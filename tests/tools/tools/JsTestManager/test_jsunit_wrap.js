@@ -1,3 +1,8 @@
+if(this["load"]){
+	load(["jsunit_wrap.js"]);
+	bu_alert = print;
+}
+
 function test_JsUnitWrap_simple() {
   jum.assertEquals('test1', 1, 1);
   jum.assertTrue('test2', true);
@@ -20,3 +25,5 @@ function test_JsUnitWrap_continueAsync() {
 function test_JsUnitWrap_waitAll() {
   jum.waitAll('JsUnitWrap_waitAll', arguments.callee);
 }
+
+jum.init();
