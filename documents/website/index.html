@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<title>Dojo Toolkit</title>
+		<style type="text/css">
+			body {
+				margin : 0;
+				margin-top : 12px;
+				padding : 0;
+				text-align : center ;
+				font-family : lucida grande, verdana, helvetica ;
+				font-size : 87%;
+				/* background-color : #ededde; */
+				background-color : white;
+				background-repeat: repeat-x;
+				background-image: url("img/bg-fade.png"); /* fades from #cccccc to white */
+			}
+			#wrapper {
+				margin : auto ;
+				overflow : visible ;
+				width : 660px;
+				padding-left : 60px;
+				background-color : white;
+				background-image : url(img/dojo.sidebar.png);
+				background-repeat : no-repeat;
+				background-position : 0 100%;
+				border : 1px solid #ccc;
+				min-height : 580px;
+			}
+			#content {
+				text-align : left ;
+			}
+			#content h1 {
+				text-indent : -5000px;
+				background-image : url(img/page-title.png) ;
+				width : 500px;
+				height : 73px;
+				margin : 0 ;
+			}
+			#summary {
+				padding : 10px ;
+				border-bottom : 1px solid #ccc ;
+				margin : 10px ;
+				margin-bottom : 0 ;
+			}
+			#sections {
+				text-align : left ;
+				font-size : 0.83em ;
+			}
+			#mailman, #viewcvs, #trac {
+				width : 160px;
+				float : left ;
+				margin : 10px;
+				margin-top : 0 ;
+				padding : 10px ;
+			}
+			#mailman h2, #viewcvs h2, #trac h2 {
+				text-align : center ;
+			}
+			#mailman h2 a span {
+				display : block ;
+				text-indent : -5000px;
+				background-image : url(img/listreader-white.png) ;
+				background-repeat : no-repeat;
+				background-position : top center;
+				width : 100%;
+				height : 96px;
+				cursor : hand ;
+			}
+			#viewcvs h2 a span {
+				display : block ;
+				text-indent : -5000px;
+				background-image : url(img/viewcvs-white.png) ;
+				background-repeat : no-repeat;
+				background-position : top center;
+				width : 100%;
+				height : 96px;
+				cursor : hand ;
+			}
+			#trac h2 a span {
+				display : block ;
+				text-indent : -5000px;
+				background-image : url(img/trac-white.png) ;
+				background-repeat : no-repeat;
+				background-position : top center;
+				width : 100%;
+				height : 96px;
+				cursor : hand ;
+			}
+			.border-spacer {
+				float : left ;
+				width : 1px;
+				height : 250px;
+				margin : 10px;
+				border-right : 1px solid #ccc ;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="content">
+				<div id="summary">
+					<h1>The Dojo Toolkit</h1>
+					<p>
+						Dojo is an <a
+						href="http://opensource.org/licenses/afl-2.1.php">Open
+						Source</a> effort by an invited set of contributors to
+						create a UI toolkit that allows a larger number of
+						web application authors to easily use the rich
+						capabilities of modern browsers.  Contributors to Dojo
+						have been the authors of such antecedent projects as <a
+						href="http://nwidgets.org">nWidgets</a>, <a
+						href="http://burstproject.org">Burst</a>, and <a
+						href="http://fm.dept-z.com">f(m)</a>.
+						<br><br>
+						Stay tuned.
+					</p>
+				</div>
+				<div id="sections">
+					<div id="mailman">
+						<h2><a href="http://netwindows.org/mailman/listinfo/ng-dhtml_netwindows.org" alt="mailing lists"><span>Mailing lists</span></a></h2>
+						<p>
+							Dojo Toolkit mailing lists, including:
+							<ul>
+								<li><a href="http://netwindows.org/mailman/listinfo/ng-dhtml_netwindows.org">Developer Discussion List</a> 
+									<a href="http://netwindows.org/pipermail/ng-dhtml_netwindows.org/">(archives)</a></li>
+								<li><a href="mailman/listinfo/dojo-checkins">Dojo Toolkit Checkins</a> 
+									<a href="pipermail/dojo-checkins/">(archives)</a></li>
+							</ul>
+						</p>
+					</div>
+					<div class="border-spacer"></div>
+					<div id="viewcvs">
+						<h2><a href="viewcvs/viewcvs.py/" alt="browse the source of Dojo via ViewCVS"><span>ViewCVS</span></a></h2>
+						<p>
+							Browse source or download a snapshot tarball.
+						</p>
+					</div>
+					<div class="border-spacer"></div>
+					<div id="trac">
+						<h2><a href="cgi-bin/trac.cgi" alt="file bugs, view the project wiki, or keep tabs on checkins with Trac"><span>Trac</span></a></h2>
+						<p>
+							Project bug tracking and Wiki.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
