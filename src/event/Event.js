@@ -166,7 +166,7 @@ dojo.event = new function(){
 
 	}
 
-	this.disconnect(){
+	this.disconnect = function(){
 		var ao = interpolateArgs(arguments);
 		if(!ao.tgtFunc){ return; } // nothing to disconnect
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
