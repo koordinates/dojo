@@ -379,7 +379,12 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 
 	// protect against infinite recursion from mutual dependencies
 	if (typeof this.loading_modules_[modulename] !== 'undefined'){
-		dj_throw("recursive attempt to load module '" + modulename + "'");
+		// NOTE: this should never throw an exception!! "recursive" includes
+		// are normal in the course of app and module building, so blow out of
+		// it gracefully, but log it in debug mode
+
+		// dj_throw("recursive attempt to load module '" + modulename + "'");
+		dj_debug("recursive attempt to load module '" + modulename + "'");
 	}
 	this.loading_modules_[modulename] = 1;
 
