@@ -8,6 +8,15 @@
 
 digraph dhtml_universe
 	{
+		// graph-wide config
+		center=true;
+		// concentrate=true;
+		label="An incomplete mapping of the DHTML Universe\nPlease send new information and corrections to:\nalex@dojotoolkit.org";
+		nodesep=0.30;
+
+		// "dark matter"
+		dm [ label="\"Dark Matter\"\n\nperhaps 3-4x the size of\nthe visible universe?",shape=doublecircle ];
+
 		// developer to project/company relationships
 		dylan -> INFA;
 		alexr -> INFA;
@@ -72,6 +81,7 @@ digraph dhtml_universe
 		ModPubSub -> RePubSub;
 
 		// developers
+		psowden		[ label="Paul Sowden" ];
 		mbazon		[ label="Mihai Bazon" ];
 		ediamond	[ label="Ethan Diamond" ];
 		ilamb		[ label="Iain Lamb" ];
