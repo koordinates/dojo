@@ -64,7 +64,7 @@ dojo.io.Request = function(url, mimetype, transport, changeUrl) {
 	this.formNode = null;
 	
 	// events stuff
-	this._events = {};
+	this.events_ = {};
 	
 	var Request = this;
 	
@@ -110,24 +110,24 @@ dojo.io.Request = function(url, mimetype, transport, changeUrl) {
 
 // EventTarget interface
 dojo.io.Request.prototype.addEventListener = function (type, func) {
-	if (!this._events[type]) this._events[type] = [];
+	if (!this.events_[type]) this.events_[type] = [];
 	
-	for (var i = 0; i < this._events[type].length; i++)
-		if (this._events[type][i] == func) return;
-	this._events[type].push(func);
+	for (var i = 0; i < this.events_[type].length; i++)
+		if (this.events_[type][i] == func) return;
+	this.events_[type].push(func);
 }
 
 dojo.io.Request.prototype.removeEventListener = function (type, func) {
-	if (!this._events[type]) return;
+	if (!this.events_[type]) return;
 	
-	for (var i = 0; i < this._events[type].length; i++)
-		if (this._events[type][i] == func) this._events[type].splice(i,1);
+	for (var i = 0; i < this.events_[type].length; i++)
+		if (this.events_[type][i] == func) this.events_[type].splice(i,1);
 }
 
 dojo.io.Request.prototype.dispatchEvent = function (evt) {
-	if (!this._events[evt.type]) return;
-	for (var i = 0; i < this._events[evt.type].length; i++)
-		this._events[evt.type][i](evt);
+	if (!this.events_[evt.type]) return;
+	for (var i = 0; i < this.events_[evt.type].length; i++)
+		this.events_[evt.type][i](evt);
 	return false; // FIXME: implement return value
 }
 
