@@ -240,10 +240,26 @@ dojo.hostenv.getBaseScriptUri = function(){
 
 	var lastslash = uri.lastIndexOf('/');
 	// inclusive of slash
-	this.base_script_uri_ = (lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_;
+	this.base_script_uri_ = this.normPath((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
+	return this.base_script_uri_;
+}
+
+// FIXME: we should move this into a different namespace
+dojo.hostenv.normPath = function(path){
+	// FIXME: need to convert or handle windows-style path separators
+
+	// posix says we can have one and two slashes next to each other, but 3 or
+	// more should be compressed to a single slash
+	path = path.replace(/(\/\/)(\/)+)/, "\/");
+	// if we've got a "..." sequence, we can should attempt to normalize it
+	path = path.replace(/(\.\.)(\.)+)/, "..");
+	// likewise, we need to clobber "../" sequences at the beginning of our
+	// string since they don't mean anything in this context
+	path = path.replace(/^(\.)+(\/))/, "");
+
 	// we need to strip out ".." sequences since rhino can't handle 'em
-	if(this.base_script_uri_.indexOf("..") >= 0){
-		var oparts = this.base_script_uri_.split("/");
+	if(path.indexOf("..") >= 0){
+		var oparts = path.split("/");
 		var nparts = [];
 		for(var x=0; x<oparts.length; x++){
 			if(oparts[x]==".."){
@@ -255,9 +271,8 @@ dojo.hostenv.getBaseScriptUri = function(){
 				nparts.push(oparts[x]);
 			}
 		}
-		this.base_script_uri_ = nparts.join("/");
+		return  nparts.join("/");
 	}
-	return this.base_script_uri_;
 }
 
 /**
