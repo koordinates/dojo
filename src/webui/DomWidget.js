@@ -27,7 +27,7 @@ dojo.webui.DomWidget = function(){
 	this.buildRendering = function(){
 		// DOM widgets construct themselves from a template
 		this.buildFromTemplate();
-		this.fillInTemplate(); 	// this is where individual widgets will handle
+		this.fillInTemplate(20, 20, 12, "testing", "ellipse"); 	// this is where individual widgets will handle
 								// population of data from properties, remote
 								// data sets, etc.
 	}
@@ -41,11 +41,10 @@ dojo.webui.DomWidget = function(){
 			
 			// FIXME: need to be able to distinguish here what should be done
 			// or provide a generic interface across all DOM implementations
-			node = this.createNodesFromText(this.templateString, true);
+			node = this.createNodesFromText(this.templateString(20, 20, 12, "testing", "ellipse"), true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 		}
 		var node = this.templateNode.cloneNode(true);
-
 		if(!node){ return false; }
 
 		// recurse through the node, looking for, and attaching to, our
@@ -95,12 +94,13 @@ dojo.webui.DomWidget = function(){
 				}
 			}
 		}
-
-		for(var x=0; x<baseNode.childNodes.length; x++){
-			if(baseNode.childNodes[x].nodeType == elementNodeType){
+		
+		// FIXME: temporarily commenting this out as it is breaking things
+		/*for(var x=0; x<baseNode.childNodes.length; x++){
+			if(baseNode.childNodes.item(x).nodeType == elementNodeType){
 				this.attachTemplateNodes(baseNode.childNodes[x]);
 			}
-		}
+		}*/
 
 		/*
 		for(var x=0; x<baseNode.childNodes.length; x++){

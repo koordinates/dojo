@@ -36,27 +36,32 @@ dojo.webui.widgets.SVGButton = function(){
 	this.label = "huzzah!";
 
 	this.setLabel = function(x, y, textSize, label, shape){
-		var labelNode = this.domNode.ownerDocument.createTextNode(this.label);
-		var textNode = this.domNode.ownerDocument.createElement("text");
-		var coords = dojo.webui.widgets.SVGButton.prototype.coordinates(x, y, textSize, label, shape)
+		//var labelNode = this.domNode.ownerDocument.createTextNode(this.label);
+		//var textNode = this.domNode.ownerDocument.createElement("text");
+		var coords = dojo.webui.widgets.SVGButton.prototype.coordinates(x, y, textSize, label, shape);
+		var textString = "";
 		switch(shape) {
 			case "ellipse":
-				textNode.setAttribute("x", coords[6]);
-				textNode.setAttribute("y", coords[7]);
+				textString = "<text x='"+ coords[6] + "' y='"+ coords[7] + "'>"+ label + "</text>";
+				//textNode.setAttribute("x", coords[6]);
+				//textNode.setAttribute("y", coords[7]);
 				break;
 			case "rectangle":
 				//FIXME: implement
+				textString = "";
 				//textNode.setAttribute("x", coords[6]);
 				//textNode.setAttribute("y", coords[7]);
 				break;
 			case "circle":
 				//FIXME: implement
+				textString = "";
 				//textNode.setAttribute("x", coords[6]);
 				//textNode.setAttribute("y", coords[7]);
 				break;
 		}
-		textNode.appendChild(labelNode);
-		this.domNode.appendChild(textNode);
+		//textNode.appendChild(labelNode);
+		//this.domNode.appendChild(textNode);
+		return textString;
 	}
 
 	this.fillInTemplate = function(x, y, textSize, label, shape){
@@ -69,7 +74,7 @@ dojo.webui.widgets.SVGButton = function(){
 		// FIXEME: for now, I'm going to fake this... need to come up with a real way to 
 		// determine the actual width of the text, such as computedStyle
 		var textWidth = this.label.length*this.textSize ;
-		this.setLabel();
+		//this.setLabel();
 	}
 }
 
@@ -104,8 +109,8 @@ dojo.webui.widgets.SVGButton.prototype.coordinates = function(x, y, textSize, la
 			var ry = buttonHeight/2;
 			var cx = rx + x;
 			var cy = ry + y;
-			var textX = cx - rx*textSize/21;
-			var textY = cy*1.33;
+			var textX = cx - rx*textSize/25;
+			var textY = cy*1.1;
 			return [buttonWidth, buttonHeight, rx, ry, cx, cy, textX, textY];
 			break;
 		case "rectangle":
@@ -119,8 +124,27 @@ dojo.webui.widgets.SVGButton.prototype.coordinates = function(x, y, textSize, la
 	}
 }
 
+dojo.webui.widgets.SVGButton.prototype.labelString = function(x, y, textSize, label, shape){
+	var textString = "";
+	var coords = dojo.webui.widgets.SVGButton.prototype.coordinates(x, y, textSize, label, shape);
+	switch(shape) {
+		case "ellipse":
+			textString = "<text x='"+ coords[6] + "' y='"+ coords[7] + "'>"+ label + "</text>";
+			break;
+		case "rectangle":
+			//FIXME: implement
+			textString = "";
+			break;
+		case "circle":
+			//FIXME: implement
+			textString = "";
+			break;
+	}
+	return textString;
+}
+
 //dojo.webui.widgets.SVGButton.prototype.templateString = "<g class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'>"+ dojo.webui.widgets.SVGButton.prototype.shapeString("ellipse") + "</g>";
 
 dojo.webui.widgets.SVGButton.prototype.templateString = function(x, y, textSize, label, shape) {
-	return "<g class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'>"+ dojo.webui.widgets.SVGButton.prototype.shapeString(x, y, textSize, label, shape) + "</g>";
+	return "<g class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'>"+ dojo.webui.widgets.SVGButton.prototype.shapeString(x, y, textSize, label, shape) + dojo.webui.widgets.SVGButton.prototype.labelString(x, y, textSize, label, shape) + "</g>";
 }
