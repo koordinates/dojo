@@ -16,11 +16,11 @@
 		</style>
 	</head>
 	<body onload="testHandler();">
-		<script type="text/javascript">
+		<script type="text/javascript"><!--
 			document.body.onload = testHandler;
 			
 			function testHandler() {
-				var testObj = new dojo.xml.ParseDocumentFragmentToJSObject();
+				var testObj = new dojo.xml.ParseDocumentFragment();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
 				outputObjectInfo(testObjects,0);
 			}
@@ -40,11 +40,11 @@
 						for(var i=0; i<indentationCounter;i++) {
 							document.getElementById("output").appendChild(document.createTextNode("-"));
 						}
-						document.getElementById("output").appendChild(document.createTextNode(y+" = "+x[y]));
+						document.getElementById("output").appendChild(document.createTextNode(y+":" +x[y]));
 						document.getElementById("output").appendChild(document.createElement("br"));
 					}
 				}
-			}
+			} //-->
 		</script>
 		<pre>
 &lt;div id="test"&gt;
