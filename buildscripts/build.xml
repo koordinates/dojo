@@ -61,11 +61,24 @@ build targets:
 				java.lang.System.out.println.apply(java.lang.System.out, args);
 				
 			}
-			print("foo");
 
-			var echo = dojo.createTask("echo");
-			help.addTask(echo);
-			echo.setMessage("JS integration is working!");
+			function echo(msg, parentTask){
+				var echo = dojo.createTask("echo");
+				parentTask.addTask(echo);
+				echo.setMessage(msg);
+			}
+
+			/*
+			function load(){
+				for(var x=0; x<arguments.length; x++){
+					var scriptTask = dojo.createTask("script");
+					scriptTask.setAttribute(); // FIXME: will this work?
+				}
+			}
+			*/
+			
+			print("foo");
+			echo("JS integration is working!", help);
 		]]></script>
 
 <!--
