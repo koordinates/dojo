@@ -27,15 +27,27 @@ dojo.io.formHasFile = function(formNode){
 }
 
 dojo.io.buildFormGetString = function(sNode){
+	var ec = encodeURIComponent;
 	//the argument is a DOM Node corresponding to a form element.
 	var tvar = "";
 	var ctyp = sNode.nodeName ? sNode.nodeName.toLowerCase() : "";
 	var etyp = sNode.type ? sNode.type.toLowerCase() : "";
-	if(( (ctyp=="input") && (etyp!="radio") && (etyp!="checkbox")) || (ctyp=="select") || (ctyp=="textarea")){
-		tvar = encodeURIComponent(sNode.getAttribute("name")) + "=" + encodeURIComponent(sNode.value)  + "&";
+	if( ( (ctyp=="input") && (etyp!="radio") && (etyp!="checkbox") ) || (ctyp=="select") || (ctyp=="textarea")){
+		if(!((ctyp=="select")&&(sNode.getAttribute("multiple")))){
+			tvar = ec(sNode.getAttribute("name")) + "=" + ec(sNode.value) + "&";
+		}else{
+			// otherwise we have a multi-select element, so gather all of it's values
+			var tn = ec(sNode.getAttribute("name")); 
+			var copts = sNode.getElementsByTagName("option");
+			for(var x=0; x<copts.length; x++){
+				if(copts[x].hasAttribute("selected")){
+					tvar += tn+"="+ec(copts[x].value)+"&";
+				}
+			}
+		}
 	}else if(ctyp=="input"){
 		if(sNode.checked){
-			tvar = encodeURIComponent(sNode.getAttribute("name")) + "=" + encodeURIComponent(sNode.value)  + "&";
+			tvar = ec(sNode.getAttribute("name")) + "=" + ec(sNode.value)  + "&";
 		}
 	}
 	if(sNode.hasChildNodes()){
