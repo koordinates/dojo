@@ -19,13 +19,51 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
+			<string>{{14, 11}, {283, 18}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>ID</key>
+			<integer>154</integer>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Text</key>
+				<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
+
+\f0\fs30 \cf0 Dojo in a JSF and/or Struts environment}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
 			<string>{{73, 364}, {87, 18}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>516</integer>
+			<integer>153</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -65,7 +103,7 @@
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>515</integer>
+			<integer>152</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -105,7 +143,7 @@
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>514</integer>
+			<integer>151</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -145,7 +183,7 @@
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>513</integer>
+			<integer>150</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -185,7 +223,7 @@
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>512</integer>
+			<integer>149</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -226,7 +264,7 @@ statusCode:"201"\};}</string>
 			<key>FitText</key>
 			<string>Vertical</string>
 			<key>ID</key>
-			<integer>511</integer>
+			<integer>148</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -267,7 +305,7 @@ statusCode:"201"\};}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>510</integer>
+			<integer>147</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -307,7 +345,7 @@ statusCode:"201"\};}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>509</integer>
+			<integer>146</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -347,7 +385,7 @@ statusCode:"201"\};}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>508</integer>
+			<integer>145</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -387,7 +425,7 @@ statusCode:"201"\};}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>507</integer>
+			<integer>144</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -427,7 +465,7 @@ statusCode:"201"\};}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>506</integer>
+			<integer>143</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -468,7 +506,7 @@ bean}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>505</integer>
+			<integer>142</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -508,7 +546,7 @@ bean}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>504</integer>
+			<integer>141</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -548,7 +586,7 @@ bean}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>503</integer>
+			<integer>140</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -589,7 +627,7 @@ Comp.}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>502</integer>
+			<integer>139</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -630,7 +668,7 @@ Comp.}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>501</integer>
+			<integer>138</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -671,7 +709,7 @@ Comp.}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>500</integer>
+			<integer>137</integer>
 			<key>Rotation</key>
 			<real>270</real>
 			<key>Shape</key>
@@ -713,7 +751,7 @@ Comp.}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>499</integer>
+			<integer>136</integer>
 			<key>Rotation</key>
 			<real>270</real>
 			<key>Shape</key>
@@ -755,7 +793,7 @@ Comp.}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>498</integer>
+			<integer>135</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -795,7 +833,7 @@ Comp.}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>497</integer>
+			<integer>134</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -829,15 +867,13 @@ Comp.}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{158, 251}, {42, 28}}</string>
+			<string>{{167, 249}, {42, 28}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>496</integer>
-			<key>Rotation</key>
-			<real>90</real>
+			<integer>133</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -872,15 +908,13 @@ Event}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{133, 254}, {37, 18}}</string>
+			<string>{{124, 254}, {37, 18}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>495</integer>
-			<key>Rotation</key>
-			<real>270</real>
+			<integer>132</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -920,7 +954,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>494</integer>
+			<integer>131</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -960,7 +994,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>493</integer>
+			<integer>130</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1000,7 +1034,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>Vertical</string>
 			<key>ID</key>
-			<integer>492</integer>
+			<integer>129</integer>
 			<key>Rotation</key>
 			<real>90</real>
 			<key>Shape</key>
@@ -1042,7 +1076,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>491</integer>
+			<integer>128</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1083,7 +1117,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>490</integer>
+			<integer>127</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1123,7 +1157,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>489</integer>
+			<integer>126</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1163,7 +1197,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>488</integer>
+			<integer>125</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1203,7 +1237,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>487</integer>
+			<integer>124</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1243,7 +1277,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>486</integer>
+			<integer>123</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1283,7 +1317,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>485</integer>
+			<integer>122</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -1319,7 +1353,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>484</integer>
+			<integer>121</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1347,7 +1381,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>483</integer>
+			<integer>120</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1374,7 +1408,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>482</integer>
+			<integer>119</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1402,7 +1436,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>481</integer>
+			<integer>118</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1429,7 +1463,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>480</integer>
+			<integer>117</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1457,7 +1491,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>479</integer>
+			<integer>116</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1483,14 +1517,14 @@ Event}</string>
 			<key>Tail</key>
 			<dict>
 				<key>ID</key>
-				<integer>464</integer>
+				<integer>101</integer>
 			</dict>
 		</dict>
 		<dict>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>478</integer>
+			<integer>115</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1518,7 +1552,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>477</integer>
+			<integer>114</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1546,7 +1580,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>476</integer>
+			<integer>113</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1576,10 +1610,10 @@ Event}</string>
 			<key>Head</key>
 			<dict>
 				<key>ID</key>
-				<integer>460</integer>
+				<integer>97</integer>
 			</dict>
 			<key>ID</key>
-			<integer>475</integer>
+			<integer>112</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1607,7 +1641,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>474</integer>
+			<integer>111</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1635,7 +1669,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>473</integer>
+			<integer>110</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1663,7 +1697,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>472</integer>
+			<integer>109</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1691,7 +1725,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>471</integer>
+			<integer>108</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1719,7 +1753,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>470</integer>
+			<integer>107</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1747,7 +1781,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>469</integer>
+			<integer>106</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1775,7 +1809,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>468</integer>
+			<integer>105</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1803,7 +1837,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>467</integer>
+			<integer>104</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1833,10 +1867,10 @@ Event}</string>
 			<key>Head</key>
 			<dict>
 				<key>ID</key>
-				<integer>462</integer>
+				<integer>99</integer>
 			</dict>
 			<key>ID</key>
-			<integer>466</integer>
+			<integer>103</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1866,7 +1900,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>465</integer>
+			<integer>102</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -1878,7 +1912,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>464</integer>
+			<integer>101</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -1890,7 +1924,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>463</integer>
+			<integer>100</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -1902,7 +1936,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>462</integer>
+			<integer>99</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1919,7 +1953,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>461</integer>
+			<integer>98</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -1931,7 +1965,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>460</integer>
+			<integer>97</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -1943,7 +1977,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>459</integer>
+			<integer>96</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -1955,7 +1989,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>458</integer>
+			<integer>95</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1970,7 +2004,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>457</integer>
+			<integer>94</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -1997,7 +2031,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>456</integer>
+			<integer>93</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2028,7 +2062,7 @@ Event}</string>
 			<key>FitText</key>
 			<string>YES</string>
 			<key>ID</key>
-			<integer>455</integer>
+			<integer>92</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -2068,7 +2102,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>454</integer>
+			<integer>91</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2085,7 +2119,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>453</integer>
+			<integer>90</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2102,7 +2136,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>452</integer>
+			<integer>89</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2119,7 +2153,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>451</integer>
+			<integer>88</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Shape</key>
@@ -2129,7 +2163,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>450</integer>
+			<integer>87</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2157,7 +2191,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>449</integer>
+			<integer>86</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2185,7 +2219,7 @@ Event}</string>
 			<key>Class</key>
 			<string>LineGraphic</string>
 			<key>ID</key>
-			<integer>448</integer>
+			<integer>85</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2215,7 +2249,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>447</integer>
+			<integer>84</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2232,7 +2266,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>446</integer>
+			<integer>83</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2249,7 +2283,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>445</integer>
+			<integer>82</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Points</key>
@@ -2281,7 +2315,7 @@ Event}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>444</integer>
+			<integer>81</integer>
 			<key>Layer</key>
 			<integer>1</integer>
 			<key>Magnets</key>
@@ -2311,7 +2345,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>443</integer>
+			<integer>80</integer>
 			<key>Layer</key>
 			<integer>2</integer>
 			<key>Points</key>
@@ -2348,7 +2382,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>442</integer>
+			<integer>79</integer>
 			<key>Layer</key>
 			<integer>2</integer>
 			<key>Points</key>
@@ -2385,7 +2419,7 @@ Event}</string>
 			<key>Class</key>
 			<string>PolygonGraphic</string>
 			<key>ID</key>
-			<integer>441</integer>
+			<integer>78</integer>
 			<key>Layer</key>
 			<integer>2</integer>
 			<key>Points</key>
@@ -2566,8 +2600,8 @@ Event}</string>
 	bD4KCQkJCQkJPHJlYWw+OTUwPC9yZWFsPgoJCQkJCTwvYXJyYXk+CgkJCQkJPGtleT5j
 	b20uYXBwbGUucHJpbnQudGlja2V0LmNsaWVudDwva2V5PgoJCQkJCTxzdHJpbmc+Y29t
 	LmFwcGxlLnByaW50aW5nbWFuYWdlcjwvc3RyaW5nPgoJCQkJCTxrZXk+Y29tLmFwcGxl
-	LnByaW50LnRpY2tldC5tb2REYXRlPC9rZXk+CgkJCQkJPGRhdGU+MjAwNC0xMS0wOFQy
-	Mjo1NDowOVo8L2RhdGU+CgkJCQkJPGtleT5jb20uYXBwbGUucHJpbnQudGlja2V0LnN0
+	LnByaW50LnRpY2tldC5tb2REYXRlPC9rZXk+CgkJCQkJPGRhdGU+MjAwNC0xMS0wOVQx
+	OToxMzowOFo8L2RhdGU+CgkJCQkJPGtleT5jb20uYXBwbGUucHJpbnQudGlja2V0LnN0
 	YXRlRmxhZzwva2V5PgoJCQkJCTxpbnRlZ2VyPjA8L2ludGVnZXI+CgkJCQk8L2RpY3Q+
 	CgkJCTwvYXJyYXk+CgkJPC9kaWN0PgoJCTxrZXk+Y29tLmFwcGxlLnByaW50LlBhZ2VG
 	b3JtYXQuUE1BZGp1c3RlZFBhcGVyUmVjdDwva2V5PgoJCTxkaWN0PgoJCQk8a2V5PmNv
@@ -2580,7 +2614,7 @@ Event}</string>
 	Pjk5MDwvcmVhbD4KCQkJCQk8L2FycmF5PgoJCQkJCTxrZXk+Y29tLmFwcGxlLnByaW50
 	LnRpY2tldC5jbGllbnQ8L2tleT4KCQkJCQk8c3RyaW5nPmNvbS5hcHBsZS5wcmludGlu
 	Z21hbmFnZXI8L3N0cmluZz4KCQkJCQk8a2V5PmNvbS5hcHBsZS5wcmludC50aWNrZXQu
-	bW9kRGF0ZTwva2V5PgoJCQkJCTxkYXRlPjIwMDQtMTEtMDhUMjI6NTQ6MDlaPC9kYXRl
+	bW9kRGF0ZTwva2V5PgoJCQkJCTxkYXRlPjIwMDQtMTEtMDlUMTk6MTM6MDhaPC9kYXRl
 	PgoJCQkJCTxrZXk+Y29tLmFwcGxlLnByaW50LnRpY2tldC5zdGF0ZUZsYWc8L2tleT4K
 	CQkJCQk8aW50ZWdlcj4wPC9pbnRlZ2VyPgoJCQkJPC9kaWN0PgoJCQk8L2FycmF5PgoJ
 	CTwvZGljdD4KCQk8a2V5PmNvbS5hcHBsZS5wcmludC5QYXBlckluZm8uUE1QYXBlck5h
@@ -2662,9 +2696,9 @@ Event}</string>
 	<key>WindowInfo</key>
 	<dict>
 		<key>Frame</key>
-		<string>{{1, 34}, {957, 798}}</string>
+		<string>{{21, 34}, {957, 798}}</string>
 		<key>VisibleRegion</key>
-		<string>{{-2.5, -90}, {941.5, 721}}</string>
+		<string>{{-3, -90}, {942, 721}}</string>
 		<key>Zoom</key>
 		<string>1</string>
 	</dict>
