@@ -25,7 +25,7 @@
 	<property name="rest_style_sheet" value="${docs_dir}/styles/dojo.css"/>
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
-
+	<property name="profile" value=""/>
 	<property name="copyright" 
 		value="/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
 
@@ -362,14 +362,41 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 	<!-- strip-docs task -->
 
 	<!-- compress task -->
-	<target name="compress"
+	<target name="compress" depends="-fix-config"
 		description="runs compression code over release JS files">
 		<!-- 
 			FIXME: this is just a stub! need to fill it in! 
 		-->
+		<script language="javascript"><![CDATA[
+
+			function echo(msg, parentTask){
+				var echo = dojo.createTask("echo");
+				parentTask.addTask(echo);
+				echo.setMessage(msg);
+			}
+
+			// set the profileFile property, since the if task isn't built in
+			// (*grumble grumble grumble*)
+
+			var pf = dojo.getProperty("profileFile");
+			if((!pf)||(pf=="null")||(pf=="")){
+				// echo("profile: "+dojo.getProperty("profile"), compress);
+				var prof = dojo.getProperty("profile");
+				if((prof)&&(prof!="null")&&(prof!="")){
+					dojo.setNewProperty("profileFile", "profiles/"+prof+".profile.js");
+				}else{
+					dojo.setNewProperty("profileFile", "getDependencyList.js");
+				}
+				// echo("profileFile: "+dojo.getProperty("profileFile"), compress);
+			}
+		]]></script>
+
+		<echo>profileFile: ${profileFile}</echo>
+
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 		<java jar="${user.home}/.ant/lib/js.jar" fork="true" outputproperty="concatFilesProp">
-			<arg value="getDependencyList.js" />
+			<arg value="${profileFile}" />
+			<!-- <arg value=" getDependencyList.js " /> -->
 		</java>
 
 		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/source.__package__.js">
