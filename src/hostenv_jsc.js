@@ -11,8 +11,9 @@ if((typeof ScriptEngineMajorVersion != 'function')||(ScriptEngineMajorVersion() 
 	dj_throw("attempt to use JScript .NET host environment with inappropriate ScriptEngine"); 
 }
 
-// for more than you wanted to know about why this import is required even if we fully qualify
-// all symbols, see http://groups.google.com/groups?th=f050c7aeefdcbde2&rnum=12
+// for more than you wanted to know about why this import is required even if
+// we fully qualify all symbols, see
+// http://groups.google.com/groups?th=f050c7aeefdcbde2&rnum=12
 import System;
 
 dojo.hostenv.getText = function(uri){
