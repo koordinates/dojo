@@ -29,6 +29,11 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		}
 	}
 
+	this.postInitialize = function(args, frag){
+		var nr = frag["dojo:"+this.widgetType.toLowerCase()].nodeRef;
+		nr.parentNode.replaceChild(this.domNode, nr);
+	}
+
 	// method over-ride
 	this.buildRendering = function(){
 		// DOM widgets construct themselves from a template

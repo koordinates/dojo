@@ -22,7 +22,7 @@ dojo.webui.widgetManager = new function(){
 		var impl = this.getImplementationName(widgetName);
 		if(impl){
 			var tclass = dojo.webui.widgets[impl];
-			dj_debug("new dojo.webui.widgets."+impl+"()");
+			// dj_debug("new dojo.webui.widgets."+impl+"()");
 			// dj_debug(new dojo.webui.widgets[impl]());
 			var item = new dojo.webui.widgets[impl](ctorObject);
 			//alert(impl+": "+item);
@@ -59,16 +59,16 @@ dojo.webui.widgetManager = new function(){
 		// the base class.
 		for(var x in dojo.webui.widgets){
 			var xlc = (new String(x)).toLowerCase();
-			// if(("html"+widgetName).toLowerCase() == xlc){
-			if(("html"+widgetName).toLowerCase() == xlc){
-				knownWidgetImplementations[xlc] = x;
-				return x;
-			}
-			// FIXME: blah, this is really fuckin ugly. Need renderer
-			// differentiation to fix!!!
-			if(("svg"+widgetName).toLowerCase() == xlc){
-				knownWidgetImplementations[xlc] = x;
-				return x;
+			if(dojo.render.html.capable){
+				if(("html"+widgetName).toLowerCase() == xlc){
+					knownWidgetImplementations[xlc] = x;
+					return x;
+				}
+			}else if(dojo.render.svg.capable){
+				if(("svg"+widgetName).toLowerCase() == xlc){
+					knownWidgetImplementations[xlc] = x;
+					return x;
+				}
 			}
 		}
 

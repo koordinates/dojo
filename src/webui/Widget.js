@@ -2,6 +2,7 @@
 dojo.hostenv.startPackage("dojo.webui.Widget");
 dojo.hostenv.startPackage("dojo.webui.selection");
 dojo.hostenv.startPackage("dojo.webui.dragAndDropManager");
+dojo.hostenv.startPackage("dojo.webui.widgets.tags");
 
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 dojo.hostenv.loadModule("dojo.event.*");
@@ -47,11 +48,12 @@ dojo.webui.Widget = function(){
 		this.isHidden = false;
 	}
 
-	this.create = function(args){
-		this.satisfyPropertySets(args);
-		this.mixInProperties(args);
-		this.buildRendering(args);
-		this.initialize();
+	this.create = function(args, fragment){
+		this.satisfyPropertySets(args, fragment);
+		this.mixInProperties(args, fragment);
+		this.buildRendering(args, fragment);
+		this.initialize(args, fragment);
+		this.postInitialize(args, fragment);
 		dojo.webui.widgetManager.add(this);
 	}
 
@@ -175,8 +177,12 @@ dojo.webui.Widget = function(){
 		}
 	}
 
-	this.initialize = function(){
+	this.initialize = function(args, frag){
 		// dj_unimplemented("dojo.webui.Widget.initialize");
+		return false;
+	}
+
+	this.postInitialize = function(args, frag){
 		return false;
 	}
 
@@ -267,6 +273,29 @@ dojo.webui.Widget = function(){
 		return false;
 	}
 
+}
+
+// TODO: should have a more general way to add tags or tag libraries?
+// TODO: need a default tags class to inherit from for things like getting propertySets
+// TODO: parse properties/propertySets into component attributes
+// TODO: parse subcomponents
+// TODO: copy/clone raw markup fragments/nodes as appropriate
+dojo.webui.widgets.tags = {};
+
+dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
+	// FIXME: Is this needed?
+	// FIXME: Not sure that this parses into the structure that I want it to parse into...
+	// FIXME: add support for nested propertySets
+	var properties = widgetParser.parseProperties(fragment);
+}
+
+dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
+	var stype = type.split(":");
+	stype = (stype.length == 2) ? stype[1] : type;
+	var propertySets = parser.getPropertySets(frag);
+	var localProperties = parser.parseProperties(frag);
+	var twidget = dojo.webui.widgetManager.getImplementation(stype);
+	twidget.create(localProperties, frag);
 }
 
 /* FIXME:

@@ -131,33 +131,3 @@ dojo.webui.widgets.Parse = function(fragment) {
 		}
 	}
 }
-
-// TODO: should have a more general way to add tags or tag libraries?
-// TODO: need a default tags class to inherit from for things like getting propertySets
-// TODO: parse properties/propertySets into component attributes
-// TODO: parse subcomponents
-// TODO: copy/clone raw markup fragments/nodes as appropriate
-dojo.webui.widgets.tags = {};
-
-dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
-	var propertySets = widgetParser.getPropertySets(fragment);
-	// FIXME: should we take each propertySet and parse it into properties at this point?
-	var localProperties = widgetParser.parseProperties(fragment);
-	// dj_debug(dojo.webui.widgetManager.getImplementationName("button"));
-	var tbutton = dojo.webui.widgetManager.getImplementation("button");
-	//alert(tbutton);
-	try{
-		tbutton.create(localProperties);
-	}catch(e){
-		alert(e);
-	}
-	var nr = fragment["dojo:button"].nodeRef;
-	nr.parentNode.replaceChild(tbutton.domNode, nr);
-}
-
-dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
-	// FIXME: Is this needed?
-	// FIXME: Not sure that this parses into the structure that I want it to parse into...
-	// FIXME: add support for nested propertySets
-	var properties = widgetParser.parseProperties(fragment);
-}

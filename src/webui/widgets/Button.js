@@ -17,3 +17,7 @@ dojo.webui.widgets.DomButton = function(){
 	dojo.webui.DomWidget.call(this, true);
 }
 dj_inherits(dojo.webui.widgets.DomButton, dojo.webui.widgets.Button);
+
+dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser){
+	dojo.webui.widgets.buildWidgetFromParseTree("dojo:button", fragment, widgetParser);
+}
