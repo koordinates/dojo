@@ -81,15 +81,15 @@ dojo.xml.Parse = function(){
 		var ntypes = dojo.xml.domUtil.nodeTypes;
 	
 		for(var i=0; i<node.childNodes.length; i++){
-			switch(node.childNodes[i].nodeType){
+			switch(node.childNodes.item(i).nodeType){
 				case  ntypes.ELEMENT_NODE: // element nodes, call this function recursively
-					parsedNodeSet[tagName].push(this.parseElement(node.childNodes[i],true));
+					parsedNodeSet[tagName].push(this.parseElement(node.childNodes.item(i),true));
 					break;
 				case  ntypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
 					break;
 				case  ntypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 					if(node.childNodes.length == 1) {
-						parsedNodeSet[tagName].push({ value: node.childNodes[0].nodeValue });
+						parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
 					}
 					break;
 				case  ntypes.CDATA_SECTION_NODE: // cdata section... not sure if this would ever be meaningful... might be...
@@ -128,8 +128,10 @@ dojo.xml.Parse = function(){
 			parsedAttributeSet[node.attributes[i].nodeName][parsedAttributeSet[node.attributes[i].nodeName].length] = { value: node.attributes[i].nodeValue };
 		}*/
 		
+		// for(var i in node.attributes){
 		for(var i=0; i<node.attributes.length; i++) {
-			parsedAttributeSet[node.attributes[i].nodeName] = { value: node.attributes[i].nodeValue };
+			// parsedAttributeSet[node.attributes[i].nodeName] = { value: node.attributes[i].nodeValue };
+			parsedAttributeSet[node.attributes.item(i).nodeName] = { value: node.attributes.item(i).nodeValue };
 		}
 		return parsedAttributeSet;
 	}

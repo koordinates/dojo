@@ -86,25 +86,19 @@ dojo.hostenv.unWindGetTextStack = function(){
 	// we serialize because this goddamned environment is too fucked up
 	// to know how to do anything else
 	dojo.hostenv.inFlightCount++;
-	try{
-		var next = dojo.hostenv.getTextStack.pop();
-		/*
-		if((!next)&&(dojo.hostenv.getTextStack.length==0)){ 
-			dojo.hostenv.inFlightCount--;
-			dojo.hostenv.async_cb = function(){};
-			return;
-		}
-		*/
-		dojo.hostenv.async_cb = next[1];
-		// http = window.getURL(uri, dojo.hostenv.anon[cbn]);
-		window.getURL(next[0], function(result){ 
-			dojo.hostenv.inFlightCount--;
-			dojo.hostenv.async_cb(result.content);
-			dojo.hostenv.unWindGetTextStack();
-		});
-	}catch(e){
-		alert(e);
+	var next = dojo.hostenv.getTextStack.pop();
+	if((!next)&&(dojo.hostenv.getTextStack.length==0)){ 
+		dojo.hostenv.inFlightCount--;
+		dojo.hostenv.async_cb = function(){};
+		return;
 	}
+	dojo.hostenv.async_cb = next[1];
+	// http = window.getURL(uri, dojo.hostenv.anon[cbn]);
+	window.getURL(next[0], function(result){ 
+		dojo.hostenv.inFlightCount--;
+		dojo.hostenv.async_cb(result.content);
+		dojo.hostenv.unWindGetTextStack();
+	});
 }
 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
