@@ -1,7 +1,7 @@
 <!--
 /* -->
-<sect1 id="log_core.js">
-	<title><filename>log_core.js</filename></title>
+<sect1 id="LogCore.js">
+	<title><filename>LogCore.js</filename></title>
 	<para>
 		This is the netWindows logging facility, which is patterned on the
 		Python logging module, which in turn has been heavily influenced by
@@ -44,11 +44,11 @@
 // TODO: write XML Formatter class
 // TODO: write HTTP Handler which uses POST to send log lines/sections
 
-// $Id: log_core.js,v 1.6 2004/09/13 15:46:00 dylan Exp $
+// $Id: LogCore.js,v 1.6 2004/09/13 15:46:00 dylan Exp $
 // Copyright (c) 2000-2004 Alex Russell
 // Licensed under the Academic Free License version 1.2
 
-// Filename:	log_core.js
+// Filename:	LogCore.js
 // Purpose:		a common logging infrastructure for NW
 // Classes:		dojo.log, dojo.loggerObj, dojo.logRecord, dojo.logFilter
 // Global Objects:	dojo.log
@@ -76,7 +76,7 @@ if(!dojo) dojo = {} //TODO: Move this to a more appropriate place later
 		<sect3 id="dojo.logRecord.properties">
 			<title>Properties</title>
 <!--*/
-function dojo.logRecord(lvl, msg){
+dojo.logRecord = function(lvl, msg){
 	/*-->
 	<fieldsynopsis>&public; &int; <varname>level</varname></fieldsynopsis>
 	<para role="fieldinfo">
@@ -130,7 +130,7 @@ function dojo.logRecord(lvl, msg){
 			<title>Properties</title>
 <!--*/
 // an empty parent (abstract) class which concrete filters should inherit from.
-function dojo.logFilter(loggerChain){
+dojo.logFilter = function(loggerChain){
 	/*-->
 	<fieldsynopsis>&public; &arr; <varname>passChain</varname>
 		<initializer>""</initializer>
@@ -198,7 +198,7 @@ function dojo.logFilter(loggerChain){
 		<sect3 id="dojo.loggerObj.properties">
 			<title>Properties</title>
 <!--*/
-function dojo.loggerObj(){
+dojo.loggerObj = function(){
 	/*-->
 	<fieldsynopsis>&public; &int; <varname>cutOffLevel</varname>
 		<initializer>0</initializer>
@@ -1080,7 +1080,7 @@ dojo.log.getLevel = function(name){
 <!--*/
 // a default handler class, it simply saves all of the handle()'d records in
 // memory. Useful for attaching to with __sig__.
-function dojo.memoryLogHandler(level, recordsToKeep){
+dojo.memoryLogHandler = function(level, recordsToKeep){
 	// mixin style inheritance
 	dojo.logHandler.call(this, level);
 	// default is unlimited
@@ -1118,7 +1118,14 @@ if(window["stdout"]){
 		stdout(String(record.time.toLocaleTimeString())+" :"+dojo.log.getLevelName(record.level)+": "+record.message);
 	}
 	dojo.log.addHandler(dojo.consoleHandler);
+} else {
+//default event queue
+	var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
+	var dojo.consoleHandler = new dojo.memoryLogHandler(0, maxRecordsToKeep);
+	dojo.log.addHandler(dojo.consoleHandler);
 }
+
+
 
 if(window["dojo.scripts"]){
 	dojo.scripts.finalize(dojo.config.corePath+"LogCore.js");
