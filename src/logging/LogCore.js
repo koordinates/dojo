@@ -63,7 +63,7 @@ if(!dojo) dojo = {} //TODO: Move this to a more appropriate place later
 	about log events is kept.
 */
 
-dojo.loggin.logRecord = function(lvl, msg){
+dojo.logging.logRecord = function(lvl, msg){
 	this.level = lvl;
 
 	this.message = msg;

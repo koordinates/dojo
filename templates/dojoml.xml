@@ -9,9 +9,8 @@
 		dojoStyle: presentational attributes on a component level that are not css... TODO: we may break these into attributes in their own namespace, or perhaps consider something like a -dojo-cssPropertyName for them...
 		dataProivder: data or a pointer to a data source or data model using JavaScript syntax... decided to use ognl/jsf style syntax rather than xpath for simplicity:
 			text: dataProvider="some plain text"
-			reference to a model: dataProvider="modelName"
-			reference to an item in a model: dataProvider="modelName.elementName"
-			xmlHttpRequest result: dataProvider="uri"
+			reference to a model: dataProvider="uri#modelName" where modelName is an id of an element in the document returned from the given uri
+			reference to an item in a model: dataProvider="uri#modelName.elementName"
 			TODO: soap, real-time/mod_pubsub, wsdl, etc.
 		action: uri for form submission
 
