@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" eventProvider="gridEvents" />
 	<dojo:propertyModel id="gridDefinitions" componentClass="default">
 		<!-- Examples of component and data models for a grid -->

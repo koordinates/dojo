@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<!-- This is an outline of the xml declaration syntax that will be used to allow people to define components in the dojo toolkit -->
 	<!-- TODO:
 		- soap, real-time/mod_pubsub, wsdl supplied data
@@ -116,6 +116,7 @@
 					expandedAll: all tree items are expanded
 					expandedToDepth: all tree items to a certain integral depth are open... for example, 3 will have all items that are 1 ,2,or 3 levels deep expanded (top level is 0)
 					expandedToList: expand all items necessary to show the list of items that are to be expanded... need to work out what this list of ids represents
+					TODO: these names aren't very good, and they won't work well as attributes of the tree
 			-->
 			<expandDepth>3</expandDepth>
 			<expandList>nodde1,node2,node5</expandList>

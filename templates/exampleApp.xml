@@ -23,6 +23,9 @@
 		</foot>
 	</dojo:propertyModel>
 	<dojo:propertyModel id="treeDefinitions" componentClass="default" resizable="yes" indentation="0.5em">
+		<state type="default" mode="expandedToList">
+			<expandList>record2,record3</expandList>
+		</state>
 		<treeItems cssClassList="className1,className2,className3"  repetitionFrequency="1,3,1" rowHeight="1.2em" />
 		<treeIconItems>
 			<icon type="folderClosed" cssClassName="folderClosed" svgDefsElement="" src="folderClosedIcon.png" />
@@ -126,6 +129,26 @@
 			<subStructure4>
 				item34
 			</subStructure4>
+		</structure>
+	</arbitraryDataStructure>
+
+	<arbitraryDataStructure id="staticTreeExampleModel">
+		<name>testTree</name>
+		<structure>
+			<name>item1</name>
+			<uniqueId>record1</uniqueId>
+		</structure>
+		<structure>
+			<name>item2</name>
+			<uniqueId>record2</uniqueId>
+		</structure>
+		<structure>
+			<name>item3</name>
+			<uniqueId>record3</uniqueId>
+		</structure>
+		<structure>
+			<name>item4</name>
+			<uniqueId>record4</uniqueId>
 		</structure>
 	</arbitraryDataStructure>
 </dojo:application>

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProvider="treeDefinitions" />
 	<dojo:propertyModel id="treeDefinitions" componentClass="default">
 		<resizable>yes</resizable>
 		<indentation>0.5em</indentation>
+		<state type="default" mode="expandedToDepth">
+			<expandDepth>3</expandDepth>
+		</state>
 		<treeItems>
 			<cssClassList>className1,className2,className3</cssClassList>
 			<repetitionFrequency>1,3,1</repetitionFrequency>
