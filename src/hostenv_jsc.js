@@ -58,4 +58,6 @@ dojo.hostenv.println = function(s){
 	print(s); // = print
 }
 
-dojo.hostenv.getLibraryScriptUri = function(){return System.Environment.GetCommandLineArgs()[0];};
+dojo.hostenv.getLibraryScriptUri = function(){
+	return System.Environment.GetCommandLineArgs()[0];
+}
