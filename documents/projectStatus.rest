@@ -1,10 +1,10 @@
 About Dojo
 ===================================
 
-:Author: Dylan Schiemann
-:Version: 0.2
+:Author: Dylan Schiemann, Alex Russell
+:Version: 0.3
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/03/17
+:Date: 2005/03/20
 
 .. contents::
 
@@ -12,9 +12,142 @@ About Dojo
 Roadmap
 ------------------------
 
-Our current road map is to continue working on the plumbing and core components 
-until we reach a point at which we can release something that people will find 
-useful.  
+A roadmap document, by necessity, outlines two separate sets of goals. One set
+is related to the end-goals of a the product/project, while the other outlines
+the concrete technical steps required to get there. This document is no
+exception, but we try to make sure that the linkages between goal and means are
+explicit where possible. Simply stated, Dojo has the following large-scale
+goals:
+
+    - Make it easier for web application authors to build responsive client-side UIs
+    - Build a toolkit that will become the defacto DHTML toolkit for developers of every skill level
+    - Reduce barriers to adoption
+
+Basedo on these goals, several guiding principles "fall out" that guide our
+development:
+
+    - Developer effort should scale with requirements
+
+        + allegory: getting "up and running" with the toolkit should be as
+          simple as humanly possible
+        + allegory: deploying for and audience of 200 million people is always
+          going to be hard and there aren't going to be a ton of people that
+          need to do that, so make it easier than it is right now, but don't
+          make "average" developers pay the associated costs
+
+    - Make it possible to take only what you need from the toolkit w/ the
+      least amount of overhead code
+    - Don't tie the toolkit to a single server-side language, but provide good
+      support for many of them. 
+
+        + allegory: allow developers to easily "plug in" at any level in the
+          toolkit. If you want to use a server-side data binding library great,
+          but supporting that shouldn't make it any harder for another
+          developer to manually roll REST requests.
+
+    - Build for today, plan for tomorrow: HTML is here today, but SVG will be
+      ubiquitous soon enough. Dojo should make it simple to transition from
+      only one to a mixed environment.
+
+Dojo is a large, continuing effort which is broader in scope than many of the
+predacessor toolkits from which we draw. There are many, many "wouldn't it be
+cool..." features that the contributors would like to add into the toolkit, but
+many of these simply aren't feasible for 1.0 with the number of contributors
+adding code to the project and the quality of the release we want to produce.
+
+To get a better feel for what the roadmap contains, it's useful to understand
+what the major components of Dojo will be:
+
+    - Core
+
+        **Build System** : mostly complete
+            allows developers to portably make "builds" of the toolkit which
+            include only those portions which are required by their
+            application. Further, automatically "compress" the resulting
+            single-file build in order to reduce the amount of code sent to the
+            browser.
+
+        **Bootstrap** : done
+            allows for environment-specific impelementations of a small set of
+            universally required features (like option parsing).
+
+        **Package System** : done
+            Part of the bootstrap, provides dependency satisfaction and the
+            ability to "roll up" multiple files into a single file for
+            deployment
+
+        **Event System** : done
+            this is a generic, AOP-style event system
+
+        **Parser System** : done 
+            takes XML, XHTML, or SVG and returns an identical JS object
+            structure regardless of source
+
+    - I/O
+
+        **Unified Interface** : done
+            ``dojo.io.bind()`` is the interface through which I/O happens in Dojo
+
+        **Platform-Specific Transports** : in progress
+            a stable transport is provided for XMLHTTP (specific to browsers)
+            and a port of repubsub is mostly complete (also for browsers). No
+            work has yet been done for iframe-based transports or for
+            Java-based transports for Rhino environments.
+
+    - Widgets
+
+        **Parser System** : done
+            allows the generic XML-to-JS parser to build Dojo widgets
+
+        **Base Widget classes** : done
+            provide the generic interfaces that all widgets must implement.
+            Widget classes for DOM, SVG, and HTML are currently complete.
+            Others (such as SWT) are much lower priority right now.
+
+        **Rapid Templating System** : done
+            allows HTML widget authors to prototype a UI build writing HTML and
+            CSS instead of writing DOM calls.
+
+        **UI Event System**
+            includes things like the setting of keystroke event handlers which
+            are then attached to widgets instead of DOM nodes or other
+            rendering primitives
+
+        **UI Constraint Language**
+            allows authors of widgets and applications to specify a set of
+            "constraints" or expressions that define how a UI should behave
+
+        **Widget Implementations**
+            many common UI idioms aren't suppoted by native HTML widgets, Dojo
+            will build a large collection of high-quality widgets which can be
+            "plugged in" to existing applications. These are outlined further
+            later in this document.
+
+        **Animation**
+            not yet started
+
+    - Language Improvements
+
+        **Functional Programming Primitives**
+            not yet started
+
+        **i8LN support**
+            not yet started
+
+        **Crypto**
+            not yet started
+
+    - Other
+
+        **Misc.**
+            there are other namespaces which are spec'd out under which Dojo
+            could contribute to the state of the art in JS programming, but no
+            work has been started on implementing them in any environment.
+
+Much of the above list is "plumbing" which end goals of the Dojo project
+require. For instance, it's much easier to support multiple rendering
+environments from a single XML markup base when you have a client-side parser
+that normalizes XML into a consistent JavaScript data structure.
 
 This includes finishing the things described below in the current status 
 (likely without much SVG support), and adding enough components and widgets to 
@@ -61,8 +194,8 @@ Releases
 ------------------------
 
 There are currently no full release builds available other than tarball 
-snapshots.  The`dojo interest mailing list` contains regular updates.  
-`Anonymous SVN access` is available, as is an `initial profile build`.  Ant is 
+snapshots. The`dojo interest mailing list` contains regular updates.  
+`Anonymous SVN access` is available, as is an `initial profile build`. Ant is 
 required to use our build system.
 
 
@@ -70,7 +203,7 @@ Getting Involved
 ------------------------
 
 Currently, contributors are added to the project through invitation only, much 
-like firefox.  If you would like to contribute to the Dojo project, please 
+like firefox. If you would like to contribute to the Dojo project, please
 contact us through the `dojo interest mailing list`.
 
 
@@ -89,12 +222,13 @@ mundane details like bylaws and tax exemption status.
 
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
+
 .. _`checkins mailing list`: http://www.dojotoolkit.org/pipermail/dojo-checkins/
 .. _`dojo interest mailing list`: http://www.dojotoolkit.org/pipermail/dojo-interest/
 .. _`initial profile build` : http://dojotoolkit.org/dojo_browserio.tar.gz
 .. _`baking usability into XMLHTTP` : http://dojotoolkit.org/intro_to_dojo_io.html
 .. _`Anonymous SVN access` : http://dojotoolkit.org/svn/dojo/
 .. _`Academic Free License v 2.1` : http://opensource.org/licenses/afl-2.1.php
-.. _``thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
+.. _`thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
