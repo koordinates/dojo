@@ -3,7 +3,10 @@
  *
  * Copyright 2005, The Dojo Foundation
  *
- * Jan 9, 2005: inital revision, Alex Russell <alex@dojotoolkit.org>
+ * This file is ENTIRELY PROVISIONAL AND MUTABLE. If you think there is
+ * something wrong, boneheaded, or offensive in any of the relationships mapped
+ * out here, please assume that I don't know what I'm talking about and mail me
+ * the RIGHT information at <alex@dojotoolkit.org>
  */
 
 digraph dhtml_universe
@@ -79,7 +82,7 @@ digraph dhtml_universe
 		// project and company relationships
 		INFA -> NW;
 		INFA -> ISC [ label="licenses" ];
-		Jot -> Dojo [ label="sponsors" ];;
+		Jot -> Dojo [ label="sponsors" ];
 		Jot -> HTMLArea [ label="sponsors" ];
 		Tibet -> ISC;
 		// FIXME: need to mine these links for info:
