@@ -182,10 +182,10 @@ dojo.io.XMLHTTPTransport = new function(){
 				var lh = null;
 				var hsl = this.historyStack.length-1;
 				if(hsl>=0){
-					while(!this.historyStack[hsl]["hash"]){
+					while(!this.historyStack[hsl]["urlHash"]){
 						hsl--;
 					}
-					lh = this.historyStack[hsl]["hash"];
+					lh = this.historyStack[hsl]["urlHash"];
 				}
 				if(lh){
 					callback = function(){

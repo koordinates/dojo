@@ -107,7 +107,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	if(async_cb){
 		http.onreadystatechange = function(){ 
 			if((4==http.readyState)&&(http["status"])){
-				dojo.hostenv.inFlightCount--;
+				// dojo.hostenv.inFlightCount--;
 				// async_cb(((200 == http.status)) ? http.responseText : null);
 				if(http.status==200){
 					dj_debug("LOADED URI: "+uri);
@@ -120,7 +120,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		}
 	}
 
-	dojo.hostenv.inFlightCount++;
+	// dojo.hostenv.inFlightCount++;
 	http.open('GET', uri, async_cb ? true : false);
 	http.send(null);
 	if(async_cb){
@@ -200,6 +200,7 @@ dojo.hostenv.println = function(s){
 	}
 }
 
+/*
 // NOTE: IE seems to have some really fucked up ideas of what "onload" means
 // WRT to pulling things out of the cache and executing them. In this case, we
 // hit "onload" and THEN execute the JS that exists below the bootstrap2.js
@@ -210,8 +211,12 @@ if(dojo.render.html.ie){
 	dojo.hostenv.modulesLoaded = function(){
 		this.modulesLoadedFired = false;
 		this._old_modulesLoaded();
+		if(this.modulesLoadedFired){
+			this.modulesLoadedListeners = [];
+		}
 	}
 }
+*/
 
 // FIXME: this and other Dojo-specific events need a more NW-like attachment mechanism
 window.onload = function(evt){
