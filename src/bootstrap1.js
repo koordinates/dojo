@@ -336,30 +336,36 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
  * The result of the eval is not available to the caller.
  */
 dojo.hostenv.loadUri = function(uri, cb){
-	dj_debug(uri);
 	var stack = this.loadUriStack;
 	stack.push([uri, cb, null]);
 	var tcb = function(contents){
 		// stack management
 		var first = stack.pop();
 		if(first[0]==uri){
+			first[2] = contents;
 			if(!contents){ 
-				first[1].cb(false);
+				first[1](false);
 			}else{
-				if(!contents){ contents = ""; }
-				// check to see if we need to load anything else first. Ugg.
-				var deps = new Array(contents.match(/dojo.hostenv.loadModule\((.*?)\)/g));
-				var ndeps = new Array(contents.match(/dojo.hostenv.require\((.*?)\)/g));
-				ndeps.push(0);
-				deps.splice.apply(deps, ndeps);
+				var deps = dojo.hostenv.getDepsForEval(first[2]);
+				/*
+				dj_debug("checking deps for: "+first[0]);
+				dj_debug("deps: "+deps);
+				*/
 				if(!deps.length){
-					var value = dj_eval(contents);
-					cb(true);
+					var value = dj_eval(first[2]);
+					first[1](true);
+					dojo.hostenv.loadedUris[first[0]] = true;
 					var next = stack.pop();
-					while(next[2]){
+					while(next[2]){ // unwind as far as we can
+						// dj_debug("evaling: "+next[0]);
+						if(dojo.hostenv.loadedUris[next[0]]){
+							next = stack.pop();
+							continue; // we've already loaded it, so don't bother evaling it again
+						}
 						var value = dj_eval(next[2]);
 						next[1](true);
-						first[1].cb(false);
+						dojo.hostenv.loadedUris[next[0]] = true;
+						next = stack.pop();
 					}
 				}else{
 					stack.push(first);
@@ -371,9 +377,8 @@ dojo.hostenv.loadUri = function(uri, cb){
 			// push back onto stack
 			stack.push(first);
 
-			// and then find our entry, perhaps the only situation when 0->x
-			// iteration is fastest in JS = )
-			for(var x=0; x<stack.length; x++){
+			// and then find our entry
+			for(var x=stack.length-1; x>=0; x--){
 				if(stack[x][0]==uri){
 					stack[x][2] = contents||"true;"; // FIXME: hack!
 				}
@@ -383,7 +388,29 @@ dojo.hostenv.loadUri = function(uri, cb){
 	this.getText(uri, tcb, true);
 }
 
+dojo.hostenv.getDepsForEval = function(contents){
+	// FIXME: should probably memoize this!
+	if(!contents){ contents = ""; }
+	// check to see if we need to load anything else first. Ugg.
+	var deps = [];
+	var tmp = contents.match( /dojo.hostenv.loadModule\((.*?)\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+	}
+	tmp = contents.match( /dojo.hostenv.require\((.*?)\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+	}
+	tmp = contents.match( /dojo.hostenv.conditionalLoadModule\((.*?)\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+	}
+
+	return deps;
+}
+
 dojo.hostenv.loadUriStack = [];
+dojo.hostenv.loadedUris = [];
 
 // FIXME: probably need to add logging to this method
 dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
