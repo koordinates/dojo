@@ -59,7 +59,7 @@ dojo.xml.Parse = function(){
 		return parsedFragment;
 	}
 
-	this.parseElement = function(node,hasParentNodeSet){
+	this.parseElement = function(node, hasParentNodeSet){
 		// TODO: make this namespace aware
 		var parsedNodeSet = {};
 		var tagName = dojo.xml.domUtil.getTagName(node);
