@@ -15,11 +15,14 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 		// this.setLabel();
 	}
 
-	this.onShow = function(event){
+	this.onShow = function(evt){
+		evt = evt || window.event;
+		dojo.event.browser.stopEvent(evt)
+
 		// FIXME: use whatever we use to do more general style setting?
 		// FIXME: FIX this into something useful
-		this.domNode.style.left = event.clientX + "px";
-		this.domNode.style.top = event.clientY + "px";
+		this.domNode.style.left = evt.clientX + "px";
+		this.domNode.style.top = evt.clientY + "px";
 		this.domNode.style.display = "block";
 	}
 	
@@ -36,6 +39,7 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	
 	// FIXME: short term hack to show a single context menu in HTML
 	// FIXME: need to prevent the default context menu...
+	
 	dojo.event.connect(document.body, "oncontextmenu", this, "onShow");
 }
 
