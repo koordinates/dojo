@@ -2,7 +2,9 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
 	"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" 	
-	xmlns:xlink="http://www.w3.org/1999/xlink" onload="dojo.hostenv.modulesLoaded();">
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:dojo="http://dojotoolkit.org/dojoml"
+	onload="dojo.hostenv.modulesLoaded();">
 	<style type="text/css">
 		<![CDATA[
 			ellipse, rect, circle {
@@ -40,17 +42,22 @@
 			
 		});
 		*/
+
 		// alert(dojo.hostenv.modulesLoadedListeners.length);
 		dojo.hostenv.modulesLoadedListeners.push(function(){ 
+			alert("in init()");
 			var parser = new dojo.xml.Parse();
 			try{
 				var frag = parser.parseElement(window.document.documentElement);
-				var fragParser = new dojo.webui.widgets.Parse(frag);
-				fragParser.createComponents(frag);
+				alert(frag);
+
+				// var fragParser = new dojo.webui.widgets.Parse(frag);
+				// fragParser.createComponents(frag);
 			}catch(e){
 				alert(e); 
 			}
 		});
+
 	]]></script>
 	<defs>
 		<radialGradient id="buttonGradient" cx="0" cy="0" fx="0%" fy="0%"
@@ -73,7 +80,7 @@ r="100%">
 	</g>
 	<g>
 		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
-		<text dojo:dojoType="button" dojo:label="this is a test button!" dojo:onClick="alert(this.domNode);">
+		<text x="20" y="35" dojoType="button" label="this is a test button!" onClick="alert(this.domNode);">
 			you shouldn't be seeing this
 		</text>
 	</g>
