@@ -1,0 +1,81 @@
+<?xml version='1.0'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
+	"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" 	
+	xmlns:xlink="http://www.w3.org/1999/xlink" onload="dojo.hostenv.modulesLoaded();">
+	<style type="text/css">
+		<![CDATA[
+			ellipse, rect, circle {
+				fill: url(#buttonGradient);
+				stroke:black;
+				stroke-width:1;
+			}
+		]]>
+	</style>
+	<script type="text/ecmascript"><![CDATA[
+		// Dojo configuration
+		window.djConfig = { 
+			baseRelativePath: "../../../",
+			baseScriptUri: "../../../",
+			isDebug: true
+		};
+			// libraryScriptUri : "../../../hostenv_adobesvg.js",
+	]]></script>
+	<script type="text/ecmascript" xlink:href="../../../src/bootstrap1.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/hostenv_adobesvg.js" />
+	<script type="text/ecmascript" xlink:href="../../../src/bootstrap2.js" />
+	<script type="text/ecmascript"><![CDATA[
+		dojo.hostenv.loadModule("dojo.xml.Parse");
+		dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
+		dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+		dojo.hostenv.loadModule("dojo.webui.widgets.SVGButton");
+		
+		/*
+		dojo.hostenv.modulesLoadedListeners.push(function(evt){
+			alert("init!")'
+			// add your on-load logic here
+			var parser = new dojo.xml.Parse();
+			var frag  = parser.parseElement(document);
+			//outputObjectInfo(frag);
+			
+		});
+		*/
+		// alert(dojo.hostenv.modulesLoadedListeners.length);
+		dojo.hostenv.modulesLoadedListeners.push(function(){ 
+			var parser = new dojo.xml.Parse();
+			try{
+				var frag = parser.parseElement(window.document.documentElement);
+				var fragParser = new dojo.webui.widgets.Parse(frag);
+				fragParser.createComponents(frag);
+			}catch(e){
+				alert(e); 
+			}
+		});
+	]]></script>
+	<defs>
+		<radialGradient id="buttonGradient" cx="0" cy="0" fx="0%" fy="0%"
+r="100%">
+			<stop offset="0%" style="stop-color:#555555"/>
+			<stop offset="100%" style="stop-color:#f0f0f0"/>
+		</radialGradient>
+	</defs>
+	<g>
+		<ellipse cx='60' cy='60' rx='35' ry='15'/>
+		<text x="40" y="65">huzzah</text>
+	</g>
+	<g>
+		<rect x='110' y='45' width='70' height='30'/>
+		<text x="125" y="65">huzzah</text>
+	</g>
+	<g>
+		<circle cx='210' cy='60' r='23'/>
+		<text x="190" y="65">huzzah</text>
+	</g>
+	<g>
+		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
+		<text dojo:dojoType="button" dojo:label="this is a test button!" dojo:onClick="alert(this.domNode);">
+			you shouldn't be seeing this
+		</text>
+	</g>
+</svg>
+
