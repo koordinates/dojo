@@ -39,10 +39,21 @@
 	</dojo:dataModel>
 
 	<dojo:eventModel id="treeEvents">
+		<connect>
+			<signal object="foo" name="'bar'" />
+			<slot object="baz" name="'xyzzy'" />
+			<mutator />
+		</connect>
+		<!-- TODO: decide how to support mutators -->
+		<!-- TODO: add other options for sigslots, conditions for detaching, etc. -->
+		<!-- TODO: how about real-time event setup... how to specify relationships between events on the client and server-side... some of this needs to wait until the event model itself is worked out -->
+		<!-- TODO: is this generalized enough to apply to a class of component items, and if not, how would this be done? -->
+
+		<!-- DOM style events... needs work in defining how the action and propagation of the event object is setup -->
+		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
 		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
 		<event type="onclick" target="treeItem" action="evt.target.open()" />
 		<event type="onclick" target="treeItem" action="dojoGridExample.display(evt.target.objectRelation)" />
-		<!-- need to revise this to mesh with the event model that we choose... for now just showing a way to do basic DOM events...  obviously this is not very intelligent and needs a lot of work -->
 	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticGridExampleModel">
