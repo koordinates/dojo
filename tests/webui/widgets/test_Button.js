@@ -9,5 +9,7 @@ function test_button_ctor(){
 	var db1 = new dojo.webui.widgets.DomButton();
 	jum.assertTrue("test3", typeof db1 == "object");
 	jum.assertTrue("test4", db1.widgetType == "Button");
+	jum.assertTrue("test5", typeof b1.attachProperty == "dojoAttachPoint");
+	jum.assertTrue("test6", typeof b1.domNode != "undefined");
 
 }
