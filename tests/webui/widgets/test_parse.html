@@ -24,6 +24,7 @@
 			document.body.onload = testHandler;
 			
 			function testHandler() {
+				// FIXME: dylan, that flat-out doesn't work. WTF is going on here?
 				var testObj = new dojo.xml.Parse.ParseDocumentFragment();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
 				//outputObjectInfo(testObjects,0,document.getElementById("output"));
