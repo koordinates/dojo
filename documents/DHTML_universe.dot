@@ -85,7 +85,7 @@ digraph dhtml_universe
 		INFA -> ISC [ label="licenses" ];
 		Jot -> Dojo [ label="sponsors" ];
 		Jot -> HTMLArea [ label="sponsors" ];
-		Tibet -> ISC;
+		Tibet -> ISC [ style=dotted ];
 		// FIXME: need to mine these links for info:
 		//	http://koranteng.blogspot.com/2004/07/on-rich-web-applications-alphablox-and.html
 		//	http://koranteng.blogspot.com/2004/10/on-gmail-and-dhtml-architecture-again.html
