@@ -1,6 +1,6 @@
 /*
-* JScript .NET jsc
-*/
+ * JScript .NET jsc
+ */
 
 dojo.hostenv.name_ = 'jsc';
 
