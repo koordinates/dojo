@@ -122,7 +122,8 @@ dojo.io.XMLHTTPTransport = new function(){
 	 *		page, thereby not requiring an iframe hack, although we do then
 	 *		need to run a timer to detect inter-page movement.
 	 */
-	this.addToHistory = function(callback, args){
+	this.addToHistory = function(args){
+		var callback = args["back"]||args["backButton"];
 		var hash = null;
 		if(!this.historyIframe){
 			this.historyIframe = window.frames["djhistory"];
@@ -142,6 +143,10 @@ dojo.io.XMLHTTPTransport = new function(){
 			setTimeout("window.location.href = '"+hash+"';", 10);
 			this.bookmarkAnchor.href = hash;
 			if(dojo.render.html.ie){
+				// IE requires manual setting of the hash since we are catching
+				// events from the iframe
+
+				// FIXME: do we need to do something similar for the forward button and location changes?
 				var oldCB = callback;
 				var lh = null;
 				var hsl = this.historyStack.length-1;
@@ -154,10 +159,27 @@ dojo.io.XMLHTTPTransport = new function(){
 				if(lh){
 					callback = function(){
 						if(window.location.hash != ""){
-							window.location.href = lp[0]+lh;
+							window.location.href = lh;
 						}
 						oldCB();
 					}
+				}
+				// when we issue a new bind(), we clobber the forward 
+				// FIXME: is this always a good idea?
+				this.forwardStack = []; 
+				var oldFW = args["forward"]||args["forwardbutton"];;
+				var tfw = function(){
+					if(window.location.hash != ""){
+						window.location.href = hash;
+					}
+					if(oldFW){ // we might not actually have one
+						oldFW();
+					}
+				}
+				if(args["forward"]){
+					args.forward = tfw;
+				}else if(args["forwardButton"]){
+					args.forwardButton = tfw;
 				}
 			}else if(dojo.render.html.moz){
 				// start the timer
@@ -243,19 +265,29 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.handleBackButton = function(){
 		var last = this.historyStack.pop();
-		last.callback();
+		if(last["callback"]){
+			last.callback();
+		}else if(last.kwArgs["backButton"]){
+			last.kwArgs.backButton();
+		}else if(last.kwArgs["back"]){
+			last.kwArgs.back();
+		}else if(last.kwArgs["handle"]){
+			last.kwArgs.handle("back");
+		}
 		this.forwardStack.push(last);
 	}
 
 	this.handleForwardButton = function(){
-		// FIXME: how do we handle this? perhaps by re-issuing the bind() call?
+		// FIXME: should we build in support for re-issuing the bind() call here?
 		// alert("alert we found a forward button call");
 		var last = this.forwardStack.pop();
-		/*
-		if(last["callback"]){
-			last.callback();
+		if(last.kwArgs["forward"]){
+			last.kwArgs.back();
+		}else if(last.kwArgs["forwardButton"]){
+			last.kwArgs.forwardButton();
+		}else if(last.kwArgs["handle"]){
+			last.kwArgs.handle("forward");
 		}
-		*/
 		this.historyStack.push(last);
 	}
 
@@ -321,8 +353,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			url += "?"+dojo.io.argsFromMap(kwArgs.content);
 		}
 
-		if(kwArgs["backButton"]){
-			this.addToHistory(kwArgs.backButton, kwArgs);
+		if((kwArgs["backButton"])||(kwArgs["back"])){
+			this.addToHistory(kwArgs);
 		}
 
 		/*
