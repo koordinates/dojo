@@ -25,7 +25,7 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 
 	*/
 	this.fillInTemplate = function(){
-		this.setLabel();
+		// this.setLabel();
 	}
 
 	this.onFoo = function(){}
