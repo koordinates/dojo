@@ -39,8 +39,22 @@ dojo.webui.widgets.SVGButton = function(){
 		var labelNode = this.domNode.ownerDocument.createTextNode(this.label);
 		var textNode = this.domNode.ownerDocument.createElement("text");
 		var coords = dojo.webui.widgets.SVGButton.prototype.coordinates(x, y, textSize, label, shape)
-		textNode.setAttribute("x", coords[6]);
-		textNode.setAttribute("y", coords[7]);
+		switch(shape) {
+			case "ellipse":
+				textNode.setAttribute("x", coords[6]);
+				textNode.setAttribute("y", coords[7]);
+				break;
+			case "rectangle":
+				//FIXME: implement
+				//textNode.setAttribute("x", coords[6]);
+				//textNode.setAttribute("y", coords[7]);
+				break;
+			case "circle":
+				//FIXME: implement
+				//textNode.setAttribute("x", coords[6]);
+				//textNode.setAttribute("y", coords[7]);
+				break;
+		}
 		textNode.appendChild(labelNode);
 		this.domNode.appendChild(textNode);
 	}
@@ -69,10 +83,14 @@ dojo.webui.widgets.SVGButton.prototype.shapeString = function(x, y, textSize, la
 			return "<ellipse cx='"+ coords[4]+"' cy='"+ coords[5]+"' rx='"+ coords[2]+"' ry='"+ coords[3]+"'/>";
 			break;
 		case "rectangle":
-			return "<rect x='110' y='45' width='70' height='30'/>";
+			//FIXME: implement
+			return "";
+			//return "<rect x='110' y='45' width='70' height='30'/>";
 			break;
 		case "circle":
-			return "<circle cx='210' cy='60' r='23'/>";
+			//FIXME: implement
+			return "";
+			//return "<circle cx='210' cy='60' r='23'/>";
 			break;
 	}
 }
@@ -91,9 +109,11 @@ dojo.webui.widgets.SVGButton.prototype.coordinates = function(x, y, textSize, la
 			return [buttonWidth, buttonHeight, rx, ry, cx, cy, textX, textY];
 			break;
 		case "rectangle":
+			//FIXME: implement
 			return "";
 			break;
 		case "circle":
+			//FIXME: implement
 			return "";
 			break;
 	}

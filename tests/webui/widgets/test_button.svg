@@ -34,7 +34,7 @@
 		
 		/*
 		dojo.hostenv.modulesLoadedListeners.push(function(evt){
-			alert("init!")'
+			//alert("init!")'
 			// add your on-load logic here
 			var parser = new dojo.xml.Parse();
 			var frag  = parser.parseElement(document);
@@ -45,7 +45,6 @@
 
 		// alert(dojo.hostenv.modulesLoadedListeners.length);
 		dojo.hostenv.modulesLoadedListeners.push(function(){ 
-			alert("in init()");
 			var parser = new dojo.xml.Parse();
 			try{
 				var frag = parser.parseElement(window.document.documentElement);

@@ -39,7 +39,6 @@ dojo.xml.Parse = function(){
 			}
 			parsedFragment[attr][parsedFragment[attr].length] = attributeSet[attr];
 		}
-	
 		for (var childNode in documentFragment.childNodes){
 			switch(documentFragment.childNodes[childNode].nodeType){
 				case  dojo.xml.domUtil.nodeTypes.ELEMENT_NODE: // element nodes, call this function recursively
@@ -127,7 +126,6 @@ dojo.xml.Parse = function(){
 			}
 			parsedAttributeSet[node.attributes[i].nodeName][parsedAttributeSet[node.attributes[i].nodeName].length] = { value: node.attributes[i].nodeValue };
 		}*/
-		
 		// for(var i in node.attributes){
 		for(var i=0; i<node.attributes.length; i++) {
 			// parsedAttributeSet[node.attributes[i].nodeName] = { value: node.attributes[i].nodeValue };
