@@ -1,0 +1,79 @@
+Component Parser Requirements
+===================================
+
+:Author: Dylan Schiemann
+:Version: 0.1
+:Copyright: Alex Russell, 2004
+:Date: 2004/11/15
+
+.. contents::
+
+Purpose
+-------
+
+This document outlines the rationale and usage scenarios for parsing component 
+and application information from multivarious sources.
+
+Requirements
+------------
+
+The client-side parser component of Dojo MUST:
+
+- provide a single, uniform data structure from all of the various supported
+  markup encodings
+- instantiate and provide properties (data and configuration directives) to
+  components and widgets
+- a second pass of the parser MUST provide deeper linking structures such as
+  property sets shared among items, and event handling linkage
+
+Use Cases
+------------
+
+.. image:: ../images/applicationParsingRendering.png
+
+Author apps using a third-party application declaration language
+****************************************************************
+
+An app author wants to use a pre-existing third party application 
+declaration language such as JSF, Struts, Tapestry, etc.  Reasons for this 
+include using dojo components in another environment to extend the capabilites 
+of an existing framework, or to comply with a set of standards for building 
+distributed web applications.
+
+In this case, the parser will usually receive dojoml or inline constructors from 
+the server framework.
+
+Author apps using dojoml
+************************
+
+
+
+Author apps using inline html and/or svg constructors
+*****************************************************
+
+Author apps using JavaScript objects
+************************************
+
+Author apps using more than one of the above methods
+********************************************************
+
+
+.. Responsibilies of each pass
+
+.. Output at each stage
+
+.. Various options at each stage
+
+.. Returning the exact same data structure
+
+.. Structure that is expecting a feed to map directly to js
+
+.. trade-offs and things that we're expecting at each step of the process
+
+.. what's the interface for a component
+
+.. cascading and inheritance
+
+.. property sets
+
+.. hierarchy, components, children, caveats, by type, etc.
