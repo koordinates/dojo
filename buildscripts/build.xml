@@ -157,14 +157,9 @@ print "look ma! Jython!"
 	</target>
 	<!-- end -fix-config task -->
 
-	<!--
-		NOTE:
-			we ALWAYS call the config task in order to garuntee that we're in a
-			sane environment
-	-->
-
 	<!-- website task -->
 	<target name="website"
+		depends="-fix-config"
 		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
 		<copy todir="${release_website_dir}" overwrite="true">
 			<fileset dir="${website_dir}">
@@ -186,6 +181,7 @@ print "look ma! Jython!"
 
 	<!-- docs task -->
 	<target name="docs"
+		depends="-fix-config"
 		description="'builds' the docs">
 		<!--
 			Ok, the <exec> task is uber-lame. Lets script this instead, shall we?
@@ -270,6 +266,7 @@ for x in dirlist:
 
 	<!-- src task -->
 	<target name="src"
+		depends="-fix-config"
 		description="creates a copy of the source files for distribution">
 
 		<property name="ddir" value="${release_dir}/${project}/${src}_src"/>
@@ -294,6 +291,7 @@ for x in dirlist:
 
 	<!-- strip-docs task -->
 	<target name="strip-docs"
+		depends="-fix-config"
 		description="this task generates files somewhere between the full 'source' version and the fully comment and white-space stripped versions produced by the 'compress' task">
 		<delete dir="${release_dir}/${project}/${nodocs}"/>
 
