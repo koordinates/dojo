@@ -105,19 +105,20 @@ print "look ma! Jython!"
 	<!-- website task -->
 	<target name="website"
 		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
-        <copy todir="${release.website.dir}">
+		<copy todir="${release.website.dir}" overwrite="true">
 			<fileset dir="${website.dir}">
-				<exclude name="**/.svn*"></excludes>
+				<exclude name="**/.svn*" />
+				<include name="**/*" />
 			</fileset>
 		</copy>
-		<chgrp group="www">
-			<fileset dir="${website.dir}" includes="**/**" followsymlinks="false" />
+		<chgrp group="www" type="both">
+			<fileset dir="${release.website.dir}" followsymlinks="false" />
 		</chgrp>
-		<chmod perm="g+rx">
-			<fileset dir="${website.dir}" includes="**/**" type="dir" followsymlinks="false" />
+		<chmod perm="g+rwx" type="dir">
+			<fileset dir="${release.website.dir}" followsymlinks="false" />
 		</chmod>
-		<chmod perm="g+r">
-			<fileset dir="${website.dir}" includes="**/**" type="file" followsymlinks="false" />
+		<chmod perm="g+rw" type="file">
+			<fileset dir="${release.website.dir}" followsymlinks="false" />
 		</chmod>
 	</target>
 	<!-- end website task -->
