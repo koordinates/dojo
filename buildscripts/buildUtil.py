@@ -39,8 +39,11 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile):
 			buildRestFiles(tn, docOutDir+os.sep+name, styleSheetFile)
 
 def norm(path):
-	return os.path.normpath(os.path.abspath(path))
-	# return path
+	path = os.path.normpath(os.path.abspath(path))
+	if os.sep == '\\':
+		return path.replace("\\", "\\\\")
+	else:
+		return path
 
 def buildTestFiles( testDir="../tests/", 
 					testOutFile="../testRunner.js", 
@@ -65,7 +68,7 @@ load("%s",
 
 	testFiles = findTestFiles(testDir)
 	for fn in testFiles:
-		testOutFD.write("""load("%s");\n""" % (fn,))
+		testOutFD.write("""load("%s");\n""" % (norm(fn),))
 
 	testOutFD.write("""
 load("%s");
@@ -85,5 +88,5 @@ def findTestFiles(testDir="../tests"):
 			testFiles[x] = norm(testDir+os.sep+testFiles[x])
 	# testFiles = map(lambda x: os.path.abspath(testDir+os.sep+x), testFiles)
 	return testFiles
-	
+
 # vim:ai:ts=4:noet:textwidth=80
