@@ -153,29 +153,39 @@ fragmentObject = {
 	}
 }
 
+The primary reason for doing this step is that it seems to be more performant 
+to parse all of the xml to JavaScript once, rather than making multiple passes 
+on XML data structures.
+
 Generic JavaScript to component and data objects
 ************************************************
 
-to-do
+This step converts a generic JavaScript object structure to one that populates 
+structures that describe components, their properties, and data models.  There 
+should be a way to define the set of rules and properties from a component.  For 
+example, what should be done with unrecognized property attributes?  Should they 
+be added to the data structure in an unknown attribute collection, or should 
+they be ignored, but still available by going back and looking at the source XML 
+structure.
 
-.. explanation
+There also needs to be a mechanism for round-tripping so that the application 
+end user may modify data or properties, which would then be provided back to the 
+server and stored locally in the xml structure.  Does this make sense?
 
-.. component interface
+So how do we define a generic component interface, and then properties and 
+subcomponents or child components specific to a particular component type?  Do 
+we use a hash map or lookup map style system?  Do we use a factory pattern for 
+components?  I guess that I am currently working under the assumption that there 
+will be a base component class, and types of components will have the properties 
+that they accept defined in a dictionary or list, as well as a listing of 
+subcomponents that they accept or expect.  How this will be done is still 
+somewhat of an ill-formulated thought in my mind, though I am sure that Alex 
+has a better concept worked out in his mind.
 
-.. translation from data model and data source to expected data structure for 
-.. a component
-
-.. example
-
-.. trade-offs
-
-.. property sets
-
-.. cascading and inheritance
-
-.. hierarchy, components, children, caveats, by type, etc.
-
-Data Integrity and Roundtripping
---------------------------------
-
-to-do
+Also, at this stage of parsing, we need to be able to mixin external data models 
+and property sets, as well as deal with conflicting properties, e.g. the same 
+property being defined in multiple ways.  The conclusion we have come to for 
+property cascading or inheritance is to simply choose the last specified 
+instance of a property, and by last, this also means most specific.  So this 
+would imply that the parser would work from the top down in determining property 
+values.
