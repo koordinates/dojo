@@ -1,0 +1,145 @@
+Event Markup Syntax Requirements
+================================
+
+:Author: Dylan Schiemann
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: $Date:$
+
+.. contents::
+
+Purpose
+-------
+
+This document outlines the rationale and development concepts for Dojo xml 
+event syntax
+
+Requirements
+------------
+
+.. FIXME
+.. I guess the main thing that is bothering me still is how to pass parameters
+.. and how to differentiate between instance and class for events defined in 
+.. proposets... also, when using propsets, do events override, or are they 
+.. additive... I'm assuming that they are additive, but what if you wanted to 
+.. override... also, how is order treated, which could be needed for things 
+.. like cancellation?
+
+
+DOM Style Events
+****************
+
+.. FIXME
+
+Instance vs. Class
+******************
+
+.. FIXME
+
+Advice
+******
+
+.. FIXME
+
+
+Usage Scenarios
+---------------
+
+.. FIXME
+
+
+Development Decisions
+---------------------
+
+.. FIXME
+
+Examples
+--------
+
+Dojo will supports simple inline, DOM 0 style attribute markup for events, as 
+well as through property sets.  Markup for various events is defined as follows:
+
+DOM 0 style inline event markup
+*******************************
+
+from within a dojoml document:::
+
+	<dojo:button label="huzzah" onclick="foo"/>
+
+from within an x/html document:::
+	
+	<div dojoTagName="button" label="huzzah" onclick="foo">
+	</div>
+
+from within an svg document:::
+	
+	<g dojo:tagName="button" label="huzzah" onclick="foo"/>
+
+In the above cases, scope is by default the widget instance.
+
+.. FIXME: defining different scope, passing custom parameters
+
+external property set
+*********************
+
+	<dojo:propertySet match="dojo.button">
+		<dojo:event type="onclick" target="" action="foo"/>
+.. FIXME: review more recent notes on this to see if this makes sense still...
+.. what's the difference between target and action... need to look at this again
+		<dojo:connect>
+			<dojo:source object="" function="" name="" />
+			<dojo:target object="" function="" name="" />
+		</dojo:connect>
+	</dojo:propertySet>
+
+child propsets in a widget/component declaration
+************************************************
+
+from within a dojoml document:::
+
+	<dojo:button label="huzzah" onclick="foo">
+		<dojo:propertySet>
+			<dojo:event type="onclick" target="" action="foo"/>
+			<dojo:connect>
+				<dojo:source object="" function="" name="" />
+				<dojo:target object="" function="" name="" />
+			</dojo:connect>
+		</dojo:propertySet>
+	</dojo:button>
+
+from within an html document:::
+	
+	<div dojoTagName="button" label="huzzah">
+		<div dojoTagName="propertySet">
+			<div dojoTagName="event" dojoType="onclick" dojoTarget="" dojoAction="foo"/>
+			<div dojoTagName="connect">
+				<div dojoTagName="source" dojoObject="" dojoFunction="" dojoName="" />
+				<div dojoTagName="target" dojoObject="" dojoFunction="" dojoName="" />
+			</div>
+		</div>
+	</div>
+
+from within an xhtml document or document with support for namespaces:::
+	
+	<div dojo:tagName="button label="huzzah">
+		<div dojo:tagName="propertySet">
+			<div dojo:tagName="event" dojo:type="onclick" dojo:target="" dojo:action="foo"/>
+			<div dojo:tagName="connect">
+				<div dojo:tagName="source" dojo:object="" dojo:function="" dojo:name="" />
+				<div dojo:tagName="target" dojo:object="" dojo:function="" dojo:name="" />
+			</div>
+		</div>
+	</div>
+
+from within an svg document:::
+	
+	<g dojo:tagName="grid" dojo:propertyProviderList="#propsetFoo #propsetBar
+		file#propsetBaz">
+		<g dojo:tagName="propertySet">
+			<g dojo:tagName="event" dojo:type="onclick" dojo:target="" dojo:action="foo"/>
+			<g dojo:tagName="connect">
+				<g dojo:tagName="source" dojo:object="" dojo:function="" dojo:name="" />
+				<g dojo:tagName="target" dojo:object="" dojo:function="" dojo:name="" />
+			</g>
+		</g>
+	</g>
