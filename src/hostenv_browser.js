@@ -67,7 +67,11 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	}
 
 	if(async_cb){
-		http.onreadystatechange = function(){ async_cb(http); }
+		http.onreadystatechange = function(){ 
+			if(4==http.readyState){
+				async_cb(http.responseText);
+			}
+		}
 	}
 
 	http.open('GET', uri, async_cb ? true : false);
@@ -76,6 +80,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		return null;
 	}
 
+	/*
 	if(http.status != 200){
 		if(!fail_ok){
 			dj_throw("Request for uri '" + uri + "' resulted in " + http.status + " (" + http.statusText + ")");
@@ -87,6 +92,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			return null;
 		}
 	}
+	*/
 	return http.responseText;
 }
 

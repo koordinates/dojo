@@ -15,7 +15,7 @@ dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version()};
 
 // see comments in spidermonkey loadUri
-dojo.hostenv.loadUri = function(uri){
+dojo.hostenv.loadUri = function(uri, cb){
 	dj_debug("uri: "+uri);
 	try{
 		// FIXME: what about remote URIs?
@@ -29,13 +29,17 @@ dojo.hostenv.loadUri = function(uri){
 			}
 		}
 		if(!found){
-			dj_throw(uri+" does not exist");
+			// dj_throw(uri+" does not exist");
+			if(cb){ cb(0); }
+			return 0;
 		}
 		var ok = load(uri);
-		dj_debug("rhino load(", uri, ") returned ", ok);
-		return 1;
+		dj_debug("rhino load('", uri, "') returned ", ok);
+		if(cb){ cb(1); }
+		return 0;
 	}catch(e){
-		dj_debug("rhino load(", uri, ") failed");
+		dj_debug("rhino load('", uri, "') failed");
+		if(cb){ cb(0); }
 		return 0;
 	}
 }

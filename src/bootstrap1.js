@@ -307,7 +307,7 @@ dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
  * @param module A module whose existance to check for after loading a path. Can be used to determine success or failure of the load.
  */
 //=java public Boolean loadPath(String relpath);
-dojo.hostenv.loadPath = function(relpath, module /*optional*/ ){
+dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	if(!relpath){
 		dj_throw("Missing relpath argument");
 	}
@@ -318,14 +318,14 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/ ){
 	var uri = base + relpath;
 	//this.println("base=" + base + " relpath=" + relpath);
 	try{
-		var ok;
 		if(!module){
-			ok = this.loadUri(uri);
+			this.loadUri(uri, cb);
 		}else{
-			ok = this.loadUriAndCheck(uri, module);
+			this.loadUriAndCheck(uri, module, cb);
 		}
-		return ok;
+		return;
 	}catch(e){
+		// FIXME: should probably re-throw w/ more data from here
 		return false;
 	}
 }
@@ -335,18 +335,61 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/ ){
  * Returns true if it succeeded. Returns false if the URI reading failed. Throws if the evaluation throws.
  * The result of the eval is not available to the caller.
  */
-dojo.hostenv.loadUri = function(uri){
-	var contents = this.getText(uri, null, true);
-	if(contents == null){ return 0; }
-	var value = dj_eval(contents);
-	return 1;
+dojo.hostenv.loadUri = function(uri, cb){
+	dj_debug(uri);
+	var stack = this.loadUriStack;
+	stack.push([uri, cb, null]);
+	var tcb = function(contents){
+		// stack management
+		var first = stack.pop();
+		if(first[0]==uri){
+			if(!contents){ 
+				first[1].cb(false);
+			}else{
+				if(!contents){ contents = ""; }
+				// check to see if we need to load anything else first. Ugg.
+				var deps = new Array(contents.match(/dojo.hostenv.loadModule\((.*?)\)/g));
+				var ndeps = new Array(contents.match(/dojo.hostenv.require\((.*?)\)/g));
+				ndeps.push(0);
+				deps.splice.apply(deps, ndeps);
+				if(!deps.length){
+					var value = dj_eval(contents);
+					cb(true);
+					var next = stack.pop();
+					while(next[2]){
+						var value = dj_eval(next[2]);
+						next[1](true);
+						first[1].cb(false);
+					}
+				}else{
+					stack.push(first);
+					first[2] = contents;
+					eval(deps.join(";"));
+				}
+			}
+		}else{
+			// push back onto stack
+			stack.push(first);
+
+			// and then find our entry, perhaps the only situation when 0->x
+			// iteration is fastest in JS = )
+			for(var x=0; x<stack.length; x++){
+				if(stack[x][0]==uri){
+					stack[x][2] = contents||"true;"; // FIXME: hack!
+				}
+			}
+		}
+	}
+	this.getText(uri, tcb, true);
 }
 
+dojo.hostenv.loadUriStack = [];
+
 // FIXME: probably need to add logging to this method
-dojo.hostenv.loadUriAndCheck = function(uri, module){
+dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	var ok = true;
 	try{
-		ok = this.loadUri(uri);
+		ok = this.loadUri(uri, cb);
 	}catch(e){
 		dj_debug("failed loading ", uri, " with error: ", e);
 	}
@@ -416,6 +459,28 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			return module;
 		}
 
+		var _this = this;
+		var nextTry = function(lastStatus){
+			if(lastStatus){ 
+				module = _this.findModule(modulename, false); // pass in false so we can give better error
+				if(!module){
+					dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+				}
+				return;
+			}
+			syms.pop();
+			syms.push("__package__");
+			relpath = syms.join("/") + '.js';
+			if(relpath.charAt(0)=="/"){
+				relpath = relpath.slice(1);
+			}
+			dj_debug("relpath: "+relpath);
+			_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
+		}
+
+		nextTry();
+
+		/*
 		//first try package/name/__package__.js
 		while(syms.length){
 			syms.pop();
@@ -428,9 +493,39 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			if(ok){ break; }
 			syms.pop();
 		}
+		*/
 	}else{
 		relpath = syms.join("/") + '.js';
 		modulename = nsyms.join('.');
+
+		var _this = this;
+		var nextTry = function(lastStatus){
+			dj_debug("lastStatus: "+lastStatus);
+			if(lastStatus){ 
+				// dj_debug("inital relpath: "+relpath);
+				module = _this.findModule(modulename, false); // pass in false so we can give better error
+				if(!module){
+					dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+				}
+				return;
+			}
+			var setPKG = (syms[syms.length-1]=="__package__") ? false : true;
+			syms.pop();
+			if(setPKG){
+				syms.push("__package__");
+			}
+			relpath = syms.join("/") + '.js';
+			if(relpath.charAt(0)=="/"){
+				relpath = relpath.slice(1);
+			}
+			dj_debug("relpath: "+relpath);
+			_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
+		}
+
+
+		this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
+
+		/*
 		var ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 		if((!ok)&&(!exact_only)){
 			// var syms = modulename.split(/\./);
@@ -448,17 +543,24 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 				if(ok){ break; }
 			}
 		}
+		*/
 
+		// FIXME: we should work something like this into the terminal
+		// condition for the above recursive callback.
+		/*
 		if(!ok){
 			dj_throw("Could not find module '" + modulename + "'; last tried path '" + relpath + "'");
 		}
+		*/
 	}
 
 	// check that the symbol was defined
+	/*
 	module = this.findModule(modulename, false); // pass in false so we can give better error
 	if(!module){
 		dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 	}
+	*/
 
 	return module;
 }
