@@ -36,10 +36,10 @@ dojo.xml.ParseDocumentFragmentToJSObject = function(documentFragment) {
 	for (var childNode in documentFragment.childNodes) {
 		switch(documentFragment.childNodes[childNode].nodeType) {
 			case 1: // element nodes, call this function recursively
- 				parsedFragment[documentFragment.tagName] = this.parseElement(documentFragment.childNodes[childNode],parsedNodeSet);
+				parsedFragment[documentFragment.tagName] = this.parseElement(documentFragment.childNodes[childNode]);
 				break;
 			case 3: // if a single text node is the child, treat it as an attribute
-				if(node.childNodes.length == 1) {
+				if(documentFragment.childNodes.length == 1) {
 					parsedFragment[documentFragment.tagName] = {};
 					parsedFragment[documentFragment.tagName].value = documentFragment.childNodes[0].nodeValue;
 				}
@@ -56,11 +56,14 @@ dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseElement = function(node,
 	if(!parentNodeSet){
 		parsedNodeSet[node.tagName] = {};
 	}
-	this.parseAttributes(node,parsedNodeSet);
+	var attributeSet = this.parseAttributes(node);
+	for(var attr in attributeSet) {
+		parsedNodeSet[attr] = attributeSet[attr];
+	}
 	for(var childNode in node.childNodes){
 		switch(node.childNodes[childNode].nodeType){
 			case 1: // element nodes, call this function recursively
- 				parsedNodeSet[node.tagName] = dojo.xml.parseElement(node,parsedNodeSet);
+ 				parsedNodeSet[node.tagName] = this.parseElement(node.childNodes[childNode],parsedNodeSet);
 				break;
 			case 2: // attribute node... not meaningful here
 				break;
@@ -94,12 +97,12 @@ dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseElement = function(node,
 }
 
 /* parses a set of attributes on a node into an object tree */
-dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseAttributes = function(node, parsedNodeSet){
+dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseAttributes = function(node) {
 	// TODO: make this namespace aware
-	for(var attr in node.attributes){
-		parsedNodeSet[node.attributes[attr].nodeName] = {};
-		// TODO: is this a good way to store this into a "dumb" tree?  any
-		// scope issues with this... this should probably be better scoped.
-		parsedNodeSet[node.attributes[attr].nodeName].value = node.attributes[attr].nodeValue; 
+	var parsedAttributeSet = {};
+	for(var attr in node.attributes) {
+		parsedAttributeSet[node.attributes[attr].nodeName] = {};
+		parsedAttributeSet[node.attributes[attr].nodeName].value = node.attributes[attr].nodeValue;
 	}
+	return parsedAttributeSet;
 }
