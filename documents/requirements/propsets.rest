@@ -1,0 +1,72 @@
+Property Set Requirements
+=========================
+
+:Author: Dylan Schiemann
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: $Date:$
+
+.. contents::
+
+Purpose
+-------
+
+This document outlines the rationale and development concepts for Dojo xml 
+property sets
+
+Requirements
+------------
+
+To serialize or not to serialize, that is the question
+******************************************************
+
+In early discussions about an xml syntax for describing Dojo applications, the 
+main point of contention was, should this be something that is directly 
+serializable to our underlying object structure, or not?  The general approach
+we took was that for now it should not for the sake of simplicity in
+development, performance, and xml structure.
+
+Usage Scenarios
+---------------
+
+A property set is a way to define a set of attributes, both stylistic and 
+behavioral, that apply to a specific component, a class of components, or all 
+components.
+
+Property sets need to support both simple presentation attributes and complex 
+inter-component relationships.
+
+Development Decisions
+---------------------
+
+Some decisions that we have made in our early efforts on this:
+
+- don't spend too much time on specifics of the markup syntax as it is certain 
+  to change as we get further along in our development
+- focus early efforts on the way components and properties are related and 
+  specified
+  
+	- Many of our thoughts on this are contained in comments in the source code.
+
+- Currently, we have a two-pass xml parser that does the following:
+  
+  - Step 1 takes an xml structure and converts it to a very generic and 
+    somewhat ugly tree of JavaScript objects.  It is somewhat ugly due to the
+    non-uniqueness of tags and their properties.
+  - Step 2 takes the result from step 1, parses components and property sets, 
+    specifies relationships between the two, which are then to be used for 
+    instantiating components.
+
+- Support for the depth of relationships between property sets and components,
+  and the ways properties are defined, is currently limited to enough variation
+	to get this working.
+- We have generally been opposed to trying to reinvent, or even reimplement, a 
+  cascade mechanism for properties as sophisticated and complex as that found in
+  CSS.  We are currently 
+  working under the assumption that we will do a simple override, in the order 
+  that a property is found, and that the order of overriding is such that 
+  something that applies to all components is looked at first, followed by 
+  property sets that apply to all components of a specific type or class, and
+  finally followed by property sets specific to a single instance of a 
+	component.  If more than one of the previous declarations is duplicated, then 
+  whatever is read last is what is applied.
