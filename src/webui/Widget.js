@@ -104,34 +104,38 @@ dojo.webui.Widget = function(){
 		for(var x in args){
 			dj_debug(x);
 			if((typeof this[x]) != (typeof undef)){
-				if(typeof this[x] == "string"){
+				if(!typeof args[x] == "string"){
 					this[x] = args[x];
-				}else if(typeof this[x] == "number"){
-					this[x] = new Number(args[x]); // FIXME: what if NaN is the result?
-				}else if(typeof this[x] == "function"){
-					// FIXME: need to determine if always over-writing instead
-					// of attaching here is appropriate. I suspect that we
-					// might want to only allow attaching w/ action items.
-					this[x] = new Function(args[x]);
-				}else if(this[x].constructor == Array){ // typeof [] == "object"
-					this[x] = args[x].split(";");
-				}else if(typeof this[x] == "object"){ 
-					// FIXME: should we be allowing extension here to handle
-					// other object types intelligently?
-
-					// FIXME: unlike all other types, we do not replace the
-					// object with a new one here. Should we change that?
-					var pairs = args[x].split(";");
-					for(var y=0; y<pairs.length; y++){
-						var si = pairs[y].indexOf(":");
-						if((si != -1)&&(pairs[y].length>si)){
-							this[x][pairs[y].substr(0, si)] = pairs[y].substr(si+1);
-						}
-					}
 				}else{
-					// the default is straight-up string assignment. When would
-					// we ever hit this?
-					this[x] = args[x];
+					if(typeof this[x] == "string"){
+						this[x] = args[x];
+					}else if(typeof this[x] == "number"){
+						this[x] = new Number(args[x]); // FIXME: what if NaN is the result?
+					}else if(typeof this[x] == "function"){
+						// FIXME: need to determine if always over-writing instead
+						// of attaching here is appropriate. I suspect that we
+						// might want to only allow attaching w/ action items.
+						this[x] = new Function(args[x]);
+					}else if(this[x].constructor == Array){ // typeof [] == "object"
+						this[x] = args[x].split(";");
+					}else if(typeof this[x] == "object"){ 
+						// FIXME: should we be allowing extension here to handle
+						// other object types intelligently?
+
+						// FIXME: unlike all other types, we do not replace the
+						// object with a new one here. Should we change that?
+						var pairs = args[x].split(";");
+						for(var y=0; y<pairs.length; y++){
+							var si = pairs[y].indexOf(":");
+							if((si != -1)&&(pairs[y].length>si)){
+								this[x][pairs[y].substr(0, si)] = pairs[y].substr(si+1);
+							}
+						}
+					}else{
+						// the default is straight-up string assignment. When would
+						// we ever hit this?
+						this[x] = args[x];
+					}
 				}
 			}
 		}
