@@ -20,6 +20,37 @@ if(typeof window == 'undefined'){
 	dj_throw("attempt to use browser hostenv when no window object");
 }
 
+with(dojo.render){
+	html.UA = navigator.userAgent;
+	html.AV = navigator.appVersion;
+	html.capable = true;
+	html.support.builtin = true;
+
+	ver = parseFloat(html.AV);
+	os.mac = html.AV.indexOf("Macintosh") == -1 ? false : true; 
+	os.win = html.AV.indexOf("Windows") == -1 ? false : true; 
+
+	html.opera = html.UA.indexOf("Opera") == -1 ? false : true; 
+	html.khtml = ((html.AV.indexOf("Konqueror") >= 0)||(html.AV.indexOf("Safari") >= 0)) ? true : false; 
+	html.safari = (html.AV.indexOf("Safari") >= 0) ? true : false; 
+	html.moz = ((html.UA.indexOf("Gecko") >= 0)&&(!html.khtml)) ? true : false; 
+	html.ie = ((document.all)&&(!html.opera)) ? true : false;
+	html.ie50 = html.ie && html.AV.indexOf("MSIE 5.0")>=0;
+	html.ie55 = html.ie && html.AV.indexOf("MSIE 5.5")>=0;
+	html.ie60 = html.ie && html.AV.indexOf("MSIE 6.0")>=0;
+
+	/*
+	// FIXME: need to check for the various SVG plugins and builtin
+	// capabilities (as w/ Moz+SVG)
+	svg.capable = false;
+	// svg.support.plugin = true;
+	// svg.support.builtin = false;
+	// svg.adobe = true;
+	*/
+};
+
+// alert(dojo.render.html.safari);
+
 dojo.hostenv.startPackage("dojo.hostenv");
 
 dojo.hostenv.name_ = 'browser';

@@ -170,6 +170,51 @@ function dj_inherits(subclass, superclass){
 	subclass['super'] = superclass;
 }
 
+// an object that authors use determine what host we are running under
+dojo.render = {
+	name: "",
+	ver: 0.0,
+	os: { win: false, linux: false, osx: false },
+	html: {
+		capable: false,
+		support: {
+			builtin: false,
+			plugin: false
+		},
+		ie: false,
+		opera: false,
+		khtml: false,
+		safari: false,
+		moz: false
+	},
+	svg: {
+		capable: false,
+		support: {
+			builtin: false,
+			plugin: false
+		},
+		corel: false,
+		adobe: false,
+		batik: false
+	},
+	swf: {
+		capable: false,
+		support: {
+			builtin: false,
+			plugin: false
+		},
+		mm: false
+	},
+	swt: {
+		capable: false,
+		support: {
+			builtin: false,
+			plugin: false
+		},
+		ibm: false
+	}
+};
+
 
 // ****************************************************************
 // dojo.hostenv methods that must be defined in hostenv_*.js

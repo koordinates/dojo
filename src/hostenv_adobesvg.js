@@ -5,7 +5,29 @@ if(typeof window == 'undefined'){
 	dj_throw("attempt to use adobe svg hostenv when no window object");
 }
 
-dj_debug = function(){}
+with(dojo.render){
+	name = navigator.appName;
+	ver = parseFloat(navigator.appVersion, 10);
+	switch(navigator.platform){
+		case "MacOS":
+			os.osx =  true;
+			break;
+		case "Linux":
+			os.linux =  true;
+			break;
+		case "Windows":
+			os.win =  true;
+			break;
+		default:
+			os.linux = true;
+			break;
+	};
+	svg.capable = true;
+	svg.support.builtin = true;
+	svg.adobe = true;
+};
+
+// browserEval("alert(window.location);");
 
 dojo.hostenv.println = function(s){
 	try{

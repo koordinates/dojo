@@ -41,7 +41,7 @@ dojo.webui.DomWidget = function(){
 			
 			// FIXME: need to be able to distinguish here what should be done
 			// or provide a generic interface across all DOM implementations
-			node = this.createNodesFromText(this.templateString(20, 20, 12, "testing", "ellipse"), true);
+			node = this.createNodesFromText(this.templateString, true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 		}
 		var node = this.templateNode.cloneNode(true);

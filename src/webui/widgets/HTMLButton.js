@@ -20,7 +20,6 @@ dojo.webui.widgets.HTMLButton = function(){
 	}
 
 	this.fillInTemplate = function(){
-		// alert("fillInTemplate");
 		this.setLabel();
 	}
 
