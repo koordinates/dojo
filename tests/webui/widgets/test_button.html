@@ -22,13 +22,18 @@
 				// add your on-load logic here
 				var parser = new dojo.xml.Parse.ParseDocumentFragment();
 				var frag  = parser.parseFragment(document.body);
-				alert(frag);
+				for(var x in frag){ 
+					dojo.hostenv.println(x+": "+frag[x]); 
+				}
+
+				var fragParser = dojo.webui.parse.ParseFragment(frag);
+				fragParser.createComponents(frag);
 			}
 		</script>
 	</head>
 	<body onload="init();">
 		Check your javascript log; the scripts were all loaded in the head.
 
-		<div dojoType="button" label="this is a test button!" />
+		<div id="testDojoButton" dojoType="button" label="this is a test button!" />
 	</body>
 </html>
