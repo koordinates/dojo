@@ -77,8 +77,8 @@ import sys
 sys.path.append("lib/pyLib.zip")
 sys.path.append(".")
 
-import re
-import os
+# import re
+# import os
 import buildUtil
 ]]></script>
 	</target>
@@ -121,7 +121,7 @@ import sys
 # make the python standard library avialable
 sys.path.append("lib/pyLib.zip")
 
-import re
+# import re
 
 echo = dojo.createTask("echo")
 testScripting.addTask(echo)
@@ -214,13 +214,16 @@ print "look ma! Jython!"
 	<target name="docs"
 		depends="-fix-config"
 		description="'builds' the docs">
+		<!-- first, clobber the docs directory and rebuild it -->
+		<delete dir="${release_docs_dir}"/>
+		<mkdir dir="${release_docs_dir}" />
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
 sys.path.append("lib/pyLib.zip")
 sys.path.append(".")
 
-import re
+# import re
 import os
 from buildUtil import *
 

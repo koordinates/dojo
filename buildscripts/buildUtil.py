@@ -3,11 +3,12 @@
 # 	2.1). We avoid Python2.3-isms like os.walk as a result.
 import sys
 sys.path.append("lib/pyLib.zip")
-import re
+# import re
 import os
 import popen2
 import fnmatch
 import glob
+import java.lang.Runtime
 
 def buildRestFiles(docDir, docOutDir, styleSheetFile):
 	docFiles = []
@@ -24,11 +25,14 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile):
 			# print x
 			cmdStr = "rst2html.py --embed-stylesheet --stylesheet-path=%s %s %s" % \
 				(styleSheetFile, x, docOutDir+os.sep+(name[0:-5])+".html")
+
 			# I'd much rather be using popen3, but it doesn't appear to be
 			# available from either the os.* or popen2.* modules in a useable
 			# way. The source of popen2.py leads me to believe that this is an
 			# underlying Java issue.
+			os.system("echo `which rst2html.py`")
 			os.system(cmdStr)
+			# java.lang.Runtime.exec(??)
 	
 	for name in os.listdir(docDir):
 		tn = os.path.normpath(docDir+os.sep+name)
