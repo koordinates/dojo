@@ -169,7 +169,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 		if(args["changeURL"]){
 			hash = "#"+ ((args["changeURL"]!==true) ? args["changeURL"] : (new Date()).getTime());
-			setTimeout("window.location.href = '"+hash+"';", 10);
+			setTimeout("window.location.href = '"+hash+"';", 1);
 			this.bookmarkAnchor.href = hash;
 			if(dojo.render.html.ie){
 				// IE requires manual setting of the hash since we are catching
@@ -216,7 +216,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 		}
 
-		this.historyStack.push({url: url, callback: callback, kwArgs: args, urlHash: hash});
+		this.historyStack.push({"url": url, "callback": callback, "kwArgs": args, "urlHash": hash});
 	}
 
 	this.checkLocation = function(){
@@ -293,12 +293,13 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.handleBackButton = function(){
 		var last = this.historyStack.pop();
+		if(!last){ return; }
 		if(last["callback"]){
 			last.callback();
 		}else if(last.kwArgs["backButton"]){
-			last.kwArgs.backButton();
+			last.kwArgs["backButton"]();
 		}else if(last.kwArgs["back"]){
-			last.kwArgs.back();
+			last.kwArgs["back"]();
 		}else if(last.kwArgs["handle"]){
 			last.kwArgs.handle("back");
 		}
@@ -309,6 +310,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// FIXME: should we build in support for re-issuing the bind() call here?
 		// alert("alert we found a forward button call");
 		var last = this.forwardStack.pop();
+		if(!last){ return; }
 		if(last.kwArgs["forward"]){
 			last.kwArgs.back();
 		}else if(last.kwArgs["forwardButton"]){

@@ -85,12 +85,15 @@ dojo.io.bind = function(kwArgs){ // FIXME: should we support positional args too
 	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
 	for(var x=0; x<this.hdlrFuncNames.length; x++){
 		var fn = this.hdlrFuncNames[x];
+		if(typeof kwArgs[fn] == "function"){ continue; }
 		if(typeof kwArgs.handler == "object"){
 			if(typeof kwArgs.handler[fn] == "function"){
 				kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
 			}
-		}else if(typeof kwArgs.handler == "function"){
+		}else if(typeof kwArgs["handler"] == "function"){
 			kwArgs[fn] = kwArgs.handler;
+		}else if(typeof kwArgs["handle"] == "function"){
+			kwArgs[fn] = kwArgs.handle;
 		}
 	}
 
@@ -157,8 +160,10 @@ dojo.io.sampleTranport = new function(){
 				if(typeof kwArgs.handler[fn] == "function"){
 					hdlrObj[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"];
 				}
-			}else if(typeof kwArgs.handler == "function"){
-				hdlrObj[fn] = kwArgs.handler;
+			}else if(typeof kwArgs[fn] == "function"){
+				hdlrObj[fn] = kwArgs[fn];
+			}else{
+				hdlrObj[fn] = kwArgs["handle"]||function(){};
 			}
 		}
 
