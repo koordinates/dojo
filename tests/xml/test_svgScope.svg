@@ -4,7 +4,11 @@
 <svg onload="init(evt)" width="111" height="111">
 <script type="text/javascript"><![CDATA[
 function init(evt){
-	svgDoc = evt.getTarget().getOwnerDocument();
+	if(evt.getTarget){
+		svgDoc = evt.getTarget().getOwnerDocument();
+	} else if (evt.target){
+		svgDoc = evt.target.documentElement;
+	}
 	parent.scopeTest(svgDoc,svgDoc.test);
 	parent.test("svg");
 	test("svg");
