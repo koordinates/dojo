@@ -1,5 +1,6 @@
 djConfig = { 
 	baseRelativePath: "../",
+	isDebug: true
 };
 
 load("/Users/alex/projects/dojo/src/bootstrap1.js");
