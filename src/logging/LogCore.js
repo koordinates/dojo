@@ -1121,7 +1121,10 @@ if(window["stdout"]){
 	dojo.consoleHandler.emit = function(record){
 		stdout(String(record.time.toLocaleTimeString())+" :"+dojo.log.getLevelName(record.level)+": "+record.message);
 	}
+} else {
+	// TODO: add way to either send to server through xmlHTTPRequest after x number of records are stored, or a way to open a console, or some other default, consoleless mechanism.  Also, we really should have a way to log to the console as done above, and additionally be able to store a more permanent log record
 }
+
 
 dojo.log.addHandler(dojo.consoleHandler);
 
