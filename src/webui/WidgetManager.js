@@ -3,8 +3,6 @@ dojo.hostenv.loadModule("dojo.webui.Widget");
 
 dojo.hostenv.startPackage("dojo.webui.WidgetManager");
 
-if(!dojo[webui]){ dojo.webui = {}; }
-
 dojo.webui.widgetManager = new function(){
 	this.widgets = [];
 
