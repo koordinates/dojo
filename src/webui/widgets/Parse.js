@@ -5,8 +5,8 @@ dojo.webui.widgets.parse.ParseFragment = function(fragment) {
 	this.fragment = fragment;
 }
 
-/*	The following method will recurse over a raw JavaScript object structure,
-		and attempt to call the corresponding handler for its normalized tagName
+/*	createComponents recurses over a raw JavaScript object structure,
+		and calls the corresponding handler for its normalized tagName if it exists
 */
 
 dojo.webui.widgets.parse.ParseFragment.prototype.createComponents = function(fragment) {
@@ -21,7 +21,7 @@ dojo.webui.widgets.parse.ParseFragment.prototype.createComponents = function(fra
 	}
 }
 
-/*  The following method checks the top level of a raw JavaScript object
+/*  parsePropertySets checks the top level of a raw JavaScript object
 		structure for any propertySets.  It stores an array of references to 
 		propertySets that it finds.
 */
@@ -38,7 +38,7 @@ dojo.webui.widgets.parse.ParseFragment.prototype.parsePropertySets = function(fr
 	return propertySets;
 }
 
-/*  The following method checks a raw JavaScript object structure for
+/*  parseProperties checks a raw JavaScript object structure for
 		properties, and returns an array of properties that it finds.
 */
 
@@ -66,7 +66,7 @@ dojo.webui.widgets.parse.ParseFragment.prototype.parseProperties = function(frag
 	return properties;
 }
 
-/* The following method returns the propertySet that matches the provided id
+/* getPropertySetById returns the propertySet that matches the provided id
 */
 
 dojo.webui.widgets.parse.ParseFragment.prototype.getPropertySetById = function(propertySetId){
@@ -78,7 +78,7 @@ dojo.webui.widgets.parse.ParseFragment.prototype.getPropertySetById = function(p
 	return "";
 }
 
-/* The following method returns the propertySet(s) that match(es) the provided componentClass
+/* getPropertySetsByClass returns the propertySet(s) that match(es) the provided componentClass
 */
 
 dojo.webui.widgets.parse.ParseFragment.prototype.getPropertySetsByClass = function(propertySetClass){
@@ -91,7 +91,7 @@ dojo.webui.widgets.parse.ParseFragment.prototype.getPropertySetsByClass = functi
 	return propertySets;
 }
 
-/* The following method returns the propertySet for a given component fragment
+/* getPropertySets returns the propertySet for a given component fragment
 */
 
 
@@ -122,7 +122,7 @@ dojo.webui.widgets.parse.ParseFragment.prototype.getPropertySets = function(frag
 }
 
 // TODO: should have a more general way to add tags or tag libraries?
-// TODO: need a default tags class to inherit from
+// TODO: need a default tags class to inherit from for things like getting propertySets
 // TODO: parse properties/propertySets into component attributes
 // TODO: parse subcomponents
 // TODO: copy/clone raw markup fragments/nodes as appropriate
@@ -130,6 +130,7 @@ dojo.webui.widgets.tags = {};
 
 dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
 	var propertySets = widgetParser.getPropertySets(fragment);
+	// FIXME: should we take each propertySet and parse it into properties at this point?
 	var localProperties = widgetParser.parseProperties(fragment);
 	// FIXME: Add instantiation of component here?
 }

@@ -126,7 +126,7 @@ dojo.xml.Parse.ParseDocumentFragment.prototype.parseAttributes = function(node) 
 	// TODO: should we allow for duplicate attributes at this point... would any of the relevant dom implementations even allow this?
 	/*for(var i=0; i<node.attributes.length; i++) {
 		if(!parsedAttributeSet[node.attributes[i].nodeName]) {
-			parsedAttributeSet[node.attributes[i].nodeName] = new Array();
+			parsedAttributeSet[node.attributes[i].nodeName] = [];
 		}
 		parsedAttributeSet[node.attributes[i].nodeName][parsedAttributeSet[node.attributes[i].nodeName].length] = { value: node.attributes[i].nodeValue };
 	}*/
