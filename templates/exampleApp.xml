@@ -4,54 +4,70 @@
 	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProvider="treeDefinitions" eventProvider="treeEvents" />
 	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" />
 	<dojo:propertyModel id="gridDefinitions" componentClass="default">
-		<sort type="user"></sort>
-		<head>
-			<rows cssClassList="headRowClassName1" rowHeight="1.5em">
-				<cells cssClassList="headCellClassName1">
-				</cells>
-			</rows>
-		</head>
-		<body>
-			<rows cssClassList="bodyRowClassName1,bodyRowClassName2" repetitionFrequency="1,1" rowHeight="1.2em">
-				<cells cssClassList="bodyCellClassName1" />
-			</rows>
-		</body>
-		<foot>
-			<rows cssClassList="footRowClassName1" rowHeight="1.5em">
-				<cells cssClassList="footCellClassName1" />
-			</rows>
-		</foot>
+		<dojo:scroll type="auto">
+			<dojo:fixedItems position="top | right | bottom | left" quantity="" />
+			<!-- used to set a fixed number of rows or columns in any position on the table... use multiple entries to specify for each position
+			TODO: nomenclature isn't very good...
+			-->
+		</dojo:scroll>
+		<dojo:reorder type="column|row|both|none" /><!-- specified the allowed actions by the user to change the order of columns and rows through drag and drop of selected rows or columns -->
+		<dojo:sort type="user-row|user-column|automatic|none" ascendingClassName="" descendingClassName=""><!-- grid table sorting, default type is none -->
+			<!-- TODO: do we really want additional css class names like this... how should this be done differently? -->
+			<dojo:order type="ascending|descending|custom">
+				<dojo:comparator></dojo:comparator>
+				<!-- how to define the comparator for each row/column... perhaps we allow multiple comparators and define a way for them to be bound to a column or a row through the head/body/foot items define below? I envision these working much like a NodeFilter in DOM 2 Range... may need some extra properties for things like sortBlankAs -->
+				<!-- add an event to cause a sort on load... by default, it does not auto-sort -->
+			</dojo:order>
+		<!-- TODO: multiple sort?
+		-->
+		</dojo:sort>
+		<dojo:head>
+			<dojo:rows cssClassList="headRowClassName1" rowHeight="1.5em">
+				<dojo:cells cssClassList="headCellClassName1">
+				</dojo:cells>
+			</dojo:rows>
+		</dojo:head>
+		<dojo:body>
+			<dojo:rows cssClassList="bodyRowClassName1,bodyRowClassName2" repetitionFrequency="1,1" rowHeight="1.2em">
+				<dojo:cells cssClassList="bodyCellClassName1" />
+			</dojo:rows>
+		</dojo:body>
+		<dojo:foot>
+			<dojo:rows cssClassList="footRowClassName1" rowHeight="1.5em">
+				<dojo:cells cssClassList="footCellClassName1" />
+			</dojo:rows>
+		</dojo:foot>
 	</dojo:propertyModel>
 	<dojo:propertyModel id="treeDefinitions" componentClass="default" resizable="yes" indentation="0.5em">
-		<state type="default" mode="expandedToList">
-			<expandList>record2,record3</expandList>
-		</state>
-		<treeItems cssClassList="className1,className2,className3"  repetitionFrequency="1,3,1" rowHeight="1.2em" />
-		<treeIconItems>
-			<icon type="folderClosed" cssClassName="folderClosed" svgDefsElement="" src="folderClosedIcon.png" />
-			<icon type="folderOpen" cssClassName="folderOpen" svgDefsElement="" src="folderOpenIcon.png" />
-			<icon type="leaf" cssClassName="leaf" svgDefsElement="" src="leafIcon.png" />
-		</treeIconItems>
+		<dojo:state type="default" mode="expandedToList">
+			<dojo:expandList>record2,record3</expandList>
+		</dojo:state>
+		<dojo:treeItems cssClassList="className1,className2,className3"  repetitionFrequency="1,3,1" rowHeight="1.2em" />
+		<dojo:treeIconItems>
+			<dojo:icon type="folderClosed" cssClassName="folderClosed" svgDefsElement="" src="folderClosedIcon.png" />
+			<dojo:icon type="folderOpen" cssClassName="folderOpen" svgDefsElement="" src="folderOpenIcon.png" />
+			<dojo:icon type="leaf" cssClassName="leaf" svgDefsElement="" src="leafIcon.png" />
+		</dojo:treeIconItems>
 	</dojo:propertyModel>
 	<dojo:dataModel id="treeExampleDataModel" xlink:href="#staticTreeExampleModel" type="xml">
-		<label elementName="name" />
-		<treeItem elementName="structure">
-			<label elementName="name" />
-			<objectRelation elementName="uniqueId" />
-		</treeItem>
+		<dojo:label elementName="name" />
+		<dojo:treeItem elementName="structure">
+			<dojo:label elementName="name" />
+			<dojo:objectRelation elementName="uniqueId" />
+		</dojo:treeItem>
 	</dojo:dataModel>
 
 	<dojo:eventModel id="treeEvents">
-		<connect>
-			<signal object="foo" name="'bar'" />
-			<slot object="baz" name="'xyzzy'" />
-			<mutator />
-		</connect>
+		<dojo:connect>
+			<dojo:signal object="foo" name="'bar'" />
+			<dojo:slot object="baz" name="'xyzzy'" />
+			<dojo:mutator />
+		</dojo:connect>
 		<!-- DOM style events... needs work in defining how the action and propagation of the event object is setup -->
-		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
-		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
-		<event type="onclick" target="treeItem" action="evt.target.open()" />
-		<event type="onclick" target="treeItem" action="dojoGridExample.display(evt.target.objectRelation)" />
+		<dojo:event type="onclick" target="treeItem" action="evt.target.highlight()" />
+		<dojo:event type="onclick" target="treeItem" action="evt.target.highlight()" />
+		<dojo:event type="onclick" target="treeItem" action="evt.target.open()" />
+		<dojo:event type="onclick" target="treeItem" action="dojoGridExample.display(evt.target.objectRelation)" />
 	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticGridExampleModel">
@@ -75,15 +91,15 @@
 	</arbitraryDataStructure>
 
 	<dojo:dataModel id="gridExampleDataModel" src="#staticGridExampleModel" type="xml"><!-- this example shows combining a couple of fields -->
-		<label elementName="name" />
-		<gridRowItem elementName="structure">
-			<gridCellItem elementName="subStructure" />
-			<gridCellItem>
-				<elementName>substructure2</elementName>
-				<elementName>substructure3</elementName>
-			</gridCellItem>
-			<gridCellItem elementName="subStructure4" />
-		</gridRowItem>
+		<dojo:label elementName="name" />
+		<dojo:gridRowItem elementName="structure">
+			<dojo:gridCellItem elementName="subStructure" />
+			<dojo:gridCellItem>
+				<dojo:elementName>substructure2</dojo:elementName>
+				<dojo:elementName>substructure3</dojo:elementName>
+			</dojo:gridCellItem>
+			<dojo:gridCellItem elementName="subStructure4" />
+		</dojo:gridRowItem>
 	</dojo:dataModel>
 
 	<arbitraryDataStructure id="staticGridExampleModel">

@@ -3,72 +3,72 @@
 	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" eventProvider="gridEvents" />
 	<dojo:propertyModel id="gridDefinitions" componentClass="default">
 		<!-- Examples of component and data models for a grid -->
-		<sort type="user" />
-		<head>
-			<rows>
-				<cssClassList>headRowClassName1</cssClassList>
-				<rowHeight>1.5em</rowHeight><!-- should this really be height... what if we wanted to be able to specify rowHeight as an attribute of the dojo:grid element? -->
-				<cells>
-					<cssClassList>headCellClassName1</cssClassList>
-				</cells>
-			</rows>
-		</head>
-		<body>
-			<rows>
-				<cssClassList>bodyRowClassName1,bodyRowClassName2</cssClassList>
-				<repetitionFrequency>1,1</repetitionFrequency>
-				<rowHeight>1.2em</rowHeight>
-				<cells>
-					<cssClassList>bodyCellClassName1</cssClassList>
-				</cells>
-			</rows>
-		</body>
-		<foot>
-			<rows>
-				<cssClassList>footRowClassName1</cssClassList>
-				<rowHeight>1.5em</rowHeight>
-				<cells>
-					<cssClassList>footCellClassName1</cssClassList>
-				</cells>
-			</rows>
-		</foot>
+		<dojo:sort type="user" />
+		<dojo:head>
+			<dojo:rows>
+				<dojo:cssClassList>headRowClassName1</dojo:cssClassList>
+				<dojo:rowHeight>1.5em</dojo:rowHeight><!-- should this really be height... what if we wanted to be able to specify rowHeight as an attribute of the dojo:grid element? -->
+				<dojo:cells>
+					<dojo:cssClassList>headCellClassName1</dojo:cssClassList>
+				</dojo:cells>
+			</dojo:rows>
+		</dojo:head>
+		<dojo:body>
+			<dojo:rows>
+				<dojo:cssClassList>bodyRowClassName1,bodyRowClassName2</cdojo:ssClassList>
+				<dojo:repetitionFrequency>1,1</dojo:repetitionFrequency>
+				<dojo:rowHeight>1.2em</dojo:rowHeight>
+				<dojo:cells>
+					<dojo:cssClassList>bodyCellClassName1</dojo:cssClassList>
+				</dojo:cells>
+			</dojo:rows>
+		</dojo:body>
+		<dojo:foot>
+			<dojo:rows>
+				<dojo:cssClassList>footRowClassName1</dojo:cssClassList>
+				<dojo:rowHeight>1.5em</dojo:rowHeight>
+				<dojo:cells>
+					<dojo:cssClassList>footCellClassName1</dojo:cssClassList>
+				</dojo:cells>
+			</dojo:rows>
+		</dojo:foot>
 	</dojo:propertyModel>
 	<dojo:dataModel id="gridExampleDataModel" src="#staticExampleModel" type="xml"><!-- this example shows inclusion of only certain elements from a data structure -->
-		<label elementName="name" />
-		<gridRowItem elementName="structure">
-			<gridCellItem elementName="subStructure" />
-			<gridCellItem elementName="subStructure3" />
-			<gridCellItem elementName="subStructure4" />
-		</gridRowItem>
+		<dojo:label elementName="name" />
+		<dojo:gridRowItem elementName="structure">
+			<dojo:gridCellItem elementName="subStructure" />
+			<dojo:gridCellItem elementName="subStructure3" />
+			<dojo:gridCellItem elementName="subStructure4" />
+		</dojo:gridRowItem>
 	</dojo:dataModel>
 
 	<dojo:dataModel id="gridExampleDataModel2" src="#staticExampleModel" type="xml"><!-- this example shows combining a couple of fields -->
-		<label elementName="name" />
-		<gridRowItem elementName="structure">
-			<gridCellItem elementName="subStructure" />
-			<gridCellItem>
-				<elementName>substructure2</elementName>
-				<elementName>substructure3</elementName>
+		<dojo:label elementName="name" />
+		<dojo:gridRowItem elementName="structure">
+			<dojo:gridCellItem elementName="subStructure" />
+			<dojo:gridCellItem>
+				<dojo:elementName>substructure2</dojo:elementName>
+				<dojo:elementName>substructure3</dojo:elementName>
 				<!-- TODO: do we want a way to define simple operations between combined items, as well as a way to parse data, show substrings, etc.? -->
-			</gridCellItem>
-			<gridCellItem elementName="subStructure4" />
-		</gridRowItem>
+			</dojo:gridCellItem>
+			<dojo:gridCellItem elementName="subStructure4" />
+		</dojo:gridRowItem>
 	</dojo:dataModel>
 
 	<dojo:dataModel id="gridExampleDataModel3" src="gridData.js#staticExampleModel" type="javascript"><!-- this example references a javascript version of the model -->
-		<label elementName="name" />
-		<gridRowItem elementName="structure">
-			<gridCellItem elementName="subStructure" />
-			<gridCellItem>
-				<elementName>substructure2</elementName>
-				<elementName>substructure3</elementName>
-			</gridCellItem>
-			<gridCellItem elementName="subStructure4" />
-		</gridRowItem>
+		<dojo:label elementName="name" />
+		<dojo:gridRowItem elementName="structure">
+			<dojo:gridCellItem elementName="subStructure" />
+			<dojo:gridCellItem>
+				<dojo:elementName>substructure2</dojo:elementName>
+				<dojo:elementName>substructure3</dojo:elementName>
+			</dojo:gridCellItem>
+			<dojo:gridCellItem elementName="subStructure4" />
+		</dojo:gridRowItem>
 	</dojo:dataModel>
 
 	<dojo:eventModel id="gridEvents">
-		<event type="onclick" target="gridCellItem" action="evt.target.highlight()" />
+		<dojo:event type="onclick" target="gridCellItem" action="evt.target.highlight()" />
 	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticExampleModel">
