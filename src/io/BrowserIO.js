@@ -53,7 +53,7 @@ dojo.io.buildFormGetString = function(sNode){
 		}
 	}
 	if(sNode.hasChildNodes()){
-		for(var temp_count=(sNode.childNodes.length-1); temp_count >= 0; temp_count=temp_count-1){
+		for(var temp_count=(sNode.childNodes.length-1); temp_count >= 0; temp_count--){
 			tvar += dojo.io.buildFormGetString(sNode.childNodes.item(temp_count));
 		}
 	}
@@ -454,7 +454,11 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if(kwArgs.method.toLowerCase() == "post"){
+			// FIXME: need to hack in more flexible Content-Type setting here!
 			http.open("POST", url, true);
+			if(kwArgs["formNode"]){
+				http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			}
 			http.send(query);
 		}else{
 			http.open("GET", url+"?"+query, true);

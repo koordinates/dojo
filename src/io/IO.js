@@ -213,7 +213,7 @@ dojo.io.argsFromMap = function(map){
 	var mapStr = "";
 	for(var x in map){
 		if(!control[x]){
-			mapStr+= encodeURIComponent(x)+"="+encodeURIComponent(map[x])+";";
+			mapStr+= encodeURIComponent(x)+"="+encodeURIComponent(map[x])+"&";
 		}
 	}
 
