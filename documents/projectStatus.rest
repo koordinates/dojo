@@ -29,7 +29,8 @@ Current Status
 
 Dojo is currently in development.  We have finished a significant portion of the
 core "plumbing" for the project, and we also have our first widget, a button, 
-that can be constructed from markup in HTML and SVG namespaces.  We have also shipped an `initial profile build`, and a supporting article, 
+that can be constructed from markup in HTML and SVG namespaces.  We have also 
+shipped an `initial profile build`, and a supporting article, 
 `baking usability into XMLHTTP`
 
 We still have a lot of work to do on making our widget system better, 
@@ -43,7 +44,8 @@ systems.  This makes Dojo an excellent toolkit for sending messages and data
 between the client and server, and between components in the client.
 Ongoing improvements and refinements are being made to our xml declaration 
 language (specifically to support contraints and state) and parser.  The parser
-currently supports the most necessary markup constructs, with space to later accomodate more elaborate declaration mechanisms.
+currently supports the most necessary markup constructs, with space to later 
+saccomodate more elaborate declaration mechanisms.
 
 And of course, we're working on adding widgets that are useful.
 
