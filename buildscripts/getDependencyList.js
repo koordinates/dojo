@@ -83,7 +83,7 @@ for(var x=0; x<dependencies.length; x++){
 		if(dep.indexOf("(") != -1){
 			dep = dojo.hostenv.getDepsForEval(dep)[0];
 		}
-		dojo.hostenv.loadModule(dep);
+		dojo.hostenv.loadModule(dep, null, true);
 	}catch(e){
 		print(e);
 	}
