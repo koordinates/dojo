@@ -129,7 +129,7 @@ dojo.webui.HTMLWidget = function(args){
 		tn.innerHTML = txt;
 		tn.normalize();
 		if(wrap){ 
-			var ret = [tn.cloneNode(true)];
+			var ret = [tn.firstChild.cloneNode(true)];
 			return ret;
 		}
 		var nodes = [];
