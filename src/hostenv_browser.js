@@ -40,10 +40,11 @@ var DJ_XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP
  */ 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
     var http = null;
-    if(typeof XMLHttpRequest !== 'undefined'){
-		http = new XMLHttpRequest();
-	}else if(typeof ActiveXObject !== 'undefined') {
-		var last_e = null;
+	var last_e = null;
+	try{ http = new XMLHttpRequest(); }catch(e){}
+    if(!http){
+		// http = new XMLHttpRequest();
+	// }else if(typeof ActiveXObject !== 'undefined') {
 
 		for(var i=0; i<3; ++i){
 			var progid = DJ_XMLHTTP_PROGIDS[i];
@@ -65,7 +66,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 
 	if((last_e)&&(!http)){
 		dj_rethrow("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
-	}else{
+	}else if(!http){
 		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
 	}
 
@@ -116,6 +117,33 @@ if(!dojo.hostenv["library_script_uri_"]){
 	dojo.hostenv.library_script_uri_ = dj_last_script_src();
 }
 
+// dojo.hostenv.loadUri = function(uri){
+	/* FIXME: adding a script element doesn't seem to be synchronous, and so
+	 * checking for namespace or object existance after loadUri using this
+	 * method will error out. Need to figure out some other way of handling
+	 * this!
+	 */
+	/*
+	var se = document.createElement("script");
+	se.src = uri;
+	var head = document.getElementsByTagName("head")[0];
+	head.appendChild(se);
+	// document.write("<script type='text/javascript' src='"+uri+"' />");
+	return 1;
+}
+*/
+
+
 dojo.hostenv.println = function(s){
-    window.alert(s);
+	try{
+		var ti = document.createElement("div");
+		document.body.appendChild(ti);
+		ti.innerHTML = s;
+	}catch(e){
+		try{
+			document.write(s);
+		}catch(e2){
+			window.alert(s);
+		}
+	}
 }

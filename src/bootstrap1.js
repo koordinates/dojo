@@ -310,6 +310,7 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/ ){
 	var base = this.getBaseScriptUri();
 	var uri = base + relpath;
 	//this.println("base=" + base + " relpath=" + relpath);
+	dj_debug(uri);
 	try{
 		var ok;
 		if(!module){
