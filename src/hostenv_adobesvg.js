@@ -2,7 +2,6 @@
  * Adobe SVG Viewer host environment
  */
 if(typeof window == 'undefined'){
-  alert("inside typeof check");
 	dj_throw("attempt to use adobe svg hostenv when no window object");
 }
 
@@ -11,6 +10,29 @@ dj_debug = function(){}
 dojo.hostenv.startPackage("dojo.hostenv");
 
 dojo.hostenv.name_ = 'adobesvg';
+
+dojo.hostenv.anonCtr = 0;
+dojo.hostenv.anon = {};
+
+dojo.hostenv.nameAnonFunc = function(anonFuncPtr, namespaceObj){
+	var ret = "_"+this.anonCtr++;
+	var nso = (namespaceObj || this.anon);
+	while(typeof nso[ret] != "undefined"){
+		ret = "_"+this.anonCtr++;
+	}
+	nso[ret] = anonFuncPtr;
+	return ret;
+}
+
+dojo.hostenv.getNewAnonFunc = function(){
+	var ret = "_"+this.anonCtr++;
+	while(typeof this.anon[ret] != "undefined"){
+		ret = "_"+this.anonCtr++;
+	}
+	// this.anon[ret] = function(){};
+	eval("dojo.nostenv.anon."+ret+" = function(){};");
+	return [ret, this.anon[ret]];
+}
 
 /**
  * Read the contents of the specified uri and return those contents.
@@ -21,39 +43,35 @@ dojo.hostenv.name_ = 'adobesvg';
  * supported. If specified, load asynchronously, and use async_cb as the handler which receives the result of the request.
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
  */ 
-dojo.hostenv.getText = function(uri, async_cb, fail_ok){
-	var http = null;
-	
-	var async_cb = async_cb;
-	
-	var get_async_cb = function() {
-		return async_cb;
-	}
-	
-	var async_callback = function(httpResponse){
-		dojo.hostenv.inFlightCount--;
-		if (!httpResponse.success) {
-			dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
-		}
-		
-		if(!httpResponse.content) {
-			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
-			return null;
-		}
+dojo.hostenv.async_cb = null;
 
-		// FIXME: wtf, I'm losing a reference to async_cb
-		async_cb(httpResponse.content);
-		// return httpResponse.content;
+dojo.hostenv.unWindGetTextStack = function(){
+	if(dojo.hostenv.inFlightCount>0){
+		setTimeout("dojo.hostenv.unWindGetTextStack()", 100);
+		return;
 	}
-	
+	// we serialize because this goddamned environment is too fucked up
+	// to know how to do anything else
+	dojo.hostenv.inFlightCount++;
+	var next = dojo.hostenv.getTextStack.pop();
+	dojo.hostenv.async_cb = next[1];
+	// http = window.getURL(uri, dojo.hostenv.anon[cbn]);
+	window.getURL(next[0], function(result){ 
+		dojo.hostenv.inFlightCount--;
+		dojo.hostenv.async_cb(result.content);
+		dojo.hostenv.unWindGetTextStack();
+	});
+}
+
+dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	try {
 		if(async_cb) {
-			dojo.hostenv.inFlightCount++;
-			http = window.getURL(uri, async_callback);
-		} else {
-		return dj_throw("No synchronous XMLHTTP implementation available, for uri " + uri);
+			dojo.hostenv.getTextStack.push([uri, async_cb, fail_ok]);
+			dojo.hostenv.unWindGetTextStack();
+		}else{
+			return dj_throw("No synchronous XMLHTTP implementation available, for uri " + uri);
 		}
-	} catch(e) {
+	}catch(e){
 		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
 	}
 }

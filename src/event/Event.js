@@ -193,7 +193,8 @@ dojo.event.MethodJoinPoint = function(obj, methname){
 }
 
 dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
-	if(!(methname in obj)){
+	// if(!(methname in obj)){
+	if(!obj[methname]){
 		// supply a do-nothing method implementation
 		obj[methname] = function(){};
 	}else if(typeof obj[methname] != "function"){
@@ -208,7 +209,12 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, methname);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
 		obj[methname] = function(){ 
-			return joinpoint.run.apply(joinpoint, arguments); 
+			var args = [];
+			for(var x=0; x<arguments.length; x++){
+				args.push(arguments[x]);
+			}
+			// return joinpoint.run.apply(joinpoint, arguments); 
+			return joinpoint.run.apply(joinpoint, args); 
 		}
 	}
 	// dojo.hostenv.println("returning joinpoint");

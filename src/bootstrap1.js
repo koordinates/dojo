@@ -251,7 +251,6 @@ dojo.hostenv.getBaseScriptUri = function(){
 	// inclusive of slash
 	// this.base_script_uri_ = this.normPath((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
 	this.base_script_uri_ = this.base_relative_path_;
-	// alert((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
 	return this.base_script_uri_;
 }
 
@@ -286,7 +285,6 @@ dojo.hostenv.normPath = function(path){
 				nparts.push(oparts[x]);
 			}
 		}
-		// alert(nparts.join("/"));
 		return nparts.join("/");
 	}
 }
@@ -344,10 +342,6 @@ dojo.hostenv.displayStack = function(){
 }
 
 dojo.hostenv.unwindUriStack = function(){
-	/*
-	dj_debug("=============== before ===============");
-	this.displayStack();
-	*/
 	var stack = this.loadUriStack;
 	for(var x in dojo.hostenv.loadedUris){
 		for(var y=stack.length-1; y>=0; y--){
@@ -365,12 +359,6 @@ dojo.hostenv.unwindUriStack = function(){
 			next[2] == stack[x][2]
 		}
 	}
-	/*
-	if(this.inFlightCount > 0){ 
-		stack.push(next);
-		return;
-	}
-	*/
 	var last = next;
 	while(dojo.hostenv.loadedUris[next[0]]){
 		last = next;
@@ -392,38 +380,11 @@ dojo.hostenv.unwindUriStack = function(){
 			last = next;
 			next = stack.pop();
 		}
-		/*
-		if(typeof next[2] != "string"){
-			// clean up the stack
-			var fills = {};
-			for(var x=0; x<stack.length; x++){
-				if(dojo.hostenv.loadedUris[stack[x][0]]){
-					fills[stack[x][0]] = true;
-				}
-				if((!fills[next[0]])&&(stack[x][0]==next[0])&&(stack[x][2])){
-					// alert(next[0]);
-					next[2] == stack[x][2];
-					fills[next[0]] = true;
-					// next = stack.splice(x, 1)[0];
-				}
-			}
-			for(var x=0; x<stack.length; x++){
-				if(fills[stack[x][0]]){
-					stack[x] = [stack[x][0], function(){}, "true;"];
-				}
-			}
-			stack.push(next);
-		}
-		*/
 	}
 	if(next){
 		stack.push(next);
 		dj_debug("### CHOKED ON: "+next[0]);
 	}
-	/*
-	dj_debug("=============== after ===============");
-	this.displayStack();
-	*/
 }
 
 /**
@@ -438,6 +399,11 @@ dojo.hostenv.loadUri = function(uri, cb){
 	var stack = this.loadUriStack;
 	stack.push([uri, cb, null]);
 	var tcb = function(contents){
+		// gratuitous hack for Adobe SVG 3, what a fucking POS
+		if(contents.content){
+			contents = contents.content;
+		}
+
 		// stack management
 		var next = stack.pop();
 		if((!next)&&(stack.length==0)){ 
@@ -461,7 +427,6 @@ dojo.hostenv.loadUri = function(uri, cb){
 		}
 		// push back onto stack
 		stack.push(next);
-		// alert(next[0]);
 		if(next[0]!=uri){
 			//  and then unwind as far as we can
 			if(typeof next[2] == "string"){
@@ -505,6 +470,7 @@ dojo.hostenv.getDepsForEval = function(contents){
 	return deps;
 }
 
+dojo.hostenv.getTextStack = [];
 dojo.hostenv.loadUriStack = [];
 dojo.hostenv.loadedUris = [];
 
@@ -520,16 +486,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 }
 
 dojo.hostenv.modulesLoaded = function(){
-	/*
-	dj_debug("trying to load:\n");
-	dj_debug(this.addedToLoadingCount);
-	dj_debug("<pre>"+this.addedToLoadingCount.join("\n")+"</pre>");
-	dj_debug("loaded so far:\n");
-	dj_debug("<pre>"+this.removedFromLoadingCount.join("\n")+"</pre>");
-	dj_debug("this.loadUriStack.length: "+this.loadUriStack.length);
-	// dj_debug("this.loadUriStack[this.loadUriStack.length-1][0]: "+this.loadUriStack[this.loadUriStack.length-1][0]);
-	*/
-	if(this.loadUriStack.length==0){
+	if((this.loadUriStack.length==0)&&(this.getTextStack.length==0)){
 		if(this.inFlightCount > 0){ 
 			dj_debug("couldn't initialize, there are files still in flight");
 			return;
@@ -567,6 +524,7 @@ dojo.hostenv.modulesLoadedListeners = [];
 * dj_load is an alias for dojo.hostenv.loadModule
 */
 dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
+	// alert("dojo.hostenv.loadModule('"+modulename+"');");
 	var module = this.findModule(modulename, 0);
 	if(module){
 		return module;
