@@ -14,6 +14,6 @@ dj_inherits(dojo.webui.widgets.Button, dojo.webui.Widget);
 // FIXME: own file? Mixin instead?
 dojo.webui.widgets.DomButton = function(){
 	dojo.webui.widgets.Button.call(this);
-	dojo.webui.DomWidget.call(this);
+	dojo.webui.DomWidget.call(this, true);
 }
 dj_inherits(dojo.webui.widgets.DomButton, dojo.webui.widgets.Button);

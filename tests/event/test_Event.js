@@ -120,3 +120,74 @@ function test_event_connectOnce(){
 	jum.assertEquals("test20", obj1.funcCallCount, 2);
 }
 
+function test_event_disconnect(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect("after", obj1, "func1", obj1, "func2");
+	dojo.event.disconnect("after", obj1, "func1", obj1, "func2");
+
+
+	jum.assertTrue("test21", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test22", obj1.funcCallCount, 1);
+	jum.assertEquals("test23", obj1.secondLastReturn, null);
+}
+
+function test_event_disconnectOnce(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect("after", obj1, "func1", obj1, "func2");
+	dojo.event.connect("after", obj1, "func1", obj1, "func2");
+	dojo.event.disconnect("after", obj1, "func1", obj1, "func2", null, null, true);
+
+
+	jum.assertTrue("test24", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test25", obj1.funcCallCount, 2);
+	jum.assertTrue("test26", obj1.secondLastReturn != null);
+}
+
+function test_event_kwDisconnect(){
+	var obj1 = new testObjectClass();
+
+	// dojo.event.connect("after", obj1, "func1", obj1, "func2");
+	dojo.event.kwConnect({
+		type: "after",
+		srcObj: obj1, 
+		srcFunc: "func1", 
+		adviceObj: obj1, 
+		adviceFunc: "func2"
+	});
+
+	dojo.event.kwDisconnect({
+		type: "after",
+		srcObj: obj1, 
+		srcFunc: "func1", 
+		adviceObj: obj1, 
+		adviceFunc: "func2"
+	});
+
+
+	jum.assertTrue("test27", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test28", obj1.funcCallCount, 1);
+	jum.assertEquals("test29", obj1.secondLastReturn, null);
+}
+
+function test_event_kwDisconnectOnce(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect("after", obj1, "func1", obj1, "func2");
+	dojo.event.connect("after", obj1, "func1", obj1, "func2");
+
+	dojo.event.kwDisconnect({
+		type: "after",
+		srcObj: obj1, 
+		srcFunc: "func1", 
+		adviceObj: obj1, 
+		adviceFunc: "func2",
+		once: true
+	});
+
+
+	jum.assertTrue("test30", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test31", obj1.funcCallCount, 2);
+}
+

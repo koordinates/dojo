@@ -120,15 +120,15 @@ dojo.event = new function(){
 		}
 
 		if((typeof ao.srcFunc).toLowerCase() != "string"){
-			ao.srcFunc = dojo.alg.getNameInObj(ao.srcObj, ao.srcFP);
+			ao.srcFunc = dojo.alg.getNameInObj(ao.srcObj, ao.srcFunc);
 		}
 
 		if((typeof ao.adviceFunc).toLowerCase() != "string"){
-			ao.adviceFunc = dojo.alg.getNameInObj(ao.adviceObj, ao.tgtFP);
+			ao.adviceFunc = dojo.alg.getNameInObj(ao.adviceObj, ao.adviceFunc);
 		}
 
 		if((ao.aroundObj)&&((typeof ao.aroundFunc).toLowerCase() != "string")){
-			ao.aroundFunc = dojo.alg.getNameInObj(ao.aroundObj, ao.aroundFP);
+			ao.aroundFunc = dojo.alg.getNameInObj(ao.aroundObj, ao.aroundFunc);
 		}
 
 		return ao;
@@ -139,8 +139,8 @@ dojo.event = new function(){
 
 		// FIXME: just doing a "getForMethod()" seems to be enough to put this into infinite recursion!!
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
-		if(ao.tgtFunc){
-			var mjp2 = dojo.event.MethodJoinPoint.getForMethod(ao.tgtObj, ao.tgtFunc);
+		if(ao.adviceFunc){
+			var mjp2 = dojo.event.MethodJoinPoint.getForMethod(ao.adviceObj, ao.adviceFunc);
 		}
 
 		mjp.kwAddAdvice(ao);
@@ -168,9 +168,9 @@ dojo.event = new function(){
 
 	this.disconnect = function(){
 		var ao = interpolateArgs(arguments);
-		if(!ao.tgtFunc){ return; } // nothing to disconnect
+		if(!ao.adviceFunc){ return; } // nothing to disconnect
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
-		mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType);
+		return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once);
 	}
 
 	this.kwDisconnect = function(kwArgs){
@@ -302,6 +302,17 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	return (this.methodfunc) ? result : null;
 }
 
+dojo.event.MethodJoinPoint.prototype.getArr = function(kind){
+	var arr = this.after;
+	// FIXME: we should be able to do this through props or Array.in()
+	if(kind.indexOf("before")!=-1){
+		arr = this.before;
+	}else if(kind=="around"){
+		arr = this.around;
+	}
+	return arr;
+}
+
 dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 	this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 					args["aroundObj"], args["aroundFunc"], 
@@ -309,14 +320,7 @@ dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 }
 
 dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thisAroundObj, thisAround, advice_kind, precedence, once){
-	var arr = this.after;
-	// FIXME: we should be able to do this through props or Array.in()
-	if(advice_kind.indexOf("before")!=-1){
-		arr = this.before;
-	}else if(advice_kind=="around"){
-		arr = this.around;
-	}
-
+	var arr = this.getArr(advice_kind);
 	if(!arr){
 		dj_throw("bad this: " + this);
 	}
@@ -337,16 +341,7 @@ dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thi
 }
 
 dojo.event.MethodJoinPoint.prototype.hasAdvice = function(adviceObj, advice, advice_kind, arr){
-	if(!arr){
-		arr = this.after;
-		// FIXME: we should be able to do this through props or Array.in()
-		if(advice_kind.indexOf("before")!=-1){
-			arr = this.before;
-		}else if(advice_kind=="around"){
-			arr = this.around;
-		}
-	}
-
+	if(!arr){ arr = this.getArr(advice_kind); }
 	var ind = -1;
 	for(var x=0; x<arr.length; x++){
 		if((arr[x][0] == adviceObj)&&(arr[x][1] == advice)){
@@ -356,12 +351,17 @@ dojo.event.MethodJoinPoint.prototype.hasAdvice = function(adviceObj, advice, adv
 	return ind;
 }
 
-dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, advice_kind) {
-	var ind = this.hasAdvice(adviceObj, advice, advice_kind);
+dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, advice_kind, once){
+	var arr = this.getArr(advice_kind);
+	var ind = this.hasAdvice(adviceObj, advice, advice_kind, arr);
 	if(ind == -1){
 		return false;
 	}
-	arr.splice(ind, 1);
+	while(ind != -1){
+		arr.splice(ind, 1);
+		if(once){ break; }
+		ind = this.hasAdvice(adviceObj, advice, advice_kind, arr);
+	}
 	return true;
 }
 

@@ -6,10 +6,16 @@ dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
-dojo.webui.DomWidget = function(){
+dojo.webui.DomWidget = function(preventSuperclassMixin){
 
-	// mixin inheritance
-	dojo.webui.Widget.call(this);
+	// FIXME: this is sort of a hack, but it seems necessaray in the case where
+	// a widget might already have another mixin base class and DomWidget is
+	// mixed in to provide extra attributes, but not necessarialy an over-write
+	// of the defaults (which might have already been changed);
+	if(!preventSuperclassMixin){
+		// mixin inheritance
+		dojo.webui.Widget.call(this);
+	}
 
 	this.attachProperty = "dojoAttachPoint";
 	this.eventAttachProperty = "dojoAttachEvent";
@@ -155,7 +161,7 @@ dojo.webui.DomWidget = function(){
 		dj_unimplemented("dojo.webui.DomWidget.createNodesFromText");
 	}
 
-	if(arguments.length>0){
+	if((arguments.length>0)&&(typeof arguments[0] == "object")){
 		this.create(arguments[0]);
 	}
 }
