@@ -26,13 +26,29 @@
 				// add your on-load logic here
 				var parser = new dojo.xml.Parse();
 				var frag  = parser.parseElement(document.body);
-				for(var x in frag){ 
-					dojo.hostenv.println(x+": "+frag[x]); 
-				}
-
+				/*for(var x in frag){ 
+					dojo.hostenv.println(x+": "+frag[x]);
+				}*/
+				outputObjectInfo(frag);
+				
 				var fragParser = new dojo.webui.widgets.Parse(frag);
 				fragParser.createComponents(frag);
+				
+				function outputObjectInfo(x) {
+					for (var y in x) {
+						if (typeof x[y] == "object" && x[y] != x.nodeRef) {
+							if (!(x instanceof Array && !isNaN(parseInt(y)))) {
+								dojo.hostenv.println(y+": "+x[y]);
+							}
+							outputObjectInfo(x[y]);
+						} else {
+							dojo.hostenv.println(y+": "+x[y]);
+						}
+					}
+				}
+
 			}
+			
 		</script>
 	</head>
 	<body onload="init();">
