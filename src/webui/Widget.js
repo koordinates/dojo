@@ -289,10 +289,17 @@ dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
 	var properties = widgetParser.parseProperties(fragment);
 }
 
+// FIXME: need to add the <dojo:connect />
+dojo.webui.widgets.tags["dojo:connect"] = function(fragment, widgetParser) {
+	var properties = widgetParser.parseProperties(fragment);
+}
+
 dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// outputObjectInfo(frag["dojo:"+stype]);
+
+	// FIXME: we don't seem to be doing anything with this!
 	var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
 	var twidget = dojo.webui.widgetManager.getImplementation(stype);
