@@ -218,6 +218,8 @@ dojo.webui.SVGWidget = function(args){
 dojo.webui.HTMLWidget = function(args){
 	// mixin inheritance
 	// dojo.webui.DomWidget.call(this);
+	this.templateCSSPath = null;
+	this.templatePath = null;
 
 	this.getContainerHeight = function(){
 		// NOTE: container height must be returned as the INNER height
@@ -255,16 +257,16 @@ dojo.webui.HTMLWidget = function(args){
 	this._old_buildFromTemplate = this.buildFromTemplate;
 
 	this.buildFromTemplate = function(){
-		if((!this.templateNode)&&(!this.templateString)&&(this.templateURL)){
+		if((!this.templateNode)&&(!this.templateString)&&(this.templatePath)){
 			// fetch a text fragment and assign it to templateString
 			// NOTE: we rely on blocking IO here!
-			this.templateString = dojo.hostenv.getText(this.templateURL);
+			this.templateString = dojo.hostenv.getText(dojo.hostenv.getBaseScriptUri()+"/"+this.templatePath);
 
 		}
 
-		if(this.templateCSSURL){
-			insertCSSFile(this.templateCSSURL);
-			this.templateCSSURL = null;
+		if(this.templateCSSPath){
+			insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath);
+			this.templateCSSPath = null;
 		}
 
 		this._old_buildFromTemplate();

@@ -8,6 +8,9 @@ dojo.webui.widgets.HTMLButton = function(){
 	dojo.webui.widgets.DomButton.call(this);
 	dojo.webui.HTMLWidget.call(this);
 
+	this.templatePath = "src/webui/widgets/templates/HTMLButtonTemplate.html";
+	this.templateCSSPath = "src/webui/widgets/templates/HTMLButtonTemplate.css";
+
 	// FIXME: freaking implement this already!
 	this.foo = function(){ alert("bar"); }
 
@@ -35,4 +38,4 @@ new function(){ // namespace protection closure
 
 dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.widgets.DomButton);
 
-dojo.webui.widgets.HTMLButton.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
+// dojo.webui.widgets.HTMLButton.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
