@@ -28,7 +28,7 @@
 			function outputObjectInfo(x,indentationCounter) {
 				indentationCounter++;
 				for (var y in x) {
-					if (typeof x[y] == "object") {
+					if (typeof x[y] == "object" && x[y] != x.nodeRef) {
 						for(var i=0; i<indentationCounter;i++) {
 							document.getElementById("output").appendChild(document.createTextNode("-"));
 						}
