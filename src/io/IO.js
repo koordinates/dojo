@@ -180,4 +180,3 @@ dojo.io.sampleTranport = new function(){
 
 	dojo.io.transports.addTransport("sampleTranport");
 }
-

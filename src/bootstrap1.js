@@ -38,8 +38,9 @@
  * </dl>
  */
 //:GLVAR Object djConfig
-var djConfig;
-if(typeof djConfig == 'undefined'){ djConfig = {}; }
+if(typeof djConfig == 'undefined'){ 
+	var djConfig = {};
+}
 
 /**
  * dojo is the root variable of (almost all) our public symbols.
@@ -47,26 +48,6 @@ if(typeof djConfig == 'undefined'){ djConfig = {}; }
 //=java public class dojo {
 var dojo;
 if(typeof dojo == 'undefined'){ dojo = {}; }
-
-//=java public static HostEnv hostenv;
-dojo.hostenv = {
-	is_debug_ : ((typeof djConfig['isDebug'] == 'undefined') ? false : djConfig['isDebug']),
-	base_script_uri_ : ((typeof djConfig['baseScriptUri'] == 'undefined') ? undefined : djConfig['baseScriptUri']),
-	base_relative_path_ : ((typeof djConfig['baseRelativePath'] == 'undefined') ? '' : djConfig['baseRelativePath']),
-	library_script_uri_ : ((typeof djConfig['libraryScriptUri'] == 'undefined') ? '' : djConfig['libraryScriptUri']),
-
-	// for recursion protection
-	loading_modules_ : {},
-	addedToLoadingCount: [],
-	removedFromLoadingCount: [],
-	inFlightCount: 0,
-
-	// lookup cache for modules.
-	// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
-	modules_ : {}
-};
-
-//=java } /* dojo */
 
 /**
  * dj_global is an alias for the top-level global object in the host environment (the "window" object in a browser).
@@ -219,6 +200,26 @@ dojo.render = {
 // ****************************************************************
 // dojo.hostenv methods that must be defined in hostenv_*.js
 // ****************************************************************
+//=java public static HostEnv hostenv;
+dojo.hostenv = {
+	is_debug_ : ((typeof djConfig['isDebug'] == 'undefined') ? false : djConfig['isDebug']),
+	base_script_uri_ : ((typeof djConfig['baseScriptUri'] == 'undefined') ? undefined : djConfig['baseScriptUri']),
+	base_relative_path_ : ((typeof djConfig['baseRelativePath'] == 'undefined') ? '' : djConfig['baseRelativePath']),
+	library_script_uri_ : ((typeof djConfig['libraryScriptUri'] == 'undefined') ? '' : djConfig['libraryScriptUri']),
+
+	// for recursion protection
+	loading_modules_ : {},
+	addedToLoadingCount: [],
+	removedFromLoadingCount: [],
+	inFlightCount: 0,
+
+	// lookup cache for modules.
+	// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
+	modules_ : {}
+};
+
+//=java } /* dojo */
+
 
 /**
  * The interface definining the interaction with the EcmaScript host environment.

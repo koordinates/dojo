@@ -72,7 +72,7 @@ dojo.io.createIFrame = function(fname){
 		}
 	}
 	
-	this.setIFrameSrc(cframe, dojo.hostenv.base_relative_path_+"/blank.html", true);
+	dojo.io.setIFrameSrc(cframe, dojo.hostenv.base_relative_path_+"/blank.html", true);
 	return cframe;
 }
 
@@ -148,7 +148,7 @@ dojo.io.XMLHTTPTransport = new function(){
 				(kwArgs["method"] == "get") ||
 				( 
 					(kwArgs["method"] == "post") && 
-					( (!kwArgs["formNode"])||(this.formHasFile(kwArgs["formNode"])) ) 
+					( (!kwArgs["formNode"])||(dojo.io.formHasFile(kwArgs["formNode"])) ) 
 				) 
 			)
 		){
@@ -162,36 +162,8 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		// much of this is from getText, but reproduced here because we need
 		// more flexibility
-		var http = null;
-		var last_e = null;
+		var http = dojo.hostenv.getXmlhttpObject();
 		var received = false;
-		try{ 
-			http = new XMLHttpRequest(); 
-		}catch(e){}
-		if(!http){
-			for(var i=0; i < DJ_XMLHTTP_PROGIDS.length; ++i){
-				var progid = DJ_XMLHTTP_PROGIDS[i];
-				try{
-					http = new ActiveXObject(progid);
-				}catch(e){
-					last_e = e;
-				}
-
-				if(http){
-					if(DJ_XMLHTTP_PROGIDS.length != 1){
-						DJ_XMLHTTP_PROGIDS = [progid];  // optimize for next time
-					}
-					break;
-				}
-			}
-		}
-
-		if((last_e)&&(!http)){
-			dj_rethrow("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
-		}else if(!http){
-			return dj_throw("No XMLHTTP implementation available");
-		}
-
 
 		// build a handler function that calls back to the handler obj
 		http.onreadystatechange = function(){
@@ -218,11 +190,11 @@ dojo.io.XMLHTTPTransport = new function(){
 		var url = kwArgs.url+"?";
 		if(kwArgs["formNode"]){
 			// FIXME: need to fix this for POST!!
-			url += this.buildFormGetString(kwArgs.formNode);
+			url += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
 
 		if(kwArgs["content"]){
-			url += "?"+this.argsFromMap(kwArgs.content);
+			url += "?"+dojo.io.argsFromMap(kwArgs.content);
 		}
 
 		if(kwArgs["backButton"]){

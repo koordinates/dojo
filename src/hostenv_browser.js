@@ -58,14 +58,7 @@ dojo.hostenv.name_ = 'browser';
 // These are in order of decreasing likelihood; this will change in time.
 var DJ_XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
 
-/**
- * Read the contents of the specified uri and return those contents.
- *
- * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
- * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
- * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
- */ 
-dojo.hostenv.getText = function(uri, async_cb, fail_ok){
+dojo.hostenv.getXmlhttpObject = function(){
     var http = null;
 	var last_e = null;
 	try{ http = new XMLHttpRequest(); }catch(e){}
@@ -97,6 +90,20 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
 	}
 
+	return http;
+}
+
+/**
+ * Read the contents of the specified uri and return those contents.
+ *
+ * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
+ * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
+ * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
+ */ 
+dojo.hostenv.getText = function(uri, async_cb, fail_ok){
+
+	var http = this.getXmlhttpObject();
+
 	if(async_cb){
 		http.onreadystatechange = function(){ 
 			if((4==http.readyState)&&(http["status"])){
@@ -113,7 +120,6 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		}
 	}
 
-	
 	dojo.hostenv.inFlightCount++;
 	http.open('GET', uri, async_cb ? true : false);
 	http.send(null);
