@@ -124,13 +124,15 @@ dojo.io.cancelDOMEvent = function(evt){
 }
 
 dojo.io.XMLHTTPTransport = new function(){
-	
+	var _this = this;
+
 	this.initialHref = window.location.href;
 	this.initialHash = window.location.hash;
-	// alert(this.initialHash);
 
 	this.moveForward = false;
 
+	var _cache = {}; // FIXME: make this public? do we even need to?
+	this.useCache = false; // if this is true, we'll cache unless kwArgs.useCache = false
 	this.historyStack = [];
 	this.forwardStack = [];
 	this.historyIframe = null;
@@ -155,6 +157,39 @@ dojo.io.XMLHTTPTransport = new function(){
 	 *		page, thereby not requiring an iframe hack, although we do then
 	 *		need to run a timer to detect inter-page movement.
 	 */
+
+	// FIXME: Should this even be a function? or do we just hard code it in the next 2 functions?
+	function getCacheKey(url, query, method) {
+		return url + "|" + query + "|" + method.toLowerCase();
+	}
+
+	function addToCache(url, query, method, http) {
+		_cache[getCacheKey(url, query, method)] = http;
+	}
+
+	function getFromCache(url, query, method) {
+		return _cache[getCacheKey(url, query, method)];
+	}
+
+	this.clearCache = function() {
+		_cache = {};
+	}
+
+	// moved successful load stuff here
+	function doLoad(kwArgs, http) {
+		// FIXME: if our request type was "text/javascript", should
+		// we eval() here?
+		var ret;
+		if(kwArgs.mimetype == "text/javascript"){
+			ret = dj_eval(http.responseText);
+		}else if(kwArgs.mimetype == "text/xml"){
+			ret = http.responseXML
+		}else {
+			ret = http.responseText;
+		}
+		kwArgs.load("load", ret, http);
+	}
+
 	this.addToHistory = function(args){
 		var callback = args["back"]||args["backButton"]||args["handle"];
 		var hash = null;
@@ -355,33 +390,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 		}
 
-		// much of this is from getText, but reproduced here because we need
-		// more flexibility
-		var http = dojo.hostenv.getXmlhttpObject();
-		var received = false;
-
-		// build a handler function that calls back to the handler obj
-		http.onreadystatechange = function(){
-			if((4==http.readyState)&&(http["status"])){
-				if(received){ return; } // Opera 7.6 is foo-bar'd
-				received = true;
-				if(http.status==200){
-					// FIXME: if our request type was "text/javascript", should
-					// we eval() here?
-					var ret = http.responseText;
-					if(kwArgs.mimetype == "text/javascript"){
-						ret = dj_eval(http.responseText);
-					}else if(kwArgs.mimetype == "text/xml"){
-						ret = http.responseXML
-					}
-					kwArgs.load("load", ret, http);
-				}else{
-					var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
-					kwArgs.error("error", errObj);
-				}
-			}
-		}
-
+		// build this first for cache purposes
 		var url = kwArgs.url;
 		var query = "";
 		if(kwArgs["formNode"]){
@@ -402,6 +411,40 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])){
 			this.addToHistory(kwArgs);
+		}
+
+		var useCache = kwArgs.useCache == true ||
+			(this.useCache == true && kwArgs.useCache != false );
+
+		if( useCache ) {
+			var cachedHttp = getFromCache(url, query, kwArgs.method);
+			if( cachedHttp ) {
+				// dj_debug("Grabbed data from cache!");
+				doLoad(kwArgs, cachedHttp);
+				return;
+			}
+		}
+
+		// much of this is from getText, but reproduced here because we need
+		// more flexibility
+		var http = dojo.hostenv.getXmlhttpObject();
+		var received = false;
+
+		// build a handler function that calls back to the handler obj
+		http.onreadystatechange = function(){
+			if((4==http.readyState)&&(http["status"])){
+				if(received){ return; } // Opera 7.6 is foo-bar'd
+				received = true;
+				if(http.status==200){
+					doLoad(kwArgs, http);
+					if( useCache ) {
+						addToCache(url, query, kwArgs.method, http);
+					}
+				}else{
+					var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
+					kwArgs.error("error", errObj);
+				}
+			}
 		}
 
 		if(kwArgs.method.toLowerCase() == "post"){
