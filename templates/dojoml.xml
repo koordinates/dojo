@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+
+	<!-- some generic templates as a temporary holding place for attributes common to a set of elements -->
+	<dojo:genericDataContainer id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider=""/>
+	<!-- description of all attributes allowed for component/widget containers -->
+	<!-- cssStyle allows inline css block, dojoStyle is for presentational attributes for components that are not dojo... we may break these into attributes in their own namespace -->
+	<dojo:genericUIComponent id="" source="" />
+	<dojo:genericModel id="" source="" />
+	<!-- description of all attributes allowed for model sources -->
+
+	<!-- containers -->
+	<dojo:label /> <!-- container to insert text through a static or dynamic dataProvider -->
+	<dojo:list />
+	<dojo:link />
+
+	<dojo:script /> <!-- do we have a need for this? -->
+	<dojo:textInput />
+	<dojo:button />
+	<dojo:selectOne /> <!-- drop down and radio buttons -->
+	<dojo:selectMultiple /> <!-- select and checkboxes -->
+	<dojo:comboBox />
+	<dojo:textInput />
+	<!-- Flex has a concept for a formItem and groups such as radioButtonGroup... what do we want to do with this? -->
+	<dojo:dateField />
+	<dojo:datePicker />
+	<dojo:tree />
+	<dojo:grid /><!-- table? -->
+	<dojo:accordion /><!--need a better name -->
+
+	<!-- mx:numericStepper should be replaced by a select list with the appropriate dataProvider -->
+
+	<dojo:tabPane />
+	<dojo:box />
+
+	<!-- models -->
+
+	<!-- how do we want to handle data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui? -->
+
+	<!-- groups of form items? -->
+
+</dojo>
