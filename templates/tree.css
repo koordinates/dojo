@@ -1,5 +1,10 @@
 .dojoTree {
-
+	width:25em;
+	height:100%;
+	font-family:Arial sans-serif;
+	color:#0054aa;
+	background-color:#e1f0ff;
+	border:1px solid #000000;
 }
 
 .className1 {
