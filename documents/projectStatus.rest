@@ -8,8 +8,7 @@ About Dojo
 
 .. contents::
 
-	
-	
+
 Roadmap
 ------------------------
 
@@ -24,6 +23,7 @@ have a widget or three that's preventing you from using Dojo, let us know.
 
 The timeline for this release is mid-April, 2005 (FIXME: date needs to be verified)
 
+
 Current Status
 ------------------------
 
@@ -34,8 +34,8 @@ shipped an `initial profile build`, and a supporting article,
 `baking usability into XMLHTTP`
 
 We still have a lot of work to do on making our widget system better, 
-especially in the world of SVG, but that will come later rather than sooner. 
-The current SVG button could be described as 
+especially in the world of SVG, but good SVG widget support will come later 
+rather than sooner. The current SVG button could be described as 
 hacky at best.  A button is a surprisingly complex widget, at least if it is 
 done with any sort of sane flexibility and constraints.
 
@@ -47,7 +47,8 @@ language (specifically to support contraints and state) and parser.  The parser
 currently supports the most necessary markup constructs, with space to later 
 saccomodate more elaborate declaration mechanisms.
 
-And of course, we're working on adding widgets that are useful.
+And of course, we're working on adding widgets that are useful.  Did we mention 
+that we're working on widgets?
 
 
 Code Checkins
@@ -59,9 +60,10 @@ A complete list of checkins may be found through our `checkins mailing list`
 Releases
 ------------------------
 
-There are currently no release full builds available.  The
-`dojo interest mailing list` contains regular updates.  `Anonymous SVN access` 
-is available, as is an `initial profile build`.
+There are currently no full release builds available other than tarball 
+snapshots.  The`dojo interest mailing list` contains regular updates.  
+`Anonymous SVN access` is available, as is an `initial profile build`.  Ant is 
+required to use our build system.
 
 
 Getting Involved
@@ -78,11 +80,12 @@ License
 Dojo is licensed under the very friendly `Academic Free License v 2.1`. Some 
 `thoughts on the AFL license` .
 
+
 Dojo Foundation
 ---------------
 
-Dojo is a California nonprofit corporation and is currently working on receiving 
-tax exemption status.
+Dojo is a California nonprofit corporation.  We're currently working on 
+mundance details like bylaws and tax exemption status.
 
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
