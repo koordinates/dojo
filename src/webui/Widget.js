@@ -121,6 +121,7 @@ dojo.webui.Widget = function(){
 					}
 				}
 			}
+
 			if((typeof this[x]) != (typeof undef)){
 				if(!typeof args[x] == "string"){
 					this[x] = args[x];
@@ -133,8 +134,18 @@ dojo.webui.Widget = function(){
 						// FIXME: need to determine if always over-writing instead
 						// of attaching here is appropriate. I suspect that we
 						// might want to only allow attaching w/ action items.
-						this[x] = new Function(args[x]);
-						dj_debug("obj."+x+": "+this[x]);
+						
+						// RAR, 1/19/05: I'm going to attach instead of
+						// over-write here. Perhaps function objects could have
+						// some sort of flag set on them? Or mixed-into objects
+						// could have some list of non-mutable properties
+						// (although I'm not sure how that would alleviate this
+						// particular problem)? 
+
+						// this[x] = new Function(args[x]);
+
+						// FIXME: what kinds of scoping problems does this cause?
+						dojo.event.connect(this, x, dojo.event.anon, dojo.event.nameAnonFunc(new Function(args[x])));
 					}else if(this[x].constructor == Array){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					}else if(typeof this[x] == "object"){ 

@@ -4,6 +4,16 @@ dojo.hostenv.startPackage("dojo.event");
 
 dojo.event = new function(){
 
+	var anonCtr = 0;
+	this.anon = {};
+
+	this.nameAnonFunc = function(anonFuncPtr, attachToGlobal){
+		var ret = "_"+anonCtr++;
+		this.anon[ret] = anonFuncPtr;
+		return ret;
+		// FIXME: implement attachToGlobal!
+	}
+
 	// FIXME: where should we put this method (not here!)?
 	this.matchSignature = function(args, signatureArr){
 
@@ -62,7 +72,16 @@ dojo.event = new function(){
 				ao.adviceFunc = args[2];
 				break;
 			case 4:
-				if((typeof args[1]).toLowerCase() == "object"){
+				if((typeof args[0] == "object")&&(typeof args[2] == "object")){
+					// we can assume that we've got an old-style "connect" from
+					// the sigslot school of event attachment. We therefore
+					// assume after-advice.
+					ao.adviceType = "after";
+					ao.srcObj = args[0];
+					ao.srcFunc = args[1];
+					ao.adviceObj = args[2];
+					ao.adviceFunc = args[3];
+				}else if((typeof args[1]).toLowerCase() == "object"){
 					ao.srcObj = args[1];
 					ao.srcFunc = args[2];
 					ao.adviceObj = dj_global;
