@@ -21,6 +21,61 @@
 		TODO: how do we want to handle data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui?
 
 	-->
+	<!-- structure
+		There are two fundamentally different approaches that were considered here for how the markup works.  One is the XAML style where the structure can actually represent the underlying data model: http://myxaml.com/marcclifton/archive/2004/04/04/193.aspx .  The other is to make the markup reflective of what components are, and to abstract away the particular structure of the underlying implementation.  In this case, I think our target market is more in line with the latter.  I'm thinking that we're not looking for a way to program with xml, but rather a way to configure with xml.
+	-->
+
+	<!-- ways to specify attributes
+			1. as nested elements:
+			<component>
+				<prop1>prop1Value</prop1>
+				<prop2>prop2Value</prop2>
+				<prop3>prop3Value</prop3>
+				...
+			</component>
+
+			2. as nested elements, with more complex property structures:
+			<component>
+				<prop1>
+					<item1>
+						prop1Item1Value
+					</item1>
+					<item2>
+						prop1Item2Value
+					</item2>
+				</prop1>
+				<prop2>prop2Value</prop2>
+				<prop3>prop3Value</prop3>
+				...
+			</component>
+
+			3. as an xml fragment somewhere in the current or external document:
+			<component propertyProvider="file.elementId" />
+
+			<properties>
+				<propertyGroup id="elementId">
+					<prop1>prop1Value</prop1>
+					<prop2>prop2Value</prop2>
+					<prop3>prop3Value</prop3>
+				</propertyGroup>
+			</properties>
+
+			4. as attributes
+			<component prop1="prop1Value" prop2="prop2Value" prop3="prop3Value" />
+
+			5. as a css selector style name value pairs in a properties attribute
+			<component properties="prop1:prop1Value;prop2:prop2Value;prop3:prop3Value;" />
+
+			6. perhaps we may now or later consider also supporting the use of an external css-like selector file for properties without consideration for cascading (for now, we are NOT SUPPORTING THIS):
+
+			<component propertyProvider="file.className" />
+
+			.className {
+				prop1:prop1Value;
+				prop2:prop2Value;
+				prop3:prop3Value;
+			}
+	-->
 
 	<!-- components -->
 	<dojo:button id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
@@ -63,7 +118,7 @@
 	<!-- models -->
 
 	<dojo:dataModel id="" src="" type="xml|javascript"><!-- src is a uri -->
-		<!-- dataModel can be empty, or cotain xml describing the structure of the data that will be passed from the src, or it can contain an xml data structure inline.  xml is allowed in any namespace... perhaps we should consider requiring a descriptor of the data structure, though that seems silly, and I'm not sure if it buys us anything. -->
+		<!-- dataModel can be empty, or cotain xml describing the structure of the data that will be passed from the src, or it can contain an xml data structure inline.  xml is allowed in any namespace... perhaps we should consider requiring a descriptor of the data structure, though that seems silly, and I'm not sure if it buys us anything. Actually, I've figured out what it buys us... it allows us to define the translation between any arbitrary xml data source or javascript data structure, and that required for the component's data model... so someone could easily have an xml fragment somewhere and use part or all of that data structure to feed a component -->
 	</dojo:dataModel>
 
 
