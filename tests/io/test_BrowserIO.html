@@ -26,9 +26,12 @@
 					url: "test_BrowserIO_data.txt",
 					load: function(type, data, evt){
 						dj_debug(data);
+						// we could just set mimetype: "text/javascript" to
+						// have it auto-eval, but that's not as interesting
+						dj_eval(data); 
 					},
 					backButton: function(){
-						alert(arguments.length);
+						alert("we intercepted the back button");
 					}
 				};
 				var canBind = dojo.io.bind(bindArgs);

@@ -96,27 +96,43 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 
 dojo.io.XMLHTTPTransport = new function(){
 
+	this.moveForward = false;
+
 	this.historyStack = [];
+	this.forwardStack = [];
 	this.historyIframe = null;
 
-	this.addToHistory = function(url, callback){
+	this.addToHistory = function(callback, args){
 		if(!this.historyIframe){
-			this.historyIframe = dojo.io.createIFrame("djhistory");
-			// FIXME: possible circref!
-			var _this = this;
-			this.historyIframe.onload = function(evt){ 
-				dj_debug("caught onload");
-				_this.checkForBackEvent(evt);
-			}
+			this.historyIframe = window.frames["djhistory"];
 		}
-
-		var url = dojo.hostenv.base_relative_path_+"/blank.html?"+(new Date()).getTime();
+		var url = dojo.hostenv.base_relative_path_+"blank.html?"+(new Date()).getTime();
+		this.moveForward = true;
 		dojo.io.setIFrameSrc(this.historyIframe, url, false);
+		this.historyStack.push({url: url, callback: callback, kwArgs: args});
 	}
 
-	this.checkForBackEvent = function(evt){
-		dj_debug(evt||window.event);
-		// dj_debug(this.historyIframe.contentWindow.location.href);
+	this.checkForBackEvent = function(evt, ifrLoc){
+		if(this.moveForward){
+			this.moveForward = false;
+			return;
+		}
+		var last = this.historyStack.pop();
+		// we hadn't added anything to the history, so this is an error by
+		// definition
+		if(!last){ return; }
+
+		/*
+		for(var x in this.historyIframe.location){
+			dj_debug(x+": "+this.historyIframe.location[x]);
+		}
+		dj_debug(this.historyIframe.location);
+		*/
+		last.callback();
+
+		// FIXME: need to handle subsequent forward button requests too
+		//	perhaps by re-issuing the bind() call?
+		// this.forwardStack.push(last);
 	}
 
 	this.canHandle = function(kwArgs){
@@ -210,7 +226,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if(kwArgs["backButton"]){
-			this.addToHistory(url, kwArgs.backButton);
+			this.addToHistory(kwArgs.backButton, kwArgs);
 		}
 
 		/*

@@ -10,10 +10,16 @@
 			// FIXME: need to insert code here to check window.parent's
 			// namespace for "back-check" method for cooperation with
 			// dojo.io.XMLHTTPTransport
+			if((window.parent != window)&&(window.parent["dojo"])){
+				var pdj = window.parent.dojo;
+				if((pdj["io"])&&(pdj["io"]["XMLHTTPTransport"])){
+					pdj.io.XMLHTTPTransport.checkForBackEvent(null, window.location.href);
+				}
+			}
 		}
 	</script>
 </head>
-<body onload="init();">
+<body onload="try{ init(); }catch(e){ alert(e); }">
 	blank.html
 	<!-- blah -->
 </body>
