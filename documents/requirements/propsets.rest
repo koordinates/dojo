@@ -2,7 +2,7 @@ Property Set Requirements
 =========================
 
 :Author: Dylan Schiemann
-:Version: 0.1
+:Version: 0.2
 :Copyright: Dojo Foundation, 2005
 :Date: $Date:$
 
@@ -26,6 +26,20 @@ serializable to our underlying object structure, or not?  The general approach
 we took was that for now it should not for the sake of simplicity in
 development, performance, and xml structure.
 
+Overriding and cascading
+************************
+
+A property set can be specified on several levels:
+
+- declared globally, applied to all components
+- declared globally, applied to all components of a certain type
+- declared globally, applied to components that reference this propset by id
+- declared globally, applied only to a specific component instance
+- declared inline, applied to that component
+
+Property sets should also be able to be nested inside other property sets, or 
+declared in external documents.
+
 Usage Scenarios
 ---------------
 
@@ -35,6 +49,10 @@ components.
 
 Property sets need to support both simple presentation attributes and complex 
 inter-component relationships.
+
+There should be a way to declare that a certain property set can not be 
+overwritten by other property sets.  This allows someone to have global control 
+over the appearance and behavior of their application, if desired.
 
 Development Decisions
 ---------------------
@@ -70,3 +88,81 @@ Some decisions that we have made in our early efforts on this:
   finally followed by property sets specific to a single instance of a 
 	component.  If more than one of the previous declarations is duplicated, then 
   whatever is read last is what is applied.
+	
+Examples
+--------
+
+Markup for various property sets is defined as follows:
+
+base propset markup::
+*******************
+
+	<dojo:propertySet match="dojo.global" scrollType="auto" />
+
+multiple properties in a single propset::
+***************************************
+
+	<dojo:propertySet match="dojo.global">
+		<dojo:scroll type="auto"/>
+		<dojo:reorder type="none"/>
+	</dojo:propertySet>
+
+"named" propsets
+****************
+
+	<dojo:propertySet id="propsetFoo">
+		<dojo:scroll type="auto"/>
+		<dojo:reorder type="none"/>
+	</dojo:propertySet>
+
+"typed" propsets (those that affect all widgets of a given base type)
+*********************************************************************
+
+	<dojo:propertySet match="dojo.grid">
+		<dojo:scroll type="auto"/>
+		<dojo:reorder type="none"/>
+	</dojo:propertySet>
+
+specifying a list of named propsets on a widget
+*********************************************************************
+
+	<dojo:grid propertyProviderList="#propsetFoo #propsetBar file#propsetBaz" />
+
+It seems to make sense, for consistency, to require a # or some other delimiter.
+
+child propsets in a widget/component declaration
+*********************************************************************
+
+	<dojo:grid>
+		<dojo:propertySet>
+			<dojo:scroll type="auto"/>
+			<dojo:reorder type="none"/>
+		</dojo:propertySet>
+	</dojo:grid>
+
+inline properties in a widget/component declaration
+*********************************************************************
+
+	<dojo:grid scrollType="auto" reorderType="none"/>
+	
+specifying propsets in an external document
+*********************************************************************
+
+..FIXME
+
+specifying propsets rule declaration type
+*********************************************************************
+
+(css vs. xml style declarations, for example)
+..FIXME
+
+specifying propsets that apply only to a certain output format
+*********************************************************************
+
+(html vs. svg, for example)
+..FIXME
+
+Precedence Rules
+----------------
+
+..FIXME
