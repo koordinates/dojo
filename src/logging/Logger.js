@@ -366,8 +366,11 @@ dojo.logging.MemoryLogHandler = function(level, recordsToKeep, postType, postInt
 	dojo.logging.LogHandler.call(this, level);
 	// default is unlimited
 	this.numRecords = recordsToKeep || -1;
+	// 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
 	this.postType = postType || -1;
+	// milliseconds for time, interger for number of records, -1 for non-posting,
 	this.postInterval = postInterval || -1;
+	
 }
 // prototype inheritance
 dojo.logging.MemoryLogHandler.prototype = new dojo.logging.LogHandler();
@@ -385,12 +388,6 @@ dojo.logging.MemoryLogHandler.prototype.emit = function(record){
 	}
 }
 
-// FIXME: RAR: why the hell is this stuff global? what class _should_ it belong
-// to? FIX THIS NOW!!!!
-
-var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
-var postType = 0; // 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
-var postInterval = 10000; // milliseconds for time, interger for number of records, -1 for non-posting, TODO: move this to a better location for prefs
 var dojo.logging.logQueueHandler = new dojo.logging.MemoryLogHandler(0,maxRecordsToKeep,postType,postInterval);
 dojo.logging.logQueueHandler.emit = function(record){
 	// stub for logging event handler
