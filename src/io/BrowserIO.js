@@ -27,6 +27,8 @@ dojo.io.formHasFile = function(formNode){
 }
 
 dojo.io.buildFormGetString = function(sNode){
+	// FIXME: we should probably be building an array and then join()-ing to
+	// make this fast for large forms
 	var ec = encodeURIComponent;
 	//the argument is a DOM Node corresponding to a form element.
 	var tvar = "";
@@ -40,7 +42,7 @@ dojo.io.buildFormGetString = function(sNode){
 			var tn = ec(sNode.getAttribute("name")); 
 			var copts = sNode.getElementsByTagName("option");
 			for(var x=0; x<copts.length; x++){
-				if(copts[x].hasAttribute("selected")){
+				if(copts[x].selected){
 					tvar += tn+"="+ec(copts[x].value)+"&";
 				}
 			}
@@ -361,6 +363,10 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.canHandle = function(kwArgs){
 		// canHandle just tells dojo.io.bind() if this is a good transport to
 		// use for the particular type of request.
+
+		// FIXME: we need to determine when form values need to be
+		// multi-part mime encoded and avoid using this transport for those
+		// requests.
 		if(	
 			(
 				(kwArgs["mimetype"] == "text/plain") ||
@@ -394,10 +400,10 @@ dojo.io.XMLHTTPTransport = new function(){
 		var url = kwArgs.url;
 		var query = "";
 		if(kwArgs["formNode"]){
-			if(kwArgs.formNode.getAttribute("action")){
-				url = kwArgs.formNode.getAttribute("action");
-			}
-			// FIXME: need to fix this for POST!!
+			var ta = kwArgs.formNode.getAttribute("action");
+			if(ta){ url = ta; }
+			var tp = kwArgs.formNode.getAttribute("method");
+			if(tp){ kwArgs.method = tp; }
 			query += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
 
@@ -416,9 +422,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		var useCache = kwArgs.useCache == true ||
 			(this.useCache == true && kwArgs.useCache != false );
 
-		if( useCache ) {
+		if(useCache){
 			var cachedHttp = getFromCache(url, query, kwArgs.method);
-			if( cachedHttp ) {
+			if(cachedHttp){
 				// dj_debug("Grabbed data from cache!");
 				doLoad(kwArgs, cachedHttp);
 				return;
@@ -448,7 +454,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if(kwArgs.method.toLowerCase() == "post"){
-			http.open("POST", uri, true);
+			http.open("POST", url, true);
 			http.send(query);
 		}else{
 			http.open("GET", url+"?"+query, true);
