@@ -16,6 +16,8 @@ dojo.hostenv.name_ = 'adobesvg';
  * Read the contents of the specified uri and return those contents.
  *
  * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
+ * FIXME: because of the way adobe requires a callback function, this isn't 
+ * currently returning the response to anything useful
  * FIXME: synch doesn't currently work
  * FIXME: add XMLHttpPost Capability
  * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
@@ -33,16 +35,14 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
 			return null;
 		}
-		
 		return httpResponse.content;
 	}
 	
 	try {
-		http = window.getURL(uri, async_cb);
+		http = window.getURL(uri, async_callback);
 	} catch(e) {
 		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
 	}
-
 }
 
 /*
