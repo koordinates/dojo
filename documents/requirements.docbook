@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+	"docbook/dtd/docbookx.dtd" [
+	<!ENTITY proj "Dojo">
+]>
+
+<article id="project_requirements" status="draft">
+	<articleinfo>
+		<title>Requirements for the &proj; Project</title>
+		<titleabbrev>&proj; Project Requirements</titleabbrev>
+		<releaseinfo>0.6, $Id: requirements.docbook,v 1.1 2004/07/27 00:00:10 mda Exp $</releaseinfo>
+		<author>
+			<firstname>Alex</firstname>
+			<surname>Russell</surname>
+			<email>alex@netWindows.org</email>
+			<affiliation>
+				<orgname>netWindows.org</orgname>
+				<jobtitle>Project Lead</jobtitle>
+			</affiliation>
+			<affiliation>
+				<orgname>Informatica</orgname>
+				<jobtitle>Sr. UI Engineer</jobtitle>
+			</affiliation>
+		</author>
+		<copyright>
+			<year>2004</year>
+			<holder>Alex Russell</holder>
+		</copyright>
+		<revhistory>
+			<revision>
+				<revnumber>0.6</revnumber>
+				<date>June 21, 2004</date>
+				<revremark>More info regarding non-functional requirements</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.5</revnumber>
+				<date>June 18, 2004</date>
+				<revremark>Adding "further requirements" section and giving sections IDs</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.4</revnumber>
+				<date>June 17, 2004</date>
+				<revremark>Reworking project structure section after getting feedback from Jennifer Tharp</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3</revnumber>
+				<date>June 17, 2004</date>
+				<revremark>
+					Fixing spelling errors (thanks ispell!).
+				</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.2</revnumber>
+				<date>June 17, 2004</date>
+				<revremark>Filling in, adding information about "how", "what", and "why".</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.1</revnumber>
+				<date>June 7, 2004</date>
+				<revremark>Initial draft.</revremark>
+			</revision>
+		</revhistory>
+	</articleinfo>
+	<section id="what_why">
+		<title>What? Why?</title>
+		<para>
+			The &proj; Tookit will attempt to meet the following goals:
+			<orderedlist numeration="arabic">
+				<listitem>Provide full and complete JavaScript toolkit</listitem>	
+				<listitem>Provide full and complete DOM toolkit</listitem>	
+				<listitem>provide full and complete widget set and
+				communications infrastructure</listitem>
+				<listitem>reduce adoption costs for all deliverables</listitem>
+			</orderedlist>
+		</para>
+		<para>
+			It will take a lot of hard work to make the stated goals a reality,
+			and so the reasoning for why we would attempt such a thing needs to
+			be laid out in further detail. Firstly, as the reader may be
+			aware, web application interfaces have traditionally been static
+			once sent to the browser. In these applications the browser acts a
+			"dumb client" to an application server which maintains all the state
+			information about the user's interactions and the data the user is
+			manipulating. In this model, any modifications to data require an
+			HTTP transaction to take place and the entire web page to be
+			re-generated on the server side and subsequently re-rendered on the
+			client.
+		</para>
+		<para>
+			Over time, client-side browsers have evolved well past the
+			capabilities of a dumb terminal for a server-managed application.
+			Browsers today can request data asynchronously, handle parsing and
+			rendering tasks, and uniformly provide full-featured languages
+			with bindings to manipulate any portion of an application's
+			in-browser rendering. Taken as a whole, these capabilities provide
+			for the possibility of a rich-client application in which
+			interactions between client and server become data-driven and not
+			formatting based.
+		</para>
+		<para>
+			There are practical obstacles to achieving this type of application
+			development, though. It is very hard today to capitalize on the
+			promise of the rich-client application within a web browser. Much
+			work is required to provide even UI primitives like menu systems,
+			combo-boxes, grid/list controls, data-transfer and parsing, and
+			rich-text editing controls within the framework of the browser.
+			Application developers must constantly re-invent or kludge
+			together solutions to these basic "plumbing" problems before they
+			can even begin to work on their application-specific logic. The
+			&proj; project seeks to provide a stable, capable, and complete
+			foundation upon which application authors can base their in-client
+			application development. Furthermore, we will unify many of the
+			competing parties in the DHTML toolkit landscape today and provide
+			a clearly superior option for those evaluating the development of
+			highly interactive, data-driven web applications.
+		</para>
+	</section>
+	<section id="project_org">
+		<title>Project organization</title>
+		<para>
+			The &proj; project will attempt to be as "self organizing" as
+			possible. While various people may have interests that lie only in
+			a subset of the project's deliverable targets, it seems somewhat
+			premature to force structure on the development process
+			at this stage. Should it become necessaray, responsibility
+			deliniation within the development team may lead to sub-section
+			leads being named and mailing lists being created for sub-teams,
+			but not until such time as it becomes necessaray.
+		</para>
+	</section>
+	<section id="infra">
+		<title>Infrastucture</title>
+		<para>
+			The &proj; project will require significant infastructure to support
+			both the development and marketing goals of the developers. Mailing
+			lists, email, source control, bug tracking, blogs, and wiki tools
+			are all to be under the purview of the &proj; Infrastructure Team.
+			Joyce Park is currently heading up our infrastucture efforts.
+		</para>
+	</section>
+	<section id="ip">
+		<title>License and Intellectual Property</title>
+		<para>
+			Comitters will need to submit IP agreement in writing (similar to
+			apache contributors agreement). The purpose of this intellectual
+			property disclaimer is to prevent future disputes about the origin
+			and/or ownership of the code produced by the project and to
+			insulate users of the project's products from liability regarding
+			inappropriate appropriation of intellectual property. This
+			safeguard will also ensure that project comitters understand their
+			obligations to donate unencumbered intellectual property.
+		</para>
+		<para>
+			The Apache Foundation's Contributors License Agreement can be <ulink
+			url="http://www.apache.org/licenses/cla.txt">found online</ulink>.
+		</para>
+	</section>
+	<section id="membership">
+		<title>Membership</title>
+		<para>
+			New members to the group are to be nominated by a member of the
+			group and approved by overall project lead. Persons with approved
+			subscriptions to the ng-dhtml mailing list at the time of adoption
+			of this document are granted automatic project membership (although
+			they must file the appropriate IP agreements to ensure ongoing
+			membership, etc.).
+		</para>
+	</section>
+	<section id="deliverables">
+		<title>Deliverables</title>
+		<para>
+			The deliverables constitute the "how" of our effort. They
+			are broadly categorized (although their categorizations may
+			change).
+			<itemizedlist>
+				<listitem>JS Core library
+					<itemizedlist>
+						<listitem>string/date formatting and sorting</listitem>
+						<listitem>namespaces</listitem>
+						<listitem>build system</listitem>
+						<listitem>JS linker</listitem>
+						<listitem>language extensions</listitem>
+						<listitem>generics and algorithms</listitem>
+						<listitem>event and message passing system (must tie to comm layer easily)</listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem>DOM Utilities core
+					<itemizedlist>
+						<listitem>CSS/browser fixes</listitem>
+						<listitem>sorting, table manipulation, etc.</listitem>
+						<listitem>
+							widget template (theme) and inline ctor support
+						</listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem>Base widget classes and support objects
+					<itemizedlist>
+						<listitem>widget tracking</listitem>
+						<listitem>keystroke handling and dispatching</listitem>
+						<listitem>widget class definition</listitem>
+						<listitem>
+							full XML schema for widget ctors, XSLT mapping to
+							XHTML and SVG extension syntaxes
+						</listitem>
+						<listitem>drag-and-drop support</listitem>
+						<listitem>animation (path and function based)</listitem>
+						<listitem>viewport coordinate translation (if/when required)</listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem>Comm layer
+					<itemizedlist>
+						<listitem>iframe queue</listitem>
+						<listitem>mod_pubsub integration</listitem>
+						<listitem>"data window" for large data sets</listitem>
+						<listitem>server-side language bindings for data binding</listitem>
+						<listitem>client-side classes for data manipulation and update support</listitem>
+						<listitem>on-the-wire efficiency for RPC mechanisms</listitem>
+						<listitem>SOAP and web-services proxies</listitem>
+						<listitem>comm layer performance profiling</listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem>Widgets
+					<itemizedlist>
+						<listitem>split-pane</listitem>
+						<listitem>tree</listitem>
+						<listitem>list</listitem>
+						<listitem>scrollable table (re-sizeable columns, field editing, etc.)</listitem>
+						<listitem>menu/menu-bar</listitem>
+						<listitem>contextual-menu</listitem>
+						<listitem>date-picker</listitem>
+						<listitem>combo-box</listitem>
+						<listitem>dialogue</listitem>
+						<listitem>sprite animation</listitem>
+						<listitem>collapse-pane</listitem>
+						<listitem>color picker</listitem>
+						<listitem>rich-text editing</listitem>
+						<listitem>note-taking widget</listitem>
+						<listitem>"canvas" for layout applications (including coord translation)</listitem>
+						<listitem>button (w/ images)</listitem>
+						<listitem>toolbar</listitem>
+						<listitem>progress indicators</listitem>
+						<listitem>slider controls</listitem>
+						<listitem>tabs</listitem>
+						<listitem>layout managers</listitem>
+						<listitem>"window" management (pop-ups, alerts, dialogs, configuration systems, etc.)</listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem>Sample Applications
+					<itemizedlist>
+						<listitem>collaboration application
+							<para>
+								The envisioned collaborative application will
+								provide a showcase for the technologies
+								provided by each group. Real-time messaging
+								between participants, distributed
+								"white-boarding" and document sharing are
+								desirable features.
+							</para>
+							<itemizedlist>
+								<listitem>server-side support for storage and session persistence</listitem>
+								<listitem>app-specific client-side logic</listitem>
+								<listitem>work with widgets and comm groups to make interface responsive and suitable for application</listitem>
+							</itemizedlist>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+	<section>
+		<title>Further Requirements</title>
+		<para>
+			The <link linkend="deliverables">Deliverables</link> list provides
+			a basis for understanding what, at the time of this writing, we
+			expect to be critical to the success of the project, but it is not
+			a substitue for a full requirements gathering process. The intended
+			audience for our toolkit will be web application authors, and it
+			must therefore meet their un-met needs. These detailed requirements
+			can be broken down into two categories: functional and
+			non-functional requirements. Detailed documents will be produced to
+			address these areas for each of the major areas listed in the <link
+			linkend="deliverables">Deliverables</link> section of this
+			document.
+		</para>
+		<para>
+			The process of gathering, documenting, and assessing the
+			requirements for the toolkit should be an ongoing process, with a
+			built-in iteration plan for each component. In order to garuntee
+			that we are currently meeting developer's requirements and will
+			continue to do so in the future, it is necessaray to continuiously
+			integrate feedback from users of the tookit as to how it can be
+			improved. Mechanisms for gathering, tracking, and acting on this
+			feedback will be developed.
+		</para>
+		<section>
+			<title>Functional Requirements</title>
+			<para>
+				Functional Requirements can be roughly described as the list of
+				things that the toolkit must do or support in order to be
+				considered "feature complete". These requirements do not
+				include such attributes as stability, performance, etc.
+			</para>
+			<para>
+				For each major sub-section of the <link
+				linkend="deliverables">deliverables list</link>, the project
+				will produce a detailed set of functional requirements that
+				outline in as much detail as is required (without becoming a
+				design document) what the toolkit should do. These requirements
+				should be gathered with enough detail to allow test cases to be
+				written for each case to verify that a feature is complete.
+				From the functional requirements, a test plan will be generated
+				for each major component.
+			</para>
+		</section>
+		<section>
+			<title>Non-Functional Requirements</title>
+			<para>
+				Non-Functional Requirements are the set of attributes that the
+				toolkit must posess in order to be successful but which are not
+				strictly feature related. 
+			</para>
+			<para>
+				One of &proj;'s guiding principles is to lower adoption costs
+				of the toolkit. This statement informs many of the
+				non-functional requirements of the toolkit. Put another way, the
+				toolkit must give the developer a minimal number of reasons not
+				to adopt it within the target market. For browser applications,
+				the factors that influence adoption decisions include size of the
+				javascript file to be downloaded, performance and capability of
+				the widgets, platform support (breadth of supported browsers),
+				stability, and "hackability". If the toolkit does not provide
+				an adequate experience to either end-users or developers, a
+				barrier to adoption has been created. Other factors that can
+				affect adoption decision cost ("adoption cost" or "barriers to
+				adoption") are the quality and completeness of documentation,
+				the availability of examples that illustrate common problems
+				and usage scenarios, ease of obtaining support for the toolkit,
+				ability to file and track bugs, and the extent of (actual or
+				perceived) industry support.
+			</para>
+			<para>
+				To ensure that &proj; provides a complete and acceptable
+				toolkit for our target market, non-functional requirements for
+				the toolkit at large and each major sub-component will be laid
+				out in architecture or design documents. Testable metrics will
+				be determined on a per-item basis (where possible), target
+				values and minimum-acceptance values will be specified for
+				each, and automated tests will be constructed to verify that
+				each component meets our standards for developer and end-user
+				acceptance.
+			</para>
+		</section>
+	</section>
+</article>

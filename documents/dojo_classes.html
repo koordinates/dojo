@@ -1,0 +1,79 @@
+<html>
+<head><title>Proposal For Dojo Class Organization</title></head>
+<body>
+<h1>Proposal For Dojo Class Organization</h1>
+Mark D. Anderson (mda@discerning.com), 2004-7-7
+<p>
+For naming, this proposal follows Java conventions: lower case for non-terminal scopes (which also exactly match directory
+names in the sources), and Upper case for terminal name scopes (which can be found as file names by adding '.js', for non-nested classes).
+
+<p>
+Legend:<br>
+B = abstract base class, only to be used in subclassing<br>
+S = only to scope static methods; never to be subclassed or instantiated<br>
+I = to be instantiated
+
+<p>
+
+
+<table border="1">
+<tr><th>Proposed        <th>B/S/I  <th>Java                <th>.NET                  <th>Description
+<tr><td>dojo.Alg        <td>S    <td>java.util.Arrays    <td>System.Collections                         <td>static functions like find(), inspired by C++. not much similar in Java or .NET
+<tr><td>dojo.Comparator <td>SI   <td>java.util.Comparator, java.lang.Comparable, java.text.Collator     <td>System.Collections.Comparer                  <td>
+<tr><td>dojo.Functional <td>S    <td>                    <td>                          <td>static functions for functional programming, like bind1st()
+<tr><td>dojo.DJMath     <td>S    <td>java.lang.Math, java.math      <td>                          <td>gaussian(), random(). not called "Math" because that is a primitive class
+<tr><td>dojo.Lang       <td>S    <td>java.lang.System    <td>                          <td>isArray(), isPrimitive(), uneval()
+<tr><td>dojo.MOP        <td>S    <td>                    <td>                          <td>static functions for MOP/AOP hacks, like memoize(), addAdvice()
+<tr><td>dojo.Text       <td>S    <td>java.util.StringTokenizer, java.text.*<td>System.String, System.Text<td>things like trimLeft. For those who want it,
+         for many static functions we will do String.prototype.* = dojo.Text.*.
+<tr><td>dojo.Time       <td>S    <td>java.util.Date, java.util.Calendar    <td>                <td>not called "Date", because that is a primitive class.
+     As with dojo.Text, there will be optional extension of the builtin Date.
+<tr><td>dojo.URI       <td>SI    <td>java.net.URL        <td>System.URI    <td>                <td>
+
+<tr><td>dojo.DJError  <td>SI    <td>java.lang.Error, java.lang.Exception, ...   <td>               <td>used in making better errors.
+<tr><td>dojo.AssertError <td>I    <td>java.lang.AssertionError                   <td>               <td>thrown by dj_assert()
+<tr><td>dojo.crypt.*      <td>S    <td>java.crypt.*          <td>System.Security.Cryptography.*       <td>md5(), etc.
+<tr><td>dojo.runtime.AbstractRuntime <td>B      <td>java.lang.System, java.lang.Runtime         <td>System.Runtime         <td>subclasses for each runtime environment:
+     DomRuntime, WshRuntime, SpiderMonkeyRuntime
+<tr><td>dojo.runtime.ScriptLoader, Script<td>SI <td>java.lang.ClassLoader, java.lang.Class  <td>Microsoft.JScript, Microsoft.Vsa
+<tr><td>dojo.runtime.Config     <td>S    <td>java.lang.System.getProperties()     <td>System.Configuration    <td>for ambient configuration information
+    (such as from window.location query string, or some global js var)
+<tr><td>dojo.stack.StackFrame, StackTrace <td>SI    <td>java.lang.StackTraceElement
+
+<tr><td>dojo.io.*     <td>BI    <td>java.io.*, java.nio.*, java.net.*, javax.servlet.*    <td>System.IO.*, System.Net.*, System.Web.Services.*    <td>
+    AbstractURIRequest, XmlHttpURIRequest, IframeURIRequest, SOAPRequest
+<tr><td>dojo.collections.*   <td>I    <td>java.util.Vector, etc.    <td>System.Collections
+<tr><td>dojo.xml.*    <td> <td>javax.xml, org.xml.* <td>System.Xml.*
+<tr><td>dojo.xml.DomUtil    <td>S  <td>   <td>   <td> static conveniences that work in an XML DOM, not just XHTML
+<tr><td>dojo.xml.HtmlUtil    <td>S  <td>   <td>   <td>static conveniences for XHTML DOM (but no functionality specific to browser DOMs, such as events)
+<tr><td>dojo.xml.XPath    <td>SI   <td>   <td>System.Xml.XPath    <td>XPath in pure javascript
+<tr><td>dojo.reflect.PropertyDef   <td>I   <td>java.reflect, java.beans, java.lang.Class   <td>System.Type, System.Reflection  <td>used to define property types,
+     for validation of forms and widget declarations.
+<tr><td>dojo.props.*      <td>    <td>java.util.prefs, java.util.Properties    <td>System.Configuration, System.Resources   <td>AbstractProperties, PropertyError
+<tr><td>dojo.logging.*    <td>    <td>java.util.logging   <td>System.Diagnostics.Debug
+
+<tr><td>dojo.event.*       <td>    <td>java.awt.event, java.swing.event, javax.naming.event, java.util.EventObject  <td>System.EventArgs,System.ComponentModel.EventHandler <td>
+   I'm not actually convince events are a universal, outside of ui .
+<tr><td>dojo.concurrent.*   <td>   <td>java.lang.Thread, java.util.Timer, java.util.TimerTask, java.lang.Object  <td>System.Threading, System.Timers, System.Windows.Forms.Timer
+<tr><td>dojo.graphics.*    <td>    <td>java.imageio.*     <td>System.Drawing.Graphics, System.Drawing.Imaging, System.Drawing.ImageAnimator  <td>for 2d vector graphics and image manipulation
+<tr><td>dojo.av.*          <td>    <td>javax.sound.*            <td>                  <td>audio and video
+<tr><td>dojo.web.InputEvent, DragDrop, TextSelection, Cookies   <td>SI    <td>    <td>System.Windows.Forms.Control.DragDrop, etc.   <td>for interaction with a browser (not just any  DOM):
+     keyboard and mouse events, user agent, etc.
+<tr><td>dojo.webui.widgets.*     <td>BI  <td>java.awt, javax.swing, etc.                <td>System.Web.UI, etc.        <td>widgets for the "webui" toolkit, which relies on a XHTML DOM.
+</table>
+
+<p>
+Areas not covered:
+<pre>
+   3D graphics
+   animation/timing (SMIL, etc.)
+</pre>
+<p>
+Functionality not in classes:
+<pre>
+   fixes to ecmascript implementations
+   dj_import(), dj_class(), dj_throw(), and any othe pseduo language extensions
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+This is the index.html for the document root of the public web site.
+ -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Dojo Toolkit</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+  </head>
+<body>
+
+<img width="200px" src="logo.gif" alt="logo" />
+
+<h1>Dojo Toolkit</h1>
+
+Welcome to the Dojo Toolkit, an open source (AFL) project for next-generation web
+applications using current-generation technologies.
+
+<h1>Mailing List</h1>
+
+Most of the activity right now is on the mailing list:
+<a href="http://netwindows.org/mailman/listinfo/ng-dhtml_netwindows.org">http://netwindows.org/mailman/listinfo/ng-dhtml_netwindows.org</a>
+
+<h1>Documents</h1>
+
+Discussion of these documents goes on in the mailing list:
+<ul>
+<li><a href="requirements.html">requirements.html</a></li>
+<li><a href="js_style_guide.html">js_style_guide.html</a></li>
+<li><a href="dojo_classes.html">dojo_classes.html</a></li>
+<li><a href="dojo_wbs_chart.png">dojo_wbs_chart.png</a></li>
+</ul>
+
+<h1>CVS</h1>
+If you have a shell account, you can checkout a remote workspace by:
+<pre>
+  # cd
+  # CVS_RSH=ssh CVSROOT=":ext:username@dojotoolkit.org:/var/cvs" cvs -z3 checkout -P dojo
+</pre>
+or a local workspace by:
+<pre>
+  # cd
+  # CVSROOT=/var/cvs cvs co dojo
+</pre>
+
+<p>
+If you are a remote anonymous user, you can checkout a workspace by:
+</p>
+<pre>
+  # CVSROOT=:pserver:anonymous@dojotoolkit.org:/root cvs login
+  (type empty return for password)
+  # CVSROOT=:pserver:anonymous@dojotoolkit.org:/root cvs -z3 co -P dojo
+</pre> 
+
+<p>
+In either case, subsequent updates are done by:
+</p>
+<pre>
+  # cvs -z3 update -Pd
+</pre>
+
+<p>
+Anyone can browse the CVS repository using either <a href="/cgi-bin/cvstrac/dojo/">cvstrac</a> or <a href="/cvsmonitor/cvsmonitor.pl">cvsmonitor</a>.
+</p>
+
+<h1>Blog and Wiki</h1>
+There is a <a href="/blog/">blog</a> and a <a href="/wiki/">wiki</a> but they aren't 
+used much right now. 
+
+<h1>Antecedents</h1>
+
+There are several ECMAScript libraries that have been authored by founding
+members of the Dojo Toolkit group. You might want to examine these until we get the "NG" thing done:
+<ul>
+<li>NetWindows (Alex Russell, AFL), at <a href="http://netwindows.org">http://netwindows.org</a></li>
+<li>f(m) (Tom Trenka, LGPL), at <a href="http://fm.dept-z.com/">http://fm.dept-z.com/</a></li>
+<li>Burst (Mark D. Anderson, AFL), at <a href="http://burstproject.org/">http://burstproject.org</a></li>
+</ul>
+
+<!--
+<h1>Improving our Look</h1>
+Here is our provisional logo: <img src="logo.draft1.jpg" alt="logo" />
+-->
+
+<hr />
+<pre>$Id: index.html,v 1.5 2004/07/09 23:51:04 mda Exp $</pre>
+
+</body>
+</html>
