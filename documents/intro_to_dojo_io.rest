@@ -15,11 +15,11 @@ The Dojo project is seeking to build the best DHTML toolkit available, hands
 down. Part of that effort includes paying attention to many of the neglected
 and unpolished sharp edges of the DHTML programming and user experience. Over
 the last several months, it's been hard not to notice the parade of fawning
-articles about one particular part of the DHTML toolbox: the XMLHTTP object.
-Some of the published information includes code, and some of that code is even
-pretty good (a big change for DHTML articles). Unfortunantly, so far, users of
-this code are left out on their own when it comes down to solving the usability
-problems that come along with XMLHTTP. 
+articles about one particular part of the DHTML asynchronous IO toolbox: the
+XMLHTTP object.  Some of the published information includes code, and some of
+that code is even OK (a big change for DHTML articles). Unfortunantly, so far,
+users of this code are left out on their own when it comes down to solving the
+usability problems that come along with XMLHTTP. 
 
 Dynamic, but at what price?
 ---------------------------
@@ -72,14 +72,14 @@ Boodman of Google and Mark Anderson of Dojo) we have come up with solutions to
 the usability problems outlined above. We're providing it in a single, easy to
 use API and a package that requires only two files to function.
 
-But first, a brief introduction to the bind() method. dojo.io.bind() is a
-generic asynchronous request API that is provided Dojo to warp multiple
+But first, a brief introduction to the ``bind()`` method. ``dojo.io.bind()`` is
+a generic asynchronous request API that is provided Dojo to warp multiple
 transport layers (queues of iframes, XMLHTTP, mod_pubsub, LivePage, etc.). Dojo
 attempts to pick the best available transport for the request at hand, and in
 the provided package file, only XMLHTTP will ever be chosen since no other
 transports are rolled in. The API accepts a single anonymous object with known
 attributes of that object acting as function arguments. To make a request that
-returns raw text from a URL, you would call bind like this::
+returns raw text from a URL, you would call ``bind()`` like this::
 
     dojo.io.bind({
         url: "http://foo.bar.com/sampleData.txt",
@@ -120,7 +120,7 @@ load and error handlers::
 
 One common idiom for dynamic content loading is (for performance reasons) to
 request a JavaScript literal string and then evaluate it. That's also baked
-into bind, just provide a different expected response type with the mimetype
+into ``bind``, just provide a different expected response type with the mimetype
 argument::
 
     dojo.io.bind({
@@ -139,7 +139,7 @@ sepcify that too::
         transport: "XMLHTTPTransport"
     });
 
-Being a jack-of-all-trades, bind() also supports the submission of forms via a
+Being a jack-of-all-trades, ``bind()`` also supports the submission of forms via a
 request (with the single caveat that it won't do file upload over XMLHTTP)::
 
     dojo.io.bind({
@@ -158,9 +158,9 @@ None of the examples so far would have caused anything but the default
 (sometimes undesireable) behavior to occur if the user subsequently hit the
 back button. In a lot of applications with small interactions, it might never
 transpire that one would want the back button to be intercepted. One could
-happily build an app using dojo.io.bind() without ever knowing or caring about
-bookmarking or the back button, but if you're reading this, the odds are that
-you care. So here we go.
+happily build an app using ``dojo.io.bind()`` without ever knowing or caring
+about bookmarking or the back button, but if you're reading this, the odds are
+that you care. So here we go.
 
 First, a note on browser support: all of the following techniques work on IE
 and Mozilla/Firefox, but Safari is, sadly, a lost cause. That doesn't mean your
@@ -218,11 +218,11 @@ situation as well.::
         formNode: sampleFormNode
     });
 
-Note that forward button triggers are _only_ fired when the user is linearly
+Note that forward button triggers are *only* fired when the user is linearly
 progressing between the forward and back buttons. If the user takes an action
-after going back-back-forward that would fire a new bind() request, the next
-"forward" will have no callback fired from it since a new branch in the history
-tree has been created and the old one is likely invalid.
+after going back-back-forward that would fire a new ``bind()`` request, the
+next "forward" will have no callback fired from it since a new branch in the
+history tree has been created and the old one is likely invalid.
 
 Bookmarking
 ------------------------------------
@@ -230,8 +230,8 @@ Bookmarking
 Bookmarkability is a really big issue for web apps. Apps that don't have it are
 at a huge dissadvantage to those that do. That's just how it is.
 
-With that in mind, dojo.io.bind() gives you one last little bit of control for
-making things bookmarkable. Simply pass in the value "true" to the flag
+With that in mind, ``dojo.io.bind()`` gives you one last little bit of control
+for making things bookmarkable. Simply pass in the value "true" to the flag
 "changeURL".  Here's the obligitory example::
 
     dojo.io.bind({
@@ -270,7 +270,7 @@ events fire when back and forward are pressed, so a timer is required to watch
 the value of location.href. On both browsers, detecting iframe loading requires
 two queues to differentiate forward from back buttons, and the iframe MUST be
 part of the intial document (in this case, created w/ document.write) since
-dynamically created iframes _don't affect the history_. Likewise, it was
+dynamically created iframes *don't affect the history*. Likewise, it was
 somewhat painful to determine what kind of anchor setting would work for
 creating back-button entries but not change the scroll position in the
 top-level viewport. It's almost painful to think of how many hours were burned
