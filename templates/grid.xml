@@ -52,23 +52,71 @@
 			</rowItems>
 		</foot>
 	</dojo:componentDefinitionModel>
-	<dojo:dataModel id="gridExampleDataModel" src="#staticExampleModel" type="xml">
+	<dojo:dataModel id="gridExampleDataModel" src="#staticExampleModel" type="xml"><!-- this example shows inclusion of only certain elements from a data structure -->
 		<label elementName="name" />
 		<gridRowItem elementName="structure">
-			<gridCellItem elementName="substructure" />
+			<gridCellItem elementName="subStructure" />
+			<gridCellItem elementName="subStructure3" />
+			<gridCellItem elementName="subStructure4" />
+		</gridRowItem>
+	</dojo:dataModel>
+
+	<dojo:dataModel id="gridExampleDataModel2" src="#staticExampleModel" type="xml"><!-- this example shows combining a couple of fields -->
+		<label elementName="name" />
+		<gridRowItem elementName="structure">
+			<gridCellItem elementName="subStructure" />
+			<gridCellItem>
+				<elementName>substructure2</elementName>
+				<elementName>substructure3</elementName>
+				<!-- TODO: do we want a way to define simple operations between combined items, as well as a way to parse data, show substrings, etc.? -->
+			</gridCellItem>
+			<gridCellItem elementName="subStructure4" />
 		</gridRowItem>
 	</dojo:dataModel>
 
 	<arbitraryDataStructure id="staticExampleModel">
 		<name>testGrid</name>
 		<structure>
-			<subtructure>
-				<!-- TODO: how to determine what to insert here...
-				     text, ram markup, hybrid, other components?
-						 also need to consider how we might define a transformation or
-						 combination of markup from the model into the view...?
-				-->
-			</subtructure>
+			<subStructure>
+				item11
+			</subStructure>
+			<subStructure2>
+				item12
+			</subStructure2>
+			<subStructure3>
+				item13
+			</subStructure3>
+			<subStructure4>
+				item14
+			</subStructure4>
+		</structure>
+		<structure>
+			<subStructure>
+				item21
+			</subStructure>
+			<subStructure2>
+				item22
+			</subStructure2>
+			<subStructure3>
+				item23
+			</subStructure3>
+			<subStructure4>
+				item24
+			</subStructure4>
+		</structure>
+		<structure>
+			<subStructure>
+				item31
+			</subStructure>
+			<subStructure2>
+				item32
+			</subStructure2>
+			<subStructure3>
+				item33
+			</subStructure3>
+			<subStructure4>
+				item34
+			</subStructure4>
 		</structure>
 	</arbitraryDataStructure>
 </dojo:application>
