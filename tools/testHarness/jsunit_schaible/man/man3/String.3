@@ -1,0 +1,48 @@
+.TH "String" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+String \- Standard ECMA class. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBString\fP ()"
+.br
+.ti -1c
+.RI "String \fBtrim\fP (String chars)"
+.br
+.RI "\fITrims characters from string.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Standard ECMA class.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void String::String ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "String String::trim (String chars)"
+.PP
+Trims characters from string.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIchars\fP\fP
+String with characters to remove. The character may also be a regular expression character class like '\\s' (which is the  default).The function removes the given chararcters \fIchars\fP from the beginning an  the end from the current string and returns the result. The function will  not modify the current string.
+.PP
+The function is written as String enhancement and available as new member  function of the class String. 
+.PP
+\fBReturns: \fP
+.in +1c
+String without given characters at start or end. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

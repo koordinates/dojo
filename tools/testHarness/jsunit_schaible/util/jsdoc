@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# JsUnit - a JUnit port for JavaScript
+# Copyright (C) 1999,2000,2001,2002 Joerg Schaible
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation in version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# Test suites built with JsUnit are derivative works derived from tested 
+# classes and functions in their production; they are not affected by this 
+# license.
+
+_DOXYGEN=`type doxygen > /dev/null 2>&1`
+if test -z "$_DOXYGEN"; then
+	if test -d /opt/doxygen/bin; then
+		PATH=$PATH:/opt/doxygen/bin
+		_DOXYGEN=YES
+	fi
+fi
+if test -z "$_DOXYGEN"; then
+	echo "doxygen not available!"
+	exit 1
+fi
+_DOT=`type dot > /dev/null 2>&1`
+if test -z "$_DOT"; then
+	if test -d /opt/graphviz/bin; then
+		HAVE_DOT="YES"
+		PATH=$PATH:/opt/graphviz/bin
+	elif test -d /opt/ATT/Graphviz/bin; then
+		HAVE_DOT="YES"
+		PATH=$PATH:/opt/ATT/Graphviz/bin
+	else
+		HAVE_DOT="NO"
+	fi
+else
+	HAVE_DOT="YES"
+fi
+OUTPUT_DIRECTORY=.
+VERSION=`cat version.cfg`
+GENERATE_HTML=YES
+GENERATE_MAN=YES
+PERL_PATH=/bin/perl
+if test `uname -s | grep -ic CYGWIN` -gt 0; then
+	PERL_PATH=`cygpath -aw $PERL_PATH`
+fi
+export GENERATE_HTML GENERATE_MAN OUTPUT_DIRECTORY HAVE_DOT PERL_PATH VERSION
+if test "$1" = "--keep-temp"; then
+	KEEP=1
+else
+	KEEP=0
+fi
+
+CWD=$CWD
+cd `dirname $0`/..
+rm -rf .lib/ .doc/ doc/ man/ > /dev/null 2>&1
+mkdir .lib .doc doc man
+PAGER=cat perldoc -t util/js2doxy.pl > .lib/.js2doxy.man
+cd lib
+for js in *.js; do 
+	../util/js2doxy.pl $js > ../.lib/$js
+done
+
+cd ..
+doxygen util/Doxyfile
+cp util/*.bmp doc/
+mv doc/*.html .doc/
+cd .doc
+for html in *.html; do 
+	sed -e 's,<\([hH][1-9]\)>JsU\(nit.*\)</\1>,<\1><span class="J">J</span><span class="s">s</span><span class="U">U</span>\2</\1>,g' $html > ../doc/$html; 
+	#sed -e 's,JsUnit\([ <]\),<span class="J">J</span><span class="s">s</span><span class="U">U</span>nit\1,g' $html > ../doc/$html; 
+done
+
+cd ..
+if test $KEEP -eq 0; then 
+	rm -rf .lib .doc
+fi
+cd $CWD
+

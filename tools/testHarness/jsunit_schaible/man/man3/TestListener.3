@@ -1,0 +1,97 @@
+.TH "TestListener" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TestListener \- A listener for test progress. 
+.SH SYNOPSIS
+.br
+.PP
+Inherited by \fBBaseTestRunner\fP, \fBResultPrinter\fP, and \fBTestResult\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "virtual void \fBTestListener\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBstartTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIA test started.\fP"
+.ti -1c
+.RI "virtual void \fBendTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIA test ended.\fP"
+.ti -1c
+.RI "virtual void \fBaddFailure\fP (\fBTest\fP test, \fBAssertionFailedError\fP afe)"
+.br
+.RI "\fIAn occured failure was added.\fP"
+.ti -1c
+.RI "virtual void \fBaddError\fP (\fBTest\fP test, \fBError\fP except)"
+.br
+.RI "\fIAn occured error was added.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A listener for test progress.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "virtual void TestListener::TestListener ()\fC [virtual]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "virtual void TestListener::addError (\fBTest\fP test, \fBError\fP except)\fC [virtual]\fP"
+.PP
+An occured error was added.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The failed test. 
+.TP
+\fB\fIexcept\fP\fP
+The thrown error. 
+.PP
+Implemented in \fBClassicResultPrinter\fP, \fBResultPrinter\fP, \fBBaseTestRunner\fP, and \fBTestResult\fP.
+.SS "virtual void TestListener::addFailure (\fBTest\fP test, \fBAssertionFailedError\fP afe)\fC [virtual]\fP"
+.PP
+An occured failure was added.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The failed test. 
+.TP
+\fB\fIafe\fP\fP
+The thrown assertion failure. 
+.PP
+Implemented in \fBResultPrinter\fP, \fBBaseTestRunner\fP, and \fBTestResult\fP.
+.SS "virtual void TestListener::endTest (\fBTest\fP test)\fC [virtual]\fP"
+.PP
+A test ended.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The ended test. 
+.PP
+Implemented in \fBClassicResultPrinter\fP, \fBResultPrinter\fP, \fBBaseTestRunner\fP, and \fBTestResult\fP.
+.SS "virtual void TestListener::startTest (\fBTest\fP test)\fC [virtual]\fP"
+.PP
+A test started.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The started test. 
+.PP
+Implemented in \fBClassicResultPrinter\fP, \fBResultPrinter\fP, \fBBaseTestRunner\fP, and \fBTestResult\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

@@ -1,0 +1,275 @@
+.TH "ResultPrinter" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ResultPrinter \- Class to print the result of a \fBTextTestRunner\fP. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBTestListener\fP.
+.PP
+Inherited by \fBClassicResultPrinter\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBResultPrinter\fP (\fBPrinterWriter\fP writer)"
+.br
+.RI "\fIConstructor.\fP"
+.ti -1c
+.RI "void \fBaddFailure\fP (\fBTest\fP test, \fBAssertionFailedError\fP afe)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBprintFailures\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIPrint the failures of the test result.\fP"
+.ti -1c
+.RI "void \fBprintDefect\fP (\fBTestFailure\fP defect, Number count)"
+.br
+.RI "\fIPrint a defect of the test result.\fP"
+.ti -1c
+.RI "\fBString\fP \fBelapsedTimeAsString\fP (Number runTime)"
+.br
+.RI "\fIReturns the elapsed time in seconds as \fBString\fP.\fP"
+.ti -1c
+.RI "void \fBprintDefectTrace\fP (void defect)"
+.br
+.ti -1c
+.RI "void \fBprintHeader\fP (Number runTime)"
+.br
+.RI "\fIPrint the header of the test result.\fP"
+.ti -1c
+.RI "\fBPrinterWriter\fP \fBgetWriter\fP ()"
+.br
+.RI "\fIReturns the associated writer to this instance.\fP"
+.ti -1c
+.RI "void \fBprint\fP (\fBTestResult\fP result, Number runTime)"
+.br
+.RI "\fIPrint the complete test result.\fP"
+.ti -1c
+.RI "void \fBprintDefects\fP (\fBArray\fP< \fBTestFailure\fP > array, \fBString\fP type)"
+.br
+.RI "\fIPrint the defects of a special type of the test result.\fP"
+.ti -1c
+.RI "void \fBprintFooter\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIPrint the footer of the test result.\fP"
+.ti -1c
+.RI "void \fBstartTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBprintErrors\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIPrint the errors of the test result.\fP"
+.ti -1c
+.RI "void \fBendTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBaddError\fP (\fBTest\fP test, \fBError\fP except)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBsetWriter\fP (\fBPrinterWriter\fP writer)"
+.br
+.RI "\fISets the \fBPrinterWriter\fP.\fP"
+.ti -1c
+.RI "void \fBprintDefectHeader\fP (void defect, void count)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmColumn\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Class to print the result of a \fBTextTestRunner\fP.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void ResultPrinter::ResultPrinter (\fBPrinterWriter\fP writer)"
+.PP
+Constructor.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIwriter\fP\fP
+The writer for the report. Initialization of the ResultPrinter. If no \fIwriter\fP is provided the  instance uses the \fBSystemWriter\fP. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void ResultPrinter::addError (\fBTest\fP test, \fBError\fP except)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test that had an error. 
+.TP
+\fB\fIexcept\fP\fP
+The thrown error. 
+.PP
+Implements \fBTestListener\fP.
+.PP
+Reimplemented in \fBClassicResultPrinter\fP.
+.SS "void ResultPrinter::addFailure (\fBTest\fP test, \fBAssertionFailedError\fP afe)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test that had a failure. 
+.TP
+\fB\fIafe\fP\fP
+The thrown failure. 
+.PP
+Implements \fBTestListener\fP.
+.SS "\fBString\fP ResultPrinter::elapsedTimeAsString (Number runTime)"
+.PP
+Returns the elapsed time in seconds as \fBString\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIrunTime\fP\fP
+The elapsed time in ms. 
+.SS "void ResultPrinter::endTest (\fBTest\fP test)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test that ends. 
+.PP
+Implements \fBTestListener\fP.
+.PP
+Reimplemented in \fBClassicResultPrinter\fP.
+.SS "\fBPrinterWriter\fP ResultPrinter::getWriter ()"
+.PP
+Returns the associated writer to this instance.
+.PP
+.SS "void ResultPrinter::print (\fBTestResult\fP result, Number runTime)"
+.PP
+Print the complete test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The complete test result. 
+.TP
+\fB\fIrunTime\fP\fP
+The elapsed time in ms. 
+.PP
+Reimplemented in \fBClassicResultPrinter\fP.
+.SS "void ResultPrinter::printDefect (\fBTestFailure\fP defect, Number count)"
+.PP
+Print a defect of the test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIdefect\fP\fP
+The defect to print. 
+.TP
+\fB\fIcount\fP\fP
+The counter for this defect type. 
+.SS "void ResultPrinter::printDefectHeader (void defect, void count)"
+.PP
+.SS "void ResultPrinter::printDefects (\fBArray\fP< \fBTestFailure\fP > array, \fBString\fP type)"
+.PP
+Print the defects of a special type of the test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIarray\fP\fP
+The array with the defects. 
+.TP
+\fB\fItype\fP\fP
+The type of the defects. 
+.SS "void ResultPrinter::printDefectTrace (void defect)"
+.PP
+.SS "void ResultPrinter::printErrors (\fBTestResult\fP result)"
+.PP
+Print the errors of the test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The complete test result. 
+.SS "void ResultPrinter::printFailures (\fBTestResult\fP result)"
+.PP
+Print the failures of the test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The complete test result. 
+.SS "void ResultPrinter::printFooter (\fBTestResult\fP result)"
+.PP
+Print the footer of the test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The complete test result. 
+.SS "void ResultPrinter::printHeader (Number runTime)"
+.PP
+Print the header of the test result.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIrunTime\fP\fP
+The elapsed time in ms. 
+.SS "void ResultPrinter::setWriter (\fBPrinterWriter\fP writer)"
+.PP
+Sets the \fBPrinterWriter\fP.
+.PP
+\fBNote: \fP
+.in +1c
+This is an enhancement to JUnit 3.8 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIwriter\fP\fP
+The writer for the report. Initialization of the ResultPrinter. If no \fIwriter\fP is provided the  instance uses the \fBSystemWriter\fP. 
+.SS "void ResultPrinter::startTest (\fBTest\fP test)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test that starts. 
+.PP
+Implements \fBTestListener\fP.
+.PP
+Reimplemented in \fBClassicResultPrinter\fP.
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int ResultPrinter::mColumn"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

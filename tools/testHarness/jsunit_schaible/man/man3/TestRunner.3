@@ -1,0 +1,99 @@
+.TH "TestRunner" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TestRunner \- TestRunner of JsUnit 1.1. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBBaseTestRunner\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBTestRunner\fP ()"
+.br
+.ti -1c
+.RI "void \fBrun\fP (\fBString\fP name, \fBTestResult\fP result)"
+.br
+.RI "\fIRuns all test of all suites and collects their results in a \fBTestResult\fP instance.\fP"
+.ti -1c
+.RI "void \fBaddSuite\fP (\fBTestSuite\fP suite)"
+.br
+.RI "\fIAdd a test suite to the application.\fP"
+.ti -1c
+.RI "Number \fBcountTestCases\fP ()"
+.br
+.RI "\fICounts the number of test cases that will be run by this test application.\fP"
+.ti -1c
+.RI "void \fBrunAll\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIRuns all test of all suites and collects their results in a \fBTestResult\fP instance.\fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmSuites\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+TestRunner of JsUnit 1.1.
+.PP
+\fBDeprecated: \fP
+.in +1c
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void TestRunner::TestRunner ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void TestRunner::addSuite (\fBTestSuite\fP suite)"
+.PP
+Add a test suite to the application.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIsuite\fP\fP
+The suite to add. 
+.SS "Number TestRunner::countTestCases ()"
+.PP
+Counts the number of test cases that will be run by this test application.
+.PP
+\fBReturns: \fP
+.in +1c
+The number of test cases. 
+.SS "void TestRunner::run (\fBString\fP name, \fBTestResult\fP result)"
+.PP
+Runs all test of all suites and collects their results in a \fBTestResult\fP instance.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+The name of the test. 
+.TP
+\fB\fIresult\fP\fP
+The test result to fill. 
+.SS "void TestRunner::runAll (\fBTestResult\fP result)"
+.PP
+Runs all test of all suites and collects their results in a \fBTestResult\fP instance.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The test result to fill. 
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int TestRunner::mSuites"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

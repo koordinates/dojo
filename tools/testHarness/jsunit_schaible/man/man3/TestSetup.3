@@ -1,0 +1,80 @@
+.TH "TestSetup" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TestSetup \- A Decorator to set up and tear down additional fixture state. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBTestDecorator\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBTestSetup\fP (\fBTest\fP test)"
+.br
+.RI "\fIConstructor.\fP"
+.ti -1c
+.RI "void \fBrun\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIRuns a test case with additional set up and tear down.\fP"
+.ti -1c
+.RI "void \fBsetUp\fP ()"
+.br
+.RI "\fISets up the fixture.\fP"
+.ti -1c
+.RI "void \fBtearDown\fP ()"
+.br
+.RI "\fITears down the fixture.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A Decorator to set up and tear down additional fixture state.
+.PP
+Subclass TestSetup and insert it into your tests when you want to set up additional state once before the tests are run. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBTestCase\fP 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void TestSetup::TestSetup (\fBTest\fP test)"
+.PP
+Constructor.
+.PP
+The constructore saves the test. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test to decorate. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void TestSetup::run (\fBTestResult\fP result)\fC [virtual]\fP"
+.PP
+Runs a test case with additional set up and tear down.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The result set. 
+.PP
+Reimplemented from \fBTestDecorator\fP.
+.SS "void TestSetup::setUp ()"
+.PP
+Sets up the fixture.
+.PP
+Override to set up additional fixture state. 
+.SS "void TestSetup::tearDown ()"
+.PP
+Tears down the fixture.
+.PP
+Override to tear down the additional fixture state. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

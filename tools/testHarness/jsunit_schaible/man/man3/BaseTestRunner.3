@@ -1,0 +1,246 @@
+.TH "BaseTestRunner" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BaseTestRunner \- General base class for an application running test suites. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBTestListener\fP.
+.PP
+Inherited by \fBTestRunner\fP, and \fBTextTestRunner\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBBaseTestRunner\fP ()"
+.br
+.ti -1c
+.RI "void \fBtestEnded\fP (void test)"
+.br
+.ti -1c
+.RI "void \fBaddFailure\fP (\fBTest\fP test, \fBAssertionFailedError\fP afe)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBgetTest\fP (\fBString\fP name)"
+.br
+.RI "\fIReturns the \fBTest\fP corresponding to the given suite.\fP"
+.ti -1c
+.RI "void \fBclearStatus\fP ()"
+.br
+.ti -1c
+.RI "void \fBrunFailed\fP (void msg)"
+.br
+.ti -1c
+.RI "Object \fBgetPreferences\fP ()"
+.br
+.RI "\fIRetrieves the Object with the global preferences of any runner.\fP"
+.ti -1c
+.RI "void \fBsetPreference\fP (\fBString\fP key, Object value)"
+.br
+.RI "\fISet a global preference.\fP"
+.ti -1c
+.RI "void \fBsetPreferences\fP (\fBArray\fP prefs)"
+.br
+.RI "\fISet any runner's global preferences.\fP"
+.ti -1c
+.RI "void \fBtestStarted\fP (void test)"
+.br
+.ti -1c
+.RI "Object \fBgetPreference\fP (\fBString\fP key, Object value)"
+.br
+.RI "\fIRetrieve the value of a global preference key.\fP"
+.ti -1c
+.RI "void \fBtestFailed\fP (void test)"
+.br
+.ti -1c
+.RI "\fBString\fP \fBtruncate\fP (\fBString\fP str)"
+.br
+.RI "\fITruncates string to maximum length.\fP"
+.ti -1c
+.RI "void \fBstartTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBendTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "void \fBaddError\fP (\fBTest\fP test, \fBError\fP except)"
+.br
+.RI "\fIImplementation of \fBTestListener\fP.\fP"
+.ti -1c
+.RI "Boolean \fBshowStackRaw\fP ()"
+.br
+.RI "\fIRetrieve the flag for raw stack output.\fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmElapsedTime\fP"
+.br
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmPreferences\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+General base class for an application running test suites.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void BaseTestRunner::BaseTestRunner ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void BaseTestRunner::addError (\fBTest\fP test, \fBError\fP except)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test that had an error. 
+.TP
+\fB\fIexcept\fP\fP
+The thrown error. 
+.PP
+Implements \fBTestListener\fP.
+.SS "void BaseTestRunner::addFailure (\fBTest\fP test, \fBAssertionFailedError\fP afe)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test that had a failure. 
+.TP
+\fB\fIafe\fP\fP
+The thrown failure. 
+.PP
+Implements \fBTestListener\fP.
+.SS "void BaseTestRunner::clearStatus ()"
+.PP
+.SS "void BaseTestRunner::endTest (\fBTest\fP test)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The ended test. 
+.PP
+Implements \fBTestListener\fP.
+.SS "Object BaseTestRunner::getPreference (\fBString\fP key, Object value)"
+.PP
+Retrieve the value of a global preference key.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+The key of the preference. 
+.TP
+\fB\fIvalue\fP\fP
+The default value. 
+.PP
+\fBReturns: \fP
+.in +1c
+The value of the key or the default value. 
+.SS "Object BaseTestRunner::getPreferences ()"
+.PP
+Retrieves the Object with the global preferences of any runner.
+.PP
+\fBReturns: \fP
+.in +1c
+Returns the runner's global preferences. 
+.SS "void BaseTestRunner::getTest (\fBString\fP name)"
+.PP
+Returns the \fBTest\fP corresponding to the given suite.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+The name of the test. This is a template method, subclasses override \fBrunFailed\fP(),  \fBclearStatus\fP(). 
+.SS "void BaseTestRunner::runFailed (void msg)"
+.PP
+.SS "void BaseTestRunner::setPreference (\fBString\fP key, Object value)"
+.PP
+Set a global preference.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIkey\fP\fP
+The key of the preference. 
+.TP
+\fB\fIvalue\fP\fP
+The value of the preference. 
+.SS "void BaseTestRunner::setPreferences (\fBArray\fP prefs)"
+.PP
+Set any runner's global preferences.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIprefs\fP\fP
+The new preferences. 
+.SS "Boolean BaseTestRunner::showStackRaw ()"
+.PP
+Retrieve the flag for raw stack output.
+.PP
+\fBReturns: \fP
+.in +1c
+Flag for an unfiltered stack output. 
+.SS "void BaseTestRunner::startTest (\fBTest\fP test)\fC [virtual]\fP"
+.PP
+Implementation of \fBTestListener\fP.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The started test. 
+.PP
+Implements \fBTestListener\fP.
+.SS "void BaseTestRunner::testEnded (void test)"
+.PP
+.SS "void BaseTestRunner::testFailed (void test)"
+.PP
+.SS "void BaseTestRunner::testStarted (void test)"
+.PP
+.SS "\fBString\fP BaseTestRunner::truncate (\fBString\fP str)"
+.PP
+Truncates string to maximum length.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+The string to trancate. 
+.PP
+\fBReturns: \fP
+.in +1c
+The truncated string. 
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int BaseTestRunner::mElapsedTime"
+.PP
+.SS "int BaseTestRunner::mPreferences\fC [static]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

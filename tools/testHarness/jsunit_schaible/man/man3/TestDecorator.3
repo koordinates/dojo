@@ -1,0 +1,171 @@
+.TH "TestDecorator" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TestDecorator \- A Decorator for Tests. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBAssert\fP, and \fBTest\fP.
+.PP
+Inherited by \fBRepeatedTest\fP, and \fBTestSetup\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBTestDecorator\fP (\fBTest\fP test)"
+.br
+.RI "\fIConstructor.\fP"
+.ti -1c
+.RI "\fBTest\fP \fBgetTest\fP ()"
+.br
+.RI "\fIReturns name the decorated test.\fP"
+.ti -1c
+.RI "\fBString\fP \fBgetName\fP ()"
+.br
+.RI "\fIReturns name of the test.\fP"
+.ti -1c
+.RI "void \fBsetName\fP (\fBString\fP name)"
+.br
+.RI "\fISets name of the test.\fP"
+.ti -1c
+.RI "void \fBrun\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIRun the test.\fP"
+.ti -1c
+.RI "void \fBbasicRun\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIThe basic run behaviour.\fP"
+.ti -1c
+.RI "Number \fBcountTestCases\fP ()"
+.br
+.RI "\fIReturns the number of the test cases.\fP"
+.ti -1c
+.RI "\fBTest\fP \fBfindTest\fP (\fBString\fP name)"
+.br
+.RI "\fIReturns the test if it matches the name.\fP"
+.ti -1c
+.RI "\fBString\fP \fBtoString\fP ()"
+.br
+.RI "\fIReturns the test as string.\fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmTest\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A Decorator for Tests.
+.PP
+Use TestDecorator as the base class for defining new test decorators. \fBTest\fP decorator subclasses can be introduced to add behaviour before or after a test is run. 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBTest\fP 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void TestDecorator::TestDecorator (\fBTest\fP test)"
+.PP
+Constructor.
+.PP
+The constructore saves the test. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test to decorate. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void TestDecorator::basicRun (\fBTestResult\fP result)"
+.PP
+The basic run behaviour.
+.PP
+The function calls the run method of the decorated test. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The test result. 
+.SS "Number TestDecorator::countTestCases ()\fC [virtual]\fP"
+.PP
+Returns the number of the test cases.
+.PP
+Implements \fBTest\fP.
+.PP
+Reimplemented in \fBRepeatedTest\fP.
+.SS "\fBTest\fP TestDecorator::findTest (\fBString\fP name)\fC [virtual]\fP"
+.PP
+Returns the test if it matches the name.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+The searched test name. 
+.PP
+Implements \fBTest\fP.
+.SS "\fBString\fP TestDecorator::getName ()\fC [virtual]\fP"
+.PP
+Returns name of the test.
+.PP
+\fBNote: \fP
+.in +1c
+This is an enhancement to JUnit 3.8 
+.PP
+Implements \fBTest\fP.
+.SS "\fBTest\fP TestDecorator::getTest ()"
+.PP
+Returns name the decorated test.
+.PP
+\fBNote: \fP
+.in +1c
+This is an enhancement to JUnit 3.8 
+.SS "void TestDecorator::run (\fBTestResult\fP result)\fC [virtual]\fP"
+.PP
+Run the test.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The test result. 
+.PP
+Implements \fBTest\fP.
+.PP
+Reimplemented in \fBTestSetup\fP, and \fBRepeatedTest\fP.
+.SS "void TestDecorator::setName (\fBString\fP name)\fC [virtual]\fP"
+.PP
+Sets name of the test.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+The new name of the test. 
+.PP
+Implements \fBTest\fP.
+.SS "\fBString\fP TestDecorator::toString ()"
+.PP
+Returns the test as string.
+.PP
+\fBNote: \fP
+.in +1c
+This is an enhancement to JUnit 3.8 
+.PP
+Reimplemented in \fBRepeatedTest\fP.
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int TestDecorator::mTest"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.
