@@ -1,11 +1,11 @@
 /*
-* SpiderMonkey host environment
-*/
+ * SpiderMonkey host environment
+ */
 
 dojo.hostenv.name_ = 'spidermonkey';
 
 // version() returns 0, sigh. and build() returns nothing but just prints.
-dojo.hostenv.getVersion = function() {return version()};
+dojo.hostenv.getVersion = function(){ return version(); }
 
 // make jsc shut up (so we can use jsc for sanity checking) 
 /*@cc_on
@@ -14,7 +14,9 @@ var line2pc; var print; var load; var quit;
 @end
 @*/
 
-if (typeof line2pc == 'undefined') dj_throw("attempt to use SpiderMonkey host environment when no 'line2pc' global");
+if(typeof line2pc == 'undefined'){
+	dj_throw("attempt to use SpiderMonkey host environment when no 'line2pc' global");
+}
 
 /*
  * This is a hack that determines the current script file by parsing a generated
@@ -24,23 +26,27 @@ if (typeof line2pc == 'undefined') dj_throw("attempt to use SpiderMonkey host en
  * the stack, but that does require that you know how deep your stack is when you are
  * calling.
  */
-function dj_spidermonkey_current_file(depth) {
+function dj_spidermonkey_current_file(depth){
     var s = '';
-    try{throw Error("whatever");} catch(e) {s = e.stack;}
+    try{
+		throw Error("whatever");
+	}catch(e){
+		s = e.stack;
+	}
     // lines are like: bu_getCurrentScriptURI_spidermonkey("ScriptLoader.js")@burst/Runtime.js:101
     var matches = s.match(/[^@]*\.js/gi);
-    if (!matches) dj_throw("could not parse stack string: '" + s + "'");
+    if(!matches){ dj_throw("could not parse stack string: '" + s + "'"); }
     var fname = (typeof depth != 'undefined' && depth) ? matches[depth + 1] : matches[matches.length - 1];
-    if (!fname) dj_throw("could not find file name in stack string '" + s + "'");
+    if(!fname){ dj_throw("could not find file name in stack string '" + s + "'");
     //print("SpiderMonkeyRuntime got fname '" + fname + "' from stack string '" + s + "'");
     return fname;
 }
 
 // call this now because later we may not be on the top of the stack
 //dojo.hostenv.getLibraryScriptUri = dj_spidermonkey_current_file;
-if (!dojo.hostenv.library_script_uri_) dojo.hostenv.library_script_uri_ = dj_spidermonkey_current_file(0);
+if(!dojo.hostenv.library_script_uri_){ dojo.hostenv.library_script_uri_ = dj_spidermonkey_current_file(0); }
 
-dojo.hostenv.loadUri = function(uri) {
+dojo.hostenv.loadUri = function(uri){
     // spidermonkey load() evaluates the contents into the global scope (which is what we want).
     // TODO: sigh, load() does not return a useful value. 
     // Perhaps it is returning the value of the last thing evaluated?
@@ -49,6 +55,6 @@ dojo.hostenv.loadUri = function(uri) {
     return 1;
 }
 
-dojo.hostenv.println = function(line) {print(line)};
+dojo.hostenv.println = function(line){ print(line); }
 
-dojo.hostenv.exit = function(exitcode) {quit(exitcode)};
+dojo.hostenv.exit = function(exitcode){ quit(exitcode); }
