@@ -33,28 +33,35 @@
 				
 				var fragParser = new dojo.webui.widgets.Parse(frag);
 				fragParser.createComponents(frag);
-				
-				function outputObjectInfo(x) {
-					for (var y in x) {
-						if (typeof x[y] == "object" && x[y] != x.nodeRef) {
-							if (!(x instanceof Array && !isNaN(parseInt(y)))) {
-								dojo.hostenv.println(y+": "+x[y]);
-							}
-							outputObjectInfo(x[y]);
-						} else {
-							dojo.hostenv.println(y+": "+x[y]);
-						}
-					}
-				}
-
 			}
 			
+			function outputObjectInfo(x) {
+				for (var y in x) {
+					if (typeof x[y] == "object" && x[y] != x.nodeRef) {
+						if (!(x instanceof Array && !isNaN(parseInt(y)))) {
+							dojo.hostenv.println(y+": "+x[y]);
+						}
+						outputObjectInfo(x[y]);
+					} else {
+						dojo.hostenv.println(y+": "+x[y]);
+					}
+				}
+			}
 		</script>
+		<style type="text/css">
+			.dojoButton{
+				border: 1px dotted black; 
+				background-image: url("../../../documents/website/img/bg-fade.png"); 
+				background-repeat: repeat-x; 
+				padding: 10px; 
+				font-family: courier-new;
+			}
+		</style>
 	</head>
 	<body onload="init();">
 		Check your javascript log; the scripts were all loaded in the head.
 
-		<div id="testDojoButton" dojoType="button" label="this is a test button!">
+		<div id="testDojoButton" dojoType="button" label="this is a test button!" onClick="alert('onclick');">
 			test button!
 		</div>
 	</body>

@@ -34,4 +34,4 @@ new function(){ // namespace protection closure
 
 dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.widgets.DomButton);
 
-dojo.webui.widgets.HTMLButton.prototype.templateString = "<button></button>";
+dojo.webui.widgets.HTMLButton.prototype.templateString = "<button class='dojoButton'></button>";

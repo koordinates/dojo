@@ -6,6 +6,8 @@ dojo.webui.widgets.Button = function(){
 	dojo.webui.Widget.call(this);
 
 	this.widgetType = "Button";
+
+	this.onClick = function(){}
 }
 dj_inherits(dojo.webui.widgets.Button, dojo.webui.Widget);
 
@@ -13,6 +15,5 @@ dj_inherits(dojo.webui.widgets.Button, dojo.webui.Widget);
 dojo.webui.widgets.DomButton = function(){
 	dojo.webui.widgets.Button.call(this);
 	dojo.webui.DomWidget.call(this);
-
 }
 dj_inherits(dojo.webui.widgets.DomButton, dojo.webui.widgets.Button);
