@@ -16,9 +16,14 @@ dojo.hostenv.getVersion = function() {return version()};
 
 // see comments in spidermonkey loadUri
 dojo.hostenv.loadUri = function(uri) {
-    var ok = load(uri);
-    dj_debug("rhino load(", uri, ") returned ", ok);
-    return 1;
+	try{
+		var ok = load(uri);
+		dj_debug("rhino load(", uri, ") returned ", ok);
+		return 1;
+	}catch(e){
+		dj_debug("rhino load(", uri, ") failed!!!");
+		return 0;
+	}
 }
 
 dojo.hostenv.println = print;
