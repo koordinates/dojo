@@ -66,11 +66,13 @@ build targets:
 	<target name="test"
 		depends="-fix-config"
 		description="builds and runs unit tests for Dojo under Rhino and JUM">
-		<!-- first, clobber the tests directory and rebuild it -->
+		<!-- clobber the tests directory and rebuild it -->
+		<!-- copy over the contents of the old test directory -->
+		<!--
 		<delete dir="${release_dir}/tests"/>
 		<mkdir dir="${release_dir}/tests" />
+		-->
 
-		<!-- next, copy over the contents of the old test directory -->
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
@@ -80,7 +82,12 @@ sys.path.append(".")
 # import re
 # import os
 import buildUtil
+
+buildUtil.buildTestFiles()
 ]]></script>
+		<java jar="${user.home}/.ant/lib/js.jar" fork="true">
+			<arg value="../testRunner.js" />
+		</java>
 	</target>
 	<!-- end test task -->
 

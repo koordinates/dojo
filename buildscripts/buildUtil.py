@@ -51,20 +51,25 @@ def buildTestFiles( testDir="../tests/",
 
 	testOutFile = norm(testOutFile)
 	if os.path.isfile(testOutFile):
-		print "found %s, unlinking it" % (testOutFile,)
+		print "rebuilding %s" % (testOutFile,)
 		os.unlink(testOutFile)
 
 	testOutFD = open(testOutFile, "w+")
-	testOutFD.write("""load("%s", "%s", "%s");\n""" % (
-		norm(prologueFile), norm(domImplFile), norm(jumFile))
+	testOutFD.write("""
+load("%s", 
+	"%s", 
+	"%s");
+""" % (norm(prologueFile), norm(domImplFile), norm(jumFile))
 	)
 
 	testFiles = findTestFiles(testDir)
 	for fn in testFiles:
 		testOutFD.write("""load("%s");\n""" % (fn,))
 
-	testOutFD.write("""load("%s");\n""" % (norm(epilogueFile),))
-	testOutFD.write("""jum.init(); jum.runAll();\n""")
+	testOutFD.write("""
+load("%s");
+jum.init();
+jum.runAll();""" % (norm(epilogueFile),))
 	testOutFD.close()
 
 def findTestFiles(testDir="../tests"):
