@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<!-- This is an example of putting together a tree and a grid -->
+	<!-- FIXME (rar):
+		the cssFileName attribute is borken since it does not provide a way to
+		specialize on a per-rendering context basis.
+	-->
 	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProvider="treeDefinitions" eventProvider="treeEvents" />
 	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" />
 	<dojo:propertyModel id="gridDefinitions" componentClass="default">

@@ -6,7 +6,7 @@
 		- soap, real-time/mod_pubsub, wsdl supplied data
 		- "virtual" actions, i.e. events sent to the server upon submitting a form or completing an action
 		- fragments and data updates
-		- drag and drop - can this be covered with connectors?
+		- drag and drop - can this be covered with connectors? (rar: yes);
 		- add the rest of the components... this is a non-exhaustive list to get started on
 		- handling data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui?
 		- define relationships between components, if any (hash maps, perhaps)
@@ -30,6 +30,25 @@
 
 	<!-- structure
 		There are two fundamentally different approaches that were considered here for how the markup works.  One is the XAML style where the structure can actually represent the underlying data model: http://myxaml.com/marcclifton/archive/2004/04/04/193.aspx .  The other is to make the markup reflective of what components are, and to abstract away the particular structure of the underlying implementation.  In this case, I think our target market is more in line with the latter.  I'm thinking that we're not looking for a way to program with xml, but rather a way to configure with xml.
+	-->
+	<!--
+		(rar) structure:
+			I'm not entirely sure that I agree with what Dylan wrote above. I
+			DO belive that it should be entirely possible (and likely!) that
+			one can do a one-to-one mapping between properties and attributes
+			specified on an XML ctor and the resulting widget/component/object.
+			It's the job of the parser to see this through, although requiring
+			component class cooperation is not out of the question.
+
+			What I DO want to see happen here is threefold:
+				- provide the most terse shorthand for declaring components,
+				  and then allow the amount of syntax required after that to
+				  scale with the cpabilities needed. I.e., our syntax should
+				  provide a good huffman encoding (what is common is shortest,
+				  what is less common is longer).
+				- a way to set EVERY property of an object via markup.
+				- degradeability within the resulting markup if a translation
+				  is required down to HTML/SVG/etc.
 	-->
 
 	<!-- ways to specify attributes
@@ -244,10 +263,31 @@
 
 	<!-- models -->
 
+	<!-- FIXME (rar):
+		The discussion below makes me think that what we really want is 3 types:
+			- data model (a descriptor)
+			- data src (a pointer or actual data carrier
+			- translator (bridges gap between src and model)
+
+		Trying to do everything in dataModel doesn't make any sense to me.
+	-->
+
 	<dojo:dataModel id="" xlink:href="" type="xml|javascript">
 		<!-- dataModel can be empty, or cotain xml describing the structure of the data that will be passed from the src, or it can contain an xml data structure inline.  xml is allowed in any namespace... perhaps we should consider requiring a descriptor of the data structure, though that seems silly, and I'm not sure if it buys us anything. Actually, I've figured out what it buys us... it allows us to define the translation between any arbitrary xml data source or javascript data structure, and that required for the component's data model... so someone could easily have an xml fragment somewhere and use part or all of that data structure to feed a component -->
 	</dojo:dataModel>
 	<dojo:eventModel id="">
+		<!-- FIXME (rar):
+			the new event system which I landed yesterday (although it's mainly
+			code from Burst) DOES have a connect() method, but it accepts
+			several parameters which aren't represented here, and it uses
+			terminology that is different from sigslot. This file should be
+			updated to reflect the various kinds of advice and perahsp use the
+			terms "source" and "target" instead of "signal" and "slot"
+			(although "signal" and "slot" may also be acceptable).
+
+			Additionally, "mutators" don't need explicit support, but around
+			advice does.
+		-->
 		<dojo:connect>
 			<dojo:signal object="" name="" /><!-- TODO: way to distinguish between a literal string and an object reference -->
 			<dojo:slot object="" name="" />
@@ -260,11 +300,24 @@
 		<dojo:event type="" target="" action="" />
 	</dojo:eventModel>
 	<dojo:propertyModel id="" componentClass="">
+		<!-- FIXME (rar):
+			the term "propertyModel" needs to be replaced with "propertySet" as
+			the current setup does not MODEL anything, it only provides a list
+			or an enum of a named set of name/value pairs 
+		-->
+
 		<!-- presentational attributes , may be specified in css, as attributes in  a component, or in a propertyModel; most css properties are allowed, expressed in lowerCamelCase
 		-->
 		<!-- propertyModel contains a collection of properties and attributes to specify as a default set for components to inherit from... currently I'm thinking of not really supporting multiple inheritance, but I (Dylan) may change my mind -->
 		<!-- componentClass is used to describe classes of components
 		of a certain type, meaning not a type of component, but a subtype... for example, a sortable grid component as opposed to a normal grid component
+		-->
+		<!-- 
+			(rar): when a component class is specified, does the property model
+			being defined then apply to all components of that class? How does
+			this property cascade? Does that last one defined wipe out all
+			others, or does it just over-ride properties potentially set in
+			others?  Or does the first one set win?
 		-->
 	</dojo:propertyModel>
 
