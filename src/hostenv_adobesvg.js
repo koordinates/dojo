@@ -31,6 +31,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	}
 	
 	var async_callback = function(httpResponse){
+		dojo.hostenv.inFlightCount--;
 		if (!httpResponse.success) {
 			dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
 		}
@@ -47,6 +48,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	
 	try {
 		if(async_cb) {
+			dojo.hostenv.inFlightCount++;
 			http = window.getURL(uri, async_callback);
 		} else {
 		return dj_throw("No synchronous XMLHTTP implementation available, for uri " + uri);
