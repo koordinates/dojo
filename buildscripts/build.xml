@@ -14,6 +14,7 @@
 	<property name="release_dir" value="${root}/release"/>
 	<property name="docs_dir" value="${root}/documents"/>
 	<property name="release_docs_dir" value="${release_dir}/docs"/>
+	<property name="rest_style_sheet" value="${docs_dir}/styles/dojo.css"/>
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 
@@ -35,6 +36,8 @@ build targets:
 		directory. More or less a copy of the source files, documentation and
 		all.
 	docs - builds documentation in all formats from ./${src} and place it in ${release_docs_dir}
+	test - builds and runs command line unit tests
+	testScripting - tests the JS and Jython integration in the build process
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -56,7 +59,35 @@ build targets:
 		ant -Dversion=0.3.0 -Ddocless=true clean release
 
 		</echo>
+	</target>
+	<!-- end help task -->
 
+	<!-- test task -->
+	<target name="test"
+		depends="-fix-config"
+		description="builds and runs unit tests for Dojo under Rhino and JUM">
+		<!-- first, clobber the tests directory and rebuild it -->
+		<delete dir="${release_dir}/tests"/>
+		<mkdir dir="${release_dir}/tests" />
+
+		<!-- next, copy over the contents of the old test directory -->
+		<script language="jython"><![CDATA[
+import sys
+# make the python standard library avialable
+sys.path.append("lib/pyLib.zip")
+sys.path.append(".")
+
+import re
+import os
+import buildUtil
+]]></script>
+	</target>
+	<!-- end test task -->
+
+	<!-- test-scripting task -->
+	<target name="testScripting"
+		depends="-fix-config"
+		description="runs minimal test on our BSF+JS+Jython integration">
 		<script language="javascript"><![CDATA[
 			function print(){
 				var args = [];
@@ -83,9 +114,8 @@ build targets:
 			*/
 			
 			print("foo");
-			echo("JS integration is working!", help);
+			echo("JavaScript (Rhino) integration is working!", testScripting);
 		]]></script>
-		<!--
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
@@ -94,14 +124,13 @@ sys.path.append("lib/pyLib.zip")
 import re
 
 echo = dojo.createTask("echo")
-help.addTask(echo)
+testScripting.addTask(echo)
 echo.setMessage("Jython integration is working!");
 
 print "look ma! Jython!"
 ]]></script>
-		-->
 	</target>
-	<!-- end help task -->
+	<!-- end testScripting task -->
 
 	<!-- -check-config task -->
 	<target name="-check-config"
@@ -152,6 +181,7 @@ print "look ma! Jython!"
 		<echo message="|                                                        |" />
 		<echo message="| The system will now exit.                              |" />
 		<echo message="+--------------------------------------------------------+" />
+		<echo message=""/>
 
 		<fail message="Sorry, please re-run your build command, it should work now"/>
 	</target>
@@ -179,40 +209,27 @@ print "look ma! Jython!"
 	</target>
 	<!-- end website task -->
 
+	<!-- FIXME: need to fix this task!! -->
 	<!-- docs task -->
 	<target name="docs"
 		depends="-fix-config"
 		description="'builds' the docs">
-		<!--
-			Ok, the <exec> task is uber-lame. Lets script this instead, shall we?
-		<exec executable="rst2html.py">
-			<arg line="" />
-		</exec>
-		-->
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
 sys.path.append("lib/pyLib.zip")
+sys.path.append(".")
 
 import re
 import os
+from buildUtil import *
 
-def buildRestFiles(basePath, baseOutputPath):
-	bp = os.abspath(basePath)
-	dl = os.listdir(bp)
-	for fn in dl:
-		if os.path.
-	
-
-# iterate within the docs dir and make HTML files out of reST documents
-# Jython doesn't have os.walk since we're only at Python 2.1
-dirlist = os.listdir(docs_dir)
-for x in dirlist:
-	print x
-
+buildRestFiles( dojo.getProperty("docs_dir"), 
+				dojo.getProperty("release_docs_dir"),
+				dojo.getProperty("rest_style_sheet"))
 ]]></script>
 	</target>
-	<!-- end website task -->
+	<!-- end docs task -->
 
 	<!-- clean task -->
 	<target name="clean"
