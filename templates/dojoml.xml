@@ -70,7 +70,7 @@
 			</dojo:component>
 
 			3. as an xml fragment somewhere in the current or external document:
-			<component propertyProviderList="file.elementId" />
+			<component propertyProviderList="file#elementId" />
 
 			<dojo:propertySet>
 				<dojo:propertySet id="elementId">
@@ -111,7 +111,7 @@
 			<dojo:component propertyProviderList="provider1" />
 			
 			<dojo:propertySet id="provider1">
-				<dojo:propertySet target="someSubComponent" xlink:href="file" sourceType="css" targetType="svg" />
+				<dojo:propertySet match="someSubComponent" xlink:href="file" sourceType="css" targetType="svg" />
 			</dojo:propertySet>
 			
 			.-dojo-someSubComponent {
@@ -319,7 +319,7 @@
 			
 			(dylan): the last one set wins... now i need to define what "last" means :)
 		-->
-		<dojo:propertySet target="someSubComponent" xlink:href="file" sourceType="css" targetType="svg" />
+		<dojo:propertySet match="someSubComponent" xlink:href="file" sourceType="css" targetType="svg" />
 		<dojo:propertySet xlink:href="file#.className" sourceType="css" targetType="html" /><!-- TODO: better syntax for class names to prevent confusion with file name?-->
 		<dojo:propertySet xlink:href="file#idName" sourceType="css" targetType="svg"  />
 		<dojo:propertySet xlink:href="file" sourceType="xml" targetType="all"  />

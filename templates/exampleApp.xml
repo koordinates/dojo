@@ -47,10 +47,10 @@
 		</dojo:body>
 		<dojo:foot>
 			<dojo:rows>
-				<dojo:cssClassList>footRowClassName1</dojo:cssClassList>
+				<dojo:repetition frequency="1" propertyProviderList="grid.css/.footRowClassName1" sourceType="css" targetType="all" />
 				<dojo:rowHeight>1.5em</dojo:rowHeight>
 				<dojo:cells>
-					<dojo:cssClassList>footCellClassName1</dojo:cssClassList>
+					<dojo:repetition frequency="1" propertyProviderList="grid.css/.footCellClassName1" sourceType="css" targetType="all" />
 				</dojo:cells>
 			</dojo:rows>
 		</dojo:foot>
