@@ -95,9 +95,14 @@ function dj_debug(){
 		dj_throw("attempt to call dj_debug when there is no dojo.hostenv println implementation (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
-	var s = 'DEBUG: ';
+	var isJUM = dj_global["jum"];
+	var s = isJUM ? "": "DEBUG: ";
 	for(var i=0;i<args.length;++i){ s += args[i]; }
-	dojo.hostenv.println(s);
+	if(isJUM){ // this seems to be the only way to get JUM to "play nice"
+		jum.debug(s);
+	}else{
+		dojo.hostenv.println(s);
+	}
 }
 
 /**
@@ -370,6 +375,8 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		return module;
 	}
 
+	dj_debug("dojo.hostenv.loadModule('"+modulename+"');");
+
 	// protect against infinite recursion from mutual dependencies
 	if (typeof this.loading_modules_[modulename] !== 'undefined'){
 		dj_throw("recursive attempt to load module '" + modulename + "'");
@@ -390,6 +397,13 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// things slightly diffrently
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
+
+		var module = this.findModule(modulename, 0);
+		dj_debug("found: "+modulename+"="+module);
+		if(module){
+			return module;
+		}
+
 		//first try package/name/__package__.js
 		while(syms.length){
 			syms.pop();
@@ -462,12 +476,14 @@ function dj_eval_object_path(objpath){
 * startPackage("A.B") follows the path, and at each level creates a new empty object
 * or uses what already exists. It returns the result.
 */
+// FIXME: this seems to be borken in Rhino under JUM. Need to debug/fix ASAP
 dojo.hostenv.startPackage = function(packname){
 	var syms = packname.split(/\./);
 	var obj = dj_global;
 	for(var i=0;i<syms.length;++i){
 		var childobj = obj[syms[i]];
 		if((typeof childobj == 'undefined')||(!childobj)){
+			dj_debug("defining: ", syms.slice(0, i+1).join("."));
 			obj = (obj[syms[i]] = {});
 		}
 	}
