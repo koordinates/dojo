@@ -345,7 +345,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.bind = function(kwArgs){
 
 		if(!kwArgs["url"]){
-			if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||kwArgs["watchForURL"]]){
+			if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||kwArgs["watchForURL"]){
 				this.addToHistory(kwArgs);
 				return true;
 			}
