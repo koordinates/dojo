@@ -1,0 +1,188 @@
+dojo.io.bind(): baking in usability
+===================================
+
+:Author: Alex Russell
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/03/09
+
+.. contents::
+
+Now that we have your attention...
+----------------------------------
+
+The Dojo project is seeking to build the best DHTML toolkit available, hands
+down. Part of that effort includes paying attention to many of the neglected
+and unpolished sharp edges of the DHTML programming and user experience. Over
+the last several months, it's been hard not to notice the parade of fawning
+articles about one particular part of the DHTML toolbox: the XMLHTTP object.
+Some of the published information includes code, and some of that code is even
+pretty good (a big change for DHTML articles). Unfortunantly, so far, users of
+this code are left out on their own when it comes down to solving the usability
+problems that come along with XMLHTTP. 
+
+Dynamic, but at what price?
+---------------------------
+
+What usability problems?
+
+Consider, for a moment, that most painful of topics for web application
+developers: the back button. With a bit of copy-and-paste, a decent DOM
+reference, and a lot of perserverence it's possible to build out a pretty
+decent dynamic UI. One that doesn't jarringly destroy the user's in-page
+experience for the most trivial of tasks (e.g.: adding an item to a list,
+etc.), but when larger portions of an application are mediated in this way
+(say, switching between a view and edit mode) the user naturally has more
+desire to "go back" to some earlier state if things aren't working out the way
+they had planned or if the action isn't what they expected.
+
+As high-gloss web applications emerge, more and more of the interactions become
+intra-page and not inter-page actions, which means that if the back button
+doesn't function in a way that helps the user, more and more work can
+potentially be lost from the user's perpsecitve when they hit the back button
+and it returns them to the login screen (and not to the previous major UI
+component that they were expecting). This is exactly the style of interface
+construction that I (and others in the DHTML community) have been advocating
+for years. The upside is that more developers now see this as a feasible and
+pagmatic way to build interfaces. The downside is that their weapon of choice
+(or ignorance), XMLHTTP, doesn't create a back-button entry on any browser that
+I know of. In short, XMLHTTP breaks the back button.
+
+If the situation with the back button has the potential to confound users, the
+inability to bookmark or otherwise reference a "screen" is downright maddening.
+Applications that dyanmically construct large sections of the UI (like Google
+Maps) today resort to a link in an intermediate screen that the user can click
+to return to their current state (and then, perhaps, bookmark) if and when they
+consdier the "bookmarkability" problem at all. More common is an app that
+simply refuses to acknowledge that the user might want to pass around a URL to
+a friend and instead builds some heavyweight and non-standard state
+serialization mechanism that is more akin to a desktop app's "save as" feature.
+"Save-as" on the web is bookmarking, and usable apps recognize this (even if
+they don't have great solutions for it today). Regardless of what serialiation
+mechanism is in use, being able to represent the state of the app in a URL (or
+a marker for serialized state) is a must. As is true to form, XMLHTTP doesn't
+provide any solution to this problem either.
+
+Introducing dojo.io.bind()
+--------------------------
+
+At Dojo, we're comitted to making DHTML applications usable, both for authors
+and for users, and with a lot of help from our friends (big shout out to Aaron
+Boodman of Google and Mark Anderson of Dojo) we have come up with solutions to
+the usability problems outlined above. We're providing it in a single, easy to
+use API and a package that requires only two files to function.
+
+But first, a brief introduction to the bind() method. dojo.io.bind() is a
+generic asynchronous request API that is provided Dojo to warp multiple
+transport layers (queues of iframes, XMLHTTP, mod_pubsub, LivePage, etc.). Dojo
+attempts to pick the best available transport for the request at hand, and in
+the provided package file, only XMLHTTP will ever be chosen since no other
+transports are rolled in. The API accepts a single anonymous object with known
+attributes of that object acting as function arguments. To make a request that
+returns raw text from a URL, you would call bind like this::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.txt",
+        load: function(type, data, evt){ /*do something w/ the data */ },
+        mimetype: "text/plain"
+    });
+
+That's all there is to it. You provide the location of the data you want to get
+and a callback function that you'd like to have called when you actually DO get
+the data. But what about if something goes wrong with the request? Just
+register an error handler too::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.txt",
+        load: function(type, data, evt){ /*do something w/ the data */ },
+        error: function(type, error){ /*do something w/ the error*/ },
+        mimetype: "text/plain"
+    });
+
+It's possible to also register just a single handler that will figure out what
+kind of event got passed and react accordingly instead of registering separate
+load and error handlers::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.txt",
+        handle: function(type, data, evt){
+            if(type == "load"){
+                // do something with the data object
+            }else if(type == "error"){
+                // here, "data" is our error object
+                // respond to the error here
+            }else{
+                // other types of events might get passed, handle them here
+            }
+        },
+        mimetype: "text/plain"
+    });
+
+One common idiom for dynamic content loading is (for performance reasons) to
+request a JavaScript literal string and then evaluate it. That's also baked
+into bind, just provide a different expected response type with the mimetype
+argument::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.js",
+        load: function(type, evaldObj){ /* do something */ },
+        mimetype: "text/javascript"
+    });
+
+And if you want to be DARN SURE you're using the XMLHTTP transport, you can
+sepcify that too::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.js",
+        load: function(type, evaldObj){ /* do something */ },
+        mimetype: "text/javascript",
+        transport: "XMLHTTPTransport"
+    });
+
+
+Remainders
+----------
+
+What's In the Package
+#########################
+
+This article is part of a "profile build" of Dojo that includes a single-file
+distribution of the Dojo core (for HTML environments), the required
+"blank.html" file used for generating back-button entries, a test page that
+demonstrates usage of the API, and this article. Dojo does a LOT more than this
+package might lead you to suspect, but don't worry, we'll be releasing more
+soon.
+
+What Isn't In The Package
+#########################
+
+Dojo consists of much more functionality than this package exposes (in fact,
+this package includes much more than is being discussed, but that's for another
+time). No widget classes, xml parsing, or generic event system code are
+included in this build, although all of those things are functional in Dojo
+subversion. We don't want to tip our hand too much, but suffice it to say that
+when Dojo 1.0 is released, it will sport the fastest widget development process
+any DHTML toolkit has ever had.
+
+About The Author
+#########################
+
+Alex Russell is just a guy.
+
+About Dojo
+#########################
+
+Dojo: take two, they're small.
+
+Getting Involved with Dojo
+##########################
+
+Comitters to Dojo are currently an invite-only group, but that doesn't mean it
+can't include you. If you'd like to contribute to the future of Dojo and
+responsive web applications, do something that impreses us (either with Dojo,
+or with JS/DHTML/DSVG in general). Our license is intentionally non-political
+(Academic Free License 2.1) and we support your use of Dojo in software that's
+licensed in other ways, but will not accept differently-licensed patches. We're
+not trying to be exclusive, just productive.
+
+.. vim:ts=4:et:tw=0:shiftwidth=4:
