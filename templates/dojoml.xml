@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
-	<!-- TODO: -->
+	<!-- This is an outline of the xml declaration syntax that will be used to allow people to define components in the dojo toolkit -->
+	<!-- TODO:
+		- soap, real-time/mod_pubsub, wsdl supplied data
+		- "virtual" actions, i.e. events sent to the server upon submitting a form or completing an action
+		- fragments and data updates
+		- drag and drop - can this be covered with connectors?
+		- add the rest of the components... this is a non-exhaustive list to get started on
+		- handling data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui?
+		- define relationships between components, if any (hash maps, perhaps)
+		- define nontrivial relationships between data structures for different components,  data models that grab elements from different data sources, and logical transformations of data sources into component data (not sure that we should even worry about the latter
+		- define schema (w3c and/or relax-ng) and dtd
+	-->
 
 	<!-- attributes
 		id: unique identifier, string
@@ -11,20 +22,10 @@
 			text: dataProvider="some plain text"
 			reference to a model: dataProvider="uri#modelName" where modelName is an id of an element in the document returned from the given uri
 			reference to an item in a model: dataProvider="uri#modelName.elementName"
-			TODO: soap, real-time/mod_pubsub, wsdl, etc.
+		propertyProvider: uri to a set of default rules for the component
+		eventProvider: uri to a set of event handlers to register or connect
 		action: uri for form submission
-
-		TODO: "virtual" actions, i.e. events sent to the server upon submitting a form or completing an action
-		TODO: a way to specify event triggers, drag and drop, etc.
-		TODO: add the rest of the components... this is a non-exhaustive list to get started on
-		TODO: how do we want to handle data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui?
-
 	-->
-	<!-- TODO: Define relationships between components, if any -->
-	<!-- TODO: Determine how to define events declaratively? -->
-	<!-- TODO: How to define nontrivial relationships between data structures for different components -->
-	<!-- TODO: How to define data models that grab elements from different data sources -->
-	<!-- TODO: make sure this is synced with things that have been added to example templates as their details are worked out -->
 
 	<!-- structure
 		There are two fundamentally different approaches that were considered here for how the markup works.  One is the XAML style where the structure can actually represent the underlying data model: http://myxaml.com/marcclifton/archive/2004/04/04/193.aspx .  The other is to make the markup reflective of what components are, and to abstract away the particular structure of the underlying implementation.  In this case, I think our target market is more in line with the latter.  I'm thinking that we're not looking for a way to program with xml, but rather a way to configure with xml.
@@ -65,14 +66,14 @@
 				</propertyGroup>
 			</properties>
 
-			in essence, this is a componentDefinitionModel, so there's no reason to
+			in essence, this is a propertyModel, so there's no reason to
 			arbitrarily place it in a properties element, i.e....
 
-			<dojo:componentDefinitionModel id="" type="">
+			<dojo:propertyModel id="" type="">
 				<prop1>prop1Value</prop1>
 				<prop2>prop2Value</prop2>
 				<prop3>prop3Value</prop3>
-			</dojo:componentDefinitionModel>
+			</dojo:propertyModel>
 
 
 			4. as attributes
@@ -93,15 +94,60 @@
 	-->
 
 	<!-- components -->
-	<dojo:button id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:contextMenu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:menu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:progressBar id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:splitPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:tabbedPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:tree id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:wizard id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:button id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:contextMenu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:menu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:progressBar id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:splitPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:tabbedPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:tree id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="">
+		<resizable></resizable>
+		<!-- resizable by user... yes|no|x|y, default is no -->
+		<!--
+			my (Dylan) thoughts on this are that the developer should be able to specify dimensions and resiability of a tree or other elements, but that we might translate such things to a container or other internal widget such as a split pane that would be needed for such behavior to acutally work
+		-->
+		<indentation></indentation>
+		<!-- indentation for each tree level, css size allowed -->
+		<treeItems>
+			<cssClassList></cssClassList>
+			<!--
+				seems better than mxml's way of just specifying a list of
+				background colors to use for alteration
+			-->
+			<!-- comma separated list of classNames -->
+			<repetitionFrequency></repetitionFrequency>
+			<!-- comma-separated list of integers -->
+			<!-- these names aren't very good... trying to replicate some of
+			svg's capabilities for specifying declarative repetition without
+			having to use more complex css selectors... -->
+			<rowHeight></rowHeight>
+				<!-- css size -->
+				<!-- should this really be height... what if we wanted to be able to specify rowHeight as an attribute of the dojo:grid element? -->
+		</treeItems>
+		<treeIconItems>
+			<!-- perhaps a dataProvider could be used here to add textual
+			content instead of an icon -->
+			<icon type="folderClosed" cssClassName="folderClosed" svgDefsElement="" src="folderClosedIcon.png" />
+			<icon type="folderOpen" cssClassName="folderOpen" svgDefsElement="" src="folderOpenIcon.png" />
+			<icon type="leaf" cssClassName="leaf" svgDefsElement="" src="leafIcon.png" />
+			<!-- idea is that in html, you'd usually want to use graphics for icons,
+				 but with svg, you'd probably want to specify either a class name, or
+				 a defs element
+			-->
+		</treeIconItems>
+		<!-- TODO: what about state?  is that defined somewhere in here? -->
+		<!-- TODO: how to describe transition effects specific to trees...
+		I'm thinking this might be handled by whatever animation model we use -->
+		<!-- TODO:
+			tree state... define what state the tree is in upon initialization?
+			preserve state of what's open and what's closed across user sessions?
+			expand all?
+			collapse all?
+		-->
+	</dojo:tree>
+
+	<dojo:wizard id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
 
 	<dojo:form id="" cssClassName="" cssStyle="" dojoStyle="" action="">
 		<!-- TODO: We should make an effort to include items in the whatwg's web forms 2.0 spec -->
@@ -113,28 +159,100 @@
 		<dojo:file />
 		<dojo:datePicker />
 		<!-- dojo:numericStepper should be replaced by a select list with the appropriate dataProvider? -->
-
+		<!-- TODO: handle data validation models for form element input -->
 	</dojo:form>
 
 	<!-- traditionally static or non-componentized elements -->
-	<dojo:label id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" /> <!-- container to insert text through a static or dynamic dataProvider -->
-	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
-	<dojo:link id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:label id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" /> <!-- container to insert text through a static or dynamic dataProvider -->
+	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:link id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
 
-	<dojo:resource dataProvider="" type="css|xslt|javascript|rss|atom" version="" />
-	<dojo:htmlFragment dataProvider="" />
-	<dojo:svgFragment dataProvider="" />
-	<dojo:xmlFragment dataProvider="" /><!-- for generic namespaces? -->
+	<dojo:resource dataProvider="" propertyProvider="" eventProvider="" type="css|xslt|javascript|rss|atom" version="" />
+	<dojo:htmlFragment dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:svgFragment dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:xmlFragment dataProvider="" propertyProvider="" eventProvider="" /><!-- for generic namespaces? -->
 
-	<dojo:grid /><!-- TODO: add attributes -->
-	<dojo:tabPane /><!-- TODO: add attributes -->
-	<dojo:box /><!-- TODO: add attributes -->
+	<dojo:grid cssFileName="" cssClassName="" id="" dataProvider="" propertyProvider="" eventProvider="">
+		<!-- TODO: things like fixed items on top/left/bottom/right -->
+		<!-- TODO: drag/drop to move items up/down, selection, reordering of columns, etc. -->
+		<!-- should headers/footers be specifiable as being on left/right rather than top/bottom? -->
+		<sort type="user|automatic|none"/><!-- grid table sorting, default type is none -->
+		<!-- TODO: specify sorting
+			sortSection (basically by a column or by a row)
+			sortOrder
+			sortComparator
+			up/down arrow images
+			sortOnLoad?
+			key
+			sortMode
+			sortBlankAs
+			multiple sort?
+		-->
+		<head>
+			<rows>
+				<cssClassList></cssClassList>
+				<!-- comma separated list of classNames -->
+				<repetitionFrequency></repetitionFrequency>
+				<!-- comma-separated list of integers -->
+				<!-- these names aren't very good... trying to replicate some of
+				svg's capabilities for specifying declarative repetition without
+				having to use more complex css selectors... -->
+				<rowHeight>1.5em</rowHeight>
+				<!-- css size -->
+				<!-- should this really be height... what if we wanted to be able to specify rowHeight as an attribute of the dojo:grid element? -->
+				<cells>
+					<cssClassList></cssClassList>
+				<!-- comma separated list of classNames -->
+				</cells>
+			</rows>
+		</head>
+		<body>
+			<rows>
+				<cssClassList></cssClassList>
+				<repetitionFrequency></repetitionFrequency>
+				<rowHeight></rowHeight>
+				<cells>
+					<cssClassList></cssClassList>
+				</cells>
+			</rows>
+		</body>
+		<foot>
+			<rows>
+				<cssClassList></cssClassList>
+				<rowHeight></rowHeight>
+				<cells>
+					<cssClassList></cssClassList>
+				</cells>
+			</rows>
+		</foot>
+	</dojo:grid>
+	<dojo:tabPane  cssFileName="" cssClassName="" id="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:box cssFileName="" cssClassName="" id="" dataProvider="" propertyProvider="" eventProvider="" />
 
 	<!-- models -->
 
-	<dojo:dataModel id="" src="" type="xml|javascript"><!-- src is a uri -->
+	<dojo:dataModel id="" xlink:href="" type="xml|javascript">
 		<!-- dataModel can be empty, or cotain xml describing the structure of the data that will be passed from the src, or it can contain an xml data structure inline.  xml is allowed in any namespace... perhaps we should consider requiring a descriptor of the data structure, though that seems silly, and I'm not sure if it buys us anything. Actually, I've figured out what it buys us... it allows us to define the translation between any arbitrary xml data source or javascript data structure, and that required for the component's data model... so someone could easily have an xml fragment somewhere and use part or all of that data structure to feed a component -->
 	</dojo:dataModel>
-
+	<dojo:eventModel id="">
+		<connect>
+			<signal object="" name="" /><!-- TODO: way to distinguish between a literal string and an object reference -->
+			<slot object="" name="" />
+			<mutator /><!-- TODO: decide how to support mutators -->
+		</connect>
+		<!-- TODO: add other options for sigslots, conditions for detaching, etc. -->
+		<!-- TODO: how about real-time event setup... how to specify relationships between events on the client and server-side... some of this needs to wait until the event model itself is worked out -->
+		<!-- TODO: is this generalized enough to apply to a class of component items, and if not, how would this be done? -->
+		<!-- DOM style events... needs work in defining how the action and propagation of the event object is setup -->
+		<event type="" target="" action="" />
+	</dojo:eventModel>
+	<dojo:propertyModel id="" componentClass="">
+		<!-- presentational attributes , may be specified in css, as attributes in  a component, or in a propertyModel; most css properties are allowed, expressed in lowerCamelCase
+		-->
+		<!-- propertyModel contains a collection of properties and attributes to specify as a default set for components to inherit from... currently I'm thinking of not really supporting multiple inheritance, but I (Dylan) may change my mind -->
+		<!-- componentClass is used to describe classes of components
+		of a certain type, meaning not a type of component, but a subtype... for example, a sortable grid component as opposed to a normal grid component
+		-->
+	</dojo:propertyModel>
 
 </dojo>

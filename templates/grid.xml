@@ -1,57 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
-	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" definitionProvider="gridDefinitions" eventProvider="gridEvents" />
-	<dojo:componentDefinitionModel id="gridDefinitions" componentClass="default">
-		<!-- componentClass is used to describe types of components
-		meaning not a type of component, but a subtype... for example,
-		a specific type of a grid component
-		-->
-		<!-- presentational attributes , may be specified in css, as attributes in the grid component, or here in the componentDefinitionModel; most css properties are allowed, expressed in lowerCamelCase -->
-		<!-- TODO: things like fixed items on top/left/bottom/right -->
-		<!-- TODO: drag/drop to move items up/down, selection, reordering of columns, etc. -->
-		<!-- should headers/footers be specifiable as being on left/right rather than top/bottom? -->
-		<sort type="user" ><!-- gird table sorting, type is user|automatic|none default is none-->
-		<!-- TODO: specify sorting
-			sortSection (basically by a column or by a row)
-			sortOrder
-			sortComparator
-			up/down arrow images
-			sortOnLoad?
-			key
-			sortMode
-			sortBlankAs
-			multiple sort?
-		-->
-		</sort>
+	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" eventProvider="gridEvents" />
+	<dojo:propertyModel id="gridDefinitions" componentClass="default">
+		<!-- Examples of component and data models for a grid -->
+		<sort type="user" />
 		<head>
-			<rowItems>
+			<rows>
 				<cssClassList>headRowClassName1</cssClassList>
-				<rowHeight>1.5em</rowHeight>
-				<cellItems>
+				<rowHeight>1.5em</rowHeight><!-- should this really be height... what if we wanted to be able to specify rowHeight as an attribute of the dojo:grid element? -->
+				<cells>
 					<cssClassList>headCellClassName1</cssClassList>
-				</cellItems>
-			</rowItems>
+				</cells>
+			</rows>
 		</head>
 		<body>
-			<rowItems>
+			<rows>
 				<cssClassList>bodyRowClassName1,bodyRowClassName2</cssClassList>
 				<repetitionFrequency>1,1</repetitionFrequency>
 				<rowHeight>1.2em</rowHeight>
-				<cellItems>
+				<cells>
 					<cssClassList>bodyCellClassName1</cssClassList>
-				</cellItems>
-			</rowItems>
+				</cells>
+			</rows>
 		</body>
 		<foot>
-			<rowItems>
+			<rows>
 				<cssClassList>footRowClassName1</cssClassList>
 				<rowHeight>1.5em</rowHeight>
-				<cellItems>
+				<cells>
 					<cssClassList>footCellClassName1</cssClassList>
-				</cellItems>
-			</rowItems>
+				</cells>
+			</rows>
 		</foot>
-	</dojo:componentDefinitionModel>
+	</dojo:propertyModel>
 	<dojo:dataModel id="gridExampleDataModel" src="#staticExampleModel" type="xml"><!-- this example shows inclusion of only certain elements from a data structure -->
 		<label elementName="name" />
 		<gridRowItem elementName="structure">
@@ -88,8 +69,6 @@
 
 	<dojo:eventModel id="gridEvents">
 		<event type="onclick" target="gridCellItem" action="evt.target.highlight()" />
-		<!-- need to revise this to mesh with the event model that we choose... for now just showing a way to do basic DOM events -->
-		<!-- -->
 	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticExampleModel">

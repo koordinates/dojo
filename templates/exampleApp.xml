@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<!-- This is an example of putting together a tree and a grid -->
-	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" definitionProvider="treeDefinitions" eventProvider="treeEvents" />
-	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" definitionProvider="gridDefinitions" />
-	<dojo:componentDefinitionModel id="gridDefinitions" componentClass="default">
+	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProvider="treeDefinitions" eventProvider="treeEvents" />
+	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" />
+	<dojo:propertyModel id="gridDefinitions" componentClass="default">
 		<sort type="user"></sort>
 		<head>
-			<rowItems cssClassList="headRowClassName1" rowHeight="1.5em">
-				<cellItems cssClassList="headCellClassName1">
-				</cellItems>
-			</rowItems>
+			<rows cssClassList="headRowClassName1" rowHeight="1.5em">
+				<cells cssClassList="headCellClassName1">
+				</cells>
+			</rows>
 		</head>
 		<body>
-			<rowItems cssClassList="bodyRowClassName1,bodyRowClassName2" repetitionFrequency="1,1" rowHeight="1.2em">
-				<cellItems cssClassList="bodyCellClassName1" />
-			</rowItems>
+			<rows cssClassList="bodyRowClassName1,bodyRowClassName2" repetitionFrequency="1,1" rowHeight="1.2em">
+				<cells cssClassList="bodyCellClassName1" />
+			</rows>
 		</body>
 		<foot>
-			<rowItems cssClassList="footRowClassName1" rowHeight="1.5em">
-				<cellItems cssClassList="footCellClassName1" />
-			</rowItems>
+			<rows cssClassList="footRowClassName1" rowHeight="1.5em">
+				<cells cssClassList="footCellClassName1" />
+			</rows>
 		</foot>
-	</dojo:componentDefinitionModel>
-	<dojo:componentDefinitionModel id="treeDefinitions" componentClass="default" resizable="yes" indentation="0.5em">
+	</dojo:propertyModel>
+	<dojo:propertyModel id="treeDefinitions" componentClass="default" resizable="yes" indentation="0.5em">
 		<treeItems cssClassList="className1,className2,className3"  repetitionFrequency="1,3,1" rowHeight="1.2em" />
 		<treeIconItems>
 			<icon type="folderClosed" cssClassName="folderClosed" svgDefsElement="" src="folderClosedIcon.png" />
 			<icon type="folderOpen" cssClassName="folderOpen" svgDefsElement="" src="folderOpenIcon.png" />
 			<icon type="leaf" cssClassName="leaf" svgDefsElement="" src="leafIcon.png" />
 		</treeIconItems>
-	</dojo:componentDefinitionModel>
-	<dojo:dataModel id="treeExampleDataModel" src="#staticTreeExampleModel" type="xml">
+	</dojo:propertyModel>
+	<dojo:dataModel id="treeExampleDataModel" xlink:href="#staticTreeExampleModel" type="xml">
 		<label elementName="name" />
 		<treeItem elementName="structure">
 			<label elementName="name" />
@@ -44,11 +44,6 @@
 			<slot object="baz" name="'xyzzy'" />
 			<mutator />
 		</connect>
-		<!-- TODO: decide how to support mutators -->
-		<!-- TODO: add other options for sigslots, conditions for detaching, etc. -->
-		<!-- TODO: how about real-time event setup... how to specify relationships between events on the client and server-side... some of this needs to wait until the event model itself is worked out -->
-		<!-- TODO: is this generalized enough to apply to a class of component items, and if not, how would this be done? -->
-
 		<!-- DOM style events... needs work in defining how the action and propagation of the event object is setup -->
 		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
 		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
@@ -75,6 +70,7 @@
 			<uniqueId>record4</uniqueId>
 		</structure>
 	</arbitraryDataStructure>
+
 	<dojo:dataModel id="gridExampleDataModel" src="#staticGridExampleModel" type="xml"><!-- this example shows combining a couple of fields -->
 		<label elementName="name" />
 		<gridRowItem elementName="structure">
