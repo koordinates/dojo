@@ -5,15 +5,16 @@ dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 dojo.webui.widgets.Parse = function(fragment) {
 	this.propertySetsList = [];
 	this.fragment = fragment;
+
 	/*	createComponents recurses over a raw JavaScript object structure,
 			and calls the corresponding handler for its normalized tagName if it exists
 	*/
-
 	this.createComponents = function(fragment) {
 		var djTags = dojo.webui.widgets.tags;
 		for(var item in fragment){
 			try{
-				if((fragment[item]["tagName"])&&(fragment[item] != fragment["nodeRef"])){
+				if((fragment[item]["tagName"])&&
+					(fragment[item] != fragment["nodeRef"])){
 					var tn = new String(fragment[item]["tagName"]);
 					if(djTags[tn.toLowerCase()]){
 						// dj_debug(tn);
@@ -37,7 +38,6 @@ dojo.webui.widgets.Parse = function(fragment) {
 			structure for any propertySets.  It stores an array of references to 
 			propertySets that it finds.
 	*/
-	
 	this.parsePropertySets = function(fragment) {
 		this.propertySets = [];
 		for(var item in fragment){
@@ -53,17 +53,18 @@ dojo.webui.widgets.Parse = function(fragment) {
 	/*  parseProperties checks a raw JavaScript object structure for
 			properties, and returns an array of properties that it finds.
 	*/
-	
-	
 	this.parseProperties = function(fragment) {
 		var properties = {};
-		for (var item in fragment) {
+		for(var item in fragment){
+			dj_debug(item);
 			// FIXME: need to check for undefined?
 			// case: its a tagName or nodeRef
-			if((fragment[item] == fragment["tagName"]) || (fragment[item] == fragment.nodeRef)){
+			if((fragment[item] == fragment["tagName"])||
+				(fragment[item] == fragment.nodeRef)){
 				// do nothing
 			}else{
-				if((fragment[item]["tagName"])&&(dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()])){
+				if((fragment[item]["tagName"])&&
+					(dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()])){
 					// TODO: it isn't a property or property set, it's a fragment, 
 					// so do something else
 					// FIXME: needs to be a better/stricter check
@@ -72,6 +73,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 					try{
 						properties[item] = fragment[item][0].value;
 						var nestedProperties = this.parseProperties(fragment[item]);
+						// FIXME: this kind of copying is expensive and inefficient!
 						for(var property in nestedProperties){
 							properties[property] = nestedProperties[property];
 						}
@@ -86,22 +88,23 @@ dojo.webui.widgets.Parse = function(fragment) {
 	*/
 	
 	this.getPropertySetById = function(propertySetId){
-		for (propertySet in this.propertySetsList) {
-			if(propertySetId == this.propertySetsList[propertySet]["id"][0].value) {
-				return this.propertySetsList[propertySet]
+		for(var x = 0; x < this.propertySetsList.length; x++){
+			if(propertySetId == this.propertySetsList[x]["id"][0].value){
+				return this.propertySetsList[x];
 			}
 		}
 		return "";
 	}
 	
-	/* getPropertySetsByClass returns the propertySet(s) that match(es) the provided componentClass
-	*/
-	
-	this.getPropertySetsByClass = function(propertySetClass){
+	/* getPropertySetsByClass returns the propertySet(s) that match(es) the
+	 * provided componentClass
+	 */
+	this.getPropertySetsByType = function(componentType){
 		var propertySets = [];
-		for (propertySet in this.propertySetsList) {
-			if(this.propertySetsList[propertySet]["componentClass"] && (propertySetId == this.propertySetsList[propertySet]["componentClass"][0].value)) {
-				propertySets.push(this.propertySetsList[propertySet]);
+		for(var x = 0; x < this.propertySetsList.length; x++){
+			if((this.propertySetsList[x]["componentClass"])&&
+				(propertySetId == this.propertySetsList[x]["componentClass"][0].value)){
+				propertySets.push(this.propertySetsList[x]);
 			}
 		}
 		return propertySets;
@@ -109,30 +112,32 @@ dojo.webui.widgets.Parse = function(fragment) {
 	
 	/* getPropertySets returns the propertySet for a given component fragment
 	*/
-	
-	
-	this.getPropertySets = function(fragment) {
-		if(fragment["dojo:propertyproviderlist"]) { 
-			var propertyProviderIds = fragment["dojo:propertyproviderlist"].value.split(" ") || fragment["dojo:propertyproviderlist"].value;
-			var propertySetClass = fragment["tagName"];
+	this.getPropertySets = function(fragment){
+		var ppl = "dojo:propertyproviderlist";
+		if(fragment[ppl]){ 
+			var propertyProviderIds = fragment[ppl].value.split(" ") || fragment[ppl].value;
+			var tagname = fragment["tagName"];
 			var propertySets = [];
 			// FIXME: should the propertyProviderList attribute contain # syntax for reference to ids or not?
 			// FIXME: need a better test to see if this is local or external
 			// FIXME: doesn't handle nested propertySets, or propertySets that just contain information about css documents, etc.
-			for (propertySetId in propertyProviderIds) {
+			for(propertySetId in propertyProviderIds){
 				if((propertySetId.indexOf("..")==-1)&&(propertySetId.indexOf("://")==-1)){
 					// get a reference to a propertySet within the current parsed structure
 					var propertySet = this.getPropertySetById(propertySetId);
-					if(propertySet != "") {
+					if(propertySet != ""){
 						propertySets.push(propertySet);
 					}
-				} else {
-					// FIXME: add code to parse and return a propertySet from another document
+				}else{
+					// FIXME: add code to parse and return a propertySet from
+					// another document
+					// alex: is this even necessaray? Do we care? If so, why?
 				}
 			}
-			propertySets.concat(this.getPropertySetsByClass(propertySetClass));
-			return propertySets
-		} else {
+			// we put the typed ones first so that the parsed ones override
+			// when iteration happens.
+			return (this.getPropertySetsByType(tagname)).concat(propertySets);
+		}else{
 			return [];
 		}
 	}

@@ -412,10 +412,11 @@ dojo.webui.dragAndDropManager = new function(){
 }
 
 dojo.webui.DragParticipant = function(){
-	this.acceptedTypes = {};
+	this.acceptedTypes = [];
 
 	this.addAcceptedType = function(type){
 		this.acceptedTypes[type] = true;
+		this.acceptedTypes.push(type);
 	}
 
 	this.canDrop = function(types){
