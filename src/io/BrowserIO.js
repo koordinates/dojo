@@ -104,6 +104,24 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.bookmarkAnchor = null;
 	this.locationTimer = null;
 
+	/* NOTES:
+	 *	Safari 1.2: 
+	 *		back button "works" fine, however it's not possible to actually
+	 *		DETECT that you've moved backwards by inspecting window.location.
+	 *		Unless there is some other means of locating.
+	 *		FIXME: perhaps we can poll on history.length?
+	 *	IE 5.5 SP2:
+	 *		back button behavior is macro. It does not move back to the
+	 *		previous hash value, but to the last full page load. This suggests
+	 *		that the iframe is the correct way to capture the back button in
+	 *		these cases.
+	 *	IE 6.0:
+	 *		same behavior as IE 5.5 SP2
+	 * Firefox 1.0:
+	 *		the back button will return us to the previous hash on the same
+	 *		page, thereby not requiring an iframe hack, although we do then
+	 *		need to run a timer to detect inter-page movement.
+	 */
 	this.addToHistory = function(callback, args){
 		var hash = null;
 		if(!this.historyIframe){
@@ -155,7 +173,8 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(window.location.hash == ""){
 			// FIXME: could this ever be a forward button?
 			if(this.historyStack.length == 1){
-				clearInterval(this.locationTimer);
+				// we can't clear it because we still need to check for forwards. Ugg.
+				// clearInterval(this.locationTimer);
 				this.handleBackButton();
 				// alert(this.historyIframe.history.go(-1));
 				alert(this.historyIframe.history.length);
