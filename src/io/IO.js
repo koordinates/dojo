@@ -60,7 +60,7 @@ dojo.io.Request = function(url, mimetype, transport, changeUrl) {
 	this.url = url;
 	this.mimetype = mimetype;
 	this.transport = transport;
-	this.changeURL = changeUrl;
+	this.changeUrl = changeUrl;
 	this.formNode = null;
 	
 	// events stuff
@@ -85,49 +85,52 @@ dojo.io.Request = function(url, mimetype, transport, changeUrl) {
 		
 		var event = new dojo.io.IOEvent("error", null, Request, errorMessage, this.url, errorCode);
 		Request.dispatchEvent(event);
-		if (Request.onerror) Request.onerror(errorMessage, Request.url, event);
+		if (Request.onerror) { Request.onerror(errorMessage, Request.url, event); }
 	}
 	
 	this.load = function (type, data, evt) {
 		var event = new dojo.io.IOEvent("load", data, Request, null, null, null);
 		Request.dispatchEvent(event);
-		if (Request.onload) Request.onload(event);
+		if (Request.onload) { Request.onload(event); }
 	}
 	
 	this.backButton = function () {
 		var event = new dojo.io.IOEvent("backbutton", null, Request, null, null, null);
 		Request.dispatchEvent(event);
-		if (Request.onbackbutton) Request.onbackbutton(event);
+		if (Request.onbackbutton) { Request.onbackbutton(event); }
 	}
 	
 	this.forwardButton = function () {
 		var event = new dojo.io.IOEvent("forwardbutton", null, Request, null, null, null);
 		Request.dispatchEvent(event);
-		if (Request.onforwardbutton) Request.onforwardbutton(event);
+		if (Request.onforwardbutton) { Request.onforwardbutton(event); }
 	}
 	
 }
 
 // EventTarget interface
 dojo.io.Request.prototype.addEventListener = function (type, func) {
-	if (!this.events_[type]) this.events_[type] = [];
+	if (!this.events_[type]) { this.events_[type] = []; }
 	
-	for (var i = 0; i < this.events_[type].length; i++)
-		if (this.events_[type][i] == func) return;
+	for (var i = 0; i < this.events_[type].length; i++) {
+		if (this.events_[type][i] == func) { return; }
+	}
 	this.events_[type].push(func);
 }
 
 dojo.io.Request.prototype.removeEventListener = function (type, func) {
-	if (!this.events_[type]) return;
+	if (!this.events_[type]) { return; }
 	
-	for (var i = 0; i < this.events_[type].length; i++)
-		if (this.events_[type][i] == func) this.events_[type].splice(i,1);
+	for (var i = 0; i < this.events_[type].length; i++) {
+		if (this.events_[type][i] == func) { this.events_[type].splice(i,1); }
+	}
 }
 
 dojo.io.Request.prototype.dispatchEvent = function (evt) {
-	if (!this.events_[evt.type]) return;
-	for (var i = 0; i < this.events_[evt.type].length; i++)
+	if (!this.events_[evt.type]) { return; }
+	for (var i = 0; i < this.events_[evt.type].length; i++) {
 		this.events_[evt.type][i](evt);
+	}
 	return false; // FIXME: implement return value
 }
 
@@ -169,6 +172,7 @@ dojo.io.bind = function(kwArgs){
 	if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
 	if(!kwArgs["method"]){ kwArgs.method = "get"; }
 	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
+	if(kwArgs["changeUrl"]) { kwArgs.changeURL = kwArgs.changeUrl; }
 	for(var x=0; x<this.hdlrFuncNames.length; x++){
 		var fn = this.hdlrFuncNames[x];
 		if(typeof kwArgs[fn] == "function"){ continue; }
