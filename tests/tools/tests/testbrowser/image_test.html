@@ -1,0 +1,20 @@
+<html>
+<head>
+<script language="JavaScript"><!--
+function binary(d) {
+    var o = '';
+    for (var i=0; i<d.length; i=i+2) o+=String.fromCharCode(eval('0x'+(d.substring(i,i+2)).toString(16)));
+    return o;
+}
+
+gif2 = binary('47494638376120001000800000000000FFFFFF2C00000000200010000002208C8FA9CBED0FA344A0D609019E7A47DB799938924A189A07AA9E570BC7F2BC15003B0A');
+//--></script>
+</head>
+<body>
+
+<img src="javascript:gif2"> or
+<img src="javascript:binary('47494638376120001000800000000000ffffff2c00000000200010000002208c8fa9cbed0fa344a0d609019e7a47db799938924a189a07aa9e570bc7f2bc15003b0a')">
+</body>
+</html>
+
+

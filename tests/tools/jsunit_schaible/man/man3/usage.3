@@ -1,0 +1,213 @@
+.TH "usage" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+usage \- Usage
+.PP
+.SS "Coding Conventions"
+.PP
+To create an object in JavaScript you have to use the new operator. Every time this operator will call a function that creates automatically the new object implicitly. The new object is of the type of the function. This means the function's code represents the class definition, the 'constructor' is the function call itself. Since JsUnit 2.0 the standard inheritance mechanism described in the JavaScript guide 1.5 for the object model is supported and preferred.
+.PP
+JsUnit follows the scheme that all member variables are declared within this constructor. Afterwards all member functions are declared, using the name schema classname_memberfunctionname. All member functions are then added to the prototype of the class. This prevents naming conflicts in the global namespace. The first section within the constructor is used for the inheritance. Call a base class by using the call method of its constructor:
+.PP
+After calling the constuctor you should initialize the member variables by assigning them a value:
+.PP
+After writing the constructor it is the time to define all member functions. Declare the function using the class name as prefix. Assign all functions afterwards to the prototype:
+.PP
+It is no problem to overload a function that was already assigned in a the base class. Call the overloaded function using its apply or call method in the prototype of the constructor:
+.PP
+You may also define static member variables using a prototype definition:
+.PP
+.SS "Alternative Syntax"
+.PP
+The previous chapter followed the coding convention of the JavaScript Reference Guide. A convension always imply you may use an alternative coding style, the Perl script  will understand even this:
+.PP
+A lot of interpreters will not generate in this situation any identifier in the second braced area to the global namespace keeping it quite clean. The disadvantage of method f2 definition is, that the function itself has no name and the call stack (if available for the engine) will return an anonymous  function call.
+.PP
+.SS "Interfaces"
+.PP
+JavaScript does not support interfaces (although \fIimplements\fP is a keyword). Since it is quite handy to be sure that a class supports a defined number of functions, the system implements a new member function \fIfulfills\fP of the class \fBFunction\fP that perfoms this action. Since the functions of an interface are never called, they can be implemented quite minimalistic:
+.PP
+An interface definition may only define member functions, but no member variables. To ensure that a class fulfills this interface you call its function \fIfulfills:</P>\fP
+.PP
+.SS "Writing test cases and test suites"
+.PP
+Writing unit tests you have to write at first test cases for your classes. The programming paradigma of eXtreme Programming demands writing your test cases first. Then you are able to programm your class against the test case, so you know when you are ready. Anyway, writing a test case means deriving from class \fBTestCase\fP:
+.PP
+ 
+.PP
+.nf
+    function SimpleTest(name)
+    {
+        TestCase.call( this, name );
+    }
+.fi
+.PP
+Overload the setUp function if necessary:
+.PP
+ 
+.PP
+.nf
+    function SimpleTest_setUp()
+    {
+        this.fValue1= 2;
+        this.fValue2= 3;
+    }
+.fi
+.PP
+Add your test fixtures:
+.PP
+ 
+.PP
+.nf
+    function SimpleTest_testDivideByZero()
+    {
+        var zero = 0;
+        this.assertEquals( 'Infinity', 8/zero );
+    }
+.fi
+.PP
+You may also overload the tearDown utility. To complete the class you have to assign the methods
+.PP
+ 
+.PP
+.nf
+    SimpleTest.prototype = new TestCase();
+    SimpleTest.prototype.setUp = SimpleTest_setUp;
+    SimpleTest.prototype.testAdd = SimpleTest_testAdd;
+    SimpleTest.prototype.testDivideByZero = SimpleTest_testDivideByZero;
+    SimpleTest.prototype.testAsserts = SimpleTest_testAsserts;
+.fi
+.SS "Creating a test application"
+.PP
+After writing the test cases we need an application to run the tests. The application has the responsibility to include all necessary sources. Create a \fBTestRunner\fP for reporting the results, add all wanted test suites to the runner and perform the test. The \fBTestRunner\fP itself is normally also a derived class, that has reporting functions that work perfectly in the system environment. See below a sample for the JavaScript shells:
+.PP
+.nf
+/*
+JsUnit - a JUnit port for JavaScript
+Copyright (C) 1999,2000,2001,2002 Joerg Schaible
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation in version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Test suites built with JsUnit are derivative works derived from tested 
+classes and functions in their production; they are not affected by this 
+license.
+*/
+
+if( !this.JsUtil )
+{
+    if( this.WScript )
+    {
+        var fso = new ActiveXObject( 'Scripting.FileSystemObject' );
+        var file = fso.OpenTextFile( '../lib/JsUtil.js', 1 );
+        var all = file.ReadAll();
+        file.Close();
+        eval( all );
+    }
+    else
+        load( '../lib/JsUtil.js' );
+    
+    eval( JsUtil.prototype.include( '../lib/JsUnit.js' ));
+    eval( JsUtil.prototype.include( 'ArrayTest.js' ));
+    eval( JsUtil.prototype.include( 'money/IMoney.js' ));
+    eval( JsUtil.prototype.include( 'money/Money.js' ));
+    eval( JsUtil.prototype.include( 'money/MoneyBag.js' ));
+    eval( JsUtil.prototype.include( 'money/MoneyTest.js' ));
+    eval( JsUtil.prototype.include( 'SimpleTest.js' ));
+}
+
+function AllTests()
+{
+    TestSuite.call( this, 'AllTests' );
+}
+function AllTests_suite()
+{
+    var suite = new AllTests();
+    suite.addTest( ArrayTestSuite.prototype.suite());
+    suite.addTest( MoneyTestSuite.prototype.suite());
+    suite.addTest( SimpleTestSuite.prototype.suite());
+    return suite;
+}
+AllTests.prototype = new TestSuite();
+AllTests.prototype.suite = AllTests_suite;
+
+if( JsUtil.prototype.isShell )
+{
+    var args;
+    if( this.WScript )
+    {
+        args = new Array();
+        for( var i = 0; i < WScript.Arguments.Count(); ++i )
+            args[i] = WScript.Arguments( i );
+    }
+    else if( this.arguments )
+        args = arguments;
+    else
+        args = new Array();
+        
+    var result = TextTestRunner.prototype.main( args );
+    JsUtil.prototype.quit( result );
+}
+
+.fi
+.PP
+.SS "Examples"
+.PP
+The examples are also ports from the originals that accompany JUnit. Please note that the last test case of SimpleTest is supposed to fail to demonstrate this case.
+.PP
+Most supported environments cannot share their test application. Therefore are a lot of AllTests*.* files part of the sample package. See the list below for all deliveries:
+.PP
+  \fBFiles\fP \fBEnvironment\fP  
+.PP
+AllTests.html
+.PP
+Any browser with a JavaScript implementation capable of exceptions
+.PP
+ 
+.PP
+AllTests.vup
+.PP
+Project for Microsoft Visual Interdev
+.PP
+ 
+.PP
+AllTests.wsf
+.PP
+Script for Windows Scripting Host. Run best with \fIcscript\fP
+.PP
+ 
+.PP
+AllTestsBV
+.br
+AllTestsBV.jsp
+.PP
+JavaScript Server Page of BroadVision. Use the script AllTestsBV to start the \fIctxdriver\fP for command line invocation.
+.PP
+ 
+.PP
+AllTestsNS
+.br
+AllTestsNS.html
+.PP
+Netscape SSJS application. The shell script uses \fIjsac\fP to compile the web application. The script generates a web file from the HTML source and the other used files.
+.PP
+ 
+.PP
+AllTests.js
+.PP
+JavaScript to use with the JavaScript shells. Use \fIjava js.jar\fP to run \fIRhino\fP build from Java source or use \fIjsshell\fP to run \fISpiderMonkey\fP build from C source. You may also use \fIcscript\fP for this file.
+.PP
+ 
+.PP
+

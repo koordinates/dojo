@@ -1,0 +1,263 @@
+.TH "Assert" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Assert \- A set of assert methods. 
+.SH SYNOPSIS
+.br
+.PP
+Inherited by \fBTestCase\fP, and \fBTestDecorator\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBAssert\fP ()"
+.br
+.ti -1c
+.RI "void \fBassertNotUndefined\fP (\fBString\fP msg, Object object)"
+.br
+.RI "\fIAsserts that an object is not undefined.\fP"
+.ti -1c
+.RI "void \fBassertEquals\fP (\fBString\fP msg, Object expected, Object actual)"
+.br
+.RI "\fIAsserts that two values are equal.\fP"
+.ti -1c
+.RI "void \fBfail\fP (\fBString\fP msg, \fBCallStack\fP stack, \fBString\fP usermsg)"
+.br
+.RI "\fIFails a test with a give message.\fP"
+.ti -1c
+.RI "void \fBassertTrue\fP (\fBString\fP msg, \fBString\fP cond)"
+.br
+.RI "\fIAsserts that a condition is true.\fP"
+.ti -1c
+.RI "void \fBassertFalse\fP (\fBString\fP msg, \fBString\fP cond)"
+.br
+.RI "\fIAsserts that a condition is false.\fP"
+.ti -1c
+.RI "void \fBassertNotNull\fP (\fBString\fP msg, Object object)"
+.br
+.RI "\fIAsserts that an object is not null.\fP"
+.ti -1c
+.RI "void \fBassertNull\fP (\fBString\fP msg, Object object)"
+.br
+.RI "\fIAsserts that an object is null.\fP"
+.ti -1c
+.RI "void \fBassertUndefined\fP (\fBString\fP msg, Object object)"
+.br
+.RI "\fIAsserts that an object is undefined.\fP"
+.ti -1c
+.RI "void \fBassertNotSame\fP (\fBString\fP msg, Object expected, Object actual)"
+.br
+.RI "\fIAsserts that two values are not the same.\fP"
+.ti -1c
+.RI "void \fBassertSame\fP (\fBString\fP msg, Object expected, Object actual)"
+.br
+.RI "\fIAsserts that two values are the same.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A set of assert methods.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void Assert::Assert ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void Assert::assertEquals (\fBString\fP msg, Object expected, Object actual)"
+.PP
+Asserts that two values are equal.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIexpected\fP\fP
+The expected value. 
+.TP
+\fB\fIactual\fP\fP
+The actual value. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the expected value is not the  actual one. 
+.SS "void Assert::assertFalse (\fBString\fP msg, \fBString\fP cond)"
+.PP
+Asserts that a condition is false.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIcond\fP\fP
+The condition to evaluate. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the evaluation was not false. 
+.SS "void Assert::assertNotNull (\fBString\fP msg, Object object)"
+.PP
+Asserts that an object is not null.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIobject\fP\fP
+The valid object. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the object is not null. 
+.SS "void Assert::assertNotSame (\fBString\fP msg, Object expected, Object actual)"
+.PP
+Asserts that two values are not the same.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIexpected\fP\fP
+The expected value. 
+.TP
+\fB\fIactual\fP\fP
+The actual value. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the expected value is not the  actual one. 
+.SS "void Assert::assertNotUndefined (\fBString\fP msg, Object object)"
+.PP
+Asserts that an object is not undefined.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIobject\fP\fP
+The defined object. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the object is undefined. 
+.SS "void Assert::assertNull (\fBString\fP msg, Object object)"
+.PP
+Asserts that an object is null.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIobject\fP\fP
+The null object. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the object is not null. 
+.SS "void Assert::assertSame (\fBString\fP msg, Object expected, Object actual)"
+.PP
+Asserts that two values are the same.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIexpected\fP\fP
+The expected value. 
+.TP
+\fB\fIactual\fP\fP
+The actual value. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the expected value is not the  actual one. 
+.SS "void Assert::assertTrue (\fBString\fP msg, \fBString\fP cond)"
+.PP
+Asserts that a condition is true.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIcond\fP\fP
+The condition to evaluate. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the evaluation was not true. 
+.SS "void Assert::assertUndefined (\fBString\fP msg, Object object)"
+.PP
+Asserts that an object is undefined.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+An optional error message. 
+.TP
+\fB\fIobject\fP\fP
+The undefined object. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Thrown if the object is not undefined. 
+.SS "void Assert::fail (\fBString\fP msg, \fBCallStack\fP stack, \fBString\fP usermsg)"
+.PP
+Fails a test with a give message.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+The error message. 
+.TP
+\fB\fIstack\fP\fP
+The call stack of the error. 
+.TP
+\fB\fIusermsg\fP\fP
+The message part of the user. 
+.PP
+Exceptions: \fP
+.in +1c
+.TP
+\fB\fI\fBAssertionFailedError\fP\fP\fP
+ Is always thrown. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

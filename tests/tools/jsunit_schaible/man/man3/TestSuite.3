@@ -1,0 +1,231 @@
+.TH "TestSuite" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TestSuite \- A TestSuite is a composition of Tests. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBTest\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBTestSuite\fP (Object obj)"
+.br
+.RI "\fIConstructor.\fP"
+.ti -1c
+.RI "Number \fBtestCount\fP ()"
+.br
+.RI "\fIReturns the number of tests in this suite.\fP"
+.ti -1c
+.RI "\fBTest\fP \fBtestAt\fP (Number index)"
+.br
+.RI "\fIRuns the test at the given index.\fP"
+.ti -1c
+.RI "void \fBrunTest\fP (\fBTest\fP test, \fBTestResult\fP result)"
+.br
+.RI "\fIRuns a single test test and collect its result in a \fBTestResult\fP instance.\fP"
+.ti -1c
+.RI "void \fBaddTest\fP (\fBTest\fP test)"
+.br
+.RI "\fIAdd a test to the suite.\fP"
+.ti -1c
+.RI "\fBString\fP \fBgetName\fP ()"
+.br
+.RI "\fIRetrieves the name of the test suite.\fP"
+.ti -1c
+.RI "void \fBsetName\fP (\fBString\fP name)"
+.br
+.RI "\fISets the name of the suite.\fP"
+.ti -1c
+.RI "void \fBrun\fP (\fBTestResult\fP result)"
+.br
+.RI "\fIRuns the tests and collects their result in a \fBTestResult\fP instance.\fP"
+.ti -1c
+.RI "void \fBaddTestSuite\fP (\fBTestCase\fP testCase)"
+.br
+.RI "\fIAdd a test suite to the current suite.\fP"
+.ti -1c
+.RI "Number \fBcountTestCases\fP ()"
+.br
+.RI "\fICounts the number of test cases that will be run by this test suite.\fP"
+.ti -1c
+.RI "\fBTest\fP \fBfindTest\fP (\fBString\fP name)"
+.br
+.RI "\fISearch a test by name.\fP"
+.ti -1c
+.RI "\fBTest\fP \fBwarning\fP (\fBString\fP message)"
+.br
+.RI "\fIReturns a test which will fail and log a warning message.\fP"
+.ti -1c
+.RI "\fBString\fP \fBtoString\fP ()"
+.br
+.RI "\fIRetrieve the test suite as string.\fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmTests\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A TestSuite is a composition of Tests.
+.PP
+It runs a collection of test cases. In despite of the JUnit implementation, this class has also functionality of \fBTestSetup\fP of the extended JUnit framework. This is because of 'recursion limits' of the JavaScript implementation of BroadVision's One-to-one Server (an OEM version of Netscape Enterprise Edition). 
+.PP
+\fBSee also: \fP
+.in +1c
+\fBTest\fP 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void TestSuite::TestSuite (Object obj)"
+.PP
+Constructor.
+.PP
+The constructor collects all test methods of the given object and adds them to the array of tests. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIobj\fP\fP
+if obj is an instance of a \fBTestCase\fP, the suite is filled  with the fixtures automatically. Otherwise obj's string value is treated as  name. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void TestSuite::addTest (\fBTest\fP test)"
+.PP
+Add a test to the suite.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test to add. The test suite will add the given \fItest\fP to the suite and prepends the name of a \fBTestCase\fP with the name of the suite. 
+.SS "void TestSuite::addTestSuite (\fBTestCase\fP testCase)"
+.PP
+Add a test suite to the current suite.
+.PP
+All fixtures of the test case will be collected in a suite which will be added. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItestCase\fP\fP
+The \fBTestCase\fP object to add. 
+.SS "Number TestSuite::countTestCases ()\fC [virtual]\fP"
+.PP
+Counts the number of test cases that will be run by this test suite.
+.PP
+\fBReturns: \fP
+.in +1c
+The number of test cases. 
+.PP
+Implements \fBTest\fP.
+.SS "\fBTest\fP TestSuite::findTest (\fBString\fP name)\fC [virtual]\fP"
+.PP
+Search a test by name.
+.PP
+\fBNote: \fP
+.in +1c
+This is an enhancement to JUnit 3.8 The function compares the given name with the name of the test and  returns its own instance if the name is equal. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+The name of the searched test. 
+.PP
+\fBReturns: \fP
+.in +1c
+The instance itself or null. 
+.PP
+Implements \fBTest\fP.
+.SS "\fBString\fP TestSuite::getName ()\fC [virtual]\fP"
+.PP
+Retrieves the name of the test suite.
+.PP
+\fBReturns: \fP
+.in +1c
+The name of test suite. 
+.PP
+Implements \fBTest\fP.
+.SS "void TestSuite::run (\fBTestResult\fP result)\fC [virtual]\fP"
+.PP
+Runs the tests and collects their result in a \fBTestResult\fP instance.
+.PP
+\fBNote: \fP
+.in +1c
+As an enhancement to JUnit 3.8 the method calls also startTest and endTest of the \fBTestResult\fP. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIresult\fP\fP
+The test result to fill. 
+.PP
+Implements \fBTest\fP.
+.SS "void TestSuite::runTest (\fBTest\fP test, \fBTestResult\fP result)"
+.PP
+Runs a single test test and collect its result in a \fBTestResult\fP instance.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fItest\fP\fP
+The test to run. 
+.TP
+\fB\fIresult\fP\fP
+The test result to fill. 
+.SS "void TestSuite::setName (\fBString\fP name)\fC [virtual]\fP"
+.PP
+Sets the name of the suite.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+The name to set. 
+.PP
+Implements \fBTest\fP.
+.SS "\fBTest\fP TestSuite::testAt (Number index)"
+.PP
+Runs the test at the given index.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIindex\fP\fP
+The index. 
+.SS "Number TestSuite::testCount ()"
+.PP
+Returns the number of tests in this suite.
+.PP
+.SS "\fBString\fP TestSuite::toString ()"
+.PP
+Retrieve the test suite as string.
+.PP
+\fBReturns: \fP
+.in +1c
+Returns the name of the test case. 
+.SS "\fBTest\fP TestSuite::warning (\fBString\fP message)"
+.PP
+Returns a test which will fail and log a warning message.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImessage\fP\fP
+The warning message. 
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int TestSuite::mTests"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

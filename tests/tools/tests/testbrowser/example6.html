@@ -1,0 +1,39 @@
+<html> 
+<head> 
+<title>getComputedStyle</title> 
+<script> 
+function cStyles() { 
+div = document.getElementById("d1"); 
+
+t1 = document.getElementById("t1"); 
+h_style = document.defaultView.getComputedStyle(div, '').getPropertyValue("height"); 
+t1.setAttribute("value", h_style); 
+
+t2 = document.getElementById("t2"); 
+w_style = document.defaultView.getComputedStyle(div, '').getPropertyValue("width"); 
+t2.setAttribute("value", w_style); 
+
+t3 = document.getElementById("t3"); 
+b_style = document.defaultView.getComputedStyle(div, '').getPropertyValue("background-color"); 
+t3.setAttribute("value", b_style); 
+}
+</script> 
+<style> 
+.d { margin-left: 10px; background-color: lightblue; height: 20px; max-width: 20px; } 
+</style> 
+</head> 
+
+<body> 
+<div id="d1" class="d">&nbsp;</div> 
+<p>&nbsp; 
+
+<blockquote> 
+<button onclick="cStyles();">getComputedStyle</button> 
+ height<input id="t1" type="text" value="1"  /> 
+ max-width<input id="t2" type="text" value="2"  /> 
+ bg-color<input id="t3" type="text" value="3"  /></pre> 
+</blockquote> 
+
+</body> 
+</html> 
+

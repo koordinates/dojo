@@ -1,0 +1,50 @@
+.TH "HTMLTestRunner" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+HTMLTestRunner \- Class for an application running test suites reporting in HTML. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBTextTestRunner\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBHTMLTestRunner\fP (void outdev)"
+.br
+.ti -1c
+.RI "Number \fBsetPrinter\fP (Object outdev)"
+.br
+.RI "\fISet printer.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Class for an application running test suites reporting in HTML.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void HTMLTestRunner::HTMLTestRunner (void outdev)"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "Number HTMLTestRunner::setPrinter (Object outdev)"
+.PP
+Set printer.
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fIoutdev\fP\fP
+Output device 
+.PP
+\fBReturns: \fP
+.in +1c
+TextTestRunner.FAILURE_EXIT. The function wraps the \fBPrinterWriter\fP of the new \fBResultPrinter\fP with a  \fBHTMLWriterFilter\fP. 
+.PP
+Reimplemented from \fBTextTestRunner\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

@@ -1,0 +1,60 @@
+.TH "TypeError" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TypeError \- TypeError class according ECMA specification. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBError\fP.
+.PP
+Inherited by \fBInterfaceDefinitionError\fP, and \fBPrinterWriterError\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBTypeError\fP (\fBString\fP msg)"
+.br
+.RI "\fIConstructor.\fP"
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBString\fP \fBname\fP"
+.br
+.RI "\fIThe name of the TypeError class as \fBString\fP.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+TypeError class according ECMA specification.
+.PP
+This class is only active, if the ECMA implementation of the current engine does not support it or implements it nof following the ECMA  standard (3rd edition). 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void TypeError::TypeError (\fBString\fP msg)"
+.PP
+Constructor.
+.PP
+The constructor initializes the \fC\fBmessage\fP\fP member with the argument  \fImsg\fP. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+The error message. 
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "\fBString\fP TypeError::name\fC [static]\fP"
+.PP
+The name of the TypeError class as \fBString\fP.
+.PP
+Reimplemented from \fBError\fP.
+.PP
+Reimplemented in \fBInterfaceDefinitionError\fP, and \fBPrinterWriterError\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.

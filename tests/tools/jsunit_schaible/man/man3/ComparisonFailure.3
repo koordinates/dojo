@@ -1,0 +1,92 @@
+.TH "ComparisonFailure" 3 "9 Nov 2002" "JsUnit" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ComparisonFailure \- Thrown when a test assert comparing equal strings fail. 
+.SH SYNOPSIS
+.br
+.PP
+Inherits \fBAssertionFailedError\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBComparisonFailure\fP (\fBString\fP msg, \fBString\fP expected, \fBString\fP actual, \fBCallStack\fP stack)"
+.br
+.RI "\fIConstructor.\fP"
+.ti -1c
+.RI "\fBString\fP \fBtoString\fP ()"
+.br
+.RI "\fIReturns the error message.\fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBmExpected\fP"
+.br
+.ti -1c
+.RI "int \fBmActual\fP"
+.br
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBString\fP \fBname\fP"
+.br
+.RI "\fIThe name of the ComparisonFailure class as \fBString\fP.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Thrown when a test assert comparing equal strings fail.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "void ComparisonFailure::ComparisonFailure (\fBString\fP msg, \fBString\fP expected, \fBString\fP actual, \fBCallStack\fP stack)"
+.PP
+Constructor.
+.PP
+An AssertionFailedMessage needs a message and a call stack for construction. 
+.PP
+Parameters: \fP
+.in +1c
+.TP
+\fB\fImsg\fP\fP
+Failure message (optional). 
+.TP
+\fB\fIexpected\fP\fP
+The expected string value. 
+.TP
+\fB\fIactual\fP\fP
+The actual string value. 
+.TP
+\fB\fIstack\fP\fP
+The call stack of the assertion. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "\fBString\fP ComparisonFailure::toString ()"
+.PP
+Returns the error message.
+.PP
+\fBReturns: \fP
+.in +1c
+Returns the formatted error message. Returns '...' in place of common prefix and '...' in place of common suffix between expected and actual. 
+.PP
+Reimplemented from \fBError\fP.
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int ComparisonFailure::mActual"
+.PP
+.SS "int ComparisonFailure::mExpected"
+.PP
+.SS "\fBString\fP ComparisonFailure::name\fC [static]\fP"
+.PP
+The name of the ComparisonFailure class as \fBString\fP.
+.PP
+Reimplemented from \fBAssertionFailedError\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for JsUnit from the source code.
