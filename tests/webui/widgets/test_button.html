@@ -28,7 +28,9 @@
 				dj_debug("******************** INIT! **********************");
 				// add your on-load logic here
 				var parser = new dojo.xml.Parse();
-				var frag  = parser.parseElement(document.body);
+				var tic = new Date();
+				var frag  = parser.parseElement(document.body, null, true);
+				alert("raw parse: "+((new Date())-tic)+"ms");
 				/*
 				for(var x in frag){ 
 					dojo.hostenv.println(x+": "+frag[x]);
@@ -38,6 +40,7 @@
 				
 				var fragParser = new dojo.webui.widgets.Parse(frag);
 				fragParser.createComponents(frag);
+				// alert("the whole shooting match: "+((new Date())-tic)+"ms");
 			}
 			
 			function outputObjectInfo(x) {
