@@ -16,7 +16,9 @@ var window; var XMLHttpRequest;
 @end
 @*/
 
-if (typeof window == 'undefined') dj_throw("attempt to use browser hostenv when no window object");
+if(typeof window == 'undefined'){
+	dj_throw("attempt to use browser hostenv when no window object");
+}
 
 dojo.hostenv.name_ = 'browser';
 
@@ -30,47 +32,59 @@ var DJ_XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP
  * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
  */ 
-dojo.hostenv.getText = function(uri, async_cb, fail_ok) {
+dojo.hostenv.getText = function(uri, async_cb, fail_ok){
     var http = null;
-    if (typeof XMLHttpRequest !== 'undefined') {http = new XMLHttpRequest();}
-    else if (typeof ActiveXObject !== 'undefined') {
-	var last_e = null;
-	for (var i=0;i<3;++i) {
-	    var progid = DJ_XMLHTTP_PROGIDS[i];
-	    try {http = new ActiveXObject(progid);}
-	    catch(e) {last_e = e;}
-	    if (http) {
-		DJ_XMLHTTP_PROGIDS = [progid];  // so faster next time
-		dj_debug("successfully made an ActiveXObject using progid ", progid);
-		break;
-	    }
-	    else {
-		// window.alert("failed new ActiveXObject(" + progid + "): " + e);
-	    }
+    if(typeof XMLHttpRequest !== 'undefined'){
+		http = new XMLHttpRequest();
+	}else if(typeof ActiveXObject !== 'undefined') {
+		var last_e = null;
+
+		for(var i=0; i<3; ++i){
+			var progid = DJ_XMLHTTP_PROGIDS[i];
+			try{
+				http = new ActiveXObject(progid);
+			}catch(e){
+				last_e = e;
+			}
+
+			if(http){
+				DJ_XMLHTTP_PROGIDS = [progid];  // so faster next time
+				dj_debug("successfully made an ActiveXObject using progid ", progid);
+				break;
+			}else{
+				// window.alert("failed new ActiveXObject(" + progid + "): " + e);
+			}
+		}
 	}
-	if (last_e && !http) dj_rethrow("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
-    }
-    else {return dj_throw("No XMLHTTP implementation available, for uri " + uri);}
 
-    if (async_cb) {
-	http.onreadystatechange = function() {async_cb(http);}
-    }
+	if((last_e)&&(!http)){
+		dj_rethrow("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
+	}else{
+		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
+	}
 
-    http.open('GET', uri, async_cb ? true : false);
-    http.send(null);
-    if (async_cb) {
-	return null;
-    }
-    if (http.status != 200) {
-	if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in " + http.status + " (" + http.statusText + ")");
-	return null;
-    }
-    
-    if (!http.responseText) {
-	if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no responseText");
-	return null;
-    }
-    return http.responseText;
+	if(async_cb){
+		http.onreadystatechange = function(){ async_cb(http); }
+	}
+
+	http.open('GET', uri, async_cb ? true : false);
+	http.send(null);
+	if(async_cb){
+		return null;
+	}
+
+	if(http.status != 200){
+		if(!fail_ok){
+			dj_throw("Request for uri '" + uri + "' resulted in " + http.status + " (" + http.statusText + ")");
+			return null;
+		}
+
+		if(!http.responseText) {
+			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no responseText");
+			return null;
+		}
+		return http.responseText;
+	}
 }
 
 /*
@@ -81,15 +95,21 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok) {
  */
 function dj_last_script_src() {
     var scripts = window.document.getElementsByTagName('script');
-    if (scripts.length < 1) dj_throw("No script elements in window.document, so can't figure out my script src"); 
+    if(scripts.length < 1){ 
+		dj_throw("No script elements in window.document, so can't figure out my script src"); 
+	}
     var script = scripts[scripts.length - 1];
     var src = script.src;
-    if (!src) dj_throw("Last script element (out of " + scripts.length + ") has no src");
+    if(!src){
+		dj_throw("Last script element (out of " + scripts.length + ") has no src");
+	}
     return src;
 }
 
-if (!dojo.hostenv.library_script_uri_) dojo.hostenv.library_script_uri_ = dj_last_script_src();
+if(!dojo.hostenv["library_script_uri_"]){
+	dojo.hostenv.library_script_uri_ = dj_last_script_src();
+}
 
-dojo.hostenv.println = function(s) {
+dojo.hostenv.println = function(s){
     window.alert(s);
 }
