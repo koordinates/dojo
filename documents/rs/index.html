@@ -5,18 +5,18 @@
 <body>
 <h1>DHTML RPC Revisited</h1>
 
-<p>DHTML RPC allows JavaScript on a webpage to call a remote server without a page reload. Although techniques for RPC doing have been around almost since the beginning of www-time (DynAPI, Brent Ashley), there has been a recent resurgence in popularity coincident with the emergence of several relatively compatible modern DHTML browsers (Mozilla, Safari, Opera, IE) along with many high profile example applications (links to apps, perhaps just google search on XMLHttp/RPC or something).</p>
+<p>DHTML RPC allows JavaScript on a webpage to call a remote server without a page reload. Although techniques for RPC have been around almost since the beginning of JavaScript (DynAPI, Brent Ashley), there has been a recent resurgence in popularity coincident with the emergence of several relatively compatible modern DHTML browsers (Mozilla, Safari, Opera, IE) along with many high profile example applications (links to apps, perhaps just google search on XMLHttp/RPC or something).</p>
 
 <hr/>
 
 <h2>Approaches</h2>
-<p>There are an unfortunately diverse variety of ways to approach DHTML RPC, each with their own unique advantages and disadvantages. We are not going to cover every single one here, as that would take far more time than we have. Instead, we'll focus on the current best practices for DHTML RPC on the public internet.</p>
+<p>There are an unfortunately diverse variety of ways to approach DHTML RPC, each with their own unique advantages and disadvantages. For our purposes here, we will focus only on the most robust, flexible, and compatible solutions available for the public internet today.</p>
 
 <h3>XmlHttp</h3>
 <p>Uses the XMLHttpRequest object, which has become a de-facto standard, to make a synchronous or asynchronous web request. Both GET and POST HTTP methods are widely supported. Although originally designed for XML, any textual format can be retrieved through the responseText property.</p>
 <dl>
   <dt>Compatibility:</dt>
-  <dd>Mozilla 1.0+, WinIE 5.0+, Safari 1.?+, Opera?+, Konqueror?</dd>
+  <dd>Mozilla 1.0+, WinIE 5.0+, Safari 1.?+, Opera?+, Konqueror?, OmniWeb?+</dd>
   
   <dt>Cross-site scripting:</dt>
   <dd>not allowed</dd>
@@ -32,9 +32,28 @@
 </p>
 
 <h3>Dynamic Script Element</h3>
-<h3>Dynamic Image Element</h3>
+<p>The DOM is used to dynamically create a new <code>&lt;SCRIPT&gt;</code> element with a remote <code>SRC</code> attribute. When the element is appended to the document, the browser dutifully downloads and executes the returned JavaScript. Two-way communication is possible by targeting a server-side script and appending querystring parameters.</p>
+<dl>
+  <dt>Compatibility:</dt>
+  <dd>Mozilla 1.0+, WinIE 4.0+, Safari 1.0+, Opera?+, Konqueror?, OmniWeb?+, Mac IE?+</dd>
+  
+  <dt>Cross-site scripting:</dt>
+  <dd>allowed</dd>
+  
+  <dt>Response types:</dt>
+  <dd>JavaScript</dd>
+</dl>
+<p>
+  <a href="xmlhttp.xml">More Information</a><br/>
+  <a href="#">Example</a>
+</p>
+
 <h3>Push</h3>
-<h3>Flash/Java/Active-X</h3>
+<p>Open to contributors...</p>
+
+<h3>Flash</h3>
+<p>A unique property of the Flash plugin is it's ability to maintain long-term two-way communication with a server via socket connections. A downside is that two-way communication with the DHTML host page is difficult in all platforms. Research will need to be done to see if this should be included or if Push covers it.</p>
+<p>Also open to contributors...</p>
 
 <hr/>
 
