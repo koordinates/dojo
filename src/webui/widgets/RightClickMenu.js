@@ -2,26 +2,26 @@ dojo.hostenv.startPackage("dojo.webui.widgets.RightClickMenu");
 
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
-dojo.webui.widgets.RightClickMenu = function(){
+dojo.webui.widgets.ContextMenu = function(){
 	dojo.webui.Widget.call(this);
-	this.widgetType = "RightClickMenu";
+	this.widgetType = "ContextMenu";
 }
-dj_inherits(dojo.webui.widgets.RightClickMenu, dojo.webui.Widget);
+dj_inherits(dojo.webui.widgets.ContextMenu, dojo.webui.Widget);
 
 // FIXME: own file? Mixin instead?
-dojo.webui.widgets.DomRightClickMenu = function(){
-	dojo.webui.widgets.RightClickMenu.call(this);
+dojo.webui.widgets.DomContextMenu = function(){
+	dojo.webui.widgets.ContextMenu.call(this);
 	dojo.webui.DomWidget.call(this, true);
 }
-dj_inherits(dojo.webui.widgets.DomRightClickMenu, dojo.webui.widgets.RightClickMenu);
+dj_inherits(dojo.webui.widgets.DomContextMenu, dojo.webui.widgets.ContextMenu);
 
 // we shouldn't be declaratively creating right-click menus in markup, although
 // one should be able to declare a right-click menu as a propset in a widget
 // declaration...
 /*
-dojo.webui.widgets.tags["dojo:rightClickMenu"] = function(fragment, widgetParser){
-	dojo.webui.widgets.buildWidgetFromParseTree("dojo:rightClickMenu", fragment, widgetParser);
+dojo.webui.widgets.tags["dojo:contextMenu"] = function(fragment, widgetParser){
+	dojo.webui.widgets.buildWidgetFromParseTree("dojo:contextMenu", fragment, widgetParser);
 }
 */
 
-// ...instead, we need to install a global right-click handler here.
+// ...instead, we need to install a global context menu handler here.
