@@ -8,7 +8,6 @@ import os
 import popen2
 import fnmatch
 import glob
-import java.lang.Runtime
 
 def buildRestFiles(docDir, docOutDir, styleSheetFile):
 	docFiles = []
@@ -39,9 +38,46 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile):
 		if os.path.isdir(tn) and not name == ".svn":
 			buildRestFiles(tn, docOutDir+os.sep+name, styleSheetFile)
 
-def buildTestFiles( testDir, testOutDir, 
-					prologueFile="../tests/prologue.js",
-					epilogueFile="../tests/epilogue.js"):
-	pass # FIXME: finish this!!!
+def norm(path):
+	return os.path.normpath(os.path.abspath(path))
 
+def buildTestFiles( testDir="../tests/", 
+					testOutFile="../testRunner.js", 
+					prologueFile="../tests/prologue.js",
+					epilogueFile="../tests/epilogue.js",
+					jumFile="../testtools/JsTestManager/jsunit_wrap.js",
+					domImplFile="../testtools/JsFakeDom/BUFakeDom.js"):
+	# FIXME: need to test for file existance of all the passed file names
+
+	testOutFile = norm(testOutFile)
+	if os.path.isfile(testOutFile):
+		print "found %s, unlinking it" % (testOutFile,)
+		os.unlink(testOutFile)
+
+	testOutFD = open(testOutFile, "w+")
+	testOutFD.write("""load("%s", "%s", "%s");\n""" % (
+		norm(prologueFile), norm(domImplFile), norm(jumFile))
+	)
+
+	testFiles = findTestFiles(testDir)
+	for fn in testFiles:
+		testOutFD.write("""load("%s");\n""" % (fn,))
+
+	testOutFD.write("""load("%s");\n""" % (norm(epilogueFile),))
+	testOutFD.write("""jum.init(); jum.runAll();\n""")
+	testOutFD.close()
+
+def findTestFiles(testDir="../tests"):
+	testFiles = glob.glob1(testDir, "test*.js")
+	dirFiles = os.listdir(testDir)
+	for name in dirFiles:
+		if os.path.isdir(testDir+os.sep+name):
+			if name[0] == ".": continue
+			testFiles.extend(findTestFiles(testDir+os.sep+name))
+	for x in xrange(len(testFiles)):
+		if not os.path.isabs(testFiles[x]):
+			testFiles[x] = norm(testDir+os.sep+testFiles[x])
+	# testFiles = map(lambda x: os.path.abspath(testDir+os.sep+x), testFiles)
+	return testFiles
+	
 # vim:ai:ts=4:noet:textwidth=80
