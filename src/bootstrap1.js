@@ -302,6 +302,7 @@ dojo.hostenv.getBaseScriptUri = function(){
 }
 
 // FIXME: we should move this into a different namespace
+/*
 dojo.hostenv.normPath = function(path){
 	// FIXME: need to convert or handle windows-style path separators
 
@@ -335,6 +336,7 @@ dojo.hostenv.normPath = function(path){
 		return nparts.join("/");
 	}
 }
+*/
 
 /**
 * Set the base script uri.
@@ -475,7 +477,7 @@ dojo.hostenv.modulesLoaded = function(){
 */
 dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// alert("dojo.hostenv.loadModule('"+modulename+"');");
-	var module = this.findModule(modulename, 0);
+	var module = this.findModule(modulename, false);
 	if(module){
 		return module;
 	}
