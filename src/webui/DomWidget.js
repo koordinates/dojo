@@ -27,7 +27,7 @@ dojo.webui.DomWidget = function(){
 	this.buildRendering = function(){
 		// DOM widgets construct themselves from a template
 		this.buildFromTemplate();
-		this.fillInTemplate(20, 20, 12, "testing", "ellipse"); 	// this is where individual widgets will handle
+		this.fillInTemplate(); 	// this is where individual widgets will handle
 								// population of data from properties, remote
 								// data sets, etc.
 	}
@@ -43,6 +43,10 @@ dojo.webui.DomWidget = function(){
 			// or provide a generic interface across all DOM implementations
 			node = this.createNodesFromText(this.templateString, true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
+		}
+		if(!this.templateNode){ 
+			dj_debug("weren't able to create template!");
+			return false;
 		}
 		var node = this.templateNode.cloneNode(true);
 		if(!node){ return false; }
