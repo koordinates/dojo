@@ -40,7 +40,7 @@
 
 // Filename:	LogCore.js
 // Purpose:		a common logging infrastructure for dojo
-// Classes:		dojo.logging, dojo.logging.Logger, dojo.logging.Record, dojo.logging.logFilter
+// Classes:		dojo.logging, dojo.logging.Logger, dojo.logging.Record, dojo.logging.LogFilter
 // Global Objects:	dojo.logging
 // Dependencies:	none
 
@@ -66,7 +66,7 @@ dojo.logging.Record = function(lvl, msg){
 }
 
 // an empty parent (abstract) class which concrete filters should inherit from.
-dojo.logging.logFilter = function(loggerChain){
+dojo.logging.LogFilter = function(loggerChain){
 
 	this.passChain = loggerChain || "";
 
