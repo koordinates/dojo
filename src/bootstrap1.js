@@ -240,10 +240,8 @@ dojo.hostenv.getBaseScriptUri = function(){
 
 	var lastslash = uri.lastIndexOf('/');
 	// inclusive of slash
-	// FIXME: what if the base_relative_path_ includes ".." sequences? Should
-	// we walk up?
-	var base = this.base_relative_path_ + (lastslash == -1 ? '' : uri.substring(0,lastslash + 1));
-	return this.base_script_uri_ = base;
+	var base = (lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_;
+	return base;
 }
 
 /**
