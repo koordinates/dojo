@@ -17,7 +17,7 @@ var window; var XMLHttpRequest;
 @*/
 
 if(typeof window == 'undefined'){
-	dj_throw("attempt to use browser hostenv when no window object");
+	dj_throw("no window object");
 }
 
 with(dojo.render){
