@@ -18,7 +18,8 @@ dojo.hostenv.name_ = 'adobesvg';
  * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
  * FIXME: because of the way adobe requires a callback function, this isn't 
  * currently returning the response to anything useful
- * FIXME: synch doesn't currently work
+ * FIXME: synch doesn't currently work as it isn't really supported by adobe as
+ * far as I can tell
  * FIXME: add XMLHttpPost Capability
  * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.

@@ -6,9 +6,6 @@
   <script type="text/ecmascript"><![CDATA[
     function init(evt) {
       var tree = new dojo.hostenv.getText("../templates/tree.xml", true, true);
-      for (x in tree) {
-        alert(x);
-      }
     }
   ]]>
   </script>
