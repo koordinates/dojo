@@ -476,15 +476,31 @@ function dj_eval_object_path(objpath){
 * startPackage("A.B") follows the path, and at each level creates a new empty object
 * or uses what already exists. It returns the result.
 */
-// FIXME: this seems to be borken in Rhino under JUM. Need to debug/fix ASAP
 dojo.hostenv.startPackage = function(packname){
 	var syms = packname.split(/\./);
+	if(syms[syms.length-1]=="*"){
+		syms.pop();
+		dj_debug("startPackage: popped a *, new packagename is : ", sysm.join("."));
+	}
 	var obj = dj_global;
+	var objName = "dj_global";
 	for(var i=0;i<syms.length;++i){
 		var childobj = obj[syms[i]];
-		if((typeof childobj == 'undefined')||(!childobj)){
-			dj_debug("defining: ", syms.slice(0, i+1).join("."));
-			obj = (obj[syms[i]] = {});
+		objName += "."+syms[i];
+		// if((typeof childobj == 'undefined')||(!childobj)){
+		if((eval("typeof "+objName+" == 'undefined'"))||(eval("!"+objName))){
+			dj_debug("startPackage: defining: ", syms.slice(0, i+1).join("."));
+			obj = dj_global;
+			// we'll start with this and move to the commented out eval if that turns out to be faster in testing
+			for(var x=0; x<i; x++){
+				obj = obj[syms[x]];
+			}
+			// obj = eval(syms.slice(0, i).join("."));
+
+			obj[syms[i]] = {};
+			// eval(objName+" = {};");
+
+			dj_debug("startPackage: ", objName, " now defined as: ", new String(eval(objName)));
 		}
 	}
 	return obj;
