@@ -57,7 +57,14 @@ dojo.webui.widgetManager = new function(){
 		// the base class.
 		for(var x in dojo.webui.widgets){
 			var xlc = (new String(x)).toLowerCase();
+			// if(("html"+widgetName).toLowerCase() == xlc){
 			if(("html"+widgetName).toLowerCase() == xlc){
+				knownWidgetImplementations[xlc] = x;
+				return x;
+			}
+			// FIXME: blah, this is really fuckin ugly. Need renderer
+			// differentiation to fix!!!
+			if(("svg"+widgetName).toLowerCase() == xlc){
 				knownWidgetImplementations[xlc] = x;
 				return x;
 			}

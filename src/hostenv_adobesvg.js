@@ -159,17 +159,25 @@ dojo.hostenv.postText = function(uri, async_cb, text, fail_ok, mime_type, encodi
  * object yet.
  */
 function dj_last_script_src() {
-		var scripts = window.document.getElementsByTagName('script');
-    if(scripts.length < 1){ 
+	var scripts = window.document.getElementsByTagName('script');
+	if(scripts.length < 1){ 
 		dj_throw("No script elements in window.document, so can't figure out my script src"); 
 	}
-    var script = scripts.item(scripts.length - 1);
-		var xlinkNS = "http://www.w3.org/1999/xlink";
-    var src = script.getAttributeNS(xlinkNS,"href");
-    if(!src){
+	var li = scripts.length-1;
+	var xlinkNS = "http://www.w3.org/1999/xlink";
+	var src = null;
+	var script = null;
+	while(!src){
+		script = scripts.item(li);
+		src = script.getAttributeNS(xlinkNS,"href");
+		li--;
+		if(li<0){ break; }
+		// break;
+	}
+	if(!src){
 		dj_throw("Last script element (out of " + scripts.length + ") has no src");
 	}
-    return src;
+	return src;
 }
 
 if(!dojo.hostenv["library_script_uri_"]){
