@@ -124,6 +124,9 @@ dojo.io.cancelDOMEvent = function(evt){
 }
 
 dojo.io.XMLHTTPTransport = new function(){
+	
+	this.initialHref = window.location.href;
+	this.initialHash = window.location.hash;
 
 	this.moveForward = false;
 
@@ -221,16 +224,13 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.checkLocation = function(){
 		var hsl = this.historyStack.length;
-		if(window.location.hash == ""){
+
+		if((window.location.hash == this.initialHash)||(window.location.href == this.initialHref)&&(hsl == 1)){
 			// FIXME: could this ever be a forward button?
-			if(hsl == 1){
-				// we can't clear it because we still need to check for forwards. Ugg.
-				// clearInterval(this.locationTimer);
-				this.handleBackButton();
-				// alert(this.historyIframe.history.go(-1));
-				// alert(this.historyIframe.history.length);
-				return;
-			}
+			// we can't clear it because we still need to check for forwards. Ugg.
+			// clearInterval(this.locationTimer);
+			this.handleBackButton();
+			return;
 		}
 		// first check to see if we could have gone forward. We always halt on
 		// a no-hash item.
