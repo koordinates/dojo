@@ -500,16 +500,16 @@ dojo.hostenv.getDepsForEval = function(contents){
 	if(!contents){ contents = ""; }
 	// check to see if we need to load anything else first. Ugg.
 	var deps = [];
-	var tmp = contents.match( /dojo.hostenv.loadModule\((.*?)\)/mg );
+	var tmp = contents.match( /dojo.hostenv.loadModule\(.*?\)/mg );
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
 	}
-	tmp = contents.match( /dojo.hostenv.require\((.*?)\)/mg );
+	tmp = contents.match( /dojo.hostenv.require\(.*?\)/mg );
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
 	}
 	// FIXME: this seems to be borken on Rhino in some situations. ???
-	tmp = contents.match( /dojo.hostenv.conditionalLoadModule\((.*?)\)/mg );
+	tmp = contents.match( /dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/gm );
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
 	}

@@ -1,6 +1,6 @@
 dojo.hostenv.loadModule("dojo.alg.*");
 
-dojo.hostenv.startPackage("dojo.event");
+dojo.hostenv.startPackage("dojo.event.Event");
 
 dojo.event = new function(){
 

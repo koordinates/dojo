@@ -267,7 +267,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 	</target>
 	<!-- end clean task -->
 
-	<!-- strip-docs task -->
+	<!-- gen-strip-docs task -->
 	<target name="gen-strip-docs">
 		<!-- make sure we're dealing with unix newlines -->
 		<replaceregexp match="(\r)" replace="" byline="false" flags="g">
@@ -308,7 +308,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 			<fileset dir="${destdir}" includes="**/*.js"/>
 		</replaceregexp>
 	</target>
-	<!-- end strip-docs task -->
+	<!-- end gen-strip-docs task -->
 
 	<!-- src task -->
 	<target name="src"
@@ -364,7 +364,13 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 	<!-- compress task -->
 	<target name="compress"
 		description="runs compression code over release JS files">
-		<!-- FIXME: this is just a stub! need to fill it in! 
+		<!-- 
+			FIXME: this is just a stub! need to fill it in! 
+		-->
+		<!-- FIXME: need to actually get a list of js files to be processed 
+		<java jar="${user.home}/.ant/lib/js.jar" fork="true">
+			<arg value="" />
+		</java>
 		-->
 	</target>
 	<!-- end compress task -->

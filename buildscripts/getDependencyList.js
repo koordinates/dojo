@@ -11,7 +11,7 @@
 
 djConfig = {
 	baseRelativePath: "../",
-	isDebug: true
+	// isDebug: true
 };
 
 dependencies = [
@@ -22,7 +22,7 @@ load("../src/bootstrap1.js");
 load("../src/hostenv_rhino.js");
 load("../src/bootstrap2.js");
 
-print(dojo.hostenv.name_);
+// print(dojo.hostenv.name_);
 
 if(!this["hostenvType"]){
 	hostenvType = "browser";
@@ -36,13 +36,15 @@ old_load = load;
 load = function(uri){
 	try{
 		var text = readText(uri);
-		print(text);
+		// print(text);
 		var requires = dojo.hostenv.getDepsForEval(text);
 		var provides = dojo.hostenv.getProvidesForEval(text);
-		print("provides: "+provides.join(";"));
+		// print("provides: "+provides.join(";"));
 		eval(provides.join(";"));
-		print("requires: "+requires.join(";"));
+		// print("requires: "+requires.join(";"));
 		eval(requires.join(";"));
+		dojo.hostenv.loadedUris.push(uri);
+		dojo.hostenv.loadedUris[uri] = true;
 	}catch(e){ 
 		print(e);
 	}
@@ -53,7 +55,7 @@ dojo.hostenv.getProvidesForEval = function(contents){
 	if(!contents){ contents = ""; }
 	// check to see if we need to load anything else first. Ugg.
 	var mods = [];
-	var tmp = contents.match( /dojo.hostenv.startPackage\((.*?)\)/mg );
+	var tmp = contents.match( /dojo.hostenv.startPackage\(.*?\)/mg );
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
 	}
@@ -64,20 +66,7 @@ dojo.hostenv.getProvidesForEval = function(contents){
 	return mods;
 }
 
-// print(load);
-
-// what we do when we're at the end of the rope
-onSuccess = function(){
-	print("success!");
-	for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
-		print(dojo.hostenv.loadedUris[x]);
-	}
-}
-
-dojo.hostenv.modulesLoadedListeners.push(onSuccess);
-
 for(var x=0; x<dependencies.length; x++){
-	print(dependencies[x]);
 	try{
 		var dep = dependencies[x];
 		if(dep.indexOf("(") != -1){
@@ -87,4 +76,9 @@ for(var x=0; x<dependencies.length; x++){
 	}catch(e){
 		print(e);
 	}
+}
+
+print("URIs, in order: ");
+for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
+	print("\t"+dojo.hostenv.loadedUris[x]);
 }
