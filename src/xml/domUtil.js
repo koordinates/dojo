@@ -21,5 +21,3 @@ dojo.xml.domUtil = new function(){
 		NOTATION_NODE                 : 12
 	}
 }
-
-
