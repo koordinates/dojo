@@ -1,31 +1,25 @@
-if(!dojo){ dojo = {}; }
-if(!dojo.webui){ 
-	dojo.webui = {};
-}
-if(!dojo.webui.widgets){ 
-	dojo.webui.widgets = {};
-}
-
-// for loading script:
-// TODO: my naming conventions here leave much to be desired... I'll blame it 
-// on the cold I'm battling
-dojo.webui.widgets.Parse = {};
+// FIXME: Dylan, "Parse" should be "parse" since it's only being used as a
+// singleton, and not a class. Please fix.
+dojo.hostenv.startPackage("dojo.webui.widgets.Parse");
+// dojo.webui.widgets.Parse = {};
 
 dojo.webui.widgets.Parse.ParseFragment = function() {
 	
 }
 
 dojo.webui.widgets.Parse.ParseFragment.prototype.createComponents = function(fragment) {
-	for (var item in fragment) {
-		if(fragment[item].tagName && fragment[item] != fragment.nodeRef &&  dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) {
+	for(var item in fragment){
+		if(	(fragment[item].tagName)&&(fragment[item] != fragment.nodeRef)&&
+			(dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) ){
 			dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()](fragment[item]);
 		}
-		if(typeof fragment[item] == "object" && fragment[item] != fragment.nodeRef && fragment[item] != fragment.tagName) {
+		if((typeof fragment[item] == "object")&&(fragment[item] != fragment.nodeRef)&&(fragment[item] != fragment.tagName)){
 			this.createComponents(fragment[item]);
 		}
 	}
 }
 
+// FIXME: Dylan, why is this a class?
 dojo.webui.widgets.Parse.ParseProperties = function() {
 	
 }
@@ -99,6 +93,12 @@ dojo.webui.widgets.tags["div"] = function(fragment) {
 dojo.webui.widgets.tags["dojo:button"] = function(fragment) {
 	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
 	// FIXME: need a more elegant way for the next if block
+
+	// FIXME: dylan, I don't understand at all why we care what the tag's
+	// container tag name is if we're going to be passing in node as one of the
+	// properties. I'm just really confused by this. Wouldn't we have already
+	// filtered by the time we hit this function?
+
 	var tagContainerName = "";
 	if (fragment["DOJO:BUTTON"]) {
 		tagContainerName = "DOJO:BUTTON";
