@@ -104,7 +104,7 @@ dojo.io.createIFrame = function(fname){
 
 	// FIXME: do we need to (optionally) squelch onload?
 	
-	dojo.io.setIFrameSrc(cframe, dojo.hostenv.base_relative_path_+"/blank.html", true);
+	dojo.io.setIFrameSrc(cframe, dojo.hostenv.getBaseScriptUri()+"/blank.html", true);
 	return cframe;
 }
 
@@ -167,7 +167,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			this.bookmarkAnchor.style.display = "none";
 		}
 		if((!args["changeURL"])||(dojo.render.html.ie)){
-			var url = dojo.hostenv.base_relative_path_+"blank.html?"+(new Date()).getTime();
+			var url = dojo.hostenv.getBaseScriptUri()+"blank.html?"+(new Date()).getTime();
 			this.moveForward = true;
 			dojo.io.setIFrameSrc(this.historyIframe, url, false);
 		}
@@ -382,34 +382,36 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 		}
 
-		var url = kwArgs.url+"?";
+		var url = kwArgs.url;
+		var query = "";
 		if(kwArgs["formNode"]){
 			if(kwArgs.formNode.getAttribute("action")){
-				url = kwArgs.formNode.getAttribute("action")+"?";
+				url = kwArgs.formNode.getAttribute("action");
 			}
 			// FIXME: need to fix this for POST!!
-			url += dojo.io.buildFormGetString(kwArgs.formNode);
+			query += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
 
 		if(kwArgs["content"]){
-			url += "?"+dojo.io.argsFromMap(kwArgs.content);
+			query += dojo.io.argsFromMap(kwArgs.content);
+		}
+
+		if(kwArgs["postContent"]){
+			query = kwArgs.postContent;
 		}
 
 		if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])){
 			this.addToHistory(kwArgs);
 		}
 
-		/*
-		FIXME: !!!!
-		if(kwArgs.method == "post"){
-			// http.open("POST", uri, true);
-			// http.send(postContent);
+		if(kwArgs.method.toLowerCase() == "post"){
+			http.open("POST", uri, true);
+			http.send(query);
 		}else{
+			http.open("GET", url+"?"+query, true);
+			http.send(null);
 		}
-		*/
 
-		http.open("GET", url, true);
-		http.send(null);
 		return;
 	}
 	dojo.io.transports.addTransport("XMLHTTPTransport");
