@@ -39,17 +39,18 @@ dojo.xml.Parse = function(){
 			}
 			parsedFragment[attr][parsedFragment[attr].length] = attributeSet[attr];
 		}
-		for (var childNode in documentFragment.childNodes){
-			switch(documentFragment.childNodes[childNode].nodeType){
+		var nodes = documentFragment.childNodes;
+		for(var childNode in nodes){
+			switch(nodes[childNode].nodeType){
 				case  dojo.xml.domUtil.nodeTypes.ELEMENT_NODE: // element nodes, call this function recursively
-					parsedFragment[tagName].push(this.parseElement(documentFragment.childNodes[childNode]));
+					parsedFragment[tagName].push(this.parseElement(nodes[childNode]));
 					break;
 				case  dojo.xml.domUtil.nodeTypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
-					if(documentFragment.childNodes.length == 1){
+					if(nodes.length == 1){
 						if(!parsedFragment[documentFragment.tagName]){
 							parsedFragment[tagName] = [];
 						}
-						parsedFragment[tagName].push({ value: documentFragment.childNodes[0].nodeValue });
+						parsedFragment[tagName].push({ value: nodes[0].nodeValue });
 					}
 					break;
 			}
@@ -58,17 +59,19 @@ dojo.xml.Parse = function(){
 		return parsedFragment;
 	}
 
-	this.parseElement = function(node, hasParentNodeSet){
+	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML){
 		// TODO: make this namespace aware
 		var parsedNodeSet = {};
 		var tagName = dojo.xml.domUtil.getTagName(node);
 		parsedNodeSet[tagName] = [];
-		var attributeSet = this.parseAttributes(node);
-		for(var attr in attributeSet){
-			if(!parsedNodeSet[tagName][attr]){
-				parsedNodeSet[tagName][attr] = [];
+		if((!optimizeForDojoML)||(tagName.substr(0,4).toLowerCase()=="dojo")){
+			var attributeSet = this.parseAttributes(node);
+			for(var attr in attributeSet){
+				if(!parsedNodeSet[tagName][attr]){
+					parsedNodeSet[tagName][attr] = [];
+				}
+				parsedNodeSet[tagName][attr].push(attributeSet[attr]);
 			}
-			parsedNodeSet[tagName][attr].push(attributeSet[attr]);
 		}
 	
 		// FIXME: we might want to make this optional or provide cloning instead of
@@ -82,7 +85,7 @@ dojo.xml.Parse = function(){
 		for(var i=0; i<node.childNodes.length; i++){
 			switch(node.childNodes.item(i).nodeType){
 				case  ntypes.ELEMENT_NODE: // element nodes, call this function recursively
-					parsedNodeSet[tagName].push(this.parseElement(node.childNodes.item(i),true));
+					parsedNodeSet[tagName].push(this.parseElement(node.childNodes.item(i),true, optimizeForDojoML));
 					break;
 				case  ntypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
 					break;
@@ -124,12 +127,14 @@ dojo.xml.Parse = function(){
 		// would any of the relevant dom implementations even allow this?
 		for(var i=0; i<atts.length; i++) {
 			var attnode = atts.item(i);
-			if(!attnode){ continue; }
-			if(	(typeof attnode == "object")||
-				(typeof attn.nodeValue == 'undefined')||
-				(attn.nodeValue == null)||
-				(attn.nodeValue == '')){ 
-				continue; 
+			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
+				if(!attnode){ continue; }
+				if(	(typeof attnode == "object")||
+					(typeof attn.nodeValue == 'undefined')||
+					(attn.nodeValue == null)||
+					(attn.nodeValue == '')){ 
+					continue; 
+				}
 			}
 			parsedAttributeSet[attnode.nodeName] = { 
 				value: attnode.nodeValue 
