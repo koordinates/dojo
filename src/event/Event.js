@@ -59,7 +59,8 @@ dojo.event = new function(){
 			aroundObj: null,
 			aroundFunc: null,
 			adviceType: (args.length>2) ? args[0] : "after",
-			precedence: "last"
+			precedence: "last",
+			once: false
 		};
 
 		switch(args.length){
@@ -116,6 +117,7 @@ dojo.event = new function(){
 				ao.adviceFunc = args[4];
 				ao.aroundObj = args[5];
 				ao.aroundFunc = args[6];
+				ao.once = args[7];
 				break;
 		}
 
@@ -144,15 +146,15 @@ dojo.event = new function(){
 	}
 
 	this.kwConnect = function(kwArgs){
-		return dojo.event.connect(	kwArgs["type"],
+		return dojo.event.connect(	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
 									kwArgs["srcObj"],
 									kwArgs["srcFunc"],
 									kwArgs["adviceObj"],
 									kwArgs["adviceFunc"],
 									kwArgs["aroundObj"],
-									kwArgs["aroundFunc"] );
+									kwArgs["aroundFunc"],
+									kwArgs["once"]);
 	}
-
 }
 
 // exactly one of these is created whenever a method with a joint point is run,
@@ -281,10 +283,10 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 	this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 					args["aroundObj"], args["aroundFunc"], 
-					args["adviceType"], args["precedence"] );
+					args["adviceType"], args["precedence"], args["once"] );
 }
 
-dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thisAroundObj, thisAround, advice_kind, precedence){
+dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thisAroundObj, thisAround, advice_kind, precedence, once){
 	var arr = this.after;
 	// FIXME: we should be able to do this through props or Array.in()
 	if(advice_kind.indexOf("before")!=-1){
@@ -298,6 +300,12 @@ dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thi
 	}
 
 	var ao = [adviceObj, advice, thisAroundObj, thisAround];
+	
+	if(once){
+		if(this.hasAdvice(adviceObj, advice, advice_kind, arr) >= 0){
+			return;
+		}
+	}
 
 	if(precedence == "first"){
 		arr.unshift(ao);
@@ -306,29 +314,28 @@ dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thi
 	}
 }
 
-dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, advice_kind) {
-	var arr = this.after;
-	// FIXME: we should be able to do this through props or Array.in()
-	if(advice_kind.indexOf("before")!=-1){
-		arr = this.before;
-	}else if(advice_kind=="around"){
-		arr = this.around;
-	}
-
+dojo.event.MethodJoinPoint.prototype.hasAdvice = function(adviceObj, advice, advice_kind, arr){
 	if(!arr){
-		dj_throw("bad this: " + this);
+		arr = this.after;
+		// FIXME: we should be able to do this through props or Array.in()
+		if(advice_kind.indexOf("before")!=-1){
+			arr = this.before;
+		}else if(advice_kind=="around"){
+			arr = this.around;
+		}
 	}
 
-	// FIXME: will this work if we pass it an arr?
 	var ind = -1;
 	for(var x=0; x<arr.length; x++){
 		if((arr[x][0] == adviceObj)&&(arr[x][1] == advice)){
 			ind = x;
 		}
 	}
-	/*
-	var ind = dojo.alg.find(arr, [adviceObj, advice]);
-	*/
+	return ind;
+}
+
+dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, advice_kind) {
+	var ind = this.hasAdvice(adviceObj, advice, advice_kind);
 	if(ind == -1){
 		return false;
 	}
@@ -337,4 +344,4 @@ dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, 
 }
 
 // needed for package satisfaction
-dojo.event.Event = {};
+dojo.hostenv.startPackage("dojo.event.Event");
