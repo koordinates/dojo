@@ -21,6 +21,10 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	}
 	
 	this.onFoo = function(){}
+	
+	this.addChild = function(){
+		
+	}
 }
 
 /*

@@ -78,7 +78,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 						}
 					}catch(e){ dj_debug(e); }
 				}else if((fragment[item])&&(fragment[item].value!="")){
-					dj_debug(item+": "+fragment[item]);
+					//dj_debug(item+": "+fragment[item]);
 					if(typeof fragment[item] == "object"){
 						for(var x in fragment[item]){
 							dj_debug(x+": "+fragment[item][x]);

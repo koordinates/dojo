@@ -5,6 +5,7 @@ dojo.hostenv.loadModule("dojo.webui.DomWidget");
 dojo.webui.widgets.ContextMenu = function(){
 	dojo.webui.Widget.call(this);
 	this.widgetType = "ContextMenu";
+	this.isContainer = true;
 }
 //dj_inherits(dojo.webui.widgets.ContextMenu, dojo.webui.widgets.Menu, dojo.webui.Widget);
 dj_inherits(dojo.webui.widgets.ContextMenu, dojo.webui.Widget);
