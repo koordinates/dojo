@@ -185,131 +185,6 @@ repubsub = new function(){
 		document.cookie = cs;
 	}
 
-	this.findPeers = function(){
-		this.hasPeers = false; 
-		if(!this.peerAware){ 
-			return this.hasPeers;
-		}
-		var kps = this.parseCookie();
-		this.log(kps);
-		var openTries = 0;
-		for(var x=0; x<kps.length; x++){
-			if(kps[x][0].toLowerCase()==this.tunnelFrameKey.toLowerCase()){
-				if(kps[x][1].toLowerCase()!="closed"){
-					openTries++;
-					// if we have peers, we need to figure out how to
-					// communicate with other instances
-
-					// Sane browsers allow us to get direct references to
-					// the window objects of the other frames (huzzah!) and
-					// even do something with them if they're in the same
-					// security domain.
-
-					// FIXME: it seems that Safari gets very picky here. It'll
-					// 		  give us a reference to the peer object, but
-					// 		  accessing its window seems strictly verboten.
-					// 		  Weird.
-
-					// grab the window name from the cookie and get a ref to
-					// that transit frame
-					try{
-						var tfref = window.open("", kps[x][1]);
-						// var tfref = window.open("about:blank", kps[x][1]);
-
-						this.peerWindowRef = tfref.parent;
-						this.peerRef = tfref.parent["repubsub"];
-						if(!this.peerRef){ // failure! keep looking.
-							//odds are pretty high that this opened a new window, so clobber it
-							try{ tfref.close(); }catch(e){} 
-							continue; 
-						}
-						this.hasPeers = true;
-						this.peerRef.learnPeer(this);
-						this.log(this.peerRef.dependants.length);
-						// this.log(kps[x][1]+" "+tfref+" "+this.peerRef.dependants.length);
-						break;
-					}catch(e){ 
-						this.hasPeers = false;
-						continue; 
-					}
-				}
-			}
-		}
-		return this.hasPeers;
-	}
-
-	// only the window with the comm iframes open ever needs to know
-	this.learnPeer = function(peerObj){
-		// first, check to make sure we don't already have one of these as a
-		// member
-		for(var x=0; x<this.dependants.length; x++){ // O(n) time
-			if(peerObj===this.dependants[x]){
-				return x;
-			}
-		}
-
-		this.dependants.push(peerObj);
-		this.log(this.dependants.length);
-		return this.dependants.length-1;
-
-		// when we learn, we also need to make sure we clear out deadwood
-		// this.clobberDeadDependants();
-	}
-
-	this.clobberDeadDependants = function(){
-		for(var x=0; x<this.dependants.length; x++){
-			if(typeof this.dependants[x] != "object"){
-				delete this.dependants[x];	
-			}
-		}
-	}
-
-	this.informPeersOfDemise = function(){
-		if(this.rcvNode){
-			this.informPeersOfDemiseAsLeader();
-		}else{
-			this.informPeersOfDemiseAsDependant();
-		}
-	}
-
-	this.informPeersOfDemiseAsDependant = function(){
-		// FIXME: do we really need to do anything here?
-		this.peerRef.clobberDeadDependants();
-	}
-
-	this.informPeersOfDemiseAsLeader = function(){
-		// first, we have to tell one of the peers to take over and give it
-		// enough context to do that.
-
-		// Q: could we hit a race condition with window closure for our iframes
-		// 	  vs. path queue requests through a new iframe comm layer? How does
-		// 	  that hurt the session concept?
-
-		var electee = null;
-		while((!electee)&&(this.dependants.length)){
-			electee = this.dependants.shift();
-		}
-
-		// TODO: determine what happens when I have a leader in one tab, a
-		// 		 follower in another, and a second follower in a new window and
-		// 		 I close the window containing the leader and the first
-		// 		 follower. Will we "bounce" twice correctly?
-		var dl = [];
-		while(this.dependants.length){
-			this.log(this.dependants.length);
-			var td = this.dependants.shift();
-			if(td){
-				dl.push(td);
-			}
-		}
-
-		// now that we've got a reasonable target, lets prune the list for
-		// passing
-		if((electee)&&(electee["initOnDemise"])){
-			electee.initOnDemise(dl, this.backlog, this.topics);
-		}
-	}
-
 	this.log = function(str, lvl){
 		if(!this.debug){ return; } // we of course only care if we're in debug mode
 		while(this.logBacklog.length>0){
@@ -350,7 +225,7 @@ repubsub = new function(){
 		// FIXME: need to register an onunload handler to pass this object
 		//        around to the "survivor" window should this one go away.
 		this.widenDomain();
-		this.findPeers();
+		// this.findPeers();
 		if(!this.hasPeers){
 			this.log("didn't find peers!");
 			this.openTunnel();
@@ -361,82 +236,6 @@ repubsub = new function(){
 		}
 	}
 
-	// the previously used comm window is about to up-and-die, and it's trying
-	// to tell us about it. Pay attention, and open a new set of comm channels.
-	// FIXME: need a way to handle the un-received responses to questions the
-	// 		  closing window has pushed down. We'd want to transfer the request
-	// 		  queue objects over to this new comm channel and we'll need to
-	// 		  deal with the situation where a response might be in-progress but
-	// 		  hasn't been dispatched yet. Does the protocol support querying
-	// 		  listeners for this kind of info?
-	this.initOnDemise = function(dependantList, backlog, subdTopics){
-		this.peerRef = null;
-		this.openTunnel();
-		this.dependants = this.dependants.concat(dependantList);
-		this.isInitialized = true;
-		for(var x=0; x<this.dependants.length; x++){
-			if(this.dependants[x]){
-				try{
-					this.dependants[x].learnNewPeerLeader(this);
-				}catch(e){ /* IE requires that we squelch here */ }
-			}
-		}
-
-		for(var x=0; x<backlog.length; x++){
-			this.backlog.push(backlog[x]);
-		}
-
-		// we need to re-subscribe ourselves to the topics that:
-		//		a.) we might already have local listeners for
-		//		b.) our dying peer had subscriptions for
-		for(var x=0; x<sudbTopics.length; x++){
-			var topic = subdTopics[x];
-			var subMe = true;
-			for(var y=0; y<this.topics.length; y++){
-				if(topic == this.topics[y]){
-					subMe = false;
-				}
-			}
-			if(subMe){
-				this.topics.push(topic);
-
-			}
-		}
-		for(var x=0; x<this.topics.length; x++){
-			var topic = this.topics[x];
-			this.log("resubbing to: "+topic);
-			if(!this.attachPathList[topic]){
-				this.attachPathList[topic] = function(){ return true; }
-			}
-			var revt = new pubsubEvent(this.tunnelURI, topic, "route");
-			var rstr = [this.serverBaseURL+"/kn", revt.toGetString()].join("");
-			this.log(rstr);
-			this.sendTopicSubToServer(topic, rstr);
-		}
-
-	}
-
-	this.learnNewPeerLeader = function(obj){
-		// FIXME: what if we get a non-repubsub object? What's a good failure
-		// 		  mode here?
-		// NOTE: got it! we should check the cookie for the window name and
-		// 		 attempt to get a reference that way (since it should have
-		// 		 happened already at this point). If it hasn't, then we're
-		// 		 well-and-truly fucked and might as well assume that we can
-		// 		 attempt to make our own tunnel.
-		this.peerRef = obj;
-		this.peerWindowRef = obj.winRef;
-		
-		// re-connect any of our listeners to server-sent events. Our local
-		// listeners don't need to be modified, but topics themselves do need
-		// to be reconnected.
-		for(var x=0; x<this.topics.length; x++){
-			var tt = this.topics[x];
-			__sig__.connect(this.peerRef.attachPathList, tt,
-							this.attachPathList, tt);
-		}
-	}
-
 	this.clobber = function(){
 		if(this.rcvNode){
 			this.setCookie( [
@@ -444,9 +243,6 @@ repubsub = new function(){
 					["path","/"]
 				], false 
 			);
-		}
-		if(this.peerAware){
-			this.informPeersOfDemise();
 		}
 	}
 
@@ -619,20 +415,31 @@ repubsub = new function(){
 		}
 		var revt = new pubsubEvent(this.tunnelURI, topic, "route");
 		var rstr = [this.serverBaseURL+"/kn", revt.toGetString()].join("");
-		__sig__.connectOnceByName(this.attachPathList, topic, toObj, toFunc);
+		dojo.event.kwConnect({
+			once: true,
+			srcObj: this.attachPathList, 
+			srcFunc: topic, 
+			adviceObj: toObj, 
+			adviceFunc: toFunc
+		});
 		// NOTE: the above is a local mapping, if we're not the leader, we
 		// 		 should connect our mapping to the topic handler of the peer
 		// 		 leader, this ensures that not matter what happens to the
 		// 		 leader, we don't really loose our heads if/when the leader
 		// 		 goes away.
 		if((!this.rcvNode)&&(this.peerRef)){
-			// FIXME: is __sig__ connecting here really sane?
+			// FIXME: is connecting here really sane?
 			// FIXME: need to determine if there are funky inter-window
 			// 		  dependencies here. I don't think there are
 			// 		  (addBareSignalByName seems very well behaved from that
 			// 		  standpoint), but we need to be absolutely sure.
-			__sig__.connectOnceByName(this.peerRef.attachPathList, topic,
-							this.attachPathList, topic);
+			dojo.event.kwConnect({
+				once: true,
+				srcObj: this.peerRef.attachPathList, 
+				srcFunc: topic, 
+				adviceObj: this.attachPathList, 
+				adviceFunc:topic 
+			});
 			// FIXME: we should only enqueue if this is our first subscription!
 			this.peerRef.sendTopicSubToServer(topic, rstr);
 		}else{
