@@ -321,6 +321,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 	<!-- src task -->
 	<target name="src"
 		depends="-fix-config"
+		unless="nosrc"
 		description="creates a copy of the source files for distribution">
 
 		<property name="ddir" value="${release_dir}/${project}/${src}_src"/>
