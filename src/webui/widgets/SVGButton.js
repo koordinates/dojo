@@ -1,3 +1,5 @@
+// FIXME: not yet functional
+
 dojo.hostenv.startPackage("dojo.webui.widgets.SVGButton");
 
 dojo.hostenv.loadModule("dojo.webui.widgets.Button");

@@ -31,7 +31,7 @@ proprietary interfaces filling in the gaps. Additionally, standard methods of
 programmatic attachment to event handlers can induce memory leaks which are
 difficult or impossible to track down.
 
-This state of affairs crys out for abstraction.
+This state of affairs cries out for abstraction.
 
 In order to understand what we should build, we should explore the common usage
 idioms for DOM event handling and come to a more complete picture of what the
@@ -57,8 +57,8 @@ This method of attachment allows the programmer to be informed when the user
 interacts with the system, and this method of attachment works universally. The
 obvious drawback to this method is that it does not allow multiple functions to
 be informed of the action. Additionally, DOM events follow a bubbling model
-which allows many events to be "cancled" after being intercepted by an event
-handler assigned to a node. Being able to support cancelability is a large
+which allows many events to be "cancelled" after being intercepted by an event
+handler assigned to a node. Being able to support cancellation is a large
 requirement for any acceptable DOM event handling abstraction (if one is used).
 Several approaches are available:
 
@@ -155,7 +155,7 @@ Several approaches are available:
 
   Antecedent event handling systems in `nWidgets`_ and `f(m)`_ have provided
   methods for dealing with most of the of the above requirements, however each
-  falls down in at least oen one way. The event system in `nWidgets`_ provides
+  falls down in at least one way. The event system in `nWidgets`_ provides
   the ability to mangle function arguments, set defaults, and otherwise adapt
   the call from the event handler to match the expected call signature of the
   listener. Unfortunantly, the keystroke handling and bubbling handling in the
@@ -163,7 +163,7 @@ Several approaches are available:
   handling and drag-and-drop are not unifieid with the general event system,
   and instead rely on synthetic event types to be "thrown" from a global
   environment object. Since the event system in `nWidgets`_ is a hybrid between
-  "normal" DOM event methods and a generic non-DOM event interface, some peices
+  "normal" DOM event methods and a generic non-DOM event interface, some pieces
   of necessaray plubming for DOM-specific attributes is unwisely re-created in
   differing ways in differing places.
 
@@ -184,7 +184,7 @@ Several approaches are available:
     // automatically wraps alertMe in an Events.EventHandler object
     node.onclick.Add(alertMe); 
 
-  As a downside to this approach, the author looses the ability to directly
+  As a downside to this approach, the author loses the ability to directly
   pass scoping for the intended handling function. For instance, if we wanted
   our handler to be a member of an object, we would need to do the following
   with the `f(m)`_ event system to make it happen::
@@ -225,11 +225,11 @@ Several approaches are available:
   For the case where the arguments are either the same for onclick() and
   alertMe() or alertMe() ignores what it is passed, this syntax is a
   significant advance in the simplicitly of making connections between
-  functions, but where some permeutation of the arguments passed to onclick()
+  functions, but where some permutation of the arguments passed to onclick()
   are required or desired when calling alertMe(), this syntax becomes
   significantly more convoluted and either an explicit closure or a "mutator"
-  is required to handle the permeutation or arguments. Additionally, there is
-  no set of garunteed properties that will be avialable in the DOM event
+  is required to handle the permutation or arguments. Additionally, there is
+  no set of guaranteed properties that will be available in the DOM event
   context, which makes applying this generic system to DOM problems something
   of a kludge when one needs to cancel bubbling and the like.
 
@@ -245,15 +245,15 @@ Several approaches are available:
   due to proprietary stopgaps extant in some browsers (*cough* IE *cough*).
 
   So what are the fundamental differences between all of these systems? I think
-  they can be summed up lik this:
+  they can be summed up like this:
 
     + `burst`_ makes no imposition on your calling/handling style, but
       provides toolkit authors with multiple systems, one for DOM and one for
       non-DOM event types.
 
-    + `nWidgets`_ likeiwse makes no imposition on calling or handling style,
+    + `nWidgets`_ likewise makes no imposition on calling or handling style,
       but does not succeed in making it simple for users to handle
-      permeutations of arguments for listeners.
+      permutations of arguments for listeners.
     
     + `f(m)`_ imposes structure onto all of the aspects of the event processing
       system, forcing all portions of the system save the caller to implement
@@ -321,7 +321,7 @@ Several approaches are available:
     });
 
   The execution environment should be able to access the (normalized)
-  properties of the DOM event. While the DOM traditionally hands a event object
+  properties of the DOM event. While the DOM traditionally hands an event object
   as the only argument to the assigned handler, this system will necessarialy
   need to intercept the event and dispatch to listeners the massaged event
   object. One method of handling this would be to provide access to the event

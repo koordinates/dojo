@@ -165,7 +165,7 @@ from within an html document:::
 	<div dojoTagName="grid">
 		<div dojoTagName="propertySet">
 			<div dojoTagName="scroll" dojoType="auto"/>
-			<dojo:dojoTagName="reorder" dojoType="none"/>
+			<div:dojoTagName="reorder" dojoType="none"/>
 		</div>
 	</div>
 
