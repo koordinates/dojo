@@ -1,0 +1,94 @@
+About Dojo
+===================================
+
+:Author: Dylan Schiemann
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/02/18
+
+.. contents::
+
+
+Current Status
+------------------------
+
+Dojo is currently in development.  We have finished a significant portion of the
+core "plumbing" for the project, and we also have our first widget, a button, 
+that can be constructed from markup in HTML and SVG namespaces.
+
+We still have a lot of work to do on making our widget system better, 
+especially in the world of SVG.  The current SVG button could be described as 
+hacky at best.  A button is a surprisingly complex widget, at least if it is 
+done with any sort of sane flexibility and constraints.
+
+Other things we are actively working on include our event, IO, and data binding
+systems.
+.. FIXME: add a concise, one sentence explanation of what this buys us.
+Ongoing improvements and refinements are being made to our xml declaration 
+language (specifically to support contraints and state) and parser.  The parser
+currently supports the most necessary markup constructs, with space to later accomodate more elaborate declaration mechanisms.
+
+The history section below details things that we have completed.
+
+Roadmap
+------------------------
+
+Our current road map is to continue working on the plumbing and core components 
+until we reach a point at which we can release something that people will find 
+useful.  
+.. FIXME: should we add a target date
+
+Code Checkins
+----------------
+
+A complete list of checkins may be found through our `checkins mailing list`
+
+
+History/Milestones
+------------------------
+
+
+
+
+May 2004: Leonard Lin suggests `the name Dojo` as part of an ongoing name discussion.  w3c web apps discussion, ian hickson, whatwg, gmail, etc.
+
+April, 2004: Alex Russell sends out an e-mail to a number of people in the DHTML
+community regarding the future of DHTML.  This discussion was the initial seed 
+of Dojo.  Several months of discussion continued over the various features and 
+limitations of existing DHTML toolkits.
+
+Releases
+------------------------
+
+There are currently no release builds available.  Check back soon, or join the 
+`dojo interest mailing list`.
+
+
+Getting Involved
+------------------------
+
+Currently, contributors are added to the project through invitation only, `much 
+like firefox`.  If you would like to contribute to the Dojo project, please 
+contact us.
+
+Subversion
+
+Java
+
+
+Project Goals
+------------------------
+
+subheading
+**********
+
+
+subsubheading
+#############
+
+.. FIXME: insert correct urls, and additional urls to make this more useful
+.. _`checkins mailing list`: http://www.dojotoolkit.org/
+.. _`the name dojo`: 
+.. _`dojo interest mailing list`: 
+.. _`much like firefox` 
+.. vim:ts=4:et:tw=0:shiftwidth=4:
