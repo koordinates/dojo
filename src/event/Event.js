@@ -1,7 +1,7 @@
-// dojo.hostenv.loadModule("dojo.alg");
+dojo.hostenv.loadModule("dojo.alg.*");
 
-if(!dojo){ /* die? */ }
-// FIXME: put dependencies here!
+dojo.hostenv.startPackage("dojo.event");
+
 dojo.event = new function(){
 
 	// FIXME: where should we put this method (not here!)?
