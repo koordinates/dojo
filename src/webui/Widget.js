@@ -111,6 +111,9 @@ dojo.webui.Widget = function(){
 		// problematic assignments and bugs in the future and will need to be
 		// documented with big bright neon lights.
 
+		// FIXME: fails miserably if a mixin property has a default value of null in 
+		// a widget
+		
 		for(var x in args){
 			var tx = this[x];
 			var xorig = new String(x);
@@ -124,7 +127,7 @@ dojo.webui.Widget = function(){
 					}
 				}
 			}
-
+			
 			if((typeof this[x]) != (typeof undef)){
 				if(!typeof args[x] == "string"){
 					this[x] = args[x];
@@ -132,8 +135,10 @@ dojo.webui.Widget = function(){
 					if(typeof this[x] == "string"){
 						this[x] = args[x];
 					}else if(typeof this[x] == "number"){
+
 						this[x] = new Number(args[x]); // FIXME: what if NaN is the result?
 					}else if(typeof this[x] == "function"){
+
 						// FIXME: need to determine if always over-writing instead
 						// of attaching here is appropriate. I suspect that we
 						// might want to only allow attaching w/ action items.
@@ -156,6 +161,7 @@ dojo.webui.Widget = function(){
 					}else if(this[x].constructor == Array){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					}else if(typeof this[x] == "object"){ 
+
 						// FIXME: should we be allowing extension here to handle
 						// other object types intelligently?
 
@@ -299,7 +305,6 @@ dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// outputObjectInfo(frag["dojo:"+stype]);
-
 	// FIXME: we don't seem to be doing anything with this!
 	var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);

@@ -12,11 +12,13 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.createComponents = function(fragment) {
 		var djTags = dojo.webui.widgets.tags;
 		for(var item in fragment){
+			if(fragment[item]["tagName"]) {
+			}
 			try{
 				if((fragment[item]["tagName"])&&
-					(fragment[item] != fragment["nodeRef"])){
-					var tn = new String(fragment[item]["tagName"]);
-					if(djTags[tn.toLowerCase()]){
+				(fragment[item] != fragment["nodeRef"])){
+						var tn = new String(fragment[item]["tagName"]);
+						if(djTags[tn.toLowerCase()]){
 						// dj_debug(tn);
 						// dj_debug(djTags[tn.toLowerCase()]);
 						djTags[tn.toLowerCase()](fragment[item], this);
@@ -148,5 +150,27 @@ dojo.webui.widgets.Parse = function(fragment) {
 		// we put the typed ones first so that the parsed ones override when
 		// iteration happens.
 		return (this.getPropertySetsByType(tagname)).concat(propertySets);
+	}
+	
+	/* 
+		nodeRef is the node to be replaced... in the future, we might want to add 
+		an alternative way to specify an insertion point
+
+		componentName is the expected dojo widget name, i.e. Button of ContextMenu
+
+		properties is an object of name value pairs
+	*/
+	this.createComponentFromScript = function(nodeRef, componentName, properties) {
+		var frag = {};
+		var tagName = "dojo:" + componentName.toLowerCase();
+		frag[tagName] = {};
+		for (prop in properties) {
+			frag[tagName][prop.toLowerCase()] = [{value: properties[prop]}];
+		}
+		frag[tagName]["dojotype"] = [{value: componentName}];
+		frag[tagName].nodeRef = nodeRef;
+		frag.tagName = tagName;
+		var fragContainer = [frag];
+		this.createComponents(fragContainer);
 	}
 }
