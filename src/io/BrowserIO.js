@@ -152,7 +152,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	 *		need to run a timer to detect inter-page movement.
 	 */
 	this.addToHistory = function(args){
-		var callback = args["back"]||args["backButton"];
+		var callback = args["back"]||args["backButton"]||args["handle"];
 		var hash = null;
 		if(!this.historyIframe){
 			this.historyIframe = window.frames["djhistory"];
@@ -168,14 +168,12 @@ dojo.io.XMLHTTPTransport = new function(){
 			dojo.io.setIFrameSrc(this.historyIframe, url, false);
 		}
 		if(args["changeURL"]){
-			hash = "#"+(new Date()).getTime();
+			hash = "#"+ ((args["changeURL"]!==true) ? args["changeURL"] : (new Date()).getTime());
 			setTimeout("window.location.href = '"+hash+"';", 10);
 			this.bookmarkAnchor.href = hash;
 			if(dojo.render.html.ie){
 				// IE requires manual setting of the hash since we are catching
 				// events from the iframe
-
-				// FIXME: do we need to do something similar for the forward button and location changes?
 				var oldCB = callback;
 				var lh = null;
 				var hsl = this.historyStack.length-1;
@@ -217,6 +215,7 @@ dojo.io.XMLHTTPTransport = new function(){
 				}
 			}
 		}
+
 		this.historyStack.push({url: url, callback: callback, kwArgs: args, urlHash: hash});
 	}
 
@@ -345,6 +344,13 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.bind = function(kwArgs){
 
+		if(!kwArgs["url"]){
+			if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||kwArgs["watchForURL"]]){
+				this.addToHistory(kwArgs);
+				return true;
+			}
+		}
+
 		// much of this is from getText, but reproduced here because we need
 		// more flexibility
 		var http = dojo.hostenv.getXmlhttpObject();
@@ -382,7 +388,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			url += "?"+dojo.io.argsFromMap(kwArgs.content);
 		}
 
-		if((kwArgs["backButton"])||(kwArgs["back"])){
+		if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])){
 			this.addToHistory(kwArgs);
 		}
 
@@ -394,6 +400,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}else{
 		}
 		*/
+
 		http.open("GET", url, true);
 		http.send(null);
 		return;
