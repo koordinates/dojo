@@ -8,9 +8,28 @@ About Dojo
 
 .. contents::
 
+Current Efforts
+-------------------
 
-Current Status
+0.1
+*********************
+- Provides multiple useful "profiles" (browserio, widgets, etc.)
+- Core Features:
+    + Fast widget prototyping and explination thereof
+    + XMLHTTP transport for bind()
+    + Supports ``<connect />`` and ``<propertyset />`` elements
+
+- Widgets:
+    + combo box
+    + button widget
+    + right-click (context) menu
+
+Details beyond 0.1 are available in the `Dojo Roadmap`_
+
+
+Status
 ------------------------
+
 Dojo is currently in heavy development. As you can glean from the list of
 modules in the roadmap, we have finished a significant portion of the core
 "plumbing" for the project, and we also have our first widget, a button, that 
@@ -33,34 +52,14 @@ more elaborate declaration mechanisms.
 
 More details are available in the `Dojo Roadmap`_
 
-The Plan
--------------------
-
-What follows is highly provisional. If a feature is important to you, make it
-known on the `dojo interest mailing list`_.
-
-0.1
-*********************
-- Provides multiple useful "profiles" (browserio, widgets, etc.)
-- Core Features:
-    + Fast widget prototyping and explination thereof
-    + XMLHTTP transport for bind()
-    + Supports ``<connect />`` and ``<propertyset />`` elements
-
-- Widgets:
-    + combo box
-    + button widget
-    + right-click (context) menu
-
-Details beyond 0.1 are available in the `Dojo Roadmap`_
-
-		
 Code Checkins
 ----------------
+
 A complete list of checkins may be found through our `checkins mailing list`_
 
 Releases
 ------------------------
+
 There are currently no full release builds available other than tarball
 snapshots. The `dojo interest mailing list`_ contains regular updates.
 `Anonymous SVN access`_ is available, as is an `initial profile build`_. Ant is
@@ -68,12 +67,14 @@ required to use our build system.
 
 Getting Involved
 ------------------------
+
 Currently, contributors are added to the project through invitation only, much
 like firefox. If you would like to contribute to the Dojo project, please
 contact us through the `dojo interest mailing list`_.
 
 License
 -------
+
 Dojo is licensed under the very friendly `Academic Free License v 2.1`_. Some
 `thoughts on the AFL license`_.
 

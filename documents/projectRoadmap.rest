@@ -11,6 +11,7 @@ Dojo Roadmap
 
 Roadmap
 ------------------------
+
 This roadmap outlines two separate sets of goals. One set
 is related to the end-goals of a the product/project, while the other outlines
 the concrete technical steps required to get there. We try to make sure 
@@ -195,8 +196,9 @@ a single XML markup base when you have a client-side parser that normalizes XML
 into a consistent JavaScript data structure, but the parser itself isn't
 necessarialy a project goal.
 
-Current Status
+Status
 ------------------------
+
 Dojo is currently in heavy development. As you can glean from the list of
 modules in the roadmap, we have finished a significant portion of the core
 "plumbing" for the project, and we also have our first widget, a button, that 
@@ -297,10 +299,12 @@ what the explicit goals for 1.0 are.
 
 Code Checkins
 ----------------
+
 A complete list of checkins may be found through our `checkins mailing list`_
 
 Releases
 ------------------------
+
 There are currently no full release builds available other than tarball
 snapshots. The `dojo interest mailing list`_ contains regular updates.
 `Anonymous SVN access`_ is available, as is an `initial profile build`_. Ant is
@@ -308,12 +312,14 @@ required to use our build system.
 
 Getting Involved
 ------------------------
+
 Currently, contributors are added to the project through invitation only, much
 like firefox. If you would like to contribute to the Dojo project, please
 contact us through the `dojo interest mailing list`_.
 
 License
 -------
+
 Dojo is licensed under the very friendly `Academic Free License v 2.1`_. Some
 `thoughts on the AFL license`_.
 
