@@ -508,6 +508,7 @@ dojo.hostenv.getDepsForEval = function(contents){
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
 	}
+	// FIXME: this seems to be borken on Rhino in some situations. ???
 	tmp = contents.match( /dojo.hostenv.conditionalLoadModule\((.*?)\)/mg );
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
@@ -522,6 +523,7 @@ dojo.hostenv.loadedUris = [];
 
 // FIXME: probably need to add logging to this method
 dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
+	dj_debug("loadUriAndCheck: "+uri+", "+module);
 	var ok = true;
 	try{
 		ok = this.loadUri(uri, cb);

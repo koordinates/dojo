@@ -141,6 +141,22 @@ function dj_rhino_current_script_via_eval_exception() {
 } 
 */
 
+// reading a file from disk in Java is a humiliating experience by any measure.
+// Lets avoid that and just get the freaking text
+function readText(uri){
+	// NOTE: we intentionally avoid handling exceptions, since the caller will
+	// want to know
+	var jf = new java.io.File(uri);
+	var sb = new java.lang.StringBuffer();
+	var input = new java.io.BufferedReader(new java.io.FileReader(jf));
+	var line = "";
+	while((line = input.readLine()) != null){
+		sb.append(line);
+		sb.append(java.lang.System.getProperty("line.separator"));
+	}
+	return sb.toString();
+}
+
 // call this now because later we may not be on the top of the stack
 if (!dojo.hostenv.library_script_uri_) dojo.hostenv.library_script_uri_ = dj_rhino_current_script_via_java(1);
 

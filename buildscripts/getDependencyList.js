@@ -34,21 +34,37 @@ dojo.hostenv.name_ = hostenvType;
 dj_eval = function(){ return true; }
 old_load = load;
 load = function(uri){
-	var jf = new java.io.File(uri);
-	var jfr = new java.io.FileReader(jf);
-	// var cb = new java.nio.CharBuffer();
-	var cb = [];
-	jfr.read(cb);
-	print("uri: "+uri);
-	print(cb);
-	for(var x=0; x<arguments.length; x++){
-		print(arguments[x]);
+	try{
+		var text = readText(uri);
+		print(text);
+		var requires = dojo.hostenv.getDepsForEval(text);
+		var provides = dojo.hostenv.getProvidesForEval(text);
+		print("provides: "+provides.join(";"));
+		eval(provides.join(";"));
+		print("requires: "+requires.join(";"));
+		eval(requires.join(";"));
+	}catch(e){ 
+		print(e);
 	}
-	/* try{ }catch(e){ print(e); } */
 	return true;
 }
 
-print(load);
+dojo.hostenv.getProvidesForEval = function(contents){
+	if(!contents){ contents = ""; }
+	// check to see if we need to load anything else first. Ugg.
+	var mods = [];
+	var tmp = contents.match( /dojo.hostenv.startPackage\((.*?)\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
+	}
+	tmp = contents.match( /dojo.hostenv.provide\((.*?)\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
+	}
+	return mods;
+}
+
+// print(load);
 
 // what we do when we're at the end of the rope
 onSuccess = function(){
