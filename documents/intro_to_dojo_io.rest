@@ -145,7 +145,7 @@ Being a jack-of-all-trades, ``bind()`` also supports the submission of forms via
 request (with the single caveat that it won't do file upload over XMLHTTP)::
 
     dojo.io.bind({
-        url: "http://foo.bar.com/sampleData.js",
+        url: "http://foo.bar.com/processForm.cgi",
         load: function(type, evaldObj){ /* do something */ },
         formNode: document.getElementById("formToSubmit")
     });
@@ -335,9 +335,9 @@ What's Not
 #########################
 
 Dojo consists of much more functionality than this package exposes (in fact,
-this package includes much more than is being discussed. No widget classes, XML
-parsing, or generic event system code are included in this build, although all
-of those things are functional in Dojo subversion.
+this package includes much more than is being discussed). No widget classes,
+XML parsing, or generic event system code are included in this build, although
+all of those things are functional in Dojo subversion.
 
 About Dojo
 #########################
