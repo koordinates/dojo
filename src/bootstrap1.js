@@ -456,7 +456,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 		// stack management
 		var next = stack.pop();
 		if((!next)&&(stack.length==0)){ 
-			dj_debug("***************** AT THE END OF THE STACK *****************");
+			// dj_debug("***************** AT THE END OF THE STACK *****************");
 			dojo.hostenv.modulesLoaded();
 			return;
 		}
@@ -470,7 +470,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 			next = stack.pop();
 		}
 		if(dojo.hostenv.loadedUris[next[0]]){ 
-			dj_debug("WE ALREADY HAD: "+next[0]);
+			// dj_debug("WE ALREADY HAD: "+next[0]);
 			dojo.hostenv.unwindUriStack();
 			return;
 		}
@@ -536,12 +536,16 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
+dojo.hostenv.modulesLoadedFired = false;
+
 dojo.hostenv.modulesLoaded = function(){
+	if(this.modulesLoadedFired){ return; }
 	if((this.loadUriStack.length==0)&&(this.getTextStack.length==0)){
 		if(this.inFlightCount > 0){ 
 			dj_debug("couldn't initialize, there are files still in flight");
 			return;
 		}
+		this.modulesLoadedFired = true;
 		var mll = this.modulesLoadedListeners;
 		for(var x=0; x<mll.length; x++){
 			mll[x]();

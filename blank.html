@@ -12,8 +12,9 @@
 			// dojo.io.XMLHTTPTransport
 			if((window.parent != window)&&(window.parent["dojo"])){
 				var pdj = window.parent.dojo;
+				// window.parent.dj_debug("iframe location: "+window.location.href);
 				if((pdj["io"])&&(pdj["io"]["XMLHTTPTransport"])){
-					pdj.io.XMLHTTPTransport.checkForBackEvent(null, window.location.href);
+					pdj.io.XMLHTTPTransport.iframeLoaded(null, window.location);
 				}
 			}
 		}

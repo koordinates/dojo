@@ -87,6 +87,7 @@ digraph dhtml_universe
 		swerner -> qooxdoo;
 		aecker -> qooxdoo;
 		caugusti -> qooxdoo;
+		ptracey -> jsxml;
 
 		// project and company relationships
 		INFA -> NW;
@@ -146,6 +147,7 @@ digraph dhtml_universe
 		swerner		[ label="Sebastian Werner" ];
 		aecker		[ label="Andreas Ecker" ];
 		caugusti	[ label="Claus Augusti" ];
+		ptracey		[ label="Peter Tracey" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -159,6 +161,7 @@ digraph dhtml_universe
 		Backbase	[ label="Backbase",shape=box];
 
 		// projects and products
+		jsxml		[ shape=diamond ];
 		HTMLArea	[ shape=diamond ];
 		AlphaBlox	[ shape=diamond ];
 		HalfBrain	[ shape=diamond ];

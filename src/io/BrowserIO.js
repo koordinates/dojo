@@ -101,38 +101,143 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.historyStack = [];
 	this.forwardStack = [];
 	this.historyIframe = null;
+	this.bookmarkAnchor = null;
+	this.locationTimer = null;
 
 	this.addToHistory = function(callback, args){
+		var hash = null;
 		if(!this.historyIframe){
 			this.historyIframe = window.frames["djhistory"];
 		}
-		var url = dojo.hostenv.base_relative_path_+"blank.html?"+(new Date()).getTime();
-		this.moveForward = true;
-		dojo.io.setIFrameSrc(this.historyIframe, url, false);
-		this.historyStack.push({url: url, callback: callback, kwArgs: args});
+		if(!this.bookmarkAnchor){
+			this.bookmarkAnchor = document.createElement("a");
+			document.body.appendChild(this.bookmarkAnchor);
+			this.bookmarkAnchor.style.display = "none";
+		}
+		if((!args["changeURL"])||(dojo.render.html.ie)){
+			var url = dojo.hostenv.base_relative_path_+"blank.html?"+(new Date()).getTime();
+			this.moveForward = true;
+			dojo.io.setIFrameSrc(this.historyIframe, url, false);
+		}
+		if(args["changeURL"]){
+			hash = "#"+(new Date()).getTime();
+			setTimeout("window.location.href = '"+hash+"';", 10);
+			this.bookmarkAnchor.href = hash;
+			if(dojo.render.html.ie){
+				var oldCB = callback;
+				var lh = null;
+				var hsl = this.historyStack.length-1;
+				if(hsl>=0){
+					while(!this.historyStack[hsl]["hash"]){
+						hsl--;
+					}
+					lh = this.historyStack[hsl]["hash"];
+				}
+				if(lh){
+					callback = function(){
+						if(window.location.hash != ""){
+							window.location.href = lp[0]+lh;
+						}
+						oldCB();
+					}
+				}
+			}else if(dojo.render.html.moz){
+				// start the timer
+				if(!this.locationTimer){
+					this.locationTimer = setInterval("dojo.io.XMLHTTPTransport.checkLocation();", 200);
+				}
+			}
+		}
+		this.historyStack.push({url: url, callback: callback, kwArgs: args, urlHash: hash});
 	}
 
-	this.checkForBackEvent = function(evt, ifrLoc){
+	this.checkLocation = function(){
+		if(window.location.hash == ""){
+			// FIXME: could this ever be a forward button?
+			if(this.historyStack.length == 1){
+				clearInterval(this.locationTimer);
+				this.handleBackButton();
+				// alert(this.historyIframe.history.go(-1));
+				alert(this.historyIframe.history.length);
+				return;
+			}
+		}
+		// first check to see if we could have gone forward. We always halt on
+		// a no-hash item.
+		if(this.forwardStack.length > 0){
+			if(this.forwardStack[this.forwardStack.length-1].urlHash == window.location.hash){
+				this.handleForwardButton();
+				return;
+			}
+		}
+		// ok, that didn't work, try someplace back in the history stack
+		if(this.historyStack.length >= 2){
+			if(this.historyStack[this.historyStack-2].urlHash==window.location.hash){
+				this.handleBackButton();
+				return;
+			}
+		}
+	}
+
+	this.iframeLoaded = function(evt, ifrLoc){
+		var isp = ifrLoc.href.split("?");
+		if(isp.length < 2){ 
+			alert("iframeLoaded");
+			// we hit the end of the history, so we should go back
+			if(this.historyStack.length == 1){
+				this.handleBackButton();
+			}
+			return;
+		}
+		var query = isp[1];
 		if(this.moveForward){
+			// we were expecting it, so it's not either a forward or backward
+			// movement
 			this.moveForward = false;
 			return;
 		}
+
 		var last = this.historyStack.pop();
-		// we hadn't added anything to the history, so this is an error by
-		// definition
-		if(!last){ return; }
-
-		/*
-		for(var x in this.historyIframe.location){
-			dj_debug(x+": "+this.historyIframe.location[x]);
+		// we don't have anything in history, so it could be a forward button
+		if(!last){ 
+			if(this.forwardStack.length > 0){
+				var next = this.forwardStack[this.forwardStack.length-1];
+				if(query == next.url.split("?")[1]){
+					this.handleForwardButton();
+				}
+			}
+			// regardless, we didnt' have any history, so it can't be a back button
+			return;
 		}
-		dj_debug(this.historyIframe.location);
-		*/
-		last.callback();
+		// put it back on the stack so we can do something useful with it when
+		// we call handleBackButton()
+		this.historyStack.push(last);
+		if(this.historyStack.length >= 2){
+			if(isp == this.historyStack[this.historyStack.length-2].url){
+				// looks like it IS a back button press, so handle it
+				this.handleBackButton();
+			}
+		}else{
+			this.handleBackButton();
+		}
+	}
 
-		// FIXME: need to handle subsequent forward button requests too
-		//	perhaps by re-issuing the bind() call?
-		// this.forwardStack.push(last);
+	this.handleBackButton = function(){
+		var last = this.historyStack.pop();
+		last.callback();
+		this.forwardStack.push(last);
+	}
+
+	this.handleForwardButton = function(){
+		alert("alert we found a forward button call");
+		var last = this.forwardStack.pop();
+		// FIXME: how do we handle this? perhaps by re-issuing the bind() call?
+		/*
+		if(last["callback"]){
+			last.callback();
+		}
+		*/
+		this.historyStack.push(last);
 	}
 
 	this.canHandle = function(kwArgs){
