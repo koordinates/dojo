@@ -5,10 +5,10 @@ dojo.hostenv.startPackage("dojo.xml.htmlUtil");
 dojo.xml.htmlUtil = new function(){
 	
 	// FIXME: need to make sure these get installed at onLoad!!!
+	// FIXME: if we're on Moz, we need to FORCE -moz-box-sizing: border-box;
 	/*
 	document.body.style.boxSizing = "border-box";
 	document.body.style.MozBoxSizing = "border-box";
-	// FIXME: if we're on Moz, we need to FORCE -moz-box-sizing: border-box;
 	*/
 	var cm = document["compatMode"];
 	var boxSizing = ((cm)&&((cm == "BackCompat")||(cm == "QuirksMode"))) ? true : false;
@@ -27,6 +27,16 @@ dojo.xml.htmlUtil = new function(){
 
 	this.getOuterHeight = function(node){
 	}
+
+	this.getEventTarget = function(evt){
+		if((window["event"])&&(event["srcElement"])){
+			return event.srcElement;
+		}else if((evt)&&(evt.target)){
+			return evt.target;
+		}
+	}
+
+	this.evtTgt = this.getEventTarget;
 
 	// RAR: this function comes from nwidgets and is more-or-less unmodified.
 	// We should probably look ant Burst and f(m)'s equivalents
