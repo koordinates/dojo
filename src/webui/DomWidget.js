@@ -1,5 +1,7 @@
 doj.hostenv.loadModule("dojo.webui.Widget");
 
+dojo.hostenv.startPackage("dojo.webui.DomWidget");
+
 dojo.webui.DomWidget = function(){
 
 	// mixin inheritance
