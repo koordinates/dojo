@@ -43,9 +43,9 @@ dojo.hostenv.startPackage("dojo.io.IO");
  *			<![CDATA[]]> sections.
  *
  *
- *	A discussion between Dylan, Mark, and Alex helped to beat down a lot the IO
- *	API interface. A transcript of it can be found at:
- *		// FIXME: karmann was down, need to insert link here
+ *	A discussion between Dylan, Mark, Tom, and Alex helped to lay down a lot
+ *	the IO API interface. A transcript of it can be found at:
+ *		http://dojotoolkit.org/viewcvs/viewcvs.py/documents/irc/irc_io_api_log.txt?rev=307&view=auto
  *	
  *	Also referenced in the design of the API was the DOM 3 L&S spec:
  *		http://www.w3.org/TR/2004/REC-DOM-Level-3-LS-20040407/load-save.html
@@ -55,6 +55,11 @@ dojo.hostenv.startPackage("dojo.io.IO");
 // by calling add(name)
 dojo.io.transports = [];
 dojo.io.hdlrFuncNames = [ "load", "error" ]; // we're omitting a progress() event for now
+
+dojo.io.Event = function(type, data){
+	this.type =  type || "unknown";
+	this.data = data;
+}
 
 dojo.io.Error = function(msg, type, num){
 	this.message = msg;
@@ -73,15 +78,25 @@ dojo.io.tranports.addTransport = function(name){
 // and the bind() method dispatches
 dojo.io.bind = function(kwArgs){ // FIXME: should we support positional args too?
 	// if the request asks for a particular implementation, use it
+	var tsName = "";
 	if(kwArgs["transport"]){
+		tsName = kwArgs["transport"];
+		if(!this[tsName]){ return false; /* throw exception? */ }
 	}else{
 		// otherwise we do our best to auto-detect what available transports
 		// will handle 
 
 		// FIXME: should we normalize or set defaults for the kwArgs here?
-		for(var x=0; x<dojo.io.transports.length; x++){
+		for(var x=0; x<this.transports.length; x++){
+			var tmp = this.transports[x];
+			if((this[tmp])&&(this[tmp].canHandle(kwArgs))){
+				tsName = tmp;
+			}
 		}
+		if(tsName == ""){ return false; /* throw exception? */ }
 	}
+	this[tsName](kwArgs);
+	return true;
 }
 
 dojo.io.argsFromMap = function(map){
