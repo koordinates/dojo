@@ -116,8 +116,7 @@ function dj_throw(message){
  * ... since natively generated Error objects do not always reflect such things?
  */
 function dj_error_to_string(excep){
-	return (typeof excep.message !== 'undefined' ? excep.message): 
-	(typeof excep.description !== 'undefined' ? excep.description : excep);
+	return (typeof excep.message !== 'undefined' ? excep.message : (typeof excep.description !== 'undefined' ? excep.description : excep));
 }
 
 

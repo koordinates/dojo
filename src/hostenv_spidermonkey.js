@@ -35,16 +35,22 @@ function dj_spidermonkey_current_file(depth){
 	}
     // lines are like: bu_getCurrentScriptURI_spidermonkey("ScriptLoader.js")@burst/Runtime.js:101
     var matches = s.match(/[^@]*\.js/gi);
-    if(!matches){ dj_throw("could not parse stack string: '" + s + "'"); }
+    if(!matches){ 
+		dj_throw("could not parse stack string: '" + s + "'");
+	}
     var fname = (typeof depth != 'undefined' && depth) ? matches[depth + 1] : matches[matches.length - 1];
-    if(!fname){ dj_throw("could not find file name in stack string '" + s + "'");
+    if(!fname){ 
+		dj_throw("could not find file name in stack string '" + s + "'");
+	}
     //print("SpiderMonkeyRuntime got fname '" + fname + "' from stack string '" + s + "'");
     return fname;
 }
 
 // call this now because later we may not be on the top of the stack
 //dojo.hostenv.getLibraryScriptUri = dj_spidermonkey_current_file;
-if(!dojo.hostenv.library_script_uri_){ dojo.hostenv.library_script_uri_ = dj_spidermonkey_current_file(0); }
+if(!dojo.hostenv.library_script_uri_){ 
+	dojo.hostenv.library_script_uri_ = dj_spidermonkey_current_file(0); 
+}
 
 dojo.hostenv.loadUri = function(uri){
     // spidermonkey load() evaluates the contents into the global scope (which is what we want).
@@ -55,6 +61,11 @@ dojo.hostenv.loadUri = function(uri){
     return 1;
 }
 
-dojo.hostenv.println = function(line){ print(line); }
+dojo.hostenv.println = function(line){
+	print(line);
+}
 
-dojo.hostenv.exit = function(exitcode){ quit(exitcode); }
+dojo.hostenv.exit = function(exitcode){ 
+	quit(exitcode); 
+}
+
