@@ -8,78 +8,80 @@ dojo.io.bind(): baking usability into XMLHTTP
 
 .. contents::
 
-Less "me too", more working code
+Intro
 ----------------------------------
 
-The Dojo project is seeking to build the best DHTML toolkit available, hands
-down. Part of that effort includes paying attention to many of the neglected
-and unpolished sharp edges of the DHTML programming and user experience. Over
-the last several months, it's been hard not to notice the parade of fawning
-articles about one particular part of the DHTML asynchronous IO toolbox: the
-XMLHTTP object.  Some of the published information includes code, and some of
-that code is even OK (a big change for DHTML articles). Unfortunantly, so far,
-users of this code are left out on their own when it comes down to solving the
-usability problems that come along with XMLHTTP. 
+The Dojo project is working to build a modern, capable, "webish", and easy to
+use DHTML toolkit. Part of that effort includes smoothing out many of the sharp
+edges of the DHTML programming and user experience. On the back of such
+high-profile success stories such as Oddpost, Google Maps, and Google Suggest,
+the XMLHTTP object has been getting a lot of attention of late. Sadly,
+in spite of all the coverage, developers have been on their own when it comes
+down to solving the usability problems that come along for the ride. 
 
-Dynamic, but at what price?
+HCI Issues
 ---------------------------
 
 What usability problems?
 
-Consider, for a moment, that most painful of topics for web application
-developers: the back button. With a bit of copy-and-paste, a decent DOM
-reference, and a lot of perserverence it's possible to build out a pretty
-decent dynamic UI. One that doesn't jarringly destroy the user's in-page
-experience for the most trivial of tasks (e.g.: adding an item to a list,
-etc.), but when larger portions of an application are mediated in this way
-(say, switching between a view and edit mode) the user naturally has more
-desire to "go back" to some earlier state if things aren't working out the way
-they had planned or if the action isn't what they expected.
+Consider that most painful of topics for web application developers: the back
+button. Web developers armed with some sample code, a decent DOM reference, and
+a lot of perseverance can build a pretty decent dynamic UI in modern browsers.
+These UIs doesn't jarringly destroy the user's in-page experience for the most
+trivial of tasks, like adding an item to a list. When larger portions of an
+application are mediated in this way, the user naturally has more desire to "go
+back" to some earlier state if things aren't working out the way they had
+planned or if the action isn't what they expected. An example might be
+switching between a view and edit mode in a content editing application.
 
-As high-gloss web applications emerge, more and more of the interactions become
-intra-page and not inter-page actions, which means that if the back button
-doesn't function in a way that helps the user, more and more work can
-potentially be lost from the user's perpsecitve when they hit the back button
-and it returns them to the login screen (and not to the previous major UI
-component that they were expecting). This is exactly the style of interface
-construction that Dojo contributors (and others in the DHTML community) have
-been advocating for years. The upside is that more developers now see this as a
-feasible and pagmatic way to build interfaces. The downside is that their
-weapon of choice (or ignorance), XMLHTTP, doesn't create a back-button entry.
-In short, XMLHTTP breaks the back button.
+As high-gloss web applications become the norm, many interactions become
+intra-page and not inter-page. Programmers looking for creative solutions have
+chosen XMLHTTP for these scenarios, but unfortunately, XMLHTTP breaks the back
+button, impairing the user experience. If the back button doesn't function in a
+way that meets user expectations, it becomes ever easier for the user to lose
+work or become confused about the state of an application. To assist the user,
+programmer need a way to capture back-button presses and do something
+intelligent with them.
 
-If the situation with the back button has the potential to confound users, the
-inability to bookmark or otherwise reference a "screen" is downright maddening.
-Applications that dyanmically construct large sections of the UI (like Google
-Maps) today resort to a link in an intermediate screen that the user can click
-to return to their current state (and then, perhaps, bookmark) if and when they
-consdier the "bookmarkability" problem at all. More common is an app that
-simply refuses to acknowledge that the user might want to pass around a URL to
-a friend and instead builds some heavyweight and non-standard state
-serialization mechanism that is more akin to a desktop app's "save as" feature.
-"Save-as" on the web is bookmarking, and usable apps recognize this (even if
-they don't have great solutions for it today). Regardless of what serialiation
-mechanism is in use, being able to represent the state of the app in a URL (or
-a marker for serialized state) is a must. As is true to form, XMLHTTP doesn't
-provide any solution to this problem either.
+If you've used Google Maps and you've tried to send your directions  to a
+friend, you know that not being able to simply copy the URL out of the address
+bar is significantly confusing at first.  Applications that dynamically
+construct large sections of the UI (like Google Maps) today resort to a link in
+an intermediate screen that the user can click to return to their current state
+and then, perhaps, book mark or send to someone else. And this is if and when
+they consider the "bookmarkability" problem at all. More common is an
+application that simply refuses to acknowledge that the user might want to pass
+around a URL to a friend and instead builds some heavyweight and non-standard
+state serialization mechanism that is more akin to a desktop application's
+"save as" feature.  "Save-as" on the web is book-marking, and usable
+applications recognize this (even if they don't have great solutions for it
+today).  Regardless of what serialization mechanism is in use, being able to
+represent the state of the application in a URL (or a marker for serialized
+state) is a must.  This is a hard problem to be sure, and none of the currently
+available tools provide simple answers.
 
 Introducing dojo.io.bind()
 --------------------------
 
-At Dojo, we're comitted to making DHTML applications usable, both for authors
-and for users, and with a lot of help from our friends (big shout out to Aaron
-Boodman of Google and Mark Anderson of Dojo) we have come up with solutions to
-the usability problems outlined above. We're providing it in a single, easy to
-use API and a package that requires only two files to function.
+At Dojo, we're committed to making DHTML applications usable, both for authors
+and for users, and with a lot of help from our friends, particularly Aaron
+Boodman and Mark Anderson,  we have come up with solutions to the usability
+problems outlined above. We're providing it in a single, easy to use API and a
+package that requires only two files to function.  The ``dojo.io`` package
+provides portable code for XMLHTTP and other, more complicated, transport
+mechanisms. Additionally, the "transports" that plug into it each provide their
+own logic to make each of them easier to use. The rest of this article will
+cover how the XMLHTTP transport from Dojo provides ways around the book-marking
+and back button problems.
 
-But first, a brief introduction to the ``bind()`` method. ``dojo.io.bind()`` is
-a generic asynchronous request API that is provided Dojo to warp multiple
-transport layers (queues of iframes, XMLHTTP, mod_pubsub, LivePage, etc.). Dojo
-attempts to pick the best available transport for the request at hand, and in
-the provided package file, only XMLHTTP will ever be chosen since no other
-transports are rolled in. The API accepts a single anonymous object with known
-attributes of that object acting as function arguments. To make a request that
-returns raw text from a URL, you would call ``bind()`` like this::
+Most of the magic of the ``dojo.io`` package is exposed through the ``bind()``
+method. ``dojo.io.bind()`` is a generic asynchronous request API that wraps
+multiple transport layers (queues of iframes, XMLHTTP, mod_pubsub, LivePage,
+etc.). Dojo attempts to pick the best available transport for the request at
+hand, and in the provided package file, only XMLHTTP will ever be chosen since
+no other transports are rolled in. The API accepts a single anonymous object
+with known attributes of that object acting as function arguments. To make a
+request that returns raw text from a URL, you would call ``bind()`` like this::
 
     dojo.io.bind({
         url: "http://foo.bar.com/sampleData.txt",
@@ -120,8 +122,8 @@ load and error handlers::
 
 One common idiom for dynamic content loading is (for performance reasons) to
 request a JavaScript literal string and then evaluate it. That's also baked
-into ``bind``, just provide a different expected response type with the mimetype
-argument::
+into ``bind``, just provide a different expected response type with the
+mimetype argument::
 
     dojo.io.bind({
         url: "http://foo.bar.com/sampleData.js",
@@ -130,7 +132,7 @@ argument::
     });
 
 And if you want to be DARN SURE you're using the XMLHTTP transport, you can
-sepcify that too::
+specify that too::
 
     dojo.io.bind({
         url: "http://foo.bar.com/sampleData.js",
@@ -148,26 +150,30 @@ request (with the single caveat that it won't do file upload over XMLHTTP)::
         formNode: document.getElementById("formToSubmit")
     });
 
-Phew.Think that about covers the basics. Good thing you weren't planning on
+Phew. Think that about covers the basics. Good thing you weren't planning on
 implementing all that stuff yourself, right?
 
 So, about that thorny back button...
 ------------------------------------
 
 None of the examples so far would have caused anything but the default
-(sometimes undesireable) behavior to occur if the user subsequently hit the
-back button. In a lot of applications with small interactions, it might never
+(sometimes undesirable) behavior to occur if the user subsequently hit the back
+button. In a lot of applications with small interactions, it might never
 transpire that one would want the back button to be intercepted. One could
-happily build an app using ``dojo.io.bind()`` without ever knowing or caring
-about bookmarking or the back button, but if you're reading this, the odds are
-that you care. So here we go.
+happily build an application using ``dojo.io.bind()`` without ever knowing or
+caring about book-marking or the back button, but if you're reading this, the
+odds are that you care. So here we go.
 
 First, a note on browser support: all of the following techniques work on IE
-and Mozilla/Firefox, but Safari is, sadly, a lost cause. That doesn't mean your
-requests won't send correctly, but it does mean that the forward and back
-buttons aren't interceptable. Even when Safari SHOULD support it,
+and Mozilla/Firefox, but Safari is, sadly, a lost cause.  That doesn't mean
+your requests won't send correctly, but it does mean that the forward and back
+buttons aren't intercept-able. Even when Safari SHOULD support it,
 implementation bugs in the browser prevent our code from doing the right thing.
-This is, needless to say, really annoying.
+In addition to not adding iframe document navigation to the forward and back
+button queues, moving between hash items on a page with forward and back
+doesn't update ``window.location.href`` or provide any other consistent way to
+determine that either button has been pressed. At this time, it's unknown if
+Apple is aware of these bugs or has plans to fix them.
 
 For that great majority of browsers that can be supported, catching the back
 button simply requires registering a callback that will fire when the user hits
@@ -190,7 +196,7 @@ of the form-hide behavior when the back button is clicked::
     });
 
 That's it. Just provide that extra backButton argument and your users can now
-hit the back button and count on your app doing something smarter than
+hit the back button and count on your application doing something smarter than
 destroying their work (with a little help from you, that is).
 
 This naturally leads to the next question: what happens if they hit the forward
@@ -227,12 +233,13 @@ history tree has been created and the old one is likely invalid.
 Bookmarking
 ------------------------------------
 
-Bookmarkability is a really big issue for web apps. Apps that don't have it are
-at a huge dissadvantage to those that do. That's just how it is.
+.. FIXME: aaron wants just a listener that he can register when a particular
+.. hash that he's intersted in gets called out to.
 
-With that in mind, ``dojo.io.bind()`` gives you one last little bit of control
-for making things bookmarkable. Simply pass in the value "true" to the flag
-"changeURL".  Here's the obligitory example::
+Bookmarkability is another can of worms for dynamic web applications.  With that in
+mind, ``dojo.io.bind()`` gives you one last little bit of control for making
+things bookmarkable. Simply pass in the value "true" to the flag "changeURL".
+Here's the example::
 
     dojo.io.bind({
         url: "http://foo.bar.com/sampleData.txt",
@@ -241,23 +248,41 @@ for making things bookmarkable. Simply pass in the value "true" to the flag
         mimetype: "text/plain"
     });
 
-Once the request is fired off, you will be able to read the new URL from
-window.location.href (I usually do this in the load() method). A more elegant
-way of infoming the server of the saved-as URL other than a new request is
-still needed, but for now, this works and it's enough to be functional.
+The effect of this call is that your top-level page will now have a new
+timestamp hash value appended to the end. Alternately, it's possible to include
+your own hash value by providing a string instead of "true" to ``changeURL``::
 
-Unfortunantly, attempting to change the URL synchronously when the request is
-fired isn't possible because of timing issues on Mozilla/Firefox. You are
-advised to report your saved-as URL to the server (if that's necessaray) from
-the load() or error() methods you provide.
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.txt",
+        load: function(type, data, evt){ /*do something w/ the data */ },
+        changeURL: "foo,bar,baz",
+        mimetype: "text/plain"
+    });
+
+If the URL of the application had previously been::
+
+    http://foo.bar.com/howdy.php
+
+The user's address bar would now show::
+
+    http://foo.bar.com/howdy.php#foo,bar,baz
+
+Currently, it's not possible to count on the URL being changed
+synchronously when the request is fired because of timing issues on
+Mozilla/Firefox. 
 
 Bookmarkability WILL interact with other inter-page navigation using named
 anchors, but should NOT change the location of the user's scroll position in
 the viewport. You are advised to test this functionality pretty thoroughly
 before deploying.
 
-Technical Discussion
-------------------------------------
+The API for bookmarking is still currently in some flux, but ``changeURL`` is
+not likely to change. Discussions are underway to add a "notify me when we hit
+this url" feature to ``bind()`` that might not even make a call to the server
+at all. Feedback on this topic is appreciated.
+
+Package Implementation Considerations
+--------------------------------------
 
 If you're not a DHTML hacker or don't want to know how sausage is made, you
 might want to skip this.
@@ -269,7 +294,7 @@ bookmarkable request. On Mozilla, a back-button request is created, but no
 events fire when back and forward are pressed, so a timer is required to watch
 the value of location.href. On both browsers, detecting iframe loading requires
 two queues to differentiate forward from back buttons, and the iframe MUST be
-part of the intial document (in this case, created w/ document.write) since
+part of the initial document (in this case, created w/ document.write) since
 dynamically created iframes *don't affect the history*. Likewise, it was
 somewhat painful to determine what kind of anchor setting would work for
 creating back-button entries but not change the scroll position in the
@@ -284,14 +309,14 @@ cross-browser hell that turned people off from DHTML in the first place.
 Remainders
 ----------
 
-Usability != Accessability
+Usability != Accessibility
 ##########################
 
 The techniques discussed in this article are NOT intended to provide you with a
-solution for accessaiblity concerns for your web apps. You still need to hammer
+solution for accessibility concerns for your web apps. You still need to hammer
 those out for yourself (although Dojo will soon be providing help in that area
 too). If you want to flame the author for discussing usability without
-discussing the negative accessabitliy impact of these tools, go right ahead,
+discussing the negative accessibility impact of these tools, go right ahead,
 but please consider that the author already has a good idea of what you're
 going to say and he's already working on tools to make the situation better.
 Flaming won't get those tools done any faster, though.
@@ -310,7 +335,7 @@ What's Not
 #########################
 
 Dojo consists of much more functionality than this package exposes (in fact,
-this package includes much more than is being discussed. No widget classes, xml
+this package includes much more than is being discussed. No widget classes, XML
 parsing, or generic event system code are included in this build, although all
 of those things are functional in Dojo subversion.
 
@@ -324,7 +349,7 @@ Getting Involved with Dojo
 
 Comitters to Dojo are currently an invite-only group, but that doesn't mean it
 can't include you. If you'd like to contribute to the future of Dojo and
-responsive web applications, do something that impreses us (either with Dojo,
+responsive web applications, do something that impress us (either with Dojo,
 or with JS/DHTML/DSVG in general). Our license is intentionally non-political
 (Academic Free License 2.1) and we support your use of Dojo in software that's
 licensed in other ways, but will not accept differently-licensed patches. We're
@@ -333,7 +358,8 @@ not trying to be exclusive, just productive.
 About The Author
 #########################
 
-Alex Russell is just a guy. You can flame him on various topics at
-<alex@dojotoolkit.org>.
+Alex Russell is just another geek. You can flame him on various topics at
+<alex@dojotoolkit.org> or leave nasty notes at his blog:
+http://alex.nwidgets.com
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
