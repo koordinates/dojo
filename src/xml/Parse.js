@@ -85,8 +85,7 @@ dojo.xml.Parse.ParseDocumentFragment.prototype.parseElement = function(node,hasP
 	parsedNodeSet[node.tagName].nodeRef = node;
 	parsedNodeSet.tagName = dojo.hostenv.getTagName(node);
 
-	var domUtil = new dojo.xml.DomUtil();
-	var ntypes = domUtil.nodeTypes;
+	var ntypes = dojo.xml.domUtil.nodeTypes;
 
 	for(var i=0; i<node.childNodes.length; i++){
 		switch(node.childNodes[i].nodeType){
