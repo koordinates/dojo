@@ -1,3 +1,4 @@
+
 /* * * Print styles * * */
 @import url(dojo-print.css);
 
@@ -64,7 +65,7 @@
 
 	.section {
 		margin-left : 210px;
-		margin-right : 192px;
+		margin-right : 3em;
 		/*
 		margin-bottom : 20px;
 		padding-bottom : 50px;
@@ -138,7 +139,8 @@ h1.title {
 	font-weight : normal;
 	font-family : Georgia, sans-serif;
 	letter-spacing : 1px;
-	background : white url(http://dojotoolkit.org/img/page-title.png) no-repeat top right;
+	background : white url(http://dojotoolkit.org/img/page-title.png) no-repeat top right;
+
 	border-bottom : 1px solid #ccc ;
 	border-right: 1px solid #ccc ;
 	border-left: 1px solid #ccc ;
@@ -169,9 +171,21 @@ h1.title {
 
 .section li {
 	margin-bottom : .6em;
+	margin-left:0em;
+	padding-left:0em;
+}
+
+.section dd, .section ul {
+	margin-left : 0em;
+	padding-left:0em;
+}
+
+.section blockquote {
+
 }
 
 .section p, .section li, .section blockquote {
 	line-height : 1.3em;
 	text-align: justify;
 }
+
