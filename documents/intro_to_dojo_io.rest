@@ -2,9 +2,9 @@ dojo.io.bind(): baking usability into XMLHTTP
 =============================================
 
 :Author: Alex Russell
-:Version: 0.1
+:Version: 0.3
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/03/09
+:Date: 2005/03/11
 
 .. contents::
 
@@ -312,14 +312,11 @@ Remainders
 Usability != Accessibility
 ##########################
 
-The techniques discussed in this article are NOT intended to provide you with a
-solution for accessibility concerns for your web apps. You still need to hammer
-those out for yourself (although Dojo will soon be providing help in that area
-too). If you want to flame the author for discussing usability without
-discussing the negative accessibility impact of these tools, go right ahead,
-but please consider that the author already has a good idea of what you're
-going to say and he's already working on tools to make the situation better.
-Flaming won't get those tools done any faster, though.
+The techniques discussed in this article are NOT intended to provide a solution
+for accessibility concerns. Developers still need to hammer those out for
+themselves (although Dojo will soon be providing help in that area too).
+Flaming the author for discussing usability without discussing the negative
+accessibility impact won't get those tools done any faster, though.
 
 What's In the Package
 #########################
@@ -331,26 +328,13 @@ demonstrates usage of the API, and this article. Dojo does a LOT more than this
 package might lead you to suspect, but don't worry, we'll be releasing more
 soon.
 
-What's Not
-#########################
-
-Dojo consists of much more functionality than this package exposes (in fact,
-this package includes much more than is being discussed). No widget classes,
-XML parsing, or generic event system code are included in this build, although
-all of those things are functional in Dojo subversion.
-
-About Dojo
-#########################
-
-Dojo: take two, they're small.
-
 Getting Involved with Dojo
 ##########################
 
 Comitters to Dojo are currently an invite-only group, but that doesn't mean it
 can't include you. If you'd like to contribute to the future of Dojo and
-responsive web applications, do something that impress us (either with Dojo,
-or with JS/DHTML/DSVG in general). Our license is intentionally non-political
+responsive web applications, do something that impress us (either with Dojo, or
+with JS/DHTML/DSVG in general). Our license is intentionally non-political
 (Academic Free License 2.1) and we support your use of Dojo in software that's
 licensed in other ways, but will not accept differently-licensed patches. We're
 not trying to be exclusive, just productive.
@@ -358,8 +342,7 @@ not trying to be exclusive, just productive.
 About The Author
 #########################
 
-Alex Russell is just another geek. You can flame him on various topics at
-<alex@dojotoolkit.org> or leave nasty notes at his blog:
-http://alex.nwidgets.com
+Alex Russell is just another geek. He can be reached at <alex@dojotoolkit.org>.
+His mostly pointless blog is at: http://alex.nwidgets.com
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
