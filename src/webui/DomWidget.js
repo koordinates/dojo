@@ -43,7 +43,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			this.domNode.appendChild(on);
 			for(var i=0; i<on.childNodes.length; i++) {
 				if(on.childNodes.nodeType == elementNodeType) {
-					this.domNode.appendChild(on.childNodes.item(i));
+					this.addChild(on.childNodes.item(i));
+					//this.domNode.appendChild(on.childNodes.item(i));
 				}
 			}
 		} else {
