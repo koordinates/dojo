@@ -15,13 +15,13 @@ dojo.event.browser = new function(){
 		if(evtName.substr(0,2)=="on"){ evtName = evtName.substr(2); }
 		if(!node){ return; } // FIXME: log and/or bail?
 		if(node.attachEvent){
-			NW_attachEvent_list.push([node, 'on' + evtName, fp]);
+			// NW_attachEvent_list.push([node, 'on' + evtName, fp]);
 			node.attachEvent("on"+evtName, fp);
 		}else if(node.addEventListener){ // &&(!__is__.konq)){ // Konq 3.1 tries to implement this, but it seems to be broken
 			node.addEventListener(evtName, fp, capture);
 			return true;
 		}else{
-			NW_expando_list.push([node, 'on' + evtName]);
+			// NW_expando_list.push([node, 'on' + evtName]);
 			// FIXME: this clobbers the event handler that's already set, is
 			// there a way around it?
 			node["on"+evtName]=fp;

@@ -18,6 +18,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 					}
 				}
 			}catch(e){
+				// throw(e);
 				// IE is such a bitch sometimes
 			}
 			if( (typeof fragment[item] == "object")&&
