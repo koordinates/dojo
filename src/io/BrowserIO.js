@@ -347,7 +347,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.bind = function(kwArgs){
 
 		if(!kwArgs["url"]){
-			if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||kwArgs["watchForURL"]){
+			if(((!kwArgs["formNode"]))&&((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||(kwArgs["watchForURL"]))){
 				this.addToHistory(kwArgs);
 				return true;
 			}
@@ -382,6 +382,9 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		var url = kwArgs.url+"?";
 		if(kwArgs["formNode"]){
+			if(kwArgs.formNode.getAttribute("action")){
+				url = kwArgs.formNode.getAttribute("action")+"?";
+			}
 			// FIXME: need to fix this for POST!!
 			url += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
