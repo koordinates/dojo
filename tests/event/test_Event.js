@@ -1,3 +1,4 @@
+/*
 if(!this["djConfig"]){
 	djConfig = { 
 		isDebug: true,
@@ -9,12 +10,15 @@ if(!this["djConfig"]){
 	load(["src/hostenv_rhino.js"]);
 	load(["src/bootstrap2.js"]);
 }
+*/
+
+// jum.debug(dojo.hostenv.base_script_uri_);
 
 // load(["src/event/Event.js"]);
 // dojo.hostenv.loadModule("alg.*");
-load("../src/alg/Alg.js");
-load("../src/event/Event.js");
-// dojo.hostenv.loadModule("dojo.event.*");
+// load("../src/alg/Alg.js");
+// load("../src/event/Event.js");
+dojo.hostenv.loadModule("dojo.event.*");
 
 function test_event_connections(){
 	var obj1 = {
