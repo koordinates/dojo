@@ -8,14 +8,21 @@
 
 digraph dhtml_universe
 	{
+		// developer to project/company relationships
 		dylan -> INFA;
 		alexr -> INFA;
 		alexr -> NW;
 		alexr -> Dojo;
+		alexr -> Jot;
+		alexr -> RePubSub;
+		jpark -> ModPubSub;
+		jpark -> RePubSub;
+		jpark -> Dojo;
 		mda -> NW;
 		mda -> Dojo;
 		mda -> Burst;
 		boogs -> Dojo;
+		boogs -> Gmail;
 		danp -> Dojo;
 		danp -> DotNetSol;
 		dylan -> Dojo;
@@ -37,48 +44,83 @@ digraph dhtml_universe
 		darink -> DomAPI;
 		sporter -> GameLib;
 		charlesk -> ISC;
+		cw -> Gmail;
+		ilamb -> Oddpost;
+		ilamb -> Yahoo;
+		ediamond -> Oddpost;
+		ediamond -> Yahoo;
+		scottandrew -> ModPubSub;
+		scottandrew -> DynAPI [ style=dotted,label="?" ]; // RAR: Not sure about this one
+		mbazon -> HTMLArea;
 		
+		// project and company relationships
 		INFA -> NW;
 		Jot -> Dojo;
+		Jot -> HTMLArea;
 		Tibet -> ISC;
+		HalfBrain -> AlphaBlox;
+		AlphaBlox -> Oddpost;
+		Oddpost -> Yahoo;
+		Gmail -> Google;
+		ModPubSub -> RePubSub;
 
-		emil [ label="Emil Eklund" ];
-		darink [ label="Darin Kadrioski" ];
-		ttrenka [ label="Tom Trenka" ];
-		erik [ label="Erik Aarvidson" ];
-		bratta [ label="Thomas Brattli" ];
-		mda [ label="Mark Anderson" ];
-		boogs [ label="Aaron Boodman" ];
-		alexr [ label="Alex Russell" ];
-		dylan [ label="Dylan Schiemann" ];
-		danp [ label="Dan Pupius" ];
-		tscarfe [ label="Tim Scarfe" ];
-		dsteinman [ label="Dan Steinman" ];
-		mhall [ label="Mike Hall" ];
-		schampeon [ label="Steve Champeon" ];
-		sporter [ label="Scott Porter" ];
-		rrainwater [ label="Robert Rainwater" ];
-		charlesk [ label="Charles K???" ];
+		// developers
+		mbazon		[ label="Mihai Bazon" ];
+		ediamond	[ label="Ethan Diamond" ];
+		ilamb		[ label="Iain Lamb" ];
+		emil 		[ label="Emil Eklund" ];
+		darink 		[ label="Darin Kadrioski" ];
+		ttrenka 	[ label="Tom Trenka" ];
+		erik 		[ label="Erik Aarvidson" ];
+		bratta 		[ label="Thomas Brattli" ];
+		mda 		[ label="Mark Anderson" ];
+		boogs 		[ label="Aaron Boodman" ];
+		alexr 		[ label="Alex Russell" ];
+		dylan 		[ label="Dylan Schiemann" ];
+		danp 		[ label="Dan Pupius" ];
+		tscarfe 	[ label="Tim Scarfe" ];
+		dsteinman 	[ label="Dan Steinman" ];
+		mhall 		[ label="Mike Hall" ];
+		schampeon 	[ label="Steve Champeon" ];
+		sporter 	[ label="Scott Porter" ];
+		rrainwater 	[ label="Robert Rainwater" ];
+		charlesk 	[ label="Charles K???" ];
 		scottandrew [ label="Scottandrew LePera" ];
+		cw 			[ label="Chris Wetherell" ];
+		jpark		[ label="Joyce Park" ];
 
+		// companies
+		DotNetSol 	[ label="Dot Net\nSolutions" ];
+		Google 		[ label="Google" ];
+		Yahoo 		[ label="Yahoo!" ];
+
+		// projects
+		HTMLArea;
+		AlphaBlox;
+		HalfBrain;
+		Oddpost;
 		Scriptomania;
 		DomAPI;
 		DynAPI;
 		GameLib;
 		Bindows;
-		Tibet;
 		jsDOM;
-		BrainJar [ label="Brain Jar" ];
-		DotNetSol [ label="Dot Net\nSolutions" ];
-		FM [ label="f(m)" ];
-		WebFX [ label="WebFX.eae.net" ];
-		Burst [ label="Burstlib" ];
-		Dojo [ label="Dojo" ];
-		Jot [ label="JotSpot" ];
-		INFA [ label="Informatica Corp." ];
-		NW [ label="netWindows" ];
-		ISC [ label="Isomorphic Inc." ];
-		WebOS [ label="WebOS.com" ];
+		Tibet		[ label="TIBET" ];
+		ModPubSub 	[ label="mod_pubsub" ];
+		RePubSub 	[ label="re_pubsub" ];
+		Gmail 		[ label="GMail" ];
+		BrainJar 	[ label="Brain Jar" ];
+		FM 			[ label="f(m)" ];
+		WebFX 		[ label="WebFX.eae.net" ];
+		Burst 		[ label="Burstlib" ];
+		Dojo 		[ label="Dojo" ];
+		Jot 		[ label="JotSpot" ];
+		INFA 		[ label="Informatica Corp." ];
+		NW 			[ label="netWindows" ];
+		ISC 		[ label="Isomorphic Inc." ];
+		WebOS 		[ label="WebOS.com" ];
 		DHTMLCentral [ label="DHTMLCentral.com" ];
 		
 	}
+
+// vim:ts=4:noet:ai
