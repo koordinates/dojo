@@ -233,6 +233,7 @@ print "look ma! Jython!"
 	<!-- FIXME: need to fix this task!! -->
 	<!-- docs task -->
 	<target name="docs"
+		unless="docless"
 		depends="-fix-config"
 		description="'builds' the docs">
 		<!-- first, clobber the docs directory and rebuild it -->
@@ -427,7 +428,14 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 	<target name="release" depends="-fix-config"
 		description="builds a release">
 		<antcall target="clean" />
+		<!--
 		<antcall target="src" />
+		-->
+		<copy todir="${release_dir}/${src}">
+			<fileset dir="${root}/${src}" includes="**" />
+		</copy>
+
+		<antcall target="docs" />
 		<antcall target="compress" />
 
 		<copy overwrite="true" file="../blank.html" todir="${release_dir}/" />
