@@ -1,11 +1,16 @@
+djConfig = { 
+	isDebug: true,
+	baseRelativePath: "../../"
+};
 load(["src/bootstrap1.js"]);
 // load(["../../src/hostenv_rhino.js"]);
-load(["src/hostenv_spidermonkey.js"]);
+// load(["src/hostenv_spidermonkey.js"]);
+load(["src/hostenv_rhino.js"]);
 load(["src/bootstrap2.js"]);
 
-// dojo.hostenv.loadModule("dojo.event");
+// load(["src/event/Event.js"]);
 load(["src/alg/Alg.js"]);
-load(["src/event/Event.js"]);
+dojo.hostenv.loadModule("dojo.event.*");
 
 obj1 = {
 	func1: function(arg1, arg2){

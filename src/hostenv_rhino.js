@@ -16,7 +16,6 @@ dojo.hostenv.getVersion = function() {return version()};
 
 // see comments in spidermonkey loadUri
 dojo.hostenv.loadUri = function(uri){
-	dj_debug("dj_global: "+dj_global);
 	dj_debug("uri: "+uri);
 	try{
 		// FIXME: what about remote URIs?

@@ -305,3 +305,5 @@ dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, 
 	return true;
 }
 
+// needed for package satisfaction
+dojo.event.Event = {};

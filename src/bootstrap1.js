@@ -364,26 +364,30 @@ dojo.hostenv.loadModule = function(modulename, exact_only){
 	// convert periods to slashes
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
-	var syms = modulename.split(/\./);
-	if(syms[0]=="dojo"){ syms[0] == "src"; } // FIXME: need a smarter way to do this!
+	var syms = modulename.split(".");
+	var nsyms = modulename.split(".");
+	if(syms[0]=="dojo"){ // FIXME: need a smarter way to do this!
+		syms[0] = "src"; 
+	}
 	var last = syms.pop();
 	syms.push(last);
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
 	if(last=="*"){
-		modulename = (syms.slice(0, -1)).join('.');
+		modulename = (nsyms.slice(0, -1)).join('.');
 		//first try package/name/__package__.js
 		while(syms.length){
 			syms.pop();
 			syms.push("__package__");
-			relpath = syms.join('/') + '.js';
+			relpath = syms.join("/") + '.js';
 			ok = this.loadPath(relpath, modulename);
 			if(ok){ break; }
 			syms.pop();
 		}
 	}else{
+		relpath = syms.join("/") + '.js';
+		modulename = nsyms.join('.');
 		var ok = this.loadPath(relpath, modulename);
-		this.println(relpath);
 		if((!ok)&&(!exact_only)){
 			// var syms = modulename.split(/\./);
 			syms.pop();
@@ -392,7 +396,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only){
 				ok = this.loadPath(relpath, modulename);
 				if(ok){ break; }
 				syms.pop();
-				relpath = syms.join('/') + '__package__.js';
+				relpath = syms.join('/') + '/__package__.js';
 				ok = this.loadPath(relpath, modulename);
 				if(ok){ break; }
 			}
@@ -473,7 +477,7 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 
 	// see if symbol is defined anyway
 	var module = dj_eval_object_path(modulename);
-	this.println(modulename+": "+module);
+	dj_debug(modulename+": "+module);
 	if((typeof module !== 'undefined')&&(module)){
 		return this.modules_[modulename] = module;
 	}
