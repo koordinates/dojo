@@ -1,8 +1,64 @@
 dojo.hostenv.loadModule("dojo.event.Event");
 dojo.hostenv.loadModule("dojo.event.BrowserEvent");
+dojo.hostenv.loadModule("dojo.io.BrowserIO");
 
 dojo.hostenv.startPackage("dojo.io.RepubsubIO");
 dojo.hostenv.startPackage("dojo.io.repubsub");
+dojo.hostenv.startPackage("dojo.io.repubsubTransport");
+
+dojo.io.repubsubTranport = new function(){
+	var rps = dojo.io.repubsub;
+	this.canHandle = function(kwArgs){
+		if(((kwArgs["mimetype"] == "text/plain")||(kwArgs["mimetype"] == "text/javascript"))&&(kwArgs["method"] == "repubsub")){
+			return true;
+		}
+		return false;
+	}
+
+	this.bind = function(kwArgs){
+		if(!rps.isInitialized){
+			// open up our tunnel, queue up requests anyway
+			rps.init();
+		}
+		// FIXME: we need to turn this into a topic subscription
+		// var tgtURL = kwArgs.url+"?"+dojo.io.argsFromMap(kwArgs.content);
+		// sampleTransport.sendRequest(tgtURL, hdlrFunc);
+
+		// a normal "bind()" call in a request-response transport layer is
+		// something that (usually) encodes most of it's payload with the
+		// request. Multi-event systems like repubsub are a bit more complex,
+		// and repubsub in particular distinguishes the publish and subscribe
+		// portions of thep rocess with different method calls to handle each.
+		// Therefore, a "bind" in the sense of repubsub must first determine if
+		// we have an open subscription to a channel provided by the server,
+		// and then "publish" the request payload if there is any. We therefore
+		// must take care not to incorrectly or too agressively register or
+		// file event handlers which are provided with the kwArgs method.
+
+		// NOTE: we ONLY pay attention to those event handlers that are
+		// registered with the bind request that subscribes to the channel. If
+		// event handlers are provided with subsequent requests, we might in
+		// the future support some additive or replacement syntax, but for now
+		// they get dropped on the floor.
+
+		// NOTE: in this case, url MUST be the "topic" to which we
+		// subscribe/publish for this channel
+		if(!rps[kwArgs.url]){
+			kwArgs.rpsLoad = function(evt){
+				kwArgs.load("load", evt);
+			}
+			rps.subscribe = function(kwArgs.url, kwArgs, "rpsLoad");
+		}
+
+		if(kwArgs["content"]){
+			// what we wanted to send
+			var cEvt = dojo.io.repubsubEvent.initFromProperties(kwArgs.content);
+			rps.publish(kwArgs.url, cEvt);
+		}
+	}
+
+	dojo.io.transports.addTransport("repubsubTranport");
+}
 
 dojo.io.repubsub = new function(){
 	this.initDoc = "init.html";
@@ -17,11 +73,7 @@ dojo.io.repubsub = new function(){
 	this.canSnd = false;
 	this.canLog = false;
 	this.sndTimer = null;
-	this.hasPeers = false;
-	this.peerRef = null; 		// our transmission peer...
-	this.peerWindowRef = null; 	// ...and its owner window
-	this.dependants = []; 		// those who view us as their transmission peer
-	this.windowRef = window; // FIXME: can/should this be dj_global?
+	this.windowRef = window;
 	this.backlog = [];
 	this.tunnelInitCount = 0;
 	this.tunnelFrameKey = "tunnel_frame";
@@ -93,7 +145,7 @@ dojo.io.repubsub = new function(){
 	this.tunnelCloseCallback = function(){
 		// when we get this callback, we should immediately attempt to re-start
 		// our tunnel connection
-		this.setIFrameSRC(this.rcvNode, this.initDoc+"?callback=repubsub.rcvNodeReady&domain="+document.domain);
+		dojo.io.setIFrameSrc(this.rcvNode, this.initDoc+"?callback=repubsub.rcvNodeReady&domain="+document.domain);
 	}
 
 	this.receiveEventFromTunnel = function(evt, srcWindow){
@@ -142,6 +194,9 @@ dojo.io.repubsub = new function(){
 		document.domain = dps.join(".");
 	}
 
+	// FIXME: parseCookie and setCookie should be methods that are more broadly
+	// available. Perhaps in htmlUtils?
+
 	this.parseCookie = function(){
 		var cs = document.cookie;
 		var keypairs = cs.split(";");
@@ -164,6 +219,7 @@ dojo.io.repubsub = new function(){
 		document.cookie = cs;
 	}
 
+	// FIXME: need to replace w/ dojo.log.*
 	this.log = function(str, lvl){
 		if(!this.debug){ return; } // we of course only care if we're in debug mode
 		while(this.logBacklog.length>0){
@@ -171,7 +227,6 @@ dojo.io.repubsub = new function(){
 			var blo = this.logBacklog.shift();
 			this.writeLog("["+blo[0]+"]: "+blo[1], blo[2]);
 		}
-		// FIXME: make this async and run off a timer!
 		this.writeLog(str, lvl);
 	}
 
@@ -180,17 +235,11 @@ dojo.io.repubsub = new function(){
 	}
 
 	this.init = function(){
-		// FIXME: need to determine some way of determining other windows which
-		//        may be open and getting a reference to them.
-		// FIXME: need to register an onunload handler to pass this object
-		//        around to the "survivor" window should this one go away.
 		this.widenDomain();
 		// this.findPeers();
-		if(!this.hasPeers){
-			this.log("didn't find peers!");
-			this.openTunnel();
-		}
+		this.openTunnel();
 		this.isInitialized = true;
+		// FIXME: this seems like entirely the wrong place to replay the backlog
 		while(this.subscriptionBacklog.length){
 			this.subscribe.apply(this, this.subscriptionBacklog.shift());
 		}
@@ -218,16 +267,16 @@ dojo.io.repubsub = new function(){
 			], false
 		);
 
-		this.rcvNode = this.createIFrame(this.rcvNodeName);
+		this.rcvNode = dojo.io.createIFrame(this.rcvNodeName);
 		// FIXME: set the src attribute here to the initialization URL
-		this.setIFrameSRC(this.rcvNode, this.initDoc+"?callback=repubsub.rcvNodeReady&domain="+document.domain);
+		dojo.io.setIFrameSrc(this.rcvNode, this.initDoc+"?callback=repubsub.rcvNodeReady&domain="+document.domain);
 
 		// the other for posting data in reply
 
 		this.sndNodeName = "sndIFrame_"+this.getRandStr();
-		this.sndNode = this.createIFrame(this.sndNodeName);
+		this.sndNode = dojo.io.createIFrame(this.sndNodeName);
 		// FIXME: set the src attribute here to the initialization URL
-		this.setIFrameSRC(this.sndNode, this.initDoc+"?callback=repubsub.sndNodeReady&domain="+document.domain);
+		dojo.io.setIFrameSrc(this.sndNode, this.initDoc+"?callback=repubsub.sndNodeReady&domain="+document.domain);
 
 	}
 
@@ -240,13 +289,13 @@ dojo.io.repubsub = new function(){
 		// this.canRcv = true;
 		this.log("rcvNodeReady");
 		// FIXME: initialize receiver and request the base topic
-		// this.setIFrameSRC(this.rcvNode, this.serverBaseURL+"/kn?do_method=blank");
+		// dojo.io.setIFrameSrc(this.rcvNode, this.serverBaseURL+"/kn?do_method=blank");
 		var initURIArr = [	this.serverBaseURL, "/kn?kn_from=", escape(this.tunnelURI),
 							"&kn_id=", escape(this.tunnelID), "&kn_status_from=", 
 							escape(statusURI)];
 		// FIXME: does the above really need a kn_response_flush? won't the
 		// 		  server already know? If not, what good is it anyway?
-		this.setIFrameSRC(this.rcvNode, initURIArr.join(""));
+		dojo.io.setIFrameSrc(this.rcvNode, initURIArr.join(""));
 
 		// setup a status path listener, but don't tell the server about it,
 		// since it already knows we're itnerested in our own tunnel status
@@ -268,71 +317,6 @@ dojo.io.repubsub = new function(){
 	this.statusListener = function(evt){
 		this.log("status listener called");
 		this.log(evt.status, "info");
-	}
-
-	this.createIFrame = function(fname) {
-		// FIXME: this is borken on IE 5.0 for the PC. What can we do with
-		// XMLHTTP to solve this, since it blocks hard and incremental read is
-		// difficult.?
-		var cframe = document.createElement((((dojo.render.html.ie)&&(dojo.render.os.win)) ? "<iframe name="+fname+">" : "iframe"));
-		with(cframe){
-			name = fname;
-			setAttribute("name", fname);
-			id = fname;
-		}
-		// try to make the frame accessable through a top-level variable. Avoid
-		// walking on other top-level variables.
-		if(!window[fname]){
-			window[fname] = cframe;
-		}else{
-			// FIXME: what do we want to do here?
-		}
-		document.body.appendChild(cframe);
-		with(cframe.style){
-			position = "absolute";
-			left = top = "0px";
-			height = width = "1px";
-			visibility = "hidden";
-			if(this.debug){
-				position = "relative";
-				height = "100px";
-				width = "300px";
-				visibility = "visible";
-			}
-		}
-		
-		dojo.event.connect(cframe, "onload", this, "cancelDOMEvent");
-		this.setIFrameSRC(cframe, "about:blank");
-		return cframe;
-	}
-
-	this.setIFrameSRC = function(iframe, src){
-		var _is = dojo.render.html;
-		if(_is.khtml){
-			iframe.setAttribute("src", src);
-		}else if(_is.opera){
-			iframe.location.replace(src);
-		}else{
-			iframe.contentWindow.location.replace(src);
-		}
-	}
-
-	this.cancelDOMEvent = function(evt){
-		if(!evt){ return false; }
-		if(evt.preventDefault){
-			evt.stopPropagation();
-			evt.preventDefault();
-		}else{
-			if(window.event){
-				window.event.cancelBubble = true;
-				window.event.returnValue = false;
-			}
-		}
-		return false;
-	}
-
-	this.parseEvent = function(event){
-		return event;
 	}
 
 	// this handles local event propigation
@@ -370,7 +354,7 @@ dojo.io.repubsub = new function(){
 			this.log("subscribing to: "+topic);
 			this.topics.push(topic);
 		}
-		var revt = new pubsubEvent(this.tunnelURI, topic, "route");
+		var revt = new dojo.io.repubsubEvent(this.tunnelURI, topic, "route");
 		var rstr = [this.serverBaseURL+"/kn", revt.toGetString()].join("");
 		dojo.event.kwConnect({
 			once: true,
@@ -384,34 +368,16 @@ dojo.io.repubsub = new function(){
 		// 		 leader, this ensures that not matter what happens to the
 		// 		 leader, we don't really loose our heads if/when the leader
 		// 		 goes away.
-		if((!this.rcvNode)&&(this.peerRef)){
-			// FIXME: is connecting here really sane?
-			// FIXME: need to determine if there are funky inter-window
-			// 		  dependencies here. I don't think there are
-			// 		  (addBareSignalByName seems very well behaved from that
-			// 		  standpoint), but we need to be absolutely sure.
-			dojo.event.kwConnect({
-				once: true,
-				srcObj: this.peerRef.attachPathList, 
-				srcFunc: topic, 
-				adviceObj: this.attachPathList, 
-				adviceFunc:topic 
-			});
-			// FIXME: we should only enqueue if this is our first subscription!
-			this.peerRef.sendTopicSubToServer(topic, rstr);
-		}else{
-			if(dontTellServer){
-				return;
-			}
-
-			this.log("sending subscription to: "+topic);
-
-			// if we still care, create a subscription event object and give it
-			// all the props we need to updates on the specified topic
-
-			// FIXME: we should only enqueue if this is our first subscription!
-			this.sendTopicSubToServer(topic, rstr);
+		if(!this.rcvNode){ /* this should be an error! */ }
+		if(dontTellServer){
+			return;
 		}
+		this.log("sending subscription to: "+topic);
+		// create a subscription event object and give it all the props we need
+		// to updates on the specified topic
+
+		// FIXME: we should only enqueue if this is our first subscription!
+		this.sendTopicSubToServer(topic, rstr);
 	}
 
 	this.sendTopicSubToServer = function(topic, str){
@@ -441,32 +407,23 @@ dojo.io.repubsub = new function(){
 	// handles local event promigulation, and therefore we emulate both sides
 	// of a real event router without having to swallow all of the complexity.
 	this.publish = function(topic, event){
-		if(!this.peerRef){
-			var evt = pubsubEvent.initFromProperties(event);
-			// FIXME: need to make sure we have from and to set correctly
-			// 		  before we serialize and send off to the great blue
-			// 		  younder.
-			evt.to = topic;
-			// evt.from = this.tunnelURI;
+		var evt = dojo.io.repubsubEvent.initFromProperties(event);
+		// FIXME: need to make sure we have from and to set correctly
+		// 		  before we serialize and send off to the great blue
+		// 		  younder.
+		evt.to = topic;
+		// evt.from = this.tunnelURI;
 
-			var evtURLParts = [];
-			evtURLParts.push(this.serverBaseURL+"/kn");
+		var evtURLParts = [];
+		evtURLParts.push(this.serverBaseURL+"/kn");
 
-			// serialize the event to a string and then post it to the correct
-			// topic
-			evtURLParts.push(evt.toGetString());
-			this.enqueueEventStr(evtURLParts.join(""));
-		}else{
-			// otherwise, forward our publish request to our inestimable peer
-			this.peerRef.publish(topic, event);
-		}
+		// serialize the event to a string and then post it to the correct
+		// topic
+		evtURLParts.push(evt.toGetString());
+		this.enqueueEventStr(evtURLParts.join(""));
 	}
 
 	this.enqueueEventStr = function(evtStr){
-		if(this.peerRef){
-			this.peerRef.enqueueEventStr(evtStr);
-			return;
-		}
 		this.log("enqueueEventStr");
 		this.backlog.push(evtStr);
 		this.dequeueEvent();
@@ -476,7 +433,7 @@ dojo.io.repubsub = new function(){
 		this.log("dequeueEvent");
 		if(this.backlog.length <= 0){ return; }
 		if((this.canSnd)||(force)){
-			this.setIFrameSRC(this.sndNode, this.backlog.shift()+"&callback=repubsub.sndNodeReady");
+			dojo.io.setIFrameSrc(this.sndNode, this.backlog.shift()+"&callback=repubsub.sndNodeReady");
 			this.canSnd = false;
 		}else{
 			this.log("sndNode not available yet!", "debug");
@@ -484,7 +441,7 @@ dojo.io.repubsub = new function(){
 	}
 }
 
-function pubsubEvent(to, from, method, id, routeURI, payload, dispname, uid){
+dojo.io.repubsubEvent = function(to, from, method, id, routeURI, payload, dispname, uid){
 	this.to = to;
 	this.from = from;
 	this.method = method||"route";
@@ -494,9 +451,41 @@ function pubsubEvent(to, from, method, id, routeURI, payload, dispname, uid){
 	this.userid = uid||repubsub.userid;
 	this.payload = payload||"";
 	this.flushChars = 4096;
+
+	this.initFromProperties = function(evt){
+		if(evt.constructor = dojo.io.repubsubEvent){ 
+			for(var x in evt){
+				this[x] = evt[x];
+			}
+		}else{
+			// we want to copy all the properties of the evt object, and transform
+			// those that are "stock" properties of dojo.io.repubsubEvent. All others should
+			// be copied as-is
+			for(var x in evt){
+				if(typeof this.forwardPropertiesMap[x] == "string"){
+					this[this.forwardPropertiesMap[x]] = evt[x];
+				}else{
+					this[x] = evt[x];
+				}
+			}
+		}
+	}
+
+	this.toGetString = function(noQmark){
+		var qs = [ ((noQmark) ? "" : "?") ];
+		for(var x=0; x<this.properties.length; x++){
+			var tp = this.properties[x];
+			if(this[tp[0]]){
+				qs.push(tp[1]+"="+encodeURIComponent(String(this[tp[0]])));
+			}
+			// FIXME: we need to be able to serialize non-stock properties!!!
+		}
+		return qs.join("&");
+	}
+
 }
 
-pubsubEvent.prototype.properties = [["from", "kn_from"], ["to", "kn_to"], 
+dojo.io.repubsubEvent.prototype.properties = [["from", "kn_from"], ["to", "kn_to"], 
 									["method", "do_method"], ["id", "kn_id"], 
 									["uri", "kn_uri"], 
 									["displayname", "kn_displayname"], 
@@ -506,68 +495,20 @@ pubsubEvent.prototype.properties = [["from", "kn_from"], ["to", "kn_to"],
 									["responseFormat", "kn_response_format"] ];
 
 // maps properties from their old names to their new names...
-pubsubEvent.prototype.forwardPropertiesMap = {};
+dojo.io.repubsubEvent.prototype.forwardPropertiesMap = {};
 // ...and vice versa...
-pubsubEvent.prototype.reversePropertiesMap = {};
+dojo.io.repubsubEvent.prototype.reversePropertiesMap = {};
 
 // and we then populate them both from the properties list
-for(var x=0; x<pubsubEvent.prototype.properties.length; x++){
-	var tp = pubsubEvent.prototype.properties[x];
-	pubsubEvent.prototype.reversePropertiesMap[tp[0]] = tp[1];
-	pubsubEvent.prototype.forwardPropertiesMap[tp[1]] = tp[0];
+for(var x=0; x<dojo.io.repubsubEvent.prototype.properties.length; x++){
+	var tp = dojo.io.repubsubEvent.prototype.properties[x];
+	dojo.io.repubsubEvent.prototype.reversePropertiesMap[tp[0]] = tp[1];
+	dojo.io.repubsubEvent.prototype.forwardPropertiesMap[tp[1]] = tp[0];
 }
-
-pubsubEvent.prototype.initFromProperties = function(evt){
-	if(evt.constructor = pubsubEvent){ 
-		for(var x in evt){
-			this[x] = evt[x];
-		}
-	}else{
-		// we want to copy all the properties of the evt object, and transform
-		// those that are "stock" properties of pubsubEvent. All others should
-		// be copied as-is
-		for(var x in evt){
-			if(typeof this.forwardPropertiesMap[x] == "string"){
-				this[this.forwardPropertiesMap[x]] = evt[x];
-			}else{
-				this[x] = evt[x];
-			}
-		}
-		/*
-		// this is the old way, which only copies known properties into the
-		// event object. This is sub-optimal.
-		for(var x=0; x<this.properties.length; x++){
-			var tp = this.properties[x][0];
-			if(evt[tp]){
-				this[tp] = evt[tp];
-			}
-		}
-		*/
-	}
-}
-
-pubsubEvent.prototype.toGetString = function(noQmark){
-	var qs = [ ((noQmark) ? "" : "?") ];
-	for(var x=0; x<this.properties.length; x++){
-		var tp = this.properties[x];
-		if(this[tp[0]]){
-			qs.push(tp[1]+"="+encodeURIComponent(String(this[tp[0]])));
-		}
-		// FIXME: we need to be able to serialize non-stock properties!!!
-	}
-	return qs.join("&");
-}
-
 // static version of initFromProperties, creates new event and object and
 // returns it after init
-pubsubEvent.initFromProperties = function(evt){
-	var eventObj = new pubsubEvent();
+dojo.io.repubsubEvent.initFromProperties = function(evt){
+	var eventObj = new dojo.io.repubsubEvent();
 	eventObj.initFromProperties(evt);
 	return eventObj;
 }
-
-// initialize when we hit onload()
-// FIXME: need to make this conditional on something or other
-// __sig__.connect(window, "onload", repubsub, "init");
-// __sig__.connect(window, "onunload", repubsub, "clobber");
-

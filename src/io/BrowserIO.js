@@ -71,6 +71,8 @@ dojo.io.createIFrame = function(fname){
 			visibility = "visible";
 		}
 	}
+
+	// FIXME: do we need to (optionally) squelch onload?
 	
 	dojo.io.setIFrameSrc(cframe, dojo.hostenv.base_relative_path_+"/blank.html", true);
 	return cframe;
@@ -92,6 +94,21 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 			dj_debug(iframe.contentWindow.location);
 		}
 	}catch(e){ alert(e); }
+}
+
+
+dojo.io.cancelDOMEvent = function(evt){
+	if(!evt){ return false; }
+	if(evt.preventDefault){
+		evt.stopPropagation();
+		evt.preventDefault();
+	}else{
+		if(window.event){
+			window.event.cancelBubble = true;
+			window.event.returnValue = false;
+		}
+	}
+	return false;
 }
 
 dojo.io.XMLHTTPTransport = new function(){
