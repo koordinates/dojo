@@ -3,8 +3,6 @@ if(!dojo.xml){
 	dojo.xml = {};
 }
 
-dojo.xml.DomUtil = {};
-
 // for loading script:
 dojo.xml.domUtil = new function(){
 
