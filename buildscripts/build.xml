@@ -4,23 +4,6 @@
 <project name="dojo" default="help" basedir=".">
 	<description>build the Dojo toolkit</description>
 
-	<!-- XMLBEAN TASK SETUP -->
-	<taskdef name="xmlbean" 
-		classname="org.apache.xmlbeans.impl.tool.XMLBean" 
-		classpath="lib/xbean.jar"/>
-	<!-- end XMLBEAN TASK SETUP -->
-
-	<!-- BSF TASK SETUP -->
-		<!--
-	<taskdef name="script" 
-		classname="org.apache.tools.ant.taskdefs.optional.Script" 
-		classpath="lib/js.jar;lib/jython.jar;lib/ant-apache-bsf.jar;lib/bsf.jar;"/>
-		classpath="lib/js-1.5R4.1.jar;lib/jython.jar;lib/ant-apache-bsf-1.6.2.jar;lib/bsf-2.3.0.jar;"/>
-		classpath="lib/jython.jar;lib/ant-apache-bsf.jar;lib/bsf.jar;"/>
-		classpath="lib/js.jar;lib/xbean.jar;lib/jython.jar;lib/ant-apache-bsf.jar;lib/bsf.jar;"/>
-		-->
-	<!-- end BSF TASK SETUP -->
-
 	<!-- project properties -->
 	<property name="project" value="dojo"/>
 	<property name="build.dir" value="../build"/>
