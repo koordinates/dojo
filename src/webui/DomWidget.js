@@ -1,6 +1,6 @@
-doj.hostenv.loadModule("dojo.webui.Widget");
-
 dojo.hostenv.startPackage("dojo.webui.DomWidget");
+
+doj.hostenv.loadModule("dojo.webui.Widget");
 
 dojo.webui.DomWidget = function(){
 

@@ -1,5 +1,7 @@
 dojo.hostenv.startPackage("dojo.webui.widgets.HTMLButton");
 
+dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+
 dojo.webui.widgets.HTMLButton = function(){
 	// if DOMButton turns into a mixin, we should subclass Button instead and
 	// just mix in the DOMButton properties.

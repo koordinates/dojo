@@ -1,8 +1,10 @@
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-
 // ensure that dojo.webui exists
 dojo.hostenv.startPackage("dojo.webui.Widget");
+dojo.hostenv.startPackage("dojo.webui.selection");
+dojo.hostenv.startPackage("dojo.webui.dragAndDropManager");
+
+dojo.hostenv.loadModule("dojo.event.*");
+dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 
 dojo.webui.Widget = function(){
 	// FIXME: need to be able to disambiguate what our rendering context is

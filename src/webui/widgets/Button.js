@@ -1,8 +1,11 @@
 dojo.hostenv.startPackage("dojo.webui.widgets.Button");
 
+dojo.hostenv.loadModule("dojo.webui.DomWidget");
+
 dojo.webui.widgets.Button = function(){
 	dojo.webui.Widget.call(this);
 
+	this.widgetType = "Button";
 }
 dj_inherits(dojo.webui.widgets.Button, dojo.webui.Widget);
 
