@@ -45,7 +45,9 @@ dojo.hostenv.loadUri = function(uri, cb){
 }
 
 dojo.hostenv.println = print;
-dojo.hostenv.exit = function(exitcode) {quit(exitcode)};
+dojo.hostenv.exit = function(exitcode){ 
+	quit(exitcode);
+}
 
 // Hack to determine current script...
 //

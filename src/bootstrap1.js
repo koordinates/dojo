@@ -418,6 +418,7 @@ dojo.hostenv.unwindUriStack = function(){
 			dj_debug("error: "+e);
 		}
 		dojo.hostenv.loadedUris[next[0]] = true;
+		dojo.hostenv.loadedUris.push(next[0]);
 		last = next;
 		next = stack.pop();
 		if((!next)&&(stack.length==0)){ break; }
