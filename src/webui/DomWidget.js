@@ -40,11 +40,11 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			var on = nr.parentNode.replaceChild(this.domNode, nr);
 			var fragParser = new dojo.webui.widgets.Parse(frag);
 			fragParser.createComponents(frag);
-			this.domNode.appendChild(on);
+			this.domNode.innerHTML = on.innerHTML;
 			for(var i=0; i<on.childNodes.length; i++) {
 				if(on.childNodes.nodeType == elementNodeType) {
-					this.addChild(on.childNodes.item(i));
-					//this.domNode.appendChild(on.childNodes.item(i));
+					// FIXME: not sure they the above innerHTML switch works, but this doesn't...
+					//this.addChild(on.childNodes.item(i));
 				}
 			}
 		} else {
