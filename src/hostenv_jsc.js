@@ -50,8 +50,10 @@ dojo.hostenv.loadUri = function(uri){
 */
 
 // same as System.Console.WriteLine
-// sigh; Rotor treats symbol "print" at parse time without actually putting it in the builtin symbol table.
-// Note that the print symbol is not available if jsc is run with the "/print-" option.
+// sigh; Rotor treats symbol "print" at parse time without actually putting it
+// in the builtin symbol table.
+// Note that the print symbol is not available if jsc is run with the "/print-"
+// option.
 dojo.hostenv.println = function(s){
 	print(s); // = print
 }
