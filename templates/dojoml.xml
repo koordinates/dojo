@@ -109,6 +109,18 @@
 		-->
 		<indentation></indentation>
 		<!-- indentation for each tree level, css size allowed -->
+		<state type="default" mode="collapsed | expandedAll | expandedToDepth | expandedToList">
+			<!--
+				the default state of the tree... possible states are:
+					collapsed: all tree items are collapsed
+					expandedAll: all tree items are expanded
+					expandedToDepth: all tree items to a certain integral depth are open... for example, 3 will have all items that are 1 ,2,or 3 levels deep expanded (top level is 0)
+					expandedToList: expand all items necessary to show the list of items that are to be expanded... need to work out what this list of ids represents
+			-->
+			<expandDepth>3</expandDepth>
+			<expandList>nodde1,node2,node5</expandList>
+			<!-- these could of course be specified as attributes, and would only need to be specified if relevant -->
+		</state>
 		<treeItems>
 			<cssClassList></cssClassList>
 			<!--
@@ -136,7 +148,6 @@
 				 a defs element
 			-->
 		</treeIconItems>
-		<!-- TODO: what about state?  is that defined somewhere in here? -->
 		<!-- TODO: how to describe transition effects specific to trees...
 		I'm thinking this might be handled by whatever animation model we use -->
 		<!-- TODO:
