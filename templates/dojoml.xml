@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+	<!-- TODO: -->
 
-	<!-- some generic templates as a temporary holding place for attributes common to a set of elements -->
-	<dojo:genericDataContainer id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider=""/>
-	<!-- description of all attributes allowed for component/widget containers -->
-	<!-- cssStyle allows inline css block, dojoStyle is for presentational attributes for components that are not dojo... we may break these into attributes in their own namespace -->
+	<!-- components -->
+	<dojo:button id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:contextMenu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:menu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:progressBar id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:splitPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:tabbedPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:tree id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:wizard id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+
+	<dojo:form id="" cssClassName="" cssStyle="" dojoStyle="" action="">
+		<!-- I'm attempting to cover the whatwg's web forms 2.0 spec here... come back to this later though -->
+		<dojo:input type="text|password|hidden|image|datetime|date|month|week|time|name|range|email|uri" />
+		<dojo:button />
+		<dojo:selectOne /> <!-- drop down and radio buttons -->
+		<dojo:selectMultiple /> <!-- select and checkboxes -->
+		<dojo:comboBox />
+		<dojo:textInput />
+		<dojo:file />
+		<!-- Flex has a concept for a formItem and groups such as radioButtonGroup... what do we want to do with this? -->
+		<dojo:datePicker />
+	</dojo:form>
+
+	<dojo:resource dataProvider="" type="css|xslt|javascript|rss|atom" />
+	<dojo:htmlFragment dataProvider="" />
+	<dojo:svgFragment dataProvider="" />
+	<dojo:xmlFragment dataProvider="" /><!-- for generic namespaces? -->
+
+
+	<!-- some generic templates as a temporary holding place for attributes 	<!-- cssStyle allows inline css block, dojoStyle is for presentational attributes for components that are not dojo... we may break these into attributes in their own namespace -->
 	<dojo:genericUIComponent id="" source="" />
 	<dojo:genericModel id="" source="" />
 	<!-- description of all attributes allowed for model sources -->
@@ -15,16 +43,6 @@
 	<dojo:link />
 
 	<dojo:script /> <!-- do we have a need for this? -->
-	<dojo:textInput />
-	<dojo:button />
-	<dojo:selectOne /> <!-- drop down and radio buttons -->
-	<dojo:selectMultiple /> <!-- select and checkboxes -->
-	<dojo:comboBox />
-	<dojo:textInput />
-	<!-- Flex has a concept for a formItem and groups such as radioButtonGroup... what do we want to do with this? -->
-	<dojo:dateField />
-	<dojo:datePicker />
-	<dojo:tree />
 	<dojo:grid /><!-- table? -->
 	<dojo:accordion /><!--need a better name -->
 
