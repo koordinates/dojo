@@ -17,7 +17,12 @@
 		<script language="JavaScript" type="text/javascript">
 			dojo.hostenv.loadModule("dojo.event.*");
 
-			function logMe(){
+			function logMe(evt){
+				// FIXME: it appears that we're not actually getting this passed from IE!?!
+				if(!evt){ evt = window.event; }
+				for(var x in evt){
+					dj_debug(x+": "+evt[x]);
+				}
 				dj_debug("some event was fired");
 			}
 
