@@ -28,12 +28,12 @@
 						dj_debug(data);
 						// we could just set mimetype: "text/javascript" to
 						// have it auto-eval, but that's not as interesting
-						dj_eval(data); 
+						// dj_eval(data); 
 					},
 					backButton: function(){
 						alert("we intercepted the back button");
 					},
-					changeURL: true
+					changeURL: "foo"+(new Date()).getTime()
 				};
 				var canBind = dojo.io.bind(bindArgs);
 			}
