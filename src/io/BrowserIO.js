@@ -177,7 +177,7 @@ dojo.io.XMLHTTPTransport = new function(){
 				// clearInterval(this.locationTimer);
 				this.handleBackButton();
 				// alert(this.historyIframe.history.go(-1));
-				alert(this.historyIframe.history.length);
+				// alert(this.historyIframe.history.length);
 				return;
 			}
 		}
@@ -201,7 +201,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.iframeLoaded = function(evt, ifrLoc){
 		var isp = ifrLoc.href.split("?");
 		if(isp.length < 2){ 
-			alert("iframeLoaded");
+			// alert("iframeLoaded");
 			// we hit the end of the history, so we should go back
 			if(this.historyStack.length == 1){
 				this.handleBackButton();
@@ -248,9 +248,9 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	this.handleForwardButton = function(){
-		alert("alert we found a forward button call");
-		var last = this.forwardStack.pop();
 		// FIXME: how do we handle this? perhaps by re-issuing the bind() call?
+		// alert("alert we found a forward button call");
+		var last = this.forwardStack.pop();
 		/*
 		if(last["callback"]){
 			last.callback();
