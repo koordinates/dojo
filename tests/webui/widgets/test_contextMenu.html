@@ -23,8 +23,10 @@
 		<script language="JavaScript" type="text/javascript">
 			dojo.hostenv.loadModule("dojo.xml.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.MenuItem");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Menu");
 			dojo.hostenv.loadModule("dojo.webui.widgets.ContextMenu");
+			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLMenuItem");
 			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLMenu");
 			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLContextMenu");
 			
@@ -63,6 +65,12 @@
 	<body>
 		Check your javascript log; the scripts were all loaded in the head.
 
-		<div dojoType="contextMenu">you shouldn't be seeing this</div>
+			<div dojoType="contextMenu">
+				<div dojoType="menuItem" onClick="alert('one');">one</div>
+				<div dojoType="menuItem" onClick="alert('two');">two</div>
+				<div dojoType="menuItem" onClick="alert('three');">three</div>
+				<div dojoType="menuItem" onClick="alert('four');">four</div>
+				<div dojoType="menuItem" onClick="alert('five');">five</div>
+			</div>
 	</body>
 </html>

@@ -12,19 +12,11 @@ dojo.webui.widgets.HTMLMenu = function(){
 	this.templateCSSPath = "src/webui/widgets/templates/HTMLMenuTemplate.css";
 
 	this.fillInTemplate = function(){
-		
-	}
 
+	}
 	this.onFoo = function(){}
 }
 
-/*
-new function(){ // namespace protection closure
-	var hbp = dojo.webui.widgets.HTMLContextMenu.prototype;
-	hbp.templateString = ["<button />"].join("");
-}; // FIXME: why isnt the (function(){})(); syntax working here??
-*/
-
 dj_inherits(dojo.webui.widgets.HTMLMenu, dojo.webui.widgets.DomMenu);
 
-// dojo.webui.widgets.HTMLContextMenu.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
+// dojo.webui.widgets.HTMLMenu.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";

@@ -124,7 +124,6 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 				}
 			}
 		}
-		
 		// FIXME: temporarily commenting this out as it is breaking things
 		for(var x=0; x<baseNode.childNodes.length; x++){
 			if(baseNode.childNodes.item(x).nodeType == elementNodeType){
