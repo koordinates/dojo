@@ -2,6 +2,8 @@
 dojo.hostenv.startPackage("dojo.event.Topic");
 dojo.hostenv.loadModule("dojo.event.Event");
 
+dojo.event.Topic = {};
+
 dojo.event.topic = new function(){
 	this.topics = {};
 
