@@ -117,8 +117,8 @@ dojo.xml.ParseDocumentFragment.prototype.parseElement = function(node,hasParentN
 				break;
 		}
 	}
-	return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
-	//return parsedNodeSet;
+	//return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
+	return parsedNodeSet;
 }
 
 /* parses a set of attributes on a node into an object tree */

@@ -22,26 +22,31 @@
 			function testHandler() {
 				var testObj = new dojo.xml.ParseDocumentFragment();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
-				outputObjectInfo(testObjects,0);
+				outputObjectInfo(testObjects,0,document.getElementById("output"));
 			}
 			
-			function outputObjectInfo(x,indentationCounter) {
+			function outputObjectInfo(x,indentationCounter, outputElement) {
 				indentationCounter++;
 				for (var y in x) {
 					if (typeof x[y] == "object" && x[y] != x.nodeRef) {
-						for(var i=0; i<indentationCounter;i++) {
-							document.getElementById("output").appendChild(document.createTextNode("-"));
+						if (!(x instanceof Array && !isNaN(parseInt(y)))) {
+							for(var i=0; i<indentationCounter; i++) {
+								outputElement.appendChild(document.createTextNode("-"));
+							}
+							outputElement.appendChild(document.createTextNode(y));
+							outputElement.appendChild(document.createElement("br"));
+						} else
+						{
+							// need some way to fix this indentation setup as this is hacky
 						}
-						document.getElementById("output").appendChild(document.createTextNode(y));
-						document.getElementById("output").appendChild(document.createElement("br"));
-						outputObjectInfo(x[y],indentationCounter);
+						outputObjectInfo(x[y],indentationCounter,outputElement);
 					} else
 					{
 						for(var i=0; i<indentationCounter;i++) {
-							document.getElementById("output").appendChild(document.createTextNode("-"));
+							outputElement.appendChild(document.createTextNode("-"));
 						}
-						document.getElementById("output").appendChild(document.createTextNode(y+":" +x[y]));
-						document.getElementById("output").appendChild(document.createElement("br"));
+						outputElement.appendChild(document.createTextNode(y+":" +x[y]));
+						outputElement.appendChild(document.createElement("br"));
 					}
 				}
 			} //-->
