@@ -1,7 +1,6 @@
 /*
-* WSH
-*
-*/
+ * WSH
+ */
 
 dojo.hostenv.name_ = 'wsh';
 
@@ -24,12 +23,12 @@ dojo.hostenv.getCurrentScriptUri = function(){
 }
 
 dojo.hostenv.getText = function(fpath){
-    var fso = new ActiveXObject("Scripting.FileSystemObject");
-    var istream = fso.OpenTextFile(fpath, 1); // iomode==1 means read only
-    if(!istream){ return null; }
-    var contents = istream.ReadAll();
-    istream.Close();
-    return contents;
+	var fso = new ActiveXObject("Scripting.FileSystemObject");
+	var istream = fso.OpenTextFile(fpath, 1); // iomode==1 means read only
+	if(!istream){ return null; }
+	var contents = istream.ReadAll();
+	istream.Close();
+	return contents;
 }
 
 dojo.hostenv.exit = function(exitcode){ WScript.Quit(exitcode); }
