@@ -195,8 +195,4 @@ dojo.hostenv.println = function(s){
 }
 
 // we assume that we haven't hit onload yet. Lord help us.
-if(dojo.render.html.moz){
-	document.write("<iframe name='djhistory' id='djhistory' src='about:blank'></iframe>");
-}else{
-	document.write("<iframe name='djhistory' id='djhistory' src='"+dojo.hostenv.base_relative_path_+"/blank.html'></iframe>");
-}
+document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+((dojo.render.html.moz) ? 'about:blank' : (dojo.hostenv.base_relative_path_+'/blank.html'))+"'></iframe>");
