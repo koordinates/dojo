@@ -21,8 +21,9 @@
 	<property name="lang" value="en"/>
 	<property name="release_dir" value="${root}/release/${project}"/>
 	<property name="docs_dir" value="${root}/documents"/>
-	<property name="release_docs_dir" value="${release_dir}/docs"/>
+	<property name="release_docs_dir" value="${release_dir}/documents"/>
 	<property name="rest_style_sheet" value="${docs_dir}/styles/dojo.css"/>
+	<property name="rest_files" value=""/>
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
@@ -256,7 +257,8 @@ from buildUtil import *
 
 buildRestFiles( dojo.getProperty("docs_dir"), 
 				dojo.getProperty("release_docs_dir"),
-				dojo.getProperty("rest_style_sheet"))
+				dojo.getProperty("rest_style_sheet"),
+				dojo.getProperty("rest_files"))
 ]]></script>
 	</target>
 	<!-- end docs task -->
@@ -440,9 +442,9 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 
 		<copy overwrite="true" file="../blank.html" todir="${release_dir}/" />
 
+		<copy file="${root}/LICENSE.txt" todir="${release_dir}/" />
 		<!--
-		<copy file="LICENSE.txt" todir="${release_dir}/${project}/" />
-		<copy file="README.txt" todir="${release_dir}/${project}/" />
+		<copy file="README.txt" todir="${release_dir}/" />
 		-->
 	</target>
 	<!-- end release task -->

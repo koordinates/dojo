@@ -19,8 +19,6 @@
 		<script language="JavaScript" type="text/javascript">
 			dojo.hostenv.loadModule("dojo.io.*");
 
-			dojo.hostenv.modulesLoadedListeners.push(init);
-
 			function init(){
 				var bindArgs = {
 					url: "test_BrowserIO_data.txt",
@@ -37,6 +35,8 @@
 				};
 				var canBind = dojo.io.bind(bindArgs);
 			}
+
+			dojo.hostenv.modulesLoadedListeners.push(init);
 		</script>
 	</head>
 	<body>

@@ -538,6 +538,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 }
 
 dojo.hostenv.modulesLoadedFired = false;
+dojo.hostenv.modulesLoadedListeners = [];
 
 dojo.hostenv.modulesLoaded = function(){
 	if(this.modulesLoadedFired){ return; }
@@ -553,8 +554,6 @@ dojo.hostenv.modulesLoaded = function(){
 		}
 	}
 }
-
-dojo.hostenv.modulesLoadedListeners = [];
 
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 

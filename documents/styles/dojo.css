@@ -65,8 +65,10 @@
 	.section {
 		margin-left : 210px;
 		margin-right : 192px;
+		/*
 		margin-bottom : 20px;
 		padding-bottom : 50px;
+		*/
 		/* FIXME: need a section separator */
 		/* background : url(../images/dots.gif) no-repeat bottom center; */
 	}
@@ -125,8 +127,9 @@ ul {
 	margin-left : 1em;
 }
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
 	color : #666666;
+	font-family : Georgia, sans-serif;
 }
 
 h1.title {

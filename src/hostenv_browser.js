@@ -200,8 +200,21 @@ dojo.hostenv.println = function(s){
 	}
 }
 
+// NOTE: IE seems to have some really fucked up ideas of what "onload" means
+// WRT to pulling things out of the cache and executing them. In this case, we
+// hit "onload" and THEN execute the JS that exists below the bootstrap2.js
+// include in the page. This might be related to the iframe loading, but there
+// isn't any way to tell that from the event that's thrown. Grr.
+if(dojo.render.html.ie){
+	dojo.hostenv._old_modulesLoaded = dojo.hostenv.modulesLoaded;
+	dojo.hostenv.modulesLoaded = function(){
+		this.modulesLoadedFired = false;
+		this._old_modulesLoaded();
+	}
+}
+
 // FIXME: this and other Dojo-specific events need a more NW-like attachment mechanism
-window.onload = function(){
+window.onload = function(evt){
 	dojo.hostenv.modulesLoaded();
 }
 

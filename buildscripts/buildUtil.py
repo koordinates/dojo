@@ -9,7 +9,7 @@ import popen2
 import fnmatch
 import glob
 
-def buildRestFiles(docDir, docOutDir, styleSheetFile):
+def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
 	docFiles = []
 
 	# start in docDir and add all the reST files in the directory to the
@@ -17,7 +17,12 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile):
 	docDir = os.path.normpath(os.path.abspath(docDir))
 	styleSheetFile = os.path.normpath(os.path.abspath(styleSheetFile))
 	docOutDir = os.path.normpath(os.path.abspath(docOutDir))
-	docFiles = glob.glob1(docDir, "*.rest")
+
+	if not len(restFiles):
+		docFiles = glob.glob1(docDir, "*.rest")
+	else:
+		docFiles = map(lambda x: x.strip(), restFiles.split(","))
+
 	for name in docFiles:
 		x = docDir+os.sep+name
 		if x.find(os.sep+".svn") == -1:
@@ -33,10 +38,11 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile):
 			os.system(cmdStr)
 			# java.lang.Runtime.exec(??)
 	
-	for name in os.listdir(docDir):
-		tn = os.path.normpath(docDir+os.sep+name)
-		if os.path.isdir(tn) and not name == ".svn":
-			buildRestFiles(tn, docOutDir+os.sep+name, styleSheetFile)
+	if not len(restFiles):
+		for name in os.listdir(docDir):
+			tn = os.path.normpath(docDir+os.sep+name)
+			if os.path.isdir(tn) and not name == ".svn":
+				buildRestFiles(tn, docOutDir+os.sep+name, styleSheetFile)
 
 def norm(path):
 	path = os.path.normpath(os.path.abspath(path))

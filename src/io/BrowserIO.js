@@ -127,6 +127,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	
 	this.initialHref = window.location.href;
 	this.initialHash = window.location.hash;
+	// alert(this.initialHash);
 
 	this.moveForward = false;
 

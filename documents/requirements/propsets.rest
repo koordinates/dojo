@@ -94,13 +94,15 @@ Examples
 
 Markup for various property sets is defined as follows:
 
-base propset markup::
-*******************
+base propset markup
+*********************
+::
 
 	<dojo:propertySet match="dojo.global" scrollType="auto" />
 
-multiple properties in a single propset::
+multiple properties in a single propset
 ***************************************
+::
 
 	<dojo:propertySet match="dojo.global">
 		<dojo:scroll type="auto"/>
@@ -109,6 +111,7 @@ multiple properties in a single propset::
 
 "named" propsets
 ****************
+::
 
 	<dojo:propertySet id="propsetFoo">
 		<dojo:scroll type="auto"/>
@@ -117,6 +120,7 @@ multiple properties in a single propset::
 
 "typed" propsets (those that affect all widgets of a given base type)
 *********************************************************************
+::
 
 	<dojo:propertySet match="dojo.grid">
 		<dojo:scroll type="auto"/>
