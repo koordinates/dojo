@@ -1,6 +1,6 @@
 dojo.hostenv.loadModule("dojo.xml.Parse");
-dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.conditionalLoadModule({
+	common:		["dojo.xml.domUtil"],
     browser: 	["dojo.xml.htmlUtil"],
     svg: 		["dojo.xml.svgUtil"]
 });
