@@ -119,17 +119,21 @@ dojo.xml.Parse = function(){
 	this.parseAttributes = function(node) {
 		// TODO: make this namespace aware
 		var parsedAttributeSet = {};
-		// TODO: should we allow for duplicate attributes at this point... would any of the relevant dom implementations even allow this?
-		/*for(var i=0; i<node.attributes.length; i++) {
-			if(!parsedAttributeSet[node.attributes[i].nodeName]) {
-				parsedAttributeSet[node.attributes[i].nodeName] = [];
+		var atts = node.attributes;
+		// TODO: should we allow for duplicate attributes at this point...
+		// would any of the relevant dom implementations even allow this?
+		for(var i=0; i<atts.length; i++) {
+			var attnode = atts.item(i);
+			if(!attnode){ continue; }
+			if(	(typeof attnode == "object")||
+				(typeof attn.nodeValue == 'undefined')||
+				(attn.nodeValue == null)||
+				(attn.nodeValue == '')){ 
+				continue; 
 			}
-			parsedAttributeSet[node.attributes[i].nodeName][parsedAttributeSet[node.attributes[i].nodeName].length] = { value: node.attributes[i].nodeValue };
-		}*/
-		// for(var i in node.attributes){
-		for(var i=0; i<node.attributes.length; i++) {
-			// parsedAttributeSet[node.attributes[i].nodeName] = { value: node.attributes[i].nodeValue };
-			parsedAttributeSet[node.attributes.item(i).nodeName] = { value: node.attributes.item(i).nodeValue };
+			parsedAttributeSet[attnode.nodeName] = { 
+				value: attnode.nodeValue 
+			};
 		}
 		return parsedAttributeSet;
 	}
