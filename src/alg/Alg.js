@@ -18,6 +18,11 @@ dojo.alg.getNameInObj = function(ns, item){
 	return null;
 }
 
+// is this the right place for this?
+dojo.alg.has = function(obj, name){
+	return (typeof obj[name] !== 'undefined');
+}
+
 dojo.alg.forEach = function(arr, unary_func){
 	for(var i=0; i<arr.length; i++){
 		unary_func(arr[i]);
