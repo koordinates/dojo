@@ -79,7 +79,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			http = new XMLHttpRequest(); 
 		}catch(e){}
 		if(!http){
-			for(var i=0; i<3; ++i){
+			for(var i=0; i < DJ_XMLHTTP_PROGIDS.length; ++i){
 				var progid = DJ_XMLHTTP_PROGIDS[i];
 				try{
 					http = new ActiveXObject(progid);
