@@ -14,14 +14,21 @@
 		<script language="JavaScript" type="text/javascript" src="../../../src/hostenv_browser.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../../../src/bootstrap2.js"></script>
 		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.xml.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
 
 			function init(){
 				// add your on-load logic here
+				var parser = new dojo.xml.Parse.ParseDocumentFragment();
+				var frag  = parser.parseFragment(document.body);
+				alert(frag);
 			}
 		</script>
 	</head>
 	<body onload="init();">
 		Check your javascript log; the scripts were all loaded in the head.
+
+		<div dojoType="button" label="this is a test button!" />
 	</body>
 </html>

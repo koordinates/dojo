@@ -1,5 +1,7 @@
 dojo.hostenv.startPackage("dojo.xml.Parse");
 
+dojo.hostenv.loadModule("dojo.xml.domUtil");
+
 //TODO: determine dependencies
 // currently has dependency on dojo.xml.DomUtil nodeTypes constants...
 
@@ -32,7 +34,8 @@ dojo.xml.Parse.ParseDocumentFragment = function(){}
 dojo.xml.Parse.ParseDocumentFragment.prototype.parseFragment = function(documentFragment) {
 	// handle parent element
 	var parsedFragment = {};
-	var tagName = dojo.xml.domUtil.getTagName(node);
+	// var tagName = dojo.xml.domUtil.getTagName(node);
+	var tagName = dojo.xml.domUtil.getTagName(documentFragment);
 	// TODO: What if document fragment is just text... need to check for nodeType perhaps?
 	parsedFragment[tagName] = new Array(documentFragment.tagName);
 	var attributeSet = this.parseAttributes(documentFragment);

@@ -415,6 +415,9 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			syms.pop();
 			syms.push("__package__");
 			relpath = syms.join("/") + '.js';
+			if(relpath.charAt(0)=="/"){
+				relpath = relpath.slice(1);
+			}
 			ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 			if(ok){ break; }
 			syms.pop();
@@ -432,6 +435,9 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 				if(ok){ break; }
 				syms.pop();
 				relpath = syms.join('/') + '/__package__.js';
+				if(relpath.charAt(0)=="/"){
+					relpath = relpath.slice(1);
+				}
 				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 				if(ok){ break; }
 			}

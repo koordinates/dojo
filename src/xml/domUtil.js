@@ -1,7 +1,4 @@
-if(!dojo){ dojo = {}; }
-if(!dojo.xml){ 
-	dojo.xml = {};
-}
+dojo.hostenv.startPackage("dojo.xml.domUtil");
 
 // for loading script:
 dojo.xml.domUtil = new function(){

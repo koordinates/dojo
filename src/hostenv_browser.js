@@ -90,8 +90,8 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no responseText");
 			return null;
 		}
-		return http.responseText;
 	}
+	return http.responseText;
 }
 
 /*
@@ -133,7 +133,6 @@ if(!dojo.hostenv["library_script_uri_"]){
 }
 */
 
-
 dojo.hostenv.println = function(s){
 	try{
 		var ti = document.createElement("div");
@@ -142,6 +141,8 @@ dojo.hostenv.println = function(s){
 	}catch(e){
 		try{
 			document.write(s);
+			// safari needs the output wrapped in an element for some reason
+			// document.write("<div>"+s+"</div>");
 		}catch(e2){
 			window.alert(s);
 		}
