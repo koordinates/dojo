@@ -101,8 +101,23 @@ dojo.webui.Widget = function(){
 
 		var undef;
 
+		// NOTE: we cannot assume that the passed properties are case-correct
+		// (esp due to some browser bugs). Therefore, we attempt to locate
+		// properties for assignment regardless of case. This may cause
+		// problematic assignments and bugs in the future and will need to be
+		// documented with big bright neon lights.
+
 		for(var x in args){
 			dj_debug("args: "+x);
+			var tx = this[x];
+			if(!tx){
+				// FIXME: this is O(n) time for each property, and thereby O(mn), which can easily be O(n^2)!!! Ack!!
+				for(var y in this){
+					if((new String(y)).toLowerCase()==(new String(x)).toLowerCase()){
+						x = y; break;
+					}
+				}
+			}
 			if((typeof this[x]) != (typeof undef)){
 				if(!typeof args[x] == "string"){
 					this[x] = args[x];
