@@ -126,12 +126,32 @@ multiple properties in a single propset::
 specifying a list of named propsets on a widget
 *********************************************************************
 
+from within a dojoml document:::
+
 	<dojo:grid propertyProviderList="#propsetFoo #propsetBar file#propsetBaz" />
 
+from within an html document:::
+	
+	<div dojoTagName="grid" dojoPropertyProviderList="#propsetFoo #propsetBar
+		file#propsetBaz">
+	</div>
+
+from within an xhtml document or document with support for namespaces:::
+	
+	<div dojo:tagName="grid" dojo:propertyProviderList="#propsetFoo #propsetBar
+		file#propsetBaz" />
+
+from within an svg document:::
+	
+	<g dojo:tagName="grid" dojo:propertyProviderList="#propsetFoo #propsetBar
+		file#propsetBaz" />
+	
 It seems to make sense, for consistency, to require a # or some other delimiter.
 
 child propsets in a widget/component declaration
 *********************************************************************
+
+from within a dojoml document:::
 
 	<dojo:grid>
 		<dojo:propertySet>
@@ -139,12 +159,57 @@ child propsets in a widget/component declaration
 			<dojo:reorder type="none"/>
 		</dojo:propertySet>
 	</dojo:grid>
+	
+from within an html document:::
+	
+	<div dojoTagName="grid">
+		<div dojoTagName="propertySet">
+			<div dojoTagName="scroll" dojoType="auto"/>
+			<dojo:dojoTagName="reorder" dojoType="none"/>
+		</div>
+	</div>
+
+from within an xhtml document or document with support for namespaces:::
+	
+	<div dojo:tagName="grid">
+		<div dojo:tagName="propertySet">
+			<div dojo:tagName="scroll" dojo:type="auto"/>
+			<div dojo:tagName="reorder" dojo:type="none"/>
+		</div>
+	</div>
+
+from within an svg document:::
+	
+	<g dojo:tagName="grid" dojo:propertyProviderList="#propsetFoo #propsetBar
+		file#propsetBaz">
+		<g dojo:tagName="propertySet">
+			<g dojo:tagName="scroll" dojo:type="auto"/>
+			<g dojo:tagName="reorder" dojo:type="none"/>
+		</g>
+	</g>
 
 inline properties in a widget/component declaration
 *********************************************************************
 
+from within a dojoml document:::
+
 	<dojo:grid scrollType="auto" reorderType="none"/>
 	
+from within an html document:::
+	
+	<div dojoTagName="grid" dojoScrollType="auto" dojoReorderType="none">
+	</div>
+
+from within an xhtml document or document with support for namespaces:::
+	
+	<div dojo:tagName="grid" dojo:scrollType="auto" dojo:reorderType="none">
+	</div>
+
+from within an svg document:::
+	
+	<g dojo:tagName="grid"  dojo:scrollType="auto" dojo:reorderType="none" />
+	
+
 specifying propsets in an external document
 *********************************************************************
 
