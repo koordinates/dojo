@@ -1,16 +1,17 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.RightClickMenu");
+dojo.hostenv.startPackage("dojo.webui.widgets.ContextMenu");
 
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
 dojo.webui.widgets.ContextMenu = function(){
-	dojo.webui.Widget.call(this);
+	dojo.webui.widgets.call(this);
 	this.widgetType = "ContextMenu";
 }
-dj_inherits(dojo.webui.widgets.ContextMenu, dojo.webui.Widget);
+dj_inherits(dojo.webui.widgets.ContextMenu, dojo.webui.widgets.Menu, dojo.webui.Widget);
 
 // FIXME: own file? Mixin instead?
 dojo.webui.widgets.DomContextMenu = function(){
 	dojo.webui.widgets.ContextMenu.call(this);
+	dojo.webui.widgets.Menu.call(this);
 	dojo.webui.DomWidget.call(this, true);
 }
 dj_inherits(dojo.webui.widgets.DomContextMenu, dojo.webui.widgets.ContextMenu);
