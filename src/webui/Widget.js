@@ -58,7 +58,7 @@ dojo.webui.Widget = function(){
 	this.satisfyPropertySets = function(args){
 		// get the default propsets for our component type
 		var typePropSets = []; // FIXME: need to pull these from somewhere!
-		var localPropSets = []; // pull out prosets from the parser's return structure
+		var localPropSets = []; // pull out propsets from the parser's return structure
 
 		/*
 		for(var x=0; x<args.length; x++){
