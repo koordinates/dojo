@@ -364,7 +364,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module){
 *
 * dj_load is an alias for dojo.hostenv.loadModule
 */
-dojo.hostenv.loadModule = function(modulename, exact_only){
+dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	var module = this.findModule(modulename, 0);
 	if(module){
 		return module;
@@ -395,24 +395,24 @@ dojo.hostenv.loadModule = function(modulename, exact_only){
 			syms.pop();
 			syms.push("__package__");
 			relpath = syms.join("/") + '.js';
-			ok = this.loadPath(relpath, modulename);
+			ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 			if(ok){ break; }
 			syms.pop();
 		}
 	}else{
 		relpath = syms.join("/") + '.js';
 		modulename = nsyms.join('.');
-		var ok = this.loadPath(relpath, modulename);
+		var ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 		if((!ok)&&(!exact_only)){
 			// var syms = modulename.split(/\./);
 			syms.pop();
 			while(syms.length){
 				relpath = syms.join('/') + '.js';
-				ok = this.loadPath(relpath, modulename);
+				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 				if(ok){ break; }
 				syms.pop();
 				relpath = syms.join('/') + '/__package__.js';
-				ok = this.loadPath(relpath, modulename);
+				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 				if(ok){ break; }
 			}
 		}
