@@ -42,63 +42,111 @@ dojo.hostenv.startPackage("dojo.io.IO");
  *			requests, but receipt of arbitrary text data seems unlikely w/o
  *			<![CDATA[]]> sections.
  *
+ *
+ *	A discussion between Dylan, Mark, and Alex helped to beat down a lot the IO
+ *	API interface. A transcript of it can be found at:
+ *		// FIXME: karmann was down, need to insert link here
+ *	
+ *	Also referenced in the design of the API was the DOM 3 L&S spec:
+ *		http://www.w3.org/TR/2004/REC-DOM-Level-3-LS-20040407/load-save.html
  ******************************************************************************/
 
-dojo.io.Request = function(){
-	this.requestPayload = null;
-	this.lastResponse = null;
+// a map of the available transport options. Transports should add themselves
+// by calling add(name)
+dojo.io.transports = [];
+dojo.io.hdlrFuncNames = [ "load", "error" ]; // we're omitting a progress() event for now
 
-	this.mapToGetParams = function(map){
-		dj_unimplemented("dojo.io.Request.mapToGetParams");
-	}
+dojo.io.Error = function(msg, type, num){
+	this.message = msg;
+	this.type =  type || "unknown"; // must be one of "io", "parse", "unknown"
+	this.number = num || 0; // per-substrate error number, not normalized
+}
 
-	this.listsToGetParams = function(lists){
-		dj_unimplemented("dojo.io.Request.listsToGetParams");
-	}
+dojo.io.tranports.addTransport = function(name){
+	this.push(name);
+	// FIXME: do we need to handle things that aren't direct children of the
+	// dojo.io namespace? (say, dojo.io.foo.fooTransport?)
+	this[name] = dojo.io[name];
+}
 
-	this.send = function(URI){
-		dj_unimplemented("dojo.io.Request.send");
-	}
+// binding interface, the various implementations register their capabilities
+// and the bind() method dispatches
+dojo.io.bind = function(kwArgs){ // FIXME: should we support positional args too?
+	// if the request asks for a particular implementation, use it
+	if(kwArgs["transport"]){
+	}else{
+		// otherwise we do our best to auto-detect what available transports
+		// will handle 
 
-	// called upon return, handles the work of returning the received data back
-	// to the listening function (which in the synchronous case, is just the
-	// return to send()
-	this.receive = function(){
-		dj_unimplemented("dojo.io.Request.receive");
+		// FIXME: should we normalize or set defaults for the kwArgs here?
+		for(var x=0; x<dojo.io.transports.length; x++){
+		}
 	}
 }
 
-dojo.io.SyncRequest = function(){
-	this.send = function(URI){
-		dj_unimplemented("dojo.io.SyncRequest.send");
+dojo.io.argsFromMap = function(map){
+	var control = new Object();
+	var mapStr = "";
+	for(var x in map){
+		if(!control[x]){
+			mapStr+= encodeURIComponent(x)+"="+encodeURIComponent(map[x])+";";
+		}
+	}
+
+	return mapStr;
+}
+
+dojo.io.sampleTranport = new function(){
+	this.canHandle = function(kwArgs){
+		// canHandle just tells dojo.io.bind() if this is a good transport to
+		// use for the particular type of request.
+		if(	
+			(
+				(kwArgs["mimetype"] == "text/plain") ||
+				(kwArgs["mimetype"] == "text/html") ||
+				(kwArgs["mimetype"] == "text/javascript")
+			)&&(
+				(kwArgs["method"] == "get") ||
+				( (kwArgs["method"] == "post") && (!kwArgs["formNode"]) )
+			)
+		){
+			return true;
+		}
+
 		return false;
 	}
 
-	// TODOC: does nothing intentionally, since send returns the payload in the
-	// sync case
-	this.receive = function(){
-		return this.lastResponse;
-	} 
-}
+	this.bind = function(kwArgs){
+		var hdlrObj = {};
 
-dj_inherits(dojo.io.SyncRequest, dojo.io.Request);
+		// set up a handler object
+		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
+			var fn = dojo.io.hdlrFuncNames[x];
+			if(typeof kwArgs.handler == "object"){
+				if(typeof kwArgs.handler[fn] == "function"){
+					hdlrObj[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"];
+				}
+			}else if(typeof kwArgs.handler == "function"){
+				hdlrObj[fn] = kwArgs.handler;
+			}
+		}
 
-// FIXME: the ctor should allow fetching of data
-dojo.io.AsyncRequest = function(uri, cbo, cbf){
+		// build a handler function that calls back to the handler obj
+		var hdlrFunc = function(evt){
+			if(evt.type == "onload"){
+				hdlrObj.load("load", evt.data, evt);
+			}else if(evt.type == "onerr"){
+				var errObj = new dojo.io.Error("sampleTransport Error: "+evt.msg);
+				hdlrObj.error("error", errObj);
+			}
+		}
 
-	this.callbackObj = null;
-	this.callbackFunctionName = null;
-
-	this.send = function(URI){
-		dj_unimplemented("dojo.io.AsyncRequest.send");
-		return true;
+		// the sample transport would attach the hdlrFunc() when sending the
+		// request down the pipe at this point
+		var tgtURL = kwArgs.url+"?"+dojo.io.argsFromMap(kwArgs.content);
+		// sampleTransport.sendRequest(tgtURL, hdlrFunc);
 	}
 
-	this.receive = function(){
-		this.callbackObj[this.callbackFunctionName](this.lastResponse);
-	}
+	dojo.io.transports.add("sampleTranport");
 }
-
-dj_inherits(dojo.io.AsyncRequest, dojo.io.Request);
-
 
