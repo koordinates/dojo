@@ -77,13 +77,15 @@ dojo.webui.widgets.Parse = function(fragment) {
 							properties[property] = nestedProperties[property];
 						}
 					}catch(e){ dj_debug(e); }
+				/*
 				}else if((fragment[item])&&(fragment[item].value!="")){
 					//dj_debug(item+": "+fragment[item]);
 					if(typeof fragment[item] == "object"){
 						for(var x in fragment[item]){
-							dj_debug(x+": "+fragment[item][x]);
+							dj_debug("- "+x+": "+fragment[item][x]);
 						}
 					}
+				*/
 				}
 			}
 		}
@@ -102,15 +104,17 @@ dojo.webui.widgets.Parse = function(fragment) {
 		return "";
 	}
 	
-	/* getPropertySetsByClass returns the propertySet(s) that match(es) the
+	/* getPropertySetsByType returns the propertySet(s) that match(es) the
 	 * provided componentClass
 	 */
 	this.getPropertySetsByType = function(componentType){
 		var propertySets = [];
-		for(var x = 0; x < this.propertySetsList.length; x++){
-			if((this.propertySetsList[x]["componentClass"])&&
-				(propertySetId == this.propertySetsList[x]["componentClass"][0].value)){
-				propertySets.push(this.propertySetsList[x]);
+		for(var x=0; x < this.propertySetsList.length; x++){
+			// dj_debug(x);
+			var cpl = this.propertySetsList[x];
+			var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
+			if((cpcc)&&(propertySetId == cpcc[0].value)){
+				propertySets.push(cpl);
 			}
 		}
 		return propertySets;
@@ -120,10 +124,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 	*/
 	this.getPropertySets = function(fragment){
 		var ppl = "dojo:propertyproviderlist";
+		var propertySets = [];
+		var tagname = fragment["tagName"];
 		if(fragment[ppl]){ 
 			var propertyProviderIds = fragment[ppl].value.split(" ") || fragment[ppl].value;
-			var tagname = fragment["tagName"];
-			var propertySets = [];
 			// FIXME: should the propertyProviderList attribute contain # syntax for reference to ids or not?
 			// FIXME: need a better test to see if this is local or external
 			// FIXME: doesn't handle nested propertySets, or propertySets that just contain information about css documents, etc.
@@ -140,11 +144,9 @@ dojo.webui.widgets.Parse = function(fragment) {
 					// alex: is this even necessaray? Do we care? If so, why?
 				}
 			}
-			// we put the typed ones first so that the parsed ones override
-			// when iteration happens.
-			return (this.getPropertySetsByType(tagname)).concat(propertySets);
-		}else{
-			return [];
 		}
+		// we put the typed ones first so that the parsed ones override when
+		// iteration happens.
+		return (this.getPropertySetsByType(tagname)).concat(propertySets);
 	}
 }
