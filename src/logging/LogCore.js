@@ -1065,11 +1065,13 @@ dojo.log.getLevel = function(name){
 <!--*/
 // a default handler class, it simply saves all of the handle()'d records in
 // memory. Useful for attaching to with __sig__.
-dojo.memoryLogHandler = function(level, recordsToKeep){
+dojo.memoryLogHandler = function(level, recordsToKeep, postType, postInterval){
 	// mixin style inheritance
 	dojo.logHandler.call(this, level);
 	// default is unlimited
 	this.numRecords = recordsToKeep || -1;
+	this.postType = postType || -1;
+	this.postInterval = postInterval || -1;
 }
 // prototype inheritance
 dojo.memoryLogHandler.prototype = new dojo.logHandler();
@@ -1095,8 +1097,9 @@ dojo.memoryLogHandler.prototype.emit = function(record){
 
 
 var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
-var postRecords = true; // TODO: move this to a better location for prefs
-var dojo.logQueueHandler = new dojo.memoryLogHandler(0,maxRecordsToKeep);
+var postType = 0; // 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
+var postInterval = 10000; // milliseconds for time, interger for number of records, -1 for non-posting, TODO: move this to a better location for prefs
+var dojo.logQueueHandler = new dojo.memoryLogHandler(0,maxRecordsToKeep,postType,postInterval);
 dojo.logQueueHandler.emit = function(record){
 	// stub for logging event handler
 }
@@ -1112,12 +1115,29 @@ dojo.logQueueHandler.emit = function(record){
 			stdout(String(record.time.toLocaleTimeString())+" :"+dojo.log.getLevelName(record.level)+": "+record.message);
 		}
 	}
-	if(postRecords) {
+	switch(this.postType) {
+		case -1:
+			break;
+		case 0:
+			if(this.data.length>this.postInterval)
+			{
+
+			}
+			break;
+
+		case 1:
+			// need some sort of interval setter
+			break;
+	}
+
 		// it seems that we would't want to send a request to the server for every log file, so perhaps we want to send them in batches, or in time intervals?
 
 		// determine if it is time to send the record... if not, and it is time-based, reset the checking interval
 		// if it is time, then we need to create an XMLHttpRequest using dojo.io
 		// TODO: add way to either send to server through xmlHTTPRequest after x number of records are stored, or a way to open a console, or some other default, consoleless mechanism.  Also, we really should have a way to log to the console as done above, and additionally be able to store a more permanent log record	}
+	}
+	while(this.data.length>this.numRecords){
+		this.data.pop();
 	}
 }
 
