@@ -32,9 +32,8 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 
  
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
-dojo.xml.Parse.ParseDocumentFragment = function() {
-	this.domUtil = new dojo.xml.DomUtil();
-}
+dojo.xml.Parse.ParseDocumentFragment = function(){}
+//	this.domUtil = new dojo.xml.DomUtil();
 
 dojo.xml.Parse.ParseDocumentFragment.prototype.parseFragment = function(documentFragment) {
 	// handle parent element
@@ -51,10 +50,10 @@ dojo.xml.Parse.ParseDocumentFragment.prototype.parseFragment = function(document
 
 	for (var childNode in documentFragment.childNodes){
 		switch(documentFragment.childNodes[childNode].nodeType){
-			case  this.domUtil.nodeTypes.ELEMENT_NODE: // element nodes, call this function recursively
+			case  dojo.xml.domUtil.nodeTypes.ELEMENT_NODE: // element nodes, call this function recursively
 				parsedFragment[documentFragment.tagName].push(this.parseElement(documentFragment.childNodes[childNode]));
 				break;
-			case  this.domUtil.nodeTypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
+			case  dojo.xml.domUtil.nodeTypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 				if(documentFragment.childNodes.length == 1){
 					if(!parsedFragment[documentFragment.tagName]){
 						parsedFragment[documentFragment.tagName] = [];
@@ -83,38 +82,40 @@ dojo.xml.Parse.ParseDocumentFragment.prototype.parseElement = function(node,hasP
 	// FIXME: we might want to make this optional or provide cloning instead of
 	// referencing, but for now, we include a node reference to allow
 	// instantiated components to figure out their "roots"
-	parsedNodeSet.nodeRef = node;
+	parsedNodeSet[node.tagName].nodeRef = node;
 	parsedNodeSet.tagName = dojo.hostenv.getTagName(node);
+
+	var ntypes = dojo.xml.domUtil.nodeTypes;
 
 	for(var i=0; i<node.childNodes.length; i++){
 		switch(node.childNodes[i].nodeType){
-			case  this.domUtil.nodeTypes.ELEMENT_NODE: // element nodes, call this function recursively
+			case  ntypes.ELEMENT_NODE: // element nodes, call this function recursively
  				parsedNodeSet[node.tagName].push(this.parseElement(node.childNodes[i],true));
 				break;
-			case  this.domUtil.nodeTypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
+			case  ntypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
 				break;
-			case  this.domUtil.nodeTypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
+			case  ntypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 				if(node.childNodes.length == 1) {
 					parsedNodeSet[node.tagName].push({ value: node.childNodes[0].nodeValue });
 				}
 				break;
-			case  this.domUtil.nodeTypes.CDATA_SECTION_NODE: // cdata section... not sure if this would ever be meaningful... might be...
+			case  ntypes.CDATA_SECTION_NODE: // cdata section... not sure if this would ever be meaningful... might be...
 				break;
-			case  this.domUtil.nodeTypes.ENTITY_REFERENCE_NODE: // entity reference node... not meaningful here
+			case  ntypes.ENTITY_REFERENCE_NODE: // entity reference node... not meaningful here
 				break;
-			case  this.domUtil.nodeTypes.ENTITY_NODE: // entity node... not sure if this would ever be meaningful
+			case  ntypes.ENTITY_NODE: // entity node... not sure if this would ever be meaningful
 				break;
-			case  this.domUtil.nodeTypes.PROCESSING_INSTRUCTION_NODE: // processing instruction node... not meaningful here
+			case  ntypes.PROCESSING_INSTRUCTION_NODE: // processing instruction node... not meaningful here
 				break;
-			case  this.domUtil.nodeTypes.COMMENT_NODE: // comment node... not not sure if this would ever be meaningful 
+			case  ntypes.COMMENT_NODE: // comment node... not not sure if this would ever be meaningful 
 				break;
-			case  this.domUtil.nodeTypes.DOCUMENT_NODE: // document node... not sure if this would ever be meaningful
+			case  ntypes.DOCUMENT_NODE: // document node... not sure if this would ever be meaningful
 				break;
-			case  this.domUtil.nodeTypes.DOCUMENT_TYPE_NODE: // document type node... not meaningful here
+			case  ntypes.DOCUMENT_TYPE_NODE: // document type node... not meaningful here
 				break;
-			case  this.domUtil.nodeTypes.DOCUMENT_FRAGMENT_NODE: // document fragment node... not meaningful here
+			case  ntypes.DOCUMENT_FRAGMENT_NODE: // document fragment node... not meaningful here
 				break;
-			case  this.domUtil.nodeTypes.NOTATION_NODE:// notation node... not meaningful here
+			case  ntypes.NOTATION_NODE:// notation node... not meaningful here
 				break;
 		}
 	}

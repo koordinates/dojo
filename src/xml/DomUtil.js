@@ -3,11 +3,13 @@ if(!dojo.xml){
 	dojo.xml = {};
 }
 
+dojo.xml.DomUtil = {};
+
 // for loading script:
-dojo.xml.DomUtil = function() {
+dojo.xml.domUtil = new function(){
 
 	this.nodeTypes = {
-		ELEMENT_NODE 									: 1,
+		ELEMENT_NODE                  : 1,
 		ATTRIBUTE_NODE                : 2,
 		TEXT_NODE                     : 3,
 		CDATA_SECTION_NODE            : 4,
