@@ -5,11 +5,32 @@ dojo.hostenv.loadModule("dojo.webui.widgets.Button");
 dojo.webui.widgets.HTMLButton = function(){
 	// if DOMButton turns into a mixin, we should subclass Button instead and
 	// just mix in the DOMButton properties.
-	dojo.webui.widgets.DOMButton.call(this);
+	dojo.webui.widgets.DomButton.call(this);
+	dojo.webui.HTMLWidget.call(this);
 
 	// FIXME: freaking implement this already!
+	this.foo = "bar";
+
+	this.label = "";
+
+	this.setLabel = function(){
+		alert(this.label);
+		this.domNode.innerHTML = this.label;
+	}
+
+	this.fillInTemplate = function(){
+		this.setLabel();
+	}
 
 }
 
-dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.widgets.DOMButton);
+/*
+new function(){ // namespace protection closure
+	var hbp = dojo.webui.widgets.HTMLButton.prototype;
+	hbp.templateString = ["<button />"].join("");
+}; // FIXME: why isnt the (function(){})(); syntax working here??
+*/
 
+dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.widgets.DomButton);
+
+dojo.webui.widgets.HTMLButton.prototype.templateString = "<button></button>";

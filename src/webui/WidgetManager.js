@@ -8,7 +8,7 @@ dojo.webui.widgetManager = new function(){
 	this.widgets = [];
 
 	this.add = function(widget){
-		
+		this.widgets.push(widget);
 	}
 
 	// FIXME: we should never allow removal of the root widget until all others
@@ -19,8 +19,11 @@ dojo.webui.widgetManager = new function(){
 	var knownWidgetImplementations = [];
 
 	this.getImplementation = function(widgetName, ctorObject, mixins){
-		var ii = this.getImplementationName(widgetName);
-		if(ii){
+		var impl = this.getImplementationName(widgetName);
+		if(impl){
+			var tclass = dojo.webui.widgets[impl];
+			dj_debug("new dojo.webui.widgets."+impl+"()");
+			dj_debug(new dojo.webui.widgets[impl]());
 			return new dojo.webui.widgets[impl](ctorObject);
 		}
 	}
@@ -54,10 +57,12 @@ dojo.webui.widgetManager = new function(){
 		// the base class.
 		for(var x in dojo.webui.widgets){
 			var xlc = (new String(x)).toLowerCase();
-			if(("html"+widgetname).toLowerCase() == xlc){
+			if(("html"+widgetName).toLowerCase() == xlc){
 				knownWidgetImplementations[xlc] = x;
 				return x;
 			}
 		}
+
+		// FIXME: what else?
 	}
 }

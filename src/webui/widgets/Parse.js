@@ -1,4 +1,5 @@
 dojo.hostenv.startPackage("dojo.webui.widgets.parse");
+dojo.hostenv.startPackage("dojo.webui.widgets.Parse");
 
 dojo.webui.widgets.parse = function(fragment) {
 	this.propertySetsList = [];
@@ -128,10 +129,17 @@ dojo.webui.widgets.parse = function(fragment) {
 dojo.webui.widgets.tags = {};
 
 dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
+	dj_debug("starting to build a <button label='button' title='button'>button</button>");
 	var propertySets = widgetParser.getPropertySets(fragment);
 	// FIXME: should we take each propertySet and parse it into properties at this point?
 	var localProperties = widgetParser.parseProperties(fragment);
 	// FIXME: Add instantiation of component here?
+
+	dj_debug(dojo.webui.widgetManager.getImplementationName("button"));
+	var tbutton = dojo.webui.widgetManager.getImplementation("button");
+	tbutton.create(fragment);
+	var nr = fragment["dojo:button"].nodeRef;
+	dojo.hostenv.println(nr.parentNode.replaceChild(tbutton.domNode, nr));
 }
 
 dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
+<!-- Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above --> 
 <!--
 	TODO: 
 		- single-file builds
@@ -8,8 +9,6 @@
 		- a task for running the compressor across the user's files as well as our own
 		- doc generation (pending new mods to Rhino)
 -->
-
-<!-- Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 --> 
 <project name="dojo" default="help" basedir=".">
 	<description>build the Dojo toolkit</description>
 
@@ -235,6 +234,11 @@ print "look ma! Jython!"
 		depends="-fix-config"
 		description="'builds' the docs">
 		<!-- first, clobber the docs directory and rebuild it -->
+		<!-- 
+			FIXME: how best can we check for staleness here? Shouldn't Ant be
+			doing this for us? Clobbering entire dirs seems a little
+			heavyweight.
+		-->
 		<delete dir="${release_docs_dir}"/>
 		<mkdir dir="${release_docs_dir}" />
 		<script language="jython"><![CDATA[

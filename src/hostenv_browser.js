@@ -20,11 +20,7 @@ if(typeof window == 'undefined'){
 	dj_throw("attempt to use browser hostenv when no window object");
 }
 
-// FIXME: remove these when they are 
-if(!dojo){ dojo = {}; }
-if(!dojo.hostenv){ 
-	dojo.hostenv = {};
-}
+dojo.hostenv.startPackage("dojo.hostenv");
 
 dojo.hostenv.name_ = 'browser';
 
@@ -139,6 +135,7 @@ dojo.hostenv.println = function(s){
 		document.body.appendChild(ti);
 		ti.innerHTML = s;
 	}catch(e){
+		/*
 		try{
 			document.write(s);
 			// safari needs the output wrapped in an element for some reason
@@ -146,5 +143,6 @@ dojo.hostenv.println = function(s){
 		}catch(e2){
 			window.alert(s);
 		}
+		*/
 	}
 }

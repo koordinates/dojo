@@ -49,7 +49,7 @@ dojo.webui.Widget = function(){
 
 	this.create = function(args){
 		this.satisfyPropertySets(args);
-		this.mixinProperties(args);
+		this.mixInProperties(args);
 		this.buildRendering(args);
 		dojo.webui.widgetManager.add(this);
 	}
@@ -102,6 +102,7 @@ dojo.webui.Widget = function(){
 		var undef;
 
 		for(var x in args){
+			dj_debug(x);
 			if((typeof this[x]) != (typeof undef)){
 				if(typeof this[x] == "string"){
 					this[x] = args[x];
@@ -138,36 +139,43 @@ dojo.webui.Widget = function(){
 
 	this.buildRendering = function(){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.buildRendering");
 		return false;
 	}
 
 	this.destroyRendering = function(){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.destroyRendering");
 		return false;
 	}
 
 	this.cleanUp = function(){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.cleanUp");
 		return false;
 	}
 
 	this.addChild = function(child){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.addChild");
 		return false;
 	}
 
 	this.addChildAtIndex = function(child, index){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.addChildAtIndex");
 		return false;
 	}
 
 	this.removeChild = function(childRef){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.removeChild");
 		return false;
 	}
 
 	this.removeChildAtIndex = function(index){
 		// SUBCLASSES MUST IMPLEMENT
+		dj_unimplemented("dojo.webui.Widget.removeChildAtIndex");
 		return false;
 	}
 
@@ -176,7 +184,8 @@ dojo.webui.Widget = function(){
 		// setHeight  functions attempt to determine if the passed param is
 		// specified in percentage or native units. Integers without a
 		// measurement are assumed to be in the native unit of measure.
-		this.setWidth(width, height);
+		this.setWidth(width);
+		this.setHeight(height);
 	}
 
 	this.setWidth = function(width){
