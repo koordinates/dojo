@@ -25,9 +25,11 @@ digraph dhtml_universe
 		boogs -> Gmail;
 		danp -> Dojo;
 		danp -> DotNetSol;
+		danp -> _13p;
 		dylan -> Dojo;
 		ttrenka -> Dojo;
 		ttrenka -> FM;
+		ttrenka -> _13p;
 		bratta -> Scriptomania;
 		bratta -> DHTMLCentral;
 		bratta -> DotNetSol;
@@ -52,6 +54,11 @@ digraph dhtml_universe
 		scottandrew -> ModPubSub;
 		scottandrew -> DynAPI [ style=dotted,label="?" ]; // RAR: Not sure about this one
 		mbazon -> HTMLArea;
+		schontz -> NW;
+		schontz -> INFA;
+		schontz -> _13p;
+		schontz -> FM;
+		michaelvo -> _13p;
 		
 		// project and company relationships
 		INFA -> NW;
@@ -88,38 +95,41 @@ digraph dhtml_universe
 		scottandrew [ label="Scottandrew LePera" ];
 		cw 			[ label="Chris Wetherell" ];
 		jpark		[ label="Joyce Park" ];
+		schontz		[ label="David Schontzler" ];
+		michaelvo	[ label="Michal van Ouwerkerk" ];
 
 		// companies
-		DotNetSol 	[ label="Dot Net\nSolutions" ];
-		Google 		[ label="Google" ];
-		Yahoo 		[ label="Yahoo!" ];
+		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
+		Google 		[ label="Google",shape=box ];
+		Yahoo 		[ label="Yahoo!",shape=box ];
+		Jot 		[ label="JotSpot",shape=box ];
+		INFA 		[ label="Informatica Corp.",shape=box ];
 
 		// projects
-		HTMLArea;
-		AlphaBlox;
-		HalfBrain;
-		Oddpost;
-		Scriptomania;
-		DomAPI;
-		DynAPI;
-		GameLib;
-		Bindows;
-		jsDOM;
-		Tibet		[ label="TIBET" ];
-		ModPubSub 	[ label="mod_pubsub" ];
-		RePubSub 	[ label="re_pubsub" ];
-		Gmail 		[ label="GMail" ];
-		BrainJar 	[ label="Brain Jar" ];
-		FM 			[ label="f(m)" ];
-		WebFX 		[ label="WebFX.eae.net" ];
-		Burst 		[ label="Burstlib" ];
-		Dojo 		[ label="Dojo" ];
-		Jot 		[ label="JotSpot" ];
-		INFA 		[ label="Informatica Corp." ];
-		NW 			[ label="netWindows" ];
-		ISC 		[ label="Isomorphic Inc." ];
-		WebOS 		[ label="WebOS.com" ];
-		DHTMLCentral [ label="DHTMLCentral.com" ];
+		HTMLArea	[ shape=diamond ];
+		AlphaBlox	[ shape=diamond ];
+		HalfBrain	[ shape=diamond ];
+		Oddpost		[ shape=diamond ];
+		Scriptomania [ shape=diamond ];
+		DomAPI		[ shape=diamond ];
+		DynAPI		[ shape=diamond ];
+		GameLib		[ shape=diamond ];
+		Bindows		[ shape=diamond ];
+		jsDOM		[ shape=diamond ];
+		Tibet		[ label="TIBET",shape=diamond ];
+		ModPubSub 	[ label="mod_pubsub",shape=diamond ];
+		RePubSub 	[ label="re_pubsub",shape=diamond ];
+		Gmail 		[ label="GMail",shape=diamond ];
+		BrainJar 	[ label="Brain Jar",shape=diamond ];
+		FM 			[ label="f(m)",shape=diamond ];
+		WebFX 		[ label="WebFX.eae.net",shape=diamond ];
+		Burst 		[ label="Burstlib",shape=diamond ];
+		Dojo 		[ label="Dojo",shape=diamond ];
+		NW 			[ label="netWindows",shape=diamond ];
+		ISC 		[ label="Isomorphic Inc.",shape=diamond ];
+		WebOS 		[ label="WebOS.com",shape=diamond ];
+		DHTMLCentral [ label="DHTMLCentral.com",shape=diamond ];
+		_13p		[ label="13th Parallel Library\n(unreleased)",shape=diamond ];
 		
 	}
 
