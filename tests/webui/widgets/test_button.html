@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" src="../../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+
+			function init(){
+				// add your on-load logic here
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		Check your javascript log; the scripts were all loaded in the head.
+	</body>
+</html>
