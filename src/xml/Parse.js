@@ -21,19 +21,26 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"l
 
 */
 
-dojo.xml.parseElement = function(node,parentJSObject) {
-	// TODO: better name for parentJSObject, test for existence
-	// something like if(typeof parentJSObject != "Object") parentJSObject = {};
-	parentJSObject[node.tagName] = {}
-	dojo.xml.parseAttributes(node,parentJSObject); // TODO: resolve call stack
+ // TODO: resolve call stack for all of this within namespaced context
+
+dojo.xml.parseElement = function(node,parentNodeSet) {
+	parsedNodeSet = {};
+	if(!parentNodeSet) {
+		parsedNodeSet[node.tagName] = {}
+	}
+	dojo.xml.parseAttributes(node,parsedNodeSet);
+	for(var childNode in node.childNodes) {
+		if(nodes.childNodes[childNodes].nodeType == 1) {
+			parsedNodeSet[node.tagName] = dojo.xml.parentElement(node,parsedNodeSet);
+		}
+	}
+	return parsedNodeSet;
 }
 
 /* parses a set of attributes on a node into an object tree */
-dojo.xml.parseAttributes = function(node,parentJSObject) {
+dojo.xml.parseAttributes = function(node,parsedNodeSet) {
 	for(var attr in node.attributes) {
-			parentJSObject[node.attributes[attr].nodeName] = {}
-			parentJSObject[node.attributes[attr].nodeName].value = node.attributes[attr].nodeValue; // TODO: is this a good way to store this into a "dumb" tree?
+		parsedNodeSet[node.attributes[attr].nodeName] = {}
+		parsedNodeSet[node.attributes[attr].nodeName].value = node.attributes[attr].nodeValue; // TODO: is this a good way to store this into a "dumb" tree?
 	}
 }
-
-
