@@ -8,7 +8,7 @@ dojo.io.bind(): baking usability into XMLHTTP
 
 .. contents::
 
-Now that we have your attention...
+Less "me too", more working code
 ----------------------------------
 
 The Dojo project is seeking to build the best DHTML toolkit available, hands
@@ -42,11 +42,11 @@ doesn't function in a way that helps the user, more and more work can
 potentially be lost from the user's perpsecitve when they hit the back button
 and it returns them to the login screen (and not to the previous major UI
 component that they were expecting). This is exactly the style of interface
-construction that I (and others in the DHTML community) have been advocating
-for years. The upside is that more developers now see this as a feasible and
-pagmatic way to build interfaces. The downside is that their weapon of choice
-(or ignorance), XMLHTTP, doesn't create a back-button entry on any browser that
-I know of. In short, XMLHTTP breaks the back button.
+construction that Dojo contributors (and others in the DHTML community) have
+been advocating for years. The upside is that more developers now see this as a
+feasible and pagmatic way to build interfaces. The downside is that their
+weapon of choice (or ignorance), XMLHTTP, doesn't create a back-button entry.
+In short, XMLHTTP breaks the back button.
 
 If the situation with the back button has the potential to confound users, the
 inability to bookmark or otherwise reference a "screen" is downright maddening.
@@ -148,7 +148,7 @@ request (with the single caveat that it won't do file upload over XMLHTTP)::
         formNode: document.getElementById("formToSubmit")
     });
 
-Phew. I think that about covers the basics. Good thing you weren't planning on
+Phew.Think that about covers the basics. Good thing you weren't planning on
 implementing all that stuff yourself, right?
 
 So, about that thorny back button...
@@ -169,7 +169,7 @@ buttons aren't interceptable. Even when Safari SHOULD support it,
 implementation bugs in the browser prevent our code from doing the right thing.
 This is, needless to say, really annoying.
 
-For that great majority of browsers that we can support, catching the back
+For that great majority of browsers that can be supported, catching the back
 button simply requires registering a callback that will fire when the user hits
 the back button. Here's the above form submitting example that does a rollback
 of the form-hide behavior when the back button is clicked::
@@ -290,9 +290,11 @@ Usability != Accessability
 The techniques discussed in this article are NOT intended to provide you with a
 solution for accessaiblity concerns for your web apps. You still need to hammer
 those out for yourself (although Dojo will soon be providing help in that area
-too). If you want to flame me for discussing usability without discussing the
-negative accessabitliy impact of these tools, please consider that this article
-isn't the right place for that discussion.
+too). If you want to flame the author for discussing usability without
+discussing the negative accessabitliy impact of these tools, go right ahead,
+but please consider that the author already has a good idea of what you're
+going to say and he's already working on tools to make the situation better.
+Flaming won't get those tools done any faster, though.
 
 What's In the Package
 #########################
@@ -304,15 +306,13 @@ demonstrates usage of the API, and this article. Dojo does a LOT more than this
 package might lead you to suspect, but don't worry, we'll be releasing more
 soon.
 
-What Isn't In The Package
+What's Not
 #########################
 
 Dojo consists of much more functionality than this package exposes (in fact,
 this package includes much more than is being discussed. No widget classes, xml
 parsing, or generic event system code are included in this build, although all
-of those things are functional in Dojo subversion. We don't want to tip our
-hand too much, but suffice it to say that when Dojo 1.0 is released, it will
-sport the fastest widget development process any DHTML toolkit has ever had.
+of those things are functional in Dojo subversion.
 
 About Dojo
 #########################
