@@ -3,16 +3,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<title>Lorem Ipsum...</title>
+	<title>The Dojo Toolkit</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 	<script>
 		function init(){
-			// FIXME: need to insert code here to check window.parent's
-			// namespace for "back-check" method for cooperation with
-			// dojo.io.XMLHTTPTransport
 			if((window.parent != window)&&(window.parent["dojo"])){
 				var pdj = window.parent.dojo;
-				// window.parent.dj_debug("iframe location: "+window.location.href);
 				if((pdj["io"])&&(pdj["io"]["XMLHTTPTransport"])){
 					pdj.io.XMLHTTPTransport.iframeLoaded(null, window.location);
 				}
@@ -21,7 +17,8 @@
 	</script>
 </head>
 <body onload="try{ init(); }catch(e){ alert(e); }">
-	blank.html
-	<!-- blah -->
+	<h4>The Dojo Toolkit -- blank.html</h4>
+
+	<p>this space intentionally left blank</p>
 </body>
 </html>
