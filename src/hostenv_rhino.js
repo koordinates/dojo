@@ -15,13 +15,28 @@ dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version()};
 
 // see comments in spidermonkey loadUri
-dojo.hostenv.loadUri = function(uri) {
+dojo.hostenv.loadUri = function(uri){
+	dj_debug("dj_global: "+dj_global);
+	dj_debug("uri: "+uri);
 	try{
+		// FIXME: what about remote URIs?
+		var found = true;
+		if(!(new java.io.File(uri)).exists()){
+			try{
+				// try it as a file first, URL second
+				(new java.io.URL(uri)).openStream();
+			}catch(e){
+				found = false;
+			}
+		}
+		if(!found){
+			dj_throw(uri+" does not exist");
+		}
 		var ok = load(uri);
 		dj_debug("rhino load(", uri, ") returned ", ok);
 		return 1;
 	}catch(e){
-		dj_debug("rhino load(", uri, ") failed!!!");
+		dj_debug("rhino load(", uri, ") failed");
 		return 0;
 	}
 }

@@ -240,6 +240,8 @@ dojo.hostenv.getBaseScriptUri = function(){
 
 	var lastslash = uri.lastIndexOf('/');
 	// inclusive of slash
+	// FIXME: what if the base_relative_path_ includes ".." sequences? Should
+	// we walk up?
 	var base = this.base_relative_path_ + (lastslash == -1 ? '' : uri.substring(0,lastslash + 1));
 	return this.base_script_uri_ = base;
 }
@@ -261,9 +263,10 @@ dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
  * We consider only the single base script uri, as returned by getBaseScriptUri().
  *
  * @param relpath A relative path to a script (no leading '/', and typically ending in '.js').
+ * @param module A module whose existance to check for after loading a path. Can be used to determine success or failure of the load.
  */
 //=java public Boolean loadPath(String relpath);
-dojo.hostenv.loadPath = function(relpath){
+dojo.hostenv.loadPath = function(relpath, module /*optional*/ ){
 	if(!relpath){
 		dj_throw("Missing relpath argument");
 	}
@@ -273,8 +276,17 @@ dojo.hostenv.loadPath = function(relpath){
 	var base = this.getBaseScriptUri();
 	var uri = base + relpath;
 	//this.println("base=" + base + " relpath=" + relpath);
-	var ok = this.loadUri(uri);
-	return ok;
+	try{
+		var ok;
+		if(!module){
+			ok = this.loadUri(uri);
+		}else{
+			ok = this.loadUriAndCheck(uri, module);
+		}
+		return ok;
+	}catch(e){
+		return false;
+	}
 }
 
 /**
@@ -287,6 +299,17 @@ dojo.hostenv.loadUri = function(uri){
 	if(contents == null){ return 0; }
 	var value = dj_eval(contents);
 	return 1;
+}
+
+// FIXME: probably need to add logging to this method
+dojo.hostenv.loadUriAndCheck = function(uri, module){
+	var ok = true;
+	try{
+		ok = this.loadUri(uri);
+	}catch(e){
+		dj_debug("failed loading ", uri, " with error: ", e);
+	}
+	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
 /**
@@ -327,20 +350,43 @@ dojo.hostenv.loadModule = function(modulename, exact_only){
 	// convert periods to slashes
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
-	var ok = this.loadPath(relpath);
-	if((!ok)&&(!exact_only)){
-		var syms = modulename.split(/\./);
-		syms.pop();
+	var syms = modulename.split(/\./);
+	if(syms[0]=="dojo"){ syms[0] == "src"; } // FIXME: need a smarter way to do this!
+	var last = syms.pop();
+	syms.push(last);
+	// figure out if we're looking for a full package, if so, we want to do
+	// things slightly diffrently
+	if(last=="*"){
+		modulename = (syms.slice(0, -1)).join('.');
+		//first try package/name/__package__.js
 		while(syms.length){
+			syms.pop();
+			syms.push("__package__");
 			relpath = syms.join('/') + '.js';
-			ok = this.loadPath(relpath);
+			ok = this.loadPath(relpath, modulename);
 			if(ok){ break; }
 			syms.pop();
 		}
-	}
+	}else{
+		var ok = this.loadPath(relpath, modulename);
+		this.println(relpath);
+		if((!ok)&&(!exact_only)){
+			// var syms = modulename.split(/\./);
+			syms.pop();
+			while(syms.length){
+				relpath = syms.join('/') + '.js';
+				ok = this.loadPath(relpath, modulename);
+				if(ok){ break; }
+				syms.pop();
+				relpath = syms.join('/') + '__package__.js';
+				ok = this.loadPath(relpath, modulename);
+				if(ok){ break; }
+			}
+		}
 
-	if(!ok){
-		dj_throw("Could not find module '" + modulename + "'; last tried path '" + relpath + "'");
+		if(!ok){
+			dj_throw("Could not find module '" + modulename + "'; last tried path '" + relpath + "'");
+		}
 	}
 
 	// check that the symbol was defined
@@ -364,6 +410,7 @@ function dj_eval_object_path(objpath){
 	// fast path for no periods
 	if(objpath.indexOf('.') == -1){
 		dj_debug("typeof this[",objpath,"]=",typeof(this[objpath]), " and typeof dj_global[]=", typeof(dj_global[objpath])); 
+		// dojo.hostenv.println(typeof dj_global[objpath]);
 		return (typeof dj_global[objpath] == 'undefined') ? undefined : dj_global[objpath];
 	}
 
@@ -412,6 +459,7 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 
 	// see if symbol is defined anyway
 	var module = dj_eval_object_path(modulename);
+	this.println(modulename+": "+module);
 	if((typeof module !== 'undefined')&&(module)){
 		return this.modules_[modulename] = module;
 	}

@@ -115,15 +115,25 @@ dojo.event = new function(){
 		if(ao.tgtFunc){
 			var mjp2 = dojo.event.MethodJoinPoint.getForMethod(ao.tgtObj, ao.tgtFunc);
 		}
+
 		mjp.kwAddAdvice(ao);
+
+		return mjp;	// advanced users might want to fsck w/ the join point
+					// manually
+	}
+
+	this.kwConnect = function(kwArgs){
+		return dojo.event.connect(	kwArgs["type"],
+									kwArgs["srcObj"],
+									kwArgs["srcFunc"],
+									kwArgs["adviceObj"],
+									kwArgs["adviceFunc"],
+									kwArgs["aroundObj"],
+									kwArgs["aroundFunc"] );
 	}
 
 }
 
-/*
-dojo.event.kwConnect = function(kwArgs){
-}
-*/
 // exactly one of these is created whenever a method with a joint point is run,
 // if there is at least one 'around' advice.
 dojo.event.MethodInvocation = function(join_point, obj, args) {
