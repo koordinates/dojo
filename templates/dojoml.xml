@@ -60,6 +60,16 @@
 				</propertyGroup>
 			</properties>
 
+			in essence, this is a componentDefinitionModel, so there's no reason to
+			arbitrarily place it in a properties element, i.e....
+
+			<dojo:componentDefinitionModel id="" type="">
+				<prop1>prop1Value</prop1>
+				<prop2>prop2Value</prop2>
+				<prop3>prop3Value</prop3>
+			</dojo:componentDefinitionModel>
+
+
 			4. as attributes
 			<component prop1="prop1Value" prop2="prop2Value" prop3="prop3Value" />
 

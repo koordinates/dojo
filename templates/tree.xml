@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
+	<dojo:tree cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" definitionProvider="treeDefinitions">
+	</dojo:tree>
+	<dojo:componentDefinitionModel id="treeDefinitions" componentClass="default">
+		<!-- componentClass is used to describe types of components
+		meaning not a type of component, but a subtype... for example,
+		a specific type of a tree component
+		-->
+		<!-- presentational attributes -->
+		<width></width>
+		<height></height>
+		<indentation></indentation>
+		<!-- indentation for each tree level, in pixels -->
+		<treeItems>
+			<cssClassList>className1,className2,className3</cssClassList>
+			<!--
+				seems better than mxml's way of just specifying a list of
+				background colors to use for alteration
+			-->
+			<!-- TODO: define the attributes that would be specified through
+					 a class, i.e. width, height, image, etc., so that they can be
+					 overriden on the template level?
+			-->
+			<repetitionFrequency>1,3,1</repetitionFrequency>
+			<!-- these names aren't very good... trying to replicate some of
+				svg's capabilities for specifying declarative repetition without
+				having to use more complex css selectors... -->
+		</treeItems>
+		<treeIconItems dataProvider><!-- dataProvider is to use content textual
+			content in place of an icon -->
+			<icon type="" cssClassName="" svgDefsElement="" />
+			<!-- idea is that in html, you'd usually want to use graphics for icons,
+				 but with svg, you'd probably want to specify either a class name, or
+				 a defs element
+			-->
+		</treeIconItems>
+		<!-- TODO: what about state?  is that defined somewhere in here? -->
+		<!-- TODO: how to describe transition effects specific to trees...
+		I'm thinking this might be handled by whatever animation model we use -->
+		<!-- TODO:
+			tree state... define what state the tree is in upon initialization?
+			preserve state of what's open and what's closed across user sessions?
+			expand all?
+			collapse all?
+		-->
+	</dojo:componentDefinitionModel>
+	<dojo:dataModel id="treeExampleDataModel">
+		<!-- TODO: specify the relationship between the tree model, and the xml or
+		  js data source, and then provide the data source examples also
+		-->
+	</dojo:dataModel>
+</dojo:application>
