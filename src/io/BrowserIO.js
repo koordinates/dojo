@@ -220,9 +220,10 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	this.checkLocation = function(){
+		var hsl = this.historyStack.length;
 		if(window.location.hash == ""){
 			// FIXME: could this ever be a forward button?
-			if(this.historyStack.length == 1){
+			if(hsl == 1){
 				// we can't clear it because we still need to check for forwards. Ugg.
 				// clearInterval(this.locationTimer);
 				this.handleBackButton();
@@ -240,8 +241,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 		}
 		// ok, that didn't work, try someplace back in the history stack
-		if(this.historyStack.length >= 2){
-			if(this.historyStack[this.historyStack-2].urlHash==window.location.hash){
+		if((hsl >= 2)&&(this.historyStack[hsl-2])){
+			if(this.historyStack[hsl-2].urlHash==window.location.hash){
 				this.handleBackButton();
 				return;
 			}
