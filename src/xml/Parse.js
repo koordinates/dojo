@@ -83,9 +83,18 @@ dojo.xml.Parse = function(){
 		var ntypes = dojo.xml.domUtil.nodeTypes;
 	
 		for(var i=0; i<node.childNodes.length; i++){
-			switch(node.childNodes.item(i).nodeType){
+			var tcn = node.childNodes.item(i);
+			switch(tcn.nodeType){
 				case  ntypes.ELEMENT_NODE: // element nodes, call this function recursively
-					parsedNodeSet[tagName].push(this.parseElement(node.childNodes.item(i),true, optimizeForDojoML));
+					var ctn = dojo.xml.domUtil.getTagName(tcn);
+					if(!parsedNodeSet[ctn]){
+						parsedNodeSet[ctn] = [];
+					}
+					parsedNodeSet[ctn].push(this.parseElement(tcn, true, optimizeForDojoML));
+					if(	(tcn.childNodes.length == 1)&&
+						(tcn.childNodes.item(0).nodeType == ntypes.TEXT_NODE)){
+						parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
+					}
 					break;
 				case  ntypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
 					break;

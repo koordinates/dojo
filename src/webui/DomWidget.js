@@ -30,7 +30,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	}
 
 	this.postInitialize = function(args, frag){
-		var nr = frag["dojo:"+this.widgetType.toLowerCase()].nodeRef;
+		var nr = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+		if(!nr){ return; } // fail safely if we weren't instantiated from a fragment
 		nr.parentNode.replaceChild(this.domNode, nr);
 	}
 
@@ -102,7 +103,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 					thisFunc = dojo.text.trim(funcNameArr[1]);
 				}
 				if(dojo.hostenv.name_ == "browser"){
-					dojo.event.browser.addListener(baseNode, evt.toLowerCase(), this[thisFunc||evt]);
+					var _this = this;
+					dojo.event.browser.addListener(baseNode, evt.toLowerCase(), function(ea){ _this[thisFunc||evt](ea); });
 				}else{
 					var en = evt.toLowerCase().substr(2);
 					baseNode.addEventListener(en, this[thisFunc||evt], false);

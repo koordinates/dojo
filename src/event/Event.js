@@ -50,9 +50,9 @@ dojo.event = new function(){
 
 	function interpolateArgs(args){
 		var ao = {
-			srcObj: null,
+			srcObj: dj_global,
 			srcFunc: null,
-			adviceObj: null,
+			adviceObj: dj_global,
 			adviceFunc: null,
 			aroundObj: null,
 			aroundFunc: null,

@@ -126,6 +126,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			(
 				(kwArgs["mimetype"] == "text/plain") ||
 				(kwArgs["mimetype"] == "text/html") ||
+				(kwArgs["mimetype"] == "text/xml") ||
 				(kwArgs["mimetype"] == "text/javascript")
 			)&&(
 				(kwArgs["method"] == "get") ||
@@ -184,7 +185,13 @@ dojo.io.XMLHTTPTransport = new function(){
 				if(http.status==200){
 					// FIXME: if our request type was "text/javascript", should
 					// we eval() here?
-					kwArgs.load("load", http.responseText, http);
+					var ret = http.responseText;
+					if(kwArgs.mimetype == "text/javascript"){
+						ret = dj_eval(http.responseText);
+					}else if(kwArgs.mimetype == "text/xml"){
+						ret = http.responseXML
+					}
+					kwArgs.load("load", ret, http);
 				}else{
 					var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
 					kwArgs.error("error", errObj);
