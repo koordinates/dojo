@@ -1,5 +1,5 @@
-dojo.io.bind(): baking in usability
-===================================
+dojo.io.bind(): baking usability into XMLHTTP
+=============================================
 
 :Author: Alex Russell
 :Version: 0.1
@@ -135,13 +135,164 @@ sepcify that too::
     dojo.io.bind({
         url: "http://foo.bar.com/sampleData.js",
         load: function(type, evaldObj){ /* do something */ },
-        mimetype: "text/javascript",
+        mimetype: "text/plain", // get plain text, don't eval()
         transport: "XMLHTTPTransport"
     });
 
+Being a jack-of-all-trades, bind() also supports the submission of forms via a
+request (with the single caveat that it won't do file upload over XMLHTTP)::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.js",
+        load: function(type, evaldObj){ /* do something */ },
+        formNode: document.getElementById("formToSubmit")
+    });
+
+Phew. I think that about covers the basics. Good thing you weren't planning on
+implementing all that stuff yourself, right?
+
+So, about that thorny back button...
+------------------------------------
+
+None of the examples so far would have caused anything but the default
+(sometimes undesireable) behavior to occur if the user subsequently hit the
+back button. In a lot of applications with small interactions, it might never
+transpire that one would want the back button to be intercepted. One could
+happily build an app using dojo.io.bind() without ever knowing or caring about
+bookmarking or the back button, but if you're reading this, the odds are that
+you care. So here we go.
+
+First, a note on browser support: all of the following techniques work on IE
+and Mozilla/Firefox, but Safari is, sadly, a lost cause. That doesn't mean your
+requests won't send correctly, but it does mean that the forward and back
+buttons aren't interceptable. Even when Safari SHOULD support it,
+implementation bugs in the browser prevent our code from doing the right thing.
+This is, needless to say, really annoying.
+
+For that great majority of browsers that we can support, catching the back
+button simply requires registering a callback that will fire when the user hits
+the back button. Here's the above form submitting example that does a rollback
+of the form-hide behavior when the back button is clicked::
+
+    var sampleFormNode = document.getElementById("formToSubmit");
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.js",
+        load: function(type, evaldObj){ 
+            // hide the form when we hear back that it submitted successfully
+            sampleFormNode.style.display = "none";
+        },
+        backButton: function(){ 
+            // ...and then when the user hits "back", re-show the form
+            sampleFormNode.style.display = "";
+        },
+        formNode: sampleFormNode
+    });
+
+That's it. Just provide that extra backButton argument and your users can now
+hit the back button and count on your app doing something smarter than
+destroying their work (with a little help from you, that is).
+
+This naturally leads to the next question: what happens if they hit the forward
+button after that? Without any intervention on your part, nothing. But, as I'm
+sure you've come to expect by now, Dojo gives you a hook to handle that
+situation as well.::
+
+    var sampleFormNode = document.getElementById("formToSubmit");
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.js",
+        load: function(type, evaldObj){ 
+            // hide the form when we hear back that it submitted successfully
+            sampleFormNode.style.display = "none";
+        },
+        backButton: function(){ 
+            // ...and then when the user hits "back", re-show the form
+            sampleFormNode.style.display = "";
+        },
+        forwardButton: function(){ 
+            // and if they hit "forward" before making another request, this
+            // happens:
+            sampleFormNode.style.display = "none"; // we don't re-submit
+        },
+        formNode: sampleFormNode
+    });
+
+Note that forward button triggers are _only_ fired when the user is linearly
+progressing between the forward and back buttons. If the user takes an action
+after going back-back-forward that would fire a new bind() request, the next
+"forward" will have no callback fired from it since a new branch in the history
+tree has been created and the old one is likely invalid.
+
+Bookmarking
+------------------------------------
+
+Bookmarkability is a really big issue for web apps. Apps that don't have it are
+at a huge dissadvantage to those that do. That's just how it is.
+
+With that in mind, dojo.io.bind() gives you one last little bit of control for
+making things bookmarkable. Simply pass in the value "true" to the flag
+"changeURL".  Here's the obligitory example::
+
+    dojo.io.bind({
+        url: "http://foo.bar.com/sampleData.txt",
+        load: function(type, data, evt){ /*do something w/ the data */ },
+        changeURL: true,
+        mimetype: "text/plain"
+    });
+
+Once the request is fired off, you will be able to read the new URL from
+window.location.href (I usually do this in the load() method). A more elegant
+way of infoming the server of the saved-as URL other than a new request is
+still needed, but for now, this works and it's enough to be functional.
+
+Unfortunantly, attempting to change the URL synchronously when the request is
+fired isn't possible because of timing issues on Mozilla/Firefox. You are
+advised to report your saved-as URL to the server (if that's necessaray) from
+the load() or error() methods you provide.
+
+Bookmarkability WILL interact with other inter-page navigation using named
+anchors, but should NOT change the location of the user's scroll position in
+the viewport. You are advised to test this functionality pretty thoroughly
+before deploying.
+
+Technical Discussion
+------------------------------------
+
+If you're not a DHTML hacker or don't want to know how sausage is made, you
+might want to skip this.
+
+There's a lot of black magic, browser-specific foo, and general hackery
+rumbling around in this code. On IE, setting the hash of the URL doesn't affect
+the back-button history, and so an iframe request is required along with a
+bookmarkable request. On Mozilla, a back-button request is created, but no
+events fire when back and forward are pressed, so a timer is required to watch
+the value of location.href. On both browsers, detecting iframe loading requires
+two queues to differentiate forward from back buttons, and the iframe MUST be
+part of the intial document (in this case, created w/ document.write) since
+dynamically created iframes _don't affect the history_. Likewise, it was
+somewhat painful to determine what kind of anchor setting would work for
+creating back-button entries but not change the scroll position in the
+top-level viewport. It's almost painful to think of how many hours were burned
+in determining exactly what does and doesn't work. There are, in fact, several
+areas of the described APIs in which there might be nagging bugs, so please
+report them if things don't behave as expected.
+
+In short, this is exactly the kind of "don't try this at home"
+cross-browser hell that turned people off from DHTML in the first place.
 
 Remainders
 ----------
+
+Usability != Accessability
+##########################
+
+The techniques discussed in this article are NOT intended to provide you with a
+solution for accessaiblity concerns for your web apps. You still need to hammer
+those out for yourself (although Dojo will soon be providing help in that area
+too). If you want to flame me for discussing usability without discussing the
+negative accessabitliy impact of these tools, please consider that this article
+isn't the right place for that discussion.
 
 What's In the Package
 #########################
@@ -157,17 +308,11 @@ What Isn't In The Package
 #########################
 
 Dojo consists of much more functionality than this package exposes (in fact,
-this package includes much more than is being discussed, but that's for another
-time). No widget classes, xml parsing, or generic event system code are
-included in this build, although all of those things are functional in Dojo
-subversion. We don't want to tip our hand too much, but suffice it to say that
-when Dojo 1.0 is released, it will sport the fastest widget development process
-any DHTML toolkit has ever had.
-
-About The Author
-#########################
-
-Alex Russell is just a guy.
+this package includes much more than is being discussed. No widget classes, xml
+parsing, or generic event system code are included in this build, although all
+of those things are functional in Dojo subversion. We don't want to tip our
+hand too much, but suffice it to say that when Dojo 1.0 is released, it will
+sport the fastest widget development process any DHTML toolkit has ever had.
 
 About Dojo
 #########################
@@ -184,5 +329,11 @@ or with JS/DHTML/DSVG in general). Our license is intentionally non-political
 (Academic Free License 2.1) and we support your use of Dojo in software that's
 licensed in other ways, but will not accept differently-licensed patches. We're
 not trying to be exclusive, just productive.
+
+About The Author
+#########################
+
+Alex Russell is just a guy. You can flame him on various topics at
+<alex@dojotoolkit.org>.
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
