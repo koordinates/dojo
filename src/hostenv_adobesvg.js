@@ -1,10 +1,12 @@
 /*
  * Adobe SVG Viewer host environment
  */
-
 if(typeof window == 'undefined'){
+  alert("inside typeof check");
 	dj_throw("attempt to use adobe svg hostenv when no window object");
 }
+
+dj_debug = function(){}
 
 dojo.hostenv.startPackage("dojo.hostenv");
 
@@ -14,6 +16,8 @@ dojo.hostenv.name_ = 'adobesvg';
  * Read the contents of the specified uri and return those contents.
  *
  * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
+ * FIXME: synch doesn't currently work
+ * FIXME: add XMLHttpPost Capability
  * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
  */ 
@@ -21,10 +25,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	var http = null;
 	
 	var async_callback = function(httpResponse){
-		if (httpResponse.success) {
-			// FIXME: not sure what to pass to the async_cb...
-			async_cb();
-		} else {
+		if (!httpResponse.success) {
 			dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
 		}
 		
@@ -53,7 +54,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 function dj_last_script_src() {
     // FIXME: this may not work with adobe's viewer, as we may first need a 
 		// reference to the svgDocument
-		var scripts = window.document.getElementsByTagName('script');
+/*		var scripts = window.document.getElementsByTagName('script');
     if(scripts.length < 1){ 
 		dj_throw("No script elements in window.document, so can't figure out my script src"); 
 	}
@@ -64,6 +65,7 @@ function dj_last_script_src() {
 		dj_throw("Last script element (out of " + scripts.length + ") has no src");
 	}
     return src;
+*/
 }
 
 if(!dojo.hostenv["library_script_uri_"]){
