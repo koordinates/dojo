@@ -84,13 +84,13 @@ digraph dhtml_universe
 		// FIXME: need to mine these links for info:
 		//	http://koranteng.blogspot.com/2004/07/on-rich-web-applications-alphablox-and.html
 		//	http://koranteng.blogspot.com/2004/10/on-gmail-and-dhtml-architecture-again.html
-		HalfBrain -> AlphaBlox [ label="AlpahBlox acquires HalfBrain" ];
+		HalfBrain -> AlphaBlox [ label="AlphaBlox acquires HalfBrain" ];
 		AlphaBlox -> IBM [ label="IBM bought AlphaBlox" ];
 		AlphaBlox -> Oddpost [ style=dotted ];
 		Oddpost -> Yahoo [ label="Y! bought Oddpost" ];
 		Gmail -> Google;
 		ModPubSub -> RePubSub;
-		TIBCO -> GenInt [ label="bought" ];
+		GenInt -> TIBCO [ label="bought" ];
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
