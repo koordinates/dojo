@@ -206,6 +206,7 @@ dojo.hostenv = {
 	base_script_uri_ : ((typeof djConfig['baseScriptUri'] == 'undefined') ? undefined : djConfig['baseScriptUri']),
 	base_relative_path_ : ((typeof djConfig['baseRelativePath'] == 'undefined') ? '' : djConfig['baseRelativePath']),
 	library_script_uri_ : ((typeof djConfig['libraryScriptUri'] == 'undefined') ? '' : djConfig['libraryScriptUri']),
+	auto_build_widgets_ : ((typeof djConfig['parseWidgets'] == 'undefined') ? true : djConfig['parseWidgets']),
 
 	// for recursion protection
 	loading_modules_ : {},

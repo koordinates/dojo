@@ -201,7 +201,24 @@ dojo.hostenv.println = function(s){
 }
 
 // FIXME: this and other Dojo-specific events need a more NW-like attachment mechanism
-window.onload = function(){ dojo.hostenv.modulesLoaded(); }
+window.onload = function(){
+	dojo.hostenv.modulesLoaded();
+}
+
+dojo.hostenv.modulesLoadedListeners.push(function(){
+	if(dojo.hostenv.auto_build_widgets_){
+		if(dj_eval_object_path("dojo.webui.widgets.Parse")){
+			try{
+				var parser = new dojo.xml.Parse();
+				var frag  = parser.parseElement(document.body, null, true);
+				var fragParser = new dojo.webui.widgets.Parse(frag);
+				fragParser.createComponents(frag);
+			}catch(e){
+				dj_debug(e);
+			}
+		}
+	}
+});
 
 // we assume that we haven't hit onload yet. Lord help us.
 // document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+((dojo.render.html.moz) ? 'about:blank' : (dojo.hostenv.base_relative_path_+'/blank.html'))+"'></iframe>");
