@@ -13,9 +13,9 @@
 				isDebug: true
 			};
 		</script>
-		<script type="text/javascript" src="../../../src/bootstrap1.js"></script>
-		<script type="text/javascript" src="../../../src/hostenv_browser.js"></script>
-		<script type="text/javascript" src="../../../src/bootstrap2.js"></script>
+		<script type="text/javascript" src="../../src/bootstrap1.js"></script>
+		<script type="text/javascript" src="../../src/hostenv_browser.js"></script>
+		<script type="text/javascript" src="../../src/bootstrap2.js"></script>
 		<script type="text/javascript">
 			dojo.hostenv.loadModule("dojo.xml.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
@@ -30,11 +30,11 @@
 	</head>
 	<body onload="testHandler();">
 		<script type="text/javascript"><!--
-			document.body.onload = testHandler;
 			
 			function testHandler() {
-				var testObjects = new dojo.xml.Parse(); testObjects.parseElement(document.getElementById("test"));
-				outputObjectInfo(testObjects,0,document.getElementById("output"));
+				var testObjects = new dojo.xml.Parse();
+				testItems = testObjects.parseElement(document.getElementById("test"));
+				outputObjectInfo(testItems,0,document.getElementById("output"));
 			}
 			
 			function outputObjectInfo(x,indentationCounter, outputElement) {

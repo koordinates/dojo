@@ -20,6 +20,7 @@
 			dojo.hostenv.loadModule("dojo.xml.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
 		</script>
 		<style type="text/css">
 			#output {
@@ -30,13 +31,9 @@
 	</head>
 	<body onload="testHandler();">
 		<script type="text/javascript"><!--
-			document.body.onload = testHandler;
-			
 			function testHandler() {
-				// FIXME: dylan, that flat-out doesn't work. WTF is going on here?
 				var testObj = new dojo.xml.Parse();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
-				//outputObjectInfo(testObjects,0,document.getElementById("output"));
 				var testParse = new dojo.webui.widgets.Parse();
 				testParse.createComponents(testObjects);
 			} //-->

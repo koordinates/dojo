@@ -44,21 +44,23 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.parseProperties = function(fragment) {
 		var properties = {};
 		for (var item in fragment) {
+			// FIXME: need to check for undefined?
 			// case: its a tagName or nodeRef
-			if((fragment[item] == fragment.tagName) || (fragment[item] != fragment.nodeRef)) {
+			if((fragment[item] == fragment.tagName) || (fragment[item] == fragment.nodeRef)) {
 				// do nothing
-			} else if(fragment[item]) {
+			} else {
 				if(fragment[item].tagName && dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) {
-					// TODO: it isn't a property or property set, it's a fragment, so do something else
+					// TODO: it isn't a property or property set, it's a fragment, 
+					// so do something else
+					// FIXME: needs to be a better/stricter check
 					// TODO: handle xlink:href for external property sets
+				} else if (fragment[item][0] && fragment[item][0].value!="") {
+					properties[item] = fragment[item][0].value;
+					var nestedProperties = this.parseProperties(fragment[item]);
+					for (var property in nestedProperties) {
+						properties[property] = nestedProperties[property];
+					}
 				}
-				if(fragment[item][0] && fragment[item][0].value) {
-						properties[fragment[item][0]] = fragment[item][0].value;
-				}
-				if(typeof fragment[item] == "object") {
-						// check for nested properties
-						this.parseProperties(fragment[item]);
-				}			
 			}
 		}
 		return properties;
@@ -132,6 +134,9 @@ dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
 	var propertySets = widgetParser.getPropertySets(fragment);
 	// FIXME: should we take each propertySet and parse it into properties at this point?
 	var localProperties = widgetParser.parseProperties(fragment);
+	for (prop in localProperties) {
+		alert(prop+":"+localProperties[prop]);
+	}
 	// FIXME: Add instantiation of component here?
 
 	dj_debug(dojo.webui.widgetManager.getImplementationName("button"));

@@ -26,10 +26,10 @@
 				// add your on-load logic here
 				var parser = new dojo.xml.Parse();
 				var frag  = parser.parseElement(document.body);
-				/*for(var x in frag){ 
+				for(var x in frag){ 
 					dojo.hostenv.println(x+": "+frag[x]);
-				}*/
-				outputObjectInfo(frag);
+				}
+				//outputObjectInfo(frag);
 				
 				var fragParser = new dojo.webui.widgets.Parse(frag);
 				fragParser.createComponents(frag);
