@@ -58,6 +58,13 @@
 		});
 
 	]]></script>
+	<g>
+		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
+		<text x="20" y="35" dojoType="button" label="this is a test button!" onClick="alert(this.domNode);">
+			you shouldn't be seeing this
+		</text>
+	</g>
+	<!--
 	<defs>
 		<radialGradient id="buttonGradient" cx="0" cy="0" fx="0%" fy="0%"
 r="100%">
@@ -77,11 +84,6 @@ r="100%">
 		<circle cx='210' cy='60' r='23'/>
 		<text x="190" y="65">huzzah</text>
 	</g>
-	<g>
-		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
-		<text x="20" y="35" dojoType="button" label="this is a test button!" onClick="alert(this.domNode);">
-			you shouldn't be seeing this
-		</text>
-	</g>
+	-->
 </svg>
 

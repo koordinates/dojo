@@ -87,7 +87,12 @@ dojo.webui.DomWidget = function(){
 					evt = dojo.text.trim(funcNameArr[0]);
 					thisFunc = dojo.text.trim(funcNameArr[1]);
 				}
-				dojo.event.browser.addListener(baseNode, evt.toLowerCase(), this[thisFunc||evt]);
+				if(dojo.hostenv.name_ == "browser"){
+					dojo.event.browser.addListener(baseNode, evt.toLowerCase(), this[thisFunc||evt]);
+				}else{
+					var en = evt.toLowerCase().substr(2);
+					baseNode.addEventListener(en, this[thisFunc||evt], false);
+				}
 			}
 		}
 
@@ -185,7 +190,7 @@ dojo.webui.SVGWidget = function(args){
 		}
 		var nodes = [];
 		for(var x=0; x<docFrag.childNodes.length; x++){
-			nodes.push(docFrag.childNodes[x].cloneNode(true));
+			nodes.push(docFrag.childNodes.item(x).cloneNode(true));
 		}
 		// tn.style.display = "none";
 		return nodes;

@@ -11,8 +11,27 @@ dojo.webui.widgets.SVGButton = function(){
 	dojo.webui.widgets.DomButton.call(this);
 	dojo.webui.SVGWidget.call(this);
 
+	// FIXME: HACK! imported directly from SVGWidget, not sure why this is required!
+	this.createNodesFromText = function(txt, wrap){
+		// from http://wiki.svg.org/index.php/ParseXml
+		var docFrag = parseXML(txt, window.document);
+		docFrag.normalize();
+		if(wrap){ 
+			var ret = [docFrag.firstChild.cloneNode(true)];
+			return ret;
+		}
+		var nodes = [];
+		for(var x=0; x<docFrag.childNodes.length; x++){
+			nodes.push(docFrag.childNodes.item(x).cloneNode(true));
+		}
+		// tn.style.display = "none";
+		return nodes;
+	}
+
+	this.onClick = function(){ alert("clicked!"); }
+
 	// FIXME: freaking implement this already!
-	this.foo = function(){ alert("bar"); }
+	this.onFoo = function(){ alert("bar"); }
 
 	this.label = "huzzah!";
 

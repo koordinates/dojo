@@ -145,7 +145,12 @@ dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
 	var localProperties = widgetParser.parseProperties(fragment);
 	// dj_debug(dojo.webui.widgetManager.getImplementationName("button"));
 	var tbutton = dojo.webui.widgetManager.getImplementation("button");
-	tbutton.create(localProperties);
+	alert(tbutton);
+	try{
+		tbutton.create(localProperties);
+	}catch(e){
+		alert(e);
+	}
 	var nr = fragment["dojo:button"].nodeRef;
 	nr.parentNode.replaceChild(tbutton.domNode, nr);
 }
