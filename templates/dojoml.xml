@@ -2,6 +2,26 @@
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
 	<!-- TODO: -->
 
+	<!-- attributes
+		id: unique identifier, string
+		cssClassName: string, follows rules of a css class name, will match css clases in an external stylesheet
+		cssStyle: inline css rules... seems like a reasonable compromose rather than the slew of presentational attributes in other similiar syntaxes
+		dojoStyle: presentational attributes on a component level that are not css... TODO: we may break these into attributes in their own namespace, or perhaps consider something like a -dojo-cssPropertyName for them...
+		dataProivder: data or a pointer to a data source or data model using JavaScript syntax... decided to use ognl/jsf style syntax rather than xpath for simplicity:
+			text: dataProvider="some plain text"
+			reference to a model: dataProvider="modelName"
+			reference to an item in a model: dataProvider="modelName.elementName"
+			xmlHttpRequest result: dataProvider="uri"
+			TODO: soap, real-time/mod_pubsub, wsdl, etc.
+		action: uri for form submission
+
+		TODO: "virtual" actions, i.e. events sent to the server upon submitting a form or completing an action
+		TODO: a way to specify event triggers, drag and drop, etc.
+		TODO: add the rest of the components... this is a non-exhaustive list to get started on
+		TODO: how do we want to handle data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui?
+
+	-->
+
 	<!-- components -->
 	<dojo:button id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
 	<dojo:contextMenu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
@@ -14,47 +34,37 @@
 	<dojo:wizard id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
 
 	<dojo:form id="" cssClassName="" cssStyle="" dojoStyle="" action="">
-		<!-- I'm attempting to cover the whatwg's web forms 2.0 spec here... come back to this later though -->
-		<dojo:input type="text|password|hidden|image|datetime|date|month|week|time|name|range|email|uri" />
+		<!-- TODO: We should make an effort to include items in the whatwg's web forms 2.0 spec -->
+		<dojo:textInput type="text|password|hidden|image|datetime|date|month|week|time|name|range|email|uri" />
 		<dojo:button />
-		<dojo:selectOne /> <!-- drop down and radio buttons -->
-		<dojo:selectMultiple /> <!-- select and checkboxes -->
+		<dojo:selectOne type="list|dropdown|radio" /> <!-- drop down and radio buttons -->
+		<dojo:selectMultiple type="list|checkbox" /> <!-- multiple select and checkboxes -->
 		<dojo:comboBox />
-		<dojo:textInput />
 		<dojo:file />
-		<!-- Flex has a concept for a formItem and groups such as radioButtonGroup... what do we want to do with this? -->
 		<dojo:datePicker />
+		<!-- dojo:numericStepper should be replaced by a select list with the appropriate dataProvider? -->
+
 	</dojo:form>
 
-	<dojo:resource dataProvider="" type="css|xslt|javascript|rss|atom" />
+	<!-- traditionally static or non-componentized elements -->
+	<dojo:label id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" /> <!-- container to insert text through a static or dynamic dataProvider -->
+	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+	<dojo:link id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" />
+
+	<dojo:resource dataProvider="" type="css|xslt|javascript|rss|atom" version="" />
 	<dojo:htmlFragment dataProvider="" />
 	<dojo:svgFragment dataProvider="" />
 	<dojo:xmlFragment dataProvider="" /><!-- for generic namespaces? -->
 
-
-	<!-- some generic templates as a temporary holding place for attributes 	<!-- cssStyle allows inline css block, dojoStyle is for presentational attributes for components that are not dojo... we may break these into attributes in their own namespace -->
-	<dojo:genericUIComponent id="" source="" />
-	<dojo:genericModel id="" source="" />
-	<!-- description of all attributes allowed for model sources -->
-
-	<!-- containers -->
-	<dojo:label /> <!-- container to insert text through a static or dynamic dataProvider -->
-	<dojo:list />
-	<dojo:link />
-
-	<dojo:script /> <!-- do we have a need for this? -->
-	<dojo:grid /><!-- table? -->
-	<dojo:accordion /><!--need a better name -->
-
-	<!-- mx:numericStepper should be replaced by a select list with the appropriate dataProvider -->
-
-	<dojo:tabPane />
-	<dojo:box />
+	<dojo:grid /><!-- TODO: add attributes -->
+	<dojo:tabPane /><!-- TODO: add attributes -->
+	<dojo:box /><!-- TODO: add attributes -->
 
 	<!-- models -->
 
-	<!-- how do we want to handle data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui? -->
+	<dojo:dataModel id="" src="" type="xml|javascript"><!-- src is a uri -->
+		<!-- dataModel can be empty, or cotain xml describing the structure of the data that will be passed from the src, or it can contain an xml data structure inline.  xml is allowed in any namespace... perhaps we should consider requiring a descriptor of the data structure, though that seems silly, and I'm not sure if it buys us anything. -->
+	</dojo:dataModel>
 
-	<!-- groups of form items? -->
 
 </dojo>
