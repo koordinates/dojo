@@ -7,6 +7,7 @@ if(!dojo.xml){
 dojo.xml.Parse = {};
 
 //TODO: determine dependencies
+// currently has dependency on dojo.xml.DomUtil constants...
 
 /* generic method for taking a node and parsing it into an object
 
@@ -31,17 +32,33 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 
  
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
-dojo.xml.ParseDocumentFragmentToJSObject = function(documentFragment) {
+dojo.xml.ParseDocumentFragmentToJSObject = function() {
+
+}
+
+dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseFragment = function(documentFragment) {
+	// handle parent element
 	var parsedFragment = {};
+	// TODO: What if document fragment is just text... need to check for nodeType perhaps?
+	parsedFragment[documentFragment.tagName] = new Array(documentFragment.tagName);
+	var attributeSet = this.parseAttributes(documentFragment);
+	for(var attr in attributeSet) {
+		if(!parsedFragment[attr]) {
+			parsedFragment[attr] = new Array();
+		}
+		parsedFragment[attr][parsedFragment[attr].length] = attributeSet[attr];
+	}
 	for (var childNode in documentFragment.childNodes) {
 		switch(documentFragment.childNodes[childNode].nodeType) {
-			case 1: // element nodes, call this function recursively
-				parsedFragment[documentFragment.tagName] = this.parseElement(documentFragment.childNodes[childNode]);
+			case dojo.xml.DomUtil.ELEMENT_NODE: // element nodes, call this function recursively
+				parsedFragment[documentFragment.tagName][parsedFragment[ documentFragment.tagName].length] = this.parseElement( documentFragment.childNodes[childNode]);
 				break;
-			case 3: // if a single text node is the child, treat it as an attribute
+			case dojo.xml.DomUtil.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 				if(documentFragment.childNodes.length == 1) {
-					parsedFragment[documentFragment.tagName] = {};
-					parsedFragment[documentFragment.tagName].value = documentFragment.childNodes[0].nodeValue;
+					if(!parsedFragment[documentFragment.tagName]) {
+						parsedFragment[documentFragment.tagName] = new Array();
+					}
+					parsedFragment[documentFragment.tagName][parsedFragment[documentFragment.tagName].length] = { value: documentFragment.childNodes[0].nodeValue };
 				}
 				break;
 		}
@@ -53,43 +70,44 @@ dojo.xml.ParseDocumentFragmentToJSObject = function(documentFragment) {
 dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseElement = function(node,parentNodeSet){
 	// TODO: make this namespace aware
 	var parsedNodeSet = {};
-	if(!parentNodeSet){
-		parsedNodeSet[node.tagName] = {};
-	}
+	parsedNodeSet[node.tagName] = new Array();
 	var attributeSet = this.parseAttributes(node);
 	for(var attr in attributeSet) {
-		parsedNodeSet[attr] = attributeSet[attr];
+		if(!parsedNodeSet[attr]) {
+			parsedNodeSet[attr] = new Array();
+		}
+		parsedNodeSet[attr][parsedNodeSet[attr].length] = attributeSet[attr];
 	}
-	for(var childNode in node.childNodes){
-		switch(node.childNodes[childNode].nodeType){
-			case 1: // element nodes, call this function recursively
- 				parsedNodeSet[node.tagName] = this.parseElement(node.childNodes[childNode],parsedNodeSet);
+	for (var i=0; i<node.childNodes.length; i++)
+	{
+		switch(node.childNodes[i].nodeType){
+			case dojo.xml.DomUtil.ELEMENT_NODE: // element nodes, call this function recursively
+ 				parsedNodeSet[node.tagName][parsedNodeSet[node.tagName].length] = this.parseElement(node.childNodes[i],parsedNodeSet);
 				break;
-			case 2: // attribute node... not meaningful here
+			case dojo.xml.DomUtil.ATTRIBUTE_NODE: // attribute node... not meaningful here
 				break;
-			case 3: // if a single text node is the child, treat it as an attribute
+			case dojo.xml.DomUtil.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 				if(node.childNodes.length == 1) {
-					parsedNodeSet[node.tagName] = {};
-					parsedNodeSet[node.tagName].value = node.childNodes[0].nodeValue;
+					parsedNodeSet[node.tagName][parsedNodeSet[node.tagName].length] = { value: node.childNodes[0].nodeValue };
 				}
 				break;
-			case 4: // cdata section... not sure if this would ever be meaningful... might be...
+			case dojo.xml.DomUtil.CDATA_SECTION_NODE: // cdata section... not sure if this would ever be meaningful... might be...
 				break;
-			case 5: // entity reference node... not meaningful here
+			case dojo.xml.DomUtil.ENTITY_REFERENCE_NODE: // entity reference node... not meaningful here
 				break;
-			case 6: // entity node... not sure if this would ever be meaningful
+			case dojo.xml.DomUtil.ENTITY_NODE: // entity node... not sure if this would ever be meaningful
 				break;
-			case 7: // processing instruction node... not meaningful here
+			case dojo.xml.DomUtil.PROCESSING_INSTRUCTION_NODE: // processing instruction node... not meaningful here
 				break;
-			case 8: // comment node... not not sure if this would ever be meaningful 
+			case dojo.xml.DomUtil.COMMENT_NODE: // comment node... not not sure if this would ever be meaningful 
 				break;
-			case 9: // document node... not sure if this would ever be meaningful
+			case dojo.xml.DomUtil.DOCUMENT_NODE: // document node... not sure if this would ever be meaningful
 				break;
-			case 10: // document type node... not meaningful here
+			case dojo.xml.DomUtil.DOCUMENT_TYPE_NODE: // document type node... not meaningful here
 				break;
-			case 11: // document fragment node... not meaningful here
+			case dojo.xml.DomUtil.DOCUMENT_FRAGMENT_NODE: // document fragment node... not meaningful here
 				break;
-			case 12:// notation node... not meaningful here
+			case dojo.xml.DomUtil.NOTATION_NODE:// notation node... not meaningful here
 				break;
 		}
 	}
@@ -100,9 +118,11 @@ dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseElement = function(node,
 dojo.xml.ParseDocumentFragmentToJSObject.prototype.parseAttributes = function(node) {
 	// TODO: make this namespace aware
 	var parsedAttributeSet = {};
-	for(var attr in node.attributes) {
-		parsedAttributeSet[node.attributes[attr].nodeName] = {};
-		parsedAttributeSet[node.attributes[attr].nodeName].value = node.attributes[attr].nodeValue;
+	for(var i=0; i<node.attributes.length; i++) {
+		if(!parsedAttributeSet[node.attributes[i].nodeName]) {
+			parsedAttributeSet[node.attributes[i].nodeName] = new Array();
+		}
+		parsedAttributeSet[node.attributes[i].nodeName][parsedAttributeSet[node.attributes[i].nodeName].length] = { value: node.attributes[i].nodeValue };
 	}
 	return parsedAttributeSet;
 }
