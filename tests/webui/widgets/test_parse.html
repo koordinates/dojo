@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" lang="en">
+	<head>
+		<title>Dojo: Static Test of Parse.js</title>
+		<script type="text/javascript">
+			dojo = {};
+		</script>
+		<script type="text/javascript" src="../../../src/xml/DomUtil.js"></script>
+		<script type="text/javascript" src="../../../src/xml/Parse.js"></script>
+		<script type="text/javascript" src="../../../src/webui/widgets/Parse.js"></script>
+		<style type="text/css">
+			#output {
+				font-family:monospace;
+				border: 3px solid #000000;
+			}
+		</style>
+	</head>
+	<body onload="testHandler();">
+		<script type="text/javascript"><!--
+			document.body.onload = testHandler;
+			
+			function testHandler() {
+				var testObj = new dojo.xml.Parse.ParseDocumentFragment();
+				var testObjects = testObj.parseElement(document.getElementById("test"));
+				//outputObjectInfo(testObjects,0,document.getElementById("output"));
+				var testParse = new dojo.webui.widgets.Parse.ParseFragment();
+				testParse.createComponents(testObjects);
+			} //-->
+		</script>
+		<pre>
+&lt;div id="test"&gt;
+	&lt;div id="test1" dojo:testAttribute="blank1" xlink:href="http://www.dojotoolkit.org"&gt;element 1&lt;/div&gt;
+	&lt;div id="test2" dojo:testAttribute="blank2" xlink:href="http://www.dojotoolkit.org"&gt;element 2&lt;/div&gt;
+	&lt;div id="test3" dojo:testAttribute="blank3" xlink:href="http://www.dojotoolkit.org"&gt;&lt;span id="test3a"&gt;element 3/3a&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+		</pre>
+		
+		<div id="test">
+			<div id="test1" dojo:testAttribute="blank1" xlink:href="http://www.dojotoolkit.org">element 1</div>
+			<div id="test2" dojo:testAttribute="blank2" xlink:href="http://www.dojotoolkit.org">element 2</div>
+			<div id="test3" dojo:testAttribute="blank3" xlink:href="http://www.dojotoolkit.org"><dojo:button id="test3a">element 3/3a</span></div>
+		</div>
+		<div id="output">
+		
+		</div>
+		<div id="attributeCount"></div>
+	</body>
+</html>
