@@ -3,8 +3,8 @@ Component Parser Requirements
 
 :Author: Dylan Schiemann
 :Version: 0.1
-:Copyright: Alex Russell, 2004
-:Date: 2004/11/15
+:Copyright: Dojo Foundation, 2005
+:Date: $Date:$
 
 .. contents::
 

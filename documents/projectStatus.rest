@@ -2,41 +2,51 @@ About Dojo
 ===================================
 
 :Author: Dylan Schiemann
-:Version: 0.1
+:Version: 0.2
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/02/18
+:Date: 2005/03/17
 
 .. contents::
 
-
-Current Status
-------------------------
-
-Dojo is currently in development.  We have finished a significant portion of the
-core "plumbing" for the project, and we also have our first widget, a button, 
-that can be constructed from markup in HTML and SVG namespaces.
-
-We still have a lot of work to do on making our widget system better, 
-especially in the world of SVG.  The current SVG button could be described as 
-hacky at best.  A button is a surprisingly complex widget, at least if it is 
-done with any sort of sane flexibility and constraints.
-
-Other things we are actively working on include our event, IO, and data binding
-systems.
-.. FIXME: add a concise, one sentence explanation of what this buys us.
-Ongoing improvements and refinements are being made to our xml declaration 
-language (specifically to support contraints and state) and parser.  The parser
-currently supports the most necessary markup constructs, with space to later accomodate more elaborate declaration mechanisms.
-
-The history section below details things that we have completed.
-
+	
+	
 Roadmap
 ------------------------
 
 Our current road map is to continue working on the plumbing and core components 
 until we reach a point at which we can release something that people will find 
 useful.  
-.. FIXME: should we add a target date
+
+This includes finishing the things described below in the current status 
+(likely without much SVG support), and adding enough components and widgets to 
+make the toolkit somewhat useful in addition to its core infrastructure.  If you 
+have a widget or three that's preventing you from using Dojo, let us know.
+
+The timeline for this release is mid-April, 2005 (FIXME: date needs to be verified)
+
+Current Status
+------------------------
+
+Dojo is currently in development.  We have finished a significant portion of the
+core "plumbing" for the project, and we also have our first widget, a button, 
+that can be constructed from markup in HTML and SVG namespaces.  We have also shipped an `initial profile build`, and a supporting article, 
+`baking usability into XMLHTTP`
+
+We still have a lot of work to do on making our widget system better, 
+especially in the world of SVG, but that will come later rather than sooner. 
+The current SVG button could be described as 
+hacky at best.  A button is a surprisingly complex widget, at least if it is 
+done with any sort of sane flexibility and constraints.
+
+Other things we are actively working on include our event, IO, and data binding
+systems.  This makes Dojo an excellent toolkit for sending messages and data 
+between the client and server, and between components in the client.
+Ongoing improvements and refinements are being made to our xml declaration 
+language (specifically to support contraints and state) and parser.  The parser
+currently supports the most necessary markup constructs, with space to later accomodate more elaborate declaration mechanisms.
+
+And of course, we're working on adding widgets that are useful.
+
 
 Code Checkins
 ----------------
@@ -44,51 +54,42 @@ Code Checkins
 A complete list of checkins may be found through our `checkins mailing list`
 
 
-History/Milestones
-------------------------
-
-
-
-
-May 2004: Leonard Lin suggests `the name Dojo` as part of an ongoing name discussion.  w3c web apps discussion, ian hickson, whatwg, gmail, etc.
-
-April, 2004: Alex Russell sends out an e-mail to a number of people in the DHTML
-community regarding the future of DHTML.  This discussion was the initial seed 
-of Dojo.  Several months of discussion continued over the various features and 
-limitations of existing DHTML toolkits.
-
 Releases
 ------------------------
 
-There are currently no release builds available.  Check back soon, or join the 
-`dojo interest mailing list`.
+There are currently no release full builds available.  The
+`dojo interest mailing list` contains regular updates.  `Anonymous SVN access` 
+is available, as is an `initial profile build`.
 
 
 Getting Involved
 ------------------------
 
-Currently, contributors are added to the project through invitation only, `much 
-like firefox`.  If you would like to contribute to the Dojo project, please 
-contact us.
-
-Subversion
-
-Java
+Currently, contributors are added to the project through invitation only, much 
+like firefox.  If you would like to contribute to the Dojo project, please 
+contact us through the `dojo interest mailing list`.
 
 
-Project Goals
-------------------------
+License
+-------
 
-subheading
-**********
+Dojo is licensed under the very friendly `Academic Free License v 2.1`. Some 
+`thoughts on the AFL license` .
 
+Dojo Foundation
+---------------
 
-subsubheading
-#############
+Dojo is a California nonprofit corporation and is currently working on receiving 
+tax exemption status.
+
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
-.. _`checkins mailing list`: http://www.dojotoolkit.org/
-.. _`the name dojo`: 
-.. _`dojo interest mailing list`: 
-.. _`much like firefox` 
+.. _`checkins mailing list`: http://www.dojotoolkit.org/pipermail/dojo-checkins/
+.. _`dojo interest mailing list`: http://www.dojotoolkit.org/pipermail/dojo-interest/
+.. _`initial profile build` : http://dojotoolkit.org/dojo_browserio.tar.gz
+.. _`baking usability into XMLHTTP` : http://dojotoolkit.org/intro_to_dojo_io.html
+.. _`Anonymous SVN access` : http://dojotoolkit.org/svn/dojo/
+.. _`Academic Free License v 2.1` : http://opensource.org/licenses/afl-2.1.php
+.. _``thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
+
 .. vim:ts=4:et:tw=0:shiftwidth=4:
