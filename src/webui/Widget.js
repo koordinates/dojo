@@ -287,12 +287,12 @@ dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
 	// FIXME: Is this needed?
 	// FIXME: Not sure that this parses into the structure that I want it to parse into...
 	// FIXME: add support for nested propertySets
-	var properties = widgetParser.parseProperties(fragment);
+	var properties = widgetParser.parseProperties(fragment["dojo:propertyset"]);
 }
 
 // FIXME: need to add the <dojo:connect />
 dojo.webui.widgets.tags["dojo:connect"] = function(fragment, widgetParser) {
-	var properties = widgetParser.parseProperties(fragment);
+	var properties = widgetParser.parseProperties(fragment["dojo:connect"]);
 }
 
 dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
