@@ -3,7 +3,7 @@ dojo.hostenv.startPackage("dojo.webui.widgets.ContextMenu");
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
 dojo.webui.widgets.ContextMenu = function(){
-	dojo.webui.widgets.call(this);
+	dojo.webui.Widget.call(this);
 	this.widgetType = "ContextMenu";
 }
 dj_inherits(dojo.webui.widgets.ContextMenu, dojo.webui.widgets.Menu, dojo.webui.Widget);
