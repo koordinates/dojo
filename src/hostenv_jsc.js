@@ -36,7 +36,8 @@ dojo.hostenv.loadUri = function(uri){
 	dj_debug("jsc eval of contents returned: ", value);
 	return 1;
 
-	// for an example doing runtime code compilation, see: http://groups.google.com/groups?selm=eQ1aeciCBHA.1644%40tkmsftngp05&rnum=6
+	// for an example doing runtime code compilation, see:
+	// http://groups.google.com/groups?selm=eQ1aeciCBHA.1644%40tkmsftngp05&rnum=6
 	// Microsoft.JScript or System.CodeDom.Compiler ?
 	// var engine = new Microsoft.JScript.Vsa.VsaEngine()
 	// what about loading a js file vs. a dll?
