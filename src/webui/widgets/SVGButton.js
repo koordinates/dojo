@@ -15,9 +15,12 @@ dojo.webui.widgets.SVGButton = function(){
 	this.label = "huzzah!";
 
 	this.setLabel = function(){
-		// FIXME: convert to svg
-		this.domNode.innerHTML = this.label;
-		this.domNode.label = this.label;
+		var labelNode = this.domNode.ownerDocument.createTextNode(this.label);
+		var textNode = this.domNode.ownerDocument.createElement("text");
+		textNode.setAttribute("x","20");
+		textNode.setAttribute("y","20");
+		textNode.appendChild(labelNode);
+		this.domNode.appendChild(textNode);
 	}
 
 	this.fillInTemplate = function(){
@@ -26,15 +29,21 @@ dojo.webui.widgets.SVGButton = function(){
 	}
 }
 
-/*
-new function(){ // namespace protection closure
-	var hbp = dojo.webui.widgets.SVGButton.prototype;
-		// FIXME: convert to svg
-	hbp.templateString = ["<button />"].join("");
-}; // FIXME: why isnt the (function(){})(); syntax working here??
-*/
-
 dj_inherits(dojo.webui.widgets.SVGButton, dojo.webui.widgets.DomButton);
 
-// FIXME: convert to svg
-dojo.webui.widgets.SVGButton.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick'></button>";
+// FIXME
+dojo.webui.widgets.SVGButton.prototype.shapeString = function(shape) {
+	switch(shape) {
+		case "ellipse":
+			return "<ellipse cx='' cy='' rx='' ry=''/>";
+			break;
+		case "rectangle":
+			return "<rect x='' y='' width='' height=''/>";
+			break;
+		case "circle":
+			return "<circle cx='' cy='' r=''/>";
+			break;
+	}
+}
+
+dojo.webui.widgets.SVGButton.prototype.templateString = "<g class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'>"+ dojo.webui.widgets.SVGButton.prototype.shapeString("ellipse") + "</g>";

@@ -5,8 +5,12 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink" onload="init(evt)">
   <script type="text/ecmascript"><![CDATA[
     function init(evt) {
-      var tree = new dojo.hostenv.getText("../templates/tree.xml", true, true);
+      var tree = new dojo.hostenv.getText("../templates/tree.xml", treeLoader, true);
     }
+		
+		function treeLoader() {
+			alert("hey");
+		}
   ]]>
   </script>
 	<script type="text/ecmascript" xlink:href="../src/bootstrap1.js" />

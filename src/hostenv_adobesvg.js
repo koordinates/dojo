@@ -24,6 +24,12 @@ dojo.hostenv.name_ = 'adobesvg';
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	var http = null;
 	
+	var async_cb = async_cb;
+	
+	var get_async_cb = function() {
+		return async_cb;
+	}
+	
 	var async_callback = function(httpResponse){
 		if (!httpResponse.success) {
 			dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
@@ -33,6 +39,8 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
 			return null;
 		}
+
+		// FIXME: wtf, I'm losing a reference to async_cb
 		async_cb(httpResponse.content);
 		// return httpResponse.content;
 	}
@@ -75,6 +83,7 @@ dojo.hostenv.postText = function(uri, async_cb, text, fail_ok, mime_type, encodi
 			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
 			return null;
 		}
+		// FIXME: wtf, I'm losing a reference to async_cb
 		async_cb(httpResponse.content);
 	}
 	
