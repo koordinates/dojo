@@ -62,13 +62,13 @@ build targets:
 				
 			}
 			print("foo");
-			/*
-			echo = dojo.createTask("echo");
-			dojo.addTask(echo);
+
+			var echo = dojo.createTask("echo");
+			help.addTask(echo);
 			echo.setMessage("JS integration is working!");
-			*/
 		]]></script>
 
+<!--
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
@@ -82,6 +82,7 @@ echo.setMessage("Jython integration is working!");
 
 print "look ma! Jython!"
 ]]></script>
+-->
 	</target>
 	<!-- end help task -->
 
