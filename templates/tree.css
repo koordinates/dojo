@@ -5,6 +5,7 @@
 	color:#0054aa;
 	background-color:#e1f0ff;
 	border:1px solid #000000;
+	-dojo-tree-indentation: 0.5em; /* not sure we want to support this, but I (Dylan) really like the idea of being able to specify everything presentational with css, even things that are component properties that get translated to css through templating... but it isn't a must have feature.  And if we do it, we need a way to prefix it with a different namespace... */
 }
 
 .className1 {

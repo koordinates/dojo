@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
 	<!-- This is an example of putting together a tree and a grid -->
-	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" definitionProvider="treeDefinitions" />
+	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" definitionProvider="treeDefinitions" eventProvider="treeEvents" />
 	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" definitionProvider="gridDefinitions" />
 	<dojo:componentDefinitionModel id="gridDefinitions" componentClass="default">
 		<sort type="user"></sort>
@@ -37,6 +37,13 @@
 			<objectRelation elementName="uniqueId" />
 		</treeItem>
 	</dojo:dataModel>
+
+	<dojo:eventModel id="treeEvents">
+		<event type="onclick" target="treeItem" action="evt.target.highlight()" />
+		<event type="onclick" target="treeItem" action="evt.target.open()" />
+		<event type="onclick" target="treeItem" action="dojoGridExample.display(evt.target.objectRelation)" />
+		<!-- need to revise this to mesh with the event model that we choose... for now just showing a way to do basic DOM events...  obviously this is not very intelligent and needs a lot of work -->
+	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticGridExampleModel">
 		<name>testTree</name>

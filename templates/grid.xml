@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml">
-	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" definitionProvider="gridDefinitions" />
+	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" definitionProvider="gridDefinitions" eventProvider="gridEvents" />
 	<dojo:componentDefinitionModel id="gridDefinitions" componentClass="default">
 		<!-- componentClass is used to describe types of components
 		meaning not a type of component, but a subtype... for example,
@@ -73,6 +73,24 @@
 			<gridCellItem elementName="subStructure4" />
 		</gridRowItem>
 	</dojo:dataModel>
+
+	<dojo:dataModel id="gridExampleDataModel3" src="gridData.js#staticExampleModel" type="javascript"><!-- this example references a javascript version of the model -->
+		<label elementName="name" />
+		<gridRowItem elementName="structure">
+			<gridCellItem elementName="subStructure" />
+			<gridCellItem>
+				<elementName>substructure2</elementName>
+				<elementName>substructure3</elementName>
+			</gridCellItem>
+			<gridCellItem elementName="subStructure4" />
+		</gridRowItem>
+	</dojo:dataModel>
+
+	<dojo:eventModel id="gridEvents">
+		<event type="onclick" target="gridCellItem" action="evt.target.highlight()" />
+		<!-- need to revise this to mesh with the event model that we choose... for now just showing a way to do basic DOM events -->
+		<!-- -->
+	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticExampleModel">
 		<name>testGrid</name>

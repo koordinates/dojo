@@ -24,6 +24,7 @@
 	<!-- TODO: Determine how to define events declaratively? -->
 	<!-- TODO: How to define nontrivial relationships between data structures for different components -->
 	<!-- TODO: How to define data models that grab elements from different data sources -->
+	<!-- TODO: make sure this is synced with things that have been added to example templates as their details are worked out -->
 
 	<!-- structure
 		There are two fundamentally different approaches that were considered here for how the markup works.  One is the XAML style where the structure can actually represent the underlying data model: http://myxaml.com/marcclifton/archive/2004/04/04/193.aspx .  The other is to make the markup reflective of what components are, and to abstract away the particular structure of the underlying implementation.  In this case, I think our target market is more in line with the latter.  I'm thinking that we're not looking for a way to program with xml, but rather a way to configure with xml.
