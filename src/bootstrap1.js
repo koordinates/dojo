@@ -686,7 +686,7 @@ dojo.hostenv.startPackage = function(packname){
 			obj[syms[i]] = {};
 			// eval(objName+" = {};");
 
-			dj_debug("startPackage: ", objName, " now defined as: ", new String(eval(objName)));
+			// dj_debug("startPackage: ", objName, " now defined as: ", new String(eval(objName)));
 		}
 	}
 	return obj;

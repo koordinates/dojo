@@ -11,3 +11,5 @@ dojo.text = new function(){
 		return iString.replace(/^\s*/, "").replace(/\s*$/, "");
 	}
 }
+
+dojo.text.Text = {}; // duh, alex.

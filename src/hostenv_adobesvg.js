@@ -108,9 +108,9 @@ dojo.hostenv.unWindGetTextStack = function(){
 }
 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
-	dj_debug("Calling getText()");
-	try {
-		if(async_cb) {
+	// dj_debug("Calling getText()");
+	try{
+		if(async_cb){
 			dojo.hostenv.getTextStack.push([uri, async_cb, fail_ok]);
 			dojo.hostenv.unWindGetTextStack();
 		}else{
