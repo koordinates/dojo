@@ -85,7 +85,7 @@ Dojo Foundation
 ---------------
 
 Dojo is a California nonprofit corporation.  We're currently working on 
-mundance details like bylaws and tax exemption status.
+mundane details like bylaws and tax exemption status.
 
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
