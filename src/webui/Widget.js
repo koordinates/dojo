@@ -52,6 +52,7 @@ dojo.webui.Widget = function(){
 	this.create = function(args, fragment){
 		this.satisfyPropertySets(args, fragment);
 		this.mixInProperties(args, fragment);
+
 		this.buildRendering(args, fragment);
 		this.initialize(args, fragment);
 		this.postInitialize(args, fragment);

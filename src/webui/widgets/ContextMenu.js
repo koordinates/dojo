@@ -18,10 +18,10 @@ dj_inherits(dojo.webui.widgets.DomContextMenu, dojo.webui.widgets.ContextMenu);
 // we shouldn't be declaratively creating right-click menus in markup, although
 // one should be able to declare a right-click menu as a propset in a widget
 // declaration...
-/*
-dojo.webui.widgets.tags["dojo:contextMenu"] = function(fragment, widgetParser){
-	dojo.webui.widgets.buildWidgetFromParseTree("dojo:contextMenu", fragment, widgetParser);
+
+dojo.webui.widgets.tags["dojo:contextmenu"] = function(fragment, widgetParser){
+	dojo.webui.widgets.buildWidgetFromParseTree("dojo:contextmenu", fragment, widgetParser);
 }
-*/
+
 
 // ...instead, we need to install a global context menu handler here.

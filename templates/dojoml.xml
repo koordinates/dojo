@@ -128,7 +128,13 @@
 			<!-- usual css properties for displaying an image on a button -->
 		</dojo:image>
 	</dojo:button>
-	<dojo:contextMenu id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:contextMenu id=""  dataProvider="" propertyProviderList="">
+		<!-- FIXME: Does is make sense to have items as separate tag types, or 
+		should the following three things just all be items -->
+		<dojo:header>text</dojo:header>
+		<dojo:item propertyProviderList="">text</dojo:item>
+		<dojo:separator />
+	</dojo:contextMenu>
 	<dojo:menu id=""  dataProvider="" propertyProviderList=""  />
 	<dojo:progressBar id=""  dataProvider="" propertyProviderList=""  />
 	<dojo:list id=""  dataProvider="" propertyProviderList=""  />

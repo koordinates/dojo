@@ -27,7 +27,8 @@
 		<script type="text/javascript">
 			// register a new do-nothing tag
 			dojo.webui.widgets.tags["dojo:donothing"] = function(frag, parser){
-				var properties = parser.parseProperties(frag);
+				//var properties = parser.parseProperties(frag);
+				var properties = parser.parseProperties(frag["dojo:donothing"]);
 				// now that we've pulled in the propsets that should apply to
 				// this tag, lets inspect them
 				testPropsets(properties);
@@ -46,6 +47,6 @@
 		<div dojoType="propertyset" foo="bar">
 			<div dojoType="baz" quux="xyzzy"></div>
 		</div>
-		<div dojoType="donothing"></div>
+		<div dojoType="donothing" test="foo"></div>
 	</body>
 </html>
