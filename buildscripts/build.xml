@@ -7,11 +7,15 @@
 	<!-- project properties -->
 	<property name="project" value="dojo"/>
 	<property name="build.dir" value="../build"/>
+	<property name="root" value=".."/>
 	<property name="src" value="src"/>
 	<property name="version" value="development"/>
 	<property name="lang" value="en"/>
-	<property name="release.dir" value="../release"/>
-	<property name="docs.dir" value="${release.dir}/docs"/>
+	<property name="release.dir" value="${root}/release"/>
+	<property name="docs.dir" value="${root}/documents"/>
+	<property name="release.docs.dir" value="${release.dir}/docs"/>
+	<property name="website.dir" value="${docs.dir}/website"/>
+	<property name="release.website.dir" value="/srv/www/htdocs"/>
 
 	<property name="copyright" 
 		value="/* Copyright (c) 2004 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
@@ -21,14 +25,14 @@
 		<echo>
 build targets:
 	clean - deletes all files in the ${release.dir} directory
-	compress - coppies the files in ./${src} to the
+	compress - copies the files in ${root}/${src} to the
 		${release.dir}/${project}/${src} directory where it
 		compresses all the .js files with a set of regular
 		expressions and removes all non .js files
 	src - Take ./${src} and build the ${release.dir}/${project}/${src}_src
 		directory. More or less a copy of the source files, documentation and
 		all.
-	docs - builds documentation in all formats from ./${src} and place it in ${docs.dir}
+	docs - builds documentation in all formats from ./${src} and place it in ${release.docs.dir}
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -97,6 +101,26 @@ print "look ma! Jython!"
 	-->
 	</target>
 	<!-- end help task -->
+
+	<!-- website task -->
+	<target name="website"
+		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
+        <copy todir="${release.website.dir}">
+			<fileset dir="${website.dir}">
+				<exclude name="**/.svn*"></excludes>
+			</fileset>
+		</copy>
+		<chgrp group="www">
+			<fileset dir="${website.dir}" includes="**/**" followsymlinks="false" />
+		</chgrp>
+		<chmod perm="g+rx">
+			<fileset dir="${website.dir}" includes="**/**" type="dir" followsymlinks="false" />
+		</chmod>
+		<chmod perm="g+r">
+			<fileset dir="${website.dir}" includes="**/**" type="file" followsymlinks="false" />
+		</chmod>
+	</target>
+	<!-- end website task -->
 
 	<!-- clean task -->
 	<target name="clean"
