@@ -39,7 +39,8 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile):
 			buildRestFiles(tn, docOutDir+os.sep+name, styleSheetFile)
 
 def norm(path):
-	return os.path.normpath(os.path.abspath(path))
+	# return os.path.normpath(os.path.abspath(path))
+	return path
 
 def buildTestFiles( testDir="../tests/", 
 					testOutFile="../testRunner.js", 
