@@ -103,12 +103,15 @@ function dj_rhino_current_script_via_java(depth) {
     //   at org.mozilla.javascript.gen.c3._c4(/Users/mda/Sites/burstproject/burst/Runtime.js:56)
     //   at org.mozilla.javascript.gen.c3.call(/Users/mda/Sites/burstproject/burst/Runtime.js)
     var matches = s.match(/[^\(]*\.js\)/gi);
-    if (!matches) throw Error("cannot parse printStackTrace output: " + s);
+    if(!matches){
+		throw Error("cannot parse printStackTrace output: " + s);
+	}
 
     // matches[0] is entire string, matches[1] is this function, matches[2] is caller, ...
-    var fname = (typeof depth != 'undefined' && depth) ? matches[depth + 1] : matches[matches.length - 1];
+    var fname = ((typeof depth != 'undefined')&&(depth)) ? matches[depth + 1] : matches[matches.length - 1];
     var fname = matches[3];
-    //print("got fname '" + fname + "' from stack string '" + s + "'");
+	if(!fname){ fname = matches[1]; }
+    // print("got fname '" + fname + "' from stack string '" + s + "'");
     if (!fname) throw Error("could not find js file in printStackTrace output: " + s);
     //print("Rhino getCurrentScriptURI returning '" + fname + "' from: " + s); 
     return fname;
