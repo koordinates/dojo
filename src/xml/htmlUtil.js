@@ -3,6 +3,7 @@ dojo.hostenv.startPackage("dojo.xml.htmlUtil");
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS. Need to investigate for KHTML and Opera
 dojo.xml.htmlUtil = new function(){
+	var _this = this;
 	
 	// FIXME: need to make sure these get installed at onLoad!!!
 	// FIXME: if we're on Moz, we need to FORCE -moz-box-sizing: border-box;
@@ -80,7 +81,7 @@ dojo.xml.htmlUtil = new function(){
 	
 	/*
 	 * Returns the string value of the list of CSS classes currently assigned
-	 * directly to the node in question. Returns null if no class attribute
+	 * directly to the node in question. Returns an empty string if no class attribute
 	 * is found;
 	*/
 	this.getClass = function(node){
@@ -89,7 +90,7 @@ dojo.xml.htmlUtil = new function(){
 		}else if(this.hasAttr(node, "class")){
 			return this.getAttr(node, "class");
 		}
-		return null;
+		return "";
 	}
 
 	/*
@@ -99,7 +100,7 @@ dojo.xml.htmlUtil = new function(){
 	*/
 
 	this.hasClass = function(node, classname){
-		var classes = (this.getClass(node)||"").split(/\s+/);
+		var classes = this.getClass(node).split(/\s+/g);
 		for(var x=0; x<classes.length; x++){
 			if(classname == classes[x]){ return true; }
 		}
@@ -181,39 +182,93 @@ dojo.xml.htmlUtil = new function(){
 		return true;
 	}
 
+	// Enum type for getElementsByClass classMatchType arg:
+	this.classMatchType = {
+		ContainsAll : 0, // all of the classes are part of the node's class (default)
+		ContainsAny : 1, // any of the classes are part of the node's class
+		IsOnly : 2 // only all of the classes are part of the node's class
+	}
+
 	/*	Returns an array of nodes for the given classStr, children of a
 	 *  parent, and optionally of a certain nodeType
 	*/
 
-	// FIXME: need some real error checking code in here
-	this.getElementsByClass = function(parent, classStr, nodeType) {
-		if(!parent){ 
-			parent = document;
-		}
-		/* FIXME: can't seem to get this to work in firefox for some reason
+	this.getElementsByClass = function(classStr, parent, nodeType, classMatchType) {
+		if(!parent){ parent = document; }
+		var classes = classStr.split(/\s+/g);
+		var nodes = [];
+		if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
+
 		if(document.evaluate) { // supports dom 3 xpath
-			var xpathResult = document.evaluate('//[@class = "'classStr'"]', document, null, 0, null);
-			var nodes = [];
-			var item;
-			while (item = xpathResult.iterateNext()) {
-				nodes.push(item);
+			var xpath = "//" + (nodeType || "*") + "[contains(";
+			if( classMatchType != _this.classMatchType.ContainsAny ) {
+				xpath += "concat(' ',@class,' '), ' " +
+					classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
+					" ')]";
+			} else {
+				xpath += "concat(' ',@class,' '), ' " +
+					classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
+					" ')]";
 			}
-			return nodes;
-		} else {
-		*/
-		  if(!nodeType) {
-				nodeType = "*";
-			}
-			var candidateNodes = parent.getElementsByTagName(nodeType);
-			var nodes = [];
-			for (var i=0; i<candidateNodes.length; i++) {
-				// FIXME: needs to support non sequential ordering...
-				if (candidateNodes[i]["className"].indexOf(classStr) != -1) {
-					nodes.push(candidateNodes[i]);
+			//dj_debug("xpath: " + xpath);
+
+			var xpathResult = document.evaluate(xpath, document, null,
+				XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+
+			outer:
+			for(var node = null, i = 0; node = xpathResult.snapshotItem(i); i++) {
+				if( classMatchType != _this.classMatchType.IsOnly ) {
+					nodes.push(node);
+				} else {
+					if( !_this.getClass(node) ) { continue outer; }
+
+					var nodeClasses = _this.getClass(node).split(/\s+/g);
+					var reClass = new RegExp("(\\s|^)(" + classes.join(")|(") + ")(\\s|$)");
+					for(var j = 0; j < nodeClasses.length; j++) {
+						if( !nodeClasses[j].match(reClass) ) {
+							continue outer;
+						}
+					}
+					nodes.push(node);
 				}
 			}
-			return nodes;
-		/*}*/
+		} else {
+			if(!nodeType) { nodeType = "*"; }
+			var candidateNodes = parent.getElementsByTagName(nodeType);
+
+			outer:
+			for(var i = 0; i < candidateNodes.length; i++) {
+				var node = candidateNodes[i];
+				if( !_this.getClass(node) ) { continue outer; }
+				var nodeClasses = _this.getClass(node).split(/\s+/g);
+				var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
+				var matches = 0;
+
+				for(var j = 0; j < nodeClasses.length; j++) {
+					if( reClass.test(nodeClasses[j]) ) {
+						if( classMatchType == _this.classMatchType.ContainsAny ) {
+							nodes.push(node);
+							continue outer;
+						} else {
+							matches++;
+						}
+					} else {
+						if( classMatchType == _this.classMatchType.IsOnly ) {
+							continue outer;
+						}
+					}
+				}
+
+				if( matches == classes.length ) {
+					if( classMatchType == _this.classMatchType.IsOnly && matches == nodeClasses.length ) {
+						nodes.push(node);
+					} else if( classMatchType == _this.classMatchType.ContainsAll ) {
+						nodes.push(node);
+					}
+				}
+			}
+		}
+		return nodes;
 	}
 	
 }
