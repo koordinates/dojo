@@ -246,6 +246,34 @@ dojo.webui.HTMLWidget = function(args){
 		// tn.style.display = "none";
 		return nodes;
 	}
+
+	this._old_buildFromTemplate = this.buildFromTemplate;
+
+	this.buildFromTemplate = function(){
+		if((!this.templateNode)&&(!this.templateString)&&(this.templateURL)){
+			// fetch a text fragment and assign it to templateString
+			// NOTE: we rely on blocking IO here!
+			this.templateString = dojo.hostenv.getText(this.templateURL);
+
+		}
+
+		if(this.templateCSSURL){
+			insertCSSFile(this.templateCSSURL);
+			this.templateCSSURL = null;
+		}
+
+		this._old_buildFromTemplate();
+	}
+
+	function insertCSSFile(URI, doc){
+		if(!doc){ doc = document; }
+		var file = doc.createElement("link");
+		file.setAttribute("type", "text/css");
+		file.setAttribute("rel", "stylesheet");
+		file.setAttribute("href", URI);
+		var head = doc.getElementsByTagName("head")[0];
+		head.appendChild(file);
+	}
 }
 
 dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
