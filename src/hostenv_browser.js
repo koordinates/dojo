@@ -194,5 +194,8 @@ dojo.hostenv.println = function(s){
 	}
 }
 
+// FIXME: this and other Dojo-specific events need a more NW-like attachment mechanism
+window.onload = function(){ dojo.hostenv.modulesLoaded(); }
+
 // we assume that we haven't hit onload yet. Lord help us.
 document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+((dojo.render.html.moz) ? 'about:blank' : (dojo.hostenv.base_relative_path_+'/blank.html'))+"'></iframe>");

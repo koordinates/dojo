@@ -14,19 +14,30 @@ djConfig = {
 	// isDebug: true
 };
 
-dependencies = [
-	"dojo.event.*"
-];
+if(!this["dependencies"]){
+	dependencies = [ 
+		"dojo.event.*",
+		"dojo.io.*",
+		"dojo.text.*",
+		"dojo.xml.*",
+		"dojo.xml.Parse",
+		"dojo.webui.widgets.Parse",
+		"dojo.webui.widgets.Button",
+		"dojo.webui.widgets.HTMLButton",
+	];
+}
 
 load("../src/bootstrap1.js");
 load("../src/hostenv_rhino.js");
 load("../src/bootstrap2.js");
 
-// print(dojo.hostenv.name_);
-
 if(!this["hostenvType"]){
 	hostenvType = "browser";
 }
+
+dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
+dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
+dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
 dojo.hostenv.name_ = hostenvType;
 
@@ -78,7 +89,8 @@ for(var x=0; x<dependencies.length; x++){
 	}
 }
 
-print("URIs, in order: ");
-for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
-	print("\t"+dojo.hostenv.loadedUris[x]);
-}
+// print("URIs, in order: ");
+// for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
+// 	print(dojo.hostenv.loadedUris[x]);
+// }
+print(dojo.hostenv.loadedUris.join(",\n"));

@@ -367,11 +367,24 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<!-- 
 			FIXME: this is just a stub! need to fill it in! 
 		-->
-		<!-- FIXME: need to actually get a list of js files to be processed 
-		<java jar="${user.home}/.ant/lib/js.jar" fork="true">
-			<arg value="" />
+		<!-- FIXME: need to actually get a list of js files to be processed  -->
+		<java jar="${user.home}/.ant/lib/js.jar" fork="true" outputproperty="concatFilesProp">
+			<arg value="getDependencyList.js" />
 		</java>
-		-->
+
+		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/source.__package__.js">
+			<filelist 
+				dir="."
+				files="${concatFilesProp}" />
+		</concat>
+
+		<java jar="./lib/custom_rhino.jar" fork="true" output="${release_dir}/__package__.js">
+			<arg value="-c" />
+			<arg value="${release_dir}/source.__package__.js" />
+		</java>
+
+		<delete file="${release_dir}/source.__package__.js"/>
+
 	</target>
 	<!-- end compress task -->
 
