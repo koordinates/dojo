@@ -163,6 +163,7 @@ dj_inherits(dojo.webui.DomWidget, dojo.webui.Widget);
 
 // SVGWidget is a mixin ONLY
 dojo.webui.SVGWidget = function(args){
+	alert("dojo.webui.SVGWidget");
 	// mixin inheritance
 	// dojo.webui.DomWidget.call(this);
 
@@ -172,11 +173,12 @@ dojo.webui.SVGWidget = function(args){
 	}
 
 	this.getContainerWidth = function(){
-		return this.parent.domNode.offsetWidth;
+		// return this.parent.domNode.offsetWidth;
+		dj_unimplemented("dojo.webui.SVGWidget.getContainerWidth");
 	}
 
 	this.setNativeHeight = function(height){
-		var ch = this.getContainerHeight();
+		// var ch = this.getContainerHeight();
 		dj_unimplemented("dojo.webui.SVGWidget.setNativeHeight");
 	}
 
@@ -237,9 +239,3 @@ dojo.webui.HTMLWidget = function(args){
 }
 
 dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
-
-// SVGWidget is a mixin ONLY
-dojo.webui.SVGWidget = function(){
-	// dojo.webui.DomWidget.call(this);
-}
-

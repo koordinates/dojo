@@ -8,27 +8,9 @@ dojo.webui.widgets.SVGButton = function(){
 	// FIXME: this is incomplete and doesn't work yet
 	// if DOMButton turns into a mixin, we should subclass Button instead and
 	// just mix in the DOMButton properties.
+
 	dojo.webui.widgets.DomButton.call(this);
 	dojo.webui.SVGWidget.call(this);
-
-	// FIXME: HACK! imported directly from SVGWidget, not sure why this is required!
-	this.createNodesFromText = function(txt, wrap){
-		// from http://wiki.svg.org/index.php/ParseXml
-		var docFrag = parseXML(txt, window.document);
-		docFrag.normalize();
-		if(wrap){ 
-			var ret = [docFrag.firstChild.cloneNode(true)];
-			return ret;
-		}
-		var nodes = [];
-		for(var x=0; x<docFrag.childNodes.length; x++){
-			nodes.push(docFrag.childNodes.item(x).cloneNode(true));
-		}
-		// tn.style.display = "none";
-		return nodes;
-	}
-
-	this.onClick = function(){ alert("clicked!"); }
 
 	// FIXME: freaking implement this already!
 	this.onFoo = function(){ alert("bar"); }
@@ -62,6 +44,7 @@ dojo.webui.widgets.SVGButton = function(){
 		//textNode.appendChild(labelNode);
 		//this.domNode.appendChild(textNode);
 		return textString;
+		alert(textNode.getComputedTextLength());
 	}
 
 	this.fillInTemplate = function(x, y, textSize, label, shape){
@@ -87,7 +70,7 @@ dojo.webui.widgets.SVGButton.prototype.shapeString = function(x, y, textSize, la
 			var coords = dojo.webui.widgets.SVGButton.prototype.coordinates(x, y, textSize, label, shape)
 			return "<ellipse cx='"+ coords[4]+"' cy='"+ coords[5]+"' rx='"+ coords[2]+"' ry='"+ coords[3]+"'/>";
 			break;
-		case "rectangle":
+		case "rect":
 			//FIXME: implement
 			return "";
 			//return "<rect x='110' y='45' width='70' height='30'/>";
