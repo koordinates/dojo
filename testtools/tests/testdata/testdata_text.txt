@@ -1,0 +1,3 @@
+Hello World.
+Here is some text with angle brackets: <root></root>
+Here is a parameter entity: &nbsp;
