@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
-<!-- Copyright (c) 2004 The Dojo Foundation, Licensed under the Academic Free License version 2.1 --> 
+<!-- Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 --> 
 <project name="dojo" default="help" basedir=".">
 	<description>build the Dojo toolkit</description>
 
@@ -19,7 +19,7 @@
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 
 	<property name="copyright" 
-		value="/* Copyright (c) 2004 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
+		value="/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
 
 	<!-- help task -->
 	<target name="help" depends="-fix-config">
