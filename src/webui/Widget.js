@@ -110,11 +110,14 @@ dojo.webui.Widget = function(){
 		for(var x in args){
 			dj_debug("args: "+x);
 			var tx = this[x];
+			var xorig = new String(x);
 			if(!tx){
 				// FIXME: this is O(n) time for each property, and thereby O(mn), which can easily be O(n^2)!!! Ack!!
 				for(var y in this){
 					if((new String(y)).toLowerCase()==(new String(x)).toLowerCase()){
-						x = y; break;
+						x = y; 
+						args[y] = args[xorig];
+						break;
 					}
 				}
 			}
@@ -131,6 +134,7 @@ dojo.webui.Widget = function(){
 						// of attaching here is appropriate. I suspect that we
 						// might want to only allow attaching w/ action items.
 						this[x] = new Function(args[x]);
+						dj_debug("obj."+x+": "+this[x]);
 					}else if(this[x].constructor == Array){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					}else if(typeof this[x] == "object"){ 

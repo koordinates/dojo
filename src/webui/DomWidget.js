@@ -1,6 +1,8 @@
 dojo.hostenv.startPackage("dojo.webui.DomWidget");
 
+dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.webui.Widget");
+dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
 dojo.webui.DomWidget = function(){
@@ -9,6 +11,7 @@ dojo.webui.DomWidget = function(){
 	dojo.webui.Widget.call(this);
 
 	this.attachProperty = "dojoAttachPoint";
+	this.eventAttachProperty = "dojoAttachEvent";
 
 	this.domNode = null; // this is our visible representation of the widget!
 
@@ -23,7 +26,9 @@ dojo.webui.DomWidget = function(){
 	this.buildRendering = function(){
 		// DOM widgets construct themselves from a template
 		this.buildFromTemplate();
-		this.fillInTemplate();
+		this.fillInTemplate(); 	// this is where individual widgets will handle
+								// population of data from properties, remote
+								// data sets, etc.
 	}
 
 	this.buildFromTemplate = function(){
@@ -50,28 +55,70 @@ dojo.webui.DomWidget = function(){
 	}
 
 	this.attachTemplateNodes = function(baseNode){
-		// if a "template attach point" method was installed on this widget class, use it!
+		var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
+
 		if(!baseNode){ 
 			baseNode = this.domNode;
-			// FIXME: is this going to have capitalization problems?
-			var aa = this.domNode.getAttribute(this.attachProperty);
-			if(aa){
-				// __log__.debug(aa);
-				this[aa]=baseNode;
+		}
+
+		if(baseNode.nodeType != elementNodeType){
+			return;
+		}
+
+		// FIXME: is this going to have capitalization problems?
+		var attachPoint = this.domNode.getAttribute(this.attachProperty);
+		if(attachPoint){
+			this[attachPoint]=baseNode;
+		}
+
+		var attachEvent = this.domNode.getAttribute(this.eventAttachProperty);
+		if(attachEvent){
+			var thisFunc = null;
+			if(attachEvent.indexOf(":") >= 0){
+				// oh, if only JS had tuple assignment
+				var funcNameArr = attachEvent.split(":");
+				attachEvent = funcNameArr[0];
+				thisFunc = funcNameArr[1];
+			}
+			// dojo.event.connect("after", baseNode, evtName, this, (thisFunc||attachEvent));
+			dojo.event.browser.addListener(baseNode, attachEvent.toLowerCase(), this[thisFunc||attachEvent]);
+		}
+
+		for(var x=0; x<baseNode.childNodes.length; x++){
+			if(baseNode.childNodes[x].nodeType == elementNodeType){
+				this.attachTemplateNodes(baseNode.childNodes[x]);
 			}
 		}
+
+		/*
 		for(var x=0; x<baseNode.childNodes.length; x++){
 			var tn = baseNode.childNodes[x];
 			if(tn.nodeType!=1){ continue; }
 			var aa = dojo.xml.htmlUtil.getAttr(tn, this.attachProperty);
 			if(aa){
 				// __log__.debug(aa);
-				this[aa]=tn;
+				var thisFunc = null;
+				if(aa.indexOf(":") >= 0){
+					// oh, if only JS had tuple assignment
+					var funcNameArr = aa.split(":");
+					aa = funcNameArr[0];
+					thisFunc = funcNameArr[1];
+				}
+				alert(aa);
+				if((this[aa])&&((thisFunc)||(typeof this[aa] == "function"))){
+					var _this = this;
+					baseNode[thisFunc||aa] = function(evt){ 
+						_this[aa](evt);
+					}
+				}else{
+					this[aa]=tn;
+				}
 			}
 			if(tn.childNodes.length>0){
 				this.attachTemplateNodes(tn);
 			}
 		}
+		*/
 	}
 
 	this.fillInTemplate = function(){
