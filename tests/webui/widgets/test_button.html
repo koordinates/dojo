@@ -27,10 +27,9 @@
 			function init(){
 				dj_debug("******************** INIT! **********************");
 				// add your on-load logic here
+				// var tic = new Date();
 				var parser = new dojo.xml.Parse();
-				var tic = new Date();
 				var frag  = parser.parseElement(document.body, null, true);
-				alert("raw parse: "+((new Date())-tic)+"ms");
 				/*
 				for(var x in frag){ 
 					dojo.hostenv.println(x+": "+frag[x]);

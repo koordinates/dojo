@@ -111,7 +111,6 @@ dojo.webui.Widget = function(){
 		// documented with big bright neon lights.
 
 		for(var x in args){
-			dj_debug("args: "+x);
 			var tx = this[x];
 			var xorig = new String(x);
 			if(!tx){

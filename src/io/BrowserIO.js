@@ -1,5 +1,7 @@
 dojo.hostenv.startPackage("dojo.io.BrowserIO");
 
+dojo.hostenv.loadModule("dojo.io.IO");
+
 dojo.io.formHasFile = function(formNode){
 	function checkChildrenForFile(node){
 		var hasTrue = false;
@@ -43,7 +45,7 @@ dojo.io.buildFormGetString = function(sNode){
 	return tvar;
 }
 
-dojo.io.XMLHTTPTransport= new function(){
+dojo.io.XMLHTTPTransport = new function(){
 	this.canHandle = function(kwArgs){
 		// canHandle just tells dojo.io.bind() if this is a good transport to
 		// use for the particular type of request.
@@ -67,19 +69,6 @@ dojo.io.XMLHTTPTransport= new function(){
 	}
 
 	this.bind = function(kwArgs){
-		var hdlrObj = {};
-
-		// set up a handler object
-		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
-			var fn = dojo.io.hdlrFuncNames[x];
-			if(typeof kwArgs.handler == "object"){
-				if(typeof kwArgs.handler[fn] == "function"){
-					hdlrObj[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"];
-				}
-			}else if(typeof kwArgs.handler == "function"){
-				hdlrObj[fn] = kwArgs.handler;
-			}
-		}
 
 		// much of this is from getText, but reproduced here because we need
 		// more flexibility
@@ -90,19 +79,20 @@ dojo.io.XMLHTTPTransport= new function(){
 			http = new XMLHttpRequest(); 
 		}catch(e){}
 		if(!http){
-		for(var i=0; i < DJ_XMLHTTP_PROGIDS.length; ++i){
-			var progid = DJ_XMLHTTP_PROGIDS[i];
-			try{
-				http = new ActiveXObject(progid);
-			}catch(e){
-				last_e = e;
-			}
-
-			if(http){
-				if(DJ_XMLHTTP_PROGIDS.length != 1){
-					DJ_XMLHTTP_PROGIDS = [progid];  // optimize for next time
+			for(var i=0; i<3; ++i){
+				var progid = DJ_XMLHTTP_PROGIDS[i];
+				try{
+					http = new ActiveXObject(progid);
+				}catch(e){
+					last_e = e;
 				}
-				break;
+
+				if(http){
+					if(DJ_XMLHTTP_PROGIDS.length != 1){
+						DJ_XMLHTTP_PROGIDS = [progid];  // optimize for next time
+					}
+					break;
+				}
 			}
 		}
 
@@ -119,10 +109,12 @@ dojo.io.XMLHTTPTransport= new function(){
 				if(received){ return; } // Opera 7.6 is foo-bar'd
 				received = true;
 				if(http.status==200){
-					hdlrObj.load("load", http.responseText, http);
+					// FIXME: if our request type was "text/javascript", should
+					// we eval() here?
+					kwArgs.load("load", http.responseText, http);
 				}else{
 					var errObj = new dojo.io.Error("sampleTransport Error: "+evt.msg);
-					hdlrObj.error("error", errObj);
+					kwArgs.error("error", errObj);
 				}
 			}
 		}
@@ -138,8 +130,8 @@ dojo.io.XMLHTTPTransport= new function(){
 		}
 
 		/*
+		FIXME: !!!!
 		if(kwArgs.method == "post"){
-			// FIXME: !!!!
 			// http.open("POST", uri, true);
 			// http.send(postContent);
 		}else{
@@ -149,7 +141,6 @@ dojo.io.XMLHTTPTransport= new function(){
 		http.send(null);
 		return;
 	}
-
-	dojo.io.transports.add("XMLHTTPTranport");
+	dojo.io.transports.addTransport("XMLHTTPTransport");
 }
 

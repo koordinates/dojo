@@ -67,7 +67,7 @@ dojo.io.Error = function(msg, type, num){
 	this.number = num || 0; // per-substrate error number, not normalized
 }
 
-dojo.io.tranports.addTransport = function(name){
+dojo.io.transports.addTransport = function(name){
 	this.push(name);
 	// FIXME: do we need to handle things that aren't direct children of the
 	// dojo.io namespace? (say, dojo.io.foo.fooTransport?)
@@ -78,6 +78,22 @@ dojo.io.tranports.addTransport = function(name){
 // and the bind() method dispatches
 dojo.io.bind = function(kwArgs){ // FIXME: should we support positional args too?
 	// if the request asks for a particular implementation, use it
+
+	// normalize args
+	if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
+	if(!kwArgs["method"]){ kwArgs.method = "get"; }
+	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
+	for(var x=0; x<this.hdlrFuncNames.length; x++){
+		var fn = this.hdlrFuncNames[x];
+		if(typeof kwArgs.handler == "object"){
+			if(typeof kwArgs.handler[fn] == "function"){
+				kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
+			}
+		}else if(typeof kwArgs.handler == "function"){
+			kwArgs[fn] = kwArgs.handler;
+		}
+	}
+
 	var tsName = "";
 	if(kwArgs["transport"]){
 		tsName = kwArgs["transport"];
@@ -87,15 +103,15 @@ dojo.io.bind = function(kwArgs){ // FIXME: should we support positional args too
 		// will handle 
 
 		// FIXME: should we normalize or set defaults for the kwArgs here?
-		for(var x=0; x<this.transports.length; x++){
-			var tmp = this.transports[x];
+		for(var x=0; x<dojo.io.transports.length; x++){
+			var tmp = dojo.io.transports[x];
 			if((this[tmp])&&(this[tmp].canHandle(kwArgs))){
 				tsName = tmp;
 			}
 		}
 		if(tsName == ""){ return false; /* throw exception? */ }
 	}
-	this[tsName](kwArgs);
+	this[tsName].bind(kwArgs);
 	return true;
 }
 
@@ -162,6 +178,6 @@ dojo.io.sampleTranport = new function(){
 		// sampleTransport.sendRequest(tgtURL, hdlrFunc);
 	}
 
-	dojo.io.transports.add("sampleTranport");
+	dojo.io.transports.addTransport("sampleTranport");
 }
 

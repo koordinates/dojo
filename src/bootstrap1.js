@@ -411,11 +411,13 @@ dojo.hostenv.unwindUriStack = function(){
 	}
 	while(typeof next[2] == "string"){ // unwind as far as we can
 		try{
+			// dj_debug("<pre><![CDATA["+next[2]+"]]></pre>");
 			dj_eval(next[2]);
 			next[1](true);
 		}catch(e){
 			dj_debug("we got an error when loading "+next[0]);
 			dj_debug("error: "+e);
+			// for(var x in e){ alert(x+" "+e[x]); }
 		}
 		dojo.hostenv.loadedUris[next[0]] = true;
 		dojo.hostenv.loadedUris.push(next[0]);
@@ -689,6 +691,7 @@ function dj_load(modulename, exact_only){
  */
 function dj_eval_object_path(objpath){
 	// fast path for no periods
+	if(typeof objpath != "string"){ return dj_global; }
 	if(objpath.indexOf('.') == -1){
 		dj_debug("typeof this[",objpath,"]=",typeof(this[objpath]), " and typeof dj_global[]=", typeof(dj_global[objpath])); 
 		// dojo.hostenv.println(typeof dj_global[objpath]);

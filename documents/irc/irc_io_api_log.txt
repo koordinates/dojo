@@ -33,7 +33,7 @@
 [2:41pm] slightlyoff: Nevow
 [2:41pm] slightlyoff: let me find a link
 [2:41pm] ttrenka: going to look 
-[2:41pm] slightlyoff: http:/​​/​​nevow.com/​​
+[2:41pm] slightlyoff: http://nevow.com/
 [2:41pm] ttrenka: thanks 
 [2:41pm] ttrenka: license on this?
 [2:41pm] slightlyoff: not sure
@@ -43,7 +43,7 @@
 [2:43pm] slightlyoff: (I can check w/ donovan)
 [2:43pm] ttrenka:
 [2:44pm] mda_: what are our use cases that the library has to satisfy? a javascript-based chat client?
-[2:44pm] dylanks: http:/​​/​​www.divmod.org/​​
+[2:44pm] dylanks: http://www.divmod.org/
 [2:44pm] slightlyoff: nevow/liveevil.py
 [2:44pm] ttrenka: anyways, for all...I was discussing with Alex the idea of using the URLRequest and Connection interfaces defined in the latest SVG1.2 spec
 [2:44pm] ttrenka: generic comm layer at this point
@@ -109,8 +109,8 @@
 [2:51pm] slightlyoff: link?
 [2:52pm] ttrenka: 2 secs
 [2:52pm] ttrenka: (finding)
-[2:52pm] dylanks: http:/​​/​​www.w3.org/​​TR/​​SVG12/​​api.html#urlrequest-interface
-[2:52pm] ttrenka: http:/​​/​​www.w3.org/​​TR/​​SVG12/​​api.html
+[2:52pm] dylanks: http://www.w3.org/TR/SVG12/api.html#urlrequest-interface
+[2:52pm] ttrenka: http://www.w3.org/TR/SVG12/api.html
 [2:52pm] ttrenka: heh
 [2:52pm] ttrenka: thanks
 [2:52pm] dylanks: np
@@ -250,7 +250,7 @@
 [3:38pm] mda: so here is quick draft of a grand unifying api....
 [3:39pm] slightlyoff: dylanks: sounds like a good idea to me 
 [3:40pm] dylanks: contributions welcomed, eh
-[3:40pm] mda: bind_channel({url: 'http:/​​/​​whatever.org/​​service​', method: 'post', content: 'whatever', handler: myhandler, interface: ifurn, mimetype: 'text/plain'})
+[3:40pm] mda: bind_channel({url: 'http://whatever.org/service', method: 'post', content: 'whatever', handler: myhandler, interface: ifurn, mimetype: 'text/plain'})
 [3:40pm] mda: interface is optional, and is a urn for verification TBD.
 [3:41pm] mda: mimetype is also optional, to sanity check what comes back
 [3:41pm] slightlyoff: so what should myhandler() receive?
@@ -284,12 +284,12 @@
 [3:49pm] mda: and you've got a handle to do other things with.
 [3:50pm] mda: for example if you want to hand the event off to someone else, or close the connection, etc.
 [3:51pm] slightlyoff: so, as a user making an XMLHTTP request, I might register something like:
-[3:52pm] slightlyoff: bind_channel({url: 'http:/​​/​​whatever.org/​​service​', method: 'gett', content: {arg1: 1, arg2: 2}, handler: function(evt){ foo.bar(evt.responseData); },})
+[3:52pm] slightlyoff: bind_channel({url: 'http://whatever.org/service', method: 'gett', content: {arg1: 1, arg2: 2}, handler: function(evt){ foo.bar(evt.responseData); },})
 [3:53pm] slightlyoff: or, more likely:
-[3:54pm] slightlyoff: dojo.io.xmlhttp.bind({url: 'http:/​​/​​whatever.org/​​service​', method: 'get', content: {arg1: 1, arg2: 2}, handler: function(evt){ foo.bar(evt.responseData); }})
+[3:54pm] slightlyoff: dojo.io.xmlhttp.bind({url: 'http://whatever.org/service', method: 'get', content: {arg1: 1, arg2: 2}, handler: function(evt){ foo.bar(evt.responseData); }})
 [3:55pm] slightlyoff: it might be nice to register the success handler instead of the generic handler in that arguments object
 [3:55pm] slightlyoff: so:
-[3:55pm] slightlyoff: dojo.io.xmlhttp.bind({url: 'http:/​​/​​whatever.org/​​service​', method: 'get', content: {arg1: 1, arg2: 2}, onSuccess: function(evt){ foo.bar(evt.responseData); }})
+[3:55pm] slightlyoff: dojo.io.xmlhttp.bind({url: 'http://whatever.org/service', method: 'get', content: {arg1: 1, arg2: 2}, onSuccess: function(evt){ foo.bar(evt.responseData); }})
 [3:56pm] slightlyoff: instead of having handler be an Object which has an onSuccess method or something
 [3:56pm] mda: yeah, good point.
 [3:56pm] slightlyoff: (success is probably a bad term, I'd want "onData" or something)

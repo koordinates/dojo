@@ -1,5 +1,5 @@
 dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.io.IO", false, true],
-	rhino: ["dojo.io.RhinoIO", false, true],
-	browser: ["dojo.io.BrowserIO", false, true]
+	common: ["dojo.io.IO", false, false],
+	rhino: ["dojo.io.RhinoIO", false, false],
+	browser: ["dojo.io.BrowserIO", false, false]
 });
