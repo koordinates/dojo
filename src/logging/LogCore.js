@@ -1109,23 +1109,21 @@ dojo.memoryLogHandler.prototype.emit = function(record){
 <!--*/
 
 
-// default handler, kinda brain-dead right now. Needs better formatter(s)
+var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
+var dojo.consoleHandler = new dojo.memoryLogHandler(0,maxRecordsToKeep);
+dojo.consoleHandler.emit = function(record){
+	// stub for logging event handler
+	// in practice, replace with actual logging event handler
+}
+
+//actual logging event handler
 if(window["stdout"]){
-	// if the console is loaded, set up a default handler that logs to it
-	var dojo.consoleHandler = new dojo.memoryLogHandler(0, 1);
-	// extend the memory handler
 	dojo.consoleHandler.emit = function(record){
 		stdout(String(record.time.toLocaleTimeString())+" :"+dojo.log.getLevelName(record.level)+": "+record.message);
 	}
-	dojo.log.addHandler(dojo.consoleHandler);
-} else {
-//default event queue
-	var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
-	var dojo.consoleHandler = new dojo.memoryLogHandler(0, maxRecordsToKeep);
-	dojo.log.addHandler(dojo.consoleHandler);
 }
 
-
+dojo.log.addHandler(dojo.consoleHandler);
 
 if(window["dojo.scripts"]){
 	dojo.scripts.finalize(dojo.config.corePath+"LogCore.js");
