@@ -8,23 +8,31 @@ if(!this["djConfig"]){
 	// load(["src/hostenv_spidermonkey.js"]);
 	load(["src/hostenv_rhino.js"]);
 	load(["src/bootstrap2.js"]);
-	load(["src/alg/Alg.js"]);
 }
 
 // load(["src/event/Event.js"]);
-dojo.hostenv.loadModule("alg.*");
-dojo.hostenv.loadModule("dojo.event.*");
+// dojo.hostenv.loadModule("alg.*");
+load("../src/alg/Alg.js");
+load("../src/event/Event.js");
+// dojo.hostenv.loadModule("dojo.event.*");
 
 function test_event_connections(){
 	var obj1 = {
+		lastReturn: null,
+		secondLastReturn: null,
+
 		func1: function(arg1, arg2){
-			dojo.hostenv.println("func1, arg1: "+arg1+", arg2: "+arg2);
-			return ("func1, arg1: "+arg1+", arg2: "+arg2);
+			this.secondLastReturn = this.lastReturn;
+			this.lastReturn = "func1, arg1: "+arg1+", arg2: "+arg2;
+			jum.debug(this.lastReturn);
+			return (this.lastReturn);
 		},
 
-		func2: function(arg2, arg1){
-			dojo.hostenv.println("func2, arg1: "+arg1+", arg2: "+arg2);
-			return ("func2, arg1: "+arg1+", arg2: "+arg2);
+		func2: function(arg1, arg2){
+			this.secondLastReturn = this.lastReturn;
+			this.lastReturn = "func2, arg1: "+arg1+", arg2: "+arg2;
+			jum.debug(this.lastReturn);
+			return (this.lastReturn);
 		},
 
 		adviceFromFunc1ToFunc2: function(miObj){
@@ -40,21 +48,16 @@ function test_event_connections(){
 		}
 	};
 
-	dojo.hostenv.println(dojo.event.connect);
+	// dojo.hostenv.println(dojo.event.connect);
 
 	dojo.event.connect("before-around", obj1, "func1", obj1, "func2", obj1, "adviceFromFunc1ToFunc2");
 
-	/*
-	dojo.hostenv.println(	"\nyou should now see:\n"+
-							"	func2, arg1: 1, arg2: 2:\n"+
-							"	func1, arg1: 1, arg2: 2:\n");
-	*/
-	jum.assertTue("test1", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertTrue("test1", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test2", obj1.secondLastReturn, "func2, arg1: 2, arg2: 1");
+	jum.assertEquals("test3", obj1.lastReturn, "func1, arg1: 1, arg2: 2");
 
-	/*
-	dojo.hostenv.println(	"\nyou should now see:\n"+
-							"	func2, arg1: foo, arg2: bar:\n"+
-							"	func1, arg1: foo, arg2: bar:\n");
-	dojo.hostenv.println(obj1.func1("foo", "bar"));
-	*/
+	jum.assertTrue("test4", obj1.func1("foo", "bar")=="func1, arg1: foo, arg2: bar");
+	jum.assertEquals("test2", obj1.secondLastReturn, "func2, arg1: bar, arg2: foo");
+	jum.assertEquals("test2", obj1.lastReturn, "func1, arg1: foo, arg2: bar");
+
 };
