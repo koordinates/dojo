@@ -275,11 +275,12 @@ dojo.webui.HTMLWidget = function(args){
 		if((!this.templateNode)&&(!this.templateString)&&(this.templatePath)){
 			// fetch a text fragment and assign it to templateString
 			// NOTE: we rely on blocking IO here!
+			// FIXME: extra / being inserted in URL?
 			this.templateString = dojo.hostenv.getText(dojo.hostenv.getBaseScriptUri()+"/"+this.templatePath);
-
 		}
 
 		if(this.templateCSSPath){
+			// FIXME: extra / being inserted in URL?
 			insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath);
 			this.templateCSSPath = null;
 		}
