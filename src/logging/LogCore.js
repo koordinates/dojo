@@ -29,7 +29,7 @@
 		type
 		level
 */
-
+// TODO: conver documentation to javadoc style once we confirm that is our choice
 // TODO: define DTD for XML-formatted log messages
 // TODO: write XML Formatter class
 // TODO: write HTTP Handler which uses POST to send log lines/sections
@@ -1119,14 +1119,13 @@ dojo.logQueueHandler.emit = function(record){
 		case -1:
 			break;
 		case 0:
-			if(this.data.length>this.postInterval)
-			{
+			if(this.data.length>this.postInterval) {
 
 			}
 			break;
 
 		case 1:
-			// need some sort of interval setter
+			// need some sort of interval setter...
 			break;
 	}
 
@@ -1136,6 +1135,7 @@ dojo.logQueueHandler.emit = function(record){
 		// if it is time, then we need to create an XMLHttpRequest using dojo.io
 		// TODO: add way to either send to server through xmlHTTPRequest after x number of records are stored, or a way to open a console, or some other default, consoleless mechanism.  Also, we really should have a way to log to the console as done above, and additionally be able to store a more permanent log record	}
 	}
+	// should we do this without receiving a response from the server?
 	while(this.data.length>this.numRecords){
 		this.data.pop();
 	}
