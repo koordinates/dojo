@@ -48,9 +48,7 @@ dojo.event = new function(){
 		return false;
 	}
 
-	this.connect = function(){
-		var args = arguments;
-
+	function interpolateArgs(args){
 		var ao = {
 			srcObj: null,
 			srcFunc: null,
@@ -133,6 +131,12 @@ dojo.event = new function(){
 			ao.aroundFunc = dojo.alg.getNameInObj(ao.aroundObj, ao.aroundFP);
 		}
 
+		return ao;
+	}
+
+	this.connect = function(){
+		var ao = interpolateArgs(arguments);
+
 		// FIXME: just doing a "getForMethod()" seems to be enough to put this into infinite recursion!!
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
 		if(ao.tgtFunc){
@@ -145,8 +149,9 @@ dojo.event = new function(){
 					// manually
 	}
 
-	this.kwConnect = function(kwArgs){
-		return dojo.event.connect(	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
+	this.kwConnectImpl_ = function(kwArgs, disconnect){
+		var fn = (disconnect) ? "disconnect" : "connect";
+		return dojo.event[fn](	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
 									kwArgs["srcObj"],
 									kwArgs["srcFunc"],
 									kwArgs["adviceObj"],
@@ -155,6 +160,23 @@ dojo.event = new function(){
 									kwArgs["aroundFunc"],
 									kwArgs["once"]);
 	}
+
+	this.kwConnect = function(kwArgs){
+		return this.kwConnectImpl_(kwArgs, false);
+
+	}
+
+	this.disconnect(){
+		var ao = interpolateArgs(arguments);
+		if(!ao.tgtFunc){ return; } // nothing to disconnect
+		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
+		mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType);
+	}
+
+	this.kwDisconnect = function(kwArgs){
+		return this.kwConnectImpl_(kwArgs, true);
+	}
+
 }
 
 // exactly one of these is created whenever a method with a joint point is run,

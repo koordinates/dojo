@@ -1,5 +1,10 @@
-repubsub = new function(){
-	this.peerAware = false;
+dojo.hostenv.loadModule("dojo.event.Event");
+dojo.hostenv.loadModule("dojo.event.BrowserEvent");
+
+dojo.hostenv.startPackage("dojo.io.RepubsubIO");
+dojo.hostenv.startPackage("dojo.io.repubsub");
+
+dojo.io.repubsub = new function(){
 	this.initDoc = "init.html";
 	this.isInitialized = false;
 	this.subscriptionBacklog = [];
@@ -84,12 +89,6 @@ repubsub = new function(){
 		}
 	}
 
-	/*
-	if((getOpts["allowExceptions"])||(this["allowExceptions"])){
-		__sig__.squelchSlotExceptions = false;
-	}
-	*/
-
 	// things that get called directly from our iframe to inform us of events
 	this.tunnelCloseCallback = function(){
 		// when we get this callback, we should immediately attempt to re-start
@@ -130,26 +129,6 @@ repubsub = new function(){
 
 		// TODO: remove the script block that created the event obj to save
 		// memory, etc.
-	}
-
-	// FIXME: only define if NW is not available!!! Need to strip out at build
-	//        time for NW-included blocks
-	this.addNodeEvtHdlr = function(node, evtName, fp, capture){
-		if(node.attachEvent){
-			// NW_attachEvent_list.push([node, 'on' + evtName, fp]);
-			node.attachEvent("on"+evtName, fp);
-		}else if((node.addEventListener)&&(!dojo.render.html.khtml)){ 
-			// Konq 3.1 tries to implement this, but it seems to be broken
-			node.addEventListener(evtName, fp, capture);
-			return true;
-		}else{
-			// NW_expando_list.push([node, 'on' + evtName]);
-
-			// FIXME: this clobbers the event handler that's already set, is
-			// there a way around it?
-			node["on"+evtName]=fp;
-			return true;
-		}
 	}
 
 	this.widenDomain = function(domainStr){
@@ -197,26 +176,7 @@ repubsub = new function(){
 	}
 
 	this.writeLog = function(str, lvl){
-		// use __log__ if available
-		if(!window["__log__"]){
-			var tc = (new Date()).toLocaleTimeString();
-			try{
-				with(document){
-					body.appendChild(createElement("br"));
-					body.appendChild(createTextNode(tc+": "+str));
-				}
-				this.canLog = true;
-			}catch(e){
-				this.canLog = false;
-				this.logBacklog.push([tc, str, lvl]);
-			}
-		}else{
-			this.canLog = true;
-			// FIXME: is this the right log level?
-			if(!lvl){ lvl = "info"; }
-			__log__[lvl](str);
-			// __log__.info(str);
-		}
+		dj_debug(((new Date()).toLocaleTimeString())+": "+str);
 	}
 
 	this.init = function(){
@@ -264,13 +224,10 @@ repubsub = new function(){
 
 		// the other for posting data in reply
 
-		// if(!window["__env__"]){ 
-			// if netWindows is available, we will use addToPageQueue instead.
-			this.sndNodeName = "sndIFrame_"+this.getRandStr();
-			this.sndNode = this.createIFrame(this.sndNodeName);
-			// FIXME: set the src attribute here to the initialization URL
-			this.setIFrameSRC(this.sndNode, this.initDoc+"?callback=repubsub.sndNodeReady&domain="+document.domain);
-		// }
+		this.sndNodeName = "sndIFrame_"+this.getRandStr();
+		this.sndNode = this.createIFrame(this.sndNodeName);
+		// FIXME: set the src attribute here to the initialization URL
+		this.setIFrameSRC(this.sndNode, this.initDoc+"?callback=repubsub.sndNodeReady&domain="+document.domain);
 
 	}
 
@@ -344,7 +301,7 @@ repubsub = new function(){
 			}
 		}
 		
-		__sig__.connect(cframe, "onload", this, "cancelDOMEvent");
+		dojo.event.connect(cframe, "onload", this, "cancelDOMEvent");
 		this.setIFrameSRC(cframe, "about:blank");
 		return cframe;
 	}
@@ -465,36 +422,20 @@ repubsub = new function(){
 		this.attachPathList[topic].subscriptions++;
 	}
 
-	/*--> 
-	<methodsynopsis>
-		&public; &void; <methodname>unSubscribe</methodname>
-		<methodparam>&str; <parameter>topic</parameter></methodparam>
-		<methodparam>&obj; <parameter>listenerObj</parameter></methodparam>
-		<methodparam>&str; <parameter>listenerFunc</parameter></methodparam>
-	</methodsynopsis>
-	<para role="methodinfo">
-		Does what you'd expect.
-	</para>
-	<!--*/
 	this.unSubscribe = function(topic, toObj, toFunc){
 		// first, locally disconnect
-		__sig__.disconnect(this.attachPathList, topic, toObj, toFunc);
+		dojo.event.kwDisconnect({
+			srcObj: this.attachPathList, 
+			srcFunc: topic, 
+			adviceObj: toObj, 
+			adviceFunc: toFunc
+		});
 		
 		// FIXME: figure out if there are any remaining listeners to the topic,
 		// 		  and if not, inform the server of our desire not to be
 		// 		  notified of updates to the topic
 	}
 
-	/*--> 
-	<methodsynopsis>
-		&public; &void; <methodname>publish</methodname>
-		<methodparam>&str; <parameter>topic</parameter></methodparam>
-		<methodparam>&obj; <parameter>event</parameter></methodparam>
-	</methodsynopsis>
-	<para role="methodinfo">
-		Sends the event to the server.
-	</para>
-	<!--*/
 	// the "publish" method is really a misnomer, since it really means "take
 	// this event and send it to the server". Note that the "dispatch" method
 	// handles local event promigulation, and therefore we emulate both sides
@@ -627,6 +568,6 @@ pubsubEvent.initFromProperties = function(evt){
 
 // initialize when we hit onload()
 // FIXME: need to make this conditional on something or other
-__sig__.connect(window, "onload", repubsub, "init");
-__sig__.connect(window, "onunload", repubsub, "clobber");
+// __sig__.connect(window, "onload", repubsub, "init");
+// __sig__.connect(window, "onunload", repubsub, "clobber");
 
