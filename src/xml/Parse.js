@@ -32,11 +32,11 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 
  
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
-dojo.xml.ParseDocumentFragment = function() {
+dojo.xml.Parse.ParseDocumentFragment = function() {
 	this.domUtil = new dojo.xml.DomUtil();
 }
 
-dojo.xml.ParseDocumentFragment.prototype.parseFragment = function(documentFragment) {
+dojo.xml.Parse.ParseDocumentFragment.prototype.parseFragment = function(documentFragment) {
 	// handle parent element
 	var parsedFragment = {};
 	// TODO: What if document fragment is just text... need to check for nodeType perhaps?
@@ -68,7 +68,7 @@ dojo.xml.ParseDocumentFragment.prototype.parseFragment = function(documentFragme
 	return parsedFragment;
 }
 
-dojo.xml.ParseDocumentFragment.prototype.parseElement = function(node,hasParentNodeSet){
+dojo.xml.Parse.ParseDocumentFragment.prototype.parseElement = function(node,hasParentNodeSet){
 	// TODO: make this namespace aware
 	var parsedNodeSet = {};
 	parsedNodeSet[node.tagName] = [];
@@ -122,7 +122,7 @@ dojo.xml.ParseDocumentFragment.prototype.parseElement = function(node,hasParentN
 }
 
 /* parses a set of attributes on a node into an object tree */
-dojo.xml.ParseDocumentFragment.prototype.parseAttributes = function(node) {
+dojo.xml.Parse.ParseDocumentFragment.prototype.parseAttributes = function(node) {
 	// TODO: make this namespace aware
 	var parsedAttributeSet = {};
 	// TODO: should we allow for duplicate attributes at this point... would any of the relevant dom implementations even allow this?

@@ -20,7 +20,7 @@
 			document.body.onload = testHandler;
 			
 			function testHandler() {
-				var testObj = new dojo.xml.ParseDocumentFragment();
+				var testObj = new dojo.xml.Parse.ParseDocumentFragment();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
 				outputObjectInfo(testObjects,0,document.getElementById("output"));
 			}
