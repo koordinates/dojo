@@ -5,7 +5,7 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink">
 	<script type="text/javascript" xlink:href="../src/bootstrap1.js" />
 	<script type="text/javascript" xlink:href="../src/hostenv_adobesvg.js" />
-	<!--<script type="text/javascript" xlink:href="../src/bootstrap2.js" />-->
+	<script type="text/javascript" xlink:href="../src/bootstrap2.js" />
 	<g>
 		<text x="20" y="20" style="stroke:none;fill:#000000;">Check your javascript log; the scripts were all loaded in the head.</text>
 	</g>

@@ -52,20 +52,17 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
  * object yet.
  */
 function dj_last_script_src() {
-    // FIXME: this may not work with adobe's viewer, as we may first need a 
-		// reference to the svgDocument
-/*		var scripts = window.document.getElementsByTagName('script');
+		var scripts = window.document.getElementsByTagName('script');
     if(scripts.length < 1){ 
 		dj_throw("No script elements in window.document, so can't figure out my script src"); 
 	}
-    var script = scripts[scripts.length - 1];
+    var script = scripts.item(scripts.length - 1);
 		var xlinkNS = "http://www.w3.org/1999/xlink";
     var src = script.getAttributeNS(xlinkNS,"href");
     if(!src){
 		dj_throw("Last script element (out of " + scripts.length + ") has no src");
 	}
     return src;
-*/
 }
 
 if(!dojo.hostenv["library_script_uri_"]){
@@ -92,11 +89,12 @@ dojo.hostenv.println = function(s){
 	try{
     // FIXME: this may not work with adobe's viewer, as we may first need a 
 		// reference to the svgDocument
-		var ti = document.createElement("text");
+		// FIXME: need a way to determine where to position the text for this
+    var ti = document.createElement("text");
 		var tn = document.createTextNode(s);
 		ti.appendChild(tn);
 		document.documentElement.appendChild(ti);
 	}catch(e){
-		
+
 	}
 }
