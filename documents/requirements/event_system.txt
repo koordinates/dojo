@@ -486,7 +486,7 @@ Examples of each follow:
         }
     };
     
-    namespace.addAdvice("before-around", obj1, "func1", obj1, "func2", obj1, "adviceFromFunc1ToFunc2");
+    namespace.addAdvice("after-around", obj1, "func1", obj1, "func2", obj1, "adviceFromFunc1ToFunc2");
 
     obj1.func1("1", "2");
     // will alert:
