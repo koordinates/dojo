@@ -22,12 +22,16 @@
 			dojo.hostenv.modulesLoadedListeners.push(init);
 
 			function init(){
-				var canBind  = dojo.io.bind({
+				var bindArgs = {
 					url: "test_BrowserIO_data.txt",
 					load: function(type, data, evt){
-						eval(data);
+						dj_debug(data);
+					},
+					backButton: function(){
+						alert(arguments.length);
 					}
-				});
+				};
+				var canBind = dojo.io.bind(bindArgs);
 			}
 		</script>
 	</head>
