@@ -51,6 +51,7 @@ dojo.webui.Widget = function(){
 		this.satisfyPropertySets(args);
 		this.mixInProperties(args);
 		this.buildRendering(args);
+		this.initialize();
 		dojo.webui.widgetManager.add(this);
 	}
 
@@ -169,6 +170,11 @@ dojo.webui.Widget = function(){
 				}
 			}
 		}
+	}
+
+	this.initialize = function(){
+		// dj_unimplemented("dojo.webui.Widget.initialize");
+		return false;
 	}
 
 	this.buildRendering = function(){
