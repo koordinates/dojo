@@ -68,12 +68,22 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 
 	if(async_cb){
 		http.onreadystatechange = function(){ 
-			if(4==http.readyState){
-				async_cb(http.responseText);
+			if((4==http.readyState)&&(http["status"])){
+				dojo.hostenv.inFlightCount--;
+				// async_cb(((200 == http.status)) ? http.responseText : null);
+				if(http.status==200){
+					dj_debug("LOADED URI: "+uri);
+					async_cb(http.responseText);
+				// }else{
+				//	dj_debug(http.status+": "+http.statusText+" "+uri);
+					// async_cb();
+				}
 			}
 		}
 	}
 
+	
+	dojo.hostenv.inFlightCount++;
 	http.open('GET', uri, async_cb ? true : false);
 	http.send(null);
 	if(async_cb){

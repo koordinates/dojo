@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.event.*");
+dojo.hostenv.loadModule("dojo.event.Event");
 
 function testObjectClass(){
 	this.lastReturn =  null;

@@ -22,13 +22,18 @@
 			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
 			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
 
+			dojo.hostenv.modulesLoadedListeners.push(init);
+
 			function init(){
+				dj_debug("******************** INIT! **********************");
 				// add your on-load logic here
 				var parser = new dojo.xml.Parse();
 				var frag  = parser.parseElement(document.body);
+				/*
 				for(var x in frag){ 
 					dojo.hostenv.println(x+": "+frag[x]);
 				}
+				*/
 				//outputObjectInfo(frag);
 				
 				var fragParser = new dojo.webui.widgets.Parse(frag);
@@ -58,12 +63,12 @@
 			}
 		</style>
 	</head>
-	<body onload="init();">
+	<body>
 		Check your javascript log; the scripts were all loaded in the head.
 
-		<div id="testDojoButton" dojoType="button" label="this is a test button!" 
-			onClick="alert(this.domNode.innerHTML);">
+		<button id="testDojoButton" dojoType="button" label="this is a test button!" 
+			onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
 			you shouldn't be seeing this
-		</div>
+		</button>
 	</body>
 </html>

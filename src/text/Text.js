@@ -1,5 +1,5 @@
-// dojo.hostenv.loadModule("dojo.alg.*");
-dojo.hostenv.startPackage("dojo.text");
+// hostenv.loadModule("dojo.alg.*");
+dojo.hostenv.startPackage("dojo.text.Text");
 
 dojo.text = new function(){
 	this.trim = function(iString){

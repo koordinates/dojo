@@ -57,6 +57,9 @@ dojo.hostenv = {
 
 	// for recursion protection
 	loading_modules_ : {},
+	addedToLoadingCount: [],
+	removedFromLoadingCount: [],
+	inFlightCount: 0,
 
 	// lookup cache for modules.
 	// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
@@ -184,6 +187,7 @@ function dj_inherits(subclass, superclass){
 //=java protected String name_ = '(unset)';
 dojo.hostenv.name_ = '(unset)';
 dojo.hostenv.version_ = '(unset)';
+dojo.hostenv.pkgFileName = "__package__";
 
 /**
  * Return the name of the hostenv.
@@ -330,57 +334,149 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	}
 }
 
+dojo.hostenv.displayStack = function(){
+	var oa = [];
+	var stack = this.loadUriStack;
+	for(var x=0; x<stack.length; x++){
+		oa.unshift([stack[x][0], (typeof stack[x][2])]);
+	}
+	dj_debug("<pre>"+oa.join("\n")+"</pre>");
+}
+
+dojo.hostenv.unwindUriStack = function(){
+	/*
+	dj_debug("=============== before ===============");
+	this.displayStack();
+	*/
+	var stack = this.loadUriStack;
+	for(var x in dojo.hostenv.loadedUris){
+		for(var y=stack.length-1; y>=0; y--){
+			if(stack[y][0]==x){
+				stack.splice(y, 1);
+			}
+		}
+	}
+	var next = stack.pop();
+	if((!next)&&(stack.length==0)){ 
+		return;
+	}
+	for(var x=0; x<stack.length; x++){
+		if((stack[x][0]==next[0])&&(stack[x][2])){
+			next[2] == stack[x][2]
+		}
+	}
+	/*
+	if(this.inFlightCount > 0){ 
+		stack.push(next);
+		return;
+	}
+	*/
+	var last = next;
+	while(dojo.hostenv.loadedUris[next[0]]){
+		last = next;
+		next = stack.pop();
+	}
+	while(typeof next[2] == "string"){ // unwind as far as we can
+		try{
+			dj_eval(next[2]);
+			next[1](true);
+		}catch(e){
+			dj_debug("we got an error when loading "+next[0]);
+			dj_debug("error: "+e);
+		}
+		dojo.hostenv.loadedUris[next[0]] = true;
+		last = next;
+		next = stack.pop();
+		if((!next)&&(stack.length==0)){ break; }
+		while(dojo.hostenv.loadedUris[next[0]]){
+			last = next;
+			next = stack.pop();
+		}
+		/*
+		if(typeof next[2] != "string"){
+			// clean up the stack
+			var fills = {};
+			for(var x=0; x<stack.length; x++){
+				if(dojo.hostenv.loadedUris[stack[x][0]]){
+					fills[stack[x][0]] = true;
+				}
+				if((!fills[next[0]])&&(stack[x][0]==next[0])&&(stack[x][2])){
+					// alert(next[0]);
+					next[2] == stack[x][2];
+					fills[next[0]] = true;
+					// next = stack.splice(x, 1)[0];
+				}
+			}
+			for(var x=0; x<stack.length; x++){
+				if(fills[stack[x][0]]){
+					stack[x] = [stack[x][0], function(){}, "true;"];
+				}
+			}
+			stack.push(next);
+		}
+		*/
+	}
+	if(next){
+		stack.push(next);
+		dj_debug("### CHOKED ON: "+next[0]);
+	}
+	/*
+	dj_debug("=============== after ===============");
+	this.displayStack();
+	*/
+}
+
 /**
  * Reads the contents of the URI, and evaluates the contents.
  * Returns true if it succeeded. Returns false if the URI reading failed. Throws if the evaluation throws.
  * The result of the eval is not available to the caller.
  */
 dojo.hostenv.loadUri = function(uri, cb){
+	if(dojo.hostenv.loadedUris[uri]){
+		return;
+	}
 	var stack = this.loadUriStack;
 	stack.push([uri, cb, null]);
 	var tcb = function(contents){
 		// stack management
-		var first = stack.pop();
-		if(first[0]==uri){
-			first[2] = contents;
-			if(!contents){ 
-				first[1](false);
-			}else{
-				var deps = dojo.hostenv.getDepsForEval(first[2]);
-				/*
-				dj_debug("checking deps for: "+first[0]);
-				dj_debug("deps: "+deps);
-				*/
-				if(!deps.length){
-					var value = dj_eval(first[2]);
-					first[1](true);
-					dojo.hostenv.loadedUris[first[0]] = true;
-					var next = stack.pop();
-					while(next[2]){ // unwind as far as we can
-						// dj_debug("evaling: "+next[0]);
-						if(dojo.hostenv.loadedUris[next[0]]){
-							next = stack.pop();
-							continue; // we've already loaded it, so don't bother evaling it again
-						}
-						var value = dj_eval(next[2]);
-						next[1](true);
-						dojo.hostenv.loadedUris[next[0]] = true;
-						next = stack.pop();
-					}
-				}else{
-					stack.push(first);
-					first[2] = contents;
-					eval(deps.join(";"));
+		var next = stack.pop();
+		if((!next)&&(stack.length==0)){ 
+			dj_debug("***************** AT THE END OF THE STACK *****************");
+			dojo.hostenv.modulesLoaded();
+			return;
+		}
+		if(typeof contents == "string"){
+			stack.push(next);
+			for(var x=0; x<stack.length; x++){
+				if(stack[x][0]==uri){
+					stack[x][2] = contents;
 				}
 			}
-		}else{
-			// push back onto stack
-			stack.push(first);
+			next = stack.pop();
+		}
+		if(dojo.hostenv.loadedUris[next[0]]){ 
+			dj_debug("WE ALREADY HAD: "+next[0]);
+			dojo.hostenv.unwindUriStack();
+			return;
+		}
+		// push back onto stack
+		stack.push(next);
+		// alert(next[0]);
+		if(next[0]!=uri){
+			//  and then unwind as far as we can
+			if(typeof next[2] == "string"){
+				dojo.hostenv.unwindUriStack();
+			}
 
-			// and then find our entry
-			for(var x=stack.length-1; x>=0; x--){
-				if(stack[x][0]==uri){
-					stack[x][2] = contents||"true;"; // FIXME: hack!
+		}else{
+			if(!contents){ 
+				next[1](false);
+			}else{
+				var deps = dojo.hostenv.getDepsForEval(next[2]);
+				if(deps.length>0){
+					eval(deps.join(";"));
+				}else{
+					dojo.hostenv.unwindUriStack();
 				}
 			}
 		}
@@ -423,6 +519,30 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
+dojo.hostenv.modulesLoaded = function(){
+	/*
+	dj_debug("trying to load:\n");
+	dj_debug(this.addedToLoadingCount);
+	dj_debug("<pre>"+this.addedToLoadingCount.join("\n")+"</pre>");
+	dj_debug("loaded so far:\n");
+	dj_debug("<pre>"+this.removedFromLoadingCount.join("\n")+"</pre>");
+	dj_debug("this.loadUriStack.length: "+this.loadUriStack.length);
+	// dj_debug("this.loadUriStack[this.loadUriStack.length-1][0]: "+this.loadUriStack[this.loadUriStack.length-1][0]);
+	*/
+	if(this.loadUriStack.length==0){
+		if(this.inFlightCount > 0){ 
+			dj_debug("couldn't initialize, there are files still in flight");
+			return;
+		}
+		var mll = this.modulesLoadedListeners;
+		for(var x=0; x<mll.length; x++){
+			mll[x]();
+		}
+	}
+}
+
+dojo.hostenv.modulesLoadedListeners = [];
+
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
 * If it is, it is simply returned (nothing to do).
@@ -452,7 +572,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		return module;
 	}
 
-	dj_debug("dojo.hostenv.loadModule('"+modulename+"');");
+	// dj_debug("dojo.hostenv.loadModule('"+modulename+"');");
 
 	// protect against infinite recursion from mutual dependencies
 	if (typeof this.loading_modules_[modulename] !== 'undefined'){
@@ -462,8 +582,11 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 
 		// dj_throw("recursive attempt to load module '" + modulename + "'");
 		dj_debug("recursive attempt to load module '" + modulename + "'");
+	}else{
+		this.addedToLoadingCount.push(modulename);
 	}
 	this.loading_modules_[modulename] = 1;
+
 
 	// convert periods to slashes
 	var relpath = modulename.replace(/\./g, '/') + '.js';
@@ -477,119 +600,77 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	syms.push(last);
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
+	var _this = this;
+	var pfn = this.pkgFileName;
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
 
 		var module = this.findModule(modulename, 0);
-		dj_debug("found: "+modulename+"="+module);
+		// dj_debug("found: "+modulename+"="+module);
 		if(module){
+			_this.removedFromLoadingCount.push(modulename);
 			return module;
 		}
 
-		var _this = this;
 		var nextTry = function(lastStatus){
 			if(lastStatus){ 
 				module = _this.findModule(modulename, false); // pass in false so we can give better error
-				if(!module){
+				if((!module)&&(syms[syms.length-1]!=pfn)){
 					dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 				}
-				return;
+				if(module){
+					_this.removedFromLoadingCount.push(modulename);
+					dojo.hostenv.modulesLoaded();
+					return;
+				}
 			}
 			syms.pop();
-			syms.push("__package__");
+			syms.push(pfn);
+			// dj_debug("syms: "+syms);
 			relpath = syms.join("/") + '.js';
 			if(relpath.charAt(0)=="/"){
 				relpath = relpath.slice(1);
 			}
-			dj_debug("relpath: "+relpath);
+			// dj_debug("relpath: "+relpath);
 			_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
 		}
 
 		nextTry();
-
-		/*
-		//first try package/name/__package__.js
-		while(syms.length){
-			syms.pop();
-			syms.push("__package__");
-			relpath = syms.join("/") + '.js';
-			if(relpath.charAt(0)=="/"){
-				relpath = relpath.slice(1);
-			}
-			ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
-			if(ok){ break; }
-			syms.pop();
-		}
-		*/
 	}else{
 		relpath = syms.join("/") + '.js';
 		modulename = nsyms.join('.');
 
-		var _this = this;
 		var nextTry = function(lastStatus){
-			dj_debug("lastStatus: "+lastStatus);
+			// dj_debug("lastStatus: "+lastStatus);
 			if(lastStatus){ 
 				// dj_debug("inital relpath: "+relpath);
 				module = _this.findModule(modulename, false); // pass in false so we can give better error
-				if(!module){
+				// if(!module){
+				if((!module)&&(syms[syms.length-1]!=pfn)){
 					dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 				}
-				return;
+				if(module){
+					_this.removedFromLoadingCount.push(modulename);
+					dojo.hostenv.modulesLoaded();
+					return;
+				}
 			}
-			var setPKG = (syms[syms.length-1]=="__package__") ? false : true;
+			var setPKG = (syms[syms.length-1]==pfn) ? false : true;
 			syms.pop();
 			if(setPKG){
-				syms.push("__package__");
+				syms.push(pfn);
 			}
 			relpath = syms.join("/") + '.js';
 			if(relpath.charAt(0)=="/"){
 				relpath = relpath.slice(1);
 			}
-			dj_debug("relpath: "+relpath);
+			// dj_debug("relpath: "+relpath);
 			_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
 		}
 
-
 		this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
-
-		/*
-		var ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
-		if((!ok)&&(!exact_only)){
-			// var syms = modulename.split(/\./);
-			syms.pop();
-			while(syms.length){
-				relpath = syms.join('/') + '.js';
-				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
-				if(ok){ break; }
-				syms.pop();
-				relpath = syms.join('/') + '/__package__.js';
-				if(relpath.charAt(0)=="/"){
-					relpath = relpath.slice(1);
-				}
-				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
-				if(ok){ break; }
-			}
-		}
-		*/
-
-		// FIXME: we should work something like this into the terminal
-		// condition for the above recursive callback.
-		/*
-		if(!ok){
-			dj_throw("Could not find module '" + modulename + "'; last tried path '" + relpath + "'");
-		}
-		*/
 	}
-
-	// check that the symbol was defined
-	/*
-	module = this.findModule(modulename, false); // pass in false so we can give better error
-	if(!module){
-		dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
-	}
-	*/
-
-	return module;
+	return;
 }
 
 function dj_load(modulename, exact_only){
@@ -669,7 +750,7 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 
 	// see if symbol is defined anyway
 	var module = dj_eval_object_path(modulename);
-	dj_debug(modulename+": "+module);
+	// dj_debug(modulename+": "+module);
 	if((typeof module !== 'undefined')&&(module)){
 		return this.modules_[modulename] = module;
 	}

@@ -99,7 +99,9 @@ print "################## end testRunner.js ##################\n"
 			<!-- FIXME: should this be in the release/ dir somewhere? -->
 			<arg value="../testRunner.js" />
 		</java>
+		<!--
 		<delete file="../testRunner.js" />
+		-->
 	</target>
 	<!-- end test task -->
 
