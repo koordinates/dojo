@@ -31,8 +31,6 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 		this.domNode.style.display = "none";
 	}
 	
-	this.onFoo = function(){}
-	
 	this.addChild = function(cn){
 		this.domNode.appendChild(cn);
 	}
