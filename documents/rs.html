@@ -1,0 +1,333 @@
+<h1>
+  A Fresh Look at Remote Scripting
+</h1>
+
+<p>Recently (beginning of 2005), there's been a lot of new interest in DHTML and particularly Remote Scripting. Applications such as Gmail, Google Suggest, and Flickr are bringing the technology back into popular focus and many people are wondering whether and how to use it in their own apps. It seemed like now was a good time for somebody to write down all the available approaches and their various strengths and weaknesses.</p>
+
+<p>This page is a community-maintained resource on the subject. Though maintained primarily by developers with a heavy interst in DHTML, it's hoped that it will stay relatively accessible to the entire web design and development community.</p>
+
+<hr/>
+
+<p><strong>Remote Scripting</strong> is any method by which JavaScript on a webpage makes an HTTP call without visibly reloading the page. There are many popular approaches to this capability, and more being developed all the time. Each has specific advantages and disadvantages which developers must consider carefully before implementation.</p>
+
+<h2>XmlHttp</h2>
+<dl>
+  <dt>Advantages:</dt>
+  <dd>Fast, returns any type of data, invisible to user.</dd>
+  
+  <dt>Disadvantages:</dt>
+  <dd>No browser navigation integration.</dd>
+  
+  <dt>Compatibility:</dt>
+  <dd>Win/IE5+, Mozilla, Safari. Opera, Konqueror coming soon.</dd>
+</dl>
+
+<p>
+  Everyone's new favorite, XmlHttpRequest, is now supported by most popular modern browsers with <a href="http://snapshot.opera.com/windows/w760p1.html">more</a> browsers coming online all the time. (todo: additional links here) Remarkably, using it is straightforward, requiring only a few hacks to get Win/IE to play along with everyone else. The canonical implementation is usually <a href="http://webfx.eae.net/dhtml/xmlextras/xmlextras.html">Erik Ardvesson's XML Extras</a>:
+</p>
+
+<pre>// XmlHttp factory
+function XmlHttp() {}
+
+XmlHttp.create = function () {
+   try {
+      if (window.XMLHttpRequest) {
+         var req = new XMLHttpRequest();
+         
+         // some older versions of Moz did not support the readyState property
+         // and the onreadystate event so we patch it!
+         if (req.readyState == null) {
+            req.readyState = 1;
+            req.addEventListener("load", function () {
+               req.readyState = 4;
+               if (typeof req.onreadystatechange == "function")
+                  req.onreadystatechange();
+            }, false);
+         }
+         
+         return req;
+      }
+      if (window.ActiveXObject) {
+         return new ActiveXObject(getControlPrefix() + ".XmlHttp");
+      }
+   }
+   catch (ex) {}
+   // fell through
+   throw new Error("Your browser does not support XmlHttp objects");
+};
+
+function getControlPrefix() {
+   if (getControlPrefix.prefix)
+      return getControlPrefix.prefix;
+   
+   var prefixes = ["MSXML2", "Microsoft", "MSXML", "MSXML3"];
+   var o, o2;
+   for (var i = 0; i < prefixes.length; i++) {
+      try {
+         // try to create the objects
+         o = new ActiveXObject(prefixes[i] + ".XmlHttp");
+         o2 = new ActiveXObject(prefixes[i] + ".XmlDom");
+         return getControlPrefix.prefix = prefixes[i];
+      }
+      catch (ex) {};
+   }
+   
+   throw new Error("Could not find an installed XML parser");
+}</pre>
+
+<p>
+  One main benefit of XmlHttp over all other methods is that it doesn't invoke the browser's navigation system. So, for example, the &quot;throbber&quot; in the top right of the browser doesn't animate, the progress bar does not progress, and the stop button doesn't become active. XmlHttp is completely invisible to the user.
+</p>
+<p>
+  Another important benefit is that XmlHttp can easily and compatibly receive any textual data as a response. What type of response to send is an important thing to consider, as it will impact the performance, compatibility, and extensibility of your application.
+</p>
+<p>
+  There are three broad approaches I&#8217;d consider:
+</p>
+
+<h3>Return XML</h3>
+
+<dl>
+  <dt>Advantages:</dt> 
+  <dd>Standards-based server interface.</dd>
+  
+  <dt>Disadvantages:</dt>
+  <dd>Slower than other response types.</dd>
+</dl>
+
+<p>
+  The benefit here is that by returning XML, you create a nice, clean, standardized interface on the server. There are many dialects and religious wars over which is best, but for the most part, whether you use SOAP, XML/RPC, or REST, you will end up with something that third parties will easily be able to program against using the popular toolkits on their platform of choice.
+</p>
+<p>
+  The downside of returning XML is the overhead. JavaScript has no good high-level support for this sort of thing, so you will need to traverse a DOM tree to extract the data you need - probably translating it into some intermediate JavaScript data structures in the process. Two or more passes over the same data does not a snappy application make, and your performance may suffer from this approach.
+</p>
+<p>
+  Here&#8217;s an example of how you might use the XmlHttp factory code from above to return XML:
+</p>
+<p>
+  Todo: code sample
+</p>
+
+<h3>Return HTML</h3>
+
+<dl>
+  <dt>Advantages</dt>: 
+  <dd>Simple to implement, good performance</dd>
+  
+  <dt>Disadvantages</dt>: 
+  <dd>Not appropriate for many applications, not as extensible as XML</dd>
+</dl>
+
+<p>
+  If the point of your remote scripting is simple to replace a chunk of the display or append to it, you might consider just returning the HTML required to do so. If you're application's style is reasonably separated from it's structure (todo: link), it should be possible to send a very small amount of HTML and just plug it into the DOM using innerHTML(1).
+</p>
+<p>
+  The benefit of this is that it&#8217;s so simple. Also, since you&#8217;re not really doing anything with the returned content, it should be pretty fast.
+</p>
+<p>
+  The downside is that you don&#8217;t really have an extensible interface at the server, since the HTML that is being returned is not so much data as the exact HTML needed to update your display.
+</p>
+<p>
+  Here&#8217;s an example of how you might return an HTML fragment to update a display:
+</p>
+<p>
+  Todo: code sample.
+</p>
+
+<h3>Return JavaScript</h3>
+
+<dl>
+  <dt>Advantages:</dt> 
+  <dd>fast, fast, fast.</dd>
+  
+  <dt>Disadvantages:</dt> 
+  <dd>Non-standardized, highly-coupled server interface</dd>
+</dl>
+<p>
+  This is a relatively new approach. The first time I saw it used was with Google Suggest. I recently learned that it had been present in pieces of <a href="http://netwindows.org/">NetWindows</a> for quite some time as well.
+</p>
+<p>
+  Basically, you return a string of JavaScript which calls functions expected to be present in the receiving page. You then plug this string into JavaScript&#8217;s native eval( ) method to run your functions and do whatever updates need to be done.
+</p>
+<p>
+  The advantage of this is that you only incur the cost of one parse and one pass over the data. Also you are using the fastest parser possible from JavaScript, the JavaScript parser itself. The disadvantage is that you are now using a completely non-standard server interface which is highly coupled to your client. It will be much more difficult for third parties to use the libraries available on their platform to communicate with your server.
+</p>
+<p>
+  This approach is exactly the same as other XmlHttp approaches, except at the end you evaluate the response instead of parsing it or displaying it:
+</p>
+<p>
+  Todo: sample
+</p>
+<hr/>
+<h2>IFrame</h2>
+
+<dl>
+  <dt>Advantages:</dd> 
+  <dd>Browser navigation integration, more compatibility than XmlHttp.</dd>
+  
+  <dt>Disadvantages:</dt> 
+  <dd>Browser navigation integration, difficult to work with XML, somewhat slower than XmlHttp.</dd>
+  
+  <dt>Compatibility:</dt> 
+  <dd>See each response type.</dd>
+</dl>
+<p>
+  Back in the day, before we had wide XmlHttp support, we used IFrames. The one thing about IFrames, though, is that they of course mad the browser&#8217;s navigation do all the things it usually does when you navigate. For the longest time, I thought that this could only be considered a negative.
+</p>
+<p>
+  But Gmail has proven that it can be beneficial for the right application. In the case of GMail, remote scripting is used to simulate navigation through the application. In that case, navigation integration is exactly what you want. We want the progress bar and throbber to light up. We even want the audible &#8220;click!&#8221; when the user navigates. This could not be done using XmlHttp, or any other remote scripting technique.
+</p>
+<p>
+  As with XmlHttp, you have several options for what to return, though returning XML is significantly more complicated than with XmlHttp.
+</p>
+
+<h3>Return XML</h3>
+<dl>
+  <dt>Advantages:</dt> 
+  <dd>Standardized server interface</dd>
+  
+  <dt>Disadvantages:</dt> 
+  <dd>Difficult and hack-ridden to setup</dd>
+  
+  <dt>Compatibility:</dt> 
+  <dd>(todo: need to test!)</dd>
+</dl>
+<p>
+  The thing with returning XML in an IFrame is that most browsers don&#8217;t have good integrated support for XML DOM. So you can&#8217;t just load up an XML document into an IFrame, reach in their with JavaScript, grab the root node, and do something interesting with it.
+</p>
+<p>
+  + IE5? Probably need to wrap in &lt;xml&gt; element?<br />+ Safari?<br />+ Mozilla (horray!)<br />+ etc
+</p>
+<p>
+  Further, many older browsers had a hard time listening for &#8220;onload&#8221; events in IFrames. At first, it was widely believed that it was impossible to do in (x browser, y browser) and that made loading XML off limits. However, Alex Russell discovered a hideous but ingenious hack that gets around this by nesting <i>two</i> IFrames. The inner one loads the XML content, and the outer one has static HTML loaded which listens for the onload of the inner one, and forwards it on to the original calling window.
+</p>
+<p>
+  Though a lot of work, this method does have a good mix of benefits: history integration, standardized XML interface on the server, and good compatibility. Here&#8217;s an example of how you&#8217;d make it all work:
+</p>
+<p>
+  (todo: nasty-ass example)
+</p>
+
+<h3>Return HTML</h3>
+
+<p>
+  Very much like returning HTML with XmlHttp this can be a good way to go if you need navigation integration and using remote scripting to update the display in simple ways.
+</p>
+<p>
+  Since you&#8217;re returning HTML, you don&#8217;t <i>have</i> to get as crazy with the double IFrames, since you can just add some JavaScript at the end of your page to call back the parent window when the page is loaded. For example:
+</p>
+<p>
+  Todo: simple example
+</p>
+<p>
+  But if you want to keep your HTML clean and free of extra coupling to the client, you may elect to still do the double IFrame.
+</p>
+
+<h3>Return JavaScript</h3>
+
+<dl>
+  <dt>Advantages:</dt> 
+  <dd>Faster than other IFrame approaches and simpler to implement</dd>
+  <dt>Disadvantages:</dt> 
+  <dd>Non-standard server interface</dd>
+  <dt>Compatibility:</dt> 
+  <dd>Any browser which supports IFrame</dd>
+</dl>
+
+<p>
+  This is the approach used by Gmail. Instead of returning HTML, return a string of JavaScript which calls back into the parent window to do any updates. The benefit of this, just like with returning JavaScript over XmlHttp is the speed. Also, it&#8217;s very compatible since most every modern browser supports IFrames and JavaScript.
+</p>
+<p>
+  The downsides are similar to JavaScript over XmlHttp as well: you sacrifice having a clean server interface for third parties to program against. Since IFrame-based approaches are useful mostly for simulating navigation, I think I&#8217;d personally be hard-pressed to find an application where the speed benefit of using JavaScript or additional simplicity or compatibility would matter enough to me to justify using this approach over returning XML in an IFrame. But I present it here for completeness.
+</p>
+<p>
+  Here&#8217;s an example of how you might program such a system:
+</p>
+<p>
+  Todo: sample
+</p>
+<hr/>
+<h2>Dynamic Script Element</h2>
+<dl>
+  <dt>Advantages:</dt> 
+  <dd>Fast, allows cross-site scripting</dd>
+  
+  <dt>Disadvantages:</dt> 
+  <dd>Non-standard, highly-coupled server interface</dd>
+  
+  <dt>Compatibility:</dt> 
+  <dd>Win/IE5+, Mozilla, Safari (todo: what else??)</dd>
+</dl>
+<p>
+  A relatively new approach is to use the DOM to create a &lt;script&gt; element and set it's source to some URL, then append it to the document. The browser then dutifully loads and executes the script. I'm not sure who the first one to think of this was, but it's clever.
+</p>
+<p>
+  A highlight of this approach is that you can call any URL. The dynamic script element approach is NOT subject to cross-site scripting limitations, as using JavaScript with XmlHttp or IFrame is.
+</p>
+<p>
+  Otherwise, the advantages and disadvantages to this approach are very similar to any other JavaScript-based approach, the main advantage being speed and the main disadvantage being a messy server interface.
+</p>
+<p>
+  Here&#8217;s an example of how you might use such an approach:
+</p>
+<p>
+  Todo: sample
+</p>
+<hr/>
+<h2>Dynamic Image Element</h2>
+
+<dl>
+  <dt>Advantages:</dt> 
+  <dd>Very fast, simple to implement, compatible with everything, allows cross-site scripting</dd>
+  
+  <dt>Disadvantages:</dt> 
+  <dd>One way communication only</dd>
+  
+  <dt>Compatibility:</dt> 
+  <dd>Any JavaScript-enabled browser</dd>
+</dl>
+<p>
+  This oldest approach, and still quite useful: you update the src property of an image using javascript, and thereby send a command to the server. Traditionally, the actual image returns had been unimportant. It was usually a 1x1 transparent gif, or not an image at all. The call to the server was all that mattered.
+</p>
+<p>
+  However, recently, I have noticed that some systems are actually displaying the image. Specifically, it looks like Flickr and perhaps Gmail are doing this. The cool thing about that is that if you want to allow the user to update the state of something in the UI, and that thing&#8217;s state is represented by an icon, then you can wrap the update of the state with remote scripting and the display of success all in one tiny little package.
+</p>
+<p>
+  The major downside to this approach is that you can&#8217;t really return any data except success/failure(3). But for cases where you only need one-way communication, this may be ideal. Here&#8217;s an example of how it works:
+</p>
+<p>
+  [code here]
+</p>
+<p>
+  <i>Note: should we include Flash? I know almost nothing about it.</i>
+</p>
+<p>
+  <i>Note: should we include know-now and other push-like things?</i>
+</p>
+
+<hr/>
+
+<h2>Conclusion</h2>
+<p>
+  So there you have it. XmlHttp works in a lot of situations and is relatively compatible. You can use it with XML for a clean interface, HTML for simple display updates, and JavaScript for high performance but high coupling. IFrames are good for navigation integration, but have some drawbacks in terms of complexity and compatibility. Dynamic script and image elements both allow cross-site scripting, but the script element requires a JavaScript server interface and the image element cannot really receive response data.
+</p>
+<p>
+  We hope this guide helps you to identify which remote scripting technique is best for your application, or even to develop a new technique of your own. Good luck, and happy scripting.
+</p>
+<p>
+  -- <br/>
+  <a href="http://youngpup.net/">Aaron</a><br/>
+  <em>Sign your name here if you edit this document, for posterity</em>
+</p>
+<hr/>
+<p>
+  (1) Note, however, that innerHTML does not work in Mozilla when it is strict XHTML mode. In that case you have to use DOMParser or something. It&#8217;s messy.
+</p>
+
+<p>
+  (2) Difficult, but not impossible, Gmail and Google Suggest both already have tons of third party code sitting on top of their server interfaces.
+</p>
+
+<p>
+  (3) Actually, on Brent Ashley&#8217;s site, there is a technique for returning data in an HTTP cookie with the server&#8217;s image response. However, support for cookies is not required and is subject to restraints on size and number. In practice I have found this approach to be pretty flaky, and therefore don&#8217;t recommend it.
+</p>
