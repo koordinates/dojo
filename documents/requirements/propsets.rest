@@ -136,7 +136,7 @@ from within a dojoml document:::
 
 from within an html document:::
 	
-	<div dojoTagName="grid" dojoPropertyProviderList="#propsetFoo #propsetBar
+	<div dojoType="grid" dojoPropertyProviderList="#propsetFoo #propsetBar
 		file#propsetBaz">
 	</div>
 
@@ -166,10 +166,10 @@ from within a dojoml document:::
 	
 from within an html document:::
 	
-	<div dojoTagName="grid">
-		<div dojoTagName="propertySet">
-			<div dojoTagName="scroll" dojoType="auto"/>
-			<div:dojoTagName="reorder" dojoType="none"/>
+	<div dojoType="grid">
+		<div dojoType="propertySet">
+			<div dojoType="scroll" dojoType="auto"/>
+			<div:dojoType="reorder" dojoType="none"/>
 		</div>
 	</div>
 
@@ -201,7 +201,7 @@ from within a dojoml document:::
 	
 from within an html document:::
 	
-	<div dojoTagName="grid" dojoScrollType="auto" dojoReorderType="none">
+	<div dojoType="grid" dojoScrollType="auto" dojoReorderType="none">
 	</div>
 
 from within an xhtml document or document with support for namespaces:::
