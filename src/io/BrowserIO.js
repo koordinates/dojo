@@ -2,28 +2,28 @@ dojo.hostenv.startPackage("dojo.io.BrowserIO");
 
 dojo.hostenv.loadModule("dojo.io.IO");
 
-dojo.io.formHasFile = function(formNode){
-	function checkChildrenForFile(node){
-		var hasTrue = false;
-		for(var x=0; x<node.childNodes.length; x++){
-			if(node.nodeType==1){
-				if(node.nodeName.toLowerCase() == "input"){
-					if(node.getAttribute("type")=="file"){
-						return true;
-					}
+dojo.io.checkChildrenForFile = function(node){
+	var hasTrue = false;
+	for(var x=0; x<node.childNodes.length; x++){
+		if(node.nodeType==1){
+			if(node.nodeName.toLowerCase() == "input"){
+				if(node.getAttribute("type")=="file"){
+					return true;
 				}
+			}
 
-				if(node.childNodes.length){
-					if(checkChildrenForFile(node)){
-						return true;
-					}
+			if(node.childNodes.length){
+				if(checkChildrenForFile(node)){
+					return true;
 				}
 			}
 		}
-		return false;
 	}
+	return false;
+}
 
-	return checkChildrenForFile(formNode);
+dojo.io.formHasFile = function(formNode){
+	return dojo.io.checkChildrenForFile(formNode);
 }
 
 dojo.io.buildFormGetString = function(sNode){
@@ -58,6 +58,24 @@ dojo.io.buildFormGetString = function(sNode){
 	return tvar;
 }
 
+dojo.io.setIFrameSrc = function(iframe, src, replace){
+	try{
+		var r = dojo.render.html;
+		// dj_debug(iframe);
+		if(!replace){
+			if(r.safari){
+				iframe.location = src;
+			}else{
+				frames[iframe.name].location = src;
+			}
+		}else{
+			var idoc = (r.moz) ? iframe.contentWindow : iframe;
+			idoc.location.replace(src);
+			dj_debug(iframe.contentWindow.location);
+		}
+	}catch(e){ alert(e); }
+}
+
 dojo.io.createIFrame = function(fname){
 	if(window[fname]){ return window[fname]; }
 	if(window.frames[fname]){ return window.frames[fname]; }
@@ -88,24 +106,6 @@ dojo.io.createIFrame = function(fname){
 	
 	dojo.io.setIFrameSrc(cframe, dojo.hostenv.base_relative_path_+"/blank.html", true);
 	return cframe;
-}
-
-dojo.io.setIFrameSrc = function(iframe, src, replace){
-	try{
-		var r = dojo.render.html;
-		// dj_debug(iframe);
-		if(!replace){
-			if(r.safari){
-				iframe.location = src;
-			}else{
-				frames[iframe.name].location = src;
-			}
-		}else{
-			var idoc = (r.moz) ? iframe.contentWindow : iframe;
-			idoc.location.replace(src);
-			dj_debug(iframe.contentWindow.location);
-		}
-	}catch(e){ alert(e); }
 }
 
 

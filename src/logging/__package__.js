@@ -1,5 +1,4 @@
 dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.logging.Logger"],
-	browser: ["dojo.logging.BrowserLogger"],
+	common: ["dojo.logging.Logger", false, false],
 	rhino: ["dojo.logging.RhinoLogger"]
 });

@@ -259,13 +259,14 @@ dojo.webui.HTMLWidget = function(args){
 		tn.normalize();
 		if(wrap){ 
 			var ret = [tn.firstChild.cloneNode(true)];
+			tn.style.display = "none";
 			return ret;
 		}
 		var nodes = [];
 		for(var x=0; x<tn.childNodes.length; x++){
 			nodes.push(tn.childNodes[x].cloneNode(true));
 		}
-		// tn.style.display = "none";
+		tn.style.display = "none";
 		return nodes;
 	}
 

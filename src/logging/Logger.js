@@ -1,6 +1,7 @@
-/*		This is the dojo logging facility, which is patterned on the
-		Python logging module, which in turn has been heavily influenced by
-		log4j (execpt with some more pythonic choices, which we adopt as well).
+/*		This is the dojo logging facility, which is stolen from nWidgets, which
+		is patterned on the Python logging module, which in turn has been
+		heavily influenced by log4j (execpt with some more pythonic choices,
+		which we adopt as well).
 
 		While the dojo logging facilities do provide a set of familiar
 		interfaces, many of the details are changed to reflect the constraints
@@ -44,9 +45,7 @@
 // Global Objects:	dojo.logging
 // Dependencies:	none
 
-if(typeof dj_global == "undefined"){ throw new Error("bootstrap not found! bailing!"); }
-
-dojo.logging = {};
+dojo.hostenv.startPackage("dojo.logging.Logger");
 
 /*
 	A simple data structure class that stores information for and about
@@ -57,19 +56,14 @@ dojo.logging = {};
 
 dojo.logging.Record = function(lvl, msg){
 	this.level = lvl;
-
 	this.message = msg;
-
 	this.time = new Date();
-
 	// FIXME: what other information can we receive/discover here?
 }
 
 // an empty parent (abstract) class which concrete filters should inherit from.
 dojo.logging.LogFilter = function(loggerChain){
-
 	this.passChain = loggerChain || "";
-
 	this.filter = function(record){
 		// FIXME: need to figure out a way to enforce the loggerChain
 		// restriction
@@ -79,16 +73,11 @@ dojo.logging.LogFilter = function(loggerChain){
 
 dojo.logging.Logger = function(){
 	this.cutOffLevel = 0;
-
 	this.propagate = true;
-
 	this.parent = null;
-
 	// storage for dojo.logging.Record objects seen and accepted by this logger
 	this.data = [];
-
 	this.filters = [];
-
 	this.handlers = [];
 }
 
@@ -261,13 +250,10 @@ dojo.logging.Logger.prototype.logType = function(type, args){
 }
 
 // the Handler class
-function dojo.logging.LogHandler(level){
-	this.cutOffLevel = level || 0;
-
+dojo.logging.LogHandler = function(level){
+	this.cutOffLevel = (level) ? level : 0;
 	this.formatter = null; // FIXME: default formatter?
-
 	this.data = [];
-
 	this.filters = [];
 }
 
@@ -301,7 +287,7 @@ dojo.logging.LogHandler.prototype.emit = function(record){
 }
 
 // set aliases since we don't want to inherit from dojo.logging.Logger
-function(){ // begin globals protection closure
+(function(){ // begin globals protection closure
 	var names = [
 		"setLevel", "addFilter", "removeFilterByIndex", "removeFilter",
 		"removeAllFilters", "filter"
@@ -311,7 +297,7 @@ function(){ // begin globals protection closure
 	for(var x=0; x<names.length; x++){
 		tgt[names[x]] = src[names[x]];
 	}
-}(); // end globals protection closure
+})(); // end globals protection closure
 
 dojo.logging.log = new dojo.logging.Logger();
 
@@ -360,7 +346,7 @@ dojo.logging.log.getLevel = function(name){
 }
 
 // a default handler class, it simply saves all of the handle()'d records in
-// memory. Useful for attaching to with __sig__.
+// memory. Useful for attaching to with dojo.event.connect()
 dojo.logging.MemoryLogHandler = function(level, recordsToKeep, postType, postInterval){
 	// mixin style inheritance
 	dojo.logging.LogHandler.call(this, level);
@@ -388,7 +374,7 @@ dojo.logging.MemoryLogHandler.prototype.emit = function(record){
 	}
 }
 
-var dojo.logging.logQueueHandler = new dojo.logging.MemoryLogHandler(0,50,0,10000);
+dojo.logging.logQueueHandler = new dojo.logging.MemoryLogHandler(0,50,0,10000);
 dojo.logging.logQueueHandler.emit = function(record){
 	// stub for logging event handler
 }

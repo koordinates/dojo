@@ -130,6 +130,7 @@ dojo.io.argsFromMap = function(map){
 	return mapStr;
 }
 
+/*
 dojo.io.sampleTranport = new function(){
 	this.canHandle = function(kwArgs){
 		// canHandle just tells dojo.io.bind() if this is a good transport to
@@ -185,3 +186,4 @@ dojo.io.sampleTranport = new function(){
 
 	dojo.io.transports.addTransport("sampleTranport");
 }
+*/
