@@ -547,15 +547,17 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			}
 		}
 
-		if(!ok){
+		if((!ok)&&(!omit_module_check)){
 			dj_throw("Could not find module '" + modulename + "'; last tried path '" + relpath + "'");
 		}
 	}
 
 	// check that the symbol was defined
-	module = this.findModule(modulename, false); // pass in false so we can give better error
-	if(!module){
-		dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+	if(!omit_module_check){
+		module = this.findModule(modulename, false); // pass in false so we can give better error
+		if(!module){
+			dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+		}
 	}
 
 	return module;
