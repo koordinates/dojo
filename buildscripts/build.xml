@@ -80,7 +80,6 @@ build targets:
 			print("foo");
 			echo("JS integration is working!", help);
 		]]></script>
-		<!--
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
@@ -94,6 +93,7 @@ echo.setMessage("Jython integration is working!");
 
 print "look ma! Jython!"
 ]]></script>
+	<!--
 	-->
 	</target>
 	<!-- end help task -->
