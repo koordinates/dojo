@@ -241,6 +241,22 @@ dojo.hostenv.getBaseScriptUri = function(){
 	var lastslash = uri.lastIndexOf('/');
 	// inclusive of slash
 	this.base_script_uri_ = (lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_;
+	// we need to strip out ".." sequences since rhino can't handle 'em
+	if(this.base_script_uri_.indexOf("..") >= 0){
+		var oparts = this.base_script_uri_.split("/");
+		var nparts = [];
+		for(var x=0; x<oparts.length; x++){
+			if(oparts[x]==".."){
+				// FIXME: what about if this is at the front? do we care?
+				if(nparts.length){
+					nparts.pop();
+				}
+			}else{
+				nparts.push(oparts[x]);
+			}
+		}
+		this.base_script_uri_ = nparts.join("/");
+	}
 	return this.base_script_uri_;
 }
 
