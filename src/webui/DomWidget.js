@@ -1,6 +1,7 @@
 dojo.hostenv.startPackage("dojo.webui.DomWidget");
 
 dojo.hostenv.loadModule("dojo.event.*");
+dojo.hostenv.loadModule("dojo.text.*");
 dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
@@ -73,15 +74,21 @@ dojo.webui.DomWidget = function(){
 
 		var attachEvent = this.domNode.getAttribute(this.eventAttachProperty);
 		if(attachEvent){
-			var thisFunc = null;
-			if(attachEvent.indexOf(":") >= 0){
-				// oh, if only JS had tuple assignment
-				var funcNameArr = attachEvent.split(":");
-				attachEvent = funcNameArr[0];
-				thisFunc = funcNameArr[1];
+			// NOTE: we want to support attributes that have the form
+			// "domEvent: nativeEvent; ..."
+			var evts = attachEvent.split(";");
+			for(var x=0; x<evts.length; x++){
+				if(!evts[x]){ continue; }
+				var evt = dojo.text.trim(evts[x]);
+				var thisFunc = null;
+				if(evt.indexOf(":") >= 0){
+					// oh, if only JS had tuple assignment
+					var funcNameArr = evt.split(":");
+					evt = dojo.text.trim(funcNameArr[0]);
+					thisFunc = dojo.text.trim(funcNameArr[1]);
+				}
+				dojo.event.browser.addListener(baseNode, evt.toLowerCase(), this[thisFunc||evt]);
 			}
-			// dojo.event.connect("after", baseNode, evtName, this, (thisFunc||attachEvent));
-			dojo.event.browser.addListener(baseNode, attachEvent.toLowerCase(), this[thisFunc||attachEvent]);
 		}
 
 		for(var x=0; x<baseNode.childNodes.length; x++){

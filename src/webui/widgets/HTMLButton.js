@@ -12,16 +12,19 @@ dojo.webui.widgets.HTMLButton = function(){
 	this.foo = function(){ alert("bar"); }
 
 	this.label = "huzzah!";
+	this.labelNode = null;
 
 	this.setLabel = function(){
-		this.domNode.innerHTML = this.label;
-		this.domNode.label = this.label;
+		this.labelNode.innerHTML = this.label;
+		// this.domNode.label = this.label;
 	}
 
 	this.fillInTemplate = function(){
 		// alert("fillInTemplate");
 		this.setLabel();
 	}
+
+	this.onFoo = function(){}
 }
 
 /*
@@ -33,4 +36,4 @@ new function(){ // namespace protection closure
 
 dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.widgets.DomButton);
 
-dojo.webui.widgets.HTMLButton.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick'></button>";
+dojo.webui.widgets.HTMLButton.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
