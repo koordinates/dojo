@@ -1,5 +1,4 @@
-dojo.alg = {};
-dojo.alg.Alg = {};
+dojo.hostenv.startPackage("dojo.alg.Alg");
 
 dojo.alg.find = function(arr, val){
 	for(var i=0;i<arr.length;++i){
