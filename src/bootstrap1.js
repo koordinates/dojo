@@ -250,12 +250,12 @@ dojo.hostenv.normPath = function(path){
 
 	// posix says we can have one and two slashes next to each other, but 3 or
 	// more should be compressed to a single slash
-	path = path.replace(/(\/\/)(\/)+)/, "\/");
+	path = path.replace(/(\/\/)(\/)+/, "\/");
 	// if we've got a "..." sequence, we can should attempt to normalize it
-	path = path.replace(/(\.\.)(\.)+)/, "..");
+	path = path.replace(/(\.\.)(\.)+/, "..");
 	// likewise, we need to clobber "../" sequences at the beginning of our
 	// string since they don't mean anything in this context
-	path = path.replace(/^(\.)+(\/))/, "");
+	path = path.replace(/^(\.)+(\/)/, "");
 
 	// we need to strip out ".." sequences since rhino can't handle 'em
 	if(path.indexOf("..") >= 0){
