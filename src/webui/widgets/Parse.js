@@ -120,7 +120,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 			// FIXME: need a better test to see if this is local or external
 			// FIXME: doesn't handle nested propertySets, or propertySets that just contain information about css documents, etc.
 			for (propertySetId in propertyProviderIds) {
-				if(propertySetId.indexOf("..")==-1 && propertySetId.indexOf("://")==-1) {
+				if((propertySetId.indexOf("..")==-1)&&(propertySetId.indexOf("://")==-1)){
 					// get a reference to a propertySet within the current parsed structure
 					var propertySet = this.getPropertySetById(propertySetId);
 					if(propertySet != "") {
@@ -130,10 +130,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 					// FIXME: add code to parse and return a propertySet from another document
 				}
 			}
-			propertySets.push(this.getPropertySetsByClass(propertySetClass));
+			propertySets.concat(this.getPropertySetsByClass(propertySetClass));
 			return propertySets
 		} else {
-			return "";
+			return [];
 		}
 	}
 }
