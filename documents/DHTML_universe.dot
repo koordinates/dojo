@@ -68,17 +68,29 @@ digraph dhtml_universe
 		schontz -> _13p;
 		schontz -> FM;
 		michaelvo -> _13p;
+		djoham -> XMLJS;	
+		mhoughton -> XMLJS;
+		ssevertson -> XMLJS;
+		jvnoort	-> XMLJS;
+		inforat -> Tibet;
+		idearat -> Tibet;
 		
 		// project and company relationships
 		INFA -> NW;
-		Jot -> Dojo;
-		Jot -> HTMLArea;
+		INFA -> ISC [ label="licenses" ];
+		Jot -> Dojo [ label="sponsors" ];;
+		Jot -> HTMLArea [ label="sponsors" ];
 		Tibet -> ISC;
-		HalfBrain -> AlphaBlox;
-		AlphaBlox -> Oddpost;
-		Oddpost -> Yahoo;
+		// FIXME: need to mine these links for info:
+		//	http://koranteng.blogspot.com/2004/07/on-rich-web-applications-alphablox-and.html
+		//	http://koranteng.blogspot.com/2004/10/on-gmail-and-dhtml-architecture-again.html
+		HalfBrain -> AlphaBlox [ label="AlpahBlox acquires HalfBrain" ];
+		AlphaBlox -> IBM [ label="IBM bought AlphaBlox" ];
+		AlphaBlox -> Oddpost [ style=dotted ];
+		Oddpost -> Yahoo [ label="Y! bought Oddpost" ];
 		Gmail -> Google;
 		ModPubSub -> RePubSub;
+		TIBCO -> GenInt [ label="bought" ];
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
@@ -107,6 +119,12 @@ digraph dhtml_universe
 		jpark		[ label="Joyce Park" ];
 		schontz		[ label="David Schontzler" ];
 		michaelvo	[ label="Michal van Ouwerkerk" ];
+		djoham		[ label="David Joham" ];
+		mhoughton	[ label="Micheal Houghton" ];
+		ssevertson	[ label="Scott Severtson" ];
+		jvnoort		[ label="Jon van Noort" ];
+		idearat		[ label="Scott Shattuck" ];
+		inforat 	[ label="William J. Edney" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -114,6 +132,9 @@ digraph dhtml_universe
 		Yahoo 		[ label="Yahoo!",shape=box ];
 		Jot 		[ label="JotSpot",shape=box ];
 		INFA 		[ label="Informatica Corp.",shape=box ];
+		IBM
+		TIBCO
+		GenInt		[ label="General Interface" ];
 
 		// projects
 		HTMLArea	[ shape=diamond ];
@@ -126,6 +147,7 @@ digraph dhtml_universe
 		GameLib		[ shape=diamond ];
 		Bindows		[ shape=diamond ];
 		jsDOM		[ shape=diamond ];
+		XMLJS		[ label="XML for Script",shape=diamond ];
 		Tibet		[ label="TIBET",shape=diamond ];
 		ModPubSub 	[ label="mod_pubsub",shape=diamond ];
 		RePubSub 	[ label="re_pubsub",shape=diamond ];
