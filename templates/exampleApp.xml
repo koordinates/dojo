@@ -5,9 +5,9 @@
 		the cssFileName attribute is borken since it does not provide a way to
 		specialize on a per-rendering context basis.
 	-->
-	<dojo:tree cssFileName="tree.css" cssClassName="dojoTree" id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProvider="treeDefinitions" eventProvider="treeEvents" />
-	<dojo:grid cssFileName="grid.css" cssClassName="dojoGrid" id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProvider="gridDefinitions" />
-	<dojo:propertyModel id="gridDefinitions" componentClass="default">
+	<dojo:tree id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProviderList="treeDefinitions" />
+	<dojo:grid id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProviderList="gridDefinitions" />
+	<dojo:propertySet id="gridDefinitions" componentClass="default">
 		<dojo:scroll type="auto">
 			<dojo:fixedItems position="top | right | bottom | left" quantity="" />
 			<!-- used to set a fixed number of rows or columns in any position on the table... use multiple entries to specify for each position
@@ -26,33 +26,57 @@
 		-->
 		</dojo:sort>
 		<dojo:head>
-			<dojo:rows cssClassList="headRowClassName1" rowHeight="1.5em">
-				<dojo:cells cssClassList="headCellClassName1">
+			<dojo:rows>
+				<dojo:repetition frequency="1" propertyProviderList="grid.css/.headRowClassName1" sourceType="css" targetType="all" />
+				<dojo:rowHeight>1.5em</dojo:rowHeight><!-- should this really be height... what if we wanted to be able to specify rowHeight as an attribute of the dojo:grid element? -->
+				<dojo:cells>
+					<dojo:repetition frequency="1" propertyProviderList="grid.css/.headCellClassName1" sourceType="css" targetType="all" />
 				</dojo:cells>
 			</dojo:rows>
 		</dojo:head>
 		<dojo:body>
-			<dojo:rows cssClassList="bodyRowClassName1,bodyRowClassName2" repetitionFrequency="1,1" rowHeight="1.2em">
-				<dojo:cells cssClassList="bodyCellClassName1" />
+			<dojo:rows>
+				<dojo:repetition frequency="1" propertyProviderList="grid.css/.bodyRowClassName1, grid.css/.bodyRowClassName2" sourceType="css" targetType="html" />
+				<dojo:repetition frequency="1" propertyProviderList="gridSVG.css/.bodyRowClassName1, gridSVG.css/.bodyRowClassName2" sourceType="css" targetType="svg" />
+				<dojo:rowHeight>1.2em</dojo:rowHeight>
+				<dojo:cells>
+					<dojo:repetition frequency="1" propertyProviderList="grid.css/.bodyCellClassName1, grid.css/.bodyRowClassName1" sourceType="css" targetType="html" />
+					<dojo:repetition frequency="1" propertyProviderList="gridSVG.css/.bodyRowClassName1, gridSVG.css/.bodyRowClassName1" sourceType="css" targetType="svg" />
+				</dojo:cells>
 			</dojo:rows>
 		</dojo:body>
 		<dojo:foot>
-			<dojo:rows cssClassList="footRowClassName1" rowHeight="1.5em">
-				<dojo:cells cssClassList="footCellClassName1" />
+			<dojo:rows>
+				<dojo:cssClassList>footRowClassName1</dojo:cssClassList>
+				<dojo:rowHeight>1.5em</dojo:rowHeight>
+				<dojo:cells>
+					<dojo:cssClassList>footCellClassName1</dojo:cssClassList>
+				</dojo:cells>
 			</dojo:rows>
 		</dojo:foot>
-	</dojo:propertyModel>
-	<dojo:propertyModel id="treeDefinitions" componentClass="default" resizable="yes" indentation="0.5em">
+	</dojo:propertySet>
+	<dojo:propertySet id="treeDefinitions" componentClass="default" resizable="yes" indentation="0.5em">
+		<dojo:connect>
+			<dojo:source object="foo" function="bar" name="" />
+			<dojo:target object="baz" function="xyzzy" name="" />
+		</dojo:connect>
+		<dojo:event type="onclick" target="treeItem" action="evt.target.highlight()" />
+		<dojo:event type="onclick" target="treeItem" action="evt.target.highlight()" />
+		<dojo:event type="onclick" target="treeItem" action="evt.target.open()" />
+		<dojo:event type="onclick" target="treeItem" action="dojoGridExample.display(evt.target.objectRelation)" />
 		<dojo:state type="default" mode="expandedToList">
-			<dojo:expandList>record2,record3</expandList>
+			<dojo:expandList>record2,record3</dojo:expandList>
 		</dojo:state>
-		<dojo:treeItems cssClassList="className1,className2,className3"  repetitionFrequency="1,3,1" rowHeight="1.2em" />
+		<dojo:treeItems>
+			<dojo:repetition frequency="1,3,1" propertyProviderList="tree.css/.className1, tree.css/.className2, tree.css/.className3" />
+			<dojo:rowHeight>1.2em</dojo:rowHeight>
+		</dojo:treeItems>
 		<dojo:treeIconItems>
-			<dojo:icon type="folderClosed" cssClassName="folderClosed" svgDefsElement="" src="folderClosedIcon.png" />
-			<dojo:icon type="folderOpen" cssClassName="folderOpen" svgDefsElement="" src="folderOpenIcon.png" />
-			<dojo:icon type="leaf" cssClassName="leaf" svgDefsElement="" src="leafIcon.png" />
+			<dojo:icon type="folderClosed" propertyProviderList="tree.css/.folderClosed" xlink:href="folderClosedIcon.png" sourceType="image" targetType="html" />
+			<dojo:icon type="folderOpen" propertyProviderList="tree.css/.folderOpen" xlink:href="folderOpenIcon.png" sourceType="image" targetType="all" />
+			<dojo:icon type="leaf" propertyProviderList="tree.css/.leaf" xlink:href="tree.svg#leaf" sourceType="svg" targetType="svg" />
 		</dojo:treeIconItems>
-	</dojo:propertyModel>
+	</dojo:propertySet>
 	<dojo:dataModel id="treeExampleDataModel" xlink:href="#staticTreeExampleModel" type="xml">
 		<dojo:label elementName="name" />
 		<dojo:treeItem elementName="structure">
@@ -60,19 +84,6 @@
 			<dojo:objectRelation elementName="uniqueId" />
 		</dojo:treeItem>
 	</dojo:dataModel>
-
-	<dojo:eventModel id="treeEvents">
-		<dojo:connect>
-			<dojo:signal object="foo" name="'bar'" />
-			<dojo:slot object="baz" name="'xyzzy'" />
-			<dojo:mutator />
-		</dojo:connect>
-		<!-- DOM style events... needs work in defining how the action and propagation of the event object is setup -->
-		<dojo:event type="onclick" target="treeItem" action="evt.target.highlight()" />
-		<dojo:event type="onclick" target="treeItem" action="evt.target.highlight()" />
-		<dojo:event type="onclick" target="treeItem" action="evt.target.open()" />
-		<dojo:event type="onclick" target="treeItem" action="dojoGridExample.display(evt.target.objectRelation)" />
-	</dojo:eventModel>
 
 	<arbitraryDataStructure id="staticGridExampleModel">
 		<name>testTree</name>

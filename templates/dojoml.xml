@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink">
+<dojo:application xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml" xmlns:xlink="http://www.w3.org/1999/xlink" propertyProvider="">
 	<!-- This is an outline of the xml declaration syntax that will be used to allow people to define components in the dojo toolkit -->
 	<!-- TODO:
-		- merge event and property providers into one provider structure
 		- soap, real-time/mod_pubsub, wsdl supplied data
 		- "virtual" actions, i.e. events sent to the server upon submitting a form or completing an action
 		- fragments and data updates
-		- drag and drop - can this be covered with connectors? (rar: yes);
 		- add the rest of the components... this is a non-exhaustive list to get started on
 		- handling data validation models... separate elements or as an attribute on the field... basically as part of the model or part of the ui?
 		- define relationships between components, if any (hash maps, perhaps)
@@ -16,15 +14,11 @@
 
 	<!-- attributes
 		id: unique identifier, string
-		cssClassName: string, follows rules of a css class name, will match css clases in an external stylesheet
-		cssStyle: inline css rules... seems like a reasonable compromose rather than the slew of presentational attributes in other similiar syntaxes
-		dojoStyle: presentational attributes on a component level that are not css... TODO: we may break these into attributes in their own namespace, or perhaps consider something like a -dojo-cssPropertyName for them...
 		dataProivder: data or a pointer to a data source or data model using JavaScript syntax... decided to use ognl/jsf style syntax rather than xpath for simplicity:
 			text: dataProvider="some plain text"
 			reference to a model: dataProvider="uri#modelName" where modelName is an id of an element in the document returned from the given uri
 			reference to an item in a model: dataProvider="uri#modelName.elementName"
-		propertyProvider: uri to a set of default rules for the component
-		eventProvider: uri to a set of event handlers to register or connect
+		propertyProviderList: uri to a propertySet for the component... includes actions and styles... propertySets can be nested
 		action: uri for form submission
 	-->
 
@@ -53,15 +47,15 @@
 
 	<!-- ways to specify attributes
 			1. as nested elements:
-			<component>
+			<dojo:component>
 				<prop1>prop1Value</prop1>
 				<prop2>prop2Value</prop2>
 				<prop3>prop3Value</prop3>
 				...
-			</component>
+			</dojo:component>
 
 			2. as nested elements, with more complex property structures:
-			<component>
+			<dojo:component>
 				<prop1>
 					<item1>
 						prop1Item1Value
@@ -73,27 +67,27 @@
 				<prop2>prop2Value</prop2>
 				<prop3>prop3Value</prop3>
 				...
-			</component>
+			</dojo:component>
 
 			3. as an xml fragment somewhere in the current or external document:
-			<component propertyProvider="file.elementId" />
+			<component propertyProviderList="file.elementId" />
 
-			<properties>
-				<propertyGroup id="elementId">
+			<dojo:propertySet>
+				<dojo:propertySet id="elementId">
 					<prop1>prop1Value</prop1>
 					<prop2>prop2Value</prop2>
 					<prop3>prop3Value</prop3>
-				</propertyGroup>
-			</properties>
+				</dojo:propertySet>
+			</dojo:propertySet>
 
-			in essence, this is a propertyModel, so there's no reason to
+			in essence, this is a propertySet, so there's no reason to
 			arbitrarily place it in a properties element, i.e....
 
-			<dojo:propertyModel id="" type="">
+			<dojo:propertySet id="" type="">
 				<prop1>prop1Value</prop1>
 				<prop2>prop2Value</prop2>
 				<prop3>prop3Value</prop3>
-			</dojo:propertyModel>
+			</dojo:propertySet>
 
 
 			4. as attributes
@@ -102,30 +96,45 @@
 			5. as a css selector style name value pairs in a properties attribute
 			<component properties="prop1:prop1Value;prop2:prop2Value;prop3:prop3Value;" />
 
-			6. perhaps we may now or later consider also supporting the use of an external css-like selector file for properties without consideration for cascading (for now, we are NOT SUPPORTING THIS):
+			6. perhaps we may now or later consider also supporting the use of an external css-like selector file for properties without consideration for cascading (for NOW, we are NOT SUPPORTING THIS):
 
-			<component propertyProvider="file.className" />
+			<dojo:component propertyProviderList="file.className" />
 
 			.className {
 				prop1:prop1Value;
 				prop2:prop2Value;
 				prop3:prop3Value;
 			}
+			
+			6a.
+			
+			<dojo:component propertyProviderList="provider1" />
+			
+			<dojo:propertySet id="provider1">
+				<dojo:propertySet target="someSubComponent" xlink:href="file" sourceType="css" targetType="svg" />
+			</dojo:propertySet>
+			
+			.-dojo-someSubComponent {
+				prop1:prop1Value;
+				prop2:prop2Value;
+				prop3:prop3Value;
+			}
+			
 	-->
 
 	<!-- components -->
-	<dojo:button id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" label="#text" state="enabled|disabled">
+	<dojo:button id=""  dataProvider="" propertyProviderList="" label="#text" state="enabled|disabled">
 		<dojo:image>
 			<!-- usual css properties for displaying an image on a button -->
 		</dojo:image>
 	</dojo:button>
-	<dojo:contextMenu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:menu id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:progressBar id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:splitPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:tabbedPane id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:tree id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="">
+	<dojo:contextMenu id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:menu id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:progressBar id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:list id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:splitPane id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:tabbedPane id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:tree id=""  dataProvider="" propertyProviderList="" >
 		<dojo:resizable></dojo:resizable>
 		<!-- resizable by user... yes|no|x|y, default is no -->
 		<!--
@@ -143,7 +152,7 @@
 					TODO: these names aren't very good, and they won't work well as attributes of the tree
 			-->
 			<dojo:expandDepth>3</dojo:expandDepth>
-			<dojo:expandList>nodde1,node2,node5</dojo:expandList>
+			<dojo:expandList>node1,node2,node5</dojo:expandList>
 			<!-- these could of course be specified as attributes, and would only need to be specified if relevant -->
 		</dojo:state>
 		<dojo:treeItems>
@@ -177,9 +186,9 @@
 		I'm thinking this should be deferred to whatever animation model we use -->
 	</dojo:tree>
 
-	<dojo:wizard id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:wizard id=""  dataProvider="" propertyProviderList=""  />
 
-	<dojo:form id="" cssClassName="" cssStyle="" dojoStyle="" action="">
+	<dojo:form id=""  action="">
 		<!-- TODO: We should make an effort to include items in the whatwg's web forms 2.0 spec -->
 		<dojo:textInput type="text|password|hidden|image|datetime|date|month|week|time|name|range|email|uri" />
 		<dojo:button />
@@ -193,16 +202,16 @@
 	</dojo:form>
 
 	<!-- traditionally static or non-componentized elements -->
-	<dojo:label id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" /> <!-- container to insert text through a static or dynamic dataProvider -->
-	<dojo:list id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:link id="" cssClassName="" cssStyle="" dojoStyle="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:label id=""  dataProvider="" propertyProviderList=""  /> <!-- container to insert text through a static or dynamic dataProvider -->
+	<dojo:list id=""  dataProvider="" propertyProviderList=""  />
+	<dojo:link id=""  dataProvider="" propertyProviderList=""  />
 
-	<dojo:resource dataProvider="" propertyProvider="" eventProvider="" type="css|xslt|javascript|rss|atom" version="" />
-	<dojo:htmlFragment dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:svgFragment dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:xmlFragment dataProvider="" propertyProvider="" eventProvider="" /><!-- for generic namespaces? -->
+	<dojo:resource dataProvider="" propertyProviderList=""  type="css|xslt|javascript|rss|atom" version="" />
+	<dojo:htmlFragment dataProvider="" propertyProviderList=""  />
+	<dojo:svgFragment dataProvider="" propertyProviderList=""  />
+	<dojo:xmlFragment dataProvider="" propertyProviderList=""  /><!-- for generic namespaces? -->
 
-	<dojo:grid cssFileName="" cssClassName="" id="" dataProvider="" propertyProvider="" eventProvider="">
+	<dojo:grid cssFileName="" cssClassName="" id="" dataProvider="" propertyProviderList="" >
 		<dojo:scroll type="specified|auto|none">
 			<dojo:fixedItems position="top | right | bottom | left" quantity="" />
 			<!-- used to set a fixed number of rows or columns in any position on the table... use multiple entries to specify for each position
@@ -258,8 +267,8 @@
 			</dojo:rows>
 		</dojo:foot>
 	</dojo:grid>
-	<dojo:tabPane  cssFileName="" cssClassName="" id="" dataProvider="" propertyProvider="" eventProvider="" />
-	<dojo:box cssFileName="" cssClassName="" id="" dataProvider="" propertyProvider="" eventProvider="" />
+	<dojo:tabPane  cssFileName="" cssClassName="" id="" dataProvider="" propertyProviderList=""  />
+	<dojo:box cssFileName="" cssClassName="" id="" dataProvider="" propertyProviderList=""  />
 
 	<!-- models -->
 
@@ -275,7 +284,6 @@
 	<dojo:dataModel id="" xlink:href="" type="xml|javascript">
 		<!-- dataModel can be empty, or cotain xml describing the structure of the data that will be passed from the src, or it can contain an xml data structure inline.  xml is allowed in any namespace... perhaps we should consider requiring a descriptor of the data structure, though that seems silly, and I'm not sure if it buys us anything. Actually, I've figured out what it buys us... it allows us to define the translation between any arbitrary xml data source or javascript data structure, and that required for the component's data model... so someone could easily have an xml fragment somewhere and use part or all of that data structure to feed a component -->
 	</dojo:dataModel>
-	<dojo:eventModel id="">
 		<!-- FIXME (rar):
 			the new event system which I landed yesterday (although it's mainly
 			code from Burst) DOES have a connect() method, but it accepts
@@ -287,28 +295,18 @@
 
 			Additionally, "mutators" don't need explicit support, but around
 			advice does.
+			
+			MDA feels that exposing advice may be a bit much here... thoughts?  For now I'm going to keep it simple.
 		-->
-		<dojo:connect>
-			<dojo:signal object="" name="" /><!-- TODO: way to distinguish between a literal string and an object reference -->
-			<dojo:slot object="" name="" />
-			<dojo:mutator /><!-- TODO: decide how to support mutators -->
-		</dojo:connect>
-		<!-- TODO: add other options for sigslots, conditions for detaching, etc. -->
+		<!-- TODO: add conditions for detaching, etc. -->
 		<!-- TODO: how about real-time event setup... how to specify relationships between events on the client and server-side... some of this needs to wait until the event model itself is worked out -->
 		<!-- TODO: is this generalized enough to apply to a class of component items, and if not, how would this be done? -->
 		<!-- DOM style events... needs work in defining how the action and propagation of the event object is setup -->
-		<dojo:event type="" target="" action="" />
-	</dojo:eventModel>
-	<dojo:propertyModel id="" componentClass="">
-		<!-- FIXME (rar):
-			the term "propertyModel" needs to be replaced with "propertySet" as
-			the current setup does not MODEL anything, it only provides a list
-			or an enum of a named set of name/value pairs 
+	<dojo:propertySet id="" componentClass="">
+		<!-- presentational attributes , may be specified in css or xml, as attributes in a component, or in a propertySet; most css properties are allowed, expressed in lowerCamelCase
+		
 		-->
-
-		<!-- presentational attributes , may be specified in css, as attributes in  a component, or in a propertyModel; most css properties are allowed, expressed in lowerCamelCase
-		-->
-		<!-- propertyModel contains a collection of properties and attributes to specify as a default set for components to inherit from... currently I'm thinking of not really supporting multiple inheritance, but I (Dylan) may change my mind -->
+		<!-- propertySet contains a collection of properties and attributes to specify as a default set for components to inherit from... currently I'm thinking of not really supporting multiple inheritance, but I (Dylan) may change my mind -->
 		<!-- componentClass is used to describe classes of components
 		of a certain type, meaning not a type of component, but a subtype... for example, a sortable grid component as opposed to a normal grid component
 		-->
@@ -318,7 +316,20 @@
 			this property cascade? Does that last one defined wipe out all
 			others, or does it just over-ride properties potentially set in
 			others?  Or does the first one set win?
+			
+			(dylan): the last one set wins... now i need to define what "last" means :)
 		-->
-	</dojo:propertyModel>
+		<dojo:propertySet target="someSubComponent" xlink:href="file" sourceType="css" targetType="svg" />
+		<dojo:propertySet xlink:href="file#.className" sourceType="css" targetType="html" /><!-- TODO: better syntax for class names to prevent confusion with file name?-->
+		<dojo:propertySet xlink:href="file#idName" sourceType="css" targetType="svg"  />
+		<dojo:propertySet xlink:href="file" sourceType="xml" targetType="all"  />
+		<dojo:propertySet xlink:href="file#idName" sourceType="xml" targetType="svg"  />
+		<dojo:connect>
+			<dojo:source object="" function="" name="" />
+			<dojo:target object="" function="" name="" />
+		</dojo:connect>
+		<dojo:event type="" target="" action="" />
+
+	</dojo:propertySet>
 
 </dojo:application>
