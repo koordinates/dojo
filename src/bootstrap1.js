@@ -240,8 +240,8 @@ dojo.hostenv.getBaseScriptUri = function(){
 
 	var lastslash = uri.lastIndexOf('/');
 	// inclusive of slash
-	var base = (lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_;
-	return base;
+	this.base_script_uri_ = (lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_;
+	return this.base_script_uri_;
 }
 
 /**
