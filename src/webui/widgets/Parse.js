@@ -18,7 +18,7 @@ dojo.webui.widgets.Parse.ParseFragment = function() {
 dojo.webui.widgets.Parse.ParseFragment.prototype.createComponents = function(fragment) {
 	for (var item in fragment) {
 		if(fragment[item].tagName && fragment[item] != fragment.nodeRef &&  dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) {
-			dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()](fragment[item]);
+			return dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()](fragment[item]);
 		}
 		if(typeof fragment[item] == "object" && fragment[item] != fragment.nodeRef && fragment[item] != fragment.tagName) {
 			this.createComponents(fragment[item]);
@@ -53,8 +53,34 @@ dojo.webui.widgets.Parse.ParseProperties.prototype.createProperties = function(f
 	return properties;
 }
 
+dojo.webui.widgets.Parse.ParseProperties.prototype.getPropertySets = function(propertyProviderList, fragment) {
+	var propertyProviders = propertyProviderList.split(" ");
+	for (var propertySet in propertyProviders) {
+		// FIXME: should the propertyProviderList attribute contain # syntax for reference to ids or not?
+		// FIXME: need a better test to see if this is local or external
+		// FIXME: doesn't handle nested propertySets, or propertySets that just contain information about css documents, etc.
+		if(propertySet.indexOf("..")==-1 && propertySet.indexOf("://")==-1) {
+			// get a reference to a propertySet within the current parsed structure
+			return this.findPropertySet(propertySet,fragment);
+		} else {
+			// FIXME: add code to parse and return a propertySet from another document
+		}
+	}
+
+	function findPropertySet(name,fragment) {
+		for (var item in fragment) {
+			if (fragment[item].tagName && fragment[item]["id"] && fragment[item].tagName=="dojo:propertySet" && fragment[item]["id"][0] == name) {
+				return dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]
+			} else {
+				// FIXME: does this make sense?
+				return this.findPropertySet(name,fragment[item]);
+			}
+		} 
+	}
+}
 
 
+// FIXME: propertySet stuff doesn't work yet... in progress
 // TODO: should have a more general way to add tags or tag libraries?
 // TODO: need a default tags class to inherit from
 // TODO: parse properties/propertySets into component attributes
@@ -62,13 +88,21 @@ dojo.webui.widgets.Parse.ParseProperties.prototype.createProperties = function(f
 // TODO: copy/clone raw markup fragments/nodes as appropriate
 dojo.webui.widgets.tags = {};
 dojo.webui.widgets.tags["div"] = function(fragment) {
-	//alert("found a div");
+	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
+	var propertySets = (fragment["propertyProviderList"]) ? propertyParser.getPropertySets(fragment["propertyProviderList"], fragment) : "";
+	var localProperties = propertyParser.createProperties(fragment);
+	// FIXME: Now do something with these propertySets and local Properties
 }
 dojo.webui.widgets.tags["dojo:button"] = function(fragment) {
-	//alert("found a button");
 	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
-	this.properties = propertyParser.createProperties(fragment);
-	// now we have all of the properties, so we need to instantiate a component
-	// and set its properties... in fact, the two lines above are probably generic 
-	// for all components as they are written currently
+	var propertySets = (fragment[propertyProviderList]) ? propertyParser.getPropertySets(fragment[propertyProviderList], fragment) : "";
+	var localProperties = propertyParser.createProperties(fragment);
+	// FIXME: Now do something with these propertySets and local Properties
+}
+
+dojo.webui.widgets.tags["dojo:propertySet"] = function(fragment) {
+	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
+	// FIXME: add support for nested propertySets
+	// var propertySets = (fragment[propertyProviderList]) ? propertyParser.getPropertySets(fragment[propertyProviderList], fragment) : "";
+	return propertyParser.createProperties(fragment);
 }

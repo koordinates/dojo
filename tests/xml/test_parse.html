@@ -6,7 +6,6 @@
 		<script type="text/javascript">
 			dojo = {};
 		</script>
-		<script type="text/javascript" src="../../src/hostenv_browser.js"></script>
 		<script type="text/javascript" src="../../src/xml/DomUtil.js"></script>
 		<script type="text/javascript" src="../../src/xml/Parse.js"></script>
 		<style type="text/css">
@@ -61,9 +60,12 @@
 		</pre>
 		
 		<div id="test">
-			<div id="test1" dojo:testAttribute="blank1" xlink:href="http://www.dojotoolkit.org">element 1</div>
+			<div id="test1" dojo:testAttribute="blank1" xlink:href="http://www.dojotoolkit.org" dojo:propertyProviderList="testPropertyList">element 1</div>
 			<div id="test2" dojo:testAttribute="blank2" xlink:href="http://www.dojotoolkit.org">element 2</div>
 			<div id="test3" dojo:testAttribute="blank3" xlink:href="http://www.dojotoolkit.org"><dojo:button id="test3a">element 3/3a</dojo:button><dojoButton id="test3b">element 3/3b</dojoButton><span dojoType="button" id="test3c">element 3/3c</span><button id="test3d" dojo:type="button">element 3/3d</button><button id="test3e">element 3/3e</button></div>
+			<dojo:propertySet id="testPropertyList" property1="test">
+				<property2>test2</property2>
+			</dojo:propertySet>
 		</div>
 		<div id="output">
 		
