@@ -1,31 +1,21 @@
-<!--
-/* -->
-<sect1 id="LogCore.js">
-	<title><filename>LogCore.js</filename></title>
-	<para>
-		This is the netWindows logging facility, which is patterned on the
+/*		This is the dojo logging facility, which is patterned on the
 		Python logging module, which in turn has been heavily influenced by
 		log4j (execpt with some more pythonic choices, which we adopt as well).
-	</para>
-	<note>
-		While the &nw; logging facilities do provide a set of familiar
+
+		While the dojo logging facilities do provide a set of familiar
 		interfaces, many of the details are changed to reflect the constraints
 		of the browser environment. Mainly, file and syslog-style logging
 		facilites are not provided, with HTTP POST and GET requests being the
 		only ways of getting data from the browser back to a server. Minimal
 		support for this (and XML serialization of logs) is provided, but may
 		not be of practical use in a deployment environment.
-	</note>
-	<para>
-		The &nw; logging classes are agnostic of any environment, and while
+
+		The dojologging classes are agnostic of any environment, and while
 		default loggers are provided for browser-based interpreter
 		environments, this file and the classes it define are explicitly
 		designed to be portable to command-line interpreters and other
 		ECMA-262v3 envrionments.
-	</para>
-<!--*/
 
-/*
 	the logger needs to accomidate:
 		log "levels"
 		type identifiers
@@ -44,12 +34,12 @@
 // TODO: write XML Formatter class
 // TODO: write HTTP Handler which uses POST to send log lines/sections
 
-// $Id: LogCore.js,v 1.6 2004/09/13 15:46:00 dylan Exp $
+// $Id: LogCore.js,v 1.7 2004/10/04 15:46:00 dylan Exp $
 // Copyright (c) 2000-2004 Alex Russell
 // Licensed under the Academic Free License version 1.2
 
 // Filename:	LogCore.js
-// Purpose:		a common logging infrastructure for NW
+// Purpose:		a common logging infrastructure for dojo
 // Classes:		dojo.log, dojo.loggerObj, dojo.logRecord, dojo.logFilter
 // Global Objects:	dojo.log
 // Dependencies:	none
@@ -64,18 +54,13 @@ try{ // try block necessary for CLI usage
 
 if(!dojo) dojo = {} //TODO: Move this to a more appropriate place later
 
-/*-->
-	<sect2 id="dojo.logRecord">
-		<title>dojo.logRecord</title>
-		<para>
-			A simple data structure class that stores information for and about
-			a logged event. Objects of this type are created automatically when
-			an event is logged and are the internal format in which information
-			about log events is kept.
-		</para>
-		<sect3 id="dojo.logRecord.properties">
-			<title>Properties</title>
-<!--*/
+/*
+	A simple data structure class that stores information for and about
+	a logged event. Objects of this type are created automatically when
+	an event is logged and are the internal format in which information
+	about log events is kept.
+*/
+
 dojo.logRecord = function(lvl, msg){
 	/*-->
 	<fieldsynopsis>&public; &int; <varname>level</varname></fieldsynopsis>
@@ -1110,12 +1095,31 @@ dojo.memoryLogHandler.prototype.emit = function(record){
 
 
 var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
-var dojo.consoleHandler = new dojo.memoryLogHandler(0,maxRecordsToKeep);
-dojo.consoleHandler.emit = function(record){
+var postRecords = true; // TODO: move this to a better location for prefs
+var dojo.logQueueHandler = new dojo.memoryLogHandler(0,maxRecordsToKeep);
+dojo.logQueueHandler.emit = function(record){
 	// stub for logging event handler
-	// in practice, replace with actual logging event handler
 }
+dojo.log.addHandler(dojo.logQueueHandler);
 
+// actual logging event handler
+dojo.logQueueHandler.emit = function(record){
+	// console output
+	// we should probably abstract this in the future
+	// also, what if a console is opened after some error messages pile up in the queue?  Do we dump them all to the queue?  Is this another pref?
+	if(window["stdout"]){
+		dojo.consoleHandler.emit = function(record){
+			stdout(String(record.time.toLocaleTimeString())+" :"+dojo.log.getLevelName(record.level)+": "+record.message);
+		}
+	}
+	if(postRecords) {
+		// it seems that we would't want to send a request to the server for every log file, so perhaps we want to send them in batches, or in time intervals?
+
+		// determine if it is time to send the record... if not, and it is time-based, reset the checking interval
+		// if it is time, then we need to create an XMLHttpRequest using dojo.io
+	}
+
+}
 //actual logging event handler
 if(window["stdout"]){
 	dojo.consoleHandler.emit = function(record){
@@ -1126,7 +1130,7 @@ if(window["stdout"]){
 }
 
 
-dojo.log.addHandler(dojo.consoleHandler);
+
 
 if(window["dojo.scripts"]){
 	dojo.scripts.finalize(dojo.config.corePath+"LogCore.js");
