@@ -15,13 +15,10 @@ dojo.hostenv.name_ = 'adobesvg';
 /**
  * Read the contents of the specified uri and return those contents.
  *
+ * FIXME: Make sure this is consistent with other implementations of getText
  * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
- * FIXME: because of the way adobe requires a callback function, this isn't 
- * currently returning the response to anything useful
- * FIXME: synch doesn't currently work as it isn't really supported by adobe as
- * far as I can tell
- * FIXME: add XMLHttpPost Capability
- * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
+ * @param async_cb If not specified, returns false as synchronous is not
+ * supported. If specified, load asynchronously, and use async_cb as the handler which receives the result of the request.
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
  */ 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
@@ -36,13 +33,59 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
 			return null;
 		}
-		return httpResponse.content;
+		async_cb(httpResponse.content);
+		// return httpResponse.content;
 	}
 	
 	try {
-		http = window.getURL(uri, async_callback);
+		if(async_cb) {
+			http = window.getURL(uri, async_callback);
+		} else {
+		return dj_throw("No synchronous XMLHTTP implementation available, for uri " + uri);
+		}
 	} catch(e) {
 		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
+	}
+}
+
+
+/**
+ * Makes an async post to the specified uri.
+ *
+ * FIXME: Not sure that we need this, but adding for completeness.
+ * More details about the implementation of this are available at 
+ * http://wiki.svg.org/index.php/PostUrl
+ * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
+ * @param async_cb If not specified, returns false as synchronous is not
+ * supported. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
+ * @param text Data to post
+ * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
+ * @param mime_type optional MIME type of the posted data (such as "text/plain")
+ * @param encoding optional encoding for data. null, 'gzip' and 'deflate' are possible values. If browser does not support binary post this parameter is ignored.
+ */ 
+dojo.hostenv.postText = function(uri, async_cb, text, fail_ok, mime_type, encoding){
+	var http = null;
+	
+	var async_callback = function(httpResponse){
+		if (!httpResponse.success) {
+			dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
+		}
+		
+		if(!httpResponse.content) {
+			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
+			return null;
+		}
+		async_cb(httpResponse.content);
+	}
+	
+	try {
+		if(async_cb) {
+			http = window.postURL(uri, text, async_callback, mimeType, encoding);
+		} else {
+		return dj_throw("No synchronous XMLHTTP post implementation available, for uri " + uri);
+		}
+	} catch(e) {
+		return dj_throw("No XMLHTTP post implementation available, for uri " + uri);
 	}
 }
 
