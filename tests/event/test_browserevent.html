@@ -1,0 +1,57 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				parseWidgets: false,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.event.*");
+
+			function logMe(){
+				dj_debug("some event was fired");
+			}
+
+			dojo.hostenv.modulesLoadedListeners.push(function(){
+				var clickNode = document.getElementById("click");
+				dojo.event.connect(clickNode, "onclick", null, "logMe");
+
+				var dblNode = document.getElementById("dblClick");
+				dojo.event.connect(dblNode, "ondblclick", null, "logMe");
+
+				var overNode = document.getElementById("mouseOver");
+				dojo.event.connect(overNode, "onmouseover", null, "logMe");
+			});
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<div id="dblClick">
+			double-click test
+		</div>
+
+		<button id="click">
+			click test
+		</button>
+
+		<table id="mouseOver">
+			<tbody>
+				<tr>
+					<td>
+						mouseOver test
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
