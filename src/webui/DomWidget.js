@@ -32,7 +32,22 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	this.postInitialize = function(args, frag){
 		var nr = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(!nr){ return; } // fail safely if we weren't instantiated from a fragment
-		nr.parentNode.replaceChild(this.domNode, nr);
+		// FIXME: this will probably break later for more complex nesting of widgets
+		// FIXME : commenting this out for now, as not only does it not yet work
+		// but I'm not sure this is a very good way to try and address the problem 
+		// of nested widgets.  For example, maybe we want to work our way up the
+		// parse tree, or make use of the addChild method from above?
+		/*if(nr.childNodes.length>1) {
+			var on = nr.parentNode.replaceChild(this.domNode, nr);
+			for (var i=0; i<on.childNodes.length; i++) {
+				// FIXME... why is it appending the child of the child... or is it being recursive?
+				dj_debug(on.childNodes.item(i).tagName);
+				this.domNode.appendChild(on.childNodes.item(i));
+			}
+		} else {
+			*/
+			nr.parentNode.replaceChild(this.domNode, nr);
+		/*}*/
 	}
 
 	// method over-ride
