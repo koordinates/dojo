@@ -1,0 +1,84 @@
+/*
+ * A Map of the DHTML Universe
+ *
+ * Copyright 2005, The Dojo Foundation
+ *
+ * Jan 9, 2005: inital revision, Alex Russell <alex@dojotoolkit.org>
+ */
+
+digraph dhtml_universe
+	{
+		dylan -> INFA;
+		alexr -> INFA;
+		alexr -> NW;
+		alexr -> Dojo;
+		mda -> NW;
+		mda -> Dojo;
+		mda -> Burst;
+		boogs -> Dojo;
+		danp -> Dojo;
+		danp -> DotNetSol;
+		dylan -> Dojo;
+		ttrenka -> Dojo;
+		ttrenka -> FM;
+		bratta -> Scriptomania;
+		bratta -> DHTMLCentral;
+		bratta -> DotNetSol;
+		tscarfe -> DotNetSol;
+		tscarfe -> DHTMLCentral;
+		erik -> WebFX;
+		erik -> Bindows;
+		erik -> WebOS;
+		emil -> WebFX;
+		mhall -> BrainJar;
+		dsteinman -> DynAPI;
+		rrainwater -> DynAPI;
+		rrainwater -> jsDOM;
+		darink -> DomAPI;
+		sporter -> GameLib;
+		charlesk -> ISC;
+		
+		INFA -> NW;
+		Jot -> Dojo;
+		Tibet -> ISC;
+
+		emil [ label="Emil Eklund" ];
+		darink [ label="Darin Kadrioski" ];
+		ttrenka [ label="Tom Trenka" ];
+		erik [ label="Erik Aarvidson" ];
+		bratta [ label="Thomas Brattli" ];
+		mda [ label="Mark Anderson" ];
+		boogs [ label="Aaron Boodman" ];
+		alexr [ label="Alex Russell" ];
+		dylan [ label="Dylan Schiemann" ];
+		danp [ label="Dan Pupius" ];
+		tscarfe [ label="Tim Scarfe" ];
+		dsteinman [ label="Dan Steinman" ];
+		mhall [ label="Mike Hall" ];
+		schampeon [ label="Steve Champeon" ];
+		sporter [ label="Scott Porter" ];
+		rrainwater [ label="Robert Rainwater" ];
+		charlesk [ label="Charles K???" ];
+		scottandrew [ label="Scottandrew LePera" ];
+
+		Scriptomania;
+		DomAPI;
+		DynAPI;
+		GameLib;
+		Bindows;
+		Tibet;
+		jsDOM;
+		BrainJar [ label="Brain Jar" ];
+		DotNetSol [ label="Dot Net\nSolutions" ];
+		FM [ label="f(m)" ];
+		WebFX [ label="WebFX.eae.net" ];
+		Burst [ label="Burstlib" ];
+		Dojo [ label="Dojo" ];
+		Jot [ label="JotSpot" ];
+		INFA [ label="Informatica Corp." ];
+		NW [ label="netWindows" ];
+		ISC [ label="Isomorphic Inc." ];
+		WebOS [ label="WebOS.com" ];
+		DHTMLCentral [ label="DHTMLCentral.com" ];
+		
+	}
