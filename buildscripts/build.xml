@@ -74,20 +74,24 @@ build targets:
 		-->
 
 		<script language="jython"><![CDATA[
+# make the python standard library available
 import sys
-# make the python standard library avialable
 sys.path.append("lib/pyLib.zip")
 sys.path.append(".")
-
-# import re
-# import os
 import buildUtil
 
 buildUtil.buildTestFiles()
+
+print "#################### testRunner.js ####################",
+for line in file("../testRunner.js"):
+	print line,
+print "################## end testRunner.js ##################\n"
 ]]></script>
 		<java jar="${user.home}/.ant/lib/js.jar" fork="true">
+			<!-- FIXME: should this be in the release/ dir somewhere? -->
 			<arg value="../testRunner.js" />
 		</java>
+		<delete file="../testRunner.js" />
 	</target>
 	<!-- end test task -->
 
