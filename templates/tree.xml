@@ -6,7 +6,12 @@
 		meaning not a type of component, but a subtype... for example,
 		a specific type of a tree component
 		-->
-		<!-- presentational attributes , may be specified in css, as attributes in the tree component, or here in the componentDefinitionModel; most css properties are allowed, express in lowerCamelCase -->
+		<resizable>yes</resizable><!-- resizable by user... yes|no|x|y -->
+		<!-- my thoughts on this are that the developer should be able to specify
+		dimensions and resiability of a tree or other elements, but that we might
+		translate such things to a container or other internal widget such as a
+		split pane that would be needed for such behavior to acutally work -->
+		<!-- presentational attributes , may be specified in css, as attributes in the tree component, or here in the componentDefinitionModel; most css properties are allowed, expressed in lowerCamelCase -->
 		<indentation>0.5em</indentation>
 		<!-- indentation for each tree level, css dimensions allowed -->
 		<treeItems>

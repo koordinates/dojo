@@ -7,23 +7,50 @@
 		a specific type of a grid component
 		-->
 		<!-- presentational attributes , may be specified in css, as attributes in the grid component, or here in the componentDefinitionModel; most css properties are allowed, expressed in lowerCamelCase -->
-		<!-- TODO: things like headers, footers, fixed items on top/left/bottom/right, scrolling, etc.-->
-		<rowItems>
-			<cssClassList>className1,className2,className3</cssClassList>
-			<!--
-				seems better than mxml's way of just specifying a list of
-				background colors to use for alteration
-			-->
-			<repetitionFrequency>1,3,1</repetitionFrequency>
-			<!-- these names aren't very good... trying to replicate some of
-				svg's capabilities for specifying declarative repetition without
-				having to use more complex css selectors... -->
-			<!-- presentational attributes , may be specified in css, as attributes in the tree component, or here in the componentDefinitionModel; most css properties may be specified, however, there needs to be a way to specify at the tree level inline that they apply to the treeItems and not the tree itself -->
-			<rowHeight>1.2em</rowHeight>
-			<cellItems>
-				<!-- rules specific to items in certain columns -->
-			</cellItems>
-		</rowItems>
+		<!-- TODO: things like fixed items on top/left/bottom/right -->
+		<!-- TODO: drag/drop to move items up/down, selection, reordering of columns, etc. -->
+		<!-- should headers/footers be specifiable as being on left/right rather than top/bottom? -->
+		<sort type="user" ><!-- gird table sorting, type is user|automatic|none default is none-->
+		<!-- TODO: specify sorting
+			sortSection (basically by a column or by a row)
+			sortOrder
+			sortComparator
+			up/down arrow images
+			sortOnLoad?
+			key
+			sortMode
+			sortBlankAs
+			multiple sort?
+		-->
+		</sort>
+		<head>
+			<rowItems>
+				<cssClassList>headRowClassName1</cssClassList>
+				<rowHeight>1.5em</rowHeight>
+				<cellItems>
+					<cssClassList>headCellClassName1</cssClassList>
+				</cellItems>
+			</rowItems>
+		</head>
+		<body>
+			<rowItems>
+				<cssClassList>bodyRowClassName1,bodyRowClassName2</cssClassList>
+				<repetitionFrequency>1,1</repetitionFrequency>
+				<rowHeight>1.2em</rowHeight>
+				<cellItems>
+					<cssClassList>bodyCellClassName1</cssClassList>
+				</cellItems>
+			</rowItems>
+		</body>
+		<foot>
+			<rowItems>
+				<cssClassList>footRowClassName1</cssClassList>
+				<rowHeight>1.5em</rowHeight>
+				<cellItems>
+					<cssClassList>footCellClassName1</cssClassList>
+				</cellItems>
+			</rowItems>
+		</foot>
 	</dojo:componentDefinitionModel>
 	<dojo:dataModel id="gridExampleDataModel" src="#staticExampleModel" type="xml">
 		<label elementName="name" />
@@ -33,11 +60,13 @@
 	</dojo:dataModel>
 
 	<arbitraryDataStructure id="staticExampleModel">
-		<name>testTree</name>
+		<name>testGrid</name>
 		<structure>
 			<subtructure>
 				<!-- TODO: how to determine what to insert here...
 				     text, ram markup, hybrid, other components?
+						 also need to consider how we might define a transformation or
+						 combination of markup from the model into the view...?
 				-->
 			</subtructure>
 		</structure>
