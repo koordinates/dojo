@@ -145,7 +145,7 @@ dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
 	var localProperties = widgetParser.parseProperties(fragment);
 	// dj_debug(dojo.webui.widgetManager.getImplementationName("button"));
 	var tbutton = dojo.webui.widgetManager.getImplementation("button");
-	alert(tbutton);
+	//alert(tbutton);
 	try{
 		tbutton.create(localProperties);
 	}catch(e){

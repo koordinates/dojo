@@ -25,7 +25,7 @@ dojo.webui.widgetManager = new function(){
 			dj_debug("new dojo.webui.widgets."+impl+"()");
 			// dj_debug(new dojo.webui.widgets[impl]());
 			var item = new dojo.webui.widgets[impl](ctorObject);
-			alert(impl+": "+item);
+			//alert(impl+": "+item);
 			return item;
 		}
 	}
