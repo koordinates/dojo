@@ -84,7 +84,10 @@ digraph dhtml_universe
 		kevlin -> KevLinDev
 		gkadndorp -> Backbase;
 		jhewitt -> SWAT;
-		
+		swerner -> qooxdoo;
+		aecker -> qooxdoo;
+		caugusti -> qooxdoo;
+
 		// project and company relationships
 		INFA -> NW;
 		INFA -> ISC [ label="licenses" ];
@@ -140,6 +143,9 @@ digraph dhtml_universe
 		ashevdoff	[ label="Alex Shvedoff" ];
 		gkadndorp	[ label="Gerbert Kaandorp" ];
 		jhewitt		[ label="Joe Hewitt" ];
+		swerner		[ label="Sebastian Werner" ];
+		aecker		[ label="Andreas Ecker" ];
+		caugusti	[ label="Claus Augusti" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -163,6 +169,7 @@ digraph dhtml_universe
 		GameLib		[ shape=diamond ];
 		Bindows		[ shape=diamond ];
 		jsDOM		[ shape=diamond ];
+		qooxdoo		[ shape=diamond ];
 		XMLJS		[ label="XML for Script",shape=diamond ];
 		Tibet		[ label="TIBET",shape=diamond ];
 		ModPubSub 	[ label="mod_pubsub",shape=diamond ];
