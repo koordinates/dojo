@@ -22,23 +22,25 @@ dojo.xml.domUtil = new function(){
 	
 	this.getTagName = function(node) {
 		var tagName = node.tagName;
-		if(tagName.substr(0,5).toLowerCase()!="dojo:") {
+		if(tagName.substr(0,5).toLowerCase()!="dojo:"){
 			
-			if(tagName.substr(0,4).toLowerCase()=="dojo") {
+			if(tagName.substr(0,4).toLowerCase()=="dojo"){
 				// FIXME: this assuumes tag names are always lower case
 				return "dojo:" + tagName.substring(4).toLowerCase();
 			}
-			
-			if(node.getAttribute("dojoType")) {
-				return "dojo:" + node.getAttribute("dojoType").toLowerCase();
+
+			var djt = node.getAttribute("dojoType");
+			if(djt){
+				return "dojo:"+djt.toLowerCase();
 			}
 			
-			if(node.getAttributeNS && node.getAttributeNS(this.dojoml,"type")) {
+			if((node.getAttributeNS)&&(node.getAttributeNS(this.dojoml,"type"))){
 				return "dojo:" + node.getAttributeNS(this.dojoml,"type").toLowerCase();
 			}
-			
-			if(node.getAttribute("dojo:type")) {
-				return "dojo:" + node.getAttribute("dojo:type").toLowerCase();
+
+			djt = node.getAttribute("dojo:type");
+			if(djt){
+				return "dojo:"+djt.toLowerCase();
 			}
 		}
 		return tagName.toLowerCase();

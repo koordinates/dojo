@@ -138,10 +138,10 @@ dojo.xml.Parse = function(){
 			var attnode = atts.item(i);
 			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
 				if(!attnode){ continue; }
-				if(	(typeof attnode == "object")||
-					(typeof attn.nodeValue == 'undefined')||
-					(attn.nodeValue == null)||
-					(attn.nodeValue == '')){ 
+				if(	(typeof attnode == "object")&&
+					(typeof attnode.nodeValue == 'undefined')||
+					(attnode.nodeValue == null)||
+					(attnode.nodeValue == '')){ 
 					continue; 
 				}
 			}

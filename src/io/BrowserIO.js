@@ -190,7 +190,7 @@ dojo.io.XMLHTTPTransport = new function(){
 				if(lh){
 					callback = function(){
 						if(window.location.hash != ""){
-							window.location.href = lh;
+							setTimeout("window.location.href = '"+lh+"';", 1);
 						}
 						oldCB();
 					}
