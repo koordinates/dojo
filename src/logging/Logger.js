@@ -273,18 +273,19 @@ function dojo.logging.LogHandler(level){
 
 dojo.logging.LogHandler.prototype.setFormatter = function(fmtr){
 	// FIXME: need to vet that it is indeed a formatter object
+	dj_unimplemented("setFormatter");
 }
 
 dojo.logging.LogHandler.prototype.flush = function(){
-	// placekeeper, should be implemented by subclasses.
+	dj_unimplemented("flush");
 }
 
 dojo.logging.LogHandler.prototype.close = function(){
-	// placekeeper, should be implemented by subclasses.
+	dj_unimplemented("close");
 }
 
 dojo.logging.LogHandler.prototype.handleError = function(){
-	// placekeeper, should be implemented by subclasses.
+	dj_unimplemented("handleError");
 }
 
 dojo.logging.LogHandler.prototype.handle = function(record){
@@ -296,7 +297,7 @@ dojo.logging.LogHandler.prototype.handle = function(record){
 
 dojo.logging.LogHandler.prototype.emit = function(record){
 	// do whatever is necessaray to actually log the record
-	// placekeeper, should be implemented by subclasses.
+	dj_unimplemented("emit");
 }
 
 // set aliases since we don't want to inherit from dojo.logging.Logger
@@ -384,6 +385,8 @@ dojo.logging.MemoryLogHandler.prototype.emit = function(record){
 	}
 }
 
+// FIXME: RAR: why the hell is this stuff global? what class _should_ it belong
+// to? FIX THIS NOW!!!!
 
 var maxRecordsToKeep = 50; // TODO: move this to a better location for prefs
 var postType = 0; // 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
