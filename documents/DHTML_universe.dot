@@ -79,6 +79,7 @@ digraph dhtml_universe
 		inforat -> Tibet;
 		idearat -> Tibet;
 		kevlin -> KevLinDev
+		gkadndorp -> Backbase;
 		
 		// project and company relationships
 		INFA -> NW;
@@ -132,6 +133,7 @@ digraph dhtml_universe
 		inforat 	[ label="William J. Edney" ];
 		kevlin		[ label="Kevin Lindsey" ];
 		ashevdoff	[ label="Alex Shvedoff" ];
+		gkadndorp	[ label="Gerbert Kaandorp" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -139,11 +141,12 @@ digraph dhtml_universe
 		Yahoo 		[ label="Yahoo!",shape=box ];
 		Jot 		[ label="JotSpot",shape=box ];
 		INFA 		[ label="Informatica Corp.",shape=box ];
-		IBM
-		TIBCO
+		IBM			[ shape=box ];
+		TIBCO		[ shape=box ];
 		GenInt		[ label="General Interface" ];
+		Backbase	[ label="Backbase",shape=box];
 
-		// projects
+		// projects and products
 		HTMLArea	[ shape=diamond ];
 		AlphaBlox	[ shape=diamond ];
 		HalfBrain	[ shape=diamond ];
