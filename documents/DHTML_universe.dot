@@ -58,6 +58,7 @@ digraph dhtml_universe
 		darink -> DomAPI;
 		sporter -> GameLib;
 		charlesk -> ISC;
+		ashevdoff -> ISC;
 		cw -> Gmail;
 		ilamb -> Oddpost;
 		ilamb -> Yahoo;
@@ -129,7 +130,8 @@ digraph dhtml_universe
 		jvnoort		[ label="Jon van Noort" ];
 		idearat		[ label="Scott Shattuck" ];
 		inforat 	[ label="William J. Edney" ];
-		kevlin 	[ label="Kevin Lindsey" ];
+		kevlin		[ label="Kevin Lindsey" ];
+		ashevdoff	[ label="Alex Shvedoff" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
