@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- Copyright (c) 2004 The Dojo Foundation, Licensed under the Academic Free License version 2.1 --> 
+<project name="dojo" default="help" basedir=".">
+	<description>build the Dojo toolkit</description>
+
+	<!-- XMLBEAN TASK SETUP -->
+	<taskdef name="xmlbean" 
+		classname="org.apache.xmlbeans.impl.tool.XMLBean" 
+		classpath="lib/xbean.jar"/>
+	<!-- end XMLBEAN TASK SETUP -->
+
+	<!-- BSF TASK SETUP -->
+		<!--
+	<taskdef name="script" 
+		classname="org.apache.tools.ant.taskdefs.optional.Script" 
+		classpath="lib/js.jar;lib/jython.jar;lib/ant-apache-bsf.jar;lib/bsf.jar;"/>
+		classpath="lib/js-1.5R4.1.jar;lib/jython.jar;lib/ant-apache-bsf-1.6.2.jar;lib/bsf-2.3.0.jar;"/>
+		classpath="lib/jython.jar;lib/ant-apache-bsf.jar;lib/bsf.jar;"/>
+		classpath="lib/js.jar;lib/xbean.jar;lib/jython.jar;lib/ant-apache-bsf.jar;lib/bsf.jar;"/>
+		-->
+	<!-- end BSF TASK SETUP -->
+
+	<!-- project properties -->
+	<property name="project" value="dojo"/>
+	<property name="build.dir" value="../build"/>
+	<property name="src" value="src"/>
+	<property name="version" value="development"/>
+	<property name="lang" value="en"/>
+	<property name="release.dir" value="../release"/>
+	<property name="docs.dir" value="${release.dir}/docs"/>
+
+	<property name="copyright" 
+		value="/* Copyright (c) 2004 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
+
+	<!-- help task -->
+	<target name="help">
+		<echo>
+build targets:
+	clean - deletes all files in the ${release.dir} directory
+	compress - coppies the files in ./${src} to the
+		${release.dir}/${project}/${src} directory where it
+		compresses all the .js files with a set of regular
+		expressions and removes all non .js files
+	src - Take ./${src} and build the ${release.dir}/${project}/${src}_src
+		directory. More or less a copy of the source files, documentation and
+		all.
+	docs - builds documentation in all formats from ./${src} and place it in ${docs.dir}
+
+	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
+		where 'currentVer' is the version of ${project} being built, default is 'development'
+
+	zip - zips the ${release.dir}/${project} directory for distribution
+	tar - tars and gzips the ${release.dir}/${project} directory for distribution
+	sigslot-release - creates a full release of the sigslot code
+	release - creates a full release of ${project}
+
+	full build example:
+		ant -Dversion=0.3.0 clean release
+
+	build example with tarball:
+		ant -Dversion=0.3.0 clean compress tar
+
+	just generate documentation:
+		ant -Dversion=0.3.0 clean docs
+
+	full build, but without docs:
+		ant -Dversion=0.3.0 -Ddocless=true clean release
+
+		</echo>
+
+		<script language="javascript"><![CDATA[
+			function print(){
+				var args = [];
+				for(var x=0; x<arguments.length; x++){
+					args.push(arguments[x]);
+				}
+				java.lang.System.out.println.apply(java.lang.System.out, args);
+				
+			}
+			print("foo");
+			/*
+			echo = dojo.createTask("echo");
+			dojo.addTask(echo);
+			echo.setMessage("JS integration is working!");
+			*/
+		]]></script>
+
+		<script language="jython"><![CDATA[
+import sys
+# make the python standard library avialable
+sys.path.append("lib/pyLib.zip")
+
+import re
+
+echo = dojo.createTask("echo")
+help.addTask(echo)
+echo.setMessage("Jython integration is working!");
+
+print "look ma! Jython!"
+]]></script>
+	</target>
+	<!-- end help task -->
+
+	<!-- clean task -->
+	<target name="clean"
+		description="removes release files">
+		<delete dir="${release.dir}"/>
+	</target>
+	<!-- end clean task -->
+
+	<!-- strip-docs task -->
+	<target name="gen-strip-docs">
+		<!-- make sure we're dealing with unix newlines -->
+		<replaceregexp match="(\r)" replace="" byline="false" flags="g">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+
+		<replaceregexp match="(\n)" replace="NWNEWLINEHERE" byline="false" flags="g">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+
+		<!-- strip /* */ (multiline) comments -->
+		<replaceregexp match="\/\*(.*?)\*\/" replace="" byline="false" flags="g">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+
+		<!-- clobber leading and trailing DocBook comment -->
+		<replaceregexp match="^&lt;\!--" replace="" byline="false" flags="g">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+		<replaceregexp match="--&gt;$" replace="" byline="false" flags="g">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+
+		<!-- add copyright notice -->
+		<replaceregexp match="^" byline="false" replace="${copyright}">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+
+		<replace dir="${release.dir}/${project}/${nodocs}">
+			<include name="**/*.js"/>
+			<replacetoken>NWNEWLINEHERE</replacetoken>
+			<replacevalue><![CDATA[
+]]></replacevalue>
+		</replace>
+
+		<!-- add copyright notice -->
+		<replaceregexp match="^" byline="false" replace="${copyright}">
+			<fileset dir="${destdir}" includes="**/*.js"/>
+		</replaceregexp>
+	</target>
+	<!-- end strip-docs task -->
+
+	<!-- src task -->
+	<target name="src"
+		description="creates a copy of the source files for distribution">
+
+		<property name="ddir" value="${release.dir}/${project}/${src}_src"/>
+		<!-- make sure our dir structure is right -->
+		<delete dir="${ddir}" />
+		<mkdir dir="${ddir}" />
+
+		<copy todir="${ddir}">
+			<fileset dir="./${src}" includes="**" />
+		</copy>
+
+		<!-- make sure we're dealing with unix newlines -->
+		<fixcrlf srcdir="${ddir}"
+			eol="lf" eof="remove"
+			includes="**/*.js" />
+
+		<!-- ensure everyone can read -->
+		<chmod perm="ugo+rx" type="dir" dir="${release.dir}" includes="**" />
+		<chmod perm="ugo+r" type="file" dir="${release.dir}" includes="**/*.*" />
+	</target>
+	<!-- end src task -->
+
+	<!-- strip-docs task -->
+	<target name="strip-docs"
+		description="this task generates files somewhere between the full 'source' version and the fully comment and white-space stripped versions produced by the 'compress' task">
+		<delete dir="${release.dir}/${project}/${nodocs}"/>
+
+		<mkdir dir="${release.dir}/${project}/${nodocs}"/>
+		<mkdir dir="${release.dir}/${project}/${nodocs}/widgets"/>
+		<copy todir="${release.dir}/${project}/${nodocs}">
+			<fileset dir="./${src}" includes="${core.files},console.js" />
+		</copy>
+		<copy todir="${release.dir}/${project}/${nodocs}/widgets">
+			<fileset dir="./${src}/widgets" includes="${widgets}" />
+		</copy>
+
+		<antcall target="gen-strip-docs">
+			<param name="destdir" value="${release.dir}/${project}/${nodocs}" />
+		</antcall>
+		<fixcrlf srcdir="${release.dir}/${project}/${nodocs}"
+			eol="lf" eof="remove"
+			includes="**/*.js" />
+		<chmod perm="ugo+rx" type="dir" dir="${release.dir}" includes="**"/>
+		<chmod perm="ugo+r" type="file" dir="${release.dir}" includes="**/*.*"/>
+	</target>
+	<!-- strip-docs task -->
+
+	<!-- compress task -->
+	<target name="compress"
+		description="runs compression code over release JS files">
+		<!-- FIXME: this is just a stub! need to fill it in! 
+		-->
+	</target>
+	<!-- end compress task -->
+
+	<!-- zip task -->
+	<target name="zip"
+		description="builds zip file of release files">
+		<zip destfile="${release.dir}/${project}_${version}.zip" basedir="${release.dir}/${project}"/>
+	</target>
+	<!-- end zip task -->
+
+	<!-- tar task -->
+	<target name="tar"
+		description="builds tarball of release files">
+		<tar tarfile="${release.dir}/${project}_${version}.tar" basedir="${release.dir}" includes="${project}/**"/>
+		<gzip zipfile="${release.dir}/${project}_${version}.tar.gz" src="${release.dir}/${project}_${version}.tar"/>
+		<delete file="${release.dir}/${project}_${version}.tar"/>
+	</target>
+	<!-- end tar task -->
+</project>
