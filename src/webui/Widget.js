@@ -145,8 +145,11 @@ dojo.webui.Widget = function(){
 
 						// this[x] = new Function(args[x]);
 
-						// FIXME: what kinds of scoping problems does this cause?
-						dojo.event.connect(this, x, dojo.event.anon, dojo.event.nameAnonFunc(new Function(args[x])));
+						// after an IRC discussion last week, it was decided
+						// that these event handlers should execute in the
+						// context of the widget, so that the "this" pointer
+						// takes correctly.
+						dojo.event.connect(this, x, this, dojo.event.nameAnonFunc(new Function(args[x]), this));
 					}else if(this[x].constructor == Array){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					}else if(typeof this[x] == "object"){ 

@@ -62,7 +62,7 @@
 		Check your javascript log; the scripts were all loaded in the head.
 
 		<div id="testDojoButton" dojoType="button" label="this is a test button!" 
-			onClick="alert('onclick event is correctly attached');">
+			onClick="alert(this.domNode.innerHTML);">
 			you shouldn't be seeing this
 		</div>
 	</body>

@@ -7,11 +7,14 @@ dojo.event = new function(){
 	var anonCtr = 0;
 	this.anon = {};
 
-	this.nameAnonFunc = function(anonFuncPtr, attachToGlobal){
+	this.nameAnonFunc = function(anonFuncPtr, namespaceObj){
 		var ret = "_"+anonCtr++;
-		this.anon[ret] = anonFuncPtr;
+		var nso = (namespaceObj || this.anon);
+		while(typeof nso[ret] != "undefined"){
+			ret = "_"+anonCtr++;
+		}
+		nso[ret] = anonFuncPtr;
 		return ret;
-		// FIXME: implement attachToGlobal!
 	}
 
 	// FIXME: where should we put this method (not here!)?
