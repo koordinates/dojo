@@ -149,6 +149,42 @@ dojo.webui.DomWidget.prototype.templateString = null;
 
 dj_inherits(dojo.webui.DomWidget, dojo.webui.Widget);
 
+// SVGWidget is a mixin ONLY
+dojo.webui.SVGWidget = function(args){
+	// mixin inheritance
+	// dojo.webui.DomWidget.call(this);
+
+	this.getContainerHeight = function(){
+		// NOTE: container height must be returned as the INNER height
+		dj_unimplemented("dojo.webui.SVGWidget.getContainerHeight");
+	}
+
+	this.getContainerWidth = function(){
+		return this.parent.domNode.offsetWidth;
+	}
+
+	this.setNativeHeight = function(height){
+		var ch = this.getContainerHeight();
+		dj_unimplemented("dojo.webui.SVGWidget.setNativeHeight");
+	}
+
+	this.createNodesFromText = function(txt, wrap){
+		// from http://wiki.svg.org/index.php/ParseXml
+		var docFrag = parseXML(txt, window.document);
+		docFrag.normalize();
+		if(wrap){ 
+			var ret = [docFrag.firstChild.cloneNode(true)];
+			return ret;
+		}
+		var nodes = [];
+		for(var x=0; x<docFrag.childNodes.length; x++){
+			nodes.push(docFrag.childNodes[x].cloneNode(true));
+		}
+		// tn.style.display = "none";
+		return nodes;
+	}
+}
+
 // HTMLWidget is a mixin ONLY
 dojo.webui.HTMLWidget = function(args){
 	// mixin inheritance
