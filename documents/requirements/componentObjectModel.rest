@@ -21,14 +21,38 @@ Requirements
 Markup
 ******
 
+It is a requirement of Dojo that application authors SHOULD be able to declare
+the location and properties of a widget with XML (or XML-derived) markup. Many
+rendering contexts do not support true XML (with namespaces) and for these
+contexts, a transformation from an XML syntax should be available. Also, for
+those rendering contexts which already provide a markup language (particularly
+HTML), Dojo markup MAY be implemented as attribute extensions in order to
+facilitate accessability requirements and downward compatibility with less
+featureful or script-disabled user agents.
+
+Preliminary syntax for Dojo interface construction markup is defined in other
+documents.
+
 The Parser
 ##########
+
+The client-side parser component of Dojo MUST:
+
+- provide a single, uniform data structure from all of the various supported
+  markup encodings
+- instantiate and provide properties (data and configuration directives) to
+  components and widgets
+- a second pass of the parser MUST provide deeper linking structures such as
+  property sets shared among items, and event handling linkage
+
+A separate requirements document MUST lay out in further detail all of the
+requirements of the Parser.
 
 Property Sets
 #############
 
-Data Binding
-############
+Data and Event Binding
+######################
 
 Programatic Construction
 ************************
@@ -56,5 +80,11 @@ Registration
 
 Lifecycle
 #########
+
+Widget Tree
+###########
+
+Collections and Lookup
+######################
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
