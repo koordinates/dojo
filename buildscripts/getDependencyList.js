@@ -89,6 +89,10 @@ for(var x=0; x<dependencies.length; x++){
 	}
 }
 
+// FIXME: we should also provide some way of figuring out what files are the
+// test files for the namespaces which are included and provide them in the
+// final package.
+
 // print("URIs, in order: ");
 // for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 // 	print(dojo.hostenv.loadedUris[x]);
