@@ -16,6 +16,8 @@ dojo.webui.widgets.Parse = function(fragment) {
 				if((fragment[item]["tagName"])&&(fragment[item] != fragment["nodeRef"])){
 					var tn = new String(fragment[item]["tagName"]);
 					if(djTags[tn.toLowerCase()]){
+						// dj_debug(tn);
+						// dj_debug(djTags[tn.toLowerCase()]);
 						djTags[tn.toLowerCase()](fragment[item], this);
 					}
 				}
@@ -58,20 +60,22 @@ dojo.webui.widgets.Parse = function(fragment) {
 		for (var item in fragment) {
 			// FIXME: need to check for undefined?
 			// case: its a tagName or nodeRef
-			if((fragment[item] == fragment["tagName"]) || (fragment[item] == fragment.nodeRef)) {
+			if((fragment[item] == fragment["tagName"]) || (fragment[item] == fragment.nodeRef)){
 				// do nothing
-			} else {
+			}else{
 				if((fragment[item]["tagName"])&&(dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()])){
 					// TODO: it isn't a property or property set, it's a fragment, 
 					// so do something else
 					// FIXME: needs to be a better/stricter check
 					// TODO: handle xlink:href for external property sets
-				} else if (fragment[item][0] && fragment[item][0].value!="") {
-					properties[item] = fragment[item][0].value;
-					var nestedProperties = this.parseProperties(fragment[item]);
-					for (var property in nestedProperties) {
-						properties[property] = nestedProperties[property];
-					}
+				}else if((fragment[item][0])&&(fragment[item][0].value!="")){
+					try{
+						properties[item] = fragment[item][0].value;
+						var nestedProperties = this.parseProperties(fragment[item]);
+						for(var property in nestedProperties){
+							properties[property] = nestedProperties[property];
+						}
+					}catch(e){ dj_debug(e); }
 				}
 			}
 		}

@@ -93,21 +93,34 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// "domEvent: nativeEvent; ..."
 			var evts = attachEvent.split(";");
 			for(var x=0; x<evts.length; x++){
-				if(!evts[x]){ continue; }
-				var evt = dojo.text.trim(evts[x]);
+				var tevt = null;
 				var thisFunc = null;
-				if(evt.indexOf(":") >= 0){
+				if(!evts[x]){ continue; }
+				if(!evts[x].length){ continue; }
+				tevt = dojo.text.trim(evts[x]);
+				if(tevt.indexOf(":") >= 0){
 					// oh, if only JS had tuple assignment
-					var funcNameArr = evt.split(":");
-					evt = dojo.text.trim(funcNameArr[0]);
+					var funcNameArr = tevt.split(":");
+					tevt = dojo.text.trim(funcNameArr[0]);
 					thisFunc = dojo.text.trim(funcNameArr[1]);
+				}
+				if(!thisFunc){
+					thisFunc = tevt;
 				}
 				if(dojo.hostenv.name_ == "browser"){
 					var _this = this;
-					dojo.event.browser.addListener(baseNode, evt.toLowerCase(), function(ea){ _this[thisFunc||evt](ea); });
+					// dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), function(ea){ _this[thisFunc||tevt](ea); });
+					// baseNode[tevt.toLowerCase()] 
+					var tf = function(){ 
+						var ntf = new String(thisFunc);
+						return function(evt){
+							_this[ntf](evt);
+						}
+					}();
+					dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), tf);
 				}else{
-					var en = evt.toLowerCase().substr(2);
-					baseNode.addEventListener(en, this[thisFunc||evt], false);
+					var en = tevt.toLowerCase().substr(2);
+					baseNode.addEventListener(en, this[thisFunc||tevt], false);
 				}
 			}
 		}

@@ -150,7 +150,8 @@ dojo.webui.Widget = function(){
 						// that these event handlers should execute in the
 						// context of the widget, so that the "this" pointer
 						// takes correctly.
-						dojo.event.connect(this, x, this, dojo.event.nameAnonFunc(new Function(args[x]), this));
+						var tn = dojo.event.nameAnonFunc(new Function(args[x]), this);
+						dojo.event.connect(this, x, this, tn);
 					}else if(this[x].constructor == Array){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					}else if(typeof this[x] == "object"){ 
@@ -291,8 +292,9 @@ dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
 dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
+	// outputObjectInfo(frag["dojo:"+stype]);
 	var propertySets = parser.getPropertySets(frag);
-	var localProperties = parser.parseProperties(frag);
+	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
 	var twidget = dojo.webui.widgetManager.getImplementation(stype);
 	twidget.create(localProperties, frag);
 }
