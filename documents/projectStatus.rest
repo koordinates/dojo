@@ -1,7 +1,7 @@
 About Dojo
 ===================================
 
-:Author: Dylan Schiemann, Alex Russell
+:Author: Alex Russell,Dylan Schiemann
 :Version: 0.3
 :Copyright: Dojo Foundation, 2005
 :Date: 2005/03/20
@@ -11,7 +11,6 @@ About Dojo
 
 Roadmap
 ------------------------
-
 A roadmap document, by necessity, outlines two separate sets of goals. One set
 is related to the end-goals of a the product/project, while the other outlines
 the concrete technical steps required to get there. This document is no
@@ -49,14 +48,36 @@ development:
       ubiquitous soon enough. Dojo should make it simple to transition from
       only one to a mixed environment.
 
+        + WhatWG and SVG are still emergent technologies that could have a huge
+          impact, but not in the near term. Dojo will focus on delivering
+          near-term solutions, but should provide simple or transparent upgrade
+          paths to take advantage of these technologies when they are
+          available.
+
 Dojo is a large, continuing effort which is broader in scope than many of the
 predacessor toolkits from which we draw. There are many, many "wouldn't it be
 cool..." features that the contributors would like to add into the toolkit, but
 many of these simply aren't feasible for 1.0 with the number of contributors
 adding code to the project and the quality of the release we want to produce.
 
-To get a better feel for what the roadmap contains, it's useful to understand
-what the major components of Dojo will be:
+There are several large functional goals that Dojo works to acheive. Breifly,
+they are:
+
+    - Creating a package and build system that makes it possible to take only
+      what you need and easily prepare deployment packages of that code.
+    - Building a JavaScript code library that is broadly useful, regardless of
+      host environment (Rhino, HTML, SVG, etc.)
+    - Creating a widget infrastructure that allows for "upgradeability" of
+      existing applications as well as simple development for ground-up
+      development.
+    - Building a set of stable, functional, and portable widgets for HTML and
+      other supported environments based on market demand.
+    - Simplifying the process of doing complex browser/server data transfer and
+      RPC.
+
+To reach these goals, there are many smaller bits of code that are or will be
+written as a part of Dojo. Groking the roadmap means understanding these
+modules or major components:
 
     - Core
 
@@ -137,7 +158,30 @@ what the major components of Dojo will be:
         **Crypto**
             not yet started
 
+        **Collections**
+            not yet started
+
+        **Generic Algorithms**
+            not yet started, will include sorting, searching, etc.
+
+        **Concurrent Programming**
+            not yet started, will provide delayed execution ("threads") for
+            non-threaded environments, like browsers
+
+        **MOP**
+            not yet started. Meta-object protocol primitives, mainly ports from
+            Burst.
+
+        **Math**
+            implementations of various useful math functions necessaray for
+            things like graphing and spreadsheet calculations.
+
+        **URI**
+            not started yet. Methods for handling URI manipulation,
+            calculation, and access.
+
     - Other
+
 
         **Misc.**
             there are other namespaces which are spec'd out under which Dojo
@@ -145,74 +189,136 @@ what the major components of Dojo will be:
             work has been started on implementing them in any environment.
 
 Much of the above list is "plumbing" which end goals of the Dojo project
-require. For instance, it's much easier to support multiple rendering
-environments from a single XML markup base when you have a client-side parser
-that normalizes XML into a consistent JavaScript data structure.
-
-This includes finishing the things described below in the current status 
-(likely without much SVG support), and adding enough components and widgets to 
-make the toolkit somewhat useful in addition to its core infrastructure.  If you 
-have a widget or three that's preventing you from using Dojo, let us know.
-
-The timeline for this release is mid-April, 2005 (FIXME: date needs to be verified)
-
+require. For instance, one goal of Dojo is relative rendering context
+independence. It's much easier to support multiple rendering environments from
+a single XML markup base when you have a client-side parser that normalizes XML
+into a consistent JavaScript data structure, but the parser itself isn't
+necessarialy a project goal.
 
 Current Status
 ------------------------
+Dojo is currently in heavy development. As you can glean from the above list of
+modules, We have finished a significant portion of the core "plumbing" for the
+project, and we also have our first widget, a button, that can be constructed
+from markup in HTML and SVG namespaces. We have also shipped an `initial
+profile build`_, and a supporting article, `baking usability into XMLHTTP`_
 
-Dojo is currently in development.  We have finished a significant portion of the
-core "plumbing" for the project, and we also have our first widget, a button, 
-that can be constructed from markup in HTML and SVG namespaces.  We have also 
-shipped an `initial profile build`, and a supporting article, 
-`baking usability into XMLHTTP`
-
-We still have a lot of work to do on making our widget system better, 
-especially in the world of SVG, but good SVG widget support will come later 
-rather than sooner. The current SVG button could be described as 
-hacky at best.  A button is a surprisingly complex widget, at least if it is 
-done with any sort of sane flexibility and constraints.
+We still have a lot of work to do on making our widget system better,
+especially in the world of SVG, but good SVG widget support will come later
+rather than sooner. The current SVG button could be described as hacky at best.
+A button is a surprisingly complex widget, at least if it is done with any sort
+of sane flexibility and constraints.
 
 Other things we are actively working on include our event, IO, and data binding
-systems.  This makes Dojo an excellent toolkit for sending messages and data 
-between the client and server, and between components in the client.
-Ongoing improvements and refinements are being made to our xml declaration 
-language (specifically to support contraints and state) and parser.  The parser
-currently supports the most necessary markup constructs, with space to later 
-saccomodate more elaborate declaration mechanisms.
+systems. This makes Dojo an excellent toolkit for sending messages and data
+between the client and server, and between components in the client. Ongoing
+improvements and refinements are being made to our xml declaration language
+(specifically to support contraints and state) and parser. The parser currently
+supports the most necessary markup constructs, with space to later saccomodate
+more elaborate declaration mechanisms.
 
-And of course, we're working on adding widgets that are useful.  Did we mention 
+And of course, we're working on adding widgets that are useful. Did we mention
 that we're working on widgets?
 
+The Plan
+-------------------
+What's a roadmap without a set of release goals? What follows is highly
+provisional and prone to change, slippage, and re-organization. What this means
+for you is that if a feature is important to you, make it known on the `dojo
+interest mailing list`_.
+
+0.1
+*********************
+- Provides multiple useful "profiles" (browserio, widgets, etc.)
+- Core Features:
+    + Fast widget prototyping and explination thereof
+    + XMLHTTP transport for bind()
+    + Supports ``<connect />`` and ``<propertyset />`` elements
+
+- Widgets:
+    + combo box
+    + button widget
+    + right-click (context) menu
+
+0.2
+**********************
+- Expands available profiles and command-line unit testing coverage
+- Core Features:
+    + Basic Drag-and-Drop support
+    + Basic Animation support
+    + Expression-based UI constraints
+
+- Widgets:
+    + "element resizer" or "grabber"
+    + layout policies
+    + split pane(s)
+
+0.3
+**********************
+- Core Features:
+    + Keystroke support and hinting
+    + Basic data-binding
+    + performance testing and tuning
+
+- Widgets:
+    + basic menus
+    + basic "grid" (scrolling and sorting table)
+    + accordion
+
+0.4
+**********************
+- Automated generation of documentation
+- Core Features:
+    + advanced data-binding w/ initial server-side bindings
+    + advanced I/O layer support (repubsub, LivePage)
+
+- Widgets:
+    + more scalable grid w/ data binding support
+    + all existing widgets support data binding
+    + tabset
+    + button-bar
+
+0.5
+**********************
+- Core Features:
+    + first I/O layer work for non-browser environments (Rhino, etc.)
+    + ``dojo.mop.*`` import from Burstlib
+    + initial i8ln support in core
+    + performance testing and tuning
+
+- Widgets:
+    + ever more complex grid widget w/ in-place editing
+    + basic (fast) rich-text editing widget
+
+Beyond 0.5
+**********************
+Past 0.5, we will be implementing what we are paid to implement and what the
+community has use for and need of. 1.0 is a long way away, and at about the 0.5
+milestone, a re-evaluation of goals and acheivements will take place which will
+allow the project contributors to then take stock of the situation and decide
+what the explicit goals for 1.0 are.
 
 Code Checkins
 ----------------
-
-A complete list of checkins may be found through our `checkins mailing list`
-
+A complete list of checkins may be found through our `checkins mailing list`_
 
 Releases
 ------------------------
-
-There are currently no full release builds available other than tarball 
-snapshots. The`dojo interest mailing list` contains regular updates.  
-`Anonymous SVN access` is available, as is an `initial profile build`. Ant is 
+There are currently no full release builds available other than tarball
+snapshots. The `dojo interest mailing list`_ contains regular updates.
+`Anonymous SVN access`_ is available, as is an `initial profile build`_. Ant is
 required to use our build system.
-
 
 Getting Involved
 ------------------------
-
-Currently, contributors are added to the project through invitation only, much 
+Currently, contributors are added to the project through invitation only, much
 like firefox. If you would like to contribute to the Dojo project, please
-contact us through the `dojo interest mailing list`.
-
+contact us through the `dojo interest mailing list`_.
 
 License
 -------
-
-Dojo is licensed under the very friendly `Academic Free License v 2.1`. Some 
-`thoughts on the AFL license` .
-
+Dojo is licensed under the very friendly `Academic Free License v 2.1`_. Some
+`thoughts on the AFL license`_.
 
 Dojo Foundation
 ---------------
