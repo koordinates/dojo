@@ -229,13 +229,24 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 	var jpfuncname = methname + "$joinpoint$method";
 	var joinpoint = obj[jpname];
 	if(!joinpoint){
+		var isNode = false;
+		if(dojo.event["browser"]){
+			if((obj["attachEvent"])||(obj["nodeType"])||(obj["addEventListener"])){
+				isNode = true;
+				dojo.event.browser.addClobberAttrs(jpname, jpfuncname, methname);
+			}
+		}
 		obj[jpfuncname] = obj[methname];
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, methname);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
 		obj[methname] = function(){ 
 			var args = [];
 			for(var x=0; x<arguments.length; x++){
-				args.push(arguments[x]);
+				if((x==0)&&(isNode)){
+					args.push(dojo.event.browser.fixEvent(arguments[x]));
+				}else{
+					args.push(arguments[x]);
+				}
 			}
 			// return joinpoint.run.apply(joinpoint, arguments); 
 			return joinpoint.run.apply(joinpoint, args); 
