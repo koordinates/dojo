@@ -5,6 +5,10 @@
 		the cssFileName attribute is borken since it does not provide a way to
 		specialize on a per-rendering context basis.
 	-->
+	<!-- FIXME (dylan):
+		I'm not convinced that the sourceType for propertyProviderLists makes a lot
+		of sense any more.
+	-->
 	<dojo:tree id="dojoTreeExample" dataProvider="treeExampleDataModel" propertyProviderList="treeDefinitions" />
 	<dojo:grid id="dojoGridExample" dataProvider="gridExampleDataModel" propertyProviderList="gridDefinitions" />
 	<dojo:propertySet id="gridDefinitions" componentClass="default">

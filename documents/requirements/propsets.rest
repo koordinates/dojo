@@ -213,16 +213,37 @@ from within an svg document:::
 specifying propsets in an external document
 *********************************************************************
 
-..FIXME
+I've been working under the assumption that an external document, if it is an 
+xml document, will still specify a specific property set element:::
+
+	<dojo:grid propertyProviderList="http://www.foo.com/foo.xml#propsetFoo" />
+
+I can see this perhaps not being sufficient in the case of a css style external 
+document, but we'll revisit this at a late date.
+
+.. FIXME: CSS?
+
+A more interesting case is either a nested property set, or a property set that 
+simply points to an external property set.  For example,
+
+	<dojo:grid propertyProviderList="#propsetFoo" />
+	<dojo:propertySet id="propsetFoo"
+		xlink:href="http://www.foo.com/bar.xml#propsetBar" />
 
 specifying propsets rule declaration type
 *********************************************************************
 
-(css vs. xml style declarations, for example)
-..FIXME
+I'm not yet convinced that there is a substantial advantage in specifying the 
+type of a propset, where types are currently css and xml.  The main drawback is 
+the difficulty in specifying a source type for each property set in a list of 
+property sets.
+
 
 specifying propsets that apply only to a certain output format
 *********************************************************************
+
+This suffers from the same complexity in specification issue as a declaration 
+type, but its need is greater.
 
 (html vs. svg, for example)
 ..FIXME
