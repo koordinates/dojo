@@ -1,6 +1,7 @@
 dojo.alg = {};
+dojo.alg.Alg = {};
 
-dojo.alg.find = function(arr, val) {
+dojo.alg.find = function(arr, val){
 	for(var i=0;i<arr.length;++i){
 		if(arr[i] == val){ return i; }
 	}
@@ -26,7 +27,7 @@ dojo.alg.forEach = function(arr, unary_func){
 
 dojo.alg.for_each = dojo.alg.forEach; // burst compat
 
-dojo.alg.map = function(arr, obj, unary_func) {
+dojo.alg.map = function(arr, obj, unary_func){
 	for(var i=0;i<arr.length;++i){
 		unary_func.call(obj, arr[i]);
 	}
