@@ -84,6 +84,7 @@ dojo.xml.Parse.ParseDocumentFragment.prototype.parseElement = function(node,hasP
 	// referencing, but for now, we include a node reference to allow
 	// instantiated components to figure out their "roots"
 	parsedNodeSet.nodeRef = node;
+	parsedNodeSet.tagName = dojo.hostenv.getTagName(node);
 
 	for(var i=0; i<node.childNodes.length; i++){
 		switch(node.childNodes[i].nodeType){

@@ -20,6 +20,12 @@ if(typeof window == 'undefined'){
 	dj_throw("attempt to use browser hostenv when no window object");
 }
 
+// FIXME: remove these when they are 
+if(!dojo){ dojo = {}; }
+if(!dojo.hostenv){ 
+	dojo.hostenv = {};
+}
+
 dojo.hostenv.name_ = 'browser';
 
 // These are in order of decreasing likelihood; this will change in time.
@@ -85,6 +91,32 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		}
 		return http.responseText;
 	}
+}
+
+dojo.hostenv.dojoml = "http://www.dojotoolkit.org/2004/dojoml";
+
+dojo.hostenv.getTagName = function(node) {
+	var tagName = node.tagName;
+	if(tagName.substr(0,5).toLowerCase()!="dojo:") {
+		
+		if(tagName.substr(0,4).toLowerCase()=="dojo") {
+			// FIXME: this assuumes tag names are always lower case
+			return "dojo:" + tagName.substring(4).toLowerCase();
+		}
+		
+		if(node.getAttribute("dojoType")) {
+			return "dojo:" + node.getAttribute("dojoType").toLowerCase();
+		}
+		
+		if(node.getAttributeNS && node.getAttributeNS(dojo.hostenv.dojoml,"type")) {
+			return "dojo:" + node.getAttributeNS(dojo.hostenv.dojoml,"type").toLowerCase();
+		}
+		
+		if(node.getAttribute("dojo:type")) {
+			return "dojo:" + node.getAttribute("dojo:type").toLowerCase();
+		}
+	}
+	return tagName.toLowerCase();
 }
 
 /*
