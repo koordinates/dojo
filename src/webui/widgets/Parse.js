@@ -1,7 +1,6 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.parse");
 dojo.hostenv.startPackage("dojo.webui.widgets.Parse");
 
-dojo.webui.widgets.parse = function(fragment) {
+dojo.webui.widgets.Parse = function(fragment) {
 	this.propertySetsList = [];
 	this.fragment = fragment;
 	/*	createComponents recurses over a raw JavaScript object structure,

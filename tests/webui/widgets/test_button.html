@@ -17,20 +17,20 @@
 		<script language="JavaScript" type="text/javascript" 
 			src="../../../src/bootstrap2.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.hostenv.loadModule("dojo.xml.parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.parse");
+			dojo.hostenv.loadModule("dojo.xml.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
 			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
 
 			function init(){
 				// add your on-load logic here
-				var parser = new dojo.xml.parse();
+				var parser = new dojo.xml.Parse();
 				var frag  = parser.parseElement(document.body);
 				for(var x in frag){ 
 					dojo.hostenv.println(x+": "+frag[x]); 
 				}
 
-				var fragParser = new dojo.webui.widgets.parse(frag);
+				var fragParser = new dojo.webui.widgets.Parse(frag);
 				fragParser.createComponents(frag);
 			}
 		</script>

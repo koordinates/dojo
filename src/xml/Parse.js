@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.xml.parse");
+dojo.hostenv.startPackage("dojo.xml.Parse");
 
 dojo.hostenv.loadModule("dojo.xml.domUtil");
 
@@ -24,7 +24,7 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 
 */
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
-dojo.xml.parse = function(){
+dojo.xml.Parse = function(){
 	this.parseFragment = function(documentFragment) {
 		// handle parent element
 		var parsedFragment = {};

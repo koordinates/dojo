@@ -17,8 +17,8 @@
 		<script type="text/javascript" src="../../../src/hostenv_browser.js"></script>
 		<script type="text/javascript" src="../../../src/bootstrap2.js"></script>
 		<script type="text/javascript">
-			dojo.hostenv.loadModule("dojo.xml.parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.parse");
+			dojo.hostenv.loadModule("dojo.xml.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
 		</script>
 		<style type="text/css">
@@ -34,10 +34,10 @@
 			
 			function testHandler() {
 				// FIXME: dylan, that flat-out doesn't work. WTF is going on here?
-				var testObj = new dojo.xml.parse();
+				var testObj = new dojo.xml.Parse();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
 				//outputObjectInfo(testObjects,0,document.getElementById("output"));
-				var testParse = new dojo.webui.widgets.parse();
+				var testParse = new dojo.webui.widgets.Parse();
 				testParse.createComponents(testObjects);
 			} //-->
 		</script>

@@ -33,7 +33,7 @@
 			document.body.onload = testHandler;
 			
 			function testHandler() {
-				var testObjects = new dojo.xml.parse(); testObjects.parseElement(document.getElementById("test"));
+				var testObjects = new dojo.xml.Parse(); testObjects.parseElement(document.getElementById("test"));
 				outputObjectInfo(testObjects,0,document.getElementById("output"));
 			}
 			
