@@ -6,7 +6,8 @@
 dojo.hostenv.name_ = 'jsc';
 
 // Sanity check this is the right hostenv.
-// See the Rotor source code jscript/engine/globalobject.cs for what globals are available.
+// See the Rotor source code jscript/engine/globalobject.cs for what globals
+// are available.
 if((typeof ScriptEngineMajorVersion != 'function')||(ScriptEngineMajorVersion() < 7)){
 	dj_throw("attempt to use JScript .NET host environment with inappropriate ScriptEngine"); 
 }
