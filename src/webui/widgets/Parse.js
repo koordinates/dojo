@@ -18,7 +18,7 @@ dojo.webui.widgets.Parse.ParseFragment = function() {
 dojo.webui.widgets.Parse.ParseFragment.prototype.createComponents = function(fragment) {
 	for (var item in fragment) {
 		if(fragment[item].tagName && fragment[item] != fragment.nodeRef &&  dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) {
-			return dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()](fragment[item]);
+			dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()](fragment[item]);
 		}
 		if(typeof fragment[item] == "object" && fragment[item] != fragment.nodeRef && fragment[item] != fragment.tagName) {
 			this.createComponents(fragment[item]);
@@ -54,7 +54,7 @@ dojo.webui.widgets.Parse.ParseProperties.prototype.createProperties = function(f
 }
 
 dojo.webui.widgets.Parse.ParseProperties.prototype.getPropertySets = function(propertyProviderList, fragment) {
-	var propertyProviders = propertyProviderList.split(" ");
+	var propertyProviders = propertyProviderList.split(" ") || propertyProviderList;
 	for (var propertySet in propertyProviders) {
 		// FIXME: should the propertyProviderList attribute contain # syntax for reference to ids or not?
 		// FIXME: need a better test to see if this is local or external
@@ -66,17 +66,19 @@ dojo.webui.widgets.Parse.ParseProperties.prototype.getPropertySets = function(pr
 			// FIXME: add code to parse and return a propertySet from another document
 		}
 	}
+}
 
-	function findPropertySet(name,fragment) {
-		for (var item in fragment) {
-			if (fragment[item].tagName && fragment[item]["id"] && fragment[item].tagName=="dojo:propertySet" && fragment[item]["id"][0] == name) {
-				return dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]
-			} else {
-				// FIXME: does this make sense?
+dojo.webui.widgets.Parse.ParseProperties.prototype.findPropertySet = function(name,fragment) {
+	for (var item in fragment) {
+		if (fragment[item].tagName && fragment[item]["id"] && fragment[item].tagName=="dojo:propertySet" && fragment[item]["id"][0] == name) {
+			return dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]
+		} else {
+			// FIXME: does this make sense?
+			if(fragment[item].tagName && fragment[item] != fragment.nodeRef) {
 				return this.findPropertySet(name,fragment[item]);
 			}
-		} 
-	}
+		}
+	} 
 }
 
 
@@ -88,14 +90,16 @@ dojo.webui.widgets.Parse.ParseProperties.prototype.getPropertySets = function(pr
 // TODO: copy/clone raw markup fragments/nodes as appropriate
 dojo.webui.widgets.tags = {};
 dojo.webui.widgets.tags["div"] = function(fragment) {
+	// FIXME: deal with case sensitivity mess here
 	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
-	var propertySets = (fragment["propertyProviderList"]) ? propertyParser.getPropertySets(fragment["propertyProviderList"], fragment) : "";
+	var propertySets = (fragment["DIV"]["dojo:propertyproviderlist"] && fragment["DIV"]["dojo:propertyproviderlist"][0]) ? propertyParser.getPropertySets(fragment["DIV"]["dojo:propertyproviderlist"][0].value, fragment) : "";
 	var localProperties = propertyParser.createProperties(fragment);
 	// FIXME: Now do something with these propertySets and local Properties
 }
 dojo.webui.widgets.tags["dojo:button"] = function(fragment) {
 	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
-	var propertySets = (fragment[propertyProviderList]) ? propertyParser.getPropertySets(fragment[propertyProviderList], fragment) : "";
+	// FIXME: normalization needs to be readdressed here
+	//var propertySets = (fragment["DOJO:BUTTON"]["dojo:propertyproviderlist"] && fragment["DOJO:BUTTON"]["dojo:propertyproviderlist"]) ? propertyParser.getPropertySets(fragment["DOJO:BUTTON"]["dojo:propertyproviderlist"][0].value, fragment) : "";
 	var localProperties = propertyParser.createProperties(fragment);
 	// FIXME: Now do something with these propertySets and local Properties
 }
