@@ -1,67 +1,82 @@
-/*
-if(!this["djConfig"]){
-	djConfig = { 
-		isDebug: true,
-		baseRelativePath: "../../"
-	};
-	load(["src/bootstrap1.js"]);
-	// load(["../../src/hostenv_rhino.js"]);
-	// load(["src/hostenv_spidermonkey.js"]);
-	load(["src/hostenv_rhino.js"]);
-	load(["src/bootstrap2.js"]);
-}
-*/
-
-// jum.debug(dojo.hostenv.base_script_uri_);
-
-// load(["src/event/Event.js"]);
-// dojo.hostenv.loadModule("alg.*");
-// load("../src/alg/Alg.js");
-// load("../src/event/Event.js");
 dojo.hostenv.loadModule("dojo.event.*");
 
-function test_event_connections(){
-	var obj1 = {
-		lastReturn: null,
-		secondLastReturn: null,
+function testObjectClass(){
+	this.lastReturn =  null;
+	this.secondLastReturn = null;
 
-		func1: function(arg1, arg2){
-			this.secondLastReturn = this.lastReturn;
-			this.lastReturn = "func1, arg1: "+arg1+", arg2: "+arg2;
-			jum.debug(this.lastReturn);
-			return (this.lastReturn);
-		},
+	this.func1 = function(arg1, arg2){
+		this.secondLastReturn = this.lastReturn;
+		this.lastReturn = "func1, arg1: "+arg1+", arg2: "+arg2;
+		jum.debug(this.lastReturn);
+		return this.lastReturn;
+	}
 
-		func2: function(arg1, arg2){
-			this.secondLastReturn = this.lastReturn;
-			this.lastReturn = "func2, arg1: "+arg1+", arg2: "+arg2;
-			jum.debug(this.lastReturn);
-			return (this.lastReturn);
-		},
+	this.func2 = function(arg1, arg2){
+		this.secondLastReturn = this.lastReturn;
+		this.lastReturn = "func2, arg1: "+arg1+", arg2: "+arg2;
+		jum.debug(this.lastReturn);
+		return this.lastReturn;
+	}
 
-		adviceFromFunc1ToFunc2: function(miObj){
-			// dojo.hostenv.println("in adviceFromFunc1ToFunc2");
-			var tmp = miObj.args[1];
-			miObj.args[1] = miObj.args[0];
-			miObj.args[0] = tmp;
-			// dojo.hostenv.println(miObj.args.length);
+	this.argSwapAroundAdvice =  function(miObj){
+		// dojo.hostenv.println("in adviceFromFunc1ToFunc2");
+		var tmp = miObj.args[1];
+		miObj.args[1] = miObj.args[0];
+		miObj.args[0] = tmp;
+		// dojo.hostenv.println(miObj.args.length);
 
-			// return obj[funcName].apply(obj, argsArr);
-			ret = miObj.proceed();
-			return ret;
-		}
-	};
+		// return obj[funcName].apply(obj, argsArr);
+		ret = miObj.proceed();
+		return ret;
+	}
+}
 
-	// dojo.hostenv.println(dojo.event.connect);
+function test_event_beforeAround(){
+	var obj1 = new testObjectClass();
 
-	dojo.event.connect("before-around", obj1, "func1", obj1, "func2", obj1, "adviceFromFunc1ToFunc2");
+	dojo.event.connect("before", obj1, "func1", obj1, "func2", obj1, "argSwapAroundAdvice");
 
 	jum.assertTrue("test1", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
 	jum.assertEquals("test2", obj1.secondLastReturn, "func2, arg1: 2, arg2: 1");
 	jum.assertEquals("test3", obj1.lastReturn, "func1, arg1: 1, arg2: 2");
+}
 
-	jum.assertTrue("test4", obj1.func1("foo", "bar")=="func1, arg1: foo, arg2: bar");
-	jum.assertEquals("test2", obj1.secondLastReturn, "func2, arg1: bar, arg2: foo");
-	jum.assertEquals("test2", obj1.lastReturn, "func1, arg1: foo, arg2: bar");
+function test_event_before(){
+	var obj1 = new testObjectClass();
 
-};
+	dojo.event.connect("before", obj1, "func1", obj1, "func2");
+
+	jum.assertTrue("test4", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	// we expected func2 to fire before func1 and neither to mangle arguments
+	jum.assertEquals("test5", obj1.secondLastReturn, "func2, arg1: 1, arg2: 2");
+	// so the most recent return should be from func1
+	jum.assertEquals("test6", obj1.lastReturn, "func1, arg1: 1, arg2: 2");
+}
+
+function test_event_afterAround(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect("after", obj1, "func1", obj1, "func2", obj1, "argSwapAroundAdvice");
+
+	jum.assertTrue("test7", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test8", obj1.lastReturn, "func2, arg1: 2, arg2: 1");
+	jum.assertEquals("test9", obj1.secondLastReturn, "func1, arg1: 1, arg2: 2");
+}
+
+function test_event_after(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect("after", obj1, "func1", obj1, "func2");
+
+	jum.assertTrue("test10", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test11", obj1.secondLastReturn, "func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test12", obj1.lastReturn, "func2, arg1: 1, arg2: 2");
+}
+
+function test_event_around(){
+	var obj1 = new testObjectClass();
+	dojo.event.connect("around", obj1, "func1", obj1, "argSwapAroundAdvice");
+	jum.assertTrue("test13", obj1.func1("1", "2")=="func1, arg1: 2, arg2: 1");
+	jum.assertEquals("test14", obj1.lastReturn, "func1, arg1: 2, arg2: 1");
+	jum.assertEquals("test15", obj1.secondLastReturn, null);
+}
