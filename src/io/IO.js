@@ -56,10 +56,96 @@ dojo.hostenv.startPackage("dojo.io.IO");
 dojo.io.transports = [];
 dojo.io.hdlrFuncNames = [ "load", "error" ]; // we're omitting a progress() event for now
 
-dojo.io.Event = function(type, data){
-	this.type =  type || "unknown";
-	this.data = data;
+dojo.io.Request = function(url, mimetype, transport, changeUrl) {
+	this.url = url;
+	this.mimetype = mimetype;
+	this.transport = transport;
+	this.changeURL = changeUrl;
+	this.formNode = null;
+	
+	// events stuff
+	this._events = {};
+	
+	var Request = this;
+	
+	this.error = function (type, error) {
+		
+		switch (type) {
+			case "io":
+				var errorCode = dojo.io.IOEvent.IO_ERROR;
+				var errorMessage = "IOError: error during IO";
+				break;
+			case "parse":
+				var errorCode = dojo.io.IOEvent.PARSE_ERROR;
+				var errorMessage = "IOError: error during parsing";
+			default:
+				var errorCode = dojo.io.IOEvent.UNKOWN_ERROR;
+				var errorMessage = "IOError: cause unkown";
+		}
+		
+		var event = new dojo.io.IOEvent("error", null, Request, errorMessage, this.url, errorCode);
+		Request.dispatchEvent(event);
+		if (Request.onerror) Request.onerror(errorMessage, Request.url, event);
+	}
+	
+	this.load = function (type, data, evt) {
+		var event = new dojo.io.IOEvent("load", data, Request, null, null, null);
+		Request.dispatchEvent(event);
+		if (Request.onload) Request.onload(event);
+	}
+	
+	this.backButton = function () {
+		var event = new dojo.io.IOEvent("backbutton", null, Request, null, null, null);
+		Request.dispatchEvent(event);
+		if (Request.onbackbutton) Request.onbackbutton(event);
+	}
+	
+	this.forwardButton = function () {
+		var event = new dojo.io.IOEvent("forwardbutton", null, Request, null, null, null);
+		Request.dispatchEvent(event);
+		if (Request.onforwardbutton) Request.onforwardbutton(event);
+	}
+	
 }
+
+// EventTarget interface
+dojo.io.Request.prototype.addEventListener = function (type, func) {
+	if (!this._events[type]) this._events[type] = [];
+	
+	for (var i = 0; i < this._events[type].length; i++)
+		if (this._events[type][i] == func) return;
+	this._events[type].push(func);
+}
+
+dojo.io.Request.prototype.removeEventListener = function (type, func) {
+	if (!this._events[type]) return;
+	
+	for (var i = 0; i < this._events[type].length; i++)
+		if (this._events[type][i] == func) this._events[type].splice(i,1);
+}
+
+dojo.io.Request.prototype.dispatchEvent = function (evt) {
+	if (!this._events[evt.type]) return;
+	for (var i = 0; i < this._events[evt.type].length; i++)
+		this._events[evt.type][i](evt);
+	return false; // FIXME: implement return value
+}
+
+dojo.io.IOEvent = function(type, data, request, errorMessage, errorUrl, errorCode) {	
+	// properties
+	this.type =  type;
+	this.data = data;
+	this.request = request;
+	this.errorMessage = errorMessage;
+	this.errorUrl = errorUrl;
+	this.errorCode = errorCode;
+}
+
+// constants
+dojo.io.IOEvent.UNKOWN_ERROR = 0;
+dojo.io.IOEvent.IO_ERROR = 1;
+dojo.io.IOEvent.PARSE_ERROR = 2;
+
 
 dojo.io.Error = function(msg, type, num){
 	this.message = msg;
@@ -76,7 +162,7 @@ dojo.io.transports.addTransport = function(name){
 
 // binding interface, the various implementations register their capabilities
 // and the bind() method dispatches
-dojo.io.bind = function(kwArgs){ // FIXME: should we support positional args too?
+dojo.io.bind = function(kwArgs){
 	// if the request asks for a particular implementation, use it
 
 	// normalize args
