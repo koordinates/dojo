@@ -21,7 +21,7 @@
 		value="/* Copyright (c) 2004 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
 
 	<!-- help task -->
-	<target name="help">
+	<target name="help" depends="-fix-config">
 		<echo>
 build targets:
 	clean - deletes all files in the ${release_dir} directory
@@ -41,7 +41,6 @@ build targets:
 
 	zip - zips the ${release_dir}/${project} directory for distribution
 	tar - tars and gzips the ${release_dir}/${project} directory for distribution
-	sigslot-release - creates a full release of the sigslot code
 	release - creates a full release of ${project}
 
 	full build example:
@@ -103,6 +102,66 @@ print "look ma! Jython!"
 		-->
 	</target>
 	<!-- end help task -->
+
+	<!-- -check-config task -->
+	<target name="-check-config"
+		description="checks to make sure than we're sane before doing anything else">
+		<available property="bsf_ok" file="${user.home}/.ant/lib/bsf.jar" />
+		<available property="ant_bsf_ok" file="${user.home}/.ant/lib/ant-apache-bsf.jar" />
+		<available property="jython_ok" file="${user.home}/.ant/lib/jython.jar" />
+		<available property="jython_libs_ok" file="${user.home}/.ant/lib/pyLib.zip" />
+		<available property="rhino_ok" file="${user.home}/.ant/lib/js.jar" />
+
+		<condition property="config_ok">
+			<and>
+				<isset property="bsf_ok" />
+				<isset property="ant_bsf_ok" />
+				<isset property="jython_ok" />
+				<isset property="jython_libs_ok" />
+				<isset property="rhino_ok" />
+			</and>
+		</condition>
+
+	</target>
+	<!-- end -check-config task -->
+
+	<!-- -fix-config task -->
+	<target name="-fix-config"
+		depends="-check-config"
+		unless="config_ok"
+		description="fixes our ant classpath (if possible)">
+		<copy todir="${user.home}/.ant/lib">
+			<fileset dir="lib/">
+				<include name="bsf.jar"/>
+				<include name="jython.jar"/>
+				<include name="pyLib.zip"/>
+				<include name="js.jar"/>
+				<include name="ant-apache-bsf.jar"/>
+			</fileset>
+		</copy>
+
+		<echo message=""/>
+		<echo message="+--------------------------------------------------------+" />
+		<echo message="| Due to some horrendous design decisions by the authors |" />
+		<echo message="| of Ant, it has been necessaray to install some jar     |" />
+		<echo message="| files to your ~/.ant/ directory. Given the nature of   |" />
+		<echo message="| the problem, it will be necessaray for you to re-run   |" />
+		<echo message="| your build command.                                    |" />
+		<echo message="|                                                        |" />
+		<echo message="| The Dojo team apologies for this inconvenience.        |" />
+		<echo message="|                                                        |" />
+		<echo message="| The system will now exit.                              |" />
+		<echo message="+--------------------------------------------------------+" />
+
+		<fail message="Sorry, please re-run your build command, it should work now"/>
+	</target>
+	<!-- end -fix-config task -->
+
+	<!--
+		NOTE:
+			we ALWAYS call the config task in order to garuntee that we're in a
+			sane environment
+	-->
 
 	<!-- website task -->
 	<target name="website"
