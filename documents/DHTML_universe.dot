@@ -34,7 +34,7 @@ digraph dhtml_universe
 		mda -> Dojo;
 		mda -> Burst;
 		boogs -> Dojo;
-		boogs -> Gmail;
+		boogs -> Google;
 		danp -> Dojo;
 		danp -> DotNetSol;
 		danp -> _13p;
@@ -53,13 +53,15 @@ digraph dhtml_universe
 		emil -> WebFX;
 		mhall -> BrainJar;
 		dsteinman -> DynAPI;
+		dsteinman -> WebOS; // thanks, Erik!
 		rrainwater -> DynAPI;
 		rrainwater -> jsDOM;
 		darink -> DomAPI;
 		sporter -> GameLib;
 		charlesk -> ISC;
 		ashevdoff -> ISC;
-		cw -> Gmail;
+		cw -> Gmail [ style=dotted,label="?" ];
+		cw -> Google;
 		ilamb -> Oddpost;
 		ilamb -> Yahoo;
 		ediamond -> Oddpost;
@@ -94,7 +96,8 @@ digraph dhtml_universe
 		AlphaBlox -> IBM [ label="IBM bought AlphaBlox" ];
 		AlphaBlox -> Oddpost [ style=dotted ];
 		Oddpost -> Yahoo [ label="Y! bought Oddpost" ];
-		Gmail -> Google;
+		Google -> Gmail;
+		Google -> Gmaps;
 		ModPubSub -> RePubSub;
 		GenInt -> TIBCO [ label="bought" ];
 
@@ -162,6 +165,7 @@ digraph dhtml_universe
 		ModPubSub 	[ label="mod_pubsub",shape=diamond ];
 		RePubSub 	[ label="re_pubsub",shape=diamond ];
 		Gmail 		[ label="GMail",shape=diamond ];
+		Gmaps		[ label="Google Maps ",shape=diamond ];
 		BrainJar 	[ label="Brain Jar",shape=diamond ];
 		FM 			[ label="f(m)",shape=diamond ];
 		WebFX 		[ label="WebFX.eae.net",shape=diamond ];
