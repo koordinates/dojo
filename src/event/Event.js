@@ -218,6 +218,7 @@ dojo.event.MethodJoinPoint = function(obj, methname){
 
 dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 	// if(!(methname in obj)){
+	if(!obj){ obj = dj_global; }
 	if(!obj[methname]){
 		// supply a do-nothing method implementation
 		obj[methname] = function(){};
