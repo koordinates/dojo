@@ -307,21 +307,18 @@ dojo.logging.logHandler.prototype.emit = function(record){
 	// placekeeper, should be implemented by subclasses.
 }
 
-
-
 // set aliases since we don't want to inherit from dojo.logging.loggerObj
-
-dojo.logging.logHandler.prototype.setLevel = dojo.logging.loggerObj.prototype.setLevel;
-
-dojo.logging.logHandler.prototype.addFilter = dojo.logging.loggerObj.prototype.addFilter;
-
-dojo.logging.logHandler.prototype.removeFilterByIndex = dojo.logging.loggerObj.prototype.removeFilterByIndex;
-
-dojo.logging.logHandler.prototype.removeFilter = dojo.logging.loggerObj.prototype.removeFilter;
-
-dojo.logging.logHandler.prototype.removeAllFilters = dojo.logging.loggerObj.prototype.removeAllFilters;
-
-dojo.logging.logHandler.prototype.filter = dojo.logging.loggerObj.prototype.filter;
+function(){
+	var names = [
+		"setLevel", "addFilter", "removeFilterByIndex", "removeFilter",
+		"removeAllFilters", "filter"
+	];
+	var tgt = dojo.logging.logHandler.prototype;
+	var src = dojo.logging.loggerObj.prototype;
+	for(var x=0; x<names.length; x++){
+		tgt[names[x]] = src[names[x]];
+	}
+}();
 
 dojo.logging.log = new dojo.logging.loggerObj();
 
