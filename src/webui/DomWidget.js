@@ -123,17 +123,20 @@ dojo.webui.HTMLWidget = function(args){
 	this.createNodesFromText = function(txt, wrap){
 		// alert("HTMLWidget.createNodesFromText");
 		var tn = document.createElement("span");
-		tn.style.display = "none";
+		// tn.style.display = "none";
+		tn.style.visibility= "hidden";
 		document.body.appendChild(tn);
 		tn.innerHTML = txt;
 		tn.normalize();
 		if(wrap){ 
-			return [tn.cloneNode(true)];
+			var ret = [tn.cloneNode(true)];
+			return ret;
 		}
 		var nodes = [];
 		for(var x=0; x<tn.childNodes.length; x++){
 			nodes.push(tn.childNodes[x].cloneNode(true));
 		}
+		// tn.style.display = "none";
 		return nodes;
 	}
 }

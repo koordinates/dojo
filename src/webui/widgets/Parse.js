@@ -8,12 +8,21 @@ dojo.webui.widgets.Parse = function(fragment) {
 	*/
 
 	this.createComponents = function(fragment) {
+		var djTags = dojo.webui.widgets.tags;
 		for(var item in fragment){
-			if(	(fragment[item].tagName)&&(fragment[item] != fragment.nodeRef)&&
-				(dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) ){
-				dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()](fragment[item], this);
+			try{
+				if((fragment[item]["tagName"])&&(fragment[item] != fragment["nodeRef"])){
+					var tn = new String(fragment[item]["tagName"]);
+					if(djTags[tn.toLowerCase()]){
+						djTags[tn.toLowerCase()](fragment[item], this);
+					}
+				}
+			}catch(e){
+				// IE is such a bitch sometimes
 			}
-			if((typeof fragment[item] == "object")&&(fragment[item] != fragment.nodeRef)&&(fragment[item] != fragment.tagName)){
+			if( (typeof fragment[item] == "object")&&
+				(fragment[item] != fragment.nodeRef)&&
+				(fragment[item] != fragment["tagName"])){
 				this.createComponents(fragment[item]);
 			}
 		}
@@ -27,7 +36,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.parsePropertySets = function(fragment) {
 		this.propertySets = [];
 		for(var item in fragment){
-			if(	(fragment[item].tagName == "dojo:propertyset") ) {
+			if(	(fragment[item]["tagName"] == "dojo:propertyset") ) {
 				propertySets.push(fragment[item]);
 			}
 		}
@@ -46,10 +55,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 		for (var item in fragment) {
 			// FIXME: need to check for undefined?
 			// case: its a tagName or nodeRef
-			if((fragment[item] == fragment.tagName) || (fragment[item] == fragment.nodeRef)) {
+			if((fragment[item] == fragment["tagName"]) || (fragment[item] == fragment.nodeRef)) {
 				// do nothing
 			} else {
-				if(fragment[item].tagName && dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()]) {
+				if((fragment[item]["tagName"])&&(dojo.webui.widgets.tags[fragment[item].tagName.toLowerCase()])){
 					// TODO: it isn't a property or property set, it's a fragment, 
 					// so do something else
 					// FIXME: needs to be a better/stricter check
@@ -98,7 +107,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.getPropertySets = function(fragment) {
 		if(fragment["dojo:propertyproviderlist"]) { 
 			var propertyProviderIds = fragment["dojo:propertyproviderlist"].value.split(" ") || fragment["dojo:propertyproviderlist"].value;
-			var propertySetClass = fragment.tagName;
+			var propertySetClass = fragment["tagName"];
 			var propertySets = [];
 			// FIXME: should the propertyProviderList attribute contain # syntax for reference to ids or not?
 			// FIXME: need a better test to see if this is local or external
@@ -135,15 +144,22 @@ dojo.webui.widgets.tags["dojo:button"] = function(fragment, widgetParser) {
 	// FIXME: should we take each propertySet and parse it into properties at this point?
 	var localProperties = widgetParser.parseProperties(fragment);
 	for (prop in localProperties) {
-		alert(prop+":"+localProperties[prop]);
+		dj_debug("localProperties: "+prop+": "+localProperties[prop]);
 	}
-	// FIXME: Add instantiation of component here?
 
 	dj_debug(dojo.webui.widgetManager.getImplementationName("button"));
 	var tbutton = dojo.webui.widgetManager.getImplementation("button");
-	tbutton.create(fragment);
+	// tbutton.create(fragment);
+	tbutton.create(localProperties);
 	var nr = fragment["dojo:button"].nodeRef;
-	dojo.hostenv.println(nr.parentNode.replaceChild(tbutton.domNode, nr));
+	/*
+	var tn = document.createElement("div");
+	tn.innerHTML = "this is a temporary node";
+	nr.parentNode.replaceChild(tn, nr);
+	*/
+	// nr.parentNode.replaceChild(tbutton.domNode, nr);
+	document.body.appendChild(tbutton.domNode);
+	// alert(tbutton.domNode.parentNode.innerHTML);
 }
 
 dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {

@@ -245,7 +245,9 @@ dojo.hostenv.getBaseScriptUri = function(){
 
 	var lastslash = uri.lastIndexOf('/');
 	// inclusive of slash
-	this.base_script_uri_ = this.normPath((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
+	// this.base_script_uri_ = this.normPath((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
+	this.base_script_uri_ = this.base_relative_path_;
+	// alert((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
 	return this.base_script_uri_;
 }
 
@@ -261,7 +263,9 @@ dojo.hostenv.normPath = function(path){
 	// likewise, we need to clobber "../" sequences at the beginning of our
 	// string since they don't mean anything in this context
 	path = path.replace(/^(\.)+(\/)/, "");
+	// return path;
 
+	// FIXME: we need to fix this for non-rhino clients (say, IE)
 	// we need to strip out ".." sequences since rhino can't handle 'em
 	if(path.indexOf("..") >= 0){
 		var oparts = path.split("/");
@@ -271,12 +275,15 @@ dojo.hostenv.normPath = function(path){
 				// FIXME: what about if this is at the front? do we care?
 				if(nparts.length){
 					nparts.pop();
+				}else{
+					nparts.push("..");
 				}
 			}else{
 				nparts.push(oparts[x]);
 			}
 		}
-		return  nparts.join("/");
+		// alert(nparts.join("/"));
+		return nparts.join("/");
 	}
 }
 
@@ -310,7 +317,6 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/ ){
 	var base = this.getBaseScriptUri();
 	var uri = base + relpath;
 	//this.println("base=" + base + " relpath=" + relpath);
-	dj_debug(uri);
 	try{
 		var ok;
 		if(!module){

@@ -11,14 +11,15 @@ dojo.webui.widgets.HTMLButton = function(){
 	// FIXME: freaking implement this already!
 	this.foo = "bar";
 
-	this.label = "";
+	this.label = "huzzah!";
 
 	this.setLabel = function(){
-		alert(this.label);
 		this.domNode.innerHTML = this.label;
+		this.domNode.label = this.label;
 	}
 
 	this.fillInTemplate = function(){
+		// alert("fillInTemplate");
 		this.setLabel();
 	}
 

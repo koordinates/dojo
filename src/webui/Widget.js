@@ -102,7 +102,7 @@ dojo.webui.Widget = function(){
 		var undef;
 
 		for(var x in args){
-			dj_debug(x);
+			dj_debug("args: "+x);
 			if((typeof this[x]) != (typeof undef)){
 				if(!typeof args[x] == "string"){
 					this[x] = args[x];
