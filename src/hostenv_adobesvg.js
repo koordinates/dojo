@@ -7,6 +7,39 @@ if(typeof window == 'undefined'){
 
 dj_debug = function(){}
 
+dojo.hostenv.println = function(s){
+	try{
+    // FIXME: this may not work with adobe's viewer, as we may first need a 
+		// reference to the svgDocument
+		// FIXME: need a way to determine where to position the text for this
+    var ti = document.createElement("text");
+    ti.setAttribute("x","50");
+		var yPos = 25 + 15*document.getElementsByTagName("text").length;
+    ti.setAttribute("y",yPos);
+		var tn = document.createTextNode(s);
+		ti.appendChild(tn);
+		document.documentElement.appendChild(ti);
+	}catch(e){
+
+	}
+}
+
+dj_debug = function() {
+	var args = arguments;
+	if(typeof dojo.hostenv.println != 'function'){
+		dj_throw("attempt to call dj_debug when there is no dojo.hostenv println implementation (yet?)");
+	}
+	if(!dojo.hostenv.is_debug_){ return; }
+	var isJUM = dj_global["jum"];
+	var s = isJUM ? "": "DEBUG: ";
+	for(var i=0;i<args.length;++i){ s += args[i]; }
+	if(isJUM){ // this seems to be the only way to get JUM to "play nice"
+		jum.debug(s);
+	}else{
+		dojo.hostenv.println(s);
+	}
+}
+
 dojo.hostenv.startPackage("dojo.hostenv");
 
 dojo.hostenv.name_ = 'adobesvg';
@@ -64,6 +97,7 @@ dojo.hostenv.unWindGetTextStack = function(){
 }
 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
+	dj_debug("Calling getText()");
 	try {
 		if(async_cb) {
 			dojo.hostenv.getTextStack.push([uri, async_cb, fail_ok]);
@@ -157,17 +191,3 @@ if(!dojo.hostenv["library_script_uri_"]){
 	return 1;
 }
 */
-
-dojo.hostenv.println = function(s){
-	try{
-    // FIXME: this may not work with adobe's viewer, as we may first need a 
-		// reference to the svgDocument
-		// FIXME: need a way to determine where to position the text for this
-    var ti = document.createElement("text");
-		var tn = document.createTextNode(s);
-		ti.appendChild(tn);
-		document.documentElement.appendChild(ti);
-	}catch(e){
-
-	}
-}

@@ -28,15 +28,18 @@
 		}
 
 		function treeLoader(result){
-			alert(result);
-			alert("hey");
+			try {
+				dj_debug(result);
+			} catch(err) {
+				alert(err.message);
+			}
 			bar(result);
 		}
 
 		function bar(result){ return; }
 
 		function baz(result){
-			alert("baz!: "+result.length);
+			dj_debug("baz!: "+result.length);
 		}
 	]]></script>
 	<g>
