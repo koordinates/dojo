@@ -81,12 +81,12 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		}
 
 		// FIXME: is this going to have capitalization problems?
-		var attachPoint = this.domNode.getAttribute(this.attachProperty);
+		var attachPoint = baseNode.getAttribute(this.attachProperty);
 		if(attachPoint){
 			this[attachPoint]=baseNode;
 		}
 
-		var attachEvent = this.domNode.getAttribute(this.eventAttachProperty);
+		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
 		if(attachEvent){
 			// NOTE: we want to support attributes that have the form
 			// "domEvent: nativeEvent; ..."
@@ -111,11 +111,11 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		}
 		
 		// FIXME: temporarily commenting this out as it is breaking things
-		/*for(var x=0; x<baseNode.childNodes.length; x++){
+		for(var x=0; x<baseNode.childNodes.length; x++){
 			if(baseNode.childNodes.item(x).nodeType == elementNodeType){
-				this.attachTemplateNodes(baseNode.childNodes[x]);
+				this.attachTemplateNodes(baseNode.childNodes.item(x));
 			}
-		}*/
+		}
 
 		/*
 		for(var x=0; x<baseNode.childNodes.length; x++){
