@@ -90,7 +90,7 @@ dojo.webui.widgets.Parse.ParseProperties.prototype.findPropertySet = function(na
 // TODO: copy/clone raw markup fragments/nodes as appropriate
 dojo.webui.widgets.tags = {};
 dojo.webui.widgets.tags["div"] = function(fragment) {
-	// FIXME: deal with case sensitivity mess here
+	// Because a div is not a dojo component, you don't really want this here.
 	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
 	var propertySets = (fragment["DIV"]["dojo:propertyproviderlist"] && fragment["DIV"]["dojo:propertyproviderlist"][0]) ? propertyParser.getPropertySets(fragment["DIV"]["dojo:propertyproviderlist"][0].value, fragment) : "";
 	var localProperties = propertyParser.createProperties(fragment);
@@ -98,8 +98,24 @@ dojo.webui.widgets.tags["div"] = function(fragment) {
 }
 dojo.webui.widgets.tags["dojo:button"] = function(fragment) {
 	var propertyParser = new dojo.webui.widgets.Parse.ParseProperties();
-	// FIXME: normalization needs to be readdressed here
-	//var propertySets = (fragment["DOJO:BUTTON"]["dojo:propertyproviderlist"] && fragment["DOJO:BUTTON"]["dojo:propertyproviderlist"]) ? propertyParser.getPropertySets(fragment["DOJO:BUTTON"]["dojo:propertyproviderlist"][0].value, fragment) : "";
+	// FIXME: need a more elegant way for the next if block
+	var tagContainerName = "";
+	if (fragment["DOJO:BUTTON"]) {
+		tagContainerName = "DOJO:BUTTON";
+	} else if (fragment["BUTTON"]) {
+		tagContainerName = "BUTTON";
+	} else if (fragment["dojo:button"]) {
+		tagContainerName = "dojo:button";
+	} else if (fragment["button"]) {
+		tagContainerName = "button";
+	} else if (fragment["DIV"]) {
+		tagContainerName = "DIV";
+	} else if (fragment["div"]) {
+		tagContainerName = "div";
+	} 
+	
+	// FIXME: needs to pass the top level fragment as its parent rather than the current fragment...
+	var propertySets = (tagContainerName && fragment[tagContainerName] && fragment[tagContainerName]["dojo:propertyproviderlist"] && fragment[tagContainerName]["dojo:propertyproviderlist"][0])  ? propertyParser.getPropertySets(fragment[tagContainerName]["dojo:propertyproviderlist"][0].value, fragment) : "";
 	var localProperties = propertyParser.createProperties(fragment);
 	// FIXME: Now do something with these propertySets and local Properties
 }
