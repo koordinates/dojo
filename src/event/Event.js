@@ -79,7 +79,6 @@ dojo.event = new function(){
 					ao.aroundFunc = args[3];
 				}
 				break;
-			// FIXME: what about 5?
 			case 6:
 				ao.srcObj = args[1];
 				ao.srcFunc = args[2];
@@ -148,7 +147,7 @@ dojo.event.MethodInvocation = function(join_point, obj, args) {
 }
 
 dojo.event.MethodInvocation.prototype.proceed = function() {
-	dojo.hostenv.println("in MethodInvocation.proceed()");
+	// dojo.hostenv.println("in MethodInvocation.proceed()");
 	this.around_index++;
 	if(this.around_index >= this.jp_.around.length){
 		return this.jp_.object[this.jp_.methodname].apply(this.jp_.object, this.args);
@@ -231,7 +230,9 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 		}
 	}
 
-	dojo.alg.forEach(this.before, unrollAdvice);
+	if(this.before.length>0){
+		dojo.alg.forEach(this.before, unrollAdvice);
+	}
 
 	var result;
 	if(this.around.length>0){
@@ -242,7 +243,9 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 		result = this.object[this.methodname].apply(this.object, args);
 	}
 
-	dojo.alg.forEach(this.after, unrollAdvice);
+	if(this.after.length>0){
+		dojo.alg.forEach(this.after, unrollAdvice);
+	}
 
 	return (this.methodfunc) ? result : null;
 }
