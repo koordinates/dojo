@@ -461,9 +461,8 @@ function dj_eval_object_path(objpath){
 /**
 * startPackage("A.B") follows the path, and at each level creates a new empty object
 * or uses what already exists. It returns the result.
-* dj_package(packname) is an alias for dojo.hostenv.startPackage(packname).
 */
-function dj_package(packname){
+dojo.hostenv.startPackage = function(packname){
 	var syms = packname.split(/\./);
 	var obj = dj_global;
 	for(var i=0;i<syms.length;++i){
@@ -475,7 +474,6 @@ function dj_package(packname){
 	return obj;
 }
 
-dojo.hostenv.startPackage = dj_package;
 
 
 /**
