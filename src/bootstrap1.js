@@ -125,7 +125,7 @@ function dj_rethrow(message, excep){
  * - JSC eval() takes an optional second argument which can be 'unsafe'.
  * - Mozilla/SpiderMonkey eval() takes an optional second argument which is the scope object for new symbols.
 */
-function dj_eval(s){ return eval(s); }
+function dj_eval(s){ return dj_global.eval ? dj_global.eval(s) : eval(s); }
 
 
 /**
