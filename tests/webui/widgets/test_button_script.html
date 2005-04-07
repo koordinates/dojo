@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../src/bootstrap2.js"></script>
+		<!--
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../release/__package__.js"></script>
+		-->
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.xml.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
+			dojo.hostenv.loadModule("dojo.event.Event");
+			dojo.hostenv.loadModule("dojo.io.IO");
+			dojo.hostenv.loadModule("dojo.io.BrowserIO");
+			dojo.hostenv.loadModule("dojo.event.BrowserEvent");						
+
+			function init() {
+				var widgetParser = new dojo.webui.widgets.Parse();
+				dojo.io.bind({
+					url: "buttonProperties.js",
+					load: function(type, data, evt){ 
+						if(type=="load"){
+							eval(data);
+							var tempNode = document.body.appendChild(document.createElement("button"));
+							widgetParser.createComponentFromScript(tempNode, "Button", buttonProperties);
+						}
+					},
+					mimetype: "text/plain"
+				});
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		Check your javascript log; the scripts were all loaded in the head.
+	</body>
+</html>
+
+
