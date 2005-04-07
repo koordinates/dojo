@@ -127,8 +127,8 @@ modules or major components:
             Others (such as SWT) are much lower priority right now.
 
         **Rapid Templating System** : done
-            allows HTML widget authors to prototype a UI build writing HTML and
-            CSS instead of writing DOM calls.
+            allows HTML widget authors to prototype a UI build by writing HTML
+            and CSS instead of writing DOM calls.
 
         **UI Event System**
             includes things like the setting of keystroke event handlers which
