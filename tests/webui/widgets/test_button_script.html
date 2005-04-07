@@ -36,12 +36,11 @@
 					url: "buttonProperties.js",
 					load: function(type, data, evt){ 
 						if(type=="load"){
-							eval(data);
 							var tempNode = document.body.appendChild(document.createElement("button"));
 							widgetParser.createComponentFromScript(tempNode, "Button", buttonProperties);
 						}
 					},
-					mimetype: "text/plain"
+					mimetype: "text/javascript"
 				});
 			}
 		</script>
