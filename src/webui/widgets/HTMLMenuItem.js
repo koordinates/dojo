@@ -28,7 +28,9 @@ dojo.webui.widgets.HTMLMenuItem = function(){
 		this.domNode.style.display = "none";
 	}
 	
-	this.onFoo = function(){}
+	this.onFoo = function(evt){
+
+	}
 }
 
 /*
