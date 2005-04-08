@@ -1,5 +1,5 @@
 dojo.hostenv.startPackage("dojo.event.BrowserEvent");
-dojo.hostenv.startPackage("dojo.event.browser");
+dojo.event.browser = {};
 
 dojo.hostenv.loadModule("dojo.event.Event");
 

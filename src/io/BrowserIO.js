@@ -461,7 +461,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 			http.send(query);
 		}else{
-			http.open("GET", url+"?"+query, true);
+			http.open("GET", url+((query!="") ? "?"+query : ""), true);
 			http.send(null);
 		}
 

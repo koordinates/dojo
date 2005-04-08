@@ -19,6 +19,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 	this.attachProperty = "dojoAttachPoint";
 	this.eventAttachProperty = "dojoAttachEvent";
+	this.subTemplateProperty = "dojoSubTemplate";
+	this.subTemplates = {};
 
 	this.domNode = null; // this is our visible representation of the widget!
 
@@ -30,6 +32,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	}
 
 	this.postInitialize = function(args, frag){
+		if(!frag){ return; }
 		var nr = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(!nr){ return; } // fail safely if we weren't instantiated from a fragment
 		// FIXME: this will probably break later for more complex nesting of widgets
@@ -87,11 +90,12 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		this.attachTemplateNodes(this.domNode);
 	}
 
-	this.attachTemplateNodes = function(baseNode){
+	this.attachTemplateNodes = function(baseNode, targetObj){
+		if(!targetObj){ targetObj = this; }
 		var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
 
 		if(!baseNode){ 
-			baseNode = this.domNode;
+			baseNode = targetObj.domNode;
 		}
 
 		if(baseNode.nodeType != elementNodeType){
@@ -101,7 +105,28 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// FIXME: is this going to have capitalization problems?
 		var attachPoint = baseNode.getAttribute(this.attachProperty);
 		if(attachPoint){
-			this[attachPoint]=baseNode;
+			targetObj[attachPoint]=baseNode;
+		}
+
+		/*
+		// FIXME: we need to put this into some kind of lookup structure
+		// instead of direct assignment
+		var tmpltPoint = baseNode.getAttribute(this.templateProperty);
+		if(tmpltPoint){
+			targetObj[tmpltPoint]=baseNode;
+		}
+		*/
+
+		// subtemplates are always collected "flatly" by the widget class
+		var tmpltPoint = baseNode.getAttribute(this.subTemplateProperty);
+		if(tmpltPoint){
+			// we assign by removal in this case, mainly because we assume that
+			// this will get proccessed later when the sub-template is filled
+			// in (usually by this method, and usually repetitively)
+			this.subTemplates[tmpltPoint]=baseNode.parentNode.removeChild(baseNode);
+			// make sure we don't get stopped here the next time we try to process
+			this.subTemplates[tmpltPoint].removeAttribute(this.subTemplateProperty);
+			return;
 		}
 
 		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
@@ -125,7 +150,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 					thisFunc = tevt;
 				}
 				if(dojo.hostenv.name_ == "browser"){
-					var _this = this;
+					var _this = targetObj;
 					// dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), function(ea){ _this[thisFunc||tevt](ea); });
 					// baseNode[tevt.toLowerCase()] 
 					var tf = function(){ 
@@ -137,14 +162,15 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 					dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), tf);
 				}else{
 					var en = tevt.toLowerCase().substr(2);
-					baseNode.addEventListener(en, this[thisFunc||tevt], false);
+					baseNode.addEventListener(en, targetObj[thisFunc||tevt], false);
 				}
 			}
 		}
+
 		// FIXME: temporarily commenting this out as it is breaking things
 		for(var x=0; x<baseNode.childNodes.length; x++){
 			if(baseNode.childNodes.item(x).nodeType == elementNodeType){
-				this.attachTemplateNodes(baseNode.childNodes.item(x));
+				this.attachTemplateNodes(baseNode.childNodes.item(x), targetObj);
 			}
 		}
 
