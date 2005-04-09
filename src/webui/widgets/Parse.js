@@ -72,6 +72,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 					// TODO: handle xlink:href for external property sets
 				}else if((fragment[item][0])&&(fragment[item][0].value!="")){
 					try{
+						// FIXME: need to allow more than one provider
 						properties[item] = fragment[item][0].value;
 						var nestedProperties = this.parseProperties(fragment[item]);
 						// FIXME: this kind of copying is expensive and inefficient!
