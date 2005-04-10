@@ -77,7 +77,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 							dj_debug(fragment[item][0].value);
 							var _this = this;
 							this.getDataProvider(_this, fragment[item][0].value);
-							dj_debug(this.dataProvider);
+							properties.dataProvider = this.dataProvider;
 						}
 						properties[item] = fragment[item][0].value;
 						var nestedProperties = this.parseProperties(fragment[item]);
@@ -98,21 +98,24 @@ dojo.webui.widgets.Parse = function(fragment) {
 				}
 			}
 		}
-		return properties;
 	}
 
 	/* getPropertySetById returns the propertySet that matches the provided id
 	*/
 	
 	this.getDataProvider = function(objRef, dataUrl) {
+		// FIXME: this is currently sync.  To make this async, we made need to move 
+		//this step into the widget ctor, so that it is loaded when it is needed 
+		// to populate the widget
 		dojo.io.bind({
 			url: dataUrl,
-			load: function(type, data, evt){
+			load: function(type, evaldObj){
 				if(type=="load"){
-					objRef.dataProvider = eval(data);
+					objRef.dataProvider = evaldObj;
 				}
 			},
-			mimetype: "text/plain"
+			mimetype: "text/javascript",
+			sync: true
 		});
 	}
 
