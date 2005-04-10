@@ -73,6 +73,12 @@ dojo.webui.widgets.Parse = function(fragment) {
 				}else if((fragment[item][0])&&(fragment[item][0].value!="")){
 					try{
 						// FIXME: need to allow more than one provider
+						if(item.toLowerCase() == "dataprovider") {
+							dj_debug(fragment[item][0].value);
+							var _this = this;
+							this.getDataProvider(_this, fragment[item][0].value);
+							dj_debug(this.dataProvider);
+						}
 						properties[item] = fragment[item][0].value;
 						var nestedProperties = this.parseProperties(fragment[item]);
 						// FIXME: this kind of copying is expensive and inefficient!
@@ -97,6 +103,19 @@ dojo.webui.widgets.Parse = function(fragment) {
 
 	/* getPropertySetById returns the propertySet that matches the provided id
 	*/
+	
+	this.getDataProvider = function(objRef, dataUrl) {
+		dojo.io.bind({
+			url: dataUrl,
+			load: function(type, data, evt){
+				if(type=="load"){
+					objRef.dataProvider = eval(data);
+				}
+			},
+			mimetype: "text/plain"
+		});
+	}
+
 	
 	this.getPropertySetById = function(propertySetId){
 		for(var x = 0; x < this.propertySetsList.length; x++){
@@ -175,3 +194,5 @@ dojo.webui.widgets.Parse = function(fragment) {
 		this.createComponents(fragContainer);
 	}
 }
+
+
