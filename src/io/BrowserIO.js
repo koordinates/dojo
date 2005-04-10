@@ -419,6 +419,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			this.addToHistory(kwArgs);
 		}
 
+		var async = kwArgs.sync ? false : true;
+
 		var useCache = kwArgs.useCache == true ||
 			(this.useCache == true && kwArgs.useCache != false );
 
@@ -437,18 +439,20 @@ dojo.io.XMLHTTPTransport = new function(){
 		var received = false;
 
 		// build a handler function that calls back to the handler obj
-		http.onreadystatechange = function(){
-			if((4==http.readyState)&&(http["status"])){
-				if(received){ return; } // Opera 7.6 is foo-bar'd
-				received = true;
-				if(http.status==200){
-					doLoad(kwArgs, http);
-					if( useCache ) {
-						addToCache(url, query, kwArgs.method, http);
+		if( async ) {
+			http.onreadystatechange = function(){
+				if((4==http.readyState)&&(http["status"])){
+					if(received){ return; } // Opera 7.6 is foo-bar'd
+					received = true;
+					if(http.status==200){
+						doLoad(kwArgs, http);
+						if( useCache ) {
+							addToCache(url, query, kwArgs.method, http);
+						}
+					}else{
+						var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
+						kwArgs.error("error", errObj);
 					}
-				}else{
-					var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
-					kwArgs.error("error", errObj);
 				}
 			}
 		}
@@ -463,6 +467,10 @@ dojo.io.XMLHTTPTransport = new function(){
 		}else{
 			http.open("GET", url+((query!="") ? "?"+query : ""), true);
 			http.send(null);
+		}
+
+		if( !async ) {
+			doLoad(kwArgs, http);
 		}
 
 		return;
