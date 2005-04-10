@@ -459,13 +459,13 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
-			http.open("POST", url, true);
+			http.open("POST", url, async);
 			if(kwArgs["formNode"]){
 				http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			}
 			http.send(query);
 		}else{
-			http.open("GET", url+((query!="") ? "?"+query : ""), true);
+			http.open("GET", url+((query!="") ? "?"+query : ""), async);
 			http.send(null);
 		}
 
