@@ -38,6 +38,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// FIXME: this will probably break later for more complex nesting of widgets
 		// FIXME: this will likely break something else, and has performance issues
 		// FIXME: it also seems to be breaking mixins
+		// FIXME: this breaks when the template for the container widget has child
+		// nodes
 		if(this.isContainer) {
 			var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
 			var on = nr.parentNode.replaceChild(this.domNode, nr);
