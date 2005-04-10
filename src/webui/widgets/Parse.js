@@ -74,7 +74,6 @@ dojo.webui.widgets.Parse = function(fragment) {
 					try{
 						// FIXME: need to allow more than one provider
 						if(item.toLowerCase() == "dataprovider") {
-							dj_debug(fragment[item][0].value);
 							var _this = this;
 							this.getDataProvider(_this, fragment[item][0].value);
 							properties.dataProvider = this.dataProvider;
@@ -98,6 +97,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 				}
 			}
 		}
+		return properties;
 	}
 
 	/* getPropertySetById returns the propertySet that matches the provided id
