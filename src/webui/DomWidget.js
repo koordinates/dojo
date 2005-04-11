@@ -91,7 +91,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		this.domNode = node;
 		this.attachTemplateNodes(this.domNode);
 	}
-
+	
 	this.attachTemplateNodes = function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
 		var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
@@ -209,6 +209,17 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 	this.fillInTemplate = function(){
 		dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
+	}
+	
+	// method over-ride
+	this.destroyRendering = function(){
+		var tempNode = this.domNode.parentNode.removeChild(this.domNode);
+		delete tempNode;
+	}
+
+	// method over-ride
+	this.cleanUp = function(){
+		
 	}
 	
 	this.getContainerHeight = function(){

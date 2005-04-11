@@ -60,9 +60,10 @@ dojo.webui.Widget = function(){
 	}
 
 	this.destroy = function(){
-		dojo.webui.widgetManager.remove(this);
+		// FIXME: this is woefully incomplete
+		this.uninitialize();
 		this.destroyRendering();
-		this.cleanUp();
+		dojo.webui.widgetManager.remove(this);
 	}
 
 	this.satisfyPropertySets = function(args){
@@ -191,6 +192,11 @@ dojo.webui.Widget = function(){
 	}
 
 	this.postInitialize = function(args, frag){
+		return false;
+	}
+
+	this.uninitialize = function(){
+		// dj_unimplemented("dojo.webui.Widget.uninitialize");
 		return false;
 	}
 
@@ -369,6 +375,7 @@ dojo.webui.selection = new function(){
 	}
 
 	this.remove = function(obj){
+		dj_debug("remove widget");
 		if(typeof obj["setSelected"] == "function"){
 			obj.setSelected(false);
 		}

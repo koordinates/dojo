@@ -13,7 +13,8 @@ dojo.webui.widgetManager = new function(){
 
 	// FIXME: we should never allow removal of the root widget until all others
 	// are removed!
-	this.remove = function(){
+	this.remove = function(widget){
+		this.widgets.pop(widget);
 	}
 
 	var knownWidgetImplementations = [];
