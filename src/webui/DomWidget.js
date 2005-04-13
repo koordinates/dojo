@@ -75,6 +75,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			
 			// FIXME: need to be able to distinguish here what should be done
 			// or provide a generic interface across all DOM implementations
+			// FIMXE: this breaks if the template has whitespace as its first 
+			// characters
 			node = this.createNodesFromText(this.templateString, true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 		}
