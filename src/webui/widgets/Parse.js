@@ -19,7 +19,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 				(fragment[item] != fragment["nodeRef"])){
 						var tn = new String(fragment[item]["tagName"]);
 						if(djTags[tn.toLowerCase()]){
-						// dj_debug(tn);
+						//dj_debug(tn);
 						// dj_debug(djTags[tn.toLowerCase()]);
 						djTags[tn.toLowerCase()](fragment[item], this);
 					}
@@ -188,7 +188,9 @@ dojo.webui.widgets.Parse = function(fragment) {
 		var tagName = "dojo:" + componentName.toLowerCase();
 		frag[tagName] = {};
 		for (prop in properties) {
-			frag[tagName][prop.toLowerCase()] = [{value: properties[prop]}];
+			if (properties[prop]) {
+				frag[tagName][prop.toLowerCase()] = [{value: properties[prop]}];
+			}
 		}
 		frag[tagName]["dojotype"] = [{value: componentName}];
 		frag[tagName].nodeRef = nodeRef;
