@@ -59,11 +59,11 @@ dojo.webui.Widget = function(){
 		dojo.webui.widgetManager.add(this);
 	}
 
-	this.destroy = function(){
+	this.destroy = function(widgetIndex){
 		// FIXME: this is woefully incomplete
 		this.uninitialize();
 		this.destroyRendering();
-		dojo.webui.widgetManager.remove(this);
+		dojo.webui.widgetManager.remove(widgetIndex);
 	}
 
 	this.satisfyPropertySets = function(args){
