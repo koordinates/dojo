@@ -189,7 +189,11 @@ dojo.io.XMLHTTPTransport = new function(){
 		}else {
 			ret = http.responseText;
 		}
-		kwArgs.load("load", ret, http);
+		if( typeof kwArgs.load == "function" ) {
+			kwArgs.load("load", ret, http);
+		} else if( typeof kwArgs.handle == "function" ) {
+			kwArgs.handle("load", ret, http);
+		}
 	}
 
 	this.addToHistory = function(args){
@@ -388,7 +392,6 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	this.bind = function(kwArgs){
-
 		if(!kwArgs["url"]){
 			if(((!kwArgs["formNode"]))&&((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||(kwArgs["watchForURL"]))){
 				this.addToHistory(kwArgs);
@@ -451,7 +454,11 @@ dojo.io.XMLHTTPTransport = new function(){
 						}
 					}else{
 						var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
-						kwArgs.error("error", errObj);
+						if( typeof kwArgs.error == "function" ) {
+							kwArgs.error("error", errObj);
+						} else if( typeof kwArgs.handle == "function" ) {
+							kwArgs.error("error", errObj);
+						}
 					}
 				}
 			}
@@ -460,9 +467,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
 			http.open("POST", url, async);
-			if(kwArgs["formNode"]){
-				http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			}
+			http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			http.send(query);
 		}else{
 			http.open("GET", url+((query!="") ? "?"+query : ""), async);
