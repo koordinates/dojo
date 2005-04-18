@@ -414,10 +414,22 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 				files="${concatFilesProp}" />
 		</concat>
 
+		<antcall target="-rhino-compress">
+			<param name="srcFile" value="${release_dir}/source.__package__.js" />
+			<param name="dstFile" value="${release_dir}/__package__.js" />
+		</antcall>
+
+		<antcall target="-no-rhino-compress">
+			<param name="srcFile" value="${release_dir}/source.__package__.js" />
+			<param name="dstFile" value="${release_dir}/__package__.js" />
+		</antcall>
+
+		<!--
 		<java jar="./lib/custom_rhino.jar" fork="true" output="${release_dir}/__package__.js">
 			<arg value="-c" />
 			<arg value="${release_dir}/source.__package__.js" />
 		</java>
+		-->
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
@@ -431,6 +443,19 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<copy file="../blank.html" todir="${release_dir}/" />
 	</target>
 	<!-- end compress task -->
+
+	<target name="-rhino-compress"
+		unless="nostrip">
+		<java jar="./lib/custom_rhino.jar" fork="true" output="${dstFile}">
+			<arg value="-c" />
+			<arg value="${srcFile}" />
+		</java>
+	</target>
+
+	<target name="-no-rhino-compress"
+		if="nostrip">
+		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}" />
+	</target>
 
 	<!-- release task -->
 	<target name="release" depends="-fix-config"
