@@ -436,6 +436,13 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 
 dojo.hostenv.modulesLoadedFired = false;
 dojo.hostenv.modulesLoadedListeners = [];
+dojo.hostenv.loaded = function(){
+	this.modulesLoadedFired = true;
+	var mll = this.modulesLoadedListeners;
+	for(var x=0; x<mll.length; x++){
+		mll[x]();
+	}
+}
 
 dojo.hostenv.modulesLoaded = function(){
 	if(this.modulesLoadedFired){ return; }
@@ -444,11 +451,7 @@ dojo.hostenv.modulesLoaded = function(){
 			dj_debug("couldn't initialize, there are files still in flight");
 			return;
 		}
-		this.modulesLoadedFired = true;
-		var mll = this.modulesLoadedListeners;
-		for(var x=0; x<mll.length; x++){
-			mll[x]();
-		}
+		this.loaded();
 	}
 }
 
