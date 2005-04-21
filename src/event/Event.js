@@ -242,11 +242,16 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
 		obj[methname] = function(){ 
 			var args = [];
-			for(var x=0; x<arguments.length; x++){
-				if((x==0)&&(isNode)){
-					args.push(dojo.event.browser.fixEvent(arguments[x]));
-				}else{
-					args.push(arguments[x]);
+
+			if((isNode)&&(!arguments.length)&&(window.event)){
+				args.push(dojo.event.browser.fixEvent(window.event));
+			}else{
+				for(var x=0; x<arguments.length; x++){
+					if((x==0)&&(isNode)){
+						args.push(dojo.event.browser.fixEvent(arguments[x]));
+					}else{
+						args.push(arguments[x]);
+					}
 				}
 			}
 			// return joinpoint.run.apply(joinpoint, arguments); 
