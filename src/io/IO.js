@@ -56,11 +56,11 @@ dojo.hostenv.startPackage("dojo.io.IO");
 dojo.io.transports = [];
 dojo.io.hdlrFuncNames = [ "load", "error" ]; // we're omitting a progress() event for now
 
-dojo.io.Request = function(url, mimetype, transport, changeUrl) {
+dojo.io.Request = function(url, mt, trans, curl){
 	this.url = url;
-	this.mimetype = mimetype;
-	this.transport = transport;
-	this.changeUrl = changeUrl;
+	this.mimetype = mt;
+	this.transport = trans;
+	this.changeUrl = curl;
 	this.formNode = null;
 	
 	// events stuff
