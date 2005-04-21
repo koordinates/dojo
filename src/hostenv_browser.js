@@ -76,7 +76,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 
 			if(http){
 				DJ_XMLHTTP_PROGIDS = [progid];  // so faster next time
-				dj_debug("successfully made an ActiveXObject using progid ", progid);
+				// dj_debug("successfully made an ActiveXObject using progid ", progid);
 				break;
 			}else{
 				// window.alert("failed new ActiveXObject(" + progid + "): " + e);
@@ -232,7 +232,7 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 				var fragParser = new dojo.webui.widgets.Parse(frag);
 				fragParser.createComponents(frag);
 			}catch(e){
-				dj_debug(e);
+				dj_debug("auto-build-widgets error: "+e);
 			}
 		}
 	}
