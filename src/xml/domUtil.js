@@ -20,7 +20,7 @@ dojo.xml.domUtil = new function(){
 	
 	this.dojoml = "http://www.dojotoolkit.org/2004/dojoml";
 	
-	this.getTagName = function(node) {
+	this.getTagName = function(node){
 		var tagName = node.tagName;
 		if(tagName.substr(0,5).toLowerCase()!="dojo:"){
 			
@@ -37,8 +37,11 @@ dojo.xml.domUtil = new function(){
 			if((node.getAttributeNS)&&(node.getAttributeNS(this.dojoml,"type"))){
 				return "dojo:" + node.getAttributeNS(this.dojoml,"type").toLowerCase();
 			}
-
-			djt = node.getAttribute("dojo:type");
+			try{
+				// FIXME: IE really really doesn't like this, so we squelch
+				// errors for it
+				djt = node.getAttribute("dojo:type");
+			}catch(e){ /* FIXME: log? */ }
 			if(djt){
 				return "dojo:"+djt.toLowerCase();
 			}
