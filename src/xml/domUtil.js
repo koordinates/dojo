@@ -50,8 +50,3 @@ dojo.xml.domUtil = new function(){
 	}
 
 }
-
-
-
-
-

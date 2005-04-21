@@ -39,6 +39,18 @@ dojo.xml.htmlUtil = new function(){
 
 	this.evtTgt = this.getEventTarget;
 
+	this.getParentOfType = function(node, type){
+		var parent = node;
+		type = type.toLowerCase();
+		while(parent.nodeName.toLowerCase()!=type){
+			if((!parent)||(parent==(document["body"]||document["documentElement"]))){
+				return null;
+			}
+			parent = parent.parentNode;
+		}
+		return parent;
+	}
+
 	// RAR: this function comes from nwidgets and is more-or-less unmodified.
 	// We should probably look ant Burst and f(m)'s equivalents
 	this.getAttr  =	function(node, attr){
