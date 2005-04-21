@@ -171,7 +171,9 @@ dojo.io.bind = function(kwArgs){
 	// normalize args
 	if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
 	if(!kwArgs["method"]){ kwArgs.method = "get"; }
+	if(kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
 	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
+	if(kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
 	if(kwArgs["changeUrl"]) { kwArgs.changeURL = kwArgs.changeUrl; }
 	for(var x=0; x<this.hdlrFuncNames.length; x++){
 		var fn = this.hdlrFuncNames[x];
