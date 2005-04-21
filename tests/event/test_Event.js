@@ -191,3 +191,11 @@ function test_event_kwDisconnectOnce(){
 	jum.assertEquals("test31", obj1.funcCallCount, 2);
 }
 
+function test_event_implicitAfter(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect(obj1, "func1", obj1, "func2");
+	jum.assertTrue("test32", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test33", obj1.funcCallCount, 2);
+	jum.assertEquals("test34", obj1.secondLastReturn, "func1, arg1: 1, arg2: 2");
+}
