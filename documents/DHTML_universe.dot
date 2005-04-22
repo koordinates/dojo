@@ -38,6 +38,7 @@ digraph dhtml_universe
 		danp -> Dojo;
 		danp -> DotNetSol;
 		danp -> _13p;
+		psowden -> Dojo;
 		dylan -> Dojo;
 		ttrenka -> Dojo;
 		ttrenka -> FM;
@@ -88,12 +89,14 @@ digraph dhtml_universe
 		aecker -> qooxdoo;
 		caugusti -> qooxdoo;
 		ptracey -> jsxml;
+		sstephenson -> Prototype;
+		syen -> TrimPath;
 
 		// project and company relationships
 		INFA -> NW;
-		INFA -> ISC [ label="licenses" ];
-		Jot -> Dojo [ label="sponsors" ];
-		Jot -> HTMLArea [ label="sponsors" ];
+		INFA -> ISC [ label="Informatica licenses \nIsomorphic" ];
+		Jot -> Dojo [ label="Jot sponsors \nDojo" ];
+		Jot -> HTMLArea [ label="Jot sponsors \nHTMLArea" ];
 		Tibet -> ISC [ style=dotted ];
 		// FIXME: need to mine these links for info:
 		//	http://koranteng.blogspot.com/2004/07/on-rich-web-applications-alphablox-and.html
@@ -106,6 +109,7 @@ digraph dhtml_universe
 		Google -> Gmaps;
 		ModPubSub -> RePubSub;
 		GenInt -> TIBCO [ label="bought" ];
+		RoR -> Prototype [ label="uses" ];
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
@@ -148,6 +152,8 @@ digraph dhtml_universe
 		aecker		[ label="Andreas Ecker" ];
 		caugusti	[ label="Claus Augusti" ];
 		ptracey		[ label="Peter Tracey" ];
+		sstephenson [ label="Sam Stephenson" ];
+		syen		[ label="Steve Yen"];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -192,6 +198,9 @@ digraph dhtml_universe
 		KevLinDev 		[ label="kevlindev.com",shape=diamond ];
 		ActiveWidgets [ label="ActiveWidgets",shape=diamond ];
 		SWAT		[ shape=diamond ];
+		Prototype	[ shape=diamond ];
+		RoR			[ label="Ruby On Rails",shape=diamond ];
+		TrimPath	[ shape=diamond ];
 	}
 
 // vim:ts=4:noet:ai

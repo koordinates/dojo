@@ -13,46 +13,75 @@ Intro
 
 The Dojo project is working to build a modern, capable, "webish", and easy to
 use DHTML toolkit. By saying "easy to use", we imply the question "easy for
-who?". Many toolkits have a single audience, but Dojo is different. We are
-trying to provide multiple points of entry into the system, and thereby make
-Dojo easy to use for many different classes of users. Making the development of
-DHTML/Ajax GUIs easy is a herculean task, and Dojo is attempting to take it one
-step at a time. In order to make it eventually simpler for the "average IT
-developer" to build UIs, we must first make it simpler for the people that
-build tools for them to construct solid and capabile building blocks. Often,
-these building blocks are a combination of custom and off-the-shelf components,
-and so simplifying the creation of both is of paramount importance. Until now,
-developers building DHTML UI components have either had to rely on
-hard-to-maintain and read innerHTML techniques or verbosely construct UI
-components one node at a time with document.createElement() calls. Given these
-unappealing options, most developers punted and scrambled back to the
-server-side where there's at least some semblence of sanity.
+who?". Dojo tries to provide multiple points of entry into the system, and
+thereby make Dojo easy to use for many different classes of users. Making the
+development of DHTML/Ajax GUIs easy is a herculean task, and Dojo is attempting
+it. One step at a time. In order to make it eventually simpler for the
+"average IT developer" to build UIs, we must first make it simpler for the
+people that build tools the tools they use to construct solid and capable
+components. Often, these building blocks are a combination of new, old, custom,
+and off-the-shelf components. Simplifying the creation and use of these
+components is of paramount importance. Until now, developers building DHTML UI
+components have either had to rely on hard-to-maintain innerHTML techniques or
+verbosely construct UI components one node at a time with
+document.createElement() calls. Given these unappealing options, most
+developers punt and scramble back to the relative sanity of the server-side.
+
+This article takes a deeper look at the status quo, proposes a hybrid way of
+constructing UI components, and discuss the APIs and tools that Dojo provides
+today to implement this new approach.
 
 The Workflow Problem
 ----------------------------------
 
-So why is it so hard build UIs on the client anyway? Cross-browser issues
-aside, there are practical considerations of usage and construction of
-components. If you go the innerHTML route, you soon find yourself building huge
-string variables and dealing with all manner of string encoding issues. Worse,
-you quickly find yourself struggling with how to attach programmatic logic to
-the newly built elements. What good is getting a reference to a DOM node that
-could be blown away the next time your need to repaint the UI in response to
-user input? Things just go downhill from there. Oy.
+So it's hard, fine, but that's an invitation for a clever solution not a reason
+to give up. Cross-browser issues aside, there are practical considerations of
+usage and construction of components. Those who go the innerHTML route soon
+find themselves building huge string variables and dealing with all manner of
+string encoding issues. Worse, they quickly find out how sub-optimal it is to
+attach programmatic logic to the newly built elements. What good is getting a
+reference to a DOM node that could be blown away the next time your need to
+repaint the UI in response to user input? Things go downhill from there.
 
-On the other side of the fence is the "clean" method of programmatically
-constructing every element in the UI with straight-up DOM manipulation in
-JavaScript. This is the approach that toolkits like DomAPI and nWidgets take
-(for the most part). While this method is functional and avoids most escaping
-issues it carries huge baggage in terms of reduced prodctivity on the part of
-the widget author. It's so verbose and hard to build UIs this way that once
-your widget or component works, the last thing you ever want to do is change
-it's DOM structure. Didn't we move to the web to get *away* from building UIs
-this way? Worse, UI designers don't generate sequences of DOM commands for
-building a UI. More likely they will hand you a stub HTML page that includes
-some generated CSS and HTML at which point it's the component author's job to
-translate that into a functioning, reusable, degradeable component. Doing it
-the DOM way is admirable but given the costs, often misguided.
+The other side of the fence is the "clean" method of programmatically
+constructing the UI with pure DOM manipulation in JavaScript. This is the
+approach that toolkits like DomAPI and nWidgets take (for the most part). While
+functional and avoiding most escaping issues, this approach carries with it
+reduced prodctivity on the part of the widget author. It's so verbose and time
+consuming to build UIs this way that once your widget or component works, the
+last thing you ever want to do is change it's DOM structure. Didn't we move to
+the web to get *away* from building UIs this way?
+
+The DOM-only approach also doesn't fit well into the basic workflow of UI
+development for web applications. Regardless of what system winds up building
+the markup/DOM that the user interacts with, the proceedure for developing
+look, feel, and interaction design of an application almost never happens in
+code. More likely, creative professionals will design the system they'd like to
+see, and if the developer is lucky, will hand over (machine generated) HTML
+with the final design (and when was the last time that a "final" design was
+actually final, anyway?). Whether the deliverable from the interaction design
+process is markup or slideware, the job of turning that design into a
+functioning system falls to a web development professional. Regardless of
+whether or not they've been handed slideware, the first step for this person is
+almost always to prototype the UI is good markup and CSS.
+
+This is a tremendously important point. Developers start with markup.
+Therefore, it's imperative that whatever tool developer choose allows them to
+easily incorporate this markup (or fragments of it) in the tool building
+process. Forcing a duplication of effort is the fast track to tool obscurity.
+
+Markup, it turns out, is perhaps the fastest way to build a static
+representation of a UI for programmers and designers alike. Classic desktop GUI
+toolkits are starting to adapt (GTK+ and  QT) or die (MFC will be replaced by
+XAML, Mozilla uses XUL now, etc.). Said another way, markup has, for better and
+for worse, democratized the GUI construction process.
+
+UI designers don't generate
+sequences of DOM commands for building a UI. More likely they will hand you a
+stub HTML page that includes some generated CSS and HTML at which point it's
+the component author's job to translate that into a functioning, reusable,
+degradeable component. Doing it the DOM way is admirable but given the costs,
+often misguided.
 
 Either way, the current workflow for building client-side components sucks.
 Doing it in markup invites pain and unmaintainable code, whereas doing it with
