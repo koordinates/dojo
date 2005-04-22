@@ -68,6 +68,8 @@ digraph dhtml_universe
 		ilamb -> Yahoo;
 		ediamond -> Oddpost;
 		ediamond -> Yahoo;
+		aplatti -> Oddpost;
+		aplatti -> Yahoo;
 		scottandrew -> ModPubSub;
 		scottandrew -> DynAPI [ style=dotted,label="?" ]; // RAR: Not sure about this one
 		mbazon -> HTMLArea;
@@ -116,6 +118,7 @@ digraph dhtml_universe
 		mbazon		[ label="Mihai Bazon" ];
 		ediamond	[ label="Ethan Diamond" ];
 		ilamb		[ label="Iain Lamb" ];
+		aplatti		[ label="Adam Platti" ];
 		emil 		[ label="Emil Eklund" ];
 		darink 		[ label="Darin Kadrioski" ];
 		ttrenka 	[ label="Tom Trenka" ];
