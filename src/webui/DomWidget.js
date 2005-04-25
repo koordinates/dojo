@@ -20,6 +20,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	this.attachProperty = "dojoAttachPoint";
 	this.eventAttachProperty = "dojoAttachEvent";
 	this.subTemplateProperty = "dojoSubTemplate";
+	this.onBuildProperty = "dojoOnBuild";
 	this.subTemplates = {};
 
 	this.domNode = null; // this is our visible representation of the widget!
@@ -93,7 +94,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		this.domNode = node;
 		this.attachTemplateNodes(this.domNode);
 	}
-	
+
 	this.attachTemplateNodes = function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
 		var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
@@ -160,7 +161,9 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 					var tf = function(){ 
 						var ntf = new String(thisFunc);
 						return function(evt){
-							_this[ntf](evt);
+							if(_this[ntf]){
+								_this[ntf](evt);
+							}
 						}
 					}();
 					dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), tf);
@@ -169,6 +172,11 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 					baseNode.addEventListener(en, targetObj[thisFunc||tevt], false);
 				}
 			}
+		}
+
+		var onBuild = baseNode.getAttribute(this.onBuildProperty);
+		if(onBuild){
+			eval("var node = baseNode; var widget = targetObj; "+onBuild);
 		}
 
 		// FIXME: temporarily commenting this out as it is breaking things
