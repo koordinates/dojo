@@ -65,28 +65,28 @@ functioning system falls to a web development professional. Regardless of
 whether or not they've been handed slideware, the first step for this person is
 almost always to prototype the UI is good markup and CSS.
 
-This is a tremendously important point. Developers start with markup.
-Therefore, it's imperative that whatever tool developer choose allows them to
-easily incorporate this markup (or fragments of it) in the tool building
-process. Forcing a duplication of effort is the fast track to tool obscurity.
+This is a tremendously important point. Markup, it turns out, is perhaps the
+fastest way to build a static representation of a UI for programmers and
+designers alike. Classic desktop GUI toolkits are starting to adapt (GTK+ and
+QT) or die (MFC will some day be replaced by XAML, Mozilla uses XUL now, etc.).
+Said another way, markup has, for better and for worse, democratized the GUI
+construction process.
 
-Markup, it turns out, is perhaps the fastest way to build a static
-representation of a UI for programmers and designers alike. Classic desktop GUI
-toolkits are starting to adapt (GTK+ and  QT) or die (MFC will be replaced by
-XAML, Mozilla uses XUL now, etc.). Said another way, markup has, for better and
-for worse, democratized the GUI construction process.
+Today, UI designers don't generate sequences of DOM commands for building a UI,
+they build HTML or Photoshop mock-ups, and then hand it off to a developer to
+"make it real". At this point, it's the component author's job to translate
+that into a functioning, reusable, degradeable component. Doing it the DOM way
+is admirable, but given the costs, often misguided. The design process demands
+flexiblity, reusability, and a hundred and one special cases in order to match
+the user's mental model to the actual behavior of the system.
 
-UI designers don't generate
-sequences of DOM commands for building a UI. More likely they will hand you a
-stub HTML page that includes some generated CSS and HTML at which point it's
-the component author's job to translate that into a functioning, reusable,
-degradeable component. Doing it the DOM way is admirable but given the costs,
-often misguided.
-
-Either way, the current workflow for building client-side components sucks.
-Doing it in markup invites pain and unmaintainable code, whereas doing it with
-the DOM invites pain and unmaintainable code. Thankfully Dojo gives us a third
-way.
+With Dojo, we are adopting a technique for the fast prototyping and development
+of GUI components in HTML environments that was first introduced in the
+netWindows toolkit but has never been given much discussion or attention. The
+method we outline allows component authors to continue to realize the
+advantages of HTML and CSS markup for creating the initial state of widgets
+while maintaining the advantages of direct DOM manipulation for
+post-initialization changes a component's look and feel.
 
 Prototype 
 ---------
@@ -107,8 +107,12 @@ FIXME: fill it in!
 Making It A Tag
 ---------------
 
+FIXME: fill it in!
+
 Remainders
 ---------------
+
+FIXME: fill it in!
 
 Getting Involved with Dojo
 ##########################
