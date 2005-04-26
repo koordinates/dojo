@@ -21,7 +21,6 @@ body {
 	background-repeat : no-repeat;
 	background-position : 0 100%;
 	border : 1px solid #ccc;
-	min-height : 580px;
 }
 
 #content {
@@ -31,6 +30,7 @@ body {
 #content h1 {
 	text-indent : -5000px;
 	background-image : url(img/page-title.png) ;
+	background-repeat : no-repeat;
 	width : 500px;
 	height : 73px;
 	margin : 0 ;
@@ -70,6 +70,13 @@ body {
 	height : 96px;
 	cursor : hand ;
 }
+#mailman ul {
+	margin : 0;
+	padding : 0 0 0 1em; 
+}
+#mailman ul li {
+	margin-bottom : 0.5em;
+}
 
 #viewcvs h2 a span {
 	display : block ;
@@ -96,7 +103,7 @@ body {
 .border-spacer {
 	float : left ;
 	width : 1px;
-	height : 250px;
+	height : 270px;
 	margin : 10px;
 	border-right : 1px solid #ccc ;
 }
