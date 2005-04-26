@@ -89,7 +89,7 @@ body {
 	cursor : hand ;
 }
 
-#trac h2 a span {
+#trac h2#traclogo a span {
 	display : block ;
 	text-indent : -5000px;
 	background-image : url(img/trac-white.png) ;
@@ -97,6 +97,16 @@ body {
 	background-position : top center;
 	width : 100%;
 	height : 96px;
+	cursor : hand ;
+}
+#trac h2#jotlogo a span {
+	display : block ;
+	text-indent : -5000px;
+	background-image : url(img/jotspot.png) ;
+	background-repeat : no-repeat;
+	background-position : top center;
+	width : 100%;
+	height : 35px;
 	cursor : hand ;
 }
 
