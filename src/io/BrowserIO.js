@@ -325,7 +325,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// we call handleBackButton()
 		this.historyStack.push(last);
 		if(this.historyStack.length >= 2){
-			if(isp == this.historyStack[this.historyStack.length-2].url){
+			if(isp[1] == this.historyStack[this.historyStack.length-2].url.split("?")[1]){
 				// looks like it IS a back button press, so handle it
 				this.handleBackButton();
 			}
