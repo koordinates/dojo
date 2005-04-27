@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<style type="text/css">
+			#elm {
+				padding : 10px;
+				background : #666;
+				color : #eee;
+			}
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.graphics.effects");
+		</script>
+	</head>
+	<body>
+		<a href="javascript:dojo.graphics.effects.fadeOut(document.getElementById('elm'), 500)">Fade out</a>
+		|
+		<a href="javascript:dojo.graphics.effects.fadeIn(document.getElementById('elm'), 500)">Fade in</a>
+		|
+		<a href="javascript:dojo.xml.htmlUtil.setOpacity(document.getElementById('elm'), 0.5)">Set opacity = 50%</a>
+		<div id="elm">Element to fade</div>
+	</body>
+</html>
+
