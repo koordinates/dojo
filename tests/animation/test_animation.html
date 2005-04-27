@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<style type="text/css">
+			#Mover {
+				position : absolute;
+				background : #ccc;
+				left : 200px;
+				top : 200px;
+			}
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.animation.*");
+			var Line = dojo.math.curves.Line;
+			var Anim = dojo.animation.Animation;
+
+			function init(){
+				var line = new Line([200,200], [400, 20]);
+				a = new Anim(line, 1000, 0);
+				a.handler = function(e) {
+					switch(e.type) {
+						case "play":
+							with(document.getElementById("Mover").style) {
+								MozOpacity = 1;
+							}
+							break;
+						case "animate":
+							with(document.getElementById("Mover").style) {
+								left = e.x + "px";
+								top = e.y + "px";
+							}
+							break;
+						case "end":
+							break;
+					}
+				}
+
+				b = new Anim(new Line([1],[0]), 500, 0);
+				b.onAnimate = function(e) {
+					with(document.getElementById("Mover").style) {
+						MozOpacity = e.x;
+					}
+				}
+
+				q = new dojo.animation.AnimationSequence();
+				q.add(a, b);
+			}
+
+			dojo.hostenv.modulesLoadedListeners.push(init);
+		</script>
+	</head>
+	<body>
+		<p>This demo kinda sucks, but you can see what goes on.</p>
+		<a href="javascript:q.playPause()">Play/Pause</a> (sequence)
+		|
+		<a href="javascript:a.gotoPercent(35, true)">Goto 35% and play</a> (move animation)
+		<div id="Mover">I'm a mover</div>
+	</body>
+</html>
+
