@@ -1,10 +1,9 @@
-dojo.hostenv.startPackage("dojo.graphics.effects");
+dojo.hostenv.startPackage("dojo.graphics.htmlEffects");
 
 dojo.hostenv.loadModule("dojo.animation.*");
-// FIXME: need support for other hostenvs
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
-dojo.graphics.effects = new function() {
+dojo.graphics.htmlEffects = new function() {
 	this.fadeOut = function(node, duration, callback) {
 		this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, callback);
 	}
