@@ -1,6 +1,7 @@
 dojo.hostenv.startPackage("dojo.webui.widgets.Parse");
 
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
+dojo.hostenv.loadModule("dojo.text.*");
 
 dojo.webui.widgets.Parse = function(fragment) {
 	this.propertySetsList = [];
@@ -12,16 +13,21 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.createComponents = function(fragment) {
 		var djTags = dojo.webui.widgets.tags;
 		for(var item in fragment){
-			if(fragment[item]["tagName"]) {
-			}
 			try{
 				if((fragment[item]["tagName"])&&
-				(fragment[item] != fragment["nodeRef"])){
-						var tn = new String(fragment[item]["tagName"]);
-						if(djTags[tn.toLowerCase()]){
-						//dj_debug(tn);
-						// dj_debug(djTags[tn.toLowerCase()]);
-						djTags[tn.toLowerCase()](fragment[item], this);
+					(fragment[item] != fragment["nodeRef"])){
+					var tn = new String(fragment[item]["tagName"]);
+					// we split so that you can declare multiple
+					// non-destructive widgets from the same ctor node
+					var tna = tn.split(";");
+					for(var x=0; x<tna.length; x++){
+						var ltn = dojo.text.trim(tna[x]).toLowerCase();
+						if(djTags[ltn]){
+							fragment[item].tagName = ltn;
+							//dj_debug(tn);
+							// dj_debug(djTags[tn.toLowerCase()]);
+							djTags[ltn](fragment[item], this);
+						}
 					}
 				}
 			}catch(e){
