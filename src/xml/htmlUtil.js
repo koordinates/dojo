@@ -283,4 +283,11 @@ dojo.xml.htmlUtil = new function(){
 		return nodes;
 	}
 	
+	/* float between 0.0 (transparent) and 1.0 (opaque) */
+	this.setOpacity = function(node, opacity) {
+		node.style.MozOpacity = opacity;
+		node.style.opacity = opacity;
+		node.style.KhtmlOpacity = opacity;
+		node.style.filter = "Alpha(Opacity="+opacity*100+")";
+	}
 }
