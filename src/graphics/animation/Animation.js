@@ -42,6 +42,11 @@ dojo.animation.Animation = function() {
 		}
 	}
 
+	this.goto = function(pct, andPlay) {
+		// goto pct % into the animation and play if told to do so
+		// this one may be "fun" :)
+	}
+
 	this.stop = function(gotoEnd) {
 		if( gotoEnd ) {
 			// TODO: play last frame
