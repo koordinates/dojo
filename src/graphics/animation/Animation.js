@@ -8,7 +8,7 @@ This still needs lots of work, but some of the interfaces should
 be exposed. Don't count on them being set in stone yet, sorry.
 */
 
-dojo.animation.Animation = function() {
+dojo.graphics.animation.Animation = function() {
 	// public properties
 	this.curve = null;
 	this.duration = 0;
@@ -42,7 +42,7 @@ dojo.animation.Animation = function() {
 		}
 	}
 
-	this.goto = function(pct, andPlay) {
+	this.gotoPct = function(pct, andPlay) {
 		// goto pct % into the animation and play if told to do so
 		// this one may be "fun" :)
 	}
@@ -83,7 +83,7 @@ dojo.animation.Animation = function() {
 }
 
 // FIXME: maybe add reference to the Animation object?
-dojo.animation.AnimationEvent = function(type, coords, sTime, cTime, eTime, dur, pct, fps) {
+dojo.graphics.animation.AnimationEvent = function(type, coords, sTime, cTime, eTime, dur, pct, fps) {
 	this.type = type; // "animate", "start", "end", "play", "pause", "stop"
 	this.coords = coords;
 	this.startTime = sTime;
