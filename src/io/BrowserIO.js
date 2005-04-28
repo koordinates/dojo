@@ -393,7 +393,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.bind = function(kwArgs){
 		if(!kwArgs["url"]){
-			if(((!kwArgs["formNode"]))&&((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||(kwArgs["watchForURL"]))){
+			if(((!kwArgs["formNode"]))&&((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||(kwArgs["watchForURL"]))&&((!window["djConfig"])&&(!window["djConfig"]["preventBackButtonFix"]))){
 				this.addToHistory(kwArgs);
 				return true;
 			}

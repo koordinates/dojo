@@ -29,6 +29,33 @@ dojo.xml.htmlUtil = new function(){
 	this.getOuterHeight = function(node){
 	}
 
+	this.getTotalOffset = function(node, type){
+		// cribbed from PPK
+		var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
+		var alt = (type=="top") ? "y" : "x";
+		var ret = 0;
+		if(node["offsetParent"]){
+			// FIXME: this is known not to work sometimes on IE 5.x since nodes
+			// soemtimes need to be "tickled" before they will display their
+			// offset correctly
+			while(node.offsetParent){
+				ret += node[typeStr];
+				node = node.offsetParent;
+			}
+		}else if(node[alt]){
+			ret += node[alt];
+		}
+		return ret;
+	}
+
+	this.totalOffsetLeft = function(node){
+		return this.getTotalOffset(node, "left");
+	}
+
+	this.totalOffsetTop = function(node){
+		return this.getTotalOffset(node, "top");
+	}
+
 	this.getEventTarget = function(evt){
 		if((window["event"])&&(event["srcElement"])){
 			return event.srcElement;
