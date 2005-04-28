@@ -91,13 +91,100 @@ post-initialization changes a component's look and feel.
 Prototype 
 ---------
 
-So you've been handed an HTML and CSS from a designer. Wouldn't it be great if
-you could prototype, test, and tweak the itneraction without 
+So you've been handed an image or HTML and CSS from a designer. Wouldn't it be
+great if you could prototype, test, and tweak the component's UI and
+interactions without sinking a ton of time into the project? Wouldn't it also
+be nice if you could easily change the location of and arguments to your widgets
+without tons of javascript in your prototype pages? Dojo can help by providing
+"templates" that you can use to rapidly prototype your UI in HTML and CSS and
+by exposing your widgets as markup on the pages you include them on. And when
+your boss says "great, lets ship it!", Dojo also ensures that your prototype
+isn't throw-away code by providing simple strategies for moving from
+development to deployment that improve performance incrementally.
+
+Templates in Dojo place HTML and CSS fragments into files which are consulted
+when a widget is constructed. The setup of event handlers and the creation of
+references to DOM nodes is handled through some extra attributes on your HTML
+markup.
+
+Lets looks the most minimal code for a stock HTML-only widget in Dojo::
+
+    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
+    dojo.hostenv.loadModule("dojo.webui.DomWidget");
+
+    dojo.webui.widgets.tags["dojo:testwidget"] = function(fragment, widgetParser){
+        dojo.webui.widgets.buildWidgetFromParseTree("dojo:testwidget", fragment, widgetParser);
+    }
+
+    dojo.webui.widgets.HTMLTestWidget = function(){
+        // mix-in inheritance. Order matters.
+        dojo.webui.Widget.call(this);
+        dojo.webui.DomWidget.call(this, true);
+        dojo.webui.HTMLWidget.call(this);
+
+        // templates
+        this.templatePath = "src/webui/widgets/templates/HTMLTestWidget.html";
+        this.templateCSSPath = "src/webui/widgets/templates/HTMLTestWidget.css";
+
+        this.widgetType = "TestWidget";
+    }
+
+    // prototype inheritance
+    dj_inherits(dojo.webui.widgets.HTMLTestWidget, dojo.webui.DomWidget);
+
+Almost everything about this file is boilerplate code, and only the properties
+that are absolutely necessary are set on the class
+`dojo.webui.widgets.HTMLTestWidget`. You read that right: JavaScript has
+classes and inheritance, and Dojo makes extensive use of them. Every Dojo
+widget you'll create comes from a constructor function like the one outlined
+here.
+
+The non-stock bits of the above example are the  `template*` properties. Lets
+look at those for a second. The properties that specify template locations are
+relative to the root of the Dojo Subversion checkout, and these are made
+absolute (if necessaray) when the widget is created. This way, you don't have
+to specify an un-portable absolute URL for your template files and you can move
+your widget file around without adverse consequences. Handy, that.
+
+So what could be in our template files? Currently, Dojo requires that templates
+ahve a single single root node which gets assigned to the `domNode` property of
+the widget.  This property is defined in the `DomWidget` class, so every widget
+that inherits from it will have this property implicitly. So lets see what the
+most minimal template files possible might look like.
+
+HTMLTestWidget.html::
+
+    <span class="testWidget">a test widget!</span>
+
+HTMLTestWidget.css::
+
+    .testWidget {
+        border: 1px solid black;
+    }
+
+That's it. A test page that includes the widget could now instantiate this UI
+at any point in the page by adding extra attributes to any tag, like this::
+
+    ...
+    <p dojoType="TestWidget">
+        this is going to get replaced with the test widget
+    </p>
+    ...
+
+Dojo allows you to (optionally) use markup *on both sides* of the widget
+creation and use process. What good would it do to allow you to quickly
+prototype your widget with markup and then force you into using JavaScript to
+declare it in your page?
 
 Connect 
 -------
 
-FIXME: fill it in!
+The example above isn't very functional. A couple of key components are missing:
+
+    1. the widget doesn't respond to user actions in any way
+    2. the widget isn't being populated with deeveloper-provided data
+
+To do anything useful, we'll have to address these.
 
 Deploy
 ------
