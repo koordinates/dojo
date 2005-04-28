@@ -177,7 +177,6 @@ dojo.event.IEEvent = function(evt){
 		// these are different in interpretation, but we copy them anyway
 		dojo.alg.forEach(['button', 'screenX', 'screenY', 'clientX', 'clientY'], 
 			function(k){
-				dj_debug(k);
 				if(dojo.alg.has(evt, k)){
 					this_obj[k] = evt[k];
 				}
