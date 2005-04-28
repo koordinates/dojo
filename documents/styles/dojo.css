@@ -102,6 +102,14 @@ ul {
 	list-style-type : square;
 }
 
+pre.literal-block {
+	
+	background : #ece9f0;
+	padding : 10px;
+	border : 2px solid #4f4677;
+	font-size : 90%;
+}
+
 .document {
 	display : inline;
 }
