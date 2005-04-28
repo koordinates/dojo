@@ -294,8 +294,9 @@ dojo.xml.htmlUtil = new function(){
 		}else if(h.safari){
 			node.style.opacity = opacity; // 1.3 directly supports "opacity"
 			node.style.KhtmlOpacity = opacity;
+		}else{
+			node.style.opacity = opacity;
 		}
-		node.style.opacity = opacity;
 	}
 	
 	this.getOpacity = function(node) {
