@@ -289,6 +289,7 @@ dojo.xml.htmlUtil = new function(){
 		if(h.ie){
 			node.style.filter = "Alpha(Opacity="+opacity*100+")";
 		}else if(h.moz){
+			node.style.opacity = opacity; // ffox 1.0 directly supports "opacity"
 			node.style.MozOpacity = opacity;
 		}else if(h.safari){
 			node.style.opacity = opacity; // 1.3 directly supports "opacity"
@@ -301,7 +302,7 @@ dojo.xml.htmlUtil = new function(){
 		if( dojo.render.ie ) {
 			var opac = (node.filters && node.filters.alpha ? node.filters.alpha.opacity || 100 : 100) / 100;
 		} else {
-			var opac = node.style.MozOpacity || node.style.opacity || node.style.KhtmlOpacity || 1;
+			var opac = node.style.opacity || node.style.MozOpacity ||  node.style.KhtmlOpacity || 1;
 		}
 		return opac > 1 ? 1.0 : Number(opac);
 	}
