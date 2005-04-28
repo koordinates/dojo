@@ -7,7 +7,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	dojo.webui.HTMLWidget.call(this);
 
 	this.templatePath = "src/webui/widgets/templates/HTMLComboBox.html";
-	// this.templateCSSPath = "src/webui/widgets/templates/HTMLComboBox.css";
+	this.templateCSSPath = "src/webui/widgets/templates/HTMLComboBox.css";
 
 	this.textInputNode = null;
 	this.optionsListNode = null;
