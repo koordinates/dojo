@@ -29,14 +29,15 @@ dojo.hostenv.loadUri = function(uri, cb){
 			}
 		}
 		if(!found){
-			// dj_throw(uri+" does not exist");
+			dj_debug(uri+" does not exist");
 			if(cb){ cb(0); }
 			return 0;
 		}
 		var ok = load(uri);
-		dj_debug("rhino load('", uri, "') returned ", ok);
+		// dj_debug(typeof ok);
+		dj_debug("rhino load('", uri, "') returned. Ok: ", ok);
 		if(cb){ cb(1); }
-		return 0;
+		return 1;
 	}catch(e){
 		dj_debug("rhino load('", uri, "') failed");
 		if(cb){ cb(0); }
