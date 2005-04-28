@@ -83,7 +83,7 @@ dojo.event = new function(){
 				}else if((typeof args[0] == "function")&&(typeof args[1] == "object")&&(typeof args[2] == "string")){
 					ao.adviceType = "after";
 					ao.srcObj = dj_global;
-					var tmpName  = this.nameAnonFunc(args[0], ao.srcObj);
+					var tmpName  = dojo.event.nameAnonFunc(args[0], ao.srcObj);
 					ao.srcObj[tmpName] = args[0];
 					ao.srcFunc = tmpName;
 					ao.adviceObj = args[1];
