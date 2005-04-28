@@ -23,24 +23,22 @@
 			src="../../src/bootstrap2.js"></script>
 		<script language="JavaScript" type="text/javascript">
 			dojo.hostenv.loadModule("dojo.animation.*");
+			dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 			var Line = dojo.math.curves.Line;
 			var Anim = dojo.animation.Animation;
 
 			function init(){
 				var line = new Line([200,200], [400, 20]);
 				a = new Anim(line, 1000, 0);
+				var mover = document.getElementById("Mover");
 				a.handler = function(e) {
 					switch(e.type) {
 						case "play":
-							with(document.getElementById("Mover").style) {
-								MozOpacity = 1;
-							}
+							dojo.xml.htmlUtil.setOpacity(mover, 1);
 							break;
 						case "animate":
-							with(document.getElementById("Mover").style) {
-								left = e.x + "px";
-								top = e.y + "px";
-							}
+							mover.style.left = e.x + "px";
+							mover.style.top = e.y + "px";
 							break;
 						case "end":
 							break;
@@ -49,8 +47,8 @@
 
 				b = new Anim(new Line([1],[0]), 500, 0);
 				b.onAnimate = function(e) {
-					with(document.getElementById("Mover").style) {
-						MozOpacity = e.x;
+					if(e.x){
+						dojo.xml.htmlUtil.setOpacity(mover, e.x);
 					}
 				}
 
