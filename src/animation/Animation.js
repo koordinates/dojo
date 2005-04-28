@@ -51,7 +51,7 @@ dojo.animation.Animation = function(curve, duration, accel) {
 		paused = false;
 
 		if( percent == 0 ) {
-			e.type = "start";
+			e.type = "begin";
 			_this.handler(e);
 			_this.onBegin(e);
 		}
@@ -157,7 +157,7 @@ dojo.animation.Animation = function(curve, duration, accel) {
 };
 
 dojo.animation.AnimationEvent = function(anim, type, coords, sTime, cTime, eTime, dur, pct, fps) {
-	this.type = type; // "animate", "start", "end", "play", "pause", "stop"
+	this.type = type; // "animate", "begin", "end", "play", "pause", "stop"
 	this.animation = anim;
 
 	this.coords = coords;
