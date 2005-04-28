@@ -333,7 +333,6 @@ dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
  *	provisional drop is rolled back visually.
  */
 
-// FIXME: need to include peering support in the dragAndDropManager
 // FIXME: need to support types of drops other than movement, such as copying.
 //		  Should this be modifiable keystrokes in order to set what should be
 //		  done?
@@ -344,22 +343,21 @@ dojo.webui.selection = new function(){
 
 	var selected = [];
 	var selectionIndexProp = "_dojo.webui.selection.index";
+	var selectionTypeProp = "_dojo.webui.selection.type";
 
-	this.add = function(obj){
+	this.add = function(obj, type){
 		if(typeof obj["setSelected"] == "function"){
 			obj.setSelected(true);
 		}
 		obj[selectionIndexProp] = selected.length;
 		selected.push(obj[selectionIndexProp]);
+		obj[selectionTypeProp] = (!type) ? (new String(typeof obj)) : type;
 	}
 
 	this.getTypes = function(){
 		var uniqueTypes = [];
 		for(var x=0; x<selected.length; x++){
-			// FIXME: this needs to include some sort of deliberate typing
-			// mechanism. Perhaps Tom's or MDA's introspection code can be used
-			// to extract the class name?
-			var st = typeof selected;
+			var st = selected[x][selectionTypeProp];
 			if((selected[x])&&(!uniqueTypes[st])){
 				uniqueTypes[st] = true;
 				uniqueTypes.push(st);
@@ -369,6 +367,7 @@ dojo.webui.selection = new function(){
 	}
 
 	this.addMultiple = function(){
+		// FIXME: how do we pass type info!?
 		for(var x=0; x<arguments.length; x++){
 			this.add(arguments[x]);
 		}
@@ -383,6 +382,8 @@ dojo.webui.selection = new function(){
 		}else{
 			for(var x=0; x<selected.length; x++){
 				if(selected[x] === obj){
+					delete selected[x][selectionIndexProp];
+					delete selected[x][selectionTypeProp];
 					delete selected[x];
 				}
 			}
@@ -399,6 +400,7 @@ dojo.webui.selection = new function(){
 	}
 }
 
+/*
 dojo.webui.dragAndDropManager = new function(){
 	
 	var currentDropTarget = null;
@@ -445,4 +447,5 @@ dojo.webui.DragParticipant = function(){
 		// accepts an array of selected items and handles them.
 	}
 }
+*/
 
