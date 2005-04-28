@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../src/bootstrap2.js"></script>
+		<!--
+		<script language="JavaScript" type="te/script>
+		-->
+		<script language="JavaScript" type="text/javascript">
+			// pull in all the stuff we need to make the widget go
+			dojo.hostenv.loadMe("dojo.webui.widgets.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.ComboBox");
+			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLComboBox");
+		</script>
+	</head>
+	<body bgcolor="white">
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<input dojoType="combobox" value="this should be replaced!">
+	</body>
+</html>
+</body>
