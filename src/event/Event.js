@@ -70,8 +70,25 @@ dojo.event = new function(){
 				ao.adviceFunc = args[1];
 				break;
 			case 3:
-				ao.srcFunc = args[1];
-				ao.adviceFunc = args[2];
+				if((typeof args[1] == "string")&&(typeof args[2] == "string")){
+					ao.srcFunc = args[1];
+					ao.adviceFunc = args[2];
+				}else if((typeof args[0] == "object")&&(typeof args[1] == "string")&&(typeof args[2] == "function")){
+					ao.adviceType = "after";
+					ao.srcObj = args[0];
+					ao.srcFunc = args[1];
+					var tmpName  = dojo.event.nameAnonFunc(args[2], ao.adviceObj);
+					ao.adviceObj[tmpName] = args[2];
+					ao.adviceFunc = tmpName;
+				}else if((typeof args[0] == "function")&&(typeof args[1] == "object")&&(typeof args[2] == "string")){
+					ao.adviceType = "after";
+					ao.srcObj = dj_global;
+					var tmpName  = this.nameAnonFunc(args[0], ao.srcObj);
+					ao.srcObj[tmpName] = args[0];
+					ao.srcFunc = tmpName;
+					ao.adviceObj = args[1];
+					ao.adviceFunc = args[2];
+				}
 				break;
 			case 4:
 				if((typeof args[0] == "object")&&(typeof args[2] == "object")){
