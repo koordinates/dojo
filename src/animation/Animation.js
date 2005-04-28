@@ -201,6 +201,14 @@ dojo.animation.AnimationSequence = function() {
 		}
 	}
 
+	this.removeAll = function() {
+		for(var i = 0; i < anims.length; i++) {
+			anims[i].animSequence_ = null;
+		}
+		anims = [];
+		currAnim = -1;
+	}
+
 	this.play = function(gotoStart) {
 		if( anims.length == 0 ) { return; }
 		if( gotoStart || !anims[currAnim] ) {
