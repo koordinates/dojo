@@ -7,6 +7,10 @@ dojo.alg.find = function(arr, val){
 	return -1;
 }
 
+dojo.alg.inArr = function(arr, val){
+	return ((dojo.alg.find(arr, val) == -1) ? false : true);
+}
+
 dojo.alg.getNameInObj = function(ns, item){
 	if(!ns){ ns = dj_global; }
 
