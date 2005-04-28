@@ -167,7 +167,7 @@ dojo.event.IEEvent = function(evt){
 	// these are the same in both
 	dojo.alg.forEach(['shiftKey', 'altKey', 'ctrlKey', 'metaKey'], 
 		function(k){
-			if(dojo.alg.has(k, evt)){ 
+			if(dojo.alg.has(evt, k)){ 
 				this_obj[k] = evt[k];
 			} 
 		}
@@ -177,7 +177,8 @@ dojo.event.IEEvent = function(evt){
 		// these are different in interpretation, but we copy them anyway
 		dojo.alg.forEach(['button', 'screenX', 'screenY', 'clientX', 'clientY'], 
 			function(k){
-				if(dojo.alg.has(k, evt)){
+				dj_debug(k);
+				if(dojo.alg.has(evt, k)){
 					this_obj[k] = evt[k];
 				}
 			}
