@@ -922,6 +922,11 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
          else {
 	     jum.report_(prefix + 'ERROR' + suffix + ' toString: ' + e.toString() + ' message: ' + e.message + 
 			 (typeof e.description != 'undefined' ? ' description: ' + e.description : ''));
+
+		 // FIXME: this shouldn't be necessaray, but seems to be in rhino to get any reasonable info
+		 for(var x in e){
+		 	jum.debug(x+": "+e[x]);
+		 }
             ++this.error_count_;
          }
        }
