@@ -285,10 +285,16 @@ dojo.xml.htmlUtil = new function(){
 	
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	this.setOpacity = function(node, opacity) {
-		node.style.MozOpacity = opacity;
+		var h = dojo.render.html;
+		if(h.ie){
+			node.style.filter = "Alpha(Opacity="+opacity*100+")";
+		}else if(h.moz){
+			node.style.MozOpacity = opacity;
+		}else if(h.safari){
+			node.style.opacity = opacity; // 1.3 directly supports "opacity"
+			node.style.KhtmlOpacity = opacity;
+		}
 		node.style.opacity = opacity;
-		node.style.KhtmlOpacity = opacity;
-		node.style.filter = "Alpha(Opacity="+opacity*100+")";
 	}
 	
 	this.getOpacity = function(node) {
