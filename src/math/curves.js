@@ -2,7 +2,10 @@ dojo.hostenv.startPackage("dojo.math.curves");
 
 dojo.hostenv.loadModule("dojo.math");
 
-/* Curves from Dan's 13th lib stuff. See: http://pupius.co.uk/js/Toolkit.Drawing.js */
+/* Curves from Dan's 13th lib stuff.
+ * See: http://pupius.co.uk/js/Toolkit.Drawing.js
+ *      http://pupius.co.uk/dump/dojo/Dojo.Math.js
+ */
 
 dojo.math.curves = {
 	//Creates a straight line object
@@ -24,7 +27,7 @@ dojo.math.curves = {
 
 
 	//Takes an array of points, the first is the start point, the last is end point and the ones in
-	//between are the Bezier control points.	REQUIRES THIRTEEN.MATH
+	//between are the Bezier control points.
 	Bezier: function(pnts) {
 		this.getValue = function(step) {
 			var retVal = new Array(this.p[0].length);
@@ -80,30 +83,90 @@ dojo.math.curves = {
 	},
 
 
-	//Creates a circle object, where start and end are points on the circle, and angle is
-	//angle between them.	Function works out radius and centre of circle for you.
-	//!!!!! Only works with 2D points !!!!!
-	// FIXME: Dan says so :)
-	Circle: function(start, end, angle) {
-		this.start = start;
+	//Creates an arc object, with center and radius (Top of arc = 0 degrees, increments clockwise)
+	// center => 2D point for center of arc
+	// radius => scalar quantity for radius of arc
+	// start  => to define an arc specify start angle (default: 0)
+	// end    => to define an arc specify start angle
+	Arc : function(center, radius, start, end) {
+		this.center = center;
+		this.radius = radius;
+		this.start = start || 0;
 		this.end = end;
-		this.angle = angle;
-
-		//Use Cosine rule to find radius of the circle
-		this.radius = Math.sqrt( (end[0]-start[0])*(end[0]-start[0]) + (end[1]-start[1])*(end[1]-start[1]) ) / (2 * Math.sin(Toolkit.Math.degToRad(angle)));
-
-		//Use Sine rule to find centre of circle
-		this.centre = [start[0] + this.radius*Math.sin(Toolkit.Math.degToRad(angle/2)), start[1] - this.radius*Math.cos(Toolkit.Math.degToRad(angle/2))];
 
 		this.getValue = function(n) {
 			var retVal = new Array(2);
-			var theta = Toolkit.Math.degToRad(angle*n);
+			var theta = dojo.math.degToRad(this.start+((this.end-this.start)*n));
 
-			//This bit basically translates the circle to (0,0), rotates the point and then translates it back
-			retVal[0] = (this.start[0] - this.centre[0])*Math.cos(theta) - (this.start[1] - this.centre[1])*Math.sin(theta) + this.centre[0];
-			retVal[1] = (this.start[0] - this.centre[0])*Math.sin(theta) + (this.start[1] - this.centre[1])*Math.cos(theta) + this.centre[1];
+			retVal[0] = this.center[0] + this.radius*Math.sin(theta);
+			retVal[1] = this.center[1] - this.radius*Math.cos(theta);
 
 			return retVal;
 		}
+
+		return this;
+	},
+
+	Circle : function(center, radius) {
+		dojo.math.curves.Arc.call(this, center, radius, 0, 360);
+		return this;
+	},
+
+	Path : function() {
+		var curves = [];
+		var weights = [];
+		var ranges = [];
+		var totalWeight = 0;
+
+		this.add = function(curve, weight) {
+			if( weight < 0 ) { dj_throw("dojo.math.curves.Path.add: weight cannot be less than 0"); }
+			curves.push(curve);
+			weights.push(weight);
+			totalWeight += weight;
+			computeRanges();
+		}
+
+		this.remove = function(curve) {
+			for(var i = 0; i < curves.length; i++) {
+				if( curves[i] == curve ) {
+					curves.splice(i, 1);
+					totalWeight -= weights.splice(i, 1)[0];
+					break;
+				}
+			}
+			computeRanges();
+		}
+
+		this.removeAll = function() {
+			curves = [];
+			weights = [];
+			totalWeight = 0;
+		}
+
+		this.getValue = function(n) {
+			for(var i = 0; i < ranges.length; i++) {
+				var r = ranges[i];
+				//w(r.join(" ... "));
+				if( n >= r[0] && n < r[1] ) {
+					var subN = (n - r[0]) / r[2];
+					return curves[i].getValue(subN);
+				}
+			}
+			// FIXME: Do we want to assume we're at the end?
+			return curves[curves.length-1].getValue(1);
+		}
+
+		function computeRanges() {
+			var start = 0;
+			for(var i = 0; i < weights.length; i++) {
+				//var start = weights[i-1] / totalWeight;
+				var end = start + weights[i] / totalWeight;
+				var len = end - start;
+				ranges[i] = [start, end, len];
+				start = end;
+			}
+		}
+
+		return this;
 	}
 };
