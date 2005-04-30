@@ -19,7 +19,7 @@ dojo.xml.htmlUtil = new function(){
 	}
 
 	this.getOuterWidth = function(node){
-
+		dj_unimplemented("dojo.xml.htmlUtil.getOuterWidth");
 	}
 
 	this.getInnerHeight = function(node){
@@ -27,6 +27,7 @@ dojo.xml.htmlUtil = new function(){
 	}
 
 	this.getOuterHeight = function(node){
+		dj_unimplemented("dojo.xml.htmlUtil.getOuterHeight");
 	}
 
 	this.getTotalOffset = function(node, type){
@@ -80,7 +81,7 @@ dojo.xml.htmlUtil = new function(){
 
 	// RAR: this function comes from nwidgets and is more-or-less unmodified.
 	// We should probably look ant Burst and f(m)'s equivalents
-	this.getAttr  =	function(node, attr){
+	this.getAttribute = function(node, attr){
 		// FIXME: need to add support for attr-specific accessors
 		if((!node)||(!node.getAttribute)){
 			// if(attr !== 'nwType'){
@@ -107,15 +108,17 @@ dojo.xml.htmlUtil = new function(){
 		}
 		return null;
 	}
+	this.getAttr = this.getAttribute; // for backwards compat (may disappear!!!)
 	
 	/*
 	 *	Determines whether or not the specified node carries a value for the
 	 *	attribute in question.
 	*/
-	this.hasAttr = function(node, attr){
-		var v = this.getAttr(node, attr);
+	this.hasAttribute = function(node, attr){
+		var v = this.getAttribute(node, attr);
 		return v ? true : false;
-	}	
+	}
+	this.hasAttr = this.hasAttribute; // for backwards compat (may disappear!!!)
 	
 	
 	/*
@@ -126,8 +129,8 @@ dojo.xml.htmlUtil = new function(){
 	this.getClass = function(node){
 		if(node.className){
 			return node.className;
-		}else if(this.hasAttr(node, "class")){
-			return this.getAttr(node, "class");
+		}else if(this.hasAttribute(node, "class")){
+			return this.getAttribute(node, "class");
 		}
 		return "";
 	}
@@ -155,8 +158,8 @@ dojo.xml.htmlUtil = new function(){
 
 	this.prependClass = function(node, classStr){
 		if(!node){ return null; }
-		if(this.hasAttr(node,"class")||node.className){
-			classStr += " " + (node.className||this.getAttr(node, "class"));
+		if(this.hasAttribute(node,"class")||node.className){
+			classStr += " " + (node.className||this.getAttribute(node, "class"));
 		}
 		return this.setClass(node, classStr);
 	}
@@ -165,10 +168,10 @@ dojo.xml.htmlUtil = new function(){
 	 *	passed &node;. Returns &true; or &false; indicating success or failure.
 	*/
 
-	this.addCSSClass = function(node, classStr){
+	this.addClass = function(node, classStr){
 		if(!node){ return null; }
-		if(this.hasAttr(node,"class")||node.className){
-			classStr = (node.className||this.getAttr(node, "class")) + " " + classStr;
+		if(this.hasAttribute(node,"class")||node.className){
+			classStr = (node.className||this.getAttribute(node, "class")) + " " + classStr;
 		}
 		return this.setClass(node, classStr);
 	}
@@ -179,7 +182,7 @@ dojo.xml.htmlUtil = new function(){
 	 *	indicating success or failure.
 	*/
 
-	this.setCSSClass = function(node, classStr){
+	this.setClass = function(node, classStr){
 		if(!node){ return false; }
 		var cs = new String(classStr);
 		try{

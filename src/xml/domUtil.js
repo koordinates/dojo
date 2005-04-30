@@ -2,6 +2,7 @@ dojo.hostenv.startPackage("dojo.xml.domUtil");
 
 // for loading script:
 dojo.xml.domUtil = new function(){
+	var _this = this;
 
 	this.nodeTypes = {
 		ELEMENT_NODE                  : 1,
@@ -49,4 +50,70 @@ dojo.xml.domUtil = new function(){
 		return tagName.toLowerCase();
 	}
 
+	this.getStyle = function(node, cssSelector) {
+		var value = undefined, camelCased = _this.toCamelCase(cssSelector);
+		value = node.style[camelCased]; // dom-ish
+		if(!value) {
+			if(document.defaultView) { // gecko
+				value = document.defaultView.getComputedStyle(node, "").getPropertyValue(cssSelector);
+			} else if(node.currentStyle) { // ie
+				value = node.currentStyle[camelCased];
+			} else if(node.style.getPropertyValue) { // dom spec
+				value = node.style.getPropertyValue(cssSelector);
+			}
+		}
+		return value;
+	}
+
+	this.toCamelCase = function(selector) {
+		var arr = selector.split('-'), cc = arr[0];
+		for(var i = 1; i < arr.length; i++) {
+			cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
+		}
+		return cc;		
+	}
+
+	this.toSelectorCase = function(selector) {
+		return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
+	}
+
+	// get RGB array from css-style color declarations
+	this.extractRGB = function(color) {
+		var hex = "0123456789abcdef";
+		color = color.toLowerCase();
+		if( color.indexOf("rgb") == 0 ) {
+			var matches = color.match(/rgb\((\d+), *(\d+), *(\d+)\)/i);
+			return matches.splice(1, 3);
+		} else if( color.indexOf("#") == 0 ) {
+			var colors = [];
+			color = color.substring(1);
+			if( color.length == 3 ) {
+				colors[0] = color.charAt(0) + color.charAt(0);
+				colors[1] = color.charAt(1) + color.charAt(1);
+				colors[2] = color.charAt(2) + color.charAt(2);
+			} else {
+				colors[0] = color.substring(0, 2);
+				colors[1] = color.substring(2, 4);
+				colors[2] = color.substring(4, 6);
+			}
+
+			for(var i = 0; i < colors.length; i++) {
+				var c = colors[i];
+				colors[i] = hex.indexOf(c.charAt(0))*16 + hex.indexOf(c.charAt(1));
+			}
+			return colors;
+		} else {
+			// named color (how many do we support?)
+			switch(color) {
+				case "white": return [255,255,255];
+				case "black": return [0,0,0];
+				case "red": return[255,0,0];
+				case "green": return [0,255,0];
+				case "blue": return [0,0,255];
+				case "navy": return [0,0,128];
+				case "gray": return [128,128,128];
+				case "silver": return [192,192,192];
+			}
+		}
+	}
 }
