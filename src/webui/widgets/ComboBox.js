@@ -28,11 +28,7 @@ dojo.webui.widgets.DomComboBox = function(){
 }
 
 dj_inherits(dojo.webui.widgets.DomComboBox, dojo.webui.widgets.ComboBox);
-
-dojo.webui.widgets.tags["dojo:combobox"] = function(fragment, widgetParser){
-	dojo.webui.widgets.buildWidgetFromParseTree("dojo:combobox", fragment, widgetParser);
-}
-
+dojo.webui.widgets.tags.addParseTreeHandler("dojo:combobox");
 
 dojo.webui.widgets.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// NOTE: this data provider is designed as a naive reference

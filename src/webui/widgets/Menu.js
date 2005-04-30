@@ -18,6 +18,4 @@ dojo.webui.widgets.DomMenu = function(){
 }
 dj_inherits(dojo.webui.widgets.DomMenu, dojo.webui.widgets.Menu);
 
-dojo.webui.widgets.tags["dojo:menu"] = function(fragment, widgetParser){
-	dojo.webui.widgets.buildWidgetFromParseTree("dojo:menu", fragment, widgetParser);
-}
+dojo.webui.widgets.tags.addParseTreeHandler("dojo:menu");

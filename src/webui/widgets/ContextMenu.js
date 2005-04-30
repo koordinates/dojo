@@ -25,6 +25,4 @@ dj_inherits(dojo.webui.widgets.DomContextMenu, dojo.webui.widgets.ContextMenu);
 // declaration...
 // unless of course, we want to just define a single default context menu...
 
-dojo.webui.widgets.tags["dojo:contextmenu"] = function(fragment, widgetParser){
-	dojo.webui.widgets.buildWidgetFromParseTree("dojo:contextmenu", fragment, widgetParser);
-}
+dojo.webui.widgets.tags.addParseTreeHandler("dojo:contextmenu");
