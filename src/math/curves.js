@@ -1,6 +1,7 @@
 dojo.hostenv.startPackage("dojo.math.curves");
 
 dojo.hostenv.loadModule("dojo.math");
+dojo.hostenv.loadModule("dojo.math.points");
 
 /* Curves from Dan's 13th lib stuff.
  * See: http://pupius.co.uk/js/Toolkit.Drawing.js
@@ -82,13 +83,27 @@ dojo.math.curves = {
 		return this;
 	},
 
+	// FIXME: This is the bad way to do a partial-arc with 2 points. We need to have the user
+	// supply the radius, otherwise we always get a half-circle between the two points.
+	Arc : function(start, end, ccw) {
+		var center = dojo.math.points.midpoint(start, end);
+		var sides = dojo.math.points.translate(dojo.math.points.invert(center), start);
+		var rad = Math.sqrt(Math.pow(sides[0], 2) + Math.pow(sides[1], 2));
+		var theta = dojo.math.radToDeg(Math.atan(sides[1]/sides[0]));
+		if( sides[0] < 0 ) {
+			theta -= 90;
+		} else {
+			theta += 90;
+		}
+		dojo.math.curves.CenteredArc.call(this, center, rad, theta, theta+(ccw?-180:180));
+	},
 
-	//Creates an arc object, with center and radius (Top of arc = 0 degrees, increments clockwise)
-	// center => 2D point for center of arc
-	// radius => scalar quantity for radius of arc
-	// start  => to define an arc specify start angle (default: 0)
-	// end    => to define an arc specify start angle
-	Arc : function(center, radius, start, end) {
+	// Creates an arc object, with center and radius (Top of arc = 0 degrees, increments clockwise)
+	//  center => 2D point for center of arc
+	//  radius => scalar quantity for radius of arc
+	//  start  => to define an arc specify start angle (default: 0)
+	//  end    => to define an arc specify start angle
+	CenteredArc : function(center, radius, start, end) {
 		this.center = center;
 		this.radius = radius;
 		this.start = start || 0;
@@ -107,8 +122,9 @@ dojo.math.curves = {
 		return this;
 	},
 
+	// Special case of Arc (start = 0, end = 360)
 	Circle : function(center, radius) {
-		dojo.math.curves.Arc.call(this, center, radius, 0, 360);
+		dojo.math.curves.CenteredArc.call(this, center, radius, 0, 360);
 		return this;
 	},
 
@@ -144,22 +160,32 @@ dojo.math.curves = {
 		}
 
 		this.getValue = function(n) {
+			var found = false, value = 0;
 			for(var i = 0; i < ranges.length; i++) {
 				var r = ranges[i];
 				//w(r.join(" ... "));
 				if( n >= r[0] && n < r[1] ) {
 					var subN = (n - r[0]) / r[2];
-					return curves[i].getValue(subN);
+					value = curves[i].getValue(subN);
+					found = true;
+					break;
 				}
 			}
+
 			// FIXME: Do we want to assume we're at the end?
-			return curves[curves.length-1].getValue(1);
+			if( !found ) {
+				value = curves[curves.length-1].getValue(1);
+			}
+
+			for(j = 0; j < i; j++) {
+				value = dojo.math.points.translate(value, curves[j].getValue(1));
+			}
+			return value;
 		}
 
 		function computeRanges() {
 			var start = 0;
 			for(var i = 0; i < weights.length; i++) {
-				//var start = weights[i-1] / totalWeight;
 				var end = start + weights[i] / totalWeight;
 				var len = end - start;
 				ranges[i] = [start, end, len];

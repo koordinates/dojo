@@ -4,7 +4,7 @@ dojo.hostenv.startPackage("dojo.math");
 
 dojo.math = {
 	degToRad: function(x) { return (x*Math.PI) / 180; },
-	radToDeg: function(x) { return (angle*180) / Math.PI; },
+	radToDeg: function(x) { return (x*180) / Math.PI; },
 
 	factorial: function(n) {
 		if(n<1) { return 0; }
