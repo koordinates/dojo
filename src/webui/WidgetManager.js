@@ -1,8 +1,9 @@
 dojo.hostenv.startPackage("dojo.webui.WidgetManager");
 dojo.hostenv.startPackage("dojo.webui.widgetManager");
 
-// hostenv.loadModule("dojo.event.*");
-// hostenv.loadModule("dojo.webui.Widget");
+dojo.hostenv.loadModule("dojo.alg.*");
+// dojo.hostenv.loadModule("dojo.event.*");
+// dojo.hostenv.loadModule("dojo.webui.Widget");
 
 dojo.webui.widgetManager = new function(){
 	this.widgets = [];
@@ -15,6 +16,27 @@ dojo.webui.widgetManager = new function(){
 	// are removed!
 	this.remove = function(widgetIndex){
 		this.widgets.splice(widgetIndex, 1);
+	}
+
+	this.getWidgetsOfType = function(type){
+		var lt = type.toLowerCase();
+		var ret = [];
+		dojo.alg.forEach(this.widgets, function(x){
+			if(x.widgetType.toLowerCase() == lt){
+				ret.push(x);
+			}
+		});
+		return ret;
+	}
+
+	this.getWidgetsByFilter = function(unaryFunc){
+		var ret = [];
+		dojo.alg.forEach(this.widgets, function(x){
+			if(unaryFunc(x)){
+				ret.push(x);
+			}
+		});
+		return ret;
 	}
 
 	var knownWidgetImplementations = [];

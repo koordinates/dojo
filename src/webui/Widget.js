@@ -295,6 +295,12 @@ dojo.webui.Widget = function(){
 // TODO: parse subcomponents
 // TODO: copy/clone raw markup fragments/nodes as appropriate
 dojo.webui.widgets.tags = {};
+dojo.webui.widgets.tags.addParseTreeHandler = function(type){
+	var ltype = type.toLowerCase();
+	this[ltype] = function(fragment, widgetParser){ 
+		dojo.webui.widgets.buildWidgetFromParseTree(ltype, fragment, widgetParser);
+	}
+}
 
 dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
 	// FIXME: Is this needed?
