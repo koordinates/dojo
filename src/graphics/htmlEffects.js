@@ -4,12 +4,14 @@ dojo.hostenv.loadModule("dojo.animation.*");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
 dojo.graphics.htmlEffects = new function() {
+	var _this = this;
+
 	this.fadeOut = function(node, duration, callback) {
-		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, callback);
+		return _this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, callback);
 	}
 
 	this.fadeIn = function(node, duration, callback) {
-		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0.99999, callback);
+		return _this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0.99999, callback);
 	}
 
 	this.fade = function(node, duration, startOpac, endOpac, callback) {
@@ -29,12 +31,12 @@ dojo.graphics.htmlEffects = new function() {
 	}
 	
 	this.slideTo = function(node, endCoords, duration, callback) {
-		return this.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
+		return _this.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
 			duration, callback);
 	}
 
 	this.slideBy = function(node, coords, duration, callback) {
-		return this.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
+		return _this.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
 			duration, callback);
 	}
 	
