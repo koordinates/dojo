@@ -4,6 +4,7 @@ dojo.hostenv.startPackage("dojo.xml.htmlUtil");
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS. Need to investigate for KHTML and Opera
 dojo.xml.htmlUtil = new function(){
 	var _this = this;
+	this.styleSheet = null;
 	
 	// FIXME: need to make sure these get installed at onLoad!!!
 	// FIXME: if we're on Moz, we need to FORCE -moz-box-sizing: border-box;
@@ -336,5 +337,49 @@ dojo.xml.htmlUtil = new function(){
 			var opac = node.style.opacity || node.style.MozOpacity ||  node.style.KhtmlOpacity || 1;
 		}
 		return opac > 1 ? 1.0 : Number(opac);
+	}
+	
+	// FIXME: this is a really basic stub for adding and removing cssRules, but
+	// it assumes that you know the index of the cssRule that you want to add 
+	// or remove, making it less than useful.  So we need something that can 
+	// search for the selector that you you want to remove.
+	this.insertCSSRule = function(selector, declaration, index) {
+		if(dojo.render.ie) {
+			if(!this.styleSheet) {
+				// FIXME: create a new style sheet document
+			}
+			if(!index) {
+				index = this.styleSheet.rules.length;
+			}
+			return this.styleSheet.addRule(selector, declaration, index);
+		} else if(document.styleSheets[0] && document.styleSheets[0].insertRule) {
+			if(!this.styleSheet) {
+				// FIXME: create a new style sheet document here
+			}
+			if(!index) {
+				index = this.styleSheet.cssRules.length;
+			}
+			var rule = selector + "{" + declaration + "}"
+			return this.styleSheet.insertRule(rule, index);
+		}
+	}
+	
+	this.removeCSSRule = function(index) {
+		if(!this.styleSheet) {
+			dj_debug("no stylesheet defined for removing rules");
+			return false;
+		}
+		if(dojo.render.ie) {
+			if(!index) {
+				index = this.styleSheet.rules.length;
+			this.styleSheet.removeRule(index);
+			}
+		} else if(document.styleSheets[0]) {
+			if(!index) {
+				index = this.styleSheet.cssRules.length;
+			}
+			this.styleSheet.deleteRule(index);
+		}
+		return true;
 	}
 }

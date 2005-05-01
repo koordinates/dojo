@@ -323,7 +323,13 @@ dojo.webui.HTMLWidget = function(args){
 		tn.innerHTML = txt;
 		tn.normalize();
 		if(wrap){ 
-			var ret = [tn.firstChild.cloneNode(true)];
+			// start hack
+			if(tn.firstChild.nodeValue == " " || tn.firstChild.nodeValue == "\t") {
+				var ret = [tn.firstChild.nextSibling.cloneNode(true)];
+			} else {
+				var ret = [tn.firstChild.cloneNode(true)];
+			}
+			// end hack
 			tn.style.display = "none";
 			return ret;
 		}
