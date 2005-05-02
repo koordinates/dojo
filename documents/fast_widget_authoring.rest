@@ -112,10 +112,6 @@ Lets looks the most minimal code for a stock HTML-only widget in Dojo::
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
     dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
-    dojo.webui.widgets.tags["dojo:testwidget"] = function(fragment, widgetParser){
-        dojo.webui.widgets.buildWidgetFromParseTree("dojo:testwidget", fragment, widgetParser);
-    }
-
     dojo.webui.widgets.HTMLTestWidget = function(){
         // mix-in inheritance. Order matters.
         dojo.webui.Widget.call(this);
@@ -184,17 +180,239 @@ The example above isn't very functional. A couple of key components are missing:
     1. the widget doesn't respond to user actions in any way
     2. the widget isn't being populated with deeveloper-provided data
 
-To do anything useful, we'll have to address these.
+The first problem is the easiest to solve when using Dojo. In HTML widgets, a
+user's actions are sent to the script as DOM events. As a programmer, you can
+receive notification of low-level UI changes, such as when the user clicks on
+an element, but these event's don't tell you anything more high-level like "the
+user wants you to calculate a complex result and show it to him". To do that,
+we need to catch the low-level DOM event we are concerned with and connect it
+to a function or object method that will actually handle the calculation. And
+this assumes you're using good style, which most DHTML programmers don't. In
+fact, it's not uncommon to see lots of example code that's littered with thing
+like::
 
-Deploy
-------
+    someNode.innerHTML = "<span onclick='calculate(); show();'>foo</span>";
 
-FIXME: fill it in!
+Now, there's a lot wrong with this code, but lets just look at how a Dojo
+template might accomplish the same thing. First, lets assume that calculate()
+and show() are methods on our wiget object, like this::
+
+    dojo.webui.widgets.HTMLTestWidget = function(){
+        // ... see previous examples for the code that goes here
+
+        this.calcDisplayNode = null;
+
+        this.result = 0;
+        
+        this.calculate = function(){
+            this.result++;
+        }
+
+        this.showResult  = function(){
+            this.calcDisplayNode.value = this.result;
+        }
+
+        this.calculateAndShow = function(){
+            this.calculate();
+            this.showResult();
+        }
+    }
+
+Ok, that's pretty easy, but how to connect it to our template? Dojo gives us a
+shorthand to do this. Here's the modified template code from HTMLTestWidget.html::
+
+    <span class="testWidget">
+        <p>a test widget!</p>
+        <p dojoAttachEvent="onClick: calculateAndShow;">
+            click here to preform calculation
+        </p>
+        <input type="text" value="not set" 
+            dojoAttachPoint="calcDisplayNode" />
+    </span>
+
+Looks straightforward, but note the magical extra attributes. Nowhere in the
+widget or in the template do we explicitly say anything like::
+    
+    widgeObj.calcDisplayNode = document.getElementById("...");
+
+Instead, Dojo takes care of this for us through the `dojoAttachPoint`
+attribute. If the value of this property is the name of a property on the
+widget (can be null, but must exist), then the value of that property is set to
+be a reference to that DOM Node. The exception to this rule is the
+implicitly-set `domNode` property of all HTML widgets. This value is set to be
+a reference to the root node of the template, and should always be available,
+regardless of whether or not you've explicitly linked it (or other nodes) to
+widget properties.
+
+The last peice of this puzzle is the event handling property,
+`dojoAttachEvent`. Like `dojoAttachPoint`, `dojoAttachEvent` provides a simple
+way for widget authors to separate the DOM structure of their widget from it's
+programatic behavior by allowing you to tie higher level actions to lower-level
+DOM events with attributes on the markup, not code in the widget. In our
+example, we want the widget method `calculateAndShow` to be called when the
+second paragraph is clicked. But if it turns out that this isn't the right
+action or node to trigger that event, all that's required to rewire the event
+handler is simply moving the location of the event handler or changing the DOM
+event from which it's triggered. For instance, we could transparently exchange
+the above template with the following::
+
+    <span class="testWidget">
+        <img src="foo.gif" dojoAttachEvent="onMouseOver: calculateAndShow;" />
+        <input type="text" value="not set" 
+            dojoAttachPoint="calcDisplayNode" />
+    </span>
+
+Now the mouseover handler of the image tag will increment the value (and
+quickly!). No changes to the widget code were required at all.
+
+This style of event handler attachment allows widget authors to focus on what
+their widget is supposed to *do* and less on (re)wiring its event handlers.
+Additionally, it allows widget funtionality and template layout to be changed
+(mostly) indepdendently. It's cleaner, easier to maintain, and faster to
+write. Better yet, you can quickly prototype new templates for your widget by
+just changing the value of the `templatePath` property and have it be
+functional without any widget code changes.
 
 Making It A Tag
 ---------------
 
-FIXME: fill it in!
+The last hurdle to making this widget something we'd consider working with is
+to make it easy to instantiate. The easiest was to do this with Dojo is to make
+your widget a tag. To do this in `HTMLTestWidget.js`, we'd add the following
+line at the very end of the file::
+
+    dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
+
+What does that buy us? First of all, it makes it tremendously simple to
+instantiate the widget. In a page that includes all of the apropriate script
+tags and resource files, you can instantiate a test widget by adding a
+`dojoType` attribute to any tag. Here's a simple example::
+    
+    <span dojoType="testWidget">this will get replaced</span>
+
+That's it. This syntax is called an "inline constructor" in Dojo-speak. You
+just add an extra attribute to an element in the page at the location where you
+want the widget to appear and it shows up there, and you can have as many of
+them as you like. You don't have to add a special identifier (you can if you
+like) to keep track of them or otherwise hard-code the number and type of
+widgets you want to use. Since we built the widget class using the Dojo
+framework, all of the accounting, housekeeping, building, destroying, and
+connecting for widgets is taken care of.
+
+But back to the problem of setting data for initial use. What if we wanted to
+set the initial value of our counter to be something other than 0? Here's how::
+
+    <span dojoType="testWidget" result="15">
+        this will get replaced
+    </span>
+
+The `result` property of our widget will now be initialized to 15 when it's
+created. But we should probably be display that value when the widget is
+created too. Here's the full source code for `HTMLTestWidget.js` as it stands
+so far with the addition of a `postInitialize` magic method::
+
+    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
+    dojo.hostenv.loadModule("dojo.webui.DomWidget");
+
+    dojo.webui.widgets.HTMLTestWidget = function(){
+        // mix-in inheritance. Order matters.
+        dojo.webui.Widget.call(this);
+        dojo.webui.DomWidget.call(this, true);
+        dojo.webui.HTMLWidget.call(this);
+
+        // templates
+        this.templatePath = "src/webui/widgets/templates/HTMLTestWidget.html";
+        this.templateCSSPath = "src/webui/widgets/templates/HTMLTestWidget.css";
+
+        this.widgetType = "TestWidget";
+
+        this.calcDisplayNode = null;
+
+        this.result = 0;
+        
+        this.calculate = function(){
+            this.result++;
+        }
+
+        this.showResult  = function(){
+            this.calcDisplayNode.value = this.result;
+        }
+
+        this.calculateAndShow = function(){
+            this.calculate();
+            this.showResult();
+        }
+
+        this.postInitialize = function(){
+            // show the initial value after we first get built
+            this.showResult();
+        }
+    }
+
+    // prototype inheritance
+    dj_inherits(dojo.webui.widgets.HTMLTestWidget, dojo.webui.DomWidget);
+    dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
+
+At this point, you might be wondering what's going on under the covers here.
+Dojo really *does* allow you to set arbitrary properties as attributes on a
+constructor, but within some narrow type limitations. For instance, those
+properties that have initial integer or float value cause the value passed by
+the constructor to be converted to a number before being assigned. Array values
+are converted by splitting on the semi-colon charachter and assigning an array
+of resulting strings. If, for instance, we had given the `HTMLTestWidget` class
+an array property named `foo` initialized to an emtpy array, we could set it on
+the inline constructor like this::
+
+    <span dojoType="testWidget" foo="foo;bar;baz"></span>
+
+Once initialized, the value of the `foo` property would be::
+
+    ["foo", "bar", "baz"]
+
+In this case, if the widget author wanted integers instead, he/she would have
+to convert them before the first use.
+
+So what about functions? Can we assign them the same way?
+
+Sort of. Dojo sports an abstract event system that should be familiar to those
+who have used Aspect Oriented Programming (AOP) in the past, but is likely to
+be alien to web app developers. In a nutshell, this event system allows a
+developer to "register" some code to be called when another function is called
+without affecting the behavior of the initial function that is being used as
+the trigger. Assigning to a function property in an inline constructor allows
+us to likewise register a listener, but not to over-ride the default behavior
+of the widget method. For instance, if we had the following method as a part of
+the `HTMLTestWidget` class::
+
+    // ...
+    this.increment = function(){
+        this.result++;
+    }
+    // ...
+
+We could then add code that would nullify the behavior of the function in the
+constructor, like this::
+
+    <span dojoType="testWidget" increment="this.result--;">
+    </span>
+
+Note that the `this` keyword referrs to the *widget object* and not the DOM
+Node here. Given these delcarations, the result of calling `increment` would
+*NOT* be a decrement, but rather `this.result` would have the *SAME* value as
+before `increment` was called. Our handler code fires after the base function,
+but before any other code that might be looking to act on the result.
+
+Armed with this information, we can now create widgets that receive data from
+the end developer. Combined with the lightweight template syntalx that makes it
+simple to prototype a widget, the job of the web application programmer just
+got a lot easier.
+
+In our breif experience using this system, developers who have a firm grasp of
+the system can prototype, iterate, and deploy robust degradeable widget-based
+UIs more quickly than ever before. Better yet, once the basics of the template
+system are explained to designers and other UI-focused web professionals, the
+work of maintaining the look and feel through CSS and HTML can often be
+distributed to the best person on the team for the job.
 
 Remainders
 ---------------
@@ -215,7 +433,7 @@ not trying to be exclusive, just productive.
 About The Author
 #########################
 
-Alex Russell is just another geek. He can be reached at <alex@dojotoolkit.org>.
-His mostly pointless blog is at: http://alex.nwidgets.com
+Alex Russell is a geek. He can be reached at <alex@dojotoolkit.org>. His blog
+is at: http://alex.nwidgets.com
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
