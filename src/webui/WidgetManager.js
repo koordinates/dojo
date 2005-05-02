@@ -7,6 +7,7 @@ dojo.hostenv.loadModule("dojo.alg.*");
 
 dojo.webui.widgetManager = new function(){
 	this.widgets = [];
+	this.root = null; // the root widget
 
 	this.add = function(widget){
 		this.widgets.push(widget);
@@ -95,6 +96,14 @@ dojo.webui.widgetManager = new function(){
 			}
 		}
 
-		// FIXME: what else?
 	}
+
+	// FIXME: does it even belong in this name space?
+	// NOTE: this method is implemented by DomWidget.js since not all
+	// hostenv's would have an implementation.
+	this.getWidgetFromPrimitive = function(baseRenderType){
+		dj_unimplemented("dojo.webui.widgetManager.getWidgetFromPrimitive");
+	}
+
+	// FIXME: what else?
 }

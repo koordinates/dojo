@@ -3,6 +3,7 @@ dojo.hostenv.startPackage("dojo.webui.Widget");
 dojo.hostenv.startPackage("dojo.webui.widgets.tags");
 
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
+dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.event.*");
 
 dojo.webui.Widget = function(){
@@ -27,6 +28,8 @@ dojo.webui.Widget = function(){
 	this.rightClickItems = [];
 
 	this.widgetID = -1; // FIXME: should this be null?
+
+	this.selection = new dojo.webui.Selection();
 	
 	this.enable = function(){
 		// should be over-ridden

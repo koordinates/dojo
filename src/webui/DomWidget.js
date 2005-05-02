@@ -360,6 +360,7 @@ dojo.webui.HTMLWidget = function(args){
 		this._old_buildFromTemplate();
 	}
 
+	// FIXME: should this be moved into htmlUtil?
 	function insertCSSFile(URI, doc){
 		if(!doc){ doc = document; }
 		var file = doc.createElement("link");
@@ -372,3 +373,64 @@ dojo.webui.HTMLWidget = function(args){
 }
 
 dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
+
+(function(){
+	var tf = function(){
+		var rw = null;
+		if(dojo.render.html){
+			function rwClass(){
+				dojo.webui.Widget.call(this);
+				dojo.webui.DomWidget.call(this, true);
+				dojo.webui.HTMLWidget.call(this);
+				this.buildRendering = function(){ return; }
+				this.destroyRendering = function(){ return; }
+				this.postInitialize = function(){ return; }
+				this.cleanUp = function(){ return; }
+				this.widgetType = "HTMLRootWidget";
+			}
+			rw = new rwClass();
+			rw.domNode = document.body;
+			// FIXME: need to attach to DOM events and the like here
+		}else if(dojo.render.svg){
+			// FIXME: fill this in!!!
+			function rwClass(){
+				dojo.webui.Widget.call(this);
+				dojo.webui.DomWidget.call(this, true);
+				dojo.webui.SVGWidget.call(this);
+				this.buildRendering = function(){ return; }
+				this.destroyRendering = function(){ return; }
+				this.postInitialize = function(){ return; }
+				this.cleanUp = function(){ return; }
+				this.widgetType = "SVGRootWidget";
+			}
+			rw = new rwClass();
+			rw.domNode = document.documentElement;
+		}
+		var wm = dojo.webui.widgetManager;
+		wm.root = rw;
+		wm.add(rw);
+
+		// extend the widgetManager with a getWidgetFromNode method
+		wm.getWidgetFromNode = function(node){
+			var filter = function(x){
+				if(x.domNode == node){
+					return true;
+				}
+			}
+			var widgets = [];
+			while((node)&&(widgets.length < 1)){
+				widgets = this.getWidgetsByFilter(filter);
+				node = node.parentNode;
+			}
+			if(widgets.length > 0){
+				return widgets[0];
+			}else{
+				return null;
+			}
+		}
+		wm.getWidgetFromPrimitive = wm.getWidgetFromNode;
+	}
+
+	// make sure we get called when the time is right
+	dojo.event.connect(dojo.hostenv, "loaded", tf);
+})();

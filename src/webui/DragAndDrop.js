@@ -1,5 +1,64 @@
 dojo.hostenv.startPackage("dojo.webui.selection");
+dojo.hostenv.startPackage("dojo.webui.dragAndDrop");
+dojo.hostenv.startPackage("dojo.webui.DragAndDrop");
+dojo.hostenv.startPackage("dojo.webui.DragSource");
+dojo.hostenv.startPackage("dojo.webui.DropTarget");
 dojo.hostenv.startPackage("dojo.webui.dragAndDropManager");
+
+dojo.webui.DragSource = function(){
+	// The interface that all drag data sources MUST implement
+
+	this.getTypes = function(){
+		// DragSource objects MUST include a selection property or overload
+		// this method
+		if(this.selection){
+			return this.selection.getTypes();
+		}
+		return [];
+	}
+}
+
+dojo.webui.DropTarget = function(){
+	// The interface that all components that accept drops MUST implement
+	this.dragEnter = function(dragSourceObj){ 
+		// FIXME: should this also accept the DOM event?
+		if(this.isDragAcceptable(dragSourceObj)){
+		}
+	}
+
+	this.dragLeave = function(dragSourceObj){
+	}
+
+	this.isDragAcceptable = function(dragSourceObj){
+		var dtypes = dragSourceObj.getTypes();
+	}
+}
+
+dojo.webui.dragAndDropManager = new function(){
+	
+	var currentDropTarget = null;
+
+	this.startDrag = function(){
+		// initialize the drag either from the current dojo.webui.selection
+		// list or from
+	}
+
+	this.drag = function(){
+		// FIXME: when dragging over a potential drop target, we must ask it if
+		// it can accept our selected items. Need to preform that check here
+		// and provide visual feedback.
+
+		// FIXME: need to cache the results so we aren't calling this willie-nilly
+	}
+
+	this.drop = function(){
+		// FIXME: we need to pass dojo.webui.selection to the drop target here.
+		// If rejected, need to provide visual feedback of rejection. Need to
+		// determine how to handle copy vs. move drags and if that can/should
+		// be set by the dragged items or the receiver of the drop event.
+	}
+}
+
 /* FIXME:
  *	The base widget classes should support drag-and-drop completely, but
  *	perhaps through a mixin.  Firstly, any widget should implement a "drop"
@@ -20,7 +79,7 @@ dojo.hostenv.startPackage("dojo.webui.dragAndDropManager");
 // FIXME: need to select collections of selected objects. Is this a clipboard
 // 		  concept? Will we want our own clipboard?
 
-dojo.webui.selection = new function(){
+dojo.webui.Selection = function(){
 
 	var selected = [];
 	var selectionIndexProp = "_dojo.webui.selection.index";
@@ -80,54 +139,3 @@ dojo.webui.selection = new function(){
 		selected = [];
 	}
 }
-
-/*
-dojo.webui.dragAndDropManager = new function(){
-	
-	var currentDropTarget = null;
-
-	this.startDrag = function(){
-		// initialize the drag either from the current dojo.webui.selection
-		// list or from
-	}
-
-	this.drag = function(){
-		// FIXME: when dragging over a potential drop target, we must ask it if
-		// it can accept our selected items. Need to preform that check here
-		// and provide visual feedback.
-
-		// FIXME: need to cache the results so we aren't calling this willie-nilly
-	}
-
-	this.drop = function(){
-		// FIXME: we need to pass dojo.webui.selection to the drop target here.
-		// If rejected, need to provide visual feedback of rejection. Need to
-		// determine how to handle copy vs. move drags and if that can/should
-		// be set by the dragged items or the receiver of the drop event.
-	}
-}
-
-dojo.webui.DragParticipant = function(){
-	this.acceptedTypes = [];
-
-	this.addAcceptedType = function(type){
-		this.acceptedTypes[type] = true;
-		this.acceptedTypes.push(type);
-	}
-
-	this.canDrop = function(types){
-		for(var x=0; x<types.length; x++){
-			if(this.acceptedTypes[types[x]]!=true){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	this.acceptDrop = function(selection){
-		// accepts an array of selected items and handles them.
-	}
-}
-*/
-
-
