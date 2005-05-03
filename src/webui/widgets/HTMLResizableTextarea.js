@@ -1,16 +1,16 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLResizeableTextarea");
+dojo.hostenv.startPackage("dojo.webui.widgets.HTMLResizableTextarea");
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:resizeabletextarea");
+dojo.webui.widgets.tags.addParseTreeHandler("dojo:resizabletextarea");
 
-dojo.webui.widgets.HTMLResizeableTextarea = function(){
+dojo.webui.widgets.HTMLResizableTextarea = function(){
 	dojo.webui.Widget.call(this);
 	dojo.webui.DomWidget.call(this, true);
 	dojo.webui.HTMLWidget.call(this);
 
-	this.templatePath = "src/webui/widgets/templates/HTMLResizeableTextarea.html";
-	this.widgetType = "ResizeableTextarea";
-	this.tagName = "dojo:resizeabletextarea";
+	this.templatePath = "src/webui/widgets/templates/HTMLResizableTextarea.html";
+	this.widgetType = "ResizableTextarea";
+	this.tagName = "dojo:resizabletextarea";
 	this.isContainer = false;
 	this.textAreaNode = null;
 	this.textAreaContainer = null;
@@ -64,4 +64,4 @@ dojo.webui.widgets.HTMLResizeableTextarea = function(){
 	dojo.event.connect(this, "startResize", this, "preDrag");
 }
 
-dj_inherits(dojo.webui.widgets.HTMLResizeableTextarea, dojo.webui.DomWidget);
+dj_inherits(dojo.webui.widgets.HTMLResizableTextarea, dojo.webui.DomWidget);
