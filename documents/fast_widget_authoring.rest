@@ -265,7 +265,7 @@ the `postInitialize` method to handle this improvement::
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
 
 So Dojo allows you to set arbitrary properties via your inline constructor 
-within some limits::
+within some limits:
 	
 - the property must be a member of the widget in order for it to be settable via   
   the inline constructor
