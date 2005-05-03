@@ -7,91 +7,25 @@ Fast Widget Authoring With Dojo
 :Date: 2005/05/02
 
 .. contents::
+	
+Example
+-------
+	
+.. start with a widget example
 
 Intro
 ----------------------------------
 
-The Dojo project is working to build a modern, capable, "webish", and easy to
-use DHTML toolkit. But what does "easy to use" mean? And easy to use for who?
-That's a big question, and one which the project is attempting to answer by
-introducing multiple points of entry into the code. What that means is that it
-shouldn't matter whether you just want to use a widget or an API, build widgets
-and APIs with Dojo, or hack on the core of Dojo itself: you should be able to
-do all of those if you want to. This article is targeted at the group of people
-who want to build and use widgets or "AJAX components" in their applications.
+A key feature of the Dojo widget system is the ability to prototype, test, and 
+tweak the component's UI and interactions.  Dojo provides "templates" that you 
+can use to rapidly prototype your UI in HTML and CSS and expose your widgets as 
+markup on the pages you include them on.  Dojo also ensures that your prototype
+isn't throw-away code by providing simple strategies for moving from development
+to deployment that improve performance incrementally.
 
-In order to make it simpler for the "average IT developer" to build better UIs,
-Dojo first has to make it easier for the people that build the tools they use
-to construct better components faster. Given the time constraints and
-volititility of specs in the average web app project, simplifying the creation
-and maintenance of these components is of paramount importance. Until now,
-developers building DHTML UI components have either had to rely on
-hard-to-maintain innerHTML techniques or verbosely construct UI components one
-node at a time with document.createElement() calls. Given these unappealing
-options, most developers punt and scramble back to the relative sanity of the
-server-side.
-
-This article takes a deeper look at the status quo, proposes a hybrid way of
-constructing UI components, and discuss the APIs and tools that Dojo provides
-today to implement this new approach.
-
-The Workflow Problem
-----------------------------------
-
-Cross-browser issues aside, there are practical considerations to think about
-when building reusable UI components. Those who go the innerHTML route soon
-find themselves building huge string variables and dealing with myriad string
-encoding issues. Worse, it's pretty sub-optimal to attach programmatic logic to
-elements created this way. What good is getting a reference to a DOM node that
-could be blown away the next time your need to repaint the UI in response to
-user input?
-
-The other side of the fence is the "clean" method constructing UIs with pure
-DOM manipulation from JavaScript. This is the approach that toolkits like
-DomAPI and nWidgets take (for the most part). While functional and cleaner than
-the alternative, developers suffer reduced productivity. Building widgets this
-way is verbose and time consuming and once a widget or component works, the
-last thing you ever want to do is change its DOM structure. Not what you might
-call maintainable.
-
-The DOM-only approach also doesn't fit well into the basic workflow of UI
-development for web applications. Creative professionals often design systems
-and if the developer is lucky, will hand over HTML with the final design (and
-when was the last time that a "final" design was actually final, anyway?). The
-job of turning that design into a functioning system falls to a web development
-professional. Regardless of whether or not they've been handed slide-ware, the
-first step for this person is almost always to prototype the UI is good markup
-and CSS.
-
-This is a tremendously important point. Markup, it turns out, is perhaps the
-fastest way to build the initial representation of a UI for programmers and
-dramatically improves the productivity of programmers.  Classic desktop GUI
-toolkits are starting to adapt (GTK+ and QT) or die (MFC will some day be
-replaced by XAML, Mozilla uses XUL now, etc.).  Said another way, markup has,
-for better and for worse, democratized the GUI construction process. Building
-client-side UIs with either innerHTML or direct DOM manipulation endangers this
-cornerstone adavntage of web applications. Successful DHTML/Ajax tools need to
-preserve the advantage of markup, both in constructing and using custom
-widgets.
-
-The method we outline here allows component authors to continue to realize the
-advantages of HTML and CSS markup for creating the initial state of widgets
-while maintaining the advantages of direct DOM manipulation for
-post-initialization changes a component's look and feel.
 
 Prototype 
 ---------
-
-So you've been handed an image or HTML and CSS from a designer. Wouldn't it be
-great if you could prototype, test, and tweak the component's UI and
-interactions without sinking a ton of time into the project? Wouldn't it also
-be nice if you could easily change the location of and arguments to your widgets
-without tons of JavaScript in your prototype pages? Dojo can help by providing
-"templates" that you can use to rapidly prototype your UI in HTML and CSS and
-by exposing your widgets as markup on the pages you include them on. And when
-your boss says "great, lets ship it!", Dojo also ensures that your prototype
-isn't throw-away code by providing simple strategies for moving from
-development to deployment that improve performance incrementally.
 
 Templates in Dojo place HTML and CSS fragments into files which are consulted
 when a widget is constructed. The setup of event handlers and the creation of
@@ -121,23 +55,21 @@ Here's the minimum code to define a Dojo widget that uses a template::
 
 Almost everything about this file is boilerplate code, and only the properties
 that are absolutely necessary are set on the class
-`dojo.webui.widgets.HTMLTestWidget`. You read that right: JavaScript has
-classes and inheritance, and Dojo makes extensive use of them. Every Dojo
-widget you'll create comes from a constructor function like the one outlined
-here.
+`dojo.webui.widgets.HTMLTestWidget`. Every Dojo widget you'll create comes from 
+a constructor function like the one outlined here.
 
-The non-stock bits of the above example are the  `template*` properties. Lets
-look at those for a second. The properties that specify template locations are
-relative to the root of the Dojo Subversion checkout, and these are made
-absolute (if necessary) when the widget is created. This way, you don't have
-to specify an un-portable absolute URL for your template files and you can move
-your widget file around without adverse consequences. Handy, that.
+The non-stock bits of the above example are the  `template*` properties.
+Template locations are specified relative to the root of the Dojo Subversion 
+checkout, and these are made absolute (if necessary) when the widget is created.
+Meaning that you don't have to specify an un-portable absolute URL for your
+template files and you can move your widget file around without adverse 
+consequences.
 
-So what could be in our template files? Currently, Dojo requires that templates
-have a single single root node which gets assigned to the `domNode` property of
-the widget.  This property is defined in the `DomWidget` class, so every widget
-that inherits from it will have this property implicitly. So lets see what the
-most minimal template files possible might look like.
+Dojo currently requires that templates have a single root node which gets 
+assigned to the `domNode` property of the widget.  This property is defined in 
+the `DomWidget` class, so every widget that inherits from it will have this 
+property implicitly. So the most minimal template files possible might look
+like this:
 
 HTMLTestWidget.html::
 
@@ -150,7 +82,7 @@ HTMLTestWidget.css::
     }
 
 That's it. A test page that includes the widget could now instantiate this UI
-at any point in the page by adding extra attributes to any tag, like this::
+at any point in the page by adding extra attributes to any tag::
 
     ...
     <p dojoType="TestWidget">
@@ -159,31 +91,28 @@ at any point in the page by adding extra attributes to any tag, like this::
     ...
 
 Dojo allows you to (optionally) use markup *on both sides* of the widget
-creation and use process. What good would it do to allow you to quickly
-prototype your widget with markup and then force you into using JavaScript to
-declare it in your page?
+creation and use process. Thus you can quickly prototype your widget with markup
+and declare it in your page with markup or with JavaScript.
 
 Connect 
 -------
 
 The example above isn't very functional. A couple of key components are missing:
 
-    1. the widget doesn't respond to user actions in any way
-    2. the widget isn't being populated with developer-provided data
+    1. the widget doesn't respond to user interaction
+    2. the widget isn't populated with data
 
-The first problem is the easiest to solve when using Dojo. In HTML widgets, a
-user's actions are sent to the script as DOM events. As a programmer, you can
-receive notification of low-level UI changes, such as when the user clicks on
-an element, but these event's don't tell you anything more high-level like "the
-user wants you to calculate a complex result and show it to him". To do that,
-we need to catch the low-level DOM event we are concerned with and connect it
-to a function or object method that will actually handle the calculation. It's
-not uncommon to see example code like::
+In HTML widgets, a user's actions are sent to the script as DOM events. As a 
+programmer, you can receive notification of low-level UI changes, such as when
+the user clicks on an element, but these events don't tell you anything 
+high-level. To do that, we need to catch low-level DOM event(s) and connect 
+them to functions or object methods that will actually handle a higher level 
+interaction. It's not uncommon to see example code like::
 
     someNode.innerHTML = "<span onclick='calculate(); show();'>foo</span>";
 
-There's a lot wrong with this code, so lets look at how a Dojo template
-might accomplish the same thing. Firstly, we'd probably make `calculate()` and
+There's a lot wrong with this code. A Dojo template might accomplish the same 
+thing with some improvements. Firstly, we'd probably make `calculate()` and
 `show()` methods of our widget class and not global functions, like this::
 
     dojo.webui.widgets.HTMLTestWidget = function(){
@@ -207,8 +136,8 @@ might accomplish the same thing. Firstly, we'd probably make `calculate()` and
         }
     }
 
-But how to connect it to our template? Dojo provides a shorthand for this.
-Here's the modified template code from HTMLTestWidget.html::
+Then, to connect it to our template, Dojo provides a shorthand attribute syntax.
+The modified template code from HTMLTestWidget.html::
 
     <span class="testWidget">
         <p>a test widget!</p>
@@ -219,23 +148,27 @@ Here's the modified template code from HTMLTestWidget.html::
             dojoAttachPoint="calcDisplayNode" />
     </span>
 
-Looks straightforward, but note the magical `dojoAttach*` attributes. Nowhere
-in the widget or in the template do we explicitly say anything like::
+Note the `dojoAttach*` attributes. The widget and the template do not explicitly
+say anything like::
     
     widgetObj.calcDisplayNode = document.getElementById("...");
 
-Dojo accomplishes the same thing with the `dojoAttachPoint` attribute. If the
+Instead, Dojo's `dojoAttachPoint` attribute accomplishes the same result. If the
 value of this property is the name of a property on the widget  then the value
-of that property is set to be a reference to that DOM Node.
+of that property is set to be a reference to that DOM Node.  So withing 
+dojo.webui.widgets.HTMLTestWidget, we can simply refer to the following to get 
+a handle to the calcDisplayNode::
 
-The last piece of the puzzle is connecting event handlers, which is done with
-the `dojoAttachEvent` property.  Like `dojoAttachPoint`, `dojoAttachEvent`
-provides a straightforward way to separate the DOM structure of a widget from
+    this.calcDisplayNode
+
+The remaining issue is connecting event handlers through the `dojoAttachEvent` 
+property.  Analogous to `dojoAttachPoint`, `dojoAttachEvent` provides a 
+straightforward way to separate the DOM structure of a widget from
 its programmatic behavior. In our example, we want the widget method
-`calculateAndShow` to be called when the second paragraph is clicked. If the
-author wants to change the node or event that causes the reclaculation, they
-just change the location or value of `dojoAttachEvent`. For instance, we can
-exchange the above template with the following::
+`calculateAndShow` to be called when the second paragraph is clicked. If you 
+want to change the node or event that causes the recalculation, just change the 
+location or value of `dojoAttachEvent`. For instance, exchange the above 
+template with the following::
 
     <span class="testWidget">
         <img src="foo.gif" dojoAttachEvent="onMouseOver: calculateAndShow;" />
@@ -243,42 +176,42 @@ exchange the above template with the following::
             dojoAttachPoint="calcDisplayNode" />
     </span>
 
-Now the mouseover handler of the image tag will increment the value (and
-quickly!). No changes to the widget code were required at all except perhaps to
-point to a different template file.
+Now the mouseover handler of the image tag quickly increments the value. No 
+changes to the widget code were required except perhaps to point to a different 
+template file.
 
-This style of event handler attachment allows widget authors to focus on what
-their widget is supposed to *do* and less on (re)wiring its event handlers.
-Additionally, it allows widget functionality and template layout to be changed
-(mostly) independently. It's cleaner, easier to maintain, and faster to
-write. Better yet, you can quickly prototype new templates for your widget by
-just changing the value of the `templatePath` property and have it be
-functional without any widget code changes.
+Benefits of this style of event handler attachment:
+
+- widget authors get to focus on what their widget is supposed to *do*
+- de-emphasize on (re)wiring event handlers.
+- widget functionality and template layout to be changed pretty independently
+- cleaner, easier to maintain, and faster to write
+- quickly prototype new templates for your widget by changing the value of the 
+  `templatePath` property and have it be functional without any widget code 
+  changes.
 
 Making It A Tag
 ---------------
 
 The last hurdle to making this widget something we'd consider working with is
-to make it easy to instantiate. The easiest was to do this with Dojo is to make
-your widget a tag . To do this in `HTMLTestWidget.js`, we'd add the following line at the
-very end of the file::
+to make it easy to instantiate. The easiest way to do this with Dojo is to make
+your widget a tag . To do this in `HTMLTestWidget.js`, we'd add the following 
+line at the very end of the file::
 
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
 
-We saw a breif example of this at the beginning of the
-article, but here's a refresher example::
+We saw a brief example of this at the beginning of the article, but here's a refresher example of a Dojo inline constructor::
     
     <span dojoType="testWidget">this will get replaced</span>
 
-This syntax for declaring widgets is called an "inline constructor" in
-Dojo-speak. Adding these extra attributes to elements in the page allows you to
-instantiate as many separate widgets as you like. You don't have to take care
-to name them differently or otherwise hard-code the number and type of widgets
+Adding these extra attributes to elements in the page allows you to
+instantiate as many separate widgets as you like. So you don't have to worry 
+about problems like unique naming or hard-coding the number and type of widgets
 you want to use.
 
 Inline constructors also provide for us a way of setting data for a widget
-instance.  What if we wanted to set the initial value of our counter to be
-something other than 0? Here's the inline constructor::
+instance.  For example, to set the initial value of our counter to be
+something other than 0::
 
     <span dojoType="testWidget" result="15">
         this will get replaced
@@ -286,8 +219,8 @@ something other than 0? Here's the inline constructor::
 
 The `result` property of our widget will now be initialized to 15. An obvious
 improvement is to display our default (or over-ridden) value when the widget is
-created. Here's the full source code for `HTMLTestWidget.js` so far plus our
-new `postInitialize` magic method::
+created. Here's the full source code for `HTMLTestWidget.js` so far, including
+the `postInitialize` method to handle this improvement::
 
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
     dojo.hostenv.loadModule("dojo.webui.DomWidget");
@@ -331,15 +264,19 @@ new `postInitialize` magic method::
     dj_inherits(dojo.webui.widgets.HTMLTestWidget, dojo.webui.DomWidget);
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
 
-Dojo allows you to set arbitrary properties via your inline constructor within
-some limits. First, the property you want to set must be a member of the widget
-in order for it to be settable via the inline constructor. Secondly, there are
-some limits to how far the type-conversion goes. For instance, those properties
-that have a numerical initial value cause the value passed by the constructor
-to be converted to a number before being assigned. Array values are converted
-by splitting on the semi-colon character and assigning an array of resulting
-strings. If we had given the `HTMLTestWidget` class an array property named
-`foo` initialized to an empty array it would be settable like this::
+So Dojo allows you to set arbitrary properties via your inline constructor 
+within some limits::
+	
+- the property must be a member of the widget in order for it to be settable via   
+  the inline constructor
+- there are some limits for type-conversion
+
+For instance, properties that have a numerical initial value cause the value  
+passed by the constructor to be converted to a number before being assigned.  
+Array values are converted by splitting on the semi-colon character and  
+assigning an array of resulting strings. If we had given the `HTMLTestWidget` 
+class an array property named `foo` initialized to an empty array it would be 
+settable like this::
 
     <span dojoType="testWidget" foo="foo;bar;baz"></span>
 
@@ -347,10 +284,10 @@ And the resulting value would be::
 
     ["foo", "bar", "baz"]
 
-If the widget author wanted integers instead, he/she would have to convert them
-before using the values from this array.
+If you want integers instead, you would have to convert them before using the 
+values from this array.
 
-Assigning to functions is subtly different, but no harder. Dojo sports an
+Assigning to functions is subtly different, but no harder. Dojo includes an
 abstract event system that should be familiar to those who have used Aspect
 Oriented Programming (AOP). In a nutshell, this event system allows a developer
 to "register" some code to be called when another function is called without
@@ -379,29 +316,21 @@ before `increment()` was called. Our handler code fires after the base function,
 but before any other code that might be looking to act on the result.
 
 Armed with this information, authors can create widgets that receive data from
-widget users and easily change the look and feel of their widget. DHTML just
-got a lot easier.
+widget users and easily change the look and feel of their widget!
 
-Remainders
----------------
+More Information
+----------------
 
-Getting Involved with Dojo
-##########################
-
-If you'd like to contribute to the future of Dojo and responsive web
-applications, we'd love to hear from you and work with you. Our project website
-has links to the various tools (mailing lists, wiki, bug tracking) that you can
-use to participate in the project. http://dojotoolkit.org
-
-People wanting to contribute to the the core of Dojo should have a look our
-license. It has been chosen to be non-political (Academic Free License 2.1) and
-we support your use of Dojo in software that's licensed in other ways, but will
-not accept differently-licensed patches.
+`Dojo Status`_
+`Problems tackled by the Dojo widget system`_
 
 About The Author
 #########################
 
-Alex Russell is a geek. He can be reached at <alex@dojotoolkit.org>. His blog
-is at: http://alex.nWidgets.com
+Alex Russell is a core contributor to Dojo.  can be reached at
+<alex@dojotoolkit.org>. His blog is at: http://alex.nWidgets.com
+
+.. _`Dojo Status`: http://www.dojotoolkit.org/projectStatus.html
+.. _`Problems tackled by the Dojo widget system`: http://www.dojotoolkit.org/widget_motivation.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
