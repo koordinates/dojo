@@ -2,9 +2,9 @@ Fast Widget Authoring With Dojo
 ===============================
 
 :Author: Alex Russell
-:Version: 0.1
+:Version: 0.3
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/04/18
+:Date: 2005/05/02
 
 .. contents::
 
