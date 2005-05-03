@@ -21,10 +21,10 @@ do all of those if you want to. This article is targeted at the group of people
 who want to build and use widgets or "AJAX components" in their applications.
 
 In order to make it simpler for the "average IT developer" to build better UIs,
-Dojo first has to make easier for the people that build the tools they use to
-construct better components faster. Given the time constraints and volititility
-of specs in the average web app project, simplifying the creation and
-maintenance of these components is of paramount importance. Until now,
+Dojo first has to make it easier for the people that build the tools they use
+to construct better components faster. Given the time constraints and
+volititility of specs in the average web app project, simplifying the creation
+and maintenance of these components is of paramount importance. Until now,
 developers building DHTML UI components have either had to rely on
 hard-to-maintain innerHTML techniques or verbosely construct UI components one
 node at a time with document.createElement() calls. Given these unappealing
@@ -38,23 +38,21 @@ today to implement this new approach.
 The Workflow Problem
 ----------------------------------
 
-So it's hard, fine, but that's an invitation for a clever solution not a reason
-to give up. Cross-browser issues aside, there are practical considerations of
-usage and construction of components. Those who go the innerHTML route soon
-find themselves building huge string variables and dealing with all manner of
-string encoding issues. Worse, they quickly find out how sub-optimal it is to
-attach programmatic logic to the newly built elements. What good is getting a
-reference to a DOM node that could be blown away the next time your need to
-repaint the UI in response to user input? Things go downhill from there.
+Cross-browser issues aside, there are practical considerations to think about
+when building reusable UI components. Those who go the innerHTML route soon
+find themselves building huge string variables and dealing with myriad string
+encoding issues. Worse, it's pretty sub-optimal to attach programmatic logic to
+elements created this way. What good is getting a reference to a DOM node that
+could be blown away the next time your need to repaint the UI in response to
+user input?
 
-The other side of the fence is the "clean" method of programmatically
-constructing the UI with pure DOM manipulation in JavaScript. This is the
-approach that toolkits like DomAPI and nWidgets take (for the most part). While
-functional and avoiding most escaping issues, this approach carries with it
-reduced productivity on the part of the widget author. It's so verbose and time
-consuming to build UIs this way that once your widget or component works, the
-last thing you ever want to do is change it's DOM structure. Didn't we move to
-the web to get *away* from building UIs this way?
+The other side of the fence is the "clean" method constructing UIs with pure
+DOM manipulation from JavaScript. This is the approach that toolkits like
+DomAPI and nWidgets take (for the most part). While functional and cleaner than
+the alternative, developers suffer reduced productivity. Building widgets this
+way is verbose and time consuming and once a widget or component works, the
+last thing you ever want to do is change its DOM structure. Not what you might
+call maintainable.
 
 The DOM-only approach also doesn't fit well into the basic workflow of UI
 development for web applications. Creative professionals often design systems
@@ -100,7 +98,7 @@ when a widget is constructed. The setup of event handlers and the creation of
 references to DOM nodes is handled through some extra attributes on your HTML
 markup.
 
-Lets looks the most minimal code for a stock HTML-only widget in Dojo::
+Here's the minimum code to define a Dojo widget that uses a template::
 
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
     dojo.hostenv.loadModule("dojo.webui.DomWidget");
@@ -179,16 +177,14 @@ receive notification of low-level UI changes, such as when the user clicks on
 an element, but these event's don't tell you anything more high-level like "the
 user wants you to calculate a complex result and show it to him". To do that,
 we need to catch the low-level DOM event we are concerned with and connect it
-to a function or object method that will actually handle the calculation. And
-this assumes you're using good style, which most DHTML programmers don't. In
-fact, it's not uncommon to see lots of example code that's littered with thing
-like::
+to a function or object method that will actually handle the calculation. It's
+not uncommon to see example code like::
 
     someNode.innerHTML = "<span onclick='calculate(); show();'>foo</span>";
 
-Now, there's a lot wrong with this code, but lets just look at how a Dojo
-template might accomplish the same thing. First, lets assume that calculate()
-and show() are methods on our widget object, like this::
+There's a lot wrong with this code, so lets look at how a Dojo template
+might accomplish the same thing. Firstly, we'd probably make `calculate()` and
+`show()` methods of our widget class and not global functions, like this::
 
     dojo.webui.widgets.HTMLTestWidget = function(){
         // ... see previous examples for the code that goes here
@@ -211,8 +207,8 @@ and show() are methods on our widget object, like this::
         }
     }
 
-Ok, that's pretty easy, but how to connect it to our template? Dojo gives us a
-shorthand to do this. Here's the modified template code from HTMLTestWidget.html::
+But how to connect it to our template? Dojo provides a shorthand for this.
+Here's the modified template code from HTMLTestWidget.html::
 
     <span class="testWidget">
         <p>a test widget!</p>
@@ -223,8 +219,8 @@ shorthand to do this. Here's the modified template code from HTMLTestWidget.html
             dojoAttachPoint="calcDisplayNode" />
     </span>
 
-Looks straightforward, but note the magical extra attributes. Nowhere in the
-widget or in the template do we explicitly say anything like::
+Looks straightforward, but note the magical `dojoAttach*` attributes. Nowhere
+in the widget or in the template do we explicitly say anything like::
     
     widgetObj.calcDisplayNode = document.getElementById("...");
 
@@ -288,10 +284,10 @@ something other than 0? Here's the inline constructor::
         this will get replaced
     </span>
 
-The `result` property of our widget will now be initialized to 15. But we
-should probably be display that value when the widget is created too. Here's
-the full source code for `HTMLTestWidget.js` as it stands so far with the
-addition of a `postInitialize` magic method::
+The `result` property of our widget will now be initialized to 15. An obvious
+improvement is to display our default (or over-ridden) value when the widget is
+created. Here's the full source code for `HTMLTestWidget.js` so far plus our
+new `postInitialize` magic method::
 
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
     dojo.hostenv.loadModule("dojo.webui.DomWidget");
@@ -335,17 +331,15 @@ addition of a `postInitialize` magic method::
     dj_inherits(dojo.webui.widgets.HTMLTestWidget, dojo.webui.DomWidget);
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
 
-You might be wondering what's going on under the covers here.
-Dojo *does* allow you to set arbitrary properties as attributes on a
-constructor, but within some limits. First, the property you want to set must
-be a member of the widget in order for it to be settable via the inline
-constructor. Secondly, there are some limits to how far the type-conversion
-goes. For instance, those properties that have a numerical initial value cause
-the value passed by the constructor to be converted to a number before being
-assigned. Array values are converted by splitting on the semi-colon character
-and assigning an array of resulting strings. If we had given the
-`HTMLTestWidget` class an array property named `foo` initialized to an empty
-array it would be settable like this::
+Dojo allows you to set arbitrary properties via your inline constructor within
+some limits. First, the property you want to set must be a member of the widget
+in order for it to be settable via the inline constructor. Secondly, there are
+some limits to how far the type-conversion goes. For instance, those properties
+that have a numerical initial value cause the value passed by the constructor
+to be converted to a number before being assigned. Array values are converted
+by splitting on the semi-colon character and assigning an array of resulting
+strings. If we had given the `HTMLTestWidget` class an array property named
+`foo` initialized to an empty array it would be settable like this::
 
     <span dojoType="testWidget" foo="foo;bar;baz"></span>
 
