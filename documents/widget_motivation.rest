@@ -100,7 +100,7 @@ not accept differently-licensed patches.
 About The Author
 #########################
 
-Alex Russell is a core contributor to Dojo.  can be reached at
+Alex Russell, a core contributor to Dojo, can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.nWidgets.com
 
 .. _`Dojo Status`: http://www.dojotoolkit.org/projectStatus.html
