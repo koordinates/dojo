@@ -105,5 +105,9 @@ dojo.webui.widgetManager = new function(){
 		dj_unimplemented("dojo.webui.widgetManager.getWidgetFromPrimitive");
 	}
 
+	this.getWidgetFromEvent = function(nativeEvt){
+		dj_unimplemented("dojo.webui.widgetManager.getWidgetFromEvent");
+	}
+
 	// FIXME: what else?
 }

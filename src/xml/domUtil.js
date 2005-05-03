@@ -77,6 +77,15 @@ dojo.xml.domUtil = new function(){
 		return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
 	}
 
+	this.getAncestors = function(node){
+		var ancestors = [];
+		while(node){
+			ancestors.push(node);
+			node = node.parentNode;
+		}
+		return ancestors;
+	}
+
 	// get RGB array from css-style color declarations
 	this.extractRGB = function(color) {
 		var hex = "0123456789abcdef";

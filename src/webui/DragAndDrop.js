@@ -7,6 +7,7 @@ dojo.hostenv.startPackage("dojo.webui.dragAndDropManager");
 
 dojo.webui.DragSource = function(){
 	// The interface that all drag data sources MUST implement
+	this.isDragSource = true;
 
 	this.getTypes = function(){
 		// DragSource objects MUST include a selection property or overload
@@ -36,14 +37,23 @@ dojo.webui.DropTarget = function(){
 
 dojo.webui.dragAndDropManager = new function(){
 	
-	var currentDropTarget = null;
+	this.hoverTarget = null;
+	this.dragSource = null;
+	this.isDragging = false;
+	this.targetAccepts = false;
 
-	this.startDrag = function(){
-		// initialize the drag either from the current dojo.webui.selection
-		// list or from
-	}
+	// FIXME: should these be replaced by some DOM/HTML variant? is there some
+	// other method they should call?
+	this.mouseOver = function(widget){ return; }
+	this.mouseOut = function(widget){ return; }
+	this.mouseMove = function(widget){ return; }
+	this.mouseDown = function(){ return; }
+	this.mouseUp = function(nativeEvt){ this.drop(nativeEvt); }
+	this.mouseDrag = function(nativeEvt){ return; }
+	this.startDrag = function(nativeEvt){ return; }
+	this.checkForResize = function(nativeEvt){ return; }
 
-	this.drag = function(){
+	this.drag = function(nativeEvt){
 		// FIXME: when dragging over a potential drop target, we must ask it if
 		// it can accept our selected items. Need to preform that check here
 		// and provide visual feedback.
@@ -51,13 +61,16 @@ dojo.webui.dragAndDropManager = new function(){
 		// FIXME: need to cache the results so we aren't calling this willie-nilly
 	}
 
-	this.drop = function(){
+	this.drop = function(nativeEvt){
 		// FIXME: we need to pass dojo.webui.selection to the drop target here.
 		// If rejected, need to provide visual feedback of rejection. Need to
 		// determine how to handle copy vs. move drags and if that can/should
 		// be set by the dragged items or the receiver of the drop event.
+		if((this.hoverTarget)&&(this.dragSource)&&(this.targetAccepts)){
+		}
 	}
 }
+
 
 /* FIXME:
  *	The base widget classes should support drag-and-drop completely, but

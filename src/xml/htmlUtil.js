@@ -318,6 +318,13 @@ dojo.xml.htmlUtil = new function(){
 	this.setOpacity = function(node, opacity) {
 		var h = dojo.render.html;
 		if(h.ie){
+			if(node.nodeName.toLowerCase() == "tr"){
+				// FIXME: is this too naive? will we get more than we want?
+				var tds = node.getElementsByTagName("td");
+				for(var x=0; x<tds.length; x++){
+					tds[x].style.filter = "Alpha(Opacity="+opacity*100+")";
+				}
+			}
 			node.style.filter = "Alpha(Opacity="+opacity*100+")";
 		}else if(h.moz){
 			node.style.opacity = opacity; // ffox 1.0 directly supports "opacity"

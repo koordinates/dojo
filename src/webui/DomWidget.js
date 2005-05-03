@@ -3,6 +3,7 @@ dojo.hostenv.startPackage("dojo.webui.DomWidget");
 dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.text.*");
 dojo.hostenv.loadModule("dojo.webui.Widget");
+dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
@@ -32,6 +33,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		}
 	}
 
+
 	this.postInitialize = function(args, frag){
 		if(!frag){ return; }
 		var nr = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
@@ -43,6 +45,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// nodes
 		if(this.isContainer) {
 			var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
+			// FIXME: this is borken!!!
 			var on = nr.parentNode.replaceChild(this.domNode, nr);
 			var fragParser = new dojo.webui.widgets.Parse(frag);
 			fragParser.createComponents(frag);
@@ -58,16 +61,28 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		}
 	}
 
-	// method over-ride
-	this.buildRendering = function(){
-		// DOM widgets construct themselves from a template
-		this.buildFromTemplate();
-		this.fillInTemplate(); 	// this is where individual widgets will handle
-								// population of data from properties, remote
-								// data sets, etc.
+	this.startResize = function(coords){
+		dj_unimplemented("dojo.webui.DomWidget.startResize");
 	}
 
-	this.buildFromTemplate = function(){
+	this.updateResize = function(coords){
+		dj_unimplemented("dojo.webui.DomWidget.updateResize");
+	}
+
+	this.endResize = function(coords){
+		dj_unimplemented("dojo.webui.DomWidget.endResize");
+	}
+	// method over-ride
+	this.buildRendering = function(args, frag){
+		// DOM widgets construct themselves from a template
+		this.buildFromTemplate(args, frag);
+		this.fillInTemplate(args, frag); 	// this is where individual widgets
+											// will handle population of data
+											// from properties, remote data
+											// sets, etc.
+	}
+
+	this.buildFromTemplate = function(args, frag){
 		var node = null;
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
@@ -218,7 +233,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	}
 
 	this.fillInTemplate = function(){
-		dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
+		// dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
 	}
 	
 	// method over-ride
@@ -301,6 +316,9 @@ dojo.webui.HTMLWidget = function(args){
 	this.templateCSSPath = null;
 	this.templatePath = null;
 
+	this.resizeGhost = null;
+	this.initialResizeCoords = null;
+
 	this.getContainerHeight = function(){
 		// NOTE: container height must be returned as the INNER height
 		dj_unimplemented("dojo.webui.HTMLWidget.getContainerHeight");
@@ -313,6 +331,53 @@ dojo.webui.HTMLWidget = function(args){
 	this.setNativeHeight = function(height){
 		var ch = this.getContainerHeight();
 	}
+
+	this.startResize = function(coords){
+		// get the left and top offset of our dom node
+		var hu = dojo.xml.htmlUtil;
+		
+		coords.offsetLeft = hu.totalOffsetLeft(this.domNode);
+		coords.offsetTop = hu.totalOffsetTop(this.domNode);
+		coords.innerWidth = hu.getInnerWidth(this.domNode);
+		coords.innerHeight = hu.getInnerHeight(this.domNode);
+		if(!this.resizeGhost){
+			this.resizeGhost = document.createElement("div");
+			var rg = this.resizeGhost;
+			rg.style.position = "absolute";
+			rg.style.backgroundColor = "white";
+			rg.style.border = "1px solid black";
+			dojo.xml.htmlUtil.setOpacity(rg, 0.3);
+			document.body.appendChild(rg);
+		}
+		with(this.resizeGhost.style){
+			left = coords.offsetLeft + "px";
+			top = coords.offsetTop + "px";
+		}
+		this.initialResizeCoords = coords;
+		this.resizeGhost.style.display = "";
+		this.updateResize(coords);
+	}
+
+	this.updateResize = function(coords){
+		var dx = coords.x-this.initialResizeCoords.x;
+		var dy = coords.y-this.initialResizeCoords.y;
+		with(this.resizeGhost.style){
+			width = this.initialResizeCoords.innerWidth + dx + "px";
+			height = this.initialResizeCoords.innerHeight + dy + "px";
+		}
+	}
+
+	this.endResize = function(coords){
+		// FIXME: need to actually change the size of the widget!
+		var dx = coords.x-this.initialResizeCoords.x;
+		var dy = coords.y-this.initialResizeCoords.y;
+		with(this.domNode.style){
+			width = this.initialResizeCoords.innerWidth + dx + "px";
+			height = this.initialResizeCoords.innerHeight + dy + "px";
+		}
+		this.resizeGhost.style.display = "none";
+	}
+
 
 	this.createNodesFromText = function(txt, wrap){
 		// alert("HTMLWidget.createNodesFromText");
@@ -374,6 +439,100 @@ dojo.webui.HTMLWidget = function(args){
 
 dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
 
+dojo.webui.htmlDragAndDropManager = new function(){
+
+	var dm = dojo.webui.dragAndDropManager;
+	this.resizeTarget = null;
+	this.dragSource = null;
+	this.hoverTarget = null;
+	this.isResizing = false;
+	this.overResize = false;
+	this.isDragging = false;
+	this.init = [];
+	this.curr = [];
+
+	this.checkForResize = function(node){
+		var rh = false;
+		var ca = null;
+		var ancestors = dojo.xml.domUtil.getAncestors(node);
+		while((ancestors.length)&&(!rh)){
+			var ca = ancestors.shift();
+			rh = dojo.xml.htmlUtil.getAttribute(ca, "resizeHandle");
+		}
+		return rh;
+	}
+
+	this.mouseMove = function(evt){
+		this.curr = [evt.clientX, evt.clientY];
+		this.curr.x = this.curr[0];
+		this.curr.y = this.curr[1];
+		if(this.isResizing){
+			if(this.resizeTarget){
+				this.resizeTarget.updateResize(this.curr);
+				evt.preventDefault();
+				evt.stopPropagation();
+			}
+		}else if(this.isDragging){
+			// FIXME: what do we do here?
+		}else{
+			var rh = this.checkForResize(evt.target);
+			// FIXME: we need to check for "hotspots" here!!
+			// FIXME: we also need to handle horizontal-only or vertical-only
+			// reisizing
+			if(rh){
+				this.overResize = true;
+				// document.body.style.cursor = "nw-resize";
+				document.body.style.cursor = "move";
+			}else{
+				this.overResize = false;
+				document.body.style.cursor = "";
+			}
+		}
+		this.hoverTarget = dojo.webui.widgetManager.getWidgetFromEvent(evt);
+	}
+
+	this.mouseDown = function(evt){
+		this.init = this.curr;
+		if(!this.hoverTarget){ return; }
+		if(this.overResize){
+			this.isResizing = true;
+			this.resizeTarget = this.hoverTarget;
+			if(this.resizeTarget["startResize"]){
+				evt.preventDefault();
+				evt.stopPropagation();
+				this.resizeTarget.startResize(this.curr);
+			}
+		}else{
+			if(this.hoverTarget["isDragSource"] == true){
+				this.isDragging = true;
+				this.dragSource = this.hoverTarget;
+				document.body.style.cursor = "move";
+			}
+		}
+	}
+
+	// turns out that these are pretty useless
+	this.mouseOver = function(nativeEvt){ return; }
+	this.mouseOut = function(nativeEvt){ return; }
+
+	this.mouseUp = function(nativeEvt){ 
+		// alert(nativeEvt); 
+		if(this.isResizing){
+			if(this.resizeTarget){
+				this.resizeTarget.endResize(this.curr);
+			}
+			this.resizeTarget = null;
+			this.isResizing = false;
+			this.overResize = false;
+			document.body.style.cursor = "";
+		}
+		dojo.webui.dragAndDropManager.drop(nativeEvt);
+		this.init = [];
+	}
+	this.mouseDrag = function(nativeEvt){ return; }
+}
+
+try{
 (function(){
 	var tf = function(){
 		var rw = null;
@@ -391,6 +550,14 @@ dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
 			rw = new rwClass();
 			rw.domNode = document.body;
 			// FIXME: need to attach to DOM events and the like here
+			
+			var htmldm = dojo.webui.htmlDragAndDropManager;
+			dojo.event.connect(document, "onmousemove", htmldm, "mouseMove");
+			dojo.event.connect(document, "onmouseover", htmldm, "mouseOver");
+			dojo.event.connect(document, "onmouseout", htmldm, "mouseOut");
+			dojo.event.connect(document, "onmousedown", htmldm, "mouseDown");
+			dojo.event.connect(document, "onmouseup", htmldm, "mouseUp");
+
 		}else if(dojo.render.svg){
 			// FIXME: fill this in!!!
 			function rwClass(){
@@ -428,9 +595,15 @@ dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
 				return null;
 			}
 		}
+
+		wm.getWidgetFromEvent = function(domEvt){
+			return this.getWidgetFromNode(domEvt.target);
+		}
+
 		wm.getWidgetFromPrimitive = wm.getWidgetFromNode;
 	}
 
 	// make sure we get called when the time is right
 	dojo.event.connect(dojo.hostenv, "loaded", tf);
 })();
+}catch(e){ alert(e); }
