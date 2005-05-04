@@ -273,7 +273,7 @@ dj_inherits(dojo.webui.DomWidget, dojo.webui.Widget);
 
 // SVGWidget is a mixin ONLY
 dojo.webui.SVGWidget = function(args){
-	alert("dojo.webui.SVGWidget");
+	// alert("dojo.webui.SVGWidget");
 	// mixin inheritance
 	// dojo.webui.DomWidget.call(this);
 
