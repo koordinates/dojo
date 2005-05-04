@@ -220,7 +220,7 @@ something other than 0::
 The `result` property of our widget will now be initialized to 15. An obvious
 improvement is to display our default (or over-ridden) value when the widget is
 created. Here's the full source code for `HTMLTestWidget.js` so far, including
-the `postInitialize` method to handle this improvement::
+the `fillInTemplate` method to handle this improvement::
 
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
     dojo.hostenv.loadModule("dojo.webui.DomWidget");
@@ -254,7 +254,7 @@ the `postInitialize` method to handle this improvement::
             this.showResult();
         }
 
-        this.postInitialize = function(){
+        this.fillInTemplate = function(){
             // show the initial value after we first get built
             this.showResult();
         }
