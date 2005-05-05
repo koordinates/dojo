@@ -35,7 +35,9 @@ dojo.io.buildFormGetString = function(sNode){
 	var ctyp = sNode.nodeName ? sNode.nodeName.toLowerCase() : "";
 	var etyp = sNode.type ? sNode.type.toLowerCase() : "";
 	if( ( (ctyp=="input") && (etyp!="radio") && (etyp!="checkbox") ) || (ctyp=="select") || (ctyp=="textarea")){
-		if(!((ctyp=="select")&&(sNode.getAttribute("multiple")))){
+		if((ctyp=='input') && (etyp=='submit')){
+			// we shouldn't be adding values of submit buttons, so ommit them here
+		}else if(!((ctyp=="select")&&(sNode.getAttribute("multiple")))){
 			tvar = ec(sNode.getAttribute("name")) + "=" + ec(sNode.value) + "&";
 		}else{
 			// otherwise we have a multi-select element, so gather all of it's values
@@ -404,9 +406,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		var query = "";
 		if(kwArgs["formNode"]){
 			var ta = kwArgs.formNode.getAttribute("action");
-			if(ta){ url = ta; }
+			if((ta)&&(!kwArgs["url"])){ url = ta; }
 			var tp = kwArgs.formNode.getAttribute("method");
-			if(tp){ kwArgs.method = tp; }
+			if((tp)&&(!kwArgs["method"])){ kwArgs.method = tp; }
 			query += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
 
@@ -442,7 +444,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		var received = false;
 
 		// build a handler function that calls back to the handler obj
-		if( async ) {
+		if(async){
 			http.onreadystatechange = function(){
 				if((4==http.readyState)&&(http["status"])){
 					if(received){ return; } // Opera 7.6 is foo-bar'd
