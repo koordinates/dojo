@@ -1,0 +1,35 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>blah</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<script language="JavaScript" type="text/javascript">
+		// Dojo configuration
+		djConfig = { 
+			baseRelativePath: "../../../",
+			isDebug: true
+		};
+	</script>
+	<script language="JavaScript" type="text/javascript" 
+		src="../../../src/bootstrap1.js"></script>
+	<script language="JavaScript" type="text/javascript" 
+		src="../../../src/hostenv_browser.js"></script>
+	<script language="JavaScript" type="text/javascript" 
+		src="../../../src/bootstrap2.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		dojo.hostenv.loadModule("dojo.webui.widgets.SlideShow");
+	</script>
+</head>
+<body>
+	<div dojoType="SlideShow" 
+		imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg;images/5.jpg;images/6.jpg" 
+		transitionInterval="700"
+		delay="700">
+		insert pretty image here
+		
+	</div>
+</body>
+</html>
