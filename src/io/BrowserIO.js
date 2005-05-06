@@ -13,7 +13,7 @@ dojo.io.checkChildrenForFile = function(node){
 			}
 
 			if(node.childNodes.length){
-				if(checkChildrenForFile(node)){
+				if(dojo.io.checkChildrenForFile(node)){
 					return true;
 				}
 			}
