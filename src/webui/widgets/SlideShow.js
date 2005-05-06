@@ -1,7 +1,5 @@
 dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.xml.*");
-dojo.hostenv.loadModule("dojo.io.IO");
-dojo.hostenv.loadModule("dojo.io.BrowserIO");
 dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
 dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
@@ -21,14 +19,32 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.urlsIdx = 0;
 	this.delay = 4000; // give it 8 seconds
 	this.transitionInterval = 2000; // 2 seconds
-	this.width = 800;
-	this.height = 600;
+	this.imgWdth = 800;
+	this.imgHeight = 600;
 	this.isContainer = false;
 	this.background = "img2";
 	this.foreground = "img1";
+	this.stopped = false;
+	this.zIndex = 0;
+
+	// our DOM nodes:
+	this.imagesContainer = null;
+	this.startStopButton = null;
+	this.controlsContainer = null;
+	this.infoContainer = null;
 	this.img1 = null;
 	this.img2 = null;
-	this.zIndex = 0;
+
+	this.toggleStopped = function(){
+		if(this.stopped){
+			this.stopped = false;
+			this.fadeEnded();
+			this.startStopButton.value= "stop";
+		}else{
+			this.stopped = true;
+			this.startStopButton.value= "start";
+		}
+	}
 
 	this.timeoutWrapperName = null;
 
@@ -45,6 +61,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 
 	this.timeoutEnded = function(){
 		// start fading out the foreground image
+		if(this.stopped){ return; }
 		var _this = this;
 		dojo.graphics.htmlEffects.fadeOut(this[this.foreground], 
 			this.transitionInterval, 
@@ -81,6 +98,9 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	}
 
 	this.fillInTemplate = function(){
+		this.imagesContainer.style.width = "px";
+			this.imgWdth+"px";
+			this.imgHeight+"px";
 		if(this.imgUrls.length>1){
 			this.img2.src = this.imgUrls[this.urlsIdx++];
 			this.fadeEnded();
@@ -92,15 +112,3 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 }
 dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
-
-/*
-function preInit(){
-	dojo.webui.widgets.HTMLSlideShow.prototype.templateNode = document.getElementById("faderTemplate");
-}
-
-function init(){
-}
-
-dojo.event.connect("before", dojo.hostenv, "loaded", window, "preInit");
-dojo.event.connect(dojo.hostenv, "loaded", window, "init");
-*/

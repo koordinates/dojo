@@ -13,6 +13,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.createComponents = function(fragment) {
 		var djTags = dojo.webui.widgets.tags;
 		for(var item in fragment){
+			// if we have items to parse/create at this level, do it!
 			try{
 				if((fragment[item]["tagName"])&&
 					(fragment[item] != fragment["nodeRef"])){
@@ -34,6 +35,8 @@ dojo.webui.widgets.Parse = function(fragment) {
 				// throw(e);
 				// IE is such a bitch sometimes
 			}
+
+			// if there's a sub-frag, build widgets from that too
 			if( (typeof fragment[item] == "object")&&
 				(fragment[item] != fragment.nodeRef)&&
 				(fragment[item] != fragment["tagName"])){
