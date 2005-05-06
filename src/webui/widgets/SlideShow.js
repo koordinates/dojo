@@ -20,7 +20,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.widgetType = "SlideShow";
 	this.imgUrls = [];
 	this.urlsIdx = 0;
-	this.delay = 4000; // give it 8 seconds
+	this.delay = 4000; // give it 4 seconds
 	this.transitionInterval = 2000; // 2 seconds
 	this.imgWidth = 800;
 	this.imgHeight = 600;
@@ -101,9 +101,12 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	}
 
 	this.fillInTemplate = function(){
-		this.imagesContainer.style.width = "px";
-			this.imgWidth+"px";
-			this.imgHeight+"px";
+		dojo.xml.htmlUtil.setOpacity(this.img1, 0.9999);
+		dojo.xml.htmlUtil.setOpacity(this.img2, 0.9999);
+		with(this.imagesContainer.style){
+			width = this.imgWidth+"px";
+			height = this.imgHeight+"px";
+		}
 		if(this.imgUrls.length>1){
 			this.img2.src = this.imgUrls[this.urlsIdx++];
 			this.fadeEnded();
