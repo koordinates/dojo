@@ -13,8 +13,10 @@ dojo.io.checkChildrenForFile = function(node){
 			}
 
 			if(node.childNodes.length){
-				if(dojo.io.checkChildrenForFile(node)){
-					return true;
+				for(var x=0; x<node.childNodes.length; x++){
+					if(dojo.io.checkChildrenForFile(node.childNodes.item(x))){
+						return true;
+					}
 				}
 			}
 		}
