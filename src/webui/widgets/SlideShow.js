@@ -22,7 +22,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.urlsIdx = 0;
 	this.delay = 4000; // give it 8 seconds
 	this.transitionInterval = 2000; // 2 seconds
-	this.imgWdth = 800;
+	this.imgWidth = 800;
 	this.imgHeight = 600;
 	this.isContainer = false;
 	this.background = "img2";
@@ -102,7 +102,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 
 	this.fillInTemplate = function(){
 		this.imagesContainer.style.width = "px";
-			this.imgWdth+"px";
+			this.imgWidth+"px";
 			this.imgHeight+"px";
 		if(this.imgUrls.length>1){
 			this.img2.src = this.imgUrls[this.urlsIdx++];
