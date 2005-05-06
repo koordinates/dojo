@@ -1,3 +1,6 @@
+dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
+dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
+
 dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.xml.*");
 dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
