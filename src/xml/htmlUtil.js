@@ -338,8 +338,8 @@ dojo.xml.htmlUtil = new function(){
 	}
 	
 	this.getOpacity = function(node) {
-		if( dojo.render.ie ) {
-			var opac = (node.filters && node.filters.alpha ? node.filters.alpha.opacity || 100 : 100) / 100;
+		if( dojo.render.html.ie ) {
+			var opac = (node.filters && node.filters.alpha && typeof node.filters.alpha.opacity == "number" ? node.filters.alpha.opacity : 100) / 100;
 		} else {
 			var opac = node.style.opacity || node.style.MozOpacity ||  node.style.KhtmlOpacity || 1;
 		}
@@ -351,7 +351,7 @@ dojo.xml.htmlUtil = new function(){
 	// or remove, making it less than useful.  So we need something that can 
 	// search for the selector that you you want to remove.
 	this.insertCSSRule = function(selector, declaration, index) {
-		if(dojo.render.ie) {
+		if(dojo.render.html.ie) {
 			if(!this.styleSheet) {
 				// FIXME: create a new style sheet document
 			}
@@ -376,7 +376,7 @@ dojo.xml.htmlUtil = new function(){
 			dj_debug("no stylesheet defined for removing rules");
 			return false;
 		}
-		if(dojo.render.ie) {
+		if(dojo.render.html.ie) {
 			if(!index) {
 				index = this.styleSheet.rules.length;
 			this.styleSheet.removeRule(index);

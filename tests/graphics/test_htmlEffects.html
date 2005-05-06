@@ -1,62 +1,76 @@
-<html>
-	<head>
-		<style type="text/css">
-			#elm {
-				padding : 10px;
-				background : #666;
-				color : #eee;
-			}
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-			#slider {
-				position : absolute;
-				padding : 5px;
-				background : #ccc;
-				left : 500px;
-				top : 300px;
-			}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>HTML Effects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+#fadeElm {
+	padding : 10px;
+	width : 70%;
+	background : #666;
+	color : #eee;
+}
 
-			#flash {
-			}
-		</style>
-		<script language="JavaScript" type="text/javascript">
-			// Dojo configuration
-			djConfig = { 
-				baseRelativePath: "../../",
-				isDebug: true
-			};
-		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../src/bootstrap1.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../src/hostenv_browser.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../src/bootstrap2.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
-			onload = function() {
-				var flash = document.getElementById("flash");
-				dojo.graphics.htmlEffects.colorFadeIn(flash, [230, 230, 180], 1500, 1500);
-				var unflash = document.getElementById("unflash");
-				dojo.graphics.htmlEffects.colorFadeOut(unflash, [255, 200, 180], 1500, 1500);
-			}
-		</script>
-	</head>
-	<body>
-		<a href="javascript:void(dojo.graphics.htmlEffects.fadeOut(document.getElementById('elm'), 500))">Fade out</a>
-		|
-		<a href="javascript:void(dojo.graphics.htmlEffects.fadeIn(document.getElementById('elm'), 500))">Fade in</a>
-		|
-		<a href="javascript:void(dojo.xml.htmlUtil.setOpacity(document.getElementById('elm'), 0.5))">Set opacity = 50%</a>
-		<div id="elm">Element to fade</div>
+#slider {
+	position : absolute;
+	padding : 5px;
+	background : #ccc;
+	left : 500px;
+	top : 300px;
+}
 
-		<a href="javascript:void(dojo.graphics.htmlEffects.slideTo(document.getElementById('slider'), [200, 200], 500))">Slide to: 200, 200</a>
-		|
-		<a href="javascript:void(dojo.graphics.htmlEffects.slideBy(document.getElementById('slider'), [200, 200], 500))">Slide by: 200, 200</a>
-		|
-		<a href="javascript:void(dojo.graphics.htmlEffects.slide(document.getElementById('slider'), [200, 200], [500, 500], 500))">Slide from 200, 200 to 500, 500</a>
-		<div id="slider">I slide</div>
-		<div id="flash">I fade to my BG!</div>
-		<div id="unflash">I fade from my BG!</div>
-	</body>
+#flash {
+}
+</style>
+<script language="JavaScript" type="text/javascript">
+	// Dojo configuration
+	djConfig = { 
+		baseRelativePath: "../../",
+		isDebug: true
+	};
+</script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/bootstrap1.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/hostenv_browser.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/bootstrap2.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/xml/domUtil.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/xml/htmlUtil.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
+	var fadeElem, flash, unflash;
+	onload = function() {
+		flash = document.getElementById("flash");
+		dojo.graphics.htmlEffects.colorFadeIn(flash, [230, 230, 180], 1500, 1500);
+		unflash = document.getElementById("unflash");
+		dojo.graphics.htmlEffects.colorFadeOut(unflash, [255, 200, 180], 1500, 1500);
+	}
+</script>
+</head>
+<body>
+	<a href="javascript:void(dojo.graphics.htmlEffects.fadeOut(document.getElementById('fadeElm'), 500))">Fade out</a>
+	|
+	<a href="javascript:void(dojo.graphics.htmlEffects.fadeIn(document.getElementById('fadeElm'), 500))">Fade in</a>
+	|
+	<a href="javascript:void(dojo.xml.htmlUtil.setOpacity(document.getElementById('fadeElm'), 0.5))">Set opacity = 50%</a>
+
+	<div id="fadeElm">Element to fade</div>
+
+	<a href="javascript:void(dojo.graphics.htmlEffects.slideTo(document.getElementById('slider'), [200, 200], 500))">Slide to: 200, 200</a>
+	|
+	<a href="javascript:void(dojo.graphics.htmlEffects.slideBy(document.getElementById('slider'), [200, 200], 500))">Slide by: 200, 200</a>
+	|
+	<a href="javascript:void(dojo.graphics.htmlEffects.slide(document.getElementById('slider'), [200, 200], [500, 500], 500))">Slide from 200, 200 to 500, 500</a>
+	<div id="slider">I slide</div>
+
+	<div id="flash">I fade to my BG!</div>
+	<div id="unflash">I fade from my BG!</div>
+</body>
 </html>
 
