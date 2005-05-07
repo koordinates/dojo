@@ -1,6 +1,7 @@
 dojo.hostenv.startPackage("dojo.io.BrowserIO");
 
 dojo.hostenv.loadModule("dojo.io.IO");
+dojo.hostenv.loadModule("dojo.alg.*");
 
 dojo.io.checkChildrenForFile = function(node){
 	var hasTrue = false;
@@ -375,29 +376,17 @@ dojo.io.XMLHTTPTransport = new function(){
 		// FIXME: we need to determine when form values need to be
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
-		if(	
-			(
-				(kwArgs["mimetype"] == "text/plain") ||
-				(kwArgs["mimetype"] == "text/html") ||
-				(kwArgs["mimetype"] == "text/xml") ||
-				(kwArgs["mimetype"] == "text/javascript")
-			)&&(
-				(kwArgs["method"] == "get") ||
-				( 
-					(kwArgs["method"] == "post") && 
-					( (!kwArgs["formNode"])||(dojo.io.formHasFile(kwArgs["formNode"])) ) 
-				) 
-			)
-		){
-			return true;
-		}
-
-		return false;
+		return dojo.alg.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "text/xml", "text/javascript"])
+			&& dojo.alg.inArray(kwArgs["method"], ["post", "get"])
+			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
 	this.bind = function(kwArgs){
 		if(!kwArgs["url"]){
-			if(((!kwArgs["formNode"]))&&((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])||(kwArgs["watchForURL"]))&&((!window["djConfig"])&&(!window["djConfig"]["preventBackButtonFix"]))){
+			// are we performing a history action?
+			if( !kwArgs["formNode"]
+				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeURL"] || kwArgs["watchForURL"])
+				&& (!window["djConfig"] && !window["djConfig"]["preventBackButtonFix"]) ) {
 				this.addToHistory(kwArgs);
 				return true;
 			}
@@ -414,6 +403,10 @@ dojo.io.XMLHTTPTransport = new function(){
 			query += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
 
+		if(!kwArgs.method) {
+			kwArgs.method = "get";
+		}
+
 		if(kwArgs["content"]){
 			query += dojo.io.argsFromMap(kwArgs.content);
 		}
@@ -422,7 +415,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			query = kwArgs.postContent;
 		}
 
-		if((kwArgs["backButton"])||(kwArgs["back"])||(kwArgs["changeURL"])){
+		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeURL"]){
 			this.addToHistory(kwArgs);
 		}
 
@@ -434,7 +427,6 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(useCache){
 			var cachedHttp = getFromCache(url, query, kwArgs.method);
 			if(cachedHttp){
-				// dj_debug("Grabbed data from cache!");
 				doLoad(kwArgs, cachedHttp);
 				return;
 			}

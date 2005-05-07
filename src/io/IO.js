@@ -170,7 +170,11 @@ dojo.io.bind = function(kwArgs){
 
 	// normalize args
 	if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
-	if(!kwArgs["method"]){ kwArgs.method = "get"; }
+	if(!kwArgs["method"] && !kwArgs["formNode"]){
+		kwArgs.method = "get";
+	} else if(kwArgs["formNode"]) {
+		kwArgs.method = kwArgs["formNode"].method || "get";
+	}
 	if(kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
 	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
 	if(kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
