@@ -316,6 +316,7 @@ dojo.xml.htmlUtil = new function(){
 	
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	this.setOpacity = function(node, opacity) {
+		if( opacity >= 1.0 ) { opacity = 0.999999; }
 		var h = dojo.render.html;
 		if(h.ie){
 			if(node.nodeName.toLowerCase() == "tr"){
@@ -343,7 +344,24 @@ dojo.xml.htmlUtil = new function(){
 		} else {
 			var opac = node.style.opacity || node.style.MozOpacity ||  node.style.KhtmlOpacity || 1;
 		}
-		return opac > 1 ? 1.0 : Number(opac);
+		return opac >= 0.999999 ? 1.0 : Number(opac);
+	}
+
+	this.clearOpacity = function(node) {
+		var h = dojo.render.html;
+		if(h.ie) {
+			if( node.filters && node.filters.alpha ) {
+				node.style.filter = ""; // FIXME: may get rid of other filter effects
+			}
+		} else if(h.moz) {
+			node.style.opacity = 1;
+			node.style.MozOpacity = 1;
+		} else if(h.safari) {
+			node.style.opacity = 1;
+			node.style.KhtmlOpacity = 1;
+		} else {
+			node.style.opacity = 1;
+		}
 	}
 	
 	// FIXME: this is a really basic stub for adding and removing cssRules, but
