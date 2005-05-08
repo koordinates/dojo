@@ -41,12 +41,20 @@
 		</script>
 	</head>
 	<body>
-		<form name="test" method="post" action="test_postResponse.txt" onsubmit="return dojoForm(this)">
+		<form method="get" action="test_postResponse.txt" onsubmit="return dojoForm(this)">
 			Name: <br>
 			<input type="text" name="name" value="Joe User"><br>
 			Nickname: <br>
 			<input type="text" name="nick" value="JoeUser"><br>
-			<input type="submit">
+			<input type="submit" value="Submit (GET)">
+		</form>
+
+		<form method="post" action="test_postResponse.txt" onsubmit="return dojoForm(this)">
+			Name: <br>
+			<input type="text" name="name" value="Joe User"><br>
+			Nickname: <br>
+			<input type="text" name="nick" value="JoeUser"><br>
+			<input type="submit" value="Submit (POST)">
 		</form>
 	</body>
 </html>
