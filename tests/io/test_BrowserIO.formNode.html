@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				// preventBackButtonFix: true,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/io/IO.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/io/BrowserIO.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.io.*");
+
+			function dojoForm(form) {
+				var kw = {
+					mimetype: "text/plain",
+					formNode: form,
+					load: function(t, txt, e) {
+						dj_debug(txt);
+					},
+					error: function(t, e) {
+						dj_debug("Error!... " + e.message);
+					}
+				};
+				dojo.io.bind(kw);
+				return false;
+			}
+		</script>
+	</head>
+	<body>
+		<form name="test" method="post" action="test_postResponse.txt" onsubmit="return dojoForm(this)">
+			Name: <br>
+			<input type="text" name="name" value="Joe User"><br>
+			Nickname: <br>
+			<input type="text" name="nick" value="JoeUser"><br>
+			<input type="submit">
+		</form>
+	</body>
+</html>
+
