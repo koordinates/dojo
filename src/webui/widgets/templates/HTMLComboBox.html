@@ -13,7 +13,7 @@
 					dojoAttachEvent="onKeyDown; onKeyUp;"
 					dojoAttachPoint="textInputNode">
 			</td>
-			<td>
+			<td dojoAttachEvent="onClick; startSearchFromInput;">
 				<!-- FIXME: we need a simple way to make sure that relative
 				location replacement gets done -->
 				<img border="0" 
@@ -23,20 +23,12 @@
 		</tr>
 		<tr>
 			<td>
-				<div class="comboBoxOptions" dojoAttachPoint="optionsListNode">
+				<div class="comboBoxOptions" dojoAttachPoint="optionsListNode"
+					style="border: 1px solid black;">
+					<!--	
 					<div>option 1</div>
 					<div>option 2</div>
-					<div>option 3</div>
-					<div>option 4</div>
-					<div>option 5</div>
-					<div>option 6</div>
-					<div>option 7</div>
-					<div>option 8</div>
-					<div>option 9</div>
-					<div>option 10</div>
-					<div>option 11</div>
-					<div>option 12</div>
-					<div>option 13</div>
+					-->
 				</div>
 			</td>
 			<td>
