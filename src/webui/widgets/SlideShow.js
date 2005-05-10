@@ -54,12 +54,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.backgroundImageLoaded = function(){
 		// start the timeout
 		var _this = this;
-		if(!this.timeoutWrapperName){
-			this.timeoutWrapperName = dojo.event.nameAnonFunc(function(){
-				_this.timeoutEnded();
-			}, dj_global);
-		}
-		setTimeout(this.timeoutWrapperName+"();", this.delay);
+		setTimeout(function() { _this.timeoutEnded(); }, this.delay);
 	}
 
 	this.timeoutEnded = function(){
@@ -93,7 +88,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 			adviceFunc: "backgroundImageLoaded",
 			once: true // make sure we only ever hear about it once
 		});
-		dojo.xml.htmlUtil.setOpacity(this[this.background], 0.9999);
+		dojo.xml.htmlUtil.setOpacity(this[this.background], 1.0);
 		this[this.background].src = this.imgUrls[this.urlsIdx++];
 		if(this.urlsIdx>(this.imgUrls.length-1)){
 			this.urlsIdx = 0;
@@ -101,8 +96,8 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	}
 
 	this.fillInTemplate = function(){
-		dojo.xml.htmlUtil.setOpacity(this.img1, 0.9999);
-		dojo.xml.htmlUtil.setOpacity(this.img2, 0.9999);
+		dojo.xml.htmlUtil.setOpacity(this.img1, 1.0);
+		dojo.xml.htmlUtil.setOpacity(this.img2, 1.0);
 		with(this.imagesContainer.style){
 			width = this.imgWidth+"px";
 			height = this.imgHeight+"px";
