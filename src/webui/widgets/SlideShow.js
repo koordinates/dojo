@@ -18,17 +18,20 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
 	this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
 
-	this.widgetType = "SlideShow";
-	this.imgUrls = [];
-	this.urlsIdx = 0;
-	this.delay = 4000; // give it 4 seconds
-	this.transitionInterval = 2000; // 2 seconds
-	this.imgWidth = 800;
-	this.imgHeight = 600;
+	// over-ride some defaults
 	this.isContainer = false;
-	this.background = "img2";
-	this.foreground = "img1";
-	this.stopped = false;
+	this.widgetType = "SlideShow";
+
+	// useful properties
+	this.imgUrls = [];		// the images we'll go through
+	this.urlsIdx = 0;		// where in the images we are
+	this.delay = 4000; 		// give it 4 seconds
+	this.transitionInterval = 2000; // 2 seconds
+	this.imgWidth = 800;	// img width
+	this.imgHeight = 600;	// img height
+	this.background = "img2"; // what's in the bg
+	this.foreground = "img1"; // what's in the fg
+	this.stopped = false;	// should I stay or should I go?
 
 	// our DOM nodes:
 	this.imagesContainer = null;
@@ -63,8 +66,6 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 			this.startStopButton.value= "start";
 		}
 	}
-
-	this.timeoutWrapperName = null;
 
 	this.backgroundImageLoaded = function(){
 		// start the timeout
