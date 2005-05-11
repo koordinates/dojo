@@ -110,9 +110,17 @@ dojo.event.browser = new function(){
 			return true;
 		}else{
 			// NW_expando_list.push([node, 'on' + evtName]);
-			// FIXME: this clobbers the event handler that's already set, is
-			// there a way around it?
-			node["on"+evtName]=newfp;
+			// there's probably "better" anti-clobber algs, but this should only ever have
+			// to happen once, so it should suffice
+			if( typeof node["on"+evtName] == "function" ) {
+				var oldEvt = node["on"+evtName];
+				node["on"+evtName] = function(e) {
+					oldEvt(e);
+					newfp(e);
+				}
+			} else {
+				node["on"+evtName]=newfp;
+			}
 			return true;
 		}
 	}
