@@ -68,12 +68,6 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	}
 
 	this.backgroundImageLoaded = function(){
-		// start the timeout
-		var _this = this;
-		setTimeout(function() { _this.timeoutEnded(); }, this.delay);
-	}
-
-	this.timeoutEnded = function(){
 		// start fading out the foreground image
 		if(this.stopped){ return; }
 		var _this = this;
@@ -106,7 +100,8 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 			srcFunc: "onload",
 			adviceObj: this,
 			adviceFunc: "backgroundImageLoaded",
-			once: true // make sure we only ever hear about it once
+			once: true, // make sure we only ever hear about it once
+			delay: this.delay
 		});
 		dojo.xml.htmlUtil.setOpacity(this[this.background], 1.0);
 		this[this.background].src = this.imgUrls[this.urlsIdx++];
