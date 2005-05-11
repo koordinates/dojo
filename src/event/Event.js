@@ -58,7 +58,8 @@ dojo.event = new function(){
 			aroundFunc: null,
 			adviceType: (args.length>2) ? args[0] : "after",
 			precedence: "last",
-			once: false
+			once: false,
+			delay: null
 		};
 
 		switch(args.length){
@@ -133,6 +134,7 @@ dojo.event = new function(){
 				ao.aroundObj = args[5];
 				ao.aroundFunc = args[6];
 				ao.once = args[7];
+				ao.delay = args[8];
 				break;
 		}
 
@@ -175,7 +177,8 @@ dojo.event = new function(){
 									kwArgs["adviceFunc"],
 									kwArgs["aroundObj"],
 									kwArgs["aroundFunc"],
-									kwArgs["once"]);
+									kwArgs["once"],
+									kwArgs["delay"]);
 	}
 
 	this.kwConnect = function(kwArgs){
@@ -288,12 +291,25 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	var obj = this.object||dj_global;
 	var args = arguments;
 
+	// optimization. We only compute once the array version of the arguments
+	// pseudo-arr in order to prevent building it each time advice is unrolled.
+	var aargs = [];
+	// NOTE: alex: I think this is safe since we apply() these args anyway, so
+	// primitive types will be copied at the call boundary anyway, and
+	// references to objects would be mutable anyway.
+	for(var x=0; x<args.length; x++){
+		aargs[x] = args[x];
+	}
+
 	var unrollAdvice  = function(marr){ 
 		// dojo.hostenv.println("in unrollAdvice()");
 		var callObj = marr[0]||dj_global;
 		var callFunc = marr[1];
 		var aroundObj = marr[2]||dj_global;
 		var aroundFunc = marr[3];
+		var undef;
+		var delay = parseInt(marr[4]);
+		var hasDelay = ((!isNaN(delay))&&(marr[4]!==null)&&(typeof marr[4] != "undefined"));
 		var to = {
 			args: [],
 			jp_: this,
@@ -302,17 +318,32 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 				return callObj[callFunc].apply(callObj, to.args);
 			}
 		};
+
+		/*
 		// FIXME: how slow is this? Is there a better/faster way to get this
 		// done?
+		// FIXME: is it necessaray to make this copy every time that
+		// unrollAdvice gets called? Would it be better/possible to handle it
+		// in run() where we make args in the first place?
 		for(var x=0; x<args.length; x++){
 			to.args[x] = args[x];
 		}
+		*/
+		to.args = aargs;
 
 		if(aroundFunc){
+			// NOTE: around advice can't delay since we might otherwise depend
+			// on execution order!
 			aroundObj[aroundFunc].call(aroundObj, to);
 		}else{
 			// var tmjp = dojo.event.MethodJoinPoint.getForMethod(obj, methname);
-			callObj[callFunc].apply(callObj, args); 
+			if((hasDelay)&&((dojo.render.html)||(dojo.render.svg))){  // FIXME: the render checks are grotty!
+				dj_global["setTimeout"](function(){
+					callObj[callFunc].apply(callObj, args); 
+				}, delay);
+			}else{ // many environments can't support delay!
+				callObj[callFunc].apply(callObj, args); 
+			}
 		}
 	}
 
@@ -350,16 +381,20 @@ dojo.event.MethodJoinPoint.prototype.getArr = function(kind){
 dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 	this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 					args["aroundObj"], args["aroundFunc"], 
-					args["adviceType"], args["precedence"], args["once"] );
+					args["adviceType"], args["precedence"], 
+					args["once"], args["delay"]);
 }
 
-dojo.event.MethodJoinPoint.prototype.addAdvice = function(adviceObj, advice, thisAroundObj, thisAround, advice_kind, precedence, once){
+dojo.event.MethodJoinPoint.prototype.addAdvice = function(	adviceObj, advice, 
+															thisAroundObj, thisAround, 
+															advice_kind, precedence, 
+															once, delay){
 	var arr = this.getArr(advice_kind);
 	if(!arr){
 		dj_throw("bad this: " + this);
 	}
 
-	var ao = [adviceObj, advice, thisAroundObj, thisAround];
+	var ao = [adviceObj, advice, thisAroundObj, thisAround, delay];
 	
 	if(once){
 		if(this.hasAdvice(adviceObj, advice, advice_kind, arr) >= 0){
