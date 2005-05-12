@@ -21,10 +21,15 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 	}
 
 	this.fitToParent = function(){
+		with(this.textAreaNode.style){
+			width = "100%";
+			height = "100%";
+		}
+		var hu = dojo.xml.htmlUtil;
 		var iw = parseInt(this.textAreaNode.offsetWidth);
 		var ih = parseInt(dojo.xml.htmlUtil.getInnerHeight(this.textAreaNode));
-		var cols = parseInt(dojo.xml.htmlUtil.getAttr(this.textAreaNode, "cols"));
-		var rows = parseInt(dojo.xml.htmlUtil.getAttr(this.textAreaNode, "rows"));
+		var cols = parseInt(hu.getAttr(this.textAreaNode, "cols"));
+		var rows = parseInt(hu.getAttr(this.textAreaNode, "rows"));
 		var pxpercol = (iw/cols);
 		var pxperrow = (ih/rows);
 		// dj_debug(pxpercol + "px/column");
@@ -32,36 +37,20 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 
 		// now fit it to it's container
 		var pn = this.textAreaNode.parentNode;
-		var pnw = parseInt(dojo.xml.htmlUtil.getInnerWidth(pn));
-		var pnh = parseInt(dojo.xml.htmlUtil.getInnerHeight(pn));
+		var pnw = parseInt(hu.getInnerWidth(pn));
+		var pnh = parseInt(hu.getInnerHeight(pn));
 		// dj_debug(parseInt(pnw/pxpercol));
 		this.textAreaNode.cols = parseInt(pnw/pxpercol);
 		this.textAreaNode.rows = parseInt(pnh/pxperrow);
 	}
 
-	this.preDrag = function(){
-		if(dojo.render.html.ie){
-			this.textAreaNode.style.display = "none";
-		}
-	}
-
 	this.postDrag = function(){
-		if(dojo.render.html.ie){
-			// this.textAreaNode.style.position = "";
-			this.textAreaNode.style.display = "";
-			var pn = this.textAreaNode.parentNode;
-			pn.style.overflow = "hidden";
-			this.fitToParent();
-			pn.style.overflow = "";
-		}
+		this.textAreaNode.parentNode.style.overflow = "hidden";
+		this.textAreaNode.style.display = "";
 		this.fitToParent();
 	}
 
 	dojo.event.connect(this, "endResize", this, "fitToParent");
-	// if(dojo.render.html.ie){
-		dojo.event.connect(this, "endResize", this, "fitToParent");
-	// }
-	dojo.event.connect(this, "startResize", this, "preDrag");
 }
 
 dj_inherits(dojo.webui.widgets.HTMLResizableTextarea, dojo.webui.DomWidget);

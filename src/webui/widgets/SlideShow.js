@@ -37,7 +37,6 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.imagesContainer = null;
 	this.startStopButton = null;
 	this.controlsContainer = null;
-	this.infoContainer = null;
 	this.img1 = null;
 	this.img2 = null;
 
@@ -56,7 +55,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 		}
 	}
 
-	this.toggleStopped = function(){
+	this.togglePaused = function(){
 		if(this.stopped){
 			this.stopped = false;
 			this.endTransition();
@@ -70,13 +69,15 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	this.backgroundImageLoaded = function(){
 		// start fading out the foreground image
 		if(this.stopped){ return; }
-		var _this = this;
+		// closure magic for callback
+		var _this = this; 
+		var callback = function(){ _this.endTransition(); };
+
+		// actually start the fadeOut effect
+		// NOTE: if we wanted to use other transition types, we'd set them up
+		// 		 here as well
 		dojo.graphics.htmlEffects.fadeOut(this[this.foreground], 
-			this.transitionInterval, 
-			function(){ 
-				_this.endTransition(); 
-			}
-		);
+			this.transitionInterval, callback);
 	}
 
 	this.endTransition = function(){
@@ -84,11 +85,12 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 		with(this[this.background].style){ zIndex = parseInt(zIndex)+1; }
 		with(this[this.foreground].style){ zIndex = parseInt(zIndex)-1; }
 
-		// now that the old fg is in teh bg, tell ourselves as much
+		// fg/bg book-keeping
 		var tmp = this.foreground;
 		this.foreground = this.background;
 		this.background = tmp;
 
+		// keep on truckin
 		this.loadNextImage();
 	}
 
