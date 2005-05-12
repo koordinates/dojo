@@ -27,10 +27,6 @@ dojo.webui.widgets.HTMLMenuItem = function(){
 		// FIXME: use whatever we use to do more general style setting?
 		this.domNode.style.display = "none";
 	}
-	
-	this.onFoo = function(evt){
-
-	}
 }
 
 /*
