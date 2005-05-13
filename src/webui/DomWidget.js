@@ -25,39 +25,45 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	this.subTemplates = {};
 
 	this.domNode = null; // this is our visible representation of the widget!
+	this.containerNode = null; // holds child elements
 
-	this.addChild = function(widget){
-		if(!this.isContainer){
+	// FIXME: should we support addition at an index in the children arr and
+	// order the display accordingly? Right now we always append.
+	this.addChild = function(widget){ 
+		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.webui.DomWidget.addChild() attempted on non-container widget");
-			return false; // we aren't allowed to contain other widgets, it seems
+			return false;
+		}else if(!this.containerNode){
+			dj_debug("dojo.webui.DomWidget.addChild() attempted without containerNode");
+			return false;
+		}else{
+			this.containerNode.appendChild(widget.domNode);
 		}
 	}
 
 
 	this.postInitialize = function(args, frag){
 		if(!frag){ return; }
-		var nr = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		if(!nr){ return; } // fail safely if we weren't instantiated from a fragment
+		var sourceNodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+		if(!sourceNodeRef){ return; } // fail safely if we weren't instantiated from a fragment
 		// FIXME: this will probably break later for more complex nesting of widgets
 		// FIXME: this will likely break something else, and has performance issues
 		// FIXME: it also seems to be breaking mixins
 		// FIXME: this breaks when the template for the container widget has child
 		// nodes
-		if(this.isContainer) {
+
+		// insert our domNode into the DOM in place of where we started
+		var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+
+		if(this.isContainer){
 			var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
 			// FIXME: this is borken!!!
-			var on = nr.parentNode.replaceChild(this.domNode, nr);
+
+			// FIXME: Dylan, why do we keep having to create new frag parsers
+			// left and right? It seems horribly inefficient.
 			var fragParser = new dojo.webui.widgets.Parse(frag);
-			fragParser.createComponents(frag);
-			this.domNode.innerHTML = on.innerHTML;
-			for(var i=0; i<on.childNodes.length; i++) {
-				if(on.childNodes.nodeType == elementNodeType) {
-					// FIXME: not sure they the above innerHTML switch works, but this doesn't...
-					//this.addChild(on.childNodes.item(i));
-				}
-			}
-		} else {
-			nr.parentNode.replaceChild(this.domNode, nr);
+			// build any sub-components with us as the parent
+			fragParser.createComponents(frag, this);
 		}
 	}
 
