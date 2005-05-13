@@ -24,6 +24,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 
 	// useful properties
 	this.imgUrls = [];		// the images we'll go through
+	this.imgUrlBase = "";
 	this.urlsIdx = 0;		// where in the images we are
 	this.delay = 4000; 		// give it 4 seconds
 	this.transitionInterval = 2000; // 2 seconds
@@ -47,11 +48,19 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 			width = this.imgWidth+"px";
 			height = this.imgHeight+"px";
 		}
+		with(this.img1.style){
+			width = this.imgWidth+"px";
+			height = this.imgHeight+"px";
+		}
+		with(this.img2.style){
+			width = this.imgWidth+"px";
+			height = this.imgHeight+"px";
+		}
 		if(this.imgUrls.length>1){
-			this.img2.src = this.imgUrls[this.urlsIdx++];
+			this.img2.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
 			this.endTransition();
 		}else{
-			this.img1.src = this.imgUrls[this.urlsIdx++];
+			this.img1.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
 		}
 	}
 
@@ -59,10 +68,10 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 		if(this.stopped){
 			this.stopped = false;
 			this.endTransition();
-			this.startStopButton.value= "stop";
+			this.startStopButton.value= "pause";
 		}else{
 			this.stopped = true;
-			this.startStopButton.value= "start";
+			this.startStopButton.value= "play";
 		}
 	}
 
