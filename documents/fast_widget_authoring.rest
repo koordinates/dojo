@@ -48,7 +48,7 @@ going to build in this article::
     </html>
 
 If you like, you can stop here and go add a slideshow to your pages. But odds
-are you want to build a widget yourself. This widget will show you how you can
+are you want to build a widget yourself. This article will show you how you can
 do that and use Dojo to go from idea to upgrade-able interface. Fast.
 
 Intro
