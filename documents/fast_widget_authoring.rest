@@ -12,40 +12,39 @@ Example
 -------
 
 This is the full source of a simple page that uses the slide-show widget we're
-going to build in this article::
+going to build in this article.
 
-    <!DOCTYPE html
-        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+.. raw:: html
 
-    <html xmlns="http://www.w3.org/1999/xhtml" 
-        xml:lang="en" lang="en">
-        <head>
-            <title>our spiffy slide show</title>
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+        <!-- we tell Dojo where it's unzipped tarball is -->
+        <script language="JavaScript" type="text/javascript">
+            djConfig = { baseScriptUri: "http://dojotoolkit.org/~alex/dojo/" };
+        </script>
 
-            <!-- we tell Dojo where it's unzipped tarball is -->
-            <script language="JavaScript" type="text/javascript">
-                djConfig = { baseRelativePath: "../" };
-            </script>
-            <!-- pull in the core of Dojo -->
-            <script language="JavaScript" type="text/javascript" 
-                src="../__package__.js"></script>
-            <!-- Dojo is loaded, include the widget  -->
-            <script language="JavaScript" type="text/javascript">
-                dojo.hostenv.loadModule("dojo.webui.widgets.SlideShow");
-            </script>
+        <!-- pull in the core of Dojo -->
+        <script language="JavaScript" type="text/javascript" 
+            src="http://dojotoolkit.org/~alex/dojo/src/bootstrap1.js"></script>
+        <script language="JavaScript" type="text/javascript" 
+            src="http://dojotoolkit.org/~alex/dojo/src/hostenv_browser.js"></script>
+        <script language="JavaScript" type="text/javascript" 
+            src="http://dojotoolkit.org/~alex/dojo/src/bootstrap2.js"></script>
 
-        </head>
-        <body>
-            <!-- upgrade a static image to a slideshow -->
-            <img dojoType="SlideShow" 
-                imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
-                transitionInterval="700"
-                delay="7000"
-                src="images/1.jpg" />
-        </body>
-    </html>
+        <!-- Dojo is loaded, include the widget  -->
+        <script language="JavaScript" type="text/javascript">
+            dojo.hostenv.loadModule("dojo.webui.widgets.SlideShow");
+        </script>
+
+        <!-- upgrade a static image to a slideshow -->
+        <img dojoType="SlideShow" 
+            imgUrlBase="http://dojotoolkit.org/~alex/dojo/tests/webui/widgets/images/"
+            imgUrls="1.jpg;2.jpg;3.jpg;4.jpg" 
+            transitionInterval="700"
+            delay="7000"
+            imgWidth="400"
+            imgHeight="300"
+            width="400"
+            height="300"
+            src="http://dojotoolkit.org/~alex/dojo/tests/webui/widgets/images/1.jpg" />
 
 If you like, you can stop here and go add a slideshow to your pages. But odds
 are you want to build a widget yourself. This article will show you how you can
@@ -57,9 +56,10 @@ Intro
 A key feature of the Dojo widget system is the ability to prototype, test, and
 tweak the component's UI and interactions. Dojo provides "templates" that you
 can use to rapidly prototype your UI in HTML and CSS and expose your widgets as
-markup on the pages you include them on. Dojo also ensures that your prototype
-isn't throw-away code by providing simple strategies for moving from
-development to deployment that improve performance incrementally.
+markup on the pages you include them on. Dojo ensures that your work in prototyping 
+isn't thrown away when it comes time for deployment. Incremental performance
+optimizations to be discussed in another article ensure that your widget is as
+fast as you need it to be.
 
 Prototype 
 ---------
@@ -69,9 +69,9 @@ when a widget is constructed. The setup of event handlers and the creation of
 references to DOM nodes is handled through some extra attributes on your HTML
 markup.
 
-We're going to build an example slide-show widget in this article. There's not
-a ton of code to it, but we'll start with the smallest functional version of the
-widget. Here it is::
+In this article, we're going to show you how we built the slide-show widget you
+see above. There's not a ton of code to it, but we'll start with the smallest
+possible (loads but doesn't do anything) version of the widget. Here it is::
 
     dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
@@ -155,7 +155,7 @@ The traditional DOM way to do it might require code like this in our widget::
 
 Now, this is fine if you don't mind clobbering other event handlers that might
 be set, but there are situations where this is a problem, so we'll spot our
-component hacker the super-spiffy Dojo event system, which might turn that code
+component author the super-spiffy Dojo event system, which might turn that code
 into::
 
     dojo.event.connect(this.domNode, "onclick", this, "togglePaused");
@@ -382,7 +382,7 @@ HTMLSlideShow.html::
     <table cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td dojoAttachPoint="controlsContainer">
-                <input type="button" value="stop" 
+                <input type="button" value="pause" 
                     dojoAttachPoint="startStopButton"
                     dojoAttachEvent="onClick: togglePaused;">
             </td>
