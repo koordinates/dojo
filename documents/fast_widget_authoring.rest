@@ -99,7 +99,7 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
 
 Almost everything about this is boilerplate, and only the properties that are
 absolutely necessary are set on the class `dojo.webui.widgets.HTMLSlideShow`.
-Every Dojo widget you'll create comes from a class constructor like the one.
+Every Dojo widget you'll create comes from a class constructor like this one.
 
 The non-stock bits of this example are the `template*` properties.  Template
 locations are specified relative to the root of the Dojo Subversion checkout,
@@ -191,7 +191,7 @@ sites for proof.
 So what we really need is something that gives us the componentization and
 non-destructiveness advantages of attaching event handlers the DOM way with the
 readability advantage of the `innerHTML` style. The Dojo template system to the
-rescue.  In our template file , we'd attach our click handler to the node using
+rescue.  In our template file, we'd attach our click handler to the node using
 the `dojoAttachEvent` property in the element we're attaching to directly.
 Here's the uber-simplified example::
 
