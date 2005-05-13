@@ -26,10 +26,25 @@
 			dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 			dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLResizableTextarea");
-			
+		</script>
+		<script language="JavaScript" type="text/javascript">
+			function upgradeTextareas(){
+				var TAs = document.body.getElementsByTagName("textarea");
+				for(var x=0; x<TAs.length; x++){
+					var tta = TAs[x];
+					if(!dojo.xml.htmlUtil.hasAttribute(tta, "dojoType")){
+						tta.setAttribute("dojoType", "resizabletextarea");
+					}
+				}
+			}
+
+			dojo.event.connect("before", dojo.hostenv, "loaded", dj_global, "upgradeTextareas");
 		</script>
 	</head>
 	<body bgcolor="white">
+		<textarea rows="10" cols="20">
+			we will upgrade this one programatically
+		</textarea>
 		<textarea dojoType="resizabletextarea" rows="15" cols="40">
 this is a textarea with a LOT of content
 
