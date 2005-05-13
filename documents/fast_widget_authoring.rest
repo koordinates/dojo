@@ -11,8 +11,8 @@ Fast Widget Authoring With Dojo
 Example
 -------
 
-This is the full source of a simple page that uses the slide-show widget we're
-going to build in this article.
+Here's an example of the slide-show widget we're going to build in this
+article. To get a feel for how it's being used, do a view-source on this page.
 
 .. raw:: html
 
