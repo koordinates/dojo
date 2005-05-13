@@ -10,19 +10,56 @@ Fast Widget Authoring With Dojo
 	
 Example
 -------
-	
-.. start with a widget example
+
+This is the full source of a simple page that uses the slide-show widget we're
+going to build in this article::
+
+    <!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+    <html xmlns="http://www.w3.org/1999/xhtml" 
+        xml:lang="en" lang="en">
+        <head>
+            <title>our spiffy slide show</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+
+            <!-- we tell Dojo where it's unzipped tarball is -->
+            <script language="JavaScript" type="text/javascript">
+                djConfig = { baseRelativePath: "../" };
+            </script>
+            <!-- pull in the core of Dojo -->
+            <script language="JavaScript" type="text/javascript" 
+                src="../__package__.js"></script>
+            <!-- Dojo is loaded, include the widget  -->
+            <script language="JavaScript" type="text/javascript">
+                dojo.hostenv.loadModule("dojo.webui.widgets.SlideShow");
+            </script>
+
+        </head>
+        <body>
+            <!-- upgrade a static image to a slideshow -->
+            <img dojoType="SlideShow" 
+                imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
+                transitionInterval="700"
+                delay="7000"
+                src="images/1.jpg" />
+        </body>
+    </html>
+
+If you like, you can stop here and go add a slideshow to your pages. But odds
+are you want to build a widget yourself. This widget will show you how you can
+do that and use Dojo to go from idea to upgrade-able interface. Fast.
 
 Intro
 ----------------------------------
 
-A key feature of the Dojo widget system is the ability to prototype, test, and 
-tweak the component's UI and interactions.  Dojo provides "templates" that you 
-can use to rapidly prototype your UI in HTML and CSS and expose your widgets as 
-markup on the pages you include them on.  Dojo also ensures that your prototype
-isn't throw-away code by providing simple strategies for moving from development
-to deployment that improve performance incrementally.
-
+A key feature of the Dojo widget system is the ability to prototype, test, and
+tweak the component's UI and interactions. Dojo provides "templates" that you
+can use to rapidly prototype your UI in HTML and CSS and expose your widgets as
+markup on the pages you include them on. Dojo also ensures that your prototype
+isn't throw-away code by providing simple strategies for moving from
+development to deployment that improve performance incrementally.
 
 Prototype 
 ---------
@@ -32,38 +69,43 @@ when a widget is constructed. The setup of event handlers and the creation of
 references to DOM nodes is handled through some extra attributes on your HTML
 markup.
 
-Here's the minimum code to define a Dojo widget that uses a template::
+We're going to build an example slide-show widget in this article. There's not
+a ton of code to it, but we'll start with the smallest functional version of the
+widget. Here it is::
 
-    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
+    dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
+    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
+
+    // load dependencies
     dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
-    dojo.webui.widgets.HTMLTestWidget = function(){
-        // mix-in inheritance. Order matters.
+    // define the widget class
+    dojo.webui.widgets.HTMLSlideShow = function(){
+        // mixin inheritance
         dojo.webui.Widget.call(this);
         dojo.webui.DomWidget.call(this, true);
         dojo.webui.HTMLWidget.call(this);
 
-        // templates
-        this.templatePath = "src/webui/widgets/templates/HTMLTestWidget.html";
-        this.templateCSSPath = "src/webui/widgets/templates/HTMLTestWidget.css";
+        this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
+        this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
 
-        this.widgetType = "TestWidget";
+        this.widgetType = "SlideShow";
+        this.isContainer = false;
     }
-
     // prototype inheritance
-    dj_inherits(dojo.webui.widgets.HTMLTestWidget, dojo.webui.DomWidget);
+    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
+    // make it a tag
+    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
 
-Almost everything about this file is boilerplate code, and only the properties
-that are absolutely necessary are set on the class
-`dojo.webui.widgets.HTMLTestWidget`. Every Dojo widget you'll create comes from 
-a constructor function like the one outlined here.
+Almost everything about this is boilerplate, and only the properties that are
+absolutely necessary are set on the class `dojo.webui.widgets.HTMLSlideShow`.
+Every Dojo widget you'll create comes from a class constructor like the one.
 
-The non-stock bits of the above example are the  `template*` properties.
-Template locations are specified relative to the root of the Dojo Subversion 
-checkout, and these are made absolute (if necessary) when the widget is created.
-Meaning that you don't have to specify an un-portable absolute URL for your
-template files and you can move your widget file around without adverse 
-consequences.
+The non-stock bits of this example are the `template*` properties.  Template
+locations are specified relative to the root of the Dojo Subversion checkout,
+and these are made absolute (if necessary) when the widget is created. Meaning
+that you don't have to specify an un-portable absolute URL for your template
+files and you can move your widget file around without adverse consequences.
 
 Dojo currently requires that templates have a single root node which gets 
 assigned to the `domNode` property of the widget.  This property is defined in 
@@ -71,221 +113,369 @@ the `DomWidget` class, so every widget that inherits from it will have this
 property implicitly. So the most minimal template files possible might look
 like this:
 
-HTMLTestWidget.html::
+HTMLSlideShow.html::
 
-    <span class="testWidget">a test widget!</span>
+    <div style="position: relative; width: 800px; height: 600px;"
+        dojoAttachPoint="imagesContainer">
+        <img dojoAttachPoint="img1" border="0" hspace="0" vspace="0" 
+            class="slideShowImg" style="z-index: 1;" />
+        <img dojoAttachPoint="img2" border="0" hspace="0" vspace="0" 
+            class="slideShowImg" style="z-index: 0;" />
+    </div>	
 
-HTMLTestWidget.css::
+HTMLSlideShow.css::
 
-    .testWidget {
-        border: 1px solid black;
+    .slideShowImg {
+        position: absolute;
+        left: 0px;
+        top: 0px; 
     }
 
-That's it. A test page that includes the widget could now instantiate this UI
-at any point in the page by adding extra attributes to any tag::
-
-    ...
-    <p dojoType="TestWidget">
-        this is going to get replaced with the test widget
-    </p>
-    ...
-
-Dojo allows you to (optionally) use markup *on both sides* of the widget
-creation and use process. Thus you can quickly prototype your widget with markup
-and declare it in your page with markup or with JavaScript.
+Like the script code above, these are just the minimum necessary to make
+things happen. We'll evolve our markup over the course of the article.
 
 Connect 
 -------
 
 The example above isn't very functional. A couple of key components are missing:
 
-    1. the widget doesn't respond to user interaction
-    2. the widget isn't populated with data
+    1. the widget doesn't respond to user interaction. You can't start or stop
+       the slideshow.
+    2. the slideshow doesn't actually show anything!
 
-In HTML widgets, a user's actions are sent to the script as DOM events. As a 
-programmer, you can receive notification of low-level UI changes, such as when
-the user clicks on an element, but these events don't tell you anything 
-high-level. To do that, we need to catch low-level DOM event(s) and connect 
-them to functions or object methods that will actually handle a higher level 
-interaction. It's not uncommon to see example code like::
+So assuming that we want the slideshow to pause or start when the user clicks,
+how would we get that done?
 
-    someNode.innerHTML = "<span onclick='calculate(); show();'>foo</span>";
+The traditional DOM way to do it might require code like this in our widget::
 
-There's a lot wrong with this code. A Dojo template might accomplish the same 
-thing with some improvements. Firstly, we'd probably make `calculate()` and
-`show()` methods of our widget class and not global functions, like this::
-
-    dojo.webui.widgets.HTMLTestWidget = function(){
-        // ... see previous examples for the code that goes here
-
-        this.calcDisplayNode = null;
-
-        this.result = 0;
-        
-        this.calculate = function(){
-            this.result++;
-        }
-
-        this.showResult  = function(){
-            this.calcDisplayNode.value = this.result;
-        }
-
-        this.calculateAndShow = function(){
-            this.calculate();
-            this.showResult();
-        }
+    var _this = this; // closure magic
+    this.domNode.onclick = function(){
+        _this.togglePaused();
     }
 
-Then, to connect it to our template, Dojo provides a shorthand attribute syntax.
-The modified template code from HTMLTestWidget.html::
+Now, this is fine if you don't mind clobbering other event handlers that might
+be set, but there are situations where this is a problem, so we'll spot our
+component hacker the super-spiffy Dojo event system, which might turn that code
+into::
 
-    <span class="testWidget">
-        <p>a test widget!</p>
-        <p dojoAttachEvent="onClick: calculateAndShow;">
-            click here to perform calculation
-        </p>
-        <input type="text" value="not set" 
-            dojoAttachPoint="calcDisplayNode" />
-    </span>
+    dojo.event.connect(this.domNode, "onclick", this, "togglePaused");
 
-Note the `dojoAttach*` attributes. The widget and the template do not explicitly
-say anything like::
-    
-    widgetObj.calcDisplayNode = document.getElementById("...");
+Down to one line, not bad!
 
-Instead, Dojo's `dojoAttachPoint` attribute accomplishes the same result. If the
-value of this property is the name of a property on the widget  then the value
-of that property is set to be a reference to that DOM Node.  So withing 
-dojo.webui.widgets.HTMLTestWidget, we can simply refer to the following to get 
-a handle to the calcDisplayNode::
+But what happens when you want that to also happen from a button that
+explicitly pauses or starts the slideshow too? Well, we'd have to get a
+reference to THAT node too and manually hook things up the same way. As you can
+see, we're explicitly tying the DOM structure to our code in a way that's going
+to make things more complicated to change later. This isn't so important when
+you're hacking up a one-off, but when you want other people to be able to
+easily customize your components, it becomes a problem.
 
-    this.calcDisplayNode
+This covers the DOM way, but what about the `innerHTML` way? If we were
+building the widget entirely using innerHTML (not uncommon), we might see
+something like::
 
-The remaining issue is connecting event handlers through the `dojoAttachEvent` 
-property.  Analogous to `dojoAttachPoint`, `dojoAttachEvent` provides a 
-straightforward way to separate the DOM structure of a widget from
-its programmatic behavior. In our example, we want the widget method
-`calculateAndShow` to be called when the second paragraph is clicked. If you 
-want to change the node or event that causes the recalculation, just change the 
-location or value of `dojoAttachEvent`. For instance, exchange the above 
-template with the following::
+    someNode.innerHTML = "<div onclick='component.togglePaused();'>...</div>";
 
-    <span class="testWidget">
-        <img src="foo.gif" dojoAttachEvent="onMouseOver: calculateAndShow;" />
-        <input type="text" value="not set" 
-            dojoAttachPoint="calcDisplayNode" />
-    </span>
+But what if we want more than one component on the page? We'd need some sort of
+ad-hoc naming or lookup scheme would need to be invented to make this code
+connect the `togglePaused` method to the right object. This might be the
+extended example::
 
-Now the mouseover handler of the image tag quickly increments the value. No 
-changes to the widget code were required except perhaps to point to a different 
-template file.
+    var clickString = this.componentName+'.togglePaused();';
+    someNode.innerHTML = "<div onclick='"+clickString+"'>...</div>";
 
-Benefits of this style of event handler attachment:
+Pretty grotty. It's not hard to imagine the maintainability nightmares that
+result. You only need to pull down code from any of the myriad script example
+sites for proof.
 
-- widget authors get to focus on what their widget is supposed to *do*
-- de-emphasize on (re)wiring event handlers.
-- widget functionality and template layout to be changed pretty independently
-- cleaner, easier to maintain, and faster to write
-- quickly prototype new templates for your widget by changing the value of the 
-  `templatePath` property and have it be functional without any widget code 
-  changes.
+So what we really need is something that gives us the componentization and
+non-destructiveness advantages of attaching event handlers the DOM way with the
+readability advantage of the `innerHTML` style. The Dojo template system to the
+rescue.  In our template file , we'd attach our click handler to the node using
+the `dojoAttachEvent` property in the element we're attaching to directly.
+Here's the uber-simplified example::
+
+    <div dojoAttachEvent="onClick: togglePaused;">
+        <img class="slideShowImg" />
+        <img class="slideShowImg" />
+    </div>	
+
+The `dojoAttachEvent` property gives us a mapping between what the DOM Node's
+event name is (`onClick`) and what logical action to take as a result
+(`togglePaused`). And and we do it in the markup, where it belongs. Our widget
+now only has to worry about manipulating DOM nodes in response to actions, if
+at all. Note that we don't have to specify the `this` keyword or otherwise
+handle the scope of the node or method assignments. Since our template is for a
+particular widget, Dojo can safely connect each new widget's template nodes to
+its methods without having to ask us for assistance.
+
+So events are pretty easy, what about handling the changing of the images to
+make the "slide show" thing happen? Good news again. Dojo allows us to easily
+connect the elements in our template file to properties in our widget class. In
+this case, a slide show will need to have 2 images; one for the current display
+and a second for the image being loaded which we will then transition into.
+Here's the new code we'd add to our widget class (other code removed for
+readability)::
+
+    // ...
+    dojo.webui.widgets.HTMLSlideShow = function(){
+        // ...boilerplate and template* code here
+
+        // over-ride defaults
+        this.widgetType = "SlideShow";
+        this.isContainer = false;
+
+        // image nodes
+        this.img1 = null;
+        this.img2 = null;
+    }
+    // ...
+
+And then in our abbreviated template, we might have::
+
+    <div dojoAttachEvent="onClick: togglePaused;">
+        <img class="slideShowImg" 
+            dojoAttachPoint="img1" />
+        <img class="slideShowImg" 
+            dojoAttachPoint="img2" />
+    </div>	
+
+The attribute `dojoAttachPoint` connects the elements to our widget properties
+when the template is created, and so code that runs later will be able to
+reference `this.img1` to get a handle instead of doing something like
+`document.getElementById(...)` which would require knowing the unique ID of the
+element. Once again, Dojo templates make wiring together the parts of a widget
+faster, less brittle, and more maintainable than either the `innerHTML` or
+straight-DOM ways of doing things. This is rapid widget prototyping at its
+best.
+
+So we've got event handlers and references to our DOM nodes. Next we want to
+make sure that we are cycling through images and that the transition doesn't
+happen until the second image is actually loaded, regardless of how long we
+specified the delay between images to be. Better to be late than broken. We're
+going to throw in a fade transition to round things out, so don't worry if the
+event-driven code is a little bit difficult to follow. The entirety of the
+widget and an improved template follow. We omit the CSS file since it hasn't
+changed since the last time you saw it.
+
+SlideShow.js::
+
+    dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
+    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
+
+    dojo.hostenv.loadModule("dojo.event.*");
+    dojo.hostenv.loadModule("dojo.xml.*");
+    dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
+    dojo.hostenv.loadModule("dojo.webui.Widget");
+    dojo.hostenv.loadModule("dojo.webui.DomWidget");
+    dojo.hostenv.loadModule("dojo.webui.WidgetManager");
+    dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
+    dojo.hostenv.loadModule("dojo.graphics.*");
+    dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
+
+    dojo.webui.widgets.HTMLSlideShow = function(){
+        dojo.webui.Widget.call(this);
+        dojo.webui.DomWidget.call(this, true);
+        dojo.webui.HTMLWidget.call(this);
+        this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
+        this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
+
+        // over-ride some defaults
+        this.isContainer = false;
+        this.widgetType = "SlideShow";
+
+        // useful properties
+        this.imgUrls = [];		// the images we'll go through
+        this.urlsIdx = 0;		// where in the images we are
+        this.delay = 4000; 		// give it 4 seconds
+        this.transitionInterval = 2000; // 2 seconds
+        this.imgWidth = 800;	// img width
+        this.imgHeight = 600;	// img height
+        this.background = "img2"; // what's in the bg
+        this.foreground = "img1"; // what's in the fg
+        this.stopped = false;	// should I stay or should I go?
+
+        // our DOM nodes:
+        this.imagesContainer = null;
+        this.startStopButton = null;
+        this.controlsContainer = null;
+        this.img1 = null;
+        this.img2 = null;
+
+        this.loadNextImage = function(){
+            // load a new image in that container, and make sure it informs
+            // us when it finishes loading
+            dojo.event.kwConnect({
+                srcObj: this[this.background],
+                srcFunc: "onload",
+                adviceObj: this,
+                adviceFunc: "backgroundImageLoaded",
+                once: true, // make sure we only ever hear about it once
+                delay: this.delay
+            });
+            dojo.xml.htmlUtil.setOpacity(this[this.background], 1.0);
+            this[this.background].src = this.imgUrls[this.urlsIdx++];
+            if(this.urlsIdx>(this.imgUrls.length-1)){
+                this.urlsIdx = 0;
+            }
+        }
+
+        this.fillInTemplate = function(){
+            dojo.xml.htmlUtil.setOpacity(this.img1, 0.9999);
+            dojo.xml.htmlUtil.setOpacity(this.img2, 0.9999);
+            with(this.imagesContainer.style){
+                width = this.imgWidth+"px";
+                height = this.imgHeight+"px";
+            }
+            if(this.imgUrls.length>1){
+                this.img2.src = this.imgUrls[this.urlsIdx++];
+                this.endTransition();
+            }else{
+                this.img1.src = this.imgUrls[this.urlsIdx++];
+            }
+        }
+
+        this.togglePaused = function(){
+            if(this.stopped){
+                this.stopped = false;
+                this.endTransition();
+                this.startStopButton.value= "pause";
+            }else{
+                this.stopped = true;
+                this.startStopButton.value= "play";
+            }
+        }
+
+        this.backgroundImageLoaded = function(){
+            // start fading out the foreground image
+            if(this.stopped){ return; }
+            // closure magic for call-back
+            var _this = this; 
+            var callback = function(){ _this.endTransition(); };
+
+            // actually start the fadeOut effect
+            // NOTE: if we wanted to use other transition types, we'd set them up
+            // 		 here as well
+            dojo.graphics.htmlEffects.fadeOut(this[this.foreground], 
+                this.transitionInterval, callback);
+        }
+
+        this.endTransition = function(){
+            // move the foreground image to the background 
+            with(this[this.background].style){ zIndex = parseInt(zIndex)+1; }
+            with(this[this.foreground].style){ zIndex = parseInt(zIndex)-1; }
+
+            // fg/bg book-keeping
+            var tmp = this.foreground;
+            this.foreground = this.background;
+            this.background = tmp;
+
+            // keep on truckin
+            this.loadNextImage();
+        }
+    }
+    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
+    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
+
+HTMLSlideShow.html::
+
+    <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td dojoAttachPoint="controlsContainer">
+                <input type="button" value="stop" 
+                    dojoAttachPoint="startStopButton"
+                    dojoAttachEvent="onClick: togglePaused;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="position: relative; width: 800px; height: 600px;"
+                    dojoAttachPoint="imagesContainer"
+                    dojoAttachEvent="onClick: togglePaused;">
+                    <img dojoAttachPoint="img1" border="0" hspace="0" vspace="0" 
+                        style="position: absolute; left: 0px; top: 0px; z-index: 1;" />
+                    <img dojoAttachPoint="img2" border="0" hspace="0" vspace="0" 
+                        style="position: absolute; left: 0px; top: 0px; z-index: 0;" />
+                </div>	
+            </td>
+        </tr>
+    </table>
+
+We're putting this in a table so that we can add controls around it (in this
+case, just a pause/play button) and so that other elements can flow around the
+widget.
 
 Making It A Tag
 ---------------
 
 The last hurdle to making this widget something we'd consider working with is
-to make it easy to instantiate. The easiest way to do this with Dojo is to make
-your widget a tag . To do this in `HTMLTestWidget.js`, we'd add the following 
-line at the very end of the file::
+to make it easy to instantiate. In our above file listing of `SlideShow.js`, we
+already have done that. Have a look at the last line::
 
-    dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
+    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
 
-We saw a brief example of this at the beginning of the article, but here's a refresher example of a Dojo inline constructor::
+We saw a brief example of this at the beginning of the article, but here's a
+refresher example of a Dojo tag being used through extra properties on an HTML
+element::
     
-    <span dojoType="testWidget">this will get replaced</span>
+    <img dojoType="SlideShow" 
+        imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
+        transitionInterval="700"
+        imgWidth="800"
+        imgHeight="600"
+        delay="7000"
+        src="images/1.jpg" />
 
-Adding these extra attributes to elements in the page allows you to
-instantiate as many separate widgets as you like. So you don't have to worry 
-about problems like unique naming or hard-coding the number and type of widgets
-you want to use.
+The parser that's built into Dojo knows what to do with that declaration, and
+normalizes it for us. In fact, we could feed the Dojo parser this XML fragment
+and get the exact same result::
 
-Inline constructors also provide for us a way of setting data for a widget
-instance.  For example, to set the initial value of our counter to be
-something other than 0::
+    <dojo:slideshow
+        imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
+        transitionInterval="700"
+        imgWidth="800"
+        imgHeight="600"
+        delay="7000" />
 
-    <span dojoType="testWidget" result="15">
-        this will get replaced
-    </span>
+The `dojoType` attribute is a proxy for an XML tag name. Standards purists
+might argue that these non-standard attributes make markup invalid, which is
+true. However, strict adherence to the letter of a spec and not its spirit is
+counter-productive, and this is a clear case of that. Since we are able to
+construct widgets that replace parts of a page arbitrarily, Dojo provides a
+baked-in an answer to concerns about how DHTML/Ajax works in browsers that
+don't support JavaScript or otherwise have strict accessibility requirements.
+Browsers that can handle it receive the upgraded UI while everyone else gets
+the "fallback", all without requiring developers to give up the ease of
+declaring their widgets where they want them in the page just extending markup.
+Toolkits that force developers to (manually) place widgets in the flow of the
+page in JavaScript are a pain to work with and have many of the same
+maintenance problems that DOM-based widget building approaches share. And if
+you really really want full standards compliance anyway, just use the `dojo:`
+namespace for your widgets. Whatever your preferences and semi-religious
+beliefs about web development, Dojo lets you have your cake and eat it too.
 
-The `result` property of our widget will now be initialized to 15. An obvious
-improvement is to display our default (or over-ridden) value when the widget is
-created. Here's the full source code for `HTMLTestWidget.js` so far, including
-the `fillInTemplate` method to handle this improvement::
+But back to our widget! Aside from `dojoType` and `src`, the attributes on the
+example all bear the names of properties that we defined in our widget class.
+Those definitions again are::
 
-    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTestWidget");
-    dojo.hostenv.loadModule("dojo.webui.DomWidget");
+    // ...
+    this.imgUrls = [];		// the images we'll go through
+    this.delay = 4000; 		// give it 4 seconds
+    this.transitionInterval = 2000; // 2 seconds
+    this.imgWidth = 800;	// img width
+    this.imgHeight = 600;	// img height
+    // ...
 
-    dojo.webui.widgets.HTMLTestWidget = function(){
-        // mix-in inheritance. Order matters.
-        dojo.webui.Widget.call(this);
-        dojo.webui.DomWidget.call(this, true);
-        dojo.webui.HTMLWidget.call(this);
+For each of these properties, the values set on the inline constructor are cast
+to the same primitive type as the initial value. `transitionInterval` will be
+cast to an integer while `imgUrls` will be turned into an array that looks
+like::
 
-        // templates
-        this.templatePath = "src/webui/widgets/templates/HTMLTestWidget.html";
-        this.templateCSSPath = "src/webui/widgets/templates/HTMLTestWidget.css";
-
-        this.widgetType = "TestWidget";
-
-        this.calcDisplayNode = null;
-
-        this.result = 0;
-        
-        this.calculate = function(){
-            this.result++;
-        }
-
-        this.showResult  = function(){
-            this.calcDisplayNode.value = this.result;
-        }
-
-        this.calculateAndShow = function(){
-            this.calculate();
-            this.showResult();
-        }
-
-        this.fillInTemplate = function(){
-            // show the initial value after we first get built
-            this.showResult();
-        }
-    }
-
-    // prototype inheritance
-    dj_inherits(dojo.webui.widgets.HTMLTestWidget, dojo.webui.DomWidget);
-    dojo.webui.widgets.tags.addParseTreeHandler("dojo:testWidget");
-
-So Dojo allows you to set arbitrary properties via your inline constructor 
-within some limits::
-	
-- the property must be a member of the widget in order for it to be settable via   
-  the inline constructor
-- there are some limits for type-conversion
-
-For instance, properties that have a numerical initial value cause the value  
-passed by the constructor to be converted to a number before being assigned.  
-Array values are converted by splitting on the semi-colon character and  
-assigning an array of resulting strings. If we had given the `HTMLTestWidget` 
-class an array property named `foo` initialized to an empty array it would be 
-settable like this::
-
-    <span dojoType="testWidget" foo="foo;bar;baz"></span>
-
-And the resulting value would be::
-
-    ["foo", "bar", "baz"]
+    ["images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg"]
 
 If you want integers instead, you would have to convert them before using the 
-values from this array.
+values from the array, since it only splits the attribute string on the
+semicolon character.
 
 Assigning to functions is subtly different, but no harder. Dojo includes an
 abstract event system that should be familiar to those who have used Aspect
@@ -294,34 +484,20 @@ to "register" some code to be called when another function is called without
 affecting the behavior of the initial function that is being used as the
 trigger. Assigning to a function property in an inline constructor allows us to
 likewise register a listener, but not to over-ride the default behavior of the
-widget method. For instance, if we had the following method as a part of the
-`HTMLTestWidget` class::
+widget method. We could alert some status information when the `togglePaused`
+method of our widget is fired by attaching to it like this:: this::
 
-    // ...
-    this.increment = function(){
-        this.result++;
-    }
-    // ...
+    <img dojoType="SlideShow" 
+        togglePaused="alert('showing image '+(this.imgIdx+1)+' of '+this.imgUrls.length);"
+        src="images/1.jpg" />
 
-We could then add code that would nullify the behavior of the function like
-this::
-
-    <span dojoType="testWidget" increment="this.result--;">
-    </span>
-
-Note that the `this` keyword refers to the *widget object* and not the DOM
-Node. Given these declarations, the result of calling `increment()` would
-*NOT* be a decrement, but rather `this.result` would have the *SAME* value as
-before `increment()` was called. Our handler code fires after the base function,
-but before any other code that might be looking to act on the result.
-
-Armed with this information, authors can create widgets that receive data from
-widget users and easily change the look and feel of their widget!
+Here the `this` keyword refers to the *widget object* and not the DOM Node. 
 
 More Information
 ----------------
 
 `Dojo Status`_
+`The Dojo Wiki`_
 `Problems tackled by the Dojo widget system`_
 
 About The Author
@@ -331,6 +507,7 @@ Alex Russell, a core contributor to Dojo, can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.nWidgets.com
 
 .. _`Dojo Status`: http://www.dojotoolkit.org/projectStatus.html
+.. _`The Dojo Wiki`: http://dojo.jot.com/
 .. _`Problems tackled by the Dojo widget system`: http://www.dojotoolkit.org/widget_motivation.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
