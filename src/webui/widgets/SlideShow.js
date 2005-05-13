@@ -115,7 +115,7 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 			delay: this.delay
 		});
 		dojo.xml.htmlUtil.setOpacity(this[this.background], 1.0);
-		this[this.background].src = this.imgUrls[this.urlsIdx++];
+		this[this.background].src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
 		if(this.urlsIdx>(this.imgUrls.length-1)){
 			this.urlsIdx = 0;
 		}
