@@ -422,7 +422,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			query += dojo.io.argsFromMap(kwArgs.content);
 		}
 
-		if(kwArgs["postContent"]) {
+		if(kwArgs["postContent"] && kwArgs.method.toLowerCase() == "post") {
 			query = kwArgs.postContent;
 		}
 
