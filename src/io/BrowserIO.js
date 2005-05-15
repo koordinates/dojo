@@ -418,13 +418,12 @@ dojo.io.XMLHTTPTransport = new function(){
 			kwArgs.method = "get";
 		}
 
-		// postContent is an alias for content. for backwards compat only, so avoid using!
-		if(kwArgs["postContent"] && !kwArgs["content"]) {
-			kwArgs.content = kwArgs.postContent;
-		}
-
 		if(kwArgs["content"]){
 			query += dojo.io.argsFromMap(kwArgs.content);
+		}
+
+		if(kwArgs["postContent"]) {
+			query = kwArgs.postContent;
 		}
 
 		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeURL"]){
