@@ -418,6 +418,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			kwArgs.method = "get";
 		}
 
+		// postContent is an alias for content. for backwards compat only, so avoid using!
 		if(kwArgs["postContent"] && !kwArgs["content"]) {
 			kwArgs.content = kwArgs.postContent;
 		}
