@@ -389,22 +389,32 @@ dojo.xml.htmlUtil = new function(){
 		}
 	}
 	
-	this.removeCSSRule = function(index) {
-		if(!this.styleSheet) {
+	this.removeCSSRule = function(index){
+		if(!this.styleSheet){
 			dj_debug("no stylesheet defined for removing rules");
 			return false;
 		}
-		if(dojo.render.html.ie) {
-			if(!index) {
+		if(dojo.render.html.ie){
+			if(!index){
 				index = this.styleSheet.rules.length;
-			this.styleSheet.removeRule(index);
+				this.styleSheet.removeRule(index);
 			}
-		} else if(document.styleSheets[0]) {
-			if(!index) {
+		}else if(document.styleSheets[0]){
+			if(!index){
 				index = this.styleSheet.cssRules.length;
 			}
 			this.styleSheet.deleteRule(index);
 		}
 		return true;
+	}
+
+	this.insertCSSFile = function(URI, doc){
+		if(!doc){ doc = document; }
+		var file = doc.createElement("link");
+		file.setAttribute("type", "text/css");
+		file.setAttribute("rel", "stylesheet");
+		file.setAttribute("href", URI);
+		var head = doc.getElementsByTagName("head")[0];
+		head.appendChild(file);
 	}
 }
