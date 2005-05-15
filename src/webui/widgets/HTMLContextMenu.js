@@ -31,10 +31,6 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 		this.domNode.style.display = "none";
 	}
 	
-	this.addChild = function(cn){
-		this.domNode.appendChild(cn);
-	}
-	
 	// FIXME: short term hack to show a single context menu in HTML
 	// FIXME: need to prevent the default context menu...
 	

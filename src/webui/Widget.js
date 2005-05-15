@@ -51,12 +51,13 @@ dojo.webui.Widget = function(){
 		this.isHidden = false;
 	}
 
-	this.create = function(args, fragment){
-		this.satisfyPropertySets(args, fragment);
-		this.mixInProperties(args, fragment);
-		this.buildRendering(args, fragment);
-		this.initialize(args, fragment);
-		this.postInitialize(args, fragment);
+	this.create = function(args, fragment, parentComp){
+		dj_debug(parentComp);
+		this.satisfyPropertySets(args, fragment, parentComp);
+		this.mixInProperties(args, fragment, parentComp);
+		this.buildRendering(args, fragment, parentComp);
+		this.initialize(args, fragment, parentComp);
+		this.postInitialize(args, fragment, parentComp);
 		dojo.webui.widgetManager.add(this);
 	}
 
@@ -298,8 +299,8 @@ dojo.webui.Widget = function(){
 dojo.webui.widgets.tags = {};
 dojo.webui.widgets.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
-	this[ltype] = function(fragment, widgetParser){ 
-		dojo.webui.widgets.buildWidgetFromParseTree(ltype, fragment, widgetParser);
+	this[ltype] = function(fragment, widgetParser, parentComp){ 
+		dojo.webui.widgets.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp);
 	}
 }
 
@@ -315,7 +316,7 @@ dojo.webui.widgets.tags["dojo:connect"] = function(fragment, widgetParser) {
 	var properties = widgetParser.parseProperties(fragment["dojo:connect"]);
 }
 
-dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
+dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser, parentComp){
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// outputObjectInfo(frag["dojo:"+stype]);
@@ -323,5 +324,5 @@ dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser){
 	var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
 	var twidget = dojo.webui.widgetManager.getImplementation(stype);
-	twidget.create(localProperties, frag);
+	twidget.create(localProperties, frag, parentComp);
 }

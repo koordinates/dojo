@@ -42,18 +42,23 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	}
 
 
-	this.postInitialize = function(args, frag){
-		if(!frag){ return; }
-		var sourceNodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		if(!sourceNodeRef){ return; } // fail safely if we weren't instantiated from a fragment
-		// FIXME: this will probably break later for more complex nesting of widgets
-		// FIXME: this will likely break something else, and has performance issues
-		// FIXME: it also seems to be breaking mixins
-		// FIXME: this breaks when the template for the container widget has child
-		// nodes
+	this.postInitialize = function(args, frag, parentComp){
+		if(parentComp){
+			parentComp.addChild(this);
+		}else{
+			if(!frag){ return; }
+			var sourceNodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+			if(!sourceNodeRef){ return; } // fail safely if we weren't instantiated from a fragment
+			// FIXME: this will probably break later for more complex nesting of widgets
+			// FIXME: this will likely break something else, and has performance issues
+			// FIXME: it also seems to be breaking mixins
+			// FIXME: this breaks when the template for the container widget has child
+			// nodes
 
-		// insert our domNode into the DOM in place of where we started
-		var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+			this.parent = dojo.webui.widgetManager.root;
+			// insert our domNode into the DOM in place of where we started
+			var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+		}
 
 		if(this.isContainer){
 			var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
@@ -424,23 +429,12 @@ dojo.webui.HTMLWidget = function(args){
 
 		if(this.templateCSSPath){
 			// FIXME: extra / being inserted in URL?
-			insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath);
+			dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath);
 			this.templateCSSPath = null;
 		}
-
 		this._old_buildFromTemplate();
 	}
 
-	// FIXME: should this be moved into htmlUtil?
-	function insertCSSFile(URI, doc){
-		if(!doc){ doc = document; }
-		var file = doc.createElement("link");
-		file.setAttribute("type", "text/css");
-		file.setAttribute("rel", "stylesheet");
-		file.setAttribute("href", URI);
-		var head = doc.getElementsByTagName("head")[0];
-		head.appendChild(file);
-	}
 }
 
 dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);

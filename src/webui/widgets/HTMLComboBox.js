@@ -25,7 +25,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	this.onKeyUp = function(evt){
 		// esc is 27
 		if(evt.keyCode == 27){
-			this.closeResultList();
+			this.hideResultList();
 			return;
 		}
 		if(this.searchTimer){
@@ -57,13 +57,11 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	}
 
 	this.openResultList = function(results){
-		while(this.optionsListNode.firstChild){
-			this.optionsListNode.removeChild(this.optionsListNode.firstChild);
-		}
+		this.clearResultsList();
 		if(!results.length){
-			this.closeResultList();
+			this.hideResultList();
 		}else{
-			this.optionsListNode.style.display = "";
+			this.showResultList();
 		}
 		while(results.length){
 			var tr = results.shift();
@@ -73,8 +71,29 @@ dojo.webui.widgets.HTMLComboBox = function(){
 		}
 	}
 
-	this.closeResultList = function(){
+	this.clearResultsList = function(){
+		var oln = this.optionsListNode;
+		while(oln.firstChild){
+			oln.removeChild(oln.firstChild);
+		}
+	}
+
+	this.hideResultList = function(){
 		this.optionsListNode.style.display = "none";
+		return;
+	}
+
+	this.showResultList = function(){
+		with(this.optionsListNode.style){
+			display = "";
+			width = dojo.xml.htmlUtil.getInnerWidth(this.textInputNode)+"px";
+			if(dojo.render.html.khtml){
+				marginTop = dojo.xml.htmlUtil.totalOffsetTop(this.optionsListNode.parentNode)+"px";
+			/*
+				left = dojo.xml.htmlUtil.totalOffsetLeft(this.optionsListNode.parentNode)+3+"px";
+			*/
+			}
+		}
 		return;
 	}
 

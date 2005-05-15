@@ -9,14 +9,16 @@ dojo.webui.widgets.HTMLMenuItem = function(){
 	dojo.webui.HTMLWidget.call(this);
 
 	this.templatePath = "src/webui/widgets/templates/HTMLMenuItemTemplate.html";
-	this.templateCSSPath = "src/webui/widgets/templates/HTMLMenuItemTemplate.css";
+	// this.templateCSSPath = "src/webui/widgets/templates/HTMLMenuItemTemplate.css";
 
-	this.label = "huzzah!";
+	this.label = "";
 	this.labelNode = null;
+	this.iconNode = null;
+	this.keystrokeNode = null;
+	this.subMenuNode = null;
 
 	this.setLabel = function(){
 		this.labelNode.innerHTML = this.label;
-		// this.domNode.label = this.label;
 	}
 
 	this.fillInTemplate = function(){

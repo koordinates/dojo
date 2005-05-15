@@ -10,7 +10,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 	/*	createComponents recurses over a raw JavaScript object structure,
 			and calls the corresponding handler for its normalized tagName if it exists
 	*/
-	this.createComponents = function(fragment) {
+	this.createComponents = function(fragment, parentComp){
 		var djTags = dojo.webui.widgets.tags;
 		for(var item in fragment){
 			// if we have items to parse/create at this level, do it!
@@ -25,9 +25,9 @@ dojo.webui.widgets.Parse = function(fragment) {
 						var ltn = dojo.text.trim(tna[x]).toLowerCase();
 						if(djTags[ltn]){
 							fragment[item].tagName = ltn;
-							//dj_debug(tn);
 							// dj_debug(djTags[tn.toLowerCase()]);
-							djTags[ltn](fragment[item], this);
+							// dj_debug(parentComp);
+							djTags[ltn](fragment[item], this, parentComp);
 						}
 					}
 				}
@@ -40,7 +40,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 			if( (typeof fragment[item] == "object")&&
 				(fragment[item] != fragment.nodeRef)&&
 				(fragment[item] != fragment["tagName"])){
-				this.createComponents(fragment[item]);
+				this.createComponents(fragment[item], parentComp);
 			}
 		}
 	}
