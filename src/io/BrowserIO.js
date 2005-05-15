@@ -183,21 +183,32 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	// moved successful load stuff here
-	function doLoad(kwArgs, http) {
-		// FIXME: if our request type was "text/javascript", should
-		// we eval() here?
+	function doLoad(kwArgs, http, url, query, useCache) {
 		var ret;
-		if(kwArgs.mimetype == "text/javascript"){
+		if(kwArgs.mimetype == "text/javascript") {
 			ret = dj_eval(http.responseText);
-		}else if(kwArgs.mimetype == "text/xml"){
+		} else if(kwArgs.mimetype == "text/xml") {
 			ret = http.responseXML;
-		}else {
+		} else {
 			ret = http.responseText;
 		}
-		if( typeof kwArgs.load == "function" ) {
-			kwArgs.load("load", ret, http);
-		} else if( typeof kwArgs.handle == "function" ) {
-			kwArgs.handle("load", ret, http);
+
+		if(http.status==200) {
+			if( useCache ) { // only cache successful responses
+				addToCache(url, query, kwArgs.method, http);
+			}
+			if( typeof kwArgs.load == "function" ) {
+				kwArgs.load("load", ret, http);
+			} else if( typeof kwArgs.handle == "function" ) {
+				kwArgs.handle("load", ret, http);
+			}
+		} else {
+			var errObj = new dojo.io.Error("XMLHttpTransport Error: "+http.status+" "+http.statusText);
+			if( typeof kwArgs.error == "function" ) {
+				kwArgs.error("error", errObj);
+			} else if( typeof kwArgs.handle == "function" ) {
+				kwArgs.error("error", errObj);
+			}
 		}
 	}
 
@@ -403,31 +414,31 @@ dojo.io.XMLHTTPTransport = new function(){
 			query += dojo.io.buildFormGetString(kwArgs.formNode);
 		}
 
-		if(!kwArgs.method) {
+		if(!kwArgs["method"]) {
 			kwArgs.method = "get";
+		}
+
+		if(kwArgs["postContent"] && !kwArgs["content"]) {
+			kwArgs.content = kwArgs.postContent;
 		}
 
 		if(kwArgs["content"]){
 			query += dojo.io.argsFromMap(kwArgs.content);
 		}
 
-		if(kwArgs["postContent"]){
-			query = kwArgs.postContent;
-		}
-
 		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeURL"]){
 			this.addToHistory(kwArgs);
 		}
 
-		var async = kwArgs.sync ? false : true;
+		var async = kwArgs["sync"] ? false : true;
 
-		var useCache = kwArgs.useCache == true ||
-			(this.useCache == true && kwArgs.useCache != false );
+		var useCache = kwArgs["useCache"] == true ||
+			(this.useCache == true && kwArgs["useCache"] != false );
 
 		if(useCache){
 			var cachedHttp = getFromCache(url, query, kwArgs.method);
 			if(cachedHttp){
-				doLoad(kwArgs, cachedHttp);
+				doLoad(kwArgs, cachedHttp, url, query, false);
 				return;
 			}
 		}
@@ -440,22 +451,10 @@ dojo.io.XMLHTTPTransport = new function(){
 		// build a handler function that calls back to the handler obj
 		if(async){
 			http.onreadystatechange = function(){
-				if((4==http.readyState)&&(http["status"])){
+				if((4==http.readyState)&&(http.status)){
 					if(received){ return; } // Opera 7.6 is foo-bar'd
 					received = true;
-					if(http.status==200){
-						doLoad(kwArgs, http);
-						if( useCache ) {
-							addToCache(url, query, kwArgs.method, http);
-						}
-					}else{
-						var errObj = new dojo.io.Error("sampleTransport Error: "+http.status+" "+http.statusText);
-						if( typeof kwArgs.error == "function" ) {
-							kwArgs.error("error", errObj);
-						} else if( typeof kwArgs.handle == "function" ) {
-							kwArgs.error("error", errObj);
-						}
-					}
+					doLoad(kwArgs, http, url, query, useCache);
 				}
 			}
 		}
@@ -463,7 +462,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
 			http.open("POST", url, async);
-			http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			http.setRequestHeader("Content-Type", kwArgs["contentType"] || "application/x-www-form-urlencoded");
 			http.send(query);
 		}else{
 			http.open("GET", url+((query!="") ? "?"+query : ""), async);
@@ -471,7 +470,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if( !async ) {
-			doLoad(kwArgs, http);
+			doLoad(kwArgs, http, url, query, useCache);
 		}
 
 		return;
