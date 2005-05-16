@@ -16,14 +16,15 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	}
 
 	this.onShow = function(evt){
-		evt = evt || window.event;
-		dojo.event.browser.stopEvent(evt)
+		evt.preventDefault();
+		evt.stopPropagation();
 
 		// FIXME: use whatever we use to do more general style setting?
 		// FIXME: FIX this into something useful
 		this.domNode.style.left = evt.clientX + "px";
 		this.domNode.style.top = evt.clientY + "px";
 		this.domNode.style.display = "block";
+		return false;
 	}
 	
 	this.onHide = function(){
@@ -37,13 +38,4 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	dojo.event.connect(document.body, "oncontextmenu", this, "onShow");
 }
 
-/*
-new function(){ // namespace protection closure
-	var hbp = dojo.webui.widgets.HTMLContextMenu.prototype;
-	hbp.templateString = ["<button />"].join("");
-}; // FIXME: why isnt the (function(){})(); syntax working here??
-*/
-
 dj_inherits(dojo.webui.widgets.HTMLContextMenu, dojo.webui.widgets.DomContextMenu);
-
-// dojo.webui.widgets.HTMLContextMenu.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
