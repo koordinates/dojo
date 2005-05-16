@@ -2,9 +2,9 @@ Fast Widget Authoring With Dojo
 ===============================
 
 :Author: Alex Russell
-:Version: 0.5
+:Version: 0.6
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/05/13
+:Date: 2005/05/16
 
 .. contents::
 	
@@ -73,6 +73,7 @@ In this article, we're going to show you how we built the slide-show widget you
 see above. There's not a ton of code to it, but we'll start with the smallest
 possible (loads but doesn't do anything) version of the widget. Here it is::
 
+    // tell the package system what classes get defined here
     dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
     dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
 
@@ -81,7 +82,8 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
 
     // define the widget class
     dojo.webui.widgets.HTMLSlideShow = function(){
-        // mixin inheritance
+        // inheritance
+        // see: http://www.cs.rit.edu/~atk/JavaScript/manuals/jsobj/
         dojo.webui.Widget.call(this);
         dojo.webui.DomWidget.call(this, true);
         dojo.webui.HTMLWidget.call(this);
@@ -92,26 +94,28 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
         this.widgetType = "SlideShow";
         this.isContainer = false;
     }
-    // prototype inheritance
+    // more inheritance
     dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
     // make it a tag
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
 
-Almost everything about this is boilerplate, and only the properties that are
-absolutely necessary are set on the class `dojo.webui.widgets.HTMLSlideShow`.
-Every Dojo widget you'll create comes from a class constructor like this one.
+Most things in this class are boilerplate, and only those properties that are
+necessary are given values.  Every Dojo widget you'll create comes from a class
+constructor like this one.
 
-The non-stock bits of this example are the `template*` properties.  Template
-locations are specified relative to the root of the Dojo Subversion checkout,
-and these are made absolute (if necessary) when the widget is created. Meaning
-that you don't have to specify an un-portable absolute URL for your template
-files and you can move your widget file around without adverse consequences.
+The most interesting bits of this example are the `template*` properties.
+Template locations are specified relative to the root of the Dojo Subversion
+checkout, and these are made absolute (if necessary) when the widget is
+created. Meaning that you don't have to specify an un-portable absolute URL for
+your template files and you can move your widget file around without adverse
+consequences.
 
-Dojo currently requires that templates have a single root node which gets 
-assigned to the `domNode` property of the widget.  This property is defined in 
-the `DomWidget` class, so every widget that inherits from it will have this 
-property implicitly. So the most minimal template files possible might look
-like this:
+Dojo currently requires that templates define a single top-level DOM node which
+gets assigned to the `domNode` property of the widget. If multiple elements are
+defined in the top-level of a template file, only the first is used. The
+`domNode` property is defined in the `DomWidget` class, so every widget that
+inherits from it will have this property implicitly. A minimal template for our
+slide show might be:
 
 HTMLSlideShow.html::
 
@@ -252,14 +256,116 @@ faster, less brittle, and more maintainable than either the `innerHTML` or
 straight-DOM ways of doing things. This is rapid widget prototyping at its
 best.
 
-So we've got event handlers and references to our DOM nodes. Next we want to
-make sure that we are cycling through images and that the transition doesn't
-happen until the second image is actually loaded, regardless of how long we
-specified the delay between images to be. Better to be late than broken. We're
-going to throw in a fade transition to round things out, so don't worry if the
-event-driven code is a little bit difficult to follow. The entirety of the
-widget and an improved template follow. We omit the CSS file since it hasn't
-changed since the last time you saw it.
+So we've got event handlers and references to our DOM nodes. Instead of going
+through all of the features of the widget and walking you through all of the
+code now, we include it at the end of the article. Scroll to the end for all
+the details.
+
+Making It A Tag
+---------------
+
+The last hurdle to making this widget something we'd consider working with is
+to make it easy to instantiate. Even in the first listing of `SlideShow.js`, we
+do that. Have a look at the last line::
+
+    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
+
+We saw a brief example of using widgets earlier, but here's a refresher example
+of a Dojo tag being used through extra properties on an HTML element::
+    
+    <img dojoType="SlideShow" 
+        imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
+        transitionInterval="700"
+        imgWidth="800"
+        imgHeight="600"
+        delay="7000"
+        src="images/1.jpg" />
+
+The parser that's built into Dojo knows what to do with that declaration, and
+normalizes it for us. In fact, we could feed the Dojo parser this XML fragment
+and get the exact same result::
+
+    <dojo:slideshow
+        imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
+        transitionInterval="700"
+        imgWidth="800"
+        imgHeight="600"
+        delay="7000" />
+
+The `dojoType` attribute is a proxy for an XML tag name. Standards purists
+might argue that these extra attributes make the markup invalid, which is true.
+If you really really want full standards compliance anyway, just use the
+`dojo:` namespace for your widgets. However, XML in browsers is hit-or-miss and
+strict adherence to the letter of a spec and not its spirit is sometimes
+counter-productive. Since we are able to construct widgets that replace parts
+of a page arbitrarily, Dojo provides a baked-in an answer to concerns about how
+DHTML/Ajax works in browsers that don't support JavaScript or otherwise have
+strict accessibility requirements. Browsers that can handle it receive the
+upgraded UI while everyone else gets the "fallback", all without requiring
+developers to give up the ease of declaring their widgets where they want them
+in the page just extending markup. Toolkits that force developers to
+(manually) place widgets in the flow of the page in JavaScript are a pain to
+work with and have many of the same maintenance problems that DOM-based widget
+building approaches share. Markup purist or pragmatist, Dojo lets you have your
+cake and eat it too.
+
+But back to our widget! To support some of the properties in this expanded
+usage listing, we would add corresponding placeholders in our class::
+
+    // ...
+    this.imgUrls = [];		// the images we'll go through
+    this.delay = 4000; 		// give it 4 seconds
+    this.transitionInterval = 2000; // 2 seconds
+    this.imgWidth = 800;	// img width
+    this.imgHeight = 600;	// img height
+    // ...
+
+For each of these properties, the values set on the inline constructor are cast
+to the same primitive type as the initial value. `transitionInterval` will be
+cast to an integer while `imgUrls` on the `dojo:slideshow` tag will be turned
+into an array that looks like::
+
+    ["images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg"]
+
+If you want integers instead, you would have to convert them before using the 
+values from the array, since it only splits the attribute string on the
+semicolon character.
+
+Assigning to functions is subtly different, but no harder. Dojo includes an
+abstract event system that should be familiar to those who have used Aspect
+Oriented Programming (AOP). In a nutshell, this event system allows a developer
+to "register" some code to be called when another function is called without
+affecting the behavior of the initial function that is being used as the
+trigger. Assigning to a function property in an inline constructor allows us to
+likewise register a listener, but not to over-ride the default behavior of the
+widget method. We could alert some status information when the `togglePaused`
+method of our widget is fired by attaching to it like this:: this::
+
+    <img dojoType="SlideShow" 
+        togglePaused="alert('showing image '+(this.imgIdx+1)+' of '+this.imgUrls.length);"
+        src="images/1.jpg" />
+
+Here the `this` keyword refers to the *widget object* and not the DOM Node. 
+
+Further Reading
+----------------
+
+This article covers the basics of how Dojo widget construction, but not many of
+the configuration, optimization, and library facilities that Dojo provides for
+making GUI programming easier. While the documentation around most of these
+topics is currently lacking, you are encouraged to check out the Dojo wiki
+(http://dojo.jot.com) for more information on these topics.
+
+Widget Code
+----------------
+
+There are some features that a slide-show should have that this article hasn't
+covered yet. We would want to cycling through images using a transition and
+make sure that doesn't happen until the background image is actually loaded,
+regardless of how long we specified the delay between images to be. Better to
+be late than broken. Don't worry if the event-driven code is a little bit
+difficult to follow. The entirety of the widget and an improved template
+follow. We omit the CSS file since it hasn't changed.
 
 SlideShow.js::
 
@@ -404,97 +510,9 @@ HTMLSlideShow.html::
         </tr>
     </table>
 
-We're putting this in a table so that we can add controls around it (in this
+We put the images in a table so that controls can be added around it (in this
 case, just a pause/play button) and so that other elements can flow around the
 widget.
-
-Making It A Tag
----------------
-
-The last hurdle to making this widget something we'd consider working with is
-to make it easy to instantiate. In our above file listing of `SlideShow.js`, we
-already have done that. Have a look at the last line::
-
-    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
-
-We saw a brief example of this at the beginning of the article, but here's a
-refresher example of a Dojo tag being used through extra properties on an HTML
-element::
-    
-    <img dojoType="SlideShow" 
-        imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
-        transitionInterval="700"
-        imgWidth="800"
-        imgHeight="600"
-        delay="7000"
-        src="images/1.jpg" />
-
-The parser that's built into Dojo knows what to do with that declaration, and
-normalizes it for us. In fact, we could feed the Dojo parser this XML fragment
-and get the exact same result::
-
-    <dojo:slideshow
-        imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg" 
-        transitionInterval="700"
-        imgWidth="800"
-        imgHeight="600"
-        delay="7000" />
-
-The `dojoType` attribute is a proxy for an XML tag name. Standards purists
-might argue that these non-standard attributes make markup invalid, which is
-true. However, strict adherence to the letter of a spec and not its spirit is
-counter-productive, and this is a clear case of that. Since we are able to
-construct widgets that replace parts of a page arbitrarily, Dojo provides a
-baked-in an answer to concerns about how DHTML/Ajax works in browsers that
-don't support JavaScript or otherwise have strict accessibility requirements.
-Browsers that can handle it receive the upgraded UI while everyone else gets
-the "fallback", all without requiring developers to give up the ease of
-declaring their widgets where they want them in the page just extending markup.
-Toolkits that force developers to (manually) place widgets in the flow of the
-page in JavaScript are a pain to work with and have many of the same
-maintenance problems that DOM-based widget building approaches share. And if
-you really really want full standards compliance anyway, just use the `dojo:`
-namespace for your widgets. Whatever your preferences and semi-religious
-beliefs about web development, Dojo lets you have your cake and eat it too.
-
-But back to our widget! Aside from `dojoType` and `src`, the attributes on the
-example all bear the names of properties that we defined in our widget class.
-Those definitions again are::
-
-    // ...
-    this.imgUrls = [];		// the images we'll go through
-    this.delay = 4000; 		// give it 4 seconds
-    this.transitionInterval = 2000; // 2 seconds
-    this.imgWidth = 800;	// img width
-    this.imgHeight = 600;	// img height
-    // ...
-
-For each of these properties, the values set on the inline constructor are cast
-to the same primitive type as the initial value. `transitionInterval` will be
-cast to an integer while `imgUrls` will be turned into an array that looks
-like::
-
-    ["images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg"]
-
-If you want integers instead, you would have to convert them before using the 
-values from the array, since it only splits the attribute string on the
-semicolon character.
-
-Assigning to functions is subtly different, but no harder. Dojo includes an
-abstract event system that should be familiar to those who have used Aspect
-Oriented Programming (AOP). In a nutshell, this event system allows a developer
-to "register" some code to be called when another function is called without
-affecting the behavior of the initial function that is being used as the
-trigger. Assigning to a function property in an inline constructor allows us to
-likewise register a listener, but not to over-ride the default behavior of the
-widget method. We could alert some status information when the `togglePaused`
-method of our widget is fired by attaching to it like this:: this::
-
-    <img dojoType="SlideShow" 
-        togglePaused="alert('showing image '+(this.imgIdx+1)+' of '+this.imgUrls.length);"
-        src="images/1.jpg" />
-
-Here the `this` keyword refers to the *widget object* and not the DOM Node. 
 
 More Information
 ----------------
