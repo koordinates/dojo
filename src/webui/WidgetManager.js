@@ -7,16 +7,35 @@ dojo.hostenv.loadModule("dojo.alg.*");
 
 dojo.webui.widgetManager = new function(){
 	this.widgets = [];
+	this.widgetIds = [];
 	this.root = null; // the root widget
+
+	var widgetCtr = 0;
+
+	this.getUniqueId = function(){
+		return widgetCtr++;
+	}
 
 	this.add = function(widget){
 		this.widgets.push(widget);
+		if(widget.widgetId == ""){
+			widget.widgetId = widget.widgetType+" "+this.getUniqueId();
+		}else if(this.widgetIds[widget.widgetId]){
+			dj_debug("widget ID collision on ID: "+widget.widgetId);
+		}
+		this.widgetIds[widget.widgetId] = widget;
 	}
 
 	// FIXME: we should never allow removal of the root widget until all others
 	// are removed!
 	this.remove = function(widgetIndex){
+		var tw = this.widgets[widgetIndex];
+		delete this.widgetIds[tw];
 		this.widgets.splice(widgetIndex, 1);
+	}
+
+	this.getWidgetById = function(id){
+		return this.widgetIds[id];
 	}
 
 	this.getWidgetsOfType = function(type){

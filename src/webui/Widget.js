@@ -27,7 +27,7 @@ dojo.webui.Widget = function(){
 	// FIXME: need to replace this with context menu stuff
 	this.rightClickItems = [];
 
-	this.widgetID = -1; // FIXME: should this be null?
+	this.widgetId = "";
 
 	this.selection = new dojo.webui.Selection();
 	
