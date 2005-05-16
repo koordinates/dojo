@@ -52,7 +52,7 @@ dojo.webui.Widget = function(){
 	}
 
 	this.create = function(args, fragment, parentComp){
-		dj_debug(parentComp);
+		//dj_debug(parentComp);
 		this.satisfyPropertySets(args, fragment, parentComp);
 		this.mixInProperties(args, fragment, parentComp);
 		this.buildRendering(args, fragment, parentComp);
