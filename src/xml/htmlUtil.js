@@ -1,4 +1,5 @@
 dojo.hostenv.startPackage("dojo.xml.htmlUtil");
+dojo.hostenv.loadModule("dojo.text");
 
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS. Need to investigate for KHTML and Opera
@@ -207,7 +208,7 @@ dojo.xml.htmlUtil = new function(){
 
 	this.removeClass = function(node, classStr){
 		if(!node){ return false; }
-		var classStr = new String(classStr).trim();
+		var classStr = dojo.text.trim(new String(classStr));
 
 		try{
 			var cs = String( node.className ).split(" ");
