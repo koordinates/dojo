@@ -5,6 +5,7 @@ dojo.hostenv.startPackage("dojo.webui.widgets.tags");
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.event.*");
+dojo.hostenv.loadModule("dojo.text.*");
 
 dojo.webui.Widget = function(){
 	// FIXME: need to be able to disambiguate what our rendering context is
