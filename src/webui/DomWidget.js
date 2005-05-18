@@ -29,7 +29,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
-	this.addChild = function(widget){ 
+	this.addChild = function(widget, overrideContainerNode){ 
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.webui.DomWidget.addChild() attempted on non-container widget");
 			return false;
@@ -37,13 +37,16 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			dj_debug("dojo.webui.DomWidget.addChild() attempted without containerNode");
 			return false;
 		}else{
-			this.containerNode.appendChild(widget.domNode);
+			if(overrideContainerNode) {
+				overrideContainerNode.appendChild(widget.domNode);
+			} else {
+				this.containerNode.appendChild(widget.domNode);
+			}
 			this.children.push(widget);
 			widget.parent = this;
 		}
 	}
-
-
+	
 	this.postInitialize = function(args, frag, parentComp){
 		if(parentComp){
 			parentComp.addChild(this);
