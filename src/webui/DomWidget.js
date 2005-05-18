@@ -38,6 +38,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			return false;
 		}else{
 			this.containerNode.appendChild(widget.domNode);
+			this.children.push(widget);
+			widget.parent = this;
 		}
 	}
 
@@ -105,6 +107,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// FIMXE: this breaks if the template has whitespace as its first 
 			// characters
 			node = this.createNodesFromText(this.templateString, true);
+			dj_debug(node);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 		}
 		if(!this.templateNode){ 
@@ -440,14 +443,13 @@ dojo.webui.HTMLWidget = function(args){
 dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
 
 dojo.webui.htmlDragAndDropManager = new function(){
+	dojo.webui.DragAndDropManager.call(this);
 
-	var dm = dojo.webui.dragAndDropManager;
 	this.resizeTarget = null;
-	this.dragSource = null;
-	this.hoverTarget = null;
+	this.hoverNode = null;
 	this.isResizing = false;
-	this.overResize = false;
-	this.isDragging = false;
+	this.overResizeHandle = false;
+	this.overDragHandle  = false;
 	this.init = [];
 	this.curr = [];
 
@@ -462,39 +464,54 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		return rh;
 	}
 
+	this.checkForDrag = function(node){
+		var rh = false;
+		var ca = null;
+		var ancestors = dojo.xml.domUtil.getAncestors(node);
+		while((ancestors.length)&&(!rh)){
+			var ca = ancestors.shift();
+			rh = dojo.xml.htmlUtil.getAttribute(ca, "dragHandle");
+		}
+		return rh;
+	}
+
 	this.mouseMove = function(evt){
 		this.curr = [evt.clientX, evt.clientY];
 		this.curr.x = this.curr[0];
 		this.curr.y = this.curr[1];
-		if(this.isResizing){
-			if(this.resizeTarget){
-				this.resizeTarget.updateResize(this.curr);
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		}else if(this.isDragging){
-			// FIXME: what do we do here?
+		if((this.isDragging)||(this.isResizing)){
+			// FIXME: we should probably implement a distance threshold here!
+			this.mouseDrag(evt);
 		}else{
+			var dh = this.checkForDrag(evt.target);
 			var rh = this.checkForResize(evt.target);
-			// FIXME: we need to check for "hotspots" here!!
 			// FIXME: we also need to handle horizontal-only or vertical-only
 			// reisizing
-			if(rh){
-				this.overResize = true;
-				// document.body.style.cursor = "nw-resize";
+			if(rh||dh){
+				if(rh){ this.overResizeHandle = true; }
+				if(dh){ this.overDragHandle = true; }
 				document.body.style.cursor = "move";
 			}else{
-				this.overResize = false;
+				this.overResizeHandle = false;
+				this.overDragHandle = false;
 				document.body.style.cursor = "";
 			}
 		}
-		this.hoverTarget = dojo.webui.widgetManager.getWidgetFromEvent(evt);
+		// update hoverTarget only when necessaray!
+		if(evt.target != this.hoverNode){ 
+			this.hoverNode = evt.target;
+			var tht = dojo.webui.widgetManager.getWidgetFromEvent(evt);
+			if((this.hoverTarget)&&(this.hoverTarget["dragLeave"])&&(tht != this.hoverTarget)){
+				this.hoverTarget.dragLeave(this.dragSource);
+			}
+			this.hoverTarget = tht;
+		}
 	}
 
 	this.mouseDown = function(evt){
 		this.init = this.curr;
 		if(!this.hoverTarget){ return; }
-		if(this.overResize){
+		if(this.overResizeHandle){
 			this.isResizing = true;
 			this.resizeTarget = this.hoverTarget;
 			if(this.resizeTarget["startResize"]){
@@ -503,10 +520,17 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				this.resizeTarget.startResize(this.curr);
 			}
 		}else{
-			if(this.hoverTarget["isDragSource"] == true){
+			if((this.hoverTarget["isDragSource"] === true)||(this.overDragHandle)){
 				this.isDragging = true;
 				this.dragSource = this.hoverTarget;
-				document.body.style.cursor = "move";
+				while((this.dragSource)&&(!this.dragSource["isDragSource"])){
+					this.dragSource = this.dragSource.parent;
+				}
+				if(!this.dragSource){
+					this.isDragging = false;
+				}else{
+					document.body.style.cursor = "move";
+				}
 			}
 		}
 	}
@@ -517,19 +541,43 @@ dojo.webui.htmlDragAndDropManager = new function(){
 
 	this.mouseUp = function(nativeEvt){ 
 		// alert(nativeEvt); 
-		if(this.isResizing){
+		this.drop(nativeEvt);
+		if((this.isResizing)||(this.isDragging)){
 			if(this.resizeTarget){
 				this.resizeTarget.endResize(this.curr);
 			}
 			this.resizeTarget = null;
 			this.isResizing = false;
-			this.overResize = false;
+			this.overResizeHandle = false;
+
+			this.dragSource = null;
+			this.isDragging = false;
+			this.overDragHandle = false;
+
 			document.body.style.cursor = "";
 		}
-		dojo.webui.dragAndDropManager.drop(nativeEvt);
 		this.init = [];
 	}
-	this.mouseDrag = function(nativeEvt){ return; }
+
+	this.mouseDrag = function(evt){ 
+		if(this.isResizing){
+			if(this.resizeTarget){
+				this.resizeTarget.updateResize(this.curr);
+				evt.preventDefault();
+				evt.stopPropagation();
+			}
+		}else if(this.isDragging){
+			evt.preventDefault();
+			evt.stopPropagation();
+			while((this.hoverTarget)&&(!this.hoverTarget["dragEnter"])&&(this.hoverTarget != dojo.webui.widgetManager.root)){
+				this.hoverTarget = this.hoverTarget.parent;
+				
+			}
+			if(this.hoverTarget != dojo.webui.widgetManager.root){
+				this.hoverTarget.dragEnter(this.dragSource);
+			}
+		}
+	}
 }
 
 try{

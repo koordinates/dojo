@@ -1,9 +1,9 @@
+dojo.hostenv.startPackage("dojo.webui.DragAndDrop");
 dojo.hostenv.startPackage("dojo.webui.selection");
 dojo.hostenv.startPackage("dojo.webui.dragAndDrop");
-dojo.hostenv.startPackage("dojo.webui.DragAndDrop");
 dojo.hostenv.startPackage("dojo.webui.DragSource");
 dojo.hostenv.startPackage("dojo.webui.DropTarget");
-dojo.hostenv.startPackage("dojo.webui.dragAndDropManager");
+dojo.hostenv.startPackage("dojo.webui.DragAndDropManager");
 
 dojo.webui.DragSource = function(){
 	// The interface that all drag data sources MUST implement
@@ -21,21 +21,50 @@ dojo.webui.DragSource = function(){
 
 dojo.webui.DropTarget = function(){
 	// The interface that all components that accept drops MUST implement
+	this.acceptedTypes = []; // strings
+
 	this.dragEnter = function(dragSourceObj){ 
 		// FIXME: should this also accept the DOM event?
-		if(this.isDragAcceptable(dragSourceObj)){
+		if(this.acceptDrag(dragSourceObj)){
+			this.targetAccepts = true;
+		}else{
+			// FIXME: visually signal that the drop won't work!
 		}
 	}
 
 	this.dragLeave = function(dragSourceObj){
 	}
 
-	this.isDragAcceptable = function(dragSourceObj){
+	this.acceptDrag = function(dragSourceObj){
+		if(!dragSourceObj["getTypes"]){ 
+			dj_debug("won't accept"); return false; 
+		}
 		var dtypes = dragSourceObj.getTypes();
+		if(dtypes.length == 0){
+			dj_debug("won't accept"); return false; 
+		}
+		for(var x=0; x<dtypes.length; x++){
+			if(!dojo.alg.inArray(this.acceptedTypes, dtypes[x])){
+				return false;
+			}
+		}
+		dj_debug(this.widgeType+" will accept!");
+		return true;
+	}
+
+	this.handleDrop = function(dragSourceObj){
+		// this is the default action. it's not very smart and so this method
+		// should be over-ridden by widgets wanting to handle drops
+		var sel = dragSourceObj.selection;
+		for(var x=0;x<sel.length; x++){
+			var tmp = dragSourceObj.remove(sel[x]);
+			this.addChild(tmp);
+		}
+		return false;
 	}
 }
 
-dojo.webui.dragAndDropManager = new function(){
+dojo.webui.DragAndDropManager = function(){
 	
 	this.hoverTarget = null;
 	this.dragSource = null;
@@ -52,6 +81,7 @@ dojo.webui.dragAndDropManager = new function(){
 	this.mouseDrag = function(nativeEvt){ return; }
 	this.startDrag = function(nativeEvt){ return; }
 	this.checkForResize = function(nativeEvt){ return; }
+	this.checkForDrag = function(nativeEvt){ return; }
 
 	this.drag = function(nativeEvt){
 		// FIXME: when dragging over a potential drop target, we must ask it if
@@ -67,10 +97,10 @@ dojo.webui.dragAndDropManager = new function(){
 		// determine how to handle copy vs. move drags and if that can/should
 		// be set by the dragged items or the receiver of the drop event.
 		if((this.hoverTarget)&&(this.dragSource)&&(this.targetAccepts)){
+			this.hoverTarget.handleDrop(this.dragSource);
 		}
 	}
 }
-
 
 /* FIXME:
  *	The base widget classes should support drag-and-drop completely, but
@@ -127,7 +157,6 @@ dojo.webui.Selection = function(){
 	}
 
 	this.remove = function(obj){
-		dj_debug("remove widget");
 		if(typeof obj["setSelected"] == "function"){
 			obj.setSelected(false);
 		}
@@ -152,3 +181,4 @@ dojo.webui.Selection = function(){
 		selected = [];
 	}
 }
+
