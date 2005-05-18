@@ -24,7 +24,7 @@ dojo.webui.Widget = function(){
 
 	this.isEnabled = true;
 	this.isHidden = false;
-	this.isContainer = true; // can we contain other widgets?
+	this.isContainer = false; // can we contain other widgets?
 	// FIXME: need to replace this with context menu stuff
 	this.rightClickItems = [];
 
