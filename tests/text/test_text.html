@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>Text Test</title>
+		<style type="text/css">
+			#Mover {
+				position : absolute;
+				background : #ccc;
+				left : 200px;
+				top : 200px;
+			}
+		</style>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/text/Text.js"></script>
+		<script language="JavaScript" type="text/javascript">
+
+			function init(){
+				var ws = " This has some white space at the ends! Oh no!    ";
+				dj_debug("trim('" + ws + "') => '" + dojo.text.trim(ws) + "'");
+				var p = "This %{string} has %{parameters} %{toReplace}";
+				dj_debug("paramString('" + p + "') => '" + dojo.text.paramString(p,
+							{ string: "area", parameters: "foo"}) + "'");
+				dj_debug("paramString('" + p + "', true) => '" + dojo.text.paramString(p,
+							{ string: "area", parameters: "foo"}, true) + "'");
+			}
+
+			dojo.hostenv.modulesLoadedListeners.push(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+
