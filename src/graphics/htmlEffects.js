@@ -146,4 +146,50 @@ dojo.graphics.htmlEffects = new function() {
 		// FIXME: waiting for math.curves.OpenPolygon
 		dj_unimplemented("dojo.graphics.htmlEffects.zig");
 	}
+
+	// assume we get a node with display:none
+	this.wipeIn = function(node, duration, callback, dontPlay) {
+		var parent = node.parentNode;
+		if( !parent ) return;
+		var abs = dojo.xml.domUtil.getStyle(node, "position") == "absolute";
+		var box = document.createElement("span"); // less likely to be styled
+		with(box.style) {
+			display = "block !important";
+			overflow = "hidden !important";
+			border = padding = margin = "0 !important";
+			height = "0px";
+			if( abs ) { position = "absolute"; }
+		}
+		parent.insertBefore(box, node);
+		box.appendChild(node);
+		node.style.display = "block";
+		var height = node.offsetHeight;
+		if(abs) {
+			// FIXME: may not work well if position is specified with right or bottom
+			box.style.top = dojo.xml.domUtil.getStyle(node, "top") || 0;
+			box.style.left = dojo.xml.domUtil.getStyle(node, "left") || 0;
+			node.style.position = "static";
+		}
+		var anim = new dojo.animation.Animation(
+			new dojo.math.curves.Line([0], [node.offsetHeight]),
+			duration, 0);
+		anim.onAnimate = function(e) {
+			box.style.height = Math.round(e.x) + "px";
+		}
+		anim.onEnd = function(e) {
+			parent.insertBefore(node, box);
+			if(abs) {
+				node.style.position = "absolute";
+			}
+			parent.removeChild(box);
+			if(typeof callback == "function") {
+				callback(node);
+			}
+		}
+		if( !dontPlay ) { anim.play(true); }
+		return anim;
+	}
+
+	this.wipeOut = function(node, duration, callback) {
+	}
 }
