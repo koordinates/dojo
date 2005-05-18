@@ -152,24 +152,31 @@ dojo.graphics.htmlEffects = new function() {
 	}
 
 	// assume we get a node with display:none
+	// So this is less than ideal, but I can't seem to get clipping to play nicely.
+	// What we do is create a box and move the node into the box and change the
+	// height of the box until it is the correct height. At the end, the node is put
+	// back where it belongs and the extra box is removed.
 	this.wipeIn = function(node, duration, callback, dontPlay) {
 		var parent = node.parentNode;
 		if( !parent ) return;
-		var abs = dojo.xml.domUtil.getStyle(node, "position") == "absolute";
+
+		// box
 		var box = document.createElement("span"); // less likely to be styled
 		with(box.style) {
 			display = "block";
 			overflow = "hidden";
 			border = padding = margin = "0";
 			height = "0px";
-			if( abs ) { position = "absolute"; }
 		}
 		parent.insertBefore(box, node);
 		box.appendChild(node);
 		node.style.display = "block";
 		var height = node.offsetHeight;
+
+		var abs = dojo.xml.domUtil.getStyle(node, "position") == "absolute";
 		if(abs) {
 			// FIXME: may not work well if position is specified with right or bottom
+			box.style.position = "absolute";
 			box.style.top = dojo.xml.domUtil.getStyle(node, "top") || 0;
 			box.style.left = dojo.xml.domUtil.getStyle(node, "left") || 0;
 			node.style.position = "static";
@@ -195,5 +202,6 @@ dojo.graphics.htmlEffects = new function() {
 	}
 
 	this.wipeOut = function(node, duration, callback) {
+		dj_unimplemented("dojo.graphics.htmlEffects.wipeOut");
 	}
 }
