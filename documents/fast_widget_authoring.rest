@@ -18,16 +18,16 @@ article. To get a feel for how it's being used, do a view-source on this page.
 
         <!-- we tell Dojo where it's unzipped tarball is -->
         <script language="JavaScript" type="text/javascript">
-            djConfig = { baseScriptUri: "http://dojotoolkit.org/~alex/dojo/" };
+            djConfig = { baseScriptUri: "/~alex/dojo/" };
         </script>
 
         <!-- pull in the core of Dojo -->
         <script language="JavaScript" type="text/javascript" 
-            src="http://dojotoolkit.org/~alex/dojo/src/bootstrap1.js"></script>
+            src="/~alex/dojo/src/bootstrap1.js"></script>
         <script language="JavaScript" type="text/javascript" 
-            src="http://dojotoolkit.org/~alex/dojo/src/hostenv_browser.js"></script>
+            src="/~alex/dojo/src/hostenv_browser.js"></script>
         <script language="JavaScript" type="text/javascript" 
-            src="http://dojotoolkit.org/~alex/dojo/src/bootstrap2.js"></script>
+            src="/~alex/dojo/src/bootstrap2.js"></script>
 
         <!-- Dojo is loaded, include the widget  -->
         <script language="JavaScript" type="text/javascript">
@@ -36,7 +36,7 @@ article. To get a feel for how it's being used, do a view-source on this page.
 
         <!-- upgrade a static image to a slideshow -->
         <img dojoType="SlideShow" 
-            imgUrlBase="http://dojotoolkit.org/~alex/dojo/tests/webui/widgets/images/"
+            imgUrlBase="/~alex/dojo/tests/webui/widgets/images/"
             imgUrls="1.jpg;2.jpg;3.jpg;4.jpg" 
             transitionInterval="700"
             delay="7000"
