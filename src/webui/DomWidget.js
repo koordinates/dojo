@@ -110,7 +110,6 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// FIMXE: this breaks if the template has whitespace as its first 
 			// characters
 			node = this.createNodesFromText(this.templateString, true);
-			dj_debug(node);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 		}
 		if(!this.templateNode){ 
