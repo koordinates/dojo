@@ -24,6 +24,14 @@
 
 #flash {
 }
+
+#wiper {
+	position : absolute;
+	left : 300px;
+	top : 400px;
+	width : 200px;
+	background : #ccc;
+}
 </style>
 <script language="JavaScript" type="text/javascript">
 	// Dojo configuration
@@ -42,14 +50,20 @@
 	src="../../src/xml/domUtil.js"></script>
 <script language="JavaScript" type="text/javascript" 
 	src="../../src/xml/htmlUtil.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/graphics/htmlEffects.js"></script>
 <script language="JavaScript" type="text/javascript">
-	dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
-	var fadeElem, flash, unflash;
+	//dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
+	var fadeElem, flash, unflash, wiper;
 	onload = function() {
 		flash = document.getElementById("flash");
 		dojo.graphics.htmlEffects.colorFadeIn(flash, [230, 230, 180], 1500, 1500);
+
 		unflash = document.getElementById("unflash");
 		dojo.graphics.htmlEffects.colorFadeOut(unflash, [255, 200, 180], 1500, 1500);
+
+		wiper = document.getElementById("wiper");
+		dojo.graphics.htmlEffects.wipeIn(wiper, 1000);
 	}
 </script>
 </head>
@@ -71,6 +85,15 @@
 
 	<div id="flash">I fade to my BG!</div>
 	<div id="unflash">I fade from my BG!</div>
+
+	<div id="wiper">
+		Wipe wipe wipe. It is so fun to...
+		Wipe wipe wipe. It is so fun to...
+		Wipe wipe wipe. It is so fun to...
+		Wipe wipe wipe. It is so fun to...
+	</div>
+
+	<div>Non-wipe...</div>
 </body>
 </html>
 
