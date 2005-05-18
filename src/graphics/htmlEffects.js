@@ -64,8 +64,10 @@ dojo.graphics.htmlEffects = new function() {
 		var color, nd = node, wasTransparent = false;
 		do {
 			color = dojo.xml.domUtil.getStyle(nd, "background-color");
-			if(nd == document.body) { nd = null; break; }
+			// Safari doesn't say "transparent"
+			if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
 			if(nd == node && color == "transparent") { wasTransparent = true; }
+			if(nd == document.body) { nd = null; break; }
 			nd = nd.parentNode;
 		} while(nd && color == "transparent");
 
@@ -83,8 +85,8 @@ dojo.graphics.htmlEffects = new function() {
 				callback(node);
 			}
 		}, delay > 0);
-		anim.onAnimate({x:startRGB[0], y:startRGB[1], z:startRGB[2]});
 		if( delay > 0 ) {
+			anim.onAnimate({x:startRGB[0], y:startRGB[1], z:startRGB[2]});
 			setTimeout(function(){anim.play(true)}, delay);
 		}
 		return anim;
@@ -98,6 +100,8 @@ dojo.graphics.htmlEffects = new function() {
 		var color, nd = node;
 		do {
 			color = dojo.xml.domUtil.getStyle(nd, "background-color");
+			// Safari doesn't say "transparent"
+			if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
 			if(nd == document.body) { nd = null; break; }
 			nd = nd.parentNode;
 		} while(nd && color == "transparent");
@@ -109,8 +113,8 @@ dojo.graphics.htmlEffects = new function() {
 		}
 
 		var anim = _this.colorFade(node, color, endRGB, duration, callback, delay > 0);
-		anim.onAnimate({x:color[0], y:color[1], z:color[2]});
 		if( delay > 0 ) {
+			anim.onAnimate({x:color[0], y:color[1], z:color[2]});
 			setTimeout(function(){anim.play(true)}, delay);
 		}
 		return anim;
@@ -154,9 +158,9 @@ dojo.graphics.htmlEffects = new function() {
 		var abs = dojo.xml.domUtil.getStyle(node, "position") == "absolute";
 		var box = document.createElement("span"); // less likely to be styled
 		with(box.style) {
-			display = "block !important";
-			overflow = "hidden !important";
-			border = padding = margin = "0 !important";
+			display = "block";
+			overflow = "hidden";
+			border = padding = margin = "0";
 			height = "0px";
 			if( abs ) { position = "absolute"; }
 		}

@@ -91,8 +91,9 @@ dojo.xml.domUtil = new function(){
 		var hex = "0123456789abcdef";
 		color = color.toLowerCase();
 		if( color.indexOf("rgb") == 0 ) {
-			var matches = color.match(/rgb\((\d+), *(\d+), *(\d+)\)/i);
-			return matches.splice(1, 3);
+			var matches = color.match(/rgba*\((\d+), *(\d+), *(\d+)/i);
+			var ret = matches.splice(1, 3);
+			return ret;
 		} else if( color.indexOf("#") == 0 ) {
 			var colors = [];
 			color = color.substring(1);
@@ -124,5 +125,6 @@ dojo.xml.domUtil = new function(){
 				case "silver": return [192,192,192];
 			}
 		}
+		return [255,255,255]; // assume white if all else fails
 	}
 }
