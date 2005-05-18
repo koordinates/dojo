@@ -60,6 +60,7 @@ dojo.webui.Widget = function(){
 		this.initialize(args, fragment, parentComp);
 		this.postInitialize(args, fragment, parentComp);
 		dojo.webui.widgetManager.add(this);
+		return this;
 	}
 
 	this.destroy = function(widgetIndex){
@@ -301,7 +302,7 @@ dojo.webui.widgets.tags = {};
 dojo.webui.widgets.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
 	this[ltype] = function(fragment, widgetParser, parentComp){ 
-		dojo.webui.widgets.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp);
+		return dojo.webui.widgets.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp);
 	}
 }
 
@@ -325,5 +326,5 @@ dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser, paren
 	var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
 	var twidget = dojo.webui.widgetManager.getImplementation(stype);
-	twidget.create(localProperties, frag, parentComp);
+	return twidget.create(localProperties, frag, parentComp);
 }

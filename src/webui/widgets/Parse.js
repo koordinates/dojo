@@ -12,6 +12,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 	*/
 	this.createComponents = function(fragment, parentComp){
 		var djTags = dojo.webui.widgets.tags;
+		var returnValue = [];
 		for(var item in fragment){
 			// if we have items to parse/create at this level, do it!
 			try{
@@ -27,7 +28,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 							fragment[item].tagName = ltn;
 							// dj_debug(djTags[tn.toLowerCase()]);
 							// dj_debug(parentComp);
-							djTags[ltn](fragment[item], this, parentComp);
+							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
 						}
 					}
 				}
@@ -40,9 +41,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 			if( (typeof fragment[item] == "object")&&
 				(fragment[item] != fragment.nodeRef)&&
 				(fragment[item] != fragment["tagName"])){
-				this.createComponents(fragment[item], parentComp);
+				returnValue.push(this.createComponents(fragment[item], parentComp));
 			}
 		}
+		return returnValue;
 	}
 
 	/*  parsePropertySets checks the top level of a raw JavaScript object
@@ -205,7 +207,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 		frag[tagName].nodeRef = nodeRef;
 		frag.tagName = tagName;
 		var fragContainer = [frag];
-		this.createComponents(fragContainer);
+		return this.createComponents(fragContainer);
 	}
 }
 
