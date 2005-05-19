@@ -189,6 +189,9 @@ dojo.io.XMLHTTPTransport = new function(){
 			ret = dj_eval(http.responseText);
 		} else if(kwArgs.mimetype == "text/xml") {
 			ret = http.responseXML;
+			if(!ret) {
+				ret = dojo.xml.domUtil.parseXmlString(http.responseText);
+			}
 		} else {
 			ret = http.responseText;
 		}

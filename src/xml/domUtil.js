@@ -86,6 +86,28 @@ dojo.xml.domUtil = new function(){
 		return ancestors;
 	}
 
+	// FIXME: this won't work in Safari
+	this.parseXmlString = function(str, mimetype) {
+		if(!mimetype) { mimetype = "text/xml"; }
+		if(typeof DOMParser != "undefined") {
+			var parser = new DOMParser();
+			return parser.parseFromString(str, mimetype);
+		} else if(typeof ActiveXObject != "undefined") {
+			var domDoc = new ActiveXObject("Microsoft.XMLDOM");
+			if(domDoc) {
+				domDoc.async = false;
+				domDoc.loadXML(str);
+				return domDoc;
+			} else {
+				dj_debug("toXml didn't work?");
+			}
+		} else {
+			dj_unimplemented("dojo.xml.domUtil.toXml");
+		}
+		return null;
+	}
+	this.parseXMLString = this.parseXmlString; // to avoid confusion
+
 	// get RGB array from css-style color declarations
 	this.extractRGB = function(color) {
 		var hex = "0123456789abcdef";
