@@ -1,10 +1,12 @@
 dojo.hostenv.startPackage("dojo.xml.htmlUtil");
 dojo.hostenv.loadModule("dojo.text.*");
+dojo.hostenv.loadModule("dojo.event.*");
 
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS. Need to investigate for KHTML and Opera
 dojo.xml.htmlUtil = new function(){
 	var _this = this;
+	var _selectDisabled = false;
 	this.styleSheet = null;
 	
 	// FIXME: need to make sure these get installed at onLoad!!!
@@ -13,6 +15,23 @@ dojo.xml.htmlUtil = new function(){
 	document.body.style.boxSizing = "border-box";
 	document.body.style.MozBoxSizing = "border-box";
 	*/
+
+	this.disableSelect = function(){
+		if(!_selectDisabled){
+			_selectDisabled = true;
+			dojo.event.connect(document.body, "onselectstart", dojo.event.browser, "stopEvent");
+			dojo.event.connect(document.body, "ondragstart", dojo.event.browser, "stopEvent");
+		}
+	}
+
+	this.enableSelect = function(){
+		if(_selectDisabled){
+			_selectDisabled = false;
+			dojo.event.disconnect(document.body, "onselectstart", dojo.event.browser, "stopEvent");
+			dojo.event.disconnect(document.body, "ondragstart", dojo.event.browser, "stopEvent");
+		}
+	}
+
 	var cm = document["compatMode"];
 	var boxSizing = ((cm)&&((cm == "BackCompat")||(cm == "QuirksMode"))) ? true : false;
 

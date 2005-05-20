@@ -163,4 +163,22 @@ dojo.xml.domUtil = new function(){
 		}
 		return [255,255,255]; // assume white if all else fails
 	}
+
+	this.insertBefore = function(node, ref){
+		var pn = node.parentNode;
+		pn.insertBefore(node, ref);
+	}
+
+	this.before = this.insertBefore;
+
+	this.insertAfter = function(node, ref){
+		var pn = ref.parentNode;
+		if(ref == pn.lastChild){
+			pn.appendChild(node);
+		}else{
+			pn.insertBefore(node, ref.nextSibling);
+		}
+	}
+
+	this.after = this.insertAfter;
 }
