@@ -29,7 +29,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
-	this.addChild = function(widget, overrideContainerNode){ 
+	this.addChild = function(widget, overrideContainerNode, pos, ref){ 
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.webui.DomWidget.addChild() attempted on non-container widget");
 			return false;
@@ -37,14 +37,27 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			dj_debug("dojo.webui.DomWidget.addChild() attempted without containerNode");
 			return false;
 		}else{
-			if(overrideContainerNode) {
-				overrideContainerNode.appendChild(widget.domNode);
-			} else {
-				this.containerNode.appendChild(widget.domNode);
+			var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
+			if(!pos){ pos = "after"; }
+			if(!ref){ ref = cn.lastChild; }
+			if(!ref){
+				cn.appendChild(widget.domNode);
+			}else{
+				dojo.xml.domUtil[pos](widget.domNode, ref);
 			}
 			this.children.push(widget);
 			widget.parent = this;
 		}
+	}
+
+	this.removeChild = function(widget){
+		for(var x=0; x<this.children.length; x++){
+			if(this.children[x] === widget){
+				this.children.splice(x, 1);
+				break;
+			}
+		}
+		return widget;
 	}
 	
 	this.postInitialize = function(args, frag, parentComp){
@@ -449,6 +462,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 
 	this.resizeTarget = null;
 	this.hoverNode = null;
+	this.dragGhost = null;
 	this.isResizing = false;
 	this.overResizeHandle = false;
 	this.overDragHandle  = false;
@@ -502,11 +516,22 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		// update hoverTarget only when necessaray!
 		if(evt.target != this.hoverNode){ 
 			this.hoverNode = evt.target;
-			var tht = dojo.webui.widgetManager.getWidgetFromEvent(evt);
-			if((this.hoverTarget)&&(this.hoverTarget["dragLeave"])&&(tht != this.hoverTarget)){
-				this.hoverTarget.dragLeave(this.dragSource);
+			var tdt = dojo.webui.widgetManager.getWidgetFromEvent(evt);
+			this.hoverTarget = tdt;
+			while((tdt)&&(!tdt["dragEnter"])&&(tdt != dojo.webui.widgetManager.root)){
+				tdt = tdt.parent;
 			}
-			this.hoverTarget = tht;
+			if(tdt != dojo.webui.widgetManager.root){
+				if(tdt != this.dropTarget){
+					if(this.dropTarget){
+						this.dropTarget.dragLeave(this.dragSource);
+					}
+					this.dropTarget = tdt;
+					if((this.dropTarget)&&(this.dropTarget["dragEnter"])){
+						this.dropTarget.dragEnter(this.dragSource);
+					}
+				}
+			}
 		}
 	}
 
@@ -521,6 +546,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				evt.stopPropagation();
 				this.resizeTarget.startResize(this.curr);
 			}
+			this.dragSource.startDrag();
 		}else{
 			if((this.hoverTarget["isDragSource"] === true)||(this.overDragHandle)){
 				this.isDragging = true;
@@ -533,6 +559,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				}else{
 					document.body.style.cursor = "move";
 				}
+				this.dragSource.startDrag();
 			}
 		}
 	}
@@ -542,12 +569,14 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.mouseOut = function(nativeEvt){ return; }
 
 	this.mouseUp = function(nativeEvt){ 
-		// alert(nativeEvt); 
 		this.drop(nativeEvt);
 		if((this.isResizing)||(this.isDragging)){
 			if(this.resizeTarget){
 				this.resizeTarget.endResize(this.curr);
+			}else{
+				this.dragSource.endDrag();
 			}
+			this.dropTarget = null;
 			this.resizeTarget = null;
 			this.isResizing = false;
 			this.overResizeHandle = false;
@@ -571,13 +600,13 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		}else if(this.isDragging){
 			evt.preventDefault();
 			evt.stopPropagation();
-			while((this.hoverTarget)&&(!this.hoverTarget["dragEnter"])&&(this.hoverTarget != dojo.webui.widgetManager.root)){
-				this.hoverTarget = this.hoverTarget.parent;
-				
+			/*
+			if((this.dropTarget)&&(this.dropTarget["acceptDrag"])&&(this.dropTarget.acceptDrag(this.dragSource))){
+				this.targetAccepts = true;
+			}else{
+				// FIXME: visually signal that the drop won't work!
 			}
-			if(this.hoverTarget != dojo.webui.widgetManager.root){
-				this.hoverTarget.dragEnter(this.dragSource);
-			}
+			*/
 		}
 	}
 }

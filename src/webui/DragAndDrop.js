@@ -9,6 +9,12 @@ dojo.webui.DragSource = function(){
 	// The interface that all drag data sources MUST implement
 	this.isDragSource = true;
 
+	this.startDrag = function(){
+	}
+
+	this.endDrag = function(){
+	}
+
 	this.getTypes = function(){
 		// DragSource objects MUST include a selection property or overload
 		// this method
@@ -24,12 +30,6 @@ dojo.webui.DropTarget = function(){
 	this.acceptedTypes = []; // strings
 
 	this.dragEnter = function(dragSourceObj){ 
-		// FIXME: should this also accept the DOM event?
-		if(this.acceptDrag(dragSourceObj)){
-			this.targetAccepts = true;
-		}else{
-			// FIXME: visually signal that the drop won't work!
-		}
 	}
 
 	this.dragLeave = function(dragSourceObj){
@@ -37,27 +37,30 @@ dojo.webui.DropTarget = function(){
 
 	this.acceptDrag = function(dragSourceObj){
 		if(!dragSourceObj["getTypes"]){ 
-			dj_debug("won't accept"); return false; 
+			// dj_debug("won't accept");
+			return false; 
 		}
 		var dtypes = dragSourceObj.getTypes();
 		if(dtypes.length == 0){
-			dj_debug("won't accept"); return false; 
+			// dj_debug("won't accept");
+			return false; 
 		}
 		for(var x=0; x<dtypes.length; x++){
 			if(!dojo.alg.inArray(this.acceptedTypes, dtypes[x])){
 				return false;
 			}
 		}
-		dj_debug(this.widgeType+" will accept!");
+		// dj_debug(this.widgeType+" will accept!");
 		return true;
 	}
 
 	this.handleDrop = function(dragSourceObj){
 		// this is the default action. it's not very smart and so this method
 		// should be over-ridden by widgets wanting to handle drops
-		var sel = dragSourceObj.selection;
+		var sel = dragSourceObj.selection.selected;
 		for(var x=0;x<sel.length; x++){
-			var tmp = dragSourceObj.remove(sel[x]);
+			var tmp = dragSourceObj.removeChild(sel[x]);
+			// dj_debug(tmp);
 			this.addChild(tmp);
 		}
 		return false;
@@ -68,6 +71,7 @@ dojo.webui.DragAndDropManager = function(){
 	
 	this.hoverTarget = null;
 	this.dragSource = null;
+	this.dropTarget = null;
 	this.isDragging = false;
 	this.targetAccepts = false;
 
@@ -96,8 +100,8 @@ dojo.webui.DragAndDropManager = function(){
 		// If rejected, need to provide visual feedback of rejection. Need to
 		// determine how to handle copy vs. move drags and if that can/should
 		// be set by the dragged items or the receiver of the drop event.
-		if((this.hoverTarget)&&(this.dragSource)&&(this.targetAccepts)){
-			this.hoverTarget.handleDrop(this.dragSource);
+		if((this.dropTarget)&&(this.dragSource)&&(this.targetAccepts)){
+			this.droptTarget.handleDrop(this.dragSource);
 		}
 	}
 }
@@ -124,7 +128,7 @@ dojo.webui.DragAndDropManager = function(){
 
 dojo.webui.Selection = function(){
 
-	var selected = [];
+	this.selected = [];
 	var selectionIndexProp = "_dojo.webui.selection.index";
 	var selectionTypeProp = "_dojo.webui.selection.type";
 
@@ -132,16 +136,17 @@ dojo.webui.Selection = function(){
 		if(typeof obj["setSelected"] == "function"){
 			obj.setSelected(true);
 		}
-		obj[selectionIndexProp] = selected.length;
-		selected.push(obj[selectionIndexProp]);
+		obj[selectionIndexProp] = this.selected.length;
+		this.selected.push(obj);
 		obj[selectionTypeProp] = (!type) ? (new String(typeof obj)) : type;
+		// dj_debug(obj[selectionTypeProp]);
 	}
 
 	this.getTypes = function(){
 		var uniqueTypes = [];
-		for(var x=0; x<selected.length; x++){
-			var st = selected[x][selectionTypeProp];
-			if((selected[x])&&(!uniqueTypes[st])){
+		for(var x=0; x<this.selected.length; x++){
+			var st = this.selected[x][selectionTypeProp];
+			if((this.selected[x])&&(!uniqueTypes[st])){
 				uniqueTypes[st] = true;
 				uniqueTypes.push(st);
 			}
@@ -162,23 +167,23 @@ dojo.webui.Selection = function(){
 		}
 		if(typeof obj[selectionIndexProp] != "undefined"){
 		}else{
-			for(var x=0; x<selected.length; x++){
-				if(selected[x] === obj){
-					delete selected[x][selectionIndexProp];
-					delete selected[x][selectionTypeProp];
-					delete selected[x];
+			for(var x=0; x<this.selected.length; x++){
+				if(this.selected[x] === obj){
+					delete this.selected[x][selectionIndexProp];
+					delete this.selected[x][selectionTypeProp];
+					delete this.selected[x];
 				}
 			}
 		}
 	}
 
 	this.clear = function(){
-		for(var x=0; x<selected.length; x++){
-			if(selected[x]){
-				this.remove(selected[x]);
+		for(var x=0; x<this.selected.length; x++){
+			if(this.selected[x]){
+				this.remove(this.selected[x]);
 			}
 		}
-		selected = [];
+		this.selected = [];
 	}
 }
 
