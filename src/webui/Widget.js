@@ -2,57 +2,56 @@
 dojo.hostenv.startPackage("dojo.webui.Widget");
 dojo.hostenv.startPackage("dojo.webui.widgets.tags");
 
+dojo.hostenv.loadModule("dojo.lang.*");
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.text.*");
 
 dojo.webui.Widget = function(){
-	// FIXME: need to be able to disambiguate what our rendering context is
-	//        here!
+}
+// FIXME: need to be able to disambiguate what our rendering context is
+//        here!
 
-	// needs to be a string with the end classname. Every subclass MUST
-	// over-ride.
-	this.widgetType = "Widget";
-
-	this.parent = null;
-	this.children = [];
-
+// needs to be a string with the end classname. Every subclass MUST
+// over-ride.
+dojo.lang.extend(dojo.webui.Widget, {
+	widgetType: "Widget",
+	parent: null,
+	children: [],
 	// obviously, top-level and modal widgets should set these appropriately
-	this.isTopLevel = false;
-	this.isModal = false;
+	isTopLevel:  false,
+	isModal: false,
 
-	this.isEnabled = true;
-	this.isHidden = false;
-	this.isContainer = false; // can we contain other widgets?
+	isEnabled: true,
+	isHidden: false,
+	isContainer: false, // can we contain other widgets?
 	// FIXME: need to replace this with context menu stuff
-	this.rightClickItems = [];
-
-	this.widgetId = "";
-
-	this.selection = new dojo.webui.Selection();
+	rightClickItems: [],
+	widgetId: "",
+	selection: new dojo.webui.Selection(),
 	
-	this.enable = function(){
+	enable: function(){
 		// should be over-ridden
 		this.isEnabled = true;
-	}
+	},
 
-	this.disable = function(){
+	disable: function(){
 		// should be over-ridden
 		this.isEnabled = false;
-	}
+	},
 
-	this.hide = function(){
+	hide: function(){
 		// should be over-ridden
 		this.isHidden = true;
-	}
+	},
 
-	this.show = function(){
+	show: function(){
 		// should be over-ridden
 		this.isHidden = false;
-	}
+	},
 
-	this.create = function(args, fragment, parentComp){
+	create: function(args, fragment, parentComp){
 		//dj_debug(parentComp);
 		this.satisfyPropertySets(args, fragment, parentComp);
 		this.mixInProperties(args, fragment, parentComp);
@@ -61,24 +60,22 @@ dojo.webui.Widget = function(){
 		this.postInitialize(args, fragment, parentComp);
 		dojo.webui.widgetManager.add(this);
 		return this;
-	}
+	},
 
-	this.destroy = function(widgetIndex){
+	destroy: function(widgetIndex){
 		// FIXME: this is woefully incomplete
 		this.uninitialize();
 		this.destroyRendering();
 		dojo.webui.widgetManager.remove(widgetIndex);
-	}
+	},
 
-	this.satisfyPropertySets = function(args){
+	satisfyPropertySets: function(args){
 		// get the default propsets for our component type
 		var typePropSets = []; // FIXME: need to pull these from somewhere!
 		var localPropSets = []; // pull out propsets from the parser's return structure
 
-		/*
-		for(var x=0; x<args.length; x++){
-		}
-		*/
+		// for(var x=0; x<args.length; x++){
+		// }
 
 		for(var x=0; x<typePropSets.length; x++){
 		}
@@ -87,9 +84,9 @@ dojo.webui.Widget = function(){
 		}
 		
 		return args;
-	}
+	},
 
-	this.mixInProperties = function(args){
+	mixInProperties: function(args){
 		/*
 		 * the actual mix-in code attempts to do some type-assignment based on
 		 * PRE-EXISTING properties of the "this" object. When a named property
@@ -188,110 +185,109 @@ dojo.webui.Widget = function(){
 				}
 			}
 		}
-	}
+	},
 
-	this.initialize = function(args, frag){
+	initialize: function(args, frag){
 		// dj_unimplemented("dojo.webui.Widget.initialize");
 		return false;
-	}
+	},
 
-	this.postInitialize = function(args, frag){
+	postInitialize: function(args, frag){
 		return false;
-	}
+	},
 
-	this.uninitialize = function(){
+	uninitialize: function(){
 		// dj_unimplemented("dojo.webui.Widget.uninitialize");
 		return false;
-	}
+	},
 
-	this.buildRendering = function(){
+	buildRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.buildRendering");
 		return false;
-	}
+	},
 
-	this.destroyRendering = function(){
+	destroyRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.destroyRendering");
 		return false;
-	}
+	},
 
-	this.cleanUp = function(){
+	cleanUp: function(){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.cleanUp");
 		return false;
-	}
+	},
 
-	this.addChild = function(child){
+	addChild: function(child){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.addChild");
 		return false;
-	}
+	},
 
-	this.addChildAtIndex = function(child, index){
+	addChildAtIndex: function(child, index){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.addChildAtIndex");
 		return false;
-	}
+	},
 
-	this.removeChild = function(childRef){
+	removeChild: function(childRef){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.removeChild");
 		return false;
-	}
+	},
 
-	this.removeChildAtIndex = function(index){
+	removeChildAtIndex: function(index){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.removeChildAtIndex");
 		return false;
-	}
+	},
 
-	this.resize = function(width, height){
+	resize: function(width, height){
 		// both width and height may be set as percentages. The setWidth and
 		// setHeight  functions attempt to determine if the passed param is
 		// specified in percentage or native units. Integers without a
 		// measurement are assumed to be in the native unit of measure.
 		this.setWidth(width);
 		this.setHeight(height);
-	}
+	},
 
-	this.setWidth = function(width){
+	setWidth: function(width){
 		if((typeof width == "string")&&(width.substr(-1) == "%")){
 			this.setPercentageWidth(width);
 		}else{
 			this.setNativeWidth(width);
 		}
-	}
+	},
 
-	this.setHeight = function(height){
+	setHeight: function(height){
 		if((typeof height == "string")&&(height.substr(-1) == "%")){
 			this.setPercentageHeight(height);
 		}else{
 			this.setNativeHeight(height);
 		}
-	}
+	},
 
-	this.setPercentageHeight = function(height){
+	setPercentageHeight: function(height){
+		// SUBCLASSES MUST IMPLEMENT
+		return false;
+	},
+
+	setNativeHeight: function(height){
+		// SUBCLASSES MUST IMPLEMENT
+		return false;
+	},
+
+	setPercentageWidth: function(width){
+		// SUBCLASSES MUST IMPLEMENT
+		return false;
+	},
+
+	setNativeWidth: function(width){
 		// SUBCLASSES MUST IMPLEMENT
 		return false;
 	}
-
-	this.setNativeHeight = function(height){
-		// SUBCLASSES MUST IMPLEMENT
-		return false;
-	}
-
-	this.setPercentageWidth = function(width){
-		// SUBCLASSES MUST IMPLEMENT
-		return false;
-	}
-
-	this.setNativeWidth = function(width){
-		// SUBCLASSES MUST IMPLEMENT
-		return false;
-	}
-
-}
+});
 
 // TODO: should have a more general way to add tags or tag libraries?
 // TODO: need a default tags class to inherit from for things like getting propertySets
