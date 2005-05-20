@@ -101,8 +101,22 @@ dojo.xml.domUtil = new function(){
 			} else {
 				dj_debug("toXml didn't work?");
 			}
-		} else {
-			dj_unimplemented("dojo.xml.domUtil.toXml");
+		} else if(document.createElement) {
+			// FIXME: this may change all tags to uppercase!
+			var tmp = document.createElement("xml");
+			tmp.innerHTML = str;
+			if(document.implementation && document.implementation.createDocument) {
+				var xmlDoc = document.implementation.createDocument("foo", "", null);
+				for(var i = 0; i < tmp.childNodes.length; i++) {
+					xmlDoc.importNode(tmp.childNodes.item(i), true);
+				}
+				return xmlDoc;
+			}
+			// FIXME: probably not a good idea to have to return an HTML fragment
+			// FIXME: the tmp.doc.firstChild is as tested from IE, so it may not
+			// work that way across the board
+			return tmp.document && tmp.document.firstChild ?
+				tmp.document.firstChild : tmp;
 		}
 		return null;
 	}

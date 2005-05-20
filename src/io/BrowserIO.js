@@ -184,19 +184,19 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
-		var ret;
-		if(kwArgs.mimetype == "text/javascript") {
-			ret = dj_eval(http.responseText);
-		} else if(kwArgs.mimetype == "text/xml") {
-			ret = http.responseXML;
-			if(!ret) {
-				ret = dojo.xml.domUtil.parseXmlString(http.responseText);
-			}
-		} else {
-			ret = http.responseText;
-		}
-
 		if(http.status==200) {
+			var ret;
+			if(kwArgs.mimetype == "text/javascript") {
+				ret = dj_eval(http.responseText);
+			} else if(kwArgs.mimetype == "text/xml") {
+				ret = http.responseXML;
+				if(!ret || typeof ret == "string") {
+					ret = dojo.xml.domUtil.parseXmlString(http.responseText);
+				}
+			} else {
+				ret = http.responseText;
+			}
+
 			if( useCache ) { // only cache successful responses
 				addToCache(url, query, kwArgs.method, http);
 			}
@@ -210,7 +210,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			if( typeof kwArgs.error == "function" ) {
 				kwArgs.error("error", errObj);
 			} else if( typeof kwArgs.handle == "function" ) {
-				kwArgs.error("error", errObj);
+				kwArgs.handle("error", errObj, errObj);
 			}
 		}
 	}
