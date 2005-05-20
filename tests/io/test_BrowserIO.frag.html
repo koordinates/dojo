@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<!--[if lt IE 5.5]>
+		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
+		<![endif]-->
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				// preventBackButtonFix: true,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap1.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/hostenv_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/bootstrap2.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/io/IO.js"></script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../src/io/BrowserIO.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.io.*");
+
+			onload = function() {
+				dojo.io.bind({
+					url: "frag.xml",
+					mimetype: "text/xml",
+					load: function(type, xml, e) {
+						// add the HTML
+						var html = xml.getElementsByTagName("html").item(0);
+						document.body.innerHTML += html.firstChild.nodeValue;
+
+						// run the script
+						var script = xml.getElementsByTagName("script").item(0);
+						dj_eval(script.firstChild.nodeValue);
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		View Source
+	</body>
+</html>
+
