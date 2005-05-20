@@ -22,6 +22,8 @@
 				var xmlText = '<response status="ok" />';
 				var xml = dojo.xml.domUtil.parseXmlString(xmlText);
 				dj_debug(xml);
+				if(xml) dj_debug(xml.document);
+				else dj_debug("no xml.document");
 				if(xml) dj_debug(xml.firstChild);
 				else dj_debug("no xml.firstChild");
 				if(xml && xml.firstChild) dj_debug(xml.firstChild.tagName);
