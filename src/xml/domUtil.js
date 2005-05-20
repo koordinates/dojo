@@ -164,6 +164,29 @@ dojo.xml.domUtil = new function(){
 		return [255,255,255]; // assume white if all else fails
 	}
 
+	this.hex2rgb = function(hex) {
+		var hexNum = "0123456789ABCDEF";
+		var rgb = new Array(3);
+		if( hex.indexOf("#") == 0 ) { hex = hex.substring(1); }
+		if( hex.length == 3 ) {
+			rgb[0] = hex.charAt(0) + hex.charAt(0)
+			rgb[1] = hex.charAt(1) + hex.charAt(1)
+			rgb[2] = hex.charAt(2) + hex.charAt(2);
+		} else {
+			rgb[0] = hex.substring(0, 2);
+			rgb[1] = hex.substring(2, 4);
+			rgb[2] = hex.substring(4);
+		}
+		for(var i = 0; i < rgb.length; i++) {
+			rgb[i] = hexNum.indexOf(rgb[i].charAt(0)) * 16 + hexNum.indexOf(rgb[i].charAt(1));
+		}
+		return rgb;
+	}
+
+	this.rgb2hex = function(r, g, b) {
+		return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+	}
+
 	this.insertBefore = function(node, ref){
 		var pn = node.parentNode;
 		pn.insertBefore(node, ref);
