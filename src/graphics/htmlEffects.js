@@ -4,14 +4,12 @@ dojo.hostenv.loadModule("dojo.animation.*");
 dojo.hostenv.loadModule("dojo.xml.*");
 
 dojo.graphics.htmlEffects = new function() {
-	var _this = this;
-
 	this.fadeOut = function(node, duration, callback) {
-		return _this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, callback);
+		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, callback);
 	}
 
 	this.fadeIn = function(node, duration, callback) {
-		return _this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0.99999, callback);
+		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0.99999, callback);
 	}
 
 	this.fade = function(node, duration, startOpac, endOpac, callback) {
@@ -31,12 +29,12 @@ dojo.graphics.htmlEffects = new function() {
 	}
 	
 	this.slideTo = function(node, endCoords, duration, callback) {
-		return _this.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
+		return this.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
 			duration, callback);
 	}
 
 	this.slideBy = function(node, coords, duration, callback) {
-		return _this.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
+		return this.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
 			duration, callback);
 	}
 	
@@ -67,7 +65,7 @@ dojo.graphics.htmlEffects = new function() {
 			color.pop();
 		}
 
-		var anim = _this.colorFade(node, startRGB, color, duration, function() {
+		var anim = this.colorFade(node, startRGB, color, duration, function() {
 			if( wasTransparent ) {
 				node.style.backgroundColor = "transparent";
 			}
@@ -91,7 +89,7 @@ dojo.graphics.htmlEffects = new function() {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
 		if( color.length == 4 ) { color.pop(); }
 
-		var anim = _this.colorFade(node, color, endRGB, duration, callback, delay > 0);
+		var anim = this.colorFade(node, color, endRGB, duration, callback, delay > 0);
 		if( delay > 0 ) {
 			anim.onAnimate(new dojo.animation.AnimationEvent(anim, "animate", color));
 			setTimeout(function(){anim.play(true)}, delay);
@@ -122,7 +120,7 @@ dojo.graphics.htmlEffects = new function() {
 
 	this.zigTo = function(node, points, duration, callback) {
 		points.splice(0, 1, [node.offsetLeft, node.offsetTop]);
-		return _this.zig(node, points, duration, callback);
+		return this.zig(node, points, duration, callback);
 	}
 
 	this.zig = function(node, points, duration, callback) {
