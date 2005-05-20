@@ -61,20 +61,10 @@ dojo.graphics.htmlEffects = new function() {
 
 	// Fade from startRGB to the node's background color
 	this.colorFadeIn = function(node, startRGB, duration, delay, callback) {
-		var color, nd = node, wasTransparent = false;
-		do {
-			color = dojo.xml.domUtil.getStyle(nd, "background-color");
-			// Safari doesn't say "transparent"
-			if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
-			if(nd == node && color == "transparent") { wasTransparent = true; }
-			if(nd == document.body) { nd = null; break; }
-			nd = nd.parentNode;
-		} while(nd && color == "transparent");
-
-		if( color == "transparent" ) {
-			color = [255, 255, 255];
-		} else {
-			color = dojo.xml.domUtil.extractRGB(color);
+		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
+		if( color.length == 4 ) {
+			wasTransparent = true;
+			color.pop();
 		}
 
 		var anim = _this.colorFade(node, startRGB, color, duration, function() {
@@ -98,20 +88,8 @@ dojo.graphics.htmlEffects = new function() {
 
 	// Fade from node's background color to endRGB
 	this.colorFadeOut = function(node, endRGB, duration, delay, callback) {
-		var color, nd = node;
-		do {
-			color = dojo.xml.domUtil.getStyle(nd, "background-color");
-			// Safari doesn't say "transparent"
-			if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
-			if(nd == document.body) { nd = null; break; }
-			nd = nd.parentNode;
-		} while(nd && color == "transparent");
-
-		if( color == "transparent" ) {
-			color = [255, 255, 255];
-		} else {
-			color = dojo.xml.domUtil.extractRGB(color);
-		}
+		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
+		if( color.length == 4 ) { color.pop(); }
 
 		var anim = _this.colorFade(node, color, endRGB, duration, callback, delay > 0);
 		if( delay > 0 ) {
@@ -122,6 +100,7 @@ dojo.graphics.htmlEffects = new function() {
 	}
 
 	// FIXME: not sure which name is better. an alias here may be bad.
+	this.unhighlight = this.colrFadeOut;
 	this.colorFadeTo = this.colorFadeOut;
 
 	// Fade node background from startRGB to endRGB
