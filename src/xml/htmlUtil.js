@@ -437,4 +437,22 @@ dojo.xml.htmlUtil = new function(){
 		var head = doc.getElementsByTagName("head")[0];
 		head.appendChild(file);
 	}
+
+	this.getBackgroundColor = function(node) {
+		var color;
+		do {
+			color = dojo.xml.domUtil.getStyle(node, "background-color");
+			// Safari doesn't say "transparent"
+			if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
+			if(node == document.body) { node = null; break; }
+			node = node.parentNode;
+		} while(node && color == "transparent");
+
+		if( color == "transparent" ) {
+			color = [255, 255, 255, 0];
+		} else {
+			color = dojo.xml.domUtil.extractRGB(color);
+		}
+		return color;
+	}
 }
