@@ -86,7 +86,7 @@ dojo.graphics.htmlEffects = new function() {
 			}
 		}, delay > 0);
 		if( delay > 0 ) {
-			anim.onAnimate({x:startRGB[0], y:startRGB[1], z:startRGB[2]});
+			anim.onAnimate(new dojo.animation.AnimationEvent(anim, "animate", startRGB));
 			setTimeout(function(){anim.play(true)}, delay);
 		}
 		return anim;
@@ -94,6 +94,7 @@ dojo.graphics.htmlEffects = new function() {
 
 	// alias for (probably?) common use/terminology
 	this.highlight = this.colorFadeIn;
+	this.colorFadeFrom = this.colorFadeIn;
 
 	// Fade from node's background color to endRGB
 	this.colorFadeOut = function(node, endRGB, duration, delay, callback) {
@@ -114,7 +115,7 @@ dojo.graphics.htmlEffects = new function() {
 
 		var anim = _this.colorFade(node, color, endRGB, duration, callback, delay > 0);
 		if( delay > 0 ) {
-			anim.onAnimate({x:color[0], y:color[1], z:color[2]});
+			anim.onAnimate(new dojo.animation.AnimationEvent(anim, "animate", color));
 			setTimeout(function(){anim.play(true)}, delay);
 		}
 		return anim;
@@ -129,8 +130,7 @@ dojo.graphics.htmlEffects = new function() {
 			new dojo.math.curves.Line(startRGB, endRGB),
 			duration, 0);
 		anim.onAnimate = function(e) {
-			var rgb = [Math.round(e.x), Math.round(e.y), Math.round(e.z)];
-			node.style.backgroundColor = "rgb(" + rgb.join(",") + ")";
+			node.style.backgroundColor = "rgb(" + e.coordsAsInts().join(",") + ")";
 		}
 		if( typeof callback == "function" ) {
 			anim.onEnd = function(e) {

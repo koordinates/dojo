@@ -65,7 +65,8 @@ dojo.animation.Animation = function(curve, duration, accel) {
 
 	this.pause = function() {
 		clearTimeout(timer);
-		if( active ) { paused = true; }
+		if( !active ) { return; }
+		paused = true;
 		var e = new dojo.animation.AnimationEvent(_this, "pause", _this.curve.getValue(percent),
 			startTime, new Date().valueOf(), endTime, _this.duration, percent, 0);
 		_this.handler(e);
@@ -172,6 +173,16 @@ dojo.animation.AnimationEvent = function(anim, type, coords, sTime, cTime, eTime
 	this.duration = dur;
 	this.percent = pct;
 	this.fps = fps;
+
+	this.coordsAsInts = function() {
+		var cints = new Array(this.coords.length);
+		for(var i = 0; i < this.coords.length; i++) {
+			cints[i] = Math.round(this.coords[i]);
+		}
+		return cints;
+	}
+
+	return this;
 };
 
 dojo.animation.AnimationSequence = function() {
