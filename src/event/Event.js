@@ -17,6 +17,22 @@ dojo.event = new function(){
 		return ret;
 	}
 
+	this.createFunctionPair = function(obj, cb) {
+		var ret = [];
+		if(typeof obj == "function"){
+			ret[1] = dojo.event.nameAnonFunc(obj, dj_global);
+			ret[0] = dj_global;
+			return ret;
+		}else if((typeof obj == "object")&&(typeof cb == "string")){
+			return [obj, cb];
+		}else if((typeof obj == "object")&&(typeof cb == "function")){
+			ret[1] = dojo.event.nameAnonFunc(cb, obj);
+			ret[0] = obj;
+			return ret;
+		}
+		return null;
+	}
+
 	// FIXME: where should we put this method (not here!)?
 	this.matchSignature = function(args, signatureArr){
 
