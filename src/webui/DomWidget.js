@@ -112,6 +112,12 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	}
 
 	this.buildFromTemplate = function(args, frag){
+		// copy template properties if they're already set in the templates object
+		var ts = dojo.webui.DomWidget.templates[this.widgetType];
+		if(ts){
+			this.templateString = ts["string"];
+			this.templateNode = ts["node"];
+		}
 		var node = null;
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
@@ -122,8 +128,15 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// or provide a generic interface across all DOM implementations
 			// FIMXE: this breaks if the template has whitespace as its first 
 			// characters
+			dj_debug(this.widgetType);
+			var ts = dojo.webui.DomWidget.templates[this.widgetType];
 			node = this.createNodesFromText(this.templateString, true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
+			ts.node = this.templateNode;
+		/*
+		}else{
+			dj_debug("bypassed!");
+		*/
 		}
 		if(!this.templateNode){ 
 			dj_debug("weren't able to create template!");
@@ -293,10 +306,12 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	if((arguments.length>0)&&(typeof arguments[0] == "object")){
 		this.create(arguments[0]);
 	}
+
 }
 
 dojo.webui.DomWidget.prototype.templateNode = null;
 dojo.webui.DomWidget.prototype.templateString = null;
+dojo.webui.DomWidget.templates = {};
 
 dj_inherits(dojo.webui.DomWidget, dojo.webui.Widget);
 
@@ -347,6 +362,7 @@ dojo.webui.HTMLWidget = function(args){
 
 	this.resizeGhost = null;
 	this.initialResizeCoords = null;
+	this.templateString = null;
 
 	this.getContainerHeight = function(){
 		// NOTE: container height must be returned as the INNER height
@@ -438,11 +454,29 @@ dojo.webui.HTMLWidget = function(args){
 	this._old_buildFromTemplate = this.buildFromTemplate;
 
 	this.buildFromTemplate = function(){
+		// copy template properties if they're already set in the templates object
+		var tmplts = dojo.webui.DomWidget.templates;
+		var ts = tmplts[this.widgetType];
+		if(!ts){
+			tmplts[this.widgetType] = {};
+			ts = tmplts[this.widgetType];
+		}
+		this.templateString = ts["string"];
+		this.templateNode = ts["node"];
 		if((!this.templateNode)&&(!this.templateString)&&(this.templatePath)){
 			// fetch a text fragment and assign it to templateString
 			// NOTE: we rely on blocking IO here!
 			// FIXME: extra / being inserted in URL?
-			this.templateString = dojo.hostenv.getText(dojo.hostenv.getBaseScriptUri()+"/"+this.templatePath);
+			var tmplts = dojo.webui.DomWidget.templates;
+			var ts = tmplts[this.widgetType];
+			if(!ts){
+				tmplts[this.widgetType] = {};
+				ts = tmplts[this.widgetType];
+			}
+			var tp = dojo.hostenv.getBaseScriptUri()+""+this.templatePath;
+			this.templateString = dojo.hostenv.getText(tp);
+			ts.string = this.templateString;
+			dj_debug(tp);
 		}
 
 		if(this.templateCSSPath){
@@ -452,10 +486,9 @@ dojo.webui.HTMLWidget = function(args){
 		}
 		this._old_buildFromTemplate();
 	}
-
 }
-
-dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
+// dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
+dojo.webui.HTMLWidgetMixin = new dojo.webui.HTMLWidget();
 
 dojo.webui.htmlDragAndDropManager = new function(){
 	dojo.webui.DragAndDropManager.call(this);
@@ -600,15 +633,10 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		}else if(this.isDragging){
 			evt.preventDefault();
 			evt.stopPropagation();
-			/*
-			if((this.dropTarget)&&(this.dropTarget["acceptDrag"])&&(this.dropTarget.acceptDrag(this.dragSource))){
-				this.targetAccepts = true;
-			}else{
-				// FIXME: visually signal that the drop won't work!
-			}
-			*/
+			this.drag();
 		}
 	}
+
 }
 
 try{

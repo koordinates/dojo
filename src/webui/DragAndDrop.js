@@ -29,6 +29,9 @@ dojo.webui.DropTarget = function(){
 	// The interface that all components that accept drops MUST implement
 	this.acceptedTypes = []; // strings
 
+	this.handleDrag = function(dragSourceObj){ 
+	}
+
 	this.dragEnter = function(dragSourceObj){ 
 	}
 
@@ -36,6 +39,7 @@ dojo.webui.DropTarget = function(){
 	}
 
 	this.acceptDrag = function(dragSourceObj){
+		if(!dragSourceObj){ return false; }
 		if(!dragSourceObj["getTypes"]){ 
 			// dj_debug("won't accept");
 			return false; 
@@ -87,12 +91,24 @@ dojo.webui.DragAndDropManager = function(){
 	this.checkForResize = function(nativeEvt){ return; }
 	this.checkForDrag = function(nativeEvt){ return; }
 
+	this.checkTargetAccepts = function(){
+		if((this.dropTarget)&&(this.dropTarget["acceptDrag"])&&(this.dropTarget.acceptDrag(this.dragSource))){
+			this.targetAccepts = true;
+		}else{
+			this.targetAccepts = false;
+			// FIXME: visually signal that the drop won't work!
+		}
+		return this.targetAccepts;
+	}
+
 	this.drag = function(nativeEvt){
 		// FIXME: when dragging over a potential drop target, we must ask it if
 		// it can accept our selected items. Need to preform that check here
 		// and provide visual feedback.
-
-		// FIXME: need to cache the results so we aren't calling this willie-nilly
+		this.checkTargetAccepts();
+		if((this.dropTarget)&&(this.dragSource)){
+			this.dropTarget.handleDrag(this.dragSource);
+		}
 	}
 
 	this.drop = function(nativeEvt){
@@ -101,7 +117,7 @@ dojo.webui.DragAndDropManager = function(){
 		// determine how to handle copy vs. move drags and if that can/should
 		// be set by the dragged items or the receiver of the drop event.
 		if((this.dropTarget)&&(this.dragSource)&&(this.targetAccepts)){
-			this.droptTarget.handleDrop(this.dragSource);
+			this.dropTarget.handleDrop(this.dragSource);
 		}
 	}
 }
