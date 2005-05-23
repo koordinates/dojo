@@ -128,8 +128,6 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// or provide a generic interface across all DOM implementations
 			// FIMXE: this breaks if the template has whitespace as its first 
 			// characters
-			dj_debug(this.widgetType);
-			var ts = dojo.webui.DomWidget.templates[this.widgetType];
 			node = this.createNodesFromText(this.templateString, true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 			ts.node = this.templateNode;
@@ -603,6 +601,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				this.resizeTarget.endResize(this.curr);
 			}else{
 				this.dragSource.endDrag();
+				this.dragSource.selection.clear();
 			}
 			this.dropTarget = null;
 			this.resizeTarget = null;
