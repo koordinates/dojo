@@ -133,10 +133,6 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			node = this.createNodesFromText(this.templateString, true);
 			this.templateNode = node[0].cloneNode(true); // we're optimistic here
 			ts.node = this.templateNode;
-		/*
-		}else{
-			dj_debug("bypassed!");
-		*/
 		}
 		if(!this.templateNode){ 
 			dj_debug("weren't able to create template!");
@@ -362,7 +358,7 @@ dojo.webui.HTMLWidget = function(args){
 
 	this.resizeGhost = null;
 	this.initialResizeCoords = null;
-	this.templateString = null;
+	// this.templateString = null;
 
 	this.getContainerHeight = function(){
 		// NOTE: container height must be returned as the INNER height
@@ -476,7 +472,6 @@ dojo.webui.HTMLWidget = function(args){
 			var tp = dojo.hostenv.getBaseScriptUri()+""+this.templatePath;
 			this.templateString = dojo.hostenv.getText(tp);
 			ts.string = this.templateString;
-			dj_debug(tp);
 		}
 
 		if(this.templateCSSPath){
