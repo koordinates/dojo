@@ -16,11 +16,21 @@ dojo.xml.htmlUtil = new function(){
 	document.body.style.MozBoxSizing = "border-box";
 	*/
 
+	this._clobberSelection = function(){
+		if(window.getSelection){
+			var selObj = window.getSelection();
+			selObj.collapseToEnd();
+		}else if(document.selection){
+			document.selection.clear();
+		}
+	}
+
 	this.disableSelect = function(){
 		if(!_selectDisabled){
 			_selectDisabled = true;
 			dojo.event.connect(document.body, "onselectstart", dojo.event.browser, "stopEvent");
 			dojo.event.connect(document.body, "ondragstart", dojo.event.browser, "stopEvent");
+			dojo.event.connect(document.body, "onmousemove", this, "_clobberSelection");
 		}
 	}
 
@@ -29,6 +39,7 @@ dojo.xml.htmlUtil = new function(){
 			_selectDisabled = false;
 			dojo.event.disconnect(document.body, "onselectstart", dojo.event.browser, "stopEvent");
 			dojo.event.disconnect(document.body, "ondragstart", dojo.event.browser, "stopEvent");
+			dojo.event.disconnect(document.body, "onmousemove", this, "_clobberSelection");
 		}
 	}
 
@@ -74,9 +85,13 @@ dojo.xml.htmlUtil = new function(){
 		return this.getTotalOffset(node, "left");
 	}
 
+	this.getAbsoluteX = this.totalOffsetLeft;
+
 	this.totalOffsetTop = function(node){
 		return this.getTotalOffset(node, "top");
 	}
+
+	this.getAbsoluteY = this.totalOffsetTop;
 
 	this.getEventTarget = function(evt){
 		if((window["event"])&&(event["srcElement"])){
