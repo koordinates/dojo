@@ -488,7 +488,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 
 	this.resizeTarget = null;
 	this.hoverNode = null;
-	this.dragGhost = null;
+	this.dragIcon = null;
 	this.isResizing = false;
 	this.overResizeHandle = false;
 	this.overDragHandle  = false;
@@ -586,6 +586,23 @@ dojo.webui.htmlDragAndDropManager = new function(){
 					document.body.style.cursor = "move";
 				}
 				this.dragSource.startDrag();
+				var di = this.dragSource.getDragIcon();
+				if(di){
+					if(!this.dragIcon){
+						this.dragIcon = document.createElement("span");
+						with(this.dragIcon.style){
+							position = "absolute";
+							left = this.curr.x+15+"px";
+							top = this.curr.y+15+"px";
+							border = margin = padding = "0px";
+							zIndex = "1000";
+						}
+						document.body.appendChild(this.dragIcon);
+						dojo.xml.htmlUtil.setOpacity(this.dragIcon, 0.5);
+					}
+					this.dragIcon.appendChild(di);
+					this.dragIcon.style.display = "";
+				}
 			}
 		}
 	}
@@ -613,6 +630,14 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			this.overDragHandle = false;
 
 			document.body.style.cursor = "";
+			if(this.dragIcon){
+				this.dragIcon.style.display = "none";
+				with(this.dragIcon){
+					while(firstChild){
+						removeChild(firstChild);
+					}
+				}
+			}
 		}
 		this.init = [];
 	}
@@ -628,6 +653,10 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			evt.preventDefault();
 			evt.stopPropagation();
 			this.drag();
+			if(this.dragIcon){
+				this.dragIcon.style.left = this.curr.x+15+"px";
+				this.dragIcon.style.top = this.curr.y+15+"px";
+			}
 		}
 	}
 

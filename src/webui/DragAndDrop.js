@@ -15,6 +15,9 @@ dojo.webui.DragSource = function(){
 	this.endDrag = function(){
 	}
 
+	this.getDragIcon = function(){
+	}
+
 	this.getTypes = function(){
 		// DragSource objects MUST include a selection property or overload
 		// this method
