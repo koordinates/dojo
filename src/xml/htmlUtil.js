@@ -350,8 +350,11 @@ dojo.xml.htmlUtil = new function(){
 	}
 	
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
-	this.setOpacity = function(node, opacity) {
-		if( opacity >= 1.0 ) { opacity = 0.999999; }
+	this.setOpacity = function(node, opacity, dontFixOpacity) {
+		if( !dontFixOpacity ) {
+			if( opacity >= 1.0 ) { opacity = 0.999999; }
+			else if( opacity < 0.0 ) { opacity = 0; }
+		}
 		var h = dojo.render.html;
 		if(h.ie){
 			if(node.nodeName.toLowerCase() == "tr"){
