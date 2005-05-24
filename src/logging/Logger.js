@@ -42,6 +42,7 @@
 // Dependencies:	none
 
 dojo.hostenv.startPackage("dojo.logging.Logger");
+dojo.hostenv.startPackage("dojo.log");
 dojo.hostenv.loadModule("dojo.lang.*");
 
 /*
@@ -186,19 +187,13 @@ dojo.lang.extend(dojo.logging.Logger, {
 		return this.logType("WARNING", this.argsToArr(arguments));
 	},
 
-	warn: dojo.logging.Logger.prototype.warning,
-
 	error: function(msg){
 		return this.logType("ERROR", this.argsToArr(arguments));
 	},
 
-	err: dojo.logging.Logger.prototype.error,
-
 	critical: function(msg){
 		return this.logType("CRITICAL", this.argsToArr(arguments));
 	},
-
-	crit: dojo.logging.Logger.prototype.criticial,
 
 	exception: function(msg, e, squelch){
 		// FIXME: this needs to be modified to put the exception in the msg
@@ -247,6 +242,14 @@ dojo.lang.extend(dojo.logging.Logger, {
 		return this.log.apply(this, na);
 	}
 });
+
+dojo.logging.tmpFunc = function(){
+	var ptype = dojo.logging.Logger.prototype;
+	ptype.warn = ptype.warning;
+	ptype.err = ptype.error;
+	ptype.crit = ptype.critical;
+}
+dojo.logging.tmpFunc();
 
 // the Handler class
 dojo.logging.LogHandler = function(level){
@@ -376,55 +379,16 @@ dojo.logging.MemoryLogHandler.prototype.emit = function(record){
 }
 
 dojo.logging.logQueueHandler = new dojo.logging.MemoryLogHandler(0,50,0,10000);
-dojo.logging.logQueueHandler.emit = function(record){
-	// stub for logging event handler
-}
-dojo.logging.log.addHandler(dojo.logging.logQueueHandler);
-
 // actual logging event handler
 dojo.logging.logQueueHandler.emit = function(record){
-	// nWidgets console output
 	// we should probably abstract this in the future
-	// also, what if a console is opened after some error messages pile up in
-	// the queue?  Do we dump them all to the queue?  Is this another pref?
-	if(dj_global["dj_debug"]){
-		dojo.logging.logQueueHandler.emit = function(record){
-			dj_debug(String(record.time.toLocaleTimeString())+" :"+dojo.logging.log.getLevelName(record.level)+": "+record.message);
-		}
-	}
-	/*
-	switch(this.postType) {
-		case -1:
-			break;
-		case 0:
-			if(this.data.length>this.postInterval) {
-
-			}
-			break;
-
-		case 1:
-			// need some sort of interval setter...
-			break;
-	}
-	*/
-
-	// it seems that we would't want to send a request to the server for every
-	// log file, so perhaps we want to send them in batches, or in time
-	// intervals?
-
-	// determine if it is time to send the record... if not, and it is
-	// time-based, reset the checking interval
-
-	// if it is time, then we need to create an XMLHttpRequest using dojo.logging.io
-
-	// TODO: add way to either send to server through xmlHTTPRequest after x
-	// number of records are stored, or a way to open a console, or some other
-	// default, consoleless mechanism.  Also, we really should have a way to
-	// log to the console as done above, and additionally be able to store a
-	// more permanent log record
-
-	// should we do this without receiving a response from the server?
-	while(this.data.length>this.numRecords){
-		this.data.pop();
+	var logStr = String(dojo.log.getLevelName(record.level)+": "+record.time.toLocaleTimeString())+": "+record.message;
+	if(typeof dj_global["print"] == "function"){
+		print(logStr);
+	}else if(dj_global["dj_debug"]){
+		dj_debug(logStr);
 	}
 }
+
+dojo.logging.log.addHandler(dojo.logging.logQueueHandler);
+dojo.log = dojo.logging.log;
