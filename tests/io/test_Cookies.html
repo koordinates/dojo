@@ -1,0 +1,56 @@
+<html>
+<head>
+	<title>Cookie Test</title>
+<script language="JavaScript" type="text/javascript">
+// Dojo configuration
+djConfig = { 
+	baseRelativePath: "../../",
+	// preventBackButtonFix: true,
+	isDebug: true
+};
+</script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/bootstrap1.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/hostenv_browser.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/bootstrap2.js"></script>
+<script language="JavaScript" type="text/javascript" 
+	src="../../src/io/Cookies.js"></script>
+<script language="JavaScript" type="text/javascript">
+dojo.hostenv.loadModule("dojo.io.Cookies");
+
+var obj = {
+	help: "I'm some help!",
+	"Eggy-Yolk!": "wee be three g'",
+	doIt: function() {
+		alert("ya");
+	}
+};
+
+function objprops(o) {
+	var p, a = [];
+	for(p in o) {
+		a.push(p + " : " + o[p]);
+	}
+	return a.sort().join("<br>");
+}
+
+onload = function() {
+	var ck = dojo.io.cookies;
+	dj_debug("obj = " + objprops(obj));
+	ck.setCookie("foo", "bar", 30);
+	ck.setObjectCookie("obj", obj, 60, null);
+	ck.isSupported();
+	var foo = ck.getCookie("foo");
+	dj_debug("foo = " + foo);
+	dj_debug("obj = " + objprops(ck.getObjectCookie("obj")));
+	ck.deleteCookie("foo");
+	ck.deleteCookie("obj");
+}
+</script>
+</head>
+<body>
+</body>
+</html>
+
