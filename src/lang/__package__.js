@@ -1,3 +1,3 @@
 dojo.hostenv.conditionalLoadModule({
-	browser: ["dojo.lang.Lang"]
+	common: ["dojo.lang.Lang"]
 });

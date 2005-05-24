@@ -14,5 +14,5 @@ dojo.lang.extend = function(ctor, props){
 }
 
 dojo.lang.extendPrototype = function(obj, props){
-	this.extend(obj.constructor.prototype, props);
+	this.extend(obj.constructor, props);
 }
