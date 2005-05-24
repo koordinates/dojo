@@ -45,6 +45,7 @@ dojo.animation.Animation = function(curve, duration, accel) {
 		if( gotoStart ) {
 			clearTimeout(timer);
 			active = false;
+			paused = false;
 			percent = 0;
 		} else if( active && !paused ) {
 			return;
