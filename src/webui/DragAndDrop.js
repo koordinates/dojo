@@ -110,7 +110,7 @@ dojo.webui.DragAndDropManager = function(){
 		// and provide visual feedback.
 		this.checkTargetAccepts();
 		if((this.dropTarget)&&(this.dragSource)){
-			this.dropTarget.handleDrag(this.dragSource);
+			this.dropTarget.handleDrag(this.dragSource, nativeEvt);
 		}
 	}
 
@@ -120,7 +120,7 @@ dojo.webui.DragAndDropManager = function(){
 		// determine how to handle copy vs. move drags and if that can/should
 		// be set by the dragged items or the receiver of the drop event.
 		if((this.dropTarget)&&(this.dragSource)&&(this.targetAccepts)){
-			this.dropTarget.handleDrop(this.dragSource);
+			this.dropTarget.handleDrop(this.dragSource, nativeEvt);
 		}
 	}
 }
