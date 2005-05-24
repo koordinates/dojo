@@ -115,10 +115,12 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// copy template properties if they're already set in the templates object
 		var ts = dojo.webui.DomWidget.templates[this.widgetType];
 		if(ts){
-			if(this.templateString.length == 0){
+			if(!this.templateString.length){
 				this.templateString = ts["string"];
 			}
-			this.templateNode = ts["node"];
+			if(!this.templateNode){
+				this.templateNode = ts["node"];
+			}
 		}
 		var node = null;
 		// attempt to clone a template node, if there is one
@@ -457,8 +459,12 @@ dojo.webui.HTMLWidget = function(args){
 			tmplts[this.widgetType] = {};
 			ts = tmplts[this.widgetType];
 		}
-		this.templateString = ts["string"];
-		this.templateNode = ts["node"];
+		if(!this.templateString){
+			this.templateString = ts["string"];
+		}
+		if(!this.templateNode){
+			this.templateNode = ts["node"];
+		}
 		if((!this.templateNode)&&(!this.templateString)&&(this.templatePath)){
 			// fetch a text fragment and assign it to templateString
 			// NOTE: we rely on blocking IO here!
