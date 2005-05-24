@@ -377,6 +377,9 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 		}
 		return ok;
 	}catch(e){
+		if(dojo.hostenv.is_debug_){
+			dj_debug(e);
+		}
 		return false;
 	}
 }
