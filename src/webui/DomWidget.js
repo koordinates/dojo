@@ -115,7 +115,9 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// copy template properties if they're already set in the templates object
 		var ts = dojo.webui.DomWidget.templates[this.widgetType];
 		if(ts){
-			this.templateString = ts["string"];
+			if(this.templateString.length == 0){
+				this.templateString = ts["string"];
+			}
 			this.templateNode = ts["node"];
 		}
 		var node = null;
