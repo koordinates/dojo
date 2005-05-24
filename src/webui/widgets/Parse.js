@@ -33,6 +33,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 					}
 				}
 			}catch(e){
+				if(dojo.hostenv.is_debug_){ dj_debug(e); }
 				// throw(e);
 				// IE is such a bitch sometimes
 			}
