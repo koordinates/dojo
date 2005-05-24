@@ -652,7 +652,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		}else if(this.isDragging){
 			evt.preventDefault();
 			evt.stopPropagation();
-			this.drag();
+			this.drag(evt);
 			if(this.dragIcon){
 				this.dragIcon.style.left = this.curr.x+15+"px";
 				this.dragIcon.style.top = this.curr.y+15+"px";
