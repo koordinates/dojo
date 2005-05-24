@@ -386,7 +386,7 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 dojo.event.MethodJoinPoint.prototype.getArr = function(kind){
 	var arr = this.after;
 	// FIXME: we should be able to do this through props or Array.in()
-	if(kind.indexOf("before")!=-1){
+	if((typeof kind == "string")&&(kind.indexOf("before")!=-1)){
 		arr = this.before;
 	}else if(kind=="around"){
 		arr = this.around;
@@ -401,7 +401,7 @@ dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 					args["once"], args["delay"]);
 }
 
-dojo.event.MethodJoinPoint.prototype.addAdvice = function(	adviceObj, advice, 
+dojo.event.MethodJoinPoint.prototype.addAdvice = function(	thisAdviceObj, thisAdvice, 
 															thisAroundObj, thisAround, 
 															advice_kind, precedence, 
 															once, delay){
@@ -410,10 +410,10 @@ dojo.event.MethodJoinPoint.prototype.addAdvice = function(	adviceObj, advice,
 		dj_throw("bad this: " + this);
 	}
 
-	var ao = [adviceObj, advice, thisAroundObj, thisAround, delay];
+	var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay];
 	
 	if(once){
-		if(this.hasAdvice(adviceObj, advice, advice_kind, arr) >= 0){
+		if(this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr) >= 0){
 			return;
 		}
 	}
@@ -425,27 +425,27 @@ dojo.event.MethodJoinPoint.prototype.addAdvice = function(	adviceObj, advice,
 	}
 }
 
-dojo.event.MethodJoinPoint.prototype.hasAdvice = function(adviceObj, advice, advice_kind, arr){
+dojo.event.MethodJoinPoint.prototype.hasAdvice = function(thisAdviceObj, thisAdvice, advice_kind, arr){
 	if(!arr){ arr = this.getArr(advice_kind); }
 	var ind = -1;
 	for(var x=0; x<arr.length; x++){
-		if((arr[x][0] == adviceObj)&&(arr[x][1] == advice)){
+		if((arr[x][0] == thisAdviceObj)&&(arr[x][1] == thisAdvice)){
 			ind = x;
 		}
 	}
 	return ind;
 }
 
-dojo.event.MethodJoinPoint.prototype.removeAdvice = function(adviceObj, advice, advice_kind, once){
+dojo.event.MethodJoinPoint.prototype.removeAdvice = function(thisAdviceObj, thisAdvice, advice_kind, once){
 	var arr = this.getArr(advice_kind);
-	var ind = this.hasAdvice(adviceObj, advice, advice_kind, arr);
+	var ind = this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr);
 	if(ind == -1){
 		return false;
 	}
 	while(ind != -1){
 		arr.splice(ind, 1);
 		if(once){ break; }
-		ind = this.hasAdvice(adviceObj, advice, advice_kind, arr);
+		ind = this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr);
 	}
 	return true;
 }
