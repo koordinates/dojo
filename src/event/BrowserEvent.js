@@ -159,6 +159,11 @@ dojo.event.browser = new function(){
 }
 
 dojo.event.IEEvent = function(evt){
+	for(var prop in evt) {
+		if(!this[prop]) {
+			this[prop] = evt[prop];
+		}
+	}
 	// this class is mainly taken from Burst's WindowEvent.js
 	this.ie_event_ = evt;
 	this.target = evt.srcElement;
