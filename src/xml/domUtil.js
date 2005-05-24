@@ -184,6 +184,11 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.rgb2hex = function(r, g, b) {
+		if(r.constructor == Array) {
+			g = r[1] || 0;
+			b = r[2] || 0;
+			r = r[0] || 0;
+		}
 		return "#" + r.toString(16) + g.toString(16) + b.toString(16);
 	}
 
