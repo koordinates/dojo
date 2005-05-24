@@ -352,7 +352,7 @@ dojo.xml.htmlUtil = new function(){
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	this.setOpacity = function(node, opacity, dontFixOpacity) {
 		if( !dontFixOpacity ) {
-			if( opacity >= 1.0 ) { opacity = 0.999999; }
+			if( opacity > 1.0 ) { opacity = 1; }
 			else if( opacity < 0.0 ) { opacity = 0; }
 		}
 		var h = dojo.render.html;
