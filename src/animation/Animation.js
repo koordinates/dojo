@@ -31,10 +31,23 @@ dojo.animation.Animation = function(curve, duration, accel) {
 	this.onStop = function(){};
 	this.handler = function() {}; // catch-all handler
 
+	// private properties
+	var startTime = null,
+		endTime = null,
+		lastFrame = null,
+		timer = null,
+		percent = 0,
+		active = false,
+		paused = false;
+
 	// public methods
 	this.play = function(gotoStart) {
-		if( !active || gotoStart ) {
+		if( gotoStart ) {
+			clearTimeout(timer);
+			active = false;
 			percent = 0;
+		} else if( active && !paused ) {
+			return;
 		}
 
 		startTime = new Date().valueOf();
@@ -110,15 +123,6 @@ dojo.animation.Animation = function(curve, duration, accel) {
 			return "stopped";
 		}
 	}
-
-	// private properties
-	var startTime = null,
-		endTime = null,
-		lastFrame = null,
-		timer = null,
-		percent = 0,
-		active = false,
-		paused = false;
 
 	// private methods
 	function cycle() {
