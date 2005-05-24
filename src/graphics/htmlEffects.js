@@ -20,8 +20,8 @@ dojo.graphics.htmlEffects = new function() {
 		dojo.event.connect(anim, "onAnimate", function(e) {
 			dojo.xml.htmlUtil.setOpacity(node, e.x);
 		});
-		if( typeof callback == "function" ) {
-			var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
 			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
 		}
 		anim.play(true);
@@ -48,8 +48,8 @@ dojo.graphics.htmlEffects = new function() {
 				top = e.y + "px";
 			}
 		});
-		if( typeof callback == "function" ) {
-			var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
 			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
 		}
 		anim.play(true);
@@ -106,8 +106,8 @@ dojo.graphics.htmlEffects = new function() {
 		dojo.event.connect(anim, "onAnimate", function(e) {
 			node.style.backgroundColor = "rgb(" + e.coordsAsInts().join(",") + ")";
 		});
-		if( typeof callback == "function" ) {
-			var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
 			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
 		}
 		if( !dontPlay ) { anim.play(true); }
@@ -157,8 +157,8 @@ dojo.graphics.htmlEffects = new function() {
 			}
 			parent.removeChild(box);
 		});
-		if( typeof callback == "function" ) {
-			var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
 			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
 		}
 		if( !dontPlay ) { anim.play(true); }
