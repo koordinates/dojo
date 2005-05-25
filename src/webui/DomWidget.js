@@ -580,7 +580,9 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				evt.stopPropagation();
 				this.resizeTarget.startResize(this.curr);
 			}
-			this.dragSource.startDrag();
+			if(this.dragSource){
+				this.dragSource.startDrag();
+			}
 		}else{
 			if((this.hoverTarget["isDragSource"] === true)||(this.overDragHandle)){
 				this.isDragging = true;
