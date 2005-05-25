@@ -351,11 +351,18 @@ dojo.xml.htmlUtil = new function(){
 	
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	this.setOpacity = function(node, opacity, dontFixOpacity) {
+		var h = dojo.render.html;
 		if( !dontFixOpacity ) {
-			if( opacity > 1.0 ) { opacity = 1; }
+			if( opacity >= 1.0 ) {
+				if( h.ie ) {
+					this.clearOpacity(node);
+					return;
+				} else {
+					opacity = 0.999999;
+				}
+			}
 			else if( opacity < 0.0 ) { opacity = 0; }
 		}
-		var h = dojo.render.html;
 		if(h.ie){
 			if(node.nodeName.toLowerCase() == "tr"){
 				// FIXME: is this too naive? will we get more than we want?
