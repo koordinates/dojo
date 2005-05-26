@@ -59,10 +59,11 @@ dojo.graphics.htmlEffects = new function() {
 	// Fade from startRGB to the node's background color
 	this.colorFadeIn = function(node, startRGB, duration, delay, cbObj, callback) {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
-		if( color.length == 4 ) {
+		while(color.length > 3) {
 			wasTransparent = true;
 			color.pop();
 		}
+		while(startRGB.length > 3) { startRGB.pop(); }
 
 		var anim = this.colorFade(node, startRGB, color, duration, cbObj, callback, true);
 		dojo.event.connect(anim, "onEnd", function(e) {
@@ -85,7 +86,8 @@ dojo.graphics.htmlEffects = new function() {
 	// Fade from node's background color to endRGB
 	this.colorFadeOut = function(node, endRGB, duration, delay, cbObj, callback) {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
-		if( color.length == 4 ) { color.pop(); }
+		while(color.length > 3) { color.pop(); }
+		while(endRGB.length > 3) { endRGB.pop(); }
 
 		var anim = this.colorFade(node, color, endRGB, duration, cbObj, callback, delay > 0);
 		if( delay > 0 ) {
@@ -95,11 +97,13 @@ dojo.graphics.htmlEffects = new function() {
 		return anim;
 	}
 	// FIXME: not sure which name is better. an alias here may be bad.
-	this.unhighlight = this.colrFadeOut;
+	this.unhighlight = this.colorFadeOut;
 	this.colorFadeTo = this.colorFadeOut;
 
 	// Fade node background from startRGB to endRGB
 	this.colorFade = function(node, startRGB, endRGB, duration, cbObj, callback, dontPlay) {
+		while(startRGB.length > 3) { startRGB.pop(); }
+		while(endRGB.length > 3) { endRGB.pop(); }
 		var anim = new dojo.animation.Animation(
 			new dojo.math.curves.Line(startRGB, endRGB),
 			duration, 0);

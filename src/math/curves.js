@@ -15,6 +15,14 @@ dojo.math.curves = {
 		this.end = end;
 		this.dimensions = start.length;
 
+		for(var i = 0; i < start.length; i++) {
+			start[i] = Number(start[i]);
+		}
+
+		for(var i = 0; i < end.length; i++) {
+			end[i] = Number(end[i]);
+		}
+
 		//simple function to find point on an n-dimensional, straight line
 		this.getValue = function(n) {
 			var retVal = new Array(this.dimensions);

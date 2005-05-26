@@ -348,6 +348,7 @@ dojo.xml.htmlUtil = new function(){
 		}
 		return nodes;
 	}
+	this.getElementsByClassName = this.getElementsByClass;
 	
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	this.setOpacity = function(node, opacity, dontFixOpacity) {
