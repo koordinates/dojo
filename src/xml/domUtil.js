@@ -86,6 +86,16 @@ dojo.xml.domUtil = new function(){
 		return ancestors;
 	}
 
+	this.isChildOf = function(node, ancestor) {
+		while(node) {
+			if(node == ancestor) {
+				return true;
+			}
+			node = node.parentNode;
+		}
+		return false;
+	}
+
 	// FIXME: this won't work in Safari
 	this.parseXmlString = function(str, mimetype) {
 		if(!mimetype) { mimetype = "text/xml"; }
