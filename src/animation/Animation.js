@@ -151,9 +151,9 @@ dojo.animation.Animation = function(curve, duration, accel) {
 				timer = setTimeout(cycle, 10);
 			} else {
 				e.type = "end";
+				active = false;
 				_this.handler(e);
 				_this.onEnd(e);
-				active = false;
 				if( _this.animSequence_ ) {
 					_this.animSequence_.playNext();
 				}
