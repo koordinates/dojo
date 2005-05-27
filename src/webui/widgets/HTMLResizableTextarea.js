@@ -40,7 +40,8 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 		var pnw = parseInt(hu.getInnerWidth(pn));
 		var pnh = parseInt(hu.getInnerHeight(pn));
 		// dj_debug(parseInt(pnw/pxpercol));
-		this.textAreaNode.cols = parseInt(pnw/pxpercol);
+		// this.textAreaNode.cols = parseInt(pnw/pxpercol);
+		this.textAreaNode.style.width = pnw+"px";
 		this.textAreaNode.rows = parseInt(pnh/pxperrow);
 	}
 
