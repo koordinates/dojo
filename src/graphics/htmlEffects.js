@@ -168,4 +168,198 @@ dojo.graphics.htmlEffects = new function() {
 		if( !dontPlay ) { anim.play(true); }
 		return anim;
 	}
+
+	this.explode = function(startNode, endNode, duration, cbObj, callback) {
+		var outline = document.createElement("div");
+		with(outline.style) {
+			position = "absolute";
+			border = "1px solid black";
+			display = "none";
+		}
+		document.body.appendChild(outline);
+
+		with(endNode.style) {
+			visibility = "hidden";
+			display = "block";
+		}
+		var endCoords = [
+			dojo.xml.htmlUtil.getAbsoluteX(endNode),
+			dojo.xml.htmlUtil.getAbsoluteY(endNode),
+			dojo.xml.htmlUtil.getInnerWidth(endNode),
+			dojo.xml.htmlUtil.getInnerHeight(endNode)
+		];
+		with(endNode.style) {
+			display = "none";
+			visibility = "visible";
+		}
+
+		var anim = new dojo.animation.Animation(
+			new dojo.math.curves.Line([
+				dojo.xml.htmlUtil.getAbsoluteX(startNode),
+				dojo.xml.htmlUtil.getAbsoluteY(startNode),
+				dojo.xml.htmlUtil.getInnerWidth(startNode),
+				dojo.xml.htmlUtil.getInnerHeight(startNode)
+			],
+			endCoords),
+			duration, 0
+		);
+		dojo.event.connect(anim, "onBegin", function(e) {
+			outline.style.display = "block";
+		});
+		dojo.event.connect(anim, "onAnimate", function(e) {
+			with(outline.style) {
+				left = e.x + "px";
+				top = e.y + "px";
+				width = e.coords[2] + "px";
+				height = e.coords[3] + "px";
+			}
+		});
+
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
+			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
+		}
+		dojo.event.connect(anim, "onEnd", function() {
+			endNode.style.display = "block";
+			outline.parentNode.removeChild(outline);
+		});
+		anim.play();
+		return anim;
+	}
+
+	this.implode = function(startNode, endNode, duration, cbObj, callback) {
+		var outline = document.createElement("div");
+		with(outline.style) {
+			position = "absolute";
+			border = "1px solid black";
+			display = "none";
+		}
+		document.body.appendChild(outline);
+
+		var anim = new dojo.animation.Animation(
+			new dojo.math.curves.Line([
+				dojo.xml.htmlUtil.getAbsoluteX(startNode),
+				dojo.xml.htmlUtil.getAbsoluteY(startNode),
+				dojo.xml.htmlUtil.getInnerWidth(startNode),
+				dojo.xml.htmlUtil.getInnerHeight(startNode)
+			],
+			[
+				dojo.xml.htmlUtil.getAbsoluteX(endNode),
+				dojo.xml.htmlUtil.getAbsoluteY(endNode),
+				dojo.xml.htmlUtil.getInnerWidth(endNode),
+				dojo.xml.htmlUtil.getInnerHeight(endNode)
+			]),
+			duration, 0
+		);
+		dojo.event.connect(anim, "onBegin", function(e) {
+			startNode.style.display = "none";
+			outline.style.display = "block";
+		});
+		dojo.event.connect(anim, "onAnimate", function(e) {
+			with(outline.style) {
+				left = e.x + "px";
+				top = e.y + "px";
+				width = e.coords[2] + "px";
+				height = e.coords[3] + "px";
+			}
+		});
+
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
+			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
+		}
+		dojo.event.connect(anim, "onEnd", function() {
+			outline.parentNode.removeChild(outline);
+		});
+		anim.play();
+		return anim;
+	}
+}
+
+dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
+	var _this = this;
+
+	// custom options
+	this.waitToHide = 500;
+	this.timeToShow = 100;
+	this.waitToShow = 200;
+	this.autoShow = false;
+	this.autoHide = false;
+
+	var animShow = null;
+	var animHide = null;
+
+	var showTimer = null;
+	var hideTimer = null;
+
+	var startCoords = null;
+	var endCoords = null;
+
+	var showing = false;
+
+	this.timeShow = function() {
+		clearTimeout(showTimer);
+		showTimer = setTimeout(_this.show, _this.waitToShow);
+	}
+
+	this.show = function() {
+		clearTimeout(showTimer);
+		clearTimeout(hideTimer);
+		triggerNode.blur();
+
+		if( (animHide && animHide.status() == "playing")
+			|| (animShow && animShow.status() == "playing")
+			|| showing ) { return; }
+
+		animShow = dojo.graphics.htmlEffects.explode(triggerNode, boxNode, 100, function(e) {
+			showing = true;
+		});
+	}
+
+	this.timeHide = function() {
+		clearTimeout(hideTimer);
+		hideTimer = setTimeout(_this.hide, _this.waitToHide);
+	}
+
+	this.hide = function() {
+		clearTimeout(showTimer);
+		clearTimeout(hideTimer);
+		if( !showing || (animShow && animShow.status() == "playing") ) {
+			return;
+		}
+
+		showing = false;
+		animHide = dojo.graphics.htmlEffects.implode(boxNode, triggerNode, 100);
+	}
+
+	// trigger events
+	dojo.event.connect(triggerNode, "onclick", function(e) {
+		if(showing) {
+			_this.hide();
+		} else {
+			_this.show();
+		}
+	});
+	dojo.event.connect(triggerNode, "onmouseover", function(e) {
+		if(_this.autoShow) {
+			_this.timeShow();
+		}
+	});
+	dojo.event.connect(triggerNode, "onmouseout", function(e) {
+		if(_this.autoHide) {
+			_this.timeHide();
+		}
+	});
+
+	// box events
+	dojo.event.connect(boxNode, "onmouseover", function(e) {
+		clearTimeout(hideTimer);
+	});
+	dojo.event.connect(boxNode, "onmouseout", function(e) {
+		if(_this.autoHide) {
+			_this.timeHide();
+		}
+	});
+
+	return this;
 }

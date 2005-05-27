@@ -32,6 +32,17 @@
 	width : 200px;
 	background : #ccc;
 }
+
+#explode {
+	position : absolute;
+	left : 300px;
+	top : 200px;
+	background : #ddd;
+	width : 400px;
+	height : 300px;
+	text-align : center;
+	display : none;
+}
 </style>
 <script language="JavaScript" type="text/javascript">
 	// Dojo configuration
@@ -53,18 +64,27 @@
 <script language="JavaScript" type="text/javascript" 
 	src="../../src/graphics/htmlEffects.js"></script>
 <script language="JavaScript" type="text/javascript">
-	//dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
-	var fadeElem, flash, unflash, wiper;
-	onload = function() {
-		flash = document.getElementById("flash");
-		dojo.graphics.htmlEffects.colorFadeIn(flash, [230, 230, 180], 1500, 1500);
+var fadeElem, flash, unflash, wiper;
+onload = function() {
+	flash = document.getElementById("flash");
+	dojo.graphics.htmlEffects.colorFadeIn(flash, [230, 230, 180], 1500, 1500);
 
-		unflash = document.getElementById("unflash");
-		dojo.graphics.htmlEffects.colorFadeOut(unflash, [255, 200, 180], 1500, 1500);
+	unflash = document.getElementById("unflash");
+	dojo.graphics.htmlEffects.colorFadeOut(unflash, [255, 200, 180], 1500, 1500);
 
-		wiper = document.getElementById("wiper");
-		dojo.graphics.htmlEffects.wipeIn(wiper, 1000);
-	}
+	wiper = document.getElementById("wiper");
+	dojo.graphics.htmlEffects.wipeIn(wiper, 1000);
+}
+
+function testExplode(start) {
+	var end = document.getElementById("explode");
+	dojo.graphics.htmlEffects.explode(start, end, 250);
+}
+
+function testImplode(start) {
+	var end = document.getElementById("explode");
+	dojo.graphics.htmlEffects.implode(end, start, 250);
+}
 </script>
 </head>
 <body>
@@ -94,6 +114,10 @@
 	</div>
 
 	<div>Non-wipe...</div>
+
+	<div id="explode">EXPLODE!!!</div>
+	<a href="javascript:;" onclick="testExplode(this)">Explode!</a>
+	<a href="javascript:;" onclick="testImplode(this)">Implode!</a>
 </body>
 </html>
 
