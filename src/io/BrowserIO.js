@@ -80,7 +80,9 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 			idoc.location.replace(src);
 			dj_debug(iframe.contentWindow.location);
 		}
-	}catch(e){ alert(e); }
+	}catch(e){ 
+		dj_debug("setIFrameSrc: "+e); 
+	}
 }
 
 dojo.io.createIFrame = function(fname){
