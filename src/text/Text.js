@@ -3,7 +3,7 @@ dojo.hostenv.startPackage("dojo.text.Text");
 
 dojo.text = new function(){
 	this.trim = function(iString){
-		if(!iString){ // allow String.prototyp-ing
+		if(arguments.length == 0){ // allow String.prototyp-ing
 			iString = this; 
 		}
 		if(typeof iString != "string"){ return iString; }
