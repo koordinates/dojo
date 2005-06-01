@@ -7,6 +7,157 @@ dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
+// static method to build from a template w/ or w/o a real widget in place
+dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, templateString) {
+	var tpath = templatePath || obj.templatePath;
+	var cpath = templateCSSPath || obj.templateCSSPath;
+
+	var tmplts = dojo.webui.DomWidget.templates;
+	if(!obj.widgetType) { // don't have a real template here
+		do {
+			var dummyName = "__dummyTemplate__" + dojo.webui.buildFromTemplate.dummyCount++;
+		} while(tmplts[dummyName]);
+		obj.widgetType = dummyName;
+	}
+
+	var ts = tmplts[obj.widgetType];
+	if(!ts){
+		tmplts[obj.widgetType] = {};
+		ts = tmplts[obj.widgetType];
+	}
+	if(!obj.templateString){
+		obj.templateString = templateString || ts["string"];
+	}
+	if(!obj.templateNode){
+		obj.templateNode = ts["node"];
+	}
+	if((!obj.templateNode)&&(!obj.templateString)&&(tpath)){
+		// fetch a text fragment and assign it to templateString
+		// NOTE: we rely on blocking IO here!
+		// FIXME: extra / being inserted in URL?
+		var tmplts = dojo.webui.DomWidget.templates;
+		var ts = tmplts[obj.widgetType];
+		if(!ts){
+			tmplts[obj.widgetType] = {};
+			ts = tmplts[obj.widgetType];
+		}
+		var tp = dojo.hostenv.getBaseScriptUri()+""+tpath;
+		obj.templateString = dojo.hostenv.getText(tp);
+		ts.string = obj.templateString;
+	}
+
+	if(cpath){
+		// FIXME: extra / being inserted in URL?
+		dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+cpath);
+		obj.templateCSSPath = null;
+	}
+}
+dojo.webui.buildFromTemplate.dummyCount = 0;
+
+dojo.webui.attachProperty = "dojoAttachPoint";
+dojo.webui.eventAttachProperty = "dojoAttachEvent";
+dojo.webui.subTemplateProperty = "dojoSubTemplate";
+dojo.webui.onBuildProperty = "dojoOnBuild";
+
+dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent){
+	var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
+
+	if(!baseNode){ 
+		baseNode = targetObj.domNode;
+	}
+
+	if(baseNode.nodeType != elementNodeType){
+		return;
+	}
+
+	// FIXME: is this going to have capitalization problems?
+	var attachPoint = baseNode.getAttribute(this.attachProperty);
+	if(attachPoint){
+		targetObj[attachPoint]=baseNode;
+	}
+
+	/*
+	// FIXME: we need to put this into some kind of lookup structure
+	// instead of direct assignment
+	var tmpltPoint = baseNode.getAttribute(this.templateProperty);
+	if(tmpltPoint){
+		targetObj[tmpltPoint]=baseNode;
+	}
+	*/
+
+	// subtemplates are always collected "flatly" by the widget class
+	var tmpltPoint = baseNode.getAttribute(this.subTemplateProperty);
+	if(tmpltPoint){
+		// we assign by removal in this case, mainly because we assume that
+		// this will get proccessed later when the sub-template is filled
+		// in (usually by this method, and usually repetitively)
+		subTemplateParent.subTemplates[tmpltPoint]=baseNode.parentNode.removeChild(baseNode);
+		// make sure we don't get stopped here the next time we try to process
+		subTemplateParent.subTemplates[tmpltPoint].removeAttribute(this.subTemplateProperty);
+		return;
+	}
+
+	var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
+	if(attachEvent){
+		// NOTE: we want to support attributes that have the form
+		// "domEvent: nativeEvent; ..."
+		var evts = attachEvent.split(";");
+		for(var x=0; x<evts.length; x++){
+			var tevt = null;
+			var thisFunc = null;
+			if(!evts[x]){ continue; }
+			if(!evts[x].length){ continue; }
+			tevt = dojo.text.trim(evts[x]);
+			if(tevt.indexOf(":") >= 0){
+				// oh, if only JS had tuple assignment
+				var funcNameArr = tevt.split(":");
+				tevt = dojo.text.trim(funcNameArr[0]);
+				thisFunc = dojo.text.trim(funcNameArr[1]);
+			}
+			if(!thisFunc){
+				thisFunc = tevt;
+			}
+			//if(dojo.hostenv.name_ == "browser"){
+			var _this = targetObj;
+			var tf = function(){ 
+				var ntf = new String(thisFunc);
+				return function(evt){
+					if(_this[ntf]){
+						_this[ntf](evt);
+					}
+				}
+			}();
+			dojo.event.connect(baseNode, tevt.toLowerCase(), tf);
+			/*
+			}else{
+				var en = tevt.toLowerCase().substr(2);
+				baseNode.addEventListener(en, targetObj[thisFunc||tevt], false);
+			}
+			*/
+		}
+	}
+
+	var onBuild = baseNode.getAttribute(this.onBuildProperty);
+	if(onBuild){
+		eval("var node = baseNode; var widget = targetObj; "+onBuild);
+	}
+
+	// FIXME: temporarily commenting this out as it is breaking things
+	for(var x=0; x<baseNode.childNodes.length; x++){
+		if(baseNode.childNodes.item(x).nodeType == elementNodeType){
+			this.attachTemplateNodes(baseNode.childNodes.item(x), targetObj, subTemplateParent);
+		}
+	}
+}
+
+dojo.webui.buildAndAttachTemplate = function(obj, templatePath, templateCSSPath, templateString, targetObj) {
+	this.buildFromTemplate(obj, templatePath, templateCSSPath, templateString);
+	var node = dojo.xml.domUtil.createNodesFromText(obj.templateString, true)[0];
+	this.attachTemplateNodes(node, targetObj||obj, obj);
+	return node;
+}
+
+
 dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 	// FIXME: this is sort of a hack, but it seems necessaray in the case where
@@ -18,10 +169,6 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		dojo.webui.Widget.call(this);
 	}
 
-	this.attachProperty = "dojoAttachPoint";
-	this.eventAttachProperty = "dojoAttachEvent";
-	this.subTemplateProperty = "dojoSubTemplate";
-	this.onBuildProperty = "dojoOnBuild";
 	this.subTemplates = {};
 
 	this.domNode = null; // this is our visible representation of the widget!
@@ -75,7 +222,9 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 			this.parent = dojo.webui.widgetManager.root;
 			// insert our domNode into the DOM in place of where we started
-			var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+			if(this.domNode) {
+				var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+			}
 		}
 
 		if(this.isContainer){
@@ -152,126 +301,8 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 
 	this.attachTemplateNodes = function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
-		var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
-
-		if(!baseNode){ 
-			baseNode = targetObj.domNode;
-		}
-
-		if(baseNode.nodeType != elementNodeType){
-			return;
-		}
-
-		// FIXME: is this going to have capitalization problems?
-		var attachPoint = baseNode.getAttribute(this.attachProperty);
-		if(attachPoint){
-			targetObj[attachPoint]=baseNode;
-		}
-
-		/*
-		// FIXME: we need to put this into some kind of lookup structure
-		// instead of direct assignment
-		var tmpltPoint = baseNode.getAttribute(this.templateProperty);
-		if(tmpltPoint){
-			targetObj[tmpltPoint]=baseNode;
-		}
-		*/
-
-		// subtemplates are always collected "flatly" by the widget class
-		var tmpltPoint = baseNode.getAttribute(this.subTemplateProperty);
-		if(tmpltPoint){
-			// we assign by removal in this case, mainly because we assume that
-			// this will get proccessed later when the sub-template is filled
-			// in (usually by this method, and usually repetitively)
-			this.subTemplates[tmpltPoint]=baseNode.parentNode.removeChild(baseNode);
-			// make sure we don't get stopped here the next time we try to process
-			this.subTemplates[tmpltPoint].removeAttribute(this.subTemplateProperty);
-			return;
-		}
-
-		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
-		if(attachEvent){
-			// NOTE: we want to support attributes that have the form
-			// "domEvent: nativeEvent; ..."
-			var evts = attachEvent.split(";");
-			for(var x=0; x<evts.length; x++){
-				var tevt = null;
-				var thisFunc = null;
-				if(!evts[x]){ continue; }
-				if(!evts[x].length){ continue; }
-				tevt = dojo.text.trim(evts[x]);
-				if(tevt.indexOf(":") >= 0){
-					// oh, if only JS had tuple assignment
-					var funcNameArr = tevt.split(":");
-					tevt = dojo.text.trim(funcNameArr[0]);
-					thisFunc = dojo.text.trim(funcNameArr[1]);
-				}
-				if(!thisFunc){
-					thisFunc = tevt;
-				}
-				if(dojo.hostenv.name_ == "browser"){
-					var _this = targetObj;
-					// dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), function(ea){ _this[thisFunc||tevt](ea); });
-					// baseNode[tevt.toLowerCase()] 
-					var tf = function(){ 
-						var ntf = new String(thisFunc);
-						return function(evt){
-							if(_this[ntf]){
-								_this[ntf](evt);
-							}
-						}
-					}();
-					dojo.event.browser.addListener(baseNode, tevt.toLowerCase(), tf);
-				}else{
-					var en = tevt.toLowerCase().substr(2);
-					baseNode.addEventListener(en, targetObj[thisFunc||tevt], false);
-				}
-			}
-		}
-
-		var onBuild = baseNode.getAttribute(this.onBuildProperty);
-		if(onBuild){
-			eval("var node = baseNode; var widget = targetObj; "+onBuild);
-		}
-
-		// FIXME: temporarily commenting this out as it is breaking things
-		for(var x=0; x<baseNode.childNodes.length; x++){
-			if(baseNode.childNodes.item(x).nodeType == elementNodeType){
-				this.attachTemplateNodes(baseNode.childNodes.item(x), targetObj);
-			}
-		}
-
-		/*
-		for(var x=0; x<baseNode.childNodes.length; x++){
-			var tn = baseNode.childNodes[x];
-			if(tn.nodeType!=1){ continue; }
-			var aa = dojo.xml.htmlUtil.getAttr(tn, this.attachProperty);
-			if(aa){
-				// __log__.debug(aa);
-				var thisFunc = null;
-				if(aa.indexOf(":") >= 0){
-					// oh, if only JS had tuple assignment
-					var funcNameArr = aa.split(":");
-					aa = funcNameArr[0];
-					thisFunc = funcNameArr[1];
-				}
-				alert(aa);
-				if((this[aa])&&((thisFunc)||(typeof this[aa] == "function"))){
-					var _this = this;
-					baseNode[thisFunc||aa] = function(evt){ 
-						_this[aa](evt);
-					}
-				}else{
-					this[aa]=tn;
-				}
-			}
-			if(tn.childNodes.length>0){
-				this.attachTemplateNodes(tn);
-			}
-		}
-		*/
+		return dojo.webui.attachTemplateNodes(baseNode, targetObj, this);
 	}
-
 	this.fillInTemplate = function(){
 		// dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
 	}
@@ -335,19 +366,7 @@ dojo.webui.SVGWidget = function(args){
 	}
 
 	this.createNodesFromText = function(txt, wrap){
-		// from http://wiki.svg.org/index.php/ParseXml
-		var docFrag = parseXML(txt, window.document);
-		docFrag.normalize();
-		if(wrap){ 
-			var ret = [docFrag.firstChild.cloneNode(true)];
-			return ret;
-		}
-		var nodes = [];
-		for(var x=0; x<docFrag.childNodes.length; x++){
-			nodes.push(docFrag.childNodes.item(x).cloneNode(true));
-		}
-		// tn.style.display = "none";
-		return nodes;
+		return dojo.xml.domUtil.createNodesFromText(txt, wrap);
 	}
 }
 
@@ -423,68 +442,13 @@ dojo.webui.HTMLWidget = function(args){
 
 
 	this.createNodesFromText = function(txt, wrap){
-		// alert("HTMLWidget.createNodesFromText");
-		var tn = document.createElement("span");
-		// tn.style.display = "none";
-		tn.style.visibility= "hidden";
-		document.body.appendChild(tn);
-		tn.innerHTML = txt;
-		tn.normalize();
-		if(wrap){ 
-			// start hack
-			if(tn.firstChild.nodeValue == " " || tn.firstChild.nodeValue == "\t") {
-				var ret = [tn.firstChild.nextSibling.cloneNode(true)];
-			} else {
-				var ret = [tn.firstChild.cloneNode(true)];
-			}
-			// end hack
-			tn.style.display = "none";
-			return ret;
-		}
-		var nodes = [];
-		for(var x=0; x<tn.childNodes.length; x++){
-			nodes.push(tn.childNodes[x].cloneNode(true));
-		}
-		tn.style.display = "none";
-		return nodes;
+		return dojo.xml.domUtil.createNodesFromText(txt, wrap);
 	}
 
 	this._old_buildFromTemplate = this.buildFromTemplate;
 
 	this.buildFromTemplate = function(){
-		// copy template properties if they're already set in the templates object
-		var tmplts = dojo.webui.DomWidget.templates;
-		var ts = tmplts[this.widgetType];
-		if(!ts){
-			tmplts[this.widgetType] = {};
-			ts = tmplts[this.widgetType];
-		}
-		if(!this.templateString){
-			this.templateString = ts["string"];
-		}
-		if(!this.templateNode){
-			this.templateNode = ts["node"];
-		}
-		if((!this.templateNode)&&(!this.templateString)&&(this.templatePath)){
-			// fetch a text fragment and assign it to templateString
-			// NOTE: we rely on blocking IO here!
-			// FIXME: extra / being inserted in URL?
-			var tmplts = dojo.webui.DomWidget.templates;
-			var ts = tmplts[this.widgetType];
-			if(!ts){
-				tmplts[this.widgetType] = {};
-				ts = tmplts[this.widgetType];
-			}
-			var tp = dojo.hostenv.getBaseScriptUri()+""+this.templatePath;
-			this.templateString = dojo.hostenv.getText(tp);
-			ts.string = this.templateString;
-		}
-
-		if(this.templateCSSPath){
-			// FIXME: extra / being inserted in URL?
-			dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath);
-			this.templateCSSPath = null;
-		}
+		dojo.webui.buildFromTemplate(this);
 		this._old_buildFromTemplate();
 	}
 }

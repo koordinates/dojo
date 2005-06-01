@@ -101,6 +101,14 @@ dojo.xml.htmlUtil = new function(){
 		}
 	}
 
+	this.getScrollTop = function() {
+		return document.documentElement.scrollTop || document.body.scrollTop || 0;
+	}
+
+	this.getScrollLeft = function() {
+		return document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	}
+
 	this.evtTgt = this.getEventTarget;
 
 	this.getParentOfType = function(node, type){

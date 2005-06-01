@@ -127,7 +127,7 @@ dojo.xml.domUtil = new function(){
 	}
 
 	// FIXME: this won't work in Safari
-	this.parseXmlString = function(str, mimetype) {
+	this.createDocumentFromText = function(str, mimetype) {
 		if(!mimetype) { mimetype = "text/xml"; }
 		if(typeof DOMParser != "undefined") {
 			var parser = new DOMParser();
@@ -160,7 +160,51 @@ dojo.xml.domUtil = new function(){
 		}
 		return null;
 	}
-	this.parseXMLString = this.parseXmlString; // to avoid confusion
+
+	// FIXME: how do we account for mixed environments?
+	if(dojo.render.html.capable) {
+		this.createNodesFromText = function(txt, wrap){
+			var tn = document.createElement("span");
+			// tn.style.display = "none";
+			tn.style.visibility= "hidden";
+			document.body.appendChild(tn);
+			tn.innerHTML = txt;
+			tn.normalize();
+			if(wrap){ 
+				// start hack
+				if(tn.firstChild.nodeValue == " " || tn.firstChild.nodeValue == "\t") {
+					var ret = [tn.firstChild.nextSibling.cloneNode(true)];
+				} else {
+					var ret = [tn.firstChild.cloneNode(true)];
+				}
+				// end hack
+				tn.style.display = "none";
+				return ret;
+			}
+			var nodes = [];
+			for(var x=0; x<tn.childNodes.length; x++){
+				nodes.push(tn.childNodes[x].cloneNode(true));
+			}
+			tn.style.display = "none";
+			return nodes;
+		}
+	} else if(dojo.render.svg.capable) {
+		this.createNodesFromText = function(txt, wrap){
+			// from http://wiki.svg.org/index.php/ParseXml
+			var docFrag = parseXML(txt, window.document);
+			docFrag.normalize();
+			if(wrap){ 
+				var ret = [docFrag.firstChild.cloneNode(true)];
+				return ret;
+			}
+			var nodes = [];
+			for(var x=0; x<docFrag.childNodes.length; x++){
+				nodes.push(docFrag.childNodes.item(x).cloneNode(true));
+			}
+			// tn.style.display = "none";
+			return nodes;
+		}
+	}
 
 	// get RGB array from css-style color declarations
 	this.extractRGB = function(color) {

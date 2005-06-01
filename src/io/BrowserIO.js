@@ -193,7 +193,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			} else if(kwArgs.mimetype == "text/xml") {
 				ret = http.responseXML;
 				if(!ret || typeof ret == "string") {
-					ret = dojo.xml.domUtil.parseXmlString(http.responseText);
+					ret = dojo.xml.domUtil.createDocumentFromText(http.responseText);
 				}
 			} else {
 				ret = http.responseText;
