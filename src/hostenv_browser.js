@@ -143,6 +143,18 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	return http.responseText;
 }
 
+dojo.hostenv.appendScript = function(uri) {
+	try {
+		var script = document.createElement("script");
+		script.setAttribute("type", "text/javascript");
+		script.setAttribute("src", uri);
+		document.getElementsByTagName("head").item(0).appendChild(script);
+	} catch(e) {
+		return null;
+	}
+	return script;
+}
+
 /*
  * It turns out that if we check *right now*, as this script file is being loaded,
  * then the last script element in the window DOM is ourselves.
@@ -188,15 +200,14 @@ dojo.hostenv.println = function(s){
 		document.body.appendChild(ti);
 		ti.innerHTML = s;
 	}catch(e){
-		/*
 		try{
-			document.write(s);
+			//document.write(s);
 			// safari needs the output wrapped in an element for some reason
-			// document.write("<div>"+s+"</div>");
+			document.write("<div>"+s+"</div>");
 		}catch(e2){
-			window.alert(s);
+			//window.alert(s);
+			window.status = s;
 		}
-		*/
 	}
 }
 

@@ -207,6 +207,7 @@ dojo.hostenv = {
 	base_relative_path_ : ((typeof djConfig['baseRelativePath'] == 'undefined') ? '' : djConfig['baseRelativePath']),
 	library_script_uri_ : ((typeof djConfig['libraryScriptUri'] == 'undefined') ? '' : djConfig['libraryScriptUri']),
 	auto_build_widgets_ : ((typeof djConfig['parseWidgets'] == 'undefined') ? true : djConfig['parseWidgets']),
+	append_scripts_ : djConfig['appendScripts'] ? true : false,
 
 	// for recursion protection
 	loading_modules_ : {},
@@ -396,6 +397,10 @@ dojo.hostenv.loadUri = function(uri, cb){
 	var contents = this.getText(uri, null, true);
 	if(contents == null){ return 0; }
 	var value = dj_eval(contents);
+	if(dojo.hostenv.is_debug_ && dojo.render.html.capable && dojo.hostenv.appendScript && dojo.hostenv.append_scripts_) {
+		dj_debug("append? " + dojo.hostenv.append_scripts_);
+		dojo.hostenv.appendScript(uri);
+	}
 	return 1;
 }
 
