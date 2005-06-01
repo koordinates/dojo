@@ -396,11 +396,11 @@ dojo.hostenv.loadUri = function(uri, cb){
 	}
 	var contents = this.getText(uri, null, true);
 	if(contents == null){ return 0; }
-	var value = dj_eval(contents);
 	if(dojo.hostenv.is_debug_ && dojo.render.html.capable && dojo.hostenv.appendScript && dojo.hostenv.append_scripts_) {
 		dj_debug("append? " + dojo.hostenv.append_scripts_);
 		dojo.hostenv.appendScript(uri);
 	}
+	var value = dj_eval(contents);
 	return 1;
 }
 
