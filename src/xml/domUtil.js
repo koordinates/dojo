@@ -50,6 +50,36 @@ dojo.xml.domUtil = new function(){
 		return tagName.toLowerCase();
 	}
 
+	this.getFirstChildTag = function(parentNode) {
+		var node = parentNode.firstChild;
+		while(node && node.nodeType != 1) {
+			node = node.nextSibling;
+		}
+		return node;
+	}
+
+	this.getLastChildTag = function(parentNode) {
+		var node = parentNode.lastChild;
+		while(node && node.nodeType != 1) {
+			node = node.previousSibling;
+		}
+		return node;
+	}
+
+	this.getNextSiblingTag = function(node) {
+		do {
+			node = node.nextSibling;
+		} while(node && node.nodeType != 1);
+		return node;
+	}
+
+	this.getPreviousSiblingTag = function(node) {
+		do {
+			node = node.previousSibling;
+		} while(node && node.nodeType != 1);
+		return node;
+	}
+
 	this.getStyle = function(node, cssSelector) {
 		var value = undefined, camelCased = _this.toCamelCase(cssSelector);
 		value = node.style[camelCased]; // dom-ish
