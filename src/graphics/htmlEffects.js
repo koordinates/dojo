@@ -169,6 +169,17 @@ dojo.graphics.htmlEffects = new function() {
 	}
 
 	this.explode = function(startNode, endNode, duration, cbObj, callback) {
+		var startCoords = [
+			dojo.xml.htmlUtil.getAbsoluteX(startNode),
+			dojo.xml.htmlUtil.getAbsoluteY(startNode),
+			dojo.xml.htmlUtil.getInnerWidth(startNode),
+			dojo.xml.htmlUtil.getInnerHeight(startNode)
+		];
+		return this.explodeFromBox(startCoords, endNode, duration, cbObj, callback);
+	}
+
+	// startCoords = [x, y, w, h]
+	this.explodeFromBox = function(startCoords, endNode, duration, cbObj, callback) {
 		var outline = document.createElement("div");
 		with(outline.style) {
 			position = "absolute";
@@ -193,13 +204,7 @@ dojo.graphics.htmlEffects = new function() {
 		}
 
 		var anim = new dojo.animation.Animation(
-			new dojo.math.curves.Line([
-				dojo.xml.htmlUtil.getAbsoluteX(startNode),
-				dojo.xml.htmlUtil.getAbsoluteY(startNode),
-				dojo.xml.htmlUtil.getInnerWidth(startNode),
-				dojo.xml.htmlUtil.getInnerHeight(startNode)
-			],
-			endCoords),
+			new dojo.math.curves.Line(startCoords, endCoords),
 			duration, 0
 		);
 		dojo.event.connect(anim, "onBegin", function(e) {
@@ -227,6 +232,16 @@ dojo.graphics.htmlEffects = new function() {
 	}
 
 	this.implode = function(startNode, endNode, duration, cbObj, callback) {
+		var endCoords = [
+			dojo.xml.htmlUtil.getAbsoluteX(endNode),
+			dojo.xml.htmlUtil.getAbsoluteY(endNode),
+			dojo.xml.htmlUtil.getInnerWidth(endNode),
+			dojo.xml.htmlUtil.getInnerHeight(endNode)
+		];
+		return this.implodeToBox(startNode, endCoords, duration, cbObj, callback);
+	}
+
+	this.implodeToBox = function(startNode, endCoords, duration, cbObj, callback) {
 		var outline = document.createElement("div");
 		with(outline.style) {
 			position = "absolute";
@@ -241,13 +256,7 @@ dojo.graphics.htmlEffects = new function() {
 				dojo.xml.htmlUtil.getAbsoluteY(startNode),
 				dojo.xml.htmlUtil.getInnerWidth(startNode),
 				dojo.xml.htmlUtil.getInnerHeight(startNode)
-			],
-			[
-				dojo.xml.htmlUtil.getAbsoluteX(endNode),
-				dojo.xml.htmlUtil.getAbsoluteY(endNode),
-				dojo.xml.htmlUtil.getInnerWidth(endNode),
-				dojo.xml.htmlUtil.getInnerHeight(endNode)
-			]),
+			], endCoords),
 			duration, 0
 		);
 		dojo.event.connect(anim, "onBegin", function(e) {
