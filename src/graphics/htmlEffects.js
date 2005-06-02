@@ -59,10 +59,9 @@ dojo.graphics.htmlEffects = new function() {
 	// Fade from startRGB to the node's background color
 	this.colorFadeIn = function(node, startRGB, duration, delay, cbObj, callback) {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
-		while(color.length > 3) {
-			wasTransparent = true;
-			color.pop();
-		}
+		var bg = dojo.xml.domUtil.getStyle(node, "background-color").toLowerCase();
+		var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
+		while(color.length > 3) { color.pop(); }
 		while(startRGB.length > 3) { startRGB.pop(); }
 
 		var anim = this.colorFade(node, startRGB, color, duration, cbObj, callback, true);
