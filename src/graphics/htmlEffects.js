@@ -317,6 +317,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 	}
 
 	this.timeHide = function() {
+		clearTimeout(showTimer);
 		clearTimeout(hideTimer);
 		hideTimer = setTimeout(_this.hide, _this.waitToHide);
 	}
