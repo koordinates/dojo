@@ -9,6 +9,13 @@ dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.text.*");
 
 dojo.webui.Widget = function(){
+	// these properties aren't primitives and need to be created on a per-item
+	// basis.
+	this.children = [];
+	this.selection = new dojo.webui.Selection();
+	// FIXME: need to replace this with context menu stuff
+	this.rightClickItems = [];
+	this.extraArgs = {};
 }
 // FIXME: need to be able to disambiguate what our rendering context is
 //        here!
@@ -16,9 +23,9 @@ dojo.webui.Widget = function(){
 // needs to be a string with the end classname. Every subclass MUST
 // over-ride.
 dojo.lang.extend(dojo.webui.Widget, {
+	// base widget properties
 	widgetType: "Widget",
 	parent: null,
-	children: [],
 	// obviously, top-level and modal widgets should set these appropriately
 	isTopLevel:  false,
 	isModal: false,
@@ -26,11 +33,8 @@ dojo.lang.extend(dojo.webui.Widget, {
 	isEnabled: true,
 	isHidden: false,
 	isContainer: false, // can we contain other widgets?
-	// FIXME: need to replace this with context menu stuff
-	rightClickItems: [],
 	widgetId: "",
-	selection: new dojo.webui.Selection(),
-	
+
 	enable: function(){
 		// should be over-ridden
 		this.isEnabled = true;
@@ -183,6 +187,9 @@ dojo.lang.extend(dojo.webui.Widget, {
 						this[x] = args[x];
 					}
 				}
+			}else{
+				// collect any extra 'non mixed in' args
+				this.extraArgs[x] = args[x];
 			}
 		}
 	},
