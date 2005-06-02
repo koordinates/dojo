@@ -252,6 +252,7 @@ dojo.xml.domUtil = new function(){
 		var hexNum = "0123456789ABCDEF";
 		var rgb = new Array(3);
 		if( hex.indexOf("#") == 0 ) { hex = hex.substring(1); }
+		hex = hex.toUpperCase();
 		if( hex.length == 3 ) {
 			rgb[0] = hex.charAt(0) + hex.charAt(0)
 			rgb[1] = hex.charAt(1) + hex.charAt(1)
