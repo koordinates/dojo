@@ -20,6 +20,12 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 		obj.widgetType = dummyName;
 	}
 
+	if(cpath){
+		// FIXME: extra / being inserted in URL?
+		dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+cpath);
+		obj.templateCSSPath = null;
+	}
+
 	var ts = tmplts[obj.widgetType];
 	if(!ts){
 		tmplts[obj.widgetType] = {};
@@ -44,12 +50,6 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 		var tp = dojo.hostenv.getBaseScriptUri()+""+tpath;
 		obj.templateString = dojo.hostenv.getText(tp);
 		ts.string = obj.templateString;
-	}
-
-	if(cpath){
-		// FIXME: extra / being inserted in URL?
-		dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+cpath);
-		obj.templateCSSPath = null;
 	}
 }
 dojo.webui.buildFromTemplate.dummyCount = 0;
