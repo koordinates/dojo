@@ -1,16 +1,12 @@
-.btn:focus {
-	color : #333;
-}
-
 ul.dropdownButtons {
 	font-size : 90%;
-	position : relatlive;
+	position : relative;
 }
 
 ul.dropdownButtons, ul.dropdownButtons ul {
 	float : left;
 	list-style-type : none;
-	margin-left : 0;
+	margin : 0;
 	padding-left : 0;
 }
 
