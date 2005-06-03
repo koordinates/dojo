@@ -462,8 +462,16 @@ dojo.xml.htmlUtil = new function(){
 		return true;
 	}
 
-	this.insertCSSFile = function(URI, doc){
+	this.insertCSSFile = function(URI, doc, checkDuplicates){
+		if(!URI) { return; }
 		if(!doc){ doc = document; }
+		if(checkDuplicates && doc.styleSheets) {
+			for(var i = 0; i < doc.styleSheets.length; i++) {
+				if(URI == doc.styleSheets[i].href) {
+					return;
+				}
+			}
+		}
 		var file = doc.createElement("link");
 		file.setAttribute("type", "text/css");
 		file.setAttribute("rel", "stylesheet");
