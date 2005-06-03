@@ -168,6 +168,8 @@ dojo.event.IEEvent = function(evt){
 	this.ie_event_ = evt;
 	this.target = evt.srcElement;
 	this.type = evt.type;
+	this.layerX = evt.offsetX;
+	this.layerY = evt.offsetY;
 
 	// keyCode is not standardized in any w3 API yet (Level 3 Events is in draft).
 	// some browsers store it in 'which'

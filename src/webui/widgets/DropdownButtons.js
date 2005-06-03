@@ -34,10 +34,12 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 		var li = dojo.xml.domUtil.getFirstChildTag(menu);
 		var menuIDs = [];
 
+		dojo.hostenv.is_debug_ = true;
+
 		while(li) {
 			if(li.getElementsByTagName("ul").length > 0) {
 				var a = dojo.xml.domUtil.getFirstChildTag(li);
-				var arrow = document.createElement("div");
+				var arrow = document.createElement("span");
 				arrow.innerHTML = "&nbsp;";
 				dojo.xml.htmlUtil.setClass(arrow, "downArrow");
 				var submenu = dojo.xml.domUtil.getNextSiblingTag(a);
@@ -49,25 +51,42 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 				}
 				menuIDs.push(submenu.id);
 
-				dojo.event.connect(arrow, "onclick", (function() {
-					var aa = a;
-					var ar = arrow;
-					var sm = submenu;
-					var setWidth = 0;
-					return function(e) {
-						hideAll(sm);
-						sm.style.top = aa.offsetHeight + "px";
-						sm.style.display = sm.style.display == "block" ? "none" : "block";
-						if(setWidth == 0) {
-							var lis = sm.getElementsByTagName("li");
-							for(var i = 0; i < lis.length; i++) {
-								setWidth = Math.max(setWidth, lis.item(i).offsetWidth, aa.offsetWidth+ar.offsetWidth);
+				if( dojo.xml.htmlUtil.hasClass(a, "disabled") ) {
+					dojo.xml.htmlUtil.addClass(arrow, "disabled");
+				} else {
+					dojo.xml.htmlUtil.addClass(submenu, "dropdownButtonsMenu");
+					document.body.appendChild(submenu);
+					dojo.event.connect(arrow, "onclick", (function() {
+						var aa = a;
+						var ar = arrow;
+						var sm = submenu;
+						var setWidth = 0;
+
+						return function(e) {
+							hideAll(sm);
+							dj_debug("client: " + e.clientX + ", layer: " + e.layerX + ", offset: " + aa.offsetLeft);
+							sm.style.left = (dojo.xml.htmlUtil.getScrollLeft() + e.clientX - e.layerX + aa.offsetLeft) + "px";
+							sm.style.top = (dojo.xml.htmlUtil.getScrollTop() + e.clientY - e.layerY + aa.offsetTop + aa.offsetHeight) + "px";
+							sm.style.display = sm.style.display == "block" ? "none" : "block";
+							if(sm.offsetWidth < aa.offsetWidth + ar.offsetWidth) {
+								sm.style.width = aa.offsetWidth + ar.offsetWidth + "px";
 							}
-							sm.style.width = setWidth + "px";
 						}
+					})());
+				}
+
+				dojo.event.connect(a, "onclick", function(e) {
+					if(e && e.target && e.target.blur) {
+						e.target.blur();
 					}
-				})());
-				li.insertBefore(arrow, a.nextSibling);
+				});
+
+				if(a.nextSibling) {
+					li.insertBefore(arrow, a.nextSibling);
+				} else {
+					li.appendChild(arrow);
+				}
+
 			}
 			li = dojo.xml.domUtil.getNextSiblingTag(li);
 		}
