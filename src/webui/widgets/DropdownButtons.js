@@ -34,8 +34,6 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 		var li = dojo.xml.domUtil.getFirstChildTag(menu);
 		var menuIDs = [];
 
-		dojo.hostenv.is_debug_ = true;
-
 		while(li) {
 			if(li.getElementsByTagName("ul").length > 0) {
 				var a = dojo.xml.domUtil.getFirstChildTag(li);
@@ -64,7 +62,6 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 
 						return function(e) {
 							hideAll(sm);
-							dj_debug("client: " + e.clientX + ", layer: " + e.layerX + ", offset: " + aa.offsetLeft);
 							sm.style.left = (dojo.xml.htmlUtil.getScrollLeft() + e.clientX - e.layerX + aa.offsetLeft) + "px";
 							sm.style.top = (dojo.xml.htmlUtil.getScrollTop() + e.clientY - e.layerY + aa.offsetTop + aa.offsetHeight) + "px";
 							sm.style.display = sm.style.display == "block" ? "none" : "block";
