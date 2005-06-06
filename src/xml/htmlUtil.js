@@ -466,8 +466,12 @@ dojo.xml.htmlUtil = new function(){
 		if(!URI) { return; }
 		if(!doc){ doc = document; }
 		if(checkDuplicates && doc.styleSheets) {
+			// get the host + port info from location
+			var loc = location.href.split("#")[0].substring(0, location.href.indexOf(location.pathname));
 			for(var i = 0; i < doc.styleSheets.length; i++) {
-				if(URI == doc.styleSheets[i].href) {
+				var href = doc.styleSheets[i].href;
+				if(URI == href
+					|| (URI.charAt(0) == '/' && (loc + "/" + URI).replace(/\/\//g, "/") == href.replace(/\/\//g, "/"))) {
 					return;
 				}
 			}
