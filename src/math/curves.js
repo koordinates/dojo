@@ -1,7 +1,6 @@
 dojo.hostenv.startPackage("dojo.math.curves");
 
-dojo.hostenv.loadModule("dojo.math");
-dojo.hostenv.loadModule("dojo.math.points");
+dojo.hostenv.loadModule("dojo.math.*");
 
 /* Curves from Dan's 13th lib stuff.
  * See: http://pupius.co.uk/js/Toolkit.Drawing.js
@@ -43,8 +42,8 @@ dojo.math.curves = {
 			for(var k=0;j<this.p[0].length;k++) retVal[k]=0;
 			for(var j=0;j<this.p[0].length;j++) {
 				var C=0; var D=0;
-				for(var i=0;i<this.p.length;i++) C += this.p[i][j] * this.p[this.p.length-1][0] * Toolkit.Math.bernstein(step,this.p.length,i);
-				for(var l=0;l<this.p.length;l++) D += this.p[this.p.length-1][0] * Toolkit.Math.bernstein(step,this.p.length,l);
+				for(var i=0;i<this.p.length;i++) C += this.p[i][j] * this.p[this.p.length-1][0] * dojo.math.bernstein(step,this.p.length,i);
+				for(var l=0;l<this.p.length;l++) D += this.p[this.p.length-1][0] * dojo.math.bernstein(step,this.p.length,l);
 				retVal[j] = C/D;
 			}
 			return retVal;
