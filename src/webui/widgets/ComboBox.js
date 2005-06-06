@@ -127,12 +127,13 @@ dojo.webui.widgets.ComboBox = function(){
 	this.searchType = "stringstart";
 	this.dataProvider = new dojo.webui.widgets.ComboBoxDataProvider();
 
-	this.startSearch = function(searchString){
-	}
-
-	this.openResultList = function(results){
-	}
-
+	this.startSearch = function(searchString){}
+	this.openResultList = function(results){}
+	this.clearResultList = function(){}
+	this.hideResultList = function(){}
+	this.selectNextResult = function(){}
+	this.selectPrevResult = function(){}
+	this.setSelectedRsult = function(){}
 }
 
 dj_inherits(dojo.webui.widgets.ComboBox, dojo.webui.Widget);

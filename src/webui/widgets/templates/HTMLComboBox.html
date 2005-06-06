@@ -1,4 +1,4 @@
-<span class="comboBox">
+<span class="comboBox" dojoAttachEvent="onClick: killEvent;">
 	<input type="hidden" name="" value="" 
 		dojoAttachPoint="comboBoxValue">
 	<input type="hidden" name="" value="" 
@@ -18,6 +18,7 @@
 				location replacement gets done -->
 				<img border="0" 
 					dojoAttachPoint="downArrowNode"
+					dojoAttachEvent="onClick: startSearchFromInput;"
 					dojoOnBuild="node.src = dojo.hostenv.getBaseScriptUri()+'/src/webui/widgets/templates/images/combo_box_arrow.png';">
 			</td>
 		</tr>

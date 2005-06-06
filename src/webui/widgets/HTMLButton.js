@@ -26,7 +26,7 @@ dojo.webui.widgets.HTMLButton = function(){
 		this.setLabel();
 	}
 
-	this.onFoo = function(){}
+	this.onFoo = function(){ }
 }
 
 /*
