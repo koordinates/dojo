@@ -1,7 +1,7 @@
 dojo.hostenv.startPackage("dojo.animation");
 dojo.hostenv.startPackage("dojo.animation.Animation");
 
-dojo.hostenv.loadModule("dojo.math.curves");
+dojo.hostenv.loadModule("dojo.math.*");
 
 /*
 Animation package based off of Dan Pupius' work on Animations:
@@ -13,13 +13,14 @@ TODO:
 
 dojo.animation = {};
 
-dojo.animation.Animation = function(curve, duration, accel) {
+dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 	var _this = this;
 
 	// public properties
 	this.curve = curve;
 	this.duration = duration;
 	this.accel = accel;
+	this.repeatCount = repeatCount || 0;
 	this.animSequence_ = null;
 
 	// public events
@@ -154,7 +155,12 @@ dojo.animation.Animation = function(curve, duration, accel) {
 				active = false;
 				_this.handler(e);
 				_this.onEnd(e);
-				if( _this.animSequence_ ) {
+				if( _this.repeatCount > 0 ) {
+					_this.repeatCount--;
+					_this.play(true);
+				} else if( _this.repeatCount == -1 ) {
+					_this.play(true);
+				} else if( _this.animSequence_ ) {
 					_this.animSequence_.playNext();
 				}
 			}

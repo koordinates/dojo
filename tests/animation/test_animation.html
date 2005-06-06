@@ -7,6 +7,13 @@
 				left : 200px;
 				top : 200px;
 			}
+
+			#Repeat1 {
+				position : absolute;
+				background : red;
+				top : 100px;
+				left : 100px;
+			}
 		</style>
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
@@ -54,6 +61,14 @@
 
 				q = new dojo.animation.AnimationSequence();
 				q.add(a, b);
+
+				r = new Anim(new dojo.math.curves.Bezier([[100,100], [80,80], [200,200], [400,30], [100,100]]), 2000, 0, 3);
+				r.onAnimate = function(e) {
+					with(document.getElementById("Repeat1").style) {
+						left = e.x + "px";
+						top = e.y + "px";
+					}
+				}
 			}
 
 			dojo.hostenv.modulesLoadedListeners.push(init);
@@ -65,6 +80,8 @@
 		|
 		<a href="javascript:a.gotoPercent(35, true)">Goto 35% and play</a> (move animation)
 		<div id="Mover">I'm a mover</div>
+		<div id="Repeat1" onclick="r.play()">I repeat a few times!</div>
+		<div id="Repeat2">I repeat forever!</div>
 	</body>
 </html>
 
