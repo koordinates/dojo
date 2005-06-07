@@ -60,15 +60,16 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 						var aa = a;
 						var ar = arrow;
 						var sm = submenu;
-						var setWidth = 0;
+						var setWidth = false;
 
 						return function(e) {
 							hideAll(sm);
 							sm.style.left = (dojo.xml.htmlUtil.getScrollLeft() + e.clientX - e.layerX + aa.offsetLeft) + "px";
 							sm.style.top = (dojo.xml.htmlUtil.getScrollTop() + e.clientY - e.layerY + aa.offsetTop + aa.offsetHeight) + "px";
 							sm.style.display = sm.style.display == "block" ? "none" : "block";
-							if(sm.offsetWidth < aa.offsetWidth + ar.offsetWidth) {
+							if(!setWidth && sm.style.display == "block" && sm.offsetWidth < aa.offsetWidth + ar.offsetWidth) {
 								sm.style.width = aa.offsetWidth + ar.offsetWidth + "px";
+								setWidth = true;
 							}
 						}
 					})());
