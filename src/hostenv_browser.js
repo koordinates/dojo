@@ -183,18 +183,23 @@ if(!dojo.hostenv["library_script_uri_"]){
 */
 
 dojo.hostenv.println = function(s){
+	var ti = null;
+	var dis = "<div>"+s+"</div>";
 	try{
-		var ti = document.createElement("div");
+		ti = document.createElement("div");
 		document.body.appendChild(ti);
 		ti.innerHTML = s;
 	}catch(e){
 		try{
 			// safari needs the output wrapped in an element for some reason
-			document.write("<div>"+s+"</div>");
+			document.write(dis);
 		}catch(e2){
 			window.status = s;
 		}
 	}
+	delete ti;
+	delete dis;
+	delete s;
 }
 
 /*
