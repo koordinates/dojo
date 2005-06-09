@@ -5,7 +5,7 @@
 }
 
 .editableRegion {
-	background-color : #ffc;
+	background-color : #ffc !important;
 	cursor : pointer;
 	_cursor : hand;
 }

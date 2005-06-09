@@ -10,7 +10,7 @@ dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 dojo.hostenv.loadModule("dojo.graphics.*");
-dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
+dojo.hostenv.loadModule("dojo.text.*");
 
 
 dojo.webui.widgets.HTMLInlineEditBox = function() {
@@ -28,31 +28,36 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 	this.text = null;
 	this.storage = document.createElement("span");
 
-	this.onSave = function(){};
-
 	this.minWidth = 100; //px. minimum width of edit box
 
-	var editing = false;
-	var textValue = "";
-	var doFade = false;
+	this.editing = false;
+	this.textValue = "";
+	this.doFade = false;
+
+	this.onSave = function(newValue, oldValue) {};
 
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
-		this.nodeRef = frag["dojo:inlineeditbox"]["nodeRef"];
+		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		var node = this.nodeRef;
 		if(node.normalize) { node.normalize(); }
 
+		dojo.webui.buildAndAttachTemplate(this);
+
 		this.editable = document.createElement("span");
 		this.editable.appendChild(node.firstChild);
-		textValue = this.editable.firstChild.nodeValue;
+		this.textValue = this.editable.firstChild.nodeValue;
 		if(node.hasChildNodes()) {
 			node.insertBefore(this.editable, node.firstChild);
 		} else {
 			node.appendChild(this.editable);
 		}
-		dojo.webui.buildAndAttachTemplate(this);
 
-		this.editable.appendChild(this.edit);
+		// delay to try and show up before stylesheet
+		var _this = this;
+		setTimeout(function() {
+			_this.editable.appendChild(_this.edit);
+		}, 30);
 
 		dojo.event.connect(this.editable, "onmouseover", this, "mouseover");
 		dojo.event.connect(this.editable, "onmouseout", this, "mouseout");
@@ -62,23 +67,23 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 	}
 
 	this.mouseover = function(e) {
-		if(!editing) {
+		if(!this.editing) {
 			dojo.xml.htmlUtil.addClass(this.editable, "editableRegion");
 		}
 	}
 
 	this.mouseout = function(e) {
-		if(!editing) {
+		if(!this.editing) {
 			dojo.xml.htmlUtil.removeClass(this.editable, "editableRegion");
 		}
 	}
 
 	this.beginEdit = function(e) {
-		if(editing) { return; }
+		if(this.editing) { return; }
 		this.mouseout();
-		editing = true;
+		this.editing = true;
 
-		this.text.value = textValue;
+		this.text.value = this.textValue;
 		this.text.style.fontSize = dojo.xml.domUtil.getStyle(this.editable, "font-size");
 		this.text.style.fontWeight = dojo.xml.domUtil.getStyle(this.editable, "font-weight");
 		this.text.style.fontStyle = dojo.xml.domUtil.getStyle(this.editable, "font-style");
@@ -88,34 +93,37 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 
 		this.editable.style.display = "none";
 		this.nodeRef.appendChild(this.form);
-		this.text.focus();
 		this.text.select();
 	}
 
 	this.saveEdit = function(e) {
 		e = dojo.event.browser.fixEvent(e);
 		dojo.event.browser.stopEvent(e);
-		if(textValue != this.text.value) {
-			doFade = true;
-			this.onSave(this.text.value, textValue);
-			textValue = this.text.value;
-			this.editable.firstChild.nodeValue = textValue;
+		if(this.textValue != this.text.value && dojo.text.trim(this.text.value) != "") {
+			this.doFade = true;
+			this.onSave(this.text.value, this.textValue);
+			this.textValue = this.text.value;
+			this.editable.firstChild.nodeValue = this.textValue;
 		} else {
-			doFade = false;
-			dj_debug('no');
+			this.doFade = false;
 		}
 		this.finishEdit(e);
 	}
 
-	this.finishEdit = function(e) {
-		if(!editing) { return; }
-		editing = false;
+	this.cancelEdit = function(e) {
+		if(!this.editing) { return false; }
+		this.editing = false;
 		this.nodeRef.removeChild(this.form);
 		this.editable.style.display = "";
-		if(doFade) {
+		return true;
+	}
+
+	this.finishEdit = function(e) {
+		if(!this.cancelEdit(e)) { return; }
+		if(this.doFade) {
 			dojo.graphics.htmlEffects.highlight(this.editable, dojo.xml.domUtil.hex2rgb("#ffc"), 700, 300);
 		}
-		doFade = false;
+		this.doFade = false;
 	}
 }
 dj_inherits(dojo.webui.widgets.HTMLInlineEditBox, dojo.webui.DomWidget);
