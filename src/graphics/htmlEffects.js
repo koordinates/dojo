@@ -319,7 +319,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 	this.show = function() {
 		clearTimeout(showTimer);
 		clearTimeout(hideTimer);
-		triggerNode.blur();
+		//triggerNode.blur();
 
 		if( (animHide && animHide.status() == "playing")
 			|| (animShow && animShow.status() == "playing")
