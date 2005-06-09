@@ -8,8 +8,14 @@ dojo.event = new function(){
 	this.anon = {};
 
 	this.nameAnonFunc = function(anonFuncPtr, namespaceObj){
-		var ret = "_"+anonCtr++;
 		var nso = (namespaceObj || this.anon);
+		for(var x in nso){
+				if(nso[x] === anonFuncPtr){
+						dj_debug(x);
+						return x;
+				}
+		}
+		var ret = "_"+anonCtr++;
 		while(typeof nso[ret] != "undefined"){
 			ret = "_"+anonCtr++;
 		}
@@ -186,6 +192,16 @@ dojo.event = new function(){
 
 	this.kwConnectImpl_ = function(kwArgs, disconnect){
 		var fn = (disconnect) ? "disconnect" : "connect";
+		if(typeof kwArgs["srcFunc"] == "function"){
+			kwArgs.srcObj = kwArgs["srcObj"]||dj_global;
+			var tmpName  = dojo.event.nameAnonFunc(kwArgs.srcFunc, kwArgs.srcObj);
+			kwArgs.srcFunc = tmpName;
+		}
+		if(typeof kwArgs["adviceFunc"] == "function"){
+			kwArgs.adviceObj = kwArgs["adviceObj"]||dj_global;
+			var tmpName  = dojo.event.nameAnonFunc(kwArgs.adviceFunc, kwArgs.adviceObj);
+			kwArgs.adviceFunc = tmpName;
+		}
 		return dojo.event[fn](	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
 									kwArgs["srcObj"],
 									kwArgs["srcFunc"],
@@ -452,3 +468,4 @@ dojo.event.MethodJoinPoint.prototype.removeAdvice = function(thisAdviceObj, this
 
 // needed for package satisfaction
 dojo.hostenv.startPackage("dojo.event.Event");
+
