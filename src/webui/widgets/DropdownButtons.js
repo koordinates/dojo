@@ -35,6 +35,7 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 		}
 		var li = dojo.xml.domUtil.getFirstChildTag(menu);
 		var menuIDs = [];
+		var arrowIDs = [];
 
 		while(li) {
 			if(li.getElementsByTagName("ul").length > 0) {
@@ -42,10 +43,17 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 				var arrow = document.createElement("span");
 				arrow.innerHTML = "&nbsp;";
 				dojo.xml.htmlUtil.setClass(arrow, "downArrow");
+				if(!arrow.id) {
+					do {
+						var id = "dd" + (new Date().valueOf() + Math.floor(Math.random()*100))
+					} while( document.getElementById(id) );
+					arrow.id = id;
+				}
+				arrowIDs.push(arrow.id);
 				var submenu = dojo.xml.domUtil.getNextSiblingTag(a);
 				if(!submenu.id) {
 					do {
-						var id = "x" + (new Date().valueOf() + Math.floor(Math.random()*100))
+						var id = "sm" + (new Date().valueOf() + Math.floor(Math.random()*100))
 					} while( document.getElementById(id) );
 					submenu.id = id;
 				}
@@ -56,6 +64,12 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 				} else {
 					dojo.xml.htmlUtil.addClass(submenu, "dropdownButtonsMenu");
 					document.body.appendChild(submenu);
+					dojo.event.connect(arrow, "onmousedown", (function() {
+						var ar = arrow;
+						return function(e) {
+							dojo.xml.htmlUtil.addClass(ar, "pressed");
+						}
+					})());
 					dojo.event.connect(arrow, "onclick", (function() {
 						var aa = a;
 						var ar = arrow;
@@ -63,11 +77,17 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 						var setWidth = false;
 
 						return function(e) {
-							hideAll(sm);
-							sm.style.left = (dojo.xml.htmlUtil.getScrollLeft() + e.clientX - e.layerX + aa.offsetLeft) + "px";
-							sm.style.top = (dojo.xml.htmlUtil.getScrollTop() + e.clientY - e.layerY + aa.offsetTop + aa.offsetHeight) + "px";
+							hideAll(sm, ar);
+							sm.style.left = (dojo.xml.htmlUtil.getScrollLeft()
+								+ e.clientX - e.layerX + aa.offsetLeft) + "px";
+							sm.style.top = (dojo.xml.htmlUtil.getScrollTop() + e.clientY
+								- e.layerY + aa.offsetTop + aa.offsetHeight) + "px";
 							sm.style.display = sm.style.display == "block" ? "none" : "block";
-							if(!setWidth && sm.style.display == "block" && sm.offsetWidth < aa.offsetWidth + ar.offsetWidth) {
+							if(sm.style.display == "none") {
+								dojo.xml.htmlUtil.removeClass(ar, "pressed");
+							}
+							if(!setWidth && sm.style.display == "block"
+								&& sm.offsetWidth < aa.offsetWidth + ar.offsetWidth) {
 								sm.style.width = aa.offsetWidth + ar.offsetWidth + "px";
 								setWidth = true;
 							}
@@ -91,17 +111,25 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 			li = dojo.xml.domUtil.getNextSiblingTag(li);
 		}
 
-		function hideAll(exclude) {
+		function hideAll(excludeMenu, excludeArrow) {
+			// hide menus
 			for(var i = 0; i < menuIDs.length; i++) {
 				var m = document.getElementById(menuIDs[i]);
-				if(!exclude || m != exclude) {
+				if(!excludeMenu || m != excludeMenu) {
 					document.getElementById(menuIDs[i]).style.display = "none";
+				}
+			}
+			// restore arrows to non-pressed state
+			for(var i = 0; i < arrowIDs.length; i++) {
+				var m = document.getElementById(arrowIDs[i]);
+				if(!excludeArrow || m != excludeArrow) {
+					dojo.xml.htmlUtil.removeClass(m, "pressed");
 				}
 			}
 		}
 
 		dojo.event.connect(document.documentElement, "onmousedown", function(e) {
-			if(e.target.className == "downArrow") { return };
+			if( dojo.xml.htmlUtil.hasClass(e.target, "downArrow") ) { return };
 			for(var i = 0; i < menuIDs.length; i++) {
 				if( dojo.xml.domUtil.isChildOf(e.target, document.getElementById(menuIDs[i])) ) {
 					return;

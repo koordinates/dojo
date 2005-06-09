@@ -11,11 +11,10 @@ ul.dropdownButtons li {
 
 ul.dropdownButtons li a {
 	padding : 2px 9px;
-	border : 2px outset #999;
-	_border-color : #ccc;
+	border : 2px outset #ccc;
 	border-right-width : 1px;
-	background : #ddd;
-	color : black;
+	background : #f4f4f4;
+	color : #333;
 	text-decoration : none;
 }
 
@@ -24,17 +23,16 @@ ul.dropdownButtons li ul {
 }
 
 ul.dropdownButtons li a.disabled {
-	color : #666;
+	color : #999;
 	cursor : default;
 }
 
 ul.dropdownButtons li span.downArrow {
 	display : inline;
 	padding : 2px 4px;
-	border : 2px outset #999;
-	_border-color : #ccc;
+	border : 2px outset #ccc;
 	border-left : 0;
-	background : #ddd url(dropdownButtonsArrow.gif) no-repeat 4px 9px;
+	background : #f4f4f4 url(dropdownButtonsArrow.gif) no-repeat 4px 9px;
 	text-decoration : none;
 	color : black;
 	cursor : pointer;
@@ -48,14 +46,19 @@ ul.dropdownButtons li span.downArrow.disabled {
 
 ul.dropdownButtons li a:hover,
 ul.dropdownButtons li span.downArrow:hover {
-	color : #333;
-	background-color : #eee;
+	color : black;
+	background-color : #ddd;
+}
+
+ul.dropdownButtons li span.downArrow.pressed {
+	border-style : inset;
+	background-position : 5px 10px;
 }
 
 ul.dropdownButtons li a.disabled:hover,
 ul.dropdownButtons li span.downArrow.disabled:hover {
-	color : #666;
-	background-color : #ddd;
+	color : #999;
+	background-color : #f4f4f4;
 }
 
 ul.dropdownButtons li a:focus {
@@ -72,8 +75,8 @@ ul.dropdownButtonsMenu {
 	_margin : -2px;
 	padding : 0;
 	display : none;
-	border : 1px solid #999;
-	background : #ddd;
+	border : 1px solid #aaa;
+	background : #f4f4f4;
 	list-style : none;
 	z-index : 99;
 }
@@ -84,13 +87,13 @@ ul.dropdownButtonsMenu li {
 
 ul.dropdownButtonsMenu a {
 	display : block;
-	padding : 2px 3px;
+	padding : 2px 5px;
 	color : #333;
 	text-decoration : none;
 }
 
 ul.dropdownButtonsMenu a:hover {
-	background : #eee;
+	background : #ddd;
 	color : black;
 }
 
