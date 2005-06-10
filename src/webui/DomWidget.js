@@ -59,7 +59,7 @@ dojo.webui.eventAttachProperty = "dojoAttachEvent";
 dojo.webui.subTemplateProperty = "dojoSubTemplate";
 dojo.webui.onBuildProperty = "dojoOnBuild";
 
-dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent){
+dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent, events){
 	var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
 
 	if(!baseNode){ 
@@ -137,6 +137,27 @@ dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent
 		}
 	}
 
+	for(var x=0; x<events.length; x++){
+		//alert(events[x]);
+		var evtVal = baseNode.getAttribute(events[x]);
+		if(evtVal){
+			var thisFunc = null;
+			if((!evtVal)||(!evtVal.length)){ continue; }
+			var domEvt = events[x].substr(4).toLowerCase(); // clober the "dojo" prefix
+			thisFunc = dojo.text.trim(evtVal);
+			var _this = targetObj;
+			var tf = function(){ 
+				var ntf = new String(thisFunc);
+				return function(evt){
+					if(_this[ntf]){
+						_this[ntf](evt);
+					}
+				}
+			}();
+			dojo.event.connect(baseNode, domEvt, tf);
+		}
+	}
+
 	var onBuild = baseNode.getAttribute(this.onBuildProperty);
 	if(onBuild){
 		eval("var node = baseNode; var widget = targetObj; "+onBuild);
@@ -145,18 +166,30 @@ dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent
 	// FIXME: temporarily commenting this out as it is breaking things
 	for(var x=0; x<baseNode.childNodes.length; x++){
 		if(baseNode.childNodes.item(x).nodeType == elementNodeType){
-			this.attachTemplateNodes(baseNode.childNodes.item(x), targetObj, subTemplateParent);
+			this.attachTemplateNodes(baseNode.childNodes.item(x), targetObj, subTemplateParent, events);
 		}
 	}
 }
 
+dojo.webui.getDojoEventsFromStr = function(str){
+	// var lstr = str.toLowerCase();
+	var re = /(dojoOn([a-z]+)(\s?))=/gi;
+	var evts = str.match(re)||[];
+	for(var x=0; x<evts.length; x++){
+		if(evts[x].legth < 1){ continue; }
+		var cm = evts[x].replace(/\s/, "");
+		evts[x] = (cm.slice(0, cm.length-1));
+	}
+	return evts;
+}
+
+
 dojo.webui.buildAndAttachTemplate = function(obj, templatePath, templateCSSPath, templateString, targetObj) {
 	this.buildFromTemplate(obj, templatePath, templateCSSPath, templateString);
 	var node = dojo.xml.domUtil.createNodesFromText(obj.templateString, true)[0];
-	this.attachTemplateNodes(node, targetObj||obj, obj);
+	this.attachTemplateNodes(node, targetObj||obj, obj, dojo.webui.getDojoEventsFromStr(templateString));
 	return node;
 }
-
 
 dojo.webui.DomWidget = function(preventSuperclassMixin){
 
@@ -296,12 +329,13 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// attachment points which should be defined on the template node.
 
 		this.domNode = node;
-		this.attachTemplateNodes(this.domNode);
+		this.attachTemplateNodes(this.domNode, this);
 	}
 
 	this.attachTemplateNodes = function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
-		return dojo.webui.attachTemplateNodes(baseNode, targetObj, this);
+		return dojo.webui.attachTemplateNodes(baseNode, targetObj, this, 
+					dojo.webui.getDojoEventsFromStr(this.templateString));
 	}
 	this.fillInTemplate = function(){
 		// dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
@@ -521,6 +555,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			}
 			if(tdt != dojo.webui.widgetManager.root){
 				if(tdt != this.dropTarget){
+					// dj_debug(tdt);
 					if(this.dropTarget){
 						this.dropTarget.dragLeave(this.dragSource);
 					}
