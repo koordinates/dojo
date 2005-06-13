@@ -18,6 +18,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	this.searchDelay = 100;
 	this.timeoutWrapperName = null;
 	this.dataUrl = "";
+	this.selectedResult = null;
 	var _prev_key_backspace = false;
 
 	this.getCaretPos = function(element){
@@ -100,7 +101,9 @@ dojo.webui.widgets.HTMLComboBox = function(){
 		if(this.searchTimer){
 			clearTimeout(this.searchTimer);
 		}
-		if(!_prev_key_backspace){
+		if((_prev_key_backspace)&&(!this.textInputNode.value.length)){
+			this.hideResultList();
+		}else{
 			var _this = this;
 			if(!this.timeoutWrapperName){
 				this.timeoutWrapperName = dojo.event.nameAnonFunc(function(){
@@ -108,10 +111,6 @@ dojo.webui.widgets.HTMLComboBox = function(){
 				}, dj_global);
 			}
 			this.searchTimer = setTimeout(this.timeoutWrapperName+"()", this.searchDelay);
-		}else{
-			if(!this.textInputNode.value.length){
-				this.hideResultList();
-			}
 		}
 	}
 
@@ -131,6 +130,39 @@ dojo.webui.widgets.HTMLComboBox = function(){
 		}
 	}
 
+	/*
+	// options item class
+	function optionItem(parent, txt){
+		this.parent = parent;
+		this.domNode = null;
+		this.itemLabel = null;
+		this.formItem = null;
+		this.formName = null;
+		this.itemString = txt||"";
+		this.clobberItem = function(){
+			// FIXME: need to do memory cleanup here for IE!!
+
+			// NOTE: the form item for this entry could be located somewhere
+			// else, so we manually remove it from whatever container it might
+			// be in.
+			this.formItem.parentNode.removeChild(this.formItem);
+			this.domNode.parentNode.removeChild(this.domNode);
+			// clobber the item text from the parent list
+			this.parent.removeFromList(this.itemString);
+		}
+
+		this.fillInTemplate = function(){
+			// FIXME: need HTML escaping here
+			this.itemLabel.innerHTML = this.itemString;
+			// FIXME: need some way to specify a name for the form item!
+			this.formItem.value = this.itemString;
+			this.formItem.name = this.formName || this.parent.baseFormName;
+			// move the form item out into the correct container
+			this.parent.formItemsNode.appendChild(this.formItem);
+		}
+	}
+	*/
+
 	this.openResultList = function(results){
 		this.clearResultList();
 		if(!results.length){
@@ -138,7 +170,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 		}else{
 			this.showResultList();
 		}
-		if((this.autoComplete)&&(results.length)){
+		if((this.autoComplete)&&(results.length)&&(!_prev_key_backspace)){
 			var cpos = this.getCaretPos(this.textInputNode);
 			// only try to extend if we added the last charachter at the end of the input
 			if((cpos+1) >= this.textInputNode.value.length){
@@ -154,6 +186,8 @@ dojo.webui.widgets.HTMLComboBox = function(){
 			td.appendChild(document.createTextNode(tr[0]));
 			this.optionsListNode.appendChild(td);
 		}
+
+		dojo.event.connect(this.optionsListNode, "onclick", this, "selectOption");
 		dojo.event.kwConnect({
 			once: true,
 			srcObj: document.body,
