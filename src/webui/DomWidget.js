@@ -174,7 +174,7 @@ dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent
 dojo.webui.getDojoEventsFromStr = function(str){
 	// var lstr = str.toLowerCase();
 	var re = /(dojoOn([a-z]+)(\s?))=/gi;
-	var evts = str.match(re)||[];
+	var evts = str ? str.match(re)||[] : [];
 	for(var x=0; x<evts.length; x++){
 		if(evts[x].legth < 1){ continue; }
 		var cm = evts[x].replace(/\s/, "");
