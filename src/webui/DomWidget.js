@@ -48,8 +48,17 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 			ts = tmplts[obj.widgetType];
 		}
 		var tp = dojo.hostenv.getBaseScriptUri()+""+tpath;
-		obj.templateString = dojo.hostenv.getText(tp);
-		ts.string = obj.templateString;
+		var tstring = dojo.hostenv.getText(tp);
+		if(tstring) {
+			var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+			if(matches) {
+				tstring = matches[1];
+			}
+		} else {
+			tstring = "";
+		}
+		obj.templateString = tstring;
+		ts.string = tstring;
 	}
 }
 dojo.webui.buildFromTemplate.dummyCount = 0;
