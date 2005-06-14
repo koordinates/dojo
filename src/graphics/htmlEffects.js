@@ -306,10 +306,12 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 
 	var showing = false;
 
-	this.onBeforeExplode = function() {};
-	this.onAfterExplode = function() {};
-	this.onBeforeImplode = function() {};
-	this.onAfterImplode = function() {};
+	this.onBeforeExplode = null;
+	this.onAfterExplode = null;
+	this.onBeforeImplode = null;
+	this.onAfterImplode = null;
+	this.onExploding = null;
+	this.onImploding = null;
 
 	this.timeShow = function() {
 		clearTimeout(showTimer);
@@ -330,6 +332,9 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 			showing = true;
 			if(typeof _this.onAfterExplode == "function") { _this.onAfterExplode(triggerNode, boxNode); }
 		});
+		if(typeof _this.onExploding == "function") {
+			dojo.event.connect(animShow, "onAnimate", this, "onExploding");
+		}
 	}
 
 	this.timeHide = function() {
@@ -341,7 +346,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 	this.hide = function() {
 		clearTimeout(showTimer);
 		clearTimeout(hideTimer);
-		if( !showing || (animShow && animShow.status() == "playing") ) {
+		if( animShow && animShow.status() == "playing" ) {
 			return;
 		}
 
@@ -350,6 +355,9 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 		animHide = dojo.graphics.htmlEffects.implode(boxNode, triggerNode, _this.timeToHide, function(e){
 			if(typeof _this.onAfterImplode == "function") { _this.onAfterImplode(triggerNode, boxNode); }
 		});
+		if(typeof _this.onImploding == "function") {
+			dojo.event.connect(animHide, "onAnimate", this, "onImploding");
+		}
 	}
 
 	// trigger events
@@ -383,7 +391,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 
 	// document events
 	dojo.event.connect(document.documentElement || document.body, "onclick", function(e) {
-		if(_this.autoHide
+		if(_this.autoHide && showing
 			&& !dojo.xml.domUtil.isChildOf(e.target, boxNode)
 			&& !dojo.xml.domUtil.isChildOf(e.target, triggerNode) ) {
 			_this.hide();
