@@ -504,7 +504,7 @@ dojo.xml.htmlUtil = new function(){
 	}
 
 	this.generateId = function(prefix) {
-		if(typeof prefix != "string" || !/^[a-z_-]/i.test(prefix)) {
+		if(!prefix || !/^[a-z_\-]/i.test(prefix.toString())) {
 			prefix = "dojo-id-";
 		}
 		do {
