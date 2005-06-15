@@ -37,8 +37,20 @@
  *  <dd>whether debug output is enabled.
  * </dl>
  */
+/**
+ * dj_global is an alias for the top-level global object in the host environment (the "window" object in a browser).
+ */
+//:GLVAR Object dj_global
+var dj_global = this; //typeof window == 'undefined' ? this : window;
+
+
+function dj_undef(name, obj){
+	if(!obj){ obj = dj_global; }
+	return (typeof obj[name] == "undefined");
+}
+
 //:GLVAR Object djConfig
-if(typeof djConfig == 'undefined'){ 
+if(dj_undef("djConfig")){
 	var djConfig = {};
 }
 
@@ -47,13 +59,7 @@ if(typeof djConfig == 'undefined'){
  */
 //=java public class dojo {
 var dojo;
-if(typeof dojo == 'undefined'){ dojo = {}; }
-
-/**
- * dj_global is an alias for the top-level global object in the host environment (the "window" object in a browser).
- */
-//:GLVAR Object dj_global
-var dj_global = this; //typeof window == 'undefined' ? this : window;
+if(dj_undef("dojo")){ dojo = {}; }
 
 // ****************************************************************
 // global public utils
@@ -75,8 +81,9 @@ function dj_debug(... args : Object[]) {
 function dj_debug(){
 	var args = arguments;
 /*@end @*/
-	if(typeof dojo.hostenv.println != 'function'){
-		dj_throw("attempt to call dj_debug when there is no dojo.hostenv println implementation (yet?)");
+	if(dj_undef("println", dojo.hostenv)){
+		// dj_throw("attempt to call dj_debug when there is no dojo.hostenv println implementation (yet?)");
+		dj_throw("dj_debug not available (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"];
@@ -93,8 +100,9 @@ function dj_debug(){
 * Throws an Error object given the string err. For now, will also do a println to the user first.
 */
 function dj_throw(message){
-	if((typeof dojo.hostenv != 'undefined')&&(typeof dojo.hostenv.println != 'undefined')){ 
-		dojo.hostenv.println("fatal error: " + message);
+	var he = dojo.hostenv;
+	if(dj_undef("hostenv", dojo)&&dj_undef("println", dojo)){ 
+		dojo.hostenv.println("FATAL: " + message);
 	}
 	throw Error(message);
 }
@@ -105,7 +113,7 @@ function dj_throw(message){
  * ... since natively generated Error objects do not always reflect such things?
  */
 function dj_error_to_string(excep){
-	return (typeof excep.message !== 'undefined' ? excep.message : (typeof excep.description !== 'undefined' ? excep.description : excep));
+	return ((!dj_undef("message", excep)) ? excep.message : (dj_undef("description", excep) ? excep : excep.description ));
 }
 
 
@@ -132,9 +140,9 @@ function dj_eval(s){ return dj_global.eval ? dj_global.eval(s) : eval(s); }
  * Convenience for throwing an exception because some function is not implemented.
  */
 function dj_unimplemented(funcname, extra){
-	var mess = "No implementation of function '" + funcname + "'";
+	var mess = "'" + funcname + "' not implemented";
 	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
-	mess += " (host environment '" + dojo.hostenv.getName() + "')";
+	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
 	dj_throw(mess);
 }
 
@@ -143,7 +151,8 @@ function dj_unimplemented(funcname, extra){
  */
 function dj_inherits(subclass, superclass){
 	if(typeof superclass != 'function'){ 
-		dj_throw("eek: superclass not a function: " + superclass + "\nsubclass is: " + subclass);
+		// dj_throw("eek: superclass not a function: " + superclass + "\nsubclass is: " + subclass);
+		dj_throw("superclass: "+superclass+" borken");
 	}
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
@@ -201,23 +210,31 @@ dojo.render = {
 // dojo.hostenv methods that must be defined in hostenv_*.js
 // ****************************************************************
 //=java public static HostEnv hostenv;
-dojo.hostenv = {
-	is_debug_ : ((typeof djConfig['isDebug'] == 'undefined') ? false : djConfig['isDebug']),
-	base_script_uri_ : ((typeof djConfig['baseScriptUri'] == 'undefined') ? undefined : djConfig['baseScriptUri']),
-	base_relative_path_ : ((typeof djConfig['baseRelativePath'] == 'undefined') ? '' : djConfig['baseRelativePath']),
-	library_script_uri_ : ((typeof djConfig['libraryScriptUri'] == 'undefined') ? '' : djConfig['libraryScriptUri']),
-	auto_build_widgets_ : ((typeof djConfig['parseWidgets'] == 'undefined') ? true : djConfig['parseWidgets']),
+dojo.hostenv = (function(){
+	var djc = djConfig;
 
-	// for recursion protection
-	loading_modules_ : {},
-	addedToLoadingCount: [],
-	removedFromLoadingCount: [],
-	inFlightCount: 0,
+	function _def(obj, name, def){
+		return (dj_undef(name, obj) ? def : obj[name]);
+	}
 
-	// lookup cache for modules.
-	// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
-	modules_ : {}
-};
+	return {
+		is_debug_: _def(djc, "isDebug", false),
+		base_script_uri_: _def(djc, "baseScriptUri", undefined),
+		base_relative_path_: _def(djc, "baseRelativePath", ""),
+		library_script_uri_: _def(djc, "libraryScriptUri", ""),
+		auto_build_widgets_: _def(djc, "parseWidgets", true),
+
+		// for recursion protection
+		loading_modules_: {},
+		addedToLoadingCount: [],
+		removedFromLoadingCount: [],
+		inFlightCount: 0,
+
+		// lookup cache for modules.
+		// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
+		modules_ : {}
+	};
+})();
 
 //=java } /* dojo */
 
@@ -247,6 +264,11 @@ dojo.hostenv.getName = function(){ return this.name_; }
 */
 //=java public abstract String getVersion() {}
 dojo.hostenv.getVersion = function(){ return this.version_; }
+
+/*
+dojo.hostenv.makeUnimpl = function(ns, funcname){
+}
+*/
 
 /**
  * Display a line of text to the user.
@@ -285,7 +307,8 @@ dojo.hostenv.getLibraryScriptUri = function(){
  */
 //=java public String getBaseScriptUri();
 dojo.hostenv.getBaseScriptUri = function(){
-	if(typeof this.base_script_uri_ != 'undefined'){ return this.base_script_uri_; }
+	// if(typeof this.base_script_uri_ != 'undefined'){ return this.base_script_uri_; }
+	if(!dj_undef("base_script_uri_", this)){ return this.base_script_uri_; }
 	var uri = this.library_script_uri_;
 	if(!uri){
 		uri = this.library_script_uri_ = this.getLibraryScriptUri();
@@ -491,7 +514,8 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// dj_debug("dojo.hostenv.loadModule('"+modulename+"');");
 
 	// protect against infinite recursion from mutual dependencies
-	if (typeof this.loading_modules_[modulename] !== 'undefined'){
+	if(!dj_undef(modulename, this.loading_modules_)){
+	// if (typeof this.loading_modules_[modulename] !== 'undefined'){
 		// NOTE: this should never throw an exception!! "recursive" includes
 		// are normal in the course of app and module building, so blow out of
 		// it gracefully, but log it in debug mode
@@ -576,25 +600,32 @@ function dj_load(modulename, exact_only){
 	return dojo.hostenv.loadModule(modulename, exact_only); 
 }
 
-
 /*
  * private utility to  evaluate a string like "A.B" without using eval.
  */
-function dj_eval_object_path(objpath){
+function dj_eval_object_path(objpath, create){
 	// fast path for no periods
 	if(typeof objpath != "string"){ return dj_global; }
 	if(objpath.indexOf('.') == -1){
 		dj_debug("typeof this[",objpath,"]=",typeof(this[objpath]), " and typeof dj_global[]=", typeof(dj_global[objpath])); 
 		// dojo.hostenv.println(typeof dj_global[objpath]);
-		return (typeof dj_global[objpath] == 'undefined') ? undefined : dj_global[objpath];
+		// return (typeof dj_global[objpath] == 'undefined') ? undefined : dj_global[objpath];
+		return dj_undef(objpath) ? undefined : dj_global[objpath];
 	}
 
 	var syms = objpath.split(/\./);
 	var obj = dj_global;
 	for(var i=0;i<syms.length;++i){
-		obj = obj[syms[i]];
-		if((typeof obj == 'undefined')||(!obj)){
-			return obj;
+		if(!create){
+			obj = obj[syms[i]];
+			if((typeof obj == 'undefined')||(!obj)){
+				return obj;
+			}
+		}else{
+			if(dj_undef(syms[i], obj)){
+				obj[syms[i]] = {};
+			}
+			obj = obj[syms[i]];
 		}
 	}
 	return obj;
@@ -610,28 +641,7 @@ dojo.hostenv.startPackage = function(packname){
 		syms.pop();
 		dj_debug("startPackage: popped a *, new packagename is : ", sysm.join("."));
 	}
-	var obj = dj_global;
-	var objName = "dj_global";
-	for(var i=0;i<syms.length;++i){
-		var childobj = obj[syms[i]];
-		objName += "."+syms[i];
-		// if((typeof childobj == 'undefined')||(!childobj)){
-		if((eval("typeof "+objName+" == 'undefined'"))||(eval("!"+objName))){
-			dj_debug("startPackage: defining: ", syms.slice(0, i+1).join("."));
-			obj = dj_global;
-			// we'll start with this and move to the commented out eval if that turns out to be faster in testing
-			for(var x=0; x<i; x++){
-				obj = obj[syms[x]];
-			}
-			// obj = eval(syms.slice(0, i).join("."));
-
-			obj[syms[i]] = {};
-			// eval(objName+" = {};");
-
-			//dj_debug("startPackage: ", objName, " now defined as: ", new String(eval(objName)));
-		}
-	}
-	return obj;
+	return dj_eval_object_path(syms.join("."), true);
 }
 
 
@@ -644,7 +654,8 @@ dojo.hostenv.startPackage = function(packname){
 //=java public Object findModule(String modulename, boolean must_exist);
 dojo.hostenv.findModule = function(modulename, must_exist) {
 	// check cache
-	if(typeof this.modules_[modulename] != 'undefined'){
+	if(!dj_undef(modulename, this.modules_)){
+	// if(typeof this.modules_[modulename] != 'undefined'){
 		return this.modules_[modulename];
 	}
 
