@@ -285,7 +285,8 @@ dojo.xml.htmlUtil = new function(){
 		var nodes = [];
 		if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
 
-		if(document.evaluate) { // supports dom 3 xpath
+		// FIXME: doesn't have correct parent support!
+		if(false && document.evaluate) { // supports dom 3 xpath
 			var xpath = "//" + (nodeType || "*") + "[contains(";
 			if( classMatchType != _this.classMatchType.ContainsAny ) {
 				xpath += "concat(' ',@class,' '), ' " +
@@ -298,7 +299,7 @@ dojo.xml.htmlUtil = new function(){
 			}
 			//dj_debug("xpath: " + xpath);
 
-			var xpathResult = document.evaluate(xpath, document, null,
+			var xpathResult = document.evaluate(xpath, parent, null,
 				XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
 
 			outer:
@@ -501,4 +502,15 @@ dojo.xml.htmlUtil = new function(){
 		}
 		return color;
 	}
+
+	this.generateId = function(prefix) {
+		if(typeof prefix != "string" || !/^[a-z_-]/i.test(prefix)) {
+			prefix = "dojo-id-";
+		}
+		do {
+			var id = prefix + (Math.random()*100000);
+		} while(document.getElementById(id));
+		return id;
+	}
+	this.generateID = this.generateId;
 }
