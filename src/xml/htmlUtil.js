@@ -288,11 +288,11 @@ dojo.xml.htmlUtil = new function(){
 		// FIXME: doesn't have correct parent support!
 		if(false && document.evaluate) { // supports dom 3 xpath
 			var xpath = "//" + (nodeType || "*") + "[contains(";
-			if( classMatchType != _this.classMatchType.ContainsAny ) {
+			if(classMatchType != _this.classMatchType.ContainsAny){
 				xpath += "concat(' ',@class,' '), ' " +
 					classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
 					" ')]";
-			} else {
+			}else{
 				xpath += "concat(' ',@class,' '), ' " +
 					classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
 					" ')]";
@@ -303,11 +303,11 @@ dojo.xml.htmlUtil = new function(){
 				XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
 
 			outer:
-			for(var node = null, i = 0; node = xpathResult.snapshotItem(i); i++) {
-				if( classMatchType != _this.classMatchType.IsOnly ) {
+			for(var node = null, i = 0; node = xpathResult.snapshotItem(i); i++){
+				if(classMatchType != _this.classMatchType.IsOnly){
 					nodes.push(node);
-				} else {
-					if( !_this.getClass(node) ) { continue outer; }
+				}else{
+					if(!_this.getClass(node)){ continue outer; }
 
 					var nodeClasses = _this.getClass(node).split(/\s+/g);
 					var reClass = new RegExp("(\\s|^)(" + classes.join(")|(") + ")(\\s|$)");
@@ -319,8 +319,8 @@ dojo.xml.htmlUtil = new function(){
 					nodes.push(node);
 				}
 			}
-		} else {
-			if(!nodeType) { nodeType = "*"; }
+		}else{
+			if(!nodeType){ nodeType = "*"; }
 			var candidateNodes = parent.getElementsByTagName(nodeType);
 
 			outer:
@@ -362,16 +362,15 @@ dojo.xml.htmlUtil = new function(){
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	this.setOpacity = function(node, opacity, dontFixOpacity) {
 		var h = dojo.render.html;
-		if( !dontFixOpacity ) {
-			if( opacity >= 1.0 ) {
-				if( h.ie ) {
+		if(!dontFixOpacity){
+			if( opacity >= 1.0){
+				if(h.ie){
 					this.clearOpacity(node);
 					return;
-				} else {
+				}else{
 					opacity = 0.999999;
 				}
-			}
-			else if( opacity < 0.0 ) { opacity = 0; }
+			}else if( opacity < 0.0){ opacity = 0; }
 		}
 		if(h.ie){
 			if(node.nodeName.toLowerCase() == "tr"){
@@ -393,10 +392,10 @@ dojo.xml.htmlUtil = new function(){
 		}
 	}
 	
-	this.getOpacity = function(node) {
-		if( dojo.render.html.ie ) {
+	this.getOpacity = function(node){
+		if(dojo.render.html.ie){
 			var opac = (node.filters && node.filters.alpha && typeof node.filters.alpha.opacity == "number" ? node.filters.alpha.opacity : 100) / 100;
-		} else {
+		}else{
 			var opac = node.style.opacity || node.style.MozOpacity ||  node.style.KhtmlOpacity || 1;
 		}
 		return opac >= 0.999999 ? 1.0 : Number(opac);
@@ -404,17 +403,17 @@ dojo.xml.htmlUtil = new function(){
 
 	this.clearOpacity = function(node) {
 		var h = dojo.render.html;
-		if(h.ie) {
+		if(h.ie){
 			if( node.filters && node.filters.alpha ) {
 				node.style.filter = ""; // FIXME: may get rid of other filter effects
 			}
-		} else if(h.moz) {
+		}else if(h.moz){
 			node.style.opacity = 1;
 			node.style.MozOpacity = 1;
-		} else if(h.safari) {
+		}else if(h.safari){
 			node.style.opacity = 1;
 			node.style.KhtmlOpacity = 1;
-		} else {
+		}else{
 			node.style.opacity = 1;
 		}
 	}
@@ -423,20 +422,20 @@ dojo.xml.htmlUtil = new function(){
 	// it assumes that you know the index of the cssRule that you want to add 
 	// or remove, making it less than useful.  So we need something that can 
 	// search for the selector that you you want to remove.
-	this.insertCSSRule = function(selector, declaration, index) {
-		if(dojo.render.html.ie) {
-			if(!this.styleSheet) {
+	this.insertCSSRule = function(selector, declaration, index){
+		if(dojo.render.html.ie){
+			if(!this.styleSheet){
 				// FIXME: create a new style sheet document
 			}
-			if(!index) {
+			if(!index){
 				index = this.styleSheet.rules.length;
 			}
 			return this.styleSheet.addRule(selector, declaration, index);
-		} else if(document.styleSheets[0] && document.styleSheets[0].insertRule) {
-			if(!this.styleSheet) {
+		}else if(document.styleSheets[0] && document.styleSheets[0].insertRule){
+			if(!this.styleSheet){
 				// FIXME: create a new style sheet document here
 			}
-			if(!index) {
+			if(!index){
 				index = this.styleSheet.cssRules.length;
 			}
 			var rule = selector + "{" + declaration + "}"
@@ -466,10 +465,10 @@ dojo.xml.htmlUtil = new function(){
 	this.insertCSSFile = function(URI, doc, checkDuplicates){
 		if(!URI) { return; }
 		if(!doc){ doc = document; }
-		if(checkDuplicates && doc.styleSheets) {
+		if(checkDuplicates && doc.styleSheets){
 			// get the host + port info from location
 			var loc = location.href.split("#")[0].substring(0, location.href.indexOf(location.pathname));
-			for(var i = 0; i < doc.styleSheets.length; i++) {
+			for(var i = 0; i < doc.styleSheets.length; i++){
 				var href = doc.styleSheets[i].href;
 				if(URI == href
 					|| (URI.charAt(0) == '/' && (loc + "/" + URI).replace(/\/\//g, "/") == href.replace(/\/\//g, "/"))) {
@@ -487,13 +486,13 @@ dojo.xml.htmlUtil = new function(){
 
 	this.getBackgroundColor = function(node) {
 		var color;
-		do {
+		do{
 			color = dojo.xml.domUtil.getStyle(node, "background-color");
 			// Safari doesn't say "transparent"
 			if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
 			if(node == document.body) { node = null; break; }
 			node = node.parentNode;
-		} while(node && color == "transparent");
+		}while(node && color == "transparent");
 
 		if( color == "transparent" ) {
 			color = [255, 255, 255, 0];
