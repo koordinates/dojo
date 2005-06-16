@@ -50,11 +50,21 @@ dojo_ie_clobber = new function(){
 		}
 
 		var na = document.all;
+		/*
+		for(var p = this.clobberArr.length-1; p>=0; p=p-1){
+			alert(this.clobberArr[p]);
+		}
+		*/
 		for(var i = na.length-1; i>=0; i=i-1){
 			var el = na[i];
 			for(var p = this.clobberArr.length-1; p>=0; p=p-1){
 				// stripctr++;
-				el[this.clobberArr[p]] = null;
+				var ta = this.clobberArr[p];
+				try{
+					el[ta] = null;
+					el.removeAttribute(ta);
+					delete el[ta];
+				}catch(e){ /* squelch */ }
 			}
 		}
 		// alert("clobbering took: "+((new Date())-init)+"ms\nwe removed: "+stripctr+" properties");
