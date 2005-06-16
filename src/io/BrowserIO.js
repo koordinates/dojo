@@ -393,7 +393,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
 		return dojo.alg.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "text/xml", "text/javascript"])
-			&& dojo.alg.inArray(kwArgs["method"], ["post", "get"])
+			&& dojo.alg.inArray(kwArgs["method"].toLowerCase(), ["post", "get"])
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
