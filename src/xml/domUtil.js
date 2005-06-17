@@ -278,7 +278,7 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.insertBefore = function(node, ref){
-		var pn = node.parentNode;
+		var pn = ref.parentNode;
 		pn.insertBefore(node, ref);
 	}
 
