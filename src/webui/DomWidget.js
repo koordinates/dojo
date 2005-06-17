@@ -573,7 +573,6 @@ dojo.webui.htmlDragAndDropManager = new function(){
 						}
 						this.dropTarget = tdt;
 						if((this.dropTarget)&&(this.dropTarget["dragEnter"])){
-							dj_debug("checking");
 							this.dropTarget.dragEnter(this.dragSource);
 						}
 					}
@@ -641,7 +640,6 @@ dojo.webui.htmlDragAndDropManager = new function(){
 
 	this.mouseUp = function(nativeEvt){ 
 		if(this.dragIcon){
-			dj_debug('clobbering drag icon');
 			this.dragIcon.style.display = "none";
 			with(this.dragIcon){
 				while(firstChild){
