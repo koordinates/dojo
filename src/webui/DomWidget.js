@@ -535,7 +535,9 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.mouseMove = function(evt){
 		this.curr = [evt.clientX, evt.clientY];
 		this.curr.x = this.curr[0];
+		this.curr.absx = this.curr.x+((dojo.render.html.moz) ? window.pageXOffset : document.body.scrollLeft);
 		this.curr.y = this.curr[1];
+		this.curr.absy = this.curr.y+((dojo.render.html.moz) ? window.pageYOffset : document.body.scrollTop);
 		if((this.isDragging)||(this.isResizing)){
 			// FIXME: we should probably implement a distance threshold here!
 			this.mouseDrag(evt);
@@ -562,16 +564,24 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			while((tdt)&&(!tdt["dragEnter"])&&(tdt != dojo.webui.widgetManager.root)){
 				tdt = tdt.parent;
 			}
-			if(tdt != dojo.webui.widgetManager.root){
-				if(tdt != this.dropTarget){
-					// dj_debug(tdt);
+			if(this.isDragging){
+				if(tdt != dojo.webui.widgetManager.root){
+					if(tdt != this.dropTarget){
+						// dj_debug(tdt);
+						if(this.dropTarget){
+							this.dropTarget.dragLeave(this.dragSource);
+						}
+						this.dropTarget = tdt;
+						if((this.dropTarget)&&(this.dropTarget["dragEnter"])){
+							dj_debug("checking");
+							this.dropTarget.dragEnter(this.dragSource);
+						}
+					}
+				}else{
 					if(this.dropTarget){
 						this.dropTarget.dragLeave(this.dragSource);
 					}
-					this.dropTarget = tdt;
-					if((this.dropTarget)&&(this.dropTarget["dragEnter"])){
-						this.dropTarget.dragEnter(this.dragSource);
-					}
+					this.dropTarget = null;
 				}
 			}
 		}
@@ -610,8 +620,8 @@ dojo.webui.htmlDragAndDropManager = new function(){
 						this.dragIcon = document.createElement("span");
 						with(this.dragIcon.style){
 							position = "absolute";
-							left = this.curr.x+15+"px";
-							top = this.curr.y+15+"px";
+							left = this.curr.absx+15+"px";
+							top = this.curr.absy+15+"px";
 							border = margin = padding = "0px";
 							zIndex = "1000";
 						}
@@ -630,11 +640,23 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.mouseOut = function(nativeEvt){ return; }
 
 	this.mouseUp = function(nativeEvt){ 
+		if(this.dragIcon){
+			dj_debug('clobbering drag icon');
+			this.dragIcon.style.display = "none";
+			with(this.dragIcon){
+				while(firstChild){
+					removeChild(firstChild);
+				}
+			}
+		}
 		this.drop(nativeEvt);
 		if((this.isResizing)||(this.isDragging)){
 			if(this.resizeTarget){
 				this.resizeTarget.endResize(this.curr);
 			}else{
+				if(this.dropTarget){
+					this.dropTarget.dragLeave(this.dragSource);
+				}
 				this.dragSource.endDrag();
 				this.dragSource.selection.clear();
 			}
@@ -648,14 +670,6 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			this.overDragHandle = false;
 
 			document.body.style.cursor = "";
-			if(this.dragIcon){
-				this.dragIcon.style.display = "none";
-				with(this.dragIcon){
-					while(firstChild){
-						removeChild(firstChild);
-					}
-				}
-			}
 		}
 		this.init = [];
 	}
@@ -664,16 +678,14 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		if(this.isResizing){
 			if(this.resizeTarget){
 				this.resizeTarget.updateResize(this.curr);
-				evt.preventDefault();
-				evt.stopPropagation();
 			}
 		}else if(this.isDragging){
 			evt.preventDefault();
 			evt.stopPropagation();
 			this.drag(evt);
 			if(this.dragIcon){
-				this.dragIcon.style.left = this.curr.x+15+"px";
-				this.dragIcon.style.top = this.curr.y+15+"px";
+				this.dragIcon.style.left = this.curr.absx+15+"px";
+				this.dragIcon.style.top = this.curr.absy+15+"px";
 			}
 		}
 	}
