@@ -639,6 +639,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.mouseOut = function(nativeEvt){ return; }
 
 	this.mouseUp = function(nativeEvt){ 
+		this.drop(nativeEvt);
 		if(this.dragIcon){
 			this.dragIcon.style.display = "none";
 			with(this.dragIcon){
@@ -647,7 +648,6 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				}
 			}
 		}
-		this.drop(nativeEvt);
 		if((this.isResizing)||(this.isDragging)){
 			if(this.resizeTarget){
 				this.resizeTarget.endResize(this.curr);
