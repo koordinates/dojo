@@ -49,6 +49,38 @@ function dj_undef(name, obj){
 	return (typeof obj[name] == "undefined");
 }
 
+/*
+ * private utility to  evaluate a string like "A.B" without using eval.
+ */
+function dj_eval_object_path(objpath, create){
+	// fast path for no periods
+	if(typeof objpath != "string"){ return dj_global; }
+	if(objpath.indexOf('.') == -1){
+		// dj_debug("typeof this[",objpath,"]=",typeof(this[objpath]), " and typeof dj_global[]=", typeof(dj_global[objpath])); 
+		// dojo.hostenv.println(typeof dj_global[objpath]);
+		// return (typeof dj_global[objpath] == 'undefined') ? undefined : dj_global[objpath];
+		return dj_undef(objpath) ? undefined : dj_global[objpath];
+	}
+
+	var syms = objpath.split(/\./);
+	var obj = dj_global;
+	for(var i=0;i<syms.length;++i){
+		if(!create){
+			obj = obj[syms[i]];
+			if((typeof obj == 'undefined')||(!obj)){
+				return obj;
+			}
+		}else{
+			if(dj_undef(syms[i], obj)){
+				obj[syms[i]] = {};
+			}
+			obj = obj[syms[i]];
+		}
+	}
+	return obj;
+}
+
+
 //:GLVAR Object djConfig
 if(dj_undef("djConfig")){
 	var djConfig = {};
@@ -210,6 +242,17 @@ dojo.render = {
 // dojo.hostenv methods that must be defined in hostenv_*.js
 // ****************************************************************
 //=java public static HostEnv hostenv;
+
+/**
+ * The interface definining the interaction with the EcmaScript host environment.
+*/
+//=java public abstract class HostEnv {
+
+/*
+ * None of these methods should ever be called directly by library users.
+ * Instead public methods such as loadModule should be called instead.
+ */
+//=java protected String name_ = '(unset)';
 dojo.hostenv = (function(){
 	var djc = djConfig;
 
@@ -223,50 +266,79 @@ dojo.hostenv = (function(){
 		base_relative_path_: _def(djc, "baseRelativePath", ""),
 		library_script_uri_: _def(djc, "libraryScriptUri", ""),
 		auto_build_widgets_: _def(djc, "parseWidgets", true),
+		name_: '(unset)',
+		version_: '(unset)',
+		pkgFileName: "__package__",
 
 		// for recursion protection
 		loading_modules_: {},
 		addedToLoadingCount: [],
 		removedFromLoadingCount: [],
 		inFlightCount: 0,
+		modulePrefixes_: {
+			dojo: {name: "dojo", value: "src"}
+		},
 
+
+		setModulePrefix: function(module, prefix){
+			this.modulePrefixes_[module] = {name: module, value: prefix};
+		},
+
+		getModulePrefix: function(module){
+			var mp = this.modulePrefixes_;
+			if((mp[module])&&(mp[module]["name"])){
+				return mp[module].value;
+			}
+			return module;
+		},
+
+		getTextStack: [],
+		loadUriStack: [],
+		loadedUris: [],
 		// lookup cache for modules.
 		// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
-		modules_ : {}
+		modules_ : {},
+		modulesLoadedFired: false,
+		modulesLoadedListeners: [],
+		/**
+		 * Return the name of the hostenv.
+		 */
+		//=java public abstract String getName() {}
+		getName: function(){ return this.name_; },
+
+		/**
+		* Return the version of the hostenv.
+		*/
+		//=java public abstract String getVersion() {}
+		getVersion: function(){ return this.version_; },
+
+		/**
+		 * Read the plain/text contents at the specified uri.
+		 * If getText() is not implemented, then it is necessary to override loadUri()
+		 * with an implementation that doesn't rely on it.
+		 */
+		//=java protected abstract String getText(String uri);
+		getText: function(uri){
+			dj_unimplemented('getText', "uri=" + uri);
+		},
+
+		/**
+		 * return the uri of the script that defined this function
+		 * private method that must be implemented by the hostenv.
+		 */
+		//=java protected abstract String getLibraryScriptUri();
+		getLibraryScriptUri: function(){
+			// FIXME: need to implement!!!
+			dj_unimplemented('getLibraryScriptUri','');
+		}
 	};
 })();
 
 //=java } /* dojo */
 
-
-/**
- * The interface definining the interaction with the EcmaScript host environment.
-*/
-//=java public abstract class HostEnv {
-
-/*
- * None of these methods should ever be called directly by library users.
- * Instead public methods such as loadModule should be called instead.
- */
-//=java protected String name_ = '(unset)';
-dojo.hostenv.name_ = '(unset)';
-dojo.hostenv.version_ = '(unset)';
-dojo.hostenv.pkgFileName = "__package__";
-
-/**
- * Return the name of the hostenv.
- */
-//=java public abstract String getName() {}
-dojo.hostenv.getName = function(){ return this.name_; }
-
-/**
-* Return the version of the hostenv.
-*/
-//=java public abstract String getVersion() {}
-dojo.hostenv.getVersion = function(){ return this.version_; }
-
 /*
 dojo.hostenv.makeUnimpl = function(ns, funcname){
+	return new Function("dj_unimplemented('"+funcname+" unimplemented');");
 }
 */
 
@@ -276,26 +348,6 @@ dojo.hostenv.makeUnimpl = function(ns, funcname){
  */
 //=java protected abstract void println();
 //dojo.hostenv.println = function(line) {}
-
-/**
- * Read the plain/text contents at the specified uri.
- * If getText() is not implemented, then it is necessary to override loadUri()
- * with an implementation that doesn't rely on it.
- */
-//=java protected abstract String getText(String uri);
-dojo.hostenv.getText = function(uri){
-	dj_unimplemented('dojo.hostenv.getText', "uri=" + uri);
-}
-
-/**
- * return the uri of the script that defined this function
- * private method that must be implemented by the hostenv.
- */
-//=java protected abstract String getLibraryScriptUri();
-dojo.hostenv.getLibraryScriptUri = function(){
-	// FIXME: need to implement!!!
-	dj_unimplemented('dojo.hostenv.getLibraryScriptUri','');
-}
 
 // ****************************************************************
 // dojo.hostenv methods not defined in hostenv_*.js
@@ -386,19 +438,11 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 		dj_throw("Missing relpath argument");
 	}
 	if((relpath.charAt(0) == '/')||(relpath.match(/^\w+:/))){
-		dj_throw("Illegal argument '" + relpath + "'; must be relative path");
+		dj_throw("relpath '" + relpath + "'; must be relative");
 	}
-	var base = this.getBaseScriptUri();
-	var uri = base + relpath;
-	//this.println("base=" + base + " relpath=" + relpath);
+	var uri = this.getBaseScriptUri() + relpath;
 	try{
-		var ok;
-		if(!module){
-			ok = this.loadUri(uri);
-		}else{
-			ok = this.loadUriAndCheck(uri, module);
-		}
-		return ok;
+		return ((!module) ? this.loadUri(uri) : this.loadUriAndCheck(uri, module));
 	}catch(e){
 		if(dojo.hostenv.is_debug_){
 			dj_debug(e);
@@ -444,10 +488,6 @@ dojo.hostenv.getDepsForEval = function(contents){
 	return deps;
 }
 
-dojo.hostenv.getTextStack = [];
-dojo.hostenv.loadUriStack = [];
-dojo.hostenv.loadedUris = [];
-
 // FIXME: probably need to add logging to this method
 dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	// dj_debug("loadUriAndCheck: "+uri+", "+module);
@@ -460,8 +500,6 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
-dojo.hostenv.modulesLoadedFired = false;
-dojo.hostenv.modulesLoadedListeners = [];
 dojo.hostenv.loaded = function(){
 	this.modulesLoadedFired = true;
 	var mll = this.modulesLoadedListeners;
@@ -480,6 +518,7 @@ dojo.hostenv.modulesLoaded = function(){
 		this.loaded();
 	}
 }
+
 
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
@@ -511,15 +550,8 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		return module;
 	}
 
-	// dj_debug("dojo.hostenv.loadModule('"+modulename+"');");
-
 	// protect against infinite recursion from mutual dependencies
 	if(!dj_undef(modulename, this.loading_modules_)){
-	// if (typeof this.loading_modules_[modulename] !== 'undefined'){
-		// NOTE: this should never throw an exception!! "recursive" includes
-		// are normal in the course of app and module building, so blow out of
-		// it gracefully, but log it in debug mode
-
 		// dj_throw("recursive attempt to load module '" + modulename + "'");
 		dj_debug("recursive attempt to load module '" + modulename + "'");
 	}else{
@@ -532,9 +564,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 
 	var syms = modulename.split(".");
 	var nsyms = modulename.split(".");
-	if(syms[0]=="dojo"){ // FIXME: need a smarter way to do this!
-		syms[0] = "src"; 
-	}
+	syms[0] = this.getModulePrefix(syms[0]);
 	var last = syms.pop();
 	syms.push(last);
 	// figure out if we're looking for a full package, if so, we want to do
@@ -580,7 +610,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		}
 
 		if((!ok)&&(!omit_module_check)){
-			dj_throw("Could not find module '" + modulename + "'; last tried path '" + relpath + "'");
+			dj_throw("Could not load '" + modulename + "'; last tried '" + relpath + "'");
 		}
 	}
 
@@ -588,7 +618,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	if(!omit_module_check){
 		module = this.findModule(modulename, false); // pass in false so we can give better error
 		if(!module){
-			dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+			dj_throw("symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 		}
 	}
 
@@ -600,37 +630,6 @@ function dj_load(modulename, exact_only){
 	return dojo.hostenv.loadModule(modulename, exact_only); 
 }
 
-/*
- * private utility to  evaluate a string like "A.B" without using eval.
- */
-function dj_eval_object_path(objpath, create){
-	// fast path for no periods
-	if(typeof objpath != "string"){ return dj_global; }
-	if(objpath.indexOf('.') == -1){
-		dj_debug("typeof this[",objpath,"]=",typeof(this[objpath]), " and typeof dj_global[]=", typeof(dj_global[objpath])); 
-		// dojo.hostenv.println(typeof dj_global[objpath]);
-		// return (typeof dj_global[objpath] == 'undefined') ? undefined : dj_global[objpath];
-		return dj_undef(objpath) ? undefined : dj_global[objpath];
-	}
-
-	var syms = objpath.split(/\./);
-	var obj = dj_global;
-	for(var i=0;i<syms.length;++i){
-		if(!create){
-			obj = obj[syms[i]];
-			if((typeof obj == 'undefined')||(!obj)){
-				return obj;
-			}
-		}else{
-			if(dj_undef(syms[i], obj)){
-				obj[syms[i]] = {};
-			}
-			obj = obj[syms[i]];
-		}
-	}
-	return obj;
-}
-
 /**
 * startPackage("A.B") follows the path, and at each level creates a new empty object
 * or uses what already exists. It returns the result.
@@ -639,7 +638,7 @@ dojo.hostenv.startPackage = function(packname){
 	var syms = packname.split(/\./);
 	if(syms[syms.length-1]=="*"){
 		syms.pop();
-		dj_debug("startPackage: popped a *, new packagename is : ", sysm.join("."));
+		// dj_debug("startPackage: popped a *, new packagename is : ", sysm.join("."));
 	}
 	return dj_eval_object_path(syms.join("."), true);
 }
