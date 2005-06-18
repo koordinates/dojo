@@ -17,29 +17,41 @@ dojo.xml.htmlUtil = new function(){
 	*/
 
 	this._clobberSelection = function(){
-		if(window.getSelection){
-			var selObj = window.getSelection();
-			selObj.collapseToEnd();
-		}else if(document.selection){
-			document.selection.clear();
-		}
+		try{
+			if(window.getSelection){
+				var selObj = window.getSelection();
+				selObj.collapseToEnd();
+			}else if(document.selection){
+				document.selection.clear();
+			}
+		}catch(e){ /*squelch*/ }
 	}
 
 	this.disableSelect = function(){
 		if(!_selectDisabled){
 			_selectDisabled = true;
-			dojo.event.connect(document.body, "onselectstart", dojo.event.browser, "stopEvent");
-			dojo.event.connect(document.body, "ondragstart", dojo.event.browser, "stopEvent");
-			dojo.event.connect(document.body, "onmousemove", this, "_clobberSelection");
+			var db = document.body;
+			if(dojo.render.html.moz){
+				db.style.MozUserSelect = "none";
+			}else{
+				dojo.event.connect(db, "onselectstart", dojo.event.browser, "stopEvent");
+				dojo.event.connect(db, "ondragstart", dojo.event.browser, "stopEvent");
+				dojo.event.connect(db, "onmousemove", this, "_clobberSelection");
+			}
 		}
 	}
 
 	this.enableSelect = function(){
 		if(_selectDisabled){
 			_selectDisabled = false;
-			dojo.event.disconnect(document.body, "onselectstart", dojo.event.browser, "stopEvent");
-			dojo.event.disconnect(document.body, "ondragstart", dojo.event.browser, "stopEvent");
-			dojo.event.disconnect(document.body, "onmousemove", this, "_clobberSelection");
+			var db = document.body;
+			if(dojo.render.html.moz){
+				db.style.MozUserSelect = "";
+			}else{
+				dojo.event.disconnect(db, "onselectstart", dojo.event.browser, "stopEvent");
+				dojo.event.disconnect(db, "ondragstart", dojo.event.browser, "stopEvent");
+				dojo.event.disconnect(db, "onmousemove", this, "_clobberSelection");
+			}
 		}
 	}
 
