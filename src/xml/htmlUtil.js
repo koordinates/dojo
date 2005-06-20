@@ -524,4 +524,6 @@ dojo.xml.htmlUtil = new function(){
 		return id;
 	}
 	this.generateID = this.generateId;
+
+	this.getStyle = dojo.xml.domUtil.getStyle;
 }
