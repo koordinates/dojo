@@ -350,6 +350,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 			return;
 		}
 
+		if(!showing) { return; }
 		showing = false;
 		if(typeof _this.onBeforeImplode == "function") { _this.onBeforeImplode(triggerNode, boxNode); }
 		animHide = dojo.graphics.htmlEffects.implode(boxNode, triggerNode, _this.timeToHide, function(e){
