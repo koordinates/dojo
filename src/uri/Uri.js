@@ -4,7 +4,7 @@ dojo.uri = new function() {
 	this.joinPath = function() {
 		var arr = [];
 		for(var i = 0; i < arguments.length; i++) { arr.push(arguments[i]); }
-		return arr.join("/").replace(/\/\//g, "/");
+		return arr.join("/").replace(/\/\//g, "/").replace(/((https*|ftps*):)/i, "$1/");
 	}
 }
 
