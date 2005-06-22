@@ -1,5 +1,5 @@
 var dependencies = [ 
-	"dojo.io.IO",
+	"dojo.io.*",
 	"dojo.event.*",
 	"dojo.io.BrowserIO",
 	"dojo.webui.widgets.jot.*",

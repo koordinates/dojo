@@ -464,7 +464,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<!--
 		<antcall target="src" />
 		-->
-		<copy todir="${release_dir}/${src}">
+		<copy todir="${release_dir}/${src}" includeEmptyDirs="false">
 			<fileset dir="${root}/${src}" includes="**" />
 		</copy>
 
