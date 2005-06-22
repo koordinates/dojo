@@ -184,12 +184,18 @@ dojo.webui.getDojoEventsFromStr = function(str){
 	// var lstr = str.toLowerCase();
 	var re = /(dojoOn([a-z]+)(\s?))=/gi;
 	var evts = str ? str.match(re)||[] : [];
+	var ret = [];
+	var lem = {};
 	for(var x=0; x<evts.length; x++){
 		if(evts[x].legth < 1){ continue; }
 		var cm = evts[x].replace(/\s/, "");
-		evts[x] = (cm.slice(0, cm.length-1));
+		cm = (cm.slice(0, cm.length-1));
+		if(!lem[cm]){
+			lem[cm] = true;
+			ret.push(cm);
+		}
 	}
-	return evts;
+	return ret;
 }
 
 
