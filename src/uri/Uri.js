@@ -1,5 +1,4 @@
 dojo.hostenv.startPackage("dojo.uri");
-dojo.hostenv.startPackage("dojo.uri.Uri");
 
 dojo.uri = new function() {
 	this.joinPath = function() {
@@ -8,3 +7,5 @@ dojo.uri = new function() {
 		return arr.join("/").replace(/\/\//g, "/");
 	}
 }
+
+dojo.hostenv.startPackage("dojo.uri.Uri");
