@@ -136,14 +136,15 @@ dojo.lang.extend(dojo.webui.Widget, {
 			}
 			
 			if((typeof this[x]) != (typeof undef)){
-				if(!typeof args[x] == "string"){
+				if(typeof args[x] != "string"){
 					this[x] = args[x];
 				}else{
 					if(typeof this[x] == "string"){
 						this[x] = args[x];
 					}else if(typeof this[x] == "number"){
-
 						this[x] = new Number(args[x]); // FIXME: what if NaN is the result?
+					}else if(typeof this[x] == "boolean"){
+						this[x] = (args[x].toLowerCase()=="false") ? false : true;
 					}else if(typeof this[x] == "function"){
 
 						// FIXME: need to determine if always over-writing instead
@@ -309,7 +310,7 @@ dojo.webui.widgets.tags.addParseTreeHandler = function(type){
 	}
 }
 
-dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
+dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser, parentComp){
 	// FIXME: Is this needed?
 	// FIXME: Not sure that this parses into the structure that I want it to parse into...
 	// FIXME: add support for nested propertySets
@@ -317,7 +318,7 @@ dojo.webui.widgets.tags["dojo:propertyset"] = function(fragment, widgetParser) {
 }
 
 // FIXME: need to add the <dojo:connect />
-dojo.webui.widgets.tags["dojo:connect"] = function(fragment, widgetParser) {
+dojo.webui.widgets.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 	var properties = widgetParser.parseProperties(fragment["dojo:connect"]);
 }
 
@@ -328,6 +329,9 @@ dojo.webui.widgets.buildWidgetFromParseTree = function(type, frag, parser, paren
 	// FIXME: we don't seem to be doing anything with this!
 	var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
+	for(var x=0; x<propertySets.length; x++){
+		
+	}
 	var twidget = dojo.webui.widgetManager.getImplementation(stype);
 	return twidget.create(localProperties, frag, parentComp);
 }
