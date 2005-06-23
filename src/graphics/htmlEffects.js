@@ -117,48 +117,48 @@ dojo.graphics.htmlEffects = new function() {
 		return anim;
 	}
 
-	// assume we get a node with display:none
-	// So this is less than ideal, but I can't seem to get clipping to play nicely.
-	// What we do is create a box and move the node into the box and change the
-	// height of the box until it is the correct height. At the end, the node is put
-	// back where it belongs and the extra box is removed.
 	this.wipeIn = function(node, duration, cbObj, callback, dontPlay) {
-		var parent = node.parentNode;
-		if( !parent ) return;
-
-		// box
-		var box = document.createElement("span"); // less likely to be styled
-		with(box.style) {
-			display = "block";
-			overflow = "hidden";
-			border = padding = margin = "0";
-			height = "0px";
-		}
-		parent.insertBefore(box, node);
-		box.appendChild(node);
+		var savedOverflow = dojo.xml.htmlUtil.getStyle(node, "overflow");
+		var savedHeight = dojo.xml.htmlUtil.getStyle(node, "height");
 		node.style.display = "block";
 		var height = node.offsetHeight;
+		node.style.overflow = "hidden";
+		node.style.height = 0;
 
-		var abs = dojo.xml.domUtil.getStyle(node, "position") == "absolute";
-		if(abs) {
-			// FIXME: may not work well if position is specified with right or bottom
-			box.style.position = "absolute";
-			box.style.top = dojo.xml.domUtil.getStyle(node, "top") || 0;
-			box.style.left = dojo.xml.domUtil.getStyle(node, "left") || 0;
-			node.style.position = "static";
-		}
 		var anim = new dojo.animation.Animation(
-			new dojo.math.curves.Line([0], [node.offsetHeight]),
+			new dojo.math.curves.Line([0], [height]),
 			duration, 0);
 		dojo.event.connect(anim, "onAnimate", function(e) {
-			box.style.height = Math.round(e.x) + "px";
+			node.style.height = Math.round(e.x) + "px";
 		});
 		dojo.event.connect(anim, "onEnd", function(e) {
-			parent.insertBefore(node, box);
-			if(abs) {
-				node.style.position = "absolute";
-			}
-			parent.removeChild(box);
+			node.style.overflow = savedOverflow;
+			node.style.height = savedHeight;
+		});
+		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
+		if( cbArr ) {
+			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
+		}
+		if( !dontPlay ) { anim.play(true); }
+		return anim;
+	}
+
+	this.wipeOut = function(node, duration, cbObj, callback, dontPlay) {
+		var savedOverflow = dojo.xml.htmlUtil.getStyle(node, "overflow");
+		var savedHeight = dojo.xml.htmlUtil.getStyle(node, "height");
+		var height = node.offsetHeight;
+		node.style.overflow = "hidden";
+
+		var anim = new dojo.animation.Animation(
+			new dojo.math.curves.Line([height], [0]),
+			duration, 0);
+		dojo.event.connect(anim, "onAnimate", function(e) {
+			node.style.height = Math.round(e.x) + "px";
+		});
+		dojo.event.connect(anim, "onEnd", function(e) {
+			node.style.display = "none";
+			node.style.overflow = savedOverflow;
+			node.style.height = savedHeight;
 		});
 		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
 		if( cbArr ) {
