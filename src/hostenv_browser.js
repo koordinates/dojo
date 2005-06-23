@@ -20,6 +20,24 @@ if(typeof window == 'undefined'){
 	dj_throw("no window object");
 }
 
+// attempt to figure out the path to dojo if it isn't set in the config
+(function() {
+	if((dojo.hostenv["base_script_uri_"] == "" || dojo.hostenv["base_relative_path_"] == "")
+		&& document && document.getElementsByTagName) {
+		var scripts = document.getElementsByTagName("script");
+		var rePkg = /__package__\.js$/i;
+		for(var i = 0; i < scripts.length; i++) {
+			var src = scripts[i].getAttribute("src");
+			if( rePkg.test(src) ) {
+				var root = src.replace(rePkg, "");
+				if(dojo.hostenv["base_script_uri_"] == "") { dojo.hostenv["base_script_uri_"] = root; }
+				if(dojo.hostenv["base_relative_path_"] == "") { dojo.hostenv["base_relative_path_"] = root; }
+				break;
+			}
+		}
+	}
+})();
+
 with(dojo.render){
 	html.UA = navigator.userAgent;
 	html.AV = navigator.appVersion;
