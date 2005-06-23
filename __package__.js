@@ -1,7 +1,13 @@
 (function(){
 	var isRhino = ((typeof this["load"] == "function")&&(typeof this["Packages"] == "object"));
 	var tmps = ["bootstrap1.js", "hostenv_"+((isRhino) ? "rhino" : "browser")+".js", "bootstrap2.js"];
-	var root = ((this["djConfig"])&&(djConfig["baseScriptUri"])) ?  djConfig.baseScriptUri : ".";
+	if((this["djConfig"])&&(djConfig["baseScriptUri"])) {
+		var root = djConfig["baseScriptUri"];
+	} else if((this["djConfig"])&&(djConfig["baseRelativePath"])) {
+		var root = djConfig["baseRelativePath"];
+	} else {
+		var root = ".";
+	}
 	for(var x in tmps){
 		var spath = root+"/src/"+tmps[x];
 		if(isRhino){
