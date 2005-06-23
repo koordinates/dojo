@@ -304,7 +304,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 	var startCoords = null;
 	var endCoords = null;
 
-	var showing = false;
+	this.showing = false;
 
 	this.onBeforeExplode = null;
 	this.onAfterExplode = null;
@@ -325,11 +325,11 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 
 		if( (animHide && animHide.status() == "playing")
 			|| (animShow && animShow.status() == "playing")
-			|| showing ) { return; }
+			|| _this.showing ) { return; }
 
 		if(typeof _this.onBeforeExplode == "function") { _this.onBeforeExplode(triggerNode, boxNode); }
 		animShow = dojo.graphics.htmlEffects.explode(triggerNode, boxNode, _this.timeToShow, function(e) {
-			showing = true;
+			_this.showing = true;
 			if(typeof _this.onAfterExplode == "function") { _this.onAfterExplode(triggerNode, boxNode); }
 		});
 		if(typeof _this.onExploding == "function") {
@@ -340,7 +340,9 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 	this.timeHide = function() {
 		clearTimeout(showTimer);
 		clearTimeout(hideTimer);
-		hideTimer = setTimeout(_this.hide, _this.waitToHide);
+		if(_this.showing) {
+			hideTimer = setTimeout(_this.hide, _this.waitToHide);
+		}
 	}
 
 	this.hide = function() {
@@ -350,8 +352,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 			return;
 		}
 
-		if(!showing) { return; }
-		showing = false;
+		_this.showing = false;
 		if(typeof _this.onBeforeImplode == "function") { _this.onBeforeImplode(triggerNode, boxNode); }
 		animHide = dojo.graphics.htmlEffects.implode(boxNode, triggerNode, _this.timeToHide, function(e){
 			if(typeof _this.onAfterImplode == "function") { _this.onAfterImplode(triggerNode, boxNode); }
@@ -363,7 +364,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 
 	// trigger events
 	dojo.event.connect(triggerNode, "onclick", function(e) {
-		if(showing) {
+		if(_this.showing) {
 			_this.hide();
 		} else {
 			_this.show();
@@ -392,7 +393,7 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 
 	// document events
 	dojo.event.connect(document.documentElement || document.body, "onclick", function(e) {
-		if(_this.autoHide && showing
+		if(_this.autoHide && _this.showing
 			&& !dojo.xml.domUtil.isChildOf(e.target, boxNode)
 			&& !dojo.xml.domUtil.isChildOf(e.target, triggerNode) ) {
 			_this.hide();
