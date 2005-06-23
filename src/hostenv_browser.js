@@ -249,8 +249,7 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 			try{
 				var parser = new dojo.xml.Parse();
 				var frag  = parser.parseElement(document.body, null, true);
-				var fragParser = new dojo.webui.widgets.Parse(frag);
-				fragParser.createComponents(frag);
+				dojo.webui.widgets.getParser().createComponents(frag);
 			}catch(e){
 				dj_debug("auto-build-widgets error: "+e);
 			}
