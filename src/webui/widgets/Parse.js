@@ -53,7 +53,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 			propertySets that it finds.
 	*/
 	this.parsePropertySets = function(fragment) {
-		this.propertySets = [];
+		var propertySets = [];
 		for(var item in fragment){
 			if(	(fragment[item]["tagName"] == "dojo:propertyset") ) {
 				propertySets.push(fragment[item]);
@@ -164,10 +164,12 @@ dojo.webui.widgets.Parse = function(fragment) {
 		var propertySets = [];
 		var tagname = fragment["tagName"];
 		if(fragment[ppl]){ 
-			var propertyProviderIds = fragment[ppl].value.split(" ") || fragment[ppl].value;
-			// FIXME: should the propertyProviderList attribute contain # syntax for reference to ids or not?
+			var propertyProviderIds = fragment[ppl].value.split(" ");
+			// FIXME: should the propertyProviderList attribute contain #
+			// 		  syntax for reference to ids or not?
 			// FIXME: need a better test to see if this is local or external
-			// FIXME: doesn't handle nested propertySets, or propertySets that just contain information about css documents, etc.
+			// FIXME: doesn't handle nested propertySets, or propertySets that
+			// 		  just contain information about css documents, etc.
 			for(propertySetId in propertyProviderIds){
 				if((propertySetId.indexOf("..")==-1)&&(propertySetId.indexOf("://")==-1)){
 					// get a reference to a propertySet within the current parsed structure
@@ -213,3 +215,17 @@ dojo.webui.widgets.Parse = function(fragment) {
 }
 
 
+dojo.webui.widgets._parser_collection = {"dojo": new dojo.webui.widgets.Parse() };
+dojo.webui.widgets.getParser = function(name){
+	if(!name){ name = "dojo"; }
+	if(!this._parser_collection[name]){
+		this._parser_collection[name] = new dojo.webui.widgets.Parse();
+	}
+	return this._parser_collection[name];
+}
+
+dojo.webui.widgets.fromScript = function(parentNode, name, props){
+	return this.getParser().createComponentFromScript(parentNode, name, props);
+}
+
+dojo.webui.fromScript = dojo.webui.widgets.fromScript;
