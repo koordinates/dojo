@@ -48,7 +48,7 @@
 			var parser = new dojo.xml.Parse();
 			try{
 				var frag = parser.parseElement(window.document.documentElement);
-				var fragParser = new dojo.webui.widgets.Parse(frag);
+				var fragParser = dojo.webui.widgets.getParser();
 				fragParser.createComponents(frag);
 				// alert("fragParser: "+fragParser);
 			}catch(e){

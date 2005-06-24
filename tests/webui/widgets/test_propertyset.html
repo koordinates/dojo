@@ -6,13 +6,10 @@
 		<script type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				baseRelativePath: "../../../",
 				isDebug: true
 			};
 		</script>
-		<script type="text/javascript" src="../../../src/bootstrap1.js"></script>
-		<script type="text/javascript" src="../../../src/hostenv_browser.js"></script>
-		<script type="text/javascript" src="../../../src/bootstrap2.js"></script>
+		<script type="text/javascript" src="../../../__package__.js"></script>
 		<script type="text/javascript">
 			dojo.hostenv.loadModule("dojo.xml.Parse");
 			dojo.hostenv.loadModule("dojo.webui.Widget");
@@ -27,7 +24,6 @@
 		<script type="text/javascript">
 			// register a new do-nothing tag
 			dojo.webui.widgets.tags["dojo:donothing"] = function(frag, parser){
-				//var properties = parser.parseProperties(frag);
 				var properties = parser.parseProperties(frag["dojo:donothing"]);
 				// now that we've pulled in the propsets that should apply to
 				// this tag, lets inspect them

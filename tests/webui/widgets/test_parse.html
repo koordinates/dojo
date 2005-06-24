@@ -9,13 +9,10 @@
 		<script type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				baseRelativePath: "../../../",
 				isDebug: true
 			};
 		</script>
-		<script type="text/javascript" src="../../../src/bootstrap1.js"></script>
-		<script type="text/javascript" src="../../../src/hostenv_browser.js"></script>
-		<script type="text/javascript" src="../../../src/bootstrap2.js"></script>
+		<script type="text/javascript" src="../../../__package__.js"></script>
 		<script type="text/javascript">
 			dojo.hostenv.loadModule("dojo.xml.Parse");
 			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
@@ -38,7 +35,7 @@
 			function testHandler() {
 				var testObj = new dojo.xml.Parse();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
-				var testParse = new dojo.webui.widgets.Parse();
+				var testParse = dojo.webui.widgets.getParser();
 				testParse.createComponents(testObjects);
 			} //-->
 		</script>
