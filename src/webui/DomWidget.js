@@ -279,9 +279,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
 			// FIXME: this is borken!!!
 
-			// FIXME: Dylan, why do we keep having to create new frag parsers
-			// left and right? It seems horribly inefficient.
-			var fragParser = new dojo.webui.widgets.Parse(frag);
+			var fragParser = dojo.webui.widgets.getParser();
 			// build any sub-components with us as the parent
 			fragParser.createComponents(frag, this);
 		}
