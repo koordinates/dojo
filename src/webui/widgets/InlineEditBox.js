@@ -26,15 +26,19 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 	this.editBox = null;
 	this.edit = null;
 	this.text = null;
+	this.textarea = null;
+	this.mode = "text";
 	this.storage = document.createElement("span");
 
 	this.minWidth = 100; //px. minimum width of edit box
+	this.minHeight = 200; //px. minimum width of edit box, if it's a TA
 
 	this.editing = false;
 	this.textValue = "";
+	this.defaultText = "";
 	this.doFade = false;
 
-	this.onSave = function(newValue, oldValue) {};
+	this.onSave = function(newValue, oldValue){};
 
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
@@ -45,13 +49,22 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		dojo.webui.buildAndAttachTemplate(this);
 
 		this.editable = document.createElement("span");
-		this.editable.appendChild(node.firstChild);
-		this.textValue = this.editable.firstChild.nodeValue;
+		// this.editable.appendChild(node.firstChild);
+		while(node.firstChild){
+			this.editable.appendChild(node.firstChild);
+		}
+		// this.textValue = this.editable.firstChild.nodeValue;
+		this.textValue = dojo.text.trim(this.editable.innerHTML);
+		if(this.textValue.length == 0){
+			this.editable.innerHTML = this.defaultText;
+		}
+		/*
 		if(node.hasChildNodes()) {
 			node.insertBefore(this.editable, node.firstChild);
 		} else {
-			node.appendChild(this.editable);
 		}
+		*/
+		node.appendChild(this.editable);
 
 		// delay to try and show up before stylesheet
 		var _this = this;
@@ -69,12 +82,17 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 	this.mouseover = function(e) {
 		if(!this.editing) {
 			dojo.xml.htmlUtil.addClass(this.editable, "editableRegion");
+			if(this.mode == "textarea"){
+				dojo.xml.htmlUtil.addClass(this.editable, "editableTextareaRegion");
+			}
 		}
 	}
 
 	this.mouseout = function(e) {
+		// if((e)&&(e.target != this.domNode)){ return; }
 		if(!this.editing) {
 			dojo.xml.htmlUtil.removeClass(this.editable, "editableRegion");
+			dojo.xml.htmlUtil.removeClass(this.editable, "editableTextareaRegion");
 		}
 	}
 
@@ -83,27 +101,37 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		this.mouseout();
 		this.editing = true;
 
-		this.text.value = this.textValue;
-		this.text.style.fontSize = dojo.xml.domUtil.getStyle(this.editable, "font-size");
-		this.text.style.fontWeight = dojo.xml.domUtil.getStyle(this.editable, "font-weight");
-		this.text.style.fontStyle = dojo.xml.domUtil.getStyle(this.editable, "font-style");
+		var ee = this[this.mode.toLowerCase()];
+
+		ee.style.display = "";
+		ee.value = this.textValue;
+		ee.style.fontSize = dojo.xml.domUtil.getStyle(this.editable, "font-size");
+		ee.style.fontWeight = dojo.xml.domUtil.getStyle(this.editable, "font-weight");
+		ee.style.fontStyle = dojo.xml.domUtil.getStyle(this.editable, "font-style");
 		//this.text.style.fontFamily = dojo.xml.domUtil.getStyle(this.editable, "font-family");
 
-		this.text.style.width = Math.max(dojo.xml.htmlUtil.getInnerWidth(this.editable), this.minWidth) + "px";
+		ee.style.width = Math.max(dojo.xml.htmlUtil.getInnerWidth(this.editable), this.minWidth) + "px";
+		// ee.style.width = "100%";
 
+		if(this.mode.toLowerCase()=="textarea"){
+			ee.style.display = "block";
+			ee.style.height = Math.max(dojo.xml.htmlUtil.getInnerHeight(this.editable), this.minHeight) + "px";
+		}
 		this.editable.style.display = "none";
 		this.nodeRef.appendChild(this.form);
-		this.text.select();
+		ee.select();
 	}
 
 	this.saveEdit = function(e) {
-		e = dojo.event.browser.fixEvent(e);
-		dojo.event.browser.stopEvent(e);
-		if(this.textValue != this.text.value && dojo.text.trim(this.text.value) != "") {
+		e.preventDefault();
+		e.stopPropagation();
+		var ee = this[this.mode.toLowerCase()];
+		if((this.textValue != ee.value)&&
+			(dojo.text.trim(ee.value) != "")){
 			this.doFade = true;
-			this.onSave(this.text.value, this.textValue);
-			this.textValue = this.text.value;
-			this.editable.firstChild.nodeValue = this.textValue;
+			this.onSave(ee.value, this.textValue);
+			this.textValue = ee.value;
+			this.editable.innerHTML = this.textValue;
 		} else {
 			this.doFade = false;
 		}
