@@ -24,13 +24,13 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 	this.animSequence_ = null;
 
 	// public events
-	this.onBegin = function(){};
-	this.onAnimate = function(){};
-	this.onEnd = function(){};
-	this.onPlay = function(){};
-	this.onPause = function(){};
-	this.onStop = function(){};
-	this.handler = function() {}; // catch-all handler
+	this.onBegin = null;
+	this.onAnimate = null;
+	this.onEnd = null;
+	this.onPlay = null;
+	this.onPause = null;
+	this.onStop = null;
+	this.handler = null; // catch-all handler
 
 	// private properties
 	var startTime = null,
@@ -67,13 +67,15 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 
 		if( percent == 0 ) {
 			e.type = "begin";
-			_this.handler(e);
-			_this.onBegin(e);
+			if(typeof _this.handler == "function") { _this.handler(e); }
+			if(typeof _this.onBegin == "function") { _this.onBegin(e); }
 		}
 
 		e.type = "play";
-		_this.handler(e);
-		_this.onPlay(e);
+		if(typeof _this.handler == "function") { _this.handler(e); }
+		if(typeof _this.onPlay == "function") { _this.onPlay(e); }
+
+		if(this.animSequence_) { this.animSequence_.setCurrent(this); }
 
 		cycle();
 	}
@@ -84,8 +86,8 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 		paused = true;
 		var e = new dojo.animation.AnimationEvent(_this, "pause", _this.curve.getValue(percent),
 			startTime, new Date().valueOf(), endTime, _this.duration, percent, 0);
-		_this.handler(e);
-		_this.onPause(e);
+		if(typeof _this.handler == "function") { _this.handler(e); }
+		if(typeof _this.onPause == "function") { _this.onPause(e); }
 	}
 
 	this.playPause = function() {
@@ -112,8 +114,8 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 		}
 		var e = new dojo.animation.AnimationEvent(_this, "stop", _this.curve.getValue(step),
 			startTime, new Date().valueOf(), endTime, _this.duration, percent, Math.round(fps));
-		_this.handler(e);
-		_this.onStop(e);
+		if(typeof _this.handler == "function") { _this.handler(e); }
+		if(typeof _this.onStop == "function") { _this.onStop(e); }
 		active = false;
 		paused = false;
 	}
@@ -145,16 +147,16 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 			var e = new dojo.animation.AnimationEvent(_this, "animate", _this.curve.getValue(step),
 				startTime, curr, endTime, _this.duration, percent, Math.round(fps));
 
-			_this.handler(e);
-			_this.onAnimate(e);
+			if(typeof _this.handler == "function") { _this.handler(e); }
+			if(typeof _this.onAnimate == "function") { _this.onAnimate(e); }
 
 			if( step < 1 ) {
 				timer = setTimeout(cycle, 10);
 			} else {
 				e.type = "end";
 				active = false;
-				_this.handler(e);
-				_this.onEnd(e);
+				if(typeof _this.handler == "function") { _this.handler(e); }
+				if(typeof _this.onEnd == "function") { _this.onEnd(e); }
 				if( _this.repeatCount > 0 ) {
 					_this.repeatCount--;
 					_this.play(true);
@@ -196,15 +198,17 @@ dojo.animation.AnimationEvent = function(anim, type, coords, sTime, cTime, eTime
 	return this;
 };
 
-dojo.animation.AnimationSequence = function() {
+dojo.animation.AnimationSequence = function(repeatCount) {
 	var anims = [];
 	var currAnim = -1;
 
+	this.repeatCount = repeatCount || 0;
+
 	// event handlers
-	this.onBegin = function(){};
-	this.onEnd = function(){};
-	this.onNext = function(){};
-	this.handler = function(){};
+	this.onBegin = null;
+	this.onEnd = null;
+	this.onNext = null;
+	this.handler = null;
 
 	this.add = function() {
 		for(var i = 0; i < arguments.length; i++) {
@@ -239,8 +243,8 @@ dojo.animation.AnimationSequence = function() {
 		if( anims[currAnim] ) {
 			if( currAnim == 0 ) {
 				var e = {type: "begin", animation: anims[currAnim]};
-				this.handler(e);
-				this.onBegin(e);
+				if(typeof this.handler == "function") { this.handler(e); }
+				if(typeof this.onBegin == "function") { this.onBegin(e); }
 			}
 			anims[currAnim].play(gotoStart);
 		}
@@ -274,19 +278,37 @@ dojo.animation.AnimationSequence = function() {
 		}
 	}
 
+	this.setCurrent = function(anim) {
+		for(var i = 0; i < anims.length; i++) {
+			if( anims[i] == anim ) {
+				currAnim = i;
+				break;
+			}
+		}
+	}
+
 	this.playNext = function() {
 		if( currAnim == -1 || anims.length == 0 ) { return; }
 		currAnim++;
 		if( anims[currAnim] ) {
 			var e = {type: "next", animation: anims[currAnim]};
-			this.handler(e);
-			this.onNext(e);
+			if(typeof this.handler == "function") { this.handler(e); }
+			if(typeof this.onNext == "function") { this.onNext(e); }
 			anims[currAnim].play(true);
 		} else {
 			var e = {type: "end", animation: anims[anims.length-1]};
-			this.handler(e);
-			this.onEnd(e);
-			currAnim = -1;
+			if(typeof this.handler == "function") { this.handler(e); }
+			if(typeof this.onEnd == "function") { this.onEnd(e); }
+			if(this.repeatCount > 0) {
+				currAnim = 0;
+				this.repeatCount--;
+				anims[currAnim].play(true);
+			} else if(this.repeatCount == -1) {
+				currAnim = 0;
+				anims[currAnim].play(true);
+			} else {
+				currAnim = -1;
+			}
 		}
 	}
 };

@@ -38,12 +38,18 @@ dojo.math.curves = {
 	//between are the Bezier control points.
 	Bezier: function(pnts) {
 		this.getValue = function(step) {
+			if(step >= 1) { step = 0.99999999; } // FIXME: Dan, I get NaN at step = 1, is this the right solution?
 			var retVal = new Array(this.p[0].length);
-			for(var k=0;j<this.p[0].length;k++) retVal[k]=0;
+			for(var k=0;j<this.p[0].length;k++) { retVal[k]=0; }
 			for(var j=0;j<this.p[0].length;j++) {
 				var C=0; var D=0;
-				for(var i=0;i<this.p.length;i++) C += this.p[i][j] * this.p[this.p.length-1][0] * dojo.math.bernstein(step,this.p.length,i);
-				for(var l=0;l<this.p.length;l++) D += this.p[this.p.length-1][0] * dojo.math.bernstein(step,this.p.length,l);
+				for(var i=0;i<this.p.length;i++) {
+					C += this.p[i][j] * this.p[this.p.length-1][0]
+						* dojo.math.bernstein(step,this.p.length,i);
+				}
+				for(var l=0;l<this.p.length;l++) {
+					D += this.p[this.p.length-1][0] * dojo.math.bernstein(step,this.p.length,l);
+				}
 				retVal[j] = C/D;
 			}
 			return retVal;
