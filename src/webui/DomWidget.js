@@ -77,10 +77,12 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 	if(rootNode.nodeType != elementNodeType){
 		return;
 	}
+	// alert(events.length);
 
 	var nodes = rootNode.getElementsByTagName("*");
-	for(var x=0; x<nodes.length; x++){
-		var baseNode = nodes[x];
+	var _this = targetObj;
+	for(var x=-1; x<nodes.length; x++){
+		var baseNode = (x == -1) ? rootNode : nodes[x];
 		// FIXME: is this going to have capitalization problems?
 		var attachPoint = baseNode.getAttribute(this.attachProperty);
 		if(attachPoint){
@@ -112,10 +114,10 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 			// "domEvent: nativeEvent; ..."
 			var evts = attachEvent.split(";");
 			for(var y=0; y<evts.length; y++){
-				var tevt = null;
-				var thisFunc = null;
 				if(!evts[y]){ continue; }
 				if(!evts[y].length){ continue; }
+				var tevt = null;
+				var thisFunc = null;
 				tevt = dojo.text.trim(evts[y]);
 				if(tevt.indexOf(":") >= 0){
 					// oh, if only JS had tuple assignment
@@ -127,7 +129,6 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 					thisFunc = tevt;
 				}
 				//if(dojo.hostenv.name_ == "browser"){
-				var _this = targetObj;
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
 					return function(evt){
@@ -148,7 +149,6 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 				if((!evtVal)||(!evtVal.length)){ continue; }
 				var domEvt = events[y].substr(4).toLowerCase(); // clober the "dojo" prefix
 				thisFunc = dojo.text.trim(evtVal);
-				var _this = targetObj;
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
 					return function(evt){
