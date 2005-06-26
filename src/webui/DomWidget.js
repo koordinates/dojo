@@ -13,7 +13,7 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 	var cpath = templateCSSPath || obj.templateCSSPath;
 
 	var tmplts = dojo.webui.DomWidget.templates;
-	if(!obj.widgetType) { // don't have a real template here
+	if(!obj["widgetType"]) { // don't have a real template here
 		do {
 			var dummyName = "__dummyTemplate__" + dojo.webui.buildFromTemplate.dummyCount++;
 		} while(tmplts[dummyName]);
@@ -41,12 +41,6 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 		// fetch a text fragment and assign it to templateString
 		// NOTE: we rely on blocking IO here!
 		// FIXME: extra / being inserted in URL?
-		var tmplts = dojo.webui.DomWidget.templates;
-		var ts = tmplts[obj.widgetType];
-		if(!ts){
-			tmplts[obj.widgetType] = {};
-			ts = tmplts[obj.widgetType];
-		}
 		var tp = dojo.hostenv.getBaseScriptUri()+""+tpath;
 		var tstring = dojo.hostenv.getText(tp);
 		if(tstring) {
@@ -68,116 +62,112 @@ dojo.webui.eventAttachProperty = "dojoAttachEvent";
 dojo.webui.subTemplateProperty = "dojoSubTemplate";
 dojo.webui.onBuildProperty = "dojoOnBuild";
 
-dojo.webui.attachTemplateNodes = function(baseNode, targetObj, subTemplateParent, events){
+dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent, events){
+	// FIXME: this method is still taking WAAAY too long. We need ways of optimizing:
+	//	a.) what we are looking for on each node
+	//	b.) the nodes that are subject to interrogation (use xpath instead?)
+	//	c.) how expensive event assignment is (less eval(), more connect())
+	// var start = new Date();
 	var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
 
-	if(!baseNode){ 
-		baseNode = targetObj.domNode;
+	if(!rootNode){ 
+		rootNode = targetObj.domNode;
 	}
 
-	if(baseNode.nodeType != elementNodeType){
+	if(rootNode.nodeType != elementNodeType){
 		return;
 	}
 
-	// FIXME: is this going to have capitalization problems?
-	var attachPoint = baseNode.getAttribute(this.attachProperty);
-	if(attachPoint){
-		targetObj[attachPoint]=baseNode;
-	}
+	var nodes = rootNode.getElementsByTagName("*");
+	for(var x=0; x<nodes.length; x++){
+		var baseNode = nodes[x];
+		// FIXME: is this going to have capitalization problems?
+		var attachPoint = baseNode.getAttribute(this.attachProperty);
+		if(attachPoint){
+			targetObj[attachPoint]=baseNode;
+		}
 
-	/*
-	// FIXME: we need to put this into some kind of lookup structure
-	// instead of direct assignment
-	var tmpltPoint = baseNode.getAttribute(this.templateProperty);
-	if(tmpltPoint){
-		targetObj[tmpltPoint]=baseNode;
-	}
-	*/
+		// FIXME: we need to put this into some kind of lookup structure
+		// instead of direct assignment
+		var tmpltPoint = baseNode.getAttribute(this.templateProperty);
+		if(tmpltPoint){
+			targetObj[tmpltPoint]=baseNode;
+		}
 
-	// subtemplates are always collected "flatly" by the widget class
-	var tmpltPoint = baseNode.getAttribute(this.subTemplateProperty);
-	if(tmpltPoint){
-		// we assign by removal in this case, mainly because we assume that
-		// this will get proccessed later when the sub-template is filled
-		// in (usually by this method, and usually repetitively)
-		subTemplateParent.subTemplates[tmpltPoint]=baseNode.parentNode.removeChild(baseNode);
-		// make sure we don't get stopped here the next time we try to process
-		subTemplateParent.subTemplates[tmpltPoint].removeAttribute(this.subTemplateProperty);
-		return;
-	}
+		// subtemplates are always collected "flatly" by the widget class
+		var tmpltPoint = baseNode.getAttribute(this.subTemplateProperty);
+		if(tmpltPoint){
+			// we assign by removal in this case, mainly because we assume that
+			// this will get proccessed later when the sub-template is filled
+			// in (usually by this method, and usually repetitively)
+			subTemplateParent.subTemplates[tmpltPoint]=baseNode.parentNode.removeChild(baseNode);
+			// make sure we don't get stopped here the next time we try to process
+			subTemplateParent.subTemplates[tmpltPoint].removeAttribute(this.subTemplateProperty);
+			// return;
+		}
 
-	var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
-	if(attachEvent){
-		// NOTE: we want to support attributes that have the form
-		// "domEvent: nativeEvent; ..."
-		var evts = attachEvent.split(";");
-		for(var x=0; x<evts.length; x++){
-			var tevt = null;
-			var thisFunc = null;
-			if(!evts[x]){ continue; }
-			if(!evts[x].length){ continue; }
-			tevt = dojo.text.trim(evts[x]);
-			if(tevt.indexOf(":") >= 0){
-				// oh, if only JS had tuple assignment
-				var funcNameArr = tevt.split(":");
-				tevt = dojo.text.trim(funcNameArr[0]);
-				thisFunc = dojo.text.trim(funcNameArr[1]);
-			}
-			if(!thisFunc){
-				thisFunc = tevt;
-			}
-			//if(dojo.hostenv.name_ == "browser"){
-			var _this = targetObj;
-			var tf = function(){ 
-				var ntf = new String(thisFunc);
-				return function(evt){
-					if(_this[ntf]){
-						_this[ntf](evt);
-					}
+		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
+		if(attachEvent){
+			// NOTE: we want to support attributes that have the form
+			// "domEvent: nativeEvent; ..."
+			var evts = attachEvent.split(";");
+			for(var y=0; y<evts.length; y++){
+				var tevt = null;
+				var thisFunc = null;
+				if(!evts[y]){ continue; }
+				if(!evts[y].length){ continue; }
+				tevt = dojo.text.trim(evts[y]);
+				if(tevt.indexOf(":") >= 0){
+					// oh, if only JS had tuple assignment
+					var funcNameArr = tevt.split(":");
+					tevt = dojo.text.trim(funcNameArr[0]);
+					thisFunc = dojo.text.trim(funcNameArr[1]);
 				}
-			}();
-			dojo.event.connect(baseNode, tevt.toLowerCase(), tf);
-			/*
-			}else{
-				var en = tevt.toLowerCase().substr(2);
-				baseNode.addEventListener(en, targetObj[thisFunc||tevt], false);
-			}
-			*/
-		}
-	}
-
-	for(var x=0; x<events.length; x++){
-		//alert(events[x]);
-		var evtVal = baseNode.getAttribute(events[x]);
-		if(evtVal){
-			var thisFunc = null;
-			if((!evtVal)||(!evtVal.length)){ continue; }
-			var domEvt = events[x].substr(4).toLowerCase(); // clober the "dojo" prefix
-			thisFunc = dojo.text.trim(evtVal);
-			var _this = targetObj;
-			var tf = function(){ 
-				var ntf = new String(thisFunc);
-				return function(evt){
-					if(_this[ntf]){
-						_this[ntf](evt);
-					}
+				if(!thisFunc){
+					thisFunc = tevt;
 				}
-			}();
-			dojo.event.connect(baseNode, domEvt, tf);
+				//if(dojo.hostenv.name_ == "browser"){
+				var _this = targetObj;
+				var tf = function(){ 
+					var ntf = new String(thisFunc);
+					return function(evt){
+						if(_this[ntf]){
+							_this[ntf](evt);
+						}
+					}
+				}();
+				dojo.event.connect(baseNode, tevt.toLowerCase(), tf);
+			}
+		}
+
+		for(var y=0; y<events.length; y++){
+			//alert(events[x]);
+			var evtVal = baseNode.getAttribute(events[y]);
+			if(evtVal){
+				var thisFunc = null;
+				if((!evtVal)||(!evtVal.length)){ continue; }
+				var domEvt = events[y].substr(4).toLowerCase(); // clober the "dojo" prefix
+				thisFunc = dojo.text.trim(evtVal);
+				var _this = targetObj;
+				var tf = function(){ 
+					var ntf = new String(thisFunc);
+					return function(evt){
+						if(_this[ntf]){
+							_this[ntf](evt);
+						}
+					}
+				}();
+				dojo.event.connect(baseNode, domEvt, tf);
+			}
+		}
+
+		var onBuild = baseNode.getAttribute(this.onBuildProperty);
+		if(onBuild){
+			eval("var node = baseNode; var widget = targetObj; "+onBuild);
 		}
 	}
 
-	var onBuild = baseNode.getAttribute(this.onBuildProperty);
-	if(onBuild){
-		eval("var node = baseNode; var widget = targetObj; "+onBuild);
-	}
-
-	// FIXME: temporarily commenting this out as it is breaking things
-	for(var x=0; x<baseNode.childNodes.length; x++){
-		if(baseNode.childNodes.item(x).nodeType == elementNodeType){
-			this.attachTemplateNodes(baseNode.childNodes.item(x), targetObj, subTemplateParent, events);
-		}
-	}
+	// dj_debug("attachTemplateNodes toc: ", new Date()-start, "ms");
 }
 
 dojo.webui.getDojoEventsFromStr = function(str){
@@ -225,6 +215,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
 	this.addChild = function(widget, overrideContainerNode, pos, ref){ 
+		// var start = new Date();
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.webui.DomWidget.addChild() attempted on non-container widget");
 			return false;
@@ -243,6 +234,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			this.children.push(widget);
 			widget.parent = this;
 		}
+		// dj_debug("add child took: ", new Date()-start, "ms");
 	}
 
 	this.removeChild = function(widget){
@@ -307,6 +299,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	}
 
 	this.buildFromTemplate = function(args, frag){
+		// var start = new Date();
 		// copy template properties if they're already set in the templates object
 		var ts = dojo.webui.DomWidget.templates[this.widgetType];
 		if(ts){
@@ -320,6 +313,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		var node = null;
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
+			dj_debug("didn't find a template node = ( ");
 			// otherwise, we are required to instantiate a copy of the template
 			// string if one is provided.
 			
@@ -327,14 +321,17 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// or provide a generic interface across all DOM implementations
 			// FIMXE: this breaks if the template has whitespace as its first 
 			// characters
-			node = this.createNodesFromText(this.templateString, true);
-			this.templateNode = node[0].cloneNode(true); // we're optimistic here
+			// node = this.createNodesFromText(this.templateString, true);
+			// this.templateNode = node[0].cloneNode(true); // we're optimistic here
+			this.templateNode = this.createNodesFromText(this.templateString, true)[0];
 			ts.node = this.templateNode;
 		}
 		if(!this.templateNode){ 
 			dj_debug("weren't able to create template!");
 			return false;
 		}
+
+		// dj_debug("toc0: ", new Date()-start, "ms");
 		var node = this.templateNode.cloneNode(true);
 		if(!node){ return false; }
 
@@ -342,7 +339,9 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// attachment points which should be defined on the template node.
 
 		this.domNode = node;
+		// dj_debug("toc1: ", new Date()-start, "ms");
 		this.attachTemplateNodes(this.domNode, this);
+		// dj_debug("toc2: ", new Date()-start, "ms");
 	}
 
 	this.attachTemplateNodes = function(baseNode, targetObj){
