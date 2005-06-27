@@ -1,4 +1,5 @@
 input.comboBoxInput {
+	border: 0px;
 }
 
 td.comboBoxOptions {
@@ -11,8 +12,25 @@ div.comboBoxOptions {
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 0.8em;
 	background-color: white;
-	border: 1px solid black;
-	padding: 2px;
+	/* border: 1px solid black; */
+	border: 1px solid #afafaf;
+	/* padding: 2px; */
 	position: absolute;
 	overflow: auto;
+}
+
+table.dojoComboBox {
+	border: 1px solid #afafaf;
+}
+
+.cbItem {
+	padding: 2px;
+}
+
+.cbItemEven {
+	background-color: #f4f4f4;
+}
+
+.cbItemOdd {
+	background-color: white;
 }
