@@ -20,6 +20,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	this.dataUrl = "";
 	this.selectedResult = null;
 	var _prev_key_backspace = false;
+	var _prev_key_esc = false;
 
 	this.getCaretPos = function(element){
 		// FIXME: we need to figure this out for Konq/Safari!
@@ -92,11 +93,17 @@ dojo.webui.widgets.HTMLComboBox = function(){
 		// esc is 27
 		if(evt.keyCode == 27){
 			this.hideResultList();
+			if(_prev_key_esc){
+				this.textInputNode.blur();
+				this.selectedResult = null;
+			}
+			_prev_key_esc = true;
 			return;
 		}
 
 		// backspace is 8
 		_prev_key_backspace = (evt.keyCode == 8) ? true : false;
+		_prev_key_esc = false;
 
 		if(this.searchTimer){
 			clearTimeout(this.searchTimer);
@@ -130,39 +137,6 @@ dojo.webui.widgets.HTMLComboBox = function(){
 		}
 	}
 
-	/*
-	// options item class
-	function optionItem(parent, txt){
-		this.parent = parent;
-		this.domNode = null;
-		this.itemLabel = null;
-		this.formItem = null;
-		this.formName = null;
-		this.itemString = txt||"";
-		this.clobberItem = function(){
-			// FIXME: need to do memory cleanup here for IE!!
-
-			// NOTE: the form item for this entry could be located somewhere
-			// else, so we manually remove it from whatever container it might
-			// be in.
-			this.formItem.parentNode.removeChild(this.formItem);
-			this.domNode.parentNode.removeChild(this.domNode);
-			// clobber the item text from the parent list
-			this.parent.removeFromList(this.itemString);
-		}
-
-		this.fillInTemplate = function(){
-			// FIXME: need HTML escaping here
-			this.itemLabel.innerHTML = this.itemString;
-			// FIXME: need some way to specify a name for the form item!
-			this.formItem.value = this.itemString;
-			this.formItem.name = this.formName || this.parent.baseFormName;
-			// move the form item out into the correct container
-			this.parent.formItemsNode.appendChild(this.formItem);
-		}
-	}
-	*/
-
 	this.openResultList = function(results){
 		this.clearResultList();
 		if(!results.length){
@@ -180,10 +154,16 @@ dojo.webui.widgets.HTMLComboBox = function(){
 				this.setSelectedRange(this.textInputNode, cpos, this.textInputNode.value.length);
 			}
 		}
+
+		var even = true;
 		while(results.length){
 			var tr = results.shift();
 			var td = document.createElement("div");
 			td.appendChild(document.createTextNode(tr[0]));
+			td.setAttribute("resultName", tr[0]);
+			td.setAttribute("resultValue", tr[1]);
+			td.className = "cbItem "+((even) ? "cbItemEven" : "cbItemOdd");
+			even = (!even);
 			this.optionsListNode.appendChild(td);
 		}
 
@@ -196,6 +176,23 @@ dojo.webui.widgets.HTMLComboBox = function(){
 			adviceFunc: "hideResultList"
 		});
 		// dojo.event.connect(document.body, "onclick", this, "hideResultList");
+	}
+
+	this.selectOption = function(evt){
+		if(!dojo.xml.domUtil.isChildOf(evt.target, this.optionsListNode)){
+			return;
+		}
+		var tgt = evt.target;
+		while(!tgt.getAttribute("resultName")){
+			tgt = tgt.parentNode;
+			if(tgt === document.body){
+				return false;
+			}
+		}
+
+		this.textInputNode.value = tgt.getAttribute("resultName");
+		this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
+		this.hideResultList();
 	}
 
 	this.clearResultList = function(){
@@ -214,7 +211,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	this.showResultList = function(){
 		with(this.optionsListNode.style){
 			display = "";
-			width = dojo.xml.htmlUtil.getInnerWidth(this.textInputNode)+"px";
+			width = dojo.xml.htmlUtil.getInnerWidth(this.downArrowNode)+dojo.xml.htmlUtil.getInnerWidth(this.textInputNode)+"px";
 			if(dojo.render.html.khtml){
 				marginTop = dojo.xml.htmlUtil.totalOffsetTop(this.optionsListNode.parentNode)+"px";
 			/*
