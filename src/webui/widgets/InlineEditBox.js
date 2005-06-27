@@ -153,6 +153,12 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		}
 		this.doFade = false;
 	}
+
+	this.setText = function(txt){
+		// sets the text without informing the server
+		this.textValue = txt;
+		this.editable.innerHTML = txt;
+	}
 }
 dj_inherits(dojo.webui.widgets.HTMLInlineEditBox, dojo.webui.DomWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:inlineeditbox");
