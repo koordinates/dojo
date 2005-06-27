@@ -120,9 +120,11 @@ dojo.graphics.htmlEffects = new function() {
 	this.wipeIn = function(node, duration, cbObj, callback, dontPlay) {
 		var savedOverflow = dojo.xml.htmlUtil.getStyle(node, "overflow");
 		var savedHeight = dojo.xml.htmlUtil.getStyle(node, "height");
-		node.style.display = "block";
+		node.style.display = "";
 		var height = node.offsetHeight;
-		node.style.overflow = "hidden";
+		if(savedOverflow == "visible") {
+			node.style.overflow = "hidden";
+		}
 		node.style.height = 0;
 
 		var anim = new dojo.animation.Animation(
@@ -132,7 +134,9 @@ dojo.graphics.htmlEffects = new function() {
 			node.style.height = Math.round(e.x) + "px";
 		});
 		dojo.event.connect(anim, "onEnd", function(e) {
-			node.style.overflow = savedOverflow;
+			if(savedOverflow != "visible") {
+				node.style.overflow = savedOverflow;
+			}
 			node.style.height = savedHeight;
 		});
 		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
