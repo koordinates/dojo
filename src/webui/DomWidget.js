@@ -313,7 +313,6 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		var node = null;
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
-			dj_debug("didn't find a template node = ( ");
 			// otherwise, we are required to instantiate a copy of the template
 			// string if one is provided.
 			
