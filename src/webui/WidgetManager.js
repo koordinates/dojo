@@ -31,6 +31,16 @@ dojo.webui.widgetManager = new function(){
 		delete this.widgetIds[tw];
 		this.widgets.splice(widgetIndex, 1);
 	}
+	
+	// FIXME: suboptimal performance
+	this.removeById = function(id) {
+		for (var i=0; i<this.widgets.length; i++) {
+			if(this.widgets[i].widgetId == id) {
+				this.remove(i);
+				break;
+			}
+		}
+	}
 
 	this.getWidgetById = function(id){
 		return this.widgetIds[id];
