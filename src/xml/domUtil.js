@@ -21,6 +21,7 @@ dojo.xml.domUtil = new function(){
 	}
 	
 	this.dojoml = "http://www.dojotoolkit.org/2004/dojoml";
+	this.idIncrement = 0;
 	
 	this.getTagName = function(node){
 		var tagName = node.tagName;
@@ -49,6 +50,15 @@ dojo.xml.domUtil = new function(){
 			}
 		}
 		return tagName.toLowerCase();
+	}
+
+	this.getUniqueId = function(){
+		var base = "dj_unique_";
+		this.idIncrement++;
+		while(document.getElementById(base+this.idIncrement)){
+			this.idIncrement++;
+		}
+		return base+this.idIncrement;
 	}
 
 	this.getFirstChildTag = function(parentNode) {
