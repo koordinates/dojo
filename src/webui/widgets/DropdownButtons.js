@@ -44,18 +44,12 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 				arrow.innerHTML = "&nbsp;";
 				dojo.xml.htmlUtil.setClass(arrow, "downArrow");
 				if(!arrow.id) {
-					do {
-						var id = "dd" + (new Date().valueOf() + Math.floor(Math.random()*100))
-					} while( document.getElementById(id) );
-					arrow.id = id;
+					arrow.id = dojo.xml.domUtil.getUniqueId();
 				}
 				arrowIDs.push(arrow.id);
 				var submenu = dojo.xml.domUtil.getNextSiblingTag(a);
 				if(!submenu.id) {
-					do {
-						var id = "sm" + (new Date().valueOf() + Math.floor(Math.random()*100))
-					} while( document.getElementById(id) );
-					submenu.id = id;
+					submenu.id = dojo.xml.domUtil.getUniqueId();
 				}
 				menuIDs.push(submenu.id);
 

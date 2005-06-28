@@ -514,16 +514,7 @@ dojo.xml.htmlUtil = new function(){
 		return color;
 	}
 
-	this.generateId = function(prefix) {
-		if(!prefix || !/^[a-z_\-]/i.test(prefix.toString())) {
-			prefix = "dojo-id-";
-		}
-		do {
-			var id = prefix + (Math.random()*100000);
-		} while(document.getElementById(id));
-		return id;
-	}
-	this.generateID = this.generateId;
+	this.getUniqueId = dojo.xml.domUtil.getUniqueId;
 
 	this.getStyle = dojo.xml.domUtil.getStyle;
 }
