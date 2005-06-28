@@ -187,6 +187,7 @@ dojo.xml.domUtil = new function(){
 				nodes.push(tn.childNodes[x].cloneNode(true));
 			}
 			tn.style.display = "none";
+			document.body.removeChild(tn);
 			return nodes;
 		}
 	} else if(dojo.render.svg.capable) {
