@@ -28,7 +28,9 @@ dojo.webui.widgets.Parse = function(fragment) {
 							fragment[item].tagName = ltn;
 							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
 						}else{
-							dj_debug("no tag handler registed for type: ", ltn);
+							if(ltn.substr(0, 5)=="dojo:"){
+								dj_debug("no tag handler registed for type: ", ltn);
+							}
 						}
 					}
 				}
