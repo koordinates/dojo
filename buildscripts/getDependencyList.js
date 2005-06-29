@@ -93,6 +93,17 @@ for(var x=0; x<dependencies.length; x++){
 // test files for the namespaces which are included and provide them in the
 // final package.
 
+// FIXME: should we turn __package__.js file clobbering on? It will break things if there's a subdir rolled up into a __package__
+/*
+for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
+	print(dojo.hostenv.loadedUris[x].substr(-14));
+	if(dojo.hostenv.loadedUris[x].substr(-14) == "__package__.js"){
+		dojo.hostenv.loadedUris.splice(x, 1);
+		x--;
+	}
+}
+*/
+
 // print("URIs, in order: ");
 // for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 // 	print(dojo.hostenv.loadedUris[x]);
