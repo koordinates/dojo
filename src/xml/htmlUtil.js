@@ -83,10 +83,12 @@ dojo.xml.htmlUtil = new function(){
 			// FIXME: this is known not to work sometimes on IE 5.x since nodes
 			// soemtimes need to be "tickled" before they will display their
 			// offset correctly
-			while(node.offsetParent){
+			
+			do {
 				ret += node[typeStr];
 				node = node.offsetParent;
-			}
+			} while (node != document.body.parentNode && node != null);
+			
 		}else if(node[alt]){
 			ret += node[alt];
 		}
