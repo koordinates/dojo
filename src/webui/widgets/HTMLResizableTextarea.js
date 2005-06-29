@@ -12,8 +12,6 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 	this.widgetType = "ResizableTextarea";
 	this.tagName = "dojo:resizabletextarea";
 	this.isContainer = false;
-	this.constrainVertical = false;
-	this.constrainHorizonatal = false;
 	this.textAreaNode = null;
 	this.textAreaContainer = null;
 
@@ -30,7 +28,7 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 		var hu = dojo.xml.htmlUtil;
 		var pn = this.textAreaNode.parentNode;
 
-		if(!this.constrainHorizontal){
+		if(this.allowResizeX){
 			var iw = parseInt(this.textAreaNode.offsetWidth);
 			var cols = parseInt(hu.getAttr(this.textAreaNode, "cols"));
 			var pxpercol = (iw/cols);
@@ -38,7 +36,7 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 			this.textAreaNode.style.width = pnw+"px";
 		}
 
-		if(!this.constrainVertical){
+		if(this.allowResizeY){
 			var ih = parseInt(dojo.xml.htmlUtil.getInnerHeight(this.textAreaNode));
 			var rows = parseInt(hu.getAttr(this.textAreaNode, "rows"));
 			var pxperrow = (ih/rows);
