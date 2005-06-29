@@ -218,7 +218,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	// set headers (note: Content-Type will get overriden if kwArgs.contentType is set)
-	function setHeaders() {
+	function setHeaders(http, kwArgs){
 		if(kwArgs["headers"]) {
 			for(var header in kwArgs["headers"]) {
 				if(header.toLowerCase() == "content-type" && !kwArgs["contentType"]) {
@@ -482,12 +482,12 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
 			http.open("POST", url, async);
-			setHeaders();
+			setHeaders(http, kwArgs);
 			http.setRequestHeader("Content-Type", kwArgs["contentType"] || "application/x-www-form-urlencoded");
 			http.send(query);
 		}else{
 			http.open("GET", url+((query!="") ? "?"+query : ""), async);
-			setHeaders();
+			setHeaders(http, kwArgs);
 			http.send(null);
 		}
 
