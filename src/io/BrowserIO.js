@@ -217,6 +217,19 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 	}
 
+	// set headers (note: Content-Type will get overriden if kwArgs.contentType is set)
+	function setHeaders() {
+		if(kwArgs["headers"]) {
+			for(var header in kwArgs["headers"]) {
+				if(header.toLowerCase() == "content-type" && !kwArgs["contentType"]) {
+					kwArgs["contentType"] = kwArgs["headers"][header];
+				} else {
+					http.setRequestHeader(header, kwArgs["headers"][header]);
+				}
+			}
+		}
+	}
+
 	this.addToHistory = function(args){
 		var callback = args["back"]||args["backButton"]||args["handle"];
 		var hash = null;
@@ -462,19 +475,6 @@ dojo.io.XMLHTTPTransport = new function(){
 					if(received){ return; } // Opera 7.6 is foo-bar'd
 					received = true;
 					doLoad(kwArgs, http, url, query, useCache);
-				}
-			}
-		}
-
-		// set headers (note: Content-Type will get overriden if kwArgs.contentType is set)
-		function setHeaders() {
-			if(kwArgs["headers"]) {
-				for(var header in kwArgs["headers"]) {
-					if(header.toLowerCase() == "content-type" && !kwArgs["contentType"]) {
-						kwArgs["contentType"] = kwArgs["headers"][header];
-					} else {
-						http.setRequestHeader(header, kwArgs["headers"][header]);
-					}
 				}
 			}
 		}
