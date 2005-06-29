@@ -12,6 +12,8 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 	this.widgetType = "ResizableTextarea";
 	this.tagName = "dojo:resizabletextarea";
 	this.isContainer = false;
+	this.constrainVertical = false;
+	this.constrainHorizonatal = false;
 	this.textAreaNode = null;
 	this.textAreaContainer = null;
 
@@ -26,23 +28,23 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 			height = "100%";
 		}
 		var hu = dojo.xml.htmlUtil;
-		var iw = parseInt(this.textAreaNode.offsetWidth);
-		var ih = parseInt(dojo.xml.htmlUtil.getInnerHeight(this.textAreaNode));
-		var cols = parseInt(hu.getAttr(this.textAreaNode, "cols"));
-		var rows = parseInt(hu.getAttr(this.textAreaNode, "rows"));
-		var pxpercol = (iw/cols);
-		var pxperrow = (ih/rows);
-		// dj_debug(pxpercol + "px/column");
-		// dj_debug(pxperrow + "px/row");
-
-		// now fit it to it's container
 		var pn = this.textAreaNode.parentNode;
-		var pnw = parseInt(hu.getInnerWidth(pn));
-		var pnh = parseInt(hu.getInnerHeight(pn));
-		// dj_debug(parseInt(pnw/pxpercol));
-		// this.textAreaNode.cols = parseInt(pnw/pxpercol);
-		this.textAreaNode.style.width = pnw+"px";
-		this.textAreaNode.rows = parseInt(pnh/pxperrow);
+
+		if(!this.constrainHorizontal){
+			var iw = parseInt(this.textAreaNode.offsetWidth);
+			var cols = parseInt(hu.getAttr(this.textAreaNode, "cols"));
+			var pxpercol = (iw/cols);
+			var pnw = parseInt(hu.getInnerWidth(pn));
+			this.textAreaNode.style.width = pnw+"px";
+		}
+
+		if(!this.constrainVertical){
+			var ih = parseInt(dojo.xml.htmlUtil.getInnerHeight(this.textAreaNode));
+			var rows = parseInt(hu.getAttr(this.textAreaNode, "rows"));
+			var pxperrow = (ih/rows);
+			var pnh = parseInt(hu.getInnerHeight(pn));
+			this.textAreaNode.rows = parseInt(pnh/pxperrow);
+		}
 	}
 
 	this.postDrag = function(){
