@@ -225,7 +225,7 @@ dojo.webui.widgets.getParser = function(name){
 }
 
 dojo.webui.widgets.fromScript = function(parentNode, name, props){
-	return this.getParser().createComponentFromScript(parentNode, name, props);
+	return dojo.webui.widgets.getParser().createComponentFromScript(parentNode, name, props);
 }
 
 dojo.webui.fromScript = dojo.webui.widgets.fromScript;
