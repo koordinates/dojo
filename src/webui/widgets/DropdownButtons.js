@@ -11,7 +11,6 @@ dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 dojo.hostenv.loadModule("dojo.webui.WidgetManager");
 dojo.hostenv.loadModule("dojo.graphics.*");
-dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
 
 
 dojo.webui.widgets.HTMLDropdownButtons = function() {
