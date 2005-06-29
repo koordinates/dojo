@@ -8,14 +8,7 @@
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
-			src="../../../src/bootstrap1.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../src/hostenv_browser.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../src/bootstrap2.js"></script>
-		<!--
-		<script language="JavaScript" type="te/script>
-		-->
+			src="../../../__package__.js"></script>
 		<script language="JavaScript" type="text/javascript">
 			// pull in all the stuff we need to make the widget go
 			dojo.hostenv.loadModule("dojo.xml.Parse");
@@ -43,8 +36,9 @@
 
 			function pUpgrade(){
 				var pu = document.getElementById("pUpgrade");
-				dojo.webui.widgets.fromScript(pu, "ResizableTextarea", {
-					"dojo:resizabletextarea": { nodeRef: pu }
+				var ra = dojo.webui.widgets.fromScript(pu, "ResizableTextarea", {
+					allowResizeX: "false",
+					"dojo:resizabletextarea": { nodeRef: pu, }
 				});
 			}
 
