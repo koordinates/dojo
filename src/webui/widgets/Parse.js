@@ -27,6 +27,8 @@ dojo.webui.widgets.Parse = function(fragment) {
 						if(djTags[ltn]){
 							fragment[item].tagName = ltn;
 							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
+						}else{
+							dj_debug("no tag handler registed for type: ", ltn);
 						}
 					}
 				}
@@ -145,7 +147,6 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.getPropertySetsByType = function(componentType){
 		var propertySets = [];
 		for(var x=0; x < this.propertySetsList.length; x++){
-			// dj_debug(x);
 			var cpl = this.propertySetsList[x];
 			var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
 			if((cpcc)&&(propertySetId == cpcc[0].value)){
@@ -202,7 +203,6 @@ dojo.webui.widgets.Parse = function(fragment) {
 		var bo = {};
 		for(prop in properties){
 			if(typeof bo[prop] == "undefined"){
-				dj_debug(prop);
 				frag[tagName][prop.toLowerCase()] = [{value: properties[prop]}];
 			}
 		}
