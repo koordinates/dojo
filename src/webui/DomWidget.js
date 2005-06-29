@@ -421,6 +421,8 @@ dojo.webui.HTMLWidget = function(args){
 	// dojo.webui.DomWidget.call(this);
 	this.templateCSSPath = null;
 	this.templatePath = null;
+	this.allowResizeX = true;
+	this.allowResizeY = true;
 
 	this.resizeGhost = null;
 	this.initialResizeCoords = null;
@@ -462,15 +464,19 @@ dojo.webui.HTMLWidget = function(args){
 		}
 		this.initialResizeCoords = coords;
 		this.resizeGhost.style.display = "";
-		this.updateResize(coords);
+		this.updateResize(coords, true);
 	}
 
-	this.updateResize = function(coords){
+	this.updateResize = function(coords, override){
 		var dx = coords.x-this.initialResizeCoords.x;
 		var dy = coords.y-this.initialResizeCoords.y;
 		with(this.resizeGhost.style){
-			width = this.initialResizeCoords.innerWidth + dx + "px";
-			height = this.initialResizeCoords.innerHeight + dy + "px";
+			if((this.allowResizeX)||(override)){
+				width = this.initialResizeCoords.innerWidth + dx + "px";
+			}
+			if((this.allowResizeY)||(override)){
+				height = this.initialResizeCoords.innerHeight + dy + "px";
+			}
 		}
 	}
 
@@ -479,8 +485,12 @@ dojo.webui.HTMLWidget = function(args){
 		var dx = coords.x-this.initialResizeCoords.x;
 		var dy = coords.y-this.initialResizeCoords.y;
 		with(this.domNode.style){
-			width = this.initialResizeCoords.innerWidth + dx + "px";
-			height = this.initialResizeCoords.innerHeight + dy + "px";
+			if(this.allowResizeX){
+				width = this.initialResizeCoords.innerWidth + dx + "px";
+			}
+			if(this.allowResizeY){
+				height = this.initialResizeCoords.innerHeight + dy + "px";
+			}
 		}
 		this.resizeGhost.style.display = "none";
 	}
