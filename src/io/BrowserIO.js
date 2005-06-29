@@ -385,6 +385,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		this.historyStack.push(last);
 	}
 
+	var hasXmlHttp = dojo.hostenv.getXmlhttpObject() ? true : false;
 	this.canHandle = function(kwArgs){
 		// canHandle just tells dojo.io.bind() if this is a good transport to
 		// use for the particular type of request.
@@ -392,7 +393,8 @@ dojo.io.XMLHTTPTransport = new function(){
 		// FIXME: we need to determine when form values need to be
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
-		return dojo.alg.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "text/xml", "text/javascript"])
+		return hasXmlHttp
+			&& dojo.alg.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "text/xml", "text/javascript"])
 			&& dojo.alg.inArray(kwArgs["method"].toLowerCase(), ["post", "get"])
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
@@ -464,13 +466,28 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 		}
 
+		// set headers (note: Content-Type will get overriden if kwArgs.contentType is set)
+		function setHeaders() {
+			if(kwArgs["headers"]) {
+				for(var header in kwArgs["headers"]) {
+					if(header.toLowerCase() == "content-type" && !kwArgs["contentType"]) {
+						kwArgs["contentType"] = kwArgs["headers"][header];
+					} else {
+						http.setRequestHeader(header, kwArgs["headers"][header]);
+					}
+				}
+			}
+		}
+
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
 			http.open("POST", url, async);
+			setHeaders();
 			http.setRequestHeader("Content-Type", kwArgs["contentType"] || "application/x-www-form-urlencoded");
 			http.send(query);
 		}else{
 			http.open("GET", url+((query!="") ? "?"+query : ""), async);
+			setHeaders();
 			http.send(null);
 		}
 
