@@ -16,7 +16,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 		for(var item in fragment){
 			// if we have items to parse/create at this level, do it!
 			try{
-				if((fragment[item]["tagName"])&&
+				if( (fragment[item]["tagName"])&&
 					(fragment[item] != fragment["nodeRef"])){
 					var tn = new String(fragment[item]["tagName"]);
 					// we split so that you can declare multiple
@@ -26,8 +26,6 @@ dojo.webui.widgets.Parse = function(fragment) {
 						var ltn = dojo.text.trim(tna[x]).toLowerCase();
 						if(djTags[ltn]){
 							fragment[item].tagName = ltn;
-							// dj_debug(djTags[tn.toLowerCase()]);
-							// dj_debug(parentComp);
 							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
 						}
 					}
@@ -201,8 +199,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 		var frag = {};
 		var tagName = "dojo:" + componentName.toLowerCase();
 		frag[tagName] = {};
-		for (prop in properties) {
-			if (properties[prop]) {
+		var bo = {};
+		for(prop in properties){
+			if(typeof bo[prop] == "undefined"){
+				dj_debug(prop);
 				frag[tagName][prop.toLowerCase()] = [{value: properties[prop]}];
 			}
 		}
