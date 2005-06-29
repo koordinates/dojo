@@ -1,3 +1,4 @@
 dojo.hostenv.conditionalLoadModule({
-	browser: ["dojo.webui.Widget"]
+	common: ["dojo.webui.Widget", "dojo.webui.widgets.Parse", "dojo.webui.DragAndDrop", "dojo.webui.WidgetManager"],
+	browser: ["dojo.webui.DomWidget"]
 });
