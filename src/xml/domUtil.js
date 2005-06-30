@@ -32,7 +32,8 @@ dojo.xml.domUtil = new function(){
 				return "dojo:" + tagName.substring(4).toLowerCase();
 			}
 
-			var djt = node.getAttribute("dojoType");
+			// allow lower-casing
+			var djt = node.getAttribute("dojoType")||node.getAttribute("dojotype");
 			if(djt){
 				return "dojo:"+djt.toLowerCase();
 			}
@@ -48,6 +49,20 @@ dojo.xml.domUtil = new function(){
 			if(djt){
 				return "dojo:"+djt.toLowerCase();
 			}
+
+			if((!dj_global["djConfig"])||(!djConfig["ignoreClassNames"])){
+				// FIXME: should we make this optionally enabled via djConfig?
+				var classes = node.getAttribute("class");
+				if((classes)&&(classes.indexOf("dojo-") != -1)){
+					classes = classes.split(" ");
+					for(var x=0; x<classes.length; x++){
+						if((classes[x].length>5)&&(classes[x].indexOf("dojo-"))){
+							return "dojo:"+classes[x].substr(5);
+						}
+					}
+				}
+			}
+
 		}
 		return tagName.toLowerCase();
 	}
