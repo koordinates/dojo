@@ -70,6 +70,7 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.getLastChildTag = function(parentNode) {
+		if(!node) { return null; }
 		var node = parentNode.lastChild;
 		while(node && node.nodeType != 1) {
 			node = node.previousSibling;
@@ -78,6 +79,7 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.getNextSiblingTag = function(node) {
+		if(!node) { return null; }
 		do {
 			node = node.nextSibling;
 		} while(node && node.nodeType != 1);
@@ -85,6 +87,7 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.getPreviousSiblingTag = function(node) {
+		if(!node) { return null; }
 		do {
 			node = node.previousSibling;
 		} while(node && node.nodeType != 1);
