@@ -1,18 +1,6 @@
-/* Example markup:
-
-<ul dojoType="tabs">
-	<li><a href="/tab1">Tab 1</a></li>
-	<li><a href="/tab2">Tab 2</a></li>
-	<li><a href="/tab3">Tab 3</a></li>
-	<li><a href="/tab4">Tab 4</a></li>
-	<li><a href="#info">More Info</a></li>
-</ul>
-*/
-
 dojo.hostenv.startPackage("dojo.webui.widgets.Tabs");
 dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTabs");
 
-dojo.hostenv.loadModule("dojo.xml.*"); // FIXME: Shouldn't need to include
 dojo.hostenv.loadModule("dojo.io.*");
 dojo.hostenv.loadModule("dojo.webui.DomWidget");
 dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
@@ -39,14 +27,18 @@ dojo.webui.widgets.HTMLTabs = function() {
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(!this.domNode) { dj_error("HTMLTabs: No node reference"); }
 
-		this.panelContainer = document.createElement("div");
-		this.panelContainer.className = "dojoTabPanelContainer";
-		var next = this.domNode.nextSibling;
-		if(next) {
-			this.domNode.parentNode.insertBefore(this.panelContainer, next);
+		if(args["tabtarget"]) {
+			this.panelContainer = document.getElementById(args["tabtarget"]);
 		} else {
-			this.domNode.parentNode.appendChild(this.panelContainer);
+			this.panelContainer = document.createElement("div");
+			var next = this.domNode.nextSibling;
+			if(next) {
+				this.domNode.parentNode.insertBefore(this.panelContainer, next);
+			} else {
+				this.domNode.parentNode.appendChild(this.panelContainer);
+			}
 		}
+		dojo.xml.htmlUtil.addClass(this.panelContainer, "dojoTabPanelContainer");
 
 		var li = dojo.xml.domUtil.getFirstChildTag(this.domNode);
 		while(li) {
@@ -79,9 +71,9 @@ dojo.webui.widgets.HTMLTabs = function() {
 		dojo.event.connect(a, "onclick", this, "selectTab");
 
 		this.tabs.push(li);
-		var panel = {url: url, loaded: false, id: url.charAt(0) == "#" ? url.substring(1) : null};
+		var panel = {url: url, loaded: false, id: null};
 		this.panels.push(panel);
-		if(panel.id) { this.getPanel(panel); }
+		if(panel.url.charAt(0) == "#") { this.getPanel(panel); }
 
 		if(this.selected == -1 && dojo.xml.htmlUtil.hasClass(li, "current")) {
 			this.selected = this.tabs.length-1;
@@ -120,17 +112,23 @@ dojo.webui.widgets.HTMLTabs = function() {
 	this.getPanel = function(panel) {
 		if(!panel || panel.loaded) { return; }
 
-		if(panel.id) {
-			var id = panel.id;
-			var node = document.getElementById(id);
+		var id = dojo.xml.domUtil.getUniqueId();
+		if(panel.url.charAt(0) == "#") {
+			var origNode = document.getElementById(panel.url.substring(1));
+			origNode.style.display = "none";
+			var node = origNode.cloneNode(true);
+			node.id = id;
+			this.panelContainer.appendChild(node);
 		} else {
-			var id = dojo.xml.domUtil.getUniqueId();
 			var node = document.createElement("div");
 			node.innerHTML = "Loading...";
+			node.style.display = "none";
 			node.id = id;
+			this.panelContainer.appendChild(node);
 
 			dojo.io.bind({
 				url: panel.url,
+				useCache: true,
 				mimetype: "text/html",
 				handler: function(type, data, e) {
 					document.getElementById(id).innerHTML = data;
@@ -138,7 +136,6 @@ dojo.webui.widgets.HTMLTabs = function() {
 			});
 		}
 
-		this.panelContainer.appendChild(node);
 		panel.id = node.id;
 		panel.loaded = true;
 	}
