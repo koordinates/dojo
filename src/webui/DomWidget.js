@@ -359,8 +359,10 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	
 	// method over-ride
 	this.destroyRendering = function(){
-		var tempNode = this.domNode.parentNode.removeChild(this.domNode);
-		delete tempNode;
+		try{
+			var tempNode = this.domNode.parentNode.removeChild(this.domNode);
+			delete tempNode;
+		}catch(e){ /* squelch! */ }
 	}
 
 	// method over-ride
