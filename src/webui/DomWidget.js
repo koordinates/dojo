@@ -313,6 +313,11 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		var node = null;
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
+			// do root conversion on the template string if required
+			this.templateString = this.templateString.replace(/\$\{baseScriptUri\}/mg, dojo.hostenv.getBaseScriptUri());
+			this.templateString = this.templateString.replace(/\$\{dojoRoot\}/mg, dojo.hostenv.getBaseScriptUri());
+			// FIXME: what other replacement productions do we want to make available? Arbitrary eval's?
+
 			// otherwise, we are required to instantiate a copy of the template
 			// string if one is provided.
 			
