@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				baseRelativePath: "../../",
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../__package__.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.webui.*");
+			function init(){
+				dj_debug(dojo.xml.Parse);
+			}
+
+			dojo.event.connect(dojo.hostenv, "loaded", "init");
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+	</body>
+</html>
