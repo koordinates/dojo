@@ -22,7 +22,7 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 		obj.widgetType = dummyName;
 	}
 
-	cpath2 = dojo.hostenv.getBaseScriptUri()+"/"+cpath;
+	var cpath2 = dojo.hostenv.getBaseScriptUri()+"/"+cpath;
 	if((cpath)&&(!dojo.webui._cssFiles[cpath2])){
 		// FIXME: extra / being inserted in URL?
 		dojo.xml.htmlUtil.insertCSSFile(cpath2);
