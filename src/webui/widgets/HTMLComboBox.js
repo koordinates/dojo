@@ -14,6 +14,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	this.textInputNode = null;
 	this.optionsListNode = null;
 	this.downArrowNode = null;
+	this.cbTableNode = null;
 	this.searchTimer = null;
 	this.searchDelay = 100;
 	this.timeoutWrapperName = null;
@@ -86,12 +87,16 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	}
 
 	this.onKeyDown = function(evt){
-		dj_debug(evt);
+		// dj_debug(evt);
+	}
+
+	this.setSelectedValue = function(value){
+		// FIXME, not sure what to do here!
+		this.hideResultList();
 	}
 
 	this.onKeyUp = function(evt){
-		// esc is 27
-		if(evt.keyCode == 27){
+		if(evt.keyCode == 27){ // esc is 27
 			this.hideResultList();
 			if(_prev_key_esc){
 				this.textInputNode.blur();
@@ -99,6 +104,9 @@ dojo.webui.widgets.HTMLComboBox = function(){
 			}
 			_prev_key_esc = true;
 			return;
+		}else if(evt.keyCode == 13){ // enter is 13
+			// FIXME: what do we want to do here?
+			this.setSelectedValue(this.textInputNode.valu);
 		}
 
 		// backspace is 8
@@ -183,7 +191,7 @@ dojo.webui.widgets.HTMLComboBox = function(){
 			return;
 		}
 		var tgt = evt.target;
-		while(!tgt.getAttribute("resultName")){
+		while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 			tgt = tgt.parentNode;
 			if(tgt === document.body){
 				return false;
@@ -216,6 +224,8 @@ dojo.webui.widgets.HTMLComboBox = function(){
 				marginTop = dojo.xml.htmlUtil.totalOffsetTop(this.optionsListNode.parentNode)+"px";
 			/*
 				left = dojo.xml.htmlUtil.totalOffsetLeft(this.optionsListNode.parentNode)+3+"px";
+				zIndex = "1000";
+				position = "relative";
 			*/
 			}
 		}

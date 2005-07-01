@@ -198,7 +198,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 
 		properties is an object of name value pairs
 	*/
-	this.createComponentFromScript = function(nodeRef, componentName, properties) {
+	this.createComponentFromScript = function(nodeRef, componentName, properties){
 		var frag = {};
 		var tagName = "dojo:" + componentName.toLowerCase();
 		frag[tagName] = {};
@@ -212,6 +212,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 		frag[tagName].nodeRef = nodeRef;
 		frag.tagName = tagName;
 		var fragContainer = [frag];
+		// FIXME: should this really return an array?
 		return this.createComponents(fragContainer);
 	}
 }

@@ -6,8 +6,9 @@
 	<table class="dojoComboBox"
 		cellpadding="0"
 		cellmargin="0"
-		border="0">
-		<tr>
+		border="0"
+		dojoAttachPoint="cbTableNode">
+		<tr valign="top">
 			<td>
 				<input type="text" class="comboBoxInput"
 					dojoAttachEvent="onKeyDown; onKeyUp;"
@@ -17,9 +18,11 @@
 				<!-- FIXME: we need a simple way to make sure that relative
 				location replacement gets done -->
 				<img border="0" 
+					hspace="0"
+					vspace="0"
 					dojoAttachPoint="downArrowNode"
 					dojoAttachEvent="onClick: startSearchFromInput;"
-					dojoOnBuild="node.src = dojo.hostenv.getBaseScriptUri()+'/src/webui/widgets/templates/images/combo_box_arrow.png';">
+					src="${dojoRoot}/src/webui/widgets/templates/images/combo_box_arrow.png">
 			</td>
 		</tr>
 		<tr>
