@@ -4,8 +4,7 @@ dojo.hostenv.loadModule("dojo.event.*");
 dojo.hostenv.loadModule("dojo.text.*");
 dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
-dojo.hostenv.loadModule("dojo.xml.domUtil");
-dojo.hostenv.loadModule("dojo.xml.htmlUtil");
+dojo.hostenv.loadModule("dojo.xml.*");
 
 dojo.webui._cssFiles = {};
 
