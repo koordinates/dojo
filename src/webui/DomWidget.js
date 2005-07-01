@@ -7,6 +7,8 @@ dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.xml.domUtil");
 dojo.hostenv.loadModule("dojo.xml.htmlUtil");
 
+dojo.webui._cssFiles = {};
+
 // static method to build from a template w/ or w/o a real widget in place
 dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, templateString) {
 	var tpath = templatePath || obj.templatePath;
@@ -20,10 +22,12 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 		obj.widgetType = dummyName;
 	}
 
-	if(cpath){
+	cpath2 = dojo.hostenv.getBaseScriptUri()+"/"+cpath;
+	if((cpath)&&(!dojo.webui._cssFiles[cpath2])){
 		// FIXME: extra / being inserted in URL?
-		dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+cpath);
+		dojo.xml.htmlUtil.insertCSSFile(cpath2);
 		obj.templateCSSPath = null;
+		dojo.webui._cssFiles[cpath2] = true;
 	}
 
 	var ts = tmplts[obj.widgetType];
