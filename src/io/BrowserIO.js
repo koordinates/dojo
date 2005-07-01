@@ -188,7 +188,18 @@ dojo.io.XMLHTTPTransport = new function(){
 	function doLoad(kwArgs, http, url, query, useCache) {
 		if(http.status==200) {
 			var ret;
-			if(kwArgs.mimetype == "text/javascript") {
+			if(kwArgs.method.toLowerCase() == "head") {
+				var headers = http.getAllResponseHeaders();
+				ret = {};
+				ret.toString = function() { return headers; }
+				var values = headers.split(/[\r\n]+/g);
+				for(var i = 0; i < values.length; i++) {
+					var pair = values[i].match(/^([^:]+)\s*:\s*(.+)$/i);
+					if(pair) {
+						ret[pair[1]] = pair[2];
+					}
+				}
+			} else if(kwArgs.mimetype == "text/javascript") {
 				ret = dj_eval(http.responseText);
 			} else if(kwArgs.mimetype == "text/xml") {
 				ret = http.responseXML;
@@ -408,7 +419,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// requests.
 		return hasXmlHttp
 			&& dojo.alg.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "text/xml", "text/javascript"])
-			&& dojo.alg.inArray(kwArgs["method"].toLowerCase(), ["post", "get"])
+			&& dojo.alg.inArray(kwArgs["method"].toLowerCase(), ["post", "get", "head"])
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
@@ -486,7 +497,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			http.setRequestHeader("Content-Type", kwArgs["contentType"] || "application/x-www-form-urlencoded");
 			http.send(query);
 		}else{
-			http.open("GET", url+((query!="") ? "?"+query : ""), async);
+			http.open(kwArgs.method.toUpperCase(), url+((query!="") ? "?"+query : ""), async);
 			setHeaders(http, kwArgs);
 			http.send(null);
 		}
