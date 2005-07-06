@@ -58,6 +58,9 @@ dojo.webui.widgets.HTMLTabs = function() {
 			var li = a.parentNode;
 			title = a.innerHTML;
 			url = a.getAttribute("href");
+			if(url.indexOf("#") > 0 && location.href.split("#")[0] == url.split("#")[0]) {
+				url = "#" + url.split("#")[1];
+			}
 		} else {
 			// programmatically adding
 			var li = document.createElement("li");
