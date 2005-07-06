@@ -71,7 +71,7 @@ dojo_ie_clobber = new function(){
 	}
 }
 
-if(dojo.render.html.ie){
+if(dojo.render.html.ie && !dojo.hostenv.ie_prevent_clobber_){
 	window.onunload = function(){
 		dojo_ie_clobber.clobber();
 	}
