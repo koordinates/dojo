@@ -136,23 +136,31 @@ dojo.event.browser = new function(){
 	}
 
 	this.fixEvent = function(evt){
-		/* From the requirements doc:
-
-		  Given that normalization of event properties is a goal, the
-		  properties that should be normalized for all DOM events are:
-
-			+ type
-			+ target
-			+ currentTarget
-			+ relatedTarget
-
-		  Methods that must be globally available on the event object include:
-
-			+ preventDefault()
-			+ stopPropagation()
-		*/
 		if(dojo.render.html.ie){
-			return new dojo.event.IEEvent(evt||window["event"]);
+			if(!evt.target) { evt.target = evt.srcElement; }
+			if(!evt.currentTarget) { evt.currentTarget = evt.srcElement; }
+			if(!evt.layerX) { evt.layerX = evt.offsetX; }
+			if(!evt.layerY) { evt.layerY = evt.offsetY; }
+			// mouseover
+			if(evt.fromElement){ evt.relatedTarget = evt.fromElement; }
+			// mouseout
+			if(evt.toElement){ evt.relatedTarget = evt.toElement; }
+			evt.callListener = function(listener, curTarget){
+				if(typeof listener != 'function'){
+					dj_throw("listener not a function: " + listener);
+				}
+				evt.currentTarget = curTarget;
+				var ret = listener.call(curTarget, evt);
+				return ret;
+			}
+
+			evt.stopPropagation = function(){
+				evt.cancelBubble = true;
+			}
+
+			evt.preventDefault = function(){
+			  evt.returnValue = false;
+			}
 		}
 		return evt;
 	}
@@ -166,69 +174,4 @@ dojo.event.browser = new function(){
 			ev.stopPropagation();
 		}
 	}
-}
-
-dojo.event.IEEvent = function(evt){
-	for(var prop in evt) {
-		if(!this[prop]) {
-			this[prop] = evt[prop];
-		}
-	}
-	// this class is mainly taken from Burst's WindowEvent.js
-	this.ie_event_ = evt;
-	this.target = evt.srcElement;
-	this.type = evt.type;
-	this.layerX = evt.offsetX;
-	this.layerY = evt.offsetY;
-
-	// keyCode is not standardized in any w3 API yet (Level 3 Events is in draft).
-	// some browsers store it in 'which'
-	if(dojo.alg.has('keyCode', evt)){
-		this.keyCode = ev.keyCode;
-	}
-
-	// below are all for MouseEvent.
-	var this_obj = this;
-	// these are the same in both
-	dojo.alg.forEach(['shiftKey', 'altKey', 'ctrlKey', 'metaKey'], 
-		function(k){
-			if(dojo.alg.has(evt, k)){ 
-				this_obj[k] = evt[k];
-			} 
-		}
-	);
-
-	if(typeof evt.button != 'undefined'){
-		// these are different in interpretation, but we copy them anyway
-		dojo.alg.forEach(['button', 'screenX', 'screenY', 'clientX', 'clientY'], 
-			function(k){
-				if(dojo.alg.has(evt, k)){
-					this_obj[k] = evt[k];
-				}
-			}
-		);
-	}
-
-	// mouseover
-	if(evt.fromElement){ this.relatedTarget = evt.fromElement; }
-	// mouseout
-	if(evt.toElement){ this.relatedTarget = evt.toElement; }
-
-	this.callListener = function(listener, curTarget){
-		if(typeof listener != 'function'){
-			dj_throw("listener not a function: " + listener);
-		}
-		this.currentTarget = curTarget;
-		var ret = listener.call(curTarget, this);
-		return ret;
-	}
-
-	this.stopPropagation = function(){
-		this.ie_event_.cancelBubble = true;
-	}
-
-	this.preventDefault = function(){
-	  this.ie_event_.returnValue = false;
-	}
-
 }
