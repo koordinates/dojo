@@ -186,7 +186,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
-		if(http.status==200) {
+		if(http.status==200 || (location.protocol=="file:" && http.status==0)) {
 			var ret;
 			if(kwArgs.method.toLowerCase() == "head") {
 				var headers = http.getAllResponseHeaders();
@@ -223,7 +223,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			if( typeof kwArgs.error == "function" ) {
 				kwArgs.error("error", errObj);
 			} else if( typeof kwArgs.handle == "function" ) {
-				kwArgs.handle("error", errObj, errObj);
+				kwArgs.handle("error", errObj, http);
 			}
 		}
 	}
@@ -482,7 +482,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// build a handler function that calls back to the handler obj
 		if(async){
 			http.onreadystatechange = function(){
-				if((4==http.readyState)&&(http.status)){
+				if(4==http.readyState){
 					if(received){ return; } // Opera 7.6 is foo-bar'd
 					received = true;
 					doLoad(kwArgs, http, url, query, useCache);
