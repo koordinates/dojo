@@ -10,7 +10,7 @@ dojo.graphics.htmlEffects = new function() {
 	}
 
 	this.fadeIn = function(node, duration, cbObj, callback) {
-		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0.99999, cbObj, callback);
+		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 1, cbObj, callback);
 	}
 
 	this.fade = function(node, duration, startOpac, endOpac, cbObj, callback) {
