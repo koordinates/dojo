@@ -67,8 +67,6 @@ with(dojo.render){
 	*/
 };
 
-// alert(dojo.render.html.safari);
-
 dojo.hostenv.startPackage("dojo.hostenv");
 
 dojo.hostenv.name_ = 'browser';
@@ -81,9 +79,6 @@ dojo.hostenv.getXmlhttpObject = function(){
 	var last_e = null;
 	try{ http = new XMLHttpRequest(); }catch(e){}
     if(!http){
-		// http = new XMLHttpRequest();
-	// }else if(typeof ActiveXObject !== 'undefined') {
-
 		for(var i=0; i<3; ++i){
 			var progid = DJ_XMLHTTP_PROGIDS[i];
 			try{
@@ -94,10 +89,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 
 			if(http){
 				DJ_XMLHTTP_PROGIDS = [progid];  // so faster next time
-				// dj_debug("successfully made an ActiveXObject using progid ", progid);
 				break;
-			}else{
-				// window.alert("failed new ActiveXObject(" + progid + "): " + e);
 			}
 		}
 	}
@@ -125,39 +117,20 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	if(async_cb){
 		http.onreadystatechange = function(){ 
 			if((4==http.readyState)&&(http["status"])){
-				// dojo.hostenv.inFlightCount--;
-				// async_cb(((200 == http.status)) ? http.responseText : null);
 				if(http.status==200){
 					dj_debug("LOADED URI: "+uri);
 					async_cb(http.responseText);
-				// }else{
-				//	dj_debug(http.status+": "+http.statusText+" "+uri);
-					// async_cb();
 				}
 			}
 		}
 	}
 
-	// dojo.hostenv.inFlightCount++;
 	http.open('GET', uri, async_cb ? true : false);
 	http.send(null);
 	if(async_cb){
 		return null;
 	}
 
-	/*
-	if(http.status != 200){
-		if(!fail_ok){
-			dj_throw("Request for uri '" + uri + "' resulted in " + http.status + " (" + http.statusText + ")");
-			return null;
-		}
-
-		if(!http.responseText) {
-			if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no responseText");
-			return null;
-		}
-	}
-	*/
 	return http.responseText;
 }
 
@@ -183,22 +156,6 @@ function dj_last_script_src() {
 if(!dojo.hostenv["library_script_uri_"]){
 	dojo.hostenv.library_script_uri_ = dj_last_script_src();
 }
-
-// dojo.hostenv.loadUri = function(uri){
-	/* FIXME: adding a script element doesn't seem to be synchronous, and so
-	 * checking for namespace or object existance after loadUri using this
-	 * method will error out. Need to figure out some other way of handling
-	 * this!
-	 */
-	/*
-	var se = document.createElement("script");
-	se.src = uri;
-	var head = document.getElementsByTagName("head")[0];
-	head.appendChild(se);
-	// document.write("<script type='text/javascript' src='"+uri+"' />");
-	return 1;
-}
-*/
 
 dojo.hostenv.println = function(s){
 	var ti = null;
@@ -258,7 +215,6 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 });
 
 // we assume that we haven't hit onload yet. Lord help us.
-// document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+((dojo.render.html.moz) ? 'about:blank' : (dojo.hostenv.base_relative_path_+'/blank.html'))+"'></iframe>");
 if((!window["djConfig"])||(!window["djConfig"]["preventBackButtonFix"])){
 	document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'/blank.html')+"'></iframe>");
 }

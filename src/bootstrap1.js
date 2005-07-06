@@ -545,17 +545,13 @@ dojo.hostenv.modulesLoaded = function(){
 * dj_load is an alias for dojo.hostenv.loadModule
 */
 dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
-	// alert("dojo.hostenv.loadModule('"+modulename+"');");
 	var module = this.findModule(modulename, false);
 	if(module){
 		return module;
 	}
 
 	// protect against infinite recursion from mutual dependencies
-	if(!dj_undef(modulename, this.loading_modules_)){
-		// dj_throw("recursive attempt to load module '" + modulename + "'");
-		dj_debug("recursive attempt to load module '" + modulename + "'");
-	}else{
+	if(dj_undef(modulename, this.loading_modules_)){
 		this.addedToLoadingCount.push(modulename);
 	}
 	this.loading_modules_[modulename] = 1;
@@ -594,7 +590,6 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		modulename = nsyms.join('.');
 		var ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 		if((!ok)&&(!exact_only)){
-			// var syms = modulename.split(/\./);
 			syms.pop();
 			while(syms.length){
 				relpath = syms.join('/') + '.js';
@@ -639,7 +634,6 @@ dojo.hostenv.startPackage = function(packname){
 	var syms = packname.split(/\./);
 	if(syms[syms.length-1]=="*"){
 		syms.pop();
-		// dj_debug("startPackage: popped a *, new packagename is : ", sysm.join("."));
 	}
 	return dj_eval_object_path(syms.join("."), true);
 }
@@ -655,13 +649,11 @@ dojo.hostenv.startPackage = function(packname){
 dojo.hostenv.findModule = function(modulename, must_exist) {
 	// check cache
 	if(!dj_undef(modulename, this.modules_)){
-	// if(typeof this.modules_[modulename] != 'undefined'){
 		return this.modules_[modulename];
 	}
 
 	// see if symbol is defined anyway
 	var module = dj_eval_object_path(modulename);
-	// dj_debug(modulename+": "+module);
 	if((typeof module !== 'undefined')&&(module)){
 		return this.modules_[modulename] = module;
 	}

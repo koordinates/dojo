@@ -39,6 +39,4 @@ dojo.hostenv.require = dojo.hostenv.loadModule;
 dojo.hostenv.provide = dojo.hostenv.startPackage;
 
 dj_debug("Using host environment: ", dojo.hostenv.name_);
-// print("Using host environment: ", dojo.hostenv.name_);
 dj_debug("getBaseScriptUri()=", dojo.hostenv.getBaseScriptUri());
-// print("getBaseScriptUri()=", dojo.hostenv.getBaseScriptUri());
