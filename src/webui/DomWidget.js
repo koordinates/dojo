@@ -240,6 +240,7 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// dj_debug("add child took: ", new Date()-start, "ms");
 	}
 
+	// FIXME: we really need to normalize how we do things WRT "destroy" vs. "remove"
 	this.removeChild = function(widget){
 		for(var x=0; x<this.children.length; x++){
 			if(this.children[x] === widget){

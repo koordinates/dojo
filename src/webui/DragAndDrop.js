@@ -149,22 +149,36 @@ dojo.webui.Selection = function(){
 
 	this.selected = [];
 	var selectionIndexProp = "_dojo.webui.selection.index";
-	var selectionTypeProp = "_dojo.webui.selection.type";
+	// var selectionTypeProp = "_dojo.webui.selection.type";
 
 	this.add = function(obj, type){
 		if(typeof obj["setSelected"] == "function"){
 			obj.setSelected(true);
 		}
-		obj[selectionIndexProp] = this.selected.length;
-		this.selected.push(obj);
-		obj[selectionTypeProp] = (!type) ? (new String(typeof obj)) : type;
+		// obj[selectionIndexProp] = this.selected.length;
+		this.selected.push([obj, ((!type) ? (new String(typeof obj)) : type)]);
+		// obj[selectionTypeProp] = (!type) ? (new String(typeof obj)) : type;
 		// dj_debug(obj[selectionTypeProp]);
+	}
+
+	this.getSelected = function(){
+		var ret = [];
+		for(var x=0; x<this.selected.length; x++){
+			if(this.selected[x]){
+				ret.push({
+					value: this.selected[x][0],
+					type: this.selected[x][1]
+				});
+			}
+		}
+		return ret;
 	}
 
 	this.getTypes = function(){
 		var uniqueTypes = [];
 		for(var x=0; x<this.selected.length; x++){
-			var st = this.selected[x][selectionTypeProp];
+			// var st = this.selected[x][selectionTypeProp];
+			var st = this.selected[x][1];
 			if((this.selected[x])&&(!uniqueTypes[st])){
 				uniqueTypes[st] = true;
 				uniqueTypes.push(st);
@@ -188,8 +202,8 @@ dojo.webui.Selection = function(){
 		}else{
 			for(var x=0; x<this.selected.length; x++){
 				if(this.selected[x] === obj){
-					delete this.selected[x][selectionIndexProp];
-					delete this.selected[x][selectionTypeProp];
+					// delete this.selected[x][selectionIndexProp];
+					// delete this.selected[x][selectionTypeProp];
 					delete this.selected[x];
 				}
 			}

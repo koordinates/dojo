@@ -1,11 +1,14 @@
 dojo.hostenv.startPackage("dojo.webui.widgets.HTMLButton");
 
 dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+dojo.hostenv.loadModule("dojo.webui.Widget");
+dojo.hostenv.loadModule("dojo.webui.DomWidget");
 
 dojo.webui.widgets.HTMLButton = function(){
 	// if DOMButton turns into a mixin, we should subclass Button instead and
 	// just mix in the DOMButton properties.
-	dojo.webui.widgets.DomButton.call(this);
+	// dojo.webui.widgets.DomButton.call(this);
+	dojo.webui.widgets.Button.call(this);
 	dojo.webui.HTMLWidget.call(this);
 
 	this.templatePath = "src/webui/widgets/templates/HTMLButtonTemplate.html";
@@ -36,6 +39,7 @@ new function(){ // namespace protection closure
 }; // FIXME: why isnt the (function(){})(); syntax working here??
 */
 
-dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.widgets.DomButton);
+// dj_inherits(dojo.webui.widgets.HTMLButton, dojo.webui.DomWidget);
+dojo.webui.widgets.HTMLButton.prototype =  new dojo.webui.DomWidget();
 
 // dojo.webui.widgets.HTMLButton.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
