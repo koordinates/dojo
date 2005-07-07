@@ -207,7 +207,8 @@ dojo.render = {
 		opera: false,
 		khtml: false,
 		safari: false,
-		moz: false
+		moz: false,
+		prefixes: ["html"]
 	},
 	svg: {
 		capable: false,
@@ -217,7 +218,8 @@ dojo.render = {
 		},
 		corel: false,
 		adobe: false,
-		batik: false
+		batik: false,
+		prefixes: ["svg"]
 	},
 	swf: {
 		capable: false,
@@ -225,7 +227,8 @@ dojo.render = {
 			builtin: false,
 			plugin: false
 		},
-		mm: false
+		mm: false,
+		prefixes: ["Swf", "Flash", "Mm"]
 	},
 	swt: {
 		capable: false,
@@ -233,7 +236,8 @@ dojo.render = {
 			builtin: false,
 			plugin: false
 		},
-		ibm: false
+		ibm: false,
+		prefixes: ["Swt"]
 	}
 };
 

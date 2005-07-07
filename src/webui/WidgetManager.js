@@ -110,28 +110,28 @@ dojo.webui.widgetManager = new function(){
 		// if we didn't get one there, then we need to run through the
 		// classname location algorithm
 
-		// step 1: look for a rendering-context specific version of our widget
-		// name
-		// /alex goes looking for a good way to do this...
-		// ...oh fuck it, for now we' hard-code in an "HTML" prefix and see if
-		// it dies, at which point we'll drop the prefix and just try to find
-		// the base class.
+		// look for a rendering-context specific version of our widget name
 		for(var i = 0; i < widgetPackages.length; i++){
 			var pn = widgetPackages[i];
 			var pkg = dj_eval_object_path(pn);
 
 			for(var x in pkg){
 				var xlc = (new String(x)).toLowerCase();
-				if(dojo.render.html.capable){
-					if(("html"+widgetName).toLowerCase() == xlc){
-						knownWidgetImplementations[xlc] = pkg[x];
-						return pkg[x];
+				for(var y in dojo.render){
+					if((dojo.render[y]["capable"])&&(dojo.render[y].capable === true)){
+						var ps = dojo.render[y].prefixes;
+						for(var z=0; z<ps.length; z++){
+							if((ps[z]+widgetName).toLowerCase() == xlc){
+								knownWidgetImplementations[xlc] = pkg[x];
+								return pkg[x];
+							}
+						}
 					}
-				}else if(dojo.render.svg.capable){
-					if(("svg"+widgetName).toLowerCase() == xlc){
-						knownWidgetImplementations[xlc] = pkg[x];
-						return pkg[x];
-					}
+				}
+				// this is the fallback to the base class. There's still some debate as to whether or not this is a good idea.
+				if((widgetName.toLowerCase()== xlc)&&(typeof pkg[x] == "function")){
+					knownWidgetImplementations[xlc] = pkg[x];
+					return pkg[x];
 				}
 			}
 		}
