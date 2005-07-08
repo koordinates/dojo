@@ -128,11 +128,13 @@ dojo.webui.widgetManager = new function(){
 						}
 					}
 				}
+				/*
 				// this is the fallback to the base class. There's still some debate as to whether or not this is a good idea.
 				if((widgetName.toLowerCase()== xlc)&&(typeof pkg[x] == "function")){
 					knownWidgetImplementations[xlc] = pkg[x];
 					return pkg[x];
 				}
+				*/
 			}
 		}
 	}
