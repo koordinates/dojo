@@ -1,3 +1,6 @@
+dojo.hostenv.startPackage("dojo.collections.ArrayList");
+dojo.hostenv.loadModule("dojo.collections.Collections");
+
 dojo.collections.ArrayList = function(arr){
 	var items = [];
 	if (arr) items = items.concat(arr);

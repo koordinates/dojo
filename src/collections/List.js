@@ -1,3 +1,6 @@
+dojo.hostenv.startPackage("dojo.collections.List");
+dojo.hostenv.loadModule("dojo.collections.Collections");
+
 dojo.collections.List = function(dictionary){
 	var items = {};
 	var q = [];

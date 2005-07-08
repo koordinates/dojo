@@ -1,3 +1,6 @@
+dojo.hostenv.startPackage("dojo.collections.Stack");
+dojo.hostenv.loadModule("dojo.collections.Collections");
+
 dojo.collections.Stack = function(arr){
 	var q = [];
 	if (arr) q = q.concat(arr);

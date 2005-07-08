@@ -1,3 +1,6 @@
+dojo.hostenv.startPackage("dojo.collections.SortedList");
+dojo.hostenv.loadModule("dojo.collections.Collections");
+
 dojo.collections.SortedList = function(dictionary){
 	var items = {};
 	var q = [];

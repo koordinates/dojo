@@ -1,3 +1,6 @@
+dojo.hostenv.startPackage("dojo.collections.Dictionary");
+dojo.hostenv.loadModule("dojo.collections.Collections");
+
 dojo.collections.Dictionary = function(){
 	var items = {};
 	this.count = 0;
