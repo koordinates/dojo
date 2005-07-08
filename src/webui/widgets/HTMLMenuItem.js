@@ -14,6 +14,7 @@ dojo.webui.widgets.HTMLMenuItem = function(){
 	this.label = "";
 	this.labelNode = null;
 	this.iconNode = null;
+	this.onClick = function(){ }
 	this.keystrokeNode = null;
 	this.subMenuNode = null;
 
