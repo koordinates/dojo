@@ -8,6 +8,7 @@ dojo.hostenv.conditionalLoadModule({
 		"dojo.collections.ArrayList", 
 		"dojo.collections.Stack",
 		"dojo.collections.BinaryTree",
-		"dojo.collections.SkipList"
+		"dojo.collections.SkipList",
+		"dojo.collections.Graph"
 	]
 });
