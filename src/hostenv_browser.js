@@ -16,6 +16,18 @@ var window; var XMLHttpRequest;
 @end
 @*/
 
+dj_addNodeEvtHdlr = function(node, evtName, fp, capture){
+	if(node.attachEvent){
+		node.attachEvent("on"+evtName, fp);
+	}else if(node.addEventListener){ // FIXME: test w/ Safari!
+		node.addEventListener(evtName, fp, capture);
+	}else{
+		// FIXME: this clobbers the event handler that's already set, is there a way around it?
+		node["on"+evtName]=fp;
+	}
+	return true;
+}
+
 if(typeof window == 'undefined'){
 	dj_throw("no window object");
 }
@@ -195,10 +207,10 @@ if(dojo.render.html.ie){
 }
 */
 
-// FIXME: this and other Dojo-specific events need a more NW-like attachment mechanism
-window.onload = function(evt){
+dj_addNodeEvtHdlr(window, "load", function(){
 	dojo.hostenv.modulesLoaded();
-}
+});
+
 
 dojo.hostenv.modulesLoadedListeners.push(function(){
 	if(dojo.hostenv.auto_build_widgets_){
