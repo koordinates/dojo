@@ -500,7 +500,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	try{
 		ok = this.loadUri(uri, cb);
 	}catch(e){
-		dj_debug("failed loading ", uri, " with error: ", e);
+		dj_debug("failed loading ", uri, " with error: ", e.message);
 	}
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }

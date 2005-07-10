@@ -123,7 +123,7 @@ dojo.hostenv.getXmlhttpObject = function(){
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
  */ 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
-
+	
 	var http = this.getXmlhttpObject();
 
 	if(async_cb){
@@ -142,7 +142,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	if(async_cb){
 		return null;
 	}
-
+	
 	return http.responseText;
 }
 
