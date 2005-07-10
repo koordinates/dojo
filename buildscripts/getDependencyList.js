@@ -108,4 +108,16 @@ for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 // for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 // 	print(dojo.hostenv.loadedUris[x]);
 // }
-print(dojo.hostenv.loadedUris.join(",\n"));
+
+var depList = [];
+var seen = {};
+for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
+	var curi = dojo.hostenv.loadedUris[x];
+	if(!seen[curi]){
+		seen[curi] = true;
+		depList.push(curi);
+	}
+}
+
+// print(dojo.hostenv.loadedUris.join(",\n"));
+print(depList.join(",\n"));
