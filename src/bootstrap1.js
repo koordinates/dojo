@@ -188,9 +188,11 @@ function dj_inherits(subclass, superclass){
 	}
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
-	// TODO: subclass.super = superclass gives JScript error?
-	subclass['super'] = superclass;
+	subclass.superclass = superclass.prototype;
+	// DEPRICATED: super is a reserved word, use 'superclass'
+	subclass['super'] = superclass.prototype;
 }
+
 
 // an object that authors use determine what host we are running under
 dojo.render = {
