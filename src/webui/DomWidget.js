@@ -627,6 +627,10 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			if((this.hoverTarget["isDragSource"] === true)||(this.overDragHandle)){
 				this.isDragging = true;
 				this.dragSource = this.hoverTarget;
+				
+				// create a rudimentary event object to be passed to startDrag()
+				var evt = {target: this.hoverNode, type: "startDrag"};
+				
 				while((this.dragSource)&&(!this.dragSource["isDragSource"])){
 					this.dragSource = this.dragSource.parent;
 				}
@@ -635,7 +639,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				}else{
 					document.body.style.cursor = "move";
 				}
-				this.dragSource.startDrag();
+				this.dragSource.startDrag(evt);
 				var di = this.dragSource.getDragIcon();
 				if(di){
 					if(!this.dragIcon){
