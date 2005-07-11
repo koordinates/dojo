@@ -711,13 +711,13 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		}
 	}
 
-	this.cancelDrag = function () {
+	this.cancelDrag = function(){
 		// scoots the drag icon off back to it's original position
 		// and the exits
-		var endcoords = dojo.xml.htmlUtil.getAttribute(
-			this.dragIcon.firstChild, "originalPosition");
+		var endcoords = (this.dragIcon) ? dojo.xml.htmlUtil.getAttribute(
+			this.dragIcon.firstChild, "originalPosition") : false;
 		
-		if (endcoords) {
+		if(endcoords){
 			endcoords = endcoords.split(",");
 			endcoords[0]++; endcoords[1]++; // offset so the end can be seen
 			var begincoords = [dojo.xml.htmlUtil.getAbsoluteX(this.dragIcon),
@@ -741,7 +741,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 		}
 	}
 	
-	this.exitDrag = function () {
+	this.exitDrag = function(){
 		// resets drag manager after a drag has finished
 		if(this.dragIcon){
 			this.dragIcon.style.display = "none";
