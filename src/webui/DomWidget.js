@@ -669,36 +669,11 @@ dojo.webui.htmlDragAndDropManager = new function(){
 
 	this.mouseUp = function(nativeEvt){ 
 		this.drop(nativeEvt);
-		if(this.dragIcon){
-			this.dragIcon.style.display = "none";
-			with(this.dragIcon){
-				while(firstChild){
-					removeChild(firstChild);
-				}
-			}
-		}
 		if((this.isResizing)||(this.isDragging)){
-			if(this.resizeTarget){
-				this.resizeTarget.endResize(this.curr);
-			}else{
-				if(this.dropTarget){
-					this.dropTarget.dragLeave(this.dragSource);
-				}
-				this.dragSource.endDrag();
-				this.dragSource.selection.clear();
-			}
-			this.dropTarget = null;
-			this.resizeTarget = null;
-			this.isResizing = false;
-			this.overResizeHandle = false;
-
-			this.dragSource = null;
-			this.isDragging = false;
-			this.overDragHandle = false;
-
-			document.body.style.cursor = "";
+			if(this.resizeTarget){ this.resizeTarget.endResize(this.curr); }
+			else if(this.dropTarget){ this.dropTarget.dragLeave(this.dragSource); }
 		}
-		this.init = [];
+		this.cancelDrag();
 	}
 
 	this.mouseDrag = function(evt){ 
@@ -715,6 +690,38 @@ dojo.webui.htmlDragAndDropManager = new function(){
 				this.dragIcon.style.top = this.curr.absy+15+"px";
 			}
 		}
+	}
+	
+	this.keyDown = function(evt){
+		if (evt.keyCode == 27) { // escape key
+			this.cancelDrag();
+		}
+	}
+
+	this.cancelDrag = function () {
+		if(this.dragIcon){
+			this.dragIcon.style.display = "none";
+			with(this.dragIcon){
+				while(firstChild){ removeChild(firstChild); }
+			}
+		}
+		if((this.isResizing)||(this.isDragging)){
+			if(!this.resizeTarget){
+				this.dragSource.endDrag();
+				this.dragSource.selection.clear();
+			}
+			this.dropTarget = null;
+			this.resizeTarget = null;
+			this.isResizing = false;
+			this.overResizeHandle = false;
+
+			this.dragSource = null;
+			this.isDragging = false;
+			this.overDragHandle = false;
+
+			document.body.style.cursor = "default";
+		}
+		this.init = [];
 	}
 
 }
@@ -739,6 +746,7 @@ try{
 			// FIXME: need to attach to DOM events and the like here
 			
 			var htmldm = dojo.webui.htmlDragAndDropManager;
+			dojo.event.connect(document, "onkeydown", htmldm, "keyDown");
 			dojo.event.connect(document, "onmousemove", htmldm, "mouseMove");
 			dojo.event.connect(document, "onmouseover", htmldm, "mouseOver");
 			dojo.event.connect(document, "onmouseout", htmldm, "mouseOut");

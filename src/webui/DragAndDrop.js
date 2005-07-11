@@ -84,6 +84,7 @@ dojo.webui.DragAndDropManager = function(){
 
 	// FIXME: should these be replaced by some DOM/HTML variant? is there some
 	// other method they should call?
+	this.keyDown = function(nativeEvt){ return; }
 	this.mouseOver = function(widget){ return; }
 	this.mouseOut = function(widget){ return; }
 	this.mouseMove = function(widget){ return; }
