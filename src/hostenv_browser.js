@@ -215,13 +215,18 @@ dj_addNodeEvtHdlr(window, "load", function(){
 dojo.hostenv.modulesLoadedListeners.push(function(){
 	if(dojo.hostenv.auto_build_widgets_){
 		if(dj_eval_object_path("dojo.webui.widgets.Parse")){
-			try{
-				var parser = new dojo.xml.Parse();
-				var frag  = parser.parseElement(document.body, null, true);
-				dojo.webui.widgets.getParser().createComponents(frag);
-			}catch(e){
-				dj_debug("auto-build-widgets error: "+e);
-			}
+			setTimeout(function(){
+				// we must do this on a delay to avoid:
+				//	http://www.shaftek.org/blog/archives/000212.html
+				// IE is such a tremendous peice of shit.
+				try{
+					var parser = new dojo.xml.Parse();
+					var frag  = parser.parseElement(document.body, null, true);
+					dojo.webui.widgets.getParser().createComponents(frag);
+				}catch(e){
+					dj_debug("auto-build-widgets error: "+e);
+				}
+			}, 10);
 		}
 	}
 });
