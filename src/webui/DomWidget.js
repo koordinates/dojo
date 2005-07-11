@@ -5,6 +5,8 @@ dojo.hostenv.loadModule("dojo.text.*");
 dojo.hostenv.loadModule("dojo.webui.Widget");
 dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.xml.*");
+dojo.hostenv.loadModule("dojo.math.curves");
+dojo.hostenv.loadModule("dojo.animation.Animation");
 
 dojo.webui._cssFiles = {};
 
@@ -670,10 +672,18 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.mouseUp = function(nativeEvt){ 
 		this.drop(nativeEvt);
 		if((this.isResizing)||(this.isDragging)){
-			if(this.resizeTarget){ this.resizeTarget.endResize(this.curr); }
-			else if(this.dropTarget){ this.dropTarget.dragLeave(this.dragSource); }
+			if(this.resizeTarget){
+				this.resizeTarget.endResize(this.curr);
+				this.exitDrag();
+			}else if(this.dropTarget){
+				this.dropTarget.dragLeave(this.dragSource);
+				this.exitDrag();
+			}else{
+				this.cancelDrag();
+			}
+		} else {
+			this.cancelDrag();
 		}
-		this.cancelDrag();
 	}
 
 	this.mouseDrag = function(evt){ 
@@ -694,11 +704,45 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	
 	this.keyDown = function(evt){
 		if (evt.keyCode == 27) { // escape key
-			this.cancelDrag();
+			// FIXME: don't seem to be able to animate as setTimeout isn't
+			// being fired with the mouse button held down?
+			//this.cancelDrag();
+			this.exitDrag();
 		}
 	}
 
 	this.cancelDrag = function () {
+		// scoots the drag icon off back to it's original position
+		// and the exits
+		var endcoords = dojo.xml.htmlUtil.getAttribute(
+			this.dragIcon.firstChild, "originalPosition");
+		
+		if (endcoords) {
+			endcoords = endcoords.split(",");
+			endcoords[0]++; endcoords[1]++; // offset so the end can be seen
+			var begincoords = [dojo.xml.htmlUtil.getAbsoluteX(this.dragIcon),
+					dojo.xml.htmlUtil.getAbsoluteY(this.dragIcon)];
+			
+			// animate
+			var line = new dojo.math.curves.Line(begincoords, endcoords);
+			var anim = new dojo.animation.Animation(line, 300, 0, 0);
+			var _this = this;
+			dojo.event.connect(anim, "onAnimate", function(e) {
+				_this.dragIcon.style.left = e.x + "px";
+				_this.dragIcon.style.top = e.y + "px";
+			});
+			dojo.event.connect(anim, "onEnd", function (e) {
+				// pause for a second (not literally) and disappear
+				setTimeout(function () { _this.exitDrag(); }, 100);
+			});
+			anim.play();
+		} else {
+			this.exitDrag();
+		}
+	}
+	
+	this.exitDrag = function () {
+		// resets drag manager after a drag has finished
 		if(this.dragIcon){
 			this.dragIcon.style.display = "none";
 			with(this.dragIcon){
