@@ -646,13 +646,15 @@ dojo.webui.htmlDragAndDropManager = new function(){
 						this.dragIcon = document.createElement("span");
 						with(this.dragIcon.style){
 							position = "absolute";
-							left = this.curr.absx+15+"px";
-							top = this.curr.absy+15+"px";
 							border = margin = padding = "0px";
 							zIndex = "1000";
 						}
 						document.body.appendChild(this.dragIcon);
 						dojo.xml.htmlUtil.setOpacity(this.dragIcon, 0.5);
+					}
+					with(this.dragIcon.style){
+						left = this.curr.absx+15+"px";
+						top = this.curr.absy+15+"px";
 					}
 					this.dragIcon.appendChild(di);
 					this.dragIcon.style.display = "";
