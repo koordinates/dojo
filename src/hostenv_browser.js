@@ -22,8 +22,16 @@ dj_addNodeEvtHdlr = function(node, evtName, fp, capture){
 	}else if(node.addEventListener){ // FIXME: test w/ Safari!
 		node.addEventListener(evtName, fp, capture);
 	}else{
-		// FIXME: this clobbers the event handler that's already set, is there a way around it?
-		node["on"+evtName]=fp;
+		// node["on"+evtName]=fp;
+		var oldHandler = node["on"+evtName];
+		if(typeof oldHandler != "undefined"){
+			node["on"+evtName]=function(){
+				fp.apply(node, arguments);
+				oldHandler.apply(node, arguments);
+			}
+		}else{
+			node["on"+evtName]=fp;
+		}
 	}
 	return true;
 }
