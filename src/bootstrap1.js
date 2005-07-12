@@ -575,6 +575,9 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
 
+ 		var tmodule = this.findModule(modulename, 0);  
+		if(tmodule){  return tmodule;  } 
+
 		while(syms.length){
 			syms.pop();
 			syms.push("__package__");
