@@ -279,6 +279,7 @@ dojo.hostenv = (function(){
 
 		// for recursion protection
 		loading_modules_: {},
+		loaded_modules_: {},
 		addedToLoadingCount: [],
 		removedFromLoadingCount: [],
 		inFlightCount: 0,
@@ -526,6 +527,10 @@ dojo.hostenv.modulesLoaded = function(){
 	}
 }
 
+dojo.hostenv.moduleLoaded = function(modulename){
+	var modref = dj_eval_object_path((modulename.split(".").slice(0, -1)).join('.'));
+	this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
+}
 
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
@@ -574,9 +579,6 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// things slightly diffrently
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
-
- 		var tmodule = this.findModule(modulename, 0);  
-		if(tmodule){  return tmodule;  } 
 
 		while(syms.length){
 			syms.pop();
@@ -654,6 +656,11 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	// check cache
 	if(!dj_undef(modulename, this.modules_)){
 		return this.modules_[modulename];
+	}
+
+	if(this.loaded_modules_[(new String(modulename)).toLowerCase()]){
+		// dj_debug(modulename);
+		return this.loaded_modules_[modulename];
 	}
 
 	// see if symbol is defined anyway

@@ -12,3 +12,4 @@ dojo.hostenv.conditionalLoadModule({
 		"dojo.collections.Graph"
 	]
 });
+dojo.hostenv.moduleLoaded("dojo.collections.*");

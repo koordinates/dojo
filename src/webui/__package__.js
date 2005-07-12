@@ -6,3 +6,4 @@ dojo.hostenv.conditionalLoadModule({
 			 "dojo.webui.WidgetManager"],
 	browser: ["dojo.webui.DomWidget"]
 });
+dojo.hostenv.moduleLoaded("dojo.webui.*");

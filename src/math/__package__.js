@@ -5,4 +5,4 @@ dojo.hostenv.conditionalLoadModule({
 		["dojo.math.points", false, false]
 	]
 });
-
+dojo.hostenv.moduleLoaded("dojo.math.*");
