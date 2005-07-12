@@ -90,6 +90,7 @@ with(dojo.render){
 dojo.hostenv.startPackage("dojo.hostenv");
 
 dojo.hostenv.name_ = 'browser';
+dojo.hostenv.searchIds = [];
 
 // These are in order of decreasing likelihood; this will change in time.
 var DJ_XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
@@ -221,7 +222,7 @@ dj_addNodeEvtHdlr(window, "load", function(){
 
 
 dojo.hostenv.modulesLoadedListeners.push(function(){
-	if(dojo.hostenv.auto_build_widgets_){
+	if((dojo.hostenv.auto_build_widgets_)||(dojo.hostenv.searchIds.length > 0)){
 		if(dj_eval_object_path("dojo.webui.widgets.Parse")){
 			setTimeout(function(){
 				// we must do this on a delay to avoid:
@@ -229,8 +230,16 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 				// IE is such a tremendous peice of shit.
 				try{
 					var parser = new dojo.xml.Parse();
-					var frag  = parser.parseElement(document.body, null, true);
-					dojo.webui.widgets.getParser().createComponents(frag);
+					var sids = dojo.hostenv.searchIds;
+					if(sids.length > 0){
+						for(var x=0; x<sids.length; x++){
+							var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
+							dojo.webui.widgets.getParser().createComponents(frag);
+						}
+					}else if(dojo.hostenv.auto_build_widgets_){
+						var frag  = parser.parseElement(document.body, null, true);
+						dojo.webui.widgets.getParser().createComponents(frag);
+					}
 				}catch(e){
 					dj_debug("auto-build-widgets error: "+e);
 				}
