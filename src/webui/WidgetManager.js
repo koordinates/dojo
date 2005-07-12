@@ -30,7 +30,7 @@ dojo.webui.widgetManager = new function(){
 	this.remove = function(widgetIndex){
 		var tw = this.widgets[widgetIndex].widgetId;
 		delete this.widgetIds[tw];
-		this.widgets = this.widgets.splice(widgetIndex, 1);
+		this.widgets.splice(widgetIndex, 1);
 	}
 	
 	// FIXME: suboptimal performance
