@@ -10,7 +10,7 @@
 		var root = ".";
 
 		// attempt to figure out the path to dojo if it isn't set in the config
-		if(document && document.getElementsByTagName) {
+		if((this["document"])&&(this["document"]["getElementsByTagName"])){
 			var scripts = document.getElementsByTagName("script");
 			var rePkg = /__package__\.js$/i;
 			for(var i = 0; i < scripts.length; i++) {
