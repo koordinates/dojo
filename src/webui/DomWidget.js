@@ -713,7 +713,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 
 	this.cancelDrag = function(){
 		// scoots the drag icon off back to it's original position
-		// and the exits
+		// and then exits
 		var endcoords = (this.dragIcon) ? dojo.xml.htmlUtil.getAttribute(
 			this.dragIcon.firstChild, "originalPosition") : false;
 		
@@ -722,23 +722,26 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			endcoords[0]++; endcoords[1]++; // offset so the end can be seen
 			var begincoords = [dojo.xml.htmlUtil.getAbsoluteX(this.dragIcon),
 					dojo.xml.htmlUtil.getAbsoluteY(this.dragIcon)];
-			
+
+			// steal the icon so that other d&ds are free to start
+			var dragIcon = this.dragIcon; this.dragIcon = null;
+		
 			// animate
 			var line = new dojo.math.curves.Line(begincoords, endcoords);
 			var anim = new dojo.animation.Animation(line, 300, 0, 0);
-			var _this = this;
 			dojo.event.connect(anim, "onAnimate", function(e) {
-				_this.dragIcon.style.left = e.x + "px";
-				_this.dragIcon.style.top = e.y + "px";
+				dragIcon.style.left = e.x + "px";
+				dragIcon.style.top = e.y + "px";
 			});
 			dojo.event.connect(anim, "onEnd", function (e) {
 				// pause for a second (not literally) and disappear
-				setTimeout(function () { _this.exitDrag(); }, 100);
+				setTimeout(function () {
+					dragIcon.parentNode.removeChild(dragIcon);
+				}, 100);
 			});
 			anim.play();
-		} else {
-			this.exitDrag();
 		}
+		this.exitDrag();
 	}
 	
 	this.exitDrag = function(){
