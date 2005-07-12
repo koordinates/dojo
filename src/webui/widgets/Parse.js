@@ -13,10 +13,31 @@ dojo.webui.widgets.Parse = function(fragment) {
 	this.createComponents = function(fragment, parentComp){
 		var djTags = dojo.webui.widgets.tags;
 		var returnValue = [];
+		// this allows us to parse without having to include the parent
+		// it is commented out as it currently breaks the existing mechanism for
+		// adding widgets programmatically.  Once that is fixed, this can be used
+		/*if( (fragment["tagName"])&&
+			(fragment != fragment["nodeRef"])){
+			var tn = new String(fragment["tagName"]);
+			// we split so that you can declare multiple
+			// non-destructive widgets from the same ctor node
+			var tna = tn.split(";");
+			for(var x=0; x<tna.length; x++){
+				var ltn = dojo.text.trim(tna[x]).toLowerCase();
+				if(djTags[ltn]){
+					fragment.tagName = ltn;
+					returnValue.push(djTags[ltn](fragment, this, parentComp));
+				}else{
+					if(ltn.substr(0, 5)=="dojo:"){
+						dj_debug("no tag handler registed for type: ", ltn);
+					}
+				}
+			}
+		}*/
 		for(var item in fragment){
 			// if we have items to parse/create at this level, do it!
 			try{
-				if( (fragment[item]["tagName"])&&
+				if( fragment[item] && (fragment[item]["tagName"])&&
 					(fragment[item] != fragment["nodeRef"])){
 					var tn = new String(fragment[item]["tagName"]);
 					// we split so that you can declare multiple
