@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true,
+				parseWidgets: false
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../__package__.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.hostenv.loadModule("dojo.xml.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
+			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
+		</script>
+	</head>
+	<body>
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<span id="pn">
+			<button id="testDojoButton" dojoType="button" label="this is a test button!" 
+				onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
+				you shouldn't be seeing this
+			</button>
+		</span>
+		<script>
+			// FIXME: dylan, this doesn't work but it should!
+			// dojo.hostenv.searchIds.push("testDojoButton");
+
+			// this works, though
+			dojo.hostenv.searchIds.push("pn");
+		</script>
+	</body>
+</html>
