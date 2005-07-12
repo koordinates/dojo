@@ -650,13 +650,24 @@ dojo.webui.htmlDragAndDropManager = new function(){
 							position = "absolute";
 							border = margin = padding = "0px";
 							zIndex = "1000";
+							display = "none";
 						}
 						document.body.appendChild(this.dragIcon);
 						dojo.xml.htmlUtil.setOpacity(this.dragIcon, 0.5);
 					}
-					with(this.dragIcon.style){
-						left = this.curr.absx+15+"px";
-						top = this.curr.absy+15+"px";
+					// start dragging the icon from its origin
+					var pos = dojo.xml.htmlUtil.getAttribute(di, "originalPosition")
+					if (pos) {
+						pos = pos.split(",");
+						this.dragIcon.offsetX = pos[0] - this.curr.absx;
+						this.dragIcon.offsetY = pos[1] - this.curr.absy;
+					} else {
+						this.dragIcon.offsetX = 15;
+						this.dragIcon.offsetY = 15;
+					}
+					with(this.dragIcon){
+						style.left = this.curr.absx+offsetX+"px";
+						style.top = this.curr.absy+offsetY+"px";
 					}
 					this.dragIcon.appendChild(di);
 					this.dragIcon.style.display = "";
@@ -696,8 +707,10 @@ dojo.webui.htmlDragAndDropManager = new function(){
 			evt.stopPropagation();
 			this.drag(evt);
 			if(this.dragIcon){
-				this.dragIcon.style.left = this.curr.absx+15+"px";
-				this.dragIcon.style.top = this.curr.absy+15+"px";
+				with (this.dragIcon) {
+					style.left = this.curr.absx+offsetX+"px";
+					style.top = this.curr.absy+offsetY+"px";
+				}
 			}
 		}
 	}
