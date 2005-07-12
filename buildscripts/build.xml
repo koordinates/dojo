@@ -186,7 +186,8 @@ print "look ma! Jython!"
 		depends="-check-config"
 		unless="config_ok"
 		description="fixes our ant classpath (if possible)">
-		<copy todir="${user.home}/.ant/lib">
+		<copy todir="${user.home}/.ant/lib"
+			preservelastmodified="true">
 			<fileset dir="lib/">
 				<include name="bsf.jar"/>
 				<include name="jython.jar"/>
@@ -329,7 +330,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<delete dir="${ddir}" />
 		<mkdir dir="${ddir}" />
 
-		<copy todir="${ddir}">
+		<copy todir="${ddir}" preservelastmodified="true">
 			<fileset dir="./${src}" includes="**" />
 		</copy>
 
@@ -457,6 +458,24 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}" />
 	</target>
 
+	<!-- intern-strings task -->
+	<target name="intern-strings" depends="-fix-config"
+		description="pulls template paths specified in prototypes into templateStrings which can be used to speed up widget construction">
+		<script language="jython"><![CDATA[
+import sys
+# make the python standard library avialable
+sys.path.append("lib/pyLib.zip")
+sys.path.append(".")
+
+# import re
+import os
+from buildUtil import *
+
+internTemplateStrings()
+]]></script>
+	</target>
+	<!-- end intern-strings task -->
+
 	<!-- release task -->
 	<target name="release" depends="-fix-config"
 		description="builds a release">
@@ -464,7 +483,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<!--
 		<antcall target="src" />
 		-->
-		<copy todir="${release_dir}/${src}" includeEmptyDirs="false">
+		<copy todir="${release_dir}/${src}" includeEmptyDirs="false" preservelastmodified="true">
 			<fileset dir="${root}/${src}">
 				<include name="**" />
 				<exclude name="**/*.swp" />
@@ -473,10 +492,11 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 
 		<antcall target="docs" />
 		<antcall target="compress" />
+		<!-- <antcall target="intern-strings" /> -->
 
-		<copy overwrite="true" file="../blank.html" todir="${release_dir}/" />
+		<copy overwrite="true" file="../blank.html" todir="${release_dir}/"  preservelastmodified="true" />
 
-		<copy file="${root}/LICENSE.txt" todir="${release_dir}/" />
+		<copy file="${root}/LICENSE.txt" todir="${release_dir}/"  preservelastmodified="true" />
 		<!--
 		<copy file="README.txt" todir="${release_dir}/" />
 		-->
