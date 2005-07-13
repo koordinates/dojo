@@ -200,6 +200,9 @@ dojo.hostenv.println = function(s){
 
 dj_addNodeEvtHdlr(window, "load", function(){
 	dojo.hostenv.modulesLoaded();
+	if(dojo.render.html.ie) {
+		dojo.hostenv.makeWidgets();
+	}
 });
 
 
@@ -229,7 +232,9 @@ dojo.hostenv.makeWidgets = function(){
 }
 
 dojo.hostenv.modulesLoadedListeners.push(function(){
+	if(!dojo.render.html.ie) {
 		dojo.hostenv.makeWidgets();
+	}
 });
 
 // we assume that we haven't hit onload yet. Lord help us.
