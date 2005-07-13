@@ -1,6 +1,7 @@
 dojo.hostenv.startPackage("dojo.math.curves");
 
-dojo.hostenv.loadModule("dojo.math.*");
+dojo.hostenv.loadModule("dojo.math.Math");
+dojo.hostenv.loadModule("dojo.math.points");
 
 /* Curves from Dan's 13th lib stuff.
  * See: http://pupius.co.uk/js/Toolkit.Drawing.js
