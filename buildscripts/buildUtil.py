@@ -3,11 +3,39 @@
 # 	2.1). We avoid Python2.3-isms like os.walk as a result.
 import sys
 sys.path.append("lib/pyLib.zip")
-# import re
+import re
 import os
 import popen2
 import fnmatch
 import glob
+import string
+
+def escape(instr):
+	out = []
+	for x in xrange(len(instr)):
+		if instr[x] == "\\":
+			out.append("\\\\")
+		elif instr[x] == "\n":
+			out.append("\\n")
+		elif instr[x] == "\"":
+			out.append("\\\"")
+		else:
+		    out.append(instr[x])
+	return string.join(out, "")
+
+def internTemplateStrings(packageFile="../release/dojo/__package__.js", srcRoot="../"):
+	pfd = open(packageFile)
+	pkgString = pfd.read()
+	pfd.close()
+	matches = re.findall('(templatePath\s*=\s*"(.+)")', pkgString)
+	# print matches.groups()
+	print matches
+	for x in matches:
+		replacement = "templateString=\""+escape(open(srcRoot+x[1]).read())+"\""
+		pkgString = string.replace(pkgString, x[0], replacement)
+	pfd = open(packageFile, "w")
+	pfd.write(pkgString)
+	pfd.close() # flush is implicit
 
 def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
 	docFiles = []
