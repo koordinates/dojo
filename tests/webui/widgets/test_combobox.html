@@ -3,16 +3,11 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				baseRelativePath: "../../../",
 				isDebug: true
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
-			src="../../../src/bootstrap1.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../src/hostenv_browser.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../src/bootstrap2.js"></script>
+			src="../../../__package__.js"></script>
 		<!--
 		<script language="JavaScript" type="te/script>
 		-->
@@ -29,6 +24,9 @@
 
 		<input dojoType="combobox" value="this should be replaced!"
 			dataUrl="comboBoxData.js">
+
+		<br>
+		this is some text below the combo box. It shouldn't get pushed out of the way when search results get returned.
 	</body>
 </html>
 </body>
