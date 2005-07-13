@@ -198,54 +198,38 @@ dojo.hostenv.println = function(s){
 	delete s;
 }
 
-/*
-// NOTE: IE seems to have some really fucked up ideas of what "onload" means
-// WRT to pulling things out of the cache and executing them. In this case, we
-// hit "onload" and THEN execute the JS that exists below the bootstrap2.js
-// include in the page. This might be related to the iframe loading, but there
-// isn't any way to tell that from the event that's thrown. Grr.
-if(dojo.render.html.ie){
-	dojo.hostenv._old_modulesLoaded = dojo.hostenv.modulesLoaded;
-	dojo.hostenv.modulesLoaded = function(){
-		this.modulesLoadedFired = false;
-		this._old_modulesLoaded();
-		if(this.modulesLoadedFired){
-			this.modulesLoadedListeners = [];
-		}
-	}
-}
-*/
-
 dj_addNodeEvtHdlr(window, "load", function(){
 	dojo.hostenv.modulesLoaded();
 });
 
 
-dojo.hostenv.modulesLoadedListeners.push(function(){
+dojo.hostenv.makeWidgets = function(){
 	if((dojo.hostenv.auto_build_widgets_)||(dojo.hostenv.searchIds.length > 0)){
 		if(dj_eval_object_path("dojo.webui.widgets.Parse")){
-			setTimeout(function(){
-				// we must do this on a delay to avoid:
-				//	http://www.shaftek.org/blog/archives/000212.html
-				// IE is such a tremendous peice of shit.
-				try{
-					var parser = new dojo.xml.Parse();
-					var sids = dojo.hostenv.searchIds;
-					if(sids.length > 0){
-						for(var x=0; x<sids.length; x++){
-							var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
-							dojo.webui.widgets.getParser().createComponents(frag);
-						}
-					}else if(dojo.hostenv.auto_build_widgets_){
-						var frag  = parser.parseElement(document.body, null, true);
+			// we must do this on a delay to avoid:
+			//	http://www.shaftek.org/blog/archives/000212.html
+			// IE is such a tremendous peice of shit.
+			try{
+				var parser = new dojo.xml.Parse();
+				var sids = dojo.hostenv.searchIds;
+				if(sids.length > 0){
+					for(var x=0; x<sids.length; x++){
+						var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
 						dojo.webui.widgets.getParser().createComponents(frag);
 					}
-				}catch(e){
-					dj_debug("auto-build-widgets error: "+e);
+				}else if(dojo.hostenv.auto_build_widgets_){
+					var frag  = parser.parseElement(document.body, null, true);
+					dojo.webui.widgets.getParser().createComponents(frag);
 				}
-			}, 10);
+			}catch(e){
+				dj_debug("auto-build-widgets error: "+e);
+			}
 		}
 	}
+}
+
+dojo.hostenv.modulesLoadedListeners.push(function(){
+		dojo.hostenv.makeWidgets();
 });
 
 // we assume that we haven't hit onload yet. Lord help us.
