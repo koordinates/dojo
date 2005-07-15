@@ -297,7 +297,24 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 	// method over-ride
 	this.buildRendering = function(args, frag){
 		// DOM widgets construct themselves from a template
-		this.buildFromTemplate(args, frag);
+		var ts = dojo.webui.DomWidget.templates[this.widgetType];
+		if(	
+			(this.templatePath)||
+			(this.templateNode)||
+			(
+				(this["templateString"])&&(this.templateString.length) 
+			)||
+			(
+				(typeof ts != "undefined")&&( (ts["string"])||(ts["node"]) )
+			)
+		){
+			// if it looks like we can build the thing from a template, do it!
+			this.buildFromTemplate(args, frag);
+		}else{
+			// otherwise, assign the DOM node that was the source of the widget
+			// parsing to be the root node
+			this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+		}
 		this.fillInTemplate(args, frag); 	// this is where individual widgets
 											// will handle population of data
 											// from properties, remote data
