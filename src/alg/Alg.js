@@ -48,4 +48,27 @@ dojo.alg.map = function(arr, obj, unary_func){
 	}
 }
 
+dojo.alg.tryThese = function(){
+	for(var x=0; x<arguments.length; x++){
+		try{
+			if(typeof arguments[x] == "function"){
+				var ret = (arguments[x]());
+				if(ret){
+					return ret;
+				}
+			}
+		}catch(e){
+			dj_debug(e);
+		}
+	}
+}
+
+dojo.alg.delayThese = function(farr, cb, delay){
+	setTimeout(function(){
+		(farr.shift())();
+		cb();
+		dojo.alg.delayThese(farr, cb, delay);
+	}, delay);
+}
+
 dojo.alg.for_each_call = dojo.alg.map; // burst compat
