@@ -64,6 +64,7 @@ dojo.alg.tryThese = function(){
 }
 
 dojo.alg.delayThese = function(farr, cb, delay){
+	if(!farr.length){ return; }
 	setTimeout(function(){
 		(farr.shift())();
 		cb();
