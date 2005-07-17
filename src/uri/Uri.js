@@ -9,7 +9,7 @@ dojo.uri = new function() {
 	
 	this.dojoUri = function (uri) {
 		// returns a Uri object resolved relative to the dojo root
-		return new dojo.uri.Uri(uri, dojo.hostenv.getBaseScriptUri());;
+		return new dojo.uri.Uri(uri, dojo.hostenv.getBaseScriptUri());
 	}
 		
 	this.Uri = function (/*uri, relativeTo, [...]*/) {
