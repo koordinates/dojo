@@ -179,6 +179,16 @@ function dj_unimplemented(funcname, extra){
 }
 
 /**
+ * Convenience for informing of deprecated behaviour.
+ */
+function dj_deprecated(behaviour, extra){
+	var mess = "'" + funcname + "' is deprecated";
+	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
+	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
+	dj_debug(mess);
+}
+
+/**
  * Does inheritance
  */
 function dj_inherits(subclass, superclass){
