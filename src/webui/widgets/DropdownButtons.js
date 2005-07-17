@@ -24,7 +24,7 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
 		if(this.templateCSSPath) {
-			dojo.xml.htmlUtil.insertCSSFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath, null, true);
+			dojo.xml.htmlUtil.insertCssFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCSSPath, null, true);
 		}
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 

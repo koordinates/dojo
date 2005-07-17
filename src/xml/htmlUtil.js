@@ -169,7 +169,7 @@ dojo.xml.htmlUtil = new function(){
 
 	this.getAttr = function (node, attr) { // for backwards compat (may disappear!!!)
 		dj_deprecated("dojo.xml.htmlUtil.getAttr is deprecated, use dojo.xml.htmlUtil.getAttribute instead");
-		this.getAttribute(node, attr);
+		dojo.xml.htmlUtil.getAttribute(node, attr);
 	}
 	
 	/*
@@ -183,7 +183,7 @@ dojo.xml.htmlUtil = new function(){
 
 	this.hasAttr = function (node, attr) { // for backwards compat (may disappear!!!)
 		dj_deprecated("dojo.xml.htmlUtil.hasAttr is deprecated, use dojo.xml.htmlUtil.hasAttribute instead");
-		this.hasAttribute(node, attr);
+		dojo.xml.htmlUtil.hasAttribute(node, attr);
 	}
 	
 	
@@ -444,7 +444,7 @@ dojo.xml.htmlUtil = new function(){
 	// it assumes that you know the index of the cssRule that you want to add 
 	// or remove, making it less than useful.  So we need something that can 
 	// search for the selector that you you want to remove.
-	this.insertCSSRule = function(selector, declaration, index){
+	this.insertCssRule = function(selector, declaration, index){
 		if(dojo.render.html.ie){
 			if(!this.styleSheet){
 				// FIXME: create a new style sheet document
@@ -465,7 +465,13 @@ dojo.xml.htmlUtil = new function(){
 		}
 	}
 	
-	this.removeCSSRule = function(index){
+	this.insertCSSRule = function(selector, declaration, index){
+		dj_deprecated("dojo.xml.htmlUtil.insertCSSRule is deprecated, use dojo.xml.htmlUtil.insertCssRule instead");
+		dojo.xml.htmlUtil.insertCssRule(selector, declaration, index);
+	}
+
+	
+	this.removeCssRule = function(index){
 		if(!this.styleSheet){
 			dj_debug("no stylesheet defined for removing rules");
 			return false;
@@ -484,7 +490,13 @@ dojo.xml.htmlUtil = new function(){
 		return true;
 	}
 
-	this.insertCSSFile = function(URI, doc, checkDuplicates){
+	this.removeCSSRule = function(index){
+		dj_deprecated("dojo.xml.htmlUtil.removeCSSRule is deprecated, use dojo.xml.htmlUtil.removeCssRule instead");
+		dojo.xml.htmlUtil.removeCssRule(index);
+	}
+
+
+	this.insertCssFile = function(URI, doc, checkDuplicates){
 		if(!URI) { return; }
 		if(!doc){ doc = document; }
 		if(checkDuplicates && doc.styleSheets){
@@ -505,6 +517,12 @@ dojo.xml.htmlUtil = new function(){
 		var head = doc.getElementsByTagName("head")[0];
 		head.appendChild(file);
 	}
+
+	this.insertCSSFile = function(URI, doc, checkDuplicates){
+		dj_deprecated("dojo.xml.htmlUtil.insertCSSFile is deprecated, use dojo.xml.htmlUtil.insertCssFile instead");
+		dojo.xml.htmlUtil.insertCssFile(URI, doc, checkDuplicates);
+	}
+
 
 	this.getBackgroundColor = function(node) {
 		var color;

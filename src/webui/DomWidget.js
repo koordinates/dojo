@@ -35,7 +35,7 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 	}
 
 	if((cpath)&&(!dojo.webui._cssFiles[cpath])){
-		dojo.xml.htmlUtil.insertCSSFile(cpath);
+		dojo.xml.htmlUtil.insertCssFile(cpath);
 		obj.templateCSSPath = null;
 		dojo.webui._cssFiles[cpath] = true;
 	}
