@@ -17,8 +17,14 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 	var cpath = templateCSSPath || obj.templateCSSPath;
 
 	// DEPRECATED: use Uri objects, not strings
-	if (tpath.constructor !== dojo.uri.Uri) { tpath = dojo.uri.dojoUri(tpath); }
-	if (cpath && cpath.constructor !== dojo.uri.Uri) { cpath = dojo.uri.dojoUri(cpath); }
+	if (!(tpath instanceof dojo.uri.Uri)) {
+		tpath = dojo.uri.dojoUri(tpath);
+		dj_deprecated("templatePath should be of type dojo.uri.Uri");
+	}
+	if (cpath && !(cpath instanceof dojo.uri.Uri)) {
+		cpath = dojo.uri.dojoUri(cpath);
+		dj_deprecated("templateCssPath should be of type dojo.uri.Uri");
+	}
 	
 	var tmplts = dojo.webui.DomWidget.templates;
 	if(!obj["widgetType"]) { // don't have a real template here
