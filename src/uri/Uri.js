@@ -9,7 +9,7 @@ dojo.uri = new function() {
 	
 	this.dojoUri = function (uri) {
 		// returns a Uri object resolved relative to the dojo root
-		return new dojo.uri.Uri(uri, dojo.hostenv.getBaseScriptUri());
+		return new dojo.uri.Uri(uri, dojo.hostenv.getBaseScriptUri());;
 	}
 		
 	this.Uri = function (/*uri, relativeTo, [...]*/) {
@@ -46,7 +46,7 @@ dojo.uri = new function() {
 						var segs = path.split("/");
 						for (var j = 0; j < segs.length; j++) {
 							if (segs[j] == ".") { segs.splice(j, 1); j--; }
-							else if (j != 0 && segs[j] == "..") {
+							else if (j != 0 && segs[j] == ".." && segs[j-1] != "..") {
 								segs.splice(j - 1, 2); j -= 2;
 							}
 						}
