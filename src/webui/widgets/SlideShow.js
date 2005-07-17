@@ -15,8 +15,8 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 	dojo.webui.Widget.call(this);
 	dojo.webui.DomWidget.call(this, true);
 	dojo.webui.HTMLWidget.call(this);
-	this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
-	this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
+	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLSlideShow.html");
+	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLSlideShow.css");
 
 	// over-ride some defaults
 	this.isContainer = false;

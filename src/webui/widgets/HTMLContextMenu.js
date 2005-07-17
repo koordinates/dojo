@@ -8,8 +8,8 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	dojo.webui.widgets.DomContextMenu.call(this);
 	dojo.webui.HTMLWidget.call(this);
 
-	this.templatePath = "src/webui/widgets/templates/HTMLContextMenuTemplate.html";
-	this.templateCSSPath = "src/webui/widgets/templates/HTMLContextMenuTemplate.css";
+	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.html");
+	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.css");
 
 	this.fillInTemplate = function(){
 		// this.setLabel();

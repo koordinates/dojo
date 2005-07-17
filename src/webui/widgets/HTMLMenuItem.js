@@ -8,7 +8,7 @@ dojo.webui.widgets.HTMLMenuItem = function(){
 	dojo.webui.widgets.DomMenuItem.call(this);
 	dojo.webui.HTMLWidget.call(this);
 
-	this.templatePath = "src/webui/widgets/templates/HTMLMenuItemTemplate.html";
+	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLMenuItemTemplate.html");
 	// this.templateCSSPath = "src/webui/widgets/templates/HTMLMenuItemTemplate.css";
 
 	this.label = "";

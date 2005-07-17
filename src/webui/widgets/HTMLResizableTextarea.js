@@ -8,7 +8,7 @@ dojo.webui.widgets.HTMLResizableTextarea = function(){
 	dojo.webui.DomWidget.call(this, true);
 	dojo.webui.HTMLWidget.call(this);
 
-	this.templatePath = "src/webui/widgets/templates/HTMLResizableTextarea.html";
+	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLResizableTextarea.html");
 	this.widgetType = "ResizableTextarea";
 	this.tagName = "dojo:resizabletextarea";
 	this.isContainer = false;

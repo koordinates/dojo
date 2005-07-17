@@ -6,8 +6,8 @@ dojo.webui.widgets.HTMLMenu = function(){
 	dojo.webui.widgets.DomMenu.call(this);
 	dojo.webui.HTMLWidget.call(this);
 
-	this.templatePath = "src/webui/widgets/templates/HTMLMenuTemplate.html";
-	this.templateCSSPath = "src/webui/widgets/templates/HTMLMenuTemplate.css";
+	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLMenuTemplate.html");
+	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLMenuTemplate.css");
 }
 
 dj_inherits(dojo.webui.widgets.HTMLMenu, dojo.webui.widgets.DomMenu);

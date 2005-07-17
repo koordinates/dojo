@@ -18,7 +18,7 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 	dojo.webui.DomWidget.call(this, true);
 	dojo.webui.HTMLWidget.call(this);
 
-	this.templateCSSPath = "src/webui/widgets/templates/HTMLDropdownButtons.css";
+	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLDropdownButtons.css");
 	this.widgetType = "DropdownButtons";
 
 	// overwrite buildRendering so we don't clobber our list
