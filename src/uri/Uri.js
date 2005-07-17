@@ -2,6 +2,7 @@ dojo.hostenv.startPackage("dojo.uri");
 
 dojo.uri = new function() {
 	this.joinPath = function() {
+		// DEPRECATED: use the dojo.uri.Uri object instead
 		var arr = [];
 		for(var i = 0; i < arguments.length; i++) { arr.push(arguments[i]); }
 		return arr.join("/").replace(/\/{2,}/g, "/").replace(/((https*|ftps*):)/i, "$1/");
@@ -9,24 +10,24 @@ dojo.uri = new function() {
 	
 	this.dojoUri = function (uri) {
 		// returns a Uri object resolved relative to the dojo root
-		return new dojo.uri.Uri(uri, dojo.hostenv.getBaseScriptUri());
+		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri(), uri);
 	}
 		
-	this.Uri = function (/*uri, relativeTo, [...]*/) {
+	this.Uri = function (/*uri1, uri2, [...]*/) {
 		// An object representing a Uri.
 		// Each argument is evaluated in order relative to the next until
 		// a conanical uri is producued. To get an absolute Uri relative
 		// to the current document use
-		//      new dojo.uri.Uri(uri, document.baseURI)
+		//      new dojo.uri.Uri(document.baseURI, uri)
 
 		// TODO: support for IPv6, see RFC 2732
 
 		// resolve uri components relative to each other
-		var uri = arguments[arguments.length - 1];
-		for (var i = arguments.length - 2; i >= 0; i--) {
+		var uri = arguments[0];
+		for (var i = 1; i < arguments.length; i++) {
 
-			var relobj = new this.constructor(arguments[i]);
-			var uriobj = new this.constructor(uri);
+			var relobj = new this.constructor(arguments[i].toString());
+			var uriobj = new this.constructor(uri.toString());
 
 			if (relobj.path == "" && relobj.scheme == null &&
 				relobj.authority == null && relobj.query == null)
