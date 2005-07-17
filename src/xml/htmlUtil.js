@@ -166,7 +166,11 @@ dojo.xml.htmlUtil = new function(){
 		}
 		return null;
 	}
-	this.getAttr = this.getAttribute; // for backwards compat (may disappear!!!)
+
+	this.getAttr = function (node, attr) { // for backwards compat (may disappear!!!)
+		dj_deprecated("dojo.xml.htmlUtil.getAttr is deprecated, use dojo.xml.htmlUtil.getAttribute instead");
+		this.getAttribute(node, attr);
+	}
 	
 	/*
 	 *	Determines whether or not the specified node carries a value for the
@@ -176,7 +180,11 @@ dojo.xml.htmlUtil = new function(){
 		var v = this.getAttribute(node, attr);
 		return v ? true : false;
 	}
-	this.hasAttr = this.hasAttribute; // for backwards compat (may disappear!!!)
+
+	this.hasAttr = function (node, attr) { // for backwards compat (may disappear!!!)
+		dj_deprecated("dojo.xml.htmlUtil.hasAttr is deprecated, use dojo.xml.htmlUtil.hasAttribute instead");
+		this.hasAttribute(node, attr);
+	}
 	
 	
 	/*
