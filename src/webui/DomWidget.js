@@ -18,8 +18,8 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 
 	// DEPRECATED: use Uri objects, not strings
 	if (tpath.constructor !== dojo.uri.Uri) { tpath = dojo.uri.dojoUri(tpath); }
-	if (cpath.constructor !== dojo.uri.Uri) { cpath = dojo.uri.dojoUri(cpath); }
-
+	if (cpath && cpath.constructor !== dojo.uri.Uri) { cpath = dojo.uri.dojoUri(cpath); }
+	
 	var tmplts = dojo.webui.DomWidget.templates;
 	if(!obj["widgetType"]) { // don't have a real template here
 		do {
