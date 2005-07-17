@@ -7,6 +7,7 @@ dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
 dojo.hostenv.loadModule("dojo.xml.*");
 dojo.hostenv.loadModule("dojo.math.curves");
 dojo.hostenv.loadModule("dojo.animation.Animation");
+dojo.hostenv.loadModule("dojo.uri.*");
 
 dojo.webui._cssFiles = {};
 
