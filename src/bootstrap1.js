@@ -182,7 +182,7 @@ function dj_unimplemented(funcname, extra){
  * Convenience for informing of deprecated behaviour.
  */
 function dj_deprecated(behaviour, extra){
-	var mess = "'" + funcname + "' is deprecated";
+	var mess = "DEPRECATED: " + behaviour;
 	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
 	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
 	dj_debug(mess);
