@@ -27,11 +27,11 @@ def internTemplateStrings(packageFile="../release/dojo/__package__.js", srcRoot=
 	pfd = open(packageFile)
 	pkgString = pfd.read()
 	pfd.close()
-	matches = re.findall('(templatePath\s*=\s*"(.+)")', pkgString)
+	matches = re.findall('(templatePath\s*=\s*(dojo\.uri\.Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
 	# print matches.groups()
 	print matches
 	for x in matches:
-		replacement = "templateString=\""+escape(open(srcRoot+x[1]).read())+"\""
+		replacement = "templateString=\""+escape(open(srcRoot+x[2]).read())+"\""
 		pkgString = string.replace(pkgString, x[0], replacement)
 	pfd = open(packageFile, "w")
 	pfd.write(pkgString)

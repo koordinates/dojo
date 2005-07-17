@@ -15,6 +15,10 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 	var tpath = templatePath || obj.templatePath;
 	var cpath = templateCSSPath || obj.templateCSSPath;
 
+	// DEPRECATED: use Uri objects, not strings
+	if (tpath.constructor !== dojo.uri.Uri) { tpath = dojo.uri.dojoUri(tpath); }
+	if (cpath.constructor !== dojo.uri.Uri) { cpath = dojo.uri.dojoUri(cpath); }
+
 	var tmplts = dojo.webui.DomWidget.templates;
 	if(!obj["widgetType"]) { // don't have a real template here
 		do {
@@ -23,12 +27,10 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 		obj.widgetType = dummyName;
 	}
 
-	var cpath2 = dojo.hostenv.getBaseScriptUri()+"/"+cpath;
-	if((cpath)&&(!dojo.webui._cssFiles[cpath2])){
-		// FIXME: extra / being inserted in URL?
-		dojo.xml.htmlUtil.insertCSSFile(cpath2);
+	if((cpath)&&(!dojo.webui._cssFiles[cpath])){
+		dojo.xml.htmlUtil.insertCSSFile(cpath);
 		obj.templateCSSPath = null;
-		dojo.webui._cssFiles[cpath2] = true;
+		dojo.webui._cssFiles[cpath] = true;
 	}
 
 	var ts = tmplts[obj.widgetType];
@@ -45,9 +47,7 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 	if((!obj.templateNode)&&(!obj.templateString)&&(tpath)){
 		// fetch a text fragment and assign it to templateString
 		// NOTE: we rely on blocking IO here!
-		// FIXME: extra / being inserted in URL?
-		var tp = dojo.hostenv.getBaseScriptUri()+""+tpath;
-		var tstring = dojo.hostenv.getText(tp);
+		var tstring = dojo.hostenv.getText(tpath);
 		if(tstring) {
 			var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
 			if(matches) {
