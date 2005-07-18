@@ -26,18 +26,20 @@ dojo.uri = new function() {
 		var uri = arguments[0];
 		for (var i = 1; i < arguments.length; i++) {
 
-			var relobj = new this.constructor(arguments[i].toString());
-			var uriobj = new this.constructor(uri.toString());
+			// Safari doesn't support this.constructor so we have to be explicit
+			var relobj = new dojo.uri.Uri(arguments[i].toString());
+			var uriobj = new dojo.uri.Uri(uri.toString());
 
-			if( relobj.path == "" && relobj.scheme == null &&
+			if (relobj.path == "" && relobj.scheme == null &&
 				relobj.authority == null && relobj.query == null)
 			{
-				if (relobj.fragment != null){ uriobj.fragment = relobj.fragment; }
+				if (relobj.fragment != null) { uriobj.fragment = relobj.fragment; }
 				relobj = uriobj;
-			}else if(typeof relobj["scheme"] != "undefined"){
+			}
+			else if (relobj.scheme == null) {
 				relobj.scheme = uriobj.scheme;
 			
-				if(typeof relobj["authority"] != "undefined"){
+				if (relobj.authority == null) {
 					relobj.authority = uriobj.authority;
 					
 					if (relobj.path.charAt(0) != "/") {
