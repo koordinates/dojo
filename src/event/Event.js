@@ -287,6 +287,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 			if((obj["attachEvent"])||(obj["nodeType"])||(obj["addEventListener"])){
 				isNode = true;
 				dojo.event.browser.addClobberAttrs(jpname, jpfuncname, methname);
+				dojo.event.browser.addClobberNode(obj);
 			}
 		}
 		obj[jpfuncname] = obj[methname];

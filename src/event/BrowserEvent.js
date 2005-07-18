@@ -16,6 +16,7 @@ dojo_ie_clobber = new function(){
 	this.exclusions = [];
 	
 	this.clobberList = {};
+	this.clobberNodes = [];
 
 	this.addClobberAttr = function(type){
 		if(dojo.render.html.ie){
@@ -49,7 +50,7 @@ dojo_ie_clobber = new function(){
 			}
 		}
 
-		var na = document.all;
+		var na = (this.clobberNodes.length) ? this.clobberNodes || document.all;
 		/*
 		for(var p = this.clobberArr.length-1; p>=0; p=p-1){
 			alert(this.clobberArr[p]);
@@ -71,7 +72,7 @@ dojo_ie_clobber = new function(){
 	}
 }
 
-if(dojo.render.html.ie && !dojo.hostenv.ie_prevent_clobber_){
+if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie_clobber_minimal_))){
 	window.onunload = function(){
 		dojo_ie_clobber.clobber();
 	}
@@ -85,6 +86,12 @@ dojo.event.browser = new function(){
 	this.addClobberAttrs = function(){
 		for(var x=0; x<arguments.length; x++){
 			this.addClobberAttr(arguments[x]);
+		}
+	}
+
+	this.addClobberNode = function(node){
+		if(dojo.hostenv.ie_clobber_minimal_){
+			dojo_ie_clobber.clobberNodes.push(node);
 		}
 	}
 
@@ -137,10 +144,10 @@ dojo.event.browser = new function(){
 
 	this.fixEvent = function(evt){
 		if(dojo.render.html.ie){
-			if(!evt.target) { evt.target = evt.srcElement; }
-			if(!evt.currentTarget) { evt.currentTarget = evt.srcElement; }
-			if(!evt.layerX) { evt.layerX = evt.offsetX; }
-			if(!evt.layerY) { evt.layerY = evt.offsetY; }
+			if(!evt.target){ evt.target = evt.srcElement; }
+			if(!evt.currentTarget){ evt.currentTarget = evt.srcElement; }
+			if(!evt.layerX){ evt.layerX = evt.offsetX; }
+			if(!evt.layerY){ evt.layerY = evt.offsetY; }
 			// mouseover
 			if(evt.fromElement){ evt.relatedTarget = evt.fromElement; }
 			// mouseout
