@@ -46,11 +46,17 @@ dojo.uri = new function() {
 					if (relobj.path.charAt(0) != "/") {
 						var path = uriobj.path.substring(0,
 							uriobj.path.lastIndexOf("/") + 1) + relobj.path;
+
 						var segs = path.split("/");
 						for (var j = 0; j < segs.length; j++) {
-							if (segs[j] == ".") { segs.splice(j, 1); j--; }
-							else if (j != 0 && segs[j] == ".." && segs[j-1] != "..") {
-								segs.splice(j - 1, 2); j -= 2;
+							if (segs[j] == ".") {
+								if (j == segs.length - 1) { segs[j] = ""; }
+								else { segs.splice(j, 1); j--; }
+							} else if (j > 0 && !(j == 1 && segs[0] == "") &&
+								segs[j] == ".." && segs[j-1] != "..")
+							{
+								if (j == segs.length - 1) { segs.splice(j, 1); segs[j - 1] = ""; }
+								else { segs.splice(j - 1, 2); j -= 2; }
 							}
 						}
 						relobj.path = segs.join("/");
