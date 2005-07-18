@@ -553,6 +553,7 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.resizeTarget = null;
 	this.hoverNode = null;
 	this.dragIcon = null;
+	this._cheapChecks = true;
 	this.isResizing = false;
 	this.overResizeHandle = false;
 	this.overDragHandle  = false;
@@ -560,6 +561,9 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	this.curr = [];
 
 	this.checkForResize = function(node){
+		if(this._cheapChecks){
+			return dojo.xml.htmlUtil.getAttribute(node, "resizeHandle");
+		}
 		var rh = false;
 		var ca = null;
 		var ancestors = dojo.xml.domUtil.getAncestors(node);
@@ -571,6 +575,9 @@ dojo.webui.htmlDragAndDropManager = new function(){
 	}
 
 	this.checkForDrag = function(node){
+		if(this._cheapChecks){
+			return dojo.xml.htmlUtil.getAttribute(node, "dragHandle");
+		}
 		var rh = false;
 		var ca = null;
 		var ancestors = dojo.xml.domUtil.getAncestors(node);
