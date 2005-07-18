@@ -50,7 +50,7 @@ dojo_ie_clobber = new function(){
 			}
 		}
 
-		var na = (this.clobberNodes.length) ? this.clobberNodes || document.all;
+		var na = (this.clobberNodes.length) ? this.clobberNodes : document.all;
 		/*
 		for(var p = this.clobberArr.length-1; p>=0; p=p-1){
 			alert(this.clobberArr[p]);
