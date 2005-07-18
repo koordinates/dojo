@@ -25,6 +25,7 @@ dojo.uri = new function() {
 		// resolve uri components relative to each other
 		var uri = arguments[0];
 		for (var i = 1; i < arguments.length; i++) {
+			if(!arguments[i]) { continue; }
 
 			// Safari doesn't support this.constructor so we have to be explicit
 			var relobj = new dojo.uri.Uri(arguments[i].toString());
