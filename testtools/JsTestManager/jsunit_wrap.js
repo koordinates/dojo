@@ -760,10 +760,8 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
 	var es = ("assertEquals" + (msg ? '(' + msg + ')' : '') + 
 				" failed: expected |" + expected_u + "| (typeof=" + (typeof expected) + ")" +
 				  ", but got |" + actual_u + "| (typeof=" + (typeof actual) + ")");
-	// throw new Error(es);
-	// var fs = new JUMAssertFailure(es);
-	// fs.isJumError = 1;
-	throw es; // JUMAssertFailure(es);
+	throw new JUMAssertFailure(es);
+
 	// jum.debug(JUMAssertFailure("foo!"));
 	/*
 	 throw JUMAssertFailure("assertEquals" + 
@@ -929,13 +927,11 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
        try{ 
 	 	func();
 	 }catch(e){
-	 	jum.debug(e, " ", typeof e, " ", e.isJumError);
          threw = true;
          if(e instanceof JUMAssertFailure) {
             jum.report_(prefix + 'FAILED' + suffix + ': ' + e.message);
             ++this.failed_count_;
          }else{
-	   	jum.debug(e.name);
 	     jum.report_(prefix + 'ERROR' + suffix + ' toString: ' + e.toString() + ' message: ' + e.message + 
 			 (typeof e.description != 'undefined' ? ' description: ' + e.description : ''));
 
@@ -1148,9 +1144,7 @@ function jum_get_object_function_names(scopeobj) {
     if (!jum_is_test_function(k)) continue; 
     if (typeof scopeobj[k] == 'function') a.push(k);
   }
-	//alert("found " + a.length + " symbols out of " + count);
   jum_debug("returning all function members in object: " + a); 
-  //bu_alert("(jsunit_wrap.js) returning all function members in object: " + a); 
   return a;
 }
 
