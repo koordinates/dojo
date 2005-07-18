@@ -29,16 +29,15 @@ dojo.uri = new function() {
 			var relobj = new this.constructor(arguments[i].toString());
 			var uriobj = new this.constructor(uri.toString());
 
-			if (relobj.path == "" && relobj.scheme == null &&
+			if( relobj.path == "" && relobj.scheme == null &&
 				relobj.authority == null && relobj.query == null)
 			{
-				if (relobj.fragment != null) { uriobj.fragment = relobj.fragment; }
+				if (relobj.fragment != null){ uriobj.fragment = relobj.fragment; }
 				relobj = uriobj;
-			}
-			else if (relobj.scheme == null) {
+			}else if (relobj["scheme"]){
 				relobj.scheme = uriobj.scheme;
 			
-				if (relobj.authority == null) {
+				if (relobj["authority"]) {
 					relobj.authority = uriobj.authority;
 					
 					if (relobj.path.charAt(0) != "/") {
