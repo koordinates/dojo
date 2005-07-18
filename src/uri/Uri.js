@@ -34,10 +34,10 @@ dojo.uri = new function() {
 			{
 				if (relobj.fragment != null){ uriobj.fragment = relobj.fragment; }
 				relobj = uriobj;
-			}else if (relobj["scheme"]){
+			}else if(typeof relobj["scheme"] != "undefined"){
 				relobj.scheme = uriobj.scheme;
 			
-				if (relobj["authority"]) {
+				if(typeof relobj["authority"] != "undefined"){
 					relobj.authority = uriobj.authority;
 					
 					if (relobj.path.charAt(0) != "/") {
