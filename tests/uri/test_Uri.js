@@ -3,8 +3,6 @@ dojo.hostenv.loadModule("dojo.uri.Uri");
 function test_uri_testBases(){
 	var base = 'http://a/b/c/d;p?q';
 
-	jum.debug("----------------------------------------------------------------------- URI");
-
 	jum.assertEquals("test1", (new dojo.uri.Uri(base, 'g:h')).toString(), 'g:h');
 	jum.assertEquals("test2", (new dojo.uri.Uri(base, 'g')).toString(), 'http://a/b/c/g');
 	jum.assertEquals("test3", (new dojo.uri.Uri(base, './g')).toString(), 'http://a/b/c/g');
