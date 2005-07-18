@@ -727,8 +727,12 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   // throw "attempting to use builtin JsUnit";
   // copied and modified from burst.BurstError.js
   function JUMAssertFailure(msg) {
-    if (!(this instanceof JUMAssertFailure)) return new JUMAssertFailure(msg);
-    this.message = msg || ''; 
+    if(!(this instanceof JUMAssertFailure)){
+    	return new JUMAssertFailure(msg);
+    }
+    // Error.call(this, msg);
+    this.isJumError = 1;
+    this.message = (new String(msg)) || ''; 
     return this; // silence warnings
   }
   JUMAssertFailure.prototype = new Error();
@@ -744,19 +748,29 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
     if (eval(cond)) throw JUMAssertFailure("assertFalse('" + cond + "') failed" + (msg ? ': ' + msg : ''));
   }
   function jum_assertEquals(msg, expected, actual) {
-     if (arguments.length == 2) {actual = expected; expected = msg; msg = null;} 
-     if (expected == actual) return ;
-     var expected_u = expected;
-     var actual_u = actual;
-     if (jum_uneval) {
-	 expected_u = jum_uneval(expected); 
-	 actual_u = jum_uneval(actual); 
-	 if (expected_u == actual_u) return ;
-     }
-     throw JUMAssertFailure("assertEquals" + 
-			    (msg ? '(' + msg + ')' : '') + 
-			    " failed: expected |" + expected_u + "| (typeof=" + (typeof expected) + ")" +
-			      ", but got |" + actual_u + "| (typeof=" + (typeof actual) + ")");
+	 if (arguments.length == 2) {actual = expected; expected = msg; msg = null;} 
+	 if (expected == actual) return ;
+	 var expected_u = expected;
+	 var actual_u = actual;
+	 if(jum_uneval){
+		 expected_u = jum_uneval(expected); 
+		 actual_u = jum_uneval(actual); 
+		 if(expected_u == actual_u){ return ; }
+	 }
+	var es = ("assertEquals" + (msg ? '(' + msg + ')' : '') + 
+				" failed: expected |" + expected_u + "| (typeof=" + (typeof expected) + ")" +
+				  ", but got |" + actual_u + "| (typeof=" + (typeof actual) + ")");
+	// throw new Error(es);
+	// var fs = new JUMAssertFailure(es);
+	// fs.isJumError = 1;
+	throw es; // JUMAssertFailure(es);
+	// jum.debug(JUMAssertFailure("foo!"));
+	/*
+	 throw JUMAssertFailure("assertEquals" + 
+				(msg ? '(' + msg + ')' : '') + 
+				" failed: expected |" + expected_u + "| (typeof=" + (typeof expected) + ")" +
+				  ", but got |" + actual_u + "| (typeof=" + (typeof actual) + ")");
+	*/
   }
 
   /*
@@ -912,14 +926,16 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
        var threw = false;
 
        if (JUM_CATCH_EXCEPTIONS) {
-       try{ func() }
-       catch(e) {
+       try{ 
+	 	func();
+	 }catch(e){
+	 	jum.debug(e, " ", typeof e, " ", e.isJumError);
          threw = true;
-         if (e instanceof JUMAssertFailure) {
+         if(e instanceof JUMAssertFailure) {
             jum.report_(prefix + 'FAILED' + suffix + ': ' + e.message);
             ++this.failed_count_;
-         }
-         else {
+         }else{
+	   	jum.debug(e.name);
 	     jum.report_(prefix + 'ERROR' + suffix + ' toString: ' + e.toString() + ' message: ' + e.message + 
 			 (typeof e.description != 'undefined' ? ' description: ' + e.description : ''));
 
