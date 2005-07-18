@@ -20,8 +20,7 @@ dojo_ie_clobber = new function(){
 
 	this.addClobberAttr = function(type){
 		if(dojo.render.html.ie){
-			if((!this.clobberList[type])||
-				(this.clobberList[type]!="set")){
+			if(this.clobberList[type]!="set"){
 				this.clobberArr.push(type);
 				this.clobberList[type] = "set"; 
 			}
@@ -91,7 +90,10 @@ dojo.event.browser = new function(){
 
 	this.addClobberNode = function(node){
 		if(dojo.hostenv.ie_clobber_minimal_){
-			dojo_ie_clobber.clobberNodes.push(node);
+			if(!node.__doClobber__) {
+				dojo_ie_clobber.clobberNodes.push(node);
+				node.__doClobber__ = true;
+			}
 		}
 	}
 
