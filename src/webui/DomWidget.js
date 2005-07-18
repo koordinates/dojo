@@ -17,7 +17,7 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 	var cpath = templateCSSPath || obj.templateCSSPath;
 
 	// DEPRECATED: use Uri objects, not strings
-	if (!(tpath instanceof dojo.uri.Uri)) {
+	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
 		tpath = dojo.uri.dojoUri(tpath);
 		dj_deprecated("templatePath should be of type dojo.uri.Uri");
 	}
