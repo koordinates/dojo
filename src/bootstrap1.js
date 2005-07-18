@@ -283,6 +283,7 @@ dojo.hostenv = (function(){
 		library_script_uri_: _def(djc, "libraryScriptUri", ""),
 		auto_build_widgets_: _def(djc, "parseWidgets", true),
 		ie_prevent_clobber_: _def(djc, "iePreventClobber", false),
+		ie_clobber_minimal_: _def(djc, "ieClobberMinimal", false),
 		name_: '(unset)',
 		version_: '(unset)',
 		pkgFileName: "__package__",
