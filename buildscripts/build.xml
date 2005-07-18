@@ -101,7 +101,8 @@ for line in file("../testRunner.js"):
 	print line,
 print "################## end testRunner.js ##################\n"
 ]]></script>
-		<java jar="${user.home}/.ant/lib/js.jar" fork="true">
+		<!-- <java jar="${user.home}/.ant/lib/js.jar" fork="true"> -->
+		<java jar="./lib/custom_rhino.jar" fork="true">
 			<!-- FIXME: should this be in the release/ dir somewhere? -->
 			<arg value="../testRunner.js" />
 		</java>
