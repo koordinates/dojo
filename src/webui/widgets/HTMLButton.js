@@ -12,7 +12,7 @@ dojo.webui.widgets.HTMLButton = function(){
 	dojo.webui.HTMLWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLButtonTemplate.html");
-	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLButtonTemplate.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLButtonTemplate.css");
 
 	// FIXME: freaking implement this already!
 	this.foo = function(){ alert("bar"); }

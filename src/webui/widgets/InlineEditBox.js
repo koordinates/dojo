@@ -19,7 +19,7 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 	dojo.webui.HTMLWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.html");
-	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.css");
 	this.widgetType = "InlineEditBox";
 
 	this.form = null;

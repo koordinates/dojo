@@ -12,9 +12,15 @@ dojo.hostenv.loadModule("dojo.uri.*");
 dojo.webui._cssFiles = {};
 
 // static method to build from a template w/ or w/o a real widget in place
-dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, templateString) {
+dojo.webui.buildFromTemplate = function(obj, templatePath, templateCssPath, templateString) {
 	var tpath = templatePath || obj.templatePath;
-	var cpath = templateCSSPath || obj.templateCSSPath;
+	var cpath = templateCssPath || obj.templateCssPath;
+
+	if (!cpath && obj.templateCSSPath) {
+		obj.templateCssPath = cpath = obj.templateCSSPath;
+		obj.templateCSSPath = null;
+		dj_deprecated("templateCSSPath is deprecated, use templateCssPath");
+	}
 
 	// DEPRECATED: use Uri objects, not strings
 	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
@@ -36,7 +42,7 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCSSPath, temp
 
 	if((cpath)&&(!dojo.webui._cssFiles[cpath])){
 		dojo.xml.htmlUtil.insertCssFile(cpath);
-		obj.templateCSSPath = null;
+		obj.templateCssPath = null;
 		dojo.webui._cssFiles[cpath] = true;
 	}
 
@@ -201,8 +207,8 @@ dojo.webui.getDojoEventsFromStr = function(str){
 }
 
 
-dojo.webui.buildAndAttachTemplate = function(obj, templatePath, templateCSSPath, templateString, targetObj) {
-	this.buildFromTemplate(obj, templatePath, templateCSSPath, templateString);
+dojo.webui.buildAndAttachTemplate = function(obj, templatePath, templateCssPath, templateString, targetObj) {
+	this.buildFromTemplate(obj, templatePath, templateCssPath, templateString);
 	var node = dojo.xml.domUtil.createNodesFromText(obj.templateString, true)[0];
 	this.attachTemplateNodes(node, targetObj||obj, obj, dojo.webui.getDojoEventsFromStr(templateString));
 	return node;
@@ -456,7 +462,7 @@ dojo.webui.SVGWidget = function(args){
 dojo.webui.HTMLWidget = function(args){
 	// mixin inheritance
 	// dojo.webui.DomWidget.call(this);
-	this.templateCSSPath = null;
+	this.templateCssPath = null;
 	this.templatePath = null;
 	this.allowResizeX = true;
 	this.allowResizeY = true;

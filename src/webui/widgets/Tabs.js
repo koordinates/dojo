@@ -14,7 +14,7 @@ dojo.webui.widgets.HTMLTabs = function() {
 
 	this.widgetType = "Tabs";
 	this.templatePath = null; // prolly not
-	this.templateCSSPath = null; // maybe
+	this.templateCssPath = null; // maybe
 
 	this.domNode = null;
 	this.panelContainer = null;

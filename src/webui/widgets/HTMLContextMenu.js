@@ -9,7 +9,7 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	dojo.webui.HTMLWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.html");
-	this.templateCSSPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.css");
 
 	this.fillInTemplate = function(){
 		// this.setLabel();
