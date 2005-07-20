@@ -63,12 +63,23 @@ dojo.alg.tryThese = function(){
 	}
 }
 
-dojo.alg.delayThese = function(farr, cb, delay){
-	if(!farr.length){ return; }
+dojo.alg.delayThese = function(farr, cb, delay, onend){
+	if(!farr.length){ 
+		if(typeof onend == "function"){
+			onend();
+		}
+		return;
+	}
+	if((typeof delay == "undefined")&&(typeof cb == "number")){
+		delay = cb;
+		cb = function(){};
+	}else if(!cb){
+		cb = function(){};
+	}
 	setTimeout(function(){
 		(farr.shift())();
 		cb();
-		dojo.alg.delayThese(farr, cb, delay);
+		dojo.alg.delayThese(farr, cb, delay, onend);
 	}, delay);
 }
 
