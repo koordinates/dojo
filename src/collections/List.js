@@ -1,5 +1,5 @@
-provide("dojo.collections.List");
-require("dojo.collections.Collections");
+dojo.provide("dojo.collections.List");
+dojo.require("dojo.collections.Collections");
 
 dojo.collections.List = function(dictionary){
 	var items = {};

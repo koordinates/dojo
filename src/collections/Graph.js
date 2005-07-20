@@ -1,5 +1,5 @@
-provide("dojo.collections.Graph");
-require("dojo.collections.Collections");
+dojo.provide("dojo.collections.Graph");
+dojo.require("dojo.collections.Collections");
 
 dojo.collections.Graph = function(nodes){
 	function node(key, data, neighbors) {

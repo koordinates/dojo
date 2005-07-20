@@ -1,5 +1,5 @@
-provide("dojo.collections.SkipList");
-require("dojo.collections.Collections");
+dojo.provide("dojo.collections.SkipList");
+dojo.require("dojo.collections.Collections");
 
 dojo.collections.SkipList = function(){
 	function node(height, val){

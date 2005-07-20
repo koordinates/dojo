@@ -1,5 +1,5 @@
-provide("dojo.collections.Stack");
-require("dojo.collections.Collections");
+dojo.provide("dojo.collections.Stack");
+dojo.require("dojo.collections.Collections");
 
 dojo.collections.Stack = function(arr){
 	var q = [];

@@ -1,5 +1,5 @@
-provide("dojo.collections.Queue");
-require("dojo.collections.Collections");
+dojo.provide("dojo.collections.Queue");
+dojo.require("dojo.collections.Collections");
 
 dojo.collections.Queue = function(arr){
 	var q = [];

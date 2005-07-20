@@ -1,5 +1,5 @@
 //	dojo.hostenv.loadModule("dojo.alg.*");
-provide("dojo.collections.Collections");
+dojo.provide("dojo.collections.Collections");
 
 dojo.collections = {};
 dojo.collections.DictionaryEntry = function(k,v){

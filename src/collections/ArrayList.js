@@ -1,5 +1,5 @@
-provide("dojo.collections.ArrayList");
-require("dojo.collections.Collections");
+dojo.provide("dojo.collections.ArrayList");
+dojo.require("dojo.collections.Collections");
 
 dojo.collections.ArrayList = function(arr){
 	var items = [];
