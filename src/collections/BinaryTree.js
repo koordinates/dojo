@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.collections.BinaryTree");
-dojo.hostenv.loadModule("dojo.collections.Collections");
+provide("dojo.collections.BinaryTree");
+require("dojo.collections.Collections");
 
 dojo.collections.BinaryTree = function(data){
 	function node(data, rnode, lnode){

@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.collections.ArrayList");
-dojo.hostenv.loadModule("dojo.collections.Collections");
+provide("dojo.collections.ArrayList");
+require("dojo.collections.Collections");
 
 dojo.collections.ArrayList = function(arr){
 	var items = [];

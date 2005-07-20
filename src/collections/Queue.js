@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.collections.Queue");
-dojo.hostenv.loadModule("dojo.collections.Collections");
+provide("dojo.collections.Queue");
+require("dojo.collections.Collections");
 
 dojo.collections.Queue = function(arr){
 	var q = [];

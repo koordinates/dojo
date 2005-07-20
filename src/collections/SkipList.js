@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.collections.SkipList");
-dojo.hostenv.loadModule("dojo.collections.Collections");
+provide("dojo.collections.SkipList");
+require("dojo.collections.Collections");
 
 dojo.collections.SkipList = function(){
 	function node(height, val){

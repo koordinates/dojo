@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.collections.Stack");
-dojo.hostenv.loadModule("dojo.collections.Collections");
+provide("dojo.collections.Stack");
+require("dojo.collections.Collections");
 
 dojo.collections.Stack = function(arr){
 	var q = [];

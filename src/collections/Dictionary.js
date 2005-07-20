@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.collections.Dictionary");
-dojo.hostenv.loadModule("dojo.collections.Collections");
+provide("dojo.collections.Dictionary");
+require("dojo.collections.Collections");
 
 dojo.collections.Dictionary = function(){
 	var items = {};
