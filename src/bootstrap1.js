@@ -498,6 +498,10 @@ dojo.hostenv.getDepsForEval = function(contents){
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
 	}
+	tmp = contents.match( /dojo.require\(.*?\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+	}
 	// FIXME: this seems to be borken on Rhino in some situations. ???
 	tmp = contents.match( /dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/gm );
 	if(tmp){

@@ -36,7 +36,13 @@ dojo.hostenv.conditionalLoadModule = function(modMap){
 }
 
 dojo.hostenv.require = dojo.hostenv.loadModule;
+dojo.require = function(){
+	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
+}
 dojo.hostenv.provide = dojo.hostenv.startPackage;
+dojo.require = function(){
+	dojo.hostenv.startPackage(dojo.hostenv, arguments);
+}
 
 dj_debug("Using host environment: ", dojo.hostenv.name_);
 dj_debug("getBaseScriptUri()=", dojo.hostenv.getBaseScriptUri());
