@@ -257,6 +257,10 @@ dojo.lang.extend(dojo.webui.Widget, {
 		return false;
 	},
 
+	addedTo: function(parent){
+		// this is just a signal that can be caught
+	},
+
 	addChild: function(child){
 		// SUBCLASSES MUST IMPLEMENT
 		dj_unimplemented("dojo.webui.Widget.addChild");
