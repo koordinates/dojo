@@ -161,16 +161,30 @@ dojo.xml.domUtil = new function(){
 		if(typeof DOMParser != "undefined") {
 			var parser = new DOMParser();
 			return parser.parseFromString(str, mimetype);
-		} else if(typeof ActiveXObject != "undefined") {
+		}else if(typeof ActiveXObject != "undefined"){
 			var domDoc = new ActiveXObject("Microsoft.XMLDOM");
 			if(domDoc) {
 				domDoc.async = false;
 				domDoc.loadXML(str);
 				return domDoc;
-			} else {
+			}else{
 				dj_debug("toXml didn't work?");
 			}
-		} else if(document.createElement) {
+		/*
+		}else if((dojo.render.html.capable)&&(dojo.render.html.safari)){
+			// FIXME: this doesn't appear to work!
+			// from: http://web-graphics.com/mtarchive/001606.php
+			// var xml = '<?xml version="1.0"?>'+str;
+			var mtype = "text/xml";
+			var xml = '<?xml version="1.0"?>'+str;
+			var url = "data:"+mtype+";charset=utf-8,"+encodeURIComponent(xml);
+			var req = new XMLHttpRequest();
+			req.open("GET", url, false);
+			req.overrideMimeType(mtype);
+			req.send(null);
+			return req.responseXML;
+		*/
+		}else if(document.createElement){
 			// FIXME: this may change all tags to uppercase!
 			var tmp = document.createElement("xml");
 			tmp.innerHTML = str;
@@ -200,14 +214,13 @@ dojo.xml.domUtil = new function(){
 			tn.innerHTML = txt;
 			tn.normalize();
 			if(wrap){ 
+				var ret = [];
 				// start hack
-				if(tn.firstChild.nodeValue == " " || tn.firstChild.nodeValue == "\t") {
-					var ret = [tn.firstChild.nextSibling.cloneNode(true)];
-				} else {
-					var ret = [tn.firstChild.cloneNode(true)];
-				}
+				var fc = tn.firstChild;
+				ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
 				// end hack
-				tn.style.display = "none";
+				// tn.style.display = "none";
+				document.body.removeChild(tn);
 				return ret;
 			}
 			var nodes = [];
@@ -218,7 +231,7 @@ dojo.xml.domUtil = new function(){
 			document.body.removeChild(tn);
 			return nodes;
 		}
-	} else if(dojo.render.svg.capable) {
+	}else if(dojo.render.svg.capable){
 		this.createNodesFromText = function(txt, wrap){
 			// from http://wiki.svg.org/index.php/ParseXml
 			var docFrag = parseXML(txt, window.document);
