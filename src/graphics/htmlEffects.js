@@ -3,6 +3,7 @@ dojo.hostenv.startPackage("dojo.graphics.htmlEffects");
 dojo.hostenv.loadModule("dojo.animation.*");
 dojo.hostenv.loadModule("dojo.xml.*");
 dojo.hostenv.loadModule("dojo.event.*");
+dojo.hostenv.loadModule("dojo.alg.*");
 
 dojo.graphics.htmlEffects = new function() {
 	this.fadeOut = function(node, duration, cbObj, callback) {
@@ -120,7 +121,8 @@ dojo.graphics.htmlEffects = new function() {
 	this.wipeIn = function(node, duration, cbObj, callback, dontPlay) {
 		var savedOverflow = dojo.xml.htmlUtil.getStyle(node, "overflow");
 		var savedHeight = dojo.xml.htmlUtil.getStyle(node, "height");
-		node.style.display = "";
+		// FIXME: should we be setting display to something other than "" for the table elements?
+		node.style.display = dojo.alg.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
 		var height = node.offsetHeight;
 		if(savedOverflow == "visible") {
 			node.style.overflow = "hidden";
