@@ -155,16 +155,16 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 						}
 					}
 				}();
-				dojo.event.connect(baseNode, tevt.toLowerCase(), tf);
+				// dojo.event.connect(baseNode, tevt.toLowerCase(), tf);
+				dojo.event.browser.addListener(baseNode, tevt.substr(2), tf);
 			}
 		}
 
 		for(var y=0; y<events.length; y++){
 			//alert(events[x]);
 			var evtVal = baseNode.getAttribute(events[y]);
-			if(evtVal){
+			if((evtVal)&&(evtVal.length)){
 				var thisFunc = null;
-				if((!evtVal)||(!evtVal.length)){ continue; }
 				var domEvt = events[y].substr(4).toLowerCase(); // clober the "dojo" prefix
 				thisFunc = dojo.text.trim(evtVal);
 				var tf = function(){ 
