@@ -40,7 +40,7 @@ dojo.require = function(){
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
 dojo.hostenv.provide = dojo.hostenv.startPackage;
-dojo.require = function(){
+dojo.provide = function(){
 	dojo.hostenv.startPackage(dojo.hostenv, arguments);
 }
 
