@@ -1,16 +1,16 @@
 /* TODO:
  */
-dojo.hostenv.startPackage("dojo.webui.widgets.InlineEditBox");
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLInlineEditBox");
+dojo.provide("dojo.webui.widgets.InlineEditBox");
+dojo.provide("dojo.webui.widgets.HTMLInlineEditBox");
 
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.xml.*");
-dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-dojo.hostenv.loadModule("dojo.webui.Widget");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.graphics.*");
-dojo.hostenv.loadModule("dojo.text.*");
+dojo.require("dojo.event.*");
+dojo.require("dojo.xml.*");
+dojo.require("dojo.webui.widgets.Parse");
+dojo.require("dojo.webui.Widget");
+dojo.require("dojo.webui.DomWidget");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.graphics.*");
+dojo.require("dojo.text.*");
 
 
 dojo.webui.widgets.HTMLInlineEditBox = function() {
@@ -55,7 +55,7 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		}
 		// this.textValue = this.editable.firstChild.nodeValue;
 		this.textValue = dojo.text.trim(this.editable.innerHTML);
-		if(this.textValue.length == 0){
+		if(dojo.text.trim(this.textValue).length == 0){
 			this.editable.innerHTML = this.defaultText;
 		}
 		/*
@@ -104,7 +104,7 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		var ee = this[this.mode.toLowerCase()];
 
 		ee.style.display = "";
-		ee.value = this.textValue;
+		ee.value = dojo.text.trim(this.textValue);
 		ee.style.fontSize = dojo.xml.domUtil.getStyle(this.editable, "font-size");
 		ee.style.fontWeight = dojo.xml.domUtil.getStyle(this.editable, "font-weight");
 		ee.style.fontStyle = dojo.xml.domUtil.getStyle(this.editable, "font-style");
@@ -156,8 +156,9 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 
 	this.setText = function(txt){
 		// sets the text without informing the server
-		this.textValue = txt;
-		this.editable.innerHTML = txt;
+		var tt = dojo.text.trim(txt);
+		this.textValue = tt
+		this.editable.innerHTML = tt;
 	}
 }
 dj_inherits(dojo.webui.widgets.HTMLInlineEditBox, dojo.webui.DomWidget);
