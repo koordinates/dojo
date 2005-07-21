@@ -34,6 +34,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 				}
 			}
 		}*/
+		var tot = 0;
 		for(var item in fragment){
 			// if we have items to parse/create at this level, do it!
 			try{
@@ -46,8 +47,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 					for(var x=0; x<tna.length; x++){
 						var ltn = dojo.text.trim(tna[x]).toLowerCase();
 						if(djTags[ltn]){
+							// var tic = new Date();
 							fragment[item].tagName = ltn;
 							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
+							// dj_debug(ltn, ": ", new Date()-tic, "ms");
 						}else{
 							if(ltn.substr(0, 5)=="dojo:"){
 								dj_debug("no tag handler registed for type: ", ltn);
@@ -76,6 +79,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 			propertySets that it finds.
 	*/
 	this.parsePropertySets = function(fragment) {
+		return [];
 		var propertySets = [];
 		for(var item in fragment){
 			if(	(fragment[item]["tagName"] == "dojo:propertyset") ) {
@@ -120,15 +124,6 @@ dojo.webui.widgets.Parse = function(fragment) {
 							properties[property] = nestedProperties[property];
 						}
 					}catch(e){ dj_debug(e); }
-				/*
-				}else if((fragment[item])&&(fragment[item].value!="")){
-					//dj_debug(item+": "+fragment[item]);
-					if(typeof fragment[item] == "object"){
-						for(var x in fragment[item]){
-							dj_debug("- "+x+": "+fragment[item][x]);
-						}
-					}
-				*/
 				}
 			}
 		}
@@ -219,7 +214,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 
 		properties is an object of name value pairs
 	*/
-	this.createComponentFromScript = function(nodeRef, componentName, properties){
+	this.createComponentFromScript = function(nodeRef, componentName, properties, fastMixIn){
 		var frag = {};
 		var tagName = "dojo:" + componentName.toLowerCase();
 		frag[tagName] = {};
@@ -233,6 +228,9 @@ dojo.webui.widgets.Parse = function(fragment) {
 		frag[tagName].nodeRef = nodeRef;
 		frag.tagName = tagName;
 		var fragContainer = [frag];
+		if(fastMixIn){
+			fragContainer[0].fastMixIn = true;
+		}
 		// FIXME: should this really return an array?
 		return this.createComponents(fragContainer);
 	}
@@ -249,6 +247,17 @@ dojo.webui.widgets.getParser = function(name){
 }
 
 dojo.webui.widgets.fromScript = function(parentNode, name, props){
+	var ln = name.toLowerCase();
+	var tn = "dojo:"+ln;
+	props[tn] = { 
+		dojotype: [{value: ln}],
+		nodeRef: parentNode,
+		fastMixIn: true
+	};
+	// var twidget = dojo.webui.widgetManager.getImplementation(ln);
+	// return twidget.create(props, props);
+
+	// return dojo.webui.widgets.tags[tn](props, dojo.webui.widgets.getParser());
 	return dojo.webui.widgets.getParser().createComponentFromScript(parentNode, name, props);
 }
 
