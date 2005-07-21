@@ -41,7 +41,7 @@ dojo.require = function(){
 }
 dojo.hostenv.provide = dojo.hostenv.startPackage;
 dojo.provide = function(){
-	dojo.hostenv.startPackage(dojo.hostenv, arguments);
+	dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
 dj_debug("Using host environment: ", dojo.hostenv.name_);
