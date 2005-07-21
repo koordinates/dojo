@@ -113,7 +113,14 @@ dojo.lang.extend(dojo.webui.Widget, {
 		return args;
 	},
 
-	mixInProperties: function(args){
+	mixInProperties: function(args, frag){
+		if((args["fastMixIn"])||(frag["fastMixIn"])){
+			// fast mix in assumes case sensitivity, no type casting, etc...
+			for(var x in args){
+				this[x] = args[x];
+			}
+			return;
+		}
 		/*
 		 * the actual mix-in code attempts to do some type-assignment based on
 		 * PRE-EXISTING properties of the "this" object. When a named property
