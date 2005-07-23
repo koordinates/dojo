@@ -38,7 +38,10 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 	this.defaultText = "";
 	this.doFade = false;
 
+	this.history = [];
+
 	this.onSave = function(newValue, oldValue){};
+	this.onUndo = function(value){};
 
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
@@ -129,6 +132,7 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		if((this.textValue != ee.value)&&
 			(dojo.text.trim(ee.value) != "")){
 			this.doFade = true;
+			this.history.push(this.textValue);
 			this.onSave(ee.value, this.textValue);
 			this.textValue = ee.value;
 			this.editable.innerHTML = this.textValue;
@@ -159,6 +163,15 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		var tt = dojo.text.trim(txt);
 		this.textValue = tt
 		this.editable.innerHTML = tt;
+	}
+
+	this.undo = function() {
+		if(this.history.length > 0) {
+			var value = this.history.pop();
+			this.editable.innerHTML = value;
+			this.textValue = value;
+			this.onUndo(value);
+		}
 	}
 }
 dj_inherits(dojo.webui.widgets.HTMLInlineEditBox, dojo.webui.DomWidget);
