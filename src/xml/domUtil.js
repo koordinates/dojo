@@ -271,4 +271,34 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.after = this.insertAfter;
+	
+	/**
+	 * implementation of the DOM Level 3 attribute.
+	 * if one argument is given acts as a getter, and if two acts as a setter
+	 */
+	this.textContent = function (node, text) {
+		if (text) {
+			while (node.hasChildren()) { node.removeChild(node.firstChild); }
+			node.appendChild(document.createTextNode(text));
+		} else {
+			var _result = "";
+			if (node == null) { return _result; }
+			for (var i = 0; i < node.childNodes.length; i++) {
+				switch (node.childNodes[i].nodeType) {
+					case 1: // ELEMENT_NODE
+					case 5: // ENTITY_REFERENCE_NODE
+						_result += dojo.xml.domUtil.textContent(node.childNodes[i]);
+					break;
+					case 3: // TEXT_NODE
+					case 2: // ATTRIBUTE_NODE
+					case 4: // CDATA_SECTION_NODE
+						_result += node.childNodes[i].nodeValue;
+					break;
+					default:
+						break;
+				}
+			}
+			return _result;
+		}
+	}
 }
