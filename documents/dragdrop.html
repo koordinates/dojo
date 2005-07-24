@@ -120,8 +120,7 @@ pre {
 
 <pre>
 interface DragSource {
-  void              register(in String constructorRef,
-                       in String name, in String rendering);
+  DragObject   ondrag(in DragEvent event);
 };
 </pre>
 
@@ -145,8 +144,8 @@ interface DragSource {
 
 <pre>
 interface DragObject {
-  void              register(in String constructorRef,
-                       in String name, in String rendering);
+  readonly attribute String[]   dragTypes;
+  Node       getDragIcon(); // usually defaults to cloneNode
 };
 </pre>
 
@@ -163,8 +162,14 @@ interface DragObject {
 
 <pre>
 interface DropTarget {
-  void              register(in String constructorRef,
-                       in String name, in String rendering);
+  readonly attribute String[]   acceptedDragTypes;
+  
+   // corresponding to the mouseover, mousemove and mouseout
+  void              ondragover(in DragEvent event);
+  void              ondragmove(in DragEvent event);
+  void               ondragout(in DragEvent event);
+  
+  void                  ondrop(in DragEvent event);
 };
 </pre>
 
