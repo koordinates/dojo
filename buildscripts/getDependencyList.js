@@ -74,6 +74,10 @@ dojo.hostenv.getProvidesForEval = function(contents){
 	if(tmp){
 		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
 	}
+	tmp = contents.match( /dojo.provide\((.*?)\)/mg );
+	if(tmp){
+		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
+	}
 	return mods;
 }
 
