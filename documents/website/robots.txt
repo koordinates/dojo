@@ -1,0 +1,2 @@
+Disallow: /trac/browser
+Disallow: /trac/log
