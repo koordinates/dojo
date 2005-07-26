@@ -6,10 +6,12 @@ dojo.hostenv.conditionalLoadModule({
 		"dojo.collections.Dictionary", 
 		"dojo.collections.Queue", 
 		"dojo.collections.ArrayList", 
+		"dojo.collections.ByteArray",
 		"dojo.collections.Stack",
 		"dojo.collections.BinaryTree",
 		"dojo.collections.SkipList",
-		"dojo.collections.Graph"
+		"dojo.collections.Graph",
+		"dojo.collections.Set"
 	]
 });
 dojo.hostenv.moduleLoaded("dojo.collections.*");
