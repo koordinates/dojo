@@ -1,6 +1,5 @@
-dojo.hostenv.loadModule("dojo.alg.*");
-
-dojo.hostenv.startPackage("dojo.event.Event");
+dojo.require("dojo.alg.*");
+dojo.provide("dojo.event.Event");
 
 dojo.event = new function(){
 
@@ -205,8 +204,8 @@ dojo.event = new function(){
 		return dojo.event[fn](	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
 									kwArgs["srcObj"],
 									kwArgs["srcFunc"],
-									kwArgs["adviceObj"],
-									kwArgs["adviceFunc"],
+									kwArgs["adviceObj"]||kwArgs["targetObj"],
+									kwArgs["adviceFunc"]||kwArgs["targetFunc"],
 									kwArgs["aroundObj"],
 									kwArgs["aroundFunc"],
 									kwArgs["once"],
