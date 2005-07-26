@@ -120,7 +120,14 @@ function dj_debug(){
 	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"];
 	var s = isJUM ? "": "DEBUG: ";
-	for(var i=0;i<args.length;++i){ s += args[i]; }
+	for(var i=0;i<args.length;++i){
+		if (!false && args[i] instanceof Error) {
+			var msg = "[" + args[i].name + ": " + args[i].message +
+				(args[i].fileName ? ", file: " + args[i].fileName : "") +
+				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";
+		} else { var msg = args[i]; }
+		s += msg + " ";
+	}
 	if(isJUM){ // this seems to be the only way to get JUM to "play nice"
 		jum.debug(s);
 	}else{
