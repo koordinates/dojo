@@ -246,19 +246,19 @@ dojo.webui.widgets.getParser = function(name){
 	return this._parser_collection[name];
 }
 
-dojo.webui.widgets.fromScript = function(parentNode, name, props){
+dojo.webui.widgets.fromScript = function(placeKeeperNode, name, props){
 	var ln = name.toLowerCase();
 	var tn = "dojo:"+ln;
 	props[tn] = { 
 		dojotype: [{value: ln}],
-		nodeRef: parentNode,
+		nodeRef: placeKeeperNode,
 		fastMixIn: true
 	};
 	// var twidget = dojo.webui.widgetManager.getImplementation(ln);
 	// return twidget.create(props, props);
 
 	// return dojo.webui.widgets.tags[tn](props, dojo.webui.widgets.getParser());
-	return dojo.webui.widgets.getParser().createComponentFromScript(parentNode, name, props);
+	return dojo.webui.widgets.getParser().createComponentFromScript(placeKeeperNode, name, props);
 }
 
 dojo.webui.fromScript = dojo.webui.widgets.fromScript;
