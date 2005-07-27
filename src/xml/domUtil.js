@@ -272,7 +272,7 @@ dojo.xml.domUtil = new function(){
 
 	this.after = this.insertAfter;
 
-	this.place = function(node, ref, position){
+	this.insert = function(node, ref, position){
 		switch(position.toLowerCase()){
 			case "before":
 				this.before(node, ref);
@@ -281,7 +281,11 @@ dojo.xml.domUtil = new function(){
 				this.after(node, ref);
 				break;
 			case "first":
-				this.before(node, ref.firstChild);
+				if(ref.firstChild){
+					this.before(node, ref.firstChild);
+				}else{
+					ref.appendChild(node);
+				}
 				break;
 			default: // aka: last
 				ref.appendChild(node);
@@ -297,6 +301,7 @@ dojo.xml.domUtil = new function(){
 		if (text) {
 			while (node.hasChildren()) { node.removeChild(node.firstChild); }
 			node.appendChild(document.createTextNode(text));
+			return text;
 		} else {
 			var _result = "";
 			if (node == null) { return _result; }
