@@ -1,3 +1,4 @@
+dojo.provide("dojo.xml.svgUtil");
 // FIXME: add imports for deps!
 
 dojo.xml.svgUtil = new function(){

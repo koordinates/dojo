@@ -1,6 +1,6 @@
-dojo.hostenv.startPackage("dojo.xml.Parse");
+dojo.provide("dojo.xml.Parse");
 
-dojo.hostenv.loadModule("dojo.xml.domUtil");
+dojo.require("dojo.xml.domUtil");
 
 //TODO: determine dependencies
 // currently has dependency on dojo.xml.DomUtil nodeTypes constants...

@@ -1,6 +1,6 @@
-dojo.hostenv.startPackage("dojo.xml.htmlUtil");
-dojo.hostenv.loadModule("dojo.text.*");
-dojo.hostenv.loadModule("dojo.event.*");
+dojo.provide("dojo.xml.htmlUtil");
+dojo.require("dojo.text.*");
+dojo.require("dojo.event.*");
 
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS. Need to investigate for KHTML and Opera
