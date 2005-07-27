@@ -8,11 +8,13 @@ dojo.event = new function(){
 
 	this.nameAnonFunc = function(anonFuncPtr, namespaceObj){
 		var nso = (namespaceObj || this.anon);
-		for(var x in nso){
+		if((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)){
+			for(var x in nso){
 				if(nso[x] === anonFuncPtr){
 						dj_debug(x);
 						return x;
 				}
+			}
 		}
 		var ret = "_"+anonCtr++;
 		while(typeof nso[ret] != "undefined"){
