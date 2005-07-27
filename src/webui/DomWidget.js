@@ -692,16 +692,18 @@ dojo.webui.htmlDragAndDropManager = new function(){
 						document.body.appendChild(this.dragIcon);
 						dojo.xml.htmlUtil.setOpacity(this.dragIcon, 0.5);
 					}
+					// FIXME: can't do this without making sure the dragover
+					//        events get fired on the DropTargets
 					// start dragging the icon from its origin
-					var pos = dojo.xml.htmlUtil.getAttribute(di, "originalPosition")
-					if (pos) {
-						pos = pos.split(",");
-						this.dragIcon.offsetX = pos[0] - this.curr.absx;
-						this.dragIcon.offsetY = pos[1] - this.curr.absy;
-					} else {
+					//var pos = dojo.xml.htmlUtil.getAttribute(di, "originalPosition")
+					//if (pos) {
+					//	pos = pos.split(",");
+					//	this.dragIcon.offsetX = pos[0] - this.curr.absx;
+					//	this.dragIcon.offsetY = pos[1] - this.curr.absy;
+					//} else {
 						this.dragIcon.offsetX = 15;
 						this.dragIcon.offsetY = 15;
-					}
+					//}
 					with(this.dragIcon){
 						style.left = this.curr.absx+offsetX+"px";
 						style.top = this.curr.absy+offsetY+"px";
