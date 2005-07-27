@@ -271,6 +271,23 @@ dojo.xml.domUtil = new function(){
 	}
 
 	this.after = this.insertAfter;
+
+	this.place = function(node, ref, position){
+		switch(position.toLowerCase()){
+			case "before":
+				this.before(node, ref);
+				break;
+			case "after":
+				this.after(node, ref);
+				break;
+			case "first":
+				this.before(node, ref.firstChild);
+				break;
+			default: // aka: last
+				ref.appendChild(node);
+				break;
+		}
+	}
 	
 	/**
 	 * implementation of the DOM Level 3 attribute.
