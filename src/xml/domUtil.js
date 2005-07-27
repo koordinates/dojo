@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.xml.domUtil");
-dojo.hostenv.loadModule("dojo.graphics.color");
+dojo.provide("dojo.xml.domUtil");
+dojo.require("dojo.graphics.color");
 
 // for loading script:
 dojo.xml.domUtil = new function(){
