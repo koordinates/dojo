@@ -269,7 +269,7 @@ dojo.webui.widgets.fromScript = function(name, props, refNode, position){
 			document.body.appendChild(refNode);
 		}
 	}else if(position){
-		dojo.xml.domUtil.place(tn, refNode, position);
+		dojo.xml.domUtil.insert(tn, refNode, position);
 	}
 	var ret = this.oldFromScript(tn, name, props);
 	if(notRef){
