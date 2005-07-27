@@ -246,7 +246,39 @@ dojo.webui.widgets.getParser = function(name){
 	return this._parser_collection[name];
 }
 
-dojo.webui.widgets.fromScript = function(placeKeeperNode, name, props){
+// FIXME: new signature should be:
+//	fromScript(name, props, refNode, position)
+dojo.webui.widgets.fromScript = function(name, props, refNode, position){
+	if(	(typeof name != "string")&&
+		(typeof props == "string")){
+		// we got called with the old function signature, so just pass it on through
+		return this.oldFromScript(name, props, refNode);
+	}
+	/// otherwise, we just need to keep working a bit...
+	props = props||{};
+	var notRef = false;
+	var tn = null;
+	var h = dojo.render.html.capable;
+	if(h){
+		tn = document.createElement("span");
+	}
+	if(!refNode){
+		notRef = true;
+		refNode = tn;
+		if(h){
+			document.body.appendChild(refNode);
+		}
+	}else if(position){
+		dojo.xml.domUtil.place(tn, refNode, position);
+	}
+	var ret = this.oldFromScript(tn, name, props);
+	if(notRef){
+		ret[0].domNode.parentNode.removeChild(ret[0].domNode);
+	}
+	return ret;
+}
+
+dojo.webui.widgets.oldFromScript = function(placeKeeperNode, name, props){
 	var ln = name.toLowerCase();
 	var tn = "dojo:"+ln;
 	props[tn] = { 
@@ -254,10 +286,6 @@ dojo.webui.widgets.fromScript = function(placeKeeperNode, name, props){
 		nodeRef: placeKeeperNode,
 		fastMixIn: true
 	};
-	// var twidget = dojo.webui.widgetManager.getImplementation(ln);
-	// return twidget.create(props, props);
-
-	// return dojo.webui.widgets.tags[tn](props, dojo.webui.widgets.getParser());
 	return dojo.webui.widgets.getParser().createComponentFromScript(placeKeeperNode, name, props);
 }
 
