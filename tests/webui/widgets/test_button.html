@@ -12,10 +12,10 @@
 		<script language="JavaScript" type="text/javascript" 
 			src="../../../__package__.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.hostenv.loadModule("dojo.xml.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
-			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
+			dojo.require("dojo.webui.*");
+			dojo.require("dojo.event.*");
+			dojo.require("dojo.webui.widgets.Button");
+			dojo.require("dojo.webui.widgets.HTMLButton");
 			
 			function outputObjectInfo(x, tid){
 				if(!tid){
