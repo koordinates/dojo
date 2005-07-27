@@ -247,7 +247,7 @@ dojo.webui.widgets.getParser = function(name){
 }
 
 // FIXME: new signature should be:
-//	fromScript(name, props, refNode, position)
+//  Widget  fromScript(name, props, refNode, position)
 dojo.webui.widgets.fromScript = function(name, props, refNode, position){
 	if(	(typeof name != "string")&&
 		(typeof props == "string")){
@@ -275,7 +275,7 @@ dojo.webui.widgets.fromScript = function(name, props, refNode, position){
 	if(notRef){
 		ret[0].domNode.parentNode.removeChild(ret[0].domNode);
 	}
-	return ret;
+	return ret[0]; // not sure what the array wrapper is for, but just return the widget
 }
 
 dojo.webui.widgets.oldFromScript = function(placeKeeperNode, name, props){
