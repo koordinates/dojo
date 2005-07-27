@@ -252,7 +252,8 @@ dojo.webui.widgets.fromScript = function(name, props, refNode, position){
 	if(	(typeof name != "string")&&
 		(typeof props == "string")){
 		// we got called with the old function signature, so just pass it on through
-		return this.oldFromScript(name, props, refNode);
+		// use full deref in case we're called from an alias
+		return dojo.webui.widgets.oldFromScript(name, props, refNode);
 	}
 	/// otherwise, we just need to keep working a bit...
 	props = props||{};
