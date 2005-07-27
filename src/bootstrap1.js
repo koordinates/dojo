@@ -97,6 +97,15 @@ if(dj_undef("dojo")){ dojo = {}; }
 // global public utils
 // ****************************************************************
 
+/*
+ * utility to print an Error. 
+ * TODO: overriding Error.prototype.toString won't accomplish this?
+ * ... since natively generated Error objects do not always reflect such things?
+ */
+function dj_error_to_string(excep){
+	return ((!dj_undef("message", excep)) ? excep.message : (dj_undef("description", excep) ? excep : excep.description ));
+}
+
 /**
  * Produce a line of debug output. 
  * Does nothing unless dojo.hostenv.is_debug_ is true.
@@ -121,11 +130,13 @@ function dj_debug(){
 	var isJUM = dj_global["jum"];
 	var s = isJUM ? "": "DEBUG: ";
 	for(var i=0;i<args.length;++i){
-		if (!false && args[i] instanceof Error) {
-			var msg = "[" + args[i].name + ": " + args[i].message +
+		if(!false && args[i] instanceof Error){
+			var msg = "[" + args[i].name + ": " + dj_error_to_string(args[i]) +
 				(args[i].fileName ? ", file: " + args[i].fileName : "") +
 				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";
-		} else { var msg = args[i]; }
+		}else{ 
+			var msg = args[i];
+		}
 		s += msg + " ";
 	}
 	if(isJUM){ // this seems to be the only way to get JUM to "play nice"
@@ -145,16 +156,6 @@ function dj_throw(message){
 	}
 	throw Error(message);
 }
-
-/*
- * utility to print an Error. 
- * TODO: overriding Error.prototype.toString won't accomplish this?
- * ... since natively generated Error objects do not always reflect such things?
- */
-function dj_error_to_string(excep){
-	return ((!dj_undef("message", excep)) ? excep.message : (dj_undef("description", excep) ? excep : excep.description ));
-}
-
 
 /**
  * Rethrows the provided Error object excep, with the additional message given by message.
