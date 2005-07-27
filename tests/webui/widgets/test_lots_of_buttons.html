@@ -9,10 +9,10 @@
 		<script language="JavaScript" type="text/javascript" 
 			src="../../../__package__.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.hostenv.loadModule("dojo.xml.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
-			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
+			dojo.require("dojo.xml.Parse");
+			dojo.require("dojo.webui.widgets.Parse");
+			dojo.require("dojo.webui.widgets.Button");
+			dojo.require("dojo.webui.widgets.HTMLButton");
 			
 			function outputObjectInfo(x, tid){
 				if(!tid){
@@ -48,9 +48,9 @@
 			function init(){
 				// var start = new Date();
 				var start = new Date();
+				var last = null;
 				for(var x = 0; x<100; x++){
-					dojo.webui.widgets.fromScript(document.body.appendChild(document.createElement("span")), 
-													"Button", { label: "button "+x });
+					dojo.webui.widgets.fromScript("Button", { label: "button "+x }, document.body, "last");
 				}
 				dj_debug("constructing ", x, " items took ", (new Date())-start, "ms");
 			}
