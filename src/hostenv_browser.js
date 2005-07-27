@@ -225,7 +225,7 @@ dojo.hostenv.makeWidgets = function(){
 					dojo.webui.widgets.getParser().createComponents(frag);
 				}
 			}catch(e){
-				dj_debug("auto-build-widgets error: "+e);
+				dj_debug("auto-build-widgets error:", e);
 			}
 		}
 	}
