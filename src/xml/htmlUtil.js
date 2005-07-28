@@ -1,6 +1,7 @@
 dojo.provide("dojo.xml.htmlUtil");
 dojo.require("dojo.text.*");
 dojo.require("dojo.event.*");
+dojo.require("dojo.uri.Uri");
 
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS. Need to investigate for KHTML and Opera
@@ -499,15 +500,12 @@ dojo.xml.htmlUtil = new function(){
 	this.insertCssFile = function(URI, doc, checkDuplicates){
 		if(!URI) { return; }
 		if(!doc){ doc = document; }
+		URI = new dojo.uri.Uri(doc.baseURI, URI);
 		if(checkDuplicates && doc.styleSheets){
 			// get the host + port info from location
 			var loc = location.href.split("#")[0].substring(0, location.href.indexOf(location.pathname));
 			for(var i = 0; i < doc.styleSheets.length; i++){
-				var href = doc.styleSheets[i].href;
-				if(URI == href
-					|| (URI.charAt(0) == '/' && (loc + "/" + URI).replace(/\/\//g, "/") == href.replace(/\/\//g, "/"))) {
-					return;
-				}
+				if(URI == new dojo.uri.Uri(doc.styleSheets[i].href)) { return; }
 			}
 		}
 		var file = doc.createElement("link");
