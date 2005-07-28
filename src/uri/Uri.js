@@ -71,8 +71,8 @@ dojo.uri = new function() {
 			if (relobj.query != null) { uri += "?" + relobj.query; }
 			if (relobj.fragment != null) { uri += "#" + relobj.fragment; }
 		}
-		
-		this.uri = uri;
+
+		this.uri = uri.toString();
 
 		// break the uri into its main components
 		var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
