@@ -40,7 +40,8 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 		while(li) {
 			if(li.getElementsByTagName("ul").length > 0) {
 				var a = dojo.xml.domUtil.getFirstChildTag(li);
-				var arrow = document.createElement("span");
+				var arrow = document.createElement("a");
+				arrow.href = "javascript:;";
 				arrow.innerHTML = "&nbsp;";
 				dojo.xml.htmlUtil.setClass(arrow, "downArrow");
 				if(!arrow.id) {
@@ -85,6 +86,7 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 								sm.style.width = aa.offsetWidth + ar.offsetWidth + "px";
 								setWidth = true;
 							}
+							e.preventDefault();
 						}
 					})());
 				}

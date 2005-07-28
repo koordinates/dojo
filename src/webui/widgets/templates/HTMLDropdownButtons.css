@@ -27,7 +27,7 @@ ul.dropdownButtons li a.disabled {
 	cursor : default;
 }
 
-ul.dropdownButtons li span.downArrow {
+ul.dropdownButtons li .downArrow {
 	display : inline;
 	padding : 2px 4px;
 	border : 2px outset #ccc;
@@ -39,7 +39,7 @@ ul.dropdownButtons li span.downArrow {
 	_cursor : hand;
 }
 
-ul.dropdownButtons li span.downArrow.disabled {
+ul.dropdownButtons li .downArrow.disabled {
 	background-image : url(dropdownButtonsArrow-disabled.gif);
 	cursor : default;
 }
@@ -50,7 +50,7 @@ ul.dropdownButtons li span.downArrow:hover {
 	background-color : #ddd;
 }
 
-ul.dropdownButtons li span.downArrow.pressed {
+ul.dropdownButtons li .downArrow.pressed {
 	border-style : inset;
 	background-position : 5px 10px;
 }
