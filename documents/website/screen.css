@@ -6,9 +6,18 @@ body {
 	font-family : lucida grande, verdana, helvetica ;
 	font-size : 87%;
 	/* background-color : #ededde; */
+	color: black;
 	background-color : white;
 	background-repeat: repeat-x;
 	background-image: url("img/bg-fade.png"); /* fades from #cccccc to white */
+}
+
+a:link {
+	color: #515D53;
+}
+
+a:visited {
+	color: black;
 }
 
 #wrapper {
