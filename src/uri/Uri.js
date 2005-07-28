@@ -86,7 +86,7 @@ dojo.uri = new function() {
 		
 		if (this.authority != null) {
 			// server based naming authority
-			regexp = "^((([^:]+:)?([^@]+))@)?([^:]+)(:([0-9]+))?$";
+			regexp = "^((([^:]+:)?([^@]+))@)?([^:]*)(:([0-9]+))?$";
 			r = this.authority.match(new RegExp(regexp));
 			
 			this.user = r[3] || null;
