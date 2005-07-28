@@ -80,6 +80,7 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 							sm.style.display = sm.style.display == "block" ? "none" : "block";
 							if(sm.style.display == "none") {
 								dojo.xml.htmlUtil.removeClass(ar, "pressed");
+								e.target.blur()
 							}
 							if(!setWidth && sm.style.display == "block"
 								&& sm.offsetWidth < aa.offsetWidth + ar.offsetWidth) {
