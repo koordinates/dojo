@@ -50,9 +50,10 @@ ul.dropdownButtons li span.downArrow:hover {
 	background-color : #ddd;
 }
 
-ul.dropdownButtons li .downArrow.pressed {
+ul.dropdownButtons li .downArrow.pressed, ul.dropdownButtons li .downArrow:focus {
 	border-style : inset;
 	background-position : 5px 10px;
+	padding : 2px 4px;
 }
 
 ul.dropdownButtons li a.disabled:hover,
