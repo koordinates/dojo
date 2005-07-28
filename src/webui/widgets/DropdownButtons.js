@@ -1,16 +1,17 @@
 /* TODO:
  * - make the dropdowns "smart" so they can't get cutoff on bottom of page, sides of page, etc.
  */
-dojo.hostenv.startPackage("dojo.webui.widgets.DropdownButtons");
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLDropdownButtons");
+dojo.provide("dojo.webui.widgets.DropdownButtons");
+dojo.provide("dojo.webui.widgets.HTMLDropdownButtons");
 
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.xml.*");
-dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-dojo.hostenv.loadModule("dojo.webui.Widget");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.graphics.*");
+dojo.require("dojo.event.*");
+dojo.require("dojo.xml.*");
+dojo.require("dojo.webui.widgets.Parse");
+dojo.require("dojo.webui.Widget");
+dojo.require("dojo.webui.DomWidget");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.graphics.*");
+dojo.require("dojo.uri.Uri");
 
 
 dojo.webui.widgets.HTMLDropdownButtons = function() {
@@ -24,7 +25,7 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
 		if(this.templateCssPath) {
-			dojo.xml.htmlUtil.insertCssFile(dojo.hostenv.getBaseScriptUri()+"/"+this.templateCssPath, null, true);
+			dojo.xml.htmlUtil.insertCssFile(this.templateCssPath, null, true);
 		}
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 
