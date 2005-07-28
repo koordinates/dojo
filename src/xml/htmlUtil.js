@@ -500,12 +500,15 @@ dojo.xml.htmlUtil = new function(){
 	this.insertCssFile = function(URI, doc, checkDuplicates){
 		if(!URI) { return; }
 		if(!doc){ doc = document; }
-		URI = new dojo.uri.Uri(doc.baseURI, URI);
+		// Safari doesn't have this property, but it doesn't support
+		// styleSheets.href either so it beomces moot
+		if(doc.baseURI) { URI = new dojo.uri.Uri(doc.baseURI, URI); }
 		if(checkDuplicates && doc.styleSheets){
 			// get the host + port info from location
 			var loc = location.href.split("#")[0].substring(0, location.href.indexOf(location.pathname));
 			for(var i = 0; i < doc.styleSheets.length; i++){
-				if(URI == new dojo.uri.Uri(doc.styleSheets[i].href)) { return; }
+				if(doc.styleSheets[i].href &&
+					URI == new dojo.uri.Uri(doc.styleSheets[i].href)) { return; }
 			}
 		}
 		var file = doc.createElement("link");
