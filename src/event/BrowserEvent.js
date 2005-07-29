@@ -124,6 +124,7 @@ dojo.event.browser = new function(){
 		if(node.attachEvent){
 			// NW_attachEvent_list.push([node, 'on' + evtName, fp]);
 			node.attachEvent("on"+evtName, newfp);
+			if(capture) { dj_debug("Warning: capture not supported (dojo.event.browser.addListener)"); }
 		}else if(node.addEventListener){ // &&(!__is__.konq)){ // Konq 3.1 tries to implement this, but it seems to be broken
 			node.addEventListener(evtName, newfp, capture);
 			return true;
