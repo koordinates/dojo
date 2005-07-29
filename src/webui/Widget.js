@@ -57,12 +57,12 @@ dojo.lang.extend(dojo.webui.Widget, {
 
 	create: function(args, fragment, parentComp){
 		//dj_debug(parentComp);
+		dojo.webui.widgetManager.add(this);
 		this.satisfyPropertySets(args, fragment, parentComp);
 		this.mixInProperties(args, fragment, parentComp);
 		this.buildRendering(args, fragment, parentComp);
 		this.initialize(args, fragment, parentComp);
 		this.postInitialize(args, fragment, parentComp);
-		dojo.webui.widgetManager.add(this);
 		return this;
 	},
 

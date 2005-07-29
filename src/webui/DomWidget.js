@@ -175,7 +175,8 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 						}
 					}
 				}();
-				dojo.event.connect(baseNode, domEvt, tf);
+				// dojo.event.connect(baseNode, domEvt, tf);
+				dojo.event.browser.addListener(baseNode, domEvt.substr(2), tf);
 			}
 		}
 
@@ -249,8 +250,10 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			}else{
 				dojo.xml.domUtil[pos](widget.domNode, ref);
 			}
+			// dj_debug(this.widgetId, "added", widget.widgetId, "as a child");
 			this.children.push(widget);
 			widget.parent = this;
+			widget.addedTo(this);
 		}
 		// dj_debug("add child took: ", new Date()-start, "ms");
 	}
