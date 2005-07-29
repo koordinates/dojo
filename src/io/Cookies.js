@@ -2,14 +2,16 @@ dojo.hostenv.startPackage("dojo.io.Cookies");
 
 dojo.io.cookies = new function() {
 	this.setCookie = function(name, value, days, path) {
-		var expires;
-		if(typeof days == "number") {
+		var expires = -1;
+		if(typeof days == "number" && days >= 0) {
 			var d = new Date();
 			d.setTime(d.getTime()+(days*24*60*60*1000));
 			expires = d.toGMTString();
 		}
 		value = escape(value);
-		document.cookie = name + "=" + value + "; expires=" + expires + "; path=" + (path || "/");
+		document.cookie = name + "=" + value + ";"
+			+ (expires >= 0 ? " expires=" + expires + ";" : "")
+			+ "path=" + (path || "/");
 	}
 
 	this.getCookie = function(name) {
@@ -24,7 +26,7 @@ dojo.io.cookies = new function() {
 	}
 
 	this.deleteCookie = function(name) {
-		this.setCookie(name, "-", -1);
+		this.setCookie(name, "-", 0);
 	}
 
 	this.setObjectCookie = function(name, obj, days, path, clearCurrent) {
