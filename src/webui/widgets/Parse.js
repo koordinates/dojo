@@ -34,8 +34,8 @@ dojo.webui.widgets.Parse = function(fragment) {
 				}
 			}
 		}*/
-		var tot = 0;
 		for(var item in fragment){
+			var built = false;
 			// if we have items to parse/create at this level, do it!
 			try{
 				if( fragment[item] && (fragment[item]["tagName"])&&
@@ -47,10 +47,10 @@ dojo.webui.widgets.Parse = function(fragment) {
 					for(var x=0; x<tna.length; x++){
 						var ltn = dojo.text.trim(tna[x]).toLowerCase();
 						if(djTags[ltn]){
+							built = true;
 							// var tic = new Date();
 							fragment[item].tagName = ltn;
 							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
-							// dj_debug(ltn, ": ", new Date()-tic, "ms");
 						}else{
 							if(ltn.substr(0, 5)=="dojo:"){
 								dj_debug("no tag handler registed for type: ", ltn);
@@ -65,7 +65,7 @@ dojo.webui.widgets.Parse = function(fragment) {
 			}
 
 			// if there's a sub-frag, build widgets from that too
-			if( (typeof fragment[item] == "object")&&
+			if( (!built) && (typeof fragment[item] == "object")&&
 				(fragment[item] != fragment.nodeRef)&&
 				(fragment[item] != fragment["tagName"])){
 				returnValue.push(this.createComponents(fragment[item], parentComp));
