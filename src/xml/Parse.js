@@ -96,12 +96,14 @@ dojo.xml.Parse = function(){
 						parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
 					}
 					break;
-				case  ntypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
-					break;
 				case  ntypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 					if(node.childNodes.length == 1) {
 						parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
 					}
+					break;
+				default: break;
+				/*
+				case  ntypes.ATTRIBUTE_NODE: // attribute node... not meaningful here
 					break;
 				case  ntypes.CDATA_SECTION_NODE: // cdata section... not sure if this would ever be meaningful... might be...
 					break;
@@ -121,6 +123,7 @@ dojo.xml.Parse = function(){
 					break;
 				case  ntypes.NOTATION_NODE:// notation node... not meaningful here
 					break;
+				*/
 			}
 		}
 		//return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
