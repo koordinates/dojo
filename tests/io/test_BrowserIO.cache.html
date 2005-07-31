@@ -7,18 +7,13 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				baseRelativePath: "../../",
 				isDebug: true
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
-			src="../../src/bootstrap1.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../src/hostenv_browser.js"></script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../src/bootstrap2.js"></script>
+			src="../../__package__.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.hostenv.loadModule("dojo.io.*");
+			dojo.require("dojo.io.*");
 
 			function init(x){
 				var url = "test_BrowserIO_cacheData";

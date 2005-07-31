@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.webui.Widget");
+dojo.require("dojo.webui.Widget");
 
 function test_widget_ctor(){
 	jum.debug("in widget.ctor");

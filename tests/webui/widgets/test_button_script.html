@@ -16,14 +16,14 @@
 			src="../../../release/__package__.js"></script>
 		-->
 		<script language="JavaScript" type="text/javascript">
-			dojo.hostenv.loadModule("dojo.xml.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Button");
-			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLButton");
-			dojo.hostenv.loadModule("dojo.event.Event");
-			dojo.hostenv.loadModule("dojo.io.IO");
-			dojo.hostenv.loadModule("dojo.io.BrowserIO");
-			dojo.hostenv.loadModule("dojo.event.BrowserEvent");						
+			dojo.require("dojo.xml.Parse");
+			dojo.require("dojo.webui.widgets.Parse");
+			dojo.require("dojo.webui.widgets.Button");
+			dojo.require("dojo.webui.widgets.HTMLButton");
+			dojo.require("dojo.event.Event");
+			dojo.require("dojo.io.IO");
+			dojo.require("dojo.io.BrowserIO");
+			dojo.require("dojo.event.BrowserEvent");						
 
 			function init() {
 				dojo.io.bind({

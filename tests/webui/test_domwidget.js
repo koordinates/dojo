@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
+dojo.require("dojo.webui.DomWidget");
 
 function test_domwidget_ctor(){
 	var dw  = new dojo.webui.DomWidget();

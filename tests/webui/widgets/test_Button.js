@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+dojo.require("dojo.webui.widgets.Button");
 
 function test_button_ctor(){
 	var b1 = new dojo.webui.widgets.Button();

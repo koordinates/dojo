@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.uri.Uri");
+dojo.require("dojo.uri.Uri");
 
 function test_uri_testBases(){
 	var base = 'http://a/b/c/d;p?q';

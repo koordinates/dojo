@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.alg.*");
+dojo.require("dojo.alg.*");
 
 var testArr = ["foo", "bar", "baz", ["foo", "bar"]];
 

@@ -27,10 +27,10 @@
 	<script type="text/ecmascript" xlink:href="../../../src/hostenv_adobesvg.js" />
 	<script type="text/ecmascript" xlink:href="../../../src/bootstrap2.js" />
 	<script type="text/ecmascript"><![CDATA[
-		dojo.hostenv.loadModule("dojo.xml.Parse");
-		dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-		dojo.hostenv.loadModule("dojo.webui.widgets.Button");
-		dojo.hostenv.loadModule("dojo.webui.widgets.SVGButton");
+		dojo.require("dojo.xml.Parse");
+		dojo.require("dojo.webui.widgets.Parse");
+		dojo.require("dojo.webui.widgets.Button");
+		dojo.require("dojo.webui.widgets.SVGButton");
 		
 		/*
 		dojo.hostenv.modulesLoadedListeners.push(function(evt){

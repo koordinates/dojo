@@ -47,23 +47,15 @@
 <script language="JavaScript" type="text/javascript">
 	// Dojo configuration
 	djConfig = { 
-		baseRelativePath: "../../",
 		isDebug: true
 	};
 </script>
 <script language="JavaScript" type="text/javascript" 
-	src="../../src/bootstrap1.js"></script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../src/hostenv_browser.js"></script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../src/bootstrap2.js"></script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../src/xml/domUtil.js"></script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../src/xml/htmlUtil.js"></script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../src/graphics/htmlEffects.js"></script>
+	src="../../__package__.js"></script>
 <script language="JavaScript" type="text/javascript">
+dojo.require("dojo.xml.*");
+dojo.require("dojo.graphics.*");
+
 var fadeElem, flash, unflash, wiper;
 onload = function() {
 	flash = document.getElementById("flash");

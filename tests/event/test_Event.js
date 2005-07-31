@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.event.Event");
+dojo.require("dojo.event.Event");
 
 function testObjectClass(){
 	this.funcCallCount = 0;

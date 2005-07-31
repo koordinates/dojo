@@ -1,4 +1,4 @@
-dojo.hostenv.loadModule("dojo.logging.Logger");
+dojo.require("dojo.logging.Logger");
 
 function test_logging_log(){
 	/*

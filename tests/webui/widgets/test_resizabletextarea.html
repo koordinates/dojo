@@ -3,7 +3,6 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				baseRelativePath: "../../../",
 				isDebug: true
 			};
 		</script>
@@ -11,14 +10,14 @@
 			src="../../../__package__.js"></script>
 		<script language="JavaScript" type="text/javascript">
 			// pull in all the stuff we need to make the widget go
-			dojo.hostenv.loadModule("dojo.xml.Parse");
-			dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-			dojo.hostenv.loadModule("dojo.event.*");
-			dojo.hostenv.loadModule("dojo.webui.Widget");
-			dojo.hostenv.loadModule("dojo.webui.DomWidget");
-			dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-			dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
-			dojo.hostenv.loadModule("dojo.webui.widgets.HTMLResizableTextarea");
+			dojo.require("dojo.xml.Parse");
+			dojo.require("dojo.webui.widgets.Parse");
+			dojo.require("dojo.event.*");
+			dojo.require("dojo.webui.Widget");
+			dojo.require("dojo.webui.DomWidget");
+			dojo.require("dojo.webui.WidgetManager");
+			dojo.require("dojo.webui.DragAndDrop");
+			dojo.require("dojo.webui.widgets.HTMLResizableTextarea");
 		</script>
 		<script language="JavaScript" type="text/javascript">
 			/*
