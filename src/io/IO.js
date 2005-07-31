@@ -169,6 +169,7 @@ dojo.io.bind = function(kwArgs){
 	// if the request asks for a particular implementation, use it
 
 	// normalize args
+	if(!kwArgs["url"]){ kwArgs.url = ""; }
 	if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
 	if(!kwArgs["method"] && !kwArgs["formNode"]){
 		kwArgs.method = "get";
