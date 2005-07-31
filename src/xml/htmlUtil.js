@@ -1,4 +1,5 @@
 dojo.provide("dojo.xml.htmlUtil");
+dojo.require("dojo.xml.domUtil");
 dojo.require("dojo.text.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.uri.Uri");
