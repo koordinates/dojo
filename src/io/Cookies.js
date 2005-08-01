@@ -10,7 +10,7 @@ dojo.io.cookies = new function() {
 		}
 		value = escape(value);
 		document.cookie = name + "=" + value + ";"
-			+ (expires >= 0 ? " expires=" + expires + ";" : "")
+			+ (expires != -1 ? " expires=" + expires + ";" : "")
 			+ "path=" + (path || "/");
 	}
 
