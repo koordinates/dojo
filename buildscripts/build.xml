@@ -34,6 +34,8 @@
 	<property name="profile" value=""/>
 	<property name="copyright" 
 		value="/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */"/>
+	<property name="build_notice" 
+		value="/* This is a compiled version of Dojo, designed for deployment and not for development. If would like to modify or work with Dojo, please visit http://dojotoolkit.org for more information and to get the 'source' version of this file. */"/>
 
 	<!-- help task -->
 	<target name="help" depends="-fix-config">
@@ -432,6 +434,11 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 			<arg value="${release_dir}/source.__package__.js" />
 		</java>
 		-->
+
+		<!-- add build notice -->
+		<replaceregexp match="^" byline="false" replace="${build_notice}">
+			<fileset dir="${release_dir}" includes="__package__.js"/>
+		</replaceregexp>
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
