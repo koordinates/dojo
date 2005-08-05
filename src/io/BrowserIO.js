@@ -497,7 +497,11 @@ dojo.io.XMLHTTPTransport = new function(){
 			http.setRequestHeader("Content-Type", kwArgs["contentType"] || "application/x-www-form-urlencoded");
 			http.send(query);
 		}else{
-			http.open(kwArgs.method.toUpperCase(), url+((query!="") ? "?"+query : ""), async);
+			var tmpUrl = url;
+			if(query != "") {
+				tmpUrl += (url.indexOf("?") > -1 ? "&" : "?") + query;
+			}
+			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
 			setHeaders(http, kwArgs);
 			http.send(null);
 		}
