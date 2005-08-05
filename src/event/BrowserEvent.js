@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.event.BrowserEvent");
+dojo.provide("dojo.event.BrowserEvent");
 dojo.event.browser = {};
 
 dojo.hostenv.loadModule("dojo.event.Event");
