@@ -1,11 +1,11 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.Tabs");
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLTabs");
+dojo.provide("dojo.webui.widgets.Tabs");
+dojo.provide("dojo.webui.widgets.HTMLTabs");
 
-dojo.hostenv.loadModule("dojo.io.*");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
-dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.graphics.*");
+dojo.require("dojo.io.*");
+dojo.require("dojo.webui.DomWidget");
+dojo.require("dojo.webui.widgets.Parse");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.graphics.*");
 
 dojo.webui.widgets.HTMLTabs = function() {
 	dojo.webui.Widget.call(this);

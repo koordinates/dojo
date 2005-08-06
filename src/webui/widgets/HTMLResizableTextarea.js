@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLResizableTextarea");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
+dojo.provide("dojo.webui.widgets.HTMLResizableTextarea");
+dojo.require("dojo.webui.DomWidget");
 
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:resizabletextarea");
 

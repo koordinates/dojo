@@ -1,7 +1,7 @@
-dojo.hostenv.startPackage("dojo.webui.WidgetManager");
-dojo.hostenv.startPackage("dojo.webui.widgetManager");
+dojo.provide("dojo.webui.WidgetManager");
+dojo.provide("dojo.webui.widgetManager");
 
-dojo.hostenv.loadModule("dojo.alg.*");
+dojo.require("dojo.alg.*");
 
 dojo.webui.widgetManager = new function(){
 	this.widgets = [];

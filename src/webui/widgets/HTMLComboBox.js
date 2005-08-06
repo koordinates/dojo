@@ -1,7 +1,6 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLComboBox");
-
-dojo.hostenv.loadModule("dojo.webui.widgets.ComboBox");
-dojo.hostenv.loadModule("dojo.io.*");
+dojo.provide("dojo.webui.widgets.HTMLComboBox");
+dojo.require("dojo.webui.widgets.ComboBox");
+dojo.require("dojo.io.*");
 
 dojo.webui.widgets.HTMLComboBox = function(){
 	dojo.webui.widgets.DomComboBox.call(this);

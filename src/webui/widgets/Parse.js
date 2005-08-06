@@ -1,7 +1,7 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.Parse");
+dojo.provide("dojo.webui.widgets.Parse");
 
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.text.*");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.text.*");
 
 dojo.webui.widgets.Parse = function(fragment) {
 	this.propertySetsList = [];

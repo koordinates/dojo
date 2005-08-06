@@ -1,9 +1,9 @@
-dojo.hostenv.startPackage("dojo.webui.DragAndDrop");
-dojo.hostenv.startPackage("dojo.webui.selection");
-dojo.hostenv.startPackage("dojo.webui.dragAndDrop");
-dojo.hostenv.startPackage("dojo.webui.DragSource");
-dojo.hostenv.startPackage("dojo.webui.DropTarget");
-dojo.hostenv.startPackage("dojo.webui.DragAndDropManager");
+dojo.provide("dojo.webui.DragAndDrop");
+dojo.provide("dojo.webui.selection");
+dojo.provide("dojo.webui.dragAndDrop");
+dojo.provide("dojo.webui.DragSource");
+dojo.provide("dojo.webui.DropTarget");
+dojo.provide("dojo.webui.DragAndDropManager");
 
 dojo.webui.DragSource = function(){
 	// The interface that all drag data sources MUST implement

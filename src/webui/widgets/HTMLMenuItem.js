@@ -1,6 +1,5 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLMenuItem");
-
-dojo.hostenv.loadModule("dojo.webui.widgets.MenuItem");
+dojo.provide("dojo.webui.widgets.HTMLMenuItem");
+dojo.require("dojo.webui.widgets.MenuItem");
 
 dojo.webui.widgets.HTMLMenuItem = function(){
 	// if DOMButton turns into a mixin, we should subclass Button instead and

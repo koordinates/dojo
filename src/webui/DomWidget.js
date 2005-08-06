@@ -1,13 +1,13 @@
-dojo.hostenv.startPackage("dojo.webui.DomWidget");
+dojo.provide("dojo.webui.DomWidget");
 
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.text.*");
-dojo.hostenv.loadModule("dojo.webui.Widget");
-dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
-dojo.hostenv.loadModule("dojo.xml.*");
-dojo.hostenv.loadModule("dojo.math.curves");
-dojo.hostenv.loadModule("dojo.animation.Animation");
-dojo.hostenv.loadModule("dojo.uri.*");
+dojo.require("dojo.event.*");
+dojo.require("dojo.text.*");
+dojo.require("dojo.webui.Widget");
+dojo.require("dojo.webui.DragAndDrop");
+dojo.require("dojo.xml.*");
+dojo.require("dojo.math.curves");
+dojo.require("dojo.animation.Animation");
+dojo.require("dojo.uri.*");
 
 dojo.webui._cssFiles = {};
 

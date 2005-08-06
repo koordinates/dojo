@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLMenu");
-dojo.hostenv.loadModule("dojo.webui.widgets.Menu");
+dojo.provide("dojo.webui.widgets.HTMLMenu");
+dojo.require("dojo.webui.widgets.Menu");
 
 // FIXME: why doesn't this actually do anything?
 dojo.webui.widgets.HTMLMenu = function(){

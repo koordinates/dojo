@@ -1,8 +1,8 @@
 // FIXME: not yet functional
 
-dojo.hostenv.startPackage("dojo.webui.widgets.SVGButton");
+dojo.provide("dojo.webui.widgets.SVGButton");
 
-dojo.hostenv.loadModule("dojo.webui.widgets.Button");
+dojo.require("dojo.webui.widgets.Button");
 
 dojo.webui.widgets.SVGButton = function(){
 	// FIXME: this is incomplete and doesn't work yet

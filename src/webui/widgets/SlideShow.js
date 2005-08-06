@@ -1,15 +1,15 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
-dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
+dojo.provide("dojo.webui.widgets.SlideShow");
+dojo.provide("dojo.webui.widgets.HTMLSlideShow");
 
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.xml.*");
-dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-dojo.hostenv.loadModule("dojo.webui.Widget");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
-dojo.hostenv.loadModule("dojo.graphics.*");
-dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
+dojo.require("dojo.event.*");
+dojo.require("dojo.xml.*");
+dojo.require("dojo.webui.widgets.Parse");
+dojo.require("dojo.webui.Widget");
+dojo.require("dojo.webui.DomWidget");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.webui.DragAndDrop");
+dojo.require("dojo.graphics.*");
+dojo.require("dojo.graphics.htmlEffects");
 
 dojo.webui.widgets.HTMLSlideShow = function(){
 	dojo.webui.Widget.call(this);

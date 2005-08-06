@@ -1,12 +1,12 @@
 // ensure that dojo.webui exists
-dojo.hostenv.startPackage("dojo.webui.Widget");
-dojo.hostenv.startPackage("dojo.webui.widgets.tags");
+dojo.provide("dojo.webui.Widget");
+dojo.provide("dojo.webui.widgets.tags");
 
-dojo.hostenv.loadModule("dojo.lang.*");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.text.*");
+dojo.require("dojo.lang.*");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.webui.DragAndDrop");
+dojo.require("dojo.event.*");
+dojo.require("dojo.text.*");
 
 dojo.webui.Widget = function(){
 	// these properties aren't primitives and need to be created on a per-item

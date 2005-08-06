@@ -1,12 +1,11 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.Menu");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
+dojo.provide("dojo.webui.widgets.Menu");
+dojo.require("dojo.webui.DomWidget");
 
 dojo.webui.widgets.Menu = function(){
 	dojo.webui.Widget.call(this);
 	this.widgetType = "Menu";
 }
 dj_inherits(dojo.webui.widgets.Menu, dojo.webui.Widget);
-
 
 // FIXME: own file? Mixin instead?
 dojo.webui.widgets.DomMenu = function(){
