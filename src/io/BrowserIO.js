@@ -1,28 +1,18 @@
-dojo.hostenv.startPackage("dojo.io.BrowserIO");
+dojo.provide("dojo.io.BrowserIO");
 
-dojo.hostenv.loadModule("dojo.io.IO");
-dojo.hostenv.loadModule("dojo.alg.*");
+dojo.require("dojo.io.IO");
+dojo.require("dojo.alg.*");
 
 dojo.io.checkChildrenForFile = function(node){
-	var hasTrue = false;
-	for(var x=0; x<node.childNodes.length; x++){
-		if(node.nodeType==1){
-			if(node.nodeName.toLowerCase() == "input"){
-				if(node.getAttribute("type")=="file"){
-					return true;
-				}
-			}
-
-			if(node.childNodes.length){
-				for(var x=0; x<node.childNodes.length; x++){
-					if(dojo.io.checkChildrenForFile(node.childNodes.item(x))){
-						return true;
-					}
-				}
-			}
+	var hasFile = false;
+	var inputs = node.getElementsByTagName("input");
+	dojo.alg.forEach(inputs, function(input){
+		if(hasFile){ return; }
+		if(input.getAttribute("type")=="file"){
+			hasFile = true;
 		}
-	}
-	return false;
+	});
+	return hasFile;
 }
 
 dojo.io.formHasFile = function(formNode){
