@@ -6,18 +6,14 @@ dojo.provide("dojo.webui.widgets.HTMLDropdownButtons");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.xml.*");
-dojo.require("dojo.webui.widgets.Parse");
-dojo.require("dojo.webui.Widget");
-dojo.require("dojo.webui.DomWidget");
-dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.webui.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.uri.Uri");
 
+dojo.webui.widgets.tags.addParseTreeHandler("dojo:dropdownbuttons");
 
 dojo.webui.widgets.HTMLDropdownButtons = function() {
-	dojo.webui.Widget.call(this);
-	dojo.webui.DomWidget.call(this, true);
-	dojo.webui.HTMLWidget.call(this);
+	dojo.webui.HtmlWidget.call(this);
 
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLDropdownButtons.css");
 	this.widgetType = "DropdownButtons";
@@ -136,5 +132,4 @@ dojo.webui.widgets.HTMLDropdownButtons = function() {
 		});
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLDropdownButtons, dojo.webui.DomWidget);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:dropdownbuttons");
+dj_inherits(dojo.webui.widgets.HTMLDropdownButtons, dojo.webui.HtmlWidget);
