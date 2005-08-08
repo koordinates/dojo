@@ -149,18 +149,29 @@ dojo.lang.extend(dojo.webui.Widget, {
 
 		// FIXME: fails miserably if a mixin property has a default value of null in 
 		// a widget
-		
+
+		// NOTE: caching lower-cased args in the prototype is only 
+		// acceptable if the properties are invariant.
+		var lcArgs;
+		// if we have a name-cache, get it
+		if(this.constructor.prototype["lcArgs"]){
+			lcArgs = this.constructor.prototype.lcArgs;
+		}else{
+			// build a lower-case property name cache if we don't have one
+			lcArgs = {};
+			for(var y in this){
+				lcArgs[((new String(y)).toLowerCase())] = y;
+			}
+			this.constructor.prototype.lcArgs = lcArgs;
+		}
+
 		for(var x in args){
-			var tx = this[x];
-			var xorig = new String(x);
-			if(!tx){
-				// FIXME: this is O(n) time for each property, and thereby O(mn), which can easily be O(n^2)!!! Ack!!
-				for(var y in this){
-					if((new String(y)).toLowerCase()==(new String(x)).toLowerCase()){
-						x = y; 
-						args[y] = args[xorig];
-						break;
-					}
+
+			if(!this[x]){ // check the cache for properties
+				var y = lcArgs[(new String(x)).toLowerCase()];
+				if(y){
+					args[y] = args[x];
+					x = y; 
 				}
 			}
 			
