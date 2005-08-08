@@ -1,13 +1,16 @@
 (function(){
-	var isRhino = ((typeof this["load"] == "function")&&(typeof this["Packages"] == "object"));
+	var isRhino = ((typeof this["load"] == "function")&&(typeof this["Packages"] == "function"));
 	var tmps = ["bootstrap1.js", "hostenv_"+((isRhino) ? "rhino" : "browser")+".js", "bootstrap2.js"];
 
-	if((this["djConfig"])&&(djConfig["baseScriptUri"])) {
+	if( (this["djConfig"])&&(djConfig["baseScriptUri"]) ){
 		var root = djConfig["baseScriptUri"];
-	} else if((this["djConfig"])&&(djConfig["baseRelativePath"])) {
+	}else if((this["djConfig"])&&(djConfig["baseRelativePath"])){
 		var root = djConfig["baseRelativePath"];
-	} else {
+	}else{
 		var root = ".";
+		if(!this["djConfig"]){
+			djConfig = { baseRelativePath: "." };
+		}
 
 		// attempt to figure out the path to dojo if it isn't set in the config
 		if((this["document"])&&(this["document"]["getElementsByTagName"])){
@@ -24,6 +27,7 @@
 			}
 		}
 	}
+
 	for(var x in tmps){
 		var spath = root+"/src/"+tmps[x];
 		if(isRhino){
