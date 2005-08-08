@@ -1,11 +1,13 @@
 dojo.provide("dojo.webui.widgets.HTMLContextMenu");
+dojo.provide("dojo.webui.widgets.HtmlContextMenu");
+dojo.require("dojo.webui.HtmlWidget");
 dojo.require("dojo.webui.widgets.ContextMenu");
 
 dojo.webui.widgets.HTMLContextMenu = function(){
 	// if DOMButton turns into a mixin, we should subclass Button instead and
 	// just mix in the DOMButton properties.
-	dojo.webui.widgets.DomContextMenu.call(this);
-	dojo.webui.HTMLWidget.call(this);
+	dojo.webui.widgets.ContextMenu.call(this);
+	dojo.webui.HtmlWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLContextMenuTemplate.css");
@@ -40,4 +42,4 @@ dojo.webui.widgets.HTMLContextMenu = function(){
 	dojo.event.connect(doc, "oncontextmenu", this, "onShow");
 }
 
-dj_inherits(dojo.webui.widgets.HTMLContextMenu, dojo.webui.widgets.DomContextMenu);
+dj_inherits(dojo.webui.widgets.HTMLContextMenu, dojo.webui.HtmlWidget);

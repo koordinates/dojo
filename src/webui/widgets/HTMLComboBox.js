@@ -1,10 +1,11 @@
 dojo.provide("dojo.webui.widgets.HTMLComboBox");
+dojo.require("dojo.webui.*");
 dojo.require("dojo.webui.widgets.ComboBox");
 dojo.require("dojo.io.*");
 
 dojo.webui.widgets.HTMLComboBox = function(){
 	dojo.webui.widgets.DomComboBox.call(this);
-	dojo.webui.HTMLWidget.call(this);
+	dojo.webui.HtmlWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLComboBox.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLComboBox.css");
@@ -239,4 +240,4 @@ dojo.webui.widgets.HTMLComboBox = function(){
 	dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 }
 
-dj_inherits(dojo.webui.widgets.HTMLComboBox, dojo.webui.widgets.DomComboBox);
+dj_inherits(dojo.webui.widgets.HTMLComboBox, dojo.webui.HtmlWidget);

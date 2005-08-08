@@ -3,18 +3,13 @@ dojo.provide("dojo.webui.widgets.HTMLSlideShow");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.xml.*");
-dojo.require("dojo.webui.widgets.Parse");
-dojo.require("dojo.webui.Widget");
-dojo.require("dojo.webui.DomWidget");
-dojo.require("dojo.webui.WidgetManager");
-dojo.require("dojo.webui.DragAndDrop");
+dojo.require("dojo.webui.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.graphics.htmlEffects");
 
 dojo.webui.widgets.HTMLSlideShow = function(){
-	dojo.webui.Widget.call(this);
-	dojo.webui.DomWidget.call(this, true);
-	dojo.webui.HTMLWidget.call(this);
+	dojo.webui.HtmlWidget.call(this);
+
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLSlideShow.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLSlideShow.css");
 
@@ -121,5 +116,5 @@ dojo.webui.widgets.HTMLSlideShow = function(){
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
+dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.HtmlWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");

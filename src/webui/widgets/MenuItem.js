@@ -12,8 +12,8 @@ dj_inherits(dojo.webui.widgets.MenuItem, dojo.webui.Widget);
 // FIXME: own file? Mixin instead?
 dojo.webui.widgets.DomMenuItem = function(){
 	dojo.webui.widgets.MenuItem.call(this);
-	dojo.webui.DomWidget.call(this, true);
+	dojo.webui.DomWidget.call(this);
 }
-dj_inherits(dojo.webui.widgets.DomMenuItem, dojo.webui.widgets.MenuItem);
+dj_inherits(dojo.webui.widgets.DomMenuItem, dojo.webui.DomWidget);
 
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:menuitem");

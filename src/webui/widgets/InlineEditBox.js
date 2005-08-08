@@ -3,20 +3,13 @@
 dojo.provide("dojo.webui.widgets.InlineEditBox");
 dojo.provide("dojo.webui.widgets.HTMLInlineEditBox");
 
-dojo.require("dojo.event.*");
-dojo.require("dojo.xml.*");
-dojo.require("dojo.webui.widgets.Parse");
-dojo.require("dojo.webui.Widget");
-dojo.require("dojo.webui.DomWidget");
-dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.webui.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.text.*");
 
 
 dojo.webui.widgets.HTMLInlineEditBox = function() {
-	dojo.webui.Widget.call(this);
-	dojo.webui.DomWidget.call(this, true);
-	dojo.webui.HTMLWidget.call(this);
+	dojo.webui.HtmlWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.css");
@@ -174,5 +167,5 @@ dojo.webui.widgets.HTMLInlineEditBox = function() {
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLInlineEditBox, dojo.webui.DomWidget);
+dj_inherits(dojo.webui.widgets.HTMLInlineEditBox, dojo.webui.HtmlWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:inlineeditbox");

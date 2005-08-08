@@ -2,15 +2,11 @@ dojo.provide("dojo.webui.widgets.Tabs");
 dojo.provide("dojo.webui.widgets.HTMLTabs");
 
 dojo.require("dojo.io.*");
-dojo.require("dojo.webui.DomWidget");
-dojo.require("dojo.webui.widgets.Parse");
-dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.webui.*");
 dojo.require("dojo.graphics.*");
 
 dojo.webui.widgets.HTMLTabs = function() {
-	dojo.webui.Widget.call(this);
-	dojo.webui.DomWidget.call(this, true);
-	dojo.webui.HTMLWidget.call(this);
+	dojo.webui.HtmlWidget.call(this);
 
 	this.widgetType = "Tabs";
 	this.templatePath = null; // prolly not
@@ -154,5 +150,5 @@ dojo.webui.widgets.HTMLTabs = function() {
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLTabs, dojo.webui.DomWidget);
+dj_inherits(dojo.webui.widgets.HTMLTabs, dojo.webui.HtmlWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:tabs");

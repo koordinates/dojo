@@ -1,9 +1,9 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.ComboBox");
+dojo.provide("dojo.webui.widgets.ComboBox");
 
-dojo.hostenv.loadModule("dojo.webui.Widget");
-dojo.hostenv.loadModule("dojo.webui.DomWidget");
-dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-dojo.hostenv.loadModule("dojo.event.*");
+dojo.require("dojo.webui.Widget");
+dojo.require("dojo.webui.DomWidget");
+dojo.require("dojo.webui.WidgetManager");
+dojo.require("dojo.event.*");
 
 dojo.webui.widgets.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// NOTE: this data provider is designed as a naive reference
@@ -143,6 +143,6 @@ dojo.webui.widgets.DomComboBox = function(){
 	dojo.webui.DomWidget.call(this, true);
 }
 
-dj_inherits(dojo.webui.widgets.DomComboBox, dojo.webui.widgets.ComboBox);
+dj_inherits(dojo.webui.widgets.DomComboBox, dojo.webui.DomWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:combobox");
 

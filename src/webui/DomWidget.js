@@ -61,12 +61,12 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCssPath, temp
 		// fetch a text fragment and assign it to templateString
 		// NOTE: we rely on blocking IO here!
 		var tstring = dojo.hostenv.getText(tpath);
-		if(tstring) {
+		if(tstring){
 			var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
-			if(matches) {
+			if(matches){
 				tstring = matches[1];
 			}
-		} else {
+		}else{
 			tstring = "";
 		}
 		obj.templateString = tstring;
@@ -215,25 +215,24 @@ dojo.webui.buildAndAttachTemplate = function(obj, templatePath, templateCssPath,
 	return node;
 }
 
-dojo.webui.DomWidget = function(preventSuperclassMixin){
-
-	// FIXME: this is sort of a hack, but it seems necessaray in the case where
-	// a widget might already have another mixin base class and DomWidget is
-	// mixed in to provide extra attributes, but not necessarialy an over-write
-	// of the defaults (which might have already been changed);
-	if(!preventSuperclassMixin){
-		// mixin inheritance
-		dojo.webui.Widget.call(this);
+dojo.webui.DomWidget = function(){
+	// dojo.webui.Widget.call(this);
+	if((arguments.length>0)&&(typeof arguments[0] == "object")){
+		this.create(arguments[0]);
 	}
+}
+dj_inherits(dojo.webui.DomWidget, dojo.webui.Widget);
 
-	this.subTemplates = {};
-
-	this.domNode = null; // this is our visible representation of the widget!
-	this.containerNode = null; // holds child elements
+dojo.lang.extend(dojo.webui.DomWidget, {
+	templateNode: null,
+	templateString: null,
+	subTemplates: {},
+	domNode: null, // this is our visible representation of the widget!
+	containerNode: null, // holds child elements
 
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
-	this.addChild = function(widget, overrideContainerNode, pos, ref){ 
+	addChild: function(widget, overrideContainerNode, pos, ref){ 
 		// var start = new Date();
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.webui.DomWidget.addChild() attempted on non-container widget");
@@ -256,10 +255,10 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			widget.addedTo(this);
 		}
 		// dj_debug("add child took: ", new Date()-start, "ms");
-	}
+	},
 
 	// FIXME: we really need to normalize how we do things WRT "destroy" vs. "remove"
-	this.removeChild = function(widget){
+	removeChild: function(widget){
 		for(var x=0; x<this.children.length; x++){
 			if(this.children[x] === widget){
 				this.children.splice(x, 1);
@@ -267,9 +266,9 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			}
 		}
 		return widget;
-	}
+	},
 	
-	this.postInitialize = function(args, frag, parentComp){
+	postInitialize: function(args, frag, parentComp){
 		if(parentComp){
 			parentComp.addChild(this);
 		}else{
@@ -297,21 +296,22 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 			// build any sub-components with us as the parent
 			fragParser.createComponents(frag, this);
 		}
-	}
+	},
 
-	this.startResize = function(coords){
+	startResize: function(coords){
 		dj_unimplemented("dojo.webui.DomWidget.startResize");
-	}
+	},
 
-	this.updateResize = function(coords){
+	updateResize: function(coords){
 		dj_unimplemented("dojo.webui.DomWidget.updateResize");
-	}
+	},
 
-	this.endResize = function(coords){
+	endResize: function(coords){
 		dj_unimplemented("dojo.webui.DomWidget.endResize");
-	}
+	},
+
 	// method over-ride
-	this.buildRendering = function(args, frag){
+	buildRendering: function(args, frag){
 		// DOM widgets construct themselves from a template
 		var ts = dojo.webui.DomWidget.templates[this.widgetType];
 		if(	
@@ -335,9 +335,9 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 											// will handle population of data
 											// from properties, remote data
 											// sets, etc.
-	}
+	},
 
-	this.buildFromTemplate = function(args, frag){
+	buildFromTemplate: function(args, frag){
 		// var start = new Date();
 		// copy template properties if they're already set in the templates object
 		var ts = dojo.webui.DomWidget.templates[this.widgetType];
@@ -385,522 +385,41 @@ dojo.webui.DomWidget = function(preventSuperclassMixin){
 		// dj_debug("toc1: ", new Date()-start, "ms");
 		this.attachTemplateNodes(this.domNode, this);
 		// dj_debug("toc2: ", new Date()-start, "ms");
-	}
+	},
 
-	this.attachTemplateNodes = function(baseNode, targetObj){
+	attachTemplateNodes: function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
 		return dojo.webui.attachTemplateNodes(baseNode, targetObj, this, 
 					dojo.webui.getDojoEventsFromStr(this.templateString));
-	}
-	this.fillInTemplate = function(){
+	},
+
+	fillInTemplate: function(){
 		// dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
-	}
+	},
 	
 	// method over-ride
-	this.destroyRendering = function(){
+	destroyRendering: function(){
 		try{
 			var tempNode = this.domNode.parentNode.removeChild(this.domNode);
 			delete tempNode;
 		}catch(e){ /* squelch! */ }
-	}
+	},
 
-	// method over-ride
-	this.cleanUp = function(){
-		
-	}
+	// FIXME: method over-ride
+	cleanUp: function(){},
 	
-	this.getContainerHeight = function(){
+	getContainerHeight: function(){
 		// FIXME: the generic DOM widget shouldn't be using HTML utils!
 		return dojo.xml.htmlUtil.getInnerHeight(this.domNode.parentNode);
-	}
+	},
 
-	this.getContainerWidth = function(){
+	getContainerWidth: function(){
 		// FIXME: the generic DOM widget shouldn't be using HTML utils!
 		return dojo.xml.htmlUtil.getInnerWidth(this.domNode.parentNode);
-	}
+	},
 
-	this.createNodesFromText = function(){
+	createNodesFromText: function(){
 		dj_unimplemented("dojo.webui.DomWidget.createNodesFromText");
 	}
-
-	if((arguments.length>0)&&(typeof arguments[0] == "object")){
-		this.create(arguments[0]);
-	}
-
-}
-
-dojo.webui.DomWidget.prototype.templateNode = null;
-dojo.webui.DomWidget.prototype.templateString = null;
+});
 dojo.webui.DomWidget.templates = {};
-
-dj_inherits(dojo.webui.DomWidget, dojo.webui.Widget);
-
-// SVGWidget is a mixin ONLY
-dojo.webui.SVGWidget = function(args){
-	// alert("dojo.webui.SVGWidget");
-	// mixin inheritance
-	// dojo.webui.DomWidget.call(this);
-
-	this.getContainerHeight = function(){
-		// NOTE: container height must be returned as the INNER height
-		dj_unimplemented("dojo.webui.SVGWidget.getContainerHeight");
-	}
-
-	this.getContainerWidth = function(){
-		// return this.parent.domNode.offsetWidth;
-		dj_unimplemented("dojo.webui.SVGWidget.getContainerWidth");
-	}
-
-	this.setNativeHeight = function(height){
-		// var ch = this.getContainerHeight();
-		dj_unimplemented("dojo.webui.SVGWidget.setNativeHeight");
-	}
-
-	this.createNodesFromText = function(txt, wrap){
-		return dojo.xml.domUtil.createNodesFromText(txt, wrap);
-	}
-}
-
-// HTMLWidget is a mixin ONLY
-dojo.webui.HTMLWidget = function(args){
-	// mixin inheritance
-	// dojo.webui.DomWidget.call(this);
-	this.templateCssPath = null;
-	this.templatePath = null;
-	this.allowResizeX = true;
-	this.allowResizeY = true;
-
-	this.resizeGhost = null;
-	this.initialResizeCoords = null;
-	// this.templateString = null;
-
-	this.getContainerHeight = function(){
-		// NOTE: container height must be returned as the INNER height
-		dj_unimplemented("dojo.webui.HTMLWidget.getContainerHeight");
-	}
-
-	this.getContainerWidth = function(){
-		return this.parent.domNode.offsetWidth;
-	}
-
-	this.setNativeHeight = function(height){
-		var ch = this.getContainerHeight();
-	}
-
-	this.startResize = function(coords){
-		// get the left and top offset of our dom node
-		var hu = dojo.xml.htmlUtil;
-		
-		coords.offsetLeft = hu.totalOffsetLeft(this.domNode);
-		coords.offsetTop = hu.totalOffsetTop(this.domNode);
-		coords.innerWidth = hu.getInnerWidth(this.domNode);
-		coords.innerHeight = hu.getInnerHeight(this.domNode);
-		if(!this.resizeGhost){
-			this.resizeGhost = document.createElement("div");
-			var rg = this.resizeGhost;
-			rg.style.position = "absolute";
-			rg.style.backgroundColor = "white";
-			rg.style.border = "1px solid black";
-			dojo.xml.htmlUtil.setOpacity(rg, 0.3);
-			document.body.appendChild(rg);
-		}
-		with(this.resizeGhost.style){
-			left = coords.offsetLeft + "px";
-			top = coords.offsetTop + "px";
-		}
-		this.initialResizeCoords = coords;
-		this.resizeGhost.style.display = "";
-		this.updateResize(coords, true);
-	}
-
-	this.updateResize = function(coords, override){
-		var dx = coords.x-this.initialResizeCoords.x;
-		var dy = coords.y-this.initialResizeCoords.y;
-		with(this.resizeGhost.style){
-			if((this.allowResizeX)||(override)){
-				width = this.initialResizeCoords.innerWidth + dx + "px";
-			}
-			if((this.allowResizeY)||(override)){
-				height = this.initialResizeCoords.innerHeight + dy + "px";
-			}
-		}
-	}
-
-	this.endResize = function(coords){
-		// FIXME: need to actually change the size of the widget!
-		var dx = coords.x-this.initialResizeCoords.x;
-		var dy = coords.y-this.initialResizeCoords.y;
-		with(this.domNode.style){
-			if(this.allowResizeX){
-				width = this.initialResizeCoords.innerWidth + dx + "px";
-			}
-			if(this.allowResizeY){
-				height = this.initialResizeCoords.innerHeight + dy + "px";
-			}
-		}
-		this.resizeGhost.style.display = "none";
-	}
-
-
-	this.createNodesFromText = function(txt, wrap){
-		return dojo.xml.domUtil.createNodesFromText(txt, wrap);
-	}
-
-	this._old_buildFromTemplate = this.buildFromTemplate;
-
-	this.buildFromTemplate = function(){
-		dojo.webui.buildFromTemplate(this);
-		this._old_buildFromTemplate();
-	}
-}
-// dj_inherits(dojo.webui.HTMLWidget, dojo.webui.DomWidget);
-dojo.webui.HTMLWidgetMixin = new dojo.webui.HTMLWidget();
-
-dojo.webui.htmlDragAndDropManager = new function(){
-	dojo.webui.DragAndDropManager.call(this);
-
-	this.resizeTarget = null;
-	this.hoverNode = null;
-	this.dragIcon = null;
-	this._cheapChecks = true;
-	this.isResizing = false;
-	this.overResizeHandle = false;
-	this.overDragHandle  = false;
-	this.init = [];
-	this.curr = [];
-
-	this.checkForResize = function(node){
-		if(this._cheapChecks){
-			return dojo.xml.htmlUtil.getAttribute(node, "resizeHandle");
-		}
-		var rh = false;
-		var ca = null;
-		var ancestors = dojo.xml.domUtil.getAncestors(node);
-		while((ancestors.length)&&(!rh)){
-			var ca = ancestors.shift();
-			rh = dojo.xml.htmlUtil.getAttribute(ca, "resizeHandle");
-		}
-		return rh;
-	}
-
-	this.checkForDrag = function(node){
-		if(this._cheapChecks){
-			return dojo.xml.htmlUtil.getAttribute(node, "dragHandle");
-		}
-		var rh = false;
-		var ca = null;
-		var ancestors = dojo.xml.domUtil.getAncestors(node);
-		while((ancestors.length)&&(!rh)){
-			var ca = ancestors.shift();
-			rh = dojo.xml.htmlUtil.getAttribute(ca, "dragHandle");
-		}
-		return rh;
-	}
-
-	this.mouseMove = function(evt){
-		this.curr = [evt.clientX, evt.clientY];
-		this.curr.x = this.curr[0];
-		this.curr.absx = this.curr.x+((dojo.render.html.moz) ? window.pageXOffset : document.body.scrollLeft);
-		this.curr.y = this.curr[1];
-		this.curr.absy = this.curr.y+((dojo.render.html.moz) ? window.pageYOffset : document.body.scrollTop);
-		if((this.isDragging)||(this.isResizing)){
-			// FIXME: we should probably implement a distance threshold here!
-			this.mouseDrag(evt);
-		}else{
-			var dh = this.checkForDrag(evt.target);
-			var rh = this.checkForResize(evt.target);
-			// FIXME: we also need to handle horizontal-only or vertical-only
-			// reisizing
-			if(rh||dh){
-				if(rh){ this.overResizeHandle = true; }
-				if(dh){ this.overDragHandle = true; }
-				document.body.style.cursor = "move";
-			}else{
-				this.overResizeHandle = false;
-				this.overDragHandle = false;
-				document.body.style.cursor = "";
-			}
-		}
-		// update hoverTarget only when necessaray!
-		if(evt.target != this.hoverNode){ 
-			this.hoverNode = evt.target;
-			var tdt = dojo.webui.widgetManager.getWidgetFromEvent(evt);
-			this.hoverTarget = tdt;
-			while((tdt)&&(!tdt["dragEnter"])&&(tdt != dojo.webui.widgetManager.root)){
-				tdt = tdt.parent;
-			}
-			if(this.isDragging){
-				if(tdt != dojo.webui.widgetManager.root){
-					if(tdt != this.dropTarget){
-						// dj_debug(tdt);
-						if(this.dropTarget){
-							this.dropTarget.dragLeave(this.dragSource);
-						}
-						this.dropTarget = tdt;
-						if((this.dropTarget)&&(this.dropTarget["dragEnter"])){
-							this.dropTarget.dragEnter(this.dragSource);
-						}
-					}
-				}else{
-					if(this.dropTarget){
-						this.dropTarget.dragLeave(this.dragSource);
-					}
-					this.dropTarget = null;
-				}
-			}
-		}
-	}
-
-	this.mouseDown = function(evt){
-		this.init = this.curr;
-		if(!this.hoverTarget){ return; }
-		if(this.overResizeHandle){
-			this.isResizing = true;
-			this.resizeTarget = this.hoverTarget;
-			if(this.resizeTarget["startResize"]){
-				evt.preventDefault();
-				evt.stopPropagation();
-				this.resizeTarget.startResize(this.curr);
-			}
-			if(this.dragSource){
-				this.dragSource.startDrag();
-			}
-		}else{
-			if((this.hoverTarget["isDragSource"] === true)||(this.overDragHandle)){
-				this.isDragging = true;
-				this.dragSource = this.hoverTarget;
-				
-				// create a rudimentary event object to be passed to startDrag()
-				var evt = {target: this.hoverNode, type: "startDrag"};
-				
-				while((this.dragSource)&&(!this.dragSource["isDragSource"])){
-					this.dragSource = this.dragSource.parent;
-				}
-				if(!this.dragSource){
-					this.isDragging = false;
-				}else{
-					document.body.style.cursor = "move";
-				}
-				this.dragSource.startDrag(evt);
-				var di = this.dragSource.getDragIcon();
-				if(di){
-					if(!this.dragIcon){
-						this.dragIcon = document.createElement("span");
-						with(this.dragIcon.style){
-							position = "absolute";
-							border = margin = padding = "0px";
-							zIndex = "1000";
-							display = "none";
-						}
-						document.body.appendChild(this.dragIcon);
-						dojo.xml.htmlUtil.setOpacity(this.dragIcon, 0.5);
-					}
-					// FIXME: can't do this without making sure the dragover
-					//        events get fired on the DropTargets
-					// start dragging the icon from its origin
-					//var pos = dojo.xml.htmlUtil.getAttribute(di, "originalPosition")
-					//if (pos) {
-					//	pos = pos.split(",");
-					//	this.dragIcon.offsetX = pos[0] - this.curr.absx;
-					//	this.dragIcon.offsetY = pos[1] - this.curr.absy;
-					//} else {
-						this.dragIcon.offsetX = 15;
-						this.dragIcon.offsetY = 15;
-					//}
-					with(this.dragIcon){
-						style.left = this.curr.absx+offsetX+"px";
-						style.top = this.curr.absy+offsetY+"px";
-					}
-					this.dragIcon.appendChild(di);
-					this.dragIcon.style.display = "";
-				}
-			}
-		}
-	}
-
-	// turns out that these are pretty useless
-	this.mouseOver = function(nativeEvt){ return; }
-	this.mouseOut = function(nativeEvt){ return; }
-
-	this.mouseUp = function(nativeEvt){ 
-		this.drop(nativeEvt);
-		if((this.isResizing)||(this.isDragging)){
-			if(this.resizeTarget){
-				this.resizeTarget.endResize(this.curr);
-				this.exitDrag();
-			}else if(this.dropTarget){
-				this.dropTarget.dragLeave(this.dragSource);
-				this.exitDrag();
-			}else{
-				this.cancelDrag();
-			}
-		} else {
-			this.cancelDrag();
-		}
-	}
-
-	this.mouseDrag = function(evt){ 
-		if(this.isResizing){
-			if(this.resizeTarget){
-				this.resizeTarget.updateResize(this.curr);
-			}
-		}else if(this.isDragging){
-			evt.preventDefault();
-			evt.stopPropagation();
-			this.drag(evt);
-			if(this.dragIcon){
-				with (this.dragIcon) {
-					style.left = this.curr.absx+offsetX+"px";
-					style.top = this.curr.absy+offsetY+"px";
-				}
-			}
-		}
-	}
-	
-	this.keyDown = function(evt){
-		if (evt.keyCode == 27) { // escape key
-			// FIXME: don't seem to be able to animate as setTimeout isn't
-			// being fired with the mouse button held down?
-			//this.cancelDrag();
-			this.exitDrag();
-		}
-	}
-
-	this.cancelDrag = function(){
-		// scoots the drag icon off back to it's original position
-		// and then exits
-		var endcoords = (this.dragIcon) ? dojo.xml.htmlUtil.getAttribute(
-			this.dragIcon.firstChild, "originalPosition") : false;
-		
-		if(endcoords){
-			endcoords = endcoords.split(",");
-			endcoords[0]++; endcoords[1]++; // offset so the end can be seen
-			var begincoords = [dojo.xml.htmlUtil.getAbsoluteX(this.dragIcon),
-					dojo.xml.htmlUtil.getAbsoluteY(this.dragIcon)];
-
-			// steal the icon so that other d&ds are free to start
-			var dragIcon = this.dragIcon; this.dragIcon = null;
-		
-			// animate
-			var line = new dojo.math.curves.Line(begincoords, endcoords);
-			var anim = new dojo.animation.Animation(line, 300, 0, 0);
-			dojo.event.connect(anim, "onAnimate", function(e) {
-				dragIcon.style.left = e.x + "px";
-				dragIcon.style.top = e.y + "px";
-			});
-			dojo.event.connect(anim, "onEnd", function (e) {
-				// pause for a second (not literally) and disappear
-				setTimeout(function () {
-					dragIcon.parentNode.removeChild(dragIcon);
-				}, 100);
-			});
-			anim.play();
-		}
-		this.exitDrag();
-	}
-	
-	this.exitDrag = function(){
-		// resets drag manager after a drag has finished
-		if(this.dragIcon){
-			this.dragIcon.style.display = "none";
-			with(this.dragIcon){
-				while(firstChild){ removeChild(firstChild); }
-			}
-		}
-		if((this.isResizing)||(this.isDragging)){
-			if(!this.resizeTarget){
-				this.dragSource.endDrag();
-				this.dragSource.selection.clear();
-			}
-			this.dropTarget = null;
-			this.resizeTarget = null;
-			this.isResizing = false;
-			this.overResizeHandle = false;
-
-			this.dragSource = null;
-			this.isDragging = false;
-			this.overDragHandle = false;
-
-			document.body.style.cursor = "default";
-		}
-		this.init = [];
-	}
-
-}
-
-try{
-(function(){
-	var tf = function(){
-		var rw = null;
-		if(dojo.render.html){
-			function rwClass(){
-				dojo.webui.Widget.call(this);
-				dojo.webui.DomWidget.call(this, true);
-				dojo.webui.HTMLWidget.call(this);
-				this.buildRendering = function(){ return; }
-				this.destroyRendering = function(){ return; }
-				this.postInitialize = function(){ return; }
-				this.cleanUp = function(){ return; }
-				this.widgetType = "HTMLRootWidget";
-			}
-			rw = new rwClass();
-			rw.domNode = document.body;
-			// FIXME: need to attach to DOM events and the like here
-			
-			var htmldm = dojo.webui.htmlDragAndDropManager;
-			dojo.event.connect(document, "onkeydown", htmldm, "keyDown");
-			dojo.event.connect(document, "onmousemove", htmldm, "mouseMove");
-			dojo.event.connect(document, "onmouseover", htmldm, "mouseOver");
-			dojo.event.connect(document, "onmouseout", htmldm, "mouseOut");
-			dojo.event.connect(document, "onmousedown", htmldm, "mouseDown");
-			dojo.event.connect(document, "onmouseup", htmldm, "mouseUp");
-
-		}else if(dojo.render.svg){
-			// FIXME: fill this in!!!
-			function rwClass(){
-				dojo.webui.Widget.call(this);
-				dojo.webui.DomWidget.call(this, true);
-				dojo.webui.SVGWidget.call(this);
-				this.buildRendering = function(){ return; }
-				this.destroyRendering = function(){ return; }
-				this.postInitialize = function(){ return; }
-				this.cleanUp = function(){ return; }
-				this.widgetType = "SVGRootWidget";
-			}
-			rw = new rwClass();
-			rw.domNode = document.documentElement;
-		}
-		var wm = dojo.webui.widgetManager;
-		wm.root = rw;
-		wm.add(rw);
-
-		// extend the widgetManager with a getWidgetFromNode method
-		wm.getWidgetFromNode = function(node){
-			var filter = function(x){
-				if(x.domNode == node){
-					return true;
-				}
-			}
-			var widgets = [];
-			while((node)&&(widgets.length < 1)){
-				widgets = this.getWidgetsByFilter(filter);
-				node = node.parentNode;
-			}
-			if(widgets.length > 0){
-				return widgets[0];
-			}else{
-				return null;
-			}
-		}
-
-		wm.getWidgetFromEvent = function(domEvt){
-			return this.getWidgetFromNode(domEvt.target);
-		}
-
-		wm.getWidgetFromPrimitive = wm.getWidgetFromNode;
-	}
-
-	// make sure we get called when the time is right
-	dojo.event.connect(dojo.hostenv, "loaded", tf);
-})();
-}catch(e){ alert(e); }
