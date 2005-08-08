@@ -89,7 +89,6 @@ if(dj_undef("djConfig")){
 /**
  * dojo is the root variable of (almost all) our public symbols.
  */
-//=java public class dojo {
 var dojo;
 if(dj_undef("dojo")){ dojo = {}; }
 
@@ -265,18 +264,15 @@ dojo.render = {
 // ****************************************************************
 // dojo.hostenv methods that must be defined in hostenv_*.js
 // ****************************************************************
-//=java public static HostEnv hostenv;
 
 /**
  * The interface definining the interaction with the EcmaScript host environment.
 */
-//=java public abstract class HostEnv {
 
 /*
  * None of these methods should ever be called directly by library users.
  * Instead public methods such as loadModule should be called instead.
  */
-//=java protected String name_ = '(unset)';
 dojo.hostenv = (function(){
 	var djc = djConfig;
 
@@ -330,13 +326,11 @@ dojo.hostenv = (function(){
 		/**
 		 * Return the name of the hostenv.
 		 */
-		//=java public abstract String getName() {}
 		getName: function(){ return this.name_; },
 
 		/**
 		* Return the version of the hostenv.
 		*/
-		//=java public abstract String getVersion() {}
 		getVersion: function(){ return this.version_; },
 
 		/**
@@ -344,7 +338,6 @@ dojo.hostenv = (function(){
 		 * If getText() is not implemented, then it is necessary to override loadUri()
 		 * with an implementation that doesn't rely on it.
 		 */
-		//=java protected abstract String getText(String uri);
 		getText: function(uri){
 			dj_unimplemented('getText', "uri=" + uri);
 		},
@@ -353,15 +346,12 @@ dojo.hostenv = (function(){
 		 * return the uri of the script that defined this function
 		 * private method that must be implemented by the hostenv.
 		 */
-		//=java protected abstract String getLibraryScriptUri();
 		getLibraryScriptUri: function(){
 			// FIXME: need to implement!!!
 			dj_unimplemented('getLibraryScriptUri','');
 		}
 	};
 })();
-
-//=java } /* dojo */
 
 /*
 dojo.hostenv.makeUnimpl = function(ns, funcname){
@@ -373,7 +363,6 @@ dojo.hostenv.makeUnimpl = function(ns, funcname){
  * Display a line of text to the user.
  * The line argument should not contain a trailing "\n"; that is added by the implementation.
  */
-//=java protected abstract void println();
 //dojo.hostenv.println = function(line) {}
 
 // ****************************************************************
@@ -384,7 +373,6 @@ dojo.hostenv.makeUnimpl = function(ns, funcname){
  * Return the base script uri that other scripts are found relative to.
  * It is either the empty string, or a non-empty string ending in '/'.
  */
-//=java public String getBaseScriptUri();
 dojo.hostenv.getBaseScriptUri = function(){
 	// if(typeof this.base_script_uri_ != 'undefined'){ return this.base_script_uri_; }
 	if(!dj_undef("base_script_uri_", this)){ return this.base_script_uri_; }
@@ -443,7 +431,6 @@ dojo.hostenv.normPath = function(path){
 /**
 * Set the base script uri.
 */
-//=java public void setBaseScriptUri(String uri);
 // In JScript .NET, see interface System._AppDomain implemented by System.AppDomain.CurrentDomain. Members include AppendPrivatePath, RelativeSearchPath, BaseDirectory.
 dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
 
@@ -459,7 +446,6 @@ dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
  * @param relpath A relative path to a script (no leading '/', and typically ending in '.js').
  * @param module A module whose existance to check for after loading a path. Can be used to determine success or failure of the load.
  */
-//=java public Boolean loadPath(String relpath);
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	if(!relpath){
 		dj_throw("Missing relpath argument");
@@ -605,7 +591,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 
 		while(syms.length){
 			syms.pop();
-			syms.push("__package__");
+			syms.push(this.pkgFileName);
 			relpath = syms.join("/") + '.js';
 			if(relpath.charAt(0)=="/"){
 				relpath = relpath.slice(1);
@@ -625,7 +611,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
 				if(ok){ break; }
 				syms.pop();
-				relpath = syms.join('/') + '/__package__.js';
+				relpath = syms.join('/') + '/'+this.pkgFileName+'.js';
 				if(relpath.charAt(0)=="/"){
 					relpath = relpath.slice(1);
 				}
@@ -674,7 +660,6 @@ dojo.hostenv.startPackage = function(packname){
  * @param modulename A string like 'A.B'.
  * @param must_exist Optional, defualt false. throw instead of returning null if the module does not currently exist.
  */
-//=java public Object findModule(String modulename, boolean must_exist);
 dojo.hostenv.findModule = function(modulename, must_exist) {
 	// check cache
 	if(!dj_undef(modulename, this.modules_)){
@@ -697,5 +682,3 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	}
 	return null;
 }
-
-//=java } /* class HostEnv */
