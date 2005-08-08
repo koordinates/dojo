@@ -283,7 +283,7 @@ dojo.lang.extend(dojo.webui.DomWidget, {
 
 			this.parent = dojo.webui.widgetManager.root;
 			// insert our domNode into the DOM in place of where we started
-			if(this.domNode) {
+			if((this.domNode)&&(this.domNode !== sourceNodeRef)){
 				var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
 			}
 		}

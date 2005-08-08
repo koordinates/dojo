@@ -271,6 +271,8 @@ dojo.webui.widgets.fromScript = function(name, props, refNode, position){
 		}
 	}else if(position){
 		dojo.xml.domUtil.insert(tn, refNode, position);
+	}else{ // otherwise don't replace, but build in-place
+		tn = refNode;
 	}
 	var ret = this.oldFromScript(tn, name, props);
 	if(notRef){
