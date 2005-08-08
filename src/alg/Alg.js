@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.alg.Alg");
+dojo.provide("dojo.alg.Alg");
 
 dojo.alg.find = function(arr, val){
 	for(var i=0;i<arr.length;++i){
