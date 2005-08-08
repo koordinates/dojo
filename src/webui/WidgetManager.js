@@ -72,9 +72,13 @@ dojo.webui.widgetManager = new function(){
 
 	// support manually registered widget packages
 	var widgetPackages = ["dojo.webui.widgets"];
+	widgetPackages["dojo.webui.widgets"] = true;
 
 	this.registerWidgetPackage = function(pname) {
-		widgetPackages.push(pname);
+		if(!widgetPackages[pname]){
+			widgetPackages[pname] = true;
+			widgetPackages.push(pname);
+		}
 	}
 
 	this.getImplementation = function(widgetName, ctorObject, mixins){
