@@ -469,5 +469,4 @@ dojo.event.MethodJoinPoint.prototype.removeAdvice = function(thisAdviceObj, this
 }
 
 // needed for package satisfaction
-dojo.hostenv.startPackage("dojo.event.Event");
-
+dojo.provide("dojo.event.Event");
