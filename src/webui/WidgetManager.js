@@ -17,7 +17,7 @@ dojo.webui.widgetManager = new function(){
 	this.add = function(widget){
 		this.widgets.push(widget);
 		if(widget.widgetId == ""){
-			widget.widgetId = widget.widgetType+" "+this.getUniqueId();
+			widget.widgetId = widget.widgetType+"_"+this.getUniqueId();
 		}else if(this.widgetIds[widget.widgetId]){
 			dj_debug("widget ID collision on ID: "+widget.widgetId);
 		}
