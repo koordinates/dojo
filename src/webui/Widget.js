@@ -4,7 +4,6 @@ dojo.provide("dojo.webui.widgets.tags");
 
 dojo.require("dojo.lang.*");
 dojo.require("dojo.webui.WidgetManager");
-dojo.require("dojo.webui.DragAndDrop");
 dojo.require("dojo.event.*");
 dojo.require("dojo.text.*");
 
@@ -93,7 +92,6 @@ dojo.lang.extend(dojo.webui.Widget, {
 			}
 		});
 	},
-
 
 	satisfyPropertySets: function(args){
 		// get the default propsets for our component type
