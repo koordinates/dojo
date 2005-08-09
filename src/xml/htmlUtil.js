@@ -445,6 +445,13 @@ dojo.xml.htmlUtil = new function(){
 	/**
 	 * Calculates the mouse's direction of gravity relative to the centre
 	 * of the given node.
+	 * <p>
+	 * If you wanted to insert a node into a DOM tree based on the mouse
+	 * position you might use the following code:
+	 * <pre>
+	 * if (gravity(node, e) & gravity.NORTH) { [insert before]; }
+	 * else { [insert after]; }
+	 * </pre>
 	 *
 	 * @param node The node
 	 * @param e    The event containing the mouse coordinates
