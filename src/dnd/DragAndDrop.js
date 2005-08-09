@@ -2,22 +2,6 @@ dojo.provide("dojo.dnd.DragSource");
 dojo.provide("dojo.dnd.DropTarget");
 dojo.provide("dojo.dnd.DragObject");
 
-/**
- * Drag and Drop events:
- * 
- * - ondrag fired when a drag operation begins
- * - ondrop fired when a drag operation ends
- * 
- * - ondragover
- * - ondragenter
- * 
- * - ondragout
- * - ondragleave
- *
- * - ondragmove
- * - ondrag
- */
-
 dojo.dnd.DragSource = function(){
 }
 
@@ -75,8 +59,7 @@ dojo.lang.extend(dojo.dnd.DropTarget, {
 	onDragMove: function(){
 	},
 	
-	onDrop: function(dragSource){
-		
+	onDrop: function(){
 	}
 });
 
@@ -91,14 +74,3 @@ dojo.dnd.DragEvent = function(){
 	//		"dragStart", "dragEnter", "dragLeave"]
 	//
 }
-
-dojo.dnd.ISortable = function (){}
-
-dojo.lang.extend(dojo.dnd.ISortable, {
-	ondragstart: function (e) {
-		
-		return this;
-	},
-});
-
-
