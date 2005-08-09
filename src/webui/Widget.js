@@ -11,7 +11,7 @@ dojo.webui.Widget = function(){
 	// these properties aren't primitives and need to be created on a per-item
 	// basis.
 	this.children = [];
-	this.selection = new dojo.webui.Selection();
+	// this.selection = new dojo.webui.Selection();
 	// FIXME: need to replace this with context menu stuff
 	this.rightClickItems = [];
 	this.extraArgs = {};
