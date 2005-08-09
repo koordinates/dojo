@@ -48,7 +48,6 @@ dojo.dnd.HtmlDragObject.prototype = {
 		this.style.left = this.dragOffset.left + e.clientY + "px";
 	},
 
-	/** slides the 
 	onDragEnd: function (e) {
 		swicth (e.dragStatus) {
 		
@@ -84,7 +83,7 @@ dojo.dnd.HtmlDragObject.prototype = {
 				break;
 		}
 	}
-});
+}
 
 dojo.dnd.HtmlDropTarget = function () {}
 
@@ -96,5 +95,5 @@ dojo.dnd.HtmlDropTarget.prototype = {
 	onDragMove: function (e) {},
 	
 	onDrop: function (e) {}
-});
+}
 
