@@ -274,7 +274,7 @@ dojo.webui.widgets.fromScript = function(name, props, refNode, position){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var ret = this.oldFromScript(tn, name, props);
+	var ret = dojo.webui.widgets.oldFromScript(tn, name, props);
 	if(notRef){
 		ret[0].domNode.parentNode.removeChild(ret[0].domNode);
 	}
