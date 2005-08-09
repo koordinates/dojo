@@ -7,6 +7,7 @@ dojo.lang.mixin = function(obj, props){
 			obj[x] = props[x];
 		}
 	}
+	return obj;
 }
 
 dojo.lang.extend = function(ctor, props){
