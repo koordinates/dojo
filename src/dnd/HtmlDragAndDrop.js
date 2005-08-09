@@ -48,8 +48,18 @@ dojo.dnd.HtmlDragObject.prototype = {
 		this.style.left = this.dragOffset.left + e.clientY + "px";
 	},
 
+	/**
+	 * If the drag operation returned a success we reomve the clone of
+	 * ourself from the original position. If the drag operation returned
+	 * failure we slide back over to where we came from and end the operation
+	 * with a little grace.
+	 */
 	onDragEnd: function (e) {
 		swicth (e.dragStatus) {
+
+			case "dropSuccess":
+				this.dragClone.parentNode.removeChild(this.dragClone);
+				break;
 		
 			case "dropFailure": // slide back to the start
 		
@@ -77,10 +87,6 @@ dojo.dnd.HtmlDragObject.prototype = {
 				});
 				anim.play();
 				break;
-			
-			case "dropSuccess":
-				//this.parentNode.removeChild(this);
-				break;
 		}
 	}
 }
@@ -88,12 +94,42 @@ dojo.dnd.HtmlDragObject.prototype = {
 dojo.dnd.HtmlDropTarget = function () {}
 
 dojo.dnd.HtmlDropTarget.prototype = {
-	onDragOver: function (e) {},
+	onDragOver: function (e) {
+		// TODO: draw an outline
+	},
 	
-	onDragOut: function (e) {},
+	onDragMove: function (e) {
+		// TODO: indicate position at which the DragObject will get inserted
+	},
+
+	onDragOut: function (e) {
+		// TODO: remove inidication from previous method
+	},
 	
-	onDragMove: function (e) {},
-	
-	onDrop: function (e) {}
+	/**
+	 * Inserts the DragObject as a child of this node relative to the
+	 * position of the mouse.
+	 *
+	 * @return true if the DragObject was inserted, false otherwise
+	 */
+	onDrop: function (e) {
+		var child = e.target;
+		while (child.parentNode && child.parentNode != this) {
+			child = child.parentNode;
+		}
+		
+		if (child) {
+			with (dojo.xml) {
+				if (htmlUtil.gravity(child, e) & htmlUtil.gravity.NORTH) {
+					domUtil.before(child, e.dragObject);
+				} else {
+					domUtil.after(child, e.dragObject);			
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
