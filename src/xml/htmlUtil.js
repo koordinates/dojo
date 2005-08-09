@@ -442,6 +442,35 @@ dojo.xml.htmlUtil = new function(){
 		}
 	}
 	
+	/**
+	 * Calculates the mouse's direction of gravity relative to the centre
+	 * of the given node.
+	 *
+	 * @param node The node
+	 * @param e    The event containing the mouse coordinates
+	 * @return     The directions, NORTH or SOUTH and EAST or WEST. These
+	 *             are properties of the function.
+	 */
+	this.gravity = function (node, e) {
+		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+		var mousey = e.pageY || e.clientY + document.body.scrollTop;
+		
+		with (dojo.xml.htmlUtil) {
+			var nodecenterx = getAbsoluteX(node) + (getOffsetWidth(node) / 2);
+			var nodecentery = getAbsoluteY(node) + (getOffsetHeight(node) / 2);
+		}
+		
+		with (argument.callee) {
+			return ((mousex < nodecenterx ? WEST : EAST) |
+				(mousey < nodecentery ? NORTH : SOUTH));
+		}
+	}
+	
+	this.gravity.NORTH = 1;
+	this.gravity.SOUTH = 1 << 1;
+	this.gravity.EAST = 1 << 2;
+	this.gravity.WEST = 1 << 3;
+	
 	// FIXME: this is a really basic stub for adding and removing cssRules, but
 	// it assumes that you know the index of the cssRule that you want to add 
 	// or remove, making it less than useful.  So we need something that can 
