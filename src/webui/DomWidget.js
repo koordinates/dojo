@@ -3,7 +3,6 @@ dojo.provide("dojo.webui.DomWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.text.*");
 dojo.require("dojo.webui.Widget");
-dojo.require("dojo.webui.DragAndDrop");
 dojo.require("dojo.xml.*");
 dojo.require("dojo.math.curves");
 dojo.require("dojo.animation.Animation");
