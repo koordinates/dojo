@@ -8,16 +8,10 @@ djConfig = {
 };
 </script>
 <script type="text/javascript" src="../../../__package__.js"></script>
-<script type="text/javascript" src="../../io/BrowserIO.js"></script>
-<script type="text/javascript" src="Parse.js"></script>
-<script type="text/javascript" src="DomWidget.js"></script>
-<script type="text/javascript" src="WidgetManager.js"></script>
-<script type="text/javascript" src="Toolbar.js"></script>
+<script type="text/javascript" src="../../../src/webui/widgets/Toolbar.js"></script>
 <script type="text/javascript">
-dojo.require("dojo.io.*");
-
 function img(name) {
-	return "templates/buttons/" + name + ".gif";
+	return dojo.uri.dojoUri("src/webui/widgets/templates/buttons/" + name + ".gif").toString();
 }
 
 function init(e) {
