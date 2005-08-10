@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>Toolbar Test</title>
+<link type="text/css" rel="stylesheet" href="templates/HtmlToolbar.css"/>
+<script type="text/javascript">
+djConfig = {
+	isDebug : true
+};
+</script>
+<script type="text/javascript" src="../../../__package__.js"></script>
+<script type="text/javascript" src="../../io/BrowserIO.js"></script>
+<script type="text/javascript" src="Parse.js"></script>
+<script type="text/javascript" src="DomWidget.js"></script>
+<script type="text/javascript" src="WidgetManager.js"></script>
+<script type="text/javascript" src="Toolbar.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.io.*");
+
+function img(name) {
+	return "templates/buttons/" + name + ".gif";
+}
+
+function init(e) {
+	tc = dojo.webui.fromScript("ToolbarContainer");
+	document.body.insertBefore(tc.domNode, document.body.firstChild);
+	tb = dojo.webui.fromScript("Toolbar");
+	tc.addChild(tb);
+	var items = [img("bold"), img("italic"), img("underline"),
+		"|", img("backcolor"), img("forecolor"),
+		"|", ["justify", img("justifyleft"), img("justifycenter"), img("justifyright"), img("justifyfull")],
+		"|", img("createlink"), img("insertimage"),
+		"|", img("undo"), img("redo")];
+	var now = new Date();
+	for(var i = 0; i < items.length; i++) {
+		tb.addChild(items[i], null, {toggleItem:i<3});
+	}
+	dj_debug("Build time: " + (new Date() - now));
+}
+
+dojo.event.connect(window, "onload", init);
+</script>
+</head>
+
+<body>
+	Justification: 
+	<a href="javascript:tc.enable('justify')">Enable</a> /
+	<a href="javascript:tc.disable('justify')">Disable</a>
+
+</body>
+</html>

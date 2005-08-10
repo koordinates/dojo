@@ -1,0 +1,45 @@
+body {
+	font-family : Tahoma;
+}
+
+.toolbarContainer {
+	xborder : 1px solid #ccd;
+	border-bottom : 0;
+	background-color : #eef;
+	color : ButtonText;
+}
+
+.toolbar {
+	padding : 2px;
+	xborder-bottom : 1px solid #ccd;
+	font-size : 11px;
+	min-height : 26px;
+}
+
+.toolbarItem {
+	float : left;
+	padding : 1px 3px;
+	margin : 1px 2px 1px 0;
+	cursor : pointer;
+	border : 1px solid #eef;
+}
+
+.toolbarItem.selected {
+	margin : 2px 1px 0 1px;
+	border : 1px inset #ccd;
+}
+
+.toolbarButton.hover {
+}
+
+.toolbarItem.disabled {
+	opacity : 0.3;
+	cursor : default;
+}
+
+.toolbarSeparator {
+	cursor : default;
+}
+
+.toolbarFlexibleSpace {
+}
