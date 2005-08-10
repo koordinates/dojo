@@ -215,7 +215,7 @@ dojo.webui.buildAndAttachTemplate = function(obj, templatePath, templateCssPath,
 }
 
 dojo.webui.DomWidget = function(){
-	// dojo.webui.Widget.call(this);
+	dojo.webui.Widget.call(this);
 	if((arguments.length>0)&&(typeof arguments[0] == "object")){
 		this.create(arguments[0]);
 	}
