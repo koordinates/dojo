@@ -1,9 +1,10 @@
-dojo.hostenv.startPackage("dojo.graphics.htmlEffects");
+dojo.provide("dojo.graphics.htmlEffects");
 
-dojo.hostenv.loadModule("dojo.animation.*");
-dojo.hostenv.loadModule("dojo.xml.*");
-dojo.hostenv.loadModule("dojo.event.*");
-dojo.hostenv.loadModule("dojo.alg.*");
+dojo.require("dojo.animation.*");
+dojo.require("dojo.xml.domUtil");
+dojo.require("dojo.xml.htmlUtil");
+dojo.require("dojo.event.*");
+dojo.require("dojo.alg.*");
 
 dojo.graphics.htmlEffects = new function() {
 	this.fadeOut = function(node, duration, cbObj, callback) {
