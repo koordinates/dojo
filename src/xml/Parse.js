@@ -7,6 +7,8 @@ dojo.require("dojo.xml.domUtil");
 
 /* generic method for taking a node and parsing it into an object
 
+TODO: WARNING: This comment is wrong!
+
 For example, the following xml fragment
 
 <foo bar="bar">
@@ -17,7 +19,7 @@ can be described as:
 
 dojo.???.foo = {}
 dojo.???.foo.bar = {}
-dojo.???.foo.bar.value = "xyzzy";
+dojo.???.foo.bar.value = "bar";
 dojo.???.foo.baz = {}
 dojo.???.foo.baz.xyzzy = {}
 dojo.???.foo.baz.xyzzy.value = "xyzzy"
