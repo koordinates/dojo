@@ -26,12 +26,12 @@ behave serve them instead of forming an obstacle for them to overcome. Their
 instincts are turned into a valuable tool by elegantly and consistently
 designed software.
 
-Dojo, as a project, should meet expectations in this way. This doesn't
-necessarily mean that you have to agree with every design decision that's been
-made in the project (dissent is healthy), nor that the guiding principles put
-down here are immortal or otherwise written in stone. They should capture the
-way design choices have been made to date. They also serve as a guide for
-making future design decisions.
+Dojo, as a project, should meet expectations in this way. This doesn't mean
+that you have to agree with every design decision that's been made in the
+project (dissent is healthy), nor that the guiding principles put down here are
+immortal or otherwise written in stone. They should capture the way design
+choices have been made to date. They also serve as a guide for making future
+design decisions.
 
 Dojo Guiding Principles
 -----------------------
@@ -42,7 +42,7 @@ Reduce barriers to adoption.
 
 Simple first, fast later
     Make it simple to use first, make it fast when it's approprite. Simple here
-    means simple for users, not for us. We should work as hard as necessaray to
+    means simple for users, not for us. We should work as hard as necessary to
     make things simple for end users. This principle goes to reducing barriers
     to adoption. Things should be as easy as possible for the common case but
     transparently "upgradeable" to a faster code path if the end user is
@@ -50,8 +50,8 @@ Simple first, fast later
 
 Bend to the constraints of your environment
     Do not bludgeon a problem to death with code. If the environment can do
-    most of something, let it. Fill in as necessaray, but do not re-invent.
-    Make the path smooth for users, but do not introduce your own idooms where
+    most of something, let it. Fill in as necessary, but do not re-invent.
+    Make the path smooth for users, but do not introduce your own idioms where
     they aren't required.
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
