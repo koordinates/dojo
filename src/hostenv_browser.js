@@ -71,7 +71,7 @@ with(dojo.render){
 	html.opera = html.UA.indexOf("Opera") == -1 ? false : true; 
 	html.khtml = ((html.AV.indexOf("Konqueror") >= 0)||(html.AV.indexOf("Safari") >= 0)) ? true : false; 
 	html.safari = (html.AV.indexOf("Safari") >= 0) ? true : false; 
-	html.moz = ((html.UA.indexOf("Gecko") >= 0)&&(!html.khtml)) ? true : false; 
+	html.mozilla = html.moz = ((html.UA.indexOf("Gecko") >= 0)&&(!html.khtml)) ? true : false; 
 	html.ie = ((document.all)&&(!html.opera)) ? true : false;
 	html.ie50 = html.ie && html.AV.indexOf("MSIE 5.0")>=0;
 	html.ie55 = html.ie && html.AV.indexOf("MSIE 5.5")>=0;
