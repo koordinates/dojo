@@ -236,10 +236,10 @@ dojo.lang.extend(dojo.webui.DomWidget, {
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.webui.DomWidget.addChild() attempted on non-container widget");
 			return false;
-		}else if(!this.containerNode){
-			dj_debug("dojo.webui.DomWidget.addChild() attempted without containerNode");
-			return false;
 		}else{
+			if((!this.containerNode)&&(!overrideContainerNode)){
+				this.containerNode = this.domNode;
+			}
 			var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
 			if(!pos){ pos = "after"; }
 			if(!ref){ ref = cn.lastChild; }
