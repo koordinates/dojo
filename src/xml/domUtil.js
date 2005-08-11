@@ -52,12 +52,12 @@ dojo.xml.domUtil = new function(){
 
 			if((!dj_global["djConfig"])||(!djConfig["ignoreClassNames"])){
 				// FIXME: should we make this optionally enabled via djConfig?
-				var classes = node.getAttribute("class");
+				var classes = node.className||node.getAttribute("class");
 				if((classes)&&(classes.indexOf("dojo-") != -1)){
-					classes = classes.split(" ");
-					for(var x=0; x<classes.length; x++){
-						if((classes[x].length>5)&&(classes[x].indexOf("dojo-"))){
-							return "dojo:"+classes[x].substr(5);
+					var aclasses = classes.split(" ");
+					for(var x=0; x<aclasses.length; x++){
+						if((aclasses[x].length>5)&&(aclasses[x].indexOf("dojo-")>=0)){
+							return "dojo:"+aclasses[x].substr(5);
 						}
 					}
 				}
