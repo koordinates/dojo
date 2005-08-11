@@ -3,15 +3,13 @@ body {
 }
 
 .toolbarContainer {
-	xborder : 1px solid #ccd;
 	border-bottom : 0;
 	background-color : #eef;
 	color : ButtonText;
 }
 
 .toolbar {
-	padding : 2px;
-	xborder-bottom : 1px solid #ccd;
+	padding : 2px 4px;
 	font-size : 11px;
 	min-height : 26px;
 }
@@ -24,12 +22,13 @@ body {
 	border : 1px solid #eef;
 }
 
-.toolbarItem.selected {
+.toolbarItem.selected, .toolbarItem.down {
 	margin : 2px 1px 0 1px;
-	border : 1px inset #ccd;
+	border-style : inset;
 }
 
 .toolbarButton.hover {
+	border-color : #bbf;
 }
 
 .toolbarItem.disabled {

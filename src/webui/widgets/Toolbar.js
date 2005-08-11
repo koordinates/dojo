@@ -1,7 +1,13 @@
-//dojo.provide("dojo.webui.widgets.Toolbar");
 dojo.provide("dojo.webui.widgets.ToolbarContainer");
-//dojo.provide("dojo.webui.widgets.HTMLToolbar");
 dojo.provide("dojo.webui.widgets.HTMLToolbarContainer");
+dojo.provide("dojo.webui.widgets.ToolbarItem");
+dojo.provide("dojo.webui.widgets.HTMLToolbarButtonGroup");
+dojo.provide("dojo.webui.widgets.HTMLToolbarButton");
+dojo.provide("dojo.webui.widgets.HTMLToolbarToggleButton");
+dojo.provide("dojo.webui.widgets.HTMLToolbarSeparator");
+dojo.provide("dojo.webui.widgets.HTMLToolbarSpace");
+dojo.provide("dojo.webui.widgets.HTMLToolbarFlexibleSpace");
+dojo.provide("dojo.webui.Icon");
 
 dojo.require("dojo.webui.*");
 
@@ -13,11 +19,8 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 	this.widgetType = "ToolbarContainer";
 	this.isContainer = true;
 
-	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HtmlToolbarContainer.html");
+	this.templateString = '<div class="toolbarContainer" dojoAttachPoint="containerNode"></div>';
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HtmlToolbar.css");
-
-	this.fillInTemplate = function(args, frag) {
-	}
 
 	this.getItem = function(name) {
 		if(name instanceof dojo.webui.widgets.ToolbarItem) { return name; }
@@ -69,6 +72,39 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 			}
 		}
 	}
+
+	this.getItemsState = function() {
+		var values = {};
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+				dojo.lang.mixin(values, child.getItemsState());
+			}
+		}
+		return values;
+	}
+
+	this.getItemsActiveState = function() {
+		var values = {};
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+				dojo.lang.mixin(values, child.getItemsActiveState());
+			}
+		}
+		return values;
+	}
+
+	this.getItemsSelectedState = function() {
+		var values = {};
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+				dojo.lang.mixin(values, child.getItemsSelectedState());
+			}
+		}
+		return values;
+	}
 }
 dj_inherits(dojo.webui.widgets.HTMLToolbarContainer, dojo.webui.HtmlWidget);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarContainer");
@@ -81,12 +117,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 	this.widgetType = "Toolbar";
 	this.isContainer = true;
 
-	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HtmlToolbar.html");
-	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HtmlToolbar.css");
-
-	this.fillInTemplate = function(args, frag) {
-		this.containerNode = this.domNode;
-	}
+	this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode"></div>';
 
 	var oldAddChild = this.addChild;
 	this.addChild = function(item, pos, props) {
@@ -105,11 +136,40 @@ dojo.webui.widgets.HTMLToolbar = function() {
 		if(name instanceof dojo.webui.widgets.ToolbarItem) { return name; }
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if((child instanceof dojo.webui.widgets.ToolbarItem
-				|| child instanceof dojo.webui.widgets.HTMLToolbarButtonGroup)
+			if(child instanceof dojo.webui.widgets.ToolbarItem
 				&& child._name == name) { return child; }
 		}
 		return null;
+	}
+
+	this.getItemsState = function() {
+		var values = {};
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+				values[child._name] = {
+					selected: child._selected,
+					enabled: child._enabled
+				};
+			}
+		}
+		return values;
+	}
+
+	this.getItemsActiveState = function() {
+		var values = this.getItemsState();
+		for(var item in values) {
+			values[item] = values[item].enabled;
+		}
+		return values;
+	}
+
+	this.getItemsSelectedState = function() {
+		var values = this.getItemsState();
+		for(var item in values) {
+			values[item] = values[item].selected;
+		}
+		return values;
 	}
 
 	this.enable = function() {
@@ -153,10 +213,8 @@ dojo.webui.widgets.HTMLToolbar = function() {
 			var name = arguments[i], value = arguments[i+1];
 			var item = this.getItem(name);
 			if(item) {
-				if(item instanceof dojo.webui.widgets.HTMLToolbarButtonGroup) {
-					item.select(value);
-				} else if(item instanceof dojo.webui.widgets.ToolbarItem) {
-					item.setLabel(value);
+				if(item instanceof dojo.webui.widgets.ToolbarItem) {
+					item.setValue(value);
 				}
 			}
 		}
@@ -190,57 +248,47 @@ dojo.webui.widgets.ToolbarItem = function() {
 	this._selected = false;
 	this.isSelected = function() { return this._selected; }
 	this.setSelected = function(is, force) {
+		if(!this._toggleItem && !force) { return; }
 		is = Boolean(is);
-		if(force || this._selected != is) {
+		if(force || this._enabled && this._selected != is) {
 			this._selected = is;
-			if(!is) {
-				this._isToggled = false;
-			}
-			if(this._icon) {
-				this._icon.setState(is ? "enabled" : "disabled");
-				this._updateIcon();
-			}
-			this._fire(this._selected ? "onSelect" : "onDeselect");
+			this.update();
+			this._fireEvent(is ? "onSelect" : "onDeselect");
 		}
 	}
 	this.select = function(force) {
-		if(!force) {
-			if(!this._enabled) { return; }
-			if(this._selected) { return; }
-		}
-		dojo.xml.htmlUtil.addClass(this.domNode, "selected");
 		return this.setSelected(true, force);
 	}
 	this.deselect = function(force) {
-		if(!force) {
-			if(!this._enabled) { return; }
-			if(!this._selected) { return; }
-		}
-		dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
 		return this.setSelected(false, force);
+	}
+
+	this._toggleItem = false;
+	this.isToggleItem = function() { return this._toggleItem; }
+	this.setToggleItem = function(value) { this._toggleItem = Boolean(value); }
+
+	this.toggleSelected = function(force) {
+		return this.setSelected(!this._selected, force);
 	}
 
 	this._enabled = true;
 	this.isEnabled = function() { return this._enabled; }
-	this.setEnabled = function(is) {
+	this.setEnabled = function(is, force) {
 		is = Boolean(is);
-		if(this._enabled != is) {
+		if(force || this._enabled != is) {
 			this._enabled = is;
-			if(this._icon) {
-				this._icon.setState(is ? "selected" : "enabled");
-				this._updateIcon();
-			}
-			this._fire(this._enabled ? "onEnable" : "onDisable");
+			this.update();
+			this._fireEvent(this._enabled ? "onEnable" : "onDisable");
 		}
 	}
-	this.enable = function() {
-		dojo.xml.htmlUtil.removeClass(this.domNode, "disabled");
-		return this.setEnabled(true);
+	this.enable = function(force) {
+		return this.setEnabled(true, force);
 	}
-	this.disable = function() {
-		dojo.xml.htmlUtil.addClass(this.domNode, "disabled");
-		this.deselect();
-		return this.setEnabled(false);
+	this.disable = function(force) {
+		return this.setEnabled(false, force);
+	}
+	this.toggleEnabled = function(force) {
+		return this.setEnabled(!this._enabled, force);
 	}
 
 	this._icon = null;
@@ -254,24 +302,49 @@ dojo.webui.widgets.ToolbarItem = function() {
 		}
 		return this._icon;
 	}
-	this._updateIcon = function() {
-		if(this._icon) { this._icon.update(); }
-	}
 
+	// TODO: update the label node (this.labelNode?)
 	this._label = "";
 	this.getLabel = function() { return this._label; }
-	this.setLabel = function(value) { this._label = value; }
-
-	this._toggleItem = false;
-	this.getToggleItem = function() { return this._toggleItem; }
-	this.setToggleItem = function(value) { this._toggleItem = Boolean(value); }
-
-	this._isToggled = false;
-	this.toggle = function() {
-		return this._isToggled = !this._isToggled;
+	this.setLabel = function(value) {
+		var ret = this._label = value;
+		this.update();
+		return ret;
 	}
 
-	this._fire = function(evt) {
+	// fired from: setSelected, setEnabled, setLabel
+	this.update = function() {
+		if(this._enabled) {
+			dojo.xml.htmlUtil.removeClass(this.domNode, "disabled");
+			if(this._selected) {
+				dojo.xml.htmlUtil.addClass(this.domNode, "selected");
+			} else {
+				dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
+			}
+		} else {
+			dojo.xml.htmlUtil.addClass(this.domNode, "disabled");
+			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
+		}
+		this._updateIcon();
+	}
+
+	this._updateIcon = function() {
+		if(this._icon) {
+			if(this._enabled) {
+				if(this._cssHover) {
+					this._icon.hover();
+				} else if(this._selected) {
+					this._icon.select();
+				} else {
+					this._icon.enable();
+				}
+			} else {
+				this._icon.disable();
+			}
+		}
+	}
+
+	this._fireEvent = function(evt) {
 		if(typeof this[evt] == "function") {
 			var args = [this];
 			for(var i = 1; i < arguments.length; i++) {
@@ -282,43 +355,44 @@ dojo.webui.widgets.ToolbarItem = function() {
 	}
 
 	this._onmouseover = function(e) {
+		if(!this._enabled) { return };
 		dojo.xml.htmlUtil.addClass(this.domNode, "hover");
 	}
 
 	this._onmouseout = function(e) {
 		dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
-		if(!this._isToggled) {
+		if(!this._selected) {
 			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
 		}
 	}
 
 	this._onclick = function(e) {
-		if(this._toggleItem) {
+		if(this._enabled && !this._toggleItem) {
+			this._fireEvent("onClick");
 		}
 	}
 
 	this._onmousedown = function(e) {
+		if(!this._enabled) { return };
+		dojo.xml.htmlUtil.addClass(this.domNode, "down");
 		if(this._toggleItem) {
-			if(!this._isToggled) { this.select(); }
-			this.toggle();
-		} else {
-			this.select();
+			if(this.parent._preventDeselect && this._selected) {
+				return;
+			}
+			this.toggleSelected();
 		}
 	}
 
 	this._onmouseup = function(e) {
-		if(!this._toggleItem
-			|| this._toggleItem && !this._isToggled) {
-			this.deselect();
-		}
+		dojo.xml.htmlUtil.removeClass(this.domNode, "down");
 	}
 
 	this.fillInTemplate = function(args, frag) {
 		if(args.selected) { this.select(); }
-		if(args.enabled) { this.enable(); }
+		if(args.disabled) { this.disable(); }
 		if(args.label) { this.setLabel(args.label); }
 		if(args.icon) { this.setIcon(args.icon); }
-		if(args.toggleitem) { this.setToggleItem(true); }
+		if(args.toggleitem||args.toggleItem) { this.setToggleItem(true); }
 	}
 }
 dj_inherits(dojo.webui.widgets.ToolbarItem, dojo.webui.HtmlWidget);
@@ -377,19 +451,22 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	this.widgetType = "ToolbarButtonGroup";
 	this.isContainer = true;
 
-	this.templateString = '<span class="toolbarButtonGroup"></span>';
+	this.templateString = '<span class="toolbarButtonGroup" dojoAttachPoint="containerNode"></span>';
 
-	var oldFillInTemplate = this.fillInTemplate;
-	this.fillInTemplate = function(args, frag) {
-		oldFillInTemplate.call(this, args, frag);
-		this.containerNode = this.domNode;
-	}
+	// if a button has the same name, it will be selected
+	// if this is set to a number, the button at that index will be selected
+	this.defaultButton = "";
 
 	var oldAddChild = this.addChild;
 	this.addChild = function(item, pos, props) {
 		var widget = dojo.webui.widgets.ToolbarItem.make(item, null, dojo.lang.mixin(props||{}, {toggleItem:true}));
 		dojo.event.connect(widget, "onSelect", this, "onChildSelected");
 		var ret = oldAddChild.call(this, widget, null, pos, null);
+		if(widget._name == this.defaultButton
+			|| (typeof this.defaultButton == "number"
+			&& this.children.length-1 == this.defaultButton)) {
+			widget.select();
+		}
 		return ret;
 	}
 
@@ -425,20 +502,31 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 		}
 	}
 
-	this.value = "";
+	this._value = "";
+	this.getValue = function() { return this._value; }
+	this.setValue = this.select;
+
 	this.select = function(name) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.ToolbarItem) {
 				if(child._name == name) {
 					child.select();
-					this.value = name;
+					this._value = name;
 				} else {
 					child.deselect(true);
 				}
 			}
 		}
-		this._fire("onSelect", this.value);
+		this._fireEvent("onSelect", this._value);
+	}
+
+	this._preventDeselect = false; // if true, once you select one, you can't have none selected
+	this.canDeselect = function(value) {
+		if(arguments.length > 0) {
+			this._preventDeselect = !value;
+		}
+		return !this._preventDeselect;
 	}
 }
 dj_inherits(dojo.webui.widgets.HTMLToolbarButtonGroup, dojo.webui.widgets.ToolbarItem);
@@ -528,6 +616,7 @@ dojo.webui.widgets.HTMLToolbarSeparator = function() {
 	var oldFillInTemplate = this.fillInTemplate;
 	this.fillInTemplate = function(args, frag, skip) {
 		oldFillInTemplate.call(this, args, frag);
+		this._name = this.widgetId;
 		if(!skip) {
 			if(!this._icon) {
 				this.setIcon(this.defaultIconPath);
@@ -619,7 +708,7 @@ dojo.webui.Icon = function(enabled, disabled, hover, selected) {
 	this.enable = function() { this.setState("enabled"); }
 	this.disable = function() { this.setState("disabled"); }
 	this.hover = function() { this.setState("hover"); }
-	this.selected = function() { this.setState("selected"); }
+	this.select = function() { this.setState("selected"); }
 
 	this.getSize = function() {
 		return {
