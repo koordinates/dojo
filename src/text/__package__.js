@@ -1,4 +1,4 @@
 dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.text.Text"]
+	common: ["dojo.text.String"]
 });
 dojo.hostenv.moduleLoaded("dojo.text.*");
