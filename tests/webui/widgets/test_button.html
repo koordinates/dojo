@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<!--[if lt IE 5.5]>
 		<script language="JavaScript" type="text/javascript" src="http://burstproject.org/burst/fix_ecma.js"></script>
@@ -51,10 +52,21 @@
 	</head>
 	<body>
 		Check your javascript log; the scripts were all loaded in the head.
+		<button class="dojo-button" label="built using XHTML class attribute">
+			button from class name
+		</button>
 
-		<button id="testDojoButton" dojoType="button" label="this is a test button!" 
+
+		<button id="testDojoButton" class="dojo-button" label="this is a test button!" 
 			onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
 			you shouldn't be seeing this
 		</button>
+
+		<dojo:button label="from namespace prefix"></dojo:button>
+
+		<button dojo:type="button" label="namespace'd attribute used">
+			button from namespace'd attribute
+		</button>
+
 	</body>
 </html>
