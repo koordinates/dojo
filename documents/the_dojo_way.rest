@@ -2,7 +2,7 @@ The Dojo Way
 ============
 
 :Author: Alex Russell
-:Version: 0.1
+:Version: 0.2
 :Copyright: Dojo Foundation, 2005
 :Date: 2005/08/11
 
@@ -13,25 +13,25 @@ Understanding Your Own Footprint
 
 Every useful system carries the imprint of its designers. From bridges to
 spoons, the expression of a builder's skill, philosophies, and production
-constraints are laid bare in the final product. Software is no different,
-except perhaps in that it changes over time. Software changes in response to
-users needs, and in that change, a continual re-impriting of a designer's
-skill and sense of taste takes place. 
+constraints are exposed in the final product. Software is no different, except
+in its propensity to change. Software mutates in response to users needs, and
+in that change, a continual re-impriting of a designer's skill and sense of
+taste takes place. 
 
 This has the potential to cause continuity problems for others, be they end
 users or other developers. Reducing these confusing aspects (cognitive load)
 allows software consumers of every type to feel better about a block of code.
 With every interaction, their pre-conceived notions of how the thing will
 behave serve them instead of forming an obstacle for them to overcome. Their
-instincts are turned into a valuable tool by elegantly (and consistently)
+instincts are turned into a valuable tool by elegantly and consistently
 designed software.
 
 Dojo, as a project, should meet expectations in this way. This doesn't
 necessarily mean that you have to agree with every design decision that's been
 made in the project (dissent is healthy), nor that the guiding principles put
 down here are immortal or otherwise written in stone. They should capture the
-way design choices have been made to date with Dojo and can serve a guides for
-how to think about future decisions that are compatible.
+way design choices have been made to date. They also serve as a guide for
+making future design decisions.
 
 Dojo Guiding Principles
 -----------------------
