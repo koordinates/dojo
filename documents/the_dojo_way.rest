@@ -28,10 +28,9 @@ designed software.
 
 Dojo, as a project, should meet expectations in this way. This doesn't mean
 that you have to agree with every design decision that's been made in the
-project (dissent is healthy), nor that the guiding principles put down here are
-immortal or otherwise written in stone. They should capture the way design
-choices have been made to date. They also serve as a guide for making future
-design decisions.
+project (dissent is healthy) or that the guiding principles outlined here are
+written in stone. They should, however,  capture the way design choices have
+been made to date and serve as a guide for making future decisions.
 
 Dojo Guiding Principles
 -----------------------
