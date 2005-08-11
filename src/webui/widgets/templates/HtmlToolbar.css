@@ -24,7 +24,8 @@ body {
 
 .toolbarItem.selected, .toolbarItem.down {
 	margin : 2px 1px 0 1px;
-	border-style : inset;
+	border-color : #bbf;
+	background-color : #fafaff;
 }
 
 .toolbarButton.hover {
