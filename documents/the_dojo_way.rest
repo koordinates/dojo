@@ -1,0 +1,59 @@
+The Dojo Way
+============
+
+:Author: Alex Russell
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/08/11
+
+.. contents::
+
+Understanding Your Own Footprint
+--------------------------------
+
+Every useful system carries the imprint of it's designers. From bridges to
+spoons, the expression of a builders skill, philosophies, and production
+constraints are laid bare in the final product. Software is no different,
+except perhaps in that it changes over time. Software changes in response to
+user's needs, and in that change, a continual re-impriting of a designer's
+skill and sense of taste takes place. 
+
+This has the potential to cause continuity problems for others, be they end
+users or other developers. Reducing these confusing aspects (cognitive load)
+allows software consumers of every type to feel better about a block of code.
+With every interaction, their pre-conceived notions of how the thing will
+behave serve them instead of forming an obstacle for them to overcome. Their
+instincts are turned into a valuable tool by elegantly (and consistently)
+designed software.
+
+Dojo, as a project, should strive to provide to set and meet expectations in
+this way.  This doesn't necessarily mean that you have to agree with every
+design decision that's been made in the project (dissent is healthy), nor that
+the guiding principles put down here are immortal or othewise written in stone.
+But they do, I hope, accurately capture the design choices that have been made
+to date with Dojo and can serve a guides for how to think about making design
+decisions that are compatible with the rest of the system in the future.
+
+Dojo Guiding Principles
+-----------------------
+
+Reduce barriers to adoption. 
+    Simply put, do not give users reasons not to choose your code. This affects
+    everything from design to licensing to packaging.
+
+Simple first, fast later
+    Make it simple to use first, make it fast when it's approprite. Simple here
+    means simple for users, not for us. We should work as hard as necessaray to
+    make things simple for end users. This principle goes to reducing barriers
+    to adoption. There should be tweakable buttons and nobs for optimization,
+    but in the main, things should be as easy as possible for the common case
+    but transparently "upgradeable" to a faster code path if the end user is
+    willing to learn about the performance dials and knobs.
+
+Bend to the constraints of your environment
+    Do not bludgeon a problem to death with code. If the environment can do
+    most of something, let it. Fill in as necessaray, but do not re-invent.
+    Make the path smooth for users, but do not introduce your own idoms where
+    they aren't required.
+
+.. vim:ts=4:et:tw=0:shiftwidth=4:
