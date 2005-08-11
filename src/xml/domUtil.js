@@ -1,10 +1,9 @@
 dojo.provide("dojo.xml.domUtil");
 dojo.require("dojo.graphics.color");
+dojo.require("dojo.text.String");
 
 // for loading script:
 dojo.xml.domUtil = new function(){
-	var _this = this;
-
 	this.nodeTypes = {
 		ELEMENT_NODE                  : 1,
 		ATTRIBUTE_NODE                : 2,
@@ -109,16 +108,17 @@ dojo.xml.domUtil = new function(){
 		return node;
 	}
 
-	this.getStyle = function(node, cssSelector) {
-		var value = undefined, camelCased = _this.toCamelCase(cssSelector);
-		value = node.style[camelCased]; // dom-ish
+	this.getStyle = function(element, cssSelector) {
+		var value = undefined, camelCased = dojo.xml.domUtil.toCamelCase(cssSelector);
+		value = element.style[camelCased]; // dom-ish
 		if(!value) {
 			if(document.defaultView) { // gecko
-				value = document.defaultView.getComputedStyle(node, "").getPropertyValue(cssSelector);
-			} else if(node.currentStyle) { // ie
-				value = node.currentStyle[camelCased];
-			} else if(node.style.getPropertyValue) { // dom spec
-				value = node.style.getPropertyValue(cssSelector);
+				value = document.defaultView.getComputedStyle(element, "")
+					.getPropertyValue(cssSelector);
+			} else if(element.currentStyle) { // ie
+				value = element.currentStyle[camelCased];
+			} else if(element.style.getPropertyValue) { // dom spec
+				value = element.style.getPropertyValue(cssSelector);
 			}
 		}
 		return value;
@@ -295,7 +295,9 @@ dojo.xml.domUtil = new function(){
 	
 	/**
 	 * implementation of the DOM Level 3 attribute.
-	 * if one argument is given acts as a getter, and if two acts as a setter
+	 * 
+	 * @param node The node to scan for text
+	 * @param text Optional, set the text to this value.
 	 */
 	this.textContent = function (node, text) {
 		if (text) {
@@ -310,12 +312,12 @@ dojo.xml.domUtil = new function(){
 					case 1: // ELEMENT_NODE
 					case 5: // ENTITY_REFERENCE_NODE
 						_result += dojo.xml.domUtil.textContent(node.childNodes[i]);
-					break;
+						break;
 					case 3: // TEXT_NODE
 					case 2: // ATTRIBUTE_NODE
 					case 4: // CDATA_SECTION_NODE
 						_result += node.childNodes[i].nodeValue;
-					break;
+						break;
 					default:
 						break;
 				}
@@ -323,4 +325,65 @@ dojo.xml.domUtil = new function(){
 			return _result;
 		}
 	}
+	
+	/**
+	 * Attempts to return the text as it would be rendered, with the line breaks
+	 * sorted out nicely. Unfinished.
+	 */
+	this.renderedTextContent = function (node) {
+		var result = "";
+		if (node == null) { return result; }
+		for (var i = 0; i < node.childNodes.length; i++) {
+			switch (node.childNodes[i].nodeType) {
+				case 1: // ELEMENT_NODE
+				case 5: // ENTITY_REFERENCE_NODE
+					switch (dojo.xml.domUtil.getStyle(node, "text-transform")) {
+						case "block": case "list-item": case "run-in":
+						case "table": case "table-row-group": case "table-header-group":
+						case "table-footer-group": case "table-row": case "table-column-group":
+						case "table-column": case "table-cell": case "table-caption":
+							// TODO: this shouldn't insert double spaces on aligning blocks
+							result += "\n";
+							result += dojo.xml.domUtil.renderedTextContent(node.childNodes[i]);
+							result += "\n";
+							break;
+						
+						case "none": break;
+						
+						default:
+							result += dojo.xml.domUtil.renderedTextContent(node.childNodes[i]);
+							break;
+					}
+					break;
+				case 3: // TEXT_NODE
+				case 2: // ATTRIBUTE_NODE
+				case 4: // CDATA_SECTION_NODE
+					var text = node.childNodes[i].nodeValue
+					switch (dojo.xml.domUtil.getStyle(node, "text-transform")) {
+						case "capitalize": text = dojo.text.capitalize(text); break;
+						case "uppercase": text = text.toUpperCase(); break;
+						case "lowercase": text = text.toLowerCase(); break;
+						default: break; // leave as is
+					}
+					// TODO: implement
+					switch (dojo.xml.domUtil.getStyle(node, "text-transform")) {
+						case "nowrap": break;
+						case "pre-wrap": break;
+						case "pre-line": break;
+						case "pre": break; // leave as is
+						default:
+							// remove whitespace and collapse first space
+							text = text.replace(/\s+/, " ");
+							if (/\s$/.test(result)) { text.replace(/^\s/, ""); }
+							break;
+					}
+					result += text;
+					break;
+				default:
+					break;
+			}
+		}
+		return result;
+	}
 }
+
