@@ -43,6 +43,3 @@ dojo.hostenv.provide = dojo.hostenv.startPackage;
 dojo.provide = function(){
 	dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
-
-dj_debug("Using host environment: ", dojo.hostenv.name_);
-dj_debug("getBaseScriptUri()=", dojo.hostenv.getBaseScriptUri());
