@@ -24,6 +24,16 @@ dojo.webui.widgetManager = new function(){
 		this.widgetIds[widget.widgetId] = widget;
 	}
 
+	this.destroyAll = function(){
+		for(var x=this.widgets.length-1; x>=0; x--){
+			try{
+				// this.widgets[x].destroyChildren();
+				this.widgets[x].destroy();
+				delete this.widgets[x];
+			}catch(e){ }
+		}
+	}
+
 	// FIXME: we should never allow removal of the root widget until all others
 	// are removed!
 	this.remove = function(widgetIndex){
