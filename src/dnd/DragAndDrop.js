@@ -1,6 +1,9 @@
+dojo.require("dojo.lang.*");
 dojo.provide("dojo.dnd.DragSource");
 dojo.provide("dojo.dnd.DropTarget");
 dojo.provide("dojo.dnd.DragObject");
+dojo.provide("dojo.dnd.DragManager");
+dojo.provide("dojo.dnd.DragAndDrop");
 
 dojo.dnd.DragSource = function(){
 }
@@ -11,10 +14,10 @@ dojo.lang.extend(dojo.dnd.DragSource, {
 	
 	onDragStart: function(){
 	}
-	
 });
 
 dojo.dnd.DragObject = function(){
+	dojo.dnd.dragManager.registerDragObject(this);
 }
 
 dojo.lang.extend(dojo.dnd.DragObject, {
@@ -38,15 +41,16 @@ dojo.lang.extend(dojo.dnd.DragObject, {
 	},
 
 	// normal aliases
-	onDragLeave: onDragOut,
-	onDragEnter: onDragOver,
+	onDragLeave: this.onDragOut,
+	onDragEnter: this.onDragOver,
 
 	// non-camel aliases
-	ondragout: onDragOut,
-	ondragover: onDragOver
+	ondragout: this.onDragOut,
+	ondragover: this.onDragOver
 });
 
 dojo.dnd.DropTarget = function(){
+	dojo.dnd.dragManager.registerDropTarget(this);
 }
 
 dojo.lang.extend(dojo.dnd.DropTarget, {
@@ -63,6 +67,9 @@ dojo.lang.extend(dojo.dnd.DropTarget, {
 	}
 });
 
+// NOTE: this interface is defined here for the convenience of the DragManager
+// implementor. It is expected that in most cases it will be satisfied by
+// extending a native event (DOM event in HTML and SVG).
 dojo.dnd.DragEvent = function(){
 	this.dragSource = null;
 	this.dragObject = null;
@@ -74,3 +81,33 @@ dojo.dnd.DragEvent = function(){
 	//		"dragStart", "dragEnter", "dragLeave"]
 	//
 }
+
+dojo.dnd.DragManager = function(){
+	/* 
+	 *	The DragManager handles listening for low-level events and dispatching
+	 *	them to higher-level primitives like drag sources and drop targets. In
+	 *	order to do this, it must keep a list of the items.
+	 */
+}
+
+dojo.lang.extend(dojo.dnd.DragManager, {
+	sourceItems: [],
+	dragSources: [],
+	registerDragSource: function(){},
+	dropTargets: [],
+	registerDropTarget: function(){},
+	lastDragTarget: null,
+	currentDragTarget: null,
+	onKeyDown: function(){},
+	onMouseOut: function(){},
+	onMouseMove: function(){},
+	onMouseUp: function(){}
+});
+
+// NOTE: despite the existance of the DragManager class, there will be a
+// singleton drag manager provided by the renderer-specific D&D support code.
+// It is therefore sane for us to assign instance variables to the DragManager
+// prototype
+
+// The renderer-specific file will define the following object:
+dojo.dnd.dragManager = null;

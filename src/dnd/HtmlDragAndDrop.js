@@ -1,19 +1,23 @@
+dojo.provide("dojo.dnd.HtmlDragAndDrop");
 dojo.provide("dojo.dnd.HtmlDragSource");
 dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
+dojo.require("dojo.dnd.HtmlDragManager");
 
-dojo.dnd.HtmlDragSource = function () {}
+dojo.dnd.HtmlDragSource = function(){
+}
 
-dojo.dnd.HtmlDragSource.prototype = {
+dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	/*
 	 * Default is for the DragSource == DragObject so we don't
 	 * handle any magic here
 	 */	
+});
+
+dojo.dnd.HtmlDragObject = function (){
 }
 
-dojo.dnd.HtmlDragObject = function () {}
-
-dojo.dnd.HtmlDragObject.prototype = {  
+dojo.lang.extend(dojo.dnd.HtmlDragObject, {  
 	/**
 	 * Creates a clone of this node and replaces this node with the clone in the
 	 * DOM tree. This is done to prevent the browser from selecting the textual
@@ -54,15 +58,14 @@ dojo.dnd.HtmlDragObject.prototype = {
 	 * failure we slide back over to where we came from and end the operation
 	 * with a little grace.
 	 */
-	onDragEnd: function (e) {
-		swicth (e.dragStatus) {
+	onDragEnd: function(e){
+		switch(e.dragStatus){
 
 			case "dropSuccess":
 				this.dragClone.parentNode.removeChild(this.dragClone);
 				break;
 		
 			case "dropFailure": // slide back to the start
-		
 				with (dojo.xml.htmlUtil) {
 					var startCoords = [getAbsoluteX(this), getAbsoluteY(this)];
 				}
@@ -89,20 +92,21 @@ dojo.dnd.HtmlDragObject.prototype = {
 				break;
 		}
 	}
+});
+
+dojo.dnd.HtmlDropTarget = function (){
 }
 
-dojo.dnd.HtmlDropTarget = function () {}
-
 dojo.dnd.HtmlDropTarget.prototype = {
-	onDragOver: function (e) {
+	onDragOver: function (e){
 		// TODO: draw an outline
 	},
 	
-	onDragMove: function (e) {
+	onDragMove: function (e){
 		// TODO: indicate position at which the DragObject will get inserted
 	},
 
-	onDragOut: function (e) {
+	onDragOut: function (e){
 		// TODO: remove inidication from previous method
 	},
 	
@@ -112,24 +116,23 @@ dojo.dnd.HtmlDropTarget.prototype = {
 	 *
 	 * @return true if the DragObject was inserted, false otherwise
 	 */
-	onDrop: function (e) {
+	onDrop: function (e){
 		var child = e.target;
-		while (child.parentNode && child.parentNode != this) {
+		while(child.parentNode && child.parentNode != this){
 			child = child.parentNode;
 		}
 		
-		if (child) {
-			with (dojo.xml) {
-				if (htmlUtil.gravity(child, e) & htmlUtil.gravity.NORTH) {
+		if(child){
+			with(dojo.xml){
+				if(htmlUtil.gravity(child, e) & htmlUtil.gravity.NORTH){
 					domUtil.before(child, e.dragObject);
-				} else {
+				}else{
 					domUtil.after(child, e.dragObject);			
 				}
 			}
 			return true;
-		} else {
+		}else{
 			return false;
 		}
 	}
 }
-
