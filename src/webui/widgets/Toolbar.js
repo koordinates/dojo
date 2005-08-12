@@ -3,10 +3,10 @@ dojo.provide("dojo.webui.widgets.HTMLToolbarContainer");
 dojo.provide("dojo.webui.widgets.ToolbarItem");
 dojo.provide("dojo.webui.widgets.HTMLToolbarButtonGroup");
 dojo.provide("dojo.webui.widgets.HTMLToolbarButton");
-dojo.provide("dojo.webui.widgets.HTMLToolbarToggleButton");
+dojo.provide("dojo.webui.widgets.HTMLToolbarDialog");
+dojo.provide("dojo.webui.widgets.HTMLToolbarMenu");
 dojo.provide("dojo.webui.widgets.HTMLToolbarSeparator");
 dojo.provide("dojo.webui.widgets.HTMLToolbarSpace");
-dojo.provide("dojo.webui.widgets.HTMLToolbarFlexibleSpace");
 dojo.provide("dojo.webui.Icon");
 
 dojo.require("dojo.webui.*");
@@ -48,9 +48,6 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
 				child.disable.apply(child, arguments);
-				//for(var j = 0; j < arguments.length; j++) {
-					//child.disable(arguments[j]);
-				//}
 			}
 		}
 	}
@@ -308,6 +305,12 @@ dojo.webui.widgets.ToolbarItem = function() {
 	this.getLabel = function() { return this._label; }
 	this.setLabel = function(value) {
 		var ret = this._label = value;
+		if(!this.labelNode) {
+			this.labelNode = document.createElement("span");
+			this.domNode.appendChild(this.labelNode);
+		}
+		this.labelNode.innerHTML = "";
+		this.labelNode.appendChild(document.createTextNode(this._label));
 		this.update();
 		return ret;
 	}
@@ -322,6 +325,7 @@ dojo.webui.widgets.ToolbarItem = function() {
 				dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
 			}
 		} else {
+			this._selected = false;
 			dojo.xml.htmlUtil.addClass(this.domNode, "disabled");
 			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
 		}
@@ -361,6 +365,7 @@ dojo.webui.widgets.ToolbarItem = function() {
 
 	this._onmouseout = function(e) {
 		dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
+		dojo.xml.htmlUtil.removeClass(this.domNode, "down");
 		if(!this._selected) {
 			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
 		}
@@ -373,10 +378,11 @@ dojo.webui.widgets.ToolbarItem = function() {
 	}
 
 	this._onmousedown = function(e) {
+		e.preventDefault();
 		if(!this._enabled) { return };
 		dojo.xml.htmlUtil.addClass(this.domNode, "down");
 		if(this._toggleItem) {
-			if(this.parent._preventDeselect && this._selected) {
+			if(this.parent.preventDeselect && this._selected) {
 				return;
 			}
 			this.toggleSelected();
@@ -388,6 +394,7 @@ dojo.webui.widgets.ToolbarItem = function() {
 	}
 
 	this.fillInTemplate = function(args, frag) {
+		if(args.name) { this._name = args.name; }
 		if(args.selected) { this.select(); }
 		if(args.disabled) { this.disable(); }
 		if(args.label) { this.setLabel(args.label); }
@@ -521,13 +528,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 		this._fireEvent("onSelect", this._value);
 	}
 
-	this._preventDeselect = false; // if true, once you select one, you can't have none selected
-	this.canDeselect = function(value) {
-		if(arguments.length > 0) {
-			this._preventDeselect = !value;
-		}
-		return !this._preventDeselect;
-	}
+	this.preventDeselect = false; // if true, once you select one, you can't have none selected
 }
 dj_inherits(dojo.webui.widgets.HTMLToolbarButtonGroup, dojo.webui.widgets.ToolbarItem);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarButtonGroup");
@@ -546,8 +547,9 @@ dojo.webui.widgets.HTMLToolbarButton = function() {
 		if(this._icon) {
 			var icon = this._icon.getNode();
 			this.domNode.appendChild( this._icon.getNode() );
-		} else {
-			this.domNode.innerHTML = this._label;
+		}
+		if(this._label) {
+			this.setLabel(this._label);
 		}
 
 		if(!this._name) {
@@ -565,41 +567,28 @@ dojo.webui.widgets.HTMLToolbarButton = function() {
 dj_inherits(dojo.webui.widgets.HTMLToolbarButton, dojo.webui.widgets.ToolbarItem);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarButton");
 
-/* ToolbarToggleButton
- ***********************/
-dojo.webui.widgets.HTMLToolbarToggleButton = function() {
-	dojo.webui.widgets.HTMLToolbarButton.call(this);
-
-	this.widgetType = "ToolbarToggleButton";
-
-	var oldFillInTemplate = this.fillInTemplate;
-	this.fillInTemplate = function(args, frag) {
-		oldFillInTemplate.call(this, args, frag);
-	}
-}
-dj_inherits(dojo.webui.widgets.HTMLToolbarToggleButton, dojo.webui.widgets.HTMLToolbarButton);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarToggleButton");
-
 /* ToolbarDialog
  **********************/
-dojo.webui.widgets.ToolbarDialog = function() {
+dojo.webui.widgets.HTMLToolbarDialog = function() {
 	dojo.webui.widgets.ToolbarItem.call(this);
 
 	this.widgetType = "ToolbarDialog";
 }
-dj_inherits(dojo.webui.widgets.ToolbarDialog, dojo.webui.widgets.ToolbarItem);
+dj_inherits(dojo.webui.widgets.HTMLToolbarDialog, dojo.webui.widgets.ToolbarItem);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarDialog");
 
 /* ToolbarMenu
  **********************/
-dojo.webui.widgets.ToolbarMenu = function() {
-	dojo.webui.widgets.ToolbarMenu.call(this);
+dojo.webui.widgets.HTMLToolbarMenu = function() {
+	dojo.webui.widgets.HTMLToolbarDialog.call(this);
 
 	this.widgetType = "ToolbarMenu";
 }
-dj_inherits(dojo.webui.widgets.ToolbarMenu, dojo.webui.widgets.ToolbarDialog);
+dj_inherits(dojo.webui.widgets.HTMLToolbarMenu, dojo.webui.widgets.HTMLToolbarDialog);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarMenu");
 
+/* ToolbarMenuItem
+ ******************/
 dojo.webui.widgets.ToolbarMenuItem = function() {
 }
 
@@ -645,22 +634,6 @@ dojo.webui.widgets.HTMLToolbarSpace = function() {
 }
 dj_inherits(dojo.webui.widgets.HTMLToolbarSpace, dojo.webui.widgets.HTMLToolbarSeparator);
 dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarSpace");
-
-/* ToolbarFlexibleSpace
- **********************/
-dojo.webui.widgets.HTMLToolbarFlexibleSpace = function() {
-	dojo.webui.widgets.HTMLToolbarSpace.call(this);
-
-	this.widgetType = "ToolbarFlexibleSpace";
-
-	var oldFillInTemplate = this.fillInTemplate;
-	this.fillInTemplate = function(args, frag) {
-		oldFillInTemplate.call(this, args, frag);
-		dojo.xml.htmlUtil.addClass(this.domNode, "toolbarFlexibleSpace");
-	}
-}
-dj_inherits(dojo.webui.widgets.HTMLToolbarFlexibleSpace, dojo.webui.widgets.HTMLToolbarSeparator);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarFlexibleSpace");
 
 /* Icon
  *********/

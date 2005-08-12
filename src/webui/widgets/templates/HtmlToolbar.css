@@ -1,11 +1,8 @@
-body {
-	font-family : Tahoma;
-}
-
 .toolbarContainer {
 	border-bottom : 0;
 	background-color : #eef;
 	color : ButtonText;
+	font : Menu;
 }
 
 .toolbar {
@@ -26,6 +23,11 @@ body {
 	margin : 2px 1px 0 1px;
 	border-color : #bbf;
 	background-color : #fafaff;
+}
+
+.toolbarButton span {
+	line-height : 19px;
+	vertical-align : top;
 }
 
 .toolbarButton.hover {
