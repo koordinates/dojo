@@ -74,6 +74,10 @@ dojo_ie_clobber = new function(){
 if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie_clobber_minimal_))){
 	window.onunload = function(){
 		dojo_ie_clobber.clobber();
+		if((dojo["webui"])&&(dojo.webui["widgetManager"])){
+			dojo.webui.widgetManager.destroyAll();
+		}
+		CollectGarbage();
 	}
 }
 
@@ -121,25 +125,23 @@ dojo.event.browser = new function(){
 			return ret;
 		}
 
-		if(node.attachEvent){
-			// NW_attachEvent_list.push([node, 'on' + evtName, fp]);
-			node.attachEvent("on"+evtName, newfp);
-			if(capture) { dj_debug("Warning: capture not supported (dojo.event.browser.addListener)"); }
-		}else if(node.addEventListener){ // &&(!__is__.konq)){ // Konq 3.1 tries to implement this, but it seems to be broken
+		var onEvtName = "on"+evtName;
+		if(node.addEventListener){ 
 			node.addEventListener(evtName, newfp, capture);
 			return true;
 		}else{
-			// NW_expando_list.push([node, 'on' + evtName]);
-			// there's probably "better" anti-clobber algs, but this should only ever have
-			// to happen once, so it should suffice
-			if( typeof node["on"+evtName] == "function" ) {
-				var oldEvt = node["on"+evtName];
-				node["on"+evtName] = function(e) {
+			if(typeof node[onEvtName] == "function" ){
+				var oldEvt = node[onEvtName];
+				node[onEvtName] = function(e){
 					oldEvt(e);
 					newfp(e);
 				}
-			} else {
-				node["on"+evtName]=newfp;
+			}else{
+				node[onEvtName]=newfp;
+			}
+			if(dojo.render.html.ie){
+				this.addClobberAttr(onEvtName);
+				this.addClobberNode(node);
 			}
 			return true;
 		}
