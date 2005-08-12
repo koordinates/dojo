@@ -3,7 +3,7 @@ dojo.require("dojo.dnd.*");
 
 dojo.dnd.Sortable = function () {}
 
-dojo.dnd.Sortable.prototyope = {
+dojo.lang.extend(dojo.dnd.Sortable, {
 
 	ondragstart: function (e) {
 		var dragObject = e.target;
@@ -15,4 +15,4 @@ dojo.dnd.Sortable.prototyope = {
 		return dragObject;
 	}
 
-}
+});

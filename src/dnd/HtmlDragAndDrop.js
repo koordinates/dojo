@@ -4,7 +4,8 @@ dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 
-dojo.dnd.HtmlDragSource = function(){
+dojo.dnd.HtmlDragSource = function(node){
+	this.domNode = node;
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
@@ -24,7 +25,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	 * content of the node. This node is then set to opaque and drags around as
 	 * the intermediate representation.
 	 */
-	onDragStart: function (e) {
+	onDragStart: function (e){
 		this.dragStartPosition = {top: dojo.xml.htmlUtil.getAbsoluteY(this),
 			left: dojo.xml.htmlUtil.getAbsoluteX(this)};
 	
@@ -43,7 +44,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		dojo.xml.htmlUtil.setOpacity(this, 0.5);
 		document.body.appendChild(this);
 		
-		if (!e.dragObject) { return this; }
+		if(!e.dragObject){ return this; }
 	},
 	
 	/** Moves the node to follow the mouse */

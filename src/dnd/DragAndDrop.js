@@ -91,7 +91,8 @@ dojo.dnd.DragManager = function(){
 }
 
 dojo.lang.extend(dojo.dnd.DragManager, {
-	sourceItems: [],
+	selectedSources: [],
+	dragObjects: [],
 	dragSources: [],
 	registerDragSource: function(){},
 	dropTargets: [],
