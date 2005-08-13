@@ -1,0 +1,5 @@
+<!--#include file="../rest_template/header.html" -->
+<h1>Downloads</h1>
+<p>For now, you can download Dojo from the <a href="/viewcvs/viewcvs.py/">SVN repository</a> or get the latest nightly in the <a href="http://archive.dojotoolkit.org">archive</a>.</p>
+<!--#include file="../rest_template/sidebar.html" -->
+<!--#include file="../rest_template/footer.html" -->
