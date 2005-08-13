@@ -39,6 +39,7 @@ digraph dhtml_universe
 		danp -> DotNetSol;
 		danp -> _13p;
 		psowden -> Dojo;
+		psowden -> Jot;
 		dylan -> Dojo;
 		ttrenka -> Dojo;
 		ttrenka -> FM;
@@ -75,6 +76,7 @@ digraph dhtml_universe
 		mbazon -> HTMLArea;
 		schontz -> NW;
 		schontz -> INFA;
+		schontz -> Jot;
 		schontz -> _13p;
 		schontz -> FM;
 		michaelvo -> _13p;
@@ -92,12 +94,16 @@ digraph dhtml_universe
 		caugusti -> qooxdoo;
 		ptracey -> jsxml;
 		sstephenson -> Prototype;
+		hfuecks -> Script_aculo_us;
+		hfuecks -> JPSpan;
 		syen -> TrimPath;
+		bobi -> MochiKit
 
 		// project and company relationships
 		INFA -> NW;
 		INFA -> ISC [ label="Informatica licenses \nIsomorphic" ];
 		Jot -> Dojo [ label="Jot sponsors \nDojo" ];
+		Dojo -> MochiKit [ style=dotted, label="Mochi is Dojo-compatible" ];
 		Jot -> HTMLArea [ label="Jot sponsors \nHTMLArea" ];
 		Tibet -> ISC [ style=dotted ];
 		// FIXME: need to mine these links for info:
@@ -112,6 +118,8 @@ digraph dhtml_universe
 		ModPubSub -> RePubSub;
 		GenInt -> TIBCO [ label="bought" ];
 		RoR -> Prototype [ label="uses" ];
+		Prototype -> Script_aculo_us [ label="Script.aculo.us\nrequires Prototype" ];
+		Prototype -> RICO [ label="RICO requires\nPrototype" ];
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
@@ -156,7 +164,9 @@ digraph dhtml_universe
 		caugusti	[ label="Claus Augusti" ];
 		ptracey		[ label="Peter Tracey" ];
 		sstephenson [ label="Sam Stephenson" ];
-		syen		[ label="Steve Yen"];
+		hfuecks		[ label="Harry Fuecks" ];
+		syen		[ label="Steve Yen" ];
+		bobi		[ label="Bob Ippolito" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -203,7 +213,11 @@ digraph dhtml_universe
 		SWAT		[ shape=diamond ];
 		Prototype	[ shape=diamond ];
 		RoR			[ label="Ruby On Rails",shape=diamond ];
+		Script_aculo_us [ label="Script.aculo.us",shape=diamond ];
+		RICO		[ label="OpenRICO",shape=diamond ];
 		TrimPath	[ shape=diamond ];
+		MochiKit	[ shape=diamond ];
+		JPSpan		[ shape=diamond ];
 	}
 
 // vim:ts=4:noet:ai
