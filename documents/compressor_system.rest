@@ -1,13 +1,3 @@
-Dojo's Compressor
-=================
-
-:Author: Alex Russell
-:Version: 0.1
-:Copyright: Dojo Foundation, 2005
-:Date: 2005/08/12
-
-.. contents::
-
 Overview
 --------
 
@@ -170,5 +160,21 @@ About The Author
 
 Alex Russell is the project lead for Dojo and  can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+Dojo's Compressor
+=================
+
+:Author: Alex Russell
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/08/12
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

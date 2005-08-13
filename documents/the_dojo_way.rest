@@ -1,12 +1,5 @@
-The Dojo Way
-============
-
-:Author: Alex Russell
-:Version: 0.2
-:Copyright: Dojo Foundation, 2005
-:Date: 2005/08/11
-
-.. contents::
+.. raw:: html
+   :file: website/rest_template/header.html
 
 Understanding Your Own Footprint
 --------------------------------
@@ -52,5 +45,32 @@ Bend to the constraints of your environment
     most of something, let it. Fill in as necessary, but do not re-invent.
     Make the path smooth for users, but do not introduce your own idioms where
     they aren't required.
+
+Improving From Here
+-------------------
+
+Dojo may not yet completely embody the principles outlined here, but it is
+their purpose to serve as a guide for the project when making determinations
+how things should change.
+
+If you think that Dojo has not yet met one or more of these goals in a
+particular way, please raise the issue on one of the project mailing lists or
+file a bug.
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+The Dojo Way
+============
+
+:Author: Alex Russell
+:Version: 0.2
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/08/11
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
