@@ -150,6 +150,12 @@ modules or major components:
 
     - Language Improvements
 
+        **Collections** : done
+            provides common data structures for thorny problems
+
+        **URI** : done
+            Methods for handling URI manipulation, calculation, and access.
+
         **Functional Programming Primitives**
             not yet started
 
@@ -157,9 +163,6 @@ modules or major components:
             not yet started
 
         **Crypto**
-            not yet started
-
-        **Collections**
             not yet started
 
         **Generic Algorithms**
@@ -177,9 +180,6 @@ modules or major components:
             implementations of various useful math functions necessaray for
             things like graphing and spreadsheet calculations.
 
-        **URI**
-            not started yet. Methods for handling URI manipulation,
-            calculation, and access.
 
     - Other
 
