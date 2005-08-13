@@ -1,5 +1,6 @@
 dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.event.*");
+dojo.require("dojo.alg.*");
 dojo.require("dojo.xml.htmlUtil");
 
 // NOTE: there will only ever be a single instance of HTMLDragManager, so it's
@@ -45,14 +46,19 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	 *			(clobber draggable selection)
 	 */
 	mouseDownTimer: null, // used for click-hold operations
+	dsCounter: 0,
+	dsPrefix: "dojoDragSource",
 
 	// method over-rides
 	registerDragSource: function(ds){
 		// FIXME: dragSource objects SHOULD have some sort of property that
 		// references their DOM node, we shouldn't just be passing nodes and
 		// expecting it to work.
-		this.dragSources.push(ds);
-		ds.domNode.setAttribute("dojoDragSource", "dojoDragSourceIdx_"+(this.dragSources.length-1));
+		var dp = this.dsPrefix;
+		var dpIdx = dp+"Idx_"+(this.dsCounter++);
+		ds.dragSourceId = dpIdx;
+		this.dragSources[dpIdx] = ds;
+		ds.domNode.setAttribute(dp, dpIdx);
 	},
 
 	registerDropTarget: function(dt){
@@ -62,14 +68,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	getDragSource: function(e){
 		var tn = e.target;
 		if(tn === document.body){ return; }
-		var ta = dojo.xml.htmlUtil.getAttribute(tn, "dojoDragSource");
+		var ta = dojo.xml.htmlUtil.getAttribute(tn, this.dsPrefix);
 		while((!ta)&&(tn)){
 			tn = tn.parentNode;
 			if((!tn)||(tn === document.body)){ return; }
-			ta = dojo.xml.htmlUtil.getAttribute(tn, "dojoDragSource");
+			ta = dojo.xml.htmlUtil.getAttribute(tn, this.dsPrefix);
 		}
-		dj_debug(ta);
-		return this.dragSources[parseInt(ta.split("_")[1])];
+		return this.dragSources[ta];
 	},
 
 	onKeyDown: function(e){
@@ -78,18 +83,44 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	onMouseDown: function(e){
 		// find a selection object, if one is a parent of the source node
 		var ds = this.getDragSource(e);
-		this.selectedSources.push(ds);
+		if(!ds){ return; }
+		if(!dojo.alg.inArray(this.selectedSources, ds)){
+			this.selectedSources.push(ds);
+		}
+		e.preventDefault();
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
 
 	onMouseUp: function(e){
 		if((!e.shiftKey)&&(!e.ctrlKey)){
+			dojo.alg.forEach(this.dragObjects, function(tempDragObj){
+				if(!tempDragObj){ return; }
+				tempDragObj.onDragEnd({
+					dragStatus: "dropFailure"
+				});
+			});
 			this.selectedSources = [];
+			this.dragObjects = [];
 		}
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
 	},
 
 	onMouseMove: function(e){
+		var _this = this;
+		if((this.selectedSources.length)&&(!this.dragObjects.length)){
+			dojo.alg.forEach(this.selectedSources, function(tempSource){
+				if(!tempSource){ return; }
+				var tdo = tempSource.getDragObject();
+				if(tdo){
+					_this.dragObjects.push(tdo);
+					tdo.onDragStart(e);
+				}
+			});
+		}
+		dojo.alg.forEach(this.dragObjects, function(tempDragObj){
+			if(!tempDragObj){ return; }
+			tempDragObj.onDragMove(e);
+		});
 	},
 
 	onMouseOver: function(e){

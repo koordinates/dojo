@@ -6,9 +6,13 @@ dojo.provide("dojo.dnd.DragManager");
 dojo.provide("dojo.dnd.DragAndDrop");
 
 dojo.dnd.DragSource = function(){
+	dojo.dnd.dragManager.registerDragSource(this);
 }
 
 dojo.lang.extend(dojo.dnd.DragSource, {
+	getDragObject: function(){
+	},
+
 	onDragEnd: function(){
 	},
 	
