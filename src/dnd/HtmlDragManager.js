@@ -110,10 +110,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		if((this.selectedSources.length)&&(!this.dragObjects.length)){
 			dojo.alg.forEach(this.selectedSources, function(tempSource){
 				if(!tempSource){ return; }
-				var tdo = tempSource.getDragObject();
+				var tdo = tempSource.onDragStart(e);
 				if(tdo){
-					_this.dragObjects.push(tdo);
 					tdo.onDragStart(e);
+					_this.dragObjects.push(tdo);
 				}
 			});
 		}

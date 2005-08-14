@@ -12,7 +12,7 @@ dojo.dnd.HtmlDragSource = function(node){
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
-	getDragObject: function(){
+	onDragStart: function(){
 		this.dragObject = new dojo.dnd.HtmlDragObject(this.domNode);
 		return this.dragObject;
 	}
@@ -54,7 +54,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	/** Moves the node to follow the mouse */
 	onDragMove: function (e) {
 		this.domNode.style.top = this.dragOffset.top + e.clientY + "px";
-		this.domNode.style.left = this.dragOffset.left + e.clientY + "px";
+		this.domNode.style.left = this.dragOffset.left + e.clientX + "px";
 	},
 
 	/**
@@ -89,7 +89,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
-					setTimeout(function () {
+					setTimeout(function (){
 						dojo.xml.htmlUtil.setOpacity(dragObject.domNode, 1.0);
 						dragObject.dragClone.parentNode.replaceChild(
 							dragObject.domNode, dragObject.dragClone);
