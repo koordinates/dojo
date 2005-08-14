@@ -219,6 +219,10 @@ print "look ma! Jython!"
 	<!-- end -fix-config task -->
 
 	<!-- website task -->
+	<!-- 
+		FIXME: 	need to build docs here and copy the HTML files generated from
+				reST to website/docs/
+	-->
 	<target name="website"
 		depends="-fix-config"
 		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
@@ -226,6 +230,13 @@ print "look ma! Jython!"
 			<fileset dir="${website_dir}">
 				<exclude name="**/.svn*" />
 				<include name="**/*" />
+			</fileset>
+		</copy>
+		<antcall target="docs" />
+		<copy todir="${release_website_dir}/docs/" overwrite="true">
+			<fileset dir="${release_docs_dir}">
+				<exclude name="**/.svn*" />
+				<include name="*.html" />
 			</fileset>
 		</copy>
 		<chgrp group="www" type="both">

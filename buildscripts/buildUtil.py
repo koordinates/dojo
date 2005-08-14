@@ -56,7 +56,7 @@ def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
 		x = docDir+os.sep+name
 		if x.find(os.sep+".svn") == -1:
 			# print x
-			cmdStr = "rst2html.py --embed-stylesheet --stylesheet-path=%s %s %s" % \
+			cmdStr = "rst2html.py --no-doc-info --no-doc-title --embed-stylesheet --stylesheet-path=%s %s %s" % \
 				(styleSheetFile, x, docOutDir+os.sep+(name[0:-5])+".html")
 
 			# I'd much rather be using popen3, but it doesn't appear to be
