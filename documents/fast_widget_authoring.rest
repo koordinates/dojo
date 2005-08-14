@@ -1,15 +1,8 @@
-Fast Widget Authoring With Dojo
-===============================
+.. raw:: html
+   :file: website/rest_template/header.html
 
-:Author: Alex Russell
-:Version: 0.6
-:Copyright: Dojo Foundation, 2005
-:Date: 2005/05/16
-
-.. contents::
-	
-Example
--------
+A Slideshow Widget Example
+--------------------------
 
 Here's an example of the slide-show widget we're going to build in this
 article. To get a feel for how it's being used, do a view-source on this page.
@@ -23,15 +16,11 @@ article. To get a feel for how it's being used, do a view-source on this page.
 
         <!-- pull in the core of Dojo -->
         <script language="JavaScript" type="text/javascript" 
-            src="/~alex/dojo/src/bootstrap1.js"></script>
-        <script language="JavaScript" type="text/javascript" 
-            src="/~alex/dojo/src/hostenv_browser.js"></script>
-        <script language="JavaScript" type="text/javascript" 
-            src="/~alex/dojo/src/bootstrap2.js"></script>
+            src="/~alex/dojo/__package__.js"></script>
 
         <!-- Dojo is loaded, include the widget  -->
         <script language="JavaScript" type="text/javascript">
-            dojo.hostenv.loadModule("dojo.webui.widgets.SlideShow");
+            dojo.require("dojo.webui.widgets.SlideShow");
         </script>
 
         <!-- upgrade a static image to a slideshow -->
@@ -74,19 +63,17 @@ see above. There's not a ton of code to it, but we'll start with the smallest
 possible (loads but doesn't do anything) version of the widget. Here it is::
 
     // tell the package system what classes get defined here
-    dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
-    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
+    dojo.provide("dojo.webui.widgets.SlideShow");
+    dojo.provide("dojo.webui.widgets.HTMLSlideShow");
 
     // load dependencies
-    dojo.hostenv.loadModule("dojo.webui.DomWidget");
+    dojo.require("dojo.webui.DomWidget");
 
     // define the widget class
     dojo.webui.widgets.HTMLSlideShow = function(){
         // inheritance
         // see: http://www.cs.rit.edu/~atk/JavaScript/manuals/jsobj/
-        dojo.webui.Widget.call(this);
-        dojo.webui.DomWidget.call(this, true);
-        dojo.webui.HTMLWidget.call(this);
+        dojo.webui.HtmlWidget.call(this);
 
         this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
         this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
@@ -95,7 +82,7 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
         this.isContainer = false;
     }
     // more inheritance
-    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
+    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.HtmlWidget);
     // make it a tag
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
 
@@ -369,23 +356,18 @@ follow. We omit the CSS file since it hasn't changed.
 
 SlideShow.js::
 
-    dojo.hostenv.startPackage("dojo.webui.widgets.SlideShow");
-    dojo.hostenv.startPackage("dojo.webui.widgets.HTMLSlideShow");
+    dojo.provide("dojo.webui.widgets.SlideShow");
+    dojo.provide("dojo.webui.widgets.HTMLSlideShow");
 
-    dojo.hostenv.loadModule("dojo.event.*");
-    dojo.hostenv.loadModule("dojo.xml.*");
-    dojo.hostenv.loadModule("dojo.webui.widgets.Parse");
-    dojo.hostenv.loadModule("dojo.webui.Widget");
-    dojo.hostenv.loadModule("dojo.webui.DomWidget");
-    dojo.hostenv.loadModule("dojo.webui.WidgetManager");
-    dojo.hostenv.loadModule("dojo.webui.DragAndDrop");
-    dojo.hostenv.loadModule("dojo.graphics.*");
-    dojo.hostenv.loadModule("dojo.graphics.htmlEffects");
+    dojo.require("dojo.event.*");
+    dojo.require("dojo.xml.*");
+    dojo.require("dojo.webui.*");
+    dojo.require("dojo.graphics.htmlEffects");
 
     dojo.webui.widgets.HTMLSlideShow = function(){
-        dojo.webui.Widget.call(this);
-        dojo.webui.DomWidget.call(this, true);
-        dojo.webui.HTMLWidget.call(this);
+
+        dojo.webui.HtmlWidget.call(this);
+
         this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
         this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
 
@@ -483,7 +465,7 @@ SlideShow.js::
             this.loadNextImage();
         }
     }
-    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.DomWidget);
+    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.HtmlWidget);
     dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
 
 HTMLSlideShow.html::
@@ -524,11 +506,28 @@ More Information
 About The Author
 #########################
 
-Alex Russell, a core contributor to Dojo, can be reached at
-<alex@dojotoolkit.org>. His blog is at: http://alex.nWidgets.com
+Alex Russell is the project lead for Dojo and  can be reached at
+<alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. _`Dojo Status`: http://www.dojotoolkit.org/projectStatus.html
 .. _`The Dojo Wiki`: http://dojo.jot.com/
 .. _`Problems tackled by the Dojo widget system`: http://www.dojotoolkit.org/widget_motivation.html
 
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+Fast Widget Authoring With Dojo
+===============================
+
+:Author: Alex Russell
+:Version: 0.7
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/08/14
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
+
+	
 .. vim:ts=4:et:tw=0:shiftwidth=4:

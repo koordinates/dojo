@@ -1,12 +1,5 @@
-About Dojo
-===================================
-
-:Author: Alex Russell,Dylan Schiemann
-:Version: 0.4
-:Copyright: Dojo Foundation, 2005
-:Date: 2005/03/21
-
-.. contents::
+.. raw:: html
+   :file: website/rest_template/header.html
 
 Current Efforts
 -------------------
@@ -95,5 +88,21 @@ mundane details like bylaws and tax exemption status.
 .. _`Anonymous SVN access` : http://dojotoolkit.org/svn/dojo/
 .. _`Academic Free License v 2.1` : http://opensource.org/licenses/afl-2.1.php
 .. _`thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+About Dojo
+===================================
+
+:Author: Alex Russell,Dylan Schiemann
+:Version: 0.4
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/03/21
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

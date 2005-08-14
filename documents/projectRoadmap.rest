@@ -1,23 +1,14 @@
-Dojo Roadmap
-===================================
-
-:Author: Alex Russell,Dylan Schiemann
-:Version: 0.4
-:Copyright: Dojo Foundation, 2005
-:Date: 2005/03/21
-
-.. contents::
-
+.. raw:: html
+   :file: website/rest_template/header.html
 
 Roadmap
 ------------------------
 
-This roadmap outlines two separate sets of goals. One set
-is related to the end-goals of a the product/project, while the other outlines
-the concrete technical steps required to get there. We try to make sure 
-that the linkages between goal and means are explicit where possible. Simply 
-stated, Dojo has the following large-scale
-goals:
+This roadmap outlines two separate sets of goals. One set is related to the
+end-goals of a the product/project, while the other outlines the concrete
+technical steps required to get there. We try to make sure that the linkages
+between goal and means are explicit where possible. Simply stated, Dojo has the
+following large-scale goals:
 
     - Make it easier for web application authors to build responsive client-side UIs
     - Build a toolkit that will become the defacto DHTML toolkit for developers of every skill level
@@ -201,9 +192,10 @@ Status
 
 Dojo is currently in heavy development. As you can glean from the list of
 modules in the roadmap, we have finished a significant portion of the core
-"plumbing" for the project, and we also have our first widget, a button, that 
-can be constructed from markup in HTML and SVG namespaces. We have also shipped 
-an `initial profile build`_, and a supporting article, `baking usability into XMLHTTP`_
+"plumbing" for the project, and we also have our first widget, a button, that
+can be constructed from markup in HTML and SVG namespaces. We have also shipped
+an `initial profile build`_, and a supporting article, `baking usability into
+XMLHTTP`_
 
 We still have a lot of work to do on making our widget system better,
 especially in the world of SVG, but good SVG widget support will come later
@@ -339,5 +331,21 @@ mundane details like bylaws and tax exemption status.
 .. _`Anonymous SVN access` : http://dojotoolkit.org/svn/dojo/
 .. _`Academic Free License v 2.1` : http://opensource.org/licenses/afl-2.1.php
 .. _`thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+Dojo Roadmap
+===================================
+
+:Author: Alex Russell,Dylan Schiemann
+:Version: 0.4
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/03/21
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

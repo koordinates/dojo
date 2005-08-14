@@ -1,11 +1,8 @@
-Proposal For Dojo Class Organization
-====================================
+.. raw:: html
+   :file: website/rest_template/header.html
 
-:Author: Mark D. Anderson (mda@discerning.com), Alex Russell (alex@netWindows.org)
-:Version: $Id: dojo_classes.txt,v 1.2 2004/08/14 23:17:44 alex Exp $ 
-:Date: $Date: 2004/08/14 23:17:44 $
-
-.. contents::
+Dojo Namespace Layout Proposal
+------------------------------
 
 For naming, this proposal follows the Dojo class and namespace naming
 conventions: lower case for singleton objects and other namespace-only items,
@@ -138,5 +135,20 @@ Functionality not in classes::
 
    fixes to ecmascript implementations
    dj_import(), dj_class(), dj_throw(), and any othe pseduo language extensions
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+Proposal For Dojo Class Organization
+====================================
+
+:Author: Mark D. Anderson (mda@discerning.com), Alex Russell (alex@netWindows.org)
+:Version: $Id: dojo_classes.txt,v 1.2 2004/08/14 23:17:44 alex Exp $ 
+:Date: $Date: 2004/08/14 23:17:44 $
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

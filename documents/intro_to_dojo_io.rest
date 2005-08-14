@@ -1,12 +1,5 @@
-dojo.io.bind(): baking usability into XMLHTTP
-=============================================
-
-:Author: Alex Russell
-:Version: 0.3
-:Copyright: Dojo Foundation, 2005
-:Date: 2005/03/11
-
-.. contents::
+.. raw:: html
+   :file: website/rest_template/header.html
 
 Intro
 ----------------------------------
@@ -342,7 +335,23 @@ not trying to be exclusive, just productive.
 About The Author
 #########################
 
-Alex Russell is just another geek. He can be reached at <alex@dojotoolkit.org>.
-His mostly pointless blog is at: http://alex.nwidgets.com
+Alex Russell is the project lead for Dojo and  can be reached at
+<alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+dojo.io.bind(): baking usability into XMLHTTP
+=============================================
+
+:Author: Alex Russell
+:Version: 0.3
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/03/11
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
