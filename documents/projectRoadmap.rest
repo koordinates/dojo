@@ -1,7 +1,7 @@
 .. raw:: html
    :file: website/rest_template/header.html
 
-Roadmap
+Dojo Roadmap
 ------------------------
 
 This roadmap outlines two separate sets of goals. One set is related to the
@@ -334,9 +334,6 @@ mundane details like bylaws and tax exemption status.
 
 .. raw:: html
    :file: website/rest_template/sidebar.html
-
-Dojo Roadmap
-------------
 
 :Author: Alex Russell,Dylan Schiemann
 :Version: 0.4
