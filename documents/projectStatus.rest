@@ -93,7 +93,7 @@ mundane details like bylaws and tax exemption status.
    :file: website/rest_template/sidebar.html
 
 About Dojo
-===================================
+----------
 
 :Author: Alex Russell,Dylan Schiemann
 :Version: 0.4
