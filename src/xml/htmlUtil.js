@@ -458,16 +458,16 @@ dojo.xml.htmlUtil = new function(){
 	 * @return     The directions, NORTH or SOUTH and EAST or WEST. These
 	 *             are properties of the function.
 	 */
-	this.gravity = function (node, e) {
+	this.gravity = function(node, e){
 		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
 		var mousey = e.pageY || e.clientY + document.body.scrollTop;
 		
-		with (dojo.xml.htmlUtil) {
-			var nodecenterx = getAbsoluteX(node) + (getOffsetWidth(node) / 2);
-			var nodecentery = getAbsoluteY(node) + (getOffsetHeight(node) / 2);
+		with(dojo.xml.htmlUtil){
+			var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
+			var nodecentery = getAbsoluteY(node) + (getInnerHeight(node) / 2);
 		}
 		
-		with (argument.callee) {
+		with(arguments.callee){
 			return ((mousex < nodecenterx ? WEST : EAST) |
 				(mousey < nodecentery ? NORTH : SOUTH));
 		}
