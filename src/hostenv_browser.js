@@ -241,3 +241,7 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 if((!window["djConfig"])||(!window["djConfig"]["preventBackButtonFix"])){
 	document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'/blank.html')+"'></iframe>");
 }
+
+// stub, over-ridden by debugging code. This will at least keep us from
+// breaking when it's not included
+dojo.hostenv.writeIncludes = function(){} 
