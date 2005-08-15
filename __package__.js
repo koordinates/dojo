@@ -28,6 +28,10 @@
 		}
 	}
 
+	if((this["djConfig"])&&(djConfig["debugAtAllCosts"])&&(!isRhino)){
+		tmps.push("browser_debug.js");
+	}
+
 	for(var x in tmps){
 		var spath = root+"/src/"+tmps[x];
 		if(isRhino){

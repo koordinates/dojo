@@ -7,7 +7,8 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				isDebug: true
+				isDebug: true,
+				debugAtAllCosts: true
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
@@ -17,7 +18,9 @@
 			dojo.require("dojo.event.*");
 			dojo.require("dojo.webui.widgets.Button");
 			dojo.require("dojo.webui.widgets.HTMLButton");
-			
+			dojo.hostenv.writeIncludes();
+		</script>
+		<script language="JavaScript" type="text/javascript">
 			function outputObjectInfo(x, tid){
 				if(!tid){
 					tid = 0;
