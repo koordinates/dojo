@@ -31,10 +31,15 @@ dojo.text = {
 	},
 	
 	/** Uppercases the first letter of each word */
-	capitalize: function (string) {
-		if (arguments.length == 0) { string = this; }
+	capitalize: function (str) {
+		if (arguments.length == 0) { str = this; }
 		// TODO: implement
-		return new String(string);
+		
+		return new String(str);
+	},
+	
+	isBlank: function (str) {
+		return (dojo.text.trim(str).length == 0);
 	}
 }
 
