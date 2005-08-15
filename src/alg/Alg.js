@@ -36,7 +36,9 @@ dojo.alg.has = function(obj, name){
 
 dojo.alg.forEach = function(arr, unary_func){
 	for(var i=0; i<arr.length; i++){
-		unary_func(arr[i]);
+		if(unary_func(arr[i]) == "break"){
+			break;
+		}
 	}
 }
 
