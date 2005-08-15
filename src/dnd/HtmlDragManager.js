@@ -49,6 +49,21 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	dsCounter: 0,
 	dsPrefix: "dojoDragSource",
 
+	// dimension calculation cache for use durring drag
+	dropTargetDimensions: [],
+
+	currentDropTarget: null,
+	currentDropTargetPoints: null,
+	previousDropTarget: null,
+
+	// mouse position properties
+	currentX: null,
+	currentY: null,
+	lastX: null,
+	lastY: null,
+	mouseDownX: null,
+	mouseDownY: null,
+
 	// method over-rides
 	registerDragSource: function(ds){
 		// FIXME: dragSource objects SHOULD have some sort of property that
@@ -92,21 +107,33 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	onMouseUp: function(e){
+		var _this = this;
 		if((!e.shiftKey)&&(!e.ctrlKey)){
 			dojo.alg.forEach(this.dragObjects, function(tempDragObj){
+				var ret = null;
 				if(!tempDragObj){ return; }
+				if(_this.currentDropTarget){
+					e.dragObject = tempDragObj;
+					e.dropTarget = _this.currentDropTarget.domNode;
+					ret = _this.currentDropTarget.onDrop(e);
+				}
 				tempDragObj.onDragEnd({
-					dragStatus: "dropFailure"
+					dragStatus: (ret) ? "dropSuccess" : "dropFailure"
 				});
 			});
 			this.selectedSources = [];
 			this.dragObjects = [];
 		}
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
+		this.currentDropTarget = null;
+		this.currentDropTargetPoints = null;
 	},
 
 	onMouseMove: function(e){
 		var _this = this;
+		// if we've got some sources, but no drag objects, we need to send
+		// onDragStart to all the right parties and get things lined up for
+		// drop target detection
 		if((this.selectedSources.length)&&(!this.dragObjects.length)){
 			dojo.alg.forEach(this.selectedSources, function(tempSource){
 				if(!tempSource){ return; }
@@ -116,11 +143,65 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 					_this.dragObjects.push(tdo);
 				}
 			});
+
+
+			this.dropTargetDimensions = [];
+			dojo.alg.forEach(this.dropTargets, function(tempTarget){
+				var hu = dojo.xml.htmlUtil;
+				var tn = tempTarget.domNode;
+				var ttx = hu.getAbsoluteX(tn);
+				var tty = hu.getAbsoluteY(tn);
+				_this.dropTargetDimensions.push([
+					[ttx, tty],	// upper-left
+					// lower-right
+					[ ttx+hu.getInnerWidth(tn), tty+hu.getInnerHeight(tn) ],
+					tempTarget
+				]);
+			});
 		}
 		dojo.alg.forEach(this.dragObjects, function(tempDragObj){
 			if(!tempDragObj){ return; }
 			tempDragObj.onDragMove(e);
 		});
+
+		// if we have a current drop target, check to see if we're outside of
+		// it. If so, do all the actions that need doing.
+		var dtp = this.currentDropTargetPoints;
+		if((dtp)&&(_this.isInsideBox(e, dtp))){
+			this.currentDropTarget.onDragMove(e);
+		}else{
+			// FIXME: need to fix the event object!
+			if(this.currentDropTarget){
+				this.currentDropTarget.onDragOut(e);
+			}
+
+			this.currentDropTarget = null;
+			this.currentDropTargetPoints = null;
+
+			// check the mouse position to see if we're in a drop target
+			dojo.alg.forEach(this.dropTargetDimensions, function(tmpDA){
+				// FIXME: is there a way to shortcut this?
+				if((!_this.currentDropTarget)&&(_this.isInsideBox(e, tmpDA))){
+					_this.currentDropTarget = tmpDA[2];
+					_this.currentDropTargetPoints = tmpDA;
+					dj_debug("found it!");
+					return "break";
+				}
+			});
+			if(this.currentDropTarget){
+				this.currentDropTarget.onDragOver(e);
+			}
+		}
+	},
+
+	isInsideBox: function(e, coords){
+		if(	(e.clientX > coords[0][0])&&
+			(e.clientX < coords[1][0])&&
+			(e.clientY > coords[0][1])&&
+			(e.clientY < coords[1][1]) ){
+			return true;
+		}
+		return false;
 	},
 
 	onMouseOver: function(e){

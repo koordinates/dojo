@@ -67,7 +67,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		switch(e.dragStatus){
 
 			case "dropSuccess":
+				with(this.domNode.style){
+					position = "";
+					left = "";
+					top = "";
+				}
 				this.dragClone.parentNode.removeChild(this.dragClone);
+				this.dragClone = null;
+				dojo.xml.htmlUtil.setOpacity(this.domNode, 1.0);
 				break;
 		
 			case "dropFailure": // slide back to the start
@@ -106,13 +113,16 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	}
 });
 
-dojo.dnd.HtmlDropTarget = function (node){
-	this.domNode;
+dojo.dnd.HtmlDropTarget = function(node){
+	this.domNode = node;
+	dojo.dnd.DropTarget.call(this);
 }
 
-dojo.dnd.HtmlDropTarget.prototype = {
+dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
 	onDragOver: function (e){
 		// TODO: draw an outline
+		// FIXME: need to add negotiation about the drop targets here!
+		this.domNode.style.border = "1px solid black";
 	},
 	
 	onDragMove: function (e){
@@ -121,6 +131,7 @@ dojo.dnd.HtmlDropTarget.prototype = {
 
 	onDragOut: function (e){
 		// TODO: remove inidication from previous method
+		this.domNode.style.border = "";
 	},
 	
 	/**
@@ -130,17 +141,23 @@ dojo.dnd.HtmlDropTarget.prototype = {
 	 * @return true if the DragObject was inserted, false otherwise
 	 */
 	onDrop: function (e){
-		var child = e.target;
-		while(child.parentNode && child.parentNode != this){
-			child = child.parentNode;
+		var child = e.dropTarget;
+		if(child != this.domNode){
+			while((child.parentNode)&&(child.parentNode != this.domNode)){
+				child = child.parentNode;
+			}
 		}
 		
 		if(child){
 			with(dojo.xml){
+				var edn = e.dragObject.domNode;
+				htmlUtil.setOpacity(edn, 1.0);
 				if(htmlUtil.gravity(child, e) & htmlUtil.gravity.NORTH){
-					domUtil.before(child, e.dragObject);
+					dj_debug("north gravity");
+					domUtil.before(edn, child);
 				}else{
-					domUtil.after(child, e.dragObject);			
+					dj_debug("other gravity");
+					domUtil.after(edn, child);
 				}
 			}
 			return true;
@@ -148,4 +165,4 @@ dojo.dnd.HtmlDropTarget.prototype = {
 			return false;
 		}
 	}
-}
+});
