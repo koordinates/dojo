@@ -71,6 +71,9 @@ dojo.webui.buildFromTemplate = function(obj, templatePath, templateCssPath, temp
 		obj.templateString = tstring;
 		ts.string = tstring;
 	}
+	if(!ts["string"]) {
+		ts.string = obj.templateString;
+	}
 }
 dojo.webui.buildFromTemplate.dummyCount = 0;
 
@@ -154,7 +157,6 @@ dojo.webui.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent
 						}
 					}
 				}();
-				// dojo.event.connect(baseNode, tevt.toLowerCase(), tf);
 				dojo.event.browser.addListener(baseNode, tevt.substr(2), tf);
 			}
 		}
@@ -254,6 +256,7 @@ dojo.lang.extend(dojo.webui.DomWidget, {
 			widget.addedTo(this);
 		}
 		// dj_debug("add child took: ", new Date()-start, "ms");
+		return widget;
 	},
 
 	// FIXME: we really need to normalize how we do things WRT "destroy" vs. "remove"
