@@ -207,7 +207,7 @@ dojo.xml.domUtil = new function(){
 	// FIXME: how do we account for mixed environments?
 	if(dojo.render.html.capable) {
 		this.createNodesFromText = function(txt, wrap){
-			var tn = document.createElement("span");
+			var tn = document.createElement("div");
 			// tn.style.display = "none";
 			tn.style.visibility= "hidden";
 			document.body.appendChild(tn);
