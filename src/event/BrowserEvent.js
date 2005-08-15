@@ -148,8 +148,8 @@ dojo.event.browser = new function(){
 	}
 
 	this.fixEvent = function(evt){
-		// check we have an event object and do nothing if we do
-		if ((typeof Event != "undefined" && !evt instanceof Event) || evt !== window.event) {
+		// check we have an event object and do nothing if we don't
+		if ((typeof Event != "undefined" && !evt instanceof Event) || !window.event) {
 			return evt;
 		}
 
@@ -198,6 +198,9 @@ dojo.event.browser = new function(){
 			for (var key in keys) {
 				evt[key] = keys[key];
 				evt.keys[keys[key]] = key; // allow reverse lookup
+			}
+			if (dojo.render.html.ie && evt.type == "keypress") {
+				evt.charCode = evt.keyCode;
 			}
 		}
 	
