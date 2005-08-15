@@ -148,6 +148,59 @@ dojo.event.browser = new function(){
 	}
 
 	this.fixEvent = function(evt){
+		// check we have an event object and do nothing if we do
+		if ((typeof Event != "undefined" && !evt instanceof Event) || evt !== window.event) {
+			return evt;
+		}
+
+		if (evt.type.indexOf("key") == 0) { // key events
+			var keys = {
+				KEY_BACKSPACE: 8,
+				KEY_TAB: 9,
+				KEY_ENTER: 13,
+				KEY_SHIFT: 16,
+				KEY_CTRL: 17,
+				KEY_ALT: 18,
+				KEY_PAUSE: 19,
+				KEY_CAPS_LOCK: 20,
+				KEY_ESCAPE: 27,
+				KEY_PAGE_UP: 33,
+				KEY_PAGE_DOWN: 34,
+				KEY_END: 35,
+				KEY_HOME: 36,
+				KEY_LEFT_ARROW: 37,
+				KEY_UP_ARROW: 38,
+				KEY_RIGHT_ARROW: 39,
+				KEY_DOWN_ARROW: 40,
+				KEY_INSERT: 45,
+				KEY_DELETE: 46,
+				KEY_LEFT_WINDOW: 91,
+				KEY_RIGHT_WINDOW: 92,
+				KEY_SELECT: 93,
+				KEY_F1: 112,
+				KEY_F2: 113,
+				KEY_F3: 114,
+				KEY_F4: 115,
+				KEY_F5: 116,
+				KEY_F6: 117,
+				KEY_F7: 118,
+				KEY_F8: 119,
+				KEY_F9: 120,
+				KEY_F10: 121,
+				KEY_F11: 122,
+				KEY_F12: 123,
+				KEY_NUM_LOCK: 144,
+				KEY_SCROLL_LOCK: 145
+			}
+	
+			evt.keys = [];
+			// add to evt object
+			for (var key in keys) {
+				evt[key] = keys[key];
+				evt.keys[keys[key]] = key; // allow reverse lookup
+			}
+		}
+	
 		if(dojo.render.html.ie){
 			if(!evt.target){ evt.target = evt.srcElement; }
 			if(!evt.currentTarget){ evt.currentTarget = evt.srcElement; }
