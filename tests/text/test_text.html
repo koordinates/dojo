@@ -28,6 +28,18 @@
 							{ string: "area", parameters: "foo"}) + "'");
 				dj_debug("paramString('" + p + "', true) => '" + dojo.text.paramString(p,
 							{ string: "area", parameters: "foo"}, true) + "'");
+				dj_debug("isBlank('   ') => " + dojo.text.isBlank('   '));
+				dj_debug("isBlank('            x') => " + dojo.text.isBlank('            x'));
+				dj_debug("isBlank('x             ') => " + dojo.text.isBlank('x             '));
+				dj_debug("isBlank('') => " + dojo.text.isBlank(''));
+				dj_debug("isBlank(null) => " + dojo.text.isBlank(null));
+				dj_debug("isBlank(new Array()) => " + dojo.text.isBlank(new Array()));
+				dj_debug("capitalize('this is a bunch of words') => '" + dojo.text.capitalize('this is a bunch of words') + "'");
+				dj_debug("capitalize('word') => '" + dojo.text.capitalize('word') + "'");
+				dj_debug("capitalize('   ') => '" + dojo.text.capitalize('   ') + "'");
+				dj_debug("capitalize('') => '" + dojo.text.capitalize('') + "'");
+				dj_debug("capitalize(null) => '" + dojo.text.capitalize(null) + "'");
+				dj_debug("capitalize(new Array()) => '" + dojo.text.capitalize(new Array()) + "'");
 			}
 
 			dojo.hostenv.modulesLoadedListeners.push(init);

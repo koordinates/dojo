@@ -32,13 +32,26 @@ dojo.text = {
 	
 	/** Uppercases the first letter of each word */
 	capitalize: function (str) {
+		if (typeof str != "string" || str == null)
+			return "";
 		if (arguments.length == 0) { str = this; }
-		// TODO: implement
+		var words = str.split(' ');
+		var retval = "";
+		var len = words.length;
+		for (var i=0; i<len; i++) {
+			var word = words[i];
+			word = word.charAt(0).toUpperCase() + word.substring(1, word.length);
+			retval += word;
+			if (i < len-1)
+				retval += " ";
+		}
 		
-		return new String(str);
+		return new String(retval);
 	},
 	
 	isBlank: function (str) {
+		if (typeof str != "string" || str == null)
+			return true;
 		return (dojo.text.trim(str).length == 0);
 	}
 }
