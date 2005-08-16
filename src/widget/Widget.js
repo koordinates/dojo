@@ -10,7 +10,7 @@ dojo.widget.Widget = function(){
 	// these properties aren't primitives and need to be created on a per-item
 	// basis.
 	this.children = [];
-	// this.selection = new dojo.webui.Selection();
+	// this.selection = new dojo.widget.Selection();
 	// FIXME: need to replace this with context menu stuff
 	this.rightClickItems = [];
 	this.extraArgs = {};
@@ -233,7 +233,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	initialize: function(args, frag){
-		// dj_unimplemented("dojo.webui.Widget.initialize");
+		// dj_unimplemented("dojo.widget.Widget.initialize");
 		return false;
 	},
 
@@ -242,7 +242,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	uninitialize: function(){
-		// dj_unimplemented("dojo.webui.Widget.uninitialize");
+		// dj_unimplemented("dojo.widget.Widget.uninitialize");
 		return false;
 	},
 

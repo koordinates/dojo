@@ -11,7 +11,7 @@ dojo.widget.Parse = function(fragment) {
 			and calls the corresponding handler for its normalized tagName if it exists
 	*/
 	this.createComponents = function(fragment, parentComp){
-		var djTags = dojo.webui.widgets.tags;
+		var djTags = dojo.widget.tags;
 		var returnValue = [];
 		// this allows us to parse without having to include the parent
 		// it is commented out as it currently breaks the existing mechanism for

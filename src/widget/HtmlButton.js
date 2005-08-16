@@ -30,7 +30,7 @@ dojo.widget.HtmlButton = function(){
 
 /*
 new function(){ // namespace protection closure
-	var hbp = dojo.webui.widgets.HTMLButton.prototype;
+	var hbp = dojo.widget.HTMLButton.prototype;
 	hbp.templateString = ["<button />"].join("");
 }; // FIXME: why isnt the (function(){})(); syntax working here??
 */

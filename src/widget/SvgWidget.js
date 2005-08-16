@@ -5,7 +5,7 @@ dojo.provide("dojo.widget.SVGWidget"); // back compat
 // SVGWidget is a mixin ONLY
 dojo.widget.SvgWidget = function(args){
 	// mix in the parent type
-	// dojo.webui.DomWidget.call(this);
+	// dojo.widget.DomWidget.call(this);
 }
 dj_inherits(dojo.widget.SvgWidget, dojo.widget.DomWidget);
 

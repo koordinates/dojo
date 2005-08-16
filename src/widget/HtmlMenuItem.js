@@ -32,11 +32,11 @@ dojo.widget.HtmlMenuItem = function(){
 
 /*
 new function(){ // namespace protection closure
-	var hbp = dojo.webui.widgets.HTMLMenuItem.prototype;
+	var hbp = dojo.widget.HTMLMenuItem.prototype;
 	hbp.templateString = ["<button />"].join("");
 }; // FIXME: why isnt the (function(){})(); syntax working here??
 */
 
 dj_inherits(dojo.widget.HtmlMenuItem, dojo.widget.HtmlWidget);
 
-// dojo.webui.widgets.HTMLMenuItem.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
+// dojo.widget.HTMLMenuItem.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";

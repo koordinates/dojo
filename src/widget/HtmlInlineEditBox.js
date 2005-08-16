@@ -40,7 +40,7 @@ dojo.widget.HtmlInlineEditBox = function() {
 		var node = this.nodeRef;
 		if(node.normalize) { node.normalize(); }
 
-		dojo.webui.buildAndAttachTemplate(this);
+		dojo.widget.buildAndAttachTemplate(this);
 
 		this.editable = document.createElement("span");
 		// this.editable.appendChild(node.firstChild);

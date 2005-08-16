@@ -13,4 +13,4 @@ dojo.widget.HrmlMenu = function(){
 
 dj_inherits(dojo.widget.HtmlMenu, dojo.widget.HtmlWidget);
 
-// dojo.webui.widgets.HTMLMenu.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";
+// dojo.widget.HTMLMenu.prototype.templateString = "<button class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'></button>";

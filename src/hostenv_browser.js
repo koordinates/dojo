@@ -208,7 +208,7 @@ dj_addNodeEvtHdlr(window, "load", function(){
 
 dojo.hostenv.makeWidgets = function(){
 	if((dojo.hostenv.auto_build_widgets_)||(dojo.hostenv.searchIds.length > 0)){
-		if(dj_eval_object_path("dojo.webui.widgets.Parse")){
+		if(dj_eval_object_path("dojo.widget.Parse")){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
 			// IE is such a tremendous peice of shit.
@@ -218,11 +218,11 @@ dojo.hostenv.makeWidgets = function(){
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
 						var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
-						dojo.webui.widgets.getParser().createComponents(frag);
+						dojo.widget.getParser().createComponents(frag);
 					}
 				}else if(dojo.hostenv.auto_build_widgets_){
 					var frag  = parser.parseElement(document.body, null, true);
-					dojo.webui.widgets.getParser().createComponents(frag);
+					dojo.widget.getParser().createComponents(frag);
 				}
 			}catch(e){
 				dj_debug("auto-build-widgets error:", e);

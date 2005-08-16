@@ -39,7 +39,7 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 		obj.widgetType = dummyName;
 	}
 
-	if((cpath)&&(!dojo.webui._cssFiles[cpath])){
+	if((cpath)&&(!dojo.widget._cssFiles[cpath])){
 		dojo.xml.htmlUtil.insertCssFile(cpath);
 		obj.templateCssPath = null;
 		dojo.widget._cssFiles[cpath] = true;
@@ -391,12 +391,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 
 	attachTemplateNodes: function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
-		return dojo.webui.attachTemplateNodes(baseNode, targetObj, this, 
+		return dojo.widget.attachTemplateNodes(baseNode, targetObj, this, 
 					dojo.widget.getDojoEventsFromStr(this.templateString));
 	},
 
 	fillInTemplate: function(){
-		// dj_unimplemented("dojo.webui.DomWidget.fillInTemplate");
+		// dj_unimplemented("dojo.widget.DomWidget.fillInTemplate");
 	},
 	
 	// method over-ride

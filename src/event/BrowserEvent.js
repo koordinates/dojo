@@ -74,8 +74,8 @@ dojo_ie_clobber = new function(){
 if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie_clobber_minimal_))){
 	window.onunload = function(){
 		dojo_ie_clobber.clobber();
-		if((dojo["webui"])&&(dojo.webui["widgetManager"])){
-			dojo.webui.widgetManager.destroyAll();
+		if((dojo["widget"])&&(dojo.widget["manager"])){
+			dojo.widget.manager.destroyAll();
 		}
 		CollectGarbage();
 	}
