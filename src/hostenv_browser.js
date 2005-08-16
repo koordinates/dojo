@@ -199,10 +199,10 @@ dojo.hostenv.println = function(s){
 }
 
 dj_addNodeEvtHdlr(window, "load", function(){
-	dojo.hostenv.modulesLoaded();
 	if(dojo.render.html.ie) {
 		dojo.hostenv.makeWidgets();
 	}
+	dojo.hostenv.modulesLoaded();
 });
 
 
