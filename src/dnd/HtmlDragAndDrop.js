@@ -4,21 +4,23 @@ dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 
-dojo.dnd.HtmlDragSource = function(node){
+dojo.dnd.HtmlDragSource = function(node, type){
 	this.domNode = node;
-	this.dragObject = null;
-
+	// register us
 	dojo.dnd.DragSource.call(this);
+
+	// set properties that might have been clobbered by the mixin
+	this.type = type||"";
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	onDragStart: function(){
-		this.dragObject = new dojo.dnd.HtmlDragObject(this.domNode);
-		return this.dragObject;
+		return new dojo.dnd.HtmlDragObject(this.domNode, this.type);
 	}
 });
 
-dojo.dnd.HtmlDragObject = function(node){
+dojo.dnd.HtmlDragObject = function(node, type){
+	this.type = type;
 	this.domNode = node;
 }
 
@@ -113,23 +115,38 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	}
 });
 
-dojo.dnd.HtmlDropTarget = function(node){
+dojo.dnd.HtmlDropTarget = function(node, types){
 	this.domNode = node;
 	dojo.dnd.DropTarget.call(this);
+	this.acceptedTypes = types||[];
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
-	onDragOver: function (e){
-		// TODO: draw an outline
-		// FIXME: need to add negotiation about the drop targets here!
-		this.domNode.style.border = "1px solid black";
+	onDragOver: function(e){
+		var dos = e.dragObjects;
+		if(!dos){ return false; }
+		var canDrop = false;
+		var _this = this;
+		dojo.alg.forEach(dos, function(tdo){
+			dojo.alg.forEach(_this.acceptedTypes, function(tmpType){
+				dj_debug(tdo.type, tmpType);
+			});
+			if((_this.acceptedTypes)&&(dojo.alg.inArray(_this.acceptedTypes, tdo.type))){
+				canDrop = true;
+				return "break";
+			}
+		});
+		
+		dj_debug("can drop: ", canDrop);
+		this.domNode.style.border = "1px solid "+(canDrop ? "black" : "red");
+		return canDrop;
 	},
 	
-	onDragMove: function (e){
+	onDragMove: function(e){
 		// TODO: indicate position at which the DragObject will get inserted
 	},
 
-	onDragOut: function (e){
+	onDragOut: function(e){
 		// TODO: remove inidication from previous method
 		this.domNode.style.border = "";
 	},
@@ -140,7 +157,8 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	 *
 	 * @return true if the DragObject was inserted, false otherwise
 	 */
-	onDrop: function (e){
+	onDrop: function(e){
+		this.onDragOut(e);
 		var child = e.dropTarget;
 		if(child != this.domNode){
 			while((child.parentNode)&&(child.parentNode != this.domNode)){
@@ -153,10 +171,10 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 				var edn = e.dragObject.domNode;
 				htmlUtil.setOpacity(edn, 1.0);
 				if(htmlUtil.gravity(child, e) & htmlUtil.gravity.NORTH){
-					dj_debug("north gravity");
+					// dj_debug("north gravity");
 					domUtil.before(edn, child);
 				}else{
-					dj_debug("other gravity");
+					// dj_debug("other gravity");
 					domUtil.after(edn, child);
 				}
 			}

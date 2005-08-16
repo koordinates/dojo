@@ -64,6 +64,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	mouseDownX: null,
 	mouseDownY: null,
 
+	dropAcceptable: false,
+
 	// method over-rides
 	registerDragSource: function(ds){
 		// FIXME: dragSource objects SHOULD have some sort of property that
@@ -112,13 +114,25 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			dojo.alg.forEach(this.dragObjects, function(tempDragObj){
 				var ret = null;
 				if(!tempDragObj){ return; }
-				if(_this.currentDropTarget){
+				if((_this.currentDropTarget)&&(_this.dropAcceptable)){
 					e.dragObject = tempDragObj;
-					e.dropTarget = _this.currentDropTarget.domNode;
+
+					// NOTE: we can't get anything but the current drop target
+					// here since the drag shadow blocks mouse-over events.
+					// This is probelematic for dropping "in" something
+					var ce = _this.currentDropTarget.domNode.childNodes;
+					if(ce.length > 0){
+						e.dropTarget = ce[0];
+						while(e.dropTarget == tempDragObj.domNode){
+							e.dropTarget = e.dropTarget.nextSibling;
+						}
+					}else{
+						e.dropTarget = _this.currentDropTarget.domNode;
+					}
 					ret = _this.currentDropTarget.onDrop(e);
 				}
 				tempDragObj.onDragEnd({
-					dragStatus: (ret) ? "dropSuccess" : "dropFailure"
+					dragStatus: (_this.dropAcceptable && ret) ? "dropSuccess" : "dropFailure"
 				});
 			});
 			this.selectedSources = [];
@@ -177,6 +191,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 			this.currentDropTarget = null;
 			this.currentDropTargetPoints = null;
+			this.dropAcceptable = false;
 
 			// check the mouse position to see if we're in a drop target
 			dojo.alg.forEach(this.dropTargetDimensions, function(tmpDA){
@@ -184,12 +199,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				if((!_this.currentDropTarget)&&(_this.isInsideBox(e, tmpDA))){
 					_this.currentDropTarget = tmpDA[2];
 					_this.currentDropTargetPoints = tmpDA;
-					dj_debug("found it!");
 					return "break";
 				}
 			});
+			e.dragObjects = this.dragObjects;
 			if(this.currentDropTarget){
-				this.currentDropTarget.onDragOver(e);
+				this.dropAcceptable = this.currentDropTarget.onDragOver(e);
 			}
 		}
 	},
