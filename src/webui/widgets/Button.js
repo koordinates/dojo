@@ -1,22 +1,7 @@
-dojo.hostenv.startPackage("dojo.webui.widgets.Button");
-dojo.hostenv.loadModule("dojo.webui.Widget");
+dojo.provide("dojo.webui.widgets.Button");
 
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:button");
+dojo.require("dojo.widget.Button");
 
-dojo.webui.widgets.Button = function(){
-	dojo.webui.Widget.call(this);
+dj_deprecated("dojo.webui.widgets.Button is deprecated, use dojo.widget.Button");
 
-	this.widgetType = "Button";
-	this.onClick = function(){ return; }
-	this.isContainer = false;
-}
-dj_inherits(dojo.webui.widgets.Button, dojo.webui.Widget);
-
-// FIXME: own file? Mixin instead?
-/*
-dojo.webui.widgets.DomButton = function(){
-	dojo.webui.widgets.Button.call(this);
-	dojo.webui.DomWidget.call(this, true);
-}
-dj_inherits(dojo.webui.widgets.DomButton, dojo.webui.widgets.Button);
-*/
+dojo.webui.widgets.Button = dojo.widget.Button;

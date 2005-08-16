@@ -1,19 +1,8 @@
 dojo.provide("dojo.webui.widgets.MenuItem");
-dojo.require("dojo.webui.DomWidget");
 
-dojo.webui.widgets.MenuItem = function(){
-	dojo.webui.Widget.call(this);
-	this.widgetType = "MenuItem";
-	this.isContainer = false;
-}
-dj_inherits(dojo.webui.widgets.MenuItem, dojo.webui.Widget);
+dojo.require("dojo.widget.MenuItem");
 
+dj_deprecated("dojo.webui.widgets.MenuItem is deprecated, use dojo.widget.MenuItem");
 
-// FIXME: own file? Mixin instead?
-dojo.webui.widgets.DomMenuItem = function(){
-	dojo.webui.widgets.MenuItem.call(this);
-	dojo.webui.DomWidget.call(this);
-}
-dj_inherits(dojo.webui.widgets.DomMenuItem, dojo.webui.DomWidget);
-
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:menuitem");
+dojo.webui.widgets.MenuItem = dojo.widget.MenuItem;
+dojo.webui.widgets.DomMenuItem = dojo.widget.DomMenuItem;
