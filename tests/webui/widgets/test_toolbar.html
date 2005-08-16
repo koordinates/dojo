@@ -15,26 +15,44 @@ function img(name) {
 }
 
 function init(e) {
+	var now = new Date();
 	tc = dojo.webui.fromScript("ToolbarContainer");
 	document.body.insertBefore(tc.domNode, document.body.firstChild);
 	tb = dojo.webui.fromScript("Toolbar");
 	tc.addChild(tb);
+	var bg = dojo.webui.fromScript("ToolbarButtonGroup", {
+		name: "justify",
+		defaultButton: "justifyleft",
+		preventDeselect: true
+	});
+	bg.addChild(img("justifyleft"));
+	bg.addChild(img("justifycenter"));
+	bg.addChild(img("justifyright"));
+	bg.addChild(img("justifyfull"));
 	var items = [img("bold"), img("italic"), img("underline"),
 		"|", img("backcolor"), img("forecolor"),
-		"|", ["justify", img("justifyleft"), img("justifycenter"), img("justifyright"), img("justifyfull")],
+		"|", bg, //["justify", img("justifyleft"), img("justifycenter"), img("justifyright"), img("justifyfull")],
 		"|", img("createlink"), img("insertimage"),
-		"|", img("undo"), img("redo")];
-	var now = new Date();
+		"|", img("indent"), img("outdent"),
+		img("insertorderedlist"), img("insertunorderedlist"),
+		"|", img("undo"), img("redo"),
+		"|", img("wikiword")];
 	for(var i = 0; i < items.length; i++) {
 		tb.addChild(items[i], null, {toggleItem:i<3});
 	}
-	dj_debug("Build time: " + (new Date() - now));
-	state = tc.getItemsState();
-	sel = tc.getItemsSelectedState();
-	act = tc.getItemsActiveState();
+	//tb.getItem("wikiword").setLabel("WikiWord");
+	var timeSpent = (new Date() - now);
+	dj_debug("Total build time: " + timeSpent);
+	return timeSpent;
 }
 
-dojo.event.connect(window, "onload", init);
+dojo.event.connect(window, "onload", function() {
+	var total = 0;
+	for(var i = 0; i < 1; i++) {
+		total += init();
+	}
+	dj_debug("Avg time: " + (total/i));
+});
 </script>
 </head>
 
