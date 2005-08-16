@@ -1,5 +1,7 @@
 dojo.provide("dojo.webui.widgets.ToolbarContainer");
 dojo.provide("dojo.webui.widgets.HTMLToolbarContainer");
+dojo.provide("dojo.webui.widgets.Toolbar");
+dojo.provide("dojo.webui.widgets.HTMLToolbar");
 dojo.provide("dojo.webui.widgets.ToolbarItem");
 dojo.provide("dojo.webui.widgets.HTMLToolbarButtonGroup");
 dojo.provide("dojo.webui.widgets.HTMLToolbarButton");
@@ -32,6 +34,17 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 			}
 		}
 		return null;
+	}
+
+	this.getItems = function() {
+		var items = [];
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+				items = items.concat(child.getItems());
+			}
+		}
+		return items;
 	}
 
 	this.enable = function() {
@@ -117,6 +130,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 	this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode"></div>';
 
 	var oldAddChild = this.addChild;
+	var ddd=0;
 	this.addChild = function(item, pos, props) {
 		var widget = dojo.webui.widgets.ToolbarItem.make(item, null, props);
 		var ret = oldAddChild.call(this, widget, null, pos, null);
@@ -137,6 +151,17 @@ dojo.webui.widgets.HTMLToolbar = function() {
 				&& child._name == name) { return child; }
 		}
 		return null;
+	}
+
+	this.getItems = function() {
+		var items = [];
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+				items.push(child);
+			}
+		}
+		return items;
 	}
 
 	this.getItemsState = function() {
@@ -241,23 +266,28 @@ dojo.webui.widgets.ToolbarItem = function() {
 	this._name;
 	this.getName = function() { return this._name; }
 	this.setName = function(value) { return this._name = value; }
+	this.getValue = this.getName;
+	this.setValue = this.setName;
 
 	this._selected = false;
 	this.isSelected = function() { return this._selected; }
-	this.setSelected = function(is, force) {
+	this.setSelected = function(is, force, preventEvent) {
 		if(!this._toggleItem && !force) { return; }
 		is = Boolean(is);
 		if(force || this._enabled && this._selected != is) {
 			this._selected = is;
 			this.update();
-			this._fireEvent(is ? "onSelect" : "onDeselect");
+			if(!preventEvent) {
+				this._fireEvent(is ? "onSelect" : "onDeselect");
+				this._fireEvent("onChangeSelect");
+			}
 		}
 	}
-	this.select = function(force) {
-		return this.setSelected(true, force);
+	this.select = function(force, preventEvent) {
+		return this.setSelected(true, force, preventEvent);
 	}
-	this.deselect = function(force) {
-		return this.setSelected(false, force);
+	this.deselect = function(force, preventEvent) {
+		return this.setSelected(false, force, preventEvent);
 	}
 
 	this._toggleItem = false;
@@ -270,12 +300,15 @@ dojo.webui.widgets.ToolbarItem = function() {
 
 	this._enabled = true;
 	this.isEnabled = function() { return this._enabled; }
-	this.setEnabled = function(is, force) {
+	this.setEnabled = function(is, force, preventEvent) {
 		is = Boolean(is);
 		if(force || this._enabled != is) {
 			this._enabled = is;
 			this.update();
-			this._fireEvent(this._enabled ? "onEnable" : "onDisable");
+			if(!preventEvent) {
+				this._fireEvent(this._enabled ? "onEnable" : "onDisable");
+				this._fireEvent("onChangeEnabled");
+			}
 		}
 	}
 	this.enable = function(force) {
@@ -296,6 +329,14 @@ dojo.webui.widgets.ToolbarItem = function() {
 			this._icon.setIcon(icon);
 		} else {
 			this._icon = icon;
+		}
+		var iconNode = this._icon.getNode();
+		if(iconNode.parentNode != this.domNode) {
+			if(this.domNode.hasChildNodes()) {
+				this.domNode.insertBefore(iconNode, this.domNode.firstChild);
+			} else {
+				this.domNode.appendChild(iconNode);
+			}
 		}
 		return this._icon;
 	}
@@ -328,6 +369,8 @@ dojo.webui.widgets.ToolbarItem = function() {
 			this._selected = false;
 			dojo.xml.htmlUtil.addClass(this.domNode, "disabled");
 			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
+			dojo.xml.htmlUtil.removeClass(this.domNode, "down");
+			dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
 		}
 		this._updateIcon();
 	}
@@ -378,7 +421,7 @@ dojo.webui.widgets.ToolbarItem = function() {
 	}
 
 	this._onmousedown = function(e) {
-		e.preventDefault();
+		if(e.preventDefault) { e.preventDefault(); }
 		if(!this._enabled) { return };
 		dojo.xml.htmlUtil.addClass(this.domNode, "down");
 		if(this._toggleItem) {
@@ -415,6 +458,9 @@ dojo.webui.widgets.ToolbarItem.make = function(wh, whIsType, props) {
 		}
 	} else if(wh instanceof dojo.webui.widgets.ToolbarItem) {
 		item = wh;
+	} else if(wh instanceof dojo.uri.Uri) {
+		item = dojo.webui.fromScript("ToolbarButton",
+			dojo.lang.mixin(props||{}, {icon: new dojo.webui.Icon(wh.toString())}));
 	} else if(whIsType) {
 		item = dojo.webui.fromScript(wh, props)
 	} else if(typeof wh == "string" || wh instanceof String) {
@@ -472,7 +518,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 		if(widget._name == this.defaultButton
 			|| (typeof this.defaultButton == "number"
 			&& this.children.length-1 == this.defaultButton)) {
-			widget.select();
+			widget.select(false, true);
 		}
 		return ret;
 	}
@@ -496,6 +542,9 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.ToolbarItem) {
 				child.enable();
+				if(child._name == this._value) {
+					child.select();
+				}
 			}
 		}
 	}
@@ -513,7 +562,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	this.getValue = function() { return this._value; }
 	this.setValue = this.select;
 
-	this.select = function(name) {
+	this.select = function(name, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.ToolbarItem) {
@@ -525,7 +574,10 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 				}
 			}
 		}
-		this._fireEvent("onSelect", this._value);
+		if(!preventEvent) {
+			this._fireEvent("onSelect", this._value);
+			this._fireEvent("onChangeSelect", this._value);
+		}
 	}
 
 	this.preventDeselect = false; // if true, once you select one, you can't have none selected
@@ -545,8 +597,7 @@ dojo.webui.widgets.HTMLToolbarButton = function() {
 		oldFillInTemplate.call(this, args, frag);
 		dojo.xml.htmlUtil.addClass(this.domNode, "toolbarButton");
 		if(this._icon) {
-			var icon = this._icon.getNode();
-			this.domNode.appendChild( this._icon.getNode() );
+			this.setIcon(this._icon);
 		}
 		if(this._label) {
 			this.setLabel(this._label);

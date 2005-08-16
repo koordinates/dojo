@@ -9,6 +9,7 @@
 	padding : 2px 4px;
 	font-size : 11px;
 	min-height : 26px;
+	_height : 26px;
 }
 
 .toolbarItem {
@@ -25,6 +26,10 @@
 	background-color : #fafaff;
 }
 
+.toolbarButton img {
+	vertical-align : bottom;
+}
+
 .toolbarButton span {
 	line-height : 19px;
 	vertical-align : top;
@@ -36,6 +41,7 @@
 
 .toolbarItem.disabled {
 	opacity : 0.3;
+	filter : alpha(opacity=30);
 	cursor : default;
 }
 
