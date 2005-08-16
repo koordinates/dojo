@@ -1,7 +1,7 @@
 dojo.hostenv.conditionalLoadModule({
 	common: ["dojo.xml.Parse", 
 			 "dojo.widget.Widget", 
-			 "dojo.webui.widgets.Parse", 
+			 "dojo.widget.Parse", 
 			 "dojo.widget.Manager"],
 	browser: ["dojo.widget.DomWidget",
 			  "dojo.widget.HtmlWidget"],
