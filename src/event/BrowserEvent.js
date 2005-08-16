@@ -153,7 +153,7 @@ dojo.event.browser = new function(){
 			return evt;
 		}
 
-		if (evt.type.indexOf("key") == 0) { // key events
+		if (evt.type && evt.type.indexOf("key") == 0) { // key events
 			var keys = {
 				KEY_BACKSPACE: 8,
 				KEY_TAB: 9,
