@@ -1,10 +1,11 @@
 dojo.provide("dojo.text.Builder");
+dojo.require("dojo.text");
 
 dojo.text.Builder = function(str){
 	var a = [];
 	var b = str || "";
 	var length = this.length = b.length;
-	if (!b.isBlank()) a.push(b);
+	if (!dojo.text.isBlank(b)) a.push(b);
 	b = "";
 	this.toString = this.valueOf = function(){ 
 		return a.join(""); 
