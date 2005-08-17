@@ -261,7 +261,7 @@ dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbar");
 dojo.webui.widgets.ToolbarItem = function() {
 	dojo.webui.HtmlWidget.call(this);
 
-	this.templateString = '<span class="toolbarItem" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></span>';
+	this.templateString = '<span unselectable="on" class="toolbarItem" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></span>';
 
 	this._name;
 	this.getName = function() { return this._name; }
@@ -311,14 +311,14 @@ dojo.webui.widgets.ToolbarItem = function() {
 			}
 		}
 	}
-	this.enable = function(force) {
-		return this.setEnabled(true, force);
+	this.enable = function(force, preventEvent) {
+		return this.setEnabled(true, force, preventEvent);
 	}
-	this.disable = function(force) {
-		return this.setEnabled(false, force);
+	this.disable = function(force, preventEvent) {
+		return this.setEnabled(false, force, preventEvent);
 	}
-	this.toggleEnabled = function(force) {
-		return this.setEnabled(!this._enabled, force);
+	this.toggleEnabled = function(force, preventEvent) {
+		return this.setEnabled(!this._enabled, force, preventEvent);
 	}
 
 	this._icon = null;
@@ -368,7 +368,6 @@ dojo.webui.widgets.ToolbarItem = function() {
 		} else {
 			this._selected = false;
 			dojo.xml.htmlUtil.addClass(this.domNode, "disabled");
-			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
 			dojo.xml.htmlUtil.removeClass(this.domNode, "down");
 			dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
 		}
@@ -504,7 +503,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	this.widgetType = "ToolbarButtonGroup";
 	this.isContainer = true;
 
-	this.templateString = '<span class="toolbarButtonGroup" dojoAttachPoint="containerNode"></span>';
+	this.templateString = '<span unselectable="on" class="toolbarButtonGroup" dojoAttachPoint="containerNode"></span>';
 
 	// if a button has the same name, it will be selected
 	// if this is set to a number, the button at that index will be selected
@@ -533,44 +532,54 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 		return null;
 	}
 
+	this.getItems = function() {
+		var items = [];
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+				items.push(child);
+			}
+		}
+		return items;
+	}
+
 	this.onChildSelected = function(e) {
 		this.select(e._name);
 	}
 
-	this.enable = function() {
+	this.enable = function(force, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.ToolbarItem) {
-				child.enable();
+				child.enable(force, preventEvent);
 				if(child._name == this._value) {
-					child.select();
+					child.select(force, preventEvent);
 				}
 			}
 		}
 	}
 
-	this.disable = function() {
+	this.disable = function(force, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.ToolbarItem) {
-				child.disable();
+				child.disable(force, preventEvent);
 			}
 		}
 	}
 
 	this._value = "";
 	this.getValue = function() { return this._value; }
-	this.setValue = this.select;
 
-	this.select = function(name, preventEvent) {
+	this.select = function(name, force, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
 			if(child instanceof dojo.webui.widgets.ToolbarItem) {
 				if(child._name == name) {
-					child.select();
+					child.select(force, preventEvent);
 					this._value = name;
 				} else {
-					child.deselect(true);
+					child.deselect(true, preventEvent);
 				}
 			}
 		}
@@ -579,6 +588,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 			this._fireEvent("onChangeSelect", this._value);
 		}
 	}
+	this.setValue = this.select;
 
 	this.preventDeselect = false; // if true, once you select one, you can't have none selected
 }
@@ -649,7 +659,7 @@ dojo.webui.widgets.HTMLToolbarSeparator = function() {
 	dojo.webui.widgets.ToolbarItem.call(this);
 
 	this.widgetType = "ToolbarSeparator";
-	this.templateString = '<span class="toolbarItem toolbarSeparator"></span>';
+	this.templateString = '<span unselectable="on" class="toolbarItem toolbarSeparator"></span>';
 
 	this.defaultIconPath = new dojo.uri.dojoUri("src/webui/widgets/templates/buttons/-.gif");
 
