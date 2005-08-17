@@ -1,22 +1,22 @@
-dojo.provide("dojo.webui.widgets.ToolbarContainer");
-dojo.provide("dojo.webui.widgets.HTMLToolbarContainer");
-dojo.provide("dojo.webui.widgets.Toolbar");
-dojo.provide("dojo.webui.widgets.HTMLToolbar");
-dojo.provide("dojo.webui.widgets.ToolbarItem");
-dojo.provide("dojo.webui.widgets.HTMLToolbarButtonGroup");
-dojo.provide("dojo.webui.widgets.HTMLToolbarButton");
-dojo.provide("dojo.webui.widgets.HTMLToolbarDialog");
-dojo.provide("dojo.webui.widgets.HTMLToolbarMenu");
-dojo.provide("dojo.webui.widgets.HTMLToolbarSeparator");
-dojo.provide("dojo.webui.widgets.HTMLToolbarSpace");
-dojo.provide("dojo.webui.Icon");
+dojo.provide("dojo.widget.ToolbarContainer");
+dojo.provide("dojo.widget.HTMLToolbarContainer");
+dojo.provide("dojo.widget.Toolbar");
+dojo.provide("dojo.widget.HTMLToolbar");
+dojo.provide("dojo.widget.ToolbarItem");
+dojo.provide("dojo.widget.HTMLToolbarButtonGroup");
+dojo.provide("dojo.widget.HTMLToolbarButton");
+dojo.provide("dojo.widget.HTMLToolbarDialog");
+dojo.provide("dojo.widget.HTMLToolbarMenu");
+dojo.provide("dojo.widget.HTMLToolbarSeparator");
+dojo.provide("dojo.widget.HTMLToolbarSpace");
+dojo.provide("dojo.widget.Icon");
 
-dojo.require("dojo.webui.*");
+dojo.require("dojo.widget.*");
 
 /* ToolbarContainer
  *******************/
-dojo.webui.widgets.HTMLToolbarContainer = function() {
-	dojo.webui.HtmlWidget.call(this);
+dojo.widget.HTMLToolbarContainer = function() {
+	dojo.widget.HtmlWidget.call(this);
 
 	this.widgetType = "ToolbarContainer";
 	this.isContainer = true;
@@ -25,10 +25,10 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HtmlToolbar.css");
 
 	this.getItem = function(name) {
-		if(name instanceof dojo.webui.widgets.ToolbarItem) { return name; }
+		if(name instanceof dojo.widget.ToolbarItem) { return name; }
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				var item = child.getItem(name);
 				if(item) { return item; }
 			}
@@ -40,7 +40,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 		var items = [];
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				items = items.concat(child.getItems());
 			}
 		}
@@ -50,7 +50,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 	this.enable = function() {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				child.enable.apply(child, arguments);
 			}
 		}
@@ -59,7 +59,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 	this.disable = function() {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				child.disable.apply(child, arguments);
 			}
 		}
@@ -68,7 +68,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 	this.select = function(name) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				child.select(arguments);
 			}
 		}
@@ -77,7 +77,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 	this.deselect = function(name) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				child.deselect(arguments);
 			}
 		}
@@ -87,7 +87,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 		var values = {};
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				dojo.lang.mixin(values, child.getItemsState());
 			}
 		}
@@ -98,7 +98,7 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 		var values = {};
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				dojo.lang.mixin(values, child.getItemsActiveState());
 			}
 		}
@@ -109,20 +109,20 @@ dojo.webui.widgets.HTMLToolbarContainer = function() {
 		var values = {};
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.HTMLToolbar) {
+			if(child instanceof dojo.widget.HTMLToolbar) {
 				dojo.lang.mixin(values, child.getItemsSelectedState());
 			}
 		}
 		return values;
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarContainer, dojo.webui.HtmlWidget);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarContainer");
+dj_inherits(dojo.widget.HTMLToolbarContainer, dojo.widget.HtmlWidget);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarContainer");
 
 /* Toolbar
  **********/
-dojo.webui.widgets.HTMLToolbar = function() {
-	dojo.webui.HtmlWidget.call(this);
+dojo.widget.HTMLToolbar = function() {
+	dojo.widget.HtmlWidget.call(this);
 
 	this.widgetType = "Toolbar";
 	this.isContainer = true;
@@ -132,7 +132,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 	var oldAddChild = this.addChild;
 	var ddd=0;
 	this.addChild = function(item, pos, props) {
-		var widget = dojo.webui.widgets.ToolbarItem.make(item, null, props);
+		var widget = dojo.widget.ToolbarItem.make(item, null, props);
 		var ret = oldAddChild.call(this, widget, null, pos, null);
 		return ret;
 	}
@@ -144,10 +144,10 @@ dojo.webui.widgets.HTMLToolbar = function() {
 	}
 
 	this.getItem = function(name) {
-		if(name instanceof dojo.webui.widgets.ToolbarItem) { return name; }
+		if(name instanceof dojo.widget.ToolbarItem) { return name; }
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem
+			if(child instanceof dojo.widget.ToolbarItem
 				&& child._name == name) { return child; }
 		}
 		return null;
@@ -157,7 +157,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 		var items = [];
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				items.push(child);
 			}
 		}
@@ -168,7 +168,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 		var values = {};
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				values[child._name] = {
 					selected: child._selected,
 					enabled: child._enabled
@@ -198,7 +198,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 		var items = arguments.length ? arguments : this.children;
 		for(var i = 0; i < items.length; i++) {
 			var child = this.getItem(items[i]);
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				child.enable();
 			}
 		}
@@ -208,7 +208,7 @@ dojo.webui.widgets.HTMLToolbar = function() {
 		var items = arguments.length ? arguments : this.children;
 		for(var i = 0; i < items.length; i++) {
 			var child = this.getItem(items[i]);
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				child.disable();
 			}
 		}
@@ -235,15 +235,15 @@ dojo.webui.widgets.HTMLToolbar = function() {
 			var name = arguments[i], value = arguments[i+1];
 			var item = this.getItem(name);
 			if(item) {
-				if(item instanceof dojo.webui.widgets.ToolbarItem) {
+				if(item instanceof dojo.widget.ToolbarItem) {
 					item.setValue(value);
 				}
 			}
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbar, dojo.webui.HtmlWidget);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbar");
+dj_inherits(dojo.widget.HTMLToolbar, dojo.widget.HtmlWidget);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbar");
 
 /* ToolbarItem hierarchy:
 	- ToolbarItem
@@ -258,8 +258,8 @@ dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbar");
 
 /* ToolbarItem
  **************/
-dojo.webui.widgets.ToolbarItem = function() {
-	dojo.webui.HtmlWidget.call(this);
+dojo.widget.ToolbarItem = function() {
+	dojo.widget.HtmlWidget.call(this);
 
 	this.templateString = '<span unselectable="on" class="toolbarItem" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></span>';
 
@@ -324,7 +324,7 @@ dojo.webui.widgets.ToolbarItem = function() {
 	this._icon = null;
 	this.getIcon = function() { return this._icon; }
 	this.setIcon = function(value) {
-		var icon = dojo.webui.Icon.make(value);
+		var icon = dojo.widget.Icon.make(value);
 		if(this._icon) {
 			this._icon.setIcon(icon);
 		} else {
@@ -444,52 +444,52 @@ dojo.webui.widgets.ToolbarItem = function() {
 		if(args.toggleitem||args.toggleItem) { this.setToggleItem(true); }
 	}
 }
-dj_inherits(dojo.webui.widgets.ToolbarItem, dojo.webui.HtmlWidget);
+dj_inherits(dojo.widget.ToolbarItem, dojo.widget.HtmlWidget);
 
-dojo.webui.widgets.ToolbarItem.make = function(wh, whIsType, props) {
+dojo.widget.ToolbarItem.make = function(wh, whIsType, props) {
 	var item = null;
 
 	if(wh instanceof Array) {
-		item = dojo.webui.fromScript("ToolbarButtonGroup", props);
+		item = dojo.widget.fromScript("ToolbarButtonGroup", props);
 		item.setName(wh[0]);
 		for(var i = 1; i < wh.length; i++) {
 			item.addChild(wh[i]);
 		}
-	} else if(wh instanceof dojo.webui.widgets.ToolbarItem) {
+	} else if(wh instanceof dojo.widget.ToolbarItem) {
 		item = wh;
 	} else if(wh instanceof dojo.uri.Uri) {
-		item = dojo.webui.fromScript("ToolbarButton",
-			dojo.lang.mixin(props||{}, {icon: new dojo.webui.Icon(wh.toString())}));
+		item = dojo.widget.fromScript("ToolbarButton",
+			dojo.lang.mixin(props||{}, {icon: new dojo.widget.Icon(wh.toString())}));
 	} else if(whIsType) {
-		item = dojo.webui.fromScript(wh, props)
+		item = dojo.widget.fromScript(wh, props)
 	} else if(typeof wh == "string" || wh instanceof String) {
 		switch(wh.charAt(0)) {
 			case "|":
 			case "-":
 			case "/":
-				item = dojo.webui.fromScript("ToolbarSeparator", props);
+				item = dojo.widget.fromScript("ToolbarSeparator", props);
 				break;
 			case " ":
 				if(wh.length == 1) {
-					item = dojo.webui.fromScript("ToolbarSpace", props);
+					item = dojo.widget.fromScript("ToolbarSpace", props);
 				} else {
-					item = dojo.webui.fromScript("ToolbarFlexibleSpace", props);
+					item = dojo.widget.fromScript("ToolbarFlexibleSpace", props);
 				}
 				break;
 			default:
 				if(/\.(gif|jpg|jpeg|png)$/i.test(wh)) {
-					item = dojo.webui.fromScript("ToolbarButton",
-						dojo.lang.mixin(props||{}, {icon: new dojo.webui.Icon(wh.toString())}));
+					item = dojo.widget.fromScript("ToolbarButton",
+						dojo.lang.mixin(props||{}, {icon: new dojo.widget.Icon(wh.toString())}));
 				} else {
-					item = dojo.webui.fromScript("ToolbarButton",
+					item = dojo.widget.fromScript("ToolbarButton",
 						dojo.lang.mixin(props||{}, {label: wh.toString()}));
 				}
 		}
 	} else if(wh && wh.tagName && /^img$/i.test(wh.tagName)) {
-		item = dojo.webui.fromScript("ToolbarButton",
+		item = dojo.widget.fromScript("ToolbarButton",
 			dojo.lang.mixin(props||{}, {icon: wh}));
 	} else {
-		item = dojo.webui.fromScript("ToolbarButton",
+		item = dojo.widget.fromScript("ToolbarButton",
 			dojo.lang.mixin(props||{}, {label: wh.toString()}));
 	}
 	return item;
@@ -497,8 +497,8 @@ dojo.webui.widgets.ToolbarItem.make = function(wh, whIsType, props) {
 
 /* ToolbarButtonGroup
  *********************/
-dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
-	dojo.webui.widgets.ToolbarItem.call(this);
+dojo.widget.HTMLToolbarButtonGroup = function() {
+	dojo.widget.ToolbarItem.call(this);
 
 	this.widgetType = "ToolbarButtonGroup";
 	this.isContainer = true;
@@ -511,7 +511,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 
 	var oldAddChild = this.addChild;
 	this.addChild = function(item, pos, props) {
-		var widget = dojo.webui.widgets.ToolbarItem.make(item, null, dojo.lang.mixin(props||{}, {toggleItem:true}));
+		var widget = dojo.widget.ToolbarItem.make(item, null, dojo.lang.mixin(props||{}, {toggleItem:true}));
 		dojo.event.connect(widget, "onSelect", this, "onChildSelected");
 		var ret = oldAddChild.call(this, widget, null, pos, null);
 		if(widget._name == this.defaultButton
@@ -523,10 +523,10 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	}
 
 	this.getItem = function(name) {
-		if(name instanceof dojo.webui.widgets.ToolbarItem) { return name; }
+		if(name instanceof dojo.widget.ToolbarItem) { return name; }
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem
+			if(child instanceof dojo.widget.ToolbarItem
 				&& child._name == name) { return child; }
 		}
 		return null;
@@ -536,7 +536,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 		var items = [];
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				items.push(child);
 			}
 		}
@@ -550,7 +550,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	this.enable = function(force, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				child.enable(force, preventEvent);
 				if(child._name == this._value) {
 					child.select(force, preventEvent);
@@ -562,7 +562,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	this.disable = function(force, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				child.disable(force, preventEvent);
 			}
 		}
@@ -574,7 +574,7 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 	this.select = function(name, force, preventEvent) {
 		for(var i = 0; i < this.children.length; i++) {
 			var child = this.children[i];
-			if(child instanceof dojo.webui.widgets.ToolbarItem) {
+			if(child instanceof dojo.widget.ToolbarItem) {
 				if(child._name == name) {
 					child.select(force, preventEvent);
 					this._value = name;
@@ -592,13 +592,13 @@ dojo.webui.widgets.HTMLToolbarButtonGroup = function() {
 
 	this.preventDeselect = false; // if true, once you select one, you can't have none selected
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarButtonGroup, dojo.webui.widgets.ToolbarItem);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarButtonGroup");
+dj_inherits(dojo.widget.HTMLToolbarButtonGroup, dojo.widget.ToolbarItem);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarButtonGroup");
 
 /* ToolbarButton
  ***********************/
-dojo.webui.widgets.HTMLToolbarButton = function() {
-	dojo.webui.widgets.ToolbarItem.call(this);
+dojo.widget.HTMLToolbarButton = function() {
+	dojo.widget.ToolbarItem.call(this);
 
 	this.widgetType = "ToolbarButton";
 
@@ -625,38 +625,38 @@ dojo.webui.widgets.HTMLToolbarButton = function() {
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarButton, dojo.webui.widgets.ToolbarItem);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarButton");
+dj_inherits(dojo.widget.HTMLToolbarButton, dojo.widget.ToolbarItem);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarButton");
 
 /* ToolbarDialog
  **********************/
-dojo.webui.widgets.HTMLToolbarDialog = function() {
-	dojo.webui.widgets.ToolbarItem.call(this);
+dojo.widget.HTMLToolbarDialog = function() {
+	dojo.widget.ToolbarItem.call(this);
 
 	this.widgetType = "ToolbarDialog";
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarDialog, dojo.webui.widgets.ToolbarItem);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarDialog");
+dj_inherits(dojo.widget.HTMLToolbarDialog, dojo.widget.ToolbarItem);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarDialog");
 
 /* ToolbarMenu
  **********************/
-dojo.webui.widgets.HTMLToolbarMenu = function() {
-	dojo.webui.widgets.HTMLToolbarDialog.call(this);
+dojo.widget.HTMLToolbarMenu = function() {
+	dojo.widget.HTMLToolbarDialog.call(this);
 
 	this.widgetType = "ToolbarMenu";
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarMenu, dojo.webui.widgets.HTMLToolbarDialog);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarMenu");
+dj_inherits(dojo.widget.HTMLToolbarMenu, dojo.widget.HTMLToolbarDialog);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarMenu");
 
 /* ToolbarMenuItem
  ******************/
-dojo.webui.widgets.ToolbarMenuItem = function() {
+dojo.widget.ToolbarMenuItem = function() {
 }
 
 /* ToolbarSeparator
  **********************/
-dojo.webui.widgets.HTMLToolbarSeparator = function() {
-	dojo.webui.widgets.ToolbarItem.call(this);
+dojo.widget.HTMLToolbarSeparator = function() {
+	dojo.widget.ToolbarItem.call(this);
 
 	this.widgetType = "ToolbarSeparator";
 	this.templateString = '<span unselectable="on" class="toolbarItem toolbarSeparator"></span>';
@@ -675,13 +675,13 @@ dojo.webui.widgets.HTMLToolbarSeparator = function() {
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarSeparator, dojo.webui.widgets.ToolbarItem);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarSeparator");
+dj_inherits(dojo.widget.HTMLToolbarSeparator, dojo.widget.ToolbarItem);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarSeparator");
 
 /* ToolbarSpace
  **********************/
-dojo.webui.widgets.HTMLToolbarSpace = function() {
-	dojo.webui.widgets.HTMLToolbarSeparator.call(this);
+dojo.widget.HTMLToolbarSpace = function() {
+	dojo.widget.HTMLToolbarSeparator.call(this);
 
 	this.widgetType = "ToolbarSpace";
 
@@ -693,13 +693,13 @@ dojo.webui.widgets.HTMLToolbarSpace = function() {
 		}
 	}
 }
-dj_inherits(dojo.webui.widgets.HTMLToolbarSpace, dojo.webui.widgets.HTMLToolbarSeparator);
-dojo.webui.widgets.tags.addParseTreeHandler("dojo:toolbarSpace");
+dj_inherits(dojo.widget.HTMLToolbarSpace, dojo.widget.HTMLToolbarSeparator);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarSpace");
 
 /* Icon
  *********/
 // arguments can be IMG nodes, Image() instances or URLs -- enabled is the only one required
-dojo.webui.Icon = function(enabled, disabled, hover, selected) {
+dojo.widget.Icon = function(enabled, disabled, hover, selected) {
 	if(arguments.length == 0) {
 		throw new Error("Icon must have at least an enabled state");
 	}
@@ -781,14 +781,14 @@ dojo.webui.Icon = function(enabled, disabled, hover, selected) {
 	this.enable();
 }
 
-dojo.webui.Icon.make = function(a,b,c,d) {
+dojo.widget.Icon.make = function(a,b,c,d) {
 	for(var i = 0; i < arguments.length; i++) {
-		if(arguments[i] instanceof dojo.webui.Icon) {
+		if(arguments[i] instanceof dojo.widget.Icon) {
 			return arguments[i];
 		} else if(!arguments[i]) {
 			nullArgs++;
 		}
 	}
 
-	return new dojo.webui.Icon(a,b,c,d);
+	return new dojo.widget.Icon(a,b,c,d);
 }
