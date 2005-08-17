@@ -212,7 +212,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * finished
 	 */
 	afterKeyPress: function (e) {
-		alert(this.editNode.innerHTML);
 		// Mozilla adds a single <p> with an embedded <br> when you hit enter once:
 		//   <p><br>\n</p>
 		// when you hit enter again it adds another <br> inside your enter
