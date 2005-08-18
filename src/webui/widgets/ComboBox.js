@@ -1,6 +1,6 @@
 dojo.provide("dojo.webui.widgets.ComboBox");
 
-dojo.provide("dojo.widget.ComboBox");
+dojo.require("dojo.widget.ComboBox");
 
 dj_deprecated("dojo.webui.widgets.ComboBox is deprecated, use dojo.widget.ComboBox");
 
