@@ -458,9 +458,9 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 
 		<delete file="${release_dir}/source.__package__.js"/>
 
-		<!-- we copy over blank.html here just in case this is a truly
+		<!-- we copy over iframe_history.html here just in case this is a truly
 		stand-alone build that isn't being kicked off via release -->
-		<copy file="../blank.html" todir="${release_dir}/" />
+		<copy file="../iframe_history.html" todir="${release_dir}/" />
 	</target>
 	<!-- end compress task -->
 
@@ -513,7 +513,7 @@ internTemplateStrings()
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
 
-		<copy overwrite="true" file="../blank.html" todir="${release_dir}/"  preservelastmodified="true" />
+		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE.txt" todir="${release_dir}/"  preservelastmodified="true" />
 		<!--

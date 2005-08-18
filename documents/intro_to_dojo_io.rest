@@ -316,7 +316,7 @@ What's In the Package
 
 This article is part of a "profile build" of Dojo that includes a single-file
 distribution of the Dojo core (for HTML environments), the required
-"blank.html" file used for generating back-button entries, a test page that
+"iframe_history.html" file used for generating back-button entries, a test page that
 demonstrates usage of the API, and this article. Dojo does a LOT more than this
 package might lead you to suspect, but don't worry, we'll be releasing more
 soon.

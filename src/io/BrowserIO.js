@@ -103,7 +103,7 @@ dojo.io.createIFrame = function(fname){
 
 	// FIXME: do we need to (optionally) squelch onload?
 	
-	dojo.io.setIFrameSrc(cframe, dojo.hostenv.getBaseScriptUri()+"/blank.html", true);
+	dojo.io.setIFrameSrc(cframe, dojo.hostenv.getBaseScriptUri()+"/iframe_history.html", true);
 	return cframe;
 }
 
@@ -243,7 +243,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			this.bookmarkAnchor.style.display = "none";
 		}
 		if((!args["changeURL"])||(dojo.render.html.ie)){
-			var url = dojo.hostenv.getBaseScriptUri()+"blank.html?"+(new Date()).getTime();
+			var url = dojo.hostenv.getBaseScriptUri()+"iframe_history.html?"+(new Date()).getTime();
 			this.moveForward = true;
 			dojo.io.setIFrameSrc(this.historyIframe, url, false);
 		}
