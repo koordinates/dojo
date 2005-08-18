@@ -14,6 +14,11 @@ dojo.event.topic = new function(){
 		return this.topics[topicName];
 	}
 
+	this.registerPublisher = function(topic, obj, funcName){
+		var topic = this.getTopic(topic);
+		topic.registerPublisher(obj, funcName);
+	}
+
 	this.subscribe = function(topic, obj, funcName){
 		var topic = this.getTopic(topic);
 		topic.subscribe(obj, funcName);
