@@ -103,7 +103,7 @@ dojo.io.createIFrame = function(fname){
 
 	// FIXME: do we need to (optionally) squelch onload?
 	
-	dojo.io.setIFrameSrc(cframe, dojo.hostenv.getBaseScriptUri()+"/iframe_history.html", true);
+	dojo.io.setIFrameSrc(cframe, dojo.hostenv.getBaseScriptUri()+"iframe_history.html", true);
 	return cframe;
 }
 
