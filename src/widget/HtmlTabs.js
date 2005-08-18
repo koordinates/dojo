@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.Tabs");
 dojo.provide("dojo.widget.HtmlTabs");
 
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Manager");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 
 dojo.widget.HtmlTabs._savedNodes = {};
