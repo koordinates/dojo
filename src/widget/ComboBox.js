@@ -1,7 +1,6 @@
 dojo.provide("dojo.widget.ComboBox");
 
-dojo.require("dojo.widget.DomWidget");
-dojo.require("dojo.widget.Manager");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 
 dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){

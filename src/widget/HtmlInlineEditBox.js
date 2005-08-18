@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.InlineEditBox");
 dojo.provide("dojo.widget.HtmlInlineEditBox");
 
-dojo.require("dojo.widget.Manager");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.text.*");
 

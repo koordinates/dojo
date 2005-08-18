@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.HtmlMenu");
-dojo.require("dojo.widget.Manager");
 dojo.require("dojo.widget.Menu");
+dojo.require("dojo.widget.*");
 
 // FIXME: why doesn't this actually do anything?
 dojo.widget.HrmlMenu = function(){

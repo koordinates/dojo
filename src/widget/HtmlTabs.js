@@ -149,4 +149,7 @@ dojo.widget.HtmlTabs = function() {
 	}
 }
 dj_inherits(dojo.widget.HtmlTabs, dojo.widget.HtmlWidget);
+
+dojo.widget.HtmlTabs._savedNodes = {};
+
 dojo.widget.tags.addParseTreeHandler("dojo:tabs");

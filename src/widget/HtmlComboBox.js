@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.HtmlComboBox");
-dojo.require("dojo.widget.Manager");
 dojo.require("dojo.widget.ComboBox");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 
 dojo.widget.HtmlComboBox = function(){

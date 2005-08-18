@@ -6,7 +6,7 @@ dojo.provide("dojo.widget.HtmlDropdownButtons");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.xml.*");
-dojo.require("dojo.widget.Manager");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.uri.Uri");
 

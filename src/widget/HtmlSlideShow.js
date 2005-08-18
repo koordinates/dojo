@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.HtmlSlideShow");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.xml.*");
-dojo.require("dojo.widget.Manager");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.graphics.htmlEffects");
 
