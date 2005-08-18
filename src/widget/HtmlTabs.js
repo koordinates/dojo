@@ -5,7 +5,6 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 
-dojo.widget.HtmlTabs._savedNodes = {};
 dojo.widget.HtmlTabs = function() {
 	dojo.widget.HtmlWidget.call(this);
 
@@ -114,12 +113,7 @@ dojo.widget.HtmlTabs = function() {
 
 		if(panel.url.charAt(0) == "#") {
 			var id = panel.url.substring(1);
-			var origNode = dojo.widget.HtmlTabs._savedNodes[id];
-			if(!origNode) {
-				origNode = dojo.widget.HtmlTabs._savedNodes[id] = document.getElementById(id);
-				if(origNode.parentNode) { origNode.parentNode.removeChild(origNode); }
-			}
-			var node = origNode.cloneNode(true);
+			var node = document.getElementById(id);
 			node.style.display = "none";
 			this.panelContainer.appendChild(node);
 		} else {
@@ -134,7 +128,7 @@ dojo.widget.HtmlTabs = function() {
 				useCache: true,
 				mimetype: "text/html",
 				handler: function(type, data, e) {
-					document.getElementById(id).innerHTML = data;
+					document.getElementById(node.id).innerHTML = data;
 				}
 			});
 		}
