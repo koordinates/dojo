@@ -346,9 +346,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			
 			// select our link and unlink
 			var range = document.createRange();
-			range.selectNode(this.getSelectedNode());
+			var a = this.getSelectedNode();
+			while (a.nodeName != "A") { a = a.parentNode; }
+			range.selectNode(a);
 			selection.removeAllRanges();
 			selection.addRange(range);
+			
 			var returnValue = this.document.execCommand("unlink", false, null);
 			
 			// restore original selection
