@@ -118,9 +118,9 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 		}
 	},
 
-	click: function (e) { this.onColourSelect(e.currentTarget.colour); },
+	click: function (e) { this.onColorSelect(e.currentTarget.color); },
 
-	onColourSelect: function (colour) {},
+	onColorSelect: function (color) {},
 
 	hide: function () { this.domNode.parentNode.removeChild(this.domNode); },
 	
