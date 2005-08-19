@@ -1,7 +1,6 @@
 .. raw:: html
    :file: website/rest_template/header.html
 
-
 Intro
 -----
 
@@ -12,6 +11,7 @@ can be listened to. Using Dojo, code can register to "hear" about any action
 through a uniform API.
 
 In this article we'll show you:
+
 - how to use these tools
 - what makes them completely different from other JavaScript event systems you
   may have used
@@ -126,20 +126,23 @@ should behave just as it always has. On the other hand, since there's no
 explicit caller for `bar()`, it's return value will be lost since there's no
 obvious place to put it.
 
-Gotchas, Disconnection, Connecting Once, and Delaying Execution, and Using Keywords
------------------------------------------------------------------------------------
-
+Disconnection 
+-------------
 Connecting is one thing, but what about when you want to stop listening?
 `dojo.event.disconnect()` will stop the listening arrangement between
 functions, but must be pass *exactly the same* arguments as were passed to
 connect in order to ensure successful disconnection.
 
+Gotchas
+-------
 If there's anything that can trip up new users of `dojo.event.connect()`, it's
-multi-connection. Very often, a piece of code will get called multiple times,
-and it will contain a `dojo.event.connect()` call. The developer is then
-surprised when their listener function is called multiple times for every time
-the source function fires. What to do?
+inadvertantly connecting multiple times. Very often, a piece of code will get
+called multiple times, and it will contain a `dojo.event.connect()` call. The
+developer is then surprised when their listener function is called multiple
+times for every time the source function fires. What to do?
 
+Connecting Once and Using Keywords
+----------------------------------
 One option is to move your `connect()` call to a location that will get invoked
 only once, but sometimes that's just not feasible. An optional argument to
 `connect()` ensures that the same arguments to connect passed multiple times
@@ -163,6 +166,8 @@ far names. Here's our object connection example using `kwConnect()` and the
 As I'm sure you've already guessed, there's an analogous `kwDisconnect` method.
 Just pass it what you pass `kwConnect`, naturally.
 
+Delaying Execution
+------------------
 There's one more modifier up the sleeve of `connect()`/`kwConnect()`; delayed
 calling. The `delay` property in `kwConnect` (the 9th positional parameter for
 `connect`) is a delay in milliseconds for those platforms that support it (all
@@ -357,8 +362,8 @@ Like much of the rest of Dojo, the event system is the work of many people over
 time. The contributions both in code and concept have been incredibly valuable.
 
 The event system was developed after an extensive review of the available
-code-bases and approaches. `f(m)`'s system, while equally flexible, was more
-cumbersome to use in the common case. `netWindow`'s system, while directly
+code-bases and approaches. `f(m)`_'s system, while equally flexible, was more
+cumbersome to use in the common case. `netWindows`_ system, while directly
 analogous to after advice, wouldn't have been easy to retrofit for the other
 event types, but  it's easy-to-use API interface was borrowed. `Burst`'s
 advice system eventually became the root of the Dojo event system after it
@@ -368,20 +373,23 @@ modifications have been made for ease of use, `before-advice` and
 `after-advice` event types, and delayed events.
 
 Event normalization for browser was inspired from much good and similar work in
-`f(m)`.
+`f(m)`_.
 
 Topic-based events build on the basic capabilities provided by `connect()`. It
 was was donated to Dojo by the WebWork team after discussions about how it
-might be accomplished and how a similar system based on `netWindows` sigslot
+might be accomplished and how a similar system based on `netWindows`_ sigslot
 systems was developed for the `repubsub` client.
 
 About The Author
-#########################
+----------------
 
 Alex Russell is the project lead for Dojo and  can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. _`Aspect Oriented Programming`: http://www-128.ibm.com/developerworks/rational/library/2782.html
+.. _`f(m)`: http://fm.dept-z.com/
+.. _`Burst`: http://burstproject.org/
+.. _`netWindows`: http://netWindows.org/
 .. _`The Dojo Wiki`: http://dojo.jot.com/
 .. _`Venkman`: http://www.hacksrus.com/~ginda/venkman/
 
