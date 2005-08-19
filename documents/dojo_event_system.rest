@@ -117,7 +117,7 @@ So lets say that I want `exampleObj.bar()` to get called whenever
 `exampleObj.foo()` is called. We can set this up the same way that we do with
 DOM events::
 
-    dojo.event.connect(exmapleObj, "foo", exampleObj, "bar");
+    dojo.event.connect(exampleObj, "foo", exampleObj, "bar");
 
 Now calling `foo()` will also call `bar()`, thereby incrementing the counter
 twice and alerting "foo" and then "bar". Any caller that was counting on
@@ -126,17 +126,15 @@ should behave just as it always has. On the other hand, since there's no
 explicit caller for `bar()`, it's return value will be lost since there's no
 obvious place to put it.
 
-Disconnection 
--------------
+Disconnection and Multi-Connection
+----------------------------------
 Connecting is one thing, but what about when you want to stop listening?
 `dojo.event.disconnect()` will stop the listening arrangement between
 functions, but must be pass *exactly the same* arguments as were passed to
 connect in order to ensure successful disconnection.
 
-Gotchas
--------
 If there's anything that can trip up new users of `dojo.event.connect()`, it's
-inadvertantly connecting multiple times. Very often, a piece of code will get
+inadvertently connecting multiple times. Very often, a piece of code will get
 called multiple times, and it will contain a `dojo.event.connect()` call. The
 developer is then surprised when their listener function is called multiple
 times for every time the source function fires. What to do?
@@ -156,7 +154,7 @@ far names. Here's our object connection example using `kwConnect()` and the
 `once` parameter::
 
     dojo.event.kwConnect({
-        srcObj:     exmapleObj, 
+        srcObj:     exampleObj, 
         srcFunc:    "foo", 
         targetObj:  exampleObj, 
         targetFunc: "bar",
@@ -187,9 +185,12 @@ Advanced Usage: Seeking Advice
 addition to being able to call any function or method after any other function
 or method call, `connect()` can be used to call listeners *before* the source
 function is called. In `Aspect Oriented Programming`_ terminology, this is called
-"before advice" while the previous examples have all be "after advice". Here's
-how we'd ensure that "bar" gets alerted *before* "foo" when `exampleObj.foo()`
-is called::
+"before advice" while the previous examples have all be "after advice". The
+terminology is confusing, but for a lack of anything less mind-bending or
+better accepted, we adopt it for the advanced cases that `connect()` supports.
+
+Here's how we'd ensure that "bar" gets alerted *before* "foo" when
+`exampleObj.foo()` is called::
 
     dojo.event.connect("before", exampleObj, "foo", exampleObj, "bar");
 
@@ -200,7 +201,7 @@ us want, and most of the time "after" is what you want anyway.
 
 The same connection using `kwConnect()` looks like::
 
-    dojo.event.connect({
+    dojo.event.kwConnect({
         type:       "before", 
         srcObj:     exampleObj, 
         srcFunc:    "foo", 
@@ -232,7 +233,7 @@ second argument if one isn't passed::
     }
 
     function aroundFoo(invocation){
-        if(invocation.args.length > 2){
+        if(invocation.args.length < 2){
             // note that it's a real array, not a pseudo-arr
             invocation.args.push("default for arg2");
         }
@@ -282,7 +283,7 @@ object/name pair to a normal "before" or "after" connection, like this::
     var obj2 = {
         oneArgFunc: function(arg1){
             // this function expects a two-element array 
-            // as its only paramater
+            // as its only parameter
         }
     };
 
@@ -300,7 +301,7 @@ object/name pair to a normal "before" or "after" connection, like this::
     
     // after-around advice
     dojo.event.connect( obj1, "twoArgFunc", 
-                        obj2, "oneArgFunc"
+                        obj2, "oneArgFunc",
                         "aroundFunc");
 
 Each function now gets what it expects, and the code calling
@@ -338,7 +339,7 @@ topics::
 
     // previously we used this connect syntax
     //
-    //  dojo.event.connect(exmapleObj, "foo", exampleObj, "bar");
+    //  dojo.event.connect(exampleObj, "foo", exampleObj, "bar");
     //
     // which we now replace with:
     
@@ -354,6 +355,45 @@ contrived, but it's possible to see how publish and subscribe over topics can
 make your code even less tightly tied, freeing you to structure it as you like,
 without having to build registry objects for callback functions when doing
 asynchronous programming.
+
+How It Works
+------------
+
+Fair warning: if you don't want to know how sausage is made, skip this section.
+
+JavaScript is a dynamic language. This means that many things that would
+normally be forbidden by a complier are fair game at runtime in JavaScript. In
+fact, nearly everything in JavaScript is mutable during script execution. This
+means that function objects (yes, functions are also objects in JS) can be
+moved from one name to another. Combined with the power of closures, JavaScript
+provides everything needed for transparent wrapping of functions, which is
+exactly what `dojo.event.connect()` does under the covers. This means that when
+you connect functions together both the listener and the source function are
+*moved to new names* on the provided namespace object and wrapper functions
+are added in their place to manage the connections that result.
+
+If we didn't have to deal with objects and were only dealing with global
+functions, didn't need multiple connection types, didn't support
+multiple-connections, didn't want around advice, had a fully-ECMA-compliant
+interpreter, and didn't support the "once" and "delay" modifiers, we could
+write a native (but pretty useless) version of `connect()` like this::
+
+    var global = this;
+
+    function naiveConnect(funcName1, funcName2){
+        global["__prefix"+funcName1] = funcName1;
+        global[funcName1] = function(){
+            global["__prefix"+funcName1].apply(global, arguments);
+            global[funcName2].apply(global, arguments);
+        }
+    }
+
+Obviously this is amazingly brittle and we'd never consider using it, but as
+you can see, it's possible to move functions "out of the way" and still call
+them. Further, the values of `funcName1` and `funcName2` are still available to
+the function defined by `naiveConnect` long after `naiveConnect` has returned.
+This is an example of "closures", and the basis for many powerful techniques
+used in advanced JavaScript programming.
 
 A Note on Lineage
 -----------------
@@ -400,7 +440,7 @@ The Dojo Event System
 =====================
 
 :Author: Alex Russell
-:Version: 0.2
+:Version: 0.3
 :Copyright: Dojo Foundation, 2005
 :Date: 2005/08/18
 
