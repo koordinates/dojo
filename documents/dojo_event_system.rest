@@ -123,6 +123,55 @@ should behave just as it always has. On the other hand, since there's no
 explicit caller for `bar()`, it's return value will be lost since there's no
 obvious place to put it.
 
+Gotchas, Disconnection, Connecting Once, and Delaying Execution, and Using Keywords
+-----------------------------------------------------------------------------------
+
+Connecting is one thing, but what about when you want to stop listening?
+`dojo.event.disconnect()` will stop the listening arrangement between
+functions, but must be pass *exactly the same* arguments as were passed to
+connect in order to ensure successful disconnection.
+
+If there's anything that can trip up new users of `dojo.event.connect()`, it's
+multi-connection. Very often, a peice of code will get called multiple times,
+and it will contain a `dojo.event.connect()` call. The developer is then
+suprised when their listener function is called multiple times for every time
+the source function fires. What to do?
+
+One option is to move your `connect()` call to a location that will get invoked
+only once, but sometimes that's just not feasible. An optional argument to
+`connect()` ensures that the same arguments to connect passed multiple times
+will result in only one connection between functions. Unfortunantly, it's the
+8th paramater. Ugg. The last thing we want to do is remember 8 different
+paramaters to our handy little utility method and even moreso since it tries so
+hard to figure out the right thing to do the rest of the time. The best answer
+in this scenario is to use the keyword-argument version of connect, aptly named
+`kwConnect()`. To use it, we have to give the paramaters we've been using so
+far names. Here's our object connection example using `kwConnect()` and the
+`once` paramater::
+
+    dojo.event.kwConnect({
+        srcObj:     exmapleObj, 
+        srcFunc:    "foo", 
+        targetObj:  exampleObj, 
+        targetFunc: "bar",
+        once:       true
+    });
+
+As I'm sure you've already guessed, there's an alagous `kwDisconnect` method.
+Just pass it what you pass `kwConnect`, naturally.
+
+There's one more modifier up the sleeve of `connect()`/`kwConnect()`; delayed
+calling. The `delay` property in `kwConnect` (the 9th positional paramater for
+`connect`) is a delay in milliseconds for those platforms that support it (all
+browsers do).
+
+The last problem worth mentioning is circular connections. Circular connections
+can occur when (perhaps even indirectly) a listener also calls the fucntion
+it's listening too. The good news is that in a JavaScript interpreter, this
+will pretty quickly yeild an exception of some sort "Too much recursion" is a
+popular error message for this kind of problem. Debugging circualr connections
+can be opaque, but tools like `Venkman`_ help.
+
 Advanced Usage: Seeking Advice
 ------------------------------
 
@@ -140,6 +189,16 @@ As you can see, we just prepended our prevous call to `connect()` with the word
 "before". In the other cases, the word "after" was the implied first argument,
 which we could have added if we wanted, but typing more isn't something any of
 us want, and most of the time "after" is what you want anyway.
+
+The same connection using `kwConnect()` looks like::
+
+    dojo.event.connect({
+        type:       "before", 
+        srcObj:     exampleObj, 
+        srcFunc:    "foo", 
+        targetObj:  exampleObj,
+        targetFunc: "bar"
+    });
 
 Before and after advice give us tools to handle a huge range of problems, but
 what about when the listener and the source functions don't have the same call
@@ -288,16 +347,6 @@ make your code even less tightly tied, freeing you to structure it as you like,
 without having to build registry objects for callback functions when doing
 asynchronous programming.
 
-How It Works
-------------
-
-JavaScript is a liberating language for those used to the constraints of
-strongly-typed or compiled languages. What must be accomplished by
-pre-compilers and invasive tools in other languages can be done transparently
-and at runtime in JavaScript and other dynamic languages like it.
-
-.. FIXME: not done!
-
 A Note on Lineage
 -----------------
 
@@ -308,7 +357,7 @@ The event system was developed after an extensive review of the available
 code-bases and aproaches. `f(m)`'s system, while equally flexible, was more
 cumbersome to use in the common case. `netWindow`'s system, while directly
 analagous to after advice, wouldn't have been easy to retrofit for the other
-event types. It's easy-to-use API interface was borrowed, though. `Burst`s
+event types, but  it's easy-to-use API interface was borrowed. `Burst`'s
 advice system eventually became the root of the Dojo event system after it
 became clear that initial work on a new system was turning into an
 almost-verbatim re-write of what was already available there. Subsequent
@@ -331,6 +380,7 @@ Alex Russell is the project lead for Dojo and  can be reached at
 
 .. _`Aspect Oriented Programming`: http://www-128.ibm.com/developerworks/rational/library/2782.html
 .. _`The Dojo Wiki`: http://dojo.jot.com/
+.. _`Venkman`: http://www.hacksrus.com/~ginda/venkman/
 
 .. raw:: html
    :file: website/rest_template/sidebar.html
@@ -341,7 +391,7 @@ The Dojo Event System
 :Author: Alex Russell
 :Version: 0.1
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/06/01
+:Date: 2005/08/18
 
 .. contents::
 	
