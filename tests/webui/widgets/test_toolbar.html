@@ -41,6 +41,17 @@ function init(e) {
 		tb.addChild(items[i], null, {toggleItem:i<3});
 	}
 	//tb.getItem("wikiword").setLabel("WikiWord");
+	var headings = dojo.widget.fromScript("ToolbarSelect", {
+		name: "formatBlock",
+		values: {
+			"Normal": "p",
+			"Heading 1": "h1"
+		}
+	});
+	dojo.event.connect(headings, "onSetValue", function(item, val) {
+		alert(item + "\n" + val);
+	});
+	tb.addChild(headings);
 	var timeSpent = (new Date() - now);
 	dj_debug("Total build time: " + timeSpent);
 	return timeSpent;
