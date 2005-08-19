@@ -103,6 +103,7 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 					backgroundColor = "#" + colors[i][j];
 					border = "1px solid gray";
 					width = height = "15px";
+					fontSize = "1px";
 				}
 	
 				td.color = "#" + colors[i][j];
@@ -118,9 +119,12 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 		}
 	},
 
-	click: function (e) { this.onColorSelect(e.currentTarget.color); },
+	click: function (e) {
+		this.onColorSelect(e.currentTarget.color);
+		e.currentTarget.style.borderColor = "gray";
+	},
 
-	onColorSelect: function (color) {},
+	onColorSelect: function (color) { },
 
 	hide: function () { this.domNode.parentNode.removeChild(this.domNode); },
 	

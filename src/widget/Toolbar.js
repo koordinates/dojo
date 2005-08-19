@@ -646,13 +646,11 @@ dojo.lang.extend(dojo.widget.HTMLToolbarDialog, {
 	},
 	
 	showDialog: function (e) {
-		setTimeout(function() {
-			dojo.event.connect(document, "onmousedown", this, "deselect");
-		}, 1);
+		dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "deselect");
 	},
 	
 	hideDialog: function (e) {
-		dojo.event.disconnect(document, "onmousedown", this, "hideDialog");
+		dojo.event.disconnect(document, "onmousedown", this, "deselect");
 	}
 
 });
