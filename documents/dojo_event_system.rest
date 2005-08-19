@@ -33,13 +33,13 @@ event handlers on DOM Nodes happen without explicit `on*` attributes in markup.
 
     dojo.event.connect(handlerNode, "onclick", "handleOnClick");
 
-In this example, `connect()` is already spotting us a bug fix. Without it, IE
-fails to pass the DOM Event object as the first argument to our handler
-function. Instead, IE forces us to grab the event object from `window.event`.
-Dojo makes sure it's passed into the handler and that it's properties are
-normalized to be more standards-compliant. The normalized event has the
-standard methods for canceling event bubbling and default behavior, which means
-you can stop writing branching statements in handler functions.
+Normally IE fails to pass the DOM Event object as the first argument to our
+handler function. Instead, IE forces us to grab the event object from
+`window.event`. `connect()` transparently fixes this by ensuring that the event
+object is passed to our handler as an argument and that it has the standard
+methods for canceling event bubbling and default behavior. When you use
+`connect()`, you can stop writing branching statements in handler functions and
+focus on handling your event.
 
 But what if we don't want to set up an named function for the event handler? No
 problem::
@@ -68,10 +68,10 @@ Dojo simplifies it to::
     dojo.event.connect(handlerNode, "onclick", object, "handler");
 
 This `connect()` call ensures that when `handlerNode.onclick()` is called,
-`object.handler()` will be called with the same arguments. Unfortunately a
-language limitation of JavaScript makes it impossible to pass in the object and
-function name together, but separating them into an object reference and
-function name isn't difficult.
+`object.handler()` will be called with the same arguments. Language limitations
+of JavaScript make it impossible to pass in the object and function name
+together, however separating them into an object reference and function name isn't
+difficult.
 
 Connect also transparently handles multiple listeners. They are called in the
 order they are registered. This would kick off two separate actions from a
@@ -145,13 +145,11 @@ One option is to move your `connect()` call to a location that will get invoked
 only once, but sometimes that's just not feasible. An optional argument to
 `connect()` ensures that the same arguments to connect passed multiple times
 will result in only one connection between functions. Unfortunately, it's the
-8th parameter. Ugg. The last thing we want to do is remember 8 different
-parameters to our handy little utility method and even more-so since it tries so
-hard to figure out the right thing to do the rest of the time. The best answer
-in this scenario is to use the keyword-argument version of connect, aptly named
-`kwConnect()`. To use it, we have to give the parameters we've been using so
-far names. Here's our object connection example using `kwConnect()` and the
-`once` parameter::
+8th parameter. Ugh. The last thing we want to do is remember 8 different
+parameters. The best answer in this scenario is to use the keyword-argument
+version of connect, aptly named `kwConnect()`. To use it, we have to give the
+parameters we've been using so far names. Here's our object connection example
+using `kwConnect()` and the `once` parameter::
 
     dojo.event.kwConnect({
         srcObj:     exampleObj, 
@@ -174,9 +172,9 @@ browsers do).
 The last problem worth mentioning is circular connections. Circular connections
 can occur when (perhaps even indirectly) a listener also calls the function
 it's listening too. The good news is that in a JavaScript interpreter, this
-will pretty quickly yield an exception of some sort "Too much recursion" is a
-popular error message for this kind of problem. Debugging circular connections
-can be opaque, but tools like `Venkman`_ help.
+will pretty quickly yield an exception of some sort. "Too much recursion" is a
+tip off that you've hit this problem. Debugging circular connections can be
+opaque, but tools like `Venkman`_ help.
 
 Advanced Usage: Seeking Advice
 ------------------------------
@@ -405,12 +403,12 @@ The event system was developed after an extensive review of the available
 code-bases and approaches. `f(m)`_'s system, while equally flexible, was more
 cumbersome to use in the common case. `netWindows`_ system, while directly
 analogous to after advice, wouldn't have been easy to retrofit for the other
-event types, but  it's easy-to-use API interface was borrowed. `Burst`'s
-advice system eventually became the root of the Dojo event system after it
-became clear that initial work on a new system was turning into an
-almost-verbatim re-write of what was already available there. Subsequent
-modifications have been made for ease of use, `before-advice` and
-`after-advice` event types, and delayed events.
+event types. However, we borrowed its easy-to-use API. `Burst`'s advice system
+eventually became the root of the Dojo event system after it became clear that
+initial work on a new system was turning into an almost-verbatim re-write of
+what was already available there. Subsequent modifications have been made for
+ease of use, `before-advice` and `after-advice` event types, and delayed
+events.
 
 Event normalization for browser was inspired from much good and similar work in
 `f(m)`_.
