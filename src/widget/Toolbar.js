@@ -631,12 +631,30 @@ dojo.widget.tags.addParseTreeHandler("dojo:toolbarButton");
 /* ToolbarDialog
  **********************/
 dojo.widget.HTMLToolbarDialog = function() {
-	dojo.widget.ToolbarItem.call(this);
-
-	this.widgetType = "ToolbarDialog";
+	dojo.widget.HTMLToolbarButton.call(this);
 }
-dj_inherits(dojo.widget.HTMLToolbarDialog, dojo.widget.ToolbarItem);
+dj_inherits(dojo.widget.HTMLToolbarDialog, dojo.widget.HTMLToolbarButton);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarDialog");
+
+dojo.lang.extend(dojo.widget.HTMLToolbarDialog, {
+	widgetType: "ToolbarDialog",
+	
+	fillInTemplate: function (args, frag) {
+		dojo.widget.HTMLToolbarDialog.superclass.fillInTemplate.call(this, args, frag);
+		dojo.event.connect(this, "onSelect", this, "showDialog");
+		dojo.event.connect(this, "onDeselect", this, "hideDialog");
+	},
+	
+	showDialog: function (e) {
+		//e.stopPropagation();
+		dojo.event.connect(document, "onmousedown", this, "deselect");
+	},
+	
+	hideDialog: function (e) {
+		dojo.event.disconnect(document, "onmousedown", this, "hideDialog");
+	}
+
+});
 
 /* ToolbarMenu
  **********************/

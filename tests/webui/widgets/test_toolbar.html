@@ -8,7 +8,8 @@ djConfig = {
 };
 </script>
 <script type="text/javascript" src="../../../__package__.js"></script>
-<script type="text/javascript" src="../../../src/webui/widgets/Toolbar.js"></script>
+<script type="text/javascript" src="../../../src/widget/Toolbar.js"></script>
+<script type="text/javascript" src="../../../src/widget/HtmlColorPalette.js"></script>
 <script type="text/javascript">
 function img(name) {
 	return dojo.uri.dojoUri("src/webui/widgets/templates/buttons/" + name + ".gif").toString();
@@ -16,11 +17,11 @@ function img(name) {
 
 function init(e) {
 	var now = new Date();
-	tc = dojo.webui.fromScript("ToolbarContainer");
+	tc = dojo.widget.fromScript("ToolbarContainer");
 	document.body.insertBefore(tc.domNode, document.body.firstChild);
-	tb = dojo.webui.fromScript("Toolbar");
+	tb = dojo.widget.fromScript("Toolbar");
 	tc.addChild(tb);
-	var bg = dojo.webui.fromScript("ToolbarButtonGroup", {
+	var bg = dojo.widget.fromScript("ToolbarButtonGroup", {
 		name: "justify",
 		defaultButton: "justifyleft",
 		preventDeselect: true
@@ -30,13 +31,12 @@ function init(e) {
 	bg.addChild(img("justifyright"));
 	bg.addChild(img("justifyfull"));
 	var items = [img("bold"), img("italic"), img("underline"),
-		"|", img("backcolor"), img("forecolor"),
+		"|", dojo.widget.fromScript("ToolbarColorDialog", {toggleItem: true, icon: new dojo.widget.Icon(img("backcolor"))}), img("forecolor"),
 		"|", bg, //["justify", img("justifyleft"), img("justifycenter"), img("justifyright"), img("justifyfull")],
 		"|", img("createlink"), img("insertimage"),
 		"|", img("indent"), img("outdent"),
 		img("insertorderedlist"), img("insertunorderedlist"),
-		"|", img("undo"), img("redo"),
-		"|", img("wikiword")];
+		"|", img("undo"), img("redo")];
 	for(var i = 0; i < items.length; i++) {
 		tb.addChild(items[i], null, {toggleItem:i<3});
 	}

@@ -374,5 +374,6 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp){
 		
 	}
 	var twidget = dojo.widget.manager.getImplementation(stype);
+	if (!twidget.create) { throw new Error("cannot find widget of type: " + stype); }
 	return twidget.create(localProperties, frag, parentComp);
 }
