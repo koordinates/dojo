@@ -418,7 +418,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		var heights = ["margin-top", "margin-bottom",
 			"padding-bottom", "padding-top",
 			"border-width-bottom", "border-width-top"];
-		for (var i = 0, chromeheight = 0; i < heights.length; i++) {
+		for (var i = 0, chromeheight = 30; i < heights.length; i++) {
 			var height = dojo.xml.domUtil.getStyle(this.iframe, heights[i]);
 			// Safari doesn't have all the heights so we have to test
 			if (height) {

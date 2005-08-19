@@ -43,6 +43,13 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 			}
 		}*/
 
+		dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");
+
+	},
+
+	_setValue: function(color) {
+		this._value = color;
+		this._fireEvent("onSetValue", color);
 	},
 	
 	showDialog: function (e) {
@@ -85,6 +92,7 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 			["000", "300", "630", "633", "330", "030", "033", "006", "309", "303"]];
 	
 		this.domNode = document.createElement("table");
+		this.domNode.unselectable = "on";
 		with (this.domNode) { // set the table's properties
 			cellPadding = "0"; cellSpacing = "1"; border = "1";
 			style.backgroundColor = "white"; style.position = "absolute";

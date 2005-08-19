@@ -310,6 +310,7 @@ dojo.widget.ToolbarItem = function() {
 				this._fireEvent("onChangeEnabled");
 			}
 		}
+		return this._enabled;
 	}
 	this.enable = function(force, preventEvent) {
 		return this.setEnabled(true, force, preventEvent);
@@ -712,6 +713,40 @@ dojo.widget.HTMLToolbarSpace = function() {
 }
 dj_inherits(dojo.widget.HTMLToolbarSpace, dojo.widget.HTMLToolbarSeparator);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSpace");
+
+/* ToolbarSelect
+ ******************/
+dojo.widget.HTMLToolbarSelect = function() {
+	dojo.widget.ToolbarItem.call(this);
+	this.widgetType = "ToolbarSelect";
+	this.templateString = '<span class="toolbarItem toolbarSelect" unselectable="on"><select dojoAttachPoint="selectBox" dojoOnChange="changed"></select></span>';
+
+	var oldFillInTemplate = this.fillInTemplate;
+	this.fillInTemplate = function(args, frag) {
+		oldFillInTemplate.call(this, args, frag, true);
+		var keys = args.values;
+		var i = 0;
+		for(var val in keys) {
+			var opt = document.createElement("option");
+			opt.setAttribute("value", keys[val]);
+			opt.innerHTML = val;
+			this.selectBox.appendChild(opt);
+		}
+	}
+
+	this.changed = function(e) {
+		this._fireEvent("onSetValue", this.selectBox.value);
+	}
+
+	var oldSetEnabled = this.setEnabled;
+	this.setEnabled = function(is, force, preventEvent) {
+		var ret = oldSetEnabled.call(this, is, force, preventEvent);
+		this.selectBox.disabled = !this._enabled;
+		return ret;
+	}
+}
+dj_inherits(dojo.widget.HTMLToolbarSelect, dojo.widget.ToolbarItem);
+dojo.widget.tags.addParseTreeHandler("dojo:toolbarSelect");
 
 /* Icon
  *********/
