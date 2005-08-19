@@ -646,8 +646,9 @@ dojo.lang.extend(dojo.widget.HTMLToolbarDialog, {
 	},
 	
 	showDialog: function (e) {
-		//e.stopPropagation();
-		dojo.event.connect(document, "onmousedown", this, "deselect");
+		setTimeout(function() {
+			dojo.event.connect(document, "onmousedown", this, "deselect");
+		}, 1);
 	},
 	
 	hideDialog: function (e) {
