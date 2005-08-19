@@ -148,11 +148,13 @@ dojo.event.browser = new function(){
 	}
 
 	this.fixEvent = function(evt){
+
+
 		// check we have an event object and do nothing if we don't
-		if ((typeof Event != "undefined" && !evt instanceof Event) || !window.event) {
+		if (!((typeof Event != "undefined" && evt instanceof Event) || window.event)) {
 			return evt;
 		}
-
+		
 		if (evt.type && evt.type.indexOf("key") == 0) { // key events
 			var keys = {
 				KEY_BACKSPACE: 8,
