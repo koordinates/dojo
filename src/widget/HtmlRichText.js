@@ -32,6 +32,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (this.debug) { alert("starting editor"); }
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
 		
+		var oldHeight = dojo.xml.htmlUtil.getInnerHeight(this.domNode);
+		
 		this.savedContent = document.createElement("div");
 		while (this.domNode.hasChildNodes()) {
 			this.savedContent.appendChild(this.domNode.firstChild);
@@ -61,13 +63,15 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.editNode.className = "editable";
 			this.domNode.appendChild(this.editNode);
 			
-			dojo.event.connect(this.editNode, "onblur", this, "blur");
+			dojo.event.connect(this.editNode, "onblur", this, "onBlur");
+			dojo.event.connect(this.editNode, "onfocus", this, "onFocus");
 		
 			this.window = window;
 			this.document = document;
 		} else {
 			this.iframe = document.createElement("iframe");
 			this.iframe.width = "100%";
+			this.iframe.height = oldHeight;
 			this.iframe.style.border = "none";
 			this.iframe.scrolling = "no";
 			this.iframe.className = "editable";
@@ -147,7 +151,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				relay(this.document, events[i], document, events[i]);
 			}
 
-			dojo.event.browser.addListener(this.document, "blur", hitch(this, "blur"));
+			dojo.event.browser.addListener(this.document, "blur", hitch(this, "onBlur"));
+			dojo.event.browser.addListener(this.document, "focus", hitch(this, "onFocus"));
 		}
 
 		// TODO: this is a guess at the default line-height, kinda works
@@ -239,10 +244,17 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		//}
 	},
 	
-	click: function (e) {
+	click: function (e) {},
+	
+	onBlur: function (e) {},
+	onFocus: function (e) {},
+
+	blur: function () {
+		//if (this.iframe) { this.window.blur(); } else { this.editNode.blur(); }
 	},
 	
-	blur: function (e) {
+	focus: function () {
+		//if (this.iframe) { this.window.focus(); } else { this.editNode.focus(); }
 	},
 	
 
