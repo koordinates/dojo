@@ -45,7 +45,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		//if (dojo.render.html.ie) {
 		//	html = html.replace(/(<(p)[^>]*>)/ig, "$1<br>");
 		//}
-		
+
+		// I need hitch, dammit!!
+		function hitch (obj, meth) {
+			return function () { return obj[meth].apply(obj, arguments); }
+		}
+
 		// Safari's selections go all out of whack if we do it inline,
 		// so for now IE is our only hero
 		//if (typeof document.body.contentEditable != "undefined") {
@@ -56,6 +61,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.editNode.className = "editable";
 			this.domNode.appendChild(this.editNode);
 			
+			dojo.event.connect(this.editNode, "onblur", this, "blur");
+		
 			this.window = window;
 			this.document = document;
 		} else {
@@ -139,6 +146,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				relay(this.window, events[i], window, events[i]);
 				relay(this.document, events[i], document, events[i]);
 			}
+
+			dojo.event.browser.addListener(this.document, "blur", hitch(this, "blur"));
 		}
 
 		// TODO: this is a guess at the default line-height, kinda works
@@ -150,11 +159,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
 		}
 		dojo.event.connect("around", this, "execCommand", this, "_normalizeCommand");
-
-		// I need hitch, dammit!!
-		function hitch (obj, meth) {
-			return function () { return obj[meth].apply(obj, arguments); }
-		}
 
 		dojo.event.browser.addListener(this.document, "keypress", hitch(this, "keyPress"));
 		dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
@@ -236,6 +240,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	click: function (e) {
+	},
+	
+	blur: function (e) {
 	},
 	
 
