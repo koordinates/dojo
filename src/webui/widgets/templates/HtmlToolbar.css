@@ -1,13 +1,12 @@
 .toolbarContainer {
 	border-bottom : 0;
-	background-color : #eef;
+	background-color : rgb(181,208,234);
 	color : ButtonText;
 	font : Menu;
 }
 
 .toolbar {
 	padding : 2px 4px;
-	font-size : 11px;
 	min-height : 26px;
 	_height : 26px;
 }
@@ -17,7 +16,7 @@
 	padding : 1px 3px;
 	margin : 1px 2px 1px 0;
 	cursor : pointer;
-	border : 1px solid #eef;
+	border : 1px solid rgb(181,208,234);
 }
 
 .toolbarItem.selected, .toolbarItem.down {
@@ -36,7 +35,7 @@
 }
 
 .toolbarButton.hover {
-	border-color : #bbf;
+	border-color : #eef;
 }
 
 .toolbarItem.disabled {
