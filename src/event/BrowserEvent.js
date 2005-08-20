@@ -49,7 +49,11 @@ dojo_ie_clobber = new function(){
 
 		var na;
 		if(nodeRef){
-			na = nodeRef.getElementsByTagName("*");
+			var tna = nodeRef.getElementsByTagName("*");
+			na = [nodeRef];
+			for(var x=0; x<tna.length; x++){
+				na.push(tna[x]);
+			}
 		}else{
 			na = (this.clobberNodes.length) ? this.clobberNodes : document.all;
 		}
