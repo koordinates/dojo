@@ -275,7 +275,7 @@ dojo.widget.fromScript = function(name, props, refNode, position){
 		tn = refNode;
 	}
 	var widgetArray = dojo.widget.oldFromScript(tn, name, props);
-	if (typeof widgetArray[0].widgetType == "undefined") {
+	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("Creation of \"" + name + "\" widget fromScript failed.");
 	}
 	if (notRef) { widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode); }
