@@ -37,9 +37,7 @@ dojo_ie_clobber = new function(){
 		}
 	}
 
-	this.clobber = function(){
-		// var init = new Date();
-		// var stripctr = 0;
+	this.clobber = function(nodeRef){
 		for(var x=0; x< this.exclusions.length; x++){
 			try{
 				var tn = document.getElementById(this.exclusions[x]);
@@ -49,16 +47,15 @@ dojo_ie_clobber = new function(){
 			}
 		}
 
-		var na = (this.clobberNodes.length) ? this.clobberNodes : document.all;
-		/*
-		for(var p = this.clobberArr.length-1; p>=0; p=p-1){
-			alert(this.clobberArr[p]);
+		var na;
+		if(nodeRef){
+			na = nodeRef.getElementsByTagName("*");
+		}else{
+			na = (this.clobberNodes.length) ? this.clobberNodes : document.all;
 		}
-		*/
 		for(var i = na.length-1; i>=0; i=i-1){
 			var el = na[i];
 			for(var p = this.clobberArr.length-1; p>=0; p=p-1){
-				// stripctr++;
 				var ta = this.clobberArr[p];
 				try{
 					el[ta] = null;
@@ -67,7 +64,6 @@ dojo_ie_clobber = new function(){
 				}catch(e){ /* squelch */ }
 			}
 		}
-		// alert("clobbering took: "+((new Date())-init)+"ms\nwe removed: "+stripctr+" properties");
 	}
 }
 
@@ -82,6 +78,11 @@ if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie
 }
 
 dojo.event.browser = new function(){
+
+	this.clean(node){
+		if(dojo.render.html.ie){ dojo_ie_clobber.clobber(node); }
+	}
+
 	this.addClobberAttr = function(type){
 		dojo_ie_clobber.addClobberAttr(type);
 	}
