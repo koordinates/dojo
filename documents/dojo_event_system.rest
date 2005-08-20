@@ -374,7 +374,7 @@ If we didn't have to deal with objects and were only dealing with global
 functions, didn't need multiple connection types, didn't support
 multiple-connections, didn't want around advice, had a fully-ECMA-compliant
 interpreter, and didn't support the "once" and "delay" modifiers, we could
-write a native (but pretty useless) version of `connect()` like this::
+write a naive (but pretty useless) version of `connect()` like this::
 
     var global = this;
 
