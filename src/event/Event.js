@@ -191,6 +191,18 @@ dojo.event = new function(){
 					// manually
 	}
 
+	this.connectBefore = function() {
+		var args = ["before"];
+		for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
+		return this.connect.apply(this, args);
+	}
+
+	this.connectAround = function() {
+		var args = ["around"];
+		for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
+		return this.connect.apply(this, args);
+	}
+
 	this.kwConnectImpl_ = function(kwArgs, disconnect){
 		var fn = (disconnect) ? "disconnect" : "connect";
 		if(typeof kwArgs["srcFunc"] == "function"){
