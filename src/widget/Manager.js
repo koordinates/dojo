@@ -26,7 +26,7 @@ dojo.widget.manager = new function(){
 		for(var x=this.widgets.length-1; x>=0; x--){
 			try{
 				// this.widgets[x].destroyChildren();
-				this.widgets[x].destroy();
+				this.widgets[x].destroy(true);
 				delete this.widgets[x];
 			}catch(e){ }
 		}

@@ -63,10 +63,10 @@ dojo.lang.extend(dojo.widget.Widget, {
 		return this;
 	},
 
-	destroy: function(){
+	destroy: function(finalize){
 		// FIXME: this is woefully incomplete
 		this.uninitialize();
-		this.destroyRendering();
+		this.destroyRendering(finalize);
 		dojo.widget.manager.removeById(this.widgetId);
 	},
 

@@ -98,10 +98,12 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		this._old_buildFromTemplate();
 	},
 
-	destroyRendering: function(){
+	destroyRendering: function(finalize){
 		try{
 			var tempNode = this.domNode.parentNode.removeChild(this.domNode);
-			dojo.event.browser.clean(tempNode);
+			if(!finalize){
+				dojo.event.browser.clean(tempNode);
+			}
 			delete tempNode;
 		}catch(e){ /* squelch! */ }
 	}
