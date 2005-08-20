@@ -274,11 +274,12 @@ dojo.widget.fromScript = function(name, props, refNode, position){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var ret = dojo.widget.oldFromScript(tn, name, props);
-	if(notRef){
-		ret[0].domNode.parentNode.removeChild(ret[0].domNode);
+	var widgetArray = dojo.widget.oldFromScript(tn, name, props);
+	if (typeof widgetArray[0].widgetType == "undefined") {
+		throw new Error("Creation of \"" + name + "\" widget fromScript failed.");
 	}
-	return ret[0]; // not sure what the array wrapper is for, but just return the widget
+	if (notRef) { widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode); }
+	return widgetArray[0]; // not sure what the array wrapper is for, but just return the widget
 }
 
 dojo.widget.oldFromScript = function(placeKeeperNode, name, props){
