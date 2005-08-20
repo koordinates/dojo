@@ -96,5 +96,13 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	buildFromTemplate: function(){
 		dojo.widget.buildFromTemplate(this);
 		this._old_buildFromTemplate();
+	},
+
+	destroyRendering: function(){
+		try{
+			var tempNode = this.domNode.parentNode.removeChild(this.domNode);
+			dojo.event.browser.clean(tempNode);
+			delete tempNode;
+		}catch(e){ /* squelch! */ }
 	}
 });
