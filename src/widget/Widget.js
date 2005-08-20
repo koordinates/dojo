@@ -22,7 +22,6 @@ dojo.widget.Widget = function(){
 // over-ride.
 dojo.lang.extend(dojo.widget.Widget, {
 	// base widget properties
-	widgetType: "Widget",
 	parent: null,
 	// obviously, top-level and modal widgets should set these appropriately
 	isTopLevel:  false,
