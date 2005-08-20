@@ -83,8 +83,10 @@ if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie
 
 dojo.event.browser = new function(){
 
-	this.clean(node){
-		if(dojo.render.html.ie){ dojo_ie_clobber.clobber(node); }
+	this.clean = function(node){
+		if(dojo.render.html.ie){ 
+			dojo_ie_clobber.clobber(node);
+		}
 	}
 
 	this.addClobberAttr = function(type){
