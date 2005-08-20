@@ -246,9 +246,19 @@ dojo.widget.getParser = function(name){
 	return this._parser_collection[name];
 }
 
-// FIXME: new signature should be:
-//  Widget  fromScript(name, props, refNode, position)
-dojo.widget.fromScript = function(name, props, refNode, position){
+/**
+ * Creates widget.
+ *
+ * @param name     The name of the widget to create
+ * @param props    Key-Value pairs of properties of the widget
+ * @param refNode  If the last argument is specified this node is used as
+ *                 a reference for inserting this node into a DOM tree else
+ *                 it beomces the domNode
+ * @param position The position to insert this widget's node relative to the
+ *                 refNode argument
+ * @return The new Widget object
+ */
+ dojo.widget.fromScript = function(name, props, refNode, position){
 	if(	(typeof name != "string")&&
 		(typeof props == "string")){
 		// we got called with the old function signature, so just pass it on through
@@ -278,7 +288,11 @@ dojo.widget.fromScript = function(name, props, refNode, position){
 	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("Creation of \"" + name + "\" widget fromScript failed.");
 	}
-	if (notRef) { widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode); }
+	if (notRef) {
+		if (widgetArray[0].domNode.parentNode) {
+			widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode);
+		}
+	}
 	return widgetArray[0]; // not sure what the array wrapper is for, but just return the widget
 }
 
@@ -292,3 +306,5 @@ dojo.widget.oldFromScript = function(placeKeeperNode, name, props){
 	};
 	return dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props);
 }
+
+
