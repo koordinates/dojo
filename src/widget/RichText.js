@@ -443,6 +443,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * @return true if the contents has been modified, false otherwise
 	 */
 	close: function (save) {
+		if (arguments.length == 0) { save = true; }
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
 		
 		if (save) { this.domNode.innerHTML = this.editNode.innerHTML; }
