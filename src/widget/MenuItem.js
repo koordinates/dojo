@@ -46,19 +46,30 @@ dj_inherits(dojo.widget.HtmlMenuItem, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 	widgetType: "MenuItem",
+	templateString: '<li style="margin: 0;"></li>',
 	label: "",
-
-	buildRendering: function () {
-		dojo.widget.HtmlMenuItem.superclass.buildRendering.apply(this, arguments);
-		this.domNode = document.createElement("li");
-		with (this.domNode.style) {
-			margin = "0"; padding = "2px 1em";
-		}
-	},
 
 	fillInTemplate: function () {
 		//dojo.widget.HtmlMenuItem.superclass.fillInTemplate.apply(this, arguments);
-		alert(this.domNode);
 		this.domNode.appendChild(document.createTextNode(this.label));
-	}
+		this.domNode.className = "MenuItem";
+		
+		dojo.event.connect(this.domNode, "onmouseover", this, "onMouseOver");
+		dojo.event.connect(this.domNode, "onmouseout", this, "onMouseOut");
+		dojo.event.connect(this.domNode, "onmousedown", this, "onMouseDown");
+		dojo.event.connect(this.domNode, "onmouseup", this, "onMouseUp");
+		dojo.event.connect(this.domNode, "onclick", this, "onClick");
+	},
+	
+	onMouseOver: function (e) {
+		dojo.xml.htmlUtil.addClass(this.domNode, "hover");
+	},
+	
+	onMouseOut: function (e) {
+		dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
+	},
+	
+	onClick: function (e) {},
+	onMouseDown: function (e) {},
+	onMouseUp: function (e) {},
 });

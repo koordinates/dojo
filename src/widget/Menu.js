@@ -37,9 +37,9 @@ dojo.widget.DomMenu = function(){
 }
 dj_inherits(dojo.widget.DomMenu, dojo.widget.DomWidget);
 
-dojo.lang.extend(dojo.widget.DomMenu, dojo.widget.DomWidget.prototype);
-dojo.lang.extend(dojo.widget.DomMenu, dojo.widget.Menu.prototype);
 dojo.lang.extend(dojo.widget.DomMenu, {
+	widgetType: "Menu",
+
 	push: function (item) {
 		dojo.widget.Menu.call(this, item);
 		this.domNode.appendChild(item.domNode);
@@ -55,24 +55,16 @@ dojo.widget.HtmlMenu = function(){
 }
 dj_inherits(dojo.widget.HtmlMenu, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlMenu, dojo.widget.HtmlWidget.prototype);
-dojo.lang.extend(dojo.widget.HtmlMenu, dojo.widget.DomMenu.prototype);
 dojo.lang.extend(dojo.widget.HtmlMenu, {
-	
-	buildRendering: function () {
-		dojo.widget.HtmlMenu.superclass.buildRendering.apply(this, arguments);
+	widgetType: "Menu",
 
-		this.domNode = document.createElement("ul");
-		with (this.domNode.style) {
-			listStye = "none";
-			padding = "0";
-			margin = "0";
-		}
-		// TODO: I don't know what Dojo does with children
-	},
+	templateString: '<ul style="list-style: none; padding: 0; margin: 0;"></ul>',
 	
 	fillInTemplate: function () {
 		//dojo.widget.HtmlMenu.superclass.fillInTemplate.apply(this, arguments);
-	}
+		this.domNode.className = "Menu";
+	},
+	
+	push: dojo.widget.DomMenu.prototype.push
 
 });
