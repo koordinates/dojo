@@ -18,6 +18,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	widgetType: "richtext",
 	debug: !true,
 
+	/** whether to inherit the parent's width or simply use 100% */
+	inheritWidth: false,
 
 /* Init
  *******/
@@ -33,6 +35,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
 		
 		var oldHeight = dojo.xml.htmlUtil.getInnerHeight(this.domNode);
+		var oldWidth = dojo.xml.htmlUtil.getInnerWidth(this.domNode);
 		
 		this.savedContent = document.createElement("div");
 		while (this.domNode.hasChildNodes()) {
@@ -70,7 +73,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.document = document;
 		} else {
 			this.iframe = document.createElement("iframe");
-			this.iframe.width = "100%";
+			this.iframe.width = this.inheritWidth ? oldWidth : "100%";
 			this.iframe.height = oldHeight;
 			this.iframe.style.border = "none";
 			this.iframe.scrolling = "no";
@@ -169,6 +172,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
 		dojo.event.browser.addListener(this.document, "keyup", hitch(this, "keyUp"));
 		dojo.event.browser.addListener(this.document, "click", hitch(this, "click"));
+		
+		this.focus();
 	},
 
 
