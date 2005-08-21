@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../../__package__.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.PopUpButton");
+</script>
+
+<script type="text/javascript" src="../../../src/widget/PopUpButton.js"></script>
+
+<script type="text/javascript">
+
+/*dojo.event.connect(window, "onload", function (e) {
+	var menu = dojo.widget.fromScript("Menu");
+	menu.push(dojo.widget.fromScript("MenuItem", {label: "Menu Item one"}));
+	menu.push(dojo.widget.fromScript("MenuItem", {label: "Menu Item two"}));
+	menu.push(dojo.widget.fromScript("MenuItem", {label: "Menu Item three"}));
+	
+	document.body.appendChild(menu.domNode);
+});*/
+
+</script>
+
+<style type="text/css">
+
+.Menu {
+	border: 1px solid black;
+	position: absolute;
+}
+
+.MenuItem {
+	padding: 2px 1em;
+}
+
+.MenuItem.hover {
+	background: #ccc;
+}
+
+</style>
+
+<select dojoType="PopUpButton">
+	<option>foo</option>
+	<option>bar</option>
+	<option>baz</option>
+</select>
