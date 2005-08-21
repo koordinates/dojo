@@ -67,7 +67,7 @@ dojo.widget.manager = new function(){
 
 	this.getWidgetsOfType = function (id) {
 		dj_deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
-		dojo.widget.manager.getWidgetsByType(id);
+		return dojo.widget.manager.getWidgetsByType(id);
 	}
 
 	this.getWidgetsByFilter = function(unaryFunc){
