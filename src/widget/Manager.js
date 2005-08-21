@@ -54,7 +54,7 @@ dojo.widget.manager = new function(){
 		return this.widgetIds[id];
 	}
 
-	this.getWidgetsOfType = function(type){
+	this.getWidgetsByType = function(type){
 		var lt = type.toLowerCase();
 		var ret = [];
 		dojo.alg.forEach(this.widgets, function(x){
@@ -63,6 +63,11 @@ dojo.widget.manager = new function(){
 			}
 		});
 		return ret;
+	}
+
+	this.getWidgetsOfType = function (id) {
+		dj_deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
+		dojo.widget.manager.getWidgetsByType(id);
 	}
 
 	this.getWidgetsByFilter = function(unaryFunc){
