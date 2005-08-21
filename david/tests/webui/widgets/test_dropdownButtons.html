@@ -1,0 +1,76 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Dropdown Buttons Widget Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<script language="JavaScript" type="text/javascript" 
+	src="../../../__package__.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.webui.widgets.DropdownButtons");
+</script>
+<style type="text/css">
+body { font-family : sans-serif; }
+</style>
+</head>
+<body>
+
+<p>The "buttons" are just a nsted unordered list. Note that the nested lists (the dropdowns) will be removed from
+the list and put into the body, adding dopdownButtonsMenu to their className. This allows them to show up on top
+of other page elements.</p>
+
+<p>This paragraph preceeds the list!</p>
+
+<ul dojoType="dropdownbuttons">
+	<li><a href="#edit">Reply</a>
+		<ul>
+			<li><a href="#1">Reply All</a></li>
+			<li><a href="#2">Forward</a></li>
+		</ul>
+	</li>
+	<li><a href="#send">Mark</a>
+		<ul>
+			<li><a href="#2">As Read</a></li>
+			<li><a href="#3">As Unread</a></li>
+			<li><a href="#4">Important</a></li>
+		</ul>
+	</li>
+	<li><a href="#">Nothing here</a></li>
+	<li><a href="#menu">Short</a>
+		<ul>
+			<li><a href="#1">Something really, really long!</a></li>
+			<li><a href="#2">You think that's long? I can do much better.</a></li>
+			<li><a href="#3">Short again</a></li>
+		</ul>
+	</li>
+	<li><a class="disabled">Don't click me!</a>
+		<ul>
+			<li><a href="#1">But what about the children?</a></li>
+		</ul>
+	</li>
+</ul>
+
+<p>This paragraph comes later.</p>
+
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce placerat luctus eros. Morbi est augue, porta ut, feugiat nec, aliquam et, neque. Vestibulum eu ipsum nec justo tristique vehicula. Curabitur iaculis imperdiet augue. Vestibulum placerat orci et dui. Morbi cursus suscipit magna. Ut eget arcu. Mauris vehicula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur adipiscing ligula et sapien. Sed nulla libero, adipiscing a, ornare at, condimentum gravida, odio. Sed sed enim. Phasellus laoreet velit ac nisl. Ut auctor, urna sit amet tempus sollicitudin, libero odio eleifend risus, et imperdiet pede diam non lacus.</p>
+
+<p>Nulla sit amet dui. Cras pretium, ipsum vitae posuere semper, dolor enim tempor quam, ut facilisis lorem urna ut massa. Nullam urna est, bibendum nec, suscipit quis, auctor in, lorem. Aliquam justo lectus, gravida vitae, pretium sit amet, placerat in, augue. Sed nunc augue, ornare sed, ultrices eu, laoreet vel, libero. Maecenas eget odio. Mauris egestas tellus at massa. Cras eu dolor. Duis vitae leo in diam luctus suscipit. Vestibulum a odio eu nunc feugiat adipiscing. In hac habitasse platea dictumst. Donec et leo. Sed libero. Nullam viverra, arcu ut vehicula consequat, neque purus porttitor nulla, et dictum orci nibh in tortor. Sed vehicula mauris non urna. Aenean varius. Nulla a mauris porta arcu dapibus vulputate. Curabitur sit amet enim quis massa consectetuer faucibus.</p>
+
+<p>Integer et nibh. Cras bibendum quam in mi. Nam quis lacus. Duis ac leo vitae nisl venenatis varius. Nullam scelerisque, mauris et egestas commodo, quam tellus dictum sapien, at lacinia lorem lectus a orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Curabitur dictum egestas tortor. Sed convallis massa sed ipsum. Maecenas id tortor. Pellentesque ante risus, bibendum non, fermentum at, accumsan quis, lacus. Donec consectetuer tortor nec arcu. Nullam vitae pede nec ante malesuada varius. Aenean bibendum. Integer consequat lacus non tellus. Integer sollicitudin velit vitae tortor. Nulla interdum. </p>
+
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce placerat luctus eros. Morbi est augue, porta ut, feugiat nec, aliquam et, neque. Vestibulum eu ipsum nec justo tristique vehicula. Curabitur iaculis imperdiet augue. Vestibulum placerat orci et dui. Morbi cursus suscipit magna. Ut eget arcu. Mauris vehicula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur adipiscing ligula et sapien. Sed nulla libero, adipiscing a, ornare at, condimentum gravida, odio. Sed sed enim. Phasellus laoreet velit ac nisl. Ut auctor, urna sit amet tempus sollicitudin, libero odio eleifend risus, et imperdiet pede diam non lacus.</p>
+
+<p>Nulla sit amet dui. Cras pretium, ipsum vitae posuere semper, dolor enim tempor quam, ut facilisis lorem urna ut massa. Nullam urna est, bibendum nec, suscipit quis, auctor in, lorem. Aliquam justo lectus, gravida vitae, pretium sit amet, placerat in, augue. Sed nunc augue, ornare sed, ultrices eu, laoreet vel, libero. Maecenas eget odio. Mauris egestas tellus at massa. Cras eu dolor. Duis vitae leo in diam luctus suscipit. Vestibulum a odio eu nunc feugiat adipiscing. In hac habitasse platea dictumst. Donec et leo. Sed libero. Nullam viverra, arcu ut vehicula consequat, neque purus porttitor nulla, et dictum orci nibh in tortor. Sed vehicula mauris non urna. Aenean varius. Nulla a mauris porta arcu dapibus vulputate. Curabitur sit amet enim quis massa consectetuer faucibus.</p>
+
+<p>Integer et nibh. Cras bibendum quam in mi. Nam quis lacus. Duis ac leo vitae nisl venenatis varius. Nullam scelerisque, mauris et egestas commodo, quam tellus dictum sapien, at lacinia lorem lectus a orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Curabitur dictum egestas tortor. Sed convallis massa sed ipsum. Maecenas id tortor. Pellentesque ante risus, bibendum non, fermentum at, accumsan quis, lacus. Donec consectetuer tortor nec arcu. Nullam vitae pede nec ante malesuada varius. Aenean bibendum. Integer consequat lacus non tellus. Integer sollicitudin velit vitae tortor. Nulla interdum. </p>
+
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce placerat luctus eros. Morbi est augue, porta ut, feugiat nec, aliquam et, neque. Vestibulum eu ipsum nec justo tristique vehicula. Curabitur iaculis imperdiet augue. Vestibulum placerat orci et dui. Morbi cursus suscipit magna. Ut eget arcu. Mauris vehicula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur adipiscing ligula et sapien. Sed nulla libero, adipiscing a, ornare at, condimentum gravida, odio. Sed sed enim. Phasellus laoreet velit ac nisl. Ut auctor, urna sit amet tempus sollicitudin, libero odio eleifend risus, et imperdiet pede diam non lacus.</p>
+
+<p>Nulla sit amet dui. Cras pretium, ipsum vitae posuere semper, dolor enim tempor quam, ut facilisis lorem urna ut massa. Nullam urna est, bibendum nec, suscipit quis, auctor in, lorem. Aliquam justo lectus, gravida vitae, pretium sit amet, placerat in, augue. Sed nunc augue, ornare sed, ultrices eu, laoreet vel, libero. Maecenas eget odio. Mauris egestas tellus at massa. Cras eu dolor. Duis vitae leo in diam luctus suscipit. Vestibulum a odio eu nunc feugiat adipiscing. In hac habitasse platea dictumst. Donec et leo. Sed libero. Nullam viverra, arcu ut vehicula consequat, neque purus porttitor nulla, et dictum orci nibh in tortor. Sed vehicula mauris non urna. Aenean varius. Nulla a mauris porta arcu dapibus vulputate. Curabitur sit amet enim quis massa consectetuer faucibus.</p>
+
+<p>Integer et nibh. Cras bibendum quam in mi. Nam quis lacus. Duis ac leo vitae nisl venenatis varius. Nullam scelerisque, mauris et egestas commodo, quam tellus dictum sapien, at lacinia lorem lectus a orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Curabitur dictum egestas tortor. Sed convallis massa sed ipsum. Maecenas id tortor. Pellentesque ante risus, bibendum non, fermentum at, accumsan quis, lacus. Donec consectetuer tortor nec arcu. Nullam vitae pede nec ante malesuada varius. Aenean bibendum. Integer consequat lacus non tellus. Integer sollicitudin velit vitae tortor. Nulla interdum. </p>
+
+</body>
+</html>

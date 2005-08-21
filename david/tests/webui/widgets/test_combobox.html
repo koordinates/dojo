@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../../__package__.js"></script>
+		<!--
+		<script language="JavaScript" type="te/script>
+		-->
+		<script language="JavaScript" type="text/javascript">
+			// pull in all the stuff we need to make the widget go
+			dojo.require("dojo.xml.Parse");
+			dojo.require("dojo.webui.widgets.Parse");
+			dojo.require("dojo.webui.widgets.ComboBox");
+			dojo.require("dojo.webui.widgets.HTMLComboBox");
+		</script>
+	</head>
+	<body bgcolor="white">
+		Check your javascript log; the scripts were all loaded in the head.
+
+		<input dojoType="combobox" value="this should be replaced!"
+			dataUrl="comboBoxData.js">
+
+		<br>
+		this is some text below the combo box. It shouldn't get pushed out of the way when search results get returned.
+	</body>
+</html>
+</body>
