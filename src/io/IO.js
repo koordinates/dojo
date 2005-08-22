@@ -174,7 +174,7 @@ dojo.io.bind = function(kwArgs){
 	if(!kwArgs["method"] && !kwArgs["formNode"]){
 		kwArgs.method = "get";
 	} else if(kwArgs["formNode"]) {
-		kwArgs.method = kwArgs["formNode"].method || kwArgs["method"] || "get";
+		kwArgs.method = kwArgs["method"] || kwArgs["formNode"].method || "get";
 	}
 	if(kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
 	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
