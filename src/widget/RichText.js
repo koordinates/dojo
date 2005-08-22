@@ -432,6 +432,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}
 		}
 		this.iframe.height = this.document.body.offsetHeight + chromeheight + "px";
+		this.window.scrollTo(0, 0);
 	},
 	
 	/**
