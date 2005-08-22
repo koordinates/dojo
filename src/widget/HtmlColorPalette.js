@@ -21,30 +21,9 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 	
 	fillInTemplate: function (args, frag) {
 		dojo.widget.HtmlToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
-		this.dialog = dojo.widget.fromScript("colorpalette");
-
-		// copied from HTMLToolbarButton because inheritence is borken!
-		/*dojo.xml.htmlUtil.addClass(this.domNode, "toolbarButton");
-		if(this._icon) {
-			this.setIcon(this._icon);
-		}
-		if(this._label) {
-			this.setLabel(this._label);
-		}
-
-		if(!this._name) {
-			if(this._label) {
-				this.setName(this._label);
-			} else if(this._icon) {
-				var src = this._icon.getSrc("enabled").match(/[\/^]([^\.\/]+)\.(gif|jpg|jpeg|png)$/i);
-				if(src) { this.setName(src[1]); }
-			} else {
-				this._name = this._widgetId;
-			}
-		}*/
+		this.dialog = dojo.widget.fromScript("ColorPalette");
 
 		dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");
-
 	},
 
 	_setValue: function(color) {
