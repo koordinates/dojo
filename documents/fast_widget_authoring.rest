@@ -20,12 +20,12 @@ article. To get a feel for how it's being used, do a view-source on this page.
 
         <!-- Dojo is loaded, include the widget  -->
         <script language="JavaScript" type="text/javascript">
-            dojo.require("dojo.webui.widgets.SlideShow");
+            dojo.require("dojo.widget.SlideShow");
         </script>
 
         <!-- upgrade a static image to a slideshow -->
         <img dojoType="SlideShow" 
-            imgUrlBase="/~alex/dojo/tests/webui/widgets/images/"
+            imgUrlBase="/~alex/dojo/tests/widget/images/"
             imgUrls="1.jpg;2.jpg;3.jpg;4.jpg" 
             transitionInterval="700"
             delay="7000"
@@ -33,7 +33,7 @@ article. To get a feel for how it's being used, do a view-source on this page.
             imgHeight="300"
             width="400"
             height="300"
-            src="http://dojotoolkit.org/~alex/dojo/tests/webui/widgets/images/1.jpg" />
+            src="http://dojotoolkit.org/~alex/dojo/tests/widget/images/1.jpg" />
 
 If you like, you can stop here and go add a slideshow to your pages. But odds
 are you want to build a widget yourself. This article will show you how you can
@@ -63,28 +63,27 @@ see above. There's not a ton of code to it, but we'll start with the smallest
 possible (loads but doesn't do anything) version of the widget. Here it is::
 
     // tell the package system what classes get defined here
-    dojo.provide("dojo.webui.widgets.SlideShow");
-    dojo.provide("dojo.webui.widgets.HTMLSlideShow");
+    dojo.provide("dojo.widget.SlideShow");
+    dojo.provide("dojo.widget.HtmlSlideShow");
 
     // load dependencies
-    dojo.require("dojo.webui.DomWidget");
+    dojo.require("dojo.widget.*");
 
     // define the widget class
-    dojo.webui.widgets.HTMLSlideShow = function(){
+    dojo.widget.HtmlSlideShow = function(){
         // inheritance
         // see: http://www.cs.rit.edu/~atk/JavaScript/manuals/jsobj/
-        dojo.webui.HtmlWidget.call(this);
+        dojo.widget.HtmlWidget.call(this);
 
-        this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
-        this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
+        this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html");
+        this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
 
         this.widgetType = "SlideShow";
-        this.isContainer = false;
     }
     // more inheritance
-    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.HtmlWidget);
+    dj_inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
     // make it a tag
-    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
+    dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 
 Most things in this class are boilerplate, and only those properties that are
 necessary are given values.  Every Dojo widget you'll create comes from a class
@@ -104,7 +103,7 @@ defined in the top-level of a template file, only the first is used. The
 inherits from it will have this property implicitly. A minimal template for our
 slide show might be:
 
-HTMLSlideShow.html::
+HtmlSlideShow.html::
 
     <div style="position: relative; width: 800px; height: 600px;"
         dojoAttachPoint="imagesContainer">
@@ -114,7 +113,7 @@ HTMLSlideShow.html::
             class="slideShowImg" style="z-index: 0;" />
     </div>	
 
-HTMLSlideShow.css::
+HtmlSlideShow.css::
 
     .slideShowImg {
         position: absolute;
@@ -212,12 +211,11 @@ Here's the new code we'd add to our widget class (other code removed for
 readability)::
 
     // ...
-    dojo.webui.widgets.HTMLSlideShow = function(){
+    dojo.widget.HtmlSlideShow = function(){
         // ...boilerplate and template* code here
 
         // over-ride defaults
         this.widgetType = "SlideShow";
-        this.isContainer = false;
 
         // image nodes
         this.img1 = null;
@@ -255,7 +253,7 @@ The last hurdle to making this widget something we'd consider working with is
 to make it easy to instantiate. Even in the first listing of `SlideShow.js`, we
 do that. Have a look at the last line::
 
-    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
+    dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 
 We saw a brief example of using widgets earlier, but here's a refresher example
 of a Dojo tag being used through extra properties on an HTML element::
@@ -356,23 +354,22 @@ follow. We omit the CSS file since it hasn't changed.
 
 SlideShow.js::
 
-    dojo.provide("dojo.webui.widgets.SlideShow");
-    dojo.provide("dojo.webui.widgets.HTMLSlideShow");
+    dojo.provide("dojo.widget.SlideShow");
+    dojo.provide("dojo.widget.HtmlSlideShow");
 
     dojo.require("dojo.event.*");
     dojo.require("dojo.xml.*");
-    dojo.require("dojo.webui.*");
+    dojo.require("dojo.widget.*");
     dojo.require("dojo.graphics.htmlEffects");
 
-    dojo.webui.widgets.HTMLSlideShow = function(){
+    dojo.widget.HtmlSlideShow = function(){
 
-        dojo.webui.HtmlWidget.call(this);
+        dojo.widget.HtmlWidget.call(this);
 
-        this.templatePath = "src/webui/widgets/templates/HTMLSlideShow.html";
-        this.templateCSSPath = "src/webui/widgets/templates/HTMLSlideShow.css";
+        this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html");
+        this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
 
-        // over-ride some defaults
-        this.isContainer = false;
+        // over-ride defaults
         this.widgetType = "SlideShow";
 
         // useful properties
@@ -465,10 +462,11 @@ SlideShow.js::
             this.loadNextImage();
         }
     }
-    dj_inherits(dojo.webui.widgets.HTMLSlideShow, dojo.webui.HtmlWidget);
-    dojo.webui.widgets.tags.addParseTreeHandler("dojo:slideshow");
 
-HTMLSlideShow.html::
+    dj_inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
+    dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
+
+HtmlSlideShow.html::
 
     <table cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -520,7 +518,7 @@ Fast Widget Authoring With Dojo
 ===============================
 
 :Author: Alex Russell
-:Version: 0.7
+:Version: 0.8
 :Copyright: Dojo Foundation, 2005
 :Date: 2005/08/14
 
