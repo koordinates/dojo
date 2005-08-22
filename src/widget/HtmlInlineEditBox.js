@@ -9,8 +9,8 @@ dojo.require("dojo.text.*");
 dojo.widget.HtmlInlineEditBox = function() {
 	dojo.widget.HtmlWidget.call(this);
 
-	this.templatePath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.html");
-	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HTMLInlineEditBox.css");
+	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.html");
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.css");
 	this.widgetType = "InlineEditBox";
 
 	this.form = null;
