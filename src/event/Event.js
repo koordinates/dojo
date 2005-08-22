@@ -89,12 +89,16 @@ dojo.event = new function(){
 			case 0: return;
 			case 1: return;
 			case 2:
-				ao.srcObj = ao.adviceObj = dj_global;
 				ao.srcFunc = args[0];
 				ao.adviceFunc = args[1];
 				break;
 			case 3:
-				if((typeof args[1] == "string")&&(typeof args[2] == "string")){
+				if((typeof args[0] == "object")&&(typeof args[1] == "string")&&(typeof args[2] == "string")){
+					ao.adviceType = "after";
+					ao.srcObj = args[0];
+					ao.srcFunc = args[1];
+					ao.adviceFunc = args[2];
+				}else if((typeof args[1] == "string")&&(typeof args[2] == "string")){
 					ao.srcFunc = args[1];
 					ao.adviceFunc = args[2];
 				}else if((typeof args[0] == "object")&&(typeof args[1] == "string")&&(typeof args[2] == "function")){
@@ -241,7 +245,6 @@ dojo.event = new function(){
 	this.kwDisconnect = function(kwArgs){
 		return this.kwConnectImpl_(kwArgs, true);
 	}
-
 }
 
 // exactly one of these is created whenever a method with a joint point is run,
