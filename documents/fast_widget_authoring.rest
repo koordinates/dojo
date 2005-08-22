@@ -20,7 +20,7 @@ article. To get a feel for how it's being used, do a view-source on this page.
 
         <!-- Dojo is loaded, include the widget  -->
         <script language="JavaScript" type="text/javascript">
-            dojo.require("dojo.widget.SlideShow");
+            dojo.require("dojo.widget.HtmlSlideShow");
         </script>
 
         <!-- upgrade a static image to a slideshow -->
@@ -80,7 +80,7 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
 
         this.widgetType = "SlideShow";
     }
-    // more inheritance
+    // complete the inheritance process
     dj_inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
     // make it a tag
     dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
@@ -148,8 +148,8 @@ The traditional DOM way to do it might require code like this in our widget::
 
 Now, this is fine if you don't mind clobbering other event handlers that might
 be set, but there are situations where this is a problem, so we'll spot our
-component author the super-spiffy Dojo event system, which might turn that code
-into::
+component author the `super-spiffy Dojo event system`_, which might turn that
+code into::
 
     dojo.event.connect(this.domNode, "onclick", this, "togglePaused");
 
@@ -250,8 +250,8 @@ Making It A Tag
 ---------------
 
 The last hurdle to making this widget something we'd consider working with is
-to make it easy to instantiate. Even in the first listing of `SlideShow.js`, we
-do that. Have a look at the last line::
+to make it easy to instantiate. Even in the first listing of
+`HtmlSlideShow.js`, we do that. Have a look at the last line::
 
     dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 
@@ -352,7 +352,7 @@ be late than broken. Don't worry if the event-driven code is a little bit
 difficult to follow. The entirety of the widget and an improved template
 follow. We omit the CSS file since it hasn't changed.
 
-SlideShow.js::
+HtmlSlideShow.js::
 
     dojo.provide("dojo.widget.SlideShow");
     dojo.provide("dojo.widget.HtmlSlideShow");
@@ -510,6 +510,7 @@ Alex Russell is the project lead for Dojo and  can be reached at
 .. _`Dojo Status`: http://www.dojotoolkit.org/projectStatus.html
 .. _`The Dojo Wiki`: http://dojo.jot.com/
 .. _`Problems tackled by the Dojo widget system`: http://www.dojotoolkit.org/widget_motivation.html
+.. _`super-spiffy Dojo event system`: http://dojotoolkit.org/docs/dojo_event_system.html
 
 .. raw:: html
    :file: website/rest_template/sidebar.html
