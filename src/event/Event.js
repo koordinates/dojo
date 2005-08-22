@@ -177,6 +177,12 @@ dojo.event = new function(){
 			ao.aroundFunc = dojo.alg.getNameInObj(ao.aroundObj, ao.aroundFunc);
 		}
 
+		if(!ao.srcObj){
+			dj_throw("bad srcObj for srcFunc: "+ao.srcFunc);
+		}
+		if(!ao.adviceObj){
+			dj_throw("bad srcObj for srcFunc: "+ao.adviceFunc);
+		}
 		return ao;
 	}
 
