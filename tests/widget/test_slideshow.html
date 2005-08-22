@@ -1,28 +1,17 @@
-<!DOCTYPE html
-	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<title>Slideshow Widget Demo</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
-	<script language="JavaScript" type="text/javascript">
-		// Dojo configuration
-		djConfig = { 
-			isDebug: true
-		};
-	</script>
-	<script language="JavaScript" type="text/javascript" 
-		src="../../../__package__.js"></script>
-	<script language="JavaScript" type="text/javascript">
-		dojo.require("dojo.webui.widgets.SlideShow");
-	</script>
-</head>
-<body>
-	<img dojoType="SlideShow" 
-		imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg;images/5.jpg;images/6.jpg" 
-		transitionInterval="700"
-		delay="7000" 
-		src="images/1.jpg"/>
-</body>
-</html>
+<title>Slideshow Widget Demo</title>
+
+<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+<script type="text/javascript" src="../../__package__.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.HtmlSlideShow");
+</script>
+
+<img dojoType="SlideShow" 
+	imgUrls="images/1.jpg;images/2.jpg;images/3.jpg;images/4.jpg;images/5.jpg;images/6.jpg" 
+	transitionInterval="700"
+	delay="7000" 
+	src="images/1.jpg"/>

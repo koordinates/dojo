@@ -1,16 +1,19 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
 <title>Toolbar Test</title>
 <link type="text/css" rel="stylesheet" href="templates/HtmlToolbar.css"/>
+
+<script type="text/javascript"> var djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../__package__.js"></script>
 <script type="text/javascript">
-djConfig = {
-	isDebug : true
-};
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Toolbar");
+	dojo.require("dojo.widget.HtmlColorPalette");
 </script>
-<script type="text/javascript" src="../../../__package__.js"></script>
-<script type="text/javascript" src="../../../src/widget/Toolbar.js"></script>
-<script type="text/javascript" src="../../../src/widget/HtmlColorPalette.js"></script>
+
 <script type="text/javascript">
+
 function img(name) {
 	return dojo.uri.dojoUri("src/webui/widgets/templates/buttons/" + name + ".gif").toString();
 }
@@ -65,7 +68,6 @@ dojo.event.connect(window, "onload", function() {
 	dj_debug("Avg time: " + (total/i));
 });
 </script>
-</head>
 
 <body>
 	Toolbar:
@@ -77,4 +79,3 @@ dojo.event.connect(window, "onload", function() {
 	<a href="javascript:tc.disable('justify')">Disable</a>
 
 </body>
-</html>

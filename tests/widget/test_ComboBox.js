@@ -1,4 +1,4 @@
-dojo.require("dojo.webui.widgets.ComboBox");
+dojo.require("dojo.widget.ComboBox");
 
 var comboData = [
 	["Alabama","AL"],

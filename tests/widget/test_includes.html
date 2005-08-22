@@ -1,23 +1,15 @@
-<html>
-	<head>
-		<script language="JavaScript" type="text/javascript">
-			// Dojo configuration
-			djConfig = { 
-				isDebug: true
-			};
-		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../__package__.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.webui.*");
-			function init(){
-				dj_debug(dojo.xml.Parse);
-			}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
 
-			dojo.event.connect(dojo.hostenv, "loaded", "init");
-		</script>
-	</head>
-	<body>
-		Check your javascript log; the scripts were all loaded in the head.
-	</body>
-</html>
+<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+<script type="text/javascript" src="../../__package__.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	function init(){
+		dj_debug(dojo.xml.Parse);
+	}
+
+	dojo.event.connect(dojo.hostenv, "loaded", "init");
+</script>
+
+<p>The scripts should have been loaded in if this test has worked

@@ -1,25 +1,25 @@
 <html>
 	<head>
-		<script language="JavaScript" type="text/javascript">
+		<script type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
 				isDebug: true
 			};
 		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../__package__.js"></script>
-		<script language="JavaScript" type="text/javascript">
+		<script type="text/javascript" 
+			src="../../__package__.js"></script>
+		<script type="text/javascript">
 			// pull in all the stuff we need to make the widget go
 			dojo.require("dojo.xml.Parse");
-			dojo.require("dojo.webui.widgets.Parse");
+			dojo.require("dojo.widget.Parse");
 			dojo.require("dojo.event.*");
-			dojo.require("dojo.webui.Widget");
-			dojo.require("dojo.webui.DomWidget");
-			dojo.require("dojo.webui.WidgetManager");
-			dojo.require("dojo.webui.DragAndDrop");
-			dojo.require("dojo.webui.widgets.HTMLResizableTextarea");
+			dojo.require("dojo.widget.Widget");
+			dojo.require("dojo.widget.DomWidget");
+			dojo.require("dojo.widget.Manager");
+			dojo.require("dojo.widget.DragAndDrop");
+			dojo.require("dojo.widget.HtmlResizableTextarea");
 		</script>
-		<script language="JavaScript" type="text/javascript">
+		<script type="text/javascript">
 			/*
 			function upgradeTextareas(){
 				var TAs = document.body.getElementsByTagName("textarea");
@@ -35,10 +35,10 @@
 
 			function pUpgrade(){
 				var pu = document.getElementById("pUpgrade");
-				var ra = dojo.webui.widgets.fromScript(pu, "ResizableTextarea", {
+				var ra = dojo.widget.fromScript("ResizableTextarea", {
 					allowResizeX: "false",
 					"dojo:resizabletextarea": { nodeRef: pu, }
-				});
+				}, pu);
 			}
 
 			dojo.event.connect(dojo.hostenv, "loaded", dj_global, "pUpgrade");

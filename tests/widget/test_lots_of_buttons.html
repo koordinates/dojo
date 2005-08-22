@@ -1,18 +1,16 @@
 <html>
 	<head>
-		<script language="JavaScript" type="text/javascript">
+		<script type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
 				isDebug: true
 			};
 		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../__package__.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.xml.Parse");
-			dojo.require("dojo.webui.widgets.Parse");
-			dojo.require("dojo.webui.widgets.Button");
-			dojo.require("dojo.webui.widgets.HTMLButton");
+		<script type="text/javascript" src="../../__package__.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.Button");
+			dojo.require("dojo.widget.HtmlButton");
 			
 			function outputObjectInfo(x, tid){
 				if(!tid){
@@ -50,7 +48,7 @@
 				var start = new Date();
 				var last = null;
 				for(var x = 0; x<100; x++){
-					dojo.webui.widgets.fromScript("Button", { label: "button "+x }, document.body, "last");
+					dojo.widget.fromScript("Button", { label: "button "+x }, document.body, "last");
 				}
 				dj_debug("constructing ", x, " items took ", (new Date())-start, "ms");
 			}

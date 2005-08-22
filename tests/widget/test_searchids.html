@@ -1,36 +1,30 @@
-<html>
-	<head>
-		<script language="JavaScript" type="text/javascript">
-			// Dojo configuration
-			djConfig = { 
-				isDebug: true,
-				parseWidgets: false
-			};
-		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../../__package__.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.xml.Parse");
-			dojo.require("dojo.webui.widgets.Parse");
-			dojo.require("dojo.webui.widgets.Button");
-			dojo.require("dojo.webui.widgets.HTMLButton");
-		</script>
-	</head>
-	<body>
-		Check your javascript log; the scripts were all loaded in the head.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
 
-		<span id="pn">
-			<button id="testDojoButton" dojoType="button" label="this is a test button!" 
-				onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
-				you shouldn't be seeing this
-			</button>
-		</span>
-		<script>
-			// FIXME: dylan, this doesn't work but it should!
-			// dojo.hostenv.searchIds.push("testDojoButton");
+<script type="text/javascript">
+	djConfig = { 
+		isDebug: true,
+		parseWidgets: false
+	};
+</script>
+<script type="text/javascript" src="../../__package__.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.HtmlButton");
+</script>
 
-			// this works, though
-			dojo.hostenv.searchIds.push("pn");
-		</script>
-	</body>
-</html>
+<span id="pn">
+	<button id="testDojoButton" dojoType="button" label="this is a test button!" 
+		onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
+		you shouldn't be seeing this
+	</button>
+</span>
+
+<script>
+	// FIXME: dylan, this doesn't work but it should!
+	// dojo.hostenv.searchIds.push("testDojoButton");
+
+	// this works, though
+	dojo.hostenv.searchIds.push("pn");
+</script>

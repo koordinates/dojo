@@ -6,20 +6,14 @@
 <head>
 <title>Tabs Demo</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
-<script language="JavaScript" type="text/javascript">
-// Dojo configuration
-djConfig = { isDebug: true };
-</script>
-<script language="JavaScript" type="text/javascript"
-	src="../../../__package__.js"></script>
-<script language="JavaScript" type="text/javascript"
-	src="../../../src/webui/widgets/Tabs.js"></script>
-<script type="text/javascript">
-dojo.require("dojo.webui.widgets.Tabs");
 
-dojo.event.connect(window, "onload", function() {
-});
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript" src="../../__package__.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.HtmlTabs");
 </script>
+
 <style type="text/css">
 body {
 	font-family : sans-serif;
