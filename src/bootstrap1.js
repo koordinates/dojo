@@ -517,12 +517,15 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
+dojo.loaded = function(){}
+
 dojo.hostenv.loaded = function(){
 	this.modulesLoadedFired = true;
 	var mll = this.modulesLoadedListeners;
 	for(var x=0; x<mll.length; x++){
 		mll[x]();
 	}
+	dojo.loaded();
 }
 
 dojo.hostenv.modulesLoaded = function(){
