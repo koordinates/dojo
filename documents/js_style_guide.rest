@@ -39,10 +39,10 @@ and carry less weight of enforcement.
 ==============  ===========================  =======
 Construct       Convention                   Comment
 ==============  ===========================  =======
-private method  ``lowerUpper_``
-private var     ``lowerUpper_``
-method args     ``lowerUpper_``, lowerUpper
-local vars      ``lowerUpper_``, lowerUpper
+private method  ``_lowerUpper``
+private var     ``_lowerUpper``
+method args     ``_lowerUpper``, lowerUpper
+local vars      ``_lowerUpper``, lowerUpper
 ==============  ===========================  =======
 
 Naming Conventions
@@ -73,19 +73,19 @@ E.  Names representing methods SHOULD be verbs or verb phrases::
         obj.getSomeValue()
 
 F.  Public class variables MUST be written using upperLower case.
-G.  Private class variables MAY be written using ``upperLower_`` (with
-    trailing underscore)::
+G.  Private class variables MAY be written using ``_upperLower`` (with
+    preceding underscore)::
 
         var MyClass = function(){
-            var buffer_;
+            var _buffer;
             this.doSomething = function(){
             };
         }
 
 H.  Variables that are intended to be private, but cannot be based on the
-    semantics of Javascript, SHOULD appended with a "_" (underscore) char::
+    semantics of Javascript, SHOULD prepended with a "_" (underscore) char::
 
-        this.somePrivateVariable_ = statement ;
+        this._somePrivateVariable = statement ;
 
     NB  Note that the above variable also follows the convention for a
     private variable.
