@@ -3,6 +3,7 @@ dojo.provide("dojo.dnd.HtmlDragSource");
 dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
+dojo.require("dojo.animation.*");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	this.domNode = node;
@@ -10,7 +11,7 @@ dojo.dnd.HtmlDragSource = function(node, type){
 	dojo.dnd.DragSource.call(this);
 
 	// set properties that might have been clobbered by the mixin
-	this.type = type||"";
+	this.type = type||this.domNode.nodeName.toLowerCase();
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
@@ -128,16 +129,18 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		var canDrop = false;
 		var _this = this;
 		dojo.alg.forEach(dos, function(tdo){
+			/*
 			dojo.alg.forEach(_this.acceptedTypes, function(tmpType){
 				dj_debug(tdo.type, tmpType);
 			});
+			*/
 			if((_this.acceptedTypes)&&(dojo.alg.inArray(_this.acceptedTypes, tdo.type))){
 				canDrop = true;
 				return "break";
 			}
 		});
 		
-		dj_debug("can drop: ", canDrop);
+		// dj_debug("can drop: ", canDrop);
 		this.domNode.style.border = "1px solid "+(canDrop ? "black" : "red");
 		return canDrop;
 	},
