@@ -215,7 +215,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 						for(var y=0; y<pairs.length; y++){
 							var si = pairs[y].indexOf(":");
 							if((si != -1)&&(pairs[y].length>si)){
-								this[x][pairs[y].substr(0, si)] = pairs[y].substr(si+1);
+								this[x][dojo.text.trim(pairs[y].substr(0, si))] = pairs[y].substr(si+1);
 							}
 						}
 					}else{
