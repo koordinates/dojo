@@ -100,7 +100,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					'    body,html { padding: 0; margin: 0; font: ' + font + '; }' +
 					// TODO: left positioning will case contents to disappear out of view
 					//       if it gets too wide for the visible area
-					'    body { position: fixed; top: 0; left:0; }' +
+					'    body { position: fixed; top: 0; left: 0; right: 0; }' +
 					'    body > *:first-child { padding-top: 0; margin-top: 0; }' +
 					'    body > *:last-child { padding-bottom: 0; margin-bottom: 0; }' +
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }' +
