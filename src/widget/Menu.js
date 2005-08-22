@@ -22,7 +22,8 @@ dojo.lang.extend(dojo.widget.Menu, {
 	
 	items: [],
 
-	push: function (item) {		
+	push: function (item) {
+		dojo.connect.event(item, "onSelect", this, "onSelect");
 		this.items.push(item);
 	}
 
@@ -59,6 +60,7 @@ dojo.lang.extend(dojo.widget.HtmlMenu, {
 	widgetType: "Menu",
 
 	templateString: '<ul style="list-style: none; padding: 0; margin: 0;"></ul>',
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu.css"),
 	
 	fillInTemplate: function () {
 		//dojo.widget.HtmlMenu.superclass.fillInTemplate.apply(this, arguments);

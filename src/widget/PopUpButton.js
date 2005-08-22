@@ -56,8 +56,6 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 		this.domNode = document.createElement("a");
 		this.domNode.className = "PopUpButton";
 		dojo.event.connect(this.domNode, "onmousedown", this, "onMouseDown");
-
-		this.domNode.innerHTML = "foo";
 		
 		// draw the arrow
 		var arrow = document.createElement("img");
@@ -66,7 +64,8 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 		this.domNode.appendChild(arrow);
 
 		this.menu = dojo.widget.fromScript("Menu");
-		dojo.xml.htmlUtil.addClass(this.menu.domNodem, "PopUpButtonMenu");
+		dojo.xml.htmlUtil.addClass(this.menu.domNode, "PopUpButtonMenu");
+		dojo.event.connect(this.menu, "onSelect", this, "onSelect");
 		
 		if (frag["dojo:" + this.widgetType.toLowerCase()].nodeRef) {
 			var node = frag["dojo:" + this.widgetType.toLowerCase()].nodeRef;
@@ -76,22 +75,93 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 					title: dojo.xml.domUtil.textContent(options[i]),
 					value: options[i].value
 				}
-				this.menu.push(dojo.widget.fromScript("MenuItem", properties));
+				this.addItem(dojo.widget.fromScript("MenuItem", properties));
 			}
-		}		
+		}
+	},
+
+	addItem: function (item) {
+		// TODO: should be dojo.widget.MenuItem
+		if (item instanceof dojo.widget.HtmlMenuItem) {
+			this.menu.push(item);
+		} else {
+			// TODO: create one
+			var menuItem = dojo.widget.fromScript("MenuItem", {title: item});
+			this.menu.push(menuItem);
+		}
+	},
+	
+	
+/* Enabled utility methods
+ **************************/
+	
+	_enabled: true,
+	
+	isEnabled: function() { return this._enabled; },
+	
+	setEnabled: function(enabled, force, preventEvent) {
+		enabled = Boolean(enabled);
+		if (force || this._enabled != enabled) {
+			this._enabled = enabled;
+			if (!preventEvent) {
+				this._fireEvent(this._enabled ? "onEnable" : "onDisable");
+				this._fireEvent("onChangeEnabled");
+			}
+		}
+		
+		dojo.xml.htmlUtil[(this._enabled ? "add" : "remove")
+			+ "Class"](this.domNode, "disabled");
+		
+		return this._enabled;
+	},
+	
+	enable: function(force, preventEvent) {
+		return this.setEnabled(true, force, preventEvent);
+	},
+	
+	disable: function(force, preventEvent) {
+		return this.setEnabled(false, force, preventEvent);
+	},
+	
+	toggleEnabled: function(force, preventEvent) {
+		return this.setEnabled(!this._enabled, force, preventEvent);
+	},
+
+
+/* Select utility methods
+ **************************/
+
+	onSelect: function (item, e) {
+		this.domNode.firstChild.nodeValue = item.title;
 	},
 	
 	onMouseDown: function (e) {
+		if (!this._menuVisible) {
+			this._showMenu(e);
+			dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "_hideMenu");
+		}
+	},
+	
+	
+	_fireEvent: function(evt) {
+		if(typeof this[evt] == "function") {
+			var args = [this];
+			for(var i = 1; i < arguments.length; i++) {
+				args.push(arguments[i]);
+			}
+			this[evt].apply(this, args);
+		}
+	},
+
+	
+	_showMenu: function (e) {
+		if (!this._enabled) { return; }
+		this._menuVisible = true;
 		with (dojo.xml.htmlUtil) {
 			var y = getAbsoluteY(this.domNode) + getInnerHeight(this.domNode);
 			var x = getAbsoluteX(this.domNode);
 		}
-		this.showMenuAt(x, y);
-		
-		dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "hideMenu");
-	},
 	
-	showMenuAt: function (x, y) {
 		document.body.appendChild(this.menu.domNode);
 		with (this.menu.domNode.style) {
 			top = y + "px";
@@ -99,9 +169,10 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 		}
 	},
 	
-	hideMenu: function () {
+	_hideMenu: function (e) {
 		this.menu.domNode.parentNode.removeChild(this.menu.domNode);
-		dojo.event.disconnect(document, "onmousedown", this, "hideMenu");
+		dojo.event.disconnect(document, "onmousedown", this, "_hideMenu");
+		this._menuVisible = false;
 	}
 
 });
