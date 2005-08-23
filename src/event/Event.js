@@ -360,6 +360,11 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 		// dojo.hostenv.println("in unrollAdvice()");
 		var callObj = marr[0]||dj_global;
 		var callFunc = marr[1];
+		
+		if (!callObj[callFunc]) {
+			throw new Error ("function \"" + callFunc + "\" does not exist on \"" + callObj + "\"");
+		}
+		
 		var aroundObj = marr[2]||dj_global;
 		var aroundFunc = marr[3];
 		var undef;
