@@ -12,7 +12,8 @@ var dependencies = [
 	"dojo.graphics.*",
 	"dojo.animation.*",
 	"dojo.io.BrowserIO",
-	"dojo.webui.*",
+	"dojo.dnd.*",
+	"dojo.widget.*"
 ];
 
 load("getDependencyList.js");
