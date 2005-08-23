@@ -584,9 +584,15 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 
 	var syms = modulename.split(".");
 	var nsyms = modulename.split(".");
-	syms[0] = this.getModulePrefix(syms[0]);
-	var last = syms.pop();
-	syms.push(last);
+	for (var i = syms.length - 1; i > 0; i--) {
+		var parentModule = syms.slice(0, i).join(".");
+		var parentModulePath = this.getModulePrefix(parentModule);
+		if (parentModulePath != parentModule) {
+			syms.splice(0, i, parentModulePath);
+			break;
+		}
+	}
+	var last = syms[syms.length - 1];
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
 	if(last=="*"){
