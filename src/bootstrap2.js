@@ -39,6 +39,19 @@ dojo.hostenv.require = dojo.hostenv.loadModule;
 dojo.require = function(){
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
+
+dojo.requireIf = function(){
+	if((arguments[0]=="common")||(dojo.render[arguments[0]].capable)){
+		dojo.require(arguments[1], arguments[2], arguments[3]);
+	}
+}
+
+dojo.conditionalRequire = dojo.requireIf;
+
+dojo.kwCompoundRequire = function(){
+	dojo.hostenv.conditionalLoadModule.apply(dojo.hostenv, arguments);
+}
+
 dojo.hostenv.provide = dojo.hostenv.startPackage;
 dojo.provide = function(){
 	dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
