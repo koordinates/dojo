@@ -6,6 +6,9 @@ dojo.require("dojo.xml.domUtil");
 dojo.require("dojo.xml.htmlUtil");
 dojo.require("dojo.event.*");
 
+// used to save content
+document.write('<textarea id="dojo.widget.RichText.savedContent" style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
+
 dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 
 dojo.widget.HtmlRichText = function () {
@@ -21,6 +24,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	/** whether to inherit the parent's width or simply use 100% */
 	inheritWidth: false,
+	
+	/**
+	 * If a save name is specified the content is saved and restored if the
+	 * editor is not properly closed after editing has started.
+	 */
+	saveName: "",
+
+	_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
 /* Init
  *******/
@@ -55,6 +66,22 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		// I need hitch, dammit!!
 		function hitch (obj, meth) {
 			return function () { return obj[meth].apply(obj, arguments); }
+		}
+		
+		if (this.saveName != "") {
+			var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
+			if (saveTextarea.value != "") {
+				var datas = saveTextarea.value.split(this._SEPARATOR);
+				for (var i = 0; i < datas.length; i++) {
+					var data = datas[i].split(":");
+					if (data[0] == this.saveName) {
+						html = data[1];
+						datas.splice(i, 1);
+						break;
+					}
+				}				
+			}
+			dojo.event.connect(window, "onunload", this, "_saveContent");
 		}
 
 		// Safari's selections go all out of whack if we do it inline,
@@ -230,7 +257,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * is useful if action needs to be taken after text operations have
 	 * finished
 	 */
-	afterKeyPress: function (e) {
+	afterKeyPress: function (e) {		
 		// Mozilla adds a single <p> with an embedded <br> when you hit enter once:
 		//   <p><br>\n</p>
 		// when you hit enter again it adds another <br> inside your enter
@@ -440,6 +467,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	/**
+	 * Saves the content in an onunload event if the editor has not been closed
+	 */
+	_saveContent: function (e) {
+		var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
+		saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.editNode.innerHTML;
+	},
+	
+	/**
 	 * Kills the editor and optionally writes back the modified contents to the 
 	 * element from which it originated.
 	 *
@@ -450,6 +485,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	close: function (save) {
 		if (arguments.length == 0) { save = true; }
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
+		
+		if (this.saveName != "") {
+			dojo.event.disconnect(window, "onunload", this, "_saveContent");
+		}
 		
 		// line height is squashed for iframes
 		if (this.iframe) { this.domNode.style.lineHeight = null; }
