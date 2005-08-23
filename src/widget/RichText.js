@@ -79,6 +79,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.iframe.style.border = "none";
 			this.iframe.scrolling = "no";
 			this.iframe.className = "editable";
+			this.domNode.style.lineHeight = "0"; // squash line height
 			this.domNode.appendChild(this.iframe);
 
 			this.window = this.iframe.contentWindow;
@@ -449,6 +450,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	close: function (save) {
 		if (arguments.length == 0) { save = true; }
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
+		
+		// line height is squashed for iframes
+		if (this.iframe) { this.domNode.style.lineHeight = null; }
 		
 		if (save) { this.domNode.innerHTML = this.editNode.innerHTML; }
 		else {
