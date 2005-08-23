@@ -39,6 +39,13 @@ dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
 dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
 dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
+if(dependencies["prefixes"]){
+	var tmp = dependencies.prefixes;
+	for(var x=0; x<tmp.length; x++){
+		dojo.hostenv.setModulePrefix(tmp[x][0], tmp[x][1]);
+	}
+}
+
 dojo.hostenv.name_ = hostenvType;
 
 // over-write dj_eval to prevent actual loading of subsequent files
