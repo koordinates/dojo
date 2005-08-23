@@ -7,40 +7,41 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.alg.*");
 
 dojo.graphics.htmlEffects = new function() {
-	this.fadeOut = function(node, duration, cbObj, callback) {
-		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, cbObj, callback);
+	this.fadeOut = function(node, duration, callback) {
+		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 0, callback);
 	}
 
-	this.fadeIn = function(node, duration, cbObj, callback) {
-		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 1, cbObj, callback);
+	this.fadeIn = function(node, duration, callback) {
+		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 1, callback);
 	}
 
-	this.fade = function(node, duration, startOpac, endOpac, cbObj, callback) {
+	this.fade = function(node, duration, startOpac, endOpac, callback) {
 		var anim = new dojo.animation.Animation(
 			new dojo.math.curves.Line([startOpac],[endOpac]),
 			duration, 0);
 		dojo.event.connect(anim, "onAnimate", function(e) {
 			dojo.xml.htmlUtil.setOpacity(node, e.x);
 		});
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
+		if(callback) {
+			dojo.event.connect(anim, "onEnd", function(e) {
+				callback(node, anim);
+			});
 		}
 		anim.play(true);
 		return anim;
 	}
 	
-	this.slideTo = function(node, endCoords, duration, cbObj, callback) {
+	this.slideTo = function(node, endCoords, duration, callback) {
 		return this.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
-			duration, cbObj, callback);
+			duration, callback);
 	}
 
-	this.slideBy = function(node, coords, duration, cbObj, callback) {
+	this.slideBy = function(node, coords, duration, callback) {
 		return this.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
-			duration, cbObj, callback);
+			duration, callback);
 	}
 	
-	this.slide = function(node, startCoords, endCoords, duration, cbObj, callback) {
+	this.slide = function(node, startCoords, endCoords, duration, callback) {
 		var anim = new dojo.animation.Animation(
 			new dojo.math.curves.Line(startCoords, endCoords),
 			duration, 0);
@@ -50,23 +51,24 @@ dojo.graphics.htmlEffects = new function() {
 				top = e.y + "px";
 			}
 		});
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
+		if(callback) {
+			dojo.event.connect(anim, "onEnd", function(e) {
+				callback(node, anim);
+			});
 		}
 		anim.play(true);
 		return anim;
 	}
 
 	// Fade from startRGB to the node's background color
-	this.colorFadeIn = function(node, startRGB, duration, delay, cbObj, callback) {
+	this.colorFadeIn = function(node, startRGB, duration, delay, callback) {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
 		var bg = dojo.xml.domUtil.getStyle(node, "background-color").toLowerCase();
 		var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
 		while(color.length > 3) { color.pop(); }
 		while(startRGB.length > 3) { startRGB.pop(); }
 
-		var anim = this.colorFade(node, startRGB, color, duration, cbObj, callback, true);
+		var anim = this.colorFade(node, startRGB, color, duration, callback, true);
 		dojo.event.connect(anim, "onEnd", function(e) {
 			if( wasTransparent ) {
 				node.style.backgroundColor = "transparent";
@@ -85,12 +87,12 @@ dojo.graphics.htmlEffects = new function() {
 	this.colorFadeFrom = this.colorFadeIn;
 
 	// Fade from node's background color to endRGB
-	this.colorFadeOut = function(node, endRGB, duration, delay, cbObj, callback) {
+	this.colorFadeOut = function(node, endRGB, duration, delay, callback) {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
 		while(color.length > 3) { color.pop(); }
 		while(endRGB.length > 3) { endRGB.pop(); }
 
-		var anim = this.colorFade(node, color, endRGB, duration, cbObj, callback, delay > 0);
+		var anim = this.colorFade(node, color, endRGB, duration, callback, delay > 0);
 		if( delay > 0 ) {
 			node.style.backgroundColor = "rgb(" + color.join(",") + ")";
 			setTimeout(function(){anim.play(true)}, delay);
@@ -102,7 +104,7 @@ dojo.graphics.htmlEffects = new function() {
 	this.colorFadeTo = this.colorFadeOut;
 
 	// Fade node background from startRGB to endRGB
-	this.colorFade = function(node, startRGB, endRGB, duration, cbObj, callback, dontPlay) {
+	this.colorFade = function(node, startRGB, endRGB, duration, callback, dontPlay) {
 		while(startRGB.length > 3) { startRGB.pop(); }
 		while(endRGB.length > 3) { endRGB.pop(); }
 		var anim = new dojo.animation.Animation(
@@ -111,15 +113,16 @@ dojo.graphics.htmlEffects = new function() {
 		dojo.event.connect(anim, "onAnimate", function(e) {
 			node.style.backgroundColor = "rgb(" + e.coordsAsInts().join(",") + ")";
 		});
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
+		if(callback) {
+			dojo.event.connect(anim, "onEnd", function(e) {
+				callback(node, anim);
+			});
 		}
 		if( !dontPlay ) { anim.play(true); }
 		return anim;
 	}
 
-	this.wipeIn = function(node, duration, cbObj, callback, dontPlay) {
+	this.wipeIn = function(node, duration, callback, dontPlay) {
 		var savedOverflow = dojo.xml.htmlUtil.getStyle(node, "overflow");
 		var savedHeight = dojo.xml.htmlUtil.getStyle(node, "height");
 		// FIXME: should we be setting display to something other than "" for the table elements?
@@ -141,16 +144,13 @@ dojo.graphics.htmlEffects = new function() {
 				node.style.overflow = savedOverflow;
 			}
 			node.style.height = savedHeight;
+			if(callback) { callback(node, anim); }
 		});
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
-		}
 		if( !dontPlay ) { anim.play(true); }
 		return anim;
 	}
 
-	this.wipeOut = function(node, duration, cbObj, callback, dontPlay) {
+	this.wipeOut = function(node, duration, callback, dontPlay) {
 		var savedOverflow = dojo.xml.htmlUtil.getStyle(node, "overflow");
 		var savedHeight = dojo.xml.htmlUtil.getStyle(node, "height");
 		var height = node.offsetHeight;
@@ -166,27 +166,24 @@ dojo.graphics.htmlEffects = new function() {
 			node.style.display = "none";
 			node.style.overflow = savedOverflow;
 			node.style.height = savedHeight;
+			if(callback) { callback(node, anim); }
 		});
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
-		}
 		if( !dontPlay ) { anim.play(true); }
 		return anim;
 	}
 
-	this.explode = function(startNode, endNode, duration, cbObj, callback) {
+	this.explode = function(startNode, endNode, duration, callback) {
 		var startCoords = [
 			dojo.xml.htmlUtil.getAbsoluteX(startNode),
 			dojo.xml.htmlUtil.getAbsoluteY(startNode),
 			dojo.xml.htmlUtil.getInnerWidth(startNode),
 			dojo.xml.htmlUtil.getInnerHeight(startNode)
 		];
-		return this.explodeFromBox(startCoords, endNode, duration, cbObj, callback);
+		return this.explodeFromBox(startCoords, endNode, duration, callback);
 	}
 
 	// startCoords = [x, y, w, h]
-	this.explodeFromBox = function(startCoords, endNode, duration, cbObj, callback) {
+	this.explodeFromBox = function(startCoords, endNode, duration, callback) {
 		var outline = document.createElement("div");
 		with(outline.style) {
 			position = "absolute";
@@ -226,29 +223,26 @@ dojo.graphics.htmlEffects = new function() {
 			}
 		});
 
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
-		}
 		dojo.event.connect(anim, "onEnd", function() {
 			endNode.style.display = "block";
 			outline.parentNode.removeChild(outline);
+			if(callback) { callback(node, anim); }
 		});
 		anim.play();
 		return anim;
 	}
 
-	this.implode = function(startNode, endNode, duration, cbObj, callback) {
+	this.implode = function(startNode, endNode, duration, callback) {
 		var endCoords = [
 			dojo.xml.htmlUtil.getAbsoluteX(endNode),
 			dojo.xml.htmlUtil.getAbsoluteY(endNode),
 			dojo.xml.htmlUtil.getInnerWidth(endNode),
 			dojo.xml.htmlUtil.getInnerHeight(endNode)
 		];
-		return this.implodeToBox(startNode, endCoords, duration, cbObj, callback);
+		return this.implodeToBox(startNode, endCoords, duration, callback);
 	}
 
-	this.implodeToBox = function(startNode, endCoords, duration, cbObj, callback) {
+	this.implodeToBox = function(startNode, endCoords, duration, callback) {
 		var outline = document.createElement("div");
 		with(outline.style) {
 			position = "absolute";
@@ -279,12 +273,9 @@ dojo.graphics.htmlEffects = new function() {
 			}
 		});
 
-		var cbArr = dojo.event.createFunctionPair(cbObj, callback);
-		if( cbArr ) {
-			dojo.event.connect(anim, "onEnd", cbArr[0], cbArr[1]);
-		}
 		dojo.event.connect(anim, "onEnd", function() {
 			outline.parentNode.removeChild(outline);
+			if(callback) { callback(node, anim); }
 		});
 		anim.play();
 		return anim;

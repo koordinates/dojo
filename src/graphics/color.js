@@ -89,6 +89,6 @@ dojo.graphics.color = new function() {
 			b = r[2] || 0;
 			r = r[0] || 0;
 		}
-		return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+		return ["#", r.toString(16), g.toString(16), b.toString(16)].join("");
 	}
 }
