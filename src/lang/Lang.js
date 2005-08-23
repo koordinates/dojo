@@ -41,3 +41,35 @@ dojo.lang.setTimeout = function (func, delay) {
 	}
 	return setTimeout(function () { func.apply(context, args); }, delay);
 }
+
+// Partial implmentation of is* functions from
+// http://www.crockford.com/javascript/recommend.html
+dojo.lang.mixin(dojo.lang, {
+	isObject : function(wh) {
+		return typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh);
+	},
+
+	isArray : function(wh) {
+		return wh.constructor == Array;
+	},
+
+	isFunction : function(wh) {
+		return wh.constructor == Function;
+	},
+
+	isString : function(wh) {
+		return wh.constructor == String;
+	},
+
+	isNumber : function(wh) {
+		return wh.constructor == Number;
+	},
+
+	isBoolean : function(wh) {
+		return wh.constructor == Boolean;
+	},
+
+	isUndefined : function(wh) {
+		return wh == undefined;
+	}
+});
