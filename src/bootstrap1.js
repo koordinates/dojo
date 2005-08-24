@@ -528,6 +528,21 @@ dojo.hostenv.loaded = function(){
 	dojo.loaded();
 }
 
+/*
+Call styles:
+	dojo.addOnLoad(functionPointer)
+	dojo.addOnLoad(object, "functionName")
+*/
+dojo.addOnLoad = function(obj, fcnName) {
+	if(arguments.length == 1) {
+		dojo.hostenv.modulesLoadedListeners.push(obj);
+	} else if(arguments.length > 1) {
+		dojo.hostenv.modulesLoadedListeners.push(function() {
+			obj[fcnName]();
+		});
+	}
+};
+
 dojo.hostenv.modulesLoaded = function(){
 	if(this.modulesLoadedFired){ return; }
 	if((this.loadUriStack.length==0)&&(this.getTextStack.length==0)){
