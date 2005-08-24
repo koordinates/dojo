@@ -3,7 +3,7 @@ dojo.require("dojo.collections.Collections");
 dojo.require("dojo.collections.ArrayList");
 
 //	straight up sets are based on arrays or array-based collections.
-dojo.collections.Set = function(){
+dojo.collections.Set = new function(){
 	this.union = function(setA, setB){
 		if (setA.constructor == Array) var setA = new dojo.collections.ArrayList(setA);
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
