@@ -34,8 +34,9 @@ dojo.alg.has = function(obj, name){
 	return (typeof obj[name] !== 'undefined');
 }
 
-dojo.alg.forEach = function(arr, unary_func){
-	for(var i=0; i<arr.length; i++){
+dojo.alg.forEach = function(arr, unary_func, fix_length){
+	var il = arr.length;
+	for(var i=0; i< ((fix_length) ? il : arr.length); i++){
 		if(unary_func(arr[i]) == "break"){
 			break;
 		}
@@ -66,6 +67,11 @@ dojo.alg.tryThese = function(){
 }
 
 dojo.alg.delayThese = function(farr, cb, delay, onend){
+	/**
+	 * alternate: (array funcArray, function callback, function onend)
+	 * alternate: (array funcArray, function callback)
+	 * alternate: (array funcArray)
+	 */
 	if(!farr.length){ 
 		if(typeof onend == "function"){
 			onend();

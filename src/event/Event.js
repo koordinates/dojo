@@ -408,7 +408,7 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	}
 
 	if(this.before.length>0){
-		dojo.alg.forEach(this.before, unrollAdvice);
+		dojo.alg.forEach(this.before, unrollAdvice, true);
 	}
 
 	var result;
@@ -421,7 +421,7 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	}
 
 	if(this.after.length>0){
-		dojo.alg.forEach(this.after, unrollAdvice);
+		dojo.alg.forEach(this.after, unrollAdvice, true);
 	}
 
 	return (this.methodfunc) ? result : null;
