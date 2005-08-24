@@ -12,7 +12,7 @@ dojo.provide("dojo.reflect.reflection");
 	There is a dependency on the variable dJ_global, which
 	should always refer to the global object.
 ******************************************************************/
-if (!dj_global) var dj_global = this;
+if(!dj_global){ var dj_global = this; }
 
 dojo.reflection = {} ;
 dojo.reflection.$unknownType = function(){ } ;
@@ -45,7 +45,9 @@ dojo.reflection.MethodInfo = function(name, fn){
 	this.getParameters = function(){ return p ; } ;
 	this.getNullArgumentsObject = function() {
 		var a = [] ;
-		for (var i = 0; i < p.length; i++) a.push(null);
+		for (var i = 0; i < p.length; i++){
+			a.push(null);
+		}
 		return a ;
 	} ;
 	this.getBody = function() { return body ; } ;
@@ -77,72 +79,104 @@ dojo.reflection.Reflector = new (function(){
 		var parts = s.split("."), i = 0, obj = dj_global ; 
 		do { obj = obj[parts[i++]] ; } while (i < parts.length && obj) ; 
 		return (obj != dj_global) ? obj : null ;
-	} ; 
+	}; 
+
 	this.typeExists = function(s) {
 		var parts = s.split("."), i = 0, obj = dj_global ; 
 		do { obj = obj[parts[i++]] ; } while (i < parts.length && obj) ; 
 		return (obj && obj != dj_global) ;
 	}; 
+
 	this.getFieldsFromType = function(s) { 
 		var type = s ;
 		if (typeof(s) == "string") {
-			type = dojo.reflection.Reflector.getTypeFromString(s) ;
+			type = this.getTypeFromString(s) ;
 		}
 		var nullArgs = (new dojo.reflection.MethodInfo(type)).getNullArgumentsObject() ;
-		return dojo.reflection.Reflector.getFields(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
-	} ;
+		return this.getFields(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
+	};
+
 	this.getPropertiesFromType = function(s) { 
 		var type = s ;
 		if (typeof(s) == "string") {
-			type = dojo.reflection.Reflector.getTypeFromString(s) ;
+			type = this.getTypeFromString(s);
 		}
 		var nullArgs = (new dojo.reflection.MethodInfo(type)).getNullArgumentsObject() ;
-		return dojo.reflection.Reflector.getProperties(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
-	} ;
+		return this.getProperties(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
+	};
+
 	this.getMethodsFromType = function(s) { 
 		var type = s ;
 		if (typeof(s) == "string") {
-			type = dojo.reflection.Reflector.getTypeFromString(s) ;
+			type = this.getTypeFromString(s) ;
 		}
 		var nullArgs = (new dojo.reflection.MethodInfo(type)).getNullArgumentsObject() ;
-		return dojo.reflection.Reflector.getMethods(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
-	} ;
+		return this.getMethods(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
+	};
+
 	this.getType = function(o) { return o.constructor ; } ;
+
 	this.getFields = function(obj) {
 		var arr = [] ;
 		for (var p in obj) { 
-			if (dojo.reflection.Reflector.getType(obj[p]) != Function) 
-				arr.push(new dojo.reflection.PropertyInfo(p, dojo.reflection.Reflector.getType(obj[p]))) ;
-			else arr.push(new dojo.reflection.MethodInfo(p, obj[p])) ;
+			if(this.getType(obj[p]) != Function){
+				arr.push(new dojo.reflection.PropertyInfo(p, this.getType(obj[p]))) ;
+			}else{
+				arr.push(new dojo.reflection.MethodInfo(p, obj[p]));
+			}
 		}
-		return arr ;
-	} ;
-	this.getProperties = function(obj) {
-		var arr = [] ;
-		var fi = dojo.reflection.Reflector.getFields(obj) ;
-		for (var i = 0; i < fi.length; i++) if (dojo.reflection.Reflector.isInstanceOf(fi[i], dojo.reflection.PropertyInfo)) arr.push(fi[i]) ;
-		return arr ;
-	} ;
-	this.getMethods = function(obj) {
-		var arr = [] ;
-		var fi = dojo.reflection.Reflector.getFields(obj) ;
-		for (var i = 0; i < fi.length; i++) if (dojo.reflection.Reflector.isInstanceOf(fi[i], dojo.reflection.MethodInfo)) arr.push(fi[i]) ;
 		return arr ;
 	};
+
+	this.getProperties = function(obj) {
+		var arr = [] ;
+		var fi = this.getFields(obj) ;
+		for (var i = 0; i < fi.length; i++){
+			if (this.isInstanceOf(fi[i], dojo.reflection.PropertyInfo)){
+				arr.push(fi[i]) ;
+			}
+		}
+		return arr ;
+	};
+
+	this.getMethods = function(obj) {
+		var arr = [] ;
+		var fi = this.getFields(obj) ;
+		for (var i = 0; i < fi.length; i++){
+			if (this.isInstanceOf(fi[i], dojo.reflection.MethodInfo)){
+				arr.push(fi[i]) ;
+			}
+		}
+		return arr ;
+	};
+
 	this.implements = function(o, type) {
-		if (dojo.reflection.Reflector.isSubTypeOf(o, type)) return false ;
-		var f = dojo.reflection.Reflector.getFieldsFromType(type) ;
+		if (this.isSubTypeOf(o, type)) return false ;
+		var f = this.getFieldsFromType(type) ;
 		for (var i = 0; i < f.length; i++) {
-			if (typeof(o[(f[i].name)]) == "undefined") return false ;
+			if (typeof(o[(f[i].name)]) == "undefined"){
+				return false;
+			}
 		}
 		return true ;
-	} ;
+	};
+
 	this.getBaseClass = function(o) {
-		if (o.getType().prototype.prototype.constructor)
+		if (o.getType().prototype.prototype.constructor){
 			return (o.getType()).prototype.prototype.constructor ;
+		}
 		return Object ;
 	} ;
-	this.isInstanceOf = function(o, type) { return (dojo.reflection.Reflector.getType(o) == type) ; } ;
-	this.isSubTypeOf = function(o, type) { return (o instanceof type) ; } ;
-	this.isBaseTypeOf = function(o, type) { return (type instanceof o) ; } ;
-})() ;
+
+	this.isInstanceOf = function(o, type) { 
+		return (this.getType(o) == type) ; 
+	};
+
+	this.isSubTypeOf = function(o, type) { 
+		return (o instanceof type) ; 
+	};
+
+	this.isBaseTypeOf = function(o, type) { 
+		return (type instanceof o); 
+	};
+})();
