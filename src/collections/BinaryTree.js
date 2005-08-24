@@ -102,8 +102,7 @@ dojo.collections.BinaryTree = function(data){
 	this.contains = function(data){
 		return this.search(data) != null;
 	};
-	// FIXME: delete is a reserved word: needs renaming!
-	/*this.delete = function(data){
+	this.deleteData = function(data){
 		var current = root;
 		var parent = null;
 		var i = current.compareData(data);
@@ -150,7 +149,7 @@ dojo.collections.BinaryTree = function(data){
 				else if (i < 0) parent.right = leftmost;
 			}
 		}
-	};*/
+	};
 	this.getIterator = function(){
 		var a = new ArrayList();
 		inorderTraversalBuildup(root, a);
