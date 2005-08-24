@@ -34,6 +34,19 @@ function testObjectClass(){
 	}
 }
 
+function test_event_callPrecedence(){
+	// from bug #70
+	var obj1 = new testObjectClass();
+	obj1.ctr = 0;
+	obj1.increment = function(){ this.ctr++; }
+	dojo.event.connect(obj1, "func1", function(){
+		obj1.increment();
+		dojo.event.connect(obj1, "func1", obj1, "increment");
+	});
+	obj1.func1();
+	jum.assertEquals("test", obj1.ctr, 1);
+}
+
 function test_event_beforeAround(){
 	var obj1 = new testObjectClass();
 
