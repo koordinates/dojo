@@ -263,7 +263,7 @@ dojo.widget.getParser = function(name){
 		(typeof props == "string")){
 		// we got called with the old function signature, so just pass it on through
 		// use full deref in case we're called from an alias
-		return dojo.widget.oldFromScript(name, props, refNode);
+		return dojo.widget._oldFromScript(name, props, refNode);
 	}
 	/// otherwise, we just need to keep working a bit...
 	props = props||{};
@@ -284,7 +284,7 @@ dojo.widget.getParser = function(name){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var widgetArray = dojo.widget.oldFromScript(tn, name, props);
+	var widgetArray = dojo.widget._oldFromScript(tn, name, props);
 	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("Creation of \"" + name + "\" widget fromScript failed.");
 	}
@@ -296,7 +296,7 @@ dojo.widget.getParser = function(name){
 	return widgetArray[0]; // not sure what the array wrapper is for, but just return the widget
 }
 
-dojo.widget.oldFromScript = function(placeKeeperNode, name, props){
+dojo.widget._oldFromScript = function(placeKeeperNode, name, props){
 	var ln = name.toLowerCase();
 	var tn = "dojo:"+ln;
 	props[tn] = { 
