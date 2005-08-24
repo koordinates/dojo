@@ -102,7 +102,8 @@ dojo.collections.BinaryTree = function(data){
 	this.contains = function(data){
 		return this.search(data) != null;
 	};
-	this.delete = function(data){
+	// FIXME: delete is a reserved word: needs renaming!
+	/*this.delete = function(data){
 		var current = root;
 		var parent = null;
 		var i = current.compareData(data);
@@ -149,7 +150,7 @@ dojo.collections.BinaryTree = function(data){
 				else if (i < 0) parent.right = leftmost;
 			}
 		}
-	};
+	};*/
 	this.getIterator = function(){
 		var a = new ArrayList();
 		inorderTraversalBuildup(root, a);
@@ -163,15 +164,15 @@ dojo.collections.BinaryTree = function(data){
 		if (!sep) var sep = " ";
 		var s = "";
 		switch (order){
-			case dojo.collections.BinaryTree.TraversalMethods.Preorder {
+			case dojo.collections.BinaryTree.TraversalMethods.Preorder:
 				s = preorderTraversal(root, sep);
-			}
-			case dojo.collections.BinaryTree.TraversalMethods.Inorder {
+				break;
+			case dojo.collections.BinaryTree.TraversalMethods.Inorder:
 				s = inorderTraversal(root, sep);
-			}
-			case dojo.collections.BinaryTree.TraversalMethods.Postorder {
+				break;
+			case dojo.collections.BinaryTree.TraversalMethods.Postorder:
 				s = postorderTraversal(root, sep);
-			}
+				break;
 		};
 		if (s.length == 0) return "";
 		else return s.substring(0, s.length - sep.length);
