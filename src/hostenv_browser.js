@@ -217,6 +217,7 @@ dojo.hostenv.makeWidgets = function(){
 				var sids = dojo.hostenv.searchIds;
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
+						if (!document.getElementById(sids[x]) { continue; }
 						var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
 						dojo.widget.getParser().createComponents(frag);
 					}
