@@ -431,12 +431,12 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 
 		<antcall target="-rhino-compress">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
-			<param name="dstFile" value="${release_dir}/__package__.js" />
+			<param name="dstFile" value="${release_dir}/dojo.js" />
 		</antcall>
 
 		<antcall target="-no-rhino-compress">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
-			<param name="dstFile" value="${release_dir}/__package__.js" />
+			<param name="dstFile" value="${release_dir}/dojo.js" />
 		</antcall>
 
 		<!--

@@ -23,8 +23,12 @@ def escape(instr):
 		    out.append(instr[x])
 	return string.join(out, "")
 
-def internTemplateStrings(packageFile="../release/dojo/__package__.js", srcRoot="../"):
-	pfd = open(packageFile)
+def internTemplateStrings(packageFile="../release/dojo/dojo.js", srcRoot="../"):
+	try:
+		pfd = open(packageFile)
+	except:
+		packageFile = packageFile.replace("dojo.js", "__package__.js")
+		pfd = open(packageFile)
 	pkgString = pfd.read()
 	pfd.close()
 	# "Now they have two problems" -- jwz
