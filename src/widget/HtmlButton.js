@@ -27,12 +27,4 @@ dojo.widget.HtmlButton = function(){
 
 	this.onFoo = function(){ }
 }
-
-/*
-new function(){ // namespace protection closure
-	var hbp = dojo.widget.HTMLButton.prototype;
-	hbp.templateString = ["<button />"].join("");
-}; // FIXME: why isnt the (function(){})(); syntax working here??
-*/
-
 dj_inherits(dojo.widget.HtmlButton, dojo.widget.HtmlWidget);
