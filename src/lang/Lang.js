@@ -50,23 +50,23 @@ dojo.lang.mixin(dojo.lang, {
 	},
 
 	isArray : function(wh) {
-		return wh.constructor == Array;
+		return (wh instanceof Array || typeof wh == "array");
 	},
 
 	isFunction : function(wh) {
-		return wh.constructor == Function;
+		return (wh instanceof Function || typeof wh == "function");
 	},
 
 	isString : function(wh) {
-		return wh.constructor == String;
+		return (wh instanceof String || typeof wh == "string");
 	},
 
 	isNumber : function(wh) {
-		return wh.constructor == Number;
+		return (wh instanceof Number || typeof wh == "number");
 	},
 
 	isBoolean : function(wh) {
-		return wh.constructor == Boolean;
+		return (wh instanceof Boolean || typeof wh == "boolean");
 	},
 
 	isUndefined : function(wh) {
