@@ -205,15 +205,11 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 			if( typeof kwArgs.load == "function" ) {
 				kwArgs.load("load", ret, http);
-			} else if( typeof kwArgs.handle == "function" ) {
-				kwArgs.handle("load", ret, http);
 			}
 		} else {
 			var errObj = new dojo.io.Error("XMLHttpTransport Error: "+http.status+" "+http.statusText);
 			if( typeof kwArgs.error == "function" ) {
-				kwArgs.error("error", errObj);
-			} else if( typeof kwArgs.handle == "function" ) {
-				kwArgs.handle("error", errObj, http);
+				kwArgs.error("error", errObj, http);
 			}
 		}
 	}
