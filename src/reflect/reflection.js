@@ -1,3 +1,5 @@
+dojo.provide("dojo.reflect.reflection");
+
 /*****************************************************************
 	reflection.js
 	v.1.5.0

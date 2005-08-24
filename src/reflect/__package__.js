@@ -1,4 +1,4 @@
 dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.relect.reflection"]
+	common: ["dojo.reflect.reflection"]
 });
 dojo.hostenv.moduleLoaded("dojo.reflect.*");
