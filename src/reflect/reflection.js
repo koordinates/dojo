@@ -55,7 +55,7 @@ dojo.reflection.MethodInfo = function(name, fn){
 
 //	Static object that can activate instances of the passed type.
 dojo.reflection.Activator = new (function(){
-	this.createInstance : function(type, args) {
+	this.createInstance = function(type, args) {
 		switch (typeof(type)) {
 			case "function" : { 
 				var o = {} ;
