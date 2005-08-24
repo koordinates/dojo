@@ -243,13 +243,12 @@ dojo.lang.extend(dojo.logging.Logger, {
 	}
 });
 
-dojo.logging.tmpFunc = function(){
+void(function(){
 	var ptype = dojo.logging.Logger.prototype;
 	ptype.warn = ptype.warning;
 	ptype.err = ptype.error;
 	ptype.crit = ptype.critical;
-}
-dojo.logging.tmpFunc();
+})();
 
 // the Handler class
 dojo.logging.LogHandler = function(level){
@@ -289,7 +288,7 @@ dojo.logging.LogHandler.prototype.emit = function(record){
 }
 
 // set aliases since we don't want to inherit from dojo.logging.Logger
-dojo.logging.tmpFunc = function(){ // begin globals protection closure
+void(function(){ // begin globals protection closure
 	var names = [
 		"setLevel", "addFilter", "removeFilterByIndex", "removeFilter",
 		"removeAllFilters", "filter"
@@ -299,8 +298,7 @@ dojo.logging.tmpFunc = function(){ // begin globals protection closure
 	for(var x=0; x<names.length; x++){
 		tgt[names[x]] = src[names[x]];
 	}
-}
-dojo.logging.tmpFunc(); // end globals protection closure
+})(); // end globals protection closure
 
 dojo.logging.log = new dojo.logging.Logger();
 
