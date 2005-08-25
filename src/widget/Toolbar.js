@@ -269,8 +269,8 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	_name: null,
 	getName: function() { return this._name; },
 	setName: function(value) { return this._name = value; },
-	getValue: this.getName,
-	setValue: this.setName,
+	getValue: function() { return this.getName(); },
+	setValue: function(value) { return this.setName(value); },
 
 	_selected: false,
 	isSelected: function() { return this._selected; },
