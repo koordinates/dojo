@@ -37,3 +37,8 @@ table.dojoComboBox {
 .cbItemOdd {
 	background-color: white;
 }
+
+.cbItemHighlight {
+	background-color: #63709A;
+	color: white;
+}

@@ -20,6 +20,7 @@ dojo.widget.HtmlComboBox = function(){
 	this.timeoutWrapperName = null;
 	this.dataUrl = "";
 	this.selectedResult = null;
+	var _highlighted_option = null;
 	var _prev_key_backspace = false;
 	var _prev_key_esc = false;
 
@@ -95,6 +96,30 @@ dojo.widget.HtmlComboBox = function(){
 		this.hideResultList();
 	}
 
+	this.highlightNextOption = function(){
+		if(_highlighted_option){
+			dojo.xml.htmlUtil.removeClass(_highlighted_option, "cbItemHighlight");
+		}
+		if((!_highlighted_option)||(!_highlighted_option.nextSibling)){
+			_highlighted_option = this.optionsListNode.firstChild;
+		}else{
+			_highlighted_option = _highlighted_option.nextSibling;
+		}
+		dojo.xml.htmlUtil.addClass(_highlighted_option, "cbItemHighlight");
+	}
+
+	this.highlightPrevOption = function(){
+		if(_highlighted_option){
+			dojo.xml.htmlUtil.removeClass(_highlighted_option, "cbItemHighlight");
+		}
+		if((!_highlighted_option)||(!_highlighted_option.previousSibling)){
+			_highlighted_option = this.optionsListNode.lastChild;
+		}else{
+			_highlighted_option = _highlighted_option.previousSibling;
+		}
+		dojo.xml.htmlUtil.addClass(_highlighted_option, "cbItemHighlight");
+	}
+
 	this.onKeyUp = function(evt){
 		if(evt.keyCode == 27){ // esc is 27
 			this.hideResultList();
@@ -103,6 +128,15 @@ dojo.widget.HtmlComboBox = function(){
 				this.selectedResult = null;
 			}
 			_prev_key_esc = true;
+			return;
+		}else if(evt.keyCode == 32){ // space is 32
+			this.selectOption();
+			return;
+		}else if(evt.keyCode == 40){ // down is 40
+			this.highlightNextOption();
+			return;
+		}else if(evt.keyCode == 38){ // up is 40
+			this.highlightPrevOption();
 			return;
 		}else if(evt.keyCode == 13){ // enter is 13
 			// FIXME: what do we want to do here?
@@ -187,9 +221,14 @@ dojo.widget.HtmlComboBox = function(){
 	}
 
 	this.selectOption = function(evt){
+		if(!evt){
+			evt = { target: _highlighted_option };
+		}
+
 		if(!dojo.xml.domUtil.isChildOf(evt.target, this.optionsListNode)){
 			return;
 		}
+
 		var tgt = evt.target;
 		while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 			tgt = tgt.parentNode;
