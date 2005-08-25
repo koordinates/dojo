@@ -92,6 +92,15 @@ if(dj_undef("djConfig")){
 var dojo;
 if(dj_undef("dojo")){ dojo = {}; }
 
+dojo.version = {
+	major: 0, minor: 0, patch: 0,
+	revision: "", // TODO: add revision number
+	toString: function() {
+		var v = dojo.version;
+		return v.major + "." + v.minor + "." + v.patch + " (" + v.revision + ")";
+	}
+};
+
 // ****************************************************************
 // global public utils
 // ****************************************************************
