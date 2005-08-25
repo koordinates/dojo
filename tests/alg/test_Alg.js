@@ -30,10 +30,11 @@ function test_alg_getNameInObj(){
 	var tclass = function(){
 		this.foo = false;
 		this.bar = true;
-		this.baz = false;
+		this.baz = "baz";
 	}
 	var tobj = new tclass();
 
 	jum.assertEquals("test80", "foo", dojo.alg.getNameInObj(tobj, tobj.foo));
+	jum.assertEquals("test80", "bar", dojo.alg.getNameInObj(tobj, tobj.bar));
 	jum.assertEquals("test90", "baz", dojo.alg.getNameInObj(tobj, tobj.baz));
 }
