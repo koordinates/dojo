@@ -9,32 +9,39 @@ dojo.widget.HtmlTabs = function() {
 	dojo.widget.HtmlWidget.call(this);
 
 	this.widgetType = "Tabs";
+	this.isContainer = true;
+
 	this.templatePath = null; // prolly not
 	this.templateCssPath = null; // maybe
 
 	this.domNode = null;
-	this.panelContainer = null;
+	this.containerNode = null;
 
 	this.tabs = [];
 	this.panels = [];
 	this.selected = -1;
+
+	this.tabTarget = "";
+	this.extractContent = false; // find the bits inside <body>
+	this.parseContent = false; // parse externally loaded pages for widgets
 
 	this.buildRendering = function(args, frag) {
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(!this.domNode) { dj_error("HTMLTabs: No node reference"); }
 
 		if(args["tabtarget"]) {
-			this.panelContainer = document.getElementById(args["tabtarget"]);
+			this.tabtarget = args["tabtarget"];
+			this.containerNode = document.getElementById(args["tabtarget"]);
 		} else {
-			this.panelContainer = document.createElement("div");
+			this.containerNode = document.createElement("div");
 			var next = this.domNode.nextSibling;
 			if(next) {
-				this.domNode.parentNode.insertBefore(this.panelContainer, next);
+				this.domNode.parentNode.insertBefore(this.containerNode, next);
 			} else {
-				this.domNode.parentNode.appendChild(this.panelContainer);
+				this.domNode.parentNode.appendChild(this.containerNode);
 			}
 		}
-		dojo.xml.htmlUtil.addClass(this.panelContainer, "dojoTabPanelContainer");
+		dojo.xml.htmlUtil.addClass(this.containerNode, "dojoTabPanelContainer");
 
 		var li = dojo.xml.domUtil.getFirstChildTag(this.domNode);
 		while(li) {
@@ -115,20 +122,35 @@ dojo.widget.HtmlTabs = function() {
 			var id = panel.url.substring(1);
 			var node = document.getElementById(id);
 			node.style.display = "none";
-			this.panelContainer.appendChild(node);
+			this.containerNode.appendChild(node);
 		} else {
 			var node = document.createElement("div");
 			node.innerHTML = "Loading...";
 			node.style.display = "none";
 			node.id = dojo.xml.domUtil.getUniqueId();
-			this.panelContainer.appendChild(node);
+			this.containerNode.appendChild(node);
 
+			var extract = this.extractContent;
+			var parse = this.parseContent;
 			dojo.io.bind({
 				url: panel.url,
 				useCache: true,
 				mimetype: "text/html",
 				handler: function(type, data, e) {
-					document.getElementById(node.id).innerHTML = data;
+					if(type == "load") {
+						if(extract) {
+							var matches = data.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+							if(matches) { data = matches[1]; }
+						}
+						node.innerHTML = data;
+						if(parse) {
+							var parser = new dojo.xml.Parse();
+							var frag = parser.parseElement(node, null, true);
+							dojo.widget.getParser().createComponents(frag);
+						}
+					} else {
+						node.innerHTML = "Error loading '" + panel.url + "' (" + e.status + " " + e.statusText + ")";
+					}
 				}
 			});
 		}
