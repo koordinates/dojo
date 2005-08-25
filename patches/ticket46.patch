@@ -1,7 +1,7 @@
-Index: src/widget/Parse.js
+Index: widget/Parse.js
 ===================================================================
---- src/widget/Parse.js	(revision 1238)
-+++ src/widget/Parse.js	(working copy)
+--- widget/Parse.js	(revision 1242)
++++ widget/Parse.js	(working copy)
 @@ -26,7 +26,7 @@
  				var ltn = dojo.text.trim(tna[x]).toLowerCase();
  				if(djTags[ltn]){
@@ -28,10 +28,10 @@ Index: src/widget/Parse.js
  						}else{
  							if(ltn.substr(0, 5)=="dojo:"){
  								dj_debug("no tag handler registed for type: ", ltn);
-Index: src/widget/DomWidget.js
+Index: widget/DomWidget.js
 ===================================================================
---- src/widget/DomWidget.js	(revision 1238)
-+++ src/widget/DomWidget.js	(working copy)
+--- widget/DomWidget.js	(revision 1242)
++++ widget/DomWidget.js	(working copy)
 @@ -233,7 +233,7 @@
  
  	// FIXME: should we support addition at an index in the children arr and
@@ -41,11 +41,12 @@ Index: src/widget/DomWidget.js
  		// var start = new Date();
  		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
  			dj_debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
-@@ -245,10 +245,11 @@
+@@ -245,10 +245,12 @@
  			var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
  			if(!pos){ pos = "after"; }
  			if(!ref){ ref = cn.lastChild; }
 +			if(!insertIndex) { insertIndex = 0; }
++			widget.domNode.setAttribute("dojoinsertionindex", insertIndex);
  			if(!ref){
  				cn.appendChild(widget.domNode);
  			}else{
@@ -54,7 +55,7 @@ Index: src/widget/DomWidget.js
  			}
  			// dj_debug(this.widgetId, "added", widget.widgetId, "as a child");
  			this.children.push(widget);
-@@ -272,7 +273,10 @@
+@@ -272,7 +274,10 @@
  	
  	postInitialize: function(args, frag, parentComp){
  		if(parentComp){
@@ -66,10 +67,10 @@ Index: src/widget/DomWidget.js
  		}else{
  			if(!frag){ return; }
  			var sourceNodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-Index: src/widget/Widget.js
+Index: widget/Widget.js
 ===================================================================
---- src/widget/Widget.js	(revision 1238)
-+++ src/widget/Widget.js	(working copy)
+--- widget/Widget.js	(revision 1242)
++++ widget/Widget.js	(working copy)
 @@ -345,8 +345,8 @@
  dojo.widget.tags = {};
  dojo.widget.tags.addParseTreeHandler = function(type){
@@ -97,10 +98,10 @@ Index: src/widget/Widget.js
 +	localProperties["dojoinsertionindex"] = insertionIndex;
  	return twidget.create(localProperties, frag, parentComp);
  }
-Index: src/xml/domUtil.js
+Index: xml/domUtil.js
 ===================================================================
---- src/xml/domUtil.js	(revision 1238)
-+++ src/xml/domUtil.js	(working copy)
+--- xml/domUtil.js	(revision 1242)
++++ xml/domUtil.js	(working copy)
 @@ -291,6 +291,17 @@
  				ref.appendChild(node);
  				break;
