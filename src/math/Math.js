@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.math");
+dojo.provide("dojo.math");
 
 /* Math utils from Dan's 13th lib stuff. See: http://pupius.co.uk/js/Toolkit.Drawing.js */
 
@@ -7,9 +7,9 @@ dojo.math = new function() {
 	this.radToDeg = function(x) { return (x*180) / Math.PI; }
 
 	this.factorial = function(n) {
-		if(n<1) { return 0; }
+		if(n<1){ return 0; }
 		var retVal = 1;
-		for(var i=1;i<=n;i++) retVal *= i;
+		for(var i=1;i<=n;i++){ retVal *= i; }
 		return retVal;
 	}
 
@@ -30,4 +30,4 @@ dojo.math = new function() {
 	}
 };
 
-dojo.hostenv.startPackage("dojo.math.Math");
+dojo.provide("dojo.math.Math");

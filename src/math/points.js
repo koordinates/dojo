@@ -1,5 +1,5 @@
-dojo.hostenv.startPackage("dojo.math.points");
-dojo.hostenv.loadModule("dojo.math.Math");
+dojo.provide("dojo.math.points");
+dojo.require("dojo.math.Math");
 
 // TODO: add a Point class?
 dojo.math.points = {
