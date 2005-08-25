@@ -4,7 +4,7 @@ var testArr = ["foo", "bar", "baz", ["foo", "bar"]];
 
 function test_alg_find(){
 	// jum.debug(testArr);
-	jum.assertEquals("test10", dojo.alg.find(testArr, "foo"), 0);
+	jum.assertEquals("test10", 0, dojo.alg.find(testArr, "foo"));
 }
 
 function test_alg_inArr(){
@@ -34,6 +34,6 @@ function test_alg_getNameInObj(){
 	}
 	var tobj = new tclass();
 
-	jum.assertEquals("test80", dojo.alg.getNameInObj(tobj, tobj.foo), "foo");
-	jum.assertEquals("test90", dojo.alg.getNameInObj(tobj, tobj.baz), "baz");
+	jum.assertEquals("test80", "foo", dojo.alg.getNameInObj(tobj, tobj.foo));
+	jum.assertEquals("test90", "baz", dojo.alg.getNameInObj(tobj, tobj.baz));
 }

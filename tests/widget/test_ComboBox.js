@@ -65,10 +65,7 @@ var comboData = [
 ];
 
 function test_combobox_ctor(){
-	// jum.debug(dojo.webui.widgets.ComboBox);
-	// jum.debug(typeof dojo.webui.widgets.ComboBox);
-	// jum.debug(new dojo.webui.widgets.ComboBox);
-	var b1 = new dojo.webui.widgets.ComboBox();
+	var b1 = new dojo.widget.ComboBox();
 
 	jum.assertEquals("test10", typeof b1, "object");
 	jum.assertEquals("test20", b1.widgetType, "ComboBox");
@@ -76,11 +73,11 @@ function test_combobox_ctor(){
 }
 
 function test_combobox_dataprovider(){
-	var box = new dojo.webui.widgets.ComboBox();
+	var box = new dojo.widget.ComboBox();
 
-	jum.assertEquals("test30", typeof dojo.webui.widgets.ComboBoxDataProvider, "function");
+	jum.assertEquals("test30", typeof dojo.widget.ComboBoxDataProvider, "function");
 
-	var provider = new dojo.webui.widgets.ComboBoxDataProvider();
+	var provider = new dojo.widget.ComboBoxDataProvider();
 	provider.setData(comboData);
 
 	// test the results of our search
