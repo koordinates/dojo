@@ -87,11 +87,44 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		// Safari's selections go all out of whack if we do it inline,
 		// so for now IE is our only hero
 		//if (typeof document.body.contentEditable != "undefined") {
-		if (dojo.render.html.ie) {
+		if (false && dojo.render.html.ie) { // active-x
+			this.object = document.createElement("object");
+			with (this.object) {
+				classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
+				width = this.inheritWidth ? oldWidth : "100%";
+				height = oldHeight;
+				Scrollbars = false;
+				Appearance = 0; // no border
+			}
+			this.domNode.appendChild(this.object);
+
+			var editor = this;
+			this.object.attachEvent("DocumentComplete", function () {
+				editor.document = editor.object.DOM;
+				editor.editNode = editor.document.body.firstChild;
+				alert(dojo.xml.htmlUtil.getInnerHeight(editor.editNode));
+			});
+			
+			this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
+
+			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
+				'<title></title>' +
+				'<style type="text/css">' +
+				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
+				'    body { overflow: hidden; }' +
+				//'    #bodywrapper {  }' +
+				'</style>' +
+				//'<base href="' + window.location + '">' +
+				'<body><div id="bodywrapper">' + html + '</div></body>';
+		
+			//this.object.onmouseover = hitch(this, "_updateHeight");//function () { alert("yo"); }
+			
+		} else if (dojo.render.html.ie) { // contentEditable
 			this.editNode = document.createElement("div");
-			this.editNode.contentEditable = true;
-			this.editNode.innerHTML = html;
-			this.editNode.className = "editable";
+			with (this.editNode) {
+				contentEditable = true;
+				innerHTML = html;
+			}
 			this.domNode.appendChild(this.editNode);
 			
 			dojo.event.connect(this.editNode, "onblur", this, "onBlur");
@@ -99,14 +132,15 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 			this.window = window;
 			this.document = document;
-		} else {
+		} else { // designMode in iframe
 			this.iframe = document.createElement("iframe");
-			this.iframe.width = this.inheritWidth ? oldWidth : "100%";
-			this.iframe.height = oldHeight;
-			this.iframe.style.border = "none";
-			this.iframe.scrolling = "no";
-			this.iframe.className = "editable";
-			this.domNode.style.lineHeight = "0"; // squash line height
+			with (this.iframe) {
+				width = this.inheritWidth ? oldWidth : "100%";
+				height = oldHeight;
+				scrolling = "no";
+				style.border = "none";
+				style.lineHeight = "0"; // squash line height
+			}
 			this.domNode.appendChild(this.iframe);
 
 			this.window = this.iframe.contentWindow;
@@ -192,6 +226,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 		// TODO: this is a guess at the default line-height, kinda works
 		if (this.domNode.nodeName == "LI") { this.domNode.lastChild.style.marginTop = "-1.2em"; }
+		dojo.xml.htmlUtil.addClass(dojo.domNode, "RichTextEditable");
 
 		// add the formatting functions
 		var funcs = ["queryCommandEnabled", "queryCommandState", "queryCommandValue"];
@@ -450,20 +485,24 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	/** Updates the height of the iframe to fit the contents. */
 	_updateHeight: function () {
-		// The height includes the padding, borders and margins so these
-		// need to be added on
-		var heights = ["margin-top", "margin-bottom",
-			"padding-bottom", "padding-top",
-			"border-width-bottom", "border-width-top"];
-		for (var i = 0, chromeheight = 0; i < heights.length; i++) {
-			var height = dojo.xml.domUtil.getStyle(this.iframe, heights[i]);
-			// Safari doesn't have all the heights so we have to test
-			if (height) {
-				chromeheight += Number(height.replace(/[^0-9]/g, ""));
+		if (this.iframe) {
+			// The height includes the padding, borders and margins so these
+			// need to be added on
+			var heights = ["margin-top", "margin-bottom",
+				"padding-bottom", "padding-top",
+				"border-width-bottom", "border-width-top"];
+			for (var i = 0, chromeheight = 0; i < heights.length; i++) {
+				var height = dojo.xml.domUtil.getStyle(this.iframe, heights[i]);
+				// Safari doesn't have all the heights so we have to test
+				if (height) {
+					chromeheight += Number(height.replace(/[^0-9]/g, ""));
+				}
 			}
+			this.iframe.height = this.document.body.offsetHeight + chromeheight + "px";
+			this.window.scrollTo(0, 0);
+		} else if (this.object) {
+			this.object.height = dojo.xml.htmlUtil.getInnerHeight(this.editNode);
 		}
-		this.iframe.height = this.document.body.offsetHeight + chromeheight + "px";
-		this.window.scrollTo(0, 0);
 	},
 	
 	/**
@@ -502,6 +541,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.domNode.appendChild(this.savedContent.firstChild);
 			}
 		}
+		
+		dojo.xml.htmlUtil.removeClass(dojo.domNode, "RichTextEditable");
 		
 		if (this.debug) { alert("ending editor; content "
 			+ (changed ? "" : "not ") + "changed"); }
