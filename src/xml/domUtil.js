@@ -108,8 +108,16 @@ dojo.xml.domUtil = new function(){
 		return node;
 	}
 
-	this.moveChildren = function(srcNode, destNode) {
+	this.moveChildren = function(srcNode, destNode, trim) {
 		var count = 0;
+		if(trim) {
+			while(srcNode.hasChildNodes() && srcNode.firstChild.nodeType == 3) {
+				srcNode.removeChild(srcNode.firstChild);
+			}
+			while(srcNode.hasChildNodes() && srcNode.lastChild.nodeType == 3) {
+				srcNode.removeChild(srcNode.lastChild);
+			}
+		}
 		while(srcNode.hasChildNodes()) {
 			destNode.appendChild(srcNode.firstChild);
 			count++;
@@ -117,9 +125,9 @@ dojo.xml.domUtil = new function(){
 		return count;
 	}
 
-	this.copyChildren = function(srcNode, destNode) {
+	this.copyChildren = function(srcNode, destNode, trim) {
 		var cp = srcNode.cloneNode(true);
-		return this.moveChildren(cp, destNode);
+		return this.moveChildren(cp, destNode, trim);
 	}
 
 	this.clearChildren = function(node) {
