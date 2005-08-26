@@ -26,7 +26,7 @@ dojo.widget.Parse = function(fragment) {
 				var ltn = dojo.text.trim(tna[x]).toLowerCase();
 				if(djTags[ltn]){
 					fragment.tagName = ltn;
-					returnValue.push(djTags[ltn](fragment, this, parentComp));
+					returnValue.push(djTags[ltn](fragment, this, parentComp, count++));
 				}else{
 					if(ltn.substr(0, 5)=="dojo:"){
 						dj_debug("no tag handler registed for type: ", ltn);
@@ -50,7 +50,7 @@ dojo.widget.Parse = function(fragment) {
 							built = true;
 							// var tic = new Date();
 							fragment[item].tagName = ltn;
-							returnValue.push(djTags[ltn](fragment[item], this, parentComp));
+							returnValue.push(djTags[ltn](fragment[item], this, parentComp, fragment[item]["index"]));
 						}else{
 							if(ltn.substr(0, 5)=="dojo:"){
 								dj_debug("no tag handler registed for type: ", ltn);

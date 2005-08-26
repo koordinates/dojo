@@ -233,7 +233,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
-	addChild: function(widget, overrideContainerNode, pos, ref){ 
+	addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){ 
 		// var start = new Date();
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dj_debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
@@ -245,10 +245,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
 			if(!pos){ pos = "after"; }
 			if(!ref){ ref = cn.lastChild; }
+			if(!insertIndex) { insertIndex = 0; }
+			widget.domNode.setAttribute("dojoinsertionindex", insertIndex);
 			if(!ref){
 				cn.appendChild(widget.domNode);
 			}else{
-				dojo.xml.domUtil[pos](widget.domNode, ref);
+				dojo.xml.domUtil[pos](widget.domNode, ref, insertIndex);
 			}
 			// dj_debug(this.widgetId, "added", widget.widgetId, "as a child");
 			this.children.push(widget);
@@ -272,7 +274,10 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	
 	postInitialize: function(args, frag, parentComp){
 		if(parentComp){
-			parentComp.addChild(this);
+			if(args["locationIndex"]) {
+				
+			}
+			parentComp.addChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"]);
 		}else{
 			if(!frag){ return; }
 			var sourceNodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];

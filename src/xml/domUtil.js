@@ -320,6 +320,23 @@ dojo.xml.domUtil = new function(){
 				break;
 		}
 	}
+
+	this.insertAtIndex = function(node, ref, insertionIndex){
+		var pn = ref.parentNode;
+		var siblingNodes = pn.childNodes;
+		var placed = false;
+		for(var i=0; i<siblingNodes.length; i++) {
+			if(	(siblingNodes.item(i)["getAttribute"])&&
+				(parseInt(siblingNodes.item(i).getAttribute("dojoinsertionindex")) > insertionIndex)){
+				this.before(node, siblingNodes.item(i));
+				placed = true;
+				break;
+			}
+		}
+		if(!placed){
+			this.before(node, ref);
+		}
+	}
 	
 	/**
 	 * implementation of the DOM Level 3 attribute.

@@ -346,8 +346,8 @@ dojo.lang.extend(dojo.widget.Widget, {
 dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
-	this[ltype] = function(fragment, widgetParser, parentComp){ 
-		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp);
+	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex){ 
+		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex);
 	}
 }
 dojo.widget.tags.addParseTreeHandler("dojo:widget");
@@ -364,7 +364,7 @@ dojo.widget.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 	var properties = widgetParser.parseProperties(fragment["dojo:connect"]);
 }
 
-dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp){
+dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp, insertionIndex){
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// outputObjectInfo(frag["dojo:"+stype]);
@@ -380,5 +380,6 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp){
 	} else if (!twidget.create) {
 		throw new Error("\"" + stype + "\" widget object does not appear to implement *Widget");
 	}
+	localProperties["dojoinsertionindex"] = insertionIndex;
 	return twidget.create(localProperties, frag, parentComp);
 }

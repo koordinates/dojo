@@ -61,7 +61,7 @@ dojo.xml.Parse = function(){
 		return parsedFragment;
 	}
 
-	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML){
+	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
 		// TODO: make this namespace aware
 		var parsedNodeSet = {};
 		var tagName = dojo.xml.domUtil.getTagName(node);
@@ -81,18 +81,21 @@ dojo.xml.Parse = function(){
 		// instantiated components to figure out their "roots"
 		parsedNodeSet[tagName].nodeRef = node;
 		parsedNodeSet.tagName = tagName;
+		parsedNodeSet.index = thisIdx||0;
 	
 		var ntypes = dojo.xml.domUtil.nodeTypes;
 	
+		var count = 0;
 		for(var i=0; i<node.childNodes.length; i++){
 			var tcn = node.childNodes.item(i);
 			switch(tcn.nodeType){
 				case  ntypes.ELEMENT_NODE: // element nodes, call this function recursively
+					count++;
 					var ctn = dojo.xml.domUtil.getTagName(tcn);
 					if(!parsedNodeSet[ctn]){
 						parsedNodeSet[ctn] = [];
 					}
-					parsedNodeSet[ctn].push(this.parseElement(tcn, true, optimizeForDojoML));
+					parsedNodeSet[ctn].push(this.parseElement(tcn, true, optimizeForDojoML, count));
 					if(	(tcn.childNodes.length == 1)&&
 						(tcn.childNodes.item(0).nodeType == ntypes.TEXT_NODE)){
 						parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
