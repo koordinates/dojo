@@ -27,6 +27,7 @@ dojo.widget.HtmlComboBox = function(){
 	var _highlighted_option = null;
 	var _prev_key_backspace = false;
 	var _prev_key_esc = false;
+	var _result_list_open = false;
 
 	this.getCaretPos = function(element){
 		// FIXME: we need to figure this out for Konq/Safari!
@@ -138,6 +139,9 @@ dojo.widget.HtmlComboBox = function(){
 			this.selectOption();
 			return;
 		}else if(evt.keyCode == 40){ // down is 40
+			if(!_result_list_open){
+				this.startSearchFromInput();
+			}
 			this.highlightNextOption();
 			return;
 		}else if(evt.keyCode == 38){ // up is 40
@@ -145,6 +149,7 @@ dojo.widget.HtmlComboBox = function(){
 			return;
 		}else if(evt.keyCode == 13){ // enter is 13
 			// FIXME: what do we want to do here?
+			this.selectOption();
 			this.setSelectedValue(this.textInputNode.value);
 			this.comboBoxValue = this.textInputNode.value;
 			this.hideResultList();
@@ -269,6 +274,7 @@ dojo.widget.HtmlComboBox = function(){
 	this.hideResultList = function(){
 		this.optionsListNode.style.display = "none";
 		dojo.event.disconnect(document.body, "onclick", this, "hideResultList");
+		_result_list_open = false;
 		return;
 	}
 
@@ -285,7 +291,16 @@ dojo.widget.HtmlComboBox = function(){
 			*/
 			}
 		}
+		_result_list_open = true;
 		return;
+	}
+
+	this.handleArrowClick = function(){
+		if(_result_list_open){
+			this.hideResultList();
+		}else{
+			this.startSearchFromInput();
+		}
 	}
 
 	this.startSearchFromInput = function(){
