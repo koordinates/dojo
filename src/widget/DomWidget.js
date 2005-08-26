@@ -274,9 +274,6 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	
 	postInitialize: function(args, frag, parentComp){
 		if(parentComp){
-			if(args["locationIndex"]) {
-				
-			}
 			parentComp.addChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"]);
 		}else{
 			if(!frag){ return; }
