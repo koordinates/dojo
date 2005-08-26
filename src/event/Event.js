@@ -322,7 +322,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 				args.push(dojo.event.browser.fixEvent(window.event));
 			}else{
 				for(var x=0; x<arguments.length; x++){
-					if((x==0)&&(isNode)){
+					if((x==0)&&(isNode)&&(arguments[x] instanceof Event)){
 						args.push(dojo.event.browser.fixEvent(arguments[x]));
 					}else{
 						args.push(arguments[x]);
