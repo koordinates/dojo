@@ -580,7 +580,7 @@ dojo.xml.htmlUtil = new function(){
 		return color;
 	}
 
-	this.getUniqueId = dojo.xml.domUtil.getUniqueId;
+	this.getUniqueId = function() { return dojo.xml.domUtil.getUniqueId(); }
 
-	this.getStyle = dojo.xml.domUtil.getStyle;
+	this.getStyle = function(el, css) { dojo.xml.domUtil.getStyle(el, css); }
 }

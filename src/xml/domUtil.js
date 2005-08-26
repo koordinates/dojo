@@ -108,6 +108,34 @@ dojo.xml.domUtil = new function(){
 		return node;
 	}
 
+	this.moveChildren = function(srcNode, destNode) {
+		var count = 0;
+		while(srcNode.hasChildNodes()) {
+			destNode.appendChild(srcNode);
+			count++;
+		}
+		return count;
+	}
+
+	this.copyChildren = function(srcNode, destNode) {
+		var cp = srcNode.cloneNode(true);
+		return this.moveChildren(cp, destNode);
+	}
+
+	this.clearChildren = function(node) {
+		var count = 0;
+		while(node.hasChildNodes()) {
+			node.removeChild(node.firstChild);
+			count++;
+		}
+		return count;
+	}
+
+	this.replaceChildren = function(node, newChild) {
+		this.clearChildren(node);
+		node.appendChild(newNode);
+	}
+
 	this.getStyle = function(element, cssSelector) {
 		var value = undefined, camelCased = dojo.xml.domUtil.toCamelCase(cssSelector);
 		value = element.style[camelCased]; // dom-ish
@@ -301,8 +329,7 @@ dojo.xml.domUtil = new function(){
 	 */
 	this.textContent = function (node, text) {
 		if (text) {
-			while (node.hasChildNodes()) { node.removeChild(node.firstChild); }
-			node.appendChild(document.createTextNode(text));
+			this.replaceChildren(node, document.createTextNode(text);
 			return text;
 		} else {
 			var _result = "";
