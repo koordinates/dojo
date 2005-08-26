@@ -41,7 +41,7 @@ methods for canceling event bubbling and default behavior. When you use
 `connect()`, you can stop writing branching statements in handler functions and
 focus on handling your event.
 
-But what if we don't want to set up an named function for the event handler? No
+But what if we don't want to set up a named function for the event handler? No
 problem::
 
     var handlerNode = document.getElementById("handler");
@@ -171,7 +171,7 @@ browsers do).
 
 The last problem worth mentioning is circular connections. Circular connections
 can occur when (perhaps even indirectly) a listener also calls the function
-it's listening too. The good news is that in a JavaScript interpreter, this
+it's listening to. The good news is that in a JavaScript interpreter, this
 will pretty quickly yield an exception of some sort. "Too much recursion" is a
 tip off that you've hit this problem. Debugging circular connections can be
 opaque, but tools like `Venkman`_ help.
