@@ -329,7 +329,7 @@ dojo.xml.domUtil = new function(){
 	 */
 	this.textContent = function (node, text) {
 		if (text) {
-			this.replaceChildren(node, document.createTextNode(text);
+			this.replaceChildren(node, document.createTextNode(text));
 			return text;
 		} else {
 			var _result = "";
