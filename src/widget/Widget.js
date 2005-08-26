@@ -31,6 +31,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	isHidden: false,
 	isContainer: false, // can we contain other widgets?
 	widgetId: "",
+	widgetType: "Widget", // used for building generic widgets
 
 	enable: function(){
 		// should be over-ridden
@@ -349,6 +350,7 @@ dojo.widget.tags.addParseTreeHandler = function(type){
 		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp);
 	}
 }
+dojo.widget.tags.addParseTreeHandler("dojo:widget");
 
 dojo.widget.tags["dojo:propertyset"] = function(fragment, widgetParser, parentComp){
 	// FIXME: Is this needed?
