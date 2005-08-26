@@ -23,6 +23,12 @@ dojo.graphics.htmlEffects = new function() {
 		});
 	}
 
+	this.fadeShow = function(node, duration, callback) {
+		if(!duration) { duration = 150; } // why not have a default?
+		node.style.display = "block";
+		return this.fade(node, duration, 0, 1, callback);
+	}
+
 	this.fade = function(node, duration, startOpac, endOpac, callback) {
 		var anim = new dojo.animation.Animation(
 			new dojo.math.curves.Line([startOpac],[endOpac]),
@@ -234,7 +240,7 @@ dojo.graphics.htmlEffects = new function() {
 		dojo.event.connect(anim, "onEnd", function() {
 			endNode.style.display = "block";
 			outline.parentNode.removeChild(outline);
-			if(callback) { callback(node, anim); }
+			if(callback) { callback(endNode, anim); }
 		});
 		anim.play();
 		return anim;
@@ -283,7 +289,7 @@ dojo.graphics.htmlEffects = new function() {
 
 		dojo.event.connect(anim, "onEnd", function() {
 			outline.parentNode.removeChild(outline);
-			if(callback) { callback(node, anim); }
+			if(callback) { callback(startNode, anim); }
 		});
 		anim.play();
 		return anim;
