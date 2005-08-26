@@ -301,7 +301,7 @@ dojo.xml.domUtil = new function(){
 	 */
 	this.textContent = function (node, text) {
 		if (text) {
-			while (node.hasChildren()) { node.removeChild(node.firstChild); }
+			while (node.hasChildNodes()) { node.removeChild(node.firstChild); }
 			node.appendChild(document.createTextNode(text));
 			return text;
 		} else {
