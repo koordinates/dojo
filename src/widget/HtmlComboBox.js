@@ -11,7 +11,11 @@ dojo.widget.HtmlComboBox = function(){
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css");
 
 	this.autoComplete = true;
+	this.formInputName = "";
+	this.name = ""; // clone in the name from the DOM node
 	this.textInputNode = null;
+	this.comboBoxValue = null;
+	this.comboBoxSelectionValue = null;
 	this.optionsListNode = null;
 	this.downArrowNode = null;
 	this.cbTableNode = null;
@@ -93,6 +97,7 @@ dojo.widget.HtmlComboBox = function(){
 
 	this.setSelectedValue = function(value){
 		// FIXME, not sure what to do here!
+		this.comboBoxSelectionValue.value = value;
 		this.hideResultList();
 	}
 
@@ -140,7 +145,12 @@ dojo.widget.HtmlComboBox = function(){
 			return;
 		}else if(evt.keyCode == 13){ // enter is 13
 			// FIXME: what do we want to do here?
-			this.setSelectedValue(this.textInputNode.valu);
+			this.setSelectedValue(this.textInputNode.value);
+			this.comboBoxValue = this.textInputNode.value;
+			this.hideResultList();
+			return;
+		}else{
+			this.comboBoxValue.value = this.textInputNode.value;
 		}
 
 		// backspace is 8
@@ -163,8 +173,13 @@ dojo.widget.HtmlComboBox = function(){
 		}
 	}
 
-	this.fillInTemplate = function(){
+	this.fillInTemplate = function(args, frag){
+		// FIXME: need to get/assign DOM node names for form participation here.
+		this.comboBoxValue.name = this.name;
+		this.comboBoxSelectionValue.name = this.name+"_selected";
+
 		// FIXME: add logic
+
 		if(this.dataUrl!=""){
 			var _this = this;
 			dojo.io.bind({
@@ -239,6 +254,8 @@ dojo.widget.HtmlComboBox = function(){
 
 		this.textInputNode.value = tgt.getAttribute("resultName");
 		this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
+		this.comboBoxValue = tgt.getAttribute("resultName");
+		this.comboBoxSelectionValue = tgt.getAttribute("resultValue");
 		this.hideResultList();
 	}
 
