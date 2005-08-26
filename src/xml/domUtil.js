@@ -149,7 +149,7 @@ dojo.xml.domUtil = new function(){
 
 	this.replaceChildren = function(node, newChild) {
 		this.clearChildren(node);
-		node.appendChild(newNode);
+		node.appendChild(newChild);
 	}
 
 	this.getStyle = function(element, cssSelector) {
