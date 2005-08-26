@@ -189,7 +189,8 @@ dojo.xml.domUtil = new function(){
 		return ancestors;
 	}
 
-	this.isChildOf = function(node, ancestor) {
+	this.isChildOf = function(node, ancestor, noSame) {
+		if(noSame && node) { node = node.parentNode; }
 		while(node) {
 			if(node == ancestor) {
 				return true;
