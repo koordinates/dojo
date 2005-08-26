@@ -71,9 +71,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 			case "dropSuccess":
 				with(this.domNode.style){
-					position = "";
-					left = "";
-					top = "";
+					position = null;
+					left = null;
+					top = null;
 				}
 				this.dragClone.parentNode.removeChild(this.dragClone);
 				this.dragClone = null;
@@ -86,7 +86,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 										getAbsoluteY(this.domNode)];
 				}
 				// offset the end so the effect can be seen
-				var endCoords = [this.dragStartPosition.top + 1,
+				var endCoords = [this.dragStartPosition.left + 1,
 					this.dragStartPosition.top + 1];
 	
 				// animate
@@ -104,11 +104,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 						dragObject.dragClone.parentNode.replaceChild(
 							dragObject.domNode, dragObject.dragClone);
 						with(dragObject.domNode.style){
-							position = "";
-							left = "";
-							top = "";
+							position = null;
+							left = null;
+							top = null;
 						}
-					}, 100);
+					}, 200);
 				});
 				anim.play();
 				break;
