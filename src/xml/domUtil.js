@@ -111,7 +111,7 @@ dojo.xml.domUtil = new function(){
 	this.moveChildren = function(srcNode, destNode) {
 		var count = 0;
 		while(srcNode.hasChildNodes()) {
-			destNode.appendChild(srcNode);
+			destNode.appendChild(srcNode.firstChild);
 			count++;
 		}
 		return count;
