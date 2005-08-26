@@ -108,6 +108,14 @@ dojo.xml.domUtil = new function(){
 		return node;
 	}
 
+	this.forEachChildTag = function(node, unaryFunc) {
+		var child = this.getFirstChildTag(node);
+		while(child) {
+			if(unaryFunc(child) == "break") { break; }
+			child = this.getNextSiblingTag(child);
+		}
+	}
+
 	this.moveChildren = function(srcNode, destNode, trim) {
 		var count = 0;
 		if(trim) {
