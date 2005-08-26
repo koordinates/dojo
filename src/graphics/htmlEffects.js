@@ -15,6 +15,14 @@ dojo.graphics.htmlEffects = new function() {
 		return this.fade(node, duration, dojo.xml.htmlUtil.getOpacity(node), 1, callback);
 	}
 
+	this.fadeHide = function(node, duration, callback) {
+		if(!duration) { duration = 150; } // why not have a default?
+		return this.fadeOut(node, duration, function(node) {
+			node.style.display = "none";
+			if(typeof callback == "function") { callback(node); }
+		});
+	}
+
 	this.fade = function(node, duration, startOpac, endOpac, callback) {
 		var anim = new dojo.animation.Animation(
 			new dojo.math.curves.Line([startOpac],[endOpac]),
