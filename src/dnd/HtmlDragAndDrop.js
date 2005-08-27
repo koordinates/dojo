@@ -141,17 +141,64 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		});
 		
 		// dj_debug("can drop: ", canDrop);
-		this.domNode.style.border = "1px solid "+(canDrop ? "black" : "red");
+
+		// cache the positions of the child nodes
+		this.childBoxes = [];
+		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
+			child = this.domNode.childNodes[i];
+			if (child.nodeType != dojo.xml.domUtil.nodeTypes.ELEMENT_NODE) { continue; }
+			with(dojo.xml.htmlUtil){
+				var top = getAbsoluteY(child);
+				var bottom = top + getInnerHeight(child);
+				var left = getAbsoluteX(child);
+				var right = left + getInnerWidth(child);
+			}
+			this.childBoxes.push({top: top, bottom: bottom,
+				left: left, right: right, node: child});
+		}
+		
 		return canDrop;
 	},
 	
-	onDragMove: function(e){
-		// TODO: indicate position at which the DragObject will get inserted
+	onDragMove: function(e) {
+		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+		var mousey = e.pageY || e.clientY + document.body.scrollTop;
+
+		// find the child
+		for (var i = 0, child; i < this.childBoxes.length; i++) {
+			with (this.childBoxes[i]) {
+				if (mousex >= left && mousex <= right &&
+					mousey >= top && mousey <= bottom) { break; }
+			}
+		}
+		if (i == this.childBoxes.length) { return; } // not over any of our children
+
+		if (!this.dropIndicator) {
+			this.dropIndicator = document.createElement("div");
+			with (this.dropIndicator.style) {
+				position = "absolute";
+				background = "black";
+				height = "1px";
+				width = dojo.xml.htmlUtil.getInnerWidth(this.domNode) + "px";
+				left = dojo.xml.htmlUtil.getAbsoluteX(this.domNode) + "px";
+			}
+		}
+		if (!this.dropIndicator.parentNode) {
+			document.body.appendChild(this.dropIndicator);
+		}
+		
+		with (this.dropIndicator.style) {
+			var nudge = 0, gravity = dojo.xml.htmlUtil.gravity;
+			if (gravity(this.childBoxes[i].node, e) & gravity.SOUTH) {
+				if (this.childBoxes[i + 1]) { i += 1; }
+				else { nudge = this.childBoxes[i].bottom - this.childBoxes[i].top; }
+			}
+			top = this.childBoxes[i].top + nudge + "px";
+		}
 	},
 
-	onDragOut: function(e){
-		// TODO: remove inidication from previous method
-		this.domNode.style.border = "";
+	onDragOut: function(e) {
+		dojo.xml.domUtil.remove(this.dropIndicator);
 	},
 	
 	/**
@@ -162,28 +209,26 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	 */
 	onDrop: function(e){
 		this.onDragOut(e);
-		var child = e.dropTarget;
-		if(child != this.domNode){
-			while((child.parentNode)&&(child.parentNode != this.domNode)){
-				child = child.parentNode;
+		
+		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+		var mousey = e.pageY || e.clientY + document.body.scrollTop;
+
+		// find the child
+		for (var i = 0, child; i < this.childBoxes.length; i++) {
+			with (this.childBoxes[i]) {
+				if (mousex >= left && mousex <= right &&
+					mousey >= top && mousey <= bottom) { break; }
 			}
+		}
+		if (i == this.childBoxes.length) { return false; }
+		
+		var gravity = dojo.xml.htmlUtil.gravity, child = this.childBoxes[i].node;
+		if (gravity(child, e) & gravity.SOUTH) {
+			dojo.xml.domUtil.after(e.dragObject.domNode, child);
+		} else {
+			dojo.xml.domUtil.before(e.dragObject.domNode, child);
 		}
 		
-		if(child){
-			with(dojo.xml){
-				var edn = e.dragObject.domNode;
-				htmlUtil.setOpacity(edn, 1.0);
-				if(htmlUtil.gravity(child, e) & htmlUtil.gravity.NORTH){
-					// dj_debug("north gravity");
-					domUtil.before(edn, child);
-				}else{
-					// dj_debug("other gravity");
-					domUtil.after(edn, child);
-				}
-			}
-			return true;
-		}else{
-			return false;
-		}
+		return true;
 	}
 });
