@@ -446,5 +446,9 @@ dojo.xml.domUtil = new function(){
 		}
 		return result;
 	}
+	
+	this.remove = function (node) {
+		if (node && node.parentNode) { node.parentNode.removeChild(node); }
+	}
 }
 
