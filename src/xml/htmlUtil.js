@@ -478,6 +478,21 @@ dojo.xml.htmlUtil = new function(){
 	this.gravity.EAST = 1 << 2;
 	this.gravity.WEST = 1 << 3;
 	
+	this.overElement = function (element, e) {
+		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+		var mousey = e.pageY || e.clientY + document.body.scrollTop;
+		
+		with(dojo.xml.htmlUtil){
+			var top = getAbsoluteY(element);
+			var bottom = top + getInnerHeight(element);
+			var left = getAbsoluteX(element);
+			var right = left + getInnerWidth(element);
+		}
+		
+		return (mousex >= left && mousex <= right &&
+			mousey >= top && mousey <= bottom);
+	}
+	
 	// FIXME: this is a really basic stub for adding and removing cssRules, but
 	// it assumes that you know the index of the cssRule that you want to add 
 	// or remove, making it less than useful.  So we need something that can 
