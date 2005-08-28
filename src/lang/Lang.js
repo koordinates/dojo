@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.lang.Lang");
+dojo.provide("dojo.lang.Lang");
 
 dojo.lang.mixin = function(obj, props){
 	var tobj = {};

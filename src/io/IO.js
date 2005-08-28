@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.io.IO");
+dojo.provide("dojo.io.IO");
 
 /******************************************************************************
  *	Notes about dojo.io design:

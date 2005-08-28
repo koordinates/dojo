@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.uri.Uri");
+dojo.provide("dojo.uri.Uri");
 
 dojo.uri = new function() {
 	this.joinPath = function() {

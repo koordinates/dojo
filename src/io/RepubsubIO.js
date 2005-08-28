@@ -1,10 +1,10 @@
-dojo.hostenv.loadModule("dojo.event.Event");
-dojo.hostenv.loadModule("dojo.event.BrowserEvent");
-dojo.hostenv.loadModule("dojo.io.BrowserIO");
+dojo.require("dojo.event.Event");
+dojo.require("dojo.event.BrowserEvent");
+dojo.require("dojo.io.BrowserIO");
 
-dojo.hostenv.startPackage("dojo.io.RepubsubIO");
-dojo.hostenv.startPackage("dojo.io.repubsub");
-dojo.hostenv.startPackage("dojo.io.repubsubTransport");
+dojo.provide("dojo.io.RepubsubIO");
+dojo.provide("dojo.io.repubsub");
+dojo.provide("dojo.io.repubsubTransport");
 
 dojo.io.repubsubTranport = new function(){
 	var rps = dojo.io.repubsub;

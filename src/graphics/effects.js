@@ -1,6 +1,6 @@
-dojo.hostenv.startPackage("dojo.graphics.effects");
+dojo.provide("dojo.graphics.effects");
 
-dojo.hostenv.loadModule("dojo.animation.*");
+dojo.require("dojo.animation.*");
 
 dojo.graphics.effects = new function() {
 	this.fadeOut = function(node, duration, callback) {

@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.io.RhinoIO");
+dojo.provide("dojo.io.RhinoIO");
 
 dojo.io.SyncHTTPRequest = function(){
 	dojo.io.SyncRequest.call(this);

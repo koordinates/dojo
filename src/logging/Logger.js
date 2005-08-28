@@ -41,9 +41,9 @@
 // Global Objects:	dojo.logging
 // Dependencies:	none
 
-dojo.hostenv.startPackage("dojo.logging.Logger");
-dojo.hostenv.startPackage("dojo.log");
-dojo.hostenv.loadModule("dojo.lang.*");
+dojo.provide("dojo.logging.Logger");
+dojo.provide("dojo.log");
+dojo.require("dojo.lang.*");
 
 /*
 	A simple data structure class that stores information for and about

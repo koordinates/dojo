@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.graphics.color");
+dojo.provide("dojo.graphics.color");
 
 dojo.graphics.color = new function() {
 	// blend colors a and b (both as RGB array or hex strings) with weight from -1 to +1, 0 being a 50/50 blend

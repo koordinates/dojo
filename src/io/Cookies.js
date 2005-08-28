@@ -1,4 +1,4 @@
-dojo.hostenv.startPackage("dojo.io.Cookies");
+dojo.provide("dojo.io.Cookies");
 
 dojo.io.cookies = new function() {
 	this.setCookie = function(name, value, days, path) {

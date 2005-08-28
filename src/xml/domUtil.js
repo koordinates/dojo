@@ -295,9 +295,9 @@ dojo.xml.domUtil = new function(){
 	}
 
 	// referenced for backwards compatibility
-	this.extractRGB = dojo.graphics.color.extractRGB;
-	this.hex2rgb = dojo.graphics.color.hex2rgb;
-	this.rgb2hex = dojo.graphics.color.rgb2hex;
+	this.extractRGB = function() { return dojo.graphics.color.extractRGB.call(dojo.graphics.color, arguments); }
+	this.hex2rgb = function() { return dojo.graphics.color.hex2rgb.call(dojo.graphics.color, arguments); }
+	this.rgb2hex = function() { return dojo.graphics.color.rgb2hex.call(dojo.graphics.color, arguments); }
 
 	this.insertBefore = function(node, ref){
 		var pn = ref.parentNode;

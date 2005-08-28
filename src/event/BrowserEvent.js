@@ -1,7 +1,7 @@
 dojo.provide("dojo.event.BrowserEvent");
 dojo.event.browser = {};
 
-dojo.hostenv.loadModule("dojo.event.Event");
+dojo.require("dojo.event.Event");
 
 dojo_ie_clobber = new function(){
 	this.clobberArr = ['data', 

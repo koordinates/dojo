@@ -1,4 +1,4 @@
-//	dojo.hostenv.loadModule("dojo.alg.*");
+//	dojo.require("dojo.alg.*");
 dojo.provide("dojo.collections.Collections");
 
 dojo.collections = {Collections:true};
