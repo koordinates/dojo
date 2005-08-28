@@ -9,7 +9,7 @@ When you download an "Edition" of Dojo, what you're getting is:
 - a pre-built "profile" which includes multiple files rolled into a single
   `dojo.js` file. This is the only file you need to get started.
 - the source for all of Dojo, including what was built into the profile
-- some breif documentation on what functions are available
+- some brief documentation on what functions are available
 
 The file `dojo.js` is the only thing you'll need to include into your
 application or page in order to use the capabilities built into the profile of
@@ -45,7 +45,7 @@ that the system you are loading might have. It Just Works.
 
 It will be slightly slower to include the event system this way than if it were
 built into `dojo.js` that came with the package you downloaded, but unless you
-are including many large packages, the difference is hardly noticable. Even
+are including many large packages, the difference is hardly noticeable. Even
 better, when you decide that you really do want a package with that capability
 rolled in, Dojo makes it easy to build one for yourself and just drop it in,
 without changing any of your code!
