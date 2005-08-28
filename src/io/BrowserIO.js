@@ -270,7 +270,7 @@ dojo.io.XMLHTTPTransport = new function(){
 				// when we issue a new bind(), we clobber the forward 
 				// FIXME: is this always a good idea?
 				this.forwardStack = []; 
-				var oldFW = args["forward"]||args["forwardbutton"];;
+				var oldFW = args["forward"]||args["forwardButton"];;
 				var tfw = function(){
 					if(window.location.hash != ""){
 						window.location.href = hash;
@@ -386,7 +386,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		var last = this.forwardStack.pop();
 		if(!last){ return; }
 		if(last.kwArgs["forward"]){
-			last.kwArgs.back();
+			last.kwArgs.forward();
 		}else if(last.kwArgs["forwardButton"]){
 			last.kwArgs.forwardButton();
 		}else if(last.kwArgs["handle"]){
