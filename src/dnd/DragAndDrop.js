@@ -6,11 +6,12 @@ dojo.provide("dojo.dnd.DragManager");
 dojo.provide("dojo.dnd.DragAndDrop");
 
 dojo.dnd.DragSource = function(){
-	this.type = "";
 	dojo.dnd.dragManager.registerDragSource(this);
 }
 
 dojo.lang.extend(dojo.dnd.DragSource, {
+	type: "",
+	
 	onDragEnd: function(){
 	},
 	
@@ -19,11 +20,12 @@ dojo.lang.extend(dojo.dnd.DragSource, {
 });
 
 dojo.dnd.DragObject = function(){
-	this.type = "";
 	dojo.dnd.dragManager.registerDragObject(this);
 }
 
 dojo.lang.extend(dojo.dnd.DragObject, {
+	type: "",
+	
 	onDragStart: function(){
 		// gets called directly after being created by the DragSource
 		// default action is to clone self as icon
@@ -54,10 +56,11 @@ dojo.lang.extend(dojo.dnd.DragObject, {
 
 dojo.dnd.DropTarget = function(){
 	dojo.dnd.dragManager.registerDropTarget(this);
-	this.acceptedTypes = [];
 }
 
 dojo.lang.extend(dojo.dnd.DropTarget, {
+	acceptedTypes: [],
+
 	onDragOver: function(){
 	},
 	
