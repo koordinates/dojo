@@ -223,7 +223,7 @@ function dj_inherits(subclass, superclass){
 // an object that authors use determine what host we are running under
 dojo.render = {
 	name: "",
-	ver: 0.0,
+	ver: dojo.version,
 	os: { win: false, linux: false, osx: false },
 	html: {
 		capable: false,
