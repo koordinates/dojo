@@ -1,7 +1,8 @@
-dojo.hostenv.startPackage("dojo.animation");
-dojo.hostenv.startPackage("dojo.animation.Animation");
+dojo.provide("dojo.animation");
+dojo.provide("dojo.animation.Animation");
 
-dojo.hostenv.loadModule("dojo.math.*");
+dojo.require("dojo.math.Math");
+dojo.require("dojo.math.curves");
 
 /*
 Animation package based off of Dan Pupius' work on Animations:
