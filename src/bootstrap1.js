@@ -6,7 +6,7 @@
 * @author Copyright 2004 Mark D. Anderson (mda@discerning.com)
 * @author Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
 *
-* $Id: bootstrap1.js,v 1.1 2004/07/27 00:25:15 mda Exp $
+* $Id$
 */
 
 /**
