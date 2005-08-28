@@ -104,7 +104,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		if(!dojo.alg.inArray(this.selectedSources, ds)){
 			this.selectedSources.push(ds);
 		}
-		e.preventDefault();
+		//e.preventDefault();
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
 
@@ -114,9 +114,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			dojo.alg.forEach(this.dragObjects, function(tempDragObj){
 				var ret = null;
 				if(!tempDragObj){ return; }
-				if((_this.currentDropTarget)&&(_this.dropAcceptable)){
+				if(_this.currentDropTarget) {
 					e.dragObject = tempDragObj;
-
+	
 					// NOTE: we can't get anything but the current drop target
 					// here since the drag shadow blocks mouse-over events.
 					// This is probelematic for dropping "in" something
@@ -129,12 +129,17 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 					}else{
 						e.dropTarget = _this.currentDropTarget.domNode;
 					}
-					ret = _this.currentDropTarget.onDrop(e);
+					if (_this.dropAcceptable){
+						ret = _this.currentDropTarget.onDrop(e);
+					} else {
+						 _this.currentDropTarget.onDragOut(e);
+					}
 				}
 				tempDragObj.onDragEnd({
 					dragStatus: (_this.dropAcceptable && ret) ? "dropSuccess" : "dropFailure"
 				});
 			});
+						
 			this.selectedSources = [];
 			this.dragObjects = [];
 		}

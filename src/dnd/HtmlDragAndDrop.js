@@ -33,6 +33,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	 * the intermediate representation.
 	 */
 	onDragStart: function (e){
+		if (document.selection) { document.selection.clear(); }
+		else if (window.getSelection) { window.getSelection().removeAllRanges(); }
+	
 		this.dragStartPosition = {top: dojo.xml.htmlUtil.getAbsoluteY(this.domNode),
 			left: dojo.xml.htmlUtil.getAbsoluteX(this.domNode)};
 	
@@ -50,8 +53,6 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		}
 		dojo.xml.htmlUtil.setOpacity(this.domNode, 0.5);
 		document.body.appendChild(this.domNode);
-		
-		if(!e.dragObject){ return this; }
 	},
 	
 	/** Moves the node to follow the mouse */
@@ -182,11 +183,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 				width = dojo.xml.htmlUtil.getInnerWidth(this.domNode) + "px";
 				left = dojo.xml.htmlUtil.getAbsoluteX(this.domNode) + "px";
 			}
-		}
-		if (!this.dropIndicator.parentNode) {
-			document.body.appendChild(this.dropIndicator);
-		}
-		
+		}		
 		with (this.dropIndicator.style) {
 			var nudge = 0, gravity = dojo.xml.htmlUtil.gravity;
 			if (gravity(this.childBoxes[i].node, e) & gravity.SOUTH) {
@@ -194,6 +191,9 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 				else { nudge = this.childBoxes[i].bottom - this.childBoxes[i].top; }
 			}
 			top = this.childBoxes[i].top + nudge + "px";
+		}
+		if (!this.dropIndicator.parentNode) {
+			document.body.appendChild(this.dropIndicator);
 		}
 	},
 
