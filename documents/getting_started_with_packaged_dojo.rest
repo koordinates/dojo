@@ -64,10 +64,8 @@ Dojo's source code.
 
 If those aren't enough help, here are a couple more ways to reach us:
 
-mailing list
-    You can sign up for the dojo-interest mailing list at
-    http://dojotoolkit.org/mailman/listinfo/dojo-interest or view the archives
-    at http://news.gmane.org/gmane.comp.web.dojo.user
+Mailing Lists
+    You can sign up for the `dojo-interest mailing list`_ or `view the archives`_.
 
 IRC
     The Dojo developers and many heavy users of the toolkit are available to
@@ -76,6 +74,7 @@ IRC
 .. raw:: html
    :file: website/rest_template/sidebar.html
 
+====================================
 Getting Started With a Dojo Download
 ====================================
 
@@ -90,5 +89,7 @@ Getting Started With a Dojo Download
    :file: website/rest_template/footer.html
 
 .. _`event system`: http://www.dojotoolkit.org/docs/dojo_event_system.html
+.. _`dojo-interest mailing list`: http://dojotoolkit.org/mailman/listinfo/dojo-interest 
+.. _`view the archives`: http://news.gmane.org/gmane.comp.web.dojo.user
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
