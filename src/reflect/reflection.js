@@ -1,7 +1,8 @@
+dojo.provide("dojo.reflect");
 dojo.provide("dojo.reflect.reflection");
 
 /*****************************************************************
-	reflection.js
+	reflect.js
 	v.1.5.0
 	(c) 2003-2004 Thomas R. Trenka, Ph.D.
 
@@ -14,24 +15,24 @@ dojo.provide("dojo.reflect.reflection");
 ******************************************************************/
 if(!dj_global){ var dj_global = this; }
 
-dojo.reflection = {} ;
-dojo.reflection.$unknownType = function(){ } ;
-dojo.reflection.ParameterInfo = function(name, type){ 
+dojo.reflect = {} ;
+dojo.reflect.$unknownType = function(){ } ;
+dojo.reflect.ParameterInfo = function(name, type){ 
 	this.name = name ;
-	this.type = (type) ? type : dojo.reflection.$unknownType ;
+	this.type = (type) ? type : dojo.reflect.$unknownType ;
 } ;
-dojo.reflection.PropertyInfo = function(name, type) { 
+dojo.reflect.PropertyInfo = function(name, type) { 
 	this.name = name ;
-	this.type = (type) ? type : dojo.reflection.$unknownType ;
+	this.type = (type) ? type : dojo.reflect.$unknownType ;
 } ;
-dojo.reflection.MethodInfo = function(name, fn){
+dojo.reflect.MethodInfo = function(name, fn){
 	var parse = function(f) {
 		var o = {} ; 
 		var s = f.toString() ;
 		var param = ((s.substring(s.indexOf('(')+1, s.indexOf(')'))).replace(/\s+/g, "")).split(",") ;
 		o.parameters = [] ;
 		for (var i = 0; i < param.length; i++) {
-			o.parameters.push(new dojo.reflection.ParameterInfo(param[i])) ;
+			o.parameters.push(new dojo.reflect.ParameterInfo(param[i])) ;
 		}
 		o.body = (s.substring(s.indexOf('{')+1, s.lastIndexOf('}'))).replace(/(^\s*)|(\s*$)/g, "") ;
 		return o ;
@@ -56,7 +57,7 @@ dojo.reflection.MethodInfo = function(name, fn){
 } ;
 
 //	Static object that can activate instances of the passed type.
-dojo.reflection.Activator = new (function(){
+dojo.reflect.Activator = new (function(){
 	this.createInstance = function(type, args) {
 		switch (typeof(type)) {
 			case "function" : { 
@@ -66,15 +67,15 @@ dojo.reflection.Activator = new (function(){
 			} ;
 			case "string" : {
 				var o = {} ;
-				(dojo.reflection.Reflector.getTypeFromString(type)).apply(o, args) ;
+				(dojo.reflect.Reflector.getTypeFromString(type)).apply(o, args) ;
 				return o ;
 			} ;
 		}
-		throw new Error("dojo.reflection.Activator.createInstance(): no such type exists.");
+		throw new Error("dojo.reflect.Activator.createInstance(): no such type exists.");
 	}
 })() ;
 
-dojo.reflection.Reflector = new (function(){
+dojo.reflect.Reflector = new (function(){
 	this.getTypeFromString = function(s) {
 		var parts = s.split("."), i = 0, obj = dj_global ; 
 		do { obj = obj[parts[i++]] ; } while (i < parts.length && obj) ; 
@@ -92,8 +93,8 @@ dojo.reflection.Reflector = new (function(){
 		if (typeof(s) == "string") {
 			type = this.getTypeFromString(s) ;
 		}
-		var nullArgs = (new dojo.reflection.MethodInfo(type)).getNullArgumentsObject() ;
-		return this.getFields(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
+		var nullArgs = (new dojo.reflect.MethodInfo(type)).getNullArgumentsObject() ;
+		return this.getFields(dojo.reflect.Activator.createInstance(s, nullArgs)) ;
 	};
 
 	this.getPropertiesFromType = function(s) { 
@@ -101,8 +102,8 @@ dojo.reflection.Reflector = new (function(){
 		if (typeof(s) == "string") {
 			type = this.getTypeFromString(s);
 		}
-		var nullArgs = (new dojo.reflection.MethodInfo(type)).getNullArgumentsObject() ;
-		return this.getProperties(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
+		var nullArgs = (new dojo.reflect.MethodInfo(type)).getNullArgumentsObject() ;
+		return this.getProperties(dojo.reflect.Activator.createInstance(s, nullArgs)) ;
 	};
 
 	this.getMethodsFromType = function(s) { 
@@ -110,8 +111,8 @@ dojo.reflection.Reflector = new (function(){
 		if (typeof(s) == "string") {
 			type = this.getTypeFromString(s) ;
 		}
-		var nullArgs = (new dojo.reflection.MethodInfo(type)).getNullArgumentsObject() ;
-		return this.getMethods(dojo.reflection.Activator.createInstance(s, nullArgs)) ;
+		var nullArgs = (new dojo.reflect.MethodInfo(type)).getNullArgumentsObject() ;
+		return this.getMethods(dojo.reflect.Activator.createInstance(s, nullArgs)) ;
 	};
 
 	this.getType = function(o) { return o.constructor ; } ;
@@ -120,9 +121,9 @@ dojo.reflection.Reflector = new (function(){
 		var arr = [] ;
 		for (var p in obj) { 
 			if(this.getType(obj[p]) != Function){
-				arr.push(new dojo.reflection.PropertyInfo(p, this.getType(obj[p]))) ;
+				arr.push(new dojo.reflect.PropertyInfo(p, this.getType(obj[p]))) ;
 			}else{
-				arr.push(new dojo.reflection.MethodInfo(p, obj[p]));
+				arr.push(new dojo.reflect.MethodInfo(p, obj[p]));
 			}
 		}
 		return arr ;
@@ -132,7 +133,7 @@ dojo.reflection.Reflector = new (function(){
 		var arr = [] ;
 		var fi = this.getFields(obj) ;
 		for (var i = 0; i < fi.length; i++){
-			if (this.isInstanceOf(fi[i], dojo.reflection.PropertyInfo)){
+			if (this.isInstanceOf(fi[i], dojo.reflect.PropertyInfo)){
 				arr.push(fi[i]) ;
 			}
 		}
@@ -143,7 +144,7 @@ dojo.reflection.Reflector = new (function(){
 		var arr = [] ;
 		var fi = this.getFields(obj) ;
 		for (var i = 0; i < fi.length; i++){
-			if (this.isInstanceOf(fi[i], dojo.reflection.MethodInfo)){
+			if (this.isInstanceOf(fi[i], dojo.reflect.MethodInfo)){
 				arr.push(fi[i]) ;
 			}
 		}
