@@ -267,18 +267,16 @@ A.  Block statements.
     6.  a switch statement SHOULD have the following form::
 
             switch (condition){
-                case ABC:{
+                case ABC:
                     statements;
                     //  fallthrough
-                }case DEF:{
+                case DEF:
                     statements;
                     break;
-                }default :{
+                default :
                     statements;
                     break;
-                }
             }
-        .. FIXME (trt) Are you sure about that?  I'm looking at that and it seems really unclear.
 
     7.  A try...catch...finally statement SHOULD have the following form::
 
