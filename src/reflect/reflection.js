@@ -1,5 +1,4 @@
 dojo.provide("dojo.reflect");
-dojo.provide("dojo.reflect.reflection");
 
 /*****************************************************************
 	reflect.js
@@ -181,3 +180,6 @@ dojo.reflect.Reflector = new (function(){
 		return (type instanceof o); 
 	};
 })();
+
+// back-compat
+dojo.provide("dojo.reflect.reflection");
