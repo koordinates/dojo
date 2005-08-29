@@ -2,7 +2,7 @@
         "http://www.w3.org/TR/html4/strict.dtd">
 
 <script type="text/javascript"> var djConfig = { isDebug: true } </script>
-<script type="text/javascript" src="dojo.js"></script>
+<script type="text/javascript" src="../../release/dojo/dojo.js"></script>
 
 <style type="text/css">
 	pre { border: 1px solid black; padding: 1em; background: #eee; }
@@ -12,7 +12,7 @@
 
 function props (e, name, descend) {
 	if (arguments.length == 2) { descend = true; }
-	var ns = ["Methods", "Fields", "Unreachables"];
+	var ns = ["Methods", "Properties", "Unreachables"];
 	var as = [[], [], []]; // array of (empty) arrays of arrays!
 	var p, j, i; // loop variables, several used multiple times
 
@@ -47,6 +47,10 @@ function props (e, name, descend) {
 	}
 
 	function times (s, n) { return n ? s + times(s, n-1) : ""; }
+
+	if (name.split(".").length == 2) {
+		document.body.appendChild(document.createTextNode("\n------" + name.split(".")[1] + "\n"));
+	}
 
 	for (j = 0; j < 1 && j < protoLevels; ++j) {
 		var h2 = document.createElement("h2");
