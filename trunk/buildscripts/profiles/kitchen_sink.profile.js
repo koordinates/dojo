@@ -8,14 +8,14 @@ var dependencies = [
 	"dojo.mop.*",
 	"dojo.xml.*",
 	"dojo.crypto.*",
-	"dojo.collections.*",
+	//"dojo.collections.*",
 	"dojo.graphics.*",
 	"dojo.animation.*",
 	"dojo.io.BrowserIO",
 	"dojo.dnd.*",
 	"dojo.widget.*",
 	"dojo.math.*",
-	"dojo.reflect.*",
+	//"dojo.reflect.*",
 	"dojo.text.*",
 	"dojo.uri.*"
 ];
