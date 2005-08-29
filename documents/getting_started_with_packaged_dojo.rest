@@ -1,6 +1,3 @@
-.. title:: Getting Started With a Dojo Download
-.. class:: docs
-
 .. raw:: html
    :file: website/rest_template/header.html
 
