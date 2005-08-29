@@ -1,0 +1,18 @@
+<!--#include virtual="/rest_template/header.html" -->
+<h1>Documentation</h1>
+
+<h3>Articles</h3>
+<p>
+	Several articles outlining major parts of Dojo have been written so far.
+	These include:
+</p>
+<ul>
+	<li><a href=""></a></li>
+</ul>
+<p>
+</p>
+
+<h3>Wiki</h3>
+
+<!--#include virtual="/rest_template/sidebar.html" -->
+<!--#include virtual="/rest_template/footer.html" ..>
