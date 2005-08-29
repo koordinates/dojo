@@ -1,3 +1,5 @@
+.. title: Making Code Smaller Safely: Dojo's Compressor
+
 .. raw:: html
    :file: website/rest_template/header.html
 

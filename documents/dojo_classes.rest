@@ -1,3 +1,5 @@
+..title: Proposal For Dojo Class Organization
+
 .. raw:: html
    :file: website/rest_template/header.html
 

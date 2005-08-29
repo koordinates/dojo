@@ -1,3 +1,5 @@
+.. title:: dojo.io.bind(): baking usability into XMLHTTP
+
 .. raw:: html
    :file: website/rest_template/header.html
 
