@@ -34,7 +34,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	 */
 	onDragStart: function (e){
 		if (document.selection) { document.selection.clear(); }
-		else if (window.getSelection) { window.getSelection().removeAllRanges(); }
+		else if (window.getSelection && window.getSelection().removeAllRanges) {
+			window.getSelection().removeAllRanges();
+		}
 	
 		this.dragStartPosition = {top: dojo.xml.htmlUtil.getAbsoluteY(this.domNode),
 			left: dojo.xml.htmlUtil.getAbsoluteX(this.domNode)};
