@@ -1,19 +1,19 @@
-<h2 id="dojo.io">dojo.io</h2><h3>Methods</h3><pre>Request (url, mt, _239, curl)
-IOEvent (type, data, _250, _251, _252, _253)
+<h2 id="dojo.io">dojo.io</h2><h3>Methods</h3><pre>Request (url, mt, trans, curl)
+IOEvent (type, data, request, errorMessage, errorUrl, errorCode)
 Error (msg, type, num)
-bind (_255)
+bind (kwArgs)
 argsFromMap (map)
 checkChildrenForFile (node)
-formHasFile (_263)
-buildFormGetString (_264)
-setIFrameSrc (_271, src, _272)
-createIFrame (_275)
+formHasFile (formNode)
+encodeForm (formNode)
+setIFrameSrc (iframe, src, replace)
+createIFrame (fname)
 cancelDOMEvent (evt)
 </pre><h3>Properties</h3><pre>Array transports
 Array hdlrFuncNames
 Object <a href="#dojo.io.XMLHTTPTransport">XMLHTTPTransport</a>
 Object <a href="#dojo.io.cookies">cookies</a>
-</pre><h2 id="dojo.io.Request Object">dojo.io.Request Object</h2><h3>Methods</h3><pre>error (type, _242)
+</pre><h2 id="dojo.io.Request Object">dojo.io.Request Object</h2><h3>Methods</h3><pre>error (type, error)
 load (type, data, evt)
 backButton ()
 forwardButton ()
@@ -34,11 +34,11 @@ Number number
 </pre><h2 id="dojo.io.XMLHTTPTransport">dojo.io.XMLHTTPTransport</h2><h3>Methods</h3><pre>clearCache ()
 addToHistory (args)
 checkLocation ()
-iframeLoaded (evt, _302)
+iframeLoaded (evt, ifrLoc)
 handleBackButton ()
 handleForwardButton ()
-canHandle (_308)
-bind (_309)
+canHandle (kwArgs)
+bind (kwArgs)
 </pre><h3>Properties</h3><pre>String initialHref
 String initialHash
 Boolean moveForward
@@ -48,10 +48,10 @@ Array forwardStack
 undefined historyIframe
 undefined bookmarkAnchor
 undefined locationTimer
-</pre><h2 id="dojo.io.cookies">dojo.io.cookies</h2><h3>Methods</h3><pre>setCookie (name, _317, days, path)
+</pre><h2 id="dojo.io.cookies">dojo.io.cookies</h2><h3>Methods</h3><pre>setCookie (name, value, days, path)
 getCookie (name)
 deleteCookie (name)
-setObjectCookie (name, obj, days, path, _323)
+setObjectCookie (name, obj, days, path, clearCurrent)
 getObjectCookie (name)
 isSupported ()
 </pre>
