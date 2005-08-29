@@ -150,6 +150,7 @@ dojo.reflect.Reflector = new (function(){
 		return arr ;
 	};
 
+	/*
 	this.implements = function(o, type) {
 		if (this.isSubTypeOf(o, type)) return false ;
 		var f = this.getFieldsFromType(type) ;
@@ -160,6 +161,7 @@ dojo.reflect.Reflector = new (function(){
 		}
 		return true ;
 	};
+	*/
 
 	this.getBaseClass = function(o) {
 		if (o.getType().prototype.prototype.constructor){
