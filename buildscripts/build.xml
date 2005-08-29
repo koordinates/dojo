@@ -227,15 +227,6 @@ print "look ma! Jython!"
 		depends="-fix-config"
 		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
 
-		<!-- fix body tags -->
-		<replaceregexp match="^&lt;body&gt;$" byline="true" 
-			replace="&lt;body class=&quot;docs&quot;&gt;" flags="g">
-			<fileset dir="${website_dir}">
-				<exclude name="**/.svn*" />
-				<include name="**/*" />
-			</fileset>
-		</replaceregexp>
-
 		<copy todir="${release_website_dir}" overwrite="true">
 			<fileset dir="${website_dir}">
 				<exclude name="**/.svn*" />
@@ -290,6 +281,16 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 				dojo.getProperty("rest_style_sheet"),
 				dojo.getProperty("rest_files"))
 ]]></script>
+
+		<!-- fix body tags -->
+		<replaceregexp match="^&lt;body&gt;$" byline="true" 
+			replace="&lt;body class=&quot;docs&quot;&gt;" flags="g">
+			<fileset dir="${release_docs_dir}">
+				<exclude name="**/.svn*" />
+				<include name="**/*.html" />
+			</fileset>
+		</replaceregexp>
+
 	</target>
 	<!-- end docs task -->
 
