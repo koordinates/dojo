@@ -1,3 +1,6 @@
+.. title:: Getting Started With a Dojo Download
+.. class:: docs
+
 .. raw:: html
    :file: website/rest_template/header.html
 
@@ -74,7 +77,6 @@ IRC
 .. raw:: html
    :file: website/rest_template/sidebar.html
 
-====================================
 Getting Started With a Dojo Download
 ====================================
 
