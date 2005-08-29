@@ -229,7 +229,7 @@ print "look ma! Jython!"
 
 		<!-- fix body tags -->
 		<replaceregexp match="^&lt;body&gt;$" byline="true" 
-			replace="&lt;body class=\"docs\"&gt;">
+			replace="&lt;body class=&quot;docs&quot;&gt;" flags="g">
 			<fileset dir="${website_dir}">
 				<exclude name="**/.svn*" />
 				<include name="**/*" />
