@@ -226,6 +226,16 @@ print "look ma! Jython!"
 	<target name="website"
 		depends="-fix-config"
 		description="'builds' the website and moves files into the correct directory, taking care to ensure that file permissions are correct">
+
+		<!-- fix body tags -->
+		<replaceregexp match="^&lt;body&gt;$" byline="true" 
+			replace="&lt;body class=\"docs\"&gt;">
+			<fileset dir="${website_dir}">
+				<exclude name="**/.svn*" />
+				<include name="**/*" />
+			</fileset>
+		</replaceregexp>
+
 		<copy todir="${release_website_dir}" overwrite="true">
 			<fileset dir="${website_dir}">
 				<exclude name="**/.svn*" />
