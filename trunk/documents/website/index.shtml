@@ -147,7 +147,7 @@ a.more:hover {
 	<div id="splash">
 		<h1>Introducing Dojo</h1>
 		<p>The Dojo Foundation is proud to announce our first official public release &ndash; version 0.1. It is packed full of JavaScript goodness to help you create powerful web applications.</p>
-		<a href="/download" id="btn-top">Download AJAX edition</a>
+		<a href="http://download.dojotoolkit.org/release-0.1.0/dojo-0.1.0-ajax.zip" id="btn-top">Download AJAX edition</a>
 		<a href="/download" id="btn-bottom">Download other dojo profiles</a>
 	</div>
 

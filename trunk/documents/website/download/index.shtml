@@ -87,7 +87,7 @@ var Picker = {
 			dojo.event.connect(a[i], "onclick", Picker, "click");
 		}
 
-		Picker.select(td[0].firstChild);
+		Picker.select(dojo.xml.domUtil.getFirstChildTag(td[0]));
 	},
 
 	click: function(e) {
