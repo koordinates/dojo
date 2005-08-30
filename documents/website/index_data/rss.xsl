@@ -11,7 +11,7 @@
 			</a>
 		</h2>
 		<dl>
-			<xsl:apply-templates select="//item[position()&lt;6]" />
+			<xsl:apply-templates select="//item[position()&lt;5]" />
 		</dl>
 	</xsl:template>
 	<xsl:template match="item">
@@ -26,14 +26,14 @@
 		<dd class="date">
 			<xsl:value-of select="substring(pubDate, 6, 11)" />
 		</dd>
-		<xsl:if test="position()=1">
+		<!-- xsl:if test="position()=1" -->
 			<dd>
 				<xsl:choose>
 					<xsl:when test="contains(description,'[...]')">
-						<xsl:value-of select="substring-before(description, ' [...]')" disable-output-escaping="yes" />...
+						<xsl:value-of select="substring(substring-before(description, ' [...]'), 1, 128)" disable-output-escaping="yes" />...
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of select="description" disable-output-escaping="yes" />...
+						<xsl:value-of select="substring(description, 1, 128)" disable-output-escaping="yes" />...
 					</xsl:otherwise>
 				</xsl:choose>
 				<a>
@@ -44,6 +44,6 @@
 					more &amp;raquo;
 				</a>
 			</dd>
-		</xsl:if>
+		<!-- /xsl:if -->
 	</xsl:template>
 </xsl:stylesheet>
