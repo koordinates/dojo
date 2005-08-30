@@ -529,6 +529,23 @@ internTemplateStrings()
 			<fileset dir="${root}/${src}">
 				<include name="**" />
 				<exclude name="**/*.swp" />
+				<exclude name="**/.svn*" />
+			</fileset>
+		</copy>
+
+		<copy todir="${release_dir}/apis" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/documents/apis">
+				<include name="**" />
+				<exclude name="**/*.swp" />
+				<exclude name="**/.svn*" />
+			</fileset>
+		</copy>
+
+		<copy todir="${release_dir}/tests" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/tests">
+				<include name="**" />
+				<exclude name="**/*.swp" />
+				<exclude name="**/.svn*" />
 			</fileset>
 		</copy>
 
