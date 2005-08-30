@@ -1,0 +1,50 @@
+.. title:: Dojo 0.1.0 Release Notes
+
+.. raw:: html
+   :file: website/rest_template/header.html
+
+Introduction
+------------
+
+Highlights
+----------
+
+Upgrade Guidelines
+------------------
+
+API Stability
+-------------
+
+Known Issues
+------------
+
+Distributions
+-------------
+
+About The Author
+#########################
+
+Alex Russell, a core contributor to Dojo, can be reached at
+<alex@dojotoolkit.org>. His blog is at: http://alex.nWidgets.com
+
+.. _`Dojo's Source`: http://dojotoolkit.org/svn/dojo/
+.. _`Dojo Status`: http://dojotoolkit.org/projectStatus.html
+.. _`The Dojo Wiki`: http://dojo.jot.com/
+
+.. raw:: html
+   :file: website/rest_template/sidebar.html
+
+Dojo 0.1.0 Release Notes
+================================
+
+:Author: Alex Russell
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/08/30
+
+.. contents::
+
+.. raw:: html
+   :file: website/rest_template/footer.html
+
+.. vim:ts=4:et:tw=0:shiftwidth=4:
