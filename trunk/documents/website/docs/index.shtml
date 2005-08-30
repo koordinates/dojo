@@ -1,5 +1,9 @@
 <html>
-<body>
+<head>
+<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/screen.css" media="screen">
+<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/print.css" media="print">
+</head>
+<body class="docs">
 <!--#include virtual="/rest_template/header.html" -->
 <h1>Documentation</h1>
 
