@@ -74,9 +74,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 			case "dropSuccess":
 				with(this.domNode.style){
-					position = null;
-					left = null;
-					top = null;
+					position = "";
+					left = "";
+					top = "";
 				}
 				this.dragClone.parentNode.removeChild(this.dragClone);
 				this.dragClone = null;
@@ -107,9 +107,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 						dragObject.dragClone.parentNode.replaceChild(
 							dragObject.domNode, dragObject.dragClone);
 						with(dragObject.domNode.style){
-							position = null;
-							left = null;
-							top = null;
+							position = "";
+							left = "";
+							top = "";
 						}
 					}, 200);
 				});
