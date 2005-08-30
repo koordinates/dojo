@@ -1,3 +1,5 @@
+<html>
+<body>
 <!--#include virtual="/rest_template/header.html" -->
 <h1>Documentation</h1>
 
@@ -29,4 +31,6 @@
 </p>
 
 <!--#include virtual="/rest_template/sidebar.html" -->
-<!--#include virtual="/rest_template/footer.html" ..>
+<!--#include virtual="/rest_template/footer.html" -->
+</body>
+</html>
