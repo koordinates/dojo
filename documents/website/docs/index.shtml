@@ -3,11 +3,20 @@
 
 <h3>Articles</h3>
 <p>
-	Several articles outlining major parts of Dojo have been written so far.
-	These include:
+	Here's a quick list of articles and resources that will help you understand
+	Dojo and know where to go when you're having trouble:
 </p>
 <ul>
-	<li><a href=""></a></li>
+	<li><a href="http://dojotoolkit.org/docs/getting_started_with_packaged_dojo.html">Getting Started With a Dojo Package</a></li>
+	<li><a href="http://dojotoolkit.org/svn/dojo/tags/release-0.1.0/documents/apis/dojo.html">Dojo 0.1 API Outlines</a></li>
+	<li><a href="http://dojotoolkit.org/docs/dojo_event_system.html">The Dojo Event System</a></li>
+	<li><a href="http://dojotoolkit.org/docs/fast_widget_authoring.html">Fast Widget Authoring With Dojo</a></li>
+	<li><a href="http://dojotoolkit.org/docs/intro_to_dojo_io.html">An Introduction to dojo.io.bind()</a></li>
+	<li><a href="http://dojotoolkit.org/docs/the_dojo_way.html">Project Philosophy: The Dojo Way</a></li>
+	<li><a href="http://dojotoolkit.org/docs/compressor_system.html">Making JavaScript Smaller: Dojo's Compressor</a></li>
+	<li><a href="http://dojotoolkit.org/docs/js_style_guide.html">The Dojo JavaScript Style Guide</a></li>
+	<li><a href="http://dojotoolkit.org/docs/projectRoadmap.html">Project Roadmap</a></li>
+	<li><a href="http://dojotoolkit.org/docs/projectStatus.html">Project Status</a></li>
 </ul>
 <p>
 </p>
