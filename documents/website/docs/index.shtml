@@ -22,6 +22,11 @@
 </p>
 
 <h3>Wiki</h3>
+<p>
+	Dojo maintains a publicly-editable Wiki at <a
+	href="http://dojo.jot.com">dojo.jot.com</a>. It contains information on how
+	to get Dojo source code and many useful code snippets and HOWTOs.
+</p>
 
 <!--#include virtual="/rest_template/sidebar.html" -->
 <!--#include virtual="/rest_template/footer.html" ..>
