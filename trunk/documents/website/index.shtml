@@ -35,7 +35,7 @@
 #splash p {
 	position : absolute;
 	right : 20px;
-	top : 95px;
+	top : 105px;
 	width : 45%;
 	font-family : Lucida Grande, Tahoma, sans-serif;
 	text-align : justify;
