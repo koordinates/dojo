@@ -1,7 +1,9 @@
 <html>
 <head>
 <title>Dojo - DojoToolkit.org</title>
-<link rel="stylesheet" href="http://dojotoolkit.org/css/screen.css" />
+<script type="text/javascript" src="/dojo/dojo.js"></script>
+<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/screen.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/print.css" media="print" />
 <style type="text/css">
 #splash {
 	position : relative;
@@ -150,11 +152,11 @@ a.more:hover {
 	</div>
 
 	<div id="col2" class="col">
-		<!--#include file="/index_data/status.html"-->
+		<!--#include virtual="/index_data/status.html"-->
 	</div>
 
 	<div id="col3" class="col">
-		<!--#include file="/index_data/blog.html"-->
+		<!--#include virtual="/index_data/blog.html"-->
 	</div>
 
 	<div id="col1" class="content">
