@@ -3,15 +3,15 @@
 # Turn Dojo blog feeds into frontpage material
 
 # blog (all)
-BLOG_URL=http://blog.dojotoolkit.org/feed/
+BLOG_URL='http://blog.dojotoolkit.org/?cat=-4&feed=rss2'
 BLOG_FILE=blog.html
 
 # blog (news)
-STATUS_URL=http://blog.dojotoolkit.org/category/news/feed
+STATUS_URL='http://blog.dojotoolkit.org/category/news/feed'
 STATUS_FILE=status.html
 OUTDIR=/srv/www/htdocs/index_data
 
-XSL_FILE=rss.xsl
+XSL_FILE=../index_data/rss.xsl
 TMP_FILE=/tmp/updateFeed
 
 updateFeed() {
@@ -23,7 +23,7 @@ updateFeed() {
 	perl -i -pe 's/&#([0-9]+);/{{{enc$1}}}/g' $TMP_FILE
 	xsltproc $XSL_FILE $TMP_FILE | perl -lpe 's/&amp;([#0-9a-zA-Z]+);/&$1;/g' > $file
 	perl -i -pe 's/\{\{\{enc([0-9]+)\}\}\}/&#$1;/g' $file
-	mv $file $OUTDIR/
+	mv -f $file $OUTDIR/
 	rm $TMP_FILE
 }
 
