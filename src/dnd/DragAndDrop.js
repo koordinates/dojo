@@ -81,7 +81,7 @@ dojo.dnd.DragEvent = function(){
 	this.dragSource = null;
 	this.dragObject = null;
 	this.target = null;
-	this.eventSatus = "success"; 
+	this.eventStatus = "success"; 
 	//
 	// can be one of:
 	//	[	"dropSuccess", "dropFailure", "dragMove", 
