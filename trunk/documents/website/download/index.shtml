@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Download Dojo 0.1 - DojoToolkit.org</title>
+<script type="text/javascript" src="/dojo/dojo.js"></script>
 <link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/screen.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/print.css" media="print" />
 <style type="text/css">
