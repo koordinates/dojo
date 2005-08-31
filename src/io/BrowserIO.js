@@ -47,7 +47,7 @@ dojo.io.encodeForm = function(formNode){
 			values.push(name + "=" + ec(elm.value));
 		}
 	}
-	return values.join("&");
+	return values.join("&") + "&";
 }
 
 dojo.io.setIFrameSrc = function(iframe, src, replace){
