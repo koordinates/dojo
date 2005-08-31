@@ -55,6 +55,7 @@ dojo.lang.extend(dojo.dnd.DragObject, {
 });
 
 dojo.dnd.DropTarget = function(){
+	if (this.constructor == dojo.dnd.DropTarget) { return; } // need to be subclassed
 	dojo.dnd.dragManager.registerDropTarget(this);
 }
 
