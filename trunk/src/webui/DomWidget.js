@@ -1,7 +1,7 @@
 dojo.provide("dojo.webui.DomWidget");
 dojo.require("dojo.widget.DomWidget");
 
-dj_deprecated("dojo.webui.DomWidget is deprectaed, use dojo.widget.DomWidget");
+dj_deprecated("dojo.webui.DomWidget is deprecated, use dojo.widget.DomWidget");
 
 dojo.webui.DomWidget = dojo.widget.DomWidget;
 dojo.webui._cssFiles = dojo.widget._cssFiles;
