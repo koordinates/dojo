@@ -176,13 +176,13 @@ dojo.lang.extend(dojo.widget.Widget, {
 				if(typeof args[x] != "string"){
 					this[x] = args[x];
 				}else{
-					if(typeof this[x] == "string"){
+					if(dojo.lang.isString(this[x])){
 						this[x] = args[x];
-					}else if(typeof this[x] == "number"){
+					}else if(dojo.lang.isNumber(this[x])){
 						this[x] = new Number(args[x]); // FIXME: what if NaN is the result?
-					}else if(typeof this[x] == "boolean"){
+					}else if(dojo.lang.isBoolean(this[x])){
 						this[x] = (args[x].toLowerCase()=="false") ? false : true;
-					}else if(typeof this[x] == "function"){
+					}else if(dojo.lang.isFunction(this[x])){
 
 						// FIXME: need to determine if always over-writing instead
 						// of attaching here is appropriate. I suspect that we
@@ -205,6 +205,8 @@ dojo.lang.extend(dojo.widget.Widget, {
 						dojo.event.connect(this, x, this, tn);
 					}else if(this[x].constructor == Array){ // typeof [] == "object"
 						this[x] = args[x].split(";");
+					} else if (this[x] instanceof Date) {
+						this[x] = new Date(Number(args[x])); // assume timestamp
 					}else if(typeof this[x] == "object"){ 
 
 						// FIXME: should we be allowing extension here to handle
