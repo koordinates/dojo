@@ -157,7 +157,7 @@ dojo.graphics.htmlEffects = new function() {
 			if(savedOverflow != "visible") {
 				node.style.overflow = savedOverflow;
 			}
-			node.style.height = savedHeight;
+			node.style.height = savedHeight || "auto";
 			if(callback) { callback(node, anim); }
 		});
 		if( !dontPlay ) { anim.play(true); }
@@ -179,7 +179,7 @@ dojo.graphics.htmlEffects = new function() {
 		dojo.event.connect(anim, "onEnd", function(e) {
 			node.style.display = "none";
 			node.style.overflow = savedOverflow;
-			node.style.height = savedHeight;
+			node.style.height = savedHeight || "auto";
 			if(callback) { callback(node, anim); }
 		});
 		if( !dontPlay ) { anim.play(true); }
