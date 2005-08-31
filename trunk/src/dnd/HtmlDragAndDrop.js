@@ -5,8 +5,9 @@ dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.animation.*");
 
-dojo.dnd.HtmlDragSource = function(node, type){
+dojo.dnd.HtmlDragSource = function(node, type, dragHandleNode){
 	this.domNode = node;
+	this.dragHandleNode = dragHandleNode||this.domNode;
 	// register us
 	dojo.dnd.DragSource.call(this);
 

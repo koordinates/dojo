@@ -75,7 +75,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var dpIdx = dp+"Idx_"+(this.dsCounter++);
 		ds.dragSourceId = dpIdx;
 		this.dragSources[dpIdx] = ds;
-		ds.domNode.setAttribute(dp, dpIdx);
+		ds.dragHandleNode.setAttribute(dp, dpIdx);
 	},
 
 	registerDropTarget: function(dt){
