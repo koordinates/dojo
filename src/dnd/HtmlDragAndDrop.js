@@ -41,27 +41,27 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	
 		this.dragStartPosition = {top: dojo.xml.htmlUtil.getAbsoluteY(this.domNode),
 			left: dojo.xml.htmlUtil.getAbsoluteX(this.domNode)};
-	
+		
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
 	
 		this.dragClone = this.domNode.cloneNode(true);
-		this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
+		//this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
 		
 		// set up for dragging
-		with(this.domNode.style){
+		with(this.dragClone.style){
 			position = "absolute";
 			top = this.dragOffset.top + e.clientY + "px";
-			left = this.dragOffset.left + e.clientY + "px";
+			left = this.dragOffset.left + e.clientX + "px";
 		}
-		dojo.xml.htmlUtil.setOpacity(this.domNode, 0.5);
-		document.body.appendChild(this.domNode);
+		dojo.xml.htmlUtil.setOpacity(this.dragClone, 0.5);
+		document.body.appendChild(this.dragClone);
 	},
 	
 	/** Moves the node to follow the mouse */
 	onDragMove: function (e) {
-		this.domNode.style.top = this.dragOffset.top + e.clientY + "px";
-		this.domNode.style.left = this.dragOffset.left + e.clientX + "px";
+		this.dragClone.style.top = this.dragOffset.top + e.clientY + "px";
+		this.dragClone.style.left = this.dragOffset.left + e.clientX + "px";
 	},
 
 	/**
@@ -74,20 +74,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		switch(e.dragStatus){
 
 			case "dropSuccess":
-				with(this.domNode.style){
-					position = "";
-					left = "";
-					top = "";
-				}
-				this.dragClone.parentNode.removeChild(this.dragClone);
+				dojo.xml.domUtil.remove(this.dragClone);
 				this.dragClone = null;
-				dojo.xml.htmlUtil.setOpacity(this.domNode, 1.0);
 				break;
 		
 			case "dropFailure": // slide back to the start
 				with (dojo.xml.htmlUtil) {
-					var startCoords = [	getAbsoluteX(this.domNode), 
-										getAbsoluteY(this.domNode)];
+					var startCoords = [	getAbsoluteX(this.dragClone), 
+										getAbsoluteY(this.dragClone)];
 				}
 				// offset the end so the effect can be seen
 				var endCoords = [this.dragStartPosition.left + 1,
@@ -98,21 +92,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				var anim = new dojo.animation.Animation(line, 300, 0, 0);
 				var dragObject = this;
 				dojo.event.connect(anim, "onAnimate", function(e) {
-					dragObject.domNode.style.left = e.x + "px";
-					dragObject.domNode.style.top = e.y + "px";
+					dragObject.dragClone.style.left = e.x + "px";
+					dragObject.dragClone.style.top = e.y + "px";
 				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
-					setTimeout(function (){
-						dojo.xml.htmlUtil.setOpacity(dragObject.domNode, 1.0);
-						dragObject.dragClone.parentNode.replaceChild(
-							dragObject.domNode, dragObject.dragClone);
-						with(dragObject.domNode.style){
-							position = "";
-							left = "";
-							top = "";
-						}
-					}, 200);
+					dojo.lang.setTimeout(dojo.xml.domUtil.remove, 200,
+						dragObject.dragClone);
 				});
 				anim.play();
 				break;
@@ -121,10 +107,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 });
 
 dojo.dnd.HtmlDropTarget = function(node, types){
+	if (arguments.length == 0) { return; }
 	this.domNode = node;
 	dojo.dnd.DropTarget.call(this);
 	this.acceptedTypes = types||[];
 }
+dj_inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
 	onDragOver: function(e){
