@@ -77,7 +77,7 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 }
 dojo.widget.buildFromTemplate.dummyCount = 0;
 
-dojo.widget.attachProperty = "dojoAttachPoint";
+dojo.widget.attachProperties = ["dojoAttachPoint", "id"];
 dojo.widget.eventAttachProperty = "dojoAttachEvent";
 dojo.widget.subTemplateProperty = "dojoSubTemplate";
 dojo.widget.onBuildProperty = "dojoOnBuild";
@@ -104,9 +104,13 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 	for(var x=-1; x<nodes.length; x++){
 		var baseNode = (x == -1) ? rootNode : nodes[x];
 		// FIXME: is this going to have capitalization problems?
-		var attachPoint = baseNode.getAttribute(this.attachProperty);
-		if(attachPoint){
-			targetObj[attachPoint]=baseNode;
+		var attachPoint = null;
+		for(var y=0; y<this.attachProperties.length; y++){
+			attachPoint = baseNode.getAttribute(this.attachProperties[y]);
+			if(attachPoint){
+				targetObj[attachPoint]=baseNode;
+				break;
+			}
 		}
 
 		// FIXME: we need to put this into some kind of lookup structure
