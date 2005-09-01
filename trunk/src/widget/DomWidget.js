@@ -189,6 +189,9 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 		if(onBuild){
 			eval("var node = baseNode; var widget = targetObj; "+onBuild);
 		}
+
+		// strip IDs to prevent dupes
+		baseNode.id = "";
 	}
 
 	// dj_debug("attachTemplateNodes toc: ", new Date()-start, "ms");
