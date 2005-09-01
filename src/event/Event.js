@@ -181,7 +181,7 @@ dojo.event = new function(){
 			dj_throw("bad srcObj for srcFunc: "+ao.srcFunc);
 		}
 		if(!ao.adviceObj){
-			dj_throw("bad srcObj for srcFunc: "+ao.adviceFunc);
+			dj_throw("bad adviceObj for adviceFunc: "+ao.adviceFunc);
 		}
 		return ao;
 	}
