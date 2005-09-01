@@ -60,6 +60,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 		this.buildRendering(args, fragment, parentComp);
 		this.initialize(args, fragment, parentComp);
 		this.postInitialize(args, fragment, parentComp);
+		this.postCreate(args, fragment, parentComp);
 		return this;
 	},
 
@@ -240,6 +241,10 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	postInitialize: function(args, frag){
+		return false;
+	},
+
+	postCreate: function(args, frag){
 		return false;
 	},
 
