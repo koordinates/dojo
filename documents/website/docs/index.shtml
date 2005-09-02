@@ -11,6 +11,11 @@
 	<li><a href="http://dojotoolkit.org/svn/dojo/tags/release-0.1.0/documents/apis/dojo.html">Dojo 0.1 API Outlines</a></li>
 </ul>
 
+<h3>Release Notes</h3>
+<ul>
+	<li><a href="http://dojotoolkit.org/docs/release_notes_0.1.0.html">Dojo 0.1.0 Release Notes</a></li>
+</ul>
+
 <h3>Articles</h3>
 <ul>
 	<li><a href="http://dojotoolkit.org/docs/getting_started_with_packaged_dojo.html">Getting Started With a Dojo Package</a></li>

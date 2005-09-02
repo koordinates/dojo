@@ -41,17 +41,59 @@ And there's even more in this release. From functional-style programming
 constructs (`dojo.alg` and `dojo.lang`) to a normalizing markup-to-JavaScript
 parser, Dojo is packed full of goodies.
 
+Details
+-------
+- package system functional
+- build system use of package system working
+- pakcage and build systems WILL change in 0.2 or 0.3 to allow for
+  sub-directory "rollups" and development outside of the Dojo directory root
+- renderer-specific module loading via package system functional
+- dojo.hostenv apis ported for Rhino and Browser
+- other dojo.hostenv implementations in varying states of repair
+- dojo.render available for platform detection
+- dojo.alg functional and tested, will likley be unified with dojo.lang in future release
+- dojo.lang functional and tested, likely to be merged w/ dojo.alg in the future
+- dojo.event.connect implemented and tested
+- dojo.event.topic implemented and tested
+- dojo.event.browser implemented and integrated with dojo.event.connect
+- dojo.event.browser correctly handles node attribute stripping on IE to prevent memory leaks
+- dojo.logging implemented and tested, but no highly uesful logging handlers have been implemented
+- dojo.text implements minimal text processing functionality
+- dojo.graphics implements only what is needed for the htmlEffects package
+- dojo.grpahics.htmlEffects includes a large set of easy-to-use transitions, will continue to be expanded in future releases
+- dojo.xml implements generic DOM functions as well as HTML utilities
+- dojo.xml.Parse implements the first-pass Dojo parser
+- dojo.uri implemented and tested
+- dojo.math implements curve and point calculations for animation packages
+- dojo.io.bind functional for XMLHTTP requests, iframe fallback not implemented yet
+- dojo.io.bind handles forward and back buttons correctly
+- dojo.io.bind serializes forms for both GET and POST reuqests
+- dojo.io.cookies completed
+- dojo.io.RepubsubIO transport class not functional yet
+- dojo.widget has been implemented and is tested for HTML environments
+- dojo.widget.Widget inheritance hierarchy WILL change in 0.2
+- dojo.webui has been DEPRECATED in favor of dojo.widget and will be REMOVED in 0.2
+- dojo.collections implemented but untested. Use at your own risk.
+- dojo.reflect implemented but untested. Use at your own risk.
+- dojo.undo is NOT implemented
+- dojo.crypto is NOT implemented
+- dojo.datetime is NOT implemented
+- dojo.props is NOT implemented
+
 Upgrade Guidelines
 ------------------
 
-This is the intial release. If you've been using Dojo off of HEAD prior to this
-release, you probably already know what you need to do.
+This is the intial release. Users of Dojo HEAD likely know what changes are
+required for their environments. In the future, this section will hold
+information about API deprecation, porting guidelines, and other changes that
+may be required to keep an application functional in a new release of Dojo.
 
 API Stability
 -------------
 
 This is an initial release with a "0.x.0" version number. We make no claims for
-forward-looking API stability on the main line. Things WILL change.
+forward-looking API stability on the main line. Things WILL change. See the
+Dojo bug tracker for details on anticipated changes.
 
 Known Issues
 ------------
@@ -68,7 +110,7 @@ Multiple profile builds of this release are available from:
 http://dojotoolkit.org/download/
 
 About The Author
-#########################
+----------------
 
 Alex Russell, a core contributor to Dojo, can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.nWidgets.com
