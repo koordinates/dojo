@@ -23,7 +23,7 @@ To run this example, you'll need a working install of Java (at least 1.4 is
 recommended). The latest version of the tool itself can be downloaded from Dojo
 Subversion at:
 
-http://dojotoolkit.org/svn/dojo/buildscripts/lib/custom_rhino.jar
+http://dojotoolkit.org/svn/dojo/trunk/buildscripts/lib/custom_rhino.jar
 
 To demo our compression system, let's build an example that we want to
 compress. Here's the listing for ``infile.js``::
@@ -138,7 +138,7 @@ And the Rhino code lives in their repository at:
 Our patches should apply cleanly against Rhino HEAD and are available in
 unified diff format from:
 
-http://dojotoolkit.org/svn/dojo/buildscripts/lib/custom_rhino.diff
+http://dojotoolkit.org/svn/dojo/trunk/buildscripts/lib/custom_rhino.diff
 
 Unlike the rest of Dojo, the Dojo Foundation does not control the copyright of
 the original work, and we therefore cannot license this code under there AFL.
