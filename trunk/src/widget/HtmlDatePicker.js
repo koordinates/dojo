@@ -57,7 +57,8 @@ dojo.widget.HtmlDatePicker = function(){
 		// calendar math is simplified if time is set to 0
 		this.today.setHours(0);
 		this.date.setHours(0);
-		this.initFirstSaturday(this.date.getMonth(), this.date.getFullYear());
+		var month = this.date.getMonth();
+		this.initFirstSaturday(this.date.getMonth().toString(), this.date.getFullYear());
 	}
 	
 	this.setDate = function() {
@@ -214,7 +215,7 @@ dojo.widget.HtmlDatePicker = function(){
 				}
 				break;
 		}
-		this.initFirstSaturday(month, year);
+		this.initFirstSaturday(month.toString(), year);
 		this.initUI();
 	}
 	
@@ -229,7 +230,7 @@ dojo.widget.HtmlDatePicker = function(){
 				year--;
 				break;
 		}
-		this.initFirstSaturday(this.firstSaturday.month, year);
+		this.initFirstSaturday(this.firstSaturday.month.toString(), year);
 		this.initUI();
 	}
 
