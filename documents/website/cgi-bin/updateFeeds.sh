@@ -11,7 +11,7 @@ STATUS_URL='http://blog.dojotoolkit.org/category/news/feed'
 STATUS_FILE=status.html
 OUTDIR=/srv/www/htdocs/index_data
 
-XSL_FILE=../index_data/rss.xsl
+XSL_FILE=$OUTDIR/rss.xsl
 TMP_FILE=/tmp/updateFeed
 
 updateFeed() {
