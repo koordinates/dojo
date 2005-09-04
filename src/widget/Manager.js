@@ -8,7 +8,7 @@ dojo.widget.manager = new function(){
 
 	var widgetTypeCtr = {};
 
-Ê Ê this.getUniqueId = function (widgetType) {
+	this.getUniqueId = function (widgetType) {
 		return widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
 			widgetTypeCtr[widgetType]++ : widgetTypeCtr[widgetType] = 0);
 	}
