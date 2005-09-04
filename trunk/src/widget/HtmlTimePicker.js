@@ -9,6 +9,8 @@ dojo.widget.HtmlTimePicker = function(){
 	var _this = this;
 	// selected time, JS Date object
 	this.time = "";
+	// set following flag to true if a default time should be set
+	this.useDefaultTime = false;
 	// rfc 3339 date
 	this.storedTime = "";
 	//this.storedTime = "";
@@ -34,12 +36,53 @@ dojo.widget.HtmlTimePicker = function(){
 		// determine date/time from stored info, or by default don't have a set time
 		if(this.storedTime) {
 			this.time = this.fromRfcDateTime(this.storedTime);
+		} else if (this.useDefaultTime) {
+			this.time = this.fromRfcDateTime();
 		}
 	}
 	
-	this.toRfcDateTime =function(jsDate) {
-		dj_unimplemented("dojo.widget.HtmlTimePicker.toRfcDate");
-		//return rfcDate;
+	this.setDateTime = function(rfcDate) {
+		this.storedTime = rfcDate;
+	}
+	
+	this.toRfcDateTime = function(jsDate) {
+		if(!jsDate) {
+			jsDate = this.today;
+		}
+		var year = jsDate.getFullYear();
+		var month = jsDate.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month.toString();
+		}
+		var date = jsDate.getDate();
+		if (date < 10) {
+			date = "0" + date.toString();
+		}
+		var hour = jsDate.getHours();
+		if (hour < 10) {
+			hour = "0" + hour.toString();
+		}
+		var minute = jsDate.getMinutes();
+		if (minute < 10) {
+			minute = "0" + minute.toString();
+		}
+		// no way to set seconds, so set to zero
+		var second = "00";
+		var timeZone = jsDate.getTimezoneOffset();
+		var timeZoneHour = parseInt(timeZone/60);
+		if(timeZoneHour > -10 && timeZoneHour < 0) {
+			timeZoneHour = "-0" + Math.abs(timeZoneHour);
+		} else if(timeZoneHour < 10) {
+			timeZoneHour = "+0" + timeZoneHour.toString();
+		} else if(timeZoneHour >= 10) {
+			timeZoneHour = "+" + timeZoneHour.toString();
+		}
+		var timeZoneMinute = timeZone%60;
+		if(timeZoneMinute < 10) {
+			timeZoneMinute = "0" + timeZoneMinute.toString();
+		}
+		dj_debug(year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second + timeZoneHour +":" + timeZoneMinute);
+		return year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second + timeZoneHour +":" + timeZoneMinute;
 	}
 	
 	this.fromRfcDateTime = function(rfcDate) {
@@ -161,23 +204,22 @@ dojo.widget.HtmlTimePicker = function(){
 	}
 	
 	this.onSetTime = function() {
-		if(this.time) {
-			var hour = 12;
-			var minute = 0;
-			var isAm = false;
-			if(this.selectedTime["hour"]) {
-				hour = parseInt(this.selectedTime["hour"], 10);
-			}
-			if(this.selectedTime["minute"]) {
-				minute = parseInt(this.selectedTime["minute"], 10);
-			}
-			if(this.selectedTime["amPm"]) {
-				isAm = (this.selectedTime["amPm"].toLowerCase() == "am");
-			}
-			this.time = new Date();
-			this.time.setHours(this.fromAmPmHour(hour, isAm));
-			this.time.setMinutes(minute);
+		var hour = 12;
+		var minute = 0;
+		var isAm = false;
+		if(this.selectedTime["hour"]) {
+			hour = parseInt(this.selectedTime["hour"], 10);
 		}
+		if(this.selectedTime["minute"]) {
+			minute = parseInt(this.selectedTime["minute"], 10);
+		}
+		if(this.selectedTime["amPm"]) {
+			isAm = (this.selectedTime["amPm"].toLowerCase() == "am");
+		}
+		this.time = new Date();
+		this.time.setHours(this.fromAmPmHour(hour, isAm));
+		this.time.setMinutes(minute);
+		this.setDateTime(this.toRfcDateTime(this.time));
 	}
 
 }
