@@ -50,7 +50,7 @@ dojo.widget.HtmlDatePicker = function(){
 	this.initData = function() {
 		this.today = new Date();
 		if(this.storedDate) {
-			this.date = fromRfcDate();
+			this.date = this.fromRfcDate(this.storedDate);
 		} else {
 			this.date = this.today;
 		}
@@ -61,14 +61,26 @@ dojo.widget.HtmlDatePicker = function(){
 		this.initFirstSaturday(this.date.getMonth().toString(), this.date.getFullYear());
 	}
 	
-	this.setDate = function() {
-		this.today = new Date();
-		return this.toRfcDate(this.today);
+	this.setDate = function(rfcDate) {
+		this.storedDate = rfcDate;
 	}
 	
 	this.toRfcDate =function(jsDate) {
-		dj_unimplemented("dojo.widget.HtmlDatePicker.toRfcDate");
-		//return rfcDate;
+		if(!jsDate) {
+			jsDate = this.today;
+		}
+		var year = jsDate.getFullYear();
+		var month = jsDate.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month.toString();
+		}
+		var date = jsDate.getDate();
+		if (date < 10) {
+			date = "0" + date.toString();
+		}
+		// because this is a date picker and not a time picker, we treat time 
+		// as zero
+		return year + "-" + month + "-" + date + "T00:00:00+00:00";
 	}
 	
 	this.fromRfcDate = function(rfcDate) {
@@ -91,6 +103,8 @@ dojo.widget.HtmlDatePicker = function(){
 	}
 	
 	this.initUI = function() {
+		this.selectedIsUsed = false;
+		this.currentIsUsed = false;
 		var currentClassName = "";
 		var previousDate = new Date();
 		var calendarNodes = this.calendarDatesContainerNode.getElementsByTagName("td");
@@ -252,7 +266,7 @@ dojo.widget.HtmlDatePicker = function(){
 		}
 		if((!this.currentIsUsed) && (date.getDate() == this.today.getDate()) && (date.getMonth() == this.today.getMonth()) && (date.getFullYear() == this.today.getFullYear())) {
 			currentClassName = currentClassName + " "  + this.classNames.currentDate;
-			this.todayIsUsed = 1;
+			this.currentIsUsed = 1;
 		}
 		return currentClassName;
 	}
@@ -277,9 +291,9 @@ dojo.widget.HtmlDatePicker = function(){
 			year = (month==11) ? --year : year;
 		}
 		this.date = new Date(year, month, evt.target.innerHTML);
+		this.setDate(this.toRfcDate(this.date));
 		this.initUI();
 	}
-	
 }
 dj_inherits(dojo.widget.HtmlDatePicker, dojo.widget.HtmlWidget);
 
