@@ -6,16 +6,17 @@ dojo.widget.manager = new function(){
 	this.widgetIds = [];
 	this.root = null; // the root widget
 
-	var widgetCtr = 0;
+	var widgetTypeCtr = {};
 
-	this.getUniqueId = function(){
-		return widgetCtr++;
+Ê Ê this.getUniqueId = function (widgetType) {
+		return widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
+			widgetTypeCtr[widgetType]++ : widgetTypeCtr[widgetType] = 0);
 	}
 
 	this.add = function(widget){
 		this.widgets.push(widget);
 		if(widget.widgetId == ""){
-			widget.widgetId = widget.widgetType+"_"+this.getUniqueId();
+			widget.widgetId = this.getUniqueId(widget.widgetType);
 		}else if(this.widgetIds[widget.widgetId]){
 			dj_debug("widget ID collision on ID: "+widget.widgetId);
 		}
