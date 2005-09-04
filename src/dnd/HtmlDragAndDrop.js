@@ -5,9 +5,8 @@ dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.animation.*");
 
-dojo.dnd.HtmlDragSource = function(node, type, dragHandleNode){
+dojo.dnd.HtmlDragSource = function(node, type){
 	this.domNode = node;
-	this.dragHandleNode = dragHandleNode||this.domNode;
 	// register us
 	dojo.dnd.DragSource.call(this);
 
@@ -110,30 +109,19 @@ dojo.dnd.HtmlDropTarget = function(node, types){
 	if (arguments.length == 0) { return; }
 	this.domNode = node;
 	dojo.dnd.DropTarget.call(this);
-	this.acceptedTypes = types||[];
+	this.acceptedTypes = types || [];
 }
 dj_inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
 	onDragOver: function(e){
-		var dos = e.dragObjects;
-		if(!dos){ return false; }
-		var canDrop = false;
-		var _this = this;
-		dojo.alg.forEach(dos, function(tdo){
-			/*
-			dojo.alg.forEach(_this.acceptedTypes, function(tmpType){
-				dj_debug(tdo.type, tmpType);
-			});
-			*/
-			if((_this.acceptedTypes)&&(dojo.alg.inArray(_this.acceptedTypes, tdo.type))){
-				canDrop = true;
-				return "break";
+		if (!dojo.alg.inArray(this.acceptedTypes, "*")) { // wildcard
+			for (var i = 0; i < e.dragObjects.length; i++) {
+				if (!dojo.alg.inArray(this.acceptedTypes,
+					e.dragObjects[i].type)) { return false; }
 			}
-		});
+		}
 		
-		// dj_debug("can drop: ", canDrop);
-
 		// cache the positions of the child nodes
 		this.childBoxes = [];
 		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
@@ -149,10 +137,10 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 				left: left, right: right, node: child});
 		}
 		
-		return canDrop;
+		return true;
 	},
 	
-	onDragMove: function(e) {
+	_getNodeUnderMouse: function (e) {
 		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
 		var mousey = e.pageY || e.clientY + document.body.scrollTop;
 
@@ -160,11 +148,15 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		for (var i = 0, child; i < this.childBoxes.length; i++) {
 			with (this.childBoxes[i]) {
 				if (mousex >= left && mousex <= right &&
-					mousey >= top && mousey <= bottom) { break; }
+					mousey >= top && mousey <= bottom) { return i; }
 			}
 		}
-		if (i == this.childBoxes.length) { return; } // not over any of our children
-
+	},
+	
+	onDragMove: function(e) {
+		var i = this._getNodeUnderMouse(e);
+		if (!dojo.lang.isNumber(i)) { return; }
+		
 		if (!this.dropIndicator) {
 			this.dropIndicator = document.createElement("div");
 			with (this.dropIndicator.style) {
@@ -201,18 +193,9 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	onDrop: function(e){
 		this.onDragOut(e);
 		
-		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-		var mousey = e.pageY || e.clientY + document.body.scrollTop;
+		var i = this._getNodeUnderMouse(e);
+		if (!dojo.lang.isNumber(i)) { return false; }
 
-		// find the child
-		for (var i = 0, child; i < this.childBoxes.length; i++) {
-			with (this.childBoxes[i]) {
-				if (mousex >= left && mousex <= right &&
-					mousey >= top && mousey <= bottom) { break; }
-			}
-		}
-		if (i == this.childBoxes.length) { return false; }
-		
 		var gravity = dojo.xml.htmlUtil.gravity, child = this.childBoxes[i].node;
 		if (gravity(child, e) & gravity.SOUTH) {
 			dojo.xml.domUtil.after(e.dragObject.domNode, child);

@@ -178,16 +178,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				]);
 			});
 		}
-		dojo.alg.forEach(this.dragObjects, function(tempDragObj){
-			if(!tempDragObj){ return; }
-			tempDragObj.onDragMove(e);
-		});
+		for (var i = 0; i < this.dragObjects.length; i++) {
+			if (this.dragObjects[i]) { this.dragObjects[i].onDragMove(e); }
+		}
 
 		// if we have a current drop target, check to see if we're outside of
 		// it. If so, do all the actions that need doing.
 		var dtp = this.currentDropTargetPoints;
-		if((dtp)&&(_this.isInsideBox(e, dtp))){
-			this.currentDropTarget.onDragMove(e);
+		if (dtp && this.isInsideBox(e, dtp)) {
+			if (this.dropAcceptable) { this.currentDropTarget.onDragMove(e); }
 		}else{
 			// FIXME: need to fix the event object!
 			if(this.currentDropTarget){
