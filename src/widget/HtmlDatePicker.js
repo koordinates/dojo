@@ -65,7 +65,7 @@ dojo.widget.HtmlDatePicker = function(){
 		this.storedDate = rfcDate;
 	}
 	
-	this.toRfcDate =function(jsDate) {
+	this.toRfcDate = function(jsDate) {
 		if(!jsDate) {
 			jsDate = this.today;
 		}
