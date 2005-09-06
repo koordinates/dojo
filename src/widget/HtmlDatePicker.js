@@ -49,7 +49,7 @@ dojo.widget.HtmlDatePicker = function(){
 	
 	this.initData = function() {
 		this.today = new Date();
-		if(this.storedDate) {
+		if(this.storedDate && (this.storedDate.split("-").length > 2)) {
 			this.date = this.fromRfcDate(this.storedDate);
 		} else {
 			this.date = this.today;
@@ -85,6 +85,9 @@ dojo.widget.HtmlDatePicker = function(){
 	
 	this.fromRfcDate = function(rfcDate) {
 		var tempDate = rfcDate.split("-");
+		if(tempDate.length < 3) {
+			return new Date();
+		}
 		// fullYear, month, date
 		return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
 	}

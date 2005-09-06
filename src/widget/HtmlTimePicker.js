@@ -19,32 +19,17 @@ dojo.widget.HtmlTimePicker = function(){
 	this.classNames = {
 		selectedTime: "selectedItem"
 	}
+	// dom node indecies for selected hour, minute, amPm, and "any time option"
 	this.selectedTime = {
 		hour: "",
 		minute: "",
-		amPm: ""
+		amPm: "",
+		anyTime: false
 	}
 
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.css");
-	
-	this.fillInTemplate = function(){
-		this.initData();
-		this.initUI();
-	}
-	
-	this.initData = function() {
-		// determine date/time from stored info, or by default don't have a set time
-		if(this.storedTime) {
-			this.time = this.fromRfcDateTime(this.storedTime);
-		} else if (this.useDefaultTime) {
-			this.time = this.fromRfcDateTime();
-		}
-	}
-	
-	this.setDateTime = function(rfcDate) {
-		this.storedTime = rfcDate;
-	}
-	
+
+	// utility functions
 	this.toRfcDateTime = function(jsDate) {
 		if(!jsDate) {
 			jsDate = this.today;
@@ -81,12 +66,13 @@ dojo.widget.HtmlTimePicker = function(){
 		if(timeZoneMinute < 10) {
 			timeZoneMinute = "0" + timeZoneMinute.toString();
 		}
-		dj_debug(year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second + timeZoneHour +":" + timeZoneMinute);
 		return year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second + timeZoneHour +":" + timeZoneMinute;
 	}
-	
+
 	this.fromRfcDateTime = function(rfcDate) {
-		//2005-06-30T08:05:00-07:00
+		if(!rfcDate) {
+			return new Date();
+		}
 		var tempTime = rfcDate.split("T")[1].split(":");
 		// fullYear, month, date
 		var tempDate = new Date();
@@ -94,7 +80,7 @@ dojo.widget.HtmlTimePicker = function(){
 		tempDate.setMinutes(tempTime[1]);
 		return tempDate;
 	}
-	
+
 	this.toAmPmHour = function(hour) {
 		var amPmHour = hour;
 		var isAm = true;
@@ -108,9 +94,9 @@ dojo.widget.HtmlTimePicker = function(){
 		}
 		return [amPmHour, isAm];
 	}
-	
+
 	this.fromAmPmHour = function(amPmHour, isAm) {
-		var hour = amPmHour;
+		var hour = parseInt(amPmHour, 10);
 		if(isAm && hour == 12) {
 			hour = 0;
 		} else if (!isAm && hour<12) {
@@ -118,7 +104,25 @@ dojo.widget.HtmlTimePicker = function(){
 		}
 		return hour;
 	}
-	
+
+	this.fillInTemplate = function(){
+		this.initData();
+		this.initUI();
+	}
+
+	this.initData = function() {
+		// FIXME: doesn't currently validate the time before trying to set it
+		// Determine the date/time from stored info, or by default don't 
+		//  have a set time
+		if(this.storedTime) {
+			this.time = this.fromRfcDateTime(this.storedTime);
+		} else if (this.useDefaultTime) {
+			this.time = this.fromRfcDateTime();
+		} else {
+			this.selectedTime.anyTime = true;
+		}
+	}
+
 	this.initUI = function() {
 		// set UI to match the currently selected time
 		if(this.time) {
@@ -132,30 +136,65 @@ dojo.widget.HtmlTimePicker = function(){
 			this.onSetSelectedAmPm(isAm);
 		}
 	}
+
+	this.setDateTime = function(rfcDate) {
+		this.storedTime = rfcDate;
+	}
 	
 	this.onClearSelectedHour = function(evt) {
+		this.clearSelectedHour();
+	}
+
+	this.onClearSelectedMinute = function(evt) {
+		this.clearSelectedMinute();
+	}
+
+	this.onClearSelectedAmPm = function(evt) {
+		this.clearSelectedAmPm();
+	}
+
+	this.onClearSelectedAnyTime = function(evt) {
+		this.clearSelectedAnyTime();
+		if(this.selectedTime.anyTime) {
+			this.selectedTime.anyTime = false;
+			this.time = this.fromRfcDateTime();
+			this.initUI();
+		}
+	}
+
+	this.clearSelectedHour = function() {
 		var hourNodes = this.hourContainerNode.getElementsByTagName("td");
 		for (var i=0; i<hourNodes.length; i++) {
 			dojo.xml.htmlUtil.setClass(hourNodes.item(i), "");
 		}
 	}
-	
-	this.onClearSelectedMinute = function(evt) {
+
+	this.clearSelectedMinute = function() {
 		var minuteNodes = this.minuteContainerNode.getElementsByTagName("td");
 		for (var i=0; i<minuteNodes.length; i++) {
 			dojo.xml.htmlUtil.setClass(minuteNodes.item(i), "");
 		}
 	}
-	
-	this.onClearSelectedAmPm = function(evt) {
+
+	this.clearSelectedAmPm = function() {
 		var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
 		for (var i=0; i<amPmNodes.length; i++) {
 			dojo.xml.htmlUtil.setClass(amPmNodes.item(i), "");
 		}
 	}
-	
+
+	this.clearSelectedAnyTime = function() {
+		dojo.xml.htmlUtil.setClass(this.anyTimeContainerNode, "anyTimeContainer");
+	}
+
 	this.onSetSelectedHour = function(evt) {
+		this.onClearSelectedAnyTime();
 		this.onClearSelectedHour();
+		this.setSelectedHour(evt);
+		this.onSetTime();
+	}
+
+	this.setSelectedHour = function(evt) {
 		if(evt.target) {
 			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["hour"] = evt.target.innerHTML;
@@ -166,11 +205,18 @@ dojo.widget.HtmlTimePicker = function(){
 				this.selectedTime["hour"] = hourNodes.item(evt).innerHTML;
 			}
 		}
+		this.selectedTime.anyTime = false;
+	}
+
+	this.onSetSelectedMinute = function(evt) {
+		this.onClearSelectedAnyTime();
+		this.onClearSelectedMinute();
+		this.setSelectedMinute(evt);
+		this.selectedTime.anyTime = false;
 		this.onSetTime();
 	}
-	
-	this.onSetSelectedMinute = function(evt) {
-		this.onClearSelectedMinute();
+
+	this.setSelectedMinute = function(evt) {
 		if(evt.target) {
 			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["minute"] = evt.target.innerHTML;
@@ -181,11 +227,17 @@ dojo.widget.HtmlTimePicker = function(){
 				this.selectedTime["minute"] = minuteNodes.item(evt).innerHTML;
 			}
 		}
+	}
+
+	this.onSetSelectedAmPm = function(evt) {
+		this.onClearSelectedAnyTime();
+		this.onClearSelectedAmPm();
+		this.setSelectedAmPm(evt);
+		this.selectedTime.anyTime = false;
 		this.onSetTime();
 	}
-	
-	this.onSetSelectedAmPm = function(evt) {
-		this.onClearSelectedAmPm();
+
+	this.setSelectedAmPm = function(evt) {
 		if(evt.target) {
 			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["amPm"] = evt.target.innerHTML;
@@ -196,33 +248,49 @@ dojo.widget.HtmlTimePicker = function(){
 				this.selectedTime["amPm"] = amPmNodes.item(evt).innerHTML;
 			}
 		}
+	}
+
+	this.onSetSelectedAnyTime = function(evt) {
+		this.onClearSelectedHour();
+		this.onClearSelectedMinute();
+		this.onClearSelectedAmPm();
+		this.setSelectedAnyTime();
 		this.onSetTime();
+	}
+
+	this.setSelectedAnyTime = function(evt) {
+		this.selectedTime.anyTime = true;
+		dojo.xml.htmlUtil.setClass(this.anyTimeContainerNode, this.classNames.selectedTime + " " + "anyTimeContainer");
 	}
 
 	this.onClick = function(evt) {
 		dojo.event.browser.stopEvent(evt)
 	}
-	
+
 	this.onSetTime = function() {
-		var hour = 12;
-		var minute = 0;
-		var isAm = false;
-		if(this.selectedTime["hour"]) {
-			hour = parseInt(this.selectedTime["hour"], 10);
+		if(this.selectedTime.anyTime) {
+			this.setDateTime();
+		} else {
+			var hour = 12;
+			var minute = 0;
+			var isAm = false;
+			if(this.selectedTime["hour"]) {
+				hour = parseInt(this.selectedTime["hour"], 10);
+			}
+			if(this.selectedTime["minute"]) {
+				minute = parseInt(this.selectedTime["minute"], 10);
+			}
+			if(this.selectedTime["amPm"]) {
+				isAm = (this.selectedTime["amPm"].toLowerCase() == "am");
+			}
+			this.time = new Date();
+			this.time.setHours(this.fromAmPmHour(hour, isAm));
+			this.time.setMinutes(minute);
+			this.setDateTime(this.toRfcDateTime(this.time));
 		}
-		if(this.selectedTime["minute"]) {
-			minute = parseInt(this.selectedTime["minute"], 10);
-		}
-		if(this.selectedTime["amPm"]) {
-			isAm = (this.selectedTime["amPm"].toLowerCase() == "am");
-		}
-		this.time = new Date();
-		this.time.setHours(this.fromAmPmHour(hour, isAm));
-		this.time.setMinutes(minute);
-		this.setDateTime(this.toRfcDateTime(this.time));
 	}
 
 }
 dj_inherits(dojo.widget.HtmlTimePicker, dojo.widget.HtmlWidget);
 
-dojo.widget.HtmlTimePicker.prototype.templateString = '<div class="timePickerContainer" dojoAttachPoint="timePickerContainerNode"><table class="timeContainer" cellspacing="0" ><thead><tr><td dojoAttachEvent="onClick: onSetSelectedHour;">Hour</td><td class="minutesHeading">Minute</td><td dojoAttachEvent="onClick: onSetSelectedHour;">&nbsp;</td></tr></thead><tbody><tr><td valign="top"><table><tbody dojoAttachPoint="hourContainerNode"  dojoAttachEvent="onClick: onSetSelectedHour;"><tr><td>12</td><td>6</td></tr> <tr><td>1</td><td>7</td></tr> <tr><td>2</td><td>8</td></tr> <tr><td>3</td><td>9</td></tr> <tr><td>4</td><td>10</td></tr> <tr><td>5</td><td>11</td></tr></tbody></table></td> <td valign="top" class="minutes"><table><tbody dojoAttachPoint="minuteContainerNode" dojoAttachEvent="onClick: onSetSelectedMinute;"><tr><td>00</td><td>30</td></tr> <tr><td>05</td><td>35</td></tr><tr><td>10</td><td>40</td></tr> <tr><td>15</td><td>45</td></tr> <tr><td>20</td><td>50</td></tr> <tr><td>25</td><td>55</td></tr></tbody></table> </td><td valign="top"><table><tbody dojoAttachPoint="amPmContainerNode" dojoAttachEvent="onClick: onSetSelectedAmPm;"><tr><td>AM</td></tr> <tr><td>PM</td></tr></tbody></table></td>																								</tr></tbody></table></div>';
+dojo.widget.HtmlTimePicker.prototype.templateString = '<div class="timePickerContainer" dojoAttachPoint="timePickerContainerNode"><table class="timeContainer" cellspacing="0" ><thead><tr><td dojoAttachEvent="onClick: onSetSelectedHour;">Hour</td><td class="minutesHeading">Minute</td><td dojoAttachEvent="onClick: onSetSelectedHour;">&nbsp;</td></tr></thead><tbody><tr><td valign="top"><table><tbody dojoAttachPoint="hourContainerNode"  dojoAttachEvent="onClick: onSetSelectedHour;"><tr><td>12</td><td>6</td></tr> <tr><td>1</td><td>7</td></tr> <tr><td>2</td><td>8</td></tr> <tr><td>3</td><td>9</td></tr> <tr><td>4</td><td>10</td></tr> <tr><td>5</td><td>11</td></tr></tbody></table></td> <td valign="top" class="minutes"><table><tbody dojoAttachPoint="minuteContainerNode" dojoAttachEvent="onClick: onSetSelectedMinute;"><tr><td>00</td><td>30</td></tr> <tr><td>05</td><td>35</td></tr><tr><td>10</td><td>40</td></tr> <tr><td>15</td><td>45</td></tr> <tr><td>20</td><td>50</td></tr> <tr><td>25</td><td>55</td></tr></tbody></table> </td><td valign="top"><table><tbody dojoAttachPoint="amPmContainerNode" dojoAttachEvent="onClick: onSetSelectedAmPm;"><tr><td>AM</td></tr> <tr><td>PM</td></tr></tbody></table></td>																								</tr><tr><td></td><td><div dojoAttachPoint="anyTimeContainerNode" dojoAttachEvent="onClick: onSetSelectedAnyTime;" class="anyTimeContainer">any</div></td><td></td></tr></tbody></table></div>';
