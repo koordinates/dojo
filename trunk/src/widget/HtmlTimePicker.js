@@ -195,7 +195,7 @@ dojo.widget.HtmlTimePicker = function(){
 	}
 
 	this.setSelectedHour = function(evt) {
-		if(evt.target) {
+		if(evt && evt.target) {
 			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["hour"] = evt.target.innerHTML;
 		} else if (!isNaN(evt)) {
@@ -217,7 +217,7 @@ dojo.widget.HtmlTimePicker = function(){
 	}
 
 	this.setSelectedMinute = function(evt) {
-		if(evt.target) {
+		if(evt && evt.target) {
 			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["minute"] = evt.target.innerHTML;
 		} else if (!isNaN(evt)) {
@@ -238,7 +238,7 @@ dojo.widget.HtmlTimePicker = function(){
 	}
 
 	this.setSelectedAmPm = function(evt) {
-		if(evt.target) {
+		if(evt && evt.target) {
 			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["amPm"] = evt.target.innerHTML;
 		} else if (!isNaN(evt)) {
