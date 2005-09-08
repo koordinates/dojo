@@ -94,7 +94,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				width = this.inheritWidth ? oldWidth : "100%";
 				height = oldHeight;
 				Scrollbars = false;
-				Appearance = 0; // no border
+				Appearance = this._activeX.appearence.flat;
 			}
 			this.domNode.appendChild(this.object);
 
@@ -333,6 +333,102 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 /* Formatting commands
  **********************/
 	
+	/** IE's Active X codes */
+	_activeX: {
+		command: {
+			bold: 5000,
+			italic: 5023,
+			underline: 5048,
+
+			justifycenter: 5024,
+			justifyleft: 5025,
+			justifyright: 5026,
+
+			cut: 5003,
+			copy: 5002,
+			paste: 5032,
+			"delete": 5004,
+
+			undo: 5049,
+			redo: 5033,
+
+			removeformat: 5034,
+			selectall: 5035,
+			unlink: 5050,
+
+			indent: 5018,
+			outdent: 5031,
+
+			insertorderedlist: 5030,
+			insertunorderedlist: 5051,
+
+			// table commands
+			inserttable: 5022,
+			insertcell: 5019,
+			insertcol: 5020,
+			insertrow: 5021,
+			deletecells: 5005,
+			deletecols: 5006,
+			deleterows: 5007,
+			mergecells: 5029,
+			splitcell: 5047
+			/*
+			DECMD_SETBACKCOLOR =              5042
+			DECMD_GETBACKCOLOR =              5010
+			DECMD_SETBLOCKFMT =               5043
+			DECMD_GETBLOCKFMT =               5011
+			DECMD_GETBLOCKFMTNAMES =          5012
+			DECMD_SETFONTNAME =               5044
+			DECMD_GETFONTNAME =               5013
+			DECMD_SETFONTSIZE =               5045
+			DECMD_GETFONTSIZE =               5014
+			DECMD_SETFORECOLOR =              5046
+			DECMD_GETFORECOLOR =              5015
+			
+			DECMD_FINDTEXT =                  5008
+			DECMD_FONT =                      5009
+			DECMD_HYPERLINK =                 5016
+			DECMD_IMAGE =                     5017
+			
+			DECMD_LOCK_ELEMENT =              5027
+			DECMD_MAKE_ABSOLUTE =             5028
+			DECMD_SEND_BACKWARD =             5036
+			DECMD_BRING_FORWARD =             5037
+			DECMD_SEND_BELOW_TEXT =           5038
+			DECMD_BRING_ABOVE_TEXT =          5039
+			DECMD_SEND_TO_BACK =              5040
+			DECMD_BRING_TO_FRONT =            5041
+			
+			DECMD_PROPERTIES =                5052
+			*/
+		},
+		
+		ui: {
+			"default": 0,
+			prompt: 1,
+			noprompt: 2
+		},
+		
+		status: {
+			notsupported: 0,
+			disabled: 1,
+			enabled: 3,
+			latched: 7,
+			ninched: 11
+		},
+		
+		appearance: {
+			flat: 0,
+			inset: 1
+		},
+		
+		state: {
+			unchecked: 0,
+			checked: 1,
+			gray: 2
+		}
+	},
+	
 	/**
 	 * Used as the advice function by dojo.event.connect to map our
 	 * normalized set of commands to those supported by the target
@@ -416,8 +512,13 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * @param argument An optional argument to the command
 	 */
 	execCommand: function (command, argument) {
+		if (this.object) {
+			return this.object.ExecCommand(this._activeX.command[command],
+				this._activeX.ui.noprompt, argument);
+	
 		// fix up unlink in Mozilla to unlink the link and not just the selection
-		if (command == "unlink" && this.queryCommandEnabled("unlink") && dojo.render.html.mozilla) {
+		} else if (command == "unlink" &&
+			this.queryCommandEnabled("unlink") && dojo.render.html.mozilla) {
 			// grab selection
 			// Mozilla gets upset if we just store the range so we have to
 			// get the basic properties and recreate to save the selection
