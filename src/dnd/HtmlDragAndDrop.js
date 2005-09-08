@@ -198,11 +198,9 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 
 		var gravity = dojo.xml.htmlUtil.gravity, child = this.childBoxes[i].node;
 		if (gravity(child, e) & gravity.SOUTH) {
-			dojo.xml.domUtil.after(e.dragObject.domNode, child);
+			return dojo.xml.domUtil.after(e.dragObject.domNode, child);
 		} else {
-			dojo.xml.domUtil.before(e.dragObject.domNode, child);
+			return dojo.xml.domUtil.before(e.dragObject.domNode, child);
 		}
-		
-		return true;
 	}
 });
