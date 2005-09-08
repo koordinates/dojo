@@ -299,20 +299,25 @@ dojo.xml.domUtil = new function(){
 	this.hex2rgb = function(hex) { return dojo.graphics.color.hex2rgb(hex); }
 	this.rgb2hex = function(r, g, b) { return dojo.graphics.color.rgb2hex(r, g, b); }
 
-	this.insertBefore = function(node, ref){
+	this.insertBefore = function(node, ref, force) {
+		if (force != true &&
+			(node === ref || node.nextSibling === ref)) { return false; }
 		var pn = ref.parentNode;
 		pn.insertBefore(node, ref);
+		return true;
 	}
 
 	this.before = this.insertBefore;
 
-	this.insertAfter = function(node, ref){
+	this.insertAfter = function(node, ref, force) {
 		var pn = ref.parentNode;
 		if(ref == pn.lastChild){
+			if (force != true  && node === ref) { return false; }
 			pn.appendChild(node);
 		}else{
-			pn.insertBefore(node, ref.nextSibling);
+			return this.insertBefore(node, ref.nextSibling, force);
 		}
+		return true;
 	}
 
 	this.after = this.insertAfter;
