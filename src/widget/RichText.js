@@ -219,8 +219,13 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				relay(this.window, events[i], window, events[i]);
 				relay(this.document, events[i], document, events[i]);
 			}
-
-			dojo.event.browser.addListener(this.document, "blur", hitch(this, "onBlur"));
+			
+			var onBlur = hitch(this, "onBlur"), doc = this.document;
+			var unBlur = { unBlur: function (e) {
+				dojo.event.browser.removeListener(doc, "blur", onBlur);
+			}};
+			dojo.event.connect("before", this, "close", unBlur, "unBlur");
+			dojo.event.browser.addListener(this.document, "blur", onBlur);
 			dojo.event.browser.addListener(this.document, "focus", hitch(this, "onFocus"));
 		}
 
