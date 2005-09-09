@@ -584,23 +584,39 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 
 	queryCommandEnabled: function (command, argument) {
-		// mozilla returns true always
-		if (command == "unlink" && dojo.render.html.mozilla) {
-			var node = this.getSelectedNode();
-			while (node.parentNode && node.nodeName != "A") { node = node.parentNode; }
-			return node.nodeName == "A";
-		} elseif (command == "inserttable" && dojo.render.html.mozilla) {
-			return true;
+		if (this.object) {
+			var status = this.object.QueryStatus(this._activeX.command[command]);
+			return (status != this.activeX.status.notsupported && 
+				status != this.activeX.status.diabled);
+		} else {
+			// mozilla returns true always
+			if (command == "unlink" && dojo.render.html.mozilla) {
+				var node = this.getSelectedNode();
+				while (node.parentNode && node.nodeName != "A") { node = node.parentNode; }
+				return node.nodeName == "A";
+			} elseif (command == "inserttable" && dojo.render.html.mozilla) {
+				return true;
+			}
+			return this.document.queryCommandEnabled(command);
 		}
-		return this.document.queryCommandEnabled(command);
 	},
 
 	queryCommandState: function (command, argument) {
-		return this.document.queryCommandState(command);
+		if (this.object) {
+			var status = this.object.QueryStatus(this._activeX.command[command]);
+
+		} else {
+			return this.document.queryCommandState(command);
+		}
 	},
 
 	queryCommandValue: function (command, argument) {
-		return this.document.queryCommandValue(command);
+		if (this.object) {
+			var status = this.object.QueryStatus(this._activeX.command[command]);
+
+		} else {
+			return this.document.queryCommandValue(command);
+		}
 	},
 	
 	
