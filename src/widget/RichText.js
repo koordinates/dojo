@@ -32,7 +32,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	saveName: "",
 	
 	/** The minimum height that the editor should have */
-	minHeight: "5em",
+	minHeight: "1em",
 
 	_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
