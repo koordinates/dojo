@@ -180,7 +180,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.document.execCommand("useCSS", false, false); // old moz call
 				this.document.execCommand("styleWithCSS", false, false); // new moz call
 				//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
-			} catch (e) { alert("y'all"); }
+			} catch (e) { }
 			
 			// FIXME: when scrollbars appear/disappear this needs to be fired
 			this._updateHeight();
@@ -584,7 +584,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 			var table = "<table><tbody>";
 			for (var i = 0; i < argument.rows; i++) { table += cols; }
-			var table += "</tbody></table>";
+			table += "</tbody></table>";
 			return this.document.execCommand("inserthtml", false, table);
 		
 		} else {
@@ -604,7 +604,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				var node = this.getSelectedNode();
 				while (node.parentNode && node.nodeName != "A") { node = node.parentNode; }
 				return node.nodeName == "A";
-			} elseif (command == "inserttable" && dojo.render.html.mozilla) {
+			} else if (command == "inserttable" && dojo.render.html.mozilla) {
 				return true;
 			}
 			return this.document.queryCommandEnabled(command);
@@ -614,7 +614,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	queryCommandState: function (command, argument) {
 		if (this.object) {
 			var status = this.object.QueryStatus(this._activeX.command[command]);
-
+			return (status == this._activeX.status.enabled ||
+				status == this._activeX.status.ninched);
 		} else {
 			return this.document.queryCommandState(command);
 		}
@@ -622,8 +623,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	queryCommandValue: function (command, argument) {
 		if (this.object) {
-			var status = this.object.QueryStatus(this._activeX.command[command]);
-
+			//var status = this.object.QueryStatus(this._activeX.command[command]);
 		} else {
 			return this.document.queryCommandValue(command);
 		}
