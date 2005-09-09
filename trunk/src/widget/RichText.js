@@ -506,6 +506,16 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				var supportedBy = isSupportedBy(ie);
 				break;
 			
+			case "inserttable":
+				var supportedBy = isSupportedBy(mozilla | (this.object ? ie : 0));
+				break;
+			
+			case "insertcell": case "insertcol": case "insertrow":
+			case "deletecells": case "deletecols": case "deleterows":
+			case "mergecells": case "splitcell":
+				var supportedBy = isSupportedBy(this.object ? ie : 0);
+				break;
+			
 			default: return false;
 		}
 		
@@ -556,6 +566,16 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			selection.addRange(selectionRange);
 			
 			return returnValue;
+		} else if (command == "inserttable" && dojo.render.html.mozilla) {
+
+			var cols = "<tr>";
+			for (var i = 0; i < argument.cols; i++) { cols += "<td></td>"; }
+			cols += "</tr>";
+		
+			var table = "<table><tbody>";
+			for (var i = 0; i < argument.rows; i++) { table += cols; }
+			return this.document.execCommand("inserthtml", false, table);
+		
 		} else {
 			argument = arguments.length > 1 ? argument : null;
 			return this.document.execCommand(command, false, argument);
@@ -568,6 +588,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			var node = this.getSelectedNode();
 			while (node.parentNode && node.nodeName != "A") { node = node.parentNode; }
 			return node.nodeName == "A";
+		} elseif (command == "inserttable" && dojo.render.html.mozilla) {
+			return true;
 		}
 		return this.document.queryCommandEnabled(command);
 	},
