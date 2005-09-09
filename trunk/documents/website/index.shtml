@@ -165,7 +165,8 @@ a.more:hover {
 
 	<div id="col1" class="content">
 <h2>What is Dojo?</h2>
-<p>Dojo is an Open Source toolkit that allows you to easily build dynamic
+<p>Dojo is an Open Source toolkit (<a href="http://dojotoolkit.org/trac/file/trunk/LICENSE.txt">Academic Free License</a>)
+that allows you to easily build dynamic
 capabilities into web pages and any other environment that supports JavaScript.
 Dojo provides components that let you make your sites more useable, responsive,
 and functional. With Dojo you can build degradeable user interfaces more
