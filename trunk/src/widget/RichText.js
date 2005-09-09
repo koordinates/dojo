@@ -574,6 +574,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 			var table = "<table><tbody>";
 			for (var i = 0; i < argument.rows; i++) { table += cols; }
+			var table += "</tbody></table>";
 			return this.document.execCommand("inserthtml", false, table);
 		
 		} else {
