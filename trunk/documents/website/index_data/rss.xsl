@@ -11,7 +11,7 @@
 			</a>
 		</h2>
 		<dl>
-			<xsl:apply-templates select="//item[position()&lt;5]" />
+			<xsl:apply-templates select="//item[position()&lt;4]" />
 		</dl>
 	</xsl:template>
 	<xsl:template match="item">
