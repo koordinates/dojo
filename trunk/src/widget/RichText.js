@@ -97,7 +97,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				width = this.inheritWidth ? oldWidth : "100%";
 				height = oldHeight;
 				Scrollbars = false;
-				Appearance = this._activeX.appearence.flat;
+				Appearance = this._activeX.appearance.flat;
 			}
 			this.domNode.appendChild(this.object);
 
@@ -105,7 +105,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.object.attachEvent("DocumentComplete", function () {
 				editor.document = editor.object.DOM;
 				editor.editNode = editor.document.body.firstChild;
-				alert(dojo.xml.htmlUtil.getInnerHeight(editor.editNode));
 			});
 			
 			this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
@@ -176,7 +175,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				close();
 			}
 			this.editNode = this.document.body;
-			try { this.document.execCommand("useCSS", false, false); } catch (e) {} // use html
+
+			try { // sanity check for Mozilla
+				this.document.execCommand("useCSS", false, false); // old moz call
+				this.document.execCommand("styleWithCSS", false, false); // new moz call
+				//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
+			} catch (e) { alert("y'all"); }
 			
 			// FIXME: when scrollbars appear/disappear this needs to be fired
 			this._updateHeight();
@@ -532,8 +536,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	execCommand: function (command, argument) {
 		if (this.object) {
-			return this.object.ExecCommand(this._activeX.command[command],
-				this._activeX.ui.noprompt, argument);
+		
+			if (arguments.length == 1) {
+				return this.object.ExecCommand(this._activeX.command[command],
+					this._activeX.ui.noprompt);
+			} else {
+				return this.object.ExecCommand(this._activeX.command[command],
+					this._activeX.ui.noprompt, argument);
+			}
 	
 		// fix up unlink in Mozilla to unlink the link and not just the selection
 		} else if (command == "unlink" &&
