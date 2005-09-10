@@ -118,7 +118,7 @@ dojo.event.browser = new function(){
 	this.removeListener = function(node, evtName, fp, capture){
 		if(!capture){ var capture = false; }
 		evtName = evtName.toLowerCase();
-		if(evtName.substr(0,2)!="on"){ evtName = "on"+evtName; }
+		if(evtName.substr(0,2)=="on"){ evtName = evtName.substr(2); }
 		// FIXME: this is mostly a punt, we aren't actually doing anything on IE
 		if(node.removeEventListener){
 			node.removeEventListener(evtName, fp, capture);
@@ -144,8 +144,9 @@ dojo.event.browser = new function(){
 
 		var onEvtName = "on"+evtName;
 		if(node.addEventListener){ 
-			node.addEventListener(evtName, newfp, capture);
-			return newfp;
+			var el = { handleEvent: newfp };
+			node.addEventListener(evtName, el, capture);
+			return el;
 		}else{
 			if(typeof node[onEvtName] == "function" ){
 				var oldEvt = node[onEvtName];
