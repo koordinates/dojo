@@ -26,7 +26,7 @@ dojo.event.topic = new function(){
 
 	this.unsubscribe = function(topic, obj, funcName){
 		var topic = this.getTopic(topic);
-		topic.subscribe(obj, funcName);
+		topic.unsubscribe(obj, funcName);
 	}
 
 	this.publish = function(topic, message){
