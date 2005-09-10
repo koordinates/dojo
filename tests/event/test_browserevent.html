@@ -21,16 +21,36 @@
 				dj_debug("some event was fired");
 			}
 
-			dojo.hostenv.modulesLoadedListeners.push(function(){
+			function click1(){
+				dj_debug("click1");
+			}
+
+			function click2(){
+				dj_debug("click2");
+			}
+
+			function click3(){
+				dj_debug("click3");
+			}
+
+			function init(){
 				var clickNode = document.getElementById("click");
-				dojo.event.connect(clickNode, "onclick", null, "logMe");
+				dojo.event.connect(clickNode, "onclick", dj_global, "logMe");
 
 				var dblNode = document.getElementById("dblClick");
-				dojo.event.connect(dblNode, "ondblclick", null, "logMe");
+				dojo.event.connect(dblNode, "ondblclick", dj_global, "logMe");
 
 				var overNode = document.getElementById("mouseOver");
-				dojo.event.connect(overNode, "onmouseover", null, "logMe");
-			});
+				dojo.event.connect(overNode, "onmouseover", dj_global, "logMe");
+
+				var click2Node = document.getElementById("click2");
+				var c1fp = dojo.event.browser.addListener(click2Node, "onclick", click1);
+				var c2fp = dojo.event.browser.addListener(click2Node, "onclick", click2);
+				var c3fp = dojo.event.browser.addListener(click2Node, "onclick", click3);
+				dojo.event.browser.removeListener(click2Node, "onclick", c2fp);
+			}
+
+			dojo.event.connect(dojo, "loaded", "init")
 		</script>
 	</head>
 	<body>
@@ -53,5 +73,8 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<button id="click2">should output only click2</button>
+
 	</body>
 </html>
