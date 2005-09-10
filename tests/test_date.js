@@ -5,24 +5,24 @@ function test_date_fromIso8601Date () {
 	//YYYY-MM-DD
 	var date = dojo.date.fromIso8601Date("2005-08-22");
 	jum.assertEquals("test1", 2005, date.getFullYear());
-	jum.assertEquals("test2", 8, date.getMonth());
+	jum.assertEquals("test2", 7, date.getMonth());
 	jum.assertEquals("test3", 22, date.getDate());
 	
 	//YYYYMMDD
 	var date = dojo.date.fromIso8601Date("20050822");
 	jum.assertEquals("test4", 2005, date.getFullYear());
-	jum.assertEquals("test5", 8, date.getMonth());
+	jum.assertEquals("test5", 7, date.getMonth());
 	jum.assertEquals("test6", 22, date.getDate());
 	
 	//YYYY-MM
 	var date = dojo.date.fromIso8601Date("2005-08");
 	jum.assertEquals("test7", 2005, date.getFullYear());
-	jum.assertEquals("test8", 8, date.getMonth());
+	jum.assertEquals("test8", 7, date.getMonth());
 	
 	//YYYYMM
 	var date = dojo.date.fromIso8601Date("200508");
 	jum.assertEquals("test9", 2005, date.getFullYear());
-	jum.assertEquals("test10", 8, date.getMonth());
+	jum.assertEquals("test10", 7, date.getMonth());
 	
 	//YYYY
 	var date = dojo.date.fromIso8601Date("2005");
@@ -82,17 +82,13 @@ function test_date_fromIso8601Time () {
 	var date = dojo.date.fromIso8601Time("18:46");
 	jum.assertEquals("test7", 18, date.getHours());
 	jum.assertEquals("test8", 46, date.getMinutes());
-	jum.assertEquals("test9", 39, date.getSeconds());
 
 	var date = dojo.date.fromIso8601Time("1846");
 	jum.assertEquals("test10", 18, date.getHours());
 	jum.assertEquals("test11", 46, date.getMinutes());
-	jum.assertEquals("test12", 39, date.getSeconds());
 
 	var date = dojo.date.fromIso8601Time("18");
 	jum.assertEquals("test13", 18, date.getHours());
-	jum.assertEquals("test14", 46, date.getMinutes());
-	jum.assertEquals("test15", 39, date.getSeconds());
 
 	//23:59:59.9942 or 235959.9942
 	var date = dojo.date.fromIso8601Time("18:46:39.9942");
