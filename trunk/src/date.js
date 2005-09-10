@@ -6,15 +6,15 @@ dojo.provide("dojo.date");
  *
  * @param string The date/time formted as an ISO 8601 string
  */
-dojo.date.setIso8601 = function setIso8601 (date, string) {
+dojo.date.setIso8601 = function setIso8601 (dateObject, string) {
 	var comps = string.split('T');
-	dojo.date.setIso8601Date(date, comps[0]);
-	if (comps.length == 2) { dojo.date.setIso8601Time(date, comps[1]); }
-	return date;
+	dojo.date.setIso8601Date(dateObject, comps[0]);
+	if (comps.length == 2) { dojo.date.setIso8601Time(dateObject, comps[1]); }
+	return dateObject;
 }
 
 dojo.date.fromIso8601 = function fromIso8601 (string) {
-	return dojo.date.setIso8601(new Date(), string);
+	return dojo.date.setIso8601(new Date(0), string);
 }
 
 /**
@@ -23,7 +23,7 @@ dojo.date.fromIso8601 = function fromIso8601 (string) {
  *
  * @param string The date formted as an ISO 8601 string
  */
-dojo.date.setIso8601Date = function setIso8601Date (date, string) {
+dojo.date.setIso8601Date = function setIso8601Date (dateObject, string) {
 	var regexp = "^([0-9]{4})((-?([0-9]{2})(-?([0-9]{2}))?)|" +
 			"(-?([0-9]{3}))|(-?W([0-9]{2})(-?([1-7]))?))?$";
 	var d = string.match(new RegExp(regexp));
@@ -34,28 +34,28 @@ dojo.date.setIso8601Date = function setIso8601Date (date, string) {
 	var dayofyear = d[8];
 	var week = d[10];
 	var dayofweek = d[12] || 1;
+
+	dateObject.setYear(year);
 	
-	this.setYear(year);
-	
-	if (dayofyear) { dojo.date.setDayOfYear(date, Number(dayofyear)); }
+	if (dayofyear) { dojo.date.setDayOfYear(dateObject, Number(dayofyear)); }
 	else if (week) {
-		date.setMonth(0);
-		date.setDate(1);
-		var day = date.getDay() || 7;
-		var offset = Number(dayofweek) + (7 * (Number(week) - 1));
+		dateObject.setMonth(0);
+		dateObject.setDate(1);
+		var day = dateObject.getDay() || 7;
+		var offset = Number(dayofweek) + (7 * Number(week));
 		
-		if (day <= 4) { date.setDate(offset + 1 - day); }
-		else { date.setDate(offset + 8 - day); }
+		if (day <= 4) { dateObject.setDate(offset + 1 - day); }
+		else { dateObject.setDate(offset + 8 - day); }
 	} else {
-		if (month) { date.setMonth(month - 1); }
-		if (date) { date.setDate(date); }
+		if (month) { dateObject.setMonth(month - 1); }
+		if (date) { dateObject.setDate(date); }
 	}
 	
-	return date;
+	return dateObject;
 }
 
 dojo.date.fromIso8601Date = function fromIso8601Date (string) {
-	return dojo.date.setIso8601Date(new Date(), string);
+	return dojo.date.setIso8601Date(new Date(0), string);
 }
 
 /**
@@ -64,7 +64,7 @@ dojo.date.fromIso8601Date = function fromIso8601Date (string) {
  *
  * @param string The time formted as an ISO 8601 string
  */
-dojo.date.setIso8601Time = function setIso8601Time (date, string) {
+dojo.date.setIso8601Time = function setIso8601Time (dateObject, string) {
 	// first strip timezone info from the end
 	var timezone = "Z|(([-+])([0-9]{2})(:?([0-9]{2}))?)$";
 	var d = string.match(new RegExp(timezone));
@@ -75,7 +75,7 @@ dojo.date.setIso8601Time = function setIso8601Time (date, string) {
 			offset = (Number(d[3]) * 60) + Number(d[5]);
 			offset *= ((d[2] == '-') ? 1 : -1);
 		}
-		offset -= date.getTimezoneOffset()
+		offset -= dateObject.getTimezoneOffset()
 		string = string.substr(0, string.length - d[0].length);
 	}
 
@@ -88,16 +88,16 @@ dojo.date.setIso8601Time = function setIso8601Time (date, string) {
 	var secs = d[5] || 0;
 	var ms = d[7] ? (Number("0." + d[7]) * 1000) : 0;
 
-	date.setHours(hours);
-	date.setMinutes(mins);
-	date.setSeconds(secs);
-	date.setMilliseconds(ms);
+	dateObject.setHours(hours);
+	dateObject.setMinutes(mins);
+	dateObject.setSeconds(secs);
+	dateObject.setMilliseconds(ms);
 	
-	return date;
+	return dateObject;
 }
 
 dojo.date.fromIso8601Time = function fromIso8601Time (string) {
-	return dojo.date.setIso8601Time(new Date(), string);
+	return dojo.date.setIso8601Time(new Date(0), string);
 }
 
 /**
@@ -105,9 +105,9 @@ dojo.date.fromIso8601Time = function fromIso8601Time (string) {
  *
  * @param date The day of year
  */
-dojo.date.setDayOfYear = function setDayOfYear (date, dayofyear) {
-	date.setMonth(0);
-	date.setDate(dayofyear);
+dojo.date.setDayOfYear = function setDayOfYear (dateObject, dayofyear) {
+	dateObject.setMonth(0);
+	dateObject.setDate(dayofyear);
 }
 
 /**
@@ -115,10 +115,10 @@ dojo.date.setDayOfYear = function setDayOfYear (date, dayofyear) {
  *
  * @return The day of the year
  */
-dojo.date.getDayOfYear = function getDayOfYear (date) {
+dojo.date.getDayOfYear = function getDayOfYear (dateObject) {
 	var tmpdate = new Date(0);
-	tmpdate.setMonth(date.getMonth());
-	tmpdate.setDate(date.getDate());
+	tmpdate.setMonth(dateObject.getMonth());
+	tmpdate.setDate(dateObject.getDate());
 	return Number(tmpdate) / 86400000; // # milliseconds in a day
 }
 
