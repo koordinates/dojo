@@ -115,6 +115,16 @@ dojo.event.browser = new function(){
 	}
 	*/
 
+	this.removeListener = function(node, evtName, fp, capture){
+		if(!capture){ var capture = false; }
+		evtName = evtName.toLowerCase();
+		if(evtName.substr(0,2)!="on"){ evtName = "on"+evtName; }
+		// FIXME: this is mostly a punt, we aren't actually doing anything on IE
+		if(node.removeEventListener){
+			node.removeEventListener(evtName, fp, capture);
+		}
+	}
+
 	this.addListener = function(node, evtName, fp, capture){
 		if(!capture){ var capture = false; }
 		evtName = evtName.toLowerCase();
@@ -135,7 +145,7 @@ dojo.event.browser = new function(){
 		var onEvtName = "on"+evtName;
 		if(node.addEventListener){ 
 			node.addEventListener(evtName, newfp, capture);
-			return true;
+			return newfp;
 		}else{
 			if(typeof node[onEvtName] == "function" ){
 				var oldEvt = node[onEvtName];
@@ -150,7 +160,7 @@ dojo.event.browser = new function(){
 				this.addClobberAttr(onEvtName);
 				this.addClobberNode(node);
 			}
-			return true;
+			return newfp;
 		}
 	}
 
