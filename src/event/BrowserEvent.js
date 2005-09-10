@@ -144,9 +144,8 @@ dojo.event.browser = new function(){
 
 		var onEvtName = "on"+evtName;
 		if(node.addEventListener){ 
-			var el = { handleEvent: newfp };
-			node.addEventListener(evtName, el, capture);
-			return el;
+			node.addEventListener(evtName, newfp, capture);
+			return newfp;
 		}else{
 			if(typeof node[onEvtName] == "function" ){
 				var oldEvt = node[onEvtName];
