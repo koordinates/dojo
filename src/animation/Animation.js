@@ -1,7 +1,7 @@
 dojo.provide("dojo.animation");
 dojo.provide("dojo.animation.Animation");
 
-dojo.require("dojo.math.Math");
+dojo.require("dojo.math");
 dojo.require("dojo.math.curves");
 
 /*

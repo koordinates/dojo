@@ -1,6 +1,6 @@
 dojo.provide("dojo.math.curves");
 
-dojo.require("dojo.math.Math");
+dojo.require("dojo.math");
 
 /* Curves from Dan's 13th lib stuff.
  * See: http://pupius.co.uk/js/Toolkit.Drawing.js
