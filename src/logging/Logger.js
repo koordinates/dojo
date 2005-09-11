@@ -353,7 +353,7 @@ dojo.logging.MemoryLogHandler = function(level, recordsToKeep, postType, postInt
 	// mixin style inheritance
 	dojo.logging.LogHandler.call(this, level);
 	// default is unlimited
-	this.numRecords = (typeof djConfig['loggingNumRecords'] != 'undefined') ? djConfig['loggingNumRecords'] : ( recordsToKeep || -1);
+	this.numRecords = (typeof djConfig['loggingNumRecords'] != 'undefined') ? djConfig['loggingNumRecords'] : ((recordsToKeep) ? recordsToKeep : -1);
 	// 0=count, 1=time, -1=don't post TODO: move this to a better location for prefs
 	this.postType = (typeof djConfig['loggingPostType'] != 'undefined') ? djConfig['loggingPostType'] : ( postType || -1);
 	// milliseconds for time, interger for number of records, -1 for non-posting,
@@ -371,7 +371,7 @@ dojo.logging.MemoryLogHandler.prototype.emit = function(record){
 	this.data.push(record);
 	if(this.numRecords != -1){
 		while(this.data.length>this.numRecords){
-			this.data.pop();
+			this.data.shift();
 		}
 	}
 }
@@ -385,6 +385,12 @@ dojo.logging.logQueueHandler.emit = function(record){
 		print(logStr);
 	}else if(dj_global["dj_debug"]){
 		dj_debug(logStr);
+	}
+	this.data.push(record);
+	if(this.numRecords != -1){
+		while(this.data.length>this.numRecords){
+			this.data.shift();
+		}
 	}
 }
 
