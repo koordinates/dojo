@@ -34,11 +34,11 @@ dojo.math.bernstein = function bernstein (t,n,i) {
  */
 dojo.math.gaussianRandom = function gaussianRandom () {
 	var k = 2;
-	while (k < 1) {
+	do {
 		var i = 2 * Math.random() - 1;
 		var j = 2 * Math.random() - 1;
 		k = i * i + j * j;
-	}
+	} while (k >= 1);
 	k = Math.sqrt((-2 * Math.log(k)) / k);
 	return i * k;
 }
