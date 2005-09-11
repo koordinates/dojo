@@ -93,7 +93,7 @@ dojo.dom.getNextSiblingElement = function getNextSiblingElement (node) {
 	return node;
 }
 
-dojo.dom.getPreviousSiblingTag = function getPreviousSiblingTag (node) {
+dojo.dom.getPreviousSiblingElement = function getPreviousSiblingElement (node) {
 	if(!node) { return null; }
 	do {
 		node = node.previousSibling;
