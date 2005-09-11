@@ -25,3 +25,74 @@ dojo.math.combinations = function combinations (n,r) {
 dojo.math.bernstein = function bernstein (t,n,i) {
 	return (dojo.math.combinations(n,i) * Math.pow(t,i) * Math.pow(1-t,n-i));
 }
+
+/**
+ * Returns random numbers with a Gaussian distribution, with the mean set at
+ * 0 and the variance set at 1.
+ *
+ * @return A random number from a Gaussian distribution
+ */
+dojo.math.gaussianRandom = function gaussianRandom () {
+	var k = 2;
+	while (k < 1) {
+		var i = 2 * Math.random() - 1;
+		var j = 2 * Math.random() - 1;
+		k = i * i + j * j;
+	}
+	k = Math.sqrt((-2 * Math.log(k)) / k);
+	return i * k;
+}
+
+/**
+ * Calculates the mean of an Array of numbers.
+ *
+ * @return The mean of the numbers in the Array
+ */
+dojo.math.mean = function mean () {
+	var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
+	var mean = 0;
+	for (var i = 0; i < array.length; i++) { mean += array[i]; }
+	return mean / array.length;
+}
+
+/**
+ * Extends Math.round by adding a second argument specifying the number of
+ * decimal places to round to.
+ *
+ * @param number The number to round
+ * @param places The number of decimal places to round to
+ * @return The rounded number
+ */
+// TODO: add support for significant figures
+dojo.math.round = function round (number, places) {
+	if (!places) { var shift = 1; }
+	else { var shift = Math.pow(10, places); }
+	return Math.round(number * shift) / shift;
+}
+
+/**
+ * Calculates the standard deviation of an Array of numbers
+ *
+ * @return The standard deviation of the numbers
+ */
+dojo.math.sd = function sd () {
+	var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
+	return Math.sqrt(dojo.math.variance(array));
+}
+
+/**
+ * Calculates the variance of an Array of numbers
+ *
+ * @return The variance of the numbers
+ */
+dojo.math.variance = function variance () {
+	var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
+	var mean = 0, squares = 0;
+	for (var i = 0; i < array.length; i++) {
+		mean += array[i];
+		squares += Math.pow(array[i], 2);
+	}
+	return (squares / array.length)
+		- Math.pow(mean / array.length, 2);
+}
+
