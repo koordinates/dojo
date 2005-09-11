@@ -1,5 +1,5 @@
 dojo.provide("dojo.math.points");
-dojo.require("dojo.math.Math");
+dojo.require("dojo.math");
 
 // TODO: add a Point class?
 dojo.math.points = {
