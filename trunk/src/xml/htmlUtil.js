@@ -597,5 +597,5 @@ dojo.xml.htmlUtil = new function(){
 
 	this.getUniqueId = function() { return dojo.xml.domUtil.getUniqueId(); }
 
-	this.getStyle = function(el, css) { dojo.xml.domUtil.getStyle(el, css); }
+	this.getStyle = function(el, css) { return dojo.xml.domUtil.getStyle(el, css); }
 }
