@@ -1,4 +1,4 @@
-dojo.require("dojo.crypto.Crypto");
+dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.MD5");
 
 /*	

@@ -1,5 +1,6 @@
 dojo.hostenv.conditionalLoadModule({
 	common: [
+		"dojo.crypto"
 		"dojo.crypto.MD5"
 	]
 });
