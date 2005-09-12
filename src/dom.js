@@ -150,7 +150,7 @@ dojo.dom.removeNode = function removeNode (node) {
 }
 
 // TODO: move??
-dojo.dom.getStyle = function getStyle (element, cssSelector) {
+/*dojo.dom.getStyle = function getStyle (element, cssSelector) {
 	var value = undefined, camelCased = dojo.dom.toCamelCase(cssSelector);
 	value = element.style[camelCased]; // dom-ish
 	if(!value) {
@@ -178,7 +178,7 @@ dojo.dom.toCamelCase = function toCamelCase (selector) {
 // TODO: move??
 dojo.dom.toSelectorCase = function toSelectorCase (selector) {
 	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
-}
+}*/
 
 dojo.dom.getAncestors = function getAncestors (node){
 	var ancestors = [];
