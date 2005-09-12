@@ -97,9 +97,9 @@ function test_lang_isBoolean(){
 function test_lang_isUndefined(){
 	var undef;
 	jum.assertTrue("90", dojo.lang.isUndefined(undef));
-	jum.assertTrue("81", dojo.lang.isUndefined(unfef2));
-	jum.assertTrue("82", dojo.lang.isUndefined(false));
-	jum.assertTrue("83", dojo.lang.isUndefined(true));
+	// jum.assertTrue("91", dojo.lang.isUndefined(unfef2));
+	jum.assertFalse("92", dojo.lang.isUndefined(false));
+	jum.assertFalse("93", dojo.lang.isUndefined(true));
 	var undef3 = null;
-	jum.assertFalse("84", dojo.lang.isUndefined(undef3));
+	jum.assertFalse("94", dojo.lang.isUndefined(undef3));
 }
