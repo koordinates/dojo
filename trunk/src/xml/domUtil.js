@@ -24,12 +24,12 @@ dojo.xml.domUtil = new function(){
 	this.dojoml = "http://www.dojotoolkit.org/2004/dojoml";
 	this.idIncrement = 0;
 	
-	this.getTagName = function(){dojo.dom.getTagName.apply(dojo.dom, arguments);}
-	this.getUniqueId = function(){dojo.dom.getUniqueId.apply(dojo.dom, arguments);}
-	this.getFirstChildTag = function() {dojo.dom.getFirstChildElement.apply(dojo.dom, arguments);}
-	this.getLastChildTag = function() {dojo.dom.getLastChildElement.apply(dojo.dom, arguments);}
-	this.getNextSiblingTag = function() {dojo.dom.getNextSiblingElement.apply(dojo.dom, arguments);}
-	this.getPreviousSiblingTag = function() {dojo.dom.getPreviousSiblingElement.apply(dojo.dom, arguments);}
+	this.getTagName = function(){return dojo.dom.getTagName.apply(dojo.dom, arguments);}
+	this.getUniqueId = function(){return dojo.dom.getUniqueId.apply(dojo.dom, arguments);}
+	this.getFirstChildTag = function() {return dojo.dom.getFirstChildElement.apply(dojo.dom, arguments);}
+	this.getLastChildTag = function() {return dojo.dom.getLastChildElement.apply(dojo.dom, arguments);}
+	this.getNextSiblingTag = function() {return dojo.dom.getNextSiblingElement.apply(dojo.dom, arguments);}
+	this.getPreviousSiblingTag = function() {return dojo.dom.getPreviousSiblingElement.apply(dojo.dom, arguments);}
 
 	this.forEachChildTag = function(node, unaryFunc) {
 		var child = this.getFirstChildTag(node);
@@ -39,59 +39,35 @@ dojo.xml.domUtil = new function(){
 		}
 	}
 
-	this.moveChildren = function() {dojo.dom.moveChildren.apply(dojo.dom, arguments);}
-	this.copyChildren = function() {dojo.dom.copyChildren.apply(dojo.dom, arguments);}
-	this.clearChildren = function() {dojo.dom.removeChildren.apply(dojo.dom, arguments);}
-	this.replaceChildren = function() {dojo.dom.replaceChildren.apply(dojo.dom, arguments);}
+	this.moveChildren = function() {return dojo.dom.moveChildren.apply(dojo.dom, arguments);}
+	this.copyChildren = function() {return dojo.dom.copyChildren.apply(dojo.dom, arguments);}
+	this.clearChildren = function() {return dojo.dom.removeChildren.apply(dojo.dom, arguments);}
+	this.replaceChildren = function() {return dojo.dom.replaceChildren.apply(dojo.dom, arguments);}
 
-	this.getStyle = function(element, cssSelector) {
-		var value = undefined, camelCased = dojo.xml.domUtil.toCamelCase(cssSelector);
-		value = element.style[camelCased]; // dom-ish
-		if(!value) {
-			if(document.defaultView) { // gecko
-				value = document.defaultView.getComputedStyle(element, "")
-					.getPropertyValue(cssSelector);
-			} else if(element.currentStyle) { // ie
-				value = element.currentStyle[camelCased];
-			} else if(element.style.getPropertyValue) { // dom spec
-				value = element.style.getPropertyValue(cssSelector);
-			}
-		}
-		return value;
-	}
+	this.getStyle = function() {return dojo.style.getStyle.apply(dojo.style, arguments);}
+	this.toCamelCase = function() {return dojo.style.toCamelCase.apply(dojo.style, arguments);}
+	this.toSelectorCase = function() {return dojo.style.toSelectorCase.apply(dojo.style, arguments);}
 
-	this.toCamelCase = function(selector) {
-		var arr = selector.split('-'), cc = arr[0];
-		for(var i = 1; i < arr.length; i++) {
-			cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
-		}
-		return cc;		
-	}
-
-	this.toSelectorCase = function(selector) {
-		return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
-	}
-
-	this.getAncestors = function(){dojo.dom.getAncestors.apply(dojo.dom, arguments);}
-	this.isChildOf = function() {dojo.dom.isDescendantOf.apply(dojo.dom, arguments);}
-	this.createDocumentFromText = function() {dojo.dom.createDocumentFromText.apply(dojo.dom, arguments);}
+	this.getAncestors = function(){return dojo.dom.getAncestors.apply(dojo.dom, arguments);}
+	this.isChildOf = function() {return dojo.dom.isDescendantOf.apply(dojo.dom, arguments);}
+	this.createDocumentFromText = function() {return dojo.dom.createDocumentFromText.apply(dojo.dom, arguments);}
 
 	if(dojo.render.html.capable || dojo.render.svg.capable) {
-		this.createNodesFromText = function(txt, wrap){dojo.dom.createNodesFromText.apply(dojo.dom, arguments);}
+		this.createNodesFromText = function(txt, wrap){return dojo.dom.createNodesFromText.apply(dojo.dom, arguments);}
 	}
 
 	this.extractRGB = function(color) { return dojo.graphics.color.extractRGB(color); }
 	this.hex2rgb = function(hex) { return dojo.graphics.color.hex2rgb(hex); }
 	this.rgb2hex = function(r, g, b) { return dojo.graphics.color.rgb2hex(r, g, b); }
 
-	this.insertBefore = function() {dojo.dom.insertBefore.apply(dojo.dom, arguments);}
+	this.insertBefore = function() {return dojo.dom.insertBefore.apply(dojo.dom, arguments);}
 	this.before = this.insertBefore;
-	this.insertAfter = function() {dojo.dom.insertAfter.apply(dojo.dom, arguments);}
+	this.insertAfter = function() {return dojo.dom.insertAfter.apply(dojo.dom, arguments);}
 	this.after = this.insertAfter
-	this.insert = function(){dojo.dom.insertAtPosition.apply(dojo.dom, arguments);}
-	this.insertAtIndex = function(){dojo.dom.insertAtIndex.apply(dojo.dom, arguments);}
-	this.textContent = function () {dojo.dom.textContent.apply(dojo.dom, arguments);}
-	this.renderedTextContent = function () {dojo.dom.renderedTextContent.apply(dojo.dom, arguments);}
-	this.remove = function (node) {dojo.dom.removeNode.apply(dojo.dom, arguments);}
+	this.insert = function(){return dojo.dom.insertAtPosition.apply(dojo.dom, arguments);}
+	this.insertAtIndex = function(){return dojo.dom.insertAtIndex.apply(dojo.dom, arguments);}
+	this.textContent = function () {return dojo.dom.textContent.apply(dojo.dom, arguments);}
+	this.renderedTextContent = function () {return dojo.dom.renderedTextContent.apply(dojo.dom, arguments);}
+	this.remove = function (node) {return dojo.dom.removeNode.apply(dojo.dom, arguments);}
 }
 
