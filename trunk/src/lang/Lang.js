@@ -70,6 +70,6 @@ dojo.lang.mixin(dojo.lang, {
 	},
 
 	isUndefined : function(wh) {
-		return wh == undefined;
+		return ((wh == undefined)&&(typeof wh == "undefined"));
 	}
 });
