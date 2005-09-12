@@ -243,7 +243,7 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 	// FIXME: doesn't have correct parent support!
 	if(false && document.evaluate) { // supports dom 3 xpath
 		var xpath = "//" + (nodeType || "*") + "[contains(";
-		if(classMatchType != _this.classMatchType.ContainsAny){
+		if(classMatchType != dojo.html.classMatchType.ContainsAny){
 			xpath += "concat(' ',@class,' '), ' " +
 				classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
 				" ')]";
@@ -259,12 +259,12 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 
 		outer:
 		for(var node = null, i = 0; node = xpathResult.snapshotItem(i); i++){
-			if(classMatchType != _this.classMatchType.IsOnly){
+			if(classMatchType != dojo.html.classMatchType.IsOnly){
 				nodes.push(node);
 			}else{
-				if(!_this.getClass(node)){ continue outer; }
+				if(!dojo.html.getClass(node)){ continue outer; }
 
-				var nodeClasses = _this.getClass(node).split(/\s+/g);
+				var nodeClasses = dojo.html.getClass(node).split(/\s+/g);
 				var reClass = new RegExp("(\\s|^)(" + classes.join(")|(") + ")(\\s|$)");
 				for(var j = 0; j < nodeClasses.length; j++) {
 					if( !nodeClasses[j].match(reClass) ) {
@@ -281,30 +281,30 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 		outer:
 		for(var i = 0; i < candidateNodes.length; i++) {
 			var node = candidateNodes[i];
-			if( !_this.getClass(node) ) { continue outer; }
-			var nodeClasses = _this.getClass(node).split(/\s+/g);
+			if( !dojo.html.getClass(node) ) { continue outer; }
+			var nodeClasses = dojo.html.getClass(node).split(/\s+/g);
 			var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
 			var matches = 0;
 
 			for(var j = 0; j < nodeClasses.length; j++) {
 				if( reClass.test(nodeClasses[j]) ) {
-					if( classMatchType == _this.classMatchType.ContainsAny ) {
+					if( classMatchType == dojo.html.classMatchType.ContainsAny ) {
 						nodes.push(node);
 						continue outer;
 					} else {
 						matches++;
 					}
 				} else {
-					if( classMatchType == _this.classMatchType.IsOnly ) {
+					if( classMatchType == dojo.html.classMatchType.IsOnly ) {
 						continue outer;
 					}
 				}
 			}
 
 			if( matches == classes.length ) {
-				if( classMatchType == _this.classMatchType.IsOnly && matches == nodeClasses.length ) {
+				if( classMatchType == dojo.html.classMatchType.IsOnly && matches == nodeClasses.length ) {
 					nodes.push(node);
-				} else if( classMatchType == _this.classMatchType.ContainsAll ) {
+				} else if( classMatchType == dojo.html.classMatchType.ContainsAll ) {
 					nodes.push(node);
 				}
 			}
