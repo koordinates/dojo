@@ -364,3 +364,63 @@ dojo.html.overElement = function (element, e) {
 	return (mousex >= left && mousex <= right &&
 		mousey >= top && mousey <= bottom);
 }
+
+/**
+ * Attempts to return the text as it would be rendered, with the line breaks
+ * sorted out nicely. Unfinished.
+ */
+dojo.html.renderedTextContent = function (node) {
+	var result = "";
+	if (node == null) { return result; }
+	for (var i = 0; i < node.childNodes.length; i++) {
+		switch (node.childNodes[i].nodeType) {
+			case 1: // ELEMENT_NODE
+			case 5: // ENTITY_REFERENCE_NODE
+				switch (dojo.html.getStyle(node.childNodes[i], "display")) {
+					case "block": case "list-item": case "run-in":
+					case "table": case "table-row-group": case "table-header-group":
+					case "table-footer-group": case "table-row": case "table-column-group":
+					case "table-column": case "table-cell": case "table-caption":
+						// TODO: this shouldn't insert double spaces on aligning blocks
+						result += "\n";
+						result += dojo.html.renderedTextContent(node.childNodes[i]);
+						result += "\n";
+						break;
+					
+					case "none": break;
+					
+					default:
+						result += dojo.html.renderedTextContent(node.childNodes[i]);
+						break;
+				}
+				break;
+			case 3: // TEXT_NODE
+			case 2: // ATTRIBUTE_NODE
+			case 4: // CDATA_SECTION_NODE
+				var text = node.childNodes[i].nodeValue;
+				switch (dojo.style.getStyle(node, "text-transform")) {
+					case "capitalize": text = dojo.text.capitalize(text); break;
+					case "uppercase": text = text.toUpperCase(); break;
+					case "lowercase": text = text.toLowerCase(); break;
+					default: break; // leave as is
+				}
+				// TODO: implement
+				switch (dojo.style.getStyle(node, "text-transform")) {
+					case "nowrap": break;
+					case "pre-wrap": break;
+					case "pre-line": break;
+					case "pre": break; // leave as is
+					default:
+						// remove whitespace and collapse first space
+						text = text.replace(/\s+/, " ");
+						if (/\s$/.test(result)) { text.replace(/^\s/, ""); }
+						break;
+				}
+				result += text;
+				break;
+			default:
+				break;
+		}
+	}
+	return result;
+}
