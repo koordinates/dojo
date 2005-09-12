@@ -39,6 +39,9 @@ function test_math_round () {
 }
 
 function test_math_sd () {
+	// see: http://en.wikipedia.org/wiki/Standard_deviation
+	var data = [5, 6, 8, 9];
+	jum.assertEquals("test1", 1.5811, dojo.math.round(dojo.math.sd(data), 4));
 }
 
 function test_math_variance () {
