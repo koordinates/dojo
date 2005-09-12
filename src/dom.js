@@ -63,7 +63,7 @@ dojo.dom.getTagName = function (node){
 
 dojo.dom.getUniqueId = function (){
 	do {
-		var id = "dj_unique_" + ++arguments.callee._idIncrement;
+		var id = "dj_unique_" + (++arguments.callee._idIncrement);
 	} while(document.getElementById(id));
 	return id;
 }
