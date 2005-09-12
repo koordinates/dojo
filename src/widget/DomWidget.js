@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.DomWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.text.*");
 dojo.require("dojo.widget.Widget");
+dojo.require("dojo.dom");
 dojo.require("dojo.xml.*");
 dojo.require("dojo.math.curves");
 dojo.require("dojo.animation.Animation");
@@ -88,7 +89,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 	//	b.) the nodes that are subject to interrogation (use xpath instead?)
 	//	c.) how expensive event assignment is (less eval(), more connect())
 	// var start = new Date();
-	var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
+	var elementNodeType = dojo.dom.ELEMENT_NODE;
 
 	if(!rootNode){ 
 		rootNode = targetObj.domNode;
@@ -218,7 +219,7 @@ dojo.widget.getDojoEventsFromStr = function(str){
 
 dojo.widget.buildAndAttachTemplate = function(obj, templatePath, templateCssPath, templateString, targetObj) {
 	this.buildFromTemplate(obj, templatePath, templateCssPath, templateString);
-	var node = dojo.xml.domUtil.createNodesFromText(obj.templateString, true)[0];
+	var node = dojo.dom.createNodesFromText(obj.templateString, true)[0];
 	this.attachTemplateNodes(node, targetObj||obj, obj, dojo.widget.getDojoEventsFromStr(templateString));
 	return node;
 }
@@ -257,7 +258,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			if(!ref){
 				cn.appendChild(widget.domNode);
 			}else{
-				dojo.xml.domUtil[pos](widget.domNode, ref, insertIndex);
+				dojo.dom[pos](widget.domNode, ref, insertIndex);
 			}
 			// dj_debug(this.widgetId, "added", widget.widgetId, "as a child");
 			this.children.push(widget);
@@ -300,7 +301,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		}
 
 		if(this.isContainer){
-			var elementNodeType = dojo.xml.domUtil.nodeTypes.ELEMENT_NODE;
+			var elementNodeType = dojo.dom.ELEMENT_NODE;
 			// FIXME: this is borken!!!
 
 			var fragParser = dojo.widget.getParser();
