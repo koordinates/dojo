@@ -34,8 +34,8 @@ function test_lang_extendPrototype(){
 		},
 		bar: "bar"
 	};
-	function dest(){}
-	dojo.lang.extend(dest.prototype, src);
+	function dest(){};
+	dojo.lang.extendPrototype(dest.prototype, src);
 	var test = new dest();
 	jum.assertEquals("30", "function", typeof test["foo"]);
 	jum.assertEquals("31", "string", typeof test["bar"]);
