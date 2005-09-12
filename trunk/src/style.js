@@ -125,7 +125,7 @@ dojo.style.insertCssFile = function insertCssFile (URI, doc, checkDuplicates){
 	head.appendChild(file);
 }
 
-dojo.style.getBackgroundColor = function(node) {
+dojo.style.getBackgroundColor = function getBackgroundColor (node) {
 	var color;
 	do{
 		color = dojo.style.getStyle(node, "background-color");
