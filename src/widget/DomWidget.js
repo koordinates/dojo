@@ -258,7 +258,9 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			if(!ref){
 				cn.appendChild(widget.domNode);
 			}else{
-				dojo.dom[pos](widget.domNode, ref, insertIndex);
+				// FIXME: was this meant to be the (ugly hack) way to support insert @ index?
+				//dojo.dom[pos](widget.domNode, ref, insertIndex);
+				dojo.dom.insertAtPosition(widget.domNode, ref, pos);
 			}
 			// dj_debug(this.widgetId, "added", widget.widgetId, "as a child");
 			this.children.push(widget);
