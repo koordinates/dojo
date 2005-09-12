@@ -6,8 +6,8 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.graphics.color");
 
-dojo.lang.extend(dojo.html, dojo.dom);
-dojo.lang.extend(dojo.html, dojo.style);
+dojo.lang.mixin(dojo.html, dojo.dom);
+dojo.lang.mixin(dojo.html, dojo.style);
 
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
