@@ -16,7 +16,7 @@ dojo.style.getInnerWidth = function getInnerWidth (node){
 	dj_unimplemented("dojo.xml.htmlUtil.getOuterWidth");
 }*/
 
-dojo.style.getInnerHeight = function getInnerHeight (node){
+dojo.style.getInnerHeight = function (node){
 	return node.offsetHeight; // FIXME: does this work?
 }
 
@@ -24,7 +24,7 @@ dojo.style.getInnerHeight = function getInnerHeight (node){
 	dj_unimplemented("dojo.xml.htmlUtil.getOuterHeight");
 }*/
 
-dojo.style.getTotalOffset = function getTotalOffset (node, type){
+dojo.style.getTotalOffset = function (node, type){
 	var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
 	var alt = (type=="top") ? "y" : "x";
 	var ret = 0;
@@ -44,13 +44,13 @@ dojo.style.getTotalOffset = function getTotalOffset (node, type){
 	return ret;
 }
 
-dojo.style.totalOffsetLeft = function totalOffsetLeft (node){
+dojo.style.totalOffsetLeft = function (node){
 	return dojo.style.getTotalOffset(node, "left");
 }
 
 dojo.style.getAbsoluteX = dojo.style.totalOffsetLeft;
 
-dojo.style.totalOffsetTop = function totalOffsetTop (node){
+dojo.style.totalOffsetTop = function (node){
 	return dojo.style.getTotalOffset(node, "top");
 }
 
@@ -63,7 +63,7 @@ dojo.style.styleSheet = null;
 // it assumes that you know the index of the cssRule that you want to add 
 // or remove, making it less than useful.  So we need something that can 
 // search for the selector that you you want to remove.
-dojo.style.insertCssRule = function insertCssRule (selector, declaration, index){
+dojo.style.insertCssRule = function (selector, declaration, index){
 	if(dojo.render.html.ie){
 		if(!dojo.style.styleSheet){
 			// FIXME: create a new style sheet document
@@ -84,7 +84,7 @@ dojo.style.insertCssRule = function insertCssRule (selector, declaration, index)
 	}
 }
 
-dojo.style.removeCssRule = function removeCssRule (index){
+dojo.style.removeCssRule = function (index){
 	if(!dojo.style.styleSheet){
 		dj_debug("no stylesheet defined for removing rules");
 		return false;
@@ -103,7 +103,7 @@ dojo.style.removeCssRule = function removeCssRule (index){
 	return true;
 }
 
-dojo.style.insertCssFile = function insertCssFile (URI, doc, checkDuplicates){
+dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
 	if(!URI) { return; }
 	if(!doc){ doc = document; }
 	// Safari doesn't have this property, but it doesn't support
@@ -125,7 +125,7 @@ dojo.style.insertCssFile = function insertCssFile (URI, doc, checkDuplicates){
 	head.appendChild(file);
 }
 
-dojo.style.getBackgroundColor = function getBackgroundColor (node) {
+dojo.style.getBackgroundColor = function (node) {
 	var color;
 	do{
 		color = dojo.style.getStyle(node, "background-color");
@@ -143,7 +143,7 @@ dojo.style.getBackgroundColor = function getBackgroundColor (node) {
 	return color;
 }
 
-dojo.style.getStyle = function getStyle (element, cssSelector) {
+dojo.style.getStyle = function (element, cssSelector) {
 	var value = undefined, camelCased = dojo.style.toCamelCase(cssSelector);
 	value = element.style[camelCased]; // dom-ish
 	if(!value) {
@@ -159,7 +159,7 @@ dojo.style.getStyle = function getStyle (element, cssSelector) {
 	return value;
 }
 
-dojo.style.toCamelCase = function toCamelCase (selector) {
+dojo.style.toCamelCase = function (selector) {
 	var arr = selector.split('-'), cc = arr[0];
 	for(var i = 1; i < arr.length; i++) {
 		cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
@@ -167,6 +167,6 @@ dojo.style.toCamelCase = function toCamelCase (selector) {
 	return cc;		
 }
 
-dojo.style.toSelectorCase = function toSelectorCase (selector) {
+dojo.style.toSelectorCase = function (selector) {
 	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
 }

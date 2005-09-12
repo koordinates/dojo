@@ -14,7 +14,7 @@ dojo.lang.extend(dojo.html, dojo.style);
 // Need to investigate for KHTML and Opera
 
 	
-dojo.html.clearSelection = function clearSelection (){
+dojo.html.clearSelection = function (){
 	try{
 		if(window.getSelection){
 			var selObj = window.getSelection();
@@ -27,7 +27,7 @@ dojo.html.clearSelection = function clearSelection (){
 
 dojo.html._selectionDisabled = false;
 
-dojo.html.disableSelection = function disableSelection (){
+dojo.html.disableSelection = function (){
 	if(!dojo.html._selectionDisabled){
 		var db = document.body;
 		if(dojo.render.html.moz){
@@ -41,7 +41,7 @@ dojo.html.disableSelection = function disableSelection (){
 	dojo.html._selectionDisabled = true;
 }
 
-dojo.html.enableSelection = function enableSelection (){
+dojo.html.enableSelection = function (){
 	if(dojo.html._selectionDisabled){
 		var db = document.body;
 		if(dojo.render.html.moz){
@@ -55,7 +55,7 @@ dojo.html.enableSelection = function enableSelection (){
 	dojo.html._selectionDisabled = false;
 }
 
-dojo.html.getEventTarget = function getEventTarget (evt){
+dojo.html.getEventTarget = function (evt){
 	if((window["event"])&&(window.event["srcElement"])){
 		return window.event.srcElement;
 	}else if((evt)&&(evt.target)){
@@ -63,15 +63,15 @@ dojo.html.getEventTarget = function getEventTarget (evt){
 	}
 }
 
-dojo.html.getScrollTop = function getScrollTop () {
+dojo.html.getScrollTop = function () {
 	return document.documentElement.scrollTop || document.body.scrollTop || 0;
 }
 
-dojo.html.getScrollLeft = function getScrollLeft () {
+dojo.html.getScrollLeft = function () {
 	return document.documentElement.scrollLeft || document.body.scrollLeft || 0;
 }
 
-dojo.html.getParentOfType = function getParentOfType (node, type){
+dojo.html.getParentOfType = function (node, type){
 	var parent = node;
 	type = type.toLowerCase();
 	while(parent.nodeName.toLowerCase()!=type){
@@ -85,7 +85,7 @@ dojo.html.getParentOfType = function getParentOfType (node, type){
 
 // RAR: this function comes from nwidgets and is more-or-less unmodified.
 // We should probably look ant Burst and f(m)'s equivalents
-dojo.html.getAttribute = function getAttribute (node, attr){
+dojo.html.getAttribute = function (node, attr){
 	// FIXME: need to add support for attr-specific accessors
 	if((!node)||(!node.getAttribute)){
 		// if(attr !== 'nwType'){
@@ -117,7 +117,7 @@ dojo.html.getAttribute = function getAttribute (node, attr){
  *	Determines whether or not the specified node carries a value for the
  *	attribute in question.
  */
-dojo.html.hasAttribute = function hasAttribute (node, attr){
+dojo.html.hasAttribute = function (node, attr){
 	var v = this.getAttribute(node, attr);
 	return v ? true : false;
 }
@@ -127,7 +127,7 @@ dojo.html.hasAttribute = function hasAttribute (node, attr){
  * directly to the node in question. Returns an empty string if no class attribute
  * is found;
  */
-dojo.html.getClass = function(node){
+dojo.html.getClass = function (node) {
 	if(node.className){
 		return node.className;
 	}else if(dojo.html.hasAttribute(node, "class")){
@@ -141,7 +141,7 @@ dojo.html.getClass = function(node){
  * class list currently applied to the node. Does not cover cascaded
  * styles, only classes directly applied to the node.
  */
-dojo.html.hasClass = function hasClass (node, classname){
+dojo.html.hasClass = function (node, classname){
 	var classes = dojo.html.getClass(node).split(/\s+/g);
 	for(var x=0; x<classes.length; x++){
 		if(classname == classes[x]){ return true; }
@@ -155,7 +155,7 @@ dojo.html.hasClass = function hasClass (node, classname){
  * when style cascading is calculated for the node. Returns true or
  * false; indicating success or failure of the operation, respectively.
  */
-dojo.html.prependClass = function prependClass (node, classStr){
+dojo.html.prependClass = function (node, classStr){
 	if(!node){ return null; }
 	if(dojo.html.hasAttribute(node,"class")||node.className){
 		classStr += " " + (node.className||dojo.html.getAttribute(node, "class"));
@@ -167,7 +167,7 @@ dojo.html.prependClass = function prependClass (node, classStr){
  * Adds the specified class to the end of the class list on the
  *	passed &node;. Returns &true; or &false; indicating success or failure.
  */
-dojo.html.addClass = function addClass (node, classStr){
+dojo.html.addClass = function (node, classStr){
 	if(!node){ return null; }
 	if(dojo.html.hasAttribute(node,"class")||node.className){
 		classStr = (node.className||dojo.html.getAttribute(node, "class")) + " " + classStr;
@@ -180,7 +180,7 @@ dojo.html.addClass = function addClass (node, classStr){
  *	the list given in the 2nd argument. Returns true or false
  *	indicating success or failure.
  */
-dojo.html.setClass = function setClass (node, classStr){
+dojo.html.setClass = function (node, classStr){
 	if(!node){ return false; }
 	var cs = new String(classStr);
 	try{
@@ -202,7 +202,7 @@ dojo.html.setClass = function setClass (node, classStr){
  * Removes the className from the node;. Returns
  * true or false indicating success or failure.
  */ 
-dojo.html.removeClass = function removeClass (node, classStr){
+dojo.html.removeClass = function (node, classStr){
 	if(!node){ return false; }
 	var classStr = dojo.text.trim(new String(classStr));
 
@@ -234,7 +234,7 @@ dojo.html.classMatchType = {
  * Returns an array of nodes for the given classStr, children of a
  * parent, and optionally of a certain nodeType
  */
-dojo.html.getElementsByClass = function getElementsByClass (classStr, parent, nodeType, classMatchType) {
+dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchType) {
 	if(!parent){ parent = document; }
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
@@ -330,7 +330,7 @@ dojo.html.getElementsByClass = function getElementsByClass (classStr, parent, no
  * @return     The directions, NORTH or SOUTH and EAST or WEST. These
  *             are properties of the function.
  */
-dojo.html.gravity = function gravity (node, e){
+dojo.html.gravity = function (node, e){
 	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
 	var mousey = e.pageY || e.clientY + document.body.scrollTop;
 	
@@ -350,7 +350,7 @@ dojo.html.gravity.SOUTH = 1 << 1;
 dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 	
-dojo.html.overElement = function overElement (element, e) {
+dojo.html.overElement = function (element, e) {
 	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
 	var mousey = e.pageY || e.clientY + document.body.scrollTop;
 	

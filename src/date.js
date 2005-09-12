@@ -6,14 +6,14 @@ dojo.provide("dojo.date");
  *
  * @param string The date/time formted as an ISO 8601 string
  */
-dojo.date.setIso8601 = function setIso8601 (dateObject, string) {
+dojo.date.setIso8601 = function (dateObject, string) {
 	var comps = string.split('T');
 	dojo.date.setIso8601Date(dateObject, comps[0]);
 	if (comps.length == 2) { dojo.date.setIso8601Time(dateObject, comps[1]); }
 	return dateObject;
 }
 
-dojo.date.fromIso8601 = function fromIso8601 (string) {
+dojo.date.fromIso8601 = function (string) {
 	return dojo.date.setIso8601(new Date(0), string);
 }
 
@@ -23,7 +23,7 @@ dojo.date.fromIso8601 = function fromIso8601 (string) {
  *
  * @param string The date formted as an ISO 8601 string
  */
-dojo.date.setIso8601Date = function setIso8601Date (dateObject, string) {
+dojo.date.setIso8601Date = function (dateObject, string) {
 	var regexp = "^([0-9]{4})((-?([0-9]{2})(-?([0-9]{2}))?)|" +
 			"(-?([0-9]{3}))|(-?W([0-9]{2})(-?([1-7]))?))?$";
 	var d = string.match(new RegExp(regexp));
@@ -54,7 +54,7 @@ dojo.date.setIso8601Date = function setIso8601Date (dateObject, string) {
 	return dateObject;
 }
 
-dojo.date.fromIso8601Date = function fromIso8601Date (string) {
+dojo.date.fromIso8601Date = function (string) {
 	return dojo.date.setIso8601Date(new Date(0), string);
 }
 
@@ -64,7 +64,7 @@ dojo.date.fromIso8601Date = function fromIso8601Date (string) {
  *
  * @param string The time formted as an ISO 8601 string
  */
-dojo.date.setIso8601Time = function setIso8601Time (dateObject, string) {
+dojo.date.setIso8601Time = function (dateObject, string) {
 	// first strip timezone info from the end
 	var timezone = "Z|(([-+])([0-9]{2})(:?([0-9]{2}))?)$";
 	var d = string.match(new RegExp(timezone));
@@ -96,7 +96,7 @@ dojo.date.setIso8601Time = function setIso8601Time (dateObject, string) {
 	return dateObject;
 }
 
-dojo.date.fromIso8601Time = function fromIso8601Time (string) {
+dojo.date.fromIso8601Time = function (string) {
 	return dojo.date.setIso8601Time(new Date(0), string);
 }
 
@@ -105,7 +105,7 @@ dojo.date.fromIso8601Time = function fromIso8601Time (string) {
  *
  * @param date The day of year
  */
-dojo.date.setDayOfYear = function setDayOfYear (dateObject, dayofyear) {
+dojo.date.setDayOfYear = function (dateObject, dayofyear) {
 	dateObject.setMonth(0);
 	dateObject.setDate(dayofyear);
 }
@@ -115,7 +115,7 @@ dojo.date.setDayOfYear = function setDayOfYear (dateObject, dayofyear) {
  *
  * @return The day of the year
  */
-dojo.date.getDayOfYear = function getDayOfYear (dateObject) {
+dojo.date.getDayOfYear = function (dateObject) {
 	var tmpdate = new Date(0);
 	tmpdate.setMonth(dateObject.getMonth());
 	tmpdate.setDate(dateObject.getDate());
@@ -131,7 +131,7 @@ dojo.date.getDayOfYear = function getDayOfYear (dateObject) {
  * @param year  The year
  * @return The number of days in the given month
  */
-dojo.date.daysInMonth = function daysInMonth (month, year) {
+dojo.date.daysInMonth = function (month, year) {
 	/*
 	 * Leap years are years with an additional day YYYY-02-29, where the year
 	 * number is a multiple of four with the following exception: If a year
