@@ -52,12 +52,12 @@ function test_alg_tryThese(){
 
 function test_alg_map(){
 	var foo = 0;
-	jum.alg.map([1, 2, 3], dj_global, function(arg){
+	dojo.alg.map([1, 2, 3], dj_global, function(arg){
 		foo+=arg;
 	});
 	jum.assertEquals("60", 6, foo);
 	foo = 0;
-	jum.alg.map([1, 2, 3, 4], function(arg){
+	dojo.alg.map([1, 2, 3, 4], function(arg){
 		foo+=arg;
 	});
 	jum.assertEquals("61", 10, foo);
@@ -65,12 +65,12 @@ function test_alg_map(){
 
 function test_alg_forEach(){
 	var foo = 0;
-	jum.alg.forEach([1, 2, 3], function(arg){
+	dojo.alg.forEach([1, 2, 3], function(arg){
 		foo+=arg;
 	});
 	jum.assertEquals("70", 6, foo);
 
 	var tarr = [1, 2, 3];
-	jum.alg.forEach(tarr, function(arg){ tarr.push(arg); }, true);
+	dojo.alg.forEach(tarr, function(arg){ tarr.push(arg); }, true);
 	jum.assertEquals("71", 6, tarr.length);
 }
