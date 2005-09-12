@@ -77,7 +77,7 @@ Some decisions that we have made in our early efforts on this:
 
 - Support for the depth of relationships between property sets and components,
   and the ways properties are defined, is currently limited to enough variation
-	to get this working.
+  to get this working.
 - We have generally been opposed to trying to reinvent, or even reimplement, a 
   cascade mechanism for properties as sophisticated and complex as that found in
   CSS.  We are currently 
@@ -86,7 +86,7 @@ Some decisions that we have made in our early efforts on this:
   something that applies to all components is looked at first, followed by 
   property sets that apply to all components of a specific type or class, and
   finally followed by property sets specific to a single instance of a 
-	component.  If more than one of the previous declarations is duplicated, then 
+  component. If more than one of the previous declarations is duplicated, then 
   whatever is read last is what is applied.
 	
 Examples
@@ -228,7 +228,7 @@ document, but we'll revisit this at a late date.
 .. FIXME: CSS?
 
 A more interesting case is either a nested property set, or a property set that 
-simply points to an external property set.  For example,
+simply points to an external property set.  For example,::
 
 	<dojo:grid propertyProviderList="#propsetFoo" />
 	<dojo:propertySet id="propsetFoo"
@@ -255,4 +255,5 @@ type, but its need is greater.
 Precedence Rules
 ----------------
 
+this is not complete
 ..FIXME

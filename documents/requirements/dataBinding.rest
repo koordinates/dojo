@@ -126,14 +126,14 @@ JavaScript Provider format
 
 The example above, but provided as a JavaScript object.::
 
-dojo.dataModel.datasetFoo = {
-	label: name,
-	gridRowItem : [
-		gridCellItem : [
-			foo, bar, baz
-		],
-		gridCellItem : [
-			foo2, bar2, baz2
+	dojo.dataModel.datasetFoo = {
+		label: name,
+		gridRowItem : [
+			gridCellItem : [
+				foo, bar, baz
+			],
+			gridCellItem : [
+				foo2, bar2, baz2
+			]
 		]
-	]
-}
+	}

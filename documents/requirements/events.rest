@@ -137,10 +137,13 @@ In the above cases, scope is by default the widget instance.
 external property set
 *********************
 
-	<dojo:propertySet match="dojo.button">
-		<dojo:event type="onclick" target="" action="foo"/>
 .. FIXME: review more recent notes on this to see if this makes sense still...
 .. what's the difference between target and action... need to look at this again
+
+external::
+
+	<dojo:propertySet match="dojo.button">
+		<dojo:event type="onclick" target="" action="foo"/>
 		<dojo:connect>
 			<dojo:source object="" function="" name="" />
 			<dojo:target object="" function="" name="" />
@@ -150,7 +153,7 @@ external property set
 child propsets in a widget/component declaration
 ************************************************
 
-from within a dojoml document:::
+from within a dojoml document::
 
 	<dojo:button label="huzzah" onclick="foo">
 		<dojo:propertySet>

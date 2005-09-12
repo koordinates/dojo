@@ -384,7 +384,7 @@ interpretation of AOP found in AspectJ.
 
 Examples of each follow:
 
-  - *before*::
+*before*::
     
     obj1 = {
         func1: function(){
@@ -398,7 +398,7 @@ Examples of each follow:
     
     namespace.addAdvice("before", obj1, "func1", obj1, "func2");
 
-  - *before-around*::
+*before-around*::
     
     obj1 = {
         func1: function(arg1, arg2){
@@ -426,7 +426,7 @@ Examples of each follow:
     //  "func1, arg1: 1, arg2: 2"
     // in that order.
 
-  - *around*::
+*around*::
     
     obj1 = {
         counter: 0,
@@ -452,7 +452,7 @@ Examples of each follow:
     //  "return is: 2"
 
 
-  - *after*::
+*after*::
     
     obj1 = {
         func1: function(){
@@ -466,7 +466,7 @@ Examples of each follow:
     
     namespace.addAdvice("after", obj1, "func1", obj1, "func2");
 
-  - *after-around*::
+*after-around*::
     
     obj1 = {
         func1: function(arg1, arg2){

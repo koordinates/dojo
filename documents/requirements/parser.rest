@@ -136,22 +136,22 @@ be described as elements and attributes, and because there is no requirement for
 uniqueness, every nested level has the somewhat confusing obfuscation of 
 everything being an array.
 
-For example, the following dojoml fragment:
+For example, the following dojoml fragment::
 
-<dojo:button dataProvider="#buttonDataProvider">
-	<dojo:image xlink:href="test.png">
-</dojo:button>
+	<dojo:button dataProvider="#buttonDataProvider">
+		<dojo:image xlink:href="test.png">
+	</dojo:button>
 
-would be translated to:
+would be translated to::
 
-fragmentObject = {
-	dojo:button[0]:{
-		dataProvider[0]:"#buttonDataProvider",
-		dojo:image[0]: {
-			xlink:href[0]:"test.png"
+	fragmentObject = {
+		dojo:button[0]:{
+			dataProvider[0]:"#buttonDataProvider",
+			dojo:image[0]: {
+				xlink:href[0]:"test.png"
+			}
 		}
 	}
-}
 
 The primary reason for doing this step is that it seems to be more performant 
 to parse all of the xml to JavaScript once, rather than making multiple passes 
