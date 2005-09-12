@@ -149,37 +149,6 @@ dojo.dom.removeNode = function removeNode (node) {
 	if (node && node.parentNode) { node.parentNode.removeChild(node); }
 }
 
-// TODO: move??
-/*dojo.dom.getStyle = function getStyle (element, cssSelector) {
-	var value = undefined, camelCased = dojo.dom.toCamelCase(cssSelector);
-	value = element.style[camelCased]; // dom-ish
-	if(!value) {
-		if(document.defaultView) { // gecko
-			value = document.defaultView.getComputedStyle(element, "")
-				.getPropertyValue(cssSelector);
-		} else if(element.currentStyle) { // ie
-			value = element.currentStyle[camelCased];
-		} else if(element.style.getPropertyValue) { // dom spec
-			value = element.style.getPropertyValue(cssSelector);
-		}
-	}
-	return value;
-}
-
-// TODO: move??
-dojo.dom.toCamelCase = function toCamelCase (selector) {
-	var arr = selector.split('-'), cc = arr[0];
-	for(var i = 1; i < arr.length; i++) {
-		cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
-	}
-	return cc;		
-}
-
-// TODO: move??
-dojo.dom.toSelectorCase = function toSelectorCase (selector) {
-	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
-}*/
-
 dojo.dom.getAncestors = function getAncestors (node){
 	var ancestors = [];
 	while(node){
