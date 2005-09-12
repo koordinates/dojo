@@ -694,12 +694,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		// line height is squashed for iframes
 		if (this.iframe) { this.domNode.style.lineHeight = null; }
 		
-		if (save) { this.domNode.innerHTML = this.editNode.innerHTML; }
-		else {
-			while (this.domNode.hasChildNodes()) {
+		dojo.event.browser.clean(this.domNode);
+		if(save){
+			this.domNode.innerHTML = this.editNode.innerHTML; 
+		}else{
+			while(this.domNode.hasChildNodes()){
 				this.domNode.removeChild(this.domNode.firstChild);
 			}
-			while (this.savedContent.hasChildNodes()) {
+			while(this.savedContent.hasChildNodes()){
 				this.domNode.appendChild(this.savedContent.firstChild);
 			}
 		}
