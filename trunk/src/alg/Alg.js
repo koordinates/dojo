@@ -46,6 +46,10 @@ dojo.alg.forEach = function(arr, unary_func, fix_length){
 dojo.alg.for_each = dojo.alg.forEach; // burst compat
 
 dojo.alg.map = function(arr, obj, unary_func){
+	if((typeof obj == "function")&&(!unary_func)){
+		unary_func = obj;
+		obj = dj_global;
+	}
 	for(var i=0;i<arr.length;++i){
 		unary_func.call(obj, arr[i]);
 	}
