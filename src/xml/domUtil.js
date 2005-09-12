@@ -77,7 +77,7 @@ dojo.xml.domUtil = new function(){
 	this.createDocumentFromText = function() {dojo.dom.createDocumentFromText.apply(dojo.dom, arguments);}
 
 	if(dojo.render.html.capable || dojo.render.svg.capable) {
-		this.createNodesFromText = function(txt, wrap){dojo.dom.createsNodesFromText.apply(dojo.dom, arguments);}
+		this.createNodesFromText = function(txt, wrap){dojo.dom.createNodesFromText.apply(dojo.dom, arguments);}
 	}
 
 	this.extractRGB = function(color) { return dojo.graphics.color.extractRGB(color); }
