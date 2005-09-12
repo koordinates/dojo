@@ -44,10 +44,10 @@ dojo.xml.Parse = function(){
 		var nodes = documentFragment.childNodes;
 		for(var childNode in nodes){
 			switch(nodes[childNode].nodeType){
-				case  dojo.dom.nodeTypes.ELEMENT_NODE: // element nodes, call this function recursively
+				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
 					parsedFragment[tagName].push(this.parseElement(nodes[childNode]));
 					break;
-				case  dojo.dom.nodeTypes.TEXT_NODE: // if a single text node is the child, treat it as an attribute
+				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 					if(nodes.length == 1){
 						if(!parsedFragment[documentFragment.tagName]){
 							parsedFragment[tagName] = [];
