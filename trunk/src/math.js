@@ -1,9 +1,9 @@
 dojo.provide("dojo.math");
 
-dojo.math.degToRad = function degToRad (x) { return (x*Math.PI) / 180; }
-dojo.math.radToDeg = function radToDeg (x) { return (x*180) / Math.PI; }
+dojo.math.degToRad = function (x) { return (x*Math.PI) / 180; }
+dojo.math.radToDeg = function (x) { return (x*180) / Math.PI; }
 
-dojo.math.factorial = function factorial (n) {
+dojo.math.factorial = function (n) {
 	if(n<1){ return 0; }
 	var retVal = 1;
 	for(var i=1;i<=n;i++){ retVal *= i; }
@@ -11,18 +11,18 @@ dojo.math.factorial = function factorial (n) {
 }
 
 //The number of ways of obtaining an ordered subset of k elements from a set of n elements
-dojo.math.permutations = function permutations (n,k) {
+dojo.math.permutations = function (n,k) {
 	if(n==0 || k==0) return 1;
 	return (dojo.math.factorial(n) / dojo.math.factorial(n-k));
 }
 
 //The number of ways of picking n unordered outcomes from r possibilities
-dojo.math.combinations = function combinations (n,r) {
+dojo.math.combinations = function (n,r) {
 	if(n==0 || r==0) return 1;
 	return (dojo.math.factorial(n) / (dojo.math.factorial(n-r) * dojo.math.factorial(r)));
 }
 
-dojo.math.bernstein = function bernstein (t,n,i) {
+dojo.math.bernstein = function (t,n,i) {
 	return (dojo.math.combinations(n,i) * Math.pow(t,i) * Math.pow(1-t,n-i));
 }
 
@@ -32,7 +32,7 @@ dojo.math.bernstein = function bernstein (t,n,i) {
  *
  * @return A random number from a Gaussian distribution
  */
-dojo.math.gaussianRandom = function gaussianRandom () {
+dojo.math.gaussianRandom = function () {
 	var k = 2;
 	do {
 		var i = 2 * Math.random() - 1;
@@ -48,7 +48,7 @@ dojo.math.gaussianRandom = function gaussianRandom () {
  *
  * @return The mean of the numbers in the Array
  */
-dojo.math.mean = function mean () {
+dojo.math.mean = function () {
 	var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
 	var mean = 0;
 	for (var i = 0; i < array.length; i++) { mean += array[i]; }
@@ -64,7 +64,7 @@ dojo.math.mean = function mean () {
  * @return The rounded number
  */
 // TODO: add support for significant figures
-dojo.math.round = function round (number, places) {
+dojo.math.round = function (number, places) {
 	if (!places) { var shift = 1; }
 	else { var shift = Math.pow(10, places); }
 	return Math.round(number * shift) / shift;
@@ -75,7 +75,7 @@ dojo.math.round = function round (number, places) {
  *
  * @return The standard deviation of the numbers
  */
-dojo.math.sd = function sd () {
+dojo.math.sd = function () {
 	var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
 	return Math.sqrt(dojo.math.variance(array));
 }
@@ -85,7 +85,7 @@ dojo.math.sd = function sd () {
  *
  * @return The variance of the numbers
  */
-dojo.math.variance = function variance () {
+dojo.math.variance = function () {
 	var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
 	var mean = 0, squares = 0;
 	for (var i = 0; i < array.length; i++) {

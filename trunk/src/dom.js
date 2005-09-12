@@ -17,7 +17,7 @@ dojo.dom.NOTATION_NODE                 = 12;
 	
 dojo.dom.dojoml = "http://www.dojotoolkit.org/2004/dojoml";
 	
-dojo.dom.getTagName = function getTagName (node){
+dojo.dom.getTagName = function (node){
 	var tagName = node.tagName;
 	if(tagName.substr(0,5).toLowerCase()!="dojo:"){
 		
@@ -61,7 +61,7 @@ dojo.dom.getTagName = function getTagName (node){
 	return tagName.toLowerCase();
 }
 
-dojo.dom.getUniqueId = function getUniqueId (){
+dojo.dom.getUniqueId = function (){
 	do {
 		var id = "dj_unique_" + ++arguments.callee._idIncrement;
 	} while(document.getElementById(id));
@@ -69,7 +69,7 @@ dojo.dom.getUniqueId = function getUniqueId (){
 }
 dojo.dom.getUniqueId._idIncrement = 0;
 
-dojo.dom.getFirstChildElement = function getFirstChildElement (parentNode) {
+dojo.dom.getFirstChildElement = function (parentNode) {
 	var node = parentNode.firstChild;
 	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
 		node = node.nextSibling;
@@ -77,7 +77,7 @@ dojo.dom.getFirstChildElement = function getFirstChildElement (parentNode) {
 	return node;
 }
 
-dojo.dom.getLastChildElement = function getLastChildElement (parentNode) {
+dojo.dom.getLastChildElement = function (parentNode) {
 	var node = parentNode.lastChild;
 	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
 		node = node.previousSibling;
@@ -85,7 +85,7 @@ dojo.dom.getLastChildElement = function getLastChildElement (parentNode) {
 	return node;
 }
 
-dojo.dom.getNextSiblingElement = function getNextSiblingElement (node) {
+dojo.dom.getNextSiblingElement = function (node) {
 	if(!node) { return null; }
 	do {
 		node = node.nextSibling;
@@ -93,7 +93,7 @@ dojo.dom.getNextSiblingElement = function getNextSiblingElement (node) {
 	return node;
 }
 
-dojo.dom.getPreviousSiblingElement = function getPreviousSiblingElement (node) {
+dojo.dom.getPreviousSiblingElement = function (node) {
 	if(!node) { return null; }
 	do {
 		node = node.previousSibling;
@@ -110,7 +110,7 @@ dojo.dom.getPreviousSiblingElement = function getPreviousSiblingElement (node) {
 	}
 }*/
 
-dojo.dom.moveChildren = function moveChildren (srcNode, destNode, trim) {
+dojo.dom.moveChildren = function (srcNode, destNode, trim) {
 	var count = 0;
 	if(trim) {
 		while(srcNode.hasChildNodes() &&
@@ -129,27 +129,27 @@ dojo.dom.moveChildren = function moveChildren (srcNode, destNode, trim) {
 	return count;
 }
 
-dojo.dom.copyChildren = function copyChildren (srcNode, destNode, trim) {
+dojo.dom.copyChildren = function (srcNode, destNode, trim) {
 	var clonedNode = srcNode.cloneNode(true);
 	return this.moveChildren(clonedNode, destNode, trim);
 }
 
-dojo.dom.removeChildren = function removeChildren (node) {
+dojo.dom.removeChildren = function (node) {
 	var count = node.childNodes.length;
 	while(node.hasChildNodes()) { node.removeChild(node.firstChild); }
 	return count;
 }
 
-dojo.dom.replaceChildren = function replaceChildren (node, newChild) {
+dojo.dom.replaceChildren = function (node, newChild) {
 	dojo.dom.removeChildren(node);
 	node.appendChild(newChild);
 }
 
-dojo.dom.removeNode = function removeNode (node) {
+dojo.dom.removeNode = function (node) {
 	if (node && node.parentNode) { node.parentNode.removeChild(node); }
 }
 
-dojo.dom.getAncestors = function getAncestors (node){
+dojo.dom.getAncestors = function (node){
 	var ancestors = [];
 	while(node){
 		ancestors.push(node);
@@ -158,7 +158,7 @@ dojo.dom.getAncestors = function getAncestors (node){
 	return ancestors;
 }
 
-dojo.dom.isDescendantOf = function isDescendantOf (node, ancestor, noSame) {
+dojo.dom.isDescendantOf = function (node, ancestor, noSame) {
 	if(noSame && node) { node = node.parentNode; }
 	while(node) {
 		if(node == ancestor) { return true; }
@@ -168,7 +168,7 @@ dojo.dom.isDescendantOf = function isDescendantOf (node, ancestor, noSame) {
 }
 
 // FIXME: this won't work in Safari
-dojo.dom.createDocumentFromText = function createDocumentFromText (str, mimetype) {
+dojo.dom.createDocumentFromText = function (str, mimetype) {
 	if(!mimetype) { mimetype = "text/xml"; }
 	if(typeof DOMParser != "undefined") {
 		var parser = new DOMParser();
@@ -218,7 +218,7 @@ dojo.dom.createDocumentFromText = function createDocumentFromText (str, mimetype
 
 // FIXME: how do we account for mixed environments?
 if(dojo.render.html.capable) {
-	dojo.dom.createNodesFromText = function createNodesFromText (txt, wrap){
+	dojo.dom.createNodesFromText = function (txt, wrap){
 		var tn = document.createElement("div");
 		// tn.style.display = "none";
 		tn.style.visibility= "hidden";
@@ -244,7 +244,7 @@ if(dojo.render.html.capable) {
 		return nodes;
 	}
 }else if(dojo.render.svg.capable){
-	dojo.dom.createNodesFromText = function createNodesFromText (txt, wrap){
+	dojo.dom.createNodesFromText = function (txt, wrap){
 		// from http://wiki.svg.org/index.php/ParseXml
 		var docFrag = parseXML(txt, window.document);
 		docFrag.normalize();
@@ -266,7 +266,7 @@ if(dojo.render.html.capable) {
 //this.hex2rgb = function(hex) { return dojo.graphics.color.hex2rgb(hex); }
 //this.rgb2hex = function(r, g, b) { return dojo.graphics.color.rgb2hex(r, g, b); }
 
-dojo.dom.insertBefore = function insertBefore (node, ref, force) {
+dojo.dom.insertBefore = function (node, ref, force) {
 	if (force != true &&
 		(node === ref || node.nextSibling === ref)) { return false; }
 	var pn = ref.parentNode;
@@ -274,7 +274,7 @@ dojo.dom.insertBefore = function insertBefore (node, ref, force) {
 	return true;
 }
 
-dojo.dom.insertAfter = function insertAfter (node, ref, force) {
+dojo.dom.insertAfter = function (node, ref, force) {
 	var pn = ref.parentNode;
 	if(ref == pn.lastChild){
 		if (force != true  && node === ref) { return false; }
@@ -285,7 +285,7 @@ dojo.dom.insertAfter = function insertAfter (node, ref, force) {
 	return true;
 }
 
-dojo.dom.insertAtPosition = function insertAtPosition (node, ref, position){
+dojo.dom.insertAtPosition = function (node, ref, position){
 	switch(position.toLowerCase()){
 		case "before":
 			dojo.dom.insertBefore(node, ref);
@@ -306,7 +306,7 @@ dojo.dom.insertAtPosition = function insertAtPosition (node, ref, position){
 	}
 }
 
-dojo.dom.insertAtIndex = function insertAtIndex (node, ref, insertionIndex){
+dojo.dom.insertAtIndex = function (node, ref, insertionIndex){
 	var pn = ref.parentNode;
 	var siblingNodes = pn.childNodes;
 	var placed = false;
@@ -329,7 +329,7 @@ dojo.dom.insertAtIndex = function insertAtIndex (node, ref, insertionIndex){
  * @param node The node to scan for text
  * @param text Optional, set the text to this value.
  */
-dojo.dom.textContent = function textContent (node, text) {
+dojo.dom.textContent = function (node, text) {
 	if (text) {
 		dojo.dom.replaceChildren(node, document.createTextNode(text));
 		return text;
@@ -359,7 +359,7 @@ dojo.dom.textContent = function textContent (node, text) {
  * Attempts to return the text as it would be rendered, with the line breaks
  * sorted out nicely. Unfinished.
  */
-dojo.dom.renderedTextContent = function renderedTextContent (node) {
+dojo.dom.renderedTextContent = function (node) {
 	var result = "";
 	if (node == null) { return result; }
 	for (var i = 0; i < node.childNodes.length; i++) {
