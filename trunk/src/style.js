@@ -170,3 +170,65 @@ dojo.style.toCamelCase = function (selector) {
 dojo.style.toSelectorCase = function (selector) {
 	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
 }
+
+/* float between 0.0 (transparent) and 1.0 (opaque) */
+dojo.style.setOpacity = function setOpacity (node, opacity, dontFixOpacity) {
+	var h = dojo.render.html;
+	if(!dontFixOpacity){
+		if( opacity >= 1.0){
+			if(h.ie){
+				dojo.style.clearOpacity(node);
+				return;
+			}else{
+				opacity = 0.999999;
+			}
+		}else if( opacity < 0.0){ opacity = 0; }
+	}
+	if(h.ie){
+		if(node.nodeName.toLowerCase() == "tr"){
+			// FIXME: is this too naive? will we get more than we want?
+			var tds = node.getElementsByTagName("td");
+			for(var x=0; x<tds.length; x++){
+				tds[x].style.filter = "Alpha(Opacity="+opacity*100+")";
+			}
+		}
+		node.style.filter = "Alpha(Opacity="+opacity*100+")";
+	}else if(h.moz){
+		node.style.opacity = opacity; // ffox 1.0 directly supports "opacity"
+		node.style.MozOpacity = opacity;
+	}else if(h.safari){
+		node.style.opacity = opacity; // 1.3 directly supports "opacity"
+		node.style.KhtmlOpacity = opacity;
+	}else{
+		node.style.opacity = opacity;
+	}
+}
+	
+dojo.style.getOpacity = function getOpacity (node){
+	if(dojo.render.html.ie){
+		var opac = (node.filters && node.filters.alpha &&
+			typeof node.filters.alpha.opacity == "number"
+			? node.filters.alpha.opacity : 100) / 100;
+	}else{
+		var opac = node.style.opacity || node.style.MozOpacity ||
+			node.style.KhtmlOpacity || 1;
+	}
+	return opac >= 0.999999 ? 1.0 : Number(opac);
+}
+
+dojo.style.clearOpacity = function clearOpacity (node) {
+	var h = dojo.render.html;
+	if(h.ie){
+		if( node.filters && node.filters.alpha ) {
+			node.style.filter = ""; // FIXME: may get rid of other filter effects
+		}
+	}else if(h.moz){
+		node.style.opacity = 1;
+		node.style.MozOpacity = 1;
+	}else if(h.safari){
+		node.style.opacity = 1;
+		node.style.KhtmlOpacity = 1;
+	}else{
+		node.style.opacity = 1;
+	}
+}
