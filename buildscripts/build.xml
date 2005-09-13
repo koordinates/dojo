@@ -555,9 +555,9 @@ internTemplateStrings()
 
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
-		<copy file="${root}/LICENSE.txt" todir="${release_dir}/"  preservelastmodified="true" />
+		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
 		<!--
-		<copy file="README.txt" todir="${release_dir}/" />
+		<copy file="README" todir="${release_dir}/" />
 		-->
 	</target>
 	<!-- end release task -->
