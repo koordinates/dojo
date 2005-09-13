@@ -37,7 +37,6 @@ dojo.hostenv.conditionalLoadModule = function(modMap){
 
 dojo.hostenv.require = dojo.hostenv.loadModule;
 dojo.require = function(){
-	dj_debug (arguments.length, arguments[0]);
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
 
