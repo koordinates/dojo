@@ -148,7 +148,6 @@ dojo.widget.manager = new function(){
 				if (!widgetPackage[renderPrefixes[j]]) { continue; }
 				for (var widgetClass in widgetPackage[renderPrefixes[j]]) {
 					if (widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
-					dj_debug(widgetPackage[renderPrefixes[j]][widgetClass]);
 					knownWidgetImplementations[lowerCaseWidgetName] =
 						widgetPackage[renderPrefixes[j]][widgetClass];
 					return knownWidgetImplementations[lowerCaseWidgetName];
