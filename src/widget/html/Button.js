@@ -1,8 +1,8 @@
-dojo.provide("dojo.widget.HtmlButton");
+dojo.provide("dojo.widget.html.Button");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Button");
 
-dojo.widget.HtmlButton = function(){
+dojo.widget.html.Button = function(){
 	// mix in the button properties
 	dojo.widget.Button.call(this);
 	dojo.widget.HtmlWidget.call(this);
@@ -27,4 +27,4 @@ dojo.widget.HtmlButton = function(){
 
 	this.onFoo = function(){ }
 }
-dj_inherits(dojo.widget.HtmlButton, dojo.widget.HtmlWidget);
+dj_inherits(dojo.widget.html.Button, dojo.widget.HtmlWidget);
