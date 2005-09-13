@@ -29,7 +29,7 @@ dojo.xml.htmlUtil = new function(){
 
 	this.getAbsoluteX = this.totalOffsetLeft;
 
-	this.totalOffsetTop = function(){return dojo.style.totalOffestTop.apply(dojo.style, arguments);}
+	this.totalOffsetTop = function(){return dojo.style.totalOffsetTop.apply(dojo.style, arguments);}
 	
 	this.getAbsoluteY = this.totalOffsetTop;
 
