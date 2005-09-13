@@ -103,6 +103,9 @@ dojo.widget.manager = new function(){
 		var impl = this.getImplementationName(widgetName);
 				
 		if(impl){
+//			var props = [];
+//			for (var prop in impl) { props.push(prop); }
+//			dj_debug(props.join(", "));
 			var item = new impl(ctorObject);
 			//alert(impl+": "+item);
 			return item;
@@ -121,42 +124,50 @@ dojo.widget.manager = new function(){
 		 * can construct a widget.
 		 */
 
-		// first, search the knownImplementations list for a suitable match
-		var impl = knownWidgetImplementations[widgetName.toLowerCase()];
-		if(impl){
-			return impl;
-		}
+		var lowerCaseWidgetName = widgetName.toLowerCase();
 
-		// if we didn't get one there, then we need to run through the
-		// classname location algorithm
+		var impl = knownWidgetImplementations[lowerCaseWidgetName];
+		if (impl) { return impl; }
+
+		// first store a list of the render prefixes we are capable of rendering
+		var renderPrefixes = [];
+		for (var renderer in dojo.render) {
+			if (dojo.render[renderer]["capable"] === true) {
+				var prefixes = dojo.render[renderer].prefixes;
+				for (var i = 0; i < prefixes.length; i++) {
+					renderPrefixes.push(prefixes[i].toLowerCase());
+				}
+			}
+		}
 
 		// look for a rendering-context specific version of our widget name
 		for(var i = 0; i < widgetPackages.length; i++){
-			var pn = widgetPackages[i];
-			var pkg = dj_eval_object_path(pn);
+			var widgetPackage = dj_eval_object_path(widgetPackages[i]);
 
-			for(var x in pkg){
-				var xlc = (new String(x)).toLowerCase();
-				for(var y in dojo.render){
-					if((dojo.render[y]["capable"])&&(dojo.render[y].capable === true)){
-						var ps = dojo.render[y].prefixes;
-						for(var z=0; z<ps.length; z++){
-							if((ps[z]+widgetName).toLowerCase() == xlc){
-								knownWidgetImplementations[xlc] = pkg[x];
-								return pkg[x];
-							}
-						}
-					}
+			for (var j = 0; j < renderPrefixes.length; j++) {
+				if (!widgetPackage[renderPrefixes[j]]) { continue; }
+				for (var widgetClass in widgetPackage[renderPrefixes[j]]) {
+					if (widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
+					dj_debug(widgetPackage[renderPrefixes[j]][widgetClass]);
+					knownWidgetImplementations[lowerCaseWidgetName] =
+						widgetPackage[renderPrefixes[j]][widgetClass];
+					return knownWidgetImplementations[lowerCaseWidgetName];
 				}
-				/*
-				// this is the fallback to the base class. There's still some debate as to whether or not this is a good idea.
-				if((widgetName.toLowerCase()== xlc)&&(typeof pkg[x] == "function")){
-					knownWidgetImplementations[xlc] = pkg[x];
-					return pkg[x];
+			}
+
+			for (var j = 0; j < renderPrefixes.length; j++) {
+				for (var widgetClass in widgetPackage) {
+					if (widgetClass.toLowerCase() !=
+						(renderPrefixes[j] + lowerCaseWidgetName)) { continue; }
+	
+					knownWidgetImplementations[lowerCaseWidgetName] =
+						widgetPackage[widgetClass];
+					return knownWidgetImplementations[lowerCaseWidgetName];
 				}
-				*/
 			}
 		}
+		
+		throw new Error('Could not locate "' + widgetName + '" class');
 	}
 
 	// FIXME: does it even belong in this name space?
