@@ -1,11 +1,11 @@
 Index: src/org/mozilla/javascript/BaseFunction.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/BaseFunction.java,v
-retrieving revision 1.54
-diff -u -u -r1.54 BaseFunction.java
---- src/org/mozilla/javascript/BaseFunction.java	6 Feb 2005 01:56:46 -0000	1.54
-+++ src/org/mozilla/javascript/BaseFunction.java	12 Aug 2005 16:54:14 -0000
-@@ -380,6 +380,28 @@
+retrieving revision 1.57
+diff -u -u -b -r1.57 BaseFunction.java
+--- src/org/mozilla/javascript/BaseFunction.java	30 Aug 2005 10:05:42 -0000	1.57
++++ src/org/mozilla/javascript/BaseFunction.java	13 Sep 2005 23:28:43 -0000
+@@ -373,6 +373,28 @@
          return sb.toString();
      }
  
@@ -37,10 +37,10 @@ diff -u -u -r1.54 BaseFunction.java
 Index: src/org/mozilla/javascript/Context.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
-retrieving revision 1.239
-diff -u -u -r1.239 Context.java
---- src/org/mozilla/javascript/Context.java	22 Apr 2005 15:28:18 -0000	1.239
-+++ src/org/mozilla/javascript/Context.java	12 Aug 2005 16:54:16 -0000
+retrieving revision 1.241
+diff -u -u -b -r1.241 Context.java
+--- src/org/mozilla/javascript/Context.java	26 Jun 2005 22:57:31 -0000	1.241
++++ src/org/mozilla/javascript/Context.java	13 Sep 2005 23:28:45 -0000
 @@ -1166,6 +1166,36 @@
          }
      }
@@ -94,10 +94,10 @@ diff -u -u -r1.239 Context.java
 Index: src/org/mozilla/javascript/Decompiler.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Decompiler.java,v
-retrieving revision 1.18
-diff -u -u -r1.18 Decompiler.java
---- src/org/mozilla/javascript/Decompiler.java	23 Aug 2004 19:06:44 -0000	1.18
-+++ src/org/mozilla/javascript/Decompiler.java	12 Aug 2005 16:54:16 -0000
+retrieving revision 1.19
+diff -u -u -b -r1.19 Decompiler.java
+--- src/org/mozilla/javascript/Decompiler.java	28 Aug 2005 23:25:22 -0000	1.19
++++ src/org/mozilla/javascript/Decompiler.java	13 Sep 2005 23:28:45 -0000
 @@ -1,3 +1,7 @@
 +// FIXME: need to implement a stack of something that allows us to keep track
 +// of what was pushed onto the replacement stack at what level and remove it
@@ -126,7 +126,7 @@ diff -u -u -r1.18 Decompiler.java
      String getEncodedSource()
      {
          return sourceToString(0);
-@@ -266,6 +276,715 @@
+@@ -266,23 +276,119 @@
          return new String(sourceBuffer, offset, sourceTop - offset);
      }
  
@@ -240,55 +240,31 @@ diff -u -u -r1.18 Decompiler.java
 +		return offset + length;
 +	}
 +
-+    /**
-+     */
+     /**
+-     * Decompile the source information associated with this js
+-     * function/script back into a string.  For the most part, this
+-     * just means translating tokens back to their string
+-     * representations; there's a little bit of lookahead logic to
+-     * decide the proper spacing/indentation.  Most of the work in
+-     * mapping the original source to the prettyprinted decompiled
+-     * version is done by the parser.
+-     *
+-     * @param source encoded source tree presentation
+-     *
+-     * @param flags flags to select output format
+-     *
+-     * @param properties indentation properties
+-     *
+      */
+-    public static String decompile(String source, int flags,
 +    public static String compress(String source, int flags,
-+                                   UintMap properties)
-+    {
-+        int length = source.length();
-+        if (length == 0) { return ""; }
-+
-+        int indent = properties.getInt(INITIAL_INDENT_PROP, 0);
-+        if (indent < 0) throw new IllegalArgumentException();
-+        int indentGap = properties.getInt(INDENT_GAP_PROP, 4);
-+        if (indentGap < 0) throw new IllegalArgumentException();
-+        int caseGap = properties.getInt(CASE_GAP_PROP, 2);
-+        if (caseGap < 0) throw new IllegalArgumentException();
-+
-+        StringBuffer result = new StringBuffer();
-+        boolean justFunctionBody = (0 != (flags & Decompiler.ONLY_BODY_FLAG));
-+        boolean toSource = (0 != (flags & Decompiler.TO_SOURCE_FLAG));
-+
-+        // Spew tokens in source, for debugging.
-+        // as TYPE number char
-+        if (printSource) {
-+            System.err.println("length:" + length);
-+            for (int i = 0; i < length; ++i) {
-+                // Note that tokenToName will fail unless Context.printTrees
-+                // is true.
-+                String tokenname = null;
-+                if (Token.printNames) {
-+                    tokenname = Token.name(source.charAt(i));
-+                }
-+                if (tokenname == null) {
-+                    tokenname = "---";
-+                }
-+                String pad = tokenname.length() > 7
-+                    ? "\t"
-+                    : "\t\t";
-+                System.err.println
-+                    (tokenname
-+                     + pad + (int)source.charAt(i)
-+                     + "\t'" + ScriptRuntime.escapeString
-+                     (source.substring(i, i+1))
-+                     + "'");
-+            }
-+            System.err.println();
-+        }
-+
-+        int braceNesting = 0;
-+        boolean afterFirstEOL = false;
-+        int i = 0;
+                                    UintMap properties)
+     {
+         int length = source.length();
+@@ -329,6 +435,619 @@
+         int braceNesting = 0;
+         boolean afterFirstEOL = false;
+         int i = 0;
 +		int prevToken = 0;
 +		boolean primeFunctionNesting = false;
 +		ArrayList functionBracePositions = new ArrayList();
@@ -839,25 +815,79 @@ diff -u -u -r1.18 Decompiler.java
 +        return result.toString();
 +    }
 +
-     /**
-      * Decompile the source information associated with this js
-      * function/script back into a string.  For the most part, this
-@@ -301,7 +1020,7 @@
- 
-         // Spew tokens in source, for debugging.
-         // as TYPE number char
--        if (printSource) {
++    /**
++     * Decompile the source information associated with this js
++     * function/script back into a string.  For the most part, this
++     * just means translating tokens back to their string
++     * representations; there's a little bit of lookahead logic to
++     * decide the proper spacing/indentation.  Most of the work in
++     * mapping the original source to the prettyprinted decompiled
++     * version is done by the parser.
++     *
++     * @param source encoded source tree presentation
++     *
++     * @param flags flags to select output format
++     *
++     * @param properties indentation properties
++     *
++     */
++    public static String decompile(String source, int flags,
++                                   UintMap properties)
++    {
++        int length = source.length();
++        if (length == 0) { return ""; }
++
++        int indent = properties.getInt(INITIAL_INDENT_PROP, 0);
++        if (indent < 0) throw new IllegalArgumentException();
++        int indentGap = properties.getInt(INDENT_GAP_PROP, 4);
++        if (indentGap < 0) throw new IllegalArgumentException();
++        int caseGap = properties.getInt(CASE_GAP_PROP, 2);
++        if (caseGap < 0) throw new IllegalArgumentException();
++
++        StringBuffer result = new StringBuffer();
++        boolean justFunctionBody = (0 != (flags & Decompiler.ONLY_BODY_FLAG));
++        boolean toSource = (0 != (flags & Decompiler.TO_SOURCE_FLAG));
++
++        // Spew tokens in source, for debugging.
++        // as TYPE number char
 +        if(printSource){
-             System.err.println("length:" + length);
-             for (int i = 0; i < length; ++i) {
-                 // Note that tokenToName will fail unless Context.printTrees
++            System.err.println("length:" + length);
++            for (int i = 0; i < length; ++i) {
++                // Note that tokenToName will fail unless Context.printTrees
++                // is true.
++                String tokenname = null;
++                if (Token.printNames) {
++                    tokenname = Token.name(source.charAt(i));
++                }
++                if (tokenname == null) {
++                    tokenname = "---";
++                }
++                String pad = tokenname.length() > 7
++                    ? "\t"
++                    : "\t\t";
++                System.err.println
++                    (tokenname
++                     + pad + (int)source.charAt(i)
++                     + "\t'" + ScriptRuntime.escapeString
++                     (source.substring(i, i+1))
++                     + "'");
++            }
++            System.err.println();
++        }
++
++        int braceNesting = 0;
++        boolean afterFirstEOL = false;
++        int i = 0;
+         int topFunctionType;
+         if (source.charAt(i) == Token.SCRIPT) {
+             ++i;
 Index: src/org/mozilla/javascript/NativeFunction.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeFunction.java,v
 retrieving revision 1.62
-diff -u -u -r1.62 NativeFunction.java
+diff -u -u -b -r1.62 NativeFunction.java
 --- src/org/mozilla/javascript/NativeFunction.java	17 Jan 2005 13:06:33 -0000	1.62
-+++ src/org/mozilla/javascript/NativeFunction.java	12 Aug 2005 16:54:17 -0000
++++ src/org/mozilla/javascript/NativeFunction.java	13 Sep 2005 23:28:46 -0000
 @@ -70,6 +70,18 @@
          }
      }
@@ -880,10 +910,10 @@ diff -u -u -r1.62 NativeFunction.java
 Index: src/org/mozilla/javascript/TokenStream.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/TokenStream.java,v
-retrieving revision 1.62
-diff -u -u -r1.62 TokenStream.java
---- src/org/mozilla/javascript/TokenStream.java	24 Sep 2004 13:14:01 -0000	1.62
-+++ src/org/mozilla/javascript/TokenStream.java	12 Aug 2005 16:54:18 -0000
+retrieving revision 1.63
+diff -u -u -b -r1.63 TokenStream.java
+--- src/org/mozilla/javascript/TokenStream.java	31 Jul 2005 13:48:46 -0000	1.63
++++ src/org/mozilla/javascript/TokenStream.java	13 Sep 2005 23:28:46 -0000
 @@ -64,9 +64,12 @@
      private final static int
          EOF_CHAR = -1;
@@ -897,7 +927,7 @@ diff -u -u -r1.62 TokenStream.java
          this.parser = parser;
          this.lineno = lineno;
          if (sourceReader != null) {
-@@ -730,6 +733,8 @@
+@@ -736,6 +739,8 @@
  
              case '/':
                  // is it a // comment?
@@ -909,11 +939,11 @@ diff -u -u -r1.62 TokenStream.java
 Index: toolsrc/org/mozilla/javascript/tools/shell/Main.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/toolsrc/org/mozilla/javascript/tools/shell/Main.java,v
-retrieving revision 1.61
-diff -u -u -r1.61 Main.java
---- toolsrc/org/mozilla/javascript/tools/shell/Main.java	9 Oct 2004 22:07:04 -0000	1.61
-+++ toolsrc/org/mozilla/javascript/tools/shell/Main.java	12 Aug 2005 16:54:18 -0000
-@@ -241,6 +241,10 @@
+retrieving revision 1.64
+diff -u -u -b -r1.64 Main.java
+--- toolsrc/org/mozilla/javascript/tools/shell/Main.java	2 Sep 2005 14:18:40 -0000	1.64
++++ toolsrc/org/mozilla/javascript/tools/shell/Main.java	13 Sep 2005 23:28:47 -0000
+@@ -237,6 +237,10 @@
                  shellContextFactory.call(iproxy);
                  continue;
              }
@@ -924,61 +954,28 @@ diff -u -u -r1.61 Main.java
              if (arg.equals("-w")) {
                  errorReporter.setIsReportingWarnings(true);
                  continue;
-@@ -338,6 +342,7 @@
-                     if (cx.stringIsCompilableUnit(source))
-                         break;
-                 }
-+
-                 Object result = evaluateScript(cx, global, null, source,
-                                                "<stdin>", startline, null);
-                 if (result != cx.getUndefinedValue()) {
-@@ -371,14 +376,18 @@
-                                   String filename, Object securityDomain)
+@@ -372,6 +376,8 @@
+                                   String path, Object securityDomain)
      {
-         Reader in = null;
+         Script script;
 +        Reader cin = null;
 +        String cout = null;
-         // Try filename first as URL
-         try {
-             URL url = new URL(filename);
-             InputStream is = url.openStream();
-             in = new BufferedReader(new InputStreamReader(is));
-+            cin = new BufferedReader(new InputStreamReader(is));
-         }  catch (MalformedURLException mfex) {
-             // fall through to try it as a file
-             in = null;
-+            cin = null;
-         } catch (IOException ioex) {
-             Context.reportError(ToolErrorReporter.getMessage(
-                 "msg.couldnt.open.url", filename, ioex.toString()));
-@@ -390,6 +399,7 @@
-             // Try filename as file
-             try {
-                 in = new PushbackReader(new FileReader(filename));
-+                cin = new PushbackReader(new FileReader(filename));
-                 int c = in.read();
-                 // Support the executable script #! syntax:  If
-                 // the first line begins with a '#', treat the whole
-@@ -408,6 +418,7 @@
-                     // around?
-                     in.close();
-                     in = new FileReader(filename);
-+                    cin = new FileReader(filename);
-                 }
-                 filename = new java.io.File(filename).getCanonicalPath();
-             }
-@@ -424,7 +435,100 @@
-         // Here we evalute the entire contents of the file as
-         // a script. Text is printed only if the print() function
-         // is called.
--        evaluateScript(cx, scope, in, null, filename, 1, securityDomain);
-+		if(outputCompressed){
-+			cout = compressScript(cx, scope, cin, null, filename, 1, securityDomain);
-+			global.getOut().println(cout);
-+		}else{
-+			evaluateScript(cx, scope, in, null, filename, 1, securityDomain);
-+		}
+         if (path.endsWith(".class")) {
+             script = loadCompiledScript(cx, path, securityDomain);
+         } else {
+@@ -396,9 +402,59 @@
+             script = loadScriptFromSource(cx, source, path, 1, securityDomain);
+         }
+         if (script != null) {
++			if(outputCompressed){
++				cout = compressScript(cx, scope, cin, null, path, 1, securityDomain);
++				global.getOut().println(cout);
++			}else{
+             evaluateScript(script, cx, scope);
+         }
+     }
 +    }
++
 +
 +    public static String compressScript(Context cx, Scriptable scope,
 +                                         Reader in, String script,
@@ -1023,57 +1020,14 @@ diff -u -u -r1.61 Main.java
 +        }
 +        return result;
 +	}
-+
-+    public static String decompileScript(Context cx, Scriptable scope,
-+                                         Reader in, String script,
-+                                         String sourceName,
-+                                         int lineno, Object securityDomain)
-+    {
-+        String result = null;
-+        try {
-+            if (in != null) {
-+                try {
-+                    try {
-+                        result = cx.decompileReader(scope, in, sourceName, 
-+								                    lineno, securityDomain);
-+                    } finally {
-+                        in.close();
-+                    }
-+                } catch (IOException ioe) {
-+                    global.getErr().println(ioe.toString());
-+                }
-+            } else {
-+				// FIXME: this is wrong!!!!
-+				//        we should probably throw the string into a temp file
-+				//        and then have it read in again.
-+				result = script;
-+            }
-+        } catch (WrappedException we) {
-+            global.getErr().println(we.getWrappedException().toString());
-+            we.printStackTrace();
-+        } catch (EvaluatorException ee) {
-+            // Already printed message.
-+            exitCode = EXITCODE_RUNTIME_ERROR;
-+        } catch (RhinoException rex) {
-+            errorReporter.reportException(rex);
-+            exitCode = EXITCODE_RUNTIME_ERROR;
-+        } catch (VirtualMachineError ex) {
-+            // Treat StackOverflow and OutOfMemory as runtime errors
-+            ex.printStackTrace();
-+            String msg = ToolErrorReporter.getMessage(
-+                "msg.uncaughtJSException", ex.toString());
-+            exitCode = EXITCODE_RUNTIME_ERROR;
-+            Context.reportError(msg);
-+        }
-+        return result;
-     }
  
-     public static Object evaluateScript(Context cx, Scriptable scope,
-@@ -515,6 +619,7 @@
+     public static Script loadScriptFromSource(Context cx, String scriptSource,
+                                               String path, int lineno,
+@@ -592,6 +648,7 @@
+     static private final int EXITCODE_RUNTIME_ERROR = 3;
      static private final int EXITCODE_FILE_NOT_FOUND = 4;
-     //static private DebugShell debugShell;
      static boolean processStdin = true;
 +    static boolean outputCompressed = false;
-     static boolean sealedStdLib = false;
      static Vector fileList = new Vector(5);
      private static SecurityProxy securityImpl;
+ }
