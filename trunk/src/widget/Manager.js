@@ -143,6 +143,7 @@ dojo.widget.manager = new function(){
 		// look for a rendering-context specific version of our widget name
 		for(var i = 0; i < widgetPackages.length; i++){
 			var widgetPackage = dj_eval_object_path(widgetPackages[i]);
+			if(!widgetPackage) { continue; }
 
 			for (var j = 0; j < renderPrefixes.length; j++) {
 				if (!widgetPackage[renderPrefixes[j]]) { continue; }
