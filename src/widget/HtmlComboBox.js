@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.HtmlComboBox");
 dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
+dojo.require("dojo.dom");
 
 dojo.widget.HtmlComboBox = function(){
 	dojo.widget.DomComboBox.call(this);
@@ -245,7 +246,7 @@ dojo.widget.HtmlComboBox = function(){
 			evt = { target: _highlighted_option };
 		}
 
-		if(!dojo.xml.domUtil.isChildOf(evt.target, this.optionsListNode)){
+		if(!dojo.dom.isDescendantOf(evt.target, this.optionsListNode)){
 			return;
 		}
 

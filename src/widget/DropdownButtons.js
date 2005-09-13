@@ -9,6 +9,7 @@ dojo.require("dojo.xml.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.uri.Uri");
+dojo.require("dojo.dom");
 
 dojo.widget.tags.addParseTreeHandler("dojo:dropdownbuttons");
 
@@ -29,24 +30,24 @@ dojo.widget.HtmlDropdownButtons = function() {
 		if( !dojo.xml.htmlUtil.hasClass(menu, "dropdownButtons") ) {
 			dojo.xml.htmlUtil.addClass(menu, "dropdownButtons");
 		}
-		var li = dojo.xml.domUtil.getFirstChildTag(menu);
+		var li = dojo.dom.getFirstChildElement(menu);
 		var menuIDs = [];
 		var arrowIDs = [];
 
 		while(li) {
 			if(li.getElementsByTagName("ul").length > 0) {
-				var a = dojo.xml.domUtil.getFirstChildTag(li);
+				var a = dojo.dom.getFirstChildElement(li);
 				var arrow = document.createElement("a");
 				arrow.href = "javascript:;";
 				arrow.innerHTML = "&nbsp;";
 				dojo.xml.htmlUtil.setClass(arrow, "downArrow");
 				if(!arrow.id) {
-					arrow.id = dojo.xml.domUtil.getUniqueId();
+					arrow.id = dojo.dom.getUniqueId();
 				}
 				arrowIDs.push(arrow.id);
-				var submenu = dojo.xml.domUtil.getNextSiblingTag(a);
+				var submenu = dojo.dom.getNextSiblingElement(a);
 				if(!submenu.id) {
-					submenu.id = dojo.xml.domUtil.getUniqueId();
+					submenu.id = dojo.dom.getUniqueId();
 				}
 				menuIDs.push(submenu.id);
 
@@ -101,7 +102,7 @@ dojo.widget.HtmlDropdownButtons = function() {
 				}
 
 			}
-			li = dojo.xml.domUtil.getNextSiblingTag(li);
+			li = dojo.dom.getNextSiblingElement(li);
 		}
 
 		function hideAll(excludeMenu, excludeArrow) {
@@ -124,7 +125,7 @@ dojo.widget.HtmlDropdownButtons = function() {
 		dojo.event.connect(document.documentElement, "onmousedown", function(e) {
 			if( dojo.xml.htmlUtil.hasClass(e.target, "downArrow") ) { return };
 			for(var i = 0; i < menuIDs.length; i++) {
-				if( dojo.xml.domUtil.isChildOf(e.target, document.getElementById(menuIDs[i])) ) {
+				if( dojo.dom.isDescendantOf(e.target, document.getElementById(menuIDs[i])) ) {
 					return;
 				}
 			}

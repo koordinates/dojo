@@ -2,6 +2,8 @@ dojo.require("dojo.widget.DomWidget");
 dojo.provide("dojo.widget.SvgWidget");
 dojo.provide("dojo.widget.SVGWidget"); // back compat
 
+dojo.require("dojo.dom");
+
 // SVGWidget is a mixin ONLY
 dojo.widget.SvgWidget = function(args){
 	// mix in the parent type
@@ -26,7 +28,7 @@ dojo.lang.extend(dojo.widget.SvgWidget, {
 	},
 
 	createNodesFromText: function(txt, wrap){
-		return dojo.xml.domUtil.createNodesFromText(txt, wrap);
+		return dojo.dom.createNodesFromText(txt, wrap);
 	}
 });
 
