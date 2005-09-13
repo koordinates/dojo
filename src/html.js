@@ -376,7 +376,7 @@ dojo.html.renderedTextContent = function (node) {
 		switch (node.childNodes[i].nodeType) {
 			case 1: // ELEMENT_NODE
 			case 5: // ENTITY_REFERENCE_NODE
-				switch (dojo.html.getStyle(node.childNodes[i], "display")) {
+				switch (dojo.style.getStyle(node.childNodes[i], "display")) {
 					case "block": case "list-item": case "run-in":
 					case "table": case "table-row-group": case "table-header-group":
 					case "table-footer-group": case "table-row": case "table-column-group":
@@ -423,4 +423,33 @@ dojo.html.renderedTextContent = function (node) {
 		}
 	}
 	return result;
+}
+
+dojo.html.setActiveStyleSheet = function (title) {
+	var i, a, main;
+	for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+		if (a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")) {
+			a.disabled = true;
+			if (a.getAttribute("title") == title) { a.disabled = false; }
+		}
+	}
+}
+
+dojo.html.getActiveStyleSheet = function () {
+	var i, a;
+	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+		if (a.getAttribute("rel").indexOf("style") != -1 &&
+			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
+	}
+	return null;
+}
+
+dojo.html.getPreferredStyleSheet = function () {
+	var i, a;
+	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+		if(a.getAttribute("rel").indexOf("style") != -1
+			&& a.getAttribute("rel").indexOf("alt") == -1
+			&& a.getAttribute("title")) { return a.getAttribute("title"); }
+	}
+	return null;
 }
