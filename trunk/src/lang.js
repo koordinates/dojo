@@ -73,6 +73,10 @@ dojo.lang.isUndefined = function(wh) {
 	return ((wh == undefined)&&(typeof wh == "undefined"));
 }
 
+dojo.lang.isAlien = function(wh) {
+	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));
+}
+
 dojo.lang.find = function(arr, val){
 	for(var i=0;i<arr.length;++i){
 		if(arr[i] == val){ return i; }
