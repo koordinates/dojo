@@ -1,4 +1,4 @@
-dojo.require("dojo.alg.*");
+dojo.require("dojo.lang");
 dojo.provide("dojo.event.Event");
 
 dojo.event = new function(){
@@ -296,7 +296,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 	if(!obj[methname]){
 		// supply a do-nothing method implementation
 		obj[methname] = function(){};
-	}else if(typeof obj[methname] != "function"){
+	}else if(!dojo.lang.isFunction(obj[methname])){
 		return null; // FIXME: should we throw an exception here instead?
 	}
 	// we hide our joinpoint instance in obj[methname + '$joinpoint']
