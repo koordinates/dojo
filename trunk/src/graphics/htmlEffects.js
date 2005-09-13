@@ -1,7 +1,8 @@
 dojo.provide("dojo.graphics.htmlEffects");
 
 dojo.require("dojo.animation.*");
-dojo.require("dojo.xml.domUtil");
+dojo.require("dojo.dom");
+dojo.require("dojo.style");
 dojo.require("dojo.xml.htmlUtil");
 dojo.require("dojo.event.*");
 dojo.require("dojo.alg.*");
@@ -77,7 +78,7 @@ dojo.graphics.htmlEffects = new function() {
 	// Fade from startRGB to the node's background color
 	this.colorFadeIn = function(node, startRGB, duration, delay, callback) {
 		var color = dojo.xml.htmlUtil.getBackgroundColor(node);
-		var bg = dojo.xml.domUtil.getStyle(node, "background-color").toLowerCase();
+		var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
 		var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
 		while(color.length > 3) { color.pop(); }
 		while(startRGB.length > 3) { startRGB.pop(); }
@@ -406,8 +407,8 @@ dojo.graphics.htmlEffects.Exploder = function(triggerNode, boxNode) {
 	// document events
 	dojo.event.connect(document.documentElement || document.body, "onclick", function(e) {
 		if(_this.autoHide && _this.showing
-			&& !dojo.xml.domUtil.isChildOf(e.target, boxNode)
-			&& !dojo.xml.domUtil.isChildOf(e.target, triggerNode) ) {
+			&& !dojo.dom.isDescendantOf(e.target, boxNode)
+			&& !dojo.dom.isDescendantOf(e.target, triggerNode) ) {
 			_this.hide();
 		}
 	});

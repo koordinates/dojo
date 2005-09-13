@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.Parse");
 
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.text.*");
+dojo.require("dojo.dom");
 
 dojo.widget.Parse = function(fragment) {
 	this.propertySetsList = [];
@@ -280,7 +281,7 @@ dojo.widget.getParser = function(name){
 			document.body.appendChild(refNode);
 		}
 	}else if(position){
-		dojo.xml.domUtil.insert(tn, refNode, position);
+		dojo.dom.insertAtPosition(tn, refNode, position);
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}

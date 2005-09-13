@@ -4,6 +4,7 @@ dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.animation.*");
+dojo.require("dojo.dom");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	this.domNode = node;
@@ -73,7 +74,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		switch(e.dragStatus){
 
 			case "dropSuccess":
-				dojo.xml.domUtil.remove(this.dragClone);
+				dojo.dom.removeNode(this.dragClone);
 				this.dragClone = null;
 				break;
 		
@@ -96,7 +97,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
-					dojo.lang.setTimeout(dojo.xml.domUtil.remove, 200,
+					dojo.lang.setTimeout(dojo.dom.removeNode, 200,
 						dragObject.dragClone);
 				});
 				anim.play();
@@ -126,7 +127,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		this.childBoxes = [];
 		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
 			child = this.domNode.childNodes[i];
-			if (child.nodeType != dojo.xml.domUtil.nodeTypes.ELEMENT_NODE) { continue; }
+			if (child.nodeType != dojo.dom.ELEMENT_NODE) { continue; }
 			with(dojo.xml.htmlUtil){
 				var top = getAbsoluteY(child);
 				var bottom = top + getInnerHeight(child);
@@ -181,7 +182,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	},
 
 	onDragOut: function(e) {
-		dojo.xml.domUtil.remove(this.dropIndicator);
+		dojo.dom.removeNode(this.dropIndicator);
 	},
 	
 	/**
@@ -198,9 +199,9 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 
 		var gravity = dojo.xml.htmlUtil.gravity, child = this.childBoxes[i].node;
 		if (gravity(child, e) & gravity.SOUTH) {
-			return dojo.xml.domUtil.after(e.dragObject.domNode, child);
+			return dojo.dom.insertAfter(e.dragObject.domNode, child);
 		} else {
-			return dojo.xml.domUtil.before(e.dragObject.domNode, child);
+			return dojo.dom.insertBefore(e.dragObject.domNode, child);
 		}
 	}
 });

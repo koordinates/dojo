@@ -2,6 +2,7 @@ dojo.provide("dojo.io.BrowserIO");
 
 dojo.require("dojo.io.IO");
 dojo.require("dojo.alg.*");
+dojo.require("dojo.dom");
 
 dojo.io.checkChildrenForFile = function(node){
 	var hasFile = false;
@@ -189,7 +190,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			} else if(kwArgs.mimetype == "application/xml" || kwArgs.mimetype == "text/xml") {
 				ret = http.responseXML;
 				if(!ret || typeof ret == "string") {
-					ret = dojo.xml.domUtil.createDocumentFromText(http.responseText);
+					ret = dojo.dom.createDocumentFromText(http.responseText);
 				}
 			} else {
 				ret = http.responseText;
