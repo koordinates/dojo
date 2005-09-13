@@ -166,15 +166,15 @@ dojo.event = new function(){
 		}
 
 		if((typeof ao.srcFunc).toLowerCase() != "string"){
-			ao.srcFunc = dojo.alg.getNameInObj(ao.srcObj, ao.srcFunc);
+			ao.srcFunc = dojo.lang.getNameInObj(ao.srcObj, ao.srcFunc);
 		}
 
 		if((typeof ao.adviceFunc).toLowerCase() != "string"){
-			ao.adviceFunc = dojo.alg.getNameInObj(ao.adviceObj, ao.adviceFunc);
+			ao.adviceFunc = dojo.lang.getNameInObj(ao.adviceObj, ao.adviceFunc);
 		}
 
 		if((ao.aroundObj)&&((typeof ao.aroundFunc).toLowerCase() != "string")){
-			ao.aroundFunc = dojo.alg.getNameInObj(ao.aroundObj, ao.aroundFunc);
+			ao.aroundFunc = dojo.lang.getNameInObj(ao.aroundObj, ao.aroundFunc);
 		}
 
 		if(!ao.srcObj){
@@ -296,7 +296,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 	if(!obj[methname]){
 		// supply a do-nothing method implementation
 		obj[methname] = function(){};
-	}else if(!dojo.lang.isFunction(obj[methname])){
+	}else if((!dojo.lang.isFunction(obj[methname]))&&(!dojo.lang.isAlien(obj[methname]))){
 		return null; // FIXME: should we throw an exception here instead?
 	}
 	// we hide our joinpoint instance in obj[methname + '$joinpoint']
@@ -408,7 +408,7 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	}
 
 	if(this.before.length>0){
-		dojo.alg.forEach(this.before, unrollAdvice, true);
+		dojo.lang.forEach(this.before, unrollAdvice, true);
 	}
 
 	var result;
@@ -421,7 +421,7 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	}
 
 	if(this.after.length>0){
-		dojo.alg.forEach(this.after, unrollAdvice, true);
+		dojo.lang.forEach(this.after, unrollAdvice, true);
 	}
 
 	return (this.methodfunc) ? result : null;
