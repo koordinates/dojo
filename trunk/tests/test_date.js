@@ -95,13 +95,13 @@ function test_date_fromIso8601Time () {
 	jum.assertEquals("test16", 18, date.getHours());
 	jum.assertEquals("test17", 46, date.getMinutes());
 	jum.assertEquals("test18", 39, date.getSeconds());
-	jum.assertEquals("test19", 994, date.getMiliseconds());
+	jum.assertEquals("test19", 994, date.getMilliseconds());
 
 	var date = dojo.date.fromIso8601Time("184639.9942");
 	jum.assertEquals("test20", 18, date.getHours());
 	jum.assertEquals("test21", 46, date.getMinutes());
 	jum.assertEquals("test22", 39, date.getSeconds());
-	jum.assertEquals("test23", 994, date.getMiliseconds());
+	jum.assertEquals("test23", 994, date.getMilliseconds());
 	
 	//1995-02-04 24:00 = 1995-02-05 00:00
 	
