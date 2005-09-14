@@ -33,19 +33,17 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	startResize: function(coords){
 		// get the left and top offset of our dom node
-		var hu = dojo.xml.htmlUtil;
-		
-		coords.offsetLeft = hu.totalOffsetLeft(this.domNode);
-		coords.offsetTop = hu.totalOffsetTop(this.domNode);
-		coords.innerWidth = hu.getInnerWidth(this.domNode);
-		coords.innerHeight = hu.getInnerHeight(this.domNode);
+		coords.offsetLeft = dojo.html.totalOffsetLeft(this.domNode);
+		coords.offsetTop = dojo.html.totalOffsetTop(this.domNode);
+		coords.innerWidth = dojo.html.getInnerWidth(this.domNode);
+		coords.innerHeight = dojo.html.getInnerHeight(this.domNode);
 		if(!this.resizeGhost){
 			this.resizeGhost = document.createElement("div");
 			var rg = this.resizeGhost;
 			rg.style.position = "absolute";
 			rg.style.backgroundColor = "white";
 			rg.style.border = "1px solid black";
-			dojo.xml.htmlUtil.setOpacity(rg, 0.3);
+			dojo.html.setOpacity(rg, 0.3);
 			document.body.appendChild(rg);
 		}
 		with(this.resizeGhost.style){
