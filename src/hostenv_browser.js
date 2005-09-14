@@ -178,12 +178,16 @@ if(!dojo.hostenv["library_script_uri_"]){
 	dojo.hostenv.library_script_uri_ = dj_last_script_src();
 }
 
+dojo.hostenv.defaultDebugContainerId = 'dojoDebug';
+
 dojo.hostenv.println = function(s){
 	var ti = null;
 	var dis = "<div>"+s+"</div>";
 	try{
+		var console = document.getElementById(djConfig.debugContainerId ? djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
+		if(!console) { console = document.body; }
 		ti = document.createElement("div");
-		document.body.appendChild(ti);
+		console.appendChild(ti);
 		ti.innerHTML = s;
 	}catch(e){
 		try{
