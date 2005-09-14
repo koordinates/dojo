@@ -33,10 +33,8 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 	
 	showDialog: function (e) {
 		dojo.widget.HtmlToolbarColorDialog.superclass.showDialog.call(this, e);
-		with (dojo.xml.htmlUtil) {
-			var x = getAbsoluteX(this.domNode);
-			var y = getAbsoluteY(this.domNode) + getInnerHeight(this.domNode);
-		}
+		var x = dojo.html.getAbsoluteX(this.domNode);
+		var y = dojo.html.getAbsoluteY(this.domNode) + dojo.html.getInnerHeight(this.domNode);
 		this.dialog.showAt(x, y);
 	},
 	
