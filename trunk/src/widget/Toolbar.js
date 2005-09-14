@@ -682,7 +682,7 @@ dojo.widget.HTMLToolbarSeparator = function() {
 	this.widgetType = "ToolbarSeparator";
 	this.templateString = '<span unselectable="on" class="toolbarItem toolbarSeparator"></span>';
 
-	this.defaultIconPath = new dojo.uri.dojoUri("src/webui/widgets/templates/buttons/-.gif");
+	this.defaultIconPath = new dojo.uri.dojoUri("src/widget/templates/buttons/-.gif");
 
 	var oldFillInTemplate = this.fillInTemplate;
 	this.fillInTemplate = function(args, frag, skip) {
