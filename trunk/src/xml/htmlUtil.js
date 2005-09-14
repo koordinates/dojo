@@ -3,7 +3,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
-dj_deprecated("dojo.xml.domUtil is deprecated, use dojo.html instead");
+dj_deprecated("dojo.xml.htmlUtil is deprecated, use dojo.html instead");
 
 dojo.xml.htmlUtil = new function(){
 	this.styleSheet = dojo.style.styleSheet;

@@ -4,7 +4,8 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.text.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
-dojo.require("dojo.xml.*");
+dojo.require("dojo.html");
+dojo.require("dojo.xml.Parse");
 dojo.require("dojo.math.curves");
 dojo.require("dojo.animation.Animation");
 dojo.require("dojo.uri.*");
@@ -41,7 +42,7 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 	}
 
 	if((cpath)&&(!dojo.widget._cssFiles[cpath])){
-		dojo.xml.htmlUtil.insertCssFile(cpath);
+		dojo.html.insertCssFile(cpath);
 		obj.templateCssPath = null;
 		dojo.widget._cssFiles[cpath] = true;
 	}
@@ -424,12 +425,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	
 	getContainerHeight: function(){
 		// FIXME: the generic DOM widget shouldn't be using HTML utils!
-		return dojo.xml.htmlUtil.getInnerHeight(this.domNode.parentNode);
+		return dojo.html.getInnerHeight(this.domNode.parentNode);
 	},
 
 	getContainerWidth: function(){
 		// FIXME: the generic DOM widget shouldn't be using HTML utils!
-		return dojo.xml.htmlUtil.getInnerWidth(this.domNode.parentNode);
+		return dojo.html.getInnerWidth(this.domNode.parentNode);
 	},
 
 	createNodesFromText: function(){
