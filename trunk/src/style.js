@@ -4,9 +4,16 @@ dojo.require("dojo.uri.Uri");
 dojo.require("dojo.graphics.color");
 
 
-dojo.style.boxSizing = (document["compatMode"] &&
-	(document["compatMode"] == "BackCompat" ||
-	document["compatMode"] == "QuirksMode")) ? true : false;
+// values: content-box, border-box
+dojo.style.getBoxSizing = function(node) {
+	if(dojo.render.ie) {
+		return document["compatMode"] != "BackCompat" ? "border-box" : "content-box";
+	} else {
+		if(arguments.length == 0) { node = document.documentElement; }
+		var sizing = dojo.style.getStyle(node, "-moz-box-sizing")
+			|| dojo.style.getStyle(node, "box-sizing");
+	}
+}
 
 dojo.style.getInnerWidth = function getInnerWidth (node){
 	return node.offsetWidth;
