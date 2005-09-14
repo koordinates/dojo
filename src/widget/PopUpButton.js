@@ -72,7 +72,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 			var options = node.getElementsByTagName("option");
 			for (var i = 0; i < options.length; i++) {
 				var properties = {
-					title: dojo.xml.domUtil.textContent(options[i]),
+					title: dojo.dom.textContent(options[i]),
 					value: options[i].value
 				}
 				this.addItem(dojo.widget.fromScript("MenuItem", properties));
