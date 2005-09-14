@@ -72,6 +72,9 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 	
 		this.domNode = document.createElement("table");
 		this.domNode.unselectable = "on";
+		dojo.event.connect(this.domNode, "onmousedown", function (e) {
+			e.preventDefault();
+		});
 		with (this.domNode) { // set the table's properties
 			cellPadding = "0"; cellSpacing = "1"; border = "1";
 			style.backgroundColor = "white"; style.position = "absolute";
