@@ -2,9 +2,10 @@ dojo.provide("dojo.widget.RichText");
 dojo.provide("dojo.widget.HtmlRichText");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.xml.domUtil");
-dojo.require("dojo.xml.htmlUtil");
+dojo.require("dojo.dom");
+dojo.require("dojo.html");
 dojo.require("dojo.event.*");
+dojo.require("dojo.style");
 
 // used to save content
 document.write('<textarea id="dojo.widget.RichText.savedContent" style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
@@ -49,8 +50,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (this.debug) { alert("starting editor"); }
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
 		
-		var oldHeight = dojo.xml.htmlUtil.getInnerHeight(this.domNode);
-		var oldWidth = dojo.xml.htmlUtil.getInnerWidth(this.domNode);
+		var oldHeight = dojo.style.getInnerHeight(this.domNode);
+		var oldWidth = dojo.style.getInnerWidth(this.domNode);
 		
 		this.savedContent = document.createElement("div");
 		while (this.domNode.hasChildNodes()) {
@@ -151,7 +152,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 			// curry the getStyle function
 			var getStyle = (function (domNode) { return function (style) {
-				return dojo.xml.domUtil.getStyle(domNode, style);
+				return dojo.style.getStyle(domNode, style);
 			}; })(this.domNode);
 			var font = getStyle('font-size') + " " + getStyle('font-family');
 
@@ -242,7 +243,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 		// TODO: this is a guess at the default line-height, kinda works
 		if (this.domNode.nodeName == "LI") { this.domNode.lastChild.style.marginTop = "-1.2em"; }
-		dojo.xml.htmlUtil.addClass(dojo.domNode, "RichTextEditable");
+		dojo.html.addClass(dojo.domNode, "RichTextEditable");
 
 		// add the formatting functions
 		var funcs = ["queryCommandEnabled", "queryCommandState", "queryCommandValue"];
@@ -388,35 +389,36 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			deleterows: 5007,
 			mergecells: 5029,
 			splitcell: 5047
-			/*
-			DECMD_SETBACKCOLOR =              5042
-			DECMD_GETBACKCOLOR =              5010
-			DECMD_SETBLOCKFMT =               5043
-			DECMD_GETBLOCKFMT =               5011
-			DECMD_GETBLOCKFMTNAMES =          5012
-			DECMD_SETFONTNAME =               5044
-			DECMD_GETFONTNAME =               5013
-			DECMD_SETFONTSIZE =               5045
-			DECMD_GETFONTSIZE =               5014
-			DECMD_SETFORECOLOR =              5046
-			DECMD_GETFORECOLOR =              5015
 			
-			DECMD_FINDTEXT =                  5008
-			DECMD_FONT =                      5009
-			DECMD_HYPERLINK =                 5016
-			DECMD_IMAGE =                     5017
+			// the command need mapping, they don't translate directly
+			// to the contentEditable commands
+			setblockformat: 5043,
+			getblockformat: 5011,
+			getblockformatnames: 5012,
+			setfontname: 5044,
+			getfontname: 5013,
+			setfontsize: 5045,
+			getfontsize: 5014,
+			setbackcolor: 5042,
+			getbackcolor: 5010,
+			setforecolor: 5046,
+			getforecolor: 5015.
 			
-			DECMD_LOCK_ELEMENT =              5027
-			DECMD_MAKE_ABSOLUTE =             5028
-			DECMD_SEND_BACKWARD =             5036
-			DECMD_BRING_FORWARD =             5037
-			DECMD_SEND_BELOW_TEXT =           5038
-			DECMD_BRING_ABOVE_TEXT =          5039
-			DECMD_SEND_TO_BACK =              5040
-			DECMD_BRING_TO_FRONT =            5041
+			findtext: 5008,
+			font: 5009,
+			hyperlink: 5016,
+			image: 5017,
 			
-			DECMD_PROPERTIES =                5052
-			*/
+			lockelement: 5027,
+			makeabsolute: 5028,
+			sendbackward: 5036,
+			bringforward: 5037,
+			sendbelowtext: 5038,
+			bringabovetext: 5039,
+			sendtoback: 5040,
+			bringtofront: 5041,
+			
+			properties: 5052
 		},
 		
 		ui: {
@@ -539,6 +541,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	execCommand: function (command, argument) {
 		if (this.object) {
+			if (typeof this._activeX.command[command] == "undefined") { return null; }
 		
 			if (arguments.length == 1) {
 				return this.object.ExecCommand(this._activeX.command[command],
@@ -598,6 +601,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	queryCommandEnabled: function (command, argument) {
 		if (this.object) {
+			if (typeof this._activeX.command[command] == "undefined") { return false; }
 			var status = this.object.QueryStatus(this._activeX.command[command]);
 			return (status != this.activeX.status.notsupported && 
 				status != this.activeX.status.diabled);
@@ -616,6 +620,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	queryCommandState: function (command, argument) {
 		if (this.object) {
+			if (typeof this._activeX.command[command] == "undefined") { return null; }
 			var status = this.object.QueryStatus(this._activeX.command[command]);
 			return (status == this._activeX.status.enabled ||
 				status == this._activeX.status.ninched);
@@ -654,7 +659,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				"padding-bottom", "padding-top",
 				"border-width-bottom", "border-width-top"];
 			for (var i = 0, chromeheight = 0; i < heights.length; i++) {
-				var height = dojo.xml.domUtil.getStyle(this.iframe, heights[i]);
+				var height = dojo.style.getStyle(this.iframe, heights[i]);
 				// Safari doesn't have all the heights so we have to test
 				if (height) {
 					chromeheight += Number(height.replace(/[^0-9]/g, ""));
@@ -663,7 +668,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.iframe.height = this.document.body.offsetHeight + chromeheight + "px";
 			this.window.scrollTo(0, 0);
 		} else if (this.object) {
-			this.object.height = dojo.xml.htmlUtil.getInnerHeight(this.editNode);
+			this.object.height = dojo.style.getInnerHeight(this.editNode);
 		}
 	},
 	
@@ -695,18 +700,15 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (this.iframe) { this.domNode.style.lineHeight = null; }
 		
 		dojo.event.browser.clean(this.domNode);
-		if(save){
-			this.domNode.innerHTML = this.editNode.innerHTML; 
-		}else{
-			while(this.domNode.hasChildNodes()){
-				this.domNode.removeChild(this.domNode.firstChild);
-			}
-			while(this.savedContent.hasChildNodes()){
+		dojo.dom.removeChildren(this.domNode);
+		if (save) { this.domNode.innerHTML = this.editNode.innerHTML; }
+		else {
+			while (this.savedContent.hasChildNodes()) {
 				this.domNode.appendChild(this.savedContent.firstChild);
 			}
 		}
 		
-		dojo.xml.htmlUtil.removeClass(dojo.domNode, "RichTextEditable");
+		dojo.html.removeClass(dojo.domNode, "RichTextEditable");
 		
 		if (this.debug) { alert("ending editor; content "
 			+ (changed ? "" : "not ") + "changed"); }
