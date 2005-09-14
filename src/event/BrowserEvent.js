@@ -164,6 +164,14 @@ dojo.event.browser = new function(){
 		}
 	}
 
+	this.isEvent = function(obj)
+	{
+		// FIXME: event detection hack ... could test for additional attributes if necessary
+		return (typeof Event != "undefined")&&(obj.eventPhase);
+		// Event does not support instanceof in Opera, otherwise:
+		//return (typeof Event != "undefined")&&(obj instanceof Event);
+	}
+	
 	this.fixEvent = function(evt){
 		
 		if (evt.type && evt.type.indexOf("key") == 0) { // key events

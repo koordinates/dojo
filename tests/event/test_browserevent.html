@@ -12,13 +12,28 @@
 		<script language="JavaScript" type="text/javascript">
 			dojo.require("dojo.event.*");
 
+			var lastEvt;
+			function dump(evt){
+				result = '';
+				for(var x in evt){
+					result += (x+": "+evt[x]+"<br>");
+				}
+				return result;
+			}
 			function logMe(evt){
 				// FIXME: it appears that we're not actually getting this passed from IE!?!
-				if(!evt){ evt = window.event; }
+				//if(!evt){ evt = window.event; }
+				dj_debug(evt.type + ' was fired');
+				lastEvt = dump(evt);
+				/*
 				for(var x in evt){
 					dj_debug(x+": "+evt[x]);
 				}
 				dj_debug("some event was fired");
+				*/
+			}
+			function dumpLast(){
+				(lastEvt ? dj_debug(lastEvt) : dj_debug('no event yet'));
 			}
 
 			function click1(){
@@ -74,7 +89,9 @@
 			</tbody>
 		</table>
 
-		<button id="click2">should output only click2</button>
-
+		<button id="click2">should output only click1/click3 (except on IE)</button>
+		<br><br>
+		<button onclick="dumpLast()">show entire most recent event object</button>
+		<br><br>
 	</body>
 </html>
