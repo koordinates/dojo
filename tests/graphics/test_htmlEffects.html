@@ -33,6 +33,14 @@
 	background : #ccc;
 }
 
+#wiper2 {
+	position : absolute;
+	left : 50px;
+	top : 400px;
+	width : 200px;
+	background : #ccc;
+}
+
 #explode {
 	position : absolute;
 	left : 300px;
@@ -77,6 +85,16 @@ function testImplode(start) {
 	var end = document.getElementById("explode");
 	dojo.graphics.htmlEffects.implode(end, start, 250);
 }
+
+function wowi(node) {
+	var h = node.offsetHeight;
+	dojo.fx.wipeOut(node, 400, function(n) {
+		n.innerHTML = "I have been replaced "
+			+ "with something completely different "
+			+ "in the middle of the wipe effects.";
+		dojo.fx.wipeIn(n, 400);
+	});
+}
 </script>
 </head>
 <body>
@@ -103,6 +121,12 @@ function testImplode(start) {
 		Wipe wipe wipe. It is so fun to...
 		Wipe wipe wipe. It is so fun to...
 		Wipe wipe wipe. It is so fun to...
+	</div>
+
+	<div id="wiper2">
+		This one does a wipeOut+wipeIn that you could use
+		to replace the content. Go ahead, give it a
+		<a href="javascript:;" onclick="wowi(this.parentNode)">try</a>
 	</div>
 
 	<div>Non-wipe...</div>
