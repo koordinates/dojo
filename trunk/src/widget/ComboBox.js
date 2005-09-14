@@ -3,6 +3,40 @@ dojo.provide("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 
+dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
+	this.searchUrl = url;
+	this.inFlight = false;
+	this.activeRequest = null;
+	this.allowCache = false;
+
+	this.cache = {};
+	this.addToCache = function(keyword, data){
+		if(this.allowCache){
+			this.cache[keyword] = data;
+		}
+	}
+
+	this.startSearch = function(searchStr, type, ignoreLimit){
+		if(this.inFlight){
+			// FIXME: implement backoff!
+		}
+		var tss = encodeURIComponent(searchStr);
+		var realUrl = dojo.text.paramString(this.searchUrl, {"searchString": tss});
+		var _this = this;
+		var request = dojo.io.bind({
+			url: realUrl,
+			method: "get",
+			mimetype: "text/javascript",
+			load: function(type, data, evt){
+				_this.inFlight = false;
+				_this.addToCache(searchStr, data);
+				_this.provideSearchResults(data);
+			}
+		});
+		this.inFlight = true;
+	}
+}
+
 dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// NOTE: this data provider is designed as a naive reference
 	// implementation, and as such it is written more for readability than

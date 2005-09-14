@@ -24,6 +24,7 @@ dojo.widget.HtmlComboBox = function(){
 	this.searchDelay = 100;
 	this.timeoutWrapperName = null;
 	this.dataUrl = "";
+	this.mode = "local"; // can also be "remote" for JSON-returning live search or "html" for dumber live search
 	this.selectedResult = null;
 	var _highlighted_option = null;
 	var _prev_key_backspace = false;
@@ -186,17 +187,23 @@ dojo.widget.HtmlComboBox = function(){
 
 		// FIXME: add logic
 
-		if(this.dataUrl!=""){
-			var _this = this;
-			dojo.io.bind({
-				url: this.dataUrl,
-				load: function(type, data, evt){ 
-					if(type=="load"){
-						_this.dataProvider.setData(data);
-					}
-				},
-				mimetype: "text/javascript"
-			});
+		if(!dojo.text.isBlank(this.dataUrl)){
+			if("local" == this.mode){
+				var _this = this;
+				dojo.io.bind({
+					url: this.dataUrl,
+					load: function(type, data, evt){ 
+						if(type=="load"){
+							_this.dataProvider.setData(data);
+						}
+					},
+					mimetype: "text/javascript"
+				});
+			}else if("remote" == this.mode){
+				this.dataProvider = new dojo.widget.incrementalComboBoxDataProvider(this.dataUrl);
+				dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
+				dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
+			}
 		}
 	}
 
