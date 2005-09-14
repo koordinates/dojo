@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.Manager");
-dojo.require("dojo.alg.*");
+dojo.require("dojo.lang.*");
 
 dojo.widget.manager = new function(){
 	this.widgets = [];
@@ -58,7 +58,7 @@ dojo.widget.manager = new function(){
 	this.getWidgetsByType = function(type){
 		var lt = type.toLowerCase();
 		var ret = [];
-		dojo.alg.forEach(this.widgets, function(x){
+		dojo.lang.forEach(this.widgets, function(x){
 			if(x.widgetType.toLowerCase() == lt){
 				ret.push(x);
 			}
@@ -73,7 +73,7 @@ dojo.widget.manager = new function(){
 
 	this.getWidgetsByFilter = function(unaryFunc){
 		var ret = [];
-		dojo.alg.forEach(this.widgets, function(x){
+		dojo.lang.forEach(this.widgets, function(x){
 			if(unaryFunc(x)){
 				ret.push(x);
 			}

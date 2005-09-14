@@ -1,13 +1,13 @@
 dojo.provide("dojo.io.BrowserIO");
 
 dojo.require("dojo.io.IO");
-dojo.require("dojo.alg.*");
+dojo.require("dojo.lang.*");
 dojo.require("dojo.dom");
 
 dojo.io.checkChildrenForFile = function(node){
 	var hasFile = false;
 	var inputs = node.getElementsByTagName("input");
-	dojo.alg.forEach(inputs, function(input){
+	dojo.lang.forEach(inputs, function(input){
 		if(hasFile){ return; }
 		if(input.getAttribute("type")=="file"){
 			hasFile = true;
@@ -40,11 +40,11 @@ dojo.io.encodeForm = function(formNode){
 			for(var j = 0; j < elm.options.length; j++) {
 				values.push(name + "=" + ec(elm.options[j].value));
 			}
-		}else if(dojo.alg.inArray(type, ["radio", "checked"])){
+		}else if(dojo.lang.inArray(type, ["radio", "checked"])){
 			if(elm.checked){
 				values.push(name + "=" + ec(elm.value));
 			}
-		}else if(!dojo.alg.inArray(type, ["file", "submit", "reset", "button"])) {
+		}else if(!dojo.lang.inArray(type, ["file", "submit", "reset", "button"])) {
 			values.push(name + "=" + ec(elm.value));
 		}
 	}
@@ -400,8 +400,8 @@ dojo.io.XMLHTTPTransport = new function(){
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
 		return hasXmlHttp
-			&& dojo.alg.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript"])
-			&& dojo.alg.inArray(kwArgs["method"].toLowerCase(), ["post", "get", "head"])
+			&& dojo.lang.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript"])
+			&& dojo.lang.inArray(kwArgs["method"].toLowerCase(), ["post", "get", "head"])
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
