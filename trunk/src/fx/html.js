@@ -138,12 +138,15 @@ dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 	var savedOverflow = dojo.html.getStyle(node, "overflow");
 	var savedHeight = dojo.html.getStyle(node, "height");
 	// FIXME: should we be setting display to something other than "" for the table elements?
-	node.style.display = dojo.alg.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
+	var dispType = dojo.alg.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
+	node.style.display = dispType;
 	var height = node.offsetHeight;
+	node.style.display = "none";
+	node.style.height = 0;
 	if(savedOverflow == "visible") {
 		node.style.overflow = "hidden";
 	}
-	node.style.height = 0;
+	node.style.display = dispType;
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([0], [height]),
