@@ -33,7 +33,7 @@ dojo.date.setIso8601Date = function (dateObject, string) {
 	var date = d[6];
 	var dayofyear = d[8];
 	var week = d[10];
-	var dayofweek = d[12] || 1;
+	var dayofweek = (d[12]) ? d[12] : 1;
 
 	dateObject.setYear(year);
 	
@@ -41,7 +41,8 @@ dojo.date.setIso8601Date = function (dateObject, string) {
 	else if (week) {
 		dateObject.setMonth(0);
 		dateObject.setDate(1);
-		var day = dateObject.getDay() || 7;
+		var gd = dateObject.getDay();
+		var day =  (gd) ? gd : 7;
 		var offset = Number(dayofweek) + (7 * Number(week));
 		
 		if (day <= 4) { dateObject.setDate(offset + 1 - day); }
@@ -84,8 +85,8 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 	var d = string.match(new RegExp(regexp));
 
 	var hours = d[1];
-	var mins = Number(d[3] || 0) + offset;
-	var secs = d[5] || 0;
+	var mins = Number((d[3]) ? d[3] : 0) + offset;
+	var secs = (d[5]) ? d[5] : 0;
 	var ms = d[7] ? (Number("0." + d[7]) * 1000) : 0;
 
 	dateObject.setHours(hours);
