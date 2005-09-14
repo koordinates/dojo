@@ -388,7 +388,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			deletecols: 5006,
 			deleterows: 5007,
 			mergecells: 5029,
-			splitcell: 5047
+			splitcell: 5047,
 			
 			// the command need mapping, they don't translate directly
 			// to the contentEditable commands
@@ -402,7 +402,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			setbackcolor: 5042,
 			getbackcolor: 5010,
 			setforecolor: 5046,
-			getforecolor: 5015.
+			getforecolor: 5015,
 			
 			findtext: 5008,
 			font: 5009,
