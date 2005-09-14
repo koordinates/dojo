@@ -363,17 +363,17 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	// fired from: setSelected, setEnabled, setLabel
 	update: function() {
 		if(this._enabled) {
-			dojo.xml.htmlUtil.removeClass(this.domNode, "disabled");
+			dojo.html.removeClass(this.domNode, "disabled");
 			if(this._selected) {
-				dojo.xml.htmlUtil.addClass(this.domNode, "selected");
+				dojo.html.addClass(this.domNode, "selected");
 			} else {
-				dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
+				dojo.html.removeClass(this.domNode, "selected");
 			}
 		} else {
 			this._selected = false;
-			dojo.xml.htmlUtil.addClass(this.domNode, "disabled");
-			dojo.xml.htmlUtil.removeClass(this.domNode, "down");
-			dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
+			dojo.html.addClass(this.domNode, "disabled");
+			dojo.html.removeClass(this.domNode, "down");
+			dojo.html.removeClass(this.domNode, "hover");
 		}
 		this._updateIcon();
 	},
@@ -406,14 +406,14 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 
 	_onmouseover: function(e) {
 		if(!this._enabled) { return };
-		dojo.xml.htmlUtil.addClass(this.domNode, "hover");
+		dojo.html.addClass(this.domNode, "hover");
 	},
 
 	_onmouseout: function(e) {
-		dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
-		dojo.xml.htmlUtil.removeClass(this.domNode, "down");
+		dojo.html.removeClass(this.domNode, "hover");
+		dojo.html.removeClass(this.domNode, "down");
 		if(!this._selected) {
-			dojo.xml.htmlUtil.removeClass(this.domNode, "selected");
+			dojo.html.removeClass(this.domNode, "selected");
 		}
 	},
 
@@ -426,7 +426,7 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	_onmousedown: function(e) {
 		if(e.preventDefault) { e.preventDefault(); }
 		if(!this._enabled) { return };
-		dojo.xml.htmlUtil.addClass(this.domNode, "down");
+		dojo.html.addClass(this.domNode, "down");
 		if(this._toggleItem) {
 			if(this.parent.preventDeselect && this._selected) {
 				return;
@@ -436,7 +436,7 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	},
 
 	_onmouseup: function(e) {
-		dojo.xml.htmlUtil.removeClass(this.domNode, "down");
+		dojo.html.removeClass(this.domNode, "down");
 	},
 
 	fillInTemplate: function(args, frag) {
@@ -611,7 +611,7 @@ dojo.lang.extend(dojo.widget.HTMLToolbarButton, {
 
 	fillInTemplate: function(args, frag) {
 		dojo.widget.HTMLToolbarButton.superclass.fillInTemplate.call(this, args, frag);
-		dojo.xml.htmlUtil.addClass(this.domNode, "toolbarButton");
+		dojo.html.addClass(this.domNode, "toolbarButton");
 		if(this._icon) {
 			this.setIcon(this._icon);
 		}
@@ -710,7 +710,7 @@ dojo.widget.HTMLToolbarSpace = function() {
 	this.fillInTemplate = function(args, frag, skip) {
 		oldFillInTemplate.call(this, args, frag, true);
 		if(!skip) {
-			dojo.xml.htmlUtil.addClass(this.domNode, "toolbarSpace");
+			dojo.html.addClass(this.domNode, "toolbarSpace");
 		}
 	}
 }
@@ -748,7 +748,7 @@ dojo.lang.extend(dojo.widget.HTMLToolbarSelect, {
 	
 	showDialog: function (e) {
 		dojo.widget.HTMLToolbarSelect.superclass.showDialog.call(this, e);
-		with (dojo.xml.htmlUtil) {
+		with (dojo.html) {
 			var x = getAbsoluteX(this.domNode);
 			var y = getAbsoluteY(this.domNode) + getInnerHeight(this.domNode);
 		}
@@ -808,7 +808,7 @@ dojo.widget.Icon = function(enabled, disabled, hover, selected) {
 
 	this.getState = function() { return currentState; }
 	this.setState = function(value) {
-		if(dojo.alg.inArray(value, states)) {
+		if(dojo.lang.inArray(value, states)) {
 			if(this[value]) {
 				currentState = value;
 				domNode.setAttribute("src", this[currentState].src);
