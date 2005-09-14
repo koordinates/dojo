@@ -156,6 +156,20 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}; })(this.domNode);
 			var font = getStyle('font-size') + " " + getStyle('font-family');
 
+			// need to save padding and consume it in the iframe
+			// this prevents visible resizing.
+			var margin = [getStyle('padding-top'), getStyle('padding-right'),
+				getStyle('padding-bottom'), getStyle('padding-left')].join(" ");
+			var paddings = [this.domNode.style.paddingTop, this.domNode.style.paddingRight,
+				this.domNode.style.paddingBottom, this.domNode.style.paddingLeft];
+			this.domNode.style.padding = "0";
+			dojo.event.connect(this, "close", (function (domNode) { return function (close) {
+				domNode.style.paddingTop = paddings[0];
+				domNode.style.paddingRight = padding[1];
+				domNode.style.paddingBottom = padding[2];
+				domNode.style.paddingLeft = padding[3];
+			}; })(this.domNode));
+
 			with (this.document) {
 				designMode = "on";
 				open();
@@ -166,7 +180,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					'    body,html { padding: 0; margin: 0; font: ' + font + '; }' +
 					// TODO: left positioning will case contents to disappear out of view
 					//       if it gets too wide for the visible area
-					'    body { position: fixed; top: 0; left: 0; right: 0; min-height: ' + this.minHeight + '; }' +
+					'    body { position: fixed; top: 0; left: 0; right: 0;' +
+					'        min-height: ' + this.minHeight + '; margin: ' + margin + '; }' +
 					'    body > *:first-child { padding-top: 0; margin-top: 0; }' +
 					'    body > *:last-child { padding-bottom: 0; margin-bottom: 0; }' +
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }' +
