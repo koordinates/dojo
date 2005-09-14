@@ -110,6 +110,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	onMouseUp: function(e){
 		var _this = this;
+		e.dragSource = this.dragSource;
 		if((!e.shiftKey)&&(!e.ctrlKey)){
 			dojo.alg.forEach(this.dragObjects, function(tempDragObj){
 				var ret = null;
@@ -135,13 +136,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 						 _this.currentDropTarget.onDragOut(e);
 					}
 				}
-				tempDragObj.onDragEnd({
-					dragStatus: (_this.dropAcceptable && ret) ? "dropSuccess" : "dropFailure"
-				});
+				
+				e.dragStatus = _this.dropAcceptable && ret ? "dropSuccess" : "dropFailure";
+				tempDragObj.onDragEnd(e);
 			});
 						
 			this.selectedSources = [];
 			this.dragObjects = [];
+			this.dragSource = null;
 		}
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
 		this.currentDropTarget = null;
@@ -154,6 +156,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// onDragStart to all the right parties and get things lined up for
 		// drop target detection
 		if((this.selectedSources.length)&&(!this.dragObjects.length)){
+			if (this.selectedSources.length == 1) {
+				this.dragSource = this.selectedSources[0];
+			}
+		
 			dojo.alg.forEach(this.selectedSources, function(tempSource){
 				if(!tempSource){ return; }
 				var tdo = tempSource.onDragStart(e);
