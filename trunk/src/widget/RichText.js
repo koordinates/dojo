@@ -165,9 +165,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.domNode.style.padding = "0";
 			dojo.event.connect(this, "close", (function (domNode) { return function (close) {
 				domNode.style.paddingTop = paddings[0];
-				domNode.style.paddingRight = padding[1];
-				domNode.style.paddingBottom = padding[2];
-				domNode.style.paddingLeft = padding[3];
+				domNode.style.paddingRight = paddings[1];
+				domNode.style.paddingBottom = paddings[2];
+				domNode.style.paddingLeft = paddings[3];
 			}; })(this.domNode));
 
 			with (this.document) {
