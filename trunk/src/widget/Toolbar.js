@@ -22,7 +22,7 @@ dojo.widget.HTMLToolbarContainer = function() {
 	this.isContainer = true;
 
 	this.templateString = '<div class="toolbarContainer" dojoAttachPoint="containerNode"></div>';
-	this.templateCssPath = dojo.uri.dojoUri("src/webui/widgets/templates/HtmlToolbar.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlToolbar.css");
 
 	this.getItem = function(name) {
 		if(name instanceof dojo.widget.ToolbarItem) { return name; }
