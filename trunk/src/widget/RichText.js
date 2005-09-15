@@ -49,7 +49,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	fillInTemplate: function () {
 		if (this.debug) { alert("starting editor"); }
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
-		
+
 		var oldHeight = dojo.style.getContentHeight(this.domNode);
 		var oldWidth = dojo.style.getContentWidth(this.domNode);
 		
@@ -87,6 +87,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}
 			dojo.event.connect(window, "onunload", this, "_saveContent");
 		}
+		
+		var contentEditable = Boolean(document.body.contentEditable);
 
 		// Safari's selections go all out of whack if we do it inline,
 		// so for now IE is our only hero
@@ -158,7 +160,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			var font = getStyle('font-size') + " " + getStyle('font-family');
 
 			with (this.document) {
-				designMode = "on";
+				if (!contentEditable) { designMode = "on"; }
 				open();
 				write(
 					//'<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
@@ -174,7 +176,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }' +
 					'</style>' +
 					//'<base href="' + window.location + '">' +
-					html);
+					'<body' + (contentEditable ? ' contentEditable="true"' : '') + '>' +
+					html + '</body>');
 				close();
 			}
 			this.editNode = this.document.body;
@@ -187,14 +190,22 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			
 			// FIXME: when scrollbars appear/disappear this needs to be fired
 			this._updateHeight();
-			dojo.event.connect(this, "afterKeyPress", this, "_updateHeight");
+			if (!dojo.render.html.safari) {
+				dojo.event.connect(this, "afterKeyPress", this, "_updateHeight");
+			} else {
+				var editor = this;
+				setInterval(function () {
+					editor.onDisplayChanged();
+					editor._updateHeight();
+				}, 500);
+			}
 		
 			// FIXME: this does not work in Mozilla, we need to addListener
 			//        in order to invoke the relay function, old school events
 			//        do not get fired with designMode on.
 			// function to allow us to relay events from this child iframe to the parent
 			// frame so they can be handled in a single place
-			function relay (srcObj, srcFunc, targetObj, targetFunc) {
+			/*function relay (srcObj, srcFunc, targetObj, targetFunc) {
 				return dojo.event.connect("around", srcObj, srcFunc, targetObj, targetFunc,
 					function (mi) {
 						var e = mi.args[0];
@@ -232,7 +243,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			for (var i = 0; i < events.length; i++) {
 				relay(this.window, events[i], window, events[i]);
 				relay(this.document, events[i], document, events[i]);
-			}
+			}*/
 			
 			var onBlur = hitch(this, "onBlur");
 			var doc = this.document;
@@ -257,9 +268,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
 		}
 
-		dojo.event.browser.addListener(this.document, "keypress", hitch(this, "keyPress"));
-		dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
-		dojo.event.browser.addListener(this.document, "keyup", hitch(this, "keyUp"));
+		if (!dojo.render.html.safari) {
+			// safari can't handle key listeners, it kills the speed
+			dojo.event.browser.addListener(this.document, "keypress", hitch(this, "keyPress"));
+			dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
+			dojo.event.browser.addListener(this.document, "keyup", hitch(this, "keyUp"));
+		}
 		dojo.event.browser.addListener(this.document, "click", hitch(this, "onClick"));
 		
 		this.focus();
