@@ -192,7 +192,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			// function to allow us to relay events from this child iframe to the parent
 			// frame so they can be handled in a single place
 			function relay (srcObj, srcFunc, targetObj, targetFunc) {
-				return dojo.event.connect("after", srcObj, srcFunc, targetObj, targetFunc,
+				return dojo.event.connect("around", srcObj, srcFunc, targetObj, targetFunc,
 					function (mi) {
 						var e = mi.args[0];
 						var newE = {};
@@ -257,7 +257,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		dojo.event.browser.addListener(this.document, "keypress", hitch(this, "keyPress"));
 		dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
 		dojo.event.browser.addListener(this.document, "keyup", hitch(this, "keyUp"));
-		dojo.event.browser.addListener(this.document, "click", hitch(this, "click"));
+		dojo.event.browser.addListener(this.document, "click", hitch(this, "onClick"));
 		
 		this.focus();
 	},
@@ -303,7 +303,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (preventDefault) { e.preventDefault(); }
 
 		// function call after the character has been inserted
-		dojo.lang.setTimeout(this, this.afterKeyPress, 1, e);
+		var clonedEvent = {};
+		for (var x in e) { clonedEvent[x] = e[x]; }
+		dojo.lang.setTimeout(this, this.afterKeyPress, 1, clonedEvent);
 	},
 	
 	/**
@@ -311,7 +313,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * is useful if action needs to be taken after text operations have
 	 * finished
 	 */
-	afterKeyPress: function (e) {		
+	afterKeyPress: function (e) {
 		// Mozilla adds a single <p> with an embedded <br> when you hit enter once:
 		//   <p><br>\n</p>
 		// when you hit enter again it adds another <br> inside your enter
@@ -333,9 +335,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		//		}
 		//	}
 		//}
+		this.onDisplayChanged(e);
 	},
 	
-	click: function (e) {},
+	onClick: function (e) { this.onDisplayChanged(e); },
 	
 	onBlur: function (e) {},
 	onFocus: function (e) {},
@@ -347,6 +350,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	focus: function () {
 		if (this.iframe) { this.window.focus(); } else { this.editNode.focus(); }
 	},
+	
+	/** this event will be fired everytime the display context changes and the
+	 result needs to be reflected in the UI */
+	onDisplayChanged: function (e) {},
 	
 
 /* Formatting commands
