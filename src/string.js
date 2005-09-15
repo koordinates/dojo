@@ -54,7 +54,7 @@ dojo.string.isBlank = function (str) {
 	return (dojo.string.trim(str).length == 0);
 }
 
-dojo.string.asciiEncode = function(str) {
+dojo.string.encodeAscii = function(str) {
 	if(!dojo.lang.isString(str)) { return str; }
 	var ret = "";
 	str = str.replace(/ /g, '+');
