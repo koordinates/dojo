@@ -103,21 +103,6 @@ dojo.io.createIFrame = function(fname){
 	return cframe;
 }
 
-
-dojo.io.cancelDOMEvent = function(evt){
-	if(!evt){ return false; }
-	if(evt.preventDefault){
-		evt.stopPropagation();
-		evt.preventDefault();
-	}else{
-		if(window.event){
-			window.event.cancelBubble = true;
-			window.event.returnValue = false;
-		}
-	}
-	return false;
-}
-
 dojo.io.XMLHTTPTransport = new function(){
 	var _this = this;
 
