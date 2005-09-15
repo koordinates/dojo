@@ -136,7 +136,7 @@ function dj_debug(){
 		dj_throw("dj_debug not available (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
-	var isJUM = dj_global["jum"];
+	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
 	var s = isJUM ? "": "DEBUG: ";
 	for(var i=0;i<args.length;++i){
 		if(!false && args[i] instanceof Error){
