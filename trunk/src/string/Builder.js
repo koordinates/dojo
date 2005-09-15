@@ -1,11 +1,11 @@
-dojo.provide("dojo.text.Builder");
-dojo.require("dojo.text");
+dojo.provide("dojo.string.Builder");
+dojo.require("dojo.string");
 
-dojo.text.Builder = function(str){
+dojo.string.Builder = function(str){
 	var a = [];
 	var b = str || "";
 	var length = this.length = b.length;
-	if (!dojo.text.isBlank(b)) a.push(b);
+	if (!dojo.string.isBlank(b)) a.push(b);
 	b = "";
 	this.toString = this.valueOf = function(){ 
 		return a.join(""); 
