@@ -50,8 +50,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (this.debug) { alert("starting editor"); }
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
 		
-		var oldHeight = dojo.style.getInnerHeight(this.domNode);
-		var oldWidth = dojo.style.getInnerWidth(this.domNode);
+		var oldHeight = dojo.style.getContentHeight(this.domNode);
+		var oldWidth = dojo.style.getContentWidth(this.domNode);
 		
 		this.savedContent = document.createElement("div");
 		while (this.domNode.hasChildNodes()) {
@@ -144,6 +144,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				scrolling = "no";
 				style.border = "none";
 				style.lineHeight = "0"; // squash line height
+				style.verticalAlign = "bottom";
 			}
 			this.domNode.appendChild(this.iframe);
 
@@ -156,21 +157,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}; })(this.domNode);
 			var font = getStyle('font-size') + " " + getStyle('font-family');
 
-			// need to save padding and consume it in the iframe
-			// this prevents visible resizing.
-			var padding = [getStyle('padding-top'), getStyle('padding-right'),
-				getStyle('padding-bottom'), getStyle('padding-left')].join(" ");
-			var paddings = [this.domNode.style.paddingTop, this.domNode.style.paddingRight,
-				this.domNode.style.paddingBottom, this.domNode.style.paddingLeft];
-			this.domNode.style.padding = "0";
-			dojo.event.connect(this, "close", (function (domNode) { return function (close) {
-				domNode.style.paddingTop = paddings[0];
-				domNode.style.paddingRight = paddings[1];
-				domNode.style.paddingBottom = paddings[2];
-				domNode.style.paddingLeft = paddings[3];
-			}; })(this.domNode));
-			this.iframe.style.verticalAlign = "bottom";
-
 			with (this.document) {
 				designMode = "on";
 				open();
@@ -182,7 +168,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					// TODO: left positioning will case contents to disappear out of view
 					//       if it gets too wide for the visible area
 					'    body { position: fixed; top: 0; left: 0; right: 0;' +
-					'        min-height: ' + this.minHeight + '; padding: ' + padding + '; }' +
+					'        min-height: ' + this.minHeight + '; }' +
 					'    body > *:first-child { padding-top: 0; margin-top: 0; }' +
 					'    body > *:last-child { padding-bottom: 0; margin-bottom: 0; }' +
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }' +
