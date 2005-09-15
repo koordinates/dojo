@@ -651,6 +651,38 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 		return this.editNode;
 	},
+	
+	placeCursorAtStart: function () {
+		if (this.iframe) {
+			var range = this.document.createRange();
+			range.selectNode(this.editNode.firstChild);
+			range.collapse(true);
+			var selection = this.window.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(range);
+		} else if (this.document.selection) { // IE
+			var range = this.document.body.createTextRange();
+			range.moveToElementText(this.editNode);
+			range.collapse(true);
+			range.select();
+		}
+	},
+	
+	placeCursorAtEnd: function () {
+		if (this.iframe) {
+			var range = this.document.createRange();
+			range.selectNode(this.editNode.lastChild);
+			range.collapse(false);
+			var selection = this.window.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(range);
+		} else if (this.document.selection) { // IE
+			var range = this.document.body.createTextRange();
+			range.moveToElementText(this.editNode);
+			range.collapse(true);
+			range.select();
+		}
+	},
 
 	/** Updates the height of the iframe to fit the contents. */
 	_updateHeight: function () {
