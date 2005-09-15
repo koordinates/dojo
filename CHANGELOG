@@ -1,1 +1,8 @@
 Dojo Changelog
+
+Namespace refactoring:
+- dojo.graphics.htmlEffects -> dojo.fx
+- dojo.alg -> (added to) dojo.lang
+- dojo.text -> dojo.string
+- dojo.xml.htmlUtil -> dojo.html + dojo.style
+- dojo.xml.domUtil -> dojo.dom
