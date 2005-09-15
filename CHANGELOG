@@ -1,5 +1,8 @@
 Dojo Changelog
 
+API Changes:
+- dojo.io.bind now returns a dojo.io.Request object instead of a boolean
+
 Namespace refactoring:
 - dojo.graphics.htmlEffects -> dojo.fx
 - dojo.alg -> (added to) dojo.lang
