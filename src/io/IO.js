@@ -58,20 +58,84 @@ dojo.io.transports = [];
 dojo.io.hdlrFuncNames = [ "load", "error" ]; // we're omitting a progress() event for now
 
 dojo.io.Request = function(url, mt, trans, curl){
-	this.url = url;
-	this.mimetype = mt;
-	this.transport = trans;
-	this.changeUrl = curl;
-	this.formNode = null;
+	var Request = this;
+
+	this.url;
+	this.mimetype;
+	this.transport;
+	this.changeUrl;
+	this.formNode;
+	this.bindSuccess = false;
+	this.events_ = {};
+
+	this.getEventUnroller = function(fp, scope){
+		return function(e){
+			return fp.call(scope, e.type, e.data, e, e.errorMessage, e.errorUrl, e.errorCode);
+		};
+	}
+
+	this.fromKwArgs = function(kwArgs){
+		// normalize args
+		if(!kwArgs["url"]){ 
+			kwArgs.url = ""; 
+		}else{
+			kwArgs.url = kwArgs.url.toString();
+		}
+		if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
+		if((!kwArgs["method"])&&(!kwArgs["formNode"])){
+			kwArgs.method = "get";
+		} else if(kwArgs["formNode"]) {
+			kwArgs.method = kwArgs["method"] || kwArgs["formNode"].method || "get";
+		}
+		if(kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
+		if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
+		if(kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
+		if(kwArgs["changeUrl"]) { kwArgs.changeURL = kwArgs.changeUrl; }
+		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
+			var fn = dojo.io.hdlrFuncNames[x];
+			if(typeof kwArgs[fn] == "function"){ continue; }
+			if(typeof kwArgs.handler == "object"){
+				if(typeof kwArgs.handler[fn] == "function"){
+					kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
+				}
+			}else if(typeof kwArgs["handler"] == "function"){
+				kwArgs[fn] = kwArgs.handler;
+			}else if(typeof kwArgs["handle"] == "function"){
+				kwArgs[fn] = kwArgs.handle;
+			}
+		}
+		var types = ["load", "error", "forwardButton", "backButton"];
+		for(var x=0; x<types.length; x++){
+			var ttype = types[x];
+			if(kwArgs[ttype]){
+				this.addEventListener(ttype, this.getEventUnroller(kwArgs[ttype], Request));
+				delete kwArgs[ttype];
+			}
+		}
+		dojo.lang.mixin(this, kwArgs);
+	}
+	
+	if((arguments.length == 1)&&(arguments[0].constructor == Object)){
+		this.fromKwArgs(arguments[0]);
+	}else{
+		this.url = url;
+		this.mimetype = mt;
+		this.transport = trans;
+		this.changeUrl = curl;
+		this.formNode = null;
+	}
 	
 	// events stuff
-	this.events_ = {};
+	this.load = function(type, data, evt){
+		var event = new dojo.io.IOEvent("load", data, Request);
+		Request.dispatchEvent(event);
+		if(Request.onload){
+			Request.onload(event);
+		}
+	}
 	
-	var Request = this;
-	
-	this.error = function (type, error) {
-		
-		switch (type) {
+	this.error = function (type, error){
+		switch (type){
 			case "io":
 				var errorCode = dojo.io.IOEvent.IO_ERROR;
 				var errorMessage = "IOError: error during IO";
@@ -86,35 +150,40 @@ dojo.io.Request = function(url, mt, trans, curl){
 		
 		var event = new dojo.io.IOEvent("error", null, Request, errorMessage, this.url, errorCode);
 		Request.dispatchEvent(event);
-		if (Request.onerror) { Request.onerror(errorMessage, Request.url, event); }
+		if(Request.onerror){
+			Request.onerror(errorMessage, Request.url, event);
+		}
 	}
 	
-	this.load = function (type, data, evt) {
-		var event = new dojo.io.IOEvent("load", data, Request, null, null, null);
+	this.backButton = function(){
+		var event = new dojo.io.IOEvent("backbutton", null, Request);
 		Request.dispatchEvent(event);
-		if (Request.onload) { Request.onload(event); }
+		if(Request.onbackbutton){
+			Request.onbackbutton(event);
+		}
 	}
 	
-	this.backButton = function () {
-		var event = new dojo.io.IOEvent("backbutton", null, Request, null, null, null);
+	this.forwardButton = function(){
+		var event = new dojo.io.IOEvent("forwardbutton", null, Request);
 		Request.dispatchEvent(event);
-		if (Request.onbackbutton) { Request.onbackbutton(event); }
-	}
-	
-	this.forwardButton = function () {
-		var event = new dojo.io.IOEvent("forwardbutton", null, Request, null, null, null);
-		Request.dispatchEvent(event);
-		if (Request.onforwardbutton) { Request.onforwardbutton(event); }
+		if(Request.onforwardbutton){
+			Request.onforwardbutton(event);
+		}
 	}
 	
 }
 
 // EventTarget interface
-dojo.io.Request.prototype.addEventListener = function (type, func) {
-	if (!this.events_[type]) { this.events_[type] = []; }
+dojo.io.Request.prototype.addEventListener = function(type, func){
+	type = type.toLowerCase();
+	if(!this.events_[type]){
+		this.events_[type] = [];
+	}
 	
-	for (var i = 0; i < this.events_[type].length; i++) {
-		if (this.events_[type][i] == func) { return; }
+	for(var i = 0; i < this.events_[type].length; i++){
+		if(this.events_[type][i] == func){
+			return;
+		}
 	}
 	this.events_[type].push(func);
 }
@@ -166,54 +235,31 @@ dojo.io.transports.addTransport = function(name){
 
 // binding interface, the various implementations register their capabilities
 // and the bind() method dispatches
-dojo.io.bind = function(kwArgs){
+dojo.io.bind = function(request){
 	// if the request asks for a particular implementation, use it
-
-	// normalize args
-	if(!kwArgs["url"]){ kwArgs.url = ""; } else { kwArgs.url = kwArgs.url.toString(); }
-	if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
-	if(!kwArgs["method"] && !kwArgs["formNode"]){
-		kwArgs.method = "get";
-	} else if(kwArgs["formNode"]) {
-		kwArgs.method = kwArgs["method"] || kwArgs["formNode"].method || "get";
+	if(!(request instanceof dojo.io.Request)){
+		try{
+		request = new dojo.io.Request(request);
+		}catch(e){ dj_debug(e); }
 	}
-	if(kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
-	if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
-	if(kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
-	if(kwArgs["changeUrl"]) { kwArgs.changeURL = kwArgs.changeUrl; }
-	for(var x=0; x<this.hdlrFuncNames.length; x++){
-		var fn = this.hdlrFuncNames[x];
-		if(typeof kwArgs[fn] == "function"){ continue; }
-		if(typeof kwArgs.handler == "object"){
-			if(typeof kwArgs.handler[fn] == "function"){
-				kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
-			}
-		}else if(typeof kwArgs["handler"] == "function"){
-			kwArgs[fn] = kwArgs.handler;
-		}else if(typeof kwArgs["handle"] == "function"){
-			kwArgs[fn] = kwArgs.handle;
-		}
-	}
-
 	var tsName = "";
-	if(kwArgs["transport"]){
-		tsName = kwArgs["transport"];
-		if(!this[tsName]){ return false; /* throw exception? */ }
+	if(request["transport"]){
+		tsName = request["transport"];
+		if(!this[tsName]){ return request; }
 	}else{
 		// otherwise we do our best to auto-detect what available transports
 		// will handle 
-
-		// FIXME: should we normalize or set defaults for the kwArgs here?
 		for(var x=0; x<dojo.io.transports.length; x++){
 			var tmp = dojo.io.transports[x];
-			if((this[tmp])&&(this[tmp].canHandle(kwArgs))){
+			if((this[tmp])&&(this[tmp].canHandle(request))){
 				tsName = tmp;
 			}
 		}
-		if(tsName == ""){ return false; /* throw exception? */ }
+		if(tsName == ""){ return request; }
 	}
-	this[tsName].bind(kwArgs);
-	return true;
+	this[tsName].bind(request);
+	request.bindSuccess = true;
+	return request;
 }
 
 dojo.io.argsFromMap = function(map){
