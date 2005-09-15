@@ -1,7 +1,7 @@
 dojo.hostenv.conditionalLoadModule({
 	common: [
-		"dojo.text.String",
-		"dojo.text.Builder"
+		"dojo.string",
+		"dojo.string.Builder"
 	]
 });
-dojo.hostenv.moduleLoaded("dojo.text.*");
+dojo.hostenv.moduleLoaded("dojo.string.*");
