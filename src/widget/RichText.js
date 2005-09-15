@@ -189,6 +189,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this._updateHeight();
 			dojo.event.connect(this, "afterKeyPress", this, "_updateHeight");
 		
+			// FIXME: this does not work in Mozilla, we need to addListener
+			//        in order to invoke the relay function, old school events
+			//        do not get fired with designMode on.
 			// function to allow us to relay events from this child iframe to the parent
 			// frame so they can be handled in a single place
 			function relay (srcObj, srcFunc, targetObj, targetFunc) {
