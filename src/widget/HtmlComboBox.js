@@ -3,6 +3,7 @@ dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.dom");
+dojo.require("dojo.html");
 
 dojo.widget.HtmlComboBox = function(){
 	dojo.widget.DomComboBox.call(this);
@@ -106,26 +107,26 @@ dojo.widget.HtmlComboBox = function(){
 
 	this.highlightNextOption = function(){
 		if(_highlighted_option){
-			dojo.xml.htmlUtil.removeClass(_highlighted_option, "cbItemHighlight");
+			dojo.html.removeClass(_highlighted_option, "cbItemHighlight");
 		}
 		if((!_highlighted_option)||(!_highlighted_option.nextSibling)){
 			_highlighted_option = this.optionsListNode.firstChild;
 		}else{
 			_highlighted_option = _highlighted_option.nextSibling;
 		}
-		dojo.xml.htmlUtil.addClass(_highlighted_option, "cbItemHighlight");
+		dojo.html.addClass(_highlighted_option, "cbItemHighlight");
 	}
 
 	this.highlightPrevOption = function(){
 		if(_highlighted_option){
-			dojo.xml.htmlUtil.removeClass(_highlighted_option, "cbItemHighlight");
+			dojo.html.removeClass(_highlighted_option, "cbItemHighlight");
 		}
 		if((!_highlighted_option)||(!_highlighted_option.previousSibling)){
 			_highlighted_option = this.optionsListNode.lastChild;
 		}else{
 			_highlighted_option = _highlighted_option.previousSibling;
 		}
-		dojo.xml.htmlUtil.addClass(_highlighted_option, "cbItemHighlight");
+		dojo.html.addClass(_highlighted_option, "cbItemHighlight");
 	}
 
 	this.onKeyUp = function(evt){
@@ -289,11 +290,11 @@ dojo.widget.HtmlComboBox = function(){
 	this.showResultList = function(){
 		with(this.optionsListNode.style){
 			display = "";
-			width = dojo.xml.htmlUtil.getInnerWidth(this.downArrowNode)+dojo.xml.htmlUtil.getInnerWidth(this.textInputNode)+"px";
+			width = dojo.html.getInnerWidth(this.downArrowNode)+dojo.html.getInnerWidth(this.textInputNode)+"px";
 			if(dojo.render.html.khtml){
-				marginTop = dojo.xml.htmlUtil.totalOffsetTop(this.optionsListNode.parentNode)+"px";
+				marginTop = dojo.html.totalOffsetTop(this.optionsListNode.parentNode)+"px";
 			/*
-				left = dojo.xml.htmlUtil.totalOffsetLeft(this.optionsListNode.parentNode)+3+"px";
+				left = dojo.html.totalOffsetLeft(this.optionsListNode.parentNode)+3+"px";
 				zIndex = "1000";
 				position = "relative";
 			*/
