@@ -25,7 +25,7 @@ dojo.io.encodeForm = function(formNode){
 	if((!formNode)||(!formNode.tagName)||(!formNode.tagName.toLowerCase() == "form")){
 		dj_throw("Attempted to encode a non-form element.");
 	}
-	var ec = encodeURIComponent;
+	var enc = dojo.string.encodeAscii;
 	var values = [];
 
 	for(var i = 0; i < formNode.elements.length; i++) {
@@ -33,19 +33,19 @@ dojo.io.encodeForm = function(formNode){
 		if(elm.disabled){
 			continue;
 		}
-		var name = ec(elm.name);
+		var name = enc(elm.name);
 		var type = elm.type.toLowerCase();
 
 		if((type == "select")&&(elm.multiple)){
 			for(var j = 0; j < elm.options.length; j++) {
-				values.push(name + "=" + ec(elm.options[j].value));
+				values.push(name + "=" + enc(elm.options[j].value));
 			}
 		}else if(dojo.lang.inArray(type, ["radio", "checked"])){
 			if(elm.checked){
-				values.push(name + "=" + ec(elm.value));
+				values.push(name + "=" + enc(elm.value));
 			}
 		}else if(!dojo.lang.inArray(type, ["file", "submit", "reset", "button"])) {
-			values.push(name + "=" + ec(elm.value));
+			values.push(name + "=" + enc(elm.value));
 		}
 	}
 	return values.join("&") + "&";

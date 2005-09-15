@@ -1,4 +1,5 @@
 dojo.provide("dojo.io.IO");
+dojo.require("dojo.string");
 
 /******************************************************************************
  *	Notes about dojo.io design:
@@ -220,7 +221,7 @@ dojo.io.argsFromMap = function(map){
 	var mapStr = "";
 	for(var x in map){
 		if(!control[x]){
-			mapStr+= encodeURIComponent(x)+"="+encodeURIComponent(map[x])+"&";
+			mapStr+= dojo.string.encodeAscii(x)+"="+dojo.string.encodeAscii(map[x])+"&";
 		}
 	}
 
