@@ -251,11 +251,11 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		dojo.html.addClass(dojo.domNode, "RichTextEditable");
 
 		// add the formatting functions
-		var funcs = ["queryCommandEnabled", "queryCommandState", "queryCommandValue"];
+		var funcs = ["queryCommandEnabled", "queryCommandState",
+			"queryCommandValue", "execCommand"];
 		for (var i = 0; i < funcs.length; i++) {
 			dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
 		}
-		dojo.event.connect("around", this, "execCommand", this, "_normalizeCommand");
 
 		dojo.event.browser.addListener(this.document, "keypress", hitch(this, "keyPress"));
 		dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
@@ -553,6 +553,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	execCommand: function (command, argument) {
 		if (this.object) {
+			if (command == "forecolor") { command = "setforecolor"; }
+			else if (command == "backcolor") { command = "setbackcolor"; }
+		
 			if (typeof this._activeX.command[command] == "undefined") { return null; }
 		
 			if (arguments.length == 1) {
@@ -613,6 +616,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	queryCommandEnabled: function (command, argument) {
 		if (this.object) {
+			if (command == "forecolor") { command = "setforecolor"; }
+			else if (command == "backcolor") { command = "setbackcolor"; }
+
 			if (typeof this._activeX.command[command] == "undefined") { return false; }
 			var status = this.object.QueryStatus(this._activeX.command[command]);
 			return (status != this.activeX.status.notsupported && 
@@ -632,6 +638,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	queryCommandState: function (command, argument) {
 		if (this.object) {
+			if (command == "forecolor") { command = "setforecolor"; }
+			else if (command == "backcolor") { command = "setbackcolor"; }
+
 			if (typeof this._activeX.command[command] == "undefined") { return null; }
 			var status = this.object.QueryStatus(this._activeX.command[command]);
 			return (status == this._activeX.status.enabled ||
@@ -663,6 +672,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	placeCursorAtStart: function () {
+		if (this.window.getSelection &&
+			dojo.lang.isString(this.window.getSelection())) { return; } // safari
 		if (this.iframe) {
 			var range = this.document.createRange();
 			range.selectNode(this.editNode.firstChild);
@@ -679,6 +690,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	placeCursorAtEnd: function () {
+		if (this.window.getSelection &&
+			dojo.lang.isString(this.window.getSelection())) { return; } // safari
 		if (this.iframe) {
 			var range = this.document.createRange();
 			range.selectNode(this.editNode.lastChild);
