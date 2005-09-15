@@ -15,21 +15,58 @@ dojo.style.getBoxSizing = function(node) {
 	}
 }
 
-dojo.style.getInnerWidth = function getInnerWidth (node){
+/*
+
+The following couple of function equate to the dimensions shown below
+
+    +-------------------------+
+    |  margin                 |
+    | +---------------------+ |
+    | |  border             | |
+    | | +-----------------+ | |
+    | | |  padding        | | |
+    | | | +-------------+ | | |
+    | | | |   content   | | | |
+    | | | +-------------+ | | |
+    | | +-|-------------|-+ | |
+    | +---|-------------|---+ |
+    +-|---|-------------|---|-+
+    | |   |             |   | |
+    | |   |<- content ->|   | |
+    | |<------ inner ------>| |
+    |<-------- outer -------->|
+ 
+*/
+
+dojo.style.getContentWidth = function (node) {
+	var match = dojo.style.getStyle(node, "width").match(/[0-9]+/);
+	if (match) { return Number(match[0]); } else { return 0; }
+}
+
+dojo.style.getInnerWidth = function (node){
 	return node.offsetWidth;
 }
 
-/*this.getOuterWidth = function(node){
-	dj_unimplemented("dojo.xml.htmlUtil.getOuterWidth");
-}*/
+this.getOuterWidth = function(node) {
+	var leftMargin = Number(dojo.style.getStyle(node, "margin-left"));
+	var rightMargin = Number(dojo.style.getStyle(node, "margin-left"));
+	return dojo.style.getInnerWidth() + leftMargin + rightMargin;
+}
+
+dojo.style.getContentHeight = function (node) {
+	var match = dojo.style.getStyle(node, "height").match(/[0-9]+/);
+	if (match) { return Number(match[0]); } else { return 0; }
+}
 
 dojo.style.getInnerHeight = function (node){
 	return node.offsetHeight; // FIXME: does this work?
 }
 
-/*this.getOuterHeight = function(node){
-	dj_unimplemented("dojo.xml.htmlUtil.getOuterHeight");
-}*/
+this.getOuterHeight = function(node){
+	var topMargin = Number(dojo.style.getStyle(node, "margin-top"));
+	var bottomMargin = Number(dojo.style.getStyle(node, "margin-bottom"));
+	return dojo.style.getInnerHeight() + topMargin + bottomMargin;
+}
 
 dojo.style.getTotalOffset = function (node, type){
 	var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
