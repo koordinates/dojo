@@ -166,7 +166,9 @@ dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
 	file.setAttribute("rel", "stylesheet");
 	file.setAttribute("href", URI);
 	var head = doc.getElementsByTagName("head")[0];
-	head.appendChild(file);
+	if(head){ // FIXME: why isn't this working on Opera 8?
+		head.appendChild(file);
+	}
 }
 
 dojo.style.getBackgroundColor = function (node) {
