@@ -71,12 +71,10 @@ dojo.io.Request = function(url, mt, trans, curl){
 	
 	// events stuff
 	this.load = function(type, data, evt){ }
-	
 	this.error = function (type, error){ }
 	
-	this.backButton = function(){ }
-	
-	this.forwardButton = function(){ }
+	// this.backButton = function(){ }
+	// this.forwardButton = function(){ }
 	
 	this.fromKwArgs = function(kwArgs){
 		// normalize args
