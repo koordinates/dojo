@@ -55,6 +55,7 @@ dojo_ie_clobber = new function(){
 				na.push(tna[x]);
 			}
 		}else{
+			try{ window.onload = null; }catch(e){}
 			na = (this.clobberNodes.length) ? this.clobberNodes : document.all;
 		}
 		for(var i = na.length-1; i>=0; i=i-1){
