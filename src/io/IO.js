@@ -68,12 +68,16 @@ dojo.io.Request = function(url, mt, trans, curl){
 	this.bindSuccess = false;
 	this.events_ = {};
 
-	this.getEventUnroller = function(fp, scope){
-		return function(e){
-			return fp.call(scope, e.type, e.data, e, e.errorMessage, e.errorUrl, e.errorCode);
-		};
-	}
-
+	
+	// events stuff
+	this.load = function(type, data, evt){ }
+	
+	this.error = function (type, error){ }
+	
+	this.backButton = function(){ }
+	
+	this.forwardButton = function(){ }
+	
 	this.fromKwArgs = function(kwArgs){
 		// normalize args
 		if(!kwArgs["url"]){ 
@@ -116,16 +120,6 @@ dojo.io.Request = function(url, mt, trans, curl){
 		this.changeUrl = curl;
 		this.formNode = null;
 	}
-	
-	// events stuff
-	this.load = function(type, data, evt){ }
-	
-	this.error = function (type, error){ }
-	
-	this.backButton = function(){ }
-	
-	this.forwardButton = function(){ }
-	
 }
 
 dojo.io.Error = function(msg, type, num){
