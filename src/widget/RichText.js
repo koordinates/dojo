@@ -217,6 +217,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this._updateHeight();
 			if (!dojo.render.html.safari) {
 				this.connect(this, "afterKeyPress", "_updateHeight");
+				this.connect(this, "execCommand", "_updateHeight");
 			} else {
 				var editor = this;
 				setInterval(function () {
