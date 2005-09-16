@@ -104,14 +104,6 @@ dojo.io.Request = function(url, mt, trans, curl){
 				kwArgs[fn] = kwArgs.handle;
 			}
 		}
-		var types = ["load", "error", "forwardButton", "backButton"];
-		for(var x=0; x<types.length; x++){
-			var ttype = types[x];
-			if(kwArgs[ttype]){
-				this.addEventListener(ttype, this.getEventUnroller(kwArgs[ttype], Request));
-				delete kwArgs[ttype];
-			}
-		}
 		dojo.lang.mixin(this, kwArgs);
 	}
 	
@@ -126,92 +118,14 @@ dojo.io.Request = function(url, mt, trans, curl){
 	}
 	
 	// events stuff
-	this.load = function(type, data, evt){
-		var event = new dojo.io.IOEvent("load", data, Request);
-		Request.dispatchEvent(event);
-		if(Request.onload){
-			Request.onload(event);
-		}
-	}
+	this.load = function(type, data, evt){ }
 	
-	this.error = function (type, error){
-		switch (type){
-			case "io":
-				var errorCode = dojo.io.IOEvent.IO_ERROR;
-				var errorMessage = "IOError: error during IO";
-				break;
-			case "parse":
-				var errorCode = dojo.io.IOEvent.PARSE_ERROR;
-				var errorMessage = "IOError: error during parsing";
-			default:
-				var errorCode = dojo.io.IOEvent.UNKOWN_ERROR;
-				var errorMessage = "IOError: cause unkown";
-		}
-		
-		var event = new dojo.io.IOEvent("error", null, Request, errorMessage, this.url, errorCode);
-		Request.dispatchEvent(event);
-		if(Request.onerror){
-			Request.onerror(errorMessage, Request.url, event);
-		}
-	}
+	this.error = function (type, error){ }
 	
-	this.backButton = function(){
-		var event = new dojo.io.IOEvent("backbutton", null, Request);
-		Request.dispatchEvent(event);
-		if(Request.onbackbutton){
-			Request.onbackbutton(event);
-		}
-	}
+	this.backButton = function(){ }
 	
-	this.forwardButton = function(){
-		var event = new dojo.io.IOEvent("forwardbutton", null, Request);
-		Request.dispatchEvent(event);
-		if(Request.onforwardbutton){
-			Request.onforwardbutton(event);
-		}
-	}
+	this.forwardButton = function(){ }
 	
-}
-
-// EventTarget interface
-dojo.io.Request.prototype.addEventListener = function(type, func){
-	type = type.toLowerCase();
-	if(!this.events_[type]){
-		this.events_[type] = [];
-	}
-	
-	for(var i = 0; i < this.events_[type].length; i++){
-		if(this.events_[type][i] == func){
-			return;
-		}
-	}
-	this.events_[type].push(func);
-}
-
-dojo.io.Request.prototype.removeEventListener = function (type, func) {
-	if (!this.events_[type]) { return; }
-	
-	for (var i = 0; i < this.events_[type].length; i++) {
-		if (this.events_[type][i] == func) { this.events_[type].splice(i,1); }
-	}
-}
-
-dojo.io.Request.prototype.dispatchEvent = function (evt) {
-	if (!this.events_[evt.type]) { return; }
-	for (var i = 0; i < this.events_[evt.type].length; i++) {
-		this.events_[evt.type][i](evt);
-	}
-	return false; // FIXME: implement return value
-}
-
-dojo.io.IOEvent = function(type, data, request, errorMessage, errorUrl, errorCode) {	
-	// properties
-	this.type =  type;
-	this.data = data;
-	this.request = request;
-	this.errorMessage = errorMessage;
-	this.errorUrl = errorUrl;
-	this.errorCode = errorCode;
 }
 
 // constants
