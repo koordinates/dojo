@@ -48,6 +48,30 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	fillInTemplate: function () {
 		if (this.debug) { alert("starting editor"); }
+		
+		// split out paragraphs because Mozilla's paragraph handling is aweful
+		// TODO: should the styles and attributes be copied to a div?
+		/*var paragraphs = dojo.dom.collectionToArray(
+			this.domNode.getElementsByTagName("p"));
+		for (var i = 0; i < paragraphs.length; i++) {
+			var paragraph = paragraphs[i];
+			
+			if (dojo.render.mozilla) {
+				// one paragraph is two lines
+				var nextSibling = dojo.dom.getNextSiblingElement(paragraph);
+				if (nextSibling && nextSibling.nodeName.toLowerCase() == "p") {
+					dojo.dom.insertAfter(document.createElement("br"), paragraph);
+				}
+			}
+			
+			dojo.dom.insertAfter(document.createElement("br"), paragraph);
+
+			while (paragraph.hasChildNodes()) {
+				dojo.dom.insertBefore(paragraph.firstChild, paragraph);
+			}
+			dojo.dom.removeNode(paragraph);
+		}*/
+
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
 
 		var oldHeight = dojo.style.getContentHeight(this.domNode);
@@ -85,7 +109,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					}
 				}				
 			}
-			dojo.event.connect(window, "onunload", this, "_saveContent");
+			this.connect(window, "onunload", "_saveContent");
 		}
 		
 		var contentEditable = Boolean(document.body.contentEditable);
@@ -133,8 +157,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}
 			this.domNode.appendChild(this.editNode);
 			
-			dojo.event.connect(this.editNode, "onblur", this, "onBlur");
-			dojo.event.connect(this.editNode, "onfocus", this, "onFocus");
+			this.connect(this.editNode, "onblur", "onBlur");
+			this.connect(this.editNode, "onfocus", "onFocus");
 		
 			this.window = window;
 			this.document = document;
@@ -173,6 +197,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					'        min-height: ' + this.minHeight + '; }' +
 					'    body > *:first-child { padding-top: 0; margin-top: 0; }' +
 					'    body > *:last-child { padding-bottom: 0; margin-bottom: 0; }' +
+					//'    li > ul:moz-first-node, li > ol:moz-first-node { padding-top: 1em; }' +
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }' +
 					'</style>' +
 					//'<base href="' + window.location + '">' +
@@ -191,7 +216,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			// FIXME: when scrollbars appear/disappear this needs to be fired
 			this._updateHeight();
 			if (!dojo.render.html.safari) {
-				dojo.event.connect(this, "afterKeyPress", this, "_updateHeight");
+				this.connect(this, "afterKeyPress", "_updateHeight");
 			} else {
 				var editor = this;
 				setInterval(function () {
@@ -268,13 +293,21 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
 		}
 
-		if (!dojo.render.html.safari) {
+		if (dojo.render.html.mozilla) {
 			// safari can't handle key listeners, it kills the speed
 			dojo.event.browser.addListener(this.document, "keypress", hitch(this, "keyPress"));
 			dojo.event.browser.addListener(this.document, "keydown", hitch(this, "keyDown"));
 			dojo.event.browser.addListener(this.document, "keyup", hitch(this, "keyUp"));
+			dojo.event.browser.addListener(this.document, "click", hitch(this, "onClick"));
+		} else {
+			if (!dojo.render.html.safari) {
+				// safari can't handle key listeners, it kills the speed
+				this.connect(this.editNode, "onkeypress", "keyPress");
+				this.connect(this.editNode, "onkeydown", "keyDown");
+				this.connect(this.editNode, "onkeyup", "keyUp");
+			}
+			this.connect(this.editNode, "onclick", "onClick");
 		}
-		dojo.event.browser.addListener(this.document, "click", hitch(this, "onClick"));
 		
 		this.focus();
 	},
@@ -320,9 +353,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (preventDefault) { e.preventDefault(); }
 
 		// function call after the character has been inserted
-		var clonedEvent = {};
-		for (var x in e) { clonedEvent[x] = e[x]; }
-		dojo.lang.setTimeout(this, this.afterKeyPress, 1, clonedEvent);
+		dojo.lang.setTimeout(this, this.afterKeyPress, 1, e);
 	},
 	
 	/**
@@ -352,7 +383,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		//		}
 		//	}
 		//}
-		this.onDisplayChanged(e);
+		this.onDisplayChanged(/*e*/); // can't pass in e
 	},
 	
 	onClick: function (e) { this.onDisplayChanged(e); },
@@ -762,9 +793,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	close: function (save) {
 		if (arguments.length == 0) { save = true; }
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
-		
-		if (this.saveName != "") {
-			dojo.event.disconnect(window, "onunload", this, "_saveContent");
+
+		// disconnect those listeners.
+		while (this._connected.length) {
+			this.disconnect(this._connected[0], this._connected[1], this._connected[2]);
 		}
 		
 		// line height is squashed for iframes
@@ -784,6 +816,24 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (this.debug) { alert("ending editor; content "
 			+ (changed ? "" : "not ") + "changed"); }
 		return changed;
+	},
+	
+	_connected: [],
+	connect: function (targetObj, targetFunc, thisFunc) {
+		dojo.event.connect(targetObj, targetFunc, this, thisFunc);
+		this._connected.push([targetObj, targetFunc, thisFunc]);	
+	},
+	
+	disconnect: function (targetObj, targetFunc, thisFunc) {
+		for (var i = 0; i < this._connected.length; i++) {
+			if (this._connected[0] == targetObj &&
+				this._connected[1] == targetFunc &&
+				this._connected[2] == thisFunc) {
+				dojo.event.disconnect(targetObj, targetFunc, this, thisFunc);
+				this._connected.splice(i, 1);
+				break;
+			}
+		}
 	}
 	
 });
