@@ -18,7 +18,7 @@ dojo.event.connect(window, "onload", function (e) {
 */
 </script>
 
-<div id="editable" dojoType="RichText" saveName="main-content"><!-- don't want space here
+<div id="editable" dojoType="RichText" widgetId="editdiv"><!--div id="editable" dojoType="RichText" saveName="main-content"--><!-- don't want space here
 
 --><h1>Lorem Ipsum</h1>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
@@ -35,6 +35,26 @@ dojo.event.connect(window, "onload", function (e) {
 </ul>
 <p>In lacinia varius odio. Fusce elementum dolor at massa. Suspendisse ullamcorper arcu vitae enim feugiat ultrices. Duis neque metus, gravida sit amet, mollis at, nonummy id, eros. Mauris aliquet quam quis nibh. Curabitur sit amet arcu et erat commodo tincidunt.
 </div>
+
+<p><input type="button" value="save" id="savebutton">
+<script type="text/javascript">
+var editable = document.getElementById("editable");
+var savebutton = document.getElementById("savebutton");
+var editableRT;
+dojo.event.connect(dojo.hostenv, "loaded", function (e) {
+	editableRT = dojo.widget.manager.getWidgetById("editdiv");
+});
+dojo.event.connect(savebutton, "onclick", function (e) {
+	if (editableRT) {
+		editableRT.close(true);
+		savebutton.value = "edit";
+		editableRT = null;
+	} else {
+		editableRT = dojo.widget.fromScript("RichText", {}, editable);
+		savebutton.value = "save";
+	}
+});
+</script>
 
 <h2>Not Editable!</h2>
 
