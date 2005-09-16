@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.Parse");
 
 dojo.require("dojo.widget.Manager");
-dojo.require("dojo.text.*");
+dojo.require("dojo.string");
 dojo.require("dojo.dom");
 
 dojo.widget.Parse = function(fragment) {
@@ -46,7 +46,7 @@ dojo.widget.Parse = function(fragment) {
 					// non-destructive widgets from the same ctor node
 					var tna = tn.split(";");
 					for(var x=0; x<tna.length; x++){
-						var ltn = dojo.text.trim(tna[x]).toLowerCase();
+						var ltn = dojo.string.trim(tna[x]).toLowerCase();
 						if(djTags[ltn]){
 							built = true;
 							// var tic = new Date();

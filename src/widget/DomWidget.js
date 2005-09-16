@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.DomWidget");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.text.*");
+dojo.require("dojo.string");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
@@ -144,12 +144,12 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 				if(!evts[y].length){ continue; }
 				var tevt = null;
 				var thisFunc = null;
-				tevt = dojo.text.trim(evts[y]);
+				tevt = dojo.string.trim(evts[y]);
 				if(tevt.indexOf(":") >= 0){
 					// oh, if only JS had tuple assignment
 					var funcNameArr = tevt.split(":");
-					tevt = dojo.text.trim(funcNameArr[0]);
-					thisFunc = dojo.text.trim(funcNameArr[1]);
+					tevt = dojo.string.trim(funcNameArr[0]);
+					thisFunc = dojo.string.trim(funcNameArr[1]);
 				}
 				if(!thisFunc){
 					thisFunc = tevt;
@@ -173,7 +173,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 			if((evtVal)&&(evtVal.length)){
 				var thisFunc = null;
 				var domEvt = events[y].substr(4).toLowerCase(); // clober the "dojo" prefix
-				thisFunc = dojo.text.trim(evtVal);
+				thisFunc = dojo.string.trim(evtVal);
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
 					return function(evt){
