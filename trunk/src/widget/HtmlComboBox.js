@@ -4,6 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
+dojo.require("dojo.string");
 
 dojo.widget.HtmlComboBox = function(){
 	dojo.widget.DomComboBox.call(this);
@@ -188,7 +189,7 @@ dojo.widget.HtmlComboBox = function(){
 
 		// FIXME: add logic
 
-		if(!dojo.text.isBlank(this.dataUrl)){
+		if(!dojo.string.isBlank(this.dataUrl)){
 			if("local" == this.mode){
 				var _this = this;
 				dojo.io.bind({

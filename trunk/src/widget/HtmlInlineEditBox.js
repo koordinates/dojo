@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.HtmlInlineEditBox");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
-dojo.require("dojo.text.*");
+dojo.require("dojo.string");
 dojo.require("dojo.style");
 
 dojo.widget.HtmlInlineEditBox = function() {
@@ -48,8 +48,8 @@ dojo.widget.HtmlInlineEditBox = function() {
 			this.editable.appendChild(node.firstChild);
 		}
 		// this.textValue = this.editable.firstChild.nodeValue;
-		this.textValue = dojo.text.trim(this.editable.innerHTML);
-		if(dojo.text.trim(this.textValue).length == 0){
+		this.textValue = dojo.string.trim(this.editable.innerHTML);
+		if(dojo.string.trim(this.textValue).length == 0){
 			this.editable.innerHTML = this.defaultText;
 		}
 		/*
@@ -98,7 +98,7 @@ dojo.widget.HtmlInlineEditBox = function() {
 		var ee = this[this.mode.toLowerCase()];
 
 		ee.style.display = "";
-		ee.value = dojo.text.trim(this.textValue);
+		ee.value = dojo.string.trim(this.textValue);
 		ee.style.fontSize = dojo.style.getStyle(this.editable, "font-size");
 		ee.style.fontWeight = dojo.style.getStyle(this.editable, "font-weight");
 		ee.style.fontStyle = dojo.style.getStyle(this.editable, "font-style");
@@ -121,7 +121,7 @@ dojo.widget.HtmlInlineEditBox = function() {
 		e.stopPropagation();
 		var ee = this[this.mode.toLowerCase()];
 		if((this.textValue != ee.value)&&
-			(dojo.text.trim(ee.value) != "")){
+			(dojo.string.trim(ee.value) != "")){
 			this.doFade = true;
 			this.history.push(this.textValue);
 			this.onSave(ee.value, this.textValue);
@@ -151,7 +151,7 @@ dojo.widget.HtmlInlineEditBox = function() {
 
 	this.setText = function(txt){
 		// sets the text without informing the server
-		var tt = dojo.text.trim(txt);
+		var tt = dojo.string.trim(txt);
 		this.textValue = tt
 		this.editable.innerHTML = tt;
 	}

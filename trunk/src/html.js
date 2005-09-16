@@ -1,7 +1,7 @@
 dojo.provide("dojo.html");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
-dojo.require("dojo.text.String");
+dojo.require("dojo.string");
 dojo.require("dojo.event.*");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.graphics.color");
@@ -204,7 +204,7 @@ dojo.html.setClass = function (node, classStr){
  */ 
 dojo.html.removeClass = function (node, classStr){
 	if(!node){ return false; }
-	var classStr = dojo.text.trim(new String(classStr));
+	var classStr = dojo.string.trim(new String(classStr));
 
 	try{
 		var cs = String( node.className ).split(" ");
@@ -399,7 +399,7 @@ dojo.html.renderedTextContent = function (node) {
 			case 4: // CDATA_SECTION_NODE
 				var text = node.childNodes[i].nodeValue;
 				switch (dojo.style.getStyle(node, "text-transform")) {
-					case "capitalize": text = dojo.text.capitalize(text); break;
+					case "capitalize": text = dojo.string.capitalize(text); break;
 					case "uppercase": text = text.toUpperCase(); break;
 					case "lowercase": text = text.toLowerCase(); break;
 					default: break; // leave as is
