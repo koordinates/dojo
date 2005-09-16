@@ -39,6 +39,8 @@ The following couple of function equate to the dimensions shown below
 */
 
 dojo.style.getContentWidth = function (node) {
+	// FIXME: clientWidth includes padding
+	if (dojo.render.html.ie && node.clientWidth) { return node.clientWidth; }
 	var match = dojo.style.getStyle(node, "width").match(/[0-9]+/);
 	if (match) { return Number(match[0]); } else { return 0; }
 }
@@ -54,6 +56,8 @@ this.getOuterWidth = function(node) {
 }
 
 dojo.style.getContentHeight = function (node) {
+	// FIXME: clientHeight includes padding
+	if (dojo.render.html.ie && node.clientHeight) { return node.clientHeight; }
 	var match = dojo.style.getStyle(node, "height").match(/[0-9]+/);
 	if (match) { return Number(match[0]); } else { return 0; }
 }
