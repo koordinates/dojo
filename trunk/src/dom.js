@@ -268,8 +268,8 @@ if(dojo.render.html.capable) {
 dojo.dom.insertBefore = function (node, ref, force) {
 	if (force != true &&
 		(node === ref || node.nextSibling === ref)) { return false; }
-	var pn = ref.parentNode;
-	pn.insertBefore(node, ref);
+	var parent = ref.parentNode;
+	parent.insertBefore(node, ref);
 	return true;
 }
 
@@ -352,4 +352,12 @@ dojo.dom.textContent = function (node, text) {
 		}
 		return _result;
 	}
+}
+
+dojo.dom.collectionToArray = function (collection) {
+	var array = new Array(collection.length);
+	for (var i = 0; i < collection.length; i++) {
+		array[i] = collection[i];
+	}
+	return array;
 }
