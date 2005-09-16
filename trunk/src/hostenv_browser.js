@@ -180,26 +180,23 @@ if(!dojo.hostenv["library_script_uri_"]){
 
 dojo.hostenv.defaultDebugContainerId = 'dojoDebug';
 
-dojo.hostenv.println = function(s){
-	var ti = null;
-	var dis = "<div>"+s+"</div>";
-	try{
-		var console = document.getElementById(djConfig.debugContainerId ? djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
+dojo.hostenv.println = function (line) {
+	try {
+		var console = document.getElementById(djConfig.debugContainerId ?
+			djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
 		if(!console) { console = document.body; }
-		ti = document.createElement("div");
-		console.appendChild(ti);
-		ti.innerHTML = s;
-	}catch(e){
+
+		var div = document.createElement("div");
+		div.appendChild(document.createTextNode(line));
+		console.appendChild(div);
+	} catch (e) {
 		try{
 			// safari needs the output wrapped in an element for some reason
-			document.write(dis);
+			document.write("<div>" + line + "</div>");
 		}catch(e2){
-			window.status = s;
+			window.status = line;
 		}
 	}
-	delete ti;
-	delete dis;
-	delete s;
 }
 
 dj_addNodeEvtHdlr(window, "load", function(){
