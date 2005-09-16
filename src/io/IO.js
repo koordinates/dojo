@@ -128,12 +128,6 @@ dojo.io.Request = function(url, mt, trans, curl){
 	
 }
 
-// constants
-dojo.io.IOEvent.UNKOWN_ERROR = 0;
-dojo.io.IOEvent.IO_ERROR = 1;
-dojo.io.IOEvent.PARSE_ERROR = 2;
-
-
 dojo.io.Error = function(msg, type, num){
 	this.message = msg;
 	this.type =  type || "unknown"; // must be one of "io", "parse", "unknown"
