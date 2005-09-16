@@ -3,8 +3,7 @@
 <title>Dojo - DojoToolkit.org</title>
 <script type="text/javascript" src="/dojo/dojo.js"></script>
 <link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/screen.css" media="screen" />
-<link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/print.css" media="print" />
-<style type="text/css">
+<style type="text/css" media="screen">
 #splash {
 	position : relative;
 	margin : 15px auto 20px;
@@ -92,6 +91,8 @@
 	text-indent : -999em;
 }
 
+</style>
+<style type="text/css">
 .col dl {
 	margin-top : 5px;
 	font-size : 0.9em;
@@ -165,8 +166,7 @@ a.more:hover {
 
 	<div id="col1" class="content">
 <h2>What is Dojo?</h2>
-<p>Dojo is an Open Source toolkit (<a href="http://dojotoolkit.org/trac/file/trunk/LICENSE.txt">Academic Free License</a>)
-that allows you to easily build dynamic
+<p>Dojo is an Open Source toolkit that allows you to easily build dynamic
 capabilities into web pages and any other environment that supports JavaScript.
 Dojo provides components that let you make your sites more useable, responsive,
 and functional. With Dojo you can build degradeable user interfaces more
