@@ -9,10 +9,6 @@ dojo.require("dojo.style");
 
 // used to save content
 document.write('<textarea id="dojo.widget.RichText.savedContent" style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
-// squish the margins in IE so that enter only shifts a single line.
-if (dojo.render.html.ie) {
-	dojo.style.insertCssRule(".RichTextEditable p", "margin: 0;");
-}
 
 dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 
@@ -52,19 +48,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	fillInTemplate: function () {
 		if (this.debug) { alert("starting editor"); }
-		
-		// paragrapghs are squished to a single line in IR so we need to
-		// pad them out with some space
-		var paragraphs = dojo.dom.collectionToArray(
-			this.domNode.getElementsByTagName("p"));
-		if (dojo.render.html.ie) {
-			for (var i = 0; i < paragraphs.length; i++) {
-				var paragraph = paragraphs[i];
-				if (dojo.dom.getNextSiblingElement(paragraph).nodeName == "P") {
-					dojo.dom.insertAfter(document.createElement("br"), paragraph);
-				}
-			}
-		}
 		
 		// split out paragraphs because Mozilla's paragraph handling is aweful
 		// TODO: should the styles and attributes be copied to a div?
@@ -815,16 +798,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		// disconnect those listeners.
 		while (this._connected.length) {
 			this.disconnect(this._connected[0], this._connected[1], this._connected[2]);
-		}
-		
-		// FIXME: need to be more intelligent about wrapping things in paragraphs
-		if (dojo.render.html.ie) {
-			var paragraphs = dojo.dom.collectionToArray(
-				this.domNode.getElementsByTagName("p"));
-			for (var i = 0; i < paragraphs.length; i++) {
-				var paragraph = paragraphs[i];
-				dojo.dom.insertBefore(document.createElement("br"), paragraph);
-			}
 		}
 		
 		// line height is squashed for iframes
