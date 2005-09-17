@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.HtmlDatePicker");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DatePicker");
+dojo.require("dojo.html");
 
 /*
 	Some assumptions:
@@ -122,7 +123,7 @@ dojo.widget.HtmlDatePicker = function(){
 			for (var i=this.firstSaturday.date; i>0; i--) {
 				currentCalendarNode = calendarNodes.item(dayInWeek);
 				currentCalendarNode.innerHTML = nextDate.getDate();
-				dojo.xml.htmlUtil.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
+				dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
 				dayInWeek--;
 				previousDate = nextDate;
 				nextDate = this.incrementDate(nextDate, false);
@@ -130,7 +131,7 @@ dojo.widget.HtmlDatePicker = function(){
 			for(var i=dayInWeek; i>-1; i--) {
 				currentCalendarNode = calendarNodes.item(i);
 				currentCalendarNode.innerHTML = nextDate.getDate();
-				dojo.xml.htmlUtil.setClass(currentCalendarNode, this.getDateClassName(nextDate, "previous"));
+				dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "previous"));
 				previousDate = nextDate;
 				nextDate = this.incrementDate(nextDate, false);				
 			}
@@ -139,7 +140,7 @@ dojo.widget.HtmlDatePicker = function(){
 			for(var i=0; i<7; i++) {
 				currentCalendarNode = calendarNodes.item(i);
 				currentCalendarNode.innerHTML = i + 1;
-				dojo.xml.htmlUtil.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
+				dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
 				previousDate = nextDate;
 				nextDate = this.incrementDate(nextDate, true);				
 			}
@@ -152,7 +153,7 @@ dojo.widget.HtmlDatePicker = function(){
 		currentCalendarNode = calendarNodes.item(count);
 		while((nextDate.getMonth() == previousDate.getMonth()) && (count<42)) {
 			currentCalendarNode.innerHTML = nextDate.getDate();
-			dojo.xml.htmlUtil.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
+			dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
 			currentCalendarNode = calendarNodes.item(++count);
 			previousDate = nextDate;
 			nextDate = this.incrementDate(nextDate, true);
@@ -160,7 +161,7 @@ dojo.widget.HtmlDatePicker = function(){
 		
 		while(count < 42) {
 			currentCalendarNode.innerHTML = nextDate.getDate();
-			dojo.xml.htmlUtil.setClass(currentCalendarNode, this.getDateClassName(nextDate, "next"));
+			dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "next"));
 			currentCalendarNode = calendarNodes.item(++count);
 			previousDate = nextDate;
 			nextDate = this.incrementDate(nextDate, true);
@@ -284,11 +285,11 @@ dojo.widget.HtmlDatePicker = function(){
 		this.todayIsUsed = 0;
 		var month = this.firstSaturday.month;
 		var year = this.firstSaturday.year;
-		if (dojo.xml.htmlUtil.hasClass(evt.target, this.classNames["next"])) {
+		if (dojo.html.hasClass(evt.target, this.classNames["next"])) {
 			month = ++month % 12;
 			// if month is now == 0, add a year
 			year = (month==0) ? ++year : year;
-		} else if (dojo.xml.htmlUtil.hasClass(evt.target, this.classNames["previous"])) {
+		} else if (dojo.html.hasClass(evt.target, this.classNames["previous"])) {
 			month = --month % 12;
 			// if month is now == 0, add a year
 			year = (month==11) ? --year : year;

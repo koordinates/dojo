@@ -1,11 +1,11 @@
 dojo.provide("dojo.widget.CiviCrmDatePicker");
 dojo.provide("dojo.widget.HtmlCiviCrmDatePicker");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.xml.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.widget.HtmlDatePicker");
 dojo.require("dojo.widget.HtmlTimePicker");
+dojo.require("dojo.html");
 
 dojo.widget.HtmlCiviCrmDatePicker = function(){
 	this.widgetType = "CiviCrmDatePicker";
@@ -97,7 +97,7 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 	this.postCreate = function(){
 		dojo.event.kwConnect({
 			type: "before", 
-			srcObj: dojo.xml.htmlUtil.getParentOfType(this.domNode, "form"),
+			srcObj: dojo.html.getParentOfType(this.domNode, "form"),
 			srcFunc: "onsubmit", 
 			targetObj: this,
 			targetFunc: "unhide"

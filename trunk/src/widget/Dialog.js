@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.HtmlDialog");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
+dojo.require("dojo.style");
 
 dojo.widget.tags.addParseTreeHandler("dojo:dialog");
 
@@ -97,8 +98,8 @@ dojo.widget.HtmlDialog = function() {
 
 	this.setBackgroundOpacity = function(op) {
 		if(arguments.length == 0) { op = this.bgOpacity; }
-		dojo.xml.htmlUtil.setOpacity(this.bg, op);
-		return this.bgOpacity = dojo.xml.htmlUtil.getOpacity(this.bg);
+		dojo.style.setOpacity(this.bg, op);
+		return this.bgOpacity = dojo.style.getOpacity(this.bg);
 	}
 
 	this.sizeBackground = function() {

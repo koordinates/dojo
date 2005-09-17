@@ -6,6 +6,7 @@ dojo.require("dojo.widget.Widget");
 dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.widget.HtmlWidget");
 
+dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:MenuItem");
 
@@ -59,11 +60,11 @@ dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 	},
 	
 	onMouseOver: function (e) {
-		dojo.xml.htmlUtil.addClass(this.domNode, "hover");
+		dojo.html.addClass(this.domNode, "hover");
 	},
 	
 	onMouseOut: function (e) {
-		dojo.xml.htmlUtil.removeClass(this.domNode, "hover");
+		dojo.html.removeClass(this.domNode, "hover");
 	},
 	
 	onClick: function (e) { this.onSelect(this, e); },

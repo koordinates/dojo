@@ -1,6 +1,7 @@
 dojo.provide("dojo.fx.html");
 
 dojo.require("dojo.html");
+dojo.require("dojo.style");
 dojo.require("dojo.lang");
 dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");

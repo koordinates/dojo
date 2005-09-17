@@ -1,7 +1,8 @@
 dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang");
-dojo.require("dojo.xml.htmlUtil");
+dojo.require("dojo.html");
+dojo.require("dojo.style");
 
 // NOTE: there will only ever be a single instance of HTMLDragManager, so it's
 // safe to use prototype properties for book-keeping.
@@ -85,11 +86,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	getDragSource: function(e){
 		var tn = e.target;
 		if(tn === document.body){ return; }
-		var ta = dojo.xml.htmlUtil.getAttribute(tn, this.dsPrefix);
+		var ta = dojo.html.getAttribute(tn, this.dsPrefix);
 		while((!ta)&&(tn)){
 			tn = tn.parentNode;
 			if((!tn)||(tn === document.body)){ return; }
-			ta = dojo.xml.htmlUtil.getAttribute(tn, this.dsPrefix);
+			ta = dojo.html.getAttribute(tn, this.dsPrefix);
 		}
 		return this.dragSources[ta];
 	},
@@ -172,14 +173,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 			this.dropTargetDimensions = [];
 			dojo.lang.forEach(this.dropTargets, function(tempTarget){
-				var hu = dojo.xml.htmlUtil;
 				var tn = tempTarget.domNode;
-				var ttx = hu.getAbsoluteX(tn);
-				var tty = hu.getAbsoluteY(tn);
+				var ttx = dojo.style.getAbsoluteX(tn);
+				var tty = dojo.style.getAbsoluteY(tn);
 				_this.dropTargetDimensions.push([
 					[ttx, tty],	// upper-left
 					// lower-right
-					[ ttx+hu.getInnerWidth(tn), tty+hu.getInnerHeight(tn) ],
+					[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
 					tempTarget
 				]);
 			});

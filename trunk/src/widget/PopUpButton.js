@@ -8,6 +8,8 @@ dojo.require("dojo.widget.HtmlButton");
 dojo.require("dojo.widget.Menu");
 dojo.require("dojo.widget.MenuItem");
 
+dojo.require("dojo.html");
+
 dojo.widget.tags.addParseTreeHandler("dojo:PopUpButton");
 
 /* PopUpButton
@@ -51,7 +53,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/PopUpButton.css"),
 	
 	buildRendering: function (args, frag) {
-		dojo.xml.htmlUtil.insertCssFile(this.templateCssPath, null, true);
+		dojo.html.insertCssFile(this.templateCssPath, null, true);
 	
 		this.domNode = document.createElement("a");
 		this.domNode.className = "PopUpButton";
@@ -60,11 +62,11 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 		// draw the arrow
 		var arrow = document.createElement("img");
 		arrow.src = dojo.uri.dojoUri("src/widget/templates/images/dropdownButtonsArrow.gif");
-		dojo.xml.htmlUtil.setClass(arrow, "downArrow");
+		dojo.html.setClass(arrow, "downArrow");
 		this.domNode.appendChild(arrow);
 
 		this.menu = dojo.widget.fromScript("Menu");
-		dojo.xml.htmlUtil.addClass(this.menu.domNode, "PopUpButtonMenu");
+		dojo.html.addClass(this.menu.domNode, "PopUpButtonMenu");
 		dojo.event.connect(this.menu, "onSelect", this, "onSelect");
 		
 		if (frag["dojo:" + this.widgetType.toLowerCase()].nodeRef) {
@@ -109,7 +111,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 			}
 		}
 		
-		dojo.xml.htmlUtil[(this._enabled ? "add" : "remove")
+		dojo.html[(this._enabled ? "add" : "remove")
 			+ "Class"](this.domNode, "disabled");
 		
 		return this._enabled;
@@ -157,7 +159,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 	_showMenu: function (e) {
 		if (!this._enabled) { return; }
 		this._menuVisible = true;
-		with (dojo.xml.htmlUtil) {
+		with (dojo.html) {
 			var y = getAbsoluteY(this.domNode) + getInnerHeight(this.domNode);
 			var x = getAbsoluteX(this.domNode);
 		}

@@ -1,6 +1,7 @@
 dojo.provide("dojo.xml.domUtil");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.dom");
+dojo.require("dojo.style");
 
 dj_deprecated("dojo.xml.domUtil is deprecated, use dojo.dom instead");
 
