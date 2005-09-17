@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.HtmlColorPalette");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
-
+dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:ToolbarColorDialog");
 

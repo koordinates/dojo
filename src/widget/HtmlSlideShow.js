@@ -2,10 +2,10 @@ dojo.provide("dojo.widget.SlideShow");
 dojo.provide("dojo.widget.HtmlSlideShow");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.xml.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.graphics.htmlEffects");
+dojo.require("dojo.style");
 
 dojo.widget.HtmlSlideShow = function(){
 	dojo.widget.HtmlWidget.call(this);
@@ -37,8 +37,8 @@ dojo.widget.HtmlSlideShow = function(){
 	this.img2 = null;
 
 	this.fillInTemplate = function(){
-		dojo.xml.htmlUtil.setOpacity(this.img1, 0.9999);
-		dojo.xml.htmlUtil.setOpacity(this.img2, 0.9999);
+		dojo.style.setOpacity(this.img1, 0.9999);
+		dojo.style.setOpacity(this.img2, 0.9999);
 		with(this.imagesContainer.style){
 			width = this.imgWidth+"px";
 			height = this.imgHeight+"px";
@@ -109,7 +109,7 @@ dojo.widget.HtmlSlideShow = function(){
 			once: true, // make sure we only ever hear about it once
 			delay: this.delay
 		});
-		dojo.xml.htmlUtil.setOpacity(this[this.background], 1.0);
+		dojo.style.setOpacity(this[this.background], 1.0);
 		this[this.background].src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
 		if(this.urlsIdx>(this.imgUrls.length-1)){
 			this.urlsIdx = 0;

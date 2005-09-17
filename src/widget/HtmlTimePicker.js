@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.HtmlTimePicker");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
+dojo.require("dojo.html");
 
 dojo.widget.HtmlTimePicker = function(){
 	dojo.widget.TimePicker.call(this);
@@ -165,26 +166,26 @@ dojo.widget.HtmlTimePicker = function(){
 	this.clearSelectedHour = function() {
 		var hourNodes = this.hourContainerNode.getElementsByTagName("td");
 		for (var i=0; i<hourNodes.length; i++) {
-			dojo.xml.htmlUtil.setClass(hourNodes.item(i), "");
+			dojo.html.setClass(hourNodes.item(i), "");
 		}
 	}
 
 	this.clearSelectedMinute = function() {
 		var minuteNodes = this.minuteContainerNode.getElementsByTagName("td");
 		for (var i=0; i<minuteNodes.length; i++) {
-			dojo.xml.htmlUtil.setClass(minuteNodes.item(i), "");
+			dojo.html.setClass(minuteNodes.item(i), "");
 		}
 	}
 
 	this.clearSelectedAmPm = function() {
 		var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
 		for (var i=0; i<amPmNodes.length; i++) {
-			dojo.xml.htmlUtil.setClass(amPmNodes.item(i), "");
+			dojo.html.setClass(amPmNodes.item(i), "");
 		}
 	}
 
 	this.clearSelectedAnyTime = function() {
-		dojo.xml.htmlUtil.setClass(this.anyTimeContainerNode, "anyTimeContainer");
+		dojo.html.setClass(this.anyTimeContainerNode, "anyTimeContainer");
 	}
 
 	this.onSetSelectedHour = function(evt) {
@@ -196,12 +197,12 @@ dojo.widget.HtmlTimePicker = function(){
 
 	this.setSelectedHour = function(evt) {
 		if(evt && evt.target) {
-			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
+			dojo.html.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["hour"] = evt.target.innerHTML;
 		} else if (!isNaN(evt)) {
 			var hourNodes = this.hourContainerNode.getElementsByTagName("td");
 			if(hourNodes.item(evt)) {
-				dojo.xml.htmlUtil.setClass(hourNodes.item(evt), this.classNames.selectedTime);
+				dojo.html.setClass(hourNodes.item(evt), this.classNames.selectedTime);
 				this.selectedTime["hour"] = hourNodes.item(evt).innerHTML;
 			}
 		}
@@ -218,12 +219,12 @@ dojo.widget.HtmlTimePicker = function(){
 
 	this.setSelectedMinute = function(evt) {
 		if(evt && evt.target) {
-			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
+			dojo.html.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["minute"] = evt.target.innerHTML;
 		} else if (!isNaN(evt)) {
 			var minuteNodes = this.minuteContainerNode.getElementsByTagName("td");
 			if(minuteNodes.item(evt)) {
-				dojo.xml.htmlUtil.setClass(minuteNodes.item(evt), this.classNames.selectedTime);
+				dojo.html.setClass(minuteNodes.item(evt), this.classNames.selectedTime);
 				this.selectedTime["minute"] = minuteNodes.item(evt).innerHTML;
 			}
 		}
@@ -239,12 +240,12 @@ dojo.widget.HtmlTimePicker = function(){
 
 	this.setSelectedAmPm = function(evt) {
 		if(evt && evt.target) {
-			dojo.xml.htmlUtil.setClass(evt.target, this.classNames.selectedTime);
+			dojo.html.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["amPm"] = evt.target.innerHTML;
 		} else if (!isNaN(evt)) {
 			var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
 			if(amPmNodes.item(evt)) {
-				dojo.xml.htmlUtil.setClass(amPmNodes.item(evt), this.classNames.selectedTime);
+				dojo.html.setClass(amPmNodes.item(evt), this.classNames.selectedTime);
 				this.selectedTime["amPm"] = amPmNodes.item(evt).innerHTML;
 			}
 		}
@@ -260,7 +261,7 @@ dojo.widget.HtmlTimePicker = function(){
 
 	this.setSelectedAnyTime = function(evt) {
 		this.selectedTime.anyTime = true;
-		dojo.xml.htmlUtil.setClass(this.anyTimeContainerNode, this.classNames.selectedTime + " " + "anyTimeContainer");
+		dojo.html.setClass(this.anyTimeContainerNode, this.classNames.selectedTime + " " + "anyTimeContainer");
 	}
 
 	this.onClick = function(evt) {

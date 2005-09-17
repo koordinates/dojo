@@ -5,6 +5,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.string");
 dojo.require("dojo.style");
+dojo.require("dojo.html");
 
 dojo.widget.HtmlInlineEditBox = function() {
 	dojo.widget.HtmlWidget.call(this);
@@ -75,9 +76,9 @@ dojo.widget.HtmlInlineEditBox = function() {
 
 	this.mouseover = function(e) {
 		if(!this.editing) {
-			dojo.xml.htmlUtil.addClass(this.editable, "editableRegion");
+			dojo.html.addClass(this.editable, "editableRegion");
 			if(this.mode == "textarea"){
-				dojo.xml.htmlUtil.addClass(this.editable, "editableTextareaRegion");
+				dojo.html.addClass(this.editable, "editableTextareaRegion");
 			}
 		}
 	}
@@ -85,8 +86,8 @@ dojo.widget.HtmlInlineEditBox = function() {
 	this.mouseout = function(e) {
 		// if((e)&&(e.target != this.domNode)){ return; }
 		if(!this.editing) {
-			dojo.xml.htmlUtil.removeClass(this.editable, "editableRegion");
-			dojo.xml.htmlUtil.removeClass(this.editable, "editableTextareaRegion");
+			dojo.html.removeClass(this.editable, "editableRegion");
+			dojo.html.removeClass(this.editable, "editableTextareaRegion");
 		}
 	}
 
@@ -104,12 +105,12 @@ dojo.widget.HtmlInlineEditBox = function() {
 		ee.style.fontStyle = dojo.style.getStyle(this.editable, "font-style");
 		//this.text.style.fontFamily = dojo.xml.domUtil.getStyle(this.editable, "font-family");
 
-		ee.style.width = Math.max(dojo.xml.htmlUtil.getInnerWidth(this.editable), this.minWidth) + "px";
+		ee.style.width = Math.max(dojo.html.getInnerWidth(this.editable), this.minWidth) + "px";
 		// ee.style.width = "100%";
 
 		if(this.mode.toLowerCase()=="textarea"){
 			ee.style.display = "block";
-			ee.style.height = Math.max(dojo.xml.htmlUtil.getInnerHeight(this.editable), this.minHeight) + "px";
+			ee.style.height = Math.max(dojo.html.getInnerHeight(this.editable), this.minHeight) + "px";
 		}
 		this.editable.style.display = "none";
 		this.nodeRef.appendChild(this.form);

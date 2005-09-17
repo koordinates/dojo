@@ -5,11 +5,12 @@ dojo.provide("dojo.widget.DropdownButtons");
 dojo.provide("dojo.widget.HtmlDropdownButtons");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.xml.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.dom");
+dojo.require("dojo.style");
+dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:dropdownbuttons");
 
@@ -22,13 +23,13 @@ dojo.widget.HtmlDropdownButtons = function() {
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
 		if(this.templateCssPath) {
-			dojo.xml.htmlUtil.insertCssFile(this.templateCssPath, null, true);
+			dojo.style.insertCssFile(this.templateCssPath, null, true);
 		}
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 
 		var menu = this.domNode;
-		if( !dojo.xml.htmlUtil.hasClass(menu, "dropdownButtons") ) {
-			dojo.xml.htmlUtil.addClass(menu, "dropdownButtons");
+		if( !dojo.html.hasClass(menu, "dropdownButtons") ) {
+			dojo.html.addClass(menu, "dropdownButtons");
 		}
 		var li = dojo.dom.getFirstChildElement(menu);
 		var menuIDs = [];
@@ -40,7 +41,7 @@ dojo.widget.HtmlDropdownButtons = function() {
 				var arrow = document.createElement("a");
 				arrow.href = "javascript:;";
 				arrow.innerHTML = "&nbsp;";
-				dojo.xml.htmlUtil.setClass(arrow, "downArrow");
+				dojo.html.setClass(arrow, "downArrow");
 				if(!arrow.id) {
 					arrow.id = dojo.dom.getUniqueId();
 				}
@@ -51,15 +52,15 @@ dojo.widget.HtmlDropdownButtons = function() {
 				}
 				menuIDs.push(submenu.id);
 
-				if( dojo.xml.htmlUtil.hasClass(a, "disabled") ) {
-					dojo.xml.htmlUtil.addClass(arrow, "disabled");
+				if( dojo.html.hasClass(a, "disabled") ) {
+					dojo.html.addClass(arrow, "disabled");
 				} else {
-					dojo.xml.htmlUtil.addClass(submenu, "dropdownButtonsMenu");
+					dojo.html.addClass(submenu, "dropdownButtonsMenu");
 					document.body.appendChild(submenu);
 					dojo.event.connect(arrow, "onmousedown", (function() {
 						var ar = arrow;
 						return function(e) {
-							dojo.xml.htmlUtil.addClass(ar, "pressed");
+							dojo.html.addClass(ar, "pressed");
 						}
 					})());
 					dojo.event.connect(arrow, "onclick", (function() {
@@ -70,13 +71,13 @@ dojo.widget.HtmlDropdownButtons = function() {
 
 						return function(e) {
 							hideAll(sm, ar);
-							sm.style.left = (dojo.xml.htmlUtil.getScrollLeft()
+							sm.style.left = (dojo.html.getScrollLeft()
 								+ e.clientX - e.layerX + aa.offsetLeft) + "px";
-							sm.style.top = (dojo.xml.htmlUtil.getScrollTop() + e.clientY
+							sm.style.top = (dojo.html.getScrollTop() + e.clientY
 								- e.layerY + aa.offsetTop + aa.offsetHeight) + "px";
 							sm.style.display = sm.style.display == "block" ? "none" : "block";
 							if(sm.style.display == "none") {
-								dojo.xml.htmlUtil.removeClass(ar, "pressed");
+								dojo.html.removeClass(ar, "pressed");
 								e.target.blur()
 							}
 							if(!setWidth && sm.style.display == "block"
@@ -117,13 +118,13 @@ dojo.widget.HtmlDropdownButtons = function() {
 			for(var i = 0; i < arrowIDs.length; i++) {
 				var m = document.getElementById(arrowIDs[i]);
 				if(!excludeArrow || m != excludeArrow) {
-					dojo.xml.htmlUtil.removeClass(m, "pressed");
+					dojo.html.removeClass(m, "pressed");
 				}
 			}
 		}
 
 		dojo.event.connect(document.documentElement, "onmousedown", function(e) {
-			if( dojo.xml.htmlUtil.hasClass(e.target, "downArrow") ) { return };
+			if( dojo.html.hasClass(e.target, "downArrow") ) { return };
 			for(var i = 0; i < menuIDs.length; i++) {
 				if( dojo.dom.isDescendantOf(e.target, document.getElementById(menuIDs[i])) ) {
 					return;

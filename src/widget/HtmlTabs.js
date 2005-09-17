@@ -5,6 +5,7 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.dom");
+dojo.require("dojo.html");
 
 dojo.widget.HtmlTabs = function() {
 	dojo.widget.HtmlWidget.call(this);
@@ -42,7 +43,7 @@ dojo.widget.HtmlTabs = function() {
 				this.domNode.parentNode.appendChild(this.containerNode);
 			}
 		}
-		dojo.xml.htmlUtil.addClass(this.containerNode, "dojoTabPanelContainer");
+		dojo.html.addClass(this.containerNode, "dojoTabPanelContainer");
 
 		var li = dojo.dom.getFirstChildElement(this.domNode);
 		while(li) {
@@ -82,7 +83,7 @@ dojo.widget.HtmlTabs = function() {
 		this.panels.push(panel);
 		if(panel.url.charAt(0) == "#") { this.getPanel(panel); }
 
-		if(this.selected == -1 && dojo.xml.htmlUtil.hasClass(li, "current")) {
+		if(this.selected == -1 && dojo.html.hasClass(li, "current")) {
 			this.selected = this.tabs.length-1;
 		}
 	}
@@ -98,11 +99,11 @@ dojo.widget.HtmlTabs = function() {
 			if(e.preventDefault) { e.preventDefault(); }
 		}
 
-		dojo.xml.htmlUtil.removeClass(this.tabs[this.selected], "current");
+		dojo.html.removeClass(this.tabs[this.selected], "current");
 
 		for(var i = 0; i < this.tabs.length; i++) {
 			if(this.tabs[i] == target) {
-				dojo.xml.htmlUtil.addClass(this.tabs[i], "current");
+				dojo.html.addClass(this.tabs[i], "current");
 				this.selected = i;
 				break;
 			}

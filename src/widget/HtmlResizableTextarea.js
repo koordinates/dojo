@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.HtmlResizableTextarea");
 dojo.require("dojo.widget.DomWidget");
+dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:resizabletextarea");
 
@@ -23,22 +24,21 @@ dojo.widget.HtmlResizableTextarea = function(){
 			width = "100%";
 			height = "100%";
 		}
-		var hu = dojo.xml.htmlUtil;
 		var pn = this.textAreaNode.parentNode;
 
 		if(this.allowResizeX){
 			var iw = parseInt(this.textAreaNode.offsetWidth);
-			var cols = parseInt(hu.getAttr(this.textAreaNode, "cols"));
+			var cols = parseInt(dojo.html.getAttribute(this.textAreaNode, "cols"));
 			var pxpercol = (iw/cols);
-			var pnw = parseInt(hu.getInnerWidth(pn));
+			var pnw = parseInt(dojo.html.getInnerWidth(pn));
 			this.textAreaNode.style.width = pnw+"px";
 		}
 
 		if(this.allowResizeY){
-			var ih = parseInt(dojo.xml.htmlUtil.getInnerHeight(this.textAreaNode));
-			var rows = parseInt(hu.getAttr(this.textAreaNode, "rows"));
+			var ih = parseInt(dojo.html.getInnerHeight(this.textAreaNode));
+			var rows = parseInt(dojo.html.getAttribute(this.textAreaNode, "rows"));
 			var pxperrow = (ih/rows);
-			var pnh = parseInt(hu.getInnerHeight(pn));
+			var pnh = parseInt(dojo.html.getInnerHeight(pn));
 			this.textAreaNode.rows = parseInt(pnh/pxperrow);
 		}
 	}
