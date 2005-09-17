@@ -5,6 +5,7 @@ dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.animation.*");
 dojo.require("dojo.dom");
+dojo.require("dojo.lang");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	this.domNode = node;
@@ -116,9 +117,9 @@ dj_inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
 	onDragOver: function(e){
-		if (!dojo.alg.inArray(this.acceptedTypes, "*")) { // wildcard
+		if (!dojo.lang.inArray(this.acceptedTypes, "*")) { // wildcard
 			for (var i = 0; i < e.dragObjects.length; i++) {
-				if (!dojo.alg.inArray(this.acceptedTypes,
+				if (!dojo.lang.inArray(this.acceptedTypes,
 					e.dragObjects[i].type)) { return false; }
 			}
 		}

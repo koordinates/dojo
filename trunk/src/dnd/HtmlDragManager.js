@@ -1,6 +1,6 @@
 dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.event.*");
-dojo.require("dojo.alg.*");
+dojo.require("dojo.lang");
 dojo.require("dojo.xml.htmlUtil");
 
 // NOTE: there will only ever be a single instance of HTMLDragManager, so it's
@@ -101,7 +101,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// find a selection object, if one is a parent of the source node
 		var ds = this.getDragSource(e);
 		if(!ds){ return; }
-		if(!dojo.alg.inArray(this.selectedSources, ds)){
+		if(!dojo.lang.inArray(this.selectedSources, ds)){
 			this.selectedSources.push(ds);
 		}
 		//e.preventDefault();
@@ -112,7 +112,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var _this = this;
 		e.dragSource = this.dragSource;
 		if((!e.shiftKey)&&(!e.ctrlKey)){
-			dojo.alg.forEach(this.dragObjects, function(tempDragObj){
+			dojo.lang.forEach(this.dragObjects, function(tempDragObj){
 				var ret = null;
 				if(!tempDragObj){ return; }
 				if(_this.currentDropTarget) {
@@ -160,7 +160,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				this.dragSource = this.selectedSources[0];
 			}
 		
-			dojo.alg.forEach(this.selectedSources, function(tempSource){
+			dojo.lang.forEach(this.selectedSources, function(tempSource){
 				if(!tempSource){ return; }
 				var tdo = tempSource.onDragStart(e);
 				if(tdo){
@@ -171,7 +171,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 
 			this.dropTargetDimensions = [];
-			dojo.alg.forEach(this.dropTargets, function(tempTarget){
+			dojo.lang.forEach(this.dropTargets, function(tempTarget){
 				var hu = dojo.xml.htmlUtil;
 				var tn = tempTarget.domNode;
 				var ttx = hu.getAbsoluteX(tn);
@@ -204,7 +204,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			this.dropAcceptable = false;
 
 			// check the mouse position to see if we're in a drop target
-			dojo.alg.forEach(this.dropTargetDimensions, function(tmpDA){
+			dojo.lang.forEach(this.dropTargetDimensions, function(tmpDA){
 				// FIXME: is there a way to shortcut this?
 				if((!_this.currentDropTarget)&&(_this.isInsideBox(e, tmpDA))){
 					_this.currentDropTarget = tmpDA[2];
