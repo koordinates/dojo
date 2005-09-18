@@ -55,6 +55,32 @@ dojo.html.enableSelection = function (){
 	dojo.html._selectionDisabled = false;
 }
 
+dojo.html.selectElement = function (element) {
+	if (document.selection && document.body.createTextRange) { // IE
+		var range = document.body.createTextRange();
+		range.moveToElementText(element);
+		range.select();
+	} else if (window.getSelection) {
+		var selection = window.getSelection();
+		if (selection.selectAllChildren) { // Mozilla
+			selection.selectAllChildren(element);
+		}
+	}
+}
+
+dojo.html.selectionCollapsed = function () {
+	if (document.selection) { // IE
+		return document.selection.createRange().text == "";
+	} else if (window.getSelection) {
+		var selection = window.getSelection();
+		if (dojo.lang.isString(selection)) { // Safari
+			return selection == "";
+		} else { // Mozilla/W3
+			return selection.isCollapsed;
+		}
+	}
+}
+
 dojo.html.getEventTarget = function (evt){
 	if((window["event"])&&(window.event["srcElement"])){
 		return window.event.srcElement;
