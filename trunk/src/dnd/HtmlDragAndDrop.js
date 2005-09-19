@@ -10,12 +10,14 @@ dojo.require("dojo.html");
 dojo.require("dojo.lang");
 
 dojo.dnd.HtmlDragSource = function(node, type){
-	this.domNode = node;
-	// register us
-	dojo.dnd.DragSource.call(this);
+	if(node){
+		this.domNode = node;
+		// register us
+		dojo.dnd.DragSource.call(this);
 
-	// set properties that might have been clobbered by the mixin
-	this.type = type||this.domNode.nodeName.toLowerCase();
+		// set properties that might have been clobbered by the mixin
+		this.type = type||this.domNode.nodeName.toLowerCase();
+	}
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
@@ -42,7 +44,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			window.getSelection().removeAllRanges();
 		}
 	
-		this.dragStartPosition = {top: dojo.stlye.getAbsoluteY(this.domNode),
+		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode),
 			left: dojo.style.getAbsoluteX(this.domNode)};
 		
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
@@ -82,7 +84,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				break;
 		
 			case "dropFailure": // slide back to the start
-				var startCoords = [dojo.stlye.getAbsoluteX(this.dragClone), 
+				var startCoords = [dojo.style.getAbsoluteX(this.dragClone), 
 							dojo.style.getAbsoluteY(this.dragClone)];
 				// offset the end so the effect can be seen
 				var endCoords = [this.dragStartPosition.left + 1,
