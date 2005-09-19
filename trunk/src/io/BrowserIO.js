@@ -219,13 +219,13 @@ dojo.io.XMLHTTPTransport = new function(){
 			document.body.appendChild(this.bookmarkAnchor);
 			this.bookmarkAnchor.style.display = "none";
 		}
-		if((!args["changeURL"])||(dojo.render.html.ie)){
+		if((!args["changeUrl"])||(dojo.render.html.ie)){
 			var url = dojo.hostenv.getBaseScriptUri()+"iframe_history.html?"+(new Date()).getTime();
 			this.moveForward = true;
 			dojo.io.setIFrameSrc(this.historyIframe, url, false);
 		}
-		if(args["changeURL"]){
-			hash = "#"+ ((args["changeURL"]!==true) ? args["changeURL"] : (new Date()).getTime());
+		if(args["changeUrl"]){
+			hash = "#"+ ((args["changeUrl"]!==true) ? args["changeUrl"] : (new Date()).getTime());
 			setTimeout("window.location.href = '"+hash+"';", 1);
 			this.bookmarkAnchor.href = hash;
 			if(dojo.render.html.ie){
@@ -394,7 +394,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(!kwArgs["url"]){
 			// are we performing a history action?
 			if( !kwArgs["formNode"]
-				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeURL"] || kwArgs["watchForURL"])
+				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"] || kwArgs["watchForURL"])
 				&& (!window["djConfig"] && !window["djConfig"]["preventBackButtonFix"]) ) {
 				this.addToHistory(kwArgs);
 				return true;
@@ -424,7 +424,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			query = kwArgs.postContent;
 		}
 
-		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeURL"]){
+		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"]){
 			this.addToHistory(kwArgs);
 		}
 
