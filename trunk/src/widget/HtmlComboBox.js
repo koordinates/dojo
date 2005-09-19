@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.HtmlComboBox");
 dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
+dojo.require("dojo.fx.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
