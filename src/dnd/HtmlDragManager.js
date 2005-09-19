@@ -69,14 +69,16 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	// method over-rides
 	registerDragSource: function(ds){
-		// FIXME: dragSource objects SHOULD have some sort of property that
-		// references their DOM node, we shouldn't just be passing nodes and
-		// expecting it to work.
-		var dp = this.dsPrefix;
-		var dpIdx = dp+"Idx_"+(this.dsCounter++);
-		ds.dragSourceId = dpIdx;
-		this.dragSources[dpIdx] = ds;
-		ds.domNode.setAttribute(dp, dpIdx);
+		if(ds["domNode"]){
+			// FIXME: dragSource objects SHOULD have some sort of property that
+			// references their DOM node, we shouldn't just be passing nodes and
+			// expecting it to work.
+			var dp = this.dsPrefix;
+			var dpIdx = dp+"Idx_"+(this.dsCounter++);
+			ds.dragSourceId = dpIdx;
+			this.dragSources[dpIdx] = ds;
+			ds.domNode.setAttribute(dp, dpIdx);
+		}
 	},
 
 	registerDropTarget: function(dt){
