@@ -39,4 +39,4 @@ dojo.widget.HtmlContextMenu = function(){
 	dojo.event.connect(doc, "oncontextmenu", this, "onShow");
 }
 
-dj_inherits(dojo.widget.HtmlContextMenu, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlContextMenu, dojo.widget.HtmlWidget);

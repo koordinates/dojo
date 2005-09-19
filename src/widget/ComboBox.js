@@ -168,13 +168,13 @@ dojo.widget.ComboBox = function(){
 	this.setSelectedRsult = function(){}
 }
 
-dj_inherits(dojo.widget.ComboBox, dojo.widget.Widget);
+dojo.inherits(dojo.widget.ComboBox, dojo.widget.Widget);
 
 dojo.widget.DomComboBox = function(){
 	dojo.widget.ComboBox.call(this);
 	dojo.widget.DomWidget.call(this, true);
 }
 
-dj_inherits(dojo.widget.DomComboBox, dojo.widget.DomWidget);
+dojo.inherits(dojo.widget.DomComboBox, dojo.widget.DomWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:combobox");
 

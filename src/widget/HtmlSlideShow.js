@@ -116,5 +116,5 @@ dojo.widget.HtmlSlideShow = function(){
 		}
 	}
 }
-dj_inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:slideshow");

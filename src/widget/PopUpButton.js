@@ -18,7 +18,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:PopUpButton");
 dojo.widget.PopUpButton = function () {
 	dojo.widget.PopUpButton.superclass.constructor.call(this);
 }
-dj_inherits(dojo.widget.PopUpButton, dojo.widget.Widget);
+dojo.inherits(dojo.widget.PopUpButton, dojo.widget.Widget);
 
 dojo.lang.extend(dojo.widget.PopUpButton, {
 	widgetType: "PopUpButton",
@@ -32,7 +32,7 @@ dojo.lang.extend(dojo.widget.PopUpButton, {
 dojo.widget.DomPopUpButton = function(){
 	dojo.widget.DomPopUpButton.superclass.constructor.call(this);
 }
-dj_inherits(dojo.widget.DomPopUpButton, dojo.widget.DomWidget);
+dojo.inherits(dojo.widget.DomPopUpButton, dojo.widget.DomWidget);
 
 dojo.lang.extend(dojo.widget.DomPopUpButton, {
 	widgetType: dojo.widget.PopUpButton.prototype.widgetType
@@ -45,7 +45,7 @@ dojo.lang.extend(dojo.widget.DomPopUpButton, {
 dojo.widget.HtmlPopUpButton = function () {
 	dojo.widget.HtmlPopUpButton.superclass.constructor.call(this);
 }
-dj_inherits(dojo.widget.HtmlPopUpButton, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlPopUpButton, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 	widgetType: dojo.widget.PopUpButton.prototype.widgetType,

@@ -166,5 +166,5 @@ dojo.widget.HtmlInlineEditBox = function() {
 		}
 	}
 }
-dj_inherits(dojo.widget.HtmlInlineEditBox, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlInlineEditBox, dojo.widget.HtmlWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:inlineeditbox");

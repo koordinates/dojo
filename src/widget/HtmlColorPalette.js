@@ -13,7 +13,7 @@ dojo.widget.HtmlToolbarColorDialog = function () {
 	}
 }
 
-dj_inherits(dojo.widget.HtmlToolbarColorDialog, dojo.widget.HTMLToolbarDialog);
+dojo.inherits(dojo.widget.HtmlToolbarColorDialog, dojo.widget.HTMLToolbarDialog);
 
 dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 
@@ -52,7 +52,7 @@ dojo.widget.HtmlColorPalette = function () {
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dj_inherits(dojo.widget.HtmlColorPalette, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlColorPalette, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 

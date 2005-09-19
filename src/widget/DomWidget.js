@@ -231,7 +231,7 @@ dojo.widget.DomWidget = function(){
 		this.create(arguments[0]);
 	}
 }
-dj_inherits(dojo.widget.DomWidget, dojo.widget.Widget);
+dojo.inherits(dojo.widget.DomWidget, dojo.widget.Widget);
 
 dojo.lang.extend(dojo.widget.DomWidget, {
 	templateNode: null,

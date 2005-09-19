@@ -8,5 +8,5 @@ dojo.widget.TimePicker = function(){
 
 }
 
-dj_inherits(dojo.widget.TimePicker, dojo.widget.Widget);
+dojo.inherits(dojo.widget.TimePicker, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:timepicker");

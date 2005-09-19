@@ -10,5 +10,5 @@ dojo.widget.DatePicker = function(){
 	this.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 }
 
-dj_inherits(dojo.widget.DatePicker, dojo.widget.Widget);
+dojo.inherits(dojo.widget.DatePicker, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:datepicker");

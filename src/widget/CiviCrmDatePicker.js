@@ -104,6 +104,6 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 		});
 	}
 }
-dj_inherits(dojo.widget.HtmlCiviCrmDatePicker, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlCiviCrmDatePicker, dojo.widget.HtmlWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:civicrmdatepicker");
 

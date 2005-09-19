@@ -322,4 +322,4 @@ dojo.widget.HtmlComboBox = function(){
 	dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 }
 
-dj_inherits(dojo.widget.HtmlComboBox, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlComboBox, dojo.widget.HtmlWidget);

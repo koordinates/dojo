@@ -61,7 +61,7 @@ dojo.widget.SvgButton = function(){
 	}
 }
 
-dj_inherits(dojo.widget.SvgButton, dojo.widget.DomButton);
+dojo.inherits(dojo.widget.SvgButton, dojo.widget.DomButton);
 
 // FIXME
 dojo.widget.SvgButton.prototype.shapeString = function(x, y, textSize, label, shape) {
