@@ -119,7 +119,7 @@ dj_throw = dj_rethrow = function(m, e){
 dojo.debug = function(){
 	var args = arguments;
 	if(dj_undef("println", dojo.hostenv)){
-		dojo.toss("dj_debug not available (yet?)");
+		dojo.toss("dojo.debug not available (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
@@ -197,54 +197,33 @@ dj_inherits = function(subclass, superclass){
 }
 
 // an object that authors use determine what host we are running under
-dojo.render = {
-	name: "",
-	ver: dojo.version,
-	os: { win: false, linux: false, osx: false },
-	html: {
-		capable: false,
-		support: {
-			builtin: false,
-			plugin: false
-		},
-		ie: false,
-		opera: false,
-		khtml: false,
-		safari: false,
-		moz: false,
-		prefixes: ["html"]
-	},
-	svg: {
-		capable: false,
-		support: {
-			builtin: false,
-			plugin: false
-		},
-		corel: false,
-		adobe: false,
-		batik: false,
-		prefixes: ["svg"]
-	},
-	swf: {
-		capable: false,
-		support: {
-			builtin: false,
-			plugin: false
-		},
-		mm: false,
-		prefixes: ["Swf", "Flash", "Mm"]
-	},
-	swt: {
-		capable: false,
-		support: {
-			builtin: false,
-			plugin: false
-		},
-		ibm: false,
-		prefixes: ["Swt"]
-	}
-};
+dojo.render = (function(){
 
+	function vscaffold(prefs, names){
+		var tmp = {
+			capable: false,
+			support: {
+				builtin: false,
+				plugin: false
+			},
+			prefixes: prefs
+		};
+		for(var x in names){
+			tmp[x] = false;
+		}
+		return tmp;
+	}
+
+	return {
+		name: "",
+		ver: dojo.version,
+		os: { win: false, linux: false, osx: false },
+		html: vscaffold(["html"], ["ie", "opera", "khtml", "safari", "moz"]),
+		svg: vscaffold(["svg"], ["corel", "adobe", "batik"]),
+		swf: vscaffold(["Swf", "Flash", "Mm"], ["mm"]),
+		swt: vscaffold(["Swt"], ["ibm"])
+	};
+})();
 
 // ****************************************************************
 // dojo.hostenv methods that must be defined in hostenv_*.js
@@ -309,7 +288,7 @@ dojo.hostenv = (function(){
 		// NOTE: this is partially redundant a private variable in the jsdown
 		// implementation, but we don't want to couple the two.
 		modules_ : {},
-		modulesLoadedFired: false,
+		post_load_: false,
 		modulesLoadedListeners: [],
 		/**
 		 * Return the name of the hostenv.
@@ -327,7 +306,7 @@ dojo.hostenv = (function(){
 		 * implementation that doesn't rely on it.
 		 */
 		getText: function(uri){
-			dj_unimplemented('getText', "uri=" + uri);
+			dojo.unimpl('getText', "uri=" + uri);
 		},
 
 		/**
@@ -336,7 +315,7 @@ dojo.hostenv = (function(){
 		 */
 		getLibraryScriptUri: function(){
 			// FIXME: need to implement!!!
-			dj_unimplemented('getLibraryScriptUri','');
+			dojo.unimpl('getLibraryScriptUri','');
 		}
 	};
 })();
@@ -367,8 +346,6 @@ dojo.hostenv.getBaseScriptUri = function(){
 	}
 
 	var lastslash = uri.lastIndexOf('/');
-	// inclusive of slash
-	// this.base_script_uri_ = this.normPath((lastslash == -1 ? '' : uri.substring(0,lastslash + 1)) + this.base_relative_path_);
 	this.base_script_uri_ = this.base_relative_path_;
 	return this.base_script_uri_;
 }
@@ -406,9 +383,7 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	try{
 		return ((!module) ? this.loadUri(uri) : this.loadUriAndCheck(uri, module));
 	}catch(e){
-		if(dojo.hostenv.is_debug_){
-			dj_debug(e);
-		}
+		dojo.debug(e);
 		return false;
 	}
 }
@@ -457,12 +432,11 @@ dojo.hostenv.getDepsForEval = function(contents){
 
 // FIXME: probably need to add logging to this method
 dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
-	// dj_debug("loadUriAndCheck: "+uri+", "+module);
 	var ok = true;
 	try{
 		ok = this.loadUri(uri, cb);
 	}catch(e){
-		dj_debug("failed loading ", uri, " with error: ", e);
+		dojo.debug("failed loading ", uri, " with error: ", e);
 	}
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
@@ -470,7 +444,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 dojo.loaded = function(){}
 
 dojo.hostenv.loaded = function(){
-	this.modulesLoadedFired = true;
+	this.post_load_ = true;
 	var mll = this.modulesLoadedListeners;
 	for(var x=0; x<mll.length; x++){
 		mll[x]();
@@ -483,6 +457,7 @@ Call styles:
 	dojo.addOnLoad(functionPointer)
 	dojo.addOnLoad(object, "functionName")
 */
+/*
 dojo.addOnLoad = function(obj, fcnName) {
 	if(arguments.length == 1) {
 		dojo.hostenv.modulesLoadedListeners.push(obj);
@@ -492,12 +467,13 @@ dojo.addOnLoad = function(obj, fcnName) {
 		});
 	}
 };
+*/
 
 dojo.hostenv.modulesLoaded = function(){
-	if(this.modulesLoadedFired){ return; }
+	if(this.post_load_){ return; }
 	if((this.loadUriStack.length==0)&&(this.getTextStack.length==0)){
 		if(this.inFlightCount > 0){ 
-			dj_debug("couldn't initialize, there are files still in flight");
+			dojo.debug("files still in flight!");
 			return;
 		}
 		this.loaded();
@@ -640,7 +616,6 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	}
 
 	if(this.loaded_modules_[(new String(modulename)).toLowerCase()]){
-		// dj_debug(modulename);
 		return this.loaded_modules_[modulename];
 	}
 
