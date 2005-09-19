@@ -57,68 +57,84 @@ dojo.require("dojo.string");
 dojo.io.transports = [];
 dojo.io.hdlrFuncNames = [ "load", "error" ]; // we're omitting a progress() event for now
 
-dojo.io.Request = function(url, mt, trans, curl){
-	var Request = this;
-
-	this.url;
-	this.mimetype;
-	this.transport;
-	this.changeUrl;
-	this.formNode;
-	this.bindSuccess = false;
-	this.events_ = {};
-
-	
-	// events stuff
-	this.load = function(type, data, evt){ }
-	this.error = function (type, error){ }
-	
-	// this.backButton = function(){ }
-	// this.forwardButton = function(){ }
-	
-	this.fromKwArgs = function(kwArgs){
-		// normalize args
-		if(!kwArgs["url"]){ 
-			kwArgs.url = ""; 
-		}else{
-			kwArgs.url = kwArgs.url.toString();
-		}
-		if(!kwArgs["mimetype"]){ kwArgs.mimetype = "text/plain"; }
-		if((!kwArgs["method"])&&(!kwArgs["formNode"])){
-			kwArgs.method = "get";
-		} else if(kwArgs["formNode"]) {
-			kwArgs.method = kwArgs["method"] || kwArgs["formNode"].method || "get";
-		}
-		if(kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
-		if(!kwArgs["handle"]){ kwArgs.handle = function(){}; }
-		if(kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
-		if(kwArgs["changeUrl"]) { kwArgs.changeURL = kwArgs.changeUrl; }
-		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
-			var fn = dojo.io.hdlrFuncNames[x];
-			if(typeof kwArgs[fn] == "function"){ continue; }
-			if(typeof kwArgs.handler == "object"){
-				if(typeof kwArgs.handler[fn] == "function"){
-					kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
-				}
-			}else if(typeof kwArgs["handler"] == "function"){
-				kwArgs[fn] = kwArgs.handler;
-			}else if(typeof kwArgs["handle"] == "function"){
-				kwArgs[fn] = kwArgs.handle;
-			}
-		}
-		dojo.lang.mixin(this, kwArgs);
-	}
-	
+dojo.io.Request = function(url, mimetype, transport, changeUrl){
 	if((arguments.length == 1)&&(arguments[0].constructor == Object)){
 		this.fromKwArgs(arguments[0]);
 	}else{
 		this.url = url;
-		this.mimetype = mt;
-		this.transport = trans;
-		this.changeUrl = curl;
-		this.formNode = null;
+		if (arguments.length >= 2) { this.mimetype = mimetype; }
+		if (arguments.length >= 3) { this.transport = transport; }
+		if (arguments.length >= 4) { this.changeUrl = changeUrl; }
 	}
 }
+
+dojo.lang.extend(dojo.io.Request, {
+
+	/** The URL to hit */
+	url: "",
+	
+	/** The mime type used to interrpret the response body */
+	mimetype: "text/plain",
+	
+	/** The HTTP method to use */
+	method: "GET",
+	
+	/** An Object containing key-value pairs to be included with the request */
+	content: undefined, // Object
+	
+	/** The transport medium to use */
+	transport: undefined, // String
+	
+	/** If defined the URL of the page is physically changed */
+	changeUrl: undefined, // String
+	
+	/** A form node to use in the request */
+	formNode: undefined, // HTMLFormElement
+	
+	/** Whether the request should be made synchronously */
+	sync: false,
+	
+	bindSuccess: false,
+	useCache: false,
+	
+	// events stuff
+	load: function(type, data, evt){ },
+	error: function (type, error){ },
+	
+	// backButton: function(){ },
+	// forwardButton: function(){ },
+	// handle: function () {},
+
+	fromKwArgs: function(kwArgs){
+		// normalize args
+		if(kwArgs["url"]){ kwArgs.url = kwArgs.url.toString(); }
+		if(!kwArgs["method"] && kwArgs["formNode"] && kwArgs["formNode"].method) {
+			kwArgs.method = kwArgs["formNode"].method;
+		}
+		
+		// backwards compatibility
+		if(!kwArgs["handle"] && kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
+		if(!kwArgs["load"] && kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
+		if(!kwArgs["changeUrl"] && kwArgs["changeURL"]) { kwArgs.changeUrl = kwArgs.changeURL; }
+
+		var isFunction = dojo.lang.isFunction;
+		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
+			var fn = dojo.io.hdlrFuncNames[x];
+			if(isFunction(kwArgs[fn])){ continue; }
+			if(isFunction(kwArgs["handle"])){
+				kwArgs[fn] = kwArgs.handle;
+			}
+			// handler is aliased above, shouldn't need this check
+			/* else if(dojo.lang.isObject(kwArgs.handler)){
+				if(isFunction(kwArgs.handler[fn])){
+					kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
+				}
+			}*/
+		}
+		dojo.lang.mixin(this, kwArgs);
+	}
+
+});
 
 dojo.io.Error = function(msg, type, num){
 	this.message = msg;
