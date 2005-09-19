@@ -166,8 +166,15 @@ dojo.dom.isDescendantOf = function (node, ancestor, noSame) {
 	return false;
 }
 
-// FIXME: this won't work in Safari
-dojo.dom.createDocumentFromText = function (str, mimetype) {
+dojo.dom.innerXML = function(node){
+	if(node.innerXML){
+		return node.innerXML;
+	}else if(typeof XMLSerializer != "undefined"){
+		return (new XMLSerializer()).serializeToString(node);
+	}
+}
+
+dojo.dom.createDocumentFromText = function(str, mimetype){
 	if(!mimetype) { mimetype = "text/xml"; }
 	if(typeof DOMParser != "undefined") {
 		var parser = new DOMParser();
