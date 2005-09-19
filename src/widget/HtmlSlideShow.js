@@ -4,7 +4,7 @@ dojo.provide("dojo.widget.HtmlSlideShow");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
-dojo.require("dojo.graphics.htmlEffects");
+dojo.require("dojo.fx.html");
 dojo.require("dojo.style");
 
 dojo.widget.HtmlSlideShow = function(){
@@ -80,7 +80,7 @@ dojo.widget.HtmlSlideShow = function(){
 		// actually start the fadeOut effect
 		// NOTE: if we wanted to use other transition types, we'd set them up
 		// 		 here as well
-		dojo.graphics.htmlEffects.fadeOut(this[this.foreground], 
+		dojo.fx.html.fadeOut(this[this.foreground], 
 			this.transitionInterval, callback);
 	}
 
