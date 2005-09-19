@@ -16,29 +16,6 @@ var window; var XMLHttpRequest;
 @end
 @*/
 
-dj_addNodeEvtHdlr = function(node, evtName, fp, capture){
-	/*
-	if(node.attachEvent){
-		node.attachEvent("on"+evtName, fp);
-	}else 
-	*/
-	if(node.addEventListener){ // FIXME: test w/ Safari!
-		node.addEventListener(evtName, fp, capture);
-	}else{
-		// node["on"+evtName]=fp;
-		var oldHandler = node["on"+evtName];
-		if((oldHandler)&&(typeof oldHandler != "undefined")){
-			node["on"+evtName]=function(){
-				fp.apply(node, arguments);
-				oldHandler.apply(node, arguments);
-			}
-		}else{
-			node["on"+evtName]=fp;
-		}
-	}
-	return true;
-}
-
 if(typeof window == 'undefined'){
 	dojo.toss("no window object");
 }
@@ -59,26 +36,28 @@ if(typeof window == 'undefined'){
 			}
 		}
 	}
-})();
 
-with(dojo.render){
-	html.UA = navigator.userAgent;
-	html.AV = navigator.appVersion;
-	html.capable = true;
-	html.support.builtin = true;
+	var dr = dojo.render;
+	var drh = dojo.render.html;
+	var dua = drh.UA = navigator.userAgent;
+	var dav = drh.AV = navigator.appVersion;
+	var t = true;
+	var f = false;
+	drh.capable = t;
+	drh.support.builtin = t;
 
-	ver = parseFloat(html.AV);
-	os.mac = html.AV.indexOf("Macintosh") == -1 ? false : true; 
-	os.win = html.AV.indexOf("Windows") == -1 ? false : true; 
+	dr.ver = parseFloat(drh.AV);
+	dr.os.mac = dav.indexOf("Macintosh") == -1 ? f : t; 
+	dr.os.win = dav.indexOf("Windows") == -1 ? f : t; 
 
-	html.opera = html.UA.indexOf("Opera") == -1 ? false : true; 
-	html.khtml = ((html.AV.indexOf("Konqueror") >= 0)||(html.AV.indexOf("Safari") >= 0)) ? true : false; 
-	html.safari = (html.AV.indexOf("Safari") >= 0) ? true : false; 
-	html.mozilla = html.moz = ((html.UA.indexOf("Gecko") >= 0)&&(!html.khtml)) ? true : false; 
-	html.ie = ((document.all)&&(!html.opera)) ? true : false;
-	html.ie50 = html.ie && html.AV.indexOf("MSIE 5.0")>=0;
-	html.ie55 = html.ie && html.AV.indexOf("MSIE 5.5")>=0;
-	html.ie60 = html.ie && html.AV.indexOf("MSIE 6.0")>=0;
+	drh.opera = dua.indexOf("Opera") == -1 ? f : t; 
+	drh.khtml = ((dav.indexOf("Konqueror") >= 0)||(dav.indexOf("Safari") >= 0)) ? t : f; 
+	drh.safari = (dav.indexOf("Safari") >= 0) ? t : f; 
+	drh.mozilla = drh.moz = ((dua.indexOf("Gecko") >= 0)&&(!drh.khtml)) ? t : f; 
+	drh.ie = ((document.all)&&(!drh.opera)) ? t : f;
+	drh.ie50 = drh.ie && dav.indexOf("MSIE 5.0")>=0;
+	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
+	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 
 	/*
 	// FIXME: need to check for the various SVG plugins and builtin
@@ -88,7 +67,8 @@ with(dojo.render){
 	// svg.support.builtin = false;
 	// svg.adobe = true;
 	*/
-};
+
+})();
 
 dojo.hostenv.startPackage("dojo.hostenv");
 
@@ -118,10 +98,8 @@ dojo.hostenv.getXmlhttpObject = function(){
 		}
 	}
 
-	if((last_e)&&(!http)){
-		dojo.toss("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
-	}else if(!http){
-		return dojo.toss("No XMLHTTP implementation available, for uri " + uri);
+	if(!http){
+		return dojo.toss("XMLHTTP not available", last_e);
 	}
 
 	return http;
@@ -130,9 +108,15 @@ dojo.hostenv.getXmlhttpObject = function(){
 /**
  * Read the contents of the specified uri and return those contents.
  *
- * @param uri A relative or absolute uri. If absolute, it still must be in the same "domain" as we are.
- * @param async_cb If not specified, load synchronously. If specified, load asynchronously, and use async_cb as the progress handler which takes the xmlhttp object as its argument. If async_cb, this function returns null.
- * @param fail_ok Default false. If fail_ok and !async_cb and loading fails, return null instead of throwing.
+ * @param uri A relative or absolute uri. If absolute, it still must be in the
+ * same "domain" as we are.
+ *
+ * @param async_cb If not specified, load synchronously. If specified, load
+ * asynchronously, and use async_cb as the progress handler which takes the
+ * xmlhttp object as its argument. If async_cb, this function returns null.
+ *
+ * @param fail_ok Default false. If fail_ok and !async_cb and loading fails,
+ * return null instead of throwing.
  */ 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	
@@ -200,6 +184,15 @@ dojo.hostenv.println = function (line) {
 			window.status = line;
 		}
 	}
+}
+
+function dj_addNodeEvtHdlr (node, evtName, fp, capture){
+	var oldHandler = node["on"+evtName] || function(){};
+	node["on"+evtName] = function(){
+		fp.apply(node, arguments);
+		oldHandler.apply(node, arguments);
+	}
+	return true;
 }
 
 dj_addNodeEvtHdlr(window, "load", function(){
