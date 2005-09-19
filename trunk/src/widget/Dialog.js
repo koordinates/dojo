@@ -132,7 +132,7 @@ dojo.widget.HtmlDialog = function() {
 			case "fade":
 				this.bg.style.display = "block";
 				this.domNode.style.display = "block";
-				dojo.graphics.htmlEffects.fade(this.domNode, this.effectDuration, 0, 1);
+				dojo.fx.fade(this.domNode, this.effectDuration, 0, 1);
 				break;
 			default:
 				this.bg.style.display = "block";
@@ -145,7 +145,7 @@ dojo.widget.HtmlDialog = function() {
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "none";
-				dojo.graphics.htmlEffects.fadeOut(this.domNode, this.effectDuration, function(node) { node.style.display = "none"; });
+				dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) { node.style.display = "none"; });
 				break;
 			default:
 				this.bg.style.display = "none";

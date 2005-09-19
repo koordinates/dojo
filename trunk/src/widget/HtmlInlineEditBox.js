@@ -103,7 +103,7 @@ dojo.widget.HtmlInlineEditBox = function() {
 		ee.style.fontSize = dojo.style.getStyle(this.editable, "font-size");
 		ee.style.fontWeight = dojo.style.getStyle(this.editable, "font-weight");
 		ee.style.fontStyle = dojo.style.getStyle(this.editable, "font-style");
-		//this.text.style.fontFamily = dojo.xml.domUtil.getStyle(this.editable, "font-family");
+		//this.text.style.fontFamily = dojo.dom.getStyle(this.editable, "font-family");
 
 		ee.style.width = Math.max(dojo.html.getInnerWidth(this.editable), this.minWidth) + "px";
 		// ee.style.width = "100%";
