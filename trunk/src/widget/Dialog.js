@@ -158,4 +158,4 @@ dojo.widget.HtmlDialog = function() {
 		dojo.event.connect(node, "onclick", this, "hide");
 	}
 }
-dj_inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);

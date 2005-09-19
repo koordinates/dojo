@@ -12,4 +12,4 @@ dojo.widget.Button = function(){
 	this.onClick = function(){ return; }
 	this.isContainer = false;
 }
-dj_inherits(dojo.widget.Button, dojo.widget.Widget);
+dojo.inherits(dojo.widget.Button, dojo.widget.Widget);

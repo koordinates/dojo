@@ -16,7 +16,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:MenuItem");
 dojo.widget.MenuItem = function () {
 	dojo.widget.MenuItem.superclass.constructor.call(this);
 }
-dj_inherits(dojo.widget.MenuItem, dojo.widget.Widget);
+dojo.inherits(dojo.widget.MenuItem, dojo.widget.Widget);
 
 dojo.lang.extend(dojo.widget.MenuItem, {
 	widgetType: "MenuItem"
@@ -28,7 +28,7 @@ dojo.lang.extend(dojo.widget.MenuItem, {
 dojo.widget.DomMenuItem = function(){
 	dojo.widget.DomMenuItem.superclass.constructor.call(this);
 }
-dj_inherits(dojo.widget.DomMenuItem, dojo.widget.DomWidget);
+dojo.inherits(dojo.widget.DomMenuItem, dojo.widget.DomWidget);
 
 dojo.lang.extend(dojo.widget.DomMenuItem, {
 	widgetType: "MenuItem"
@@ -40,7 +40,7 @@ dojo.lang.extend(dojo.widget.DomMenuItem, {
 dojo.widget.HtmlMenuItem = function () {
 	dojo.widget.HtmlMenuItem.superclass.constructor.call(this);
 }
-dj_inherits(dojo.widget.HtmlMenuItem, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlMenuItem, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 	widgetType: "MenuItem",

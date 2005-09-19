@@ -9,7 +9,7 @@ dojo.widget.SvgWidget = function(args){
 	// mix in the parent type
 	// dojo.widget.DomWidget.call(this);
 }
-dj_inherits(dojo.widget.SvgWidget, dojo.widget.DomWidget);
+dojo.inherits(dojo.widget.SvgWidget, dojo.widget.DomWidget);
 
 dojo.lang.extend(dojo.widget.SvgWidget, {
 	getContainerHeight: function(){

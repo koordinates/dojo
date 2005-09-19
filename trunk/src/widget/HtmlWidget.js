@@ -7,7 +7,7 @@ dojo.widget.HtmlWidget = function(args){
 	dojo.widget.DomWidget.call(this);
 }
 
-dj_inherits(dojo.widget.HtmlWidget, dojo.widget.DomWidget);
+dojo.inherits(dojo.widget.HtmlWidget, dojo.widget.DomWidget);
 
 dojo.lang.extend(dojo.widget.HtmlWidget, {
 	templateCssPath: null,

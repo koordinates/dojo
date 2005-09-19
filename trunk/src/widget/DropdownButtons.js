@@ -134,4 +134,4 @@ dojo.widget.HtmlDropdownButtons = function() {
 		});
 	}
 }
-dj_inherits(dojo.widget.HtmlDropdownButtons, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlDropdownButtons, dojo.widget.HtmlWidget);

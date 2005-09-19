@@ -8,5 +8,5 @@ dojo.widget.ContextMenu = function(){
 	this.isOpened = false;
 }
 
-dj_inherits(dojo.widget.ContextMenu, dojo.widget.Widget);
+dojo.inherits(dojo.widget.ContextMenu, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:contextmenu");

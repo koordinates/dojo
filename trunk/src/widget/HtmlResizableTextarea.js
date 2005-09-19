@@ -52,4 +52,4 @@ dojo.widget.HtmlResizableTextarea = function(){
 	dojo.event.connect(this, "endResize", this, "fitToParent");
 }
 
-dj_inherits(dojo.widget.HtmlResizableTextarea, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlResizableTextarea, dojo.widget.HtmlWidget);

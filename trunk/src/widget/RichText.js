@@ -16,7 +16,7 @@ dojo.widget.HtmlRichText = function () {
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dj_inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlRichText, {
 

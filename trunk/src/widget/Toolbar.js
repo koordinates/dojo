@@ -117,7 +117,7 @@ dojo.widget.HTMLToolbarContainer = function() {
 		return values;
 	}
 }
-dj_inherits(dojo.widget.HTMLToolbarContainer, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HTMLToolbarContainer, dojo.widget.HtmlWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarContainer");
 
 /* Toolbar
@@ -243,7 +243,7 @@ dojo.widget.HTMLToolbar = function() {
 		}
 	}
 }
-dj_inherits(dojo.widget.HTMLToolbar, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HTMLToolbar, dojo.widget.HtmlWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbar");
 
 /* ToolbarItem hierarchy:
@@ -262,7 +262,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:toolbar");
 dojo.widget.ToolbarItem = function() {
 	dojo.widget.HtmlWidget.call(this);
 }
-dj_inherits(dojo.widget.ToolbarItem, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.ToolbarItem, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.ToolbarItem, {
 	templateString: '<span unselectable="on" class="toolbarItem" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></span>',
@@ -596,7 +596,7 @@ dojo.widget.HTMLToolbarButtonGroup = function() {
 
 	this.preventDeselect = false; // if true, once you select one, you can't have none selected
 }
-dj_inherits(dojo.widget.HTMLToolbarButtonGroup, dojo.widget.ToolbarItem);
+dojo.inherits(dojo.widget.HTMLToolbarButtonGroup, dojo.widget.ToolbarItem);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarButtonGroup");
 
 /* ToolbarButton
@@ -604,7 +604,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:toolbarButtonGroup");
 dojo.widget.HTMLToolbarButton = function() {
 	dojo.widget.ToolbarItem.call(this);
 }
-dj_inherits(dojo.widget.HTMLToolbarButton, dojo.widget.ToolbarItem);
+dojo.inherits(dojo.widget.HTMLToolbarButton, dojo.widget.ToolbarItem);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarButton");
 
 dojo.lang.extend(dojo.widget.HTMLToolbarButton, {
@@ -638,7 +638,7 @@ dojo.lang.extend(dojo.widget.HTMLToolbarButton, {
 dojo.widget.HTMLToolbarDialog = function() {
 	dojo.widget.HTMLToolbarButton.call(this);
 }
-dj_inherits(dojo.widget.HTMLToolbarDialog, dojo.widget.HTMLToolbarButton);
+dojo.inherits(dojo.widget.HTMLToolbarDialog, dojo.widget.HTMLToolbarButton);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarDialog");
 
 dojo.lang.extend(dojo.widget.HTMLToolbarDialog, {
@@ -667,7 +667,7 @@ dojo.widget.HTMLToolbarMenu = function() {
 
 	this.widgetType = "ToolbarMenu";
 }
-dj_inherits(dojo.widget.HTMLToolbarMenu, dojo.widget.HTMLToolbarDialog);
+dojo.inherits(dojo.widget.HTMLToolbarMenu, dojo.widget.HTMLToolbarDialog);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarMenu");
 
 /* ToolbarMenuItem
@@ -697,7 +697,7 @@ dojo.widget.HTMLToolbarSeparator = function() {
 		}
 	}
 }
-dj_inherits(dojo.widget.HTMLToolbarSeparator, dojo.widget.ToolbarItem);
+dojo.inherits(dojo.widget.HTMLToolbarSeparator, dojo.widget.ToolbarItem);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSeparator");
 
 /* ToolbarSpace
@@ -715,7 +715,7 @@ dojo.widget.HTMLToolbarSpace = function() {
 		}
 	}
 }
-dj_inherits(dojo.widget.HTMLToolbarSpace, dojo.widget.HTMLToolbarSeparator);
+dojo.inherits(dojo.widget.HTMLToolbarSpace, dojo.widget.HTMLToolbarSeparator);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSpace");
 
 /* ToolbarSelect
@@ -729,7 +729,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:toolbarSpace");
 		this[method] = this.constructor.prototype[method];
 	}
 }
-dj_inherits(dojo.widget.HTMLToolbarSelect, dojo.widget.HTMLToolbarDialog);
+dojo.inherits(dojo.widget.HTMLToolbarSelect, dojo.widget.HTMLToolbarDialog);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSelect");
 
 dojo.lang.extend(dojo.widget.HTMLToolbarSelect, {
@@ -793,7 +793,7 @@ dojo.widget.HTMLToolbarSelect = function() {
 		return ret;
 	}
 }
-dj_inherits(dojo.widget.HTMLToolbarSelect, dojo.widget.ToolbarItem);
+dojo.inherits(dojo.widget.HTMLToolbarSelect, dojo.widget.ToolbarItem);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSelect");
 
 /* Icon
