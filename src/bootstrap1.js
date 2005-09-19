@@ -157,7 +157,7 @@ function dj_eval(s){ return dj_global.eval ? dj_global.eval(s) : eval(s); }
  * Convenience for throwing an exception because some function is not
  * implemented.
  */
-dj_unimplemented = dojo.unimpl = function(funcname, extra){
+dj_unimplemented = dojo.unimplemented = function(funcname, extra){
 	// FIXME: need to move this away from dj_*
 	var mess = "'" + funcname + "' not implemented";
 	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
@@ -304,7 +304,7 @@ dojo.hostenv = (function(){
 		 * implementation that doesn't rely on it.
 		 */
 		getText: function(uri){
-			dojo.unimpl('getText', "uri=" + uri);
+			dojo.unimplemented('getText', "uri=" + uri);
 		},
 
 		/**
@@ -313,7 +313,7 @@ dojo.hostenv = (function(){
 		 */
 		getLibraryScriptUri: function(){
 			// FIXME: need to implement!!!
-			dojo.unimpl('getLibraryScriptUri','');
+			dojo.unimplemented('getLibraryScriptUri','');
 		}
 	};
 })();
