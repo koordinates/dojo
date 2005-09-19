@@ -17,14 +17,17 @@ var window; var XMLHttpRequest;
 @*/
 
 dj_addNodeEvtHdlr = function(node, evtName, fp, capture){
+	/*
 	if(node.attachEvent){
 		node.attachEvent("on"+evtName, fp);
-	}else if(node.addEventListener){ // FIXME: test w/ Safari!
+	}else 
+	*/
+	if(node.addEventListener){ // FIXME: test w/ Safari!
 		node.addEventListener(evtName, fp, capture);
 	}else{
 		// node["on"+evtName]=fp;
 		var oldHandler = node["on"+evtName];
-		if(typeof oldHandler != "undefined"){
+		if((oldHandler)&&(typeof oldHandler != "undefined")){
 			node["on"+evtName]=function(){
 				fp.apply(node, arguments);
 				oldHandler.apply(node, arguments);
@@ -37,7 +40,7 @@ dj_addNodeEvtHdlr = function(node, evtName, fp, capture){
 }
 
 if(typeof window == 'undefined'){
-	dj_throw("no window object");
+	dojo.toss("no window object");
 }
 
 // attempt to figure out the path to dojo if it isn't set in the config
@@ -116,9 +119,9 @@ dojo.hostenv.getXmlhttpObject = function(){
 	}
 
 	if((last_e)&&(!http)){
-		dj_rethrow("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
+		dojo.toss("Could not create a new ActiveXObject using any of the progids " + DJ_XMLHTTP_PROGIDS.join(', '), last_e);
 	}else if(!http){
-		return dj_throw("No XMLHTTP implementation available, for uri " + uri);
+		return dojo.toss("No XMLHTTP implementation available, for uri " + uri);
 	}
 
 	return http;
@@ -164,12 +167,12 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 function dj_last_script_src() {
     var scripts = window.document.getElementsByTagName('script');
     if(scripts.length < 1){ 
-		dj_throw("No script elements in window.document, so can't figure out my script src"); 
+		dojo.toss("No script elements in window.document, so can't figure out my script src"); 
 	}
     var script = scripts[scripts.length - 1];
     var src = script.src;
     if(!src){
-		dj_throw("Last script element (out of " + scripts.length + ") has no src");
+		dojo.toss("Last script element (out of " + scripts.length + ") has no src");
 	}
     return src;
 }
@@ -206,10 +209,9 @@ dj_addNodeEvtHdlr(window, "load", function(){
 	dojo.hostenv.modulesLoaded();
 });
 
-
 dojo.hostenv.makeWidgets = function(){
 	if((dojo.hostenv.auto_build_widgets_)||(dojo.hostenv.searchIds.length > 0)){
-		if(dj_eval_object_path("dojo.widget.Parse")){
+		if(dojo.evalObjPath("dojo.widget.Parse")){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
 			// IE is such a tremendous peice of shit.
