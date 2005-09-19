@@ -11,7 +11,6 @@ dj_inherits(dojo.dnd.HtmlDragMoveSource, dojo.dnd.HtmlDragSource);
 
 dojo.lang.extend(dojo.dnd.HtmlDragMoveSource, {
 	onDragStart: function(){
-		dj_debug("onDragStart");
 		return new dojo.dnd.HtmlDragMoveObject(this.domNode, this.type);
 	}
 });
