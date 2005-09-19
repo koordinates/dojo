@@ -9,3 +9,13 @@ Namespace refactoring:
 - dojo.text -> dojo.string
 - dojo.xml.htmlUtil -> dojo.html + dojo.style
 - dojo.xml.domUtil -> dojo.dom
+
+Individual function refactoring
+- dj_unimplmemented() -> dojo.unimpl()
+- dj_inherits() -> dojo.inherits()
+- dj_deprecated() -> dojo.deprecated()
+- dj_eval_object_path() -> dojo.evalObjPath()
+- dj_error_to_string() -> dojo.errorToString()
+- dj_throw() -> dojo.raise()
+- dj_rethrow() -> dojo.raise()
+- dj_debug() -> dojo.debug()
