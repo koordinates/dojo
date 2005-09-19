@@ -54,9 +54,7 @@ dojo.version = {
 dojo.evalObjPath = function(objpath, create){
 	// fast path for no periods
 	if(typeof objpath != "string"){ return dj_global; }
-	if(objpath.indexOf('.') == -1){
-		return dj_undef(objpath) ? undefined : dj_global[objpath];
-	}
+	if(objpath.indexOf('.') == -1){ return dj_global[objpath]; }
 
 	var syms = objpath.split(/\./);
 	var obj = dj_global;
@@ -94,7 +92,7 @@ dojo.errorToString = function(excep){
 * Throws an Error object given the string err. For now, will also do a println
 * to the user first.
 */
-dojo.toss = function(message, excep){
+dojo.raise = function(message, excep){
 	if(excep){
 		message = message + ": "+dojo.errorToString(excep);
 	}
@@ -106,8 +104,8 @@ dojo.toss = function(message, excep){
 };
 
 dj_throw = dj_rethrow = function(m, e){
-	dojo.deprecated("dj_throw and dj_rethrow deprecated, use dojo.toss instead");
-	dojo.toss(m, e);
+	dojo.deprecated("dj_throw and dj_rethrow deprecated, use dojo.raise instead");
+	dojo.raise(m, e);
 };
 
 /**
@@ -119,7 +117,7 @@ dj_throw = dj_rethrow = function(m, e){
 dojo.debug = function(){
 	var args = arguments;
 	if(dj_undef("println", dojo.hostenv)){
-		dojo.toss("dojo.debug not available (yet?)");
+		dojo.raise("dojo.debug not available (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
@@ -164,7 +162,7 @@ dj_unimplemented = dojo.unimpl = function(funcname, extra){
 	var mess = "'" + funcname + "' not implemented";
 	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
 	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
-	dojo.toss(mess);
+	dojo.raise(mess);
 }
 
 /**
@@ -182,7 +180,7 @@ dj_deprecated = dojo.deprecated = function(behaviour, extra){
  */
 dojo.inherits = function(subclass, superclass){
 	if(typeof superclass != 'function'){ 
-		dojo.toss("superclass: "+superclass+" borken");
+		dojo.raise("superclass: "+superclass+" borken");
 	}
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
@@ -287,7 +285,7 @@ dojo.hostenv = (function(){
 		// lookup cache for modules.
 		// NOTE: this is partially redundant a private variable in the jsdown
 		// implementation, but we don't want to couple the two.
-		modules_ : {},
+		// modules_ : {},
 		post_load_: false,
 		modulesLoadedListeners: [],
 		/**
@@ -341,7 +339,7 @@ dojo.hostenv.getBaseScriptUri = function(){
 	if(!uri){
 		uri = this.library_script_uri_ = this.getLibraryScriptUri();
 		if(!uri){
-			dojo.toss("Nothing returned by getLibraryScriptUri(): " + uri);
+			dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
 		}
 	}
 
@@ -373,15 +371,12 @@ dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
  * Can be used to determine success or failure of the load.
  */
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
-	if(!relpath){
-		dojo.toss("Missing relpath argument");
-	}
 	if((relpath.charAt(0) == '/')||(relpath.match(/^\w+:/))){
-		dojo.toss("relpath '" + relpath + "'; must be relative");
+		dojo.raise("relpath '" + relpath + "'; must be relative");
 	}
 	var uri = this.getBaseScriptUri() + relpath;
 	try{
-		return ((!module) ? this.loadUri(uri) : this.loadUriAndCheck(uri, module));
+		return ((!module) ? this.loadUri(uri, cb) : this.loadUriAndCheck(uri, module, cb));
 	}catch(e){
 		dojo.debug(e);
 		return false;
@@ -457,7 +452,6 @@ Call styles:
 	dojo.addOnLoad(functionPointer)
 	dojo.addOnLoad(object, "functionName")
 */
-/*
 dojo.addOnLoad = function(obj, fcnName) {
 	if(arguments.length == 1) {
 		dojo.hostenv.modulesLoadedListeners.push(obj);
@@ -467,7 +461,6 @@ dojo.addOnLoad = function(obj, fcnName) {
 		});
 	}
 };
-*/
 
 dojo.hostenv.modulesLoaded = function(){
 	if(this.post_load_){ return; }
@@ -481,8 +474,8 @@ dojo.hostenv.modulesLoaded = function(){
 }
 
 dojo.hostenv.moduleLoaded = function(modulename){
-	var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
-	this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
+	// var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
+	// this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
 }
 
 /**
@@ -575,7 +568,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		}
 
 		if((!ok)&&(!omit_module_check)){
-			dojo.toss("Could not load '" + modulename + "'; last tried '" + relpath + "'");
+			dojo.raise("Could not load '" + modulename + "'; last tried '" + relpath + "'");
 		}
 	}
 
@@ -584,7 +577,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		// pass in false so we can give better error
 		module = this.findModule(modulename, false);
 		if(!module){
-			dojo.toss("symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+			dojo.raise("symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 		}
 	}
 
@@ -611,6 +604,7 @@ dojo.hostenv.startPackage = function(packname){
  */
 dojo.hostenv.findModule = function(modulename, must_exist) {
 	// check cache
+	/*
 	if(!dj_undef(modulename, this.modules_)){
 		return this.modules_[modulename];
 	}
@@ -618,15 +612,17 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	if(this.loaded_modules_[(new String(modulename)).toLowerCase()]){
 		return this.loaded_modules_[modulename];
 	}
+	*/
 
 	// see if symbol is defined anyway
 	var module = dojo.evalObjPath(modulename);
 	if((typeof module !== 'undefined')&&(module)){
-		return this.modules_[modulename] = module;
+		return module;
+		// return this.modules_[modulename] = module;
 	}
 
 	if(must_exist){
-		dojo.toss("no loaded module named '" + modulename + "'");
+		dojo.raise("no loaded module named '" + modulename + "'");
 	}
 	return null;
 }

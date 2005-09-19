@@ -17,7 +17,7 @@ var window; var XMLHttpRequest;
 @*/
 
 if(typeof window == 'undefined'){
-	dojo.toss("no window object");
+	dojo.raise("no window object");
 }
 
 // attempt to figure out the path to dojo if it isn't set in the config
@@ -99,7 +99,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 	}
 
 	if(!http){
-		return dojo.toss("XMLHTTP not available", last_e);
+		return dojo.raise("XMLHTTP not available", last_e);
 	}
 
 	return http;
@@ -151,12 +151,12 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 function dj_last_script_src() {
     var scripts = window.document.getElementsByTagName('script');
     if(scripts.length < 1){ 
-		dojo.toss("No script elements in window.document, so can't figure out my script src"); 
+		dojo.raise("No script elements in window.document, so can't figure out my script src"); 
 	}
     var script = scripts[scripts.length - 1];
     var src = script.src;
     if(!src){
-		dojo.toss("Last script element (out of " + scripts.length + ") has no src");
+		dojo.raise("Last script element (out of " + scripts.length + ") has no src");
 	}
     return src;
 }
