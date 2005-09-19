@@ -10,78 +10,24 @@
 */
 
 /**
- * The global djConfig can be set prior to loading the library, to override certain settings.
- * It does not exist under dojo.* so that it can be set before the dojo variable exists.
- * Setting any of these variables *after* the library has loaded does nothing at all.
- * The variables that can be set are as follows:
- *
- * <dl>
- * <dt>baseScriptUri
- *  <dd>The value that getBaseScriptUri() will return. It is the base URI for loading modules.
- *  If not set in config, we find it using libraryScriptUri (stripping out the name part).
- *
- * <dt>baseRelativePath
- *  <dd>How to get from the parent URI of the URI defining the bootstrap code (libraryScriptUri)
- *  to the base URI. Defaults to '' (meaning that the bootstrap code sits in the top).
- *  If it is non-empty, it has to have a trailing '/'.
- *
- * <dt>libraryScriptUri
- *  <dd>Unless set in config, in a browser environment, this is the full
- *  value of the 'src' attribute of our script element.
- *  In a command line, this is the argument specifying the library file.
- *  If you set baseScriptUri, this is ignored.
- *  Setting it saves us the effort of trying to figure it out, but you
- *  might as well just set baseScriptUri instead.
- *
- * <dt>isDebug
- *  <dd>whether debug output is enabled.
- * </dl>
+ * The global djConfig can be set prior to loading the library, to override
+ * certain settings.  It does not exist under dojo.* so that it can be set
+ * before the dojo variable exists. Setting any of these variables *after* the
+ * library has loaded does nothing at all. The variables that can be set are
+ * as follows:
  */
-/**
- * dj_global is an alias for the top-level global object in the host environment (the "window" object in a browser).
- */
-//:GLVAR Object dj_global
-var dj_global = this; //typeof window == 'undefined' ? this : window;
 
+/**
+ * dj_global is an alias for the top-level global object in the host
+ * environment (the "window" object in a browser).
+ */
+var dj_global = this; //typeof window == 'undefined' ? this : window;
 
 function dj_undef(name, obj){
 	if(!obj){ obj = dj_global; }
 	return (typeof obj[name] == "undefined");
 }
 
-/*
- * private utility to  evaluate a string like "A.B" without using eval.
- */
-function dj_eval_object_path(objpath, create){
-	// fast path for no periods
-	if(typeof objpath != "string"){ return dj_global; }
-	if(objpath.indexOf('.') == -1){
-		// dj_debug("typeof this[",objpath,"]=",typeof(this[objpath]), " and typeof dj_global[]=", typeof(dj_global[objpath])); 
-		// dojo.hostenv.println(typeof dj_global[objpath]);
-		// return (typeof dj_global[objpath] == 'undefined') ? undefined : dj_global[objpath];
-		return dj_undef(objpath) ? undefined : dj_global[objpath];
-	}
-
-	var syms = objpath.split(/\./);
-	var obj = dj_global;
-	for(var i=0;i<syms.length;++i){
-		if(!create){
-			obj = obj[syms[i]];
-			if((typeof obj == 'undefined')||(!obj)){
-				return obj;
-			}
-		}else{
-			if(dj_undef(syms[i], obj)){
-				obj[syms[i]] = {};
-			}
-			obj = obj[syms[i]];
-		}
-	}
-	return obj;
-}
-
-
-//:GLVAR Object djConfig
 if(dj_undef("djConfig")){
 	var djConfig = {};
 }
@@ -102,6 +48,35 @@ dojo.version = {
 	}
 };
 
+/*
+ * evaluate a string like "A.B" without using eval.
+ */
+dojo.evalObjPath = function(objpath, create){
+	// fast path for no periods
+	if(typeof objpath != "string"){ return dj_global; }
+	if(objpath.indexOf('.') == -1){
+		return dj_undef(objpath) ? undefined : dj_global[objpath];
+	}
+
+	var syms = objpath.split(/\./);
+	var obj = dj_global;
+	for(var i=0;i<syms.length;++i){
+		if(!create){
+			obj = obj[syms[i]];
+			if((typeof obj == 'undefined')||(!obj)){
+				return obj;
+			}
+		}else{
+			if(dj_undef(syms[i], obj)){
+				obj[syms[i]] = {};
+			}
+			obj = obj[syms[i]];
+		}
+	}
+	return obj;
+};
+
+
 // ****************************************************************
 // global public utils
 // ****************************************************************
@@ -111,68 +86,62 @@ dojo.version = {
  * TODO: overriding Error.prototype.toString won't accomplish this?
  * ... since natively generated Error objects do not always reflect such things?
  */
-function dj_error_to_string(excep){
+dojo.errorToString = function(excep){
 	return ((!dj_undef("message", excep)) ? excep.message : (dj_undef("description", excep) ? excep : excep.description ));
-}
+};
+
+/**
+* Throws an Error object given the string err. For now, will also do a println
+* to the user first.
+*/
+dojo.toss = function(message, excep){
+	if(excep){
+		message = message + ": "+dojo.errorToString(excep);
+	}
+	var he = dojo.hostenv;
+	if(dj_undef("hostenv", dojo)&&dj_undef("println", dojo)){ 
+		dojo.hostenv.println("FATAL: " + message);
+	}
+	throw Error(message);
+};
+
+dj_throw = dj_rethrow = function(m, e){
+	dojo.deprecated("dj_throw and dj_rethrow deprecated, use dojo.toss instead");
+	dojo.toss(m, e);
+};
 
 /**
  * Produce a line of debug output. 
  * Does nothing unless dojo.hostenv.is_debug_ is true.
  * varargs, joined with ''.
  * Caller should not supply a trailing "\n".
- *
- * TODO: dj_debug() is a convenience for dojo.hostenv.debug()?
  */
-// We have a workaround here for the "arguments" object not being legal when using "jsc -fast+".
-/*@cc_on @*/
-/*@if (@_jscript_version >= 7)
-function dj_debug(... args : Object[]) {
-@else @*/
-function dj_debug(){
+dojo.debug = function(){
 	var args = arguments;
-/*@end @*/
 	if(dj_undef("println", dojo.hostenv)){
-		// dj_throw("attempt to call dj_debug when there is no dojo.hostenv println implementation (yet?)");
-		dj_throw("dj_debug not available (yet?)");
+		dojo.toss("dj_debug not available (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
-	var s = isJUM ? "": "DEBUG: ";
+	var s = [(isJUM ? "": "DEBUG: ")];
 	for(var i=0;i<args.length;++i){
 		if(!false && args[i] instanceof Error){
-			var msg = "[" + args[i].name + ": " + dj_error_to_string(args[i]) +
+			var msg = "[" + args[i].name + ": " + dojo.errorToString(args[i]) +
 				(args[i].fileName ? ", file: " + args[i].fileName : "") +
 				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";
 		}else{ 
 			var msg = args[i];
 		}
-		s += msg + " ";
+		s.push(msg);
 	}
 	if(isJUM){ // this seems to be the only way to get JUM to "play nice"
-		jum.debug(s);
+		jum.debug(s.join(" "));
 	}else{
-		dojo.hostenv.println(s);
+		dojo.hostenv.println(s.join(" "));
 	}
 }
-
-/**
-* Throws an Error object given the string err. For now, will also do a println to the user first.
-*/
-function dj_throw(message){
-	var he = dojo.hostenv;
-	if(dj_undef("hostenv", dojo)&&dj_undef("println", dojo)){ 
-		dojo.hostenv.println("FATAL: " + message);
-	}
-	throw Error(message);
-}
-
-/**
- * Rethrows the provided Error object excep, with the additional message given by message.
- */
-function dj_rethrow(message, excep){
-	var emess = dj_error_to_string(excep);
-	dj_throw(message + ": " + emess);
-}
+// FIXME: we should deprecate the name "dj_debug"
+var dj_debug = dojo.debug;
 
 /**
  * We put eval() in this separate function to keep down the size of the trapped
@@ -180,38 +149,40 @@ function dj_rethrow(message, excep){
  *
  * Note that:
  * - JSC eval() takes an optional second argument which can be 'unsafe'.
- * - Mozilla/SpiderMonkey eval() takes an optional second argument which is the scope object for new symbols.
+ * - Mozilla/SpiderMonkey eval() takes an optional second argument which is the
+ *   scope object for new symbols.
 */
 function dj_eval(s){ return dj_global.eval ? dj_global.eval(s) : eval(s); }
 
 
 /**
- * Convenience for throwing an exception because some function is not implemented.
+ * Convenience for throwing an exception because some function is not
+ * implemented.
  */
-function dj_unimplemented(funcname, extra){
+dj_unimplemented = dojo.unimpl = function(funcname, extra){
+	// FIXME: need to move this away from dj_*
 	var mess = "'" + funcname + "' not implemented";
 	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
 	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
-	dj_throw(mess);
+	dojo.toss(mess);
 }
 
 /**
  * Convenience for informing of deprecated behaviour.
  */
-function dj_deprecated(behaviour, extra){
+dj_deprecated = dojo.deprecated = function(behaviour, extra){
 	var mess = "DEPRECATED: " + behaviour;
 	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
 	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
-	dj_debug(mess);
+	dojo.debug(mess);
 }
 
 /**
  * Does inheritance
  */
-function dj_inherits(subclass, superclass){
+dojo.inherits = function(subclass, superclass){
 	if(typeof superclass != 'function'){ 
-		// dj_throw("eek: superclass not a function: " + superclass + "\nsubclass is: " + subclass);
-		dj_throw("superclass: "+superclass+" borken");
+		dojo.toss("superclass: "+superclass+" borken");
 	}
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
@@ -220,6 +191,10 @@ function dj_inherits(subclass, superclass){
 	subclass['super'] = superclass.prototype;
 }
 
+dj_inherits = function(subclass, superclass){
+	dojo.deprecated("dj_inherits deprecated, use dojo.inherits instead");
+	dojo.inherits(subclass, superclass);
+}
 
 // an object that authors use determine what host we are running under
 dojo.render = {
@@ -291,6 +266,8 @@ dojo.hostenv = (function(){
 	}
 
 	return {
+		// FIXME: why in the heck are we not just naming these the same as the
+		// values on djConfig and then allowing mixin?
 		is_debug_: _def(djc, "isDebug", false),
 		base_script_uri_: _def(djc, "baseScriptUri", undefined),
 		base_relative_path_: _def(djc, "baseRelativePath", ""),
@@ -329,7 +306,8 @@ dojo.hostenv = (function(){
 		loadUriStack: [],
 		loadedUris: [],
 		// lookup cache for modules.
-		// NOTE: this is partially redundant a private variable in the jsdown implementation, but we don't want to couple the two.
+		// NOTE: this is partially redundant a private variable in the jsdown
+		// implementation, but we don't want to couple the two.
 		modules_ : {},
 		modulesLoadedFired: false,
 		modulesLoadedListeners: [],
@@ -344,9 +322,9 @@ dojo.hostenv = (function(){
 		getVersion: function(){ return this.version_; },
 
 		/**
-		 * Read the plain/text contents at the specified uri.
-		 * If getText() is not implemented, then it is necessary to override loadUri()
-		 * with an implementation that doesn't rely on it.
+		 * Read the plain/text contents at the specified uri.  If getText() is
+		 * not implemented, then it is necessary to override loadUri() with an
+		 * implementation that doesn't rely on it.
 		 */
 		getText: function(uri){
 			dj_unimplemented('getText', "uri=" + uri);
@@ -363,15 +341,10 @@ dojo.hostenv = (function(){
 	};
 })();
 
-/*
-dojo.hostenv.makeUnimpl = function(ns, funcname){
-	return new Function("dj_unimplemented('"+funcname+" unimplemented');");
-}
-*/
-
 /**
  * Display a line of text to the user.
- * The line argument should not contain a trailing "\n"; that is added by the implementation.
+ * The line argument should not contain a trailing "\n"; that is added by the
+ * implementation.
  */
 //dojo.hostenv.println = function(line) {}
 
@@ -384,13 +357,12 @@ dojo.hostenv.makeUnimpl = function(ns, funcname){
  * It is either the empty string, or a non-empty string ending in '/'.
  */
 dojo.hostenv.getBaseScriptUri = function(){
-	// if(typeof this.base_script_uri_ != 'undefined'){ return this.base_script_uri_; }
 	if(!dj_undef("base_script_uri_", this)){ return this.base_script_uri_; }
 	var uri = this.library_script_uri_;
 	if(!uri){
 		uri = this.library_script_uri_ = this.getLibraryScriptUri();
 		if(!uri){
-			dj_throw("Nothing returned by getLibraryScriptUri(): " + uri);
+			dojo.toss("Nothing returned by getLibraryScriptUri(): " + uri);
 		}
 	}
 
@@ -401,67 +373,34 @@ dojo.hostenv.getBaseScriptUri = function(){
 	return this.base_script_uri_;
 }
 
-// FIXME: we should move this into a different namespace
-/*
-dojo.hostenv.normPath = function(path){
-	// FIXME: need to convert or handle windows-style path separators
-
-	// posix says we can have one and two slashes next to each other, but 3 or
-	// more should be compressed to a single slash
-	path = path.replace(/(\/\/)(\/)+/, "\/");
-	// if we've got a "..." sequence, we can should attempt to normalize it
-	path = path.replace(/(\.\.)(\.)+/, "..");
-	// likewise, we need to clobber "../" sequences at the beginning of our
-	// string since they don't mean anything in this context
-	path = path.replace(/^(\.)+(\/)/, "");
-	// return path;
-
-	// FIXME: we need to fix this for non-rhino clients (say, IE)
-	// we need to strip out ".." sequences since rhino can't handle 'em
-	if(path.indexOf("..") >= 0){
-		var oparts = path.split("/");
-		var nparts = [];
-		for(var x=0; x<oparts.length; x++){
-			if(oparts[x]==".."){
-				// FIXME: what about if this is at the front? do we care?
-				if(nparts.length){
-					nparts.pop();
-				}else{
-					nparts.push("..");
-				}
-			}else{
-				nparts.push(oparts[x]);
-			}
-		}
-		return nparts.join("/");
-	}
-}
-*/
-
 /**
 * Set the base script uri.
 */
-// In JScript .NET, see interface System._AppDomain implemented by System.AppDomain.CurrentDomain. Members include AppendPrivatePath, RelativeSearchPath, BaseDirectory.
+// In JScript .NET, see interface System._AppDomain implemented by
+// System.AppDomain.CurrentDomain. Members include AppendPrivatePath,
+// RelativeSearchPath, BaseDirectory.
 dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
 
 /**
- * Loads and interprets the script located at relpath, which is relative to the script root directory.
- * If the script is found but its interpretation causes a runtime exception, that exception is not caught
- * by us, so the caller will see it.
- * We return a true value if and only if the script is found.
+ * Loads and interprets the script located at relpath, which is relative to the
+ * script root directory.  If the script is found but its interpretation causes
+ * a runtime exception, that exception is not caught by us, so the caller will
+ * see it.  We return a true value if and only if the script is found.
  *
- * For now, we do not have an implementation of a true search path.
- * We consider only the single base script uri, as returned by getBaseScriptUri().
+ * For now, we do not have an implementation of a true search path.  We
+ * consider only the single base script uri, as returned by getBaseScriptUri().
  *
- * @param relpath A relative path to a script (no leading '/', and typically ending in '.js').
- * @param module A module whose existance to check for after loading a path. Can be used to determine success or failure of the load.
+ * @param relpath A relative path to a script (no leading '/', and typically
+ * ending in '.js').
+ * @param module A module whose existance to check for after loading a path.
+ * Can be used to determine success or failure of the load.
  */
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	if(!relpath){
-		dj_throw("Missing relpath argument");
+		dojo.toss("Missing relpath argument");
 	}
 	if((relpath.charAt(0) == '/')||(relpath.match(/^\w+:/))){
-		dj_throw("relpath '" + relpath + "'; must be relative");
+		dojo.toss("relpath '" + relpath + "'; must be relative");
 	}
 	var uri = this.getBaseScriptUri() + relpath;
 	try{
@@ -476,7 +415,8 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 
 /**
  * Reads the contents of the URI, and evaluates the contents.
- * Returns true if it succeeded. Returns false if the URI reading failed. Throws if the evaluation throws.
+ * Returns true if it succeeded. Returns false if the URI reading failed.
+ * Throws if the evaluation throws.
  * The result of the eval is not available to the caller.
  */
 dojo.hostenv.loadUri = function(uri, cb){
@@ -565,16 +505,20 @@ dojo.hostenv.modulesLoaded = function(){
 }
 
 dojo.hostenv.moduleLoaded = function(modulename){
-	var modref = dj_eval_object_path((modulename.split(".").slice(0, -1)).join('.'));
+	var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
 	this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
 }
 
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
 * If it is, it is simply returned (nothing to do).
-* If it is not defined, it will look for "A/B.js" in the script root directory, followed
-* by "A.js".
-* It throws if it cannot find a file to load, or if the symbol A.B is not defined after loading.
+*
+* If it is not defined, it will look for "A/B.js" in the script root directory,
+* followed by "A.js".
+*
+* It throws if it cannot find a file to load, or if the symbol A.B is not
+* defined after loading.
+*
 * It returns the object A.B.
 *
 * This does nothing about importing symbols into the current package.
@@ -655,44 +599,39 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		}
 
 		if((!ok)&&(!omit_module_check)){
-			dj_throw("Could not load '" + modulename + "'; last tried '" + relpath + "'");
+			dojo.toss("Could not load '" + modulename + "'; last tried '" + relpath + "'");
 		}
 	}
 
 	// check that the symbol was defined
 	if(!omit_module_check){
-		module = this.findModule(modulename, false); // pass in false so we can give better error
+		// pass in false so we can give better error
+		module = this.findModule(modulename, false);
 		if(!module){
-			dj_throw("symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+			dojo.toss("symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
 		}
 	}
 
 	return module;
 }
 
-
-function dj_load(modulename, exact_only){
-	return dojo.hostenv.loadModule(modulename, exact_only); 
-}
-
 /**
-* startPackage("A.B") follows the path, and at each level creates a new empty object
-* or uses what already exists. It returns the result.
+* startPackage("A.B") follows the path, and at each level creates a new empty
+* object or uses what already exists. It returns the result.
 */
 dojo.hostenv.startPackage = function(packname){
 	var syms = packname.split(/\./);
 	if(syms[syms.length-1]=="*"){
 		syms.pop();
 	}
-	return dj_eval_object_path(syms.join("."), true);
+	return dojo.evalObjPath(syms.join("."), true);
 }
-
-
 
 /**
  * findModule("A.B") returns the object A.B if it exists, otherwise null.
  * @param modulename A string like 'A.B'.
- * @param must_exist Optional, defualt false. throw instead of returning null if the module does not currently exist.
+ * @param must_exist Optional, defualt false. throw instead of returning null
+ * if the module does not currently exist.
  */
 dojo.hostenv.findModule = function(modulename, must_exist) {
 	// check cache
@@ -706,13 +645,13 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	}
 
 	// see if symbol is defined anyway
-	var module = dj_eval_object_path(modulename);
+	var module = dojo.evalObjPath(modulename);
 	if((typeof module !== 'undefined')&&(module)){
 		return this.modules_[modulename] = module;
 	}
 
 	if(must_exist){
-		dj_throw("no loaded module named '" + modulename + "'");
+		dojo.toss("no loaded module named '" + modulename + "'");
 	}
 	return null;
 }
