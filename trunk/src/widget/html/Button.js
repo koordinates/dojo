@@ -27,4 +27,4 @@ dojo.widget.html.Button = function(){
 
 	this.onFoo = function(){ }
 }
-dj_inherits(dojo.widget.html.Button, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.Button, dojo.widget.HtmlWidget);
