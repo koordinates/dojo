@@ -202,7 +202,7 @@ dojo.addOnLoad(Picker, "init");
 
 			<h2>Get the Source</h2>
 			<p>Are you developing a project that requires more advanced packaging functionality
-			than the pre-built editions provide? If so, you can <a href="http://dojo.jot.com/WikiHome/GettingStartedWithSubversion">grab an SVN checkout</a>
+			than the pre-built editions provide? If so, you can <a href="http://dojo.jot.com/WikiHome/Getting+Started+With+Subversion">grab an SVN checkout</a>
 			which includes build tools allowing you to create your own packages and even roll in your own
 			custom code.</p>
 
