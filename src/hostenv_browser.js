@@ -239,7 +239,7 @@ if((!window["djConfig"])||(!window["djConfig"]["preventBackButtonFix"])){
 	document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'iframe_history.html')+"'></iframe>");
 }
 if(dojo.render.html.ie){
-	document.write("style>v\\:*{ behavior:url(#default#VML); }</style>");
+	document.write("<style>v\\:*{ behavior:url(#default#VML); }</style>");
 	document.write("<xml:namespace ns=\"urn:schemas-microsoft-com:vml\" prefix=\"v\"/>");
 }
 
