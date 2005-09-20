@@ -104,6 +104,6 @@ dojo.crypto.MD5=new function(){
 			c=add(c,oldc);
 			d=add(d,oldd);
 		}
-		return [].concat(a).concat(b).concat(c).concat(d);
+		return new Array(a, b, c, d);
 	};
 }();
