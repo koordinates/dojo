@@ -138,8 +138,7 @@ dojo.debug = function(){
 		dojo.hostenv.println(s.join(" "));
 	}
 }
-// FIXME: we should deprecate the name "dojo.debug"
-var dojo.debug = dojo.debug;
+var dj_debug = dojo.debug;
 
 /**
  * We put eval() in this separate function to keep down the size of the trapped
