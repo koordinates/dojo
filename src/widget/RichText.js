@@ -197,7 +197,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					'        min-height: ' + this.minHeight + '; }' +
 					'    body > *:first-child { padding-top: 0; margin-top: 0; }' +
 					'    body > *:last-child { padding-bottom: 0; margin-bottom: 0; }' +
-					//'    li > ul:moz-first-node, li > ol:moz-first-node { padding-top: 1em; }' +
+					'    li > ul:-moz-first-node, li > ol:-moz-first-node { padding-top: 1.2em; }' +
+					'    li { min-height: 1.2em; }' +
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }' +
 					'</style>' +
 					//'<base href="' + window.location + '">' +
@@ -223,7 +224,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				setInterval(function () {
 					editor.onDisplayChanged();
 					editor._updateHeight();
-				}, 500);
+				}, 1000);
 			}
 		
 			// FIXME: this does not work in Mozilla, we need to addListener
