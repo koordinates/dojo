@@ -1,4 +1,4 @@
-dojo.provide("dojo.dnd.HtmlDragAndDrop");
+/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */dojo.provide("dojo.dnd.HtmlDragAndDrop");
 dojo.provide("dojo.dnd.HtmlDragSource");
 dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
@@ -49,6 +49,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
+
+		this.scrollOffset = {
+			top: document.documentElement.scrollTop,
+			left: document.documentElement.scrollLeft
+		};
 	
 		this.dragClone = this.domNode.cloneNode(true);
 		//this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
@@ -61,6 +66,16 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		}
 		dojo.style.setOpacity(this.dragClone, 0.5);
 		document.body.appendChild(this.dragClone);
+	},
+
+	updateDragOffset: function() {
+		var sTop = document.documentElement.scrollTop;
+		var sLeft = document.documentElement.scrollLeft;
+		if(sTop != this.scrollOffset.top) {
+			var diff = sTop - this.scrollOffset.top;
+			this.dragOffset.top += diff;
+			this.scrollOffset.top = sTop;
+		}
 	},
 	
 	/** Moves the node to follow the mouse */
