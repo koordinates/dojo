@@ -114,7 +114,7 @@ dojo.style.styleSheet = null;
 dojo.style.insertCssRule = function (selector, declaration, index){
 	if(dojo.render.html.ie){
 		if(!dojo.style.styleSheet){
-			// FIXME: create a new style sheet document
+			dojo.style.styleSheet = document.createStyleSheet();
 		}
 		if(!index){
 			index = dojo.style.styleSheet.rules.length;
