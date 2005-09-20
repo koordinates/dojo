@@ -55,9 +55,11 @@ dojo_ie_clobber = new function(){
 				na.push(tna[x]);
 				// if we're gonna be clobbering the thing, at least make sure
 				// we aren't trying to do it twice
-				var pos = dojo.lang.find(this.clobberNodes, tna[x], true);
-				if(pos >= 0){
-					this.clobberNodes.splice(pos, 1);
+				if(tna[x]["__doClobber__"]){
+					var pos = dojo.lang.find(this.clobberNodes, tna[x], true);
+					if(pos >= 0){
+						this.clobberNodes.splice(pos, 1);
+					}
 				}
 			}
 		}else{
