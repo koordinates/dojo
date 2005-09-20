@@ -96,16 +96,26 @@ developer and end-user acceptance.
 				- relative positioning/containing
 				- zoom
 				- resize
-				- panning			- split pane
+				- panning
+				- split pane
 				- element resizer
-		- combo box		- auto-complete		- sliders
-		- data table		- menus and drop downs		- toolbar
-			- toggle buttons		- tab set
-		- debugger/logger		- tree		- progress bar
-		- status bar		- context menu
+		- combo box
+		- auto-complete
+		- sliders
+		- data table
+		- menus and drop downs
+		- toolbar
+			- toggle buttons
+			- tab set
+		- debugger/logger
+		- tree
+		- progress bar
+		- status bar
+		- context menu
 		- status indicators
 		- WYSIWIG editor or rich-text edit control
-		- animation (RAR: need to engage Dan to get his code for this)		- drawing
+		- animation (RAR: need to engage Dan to get his code for this)
+		- drawing
 		- keyboard events
 		- drag and drop
 			- method for determing if you "accept" a drag or drop
