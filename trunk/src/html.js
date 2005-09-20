@@ -194,7 +194,7 @@ dojo.html.prependClass = function (node, classStr){
  *	passed &node;. Returns &true; or &false; indicating success or failure.
  */
 dojo.html.addClass = function (node, classStr){
-	if(!node){ return null; }
+	if (!node) { throw new Error("addClass: node does not exist"); }
 	if(dojo.html.hasAttribute(node,"class")||node.className){
 		classStr = (node.className||dojo.html.getAttribute(node, "class")) + " " + classStr;
 	}
