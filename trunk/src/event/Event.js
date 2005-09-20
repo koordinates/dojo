@@ -11,7 +11,7 @@ dojo.event = new function(){
 		if((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)){
 			for(var x in nso){
 				if(nso[x] === anonFuncPtr){
-						dj_debug(x);
+						dojo.debug(x);
 						return x;
 				}
 			}

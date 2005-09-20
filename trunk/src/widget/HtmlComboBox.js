@@ -98,7 +98,7 @@ dojo.widget.HtmlComboBox = function(){
 	}
 
 	this.onKeyDown = function(evt){
-		// dj_debug(evt);
+		// dojo.debug(evt);
 	}
 
 	this.setSelectedValue = function(value){

@@ -156,7 +156,7 @@ dojo.io.bind = function(request){
 	if(!(request instanceof dojo.io.Request)){
 		try{
 		request = new dojo.io.Request(request);
-		}catch(e){ dj_debug(e); }
+		}catch(e){ dojo.debug(e); }
 	}
 	var tsName = "";
 	if(request["transport"]){

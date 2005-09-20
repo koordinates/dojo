@@ -46,10 +46,10 @@ dojo.hostenv.println = function(s){
 	}
 }
 
-dj_debug = function() {
+dojo.debug = function() {
 	var args = arguments;
 	if(typeof dojo.hostenv.println != 'function'){
-		dj_throw("attempt to call dj_debug when there is no dojo.hostenv println implementation (yet?)");
+		dj_throw("attempt to call dojo.debug when there is no dojo.hostenv println implementation (yet?)");
 	}
 	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"];
@@ -90,7 +90,7 @@ dojo.hostenv.modulesLoaded = function(){
 	if(this.modulesLoadedFired){ return; }
 	if((this.loadUriStack.length==0)&&(this.getTextStack.length==0)){
 		if(this.inFlightCount > 0){ 
-			dj_debug("couldn't initialize, there are files still in flight");
+			dojo.debug("couldn't initialize, there are files still in flight");
 			return;
 		}
 		this.modulesLoadedFired = true;
@@ -117,7 +117,7 @@ dojo.hostenv.displayStack = function(){
 	for(var x=0; x<stack.length; x++){
 		oa.unshift([stack[x][0], (typeof stack[x][2])]);
 	}
-	dj_debug("<pre>"+oa.join("\n")+"</pre>");
+	dojo.debug("<pre>"+oa.join("\n")+"</pre>");
 }
 
 dojo.hostenv.unwindUriStack = function(){
@@ -145,12 +145,12 @@ dojo.hostenv.unwindUriStack = function(){
 	}
 	while(typeof next[2] == "string"){ // unwind as far as we can
 		try{
-			// dj_debug("<pre><![CDATA["+next[2]+"]]></pre>");
+			// dojo.debug("<pre><![CDATA["+next[2]+"]]></pre>");
 			dj_eval(next[2]);
 			next[1](true);
 		}catch(e){
-			dj_debug("we got an error when loading "+next[0]);
-			dj_debug("error: "+e);
+			dojo.debug("we got an error when loading "+next[0]);
+			dojo.debug("error: "+e);
 			// for(var x in e){ alert(x+" "+e[x]); }
 		}
 		dojo.hostenv.loadedUris[next[0]] = true;
@@ -165,7 +165,7 @@ dojo.hostenv.unwindUriStack = function(){
 	}
 	if(next){
 		stack.push(next);
-		dj_debug("### CHOKED ON: "+next[0]);
+		dojo.debug("### CHOKED ON: "+next[0]);
 	}
 }
 
@@ -202,7 +202,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 			next = stack.pop();
 		}
 		if(dojo.hostenv.loadedUris[next[0]]){ 
-			// dj_debug("WE ALREADY HAD: "+next[0]);
+			// dojo.debug("WE ALREADY HAD: "+next[0]);
 			dojo.hostenv.unwindUriStack();
 			return;
 		}
@@ -263,7 +263,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 			next = stack.pop();
 		}
 		if(dojo.hostenv.loadedUris[next[0]]){ 
-			// dj_debug("WE ALREADY HAD: "+next[0]);
+			// dojo.debug("WE ALREADY HAD: "+next[0]);
 			dojo.hostenv.unwindUriStack();
 			return;
 		}
@@ -321,7 +321,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		return module;
 	}
 
-	// dj_debug("dojo.hostenv.loadModule('"+modulename+"');");
+	// dojo.debug("dojo.hostenv.loadModule('"+modulename+"');");
 
 	// protect against infinite recursion from mutual dependencies
 	if (typeof this.loading_modules_[modulename] !== 'undefined'){
@@ -330,7 +330,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		// it gracefully, but log it in debug mode
 
 		// dj_throw("recursive attempt to load module '" + modulename + "'");
-		dj_debug("recursive attempt to load module '" + modulename + "'");
+		dojo.debug("recursive attempt to load module '" + modulename + "'");
 	}else{
 		this.addedToLoadingCount.push(modulename);
 	}
@@ -355,7 +355,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		modulename = (nsyms.slice(0, -1)).join('.');
 
 		var module = this.findModule(modulename, 0);
-		// dj_debug("found: "+modulename+"="+module);
+		// dojo.debug("found: "+modulename+"="+module);
 		if(module){
 			_this.removedFromLoadingCount.push(modulename);
 			return module;
@@ -375,12 +375,12 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			}
 			syms.pop();
 			syms.push(pfn);
-			// dj_debug("syms: "+syms);
+			// dojo.debug("syms: "+syms);
 			relpath = syms.join("/") + '.js';
 			if(relpath.charAt(0)=="/"){
 				relpath = relpath.slice(1);
 			}
-			// dj_debug("relpath: "+relpath);
+			// dojo.debug("relpath: "+relpath);
 			_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
 		}
 
@@ -390,9 +390,9 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 		modulename = nsyms.join('.');
 
 		var nextTry = function(lastStatus){
-			// dj_debug("lastStatus: "+lastStatus);
+			// dojo.debug("lastStatus: "+lastStatus);
 			if(lastStatus){ 
-				// dj_debug("inital relpath: "+relpath);
+				// dojo.debug("inital relpath: "+relpath);
 				module = _this.findModule(modulename, false); // pass in false so we can give better error
 				// if(!module){
 				if((!module)&&(syms[syms.length-1]!=pfn)){
@@ -413,7 +413,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			if(relpath.charAt(0)=="/"){
 				relpath = relpath.slice(1);
 			}
-			// dj_debug("relpath: "+relpath);
+			// dojo.debug("relpath: "+relpath);
 			_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
 		}
 
@@ -457,7 +457,7 @@ dojo.hostenv.unWindGetTextStack = function(){
 }
 
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
-	// dj_debug("Calling getText()");
+	// dojo.debug("Calling getText()");
 	try{
 		if(async_cb){
 			dojo.hostenv.getTextStack.push([uri, async_cb, fail_ok]);

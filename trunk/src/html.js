@@ -219,7 +219,7 @@ dojo.html.setClass = function (node, classStr){
 			return false;
 		}
 	}catch(e){
-		dj_debug("__util__.setClass() failed", e);
+		dojo.debug("__util__.setClass() failed", e);
 	}
 	return true;
 }
@@ -242,7 +242,7 @@ dojo.html.removeClass = function (node, classStr){
 		}
 		node.className = nca .join(" ");
 	}catch(e){
-		dj_debug("__util__.removeClass() failed", e);
+		dojo.debug("__util__.removeClass() failed", e);
 	}
 
 	return true;
@@ -278,7 +278,7 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 				classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
 				" ')]";
 		}
-		//dj_debug("xpath: " + xpath);
+		//dojo.debug("xpath: " + xpath);
 
 		var xpathResult = document.evaluate(xpath, parent, null,
 			XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);

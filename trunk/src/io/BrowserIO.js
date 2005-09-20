@@ -54,7 +54,7 @@ dojo.io.encodeForm = function(formNode){
 dojo.io.setIFrameSrc = function(iframe, src, replace){
 	try{
 		var r = dojo.render.html;
-		// dj_debug(iframe);
+		// dojo.debug(iframe);
 		if(!replace){
 			if(r.safari){
 				iframe.location = src;
@@ -64,10 +64,10 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 		}else{
 			var idoc = (r.moz) ? iframe.contentWindow : iframe;
 			idoc.location.replace(src);
-			dj_debug(iframe.contentWindow.location);
+			dojo.debug(iframe.contentWindow.location);
 		}
 	}catch(e){ 
-		dj_debug("setIFrameSrc: "+e); 
+		dojo.debug("setIFrameSrc: "+e); 
 	}
 }
 

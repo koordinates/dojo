@@ -383,8 +383,8 @@ dojo.logging.logQueueHandler.emit = function(record){
 	var logStr = String(dojo.log.getLevelName(record.level)+": "+record.time.toLocaleTimeString())+": "+record.message;
 	if(typeof dj_global["print"] == "function"){
 		print(logStr);
-	}else if(dj_global["dj_debug"]){
-		dj_debug(logStr);
+	}else if(dj_global["dojo.debug"]){
+		dojo.debug(logStr);
 	}
 	this.data.push(record);
 	if(this.numRecords != -1){

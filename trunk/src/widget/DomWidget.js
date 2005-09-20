@@ -196,7 +196,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 		baseNode.id = "";
 	}
 
-	// dj_debug("attachTemplateNodes toc: ", new Date()-start, "ms");
+	// dojo.debug("attachTemplateNodes toc: ", new Date()-start, "ms");
 }
 
 dojo.widget.getDojoEventsFromStr = function(str){
@@ -245,7 +245,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){ 
 		// var start = new Date();
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
-			dj_debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
+			dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
 			return false;
 		}else{
 			if((!this.containerNode)&&(!overrideContainerNode)){
@@ -263,12 +263,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 				//dojo.dom[pos](widget.domNode, ref, insertIndex);
 				dojo.dom.insertAtPosition(widget.domNode, ref, pos);
 			}
-			// dj_debug(this.widgetId, "added", widget.widgetId, "as a child");
+			// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
 			this.children.push(widget);
 			widget.parent = this;
 			widget.addedTo(this);
 		}
-		// dj_debug("add child took: ", new Date()-start, "ms");
+		// dojo.debug("add child took: ", new Date()-start, "ms");
 		return widget;
 	},
 
@@ -385,11 +385,11 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			ts.node = this.templateNode;
 		}
 		if(!this.templateNode){ 
-			dj_debug("weren't able to create template!");
+			dojo.debug("weren't able to create template!");
 			return false;
 		}
 
-		// dj_debug("toc0: ", new Date()-start, "ms");
+		// dojo.debug("toc0: ", new Date()-start, "ms");
 		var node = this.templateNode.cloneNode(true);
 		if(!node){ return false; }
 
@@ -397,9 +397,9 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		// attachment points which should be defined on the template node.
 
 		this.domNode = node;
-		// dj_debug("toc1: ", new Date()-start, "ms");
+		// dojo.debug("toc1: ", new Date()-start, "ms");
 		this.attachTemplateNodes(this.domNode, this);
-		// dj_debug("toc2: ", new Date()-start, "ms");
+		// dojo.debug("toc2: ", new Date()-start, "ms");
 	},
 
 	attachTemplateNodes: function(baseNode, targetObj){

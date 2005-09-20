@@ -134,7 +134,7 @@ dojo.style.insertCssRule = function (selector, declaration, index){
 
 dojo.style.removeCssRule = function (index){
 	if(!dojo.style.styleSheet){
-		dj_debug("no stylesheet defined for removing rules");
+		dojo.debug("no stylesheet defined for removing rules");
 		return false;
 	}
 	if(dojo.render.html.ie){
