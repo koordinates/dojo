@@ -18,7 +18,7 @@ dojo.widget.manager = new function(){
 		if(widget.widgetId == ""){
 			widget.widgetId = this.getUniqueId(widget.widgetType);
 		}else if(this.widgetIds[widget.widgetId]){
-			dj_debug("widget ID collision on ID: "+widget.widgetId);
+			dojo.debug("widget ID collision on ID: "+widget.widgetId);
 		}
 		this.widgetIds[widget.widgetId] = widget;
 	}
@@ -105,7 +105,7 @@ dojo.widget.manager = new function(){
 		if(impl){
 //			var props = [];
 //			for (var prop in impl) { props.push(prop); }
-//			dj_debug(props.join(", "));
+//			dojo.debug(props.join(", "));
 			var item = new impl(ctorObject);
 			//alert(impl+": "+item);
 			return item;

@@ -145,7 +145,7 @@ dojo.lang.tryThese = function(){
 				}
 			}
 		}catch(e){
-			dj_debug(e);
+			dojo.debug(e);
 		}
 	}
 }

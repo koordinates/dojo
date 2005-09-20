@@ -34,7 +34,7 @@ dojo.hostenv.loadUri = function(uri){
 	}
 	// TODO: in JScript .NET, eval will not affect the symbol table of the current code?
 	var value = dj_eval(contents);
-	dj_debug("jsc eval of contents returned: ", value);
+	dojo.debug("jsc eval of contents returned: ", value);
 	return 1;
 
 	// for an example doing runtime code compilation, see:

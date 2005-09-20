@@ -64,7 +64,7 @@ dojo.hostenv.loadUri = function(uri){
 	// attempting to load(). As per MDA, we should look at xpcshell as a
 	// replacement for spidermonkey.
     var ok = load(uri);
-    dj_debug("spidermonkey load(", uri, ") returned ", ok);
+    dojo.debug("spidermonkey load(", uri, ") returned ", ok);
     return 1;
 }
 

@@ -231,7 +231,7 @@ dojo.io.repubsub = new function(){
 	}
 
 	this.writeLog = function(str, lvl){
-		dj_debug(((new Date()).toLocaleTimeString())+": "+str);
+		dojo.debug(((new Date()).toLocaleTimeString())+": "+str);
 	}
 
 	this.init = function(){

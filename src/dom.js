@@ -186,7 +186,7 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 			domDoc.loadXML(str);
 			return domDoc;
 		}else{
-			dj_debug("toXml didn't work?");
+			dojo.debug("toXml didn't work?");
 		}
 	/*
 	}else if((dojo.render.html.capable)&&(dojo.render.html.safari)){
