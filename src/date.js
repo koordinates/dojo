@@ -146,3 +146,73 @@ dojo.date.daysInMonth = function (month, year) {
 		else { return 28; }
 	} else { return days[month]; }
 }
+
+dojo.date.months = ["January", "February", "March", "April", "May", "June",
+	"July", "August", "September", "October", "November", "December"];
+dojo.date.shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+dojo.date.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+dojo.date.shortDays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+
+/**
+ *
+ * Returns a string of the date in the version "January 1, 2004"
+ *
+ * @param date The date object
+ */
+dojo.date.toLongDateString = function(date) {
+	return dojo.date.months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+/**
+ *
+ * Returns a string of the date in the version "Jan 1, 2004"
+ *
+ * @param date The date object
+ */
+dojo.date.toShortDateString = function(date) {
+	return dojo.date.shortMonths[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+/**
+ *
+ * Returns a string of the date relative to the current date.
+ *
+ * @param date The date object
+ *
+ * Example returns:
+ * - "1 minute ago"
+ * - "4 minutes ago"
+ * - "Yesterday"
+ * - "2 days ago"
+ */
+dojo.date.toRelativeString = function(date) {
+	var now = new Date();
+	var diff = (now - date) / 1000;
+	var end = " ago";
+	var future = false;
+	if(diff < 0) {
+		future = true;
+		end = " from now";
+		diff = -diff;
+	}
+
+	if(diff < 60) {
+		diff = Math.round(diff);
+		return diff + " second" + (diff == 1 ? "" : "s") + end;
+	} else if(diff < 3600) {
+		diff = Math.round(diff/60);
+		return diff + " minute" + (diff == 1 ? "" : "s") + end;
+	} else if(diff < 3600*24 && date.getDay() == now.getDay()) {
+		diff = Math.round(diff/3600);
+		return diff + " hour" + (diff == 1 ? "" : "s") + end;
+	} else if(diff < 3600*24*7) {
+		diff = Math.round(diff/(3600*24));
+		if(diff == 1) {
+			return future ? "Tomorrow" : "Yesterday";
+		} else {
+			return diff + " days" + end;
+		}
+	} else {
+		return dojo.date.toShortDateString(date);
+	}
+}
