@@ -208,7 +208,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.editNode = this.document.body;
 
 			try { // sanity check for Mozilla
-				this.document.execCommand("useCSS", false, false); // old moz call
+				this.document.execCommand("useCSS", false, true); // old moz call
 				this.document.execCommand("styleWithCSS", false, false); // new moz call
 				//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
 			} catch (e) { }
@@ -285,7 +285,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 		// TODO: this is a guess at the default line-height, kinda works
 		if (this.domNode.nodeName == "LI") { this.domNode.lastChild.style.marginTop = "-1.2em"; }
-		dojo.html.addClass(dojo.domNode, "RichTextEditable");
+		dojo.html.addClass(this.domNode, "RichTextEditable");
 
 		// add the formatting functions
 		var funcs = ["queryCommandEnabled", "queryCommandState",
@@ -334,7 +334,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 		var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
 		var code = e.keyCode;
-		
+				
 		var preventDefault = true; // by default assume we cancel;
 
 		// define some key combos
@@ -815,7 +815,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}
 		}
 		
-		dojo.html.removeClass(dojo.domNode, "RichTextEditable");
+		dojo.html.removeClass(this.domNode, "RichTextEditable");
 		
 		if (this.debug) { alert("ending editor; content "
 			+ (changed ? "" : "not ") + "changed"); }
