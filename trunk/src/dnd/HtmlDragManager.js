@@ -1,4 +1,4 @@
-dojo.provide("dojo.dnd.HtmlDragManager");
+/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang");
 dojo.require("dojo.html");
@@ -46,6 +46,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	 *	4.) mouse-up
 	 *			(clobber draggable selection)
 	 */
+	disabled: false, // to kill all dragging!
 	mouseDownTimer: null, // used for click-hold operations
 	dsCounter: 0,
 	dsPrefix: "dojoDragSource",
@@ -101,6 +102,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	onMouseDown: function(e){
+		if(this.disabled) { return; }
 		// find a selection object, if one is a parent of the source node
 		var ds = this.getDragSource(e);
 		if(!ds){ return; }
@@ -151,6 +153,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
 		this.currentDropTarget = null;
 		this.currentDropTargetPoints = null;
+	},
+
+	scrollBy: function(x, y) {
+		for(var i = 0; i < this.dragObjects.length; i++) {
+			if(this.dragObjects[i].updateDragOffset) {
+				this.dragObjects[i].updateDragOffset();
+			}
+		}
 	},
 
 	onMouseMove: function(e){
@@ -250,4 +260,5 @@ dojo.dnd.dragManager = new dojo.dnd.HtmlDragManager();
 	dojo.event.connect(d, "onmouseout", 	dm, "onMouseOut");
 	dojo.event.connect(d, "onmousedown",	dm, "onMouseDown");
 	dojo.event.connect(d, "onmouseup",		dm, "onMouseUp");
+	dojo.event.connect(window, "scrollBy",	dm, "scrollBy");
 })();
