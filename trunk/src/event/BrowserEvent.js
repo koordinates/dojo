@@ -52,10 +52,15 @@ dojo_ie_clobber = new function(){
 			var tna = nodeRef.getElementsByTagName("*");
 			na = [nodeRef];
 			for(var x=0; x<tna.length; x++){
-				na.push(tna[x]);
+				if(!dojo.hostenv.ie_clobber_minimal_){
+					na.push(tna[x]);
+				}
 				// if we're gonna be clobbering the thing, at least make sure
 				// we aren't trying to do it twice
 				if(tna[x]["__doClobber__"]){
+					if(dojo.hostenv.ie_clobber_minimal_){
+						na.push(tna[x]);
+					}
 					var pos = dojo.lang.find(this.clobberNodes, tna[x], true);
 					if(pos >= 0){
 						this.clobberNodes.splice(pos, 1);
