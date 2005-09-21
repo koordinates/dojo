@@ -533,6 +533,23 @@ internTemplateStrings()
 			</fileset>
 		</copy>
 
+		<antcall target="-docs-and-tests" />
+		<antcall target="compress" />
+		<!-- <antcall target="intern-strings" /> -->
+
+		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
+
+		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
+		<copy file="${root}/CHANGELOG" todir="${release_dir}/"  preservelastmodified="true" />
+		<!--
+		<copy file="README" todir="${release_dir}/" />
+		-->
+	</target>
+	<!-- end release task -->
+
+	<target name="-docs-and-tests"
+		unless="docless"
+		description="builds docs, copies in tests, and constructs API outlines">
 		<copy todir="${release_dir}/apis" includeEmptyDirs="false" preservelastmodified="true">
 			<fileset dir="${root}/documents/apis">
 				<include name="**" />
@@ -550,18 +567,7 @@ internTemplateStrings()
 		</copy>
 
 		<antcall target="docs" />
-		<antcall target="compress" />
-		<!-- <antcall target="intern-strings" /> -->
-
-		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
-
-		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
-		<copy file="${root}/CHANGELOG" todir="${release_dir}/"  preservelastmodified="true" />
-		<!--
-		<copy file="README" todir="${release_dir}/" />
-		-->
 	</target>
-	<!-- end release task -->
 
 	<!-- zip task -->
 	<target name="zip"
