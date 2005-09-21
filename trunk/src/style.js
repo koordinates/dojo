@@ -3,21 +3,32 @@ dojo.require("dojo.dom");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.graphics.color");
 
-
 // values: content-box, border-box
-dojo.style.getBoxSizing = function(node) {
-	if(dojo.render.ie) {
-		return document["compatMode"] != "BackCompat" ? "border-box" : "content-box";
-	} else {
-		if(arguments.length == 0) { node = document.documentElement; }
-		var sizing = dojo.style.getStyle(node, "-moz-box-sizing")
-			|| dojo.style.getStyle(node, "box-sizing");
+dojo.style.boxSizing = {
+	marginBox: "margin-box",
+	borderBox: "border-box",
+	paddingBox: "padding-box",
+	contentBox: "content-box"
+};
+
+dojo.style.getBoxSizing = function(node) 
+{
+	var cm = document["compatMode"];
+	if (cm == "BackCompat" || cm == "QuirksMode"){ 
+		return dojo.style.boxSizing.borderBox; 
+	}else	if (dojo.render.html.ie){ 
+		return dojo.style.boxSizing.contentBox; 
+	}else{
+		if(arguments.length == 0){ node = document.documentElement; }
+		var sizing = dojo.style.getStyle(node, "-moz-box-sizing");
+		if(!sizing){ sizing = dojo.style.getStyle(node, "box-sizing"); }
+		return (sizing ? sizing : dojo.style.boxSizing.contentBox);
 	}
 }
 
 /*
 
-The following couple of function equate to the dimensions shown below
+The following several function use the dimensions shown below
 
     +-------------------------+
     |  margin                 |
@@ -29,58 +40,181 @@ The following couple of function equate to the dimensions shown below
     | | | |   content   | | | |
     | | | +-------------+ | | |
     | | +-|-------------|-+ | |
-    | +---|-------------|---+ |
-    +-|---|-------------|---|-+
-    | |   |             |   | |
-    | |   |<- content ->|   | |
+    | +-|-|-------------|-|-+ |
+    +-|-|-|-------------|-|-|-+
+    | | | |             | | | |
+    | | | |<- content ->| | | |
     | |<------ inner ------>| |
     |<-------- outer -------->|
- 
+    +-------------------------+
+
+    * content-box
+
+    |m|b|p|             |p|b|m|
+    | |<------ offset ----->| |
+    | | |<---- client --->| | |
+    | | | |<-- width -->| | | |
+
+    * border-box
+
+    |m|b|p|             |p|b|m|
+    | |<------ offset ----->| |
+    | | |<---- client --->| | |
+    | |<------ width ------>| |
 */
 
-dojo.style.getContentWidth = function (node) {
-	// FIXME: clientWidth includes padding
-	if (dojo.render.html.ie && node.clientWidth) { return node.clientWidth; }
-	var match = dojo.style.getStyle(node, "width").match(/[0-9]+/);
-	if (match) { return Number(match[0]); } else { return 0; }
+/*
+	Notes:
+
+	General:
+		- Uncomputable values are returned as NaN.
+		- setOuterWidth/Height return *false* if the outer size could not be computed, otherwise *true*.
+		- I (sjmiles) know no way to find the calculated values for auto-margins. 
+		- All values are floating point in 'px' units. If a non-zero computed style value is not specified in 'px', NaN is returned.
+
+	FF:
+		- styles specified as '0' (unitless 0) show computed as '0pt'.
+
+	IE:
+		- clientWidth/Height are unreliable (0 unless the object has 'layout').
+		- margins must be specified in px, or 0 (in any unit) for all sizing functions to work.
+		- padding can be empty or, if specified, must be in px, or 0 (in any unit) for all sizing functions to work.
+
+	Safari:
+		- Safari defaults padding values to 'auto'.
+
+	See the unit tests for listings of (un)computable values in a given browser.
+
+*/
+
+// FIXME: these work for most elements (e.g. DIV) but not all (e.g. TEXTAREA)
+
+dojo.style.isBorderBox = function(node)
+{
+	return (dojo.style.getBoxSizing(node) == dojo.style.boxSizing.borderBox);
+}
+
+dojo.style.getNumericStyle = function (element, cssSelector){
+	// FIXME: is regex inefficient vs. parseInt or some manual test? 
+	var s = dojo.style.getComputedStyle(element, cssSelector);
+	if (s == ''){ return 0; }
+	if (dojo.lang.isUndefined(s)){ return NaN };
+	var match = s.match(/([\d.]+)([a-z]*)/);
+	if (!match || !match[1]) 
+		return NaN;
+	var n = Number(match[1]);
+	return (n == 0 || match[2]=='px' ? n : NaN);
+}
+
+dojo.style.getMarginWidth = function(node){
+	var left = dojo.style.getNumericStyle(node, "margin-left");
+	var right = dojo.style.getNumericStyle(node, "margin-right");
+	return left + right;
+}
+
+dojo.style.getBorderWidth = function(node){
+	if (node.clientWidth){
+		return node.offsetWidth - node.clientWidth;
+	}else{
+		var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-left-width"));
+		var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-right-width"));
+		return left + right;
+	}
+}
+
+dojo.style.getPaddingWidth = function(node){
+	var left = (dojo.style.getStyle(node, 'padding-left') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-left"));
+	var right = (dojo.style.getStyle(node, 'padding-right') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-right"));
+	return left + right;
+}
+
+dojo.style.getContentWidth = function (node){
+	return node.offsetWidth - dojo.style.getPaddingWidth(node) - dojo.style.getBorderWidth(node);
 }
 
 dojo.style.getInnerWidth = function (node){
 	return node.offsetWidth;
 }
 
-this.getOuterWidth = function(node) {
-	var leftMargin = Number(dojo.style.getStyle(node, "margin-left"));
-	var rightMargin = Number(dojo.style.getStyle(node, "margin-left"));
-	return dojo.style.getInnerWidth() + leftMargin + rightMargin;
+dojo.style.getOuterWidth = function (node){
+	return dojo.style.getInnerWidth(node) + dojo.style.getMarginWidth(node);
 }
 
-dojo.style.getContentHeight = function (node) {
-	// FIXME: clientHeight includes padding
-	if (dojo.render.html.ie && node.clientHeight) { return node.clientHeight; }
-	var match = dojo.style.getStyle(node, "height").match(/[0-9]+/);
-	if (match) { return Number(match[0]); } else { return 0; }
+dojo.style.setOuterWidth = function (node, pxWidth){
+	if (!dojo.style.isBorderBox(node)){
+		pxWidth -= dojo.style.getPaddingWidth(node) + dojo.style.getBorderWidth(node);
+	}
+	pxWidth -= dojo.style.getMarginWidth(node);
+	if (!isNaN(pxWidth) && pxWidth > 0){
+		node.style.width = pxWidth + 'px';
+		return true;
+	}else return false;
+}
+
+dojo.style.getContentBoxWidth = dojo.style.getContentWidth;
+dojo.style.getBorderBoxWidth = dojo.style.getInnerWidth;
+dojo.style.getMarginBoxWidth = dojo.style.getOuterWidth;
+dojo.style.setMarginBoxWidth = dojo.style.setOuterWidth;
+
+dojo.style.getMarginHeight = function(node){
+	var top = dojo.style.getNumericStyle(node, "margin-top");
+	var bottom = dojo.style.getNumericStyle(node, "margin-bottom");
+	return top + bottom;
+}
+
+dojo.style.getBorderHeight = function(node){
+	if (node.clientHeight){
+		return node.offsetHeight- node.clientHeight;
+	}else{
+		var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-top-width"));
+		var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-bottom-width"));
+		return top + bottom;
+	}
+}
+
+dojo.style.getPaddingHeight = function(node){
+	var top = (dojo.style.getStyle(node, 'padding-top') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-top"));
+	var bottom = (dojo.style.getStyle(node, 'padding-bottom') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-bottom"));
+	return top + bottom;
+}
+
+dojo.style.getContentHeight = function (node){
+	return node.offsetHeight - dojo.style.getPaddingHeight(node) - dojo.style.getBorderHeight(node);
 }
 
 dojo.style.getInnerHeight = function (node){
 	return node.offsetHeight; // FIXME: does this work?
 }
 
-this.getOuterHeight = function(node){
-	var topMargin = Number(dojo.style.getStyle(node, "margin-top"));
-	var bottomMargin = Number(dojo.style.getStyle(node, "margin-bottom"));
-	return dojo.style.getInnerHeight() + topMargin + bottomMargin;
+dojo.style.getOuterHeight = function (node){
+	return dojo.style.getInnerHeight(node) + dojo.style.getMarginHeight(node);
 }
+
+dojo.style.setOuterHeight = function (node, pxHeight){
+	if (!dojo.style.isBorderBox(node)){
+			pxHeight -= dojo.style.getPaddingHeight(node) + dojo.style.getBorderHeight(node);
+	}
+	pxHeight -= dojo.style.getMarginHeight(node);
+	if (!isNaN(pxHeight) && pxHeight > 0){
+		node.style.height = pxHeight + 'px';
+		return true;
+	}else return false;
+}
+
+dojo.style.getContentBoxHeight = dojo.style.getContentHeight;
+dojo.style.getBorderBoxHeight = dojo.style.getInnerHeight;
+dojo.style.getMarginBoxHeight = dojo.style.getOuterHeight;
+dojo.style.setMarginBoxHeight = dojo.style.setOuterHeight;
 
 dojo.style.getTotalOffset = function (node, type){
 	var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
 	var alt = (type=="top") ? "y" : "x";
 	var ret = 0;
 	if(node["offsetParent"]){
+		
 		// FIXME: this is known not to work sometimes on IE 5.x since nodes
 		// soemtimes need to be "tickled" before they will display their
 		// offset correctly
-		
 		do {
 			ret += node[typeStr];
 			node = node.offsetParent;
@@ -103,7 +237,6 @@ dojo.style.totalOffsetTop = function (node){
 }
 
 dojo.style.getAbsoluteY = dojo.style.totalOffsetTop;
-
 
 dojo.style.styleSheet = null;
 
@@ -193,20 +326,22 @@ dojo.style.getBackgroundColor = function (node) {
 	return color;
 }
 
-dojo.style.getStyle = function (element, cssSelector) {
-	var value = undefined, camelCased = dojo.style.toCamelCase(cssSelector);
-	value = element.style[camelCased]; // dom-ish
-	if(!value) {
-		if(document.defaultView) { // gecko
-			value = document.defaultView.getComputedStyle(element, "")
-				.getPropertyValue(cssSelector);
-		} else if(element.currentStyle) { // ie
-			value = element.currentStyle[camelCased];
-		} else if(element.style.getPropertyValue) { // dom spec
-			value = element.style.getPropertyValue(cssSelector);
-		}
+dojo.style.getComputedStyle = function (element, cssSelector, inValue) {
+	var value = inValue;
+	if(document.defaultView) { // gecko
+		value = document.defaultView.getComputedStyle(element, "").getPropertyValue(cssSelector);
+	} else if(element.currentStyle) { // ie
+		value = element.currentStyle[dojo.style.toCamelCase(cssSelector)];
+	} else if(element.style.getPropertyValue) { // dom spec
+		value = element.style.getPropertyValue(cssSelector);
 	}
 	return value;
+}
+
+dojo.style.getStyle = function (element, cssSelector) {
+	var camelCased = dojo.style.toCamelCase(cssSelector);
+	var value = element.style[camelCased]; // dom-ish
+	return (value ? value : dojo.style.getComputedStyle(element, cssSelector, value));
 }
 
 dojo.style.toCamelCase = function (selector) {
