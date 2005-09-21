@@ -10,14 +10,21 @@ dojo.widget.manager = new function(){
 
 	this.getUniqueId = function (widgetType) {
 		return widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
-			widgetTypeCtr[widgetType]++ : widgetTypeCtr[widgetType] = 0);
+			++widgetTypeCtr[widgetType] : widgetTypeCtr[widgetType] = 0);
 	}
 
 	this.add = function(widget){
 		this.widgets.push(widget);
 		if(widget.widgetId == ""){
-			widget.widgetId = this.getUniqueId(widget.widgetType);
-		}else if(this.widgetIds[widget.widgetId]){
+			if(widget["id"]){
+				widget.widgetId = widget["id"];
+			}else if(widget.extraArgs["id"]){
+				widget.widgetId = widget.extraArgs["id"];
+			}else{
+				widget.widgetId = this.getUniqueId(widget.widgetType);
+			}
+		}
+		if(this.widgetIds[widget.widgetId]){
 			dojo.debug("widget ID collision on ID: "+widget.widgetId);
 		}
 		this.widgetIds[widget.widgetId] = widget;
