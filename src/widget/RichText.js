@@ -132,17 +132,20 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (!this.iframe) {
 			this.iframe = document.createElement("iframe");
 			with (this.iframe) {
+				width = this.inheritWidth ? oldWidth : "100%";
+				height = oldHeight;
 				scrolling = "no";
 				style.border = "none";
 				style.lineHeight = "0"; // squash line height
 				style.verticalAlign = "bottom";
 			}
+		} else {
+			with (this.iframe) {
+				width = this.inheritWidth ? oldWidth : "100%";
+				height = oldHeight;
+			}
 		}
-
-		with (this.iframe) {
-			width = this.inheritWidth ? oldWidth : "100%";
-			height = oldHeight;
-		}
+		
 		this.domNode.appendChild(this.iframe);
 
 		if (!this.editNode) {
