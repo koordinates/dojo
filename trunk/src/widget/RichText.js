@@ -64,6 +64,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
 		
+		this._oldHeight = dojo.style.getContentHeight(this.domNode);
+		this._oldWidth = dojo.style.getContentWidth(this.domNode);
+		
 		this.savedContent = document.createElement("div");
 		while (this.domNode.hasChildNodes()) {
 			this.savedContent.appendChild(this.domNode.firstChild);
@@ -126,20 +129,23 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 	/** Draws an iFrame using the existing one if one exists. Used by Mozilla and Safari */
 	_drawIframe: function (html) {
-		var oldHeight = dojo.style.getContentHeight(this.domNode);
-		var oldWidth = dojo.style.getContentWidth(this.domNode);
-
 		if (!this.iframe) {
 			this.iframe = document.createElement("iframe");
 			with (this.iframe) {
-				width = this.inheritWidth ? oldWidth : "100%";
-				height = oldHeight;
 				scrolling = "no";
 				style.border = "none";
 				style.lineHeight = "0"; // squash line height
 				style.verticalAlign = "bottom";
 			}
+		}
 
+		with (this.iframe) {
+			width = this.inheritWidth ? this._oldWidth : "100%";
+			height = this._oldHeight;
+		}
+		this.domNode.appendChild(this.iframe);
+
+		if (!this.editNode) {
 			this.window = this.iframe.contentWindow;
 			this.document = this.iframe.contentDocument;
 	
@@ -222,12 +228,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 
 		} else {
-			with (this.iframe) {
-				width = this.inheritWidth ? oldWidth : "100%";
-				height = oldHeight;
-			}
-		
-			this.domNode.appendChild(this.iframe);
 			this.editNode.innerHTML = html;
 		}
 		
@@ -236,14 +236,11 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	/** Draws an active x object, used by IE */
 	_drawObject: function (html) {
-		var oldHeight = dojo.style.getContentHeight(this.domNode);
-		var oldWidth = dojo.style.getContentWidth(this.domNode);
-
 		this.object = document.createElement("object");
 		with (this.object) {
 			classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
-			width = this.inheritWidth ? oldWidth : "100%";
-			height = oldHeight;
+			width = this.inheritWidth ? this._oldWidth : "100%";
+			height = this._oldHeight;
 			Scrollbars = false;
 			Appearance = this._activeX.appearance.flat;
 		}
@@ -256,7 +253,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		});
 		
 		this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
-		this.object.attachEvent("DisplayChanged", hitch(this, "onDisplayChanged"));
 
 		this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
 			'<title></title>' +
