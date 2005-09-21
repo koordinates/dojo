@@ -139,16 +139,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				style.lineHeight = "0"; // squash line height
 				style.verticalAlign = "bottom";
 			}
-		} else {
-			with (this.iframe) {
-				width = this.inheritWidth ? oldWidth : "100%";
-				height = oldHeight;
-			}
-		}
-		
-		this.domNode.appendChild(this.iframe);
 
-		if (!this.editNode) {
 			this.window = this.iframe.contentWindow;
 			this.document = this.iframe.contentDocument;
 	
@@ -231,6 +222,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 
 		} else {
+			with (this.iframe) {
+				width = this.inheritWidth ? oldWidth : "100%";
+				height = oldHeight;
+			}
+		
+			this.domNode.appendChild(this.iframe);
 			this.editNode.innerHTML = html;
 		}
 		
@@ -259,6 +256,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		});
 		
 		this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
+		this.object.attachEvent("DisplayChanged", hitch(this, "onDisplayChanged"));
 
 		this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
 			'<title></title>' +
