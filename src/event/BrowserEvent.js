@@ -37,6 +37,14 @@ dojo_ie_clobber = new function(){
 		}
 	}
 
+	function nukeProp(node, prop){
+		try{
+			node[prop] = null;
+			node.removeAttribute(prop);
+			delete node[prop];
+		}catch(e){ /* squelch */ }
+	}
+
 	this.clobber = function(nodeRef){
 		for(var x=0; x< this.exclusions.length; x++){
 			try{
@@ -73,13 +81,23 @@ dojo_ie_clobber = new function(){
 		}
 		for(var i = na.length-1; i>=0; i=i-1){
 			var el = na[i];
-			for(var p = this.clobberArr.length-1; p>=0; p=p-1){
-				var ta = this.clobberArr[p];
-				try{
-					el[ta] = null;
-					el.removeAttribute(ta);
-					delete el[ta];
-				}catch(e){ /* squelch */ }
+			if(dojo.hostenv.ie_clobber_minimal_){
+				for(var p in el.__clobberAttrs__){
+					// if(el.__clobberAttrs__[p] == "clobber"){
+					nukeProp(el, p);
+					// }
+				}
+				nukeProp(el, "__clobberAttrs__");
+				nukeProp(el, "__doClobber__");
+			}else{
+				for(var p = this.clobberArr.length-1; p>=0; p=p-1){
+					var ta = this.clobberArr[p];
+					try{
+						el[ta] = null;
+						el.removeAttribute(ta);
+						delete el[ta];
+					}catch(e){ /* squelch */ }
+				}
 			}
 		}
 	}
@@ -118,7 +136,19 @@ dojo.event.browser = new function(){
 			if(!node.__doClobber__) {
 				dojo_ie_clobber.clobberNodes.push(node);
 				node.__doClobber__ = true;
+				node.__clobberAttrs__ = {};
 			}
+		}
+	}
+
+	this.addClobberNodeAttrs = function(node, props){
+		this.addClobberNode(node);
+		if(dojo.hostenv.ie_clobber_minimal_){
+			for(var x=0; x<props.length; x++){
+				node.__clobberAttrs__[props[x]] = "clobber";
+			}
+		}else{
+			this.addClobberAttrs.apply(this, props);
 		}
 	}
 
@@ -178,8 +208,7 @@ dojo.event.browser = new function(){
 		}
 	}
 
-	this.isEvent = function(obj)
-	{
+	this.isEvent = function(obj){
 		// FIXME: event detection hack ... could test for additional attributes if necessary
 		return (typeof Event != "undefined")&&(obj.eventPhase);
 		// Event does not support instanceof in Opera, otherwise:
