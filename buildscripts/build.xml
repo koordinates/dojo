@@ -98,10 +98,10 @@ import buildUtil
 
 buildUtil.buildTestFiles()
 
-print "#################### testRunner.js ####################",
-for line in file("../testRunner.js"):
-	print line,
-print "################## end testRunner.js ##################\n"
+# print "#################### testRunner.js ####################",
+# for line in file("../testRunner.js"):
+# 	print line,
+# print "################## end testRunner.js ##################\n"
 ]]></script>
 		<!-- <java jar="${user.home}/.ant/lib/js.jar" fork="true"> -->
 		<java jar="./lib/custom_rhino.jar" fork="true">
@@ -266,6 +266,7 @@ print "look ma! Jython!"
 		-->
 		<delete dir="${release_docs_dir}"/>
 		<mkdir dir="${release_docs_dir}" />
+		<mkdir dir="${release_docs_dir}/requirements" />
 		<script language="jython"><![CDATA[
 import sys
 # make the python standard library avialable
@@ -418,7 +419,6 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 		<java jar="${user.home}/.ant/lib/js.jar" fork="true" outputproperty="concatFilesProp">
 			<arg value="${profileFile}" />
-			<!-- <arg value=" getDependencyList.js " /> -->
 		</java>
 		<script language="javascript"><![CDATA[
 			function echo(msg){
@@ -556,6 +556,7 @@ internTemplateStrings()
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
+		<copy file="${root}/CHANGELOG" todir="${release_dir}/"  preservelastmodified="true" />
 		<!--
 		<copy file="README" todir="${release_dir}/" />
 		-->
