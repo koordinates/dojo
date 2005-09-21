@@ -774,10 +774,19 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   /*
    * interface methods
    */
+  jum.verbose = false;
   jum.name = 'mda';
-  jum.debug = function(line) {jum.my_output_('DEBUG', line)};
-  jum.info = function(line) {jum.my_output_('INFO', line)};
-  jum.warn = function(line) {jum.my_output_('WARN', line)};
+  jum.debug = function(line){
+    if(jum.verbose){
+        jum.my_output_('DEBUG', line);
+    }
+  };
+  jum.info = function(line){
+    jum.my_output_('INFO', line);
+  };
+  jum.warn = function(line){
+    jum.my_output_('WARN', line);
+  };
 
   jum.assertTrue = jum_assertTrue;
   jum.assertFalse = jum_assertFalse;
@@ -818,7 +827,9 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
    * private variables and methods
    */
   jum.alltests_ = null;
-  jum.report_ = function(line) {this.my_output_('TEST', line)};
+  jum.report_ = function(line){
+     jum.my_output_('TEST', line);
+  };
 
   jum.my_println_ = function(line) {
     jum.initOutput_();
@@ -828,7 +839,7 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   };
 
   jum.my_output_ = function(categ, line) {
-     if (typeof categ != 'undefined' && categ) line = categ + ': ' + line;
+     if(typeof categ != 'undefined' && categ){ line = categ + ': ' + line; }
      this.my_println_(line);
   };
 
@@ -852,9 +863,13 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
   jum.initOutput_ = function() {
      //alert("in initOutput_");
      // sigh, KJS has no "load" global, just: "debug", "print", "version" 
-     if ((typeof load != 'undefined' || typeof debug != 'undefined') && typeof print != 'undefined') jum.my_println_ = function(line) {print(line)};
-     //else if (typeof alert != 'undefined') jum.my_println_ = function(line) {alert(line)};
-     else if (typeof window != 'undefined') {
+     if((typeof load != 'undefined' || typeof debug != 'undefined') && typeof print != 'undefined'){
+        jum.my_println_ = function(line){
+            // print(3||4);
+            print(line)
+        };
+         //else if (typeof alert != 'undefined') jum.my_println_ = function(line) {alert(line)};
+     }else if (typeof window != 'undefined'){
         jum.set_output_window_(jum.create_output_window_());
         jum.my_println_ = function(line) {
 	  // break up multiple lines
@@ -911,11 +926,11 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
 
     this.all_count_ += testdefs.length;
 
-    jum.report_("group '" + groupname + "' has " + testdefs.length + " tests to run...");
+    jum.debug("group '" + groupname + "' has " + testdefs.length + " tests to run...");
     for (var i=0;i<testdefs.length; ++i) {
        var testdef = testdefs[i];
        var testname = testdef.testname;
-       jum.report_("   test '" + testname + "' ...");
+       jum.debug("   test '" + testname + "' ...");
        var func = testdef.funcobj;
 
        var displayname = groupname + '.' + testname;
@@ -945,7 +960,7 @@ You can access arguments from the testRunner.html query string by <code>top.jsUn
        }
        else {func()}
        if (!threw) {
-          jum.report_(prefix + 'PASSED' + suffix);
+          jum.debug(prefix + 'PASSED' + suffix);
           ++this.passed_count_;
        }
     }
@@ -1370,3 +1385,4 @@ function jum_add_test(alltests, groupname, testname, funcname, funcobj) {
 }
 
 
+// vim:ts=8:et
