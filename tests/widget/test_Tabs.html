@@ -11,14 +11,15 @@
 
 <script type="text/javascript">
 var djConfig = {
-	debug: true,
+	isDebug: true,
 	debugAtAllCosts: false
 };
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../src/widget/HtmlTabs.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.widget.*");
-	dojo.require("dojo.widget.HtmlTabs");
+	//dojo.require("dojo.widget.*");
+	//dojo.require("dojo.widget.HtmlTabs");
 </script>
 
 <style type="text/css">
@@ -103,6 +104,11 @@ body {
 	margin : 0;
 }
 </style>
+<script type="text/javascript">
+function boo(panel, node) {
+	node.innerHTML = "Handlers override grabbing from URLs. They run in context of the widget, so 'this' refers to the tab widget.";
+}
+</script>
 </head>
 
 <body>
@@ -112,8 +118,8 @@ body {
 
 	<ul class="tabs" dojoType="tabs">
 		<li><a href="tab1.html">Tab 1</a></li>
-		<li><a href="tab2.html">Tab 2</a></li>
-		<li><a href="#tab3">Tab 3</a></li>
+		<li><a href="tab2.html" tabid="tab2">Tab 2</a></li>
+		<li><a href="#tab3" tabhandler="boo">Tab 3</a></li>
 		<li><a href="#another">Another Tab</a></li>
 		<li><a href="#tab2cont">Sub-tabs</a></li>
 	</ul>
