@@ -255,7 +255,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			} else if (dojo.render.html.mozilla) {
 				// safari can't handle key listeners, it kills the speed
 				var addListener = dojo.event.browser.addListener;
-				addListener(this.document, "keypress", hitch(this, "	keyPress"));
+				addListener(this.document, "keypress", hitch(this, "keyPress"));
 				addListener(this.document, "keydown", hitch(this, "keyDown"));
 				addListener(this.document, "keyup", hitch(this, "keyUp"));
 				addListener(this.document, "click", hitch(this, "onClick"));
@@ -572,6 +572,22 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			else if (command == "backcolor") { command = "setbackcolor"; }
 		
 			if (typeof this._activeX.command[command] == "undefined") { return null; }
+		
+			if (command == "inserttable") {
+				var tableInfo = this.constructor._tableInfo;
+				if (!tableInfo) {
+					tableInfo = document.createElement("object");
+					tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
+					document.body.appendChild(tableInfo);
+					this.constructor._table = tableInfo;
+				}
+				
+				tableInfo.NumRows = argument.rows;
+				tableInfo.NumCols = argument.cols;
+				tableInfo.TableAttrs = argument["TableAttrs"];
+				tableInfo.CellAttrs = arr["CellAttrs"];
+				tableInfo.Caption = arr["Caption"];
+			}
 		
 			if (arguments.length == 1) {
 				return this.object.ExecCommand(this._activeX.command[command],
