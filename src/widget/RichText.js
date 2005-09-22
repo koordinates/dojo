@@ -59,6 +59,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * a reguler element if contentEditable is available.
 	 */
 	open: function (element) {
+		dojo.event.topic.publish("dojo.widget.RichText::open", this);
+
 		if (!this.isClosed) { this.close(); }
 		if (arguments.length == 1) { this.domNode = element; } // else unchanged
 		
@@ -114,6 +116,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 			this.window = window;
 			this.document = document;
+			
+			this.onLoad();
 		} else { // designMode in iframe
 			this._drawIframe(html);
 		}
@@ -123,7 +127,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		dojo.html.addClass(this.domNode, "RichTextEditable");
 		
 		this.isClosed = false;
-		dojo.event.topic.publish("dojo.widget.RichText::open", this);
 	},
 	
 	/** Draws an iFrame using the existing one if one exists. Used by Mozilla and Safari */
@@ -147,9 +150,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (!this.editNode) {
 			this.window = this.iframe.contentWindow;
 			this.document = this.iframe.contentDocument;
-	
-			this.connect(this.iframe, "onload", "onLoad");
-	
+		
 			// curry the getStyle function
 			var getStyle = (function (domNode) { return function (style) {
 				return dojo.style.getStyle(domNode, style);
@@ -181,6 +182,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					html + '</body>');
 				close();
 			}
+			
+			this.onLoad();
+			
 		} else {
 			this.editNode.innerHTML = html;
 			this.onDisplayChanged(e);
