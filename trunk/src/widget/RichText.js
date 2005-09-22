@@ -122,7 +122,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (this.domNode.nodeName == "LI") { this.domNode.lastChild.style.marginTop = "-1.2em"; }
 		dojo.html.addClass(this.domNode, "RichTextEditable");
 		
-		this.focus();
 		this.isClosed = false;
 		dojo.event.topic.publish("dojo.widget.RichText::open", this);
 	},
@@ -148,6 +147,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (!this.editNode) {
 			this.window = this.iframe.contentWindow;
 			this.document = this.iframe.contentDocument;
+	
+			this.connect(this.iframe, "onload", "onLoad");
 	
 			// curry the getStyle function
 			var getStyle = (function (domNode) { return function (style) {
@@ -180,6 +181,52 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					html + '</body>');
 				close();
 			}
+		} else {
+			this.editNode.innerHTML = html;
+			this.onDisplayChanged(e);
+		}
+	},
+
+	/** Draws an active x object, used by IE */
+	_drawObject: function (html) {
+		this.object = document.createElement("object");
+
+		with (this.object) {
+			classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
+			width = this.inheritWidth ? this._oldWidth : "100%";
+			height = this._oldHeight;
+			Scrollbars = false;
+			Appearance = this._activeX.appearance.flat;
+		}
+		this.domNode.appendChild(this.object);
+
+		function hitch (obj, meth) {
+			return function () { return obj[meth].apply(obj, arguments); }
+		}
+		
+		this.object.attachEvent("DocumentComplete", hitch(this, "onLoad"));
+		this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
+		this.object.attachEvent("DisplayChanged", hitch(this, "onDisplayChanged"));
+
+		this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
+			'<title></title>' +
+			'<style type="text/css">' +
+			'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
+			'    body { overflow: hidden; }' +
+			//'    #bodywrapper {  }' +
+			'</style>' +
+			//'<base href="' + window.location + '">' +
+			'<body><div id="bodywrapper">' + html + '</div></body>';
+	},
+
+/* Event handlers
+ *****************/
+
+	onLoad: function (e) {
+		if (this.object) {
+			this.document = this.object.DOM;
+			this.editNode = this.document.body.firstChild;
+		} else if (this.iframe) {
 			this.editNode = this.document.body;
 	
 			try { // sanity check for Mozilla
@@ -188,20 +235,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
 			} catch (e) { }
 			
-			// FIXME: when scrollbars appear/disappear this needs to be fired
-			if (!dojo.render.html.safari) {
-				this.connect(this, "afterKeyPress", "_updateHeight");
-				this.connect(this, "onClick", "_updateHeight");
-				this.connect(this, "execCommand", "_updateHeight");
-			} else {
-				var editor = this;
-				this.interval = setInterval(function () {
-					editor.onDisplayChanged();
-					editor._updateHeight();
-				}, 500);
-			}
-			
-			// I need hitch, dammit!!
 			function hitch (obj, meth) {
 				return function () { return obj[meth].apply(obj, arguments); }
 			}
@@ -217,56 +250,24 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			dojo.event.connect("before", this, "close", unBlur, "unBlur");
 			dojo.event.browser.addListener(this.document, "focus", hitch(this, "onFocus"));
 
-			if (dojo.render.html.mozilla) {
+			if (dojo.render.html.safari) {
+				this.interval = setInterval(hitch(this, "onDisplayChanged"), 500);
+			} else if (dojo.render.html.mozilla) {
 				// safari can't handle key listeners, it kills the speed
 				var addListener = dojo.event.browser.addListener;
-				addListener(this.document, "keypress", hitch(this, "keyPress"));
+				addListener(this.document, "keypress", hitch(this, "	keyPress"));
 				addListener(this.document, "keydown", hitch(this, "keyDown"));
 				addListener(this.document, "keyup", hitch(this, "keyUp"));
 				addListener(this.document, "click", hitch(this, "onClick"));
 			}
 
-
-		} else {
-			this.editNode.innerHTML = html;
+			// FIXME: when scrollbars appear/disappear this needs to be fired						
+			this.connect(this, "onDisplayChanged", "_updateHeight");
 		}
 		
-		this._updateHeight();
+		this.focus();
+		this.onDisplayChanged(e);
 	},
-
-	/** Draws an active x object, used by IE */
-	_drawObject: function (html) {
-		this.object = document.createElement("object");
-		with (this.object) {
-			classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
-			width = this.inheritWidth ? this._oldWidth : "100%";
-			height = this._oldHeight;
-			Scrollbars = false;
-			Appearance = this._activeX.appearance.flat;
-		}
-		this.domNode.appendChild(this.object);
-
-		var editor = this;
-		this.object.attachEvent("DocumentComplete", function () {
-			editor.document = editor.object.DOM;
-			editor.editNode = editor.document.body.firstChild;
-		});
-		
-		this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
-
-		this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-			'<title></title>' +
-			'<style type="text/css">' +
-			'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
-			'    body { overflow: hidden; }' +
-			//'    #bodywrapper {  }' +
-			'</style>' +
-			//'<base href="' + window.location + '">' +
-			'<body><div id="bodywrapper">' + html + '</div></body>';
-	},
-
-/* Event handlers
- *****************/
 
 	/** Fired on keydown */
 	keyDown: function (e) {
@@ -359,11 +360,13 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	onFocus: function (e) {},
 
 	blur: function () {
-		if (this.iframe) { this.window.blur(); } else { this.editNode.blur(); }
+		if (this.iframe) { this.window.blur(); }
+		else if (this.editNode) { this.editNode.blur(); }
 	},
 	
 	focus: function () {
-		if (this.iframe) { this.window.focus(); } else { this.editNode.focus(); }
+		if (this.iframe) { this.window.focus(); }
+		else if (this.editNode) { this.editNode.focus(); }
 	},
 	
 	/** this event will be fired everytime the display context changes and the
@@ -618,12 +621,15 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			var table = "<table><tbody>";
 			for (var i = 0; i < argument.rows; i++) { table += cols; }
 			table += "</tbody></table>";
-			return this.document.execCommand("inserthtml", false, table);
+			var returnValue = this.document.execCommand("inserthtml", false, table);
 		
 		} else {
 			argument = arguments.length > 1 ? argument : null;
-			return this.document.execCommand(command, false, argument);
+			var returnValue = this.document.execCommand(command, false, argument);
 		}
+		
+		this.onDisplayChanged();
+		return returnValue;
 	},
 
 	queryCommandEnabled: function (command, argument) {
@@ -768,10 +774,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (dojo.render.html.ie && !this.object) {
 			dojo.event.browser.clean(this.editNode);
 		}
-//		document.body.appendChild(this.iframe);
-//		this.iframe.contentWindow = this.window;
-//		alert(this.iframe.contentWindow.document.documentElement.innerHTML);
-//		alert(this.window === this.iframe.contentWindow);
 		dojo.dom.removeChildren(this.domNode);
 		if (save) {
 			this.domNode.innerHTML = this.editNode.innerHTML;
