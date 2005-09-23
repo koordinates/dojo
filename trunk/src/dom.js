@@ -15,7 +15,38 @@ dojo.dom.DOCUMENT_FRAGMENT_NODE        = 11;
 dojo.dom.NOTATION_NODE                 = 12;
 	
 dojo.dom.dojoml = "http://www.dojotoolkit.org/2004/dojoml";
-	
+
+/**
+ *	comprehensive list of XML namespaces
+**/
+dojo.dom.xmlns = {
+	svg : "http://www.w3.org/2000/svg",
+	smil : "http://www.w3.org/2001/SMIL20/",
+	mml : "http://www.w3.org/1998/Math/MathML",
+	cml : "http://www.xml-cml.org",
+	xlink : "http://www.w3.org/1999/xlink",
+	xhtml : "http://www.w3.org/1999/xhtml",
+	xul : "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
+	xbl : "http://www.mozilla.org/xbl",
+	fo : "http://www.w3.org/1999/XSL/Format",
+	xsl : "http://www.w3.org/1999/XSL/Transform",
+	xslt : "http://www.w3.org/1999/XSL/Transform",
+	xi : "http://www.w3.org/2001/XInclude",
+	xforms : "http://www.w3.org/2002/01/xforms",
+	saxon : "http://icl.com/saxon",
+	xalan : "http://xml.apache.org/xslt",
+	xsd : "http://www.w3.org/2001/XMLSchema",
+	dt: "http://www.w3.org/2001/XMLSchema-datatypes",
+	xsi : "http://www.w3.org/2001/XMLSchema-instance",
+	rdf : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+	rdfs : "http://www.w3.org/2000/01/rdf-schema#",
+	dc : "http://purl.org/dc/elements/1.1/",
+	dcq: "http://purl.org/dc/qualifiers/1.0",
+	"soap-env" : "http://schemas.xmlsoap.org/soap/envelope/",
+	wsdl : "http://schemas.xmlsoap.org/wsdl/",
+	AdobeExtensions : "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+};
+
 dojo.dom.getTagName = function (node){
 	var tagName = node.tagName;
 	if(tagName.substr(0,5).toLowerCase()!="dojo:"){
@@ -167,10 +198,60 @@ dojo.dom.isDescendantOf = function (node, ancestor, noSame) {
 }
 
 dojo.dom.innerXML = function(node){
+	//	based on WebFX RichTextControl getXHTML() function.
+	function nodeToString(n, a) {
+		function fixText(s) { return String(s).replace(/\&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;"); }
+		function fixAttribute(s) { return fixText(s).replace(/\"/g, "&quot;"); }
+		switch (n.nodeType) {
+			case dojo.dom.ELEMENT_NODE:	{
+				var name = n.nodeName;
+				a.push("<" + name);
+				for (var i = 0; i < n.attributes.length; i++) {
+					if (n.attributes.item(i).specified) {
+						a.push(" " + n.attributes.item(i).nodeName.toLowerCase() + "=\"" + fixAttribute(n.attributes.item(i).nodeValue) + "\"");
+					}
+				}
+				if (n.canHaveChildren || n.hasChildNodes()) {
+					a.push(">");
+					for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
+					a.push("</" + name + ">\n");
+				} else a.push(" />\n");
+				break;
+			}
+			case dojo.dom.TEXT_NODE: {
+				a.push(fixText(n.nodeValue));
+				break;
+			}
+			case dojo.dom.CDATA_SECTION_NODE: {
+				a.push("<![CDA" + "TA[\n" + n.nodeValue + "\n]" + "]>");
+				break;
+			}
+			case dojo.dom.PROCESSING_INSTRUCTION_NODE: {
+				a.push(n.nodeValue);
+				if (/(^<\?xml)|(^<\!DOCTYPE)/.test(n.nodeValue)) a.push("\n");
+				break;
+			}
+			case dojo.dom.COMMENT_NODE: {
+				a.push("<!-- " + n.nodeValue + " -->\n");
+				break;
+			}
+			case dojo.dom.DOCUMENT_NODE: 
+			case dojo.dom.DOCUMENT_FRAGMENT_NODE: {
+				for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
+				break;
+			}
+			default:
+				a.push("<!--\nNot Supported:\n\n" + "nodeType: " + n.nodeType + "\nnodeName: " + n.nodeName + "\n-->");
+		}
+	}
 	if(node.innerXML){
 		return node.innerXML;
 	}else if(typeof XMLSerializer != "undefined"){
 		return (new XMLSerializer()).serializeToString(node);
+	}else{
+		var a = [];
+		nodeToString(xml, a);
+		return a.join("");
 	}
 }
 
@@ -250,9 +331,12 @@ if(dojo.render.html.capable) {
 		return nodes;
 	}
 }else if(dojo.render.svg.capable){
+	//	modded to account for FF 1.5 mixed environment, will try ASVG first, then w3 standard.
 	dojo.dom.createNodesFromText = function (txt, wrap){
-		// from http://wiki.svg.org/index.php/ParseXml
-		var docFrag = parseXML(txt, window.document);
+		var docFrag;
+		if (window.parseXML) docFrag = parseXML(txt, window.document);
+		else if (window.DOMParser) docFrag = (new DOMParser()).parseFromString(s, "text/xml");
+		else dojo.raise("dojo.dom.createNodesFromText: environment does not support XML parsing");
 		docFrag.normalize();
 		if(wrap){ 
 			var ret = [docFrag.firstChild.cloneNode(true)];
