@@ -648,7 +648,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 		} else if (command == "hilitecolor" && dojo.render.html.mozilla) {
 			// mozilla doesn't support hilitecolor properly when useCSS is
-			// set to false
+			// set to false (bugzilla #279330)
 			
 			this.document.execCommand("useCSS", false, false);
 			var returnValue = this.document.execCommand(command, false, argument);			
