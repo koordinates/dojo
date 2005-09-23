@@ -102,7 +102,7 @@ dojo.io.IframeTransport = new function(){
 		}else{
 			// otherwise we post a GET string by changing URL location for the
 			// iframe
-			var query = dojo.io.argsFromMap(kwArgs.content);
+			var query = dojo.io.argsFromMap(this.currentRequest.content);
 			var tmpUrl = (cr.url.indexOf("?") > -1 ? "&" : "?") + query;
 			dojo.io.setIFrameSrc(this.iframe, tmpUrl, true);
 		}
