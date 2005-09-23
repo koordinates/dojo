@@ -122,6 +122,7 @@ dojo.lang.isEmpty = function(obj) {
 	for(var x in obj){
 		if(obj[x] && (!tmp[x])){
 			count++;
+			break;
 		} 
 	}
 	return (count == 0);
