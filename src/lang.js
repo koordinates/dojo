@@ -116,6 +116,17 @@ dojo.lang.has = function(obj, name){
 	return (typeof obj[name] !== 'undefined');
 }
 
+dojo.lang.isEmpty = function(obj) {
+	var tmp = {};
+	var count = 0;
+	for(var x in obj){
+		if(obj[x] && (!tmp[x])){
+			count++;
+		} 
+	}
+	return (count == 0);
+}
+
 dojo.lang.forEach = function(arr, unary_func, fix_length){
 	var il = arr.length;
 	for(var i=0; i< ((fix_length) ? il : arr.length); i++){
