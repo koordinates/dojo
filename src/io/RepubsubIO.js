@@ -9,7 +9,7 @@ dojo.provide("dojo.io.repubsubTransport");
 dojo.io.repubsubTranport = new function(){
 	var rps = dojo.io.repubsub;
 	this.canHandle = function(kwArgs){
-		if(((kwArgs["mimetype"] == "text/plain")||(kwArgs["mimetype"] == "text/javascript"))&&(kwArgs["method"] == "repubsub")){
+		if((kwArgs["mimetype"] == "text/javascript")&&(kwArgs["method"] == "repubsub")){
 			return true;
 		}
 		return false;
@@ -43,7 +43,7 @@ dojo.io.repubsubTranport = new function(){
 
 		// NOTE: in this case, url MUST be the "topic" to which we
 		// subscribe/publish for this channel
-		if(!rps[kwArgs.url]){
+		if(!rps.topics[kwArgs.url]){
 			kwArgs.rpsLoad = function(evt){
 				kwArgs.load("load", evt);
 			}

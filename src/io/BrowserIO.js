@@ -71,38 +71,6 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 	}
 }
 
-dojo.io.createIFrame = function(fname){
-	if(window[fname]){ return window[fname]; }
-	if(window.frames[fname]){ return window.frames[fname]; }
-	var r = dojo.render.html;
-	var cframe = null;
-	cframe = document.createElement((((r.ie)&&(r.win)) ? "<iframe name="+fname+">" : "iframe"));
-	with(cframe){
-		name = fname;
-		setAttribute("name", fname);
-		id = fname;
-	}
-	window[fname] = cframe;
-	document.body.appendChild(cframe);
-	with(cframe.style){
-		position = "absolute";
-		left = top = "0px";
-		height = width = "1px";
-		visibility = "hidden";
-		if(dojo.hostenv.is_debug_){
-			position = "relative";
-			height = "100px";
-			width = "300px";
-			visibility = "visible";
-		}
-	}
-
-	// FIXME: do we need to (optionally) squelch onload?
-	
-	dojo.io.setIFrameSrc(cframe, dojo.hostenv.getBaseScriptUri()+"iframe_history.html", true);
-	return cframe;
-}
-
 dojo.io.XMLHTTPTransport = new function(){
 	var _this = this;
 
