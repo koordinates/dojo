@@ -1,35 +1,38 @@
 dojo.provide("dojo.io.IframeIO");
 dojo.require("dojo.io.BrowserIO");
+dojo.require("dojo.uri.*");
 
 dojo.io.createIFrame = function(fname){
 	if(window[fname]){ return window[fname]; }
 	if(window.frames[fname]){ return window.frames[fname]; }
 	var r = dojo.render.html;
 	var cframe = null;
-	cframe = document.createElement((((r.ie)&&(r.win)) ? "<iframe name="+fname+">" : "iframe"));
+	var turi = dojo.uri.dojoUri("iframe_history.html?noInit=true");
+	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? "<iframe name='"+fname+"' src='"+turi+"' >" : "iframe";
+	cframe = document.createElement(ifrstr);
 	with(cframe){
 		name = fname;
 		setAttribute("name", fname);
 		id = fname;
 	}
-	window[fname] = cframe;
 	document.body.appendChild(cframe);
+	window[fname] = cframe;
 	with(cframe.style){
 		position = "absolute";
 		left = top = "0px";
 		height = width = "1px";
 		visibility = "hidden";
-		/*
 		if(dojo.hostenv.is_debug_){
 			position = "relative";
 			height = "300px";
 			width = "600px";
 			visibility = "visible";
 		}
-		*/
 	}
 
-	dojo.io.setIFrameSrc(cframe, "about:blank", true);
+	if(!r.ie){
+		dojo.io.setIFrameSrc(cframe, turi, true);
+	}
 	return cframe;
 }
 
@@ -72,11 +75,16 @@ dojo.io.IframeTransport = new function(){
 				// before submission
 				for(var x in cr.content){
 					if(!fn[x]){
-						var tn = document.createElement("input");
-						fn.appendChild(tn);
-						tn.type = "hidden";
-						tn.name = x;
-						tn.value = cr.content[x];
+						var tn;
+						if(dojo.render.html.ie){
+							tn = document.createElement("<input type='hidden' name='"+x+"' value='"+cr.content[x]+"'>");
+						}else{
+							tn = document.createElement("input");
+							fn.appendChild(tn);
+							tn.type = "hidden";
+							tn.name = x;
+							tn.value = cr.content[x];
+						}
 					}else{
 						fn[x].value = cr.content[x];
 					}
@@ -88,8 +96,8 @@ dojo.io.IframeTransport = new function(){
 			if(!fn.getAttribute("method")){
 				fn.setAttribute("method", (cr["method"]) ? cr["method"] : "post");
 			}
+			fn.setAttribute("target", this.iframeName);
 			fn.target = this.iframeName;
-			dojo.debug("submitting!");
 			fn.submit();
 		}else{
 			// otherwise we post a GET string by changing URL location for the
