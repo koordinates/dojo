@@ -36,6 +36,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 	isClosed: true,
 	
+	/** whether to use the active-x object in IE */
+	useActiveX: false,
+	
 	_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
 /* Init
@@ -97,7 +100,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		// Safari's selections go all out of whack if we do it inline,
 		// so for now IE is our only hero
 		//if (typeof document.body.contentEditable != "undefined") {
-		if (false && dojo.render.html.ie) { // active-x
+		if (this.useActiveX && dojo.render.html.ie) { // active-x
 			this._drawObject(html);
 		} else if (dojo.render.html.ie) { // contentEditable, easy
 			this.editNode = document.createElement("div");
@@ -575,7 +578,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			if (command == "forecolor") { command = "setforecolor"; }
 			else if (command == "backcolor") { command = "setbackcolor"; }
 		
-			if (typeof this._activeX.command[command] == "undefined") { return null; }
+			//if (typeof this._activeX.command[command] == "undefined") { return null; }
 		
 			if (command == "inserttable") {
 				var tableInfo = this.constructor._tableInfo;
@@ -642,6 +645,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			for (var i = 0; i < argument.rows; i++) { table += cols; }
 			table += "</tbody></table>";
 			var returnValue = this.document.execCommand("inserthtml", false, table);
+
+		} else if (command == "hilitecolor" && dojo.render.html.mozilla) {
+			// mozilla doesn't support hilitecolor properly when useCSS is
+			// set to false
+			
+			this.document.execCommand("useCSS", false, false);
+			var returnValue = this.document.execCommand(command, false, argument);			
+			this.document.execCommand("useCSS", false, true);
 		
 		} else {
 			argument = arguments.length > 1 ? argument : null;
@@ -690,6 +701,18 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	queryCommandValue: function (command, argument) {
 		if (this.object) {
+			switch (command) {
+				case "forecolor":
+				case "backcolor":
+				case "fontsize":
+				case "fontname":
+				case "blockformat":
+					command = "get" + command;
+					return this.object.execCommand(
+						this._activeX.command[command],
+						this._activeX.ui.noprompt);
+			}			
+		
 			//var status = this.object.QueryStatus(this._activeX.command[command]);
 		} else {
 			return this.document.queryCommandValue(command);
