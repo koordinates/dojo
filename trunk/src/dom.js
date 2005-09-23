@@ -198,60 +198,10 @@ dojo.dom.isDescendantOf = function (node, ancestor, noSame) {
 }
 
 dojo.dom.innerXML = function(node){
-	//	based on WebFX RichTextControl getXHTML() function.
-	function nodeToString(n, a) {
-		function fixText(s) { return String(s).replace(/\&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;"); }
-		function fixAttribute(s) { return fixText(s).replace(/\"/g, "&quot;"); }
-		switch (n.nodeType) {
-			case dojo.dom.ELEMENT_NODE:	{
-				var name = n.nodeName;
-				a.push("<" + name);
-				for (var i = 0; i < n.attributes.length; i++) {
-					if (n.attributes.item(i).specified) {
-						a.push(" " + n.attributes.item(i).nodeName.toLowerCase() + "=\"" + fixAttribute(n.attributes.item(i).nodeValue) + "\"");
-					}
-				}
-				if (n.canHaveChildren || n.hasChildNodes()) {
-					a.push(">");
-					for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
-					a.push("</" + name + ">\n");
-				} else a.push(" />\n");
-				break;
-			}
-			case dojo.dom.TEXT_NODE: {
-				a.push(fixText(n.nodeValue));
-				break;
-			}
-			case dojo.dom.CDATA_SECTION_NODE: {
-				a.push("<![CDA" + "TA[\n" + n.nodeValue + "\n]" + "]>");
-				break;
-			}
-			case dojo.dom.PROCESSING_INSTRUCTION_NODE: {
-				a.push(n.nodeValue);
-				if (/(^<\?xml)|(^<\!DOCTYPE)/.test(n.nodeValue)) a.push("\n");
-				break;
-			}
-			case dojo.dom.COMMENT_NODE: {
-				a.push("<!-- " + n.nodeValue + " -->\n");
-				break;
-			}
-			case dojo.dom.DOCUMENT_NODE: 
-			case dojo.dom.DOCUMENT_FRAGMENT_NODE: {
-				for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
-				break;
-			}
-			default:
-				a.push("<!--\nNot Supported:\n\n" + "nodeType: " + n.nodeType + "\nnodeName: " + n.nodeName + "\n-->");
-		}
-	}
 	if(node.innerXML){
 		return node.innerXML;
 	}else if(typeof XMLSerializer != "undefined"){
 		return (new XMLSerializer()).serializeToString(node);
-	}else{
-		var a = [];
-		nodeToString(xml, a);
-		return a.join("");
 	}
 }
 
