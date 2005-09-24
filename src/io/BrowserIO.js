@@ -1,7 +1,7 @@
 dojo.provide("dojo.io.BrowserIO");
 
-dojo.require("dojo.io.IO");
-dojo.require("dojo.lang.*");
+dojo.require("dojo.io");
+dojo.require("dojo.lang");
 dojo.require("dojo.dom");
 
 dojo.io.checkChildrenForFile = function(node){
