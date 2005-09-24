@@ -59,15 +59,45 @@ if(typeof window == 'undefined'){
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 
-	/*
-	// FIXME: need to check for the various SVG plugins and builtin
-	// capabilities (as w/ Moz+SVG)
-	svg.capable = false;
-	// svg.support.plugin = true;
-	// svg.support.builtin = false;
-	// svg.adobe = true;
-	*/
-
+	dr.svg.capable = false;
+	dr.svg.support.plugin = false;
+	dr.svg.support.builtin = false;
+	dr.svg.adobe = false;
+	//	this is ugly, but we can't append elements to a non-existant BODY element yet.
+	if (document.createElementNS 
+		&& drh.moz 
+		&& parseFloat(dua.substring(dua.lastIndexOf("/")+1,dua.length))>1.0
+	){
+		dr.svg.capable = true;
+		dr.svg.support.builtin = true;
+		dr.svg.support.plugin = false;
+		dr.svg.adobe = false;
+	}else{ 
+		//	check for ASVG
+		if(navigator.mimeTypes && navigator.mimeTypes.length > 0){
+			if (navigator.mimeTypes["image/svg+xml"]||navigator.mimeTypes["image/svg"]||navigator.mimeTypes["image/svg-xml"]){
+				var result = navigator.mimeTypes["image/svg+xml"]||navigator.mimeTypes["image/svg"]||navigator.mimeTypes["image/svg-xml"];
+				dr.svg.capable = t;
+				dr.svg.support.plugin = t;
+				dr.svg.adobe = result.enabledPlugin.description.indexOf("Adobe") > -1;
+			}
+		}else if(drh.ie && dr.os.win){
+			var result = f;
+			try {
+				var test = new ActiveXObject("Adobe.SVGCtl");
+				result = t;
+			} catch(e){}
+			if (result){
+				dr.svg.capable = t;
+				dr.svg.support.plugin = t;
+				dr.svg.adobe = t;
+			}
+		}else{
+			dr.svg.capable = f;
+			dr.svg.support.plugin = f;
+			dr.svg.adobe = f;
+		}
+	}
 })();
 
 dojo.hostenv.startPackage("dojo.hostenv");
