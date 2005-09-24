@@ -105,14 +105,14 @@ dojo.hostenv.startPackage = function(moduleName){
 };
 
 //	wrapper objects for ASVG
-if (!window.XMLSerializer){
+if (window.parseXML){
 	window.XMLSerialzer = function(){
 		//	based on WebFX RichTextControl getXHTML() function.
 		function nodeToString(n, a) {
 			function fixText(s) { return String(s).replace(/\&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;"); }
 			function fixAttribute(s) { return fixText(s).replace(/\"/g, "&quot;"); }
 			switch (n.nodeType) {
-				case dojo.dom.ELEMENT_NODE:	{
+				case 1:	{	//	ELEMENT
 					var name = n.nodeName;
 					a.push("<" + name);
 					for (var i = 0; i < n.attributes.length; i++) {
@@ -127,22 +127,30 @@ if (!window.XMLSerializer){
 					} else a.push(" />\n");
 					break;
 				}
-				case dojo.dom.TEXT_NODE: {
+				case 3: {	//	TEXT
 					a.push(fixText(n.nodeValue));
 					break;
 				}
-				case dojo.dom.CDATA_SECTION_NODE: {
+				case 4: {	//	CDATA
 					a.push("<![CDA" + "TA[\n" + n.nodeValue + "\n]" + "]>");
 					break;
 				}
-				case dojo.dom.PROCESSING_INSTRUCTION_NODE: {
+				case 7:{	//	PROCESSING INSTRUCTION
 					a.push(n.nodeValue);
 					if (/(^<\?xml)|(^<\!DOCTYPE)/.test(n.nodeValue)) a.push("\n");
 					break;
 				}
-				case dojo.dom.COMMENT_NODE: {
+				case 8:{	//	COMMENT
 					a.push("<!-- " + n.nodeValue + " -->\n");
 					break;
+				}
+				case 9:		//	DOCUMENT
+				case 11:{	//	DOCUMENT FRAGMENT
+					for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
+					break;
+				}
+				default:{
+					a.push("<!--\nNot Supported:\n\n" + "nodeType: " + n.nodeType + "\nnodeName: " + n.nodeName + "\n-->");
 				}
 			}
 		}
@@ -152,42 +160,46 @@ if (!window.XMLSerializer){
 			return a.join("");
 		};
 	};
-}
-if (!window.DOMParser){
+
 	window.DOMParser = function(){
 		//	mimetype is basically ignored
 		this.parseFromString = function(s){
 			return parseXML(s, window.document);
 		}
 	};
-}
-if (!window.XMLHttpRequest){
+
 	window.XMLHttpRequest = function(){
-		var self = this;
-		var http;
-		var headers = [];
+		//	we ignore the setting and getting of content-type.
 		var uri = null;
 		var method = "POST";
-		var isAsync = true;		//	TODO: allow support of sync ops?
+		var isAsync = true;	
 		var cb = function(d){
 			this.responseText = d.content;
 			try {
 				this.responseXML = parseXML(this.responseText, window.document);
 			} catch(e){}
 			this.status = "200";
+			this.statusText = "OK";
+			if (!d.success) {
+				this.status = "500";
+				this.statusText = "Internal Server Error";
+			}
+			this.onload();
 			this.onreadystatechange();
 		};
-		
+		this.onload = function(){};
 		this.readyState = 4;
 		this.onreadystatechange = function(){};
 		this.status = 0;
+		this.statusText = "";
+		this.responseBody = null;
+		this.responseStream = null;
 		this.responseXML = null;
 		this.responseText = null;
-		this.setHeader = function(nm, val){ 
-			var o = [];
-			o[nm] = val;
-			headers.push(o);
-		};
+		this.abort = function(){ return; };
+		this.getAllResponseHeaders = function(){ return []; };
+		this.getResponseHeader = function(n){ return null; };
+		this.setRequestHeader = function(nm, val){ };
 		this.open = function(meth, url, async){ 
 			method = meth;
 			uri = url;
