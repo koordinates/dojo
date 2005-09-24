@@ -22,12 +22,14 @@ dojo.io.createIFrame = function(fname){
 		left = top = "0px";
 		height = width = "1px";
 		visibility = "hidden";
+		/*
 		if(dojo.hostenv.is_debug_){
 			position = "relative";
 			height = "300px";
 			width = "600px";
 			visibility = "visible";
 		}
+		*/
 	}
 
 	if(!r.ie){
@@ -117,6 +119,9 @@ dojo.io.IframeTransport = new function(){
 				[	"text/plain", "text/html", 
 					"application/xml", "text/xml", 
 					"text/javascript"])
+			)&&(
+				// make sur we really only get used in file upload cases	
+				(kwArgs["formNode"])&&(dojo.io.checkChildrenForFile(kwArgs["formNode"]))
 			)&&(
 				dojo.lang.inArray(kwArgs["method"].toLowerCase(), ["post", "get"])
 			)&&(
