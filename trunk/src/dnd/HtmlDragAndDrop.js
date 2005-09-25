@@ -39,11 +39,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	 * the intermediate representation.
 	 */
 	onDragStart: function (e){
-		if (document.selection) { document.selection.clear(); }
-		else if (window.getSelection && window.getSelection().removeAllRanges) {
-			window.getSelection().removeAllRanges();
-		}
-	
+		dojo.html.clearSelection();
+		
 		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode),
 			left: dojo.style.getAbsoluteX(this.domNode)};
 		

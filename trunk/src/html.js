@@ -16,9 +16,11 @@ dojo.lang.mixin(dojo.html, dojo.style);
 	
 dojo.html.clearSelection = function () {
 	try {
-		if (window.getSelection) { window.getSelection().collapseToEnd(); }
-		else if (document.selection) { document.selection.clear(); }
-	} catch (e) { }
+		if (window.getSelection) { window.getSelection().removeAllRanges(); }
+		else if (document.selection && document.selection.clear) {
+			document.selection.clear();
+		}
+	} catch (e) { dojo.debug(e); }
 }
 
 dojo.html.disableSelection = function (element) {
