@@ -22,6 +22,7 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 	fillInTemplate: function (args, frag) {
 		dojo.widget.HtmlToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
 		this.dialog = dojo.widget.fromScript("ColorPalette");
+		this.dialog.domNode.style.position = "absolute";
 
 		dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");
 	},
@@ -57,28 +58,38 @@ dojo.inherits(dojo.widget.HtmlColorPalette, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 
 	widgetType: "colorpalette",
-
-	buildRendering: function () {
 	
-		var colors = [["fff", "fcc", "fc9", "ff9", "ffc", "9f9", "9ff", "cff", "ccf", "fcf"],
+	palette: "7x10",
+
+	palettes: {
+		"7x10": [["fff", "fcc", "fc9", "ff9", "ffc", "9f9", "9ff", "cff", "ccf", "fcf"],
 			["ccc", "f66", "f96", "ff6", "ff3", "6f9", "3ff", "6ff", "99f", "f9f"],
 			["c0c0c0", "f00", "f90", "fc6", "ff0", "3f3", "6cc", "3cf", "66c", "c6c"],
 			["999", "c00", "f60", "fc3", "fc0", "3c0", "0cc", "36f", "63f", "c3c"],
 			["666", "900", "c60", "c93", "990", "090", "399", "33f", "60c", "939"],
 			["333", "600", "930", "963", "660", "060", "366", "009", "339", "636"],
-			["000", "300", "630", "633", "330", "030", "033", "006", "309", "303"]];
+			["000", "300", "630", "633", "330", "030", "033", "006", "309", "303"]],
 	
+		"3x4": [["ffffff"/*white*/, "00ff00"/*lime*/, "008000"/*green*/, "0000ff"/*blue*/],
+			["c0c0c0"/*silver*/, "ffff00"/*yellow*/, "ff00ff"/*fuchsia*/, "000080"/*navy*/],
+			["808080"/*gray*/, "ff0000"/*red*/, "800080"/*purple*/, "000000"/*black*/]]
+			//["00ffff"/*aqua*/, "808000"/*olive*/, "800000"/*maroon*/, "008080"/*teal*/]];
+	},
+
+	buildRendering: function () {
+		
 		this.domNode = document.createElement("table");
-		this.domNode.unselectable = "on";
+		dojo.html.disableSelection(this.domNode);
 		dojo.event.connect(this.domNode, "onmousedown", function (e) {
 			e.preventDefault();
 		});
 		with (this.domNode) { // set the table's properties
 			cellPadding = "0"; cellSpacing = "1"; border = "1";
-			style.backgroundColor = "white"; style.position = "absolute";
+			style.backgroundColor = "white"; //style.position = "absolute";
 		}
 		var tbody = document.createElement("tbody");
 		this.domNode.appendChild(tbody);
+		var colors = this.palettes[this.palette];
 		for (var i = 0; i < colors.length; i++) {
 			var tr = document.createElement("tr");
 			for (var j = 0; j < colors[i].length; j++) {
