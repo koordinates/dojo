@@ -7,5 +7,5 @@ dojo.io.SyncHTTPRequest = function(){
 	}
 }
 
-dj_inherits(dojo.io.SyncHTTPRequest, dojo.io.SyncRequest);
+dojo.inherits(dojo.io.SyncHTTPRequest, dojo.io.SyncRequest);
 
