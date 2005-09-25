@@ -69,10 +69,13 @@ dojo_ie_clobber = new function(){
 					if(dojo.hostenv.ie_clobber_minimal_){
 						na.push(tna[x]);
 					}
+					delete this.clobberNodes[tna[x].__doClobber__];
+					/*
 					var pos = dojo.lang.find(this.clobberNodes, tna[x], true);
 					if(pos >= 0){
 						this.clobberNodes.splice(pos, 1);
 					}
+					*/
 				}
 			}
 		}else{
@@ -115,6 +118,8 @@ if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie
 
 dojo.event.browser = new function(){
 
+	var clobberIdx = 0;
+
 	this.clean = function(node){
 		if(dojo.render.html.ie){ 
 			dojo_ie_clobber.clobber(node);
@@ -134,8 +139,9 @@ dojo.event.browser = new function(){
 	this.addClobberNode = function(node){
 		if(dojo.hostenv.ie_clobber_minimal_){
 			if(!node.__doClobber__) {
-				dojo_ie_clobber.clobberNodes.push(node);
-				node.__doClobber__ = true;
+				// dojo_ie_clobber.clobberNodes.push(node);
+				node.__doClobber__ = "clobber-"+clobberIdx++;
+				dojo_ie_clobber.clobberNodes[node.__doClobber__] = node;
 				node.__clobberAttrs__ = {};
 			}
 		}
