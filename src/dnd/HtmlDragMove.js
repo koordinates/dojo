@@ -19,19 +19,16 @@ dojo.dnd.HtmlDragMoveObject = function(node, type){
 	dojo.dnd.HtmlDragObject.call(this, node, type);
 }
 
-dj_inherits(dojo.dnd.HtmlDragMoveObject, dojo.dnd.HtmlDragObject);
+dojo.inherits(dojo.dnd.HtmlDragMoveObject, dojo.dnd.HtmlDragObject);
 
 dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 	onDragEnd: function(e){
-		this.dragClone = null;
-		// don't do anything
+		delete this.dragClone;
 	},
+	
 	onDragStart: function(e){
-		if (document.selection) { document.selection.clear(); }
-		else if (window.getSelection && window.getSelection().removeAllRanges) {
-			window.getSelection().removeAllRanges();
-		}
-
+		dojo.html.clearSelection();
+		
 		this.dragClone = this.domNode;
 	
 		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode),

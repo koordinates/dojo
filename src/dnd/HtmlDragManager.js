@@ -58,6 +58,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	currentDropTargetPoints: null,
 	previousDropTarget: null,
 
+	selectedSources: [],
+	dragObjects: [],
+
 	// mouse position properties
 	currentX: null,
 	currentY: null,
@@ -109,7 +112,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		if(!dojo.lang.inArray(this.selectedSources, ds)){
 			this.selectedSources.push(ds);
 		}
+		
+		// We can't prevent the default action on all mousedown events
+		// inside of drag sources as it prevents user interaction with
+		// the contents. The selection needs to be cleared using another
+		// method once the drag has been confirmed to start
 		//e.preventDefault();
+		
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
 
@@ -181,7 +190,6 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 					_this.dragObjects.push(tdo);
 				}
 			});
-
 
 			this.dropTargetDimensions = [];
 			dojo.lang.forEach(this.dropTargets, function(tempTarget){
