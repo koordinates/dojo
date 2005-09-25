@@ -2,8 +2,8 @@ dojo.provide("dojo.widget.PopUpButton");
 dojo.provide("dojo.widget.DomPopUpButton");
 dojo.provide("dojo.widget.HtmlPopUpButton");
 
-dojo.require("dojo.widget.Button");
-dojo.require("dojo.widget.HtmlButton");
+//dojo.require("dojo.widget.Button");
+//dojo.require("dojo.widget.HtmlButton");
 
 dojo.require("dojo.widget.Menu");
 dojo.require("dojo.widget.MenuItem");
