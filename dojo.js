@@ -36,8 +36,14 @@
 		var spath = root+"src/"+tmps[x];
 		if(isRhino){
 			load(spath);
-		}else{
-			document.write("<script type='text/javascript' src='"+spath+"'></script>");
+		} else {
+			try {
+				document.write("<script type='text/javascript' src='"+spath+"'></script>");
+			} catch (e) {
+				var script = document.createElement("script");
+				script.src = spath;
+				document.getElementsByTagName("head")[0].appendChild(script);
+			}
 		}
 	}
 })();
