@@ -14,45 +14,27 @@ dojo.lang.mixin(dojo.html, dojo.style);
 // Need to investigate for KHTML and Opera
 
 	
-dojo.html.clearSelection = function (){
-	try{
-		if(window.getSelection){
-			var selObj = window.getSelection();
-			selObj.collapseToEnd();
-		}else if(document.selection){
-			document.selection.clear();
-		}
-	}catch(e){ /*squelch*/ }
+dojo.html.clearSelection = function () {
+	try {
+		if (window.getSelection) { window.getSelection().collapseToEnd(); }
+		else if (document.selection) { document.selection.clear(); }
+	} catch (e) { }
 }
 
-dojo.html._selectionDisabled = false;
-
-dojo.html.disableSelection = function (){
-	if(!dojo.html._selectionDisabled){
-		var db = document.body;
-		if(dojo.render.html.moz){
-			db.style.MozUserSelect = "none";
-		}else{
-			dojo.event.connect(db, "onselectstart", dojo.event.browser, "stopEvent");
-			dojo.event.connect(db, "ondragstart", dojo.event.browser, "stopEvent");
-			dojo.event.connect(db, "onmousemove", dojo.html, "clearSelection");
-		}
-	}
-	dojo.html._selectionDisabled = true;
+dojo.html.disableSelection = function (element) {
+	if (arguments.length == 0) { element = document.body; }
+	
+	if (dojo.render.html.mozilla) { element.style.MozUserSelect = "none"; }
+	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = "none"; }
+	else if (dojo.render.html.ie) { element.unselectable = "on"; }
 }
 
-dojo.html.enableSelection = function (){
-	if(dojo.html._selectionDisabled){
-		var db = document.body;
-		if(dojo.render.html.moz){
-			db.style.MozUserSelect = "";
-		}else{
-			dojo.event.disconnect(db, "onselectstart", dojo.event.browser, "stopEvent");
-			dojo.event.disconnect(db, "ondragstart", dojo.event.browser, "stopEvent");
-			dojo.event.disconnect(db, "onmousemove", dojo.html, "clearSelection");
-		}
-	}
-	dojo.html._selectionDisabled = false;
+dojo.html.enableSelection = function (element) {
+	if (arguments.length == 0) { element = document.body; }
+	
+	if (dojo.render.html.mozilla) { element.style.MozUserSelect = ""; }
+	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = ""; }
+	else if (dojo.render.html.ie) { element.unselectable = "off"; }
 }
 
 dojo.html.selectElement = function (element) {
@@ -68,7 +50,7 @@ dojo.html.selectElement = function (element) {
 	}
 }
 
-dojo.html.selectionCollapsed = function () {
+dojo.html.isSelectionCollapsed = function () {
 	if (document.selection) { // IE
 		return document.selection.createRange().text == "";
 	} else if (window.getSelection) {
