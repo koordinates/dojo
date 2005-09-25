@@ -7,7 +7,7 @@ dojo.dnd.HtmlDragMoveSource = function(node, type){
 	dojo.dnd.HtmlDragSource.call(this, node, type);
 }
 
-dj_inherits(dojo.dnd.HtmlDragMoveSource, dojo.dnd.HtmlDragSource);
+dojo.inherits(dojo.dnd.HtmlDragMoveSource, dojo.dnd.HtmlDragSource);
 
 dojo.lang.extend(dojo.dnd.HtmlDragMoveSource, {
 	onDragStart: function(){

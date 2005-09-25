@@ -9,7 +9,7 @@ dojo.require("dojo.style");
 dojo.dnd.HtmlDragManager = function(){
 }
 
-dj_inherits(dojo.dnd.HtmlDragManager, dojo.dnd.DragManager);
+dojo.inherits(dojo.dnd.HtmlDragManager, dojo.dnd.DragManager);
 
 dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	/**
