@@ -4,7 +4,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/BaseFunction.java
 retrieving revision 1.57
 diff -u -u -r1.57 BaseFunction.java
 --- src/org/mozilla/javascript/BaseFunction.java	30 Aug 2005 10:05:42 -0000	1.57
-+++ src/org/mozilla/javascript/BaseFunction.java	21 Sep 2005 17:14:57 -0000
++++ src/org/mozilla/javascript/BaseFunction.java	25 Sep 2005 22:48:29 -0000
 @@ -373,6 +373,28 @@
          return sb.toString();
      }
@@ -40,7 +40,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
 retrieving revision 1.241
 diff -u -u -r1.241 Context.java
 --- src/org/mozilla/javascript/Context.java	26 Jun 2005 22:57:31 -0000	1.241
-+++ src/org/mozilla/javascript/Context.java	21 Sep 2005 17:14:59 -0000
++++ src/org/mozilla/javascript/Context.java	25 Sep 2005 22:48:32 -0000
 @@ -1166,6 +1166,36 @@
          }
      }
@@ -97,7 +97,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Decompiler.java,v
 retrieving revision 1.19
 diff -u -u -r1.19 Decompiler.java
 --- src/org/mozilla/javascript/Decompiler.java	28 Aug 2005 23:25:22 -0000	1.19
-+++ src/org/mozilla/javascript/Decompiler.java	21 Sep 2005 17:15:01 -0000
++++ src/org/mozilla/javascript/Decompiler.java	25 Sep 2005 22:48:33 -0000
 @@ -1,3 +1,7 @@
 +// FIXME: need to implement a stack of something that allows us to keep track
 +// of what was pushed onto the replacement stack at what level and remove it
@@ -869,7 +869,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeFunction.ja
 retrieving revision 1.62
 diff -u -u -r1.62 NativeFunction.java
 --- src/org/mozilla/javascript/NativeFunction.java	17 Jan 2005 13:06:33 -0000	1.62
-+++ src/org/mozilla/javascript/NativeFunction.java	21 Sep 2005 17:15:01 -0000
++++ src/org/mozilla/javascript/NativeFunction.java	25 Sep 2005 22:48:33 -0000
 @@ -70,6 +70,18 @@
          }
      }
@@ -895,7 +895,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/TokenStream.java,
 retrieving revision 1.63
 diff -u -u -r1.63 TokenStream.java
 --- src/org/mozilla/javascript/TokenStream.java	31 Jul 2005 13:48:46 -0000	1.63
-+++ src/org/mozilla/javascript/TokenStream.java	21 Sep 2005 17:15:02 -0000
++++ src/org/mozilla/javascript/TokenStream.java	25 Sep 2005 22:48:38 -0000
 @@ -64,9 +64,12 @@
      private final static int
          EOF_CHAR = -1;
@@ -924,7 +924,7 @@ RCS file: /cvsroot/mozilla/js/rhino/toolsrc/org/mozilla/javascript/tools/shell/M
 retrieving revision 1.64
 diff -u -u -r1.64 Main.java
 --- toolsrc/org/mozilla/javascript/tools/shell/Main.java	2 Sep 2005 14:18:40 -0000	1.64
-+++ toolsrc/org/mozilla/javascript/tools/shell/Main.java	21 Sep 2005 17:15:03 -0000
++++ toolsrc/org/mozilla/javascript/tools/shell/Main.java	25 Sep 2005 22:48:38 -0000
 @@ -237,6 +237,10 @@
                  shellContextFactory.call(iproxy);
                  continue;
@@ -975,7 +975,7 @@ diff -u -u -r1.64 Main.java
 +					try {
 +						cin = new PushbackReader(new FileReader(path));
 +					} catch (FileNotFoundException ex) {
-+						global.getErr().println(ex.toString());
++						// global.getErr().println(ex.toString());
 +						return;
 +					} catch (IOException ioe) {
 +						global.getErr().println(ioe.toString());
