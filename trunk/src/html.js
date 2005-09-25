@@ -342,12 +342,12 @@ dojo.html.gravity = function (node, e){
 	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
 	var mousey = e.pageY || e.clientY + document.body.scrollTop;
 	
-	with(dojo.html){
+	with (dojo.html) {
 		var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
 		var nodecentery = getAbsoluteY(node) + (getInnerHeight(node) / 2);
 	}
 	
-	with(arguments.callee){
+	with (dojo.html.gravity) {
 		return ((mousex < nodecenterx ? WEST : EAST) |
 			(mousey < nodecentery ? NORTH : SOUTH));
 	}
