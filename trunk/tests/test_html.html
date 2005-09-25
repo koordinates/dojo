@@ -16,36 +16,6 @@ function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : 
 
 
 <!---------------------------------------------------------------------------->
-<h2><code>clearSelection</code></h2>
-
-<p id="clearSelection" onmouseover="">The current selection should be cleared when you mouse over this paragraph.</p>
-
-<script type="text/javascript">
-dojo.event.connect($("clearSelection"), "onmouseover", function (e) {
-	dojo.html.clearSelection();
-});
-</script>
-
-
-
-<!---------------------------------------------------------------------------->
-<h2><code>disableSelection</code> and <code>enableSelection</code></h2>
-
-<p><input type="checkbox" id="toggleSelection"><label for="toggleSelection"> toggling this checkbox should enable and disable the ability to select the document.</label></p>
-
-<script type="text/javascript">
-dojo.event.connect($("toggleSelection"), "onchange", function (e) {
-	if ($("toggleSelection").checked) {
-		dojo.html.disableSelection();
-	} else {
-		dojo.html.enableSelection();
-	}
-});
-</script>
-
-
-
-<!---------------------------------------------------------------------------->
 <h2><code>getScrollTop</code> and <code>getScrollLeft</code></h2>
 
 <p>Scroll top: <span id="scrollTop">0</span><br>Scroll left: <span id="scrollLeft">0</span></p>
