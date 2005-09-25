@@ -75,11 +75,15 @@ if(typeof window == 'undefined'){
 	}else{ 
 		//	check for ASVG
 		if(navigator.mimeTypes && navigator.mimeTypes.length > 0){
-			if (navigator.mimeTypes["image/svg+xml"]||navigator.mimeTypes["image/svg"]||navigator.mimeTypes["image/svg-xml"]){
-				var result = navigator.mimeTypes["image/svg+xml"]||navigator.mimeTypes["image/svg"]||navigator.mimeTypes["image/svg-xml"];
+			var result = navigator.mimeTypes["image/svg+xml"] ||
+				navigator.mimeTypes["image/svg"] ||
+				navigator.mimeTypes["image/svg-xml"];
+			if (result){
 				dr.svg.capable = t;
 				dr.svg.support.plugin = t;
-				dr.svg.adobe = result.enabledPlugin.description.indexOf("Adobe") > -1;
+				dr.svg.adobe = result && result.enabledPlugin &&
+					result.enabledPlugin.description && 
+					(result.enabledPlugin.description.indexOf("Adobe") > -1);
 			}
 		}else if(drh.ie && dr.os.win){
 			var result = f;
