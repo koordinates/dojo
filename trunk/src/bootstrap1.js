@@ -435,7 +435,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
-dojo.loaded = function(){}
+dojo.loaded = function(){ dojo.debug("loaded"); }
 
 dojo.hostenv.loaded = function(){
 	this.post_load_ = true;
@@ -473,8 +473,8 @@ dojo.hostenv.modulesLoaded = function(){
 }
 
 dojo.hostenv.moduleLoaded = function(modulename){
-	// var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
-	// this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
+	var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
+	this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
 }
 
 /**
@@ -607,11 +607,11 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	if(!dj_undef(modulename, this.modules_)){
 		return this.modules_[modulename];
 	}
+	*/
 
 	if(this.loaded_modules_[(new String(modulename)).toLowerCase()]){
 		return this.loaded_modules_[modulename];
 	}
-	*/
 
 	// see if symbol is defined anyway
 	var module = dojo.evalObjPath(modulename);
