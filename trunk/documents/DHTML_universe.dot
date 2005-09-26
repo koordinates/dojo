@@ -13,15 +13,15 @@ digraph dhtml_universe
 	{
 		// graph-wide config
 		center=true;
+		// overlap=scale;
+		splines=true;
 		// concentrate=true;
 		label="An incomplete mapping of the DHTML Universe\nPlease send new information and corrections to:\nalex@dojotoolkit.org";
-		nodesep=0.30;
 
 		// "dark matter"
 		dm [ label="\"Dark Matter\"\n\nperhaps 3-4x the size of\nthe visible universe?",shape=doublecircle ];
 
 		// developer to project/company relationships
-		dylan -> INFA;
 		alexr -> INFA;
 		alexr -> NW;
 		alexr -> Dojo;
@@ -30,6 +30,7 @@ digraph dhtml_universe
 		jpark -> ModPubSub;
 		jpark -> RePubSub;
 		jpark -> Dojo;
+		jpark -> Renkoo;
 		mda -> NW;
 		mda -> Dojo;
 		mda -> Burst;
@@ -38,9 +39,12 @@ digraph dhtml_universe
 		danp -> Dojo;
 		danp -> DotNetSol;
 		danp -> _13p;
+		danp -> Google;
 		psowden -> Dojo;
 		psowden -> Jot;
+		dylan -> INFA;
 		dylan -> Dojo;
+		dylan -> Renkoo;
 		ttrenka -> Dojo;
 		ttrenka -> FM;
 		ttrenka -> _13p;
@@ -65,6 +69,7 @@ digraph dhtml_universe
 		ashevdoff -> ISC;
 		cw -> Gmail [ style=dotted,label="?" ];
 		cw -> Google;
+		nkand -> Google;
 		ilamb -> Oddpost;
 		ilamb -> Yahoo;
 		ediamond -> Oddpost;
@@ -98,14 +103,20 @@ digraph dhtml_universe
 		hfuecks -> JPSpan;
 		syen -> TrimPath;
 		bobi -> MochiKit
+		glish -> Yahoo;
+		swillison -> Yahoo;
+		gmurphy -> Google;
+		michaelvo -> Backbase;
 
 		// project and company relationships
 		INFA -> NW;
 		INFA -> ISC [ label="Informatica licenses \nIsomorphic" ];
 		Jot -> Dojo [ label="Jot sponsors \nDojo" ];
+		Renkoo -> Dojo [ label="Renkoo\nsponsors\nDojo" ];
+		TurboAjax -> Dojo [ label="TurboAjax built\non Dojo" ];
 		Dojo -> MochiKit [ style=dotted, label="Mochi is Dojo-compatible" ];
 		Jot -> HTMLArea [ label="Jot sponsors \nHTMLArea" ];
-		Tibet -> ISC [ style=dotted ];
+		// Tibet -> ISC [ style=dotted ];
 		// FIXME: need to mine these links for info:
 		//	http://koranteng.blogspot.com/2004/07/on-rich-web-applications-alphablox-and.html
 		//	http://koranteng.blogspot.com/2004/10/on-gmail-and-dhtml-architecture-again.html
@@ -167,6 +178,10 @@ digraph dhtml_universe
 		hfuecks		[ label="Harry Fuecks" ];
 		syen		[ label="Steve Yen" ];
 		bobi		[ label="Bob Ippolito" ];
+		nkand		[ label="Neil Kandalgaonkar" ];
+		glish		[ label="Eric Costello" ];
+		swillison	[ label="Simon Willison" ];
+		gmurphy		[ label="Glen Murphy" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -177,7 +192,9 @@ digraph dhtml_universe
 		IBM			[ shape=box ];
 		TIBCO		[ shape=box ];
 		GenInt		[ label="General Interface" ];
-		Backbase	[ label="Backbase",shape=box];
+		Backbase	[ label="Backbase",shape=box ];
+		Renkoo		[ label="Renkoo",shape=box ];
+		TurboAjax	[ label="TurboAjax Group",shape=box ];
 
 		// projects and products
 		jsxml		[ shape=diamond ];
