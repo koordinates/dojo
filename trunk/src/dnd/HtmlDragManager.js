@@ -47,6 +47,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	 *			(clobber draggable selection)
 	 */
 	disabled: false, // to kill all dragging!
+	nestedTargets: false,
 	mouseDownTimer: null, // used for click-hold operations
 	dsCounter: 0,
 	dsPrefix: "dojoDragSource",
@@ -211,7 +212,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// if we have a current drop target, check to see if we're outside of
 		// it. If so, do all the actions that need doing.
 		var dtp = this.currentDropTargetPoints;
-		if (dtp && this.isInsideBox(e, dtp)) {
+		if((!this.nestedTargets)&&(dtp)&&(this.isInsideBox(e, dtp))){
 			if (this.dropAcceptable) { this.currentDropTarget.onDragMove(e); }
 		}else{
 			// FIXME: need to fix the event object!
@@ -226,10 +227,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			// check the mouse position to see if we're in a drop target
 			dojo.lang.forEach(this.dropTargetDimensions, function(tmpDA){
 				// FIXME: is there a way to shortcut this?
-				if((!_this.currentDropTarget)&&(_this.isInsideBox(e, tmpDA))){
+				if( ((!_this.currentDropTarget)||(_this.nestedTargets))&&
+					(_this.isInsideBox(e, tmpDA))){
 					_this.currentDropTarget = tmpDA[2];
 					_this.currentDropTargetPoints = tmpDA;
-					return "break";
+					if(!_this.nestedTargets){
+						return "break";
+					}
 				}
 			});
 			e.dragObjects = this.dragObjects;
