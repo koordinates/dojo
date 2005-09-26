@@ -57,7 +57,7 @@ dojo.string.isBlank = function (str) {
 dojo.string.encodeAscii = function(str) {
 	if(!dojo.lang.isString(str)) { return str; }
 	var ret = "";
-	str = str.replace(/ /g, '+');
+	str = str.replace(/ /g, "+");
 	var value = escape(str);
 	var match, re = /%u([0-9A-F]{4})/i;
 	while((match = value.match(re))) {
@@ -66,7 +66,7 @@ dojo.string.encodeAscii = function(str) {
 		ret += value.substring(0, match.index) + newVal;
 		value = value.substring(match.index+match[0].length);
 	}
-	ret += value;
+	ret += value.replace(/\+/g, "%2B");
 	return ret;
 }
 	
