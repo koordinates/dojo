@@ -318,8 +318,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		} else {
 			switch (code) {
 				case e.KEY_TAB:
-					this.execCommand(e.shiftKey ? "unindent" : "indent");
-					break;
+				  // commenting out bcs it's crashing FF
+					// this.execCommand(e.shiftKey ? "unindent" : "indent");
+					// break;
 				default:
 					preventDefault = false; break; // didn't handle here
 			}
