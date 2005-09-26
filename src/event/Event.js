@@ -356,6 +356,11 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	}
 
 	var unrollAdvice  = function(marr){ 
+	  if (!marr) {
+	    dojo.debug("Null argument to unrollAdvice()");
+	    return;
+	  }
+	  
 		// dojo.hostenv.println("in unrollAdvice()");
 		var callObj = marr[0]||dj_global;
 		var callFunc = marr[1];
