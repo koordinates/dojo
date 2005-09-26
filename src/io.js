@@ -117,6 +117,15 @@ dojo.lang.extend(dojo.io.Request, {
 		if(!kwArgs["load"] && kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
 		if(!kwArgs["changeUrl"] && kwArgs["changeURL"]) { kwArgs.changeUrl = kwArgs.changeURL; }
 
+		// encoding fun!
+		if(!kwArgs["encoding"]) {
+			if(!dojo.lang.isUndefined(djConfig["bindEncoding"])) {
+				kwArgs.encoding = djConfig.bindEncoding;
+			} else {
+				kwArgs.encoding = "";
+			}
+		}
+
 		var isFunction = dojo.lang.isFunction;
 		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
 			var fn = dojo.io.hdlrFuncNames[x];
@@ -178,12 +187,13 @@ dojo.io.bind = function(request){
 	return request;
 }
 
-dojo.io.argsFromMap = function(map){
+dojo.io.argsFromMap = function(map, encoding){
 	var control = new Object();
 	var mapStr = "";
+	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	for(var x in map){
 		if(!control[x]){
-			mapStr+= dojo.string.encodeAscii(x)+"="+dojo.string.encodeAscii(map[x])+"&";
+			mapStr+= enc(x)+"="+enc(map[x])+"&";
 		}
 	}
 

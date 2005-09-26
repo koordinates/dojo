@@ -21,11 +21,11 @@ dojo.io.formHasFile = function(formNode){
 }
 
 // TODO: Move to htmlUtils
-dojo.io.encodeForm = function(formNode){
+dojo.io.encodeForm = function(formNode, encoding){
 	if((!formNode)||(!formNode.tagName)||(!formNode.tagName.toLowerCase() == "form")){
 		dj_throw("Attempted to encode a non-form element.");
 	}
-	var enc = dojo.string.encodeAscii;
+	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var values = [];
 
 	for(var i = 0; i < formNode.elements.length; i++) {
@@ -377,7 +377,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			if((ta)&&(!kwArgs["url"])){ url = ta; }
 			var tp = kwArgs.formNode.getAttribute("method");
 			if((tp)&&(!kwArgs["method"])){ kwArgs.method = tp; }
-			query += dojo.io.encodeForm(kwArgs.formNode);
+			query += dojo.io.encodeForm(kwArgs.formNode, kwArgs.encoding);
 		}
 
 		if(!kwArgs["method"]) {
@@ -385,7 +385,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if(kwArgs["content"]){
-			query += dojo.io.argsFromMap(kwArgs.content);
+			query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
 		}
 
 		if(kwArgs["postContent"] && kwArgs.method.toLowerCase() == "post") {
