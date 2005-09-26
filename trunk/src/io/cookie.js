@@ -77,3 +77,6 @@ dojo.io.cookie.isSupported = function() {
 	}
 	return navigator.cookieEnabled;
 }
+
+// need to leave this in for backwards-compat from 0.1 for when it gets pulled in by dojo.io.*
+if(!dojo.io.cookies) { dojo.io.cookies = dojo.io.cookie; }
