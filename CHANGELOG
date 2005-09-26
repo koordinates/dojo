@@ -9,6 +9,7 @@ Namespace refactoring:
 - dojo.text -> dojo.string
 - dojo.xml.htmlUtil -> dojo.html + dojo.style
 - dojo.xml.domUtil -> dojo.dom
+- dojo.io.cookies -> dojo.io.cookie
 
 Individual function refactoring
 - dj_unimplmemented() -> dojo.unimpl()
