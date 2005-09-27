@@ -59,19 +59,19 @@ if(typeof window == 'undefined'){
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 
-	dr.svg.capable = false;
-	dr.svg.support.plugin = false;
-	dr.svg.support.builtin = false;
-	dr.svg.adobe = false;
+	dr.svg.capable = f;
+	dr.svg.support.plugin = f;
+	dr.svg.support.builtin = f;
+	dr.svg.adobe = f;
 	//	this is ugly, but we can't append elements to a non-existant BODY element yet.
 	if (document.createElementNS 
 		&& drh.moz 
 		&& parseFloat(dua.substring(dua.lastIndexOf("/")+1,dua.length))>1.0
 	){
-		dr.svg.capable = true;
-		dr.svg.support.builtin = true;
-		dr.svg.support.plugin = false;
-		dr.svg.adobe = false;
+		dr.svg.capable = t;
+		dr.svg.support.builtin = t;
+		dr.svg.support.plugin = f;
+		dr.svg.adobe = f;
 	}else{ 
 		//	check for ASVG
 		if(navigator.mimeTypes && navigator.mimeTypes.length > 0){
