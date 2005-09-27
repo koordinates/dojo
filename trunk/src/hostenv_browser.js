@@ -22,7 +22,7 @@ if(typeof window == 'undefined'){
 
 // attempt to figure out the path to dojo if it isn't set in the config
 (function() {
-	if((dojo.hostenv["base_script_uri_"] == "" || dojo.hostenv["base_relative_path_"] == "")
+	if((djConfig["baseScriptUri"] == "" || djConfig["baseRelativePath"] == "")
 		&& document && document.getElementsByTagName) {
 		var scripts = document.getElementsByTagName("script");
 		var rePkg = /(__package__|dojo)\.js$/i;
@@ -30,8 +30,8 @@ if(typeof window == 'undefined'){
 			var src = scripts[i].getAttribute("src");
 			if( rePkg.test(src) ) {
 				var root = src.replace(rePkg, "");
-				if(dojo.hostenv["base_script_uri_"] == "") { dojo.hostenv["base_script_uri_"] = root; }
-				if(dojo.hostenv["base_relative_path_"] == "") { dojo.hostenv["base_relative_path_"] = root; }
+				if(djConfig["baseScriptUri"] == "") { djConfig["baseScriptUri"] = root; }
+				if(djConfig["baseRelativePath"] == "") { djConfig["baseRelativePath"] = root; }
 				break;
 			}
 		}

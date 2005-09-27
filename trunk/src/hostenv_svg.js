@@ -3,8 +3,8 @@ if(typeof window == 'undefined'){
 	dj_throw("attempt to use adobe svg hostenv when no window object");
 }
 dojo.debug = function(){ 
+	if (!djConfig.isDebug) { return; }
 	var args = arguments;
-	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"];
 	var s = isJUM ? "": "DEBUG: ";
 	for (var i = 0; i < args.length; ++i){ s += args[i]; }

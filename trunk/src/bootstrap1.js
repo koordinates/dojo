@@ -110,16 +110,16 @@ dj_throw = dj_rethrow = function(m, e){
 
 /**
  * Produce a line of debug output. 
- * Does nothing unless dojo.hostenv.is_debug_ is true.
+ * Does nothing unless djConfig.isDebug is true.
  * varargs, joined with ''.
  * Caller should not supply a trailing "\n".
  */
 dojo.debug = function(){
+	if (!djConfig.isDebug) { return; }
 	var args = arguments;
 	if(dj_undef("println", dojo.hostenv)){
 		dojo.raise("dojo.debug not available (yet?)");
 	}
-	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
 	var s = [(isJUM ? "": "DEBUG: ")];
 	for(var i=0;i<args.length;++i){
@@ -235,8 +235,27 @@ dojo.render = (function(){
  * Instead public methods such as loadModule should be called instead.
  */
 dojo.hostenv = (function(){
-	var djc = djConfig;
 
+	// default configuration options
+	var config = {
+		isDebug: false,
+		baseRelativePath: "",
+		libraryScriptUri: "",
+		parseWidgets: true,
+		iePreventClobber: false,
+		ieClobberMinimal: false
+	};
+
+	if (typeof djConfig == "undefined") { djConfig = config; }
+	else {
+		for (var option in config) {
+			if (typeof djConfig[option] == "undefined") {
+				djConfig[option] = config[option];
+			}
+		}
+	}
+
+var djc = djConfig;
 	function _def(obj, name, def){
 		return (dj_undef(name, obj) ? def : obj[name]);
 	}
@@ -333,18 +352,17 @@ dojo.hostenv = (function(){
  * It is either the empty string, or a non-empty string ending in '/'.
  */
 dojo.hostenv.getBaseScriptUri = function(){
-	if(!dj_undef("base_script_uri_", this)){ return this.base_script_uri_; }
-	var uri = this.library_script_uri_;
-	if(!uri){
-		uri = this.library_script_uri_ = this.getLibraryScriptUri();
-		if(!uri){
-			dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
-		}
+	if(!dj_undef("baseScriptUri", djConfig)){ return djConfig.baseScriptUri; }
+	if (!djConfig.libraryScriptUri) {
+		djConfig.libraryScriptUri = this.getLibraryScriptUri();
 	}
+	var uri = djConfig.libraryScriptUri;
+
+	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
 
 	var lastslash = uri.lastIndexOf('/');
-	this.base_script_uri_ = this.base_relative_path_;
-	return this.base_script_uri_;
+	djConfig.baseScriptUri = djConfig.baseRelativePath;
+	return djConfig.baseScriptUri;
 }
 
 /**
@@ -353,7 +371,7 @@ dojo.hostenv.getBaseScriptUri = function(){
 // In JScript .NET, see interface System._AppDomain implemented by
 // System.AppDomain.CurrentDomain. Members include AppendPrivatePath,
 // RelativeSearchPath, BaseDirectory.
-dojo.hostenv.setBaseScriptUri = function(uri){ this.base_script_uri_ = uri }
+dojo.hostenv.setBaseScriptUri = function(uri){ djConfig.baseScriptUri = uri }
 
 /**
  * Loads and interprets the script located at relpath, which is relative to the

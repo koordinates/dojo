@@ -47,11 +47,11 @@ dojo.hostenv.println = function(s){
 }
 
 dojo.debug = function() {
+	if (!djConfig.isDebug) { return; }
 	var args = arguments;
 	if(typeof dojo.hostenv.println != 'function'){
 		dj_throw("attempt to call dojo.debug when there is no dojo.hostenv println implementation (yet?)");
 	}
-	if(!dojo.hostenv.is_debug_){ return; }
 	var isJUM = dj_global["jum"];
 	var s = isJUM ? "": "DEBUG: ";
 	for(var i=0;i<args.length;++i){ s += args[i]; }
