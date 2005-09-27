@@ -47,14 +47,14 @@ if(typeof window == 'undefined'){
 	drh.support.builtin = t;
 
 	dr.ver = parseFloat(drh.AV);
-	dr.os.mac = dav.indexOf("Macintosh") == -1 ? f : t; 
-	dr.os.win = dav.indexOf("Windows") == -1 ? f : t; 
+	dr.os.mac = dav.indexOf("Macintosh") >= 0;
+	dr.os.win = dav.indexOf("Windows") >= 0;
 
-	drh.opera = dua.indexOf("Opera") == -1 ? f : t; 
-	drh.khtml = ((dav.indexOf("Konqueror") >= 0)||(dav.indexOf("Safari") >= 0)) ? t : f; 
-	drh.safari = (dav.indexOf("Safari") >= 0) ? t : f; 
-	drh.mozilla = drh.moz = ((dua.indexOf("Gecko") >= 0)&&(!drh.khtml)) ? t : f; 
-	drh.ie = ((document.all)&&(!drh.opera)) ? t : f;
+	drh.opera = dua.indexOf("Opera") >= 0;
+	drh.khtml = (dav.indexOf("Konqueror") >= 0)||(dav.indexOf("Safari") >= 0);
+	drh.safari = dav.indexOf("Safari") >= 0;
+	drh.mozilla = drh.moz = (dua.indexOf("Gecko") >= 0)&&(!drh.khtml);
+	drh.ie = (document.all)&&(!drh.opera);
 	drh.ie50 = drh.ie && dav.indexOf("MSIE 5.0")>=0;
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
