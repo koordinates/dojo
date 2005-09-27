@@ -22,8 +22,8 @@ if(typeof window == 'undefined'){
 
 // attempt to figure out the path to dojo if it isn't set in the config
 (function() {
-	if((djConfig["baseScriptUri"] == "" || djConfig["baseRelativePath"] == "")
-		&& document && document.getElementsByTagName) {
+	if((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == ""))
+		&&(document && document.getElementsByTagName)){
 		var scripts = document.getElementsByTagName("script");
 		var rePkg = /(__package__|dojo)\.js$/i;
 		for(var i = 0; i < scripts.length; i++) {
@@ -220,14 +220,38 @@ dojo.hostenv.println = function (line) {
 	}
 }
 
+// dj_addNodeEvtHdlr_clobberArr = [];
 function dj_addNodeEvtHdlr (node, evtName, fp, capture){
-	var oldHandler = node["on"+evtName] || function(){};
-	node["on"+evtName] = function(){
-		fp.apply(node, arguments);
-		oldHandler.apply(node, arguments);
-	}
+	/*
+	if(dojo.render.html.ie){
+		dj_addNodeEvtHdlr_clobberArr.push([node, 'on' + evtName, fp]);
+		node.attachEvent("on"+evtName, fp);
+	}else{
+	*/
+		var oldHandler = node["on"+evtName] || function(){};
+		node["on"+evtName] = function(){
+			fp.apply(node, arguments);
+			oldHandler.apply(node, arguments);
+		}
+	//}
 	return true;
 }
+
+/*
+dj_addNodeEvtHdlr.clobber = function(){
+	var i;
+	var ca = dj_addNodeEvtHdlr_clobberArr;
+	for(i=ca.length-1; i>=0; i=i-1){
+		var ae_args = ca[i];
+		if(ae_args[0]["detachEvent"]){
+			ae_args[0].detachEvent(ae_args[1], ae_args[2]);
+		}
+		try{ ae_args[0][ae_args[1]] = null; }catch(e){}
+	}
+	dj_addNodeEvtHdlr_clobberArr = [];
+	alert("clobered!");
+}
+*/
 
 dj_addNodeEvtHdlr(window, "load", function(){
 	if(dojo.render.html.ie) {

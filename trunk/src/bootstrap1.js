@@ -239,6 +239,7 @@ dojo.hostenv = (function(){
 	// default configuration options
 	var config = {
 		isDebug: false,
+		baseScriptUri: "",
 		baseRelativePath: "",
 		libraryScriptUri: "",
 		parseWidgets: true,
@@ -355,7 +356,7 @@ var djc = djConfig;
  * It is either the empty string, or a non-empty string ending in '/'.
  */
 dojo.hostenv.getBaseScriptUri = function(){
-	if(!dj_undef("baseScriptUri", djConfig)){ return djConfig.baseScriptUri; }
+	if((!dj_undef("baseScriptUri", djConfig)&&(djConfig.baseScriptUri.length != 0))){ return djConfig.baseScriptUri; }
 	if (!djConfig.libraryScriptUri) {
 		djConfig.libraryScriptUri = this.getLibraryScriptUri();
 	}

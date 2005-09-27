@@ -102,10 +102,14 @@ dojo_ie_clobber = new function(){
 if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(djConfig.ieClobberMinimal))){
 	window.onunload = function(){
 		dojo_ie_clobber.clobber();
-		if((dojo["widget"])&&(dojo.widget["manager"])){
-			dojo.widget.manager.destroyAll();
-		}
+		try{
+			if((dojo["widget"])&&(dojo.widget["manager"])){
+				dojo.widget.manager.destroyAll();
+			}
+		}catch(e){}
 		CollectGarbage();
+		try{ window.onload = null; }catch(e){}
+		try{ window.onunload = null; }catch(e){}
 	}
 }
 
