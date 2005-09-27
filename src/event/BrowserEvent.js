@@ -38,11 +38,9 @@ dojo_ie_clobber = new function(){
 	}
 
 	function nukeProp(node, prop){
-		try{
-			node[prop] = null;
-			node.removeAttribute(prop);
-			delete node[prop];
-		}catch(e){ /* squelch */ }
+		// try{ node.removeAttribute(prop); 	}catch(e){ /* squelch */ }
+		try{ node[prop] = null; 			}catch(e){ /* squelch */ }
+		try{ delete node[prop]; 			}catch(e){ /* squelch */ }
 	}
 
 	this.clobber = function(nodeRef){
@@ -60,16 +58,15 @@ dojo_ie_clobber = new function(){
 			var tna = nodeRef.getElementsByTagName("*");
 			na = [nodeRef];
 			for(var x=0; x<tna.length; x++){
-				if(!dojo.hostenv.ie_clobber_minimal_){
+				if(!djConfig.ieClobberMinimal){
 					na.push(tna[x]);
 				}
 				// if we're gonna be clobbering the thing, at least make sure
 				// we aren't trying to do it twice
 				if(tna[x]["__doClobber__"]){
-					if(dojo.hostenv.ie_clobber_minimal_){
+					if(djConfig.ieClobberMinimal){
 						na.push(tna[x]);
 					}
-					delete this.clobberNodes[tna[x].__doClobber__];
 					/*
 					var pos = dojo.lang.find(this.clobberNodes, tna[x], true);
 					if(pos >= 0){
@@ -84,7 +81,7 @@ dojo_ie_clobber = new function(){
 		}
 		for(var i = na.length-1; i>=0; i=i-1){
 			var el = na[i];
-			if(dojo.hostenv.ie_clobber_minimal_){
+			if(djConfig.ieClobberMinimal){
 				for(var p in el.__clobberAttrs__){
 					// if(el.__clobberAttrs__[p] == "clobber"){
 					nukeProp(el, p);
@@ -95,18 +92,14 @@ dojo_ie_clobber = new function(){
 			}else{
 				for(var p = this.clobberArr.length-1; p>=0; p=p-1){
 					var ta = this.clobberArr[p];
-					try{
-						el[ta] = null;
-						el.removeAttribute(ta);
-						delete el[ta];
-					}catch(e){ /* squelch */ }
+					nukeAttr(el, ta);
 				}
 			}
 		}
 	}
 }
 
-if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(dojo.hostenv.ie_clobber_minimal_))){
+if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(djConfig.ieClobberMinimal))){
 	window.onunload = function(){
 		dojo_ie_clobber.clobber();
 		if((dojo["widget"])&&(dojo.widget["manager"])){
@@ -137,7 +130,7 @@ dojo.event.browser = new function(){
 	}
 
 	this.addClobberNode = function(node){
-		if(dojo.hostenv.ie_clobber_minimal_){
+		if(djConfig.ieClobberMinimal){
 			if(!node.__doClobber__) {
 				// dojo_ie_clobber.clobberNodes.push(node);
 				node.__doClobber__ = "clobber-"+clobberIdx++;
@@ -149,7 +142,7 @@ dojo.event.browser = new function(){
 
 	this.addClobberNodeAttrs = function(node, props){
 		this.addClobberNode(node);
-		if(dojo.hostenv.ie_clobber_minimal_){
+		if(djConfig.ieClobberMinimal){
 			for(var x=0; x<props.length; x++){
 				node.__clobberAttrs__[props[x]] = "clobber";
 			}
