@@ -22,8 +22,7 @@ if(typeof window == 'undefined'){
 
 // attempt to figure out the path to dojo if it isn't set in the config
 (function() {
-	if((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == ""))
-		&&(document && document.getElementsByTagName)){
+	if(((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == "")) &&(document && document.getElementsByTagName)){
 		var scripts = document.getElementsByTagName("script");
 		var rePkg = /(__package__|dojo)\.js$/i;
 		for(var i = 0; i < scripts.length; i++) {
