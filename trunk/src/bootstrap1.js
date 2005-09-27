@@ -243,7 +243,8 @@ dojo.hostenv = (function(){
 		libraryScriptUri: "",
 		parseWidgets: true,
 		iePreventClobber: false,
-		ieClobberMinimal: false
+		ieClobberMinimal: true,
+		preventBackButtonFix: true
 	};
 
 	if (typeof djConfig == "undefined") { djConfig = config; }
@@ -263,6 +264,7 @@ var djc = djConfig;
 	return {
 		// FIXME: why in the heck are we not just naming these the same as the
 		// values on djConfig and then allowing mixin?
+		/*
 		is_debug_: _def(djc, "isDebug", false),
 		base_script_uri_: _def(djc, "baseScriptUri", undefined),
 		base_relative_path_: _def(djc, "baseRelativePath", ""),
@@ -270,6 +272,7 @@ var djc = djConfig;
 		auto_build_widgets_: _def(djc, "parseWidgets", true),
 		ie_prevent_clobber_: _def(djc, "iePreventClobber", false),
 		ie_clobber_minimal_: _def(djc, "ieClobberMinimal", false),
+		*/
 		name_: '(unset)',
 		version_: '(unset)',
 		pkgFileName: "__package__",

@@ -4,6 +4,12 @@ dojo.require("dojo.io");
 dojo.require("dojo.lang");
 dojo.require("dojo.dom");
 
+try {
+	if((!djConfig.preventBackButtonFix)&&(!dojo.hostenv.post_load_)){
+		document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'iframe_history.html')+"'></iframe>");
+	}
+} catch (e) { }
+
 dojo.io.checkChildrenForFile = function(node){
 	var hasFile = false;
 	var inputs = node.getElementsByTagName("input");
@@ -363,7 +369,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			// are we performing a history action?
 			if( !kwArgs["formNode"]
 				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"] || kwArgs["watchForURL"])
-				&& (!window["djConfig"] && !window["djConfig"]["preventBackButtonFix"]) ) {
+				&& (!djConfig.preventBackButtonFix)) {
 				this.addToHistory(kwArgs);
 				return true;
 			}
