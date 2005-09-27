@@ -175,7 +175,7 @@ dojo.addOnLoad(Picker, "init");
 				</div>
 				<div class="content" id="dl-sink">
 					<div class="download"><a href="http://download.dojotoolkit.org/release-0.1.0/dojo-0.1.0-kitchen_sink.zip">Download 0.1 (zip)</a></div>
-					<p>Get every piece of Dojo packed into one file. Not for the faint of heart.</p>
+					<p>This build includes all of the Dojo libraries rolled into a single file so you don't have to think about what to include. A great way to get up-and-running fast.</p>
 				</div>
 			</td>
 			</tr></tbody>
