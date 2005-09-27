@@ -57,7 +57,6 @@ dojo.string.isBlank = function (str) {
 dojo.string.encodeAscii = function(str) {
 	if(!dojo.lang.isString(str)) { return str; }
 	var ret = "";
-	str = str.replace(/ /g, "+");
 	var value = escape(str);
 	var match, re = /%u([0-9A-F]{4})/i;
 	while((match = value.match(re))) {
