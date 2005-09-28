@@ -128,10 +128,54 @@ dojo.widget.HTMLToolbar = function() {
 	this.widgetType = "Toolbar";
 	this.isContainer = true;
 
-	this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode"></div>';
+	this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></div>',
+	//this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on"></div>';
+
+	// given a node, tries to find it's toolbar item
+	this._getItem = function(node) {
+		var start = new Date();
+		var widget = null;
+		while(node && node != this.domNode) {
+			if(dojo.html.hasClass(node, "toolbarItem")) {
+				var widgets = dojo.widget.manager.getWidgetsByFilter(function(w) { return w.domNode == node; });
+				if(widgets.length == 1) {
+					widget = widgets[0];
+					break;
+				} else if(widgets.length > 1) {
+					dojo.raise("Toolbar._getItem: More than one widget matches the node");
+				}
+			}
+			node = node.parentNode;
+		}
+		return widget;
+	}
+
+	this._onmouseover = function(e) {
+		var widget = this._getItem(e.target);
+		if(widget && widget._onmouseover) { widget._onmouseover(e); }
+	}
+
+	this._onmouseout = function(e) {
+		var widget = this._getItem(e.target);
+		if(widget && widget._onmouseout) { widget._onmouseout(e); }
+	}
+
+	this._onclick = function(e) {
+		var widget = this._getItem(e.target);
+		if(widget && widget._onclick) { widget._onclick(e); }
+	}
+
+	this._onmousedown = function(e) {
+		var widget = this._getItem(e.target);
+		if(widget && widget._onmousedown) { widget._onmousedown(e); }
+	}
+
+	this._onmouseup = function(e) {
+		var widget = this._getItem(e.target);
+		if(widget && widget._onmouseup) { widget._onmouseup(e); }
+	}
 
 	var oldAddChild = this.addChild;
-	var ddd=0;
 	this.addChild = function(item, pos, props) {
 		var widget = dojo.widget.ToolbarItem.make(item, null, props);
 		var ret = oldAddChild.call(this, widget, null, pos, null);
@@ -265,7 +309,7 @@ dojo.widget.ToolbarItem = function() {
 dojo.inherits(dojo.widget.ToolbarItem, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.ToolbarItem, {
-	templateString: '<span unselectable="on" class="toolbarItem" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></span>',
+	templateString: '<span unselectable="on" class="toolbarItem"></span>',
 
 	_name: null,
 	getName: function() { return this._name; },
@@ -696,6 +740,10 @@ dojo.widget.HTMLToolbarSeparator = function() {
 			this.domNode.appendChild(this._icon.getNode());
 		}
 	}
+
+	// don't want events!
+	this._onmouseover = this._onmouseout = this._onclick
+		= this._onmousedown = this._onmouseup = null;
 }
 dojo.inherits(dojo.widget.HTMLToolbarSeparator, dojo.widget.ToolbarItem);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSeparator");
@@ -792,6 +840,10 @@ dojo.widget.HTMLToolbarSelect = function() {
 		this.selectBox.disabled = !this._enabled;
 		return ret;
 	}
+
+	// don't want events!
+	this._onmouseover = this._onmouseout = this._onclick
+		= this._onmousedown = this._onmouseup = null;
 }
 dojo.inherits(dojo.widget.HTMLToolbarSelect, dojo.widget.ToolbarItem);
 dojo.widget.tags.addParseTreeHandler("dojo:toolbarSelect");
