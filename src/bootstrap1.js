@@ -361,14 +361,15 @@ dojo.hostenv.getBaseScriptUri = function(){
 	if(djConfig.baseScriptUri.length){ 
 		return djConfig.baseScriptUri;
 	}
-	var uri = djConfig.baseScriptUri;
+	var uri = djConfig.libraryScriptUri;
+	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
+	/*
 	if((!uri)||(!uri.length)){
 		uri = djConfig.libraryScriptUri = this.getLibraryScriptUri();
 		if((!uri)||(!uri.length)){
 			dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
 		}
 	}
-	/*
 	if (!djConfig.libraryScriptUri) {
 		djConfig.libraryScriptUri = this.getLibraryScriptUri();
 	}
