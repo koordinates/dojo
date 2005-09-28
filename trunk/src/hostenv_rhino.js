@@ -159,6 +159,7 @@ function readText(uri){
 }
 
 // call this now because later we may not be on the top of the stack
-if (!dojo.hostenv.library_script_uri_) dojo.hostenv.library_script_uri_ = dj_rhino_current_script_via_java(1);
-
+if(!djConfig.libraryScriptUri.length){
+	djConfig.libraryScriptUri = dj_rhino_current_script_via_java(1);
+}
 
