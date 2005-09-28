@@ -219,62 +219,38 @@ dojo.hostenv.println = function (line) {
 	}
 }
 
-// dj_addNodeEvtHdlr_clobberArr = [];
 function dj_addNodeEvtHdlr (node, evtName, fp, capture){
-	/*
-	if(dojo.render.html.ie){
-		dj_addNodeEvtHdlr_clobberArr.push([node, 'on' + evtName, fp]);
-		node.attachEvent("on"+evtName, fp);
-	}else{
-	*/
-		var oldHandler = node["on"+evtName] || function(){};
-		node["on"+evtName] = function(){
-			fp.apply(node, arguments);
-			oldHandler.apply(node, arguments);
-		}
-	//}
+	var oldHandler = node["on"+evtName] || function(){};
+	node["on"+evtName] = function(){
+		fp.apply(node, arguments);
+		oldHandler.apply(node, arguments);
+	}
 	return true;
 }
 
-/*
-dj_addNodeEvtHdlr.clobber = function(){
-	var i;
-	var ca = dj_addNodeEvtHdlr_clobberArr;
-	for(i=ca.length-1; i>=0; i=i-1){
-		var ae_args = ca[i];
-		if(ae_args[0]["detachEvent"]){
-			ae_args[0].detachEvent(ae_args[1], ae_args[2]);
-		}
-		try{ ae_args[0][ae_args[1]] = null; }catch(e){}
-	}
-	dj_addNodeEvtHdlr_clobberArr = [];
-	alert("clobered!");
-}
-*/
-
 dj_addNodeEvtHdlr(window, "load", function(){
-	if(dojo.render.html.ie) {
+	if(dojo.render.html.ie){
 		dojo.hostenv.makeWidgets();
 	}
 	dojo.hostenv.modulesLoaded();
 });
 
 dojo.hostenv.makeWidgets = function(){
-	if((dojo.hostenv.auto_build_widgets_)||(dojo.hostenv.searchIds.length > 0)){
+	if((djConfig.parseWidgets)||(djConfig.searchIds.length > 0)){
 		if(dojo.evalObjPath("dojo.widget.Parse")){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
 			// IE is such a tremendous peice of shit.
 			try{
 				var parser = new dojo.xml.Parse();
-				var sids = dojo.hostenv.searchIds;
+				var sids = djConfig.searchIds;
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
 						if (!document.getElementById(sids[x])) { continue; }
 						var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
 						dojo.widget.getParser().createComponents(frag);
 					}
-				}else if(dojo.hostenv.auto_build_widgets_){
+				}else if(djConfig.parseWidgets){
 					var frag  = parser.parseElement(document.body, null, true);
 					dojo.widget.getParser().createComponents(frag);
 				}

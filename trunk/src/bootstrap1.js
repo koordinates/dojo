@@ -245,7 +245,9 @@ dojo.hostenv = (function(){
 		parseWidgets: true,
 		iePreventClobber: false,
 		ieClobberMinimal: true,
-		preventBackButtonFix: true
+		preventBackButtonFix: true,
+		searchIds: [],
+		parseWidgets: true
 	};
 
 	if (typeof djConfig == "undefined") { djConfig = config; }
@@ -356,13 +358,24 @@ var djc = djConfig;
  * It is either the empty string, or a non-empty string ending in '/'.
  */
 dojo.hostenv.getBaseScriptUri = function(){
-	if((!dj_undef("baseScriptUri", djConfig)&&(djConfig.baseScriptUri.length != 0))){ return djConfig.baseScriptUri; }
+	if(djConfig.baseScriptUri.length){ 
+		return djConfig.baseScriptUri;
+	}
+	var uri = djConfig.baseScriptUri;
+	if((!uri)||(!uri.length)){
+		uri = djConfig.libraryScriptUri = this.getLibraryScriptUri();
+		if((!uri)||(!uri.length)){
+			dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
+		}
+	}
+	/*
 	if (!djConfig.libraryScriptUri) {
 		djConfig.libraryScriptUri = this.getLibraryScriptUri();
 	}
 	var uri = djConfig.libraryScriptUri;
 
 	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
+	*/
 
 	var lastslash = uri.lastIndexOf('/');
 	djConfig.baseScriptUri = djConfig.baseRelativePath;
