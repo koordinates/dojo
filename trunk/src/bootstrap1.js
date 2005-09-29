@@ -242,7 +242,6 @@ dojo.hostenv = (function(){
 		baseScriptUri: "",
 		baseRelativePath: "",
 		libraryScriptUri: "",
-		parseWidgets: true,
 		iePreventClobber: false,
 		ieClobberMinimal: true,
 		preventBackButtonFix: true,
