@@ -132,11 +132,19 @@ dojo.widget.HtmlDialog = function() {
 			case "fade":
 				this.bg.style.display = "block";
 				this.domNode.style.display = "block";
-				dojo.fx.fade(this.domNode, this.effectDuration, 0, 1);
+				var _this = this;
+				dojo.fx.fade(this.domNode, this.effectDuration, 0, 1, function(node) {
+					if(dojo.lang.isFunction(_this.onShow)) {
+						_this.onShow(node);
+					}
+				});
 				break;
 			default:
 				this.bg.style.display = "block";
 				this.domNode.style.display = "block";
+				if(dojo.lang.isFunction(this.onShow)) {
+					this.onShow(node);
+				}
 				break;
 		}
 	}
@@ -145,11 +153,20 @@ dojo.widget.HtmlDialog = function() {
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "none";
-				dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) { node.style.display = "none"; });
+				var _this = this;
+				dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) {
+					node.style.display = "none";
+					if(dojo.lang.isFunction(_this.onHide)) {
+						_this.onHide(node);
+					}
+				});
 				break;
 			default:
 				this.bg.style.display = "none";
 				this.domNode.style.display = "none";
+				if(dojo.lang.isFunction(this.onHide)) {
+					this.onHide(node);
+				}
 				break;
 		}
 	}
