@@ -813,10 +813,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
 		
 		// line height is squashed for iframes
-		if (this.iframe) { this.domNode.style.lineHeight = null; }
+		if(this.iframe){ this.domNode.style.lineHeight = null; }
 		
-		if (dojo.render.html.ie && !this.object) {
+		if((dojo.render.html.ie)&&(!this.object)){
+			// alert(this.editNode.outerHTML);
 			dojo.event.browser.clean(this.editNode);
+			this.editNode = null;
 		}
 		dojo.dom.removeChildren(this.domNode);
 		if (save) {
@@ -834,19 +836,28 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	destroy: function () {
-		if (this.interval) { clearInterval(this.interval); }
+		if(this.interval){ clearInterval(this.interval); }
 	
 		// disconnect those listeners.
 		while (this._connected.length) {
 			this.disconnect(this._connected[0],
 				this._connected[1], this._connected[2]);
 		}
+
+		if(this.editNode){
+			dojo.event.browser.clean(this.editNode);
+			this.editNode = null;
+		}
+
+		dojo.event.browser.clean(this.domNode);
+		this.domNode = null;
+		this.window = null;
 	},
 	
 	_connected: [],
 	connect: function (targetObj, targetFunc, thisFunc) {
 		dojo.event.connect(targetObj, targetFunc, this, thisFunc);
-		this._connected.push([targetObj, targetFunc, thisFunc]);	
+		// this._connected.push([targetObj, targetFunc, thisFunc]);	
 	},
 	
 	disconnect: function (targetObj, targetFunc, thisFunc) {

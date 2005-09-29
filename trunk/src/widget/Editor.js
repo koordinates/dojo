@@ -113,11 +113,16 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	buildRendering: function(args, frag) {
 		// get the node from args/frag
 		var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		this.setRichText(dojo.widget.fromScript(this._richTextType, {}, node));
+		var trt = dojo.widget.fromScript(this._richTextType, {}, node)
+		var _this = this;
+		// this appears to fix a weird timing bug on Safari
+		setTimeout(function(){
+			_this.setRichText(trt);
 
-		this.initToolbar();
+			_this.initToolbar();
 
-		this.fillInTemplate(args, frag);
+			_this.fillInTemplate(args, frag);
+		}, 0);
 	},
 
 	setRichText: function(richText) {
@@ -388,6 +393,7 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	onCancel: null
 });
 
+/*
 function dontRunMe() {
 function createToolbar() {
 	tick("createToolbar");
@@ -419,10 +425,9 @@ function createToolbar() {
 	tb.addChild("|");
 	tock("ct-init");
 
-	/* toolbar layout (2 rows):
-	 * Save Cancel | WikiWord | Link Img | Table
-	 * Heading FontFace | B I U | Alignment | OL UL < > | FG BG
-	**/
+	// toolbar layout (2 rows):
+	// Save Cancel | WikiWord | Link Img | Table
+	// Heading FontFace | B I U | Alignment | OL UL < > | FG BG
 	var rows = [
 		["save", "cancel", "|", "wikiword", "|", "createlink", "insertimage", "|", "table"],
 		["formatBlock", "font", "|", "bold", "italic", "underline", "|", "justification", "|", "ol", "ul", "forecolor", "hilitecolor"]
@@ -531,3 +536,4 @@ function createWysiwyg(node) {
 }
 
 }
+*/
