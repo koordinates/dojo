@@ -350,6 +350,31 @@ dojo.io.XMLHTTPTransport = new function(){
 		this.historyStack.push(last);
 	}
 
+	this.inFlight = [];
+	this.inFlightTimer = null;
+
+	this.startWatchingInFlight = function(){
+		if(!this.inFlightTimer){
+			this.inFlightTimer = setInterval("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
+		}
+	}
+
+	this.watchInFlight = function(){
+		for(var x=this.inFlight.length-1; x>=0; x--){
+			var tif = this.inFlight[x];
+			if(!tif){ this.inFlight.splice(x, 1); continue; }
+			if(4==tif.http.readyState){
+				// remove it so we can clean refs
+				doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
+				this.inFlight.splice(x, 1);
+				if(this.inFlight.length == 0){
+					clearInterval(this.inFlightTimer);
+					this.inFlightTimer = null;
+				}
+			} // FIXME: need to implement a timeout param here!
+		}
+	}
+
 	var hasXmlHttp = dojo.hostenv.getXmlhttpObject() ? true : false;
 	this.canHandle = function(kwArgs){
 		// canHandle just tells dojo.io.bind() if this is a good transport to
@@ -402,6 +427,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			this.addToHistory(kwArgs);
 		}
 
+		// kwArgs.Connection = "close";
+
 		var async = kwArgs["sync"] ? false : true;
 
 		var useCache = kwArgs["useCache"] == true ||
@@ -422,13 +449,15 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		// build a handler function that calls back to the handler obj
 		if(async){
-			http.onreadystatechange = function(){
-				if(4==http.readyState){
-					if(received){ return; } // Opera 7.6 is foo-bar'd
-					received = true;
-					doLoad(kwArgs, http, url, query, useCache);
-				}
-			}
+			// FIXME: setting up this callback handler leaks on IE!!!
+			this.inFlight.push({
+				"req":		kwArgs,
+				"http":		http,
+				"url":		url,
+				"query":	query,
+				"useCache":	useCache
+			});
+			this.startWatchingInFlight();
 		}
 
 		if(kwArgs.method.toLowerCase() == "post"){
