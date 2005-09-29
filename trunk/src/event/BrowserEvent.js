@@ -54,48 +54,45 @@ dojo_ie_clobber = new function(){
 		}
 
 		var na;
+		var tna;
 		if(nodeRef){
-			var tna = nodeRef.getElementsByTagName("*");
+			tna = nodeRef.getElementsByTagName("*");
 			na = [nodeRef];
 			for(var x=0; x<tna.length; x++){
 				if(!djConfig.ieClobberMinimal){
 					na.push(tna[x]);
-				}
-				// if we're gonna be clobbering the thing, at least make sure
-				// we aren't trying to do it twice
-				if(tna[x]["__doClobber__"]){
-					if(djConfig.ieClobberMinimal){
+				}else{
+					// if we're gonna be clobbering the thing, at least make sure
+					// we aren't trying to do it twice
+					if(tna[x]["__doClobber__"]){
 						na.push(tna[x]);
 					}
-					/*
-					var pos = dojo.lang.find(this.clobberNodes, tna[x], true);
-					if(pos >= 0){
-						this.clobberNodes.splice(pos, 1);
-					}
-					*/
 				}
 			}
 		}else{
 			try{ window.onload = null; }catch(e){}
 			na = (this.clobberNodes.length) ? this.clobberNodes : document.all;
 		}
+		tna = null;
+		var basis = {};
 		for(var i = na.length-1; i>=0; i=i-1){
 			var el = na[i];
 			if(djConfig.ieClobberMinimal){
-				for(var p in el.__clobberAttrs__){
-					// if(el.__clobberAttrs__[p] == "clobber"){
-					nukeProp(el, p);
-					// }
+				if(el["__clobberAttrs__"]){
+					for(var j=0; j<el.__clobberAttrs__.length; j++){
+						nukeProp(el, el.__clobberAttrs__[j]);
+					}
+					nukeProp(el, "__clobberAttrs__");
+					nukeProp(el, "__doClobber__");
 				}
-				nukeProp(el, "__clobberAttrs__");
-				nukeProp(el, "__doClobber__");
 			}else{
 				for(var p = this.clobberArr.length-1; p>=0; p=p-1){
 					var ta = this.clobberArr[p];
-					nukeAttr(el, ta);
+					nukeProp(el, ta);
 				}
 			}
 		}
+		na = null;
 	}
 }
 
@@ -107,9 +104,10 @@ if((dojo.render.html.ie)&&((!dojo.hostenv.ie_prevent_clobber_)||(djConfig.ieClob
 				dojo.widget.manager.destroyAll();
 			}
 		}catch(e){}
-		CollectGarbage();
 		try{ window.onload = null; }catch(e){}
 		try{ window.onunload = null; }catch(e){}
+		dojo_ie_clobber.clobberNodes = [];
+		// CollectGarbage();
 	}
 }
 
@@ -136,10 +134,12 @@ dojo.event.browser = new function(){
 	this.addClobberNode = function(node){
 		if(djConfig.ieClobberMinimal){
 			if(!node.__doClobber__) {
-				// dojo_ie_clobber.clobberNodes.push(node);
-				node.__doClobber__ = "clobber-"+clobberIdx++;
-				dojo_ie_clobber.clobberNodes[node.__doClobber__] = node;
-				node.__clobberAttrs__ = {};
+				node.__doClobber__ = true;
+				dojo_ie_clobber.clobberNodes.push(node);
+				// this might not be the most efficient thing to do, but it's
+				// much less error prone than other approaches which were
+				// previously tried and failed
+				node.__clobberAttrs__ = [];
 			}
 		}
 	}
@@ -148,7 +148,7 @@ dojo.event.browser = new function(){
 		this.addClobberNode(node);
 		if(djConfig.ieClobberMinimal){
 			for(var x=0; x<props.length; x++){
-				node.__clobberAttrs__[props[x]] = "clobber";
+				node.__clobberAttrs__.push(props[x]);
 			}
 		}else{
 			this.addClobberAttrs.apply(this, props);
@@ -204,8 +204,7 @@ dojo.event.browser = new function(){
 				node[onEvtName]=newfp;
 			}
 			if(dojo.render.html.ie){
-				this.addClobberAttr(onEvtName);
-				this.addClobberNode(node);
+				this.addClobberNodeAttrs(node, [onEvtName]);
 			}
 			return newfp;
 		}
