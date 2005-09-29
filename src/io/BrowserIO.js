@@ -46,7 +46,7 @@ dojo.io.encodeForm = function(formNode, encoding){
 			for(var j = 0; j < elm.options.length; j++) {
 				values.push(name + "=" + enc(elm.options[j].value));
 			}
-		}else if(dojo.lang.inArray(type, ["radio", "checked"])){
+		}else if(dojo.lang.inArray(type, ["radio", "checkbox"])){
 			if(elm.checked){
 				values.push(name + "=" + enc(elm.value));
 			}
