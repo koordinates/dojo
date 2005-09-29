@@ -244,7 +244,7 @@ dojo.widget.HTMLToolbar = function() {
 		for(var i = 0; i < items.length; i++) {
 			var child = this.getItem(items[i]);
 			if(child instanceof dojo.widget.ToolbarItem) {
-				child.enable();
+				child.enable(false, true);
 			}
 		}
 	}

@@ -30,8 +30,8 @@
 }
 
 .toolbarButton span {
-	line-height : 19px;
-	vertical-align : top;
+	line-height : 16px;
+	vertical-align : middle;
 }
 
 .toolbarButton.hover {
