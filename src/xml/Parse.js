@@ -69,7 +69,7 @@ dojo.xml.Parse = function(){
 		if((!optimizeForDojoML)||(tagName.substr(0,4).toLowerCase()=="dojo")){
 			var attributeSet = this.parseAttributes(node);
 			for(var attr in attributeSet){
-				if(!parsedNodeSet[tagName][attr]){
+				if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
 					parsedNodeSet[tagName][attr] = [];
 				}
 				parsedNodeSet[tagName][attr].push(attributeSet[attr]);
