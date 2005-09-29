@@ -186,3 +186,13 @@ dojo.lang.delayThese = function(farr, cb, delay, onend){
 		dojo.lang.delayThese(farr, cb, delay, onend);
 	}, delay);
 }
+
+dojo.lang.shallowCopy = function(obj) {
+	var ret = {}, key;
+	for(key in obj) {
+		if(dojo.lang.isUndefined(ret[key])) {
+			ret[key] = obj[key];
+		}
+	}
+	return ret;
+}
