@@ -818,7 +818,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if((dojo.render.html.ie)&&(!this.object)){
 			// alert(this.editNode.outerHTML);
 			dojo.event.browser.clean(this.editNode);
-			this.editNode = null;
+			// this.editNode = null;
 		}
 		dojo.dom.removeChildren(this.domNode);
 		if (save) {
@@ -846,7 +846,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 		if(this.editNode){
 			dojo.event.browser.clean(this.editNode);
-			this.editNode = null;
+			// this.editNode = null;
 		}
 
 		dojo.event.browser.clean(this.domNode);
