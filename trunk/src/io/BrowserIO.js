@@ -42,7 +42,7 @@ dojo.io.encodeForm = function(formNode, encoding){
 		var name = enc(elm.name);
 		var type = elm.type.toLowerCase();
 
-		if((type == "select")&&(elm.multiple)){
+		if(type == "select-multiple"){
 			for(var j = 0; j < elm.options.length; j++) {
 				values.push(name + "=" + enc(elm.options[j].value));
 			}
