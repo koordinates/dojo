@@ -12,7 +12,7 @@ dojo.widget.HtmlDialog = function() {
 
 	this.widgetType = "Dialog";
 
-	this.templateString = '<div class="dialog">'
+	this.templateString = '<div class="dojo-dialog">'
 		+ '<span dojoAttachPoint="tabStart" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
 		+ '<div dojoAttachPoint="content"></div>'
 		+ '<span dojoAttachPoint="tabEnd" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
@@ -156,6 +156,10 @@ dojo.widget.HtmlDialog = function() {
 
 	this.setCloseControl = function(node) {
 		dojo.event.connect(node, "onclick", this, "hide");
+	}
+
+	this.setShowControl = function(node) {
+		dojo.event.connect(node, "onclick", this, "show");
 	}
 }
 dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
