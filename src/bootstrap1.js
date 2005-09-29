@@ -471,7 +471,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	return ((ok)&&(this.findModule(module, false))) ? true : false;
 }
 
-dojo.loaded = function(){ dojo.debug("loaded"); }
+dojo.loaded = function(){ }
 
 dojo.hostenv.loaded = function(){
 	this.post_load_ = true;
@@ -504,7 +504,11 @@ dojo.hostenv.modulesLoaded = function(){
 			dojo.debug("files still in flight!");
 			return;
 		}
-		this.loaded();
+		if(typeof setTimeout == "object"){
+			setTimeout("dojo.hostenv.loaded();", 0);
+		}else{
+			dojo.hostenv.loaded();
+		}
 	}
 }
 
