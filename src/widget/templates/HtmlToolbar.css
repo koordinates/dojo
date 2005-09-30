@@ -3,6 +3,7 @@
 	background-color : #def;
 	color : ButtonText;
 	font : Menu;
+	background-image: url(images/toolbar-bg.gif);
 }
 
 .toolbar {
@@ -16,7 +17,7 @@
 	padding : 1px 2px;
 	margin : 0 2px 1px 0;
 	cursor : pointer;
-	border : 1px solid #def;
+	/* border : 1px solid #def; */
 }
 
 .toolbarItem.selected, .toolbarItem.down {
