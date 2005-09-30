@@ -8,7 +8,10 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.style");
 
 // used to save content
-document.write('<textarea id="dojo.widget.RichText.savedContent" style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
+try {
+	document.write('<textarea id="dojo.widget.RichText.savedContent" ' +
+		'style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
+} catch (e) { }
 
 dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 
@@ -67,8 +70,27 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (!this.isClosed) { this.close(); }
 		if (arguments.length == 1) { this.domNode = element; } // else unchanged
 		
-		var html = this.domNode[this.domNode.nodeName == "TEXTAREA" ? "value" : "innerHTML"];
-		
+		if (this.domNode.nodeName == "TEXTAREA") {
+			this.textarea = this.domNode;
+			var html = this.textarea.value;
+			this.domNode = document.createElement("div");
+			this.textarea.style.display = "none";
+			dojo.dom.insertBefore(this.domNode, this.textarea);
+			
+			if (this.textarea.form) {
+				this.connect(this.textarea.form, "onsubmit", "save");
+			}
+			
+			// dojo plucks our original domNode from the document so we need
+			// to go back and put ourselves back in
+			var editor = this;
+			dojo.event.connect(this, "postCreate", function () {
+				dojo.dom.insertAfter(editor.textarea, editor.domNode);
+			});
+		} else {
+			var html = this.domNode.innerHTML;
+		}
+				
 		this._oldHeight = dojo.style.getContentHeight(this.domNode);
 		this._oldWidth = dojo.style.getContentWidth(this.domNode);
 		
@@ -813,12 +835,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
 		
 		// line height is squashed for iframes
-		if(this.iframe){ this.domNode.style.lineHeight = null; }
+		if (this.iframe) { this.domNode.style.lineHeight = null; }
 		
-		if((dojo.render.html.ie)&&(!this.object)){
-			// alert(this.editNode.outerHTML);
+		if (dojo.render.html.ie && !this.object) {
 			dojo.event.browser.clean(this.editNode);
-			// this.editNode = null;
 		}
 		dojo.dom.removeChildren(this.domNode);
 		if (save) {
@@ -830,13 +850,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.domNode.appendChild(this.savedContent.firstChild);
 			}
 		}
+		delete this.savedContent;
 		
 		dojo.html.removeClass(this.domNode, "RichTextEditable");
 		return changed;
 	},
 	
 	destroy: function () {
-		if(this.interval){ clearInterval(this.interval); }
+		if (this.interval) { clearInterval(this.interval); }
 	
 		// disconnect those listeners.
 		while (this._connected.length) {
@@ -844,14 +865,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this._connected[1], this._connected[2]);
 		}
 
-		if(this.editNode){
-			dojo.event.browser.clean(this.editNode);
-			// this.editNode = null;
-		}
-
-		dojo.event.browser.clean(this.domNode);
-		this.domNode = null;
-		this.window = null;
+		if (this.editNode) { dojo.event.browser.clean(this.editNode); }
+		if (this.savedContent) { dojo.event.browser.clean(this.savedContent); }
 	},
 	
 	_connected: [],
@@ -860,6 +875,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		// this._connected.push([targetObj, targetFunc, thisFunc]);	
 	},
 	
+	// FIXME: below two functions do not work with the above line commented out
 	disconnect: function (targetObj, targetFunc, thisFunc) {
 		for (var i = 0; i < this._connected.length; i++) {
 			if (this._connected[0] == targetObj &&
