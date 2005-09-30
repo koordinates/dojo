@@ -27,7 +27,7 @@ dojo.collections.Dictionary = function(){
 		}
 		return false;
 	};
-	this.item = function(f){
+	this.item = function(k){
 		return items[k];
 	};
 	this.getIterator = function(){
