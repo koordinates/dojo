@@ -360,7 +360,7 @@ dojo.hostenv.getBaseScriptUri = function(){
 	if(djConfig.baseScriptUri.length){ 
 		return djConfig.baseScriptUri;
 	}
-	var uri = djConfig.libraryScriptUri;
+	var uri = new String(djConfig.libraryScriptUri||djConfig.baseRelativePath);
 	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
 	/*
 	if((!uri)||(!uri.length)){
@@ -438,22 +438,19 @@ dojo.hostenv.getDepsForEval = function(contents){
 	if(!contents){ contents = ""; }
 	// check to see if we need to load anything else first. Ugg.
 	var deps = [];
-	var tmp = contents.match( /dojo.hostenv.loadModule\(.*?\)/mg );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
-	}
-	tmp = contents.match( /dojo.hostenv.require\(.*?\)/mg );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
-	}
-	tmp = contents.match( /dojo.require\(.*?\)/mg );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
-	}
-	// FIXME: this seems to be borken on Rhino in some situations. ???
-	tmp = contents.match( /dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/gm );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+	var tmp;
+	var testExps = [
+		/dojo.hostenv.loadModule\(.*?\)/mg,
+		/dojo.hostenv.require\(.*?\)/mg,
+		/dojo.require\(.*?\)/mg,
+		/dojo.requireIf\(.*?\)/mg,
+		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
+	];
+	for(var i=0; i<testExps.length; i++){
+		tmp = contents.match(testExps[i]);
+		if(tmp){
+			for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+		}
 	}
 
 	return deps;
