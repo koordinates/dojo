@@ -206,12 +206,17 @@ dojo.style.getBorderBoxHeight = dojo.style.getInnerHeight;
 dojo.style.getMarginBoxHeight = dojo.style.getOuterHeight;
 dojo.style.setMarginBoxHeight = dojo.style.setOuterHeight;
 
-dojo.style.getTotalOffset = function (node, type){
+dojo.style.getTotalOffset = function (node, type, includeScroll){
 	var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
+	var typeScroll = (type=="top") ? "scrollTop" : "scrollLeft";
+	
 	var alt = (type=="top") ? "y" : "x";
 	var ret = 0;
 	if(node["offsetParent"]){
 		
+		if(includeScroll) {
+		  ret -= dojo.style.sumAncestorProperties(node, typeScroll);
+		}
 		// FIXME: this is known not to work sometimes on IE 5.x since nodes
 		// soemtimes need to be "tickled" before they will display their
 		// offset correctly
@@ -226,14 +231,28 @@ dojo.style.getTotalOffset = function (node, type){
 	return ret;
 }
 
-dojo.style.totalOffsetLeft = function (node){
-	return dojo.style.getTotalOffset(node, "left");
+dojo.style.sumAncestorProperties = function (node, prop) {
+	if (!node) { return 0; } // FIXME: throw an error?
+	
+	var retVal = 0;
+	while (node) {
+		var val = node[prop];
+		if (val) {
+			retVal += val - 0;
+		}
+		node = node.parentNode;
+	}
+	return retVal;
+}
+
+dojo.style.totalOffsetLeft = function (node, includeScroll){
+	return dojo.style.getTotalOffset(node, "left", includeScroll);
 }
 
 dojo.style.getAbsoluteX = dojo.style.totalOffsetLeft;
 
-dojo.style.totalOffsetTop = function (node){
-	return dojo.style.getTotalOffset(node, "top");
+dojo.style.totalOffsetTop = function (node, includeScroll){
+	return dojo.style.getTotalOffset(node, "top", includeScroll);
 }
 
 dojo.style.getAbsoluteY = dojo.style.totalOffsetTop;

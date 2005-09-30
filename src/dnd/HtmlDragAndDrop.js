@@ -41,17 +41,17 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	onDragStart: function (e){
 		dojo.html.clearSelection();
 		
-		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode),
-			left: dojo.style.getAbsoluteX(this.domNode)};
+		this.scrollOffset = {
+			top: dojo.html.getScrollTop(), // document.documentElement.scrollTop,
+			left: dojo.html.getScrollLeft() // document.documentElement.scrollLeft
+		};
+	
+		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode, true) + this.scrollOffset.top,
+			left: dojo.style.getAbsoluteX(this.domNode, true) + this.scrollOffset.left};
 		
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
 
-		this.scrollOffset = {
-			top: document.documentElement.scrollTop,
-			left: document.documentElement.scrollLeft
-		};
-	
 		this.dragClone = this.domNode.cloneNode(true);
 		//this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
 		
@@ -66,8 +66,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	},
 
 	updateDragOffset: function() {
-		var sTop = document.documentElement.scrollTop;
-		var sLeft = document.documentElement.scrollLeft;
+		var sTop = dojo.html.getScrollTop(); // document.documentElement.scrollTop;
+		var sLeft = dojo.html.getScrollLeft(); // document.documentElement.scrollLeft;
 		if(sTop != this.scrollOffset.top) {
 			var diff = sTop - this.scrollOffset.top;
 			this.dragOffset.top += diff;
