@@ -206,4 +206,4 @@ dojo.widget.getWidgetImplementationName = function () { return dojo.widget.manag
 
 dojo.widget.widgets = dojo.widget.manager.widgets;
 dojo.widget.widgetIds = dojo.widget.manager.widgetIds;
-dojo.widget.root = dojo.widget.root;
+dojo.widget.root = dojo.widget.manager.root;
