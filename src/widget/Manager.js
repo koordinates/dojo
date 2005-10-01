@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.Manager");
 dojo.require("dojo.lang.*");
+dojo.require("dojo.event");
 
 dojo.widget.manager = new function(){
 	this.widgets = [];
@@ -28,6 +29,12 @@ dojo.widget.manager = new function(){
 			dojo.debug("widget ID collision on ID: "+widget.widgetId);
 		}
 		this.widgetIds[widget.widgetId] = widget;
+		
+		// remove widgets on destruction
+		var _this = this;
+		dojo.event.connect(widget, "destroy", function () {
+			_this.removeById(widget.widgetId);
+		});
 	}
 
 	this.destroyAll = function(){
@@ -108,15 +115,7 @@ dojo.widget.manager = new function(){
 	this.getImplementation = function(widgetName, ctorObject, mixins){
 		// try and find a name for the widget
 		var impl = this.getImplementationName(widgetName);
-				
-		if(impl){
-//			var props = [];
-//			for (var prop in impl) { props.push(prop); }
-//			dojo.debug(props.join(", "));
-			var item = new impl(ctorObject);
-			//alert(impl+": "+item);
-			return item;
-		}
+		if (impl) { return new impl(ctorObject); }
 	}
 
 	this.getImplementationName = function(widgetName){
@@ -180,13 +179,31 @@ dojo.widget.manager = new function(){
 	// FIXME: does it even belong in this name space?
 	// NOTE: this method is implemented by DomWidget.js since not all
 	// hostenv's would have an implementation.
-	this.getWidgetFromPrimitive = function(baseRenderType){
+	/*this.getWidgetFromPrimitive = function(baseRenderType){
 		dj_unimplemented("dojo.widget.manager.getWidgetFromPrimitive");
 	}
 
 	this.getWidgetFromEvent = function(nativeEvt){
 		dj_unimplemented("dojo.widget.manager.getWidgetFromEvent");
-	}
+	}*/
 
 	// FIXME: what else?
 }
+
+
+// copy the methods from the default manager (this) to the widget namespace
+dojo.widget.getUniqueId = function () { return dojo.widget.manager.getUniqueId.apply(dojo.widget.manager, arguments); }
+dojo.widget.addWidget = function () { return dojo.widget.manager.add.apply(dojo.widget.manager, arguments); }
+dojo.widget.destroyAllWidgets = function () { return dojo.widget.manager.destroyAll.apply(dojo.widget.manager, arguments); }
+dojo.widget.removeWidget = function () { return dojo.widget.manager.remove.apply(dojo.widget.manager, arguments); }
+dojo.widget.removeWidgetById = function () { return dojo.widget.manager.removeById.apply(dojo.widget.manager, arguments); }
+dojo.widget.getWidgetById = function () { return dojo.widget.manager.getWidgetById.apply(dojo.widget.manager, arguments); }
+dojo.widget.getWidgetsByType = function () { return dojo.widget.manager.getWidgetsByType.apply(dojo.widget.manager, arguments); }
+dojo.widget.getWidgetsByFilter = function () { return dojo.widget.manager.getWidgetsByFilter.apply(dojo.widget.manager, arguments); }
+dojo.widget.registerWidgetPackage = function () { return dojo.widget.manager.registerWidgetPackage.apply(dojo.widget.manager, arguments); }
+dojo.widget.getWidgetImplementation = function () { return dojo.widget.manager.getImplementation.apply(dojo.widget.manager, arguments); }
+dojo.widget.getWidgetImplementationName = function () { return dojo.widget.manager.getImplementationName.apply(dojo.widget.manager, arguments); }
+
+dojo.widget.widgets = dojo.widget.manager.widgets;
+dojo.widget.widgetIds = dojo.widget.manager.widgetIds;
+dojo.widget.root = dojo.widget.root;
