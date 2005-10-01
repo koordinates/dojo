@@ -56,6 +56,12 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		for (var i = 0; i < funcs.length; i++) {
 			dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
 		}
+		
+		// backwards compatibility, needs to be removed
+		dojo.event.connect(this, "onKeyPressed", this, "afterKeyPress");
+		dojo.event.connect(this, "onKeyPress", this, "keyPress");
+		dojo.event.connect(this, "onKeyDown", this, "keyDown");
+		dojo.event.connect(this, "onKeyUp", this, "keyUp");
 	},
 
 	/**
@@ -133,8 +139,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}
 			this.domNode.appendChild(this.editNode);
 			
-			var events = ["onBlur", "onFocus", "keyPress",
-				"keyDown", "keyUp", "onClick"];
+			var events = ["onBlur", "onFocus", "onKeyPress",
+				"onKeyDown", "onKeyUp", "onClick"];
 			for (var i = 0; i < events.length; i++) {
 				this.connect(this.editNode, events[i].toLowerCase(), events[i]);
 			}
@@ -288,9 +294,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			
 				// safari can't handle key listeners, it kills the speed
 				var addListener = dojo.event.browser.addListener;
-				addListener(this.document, "keypress", hitch(this, "keyPress"));
-				addListener(this.document, "keydown", hitch(this, "keyDown"));
-				addListener(this.document, "keyup", hitch(this, "keyUp"));
+				addListener(this.document, "keypress", hitch(this, "onKeyPress"));
+				addListener(this.document, "keydown", hitch(this, "onKeyDown"));
+				addListener(this.document, "keyup", hitch(this, "onKeyUp"));
 				addListener(this.document, "click", hitch(this, "onClick"));
 			}
 
@@ -303,18 +309,18 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 
 	/** Fired on keydown */
-	keyDown: function (e) {
+	onKeyDown: function (e) {
 		// we need this event at the moment to get the events from control keys
 		// such as the backspace. It might be possible to add this to Dojo, so that
 		// keyPress events can be emulated by the keyDown and keyUp detection.
 	},
 	
 	/** Fired on keyup */
-	keyUp: function (e) {
+	onKeyUp: function (e) {
 	},
 	
 	/** Fired on keypress. */
-	keyPress: function (e) {
+	onKeyPress: function (e) {
 		// handle the various key events
 
 		var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
@@ -355,7 +361,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if (preventDefault) { e.preventDefault(); }
 
 		// function call after the character has been inserted
-		dojo.lang.setTimeout(this, this.afterKeyPress, 1, e);
+		dojo.lang.setTimeout(this, this.onKeyPressed, 1, e);
 	},
 	
 	/**
@@ -363,7 +369,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * is useful if action needs to be taken after text operations have
 	 * finished
 	 */
-	afterKeyPress: function (e) {
+	onKeyPressed: function (e) {
 		// Mozilla adds a single <p> with an embedded <br> when you hit enter once:
 		//   <p><br>\n</p>
 		// when you hit enter again it adds another <br> inside your enter
