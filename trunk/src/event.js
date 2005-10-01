@@ -1,5 +1,5 @@
 dojo.require("dojo.lang");
-dojo.provide("dojo.event.Event");
+dojo.provide("dojo.event");
 
 dojo.event = new function(){
 
@@ -499,6 +499,3 @@ dojo.event.MethodJoinPoint.prototype.removeAdvice = function(thisAdviceObj, this
 	}
 	return true;
 }
-
-// needed for package satisfaction
-dojo.provide("dojo.event.Event");

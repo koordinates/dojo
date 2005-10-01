@@ -1,5 +1,5 @@
 dojo.hostenv.conditionalLoadModule({
-	common: ["dojo.event.Event", "dojo.event.Topic"],
+	common: ["dojo.event", "dojo.event.topic"],
 	browser: ["dojo.event.BrowserEvent"]
 });
 dojo.hostenv.moduleLoaded("dojo.event.*");
