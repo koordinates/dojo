@@ -268,20 +268,24 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				return function () { return obj[meth].apply(obj, arguments); }
 			}
 			
-			var onBlur = hitch(this, "onBlur");
-			var doc = this.document;
-			var blurfp = dojo.event.browser.addListener(this.document, "blur", onBlur);
-			var unBlur = { 
-				unBlur: function(e){
-					dojo.event.browser.removeListener(doc, "blur", blurfp);
-				}
-			};
-			dojo.event.connect("before", this, "close", unBlur, "unBlur");
-			dojo.event.browser.addListener(this.document, "focus", hitch(this, "onFocus"));
-
 			if (dojo.render.html.safari) {
+				this.connect(this.editNode, "onblur", "onBlur");
+				this.connect(this.editNode, "onfocus", "onFocus");
+			
 				this.interval = setInterval(hitch(this, "onDisplayChanged"), 500);
 			} else if (dojo.render.html.mozilla) {
+
+				// We need to unhook the blur event listener on close as we
+				// can encounter a garunteed crash in FF if another event is
+				// also fired
+				var doc = this.document;
+				var blurfp = dojo.event.browser.addListener(this.document, "blur", hitch(this, "onBlur"));
+				var unBlur = { unBlur: function(e){
+						dojo.event.browser.removeListener(doc, "blur", blurfp);
+				} };
+				dojo.event.connect("before", this, "close", unBlur, "unBlur");
+				dojo.event.browser.addListener(this.document, "focus", hitch(this, "onFocus"));
+			
 				// safari can't handle key listeners, it kills the speed
 				var addListener = dojo.event.browser.addListener;
 				addListener(this.document, "keypress", hitch(this, "keyPress"));
@@ -386,8 +390,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 	onClick: function (e) { this.onDisplayChanged(e); },
 	
-	onBlur: function (e) {},
-	onFocus: function (e) {},
+	onBlur: function (e) { },
+	onFocus: function (e) { },
 
 	blur: function () {
 		if (this.iframe) { this.window.blur(); }
@@ -756,15 +760,18 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	placeCursorAtStart: function () {
-		if (this.window.getSelection &&
-			dojo.lang.isString(this.window.getSelection())) { return; } // safari
-		if (this.iframe) {
-			var range = this.document.createRange();
-			range.selectNode(this.editNode.firstChild);
-			range.collapse(true);
-			var selection = this.window.getSelection();
-			selection.removeAllRanges();
-			selection.addRange(range);
+		if (this.window.getSelection) {
+			var selection = this.window.getSelection;
+			if (selection.removeAllRanges) { // Mozilla			
+				var range = this.document.createRange();
+				range.selectNode(this.editNode.firstChild);
+				range.collapse(true);
+				var selection = this.window.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(range);
+			} else { // Safari
+				// not a great deal we can do
+			}
 		} else if (this.document.selection) { // IE
 			var range = this.document.body.createTextRange();
 			range.moveToElementText(this.editNode);
@@ -774,15 +781,18 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	placeCursorAtEnd: function () {
-		if (this.window.getSelection &&
-			dojo.lang.isString(this.window.getSelection())) { return; } // safari
-		if (this.iframe) {
-			var range = this.document.createRange();
-			range.selectNode(this.editNode.lastChild);
-			range.collapse(false);
-			var selection = this.window.getSelection();
-			selection.removeAllRanges();
-			selection.addRange(range);
+		if (this.window.getSelection) {
+			var selection = this.window.getSelection;
+			if (selection.removeAllRanges) { // Mozilla			
+				var range = this.document.createRange();
+				range.selectNode(this.editNode.lastChild);
+				range.collapse(false);
+				var selection = this.window.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(range);
+			} else { // Safari
+				// not a great deal we can do
+			}
 		} else if (this.document.selection) { // IE
 			var range = this.document.body.createTextRange();
 			range.moveToElementText(this.editNode);
@@ -830,12 +840,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * @return true if the contents has been modified, false otherwise
 	 */
 	close: function (save) {
-		this.isClosed = true;
+		if (this.isClosed) { return false; }
 		if (arguments.length == 0) { save = true; }
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
 		
 		// line height is squashed for iframes
 		if (this.iframe) { this.domNode.style.lineHeight = null; }
+		
+		if (this.interval) { clearInterval(this.interval); }
 		
 		if (dojo.render.html.ie && !this.object) {
 			dojo.event.browser.clean(this.editNode);
@@ -853,20 +865,18 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		delete this.savedContent;
 		
 		dojo.html.removeClass(this.domNode, "RichTextEditable");
+		this.isClosed = true;
 		return changed;
 	},
 	
 	destroy: function () {
-		if (this.interval) { clearInterval(this.interval); }
+		if (!this.isClosed) { this.close(false); }
 	
 		// disconnect those listeners.
 		while (this._connected.length) {
 			this.disconnect(this._connected[0],
 				this._connected[1], this._connected[2]);
 		}
-
-		if (this.editNode) { dojo.event.browser.clean(this.editNode); }
-		if (this.savedContent) { dojo.event.browser.clean(this.savedContent); }
 	},
 	
 	_connected: [],
