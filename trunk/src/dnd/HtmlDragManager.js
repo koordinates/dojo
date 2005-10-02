@@ -107,6 +107,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	onMouseDown: function(e){
 		if(this.disabled) { return; }
+		
+		// do not start drag involvement if the user is interacting with
+		// a form element.
+		switch(e.target.tagName.toLowerCase()) {
+			case "a": case "button": case "textarea":
+			case "input":
+				return;
+		}
+		
 		// find a selection object, if one is a parent of the source node
 		var ds = this.getDragSource(e);
 		if(!ds){ return; }
@@ -114,11 +123,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			this.selectedSources.push(ds);
 		}
 		
-		// We can't prevent the default action on all mousedown events
-		// inside of drag sources as it prevents user interaction with
-		// the contents. The selection needs to be cleared using another
-		// method once the drag has been confirmed to start
-		//e.preventDefault();
+		// WARNING: preventing the default action on all mousedown events
+		// prevents user interaction with the contents.
+		e.preventDefault();
 		
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
