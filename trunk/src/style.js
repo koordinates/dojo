@@ -263,25 +263,31 @@ dojo.style.styleSheet = null;
 // it assumes that you know the index of the cssRule that you want to add 
 // or remove, making it less than useful.  So we need something that can 
 // search for the selector that you you want to remove.
-dojo.style.insertCssRule = function (selector, declaration, index){
-	if(dojo.render.html.ie){
-		if(!dojo.style.styleSheet){
+dojo.style.insertCssRule = function (selector, declaration, index) {
+	if (!dojo.style.styleSheet) {
+		if (document.createStyleSheet) { // IE
 			dojo.style.styleSheet = document.createStyleSheet();
-		}
-		if(!index){
-			index = dojo.style.styleSheet.rules.length;
-		}
-		return dojo.style.styleSheet.addRule(selector, declaration, index);
-	}else if(document.styleSheets[0] && document.styleSheets[0].insertRule){
-		if(!dojo.style.styleSheet){
-			// FIXME: create a new style sheet document here
-		}
-		if(!index){
-			index = dojo.style.styleSheet.cssRules.length;
-		}
-		var rule = selector + "{" + declaration + "}"
-		return dojo.style.styleSheet.insertRule(rule, index);
+		} else if (document.styleSheets[0]) { // rest
+			// FIXME: should create a new style sheet here
+			// fall back on an exsiting style sheet
+			dojo.style.styleSheet = document.styleSheets[0];
+		} else { return null; } // fail
 	}
+
+	if (arguments.length < 3) { // index may == 0
+		if (dojo.style.styleSheet.cssRules) { // W3
+			index = dojo.style.styleSheet.cssRules.length;
+		} else if (dojo.style.styleSheet.rules) { // IE
+			index = dojo.style.styleSheet.rules.length;
+		} else { return null; } // fail
+	}
+
+	if (dojo.style.styleSheet.insertRule) { // W3
+		var rule = selector + " { " + declaration + " }";
+		return dojo.style.styleSheet.insertRule(rule, index);
+	} else if (dojo.style.styleSheet.addRule) { // IE
+		return dojo.style.styleSheet.addRule(selector, declaration, index);
+	} else { return null; } // fail
 }
 
 dojo.style.removeCssRule = function (index){
