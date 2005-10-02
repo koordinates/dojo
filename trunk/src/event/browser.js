@@ -228,6 +228,7 @@ dojo.event.browser = new function(){
 				KEY_PAUSE: 19,
 				KEY_CAPS_LOCK: 20,
 				KEY_ESCAPE: 27,
+				KEY_SPACE: 32,
 				KEY_PAGE_UP: 33,
 				KEY_PAGE_DOWN: 34,
 				KEY_END: 35,
