@@ -353,12 +353,13 @@ dojo.style.getBackgroundColor = function (node) {
 
 dojo.style.getComputedStyle = function (element, cssSelector, inValue) {
 	var value = inValue;
-	if(document.defaultView) { // gecko
-		value = document.defaultView.getComputedStyle(element, "").getPropertyValue(cssSelector);
-	} else if(element.currentStyle) { // ie
-		value = element.currentStyle[dojo.style.toCamelCase(cssSelector)];
-	} else if(element.style.getPropertyValue) { // dom spec
+	if (element.style.getPropertyValue) { // W3
 		value = element.style.getPropertyValue(cssSelector);
+	} else if (document.defaultView) { // gecko
+		value = document.defaultView.getComputedStyle(element, "")
+			.getPropertyValue(cssSelector);
+	} else if (element.currentStyle) { // IE
+		value = element.currentStyle[dojo.style.toCamelCase(cssSelector)];
 	}
 	return value;
 }
