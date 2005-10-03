@@ -9,18 +9,36 @@
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
+	dojo.require("dojo.math");
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.Button");
 </script>
 <script type="text/javascript">
+	function foo(){
+		dojo.debug("foo");
+	}
+
 	function init(){
-		// var start = new Date();
 		var start = new Date();
+		var tdb = dojo.widget.getWidgetById("testDojoButton");
+		for(var x = 0; x<100; x++){
+			var tcn = tdb.domNode.cloneNode(true)
+			document.body.appendChild(tcn);
+			tcn.innerHTML = "clone "+x;
+			dojo.event.connect(tcn, "onclick", "foo");
+		}
+		var copyTime = (new Date())-start;
+		dojo.debug("copying ", x, " nodes took ", copyTime, "ms");
+
+		start = new Date();
 		for(var x = 0; x<100; x++){
 			var button = dojo.widget.fromScript("Button", {label: "button "+x });
 			document.body.appendChild(button.domNode);
 		}
-		dj_debug("constructing ", x, " items took ", (new Date())-start, "ms");
+		var buildTime = (new Date())-start;
+		dojo.debug("constructing ", x, " items took ", buildTime, "ms");
+
+		dojo.debug("widgets are", dojo.math.round(buildTime/copyTime, 2), "times slower than raw DOM");
 	}
 
 	dojo.event.connect(dojo, "loaded", "init");
