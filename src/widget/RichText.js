@@ -834,7 +834,11 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	_saveContent: function (e) {
 		var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
-		saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.editNode.innerHTML;
+		saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getEditorContent();
+	},
+
+	getEditorContent: function(){
+		return this.editNode.innerHTML;
 	},
 	
 	/**
