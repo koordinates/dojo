@@ -38,4 +38,132 @@ dojo.svg.animations = dojo.svg.anim = new function(d){
 		try { d.documentElement.unpauseAnimations(); } catch(e){ }
 	};
 }(document);
+
+/**
+ *	signatures from dojo.style.
+ */
+//	there has to be a better way of just getting this without the overhead...
+dojo.svg.toCamelCase = function(selector){
+	var arr = selector.split('-'), cc = arr[0];
+	for(var i = 1; i < arr.length; i++) {
+		cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
+	}
+	return cc;		
+};
+dojo.svg.toSelectorCase = function (selector) {
+	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
+};
+dojo.svg.getStyle = function(node, cssSelector){
+	return document.defaultView.getComputedStyle(node, cssSelector);
+};
+dojo.svg.getNumericStyle = function(node, cssSelector){
+	return parseFloat(dojo.svg.getStyle(node, cssSelector));
+};
+
+//	we use the attribute over the style
+dojo.svg.getOpacity = function(node){
+	return Math.min(1.0, dojo.svg.getNumericStyle(node, "fill-opacity"));
+};
+dojo.svg.setOpacity = function(node, opacity){
+	node.setAttributeNS(dojo.dom.xmlns.svg, "fill-opacity", opacity);
+	node.setAttributeNS(dojo.dom.xmlns.svg, "stroke-opacity", opacity);
+};
+dojo.svg.clearOpacity = function(node){
+	node.setAttributeNS(dojo.dom.xmlns.svg, "fill-opacity", "1.0");
+	node.setAttributeNS(dojo.dom.xmlns.svg, "stroke-opacity", "1.0");
+};
+
+//	this is ALL based on the spec, we'll account for variations later.
+dojo.svg.getCoords = function(node){
+	if (node.getBBox) {
+		var box = node.getBBox();
+		return { x: box.x, y: box.y };
+	}
+	return null;
+};
+dojo.svg.setCoords = function(node, coords){
+		var p = dojo.svg.getCoords();
+		if (!p) return;
+		var dx = p.x - coords.x;
+		var dy = p.y - coords.y;
+		dojo.svg.translate(node, dx, dy);
+	}
+};
+dojo.svg.getDimensions = function(node){
+	if (node.getBBox){
+		var box = node.getBBox();
+		return { width: box.width, height : box.height };
+	}
+	return null;
+};
+//	TODO
+dojo.svg.setDimensions = function(node, dim){
+	var box = dojo.svg.getDimensions(node);
+	
+};
+
+dojo.svg.translate = function(node, dx, dy){
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var t = node.ownerSVGElement.createSVGTransform();
+		t.setTranslate(dx, dy);
+		node.transform.baseVal.appendItem(t);
+	}
+};
+dojo.svg.scale = function(node, scaleX, scaleY){
+	if (!scaleY) var scaleY = scaleX;
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var t = node.ownerSVGElement.createSVGTransform();
+		t.setScale(scaleX, scaleY);
+		node.transform.baseVal.appendItem(t);
+	}
+};
+dojo.svg.rotate = function(node, ang, cx, cy){
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var t = node.ownerSVGElement.createSVGTransform();
+		if (!cx) t.setMatrix(t.matrix.rotate(ang));
+		else t.setRotate(ang, cx, cy);
+		node.transform.baseVal.appendItem(t);
+	}
+};
+dojo.svg.skew = function(node, ang, axis){
+	var dir = axis || "x";
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var t = node.ownerSVGElement.createSVGTransform();
+		if (dir != "x") t.setSkewY(ang);
+		else t.setSkewX(ang);
+		node.transform.baseVal.appendItem(t);
+	}
+};
+dojo.svg.flip = function(node, axis){
+	var dir = axis || "x";
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var t = node.ownerSVGElement.createSVGTransform();
+		t.setMatrix((dir != "x") ? t.matrix.flipY() : t.matrix.flipX());
+		node.transform.baseVal.appendItem(t);
+	}
+};
+dojo.svg.invert = function(node){
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var t = node.ownerSVGElement.createSVGTransform();
+		t.setMatrix(t.matrix.inverse());
+		node.transform.baseVal.appendItem(t);
+	}
+};
+dojo.svg.applyMatrix = function(node, a, b, c, d, e, f){
+	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+		var m;
+		if (b){
+			var m = node.ownerSVGElement.createSVGMatrix();
+			m.a = a;
+			m.b = b;
+			m.c = c;
+			m.d = d;
+			m.e = e;
+			m.f = f;
+		} else m = a;
+		var t = node.ownerSVGElement.createSVGTransform();
+		t.setMatrix(m);
+		node.transform.baseVal.appendItem(t);
+	}
+};
 // vim:ts=4:noet:tw=0:
