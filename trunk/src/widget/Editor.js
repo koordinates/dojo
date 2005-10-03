@@ -144,6 +144,7 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	},
 
 	initToolbar: function() {
+		// var tic = new Date();
 		if(this._toolbarContainer) { return; } // only create it once
 		this._toolbarContainer = dojo.widget.fromScript(this._toolbarContainerType);
 		var tb = this.addToolbar();
@@ -155,6 +156,7 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 			}
 		}
 		this.insertToolbar(this._toolbarContainer.domNode, this._richText.domNode);
+		// alert(new Date - tic);
 	},
 
 	// allow people to override this so they can make their own placement logic
@@ -175,7 +177,7 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 
 	addItem: function(item, tb, dontValidate) {
 		if(!tb) { tb = this._toolbars[0]; }
-		var cmd = item.getValue ? item.getValue() : item;
+		var cmd = ((item)&&(!dojo.lang.isUndefined(item["getValue"]))) ?  cmd = item["getValue"](): item;
 
 		var groups = dojo.widget.HtmlEditor.itemGroups;
 		if(item instanceof dojo.widget.ToolbarItem) {
@@ -219,13 +221,20 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 
 	enableToolbar: function() {
 		if(this._toolbarContainer) {
+			this._toolbarContainer.domNode.style.display = "";
 			this._toolbarContainer.enable();
 		}
 	},
 
-	disableToolbar: function() {
-		if(this._toolbarContainer) {
-			this._toolbarContainer.disable();
+	disableToolbar: function(hide){
+		if(hide){
+			if(this._toolbarContainer){
+				this._toolbarContainer.domNode.style.display = "none";
+			}
+		}else{
+			if(this._toolbarContainer){
+				this._toolbarContainer.disable();
+			}
 		}
 	},
 
@@ -379,8 +388,12 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 		}
 	},
 
-	onClose: function(save) {
-		this.disableToolbar();
+	getHtml: function(){
+		return this._richText.getEditorContent();
+	},
+
+	onClose: function(save, hide){
+		this.disableToolbar(hide);
 		if(save) {
 			this._fire("onSave");
 		} else {
