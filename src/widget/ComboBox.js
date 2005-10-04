@@ -165,7 +165,7 @@ dojo.widget.ComboBox = function(){
 	this.hideResultList = function(){}
 	this.selectNextResult = function(){}
 	this.selectPrevResult = function(){}
-	this.setSelectedRsult = function(){}
+	this.setSelectedResult = function(){}
 }
 
 dojo.inherits(dojo.widget.ComboBox, dojo.widget.Widget);
