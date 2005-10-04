@@ -16,7 +16,6 @@ dojo.hostenv.writeIncludes();
 <script type="text/javascript">
 
 function doit() {
-	dj_eval("alert('haha')");
 	var kw = {
 		url: "data.js",
 		mimetype: "text/javascript",
@@ -24,7 +23,9 @@ function doit() {
 			dojo.debug("http:", http);
 			dojo.debug("response:", http.responseText);
 			dojo.debug("state:", http.readyState);
+			dojo.debug("--------");
 			dojo.debug("js:", js);
+			dojo.debug("--------");
 			for(var key in js) {
 				dojo.debug(key, ":", js[key]);
 			}
