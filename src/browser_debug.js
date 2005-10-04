@@ -3,6 +3,7 @@ dojo.hostenv.loadedUris.push("../src/hostenv_browser.js");
 dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
 // over-write dj_eval to prevent actual loading of subsequent files
+var old_dj_eval = dj_eval;
 dj_eval = function(){ return true; }
 dojo.hostenv.oldLoadUri = dojo.hostenv.loadUri;
 dojo.hostenv.loadUri = function(uri){
@@ -57,4 +58,5 @@ dojo.hostenv.writeIncludes = function(){
 	for(var x=3; x<depList.length; x++){
 		document.write("<script type='text/javascript' src='"+depList[x]+"'></script>");
 	}
+	dj_eval = old_dj_eval;
 }
