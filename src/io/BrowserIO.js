@@ -131,12 +131,12 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
-		if(http.status==200 || (location.protocol=="file:" && http.status==0)) {
+		if((http.status==200)||(location.protocol=="file:" && http.status==0)) {
 			var ret;
-			if(kwArgs.method.toLowerCase() == "head") {
+			if(kwArgs.method.toLowerCase() == "head"){
 				var headers = http.getAllResponseHeaders();
 				ret = {};
-				ret.toString = function() { return headers; }
+				ret.toString = function(){ return headers; }
 				var values = headers.split(/[\r\n]+/g);
 				for(var i = 0; i < values.length; i++) {
 					var pair = values[i].match(/^([^:]+)\s*:\s*(.+)$/i);
@@ -144,26 +144,32 @@ dojo.io.XMLHTTPTransport = new function(){
 						ret[pair[1]] = pair[2];
 					}
 				}
-			} else if(kwArgs.mimetype == "text/javascript") {
-				ret = dj_eval(http.responseText);
-			} else if(kwArgs.mimetype == "application/xml" || kwArgs.mimetype == "text/xml") {
+			}else if(kwArgs.mimetype == "text/javascript"){
+				try{
+					ret = dj_eval(http.responseText);
+				}catch(e){
+					dojo.debug(e);
+					ret = false;
+				}
+			}else if((kwArgs.mimetype == "application/xml")||
+						(kwArgs.mimetype == "text/xml")){
 				ret = http.responseXML;
 				if(!ret || typeof ret == "string") {
 					ret = dojo.dom.createDocumentFromText(http.responseText);
 				}
-			} else {
+			}else{
 				ret = http.responseText;
 			}
 
-			if( useCache ) { // only cache successful responses
+			if(useCache){ // only cache successful responses
 				addToCache(url, query, kwArgs.method, http);
 			}
-			if( typeof kwArgs.load == "function" ) {
+			if(typeof kwArgs.load == "function"){
 				kwArgs.load("load", ret, http);
 			}
-		} else {
+		}else{
 			var errObj = new dojo.io.Error("XMLHttpTransport Error: "+http.status+" "+http.statusText);
-			if( typeof kwArgs.error == "function" ) {
+			if(typeof kwArgs.error == "function"){
 				kwArgs.error("error", errObj, http);
 			}
 		}
