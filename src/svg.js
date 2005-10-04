@@ -42,7 +42,6 @@ dojo.svg.animations = dojo.svg.anim = new function(d){
 /**
  *	signatures from dojo.style.
  */
-//	there has to be a better way of just getting this without the overhead...
 dojo.svg.toCamelCase = function(selector){
 	var arr = selector.split('-'), cc = arr[0];
 	for(var i = 1; i < arr.length; i++) {
@@ -60,20 +59,24 @@ dojo.svg.getNumericStyle = function(node, cssSelector){
 	return parseFloat(dojo.svg.getStyle(node, cssSelector));
 };
 
-//	we use the attribute over the style
+/**
+ *	alpha channel operations
+ */
 dojo.svg.getOpacity = function(node){
 	return Math.min(1.0, dojo.svg.getNumericStyle(node, "fill-opacity"));
 };
 dojo.svg.setOpacity = function(node, opacity){
-	node.setAttributeNS(dojo.dom.xmlns.svg, "fill-opacity", opacity);
-	node.setAttributeNS(dojo.dom.xmlns.svg, "stroke-opacity", opacity);
+	node.setAttributeNS(this.xmlns.svg, "fill-opacity", opacity);
+	node.setAttributeNS(this.xmlns.svg, "stroke-opacity", opacity);
 };
 dojo.svg.clearOpacity = function(node){
-	node.setAttributeNS(dojo.dom.xmlns.svg, "fill-opacity", "1.0");
-	node.setAttributeNS(dojo.dom.xmlns.svg, "stroke-opacity", "1.0");
+	node.setAttributeNS(this.xmlns.svg, "fill-opacity", "1.0");
+	node.setAttributeNS(this.xmlns.svg, "stroke-opacity", "1.0");
 };
 
-//	this is ALL based on the spec, we'll account for variations later.
+/**
+ *	Coordinates and dimensions.
+ */
 dojo.svg.getCoords = function(node){
 	if (node.getBBox) {
 		var box = node.getBBox();
@@ -96,12 +99,24 @@ dojo.svg.getDimensions = function(node){
 	}
 	return null;
 };
-//	TODO
 dojo.svg.setDimensions = function(node, dim){
-	var box = dojo.svg.getDimensions(node);
-	
+	//	will only support shape-based and container elements; path-based elements are ignored.
+	if (node.width){
+		node.width.baseVal.value = dim.width;
+		node.height.baseVal.vaule = dim.height;
+	}
+	else if (node.r){
+		node.r.baseVal.value = Math.min(dim.width, dim.height)/2;
+	}
+	else if (node.rx){
+		node.rx.baseVal.value = dim.width/2;
+		node.ry.baseVal.value = dim.height/2;
+	}
 };
 
+/**
+ *	Transformations.
+ */
 dojo.svg.translate = function(node, dx, dy){
 	if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
 		var t = node.ownerSVGElement.createSVGTransform();
@@ -164,6 +179,55 @@ dojo.svg.applyMatrix = function(node, a, b, c, d, e, f){
 		var t = node.ownerSVGElement.createSVGTransform();
 		t.setMatrix(m);
 		node.transform.baseVal.appendItem(t);
+	}
+};
+
+/**
+ *	Grouping and z-index operations.
+ */
+dojo.svg.group = function(nodes){
+	//	expect an array of nodes, attaches the group to the parent of the first node.
+	var p = nodes[0].parentNode;
+	var g = document.createElementNS(this.xmlns.svg, "g");
+	for (var i = 0; i < nodes.length; i++) g.appendChild(nodes[i]);
+	p.appendChild(g);
+	return g;
+};
+dojo.svg.ungroup = function(g){
+	//	puts the children of the group on the same level as group was.
+	var p = g.parentNode;
+	while (g.childNodes.length > 0) p.appendChild(g.childNodes[0]);
+	p.removeChild(g);
+};
+//	if the node is part of a group, return the group, else return null.
+dojo.svg.getGroup = function(node){
+	//	if the node is part of a group, return the group, else return null.
+	var a = this.getAncestors(node);
+	for (var i = 0; i < a.length; i++){
+		if (a[i].nodeType == this.ELEMENT_NODE && a[i].nodeName.toLowerCase() == "g")
+			return a[i];
+	}
+	return null;
+};
+dojo.svg.bringToFront = function(node){
+	var n = this.getGroup(node) || node;
+	n.ownerSVGElement.appendChild(n);
+};
+dojo.svg.sendToBack = function(node){
+	var n = this.getGroup(node) || node;
+	n.ownerSVGElement.insertBefore(n, n.ownerSVGElement.firstChild);
+};
+//	TODO: possibly push node up a level in the DOM if it's at the beginning or end of the childNodes list.
+dojo.svg.bringForward = function(node){
+	var n = this.getGroup(node) || node;
+	if (this.getLastChildElement(n.parentNode) != n){
+		this.insertAfter(n, this.getNextSiblingElement(n), true);
+	}
+};
+dojo.svg.sendBackward = function(node){
+	var n = this.getGroup(node) || node;
+	if (this.getFirstChildElement(n.parentNode) != n){
+		this.insertBefore(n, this.getPreviousSiblingElement(n), true);
 	}
 };
 // vim:ts=4:noet:tw=0:
