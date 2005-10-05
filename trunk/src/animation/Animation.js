@@ -20,9 +20,15 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 	// public properties
 	this.curve = curve;
 	this.duration = duration;
-	this.accel = accel;
 	this.repeatCount = repeatCount || 0;
 	this.animSequence_ = null;
+	if(accel) {
+		if(accel.getValue) this.accel = accel;
+		else {
+			var i = 0.35*accel+0.5;	// 0.15 <= i <= 0.85
+			this.accel = new dojo.math.curves.CatmullRom([[0], [i], [1]], 0.45);
+		}
+	}
 
 	// public events
 	this.onBegin = null;
@@ -143,6 +149,11 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 				percent = 100;
 			} else {
 				percent = step * 100;
+			}
+			
+			// Perform accelleration
+			if(_this.accel && _this.accel.getValue) {
+				step = _this.accel.getValue(step);
 			}
 
 			var e = new dojo.animation.AnimationEvent(_this, "animate", _this.curve.getValue(step),
