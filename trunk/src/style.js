@@ -337,11 +337,13 @@ dojo.style.getBackgroundColor = function (node) {
 	var color;
 	do{
 		color = dojo.style.getStyle(node, "background-color");
+		dojo.debug("node:", node, node.tagName, node.id);
+		dojo.debug("color:", color);
 		// Safari doesn't say "transparent"
 		if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
 		if(node == document.body) { node = null; break; }
 		node = node.parentNode;
-	}while(node && color == "transparent");
+	}while(node && dojo.lang.inArray(color, ["transparent", ""]));
 
 	if( color == "transparent" ) {
 		color = [255, 255, 255, 0];
@@ -355,11 +357,14 @@ dojo.style.getComputedStyle = function (element, cssSelector, inValue) {
 	var value = inValue;
 	if (element.style.getPropertyValue) { // W3
 		value = element.style.getPropertyValue(cssSelector);
-	} else if (document.defaultView) { // gecko
-		value = document.defaultView.getComputedStyle(element, "")
-			.getPropertyValue(cssSelector);
-	} else if (element.currentStyle) { // IE
-		value = element.currentStyle[dojo.style.toCamelCase(cssSelector)];
+	}
+	if(!value) {
+		if (document.defaultView) { // gecko
+			value = document.defaultView.getComputedStyle(element, "")
+				.getPropertyValue(cssSelector);
+		} else if (element.currentStyle) { // IE
+			value = element.currentStyle[dojo.style.toCamelCase(cssSelector)];
+		}
 	}
 	return value;
 }
