@@ -7,9 +7,6 @@ dojo.require("dojo.math.curves");
 /*
 Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js
-
-TODO:
-- Implement accelleration
 */
 
 dojo.animation = {};
@@ -23,8 +20,9 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
 	this.repeatCount = repeatCount || 0;
 	this.animSequence_ = null;
 	if(accel) {
-		if(accel.getValue) this.accel = accel;
-		else {
+		if(dojo.lang.isFunction(accel.getValue)) {
+			this.accel = accel;
+		} else {
 			var i = 0.35*accel+0.5;	// 0.15 <= i <= 0.85
 			this.accel = new dojo.math.curves.CatmullRom([[0], [i], [1]], 0.45);
 		}
