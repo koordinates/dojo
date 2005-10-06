@@ -18,7 +18,6 @@ dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 dojo.widget.HtmlRichText = function () {
 	dojo.widget.HtmlWidget.call(this);
 }
-
 dojo.inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlRichText, {
@@ -47,7 +46,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 /* Init
  *******/
 
-	fillInTemplate: function () {
+	fillInTemplate: function (){
 		this.open();
 
 		// add the formatting functions
@@ -396,8 +395,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 	onClick: function (e) { this.onDisplayChanged(e); },
 	
-	onBlur: function (e) { },
-	onFocus: function (e) { },
+	onBlur: function (e){ },
+	onFocus: function (e){ },
 
 	blur: function () {
 		if (this.iframe) { this.window.blur(); }
@@ -405,8 +404,11 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	focus: function () {
-		if (this.iframe) { this.window.focus(); }
-		else if (this.editNode) { this.editNode.focus(); }
+		if(this.iframe){
+			this.window.focus();
+		}else if(this.editNode){
+			this.editNode.focus();
+		}
 	},
 	
 	/** this event will be fired everytime the display context changes and the
@@ -849,22 +851,40 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 *             discarded.
 	 * @return true if the contents has been modified, false otherwise
 	 */
-	close: function (save) {
-		if (this.isClosed) { return false; }
+	close: function(save, force){
+		if(this.isClosed){return false; }
+
 		if (arguments.length == 0) { save = true; }
 		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
 		
 		// line height is squashed for iframes
-		if (this.iframe) { this.domNode.style.lineHeight = null; }
+		if (this.iframe){ this.domNode.style.lineHeight = null; }
 		
-		if (this.interval) { clearInterval(this.interval); }
+		if(this.interval){ clearInterval(this.interval); }
 		
-		if (dojo.render.html.ie && !this.object) {
+		if(dojo.render.html.ie && !this.object){
 			dojo.event.browser.clean(this.editNode);
 		}
-		dojo.dom.removeChildren(this.domNode);
-		if (save) {
-			this.domNode.innerHTML = this.editNode.innerHTML;
+		if(dojo.render.html.moz){
+			var ifr = this.domNode.firstChild;
+			ifr.style.display = "none";
+			/*
+			setTimeout(function(){
+				ifr.parentNode.removeChild(ifr);
+			}, 0);
+			*/
+		}else{
+			this.domNode.innerHTML = "";
+		}
+		// dojo.dom.removeChildren(this.domNode);
+		if(save){
+			if(dojo.render.html.moz){
+				var nc = document.createElement("span");
+				this.domNode.appendChild(nc);
+				nc.innerHTML = this.editNode.innerHTML;
+			}else{
+				this.domNode.innerHTML = this.editNode.innerHTML;
+			}
 			// kill listeners on the saved content
 			dojo.event.browser.clean(this.savedContent);
 		} else {
@@ -876,6 +896,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 		dojo.html.removeClass(this.domNode, "RichTextEditable");
 		this.isClosed = true;
+
 		return changed;
 	},
 	
