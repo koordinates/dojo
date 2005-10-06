@@ -1,5 +1,4 @@
 dojo.provide("dojo.profile");
-dojo.hostenv.moduleLoaded("dojo.profile.*");
 
 dojo.profile = new function(){
 	var profiles = {};
