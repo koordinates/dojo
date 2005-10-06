@@ -62,7 +62,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			left = this.dragOffset.left + e.clientX + "px";
 		}
 		dojo.style.setOpacity(this.dragClone, 0.5);
-		document.body.appendChild(this.dragClone);
+		dojo.html.body().appendChild(this.dragClone);
 	},
 
 	updateDragOffset: function() {
@@ -157,8 +157,8 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	},
 	
 	_getNodeUnderMouse: function (e) {
-		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-		var mousey = e.pageY || e.clientY + document.body.scrollTop;
+		var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
+		var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 
 		// find the child
 		for (var i = 0, child; i < this.childBoxes.length; i++) {
@@ -203,7 +203,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		}
 		
 		if (!this.dropIndicator.parentNode) {
-			document.body.appendChild(this.dropIndicator);
+			dojo.html.body().appendChild(this.dropIndicator);
 		}
 	},
 

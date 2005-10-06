@@ -243,12 +243,12 @@ dojo.widget.HtmlComboBox = function(){
 		dojo.event.connect(this.optionsListNode, "onclick", this, "selectOption");
 		dojo.event.kwConnect({
 			once: true,
-			srcObj: document.body,
+			srcObj: dojo.html.body(),
 			srcFunc: "onclick", 
 			adviceObj: this, 
 			adviceFunc: "hideResultList"
 		});
-		// dojo.event.connect(document.body, "onclick", this, "hideResultList");
+		// dojo.event.connect(dojo.html.body(), "onclick", this, "hideResultList");
 	}
 
 	this.selectOption = function(evt){
@@ -263,7 +263,7 @@ dojo.widget.HtmlComboBox = function(){
 		var tgt = evt.target;
 		while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 			tgt = tgt.parentNode;
-			if(tgt === document.body){
+			if(tgt === dojo.html.body()){
 				return false;
 			}
 		}
@@ -284,7 +284,7 @@ dojo.widget.HtmlComboBox = function(){
 
 	this.hideResultList = function(){
 		this.optionsListNode.style.display = "none";
-		dojo.event.disconnect(document.body, "onclick", this, "hideResultList");
+		dojo.event.disconnect(dojo.html.body(), "onclick", this, "hideResultList");
 		_result_list_open = false;
 		return;
 	}

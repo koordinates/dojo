@@ -56,7 +56,7 @@ dojo.widget.HtmlDropdownButtons = function() {
 					dojo.html.addClass(arrow, "disabled");
 				} else {
 					dojo.html.addClass(submenu, "dropdownButtonsMenu");
-					document.body.appendChild(submenu);
+					dojo.html.body().appendChild(submenu);
 					dojo.event.connect(arrow, "onmousedown", (function() {
 						var ar = arrow;
 						return function(e) {

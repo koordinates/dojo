@@ -3,6 +3,7 @@ dojo.provide("dojo.io.BrowserIO");
 dojo.require("dojo.io");
 dojo.require("dojo.lang");
 dojo.require("dojo.dom");
+dojo.require("dojo.html");
 
 try {
 	if((!djConfig.preventBackButtonFix)&&(!dojo.hostenv.post_load_)){
@@ -196,7 +197,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 		if(!this.bookmarkAnchor){
 			this.bookmarkAnchor = document.createElement("a");
-			document.body.appendChild(this.bookmarkAnchor);
+			dojo.html.body().appendChild(this.bookmarkAnchor);
 			this.bookmarkAnchor.style.display = "none";
 		}
 		if((!args["changeUrl"])||(dojo.render.html.ie)){

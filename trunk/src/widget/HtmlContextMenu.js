@@ -1,4 +1,5 @@
 dojo.provide("dojo.widget.HtmlContextMenu");
+dojo.require("dojo.html");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.ContextMenu");
 
@@ -35,7 +36,7 @@ dojo.widget.HtmlContextMenu = function(){
 	// FIXME: short term hack to show a single context menu in HTML
 	// FIXME: need to prevent the default context menu...
 	
-	var doc = document.documentElement  || document.body;
+	var doc = document.documentElement  || dojo.html.body();
 	dojo.event.connect(doc, "oncontextmenu", this, "onShow");
 }
 
