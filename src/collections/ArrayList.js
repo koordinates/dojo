@@ -28,10 +28,15 @@ dojo.collections.ArrayList = function(arr){
 		var i ;
 		while ((high - low) > 1) {
 			i = ((low + high) >>> 1) ;
-			if (key <= arr[i]) high = i ;
-			else low = i ;
+			if (key <= arr[i]) {
+				high = i ;
+			} else {
+				low = i ;
+			}
 		}
-		if (key == arr[high]) return high ;
+		if (key == arr[high]) {
+			return high ;
+		}
 		return -1 ;
 	};
 	this.clear = function(){
@@ -43,7 +48,9 @@ dojo.collections.ArrayList = function(arr){
 	};
 	this.contains = function(o){
 		for (var i = 0; i < items.length; i++){
-			if (items[i] == o) return true;
+			if (items[i] == o) {
+				return true;
+			}
 		}
 		return false;
 	};
@@ -52,7 +59,9 @@ dojo.collections.ArrayList = function(arr){
 	};
 	this.indexOf = function(o){
 		for (var i = 0; i < items.length; i++){
-			if (items[i] == o) return i;
+			if (items[i] == o) {
+				return i;
+			}
 		}
 		return -1;
 	};
@@ -65,7 +74,9 @@ dojo.collections.ArrayList = function(arr){
 	};
 	this.remove = function(o){
 		var i = this.indexOf(o);
-		if (i >=0) items.splice(i,1);
+		if (i >=0) {
+			items.splice(i,1);
+		}
 		this.count = items.length;
 	};
 	this.removeAt = function(i){

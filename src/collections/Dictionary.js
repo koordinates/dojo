@@ -6,7 +6,9 @@ dojo.collections.Dictionary = function(dictionary){
 	this.count = 0;
 	if (dictionary){
 		var e = dictionary.getIterator();
-		while (e.moveNext()) items[e.key] = new dojo.collections.DictionaryEntry(e.key, e.value);
+		while (e.moveNext()) {
+			 items[e.key] = new dojo.collections.DictionaryEntry(e.key, e.value);
+		}
 	}
 
 	this.add = function(k,v){
@@ -33,13 +35,17 @@ dojo.collections.Dictionary = function(dictionary){
 	this.getKeyList = function(){
 		var arr = [];
 		var e = this.getIterator();
-		while (e.moveNext()) arr.push(e.key);
+		while (e.moveNext()) {
+			arr.push(e.key);
+		}
 		return arr;
 	};
 	this.getValueList = function(){
 		var arr = [];
 		var e = this.getIterator();
-		while (e.moveNext()) arr.push(e.value);
+		while (e.moveNext()) {
+			arr.push(e.value);
+		}
 		return arr;
 	};
 	this.item = function(k){
