@@ -58,3 +58,6 @@ dojo.hostenv.provide = dojo.hostenv.startPackage;
 dojo.provide = function(){
 	dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
+
+// stub
+dojo.profile = { start: function(){}, end: function(){}, dump: function(){} };
