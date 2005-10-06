@@ -234,7 +234,7 @@ dojo.svg.sendBackward = function(node){
 dojo.dom.createNodesFromText = function (txt, wrap){
 	var docFrag;
 	if (window.parseXML) docFrag = parseXML(txt, window.document);
-	else if (window.DOMParser) docFrag = (new DOMParser()).parseFromString(s, "text/xml");
+	else if (window.DOMParser) docFrag = (new DOMParser()).parseFromString(txt, "text/xml");
 	else dojo.raise("dojo.dom.createNodesFromText: environment does not support XML parsing");
 	docFrag.normalize();
 	if(wrap){ 
