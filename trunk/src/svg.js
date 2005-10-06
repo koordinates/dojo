@@ -230,4 +230,30 @@ dojo.svg.sendBackward = function(node){
 		this.insertBefore(n, this.getPreviousSiblingElement(n), true);
 	}
 };
+//	modded to account for FF 1.5 mixed environment, will try ASVG first, then w3 standard.
+dojo.dom.createNodesFromText = function (txt, wrap){
+	var docFrag;
+	if (window.parseXML) docFrag = parseXML(txt, window.document);
+	else if (window.DOMParser) docFrag = (new DOMParser()).parseFromString(s, "text/xml");
+	else dojo.raise("dojo.dom.createNodesFromText: environment does not support XML parsing");
+	docFrag.normalize();
+	if(wrap){ 
+		var ret = [docFrag.firstChild.cloneNode(true)];
+		return ret;
+	}
+	var nodes = [];
+	for(var x=0; x<docFrag.childNodes.length; x++){
+		nodes.push(docFrag.childNodes.item(x).cloneNode(true));
+	}
+	// tn.style.display = "none";
+	return nodes;
+}
+
+// FIXME: this should be removed after 0.2 release
+if(!dojo.evalObjPath("dojo.dom.createNodesFromText")) {
+	dojo.dom.createNodesFromText = function() {
+		dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.svg.createNodesFromText instead");
+		dojo.svg.createNodesFromText.apply(dojo.html, arguments);
+	}
+}
 // vim:ts=4:noet:tw=0:

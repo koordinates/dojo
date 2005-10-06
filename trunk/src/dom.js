@@ -253,54 +253,6 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 	return null;
 }
 
-// FIXME: how do we account for mixed environments?
-if(dojo.render.html.capable) {
-	dojo.dom.createNodesFromText = function (txt, wrap){
-		var tn = document.createElement("div");
-		// tn.style.display = "none";
-		tn.style.visibility= "hidden";
-		document.getElementsByTagName("body")[0].appendChild(tn);
-		tn.innerHTML = txt;
-		tn.normalize();
-		if(wrap){ 
-			var ret = [];
-			// start hack
-			var fc = tn.firstChild;
-			ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
-			// end hack
-			// tn.style.display = "none";
-			document.getElementsByTagName("body")[0].removeChild(tn);
-			return ret;
-		}
-		var nodes = [];
-		for(var x=0; x<tn.childNodes.length; x++){
-			nodes.push(tn.childNodes[x].cloneNode(true));
-		}
-		tn.style.display = "none";
-		document.getElementsByTagName("body")[0].removeChild(tn);
-		return nodes;
-	}
-}else if(dojo.render.svg.capable){
-	//	modded to account for FF 1.5 mixed environment, will try ASVG first, then w3 standard.
-	dojo.dom.createNodesFromText = function (txt, wrap){
-		var docFrag;
-		if (window.parseXML) docFrag = parseXML(txt, window.document);
-		else if (window.DOMParser) docFrag = (new DOMParser()).parseFromString(s, "text/xml");
-		else dojo.raise("dojo.dom.createNodesFromText: environment does not support XML parsing");
-		docFrag.normalize();
-		if(wrap){ 
-			var ret = [docFrag.firstChild.cloneNode(true)];
-			return ret;
-		}
-		var nodes = [];
-		for(var x=0; x<docFrag.childNodes.length; x++){
-			nodes.push(docFrag.childNodes.item(x).cloneNode(true));
-		}
-		// tn.style.display = "none";
-		return nodes;
-	}
-}
-
 // referenced for backwards compatibility
 //this.extractRGB = function(color) { return dojo.graphics.color.extractRGB(color); }
 //this.hex2rgb = function(hex) { return dojo.graphics.color.hex2rgb(hex); }
