@@ -20,3 +20,12 @@ dojo.validate.isInteger = function(value) {
 dojo.validate.isValidNumber = function(value) {
 	return dojo.lang.isNumber(value);
 }
+
+dojo.validate.isEmailAdddress = function(value) {
+	// FIXME: very basic email validation
+	// strip out mailto: or <>
+	value = value.replace(/mailto:/i, "");
+	value = value.replace(/[<>]*/g, "");
+	//if((value.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) 
+	return (!value.match(/[^0-9a-zA-Z+-._@]+/g);
+}
