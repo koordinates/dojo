@@ -467,3 +467,37 @@ dojo.html.getPreferredStyleSheet = function () {
 dojo.html.body = function() {
 	return document.body || document.getElementsByTagName("body")[0];
 }
+
+dojo.html.createNodesFromText = function(txt, wrap) {
+	var tn = document.createElement("div");
+	// tn.style.display = "none";
+	tn.style.visibility= "hidden";
+	document.body.appendChild(tn);
+	tn.innerHTML = txt;
+	tn.normalize();
+	if(wrap){ 
+		var ret = [];
+		// start hack
+		var fc = tn.firstChild;
+		ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
+		// end hack
+		// tn.style.display = "none";
+		document.body.removeChild(tn);
+		return ret;
+	}
+	var nodes = [];
+	for(var x=0; x<tn.childNodes.length; x++){
+		nodes.push(tn.childNodes[x].cloneNode(true));
+	}
+	tn.style.display = "none";
+	document.body.removeChild(tn);
+	return nodes;
+}
+
+// FIXME: this should be removed after 0.2 release
+if(!dojo.evalObjPath("dojo.dom.createNodesFromText")) {
+	dojo.dom.createNodesFromText = function() {
+		dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.html.createNodesFromText instead");
+		dojo.html.createNodesFromText.apply(dojo.html, arguments);
+	}
+}
