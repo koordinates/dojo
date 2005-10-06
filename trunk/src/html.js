@@ -463,3 +463,7 @@ dojo.html.getPreferredStyleSheet = function () {
 	}
 	return null;
 }
+
+dojo.html.getBody = function() {
+	return document.body || document.getElementsByTagName("body")[0];
+}
