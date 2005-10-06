@@ -129,7 +129,7 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 	
 	showAt: function (x, y) {
 		with (this.domNode.style) { top = y + "px"; left = x + "px"; }
-		document.body.appendChild(this.domNode);
+		dojo.html.body().appendChild(this.domNode);
 	}
 
 });

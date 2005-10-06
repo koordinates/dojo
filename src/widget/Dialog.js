@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.HtmlDialog");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
-dojo.require("dojo.style");
+dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:dialog");
 
@@ -52,7 +52,7 @@ dojo.widget.HtmlDialog = function() {
 	}
 
 	this.postInitialize = function(args, frag, parentComp) {
-		document.body.appendChild(this.domNode);
+		dojo.html.body().appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(this.nodeRef) {
 			this.setContent(this.nodeRef);
@@ -67,7 +67,7 @@ dojo.widget.HtmlDialog = function() {
 			display = "none";
 		}
 		this.setBackgroundColor(this.bgColor);
-		document.body.appendChild(this.bg);
+		dojo.html.body().appendChild(this.bg);
 		with(this.domNode.style) {
 			position = "absolute";
 			zIndex = 999;
@@ -103,15 +103,15 @@ dojo.widget.HtmlDialog = function() {
 	}
 
 	this.sizeBackground = function() {
-		var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+		var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
 		this.bg.style.height = h + "px";
 	}
 
 	this.placeDialog = function() {
 		var scrollTop = document.documentElement.scrollTop;
 		var scrollLeft = document.documentElement.scrollLeft;
-		var W = document.documentElement.clientWidth || document.body.clientWidth || 0;
-		var H = document.documentElement.clientHeight || document.body.clientHeight || 0;
+		var W = document.documentElement.clientWidth || dojo.html.body().clientWidth || 0;
+		var H = document.documentElement.clientHeight || dojo.html.body().clientHeight || 0;
 		this.domNode.style.display = "block";
 		var w = this.domNode.offsetWidth;
 		var h = this.domNode.offsetHeight;

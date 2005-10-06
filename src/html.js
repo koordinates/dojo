@@ -24,7 +24,7 @@ dojo.html.clearSelection = function () {
 }
 
 dojo.html.disableSelection = function (element) {
-	if (arguments.length == 0) { element = document.body; }
+	if (arguments.length == 0) { element = this.body(); }
 	
 	if (dojo.render.html.mozilla) { element.style.MozUserSelect = "none"; }
 	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = "none"; }
@@ -32,7 +32,7 @@ dojo.html.disableSelection = function (element) {
 }
 
 dojo.html.enableSelection = function (element) {
-	if (arguments.length == 0) { element = document.body; }
+	if (arguments.length == 0) { element = this.body(); }
 	
 	if (dojo.render.html.mozilla) { element.style.MozUserSelect = ""; }
 	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = ""; }
@@ -40,8 +40,8 @@ dojo.html.enableSelection = function (element) {
 }
 
 dojo.html.selectElement = function (element) {
-	if (document.selection && document.body.createTextRange) { // IE
-		var range = document.body.createTextRange();
+	if (document.selection && this.body().createTextRange) { // IE
+		var range = this.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	} else if (window.getSelection) {
@@ -74,11 +74,11 @@ dojo.html.getEventTarget = function (evt){
 }
 
 dojo.html.getScrollTop = function () {
-	return document.documentElement.scrollTop || document.body.scrollTop || 0;
+	return document.documentElement.scrollTop || this.body().scrollTop || 0;
 }
 
 dojo.html.getScrollLeft = function () {
-	return document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	return document.documentElement.scrollLeft || this.body().scrollLeft || 0;
 }
 
 dojo.html.getParentOfType = function (node, type){
@@ -341,8 +341,8 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
  *             are properties of the function.
  */
 dojo.html.gravity = function (node, e){
-	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-	var mousey = e.pageY || e.clientY + document.body.scrollTop;
+	var mousex = e.pageX || e.clientX + this.body().scrollLeft;
+	var mousey = e.pageY || e.clientY + this.body().scrollTop;
 	
 	with (dojo.html) {
 		var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
@@ -361,8 +361,8 @@ dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 	
 dojo.html.overElement = function (element, e) {
-	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-	var mousey = e.pageY || e.clientY + document.body.scrollTop;
+	var mousex = e.pageX || e.clientX + this.body().scrollLeft;
+	var mousey = e.pageY || e.clientY + this.body().scrollTop;
 	
 	with(dojo.html){
 		var top = getAbsoluteY(element);
@@ -464,6 +464,6 @@ dojo.html.getPreferredStyleSheet = function () {
 	return null;
 }
 
-dojo.html.getBody = function() {
+dojo.html.body = function() {
 	return document.body || document.getElementsByTagName("body")[0];
 }

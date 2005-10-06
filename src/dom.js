@@ -259,7 +259,7 @@ if(dojo.render.html.capable) {
 		var tn = document.createElement("div");
 		// tn.style.display = "none";
 		tn.style.visibility= "hidden";
-		document.body.appendChild(tn);
+		document.getElementsByTagName("body")[0].appendChild(tn);
 		tn.innerHTML = txt;
 		tn.normalize();
 		if(wrap){ 
@@ -269,7 +269,7 @@ if(dojo.render.html.capable) {
 			ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
 			// end hack
 			// tn.style.display = "none";
-			document.body.removeChild(tn);
+			document.getElementsByTagName("body")[0].removeChild(tn);
 			return ret;
 		}
 		var nodes = [];
@@ -277,7 +277,7 @@ if(dojo.render.html.capable) {
 			nodes.push(tn.childNodes[x].cloneNode(true));
 		}
 		tn.style.display = "none";
-		document.body.removeChild(tn);
+		document.getElementsByTagName("body")[0].removeChild(tn);
 		return nodes;
 	}
 }else if(dojo.render.svg.capable){

@@ -278,7 +278,7 @@ dojo.widget.getParser = function(name){
 		notRef = true;
 		refNode = tn;
 		if(h){
-			document.body.appendChild(refNode);
+			dojo.html.body().appendChild(refNode);
 		}
 	}else if(position){
 		dojo.dom.insertAtPosition(tn, refNode, position);

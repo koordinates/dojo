@@ -223,7 +223,7 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 		do {
 			ret += node[typeStr];
 			node = node.offsetParent;
-		} while (node != document.body.parentNode && node != null);
+		} while (node != document.getElementsByTagName("body")[0].parentNode && node != null);
 		
 	}else if(node[alt]){
 		ret += node[alt];
@@ -341,7 +341,7 @@ dojo.style.getBackgroundColor = function (node) {
 		dojo.debug("color:", color);
 		// Safari doesn't say "transparent"
 		if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
-		if(node == document.body) { node = null; break; }
+		if(node == document.getElementsByTagName("body")[0]) { node = null; break; }
 		node = node.parentNode;
 	}while(node && dojo.lang.inArray(color, ["transparent", ""]));
 
