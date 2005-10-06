@@ -1,4 +1,3 @@
-//	dojo.require("dojo.alg.*");
 dojo.provide("dojo.collections.Collections");
 
 dojo.collections = {Collections:true};
@@ -13,9 +12,13 @@ dojo.collections.Iterator = function(a){
 	this.current = null;
 	this.atEnd = false;
 	this.moveNext = function(){
-		if (this.atEnd) return !this.atEnd;
+		if (this.atEnd) {
+			return !this.atEnd;
+		}
 		this.current = o[position];
-		if (position == o.length) this.atEnd = true;
+		if (position == o.length) {
+			this.atEnd = true;
+		}
 		position++;
 		return !this.atEnd;
 	}
@@ -35,13 +38,17 @@ dojo.collections.DictionaryIterator = function(obj){
 	this.value = null ;
 	this.atEnd = false ;
 	this.moveNext = function() { 
-		if (this.atEnd) return !this.atEnd ;
+		if (this.atEnd) {
+			return !this.atEnd ;
+		}
 		this.entry = this.current = o[position] ;
 		if (this.entry) {
 			this.key = this.entry.key ;
 			this.value = this.entry.value ;
 		}
-		if (position == o.length) this.atEnd = true ;
+		if (position == o.length) {
+			this.atEnd = true ;
+		}
 		position++ ;
 		return !this.atEnd ;
 	} ;
