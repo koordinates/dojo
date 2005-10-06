@@ -21,7 +21,7 @@ dojo.validate.isValidNumber = function(value) {
 	return dojo.lang.isNumber(value);
 }
 
-dojo.validate.isEmailAdddress = function(value) {
+dojo.validate.isEmailAddress = function(value) {
 	// FIXME: very basic email validation
 	// strip out mailto: or <>
 	value = value.replace(/mailto:/i, "");
