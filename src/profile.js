@@ -41,10 +41,11 @@ dojo.profile = new function(){
 			borderCollapse = "collapse";
 		}
 		var hdr = tbl.createTHead();
-		var hdrtr = hdr.insertRow();
+		var hdrtr = hdr.insertRow(0);
+		// document.createElement("tr");
 		var cols = ["Identifier","Calls","Total","Avg"];
 		for(var x=0; x<cols.length; x++){
-			var ntd = hdrtr.insertCell();
+			var ntd = hdrtr.insertCell(x);
 			with(ntd.style){
 				backgroundColor = "#225d94";
 				color = "white";
@@ -61,10 +62,10 @@ dojo.profile = new function(){
 			var prf = profiles[pns[x]];
 			this.end(pns[x]);
 			if(prf.iters>0){
-				var bdytr = tbl.insertRow();
+				var bdytr = tbl.insertRow(true);
 				var vals = [pns[x], prf.iters, prf.total, parseInt(prf.total/prf.iters)];
 				for(var y=0; y<vals.length; y++){
-					var cc = bdytr.insertCell();
+					var cc = bdytr.insertCell(y);
 					cc.appendChild(document.createTextNode(vals[y]));
 					with(cc.style){
 						borderBottom = "1px solid gray";
