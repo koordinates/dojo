@@ -85,12 +85,11 @@ dojo.svg.getCoords = function(node){
 	return null;
 };
 dojo.svg.setCoords = function(node, coords){
-		var p = dojo.svg.getCoords();
-		if (!p) return;
-		var dx = p.x - coords.x;
-		var dy = p.y - coords.y;
-		dojo.svg.translate(node, dx, dy);
-	}
+	var p = dojo.svg.getCoords();
+	if (!p) return;
+	var dx = p.x - coords.x;
+	var dy = p.y - coords.y;
+	dojo.svg.translate(node, dx, dy);
 };
 dojo.svg.getDimensions = function(node){
 	if (node.getBBox){
