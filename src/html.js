@@ -2,9 +2,6 @@ dojo.provide("dojo.html");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.string");
-dojo.require("dojo.event.*");
-dojo.require("dojo.uri.Uri");
-dojo.require("dojo.graphics.color");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
 dojo.lang.mixin(dojo.html, dojo.style);
