@@ -5,24 +5,32 @@
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
+	dojo.require("dojo.profile.*");
 	dojo.require("dojo.event.*");
-	//dojo.require("dojo.widget.Editor");
+	dojo.require("dojo.widget.Editor");
 </script>
+<!--
 <script type="text/javascript" src="../../src/widget/RichText.js"></script>
 <script type="text/javascript" src="../../src/widget/Toolbar.js"></script>
 <script type="text/javascript" src="../../src/widget/Editor.js"></script>
+-->
 
 <script type="text/javascript">
 /*
 // If we wanted to do this pragmatically...
-dojo.event.connect(window, "onload", function (e) {
+dojo.addOnLoad(function(){
 	var div = document.getElementById("editable");
 	var editor = dojo.widget.fromScript("RichText", {}, div);
 });
 */
+dojo.addOnLoad(function(){
+	setTimeout(function(){
+		dojo.profile.dump(true);
+	}, 10);
+});
 </script>
 
-<div id="editable" dojoType="Editor" widgetId="editdiv"><!-- don't want space here
+<div id="editable" dojoType="Editor" widgetId="editdiv" items="insertunorderedlist;insertorderedlist;|;bold;italic;underline;strikethrough;|;createLink;"><!-- don't want space here
 
 --><h1>Lorem Ipsum</h1>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
