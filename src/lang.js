@@ -179,6 +179,7 @@ dojo.lang.delayThese = function(farr, cb, delay, onend){
 		cb = function(){};
 	}else if(!cb){
 		cb = function(){};
+		if(!delay){ delay = 0; }
 	}
 	setTimeout(function(){
 		(farr.shift())();
