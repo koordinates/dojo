@@ -10,6 +10,12 @@ dojo.animation.Timer = function(intvl){
 	this.onStart = null;
 	this.onStop = null;
 
+	this.setInterval = function(ms){
+		if (this.isRunning) window.clearInterval(timer);
+		this.interval = ms;
+		if (this.isRunning) timer = window.setInterval(_this.onTick, _this.interval);
+	};
+
 	this.start = function(){
 		if (typeof _this.onStart == "function") _this.onStart();
 		this.isRunning = true;
