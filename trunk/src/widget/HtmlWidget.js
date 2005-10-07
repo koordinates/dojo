@@ -86,7 +86,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 
 	createNodesFromText: function(txt, wrap){
-		return dojo.dom.createNodesFromText(txt, wrap);
+		return dojo.html.createNodesFromText(txt, wrap);
 	},
 
 	_old_buildFromTemplate: dojo.widget.DomWidget.prototype.buildFromTemplate,
