@@ -4,6 +4,7 @@ dojo.collections = {Collections:true};
 dojo.collections.DictionaryEntry = function(k,v){
 	this.key = k;
 	this.value = v;
+	this.toString = function(){ return this.value; };
 }
 
 dojo.collections.Iterator = function(a){
