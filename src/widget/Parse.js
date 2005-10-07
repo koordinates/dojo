@@ -54,7 +54,7 @@ dojo.widget.Parse = function(fragment) {
 							returnValue.push(djTags[ltn](fragment[item], this, parentComp, fragment[item]["index"]));
 						}else{
 							if(ltn.substr(0, 5)=="dojo:"){
-								dj_debug("no tag handler registed for type: ", ltn);
+								dojo.debug("no tag handler registed for type: ", ltn);
 							}
 						}
 					}
@@ -305,7 +305,8 @@ dojo.widget._oldFromScript = function(placeKeeperNode, name, props){
 		nodeRef: placeKeeperNode,
 		fastMixIn: true
 	};
-	return dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props);
+	var ret = dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props, true);
+	return ret;
 }
 
 
