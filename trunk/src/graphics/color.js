@@ -117,5 +117,8 @@ dojo.graphics.color.rgb2hex = function(r, g, b) {
 		b = r[2] || "00";
 		r = r[0] || "00";
 	}
-	return ["#", r.toString(16), g.toString(16), b.toString(16)].join("");
+	r = "00" + r.toString(16);
+	g = "00" + g.toString(16);
+	b = "00" + b.toString(16);
+	return ["#", r.substr(-2,2), g.substr(-2,2), b.substr(-2,2)].join("");
 }
