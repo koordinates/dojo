@@ -1,5 +1,4 @@
 dojo.provide("dojo.dom");
-//dojo.require("dojo.graphics.color");
 
 dojo.dom.ELEMENT_NODE                  = 1;
 dojo.dom.ATTRIBUTE_NODE                = 2;
