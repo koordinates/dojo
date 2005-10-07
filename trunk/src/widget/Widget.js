@@ -94,7 +94,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	satisfyPropertySets: function(args){
+		dojo.profile.start("satisfyPropertySets");
 		// get the default propsets for our component type
+		/*
 		var typePropSets = []; // FIXME: need to pull these from somewhere!
 		var localPropSets = []; // pull out propsets from the parser's return structure
 
@@ -106,18 +108,24 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 		for(var x=0; x<localPropSets.length; x++){
 		}
+		*/
+		dojo.profile.end("satisfyPropertySets");
 		
 		return args;
 	},
 
 	mixInProperties: function(args, frag){
 		if((args["fastMixIn"])||(frag["fastMixIn"])){
+			dojo.profile.start("mixInProperties_fastMixIn");
 			// fast mix in assumes case sensitivity, no type casting, etc...
+			// dojo.lang.mixin(this, args);
 			for(var x in args){
 				this[x] = args[x];
 			}
+			dojo.profile.end("mixInProperties_fastMixIn");
 			return;
 		}
+		dojo.profile.start("mixInProperties");
 		/*
 		 * the actual mix-in code attempts to do some type-assignment based on
 		 * PRE-EXISTING properties of the "this" object. When a named property
@@ -162,9 +170,8 @@ dojo.lang.extend(dojo.widget.Widget, {
 			}
 			this.constructor.prototype.lcArgs = lcArgs;
 		}
-
+		var visited = {};
 		for(var x in args){
-
 			if(!this[x]){ // check the cache for properties
 				var y = lcArgs[(new String(x)).toLowerCase()];
 				if(y){
@@ -172,7 +179,8 @@ dojo.lang.extend(dojo.widget.Widget, {
 					x = y; 
 				}
 			}
-			
+			if(visited[x]){ continue; }
+			visited[x] = true;
 			if((typeof this[x]) != (typeof undef)){
 				if(typeof args[x] != "string"){
 					this[x] = args[x];
@@ -209,7 +217,6 @@ dojo.lang.extend(dojo.widget.Widget, {
 					} else if (this[x] instanceof Date) {
 						this[x] = new Date(Number(args[x])); // assume timestamp
 					}else if(typeof this[x] == "object"){ 
-
 						// FIXME: should we be allowing extension here to handle
 						// other object types intelligently?
 
@@ -233,6 +240,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 				this.extraArgs[x] = args[x];
 			}
 		}
+		dojo.profile.end("mixInProperties");
 	},
 
 	initialize: function(args, frag){
@@ -372,21 +380,28 @@ dojo.widget.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 }
 
 dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp, insertionIndex){
+	var localProperties = {};
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// outputObjectInfo(frag["dojo:"+stype]);
 	// FIXME: we don't seem to be doing anything with this!
-	var propertySets = parser.getPropertySets(frag);
+	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
+	/*
 	for(var x=0; x<propertySets.length; x++){
 		
 	}
+	*/
+	// var tic = new Date();
 	var twidget = dojo.widget.manager.getImplementation(stype);
-	if (!twidget) {
+	if(!twidget){
 		throw new Error("cannot find \"" + stype + "\" widget");
-	} else if (!twidget.create) {
+	}else if (!twidget.create){
 		throw new Error("\"" + stype + "\" widget object does not appear to implement *Widget");
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
-	return twidget.create(localProperties, frag, parentComp);
+	// FIXME: we loose no less than 5ms in construction!
+	var ret = twidget.create(localProperties, frag, parentComp);
+	// dojo.debug(new Date() - tic);
+	return ret;
 }
