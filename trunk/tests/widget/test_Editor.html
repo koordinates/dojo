@@ -8,6 +8,7 @@
 	dojo.require("dojo.profile.*");
 	dojo.require("dojo.event.*");
 	dojo.require("dojo.widget.Editor");
+	dojo.profile.start("init");
 </script>
 <!--
 <script type="text/javascript" src="../../src/widget/RichText.js"></script>
@@ -24,9 +25,8 @@ dojo.addOnLoad(function(){
 });
 */
 dojo.addOnLoad(function(){
-	setTimeout(function(){
-		dojo.profile.dump(true);
-	}, 10);
+	dojo.profile.end("init");
+	dojo.profile.dump(true);
 });
 </script>
 
