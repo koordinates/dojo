@@ -36,7 +36,7 @@ dojo.io.encodeForm = function(formNode, encoding){
 
 	for(var i = 0; i < formNode.elements.length; i++) {
 		var elm = formNode.elements[i];
-		if(elm.disabled){
+		if(elm.disabled || elm.tagName.toLowerCase() == "fieldset"){
 			continue;
 		}
 		var name = enc(elm.name);
@@ -44,7 +44,9 @@ dojo.io.encodeForm = function(formNode, encoding){
 
 		if(type == "select-multiple"){
 			for(var j = 0; j < elm.options.length; j++) {
-				values.push(name + "=" + enc(elm.options[j].value));
+				if(elm.options[j].selected) {
+					values.push(name + "=" + enc(elm.options[j].value));
+				}
 			}
 		}else if(dojo.lang.inArray(type, ["radio", "checkbox"])){
 			if(elm.checked){
@@ -52,6 +54,18 @@ dojo.io.encodeForm = function(formNode, encoding){
 			}
 		}else if(!dojo.lang.inArray(type, ["file", "submit", "reset", "button"])) {
 			values.push(name + "=" + enc(elm.value));
+		}
+	}
+
+	// now collect input type="image", which doesn't show up in the elements array
+	var inputs = formNode.getElementsByTagName("input");
+	for(var i = 0; i < inputs.length; i++) {
+		var input = inputs[i];
+		if(input.type.toLowerCase() == "image" && input.form == formNode) {
+			var name = enc(input.name);
+			values.push(name + "=" + enc(input.value));
+			values.push(name + ".x=0");
+			values.push(name + ".y=0");
 		}
 	}
 	return values.join("&") + "&";
