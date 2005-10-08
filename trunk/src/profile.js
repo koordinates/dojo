@@ -13,14 +13,15 @@ dojo.profile = new function(){
 				this.end(name);
 			}
 		}
-		profiles[name].start = new Date();
 		profiles[name].end = null;
+		profiles[name].start = new Date();
 	}
 
 	this.end = function(name){
+		var ed = new Date();
 		if((profiles[name])&&(profiles[name]["start"])){
 			with(profiles[name]){
-				end = new Date();
+				end = ed;
 				total += (end - start);
 				start = null;
 				iters++;
