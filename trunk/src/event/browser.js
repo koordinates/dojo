@@ -187,6 +187,8 @@ dojo.event.browser = new function(){
 				}
 				return ret;
 			}
+		}else{
+			newfp = fp;
 		}
 
 		if(node.addEventListener){ 
