@@ -81,10 +81,9 @@ dojo.widget.buildFromTemplate.dummyCount = 0;
 
 dojo.widget.attachProperties = ["dojoAttachPoint", "id"];
 dojo.widget.eventAttachProperty = "dojoAttachEvent";
-dojo.widget.subTemplateProperty = "dojoSubTemplate";
 dojo.widget.onBuildProperty = "dojoOnBuild";
 
-dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParent, events){
+dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 	// FIXME: this method is still taking WAAAY too long. We need ways of optimizing:
 	//	a.) what we are looking for on each node
 	//	b.) the nodes that are subject to interrogation (use xpath instead?)
@@ -114,6 +113,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 				break;
 			}
 		}
+		// continue;
 
 		// FIXME: we need to put this into some kind of lookup structure
 		// instead of direct assignment
@@ -122,48 +122,45 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 			targetObj[tmpltPoint]=baseNode;
 		}
 
-		// subtemplates are always collected "flatly" by the widget class
-		var tmpltPoint = baseNode.getAttribute(this.subTemplateProperty);
-		if(tmpltPoint){
-			// we assign by removal in this case, mainly because we assume that
-			// this will get proccessed later when the sub-template is filled
-			// in (usually by this method, and usually repetitively)
-			subTemplateParent.subTemplates[tmpltPoint]=baseNode.parentNode.removeChild(baseNode);
-			// make sure we don't get stopped here the next time we try to process
-			subTemplateParent.subTemplates[tmpltPoint].removeAttribute(this.subTemplateProperty);
-			// return;
-		}
-
 		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
 		if(attachEvent){
 			// NOTE: we want to support attributes that have the form
 			// "domEvent: nativeEvent; ..."
 			var evts = attachEvent.split(";");
 			for(var y=0; y<evts.length; y++){
-				if(!evts[y]){ continue; }
-				if(!evts[y].length){ continue; }
-				var tevt = null;
+				if((!evts[y])||(!evts[y].length)){ continue; }
 				var thisFunc = null;
-				tevt = dojo.string.trim(evts[y]);
-				if(tevt.indexOf(":") >= 0){
+				// var tevt = dojo.string.trim(evts[y]);
+				var tevt = evts[y];
+				if(evts[y].indexOf(":") >= 0){
 					// oh, if only JS had tuple assignment
 					var funcNameArr = tevt.split(":");
 					tevt = dojo.string.trim(funcNameArr[0]);
 					thisFunc = dojo.string.trim(funcNameArr[1]);
 				}
 				if(!thisFunc){
-					thisFunc = tevt;
+					thisFunc = dojo.string.trim(tevt);
 				}
 				//if(dojo.hostenv.name_ == "browser"){
+				/*
+				var tf = dojo.lang.hitch(this, function(evt){
+					if(this[thisFunc]){
+						this[thisFunc](evt);
+					}
+				});
+				*/
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
-					return function(evt){
+					return 
+					function(evt){
 						if(_this[ntf]){
-							_this[ntf](evt);
+							_this[ntf](dojo.event.browser.fixEvent(evt));
 						}
 					}
 				}();
-				dojo.event.browser.addListener(baseNode, tevt.substr(2), tf);
+				// baseNode[tevt] = tf;
+				// FIXME: this is slow!
+				dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
 			}
 		}
 
@@ -172,7 +169,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 			var evtVal = baseNode.getAttribute(events[y]);
 			if((evtVal)&&(evtVal.length)){
 				var thisFunc = null;
-				var domEvt = events[y].substr(4).toLowerCase(); // clober the "dojo" prefix
+				var domEvt = events[y].substr(4); // clober the "dojo" prefix
 				thisFunc = dojo.string.trim(evtVal);
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
@@ -183,7 +180,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 					}
 				}();
 				// dojo.event.connect(baseNode, domEvt, tf);
-				dojo.event.browser.addListener(baseNode, domEvt.substr(2), tf);
+				dojo.event.browser.addListener(baseNode, domEvt, tf);
 			}
 		}
 
@@ -196,7 +193,6 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, subTemplateParen
 		baseNode.id = "";
 	}
 
-	// dojo.debug("attachTemplateNodes toc: ", new Date()-start, "ms");
 }
 
 dojo.widget.getDojoEventsFromStr = function(str){
@@ -221,7 +217,7 @@ dojo.widget.getDojoEventsFromStr = function(str){
 dojo.widget.buildAndAttachTemplate = function(obj, templatePath, templateCssPath, templateString, targetObj) {
 	this.buildFromTemplate(obj, templatePath, templateCssPath, templateString);
 	var node = dojo.dom.createNodesFromText(obj.templateString, true)[0];
-	this.attachTemplateNodes(node, targetObj||obj, obj, dojo.widget.getDojoEventsFromStr(templateString));
+	this.attachTemplateNodes(node, targetObj||obj, dojo.widget.getDojoEventsFromStr(templateString));
 	return node;
 }
 
@@ -236,14 +232,12 @@ dojo.inherits(dojo.widget.DomWidget, dojo.widget.Widget);
 dojo.lang.extend(dojo.widget.DomWidget, {
 	templateNode: null,
 	templateString: null,
-	subTemplates: {},
 	domNode: null, // this is our visible representation of the widget!
 	containerNode: null, // holds child elements
 
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
 	addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){ 
-		// var start = new Date();
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
 			return false;
@@ -274,7 +268,6 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			widget.parent = this;
 			widget.addedTo(this);
 		}
-		// dojo.debug("add child took: ", new Date()-start, "ms");
 		return widget;
 	},
 
@@ -403,14 +396,14 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		// attachment points which should be defined on the template node.
 
 		this.domNode = node;
-		// dojo.debug("toc1: ", new Date()-start, "ms");
+		// dojo.profile.start("attachTemplateNodes");
 		this.attachTemplateNodes(this.domNode, this);
-		// dojo.debug("toc2: ", new Date()-start, "ms");
+		// dojo.profile.end("attachTemplateNodes");
 	},
 
 	attachTemplateNodes: function(baseNode, targetObj){
 		if(!targetObj){ targetObj = this; }
-		return dojo.widget.attachTemplateNodes(baseNode, targetObj, this, 
+		return dojo.widget.attachTemplateNodes(baseNode, targetObj, 
 					dojo.widget.getDojoEventsFromStr(this.templateString));
 	},
 

@@ -94,7 +94,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	satisfyPropertySets: function(args){
-		dojo.profile.start("satisfyPropertySets");
+		// dojo.profile.start("satisfyPropertySets");
 		// get the default propsets for our component type
 		/*
 		var typePropSets = []; // FIXME: need to pull these from somewhere!
@@ -109,23 +109,23 @@ dojo.lang.extend(dojo.widget.Widget, {
 		for(var x=0; x<localPropSets.length; x++){
 		}
 		*/
-		dojo.profile.end("satisfyPropertySets");
+		// dojo.profile.end("satisfyPropertySets");
 		
 		return args;
 	},
 
 	mixInProperties: function(args, frag){
 		if((args["fastMixIn"])||(frag["fastMixIn"])){
-			dojo.profile.start("mixInProperties_fastMixIn");
+			// dojo.profile.start("mixInProperties_fastMixIn");
 			// fast mix in assumes case sensitivity, no type casting, etc...
 			// dojo.lang.mixin(this, args);
 			for(var x in args){
 				this[x] = args[x];
 			}
-			dojo.profile.end("mixInProperties_fastMixIn");
+			// dojo.profile.end("mixInProperties_fastMixIn");
 			return;
 		}
-		dojo.profile.start("mixInProperties");
+		// dojo.profile.start("mixInProperties");
 		/*
 		 * the actual mix-in code attempts to do some type-assignment based on
 		 * PRE-EXISTING properties of the "this" object. When a named property
@@ -240,7 +240,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 				this.extraArgs[x] = args[x];
 			}
 		}
-		dojo.profile.end("mixInProperties");
+		// dojo.profile.end("mixInProperties");
 	},
 
 	initialize: function(args, frag){
