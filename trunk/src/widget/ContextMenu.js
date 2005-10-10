@@ -1,4 +1,6 @@
 dojo.provide("dojo.widget.ContextMenu");
+
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DomWidget");
 
 dojo.widget.ContextMenu = function(){
