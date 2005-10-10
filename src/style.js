@@ -113,9 +113,11 @@ dojo.style.getMarginWidth = function(node){
 }
 
 dojo.style.getBorderWidth = function(node){
-	if (node.clientWidth){
-		return node.offsetWidth - node.clientWidth;
-	}else{
+	// the removed calculation incorrectly includes scrollbar
+	//if (node.clientWidth){
+	//	return node.offsetWidth - node.clientWidth;
+	//}else
+	{
 		var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-left-width"));
 		var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-right-width"));
 		return left + right;
@@ -163,9 +165,11 @@ dojo.style.getMarginHeight = function(node){
 }
 
 dojo.style.getBorderHeight = function(node){
-	if (node.clientHeight){
-		return node.offsetHeight- node.clientHeight;
-	}else{
+	// this removed calculation incorrectly includes scrollbar
+//	if (node.clientHeight){
+//		return node.offsetHeight- node.clientHeight;
+//	}else
+	{		
 		var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-top-width"));
 		var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-bottom-width"));
 		return top + bottom;
