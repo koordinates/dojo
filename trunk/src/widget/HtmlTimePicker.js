@@ -1,6 +1,9 @@
 dojo.provide("dojo.widget.HtmlTimePicker");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
+
+dojo.require("dojo.widget.*");
+dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
 dojo.widget.HtmlTimePicker = function(){
