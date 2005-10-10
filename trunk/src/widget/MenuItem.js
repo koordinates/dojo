@@ -45,11 +45,12 @@ dojo.inherits(dojo.widget.HtmlMenuItem, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 	widgetType: "MenuItem",
 	templateString: '<li style="margin: 0;"></li>',
-	title: "",
+	label: "",
 
 	fillInTemplate: function () {
+
 		//dojo.widget.HtmlMenuItem.superclass.fillInTemplate.apply(this, arguments);
-		this.domNode.appendChild(document.createTextNode(this.title));
+		this.domNode.appendChild(document.createTextNode(this.label));
 		this.domNode.className = "MenuItem";
 		
 		dojo.event.connect(this.domNode, "onmouseover", this, "onMouseOver");
@@ -60,11 +61,11 @@ dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 	},
 	
 	onMouseOver: function (e) {
-		dojo.html.addClass(this.domNode, "hover");
+		dojo.html.addClass(this.domNode, "dojoContextMenuItemHover");
 	},
 	
 	onMouseOut: function (e) {
-		dojo.html.removeClass(this.domNode, "hover");
+		dojo.html.removeClass(this.domNode, "dojoContextMenuItemHover");
 	},
 	
 	onClick: function (e) { this.onSelect(this, e); },
