@@ -19,6 +19,10 @@ dojo.lang.extendPrototype = function(obj, props){
 	this.extend(obj.constructor, props);
 }
 
+dojo.lang.hitch = function(obj, meth){
+	return function(){ return obj[meth].apply(obj, arguments); }
+}
+
 
 /**
  * Sets a timeout in milliseconds to execute a function in a given context
