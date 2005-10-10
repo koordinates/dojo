@@ -15,7 +15,9 @@ dojo.widget.manager = new function(){
 	}
 
 	this.add = function(widget){
+		dojo.profile.start("dojo.widget.manager.add");
 		this.widgets.push(widget);
+		// FIXME: the rest of this method is very slow!
 		if(widget.widgetId == ""){
 			if(widget["id"]){
 				widget.widgetId = widget["id"];
@@ -29,12 +31,9 @@ dojo.widget.manager = new function(){
 			dojo.debug("widget ID collision on ID: "+widget.widgetId);
 		}
 		this.widgetIds[widget.widgetId] = widget;
-		
-		// remove widgets on destruction
-		var _this = this;
-		dojo.event.connect(widget, "destroy", function () {
-			_this.removeById(widget.widgetId);
-		});
+		// Widget.destroy already calls removeById(), so we don't need to
+		// connect() it here
+		dojo.profile.end("dojo.widget.manager.add");
 	}
 
 	this.destroyAll = function(){
@@ -115,7 +114,12 @@ dojo.widget.manager = new function(){
 	this.getImplementation = function(widgetName, ctorObject, mixins){
 		// try and find a name for the widget
 		var impl = this.getImplementationName(widgetName);
-		if (impl) { return new impl(ctorObject); }
+		if(impl){ 
+			// var tic = new Date();
+			var ret = new impl(ctorObject);
+			// dojo.debug(new Date() - tic);
+			return ret;
+		}
 	}
 
 	this.getImplementationName = function(widgetName){
@@ -133,7 +137,9 @@ dojo.widget.manager = new function(){
 		var lowerCaseWidgetName = widgetName.toLowerCase();
 
 		var impl = knownWidgetImplementations[lowerCaseWidgetName];
-		if (impl) { return impl; }
+		if(impl){
+			return impl;
+		}
 
 		// first store a list of the render prefixes we are capable of rendering
 		var renderPrefixes = [];

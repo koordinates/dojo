@@ -131,7 +131,7 @@ dojo.event.browser = new function(){
 
 	this.addClobberNode = function(node){
 		if(djConfig.ieClobberMinimal){
-			if(!node.__doClobber__) {
+			if(!node["__doClobber__"]){
 				node.__doClobber__ = true;
 				dojo_ie_clobber.clobberNodes.push(node);
 				// this might not be the most efficient thing to do, but it's
@@ -170,39 +170,40 @@ dojo.event.browser = new function(){
 		}
 	}
 
-	this.addListener = function(node, evtName, fp, capture){
+	this.addListener = function(node, evtName, fp, capture, dontFix){
+		if(!node){ return; } // FIXME: log and/or bail?
 		if(!capture){ var capture = false; }
 		evtName = evtName.toLowerCase();
-		if(evtName.substr(0,2)=="on"){ evtName = evtName.substr(2); }
-		if(!node){ return; } // FIXME: log and/or bail?
+		if(evtName.substr(0,2)!="on"){ evtName = "on"+evtName; }
 
-		// build yet another closure around fp in order to inject fixEvent
-		// around the resulting event
-		var newfp = function(evt){
-			if(!evt){ evt = window.event; }
-			var ret = fp(dojo.event.browser.fixEvent(evt));
-			if(capture){
-				dojo.event.browser.stopEvent(evt);
+		if(!dontFix){
+			// build yet another closure around fp in order to inject fixEvent
+			// around the resulting event
+			var newfp = function(evt){
+				if(!evt){ evt = window.event; }
+				var ret = fp(dojo.event.browser.fixEvent(evt));
+				if(capture){
+					dojo.event.browser.stopEvent(evt);
+				}
+				return ret;
 			}
-			return ret;
 		}
 
-		var onEvtName = "on"+evtName;
 		if(node.addEventListener){ 
-			node.addEventListener(evtName, newfp, capture);
+			node.addEventListener(evtName.substr(2), newfp, capture);
 			return newfp;
 		}else{
-			if(typeof node[onEvtName] == "function" ){
-				var oldEvt = node[onEvtName];
-				node[onEvtName] = function(e){
+			if(typeof node[evtName] == "function" ){
+				var oldEvt = node[evtName];
+				node[evtName] = function(e){
 					oldEvt(e);
-					newfp(e);
+					return newfp(e);
 				}
 			}else{
-				node[onEvtName]=newfp;
+				node[evtName]=newfp;
 			}
 			if(dojo.render.html.ie){
-				this.addClobberNodeAttrs(node, [onEvtName]);
+				this.addClobberNodeAttrs(node, [evtName]);
 			}
 			return newfp;
 		}
