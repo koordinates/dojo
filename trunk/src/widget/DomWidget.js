@@ -261,7 +261,13 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			}else{
 				// FIXME: was this meant to be the (ugly hack) way to support insert @ index?
 				//dojo.dom[pos](widget.domNode, ref, insertIndex);
-				dojo.dom.insertAtPosition(widget.domNode, ref, pos);
+
+				// CAL: this appears to be the intended way to insert a node at a given position...
+				if (pos == 'insertAtIndex'){
+					dojo.dom.insertAtIndex(widget.domNode, ref, insertIndex);
+				}else{
+					dojo.dom.insertAtPosition(widget.domNode, ref, pos);
+				}
 			}
 			// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
 			this.children.push(widget);
