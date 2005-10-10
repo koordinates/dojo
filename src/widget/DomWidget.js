@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.DomWidget");
 
 dojo.require("dojo.event.*");
+dojo.require("dojo.event.browser");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
@@ -141,25 +142,16 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				if(!thisFunc){
 					thisFunc = dojo.string.trim(tevt);
 				}
-				//if(dojo.hostenv.name_ == "browser"){
-				/*
-				var tf = dojo.lang.hitch(this, function(evt){
-					if(this[thisFunc]){
-						this[thisFunc](evt);
-					}
-				});
-				*/
+
+				// dojo.debug(dojo.event.browser);
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
-					return 
-					function(evt){
+					return function(evt){
 						if(_this[ntf]){
 							_this[ntf](dojo.event.browser.fixEvent(evt));
 						}
-					}
+					};
 				}();
-				// baseNode[tevt] = tf;
-				// FIXME: this is slow!
 				dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
 			}
 		}
@@ -175,12 +167,11 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 					var ntf = new String(thisFunc);
 					return function(evt){
 						if(_this[ntf]){
-							_this[ntf](evt);
+							_this[ntf](dojo.event.browser.fixEvent(evt));
 						}
 					}
 				}();
-				// dojo.event.connect(baseNode, domEvt, tf);
-				dojo.event.browser.addListener(baseNode, domEvt, tf);
+				dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
 			}
 		}
 
