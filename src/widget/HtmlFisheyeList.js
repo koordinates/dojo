@@ -446,11 +446,6 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		}else{
 
-			var s2 = (cen - main_p) * 2;
-			var s3 = ((this.isHorizontal ? this.itemWidth : this.itemHeight) - this.items[main_p].sizeMain);
-			offset = (s2 * s3) - ((s3 / 2) * s2);
-			offset = s2 * s3 / 2;
-
 			offset = (cen - main_p) * ((this.isHorizontal ? this.itemWidth : this.itemHeight) - this.items[main_p].sizeMain);
 		}
 
