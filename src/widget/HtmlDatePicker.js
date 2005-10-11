@@ -1,4 +1,6 @@
 dojo.provide("dojo.widget.HtmlDatePicker");
+
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.html");
