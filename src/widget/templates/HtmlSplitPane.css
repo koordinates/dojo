@@ -2,6 +2,7 @@
 
 	background-color: #D4D0C8;
 	padding: 5px;
+	margin: 0;
 }
 
 .dojoHtmlSplitPaneSizerH {
@@ -13,6 +14,7 @@
 	border-left: 1px solid #FFFFFF;
 	border-bottom: 1px solid #808080;
 	border-right: 1px solid #808080;
+	margin: 0;
 }
 
 .dojoHtmlSplitPaneSizerV {
@@ -24,6 +26,7 @@
 	border-left: 1px solid #FFFFFF;
 	border-bottom: 1px solid #808080;
 	border-right: 1px solid #808080;
+	margin: 0;
 }
 
 .dojoHtmlSplitPaneVirtualSizerH {
@@ -31,6 +34,7 @@
 	cursor: move;
 	cursor: col-resize;
 	background-color: #808080;
+	margin: 0;
 }
 
 .dojoHtmlSplitPaneVirtualSizerV {
@@ -38,4 +42,5 @@
 	cursor: move;
 	cursor: row-resize;
 	background-color: #808080;
+	margin: 0;
 }
