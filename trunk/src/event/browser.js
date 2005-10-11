@@ -219,8 +219,11 @@ dojo.event.browser = new function(){
 	}
 	
 	this.fixEvent = function(evt){
+		if((!evt)&&(window["event"])){
+			var evt = window.event;
+		}
 		
-		if (evt.type && evt.type.indexOf("key") == 0) { // key events
+		if((evt["type"])&&(evt["type"].indexOf("key") == 0)){ // key events
 			var keys = {
 				KEY_BACKSPACE: 8,
 				KEY_TAB: 9,
@@ -267,7 +270,7 @@ dojo.event.browser = new function(){
 				evt[key] = keys[key];
 				evt.keys[keys[key]] = key; // allow reverse lookup
 			}
-			if (dojo.render.html.ie && evt.type == "keypress") {
+			if (dojo.render.html.ie && evt["type"] == "keypress") {
 				evt.charCode = evt.keyCode;
 			}
 		}
