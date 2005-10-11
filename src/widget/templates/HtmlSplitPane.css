@@ -1,0 +1,41 @@
+.dojoHtmlSplitterPanePanel{
+
+	background-color: #D4D0C8;
+	padding: 5px;
+}
+
+.dojoHtmlSplitPaneSizerH {
+
+	cursor: move;
+	cursor: col-resize;
+	background-color: #D4D0C8;
+	border-top: 1px solid #FFFFFF;
+	border-left: 1px solid #FFFFFF;
+	border-bottom: 1px solid #808080;
+	border-right: 1px solid #808080;
+}
+
+.dojoHtmlSplitPaneSizerV {
+
+	cursor: move;
+	cursor: row-resize;
+	background-color: #D4D0C8;
+	border-top: 1px solid #FFFFFF;
+	border-left: 1px solid #FFFFFF;
+	border-bottom: 1px solid #808080;
+	border-right: 1px solid #808080;
+}
+
+.dojoHtmlSplitPaneVirtualSizerH {
+
+	cursor: move;
+	cursor: col-resize;
+	background-color: #808080;
+}
+
+.dojoHtmlSplitPaneVirtualSizerV {
+
+	cursor: move;
+	cursor: row-resize;
+	background-color: #808080;
+}
