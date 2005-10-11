@@ -8,7 +8,7 @@
 .dojoHtmlSplitPaneSizerH {
 
 	cursor: move;
-	cursor: col-resize;
+	cursor: w-resize;
 	background-color: #D4D0C8;
 	border-top: 1px solid #FFFFFF;
 	border-left: 1px solid #FFFFFF;
@@ -20,7 +20,7 @@
 .dojoHtmlSplitPaneSizerV {
 
 	cursor: move;
-	cursor: row-resize;
+	cursor: n-resize;
 	background-color: #D4D0C8;
 	border-top: 1px solid #FFFFFF;
 	border-left: 1px solid #FFFFFF;
@@ -32,7 +32,7 @@
 .dojoHtmlSplitPaneVirtualSizerH {
 
 	cursor: move;
-	cursor: col-resize;
+	cursor: w-resize;
 	background-color: #808080;
 	margin: 0;
 }
@@ -40,7 +40,7 @@
 .dojoHtmlSplitPaneVirtualSizerV {
 
 	cursor: move;
-	cursor: row-resize;
+	cursor: n-resize;
 	background-color: #808080;
 	margin: 0;
 }
