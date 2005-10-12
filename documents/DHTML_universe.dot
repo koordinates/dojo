@@ -56,6 +56,7 @@ digraph dhtml_universe
 		erik -> WebFX;
 		erik -> Bindows;
 		erik -> WebOS;
+		erik -> Google;
 		emil -> WebFX;
 		emil -> WebOS;
 		mhall -> BrainJar;
