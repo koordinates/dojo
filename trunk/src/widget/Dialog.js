@@ -25,6 +25,7 @@ dojo.widget.HtmlDialog = function() {
 	this.bg;
 	this.bgColor = "black";
 	this.bgOpacity = 0.4;
+	this.followScroll = 1;
 
 	var fromTrap = false;
 	this.trapTabs = function(e) {
@@ -72,6 +73,10 @@ dojo.widget.HtmlDialog = function() {
 			position = "absolute";
 			zIndex = 999;
 			display = "none";
+		}
+
+		if (this.followScroll){
+			dojo.event.connect(window, "onscroll", this, "onScroll");
 		}
 	}
 
@@ -177,6 +182,15 @@ dojo.widget.HtmlDialog = function() {
 
 	this.setShowControl = function(node) {
 		dojo.event.connect(node, "onclick", this, "show");
+	}
+
+	this.onScroll = function(){
+		//dojo.debug("scroll!");
+
+		if (this.bg.style.display == 'block'){
+			this.placeDialog();
+			this.domNode.style.display = "block";
+		}
 	}
 }
 dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
