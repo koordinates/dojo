@@ -300,9 +300,8 @@ dojo.dom.insertAtPosition = function (node, ref, position){
 	}
 }
 
-dojo.dom.insertAtIndex = function (node, ref, insertionIndex){
-	var pn = ref.parentNode;
-	var siblingNodes = pn.childNodes;
+dojo.dom.insertAtIndex = function (node, containingNode, insertionIndex){
+	var siblingNodes = containingNode.childNodes;
 	var placed = false;
 	for(var i=0; i<siblingNodes.length; i++) {
 		if(	(siblingNodes.item(i)["getAttribute"])&&
