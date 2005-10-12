@@ -18,6 +18,8 @@ dojo.widget.HtmlDialog = function() {
 		+ '<span dojoAttachPoint="tabEnd" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
 		+ '</div>';
 
+	this._scrollConnected = 0;
+
 	// Only supports fade right now
 	this.effect = "fade";
 	this.effectDuration = 250;
@@ -73,10 +75,6 @@ dojo.widget.HtmlDialog = function() {
 			position = "absolute";
 			zIndex = 999;
 			display = "none";
-		}
-
-		if (this.followScroll){
-			dojo.event.connect(window, "onscroll", this, "onScroll");
 		}
 	}
 
@@ -152,6 +150,15 @@ dojo.widget.HtmlDialog = function() {
 				}
 				break;
 		}
+
+		// FIXME: moz doesn't generate onscroll events for mouse or key scrolling (wtf)
+		// we should create a fake event by polling the scrolltop/scrollleft every X ms.
+		// this smells like it should be a dojo feature rather than just for this widget.
+
+		if (this.followScroll && !this._scrollConnected){
+			this._scrollConnected = 1;
+			dojo.event.connect(window, "onscroll", this, "onScroll");
+		}
 	}
 
 	this.hide = function() {
@@ -174,6 +181,11 @@ dojo.widget.HtmlDialog = function() {
 				}
 				break;
 		}
+
+		if (this._scrollConnected){
+			this._scrollConnected = 0;
+			dojo.event.disconnect(window, "onscroll", this, "onScroll");
+		}
 	}
 
 	this.setCloseControl = function(node) {
@@ -185,12 +197,8 @@ dojo.widget.HtmlDialog = function() {
 	}
 
 	this.onScroll = function(){
-		//dojo.debug("scroll!");
-
-		if (this.bg.style.display == 'block'){
-			this.placeDialog();
-			this.domNode.style.display = "block";
-		}
+		this.placeDialog();
+		this.domNode.style.display = "block";
 	}
 }
 dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
