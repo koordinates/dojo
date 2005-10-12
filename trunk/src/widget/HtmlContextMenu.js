@@ -7,6 +7,7 @@ dojo.widget.HtmlContextMenu = function(){
 	dojo.widget.ContextMenu.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
+	this.isShowing = 0;
 	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlContextMenuTemplate.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlContextMenuTemplate.css");
 
@@ -15,6 +16,9 @@ dojo.widget.HtmlContextMenu = function(){
 	}
 
 	this.onShow = function(evt){
+		if (this.isShowing){ this.onHide(); }
+		this.isShowing = 1;
+
 		evt.preventDefault();
 		evt.stopPropagation();
 
@@ -31,6 +35,7 @@ dojo.widget.HtmlContextMenu = function(){
 		// FIXME: use whatever we use to do more general style setting?
 		this.domNode.style.display = "none";
 		dojo.event.disconnect(doc, "onclick", this, "onHide");
+		this.isShowing = 0;
 	}
 	
 	// FIXME: short term hack to show a single context menu in HTML
