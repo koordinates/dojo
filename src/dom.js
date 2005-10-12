@@ -304,7 +304,7 @@ dojo.dom.insertAtIndex = function (node, containingNode, insertionIndex){
 	var siblingNodes = containingNode.childNodes;
 	var placed = false;
 	if((dojo.lang.isNumber(insertionIndex))&&(insertionIndex>0)&&(insertionIndex>=siblingNodes.length)){
-		dojo.dom.insertAfter(node, containingNode.lastChild);
+		containingNode.appendChild(node);
 		return;
 	}
 	for(var i=0; i<siblingNodes.length; i++) {
