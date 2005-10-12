@@ -105,9 +105,13 @@ digraph dhtml_universe
 		syen -> TrimPath;
 		bobi -> MochiKit
 		glish -> Yahoo;
+		glish -> Flickr;
 		swillison -> Yahoo;
+		swillison -> Flickr;
 		gmurphy -> Google;
 		michaelvo -> Backbase;
+		cal -> Yahoo;
+		cal -> Flickr;
 
 		// project and company relationships
 		INFA -> NW;
@@ -127,6 +131,7 @@ digraph dhtml_universe
 		Oddpost -> Yahoo [ label="Y! bought Oddpost" ];
 		Google -> Gmail;
 		Google -> Gmaps;
+		Yahoo -> Flickr;
 		ModPubSub -> RePubSub;
 		GenInt -> TIBCO [ label="bought" ];
 		RoR -> Prototype [ label="uses" ];
@@ -183,6 +188,7 @@ digraph dhtml_universe
 		glish		[ label="Eric Costello" ];
 		swillison	[ label="Simon Willison" ];
 		gmurphy		[ label="Glen Murphy" ];
+		cal		[ label="Cal Henderson" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -236,6 +242,7 @@ digraph dhtml_universe
 		TrimPath	[ shape=diamond ];
 		MochiKit	[ shape=diamond ];
 		JPSpan		[ shape=diamond ];
+		Flickr		[ shape=diamond ];
 	}
 
 // vim:ts=4:noet:ai
