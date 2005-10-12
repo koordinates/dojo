@@ -175,7 +175,10 @@ dojo.dom.replaceChildren = function (node, newChild) {
 }
 
 dojo.dom.removeNode = function (node) {
-	if (node && node.parentNode) { node.parentNode.removeChild(node); }
+	if(node && node.parentNode){ 
+		// return a ref to the removed child
+		return node.parentNode.removeChild(node);
+	}
 }
 
 dojo.dom.getAncestors = function (node){

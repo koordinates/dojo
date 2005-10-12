@@ -249,9 +249,11 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 
 				// CAL: this appears to be the intended way to insert a node at a given position...
 				if (pos == 'insertAtIndex'){
+					// dojo.debug("idx:", insertIndex, "isLast:", ref === cn.lastChild);
 					dojo.dom.insertAtIndex(widget.domNode, ref, insertIndex);
 				}else{
-					dojo.dom.insertAtPosition(widget.domNode, ref, pos);
+					// dojo.debug("pos:", pos, "isLast:", ref === cn.lastChild);
+					dojo.dom.insertAtPosition(widget.domNode, cn, pos);
 				}
 			}
 			// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
