@@ -303,7 +303,7 @@ dojo.dom.insertAtPosition = function (node, ref, position){
 dojo.dom.insertAtIndex = function (node, containingNode, insertionIndex){
 	var siblingNodes = containingNode.childNodes;
 	var placed = false;
-	if((dojo.lang.isNumber(insertionIndex))&&(insertionIndex>0)&&(insertionIndex>=siblingNodes.length)){
+	if((dojo.lang.isNumber(insertionIndex))&&(insertionIndex>=siblingNodes.length)){
 		containingNode.appendChild(node);
 		return;
 	}
