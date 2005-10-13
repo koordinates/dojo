@@ -1,5 +1,10 @@
 /* TODO:
  * - make the dropdowns "smart" so they can't get cutoff on bottom of page, sides of page, etc.
+ * - unify menus with the MenuItem and Menu classes so we can add stuff to all menus at once
+ * - allow buttons to be enabled/disabled at runtime
+ *     - this probably means creating all menus upfront and then triggering a disable action
+ *       for disabled buttons in the constructor loop. we'll need a disable and enable action anyway
+ * - should each button with menu be a widget object of it's own?
  */
 dojo.provide("dojo.widget.DropdownButtons");
 dojo.provide("dojo.widget.HtmlDropdownButtons");
