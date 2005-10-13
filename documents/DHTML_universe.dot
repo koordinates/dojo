@@ -140,7 +140,7 @@ digraph dhtml_universe
 		Oddpost -> Yahoo [ label="Y! bought Oddpost" ];
 		Google -> Gmail;
 		Google -> Gmaps;
-		Yahoo -> Flickr [ label="Y! bought Oddpost" ];
+		Yahoo -> Flickr [ label="Y! bought Flickr" ];
 		ModPubSub -> RePubSub;
 		GenInt -> TIBCO [ label="bought" ];
 		RoR -> Prototype [ label="uses" ];
