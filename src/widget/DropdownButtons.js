@@ -54,6 +54,8 @@ dojo.widget.HtmlDropdownButtons = function() {
 
 				if( dojo.html.hasClass(a, "disabled") ) {
 					dojo.html.addClass(arrow, "disabled");
+					dojo.html.disableSelection(li);
+					arrow.onfocus = function(){ this.blur(); }
 				} else {
 					dojo.html.addClass(submenu, "dropdownButtonsMenu");
 					dojo.html.body().appendChild(submenu);
