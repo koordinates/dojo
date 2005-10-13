@@ -220,12 +220,12 @@ dojo.widget.Parse = function(fragment) {
 		var tagName = "dojo:" + componentName.toLowerCase();
 		frag[tagName] = {};
 		var bo = {};
+		properties.dojotype = componentName;
 		for(prop in properties){
 			if(typeof bo[prop] == "undefined"){
-				frag[tagName][prop.toLowerCase()] = [{value: properties[prop]}];
+				frag[tagName][prop] = [{value: properties[prop]}];
 			}
 		}
-		frag[tagName]["dojotype"] = [{value: componentName}];
 		frag[tagName].nodeRef = nodeRef;
 		frag.tagName = tagName;
 		var fragContainer = [frag];
