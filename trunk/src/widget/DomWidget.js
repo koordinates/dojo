@@ -132,7 +132,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				if((!evts[y])||(!evts[y].length)){ continue; }
 				var thisFunc = null;
 				// var tevt = dojo.string.trim(evts[y]);
-				var tevt = evts[y];
+				var tevt = dojo.string.trim(evts[y]);
 				if(evts[y].indexOf(":") >= 0){
 					// oh, if only JS had tuple assignment
 					var funcNameArr = tevt.split(":");
@@ -140,10 +140,9 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 					thisFunc = dojo.string.trim(funcNameArr[1]);
 				}
 				if(!thisFunc){
-					thisFunc = dojo.string.trim(tevt);
+					thisFunc = tevt;
 				}
 
-				// dojo.debug(dojo.event.browser);
 				var tf = function(){ 
 					var ntf = new String(thisFunc);
 					return function(evt){
