@@ -271,7 +271,9 @@ dojo.dom.insertBefore = function (node, ref, force) {
 dojo.dom.insertAfter = function (node, ref, force) {
 	var pn = ref.parentNode;
 	if(ref == pn.lastChild){
-		if (force != true  && node === ref) { return false; }
+		if((force != true)&&(node === ref)){
+			return false;
+		}
 		pn.appendChild(node);
 	}else{
 		return this.insertBefore(node, ref.nextSibling, force);

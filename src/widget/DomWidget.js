@@ -252,7 +252,11 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 					dojo.dom.insertAtIndex(widget.domNode, ref.parentNode, insertIndex);
 				}else{
 					// dojo.debug("pos:", pos, "isLast:", ref === cn.lastChild);
-					dojo.dom.insertAtPosition(widget.domNode, cn, pos);
+					if((pos == "after")&&(ref === cn.lastChild)){
+						cn.appendChild(widget.domNode);
+					}else{
+						dojo.dom.insertAtPosition(widget.domNode, cn, pos);
+					}
 				}
 			}
 			// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
