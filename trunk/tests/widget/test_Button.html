@@ -4,7 +4,7 @@
 <title>Dojo Button Widget Test</title>
 
 <script type="text/javascript">
-	var djConfig = {isDebug: true, ieClobberMinimal: true, debugAtAllCosts: true };
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -14,6 +14,23 @@
 	dojo.require("dojo.widget.Button");
 	dojo.require("dojo.widget.html.Button");
 	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+	function init(){
+		var buttonArgs = {
+			label: "button from script",
+			onFoo: function(){
+				dojo.debug("dojo.widget.button.onFoo");
+			},
+			onClick: function(){
+				dojo.debug("dojo.widget.button.onClick");
+			}
+		};
+		var button = dojo.widget.fromScript("Button", buttonArgs);
+		dojo.html.body().appendChild(button.domNode);
+	}
+
+	dojo.addOnLoad(init);
 </script>
 
 <button class="dojo-button" label="built using XHTML class attribute">
@@ -28,6 +45,6 @@
 
 <dojo:button label="from namespace prefix"></dojo:button>
 
-<button dojo:type="button" label="namespace'd attribute used">
+<button dojo:type="button" label="namespace'd attribute used" onClick="dojo.debug('foo');">
 	button from namespace'd attribute
 </button>
