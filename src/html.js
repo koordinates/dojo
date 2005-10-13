@@ -495,6 +495,6 @@ dojo.html.createNodesFromText = function(txt, wrap) {
 if(!dojo.evalObjPath("dojo.dom.createNodesFromText")) {
 	dojo.dom.createNodesFromText = function() {
 		dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.html.createNodesFromText instead");
-		dojo.html.createNodesFromText.apply(dojo.html, arguments);
+		return dojo.html.createNodesFromText.apply(dojo.html, arguments);
 	}
 }
