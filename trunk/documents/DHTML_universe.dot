@@ -71,8 +71,12 @@ digraph dhtml_universe
 		cw -> Gmail [ style=dotted,label="?" ];
 		cw -> Google;
 		nkand -> Google;
+		ilamb -> HalfBrain;
+		ilamb -> AlphaBlox;
 		ilamb -> Oddpost;
 		ilamb -> Yahoo;
+		ediamond -> HalfBrain;
+		ediamond -> AlphaBlox;
 		ediamond -> Oddpost;
 		ediamond -> Yahoo;
 		aplatti -> Oddpost;
@@ -112,6 +116,11 @@ digraph dhtml_universe
 		michaelvo -> Backbase;
 		cal -> Yahoo;
 		cal -> Flickr;
+		cal -> Dojo;
+		bradneuberg -> Dojo;
+		bradneuberg -> Storage;
+		bscott -> RICO;
+		djames -> RICO;
 
 		// project and company relationships
 		INFA -> NW;
@@ -131,7 +140,7 @@ digraph dhtml_universe
 		Oddpost -> Yahoo [ label="Y! bought Oddpost" ];
 		Google -> Gmail;
 		Google -> Gmaps;
-		Yahoo -> Flickr;
+		Yahoo -> Flickr [ label="Y! bought Oddpost" ];
 		ModPubSub -> RePubSub;
 		GenInt -> TIBCO [ label="bought" ];
 		RoR -> Prototype [ label="uses" ];
@@ -188,7 +197,10 @@ digraph dhtml_universe
 		glish		[ label="Eric Costello" ];
 		swillison	[ label="Simon Willison" ];
 		gmurphy		[ label="Glen Murphy" ];
-		cal		[ label="Cal Henderson" ];
+		cal			[ label="Cal Henderson" ];
+		bradneuberg	[ label="Brad Neuberg" ];
+		bscott		[ label="Bill Scott" ];
+		djames		[ label="Darren James" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -204,6 +216,7 @@ digraph dhtml_universe
 		TurboAjax	[ label="TurboAjax Group",shape=box ];
 
 		// projects and products
+		Storage		[ shape=diamond ];
 		jsxml		[ shape=diamond ];
 		HTMLArea	[ shape=diamond ];
 		AlphaBlox	[ shape=diamond ];
