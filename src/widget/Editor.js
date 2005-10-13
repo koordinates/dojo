@@ -203,7 +203,17 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 			}
 		} else {
 			if(dontValidate || this.isSupportedCommand(cmd)) {
-				if(dojo.lang.inArray(cmd, ["forecolor", "hilitecolor"])) {
+				cmd = cmd.toLowerCase();
+				if(cmd == "formatblock") {
+					var select = dojo.widget.fromScript("ToolbarSelect", {
+						name: "formatBlock",
+						values: this.formatBlockItems
+					});
+					tb.addChild(select);
+					dojo.event.connect(select, "onSetValue", function(item, value) {
+						editor.execCommand("formatBlock", value);
+					}
+				} else if(dojo.lang.inArray(cmd, ["forecolor", "hilitecolor"])) {
 					var btn = tb.addChild(dojo.widget.fromScript("ToolbarColorDialog", this.getItemProperties(cmd)));
 					dojo.event.connect(btn, "onSetValue", this, "_setValue");
 				} else {
