@@ -16,9 +16,9 @@ dojo.event = new function(){
 				}
 			}
 		}
-		var ret = "_"+anonCtr++;
+		var ret = "__"+anonCtr++;
 		while(typeof nso[ret] != "undefined"){
-			ret = "_"+anonCtr++;
+			ret = "__"+anonCtr++;
 		}
 		nso[ret] = anonFuncPtr;
 		return ret;
