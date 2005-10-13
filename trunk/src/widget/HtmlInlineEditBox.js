@@ -2,7 +2,8 @@ dojo.provide("dojo.widget.InlineEditBox");
 dojo.provide("dojo.widget.HtmlInlineEditBox");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.graphics.*");
+dojo.require("dojo.fx.*");
+dojo.require("dojo.graphics.color");
 dojo.require("dojo.string");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
@@ -145,7 +146,7 @@ dojo.widget.HtmlInlineEditBox = function() {
 	this.finishEdit = function(e) {
 		if(!this.cancelEdit(e)) { return; }
 		if(this.doFade) {
-			dojo.graphics.htmlEffects.highlight(this.editable, dojo.graphics.color.hex2rgb("#ffc"), 700, 300);
+			dojo.fx.highlight(this.editable, dojo.graphics.color.hex2rgb("#ffc"), 700, 300);
 		}
 		this.doFade = false;
 	}
