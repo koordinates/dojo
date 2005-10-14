@@ -7,7 +7,7 @@ dojo.collections.Set = new function(){
 	this.union = function(setA, setB){
 		if (setA.constructor == Array) var setA = new dojo.collections.ArrayList(setA);
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
-		if (!setA.toArray || !setB.toArray) dj_throw("Set operations can only be performed on array-based collections.");
+		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList(setA.toArray());
 		var e = setB.getIterator();
 		while (e.moveNext()){
@@ -18,7 +18,7 @@ dojo.collections.Set = new function(){
 	this.intersection = function(setA, setB){
 		if (setA.constructor == Array) var setA = new dojo.collections.ArrayList(setA);
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
-		if (!setA.toArray || !setB.toArray) dj_throw("Set operations can only be performed on array-based collections.");
+		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList();
 		var e = setB.getIterator();
 		while (e.moveNext()){
@@ -30,7 +30,7 @@ dojo.collections.Set = new function(){
 	this.difference = function(setA, setB){
 		if (setA.constructor == Array) var setA = new dojo.collections.ArrayList(setA);
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
-		if (!setA.toArray || !setB.toArray) dj_throw("Set operations can only be performed on array-based collections.");
+		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList();
 		var e = setA.getIterator();
 		while (e.moveNext()){
@@ -41,7 +41,7 @@ dojo.collections.Set = new function(){
 	this.isSubSet = function(setA, setB) {
 		if (setA.constructor == Array) var setA = new dojo.collections.ArrayList(setA);
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
-		if (!setA.toArray || !setB.toArray) dj_throw("Set operations can only be performed on array-based collections.");
+		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var e = setA.getIterator();
 		while (e.moveNext()){
 			if (!setB.contains(e.current)) return false;
@@ -51,7 +51,7 @@ dojo.collections.Set = new function(){
 	this.isSuperSet = function(setA, setB){
 		if (setA.constructor == Array) var setA = new dojo.collections.ArrayList(setA);
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
-		if (!setA.toArray || !setB.toArray) dj_throw("Set operations can only be performed on array-based collections.");
+		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var e = setB.getIterator();
 		while (e.moveNext()){
 			if (!setA.contains(e.current)) return false;

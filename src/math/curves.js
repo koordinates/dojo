@@ -149,7 +149,7 @@ dojo.math.curves = {
 		var totalWeight = 0;
 
 		this.add = function(curve, weight) {
-			if( weight < 0 ) { dj_throw("dojo.math.curves.Path.add: weight cannot be less than 0"); }
+			if( weight < 0 ) { dojo.raise("dojo.math.curves.Path.add: weight cannot be less than 0"); }
 			curves.push(curve);
 			weights.push(weight);
 			totalWeight += weight;

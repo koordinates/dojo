@@ -29,7 +29,7 @@ dojo.io.formHasFile = function(formNode){
 // TODO: Move to htmlUtils
 dojo.io.encodeForm = function(formNode, encoding){
 	if((!formNode)||(!formNode.tagName)||(!formNode.tagName.toLowerCase() == "form")){
-		dj_throw("Attempted to encode a non-form element.");
+		dojo.raise("Attempted to encode a non-form element.");
 	}
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var values = [];
