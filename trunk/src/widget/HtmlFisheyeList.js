@@ -19,6 +19,7 @@ dojo.widget.HtmlFisheyeList = function() {
 	dojo.widget.HtmlWidget.call(this);
 
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css");
+	this.blankImgPath = dojo.uri.dojoUri("src/widget/templates/images/blank.gif");
 	this.widgetType = "FisheyeList";
 
 	this.EDGE_CENTER = 0;
@@ -191,6 +192,16 @@ dojo.widget.HtmlFisheyeList = function() {
 					//dojo.debug(item.imgNode.src + " : " + item.labelText);
 
 					this.items[item.index] = item;
+
+					//
+					// set up the filter if required
+					//
+
+					var src = new String(item.imgNode.src);
+					if((src.toLowerCase().substring(src.length-4)==".png")&&(dojo.render.html.ie)){
+						item.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+src+"', sizingMethod='scale')";
+						item.imgNode.src = this.blankImgPath.toString();
+					}
 
 				}else{
 					dojo.debug("can't find an img node inside this dojo:fisheyelisitem");
