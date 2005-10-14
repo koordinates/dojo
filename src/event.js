@@ -386,25 +386,26 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 			var rate = parseInt(marr[5]);
 			var cur = new Date();
 			var timerSet = false;
-			if(dojo.event.canTimeout){
-				// FIXME: how much overhead does this all add?
-				if(marr["delayTimer"]){
-					// dojo.debug("clearing:", marr.delayTimer);
-					clearTimeout(marr.delayTimer);
-				}
-				// dojo.debug("setting delay");
-				var tod = parseInt(rate*2); // is rate*2 naive?
-				marr.delayTimer = setTimeout(function(){
-					// FIXME: on IE at least, event objects from the
-					// browser can go out of scope. How (or should?) we
-					// deal with it?
-					var mcpy = dojo.lang.shallowCopy(marr);
-					mcpy[5] = 0;
-					unrollAdvice(mcpy);
-				}, tod);
-				// dojo.debug("setting:", marr.delayTimer);
-			}
 			if((marr["last"])&&((cur-marr.last)<=rate)){
+				// this should only happen if we don't otherwise deliver the event
+				if(dojo.event.canTimeout){
+					// FIXME: how much overhead does this all add?
+					if(marr["delayTimer"]){
+						// dojo.debug("clearing:", marr.delayTimer);
+						clearTimeout(marr.delayTimer);
+					}
+					// dojo.debug("setting delay");
+					var tod = parseInt(rate*2); // is rate*2 naive?
+					marr.delayTimer = setTimeout(function(){
+						// FIXME: on IE at least, event objects from the
+						// browser can go out of scope. How (or should?) we
+						// deal with it?
+						var mcpy = dojo.lang.shallowCopy(marr);
+						mcpy[5] = 0;
+						unrollAdvice(mcpy);
+					}, tod);
+					// dojo.debug("setting:", marr.delayTimer);
+				}
 				return;
 			}else{
 				marr.last = cur;
