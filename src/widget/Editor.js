@@ -210,8 +210,9 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 						values: this.formatBlockItems
 					});
 					tb.addChild(select);
+					var _this = this;
 					dojo.event.connect(select, "onSetValue", function(item, value) {
-						editor.execCommand("formatBlock", value);
+						_this.onAction("formatBlock", value);
 					});
 				} else if(dojo.lang.inArray(cmd, ["forecolor", "hilitecolor"])) {
 					var btn = tb.addChild(dojo.widget.fromScript("ToolbarColorDialog", this.getItemProperties(cmd)));
