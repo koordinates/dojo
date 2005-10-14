@@ -5,6 +5,7 @@ dojo.event = new function(){
 
 	var anonCtr = 0;
 	this.anon = {};
+	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
 
 	this.nameAnonFunc = function(anonFuncPtr, namespaceObj){
 		var nso = (namespaceObj || this.anon);
@@ -82,7 +83,8 @@ dojo.event = new function(){
 			adviceType: (args.length>2) ? args[0] : "after",
 			precedence: "last",
 			once: false,
-			delay: null
+			delay: null,
+			rate: 0
 		};
 
 		switch(args.length){
@@ -162,6 +164,7 @@ dojo.event = new function(){
 				ao.aroundFunc = args[6];
 				ao.once = args[7];
 				ao.delay = args[8];
+				ao.rate = args[9];
 				break;
 		}
 
@@ -226,14 +229,15 @@ dojo.event = new function(){
 			kwArgs.adviceFunc = tmpName;
 		}
 		return dojo.event[fn](	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
-									kwArgs["srcObj"],
+									kwArgs["srcObj"]||dj_global,
 									kwArgs["srcFunc"],
-									kwArgs["adviceObj"]||kwArgs["targetObj"],
+									kwArgs["adviceObj"]||kwArgs["targetObj"]||dj_global,
 									kwArgs["adviceFunc"]||kwArgs["targetFunc"],
 									kwArgs["aroundObj"],
 									kwArgs["aroundFunc"],
 									kwArgs["once"],
-									kwArgs["delay"]);
+									kwArgs["delay"],
+									kwArgs["rate"]);
 	}
 
 	this.kwConnect = function(kwArgs){
@@ -343,6 +347,8 @@ dojo.event.MethodJoinPoint.prototype.unintercept = function() {
 }
 
 dojo.event.MethodJoinPoint.prototype.run = function() {
+	// FIXME: need to add support here for rates!
+
 	// dojo.hostenv.println("in run()");
 	var obj = this.object||dj_global;
 	var args = arguments;
@@ -358,16 +364,16 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	}
 
 	var unrollAdvice  = function(marr){ 
-	  if (!marr) {
-	    dojo.debug("Null argument to unrollAdvice()");
-	    return;
-	  }
+		if(!marr){
+			dojo.debug("Null argument to unrollAdvice()");
+			return;
+		}
 	  
 		// dojo.hostenv.println("in unrollAdvice()");
 		var callObj = marr[0]||dj_global;
 		var callFunc = marr[1];
 		
-		if (!callObj[callFunc]) {
+		if(!callObj[callFunc]){
 			throw new Error ("function \"" + callFunc + "\" does not exist on \"" + callObj + "\"");
 		}
 		
@@ -376,6 +382,34 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 		var undef;
 		var delay = parseInt(marr[4]);
 		var hasDelay = ((!isNaN(delay))&&(marr[4]!==null)&&(typeof marr[4] != "undefined"));
+		if(marr[5]){
+			var rate = parseInt(marr[5]);
+			var cur = new Date();
+			var timerSet = false;
+			if(dojo.event.canTimeout){
+				// FIXME: how much overhead does this all add?
+				if(marr["delayTimer"]){
+					// dojo.debug("clearing:", marr.delayTimer);
+					clearTimeout(marr.delayTimer);
+				}
+				// dojo.debug("setting delay");
+				var tod = parseInt(rate*2); // is rate*2 naive?
+				marr.delayTimer = setTimeout(function(){
+					// FIXME: on IE at least, event objects from the
+					// browser can go out of scope. How (or should?) we
+					// deal with it?
+					var mcpy = dojo.lang.shallowCopy(marr);
+					mcpy[5] = 0;
+					unrollAdvice(mcpy);
+				}, tod);
+				// dojo.debug("setting:", marr.delayTimer);
+			}
+			if((marr["last"])&&((cur-marr.last)<=rate)){
+				return;
+			}else{
+				marr.last = cur;
+			}
+		}
 		var to = {
 			args: [],
 			jp_: this,
@@ -384,6 +418,8 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 				return callObj[callFunc].apply(callObj, to.args);
 			}
 		};
+
+		// FIXME: need to enforce rates for a connection here!
 
 		/*
 		// FIXME: how slow is this? Is there a better/faster way to get this
@@ -448,19 +484,19 @@ dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 	this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 					args["aroundObj"], args["aroundFunc"], 
 					args["adviceType"], args["precedence"], 
-					args["once"], args["delay"]);
+					args["once"], args["delay"], args["rate"]);
 }
 
 dojo.event.MethodJoinPoint.prototype.addAdvice = function(	thisAdviceObj, thisAdvice, 
 															thisAroundObj, thisAround, 
 															advice_kind, precedence, 
-															once, delay){
+															once, delay, rate){
 	var arr = this.getArr(advice_kind);
 	if(!arr){
 		dojo.raise("bad this: " + this);
 	}
 
-	var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay];
+	var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate];
 	
 	if(once){
 		if(this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr) >= 0){
