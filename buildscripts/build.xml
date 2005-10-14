@@ -446,7 +446,19 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 	<target name="compress" depends="-fix-config, list-profile-deps"
 		description="runs compression code over release JS files">
 		<echo>profileFile: ${profileFile}</echo>
+		<!-- write the list of files included to the release directory -->
+		<echo file="${release_dir}/build.txt">
+Files baked into this package:
+
+${profileDeps}
+
+		</echo>
+
+		<!-- now write 'em all to a single file -->
 		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/source.__package__.js">
+		<!--
+		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/dojo.js">
+		-->
 			<filelist 
 				dir="."
 				files="${profileDeps}" />
@@ -471,7 +483,7 @@ buildRestFiles( dojo.getProperty("docs_dir"),
 
 		<!-- add build notice -->
 		<replaceregexp match="^" byline="false" replace="${build_notice}">
-			<fileset dir="${release_dir}" includes="__package__.js"/>
+			<fileset dir="${release_dir}" includes="dojo.js"/>
 		</replaceregexp>
 
 		<!-- add copyright notice -->
