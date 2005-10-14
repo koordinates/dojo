@@ -286,7 +286,7 @@ dojo.event.browser = new function(){
 			if(evt.toElement){ evt.relatedTarget = evt.toElement; }
 			evt.callListener = function(listener, curTarget){
 				if(typeof listener != 'function'){
-					dj_throw("listener not a function: " + listener);
+					dojo.raise("listener not a function: " + listener);
 				}
 				evt.currentTarget = curTarget;
 				var ret = listener.call(curTarget, evt);

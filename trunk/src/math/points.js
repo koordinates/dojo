@@ -5,7 +5,7 @@ dojo.require("dojo.math");
 dojo.math.points = {
 	translate: function(a, b) {
 		if( a.length != b.length ) {
-			dj_throw("dojo.math.translate: points not same size (a:[" + a + "], b:[" + b + "])");
+			dojo.raise("dojo.math.translate: points not same size (a:[" + a + "], b:[" + b + "])");
 		}
 		var c = new Array(a.length);
 		for(var i = 0; i < a.length; i++) {
@@ -16,7 +16,7 @@ dojo.math.points = {
 
 	midpoint: function(a, b) {
 		if( a.length != b.length ) {
-			dj_throw("dojo.math.midpoint: points not same size (a:[" + a + "], b:[" + b + "])");
+			dojo.raise("dojo.math.midpoint: points not same size (a:[" + a + "], b:[" + b + "])");
 		}
 		var c = new Array(a.length);
 		for(var i = 0; i < a.length; i++) {

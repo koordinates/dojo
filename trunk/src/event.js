@@ -178,10 +178,10 @@ dojo.event = new function(){
 		}
 
 		if(!ao.srcObj){
-			dj_throw("bad srcObj for srcFunc: "+ao.srcFunc);
+			dojo.raise("bad srcObj for srcFunc: "+ao.srcFunc);
 		}
 		if(!ao.adviceObj){
-			dj_throw("bad adviceObj for adviceFunc: "+ao.adviceFunc);
+			dojo.raise("bad adviceObj for adviceFunc: "+ao.adviceFunc);
 		}
 		return ao;
 	}
@@ -457,7 +457,7 @@ dojo.event.MethodJoinPoint.prototype.addAdvice = function(	thisAdviceObj, thisAd
 															once, delay){
 	var arr = this.getArr(advice_kind);
 	if(!arr){
-		dj_throw("bad this: " + this);
+		dojo.raise("bad this: " + this);
 	}
 
 	var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay];
