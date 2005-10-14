@@ -12,6 +12,7 @@ dojo.provide("dojo.widget.HtmlFisheyeListItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.dom");
+dojo.require("dojo.html");
 
 dojo.widget.HtmlFisheyeList = function() {
 
@@ -48,6 +49,8 @@ dojo.widget.HtmlFisheyeList = function() {
 	this.attachEdge = 'center';
 	this.labelEdge = 'bottom';
 
+	this.enableCrappySvgSupport = 0;
+
 	//
 	//
 	//
@@ -64,7 +67,26 @@ dojo.widget.HtmlFisheyeList = function() {
 		}
 
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		this.domNode.style.display = 'none';
+		dojo.html.disableSelection(this.domNode);
+
+
+		//
+		// hide the children...
+		//
+
+		for(var i=this.domNode.childNodes.length-1; i>=0; i--){
+
+			if (this.domNode.childNodes[i].nodeType == dojo.dom.ELEMENT_NODE){
+
+				this.domNode.childNodes[i].style.display = 'none';
+			}
+
+			if (this.domNode.childNodes[i].nodeType == dojo.dom.TEXT_NODE){
+
+				dojo.dom.removeNode(this.domNode.childNodes[i]);
+			}
+		}		
+
 
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.selectedNode = -1;
@@ -223,15 +245,14 @@ dojo.widget.HtmlFisheyeList = function() {
 		// create the bar
 		//
 
-		this.barElm = document.createElement('div');
-		this.barElm.style.position = 'relative';
-		this.barElm.style.left = '0px';
-		this.barElm.style.top = '0px';
-		this.barElm.style.width = this.barWidth + 'px';
-		this.barElm.style.height = this.barHeight + 'px';
-		this.barElm.style.border = '1px solid blue';
+		this.domNode.style.position = 'relative';
+		this.domNode.style.left = '0px';
+		this.domNode.style.top = '0px';
+		this.domNode.style.width = this.barWidth + 'px';
+		this.domNode.style.height = this.barHeight + 'px';
 
-		dojo.dom.insertAfter(this.barElm, this.domNode);
+		dojo.html.addClass(this.domNode, "dojoHtmlFisheyeListBar");
+
 
 
 		//
@@ -248,13 +269,11 @@ dojo.widget.HtmlFisheyeList = function() {
 			elm.style.top    = itm.posY + 'px';
 			elm.style.width  = this.itemWidth + 'px';
 			elm.style.height = this.itemHeight + 'px';
-			//elm.style.backgroundColor = (i%2==0)?'#eee':'#ccc';
-			//elm.appendChild(document.createTextNode('ITEM '+i));			
 			elm.style.zIndex = 2;
 
 			itm.elm = elm;
 
-			this.barElm.appendChild(elm);
+			this.domNode.appendChild(elm);
 
 
 			//
@@ -265,6 +284,8 @@ dojo.widget.HtmlFisheyeList = function() {
 			itm.linkNode.href = "#"+i;
 			itm.linkNode.onclick = (function(){ var src=itm.srcDiv.getAttribute("onclickicon"); return function(){ eval(src); return false; }})();
 			elm.appendChild(itm.linkNode);
+
+			dojo.html.addClass(itm.linkNode, "dojoHtmlFisheyeListItemLink");
 
 
 			//
@@ -278,8 +299,45 @@ dojo.widget.HtmlFisheyeList = function() {
 			itm.imgNode.style.left = this.itemPadding+'%';
 			itm.imgNode.style.top = this.itemPadding+'%';
 			itm.imgNode.style.width = (100 - 2 * this.itemPadding) + '%';
-			itm.imgNode.style.heigh = (100 - 2 * this.itemPadding) + '%';
+			itm.imgNode.style.height = (100 - 2 * this.itemPadding) + '%';
 			itm.imgNode.style.border = '0px';
+			itm.imgNode.style.zIndex = 2;
+
+			dojo.html.addClass(itm.imgNode, "dojoHtmlFisheyeListItemImage");
+
+
+			//
+			// create an svg node instead?
+			//
+
+			//dojo.debug();
+
+			if (itm.srcDiv.getAttribute('svgSrc') && (this.enableCrappySvgSupport == '1')){
+
+				itm.svgNode = this.createSvgNode(itm.srcDiv.getAttribute('svgSrc'));
+				itm.linkNode.appendChild(itm.svgNode);
+
+				itm.imgNode.style.display = 'none';
+
+				itm.imgNode = document.createElement('div');
+				itm.imgNode.style.position = 'absolute';
+				itm.imgNode.style.left = this.itemPadding+'%';
+				itm.imgNode.style.top = this.itemPadding+'%';
+				itm.imgNode.style.width = (100 - 2 * this.itemPadding) + '%';
+				itm.imgNode.style.height = (100 - 2 * this.itemPadding) + '%';
+				itm.imgNode.style.border = '0px';
+				itm.imgNode.style.zIndex = 2;
+				itm.linkNode.appendChild(itm.imgNode);
+
+				itm.svgNode.style.position = 'absolute';
+				itm.svgNode.style.left = this.itemPadding+'%';
+				itm.svgNode.style.top = this.itemPadding+'%';
+				itm.svgNode.style.width = (100 - 2 * this.itemPadding) + '%';
+				itm.svgNode.style.height = (100 - 2 * this.itemPadding) + '%';
+				itm.svgNode.style.zIndex = 1;
+
+				itm.svgNode.setSize(this.itemWidth, this.itemHeight);
+			}
 
 
 			//
@@ -292,19 +350,23 @@ dojo.widget.HtmlFisheyeList = function() {
 
 				itm.lblNode = document.createElement('div');
 				itm.lblNode.style.position = 'absolute';
-				//itm.lblNode.style.backgroundColor = 'pink';
 				itm.lblNode.style.left   = '0px';
 				itm.lblNode.style.top    = '0px';
 				itm.lblNode.appendChild(document.createTextNode(itm.labelText));
 
-				this.barElm.appendChild(itm.lblNode);
+				dojo.html.addClass(itm.lblNode, "dojoHtmlFisheyeListItemLabel");
 
-				itm.labelW = itm.lblNode.offsetWidth;
-				itm.labelH = itm.lblNode.offsetHeight;
+				this.domNode.appendChild(itm.lblNode);
 
-				itm.lblNode.style.width = itm.labelW + 'px';
-				itm.lblNode.style.height = itm.labelH + 'px';
-				itm.lblNode.style.top = -itm.labelH + 'px';
+				itm.labelW = dojo.style.getOuterWidth(itm.lblNode);
+				itm.labelH = dojo.style.getOuterHeight(itm.lblNode);
+
+				dojo.style.setOuterWidth(itm.lblNode, itm.labelW);
+				dojo.style.setOuterHeight(itm.lblNode, itm.labelH);
+
+				//itm.lblNode.style.width = itm.labelW + 'px';
+				//itm.lblNode.style.height = itm.labelH + 'px';
+				//itm.lblNode.style.top = -itm.labelH + 'px';
 				itm.lblNode.style.display = 'none';
 
 				elm.appendChild(itm.lblNode);
@@ -335,7 +397,7 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		//this.debugElm = document.createElement('div');
 		//this.debugElm.appendChild(document.createTextNode('DEBUGGER!'));
-		//dojo.dom.insertAfter(this.debugElm, this.barElm);
+		//dojo.dom.insertAfter(this.debugElm, this.domNode);
 
 
 		//
@@ -548,6 +610,10 @@ dojo.widget.HtmlFisheyeList = function() {
 		this.items[p].elm.style.width  = w + 'px';
 		this.items[p].elm.style.height = h + 'px';
 
+		if (this.items[p].svgNode){
+			this.items[p].svgNode.setSize(w, h);
+		}
+
 		//this.setLabelPosition(this.items[p]);
 	}
 
@@ -697,7 +763,7 @@ dojo.widget.HtmlFisheyeList = function() {
 
 	this.calcHitGrid = function(){
 
-		var pos = this.findPos(this.barElm);
+		var pos = this.findPos(this.domNode);
 
 		this.hitX1 = pos.x - this.proximityLeft;
 		this.hitY1 = pos.y - this.proximityTop;
@@ -720,6 +786,57 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		dojo.dom.replaceChildren(this.debugElm, document.createTextNode(text));
 	}
+
+
+	this.createSvgNode = function(src){
+
+		var elm = document.createElement('embed');
+		elm.src = src;
+		elm.type = 'image/svg+xml';
+		//elm.style.border = '1px solid black';
+		elm.style.width = '1px';
+		elm.style.height = '1px';
+		elm.loaded = 0;
+		elm.setSizeOnLoad = 0;
+
+		elm.onload = function(){
+			this.svgRoot = this.getSVGDocument().rootElement;
+			this.svgDoc = this.getSVGDocument().documentElement;
+			this.zeroWidth = this.svgRoot.width.baseVal.value;
+			this.zeroHeight = this.svgRoot.height.baseVal.value;
+			this.loaded = 1;
+
+			if (this.setSizeOnLoad){
+				this.setSize(this.setWidth, this.setHeight);
+			}
+		}
+
+		elm.setSize = function(w, h){
+			if (!this.loaded){
+				this.setWidth = w;
+				this.setHeight = h;
+				this.setSizeOnLoad = 1;
+				return;
+			}
+
+			this.style.width = w+'px';
+			this.style.height = h+'px';
+			this.svgRoot.width.baseVal.value = w;
+			this.svgRoot.height.baseVal.value = h;
+
+			var scale_x = w / this.zeroWidth;
+			var scale_y = h / this.zeroHeight;
+
+			for(var i=0; i<this.svgDoc.childNodes.length; i++){
+				if (this.svgDoc.childNodes[i].setAttribute){
+					this.svgDoc.childNodes[i].setAttribute( "transform", "scale("+scale_x+","+scale_y+")" );
+				}
+			}
+		}
+
+		return elm;
+	}
+
 }
 
 dojo.inherits(dojo.widget.HtmlFisheyeList, dojo.widget.HtmlWidget);
