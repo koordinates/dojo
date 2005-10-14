@@ -83,12 +83,10 @@ dojo.widget.HtmlDialog = function() {
 		if(typeof content == "string") {
 			this.content.innerHTML = content;
 		} else if(content.nodeType != undefined) {
-			while(this.content.hasChildNodes()) {
-				this.content.removeChild(this.content.firstChild);
-			}
+			dojo.dom.removeChildren(this.content);
 			this.content.appendChild(content);
 		} else {
-			dj_throw("Tried to setContent with unknownn content (" + content + ")");
+			dojo.raise("Tried to setContent with unknown content (" + content + ")");
 		}
 	}
 
