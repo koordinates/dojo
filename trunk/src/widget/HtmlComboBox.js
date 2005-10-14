@@ -42,14 +42,20 @@ dojo.widget.HtmlComboBox = function(){
 		}else if(dojo.render.html.ie){
 			// in the case of a mouse click in a popup being handled,
 			// then the document.selection is not the textarea, but the popup
-			var r = document.selection.createRange();
+			// var r = document.selection.createRange();
 			// hack to get IE 6 to play nice. What a POS browser.
-			var tr = r.duplicate();
-			var ntr = document.selection.createRange().duplicate();
+			// var tr = r.duplicate();
+			var tr = document.selection.createRange().duplicate();
+			// var ntr = document.selection.createRange().duplicate();
+			var ntr = element.createTextRange();
 			// FIXME: this seems to work but I'm getting some execptions on reverse-tab
 			tr.move("character",0);
 			ntr.move("character",0);
-			ntr.moveToElementText(element);
+			/*
+			try{
+				ntr.moveToElementText(element);
+			}catch(e){ dojo.debug(e); }
+			*/
 			ntr.setEndPoint("EndToEnd", tr);
 			return String(ntr.text).replace(/\r/g,"").length;
 		}
