@@ -364,9 +364,6 @@ dojo.widget.HtmlFisheyeList = function() {
 				dojo.style.setOuterWidth(itm.lblNode, itm.labelW);
 				dojo.style.setOuterHeight(itm.lblNode, itm.labelH);
 
-				//itm.lblNode.style.width = itm.labelW + 'px';
-				//itm.lblNode.style.height = itm.labelH + 'px';
-				//itm.lblNode.style.top = -itm.labelH + 'px';
 				itm.lblNode.style.display = 'none';
 
 				elm.appendChild(itm.lblNode);
@@ -376,8 +373,8 @@ dojo.widget.HtmlFisheyeList = function() {
 				// set up label handlers
 				//
 
-				var h1 = (function(){ var node = itm.lblNode; return function(){ node.style.display = 'block'; } })();
-				var h2 = (function(){ var node = itm.lblNode; return function(){ node.style.display = 'none'; } })();
+				var h1 = (function(){ var o=self; var j=i; return function(){ o.items[j].lblNode.style.display = 'block'; o.positionLabel(j); } })();
+				var h2 = (function(){ var o=self; var j=i; return function(){ o.items[j].lblNode.style.display = 'none'; } })();
 
 				dojo.event.connect(itm.imgNode, "onmouseover", h1);
 				dojo.event.connect(itm.imgNode, "onmouseout",  h2);
@@ -404,7 +401,7 @@ dojo.widget.HtmlFisheyeList = function() {
 		// connect the event proc
 		//
 
-		dojo.event.connect(document.documentElement, "onmousemove", function(e) {
+		var mouse_handler = function(e) {
 
 			var p = self.getCursorPos(e);
 
@@ -420,7 +417,17 @@ dojo.widget.HtmlFisheyeList = function() {
 				}
 			}
 
-		});
+		};
+
+		var kwArgs = {
+			srcObj: document.documentElement,
+			srcFunc: "onmousemove",
+			adviceFunc: mouse_handler,
+			rate: 50
+		};
+
+		//dojo.event.kwConnect(kwArgs);
+		dojo.event.connect(document.documentElement, "onmousemove", mouse_handler);
 	}
 
 	this.onGridMouseMove = function(x, y){
