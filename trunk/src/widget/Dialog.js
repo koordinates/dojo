@@ -11,6 +11,7 @@ dojo.widget.HtmlDialog = function() {
 	dojo.widget.HtmlDialog.superclass.constructor.call(this);
 
 	this.widgetType = "Dialog";
+	this.isContainer = true;
 
 	this.templateString = '<div class="dojo-dialog">'
 		+ '<span dojoAttachPoint="tabStart" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
