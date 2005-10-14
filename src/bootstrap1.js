@@ -258,7 +258,7 @@ dojo.hostenv = (function(){
 		}
 	}
 
-var djc = djConfig;
+	var djc = djConfig;
 	function _def(obj, name, def){
 		return (dj_undef(name, obj) ? def : obj[name]);
 	}
