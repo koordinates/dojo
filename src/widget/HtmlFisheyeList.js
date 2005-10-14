@@ -69,7 +69,6 @@ dojo.widget.HtmlFisheyeList = function() {
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		dojo.html.disableSelection(this.domNode);
 
-
 		//
 		// hide the children...
 		//
@@ -352,6 +351,7 @@ dojo.widget.HtmlFisheyeList = function() {
 				itm.lblNode.style.position = 'absolute';
 				itm.lblNode.style.left   = '0px';
 				itm.lblNode.style.top    = '0px';
+				itm.lblNode.style.margin = '0';
 				itm.lblNode.appendChild(document.createTextNode(itm.labelText));
 
 				dojo.html.addClass(itm.lblNode, "dojoHtmlFisheyeListItemLabel");
@@ -490,7 +490,6 @@ dojo.widget.HtmlFisheyeList = function() {
 
 			this.setItemSize(i, weight * off_weight);
 		}
-
 
 		//
 		// set the positions
