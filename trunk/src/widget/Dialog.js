@@ -34,14 +34,14 @@ dojo.widget.HtmlDialog = function() {
 	this.trapTabs = function(e) {
 		if(e.target == this.tabStart) {
 			if(fromTrap) {
-				fromTrag = false;
+				fromTrap = false;
 			} else {
 				fromTrap = true;
 				this.tabEnd.focus();
 			}
 		} else if(e.target == this.tabEnd) {
 			if(fromTrap) {
-				fromTrag = false;
+				fromTrap = false;
 			} else {
 				fromTrap = true;
 				this.tabStart.focus();
