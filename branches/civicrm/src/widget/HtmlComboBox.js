@@ -7,6 +7,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
 
+
 dojo.widget.HtmlComboBox = function(){
 	dojo.widget.DomComboBox.call(this);
 	dojo.widget.HtmlWidget.call(this);
