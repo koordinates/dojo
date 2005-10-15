@@ -207,6 +207,19 @@ dojo.widget.HtmlComboBox = function(){
 				dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
 				dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 			}
+		}else{
+			// check to see if we can populate the list from <option> elements
+			var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+			if((node)&&(node.nodeName.toLowerCase() == "select")){
+				// NOTE: we're not handling <optgroup> here yet
+				var opts = node.getElementsByTagName("option");
+				var ol = opts.length;
+				var data = [];
+				for(var x=0; x<ol; x++){
+					data.push([new String(opts[x].innerHTML), new String(opts[x].value)]);
+				}
+				this.dataProvider.setData(data);
+			}
 		}
 	}
 
