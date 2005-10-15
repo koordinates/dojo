@@ -121,6 +121,10 @@ digraph dhtml_universe
 		bradneuberg -> Storage;
 		bscott -> RICO;
 		djames -> RICO;
+		sschiller -> Yahoo;
+		svisscher -> Q42;
+		mwubben -> sIFR;
+		mdavidson -> sIFR;
 
 		// project and company relationships
 		INFA -> NW;
@@ -146,6 +150,7 @@ digraph dhtml_universe
 		RoR -> Prototype [ label="uses" ];
 		Prototype -> Script_aculo_us [ label="Script.aculo.us\nrequires Prototype" ];
 		Prototype -> RICO [ label="RICO requires\nPrototype" ];
+		Q42 -> XOpus;
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
@@ -201,6 +206,10 @@ digraph dhtml_universe
 		bradneuberg	[ label="Brad Neuberg" ];
 		bscott		[ label="Bill Scott" ];
 		djames		[ label="Darren James" ];
+		sschiller	[ label="Scott Schiller" ];
+		svisscher	[ label="Sjoerd Visscher" ];
+		mwubben		[ label="Mark Wubben" ];
+		mdavidson	[ label="Mike Davidson" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -214,6 +223,7 @@ digraph dhtml_universe
 		Backbase	[ label="Backbase",shape=box ];
 		Renkoo		[ label="Renkoo",shape=box ];
 		TurboAjax	[ label="TurboAjax Group",shape=box ];
+		Q42			[ label="Q42",shape=box ];
 
 		// projects and products
 		Storage		[ shape=diamond ];
@@ -256,6 +266,8 @@ digraph dhtml_universe
 		MochiKit	[ shape=diamond ];
 		JPSpan		[ shape=diamond ];
 		Flickr		[ shape=diamond ];
+		XOpus		[ shape=diamond ];
+		sIFR		[ shape=diamond ];
 	}
 
 // vim:ts=4:noet:ai
