@@ -374,6 +374,8 @@ dojo.widget.HtmlFisheyeList = function() {
 
 				dojo.style.setOuterWidth(itm.lblNode, itm.labelW);
 				dojo.style.setOuterHeight(itm.lblNode, itm.labelH);
+				
+				this.domNode.removeChild(itm.lblNode);
 
 				itm.lblNode.style.display = 'none';
 
