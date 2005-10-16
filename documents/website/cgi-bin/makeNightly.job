@@ -3,16 +3,16 @@
 # Folder names
 DOJO=dojo-`date +%F`
 NIGHTLY=nightly
-OUT_DIR=/srv/www/htdocs/archive
+OUT_DIR=/srv/www/vhosts/archive
 TMP=~/.dojotmp
 
-mkdir $TMP/profiles
-mkdir $OUT_DIR/$DOJO
+mkdir -p $TMP/profiles
+mkdir -p $OUT_DIR/$DOJO
 cd $OUT_DIR/$DOJO
 
 # Get checkout
 echo Grabbing SVN trunk...
-svn co -q http://localhost/svn/dojo/trunk .
+svn co -q http://dojotoolkit.org/svn/dojo/trunk .
 
 # Kill the SVN bits (makes things huge otherwise)
 echo Removing SVN bits...
@@ -21,15 +21,20 @@ do
   rm -rf $svn
 done
 
+# Fixor ant
+CLASSPATH="$OUT_DIR/$DOJO/buildscripts/lib/js.jar:$OUT_DIR/$DOJO/buildscripts/lib/jython.jar"
+export CLASSPATH
+
 # Build profiles
 echo Build profiles...
 cd buildscripts
 ant # get it setup
+
 for pfile in $(cd profiles; ls *.profile.js; cd ..)
 do
 	profile=`echo $pfile | sed 's/.profile.js//g'`
 	echo Building profile: $profile
-	ant -q -Ddocless=true -Dprofile=$profile release
+	ant -q -Ddocless=true -Dnostrip=true -Dprofile=$profile release
 	proName=$profile-`date +%F`
 	cd ../release
 	tar -zcf $TMP/profiles/$proName.tgz .
