@@ -1,4 +1,5 @@
 dojo.provide("dojo.widget.HtmlComboBox");
+
 dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
