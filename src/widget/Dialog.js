@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.HtmlDialog");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.graphics.*");
+dojo.require("dojo.fx.*");
 dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:dialog");
