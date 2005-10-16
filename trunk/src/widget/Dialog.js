@@ -14,11 +14,11 @@ dojo.widget.HtmlDialog = function() {
 	this.widgetType = "Dialog";
 	this.isContainer = true;
 
-	this.templateString = '<div class="dojo-dialog">'
-		+ '<span dojoAttachPoint="tabStart" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
-		+ '<div dojoAttachPoint="content"></div>'
-		+ '<span dojoAttachPoint="tabEnd" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
-		+ '</div>';
+	this.templateString = ['<div class="dojo-dialog">',
+		'<span dojoAttachPoint="tabStart" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>',
+		'<div dojoAttachPoint="content"></div>',
+		'<span dojoAttachPoint="tabEnd" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>',
+		'</div>'].join();
 
 	this._scrollConnected = 0;
 
