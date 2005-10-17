@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.HtmlComboBox");
-
 dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
@@ -8,13 +7,9 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
 
-
 dojo.widget.HtmlComboBox = function(){
-	dojo.widget.DomComboBox.call(this);
+	dojo.widget.ComboBox.call(this);
 	dojo.widget.HtmlWidget.call(this);
-
-	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html");
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css");
 
 	this.autoComplete = true;
 	this.formInputName = "";
@@ -29,14 +24,28 @@ dojo.widget.HtmlComboBox = function(){
 	this.searchDelay = 100;
 	this.timeoutWrapperName = null;
 	this.dataUrl = "";
-	this.mode = "local"; // can also be "remote" for JSON-returning live search or "html" for dumber live search
+	// mode can also be "remote" for JSON-returning live search or "html" for
+	// dumber live search
+	this.mode = "local"; 
 	this.selectedResult = null;
-	var _highlighted_option = null;
-	var _prev_key_backspace = false;
-	var _prev_key_esc = false;
-	var _result_list_open = false;
+	this._highlighted_option = null;
+	this._prev_key_backspace = false;
+	this._prev_key_esc = false;
+	this._result_list_open = false;
+}
 
-	this.getCaretPos = function(element){
+dojo.inherits(dojo.widget.HtmlComboBox, dojo.widget.HtmlWidget);
+
+// copied from superclass since we can't really over-ride via prototype
+dojo.lang.extend(dojo.widget.HtmlComboBox, dojo.widget.ComboBox.defaults);
+
+dojo.lang.extend(dojo.widget.HtmlComboBox, {
+
+
+	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css"),
+
+	getCaretPos: function(element){
 		// FIXME: we need to figure this out for Konq/Safari!
 		if(dojo.render.html.mozilla){
 			// FIXME: this is totally borked on Moz < 1.3. Any recourse?
@@ -44,25 +53,31 @@ dojo.widget.HtmlComboBox = function(){
 		}else if(dojo.render.html.ie){
 			// in the case of a mouse click in a popup being handled,
 			// then the document.selection is not the textarea, but the popup
-			var r = document.selection.createRange();
+			// var r = document.selection.createRange();
 			// hack to get IE 6 to play nice. What a POS browser.
-			var tr = r.duplicate();
-			var ntr = document.selection.createRange().duplicate();
+			// var tr = r.duplicate();
+			var tr = document.selection.createRange().duplicate();
+			// var ntr = document.selection.createRange().duplicate();
+			var ntr = element.createTextRange();
 			// FIXME: this seems to work but I'm getting some execptions on reverse-tab
 			tr.move("character",0);
 			ntr.move("character",0);
-			ntr.moveToElementText(element);
+			/*
+			try{
+				ntr.moveToElementText(element);
+			}catch(e){ dojo.debug(e); }
+			*/
 			ntr.setEndPoint("EndToEnd", tr);
 			return String(ntr.text).replace(/\r/g,"").length;
 		}
-	}
+	},
 
-	this.setCaretPos = function(element, location){
+	setCaretPos: function(element, location){
 		location = parseInt(location);
 		this.setSelectedRange(element, location, location);
-	}
+	},
 
-	this.setSelectedRange = function(element, start, end){
+	setSelectedRange: function(element, start, end){
 		if(!end){ end = element.value.length; }
 		// Mozilla
 		// parts borrowed from http://www.faqts.com/knowledge_base/view.phtml/aid/13562/fid/130
@@ -92,61 +107,60 @@ dojo.widget.HtmlComboBox = function(){
 				twe.dispatchEvent(te);
 			}
 		}
-	}
+	},
 
-	this.killEvent = function(evt){
+	killEvent: function(evt){
 		evt.preventDefault();
 		evt.stopPropagation();
-	}
+	},
 
-	this.onKeyDown = function(evt){
-		// dojo.debug(evt);
-	}
+	onKeyDown: function(evt){
+	},
 
-	this.setSelectedValue = function(value){
+	setSelectedValue: function(value){
 		// FIXME, not sure what to do here!
 		this.comboBoxSelectionValue.value = value;
 		this.hideResultList();
-	}
+	},
 
-	this.highlightNextOption = function(){
-		if(_highlighted_option){
-			dojo.html.removeClass(_highlighted_option, "cbItemHighlight");
+	highlightNextOption: function(){
+		if(this._highlighted_option){
+			dojo.html.removeClass(this._highlighted_option, "cbItemHighlight");
 		}
-		if((!_highlighted_option)||(!_highlighted_option.nextSibling)){
-			_highlighted_option = this.optionsListNode.firstChild;
+		if((!this._highlighted_option)||(!this._highlighted_option.nextSibling)){
+			this._highlighted_option = this.optionsListNode.firstChild;
 		}else{
-			_highlighted_option = _highlighted_option.nextSibling;
+			this._highlighted_option = this._highlighted_option.nextSibling;
 		}
-		dojo.html.addClass(_highlighted_option, "cbItemHighlight");
-	}
+		dojo.html.addClass(this._highlighted_option, "cbItemHighlight");
+	},
 
-	this.highlightPrevOption = function(){
-		if(_highlighted_option){
-			dojo.html.removeClass(_highlighted_option, "cbItemHighlight");
+	highlightPrevOption: function(){
+		if(this._highlighted_option){
+			dojo.html.removeClass(this._highlighted_option, "cbItemHighlight");
 		}
-		if((!_highlighted_option)||(!_highlighted_option.previousSibling)){
-			_highlighted_option = this.optionsListNode.lastChild;
+		if((!this._highlighted_option)||(!this._highlighted_option.previousSibling)){
+			this._highlighted_option = this.optionsListNode.lastChild;
 		}else{
-			_highlighted_option = _highlighted_option.previousSibling;
+			this._highlighted_option = this._highlighted_option.previousSibling;
 		}
-		dojo.html.addClass(_highlighted_option, "cbItemHighlight");
-	}
+		dojo.html.addClass(this._highlighted_option, "cbItemHighlight");
+	},
 
-	this.onKeyUp = function(evt){
+	onKeyUp: function(evt){
 		if(evt.keyCode == 27){ // esc is 27
 			this.hideResultList();
-			if(_prev_key_esc){
+			if(this._prev_key_esc){
 				this.textInputNode.blur();
 				this.selectedResult = null;
 			}
-			_prev_key_esc = true;
+			this._prev_key_esc = true;
 			return;
 		}else if(evt.keyCode == 32){ // space is 32
 			this.selectOption();
 			return;
 		}else if(evt.keyCode == 40){ // down is 40
-			if(!_result_list_open){
+			if(!this._result_list_open){
 				this.startSearchFromInput();
 			}
 			this.highlightNextOption();
@@ -166,13 +180,13 @@ dojo.widget.HtmlComboBox = function(){
 		}
 
 		// backspace is 8
-		_prev_key_backspace = (evt.keyCode == 8) ? true : false;
-		_prev_key_esc = false;
+		this._prev_key_backspace = (evt.keyCode == 8) ? true : false;
+		this._prev_key_esc = false;
 
 		if(this.searchTimer){
 			clearTimeout(this.searchTimer);
 		}
-		if((_prev_key_backspace)&&(!this.textInputNode.value.length)){
+		if((this._prev_key_backspace)&&(!this.textInputNode.value.length)){
 			this.hideResultList();
 		}else{
 			var _this = this;
@@ -183,14 +197,15 @@ dojo.widget.HtmlComboBox = function(){
 			}
 			this.searchTimer = setTimeout(this.timeoutWrapperName+"()", this.searchDelay);
 		}
-	}
+	},
 
-	this.fillInTemplate = function(args, frag){
+	fillInTemplate: function(args, frag){
 		// FIXME: need to get/assign DOM node names for form participation here.
 		this.comboBoxValue.name = this.name;
 		this.comboBoxSelectionValue.name = this.name+"_selected";
 
 		// FIXME: add logic
+		this.dataProvider = new dojo.widget.ComboBoxDataProvider();
 
 		if(!dojo.string.isBlank(this.dataUrl)){
 			if("local" == this.mode){
@@ -206,8 +221,6 @@ dojo.widget.HtmlComboBox = function(){
 				});
 			}else if("remote" == this.mode){
 				this.dataProvider = new dojo.widget.incrementalComboBoxDataProvider(this.dataUrl);
-				dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
-				dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 			}
 		}else{
 			// check to see if we can populate the list from <option> elements
@@ -223,16 +236,19 @@ dojo.widget.HtmlComboBox = function(){
 				this.dataProvider.setData(data);
 			}
 		}
-	}
+	},
 
-	this.openResultList = function(results){
+	openResultList: function(results){
 		this.clearResultList();
 		if(!results.length){
 			this.hideResultList();
 		}else{
 			this.showResultList();
 		}
-		if((this.autoComplete)&&(results.length)&&(!_prev_key_backspace)){
+		if(	(this.autoComplete)&&
+			(results.length)&&
+			(!this._prev_key_backspace)&&
+			(this.textInputNode.value.length > 0)){
 			var cpos = this.getCaretPos(this.textInputNode);
 			// only try to extend if we added the last charachter at the end of the input
 			if((cpos+1) >= this.textInputNode.value.length){
@@ -258,17 +274,17 @@ dojo.widget.HtmlComboBox = function(){
 		dojo.event.connect(this.optionsListNode, "onclick", this, "selectOption");
 		dojo.event.kwConnect({
 			once: true,
-			srcObj: document.body,
+			srcObj: dojo.html.body(),
 			srcFunc: "onclick", 
 			adviceObj: this, 
 			adviceFunc: "hideResultList"
 		});
-		// dojo.event.connect(document.body, "onclick", this, "hideResultList");
-	}
+		// dojo.event.connect(dojo.html.body(), "onclick", this, "hideResultList");
+	},
 
-	this.selectOption = function(evt){
+	selectOption: function(evt){
 		if(!evt){
-			evt = { target: _highlighted_option };
+			evt = { target: this._highlighted_option };
 		}
 
 		if(!dojo.dom.isDescendantOf(evt.target, this.optionsListNode)){
@@ -278,7 +294,7 @@ dojo.widget.HtmlComboBox = function(){
 		var tgt = evt.target;
 		while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 			tgt = tgt.parentNode;
-			if(tgt === document.body){
+			if(tgt === dojo.html.body()){
 				return false;
 			}
 		}
@@ -288,25 +304,29 @@ dojo.widget.HtmlComboBox = function(){
 		this.comboBoxValue = tgt.getAttribute("resultName");
 		this.comboBoxSelectionValue = tgt.getAttribute("resultValue");
 		this.hideResultList();
-	}
+	},
 
-	this.clearResultList = function(){
+	clearResultList: function(){
 		var oln = this.optionsListNode;
 		while(oln.firstChild){
 			oln.removeChild(oln.firstChild);
 		}
-	}
+	},
 
-	this.hideResultList = function(){
-		this.optionsListNode.style.display = "none";
-		dojo.event.disconnect(document.body, "onclick", this, "hideResultList");
-		_result_list_open = false;
+	hideResultList: function(){
+		// this.optionsListNode.style.display = "none";
+		dojo.fx.fadeOut(this.optionsListNode, 200);
+		dojo.event.disconnect(dojo.html.body(), "onclick", this, "hideResultList");
+		this._result_list_open = false;
 		return;
-	}
+	},
 
-	this.showResultList = function(){
+	showResultList: function(){
+		if(this._result_list_open){ return; }
 		with(this.optionsListNode.style){
 			display = "";
+			// visibility = "hidden";
+			height = "";
 			width = dojo.html.getInnerWidth(this.downArrowNode)+dojo.html.getInnerWidth(this.textInputNode)+"px";
 			if(dojo.render.html.khtml){
 				marginTop = dojo.html.totalOffsetTop(this.optionsListNode.parentNode)+"px";
@@ -317,24 +337,27 @@ dojo.widget.HtmlComboBox = function(){
 			*/
 			}
 		}
-		_result_list_open = true;
+		dojo.html.setOpacity(this.optionsListNode);
+		dojo.fx.fadeIn(this.optionsListNode, 200);
+		this._result_list_open = true;
 		return;
-	}
+	},
 
-	this.handleArrowClick = function(){
-		if(_result_list_open){
+	handleArrowClick: function(){
+		if(this._result_list_open){
 			this.hideResultList();
 		}else{
 			this.startSearchFromInput();
 		}
-	}
+	},
 
-	this.startSearchFromInput = function(){
+	startSearchFromInput: function(){
 		this.startSearch(this.textInputNode.value);
+	},
+
+	postCreate: function(){
+		dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
+		dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 	}
 
-	dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
-	dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
-}
-
-dojo.inherits(dojo.widget.HtmlComboBox, dojo.widget.HtmlWidget);
+});
