@@ -314,10 +314,7 @@ dojo.lang.extend(dojo.widget.HtmlComboBox, {
 	},
 
 	hideResultList: function(){
-		// this.optionsListNode.style.display = "none";
-		dojo.fx.fadeOut(this.optionsListNode, 200, function(){
-			_this.optionsListNode.style.display = "none";
-		});
+		dojo.fx.fadeHide(this.optionsListNode, 200);
 		dojo.event.disconnect(dojo.html.body(), "onclick", this, "hideResultList");
 		this._result_list_open = false;
 		return;
