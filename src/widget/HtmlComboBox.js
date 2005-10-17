@@ -246,7 +246,10 @@ dojo.lang.extend(dojo.widget.HtmlComboBox, {
 		}else{
 			this.showResultList();
 		}
-		if((this.autoComplete)&&(results.length)&&(!this._prev_key_backspace)){
+		if(	(this.autoComplete)&&
+			(results.length)&&
+			(!this._prev_key_backspace)&&
+			(this.textInputNode.value.length > 0)){
 			var cpos = this.getCaretPos(this.textInputNode);
 			// only try to extend if we added the last charachter at the end of the input
 			if((cpos+1) >= this.textInputNode.value.length){
@@ -331,6 +334,7 @@ dojo.lang.extend(dojo.widget.HtmlComboBox, {
 			*/
 			}
 		}
+		// dojo.fx.fadeIn(this.optionsListNode, 1000);
 		this._result_list_open = true;
 		return;
 	},
