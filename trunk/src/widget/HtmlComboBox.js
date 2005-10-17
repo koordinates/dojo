@@ -339,7 +339,7 @@ dojo.lang.extend(dojo.widget.HtmlComboBox, {
 			*/
 			}
 		}
-		dojo.html.setOpacity(this.optionsListNode);
+		dojo.html.setOpacity(this.optionsListNode, 0);
 		dojo.fx.fadeIn(this.optionsListNode, 200);
 		this._result_list_open = true;
 		return;
