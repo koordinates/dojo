@@ -151,24 +151,29 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 
 dojo.widget.ComboBox = function(){
 	dojo.widget.Widget.call(this);
-
-	this.widgetType = "ComboBox";
-	this.isContainer = false;
-
-	this.forceValidOption = false;
-	this.searchType = "stringstart";
-	this.dataProvider = new dojo.widget.ComboBoxDataProvider();
-
-	this.startSearch = function(searchString){}
-	this.openResultList = function(results){}
-	this.clearResultList = function(){}
-	this.hideResultList = function(){}
-	this.selectNextResult = function(){}
-	this.selectPrevResult = function(){}
-	this.setSelectedResult = function(){}
 }
 
+
 dojo.inherits(dojo.widget.ComboBox, dojo.widget.Widget);
+
+dojo.widget.ComboBox.defaults = {
+	widgetType: "ComboBox",
+	isContainer: false,
+
+	forceValidOption: false,
+	searchType: "stringstart",
+	dataProvider: null,
+
+	startSearch: function(searchString){},
+	openResultList: function(results){},
+	clearResultList: function(){},
+	hideResultList: function(){},
+	selectNextResult: function(){},
+	selectPrevResult: function(){},
+	setSelectedResult: function(){}
+};
+
+dojo.lang.extend(dojo.widget.ComboBox, dojo.widget.ComboBox.defaults);
 
 dojo.widget.DomComboBox = function(){
 	dojo.widget.ComboBox.call(this);
