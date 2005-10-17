@@ -115,7 +115,6 @@ dojo.lang.extend(dojo.widget.HtmlComboBox, {
 	},
 
 	onKeyDown: function(evt){
-		// dojo.debug(evt);
 	},
 
 	setSelectedValue: function(value){
@@ -338,7 +337,7 @@ dojo.lang.extend(dojo.widget.HtmlComboBox, {
 			*/
 			}
 		}
-		// dojo.debug("starting fade");
+		dojo.html.setOpacity(this.optionsListNode);
 		dojo.fx.fadeIn(this.optionsListNode, 200);
 		this._result_list_open = true;
 		return;
