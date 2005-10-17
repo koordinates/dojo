@@ -11,7 +11,7 @@ Index: style.js
 -		return NaN;
 -	var n = Number(match[1]);
 -	return (n == 0 || match[2]=='px' ? n : NaN);
-+	var match = s.match(/([\d\.]+)(px){0,1)/i);
++	var match = s.match(/([\d\.]+)(px){0,1}/i);
 +	return match ? Number(match[1]) : NaN;
  }
  
