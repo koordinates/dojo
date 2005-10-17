@@ -16,27 +16,28 @@ dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
 dojo.widget.HtmlLayoutPane = function(){
-
 	dojo.widget.HtmlWidget.call(this);
+}
 
-	this.widgetType = "LayoutPane";
+dojo.inherits(dojo.widget.HtmlLayoutPane, dojo.widget.HtmlWidget);
 
-	this.isContainer = true;
-	this.containerNode = null;
-	this.domNode = null;
-	this.isChild = false;
+dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
+	widgetType: "LayoutPane",
 
-	this.clientRect = {'left':0, 'right':0, 'top':0, 'bottom':0};
-	this.clientWidth = 0;
-	this.clientHeight = 0;
+	isContainer: true,
+	containerNode: null,
+	domNode: null,
+	isChild: false,
 
-	this.layoutAlign = 'none';
-	this.layoutChildPriority = 'top-bottom';
-	this.layoutSizeMode = 'relative';
+	clientRect: {'left':0, 'right':0, 'top':0, 'bottom':0},
+	clientWidth: 0,
+	clientHeight: 0,
 
+	layoutAlign: 'none',
+	layoutChildPriority: 'top-bottom',
+	layoutSizeMode: 'relative',
 
-	this.fillInTemplate = function(){
-
+	fillInTemplate: function(){
 		this.filterAllowed('layoutAlign',         ['none', 'left', 'top', 'right', 'bottom', 'client']);
 		this.filterAllowed('layoutChildPriority', ['left-right', 'top-bottom']);
 		this.filterAllowed('layoutSizeMode',      ['absolute', 'relative']);
@@ -45,9 +46,9 @@ dojo.widget.HtmlLayoutPane = function(){
 
 		this.domNode.style.position = 'relative';
 		dojo.event.connect(window, 'onresize', this, 'layoutChildren');
-	}
+	},
 
-	this.postCreate = function(args, fragment, parentComp){
+	postCreate: function(args, fragment, parentComp){
 
 		// attach our children
 
@@ -62,9 +63,9 @@ dojo.widget.HtmlLayoutPane = function(){
 		}
 
 		this.layoutChildren();
-	}
+	},
 
-	this.filterAllowed = function(param, values){
+	filterAllowed: function(param, values){
 
 		for(i in values){
 			if (this[param] == values[i]){
@@ -72,9 +73,9 @@ dojo.widget.HtmlLayoutPane = function(){
 			}
 		}
 		this[param] = values[0];
-	}
+	},
 
-	this.layoutChildren = function(){
+	layoutChildren: function(){
 
 		// find the children to arrange
 
@@ -118,9 +119,9 @@ dojo.widget.HtmlLayoutPane = function(){
 			this.layoutBottom(kids);
 		}
 		this.layoutClient(kids);
-	}
+	},
 
-	this.layoutTop = function(kids){
+	layoutTop: function(kids){
 
 		for(var i=0; i<kids.top.length; i++){
 
@@ -132,9 +133,9 @@ dojo.widget.HtmlLayoutPane = function(){
 
 			kids.top[i].onResized();
 		}
-	}
+	},
 
-	this.layoutBottom = function(kids){
+	layoutBottom: function(kids){
 
 		for(var i=0; i<kids.bottom.length; i++){
 
@@ -148,9 +149,9 @@ dojo.widget.HtmlLayoutPane = function(){
 
 			kids.bottom[i].onResized();
 		}
-	}
+	},
 
-	this.layoutLeft = function(kids){
+	layoutLeft: function(kids){
 
 		for(var i=0; i<kids.left.length; i++){
 
@@ -162,9 +163,9 @@ dojo.widget.HtmlLayoutPane = function(){
 
 			kids.left[i].onResized();
 		}
-	}
+	},
 
-	this.layoutRight = function(kids){
+	layoutRight: function(kids){
 
 		for(var i=0; i<kids.right.length; i++){
 
@@ -178,9 +179,9 @@ dojo.widget.HtmlLayoutPane = function(){
 
 			kids.right[i].onResized();
 		}
-	}
+	},
 
-	this.layoutClient = function(kids){
+	layoutClient: function(kids){
 
 		if (kids.client[1]){
 			dojo.debug('We can only layout one client pane per parent pane!');
@@ -198,22 +199,20 @@ dojo.widget.HtmlLayoutPane = function(){
 		dojo.style.setOuterHeight(kids.client[0].domNode, this.clientRect.bottom - this.clientRect.top);
 
 		kids.client[0].onResized();
-	}
+	},
 
-	this.hasLayoutAlign = function(child){
+	hasLayoutAlign: function(child){
 		if (child.layoutAlign == 'left'){ return 1; }
 		if (child.layoutAlign == 'right'){ return 1; }
 		if (child.layoutAlign == 'top'){ return 1; }
 		if (child.layoutAlign == 'bottom'){ return 1; }
 		if (child.layoutAlign == 'client'){ return 1; }
 		return 0;
-	}
+	},
 
-	this.onResized = function(){
+	onResized: function(){
 		// override me!
 	}
-}
-
-dojo.inherits(dojo.widget.HtmlLayoutPane, dojo.widget.HtmlWidget);
+});
 
 dojo.widget.tags.addParseTreeHandler("dojo:LayoutPane");
