@@ -8,6 +8,7 @@ dojo.widget.manager = new function(){
 	this.root = null; // the root widget
 
 	var widgetTypeCtr = {};
+	var renderPrefixCache = [];
 
 	this.getUniqueId = function (widgetType) {
 		return widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
@@ -142,14 +143,18 @@ dojo.widget.manager = new function(){
 		}
 
 		// first store a list of the render prefixes we are capable of rendering
-		var renderPrefixes = [];
-		for (var renderer in dojo.render) {
-			if (dojo.render[renderer]["capable"] === true) {
-				var prefixes = dojo.render[renderer].prefixes;
-				for (var i = 0; i < prefixes.length; i++) {
-					renderPrefixes.push(prefixes[i].toLowerCase());
+		if(!renderPrefixCache.length){
+			for(var renderer in dojo.render){
+				if(dojo.render[renderer]["capable"] === true){
+					var prefixes = dojo.render[renderer].prefixes;
+					for(var i = 0; i < prefixes.length; i++){
+						renderPrefixCache.push(prefixes[i].toLowerCase());
+					}
 				}
 			}
+			// make sure we don't HAVE to prefix widget implementation names
+			// with anything to get them to render
+			renderPrefixCache.push("");
 		}
 
 		// look for a rendering-context specific version of our widget name
@@ -157,20 +162,20 @@ dojo.widget.manager = new function(){
 			var widgetPackage = dojo.evalObjPath(widgetPackages[i]);
 			if(!widgetPackage) { continue; }
 
-			for (var j = 0; j < renderPrefixes.length; j++) {
-				if (!widgetPackage[renderPrefixes[j]]) { continue; }
-				for (var widgetClass in widgetPackage[renderPrefixes[j]]) {
+			for (var j = 0; j < renderPrefixCache.length; j++) {
+				if (!widgetPackage[renderPrefixCache[j]]) { continue; }
+				for (var widgetClass in widgetPackage[renderPrefixCache[j]]) {
 					if (widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
 					knownWidgetImplementations[lowerCaseWidgetName] =
-						widgetPackage[renderPrefixes[j]][widgetClass];
+						widgetPackage[renderPrefixCache[j]][widgetClass];
 					return knownWidgetImplementations[lowerCaseWidgetName];
 				}
 			}
 
-			for (var j = 0; j < renderPrefixes.length; j++) {
+			for (var j = 0; j < renderPrefixCache.length; j++) {
 				for (var widgetClass in widgetPackage) {
 					if (widgetClass.toLowerCase() !=
-						(renderPrefixes[j] + lowerCaseWidgetName)) { continue; }
+						(renderPrefixCache[j] + lowerCaseWidgetName)) { continue; }
 	
 					knownWidgetImplementations[lowerCaseWidgetName] =
 						widgetPackage[widgetClass];
