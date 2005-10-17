@@ -1,6 +1,5 @@
-/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */
-dojo.provide("dojo.event.topic");
 dojo.require("dojo.event");
+dojo.provide("dojo.event.topic");
 
 dojo.event.topic = new function(){
 	this.topics = {};
