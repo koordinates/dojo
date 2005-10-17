@@ -318,7 +318,7 @@ dojo.dom.insertAtIndex = function (node, containingNode, insertionIndex){
 		}
 	}
 	if(!placed){
-		dojo.dom.insertBefore(node, ref);
+		dojo.dom.insertBefore(node, containingNode);
 	}
 }
 	
