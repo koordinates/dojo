@@ -94,10 +94,11 @@ dojo.style.isBorderBox = function(node)
 	return (dojo.style.getBoxSizing(node) == dojo.style.boxSizing.borderBox);
 }
 
-dojo.style.getNumericStyle = function (element, cssSelector){
+dojo.style.getNumericStyle = function (element, cssSelector, treatAutoAsZero){
 	// FIXME: is regex inefficient vs. parseInt or some manual test? 
 	var s = dojo.style.getComputedStyle(element, cssSelector);
 	if (s == ''){ return 0; }
+	if ((s == 'auto') && treatAutoAsZero){ return 0; }
 	if (dojo.lang.isUndefined(s)){ return NaN };
 	var match = s.match(/([\d.]+)([a-z]*)/);
 	if (!match || !match[1]) 
@@ -107,8 +108,9 @@ dojo.style.getNumericStyle = function (element, cssSelector){
 }
 
 dojo.style.getMarginWidth = function(node){
-	var left = dojo.style.getNumericStyle(node, "margin-left");
-	var right = dojo.style.getNumericStyle(node, "margin-right");
+	var autoIsOk = (dojo.style.getComputedStyle(node, 'position') == 'absolute') ? 1 : 0;
+	var left = dojo.style.getNumericStyle(node, "margin-left", autoIsOk);
+	var right = dojo.style.getNumericStyle(node, "margin-right", autoIsOk);
 	return left + right;
 }
 
@@ -159,8 +161,9 @@ dojo.style.getMarginBoxWidth = dojo.style.getOuterWidth;
 dojo.style.setMarginBoxWidth = dojo.style.setOuterWidth;
 
 dojo.style.getMarginHeight = function(node){
-	var top = dojo.style.getNumericStyle(node, "margin-top");
-	var bottom = dojo.style.getNumericStyle(node, "margin-bottom");
+	var autoIsOk = (dojo.style.getComputedStyle(node, 'position') == 'absolute') ? 1 : 0;
+	var top = dojo.style.getNumericStyle(node, "margin-top", autoIsOk);
+	var bottom = dojo.style.getNumericStyle(node, "margin-bottom", autoIsOk);
 	return top + bottom;
 }
 
