@@ -16,7 +16,7 @@ dojo.widget.HtmlDialog = function() {
 
 	this.templateString = '<div class="dojo-dialog">'
 		+ '<span dojoAttachPoint="tabStart" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
-		+ '<div dojoAttachPoint="content"></div>'
+		+ '<div dojoAttachPoint="containerNode"></div>'
 		+ '<span dojoAttachPoint="tabEnd" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
 		+ '</div>';
 
@@ -56,7 +56,7 @@ dojo.widget.HtmlDialog = function() {
 		}, 100);
 	}
 
-	this.postInitialize = function(args, frag, parentComp) {
+	this.postCreate = function(args, frag, parentComp) {
 		dojo.html.body().appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(this.nodeRef) {
@@ -82,10 +82,10 @@ dojo.widget.HtmlDialog = function() {
 
 	this.setContent = function(content) {
 		if(typeof content == "string") {
-			this.content.innerHTML = content;
+			this.containerNode.innerHTML = content;
 		} else if(content.nodeType != undefined) {
-			dojo.dom.removeChildren(this.content);
-			this.content.appendChild(content);
+			// dojo.dom.removeChildren(this.containerNode);
+			this.containerNode.appendChild(content);
 		} else {
 			dojo.raise("Tried to setContent with unknown content (" + content + ")");
 		}
