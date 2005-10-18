@@ -67,7 +67,7 @@ dojo.widget.HtmlDialog = function() {
 		with(this.bg.style) {
 			position = "absolute";
 			left = top = "0px";
-			width = "100%";
+			width = dojo.html.getOuterWidth(dojo.html.body()) + "px";
 			zIndex = 998;
 			display = "none";
 		}
@@ -113,8 +113,13 @@ dojo.widget.HtmlDialog = function() {
 	this.placeDialog = function() {
 		var scrollTop = document.documentElement.scrollTop;
 		var scrollLeft = document.documentElement.scrollLeft;
-		var W = document.documentElement.clientWidth || dojo.html.body().clientWidth || 0;
-		var H = document.documentElement.clientHeight || dojo.html.body().clientHeight || 0;
+		// this is a candidate for helper function somewhere in dojo.style.*
+		var W1 = document.documentElement.clientWidth;
+		var W2 = dojo.html.body().clientWidth;
+		var W = (W1 && W2) ? Math.min(W1, W2) : (W1 || W2 || 0);
+		var H1 = document.documentElement.clientWidth;
+		var H2 = dojo.html.body().clientWidth;
+		var H = (H1 && H2) ? Math.min(H1, H2) : (H1 || H2 || 0);
 		this.domNode.style.display = "block";
 		var w = this.domNode.offsetWidth;
 		var h = this.domNode.offsetHeight;
