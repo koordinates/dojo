@@ -385,8 +385,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			if(!tif){ this.inFlight.splice(x, 1); continue; }
 			if(4==tif.http.readyState){
 				// remove it so we can clean refs
-				doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
 				this.inFlight.splice(x, 1);
+				doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
 				if(this.inFlight.length == 0){
 					clearInterval(this.inFlightTimer);
 					this.inFlightTimer = null;
