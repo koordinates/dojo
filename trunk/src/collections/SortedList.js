@@ -59,7 +59,7 @@ dojo.collections.SortedList = function(dictionary){
 			idx++;
 		}
 	};
-	this.getByIndex = function(o){
+	this.getByIndex = function(i){
 		return q[i].value;
 	};
 	this.getIterator = function(){
