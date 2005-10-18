@@ -148,11 +148,16 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 		if(this._toolbarContainer) { return; } // only create it once
 		this._toolbarContainer = dojo.widget.fromScript(this._toolbarContainerType);
 		var tb = this.addToolbar();
+		var last = true;
 		for(var i = 0; i < this.items.length; i++) {
 			if(this.items[i] == "\n") { // new row
 				tb = this.addToolbar();
 			} else {
-				this.addItem(this.items[i], tb);
+				if((this.items[i] == "|")&&(!last)){
+					last = true;
+				}else{
+					last = this.addItem(this.items[i], tb);
+				}
 			}
 		}
 		this.insertToolbar(this._toolbarContainer.domNode, this._richText.domNode);
@@ -184,11 +189,14 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 			tb.addChild(item);
 		} else if(groups[cmd]) {
 			var group = groups[cmd];
+			var worked = true;
 			if(cmd == "justifyGroup" || cmd == "listGroup") {
 				var btnGroup = [cmd];
 				for(var i = 0 ; i < group.length; i++) {
 					if(dontValidate || this.isSupportedCommand(group[i])) {
 						btnGroup.push(this.getCommandImage(group[i]));
+					}else{
+						worked = false;
 					}
 				}
 				if(btnGroup.length) {
@@ -196,12 +204,19 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 					dojo.event.connect(btn, "onClick", this, "_action");
 					dojo.event.connect(btn, "onChangeSelect", this, "_action");
 				}
+				return worked;
 			} else {
 				for(var i = 0; i < group.length; i++) {
-					this.addItem(group[i], tb);
+					if(!this.addItem(group[i], tb)){
+						worked = false;
+					}
 				}
+				return worked;
 			}
 		} else {
+			if((!dontValidate)&&(!this.isSupportedCommand(cmd))){
+				return false;
+			}
 			if(dontValidate || this.isSupportedCommand(cmd)) {
 				cmd = cmd.toLowerCase();
 				if(cmd == "formatblock") {
@@ -228,6 +243,7 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 				}
 			}
 		}
+		return true;
 	},
 
 	enableToolbar: function() {
