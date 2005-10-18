@@ -210,6 +210,26 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		return 0;
 	},
 
+	addPane: function(pane){
+
+		this.children.push(pane);
+		this.domNode.appendChild(pane.domNode);
+
+		pane.domNode.style.position = 'absolute';
+		pane.isChild = true;
+		dojo.event.disconnect(window, 'onresize', pane, 'layoutChildren');
+
+		this.layoutChildren();
+	},
+
+	layoutSoon: function(){
+
+		var self = this;
+		var closure = function(){ return function(){ self.layoutChildren(); } }();
+
+		window.setTimeout(closure, 0);
+	},
+
 	onResized: function(){
 		// override me!
 	}
