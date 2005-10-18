@@ -567,14 +567,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			case "forecolor": case "hilitecolor":
 			case "justifycenter": case "justifyfull": case "justifyleft": case "justifyright":
 			case "cut": case "copy": case "paste": case "delete":
-			case "undo": case "redo": case "formatblock":
+			case "undo": case "redo":
 				var supportedBy = isSupportedBy(mozilla | ie | safari);
 				break;
 				
 			case "createlink": case "unlink": case "removeformat":
 			case "inserthorizontalrule": case "insertimage":
 			case "insertorderedlist": case "insertunorderedlist":
-			case "indent": case "outdent":
+			case "indent": case "outdent": case "formatblock":
 				var supportedBy = isSupportedBy(mozilla | ie);
 				break;
 				
