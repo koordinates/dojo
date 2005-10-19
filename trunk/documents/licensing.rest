@@ -38,8 +38,8 @@ Licensing Policies
 
 The above goals have given rise to the following policies:
 
-- All contributors much sign an Individual Contributors License Agreement or
-  Corporate Contributors License Agreement as appropriate.
+- All contributors much sign an `Individual Contributors License Agreement`_ or
+  `Corporate Contributors License Agreement`_ as appropriate.
 - Commit privileges are only extended when CLAs have been submitted.
 - All Dojo Foundation projects must release their code under the terms of the
   `Academic Free License`_ v2.1
@@ -50,6 +50,8 @@ The above goals have given rise to the following policies:
 
 .. _`Academic Free License`: http://opensource.org/licenses/afl-2.1.php
 .. _`Open Source Definition`: http://opensource.org/docs/definition.php
+.. _`Individual Contributors License Agreement`: http://dojotoolkit.org/icla.txt
+.. _`Corporate Contributors License Agreement`: http://dojotoolkit.org/ccla.txt
 
 .. raw:: html
    :file: website/rest_template/sidebar.html
