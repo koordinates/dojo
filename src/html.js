@@ -21,7 +21,7 @@ dojo.html.clearSelection = function () {
 }
 
 dojo.html.disableSelection = function (element) {
-	if (arguments.length == 0) { element = this.body(); }
+	if (arguments.length == 0) { element = dojo.html.body(); }
 	
 	if (dojo.render.html.mozilla) { element.style.MozUserSelect = "none"; }
 	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = "none"; }
@@ -29,7 +29,7 @@ dojo.html.disableSelection = function (element) {
 }
 
 dojo.html.enableSelection = function (element) {
-	if (arguments.length == 0) { element = this.body(); }
+	if (arguments.length == 0) { element = dojo.html.body(); }
 	
 	if (dojo.render.html.mozilla) { element.style.MozUserSelect = ""; }
 	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = ""; }
@@ -37,8 +37,8 @@ dojo.html.enableSelection = function (element) {
 }
 
 dojo.html.selectElement = function (element) {
-	if (document.selection && this.body().createTextRange) { // IE
-		var range = this.body().createTextRange();
+	if (document.selection && dojo.html.body().createTextRange) { // IE
+		var range = dojo.html.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	} else if (window.getSelection) {
@@ -71,11 +71,49 @@ dojo.html.getEventTarget = function (evt){
 }
 
 dojo.html.getScrollTop = function () {
-	return document.documentElement.scrollTop || this.body().scrollTop || 0;
+	return document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
 }
 
 dojo.html.getScrollLeft = function () {
-	return document.documentElement.scrollLeft || this.body().scrollLeft || 0;
+	return document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
+}
+
+dojo.html.getDocumentWidth = function() {
+	var w = 0;
+	var docElm = document.documentElement;
+	var body = dojo.html.body();
+	if(docElm && body) {
+		w = Math.min(docElm.clientWidth, body.clientWidth);
+	} else if(docElm) {
+		w = docElm.clientWidth;
+	} else if(body) {
+		w = body.clientWidth;
+	}
+	if(!h) {
+		w = window.innerWidth;
+	}
+	return w || 0;
+}
+
+dojo.html.getDocumentHeight = function() {
+	var h = 0;
+	var docElm = document.documentElement;
+	var body = dojo.html.body();
+	if(docElm && body) {
+		h = Math.min(docElm.clientHeight, body.clientHeight);
+	} else if(docElm) {
+		h = docElm.clientHeight;
+	} else if(body) {
+		h = body.clientHeight;
+	}
+	if(!h) {
+		h = window.innerHeight;
+	}
+	return h || 0;
+}
+
+dojo.html.getDocumentSize = function() {
+	return [dojo.html.getDocumentWidth(), dojo.html.getDocumentHeight()];
 }
 
 dojo.html.getParentOfType = function (node, type){
@@ -125,7 +163,7 @@ dojo.html.getAttribute = function (node, attr){
  *	attribute in question.
  */
 dojo.html.hasAttribute = function (node, attr){
-	var v = this.getAttribute(node, attr);
+	var v = dojo.html.getAttribute(node, attr);
 	return v ? true : false;
 }
 	
@@ -338,8 +376,8 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
  *             are properties of the function.
  */
 dojo.html.gravity = function (node, e){
-	var mousex = e.pageX || e.clientX + this.body().scrollLeft;
-	var mousey = e.pageY || e.clientY + this.body().scrollTop;
+	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
+	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	
 	with (dojo.html) {
 		var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
@@ -358,8 +396,8 @@ dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 	
 dojo.html.overElement = function (element, e) {
-	var mousex = e.pageX || e.clientX + this.body().scrollLeft;
-	var mousey = e.pageY || e.clientY + this.body().scrollTop;
+	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
+	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	
 	with(dojo.html){
 		var top = getAbsoluteY(element);

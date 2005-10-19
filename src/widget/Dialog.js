@@ -114,12 +114,8 @@ dojo.widget.HtmlDialog = function() {
 		var scrollTop = document.documentElement.scrollTop;
 		var scrollLeft = document.documentElement.scrollLeft;
 		// this is a candidate for helper function somewhere in dojo.style.*
-		var W1 = document.documentElement.clientWidth;
-		var W2 = dojo.html.body().clientWidth;
-		var W = (W1 && W2) ? Math.min(W1, W2) : (W1 || W2 || 0);
-		var H1 = document.documentElement.clientHeight;
-		var H2 = dojo.html.body().clientHeight;
-		var H = (H1 && H2) ? Math.min(H1, H2) : (H1 || H2 || 0);
+		var W = dojo.html.getDocumentWidth();
+		var H = dojo.html.getDocumentHeight();
 		this.domNode.style.display = "block";
 		var w = this.domNode.offsetWidth;
 		var h = this.domNode.offsetHeight;
