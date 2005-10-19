@@ -241,13 +241,13 @@ print "look ma! Jython!"
 			</fileset>
 		</copy>
 		<chgrp group="www" type="both">
-			<fileset dir="${release_website_dir}" followsymlinks="false" />
+			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
 		</chgrp>
 		<chmod perm="g+rwx" type="dir">
-			<fileset dir="${release_website_dir}" followsymlinks="false" />
+			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
 		</chmod>
 		<chmod perm="g+rw" type="file">
-			<fileset dir="${release_website_dir}" followsymlinks="false" />
+			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
 		</chmod>
 	</target>
 	<!-- end website task -->
