@@ -57,7 +57,7 @@ conditions:
 4. You represent that, except as disclosed in your Contribution
    submission(s), each of your Contributions is your original creation.
    You represent that your Contribution submission(s) include complete
-   details of any license or other restriction (including, but not
+   details of any license or other known restrictions (including, but not
    limited to, related patents and trademarks) associated with any part
    of your Contribution(s) (including a copy of any applicable license
    agreement).  You agree to notify the Foundation of any facts or
