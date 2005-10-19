@@ -362,6 +362,13 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 	for(var x=0; x<args.length; x++){
 		aargs[x] = args[x];
 	}
+	/*
+	try{
+		if((dojo.render.html.ie)&&(aargs.length == 1)&&(aargs[0])&&(!dojo.lang.isUndefined(aargs[0]["clientX"]))){
+			aargs[0] = document.createEventObject(aargs[0]);
+		}
+	}catch(e){ }
+	*/
 
 	var unrollAdvice  = function(marr){ 
 		if(!marr){
@@ -380,6 +387,17 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 		var aroundObj = marr[2]||dj_global;
 		var aroundFunc = marr[3];
 		var undef;
+
+		var to = {
+			args: [],
+			jp_: this,
+			object: obj,
+			proceed: function(){
+				return callObj[callFunc].apply(callObj, to.args);
+			}
+		};
+		to.args = aargs;
+
 		var delay = parseInt(marr[4]);
 		var hasDelay = ((!isNaN(delay))&&(marr[4]!==null)&&(typeof marr[4] != "undefined"));
 		if(marr[5]){
@@ -396,11 +414,11 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 					}
 					// dojo.debug("setting delay");
 					var tod = parseInt(rate*2); // is rate*2 naive?
+					var mcpy = dojo.lang.shallowCopy(marr);
 					marr.delayTimer = setTimeout(function(){
 						// FIXME: on IE at least, event objects from the
 						// browser can go out of scope. How (or should?) we
 						// deal with it?
-						var mcpy = dojo.lang.shallowCopy(marr);
 						mcpy[5] = 0;
 						unrollAdvice(mcpy);
 					}, tod);
@@ -411,14 +429,6 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 				marr.last = cur;
 			}
 		}
-		var to = {
-			args: [],
-			jp_: this,
-			object: obj,
-			proceed: function(){
-				return callObj[callFunc].apply(callObj, to.args);
-			}
-		};
 
 		// FIXME: need to enforce rates for a connection here!
 
@@ -432,7 +442,6 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 			to.args[x] = args[x];
 		}
 		*/
-		to.args = aargs;
 
 		if(aroundFunc){
 			// NOTE: around advice can't delay since we might otherwise depend
