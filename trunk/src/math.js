@@ -96,20 +96,3 @@ dojo.math.variance = function () {
 		- Math.pow(mean / array.length, 2);
 }
 
-dojo.math.max = function(){
-	var x = null;
-	for (var i=0; i<arguments.length; i++) {
-		var y = arguments[i];
-		if ((y > x) || (x == null)){ x = y; }
-	}
-	return x;
-}
-
-dojo.math.min = function(){
-	var x = null;
-	for (var i=0; i<arguments.length; i++) {
-		var y = arguments[i];
-		if ((y < x) || (x == null)){ x = y; }
-	}
-	return x;
-}

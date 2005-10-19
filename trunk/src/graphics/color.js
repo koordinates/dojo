@@ -155,8 +155,8 @@ dojo.graphics.color.rgb2hsv = function(r, g, b){
 	var s = null;
 	var v = null;
 
-	var min = dojo.math.min(r, g, b);
-	v = dojo.math.max(r, g, b);
+	var min = Math.min(r, g, b);
+	v = Math.max(r, g, b);
 
 	var delta = v - min;
 
@@ -274,8 +274,8 @@ dojo.graphics.color.rgb2hsl = function(r, g, b){
 	var l = null;
 
 
-	var min = dojo.math.min(r, g, b);
-	var max = dojo.math.max(r, g, b);
+	var min = Math.min(r, g, b);
+	var max = Math.max(r, g, b);
 	var delta = max - min;
 
 	l = (min + max) / 2;
@@ -343,9 +343,9 @@ dojo.graphics.color.hsl2rgb = function(h, s, l){
 		b = (360 - h) / 60;
 	}
 
-	r = dojo.math.min(r, 1);
-	g = dojo.math.min(g, 1);
-	b = dojo.math.min(b, 1);
+	r = Math.min(r, 1);
+	g = Math.min(g, 1);
+	b = Math.min(b, 1);
 
 	r = 2 * s * r + (1 - s);
 	g = 2 * s * g + (1 - s);
