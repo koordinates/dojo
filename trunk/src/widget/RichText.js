@@ -526,11 +526,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 *                  an argument.
 	 */
 	_normalizeCommand: function (joinObject){
-		var safari = dojo.render.html.safari, mozilla = dojo.render.html.mozilla;
+		var drh = dojo.render.html;
 		
 		var command = joinObject.args[0].toLowerCase();
-		if (command == "formatblock" && safari) { command = "heading"; }
-		if (command == "hilitecolor" && !mozilla) { command = "backcolor"; }
+		if(command == "formatblock"){
+			if(drh.safari){ command = "heading"; }
+			if(drh.ie){ joinObject.args[1] = "<"+joinObject.args[1]+">"; }
+		}
+		if (command == "hilitecolor" && !drh.mozilla) { command = "backcolor"; }
 		joinObject.args[0] = command;
 		
 		if (joinObject.args.length > 1) { // a command was specified
