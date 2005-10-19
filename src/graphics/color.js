@@ -2,6 +2,10 @@ dojo.provide("dojo.graphics.color");
 dojo.require("dojo.lang");
 dojo.require("dojo.math");
 
+// TODO: rewrite the "x2y" methods to take advantage of the parsing
+//       abilities of the Color object. Also, beef up the Color
+//       object (as possible) to parse most common formats
+
 // takes an r, g, b, a(lpha) value, [r, g, b, a] array, "rgb(...)" string, hex string (#aaa, #aaaaaa, aaaaaaa)
 dojo.graphics.color.Color = function(r, g, b, a) {
 	if(dojo.lang.isArray(r)) {
@@ -14,11 +18,17 @@ dojo.graphics.color.Color = function(r, g, b, a) {
 		this.r = rgb[0];
 		this.g = rgb[1];
 		this.b = rgb[2];
-		this.a = b||1.0;
+		this.a = g||1.0;
+	} else if(r instanceof dojo.graphics.color.Color) {
+		this.r = r.r;
+		this.b = r.b;
+		this.g = r.g;
+		this.a = r.a;
 	} else {
 		this.r = r;
 		this.g = g;
 		this.b = b;
+		this.a = a;
 	}
 };
 
@@ -45,6 +55,10 @@ dojo.graphics.color.Color.prototype.toHsv = function() {
 dojo.graphics.color.Color.prototype.toHsl = function() {
 	return dojo.graphics.color.rgb2hsl(this.toRgb());
 };
+
+dojo.graphics.color.Color.prototype.blend = function(color, weight) {
+	return dojo.graphics.color.blend(this.toRgb(), new Color(color).toRgb(), weight);
+}
 
 dojo.graphics.color.named = {
 	white:      [255,255,255],
