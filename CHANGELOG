@@ -1,5 +1,11 @@
 Dojo Changelog
 
+Configuration Changes:
+- all djConfig properties should now be "live", which is to say that modifying
+  them at runtime should affect system behavior directly.
+- djConfig.ieClobberMinimal now defaults to true (previously was false)
+- djConfig.preventBackButtonFix now defaults to true (previously was false)
+
 API Changes:
 - dojo.io.bind now returns a dojo.io.Request object instead of a boolean
 
