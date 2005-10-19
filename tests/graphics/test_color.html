@@ -28,18 +28,37 @@ for(var i = 0; i < hex.length; i++) {
 	dj_debug("extractRGB(" + hex[i] + ")", c.extractRGB(hex[i]));
 }
 
+dj_debug();
 dj_debug("Color object:");
 var color = new dojo.graphics.color.Color("ffc");
 dj_debug("toRgb:", color.toRgb());
 dj_debug("toHex:", color.toHex());
 dj_debug("toCss:", color.toCss());
 dj_debug("toString:", color.toString());
+dj_debug("toHsv:", color.toHsv());
+dj_debug("toHsl:", color.toHsl());
 
+dj_debug();
 dj_debug("Named colors:");
 for(var clr in c.named) {
 	var rgb = c.extractRGB(clr);
 	dj_debug(clr, "->", rgb, "->", c.rgb2hex(rgb));
 }
+
+
+dj_debug();
+dj_debug("Color spaces:");
+
+var a = [255,255,204];
+var b = dojo.graphics.color.rgb2hsv(a);
+var c = dojo.graphics.color.hsv2rgb(b);
+dj_debug("HSV:", a, "->", b, "->", c);
+
+var d = [255,255,204];
+var e = dojo.graphics.color.rgb2hsl(d);
+var f = dojo.graphics.color.hsl2rgb(e);
+dj_debug("HSL:", d, "->", e, "->", f);
+
 </script>
 </head>
 <body>
