@@ -48,11 +48,18 @@ if(typeof window == 'undefined'){
 	dr.ver = parseFloat(drh.AV);
 	dr.os.mac = dav.indexOf("Macintosh") >= 0;
 	dr.os.win = dav.indexOf("Windows") >= 0;
+	// could also be Solaris or something, but it's the same browser
+	dr.os.linux = dav.indexOf("X11") >= 0;
 
 	drh.opera = dua.indexOf("Opera") >= 0;
 	drh.khtml = (dav.indexOf("Konqueror") >= 0)||(dav.indexOf("Safari") >= 0);
 	drh.safari = dav.indexOf("Safari") >= 0;
-	drh.mozilla = drh.moz = (dua.indexOf("Gecko") >= 0)&&(!drh.khtml);
+	var geckoPos = dua.indexOf("Gecko");
+	drh.mozilla = drh.moz = (geckoPos >= 0)&&(!drh.khtml);
+	if (drh.mozilla) {
+		// gecko version is YYYYMMDD
+		drh.geckoVersion = dua.substring(geckoPos + 6, geckoPos + 14);
+	}
 	drh.ie = (document.all)&&(!drh.opera);
 	drh.ie50 = drh.ie && dav.indexOf("MSIE 5.0")>=0;
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
