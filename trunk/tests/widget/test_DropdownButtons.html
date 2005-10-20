@@ -1,18 +1,29 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 
+<head.>
+	
 <title>Dropdown Buttons Widget Test</title>
 
-<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+<script type="text/javascript">
+	var djConfig = {
+		debugAtAllCosts: true,
+		isDebug: true
+	};
+</script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.DropdownButtons");
+	dojo.hostenv.writeIncludes();
 </script>
 
 <style type="text/css">
 	body { font-family : sans-serif; }
 </style>
 
+</head>
+<body bgcolor="white">
+	
 <p>The "buttons" are just a nsted unordered list. Note that the nested lists (the dropdowns) will be removed from
 the list and put into the body, adding dopdownButtonsMenu to their className. This allows them to show up on top
 of other page elements.</p>
@@ -51,3 +62,4 @@ of other page elements.</p>
 <p>This paragraph comes later.</p>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Fusce placerat luctus eros. Morbi est augue, porta ut, feugiat nec, aliquam et, neque. Vestibulum eu ipsum nec justo tristique vehicula. Curabitur iaculis imperdiet augue. Vestibulum placerat orci et dui. Morbi cursus suscipit magna. Ut eget arcu. Mauris vehicula.
 <p>Nulla sit amet dui. Cras pretium, ipsum vitae posuere semper, dolor enim tempor quam, ut facilisis lorem urna ut massa. Nullam urna est, bibendum nec, suscipit quis, auctor in, lorem. Aliquam justo lectus, gravida vitae, pretium sit amet, placerat in, augue.
+</body>
