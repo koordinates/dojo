@@ -1,100 +1,104 @@
-ul.dropdownButtons {
+/* ----- collection of buttons -------- */
+.dropdownButtonCollection {
 	margin : 0;
-	padding : 5px 0;
+	border-spacing : 5px 0px;	/* space between buttons */
+	position: static;
+	background-color: default;
 }
 
-ul.dropdownButtons li {
-	display : inline;
-	margin-right : 5px;
-	padding : 2px 0;
+/* if the buttons are different sizes (not recommended), makes tops align */
+.dropdownButtonCollection tr td {
+	vertical-align: top;
 }
 
-ul.dropdownButtons li a {
-	padding : 2px 9px;
-	border : 2px outset #ccc;
-	border-right-width : 1px;
-	background : #f4f4f4;
-	color : #333;
-	text-decoration : none;
+/** ---- color/font settings --- **/
+.dropdownButtonCollection * {
+	font-size: 8pt;
+	white-space: nowrap;
+	color: black;
 }
 
-ul.dropdownButtons li ul {
-	display : none;
+.dropdownButtonCollection .noHover {
+	background-color : #f4f4f4;
 }
 
-ul.dropdownButtons li a.disabled {
+.dropdownButtonCollection .hover, td.pressed {
+	background-color: #ddd;
+	cursor: pointer;
+}
+
+/* button (disabled) */
+.dropdownButton.disabled, .dropdownButton.disabled * {
 	color : #999;
 	cursor : default;
+	background-color : #f4f4f4;
 }
 
-ul.dropdownButtons li .downArrow {
-	display : inline;
-	padding : 2px 4px;
-	border : 2px outset #ccc;
-	border-left : 0;
-	background : #f4f4f4 url(images/dropdownButtonsArrow.gif) no-repeat 4px 9px;
-	text-decoration : none;
-	color : black;
-	cursor : pointer;
-	_cursor : hand;
+/** ----- container for the button and the menu below it ----- **/
+.buttonAndMenu {
+	border-spacing: 0px;
+	cell-spacing: 0px;
+	cell-padding: 0px;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
 }
 
-ul.dropdownButtons li .downArrow.disabled {
+/* ---------- a single button ---------- */
+.dropdownButton {
+	position: static;
+	border : 3px outset #ccc;
+	border-spacing: 2px;
+	border-collapse: collapse;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	cursor: pointer;
+}
+
+.dropdownButton .label {
+	padding-right: 5px;
+	/* if icon and label are split across two lines, center icon */
+	text-align: center;
+}
+
+.dropdownButton img, .dropdownButtonsMenu img {
+	vertical-align: middle;	/* if icon and label are on same line, center them */
+}
+
+.dropdownButton.disabled a {
+	color: gray;
+}
+
+/* button arrow */
+.dropdownButton .downArrow {
+	border-left : solid 2px gray;	/* line between label and arrow */
+	background-image : url(images/dropdownButtonsArrow.gif);
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 10px;
+	cursor: pointer;
+}
+
+.dropdownButton.disabled .downArrow {
 	background-image : url(images/dropdownButtonsArrow-disabled.gif);
 	cursor : default;
 }
 
-ul.dropdownButtons li a:hover,
-ul.dropdownButtons li span.downArrow:hover {
-	color : black;
-	background-color : #ddd;
-}
 
-ul.dropdownButtons li .downArrow.pressed, ul.dropdownButtons li .downArrow:focus {
-	border-style : inset;
-	background-position : 5px 10px;
-	padding : 2px 4px;
-}
-
-ul.dropdownButtons li a.disabled:hover,
-ul.dropdownButtons li span.downArrow.disabled:hover {
-	color : #999;
-	background-color : #f4f4f4;
-}
-
-ul.dropdownButtons li a:focus {
-	padding : 3px 8px 1px 10px;
-	color : #333;
-	border-style : inset;
-}
-
-/* Menu
- ******************** */
-ul.dropdownButtonsMenu {
+/* Menu */
+ 
+ .dropdownButtonsMenu {
 	position : absolute;
-	margin : 0;
-	_margin : -2px;
-	padding : 0;
-	display : none;
+	display : none;		/* until someone clicks the arrow */
+	top: -5px;
+	left: 0px;
 	border : 1px solid #aaa;
-	background : #f4f4f4;
-	list-style : none;
+	background-color : #f4f4f4;
 	z-index : 99;
+	list-style : none;
+	margin : 0px 0px 0px 0px;
+	padding : 0;
 }
 
-ul.dropdownButtonsMenu li {
-	_display : inline;
-}
-
-ul.dropdownButtonsMenu a {
-	display : block;
-	padding : 2px 5px;
-	color : #333;
-	text-decoration : none;
-}
-
-ul.dropdownButtonsMenu a:hover {
-	background : #ddd;
-	color : black;
+.dropdownButtonsMenu li {
 }
 

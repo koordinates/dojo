@@ -19,14 +19,13 @@ dojo.inherits(dojo.widget.Menu, dojo.widget.Widget);
 
 dojo.lang.extend(dojo.widget.Menu, {
 	widgetType: "Menu",
-	
+	isContainer: true,
 	items: [],
-
-	push: function (item) {
+	push: function(item){
 		dojo.connect.event(item, "onSelect", this, "onSelect");
 		this.items.push(item);
-	}
-
+	},
+	onSelect: function(){}
 });
 
 
@@ -40,6 +39,7 @@ dojo.inherits(dojo.widget.DomMenu, dojo.widget.DomWidget);
 
 dojo.lang.extend(dojo.widget.DomMenu, {
 	widgetType: "Menu",
+	isContainer: true,
 
 	push: function (item) {
 		dojo.widget.Menu.call(this, item);
@@ -53,20 +53,31 @@ dojo.lang.extend(dojo.widget.DomMenu, {
  
 dojo.widget.HtmlMenu = function(){
 	dojo.widget.HtmlMenu.superclass.constructor.call(this);
+	this.items = [];
 }
 dojo.inherits(dojo.widget.HtmlMenu, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlMenu, {
 	widgetType: "Menu",
+	isContainer: true,
 
-	templateString: '<ul style="list-style: none; padding: 0; margin: 0;"></ul>',
+	templateString: '<ul></ul>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu.css"),
 	
-	fillInTemplate: function () {
+	fillInTemplate: function (args, frag){
 		//dojo.widget.HtmlMenu.superclass.fillInTemplate.apply(this, arguments);
-		this.domNode.className = "Menu";
+		this.domNode.className = "dojoMenu";
 	},
 	
-	push: dojo.widget.DomMenu.prototype.push
+ 
+	_register: function (item ) {
+		dojo.event.connect(item, "onSelect", this, "onSelect");
+		this.items.push(item);
+	},
+
+	push: function (item) {
+		this.domNode.appendChild(item.domNode);
+		this._register(item);
+	}
 
 });
