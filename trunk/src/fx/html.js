@@ -5,6 +5,7 @@ dojo.require("dojo.style");
 dojo.require("dojo.lang");
 dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
+dojo.require("dojo.graphics.color");
 
 dojo.fx.html.fadeOut = function(node, duration, callback) {
 	return dojo.fx.html.fade(node, duration, dojo.html.getOpacity(node), 0, callback);
@@ -73,22 +74,22 @@ dojo.fx.html.slide = function(node, startCoords, endCoords, duration, callback) 
 	return anim;
 };
 
-// Fade from startRGB to the node's background color
-dojo.fx.html.colorFadeIn = function(node, startRGB, duration, delay, callback) {
+// Fade from startColor to the node's background color
+dojo.fx.html.colorFadeIn = function(node, startColor, duration, delay, callback) {
 	var color = dojo.html.getBackgroundColor(node);
 	var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
 	var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
 	while(color.length > 3) { color.pop(); }
-	while(startRGB.length > 3) { startRGB.pop(); }
 
-	var anim = dojo.fx.html.colorFade(node, startRGB, color, duration, callback, true);
+	var rgb = new dojo.graphics.color.Color(startColor).toRgb();
+	var anim = dojo.fx.html.colorFade(node, startColor, color, duration, callback, true);
 	dojo.event.connect(anim, "onEnd", function(e) {
 		if( wasTransparent ) {
 			node.style.backgroundColor = "transparent";
 		}
 	});
 	if( delay > 0 ) {
-		node.style.backgroundColor = "rgb(" + startRGB.join(",") + ")";
+		node.style.backgroundColor = "rgb(" + rgb.join(",") + ")";
 		setTimeout(function(){anim.play(true)}, delay);
 	} else {
 		anim.play(true);
@@ -99,13 +100,12 @@ dojo.fx.html.colorFadeIn = function(node, startRGB, duration, delay, callback) {
 dojo.fx.html.highlight = dojo.fx.html.colorFadeIn;
 dojo.fx.html.colorFadeFrom = dojo.fx.html.colorFadeIn;
 
-// Fade from node's background color to endRGB
-dojo.fx.html.colorFadeOut = function(node, endRGB, duration, delay, callback) {
-	var color = dojo.html.getBackgroundColor(node);
-	while(color.length > 3) { color.pop(); }
-	while(endRGB.length > 3) { endRGB.pop(); }
+// Fade from node's background color to endColor
+dojo.fx.html.colorFadeOut = function(node, endColor, duration, delay, callback) {
+	var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node)).toRgb();
 
-	var anim = dojo.fx.html.colorFade(node, color, endRGB, duration, callback, delay > 0);
+	var rgb = new dojo.graphics.color.Color(endColor).toRgb();
+	var anim = dojo.fx.html.colorFade(node, color, rgb, duration, callback, delay > 0);
 	if( delay > 0 ) {
 		node.style.backgroundColor = "rgb(" + color.join(",") + ")";
 		setTimeout(function(){anim.play(true)}, delay);
@@ -116,12 +116,12 @@ dojo.fx.html.colorFadeOut = function(node, endRGB, duration, delay, callback) {
 dojo.fx.html.unhighlight = dojo.fx.html.colorFadeOut;
 dojo.fx.html.colorFadeTo = dojo.fx.html.colorFadeOut;
 
-// Fade node background from startRGB to endRGB
-dojo.fx.html.colorFade = function(node, startRGB, endRGB, duration, callback, dontPlay) {
-	while(startRGB.length > 3) { startRGB.pop(); }
-	while(endRGB.length > 3) { endRGB.pop(); }
+// Fade node background from startColor to endColor
+dojo.fx.html.colorFade = function(node, startColor, endColor, duration, callback, dontPlay) {
+	var startRgb = new dojo.graphics.color.Color(startColor).toRgb();
+	var endRgb = new dojo.graphics.color.Color(endColor).toRgb();
 	var anim = new dojo.animation.Animation(
-		new dojo.math.curves.Line(startRGB, endRGB),
+		new dojo.math.curves.Line(startRgb, endRgb),
 		duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		node.style.backgroundColor = "rgb(" + e.coordsAsInts().join(",") + ")";
