@@ -1,16 +1,40 @@
-.Menu {
-	border: 1px solid black;
-	position: absolute;
-	border : 1px outset #ccc;
-	background : #f4f4f4;
-	color : #333;
+.dojoMenu, .dojoContextMenu {
+	border:1px solid #000000;
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	padding-bottom: 1px;
+	background-color:#f4f4f4;
+	text-wrap: none;
 }
 
-.MenuItem {
-	padding: 2px 1em;
-	cursor: default;
+.dojoContextMenu {
+	position:absolute;
+	display:none;
 }
 
-.MenuItem.hover {
-	background: #ccc;
+
+.dojoMenuItem {
+	white-space: nowrap;
+}
+
+
+li:hover.dojoMenuItem,
+.dojoMenuItemHover {
+	background-color:#ccc;
+	cursor:pointer;cursor:hand;
+}
+
+.dojoMenuSeparator {
+	list-style-type:none;
+	margin:0;
+	padding:1px 0;
+	border-bottom:1px solid #000000;
+	line-height:1px;
+	height:1px;
+}
+
+li:hover.dojoMenuSeparator {
+	background-color:#e5e5e5;
+	cursor:default;
 }

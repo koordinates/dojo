@@ -9,9 +9,9 @@ dojo.widget.HtmlContextMenu = function(){
 
 	this.isShowing = 0;
 	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlContextMenuTemplate.html");
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlContextMenuTemplate.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/Menu.css");
 
-	this.fillInTemplate = function(){
+	this.fillInTemplate = function(args, frag){
 		// this.setLabel();
 	}
 
