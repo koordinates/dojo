@@ -31,6 +31,21 @@ dojo.event.connect($("updateScroll"), "onclick", function (e) {
 
 
 <!---------------------------------------------------------------------------->
+<h2><code>getDocumentWidth</code> and <code>getDocumentHeight</code></h2>
+
+<p>Document width: <span id="docWidth">0</span><br>Document height: <span id="docHeight">0</span></p>
+<p><input type="button" id="updateSize" value="Update Size Values"></p>
+
+<script type="text/javascript">
+dojo.event.connect($("updateSize"), "onclick", function (e) {
+	$("docWidth").firstChild.nodeValue = dojo.html.getDocumentWidth();
+	$("docHeight").firstChild.nodeValue = dojo.html.getDocumentHeight();
+});
+</script>
+
+
+
+<!---------------------------------------------------------------------------->
 <h2><code>getParentOfType</code></h2>
 
 <p>This <b id="bold">is <u>some <i id="italic">crazy <span style="color:red;" id="redChild">text</span></i></u></b></p>
