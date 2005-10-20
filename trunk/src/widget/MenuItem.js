@@ -53,7 +53,6 @@ dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 		dojo.html.disableSelection(this.domNode);
 
 		//dojo.widget.HtmlMenuItem.superclass.fillInTemplate.apply(this, arguments);
-		this.domNode.appendChild(document.createTextNode(this.title));
 		this.domNode.className = "MenuItem";
 		if(!dojo.string.isBlank(this.title)){
 			this.domNode.appendChild(document.createTextNode(this.title));
