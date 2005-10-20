@@ -1,7 +1,7 @@
 .. title:: Javascript Programming Conventions
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 This document follows the basic outline of the Java Programming Conventions
 Guide, a copy of which may be found at http://geosoft.no/javastyle.html.
@@ -324,7 +324,7 @@ C.  Comments
     6.  Comments SHOULD NOT be included for every single line of code.
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 Javascript Programming Conventions
 ==================================
@@ -338,6 +338,6 @@ Javascript Programming Conventions
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

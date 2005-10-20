@@ -1,7 +1,7 @@
 .. title:: Rich Text Editing With Dojo
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 The Importance Being Solid
 --------------------------
@@ -62,7 +62,7 @@ Using the Rich Text Component By Itself
 .. FIXME: discuss customizing event handlers
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 Rich Text Editing With Dojo
 ===========================
@@ -75,6 +75,6 @@ Rich Text Editing With Dojo
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

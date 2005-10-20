@@ -26,6 +26,7 @@
 	<property name="lang" value="en"/>
 	<property name="release_dir" value="${root}/release/${project}"/>
 	<property name="docs_dir" value="${root}/documents"/>
+	<property name="articles_dir" value="${docs_dir}/articles"/>
 	<property name="release_docs_dir" value="${release_dir}/documents"/>
 	<property name="rest_style_sheet" value="${docs_dir}/styles/dojo.css"/>
 	<property name="rest_files" value=""/>
@@ -277,7 +278,7 @@ sys.path.append(".")
 import os
 from buildUtil import *
 
-buildRestFiles( dojo.getProperty("docs_dir"), 
+buildRestFiles( dojo.getProperty("articles_dir"), 
 				dojo.getProperty("release_docs_dir"),
 				dojo.getProperty("rest_style_sheet"),
 				dojo.getProperty("rest_files"))

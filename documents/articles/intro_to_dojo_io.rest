@@ -1,7 +1,7 @@
 .. title:: dojo.io.bind(): baking usability into XMLHTTP
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 Intro
 ----------------------------------
@@ -341,7 +341,7 @@ Alex Russell is the project lead for Dojo and  can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 dojo.io.bind(): baking usability into XMLHTTP
 =============================================
@@ -354,6 +354,6 @@ dojo.io.bind(): baking usability into XMLHTTP
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
