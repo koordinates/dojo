@@ -68,4 +68,12 @@ dojo.string.encodeAscii = function(str) {
 	ret += value.replace(/\+/g, "%2B");
 	return ret;
 }
-	
+
+// TODO: make an HTML version
+dojo.string.summary = function(str, len) {
+	if(!len || str.length < len) {
+		return str;
+	} else {
+		return str.substring(0, len) + "...";
+	}
+}
