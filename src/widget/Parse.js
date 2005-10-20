@@ -221,7 +221,7 @@ dojo.widget.Parse = function(fragment) {
 		frag[tagName] = {};
 		var bo = {};
 		properties.dojotype = componentName;
-		for(prop in properties){
+		for(var prop in properties){
 			if(typeof bo[prop] == "undefined"){
 				frag[tagName][prop] = [{value: properties[prop]}];
 			}
