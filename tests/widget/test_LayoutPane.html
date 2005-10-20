@@ -15,10 +15,9 @@
 <script language="JavaScript" type="text/javascript">
 
 	dojo.require("dojo.widget.HtmlLayoutPane");
+	dojo.require("dojo.widget.HtmlComboBox");
 
-	if (djConfig.debugAtAllCosts){
-		dojo.hostenv.writeIncludes();
-	}
+	dojo.hostenv.writeIncludes();
 </script>
 </head>
 <body>
@@ -46,6 +45,11 @@
 	<div dojoType="LayoutPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
 		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
 		(to check we're copying children around properly).<br />
+		<select dojoType="combobox">
+			<option value="1">foo</option>
+			<option value="2">bar</option>
+			<option value="3">baz</option>
+		</select>
 	</div>
 </div>
 
