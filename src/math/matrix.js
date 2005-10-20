@@ -23,7 +23,7 @@ dojo.math.matrix.multiply = function(a, b){
 	var bx = b[0].length;
 	var by = b.length;
 
-	if (ay != bx){
+	if (ax != by){
 		dojo.debug("Can't multiply matricies of sizes "+ax+','+ay+' and '+bx+','+by);
 		return [[0]];
 	}
