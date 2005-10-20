@@ -84,16 +84,12 @@ dojo.html.getDocumentWidth = function() {
 	var body = dojo.html.body();
 	var bodyWidth = body ? body.clientWidth : 0;
 
-	if(docElmWidth && bodyWidth) {
-		return Math.min(docElmWidth, bodyWidth);
-	} else if(docElmWidth) {
-		return docElmWidth;
-	} else if(bodyWidth) {
-		return bodyWidth;
-	} else if(window.innerWidth) {
+	if(dojo.lang.isNumber(window.innerWidth)) {
 		return window.innerWidth;
+	} else if(docElmWidth && bodyWidth) {
+		return Math.min(docElmWidth, bodyWidth);
 	} else {
-		return 0;
+		return docElmWidth || bodyWidth || 0;
 	}
 }
 
@@ -103,16 +99,12 @@ dojo.html.getDocumentHeight = function() {
 	var body = dojo.html.body();
 	var bodyHeight = body ? body.clientHeight : 0;
 
-	if(docElmHeight && bodyHeight) {
-		return Math.min(docElmHeight, bodyHeight);
-	} else if(docElmHeight) {
-		return docElmHeight;
-	} else if(bodyHeight) {
-		return bodyHeight;
-	} else if(window.innerHeight) {
+	if(dojo.lang.isNumber(window.innerHeight)) {
 		return window.innerHeight;
+	} else if(docElmHeight && bodyHeight) {
+		return Math.min(docElmHeight, bodyHeight);
 	} else {
-		return 0;
+		return docElmHeight || bodyHeight || 0;
 	}
 }
 
