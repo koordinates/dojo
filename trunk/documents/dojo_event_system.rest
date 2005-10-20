@@ -107,11 +107,11 @@ define a simple object with a couple of methods::
         counter: 0,
         foo: function(){ 
             alert("foo");
-            counter++;
+            this.counter++;
         },
         bar: function(){
             alert("bar");
-            counter++;
+            this.counter++;
         }
     };
 
@@ -329,11 +329,11 @@ topics::
         counter: 0,
         foo: function(){ 
             alert("foo");
-            counter++;
+            this.counter++;
         },
         bar: function(){
             alert("bar");
-            counter++;
+            this.counter++;
         }
     };
 
