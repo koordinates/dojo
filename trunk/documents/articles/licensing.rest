@@ -1,7 +1,7 @@
 .. title:: Licensing Considerations of the Dojo Foundation
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 Background
 ----------
@@ -54,7 +54,7 @@ The above goals have given rise to the following policies:
 .. _`Corporate Contributors License Agreement`: http://dojotoolkit.org/ccla.txt
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 Licensing Considerations of the Dojo Foundation
 ===============================================
@@ -67,6 +67,6 @@ Licensing Considerations of the Dojo Foundation
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

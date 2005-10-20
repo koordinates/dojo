@@ -1,7 +1,7 @@
 .. title:: The Dojo Way
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 Understanding Your Own Footprint
 --------------------------------
@@ -60,7 +60,7 @@ particular way, please raise the issue on one of the project mailing lists or
 file a bug.
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 The Dojo Way
 ============
@@ -73,6 +73,6 @@ The Dojo Way
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:

@@ -1,7 +1,7 @@
 .. title:: Getting Started With a Dojo Download
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 So I've Got This Zip File...
 ----------------------------
@@ -74,7 +74,7 @@ IRC
     answer questions in IRC on irc.freenode.net at #dojo.
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 Getting Started With a Dojo Download
 ====================================
@@ -87,7 +87,7 @@ Getting Started With a Dojo Download
 .. contents::
 	
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. _`event system`: http://www.dojotoolkit.org/docs/dojo_event_system.html
 .. _`dojo-interest mailing list`: http://dojotoolkit.org/mailman/listinfo/dojo-interest 

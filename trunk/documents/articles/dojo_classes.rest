@@ -1,7 +1,7 @@
 ..title: Proposal For Dojo Class Organization
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 Dojo Namespace Layout Proposal
 ------------------------------
@@ -139,7 +139,7 @@ Functionality not in classes::
    dj_import(), dj_class(), dj_throw(), and any othe pseduo language extensions
 
 .. raw:: html
-   :file: website/rest_template/sidebar.html
+   :file: ../website/rest_template/sidebar.html
 
 Proposal For Dojo Class Organization
 ====================================
@@ -151,6 +151,6 @@ Proposal For Dojo Class Organization
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
