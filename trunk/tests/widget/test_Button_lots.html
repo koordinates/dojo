@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 
 <script type="text/javascript">
 	var djConfig = {
@@ -8,10 +7,16 @@
 	};
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
+<!--
+<script type="text/javascript" src="../../src/profile.js"></script>
+-->
 <script type="text/javascript">
+	dojo.require("dojo.profile.*");
 	dojo.require("dojo.math");
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.html.Button");
+	// dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
 	function foo(){
@@ -19,32 +24,31 @@
 	}
 
 	function init(){
-		var start = new Date();
-		var tdb = dojo.widget.getWidgetById("testDojoButton");
+		var tdb = dojo.widget.getWidgetsByType("Button")[0];
 		for(var x = 0; x<100; x++){
+			dojo.profile.start("copy");
 			var tcn = tdb.domNode.cloneNode(true)
 			document.body.appendChild(tcn);
 			tcn.innerHTML = "clone "+x;
-			dojo.event.connect(tcn, "onclick", "foo");
+			tcn.onmouseover = foo;
+			tcn.onclick = foo;
+			// dojo.event.connect(tcn, "onclick", "foo");
+			dojo.profile.end("copy");
 		}
-		var copyTime = (new Date())-start;
-		dojo.debug("copying ", x, " nodes took ", copyTime, "ms");
 
-		start = new Date();
 		for(var x = 0; x<100; x++){
-			var button = dojo.widget.fromScript("Button", {label: "button "+x });
-			document.body.appendChild(button.domNode);
+			dojo.profile.start("build");
+			document.body.appendChild(dojo.widget.fromScript("Button", {label: "button "+x }).domNode);
+			dojo.profile.end("build");
 		}
-		var buildTime = (new Date())-start;
-		dojo.debug("constructing ", x, " items took ", buildTime, "ms");
-
-		dojo.debug("widgets are", dojo.math.round(buildTime/copyTime, 2), "times slower than raw DOM");
+		dojo.profile.dump(true);
 	}
 
-	dojo.event.connect(dojo, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 
 <button id="testDojoButton" dojoType="button" label="this is a test button!" 
 	onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
 	you shouldn't be seeing this
 </button>
+</html>
