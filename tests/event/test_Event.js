@@ -212,3 +212,13 @@ function test_event_implicitAfter(){
 	jum.assertEquals("test33", obj1.funcCallCount, 2);
 	jum.assertEquals("test34", obj1.secondLastReturn, "func1, arg1: 1, arg2: 2");
 }
+
+function test_event_anonymous(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect(obj1, "func1", function(){
+		obj1.funcCallCount++;
+	});
+	obj1.func1("1", "2");
+	jum.assertEquals("test35", 2, obj1.funcCallCount);
+}
