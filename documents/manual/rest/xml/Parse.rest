@@ -1,0 +1,113 @@
+.. title:: dojo.xml.Parse -- The Dojo Manual
+
+.. this is a comment. for more information on reST, see:
+   http://docutils.sf.net/docs/user/rst/quickstart.html
+   http://docutils.sf.net/docs/user/rst/quickref.html
+
+Name
+===============================================================================
+
+dojo.xml.Parse - a first pass XML to JS parser.  The theory behind this parser 
+is that DOM calls are expensive relative to JS object manipulations, so only a 
+very minimal set of optimizations are done in this step.  Instead, focus is 
+placed on getting a generic JS object structure created as quickly as possible.
+
+Summary and Overview
+===============================================================================
+
+This namespace contains three methods, all related to parsing XML into JS.  
+parseFragment and parseElement are really essentially the same thing, except 
+that Element and Fragment are as they are defined in the DOM.  So Fragment 
+does not require that their be a single top level parent node.
+
+Usage
+===============================================================================
+
+::
+
+    var ret = dojo.namespace.doSomething("arg1", "arg2");
+    dojo.namespace.exerciseYourFunctions(ret);
+    dojo.debug("huzzah!");
+
+
+API Reference
+===============================================================================
+
+Classes
+---------------------------------------
+
+``Foo(arg1)``:
+
+    Please eneumerate constructor argument types here and describe the classes
+    function.
+
+    *Inherits from*:
+        nothing
+
+    ``arg1``:
+        a very arg-like argument
+
+    *returns*:
+        new object of type Foo.
+
+``Foo.prototype.method1()``:
+
+Properties
+---------------------------------------
+
+``foo``:
+
+    A string that has many foo-like propeties. Defaults to "thud".
+
+``bar``:
+
+    Object reference to an instance of ``dojo.namespace.Bar``
+
+Methods
+---------------------------------------
+
+``baz(arg1)``:
+
+    describe ``dojo.namespace.baz()`` here.
+
+    ``arg1``:
+        An argument. Like many others, but different in its own special way.
+
+    *returns*:
+        null
+	
+
+Requires
+===============================================================================
+
+- `dojo.hostenv`_
+- `dojo.other.namespace`_
+
+.. _`dojo.hostenv`: 		hostenv.html
+.. _`dojo.other.namespace`:	other.namespace.html
+
+Provides
+===============================================================================
+
+dojo.namespace.Foo
+    A class constructor that allows Foos to be created
+
+dojo.namespace.Bar
+    A class constructor that allows Bars to be created, although you might need
+    a liquor license in your own municipality to actually operate the created
+    Bars.
+
+To Do
+===============================================================================
+
+Lots. But that's always true.
+
+About
+===============================================================================
+
+:Author: Dylan Schiemann
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/10/21
+
+.. vim:ts=4:et:tw=80:shiftwidth=4:
