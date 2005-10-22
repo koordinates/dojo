@@ -5,7 +5,8 @@ dojo.string.Builder = function(str){
 	var a = [];
 	var b = str || "";
 	var length = this.length = b.length;
-	if(!dojo.string.isBlank(b)){
+
+	if(b.length > 0){
 		a.push(b);
 	}
 	b = "";
@@ -17,13 +18,11 @@ dojo.string.Builder = function(str){
 		a.push(s);
 		length += s.length;
 		this.length = length;
-		return this;
 	};
 
 	this.clear = function(){
 		a=[];
 		length = this.length = 0;
-		return this;
 	};
 
 	this.remove = function(f,l){
@@ -37,34 +36,29 @@ dojo.string.Builder = function(str){
 		a.push(b);
 		length = this.length = b.length; 
 		b="";
-		return this;
 	};
 
 	this.replace = function(o,n){
-		// FIXME: this is not passing our unit tests
 		b = a.join(""); 
 		a = []; 
-		b.replace(o,n); 
+		b = b.replace(o,n); 
 		a.push(b);
 		length = this.length = b.length; 
 		b="";
-		return this;
 	};
 
 	this.insert = function(idx,s){
-		// FIXME: this is not passing our unit tests
 		b = a.join(""); 
 		a=[];
 		if(idx == 0){
 			b = s + b;
 		}else{
-			var start = b.substring(0, idx-1);
-			var end = b.substring(idx);
-			b = start + s + end;
+			var t = b.split("");
+			t.splice(idx,0,s);
+			b = t.join("")
 		}
 		length = this.length = b.length; 
 		a.push(b); 
 		b="";
-		return this;
 	};
 };
