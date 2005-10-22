@@ -5,8 +5,8 @@ dojo.collections.ArrayList = function(arr){
 	var items = [];
 	if (arr) items = items.concat(arr);
 	this.count = items.length;
-	this.add = function(o){
-		items.push(o);
+	this.add = function(obj){
+		items.push(obj);
 		this.count = items.length;
 	};
 	this.addRange = function(a){
@@ -17,27 +17,11 @@ dojo.collections.ArrayList = function(arr){
 			}
 			this.count = items.length;
 		} else {
-			items.concat(a);
+			for (var i=0; i<a.length; i++){
+				items.push(a[i]);
+			}
 			this.count = items.length;
 		}
-	};
-	this.binarySearch = function(key, fn){
-		var arr = ([].concat(items)).sort((fn?fn:'')) ;
-		var low = -1 ;
-		var high = arr.length ;
-		var i ;
-		while ((high - low) > 1) {
-			i = ((low + high) >>> 1) ;
-			if (key <= arr[i]) {
-				high = i ;
-			} else {
-				low = i ;
-			}
-		}
-		if (key == arr[high]) {
-			return high ;
-		}
-		return -1 ;
 	};
 	this.clear = function(){
 		items.splice(0, items.length);
@@ -46,9 +30,9 @@ dojo.collections.ArrayList = function(arr){
 	this.clone = function(){
 		return new dojo.collections.ArrayList(items);
 	};
-	this.contains = function(o){
+	this.contains = function(obj){
 		for (var i = 0; i < items.length; i++){
-			if (items[i] == o) {
+			if (items[i] == obj) {
 				return true;
 			}
 		}
@@ -57,23 +41,23 @@ dojo.collections.ArrayList = function(arr){
 	this.getIterator = function(){
 		return new dojo.collections.Iterator(items);
 	};
-	this.indexOf = function(o){
+	this.indexOf = function(obj){
 		for (var i = 0; i < items.length; i++){
-			if (items[i] == o) {
+			if (items[i] == obj) {
 				return i;
 			}
 		}
 		return -1;
 	};
-	this.insert = function(i, o){
-		items.splice(i,0,o);
+	this.insert = function(i, obj){
+		items.splice(i,0,obj);
 		this.count = items.length;
 	};
 	this.item = function(k){
 		return items[k];
 	};
-	this.remove = function(o){
-		var i = this.indexOf(o);
+	this.remove = function(obj){
+		var i = this.indexOf(obj);
 		if (i >=0) {
 			items.splice(i,1);
 		}
@@ -87,7 +71,11 @@ dojo.collections.ArrayList = function(arr){
 		items.reverse();
 	};
 	this.sort = function(fn){
-		items.sort(fn);
+		if (fn){
+			items.sort(fn);
+		} else {
+			items.sort();
+		}
 	};
 	this.toArray = function(){
 		return [].concat(items);
