@@ -25,9 +25,8 @@ Usage
 
 ::
 
-    var ret = dojo.namespace.doSomething("arg1", "arg2");
-    dojo.namespace.exerciseYourFunctions(ret);
-    dojo.debug("huzzah!");
+    var parser = new dojo.xml.Parse();
+    var parsedNodes = parser.parseElement(node);
 
 
 API Reference
@@ -36,71 +35,90 @@ API Reference
 Classes
 ---------------------------------------
 
-``Foo(arg1)``:
+``Parse()``:
 
-    Please eneumerate constructor argument types here and describe the classes
-    function.
+    The constructor has no arguments.
 
     *Inherits from*:
         nothing
 
-    ``arg1``:
-        a very arg-like argument
-
     *returns*:
-        new object of type Foo.
-
-``Foo.prototype.method1()``:
+        new object of type dojo.xml.Parse.
 
 Properties
 ---------------------------------------
 
-``foo``:
+``parsedFragment``:
 
-    A string that has many foo-like propeties. Defaults to "thud".
+    A local object that is returned after parsingis completed.
 
-``bar``:
-
-    Object reference to an instance of ``dojo.namespace.Bar``
 
 Methods
 ---------------------------------------
 
-``baz(arg1)``:
+``parseFragment(documentFragment)``:
 
-    describe ``dojo.namespace.baz()`` here.
+    parseFragment accepts a node set, and returns an object of arrays, making 
+		calls to parseElement as needed.
 
-    ``arg1``:
-        An argument. Like many others, but different in its own special way.
+    ``documentFragment``:
+        A DOM fragment.
 
     *returns*:
-        null
-	
+        parsedFragment
+
+``parseElement(node, hasParentNodeSet, optimizeForDojoML, thisIdx)``:
+
+    parseElement accepts a node, and returns an object of arrays, making 
+		recursive calls to parseElement as needed for nested child elements.
+
+    ``node``:
+        A DOM node to parse.
+
+    ``hasParentNodeSet``:
+        A boolean that will create an object to place the return value.  This is 
+				convenient for the nested recursion that takes place.
+
+    ``optimizeForDojoML``:
+        A boolean that specifies whether to make certain performance 
+				optimizations for the DojoML.
+
+    ``thisIdx``:
+        An index so that node order can be inferred for nested widgets and 
+				nodes..
+
+    *returns*:
+        parsedNodeSet
+
+``parseAttributes(node)``:
+
+    parseAttributes takes a node, and returns attributes in an object of arrays.
+		Redundant attributes are preserved rather than being ignored.  Child text 
+		nodes and child elements are normalized in the same manner as attributes, 
+		thus allowing authors to freely interchange the use of attributes and child 
+		elements.
+
+    ``node``:
+        A DOM node.
+
+    *returns*:
+        parsedAttributeSet
 
 Requires
 ===============================================================================
 
 - `dojo.hostenv`_
-- `dojo.other.namespace`_
+- `dojo.dom`_
 
 .. _`dojo.hostenv`: 		hostenv.html
-.. _`dojo.other.namespace`:	other.namespace.html
+.. _`dojo.dom`:	dom.html
 
 Provides
 ===============================================================================
 
-dojo.namespace.Foo
-    A class constructor that allows Foos to be created
+dojo.xml.Parse
+    A class constructor that allows dojo.xml.Parse to be created
 
-dojo.namespace.Bar
-    A class constructor that allows Bars to be created, although you might need
-    a liquor license in your own municipality to actually operate the created
-    Bars.
-
-To Do
-===============================================================================
-
-Lots. But that's always true.
 
 About
 ===============================================================================
