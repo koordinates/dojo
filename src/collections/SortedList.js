@@ -2,6 +2,7 @@ dojo.provide("dojo.collections.SortedList");
 dojo.require("dojo.collections.Collections");
 
 dojo.collections.SortedList = function(dictionary){
+	var _this = this;
 	var items = {};
 	var q = [];
 	var sorter = function(a,b){
@@ -10,7 +11,8 @@ dojo.collections.SortedList = function(dictionary){
 		return 0;
 	};
 	var build = function(){
-		var e = this.getIterator();
+		q = [];
+		var e = _this.getIterator();
 		while (e.moveNext()) {
 			q.push(e.entry);
 		}
@@ -116,6 +118,6 @@ dojo.collections.SortedList = function(dictionary){
 	};
 
 	this.setByIndex = function(i,o){
-		items[q[i].key] = o;
+		items[q[i].key].value = o;
 	};
 }
