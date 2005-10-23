@@ -89,6 +89,34 @@ Methods
 
     *returns*:
         parsedNodeSet
+				For example, the following xml fragment
+				
+				<foo bar="bard">
+					<baz xyzzy="xyzzyd"/>
+				</foo>
+				
+				would return
+				
+				{
+					foo: {[
+						bar: {[
+							"bard"
+						]},
+						baz: {[
+							xyzzy: {[
+								"xyzzyd"
+							],
+							nodeRef: bazDomNodeRef,
+							tagName: "baz",
+							index: index
+							}
+						]}
+						],
+						nodeRef: fooDomNodeRef,
+						tagName: "foo",
+						index: index
+					}
+				}
 
 ``parseAttributes(node)``:
 
