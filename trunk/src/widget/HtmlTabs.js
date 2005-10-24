@@ -126,6 +126,8 @@ dojo.widget.HtmlTabs = function() {
 		if(this.selected == -1 && dojo.html.hasClass(li, "current")) {
 			this.selected = this.tabs.length-1;
 		}
+
+		return { "tab": li, "panel": panel };
 	}
 
 	this.selectTab = function(e, target) {
