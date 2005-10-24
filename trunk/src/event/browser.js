@@ -39,6 +39,8 @@ dojo_ie_clobber = new function(){
 		// try{ node.removeAttribute(prop); 	}catch(e){ /* squelch */ }
 		try{ node[prop] = null; 			}catch(e){ /* squelch */ }
 		try{ delete node[prop]; 			}catch(e){ /* squelch */ }
+		// FIXME: JotLive needs this, but I'm not sure if it's too slow or not
+		try{ node.removeAttribute(prop);	}catch(e){ /* squelch */ }
 	}
 
 	this.clobber = function(nodeRef){
