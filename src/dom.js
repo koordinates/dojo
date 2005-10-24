@@ -190,8 +190,9 @@ dojo.dom.getAncestors = function (node){
 	return ancestors;
 }
 
-dojo.dom.isDescendantOf = function (node, ancestor, noSame) {
-	if(noSame && node) { node = node.parentNode; }
+dojo.dom.isDescendantOf = function (node, ancestor, guaranteeDescendant) {
+	// guaranteeDescendant allows us to be a "true" isDescendantOf function
+	if(guaranteeDescendant && node) { node = node.parentNode; }
 	while(node) {
 		if(node == ancestor) { return true; }
 		node = node.parentNode;
