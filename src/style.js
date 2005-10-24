@@ -344,8 +344,6 @@ dojo.style.getBackgroundColor = function (node) {
 	var color;
 	do{
 		color = dojo.style.getStyle(node, "background-color");
-		dojo.debug("node:", node, node.tagName, node.id);
-		dojo.debug("color:", color);
 		// Safari doesn't say "transparent"
 		if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
 		if(node == document.getElementsByTagName("body")[0]) { node = null; break; }
