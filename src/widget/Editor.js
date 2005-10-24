@@ -1,5 +1,4 @@
 /* TODO:
- * - formatBlock
  * - font selector
  * - test, bug fix, more features :)
 */
@@ -14,11 +13,6 @@ dojo.widget.tags.addParseTreeHandler("dojo:Editor");
 
 dojo.widget.HtmlEditor = function() {
 	dojo.widget.HtmlWidget.call(this);
-
-	// this necessary? I stole it from Paul's code
-	for(var method in this.constructor.prototype) {
-		this[method] = this.constructor.prototype[method];
-	}
 }
 dojo.inherits(dojo.widget.HtmlEditor, dojo.widget.HtmlWidget);
 
