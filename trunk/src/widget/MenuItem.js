@@ -46,14 +46,12 @@ dojo.inherits(dojo.widget.HtmlMenuItem, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlMenuItem, {
 	widgetType: "MenuItem",
-	templateString: '<li style="margin: 0;" dojoAttachEvent="onMouseOver; onMouseOut; onMouseDown; onMouseUp; onClick;"></li>',
+	templateString: '<li class="dojoMenuItem" dojoAttachEvent="onMouseOver; onMouseOut; onMouseDown; onMouseUp; onClick;"></li>',
 	title: "",
 
 	fillInTemplate: function(args, frag){
 		dojo.html.disableSelection(this.domNode);
 
-		//dojo.widget.HtmlMenuItem.superclass.fillInTemplate.apply(this, arguments);
-		this.domNode.className = "MenuItem";
 		if(!dojo.string.isBlank(this.title)){
 			this.domNode.appendChild(document.createTextNode(this.title));
 		}else{

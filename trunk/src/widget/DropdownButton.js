@@ -23,7 +23,7 @@ dojo.widget.HtmlDropdownButton = function() {
 	this.widgetType = "DropdownButton";
 	this.isContainer = false;	// will process children manually
 
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlDropdownButton.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlButtonTemplate.css");
 		
 	// Layout of generated button:
 	//
@@ -41,16 +41,16 @@ dojo.widget.HtmlDropdownButton = function() {
 	//  DDD - div to hang menu off of.
 
 	this.templateString =
-		  '<table class="dropdownButtonContainer" dojoAttachPoint="dropdownButtonContainer">'
+		  '<table class="dojoButtonWrapper" dojoAttachPoint="dropdownButtonContainer">'
 		+ '<tr><td>'
-		+   '<table dojoAttachPoint="dropdownButton" class="dropdownButton noHover" dojoAttachEvent="onMouseOver: onMouseOver; onMouseOut: onMouseOut;"><tr>'
+		+   '<table dojoAttachPoint="dropdownButton" class="dojoButton dojoButtonNoHover" dojoAttachEvent="onMouseOver: onMouseOver; onMouseOut: onMouseOut;"><tr>'
 		+     '<td class="label" dojoAttachPoint="labelCell" dojoAttachEvent="onClick: onClickButton;"></td>'
 		+     '<td class="downArrow" dojoAttachPoint="arrowCell" dojoAttachEvent="onClick: onClickArrow;">'
 		+         '<img dojoAttachPoint="arrow">'
 		+     '</td>'
 		+   '</tr></table>'
 		+ '</td></tr>'
-		+ '<tr><td>'
+		+ '<tr height=0><td height=0>'
 		+   '<div dojoAttachPoint="menuAttach" style="overflow: visible; position: relative; display: none;"></div>'
 		+ '</tr></td>'
 		+ '</table>';
@@ -95,7 +95,7 @@ dojo.widget.HtmlDropdownButton = function() {
 			this.menu.style.display="block";
 		}
 		this.menu.style.top="-5px";
-		this.menu.style.left=0;
+		this.menu.style.left="0px";
 		this.menu.style["z-index"] = 99;
 		this.menuAttach.appendChild(this.menu);
 		
@@ -110,13 +110,13 @@ dojo.widget.HtmlDropdownButton = function() {
 	};
 
 	this.onMouseOver = function(e) {
-		dojo.html.addClass(this.dropdownButton, "hover");
-		dojo.html.removeClass(this.dropdownButton, "noHover");
+		dojo.html.addClass(this.dropdownButton, "dojoButtonHover");
+		dojo.html.removeClass(this.dropdownButton, "dojoButtonNoHover");
 	};
 	
 	this.onMouseOut = function(e) {
-		dojo.html.removeClass(this.dropdownButton, "hover");
-		dojo.html.addClass(this.dropdownButton, "noHover");
+		dojo.html.removeClass(this.dropdownButton, "dojoButtonHover");
+		dojo.html.addClass(this.dropdownButton, "dojoButtonNoHover");
 	}
 
 	// Action when the user presses the button

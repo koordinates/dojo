@@ -9,7 +9,6 @@ dojo.widget.Button = function(){
 	dojo.widget.Widget.call(this);
 
 	this.widgetType = "Button";
-	this.onClick = function(){ return; }
-	this.isContainer = false;
+	this.isContainer = true;
 }
 dojo.inherits(dojo.widget.Button, dojo.widget.Widget);
