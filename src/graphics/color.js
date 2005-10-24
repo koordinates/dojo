@@ -32,9 +32,17 @@ dojo.graphics.color.Color = function(r, g, b, a) {
 	}
 };
 
-dojo.graphics.color.Color.prototype.toRgb = function() {
-	return [this.r, this.g, this.b];
+dojo.graphics.color.Color.prototype.toRgb = function(includeAlpha) {
+	if(includeAlpha) {
+		return this.toRgba();
+	} else {
+		return [this.r, this.g, this.b];
+	}
 };
+
+dojo.graphics.color.Color.prototype.toRgba = function() {
+	return [this.r, this.g, this.b, this.a];
+}
 
 dojo.graphics.color.Color.prototype.toHex = function() {
 	return dojo.graphics.color.rgb2hex(this.toRgb());
