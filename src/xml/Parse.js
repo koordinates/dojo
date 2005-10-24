@@ -74,14 +74,14 @@ dojo.xml.Parse = function(){
 				}
 				parsedNodeSet[tagName][attr].push(attributeSet[attr]);
 			}
-		}
 	
-		// FIXME: we might want to make this optional or provide cloning instead of
-		// referencing, but for now, we include a node reference to allow
-		// instantiated components to figure out their "roots"
-		parsedNodeSet[tagName].nodeRef = node;
-		parsedNodeSet.tagName = tagName;
-		parsedNodeSet.index = thisIdx||0;
+			// FIXME: we might want to make this optional or provide cloning instead of
+			// referencing, but for now, we include a node reference to allow
+			// instantiated components to figure out their "roots"
+			parsedNodeSet[tagName].nodeRef = node;
+			parsedNodeSet.tagName = tagName;
+			parsedNodeSet.index = thisIdx||0;
+		}
 	
 		var count = 0;
 		for(var i=0; i<node.childNodes.length; i++){
