@@ -32,6 +32,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * editor is not properly closed after editing has started.
 	 */
 	saveName: "",
+	_content: "",
 	
 	/** The minimum height that the editor should have */
 	minHeight: "1em",
@@ -42,6 +43,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	useActiveX: false,
 	
 	_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
+
+	contentFilters: [],
 
 /* Init
  *******/
@@ -73,6 +76,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		dojo.event.topic.publish("dojo.widget.RichText::open", this);
 
 		if (!this.isClosed) { this.close(); }
+		this._content = "";
 		if (arguments.length == 1) { this.domNode = element; } // else unchanged
 		
 		if (this.domNode.nodeName == "TEXTAREA") {
@@ -843,7 +847,15 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 
 	getEditorContent: function(){
-		return this.editNode.innerHTML;
+		var ec = "";
+		try{
+			ec = (this._content.length > 0) ? this._content : this.editNode.innerHTML;
+		}catch(e){ /* squelch */ }
+
+		dojo.lang.forEach(this.contentFilters, function(ef){
+			ec = ef(ec);
+		});
+		return ec;
 	},
 	
 	/**
@@ -858,7 +870,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		if(this.isClosed){return false; }
 
 		if (arguments.length == 0) { save = true; }
-		var changed = (this.savedContent.innerHTML != this.editNode.innerHTML);
+		this._content = this.editNode.innerHTML;
+		var changed = (this.savedContent.innerHTML != this._content);
 		
 		// line height is squashed for iframes
 		if (this.iframe){ this.domNode.style.lineHeight = null; }
@@ -886,7 +899,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.domNode.appendChild(nc);
 				nc.innerHTML = this.editNode.innerHTML;
 			}else{
-				this.domNode.innerHTML = this.editNode.innerHTML;
+				this.domNode.innerHTML = this._content;
 			}
 			// kill listeners on the saved content
 			dojo.event.browser.clean(this.savedContent);
@@ -912,7 +925,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this._connected[1], this._connected[2]);
 		}
 	},
-	
+
 	_connected: [],
 	connect: function (targetObj, targetFunc, thisFunc) {
 		dojo.event.connect(targetObj, targetFunc, this, thisFunc);
