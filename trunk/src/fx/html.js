@@ -8,11 +8,11 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
 dojo.fx.html.fadeOut = function(node, duration, callback) {
-	return dojo.fx.html.fade(node, duration, dojo.html.getOpacity(node), 0, callback);
+	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 0, callback);
 };
 
 dojo.fx.html.fadeIn = function(node, duration, callback) {
-	return dojo.fx.html.fade(node, duration, dojo.html.getOpacity(node), 1, callback);
+	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 1, callback);
 };
 
 dojo.fx.html.fadeHide = function(node, duration, callback) {
@@ -34,7 +34,7 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
 		new dojo.math.curves.Line([startOpac],[endOpac]),
 		duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
-		dojo.html.setOpacity(node, e.x);
+		dojo.stylj.setOpacity(node, e.x);
 	});
 	if(callback) {
 		dojo.event.connect(anim, "onEnd", function(e) {
