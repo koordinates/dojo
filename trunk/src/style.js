@@ -13,11 +13,13 @@ dojo.style.boxSizing = {
 
 dojo.style.getBoxSizing = function(node) 
 {
-	var cm = document["compatMode"];
-	if (cm == "BackCompat" || cm == "QuirksMode"){ 
-		return dojo.style.boxSizing.borderBox; 
-	}else	if (dojo.render.html.ie){ 
-		return dojo.style.boxSizing.contentBox; 
+	if (dojo.render.html.ie || dojo.render.html.opera){ 
+		var cm = document["compatMode"];
+		if (cm == "BackCompat" || cm == "QuirksMode"){ 
+			return dojo.style.boxSizing.borderBox; 
+		}else{
+			return dojo.style.boxSizing.contentBox; 
+		}
 	}else{
 		if(arguments.length == 0){ node = document.documentElement; }
 		var sizing = dojo.style.getStyle(node, "-moz-box-sizing");
@@ -70,20 +72,20 @@ The following several function use the dimensions shown below
 		- Uncomputable values are returned as NaN.
 		- setOuterWidth/Height return *false* if the outer size could not be computed, otherwise *true*.
 		- I (sjmiles) know no way to find the calculated values for auto-margins. 
-		- All values are floating point in 'px' units. If a non-zero computed style value is not specified in 'px', NaN is returned.
+		- All returned values are floating point in 'px' units. If a non-zero computed style value is not specified in 'px', NaN is returned.
 
 	FF:
 		- styles specified as '0' (unitless 0) show computed as '0pt'.
 
 	IE:
 		- clientWidth/Height are unreliable (0 unless the object has 'layout').
-		- margins must be specified in px, or 0 (in any unit) for all sizing functions to work.
-		- padding can be empty or, if specified, must be in px, or 0 (in any unit) for all sizing functions to work.
+		- margins must be specified in px, or 0 (in any unit) for any sizing function to work. Otherwise margins detect as 'auto'.
+		- padding can be empty or, if specified, must be in px, or 0 (in any unit) for any sizing function to work.
 
 	Safari:
 		- Safari defaults padding values to 'auto'.
 
-	See the unit tests for listings of (un)computable values in a given browser.
+	See the unit tests for examples of (un)computable values in a given browser.
 
 */
 
@@ -94,23 +96,43 @@ dojo.style.isBorderBox = function(node)
 	return (dojo.style.getBoxSizing(node) == dojo.style.boxSizing.borderBox);
 }
 
-dojo.style.getNumericStyle = function (element, cssSelector, treatAutoAsZero){
-	// FIXME: is regex inefficient vs. parseInt or some manual test? 
+dojo.style.getUnitValue = function (element, cssSelector, autoIsZero){
+	var result = { value: 0, units: 'px' };
 	var s = dojo.style.getComputedStyle(element, cssSelector);
-	if (s == ''){ return 0; }
-	if ((s == 'auto') && treatAutoAsZero){ return 0; }
-	if (dojo.lang.isUndefined(s)){ return NaN };
-	var match = s.match(/([\d.]+)([a-z]*)/);
-	if (!match || !match[1]) 
-		return NaN;
-	var n = Number(match[1]);
-	return (n == 0 || match[2]=='px' ? n : NaN);
+	if (s == '' || (s == 'auto' && autoIsZero)){ return result; }
+	if (dojo.lang.isUndefined(s)){ 
+		result.value = NaN;
+	}else{
+		// FIXME: is regex inefficient vs. parseInt or some manual test? 
+		var match = s.match(/([\d.]+)([a-z%]*)/i);
+		if (!match){
+			result.value = NaN;
+		}else{
+			result.value = Number(match[1]);
+			result.units = match[2].toLowerCase();
+		}
+	}
+	return result;		
+}
+
+dojo.style.getPxValue = function (element, cssSelector, autoIsZero){
+	var result = dojo.style.getUnitValue(element, cssSelector, autoIsZero);
+	// FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
+	// but there are cross-browser complexities
+	if (result.value == NaN || (result.value && result.units != 'px')) { return NaN; }
+	return result.value;
+}
+
+dojo.style.getNumericStyle = dojo.style.getPxValue; // backward compat
+
+dojo.style.isPositionAbsolute = function(node){
+	return (dojo.style.getComputedStyle(node, 'position') == 'absolute');
 }
 
 dojo.style.getMarginWidth = function(node){
-	var autoIsOk = (dojo.style.getComputedStyle(node, 'position') == 'absolute') ? 1 : 0;
-	var left = dojo.style.getNumericStyle(node, "margin-left", autoIsOk);
-	var right = dojo.style.getNumericStyle(node, "margin-right", autoIsOk);
+	var autoIsZero = dojo.style.isPositionAbsolute(node);
+	var left = dojo.style.getPxValue(node, "margin-left", autoIsZero);
+	var right = dojo.style.getPxValue(node, "margin-right", autoIsZero);
 	return left + right;
 }
 
@@ -120,15 +142,15 @@ dojo.style.getBorderWidth = function(node){
 	//	return node.offsetWidth - node.clientWidth;
 	//}else
 	{
-		var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-left-width"));
-		var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-right-width"));
+		var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-left-width"));
+		var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-right-width"));
 		return left + right;
 	}
 }
 
 dojo.style.getPaddingWidth = function(node){
-	var left = (dojo.style.getStyle(node, 'padding-left') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-left"));
-	var right = (dojo.style.getStyle(node, 'padding-right') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-right"));
+	var left = dojo.style.getPxValue(node, "padding-left", true);
+	var right = dojo.style.getPxValue(node, "padding-right", true);
 	return left + right;
 }
 
@@ -155,15 +177,16 @@ dojo.style.setOuterWidth = function (node, pxWidth){
 	}else return false;
 }
 
+// FIXME: these aliases are actually the preferred names
 dojo.style.getContentBoxWidth = dojo.style.getContentWidth;
 dojo.style.getBorderBoxWidth = dojo.style.getInnerWidth;
 dojo.style.getMarginBoxWidth = dojo.style.getOuterWidth;
 dojo.style.setMarginBoxWidth = dojo.style.setOuterWidth;
 
 dojo.style.getMarginHeight = function(node){
-	var autoIsOk = (dojo.style.getComputedStyle(node, 'position') == 'absolute') ? 1 : 0;
-	var top = dojo.style.getNumericStyle(node, "margin-top", autoIsOk);
-	var bottom = dojo.style.getNumericStyle(node, "margin-bottom", autoIsOk);
+	var autoIsZero = dojo.style.isPositionAbsolute(node);
+	var top = dojo.style.getPxValue(node, "margin-top", autoIsZero);
+	var bottom = dojo.style.getPxValue(node, "margin-bottom", autoIsZero);
 	return top + bottom;
 }
 
@@ -173,15 +196,15 @@ dojo.style.getBorderHeight = function(node){
 //		return node.offsetHeight- node.clientHeight;
 //	}else
 	{		
-		var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-top-width"));
-		var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getNumericStyle(node, "border-bottom-width"));
+		var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-top-width"));
+		var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-bottom-width"));
 		return top + bottom;
 	}
 }
 
 dojo.style.getPaddingHeight = function(node){
-	var top = (dojo.style.getStyle(node, 'padding-top') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-top"));
-	var bottom = (dojo.style.getStyle(node, 'padding-bottom') == 'auto' ? 0 : dojo.style.getNumericStyle(node, "padding-bottom"));
+	var top = dojo.style.getPxValue(node, "padding-top", true);
+	var bottom = dojo.style.getPxValue(node, "padding-bottom", true);
 	return top + bottom;
 }
 
@@ -208,6 +231,7 @@ dojo.style.setOuterHeight = function (node, pxHeight){
 	}else return false;
 }
 
+// FIXME: these aliases are actually the preferred names
 dojo.style.getContentBoxHeight = dojo.style.getContentHeight;
 dojo.style.getBorderBoxHeight = dojo.style.getInnerHeight;
 dojo.style.getMarginBoxHeight = dojo.style.getOuterHeight;
