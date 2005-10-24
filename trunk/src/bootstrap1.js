@@ -54,7 +54,12 @@ dojo.version = {
 dojo.evalObjPath = function(objpath, create){
 	// fast path for no periods
 	if(typeof objpath != "string"){ return dj_global; }
-	if(objpath.indexOf('.') == -1){ return dj_global[objpath]; }
+	if(objpath.indexOf('.') == -1){
+		if(dj_undef(objpath, dj_global)){
+			dj_global[objpath] = {};
+		}
+		return dj_global[objpath];
+	}
 
 	var syms = objpath.split(/\./);
 	var obj = dj_global;
