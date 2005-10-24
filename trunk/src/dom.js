@@ -80,7 +80,7 @@ dojo.dom.getTagName = function (node){
 				var aclasses = classes.split(" ");
 				for(var x=0; x<aclasses.length; x++){
 					if((aclasses[x].length>5)&&(aclasses[x].indexOf("dojo-")>=0)){
-						return "dojo:"+aclasses[x].substr(5);
+						return "dojo:"+aclasses[x].substr(5).toLowerCase();
 					}
 				}
 			}
