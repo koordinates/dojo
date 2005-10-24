@@ -174,7 +174,8 @@ dojo.widget.HtmlDatePicker = function(){
 	
 	this.incrementDate = function(date, bool) {
 		// bool: true to increase, false to decrease
-		var time = date.getTime();
+		// subtract 20 ms to account for ms rounding bugs
+		var time = date.getTime() - 20;
 		var increment = 1000 * 60 * 60 * 24;
 		time = (bool) ? (time + increment) : (time - increment);
 		var returnDate = new Date();
