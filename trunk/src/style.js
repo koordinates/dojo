@@ -115,7 +115,7 @@ dojo.style.getUnitValue = function (element, cssSelector, autoIsZero){
 	return result;		
 }
 
-dojo.style.getPxValue = function (element, cssSelector, autoIsZero){
+dojo.style.getPixelValue = function (element, cssSelector, autoIsZero){
 	var result = dojo.style.getUnitValue(element, cssSelector, autoIsZero);
 	// FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
 	// but there are cross-browser complexities
@@ -123,7 +123,7 @@ dojo.style.getPxValue = function (element, cssSelector, autoIsZero){
 	return result.value;
 }
 
-dojo.style.getNumericStyle = dojo.style.getPxValue; // backward compat
+dojo.style.getNumericStyle = dojo.style.getPixelValue; // backward compat
 
 dojo.style.isPositionAbsolute = function(node){
 	return (dojo.style.getComputedStyle(node, 'position') == 'absolute');
@@ -131,8 +131,8 @@ dojo.style.isPositionAbsolute = function(node){
 
 dojo.style.getMarginWidth = function(node){
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
-	var left = dojo.style.getPxValue(node, "margin-left", autoIsZero);
-	var right = dojo.style.getPxValue(node, "margin-right", autoIsZero);
+	var left = dojo.style.getPixelValue(node, "margin-left", autoIsZero);
+	var right = dojo.style.getPixelValue(node, "margin-right", autoIsZero);
 	return left + right;
 }
 
@@ -142,15 +142,15 @@ dojo.style.getBorderWidth = function(node){
 	//	return node.offsetWidth - node.clientWidth;
 	//}else
 	{
-		var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-left-width"));
-		var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-right-width"));
+		var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-left-width"));
+		var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-right-width"));
 		return left + right;
 	}
 }
 
 dojo.style.getPaddingWidth = function(node){
-	var left = dojo.style.getPxValue(node, "padding-left", true);
-	var right = dojo.style.getPxValue(node, "padding-right", true);
+	var left = dojo.style.getPixelValue(node, "padding-left", true);
+	var right = dojo.style.getPixelValue(node, "padding-right", true);
 	return left + right;
 }
 
@@ -185,8 +185,8 @@ dojo.style.setMarginBoxWidth = dojo.style.setOuterWidth;
 
 dojo.style.getMarginHeight = function(node){
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
-	var top = dojo.style.getPxValue(node, "margin-top", autoIsZero);
-	var bottom = dojo.style.getPxValue(node, "margin-bottom", autoIsZero);
+	var top = dojo.style.getPixelValue(node, "margin-top", autoIsZero);
+	var bottom = dojo.style.getPixelValue(node, "margin-bottom", autoIsZero);
 	return top + bottom;
 }
 
@@ -196,15 +196,15 @@ dojo.style.getBorderHeight = function(node){
 //		return node.offsetHeight- node.clientHeight;
 //	}else
 	{		
-		var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-top-width"));
-		var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getPxValue(node, "border-bottom-width"));
+		var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-top-width"));
+		var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-bottom-width"));
 		return top + bottom;
 	}
 }
 
 dojo.style.getPaddingHeight = function(node){
-	var top = dojo.style.getPxValue(node, "padding-top", true);
-	var bottom = dojo.style.getPxValue(node, "padding-bottom", true);
+	var top = dojo.style.getPixelValue(node, "padding-top", true);
+	var bottom = dojo.style.getPixelValue(node, "padding-bottom", true);
 	return top + bottom;
 }
 
