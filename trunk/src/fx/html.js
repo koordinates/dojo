@@ -34,7 +34,7 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
 		new dojo.math.curves.Line([startOpac],[endOpac]),
 		duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
-		dojo.stylj.setOpacity(node, e.x);
+		dojo.style.setOpacity(node, e.x);
 	});
 	if(callback) {
 		dojo.event.connect(anim, "onEnd", function(e) {
