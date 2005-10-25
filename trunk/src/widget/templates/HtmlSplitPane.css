@@ -7,6 +7,7 @@
 
 .dojoHtmlSplitPaneSizerH {
 
+	font-size: 1px;
 	cursor: move;
 	cursor: w-resize;
 	background-color: #D4D0C8;
@@ -19,6 +20,7 @@
 
 .dojoHtmlSplitPaneSizerV {
 
+	font-size: 1px;
 	cursor: move;
 	cursor: n-resize;
 	background-color: #D4D0C8;
@@ -31,6 +33,7 @@
 
 .dojoHtmlSplitPaneVirtualSizerH {
 
+	font-size: 1px;
 	cursor: move;
 	cursor: w-resize;
 	background-color: #808080;
@@ -39,6 +42,7 @@
 
 .dojoHtmlSplitPaneVirtualSizerV {
 
+	font-size: 1px;
 	cursor: move;
 	cursor: n-resize;
 	background-color: #808080;
