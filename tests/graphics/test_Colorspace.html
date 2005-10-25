@@ -16,7 +16,7 @@
 </script>
 <script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-dojo.require("dojo.graphics.colorspace");
+dojo.require("dojo.graphics.Colorspace");
 
 function convert_test(c, col, model_from, model_to){
 
@@ -57,7 +57,7 @@ function convert_test_do(c, col, model_from, model_to){
 
 window.onload = function(){
 
-var c = new dojo.graphics.colorspace();
+var c = new dojo.graphics.Colorspace();
 
 var spaces = ['RGB', 'XYZ', 'xyY', 'Lab', 'LCHab', 'Luv', 'LCHuv', 'CMY', 'CMYK', 'HSV', 'HSL'];
 
