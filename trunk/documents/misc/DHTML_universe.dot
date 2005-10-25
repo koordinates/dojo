@@ -104,10 +104,10 @@ digraph dhtml_universe
 		caugusti -> qooxdoo;
 		ptracey -> jsxml;
 		sstephenson -> Prototype;
-		hfuecks -> Script_aculo_us;
+		tfuchs -> Script_aculo_us;
 		hfuecks -> JPSpan;
 		syen -> TrimPath;
-		bobi -> MochiKit
+		bobi -> MochiKit;
 		glish -> Yahoo;
 		glish -> Flickr;
 		swillison -> Yahoo;
@@ -125,6 +125,8 @@ digraph dhtml_universe
 		svisscher -> Q42;
 		mwubben -> sIFR;
 		mdavidson -> sIFR;
+		sjmiles -> Dojo;
+		sjmiles -> TurboAjax;
 
 		// project and company relationships
 		INFA -> NW;
@@ -133,7 +135,7 @@ digraph dhtml_universe
 		Renkoo -> Dojo [ label="Renkoo\nsponsors\nDojo" ];
 		TurboAjax -> Dojo [ label="TurboAjax built\non Dojo" ];
 		Dojo -> MochiKit [ style=dotted, label="Mochi is Dojo-compatible" ];
-		Jot -> HTMLArea [ label="Jot sponsors \nHTMLArea" ];
+		Jot -> HTMLArea [ label="Jot sponsored \nHTMLArea" ];
 		// Tibet -> ISC [ style=dotted ];
 		// FIXME: need to mine these links for info:
 		//	http://koranteng.blogspot.com/2004/07/on-rich-web-applications-alphablox-and.html
@@ -151,6 +153,10 @@ digraph dhtml_universe
 		Prototype -> Script_aculo_us [ label="Script.aculo.us\nrequires Prototype" ];
 		Prototype -> RICO [ label="RICO requires\nPrototype" ];
 		Q42 -> XOpus;
+		TrimPath -> TrimJunction;
+		TrimPath -> TrimSpreadsheet;
+		TrimPath -> TrimQuery;
+		TrimSpreadsheet -> NumSum;
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
@@ -196,6 +202,7 @@ digraph dhtml_universe
 		ptracey		[ label="Peter Tracey" ];
 		sstephenson [ label="Sam Stephenson" ];
 		hfuecks		[ label="Harry Fuecks" ];
+		tfuchs		[ label="Thomas Fuchs" ];
 		syen		[ label="Steve Yen" ];
 		bobi		[ label="Bob Ippolito" ];
 		nkand		[ label="Neil Kandalgaonkar" ];
@@ -210,6 +217,8 @@ digraph dhtml_universe
 		svisscher	[ label="Sjoerd Visscher" ];
 		mwubben		[ label="Mark Wubben" ];
 		mdavidson	[ label="Mike Davidson" ];
+		sjmiles		[ label="Scott Miles" ];
+		jgwebber	[ label="Joel Webber" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -224,9 +233,10 @@ digraph dhtml_universe
 		Renkoo		[ label="Renkoo",shape=box ];
 		TurboAjax	[ label="TurboAjax Group",shape=box ];
 		Q42			[ label="Q42",shape=box ];
+		NumSum		[ shape=box ];
 
 		// projects and products
-		Storage		[ shape=diamond ];
+		Storage		[ label="AMASS",shape=diamond ];
 		jsxml		[ shape=diamond ];
 		HTMLArea	[ shape=diamond ];
 		AlphaBlox	[ shape=diamond ];
@@ -263,6 +273,9 @@ digraph dhtml_universe
 		Script_aculo_us [ label="Script.aculo.us",shape=diamond ];
 		RICO		[ label="OpenRICO",shape=diamond ];
 		TrimPath	[ shape=diamond ];
+		TrimJunction [ shape=diamond ];
+		TrimQuery	[ shape=diamond ];
+		TrimSpreadsheet [ shape=diamond ];
 		MochiKit	[ shape=diamond ];
 		JPSpan		[ shape=diamond ];
 		Flickr		[ shape=diamond ];
