@@ -41,8 +41,6 @@ dojo.widget.HtmlSplitPane = function(){
 
 	this.activeSizing = '';
 	this.sizerWidth = 15;
-	this.paneWidth = 300;
-	this.paneHeight = 300;
 	this.orientation = 'horizontal';
 
 	this.fillInTemplate = function(){
@@ -50,11 +48,17 @@ dojo.widget.HtmlSplitPane = function(){
 		dojo.style.insertCssFile(this.templateCssPath);
 
 		this.domNode.style.position = 'relative';
-		this.domNode.style.width = this.paneWidth + 'px';
-		this.domNode.style.height = this.paneHeight + 'px';
+		this.paneWidth = dojo.style.getContentWidth(this.domNode);
+		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
+	}
+
+	this.onResize = function(e) {
+		this.paneWidth = dojo.style.getContentWidth(this.domNode);
+		this.paneHeight = dojo.style.getContentHeight(this.domNode);
+		this.layoutPanels();
 	}
 
 	this.postCreate = function(args, fragment, parentComp){
@@ -118,8 +122,16 @@ dojo.widget.HtmlSplitPane = function(){
 		// size the panels once the browser has caught up
 		//
 
-		var h3 = (function(){ return function(){ self.layoutPanels(); } })();
+		var h3 = (function(){ return function(){ self.onResize(); } })();
 		window.setTimeout(h3, 0);
+		
+		//
+		// Handle resize events due to window resizing and/or resize commands
+		// from my container.
+		//
+		dojo.event.connect(this.domNode, "onresize", this, "onResize");
+		dojo.addOnLoad(this, "onResize");
+		dojo.event.connect(window, "onresize", this, "onResize");
 	}
 
 
@@ -170,7 +182,6 @@ dojo.widget.HtmlSplitPane = function(){
 		}
 		this.children[this.children.length-1].sizeActual = space - total_size;
 
-
 		//
 		// make sure the sizes are ok
 		//
@@ -200,10 +211,16 @@ dojo.widget.HtmlSplitPane = function(){
 			this.children[i].position = pos;
 			pos += size;
 		}
+		
+		//
+		// if children are widgets, then let them resize themselves (if they want to)
+		//
+		for(var i=0; i<this.children.length; i++){
+			this.children[i].onResized();
+		}
 	}
 
 	this.movePanel = function(panel, pos, size){
-
 		if (this.isHorizontal){
 			panel.style.left = pos + 'px';
 			panel.style.top = 0;
@@ -506,9 +523,28 @@ dojo.widget.HtmlSplitPanePanel = function(){
 	this.sizeMin= 10;
 	this.sizeShare = 10;
 
-	this.fillInTemplate = function(){
+	this.fillInTemplate = function(args, frag) {
+		this.domNode.style.position="relative";	// in case my child does a height=100%
+		
+		// Recursively expand widgets inside of me
+		// (Since I also contain arbitrary (non-widget) HTML, I can't say
+		// this.isContainer=true. Rather, I have to manually expand widgets.)
+		var input = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+		var parser = new dojo.xml.Parse();
+		var frag = parser.parseElement(input, null, true);
+		var ary = dojo.widget.getParser().createComponents(frag);
+	}
 
-		//dojo.debug('creating child node');
+	this.onResized = function() {
+		// If any of my children are widgets (ex: split pane inside of a split pane),
+		// then resize them.  (TODO: what if my children are normal HTML objects but
+		// my grandchildren (etc.) are widgets?)
+		for(var child = dojo.dom.getFirstChildElement(this.domNode); child;
+			child = dojo.dom.getNextSiblingElement(child) ) {
+			if ( child.onresize ) {
+				child.onresize();
+			}
+		}
 	}
 }
 

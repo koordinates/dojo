@@ -49,7 +49,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	postCreate: function(args, fragment, parentComp){
-
 		// attach our children
 
 		for(var i=0; i<this.children.length; i++){
@@ -143,7 +142,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			kids.bottom[i].domNode.style.left = this.clientRect.left + 'px';
 			kids.bottom[i].domNode.style.top = (this.clientRect.bottom - h) + 'px';
-
 			dojo.style.setOuterWidth(kids.bottom[i].domNode, this.clientRect.right - this.clientRect.left);
 			this.clientRect.bottom -= h;
 
@@ -195,9 +193,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		kids.client[0].domNode.style.left = this.clientRect.left + 'px';
 		kids.client[0].domNode.style.top = this.clientRect.top + 'px';
 
-		dojo.style.setOuterWidth(kids.client[0].domNode, this.clientRect.right - this.clientRect.left);
+		dojo.style.setOuterWidth(kids.client[0].domNode, this.clientRect.right - this.clientRect.left);		
 		dojo.style.setOuterHeight(kids.client[0].domNode, this.clientRect.bottom - this.clientRect.top);
-
 		kids.client[0].onResized();
 	},
 
@@ -231,7 +228,15 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	onResized: function(){
-		// override me!
+		// If any of my children are widgets (ex: split pane),
+		// then resize them.  TODO: what if my children are normal HTML objects but
+		// my grandchildren (etc.) are widgets?
+		for(var child = dojo.dom.getFirstChildElement(this.domNode); child;
+			child = dojo.dom.getNextSiblingElement(child) ) {
+			if ( child.onResize ) {
+				child.onResize();
+			}
+		}
 	}
 });
 
