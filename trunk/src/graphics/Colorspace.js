@@ -1,10 +1,21 @@
-dojo.provide("dojo.graphics.colorspace");
+dojo.provide("dojo.graphics.Colorspace");
 
 dojo.require("dojo.lang");
 dojo.require("dojo.math.matrix");
 
+//
+// to convert to YUV:
+//   c.whitePoint = 'D65';
+//   c.RGBWorkingSpace = 'pal_secam_rgb';
+//   var out = c.convert([r,g,b], 'RGB', 'XYZ');
+//
+// to convert to YIQ:
+//   c.whitePoint = 'D65';
+//   c.RGBWorkingSpace = 'ntsc_rgb';
+//   var out = c.convert([r,g,b], 'RGB', 'XYZ');
+//
 
-dojo.graphics.colorspace =function(){
+dojo.graphics.Colorspace =function(){
 
 	this.whitePoint = 'D65';
 	this.stdObserver = '10';
@@ -107,7 +118,7 @@ dojo.graphics.colorspace =function(){
 	return this;
 }
 
-dojo.graphics.colorspace.prototype.convert = function(col, model_from, model_to){
+dojo.graphics.Colorspace.prototype.convert = function(col, model_from, model_to){
 
 	var k = model_from+'_to_'+model_to;
 
@@ -135,7 +146,7 @@ dojo.graphics.colorspace.prototype.convert = function(col, model_from, model_to)
 	}
 }
 
-dojo.graphics.colorspace.prototype.munge = function(keys, args){
+dojo.graphics.Colorspace.prototype.munge = function(keys, args){
 
 	if (dojo.lang.isArray(args[0])){
 		args = args[0];
@@ -150,7 +161,7 @@ dojo.graphics.colorspace.prototype.munge = function(keys, args){
 	return out;
 }
 
-dojo.graphics.colorspace.prototype.getWhitePoint = function(){
+dojo.graphics.Colorspace.prototype.getWhitePoint = function(){
 
 	var x = 0;
 	var y = 0;
@@ -212,7 +223,7 @@ dojo.graphics.colorspace.prototype.getWhitePoint = function(){
 	return wp
 }
 
-dojo.graphics.colorspace.prototype.getPrimaries = function(){
+dojo.graphics.Colorspace.prototype.getPrimaries = function(){
 
 	// ref: http://www.fho-emden.de/~hoffmann/ciexyz29082000.pdf
 	// ref: http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
@@ -289,17 +300,17 @@ dojo.graphics.colorspace.prototype.getPrimaries = function(){
 	return p;
 }
 
-dojo.graphics.colorspace.prototype.epsilon = function(){
+dojo.graphics.Colorspace.prototype.epsilon = function(){
 
 	return this.useApproxCIELabMapping ? 0.008856 : 216 / 24289;
 }
 
-dojo.graphics.colorspace.prototype.kappa = function(){
+dojo.graphics.Colorspace.prototype.kappa = function(){
 
 	return this.useApproxCIELabMapping ? 903.3 : 24389 / 27;
 }
 
-dojo.graphics.colorspace.prototype.XYZ_to_xyY = function(){
+dojo.graphics.Colorspace.prototype.XYZ_to_xyY = function(){
 	var src = this.munge('XYZ', arguments);
 
 	var sum = src.X + src.Y + src.Z;
@@ -320,7 +331,7 @@ dojo.graphics.colorspace.prototype.XYZ_to_xyY = function(){
 	return [x, y, Y];
 }
 
-dojo.graphics.colorspace.prototype.xyY_to_XYZ = function(){
+dojo.graphics.Colorspace.prototype.xyY_to_XYZ = function(){
 	var src = this.munge('xyY', arguments);
 
 	if (src.y == 0){
@@ -337,7 +348,7 @@ dojo.graphics.colorspace.prototype.xyY_to_XYZ = function(){
 	return [X, Y, Z];
 }
 
-dojo.graphics.colorspace.prototype.RGB_to_XYZ = function(){
+dojo.graphics.Colorspace.prototype.RGB_to_XYZ = function(){
 	var src = this.munge('RGB', arguments);
 
 	var m = this.getRGB_XYZ_Matrix();
@@ -361,7 +372,7 @@ dojo.graphics.colorspace.prototype.RGB_to_XYZ = function(){
 	return [XYZ[0][0], XYZ[0][1], XYZ[0][2]];
 }
 
-dojo.graphics.colorspace.prototype.XYZ_to_RGB = function(){
+dojo.graphics.Colorspace.prototype.XYZ_to_RGB = function(){
 	var src = this.munge('XYZ', arguments);
 
 	var mi = this.getXYZ_RGB_Matrix();
@@ -386,7 +397,7 @@ dojo.graphics.colorspace.prototype.XYZ_to_RGB = function(){
 	return [R, G, B];
 }
 
-dojo.graphics.colorspace.prototype.XYZ_to_Lab = function(){
+dojo.graphics.Colorspace.prototype.XYZ_to_Lab = function(){
 	var src = this.munge('XYZ', arguments);
 
 	var wp = this.getWhitePoint();
@@ -406,7 +417,7 @@ dojo.graphics.colorspace.prototype.XYZ_to_Lab = function(){
 	return [L, a, b];
 }
 
-dojo.graphics.colorspace.prototype.Lab_to_XYZ = function(){
+dojo.graphics.Colorspace.prototype.Lab_to_XYZ = function(){
 	var src = this.munge('Lab', arguments);
 
 	var wp = this.getWhitePoint();
@@ -431,7 +442,7 @@ dojo.graphics.colorspace.prototype.Lab_to_XYZ = function(){
 	return [X, Y, Z];
 }
 
-dojo.graphics.colorspace.prototype.Lab_to_LCHab = function(){
+dojo.graphics.Colorspace.prototype.Lab_to_LCHab = function(){
 	var src = this.munge('Lab', arguments);
 
 	var L = src.L;
@@ -444,7 +455,7 @@ dojo.graphics.colorspace.prototype.Lab_to_LCHab = function(){
 	return [L, C, H];
 }
 
-dojo.graphics.colorspace.prototype.LCHab_to_Lab = function(){
+dojo.graphics.Colorspace.prototype.LCHab_to_Lab = function(){
 	var src = this.munge('LCH', arguments);
 
 	var H_rad = src.H * (Math.PI / 180);
@@ -465,7 +476,7 @@ dojo.graphics.colorspace.prototype.LCHab_to_Lab = function(){
 // this function converts an XYZ color array (col) from one whitepoint (src_w) to another (dst_w)
 //
 
-dojo.graphics.colorspace.prototype.chromaticAdaptation = function(col, src_w, dst_w){
+dojo.graphics.Colorspace.prototype.chromaticAdaptation = function(col, src_w, dst_w){
 
 	col = this.munge('XYZ', [col]);
 
@@ -543,7 +554,7 @@ dojo.graphics.colorspace.prototype.chromaticAdaptation = function(col, src_w, ds
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-dojo.graphics.colorspace.prototype.getRGB_XYZ_Matrix = function(){
+dojo.graphics.Colorspace.prototype.getRGB_XYZ_Matrix = function(){
 
 	var wp = this.getWhitePoint();
 	var pr = this.getPrimaries();
@@ -575,14 +586,14 @@ dojo.graphics.colorspace.prototype.getRGB_XYZ_Matrix = function(){
 	return m4;
 }
 
-dojo.graphics.colorspace.prototype.getXYZ_RGB_Matrix = function(){
+dojo.graphics.Colorspace.prototype.getXYZ_RGB_Matrix = function(){
 
 	var m = this.getRGB_XYZ_Matrix();
 
 	return dojo.math.matrix.inverse(m);
 }
 
-dojo.graphics.colorspace.prototype.XYZ_to_Luv = function(){
+dojo.graphics.Colorspace.prototype.XYZ_to_Luv = function(){
 
 	var src = this.munge('XYZ', arguments);
 
@@ -603,7 +614,7 @@ dojo.graphics.colorspace.prototype.XYZ_to_Luv = function(){
 	return [L, u, v];
 }
 
-dojo.graphics.colorspace.prototype.Luv_to_XYZ = function(){
+dojo.graphics.Colorspace.prototype.Luv_to_XYZ = function(){
 
 	var src = this.munge('Luv', arguments);
 
@@ -625,7 +636,7 @@ dojo.graphics.colorspace.prototype.Luv_to_XYZ = function(){
 	return [X, Y, Z];
 }
 
-dojo.graphics.colorspace.prototype.Luv_to_LCHuv = function(){
+dojo.graphics.Colorspace.prototype.Luv_to_LCHuv = function(){
 
 	var src = this.munge('Luv', arguments);
 
@@ -639,7 +650,7 @@ dojo.graphics.colorspace.prototype.Luv_to_LCHuv = function(){
 	return [L, C, H];
 }
 
-dojo.graphics.colorspace.prototype.LCHuv_to_Luv = function(){
+dojo.graphics.Colorspace.prototype.LCHuv_to_Luv = function(){
 
 	var src = this.munge('LCH', arguments);
 
@@ -655,7 +666,7 @@ dojo.graphics.colorspace.prototype.LCHuv_to_Luv = function(){
 	return [L, u, v];
 }
 
-dojo.graphics.colorspace.colorTemp_to_whitePoint = function(T){
+dojo.graphics.Colorspace.colorTemp_to_whitePoint = function(T){
 
 	if (T < 4000){
 		dojo.debug("Can't find a white point for temperatures under 4000K");
@@ -687,7 +698,7 @@ dojo.graphics.colorspace.colorTemp_to_whitePoint = function(T){
 	return [x, y];
 }
 
-dojo.graphics.colorspace.prototype.RGB_to_CMY = function(){
+dojo.graphics.Colorspace.prototype.RGB_to_CMY = function(){
 
 	var src = this.munge('RGB', arguments);
 
@@ -698,7 +709,7 @@ dojo.graphics.colorspace.prototype.RGB_to_CMY = function(){
 	return [C, M, Y];
 }
 
-dojo.graphics.colorspace.prototype.CMY_to_RGB = function(){
+dojo.graphics.Colorspace.prototype.CMY_to_RGB = function(){
 
 	var src = this.munge('CMY', arguments);
 
@@ -709,7 +720,7 @@ dojo.graphics.colorspace.prototype.CMY_to_RGB = function(){
 	return [R, G, B];
 }
 
-dojo.graphics.colorspace.prototype.RGB_to_CMYK = function(){
+dojo.graphics.Colorspace.prototype.RGB_to_CMYK = function(){
 
 	var src = this.munge('RGB', arguments);
 
@@ -721,7 +732,7 @@ dojo.graphics.colorspace.prototype.RGB_to_CMYK = function(){
 	return [C, M, Y, K];
 }
 
-dojo.graphics.colorspace.prototype.CMYK_to_RGB = function(){
+dojo.graphics.Colorspace.prototype.CMYK_to_RGB = function(){
 
 	var src = this.munge('CMYK', arguments);
 
@@ -732,7 +743,7 @@ dojo.graphics.colorspace.prototype.CMYK_to_RGB = function(){
 	return [R, G, B];
 }
 
-dojo.graphics.colorspace.prototype.CMY_to_CMYK = function(){
+dojo.graphics.Colorspace.prototype.CMY_to_CMYK = function(){
 
 	var src = this.munge('CMY', arguments);
 
@@ -744,7 +755,7 @@ dojo.graphics.colorspace.prototype.CMY_to_CMYK = function(){
 	return [C, M, Y, K];
 }
 
-dojo.graphics.colorspace.prototype.CMYK_to_CMY = function(){
+dojo.graphics.Colorspace.prototype.CMYK_to_CMY = function(){
 
 	var src = this.munge('CMYK', arguments);
 
@@ -755,7 +766,7 @@ dojo.graphics.colorspace.prototype.CMYK_to_CMY = function(){
 	return [C, M, Y];
 }
 
-dojo.graphics.colorspace.prototype.RGB_to_HSV = function(){
+dojo.graphics.Colorspace.prototype.RGB_to_HSV = function(){
 
 	var src = this.munge('RGB', arguments);
 
@@ -795,7 +806,7 @@ dojo.graphics.colorspace.prototype.RGB_to_HSV = function(){
 	return [H, S, V];
 }
 
-dojo.graphics.colorspace.prototype.HSV_to_RGB = function(){
+dojo.graphics.Colorspace.prototype.HSV_to_RGB = function(){
  
 	var src = this.munge('HSV', arguments);
 
@@ -837,7 +848,7 @@ dojo.graphics.colorspace.prototype.HSV_to_RGB = function(){
 	return [R, G, B];
 }
 
-dojo.graphics.colorspace.prototype.RGB_to_HSL = function(){
+dojo.graphics.Colorspace.prototype.RGB_to_HSL = function(){
 
 	var src = this.munge('RGB', arguments);
 
@@ -876,7 +887,7 @@ dojo.graphics.colorspace.prototype.RGB_to_HSL = function(){
 	return [H, S, L];
 }
 
-dojo.graphics.colorspace.prototype.HSL_to_RGB = function(){
+dojo.graphics.Colorspace.prototype.HSL_to_RGB = function(){
  
 	var src = this.munge('HSL', arguments);
 
