@@ -119,7 +119,7 @@ dojo.style.getPixelValue = function (element, cssSelector, autoIsZero){
 	var result = dojo.style.getUnitValue(element, cssSelector, autoIsZero);
 	// FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
 	// but there are cross-browser complexities
-	if (result.value == NaN || (result.value && result.units != 'px')) { return NaN; }
+	if (isNaN(result.value) || (result.value && result.units != 'px')) { return NaN; }
 	return result.value;
 }
 
