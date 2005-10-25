@@ -546,6 +546,14 @@ internTemplateStrings()
 			</fileset>
 		</copy>
 
+		<copy todir="${release_dir}/demos" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/demos">
+				<include name="**" />
+				<exclude name="**/*.swp" />
+				<exclude name="**/.svn*" />
+			</fileset>
+		</copy>
+
 		<antcall target="-docs-and-tests" />
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
