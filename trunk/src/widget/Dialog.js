@@ -2,61 +2,62 @@ dojo.provide("dojo.widget.Dialog");
 dojo.provide("dojo.widget.HtmlDialog");
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.*");
 dojo.require("dojo.fx.*");
 dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:dialog");
 
-dojo.widget.HtmlDialog = function() {
-	dojo.widget.HtmlDialog.superclass.constructor.call(this);
+dojo.widget.HtmlDialog = function(){
+	dojo.widget.HtmlWidget.call(this);
+}
 
-	this.widgetType = "Dialog";
-	this.isContainer = true;
+dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
 
-	this.templateString = '<div class="dojo-dialog">'
-		+ '<span dojoAttachPoint="tabStart" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
-		+ '<div dojoAttachPoint="containerNode"></div>'
-		+ '<span dojoAttachPoint="tabEnd" dojoOnFocus="trapTabs" dojoOnBlur="clearTrap" tabindex="0"></span>'
-		+ '</div>';
+dojo.lang.extend(dojo.widget.HtmlDialog, {
+	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDialog.html"),
+	widgetType: "Dialog",
+	isContainer: true,
 
-	this._scrollConnected = 0;
+	_scrollConnected: 0,
 
 	// Only supports fade right now
-	this.effect = "fade";
-	this.effectDuration = 250;
+	effect: "fade",
+	effectDuration: 250,
 
-	this.bg;
-	this.bgColor = "black";
-	this.bgOpacity = 0.4;
-	this.followScroll = 1;
+	bg: null,
+	bgColor: "black",
+	bgOpacity: 0.4,
+	followScroll: 1,
+	_fromTrap: false,
 
-	var fromTrap = false;
-	this.trapTabs = function(e) {
+	trapTabs: function(e){
 		if(e.target == this.tabStart) {
-			if(fromTrap) {
-				fromTrap = false;
+			if(this._fromTrap) {
+				this._fromTrap = false;
 			} else {
-				fromTrap = true;
+				this._fromTrap = true;
 				this.tabEnd.focus();
 			}
 		} else if(e.target == this.tabEnd) {
-			if(fromTrap) {
-				fromTrap = false;
+			if(this._fromTrap) {
+				this._fromTrap = false;
 			} else {
-				fromTrap = true;
+				this._fromTrap = true;
 				this.tabStart.focus();
 			}
 		}
-	}
+	},
 
-	this.clearTrap = function(e) {
+	clearTrap: function(e) {
+		var _this = this;
 		setTimeout(function() {
-			fromTrap = false;
+			_this._fromTrap = false;
 		}, 100);
-	}
+	},
 
-	this.postCreate = function(args, frag, parentComp) {
+	postCreate: function(args, frag, parentComp) {
 		dojo.html.body().appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(this.nodeRef) {
@@ -78,9 +79,9 @@ dojo.widget.HtmlDialog = function() {
 			zIndex = 999;
 			display = "none";
 		}
-	}
+	},
 
-	this.setContent = function(content) {
+	setContent: function(content) {
 		if(typeof content == "string") {
 			this.containerNode.innerHTML = content;
 		} else if(content.nodeType != undefined) {
@@ -89,28 +90,28 @@ dojo.widget.HtmlDialog = function() {
 		} else {
 			dojo.raise("Tried to setContent with unknown content (" + content + ")");
 		}
-	}
+	},
 
-	this.setBackgroundColor = function(color) {
+	setBackgroundColor: function(color) {
 		if(arguments.length >= 3) {
 			color = dojo.graphics.color.rgb2hex(arguments[0], arguments[1], arguments[2]);
 		}
 		this.bg.style.backgroundColor = color;
 		return this.bgColor = color;
-	}
-
-	this.setBackgroundOpacity = function(op) {
+	},
+	
+	setBackgroundOpacity: function(op) {
 		if(arguments.length == 0) { op = this.bgOpacity; }
 		dojo.style.setOpacity(this.bg, op);
 		return this.bgOpacity = dojo.style.getOpacity(this.bg);
-	}
+	},
 
-	this.sizeBackground = function() {
+	sizeBackground: function() {
 		var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
 		this.bg.style.height = h + "px";
-	}
+	},
 
-	this.placeDialog = function() {
+	placeDialog: function() {
 		var scrollTop = document.documentElement.scrollTop;
 		var scrollLeft = document.documentElement.scrollLeft;
 		// this is a candidate for helper function somewhere in dojo.style.*
@@ -126,9 +127,9 @@ dojo.widget.HtmlDialog = function() {
 			left = L + "px";
 			top = T + "px";
 		}
-	}
+	},
 
-	this.show = function() {
+	show: function() {
 		this.setBackgroundOpacity();
 		this.sizeBackground();
 		this.placeDialog();
@@ -160,9 +161,9 @@ dojo.widget.HtmlDialog = function() {
 			this._scrollConnected = 1;
 			dojo.event.connect(window, "onscroll", this, "onScroll");
 		}
-	}
+	},
 
-	this.hide = function() {
+	hide: function(){
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "none";
@@ -187,19 +188,19 @@ dojo.widget.HtmlDialog = function() {
 			this._scrollConnected = 0;
 			dojo.event.disconnect(window, "onscroll", this, "onScroll");
 		}
-	}
+	},
 
-	this.setCloseControl = function(node) {
+	setCloseControl: function(node) {
 		dojo.event.connect(node, "onclick", this, "hide");
-	}
+	},
 
-	this.setShowControl = function(node) {
+	setShowControl: function(node) {
 		dojo.event.connect(node, "onclick", this, "show");
-	}
+	},
 
-	this.onScroll = function(){
+	onScroll: function(){
 		this.placeDialog();
 		this.domNode.style.display = "block";
 	}
-}
-dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
+});
+
