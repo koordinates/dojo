@@ -24,8 +24,6 @@ dojo.widget.HtmlDatePicker = function(){
 	dojo.widget.DatePicker.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
-	this.templatePath =  dojo.uri.dojoUri("src/widget/templates/HtmlDatePicker.html");
-
 	var _this = this;
 	// today's date, JS Date object
 	this.today = "";
@@ -45,6 +43,7 @@ dojo.widget.HtmlDatePicker = function(){
 		selectedDate: "selectedItem"
 	}
 
+	this.templatePath =  dojo.uri.dojoUri("src/widget/templates/HtmlDatePicker.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlDatePicker.css");
 	
 	this.fillInTemplate = function(){
