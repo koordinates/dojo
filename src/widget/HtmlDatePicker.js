@@ -24,6 +24,8 @@ dojo.widget.HtmlDatePicker = function(){
 	dojo.widget.DatePicker.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
+	this.templatePath =  dojo.uri.dojoUri("src/widget/templates/HtmlDatePicker.html");
+
 	var _this = this;
 	// today's date, JS Date object
 	this.today = "";
@@ -303,5 +305,3 @@ dojo.widget.HtmlDatePicker = function(){
 	}
 }
 dojo.inherits(dojo.widget.HtmlDatePicker, dojo.widget.HtmlWidget);
-
-dojo.widget.HtmlDatePicker.prototype.templateString = '<div class="datePickerContainer" dojoAttachPoint="datePickerContainerNode"><h3 class="monthLabel"><!--<span dojoAttachPoint="decreaseWeekNode" dojoAttachEvent="onClick: onIncrementWeek;" class="incrementControl"><img src="' + djConfig.baseRelativePath+ 'src/widget/templates/decrementWeek.gif" alt="&uarr;" /></span>--><span dojoAttachPoint="decreaseMonthNode" dojoAttachEvent="onClick: onIncrementMonth;" class="incrementControl"><img src="' + djConfig.baseRelativePath+ 'src/widget/templates/decrementMonth.gif" alt="&uarr;" dojoAttachPoint="decrementMonthImageNode"></span><span dojoAttachPoint="monthLabelNode" class="month">July</span><span dojoAttachPoint="increaseMonthNode" dojoAttachEvent="onClick: onIncrementMonth;" class="incrementControl"><img src="' + djConfig.baseRelativePath+ 'src/widget/templates/incrementMonth.gif" alt="&darr;"  dojoAttachPoint="incrementMonthImageNode"></span><!--<span dojoAttachPoint="increaseWeekNode" dojoAttachEvent="onClick: onIncrementWeek;" class="incrementControl"><img src="' + djConfig.baseRelativePath+ 'src/widget/templates//incrementWeek.gif" alt="&darr;" /></span>--></h3><table class="calendarContainer"><thead> <tr><td>Su</td><td>Mo</td><td>Tu</td><td>We</td><td>Th</td><td>Fr</td><td>Sa</td></tr> </thead> <tbody dojoAttachPoint="calendarDatesContainerNode"  dojoAttachEvent="onClick: onSetDate;"> <tr dojoAttachPoint="calendarRow0"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> <tr dojoAttachPoint="calendarRow1"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> <tr dojoAttachPoint="calendarRow2"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> <tr dojoAttachPoint="calendarRow3"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> <tr dojoAttachPoint="calendarRow4"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> <tr dojoAttachPoint="calendarRow5"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table><h3 class="yearLabel"><span dojoAttachPoint="previousYearLabelNode" dojoAttachEvent="onClick: onIncrementYear;" class="previousYear"></span> <span class="selectedYear" dojoAttachPoint="currentYearLabelNode"></span> <span dojoAttachPoint="nextYearLabelNode" dojoAttachEvent="onClick: onIncrementYear;" class="nextYear"></span></h3></div>';
