@@ -74,6 +74,6 @@ dojo.string.summary = function(str, len) {
 	if(!len || str.length < len) {
 		return str;
 	} else {
-		return str.substring(0, len) + "...";
+		return str.substring(0, len).replace(/\.+$/, "") + "...";
 	}
 }
