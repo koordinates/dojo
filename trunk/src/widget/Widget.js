@@ -30,6 +30,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	isEnabled: true,
 	isHidden: false,
 	isContainer: false, // can we contain other widgets?
+	messWithMyChildren: false, // should we programatically insert child widgets?
 	widgetId: "",
 	widgetType: "Widget", // used for building generic widgets
 

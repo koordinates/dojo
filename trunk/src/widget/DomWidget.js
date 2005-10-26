@@ -240,22 +240,26 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			if(!ref){ ref = cn.lastChild; }
 			if(!insertIndex) { insertIndex = 0; }
 			widget.domNode.setAttribute("dojoinsertionindex", insertIndex);
-			if(!ref){
-				cn.appendChild(widget.domNode);
-			}else{
-				// FIXME: was this meant to be the (ugly hack) way to support insert @ index?
-				//dojo.dom[pos](widget.domNode, ref, insertIndex);
 
-				// CAL: this appears to be the intended way to insert a node at a given position...
-				if (pos == 'insertAtIndex'){
-					// dojo.debug("idx:", insertIndex, "isLast:", ref === cn.lastChild);
-					dojo.dom.insertAtIndex(widget.domNode, ref.parentNode, insertIndex);
+			if (this.messWithMyChildren){
+
+				if(!ref){
+					cn.appendChild(widget.domNode);
 				}else{
-					// dojo.debug("pos:", pos, "isLast:", ref === cn.lastChild);
-					if((pos == "after")&&(ref === cn.lastChild)){
-						cn.appendChild(widget.domNode);
+					// FIXME: was this meant to be the (ugly hack) way to support insert @ index?
+					//dojo.dom[pos](widget.domNode, ref, insertIndex);
+
+					// CAL: this appears to be the intended way to insert a node at a given position...
+					if (pos == 'insertAtIndex'){
+						// dojo.debug("idx:", insertIndex, "isLast:", ref === cn.lastChild);
+						dojo.dom.insertAtIndex(widget.domNode, ref.parentNode, insertIndex);
 					}else{
-						dojo.dom.insertAtPosition(widget.domNode, cn, pos);
+						// dojo.debug("pos:", pos, "isLast:", ref === cn.lastChild);
+						if((pos == "after")&&(ref === cn.lastChild)){
+							cn.appendChild(widget.domNode);
+						}else{
+							dojo.dom.insertAtPosition(widget.domNode, cn, pos);
+						}
 					}
 				}
 			}
