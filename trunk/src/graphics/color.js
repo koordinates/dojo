@@ -104,7 +104,6 @@ dojo.graphics.color.extractRGB = function(color) {
 	var hex = "0123456789abcdef";
 	color = color.toLowerCase();
 	if( color.indexOf("rgb") == 0 ) {
-		dojo.debug("e1");
 		var matches = color.match(/rgba*\((\d+), *(\d+), *(\d+)/i);
 		var ret = matches.splice(1, 3);
 		return ret;
