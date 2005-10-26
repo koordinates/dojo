@@ -21,10 +21,10 @@ dojo.validate.isValidNumber = function(value) {
 // FIXME: may be too basic
 dojo.validate.isEmailAddress = function(value, allowLocal, allowCruft) {
 	if(allowCruft) { value = value.replace(/mailto:/i, ""); }
-	var part = "[\\w\\.\\-]+";
+	var part = "[\\w\\.\\-\\+]+";
 	var cruft = allowCruft ? "<?" : "";
 	var local = allowLocal ? "" : "\\." + part;
-	// regexp: /^<?([\w\.\-]+)@([\w\.\-]+\.[\w\.\-]+)>?$/i
+	// regexp: /^<?([\w\.\-\+]+)@([\w\.\-\+]+\.[\w\.\-\+]+)>?$/i
 	var re = new RegExp("^" + cruft + "(" + part + ")@(" + part + local + ")" + cruft + "$", "i");
 	return re.test(value);
 }
