@@ -29,6 +29,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	domNode: null,
 	isChild: false,
 
+	clientLeft: 0,
+	clientTop: 0,
 	clientRect: {'left':0, 'right':0, 'top':0, 'bottom':0},
 	clientWidth: 0,
 	clientHeight: 0,
@@ -128,8 +130,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		for(var i=0; i<kids.top.length; i++){
 
-			kids.top[i].domNode.style.left = this.clientRect.left + 'px';
-			kids.top[i].domNode.style.top = this.clientRect.top + 'px';
+			this.positionChild(kids.top[i], this.clientRect.left, this.clientRect.top);
 
 			dojo.style.setOuterWidth(kids.top[i].domNode, this.clientRect.right - this.clientRect.left);
 			this.clientRect.top += dojo.style.getOuterHeight(kids.top[i].domNode);
@@ -144,8 +145,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			var h = dojo.style.getOuterHeight(kids.bottom[i].domNode);
 
-			kids.bottom[i].domNode.style.left = this.clientRect.left + 'px';
-			kids.bottom[i].domNode.style.top = (this.clientRect.bottom - h) + 'px';
+			this.positionChild(kids.bottom[i], this.clientRect.left, this.clientRect.bottom - h);
+
 			dojo.style.setOuterWidth(kids.bottom[i].domNode, this.clientRect.right - this.clientRect.left);
 			this.clientRect.bottom -= h;
 
@@ -157,8 +158,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		for(var i=0; i<kids.left.length; i++){
 
-			kids.left[i].domNode.style.left = this.clientRect.left + 'px';
-			kids.left[i].domNode.style.top = this.clientRect.top + 'px';
+			this.positionChild(kids.left[i], this.clientRect.left, this.clientRect.top);
 
 			dojo.style.setOuterHeight(kids.left[i].domNode, this.clientRect.bottom - this.clientRect.top);
 			this.clientRect.left += dojo.style.getOuterWidth(kids.left[i].domNode);
@@ -173,8 +173,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			var w = dojo.style.getOuterWidth(kids.right[i].domNode);
 
-			kids.right[i].domNode.style.left = (this.clientRect.right - w) + 'px';
-			kids.right[i].domNode.style.top = this.clientRect.top + 'px';
+			this.positionChild(kids.right[i], this.clientRect.right - w, this.clientRect.top);
 
 			dojo.style.setOuterHeight(kids.right[i].domNode, this.clientRect.bottom - this.clientRect.top);
 			this.clientRect.right -= w;
@@ -193,13 +192,23 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			return;
 		}
 
-		
-		kids.client[0].domNode.style.left = this.clientRect.left + 'px';
-		kids.client[0].domNode.style.top = this.clientRect.top + 'px';
+		this.positionChild(kids.client[0], this.clientRect.left, this.clientRect.top);
 
 		dojo.style.setOuterWidth(kids.client[0].domNode, this.clientRect.right - this.clientRect.left);		
 		dojo.style.setOuterHeight(kids.client[0].domNode, this.clientRect.bottom - this.clientRect.top);
 		kids.client[0].onResized();
+	},
+
+	positionChild: function(child, x, y){
+
+		if (child.domNode.style.position == 'relative'){
+
+			x -= this.clientLeft;
+			y -= this.clientTop;
+		}
+
+		child.domNode.style.left = x + 'px';
+		child.domNode.style.top = y + 'px';
 	},
 
 	hasLayoutAlign: function(child){
