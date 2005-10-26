@@ -19,6 +19,7 @@ dojo.widget.HtmlTreeNode = function() {
     this.templatePath = dojo.uri.dojoUri("src/widget/templates/TreeNode.html");
     this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/TreeNode.css");
     this.isContainer = true;
+    this.messWithMyChildren = true;
 
     // the last node and with no children
     this.lastNodeLeafImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/leaf-l.gif";
