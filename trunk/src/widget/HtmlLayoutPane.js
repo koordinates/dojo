@@ -231,9 +231,17 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	onResized: function(){
+
+		// layout our children
+		// this will in turn call obj.onResized() for each child, so they can layout *their* children
+
+		this.layoutChildren();
+
+
 		// If any of my children are widgets (ex: split pane),
 		// then resize them.  TODO: what if my children are normal HTML objects but
 		// my grandchildren (etc.) are widgets?
+
 		for(var child = dojo.dom.getFirstChildElement(this.domNode); child;
 			child = dojo.dom.getNextSiblingElement(child) ) {
 			if ( child.onResize ) {

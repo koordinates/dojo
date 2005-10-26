@@ -10,13 +10,14 @@ dojo.provide("dojo.widget.HtmlSplitPanePanel");
 //
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.HtmlLayoutPane");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
 dojo.widget.HtmlSplitPane = function(){
 
-	dojo.widget.HtmlWidget.call(this);
+	dojo.widget.HtmlLayoutPane.call(this);
 
 	this.widgetType = "SplitPane";
 
@@ -55,7 +56,15 @@ dojo.widget.HtmlSplitPane = function(){
 		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
 	}
 
-	this.onResize = function(e) {
+	this.layoutChildrenx = function(){
+
+		// do nothing!
+	}
+
+	this.onResized = function(e){
+
+		//dojo.widget.HtmlLayoutPane.onResized.call(this);
+
 		this.paneWidth = dojo.style.getContentWidth(this.domNode);
 		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 		this.layoutPanels();
@@ -122,16 +131,16 @@ dojo.widget.HtmlSplitPane = function(){
 		// size the panels once the browser has caught up
 		//
 
-		var h3 = (function(){ return function(){ self.onResize(); } })();
+		var h3 = (function(){ return function(){ self.onResized(); } })();
 		window.setTimeout(h3, 0);
 		
 		//
 		// Handle resize events due to window resizing and/or resize commands
 		// from my container.
 		//
-		dojo.event.connect(this.domNode, "onresize", this, "onResize");
-		dojo.addOnLoad(this, "onResize");
-		dojo.event.connect(window, "onresize", this, "onResize");
+		dojo.event.connect(this.domNode, "onresize", this, "onResized");
+		dojo.addOnLoad(this, "onResized");
+		dojo.event.connect(window, "onresize", this, "onResized");
 	}
 
 
@@ -514,7 +523,7 @@ dojo.widget.HtmlSplitPane = function(){
 
 dojo.widget.HtmlSplitPanePanel = function(){
 
-	dojo.widget.HtmlWidget.call(this);
+	dojo.widget.HtmlLayoutPane.call(this);
 
 	this.widgetType = "SplitPanePanel";
 	this.sizeActual = 0;
@@ -534,22 +543,10 @@ dojo.widget.HtmlSplitPanePanel = function(){
 		var frag = parser.parseElement(input, null, true);
 		var ary = dojo.widget.getParser().createComponents(frag);
 	}
-
-	this.onResized = function() {
-		// If any of my children are widgets (ex: split pane inside of a split pane),
-		// then resize them.  (TODO: what if my children are normal HTML objects but
-		// my grandchildren (etc.) are widgets?)
-		for(var child = dojo.dom.getFirstChildElement(this.domNode); child;
-			child = dojo.dom.getNextSiblingElement(child) ) {
-			if ( child.onresize ) {
-				child.onresize();
-			}
-		}
-	}
 }
 
-dojo.inherits(dojo.widget.HtmlSplitPane, dojo.widget.HtmlWidget);
-dojo.inherits(dojo.widget.HtmlSplitPanePanel, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlSplitPane, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.HtmlSplitPanePanel, dojo.widget.HtmlLayoutPane);
 
 dojo.widget.tags.addParseTreeHandler("dojo:SplitPane");
 dojo.widget.tags.addParseTreeHandler("dojo:SplitPanePanel");
