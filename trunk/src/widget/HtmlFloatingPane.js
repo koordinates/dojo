@@ -66,11 +66,17 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 
 	postCreate: function(args, fragment, parentComp){
 
-		// attach our children
+		// move our 'children' into the client pane
+		// we already moved the domnodes, but now we need to move the 'children'
 
-		for(var i=0; i<this.children.length; i++){
-			if (this.children[i].ownerPane != this){
-				this.clientPane.domNode.appendChild(this.children[i].domNode);
+		var kids = this.children.concat();
+		this.children = [];
+
+		for(var i=0; i<kids.length; i++){
+			if (kids[i].ownerPane == this){
+				this.children.push(kids[i]);
+			}else{
+				this.clientPane.children.push(kids[i]);
 			}
 		}
 	},
