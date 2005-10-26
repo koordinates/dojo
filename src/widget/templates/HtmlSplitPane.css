@@ -1,50 +1,40 @@
 .dojoHtmlSplitterPanePanel{
 
-	background-color: #D4D0C8;
+	background-color: ThreeDFace;
 	padding: 5px;
 	margin: 0;
 }
 
-.dojoHtmlSplitPaneSizerH {
-
+.dojoHtmlSplitPaneSizerH,
+.dojoHtmlSplitPaneSizerV {
 	font-size: 1px;
 	cursor: move;
 	cursor: w-resize;
-	background-color: #D4D0C8;
-	border-top: 1px solid #FFFFFF;
-	border-left: 1px solid #FFFFFF;
-	border-bottom: 1px solid #808080;
-	border-right: 1px solid #808080;
+	background-color: ThreeDFace;
+	border: 1px solid;
+	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	margin: 0;
 }
 
 .dojoHtmlSplitPaneSizerV {
 
-	font-size: 1px;
-	cursor: move;
 	cursor: n-resize;
-	background-color: #D4D0C8;
-	border-top: 1px solid #FFFFFF;
-	border-left: 1px solid #FFFFFF;
-	border-bottom: 1px solid #808080;
-	border-right: 1px solid #808080;
-	margin: 0;
 }
 
-.dojoHtmlSplitPaneVirtualSizerH {
+.dojoHtmlSplitPaneVirtualSizerH,
+.dojoHtmlSplitPaneVirtualSizerV {
 
 	font-size: 1px;
 	cursor: move;
 	cursor: w-resize;
-	background-color: #808080;
+	background-color: ThreeDShadow;
+	-moz-opacity: 0.5;
+	opacity: 0.5;
+	filter: Alpha(Opacity=50);
 	margin: 0;
 }
 
 .dojoHtmlSplitPaneVirtualSizerV {
 
-	font-size: 1px;
-	cursor: move;
 	cursor: n-resize;
-	background-color: #808080;
-	margin: 0;
 }
