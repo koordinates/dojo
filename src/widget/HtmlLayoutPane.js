@@ -95,12 +95,15 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		// calc layout space
 
-		this.clientWidth = dojo.style.getContentWidth(this.domNode);
+		this.clientWidth  = dojo.style.getContentWidth(this.domNode);
 		this.clientHeight = dojo.style.getContentHeight(this.domNode);
-		this.clientRect['left'] = 0;
-		this.clientRect['right'] = this.clientWidth;
-		this.clientRect['top'] = 0;
-		this.clientRect['bottom'] = this.clientHeight;
+		this.clientLeft   = dojo.style.getPixelValue(this.domNode, "padding-left", true);
+		this.clientTop    = dojo.style.getPixelValue(this.domNode, "padding-top", true);
+
+		this.clientRect['left']   = this.clientLeft;
+		this.clientRect['right']  = this.clientLeft + this.clientWidth;
+		this.clientRect['top']    = this.clientTop;
+		this.clientRect['bottom'] = this.clientTop + this.clientHeight;
 
 
 		// arrange them in order
