@@ -48,6 +48,8 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 	sizerWidth: 15,
 	orientation: 'horizontal',
 
+	debugName: '',
+
 	fillInTemplate: function(){
 
 		dojo.style.insertCssFile(this.templateCssPath);
@@ -58,11 +60,8 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
-	},
 
-	layoutChildrenx: function(){
-
-		// do nothing!
+dojo.debug("fillInTemplate for "+this.debugName);
 	},
 
 	onResized: function(e){
@@ -76,11 +75,13 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 
 	postCreate: function(args, fragment, parentComp){
 
+dojo.debug("post create for "+this.debugName);
+
 		// attach the children
 
 		for(var i=0; i<this.children.length; i++){
 
-			this.domNode.appendChild(this.children[i].domNode);
+			//this.domNode.appendChild(this.children[i].domNode);
 			this.children[i].domNode.style.position = 'absolute';
 			this.children[i].domNode.style.overflow = 'hidden';
 
