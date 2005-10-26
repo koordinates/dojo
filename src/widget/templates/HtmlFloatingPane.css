@@ -17,6 +17,7 @@
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 12px;
 	font-weight: bold;
+	cursor: default;
 }
 
 .dojoFloatingPaneClient {
