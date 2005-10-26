@@ -19,32 +19,36 @@ dojo.widget.HtmlSplitPane = function(){
 
 	dojo.widget.HtmlLayoutPane.call(this);
 
-	this.widgetType = "SplitPane";
-
-	this.isContainer = true;
-	this.domNode = null;
 	this.sizers = [];
-	this.virtualSizer = null;
-	this.isHorizontal = 0;
-	this.paneBefore = null;
-	this.paneAfter = null;
-	this.isSizing = 0;
-	this.dragOffset = null;
-	this.startPoint = null;
-	this.lastPoint = null;
-	this.sizingSplitter = null;
-	this.isActiveResize = 0;
-	this.offsetX = 0;
-	this.offsetY = 0;
-	this.isDraggingLeft = 0;
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlSplitPane.css");
-	this.originPos = null;
+}
 
-	this.activeSizing = '';
-	this.sizerWidth = 15;
-	this.orientation = 'horizontal';
+dojo.inherits(dojo.widget.HtmlSplitPane, dojo.widget.HtmlLayoutPane);
 
-	this.fillInTemplate = function(){
+dojo.lang.extend(dojo.widget.HtmlSplitPane, {
+	widgetType: "SplitPane",
+	isContainer: true,
+	domNode: null,
+	virtualSizer: null,
+	isHorizontal: 0,
+	paneBefore: null,
+	paneAfter: null,
+	isSizing: 0,
+	dragOffset: null,
+	startPoint: null,
+	lastPoint: null,
+	sizingSplitter: null,
+	isActiveResize: 0,
+	offsetX: 0,
+	offsetY: 0,
+	isDraggingLeft: 0,
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSplitPane.css"),
+	originPos: null,
+
+	activeSizing: '',
+	sizerWidth: 15,
+	orientation: 'horizontal',
+
+	fillInTemplate: function(){
 
 		dojo.style.insertCssFile(this.templateCssPath);
 
@@ -54,23 +58,23 @@ dojo.widget.HtmlSplitPane = function(){
 
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
-	}
+	},
 
-	this.layoutChildrenx = function(){
+	layoutChildrenx: function(){
 
 		// do nothing!
-	}
+	},
 
-	this.onResized = function(e){
+	onResized: function(e){
 
 		//dojo.widget.HtmlLayoutPane.onResized.call(this);
 
 		this.paneWidth = dojo.style.getContentWidth(this.domNode);
 		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 		this.layoutPanels();
-	}
+	},
 
-	this.postCreate = function(args, fragment, parentComp){
+	postCreate: function(args, fragment, parentComp){
 
 		// attach the children
 
@@ -141,10 +145,10 @@ dojo.widget.HtmlSplitPane = function(){
 		dojo.event.connect(this.domNode, "onresize", this, "onResized");
 		dojo.addOnLoad(this, "onResized");
 		dojo.event.connect(window, "onresize", this, "onResized");
-	}
+	},
 
 
-	this.layoutPanels = function(){
+	layoutPanels: function(){
 
 		//
 		// calculate space
@@ -227,9 +231,9 @@ dojo.widget.HtmlSplitPane = function(){
 		for(var i=0; i<this.children.length; i++){
 			this.children[i].onResized();
 		}
-	}
+	},
 
-	this.movePanel = function(panel, pos, size){
+	movePanel: function(panel, pos, size){
 		if (this.isHorizontal){
 			panel.style.left = pos + 'px';
 			panel.style.top = 0;
@@ -243,9 +247,9 @@ dojo.widget.HtmlSplitPane = function(){
 			dojo.style.setOuterWidth(panel, this.paneWidth);
 			dojo.style.setOuterHeight(panel, size);
 		}
-	}
+	},
 
-	this.growPane = function(growth, pane){
+	growPane: function(growth, pane){
 
 		if (growth > 0){
 			if (pane.sizeActual > pane.sizeMin){
@@ -261,11 +265,10 @@ dojo.widget.HtmlSplitPane = function(){
 				}
 			}
 		}
-
 		return growth;
-	}
+	},
 
-	this.checkSizes = function(){
+	checkSizes: function(){
 
 		var total_min_size = 0;
 		var total_size = 0;
@@ -305,13 +308,12 @@ dojo.widget.HtmlSplitPane = function(){
 		}else{
 
 			for(var i=0; i<this.children.length; i++){
-
 				this.children[i].sizeActual = Math.round(total_size * (this.children[i].sizeMin / total_min_size));
-        		}
+			}
 		}
-	}
+	},
 
-	this.beginSizing = function(e, i){
+	beginSizing: function(e, i){
 
 		var clientX = window.event ? window.event.offsetX : e.layerX;
 		var clientY = window.event ? window.event.offsetY : e.layerY;
@@ -334,15 +336,15 @@ dojo.widget.HtmlSplitPane = function(){
 		if (!this.isActiveResize){
 			this.showSizingLine();
 		}
-	}
+	},
 
-	this.changeSizing = function(e){
+	changeSizing: function(e){
 
+		// FIXME: is this fixed in connect()?
 		var screenX = window.event ? window.event.clientX : e.pageX;
 		var screenY = window.event ? window.event.clientY : e.pageY;
 
 		if (this.isActiveResize){
-
 			this.lastPoint = {'x':screenX, 'y':screenY};
 			this.movePoint();
 			this.updateSize();
@@ -351,9 +353,9 @@ dojo.widget.HtmlSplitPane = function(){
 			this.movePoint();
 			this.moveSizingLine();
 		}
-	}
+	},
 
-	this.endSizing = function(e){
+	endSizing: function(e){
 
 		if (!this.isActiveResize){
 			this.hideSizingLine();
@@ -362,9 +364,9 @@ dojo.widget.HtmlSplitPane = function(){
 		this.updateSize();
 
 		this.isSizing = 0;
-	}
+	},
 
-	this.movePoint = function(){
+	movePoint: function(){
 
 		// make sure FLastPoint is a legal point to drag to
 		p = this.screenToMainClient(this.lastPoint);
@@ -381,41 +383,41 @@ dojo.widget.HtmlSplitPane = function(){
 		}
 
 		this.lastPoint = this.mainClientToScreen(p);
-	}
+	},
 
-	this.screenToClient = function(pt){
+	screenToClient: function(pt){
 
 		pt.x -= (this.offsetX + this.sizingSplitter.position);
 		pt.y -= (this.offsetY + this.sizingSplitter.position);
 
 		return pt;
-	}
+	},
 
-	this.clientToScreen = function(pt){
+	clientToScreen: function(pt){
 
 		pt.x += (this.offsetX + this.sizingSplitter.position);
 		pt.y += (this.offsetY + this.sizingSplitter.position);
 
 		return pt;
-	}
+	},
 
-	this.screenToMainClient = function(pt){
+	screenToMainClient: function(pt){
 
 		pt.x -= this.offsetX;
 		pt.y -= this.offsetY;
 
 		return pt;
-	}
+	},
 
-	this.mainClientToScreen = function(pt){
+	mainClientToScreen: function(pt){
 
 		pt.x += this.offsetX;
 		pt.y += this.offsetY;
 
 		return pt;
-	}
+	},
 
-	this.legaliseSplitPoint = function(a){
+	legaliseSplitPoint: function(a){
 
 		a += this.sizingSplitter.position;
 
@@ -439,9 +441,9 @@ dojo.widget.HtmlSplitPane = function(){
 		this.checkSizes();
 
 		return a;
-	}
+	},
 
-	this.updateSize = function(){
+	updateSize: function(){
 
 		var p = this.clientToScreen(this.lastPoint);
 		var p = this.screenToClient(this.lastPoint);
@@ -461,10 +463,9 @@ dojo.widget.HtmlSplitPane = function(){
 		}
 
 		this.layoutPanels();
-	}
+	},
 
-
-	this.findPos = function(obj){
+	findPos: function(obj){
 
 		var x = 0;
 		var y = 0;
@@ -480,9 +481,9 @@ dojo.widget.HtmlSplitPane = function(){
 		}
 
 		return {'x':x, 'y':y};
-	}
+	},
 
-	this.showSizingLine = function(){
+	showSizingLine: function(){
 
 		this.moveSizingLine();
 
@@ -495,14 +496,14 @@ dojo.widget.HtmlSplitPane = function(){
 		}
 
 		this.virtualSizer.style.display = 'block';
-	}
+	},
 
-	this.hideSizingLine = function(){
+	hideSizingLine: function(){
 
 		this.virtualSizer.style.display = 'none';
-	}
+	},
 
-	this.moveSizingLine = function(){
+	moveSizingLine: function(){
 
 		var origin = {'x':0, 'y':0};
 
@@ -515,24 +516,24 @@ dojo.widget.HtmlSplitPane = function(){
 		this.virtualSizer.style.left = origin.x + 'px';
 		this.virtualSizer.style.top = origin.y + 'px';
 	}
-
-
-}
-
-
+});
 
 dojo.widget.HtmlSplitPanePanel = function(){
-
 	dojo.widget.HtmlLayoutPane.call(this);
+}
 
-	this.widgetType = "SplitPanePanel";
-	this.sizeActual = 0;
-	this.position = 0;
+dojo.inherits(dojo.widget.HtmlSplitPanePanel, dojo.widget.HtmlLayoutPane);
 
-	this.sizeMin= 10;
-	this.sizeShare = 10;
+dojo.lang.extend(dojo.widget.HtmlSplitPanePanel, {
 
-	this.fillInTemplate = function(args, frag) {
+	widgetType: "SplitPanePanel",
+	sizeActual: 0,
+	position: 0,
+
+	sizeMin: 10,
+	sizeShare: 10,
+
+	fillInTemplate: function(args, frag) {
 		this.domNode.style.position="relative";	// in case my child does a height=100%
 		
 		// Recursively expand widgets inside of me
@@ -543,10 +544,8 @@ dojo.widget.HtmlSplitPanePanel = function(){
 		var frag = parser.parseElement(input, null, true);
 		var ary = dojo.widget.getParser().createComponents(frag);
 	}
-}
+});
 
-dojo.inherits(dojo.widget.HtmlSplitPane, dojo.widget.HtmlLayoutPane);
-dojo.inherits(dojo.widget.HtmlSplitPanePanel, dojo.widget.HtmlLayoutPane);
 
 dojo.widget.tags.addParseTreeHandler("dojo:SplitPane");
 dojo.widget.tags.addParseTreeHandler("dojo:SplitPanePanel");
