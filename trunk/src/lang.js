@@ -82,6 +82,12 @@ dojo.lang.isAlien = function(wh) {
 }
 
 dojo.lang.find = function(arr, val, identity){
+	// support both (arr, val) and (val, arr)
+	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
+		var a = arr;
+		arr = val;
+		val = a;
+	}
 	if(identity){
 		for(var i=0;i<arr.length;++i){
 			if(arr[i] === val){ return i; }
@@ -95,12 +101,6 @@ dojo.lang.find = function(arr, val, identity){
 }
 
 dojo.lang.inArray = function(arr, val){
-	// support both (arr, val) and (val, arr)
-	if( (!arr || arr.constructor != Array) && (val && val.constructor == Array) ) {
-		var a = arr;
-		arr = val;
-		val = a;
-	}
 	return dojo.lang.find(arr, val) > -1;
 }
 
