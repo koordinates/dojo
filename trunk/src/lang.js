@@ -19,8 +19,31 @@ dojo.lang.extendPrototype = function(obj, props){
 	this.extend(obj.constructor, props);
 }
 
+dojo.lang.anonCtr = 0;
+dojo.lang.anon = {};
+dojo.lang.nameAnonFunc = function(anonFuncPtr, namespaceObj){
+	var nso = (namespaceObj || dojo.lang.anon);
+	if((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)){
+		for(var x in nso){
+			if(nso[x] === anonFuncPtr){
+				return x;
+			}
+		}
+	}
+	var ret = "__"+dojo.lang.anonCtr++;
+	while(typeof nso[ret] != "undefined"){
+		ret = "__"+dojo.lang.anonCtr++;
+	}
+	nso[ret] = anonFuncPtr;
+	return ret;
+}
+
 dojo.lang.hitch = function(obj, meth){
-	return function(){ return obj[meth].apply(obj, arguments); }
+	var mn = meth;
+	if(!dojo.lang.isString(mn)){
+		mn = dojo.lang.nameAnonFunc(meth, obj);
+	}
+	return function(){ return obj[mn].apply(obj, arguments); }
 }
 
 
