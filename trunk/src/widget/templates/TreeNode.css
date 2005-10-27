@@ -11,7 +11,8 @@
     cursor: pointer;
 }
 
-.TreeNodeImage {
+.TreeNodeImage,
+.TreeNodeIcon {
 	vertical-align: middle;
 }
 
