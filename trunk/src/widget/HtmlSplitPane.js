@@ -26,8 +26,6 @@ dojo.inherits(dojo.widget.HtmlSplitPane, dojo.widget.HtmlLayoutPane);
 
 dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 	widgetType: "SplitPane",
-	isContainer: true,
-	domNode: null,
 	virtualSizer: null,
 	isHorizontal: 0,
 	paneBefore: null,
@@ -61,21 +59,19 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
 
-dojo.debug("fillInTemplate for "+this.debugName);
+		//dojo.debug("fillInTemplate for "+this.debugName);
 	},
 
 	onResized: function(e){
-
-		//dojo.widget.HtmlLayoutPane.onResized.call(this);
-
 		this.paneWidth = dojo.style.getContentWidth(this.domNode);
 		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 		this.layoutPanels();
+		this.notifyChildrenOfResize();	// notify children they've been moved/resized
 	},
 
 	postCreate: function(args, fragment, parentComp){
 
-dojo.debug("post create for "+this.debugName);
+		// dojo.debug("post create for "+this.debugName);
 
 		// attach the children
 
@@ -138,14 +134,6 @@ dojo.debug("post create for "+this.debugName);
 
 		var h3 = (function(){ return function(){ self.onResized(); } })();
 		window.setTimeout(h3, 0);
-		
-		//
-		// Handle resize events due to window resizing and/or resize commands
-		// from my container.
-		//
-		dojo.event.connect(this.domNode, "onresize", this, "onResized");
-		dojo.addOnLoad(this, "onResized");
-		dojo.event.connect(window, "onresize", this, "onResized");
 	},
 
 
@@ -536,14 +524,6 @@ dojo.lang.extend(dojo.widget.HtmlSplitPanePanel, {
 
 	fillInTemplate: function(args, frag) {
 		this.domNode.style.position="relative";	// in case my child does a height=100%
-		
-		// Recursively expand widgets inside of me
-		// (Since I also contain arbitrary (non-widget) HTML, I can't say
-		// this.isContainer=true. Rather, I have to manually expand widgets.)
-		var input = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		var parser = new dojo.xml.Parse();
-		var frag = parser.parseElement(input, null, true);
-		var ary = dojo.widget.getParser().createComponents(frag);
 	}
 });
 

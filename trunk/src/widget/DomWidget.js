@@ -233,8 +233,8 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
 			return false;
 		}else{
-			addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
-			registerChild(widget);
+			this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
+			this.registerChild(widget);
 		}
 	},
 	
@@ -308,9 +308,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			parentComp.addWidgetAsDirectChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"], sourceNodeRef);
 		}
 
-		// Register myself with my parent
+		// Register myself with my parent, or with the widget manager if
+		// I have no parent
 		if ( parentComp ) {
 			parentComp.registerChild(this);
+		} else {
+			dojo.widget.manager.topWidgets.push(this);
 		}
 
 		// Expand my children widgets

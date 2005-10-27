@@ -14,7 +14,6 @@ dojo.widget.HtmlTree = function() {
 
     this.widgetType = "Tree";
     this.isContainer = true;
-    this.messWithMyChildren = true;
     this.templatePath = dojo.uri.dojoUri("src/widget/templates/Tree.html");
     this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/TreeNode.css");
 
