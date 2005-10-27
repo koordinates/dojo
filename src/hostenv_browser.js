@@ -288,3 +288,10 @@ try {
 // stub, over-ridden by debugging code. This will at least keep us from
 // breaking when it's not included
 dojo.hostenv.writeIncludes = function(){} 
+
+dojo.hostenv.byId = dojo.byId = function(id) {
+	if(typeof id == "string" || id instanceof String) {
+		return document.getElementById(id);
+	}
+	return id; // assume it's a node
+}
