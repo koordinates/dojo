@@ -235,11 +235,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
-			return false;
+			return null;
 		}else{
 			this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
 			this.registerChild(widget);
 		}
+		return widget;
 	},
 	
 	addWidgetAsDirectChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
