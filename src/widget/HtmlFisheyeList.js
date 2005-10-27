@@ -443,6 +443,10 @@ dojo.widget.HtmlFisheyeList = function() {
 		dojo.event.connect(document.documentElement, "onmousemove", mouse_handler);
 	}
 
+	this.onResized = function() {
+		this.calcHitGrid();
+	}
+
 	this.onGridMouseMove = function(x, y){
 
 		//

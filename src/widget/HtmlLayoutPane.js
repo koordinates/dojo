@@ -11,22 +11,20 @@ dojo.provide("dojo.widget.HtmlLayoutPane");
 //
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.HtmlContainer");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
 dojo.widget.HtmlLayoutPane = function(){
-	dojo.widget.HtmlWidget.call(this);
+	dojo.widget.HtmlContainer.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlLayoutPane, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlLayoutPane, dojo.widget.HtmlContainer);
 
 dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	widgetType: "LayoutPane",
 
-	isContainer: true,
-	containerNode: null,
-	domNode: null,
 	isChild: false,
 
 	clientLeft: 0,
@@ -44,23 +42,16 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		this.filterAllowed('layoutChildPriority', ['left-right', 'top-bottom']);
 		this.filterAllowed('layoutSizeMode',      ['absolute', 'relative']);
 
-		// if we're a child panel, this will get updated by our parent's postCreate
-
 		this.domNode.style.position = 'relative';
-		dojo.event.connect(window, 'onresize', this, 'layoutChildren');
 	},
 
 	postCreate: function(args, fragment, parentComp){
-
 		this.domNode.style.position = 'relative';
 
-		// arrange our children
 		for(var i=0; i<this.children.length; i++){
-
 			if (this.hasLayoutAlign(this.children[i])){
 				this.children[i].domNode.style.position = 'absolute';
 				this.children[i].isChild = true;
-				dojo.event.disconnect(window, 'onresize', this.children[i], 'layoutChildren');
 			}
 		}
 
@@ -134,8 +125,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			dojo.style.setOuterWidth(kids.top[i].domNode, this.clientRect.right - this.clientRect.left);
 			this.clientRect.top += dojo.style.getOuterHeight(kids.top[i].domNode);
-
-			kids.top[i].onResized();
 		}
 	},
 
@@ -149,8 +138,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			dojo.style.setOuterWidth(kids.bottom[i].domNode, this.clientRect.right - this.clientRect.left);
 			this.clientRect.bottom -= h;
-
-			kids.bottom[i].onResized();
 		}
 	},
 
@@ -162,8 +149,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			dojo.style.setOuterHeight(kids.left[i].domNode, this.clientRect.bottom - this.clientRect.top);
 			this.clientRect.left += dojo.style.getOuterWidth(kids.left[i].domNode);
-
-			kids.left[i].onResized();
 		}
 	},
 
@@ -177,8 +162,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 			dojo.style.setOuterHeight(kids.right[i].domNode, this.clientRect.bottom - this.clientRect.top);
 			this.clientRect.right -= w;
-
-			kids.right[i].onResized();
 		}
 	},
 
@@ -193,10 +176,9 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		}
 
 		this.positionChild(kids.client[0], this.clientRect.left, this.clientRect.top);
-
+		
 		dojo.style.setOuterWidth(kids.client[0].domNode, this.clientRect.right - this.clientRect.left);		
 		dojo.style.setOuterHeight(kids.client[0].domNode, this.clientRect.bottom - this.clientRect.top);
-		kids.client[0].onResized();
 	},
 
 	positionChild: function(child, x, y){
@@ -227,9 +209,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		pane.domNode.style.position = 'absolute';
 		pane.isChild = true;
-		dojo.event.disconnect(window, 'onresize', pane, 'layoutChildren');
 
-		this.layoutChildren();
+		this.onResized();
 	},
 
 	layoutSoon: function(){
@@ -241,23 +222,13 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	onResized: function(){
+		//dojo.debug(this.widgetId + ": resized");
 
-		// layout our children
-		// this will in turn call obj.onResized() for each child, so they can layout *their* children
-
+		// set position/size for my children
 		this.layoutChildren();
 
-
-		// If any of my children are widgets (ex: split pane),
-		// then resize them.  TODO: what if my children are normal HTML objects but
-		// my grandchildren (etc.) are widgets?
-
-		for(var child = dojo.dom.getFirstChildElement(this.domNode); child;
-			child = dojo.dom.getNextSiblingElement(child) ) {
-			if ( child.onResize ) {
-				child.onResize();
-			}
-		}
+		// notify children that they have been moved/resized
+		this.notifyChildrenOfResize();
 	}
 });
 

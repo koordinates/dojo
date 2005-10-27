@@ -2,10 +2,13 @@ dojo.provide("dojo.widget.Manager");
 dojo.require("dojo.lang.*");
 dojo.require("dojo.event");
 
+// Manager class
 dojo.widget.manager = new function(){
 	this.widgets = [];
 	this.widgetIds = [];
-	this.root = null; // the root widget
+	
+	// list of widgets without parents (top level widgets)
+	this.topWidgets = [];
 
 	var widgetTypeCtr = {};
 	var renderPrefixCache = [];
@@ -198,9 +201,21 @@ dojo.widget.manager = new function(){
 		dj_unimplemented("dojo.widget.manager.getWidgetFromEvent");
 	}*/
 
+	// Catch window resize events and notify top level widgets
+	this.onResized = function() {
+		for(var i=0; i<this.topWidgets.length; i++) {
+			var child = this.topWidgets[i];
+			//dojo.debug("root resizing child " + child.widgetId);
+			if ( child.onResized ) {
+				child.onResized();
+			}
+		}
+	}
+	dojo.addOnLoad(this, 'onResized');							// initial sizing
+	dojo.event.connect(window, 'onresize', this, 'onResized');	// window resize
+
 	// FIXME: what else?
 }
-
 
 // copy the methods from the default manager (this) to the widget namespace
 dojo.widget.getUniqueId = function () { return dojo.widget.manager.getUniqueId.apply(dojo.widget.manager, arguments); }
