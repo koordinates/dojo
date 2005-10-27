@@ -237,6 +237,13 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		// notify children that they have been moved/resized
 		this.notifyChildrenOfResize();
+	},
+
+	resizeTo: function(w, h){
+
+		dojo.style.setOuterWidth(this.domNode, w);
+		dojo.style.setOuterHeight(this.domNode, h);
+		this.onResized();
 	}
 });
 
