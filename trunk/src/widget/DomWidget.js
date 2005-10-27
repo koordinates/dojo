@@ -110,7 +110,11 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 		for(var y=0; y<this.attachProperties.length; y++){
 			attachPoint = baseNode.getAttribute(this.attachProperties[y]);
 			if(attachPoint){
-				targetObj[attachPoint]=baseNode;
+				if((targetObj[attachPoint])&&(dojo.lang.isArray(targetObj[attachPoint]))){
+					targetObj[attachPoint].push(baseNode);
+				}else{
+					targetObj[attachPoint]=baseNode;
+				}
 				break;
 			}
 		}
