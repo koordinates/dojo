@@ -3,7 +3,6 @@ dojo.provide("dojo.widget.HtmlTabs");
 
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.graphics.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 
@@ -14,7 +13,7 @@ dojo.widget.HtmlTabs = function() {
 	this.isContainer = true;
 
 	this.templatePath = null; // prolly not
-	this.templateCssPath = null; // maybe
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlTabs.css");
 
 	this.domNode = null;
 	this.containerNode = null;
@@ -28,6 +27,7 @@ dojo.widget.HtmlTabs = function() {
 	this.parseContent = false; // parse externally loaded pages for widgets
 
 	this.buildRendering = function(args, frag) {
+		dojo.style.insertCssFile(this.templateCssPath);
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(!this.domNode) { dj_error("HTMLTabs: No node reference"); }
 
