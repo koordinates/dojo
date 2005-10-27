@@ -20,6 +20,7 @@ dojo.inherits(dojo.widget.Menu, dojo.widget.Widget);
 dojo.lang.extend(dojo.widget.Menu, {
 	widgetType: "Menu",
 	isContainer: true,
+	
 	items: [],
 	push: function(item){
 		dojo.connect.event(item, "onSelect", this, "onSelect");
@@ -60,6 +61,10 @@ dojo.inherits(dojo.widget.HtmlMenu, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.HtmlMenu, {
 	widgetType: "Menu",
 	isContainer: true,
+
+	// copy children widgets output directly to parent (this node), to avoid
+	// errors trying to insert an <li> under a <div>
+	snarfChildDomOutput: true,
 
 	templateString: '<ul></ul>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu.css"),
