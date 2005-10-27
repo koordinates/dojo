@@ -66,14 +66,11 @@ dojo.require("dojo.graphics.*");
 
 var fadeElem, flash, unflash, wiper;
 onload = function() {
-	flash = document.getElementById("flash");
-	dojo.graphics.htmlEffects.colorFadeIn(flash, [230, 230, 180], 1500, 1500);
+	dojo.graphics.htmlEffects.colorFadeIn("flash", [230, 230, 180], 1500, 1500);
 
-	unflash = document.getElementById("unflash");
-	dojo.graphics.htmlEffects.colorFadeOut(unflash, [255, 200, 180], 1500, 1500);
+	dojo.graphics.htmlEffects.colorFadeOut("unflash", [255, 200, 180], 1500, 1500);
 
-	wiper = document.getElementById("wiper");
-	dojo.graphics.htmlEffects.wipeIn(wiper, 1000);
+	dojo.graphics.htmlEffects.wipeIn("wiper", 1000);
 }
 
 function testExplode(start) {

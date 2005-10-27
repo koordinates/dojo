@@ -16,6 +16,7 @@ dojo.fx.html.fadeIn = function(node, duration, callback) {
 };
 
 dojo.fx.html.fadeHide = function(node, duration, callback) {
+	node = dojo.byId(node);
 	if(!duration) { duration = 150; } // why not have a default?
 	return dojo.fx.html.fadeOut(node, duration, function(node) {
 		node.style.display = "none";
@@ -24,12 +25,14 @@ dojo.fx.html.fadeHide = function(node, duration, callback) {
 };
 
 dojo.fx.html.fadeShow = function(node, duration, callback) {
+	node = dojo.byId(node);
 	if(!duration) { duration = 150; } // why not have a default?
 	node.style.display = "block";
 	return dojo.fx.html.fade(node, duration, 0, 1, callback);
 };
 
 dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
+	node = dojo.byId(node);
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([startOpac],[endOpac]),
 		duration, 0);
@@ -46,16 +49,19 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
 };
 
 dojo.fx.html.slideTo = function(node, endCoords, duration, callback) {
+	node = dojo.byId(node);
 	return dojo.fx.html.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
 		duration, callback);
 };
 
 dojo.fx.html.slideBy = function(node, coords, duration, callback) {
+	node = dojo.byId(node);
 	return dojo.fx.html.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
 		duration, callback);
 };
 
 dojo.fx.html.slide = function(node, startCoords, endCoords, duration, callback) {
+	node = dojo.byId(node);
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
 		duration, 0);
@@ -76,6 +82,7 @@ dojo.fx.html.slide = function(node, startCoords, endCoords, duration, callback) 
 
 // Fade from startColor to the node's background color
 dojo.fx.html.colorFadeIn = function(node, startColor, duration, delay, callback) {
+	node = dojo.byId(node);
 	var color = dojo.html.getBackgroundColor(node);
 	var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
 	var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
@@ -102,6 +109,7 @@ dojo.fx.html.colorFadeFrom = dojo.fx.html.colorFadeIn;
 
 // Fade from node's background color to endColor
 dojo.fx.html.colorFadeOut = function(node, endColor, duration, delay, callback) {
+	node = dojo.byId(node);
 	var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node)).toRgb();
 
 	var rgb = new dojo.graphics.color.Color(endColor).toRgb();
@@ -118,6 +126,7 @@ dojo.fx.html.colorFadeTo = dojo.fx.html.colorFadeOut;
 
 // Fade node background from startColor to endColor
 dojo.fx.html.colorFade = function(node, startColor, endColor, duration, callback, dontPlay) {
+	node = dojo.byId(node);
 	var startRgb = new dojo.graphics.color.Color(startColor).toRgb();
 	var endRgb = new dojo.graphics.color.Color(endColor).toRgb();
 	var anim = new dojo.animation.Animation(
@@ -136,6 +145,7 @@ dojo.fx.html.colorFade = function(node, startColor, endColor, duration, callback
 };
 
 dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
+	node = dojo.byId(node);
 	var savedHeight = dojo.html.getStyle(node, "height");
 	var dispType = dojo.lang.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
 	node.style.display = dispType;
@@ -147,6 +157,7 @@ dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 };
 
 dojo.fx.html.wipeInToHeight = function(node, duration, height, callback, dontPlay) {
+	node = dojo.byId(node);
 	var savedOverflow = dojo.html.getStyle(node, "overflow");
 	// FIXME: should we be setting display to something other than "" for the table elements?
 	node.style.display = "none";
@@ -174,6 +185,7 @@ dojo.fx.html.wipeInToHeight = function(node, duration, height, callback, dontPla
 }
 
 dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
+	node = dojo.byId(node);
 	var savedOverflow = dojo.html.getStyle(node, "overflow");
 	var savedHeight = dojo.html.getStyle(node, "height");
 	var height = node.offsetHeight;
@@ -196,6 +208,7 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 };
 
 dojo.fx.html.explode = function(startNode, endNode, duration, callback) {
+	startNode = dojo.byId(startNode);
 	var startCoords = [
 		dojo.html.getAbsoluteX(startNode),
 		dojo.html.getAbsoluteY(startNode),
@@ -207,6 +220,7 @@ dojo.fx.html.explode = function(startNode, endNode, duration, callback) {
 
 // startCoords = [x, y, w, h]
 dojo.fx.html.explodeFromBox = function(startCoords, endNode, duration, callback) {
+	endNode = dojo.byId(endNode);
 	var outline = document.createElement("div");
 	with(outline.style) {
 		position = "absolute";
@@ -256,6 +270,7 @@ dojo.fx.html.explodeFromBox = function(startCoords, endNode, duration, callback)
 };
 
 dojo.fx.html.implode = function(startNode, endNode, duration, callback) {
+	endNode = dojo.byId(endNode);
 	var endCoords = [
 		dojo.html.getAbsoluteX(endNode),
 		dojo.html.getAbsoluteY(endNode),
@@ -266,6 +281,7 @@ dojo.fx.html.implode = function(startNode, endNode, duration, callback) {
 };
 
 dojo.fx.html.implodeToBox = function(startNode, endCoords, duration, callback) {
+	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
 	with(outline.style) {
 		position = "absolute";
@@ -305,6 +321,8 @@ dojo.fx.html.implodeToBox = function(startNode, endCoords, duration, callback) {
 };
 
 dojo.fx.html.Exploder = function(triggerNode, boxNode) {
+	triggerNode = dojo.byId(triggerNode);
+	boxNode = dojo.byId(boxNode);
 	var _this = this;
 
 	// custom options
