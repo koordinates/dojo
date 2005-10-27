@@ -225,50 +225,58 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	domNode: null, // this is our visible representation of the widget!
 	containerNode: null, // holds child elements
 
+	// Process the given child widget, inserting it's dom node as a child of our dom node
 	// FIXME: should we support addition at an index in the children arr and
 	// order the display accordingly? Right now we always append.
-	addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){ 
+	addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
 		if(!this.isContainer){ // we aren't allowed to contain other widgets, it seems
 			dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
 			return false;
 		}else{
-			if((!this.containerNode)&&(!overrideContainerNode)){
-				this.containerNode = this.domNode;
-			}
-			var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
-			if(!pos){ pos = "after"; }
-			if(!ref){ ref = cn.lastChild; }
-			if(!insertIndex) { insertIndex = 0; }
-			widget.domNode.setAttribute("dojoinsertionindex", insertIndex);
+			addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
+			registerChild(widget);
+		}
+	},
+	
+	addWidgetAsDirectChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
+		if((!this.containerNode)&&(!overrideContainerNode)){
+			this.containerNode = this.domNode;
+		}
+		var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
+		if(!pos){ pos = "after"; }
+		if(!ref){ ref = cn.lastChild; }
+		if(!insertIndex) { insertIndex = 0; }
+		widget.domNode.setAttribute("dojoinsertionindex", insertIndex);
 
-			if (this.messWithMyChildren){
+		// insert the child widget domNode directly underneath my domNode, in the
+		// specified position (by default, append to end)
+		if(!ref){
+			cn.appendChild(widget.domNode);
+		}else{
+			// FIXME: was this meant to be the (ugly hack) way to support insert @ index?
+			//dojo.dom[pos](widget.domNode, ref, insertIndex);
 
-				if(!ref){
+			// CAL: this appears to be the intended way to insert a node at a given position...
+			if (pos == 'insertAtIndex'){
+				// dojo.debug("idx:", insertIndex, "isLast:", ref === cn.lastChild);
+				dojo.dom.insertAtIndex(widget.domNode, ref.parentNode, insertIndex);
+			}else{
+				// dojo.debug("pos:", pos, "isLast:", ref === cn.lastChild);
+				if((pos == "after")&&(ref === cn.lastChild)){
 					cn.appendChild(widget.domNode);
 				}else{
-					// FIXME: was this meant to be the (ugly hack) way to support insert @ index?
-					//dojo.dom[pos](widget.domNode, ref, insertIndex);
-
-					// CAL: this appears to be the intended way to insert a node at a given position...
-					if (pos == 'insertAtIndex'){
-						// dojo.debug("idx:", insertIndex, "isLast:", ref === cn.lastChild);
-						dojo.dom.insertAtIndex(widget.domNode, ref.parentNode, insertIndex);
-					}else{
-						// dojo.debug("pos:", pos, "isLast:", ref === cn.lastChild);
-						if((pos == "after")&&(ref === cn.lastChild)){
-							cn.appendChild(widget.domNode);
-						}else{
-							dojo.dom.insertAtPosition(widget.domNode, cn, pos);
-						}
-					}
+					dojo.dom.insertAtPosition(widget.domNode, cn, pos);
 				}
 			}
-			// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
-			this.children.push(widget);
-			widget.parent = this;
-			widget.addedTo(this);
 		}
-		return widget;
+	},
+
+	// Record that given widget descends from me
+	registerChild: function(widget)  {
+		// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
+		this.children.push(widget);
+		widget.parent = this;
+		widget.addedTo(this);
 	},
 
 	// FIXME: we really need to normalize how we do things WRT "destroy" vs. "remove"
@@ -282,27 +290,32 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		return widget;
 	},
 	
+	// Replace source domNode with generated dom structure, and register
+	// widget with parent.
 	postInitialize: function(args, frag, parentComp){
-		if(parentComp){
-			parentComp.addChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"]);
-		}else{
-			if(!frag){ return; }
-			var sourceNodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-			if(!sourceNodeRef){ return; } // fail safely if we weren't instantiated from a fragment
-			// FIXME: this will probably break later for more complex nesting of widgets
-			// FIXME: this will likely break something else, and has performance issues
-			// FIXME: it also seems to be breaking mixins
-			// FIXME: this breaks when the template for the container widget has child
-			// nodes
-
-			this.parent = dojo.widget.manager.root;
-			// insert our domNode into the DOM in place of where we started
+		var sourceNodeRef = frag ? frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"] : null;
+		
+		// Stick my generated dom into the output tree
+		//alert(this.widgetId + ": replacing " + sourceNodeRef + " with " + this.domNode.innerHTML);
+		if ( sourceNodeRef ) {
+			// Do in-place replacement of the my source node with my generated dom
 			if((this.domNode)&&(this.domNode !== sourceNodeRef)){
 				var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
 			}
+		} else if ( parentComp ) {
+			// Add my generated dom as a direct child of my parent widget
+			// (This is important for generated widgets)
+			parentComp.addWidgetAsDirectChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"], sourceNodeRef);
 		}
 
+		// Register myself with my parent
+		if ( parentComp ) {
+			parentComp.registerChild(this);
+		}
+
+		// Expand my children widgets
 		if(this.isContainer){
+			//alert("recurse from " + this.widgetId);
 			var elementNodeType = dojo.dom.ELEMENT_NODE;
 			// FIXME: this is borken!!!
 
