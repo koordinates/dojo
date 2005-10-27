@@ -289,9 +289,10 @@ try {
 // breaking when it's not included
 dojo.hostenv.writeIncludes = function(){} 
 
-dojo.hostenv.byId = dojo.byId = function(id) {
+dojo.hostenv.byId = dojo.byId = function(id, doc) {
 	if(typeof id == "string" || id instanceof String) {
-		return document.getElementById(id);
+		if(!doc) { doc = document; }
+		return doc.getElementById(id);
 	}
 	return id; // assume it's a node
 }
