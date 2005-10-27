@@ -79,6 +79,8 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 				this.clientPane.children.push(kids[i]);
 			}
 		}
+
+		this.resizeSoon();
 	},
 
 	createPane: function(node, align){

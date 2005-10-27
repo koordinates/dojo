@@ -221,6 +221,14 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		window.setTimeout(closure, 0);
 	},
 
+	resizeSoon: function(){
+
+		var self = this;
+		var closure = function(){ return function(){ self.onResized(); } }();
+
+		window.setTimeout(closure, 0);
+	},
+
 	onResized: function(){
 		//dojo.debug(this.widgetId + ": resized");
 
