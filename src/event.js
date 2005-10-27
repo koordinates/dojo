@@ -3,27 +3,9 @@ dojo.provide("dojo.event");
 
 dojo.event = new function(){
 
-	var anonCtr = 0;
-	this.anon = {};
 	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
 
-	this.nameAnonFunc = function(anonFuncPtr, namespaceObj){
-		var nso = (namespaceObj || this.anon);
-		if((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)){
-			for(var x in nso){
-				if(nso[x] === anonFuncPtr){
-						dojo.debug(x);
-						return x;
-				}
-			}
-		}
-		var ret = "__"+anonCtr++;
-		while(typeof nso[ret] != "undefined"){
-			ret = "__"+anonCtr++;
-		}
-		nso[ret] = anonFuncPtr;
-		return ret;
-	}
+	this.nameAnonFunc = dojo.lang.nameAnonFunc;
 
 	this.createFunctionPair = function(obj, cb) {
 		var ret = [];
