@@ -297,15 +297,16 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		
 		// Stick my generated dom into the output tree
 		//alert(this.widgetId + ": replacing " + sourceNodeRef + " with " + this.domNode.innerHTML);
-		if ( sourceNodeRef ) {
+		if ( parentComp && ( parentComp.snarfChildDomOutput || !sourceNodeRef ) ) {
+			// Add my generated dom as a direct child of my parent widget
+			// This is important for generated widgets, and also cases where I am generating an
+			// <li> node that can't be inserted back into the original DOM tree
+			parentComp.addWidgetAsDirectChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"], sourceNodeRef);
+		} else if ( sourceNodeRef ) {
 			// Do in-place replacement of the my source node with my generated dom
 			if((this.domNode)&&(this.domNode !== sourceNodeRef)){
 				var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
 			}
-		} else if ( parentComp ) {
-			// Add my generated dom as a direct child of my parent widget
-			// (This is important for generated widgets)
-			parentComp.addWidgetAsDirectChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"], sourceNodeRef);
 		}
 
 		// Register myself with my parent, or with the widget manager if
@@ -319,11 +320,8 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		// Expand my children widgets
 		if(this.isContainer){
 			//alert("recurse from " + this.widgetId);
-			var elementNodeType = dojo.dom.ELEMENT_NODE;
-			// FIXME: this is borken!!!
-
-			var fragParser = dojo.widget.getParser();
 			// build any sub-components with us as the parent
+			var fragParser = dojo.widget.getParser();
 			fragParser.createComponents(frag, this);
 		}
 	},
