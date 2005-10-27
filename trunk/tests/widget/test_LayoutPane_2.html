@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>LayoutPane / StatusBar Widget Test</title>
+
+<script type="text/javascript">
+
+	var djConfig = {isDebug: true};
+
+	//djConfig.debugAtAllCosts = true;
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+	dojo.require("dojo.widget.HtmlLayoutPane");
+	dojo.require("dojo.widget.HtmlComboBox");
+
+	dojo.hostenv.writeIncludes();
+</script>
+<style>
+
+div.statusBar {
+	background-color: ThreeDFace;
+	height: 28px;
+	padding: 1px;
+}
+
+div.statusPanel {
+	background-color: ThreeDFace;
+	border: 1px solid;
+	border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
+	margin: 1px;
+	padding: 2px 6px;
+}
+
+div.grabHandle {
+	xwidth: 10px;
+}
+
+div.grabHandleInner {
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+	width: 13px;
+	height: 13px;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+	z-index: 2;
+	background-color: ThreeDFace;
+}
+
+div.grabHandleInner img {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+</style>
+</head>
+<body>
+
+<p>HTML before</p>
+<p>HTML before</p>
+<p>HTML before</p>
+
+<div dojoType="LayoutPane"
+	style="border: 2px solid black; width: 90%; height: 300px;"
+>
+	<div dojoType="LayoutPane" layoutAlign="bottom" class="statusBar">
+
+		<div dojoType="LayoutPane" layoutAlign="left" class="statusPanel">
+			panel 1
+		</div>
+		<div dojoType="LayoutPane" layoutAlign="left" class="statusPanel">
+			panel 2
+		</div>
+		<div dojoType="LayoutPane" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;">
+			panel 3
+		</div>
+		<div class="grabHandleInner"><img src="../../src/widget/templates/grabCorner.gif" width="13" height="13" /></div>
+
+	</div>
+</div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>
