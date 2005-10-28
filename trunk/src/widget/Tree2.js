@@ -9,53 +9,53 @@ dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.HtmlTree2 = function() {
 	dojo.widget.HtmlWidget.call(this);
+}
+dojo.inherits(dojo.widget.HtmlTree2, dojo.widget.HtmlWidget);
+dojo.lang.extend(dojo.widget.HtmlTree2, {
+	widgetType: "Tree2",
+	isContainer: true,
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Tree2.css"),
+	templateString: '<div></div>',
 
-	this.widgetType = "Tree2";
-	this.isContainer = true;
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/Tree2.css");
-	this.templateString = '<div></div>';
-
-	this.treeNode = null;
-	this.selectedNode = null;
-	this.maxDepth = 10; // if you have a deep tree, bump this up. but not too high, or ff makes tables width for no reason
+	treeNode: null,
+	selectedNode: null,
+	maxDepth: 10, // if you have a deep tree, bump this up. but not too high, or ff makes tables width for no reason
 
 
 	//
 	// these icons control the grid and expando buttons for the whole tree
 	//
+	blankIconSrc: dojo.uri.dojoUri("src/widget/templates/images/treenode_blank.gif"),
 
-	this.blankIconSrc = dojo.uri.dojoUri("src/widget/templates/images/treenode_blank.gif");
+	gridIconSrcT: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_t.gif"), // for non-last child grid
+	gridIconSrcL: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_l.gif"), // for last child grid
+	gridIconSrcV: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_v.gif"), // vertical line
+	gridIconSrcP: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_p.gif"), // for under parent item child icons
+	gridIconSrcC: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_c.gif"), // for under child item child icons
+	gridIconSrcX: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_x.gif"), // grid for sole root item
+	gridIconSrcY: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_y.gif"), // grid for last rrot item
+	gridIconSrcZ: dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_z.gif"), // for under root parent item child icon
 
-	this.gridIconSrcT = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_t.gif"); // for non-last child grid
-	this.gridIconSrcL = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_l.gif"); // for last child grid
-	this.gridIconSrcV = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_v.gif"); // vertical line
-	this.gridIconSrcP = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_p.gif"); // for under parent item child icons
-	this.gridIconSrcC = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_c.gif"); // for under child item child icons
-	this.gridIconSrcX = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_x.gif"); // grid for sole root item
-	this.gridIconSrcY = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_y.gif"); // grid for last rrot item
-	this.gridIconSrcZ = dojo.uri.dojoUri("src/widget/templates/images/treenode_grid_z.gif"); // for under root parent item child icon
+	expandIconSrcPlus: dojo.uri.dojoUri("src/widget/templates/images/treenode_expand_plus.gif"),
+	expandIconSrcMinus: dojo.uri.dojoUri("src/widget/templates/images/treenode_expand_minus.gif"),
 
-	this.expandIconSrcPlus  = dojo.uri.dojoUri("src/widget/templates/images/treenode_expand_plus.gif");
-	this.expandIconSrcMinus = dojo.uri.dojoUri("src/widget/templates/images/treenode_expand_minus.gif");
-
-	this.iconWidth = 18;
-	this.iconHeight = 18;
+	iconWidth: 18,
+	iconHeight: 18,
 
 
 	//
 	// tree options
 	//
 
-	this.showGrid = true;
-	this.showRootGrid = true;
+	showGrid: true,
+	showRootGrid: true,
 
 
-	this.postCreate = function(){
-
+	postCreate: function(){
 		this.buildTree();
-	}
+	},
 
-	this.buildTree = function(){
+	buildTree: function(){
 
 		this.treeNode = document.createElement('table');
 		//this.treeNode.border = '1';
@@ -87,41 +87,43 @@ dojo.widget.HtmlTree2 = function() {
 		}
 
 	}
-}
+});
 
 
 dojo.widget.HtmlTree2Node = function() {
 	dojo.widget.HtmlWidget.call(this);
+}
+dojo.inherits(dojo.widget.HtmlTree2Node, dojo.widget.HtmlWidget);
+dojo.lang.extend(dojo.widget.HtmlTree2Node, {
+	widgetType: "Tree2Node",
+	isContainer: true,
+	messWithMyChildren: true,
 
-	this.widgetType = "Tree2Node";
-	this.isContainer = true;
-	this.messWithMyChildren = true;
+	childIconSrc: dojo.uri.dojoUri("src/widget/templates/images/treenode_node.gif"),
 
-	this.childIconSrc = dojo.uri.dojoUri("src/widget/templates/images/treenode_node.gif");
+	childIcon: null,
+	underChildIcon: null,
 
-	this.childIcon = null;
-	this.underChildIcon = null;
+	expandIcon: null,
+	underExpandIcon: null,
 
-	this.expandIcon = null;
-	this.underExpandIcon = null;
+	title: "",
 
-	this.title = "";
+	labelNode: null, // the item label
+	imgs: null, // an array of icons imgs
+	imgDivs: null, // an array of icons divs
+	rowNode: null, // the tr
 
-	this.labelNode	= null; // the item label
-	this.imgs	= null; // an array of icons imgs
-	this.imgDivs	= null; // an array of icons divs
-	this.rowNode	= null; // the tr
+	tree: null,
+	parentNode: null,
+	depth: 0,
 
-	this.tree = null;
-	this.parentNode = null;
-	this.depth = 0;
+	isFirstNode: false,
+	isLastNode: false,
+	isExpanded: false,
+	isParent: false,
 
-	this.isFirstNode = false;
-	this.isLastNode = false;
-	this.isExpanded = false;
-	this.isParent = false;
-
-	this.buildNode = function(tree, depth){
+	buildNode: function(tree, depth){
 
 		this.tree = tree;
 		this.depth = depth;
@@ -222,10 +224,9 @@ dojo.widget.HtmlTree2Node = function() {
 		this.isParent = (this.children.length > 0) ? true : false;
 
 		this.collapse();
-	}
+	},
 
-
-	this.createIconPair = function(tr_node){
+	createIconPair: function(tr_node){
 
 		var cell = document.createElement('td');
 		var div  = document.createElement('div');
@@ -257,24 +258,22 @@ dojo.widget.HtmlTree2Node = function() {
 		this.imgDivs.push(div);
 
 		return [img1, img2];
-	}
+	},
 
-
-	this.onTreeClick = function(e){
+	onTreeClick: function(e){
 
 		if (this.isExpanded){
 			this.collapse();
 		}else{
 			this.expand();
 		}
-	}
+	},
 
-	this.onIconClick = function(){
-
+	onIconClick: function(){
 		this.onLabelClick();
-	}
+	},
 
-	this.onLabelClick = function(){
+	onLabelClick: function(){
 
 		if (this.tree.selectedNode == this){
 
@@ -287,19 +286,19 @@ dojo.widget.HtmlTree2Node = function() {
 
 		this.tree.selectedNode = this;
 		this.tree.selectedNode.select();
-	}
+	},
 
-	this.select = function(){
+	select: function(){
 
 		dojo.html.addClass(this.labelNode, 'dojoTree2NodeLabelSelected');
-	}
+	},
 
-	this.deselect = function(){
+	deselect: function(){
 
 		dojo.html.removeClass(this.labelNode, 'dojoTree2NodeLabelSelected');
-	}
+	},
 
-	this.updateIcons = function(){
+	updateIcons: function(){
 
 		this.imgDivs[0].style.display = this.tree.showRootGrid ? 'block' : 'none';
 
@@ -376,49 +375,45 @@ dojo.widget.HtmlTree2Node = function() {
 			parent = parent.parentNode;
 		}
 
-	}
+	},
 
-	this.expand = function(){
+	expand: function(){
 		this.showChildren();
 		this.isExpanded = true;
 		this.updateIcons();
-	}
+	},
 
-	this.collapse = function(){
+	collapse: function(){
 		this.hideChildren();
 		this.isExpanded = false;
 		this.updateIcons();
-	}
+	},
 
-	this.hideNode = function(){
+	hideNode: function(){
 		this.hideChildren();
 		this.rowNode.style.display = 'none';
-	}
+	},
 
-	this.showNode = function(){
+	showNode: function(){
 		if (this.isExpanded){ this.showChildren(); }
 		this.rowNode.style.display = document.all ? 'block' : 'table-row';
-	}
+	},
 
-	this.hideChildren = function(){
+	hideChildren: function(){
 
 		for(var i=0; i<this.children.length; i++){
-
 			this.children[i].hideNode();
 		}
-	}
+	},
 
-	this.showChildren = function(){
+	showChildren: function(){
 
 		for(var i=0; i<this.children.length; i++){
-
 			this.children[i].showNode();
 		}
-	}}
+	}
+});
 
-// complete the inheritance process
-dojo.inherits(dojo.widget.HtmlTree2, dojo.widget.HtmlWidget);
-dojo.inherits(dojo.widget.HtmlTree2Node, dojo.widget.HtmlWidget);
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree2");
