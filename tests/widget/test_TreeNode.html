@@ -26,7 +26,7 @@
         };
     }
 
-    dojo.hostenv.modulesLoadedListeners.push(function(){
+    dojo.addOnLoad(function(){
         var tree = dojo.widget.fromScript("Tree", {publishSelectionTopic: "treeSelected", toggle: "fade"});
         document.body.appendChild(tree.domNode);
         var rootNode = dojo.widget.fromScript("TreeNode", {title: "Root Node"});
