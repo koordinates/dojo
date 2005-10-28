@@ -37,6 +37,9 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	layoutChildPriority: 'top-bottom',
 	layoutSizeMode: 'relative',
 
+	minWidth: 0,
+	minHeight: 0,
+
 	fillInTemplate: function(){
 		this.filterAllowed('layoutAlign',         ['none', 'left', 'top', 'right', 'bottom', 'client']);
 		this.filterAllowed('layoutChildPriority', ['left-right', 'top-bottom']);
@@ -240,6 +243,9 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	resizeTo: function(w, h){
+
+		w = Math.max(w, this.minWidth);
+		h = Math.max(h, this.minHeight);
 
 		dojo.style.setOuterWidth(this.domNode, w);
 		dojo.style.setOuterHeight(this.domNode, h);
