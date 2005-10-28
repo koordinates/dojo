@@ -1,9 +1,9 @@
-dojo.provide("dojo.widget.HtmlContextMenu");
+dojo.provide("dojo.widget.html.ContextMenu");
 dojo.require("dojo.html");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.ContextMenu");
 
-dojo.widget.HtmlContextMenu = function(){
+dojo.widget.html.ContextMenu = function(){
 	dojo.widget.ContextMenu.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
@@ -45,4 +45,4 @@ dojo.widget.HtmlContextMenu = function(){
 	dojo.event.connect(doc, "oncontextmenu", this, "onShow");
 }
 
-dojo.inherits(dojo.widget.HtmlContextMenu, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.ContextMenu, dojo.widget.HtmlWidget);
