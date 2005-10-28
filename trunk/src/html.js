@@ -210,6 +210,9 @@ dojo.html.prependClass = function (node, classStr){
  */
 dojo.html.addClass = function (node, classStr){
 	if (!node) { throw new Error("addClass: node does not exist"); }
+	if (dojo.html.hasClass(node, classStr)) {
+	  return false;
+	}
 	if(dojo.html.hasAttribute(node,"class")||node.className){
 		classStr = (node.className||dojo.html.getAttribute(node, "class")) + " " + classStr;
 	}
@@ -217,7 +220,7 @@ dojo.html.addClass = function (node, classStr){
 }
 
 /**
- *  Clobbers the existing list of classes for the node, replacing it with
+ *	Clobbers the existing list of classes for the node, replacing it with
  *	the list given in the 2nd argument. Returns true or false
  *	indicating success or failure.
  */
@@ -243,19 +246,52 @@ dojo.html.setClass = function (node, classStr){
  * Removes the className from the node;. Returns
  * true or false indicating success or failure.
  */ 
-dojo.html.removeClass = function (node, classStr){
+dojo.html.removeClass = function (node, classStr, allowPartialMatches){
 	if(!node){ return false; }
 	var classStr = dojo.string.trim(new String(classStr));
 
 	try{
 		var cs = String( node.className ).split(" ");
-		var nca  = [];
-		for(var i = 0; i<cs.length; i++){
-			if(cs[i] != classStr){ 
-				nca .push(cs[i]);
+		var nca	= [];
+		if (allowPartialMatches) {
+			for(var i = 0; i<cs.length; i++){
+				if(cs[i].indexOf(classStr) == -1){ 
+					nca.push(cs[i]);
+				}
 			}
 		}
-		node.className = nca .join(" ");
+		else {
+			for(var i = 0; i<cs.length; i++){
+				if(cs[i] != classStr){ 
+					nca.push(cs[i]);
+				}
+			}
+		}
+		node.className = nca.join(" ");
+	}catch(e){
+		dojo.debug("__util__.removeClass() failed", e);
+	}
+
+	return true;
+}
+
+/**
+ * Removes the className from the node;. Returns
+ * true or false indicating success or failure.
+ */ 
+dojo.html.removeClassByPart = function (node, classStr){
+	if(!node){ return false; }
+	var classStr = dojo.string.trim(new String(classStr));
+
+	try{
+		var cs = String( node.className ).split(" ");
+		var nca	= [];
+		for(var i = 0; i<cs.length; i++){
+			if(cs[i].indexOf(classStr) == -1){ 
+				nca.push(cs[i]);
+			}
+		}
+		node.className = nca.join(" ");
 	}catch(e){
 		dojo.debug("__util__.removeClass() failed", e);
 	}
@@ -367,9 +403,9 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
  * </pre>
  *
  * @param node The node
- * @param e    The event containing the mouse coordinates
- * @return     The directions, NORTH or SOUTH and EAST or WEST. These
- *             are properties of the function.
+ * @param e		The event containing the mouse coordinates
+ * @return		 The directions, NORTH or SOUTH and EAST or WEST. These
+ *						 are properties of the function.
  */
 dojo.html.gravity = function (node, e){
 	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
