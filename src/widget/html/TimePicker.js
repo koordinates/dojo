@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.HtmlTimePicker");
+dojo.provide("dojo.widget.html.TimePicker");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
 
@@ -6,7 +6,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
-dojo.widget.HtmlTimePicker = function(){
+dojo.widget.html.TimePicker = function(){
 	dojo.widget.TimePicker.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
@@ -297,4 +297,4 @@ dojo.widget.HtmlTimePicker = function(){
 	}
 
 }
-dojo.inherits(dojo.widget.HtmlTimePicker, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.TimePicker, dojo.widget.HtmlWidget);
