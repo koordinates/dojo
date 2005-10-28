@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>FloatingPane Widget Demo</title>
+
+<script type="text/javascript">
+
+	var djConfig = {isDebug: true};
+
+	//djConfig.debugAtAllCosts = true;
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+	dojo.require("dojo.widget.HtmlFloatingPane");
+	dojo.require("dojo.widget.HtmlResizeHandle");
+	dojo.hostenv.writeIncludes();
+</script>
+<style>
+
+.dojoFloatingPaneClient {
+	border: 0 !important;
+	margin: 0 !important;
+}
+
+
+</style>
+</head>
+<body style="background-color: ThreeDFace;">
+
+<p>HTML before</p>
+<p>HTML before</p>
+<p>HTML before</p>
+
+<div dojoType="FloatingPane"
+	title="Test window"
+	constrainToContainer="1"
+	style="width: 300px; height: 200px; left: 200px;"
+	widgetId="testWindow"
+>
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+
+	<div dojoType="ResizeHandle" targetElmId="testWindow"></div>
+</div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>
