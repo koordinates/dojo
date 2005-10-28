@@ -153,7 +153,6 @@ dojo.widget.ComboBox = function(){
 	dojo.widget.Widget.call(this);
 }
 
-
 dojo.inherits(dojo.widget.ComboBox, dojo.widget.Widget);
 
 dojo.widget.ComboBox.defaults = {
@@ -182,4 +181,4 @@ dojo.widget.DomComboBox = function(){
 
 dojo.inherits(dojo.widget.DomComboBox, dojo.widget.DomWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:combobox");
-
+dojo.requireIf("html", "dojo.widget.html.ComboBox");
