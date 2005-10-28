@@ -10,6 +10,7 @@ dojo.require("dojo.widget.HtmlContainer");
 
 dojo.widget.HtmlTree = function(){
 	dojo.widget.HtmlContainer.call(this);
+	this.items = [];
 }
 dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlContainer);
 
@@ -31,6 +32,7 @@ dojo.lang.extend(dojo.widget.HtmlTree, {
     nestedChildIcon: null,
     toggle: "default",
     toggleDuration: 150,
+	snarfChildDomOutput: true,
 
     initialize: function(args, frag){
         switch (this.toggle) {
