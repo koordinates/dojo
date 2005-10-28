@@ -158,17 +158,15 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 		// NOTE: caching lower-cased args in the prototype is only 
 		// acceptable if the properties are invariant.
-		var lcArgs;
 		// if we have a name-cache, get it
-		if(this.constructor.prototype["lcArgs"]){
-			lcArgs = this.constructor.prototype.lcArgs;
-		}else{
+		var lcArgs = dojo.widget.lcArgsCache[this.widgetType];
+		if ( lcArgs == null ){
 			// build a lower-case property name cache if we don't have one
 			lcArgs = {};
 			for(var y in this){
 				lcArgs[((new String(y)).toLowerCase())] = y;
 			}
-			this.constructor.prototype.lcArgs = lcArgs;
+			dojo.widget.lcArgsCache[this.widgetType] = lcArgs;
 		}
 		var visited = {};
 		for(var x in args){
@@ -353,6 +351,12 @@ dojo.lang.extend(dojo.widget.Widget, {
 	}
 });
 
+// Lower case name cache: listing of the lower case elements in each widget.
+// We can't store the lcArgs in the widget itself because if B subclasses A,
+// then B.prototype.lcArgs might return A.prototype.lcArgs, which is not what we
+// want
+dojo.widget.lcArgsCache = {};
+
 // TODO: should have a more general way to add tags or tag libraries?
 // TODO: need a default tags class to inherit from for things like getting propertySets
 // TODO: parse properties/propertySets into component attributes
@@ -387,11 +391,6 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp, 
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
-	/*
-	for(var x=0; x<propertySets.length; x++){
-		
-	}
-	*/
 	// var tic = new Date();
 	var twidget = dojo.widget.manager.getImplementation(stype);
 	if(!twidget){
