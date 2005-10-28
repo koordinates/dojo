@@ -3,8 +3,8 @@ dojo.provide("dojo.widget.HtmlCiviCrmDatePicker");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.DatePicker");
-dojo.require("dojo.widget.HtmlDatePicker");
-dojo.require("dojo.widget.HtmlTimePicker");
+dojo.require("dojo.widget.html.DatePicker");
+dojo.require("dojo.widget.html.TimePicker");
 dojo.require("dojo.html");
 
 dojo.widget.HtmlCiviCrmDatePicker = function(){
