@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.HtmlDatePicker");
+dojo.provide("dojo.widget.html.DatePicker");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
@@ -20,7 +20,7 @@ dojo.require("dojo.html");
 */
 
 
-dojo.widget.HtmlDatePicker = function(){
+dojo.widget.html.DatePicker = function(){
 	dojo.widget.DatePicker.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
@@ -303,4 +303,4 @@ dojo.widget.HtmlDatePicker = function(){
 		this.initUI();
 	}
 }
-dojo.inherits(dojo.widget.HtmlDatePicker, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.DatePicker, dojo.widget.HtmlWidget);

@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.DatePicker");
 dojo.require("dojo.widget.DomWidget");
+dojo.requireIf("html", "dojo.widget.html.DatePicker");
 
 dojo.widget.DatePicker = function(){
 	dojo.widget.Widget.call(this);
