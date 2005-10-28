@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.ContextMenu");
 
+dojo.requireIf("html", "dojo.widget.html.ContextMenu");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DomWidget");
 
