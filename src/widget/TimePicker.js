@@ -1,6 +1,8 @@
 dojo.provide("dojo.widget.TimePicker");
 dojo.require("dojo.widget.DomWidget");
 
+dojo.requireIf("html", "dojo.widget.html.TimePicker");
+
 dojo.widget.TimePicker = function(){
 	dojo.widget.Widget.call(this);
 	this.widgetType = "TimePicker";
