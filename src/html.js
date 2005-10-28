@@ -275,30 +275,6 @@ dojo.html.removeClass = function (node, classStr, allowPartialMatches){
 	return true;
 }
 
-/**
- * Removes the className from the node;. Returns
- * true or false indicating success or failure.
- */ 
-dojo.html.removeClassByPart = function (node, classStr){
-	if(!node){ return false; }
-	var classStr = dojo.string.trim(new String(classStr));
-
-	try{
-		var cs = String( node.className ).split(" ");
-		var nca	= [];
-		for(var i = 0; i<cs.length; i++){
-			if(cs[i].indexOf(classStr) == -1){ 
-				nca.push(cs[i]);
-			}
-		}
-		node.className = nca.join(" ");
-	}catch(e){
-		dojo.debug("__util__.removeClass() failed", e);
-	}
-
-	return true;
-}
-
 // Enum type for getElementsByClass classMatchType arg:
 dojo.html.classMatchType = {
 	ContainsAll : 0, // all of the classes are part of the node's class (default)
