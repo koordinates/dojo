@@ -96,12 +96,10 @@ dojo.widget.Tree.DefaultToggle = function() {
 dojo.widget.Tree.FadeToggle = function(duration) {
 	this.toggleDuration = duration ? duration : 150;
 	this.show = function(node) {
-		dojo.style.setOpacity(node, 0);
 		dojo.fx.html.fadeShow(node, this.toggleDuration);
 	}
 
 	this.hide = function(node) {
-		dojo.style.setOpacity(node, 1);
 		dojo.fx.html.fadeHide(node, this.toggleDuration);
 	}
 }
