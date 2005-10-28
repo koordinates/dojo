@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.HtmlComboBox");
+dojo.provide("dojo.widget.html.ComboBox");
 dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
@@ -7,7 +7,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
 
-dojo.widget.HtmlComboBox = function(){
+dojo.widget.html.ComboBox = function(){
 	dojo.widget.ComboBox.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
@@ -34,12 +34,12 @@ dojo.widget.HtmlComboBox = function(){
 	this._result_list_open = false;
 }
 
-dojo.inherits(dojo.widget.HtmlComboBox, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.ComboBox, dojo.widget.HtmlWidget);
 
 // copied from superclass since we can't really over-ride via prototype
-dojo.lang.extend(dojo.widget.HtmlComboBox, dojo.widget.ComboBox.defaults);
+dojo.lang.extend(dojo.widget.html.ComboBox, dojo.widget.ComboBox.defaults);
 
-dojo.lang.extend(dojo.widget.HtmlComboBox, {
+dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html"),
