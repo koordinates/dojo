@@ -15,106 +15,105 @@ dojo.widget.HtmlTree = function(){
 dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlContainer);
 
 dojo.lang.extend(dojo.widget.HtmlTree, {
-    widgetType: "Tree",
-    templatePath: dojo.uri.dojoUri("src/widget/templates/Tree.html"),
-    templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeNode.css"),
-	
+	widgetType: "Tree",
+	templatePath: dojo.uri.dojoUri("src/widget/templates/Tree.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeNode.css"),
+
 	items: [],
 
 	// copy children widgets output directly to parent (this node), to avoid
 	// errors trying to insert an <li> under a <div>
 	snarfChildDomOutput: true,
 
-    publishSelectionTopic: "",
-    publishExpandedTopic: "",
-    publishCollapsedTopic: "",
-    preChildIcon: null,
-    nestedChildIcon: null,
-    toggle: "default",
-    toggleDuration: 150,
+	publishSelectionTopic: "",
+	publishExpandedTopic: "",
+	publishCollapsedTopic: "",
+	preChildIcon: null,
+	nestedChildIcon: null,
+	toggle: "default",
+	toggleDuration: 150,
 	snarfChildDomOutput: true,
 
-    initialize: function(args, frag){
-        switch (this.toggle) {
-           case "wipe"    : this.toggle = new dojo.widget.Tree.WipeToggle();
-                            break;
-           case "fade"    : this.toggle = new dojo.widget.Tree.FadeToggle();
-                            break;
-           default        : this.toggle = new dojo.widget.Tree.DefaultToggle();
-        }
+	initialize: function(args, frag){
+		switch (this.toggle) {
+			case "wipe"    : this.toggle = new dojo.widget.Tree.WipeToggle();
+							break;
+			case "fade"    : this.toggle = new dojo.widget.Tree.FadeToggle();
+							break;
+			default        : this.toggle = new dojo.widget.Tree.DefaultToggle();
+		}
 
-        //  when we add a child, automatically wire it.
-        dojo.event.connect(this, "addChild", this, "wireNode");
-    },
+		//  when we add a child, automatically wire it.
+		dojo.event.connect(this, "addChild", this, "wireNode");
+	},
 
-    wireNode: function(node) {
-        node.tree = this;
+	wireNode: function(node) {
+		node.tree = this;
 
 		dojo.event.connect(node, "onSelect", this, "nodeSelected");
 		dojo.event.connect(node, "onExpand", this, "nodeExpanded");
 		dojo.event.connect(node, "onCollapse", this, "nodeCollapsed");
 		dojo.event.connect(this, "nodeSelected", node, "onTreeNodeSelected");
 
-        // when a child is added to this node, we need to wire that new node too
-        dojo.event.connect(node, "addChild", this, "wireNode");
-    },
+		// when a child is added to this node, we need to wire that new node too
+		dojo.event.connect(node, "addChild", this, "wireNode");
+	},
 
-    getToggle: function () {
-        return this.toggle;
-    },
+	getToggle: function () {
+		return this.toggle;
+	},
 
-    nodeSelected: function (item, e) {
-        //this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
-        dojo.event.topic.publish(this.publishSelectionTopic, item.id);
-    },
-    
-    nodeExpanded: function (item, e) {
-        //this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
-        dojo.event.topic.publish(this.publishExpandedTopic, item.id);
-    },
+	nodeSelected: function (item, e) {
+		//this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
+		dojo.event.topic.publish(this.publishSelectionTopic, item.id);
+	},
 
-    nodeCollapsed: function (item, e) {
-        //this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
-        dojo.event.topic.publish(this.publishCollapsedTopic, item.id);
-    }
+	nodeExpanded: function (item, e) {
+		//this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
+		dojo.event.topic.publish(this.publishExpandedTopic, item.id);
+	},
+
+	nodeCollapsed: function (item, e) {
+		//this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
+		dojo.event.topic.publish(this.publishCollapsedTopic, item.id);
+	}
 });
 
 dojo.widget.Tree.DefaultToggle = function() {
-    this.show = function(node) {
-        if (node.style) {
-            node.style.display = "block";
-        }
-    }
+	this.show = function(node) {
+		if (node.style) {
+			node.style.display = "block";
+		}
+	}
 
-    this.hide = function(node) {
-        if (node.style) {
-            node.style.display = "none";
-        }
-    }
+	this.hide = function(node) {
+		if (node.style) {
+			node.style.display = "none";
+		}
+	}
 }
 
 dojo.widget.Tree.FadeToggle = function(duration) {
-    this.toggleDuration = duration ? duration : 150;
-    this.show = function(node) {
-        dojo.fx.html.fadeShow(node, this.toggleDuration);
-    }
+	this.toggleDuration = duration ? duration : 150;
+	this.show = function(node) {
+		dojo.fx.html.fadeShow(node, this.toggleDuration);
+	}
 
-    this.hide = function(node) {
-        dojo.fx.html.fadeHide(node, this.toggleDuration);
-    }
+	this.hide = function(node) {
+		dojo.fx.html.fadeHide(node, this.toggleDuration);
+	}
 }
 
 dojo.widget.Tree.WipeToggle = function(duration) {
-    this.toggleDuration = duration ? duration : 150;
-    this.show = function(node) {
-        dojo.fx.html.wipeIn(node, this.toggleDuration);
-    }
+	this.toggleDuration = duration ? duration : 150;
+	this.show = function(node) {
+		dojo.fx.html.wipeIn(node, this.toggleDuration);
+	}
 
-    this.hide = function(node) {
-        dojo.fx.html.wipeOut(node, this.toggleDuration);
-    }
+	this.hide = function(node) {
+		dojo.fx.html.wipeOut(node, this.toggleDuration);
+	}
 }
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree");
-
