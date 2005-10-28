@@ -4,53 +4,56 @@ dojo.provide("dojo.widget.HtmlTreeNode");
 dojo.require("dojo.event.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.widget.Tree");
-dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.HtmlContainer");
 
 
-// define the widget class
-dojo.widget.HtmlTreeNode = function() {
-	dojo.widget.HtmlWidget.call(this);
+dojo.widget.HtmlTreeNode = function(){
+	dojo.widget.HtmlTreeNode.superclass.constructor.call(this);
+}
+dojo.inherits(dojo.widget.HtmlTreeNode, dojo.widget.HtmlContainer);
 
-	this.widgetType = "TreeNode";
-	this.templatePath = dojo.uri.dojoUri("src/widget/templates/TreeNode.html");
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/TreeNode.css");
-	this.isContainer = true;
+dojo.lang.extend(dojo.widget.HtmlTreeNode, {
+	widgetType: "TreeNode",
+	templatePath: dojo.uri.dojoUri("src/widget/templates/TreeNode.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeNode.css"),
+
+	snarfChildDomOutput: true,
 
 	// the last node and with no children
-	this.lastNodeLeafImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/leaf-l.gif";
+	lastNodeLeafImgSrc: djConfig.baseRelativePath + "src/widget/templates/images/leaf-l.gif",
 	// not the last node and with no children
-	this.notLastNodeLeafImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/leaf-t.gif";
+	notLastNodeLeafImgSrc: djConfig.baseRelativePath + "src/widget/templates/images/leaf-t.gif",
 	// the last node and with children
-	this.lastNodeParentImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/plus-l.gif";
+	lastNodeParentImgSrc: djConfig.baseRelativePath + "src/widget/templates/images/plus-l.gif",
 	// not the last node and with children
-	this.notLastNodeParentImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/plus-t.gif";
+	notLastNodeParentImgSrc: djConfig.baseRelativePath + "src/widget/templates/images/plus-t.gif",
 
-	this.lastNodeParentToggleImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/minus-l.gif";
-	this.notLastNodeParentToggleImgSrc = djConfig.baseRelativePath + "src/widget/templates/images/minus-t.gif";
+	lastNodeParentToggleImgSrc: djConfig.baseRelativePath + "src/widget/templates/images/minus-l.gif",
+	notLastNodeParentToggleImgSrc: djConfig.baseRelativePath + "src/widget/templates/images/minus-t.gif",
 
-	this.childIcon = null;
-	this.childIconSrc = '';
+	childIcon: null,
+	childIconSrc: '',
 
-	this.id = null;
-	this.title = "";
+	id: null,
+	title: "",
 	// the DOM node that holds the title and open / close controls
-	this.nodeTitle = null;
+	nodeTitle: null,
 	// the DOM text node with the title in it
-	this.titleText = null;
+	titleText: null,
 	// the node which controls opening and closing the children (only exists when children are added)
-	this.toggleControl = null;
+	toggleControl: null,
 	// the node which holds the toggle image.
-	this.toggleImage = null;
+	toggleImage: null,
 	// the toggle strategy object which will toggle a parent node open and closed
-	this.toggle = new dojo.widget.Tree.DefaultToggle();
+	toggle: new dojo.widget.Tree.DefaultToggle(),
 	// the outer tree containing this node
-	this.tree = null;
+	tree: null,
 	// flag to hold whether this is the last node in the branch.
-	this.isLastNode = true;
-	this.isExpanded = false;
-	this.isParent = false;
+	isLastNode: true,
+	isExpanded: false,
+	isParent: false,
 
-	this.initialize = function(args, frag){
+	initialize: function(args, frag){
 		if (!this.id) {
 			this.id = this.title;
 		}
@@ -62,13 +65,13 @@ dojo.widget.HtmlTreeNode = function() {
 			this.childIcon.src = this.childIconSrc;
 			this.childIcon.alt = "";
 		}else{
-			this.childIcon.style.display = 'none';
+			if ( this.childIcon ) {
+				this.childIcon.style.display = 'none';
+			}
 		}
-	}
+	},
 
-	var oldAddChild = this.addChild;
-
-	this.addChild = function(widget, overrideContainerNode, pos, ref, insertIndex) {
+	addWidgetAsDirectChild: function(widget, overrideContainerNode, pos, ref, insertIndex) {
 
 		this.isParent = 1;
 
@@ -91,36 +94,37 @@ dojo.widget.HtmlTreeNode = function() {
 			this.children[this.children.length - 1].setNotLastNode();
 		}
 
-		return oldAddChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
-	}
+		// Call the superclass
+		return dojo.widget.HtmlTreeNode.superclass.addWidgetAsDirectChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
+		this.registerChild(widget);
+	},
 
-	this.removeChild = function(widget){
+	removeChild: function(widget){
 
 		var ret = dojo.widget.HtmlWidget.removeChild.call(this);
 
 		this.isParent = (this.children && (this.children.length > 0)) ? true : false;
 
 		return ret;
-	}
+	},
 
-
-
-	this.fillInTemplate = function (){
+	fillInTemplate: function (){
 		this.titleText.appendChild(document.createTextNode(this.title));
 //		dojo.event.connect(this.nodeTitle, "onmouseover", this, "onMouseOver");
 //		dojo.event.connect(this.nodeTitle, "onmouseout", this, "onMouseOut");
 //		dojo.event.connect(this.nodeTitle, "onmousedown", this, "onMouseDown");
 //		dojo.event.connect(this.nodeTitle, "onmouseup", this, "onMouseUp");
 		dojo.event.connect(this.titleText, "onclick", this, "onClick");
-		dojo.event.connect(this.childIcon, "onclick", this, "onClick");
-	}
+		if ( this.childIcon )
+			dojo.event.connect(this.childIcon, "onclick", this, "onClick");
+	},
 
-	this.setNotLastNode = function (){
+	setNotLastNode: function (){
 		this.isLastNode = false;
 		this.updateToggleImage();
-	}
+	},
 
-	this.toggleOpened = function(e){
+	toggleOpened: function(e){
 		if (this.containerNode){
 			aToggle = this.getToggle();
 			if (this.containerNode.style.display == "none" || this.containerNode.style.display == ""){
@@ -133,52 +137,52 @@ dojo.widget.HtmlTreeNode = function() {
 				this.onCollapse(this, e);
 			}
 		}
-	}
+	},
 
-	this.getToggle = function (){
+	getToggle: function (){
 		if (this.parent && this.parent.getToggle) {
 			return this.parent.getToggle();
 		}
 		return this.toggle;
-	}
+	},
 
-	this.onMouseOver = function (e){
-	}
+	onMouseOver: function (e){
+	},
 
-	this.onMouseOut = function (e){
-	}
+	onMouseOut: function (e){
+	},
 
-	this.onClick = function (e){
+	onClick: function (e){
 		this.onSelect(this, e);
-	}
+	},
 
-	this.onMouseDown = function (e){
-	}
+	onMouseDown: function (e){
+	},
 
-	this.onMouseUp = function (e){
-	}
+	onMouseUp: function (e){
+	},
 
-	this.onSelect = function (item, e){
+	onSelect: function (item, e){
 		dojo.html.addClass(this.titleText, "TreeNodeSelected");
 		dojo.html.addClass(this.childIcon, "TreeNodeSelected");
-	}
+	},
 
-	this.onTreeNodeSelected = function (item, e){
+	onTreeNodeSelected: function (item, e){
 		if (this.id != item.id) {
 			dojo.html.removeClass(this.titleText, "TreeNodeSelected");
 			dojo.html.removeClass(this.childIcon, "TreeNodeSelected");
 		}
-	}
+	},
 
-	this.onExpand = function (item, e){
+	onExpand: function (item, e){
 		this.updateToggleImage();
-	}
+	},
 
-	this.onCollapse = function (item, e){
+	onCollapse: function (item, e){
 		this.updateToggleImage();
-	}
+	},
 
-	this.applyTheme = function(theme){
+	applyTheme: function(theme){
 
 		// CAL: this is a hack right now
 		// i'd like to have all the 'style' stuff maybe in one assoc-array
@@ -198,9 +202,9 @@ dojo.widget.HtmlTreeNode = function() {
 		this.notLastNodeParentToggleImgSrc	= theme.iconOpenLast;
 
 		this.updateToggleImage();
-	}
+	},
 
-	this.updateToggleImage = function(){
+	updateToggleImage: function(){
 
 		if (this.isParent){
 
@@ -216,10 +220,7 @@ dojo.widget.HtmlTreeNode = function() {
 		}
 
 	}
-}
-
-// complete the inheritance process
-dojo.inherits(dojo.widget.HtmlTreeNode, dojo.widget.HtmlWidget);
+});
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:TreeNode");

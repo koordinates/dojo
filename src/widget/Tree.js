@@ -5,27 +5,34 @@ dojo.require("dojo.event.topic");
 dojo.require("dojo.fx.html");
 //dojo.require("dojo.widget.Widget");
 //dojo.require("dojo.widget.DomWidget");
-dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.HtmlContainer");
 
 
-// define the widget class
-dojo.widget.HtmlTree = function() {
-    dojo.widget.HtmlWidget.call(this);
+dojo.widget.HtmlTree = function(){
+	dojo.widget.HtmlContainer.call(this);
+}
+dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlContainer);
 
-    this.widgetType = "Tree";
-    this.isContainer = true;
-    this.templatePath = dojo.uri.dojoUri("src/widget/templates/Tree.html");
-    this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/TreeNode.css");
+dojo.lang.extend(dojo.widget.HtmlTree, {
+    widgetType: "Tree",
+    templatePath: dojo.uri.dojoUri("src/widget/templates/Tree.html"),
+    templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeNode.css"),
+	
+	items: [],
 
-    this.publishSelectionTopic = "";
-    this.publishExpandedTopic = "";
-    this.publishCollapsedTopic = "";
-    this.preChildIcon = null;
-    this.nestedChildIcon = null;
-    this.toggle = "default";
-    this.toggleDuration = 150;
+	// copy children widgets output directly to parent (this node), to avoid
+	// errors trying to insert an <li> under a <div>
+	snarfChildDomOutput: true,
 
-    this.initialize = function(args, frag){
+    publishSelectionTopic: "",
+    publishExpandedTopic: "",
+    publishCollapsedTopic: "",
+    preChildIcon: null,
+    nestedChildIcon: null,
+    toggle: "default",
+    toggleDuration: 150,
+
+    initialize: function(args, frag){
         switch (this.toggle) {
            case "wipe"    : this.toggle = new dojo.widget.Tree.WipeToggle();
                             break;
@@ -36,9 +43,9 @@ dojo.widget.HtmlTree = function() {
 
         //  when we add a child, automatically wire it.
         dojo.event.connect(this, "addChild", this, "wireNode");
-    }
+    },
 
-    this.wireNode = function(node) {
+    wireNode: function(node) {
         node.tree = this;
 
 		dojo.event.connect(node, "onSelect", this, "nodeSelected");
@@ -48,25 +55,27 @@ dojo.widget.HtmlTree = function() {
 
         // when a child is added to this node, we need to wire that new node too
         dojo.event.connect(node, "addChild", this, "wireNode");
-    }
+    },
 
-    this.getToggle = function () {
+    getToggle: function () {
         return this.toggle;
-    }
+    },
 
-    this.nodeSelected = function (item, e) {
+    nodeSelected: function (item, e) {
         //this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
         dojo.event.topic.publish(this.publishSelectionTopic, item.id);
-    }
-    this.nodeExpanded = function (item, e) {
+    },
+    
+    nodeExpanded: function (item, e) {
         //this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
         dojo.event.topic.publish(this.publishExpandedTopic, item.id);
-    }
-    this.nodeCollapsed = function (item, e) {
+    },
+
+    nodeCollapsed: function (item, e) {
         //this.publishSelectionTopic.sendMessage("Node Selected: " + item.id);
         dojo.event.topic.publish(this.publishCollapsedTopic, item.id);
     }
-}
+});
 
 dojo.widget.Tree.DefaultToggle = function() {
     this.show = function(node) {
@@ -103,9 +112,6 @@ dojo.widget.Tree.WipeToggle = function(duration) {
         dojo.fx.html.wipeOut(node, this.toggleDuration);
     }
 }
-
-// complete the inheritance process
-dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlWidget);
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree");
