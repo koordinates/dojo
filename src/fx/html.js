@@ -7,6 +7,27 @@ dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
+dojo.fx._makeFadeable = function(node){
+	if(dojo.render.html.ie){
+		// only set the zoom if the "tickle" value would be the same as the
+		// default
+		if( (node.style.zoom.length == 0) &&
+			(dojo.style.getStyle(node, "zoom") == "normal") ){
+			// make sure the node "hasLayout"
+			// NOTE: this has been tested with larger and smaller user-set text
+			// sizes and works fine
+			node.style.zoom = "1";
+			// node.style.zoom = "normal";
+		}
+		// don't set the width to auto if it didn't already cascade that way.
+		// We don't want to f anyones designs
+		if(	(node.style.width.length == 0) &&
+			(dojo.style.getStyle(node, "width") == "auto") ){
+			node.style.width = "auto";
+		}
+	}
+}
+
 dojo.fx.html.fadeOut = function(node, duration, callback) {
 	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 0, callback);
 };
@@ -33,6 +54,7 @@ dojo.fx.html.fadeShow = function(node, duration, callback) {
 
 dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
 	node = dojo.byId(node);
+	dojo.fx._makeFadeable(node);
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([startOpac],[endOpac]),
 		duration, 0);
