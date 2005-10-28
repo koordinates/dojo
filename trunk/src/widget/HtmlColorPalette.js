@@ -21,7 +21,7 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 	
 	fillInTemplate: function (args, frag) {
 		dojo.widget.HtmlToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
-		this.dialog = dojo.widget.fromScript("ColorPalette");
+		this.dialog = dojo.widget.fromScript("ColorPalette", {palette: this.palette});
 		this.dialog.domNode.style.position = "absolute";
 
 		dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");
