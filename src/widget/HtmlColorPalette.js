@@ -18,6 +18,8 @@ dojo.inherits(dojo.widget.HtmlToolbarColorDialog, dojo.widget.HTMLToolbarDialog)
 dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 
 	widgetType: "ToolbarColorDialog",
+
+	palette: "7x10",
 	
 	fillInTemplate: function (args, frag) {
 		dojo.widget.HtmlToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
