@@ -24,13 +24,48 @@
 	style="border: 2px solid black; float: left; margin-right: 30px;  width: 400px; height: 300px;"
 >
 	<div dojoType="AccordionPanel" open="true">
+		<div dojoType="Label">
+			foo bar baz
+		</div>
+		<div dojoType="InitialContent">
+			this is some initial content
+		</div>
 		this box has three split panes
+		<p>
+			Nunc consequat nisi vitae quam. Suspendisse sed nunc. Proin
+			suscipit porta magna. Duis accumsan nunc in velit. Nam et nibh.
+			Nulla facilisi. Cras venenatis urna et magna. Aenean magna mauris,
+			bibendum sit amet, semper quis, aliquet nec, sapien.  Aliquam
+			aliquam odio quis erat. Etiam est nisi, condimentum non, lacinia
+			ac, vehicula laoreet, elit. Sed interdum augue sit amet quam
+			dapibus semper. Nulla facilisi. Pellentesque lobortis erat nec
+			quam.
+		</p>
+		<p>
+			Sed arcu magna, molestie at, fringilla in, sodales eu, elit.
+			Curabitur mattis lorem et est. Quisque et tortor. Integer bibendum
+			vulputate odio. Nam nec ipsum. Vestibulum mollis eros feugiat
+			augue. Integer fermentum odio lobortis odio. Nullam mollis nisl non
+			metus. Maecenas nec nunc eget pede ultrices blandit. Ut non purus
+			ut elit convallis eleifend. Fusce tincidunt, justo quis tempus
+			euismod, magna nulla viverra libero, sit amet lacinia odio diam id
+			risus. Ut varius viverra turpis. Morbi urna elit, imperdiet eu,
+			porta ac, pharetra sed, nisi. Etiam ante libero, ultrices ac,
+			faucibus ac, cursus sodales, nisl. Praesent nisl sem, fermentum eu,
+			consequat quis, varius interdum, nulla. Donec neque tortor,
+			sollicitudin sed, consequat nec, facilisis sit amet, orci. Aenean
+			ut eros sit amet ante pharetra interdum.
+		</p>
 	</div>
-	<div dojoType="AccordionPanel" style="background-color: yellow; border: 3px solid purple;">
+	<div dojoType="AccordionPanel" 
+		label="in vertical mode"
+		style="background-color: yellow; border: 3px solid purple;">
 		in vertical mode
 	</div>
-	<div dojoType="AccordionPanel">
-		without active resizing
+	<div dojoType="AccordionPanel"
+		label="with active resizing"
+		initialContent="and some extra stuff">
+		see how easy it is?
 	</div>
 </div>
 <p style="clear: both;">HTML after</p>
