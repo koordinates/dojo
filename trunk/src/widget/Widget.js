@@ -95,6 +95,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	getChildrenOfType: function(type, recurse){
 		var ret = [];
+		type = type.toLowerCase();
 		for(var x=0; x<this.children.length; x++){
 			if(this.children[x].widgetType.toLowerCase() == type){
 				ret.push(this.children[x]);
