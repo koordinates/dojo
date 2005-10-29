@@ -23,6 +23,7 @@ dojo.inherits(dojo.widget.Accordion, dojo.widget.HtmlSplitPane);
 dojo.lang.extend(dojo.widget.Accordion, {
 	sizerWidth: 1,
 	activeSizing: 1,
+	openPanel: null,
 	myPostCreate: function(args, frag){
 		for(var i=0; i<this.sizers.length; i++){
 			var sn = this.sizers[i];
@@ -32,8 +33,28 @@ dojo.lang.extend(dojo.widget.Accordion, {
 		}
 		for(var i=0; i<this.children.length; i++){
 			this.children[i].setMinHeight();
+			if(this.children[i].open){
+				this.openPanel = this.children[i];
+			}
 		}
 		this.onResized();
+	},
+
+	setOpenPanel: function(panel){
+		if(!panel){ return; }
+		if(!this.openPanel){
+			this.openPanel = panel; 
+			panel.open = true;
+		}else if(panel === this.openPanel){
+			// no-op
+		}else{
+			this.openPanel.sizeShare = 0;
+			this.openPanel.open = false;
+			this.openPanel = panel;
+			this.openPanel.sizeShare = 100;
+			this.openPanel.open = true;
+			this.onResized();
+		}
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:Accordion");
@@ -64,9 +85,14 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	},
 
 	myFillInTemplate: function(args, frag){
+		this.contentNode.appendChild(frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"].cloneNode(true));
 		if(this.open){
 			this.sizeShare = 100;
 		}
+	},
+
+	toggleOpen: function(evt){
+		this.parent.setOpenPanel(this);
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:AccordionPanel");
