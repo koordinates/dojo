@@ -81,8 +81,8 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 
 	setMinHeight: function(){
 		// now handle our setup
-		var lh = dojo.style.getOuterHeight(this.labelNode);
-		lh += dojo.style.getOuterHeight(this.initialContentNode);
+		var lh = dojo.style.getContentHeight(this.labelNode);
+		lh += dojo.style.getContentHeight(this.initialContentNode);
 		this.sizeMin = lh;
 	},
 
