@@ -1,13 +1,10 @@
 dojo.provide("dojo.string");
 dojo.require("dojo.lang");
 
-dojo.string.trim = function(iString){
-	if(arguments.length == 0){ // allow String.prototyp-ing
-		iString = this; 
-	}
-	if(typeof iString != "string"){ return iString; }
-	if(!iString.length){ return iString; }
-	return iString.replace(/^\s*/, "").replace(/\s*$/, "");
+dojo.string.trim = function(str){
+	if(!dojo.lang.isString(str)){ return str; }
+	if(!str.length){ return str; }
+	return str.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 
 // Parameterized string function
@@ -15,12 +12,6 @@ dojo.string.trim = function(iString){
 //  pairs - object of name: "value" value pairs
 //  killExtra - remove all remaining %{values} after pairs are inserted
 dojo.string.paramString = function(str, pairs, killExtra) {
-	if(typeof str != "string") { // allow String.prototype-ing
-		pairs = str;
-		killExtra = pairs;
-		str = this;
-	}
-
 	for(var name in pairs) {
 		var re = new RegExp("\\%\\{" + name + "\\}", "g");
 		str = str.replace(re, pairs[name]);
@@ -32,8 +23,7 @@ dojo.string.paramString = function(str, pairs, killExtra) {
 
 /** Uppercases the first letter of each word */
 dojo.string.capitalize = function (str) {
-	if (typeof str != "string" || str == null)
-		return "";
+	if (!dojo.lang.isString(str)) { return ""; }
 	if (arguments.length == 0) { str = this; }
 	var words = str.split(' ');
 	var retval = "";
@@ -75,5 +65,58 @@ dojo.string.summary = function(str, len) {
 		return str;
 	} else {
 		return str.substring(0, len).replace(/\.+$/, "") + "...";
+	}
+}
+
+dojo.string.escape = function(type, str) {
+	switch(type.toLowerCase()) {
+		case "xml":
+		case "html":
+			return dojo.string.escapeXml(str);
+		case "sql":
+			return dojo.string.escapeSql(str);
+		case "regexp":
+		case "regex":
+			return dojo.string.escapeRegExp(str);
+		case "javascript":
+		case "js":
+			return dojo.string.escapeJavaScript(str);
+		default:
+			return str;
+	}
+}
+
+dojo.string.escapeXml = function(str) {
+	return str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;")
+		.replace(/>/gm, "&gt;").replace(/"/gm, "&quot;").replace(/'/gm, "&#39;");
+}
+
+dojo.string.escapeSql = function(str) {
+	return str.replace(/'/gm, "''");
+}
+
+dojo.string.escapeRegExp = function(str) {
+	return str.replace(/\\/gm, "\\\\");
+}
+
+dojo.string.escapeJavaScript = function(str) {
+	return str.replace(/(["'])/gm, "\\$1");
+}
+
+dojo.string.addToPrototype = function() {
+	for(var method in dojo.string) {
+		if(method != "addToPrototype" && dojo.lang.isFunction(dojo.string[method])) {
+			String.prototype[method] = (function() {
+				var meth = method;
+				return function() {
+					var args = [this];
+					for(var i = 0; i < arguments.length; i++) {
+						args.push(arguments[i]);
+					}
+					dojo.debug(args);
+					return dojo.string[meth].apply(dojo.string, args);
+				}
+			})();
+		}
 	}
 }
