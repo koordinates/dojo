@@ -71,21 +71,47 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	sizeMin:0,
 	sizeShare: 0,
 	open: false,
+	label: "",
+	initialContent: "",
 	labelNode: null,
 	initalContentNode: null,
 	contentNode: null,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.html"),
-	// templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.css"),
 
 	setMinHeight: function(){
 		// now handle our setup
-		var lh = dojo.style.getContentHeight(this.labelNode);
-		lh += dojo.style.getContentHeight(this.initialContentNode);
+		var lh = dojo.style.getOuterHeight(this.labelNode);
+		lh += dojo.style.getOuterHeight(this.initialContentNode);
 		this.sizeMin = lh;
 	},
 
 	myFillInTemplate: function(args, frag){
-		this.contentNode.appendChild(frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"].cloneNode(true));
+		var sn;
+		if(this.label.length > 0){
+			this.labelNode.innerHTML = this.label;
+		}else{
+			try{
+				sn = frag["dojo:label"][0]["dojo:label"].nodeRef;
+				while(sn.firstChild){
+					this.labelNode.firstChild.appendChild(sn.firstChild);
+				}
+			}catch(e){ }
+		}
+		if(this.initialContent.length > 0){
+			this.initialContentNode.innerHTML = this.initialContent;
+		}else{
+			try{
+				sn = frag["dojo:initialcontent"][0]["dojo:initialcontent"].nodeRef;
+				while(sn.firstChild){
+					this.initialContentNode.firstChild.appendChild(sn.firstChild);
+				}
+			}catch(e){ }
+		}
+		sn = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+		while(sn.firstChild){
+			this.contentNode.appendChild(sn.firstChild);
+		}
 		if(this.open){
 			this.sizeShare = 100;
 		}

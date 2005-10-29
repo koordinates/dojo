@@ -1,11 +1,35 @@
-<div style="border: 0px; margin: 0px; padding: 0px;">
+<div class="AccordionPanel">
 	<div dojoAttachPoint="labelNode" 
-		dojoOnClick="toggleOpen"
-		style="margin: 0px; padding: 0px; cursor: pointer;">
-		label
-	</div>
-	<div dojoAttachPoint="initialContentNode" style="margin: 0px; padding: 0px;">
-		initial content
-	</div>
-	<div dojoAttachPoint="contentNode"></div>
+		dojoOnClick="toggleOpen" 
+		class="AccordionPanelLabel"><span>
+		</span></div>
+	<div dojoAttachPoint="initialContentNode"
+		class="AccordionPanelInitialContent"><span>
+			
+		</span></div>
+	<div dojoAttachPoint="contentNode"
+		class="AccordtionPanelContent"><span>
+			
+		</span></div>
 </div>
+<!--
+<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<td dojoAttachPoint="labelNode" 
+			dojoOnClick="toggleOpen"
+			style="margin: 0px; padding: 0px; cursor: pointer;">
+			label
+		</td>
+	</tr>
+	<tr>
+		<td dojoAttachPoint="initialContentNode">
+			initial content
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div dojoAttachPoint="contentNode"></div>
+		</td>
+	</tr>
+</table>
+-->
