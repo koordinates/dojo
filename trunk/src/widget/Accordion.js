@@ -50,6 +50,7 @@ dojo.lang.extend(dojo.widget.Accordion, {
 		}else{
 			this.openPanel.sizeShare = 0;
 			this.openPanel.open = false;
+			this.openPanel.setMinHeight(true);
 			this.openPanel = panel;
 			this.openPanel.sizeShare = 100;
 			this.openPanel.open = true;
@@ -79,10 +80,12 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.css"),
 
-	setMinHeight: function(){
+	setMinHeight: function(ignoreIC){
 		// now handle our setup
 		var lh = dojo.style.getContentHeight(this.labelNode);
-		lh += dojo.style.getContentHeight(this.initialContentNode);
+		if(!ignoreIC){
+			lh += dojo.style.getContentHeight(this.initialContentNode);
+		}
 		this.sizeMin = lh;
 	},
 
