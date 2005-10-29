@@ -24,21 +24,14 @@ dojo.lang.extend(dojo.widget.Accordion, {
 	sizerWidth: 1,
 	activeSizing: 1,
 	myPostCreate: function(args, frag){
-		for(var i=0; i<this.sizers.length-1; i++){
+		for(var i=0; i<this.sizers.length; i++){
 			var sn = this.sizers[i];
-			dojo.debug(sn);
 			if(sn){
-				sn.style.border = "1px";
+				sn.style.border = "0px";
 			}
 		}
-		for(var i=0; i<this.children.length-1; i++){
-			var tc = this.children[i];
-			if(!tc.open){
-				var lh = dojo.style.getContentHeight(tc.labelNode);
-				lh += dojo.style.getContentHeight(tc.initialContentNode);
-				tc.sizeMin = lh;
-				// this.growPane(lh, tc);
-			}
+		for(var i=0; i<this.children.length; i++){
+			this.children[i].setMinHeight();
 		}
 		this.onResized();
 	}
@@ -63,12 +56,16 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.html"),
 	// templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.css"),
 
-	myFillInTemplate: function(args, frag){
+	setMinHeight: function(){
 		// now handle our setup
+		var lh = dojo.style.getContentHeight(this.labelNode);
+		lh += dojo.style.getContentHeight(this.initialContentNode);
+		this.sizeMin = lh;
+	},
+
+	myFillInTemplate: function(args, frag){
 		if(this.open){
 			this.sizeShare = 100;
-		}else{
-			this.contentNode.style.display = "none";
 		}
 	}
 });
