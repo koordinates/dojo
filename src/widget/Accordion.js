@@ -16,39 +16,31 @@ dojo.widget.Accordion = function(){
 	dojo.widget.HtmlSplitPane.call(this);
 	this.widgetType = "Accordion";
 	this._super = dojo.widget.AccordionPanel.superclass;
-
-	/*
-	this.layoutPanels = function(){
-		dojo.widget.Accordion.superclass.layoutPanels.call(this);
-	}
-	*/
-
+	dojo.event.connect(this, "postCreate", this, "myPostCreate");
 	
 }
 dojo.inherits(dojo.widget.Accordion, dojo.widget.HtmlSplitPane);
 dojo.lang.extend(dojo.widget.Accordion, {
-	sizerWidth: 0,
+	sizerWidth: 1,
 	activeSizing: 1,
-	postCreate: function(args, frag){
-		this._super.fillInTemplate.call(this, args, frag);
+	myPostCreate: function(args, frag){
 		for(var i=0; i<this.sizers.length-1; i++){
 			var sn = this.sizers[i];
 			dojo.debug(sn);
 			if(sn){
-				sn.style.border = "0px;"
+				sn.style.border = "1px";
 			}
 		}
 		for(var i=0; i<this.children.length-1; i++){
 			var tc = this.children[i];
 			if(!tc.open){
 				var lh = dojo.style.getContentHeight(tc.labelNode);
-				tc.sizeMin = lh;
-				dojo.debug(lh);
 				lh += dojo.style.getContentHeight(tc.initialContentNode);
-				dojo.debug(lh);
-				this.growPane(lh, tc);
+				tc.sizeMin = lh;
+				// this.growPane(lh, tc);
 			}
 		}
+		this.onResized();
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:Accordion");
@@ -56,7 +48,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:Accordion");
 dojo.widget.AccordionPanel = function(){
 	dojo.widget.HtmlSplitPanePanel.call(this);
 	this.widgetType = "AccordionPanel";
-	this._super = dojo.widget.AccordionPanel.superclass;
+	dojo.event.connect(this, "fillInTemplate", this, "myFillInTemplate");
 }
 
 dojo.inherits(dojo.widget.AccordionPanel, dojo.widget.HtmlSplitPanePanel);
@@ -71,8 +63,7 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.html"),
 	// templateCssPath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.css"),
 
-	fillInTemplate: function(args, frag){
-		this._super.fillInTemplate.call(this, args, frag);
+	myFillInTemplate: function(args, frag){
 		// now handle our setup
 		if(this.open){
 			this.sizeShare = 100;
