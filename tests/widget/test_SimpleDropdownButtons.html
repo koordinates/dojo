@@ -3,7 +3,7 @@
 
 <head>
 	
-<title>Dropdown Buttons Widget Test</title>
+<title>Simple Dropdown Buttons Widget Test</title>
 
 <script type="text/javascript">
 	var djConfig = {
@@ -13,7 +13,7 @@
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.widget.DropdownButtons");
+	dojo.require("dojo.widget.SimpleDropdownButtons");
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -24,18 +24,16 @@
 </head>
 <body bgcolor="white">
 
-<h1> Drop down Buttons </h1>
-<div style="background: yellow;">
-DropdownButtons is a deprecated class; please use Dropdownbutton instead
-</div>
+<h1> Simple Drop down Buttons </h1>
 
-<p>The "buttons" are just a nsted unordered list. Note that the nested lists (the dropdowns) will be removed from
+
+<p>The "buttons" are just a nested unordered list. Note that the nested lists (the dropdowns) will be removed from
 the list and put into the body, adding dopdownButtonsMenu to their className. This allows them to show up on top
 of other page elements.</p>
 
 <p>This paragraph preceeds the list!</p>
 
-<ul dojoType="dropdownbuttons">
+<ul dojoType="simpledropdownbuttons">
 	<li><a href="#edit">Reply</a>
 		<ul>
 			<li><a href="#1">Reply All</a></li>

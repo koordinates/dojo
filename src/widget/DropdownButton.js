@@ -22,6 +22,7 @@ dojo.widget.HtmlDropdownButton = function() {
 
 	this.widgetType = "DropdownButton";
 	this.isContainer = false;	// will process children manually
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlButtonTemplate.css");
 		
 	// Layout of generated button:
 	//
