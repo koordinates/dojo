@@ -93,6 +93,19 @@ dojo.lang.extend(dojo.widget.Widget, {
 		});
 	},
 
+	getChildrenOfType: function(type, recurse){
+		var ret = [];
+		for(var x=0; x<this.children.length; x++){
+			if(this.children[x].widgetType.toLowerCase() == type){
+				ret.push(this.children[x]);
+			}
+			if(recurse){
+				ret = ret.concat(this.children[x].getChildrenOfType(type, recurse));
+			}
+		}
+		return ret;
+	},
+
 	satisfyPropertySets: function(args){
 		// dojo.profile.start("satisfyPropertySets");
 		// get the default propsets for our component type
