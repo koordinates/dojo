@@ -4,6 +4,7 @@ dojo.provide("dojo.widget.Tree2Node");
 dojo.provide("dojo.widget.HtmlTree2Node");
 
 dojo.require("dojo.event.*");
+dojo.require("dojo.fx.html");
 dojo.require("dojo.widget.HtmlWidget");
 
 
@@ -20,6 +21,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 	treeNode: null,
 	selectedNode: null,
 	maxDepth: 10, // if you have a deep tree, bump this up. but not too high, or ff makes tables width for no reason
+	toggler: null,
 
 
 	//
@@ -50,6 +52,17 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 	showGrid: true,
 	showRootGrid: true,
 
+	toggle: "default",
+	toggleDuration: 150,
+
+
+	initialize: function(args, frag){
+		switch (this.toggle) {
+			case "fade": this.toggler = new dojo.widget.Tree2.FadeToggle(); break;
+			case "wipe": this.toggler = new dojo.widget.Tree2.WipeToggle(); break;
+			default    : this.toggler = new dojo.widget.Tree2.DefaultToggle();
+		}
+	},
 
 	postCreate: function(){
 		this.buildTree();
@@ -86,6 +99,9 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 			}
 		}
 
+		for(var i=0; i<this.children.length; i++){
+			this.children[i].startMe();
+		}
 	}
 });
 
@@ -122,6 +138,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 	isLastNode: false,
 	isExpanded: false,
 	isParent: false,
+	booted: false,
 
 	buildNode: function(tree, depth){
 
@@ -391,11 +408,27 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 	hideNode: function(){
 		this.hideChildren();
-		this.rowNode.style.display = 'none';
+		if (this.booted){
+			this.tree.toggler.hide(this);
+		}else{
+			this.hideNodeNow();
+		}
 	},
 
 	showNode: function(){
 		if (this.isExpanded){ this.showChildren(); }
+		if (this.booted){
+			this.tree.toggler.show(this);
+		}else{
+			this.showNodeNow();
+		}
+	},
+
+	hideNodeNow: function(){
+		this.rowNode.style.display = 'none';
+	},
+
+	showNodeNow: function(){
 		this.rowNode.style.display = document.all ? 'block' : 'table-row';
 	},
 
@@ -411,8 +444,55 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		for(var i=0; i<this.children.length; i++){
 			this.children[i].showNode();
 		}
+	},
+
+	startMe: function(){
+
+		this.booted = true;
+		for(var i=0; i<this.children.length; i++){
+			this.children[i].startMe();
+		}
 	}
 });
+
+dojo.widget.Tree2.DefaultToggle = function(){
+
+	this.show = function(node){
+		node.showNodeNow();
+	}
+
+	this.hide = function(node){
+		node.hideNodeNow();
+	}
+}
+
+dojo.widget.Tree2.FadeToggle = function(duration){
+	this.toggleDuration = duration ? duration : 150;
+
+	this.show = function(node){
+		node.showNodeNow();
+		dojo.fx.html.fade(node.rowNode, this.toggleDuration, 0, 1);
+	}
+
+	this.hide = function(node){
+		node.rowNode.nodeNode = node;
+		dojo.fx.html.fadeOut(node.rowNode, this.toggleDuration, function(node){ node.nodeNode.hideNodeNow(); });
+	}
+}
+
+dojo.widget.Tree2.WipeToggle = function(duration){
+	this.toggleDuration = duration ? duration : 150;
+
+	this.show = function(node){
+		node.showNodeNow();
+		dojo.fx.html.wipeIn(node.rowNode, this.toggleDuration);
+	}
+
+	this.hide = function(node){
+		node.rowNode.nodeNode = node;
+		dojo.fx.html.wipeOut(node.rowNode, this.toggleDuration, function(node){ node.nodeNode.hideNodeNow(); });
+	}
+}
 
 
 // make it a tag
