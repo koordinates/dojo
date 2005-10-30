@@ -10,6 +10,8 @@ dojo.provide("dojo.widget.Accordion");
 dojo.require("dojo.widget.*");
 // pull in our superclass
 dojo.require("dojo.widget.HtmlSplitPane");
+// pull in animation libraries
+dojo.require("dojo.animation.Animation");
 
 dojo.widget.Accordion = function(){
 
@@ -23,6 +25,7 @@ dojo.inherits(dojo.widget.Accordion, dojo.widget.HtmlSplitPane);
 dojo.lang.extend(dojo.widget.Accordion, {
 	sizerWidth: 1,
 	activeSizing: 1,
+	animationInterval: 250,
 	openPanel: null,
 	myPostCreate: function(args, frag){
 		for(var i=0; i<this.sizers.length; i++){
@@ -48,6 +51,8 @@ dojo.lang.extend(dojo.widget.Accordion, {
 		}else if(panel === this.openPanel){
 			// no-op
 		}else{
+			var closingPanel = this.openPanel;
+			var openingPanel = panel;
 			this.openPanel.sizeShare = 0;
 			this.openPanel.open = false;
 			this.openPanel.setMinHeight(true);
@@ -55,6 +60,34 @@ dojo.lang.extend(dojo.widget.Accordion, {
 			this.openPanel.sizeShare = 100;
 			this.openPanel.open = true;
 			this.onResized();
+			// Don't animate if there is no interval
+			if (this.animationInterval == 0){
+				openingPanel.sizeShare = 100;
+				closingPanel.sizeShare = 0;
+				e.animation.accordion.onResized();
+			}else{
+				var line = new dojo.math.curves.Line([0,0], [0,100]);
+				var anim = new dojo.animation.Animation(
+					line,
+					this.animationInterval,
+					new dojo.math.curves.Bezier([[0],[0.05],[0.1],[0.9],[0.95],[1]])
+				);
+				
+				var accordion = this;
+	
+				anim.handler = function(e) {
+					switch(e.type) {
+						case "animate":
+							openingPanel.sizeShare = parseInt(e.y);
+							closingPanel.sizeShare = parseInt(100 - e.y);
+							accordion.onResized();
+							break;
+						case "end":
+						break;
+					}
+				}
+				anim.play();
+			}
 		}
 	}
 });
