@@ -6,7 +6,6 @@ dojo.require("dojo.fx.html");
 //dojo.require("dojo.widget.Widget");
 //dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.widget.HtmlContainer");
-dojo.require("dojo.widget.TreeNode");
 
 dojo.widget.HtmlTree = function(){
 	dojo.widget.HtmlContainer.call(this);
@@ -117,3 +116,6 @@ dojo.widget.Tree.WipeToggle = function(duration) {
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree");
+
+dojo.require("dojo.widget.TreeNode");
+dojo.require("dojo.widget.HtmlTreeNode");
