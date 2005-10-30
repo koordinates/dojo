@@ -96,27 +96,40 @@ dojo.string.escapeSql = function(str) {
 }
 
 dojo.string.escapeRegExp = function(str) {
-	return str.replace(/\\/gm, "\\\\");
+	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r])/gm, "\\$1");
 }
 
 dojo.string.escapeJavaScript = function(str) {
-	return str.replace(/(["'])/gm, "\\$1");
+	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
 }
 
+// do we even want to offer this? is it worth it?
 dojo.string.addToPrototype = function() {
 	for(var method in dojo.string) {
-		if(method != "addToPrototype" && dojo.lang.isFunction(dojo.string[method])) {
-			String.prototype[method] = (function() {
+		if(dojo.lang.isFunction(dojo.string[method])) {
+			var func = (function() {
 				var meth = method;
-				return function() {
-					var args = [this];
-					for(var i = 0; i < arguments.length; i++) {
-						args.push(arguments[i]);
-					}
-					dojo.debug(args);
-					return dojo.string[meth].apply(dojo.string, args);
+				switch(meth) {
+					case "addToPrototype":
+						return null;
+						break;
+					case "escape":
+						return function(type) {
+							return dojo.string.escape(type, this);
+						}
+						break;
+					default:
+						return function() {
+							var args = [this];
+							for(var i = 0; i < arguments.length; i++) {
+								args.push(arguments[i]);
+							}
+							dojo.debug(args);
+							return dojo.string[meth].apply(dojo.string, args);
+						}
 				}
 			})();
+			if(func) { String.prototype[method] = func; }
 		}
 	}
 }
