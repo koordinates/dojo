@@ -438,12 +438,12 @@ BUFakeNode.prototype.getAttribute = function(name) {
 
 // Boolean hasChildNodes()
 BUFakeNode.prototype.hasChildNodes = function() {
-  return this[childNodes] && this.childNodes.length > 0;
+  return this["childNodes"] && this.childNodes.length > 0;
 }
 
 // Boolean hasAttributes()
 BUFakeNode.prototype.hasAttributes = function() {
-  return this[attributes] && this.attributes.length > 0;
+  return this["attributes"] && this.attributes.length > 0;
 }
 
 // Boolean hasAttribute(String name)
