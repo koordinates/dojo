@@ -90,23 +90,23 @@ dojo.dom.getTagName = function (node){
 	return tagName.toLowerCase();
 }
 
-dojo.dom.getUniqueId = function (){
+dojo.dom.getUniqueId = function(){
 	do {
 		var id = "dj_unique_" + (++arguments.callee._idIncrement);
-	} while(document.getElementById(id));
+	}while(document.getElementById(id));
 	return id;
 }
 dojo.dom.getUniqueId._idIncrement = 0;
 
-dojo.dom.getFirstChildElement = function (parentNode) {
+dojo.dom.firstElement = dojo.dom.getFirstChildElement = function(parentNode){
 	var node = parentNode.firstChild;
-	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
+	while(node && node.nodeType != dojo.dom.ELEMENT_NODE){
 		node = node.nextSibling;
 	}
 	return node;
 }
 
-dojo.dom.getLastChildElement = function (parentNode) {
+dojo.dom.lastElement = dojo.dom.getLastChildElement = function(parentNode){
 	var node = parentNode.lastChild;
 	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
 		node = node.previousSibling;
@@ -114,7 +114,7 @@ dojo.dom.getLastChildElement = function (parentNode) {
 	return node;
 }
 
-dojo.dom.getNextSiblingElement = function (node) {
+dojo.dom.nextElement = dojo.dom.getNextSiblingElement = function(node){
 	if(!node) { return null; }
 	do {
 		node = node.nextSibling;
@@ -122,7 +122,7 @@ dojo.dom.getNextSiblingElement = function (node) {
 	return node;
 }
 
-dojo.dom.getPreviousSiblingElement = function (node) {
+dojo.dom.prevElement = dojo.dom.getPreviousSiblingElement = function(node){
 	if(!node) { return null; }
 	do {
 		node = node.previousSibling;
@@ -139,7 +139,7 @@ dojo.dom.getPreviousSiblingElement = function (node) {
 	}
 }*/
 
-dojo.dom.moveChildren = function (srcNode, destNode, trim) {
+dojo.dom.moveChildren = function(srcNode, destNode, trim){
 	var count = 0;
 	if(trim) {
 		while(srcNode.hasChildNodes() &&
@@ -151,37 +151,38 @@ dojo.dom.moveChildren = function (srcNode, destNode, trim) {
 			srcNode.removeChild(srcNode.lastChild);
 		}
 	}
-	while(srcNode.hasChildNodes()) {
+	while(srcNode.hasChildNodes()){
 		destNode.appendChild(srcNode.firstChild);
 		count++;
 	}
 	return count;
 }
 
-dojo.dom.copyChildren = function (srcNode, destNode, trim) {
+dojo.dom.copyChildren = function(srcNode, destNode, trim){
 	var clonedNode = srcNode.cloneNode(true);
 	return this.moveChildren(clonedNode, destNode, trim);
 }
 
-dojo.dom.removeChildren = function (node) {
+dojo.dom.removeChildren = function(node){
 	var count = node.childNodes.length;
-	while(node.hasChildNodes()) { node.removeChild(node.firstChild); }
+	while(node.hasChildNodes()){ node.removeChild(node.firstChild); }
 	return count;
 }
 
-dojo.dom.replaceChildren = function (node, newChild) {
+dojo.dom.replaceChildren = function(node, newChild){
+	// FIXME: what if newChild is an array-like object?
 	dojo.dom.removeChildren(node);
 	node.appendChild(newChild);
 }
 
-dojo.dom.removeNode = function (node) {
+dojo.dom.removeNode = function(node){
 	if(node && node.parentNode){ 
 		// return a ref to the removed child
 		return node.parentNode.removeChild(node);
 	}
 }
 
-dojo.dom.getAncestors = function (node){
+dojo.dom.getAncestors = function(node){
 	var ancestors = [];
 	while(node){
 		ancestors.push(node);
@@ -190,11 +191,11 @@ dojo.dom.getAncestors = function (node){
 	return ancestors;
 }
 
-dojo.dom.isDescendantOf = function (node, ancestor, guaranteeDescendant) {
+dojo.dom.isDescendantOf = function(node, ancestor, guaranteeDescendant){
 	// guaranteeDescendant allows us to be a "true" isDescendantOf function
 	if(guaranteeDescendant && node) { node = node.parentNode; }
 	while(node) {
-		if(node == ancestor) { return true; }
+		if(node == ancestor){ return true; }
 		node = node.parentNode;
 	}
 	return false;
@@ -261,15 +262,15 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 //this.hex2rgb = function(hex) { return dojo.graphics.color.hex2rgb(hex); }
 //this.rgb2hex = function(r, g, b) { return dojo.graphics.color.rgb2hex(r, g, b); }
 
-dojo.dom.insertBefore = function (node, ref, force) {
+dojo.dom.insertBefore = function(node, ref, force){
 	if (force != true &&
-		(node === ref || node.nextSibling === ref)) { return false; }
+		(node === ref || node.nextSibling === ref)){ return false; }
 	var parent = ref.parentNode;
 	parent.insertBefore(node, ref);
 	return true;
 }
 
-dojo.dom.insertAfter = function (node, ref, force) {
+dojo.dom.insertAfter = function(node, ref, force){
 	var pn = ref.parentNode;
 	if(ref == pn.lastChild){
 		if((force != true)&&(node === ref)){
@@ -282,7 +283,7 @@ dojo.dom.insertAfter = function (node, ref, force) {
 	return true;
 }
 
-dojo.dom.insertAtPosition = function (node, ref, position){
+dojo.dom.insertAtPosition = function(node, ref, position){
 	switch(position.toLowerCase()){
 		case "before":
 			dojo.dom.insertBefore(node, ref);
@@ -303,7 +304,7 @@ dojo.dom.insertAtPosition = function (node, ref, position){
 	}
 }
 
-dojo.dom.insertAtIndex = function (node, containingNode, insertionIndex){
+dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
 	var siblingNodes = containingNode.childNodes;
 	var placed = false;
 	if((dojo.lang.isNumber(insertionIndex))&&(insertionIndex>=siblingNodes.length)){
@@ -329,7 +330,7 @@ dojo.dom.insertAtIndex = function (node, containingNode, insertionIndex){
  * @param node The node to scan for text
  * @param text Optional, set the text to this value.
  */
-dojo.dom.textContent = function (node, text) {
+dojo.dom.textContent = function(node, text){
 	if (text) {
 		dojo.dom.replaceChildren(node, document.createTextNode(text));
 		return text;
@@ -355,7 +356,7 @@ dojo.dom.textContent = function (node, text) {
 	}
 }
 
-dojo.dom.collectionToArray = function (collection) {
+dojo.dom.collectionToArray = function(collection){
 	var array = new Array(collection.length);
 	for (var i = 0; i < collection.length; i++) {
 		array[i] = collection[i];
