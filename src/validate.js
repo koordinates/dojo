@@ -16,16 +16,18 @@ dojo.validate.isNumber = function(value) {
 	return /^[-+]?(0|[1-9]\d*)(\.\d+)?([eE][-+]?(0|[1-9]\d*))?$/.test(value);	
 }
 
-// FIXME: may be too basic
 dojo.validate.isEmailAddress = function(value, allowLocal, allowCruft) {
-	// 	return /^([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value);
-	if(allowCruft) { value = value.replace(/mailto:/i, ""); }
-	var part = "[\\w\\.\\-\\+]+";
-	var cruft = allowCruft ? "<?" : "";
-	var local = allowLocal ? "" : "\\." + part;
-	// regexp: /^<?([\w\.\-\+]+)@([\w\.\-\+]+\.[\w\.\-\+]+)>?$/i
-	var re = new RegExp("^" + cruft + "(" + part + ")@(" + part + local + ")" + cruft + "$", "i");
-	return re.test(value);
+	// It's valid for an email address to contain an apostrophe.
+	if (/^([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value)) return true;
+
+	// Allow local email addresses
+	if ( allowLocal && /^([\da-z]+[-._+&\'])*[\da-z]+@localhost$/i.test(value) ) return true;
+
+	// Allow email addresses with cruft
+	if ( allowCruft && /^<([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}>$/i.test(value) ) return true;
+	if ( allowCruft && /^mailto\:([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value) ) return true;
+
+	return false;
 }
 
 // FIXME: should this biggyback on isEmailAddress or just have its own RegExp?

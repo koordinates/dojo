@@ -48,6 +48,16 @@ function test_validate_isEmailAddress(){
 	jum.assertFalse("test9", dojo.validate.isEmailAddress("'mally@yahoo.com"));
 	jum.assertTrue("test10", dojo.validate.isEmailAddress("fred&barney@stonehenge.com"));
 	jum.assertFalse("test11", dojo.validate.isEmailAddress("fred&&barney@stonehenge.com"));
+
+	// local addresses
+	jum.assertTrue("test12", dojo.validate.isEmailAddress("fred&barney@localhost", true));
+	jum.assertFalse("test13", dojo.validate.isEmailAddress("fred&barney@localhost"));
+
+	// addresses with cruft
+	jum.assertTrue("test14", dojo.validate.isEmailAddress("mailto:fred&barney@stonehenge.com",false, true));
+	jum.assertTrue("test15", dojo.validate.isEmailAddress("<fred&barney@stonehenge.com>",false, true));
+	jum.assertFalse("test16", dojo.validate.isEmailAddress("mailto:fred&barney@stonehenge.com"));
+	jum.assertFalse("test17", dojo.validate.isEmailAddress("<fred&barney@stonehenge.com>"));
 }
 
 function test_validate_isValidDate(){
