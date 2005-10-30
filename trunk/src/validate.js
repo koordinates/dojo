@@ -1,6 +1,5 @@
 dojo.provide("dojo.validate");
 dojo.provide("dojo.validate.us");
-dojo.require("dojo.lang");
 
 dojo.validate.isText = function(value) {
 	return /\S/.test(value);
@@ -18,14 +17,17 @@ dojo.validate.isNumber = function(value) {
 
 dojo.validate.isEmailAddress = function(value, allowLocal, allowCruft) {
 	// It's valid for an email address to contain an apostrophe.
-	if (/^([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value)) return true;
-
+	if (/^([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value)) {
+		return true;
+	}
 	// Allow local email addresses
-	if ( allowLocal && /^([\da-z]+[-._+&\'])*[\da-z]+@localhost$/i.test(value) ) return true;
-
+	if ( allowLocal && /^([\da-z]+[-._+&\'])*[\da-z]+@localhost$/i.test(value) ) {
+		return true;
+	}
 	// Allow email addresses with cruft
-	if ( allowCruft && /^<([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}>$/i.test(value) ) return true;
-	if ( allowCruft && /^mailto\:([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value) ) return true;
+	if ( allowCruft && ( /^<([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}>$/i.test(value) || /^mailto\:([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value)) ) {
+		return true;
+	}
 
 	return false;
 }
