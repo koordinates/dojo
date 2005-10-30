@@ -281,6 +281,7 @@ function BUFakeNode(nType, nName, nOwner) {
   this.nodeName = (nName && nName.charAt(0) != '#') ? nOwner.norm_case_(nName) : nName;
   this.childNodes = [];
   this.firstChild = null;
+  this.lastChild = null;
   this.nextSibling = null;
   this.previousSibling = null;
   this.parentNode = null;
@@ -472,13 +473,14 @@ BUFakeNode.prototype.removeChild = function(child) {
   if (prev) {
     prev.nextSibling = next;
     child.previousSibling = null;
-  }
-  else {
+  } else {
     this.firstChild = next;
   }
   if (next) {
     next.previousSibling = prev;
     child.nextSibling = null;
+  } else {
+  	this.lastChild = prev;
   }
   this.childNodes.splice(found_ind, 1);
   child.parentNode = null;
@@ -531,9 +533,10 @@ BUFakeNode.prototype.appendChild = function(child) {
      var prev = this.childNodes[this.childNodes.length - 1];
      prev.nextSibling = child;
      child.previousSibling = prev;
-  }
-  else
+  } else {
      this.firstChild = child;
+  }
+  this.lastChild = child;
   this.childNodes.push(child);
   child.parentNode = this;
 
