@@ -97,6 +97,7 @@ dojo.widget.AccordionPanel = function(){
 	dojo.widget.HtmlSplitPanePanel.call(this);
 	this.widgetType = "AccordionPanel";
 	dojo.event.connect(this, "fillInTemplate", this, "myFillInTemplate");
+	dojo.event.connect(this, "postCreate", this, "myPostCreate");
 }
 
 dojo.inherits(dojo.widget.AccordionPanel, dojo.widget.HtmlSplitPanePanel);
@@ -108,6 +109,7 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	label: "",
 	initialContent: "",
 	labelNode: null,
+	scrollContent: true,
 	initalContentNode: null,
 	contentNode: null,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/AccordionPanel.html"),
@@ -150,6 +152,25 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 		}
 		if(this.open){
 			this.sizeShare = 100;
+		}
+	},
+
+	myPostCreate: function(){
+		// this.domNode.style.overflow = "auto";
+		// this.domNode.style.position = "relative";
+	},
+
+	sizeSet: function(size){
+		// dojo.debug("new size:", size, "sizeMin:", this.sizeMin);
+		if(!this.scrollContent){
+			return;
+		}
+		if(size <= this.sizeMin){
+			this.contentNode.style.display = "none";
+		}else{
+			this.contentNode.style.display = "block";
+			this.contentNode.style.overflow = "auto";
+			dojo.style.setOuterHeight(this.contentNode, size-this.sizeMin);
 		}
 	},
 

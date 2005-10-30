@@ -76,14 +76,12 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		// attach the children
 
 		for(var i=0; i<this.children.length; i++){
-
-			//this.domNode.appendChild(this.children[i].domNode);
-			this.children[i].domNode.style.position = 'absolute';
-			this.children[i].domNode.style.overflow = 'hidden';
-
-			dojo.html.addClass(this.children[i].domNode, "dojoHtmlSplitterPanePanel");
-
-			//this.children[i].domNode.style.backgroundColor = 'pink';
+			with(this.children[i].domNode.style){
+				position = "absolute";
+				overflow = "hidden";
+			}
+			dojo.html.addClass(this.children[i].domNode, 
+				"dojoHtmlSplitterPanePanel");
 		}
 
 		// create the draggers
@@ -199,6 +197,7 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
+		this.children[0].sizeSet(size);
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -211,6 +210,7 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
+			this.children[i].sizeSet(size);
 			pos += size;
 		}
 		
@@ -521,6 +521,9 @@ dojo.lang.extend(dojo.widget.HtmlSplitPanePanel, {
 
 	sizeMin: 10,
 	sizeShare: 10,
+
+	sizeSet: function(height){
+	},
 
 	fillInTemplate: function(args, frag) {
 		this.domNode.style.position="relative";	// in case my child does a height=100%
