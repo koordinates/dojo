@@ -222,3 +222,49 @@ function test_event_anonymous(){
 	obj1.func1("1", "2");
 	jum.assertEquals("test35", 2, obj1.funcCallCount);
 }
+
+function test_event_adviceMsg(){
+	var obj1 = new testObjectClass();
+
+	obj1.func3 = function(kwa){
+		this.argsLen = arguments.length;
+		this.miArgsLen = kwa.args.length;
+		this.srcObj = kwa.object;
+	}
+
+	dojo.event.kwConnect({
+		type: "after",
+		srcObj: obj1, 
+		srcFunc: "func1", 
+		adviceObj: obj1, 
+		adviceFunc: "func3",
+		adviceMsg: true
+	});
+
+	obj1.func1("1", "2", "3", "4", "5");
+	jum.assertEquals("test36", 1, obj1.argsLen);
+	jum.assertEquals("test37", 5, obj1.miArgsLen);
+	jum.assertEquals("test38", obj1, obj1.srcObj);
+
+	var obj2 = {
+		foo: function(){
+		}
+	};
+
+	var obj3 = {
+		bar: function(mi){
+			this.srcObj = mi.object;
+		}
+	};
+
+	dojo.event.kwConnect({
+		srcObj: obj2, 
+		srcFunc: "foo", 
+		adviceObj: obj3, 
+		adviceFunc: "bar",
+		adviceMsg: true
+	});
+
+	obj2.foo();
+	jum.assertTrue("test39", obj2 === obj3.srcObj);
+}
