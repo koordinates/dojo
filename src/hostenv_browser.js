@@ -296,3 +296,17 @@ dojo.hostenv.byId = dojo.byId = function(id, doc) {
 	}
 	return id; // assume it's a node
 }
+
+dojo.hostenv.byIdArray = dojo.byIdArray = function() {
+	var ids = [];
+	for(var i = 0; i < arguments.length; i++) {
+		if(dojo.lang.isArray(arguments[i])) {
+			for(var j = 0; j < arguments[i].length; j++) {
+				ids = ids.concat(dojo.hostenv.byIdArray(arguments[i][j]));
+			}
+		} else {
+			ids.push(dojo.hostenv.byId(arguments[i]));
+		}
+	}
+	return ids;
+}
