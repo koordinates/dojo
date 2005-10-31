@@ -44,6 +44,7 @@ dojo.lang.extend(dojo.widget.HtmlTree, {
 
 		//  when we add a child, automatically wire it.
 		dojo.event.connect(this, "addChild", this, "wireNode");
+		dojo.event.connect(this, "addWidgetAsDirectChild", this, "wireNode");
 	},
 
 	wireNode: function(node) {
@@ -56,6 +57,7 @@ dojo.lang.extend(dojo.widget.HtmlTree, {
 
 		// when a child is added to this node, we need to wire that new node too
 		dojo.event.connect(node, "addChild", this, "wireNode");
+		dojo.event.connect(node, "addWidgetAsDirectChild", this, "wireNode");
 	},
 
 	getToggle: function () {
