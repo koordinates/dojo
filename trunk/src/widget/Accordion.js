@@ -163,16 +163,21 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 	},
 
 	sizeSet: function(size){
-		// dojo.debug("new size:", size, "sizeMin:", this.sizeMin);
 		if(!this.scrollContent){
 			return;
 		}
 		if(size <= this.sizeMin){
 			this.contentNode.style.display = "none";
 		}else{
+			// this.domNode.style.overflow = "hidden";
 			this.contentNode.style.display = "block";
 			this.contentNode.style.overflow = "auto";
-			dojo.style.setOuterHeight(this.contentNode, size-((this.initialSizeMin) ? this.initialSizeMin : this.sizeMin));
+			var scrollSize = (size-((this.initialSizeMin) ? this.initialSizeMin : this.sizeMin));
+			if(dojo.render.html.ie){
+				this.contentNode.style.height =  scrollSize+"px";
+			}else{
+				dojo.style.setOuterHeight(this.contentNode, scrollSize);
+			}
 		}
 	},
 
