@@ -66,7 +66,8 @@ dojo.event = new function(){
 			precedence: "last",
 			once: false,
 			delay: null,
-			rate: 0
+			rate: 0,
+			adviceMsg: false
 		};
 
 		switch(args.length){
@@ -147,6 +148,7 @@ dojo.event = new function(){
 				ao.once = args[7];
 				ao.delay = args[8];
 				ao.rate = args[9];
+				ao.adviceMsg = args[10];
 				break;
 		}
 
@@ -219,7 +221,8 @@ dojo.event = new function(){
 									kwArgs["aroundFunc"],
 									kwArgs["once"],
 									kwArgs["delay"],
-									kwArgs["rate"]);
+									kwArgs["rate"],
+									kwArgs["adviceMsg"]||false );
 	}
 
 	this.kwConnect = function(kwArgs){
@@ -368,6 +371,7 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 		
 		var aroundObj = marr[2]||dj_global;
 		var aroundFunc = marr[3];
+		var msg = marr[6];
 		var undef;
 
 		var to = {
@@ -433,10 +437,18 @@ dojo.event.MethodJoinPoint.prototype.run = function() {
 			// var tmjp = dojo.event.MethodJoinPoint.getForMethod(obj, methname);
 			if((hasDelay)&&((dojo.render.html)||(dojo.render.svg))){  // FIXME: the render checks are grotty!
 				dj_global["setTimeout"](function(){
-					callObj[callFunc].apply(callObj, args); 
+					if(msg){
+						callObj[callFunc].call(callObj, to); 
+					}else{
+						callObj[callFunc].apply(callObj, args); 
+					}
 				}, delay);
 			}else{ // many environments can't support delay!
-				callObj[callFunc].apply(callObj, args); 
+				if(msg){
+					callObj[callFunc].call(callObj, to); 
+				}else{
+					callObj[callFunc].apply(callObj, args); 
+				}
 			}
 		}
 	}
@@ -476,19 +488,20 @@ dojo.event.MethodJoinPoint.prototype.kwAddAdvice = function(args){
 	this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
 					args["aroundObj"], args["aroundFunc"], 
 					args["adviceType"], args["precedence"], 
-					args["once"], args["delay"], args["rate"]);
+					args["once"], args["delay"], args["rate"], 
+					args["adviceMsg"]);
 }
 
 dojo.event.MethodJoinPoint.prototype.addAdvice = function(	thisAdviceObj, thisAdvice, 
 															thisAroundObj, thisAround, 
 															advice_kind, precedence, 
-															once, delay, rate){
+															once, delay, rate, asMessage){
 	var arr = this.getArr(advice_kind);
 	if(!arr){
 		dojo.raise("bad this: " + this);
 	}
 
-	var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate];
+	var ao = [thisAdviceObj, thisAdvice, thisAroundObj, thisAround, delay, rate, asMessage];
 	
 	if(once){
 		if(this.hasAdvice(thisAdviceObj, thisAdvice, advice_kind, arr) >= 0){
