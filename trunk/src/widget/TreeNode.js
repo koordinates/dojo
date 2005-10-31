@@ -52,6 +52,13 @@ dojo.lang.extend(dojo.widget.HtmlTreeNode, {
 	isLastNode: true,
 	isExpanded: false,
 	isParent: false,
+	open: false,
+
+	postCreate: function(){
+		if(this.open){
+			this.toggleOpened();
+		}
+	},
 
 	initialize: function(args, frag){
 		if (!this.id) {
