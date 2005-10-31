@@ -7,7 +7,7 @@ dojo.collections.Dictionary = function(dictionary){
 	if (dictionary){
 		var e = dictionary.getIterator();
 		while (e.moveNext()) {
-			 items[e.key] = new dojo.collections.DictionaryEntry(e.key, e.value);
+			 this.add(e.key, e.value);
 		}
 	}
 
