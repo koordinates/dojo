@@ -104,6 +104,7 @@ dojo.inherits(dojo.widget.AccordionPanel, dojo.widget.HtmlSplitPanePanel);
 
 dojo.lang.extend(dojo.widget.AccordionPanel, {
 	sizeMin:0,
+	initialSizeMin: null,
 	sizeShare: 0,
 	open: false,
 	label: "",
@@ -120,6 +121,7 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 		var lh = dojo.style.getContentHeight(this.labelNode);
 		if(!ignoreIC){
 			lh += dojo.style.getContentHeight(this.initialContentNode);
+			this.initialSizeMin = lh;
 		}
 		this.sizeMin = lh;
 	},
@@ -170,7 +172,7 @@ dojo.lang.extend(dojo.widget.AccordionPanel, {
 		}else{
 			this.contentNode.style.display = "block";
 			this.contentNode.style.overflow = "auto";
-			dojo.style.setOuterHeight(this.contentNode, size-this.sizeMin);
+			dojo.style.setOuterHeight(this.contentNode, size-((this.initialSizeMin) ? this.initialSizeMin : this.sizeMin));
 		}
 	},
 
