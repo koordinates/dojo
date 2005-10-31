@@ -18,11 +18,13 @@ dojo.string.Builder = function(str){
 		a.push(s);
 		length += s.length;
 		this.length = length;
+		return this;
 	};
 
 	this.clear = function(){
 		a=[];
 		length = this.length = 0;
+		return this;
 	};
 
 	this.remove = function(f,l){
@@ -36,6 +38,7 @@ dojo.string.Builder = function(str){
 		a.push(b);
 		length = this.length = b.length; 
 		b="";
+		return this;
 	};
 
 	this.replace = function(o,n){
@@ -45,6 +48,7 @@ dojo.string.Builder = function(str){
 		a.push(b);
 		length = this.length = b.length; 
 		b="";
+		return this;
 	};
 
 	this.insert = function(idx,s){
@@ -60,5 +64,6 @@ dojo.string.Builder = function(str){
 		length = this.length = b.length; 
 		a.push(b); 
 		b="";
+		return this;
 	};
 };
