@@ -5,6 +5,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.event");
 
 dojo.widget.HtmlResizeHandle = function(){
 
@@ -39,15 +40,7 @@ dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 	},
 
 	postCreate: function(){
-
-		var self = this;
-		var h1 = (function(){ return function(e){ if (self.isSizing){ self.changeSizing(e); } } })();
-		var h2 = (function(){ return function(e){ if (self.isSizing){ self.endSizing(e); } } })();
-		var h3 = (function(){ return function(e){ self.beginSizing(e); } })();
-
-		dojo.event.connect(document.documentElement, "onmousemove", h1);
-		dojo.event.connect(document.documentElement, "onmouseup", h2);
-		dojo.event.connect(this.domNode, "onmousedown", h3);
+		dojo.event.connect(this.domNode, "onmousedown", this, "beginSizing");
 	},
 
 	beginSizing: function(e){
@@ -59,24 +52,23 @@ dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 		var screenY = window.event ? window.event.clientY : e.pageY;
 
 		this.isSizing = 1;
-		this.startPoint  = {'x':screenX, 'y':screenY};
+		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
 		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetElm.domNode), 'h':dojo.style.getOuterHeight(this.targetElm.domNode)};
+
+		dojo.event.connect(document.documentElement, "onmousemove", this, "changeSizing");
+		dojo.event.connect(document.documentElement, "onmouseup", this, "endSizing");
 	},
 
 	changeSizing: function(e){
-
-		var screenX = window.event ? window.event.clientX : e.pageX;
-		var screenY = window.event ? window.event.clientY : e.pageY;
-
-		var dx = this.startPoint.x - screenX;
-		var dy = this.startPoint.y - screenY;
-
+		var dx = this.startPoint.x - e.clientX;
+		var dy = this.startPoint.y - e.clientY;
 		this.targetElm.resizeTo(this.startSize.w - dx, this.startSize.h - dy);
 	},
 
 	endSizing: function(e){
-
 		this.isSizing = 0;
+		dojo.event.disconnect(document.documentElement, "onmousemove", this, "changeSizing");
+		dojo.event.disconnect(document.documentElement, "onmouseup", this, "endSizing");
 	}
 
 
