@@ -1,92 +1,105 @@
-<html>
-	<head>
-		<title>ArrayList Test</title>
-		<style type="text/css">
-			#Mover {
-				position : absolute;
-				background : #ccc;
-				left : 200px;
-				top : 200px;
-			}
-		</style>
-		<script language="JavaScript" type="text/javascript">
-			// Dojo configuration
-			djConfig = { 
-				isDebug: true
-			};
-		</script>
-		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
-		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.collections.ArrayList");
-			function init(){
-				var a = ["foo","bar","test","bull"];
-				var al = new dojo.collections.ArrayList(a);
+dojo.require("dojo.collections.ArrayList");
 
-				//	test the constructor
-				jum.assertEquals("test10", 4, al.count);
+function getAL(){
+	return new dojo.collections.ArrayList(["foo","bar","test","bull"]);
+}
 
-				//	test add and addRange
-				al.add("carp");
-				jum.assertEquals("test20", "foo,bar,test,bull,carp", al.toString());
+function test_ArrayList_ctor(){
+	var al = getAL();
 
-				al.addRange(["oof","rab"]);
-				jum.assertEquals("test30", "foo,bar,test,bull,carp,oof,rab", al.toString());
+	//	test the constructor
+	jum.assertEquals("test10", 4, al.count);
+}
 
-				//	clear
-				var a = ["foo","bar","test","bull"];
-				var al = new dojo.collections.ArrayList(a);
-				al.clear();
-				jum.assertEquals("test60", 0, al.count);
+function test_ArrayList_add(){
+	var al = getAL();
 
-				//	clone
-				var a = ["foo","bar","test","bull"];
-				var al = new dojo.collections.ArrayList(a);
-				var cloned = al.clone();
-				jum.assertEquals("test70", al.toString(), cloned.toString());
+	//	test add and addRange
+	al.add("carp");
+	jum.assertEquals("test20", "foo,bar,test,bull,carp", al.toString());
 
-				//	contains
-				jum.assertEquals("test80", true, al.contains("bar"));
-				jum.assertEquals("test90", false, al.contains("faz"));
+	al.addRange(["oof","rab"]);
+	jum.assertEquals("test30", "foo,bar,test,bull,carp,oof,rab", al.toString());
+}
 
-				//	iterator test
-				var e = al.getIterator();
-				while (!e.atEnd) e.moveNext();
-				jum.assertEquals("test100", "bull", e.current);
+function test_ArrayList_clear(){
+	var al = getAL();
+	al.clear();
+	jum.assertEquals("test60", 0, al.count);
+}
 
-				//	indexOf
-				jum.assertEquals("test110", 1, al.indexOf("bar"));
+function test_ArrayList_clone(){
+	//	clone
+	var al = getAL();
+	var cloned = al.clone();
+	jum.assertEquals("test70", al.toString(), cloned.toString());
+}
 
-				// insert
-				al.insert(2, "baz");
-				jum.assertEquals("ArrayList.insert", 2, al.indexOf("baz"));
+function test_ArrayList_contains(){
+	var al = getAL();
+	//	contains
+	jum.assertEquals("test80", true, al.contains("bar"));
+	jum.assertEquals("test90", false, al.contains("faz"));
+}
 
-				// item
-				jum.assertEquals("test130", "baz", al.item(2));
+function test_ArrayList_getIterator(){
+	var al = getAL();
+	//	iterator test
+	var e = al.getIterator();
+	while(!e.atEnd){ e.moveNext(); }
+	jum.assertEquals("test100", "bull", e.current);
+}
 
-				// remove
-				al.remove("baz");
-				jum.assertEquals("test140", 4, al.count);
+function test_ArrayList_indexOf(){
+	var al = getAL();
+	//	indexOf
+	jum.assertEquals("test110", 1, al.indexOf("bar"));
+}
 
-				// removeAt
-				al.removeAt(3);
-				jum.assertEquals("test150", "foo,bar,test", al.toString());
+function test_ArrayList_insert(){
+	var al = getAL();
+	// insert
+	al.insert(2, "baz");
+	jum.assertEquals("ArrayList.insert", 2, al.indexOf("baz"));
+}
 
-				//	reverse
-				al.reverse();
-				jum.assertEquals("test160", "test,bar,foo", al.toString());
+function test_ArrayList_item(){
+	var al = getAL();
+	// item
+	jum.assertEquals("test130", "test", al.item(2));
+}
 
-				// sort
-				al.sort();
-				jum.assertEquals("test170", "bar,foo,test", al.toString());
+function test_ArrayList_remove(){
+	var al = getAL();
+	// remove
+	al.remove("bar");
+	jum.assertEquals("test140", 3, al.count);
+}
 
-				//	toArray
-				var a = al.toArray();
-				jum.assertEquals("test180", a.join(","), al.toString());
-			}
-			dojo.hostenv.modulesLoadedListeners.push(init);
-		</script>
-	</head>
-	<body>
-	</body>
-</html>
+function test_ArrayList_removeAt(){
+	var al = getAL();
+	// removeAt
+	al.removeAt(3);
+	jum.assertEquals("test150", "foo,bar,test", al.toString());
+}
+
+function test_ArrayList_reverse(){
+	var al = getAL();
+	//	reverse
+	al.reverse();
+	jum.assertEquals("test160", "bull,test,bar,foo", al.toString());
+}
+
+function test_ArrayList_sort(){
+	var al = getAL();
+	// sort
+	al.sort();
+	jum.assertEquals("test170", "bar,bull,foo,test", al.toString());
+}
+
+function test_ArrayList_sort(){
+	var al = getAL();
+	//	toArray
+	var a = al.toArray();
+	jum.assertEquals("test180", a.join(","), al.toString());
+}
