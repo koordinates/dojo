@@ -116,8 +116,10 @@ dojo.widget.html.DatePicker = function(){
 		var previousDate = new Date();
 		var calendarNodes = this.calendarDatesContainerNode.getElementsByTagName("td");
 		var currentCalendarNode;
-		previousDate.setHours(0);
-		var nextDate = new Date(this.firstSaturday.year, this.firstSaturday.month, this.firstSaturday.date, 0);
+		// set hours of date such that there is no chance of rounding error due to 
+		// time change in local time zones
+		previousDate.setHours(8);
+		var nextDate = new Date(this.firstSaturday.year, this.firstSaturday.month, this.firstSaturday.date, 8);
 
 		
 		if(this.firstSaturday.date < 7) {
