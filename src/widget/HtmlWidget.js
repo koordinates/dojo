@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.html");
+dojo.require("dojo.fx.html");
 
 dojo.widget.HtmlWidget = function(args){
 	// mixin inheritance
@@ -18,6 +19,13 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	resizeGhost: null,
 	initialResizeCoords: null,
 	// this.templateString = null;
+
+	// for displaying/hiding widget
+	toggle: "default",
+	toggleDuration: 150,
+
+	initialize: function(args, frag){
+	},
 
 	getContainerHeight: function(){
 		// NOTE: container height must be returned as the INNER height
@@ -104,5 +112,70 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			}
 			delete tempNode;
 		}catch(e){ /* squelch! */ }
+	},
+
+	// Functions for showing/hiding widget
+	getToggle: function () {
+		// lazyinstantiation of the toggle object
+		if ( !this.toggleHandler ) {
+			switch (this.toggle) {
+				case "wipe"    : this.toggleHandler = new dojo.widget.HtmlWidget.WipeToggle(this.toggleDuration);
+								break;
+				case "fade"    : this.toggleHandler = new dojo.widget.HtmlWidget.FadeToggle(this.toggleDuration);
+								break;
+				default        : this.toggleHandler = new dojo.widget.HtmlWidget.DefaultToggle();
+			}
+		}
+		return this.toggleHandler;
+	},
+	show: function() {
+		this.getToggle().show(this.domNode);
+	},
+	hide: function() {
+		this.getToggle().hide(this.domNode);
+	}
+});
+
+
+
+/**** Strategies for displaying/hiding widget *****/
+dojo.widget.HtmlWidget.DefaultToggle = function() { }
+dojo.lang.extend(dojo.widget.HtmlWidget.DefaultToggle, {
+	show: function(node) {
+		if (node.style) {
+			node.style.display = "block";
+		}
+	},
+
+	hide: function(node) {
+		if (node.style) {
+			node.style.display = "none";
+		}
+	}
+});
+
+dojo.widget.HtmlWidget.FadeToggle = function(duration) {
+	this.toggleDuration = duration ? duration : 150;
+}
+dojo.lang.extend(dojo.widget.HtmlWidget.FadeToggle, {
+	show: function(node) {
+		dojo.fx.html.fadeShow(node, this.toggleDuration);
+	},
+
+	hide: function(node) {
+		dojo.fx.html.fadeHide(node, this.toggleDuration);
+	}
+});
+
+dojo.widget.HtmlWidget.WipeToggle = function(duration) {
+	this.toggleDuration = duration ? duration : 150;
+}
+dojo.lang.extend(dojo.widget.HtmlWidget.WipeToggle, {
+	show: function(node) {
+		dojo.fx.html.wipeIn(node, this.toggleDuration);
+	},
+
+	hide: function(node) {
+		dojo.fx.html.wipeOut(node, this.toggleDuration);
 	}
 });

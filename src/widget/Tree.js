@@ -29,21 +29,12 @@ dojo.lang.extend(dojo.widget.HtmlTree, {
 	publishCollapsedTopic: "",
 	preChildIcon: null,
 	nestedChildIcon: null,
-	toggle: "default",
-	toggleDuration: 150,
 	snarfChildDomOutput: true,
 
 	initialize: function(args, frag){
-		switch (this.toggle) {
-			case "wipe"    : this.toggle = new dojo.widget.Tree.WipeToggle();
-							break;
-			case "fade"    : this.toggle = new dojo.widget.Tree.FadeToggle();
-							break;
-			default        : this.toggle = new dojo.widget.Tree.DefaultToggle();
-		}
-
+		dojo.widget.HtmlTreeNode.superclass.initialize.call(this, args, frag);
 		//  when we add a child, automatically wire it.
-		dojo.event.connect(this, "addChild", this, "wireNode");
+		dojo.event.connect(this, "addChild", this, "wireNode");	
 		dojo.event.connect(this, "addWidgetAsDirectChild", this, "wireNode");
 	},
 
@@ -58,10 +49,6 @@ dojo.lang.extend(dojo.widget.HtmlTree, {
 		// when a child is added to this node, we need to wire that new node too
 		dojo.event.connect(node, "addChild", this, "wireNode");
 		dojo.event.connect(node, "addWidgetAsDirectChild", this, "wireNode");
-	},
-
-	getToggle: function () {
-		return this.toggle;
 	},
 
 	nodeSelected: function (item, e) {
@@ -79,42 +66,6 @@ dojo.lang.extend(dojo.widget.HtmlTree, {
 		dojo.event.topic.publish(this.publishCollapsedTopic, item.id);
 	}
 });
-
-dojo.widget.Tree.DefaultToggle = function() {
-	this.show = function(node) {
-		if (node.style) {
-			node.style.display = "block";
-		}
-	}
-
-	this.hide = function(node) {
-		if (node.style) {
-			node.style.display = "none";
-		}
-	}
-}
-
-dojo.widget.Tree.FadeToggle = function(duration) {
-	this.toggleDuration = duration ? duration : 150;
-	this.show = function(node) {
-		dojo.fx.html.fadeShow(node, this.toggleDuration);
-	}
-
-	this.hide = function(node) {
-		dojo.fx.html.fadeHide(node, this.toggleDuration);
-	}
-}
-
-dojo.widget.Tree.WipeToggle = function(duration) {
-	this.toggleDuration = duration ? duration : 150;
-	this.show = function(node) {
-		dojo.fx.html.wipeIn(node, this.toggleDuration);
-	}
-
-	this.hide = function(node) {
-		dojo.fx.html.wipeOut(node, this.toggleDuration);
-	}
-}
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree");

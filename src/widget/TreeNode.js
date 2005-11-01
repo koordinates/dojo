@@ -44,8 +44,7 @@ dojo.lang.extend(dojo.widget.HtmlTreeNode, {
 	toggleControl: null,
 	// the node which holds the toggle image.
 	toggleImage: null,
-	// the toggle strategy object which will toggle a parent node open and closed
-	toggle: new dojo.widget.Tree.DefaultToggle(),
+
 	// the outer tree containing this node
 	tree: null,
 	// flag to hold whether this is the last node in the branch.
@@ -61,6 +60,8 @@ dojo.lang.extend(dojo.widget.HtmlTreeNode, {
 	},
 
 	initialize: function(args, frag){
+		dojo.widget.HtmlTreeNode.superclass.initialize.call(this, args, frag);
+
 		if (!this.id) {
 			this.id = this.title;
 		}
@@ -147,10 +148,11 @@ dojo.lang.extend(dojo.widget.HtmlTreeNode, {
 	},
 
 	getToggle: function (){
-		if (this.parent && this.parent.getToggle) {
+		// Find the toggle setting for the tree itself
+		if (this.parent && (this.parent.widgetType == "TreeNode" || this.parent.widgetType == "Tree") ) {
 			return this.parent.getToggle();
 		}
-		return this.toggle;
+		return this.getToggle();
 	},
 
 	onMouseOver: function (e){
