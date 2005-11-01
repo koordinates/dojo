@@ -14,11 +14,11 @@ dojo.collections.Iterator = function(a){
 	this.current = null;
 	this.atEnd = false;
 	this.moveNext = function(){
-		if (this.atEnd) {
+		if(this.atEnd){
 			return !this.atEnd;
 		}
 		this.current = obj[position];
-		if (position == obj.length) {
+		if(position == obj.length-1){
 			this.atEnd = true;
 		}
 		position++;
