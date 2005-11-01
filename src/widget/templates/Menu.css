@@ -1,4 +1,4 @@
-.dojoMenu, .dojoContextMenu {
+.dojoMenu {
 	border:1px solid #000000;
 	list-style-type:none;
 	margin:0;
@@ -6,28 +6,6 @@
 	padding-bottom: 1px;
 	background-color:#f4f4f4;
 	font-size: 8pt;
-}
-
-.dojoContextMenu {
-	position:absolute;
-	display:none;
-}
-
-
-.dojoMenuItem {
-	white-space: nowrap;
-}
-
-.dojoMenuItem a {
-	text-decoration: none;
-	color: black;
-	font: inherit;
-}
-
-li:hover.dojoMenuItem,
-.dojoMenuItemHover {
-	background-color:#ccc;
-	cursor:pointer;cursor:hand;
 }
 
 .dojoMenuSeparator {
@@ -42,4 +20,41 @@ li:hover.dojoMenuItem,
 li:hover.dojoMenuSeparator {
 	background-color:#e5e5e5;
 	cursor:default;
+}
+
+
+
+
+.dojoContextMenu {
+	position: absolute;
+	display: none;
+	border: 2px solid;
+	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
+	list-style-type: none;
+	margin: 0;
+	padding: 1px;
+	background-color: ThreeDFace;
+	font-size: 8pt;
+}
+
+.dojoMenuItem {
+	white-space: nowrap;
+	padding: 2px;
+	font: menu;
+	color: WindowText;
+}
+
+.dojoMenuItem a {
+	text-decoration: none;
+	color: WindowText;
+	font: inherit;
+}
+
+.dojoMenuItemHover {
+	padding: 2px;
+	background-color: blue;
+	cursor: pointer;
+	cursor: hand;
+	background-color: Highlight;
+	color: HighlightText;
 }
