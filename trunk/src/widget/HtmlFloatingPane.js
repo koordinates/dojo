@@ -4,6 +4,10 @@ dojo.provide("dojo.widget.HtmlFloatingPane");
 //
 // this widget provides a window-like floating pane
 //
+// TODO: instead of custom drag code, use HtmlDragMove.js in
+// conjuction with DragHandle).  The only tricky part is the constraint 
+// stuff (to keep the box within the container's boundaries)
+//
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html");
@@ -28,6 +32,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	dragOrigin: null,
 	posOrigin: null,
 	maxPosition: null,
+	hasShadow: false,
 	title: 'Untitled',
 	constrainToContainer: 0,
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
@@ -41,11 +46,20 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 
 		dojo.html.addClass(this.domNode, 'dojoFloatingPane');
 
-		// this is our client area
-
 		var elm = document.createElement('div');
 		dojo.dom.moveChildren(this.domNode, elm, 0);
 		dojo.html.addClass(elm, 'dojoFloatingPaneClient');
+
+		// add a drop shadow
+		if ( this.hasShadow ) {
+			this.shadow = document.createElement('div');
+			dojo.html.addClass(this.shadow, "dojoDropShadow");
+			dojo.style.setOpacity(this.shadow, 0.5);
+			this.domNode.appendChild(this.shadow);
+			dojo.html.disableSelection(this.shadow);
+		}
+
+		// this is our client area
 		this.clientPane = this.createPane(elm, 'client');
 		this.clientPane.ownerPane = this;
 
@@ -83,6 +97,16 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		this.resizeSoon();
 	},
 
+	onResized: function(){
+		if ( this.hasShadow ) {
+			var width = dojo.style.getOuterWidth(this.domNode);
+			var height = dojo.style.getOuterHeight(this.domNode);
+			dojo.style.setOuterWidth(this.shadow, width);
+			dojo.style.setOuterHeight(this.shadow, height);
+		}
+		dojo.widget.HtmlFloatingPane.superclass.onResized.call(this);
+	},
+
 	createPane: function(node, align){
 
 		var pane = dojo.widget.fromScript("LayoutPane", { layoutAlign: align }, node);
@@ -93,22 +117,24 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	},
 
 	onMyDragStart: function(e){
-
-		this.dragOrigin = {'x': e.pageX, 'y': e.pageY};
-		this.posOrigin = {'x': dojo.style.getNumericStyle(this.domNode, 'left'), 'y': dojo.style.getNumericStyle(this.domNode, 'top')};
+		this.dragOrigin = {'x': e.clientX, 'y': e.clientY};
+		
+		// this doesn't work if (as in the test file) the user hasn't set top
+		// 	this.posOrigin = {'x': dojo.style.getNumericStyle(this.domNode, 'left'), 'y': dojo.style.getNumericStyle(this.domNode, 'top')};
+		this.posOrigin = {'x': this.domNode.offsetLeft, 'y': this.domNode.offsetTop};
 
 		if (this.constrainToContainer){
 			// get parent client size...
 
 			if (this.domNode.parentNode.nodeName.toLowerCase() == 'body'){
 				var parentClient = {
-					'w': window.innerWidth,
-					'h': window.innerHeight
+					'w': dojo.html.getDocumentWidth(),
+					'h': dojo.html.getDocumentHeight()
 				};
 			}else{
 				var parentClient = {
-					'w': this.domNode.parentNode.offsetWidth - dojo.style.getBorderWidth(this.domNode.parentNode),
-					'h': this.domNode.parentNode.offsetHeight - dojo.style.getBorderHeight(this.domNode.parentNode)
+					'w': dojo.style.getInnerWidth(this.domNode.parentNode),
+					'h': dojo.style.getInnerHeight(this.domNode.parentNode)
 				};
 			}
 
@@ -118,14 +144,13 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 			};
 		}
 
-		dojo.event.connect(window, 'onmousemove', this, 'onMyDragMove');
-		dojo.event.connect(window, 'onmouseup', this, 'onMyDragEnd');
+		dojo.event.connect(document, 'onmousemove', this, 'onMyDragMove');
+		dojo.event.connect(document, 'onmouseup', this, 'onMyDragEnd');
 	},
 
 	onMyDragMove: function(e){
-
-		var x = this.posOrigin.x + (e.pageX - this.dragOrigin.x);
-		var y = this.posOrigin.y + (e.pageY - this.dragOrigin.y);
+		var x = this.posOrigin.x + (e.clientX - this.dragOrigin.x);
+		var y = this.posOrigin.y + (e.clientY - this.dragOrigin.y);
 
 		if (this.constrainToContainer){
 			if (x < 0){ x = 0; }
@@ -139,9 +164,8 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	},
 
 	onMyDragEnd: function(e){
-
-		dojo.event.disconnect(window, 'onmousemove', this, 'onMyDragMove');
-		dojo.event.disconnect(window, 'onmouseup', this, 'onMyDragEnd');
+		dojo.event.disconnect(document, 'onmousemove', this, 'onMyDragMove');
+		dojo.event.disconnect(document, 'onmouseup', this, 'onMyDragEnd');
 	}
 	
 });
