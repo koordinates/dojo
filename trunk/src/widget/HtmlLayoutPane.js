@@ -250,6 +250,17 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		dojo.style.setOuterWidth(this.domNode, w);
 		dojo.style.setOuterHeight(this.domNode, h);
 		this.onResized();
+	},
+	
+	show: function(){
+		// On IE, if this node was created while display=="none" then it
+		// didn't get laid out correctly; fix that here.
+		if ( this.domNode.style.display=="none" ) {
+			dojo.style.setOpacity(this.domNode, 0.01);
+			this.domNode.style.display="";
+			this.onResized();	
+		}
+		dojo.widget.HtmlLayoutPane.superclass.show.call(this);
 	}
 });
 
