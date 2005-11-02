@@ -1,23 +1,8 @@
 dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.Blowfish");
 
-/**
- *	Blowfish implementation.  Based on original C implementation, as implemented by
- *	Markus Hahn (released under the Apache 2.0 license), and augmented by the aamcyrpt
- *	implementation by Andre Mueller and Rainer Wollman (released under the UGPL).
- *
- *	How it basically works:
- *	1. intialize rounds boxes based on the boxes constant and encrypting the passed key
- *		with a rounds-based rotoring mechanism
- *	2. Use the initialized rounds to encrypt/decrypt the passed text.
- **/
-
 dojo.crypto.Blowfish = new function(){
-	//	blowfish defs
-	var maxBytes=56;
 	var nRounds=16;
-
-	//	the following is the initial state of the boxes before being initialized with the key.
 	var boxes = {
 		p:[
 			0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, 0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89, 
@@ -162,98 +147,30 @@ dojo.crypto.Blowfish = new function(){
 		]
 	}
 
-	//	main round function.
-	function r(a,b,n,bx){
-		return (xor(a, xor(xor(bx.s0[b0(b)] + bx.s1[b1(b)], bx.s2[b2(b)]) + bx.s3[b3(b)], bx.p[n])));
+	function r(x, box){
+		return add(add(box.s0[(x>>>24)&0xff], box.s1[(x>>>16)&0xff])^box.s2[(x>>>8)&0xff],box.s3[x&0xff]);
 	}
-
-	//	byte functions
-	function b0(w){ return (w&0xffffffff)>>>24; }
-	function b1(w){ return (w&0x00ffffff)>>>16; }
-	function b2(w){ return (w&0x0000ffff)>>>8; }
-	function b3(w){ return w&0x000000ff; }
-	function xor(w1,w2){
-		var result = w1^w2;
-		if (result<0) result+=0xffffffff+1;
-		return result;
+	function add(a, b){
+		var n=(a&0xffff)+(b&0xffff);
+		return ((a>>16)+(b>>16)+(n>>16)<<16)|(n&0xffff);
 	}
-
-	function esc(s){
-		var ti=0;
-		var t1=0;
-		var t2=0;
-		var a=[];
-		for(var i=0;i<s.length;i++){
-			ti=s.charCodeAt(i);
-			t1=Math.floor(s.charCodeAt(i)/16);
-			t2=s.charCodeAt(i)%16;
-			if(t1<10) t1+=48;
-			else t1+=55;
-			if(t2<10) t2+=48;
-			else t2+=55;
-			a.push(String.fromCharCode(t1)+String.fromCharCode(t2));
-		}
-		return a.join("");
+	function parseLongAt(s, i){
+		return s.charCodeAt(i<<2)
+			+ (s.charCodeAt((i<<2)+1)<<8)
+			+ (s.charCodeAt((i<<2)+2)<<16)
+			+ (s.charCodeAt((i<<2)+3)<<24);
 	}
-	function uesc(s){
-		var t1=0;
-		var t2=0;
-		var ret="";
-		for(var i=0; i<s.length; i++){
-			t1=s.charCodeAt(i++);
-			t2=s.charCodeAt(i);
-			if(t1<58) t1-=48;
-			else{
-				if(t1>96) t1-=87;
-				else t1-=55;
-			}
-			if(t2<58) t2-=48;
-			else{
-				if(t2>96) t2-=87;
-				else t2-=55;
-			}
-			ret+=String.fromCharCode(t1*16+t2);
-		}
-		return ret;
+	function getBlock(s){
+		return {left:parseLongAt(s,0), right:parseLongAt(s,1)};
 	}
-
-	function qwordToString(w){
-		var result="";
-		var a=[ b0(w), b1(w), b2(w), b3(w) ];
-		for (var i=3; i>=0; i--){
-			var t1=Math.floor(a[i]/16);
-			var t2=a[i]%16;
-			if(t1<10) t1+=48;
-			else t1+=55;
-			if(t2<10) t2+=48;
-			else t2+=55;
-			result+=String.fromCharCode(t1)+String.fromCharCode(t2);
-		}
-		return result;
+	function fromBlock(o){
+		return String.fromCharCode(
+			o.left&0xff, (o.left>>>8)&0xff, (o.left>>>16)&0xff, (o.left>>>24)&0xff, 
+			o.right&0xff, (o.right>>>8)&0xff, (o.right>>>16)&0xff, (o.right>>>24)&0xff
+		);
 	}
-	function stringToQWord(s){
-		var result=0;
-		var t1=0;
-		var t2=0;
-		for(var i=6; i>=0; i-=2){
-			t1=s.charCodeAt(i);
-			t2=s.charCodeAt(i+1);
-			if(t1<58) t1-=48;
-			else t1-=55;
-			if(t2<58) t2-=48;
-			else t2-=55;
-			result = result*256+(t1*16+t2);
-		}
-		return result;
-	}
-
+	
 	function initialize(key){
-		var keyBytes = key.length;
-		if(keyBytes>maxBytes){
-			var key=key.substr(0,maxBytes);
-		}
-
-		//	clone the boxes
 		var box = { p:[], s0:[], s1:[], s2:[], s3:[] };
 		for(var i=0; i<boxes.p.length; i++) box.p.push(boxes.p[i]);
 		for(var i=0; i<boxes.s0.length; i++) box.s0.push(boxes.s0[i]);
@@ -261,102 +178,104 @@ dojo.crypto.Blowfish = new function(){
 		for(var i=0; i<boxes.s2.length; i++) box.s2.push(boxes.s2[i]);
 		for(var i=0; i<boxes.s3.length; i++) box.s3.push(boxes.s3[i]);
 
-		//	set up the new values on the boxes
 		var pos=0;
 		var data = 0x00000000;
 		for(var i=0; i<nRounds+2; i++){
-			data= key.charCodeAt(pos%keyBytes)*256
-				+ key.charCodeAt((pos+1)%keyBytes)*256
-				+ key.charCodeAt((pos+2)%keyBytes)*256
-				+ key.charCodeAt((pos+3)%keyBytes);
-			box.p[i]=xor(box.p[i], data);
-			pos=(pos+4)%keyBytes;
+			data = ((data<<8)&0xffffffff)|parseLongAt(key,pos);
+			pos++;
+			if(pos>=key.length) pos=0;
+			box.p[i]^=data;
 		}
-		key=esc(key);
 		var res={ left:0x00000000, right:0x00000000 };
 		for(var i=0; i<nRounds+2; i+=2){
-			encrypt(res, box);
+			encryptBlock(res, box);
 			box.p[i]=res.left;
 			box.p[i+1]=res.right;
 		}
-		for(var i=0; i<256; i+=2){
-			encrypt(res, box);
-			box.s0[i]=res.left;
-			box.s0[i+1]=res.right;
-		}
-		for(var i=0; i<256; i+=2){
-			encrypt(res, box);
-			box.s1[i]=res.left;
-			box.s1[i+1]=res.right;
-		}
-		for(var i=0; i<256; i+=2){
-			encrypt(res, box);
-			box.s2[i]=res.left;
-			box.s2[i+1]=res.right;
-		}
-		for(var i=0; i<256; i+=2){
-			encrypt(res, box);
-			box.s3[i]=res.left;
-			box.s3[i+1]=res.right;
+		for (var i=0; i<4; i++){
+			for(var j=0; j<256; j+=2){
+				encryptBlock(res, box);
+				box["s"+i][j]=res.left;
+				box["s"+i][j+1]=res.right;
+			}
 		}
 		return box;
 	}
 
-	function encrypt(o, box){
-		o.left = xor(o.left, box.p[0]);
-		o.right = r(o.right, o.left, 1, box); o.left = r(o.left, o.right, 2, box);
-		o.right = r(o.right, o.left, 3, box); o.left = r(o.left, o.right, 4, box);
-		o.right = r(o.right, o.left, 5, box); o.left = r(o.left, o.right, 6, box);
-		o.right = r(o.right, o.left, 7, box); o.left = r(o.left, o.right, 8, box);
-		o.right = r(o.right, o.left, 9, box); o.left = r(o.left, o.right, 10, box);
-		o.right = r(o.right, o.left, 11, box); o.left = r(o.left, o.right, 12, box);
-		o.right = r(o.right, o.left, 13, box); o.left = r(o.left, o.right, 14, box);
-		o.right = r(o.right, o.left, 15, box); o.left = r(o.left, o.right, 16, box);
-		o.right = xor(o.right, box.p[17]);
+	function encryptBlock(o, box){
+		o.left^=box.p[0];
+		o.right^=r(o.left,box) ^box.p[1];
+		o.left ^=r(o.right,box)^box.p[2];
+		o.right^=r(o.left,box) ^box.p[3];
+		o.left ^=r(o.right,box)^box.p[4];
+		o.right^=r(o.left,box) ^box.p[5];
+		o.left ^=r(o.right,box)^box.p[6];
+		o.right^=r(o.left,box) ^box.p[7];
+		o.left ^=r(o.right,box)^box.p[8];
+		o.right^=r(o.left,box) ^box.p[9];
+		o.left ^=r(o.right,box)^box.p[10];
+		o.right^=r(o.left,box) ^box.p[11];
+		o.left ^=r(o.right,box)^box.p[12];
+		o.right^=r(o.left,box) ^box.p[13];
+		o.left ^=r(o.right,box)^box.p[14];
+		o.right^=r(o.left,box) ^box.p[15];
+		o.left ^=r(o.right,box);
+
+		var left=o.right^box.p[17];
+		var right=o.left^box.p[16];
+		o.left=left;
+		o.right=right;
 	}
 
-	function decrypt(o, box){
-		o.left = xor(o.left, box.p[17]);
-		o.right = r(o.right, o.left, 16, box); o.left = r(o.left, o.right, 15, box);
-		o.right = r(o.right, o.left, 14, box); o.left = r(o.left, o.right, 13, box);
-		o.right = r(o.right, o.left, 12, box); o.left = r(o.left, o.right, 11, box);
-		o.right = r(o.right, o.left, 10, box); o.left = r(o.left, o.right, 9, box);
-		o.right = r(o.right, o.left, 8, box); o.left = r(o.left, o.right, 7, box);
-		o.right = r(o.right, o.left, 6, box); o.left = r(o.left, o.right, 5, box);
-		o.right = r(o.right, o.left, 4, box); o.left = r(o.left, o.right, 3, box);
-		o.right = r(o.right, o.left, 2, box); o.left = r(o.left, o.right, 1, box);
-		o.right = xor(o.right, box.p[0]);
+	function decryptBlock(o, box){
+		o.left ^=box.p[17];
+		o.right^=r(o.left,box) ^box.p[16];
+		o.left ^=r(o.right,box)^box.p[15];
+		o.right^=r(o.left,box) ^box.p[14];
+		o.left ^=r(o.right,box)^box.p[13];
+		o.right^=r(o.left,box) ^box.p[12];
+		o.left ^=r(o.right,box)^box.p[11];
+		o.right^=r(o.left,box) ^box.p[10];
+		o.left ^=r(o.right,box)^box.p[9];
+		o.right^=r(o.left,box) ^box.p[8];
+		o.left ^=r(o.right,box)^box.p[7];
+		o.right^=r(o.left,box) ^box.p[6];
+		o.left ^=r(o.right,box)^box.p[5];
+		o.right^=r(o.left,box) ^box.p[4];
+		o.left ^=r(o.right,box)^box.p[3];
+		o.right^=r(o.left,box) ^box.p[2];
+		o.left ^=r(o.right,box);
+
+		var left = o.right^box.p[0];
+		var right= o.left^box.p[1];
+		o.left=left;
+		o.right=right;
 	};
 
 	this.encrypt = function(plaintext, key){
 		var bx = initialize(key);
 		var ciphertext="";
-		var pt=esc(plaintext);
-		for(var i=0; i<pt.length; i+=16){
-			pt+="0";
-		}
-		for(var i=0; i<pt.length; i++16){
-			var res = {};
-			res.right = stringToQWord(pt.substr(i,8));
-			res.left = stringToQWord(pt.substr(i+8,8));
-			encrypt(res, bx);
-			ciphertext+=qwordToString(res.right)+qwordToString(res.left);
+		//	fixme: double check to make sure the following uses the right chars for padding in other langs.
+		var padding = 8 - (plaintext.length & 7);
+		for (var i=0; i<padding; i++) plaintext+=String.fromCharCode(padding);
+		for(var i=0; i<plaintext.length; i+=8){
+			var o=getBlock(plaintext.substr(i,8));
+			encryptBlock(o, bx);
+			ciphertext+=fromBlock(o);
 		}
 		return ciphertext;
 	};
+
 	this.decrypt = function(ciphertext, key){
 		var bx = initialize(key);
 		var plaintext="";
-		for(var i=0; i<ciphertext.length%16; i+=16){
-			ciphertext+="0";
+		var l=ciphertext.length;
+		for(var i=0; i<l; i+=8){
+			var o=getBlock(ciphertext.substr(i,8));
+			decryptBlock(o, bx);
+			plaintext+=fromBlock(o);
 		}
-		for(var i=0; i<ciphertext.length; i+=16){
-			var res = {};
-			res.right = stringToQWord(ciphertext.substr(i,8));
-			res.left = stringToQWord(ciphertext.substr(i+8,8));
-			decrypt(res, bx);
-			plaintext+=qwordToString(res.right)+qwordToString(res.left);
-		}
-		return uesc(plaintext);
+		// fixme: double check to make sure this is part of the original def.
+		return plaintext.substr(0,l-(ciphertext.charCodeAt(l-1)));
 	};
 }();
