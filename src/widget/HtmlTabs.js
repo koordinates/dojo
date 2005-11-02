@@ -131,7 +131,10 @@ dojo.widget.HtmlTabs = function() {
 	}
 
 	this.selectTab = function(e, target) {
-		if(e) {
+		if(dojo.lang.isNumber(e)) {
+			target = this.tabs[e];
+		}
+		else if(e) {
 			if(e.target) {
 				target = e.target;
 				while(target && (target.tagName||"").toLowerCase() != "li") {
