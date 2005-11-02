@@ -16,8 +16,9 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 	widgetType: "Tree2",
 	isContainer: true,
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Tree2.css"),
-	templateString: '<div></div>',
+	templateString: '<div>hello world</div>',
 
+	oldDomNode: null,
 	treeNode: null,
 	selectedNode: null,
 	maxDepth: 10, // if you have a deep tree, bump this up. but not too high, or ff makes tables width for no reason
@@ -79,18 +80,20 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 
 	buildTree: function(){
 
-		this.treeNode = document.createElement('table');
-		//this.treeNode.border = '1';
-		this.treeNode.cellPadding = '0';
-		this.treeNode.cellSpacing = '0';
+		this.oldDomNode = this.domNode;
+
+		this.domNode = document.createElement('table');
+		//this.domNode.border = '1';
+		this.domNode.cellPadding = '0';
+		this.domNode.cellSpacing = '0';
 
 		this.bodyNode = document.createElement('tbody');
-		this.treeNode.appendChild(this.bodyNode);
+		this.domNode.appendChild(this.bodyNode);
 
-		dojo.html.disableSelection(this.treeNode);
+		dojo.html.disableSelection(this.domNode);
 
-		this.domNode.style.display = 'none';
-		this.domNode.parentNode.replaceChild(this.treeNode, this.domNode);
+		this.oldDomNode.style.display = 'none';
+		this.oldDomNode.parentNode.replaceChild(this.domNode, this.oldDomNode);
 
 		for(var i=0; i<this.children.length; i++){
 
@@ -113,6 +116,61 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 
 		for(var i=0; i<this.children.length; i++){
 			this.children[i].startMe();
+		}
+	},
+
+	addChild: function(child){
+
+		//
+		// this function gets called to add nodes to both trees and nodes, so it's a little confusing :)
+		//
+
+		if (child.widgetType != 'Tree2Node'){
+			dojo.raise("You can only add Tree2Node widgets to a "+this.widgetType+" widget!");
+			return;
+		}
+
+		if (this.children.length){
+
+			var lastChild = this.children[this.children.length-1];
+			lastChild.isLastNode = false;
+			lastChild.updateIconTree();
+		}else{
+
+			if (this.widgetType == 'Tree2Node'){
+				this.isParent = true;
+				this.isExpanded = false;
+				this.updateIcons();
+			}
+
+			child.isFirstNode = true;
+		}
+
+
+
+		if (this.widgetType == 'Tree2Node'){
+
+			var childDepth = this.depth+1;
+			var childTree = this.tree;
+			var childShowing = this.isExpanded;
+
+			child.parentNode = this;
+			child.isLastNode = true;
+
+		}else{
+			var childDepth = 0;
+			var childTree = this;
+			var childShowing = true;
+
+			child.isLastNode = true;
+		}
+
+		this.children.push(child);
+		child.buildNode(childTree, childDepth);
+		child.startMe();
+
+		if (!childShowing){
+			child.hideNodeNow();
 		}
 	}
 });
@@ -172,6 +230,8 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 			var cell = document.createElement('td');
 			var img = document.createElement('img');
 			var div = document.createElement('div');
+
+			cell.style.width = this.tree.iconWidth + 'px';
 
 			div.style.position = 'relative';
 			div.style.left = '0';
@@ -265,6 +325,8 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		cell.appendChild(div);
 		div.appendChild(img1);
 		div.appendChild(img2);
+
+		cell.style.width = this.tree.iconWidth + 'px';
 
 		div.style.position = 'relative';
 		div.style.left = '0';
@@ -408,6 +470,15 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 	},
 
+	updateIconTree: function(){
+
+		this.updateIcons();
+
+		for(var i=0; i<this.children.length; i++){
+			this.children[i].updateIconTree();
+		}
+	},
+
 	expand: function(){
 		this.showChildren();
 		this.isExpanded = true;
@@ -468,7 +539,13 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		for(var i=0; i<this.children.length; i++){
 			this.children[i].startMe();
 		}
+	},
+
+	addChild: function(child){
+
+		this.tree.addChild.call(this, child);
 	}
+
 });
 
 dojo.widget.Tree2.DefaultToggle = function(){

@@ -29,19 +29,22 @@
 
 	dojo.addOnLoad(function(){
 
-		if (0){
-		var tree = dojo.widget.fromScript("Tree", {publishSelectionTopic: "treeSelected", toggle: "fade"});
+		var tree = dojo.widget.fromScript("Tree2", {publishSelectionTopic: "treeSelected", toggle: "fade"});
 		document.body.appendChild(tree.domNode);
-		var rootNode = dojo.widget.fromScript("TreeNode", {title: "Root Node"});
+
+		var rootNode = dojo.widget.fromScript("Tree2Node", {title: "Root Node"});
 		tree.addChild(rootNode);
-		rootNode.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 1"}));
-		rootNode.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 2"}));
-		var node3 = dojo.widget.fromScript("TreeNode", {title: "Node 3"});
+
+		rootNode.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 1"}));
+
+		rootNode.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 2"}));
+		var node3 = dojo.widget.fromScript("Tree2Node", {title: "Node 3"});
 		rootNode.addChild(node3);
-		var node3_1 = dojo.widget.fromScript("TreeNode", {title: "Node 3.1"});
+		var node3_1 = dojo.widget.fromScript("Tree2Node", {title: "Node 3.1"});
 		node3.addChild(node3_1);
-		node3_1.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 3.1.1"}))
-		}
+		node3_1.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 3.1.1"}))
+
+		tree.addChild(dojo.widget.fromScript("Tree2Node", {title: "Root Node 2"}));
 
 		var eventSub = new Subscriber(document.getElementById("SelectionEvents"));
 		var selectionTopic = dojo.event.topic.getTopic("treeSelected");
