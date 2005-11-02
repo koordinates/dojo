@@ -56,6 +56,15 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 	toggleDuration: 150,
 
 
+	//
+	// subscribable events
+	//
+
+	publishSelectionTopic: "",
+	publishExpandedTopic: "",
+	publishCollapsedTopic: "",
+
+
 	initialize: function(args, frag){
 		switch (this.toggle) {
 			case "fade": this.toggler = new dojo.widget.Tree2.FadeToggle(); break;
@@ -311,6 +320,8 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 	select: function(){
 
 		dojo.html.addClass(this.labelNode, 'dojoTree2NodeLabelSelected');
+
+		dojo.event.topic.publish(this.tree.publishSelectionTopic, this.widgetId);
 	},
 
 	deselect: function(){
@@ -416,6 +427,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		}else{
 			this.hideNodeNow();
 		}
+		dojo.event.topic.publish(this.tree.publishCollapsedTopic, this.widgetId);
 	},
 
 	showNode: function(){
@@ -425,6 +437,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		}else{
 			this.showNodeNow();
 		}
+		dojo.event.topic.publish(this.tree.publishExpandedTopic, this.widgetId);
 	},
 
 	hideNodeNow: function(){
