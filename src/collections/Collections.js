@@ -18,10 +18,10 @@ dojo.collections.Iterator = function(a){
 			return !this.atEnd;
 		}
 		this.current = obj[position];
-		if(position == obj.length-1){
+		position++;
+		if(position == obj.length){
 			this.atEnd = true;
 		}
-		position++;
 		return !this.atEnd;
 	}
 	this.reset = function(){
@@ -48,10 +48,10 @@ dojo.collections.DictionaryIterator = function(obj){
 			this.key = this.entry.key ;
 			this.value = this.entry.value ;
 		}
+		position++;
 		if (position == arr.length) {
 			this.atEnd = true ;
 		}
-		position++ ;
 		return !this.atEnd ;
 	} ;
 	this.reset = function() { 
