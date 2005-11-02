@@ -75,6 +75,9 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 		this.treeNode.cellPadding = '0';
 		this.treeNode.cellSpacing = '0';
 
+		this.bodyNode = document.createElement('tbody');
+		this.treeNode.appendChild(this.bodyNode);
+
 		dojo.html.disableSelection(this.treeNode);
 
 		this.domNode.style.display = 'none';
@@ -220,7 +223,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 		dojo.html.addClass(this.labelNode, 'dojoTree2NodeLabel');
 
-		this.tree.treeNode.appendChild(this.rowNode);
+		this.tree.bodyNode.appendChild(this.rowNode);
 
 		dojo.event.connect(this.childIcon, 'onclick', this, 'onIconClick');
 		dojo.event.connect(this.labelNode, 'onclick', this, 'onLabelClick');
