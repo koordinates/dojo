@@ -53,16 +53,10 @@ if(!dojo.hostenv.library_script_uri_){
 }
 
 dojo.hostenv.loadUri = function(uri){
-    // spidermonkey load() evaluates the contents into the global scope (which is what we want).
+	// spidermonkey load() evaluates the contents into the global scope (which
+	// is what we want).
     // TODO: sigh, load() does not return a useful value. 
     // Perhaps it is returning the value of the last thing evaluated?
-
-	// FIXME: this is TOTALLY BORKEN on a stock spidermoneky. Instead of
-	// returning a fail code, the interpreter halts, and without passing
-	// JS_HAS_FILE_OBJECT=1 in the build (which I've not gotten to work yet)
-	// there's no way to stat() the file to determine if it even exists before
-	// attempting to load(). As per MDA, we should look at xpcshell as a
-	// replacement for spidermonkey.
     var ok = load(uri);
     dojo.debug("spidermonkey load(", uri, ") returned ", ok);
     return 1;
