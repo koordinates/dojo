@@ -18,8 +18,7 @@ dojo.collections.Iterator = function(a){
 			return !this.atEnd;
 		}
 		this.current = obj[position];
-		position++;
-		if(position == obj.length){
+		if(++position == obj.length){
 			this.atEnd = true;
 		}
 		return !this.atEnd;
@@ -48,8 +47,7 @@ dojo.collections.DictionaryIterator = function(obj){
 			this.key = this.entry.key ;
 			this.value = this.entry.value ;
 		}
-		position++;
-		if (position == arr.length) {
+		if (++position == arr.length) {
 			this.atEnd = true ;
 		}
 		return !this.atEnd ;
