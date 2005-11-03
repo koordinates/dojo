@@ -4,6 +4,11 @@
 
 dojo.hostenv.name_ = 'spidermonkey';
 
+dojo.hostenv.println = print;
+dojo.hostenv.exit = function(exitcode){ 
+	quit(exitcode); 
+}
+
 // version() returns 0, sigh. and build() returns nothing but just prints.
 dojo.hostenv.getVersion = function(){ return version(); }
 
@@ -15,7 +20,7 @@ var line2pc; var print; var load; var quit;
 @*/
 
 if(typeof line2pc == 'undefined'){
-	dj_throw("attempt to use SpiderMonkey host environment when no 'line2pc' global");
+	dojo.raise("attempt to use SpiderMonkey host environment when no 'line2pc' global");
 }
 
 /*
@@ -36,11 +41,11 @@ function dj_spidermonkey_current_file(depth){
     // lines are like: bu_getCurrentScriptURI_spidermonkey("ScriptLoader.js")@burst/Runtime.js:101
     var matches = s.match(/[^@]*\.js/gi);
     if(!matches){ 
-		dj_throw("could not parse stack string: '" + s + "'");
+		dojo.raise("could not parse stack string: '" + s + "'");
 	}
     var fname = (typeof depth != 'undefined' && depth) ? matches[depth + 1] : matches[matches.length - 1];
     if(!fname){ 
-		dj_throw("could not find file name in stack string '" + s + "'");
+		dojo.raise("could not find file name in stack string '" + s + "'");
 	}
     //print("SpiderMonkeyRuntime got fname '" + fname + "' from stack string '" + s + "'");
     return fname;
@@ -55,18 +60,11 @@ if(!dojo.hostenv.library_script_uri_){
 dojo.hostenv.loadUri = function(uri){
 	// spidermonkey load() evaluates the contents into the global scope (which
 	// is what we want).
-    // TODO: sigh, load() does not return a useful value. 
-    // Perhaps it is returning the value of the last thing evaluated?
-    var ok = load(uri);
-    dojo.debug("spidermonkey load(", uri, ") returned ", ok);
-    return 1;
+	// TODO: sigh, load() does not return a useful value. 
+	// Perhaps it is returning the value of the last thing evaluated?
+	var ok = load(uri);
+	// dojo.debug("spidermonkey load(", uri, ") returned ", ok);
+	return 1;
 }
 
-dojo.hostenv.println = function(line){
-	print(line);
-}
-
-dojo.hostenv.exit = function(exitcode){ 
-	quit(exitcode); 
-}
 

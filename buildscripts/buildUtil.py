@@ -89,7 +89,8 @@ def buildTestFiles( testDir="../tests/",
 					prologueFile="../tests/prologue.js",
 					epilogueFile="../tests/epilogue.js",
 					jumFile="../testtools/JsTestManager/jsunit_wrap.js",
-					domImplFile="../testtools/JsFakeDom/BUFakeDom.js"):
+					domImplFile="../testtools/JsFakeDom/BUFakeDom.js",
+					dojoRootPath="../"):
 	# FIXME: need to test for file existance of all the passed file names
 
 	testOutFile = norm(testOutFile)
@@ -99,10 +100,18 @@ def buildTestFiles( testDir="../tests/",
 
 	testOutFD = open(testOutFile, "w+")
 	testOutFD.write("""
+
+djConfig = { 
+	baseRelativePath: "%s/",
+	isDebug: true
+};
+
+load("%s/dojo.js");
+
 load("%s", 
 	"%s", 
 	"%s");
-""" % (norm(prologueFile), norm(domImplFile), norm(jumFile))
+""" % (norm(dojoRootPath), norm(dojoRootPath), norm(prologueFile), norm(domImplFile), norm(jumFile))
 	)
 
 	testFiles = findTestFiles(testDir)
