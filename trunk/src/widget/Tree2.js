@@ -95,6 +95,8 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 		this.oldDomNode.style.display = 'none';
 		this.oldDomNode.parentNode.replaceChild(this.domNode, this.oldDomNode);
 
+		this.buildHeader();
+
 		for(var i=0; i<this.children.length; i++){
 
 			this.children[i].isFirstNode = (i == 0) ? true : false;
@@ -117,6 +119,18 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 		for(var i=0; i<this.children.length; i++){
 			this.children[i].startMe();
 		}
+	},
+
+	// Add a dummy row at the top of the table just to set cell widths (this
+	// avoids some problems with IE)
+	buildHeader: function(){
+		var rowNode = document.createElement('tr');
+		for(var i=0; i<this.maxDepth; i++){
+			var cell = document.createElement('td');
+			cell.style.width = this.iconWidth + 'px';
+			rowNode.appendChild(cell);
+		}
+		this.bodyNode.appendChild(rowNode);
 	},
 
 	addChild: function(child){
@@ -325,8 +339,6 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		cell.appendChild(div);
 		div.appendChild(img1);
 		div.appendChild(img2);
-
-		cell.style.width = this.tree.iconWidth + 'px';
 
 		div.style.position = 'relative';
 		div.style.left = '0';
