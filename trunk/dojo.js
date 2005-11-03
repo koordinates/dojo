@@ -1,15 +1,24 @@
 (function(){
-	var isRhino = ((typeof this["load"] == "function")&&(typeof this["Packages"] == "function"));
-	var tmps = ["bootstrap1.js", "hostenv_"+((isRhino) ? "rhino" : "browser")+".js", "bootstrap2.js"];
+	var hostEnv = "browser";
+	var isRhino = false;
+	var isSpidermonkey = false;
+	if((typeof this["load"] == "function")&&(typeof this["Packages"] == "function")){
+		var isRhino = true;
+		hostEnv = "rhino";
+	}else if(typeof this["load"] == "function"){
+		isSpidermonkey  = true;
+		hostEnv = "spidermonkey";
+	}
+	var tmps = ["bootstrap1.js", "hostenv_"+hostEnv+".js", "bootstrap2.js"];
 
 	if( (this["djConfig"])&&(djConfig["baseScriptUri"]) ){
 		var root = djConfig["baseScriptUri"];
 	}else if((this["djConfig"])&&(djConfig["baseRelativePath"])){
 		var root = djConfig["baseRelativePath"];
 	}else{
-		var root = ".";
+		var root = "./";
 		if(!this["djConfig"]){
-			djConfig = { baseRelativePath: "." };
+			djConfig = { baseRelativePath: "./" };
 		}
 
 		// attempt to figure out the path to dojo if it isn't set in the config
@@ -34,7 +43,7 @@
 
 	for(var x in tmps){
 		var spath = root+"src/"+tmps[x];
-		if(isRhino){
+		if(isRhino||isSpidermonkey){
 			load(spath);
 		} else {
 			try {
