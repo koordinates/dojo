@@ -1,4 +1,4 @@
-dojo.require("dojo.event.Topic");
+dojo.require("dojo.event.*");
 
 function topicTestClass(){
 	this.testVal = 0;
