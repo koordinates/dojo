@@ -112,6 +112,65 @@ dojo.html.getDocumentSize = function() {
 	return [dojo.html.getDocumentWidth(), dojo.html.getDocumentHeight()];
 }
 
+dojo.html.getViewportWidth = function(){
+
+	if (window.innerWidth){
+		return window.innerWidth;
+	}
+
+	if (document.documentElement && document.documentElement.clientWidth){
+		// IE6 Strict
+		return document.documentElement.clientWidth;
+	}
+
+	if (document.body){
+		// IE
+		return document.body.clientWidth;
+	}
+
+	return 0;
+}
+
+dojo.html.getViewportHeight = function(){
+
+	if (window.innerHeight){
+		return window.innerHeight;
+	}
+
+	if (document.documentElement && document.documentElement.clientHeight){
+		// IE6 Strict
+		return document.documentElement.clientHeight;
+	}
+
+	if (document.body){
+		// IE
+		return document.body.clientHeight;
+	}
+
+	return 0;
+}
+
+dojo.html.getViewportSize = function() {
+	return [dojo.html.getViewportWidth(), dojo.html.getViewportHeight()];
+}
+
+dojo.html.getScrollOffset = function(){
+
+	if (window.pageYOffset){
+		return [window.pageXOffset, window.pageYOffset];
+	}
+		
+	if (document.documentElement && document.documentElement.scrollTop){
+		return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
+	}
+
+	if (document.body){
+		return [document.body.scrollLeft, document.body.scrollTop];
+	}
+
+	return [0, 0];
+}
+
 dojo.html.getParentOfType = function (node, type){
 	var parent = node;
 	type = type.toLowerCase();
