@@ -13,6 +13,12 @@ dojo.require("dojo.uri.*");
 
 dojo.widget._cssFiles = {};
 
+dojo.widget.defaultStrings = {
+	dojoRoot: dojo.hostenv.getBaseScriptUri(),
+	baseScriptUri: dojo.hostenv.getBaseScriptUri()
+};
+
+
 // static method to build from a template w/ or w/o a real widget in place
 dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, templateString) {
 	var tpath = templatePath || obj.templatePath;
@@ -385,19 +391,20 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		var node = null;
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
-			// do root conversion on the template string if required
-			this.templateString = this.templateString.replace(/\$\{baseScriptUri\}/mg, dojo.hostenv.getBaseScriptUri());
-			this.templateString = this.templateString.replace(/\$\{dojoRoot\}/mg, dojo.hostenv.getBaseScriptUri());
-			// FIXME: what other replacement productions do we want to make available? Arbitrary eval's?
-
 			// some special matching fun (this is a first pass, but could end up being useful for i8n)...
 			var matches = this.templateString.match(/\$\{([^\}]+)\}/g);
 			if(matches) {
+				var hash = this.strings || {};
+				for(var key in dojo.widget.defaultStrings) {
+					if(dojo.lang.isUndefined(hash[key])) {
+						hash[key] = dojo.widget.defaultStrings[key];
+					}
+				}
 				for(var i = 0; i < matches.length; i++) {
 					var key = matches[i];
 					key = key.substring(2, key.length-1);
-					if(this.strings[key]) {
-						this.templateString = this.templateString.replace(matches[i], this.strings[key]);
+					if(hash[key]) {
+						this.templateString = this.templateString.replace(matches[i], hash[key]);
 					}
 				}
 			}
