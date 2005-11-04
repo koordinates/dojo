@@ -292,6 +292,7 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
+	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
 
 	// FIXME: doesn't have correct parent support!
 	if(false && document.evaluate) { // supports dom 3 xpath
@@ -318,7 +319,6 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 				if(!dojo.html.getClass(node)){ continue outer; }
 
 				var nodeClasses = dojo.html.getClass(node).split(/\s+/g);
-				var reClass = new RegExp("(\\s|^)(" + classes.join(")|(") + ")(\\s|$)");
 				for(var j = 0; j < nodeClasses.length; j++) {
 					if( !nodeClasses[j].match(reClass) ) {
 						continue outer;
@@ -336,7 +336,6 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
 			var node = candidateNodes[i];
 			if( !dojo.html.getClass(node) ) { continue outer; }
 			var nodeClasses = dojo.html.getClass(node).split(/\s+/g);
-			var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
 			var matches = 0;
 
 			for(var j = 0; j < nodeClasses.length; j++) {
