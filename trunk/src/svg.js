@@ -187,16 +187,16 @@ dojo.svg.applyMatrix = function(node, a, b, c, d, e, f){
  */
 dojo.svg.group = function(nodes){
 	//	expect an array of nodes, attaches the group to the parent of the first node.
-	var p = nodes[0].parentNode;
+	var p = nodes.item(0).parentNode;
 	var g = document.createElementNS(this.xmlns.svg, "g");
-	for (var i = 0; i < nodes.length; i++) g.appendChild(nodes[i]);
+	for (var i = 0; i < nodes.length; i++) g.appendChild(nodes.item(i));
 	p.appendChild(g);
 	return g;
 };
 dojo.svg.ungroup = function(g){
 	//	puts the children of the group on the same level as group was.
 	var p = g.parentNode;
-	while (g.childNodes.length > 0) p.appendChild(g.childNodes[0]);
+	while (g.childNodes.length > 0) p.appendChild(g.childNodes.item(0));
 	p.removeChild(g);
 };
 //	if the node is part of a group, return the group, else return null.
