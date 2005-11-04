@@ -143,6 +143,22 @@ dojo.debug = function(){
 		dojo.hostenv.println(s.join(" "));
 	}
 }
+
+/**
+ * this is really hacky for now - just 
+ * display the properties of the object
+**/
+
+dojo.debugShallow = function(obj){
+	if (!djConfig.isDebug) { return; }
+	dojo.debug('------------------------------------------------------------');
+	dojo.debug('Object: '+obj);
+	for(i in obj){
+		dojo.debug(i + ': ' + obj[i]);
+	}
+	dojo.debug('------------------------------------------------------------');
+}
+
 var dj_debug = dojo.debug;
 
 /**
