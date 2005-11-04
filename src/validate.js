@@ -37,6 +37,8 @@ dojo.validate.isEmailAddressList = function(value, allowLocal, allowCruft) {
 	var values = value.split(/\s*[\s;,]\s*/g);
 	var emails = [];
 	for(var i = 0; i < values.length; i++) {
+		if(dojo.string.trim(values[i]) == "") { continue; }
+
 		if(!dojo.validate.isEmailAddress(values[i], allowLocal, allowCruft)) {
 			return false;
 		} else {
