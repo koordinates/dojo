@@ -71,20 +71,28 @@ dojo.widget.html.ContextMenu = function(){
 		// calculate if menu is going to apear within window
 		// or if its partially out of visable area
 		with(dojo.html){
+
 			var menuW = getInnerWidth(this.domNode);
 			var menuH = getInnerHeight(this.domNode);
-			var docW = getDocumentWidth();
-			var docH = getDocumentHeight();
+
+			var viewport = getViewportSize();
+			var scrolloffset = getScrollOffset();
 		}
 
-		var x = ((menuW + evt.clientX < docW) ? evt.clientX : evt.clientX - menuW);
-		var y = ((menuH + evt.clientY < docH) ? evt.clientY : evt.clientY - menuH);
+		var minX = viewport[0];
+		var minY = viewport[1];
 
-		// FIXME: use whatever we use to do more general style setting?
-		// FIXME: FIX this into something useful
-		// I am propably stupid but I doesnt understand what you mean above / Fredik
-		this.domNode.style.left = x + "px";
-		this.domNode.style.top = y + "px";
+		var maxX = (viewport[0] + scrolloffset[0]) - menuW;
+		var maxY = (viewport[1] + scrolloffset[1]) - menuH;
+
+		var posX = evt.clientX + scrolloffset[0];
+		var posY = evt.clientY + scrolloffset[1];
+
+		if (posX > maxX){ posX = posX - menuW; }
+		if (posY > maxY){ posY = posY - menuH; }
+
+		this.domNode.style.left = posX + "px";
+		this.domNode.style.top = posY + "px";
 
 
 		// block the onclick that follows this particular right click
