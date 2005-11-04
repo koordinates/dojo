@@ -390,6 +390,18 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			this.templateString = this.templateString.replace(/\$\{dojoRoot\}/mg, dojo.hostenv.getBaseScriptUri());
 			// FIXME: what other replacement productions do we want to make available? Arbitrary eval's?
 
+			// some special matching fun (this is a first pass, but could end up being useful for i8n)...
+			var matches = this.templateString.match(/\$\{([^\}]+)\}/g);
+			if(matches) {
+				for(var i = 0; i < matches.length; i++) {
+					var key = matches[i];
+					key = key.substring(2, key.length-1);
+					if(this.strings[key]) {
+						this.templateString = this.templateString.replace(matches[i], this.strings[key]);
+					}
+				}
+			}
+
 			// otherwise, we are required to instantiate a copy of the template
 			// string if one is provided.
 			
