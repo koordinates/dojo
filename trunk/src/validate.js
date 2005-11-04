@@ -34,13 +34,16 @@ dojo.validate.isEmailAddress = function(value, allowLocal, allowCruft) {
 
 // FIXME: should this biggyback on isEmailAddress or just have its own RegExp?
 dojo.validate.isEmailAddressList = function(value, allowLocal, allowCruft) {
-	var values = value.split(/\s*[\s;,]\s*/gi);
+	var values = value.split(/\s*[\s;,]\s*/g);
+	var emails = [];
 	for(var i = 0; i < values.length; i++) {
 		if(!dojo.validate.isEmailAddress(values[i], allowLocal, allowCruft)) {
 			return false;
+		} else {
+			emails.push(values[i]);
 		}
 	}
-	return true;
+	return emails;
 }
 
 /**
