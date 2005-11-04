@@ -45,7 +45,7 @@ dojo.validate.isEmailAddressList = function(value, allowLocal, allowCruft) {
 			emails.push(values[i]);
 		}
 	}
-	return emails;
+	return emails.length > 0 ? emails : false;
 }
 
 /**
