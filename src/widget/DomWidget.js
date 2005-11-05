@@ -404,7 +404,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 					var key = matches[i];
 					key = key.substring(2, key.length-1);
 					if(hash[key]) {
-						this.templateString = this.templateString.replace(matches[i], hash[key]);
+						if(dojo.lang.isFunction(hash[key])) {
+							var value = hash[key].call(this, key, this.templateString)
+						} else {
+							var value = hash[key];
+						}
+						this.templateString = this.templateString.replace(matches[i], value);
 					}
 				}
 			}
