@@ -3,48 +3,51 @@
 .. raw:: html
    :file: ../website/rest_template/header.html
 
-The Dojo Editor isn't the most feature-packed WYSIWYG editor control you can
-integrate into your application, but it is the best for heavy day-to-day use.
-We'll explain why, how to use it, and how its portability and stability will
-improve your application both in the short run and over the long haul.
+The Dojo Editor is the best in-browser WYSIWYG component for heavy day-to-day
+use. Paul Sowden's dedication to stability and a great experience over features
+has yeilded a portable, easy to use, easy to integrate component.
+
+This article explain why it was built, how to use it, and how its portability
+and stability will improve your application both in the short run and over the
+long haul.
 
 The Importance Being Solid
 --------------------------
 
-`JotSpot`_ has been a tremendous sponsor of the Dojo project for almost a year.
+`JotSpot`_ has been a tremendous sponsor of the Dojo project since early 2005.
 As the first Wiki to provide users with the advantages of WYSIWYG editing, it
-is imperative for Jot to get WYSIWYG right. The editing component is any Jot
-users most frequent, and error-prone, interaction with the system. While
-WYSIWYG is a clear advantage for end users, it can be quickly undermined if
-niggling iteraction problems, or even crashes, make users distrustful of the
-editing experience.
+is imperative for Jot that the WYSIWYG experience be absolutely *right*. The
+editing component is any Jot users most frequent, and error-prone, interaction
+with the system. While WYSIWYG is a clear advantage for end users, it can be
+quickly undermined if niggling iteraction problems or crashes make users
+distrustful or hesitant. Trust is built slowly, but can be destroyed in the
+blink of an eye.
 
-It was always hoped that Jot could avoid writing a new WYSIWYG component. Good
+It was always hoped writing a new WYSIWYG component could be avoided. Good
 engineers don't solve hard problems for the sake of solving them (on the clock,
-anyway). But after some frustration with the incumbent tool, it was decided to
-make a survey of all of the available options, including a ground-up rewrite.
+anyway). But after some frustration with the incumbent component, it was
+decided to make a survey of all of the available options, including a ground-up
+rewrite.
 
-It seems obvious in retrospect that a solid editing experience is what
-matters most. Regardless, our testing showed almost every in-browser editor
-attempts things that break user's expectations or make editing unstable. Of
-course it's not intentional. WYSIWYG on the web *is* a hard problem, and
-providing features cross-browser is a difficult feat. Somewhere in the heat of
-battle against unhelpful APIs, lousy documentation, and a never-ending maze of
-Mozilla bugs it becomes easy to forget that even though it may be possible to
-add a feature, endangering a solid user experience is almost certainly never
-worth it. What use is an editor if "undo" doesn't work? Does the "semanticness"
-of an editors output matter if it crashes?
 
-The things a Rich Text control doesn't do are as important as what it does.
-Sadly, the available options weren't salvagable.
+Our testing showed almost every in-browser editor attempts things that break
+user's expectations or make editing unstable. Of course it's not intentional.
+WYSIWYG on the web *is* a hard problem, and providing features cross-browser is
+a difficult feat. Somewhere in the heat of battle against unhelpful APIs, lousy
+documentation, and a never-ending maze of bugs it becomes easy to forget that
+even though it may be possible to add a feature, endangering a solid experience
+is almost certainly never worth it. What use is an editor if "undo" doesn't
+work? Does the "semanticness" of an editors output matter if it crashes?
 
-With this background, Paul Sowden set about to write an editor that adhered to
-strict user-experience and reliability principles. The result if a summer's
-work is the Dojo Rich Text component and Editor control. The Editor builds on
-the Rich Text component and gives it a toolbar that represents only those
-functions a given browser can reliabliy provide. JotSpot has generously made
-these components Open Source Software under the same liberal under which Dojo
-is distributed.
+The things a Rich Text control doesn't do are as important as what it does. The
+available options weren't salvagable.
+
+Paul Sowden set out to write an editor that adhered to strict user-experience
+and reliability principles. The result of a summer's work is the Dojo Rich Text
+component and Editor control. The Editor builds on the Rich Text component and
+gives it a toolbar that represents only those functions a given browser can
+reliabliy provide. JotSpot has generously made these components Open Source
+Software under the same liberal under which Dojo is distributed.
 
 Using the Editor
 ----------------
@@ -88,7 +91,57 @@ As you can see...
 The buttons in the default toolbar outline most of what the control is capable
 of on the browser that you are viewing it on.
 
-.. FIXME: add toolbar configuration demos
+.. note: We use the *dojoType* syntax instead of a special classname in this
+         example, although they are equivalent. Dojo supports special
+         classnames in order to provide strict support for XHTML and similarly
+         restrictive markup environments.
+
+Like all Dojo components, the properties of the editor control can be set using
+attributes in your markup. So if you want to set only bold, italic, and
+underline buttons in your editor's toolbar, the invocation might be::
+
+    <div dojoType="Editor" items="textGroup">
+        some content
+    </div>
+
+Or if we would like to see the editor created with list controls exposed, we
+could add them (with a separator inbetween) like this::
+
+    <div dojoType="Editor" items="textGroup|listGroup">
+        some content
+    </div>
+
+These groups indicate sets of icons which can also be specified individually.
+Available groups, with their constituient options listed as children, are:
+
+- textGroup
+    * bold
+    * italic
+    * underline
+    * strikethrough
+- blockGroup
+    * fontFace
+    * formatBlock
+- justifyGroup
+    * justifyleft
+    * justifycenter
+    * justifyright
+- commandGroup
+    * save
+    * cancel
+- colorGroup
+    * forecolor
+    * hilitecolor
+- listGroup
+    * insertorderedlist
+    * insertunorderedlist
+- indentGroup
+    * outdent
+    * indent
+- linkGroup
+    * createlink
+    * insertimage
+
 .. FIXME: discuss form participation
 .. FIXME: outline browser compat and limitations: IE, FF, Safari
 
