@@ -156,8 +156,22 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			}
 			this._prev_key_esc = true;
 			return;
-		}else if(evt.keyCode == 32){ // space is 32
-			this.selectOption();
+		}else if((evt.keyCode == 32)||(evt.keyCode == 13)){ // space is 32, enter is 13.
+			/*
+			// Cancel the enter key event bubble to avoid submitting the form.
+			if (evt.keyCode == 13) {
+				// FIXME: the does not cancel the form submission.
+				this.killEvent(evt);
+			}
+			*/
+			// If the list is open select the option with the event.
+			if(this._result_list_open){
+				evt = { target: this._highlighted_option };
+				this.selectOption(evt);
+			}else{
+				// Otherwise select the option with out the event.
+				this.selectOption();
+			}
 			return;
 		}else if(evt.keyCode == 40){ // down is 40
 			if(!this._result_list_open){
@@ -165,15 +179,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			}
 			this.highlightNextOption();
 			return;
-		}else if(evt.keyCode == 38){ // up is 40
+		}else if(evt.keyCode == 38){ // up is 38
 			this.highlightPrevOption();
-			return;
-		}else if(evt.keyCode == 13){ // enter is 13
-			// FIXME: what do we want to do here?
-			this.selectOption();
-			this.setSelectedValue(this.textInputNode.value);
-			this.comboBoxValue = this.textInputNode.value;
-			this.hideResultList();
 			return;
 		}else{
 			this.comboBoxValue.value = this.textInputNode.value;
@@ -301,8 +308,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 		this.textInputNode.value = tgt.getAttribute("resultName");
 		this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
-		this.comboBoxValue = tgt.getAttribute("resultName");
-		this.comboBoxSelectionValue = tgt.getAttribute("resultValue");
+		this.comboBoxValue.value = tgt.getAttribute("resultName");
+		this.comboBoxSelectionValue.value = tgt.getAttribute("resultValue");
 		this.hideResultList();
 	},
 
