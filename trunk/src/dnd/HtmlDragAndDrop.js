@@ -26,6 +26,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	onDragStart: function(){
 		return new dojo.dnd.HtmlDragObject(this.dragObject, this.type);
 	},
+	setDragHandle: function(node){
+		dojo.dnd.dragManager.unregisterDragSource(this);
+		this.domNode = node;
+		dojo.dnd.dragManager.registerDragSource(this);
+	},
 	setDragTarget: function(node){
 		this.dragObject = node;
 	}
