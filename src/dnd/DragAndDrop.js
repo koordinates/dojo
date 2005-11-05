@@ -16,6 +16,14 @@ dojo.lang.extend(dojo.dnd.DragSource, {
 	},
 	
 	onDragStart: function(){
+	},
+
+	unregister: function(){
+		dojo.dnd.dragManager.unregisterDragSource(this);
+	},
+
+	reregister: function(){
+		dojo.dnd.dragManager.registerDragSource(this);
 	}
 });
 

@@ -86,6 +86,17 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		}
 	},
 
+	unregisterDragSource: function(ds){
+		if (ds["domNode"]){
+
+			var dp = this.dsPrefix;
+			var dpIdx = ds.dragSourceId;
+			delete ds.dragSourceId;
+			delete this.dragSources[dpIdx];
+			ds.domNode.setAttribute(dp, null);
+		}
+	},
+
 	registerDropTarget: function(dt){
 		this.dropTargets.push(dt);
 	},
