@@ -12,6 +12,8 @@ dojo.require("dojo.lang");
 dojo.dnd.HtmlDragSource = function(node, type){
 	if(node){
 		this.domNode = node;
+		this.dragObject = node;
+
 		// register us
 		dojo.dnd.DragSource.call(this);
 
@@ -22,7 +24,10 @@ dojo.dnd.HtmlDragSource = function(node, type){
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	onDragStart: function(){
-		return new dojo.dnd.HtmlDragObject(this.domNode, this.type);
+		return new dojo.dnd.HtmlDragObject(this.dragObject, this.type);
+	},
+	setDragTarget: function(node){
+		this.dragObject = node;
 	}
 });
 
