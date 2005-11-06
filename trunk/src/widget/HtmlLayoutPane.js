@@ -37,6 +37,11 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	layoutChildPriority: 'top-bottom',
 	layoutSizeMode: 'relative',
 
+	// If this pane's content is external then set the url here	
+	url: "inline",
+	extractContent: true,
+	parseContent: true,
+
 	minWidth: 0,
 	minHeight: 0,
 
@@ -57,7 +62,49 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			}
 		}
 
+		if ( this.url != "inline" ) {
+			this.downloadExternalContent(this.url, true);
+		}
 		this.layoutChildren();
+	},
+
+	// Reset the (external defined) content of this pane
+	setUrl: function(url) {
+		this.url = url;
+		this.downloadExternalContent(url, true);
+	},
+
+	downloadExternalContent: function(url, useCache) {
+		var node = this.domNode;
+		node.innerHTML = "Loading...";
+
+		var extract = this.extractContent;
+		var parse = this.parseContent;
+		var self = this;
+
+		dojo.io.bind({
+			url: url,
+			useCache: useCache,
+			mimetype: "text/html",
+			handler: function(type, data, e) {
+				if(type == "load") {
+					if(extract) {
+						var matches = data.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+						if(matches) { data = matches[1]; }
+					}
+					node.innerHTML = data;
+					this.isLoaded = true;
+					if(parse) {
+						var parser = new dojo.xml.Parse();
+						var frag = parser.parseElement(node, null, true);
+						dojo.widget.getParser().createComponents(frag);
+					}
+					self.onResized();
+				} else {
+					node.innerHTML = "Error loading '" + url + "' (" + e.status + " " + e.statusText + ")";
+				}
+			}
+		});
 	},
 
 	filterAllowed: function(param, values){
