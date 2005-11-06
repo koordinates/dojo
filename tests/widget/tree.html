@@ -1,0 +1,26 @@
+<!-- Used from test_LayoutPaneHref.html -->
+<body>
+
+<h1>Tree</h1>
+<p>Clicking on doc1/doc2 in the tree below should make the contents show up on the right.</p>
+<div dojoType="Tree2" toggle="wipe" toggleDuration="500" publishSelectionTopic="treeSelected">
+	<div dojoType="Tree2Node" title="Item 1">
+		<div dojoType="Tree2Node" title="doc1"></div>
+		<div dojoType="Tree2Node" title="doc2">
+			<div dojoType="Tree2Node" title="Item 1.2.1">
+				<div dojoType="Tree2Node" title="Item 1.2.1.1"></div>
+			</div>
+			<div dojoType="Tree2Node" title="Item 1.2.2"></div>
+		</div>
+		<div dojoType="Tree2Node" title="Item 1.3">
+			<div dojoType="Tree2Node" title="Item 1.3.1"></div>
+			<div dojoType="Tree2Node" title="Item 1.3.2"></div>
+		</div>
+		<div dojoType="Tree2Node" title="Item 1.4">
+			<div dojoType="Tree2Node" title="Item 1.4.1"></div>
+		</div>
+	</div>
+	<div dojoType="Tree2Node" title="Item 2"></div>
+</div>
+
+</body>
