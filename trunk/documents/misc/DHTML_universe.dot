@@ -120,13 +120,18 @@ digraph dhtml_universe
 		bradneuberg -> Dojo;
 		bradneuberg -> Storage;
 		bscott -> RICO;
+		bscott -> Yahoo;
 		djames -> RICO;
+		djames -> Yahoo;
 		sschiller -> Yahoo;
 		svisscher -> Q42;
 		mwubben -> sIFR;
 		mdavidson -> sIFR;
 		sjmiles -> Dojo;
 		sjmiles -> TurboAjax;
+		dcrockford -> JSON;
+		dcrockford -> JSLint;
+		dcrockford -> Yahoo;
 
 		// project and company relationships
 		INFA -> NW;
@@ -219,6 +224,7 @@ digraph dhtml_universe
 		mdavidson	[ label="Mike Davidson" ];
 		sjmiles		[ label="Scott Miles" ];
 		jgwebber	[ label="Joel Webber" ];
+		dcrockford	[ label="Douglas Crockford" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -281,6 +287,8 @@ digraph dhtml_universe
 		Flickr		[ shape=diamond ];
 		XOpus		[ shape=diamond ];
 		sIFR		[ shape=diamond ];
+		JSON		[ shape=diamond ];
+		JSLint		[ shape=diamond ];
 	}
 
 // vim:ts=4:noet:ai
