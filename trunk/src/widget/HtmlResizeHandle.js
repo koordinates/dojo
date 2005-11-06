@@ -17,7 +17,7 @@ dojo.inherits(dojo.widget.HtmlResizeHandle, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 	widgetType: "ResizeHandle",
 
-	isSizing: 0,
+	isSizing: false,
 	startPoint: null,
 	startSize: null,
 
@@ -44,6 +44,7 @@ dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 	},
 
 	beginSizing: function(e){
+		if (this.isSizing){ return false; }
 
 		this.targetElm = dojo.widget.getWidgetById(this.targetElmId);
 		if (!this.targetElm){ return; }
@@ -51,7 +52,7 @@ dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 		var screenX = window.event ? window.event.clientX : e.pageX;
 		var screenY = window.event ? window.event.clientY : e.pageY;
 
-		this.isSizing = 1;
+		this.isSizing = true;
 		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
 		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetElm.domNode), 'h':dojo.style.getOuterHeight(this.targetElm.domNode)};
 
@@ -70,9 +71,10 @@ dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 	},
 
 	endSizing: function(e){
-		this.isSizing = 0;
 		dojo.event.disconnect(document.documentElement, "onmousemove", this, "changeSizing");
 		dojo.event.disconnect(document.documentElement, "onmouseup", this, "endSizing");
+
+		this.isSizing = false;
 	}
 
 
