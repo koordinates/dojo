@@ -243,8 +243,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 	resizeTo: function(w, h){
 
-		w = Math.max(w, this.minWidth);
-		h = Math.max(h, this.minHeight);
+		w = Math.max(w, this.getMinWidth());
+		h = Math.max(h, this.getMinHeight());
 
 		dojo.style.setOuterWidth(this.domNode, w);
 		dojo.style.setOuterHeight(this.domNode, h);
@@ -260,6 +260,94 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			this.onResized();	
 		}
 		dojo.widget.HtmlLayoutPane.superclass.show.call(this);
+	},
+
+	getMinWidth: function(){
+
+		//
+		// we need to first get the cumulative width
+		//
+
+		var w = this.minWidth;
+
+		if ((this.layoutAlign == 'left') || (this.layoutAlign == 'right')){
+
+			w = dojo.style.getOuterWidth(this.domNode);
+		}
+
+		for(var i=0; i<this.children.length; i++){
+			var ch = this.children[i];
+			var a = ch.layoutAlign;
+
+			if ((a == 'left') || (a == 'right') || (a == 'client')){
+
+				if (dojo.lang.isFunction(ch.getMinWidth)){
+					w += ch.getMinWidth();
+				}
+			}
+		}
+
+		//
+		// but then we need to check to see if the top/bottom kids are larger
+		//
+
+		for(var i=0; i<this.children.length; i++){
+			var ch = this.children[i];
+			var a = ch.layoutAlign;
+
+			if ((a == 'top') || (a == 'bottom')){
+
+				if (dojo.lang.isFunction(ch.getMinWidth)){
+					w = Math.max(w, ch.getMinWidth());
+				}
+			}
+		}
+
+		return w;
+	},
+
+	getMinHeight: function(){
+
+		//
+		// we need to first get the cumulative height
+		//
+
+		var h = this.minHeight;
+
+		if ((this.layoutAlign == 'top') || (this.layoutAlign == 'bottom')){
+
+			h = dojo.style.getOuterHeight(this.domNode);
+		}
+
+		for(var i=0; i<this.children.length; i++){
+			var ch = this.children[i];
+			var a = ch.layoutAlign;
+
+			if ((a == 'top') || (a == 'bottom') || (a == 'client')){
+
+				if (dojo.lang.isFunction(ch.getMinHeight)){
+					h += ch.getMinHeight();
+				}
+			}
+		}
+
+		//
+		// but then we need to check to see if the left/right kids are larger
+		//
+
+		for(var i=0; i<this.children.length; i++){
+			var ch = this.children[i];
+			var a = ch.layoutAlign;
+
+			if ((a == 'left') || (a == 'right')){
+
+				if (dojo.lang.isFunction(ch.getMinHeight)){
+					h = Math.max(h, ch.getMinHeight());
+				}
+			}
+		}
+
+		return h;
 	}
 });
 
