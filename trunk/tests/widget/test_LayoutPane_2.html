@@ -18,6 +18,11 @@
 	dojo.require("dojo.widget.HtmlResizeHandle");
 
 	dojo.hostenv.writeIncludes();
+
+	dojo.addOnLoad(function(){
+		dojo.debug('status bar min width: '+dojo.widget.getWidgetById('statusBar').getMinWidth());
+		dojo.debug('window thing min width: '+dojo.widget.getWidgetById('mywindow').getMinWidth());
+	});
 </script>
 <style>
 
@@ -41,13 +46,13 @@ div.statusPanel {
 
 <p>HTML before</p>
 <p>HTML before</p>
-<p>HTML before</p>
 
 <div dojoType="LayoutPane"
 	widgetId="mywindow"
-	style="border: 2px solid black; width: 90%; height: 300px;"
+	minHeight="20"
+	style="border: 2px solid black; width: 90%; height: 200px;"
 >
-	<div dojoType="LayoutPane" layoutAlign="bottom" class="statusBar">
+	<div dojoType="LayoutPane" layoutAlign="bottom" class="statusBar" minHeight="28" widgetId="statusBar">
 
 		<div dojoType="LayoutPane" layoutAlign="left" class="statusPanel">
 			panel 1
@@ -55,14 +60,13 @@ div.statusPanel {
 		<div dojoType="LayoutPane" layoutAlign="left" class="statusPanel">
 			panel 2
 		</div>
-		<div dojoType="LayoutPane" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;">
+		<div dojoType="LayoutPane" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;" minWidth="80">
 			panel 3
 		</div>
 		<div dojoType="ResizeHandle" targetElmId="mywindow"></div>
 	</div>
 </div>
 
-<p>HTML after</p>
 <p>HTML after</p>
 <p>HTML after</p>
 
