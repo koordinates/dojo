@@ -49,7 +49,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	postCreate: function(args, fragment, parentComp){
-		this.domNode.style.position = 'relative';
 
 		for(var i=0; i<this.children.length; i++){
 			if (this.hasLayoutAlign(this.children[i])){

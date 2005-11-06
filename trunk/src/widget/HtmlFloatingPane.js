@@ -91,6 +91,10 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 				this.children.push(kids[i]);
 			}else{
 				this.clientPane.children.push(kids[i]);
+
+				if (kids[i].widgetType == 'LayoutPane'){
+					kids[i].domNode.style.position = 'absolute';
+				}
 			}
 		}
 
