@@ -36,7 +36,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	title: 'Untitled',
 	constrainToContainer: 0,
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
-
+	isDragging: false,
 
 	fillInTemplate: function(){
 
@@ -121,6 +121,8 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	},
 
 	onMyDragStart: function(e){
+		if (this.isDragging){ return; }
+
 		this.dragOrigin = {'x': e.clientX, 'y': e.clientY};
 		
 		// this doesn't work if (as in the test file) the user hasn't set top
@@ -150,6 +152,8 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 
 		dojo.event.connect(document, 'onmousemove', this, 'onMyDragMove');
 		dojo.event.connect(document, 'onmouseup', this, 'onMyDragEnd');
+
+		this.isDragging = true;
 	},
 
 	onMyDragMove: function(e){
@@ -170,6 +174,8 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	onMyDragEnd: function(e){
 		dojo.event.disconnect(document, 'onmousemove', this, 'onMyDragMove');
 		dojo.event.disconnect(document, 'onmouseup', this, 'onMyDragEnd');
+
+		this.isDragging = false;
 	}
 	
 });
