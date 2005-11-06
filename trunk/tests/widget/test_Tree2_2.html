@@ -2,8 +2,19 @@
         "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Dojo Tree2 Widget Test</title>
+<title>Dojo Tree2 Widget Test (dynamic node creation)</title>
 
+<!--
+Uncomment this to debug tree positioning
+<style>
+table {
+	border: solid blue;
+}
+td {
+	border: solid yellow;
+}
+</style>
+-->
 <script type="text/javascript">
 	var djConfig = {isDebug: true};
 	//var djConfig = {isDebug: true, debugAtAllCosts: true };
@@ -35,7 +46,8 @@
 		var rootNode = dojo.widget.fromScript("Tree2Node", {title: "Root Node"});
 		tree.addChild(rootNode);
 
-		rootNode.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 1"}));
+		var node1 = dojo.widget.fromScript("Tree2Node", {title: "Node 1"});
+		rootNode.addChild(node1);
 
 		rootNode.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 2"}));
 		var node3 = dojo.widget.fromScript("Tree2Node", {title: "Node 3"});
@@ -45,6 +57,11 @@
 		node3_1.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 3.1.1"}))
 
 		tree.addChild(dojo.widget.fromScript("Tree2Node", {title: "Root Node 2"}));
+
+		// Add some nodes the first element (rather than the last element) just for testing
+		for(var i=1;i<5;i++) {
+			node1.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 1."+i}));
+		}
 
 		var eventSub = new Subscriber(document.getElementById("SelectionEvents"));
 		var selectionTopic = dojo.event.topic.getTopic("treeSelected");
