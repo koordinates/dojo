@@ -57,12 +57,16 @@ dojo.lang.extend(dojo.widget.HtmlResizeHandle, {
 
 		dojo.event.connect(document.documentElement, "onmousemove", this, "changeSizing");
 		dojo.event.connect(document.documentElement, "onmouseup", this, "endSizing");
+
+		e.preventDefault();
 	},
 
 	changeSizing: function(e){
 		var dx = this.startPoint.x - e.clientX;
 		var dy = this.startPoint.y - e.clientY;
 		this.targetElm.resizeTo(this.startSize.w - dx, this.startSize.h - dy);
+
+		e.preventDefault();
 	},
 
 	endSizing: function(e){
