@@ -24,6 +24,9 @@ dojo.widget.HtmlSimpleDropdownButtons = function() {
 	this.widgetType = "SimpleDropdownButtons";
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlSimpleDropdownButtons.css");
 
+	this.menuTriggerClass = "dojoSimpleDropdownButtons";
+	this.menuClass = "dojoSimpleDropdownButtonsMenu";
+
 	// overwrite buildRendering so we don't clobber our list
 	this.buildRendering = function(args, frag) {
 		if(this.templateCssPath) {
@@ -32,8 +35,8 @@ dojo.widget.HtmlSimpleDropdownButtons = function() {
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 
 		var menu = this.domNode;
-		if( !dojo.html.hasClass(menu, "dojoSimpleDropdownButtons") ) {
-			dojo.html.addClass(menu, "dojoSimpleDropdownButtons");
+		if( !dojo.html.hasClass(menu, this.menuTriggerClass) ) {
+			dojo.html.addClass(menu, this.menuTriggerClass);
 		}
 		var li = dojo.dom.getFirstChildElement(menu);
 		var menuIDs = [];
@@ -61,7 +64,7 @@ dojo.widget.HtmlSimpleDropdownButtons = function() {
 					dojo.html.disableSelection(li);
 					arrow.onfocus = function(){ this.blur(); }
 				} else {
-					dojo.html.addClass(submenu, "dojoSimpleDropdownButtonsMenu");
+					dojo.html.addClass(submenu, this.menuClass);
 					dojo.html.body().appendChild(submenu);
 					dojo.event.connect(arrow, "onmousedown", (function() {
 						var ar = arrow;
