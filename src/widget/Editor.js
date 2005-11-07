@@ -13,6 +13,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:Editor");
 
 dojo.widget.HtmlEditor = function() {
 	dojo.widget.HtmlWidget.call(this);
+	this.contentFilters = [];
 }
 dojo.inherits(dojo.widget.HtmlEditor, dojo.widget.HtmlWidget);
 
@@ -410,7 +411,12 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	},
 
 	getHtml: function(){
+		this._richText.contentFilters = this.contentFilters;
 		return this._richText.getEditorContent();
+	},
+
+	getEditorContent: function(){
+		return this.getHtml();
 	},
 
 	onClose: function(save, hide){
