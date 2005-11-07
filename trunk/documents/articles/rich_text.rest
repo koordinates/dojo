@@ -5,7 +5,7 @@
 
 The Dojo Editor is the best in-browser WYSIWYG component for heavy day-to-day
 use. Paul Sowden's dedication to stability and a great experience over features
-has yielded a portable, easy to use, easy to integrate component.
+has given Dojo users an easy to use, easy to integrate WYSIWYG component.
 
 This article explain why it was built, how to use it, and how its portability
 and stability will improve your application both in the short run and over the
@@ -14,76 +14,66 @@ long haul.
 The Importance Being Solid
 --------------------------
 
-`JotSpot`_ has been a tremendous sponsor of the Dojo project since January
-2005. As the first Wiki to provide users with the advantages of WYSIWYG
-editing, it is imperative for Jot that the WYSIWYG experience be absolutely
-*right*. The editing component is any Jot users most frequent, and error-prone,
-interaction with the system. While WYSIWYG is a clear advantage for end users,
-it can be quickly undermined if niggling interaction problems or crashes make
-users distrustful or hesitant. Trust is built slowly, but can be destroyed in
-the blink of an eye.
+`JotSpot`_ is a tremendous sponsor of Dojo and the first Wiki to provide usable
+WYSIWYG for Wikis. Jot's WYSIWYG experience must therefore be fluid, stable,
+and trustworthy in the eyes of the user. While WYSIWYG provides  clear
+advantages to users, it can be quickly undermined if niggling interaction
+problems or crashes make users distrustful or hesitant. Trust is earned slowly,
+but can be destroyed in the blink of an eye.
 
-It was always hoped writing a new WYSIWYG component could be avoided. Good
-engineers don't solve hard problems for the sake of solving them (on the clock,
-anyway). But after some frustration with the incumbent component, it was
-decided to make a survey of all of the available options, including a ground-up
-rewrite.
-
-Testing showed almost every in-browser editor breaks user expectations or make
-editing unstable. Of course it's not intentional. WYSIWYG on the web *is* a
-hard problem, and providing features cross-browser is a difficult feat.
+Testing at Jot showed almost every in-browser editor breaks user expectations
+or make editing unstable. Of course it's not intentional. WYSIWYG on the web
+*is* a hard problem, and providing features cross-browser is a difficult feat.
 Somewhere in the heat of battle against unhelpful APIs, lousy documentation,
-and a never-ending maze of bugs it becomes easy to forget that even though it
-may be possible to add a feature, endangering a solid experience is almost
-certainly never worth it. What use is an editor if "undo" doesn't work? Does
-the "semanticness" of an editors output matter if it crashes?
+and a never-ending maze of bugs and feature requests it becomes easy to forget
+that even though it may be possible to add a feature, endangering a solid
+experience is almost certainly never worth it. What use is an editor if "undo"
+doesn't work? Do the semantics of an editor's output matter if it crashes?
 
-We realized that the things a Rich Text control doesn't do are as important as
-what it does. The available options weren't salvageable.
+Paul's research showed that the things a rich text control doesn't do are as
+important as its feature list. Sadly, the available options weren't
+salvageable.
 
-Paul Sowden set out to write an editor that adhered to strict user-experience
-and reliability principles. The result is the Dojo Rich Text component and
-Editor control. The Editor builds on the Rich Text component and gives it a
-toolbar that represents only those functions a given browser can reliably
-provide. JotSpot has generously made these components Open Source Software
-under the same liberal under which Dojo is distributed.
+A new editor that adhered to strict user-experience and reliability principles
+was needed. The result is the Dojo Rich Text component and Editor controls,
+developed by Paul Sowden and David Schontzler. JotSpot has generously made this
+work Open Source Software under the same `liberal license`_ as Dojo.
 
 Fixing The Experience
 ---------------------
 
-As mentioned, there are several guiding goals for the Dojo Editor control that
-guided development:
+Several principles guided development of the Dojo Editor:
 
 *Do not break undo*
-    Browsers that support Rich Text editing also tend to hook these editing
-    components into the machinery of the editing undo stack. This means that
-    hitting ``ctrl-z`` should work.  The Dojo Editor takes great pains to avoid
-    doing things that will break this.
+    Browsers that support Rich Text editing hook editing into the undo stack.
+    This means that hitting ``ctrl-z`` *should* work.  The Dojo Editor takes
+    great pains to avoid doing things that break this behavior. Users trust an
+    editor (and the applications that use it) more if minor mistakes do not
+    incur disproportionate costs.
 
 *Provide WYSIWYG, not source editing*
-    Users choose WYSIWYG editing because they care about how something looks
-    and not the quality of HTML produced. This is a key reliability-improving
-    understanding. The goal for the editor then hast to be to provide What You
-    See Is What You Get (WYSIWYG) and not What You See Has A Semantic Meaning
-    Which May Or May Not Be What You Get (WYSHASMWMOMNBWYG). Filtering and
-    reworking HTML to meet markup or translation goals are allowed via hooks at
-    save time, but the contents of the editor are not modified at runtime to
-    support these secondary goals.
+    Users like WYSIWYG because they care about how something looks and not the
+    quality of HTML produced. The Dojo Editor provides What You See Is What You
+    Get (WYSIWYG) and not What You See Has A Semantic Meaning Which May Or May
+    Not Be What You Get (WYSHASMWMOMNBWYG). Therefore, filtering and reworking
+    HTML to meet markup cleanliness or or goals are allowed via hooks at save
+    time, not invasive and slow DOM manipulation at runtime.
 
 *Data Loss Is Unacceptable*
-    The worst thing an editor can do is to lose data. In a webapp, this
-    translates into being able to hit the "back" button after an error and not
-    have work lost. Browsers imbue textareas with this capability but rich text
-    editing components usually fail the test.
+    Nothing destroys trust like data loss. In a web app, this translates into
+    being able to hit the "back" button after an error and not have work lost.
+    Browsers imbue textareas with this capability but rich text editing
+    components usually fail the test. Dojo's Editor gives rich text
+    applications this trust-enhancing behavior.
 
 Using the Editor
 ----------------
 
-The Dojo Editor widget is a container for a Rich Text editor and a Toolbar
-widget that controls its behavior. When you build an editor, you can outline
-which buttons you'd like to be in the toolbars and their order. If the browser
-viewing the page can't support a particular option you've specified, its button
-won't appear in the toolbar. The simplest example of creating an Editor is::
+The Dojo Editor is a container for a Rich Text widget and a Toolbar
+widget. When building an Editor, you can outline which buttons you'd like to be
+in the toolbars and their order. If the browser viewing the page can't support
+a particular option you've specified, its button won't appear in the toolbar.
+The simplest example of creating an Editor is::
 
     <div class="dojo-Editor">
         some content
@@ -187,14 +177,16 @@ linkGroup
 Therefore, we can get the same result as specifying the ``textGroup`` by
 declaring our widget this way::
 
-    <div dojoType="Editor" items="bold;italic;underline;strikethrough;">
+    <div dojoType="Editor" 
+        items="bold;italic;underline;strikethrough;">
         some content
     </div>
 
 Of course, it's also possible to create an editor widget directly from
 JavaScript::
 
-    var editor = dojo.widget.fromScript("Editor", {}, dojo.byId("contentNode"));
+    var editor = dojo.widget.fromScript("Editor", {}, 
+                                        dojo.byId("contentNode"));
 
 Which will make the contents of ``contentNode`` editable. It's also easy to
 pass a different set of toolbar options as we have in previous examples::
@@ -202,7 +194,8 @@ pass a different set of toolbar options as we have in previous examples::
     var editorArgs = {
         items: ["bold", "italic", "underline", "strikethrough"]
     };
-    var editor = dojo.widget.fromScript("Editor", editorArgs, dojo.byId("contentNode"));
+    var editor = dojo.widget.fromScript("Editor", editorArgs, 
+                                        dojo.byId("contentNode"));
 
 Getting Content Back Out
 ########################
@@ -214,7 +207,8 @@ user's editing session. The first is ``getEditorContent``, which provides the
 current HTML generated by the WYSIWYG editing. This is useful when submitting
 content through ``dojo.io.bind()``:: 
 
-    var editor = dojo.widget.fromScript("Editor", {}, dojo.byId("contentNode"));
+    var editor = dojo.widget.fromScript("Editor", {}, 
+                                        dojo.byId("contentNode"));
 
     // ... time passes ...
 
@@ -246,33 +240,12 @@ textarea before the form is submitted.
 From the perspective of the developer, it's just like any other textarea that
 contains HTML content to be edited.
 
-The Negotiated Toolbar
-######################
+Stand-Alone Rich Text Widgets
+-----------------------------
 
-As briefly mentioned earlier, viewing the same editor definition on different
-browsers yields different toolbars. For instance, list-manipulation toolbars
-don't appear on Safari since it doesn't support the editor commands necessary
-to provide list editing without breaking the undo stack. This negotiation
-process is automatic, and so as a developer you will never arrive in a position
-where your application presents users with options that are perpetually grayed
-out, or worse, simply don't work.
-
-If you think you've declared a set of toolbar options but not all of them show
-up, try loading your application in Internet Explorer which supports the full
-range of editor options.
-
-Using the Rich Text Component By Itself
----------------------------------------
-
-At the core of each Editor is a RichText component that provides cross-browser
-editing capability. The Editor creates both a Toolbar and a RichText
-widget in order to give your editor a visual UI, but it is possible to use
-RichText components independently of the toolbar in order to provide HTML
-editing for many parts of a web interface where plain text feels un-natural but
-the overhead of a full toolbar seems out of place. 
-
-RichText widgets can be created as easily as Editor components using inline
-constructors::
+At the core of each Editor is a RichText widget, but it is possible to use
+RichText components independently of the Editor and Toolbar. RichText widgets
+can be created as easily as Editor components using inline constructors::
 
     <div dojoType="RichText">
         some content
@@ -280,12 +253,13 @@ constructors::
 
 Or in script::
 
-    var rte = dojo.widget.fromScript("RichText", {}, dojo.byId("contentNode"));
+    var rte = dojo.widget.fromScript("RichText", {}, 
+                                     dojo.byId("contentNode"));
 
 As with Editor instances, the RichText widget supports simple form
 participation and back-button save capability. Using the ``fromScript`` method
-of creating RichText widgets opens up possibilities for quickly enabling WYSIWYG
-editing for many quick, in-place editing tasks.
+of creating RichText widgets opens up possibilities for quickly enabling
+WYSIWYG editing for many in-place editing tasks.
 
 Like the Editor, the RichText widget provides a ``getEditorContent`` method
 which allows you to easily save out the "live" contents of an editor. As with
@@ -294,7 +268,8 @@ series of (optional) filters. These filters are unary functions that accept and
 return a single string. To register a new filter, simply push it onto the
 ``contentFilters`` array::
 
-    var rte = dojo.widget.fromScript("RichText", {}, dojo.byId("contentNode"));
+    var rte = dojo.widget.fromScript("RichText", {}, 
+                                     dojo.byId("contentNode"));
     rte.contentFilters.push(
         function(str){
             var copyright = "<!-- copyright 2005, The Dojo Foundation -->";
@@ -304,7 +279,7 @@ return a single string. To register a new filter, simply push it onto the
     );
 
 Now when ``rte.getEditorContent()`` is called, the return will be preceded
-with a copyright notice.
+with a copyright notice comment.
 
 .. FIXME: discuss fast creation/removal of RichText controls
 .. FIXME: discuss customizing event handlers
@@ -312,11 +287,14 @@ with a copyright notice.
 Availability
 ------------
 
-The Editor component covered in this article is part of the forthcoming 0.2
-release of Dojo. For those looking to take advantage of it before 0.2 becomes
-available, the Foundation makes nightly builds available at
-http://archive.dojotoolkit.org/ and the latest builds of the various Editions
-of Dojo are available from http://archive.dojotoolkit.org/nightly-profiles/
+The Editor component covered in this article is part of the upcoming 0.2
+release of Dojo. To take advantage of it before 0.2 becomes available, you can
+download a nightly build, available at http://archive.dojotoolkit.org/ and the
+latest builds of the various Editions of Dojo are available from
+http://archive.dojotoolkit.org/nightly-profiles/
+
+The truly adventurous can get Dojo directly from anonymous subversion:
+http://dojotoolkit.org/svn/dojo/trunk/
 
 Endnotes
 --------
@@ -335,6 +313,7 @@ Alex Russell is the project lead for Dojo and can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. _`JotSpot`: http://www.jot.com
+.. _`liberal license`: http://opensource.org/licenses/afl-2.1.php
 
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
