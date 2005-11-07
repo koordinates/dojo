@@ -1,15 +1,15 @@
-ul.dojo-simpleDropdownButtons {
+ul.dojoSimpleDropdownButtons {
 	margin : 0;
 	padding : 5px 0;
 }
 
-ul.dojo-simpleDropdownButtons li {
+ul.dojoSimpleDropdownButtons li {
 	display : inline;
 	margin-right : 5px;
 	padding : 2px 0;
 }
 
-ul.dojo-simpleDropdownButtons li a {
+ul.dojoSimpleDropdownButtons li a {
 	padding : 2px 9px;
 	border : 2px outset #ccc;
 	border-right-width : 1px;
@@ -18,16 +18,16 @@ ul.dojo-simpleDropdownButtons li a {
 	text-decoration : none;
 }
 
-ul.dojo-simpleDropdownButtons li ul {
+ul.dojoSimpleDropdownButtons li ul {
 	display : none;
 }
 
-ul.dojo-simpleDropdownButtons li a.disabled {
+ul.dojoSimpleDropdownButtons li a.disabled {
 	color : #999;
 	cursor : default;
 }
 
-ul.dojo-simpleDropdownButtons li .downArrow {
+ul.dojoSimpleDropdownButtons li .downArrow {
 	display : inline;
 	padding : 2px 4px;
 	border : 2px outset #ccc;
@@ -39,30 +39,30 @@ ul.dojo-simpleDropdownButtons li .downArrow {
 	_cursor : hand;
 }
 
-ul.dojo-simpleDropdownButtons li .downArrow.disabled {
+ul.dojoSimpleDropdownButtons li .downArrow.disabled {
 	background-image : url(images/dropdownButtonsArrow-disabled.gif);
 	cursor : default;
 }
 
-ul.dojo-simpleDropdownButtons li a:hover,
-ul.dojo-simpleDropdownButtons li span.downArrow:hover {
+ul.dojoSimpleDropdownButtons li a:hover,
+ul.dojoSimpleDropdownButtons li span.downArrow:hover {
 	color : black;
 	background-color : #ddd;
 }
 
-ul.dojo-simpleDropdownButtons li .downArrow.pressed, ul.dojo-simpleDropdownButtons li .downArrow:focus {
+ul.dojoSimpleDropdownButtons li .downArrow.pressed, ul.dojoSimpleDropdownButtons li .downArrow:focus {
 	border-style : inset;
 	background-position : 5px 10px;
 	padding : 2px 4px;
 }
 
-ul.dojo-simpleDropdownButtons li a.disabled:hover,
-ul.dojo-simpleDropdownButtons li span.downArrow.disabled:hover {
+ul.dojoSimpleDropdownButtons li a.disabled:hover,
+ul.dojoSimpleDropdownButtons li span.downArrow.disabled:hover {
 	color : #999;
 	background-color : #f4f4f4;
 }
 
-ul.dojo-simpleDropdownButtons li a:focus {
+ul.dojoSimpleDropdownButtons li a:focus {
 	padding : 3px 8px 1px 10px;
 	color : #333;
 	border-style : inset;
@@ -70,7 +70,7 @@ ul.dojo-simpleDropdownButtons li a:focus {
 
 /* Menu
  ******************** */
-ul.dojo-simpleDropdownButtonsMenu {
+ul.dojoSimpleDropdownButtonsMenu {
 	position : absolute;
 	margin : 0;
 	_margin : -2px;
@@ -82,18 +82,18 @@ ul.dojo-simpleDropdownButtonsMenu {
 	z-index : 99;
 }
 
-ul.dojo-simpleDropdownButtonsMenu li {
+ul.dojoSimpleDropdownButtonsMenu li {
 	_display : inline;
 }
 
-ul.dojo-simpleDropdownButtonsMenu a {
+ul.dojoSimpleDropdownButtonsMenu a {
 	display : block;
 	padding : 2px 5px;
 	color : #333;
 	text-decoration : none;
 }
 
-ul.dojo-simpleDropdownButtonsMenu a:hover {
+ul.dojoSimpleDropdownButtonsMenu a:hover {
 	background : #ddd;
 	color : black;
 }

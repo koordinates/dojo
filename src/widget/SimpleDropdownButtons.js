@@ -32,8 +32,8 @@ dojo.widget.HtmlSimpleDropdownButtons = function() {
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 
 		var menu = this.domNode;
-		if( !dojo.html.hasClass(menu, "dojo-simpleDropdownButtons") ) {
-			dojo.html.addClass(menu, "dojo-simpleDropdownButtons");
+		if( !dojo.html.hasClass(menu, "dojoSimpleDropdownButtons") ) {
+			dojo.html.addClass(menu, "dojoSimpleDropdownButtons");
 		}
 		var li = dojo.dom.getFirstChildElement(menu);
 		var menuIDs = [];
@@ -61,7 +61,7 @@ dojo.widget.HtmlSimpleDropdownButtons = function() {
 					dojo.html.disableSelection(li);
 					arrow.onfocus = function(){ this.blur(); }
 				} else {
-					dojo.html.addClass(submenu, "dojo-simpleDropdownButtonsMenu");
+					dojo.html.addClass(submenu, "dojoSimpleDropdownButtonsMenu");
 					dojo.html.body().appendChild(submenu);
 					dojo.event.connect(arrow, "onmousedown", (function() {
 						var ar = arrow;
