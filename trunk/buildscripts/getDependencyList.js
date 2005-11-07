@@ -18,12 +18,11 @@ if(!this["dependencies"]){
 	dependencies = [ 
 		"dojo.event.*",
 		"dojo.io.*",
-		"dojo.text.*",
+		"dojo.string",
 		"dojo.xml.*",
 		"dojo.xml.Parse",
-		"dojo.webui.widgets.Parse",
-		"dojo.webui.widgets.Button",
-		"dojo.webui.widgets.HTMLButton",
+		"dojo.widget.Parse",
+		"dojo.widget.Button"
 	];
 }
 
