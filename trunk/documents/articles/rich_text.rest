@@ -118,20 +118,20 @@ As you can see...
             dojo.require("dojo.widget.Editor");
         </script>
 
-        <span id="testEditor">
-            <!-- outline the editor so people know where they can type -->
-            <div style="border: 1px solid #908f8f;">
-                <div items="blockGroup;|;textGroup;|;justifyGroup;|;colorGroup;" 
-                    dojoType="Editor">...It could scarcely be easier.</div>
+        <!-- outline the editor so people know where they can type -->
+        <div style="border: 1px solid #908f8f;" id="testEditor">
+            <div dojoType="Editor"
+                items="blockGroup;|;textGroup;|;justifyGroup;|;colorGroup;">
+                <br />
+                ...It could scarcely be easier.
+                <br />
+                <br />
             </div>
-            <br />
-            <br />
-        </span>
+        </div>
 
-The buttons in the default toolbar outline most of what the control is capable
-of on the browser that you are viewing it on. You need only tell the system
-that you want the Editor component and it pulls in all of the Editor's
-dependencies transparently.
+
+You need only tell the system that you want the Editor component and it pulls
+in all of the Editor's dependencies transparently.
 
 .. note: We use the *dojoType* syntax instead of a special class name in this
          example, although they are equivalent. Dojo supports special
