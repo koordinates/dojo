@@ -4,7 +4,6 @@ dojo.provide("dojo.widget.HtmlFisheyeListItem");
 
 //
 // TODO
-// deal with moving/resizing correctly
 // fix really long labels in vertical mode
 // create widget correctly from source
 // allow proper styling of widget
