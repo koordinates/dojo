@@ -559,7 +559,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 * @return true if the command is supported, false otherwise
 	 */
 	queryCommandAvailable: function (command) {
-		var ie = 1, mozilla = 1 << 1, safari = 1 << 2;
+		var ie = 1;
+		var mozilla = 1 << 1
+		var safari = 1 << 2;
 		function isSupportedBy (browsers) {
 			return {
 				ie: Boolean(browsers & ie),
@@ -567,6 +569,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				safari: Boolean(browsers & safari)
 			}
 		}
+
+		var supportedBy = null;
 		
 		switch (command.toLowerCase()) {
 			case "bold": case "italic": case "underline":
@@ -576,30 +580,30 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			case "justifycenter": case "justifyfull": case "justifyleft": case "justifyright":
 			case "cut": case "copy": case "paste": case "delete":
 			case "undo": case "redo":
-				var supportedBy = isSupportedBy(mozilla | ie | safari);
+				supportedBy = isSupportedBy(mozilla | ie | safari);
 				break;
 				
 			case "createlink": case "unlink": case "removeformat":
 			case "inserthorizontalrule": case "insertimage":
 			case "insertorderedlist": case "insertunorderedlist":
 			case "indent": case "outdent": case "formatblock":
-				var supportedBy = isSupportedBy(mozilla | ie);
+				supportedBy = isSupportedBy(mozilla | ie);
 				break;
 				
 			case "blockdirltr": case "blockdirrtl":
 			case "dirltr": case "dirrtl":
 			case "inlinedirltr": case "inlinedirrtl":
-				var supportedBy = isSupportedBy(ie);
+				supportedBy = isSupportedBy(ie);
 				break;
 			
 			case "inserttable":
-				var supportedBy = isSupportedBy(mozilla | (this.object ? ie : 0));
+				supportedBy = isSupportedBy(mozilla | (this.object ? ie : 0));
 				break;
 			
 			case "insertcell": case "insertcol": case "insertrow":
 			case "deletecells": case "deletecols": case "deleterows":
 			case "mergecells": case "splitcell":
-				var supportedBy = isSupportedBy(this.object ? ie : 0);
+				supportedBy = isSupportedBy(this.object ? ie : 0);
 				break;
 			
 			default: return false;
