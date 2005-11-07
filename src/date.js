@@ -175,6 +175,19 @@ dojo.date.toShortDateString = function(date) {
 
 /**
  *
+ * Returns military formatted time
+ *
+ * @param date the date object
+ */
+dojo.date.toMilitaryTimeString = function(date){
+	var h = "00" + date.getHours();
+	var m = "00" + date.getMinutes();
+	var s = "00" + date.getSeconds();
+	return h.substr(h.length-2,2) + ":" + m.substr(m.length-2,2) + ":" + s.substr(s.length-2,2);
+}
+
+/**
+ *
  * Returns a string of the date relative to the current date.
  *
  * @param date The date object
