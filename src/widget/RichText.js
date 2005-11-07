@@ -17,6 +17,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 
 dojo.widget.HtmlRichText = function () {
 	dojo.widget.HtmlWidget.call(this);
+	this.contentFilters = [];
 }
 dojo.inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
 
@@ -44,7 +45,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 	_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
-	contentFilters: [],
+	// contentFilters: [],
 
 /* Init
  *******/
