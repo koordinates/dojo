@@ -1,6 +1,7 @@
 dojo.provide("dojo.io.RhinoIO");
 
-dojo.io.SyncHTTPRequest = function(){
+// TODO: this doesn't execute
+/*dojo.io.SyncHTTPRequest = function(){
 	dojo.io.SyncRequest.call(this);
 
 	this.send = function(URI){
@@ -8,4 +9,4 @@ dojo.io.SyncHTTPRequest = function(){
 }
 
 dojo.inherits(dojo.io.SyncHTTPRequest, dojo.io.SyncRequest);
-
+*/
