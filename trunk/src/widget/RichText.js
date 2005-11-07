@@ -560,7 +560,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	 */
 	queryCommandAvailable: function (command) {
 		var ie = 1;
-		var mozilla = 1 << 1
+		var mozilla = 1 << 1;
 		var safari = 1 << 2;
 		function isSupportedBy (browsers) {
 			return {
