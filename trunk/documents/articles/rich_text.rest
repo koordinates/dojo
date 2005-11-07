@@ -12,21 +12,20 @@ solution to these problems in an easy-to-integrate package.
 The Importance Being Solid
 --------------------------
 
-`JotSpot`_ is a tremendous sponsor of Dojo and the first Wiki to provide usable
-WYSIWYG for Wikis. Jot's WYSIWYG experience must therefore be fluid, stable,
-and trustworthy in the eyes of the user. While WYSIWYG provides clear
-advantages to users, it can be quickly undermined if niggling interaction
-problems or crashes make users distrustful or hesitant. Trust is earned slowly,
-but can be destroyed in the blink of an eye.
+`JotSpot`_ has been a key sponsor of Dojo and as the first Wiki to provide
+usable WYSIWYG, Jot's WYSIWYG editor is a critical part of the Wiki experience.
+While WYSIWYG is a clear advantage, it can be quickly undermined if niggling
+interaction problems or crashes make users distrustful or hesitant. Trust is
+earned slowly, but can be destroyed in the blink of an eye.
 
-Jots testing showed almost every in-browser editor breaks user expectations
-or makes editing unstable. Of course it's not intentional. WYSIWYG on the web
-*is* a hard problem, and providing features cross-browser is a difficult feat.
-We've all struggled against unhelpful APIs, lousy documentation, and a
-never-ending maze of bugs and feature requests. Amidst the frustration it's
-easy to forget that while it is possible to add a feature, endangering a solid
-experience is never worth it. What use is an editor if "undo" doesn't work? Do
-the semantics of an editor's output matter if it crashes?
+Testing showed almost every in-browser editor breaks user expectations or makes
+editing unstable. Of course it's not intentional. WYSIWYG on the web *is* a
+hard problem, and providing features cross-browser is a difficult feat.  We've
+all struggled against unhelpful APIs, lousy documentation, and a never-ending
+maze of bugs and feature requests. Amidst the frustration it's easy to forget
+that while it is possible to add a feature, endangering a solid experience is
+never worth it. What use is an editor if "undo" doesn't work? Do the semantics
+of an editor's output matter if it crashes?
 
 A new editor that adhered to strict user-experience and reliability principles
 was needed. The results are the Dojo Rich Text, Toolbar, and Editor controls.
