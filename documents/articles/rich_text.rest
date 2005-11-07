@@ -106,7 +106,12 @@ As you can see...
 
         <!-- pull in the core of Dojo -->
         <script type="text/javascript" 
-            src="/path/to/dojo.js"></script>
+            src="/archive/dojo-2005-11-07/editor/dojo/dojo.js"></script>
+
+        <!--
+        <script type="text/javascript" 
+            src="/~alex/dojo/trunk/release/dojo/dojo.js"></script>
+        -->
 
         <!-- Dojo is loaded, include the widget  -->
         <script type="text/javascript">
