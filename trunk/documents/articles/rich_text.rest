@@ -56,8 +56,8 @@ Several principles guided development of the Dojo Editor:
     quality of HTML produced. The Dojo Editor provides What You See Is What You
     Get (WYSIWYG) and not What You See Has A Semantic Meaning Which May Or May
     Not Be What You Get (WYSHASMWMOMNBWYG). Therefore, filtering and reworking
-    HTML to meet markup cleanliness or or goals are allowed via hooks at save
-    time, not invasive and slow DOM manipulation at runtime.
+    HTML to meet markup cleanliness is done via hooks at save time, not
+    invasive and slow DOM manipulation at runtime.
 
 *Data Loss Is Unacceptable*
     Nothing destroys trust like data loss. In a web app, this translates into
@@ -110,7 +110,7 @@ As you can see...
 
         <!--
         <script type="text/javascript" 
-            src="/~alex/dojo/trunk/release/dojo/dojo.js"></script>
+            src="/~alex/dojo/trunk/dojo.js"></script>
         -->
 
         <!-- Dojo is loaded, include the widget  -->
@@ -119,7 +119,11 @@ As you can see...
         </script>
 
         <span id="testEditor">
-            <div dojoType="Editor">...It could scarcely be easier.</div>
+            <!-- outline the editor so people know where they can type -->
+            <div style="border: 1px solid #908f8f;">
+                <div items="blockGroup;|;textGroup;|;justifyGroup;|;colorGroup;" 
+                    dojoType="Editor">...It could scarcely be easier.</div>
+            </div>
             <br />
             <br />
         </span>
