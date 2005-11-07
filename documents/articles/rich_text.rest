@@ -3,41 +3,35 @@
 .. raw:: html
    :file: ../website/rest_template/header.html
 
-The Dojo Editor is the best in-browser WYSIWYG component for heavy day-to-day
-use. Paul Sowden's dedication to stability and a great experience over features
-has given Dojo users an easy to use, easy to integrate WYSIWYG component.
-
-This article explain why it was built, how to use it, and how its portability
-and stability will improve your application both in the short run and over the
-long haul.
+Rich text (WYSIWYG) editing on the web is a difficult problem. Browser-based
+rich text editors to date have failed to meet users stability expectations or
+in other ways subtly break the seamlessness of the editing experience. The Dojo
+Editor widget, written by `Paul Sowden`_ and `David Schontzler`_, provides a
+solution to these problems in an easy-to-integrate package.
 
 The Importance Being Solid
 --------------------------
 
 `JotSpot`_ is a tremendous sponsor of Dojo and the first Wiki to provide usable
 WYSIWYG for Wikis. Jot's WYSIWYG experience must therefore be fluid, stable,
-and trustworthy in the eyes of the user. While WYSIWYG provides  clear
+and trustworthy in the eyes of the user. While WYSIWYG provides clear
 advantages to users, it can be quickly undermined if niggling interaction
 problems or crashes make users distrustful or hesitant. Trust is earned slowly,
 but can be destroyed in the blink of an eye.
 
-Testing at Jot showed almost every in-browser editor breaks user expectations
-or make editing unstable. Of course it's not intentional. WYSIWYG on the web
+Jots testing showed almost every in-browser editor breaks user expectations
+or makes editing unstable. Of course it's not intentional. WYSIWYG on the web
 *is* a hard problem, and providing features cross-browser is a difficult feat.
-Somewhere in the heat of battle against unhelpful APIs, lousy documentation,
-and a never-ending maze of bugs and feature requests it becomes easy to forget
-that even though it may be possible to add a feature, endangering a solid
-experience is almost certainly never worth it. What use is an editor if "undo"
-doesn't work? Do the semantics of an editor's output matter if it crashes?
-
-Paul's research showed that the things a rich text control doesn't do are as
-important as its feature list. Sadly, the available options weren't
-salvageable.
+We've all struggled against unhelpful APIs, lousy documentation, and a
+never-ending maze of bugs and feature requests. Amidst the frustration it's
+easy to forget that while it is possible to add a feature, endangering a solid
+experience is never worth it. What use is an editor if "undo" doesn't work? Do
+the semantics of an editor's output matter if it crashes?
 
 A new editor that adhered to strict user-experience and reliability principles
-was needed. The result is the Dojo Rich Text component and Editor controls,
-developed by Paul Sowden and David Schontzler. JotSpot has generously made this
-work Open Source Software under the same `liberal license`_ as Dojo.
+was needed. The results are the Dojo Rich Text, Toolbar, and Editor controls.
+JotSpot has generously made this work Open Source Software under the same
+`liberal license`_ as Dojo.
 
 Fixing The Experience
 ---------------------
@@ -62,7 +56,7 @@ Several principles guided development of the Dojo Editor:
 *Data Loss Is Unacceptable*
     Nothing destroys trust like data loss. In a web app, this translates into
     being able to hit the "back" button after an error and not have work lost.
-    Browsers imbue textareas with this capability but rich text editing
+    Browsers imbue ``textarea``s with this capability but rich text editing
     components usually fail the test. Dojo's Editor gives rich text
     applications this trust-enhancing behavior.
 
@@ -244,10 +238,10 @@ The simplest way to accomplish this is to create your Editor from a
 When the editor detects that it's being constructed out of a ``textarea``, it
 automatically hooks into the ``onsubmit`` method of the form the ``textarea``
 is a part of and ensures that the editor content is saved back out to the
-textarea before the form is submitted. 
+``textarea`` before the form is submitted. 
 
-From the perspective of the developer, it's just like any other textarea that
-contains HTML content to be edited.
+From the perspective of the developer, it's just like any other ``textarea``
+that contains HTML content to be edited.
 
 Stand-Alone Rich Text Widgets
 -----------------------------
@@ -321,6 +315,8 @@ About The Author
 Alex Russell is the project lead for Dojo and can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
+.. _`Paul Sowden`: http://idontsmoke.co.uk
+.. _`David Schontzler`: http://stilleye.com
 .. _`JotSpot`: http://www.jot.com
 .. _`liberal license`: http://opensource.org/licenses/afl-2.1.php
 
