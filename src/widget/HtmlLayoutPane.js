@@ -35,7 +35,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 	layoutAlign: 'none',
 	layoutChildPriority: 'top-bottom',
-	layoutSizeMode: 'relative',
+
+	cssPath: dojo.uri.dojoUri("src/widget/templates/HtmlLayoutPane.css"),
 
 	// If this pane's content is external then set the url here	
 	url: "inline",
@@ -48,9 +49,12 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	fillInTemplate: function(){
 		this.filterAllowed('layoutAlign',         ['none', 'left', 'top', 'right', 'bottom', 'client']);
 		this.filterAllowed('layoutChildPriority', ['left-right', 'top-bottom']);
-		this.filterAllowed('layoutSizeMode',      ['absolute', 'relative']);
+
+		// Need to include CSS manually because there is no template file/string
+		dojo.style.insertCssFile(this.cssPath, null, true);
 
 		this.domNode.style.position = 'relative';
+		dojo.html.addClass(this.domNode, "dojoLayoutPaneParent");
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -59,6 +63,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			if (this.hasLayoutAlign(this.children[i])){
 				this.children[i].domNode.style.position = 'absolute';
 				this.children[i].isChild = true;
+				dojo.html.removeClass(this.children[i].domNode, "dojoLayoutPaneParent");
+				dojo.html.addClass(this.children[i].domNode, "dojoLayoutPaneChild");	
 			}
 		}
 
