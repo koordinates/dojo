@@ -55,7 +55,7 @@ Several principles guided development of the Dojo Editor:
 *Data Loss Is Unacceptable*
     Nothing destroys trust like data loss. In a web app, this translates into
     being able to hit the "back" button after an error and not have work lost.
-    Browsers imbue ``textarea``s with this capability but rich text editing
+    Browsers imbue ``textareas`` with this capability but rich text editing
     components usually fail the test. Dojo's Editor gives rich text
     applications this trust-enhancing behavior.
 
@@ -301,12 +301,15 @@ http://dojotoolkit.org/svn/dojo/trunk/
 Endnotes
 --------
 
-About The Developer
+About The Developers
 #########################
 
 Paul Sowden is a Masters student at the University of Southampton, former
 intern at `JotSpot`_, and DHTML hacker extrordinare. He can be reached at
 <psowden@dojotoolkit.org>. His personal site is http://idontsmoke.co.uk
+
+David Schontzler is a UI Engineer at `JotSpot`_. He can be reached at
+<david@dojotoolkit.org> and his personal site is http://stilleye.com
 
 About The Author
 #########################
