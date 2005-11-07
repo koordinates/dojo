@@ -11,8 +11,8 @@ solution to these problems in an easy-to-integrate package.
 
 `Quick link to the Editor demo`_
 
-The Importance Being Solid
---------------------------
+Experience Matters
+------------------
 
 `JotSpot`_ has been a key sponsor of Dojo and as the first Wiki to provide
 usable WYSIWYG, Jot's WYSIWYG editor is a critical part of the Wiki experience.
@@ -24,18 +24,20 @@ Testing showed almost every in-browser editor breaks user expectations or makes
 editing unstable. Of course it's not intentional. WYSIWYG on the web *is* a
 hard problem, and providing features cross-browser is a difficult feat.  We've
 all struggled against unhelpful APIs, lousy documentation, and a never-ending
-maze of bugs and feature requests. Amidst the frustration it's easy to forget
-that while it is possible to add a feature, endangering a solid experience is
-never worth it. What use is an editor if "undo" doesn't work? Do the semantics
-of an editor's output matter if it crashes?
+maze of bugs and feature requests. Line ending issues and
+iframes-vs-contenteditable is enough to drive anyone mad. Amidst the
+frustration it's easy to forget that while it is possible to add a feature,
+endangering a solid experience is never worth it. What use is an editor if
+"undo" doesn't work? Do the semantics of an editor's output matter if it
+crashes?
 
 A new editor that adhered to strict user-experience and reliability principles
 was needed. The results are the Dojo Rich Text, Toolbar, and Editor controls.
 JotSpot has generously made this work Open Source Software under the same
 `liberal license`_ as Dojo.
 
-Fixing The Experience
----------------------
+Getting There From Here
+-----------------------
 
 Several principles guided development of the Dojo Editor:
 
@@ -276,7 +278,7 @@ return a single string. To register a new filter, simply push it onto the
                                      dojo.byId("contentNode"));
     rte.contentFilters.push(
         function(str){
-            var copyright = "<!-- copyright 2005, The Dojo Foundation -->";
+            var copyright = "<!-- Copyright The Dojo Foundation -->";
             // prepend the HTML with a copyright statement:
             return copyright+str;
         }
@@ -297,7 +299,7 @@ download a nightly build, available at http://archive.dojotoolkit.org/ and the
 latest builds of the various Editions of Dojo are available from
 http://archive.dojotoolkit.org/nightly-profiles/
 
-The truly adventurous can get Dojo directly from anonymous subversion:
+Developers familiar with Subversion can get the lastest Dojo directly from:
 http://dojotoolkit.org/svn/dojo/trunk/
 
 Endnotes
