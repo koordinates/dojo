@@ -133,12 +133,14 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		this.posOrigin = {'x': this.domNode.offsetLeft, 'y': this.domNode.offsetTop};
 
 		if (this.constrainToContainer){
+			// TODO: this doesn't work with scrolled pages
+
 			// get parent client size...
 
 			if (this.domNode.parentNode.nodeName.toLowerCase() == 'body'){
 				var parentClient = {
-					'w': dojo.html.getDocumentWidth(),
-					'h': dojo.html.getDocumentHeight()
+					'w': dojo.html.getViewportWidth(),
+					'h': dojo.html.getViewportHeight()
 				};
 			}else{
 				var parentClient = {
