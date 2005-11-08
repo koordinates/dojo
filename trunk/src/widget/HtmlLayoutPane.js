@@ -54,7 +54,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		dojo.style.insertCssFile(this.cssPath, null, true);
 
 		this.domNode.style.position = 'relative';
-		dojo.html.addClass(this.domNode, "dojoLayoutPaneParent");
+		dojo.html.addClass(this.domNode, "dojoLayoutPane");
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -62,9 +62,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		for(var i=0; i<this.children.length; i++){
 			if (this.hasLayoutAlign(this.children[i])){
 				this.children[i].domNode.style.position = 'absolute';
-				this.children[i].isChild = true;
-				dojo.html.removeClass(this.children[i].domNode, "dojoLayoutPaneParent");
-				dojo.html.addClass(this.children[i].domNode, "dojoLayoutPaneChild");	
+				this.children[i].isChild = true;	
 			}
 		}
 
@@ -268,6 +266,18 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		this.onResized();
 	},
 
+	removePane: function(pane){
+
+		var idx = dojo.lang.find(this.children, pane);
+		if ( idx != -1 ) {
+			this.children.splice(idx, 1);
+		}
+		
+		dojo.dom.removeNode(pane.domNode);
+
+		this.onResized();
+	},
+	
 	layoutSoon: function(){
 
 		var self = this;
