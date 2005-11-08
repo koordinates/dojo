@@ -99,7 +99,7 @@ dojo.widget.manager = new function(){
 	}
 
 	// map of previousally discovered implementation names to constructors
-	var knownWidgetImplementations = [];
+	var knownWidgetImplementations = {};
 
 	// support manually registered widget packages
 	var widgetPackages = ["dojo.widget", "dojo.webui.widgets"];
