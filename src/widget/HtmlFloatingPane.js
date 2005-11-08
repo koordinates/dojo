@@ -24,6 +24,16 @@ dojo.inherits(dojo.widget.HtmlFloatingPane, dojo.widget.HtmlLayoutPane);
 dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	widgetType: "FloatingPane",
 
+	// Constructor arguments
+	hasShadow: false,
+	title: 'Untitled',
+	constrainToContainer: false,
+
+	// If this pane's content is external then set the url here	
+	url: "inline",
+	extractContent: true,
+	parseContent: true,
+	
 	isContainer: true,
 	containerNode: null,
 	domNode: null,
@@ -32,9 +42,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	dragOrigin: null,
 	posOrigin: null,
 	maxPosition: null,
-	hasShadow: false,
-	title: 'Untitled',
-	constrainToContainer: 0,
+
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 	isDragging: false,
 
@@ -60,16 +68,14 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		}
 
 		// this is our client area
-		this.clientPane = this.createPane(elm, 'client');
+		this.clientPane = this.createPane(elm, {layoutAlign: "client", url: this.url});
 		this.clientPane.ownerPane = this;
 
-
 		// this is our chrome
-
 		var elm = document.createElement('div');
 		elm.appendChild(document.createTextNode(this.title));
 		dojo.html.addClass(elm, 'dojoFloatingPaneDragbar');
-		this.dragBar = this.createPane(elm, 'top');
+		this.dragBar = this.createPane(elm, {layoutAlign: 'top'});
 		this.dragBar.ownerPane = this;
 
 		dojo.html.disableSelection(this.dragBar.domNode);
@@ -111,12 +117,9 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		dojo.widget.HtmlFloatingPane.superclass.onResized.call(this);
 	},
 
-	createPane: function(node, align){
-
-		var pane = dojo.widget.fromScript("LayoutPane", { layoutAlign: align }, node);
-
+	createPane: function(node, args){
+		var pane = dojo.widget.fromScript("LayoutPane", args, node);
 		this.addPane(pane);
-
 		return pane;
 	},
 
