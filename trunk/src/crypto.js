@@ -43,29 +43,25 @@ dojo.crypto.fromBase64 = function (data){
 	return output ;
 }
 
-dojo.crypto.toBinHex = function (data){
-	if (typeof(data) == "string") data = this.toByteArray(data);
-	var hex_tab = "0123456789abcdef";
-	var s = [] ;
-	for (var i = 0; i < data.length * 4; i++) 
-		s.push(hex_tab.charAt((data[i >> 2] >> ((i % 4) * 8 + 4)) & 0xF) + hex_tab.charAt((data[i >> 2] >> ((i % 4) * 8)) & 0xF)) ;
-	return s.join("") ;
-}
-
-dojo.crypto.toByteArray = function (data){
-	var chrsz = 8 ;
-	var bin = [] ;
-	var mask = (1 << chrsz) - 1;
-	for (var i = 0; i < data.length * chrsz; i += chrsz) 
-		bin[i >> 5] |= (data.charCodeAt(i / chrsz) & mask) << (i % 32) ;
+dojo.crypto.toByteArray = function(data){
+	var chrsz=8 ;
+	var bin=[] ;
+	var mask=(1<<chrsz)-1;
+	for (var i=0; i<data.length*chrsz; i+=chrsz){
+		bin[i>>5]|=(data.charCodeAt(i/chrsz)&mask)<<(i%32);
+	}
 	return bin;
 }
 
-dojo.crypto.fromByteArray = function (data){
+dojo.crypto.fromByteArray = function(data){
 	var chrsz=8;
 	var s=[];
-	var mask=(1<<chrsz)-1;
-	for (var i=0; i<data.length*32; i+=chrsz) 
-		s.push(String.fromCharCode((data[i >> 5] >>> (i % 32)) & mask));
+	var mask = (1 << chrsz) - 1;
+	for (var i=0; i<data.length*32; i+=chrsz){
+		s.push(String.fromCharCode((data[i>>5]>>>(i%32))&mask));
+	}
+	while(s[s.length-1] == "\x00"){
+		s.pop();
+	}
 	return s.join("");
 }
