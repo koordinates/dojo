@@ -50,7 +50,7 @@ Properties
 
 ``parsedFragment``:
 
-    A local object that is returned after parsingis completed.
+    A local object that is returned after parsing is completed.
 
 
 Methods

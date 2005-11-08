@@ -1,0 +1,86 @@
+.. title:: dojo.widget.html.DatePicker -- The Dojo Manual
+
+.. this is a comment. for more information on reST, see:
+   http://docutils.sf.net/docs/user/rst/quickstart.html
+   http://docutils.sf.net/docs/user/rst/quickref.html
+
+Name
+===============================================================================
+
+dojo.widget.html.DatePicker - A stand-alone DatePicker widget that makes it 
+easy to select a date, or switch by month and/or year.  The infrastructure is 
+in place to also allow scrolling by week rather than month, which is useful for 
+looking at schedules near the end of a month, without having to view two months 
+of data (though this feature is not implemented yet).
+
+Summary and Overview
+===============================================================================
+
+As JavaScript's Date and Time core APIs leave much to be desired, this widget 
+contains a lot of convenience methods for going between various date formats.
+
+Usage
+===============================================================================
+
+::
+
+var datePicker = dojo.widget.fromScript("DatePicker", {},  
+dojo.byId("datePickerNode"));
+
+or
+
+<div dojoType="DatePicker"></div>
+																		
+
+API Reference
+===============================================================================
+
+Properties
+---------------------------------------
+
+``prop``:
+
+    property description
+
+
+Methods
+---------------------------------------
+
+``method(param)``:
+
+    method description.
+
+    ``param``:
+        param description
+
+    *returns*:
+        returnValue
+
+Requires
+===============================================================================
+
+- `dojo.widget`_
+- `dojo.widget.HtmlWidget`_
+- `dojo.widget.DatePicker`_
+- `dojo.html`_
+
+.. _`dojo.hostenv`: 		hostenv.html
+.. _`dojo.dom`:	dom.html
+
+Provides
+===============================================================================
+
+dojo.widget.html.DatePicker
+    A class constructor that allows a widget of type 
+		dojo.widget.html.DatePicker to be created.
+
+
+About
+===============================================================================
+
+:Author: Dylan Schiemann
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/11/08
+
+.. vim:ts=4:et:tw=80:shiftwidth=4:
