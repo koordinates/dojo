@@ -66,6 +66,8 @@ dojo.widget.html.ContextMenu = function(){
 		if (evt.preventDefault){ evt.preventDefault(); }
 
 		// need to light up this one before we check width and height
+		this.domNode.style.left = "-9999px";
+		this.domNode.style.top  = "-9999px";
 		this.domNode.style.display = "block";
 
 		// calculate if menu is going to apear within window
