@@ -105,6 +105,8 @@ dojo.lang.isAlien = function(wh) {
 }
 
 dojo.lang.find = function(arr, val, identity){
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	// support both (arr, val) and (val, arr)
 	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
 		var a = arr;
@@ -126,6 +128,8 @@ dojo.lang.find = function(arr, val, identity){
 dojo.lang.indexOf = dojo.lang.find;
 
 dojo.lang.findLast = function(arr, val, identity) {
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	// support both (arr, val) and (val, arr)
 	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
 		var a = arr;
@@ -168,18 +172,24 @@ dojo.lang.has = function(obj, name){
 }
 
 dojo.lang.isEmpty = function(obj) {
-	var tmp = {};
-	var count = 0;
-	for(var x in obj){
-		if(obj[x] && (!tmp[x])){
-			count++;
-			break;
-		} 
+	if(dojo.lang.isObject(obj)) {
+		var tmp = {};
+		var count = 0;
+		for(var x in obj){
+			if(obj[x] && (!tmp[x])){
+				count++;
+				break;
+			} 
+		}
+		return (count == 0);
+	} else if(dojo.lang.isArray(obj) || dojo.lang.isString(obj)) {
+		return obj.length == 0;
 	}
-	return (count == 0);
 }
 
 dojo.lang.forEach = function(arr, unary_func, fix_length){
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	var il = arr.length;
 	for(var i=0; i< ((fix_length) ? il : arr.length); i++){
 		if(unary_func(arr[i], i, arr) == "break"){
@@ -189,6 +199,8 @@ dojo.lang.forEach = function(arr, unary_func, fix_length){
 }
 
 dojo.lang.map = function(arr, obj, unary_func){
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	if(dojo.lang.isFunction(obj)&&(!unary_func)){
 		unary_func = obj;
 		obj = dj_global;
@@ -200,12 +212,17 @@ dojo.lang.map = function(arr, obj, unary_func){
 	}
 
 	if(Array.map) {
-		return Array.map(arr, unary_func, obj);
+		var outArr = Array.map(arr, unary_func, obj);
 	} else {
 		var outArr = [];
 		for(var i=0;i<arr.length;++i){
 			outArr.push(unary_func.call(obj, arr[i]));
 		}
+	}
+
+	if(isString) {
+		return outArr.join("");
+	} else {
 		return outArr;
 	}
 }
@@ -262,6 +279,8 @@ dojo.lang.shallowCopy = function(obj) {
 }
 
 dojo.lang.every = function(arr, callback, thisObject) {
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	if(Array.every) {
 		return Array.every(arr, callback, thisObject);
 	} else {
@@ -280,6 +299,8 @@ dojo.lang.every = function(arr, callback, thisObject) {
 }
 
 dojo.lang.some = function(arr, callback, thisObject) {
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	if(Array.some) {
 		return Array.some(arr, callback, thisObject);
 	} else {
@@ -298,8 +319,10 @@ dojo.lang.some = function(arr, callback, thisObject) {
 }
 
 dojo.lang.filter = function(arr, callback, thisObject) {
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	if(Array.filter) {
-		return Array.filter(arr, callback, thisObject);
+		var outArr = Array.filter(arr, callback, thisObject);
 	} else {
 		if(!thisObject) {
 			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
@@ -312,6 +335,10 @@ dojo.lang.filter = function(arr, callback, thisObject) {
 				outArr.push(arr[i]);
 			}
 		}
+	}
+	if(isString) {
+		return outArr.join("");
+	} else {
 		return outArr;
 	}
 }
