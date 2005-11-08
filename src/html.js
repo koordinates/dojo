@@ -79,37 +79,18 @@ dojo.html.getScrollLeft = function () {
 }
 
 dojo.html.getDocumentWidth = function() {
-	var docElm = document.documentElement;
-	var docElmWidth = docElm ? docElm.clientWidth : 0;
-	var body = dojo.html.body();
-	var bodyWidth = body ? body.clientWidth : 0;
-
-	if(dojo.lang.isNumber(window.innerWidth)) {
-		return window.innerWidth;
-	} else if(docElmWidth && bodyWidth) {
-		return Math.min(docElmWidth, bodyWidth);
-	} else {
-		return docElmWidth || bodyWidth || 0;
-	}
+	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	return dojo.html.getViewportWidth();
 }
 
 dojo.html.getDocumentHeight = function() {
-	var docElm = document.documentElement;
-	var docElmHeight = docElm ? docElm.clientHeight : 0;
-	var body = dojo.html.body();
-	var bodyHeight = body ? body.clientHeight : 0;
-
-	if(dojo.lang.isNumber(window.innerHeight)) {
-		return window.innerHeight;
-	} else if(docElmHeight && bodyHeight) {
-		return Math.min(docElmHeight, bodyHeight);
-	} else {
-		return docElmHeight || bodyHeight || 0;
-	}
+	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	return dojo.html.getViewportHeight();
 }
 
 dojo.html.getDocumentSize = function() {
-	return [dojo.html.getDocumentWidth(), dojo.html.getDocumentHeight()];
+	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	return dojo.html.getViewportSize();
 }
 
 dojo.html.getViewportWidth = function(){
