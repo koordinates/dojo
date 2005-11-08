@@ -29,17 +29,36 @@ dojo.event.connect($("updateScroll"), "onclick", function (e) {
 </script>
 
 
-
 <!---------------------------------------------------------------------------->
-<h2><code>getDocumentWidth</code> and <code>getDocumentHeight</code></h2>
+<h2><code>getScrollOffset</code></h2>
 
-<p>Document width: <span id="docWidth">0</span><br>Document height: <span id="docHeight">0</span></p>
-<p><input type="button" id="updateSize" value="Update Size Values"></p>
+<p>Scroll offset x: <span id="scrollOffsetX">0</span><br>Scroll offset y: <span id="scrollOffsetY">0</span></p>
+<p><input type="button" id="updateScrollOffset" value="Update Scroll Values"></p>
 
 <script type="text/javascript">
-dojo.event.connect($("updateSize"), "onclick", function (e) {
-	$("docWidth").firstChild.nodeValue = dojo.html.getDocumentWidth();
-	$("docHeight").firstChild.nodeValue = dojo.html.getDocumentHeight();
+dojo.event.connect($("updateScrollOffset"), "onclick", function (e) {
+	var offset = dojo.html.getScrollOffset();
+	$("scrollOffsetX").firstChild.nodeValue = offset[0];
+	$("scrollOffsetY").firstChild.nodeValue = offset[1];
+});
+</script>
+
+
+<!---------------------------------------------------------------------------->
+<h2><code>getViewportWidth</code>, <code>getViewportHeight</code> and <code>getViewportSize</code></h2>
+
+<p>
+	Viewport width: <span id="viewportWidth">0</span><br>
+	Viewport height: <span id="viewportHeight">0</span><br>
+	Viewport size: <span id="viewportSize">0</span>
+</p>
+<p><input type="button" id="updateViewport" value="Update Size Values"></p>
+
+<script type="text/javascript">
+dojo.event.connect($("updateViewport"), "onclick", function (e) {
+	$("viewportWidth").firstChild.nodeValue = dojo.html.getViewportWidth();
+	$("viewportHeight").firstChild.nodeValue = dojo.html.getViewportHeight();
+	$("viewportSize").firstChild.nodeValue = dojo.html.getViewportSize();
 });
 </script>
 
