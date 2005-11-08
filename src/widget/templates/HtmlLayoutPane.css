@@ -1,9 +1,3 @@
-/* pane not inside another pane */
-.dojoLayoutPaneParent {
-	overflow: auto;
-}
-
-/* pane inside another pane */
-.dojoLayoutPaneChild {
-	overflow: auto;
+.dojoLayoutPane {
+	overflow: hide;
 }
