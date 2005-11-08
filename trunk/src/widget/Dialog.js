@@ -112,20 +112,24 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	placeDialog: function() {
-		var scrollTop = document.documentElement.scrollTop;
-		var scrollLeft = document.documentElement.scrollLeft;
-		// this is a candidate for helper function somewhere in dojo.style.*
-		var W = dojo.html.getDocumentWidth();
-		var H = dojo.html.getDocumentHeight();
+
+		var scroll_offset = dojo.html.getScrollOffset();
+		var viewport_size = dojo.html.getViewportSize();
+
+		// find the size of the dialog
+		// we should really be using dojo.style but i'm not sure
+		// which (inner, outer, box, content, client) --cal
 		this.domNode.style.display = "block";
 		var w = this.domNode.offsetWidth;
 		var h = this.domNode.offsetHeight;
 		this.domNode.style.display = "none";
-		var L = scrollLeft + (W - w)/2;
-		var T = scrollTop + (H - h)/2;
+
+		var x = scroll_offset[0] + (viewport_size[0] - w)/2;
+		var y = scroll_offset[1] + (viewport_size[1] - h)/2;
+
 		with(this.domNode.style) {
-			left = L + "px";
-			top = T + "px";
+			left = x + "px";
+			top = y + "px";
 		}
 	},
 
