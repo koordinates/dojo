@@ -123,6 +123,29 @@ dojo.lang.find = function(arr, val, identity){
 	return -1;
 }
 
+dojo.lang.indexOf = dojo.lang.find;
+
+dojo.lang.findLast = function(arr, val, identity) {
+	// support both (arr, val) and (val, arr)
+	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
+		var a = arr;
+		arr = val;
+		val = a;
+	}
+	if(identity){
+		for(var i = arr.length-1; i >= 0; i--) {
+			if(arr[i] === val){ return i; }
+		}
+	}else{
+		for(var i = arr.length-1; i >= 0; i--) {
+			if(arr[i] == val){ return i; }
+		}
+	}
+	return -1;
+}
+
+dojo.lang.lastIndexOf = dojo.lang.findLast;
+
 dojo.lang.inArray = function(arr, val){
 	return dojo.lang.find(arr, val) > -1;
 }
@@ -138,6 +161,7 @@ dojo.lang.getNameInObj = function(ns, item){
 	return null;
 }
 
+// FIXME: Is this worthless since you can do: if(name in obj)
 // is this the right place for this?
 dojo.lang.has = function(obj, name){
 	return (typeof obj[name] !== 'undefined');
@@ -158,19 +182,31 @@ dojo.lang.isEmpty = function(obj) {
 dojo.lang.forEach = function(arr, unary_func, fix_length){
 	var il = arr.length;
 	for(var i=0; i< ((fix_length) ? il : arr.length); i++){
-		if(unary_func(arr[i]) == "break"){
+		if(unary_func(arr[i], i, arr) == "break"){
 			break;
 		}
 	}
 }
 
 dojo.lang.map = function(arr, obj, unary_func){
-	if((typeof obj == "function")&&(!unary_func)){
+	if(dojo.lang.isFunction(obj)&&(!unary_func)){
 		unary_func = obj;
 		obj = dj_global;
+	} else if(dojo.lang.isFunction(obj) && unary_func) {
+		// ff 1.5 compat
+		var tmpObj = obj;
+		obj = unary_func;
+		unary_func = tmpObj;
 	}
-	for(var i=0;i<arr.length;++i){
-		unary_func.call(obj, arr[i]);
+
+	if(Array.map) {
+		return Array.map(arr, unary_func, obj);
+	} else {
+		var outArr = [];
+		for(var i=0;i<arr.length;++i){
+			outArr.push(unary_func.call(obj, arr[i]));
+		}
+		return outArr;
 	}
 }
 
@@ -223,4 +259,59 @@ dojo.lang.shallowCopy = function(obj) {
 		}
 	}
 	return ret;
+}
+
+dojo.lang.every = function(arr, callback, thisObject) {
+	if(Array.every) {
+		return Array.every(arr, callback, thisObject);
+	} else {
+		if(!thisObject) {
+			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
+			thisObject = dj_global;
+		}
+
+		for(var i = 0; i < arr.length; i++) {
+			if(!callback.call(thisObject, arr[i], i, arr)) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+dojo.lang.some = function(arr, callback, thisObject) {
+	if(Array.some) {
+		return Array.some(arr, callback, thisObject);
+	} else {
+		if(!thisObject) {
+			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
+			thisObject = dj_global;
+		}
+
+		for(var i = 0; i < arr.length; i++) {
+			if(callback.call(thisObject, arr[i], i, arr)) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+dojo.lang.filter = function(arr, callback, thisObject) {
+	if(Array.filter) {
+		return Array.filter(arr, callback, thisObject);
+	} else {
+		if(!thisObject) {
+			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
+			thisObject = dj_global;
+		}
+
+		var outArr = [];
+		for(var i = 0; i < arr.length; i++) {
+			if(callback.call(thisObject, arr[i], i, arr)) {
+				outArr.push(arr[i]);
+			}
+		}
+		return outArr;
+	}
 }
