@@ -288,6 +288,16 @@ dojo.style.totalOffsetTop = function (node, includeScroll){
 
 dojo.style.getAbsoluteY = dojo.style.totalOffsetTop;
 
+dojo.style.getAbsolutePosition = function(node, includeScroll) {
+	var position = [
+		dojo.style.getAbsoluteX(node, includeScroll),
+		dojo.style.getAbsoluteY(node, includeScroll)
+	];
+	position.x = position[0];
+	position.y = position[1];
+	return position;
+}
+
 dojo.style.styleSheet = null;
 
 // FIXME: this is a really basic stub for adding and removing cssRules, but
