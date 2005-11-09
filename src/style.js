@@ -231,6 +231,30 @@ dojo.style.setOuterHeight = function (node, pxHeight){
 	}else return false;
 }
 
+dojo.style.setContentWidth = function(node, pxWidth){
+
+	if (dojo.style.isBorderBox(node)){
+		pxWidth += dojo.style.getPaddingWidth(node) + dojo.style.getBorderWidth(node);
+	}
+
+	if (!isNaN(pxWidth) && pxWidth > 0){
+		node.style.width = pxWidth + 'px';
+		return true;
+	}else return false;
+}
+
+dojo.style.setContentHeight = function(node, pxHeight){
+
+	if (dojo.style.isBorderBox(node)){
+		pxHeight += dojo.style.getPaddingHeight(node) + dojo.style.getBorderHeight(node);
+	}
+
+	if (!isNaN(pxHeight) && pxHeight > 0){
+		node.style.height = pxHeight + 'px';
+		return true;
+	}else return false;
+}
+
 // FIXME: these aliases are actually the preferred names
 dojo.style.getContentBoxHeight = dojo.style.getContentHeight;
 dojo.style.getBorderBoxHeight = dojo.style.getInnerHeight;
