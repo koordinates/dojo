@@ -184,7 +184,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 	templateString: '<div class="dojoTree2Node"><div dojoAttachPoint="containerNode"></div></div>',
 
-	childIconSrc: dojo.uri.dojoUri("src/widget/templates/images/treenode_node.gif").toString(),
+	childIconSrc: '',
 
 	childIcon: null,
 	underChildIcon: null,
