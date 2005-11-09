@@ -2,7 +2,7 @@
         "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Dojo Tree2 Widget Test (dynamic node creation)</title>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
 
 <!--
 Uncomment this to debug tree positioning
@@ -23,7 +23,7 @@ td {
 <script type="text/javascript">
 	dojo.require("dojo.lang.*");
 	dojo.require("dojo.widget.*");
-	dojo.require("dojo.widget.Tree2");
+	dojo.require("dojo.widget.Tree");
 	dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
@@ -40,27 +40,27 @@ td {
 
 	dojo.addOnLoad(function(){
 
-		var tree = dojo.widget.fromScript("Tree2", {publishSelectionTopic: "treeSelected", toggle: "fade"});
+		var tree = dojo.widget.fromScript("Tree", {publishSelectionTopic: "treeSelected", toggle: "fade"});
 		document.body.appendChild(tree.domNode);
 
-		var rootNode = dojo.widget.fromScript("Tree2Node", {title: "Root Node"});
+		var rootNode = dojo.widget.fromScript("TreeNode", {title: "Root Node"});
 		tree.addChild(rootNode);
 
-		var node1 = dojo.widget.fromScript("Tree2Node", {title: "Node 1"});
+		var node1 = dojo.widget.fromScript("TreeNode", {title: "Node 1"});
 		rootNode.addChild(node1);
 
-		rootNode.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 2"}));
-		var node3 = dojo.widget.fromScript("Tree2Node", {title: "Node 3"});
+		rootNode.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 2"}));
+		var node3 = dojo.widget.fromScript("TreeNode", {title: "Node 3"});
 		rootNode.addChild(node3);
-		var node3_1 = dojo.widget.fromScript("Tree2Node", {title: "Node 3.1"});
+		var node3_1 = dojo.widget.fromScript("TreeNode", {title: "Node 3.1"});
 		node3.addChild(node3_1);
-		node3_1.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 3.1.1"}))
+		node3_1.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 3.1.1"}))
 
-		tree.addChild(dojo.widget.fromScript("Tree2Node", {title: "Root Node 2"}));
+		tree.addChild(dojo.widget.fromScript("TreeNode", {title: "Root Node 2"}));
 
 		// Add some nodes the first element (rather than the last element) just for testing
 		for(var i=1;i<5;i++) {
-			node1.addChild(dojo.widget.fromScript("Tree2Node", {title: "Node 1."+i}));
+			node1.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 1."+i}));
 		}
 
 		var eventSub = new Subscriber(document.getElementById("SelectionEvents"));
@@ -72,19 +72,19 @@ td {
 </head>
 <body>
 
-<div dojoType="Tree2" publishSelectionTopic="treeSelected" toggle="fade">
-    <div dojoType="Tree2Node" title="Item 1">
-        <div dojoType="Tree2Node" title="Item 1.1"><br/></div>
-        <div dojoType="Tree2Node" title="Item 1.2">
-            <div dojoType="Tree2Node" title="Item 1.2.1"></div>
-            <div dojoType="Tree2Node" title="Item 1.2.2"></div>
+<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade">
+    <div dojoType="TreeNode" title="Item 1">
+        <div dojoType="TreeNode" title="Item 1.1"><br/></div>
+        <div dojoType="TreeNode" title="Item 1.2">
+            <div dojoType="TreeNode" title="Item 1.2.1"></div>
+            <div dojoType="TreeNode" title="Item 1.2.2"></div>
         </div>
-        <div dojoType="Tree2Node" title="Item 1.3">
-            <div dojoType="Tree2Node" title="Item 1.3.1"></div>
-            <div dojoType="Tree2Node" title="Item 1.3.2"></div>
+        <div dojoType="TreeNode" title="Item 1.3">
+            <div dojoType="TreeNode" title="Item 1.3.1"></div>
+            <div dojoType="TreeNode" title="Item 1.3.2"></div>
         </div>
-        <div dojoType="Tree2Node" title="Item 1.4">
-            <div dojoType="Tree2Node" title="Item 1.4.1"></div>
+        <div dojoType="TreeNode" title="Item 1.4">
+            <div dojoType="TreeNode" title="Item 1.4.1"></div>
         </div>
     </div>
 </div>
