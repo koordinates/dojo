@@ -1,6 +1,6 @@
 dojo.require("dojo.crypto.SHA256");
 
-function test_SHA256_aompute(){
+function test_SHA256_compute(){
 	var message = "The rain in Spain falls mainly on the plain.";
 	var hash = "Vt7FG/uDGhzhEE8FFG22iBL4AS5eq3F4agWMFTAEwxE=";
 
