@@ -44,6 +44,22 @@ dojo.crypto.fromBase64 = function (data){
 }
 
 dojo.crypto.toByteArray = function(data){
+	var bin=[] ;
+	for (var i=0; i<data.length; i++){
+		bin.push(data.charCodeAt(i));
+	}
+	return bin;
+}
+
+dojo.crypto.fromByteArray = function(data){
+	var s=[];
+	for (var i=0; i<data.length; i++){
+		s.push(String.fromCharCode(data[i]));
+	}
+	return s.join("");
+}
+
+dojo.crypto.toDWordArray = function(data){
 	var chrsz=8 ;
 	var bin=[] ;
 	var mask=(1<<chrsz)-1;
@@ -53,7 +69,7 @@ dojo.crypto.toByteArray = function(data){
 	return bin;
 }
 
-dojo.crypto.fromByteArray = function(data){
+dojo.crypto.fromDWordArray = function(data){
 	var chrsz=8;
 	var s=[];
 	var mask = (1 << chrsz) - 1;
