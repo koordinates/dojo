@@ -1,26 +1,26 @@
-dojo.provide("dojo.widget.Tree2");
-dojo.provide("dojo.widget.HtmlTree2");
-dojo.provide("dojo.widget.Tree2Node");
-dojo.provide("dojo.widget.HtmlTree2Node");
+dojo.provide("dojo.widget.Tree");
+dojo.provide("dojo.widget.HtmlTree");
+dojo.provide("dojo.widget.TreeNode");
+dojo.provide("dojo.widget.HtmlTreeNode");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.widget.HtmlLayoutPane");
 
 
-dojo.widget.HtmlTree2 = function() {
+dojo.widget.HtmlTree = function() {
 	dojo.widget.HtmlLayoutPane.call(this);
 }
-dojo.inherits(dojo.widget.HtmlTree2, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlLayoutPane);
 
-dojo.lang.extend(dojo.widget.HtmlTree2, {
-	widgetType: "Tree2",
+dojo.lang.extend(dojo.widget.HtmlTree, {
+	widgetType: "Tree",
 	isContainer: true,
 
 	domNode: null,
 
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Tree2.css"),
-	templateString: '<div class="dojoTree2"></div>',
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Tree.css"),
+	templateString: '<div class="dojoTree"></div>',
 
 	selectedNode: null,
 	toggler: null,
@@ -70,9 +70,9 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 
 	initialize: function(args, frag){
 		switch (this.toggle) {
-			case "fade": this.toggler = new dojo.widget.Tree2.FadeToggle(); break;
-			case "wipe": this.toggler = new dojo.widget.Tree2.WipeToggle(); break;
-			default    : this.toggler = new dojo.widget.Tree2.DefaultToggle();
+			case "fade": this.toggler = new dojo.widget.Tree.FadeToggle(); break;
+			case "wipe": this.toggler = new dojo.widget.Tree.WipeToggle(); break;
+			default    : this.toggler = new dojo.widget.Tree.DefaultToggle();
 		}
 	},
 
@@ -116,8 +116,8 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 		// this function gets called to add nodes to both trees and nodes, so it's a little confusing :)
 		//
 
-		if (child.widgetType != 'Tree2Node'){
-			dojo.raise("You can only add Tree2Node widgets to a "+this.widgetType+" widget!");
+		if (child.widgetType != 'TreeNode'){
+			dojo.raise("You can only add TreeNode widgets to a "+this.widgetType+" widget!");
 			return;
 		}
 
@@ -128,7 +128,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 			lastChild.updateIconTree();
 		}else{
 
-			if (this.widgetType == 'Tree2Node'){
+			if (this.widgetType == 'TreeNode'){
 				this.isParent = true;
 				this.isExpanded = false;
 				this.updateIcons();
@@ -139,7 +139,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 
 
 
-		if (this.widgetType == 'Tree2Node'){
+		if (this.widgetType == 'TreeNode'){
 
 			var childDepth = this.depth+1;
 			var childTree = this.tree;
@@ -157,7 +157,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 		this.children.push(child);
 		var node = child.buildNode(childTree, childDepth);
 
-		if (this.widgetType == 'Tree2'){
+		if (this.widgetType == 'Tree'){
 			this.domNode.appendChild(node);
 		}else{
 			this.containerNode.appendChild(node);
@@ -168,21 +168,21 @@ dojo.lang.extend(dojo.widget.HtmlTree2, {
 });
 
 
-dojo.widget.HtmlTree2Node = function() {
+dojo.widget.HtmlTreeNode = function() {
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlTree2Node, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.HtmlTreeNode, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlTree2Node, {
-	widgetType: "Tree2Node",
+dojo.lang.extend(dojo.widget.HtmlTreeNode, {
+	widgetType: "TreeNode",
 	isContainer: true,
 	messWithMyChildren: true,
 
 	domNode: null,
 	continerNode: null,
 
-	templateString: '<div class="dojoTree2Node"><div dojoAttachPoint="containerNode"></div></div>',
+	templateString: '<div class="dojoTreeNode"><div dojoAttachPoint="containerNode"></div></div>',
 
 	childIconSrc: '',
 
@@ -247,7 +247,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 		this.domNode.insertBefore(this.labelNode, this.containerNode);
 
-		dojo.html.addClass(this.labelNode, 'dojoTree2NodeLabel');
+		dojo.html.addClass(this.labelNode, 'dojoTreeNodeLabel');
 
 
 		dojo.event.connect(this.expandIcon, 'onclick', this, 'onTreeClick');
@@ -306,14 +306,14 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 	select: function(){
 
-		dojo.html.addClass(this.labelNode, 'dojoTree2NodeLabelSelected');
+		dojo.html.addClass(this.labelNode, 'dojoTreeNodeLabelSelected');
 
 		dojo.event.topic.publish(this.tree.publishSelectionTopic, this.widgetId);
 	},
 
 	deselect: function(){
 
-		dojo.html.removeClass(this.labelNode, 'dojoTree2NodeLabelSelected');
+		dojo.html.removeClass(this.labelNode, 'dojoTreeNodeLabelSelected');
 	},
 
 	updateIcons: function(){
@@ -356,7 +356,12 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 		// set the child icon
 		//
 
-		this.childIcon.src = this.childIconSrc;
+		if (this.childIconSrc){
+			this.childIcon.style.display = 'inline';
+			this.childIcon.src = this.childIconSrc;
+		}else{
+			this.childIcon.style.display = 'none';
+		}
 
 
 		//
@@ -458,7 +463,7 @@ dojo.lang.extend(dojo.widget.HtmlTree2Node, {
 
 });
 
-dojo.widget.Tree2.DefaultToggle = function(){
+dojo.widget.Tree.DefaultToggle = function(){
 
 	this.show = function(node){
 		node.style.display = 'block';
@@ -469,7 +474,7 @@ dojo.widget.Tree2.DefaultToggle = function(){
 	}
 }
 
-dojo.widget.Tree2.FadeToggle = function(duration){
+dojo.widget.Tree.FadeToggle = function(duration){
 	this.toggleDuration = duration ? duration : 150;
 
 	this.show = function(node){
@@ -482,7 +487,7 @@ dojo.widget.Tree2.FadeToggle = function(duration){
 	}
 }
 
-dojo.widget.Tree2.WipeToggle = function(duration){
+dojo.widget.Tree.WipeToggle = function(duration){
 	this.toggleDuration = duration ? duration : 150;
 
 	this.show = function(node){
@@ -497,6 +502,6 @@ dojo.widget.Tree2.WipeToggle = function(duration){
 
 
 // make it a tag
-dojo.widget.tags.addParseTreeHandler("dojo:Tree2");
-dojo.widget.tags.addParseTreeHandler("dojo:Tree2Node");
+dojo.widget.tags.addParseTreeHandler("dojo:Tree");
+dojo.widget.tags.addParseTreeHandler("dojo:TreeNode");
 
