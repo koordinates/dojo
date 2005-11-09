@@ -105,14 +105,14 @@ dojo.lang.isAlien = function(wh) {
 }
 
 dojo.lang.find = function(arr, val, identity){
-	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
 	// support both (arr, val) and (val, arr)
 	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
 		var a = arr;
 		arr = val;
 		val = a;
 	}
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	if(identity){
 		for(var i=0;i<arr.length;++i){
 			if(arr[i] === val){ return i; }
@@ -128,14 +128,14 @@ dojo.lang.find = function(arr, val, identity){
 dojo.lang.indexOf = dojo.lang.find;
 
 dojo.lang.findLast = function(arr, val, identity) {
-	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
 	// support both (arr, val) and (val, arr)
 	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
 		var a = arr;
 		arr = val;
 		val = a;
 	}
+	var isString = dojo.lang.isString(arr);
+	if(isString) { arr = arr.split(""); }
 	if(identity){
 		for(var i = arr.length-1; i >= 0; i--) {
 			if(arr[i] === val){ return i; }
