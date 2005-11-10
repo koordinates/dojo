@@ -464,7 +464,7 @@ dojo.hostenv.getDepsForEval = function(contents){
 		/dojo.hostenv.loadModule\(.*?\)/mg,
 		/dojo.hostenv.require\(.*?\)/mg,
 		/dojo.require\(.*?\)/mg,
-		/dojo.requireIf\(.*?\)/mg,
+		/dojo.requireIf\([\w\W]*?\)/mg,
 		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
 	];
 	for(var i=0; i<testExps.length; i++){
