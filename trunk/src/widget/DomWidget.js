@@ -283,9 +283,22 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	},
 
 	// Record that given widget descends from me
-	registerChild: function(widget)  {
-		// dojo.debug(this.widgetId, "added", widget.widgetId, "as a child");
-		this.children.push(widget);
+	registerChild: function(widget, insertionIndex){
+
+		// we need to insert the child at the right point in the parent's 
+		// 'children' array, based on the insertionIndex
+
+		widget.dojoInsertionIndex = insertionIndex;
+
+		var idx = -1;
+		for(var i=0; i<this.children.length; i++){
+			if (this.children[i].dojoInsertionIndex < insertionIndex){
+				idx = i;
+			}
+		}
+
+		this.children.splice(idx+1, 0, widget);
+
 		widget.parent = this;
 		widget.addedTo(this);
 	},
@@ -323,7 +336,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		// Register myself with my parent, or with the widget manager if
 		// I have no parent
 		if ( parentComp ) {
-			parentComp.registerChild(this);
+			parentComp.registerChild(this, args.dojoinsertionindex);
 		} else {
 			dojo.widget.manager.topWidgets.push(this);
 		}
