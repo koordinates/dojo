@@ -253,8 +253,9 @@ dojo.hostenv.makeWidgets = function(){
 				var sids = djConfig.searchIds;
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
-						if (!document.getElementById(sids[x])) { continue; }
-						var frag = parser.parseElement(document.getElementById(sids[x]), null, true);
+						var tmpNode = document.getElementById(sids[x]);
+						if(!tmpNode){ continue; }
+						var frag = parser.parseElement(tmpNode, null, true);
 						dojo.widget.getParser().createComponents(frag);
 					}
 				}else if(djConfig.parseWidgets){
