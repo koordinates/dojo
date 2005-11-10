@@ -583,3 +583,14 @@ if(!dojo.evalObjPath("dojo.dom.createNodesFromText")) {
 		return dojo.html.createNodesFromText.apply(dojo.html, arguments);
 	}
 }
+
+dojo.html.getAncestorsByTag = function(node, tag, returnFirstHit) {
+	tag = tag.toLowerCase();
+	return dojo.dom.getAncestors(node, function(el) {
+		return el.tagName && (el.tagName.toLowerCase() == tag);
+	}, returnFirstHit);
+}
+
+dojo.html.getFirstAncestorByTag = function(node, tag) {
+	return dojo.html.getAncestorsByTag(node, tag, true);
+}
