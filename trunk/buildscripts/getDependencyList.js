@@ -29,6 +29,7 @@ if(!this["dependencies"]){
 load("../src/bootstrap1.js");
 load("../src/hostenv_rhino.js");
 load("../src/bootstrap2.js");
+dojo.render.html.capable = true;
 
 if(!this["hostenvType"]){
 	hostenvType = "browser";
