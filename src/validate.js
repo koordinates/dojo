@@ -25,7 +25,7 @@ dojo.validate.isEmailAddress = function(value, allowLocal, allowCruft) {
 		return true;
 	}
 	// Allow email addresses with cruft
-	if ( allowCruft && ( /^<([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}>$/i.test(value) || /^mailto\:([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value)) ) {
+	if ( allowCruft && /^<?(mailto\:)?([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}>?$/i.test(value) ) {
 		return true;
 	}
 
@@ -205,4 +205,220 @@ dojo.validate.us.isZipCode = function(value) {
 // Validates states and and territories of the United States in a 2 character format.
 dojo.validate.us.isState = function(value) {
 	return /^(AL|AK|AS|AZ|AR|CA|CO|CT|DE|DC|FM|FL|GA|GU|HI|ID|IL|IN|IA|KS|KY|LA|ME|MH|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|MP|OH|OK|OR|PW|PA|PR|RI|SC|SD|TN|TX|UT|VT|VI|VA|WA|WV|WI|WY)$/i.test(value);
+}
+
+/**
+	Procedural API Description
+
+		The main aim is to make input validation expressible in a simple format.
+		You define profiles which declare the required and optional fields and any constraints they might have.
+		The results are provided as an object that makes it easy to handle missing and invalid input.
+
+	Usage
+
+		var results = dojo.validate.check(form, profile);
+
+	Profile Object
+
+		var profile = {
+			// filters change the field value and are applied before validation.
+			trim: ["tx1", "tx2"],
+			uppercase: ["tx9"],
+			lowercase: ["tx5", "tx6", "tx7"],
+			ucfirst: ["tx10"],
+			digit: ["tx11"],
+
+			// required input fields that are blank will be reported missing.
+			// required radio button groups and drop-down lists with no selection will be reported missing.
+			// checkbox groups and selectboxes can be required to have more than one value selected.
+			// List required fields by name and use this notation to require more than one value: {checkboxgroup: 2}, {selectboxname: 3}.
+			required: ["tx7", "tx8", "pw1", "ta1", "rb1", "rb2", "cb3", "s1", {"doubledip":2}, {"tripledip":3}],
+
+			// Fields can be validated using any boolean valued function.  
+			// Use arrays to specify parameters in addition to the field value.
+			constraints: {
+				field_name1: myValidationFunction,
+				field_name2: dojo.validate.isInteger,
+				field_name3: [myValidationFunction, additional parameters],
+				field_name4: [dojo.validate.isValidDate, "YYYY.MM.DD"],
+				field_name5: [dojo.validate.isEmailAddress, false, true],
+			},
+		};
+
+	Results Object
+
+		isSuccessful(): Returns true if there were no invalid or missing fields, else it returns false.
+		hasMissing():  Returns true if the results contain any missing fields.
+		getMissing():  Returns a list of required fields that have values missing.
+		isMissing(field):  Returns true if the field is required and the value is missing.
+		hasInvalid():  Returns true if the results contain fields with invalid data.
+		getInvalid():  Returns a list of fields that have invalid values.
+		isInvalid(field):  Returns true if the field has an invalid value.
+
+*/
+
+/**
+  Validates user input of an HTML form based on input profile.
+
+	@param form  The form object to be validated.
+	@param profile  The input profile that specifies how the form fields are to be validated.
+	@return results  An object that contains several methods summarizing the results of the validation.
+*/
+dojo.validate.check = function(form, profile) {
+	// Essentially private properties of results object
+	var missing = [];
+	var invalid = [];
+
+	// results object summarizes the validation
+	var results = {
+		isSuccessful: function() {return ( !this.hasInvalid() && !this.hasMissing() );},
+		hasMissing: function() {return ( missing.length > 0 );},
+		getMissing: function() {return missing;},
+		isMissing: function(elemname) {
+			for (var i = 0; i < missing.length; i++) {
+				if ( elemname == missing[i] ) { return true; }
+			}
+			return false;
+		},
+		hasInvalid: function() {return ( invalid.length > 0 );},
+		getInvalid: function() {return invalid;},
+		isInvalid: function(elemname) {
+			for (var i = 0; i < invalid.length; i++) {
+				if ( elemname == invalid[i] ) { return true; }
+			}
+			return false;
+		},
+	};
+
+	// Filters are applied before fields are validated.
+	// Trim removes white space at the front and end of the fields.
+	if ( profile.trim instanceof Array ) {
+		for (var i = 0; i < profile.trim.length; i++) {
+			var elem = form[profile.trim[i]];
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
+			elem.value = elem.value.replace(/(^\s*|\s*$)/g, "");
+		}
+	}
+	// Convert to uppercase
+	if ( profile.uppercase instanceof Array ) {
+		for (var i = 0; i < profile.uppercase.length; i++) {
+			var elem = form[profile.uppercase[i]];
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
+			elem.value = elem.value.toUpperCase();
+		}
+	}
+	// Convert to lowercase
+	if ( profile.lowercase instanceof Array ) {
+		for (var i = 0; i < profile.lowercase.length; i++) {
+			var elem = form[profile.lowercase[i]];
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
+			elem.value = elem.value.toLowerCase();
+		}
+	}
+	// Uppercase first letter
+	if ( profile.ucfirst instanceof Array ) {
+		for (var i = 0; i < profile.ucfirst.length; i++) {
+			var elem = form[profile.ucfirst[i]];
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
+			elem.value = elem.value.replace(/\b\w+\b/g, function(word) { return word.substring(0,1).toUpperCase() + word.substring(1).toLowerCase(); });
+		}
+	}
+	// Remove non digits characters from the input.
+	if ( profile.digit instanceof Array ) {
+		for (var i = 0; i < profile.digit.length; i++) {
+			var elem = form[profile.digit[i]];
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
+			elem.value = elem.value.replace(/\D/g, "");
+		}
+	}
+
+	// See if required input fields have values missing.
+	if ( profile.required instanceof Array ) {
+		for (var i = 0; i < profile.required.length; i++) { 
+			if ( typeof profile.required[i] != "string" ) { continue; }
+			var elem = form[profile.required[i]];
+			// Are textbox, textarea, or password fields blank.
+			if ( (elem.type == "text" || elem.type == "textarea" || elem.type == "password") && /^\s*$/.test(elem.value) ) {	
+				missing[missing.length] = elem.name;
+			}
+			// Does drop-down box have option selected.
+			else if ( (elem.type == "select-one" || elem.type == "select-multiple") && elem.selectedIndex == -1 ) {
+				missing[missing.length] = elem.name;
+			}
+			// Does radio button group (or check box group) have option checked.
+			else if ( elem instanceof Array )  {
+				var checked = false;
+				for (var j = 0; j < elem.length; j++) {
+					if (elem[j].checked) { checked = true; }
+				}
+				if ( !checked ) {	
+					missing[missing.length] = elem[0].name;
+				}
+			}
+		}
+	}
+
+	// See if checkbox groups and select boxes have x number of required values.
+	if ( profile.required instanceof Array ) {
+		for (var i = 0; i < profile.required.length; i++) { 
+			if ( typeof profile.required[i] != "object" ) { continue; }
+			var elem, numRequired;
+			for (var name in profile.required[i]) { 
+				elem = form[name]; 
+				numRequired = profile.required[i][name];
+			}
+			// case 1: elem is a check box group
+			if ( elem instanceof Array )  {
+				var checked = 0;
+				for (var j = 0; j < elem.length; j++) {
+					if (elem[j].checked) { checked++; }
+				}
+				if ( checked < numRequired ) {	
+					missing[missing.length] = elem[0].name;
+				}
+			}
+			// case 2: elem is a select box
+			else if ( elem.type == "select-multiple" ) {
+				var selected = 0;
+				for (var j = 0; j < elem.options.length; j++) {
+					if (elem.options[j].selected) { selected++; }
+				}
+				if ( selected < numRequired ) {	
+					missing[missing.length] = elem.name;
+				}
+			}
+		}
+	}
+
+	// Find invalid input fields.
+	if ( typeof profile.constraints == "object" ) {
+		// constraint properties are the names of fields to be validated
+		for (name in profile.constraints) {
+			var elem = form[name];
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
+			// skip if blank - its optional unless required, in which case it is already listed as missing.
+			if ( /^\s*$/.test(elem.value) ) { continue; }
+
+			var isValid = true;
+			// case 1: constraint value is validation function
+			if ( typeof profile.constraints[name] == "function" ) {
+				isValid = profile.constraints[name](elem.value);
+			}
+			// case 2: constraint value is array, first elem is function, tail is parameters
+			else if ( profile.constraints[name] instanceof Array ) {
+				var isValidSomething = profile.constraints[name][0];
+				var params = profile.constraints[name].slice(1);
+				params.unshift(elem.value);
+				isValid = isValidSomething.apply(null, params);
+			}
+
+			if ( !isValid ) {	
+				invalid[invalid.length] = elem.name;
+			}
+		}
+	}
+
+	// Todo: Find required fields based on more complicated dependencies
+
+	return results;
 }
