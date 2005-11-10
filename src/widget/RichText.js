@@ -574,7 +574,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 		switch (command.toLowerCase()) {
 			case "bold": case "italic": case "underline":
-			case "strikethrough": case "subscript": case "superscript":
+			case "subscript": case "superscript":
 			case "fontname": case "fontsize":
 			case "forecolor": case "hilitecolor":
 			case "justifycenter": case "justifyfull": case "justifyleft": case "justifyright":
@@ -586,7 +586,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			case "createlink": case "unlink": case "removeformat":
 			case "inserthorizontalrule": case "insertimage":
 			case "insertorderedlist": case "insertunorderedlist":
-			case "indent": case "outdent": case "formatblock":
+			case "indent": case "outdent": case "formatblock": case "strikethrough": 
 				supportedBy = isSupportedBy(mozilla | ie);
 				break;
 				
