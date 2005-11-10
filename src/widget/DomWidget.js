@@ -1,14 +1,10 @@
 dojo.provide("dojo.widget.DomWidget");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.event.browser");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
-dojo.require("dojo.html");
 dojo.require("dojo.xml.Parse");
-dojo.require("dojo.math.curves");
-dojo.require("dojo.animation.Animation");
 dojo.require("dojo.uri.*");
 
 dojo.widget._cssFiles = {};
