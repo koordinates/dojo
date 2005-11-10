@@ -119,7 +119,11 @@ dojo.widget.manager = new function(){
 			widgetPackages.push(pname);
 		}
 	}
-
+	
+	this.getWidgetPackageList = function() {
+		return dojo.lang.map(widgetPackages, function(elt) { return(elt!==true ? elt : undefined); });
+	}
+	
 	this.getImplementation = function(widgetName, ctorObject, mixins){
 		// try and find a name for the widget
 		var impl = this.getImplementationName(widgetName);
