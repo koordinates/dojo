@@ -103,7 +103,12 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	setBackgroundOpacity: function(op) {
 		if(arguments.length == 0) { op = this.bgOpacity; }
 		dojo.style.setOpacity(this.bg, op);
-		return this.bgOpacity = dojo.style.getOpacity(this.bg);
+		try {
+			this.bgOpacity = dojo.style.getOpacity(this.bg);
+		} catch (e) {
+			this.bgOpacity = op;
+		}
+		return this.bgOpacity;
 	},
 
 	sizeBackground: function() {
