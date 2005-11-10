@@ -176,19 +176,35 @@ dojo.dom.replaceChildren = function(node, newChild){
 }
 
 dojo.dom.removeNode = function(node){
-	if(node && node.parentNode){ 
+	if(node && node.parentNode){
 		// return a ref to the removed child
 		return node.parentNode.removeChild(node);
 	}
 }
 
-dojo.dom.getAncestors = function(node){
+dojo.dom.getAncestors = function(node, filterFunction, returnFirstHit) {
 	var ancestors = [];
-	while(node){
-		ancestors.push(node);
+	var isFunction = dojo.lang.isFunction(filterFunction);
+	while(node) {
+		if (!isFunction || filterFunction(node)) {
+			ancestors.push(node);
+		}
+		if (returnFirstHit && ancestors.length > 0) { return ancestors[0]; }
+		
 		node = node.parentNode;
 	}
+	if (returnFirstHit) { return null; }
 	return ancestors;
+}
+
+dojo.dom.getAncestorsByTag = function(node, tag, returnFirstHit) {
+	return dojo.dom.getAncestors(node, function(el) {
+		return el.tagName && (el.tagName == tag);
+	}, returnFirstHit);
+}
+
+dojo.dom.getFirstAncestorByTag = function(node, tag) {
+	return dojo.dom.getAncestorsByTag(node, tag, true);
 }
 
 dojo.dom.isDescendantOf = function(node, ancestor, guaranteeDescendant){
