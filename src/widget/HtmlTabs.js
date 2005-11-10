@@ -8,25 +8,29 @@ dojo.require("dojo.html");
 
 dojo.widget.HtmlTabs = function() {
 	dojo.widget.HtmlWidget.call(this);
-
-	this.widgetType = "Tabs";
-	this.isContainer = true;
-
-	this.templatePath = null; // prolly not
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlTabs.css");
-
-	this.domNode = null;
-	this.containerNode = null;
-
 	this.tabs = [];
 	this.panels = [];
-	this.selected = -1;
+}
+dojo.inherits(dojo.widget.HtmlTabs, dojo.widget.HtmlWidget);
 
-	this.tabTarget = "";
-	this.extractContent = false; // find the bits inside <body>
-	this.parseContent = false; // parse externally loaded pages for widgets
+dojo.lang.extend(dojo.widget.HtmlTabs, {
 
-	this.buildRendering = function(args, frag) {
+	widgetType: "Tabs",
+	isContainer: true,
+
+	templatePath: null, // prolly not
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabs.css"),
+
+	domNode: null,
+	containerNode: null,
+
+	selected: -1,
+
+	tabTarget: "",
+	extractContent: false, // find the bits inside <body>
+	parseContent: false, // parse externally loaded pages for widgets
+
+	buildRendering: function(args, frag) {
 		dojo.style.insertCssFile(this.templateCssPath);
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(!this.domNode) { dj_error("HTMLTabs: No node reference"); }
@@ -54,9 +58,9 @@ dojo.widget.HtmlTabs = function() {
 
 		if(this.selected == -1) { this.selected = 0; }
 		this.selectTab(null, this.tabs[this.selected]);
-	}
+	},
 
-	this.addTab = function(title, url, tabId, tabHandler) {
+	addTab: function(title, url, tabId, tabHandler) {
 		// TODO: make this an object proper
 		var panel = {
 			url: null,
@@ -128,9 +132,9 @@ dojo.widget.HtmlTabs = function() {
 		}
 
 		return { "tab": li, "panel": panel };
-	}
+	},
 
-	this.selectTab = function(e, target) {
+	selectTab: function(e, target) {
 		if(dojo.lang.isNumber(e)) {
 			target = this.tabs[e];
 		}
@@ -160,9 +164,9 @@ dojo.widget.HtmlTabs = function() {
 			this.hidePanels(panel);
 			document.getElementById(panel.id).style.display = "";
 		}
-	}
+	},
 
-	this.setPanelHandler = function(handler, panel) {
+	setPanelHandler: function(handler, panel) {
 		var fcn = dojo.lang.isFunction(handler) ? handler : window[handler];
 		if(!dojo.lang.isFunction(fcn)) {
 			throw new Error("Unable to set panel handler, '" + handler + "' not a function.");
@@ -171,9 +175,9 @@ dojo.widget.HtmlTabs = function() {
 		this["tabHandler" + panel.id] = function() {
 			return fcn.apply(this, arguments);
 		}
-	}
+	},
 
-	this.runPanelHandler = function(panel) {
+	runPanelHandler: function(panel) {
 		if(dojo.lang.isFunction(this["tabHandler" + panel.id])) {
 			this["tabHandler" + panel.id](panel, document.getElementById(panel.id));
 			return false;
@@ -190,9 +194,9 @@ dojo.widget.HtmlTabs = function() {
 		}
 		return ret;
 		*/
-	}
+	},
 
-	this.getPanel = function(panel) {
+	getPanel: function(panel) {
 		if(this.runPanelHandler(panel)) {
 			if(panel.isLocal) {
 				// do nothing?
@@ -202,9 +206,9 @@ dojo.widget.HtmlTabs = function() {
 				}
 			}
 		}
-	}
+	},
 
-	this.setExternalContent = function(panel, url, useCache) {
+	setExternalContent: function(panel, url, useCache) {
 		var node = document.getElementById(panel.id);
 		node.innerHTML = "Loading...";
 
@@ -233,9 +237,9 @@ dojo.widget.HtmlTabs = function() {
 				}
 			}
 		});
-	}
+	},
 
-	this.hidePanels = function(except) {
+	hidePanels: function(except) {
 		for(var i = 0; i < this.panels.length; i++) {
 			if(this.panels[i] != except && this.panels[i].id) {
 				var p = document.getElementById(this.panels[i].id);
@@ -245,7 +249,6 @@ dojo.widget.HtmlTabs = function() {
 			}
 		}
 	}
-}
-dojo.inherits(dojo.widget.HtmlTabs, dojo.widget.HtmlWidget);
+});
 
 dojo.widget.tags.addParseTreeHandler("dojo:tabs");
