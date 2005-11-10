@@ -98,6 +98,11 @@ dojo.widget.manager = new function(){
 		return ret;
 	}
 
+	// shortcuts, baby
+	this.byId = this.getWidgetById;
+	this.byType = this.getWidgetsByType;
+	this.byFilter = this.getWidgetsByFilter;
+
 	// map of previousally discovered implementation names to constructors
 	var knownWidgetImplementations = {};
 
