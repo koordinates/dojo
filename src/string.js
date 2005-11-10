@@ -61,7 +61,7 @@ dojo.string.encodeAscii = function(str) {
 
 // TODO: make an HTML version
 dojo.string.summary = function(str, len) {
-	if(!len || str.length < len) {
+	if(!len || str.length <= len) {
 		return str;
 	} else {
 		return str.substring(0, len).replace(/\.+$/, "") + "...";
