@@ -97,7 +97,11 @@ dojo.lang.isBoolean = function(wh) {
 }
 
 dojo.lang.isUndefined = function(wh) {
-	return ((wh == undefined)&&(typeof wh == "undefined"));
+	if(dojo.lang.isString(wh)) {
+		return dojo.lang.isUndefined(dj_global[wh]);
+	} else {
+		return ((wh == undefined)&&(typeof wh == "undefined"));
+	}
 }
 
 dojo.lang.isAlien = function(wh) {
