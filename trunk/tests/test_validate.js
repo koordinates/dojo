@@ -200,3 +200,173 @@ function test_validate_isState(){
 	jum.assertTrue("test3", dojo.validate.us.isState('CA'));
 	jum.assertTrue("test4", dojo.validate.us.isState('Wa'));
 }
+
+function test_validate_check(){
+	// A generic form
+	var f = {
+		// textboxes
+		tx1: {type: "text", value: " 1001 ",  name: "tx1"},
+		tx2: {type: "text", value: " x",  name: "tx2"},
+		tx3: {type: "text", value: "10/19/2005",  name: "tx3"},
+		tx4: {type: "text", value: "10/19/2005",  name: "tx4"},
+		tx5: {type: "text", value: "Foo@Localhost",  name: "tx5"},
+		tx6: {type: "text", value: "Foo@Localhost",  name: "tx6"},
+		tx7: {type: "text", value: "<Foo@Gmail.Com>",  name: "tx7"},
+		tx8: {type: "text", value: "   ",  name: "tx8"},
+		tx9: {type: "text", value: "ca",  name: "tx9"},
+		tx10: {type: "text", value: "homer SIMPSON",  name: "tx10"},
+		tx11: {type: "text", value: "$1,000,000 (US)",  name: "tx11"},
+		// password
+		pw1: {type: "password", value: "",  name: "pw1"},
+		pw2: {type: "password", value: "",  name: "pw2"},
+		// textarea - they have a type property, even though no html attribute
+		ta1: {type: "textarea", value: "",  name: "ta1"},
+		ta2: {type: "textarea", value: "",  name: "ta2"},
+		// radio button groups
+		rb1: [
+			{type: "radio", value: "v0",  name: "rb1", checked: false},
+			{type: "radio", value: "v1",  name: "rb1", checked: false},
+			{type: "radio", value: "v2",  name: "rb1", checked: true}
+		],
+		rb2: [
+			{type: "radio", value: "v0",  name: "rb2", checked: false},
+			{type: "radio", value: "v1",  name: "rb2", checked: false},
+			{type: "radio", value: "v2",  name: "rb2", checked: false}
+		],
+		rb3: [
+			{type: "radio", value: "v0",  name: "rb3", checked: false},
+			{type: "radio", value: "v1",  name: "rb3", checked: false},
+			{type: "radio", value: "v2",  name: "rb3", checked: false}
+		],
+		// checkboxes
+		cb1: {type: "checkbox", value: "cb1",  name: "cb1", checked: false},
+		cb2: {type: "checkbox", value: "cb2",  name: "cb2", checked: false},
+		// checkbox group with the same name
+		cb3: [
+			{type: "checkbox", value: "v0",  name: "cb3", checked: false},
+			{type: "checkbox", value: "v1",  name: "cb3", checked: false},
+			{type: "checkbox", value: "v2",  name: "cb3", checked: false}
+		],
+		doubledip: [
+			{type: "checkbox", value: "vanilla",  name: "doubledip", checked: false},
+			{type: "checkbox", value: "chocolate",  name: "doubledip", checked: false},
+			{type: "checkbox", value: "chocolate chip",  name: "doubledip", checked: false},
+			{type: "checkbox", value: "lemon custard",  name: "doubledip", checked: true},
+			{type: "checkbox", value: "pistachio almond",  name: "doubledip", checked: false},
+		],		
+		// <select>
+		s1: {
+			type: "select-one", 
+			name: "s1",
+			selectedIndex: -1,
+			options: [
+				{text: "option 1", value: "v0", selected: false},
+				{text: "option 2", value: "v1", selected: false},
+				{text: "option 3", value: "v2", selected: false},
+			]
+		},
+		// <select multiple>
+		s2: {
+			type: "select-multiple", 
+			name: "s2",
+			selectedIndex: 1,
+			options: [
+				{text: "option 1", value: "v0", selected: false},
+				{text: "option 2", value: "v1", selected: true},
+				{text: "option 3", value: "v2", selected: true},
+			]
+		},
+		tripledip: {
+			type: "select-multiple", 
+			name: "tripledip",
+			selectedIndex: 3,
+			options: [
+				{text: "option 1", value: "vanilla", selected: false},
+				{text: "option 2", value: "chocolate", selected: false},
+				{text: "option 3", value: "chocolate chip", selected: false},
+				{text: "option 4", value: "lemon custard", selected: true},
+				{text: "option 5", value: "pistachio almond", selected: true},
+				{text: "option 6", value: "mocha almond chip", selected: false},
+			],
+		},
+	};
+
+	// Profile for form input
+	var profile = {
+		// filters
+		trim: ["tx1", "tx2"],
+		uppercase: ["tx9"],
+		lowercase: ["tx5", "tx6", "tx7"],
+		ucfirst: ["tx10"],
+		digit: ["tx11"],
+		// required fields
+		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "pw1", "ta1", "rb1", "rb2", "cb3", "s1", "s2", 
+			{"doubledip":2}, {"tripledip":3} ],
+		// validated fields
+		constraints: {
+			tx1: dojo.validate.isInteger,
+			tx2: dojo.validate.isInteger,
+			tx3: [dojo.validate.isValidDate, "MM/DD/YYYY"],
+			tx4: [dojo.validate.isValidDate, "YYYY.MM.DD"],
+			tx5: [dojo.validate.isEmailAddress],
+			tx6: [dojo.validate.isEmailAddress, true],
+			tx7: [dojo.validate.isEmailAddress, false, true],
+			tx8: dojo.validate.isURL,
+		},
+	};
+
+	// results object
+	var results = dojo.validate.check(f, profile);
+
+	// test filter stuff
+	jum.assertEquals("trim_test1", "1001", f.tx1.value );
+	jum.assertEquals("trim_test2", "x", f.tx2.value );
+	jum.assertEquals("uc_test1", "CA", f.tx9.value );
+	jum.assertEquals("lc_test1", "foo@localhost", f.tx5.value );
+	jum.assertEquals("lc_test2", "foo@localhost", f.tx6.value );
+	jum.assertEquals("lc_test3", "<foo@gmail.com>", f.tx7.value );
+	jum.assertEquals("ucfirst_test1", "Homer Simpson", f.tx10.value );
+	jum.assertEquals("digit_test1", "1000000", f.tx11.value );
+
+	// test missing stuff
+	jum.assertFalse("missing_test1", results.isSuccessful() );
+	jum.assertTrue("missing_test2", results.hasMissing() );
+	jum.assertFalse("missing_test3", results.isMissing("tx1") );
+	jum.assertFalse("missing_test4", results.isMissing("tx2") );
+	jum.assertFalse("missing_test5", results.isMissing("tx3") );
+	jum.assertFalse("missing_test6", results.isMissing("tx4") );
+	jum.assertFalse("missing_test7", results.isMissing("tx5") );
+	jum.assertFalse("missing_test8", results.isMissing("tx6") );
+	jum.assertFalse("missing_test9", results.isMissing("tx7") );
+	jum.assertTrue("missing_test10", results.isMissing("tx8") );
+	jum.assertTrue("missing_test11", results.isMissing("pw1") );
+	jum.assertFalse("missing_test12", results.isMissing("pw2") );
+	jum.assertTrue("missing_test13", results.isMissing("ta1") );
+	jum.assertFalse("missing_test14", results.isMissing("ta2") );
+	jum.assertFalse("missing_test15", results.isMissing("rb1") );
+	jum.assertTrue("missing_test16", results.isMissing("rb2") );
+	jum.assertFalse("missing_test17", results.isMissing("rb3") );
+	jum.assertTrue("missing_test18", results.isMissing("cb3") );
+	jum.assertTrue("missing_test17", results.isMissing("s1") );
+	jum.assertFalse("missing_test20", results.isMissing("s2") );
+	jum.assertTrue("missing_test21", results.isMissing("doubledip") );
+	jum.assertTrue("missing_test22", results.isMissing("tripledip") );
+	// missing: tx8, pw1, ta1, rb2, cb3, s1, doubledip, tripledip
+	jum.assertEquals("missing_test23", 8, results.getMissing().length );
+
+	// test constraint stuff
+	jum.assertTrue("invalid_test1", results.hasInvalid() );
+	jum.assertFalse("invalid_test2", results.isInvalid("tx1") );
+	jum.assertTrue("invalid_test3", results.isInvalid("tx2") );
+	jum.assertFalse("invalid_test4", results.isInvalid("tx3") );
+	jum.assertTrue("invalid_test5", results.isInvalid("tx4") );
+	jum.assertTrue("invalid_test6", results.isInvalid("tx5") );
+	jum.assertFalse("invalid_test7", results.isInvalid("tx6") );
+	jum.assertFalse("invalid_test8", results.isInvalid("tx7") );
+	jum.assertFalse("invalid_test9", results.isInvalid("tx8") );
+	jum.assertFalse("invalid_test10", results.isInvalid("pw1") );
+	jum.assertFalse("invalid_test11", results.isInvalid("pw2") );
+	jum.assertFalse("invalid_test12", results.isInvalid("ta1") );
+	jum.assertFalse("invalid_test13", results.isInvalid("ta2") );
+	jum.assertEquals("invalid_test14", 3, results.getInvalid().length );
+}
