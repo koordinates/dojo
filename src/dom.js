@@ -322,21 +322,36 @@ dojo.dom.insertAtPosition = function(node, ref, position){
 
 dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
 	var siblingNodes = containingNode.childNodes;
-	var placed = false;
-	if((dojo.lang.isNumber(insertionIndex))&&(insertionIndex>=siblingNodes.length)){
+
+	// if there aren't any kids yet, just add it to the beginning
+
+	if (!siblingNodes.length){
 		containingNode.appendChild(node);
 		return;
 	}
-	for(var i=0; i<siblingNodes.length; i++) {
-		if(	(siblingNodes.item(i)["getAttribute"])&&
-			(parseInt(siblingNodes.item(i).getAttribute("dojoinsertionindex")) > insertionIndex)){
-			dojo.dom.insertBefore(node, siblingNodes.item(i));
-			placed = true;
-			break;
+
+	// otherwise we need to walk the childNodes
+	// and find our spot
+
+	var after = null;
+
+	for(var i=0; i<siblingNodes.length; i++){
+
+		var sibling_index = siblingNodes.item(i)["getAttribute"] ? parseInt(siblingNodes.item(i).getAttribute("dojoinsertionindex")) : -1;
+
+		if (sibling_index < insertionIndex){
+			after = siblingNodes.item(i);
 		}
 	}
-	if(!placed){
-		dojo.dom.insertBefore(node, containingNode);
+
+	if (after){
+		// add it after the node in {after}
+
+		dojo.dom.insertAfter(node, after);
+	}else{
+		// add it to the start
+
+		dojo.dom.insertBefore(node, siblingNodes.item(0));
 	}
 }
 	
