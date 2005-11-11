@@ -46,6 +46,15 @@ dojo.dom.xmlns = {
 	AdobeExtensions : "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 };
 
+dojo.dom.isNode = dojo.lang.isDomNode = function(wh) {
+	if(typeof Element != "undefined") {
+		return wh instanceof Element;
+	} else {
+		// best-guess
+		return !isNaN(wh.nodeType);
+	}
+}
+
 dojo.dom.getTagName = function (node){
 	var tagName = node.tagName;
 	if(tagName.substr(0,5).toLowerCase()!="dojo:"){
