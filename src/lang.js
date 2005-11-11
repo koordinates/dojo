@@ -38,17 +38,22 @@ dojo.lang.nameAnonFunc = function(anonFuncPtr, namespaceObj){
 	return ret;
 }
 
-dojo.lang.hitch = function(obj, meth){
-	var mn = meth;
-	if(!dojo.lang.isString(mn)){
-		mn = dojo.lang.nameAnonFunc(meth, obj);
+/**
+ * Runs a function in a given scope (thisObject), can
+ * also be used to preserve scope.
+ *
+ * hitch(foo, "bar"); // runs foo.bar() in the scope of foo
+ * hitch(foo, myFunction); // runs myFunction in the scope of foo
+ */
+dojo.lang.hitch = function(thisObject, method) {
+	if(dojo.lang.isString(method)) {
+		var fcn = thisObject[method];
+	} else {
+		var fcn = method;
 	}
-	return function(){ return obj[mn].apply(obj, arguments); }
-}
 
-dojo.lang.bind = function(thisObject, method) {
 	return function() {
-		method.apply(thisObject, arguments);
+		return fcn.apply(thisObject, arguments);
 	}
 }
 
