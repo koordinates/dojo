@@ -224,7 +224,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 						// takes correctly.
 						var tn = dojo.event.nameAnonFunc(new Function(args[x]), this);
 						dojo.event.connect(this, x, this, tn);
-					}else if(this[x].constructor == Array){ // typeof [] == "object"
+					}else if(dojo.lang.isArray(this[x])){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					} else if (this[x] instanceof Date) {
 						this[x] = new Date(Number(args[x])); // assume timestamp
