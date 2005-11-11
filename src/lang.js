@@ -116,6 +116,9 @@ dojo.lang.isBoolean = function(wh) {
 }
 
 dojo.lang.isUndefined = function(wh) {
+	// reverted by CH. this broke alot of the widget stuff
+	return ((wh == undefined)&&(typeof wh == "undefined"));
+
 	if(dojo.lang.isString(wh)) {
 		return dojo.lang.isUndefined(dj_global[wh]);
 	} else {
