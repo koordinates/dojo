@@ -1,4 +1,5 @@
 dojo.provide("dojo.dom");
+dojo.require("dojo.lang");
 
 dojo.dom.ELEMENT_NODE                  = 1;
 dojo.dom.ATTRIBUTE_NODE                = 2;
