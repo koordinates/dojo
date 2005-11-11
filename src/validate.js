@@ -184,10 +184,64 @@ dojo.validate.us.isCurrency = function(value) {
 	return /^[-+]?\$?(0|[1-9]\d{0,2}(,?\d\d\d)*)(\.\d\d)?$/.test(value);	
 }
 
-// Validates 10 US digit phone number
-dojo.validate.us.isPhoneNumber = function(value) {
-	// Choice of 4 separators, round brackets optional.
-	return /^\(?\d{3}\)?[- .]\d{3}[- .]\d{4}$/.test(value);
+/**
+	Validates 10 US digit phone number
+
+	@param value The telephone number string
+	@param flags  An associative array of flags and values specifying additional constraints.
+		flags.ext  Possible values for telephone extension are "yes, "no", or "allow".  Default is "allow".
+		flags.prefix  String that preceeds extention. Default allows "x" or "ext" or "ext." or "".
+		flags.area_code  Possible values are "yes, "no", or "allow".  Default is "allow".
+		flags.par  Parantheses around area code can have values of "yes, "no", or "allow".  Default is "allow".
+		flags.sep  A string that specifies the seperator.  Default is "-" or "." or " ".
+	@return true or false
+*/
+dojo.validate.us.isPhoneNumber = function(value, flags) {
+	flags = (typeof flags == "object") ? flags : {};
+	var ext = (typeof flags.ext == "string") ? flags.ext : "allow";
+	var prefix = (typeof flags.prefix == "string") ? flags.prefix : "(x|ext\\.?)?";
+	var ac = (typeof flags.area_code == "string") ? flags.area_code : "allow";
+	var par = (typeof flags.par == "string") ? flags.par : "allow";
+	var sep = (typeof flags.sep == "string") ? flags.sep : "[- .]";
+
+	// build a regular expression for the area code
+	var areacodeRE = "";
+	if ( ac == "yes" && par == "yes" ) {
+		areacodeRE = "\\(\\d{3}\\) ";
+	}
+	else if ( ac == "allow" && par == "yes" ) {
+		areacodeRE = "(\\(\\d{3}\\) )?";
+	}
+	else if ( ac == "yes" && par == "no" ) {
+		areacodeRE = "\\d{3}" + sep;
+	}
+	else if ( ac == "allow" && par == "no" ) {
+		areacodeRE = "(\\d{3}" + sep + ")?";
+	}
+	else if ( ac == "yes" && par == "allow" ) {
+		areacodeRE = "(\\(\\d{3}\\) |\\d{3}" + sep + ")";
+	}
+	else if ( ac == "allow" && par == "allow" ) {
+		areacodeRE = "(\\(\\d{3}\\) |\\d{3}" + sep + ")?";
+	}
+
+	// build a regular expression for the local number
+	var numberRE = "\\d{3}" + sep + "\\d{4}";
+
+	// build a regular expression for the extention
+	var extentionRE = "";
+	if ( ext == "yes" ) {
+		extentionRE = " \\s*" + prefix + "\\s*\\d{1,4}";
+	}
+	else if ( ext == "allow" ) {
+		extentionRE = "( \\s*" + prefix + "\\s*\\d{1,4})?";
+	}
+
+	// build a regular expression for the phone number
+	var phoneRE = "^" + areacodeRE + numberRE + extentionRE + "$";
+
+	var re = new RegExp(phoneRE);
+	return re.test(value);
 }
 
 // Validates social security number
@@ -206,6 +260,7 @@ dojo.validate.us.isZipCode = function(value) {
 dojo.validate.us.isState = function(value) {
 	return /^(AL|AK|AS|AZ|AR|CA|CO|CT|DE|DC|FM|FL|GA|GU|HI|ID|IL|IN|IA|KS|KY|LA|ME|MH|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|MP|OH|OK|OR|PW|PA|PR|RI|SC|SD|TN|TX|UT|VT|VI|VA|WA|WV|WI|WY)$/i.test(value);
 }
+
 
 /**
 	Procedural API Description
@@ -234,6 +289,13 @@ dojo.validate.us.isState = function(value) {
 			// List required fields by name and use this notation to require more than one value: {checkboxgroup: 2}, {selectboxname: 3}.
 			required: ["tx7", "tx8", "pw1", "ta1", "rb1", "rb2", "cb3", "s1", {"doubledip":2}, {"tripledip":3}],
 
+			// dependant/conditional fields are required if the target field is present and not blank.
+			// At present only textbox, password, and textarea fields are supported.
+			dependancies:	{
+				cc_exp: "cc_no",	
+				cc_type: "cc_no",	
+			},
+
 			// Fields can be validated using any boolean valued function.  
 			// Use arrays to specify parameters in addition to the field value.
 			constraints: {
@@ -242,6 +304,14 @@ dojo.validate.us.isState = function(value) {
 				field_name3: [myValidationFunction, additional parameters],
 				field_name4: [dojo.validate.isValidDate, "YYYY.MM.DD"],
 				field_name5: [dojo.validate.isEmailAddress, false, true],
+			},
+
+			// Confirm is a sort of conditional validation.
+			// It associates each field in its property list with another field whose value should be equal.
+			// If the values are not equal, the field in the property list is reported as Invalid. Unless the target field is blank.
+			confirm: {
+				email_confirm: "email",	
+				pw2: "pw1",	
 			},
 		};
 
@@ -390,6 +460,24 @@ dojo.validate.check = function(form, profile) {
 		}
 	}
 
+	// Dependant fields are required when the target field is present (not blank).
+	// Todo: Support dependant and target fields that are radio button groups, or select drop-down lists.
+	// Todo: Make the dependancy based on a specific value of the target field.
+	// Todo: allow dependant fields to have several required values, like {checkboxgroup: 3}.
+	if ( typeof profile.dependancies == "object" ) {
+		// properties of dependancies object are the names of dependant fields to be checked
+		for (name in profile.dependancies) {
+			var elem = form[name];	// the dependant element
+			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; } // limited support
+			if ( /\S+/.test(elem.value) ) { continue; }	// has a value already
+			if ( results.isMissing(elem.name) ) { continue; }	// already listed as missing
+			var target = form[profile.dependancies[name]];
+			if ( target.type != "text" && target.type != "textarea" && target.type != "password" ) { continue; }	// limited support
+			if ( /^\s*$/.test(target.value) ) { continue; }	// skip if blank
+			missing[missing.length] = elem.name;	// ok the dependant field is missing
+		}
+	}
+
 	// Find invalid input fields.
 	if ( typeof profile.constraints == "object" ) {
 		// constraint properties are the names of fields to be validated
@@ -418,7 +506,22 @@ dojo.validate.check = function(form, profile) {
 		}
 	}
 
-	// Todo: Find required fields based on more complicated dependencies
+	// Find unequal confirm fields and report them as Invalid.
+	if ( typeof profile.confirm == "object" ) {
+		for (name in profile.confirm) {
+			var elem = form[name];	// the confirm element
+			var target = form[profile.confirm[name]];
+			if ( (elem.type != "text" && elem.type != "textarea" && elem.type != "password") 
+				|| target.type != elem.type 
+				|| target.value == elem.value		// it's valid
+				|| results.isInvalid(elem.name)	// already listed as invalid
+				|| /^\s*$/.test(target.value)	)	// skip if blank - only confirm if target has a value
+			{
+				continue; 
+			}	
+			invalid[invalid.length] = elem.name;
+		}
+	}
 
 	return results;
 }

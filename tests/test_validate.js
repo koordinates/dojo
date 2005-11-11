@@ -175,7 +175,30 @@ function test_validate_isPhoneNumber(){
 	jum.assertTrue("test4", dojo.validate.us.isPhoneNumber('111.111.1111'));
 	jum.assertTrue("test5", dojo.validate.us.isPhoneNumber('111-111-1111'));
 	jum.assertFalse("test6", dojo.validate.us.isPhoneNumber('111/111/1111'));
-	jum.assertFalse("test7", dojo.validate.us.isPhoneNumber('111-1111'));
+	jum.assertTrue("test7", dojo.validate.us.isPhoneNumber('111-1111'));
+
+	// test extensions
+	jum.assertTrue("test8", dojo.validate.us.isPhoneNumber('111-111-1111 ext. 1234'));
+	jum.assertTrue("test9", dojo.validate.us.isPhoneNumber('111-111-1111 ext 1234'));
+	jum.assertTrue("test10", dojo.validate.us.isPhoneNumber('111-111-1111 x1234'));
+	jum.assertFalse("test11", dojo.validate.us.isPhoneNumber('111-111-1111 ext. 1234', {ext: "no"}));
+	jum.assertTrue("test12", dojo.validate.us.isPhoneNumber('111-111-1111 tel ext. 1234', {prefix: "tel ext."}));
+
+	// test area codes
+	jum.assertTrue("test13", dojo.validate.us.isPhoneNumber('111-1111 ext. 1234'));
+	jum.assertFalse("test14",  dojo.validate.us.isPhoneNumber('111-1111 ext 1234', {area_code: "yes"}));
+	jum.assertTrue("test15", dojo.validate.us.isPhoneNumber('(111) 111-1111 x1234'));
+	jum.assertFalse("test16", dojo.validate.us.isPhoneNumber('(111) 111-1111 ext. 1234', {area_code: "no"}));
+	jum.assertFalse("test17", dojo.validate.us.isPhoneNumber('(111) 111-1111 ext. 1234', {par: "no"}));
+	jum.assertTrue("test18", dojo.validate.us.isPhoneNumber('111-111-1111 ext. 1234', {par: "no"}));
+
+	// test seperator
+	jum.assertTrue("test19", dojo.validate.us.isPhoneNumber('111.111.1111 x1234', {sep: "."}));
+	jum.assertFalse("test20", dojo.validate.us.isPhoneNumber('111.111.1111 x1234', {sep: "-"}));
+	jum.assertTrue("test21", dojo.validate.us.isPhoneNumber('(111) 111-1111 x1234', {sep: "-"}));
+	jum.assertFalse("test22", dojo.validate.us.isPhoneNumber('(111)-111-1111 x1234', {sep: "-"}));
+	jum.assertTrue("test23", dojo.validate.us.isPhoneNumber('1111111111 x1234', {sep: ""}));
+	jum.assertTrue("test24", dojo.validate.us.isPhoneNumber('(111) 111 1111 x1234', {sep: " ", par: "yes"}));
 }
 
 function test_validate_isSocialSecurityNumber(){
@@ -216,9 +239,14 @@ function test_validate_check(){
 		tx9: {type: "text", value: "ca",  name: "tx9"},
 		tx10: {type: "text", value: "homer SIMPSON",  name: "tx10"},
 		tx11: {type: "text", value: "$1,000,000 (US)",  name: "tx11"},
+		cc_no: {type: "text", value: "5434 1111 1111 1111",  name: "cc_no"},
+		cc_exp: {type: "text", value: "",  name: "cc_exp"},
+		cc_type: {type: "text", value: "Visa",  name: "cc_type"},
+		email: {type: "text", value: "foo@gmail.com",  name: "email"},
+		email_confirm: {type: "text", value: "foo2@gmail.com",  name: "email_confirm"},
 		// password
-		pw1: {type: "password", value: "",  name: "pw1"},
-		pw2: {type: "password", value: "",  name: "pw2"},
+		pw1: {type: "password", value: "123456",  name: "pw1"},
+		pw2: {type: "password", value: "123456",  name: "pw2"},
 		// textarea - they have a type property, even though no html attribute
 		ta1: {type: "textarea", value: "",  name: "ta1"},
 		ta2: {type: "textarea", value: "",  name: "ta2"},
@@ -302,6 +330,11 @@ function test_validate_check(){
 		// required fields
 		required: ["tx2", "tx3", "tx4", "tx5", "tx6", "tx7", "tx8", "pw1", "ta1", "rb1", "rb2", "cb3", "s1", "s2", 
 			{"doubledip":2}, {"tripledip":3} ],
+		// dependant/conditional fields
+		dependancies:	{
+			cc_exp: "cc_no",	
+			cc_type: "cc_no",	
+		},
 		// validated fields
 		constraints: {
 			tx1: dojo.validate.isInteger,
@@ -312,6 +345,11 @@ function test_validate_check(){
 			tx6: [dojo.validate.isEmailAddress, true],
 			tx7: [dojo.validate.isEmailAddress, false, true],
 			tx8: dojo.validate.isURL,
+		},
+		// confirm fields
+		confirm: {
+			email_confirm: "email",	
+			pw2: "pw1",	
 		},
 	};
 
@@ -339,7 +377,7 @@ function test_validate_check(){
 	jum.assertFalse("missing_test8", results.isMissing("tx6") );
 	jum.assertFalse("missing_test9", results.isMissing("tx7") );
 	jum.assertTrue("missing_test10", results.isMissing("tx8") );
-	jum.assertTrue("missing_test11", results.isMissing("pw1") );
+	jum.assertFalse("missing_test11", results.isMissing("pw1") );
 	jum.assertFalse("missing_test12", results.isMissing("pw2") );
 	jum.assertTrue("missing_test13", results.isMissing("ta1") );
 	jum.assertFalse("missing_test14", results.isMissing("ta2") );
@@ -351,8 +389,11 @@ function test_validate_check(){
 	jum.assertFalse("missing_test20", results.isMissing("s2") );
 	jum.assertTrue("missing_test21", results.isMissing("doubledip") );
 	jum.assertTrue("missing_test22", results.isMissing("tripledip") );
-	// missing: tx8, pw1, ta1, rb2, cb3, s1, doubledip, tripledip
-	jum.assertEquals("missing_test23", 8, results.getMissing().length );
+	jum.assertFalse("missing_test23", results.isMissing("cc_no") );
+	jum.assertTrue("missing_test24", results.isMissing("cc_exp") );
+	jum.assertFalse("missing_test25", results.isMissing("cc_type") );
+	// missing: tx8, ta1, rb2, cb3, s1, doubledip, tripledip, cc_exp
+	jum.assertEquals("missing_test26", 8, results.getMissing().length );
 
 	// test constraint stuff
 	jum.assertTrue("invalid_test1", results.hasInvalid() );
@@ -368,5 +409,8 @@ function test_validate_check(){
 	jum.assertFalse("invalid_test11", results.isInvalid("pw2") );
 	jum.assertFalse("invalid_test12", results.isInvalid("ta1") );
 	jum.assertFalse("invalid_test13", results.isInvalid("ta2") );
-	jum.assertEquals("invalid_test14", 3, results.getInvalid().length );
+	jum.assertFalse("invalid_test14", results.isInvalid("email") );
+	jum.assertTrue("invalid_test15", results.isInvalid("email_confirm") );
+	// invlaid: txt2, txt4, txt5, email_confirm
+	jum.assertEquals("invalid_test16", 4, results.getInvalid().length );
 }
