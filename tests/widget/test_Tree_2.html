@@ -68,11 +68,21 @@ td {
 		selectionTopic.subscribe(eventSub, "update");
 	});
 
+	function get_selected_node(){
+		var tree = dojo.widget.getWidgetById('firstTree');
+		var node = tree.selectedNode;
+		if (node){
+			alert("The selected node is "+node.widgetId);
+		}else{
+			alert("There is no selected node");
+		}
+	}
+
 </script>
 </head>
 <body>
 
-<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade">
+<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="firstTree">
     <div dojoType="TreeNode" title="Item 1">
         <div dojoType="TreeNode" title="Item 1.1"><br/></div>
         <div dojoType="TreeNode" title="Item 1.2">
@@ -89,9 +99,13 @@ td {
     </div>
 </div>
 
-<p>this is some text below the tree.
+<p>this is some text below the tree.</p>
+
+<p><input type="button" value="What node is selected in the top tree?" onclick="get_selected_node();" /></p>
 
 <div id="SelectionEvents" style="background:#dcdcdc; color:#191970;">Selection events should show up here</div>
+
+
 
 </body>
 </html>
