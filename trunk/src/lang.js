@@ -93,6 +93,15 @@ dojo.lang.isString = function(wh) {
 	return (wh instanceof String || typeof wh == "string");
 }
 
+/* WARNING: In most cases, isNaN(wh) is sufficient to determine whether or not
+something is a number or can be used as such. For example, a number or string
+can be used interchangably when accessing array items (arr["1"] is the same as
+arr[1]) and isNaN will return false for both values ("1" and 1). Should you
+use isNumber("1"), that will return false, which is generally not too useful.
+Also, isNumber(NaN) returns true, again, this isn't generally useful, but there
+are corner cases (like when you want to make sure that two things are really
+the same type of thing). That is really where isNumber "shines".
+*/
 dojo.lang.isNumber = function(wh) {
 	return (wh instanceof Number || typeof wh == "number");
 }

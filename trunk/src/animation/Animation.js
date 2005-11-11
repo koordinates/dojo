@@ -1,12 +1,17 @@
 dojo.provide("dojo.animation");
 dojo.provide("dojo.animation.Animation");
 
+dojo.require("dojo.lang");
 dojo.require("dojo.math");
 dojo.require("dojo.math.curves");
 
 /*
 Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js
+
+TODO:
+- make animations reusable by not killing repeatCount as we go
+- use dojo.lang.bind/hitch to avoid the "_this" junk
 */
 
 dojo.animation = {};
