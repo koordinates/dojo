@@ -562,11 +562,13 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		var ie = 1;
 		var mozilla = 1 << 1;
 		var safari = 1 << 2;
+		var opera = 1 << 3;
 		function isSupportedBy (browsers) {
 			return {
 				ie: Boolean(browsers & ie),
 				mozilla: Boolean(browsers & mozilla),
-				safari: Boolean(browsers & safari)
+				safari: Boolean(browsers & safari),
+				opera: Boolean(browsers & opera)
 			}
 		}
 
@@ -580,14 +582,14 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			case "justifycenter": case "justifyfull": case "justifyleft": case "justifyright":
 			case "cut": case "copy": case "paste": case "delete":
 			case "undo": case "redo":
-				supportedBy = isSupportedBy(mozilla | ie | safari);
+				supportedBy = isSupportedBy(mozilla | ie | safari | opera);
 				break;
 				
 			case "createlink": case "unlink": case "removeformat":
 			case "inserthorizontalrule": case "insertimage":
 			case "insertorderedlist": case "insertunorderedlist":
 			case "indent": case "outdent": case "formatblock": case "strikethrough": 
-				supportedBy = isSupportedBy(mozilla | ie);
+				supportedBy = isSupportedBy(mozilla | ie | opera);
 				break;
 				
 			case "blockdirltr": case "blockdirrtl":
@@ -611,7 +613,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 		return (dojo.render.html.ie && supportedBy.ie) ||
 			(dojo.render.html.mozilla && supportedBy.mozilla) ||
-			(dojo.render.html.safari && supportedBy.safari);
+			(dojo.render.html.safari && supportedBy.safari) ||
+			(dojo.render.html.opera && supportedBy.opera);
 	},
 	
 	/**
