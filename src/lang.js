@@ -46,6 +46,11 @@ dojo.lang.hitch = function(obj, meth){
 	return function(){ return obj[mn].apply(obj, arguments); }
 }
 
+dojo.lang.bind = function(thisObject, method) {
+	return function() {
+		method.apply(thisObject, arguments);
+	}
+}
 
 /**
  * Sets a timeout in milliseconds to execute a function in a given context
