@@ -80,8 +80,16 @@ dojo.lang.setTimeout = function (func, delay) {
 	return setTimeout(function () { func.apply(context, args); }, delay);
 }
 
-// Partial implmentation of is* functions from
-// http://www.crockford.com/javascript/recommend.html
+/**
+ * Partial implmentation of is* functions from
+ * http://www.crockford.com/javascript/recommend.html
+ * NOTE: some of these may not be the best thing to use in all situations
+ * as they aren't part of core JS and therefore can't work in every case.
+ * See WARNING messages inline for tips.
+ *
+ * The following is* functions are fairly "safe"
+ */
+
 dojo.lang.isObject = function(wh) {
 	return typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh);
 }
@@ -98,36 +106,64 @@ dojo.lang.isString = function(wh) {
 	return (wh instanceof String || typeof wh == "string");
 }
 
-/* WARNING: In most cases, isNaN(wh) is sufficient to determine whether or not
-something is a number or can be used as such. For example, a number or string
-can be used interchangably when accessing array items (arr["1"] is the same as
-arr[1]) and isNaN will return false for both values ("1" and 1). Should you
-use isNumber("1"), that will return false, which is generally not too useful.
-Also, isNumber(NaN) returns true, again, this isn't generally useful, but there
-are corner cases (like when you want to make sure that two things are really
-the same type of thing). That is really where isNumber "shines".
-*/
-dojo.lang.isNumber = function(wh) {
-	return (wh instanceof Number || typeof wh == "number");
+dojo.lang.isAlien = function(wh) {
+	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));
 }
 
 dojo.lang.isBoolean = function(wh) {
 	return (wh instanceof Boolean || typeof wh == "boolean");
 }
 
-dojo.lang.isUndefined = function(wh) {
-	// reverted by CH. this broke alot of the widget stuff
-	return ((wh == undefined)&&(typeof wh == "undefined"));
-
-	if(dojo.lang.isString(wh)) {
-		return dojo.lang.isUndefined(dj_global[wh]);
-	} else {
-		return ((wh == undefined)&&(typeof wh == "undefined"));
-	}
+/**
+ * The following is***() functions are somewhat "unsafe". Fortunately,
+ * there are workarounds the the language provides and are mentioned
+ * in the WARNING messages.
+ *
+ * WARNING: In most cases, isNaN(wh) is sufficient to determine whether or not
+ * something is a number or can be used as such. For example, a number or string
+ * can be used interchangably when accessing array items (arr["1"] is the same as
+ * arr[1]) and isNaN will return false for both values ("1" and 1). Should you
+ * use isNumber("1"), that will return false, which is generally not too useful.
+ * Also, isNumber(NaN) returns true, again, this isn't generally useful, but there
+ * are corner cases (like when you want to make sure that two things are really
+ * the same type of thing). That is really where isNumber "shines".
+ *
+ * RECOMMENDATION: Use isNaN(wh) when possible
+ */
+dojo.lang.isNumber = function(wh) {
+	return (wh instanceof Number || typeof wh == "number");
 }
 
-dojo.lang.isAlien = function(wh) {
-	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));
+/**
+ * WARNING: In some cases, isUndefined will not behave as you
+ * might expect. If you do isUndefined(foo) and there is no earlier
+ * reference to foo, an error will be thrown before isUndefined is
+ * called. It behaves correctly if you scope yor object first, i.e.
+ * isUndefined(foo.bar) where foo is an object and bar isn't a
+ * property of the object.
+ *
+ * RECOMMENDATION: Use `typeof foo == "undefined"` when possible
+ *
+ * FIXME: Should isUndefined go away since it is error prone?
+ */
+dojo.lang.isUndefined = function(wh) {
+	return ((wh == undefined)&&(typeof wh == "undefined"));
+}
+
+// end Crockford functions
+
+dojo.lang.whatAmI = function(wh) {
+	try {
+		if(dojo.lang.isArray(wh)) { return "array"; }
+		if(dojo.lang.isFunction(wh)) { return "function"; }
+		if(dojo.lang.isString(wh)) { return "string"; }
+		if(dojo.lang.isNumber(wh)) { return "number"; }
+		if(dojo.lang.isBoolean(wh)) { return "boolean"; }
+		if(dojo.lang.isAlien(wh)) { return "alien"; }
+		if(dojo.lang.isUndefined(wh)) { return "undefined"; }
+		if(dojo.lang.isObject(wh)) { return "object"; }
+	} catch(E) {}
+	return "unknown";
 }
 
 dojo.lang.find = function(arr, val, identity){
