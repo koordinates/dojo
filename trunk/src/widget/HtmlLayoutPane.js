@@ -7,14 +7,17 @@ dojo.provide("dojo.widget.HtmlLayoutPane");
 //
 // TODO: allow more edge priority orders (e.g. t,r,l,b)
 // TODO: allow percentage sizing stuff
-// TODO: integrate somehow with HtmlSplitPane stuff?
 //
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.event.*");
+dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlContainer");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.string");
+
 
 dojo.widget.HtmlLayoutPane = function(){
 	dojo.widget.HtmlContainer.call(this);
@@ -42,6 +45,9 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	url: "inline",
 	extractContent: true,
 	parseContent: true,
+	
+	// To generate pane content from a java function
+	handler: "none",
 
 	minWidth: 0,
 	minHeight: 0,
@@ -55,6 +61,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		this.domNode.style.position = 'relative';
 		dojo.html.addClass(this.domNode, "dojoLayoutPane");
+		dojo.html.addClass(this.domNode, "dojoAlign" + dojo.string.capitalize(this.layoutAlign));		
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -66,10 +73,15 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			}
 		}
 
-		if ( this.url != "inline" ) {
+		if ( this.handler != "none" ){
+			this.setHandler(this.handler);
+		}
+		if ( dojo.lang.isFunction(this.handler)) {
+			this.runHandler();
+		} else if ( this.url != "inline" ) {
 			this.downloadExternalContent(this.url, true);
 		}
-		this.layoutChildren();
+		this.resizeSoon();
 	},
 
 	// Reset the (external defined) content of this pane
@@ -111,6 +123,37 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		});
 	},
 
+	// Generate pane content from given java function
+	setHandler: function(handler) {
+		var fcn = dojo.lang.isFunction(handler) ? handler : window[handler];
+		if(!dojo.lang.isFunction(fcn)) {
+			throw new Error("Unable to set handler, '" + handler + "' not a function.");
+			return;
+		}
+		this.handler = function() {
+			return fcn.apply(this, arguments);
+		}
+	},
+
+	runHandler: function() {
+		if(dojo.lang.isFunction(this.handler)) {
+			this.handler(this, this.domNode);
+			return false;
+		}
+		return true;
+		/*
+		// in case we want to honor the return value?
+		var ret = true;
+		if(dojo.lang.isFunction(this.handler) {
+			var val = this.handler(this, panel);
+			if(!dojo.lang.isUndefined(val)) {
+				ret = val;
+			}
+		}
+		return ret;
+		*/
+	},
+
 	filterAllowed: function(param, values){
 
 		for(i in values){
@@ -122,7 +165,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	layoutChildren: function(){
-
 		// find the children to arrange
 
 		var kids = {'left':[], 'right':[], 'top':[], 'bottom':[], 'client':[]};
@@ -151,7 +193,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		this.clientRect['right']  = this.clientLeft + this.clientWidth;
 		this.clientRect['top']    = this.clientTop;
 		this.clientRect['bottom'] = this.clientTop + this.clientHeight;
-
 
 		// arrange them in order
 
@@ -219,19 +260,17 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	layoutClient: function(kids){
+		// Put every child in the same position.  (If there is more than one
+		// child; caller should set all but one to "display: none"
+		for(var i=0; i<kids.client.length; i++){
 
-		if (kids.client[1]){
-			dojo.debug('We can only layout one client pane per parent pane!');
+			this.positionChild(kids.client[i], this.clientRect.left, this.clientRect.top);
+			
+			dojo.style.setOuterWidth(kids.client[i].domNode, this.clientRect.right - this.clientRect.left);		
+			dojo.style.setOuterHeight(kids.client[i].domNode, this.clientRect.bottom - this.clientRect.top);
+
 		}
 
-		if (!kids.client[0]){
-			return;
-		}
-
-		this.positionChild(kids.client[0], this.clientRect.left, this.clientRect.top);
-		
-		dojo.style.setOuterWidth(kids.client[0].domNode, this.clientRect.right - this.clientRect.left);		
-		dojo.style.setOuterHeight(kids.client[0].domNode, this.clientRect.bottom - this.clientRect.top);
 	},
 
 	positionChild: function(child, x, y){
@@ -263,7 +302,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		pane.domNode.style.position = 'absolute';
 		pane.isChild = true;
 
-		this.onResized();
+		this.resizeSoon();
 	},
 
 	removePane: function(pane){
@@ -275,7 +314,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		
 		dojo.dom.removeNode(pane.domNode);
 
-		this.onResized();
+		this.resizeSoon();
 	},
 	
 	layoutSoon: function(){
@@ -318,9 +357,9 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		// On IE, if this node was created while display=="none" then it
 		// didn't get laid out correctly; fix that here.
 		if ( this.domNode.style.display=="none" ) {
-			dojo.style.setOpacity(this.domNode, 0.01);
 			this.domNode.style.display="";
-			this.onResized();	
+			this.onResized();
+			this.domNode.style.display="none";
 		}
 		dojo.widget.HtmlLayoutPane.superclass.show.call(this);
 	},
