@@ -180,7 +180,7 @@ function dj_eval(s){ return dj_global.eval ? dj_global.eval(s) : eval(s); }
 dj_unimplemented = dojo.unimplemented = function(funcname, extra){
 	// FIXME: need to move this away from dj_*
 	var mess = "'" + funcname + "' not implemented";
-	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
+	if((!dj_undef(extra))&&(extra)){ mess += " " + extra; }
 	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
 	dojo.raise(mess);
 }
@@ -188,9 +188,10 @@ dj_unimplemented = dojo.unimplemented = function(funcname, extra){
 /**
  * Convenience for informing of deprecated behaviour.
  */
-dj_deprecated = dojo.deprecated = function(behaviour, extra){
+dj_deprecated = dojo.deprecated = function(behaviour, extra, removal){
 	var mess = "DEPRECATED: " + behaviour;
-	if((typeof extra != 'undefined')&&(extra)){ mess += " " + extra; }
+	if((!dj_undef(extra))&&(extra)){ mess += " " + extra; }
+	if(!dj_undef(removal)){ mess += " -- will be removed in version" + removal; }
 	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
 	dojo.debug(mess);
 }
@@ -260,6 +261,7 @@ dojo.hostenv = (function(){
 	// default configuration options
 	var config = {
 		isDebug: false,
+		allowQueryConfig: true,
 		baseScriptUri: "",
 		baseRelativePath: "",
 		libraryScriptUri: "",
