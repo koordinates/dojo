@@ -19,6 +19,19 @@ Summary and Overview
 As JavaScript's Date and Time core APIs leave much to be desired, this widget 
 contains a lot of convenience methods for going between various date formats.
 
+We always show 42 days at a time, and we have things in place to scroll by week,
+not just by month or year (though this is not yet implemented).
+
+To get a sense of what month to highlight, we basically initialize on the 
+first Saturday of each month, since that will be either the first of two or 
+the second of three months being partially displayed, and then work forwards 
+and backwards from that point. Currently, we assume that dates are stored in the 
+`RFC 3339`_ format (2005-06-30T08:05:00-07:00), because Dylan finds it to be most human readable and easy to 
+parse.  Extension of this to support other date formats, such as those found in 
+dojo.date, would be a welcome contribution.
+
+.. _`RFC 3339`:	http://www.faqs.org/rfcs/rfc3339.html
+
 Usage
 ===============================================================================
 
@@ -38,23 +51,100 @@ API Reference
 Properties
 ---------------------------------------
 
-``prop``:
+``today``:
 
-    property description
+    A JavaScript Date object representing the current Date, based on the date 
+		of the client computer
 
+``date``:
+
+    A JavaScript Date object representing the currently selected date in the 
+		DatePicker
+
+``storedDate``:
+
+    An `RFC 3339`_ Date (2005-06-30T08:05:00-07:00 ) representing the 
+		currently stored date for the DatePicker
+
+``currentDate``:
+
+    An object representing the currently selected date as it appears in the 
+		user interface.  year, month, and date properties are set on this object.
+
+``currentDate``:
+
+    An object representing the date of the first Saturday currently shown in 
+		the DatePicker.  This is useful for implementing a feature that will 
+		allow the DatePicker to be scrolled by week rather than by month, and 
+		allow easy determination of which month a date is in for distinctive 
+		styling of dates from different months.
+
+``classNames``:
+
+    An object representing the CSS class names for the previous, current, and 
+		next months, as well as the current and selected dates.
+
+``templatePath``:
+
+    dojo.uri.dojoUri object representing the url for the html template for a 
+		DatePicker widget.
+		
+``templateCssPath``:
+
+    dojo.uri.dojoUri object representing the url for the css to be used for a 
+		DatePicker widget.
 
 Methods
 ---------------------------------------
 
-``method(param)``:
+``fillInTemplate(param)``:
 
-    method description.
+    Standard widget initialization function that allows the data and UI to be 
+		initialized after the template has been loaded.
 
-    ``param``:
-        param description
+    no parameters
+
+    *returns*:
+        null
+				
+				
+``initData()``:
+
+    Initializes the date data for the DatePicker widget instance.  For example, 
+		if there is not already a value for storedDate, it is populated with 
+		today's date from the client.
+
+    no parameters
+
+    *returns*:
+        null
+
+``setDate(rfcDate)``:
+
+    Sets the value for storedDate to the rfcDate parameter that is passed. This 
+		is useful as it makes it easy to attach a dojo.event.connect statement to 
+		setDate to watch for changes to the storedDate value.
+
+    ``rfcDate``:
+        A date in `RFC 3339`_ format
 
     *returns*:
         returnValue
+
+``toRfcDate(jsDate)``:
+
+    Convert a JavaScript date object, jsDate, to an `RFC 3339`_ date format. If 
+		no jsDate is passed in, it converts the value of today.  There is currently 
+		little attempt to validate the date inside this method.  Time is treated as 
+		0, in the GMT time zone, since this is a DatePicker.  This should probably 
+		be re-evaluated to chose using the time zone of either the current user, or 
+		a time zone that is passsed to the object.
+
+    ``jsDate``:
+        A JavaScript Date object instance
+
+    *returns*:
+        an `RFC 3339`_ date
 
 Requires
 ===============================================================================
@@ -64,8 +154,10 @@ Requires
 - `dojo.widget.DatePicker`_
 - `dojo.html`_
 
-.. _`dojo.hostenv`: 		hostenv.html
-.. _`dojo.dom`:	dom.html
+.. _`dojo.widget`:	widget.html
+.. _`dojo.widget.HtmlWidget`:	widget/HtmlWidget.html
+.. _`dojo.widget.DatePicker`:	widget/DatePicker.html
+.. _`dojo.html`:	html.html
 
 Provides
 ===============================================================================
