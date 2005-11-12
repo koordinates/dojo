@@ -22,6 +22,29 @@ if(typeof window == 'undefined'){
 
 // attempt to figure out the path to dojo if it isn't set in the config
 (function() {
+	// before we get any further with the config options, try to pick them out
+	// of the URL. Most of this code is from NW
+	if(djConfig.allowQueryConfig){
+		var baseUrl = document.location.toString(); // FIXME: use location.query instead?
+		var params = baseUrl.split("?", 2);
+		if(params.length > 1){
+			var paramStr = params[1];
+			var pairs = paramStr.split("&");
+			for(var x in pairs){
+				var sp = pairs[x].split("=");
+				// FIXME: is this eval dangerous?
+				if((sp[0].length > 9)&&(sp[0].substr(0, 9) == "djConfig.")){
+					var opt = sp[0].substr(9);
+					try{
+						djConfig[opt]=eval(sp[1]);
+					}catch(e){
+						djConfig[opt]=sp[1];
+					}
+				}
+			}
+		}
+	}
+
 	if(((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == "")) &&(document && document.getElementsByTagName)){
 		var scripts = document.getElementsByTagName("script");
 		var rePkg = /(__package__|dojo)\.js$/i;
