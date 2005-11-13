@@ -96,6 +96,10 @@
 			<td> supah </td>
 			<td> Aaron Boodman </td>
 		</tr>
+		<tr>
+			<td> bob </td>
+			<td> Bob Ippolito </td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
