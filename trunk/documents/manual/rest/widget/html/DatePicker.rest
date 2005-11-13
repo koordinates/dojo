@@ -71,7 +71,7 @@ Properties
     An object representing the currently selected date as it appears in the 
 		user interface.  year, month, and date properties are set on this object.
 
-``currentDate``:
+``firstSaturday``:
 
     An object representing the date of the first Saturday currently shown in 
 		the DatePicker.  This is useful for implementing a feature that will 
@@ -300,11 +300,13 @@ Requires
 - `dojo.widget`_
 - `dojo.widget.HtmlWidget`_
 - `dojo.widget.DatePicker`_
+- `dojo.event`_
 - `dojo.html`_
 
 .. _`dojo.widget`:	widget.html
 .. _`dojo.widget.HtmlWidget`:	widget/HtmlWidget.html
 .. _`dojo.widget.DatePicker`:	widget/DatePicker.html
+.. _`dojo.event`:	event.html
 .. _`dojo.html`:	html.html
 
 Provides
