@@ -1,8 +1,8 @@
 dojo.provide("dojo.widget.html.DatePicker");
-
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DatePicker");
+dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
 /*
@@ -193,6 +193,10 @@ dojo.widget.html.DatePicker = function(){
 		dojo.unimplemented('dojo.widget.html.DatePicker.incrementMonth');
 	}
 
+	this.incrementYear = function(date, bool) {
+		dojo.unimplemented('dojo.widget.html.DatePicker.incrementYear');
+	}
+
 	this.onIncrementDate = function(evt) {
 		dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementDate');
 	}
@@ -258,6 +262,7 @@ dojo.widget.html.DatePicker = function(){
 	}
 	
 	this.onIncrementYear = function(evt) {
+		// FIXME: should make a call to incrementYear when that is implemented
 		evt.stopPropagation();
 		var year = this.firstSaturday.year;
 		switch(evt.target) {

@@ -1,8 +1,7 @@
 dojo.provide("dojo.widget.html.TimePicker");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
-
-dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
@@ -18,7 +17,6 @@ dojo.widget.html.TimePicker = function(){
 	this.useDefaultTime = false;
 	// rfc 3339 date
 	this.storedTime = "";
-	//this.storedTime = "";
 	// time currently selected in the UI, stored in hours, minutes, seconds in the format that will be actually displayed
 	this.currentTime = {};
 	this.classNames = {
