@@ -177,8 +177,7 @@ dojo.widget.html.DatePicker = function(){
 	
 	this.incrementDate = function(date, bool) {
 		// bool: true to increase, false to decrease
-		// subtract 20 ms to account for ms rounding bugs
-		var time = date.getTime() - 20;
+		var time = date.getTime();
 		var increment = 1000 * 60 * 60 * 24;
 		time = (bool) ? (time + increment) : (time - increment);
 		var returnDate = new Date();
@@ -186,8 +185,22 @@ dojo.widget.html.DatePicker = function(){
 		return returnDate;
 	}
 	
+	this.incrementWeek = function(date, bool) {
+		dojo.unimplemented('dojo.widget.html.DatePicker.incrementWeek');
+	}
+
+	this.incrementMonth = function(date, bool) {
+		dojo.unimplemented('dojo.widget.html.DatePicker.incrementMonth');
+	}
+
+	this.onIncrementDate = function(evt) {
+		dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementDate');
+	}
+	
 	this.onIncrementWeek = function(evt) {
+		// FIXME: should make a call to incrementWeek when that is implemented
 		evt.stopPropagation();
+		dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementWeek');
 		switch(evt.target) {
 			case this.increaseWeekNode:
 				break;
@@ -197,6 +210,7 @@ dojo.widget.html.DatePicker = function(){
 	}
 
 	this.onIncrementMonth = function(evt) {
+		// FIXME: should make a call to incrementMonth when that is implemented
 		evt.stopPropagation();
 		var month = this.firstSaturday.month;
 		var year = this.firstSaturday.year;
