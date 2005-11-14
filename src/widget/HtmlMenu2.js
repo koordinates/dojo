@@ -327,7 +327,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 
 			if ((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.render.html.ie)){
 
-				this.iconNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='scale')";
+				this.iconNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='image')";
 				this.iconNode.style.backgroundImage = '';
 			}else{
 				this.iconNode.style.backgroundImage = 'url('+this.iconSrc+')';
