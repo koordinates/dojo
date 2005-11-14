@@ -461,8 +461,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		
 		// relocate source contents to templated container node
 		// this.containerNode must be able to receive children, or exceptions will be thrown
-		if (this.isContainer && this.containerNode)
-		{
+		if (this.isContainer && this.containerNode){
 			var src = this.getFragNodeRef(frag);
 			if (src){
 				dojo.dom.moveChildren(src, this.containerNode);
