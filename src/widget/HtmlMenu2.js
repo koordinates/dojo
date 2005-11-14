@@ -96,7 +96,6 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 				max_accel_w = Math.max(max_accel_w, this.children[i].getAccelWidth());
 			}
 		}
-//dojo.debug('SIZE: '+max_label_w+' / '+max_accel_w);
 
 		var clientLeft = dojo.style.getPixelValue(this.domNode, "padding-left", true) + dojo.style.getPixelValue(this.containerNode, "padding-left", true);
 		var clientTop  = dojo.style.getPixelValue(this.domNode, "padding-top", true)  + dojo.style.getPixelValue(this.containerNode, "padding-top", true);
@@ -237,7 +236,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 			+'<span dojoAttachPoint="labelNode"><span><span></span></span></span>'
 			+'<span dojoAttachPoint="accelNode"><span><span></span></span></span>'
 			+'<div dojoAttachPoint="submenuNode"></div>'
-			+'<div dojoAttachPoint="targetNode">&nbsp;</div>'
+			+'<div dojoAttachPoint="targetNode" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick;">&nbsp;</div>'
 			+'</div>',
 	//
 	// nodes
@@ -285,13 +284,6 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		if (this.isDisabled){
 			this.setDisabled(true);
 		}
-
-		dojo.event.connect(this.targetNode, 'onmouseover', this, 'onHover');
-		dojo.event.connect(this.targetNode, 'onmouseout',  this, 'onUnhover');
-		dojo.event.connect(this.targetNode, 'onclick', this, 'onClick');
-
-		dojo.event.connect(this.labelNode, 'onmouseover', this, 'onHover');
-		dojo.event.connect(this.labelNode, 'onmouseout',  this, 'onUnhover');
 
 		this.labelNode.childNodes[0].appendChild(document.createTextNode(this.caption));
 		this.accelNode.childNodes[0].appendChild(document.createTextNode(this.accelKey));
@@ -517,7 +509,7 @@ dojo.lang.extend(dojo.widget.MenuSeparator2, {
 
 //
 // the menu manager makes sure we don't have several menus
-// open at once. the root menu in an opending sequence calls
+// open at once. the root menu in an opening sequence calls
 // opened(). when a root menu closes it calls closed(). then
 // everything works. lovely.
 //
