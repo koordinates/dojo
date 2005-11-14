@@ -312,22 +312,26 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		}
 		return widget;
 	},
+
+	getFragNodeRef: function(frag)
+	{
+		return (frag ? frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"] : null);
+	},
 	
 	// Replace source domNode with generated dom structure, and register
 	// widget with parent.
 	postInitialize: function(args, frag, parentComp){
-		var sourceNodeRef = frag ? frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"] : null;
-		
+		var sourceNodeRef = this.getFragNodeRef(frag);
 		// Stick my generated dom into the output tree
 		//alert(this.widgetId + ": replacing " + sourceNodeRef + " with " + this.domNode.innerHTML);
-		if ( parentComp && ( parentComp.snarfChildDomOutput || !sourceNodeRef ) ) {
+		if (parentComp && (parentComp.snarfChildDomOutput || !sourceNodeRef)){
 			// Add my generated dom as a direct child of my parent widget
 			// This is important for generated widgets, and also cases where I am generating an
 			// <li> node that can't be inserted back into the original DOM tree
 			parentComp.addWidgetAsDirectChild(this, "", "insertAtIndex", "",  args["dojoinsertionindex"], sourceNodeRef);
-		} else if ( sourceNodeRef ) {
+		} else if (sourceNodeRef){
 			// Do in-place replacement of the my source node with my generated dom
-			if((this.domNode)&&(this.domNode !== sourceNodeRef)){
+			if(this.domNode && (this.domNode !== sourceNodeRef)){
 				var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
 			}
 		}
@@ -380,7 +384,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		}else{
 			// otherwise, assign the DOM node that was the source of the widget
 			// parsing to be the root node
-			this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+			this.domNode = this.getFragNodeRef(frag);
 		}
 		this.fillInTemplate(args, frag); 	// this is where individual widgets
 											// will handle population of data
@@ -454,6 +458,16 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		// dojo.profile.start("attachTemplateNodes");
 		this.attachTemplateNodes(this.domNode, this);
 		// dojo.profile.end("attachTemplateNodes");
+		
+		// relocate source contents to templated container node
+		// this.containerNode must be able to receive children, or exceptions will be thrown
+		if (this.isContainer && this.containerNode)
+		{
+			var src = this.getFragNodeRef(frag);
+			if (src){
+				dojo.dom.moveChildren(src, this.containerNode);
+			}
+		}
 	},
 
 	attachTemplateNodes: function(baseNode, targetObj){

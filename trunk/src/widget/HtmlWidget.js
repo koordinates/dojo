@@ -98,9 +98,9 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	_old_buildFromTemplate: dojo.widget.DomWidget.prototype.buildFromTemplate,
 
-	buildFromTemplate: function(){
+	buildFromTemplate: function(args, frag){
 		dojo.widget.buildFromTemplate(this);
-		this._old_buildFromTemplate();
+		this._old_buildFromTemplate(args, frag);
 	},
 
 	destroyRendering: function(finalize){
