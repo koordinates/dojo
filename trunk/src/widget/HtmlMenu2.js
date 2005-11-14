@@ -86,12 +86,17 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		for(var i=0; i<this.children.length; i++){
 
-			if (this.children[i].labelNode){
+			if (this.children[i].getLabelWidth){
 
-				max_label_w = Math.max(max_label_w, dojo.style.getOuterWidth(this.children[i].labelNode));
-				max_accel_w = Math.max(max_accel_w, dojo.style.getOuterWidth(this.children[i].accelNode));
+				max_label_w = Math.max(max_label_w, this.children[i].getLabelWidth());
 			}
-		}		
+
+			if (dojo.lang.isFunction(this.children[i].getAccelWidth)){
+
+				max_accel_w = Math.max(max_accel_w, this.children[i].getAccelWidth());
+			}
+		}
+//dojo.debug('SIZE: '+max_label_w+' / '+max_accel_w);
 
 		var clientLeft = dojo.style.getPixelValue(this.domNode, "padding-left", true) + dojo.style.getPixelValue(this.containerNode, "padding-left", true);
 		var clientTop  = dojo.style.getPixelValue(this.domNode, "padding-top", true)  + dojo.style.getPixelValue(this.containerNode, "padding-top", true);
@@ -445,6 +450,28 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		}else{
 			dojo.html.removeClass(this.domNode, 'dojoMenuItem2Disabled');
 		}
+	},
+
+	getLabelWidth: function(){
+
+		if (navigator.userAgent.indexOf('Firefox/1.0') >= 0){
+			var node = this.labelNode.childNodes[0];
+		}else{
+			var node = this.labelNode;
+		}
+
+		return dojo.style.getOuterWidth(node);
+	},
+
+	getAccelWidth: function(){
+
+		if (navigator.userAgent.indexOf('Firefox/1.0') >= 0){
+			var node = this.accelNode.childNodes[0];
+		}else{
+			var node = this.accelNode;
+		}
+
+		return dojo.style.getOuterWidth(node);
 	}
 });
 
