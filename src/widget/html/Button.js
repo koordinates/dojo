@@ -16,17 +16,12 @@ dojo.lang.extend(dojo.widget.html.Button, {
 
 	label: "undefined",
 	labelNode: null,
+	containerNode: null,
 
 	postCreate: function(args, frag){
+		this.labelNode = this.containerNode;
 		if(this.label != "undefined"){
 			this.domNode.appendChild(document.createTextNode(this.label));
-		} else {
-			// TODO: this is a workaround.  The non-widget contents should
-			// be copied over automatically (I think), but they aren't
-			var input = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-			while ( input.firstChild ) {
-				this.domNode.appendChild(input.firstChild);
-			}
 		}
 	},
 	
