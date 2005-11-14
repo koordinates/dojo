@@ -40,19 +40,21 @@ API Reference
 Classes
 ---------------------------------------
 
-``Animation(curve, duration, acceleration, repeatCount)``:
+``Animation(Object curve, Number duration, Object acceleration, Number repeatCount)``
+``Animation(Object curve, Number duration, Number acceleration, Number repeatCount)``:
 
     *Inherits from*:
         nothing
 
-    ``curve``:
+    ``Object curve``:
         A curve object that supports a ``getValue`` method. See
         ``dojo.math.curves`` for example curves.
 
-    ``duraction``:
+    ``Number duraction``:
         The total time the animation should last, in milliseconds.
 
-    ``acceleration``:
+    ``Object acceleration``
+    ``Number acceleration``:
         Determines whether or not the animation will speed up, slow down, or
         otherwise change during the course of the animation. It supports two
         types of values:
@@ -63,7 +65,7 @@ Classes
         - *Number* - a numeric value from -1 (max deceleration) to 1 (max
           acceleration), inclusive. A value of 0 means no acceleration.
 
-    ``repeatCount``:
+    ``Number repeatCount``:
         If set, determines the number of times the animation will repeat when
         you play it. Defaults to 0. A value of -1 will repeat forever.
 
@@ -73,32 +75,76 @@ Classes
     Properties
     #####################################
 
-    ``curve``:
+    ``Object curve``:
         The curve used by the animation to compute coordinate values.
 
-    ``duration``:
+    ``Number duration``:
         The total time the animation should last, in milliseconds.
 
-    ``accel``:
+    ``Object accel``:
         Acceleration curve used to determine acceleration. (Note: this should
         only be set to a numeric value (-1 to 1, inclusive) in the constructor.)
 
-    ``repeatCount``:
+    ``Number repeatCount``:
         Set the numer of times the animation should repeat.
 
-    ``animSequence_``:
+    ``Object animSequence_``:
         Reference to the ``AnimationSequence`` object that the animation is
         associated with, if any.
 
     Methods
     #####################################
 
-    ``play``:
-    ``pause``:
-    ``playPause``:
-    ``gotoPercent``:
-    ``stop``:
-    ``status``:
+    ``void play(Boolean gotoStart)``:
+
+        Plays an animation either from the beginning or from where it was
+        paused.
+
+        ``Boolean gotoStart``:
+            If ``true``, plays the animations from the beginning, otherwise it
+            plays it from where it left off. If the animation has never been
+            played, or it has been played to completion, ``play`` will start at
+            the beginning regardless of the value of ``gotoStart``.
+
+    ``void pause()``:
+
+        Pauses an animation if it is playing.
+
+    ``void playPause()``:
+
+        Plays or pauses an animation. If the animation is currently playing, it
+        pauses the animation. If the animation is currently paused or stopped,
+        it plays the animation.
+
+    ``void gotoPercent(Number pct, Boolean andPlay)``:
+
+        Jump to an arbitrary place in the animation.
+
+        ``Number pct``:
+            A decimal value between 0 and 100 inclusive that you want the
+            animation to jump to.
+
+        ``Boolean andPlay``:
+            If ``true``, play the animation after jumping to ``pct``. Otherwise,
+            the animation will be in the paused state, regardless of the state
+            it was in before the call to ``gotoPercent``.
+
+    ``void stop(Boolean gotoEnd)``:
+
+        Stop the current animation if it is playing.
+
+        ``Boolean gotoEnd``:
+            If ``true``, the AnimationEvent will return coordinates for the end
+            position in the animation, otherwise the coordinates for the current
+            position in the animation will be sent.
+
+    ``String status()``:
+
+        Get the status of the animation object. Possible values are:
+
+        - ``paused``
+        - ``playing``
+        - ``stopped``
 
     Event Handlers
     #####################################
@@ -134,7 +180,6 @@ Methods
 
     *returns*:
         null
-	
 
 Requires
 ===============================================================================
@@ -143,20 +188,22 @@ Requires
 - `dojo.math`_
 - `dojo.math.curves`_
 
-.. _`dojo.hostenv`: 		hostenv.html
+.. _`dojo.hostenv`: hostenv.html
 .. _`dojo.math`: math.html
 .. _`dojo.math.curves`: curves.html
 
 Provides
 ===============================================================================
 
-dojo.namespace.Foo
-    A class constructor that allows Foos to be created
+dojo.animation.Animation
+    A class constructor to create Animation objects.
 
-dojo.namespace.Bar
-    A class constructor that allows Bars to be created, although you might need
-    a liquor license in your own municipality to actually operate the created
-    Bars.
+dojo.animation.AnimationEvent
+    A class constructor to create AnimationEvent objects fired by animations.
+
+dojo.animation.AnimationSequence
+    A class constructor to create AnimationSequence objects which contain
+    animations.
 
 To Do
 ===============================================================================
