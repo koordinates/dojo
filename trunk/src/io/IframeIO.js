@@ -68,7 +68,7 @@ dojo.io.IframeTransport = new function(){
 
 	this.fireNextRequest = function(){
 		if((this.currentRequest)||(this.requestQueue.length == 0)){ return; }
-		dojo.debug("fireNextRequest");
+		// dojo.debug("fireNextRequest");
 		var cr = this.currentRequest = this.requestQueue.shift();
 		var fn = cr["formNode"];
 		if(fn){
