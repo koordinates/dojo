@@ -25,6 +25,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	currentSubmenuTrigger: null,
 	parentMenu: null,
 	isShowing: false,
+	menuX: 0,
+	menuY: 0,
 	menuWidth: 0,
 	menuHeight: 0,
 	menuIndex: 0,
@@ -159,6 +161,9 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.parentMenu = parentMenu;
 		this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
 
+		this.menuX = x;
+		this.menuY = y;
+
 		this.domNode.style.zIndex = 10 + this.menuIndex;
 		this.domNode.style.left = x + 'px';
 		this.domNode.style.top = y + 'px';
@@ -219,6 +224,17 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.open(e.clientX, e.clientY, null);
 
 		e.preventDefault();
+	},
+
+	isPointInMenu: function(x, y){
+
+		if (x < this.menuX){ return 0; }
+		if (x > this.menuX + this.menuWidth){ return 0; }
+
+		if (y < this.menuY){ return 0; }
+		if (y > this.menuY + this.menuHeight){ return 0; }
+
+		return 1;
 	}
 });
 
@@ -517,6 +533,9 @@ dojo.lang.extend(dojo.widget.MenuSeparator2, {
 dojo.widget.HtmlMenu2Manager = new function(){
 
 	this.currentMenu = null;
+	this.focusNode = null;
+
+	dojo.event.connect(document, 'onmousedown', this, 'onClick');
 
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
@@ -532,6 +551,33 @@ dojo.widget.HtmlMenu2Manager = new function(){
 		}
 
 		this.currentMenu = menu;
+	};
+
+	this.onClick = function(e){
+
+		if (!this.currentMenu){ return; }
+
+		var x = e.clientX;
+		var y = e.clientY;
+		var m = this.currentMenu;
+
+		// starting from the base menu, perform a hit test
+		// and exit when one succeeds
+
+		while (m){
+
+			if (m.isPointInMenu(x, y)){
+
+				return;
+			}
+
+			m = m.currentSubmenu;
+		}
+
+		// the click didn't fall within the open menu tree
+		// so close it
+
+		this.currentMenu.close();
 	};
 }
 
