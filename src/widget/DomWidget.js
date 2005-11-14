@@ -108,14 +108,17 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 	for(var x=-1; x<nodes.length; x++){
 		var baseNode = (x == -1) ? rootNode : nodes[x];
 		// FIXME: is this going to have capitalization problems?
-		var attachPoint = null;
+		var attachPoint = [];
 		for(var y=0; y<this.attachProperties.length; y++){
-			attachPoint = baseNode.getAttribute(this.attachProperties[y]);
-			if(attachPoint){
-				if((targetObj[attachPoint])&&(dojo.lang.isArray(targetObj[attachPoint]))){
-					targetObj[attachPoint].push(baseNode);
-				}else{
-					targetObj[attachPoint]=baseNode;
+			var tmpAttachPoint = baseNode.getAttribute(this.attachProperties[y]);
+			if(tmpAttachPoint){
+				attachPoint = tmpAttachPoint.split(";");
+				for(var z=0; z<this.attachProperties.length; z++){
+					if((targetObj[attachPoint[z]])&&(dojo.lang.isArray(targetObj[attachPoint[z]]))){
+						targetObj[attachPoint[z]].push(baseNode);
+					}else{
+						targetObj[attachPoint[z]]=baseNode;
+					}
 				}
 				break;
 			}
