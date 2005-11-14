@@ -129,7 +129,7 @@ Methods
         A date in `RFC 3339`_ format
 
     *returns*:
-        returnValue
+        null
 
 ``toRfcDate(jsDate)``:
 
@@ -145,6 +145,17 @@ Methods
 
     *returns*:
         an `RFC 3339`_ date
+
+``fromRfcDate(rfCDate)``:
+
+    Converts an `RFC 3339`_ date string to a JavaScript Date object instance.
+
+    ``rfcDate``:
+        A string representing an `RFC 3339`_ formatted date.
+
+    *returns*:
+        a JavaScript Date object instance representing the value passed in by 
+				rfcDate, or today if rfcDate is not valid.
 
 ``initFirstSaturday(month, year)``:
 
