@@ -454,22 +454,14 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 
 	getLabelWidth: function(){
 
-		if (navigator.userAgent.indexOf('Firefox/1.0') >= 0){
-			var node = this.labelNode.childNodes[0];
-		}else{
-			var node = this.labelNode;
-		}
+		var node = this.labelNode.childNodes[0];
 
 		return dojo.style.getOuterWidth(node);
 	},
 
 	getAccelWidth: function(){
 
-		if (navigator.userAgent.indexOf('Firefox/1.0') >= 0){
-			var node = this.accelNode.childNodes[0];
-		}else{
-			var node = this.accelNode;
-		}
+		var node = this.accelNode.childNodes[0];
 
 		return dojo.style.getOuterWidth(node);
 	}

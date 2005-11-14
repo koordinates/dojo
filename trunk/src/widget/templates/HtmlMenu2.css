@@ -20,6 +20,10 @@
 	margin: 0;
 }
 
+.dojoMenuItem2 span {
+	margin: 0;
+}
+
 .dojoMenuItem2Hover {
 	background-color: Highlight;
 	color: HighlightText;
