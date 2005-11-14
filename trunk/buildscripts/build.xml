@@ -170,7 +170,6 @@ print "look ma! Jython!"
 		<available property="ant_bsf_ok" file="${user.home}/.ant/lib/ant-apache-bsf.jar" />
 		<available property="jython_ok" file="${user.home}/.ant/lib/jython.jar" />
 		<available property="jython_libs_ok" file="${user.home}/.ant/lib/pyLib.zip" />
-		<available property="rhino_ok" file="${user.home}/.ant/lib/js.jar" />
 
 		<condition property="config_ok">
 			<and>
@@ -178,7 +177,6 @@ print "look ma! Jython!"
 				<isset property="ant_bsf_ok" />
 				<isset property="jython_ok" />
 				<isset property="jython_libs_ok" />
-				<isset property="rhino_ok" />
 			</and>
 		</condition>
 
@@ -418,7 +416,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		]]></script>
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
-		<java jar="${user.home}/.ant/lib/js.jar" fork="true" outputproperty="concatFilesProp">
+		<java jar="./lib/js.jar" fork="true" outputproperty="concatFilesProp" errorproperty="concatFilesError">
 			<arg value="${profileFile}" />
 		</java>
 		<script language="javascript"><![CDATA[
