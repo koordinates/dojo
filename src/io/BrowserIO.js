@@ -82,11 +82,17 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 				frames[iframe.name].location = src;
 			}
 		}else{
-			var idoc = (r.moz) ? iframe.contentWindow : iframe;
+			var idoc;
+			// dojo.debug(iframe.name);
+			if(r.ie){
+				idoc = iframe.contentWindow.document;
+			}else if(r.moz){
+				idoc = iframe.contentWindow;
+			}
 			idoc.location.replace(src);
-			dojo.debug(iframe.contentWindow.location);
 		}
 	}catch(e){ 
+		dojo.debug(e); 
 		dojo.debug("setIFrameSrc: "+e); 
 	}
 }
@@ -498,6 +504,10 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		if( !async ) {
 			doLoad(kwArgs, http, url, query, useCache);
+		}
+
+		kwArgs.abort = function(){
+			return http.abort();
 		}
 
 		return;
