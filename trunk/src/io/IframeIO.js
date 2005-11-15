@@ -15,7 +15,7 @@ dojo.io.createIFrame = function(fname){
 		setAttribute("name", fname);
 		id = fname;
 	}
-	dojo.html.body().appendChild(cframe);
+	(document.body||document.getElementsByTagName("body")[0]).appendChild(cframe);
 	window[fname] = cframe;
 	with(cframe.style){
 		position = "absolute";
@@ -24,10 +24,12 @@ dojo.io.createIFrame = function(fname){
 		visibility = "hidden";
 		/*
 		if(dojo.hostenv.is_debug_){
+		*/
 			position = "relative";
 			height = "300px";
 			width = "600px";
 			visibility = "visible";
+		/*
 		}
 		*/
 	}
