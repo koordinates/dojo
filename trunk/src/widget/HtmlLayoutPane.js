@@ -76,21 +76,35 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		if ( this.handler != "none" ){
 			this.setHandler(this.handler);
 		}
-		if ( dojo.lang.isFunction(this.handler)) {
-			this.runHandler();
-		} else if ( this.url != "inline" ) {
-			this.downloadExternalContent(this.url, true);
+		if ( this.domNode.style.display != "none" ){
+			this.loadContents();
 		}
-		this.resizeSoon();
+	},
+
+	// If the pane contents are external then load them
+	loadContents: function() {
+		if ( this.isLoaded ){
+			return;
+		}
+		if ( dojo.lang.isFunction(this.handler)) {
+			this._runHandler();
+		} else if ( this.url != "inline" ) {
+			this._downloadExternalContent(this.url, true);
+		}
+		this.isLoaded=true;
 	},
 
 	// Reset the (external defined) content of this pane
 	setUrl: function(url) {
 		this.url = url;
-		this.downloadExternalContent(url, true);
+		this.isLoaded = false;
+		if ( this.domNode.style.display != "none" ){
+			this.loadContents();
+		}
 	},
 
-	downloadExternalContent: function(url, useCache) {
+	_downloadExternalContent: function(url, useCache) {
+		//dojo.debug(this.widgetId + " downloading " + url);
 		var node = this.domNode;
 		node.innerHTML = "Loading...";
 
@@ -109,7 +123,6 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 						if(matches) { data = matches[1]; }
 					}
 					node.innerHTML = data;
-					this.isLoaded = true;
 					if(parse) {
 						var parser = new dojo.xml.Parse();
 						var frag = parser.parseElement(node, null, true);
@@ -135,7 +148,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		}
 	},
 
-	runHandler: function() {
+	_runHandler: function() {
 		if(dojo.lang.isFunction(this.handler)) {
 			this.handler(this, this.domNode);
 			return false;
@@ -354,6 +367,10 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 	
 	show: function(){
+		// If this is the first time we are displaying this object,
+		// and the contents are external, then download them.
+		this.loadContents();
+
 		// On IE, if this node was created while display=="none" then it
 		// didn't get laid out correctly; fix that here.
 		if ( this.domNode.style.display=="none" ) {
