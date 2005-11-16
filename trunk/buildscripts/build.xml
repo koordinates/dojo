@@ -500,6 +500,7 @@ ${profileDeps}
 
 	<target name="-rhino-compress"
 		unless="nostrip">
+		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
 		<java jar="./lib/custom_rhino.jar" fork="true" output="${dstFile}">
 			<arg value="-c" />
 			<arg value="${srcFile}" />
