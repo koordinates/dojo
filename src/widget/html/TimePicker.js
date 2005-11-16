@@ -30,6 +30,11 @@ dojo.widget.html.TimePicker = function(){
 		anyTime: false
 	}
 
+	// minutes are ordered as follows: ["12", "6", "1", "7", "2", "8", "3", "9", "4", "10", "5", "11"]
+	this.hourIndexMap = ["", 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11, 0];
+	// minutes are ordered as follows: ["00", "30", "05", "35", "10", "40", "15", "45", "20", "50", "25", "55"]
+	this.minuteIndexMap = [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11];
+
 	this.templatePath =  dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.css");
 
@@ -74,7 +79,7 @@ dojo.widget.html.TimePicker = function(){
 	}
 
 	this.fromRfcDateTime = function(rfcDate) {
-		if(!rfcDate) {
+		if(!rfcDate || !rfcDate.split("T")[1]) {
 			return new Date();
 		}
 		var tempTime = rfcDate.split("T")[1].split(":");
@@ -135,8 +140,8 @@ dojo.widget.html.TimePicker = function(){
 			var isAm = amPmHour[1];
 			var minute = this.time.getMinutes();
 			var minuteIndex = parseInt(minute/5);
-			this.onSetSelectedHour(hour);
-			this.onSetSelectedMinute(minuteIndex);
+			this.onSetSelectedHour(this.hourIndexMap[hour]);
+			this.onSetSelectedMinute(this.minuteIndexMap[minuteIndex]);
 			this.onSetSelectedAmPm(isAm);
 		}
 	}
@@ -245,11 +250,11 @@ dojo.widget.html.TimePicker = function(){
 		if(evt && evt.target) {
 			dojo.html.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["amPm"] = evt.target.innerHTML;
-		} else if (!isNaN(evt)) {
+		} else {
 			var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
-			if(amPmNodes.item(evt)) {
-				dojo.html.setClass(amPmNodes.item(evt), this.classNames.selectedTime);
-				this.selectedTime["amPm"] = amPmNodes.item(evt).innerHTML;
+			if(amPmNodes.item(!evt)) {
+				dojo.html.setClass(amPmNodes.item(!evt), this.classNames.selectedTime);
+				this.selectedTime["amPm"] = amPmNodes.item(!evt).innerHTML;
 			}
 		}
 	}
