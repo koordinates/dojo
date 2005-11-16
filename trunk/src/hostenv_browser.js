@@ -313,22 +313,22 @@ try {
 // breaking when it's not included
 dojo.hostenv.writeIncludes = function(){} 
 
-dojo.hostenv.byId = dojo.byId = function(id, doc) {
-	if(typeof id == "string" || id instanceof String) {
-		if(!doc) { doc = document; }
+dojo.hostenv.byId = dojo.byId = function(id, doc){
+	if(typeof id == "string" || id instanceof String){
+		if(!doc){ doc = document; }
 		return doc.getElementById(id);
 	}
 	return id; // assume it's a node
 }
 
-dojo.hostenv.byIdArray = dojo.byIdArray = function() {
+dojo.hostenv.byIdArray = dojo.byIdArray = function(){
 	var ids = [];
-	for(var i = 0; i < arguments.length; i++) {
-		if(dojo.lang.isArray(arguments[i])) {
-			for(var j = 0; j < arguments[i].length; j++) {
+	for(var i = 0; i < arguments.length; i++){
+		if((arguments[i] instanceof Array)||(typeof arguments[i] == "array")){
+			for(var j = 0; j < arguments[i].length; j++){
 				ids = ids.concat(dojo.hostenv.byIdArray(arguments[i][j]));
 			}
-		} else {
+		}else{
 			ids.push(dojo.hostenv.byId(arguments[i]));
 		}
 	}
