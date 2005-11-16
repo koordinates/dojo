@@ -128,7 +128,7 @@ dojo.widget.HTMLToolbar = function() {
 	this.widgetType = "Toolbar";
 	this.isContainer = true;
 
-	this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></div>',
+	this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></div>';
 	//this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on"></div>';
 
 	// given a node, tries to find it's toolbar item
@@ -162,7 +162,9 @@ dojo.widget.HTMLToolbar = function() {
 
 	this._onclick = function(e) {
 		var widget = this._getItem(e.target);
-		if(widget && widget._onclick) { widget._onclick(e); }
+		if(widget && widget._onclick){ 
+			widget._onclick(e);
+		}
 	}
 
 	this._onmousedown = function(e) {
@@ -463,6 +465,8 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	},
 
 	_onclick: function(e) {
+		// FIXME: buttons never seem to have this._enabled set to true on Opera 9
+		// dojo.debug("widget:", this.widgetType, ":", this.getName(), ", enabled:", this._enabled);
 		if(this._enabled && !this._toggleItem) {
 			this._fireEvent("onClick");
 		}
