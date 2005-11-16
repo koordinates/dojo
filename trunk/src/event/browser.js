@@ -293,7 +293,7 @@ dojo.event.browser = new function(){
 			evt.keys = this.revKeys;
 			// FIXME: how can we eliminate this iteration?
 			for(var key in this.keys) {
-				evt[key] = keys[key];
+				evt[key] = this.keys[key];
 			}
 			if((dojo.render.html.ie)&&(evt["type"] == "keypress")){
 				evt.charCode = evt.keyCode;
