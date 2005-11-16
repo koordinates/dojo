@@ -251,10 +251,11 @@ dojo.widget.html.TimePicker = function(){
 			dojo.html.setClass(evt.target, this.classNames.selectedTime);
 			this.selectedTime["amPm"] = evt.target.innerHTML;
 		} else {
+			evt = evt ? 0 : 1;
 			var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
-			if(amPmNodes.item(!evt)) {
-				dojo.html.setClass(amPmNodes.item(!evt), this.classNames.selectedTime);
-				this.selectedTime["amPm"] = amPmNodes.item(!evt).innerHTML;
+			if(amPmNodes.item(evt)) {
+				dojo.html.setClass(amPmNodes.item(evt), this.classNames.selectedTime);
+				this.selectedTime["amPm"] = amPmNodes.item(evt).innerHTML;
 			}
 		}
 	}
