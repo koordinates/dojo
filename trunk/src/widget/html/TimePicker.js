@@ -79,14 +79,16 @@ dojo.widget.html.TimePicker = function(){
 	}
 
 	this.fromRfcDateTime = function(rfcDate) {
-		if(!rfcDate || !rfcDate.split("T")[1]) {
-			return new Date();
-		}
-		var tempTime = rfcDate.split("T")[1].split(":");
-		// fullYear, month, date
 		var tempDate = new Date();
-		tempDate.setHours(tempTime[0]);
-		tempDate.setMinutes(tempTime[1]);
+		if(!rfcDate || !rfcDate.split("T")[1]) {
+			tempDate.setMinutes(Math.floor(tempDate.getMinutes()/5)*5);
+		} else {
+			var tempTime = rfcDate.split("T")[1].split(":");
+			// fullYear, month, date
+			var tempDate = new Date();
+			tempDate.setHours(tempTime[0]);
+			tempDate.setMinutes(tempTime[1]);
+		}
 		return tempDate;
 	}
 
@@ -123,7 +125,9 @@ dojo.widget.html.TimePicker = function(){
 		// FIXME: doesn't currently validate the time before trying to set it
 		// Determine the date/time from stored info, or by default don't 
 		//  have a set time
-		if(this.storedTime) {
+		// FIXME: should normalize against whitespace on storedTime... for now 
+		// just a lame hack
+		if(this.storedTime && this.storedTime!=" ") {
 			this.time = this.fromRfcDateTime(this.storedTime);
 		} else if (this.useDefaultTime) {
 			this.time = this.fromRfcDateTime();
