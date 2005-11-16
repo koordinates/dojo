@@ -11,7 +11,6 @@ http://pupius.co.uk/js/Toolkit.Drawing.js
 
 TODO:
 - make animations reusable by not killing repeatCount as we go
-- use dojo.lang.bind/hitch to avoid the "_this" junk
 */
 
 dojo.animation = {};
