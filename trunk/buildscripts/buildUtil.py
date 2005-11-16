@@ -38,6 +38,13 @@ def internTemplateStrings(packageFile="../release/dojo/dojo.js", srcRoot="../"):
 	for x in matches:
 		replacement = "templateString=\""+escape(open(srcRoot+x[3]).read())+"\""
 		pkgString = string.replace(pkgString, x[0], replacement)
+
+	matches = re.findall('(templatePath\s*:\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
+	print matches
+	for x in matches:
+		replacement = "templateString:\""+escape(open(srcRoot+x[3]).read())+"\""
+		pkgString = string.replace(pkgString, x[0], replacement)
+
 	pfd = open(packageFile, "w")
 	pfd.write(pkgString)
 	pfd.close() # flush is implicit
