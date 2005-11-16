@@ -1,7 +1,7 @@
 dojo.provide("dojo.animation.Timer");
+dojo.require("dojo.lang");
 
 dojo.animation.Timer = function(intvl){
-	var _this = this;
 	var timer = null;
 	this.isRunning = false;
 	this.interval = intvl;
@@ -13,16 +13,16 @@ dojo.animation.Timer = function(intvl){
 	this.setInterval = function(ms){
 		if (this.isRunning) window.clearInterval(timer);
 		this.interval = ms;
-		if (this.isRunning) timer = window.setInterval(_this.onTick, _this.interval);
+		if (this.isRunning) timer = window.setInterval(dojo.lang.hitch(this, "onTick"), this.interval);
 	};
 
 	this.start = function(){
-		if (typeof _this.onStart == "function") _this.onStart();
+		if (typeof this.onStart == "function") this.onStart();
 		this.isRunning = true;
-		timer = window.setInterval(_this.onTick, _this.interval);
+		timer = window.setInterval(this.onTick, this.interval);
 	};
 	this.stop = function(){
-		if (typeof _this.onStop == "function") _this.onStop();
+		if (typeof this.onStop == "function") this.onStop();
 		this.isRunning = false;
 		window.clearInterval(timer);
 	};
