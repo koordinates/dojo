@@ -11,9 +11,10 @@ dojo.collections.ArrayList = function(arr){
 	};
 	this.addRange = function(a){
 		if (a.getIterator) {
-			var e = new dojo.collections.Iterator(a);
-			while (e.moveNext()) {
+			var e = a.getIterator();
+			while (!e.atEnd) {
 				this.add(e.current);
+				e.moveNext();
 			}
 			this.count = items.length;
 		} else {
