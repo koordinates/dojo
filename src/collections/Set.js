@@ -10,7 +10,7 @@ dojo.collections.Set = new function(){
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList(setA.toArray());
 		var e = setB.getIterator();
-		while (e.moveNext()){
+		while (!e.atEnd){
 			if (!result.contains(e.current)) result.add(e.current);
 		}
 		return result;
@@ -21,8 +21,9 @@ dojo.collections.Set = new function(){
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList();
 		var e = setB.getIterator();
-		while (e.moveNext()){
+		while (!e.atEnd){
 			if (setA.contains(e.current)) result.add(e.current);
+			e.moveNext();
 		}
 		return result;
 	};
@@ -33,8 +34,9 @@ dojo.collections.Set = new function(){
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList();
 		var e = setA.getIterator();
-		while (e.moveNext()){
+		while (!e.atEnd){
 			if (!setB.contains(e.current)) result.add(e.current);
+			e.moveNext();
 		}
 		return result;
 	};
@@ -43,8 +45,9 @@ dojo.collections.Set = new function(){
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var e = setA.getIterator();
-		while (e.moveNext()){
+		while (!e.atEnd){
 			if (!setB.contains(e.current)) return false;
+			e.moveNext();
 		}
 		return true;
 	};
@@ -53,8 +56,9 @@ dojo.collections.Set = new function(){
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var e = setB.getIterator();
-		while (e.moveNext()){
+		while (!e.atEnd){
 			if (!setA.contains(e.current)) return false;
+			e.moveNext();
 		}
 		return true;
 	};

@@ -15,13 +15,12 @@ dojo.collections.Iterator = function(a){
 	this.atEnd = false;
 	this.moveNext = function(){
 		if(this.atEnd){
-			return !this.atEnd;
+			dojo.raise("dojo.collections.Iterator.moveNext: iterator is at end position.");
 		}
 		this.current = obj[position];
 		if(++position == obj.length){
 			this.atEnd = true;
 		}
-		return !this.atEnd;
 	}
 	this.reset = function(){
 		position = 0;
@@ -39,8 +38,8 @@ dojo.collections.DictionaryIterator = function(obj){
 	this.value = null ;
 	this.atEnd = false ;
 	this.moveNext = function() { 
-		if (this.atEnd) {
-			return !this.atEnd ;
+		if(this.atEnd){
+			dojo.raise("dojo.collections.Iterator.moveNext: iterator is at end position.");
 		}
 		this.entry = this.current = arr[position] ;
 		if (this.entry) {
@@ -50,7 +49,6 @@ dojo.collections.DictionaryIterator = function(obj){
 		if (++position == arr.length) {
 			this.atEnd = true ;
 		}
-		return !this.atEnd ;
 	} ;
 	this.reset = function() { 
 		position = 0 ; 

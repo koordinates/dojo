@@ -13,16 +13,18 @@ dojo.collections.SortedList = function(dictionary){
 	var build = function(){
 		q = [];
 		var e = _this.getIterator();
-		while (e.moveNext()) {
+		while (!e.atEnd) {
 			q.push(e.entry);
+			e.moveNext();
 		}
 		q.sort(sorter);
 	};
 
 	if (dictionary){
 		var e = dictionary.getIterator();
-		while (e.moveNext()) {
+		while (!e.atEnd) {
 			q[q.length] = items[e.key] = new dojo.collections.DictionaryEntry(e.key, e.value);
+			e.moveNext();
 		}
 		q.sort(sorter);
 	}
@@ -48,17 +50,19 @@ dojo.collections.SortedList = function(dictionary){
 	};
 	this.containsValue = function(o){
 		var e = this.getIterator();
-		while (e.moveNext()){
+		while (!e.atEnd){
 			if (e.value == o) return true;
+			e.moveNext();
 		}
 		return false;
 	};
 	this.copyTo = function(arr, i){
 		var e = this.getIterator();
 		var idx = i;
-		while (e.moveNext()){
+		while (!e.atEnd){
 			arr.splice(idx, 0, e.entry);
 			idx++;
+			e.moveNext();
 		}
 	};
 	this.getByIndex = function(i){
@@ -73,16 +77,18 @@ dojo.collections.SortedList = function(dictionary){
 	this.getKeyList = function(){
 		var arr = [];
 		var e = this.getIterator();
-		while (e.moveNext()) {
+		while (!e.atEnd){
 			arr.push(e.key);
+			e.moveNext();
 		}
 		return arr;
 	};
 	this.getValueList = function(){
 		var arr = [];
 		var e = this.getIterator();
-		while (e.moveNext()) {
+		while (!e.atEnd){
 			arr.push(e.value);
+			e.moveNext();
 		}
 		return arr;
 	};
