@@ -39,11 +39,11 @@ function boo(panel, node) {
 	files tab1.html and tab2.html. Tab 3 and Another Tab are using content that is already
 	part of this page.</p>
 
-	<div id="maintabs" dojoType="tabs" style="width: 100%; height: 20em;">
+	<div id="maintabs" dojoType="tabs" style="width: 100%; height: 20em;" selectedTab="tab2">
 	
-		<div dojoType="tab" label="Tab 1" url="tab1.html"></div>
+		<div id="tab1" dojoType="tab" label="Tab 1" url="tab1.html"></div>
 		
-		<div dojoType="tab" label="Tab 2" url="tab2.html"></div>
+		<div id="tab2" dojoType="tab" label="Tab 2" url="tab2.html"></div>
 		
 		<div dojoType="tab" label="Tab 3">
 			<h1>I am tab 3</h1>
@@ -67,7 +67,7 @@ function boo(panel, node) {
 		<div dojoType="tab" label="Sub Tabs">
 			<div id="subtabs" dojoType="tabs" style="width: 100%; height: 100%;">	
 				<div dojoType="tab" label="Tab 1" url="tab1.html"></div>		
-				<div dojoType="tab" label="Tab 2" url="tab2.html"></div>
+				<div dojoType="tab" label="Tab 2" url="tab2.html" selected="true"></div>
 			</div>
 		</div>
 

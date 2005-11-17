@@ -23,7 +23,7 @@ dojo.lang.extend(dojo.widget.HtmlTabs, {
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabs.css"),
 
-	selected: null,		// currently selected tab
+	selectedTab: "",		// currently selected tab's widgetId, later widget
 
 	fillInTemplate: function(args, frag) {
 		dojo.widget.HtmlTabs.superclass.fillInTemplate.call(this, args, frag);
@@ -46,19 +46,29 @@ dojo.lang.extend(dojo.widget.HtmlTabs, {
 	registerChild: function(tab, insertionIndex){
 		dojo.widget.HtmlTabs.superclass.registerChild.call(this, tab, insertionIndex);
 		this.ul.appendChild(tab.li);
-		
-		if ( !this.selected ) {
+
+		if (this.selectedTab==tab.widgetId ||
+				tab.selected) {
 			this.onSelected(tab);
 		}
 	},
 
 	onSelected: function(tab) {
 		// Deselect old tab and select new one
-		if ( this.selected ) {
-			this.selected.hide();
+		if (this.selectedTab && this.selectedTab.widgetId) {
+			this.selectedTab.hide();
 		}
 		tab.show();
-		this.selected = tab;
+		this.selectedTab = tab;		// becomes widget rather than string
+	},
+	
+	onResized: function() {
+		// If none of the tabs were specified as selected, catch that here
+		// and just select the first one
+		if ( !this.selectedTab.widgetId ) {
+			this.onSelected(this.children[0]);
+		}
+		dojo.widget.HtmlTabs.superclass.onResized.call(this);
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:tabs");
@@ -77,6 +87,7 @@ dojo.lang.extend(dojo.widget.HtmlTab, {
 	label: "",
 	url: "inline",
 	handler: "none",
+	selected: false,	// is this tab currently selected?
 	
 	fillInTemplate: function(args, frag) {
 		this.layoutAlign = "client";
@@ -98,11 +109,13 @@ dojo.lang.extend(dojo.widget.HtmlTab, {
 	
 	show: function() {
 		dojo.html.addClass(this.li, "current");
+		this.selected=true;
 		dojo.widget.HtmlTab.superclass.show.call(this);
 	},
 
 	hide: function() {
 		dojo.html.removeClass(this.li, "current");
+		this.selected=false;
 		dojo.widget.HtmlTab.superclass.hide.call(this);
 	}	
 });
