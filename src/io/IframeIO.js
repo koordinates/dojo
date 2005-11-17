@@ -23,13 +23,11 @@ dojo.io.createIFrame = function(fname){
 		height = width = "1px";
 		visibility = "hidden";
 		/*
-		if(dojo.hostenv.is_debug_){
-		*/
+		if(djConfig.isDebug){
 			position = "relative";
 			height = "300px";
 			width = "600px";
 			visibility = "visible";
-		/*
 		}
 		*/
 	}
