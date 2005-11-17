@@ -357,7 +357,7 @@ dojo.validate.check = function(form, profile) {
 				if ( elemname == invalid[i] ) { return true; }
 			}
 			return false;
-		},
+		}
 	};
 
 	// Filters are applied before fields are validated.
