@@ -12,6 +12,7 @@ dojo.provide("dojo.widget.HtmlFisheyeListItem");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
+dojo.require("dojo.event");
 
 dojo.widget.HtmlFisheyeList = function() {
 
