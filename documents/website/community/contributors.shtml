@@ -103,7 +103,6 @@
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
-<h1>Dojo Community</h1>
 <!--#include virtual="menu.html" -->
 <!--#include virtual="/rest_template/footer.html" -->
 </body>
