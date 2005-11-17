@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
 
-	var djConfig = {isDebug: true};
+	var djConfig = {isDebug: true /*, debugAtAllCosts: true */ };
 
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -14,7 +14,7 @@
 
 	//dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.HtmlFisheyeList");
-
+	dojo.hostenv.writeIncludes();
 </script>
 </head>
 <body style="padding: 150px;">

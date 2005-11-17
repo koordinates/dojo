@@ -1,4 +1,4 @@
-dojo.require("dojo.lang.*");
+dojo.require("dojo.lang");
 dojo.provide("dojo.dnd.DragSource");
 dojo.provide("dojo.dnd.DropTarget");
 dojo.provide("dojo.dnd.DragObject");

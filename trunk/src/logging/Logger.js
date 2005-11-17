@@ -43,7 +43,7 @@
 
 dojo.provide("dojo.logging.Logger");
 dojo.provide("dojo.log");
-dojo.require("dojo.lang.*");
+dojo.require("dojo.lang");
 
 /*
 	A simple data structure class that stores information for and about
