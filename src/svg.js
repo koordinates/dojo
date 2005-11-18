@@ -256,4 +256,12 @@ if(!dojo.evalObjPath("dojo.dom.createNodesFromText")) {
 		dojo.svg.createNodesFromText.apply(dojo.html, arguments);
 	}
 }
+
+//	IE INLINE FIX
+/*
+if (dojo.render.html.ie && dojo.render.svg.adobe){
+	document.write("<object id=\"AdobeSVG\" classid=\"clsid:78156a80-c6a1-4bbf-8e6a-3cd390eeb4e2\"></object>");
+	document.write("<?import namespace=\"svg\" urn=\"http://www.w3.org/2000/svg\" implementation=\"#AdobeSVG\"?>");
+}
+*/
 // vim:ts=4:noet:tw=0:
