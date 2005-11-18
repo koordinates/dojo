@@ -29,8 +29,9 @@
 </p>
 <h1>Becoming A Committer</h1>
 <p>
-	While Dojo is an Open Source project, we keep our standards very high. That
-	means that in order to contribute code to Dojo a developer must submit a <a
+	Dojo is an Open Source project, so we keep our standards very high and try
+	to make decisions with community input. Therefore, in order to contribute
+	code to Dojo a developer must submit a <a
 	href="http://dojotoolkit.org/icla.txt">Contributors License Agreement</a>
 	to the Dojo Foundation. Contributors who make large contributions or who
 	have earned the respect of their peers are granted commit privileges and
