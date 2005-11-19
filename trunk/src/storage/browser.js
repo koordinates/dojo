@@ -67,7 +67,7 @@ dojo.lang.extend(dojo.storage.browser.StorageProvider, {
 			storeParts.push('	style="border: 1px solid black;"');
 			storeParts.push('	classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"');
 			storeParts.push('	codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0"');
-			storeParts.push('	width="215" height="138" id="dojo-storage">');
+			storeParts.push('	width="215" height="138" id="dojoStorage">');
 			storeParts.push('	<param name="movie" value="'+swfloc+'">');
 			storeParts.push('	<param name="quality" value="high">');
 			storeParts.push('</object>');
@@ -76,7 +76,7 @@ dojo.lang.extend(dojo.storage.browser.StorageProvider, {
 			storeParts.push('	quality="high" ');
 			storeParts.push('	pluginspage="http://www.macromedia.com/go/getflashplayer" ');
 			storeParts.push('	type="application/x-shockwave-flash" ');
-			storeParts.push('	name="dojo-storage">');
+			storeParts.push('	name="dojoStorage">');
 			storeParts.push('</embed>');
 		}
 		storeParts.push('</div>');
@@ -88,5 +88,5 @@ dojo.storage.setProvider(new dojo.storage.browser.StorageProvider());
 dojo.storage.provider.writeStorage();
 
 dojo.addOnLoad(function(){
-	dojo.storage.provider.flash = (dojo.render.html.ie) ? window["dojo-storage"] : document["dojo-storage"];
+	dojo.storage.provider.flash = (dojo.render.html.ie) ? window["dojoStorage"] : document["dojoStorage"];
 });
