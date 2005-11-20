@@ -64,6 +64,11 @@ Properties
     An object representing the dom node indecies for the selection hour, 
 		minute, am/pm, and "any time" option.
 
+``any``:
+
+    A string representing the text that should be placed into storedTime if 
+		the anyTime option is selected.
+
 ``classNames``:
 
     An object representing the CSS class names for the selected time.
