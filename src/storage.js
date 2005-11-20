@@ -47,15 +47,7 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 		dojo.unimplemented("dojo.storage.StorageProvider.set");
 	},
 
-	get: function(key, value, namespace){
+	get: function(key, namespace){
 		dojo.unimplemented("dojo.storage.StorageProvider.get");
-	},
-
-	getItem: function(){
-		return this.get(key, value, namespace);
-	},
-
-	setItem: function(key, value, namespace){
-		return this.set(key, value, namespace);
 	}
 });
