@@ -261,7 +261,7 @@ dojo.hostenv = (function(){
 	// default configuration options
 	var config = {
 		isDebug: false,
-		allowQueryConfig: true,
+		allowQueryConfig: false,
 		baseScriptUri: "",
 		baseRelativePath: "",
 		libraryScriptUri: "",
