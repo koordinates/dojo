@@ -49,7 +49,7 @@
 				a.handler = function(e) {
 					switch(e.type) {
 						case "play":
-							dojo.xml.htmlUtil.setOpacity(mover, 1);
+							dojo.html.setOpacity(mover, 1);
 							break;
 						case "animate":
 							mover.style.left = e.x + "px";
@@ -63,7 +63,7 @@
 				b = new Anim(new Line([1],[0]), 500, 0);
 				b.onAnimate = function(e) {
 					if(e.x){
-						dojo.xml.htmlUtil.setOpacity(mover, e.x);
+						dojo.html.setOpacity(mover, e.x);
 					}
 				}
 
