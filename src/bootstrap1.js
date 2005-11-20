@@ -102,7 +102,7 @@ dojo.raise = function(message, excep){
 		message = message + ": "+dojo.errorToString(excep);
 	}
 	var he = dojo.hostenv;
-	if(dj_undef("hostenv", dojo)&&dj_undef("println", dojo)){ 
+	if((!dj_undef("hostenv", dojo))&&(!dj_undef("println", dojo.hostenv))){ 
 		dojo.hostenv.println("FATAL: " + message);
 	}
 	throw Error(message);
@@ -466,7 +466,7 @@ dojo.hostenv.getDepsForEval = function(contents){
 		/dojo.hostenv.loadModule\(.*?\)/mg,
 		/dojo.hostenv.require\(.*?\)/mg,
 		/dojo.require\(.*?\)/mg,
-		/dojo.requireIf\([\w\W]*?\)/mg,
+		/dojo.requireIf\([\w\w]*?\)/mg,
 		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
 	];
 	for(var i=0; i<testExps.length; i++){
