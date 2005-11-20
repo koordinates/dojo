@@ -22,6 +22,7 @@ dojo.widget.html.TimePicker = function(){
 	this.classNames = {
 		selectedTime: "selectedItem"
 	}
+	this.any = "any"
 	// dom node indecies for selected hour, minute, amPm, and "any time option"
 	this.selectedTime = {
 		hour: "",
@@ -127,7 +128,7 @@ dojo.widget.html.TimePicker = function(){
 		//  have a set time
 		// FIXME: should normalize against whitespace on storedTime... for now 
 		// just a lame hack
-		if(this.storedTime && this.storedTime!=" ") {
+		if(this.storedTime.split("T")[1] && this.storedTime!=" " && this.storedTime.split("T")[1]!="any") {
 			this.time = this.fromRfcDateTime(this.storedTime);
 		} else if (this.useDefaultTime) {
 			this.time = this.fromRfcDateTime();
@@ -147,6 +148,8 @@ dojo.widget.html.TimePicker = function(){
 			this.onSetSelectedHour(this.hourIndexMap[hour]);
 			this.onSetSelectedMinute(this.minuteIndexMap[minuteIndex]);
 			this.onSetSelectedAmPm(isAm);
+		} else {
+			this.onSetSelectedAnyTime();
 		}
 	}
 
@@ -283,7 +286,9 @@ dojo.widget.html.TimePicker = function(){
 
 	this.onSetTime = function() {
 		if(this.selectedTime.anyTime) {
-			this.setDateTime();
+			this.time = new Date();
+			var tempDateTime = this.toRfcDateTime(this.time);
+			this.setDateTime(tempDateTime.split("T")[0] + "T" + this.any);
 		} else {
 			var hour = 12;
 			var minute = 0;
