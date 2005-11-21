@@ -8,9 +8,6 @@ dojo.require("dojo.math.curves");
 /*
 Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js
-
-TODO:
-- make animations reusable by not killing repeatCount as we go
 */
 
 dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
@@ -52,6 +49,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 	_percent: 0,
 	_active: false,
 	_paused: false,
+	_startRepeatCount: 0,
 
 	// public methods
 	play: function(gotoStart) {
@@ -78,6 +76,9 @@ dojo.lang.extend(dojo.animation.Animation, {
 		this._paused = false;
 
 		if( this._percent == 0 ) {
+			if(!this._startRepeatCount) {
+				this._startRepeatCount = this.repeatCount;
+			}
 			e.type = "begin";
 			if(typeof this.handler == "function") { this.handler(e); }
 			if(typeof this.onBegin == "function") { this.onBegin(e); }
@@ -181,8 +182,14 @@ dojo.lang.extend(dojo.animation.Animation, {
 					this.play(true);
 				} else if( this.repeatCount == -1 ) {
 					this.play(true);
-				} else if( this._animSequence ) {
-					this._animSequence.playNext();
+				} else {
+					if(this._startRepeatCount) {
+						this.repeatCount = this._startRepeatCount;
+						this._startRepeatCount = 0;
+					}
+					if( this._animSequence ) {
+						this._animSequence.playNext();
+					}
 				}
 			}
 		}
