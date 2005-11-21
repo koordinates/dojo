@@ -27,6 +27,8 @@ dojo.lang.extend(dojo.widget.HtmlInlineEditBox, {
 	edit: null,
 	text: null,
 	textarea: null,
+	submitButton: null,
+	cancelButton: null,
 	mode: "text",
 
 	minWidth: 100, //px. minimum width of edit box
@@ -120,6 +122,7 @@ dojo.lang.extend(dojo.widget.HtmlInlineEditBox, {
 		this.editable.style.display = "none";
 		this.nodeRef.appendChild(this.form);
 		ee.select();
+		this.submitButton.disabled = true;
 	},
 
 	saveEdit: function(e){
@@ -168,6 +171,14 @@ dojo.lang.extend(dojo.widget.HtmlInlineEditBox, {
 			this.editable.innerHTML = value;
 			this.textValue = value;
 			this.onUndo(value);
+		}
+	},
+
+	handleKeyPress: function(){
+		var ee = this[this.mode.toLowerCase()];
+		if((this.textValue != ee.value)&&
+			(dojo.string.trim(ee.value) != "")){
+			this.submitButton.disabled = false;
 		}
 	}
 });
