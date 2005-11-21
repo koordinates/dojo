@@ -88,7 +88,7 @@ Classes
     ``Number repeatCount``:
         Set the numer of times the animation should repeat.
 
-    ``Object animSequence_``:
+    ``Object _animSequence``:
         Reference to the ``AnimationSequence`` object that the animation is
         associated with, if any.
 
@@ -149,13 +149,36 @@ Classes
     Event Handlers
     #####################################
 
-    ``onBegin``:
-    ``onAnimate``:
-    ``onEnd``:
-    ``onPlay``:
-    ``onPause``:
-    ``onStop``:
-    ``handler``:
+    ``onBegin(AnimationEvent event)``:
+
+        Called when an animation begins playing from the start.
+
+    ``onAnimate(AnimationEvent event)``:
+
+        Called every "frame" of the animation.
+
+    ``onEnd(AnimationEvent event)``:
+
+        Called when an animation ends playing.
+
+    ``onPlay(AnimationEvent event)``:
+
+        Called when an animation begins playing from the start or is resumed
+        from the paused state.
+
+    ``onPause(AnimationEvent event)``:
+
+        Called when a playing animation is paused.
+
+    ``onStop(AnimationEvent event)``:
+
+        Called when an animation is stopped via ``stop()``
+
+    ``handler(AnimationEvent event)``:
+
+        Called along with any of the other event handlers. This can be used for
+        a one-size-fits all handler. You would then have to look at
+        ``event.type`` to figure out which event is being fired.
 
 Properties
 ---------------------------------------
