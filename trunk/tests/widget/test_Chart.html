@@ -1,0 +1,89 @@
+<html>
+<head>
+<script type="text/javascript">
+	var djConfig = {
+		isDebug: true
+	};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Chart");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body style="background-color:#ededde;">
+	<div dojoType="chart">
+		<table>
+			<thead>
+				<tr>
+					<th>X</th>
+					<th plotType="bar">Series A</th>
+					<th plotType="line">Series B</th>
+					<th plotType="line">Series C</th>
+					<th plotType="scatter">Series D</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr><td>2</td><td>22</td><td>17</td><td>18</td><td>1.04137618667233</td></tr>
+				<tr><td>4</td><td>19</td><td>14.7224318643355</td><td>24</td><td>8.5</td></tr>
+				<tr><td>6</td><td>16</td><td>8.5</td><td>30</td><td>14.7224318643355</td></tr>
+				<tr><td>8</td><td>13</td><td>2.08275237334465</td><td>36</td><td>17</td></tr>
+				<tr><td>10</td><td>23</td><td>8.5</td><td>42</td><td>14.7224318643355</td></tr>
+				<tr><td>12</td><td>20</td><td>14.7224318643355</td><td>48</td><td>8.50000000000001</td></tr>
+				<tr><td>14</td><td>17</td><td>17</td><td>54</td><td>3.12412856001698</td></tr>
+				<tr><td>16</td><td>14</td><td>14.7224318643355</td><td>15</td><td>8.5</td></tr>
+				<tr><td>18</td><td>24</td><td>8.50000000000001</td><td>21</td><td>14.7224318643355</td></tr>
+				<tr><td>20</td><td>21</td><td>4.16550474668931</td><td>27</td><td>17</td></tr>
+				<tr><td>22</td><td>18</td><td>8.5</td><td>33</td><td>14.7224318643355</td></tr>
+				<tr><td>24</td><td>15</td><td>14.7224318643355</td><td>39</td><td>8.49999999999999</td></tr>
+				<tr><td>26</td><td>12</td><td>17</td><td>45</td><td>5.20688093336164</td></tr>
+				<tr><td>28</td><td>22</td><td>14.7224318643355</td><td>51</td><td>8.49999999999999</td></tr>
+				<tr><td>30</td><td>19</td><td>8.5</td><td>12</td><td>14.7224318643355</td></tr>
+				<tr><td>32</td><td>16</td><td>6.24825712003396</td><td>18</td><td>17</td></tr>
+				<tr><td>34</td><td>13</td><td>8.49999999999999</td><td>24</td><td>14.7224318643355</td></tr>
+				<tr><td>36</td><td>23</td><td>14.7224318643355</td><td>30</td><td>8.5</td></tr>
+				<tr><td>38</td><td>20</td><td>17</td><td>36</td><td>7.28963330670629</td></tr>
+				<tr><td>40</td><td>17</td><td>14.7224318643355</td><td>42</td><td>8.49999999999999</td></tr>
+				<tr><td>42</td><td>14</td><td>8.5</td><td>48</td><td>14.7224318643355</td></tr>
+				<tr><td>44</td><td>24</td><td>8.33100949337862</td><td>54</td><td>17</td></tr>
+				<tr><td>46</td><td>21</td><td>8.49999999999998</td><td>15</td><td>14.7224318643355</td></tr>
+				<tr><td>48</td><td>18</td><td>14.7224318643355</td><td>21</td><td>8.5</td></tr>
+				<tr><td>50</td><td>15</td><td>17</td><td>27</td><td>9.37238568005094</td></tr>
+				<tr><td>52</td><td>12</td><td>14.7224318643355</td><td>33</td><td>8.50000000000001</td></tr>
+				<tr><td>54</td><td>22</td><td>8.5</td><td>39</td><td>14.7224318643355</td></tr>
+				<tr><td>56</td><td>19</td><td>1.04137618667233</td><td>45</td><td>17</td></tr>
+				<tr><td>58</td><td>16</td><td>8.49999999999998</td><td>51</td><td>14.7224318643355</td></tr>
+				<tr><td>60</td><td>13</td><td>14.7224318643354</td><td>12</td><td>8.50000000000003</td></tr>
+				<tr><td>62</td><td>23</td><td>17</td><td>18</td><td>1.87429282164087</td></tr>
+				<tr><td>64</td><td>20</td><td>14.7224318643355</td><td>24</td><td>8.50000000000001</td></tr>
+				<tr><td>66</td><td>17</td><td>8.5</td><td>30</td><td>14.7224318643355</td></tr>
+				<tr><td>68</td><td>14</td><td>1.24965142400679</td><td>36</td><td>17</td></tr>
+				<tr><td>70</td><td>24</td><td>8.49999999999998</td><td>42</td><td>14.7224318643355</td></tr>
+				<tr><td>72</td><td>21</td><td>14.7224318643354</td><td>48</td><td>8.50000000000003</td></tr>
+				<tr><td>74</td><td>18</td><td>17</td><td>54</td><td>1.6660175843064</td></tr>
+				<tr><td>76</td><td>15</td><td>14.7224318643355</td><td>15</td><td>8.50000000000001</td></tr>
+				<tr><td>78</td><td>12</td><td>8.5</td><td>21</td><td>14.7224318643355</td></tr>
+				<tr><td>80</td><td>22</td><td>1.45792666134126</td><td>27</td><td>17</td></tr>
+				<tr><td>82</td><td>19</td><td>8.49999999999998</td><td>33</td><td>14.7224318643355</td></tr>
+				<tr><td>84</td><td>16</td><td>14.7224318643354</td><td>39</td><td>8.50000000000003</td></tr>
+				<tr><td>86</td><td>13</td><td>17</td><td>45</td><td>1.45774234697194</td></tr>
+				<tr><td>88</td><td>23</td><td>14.7224318643355</td><td>51</td><td>8.5</td></tr>
+				<tr><td>90</td><td>20</td><td>8.50000000000001</td><td>12</td><td>14.7224318643355</td></tr>
+				<tr><td>92</td><td>17</td><td>1.66620189867572</td><td>18</td><td>17</td></tr>
+				<tr><td>94</td><td>14</td><td>8.49999999999998</td><td>24</td><td>14.7224318643355</td></tr>
+				<tr><td>96</td><td>24</td><td>14.7224318643354</td><td>30</td><td>8.50000000000003</td></tr>
+				<tr><td>98</td><td>21</td><td>17</td><td>36</td><td>1.24946710963747</td></tr>
+				<tr><td>100</td><td>18</td><td>14.7224318643355</td><td>42</td><td>8.5</td></tr>
+				<tr><td>102</td><td>15</td><td>8.50000000000001</td><td>48</td><td>14.7224318643355</td></tr>
+				<tr><td>104</td><td>12</td><td>1.87447713601019</td><td>54</td><td>17</td></tr>
+				<tr><td>106</td><td>22</td><td>8.49999999999998</td><td>15</td><td>14.7224318643355</td></tr>
+				<tr><td>108</td><td>19</td><td>14.7224318643355</td><td>21</td><td>8.49999999999998</td></tr>
+				<tr><td>110</td><td>16</td><td>17</td><td>27</td><td>1.041191872303</td></tr>
+				<tr><td>112</td><td>13</td><td>14.7224318643355</td><td>33</td><td>8.5</td></tr>
+				<tr><td>114</td><td>23</td><td>8.50000000000001</td><td>39</td><td>14.7224318643355</td></tr>
+				<tr><td>116</td><td>20</td><td>2.08275237334465</td><td>45</td><td>17</td></tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
