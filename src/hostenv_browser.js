@@ -88,6 +88,8 @@ if(typeof window == 'undefined'){
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 
+	dr.vml = drh.ie;
+
 	dr.svg.capable = f;
 	dr.svg.support.plugin = f;
 	dr.svg.support.builtin = f;
