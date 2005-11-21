@@ -174,7 +174,7 @@ dojo.lang.extend(dojo.widget.HtmlInlineEditBox, {
 		}
 	},
 
-	handleKeyPress: function(){
+	checkForValueChange: function(){
 		var ee = this[this.mode.toLowerCase()];
 		if((this.textValue != ee.value)&&
 			(dojo.string.trim(ee.value) != "")){
