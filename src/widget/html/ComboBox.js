@@ -6,6 +6,7 @@ dojo.require("dojo.fx.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
+dojo.require("dojo.widget.html.stabile");
 
 dojo.widget.html.ComboBox = function(){
 	dojo.widget.ComboBox.call(this);
@@ -44,6 +45,24 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css"),
+
+	setValue: function(value) {
+		this.comboBoxValue.value = this.textInputNode.value = value;
+		dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+	},
+
+	getValue: function() {
+		return this.comboBoxValue.value;
+	},
+
+	getState: function() {
+		return {value: this.getValue()};
+	},
+
+	setState: function(state) {
+        	this.setValue(state.value);
+	},
+
 
 	getCaretPos: function(element){
 		// FIXME: we need to figure this out for Konq/Safari!
@@ -183,7 +202,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			this.highlightPrevOption();
 			return;
 		}else{
-			this.comboBoxValue.value = this.textInputNode.value;
+			this.setValue(this.textInputNode.value);
 		}
 
 		// backspace is 8
@@ -308,7 +327,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 		this.textInputNode.value = tgt.getAttribute("resultName");
 		this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
-		this.comboBoxValue.value = tgt.getAttribute("resultName");
+		this.setValue(tgt.getAttribute("resultName"));
 		this.comboBoxSelectionValue.value = tgt.getAttribute("resultValue");
 		this.hideResultList();
 	},
@@ -364,6 +383,10 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	postCreate: function(){
 		dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
 		dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
+		var s = dojo.widget.html.stabile.getState(this.widgetId);
+		if (s) {
+			this.setState(s);
+		}
 	}
 
 });
