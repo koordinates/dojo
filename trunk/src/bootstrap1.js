@@ -239,6 +239,7 @@ dojo.render = (function(){
 		os: { win: false, linux: false, osx: false },
 		html: vscaffold(["html"], ["ie", "opera", "khtml", "safari", "moz"]),
 		svg: vscaffold(["svg"], ["corel", "adobe", "batik"]),
+		vml: vscaffold(["vml"], ["ie"]),
 		swf: vscaffold(["Swf", "Flash", "Mm"], ["mm"]),
 		swt: vscaffold(["Swt"], ["ibm"])
 	};
