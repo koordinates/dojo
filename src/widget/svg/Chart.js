@@ -125,6 +125,7 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 		var rows=tbody.getElementsByTagName("tr");
 		var xMin=Number.MAX_VALUE,xMax=Number.MIN_VALUE;
 		var yMin=Number.MAX_VALUE,yMax=Number.MIN_VALUE;
+		var ignore = ["accesskey","align","bgcolor","class","colspan","height","id","nowrap","rowspan","style","tabindex","title","valign","width"];
 
 		for(var i=0; i<rows.length; i++){
 			var row=rows[i];
@@ -141,6 +142,18 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 					yMin=Math.min(yMin,y);
 					yMax=Math.max(yMax,y);
 					var o={x:x, value:y};
+					var attrs=cells[j].attributes;
+					for(var k=0; k<attrs.length; k++){
+						var attr=attrs.item(k);
+						var bIgnore=false;
+						for (var l=0; l<ignore.length; l++){
+							if (attr.nodeName.toLowerCase()==ignore[l]){
+								bIgnore=true;
+								break;
+							}
+						}
+						if(!bIgnore) o[attr.nodeName]=attr.nodeValue;
+					}
 					ds.add(o);
 				}
 			}
@@ -394,29 +407,39 @@ dojo.widget.svg.Chart.Plotter=new function(){
 		line.setAttribute("d", path.join(" "));
 	};
 	plotters[types.Scatter]=function(series, chart){
-		var r=3;
+		var r=7;
 		for (var i=0; i<series.values.length; i++){
-			var point=document.createElementNS(dojo.svg.xmlns.svg, "circle");
-			point.setAttribute("r", r);
-			point.setAttribute("stroke-width", 0);
+			var x=_this.getX(series.values[i].x, chart);
+			var y=_this.getY(series.values[i].value, chart);
+			var point = document.createElementNS(dojo.svg.xmlns.svg, "path");
 			point.setAttribute("fill", series.color);
-			point.setAttribute("cx", _this.getX(series.values[i].x, chart));
-			point.setAttribute("cy", _this.getY(series.values[i].value, chart));
-			point.setAttribute("title", series.values[i].x + ", " + series.values[i].value);
+			point.setAttribute("stroke-width", "0");
+			point.setAttribute("title", series.label + ": " + series.values[i].value);
+			point.setAttribute("d",
+				"M " + x + "," + (y-r) + " " +
+				"Q " + x + "," + y + " " + (x+r) + "," + y + " " +
+				"Q " + x + "," + y + " " + x + "," + (y+r) + " " +
+				"Q " + x + "," + y + " " + (x-r) + "," + y + " " +
+				"Q " + x + "," + y + " " + x + "," + (y-r) + " " +
+				"Z"
+			);
 			chart.dataGroup.appendChild(point);
 		}
 	};
 	plotters[types.Bubble]=function(series, chart){
 		//	added param for series[n].value: size
-		var minR=3;
+		var minR=10;
 		for (var i=0; i<series.values.length; i++){
+			var size = series.values[i].size;
+			if (isNaN(parseFloat(size))) size=minR;
 			var point=document.createElementNS(dojo.svg.xmlns.svg, "circle");
 			point.setAttribute("stroke-width", 0);
 			point.setAttribute("fill", series.color);
-			point.setAttribute("r", Math.max(parseFloat(series.values[i].size)/2, minR));
+			point.setAttribute("fill-opacity", "0.8");
+			point.setAttribute("r", parseFloat(size)/2);
 			point.setAttribute("cx", _this.getX(series.values[i].x, chart));
 			point.setAttribute("cy", _this.getY(series.values[i].value, chart));
-			point.setAttribute("title", series.values[i].x + ", " + series.values[i].value);
+			point.setAttribute("title", series.label + ": " + series.values[i].value + " (" + size + ")");
 			chart.dataGroup.appendChild(point);
 		}
 	};
