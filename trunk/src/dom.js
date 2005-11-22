@@ -47,7 +47,7 @@ dojo.dom.xmlns = {
 	AdobeExtensions : "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 };
 
-dojo.dom.isNode = dojo.lang.isDomNode = function(wh) {
+dojo.dom.isNode = dojo.lang.isDomNode = function(wh){
 	if(typeof Element != "undefined") {
 		return wh instanceof Element;
 	} else {
@@ -56,7 +56,7 @@ dojo.dom.isNode = dojo.lang.isDomNode = function(wh) {
 	}
 }
 
-dojo.dom.getTagName = function (node){
+dojo.dom.getTagName = function(node){
 	var tagName = node.tagName;
 	if(tagName.substr(0,5).toLowerCase()!="dojo:"){
 		
@@ -208,8 +208,9 @@ dojo.dom.getAncestors = function(node, filterFunction, returnFirstHit) {
 }
 
 dojo.dom.getAncestorsByTag = function(node, tag, returnFirstHit) {
-	return dojo.dom.getAncestors(node, function(el) {
-		return el.tagName && (el.tagName == tag);
+	tag = tag.toLowerCase();
+	return dojo.dom.getAncestors(node, function(el){
+		return ((el.tagName)&&(el.tagName.toLoweCase() == tag));
 	}, returnFirstHit);
 }
 
@@ -310,23 +311,23 @@ dojo.dom.insertAfter = function(node, ref, force){
 }
 
 dojo.dom.insertAtPosition = function(node, ref, position){
+	if((!node)||(!ref)||(!position)){ return false; }
 	switch(position.toLowerCase()){
 		case "before":
-			dojo.dom.insertBefore(node, ref);
-			break;
+			return dojo.dom.insertBefore(node, ref);
 		case "after":
-			dojo.dom.insertAfter(node, ref);
-			break;
+			return dojo.dom.insertAfter(node, ref);
 		case "first":
 			if(ref.firstChild){
-				dojo.dom.insertBefore(node, ref.firstChild);
+				return dojo.dom.insertBefore(node, ref.firstChild);
 			}else{
 				ref.appendChild(node);
+				return true;
 			}
 			break;
 		default: // aka: last
 			ref.appendChild(node);
-			break;
+			return true;
 	}
 }
 
@@ -337,7 +338,7 @@ dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
 
 	if (!siblingNodes.length){
 		containingNode.appendChild(node);
-		return;
+		return true;
 	}
 
 	// otherwise we need to walk the childNodes
@@ -357,11 +358,11 @@ dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
 	if (after){
 		// add it after the node in {after}
 
-		dojo.dom.insertAfter(node, after);
+		return dojo.dom.insertAfter(node, after);
 	}else{
 		// add it to the start
 
-		dojo.dom.insertBefore(node, siblingNodes.item(0));
+		return dojo.dom.insertBefore(node, siblingNodes.item(0));
 	}
 }
 	
