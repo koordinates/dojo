@@ -210,7 +210,7 @@ dojo.dom.getAncestors = function(node, filterFunction, returnFirstHit) {
 dojo.dom.getAncestorsByTag = function(node, tag, returnFirstHit) {
 	tag = tag.toLowerCase();
 	return dojo.dom.getAncestors(node, function(el){
-		return ((el.tagName)&&(el.tagName.toLoweCase() == tag));
+		return ((el.tagName)&&(el.tagName.toLowerCase() == tag));
 	}, returnFirstHit);
 }
 
