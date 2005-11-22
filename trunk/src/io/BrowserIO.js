@@ -36,7 +36,7 @@ dojo.io.encodeForm = function(formNode, encoding){
 
 	for(var i = 0; i < formNode.elements.length; i++) {
 		var elm = formNode.elements[i];
-		if(elm.disabled || elm.tagName.toLowerCase() == "fieldset"){
+		if(elm.disabled || elm.tagName.toLowerCase() == "fieldset" || !elm.name){
 			continue;
 		}
 		var name = enc(elm.name);
