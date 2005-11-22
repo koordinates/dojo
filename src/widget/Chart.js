@@ -6,17 +6,21 @@ dojo.require("dojo.widget.Widget");
 dojo.require("dojo.graphics.color");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
+dojo.requireIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
+//dojo.requireIf(dojo.render.vml, "dojo.widget.vml.Chart");
+
 dojo.widget.Chart=function(){
 	dojo.widget.Widget.call(this);
 	this.widgetType="Chart";
 	this.isContainer=false;
 	this.series=[];
 	this.assignColors=function(){
-		var hue=0, sat=100, lum=100;
-		var steps = Math.round(360/this.series.length);
+		var hue=30, sat=120, lum=120;
+		var steps = Math.round(330/this.series.length);
 		for (var i=0; i<this.series.length; i++){
 			var c=dojo.graphics.color.hsl2rgb(hue,sat,lum);
-			this.series[i].color=dojo.graphics.color.rgb2hex(c[0],c[1],c[2]);
+			if (!this.series[i].color) 
+				this.series[i].color=dojo.graphics.color.rgb2hex(c[0],c[1],c[2]);
 			hue+=steps;
 		}
 	};
@@ -32,7 +36,7 @@ dojo.widget.Chart.DataSeries=function(key, label, plotType, color){
 	this.key=key;
 	this.label=label||this.id;
 	this.plotType=plotType||0;
-	this.color=color||"#000";
+	this.color=color;
 	this.values=[];
 };
 dojo.widget.Chart.DataSeries.prototype={
@@ -155,6 +159,3 @@ dojo.widget.Chart.DataSeries.prototype={
 		return parseFloat(ret);
 	}
 };
-
-dojo.requireIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
-//dojo.requireIf(dojo.render.vml, "dojo.widget.vml.Chart");
