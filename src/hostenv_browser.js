@@ -94,9 +94,12 @@ if(typeof window == 'undefined'){
 	dr.svg.support.builtin = f;
 	dr.svg.adobe = f;
 	//	this is ugly, but we can't append elements to a non-existant BODY element yet.
-	if (document.createElementNS 
+	if ((document.createElementNS 
 		&& drh.moz 
-		&& parseFloat(dua.substring(dua.lastIndexOf("/")+1,dua.length))>1.0
+		&& parseFloat(dua.substring(dua.lastIndexOf("/")+1,dua.length))>1.0)
+		||
+		(document.implementation && document.implementation.hasFeature
+		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0"))
 	){
 		dr.svg.capable = t;
 		dr.svg.support.builtin = t;
@@ -109,11 +112,13 @@ if(typeof window == 'undefined'){
 				navigator.mimeTypes["image/svg"] ||
 				navigator.mimeTypes["image/svg-xml"];
 			if (result){
-				dr.svg.capable = t;
-				dr.svg.support.plugin = t;
 				dr.svg.adobe = result && result.enabledPlugin &&
 					result.enabledPlugin.description && 
 					(result.enabledPlugin.description.indexOf("Adobe") > -1);
+				if(dr.svg.adobe) {
+					dr.svg.capable = t;
+					dr.svg.support.plugin = t;
+				}
 			}
 		}else if(drh.ie && dr.os.win){
 			var result = f;
