@@ -231,7 +231,7 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 		//	set up the clip path for the plot area.
 		var defs = document.createElementNS(dojo.svg.xmlns.svg, "defs");
 		var clip = document.createElementNS(dojo.svg.xmlns.svg, "clipPath");
-		clip.setAttribute("id","plotClip");
+		clip.setAttribute("id","plotClip"+this.widgetId);
 		var rect = document.createElementNS(dojo.svg.xmlns.svg, "rect");		
 		rect.setAttribute("x", this.properties.padding.left);
 		rect.setAttribute("y", this.properties.padding.top);
@@ -254,7 +254,7 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 
 		//	data group
 		this.dataGroup = document.createElementNS(dojo.svg.xmlns.svg, "g");
-		this.dataGroup.setAttribute("style","clip-path:url(#plotClip);");
+		this.dataGroup.setAttribute("style","clip-path:url(#plotClip"+this.widgetId+");");
 		this.plotArea.appendChild(this.dataGroup);
 
 		//	axis group
