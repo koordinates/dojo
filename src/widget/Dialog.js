@@ -21,6 +21,10 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	isContainer: true,
 
 	_scrollConnected: 0,
+	
+	// provide a focusable element or element id if you need to
+	// work around FF's tendency to send focus into outer space on hide
+	focusElement: "",
 
 	// Only supports fade right now
 	effect: "fade",
@@ -196,6 +200,11 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	hide: function(){
+		// workaround for FF focus going into outer space
+		if (this.focusElement) { 
+			dojo.byId(this.focusElement).focus(); 
+			dojo.byId(this.focusElement).blur();
+		}
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "none";
