@@ -497,7 +497,16 @@ dojo.widget.svg.Chart.Plotter=new function(){
 	plotters[types.Bubble]=function(series, chart){
 		//	added param for series[n].value: size
 		var minR=1;
-		var factor=10;
+		
+		//	do this off the x axis?
+		var min=chart.properties.axes.x.range.min;
+		var max=chart.properties.axes.x.range.max;
+		var ofst=0-min;
+		min+=ofst; max+=ofst; v+=ofst;
+		var xmin=chart.properties.padding.left;
+		var xmax=chart.properties.width-chart.properties.padding.right;
+		var factor=(max-min)/(xmax-xmin)*25;
+		
 		for (var i=0; i<series.values.length; i++){
 			var size = series.values[i].size;
 			if (isNaN(parseFloat(size))) size=minR;
