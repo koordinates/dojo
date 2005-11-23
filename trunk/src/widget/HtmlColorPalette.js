@@ -20,7 +20,7 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 	widgetType: "ToolbarColorDialog",
 
 	palette: "7x10",
-	
+
 	fillInTemplate: function (args, frag) {
 		dojo.widget.HtmlToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
 		this.dialog = dojo.widget.fromScript("ColorPalette", {palette: this.palette});
@@ -63,6 +63,8 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 	
 	palette: "7x10",
 
+	bgIframe: null,
+	
 	palettes: {
 		"7x10": [["fff", "fcc", "fc9", "ff9", "ffc", "9f9", "9ff", "cff", "ccf", "fcf"],
 			["ccc", "f66", "f96", "ff6", "ff3", "6f9", "3ff", "6ff", "99f", "f9f"],
@@ -118,6 +120,17 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 			}
 			tbody.appendChild(tr);
 		}
+
+		if(dojo.render.html.ie){
+			this.bgIframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
+			with(this.bgIframe.style){
+				position = "absolute";
+				left = top = "0px";
+				display = "none";
+			}
+			dojo.html.body().appendChild(this.bgIframe);
+			dojo.style.setOpacity(this.bgIframe, 0);
+		}
 	},
 
 	click: function (e) {
@@ -127,11 +140,32 @@ dojo.lang.extend(dojo.widget.HtmlColorPalette, {
 
 	onColorSelect: function (color) { },
 
-	hide: function () { this.domNode.parentNode.removeChild(this.domNode); },
+	hide: function (){
+		this.domNode.parentNode.removeChild(this.domNode);
+		if(this.bgIframe){
+			this.bgIframe.style.display = "none";
+		}
+	},
 	
 	showAt: function (x, y) {
-		with (this.domNode.style) { top = y + "px"; left = x + "px"; }
+		with(this.domNode.style){
+			top = y + "px";
+			left = x + "px";
+			zIndex = 999;
+		}
 		dojo.html.body().appendChild(this.domNode);
+		djConfig.isDebug = true;
+		if(this.bgIframe){
+			with(this.bgIframe.style){
+				display = "block";
+				top = y + "px";
+				left = x + "px";
+				zIndex = 998;
+				width = dojo.html.getOuterWidth(this.domNode) + "px";
+				height = dojo.html.getOuterHeight(this.domNode) + "px";
+			}
+
+		}
 	}
 
 });
