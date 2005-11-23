@@ -11,6 +11,14 @@ dojo.widget.tags.addParseTreeHandler("dojo:dialog");
 
 dojo.widget.HtmlDialog = function(){
 	dojo.widget.HtmlWidget.call(this);
+
+	this.resizeConnectArgs = {
+		srcObj: window,
+		srcFunc: "onresize",
+		adviceObj: this,
+		adviceFunc: "onResize",
+		rate: 500
+	}
 }
 
 dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
@@ -20,7 +28,8 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	widgetType: "Dialog",
 	isContainer: true,
 
-	_scrollConnected: 0,
+	_scrollConnected: false,
+	_resizeConnected: false,
 	
 	// provide a focusable element or element id if you need to
 	// work around FF's tendency to send focus into outer space on hide
@@ -75,7 +84,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			with(this.bgIframe.style) {
 				position = "absolute";
 				left = top = "0px";
-				width = dojo.html.getOuterWidth(b) + "px";
 				zIndex = 997;
 				display = "none";
 				// backgroundColor = "transparent";
@@ -90,7 +98,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		with(this.bg.style) {
 			position = "absolute";
 			left = top = "0px";
-			width = dojo.html.getOuterWidth(b) + "px";
 			zIndex = 998;
 			display = "none";
 		}
@@ -135,10 +142,13 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 	sizeBackground: function() {
 		var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
+		var w = dojo.html.getViewportWidth();
+		this.bg.style.width = w + "px";
+		this.bg.style.height = h + "px";
 		if(this.bgIframe){
 			this.bgIframe.style.height = h + "px";
+			this.bgIframe.style.width = w + "px";
 		}
-		this.bg.style.height = h + "px";
 	},
 
 	placeDialog: function() {
@@ -194,8 +204,13 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		// this smells like it should be a dojo feature rather than just for this widget.
 
 		if (this.followScroll && !this._scrollConnected){
-			this._scrollConnected = 1;
+			this._scrollConnected = true;
 			dojo.event.connect(window, "onscroll", this, "onScroll");
+		}
+
+		if(!this._resizeConnected) {
+			this._resizeConnected = true;
+			dojo.event.kwConnect(this.resizeConnectArgs);
 		}
 	},
 
@@ -227,9 +242,19 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				break;
 		}
 
+		this.bg.style.width = this.bg.style.height = "1px";
+		if(this.bgIframe) {
+			this.bgIframe.style.width = this.bgIframe.style.height = "1px";
+		}
+
 		if (this._scrollConnected){
-			this._scrollConnected = 0;
+			this._scrollConnected = false;
 			dojo.event.disconnect(window, "onscroll", this, "onScroll");
+		}
+
+		if(this._resizeConnected) {
+			this._resizeConnected = false;
+			dojo.event.kwDisconnect(this.resizeConnectArgs);
 		}
 	},
 
@@ -244,6 +269,10 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	onScroll: function(){
 		this.placeDialog();
 		this.domNode.style.display = "block";
+	},
+
+	onResize: function(e) {
+		this.sizeBackground();
 	}
 });
 
