@@ -93,13 +93,9 @@ if(typeof window == 'undefined'){
 	dr.svg.support.plugin = f;
 	dr.svg.support.builtin = f;
 	dr.svg.adobe = f;
-	//	this is ugly, but we can't append elements to a non-existant BODY element yet.
-	if ((document.createElementNS 
-		&& drh.moz 
-		&& parseFloat(dua.substring(dua.lastIndexOf("/")+1,dua.length))>1.0)
-		||
-		(document.implementation && document.implementation.hasFeature
-		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0"))
+	if (document.implementation 
+		&& document.implementation.hasFeature
+		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")
 	){
 		dr.svg.capable = t;
 		dr.svg.support.builtin = t;
