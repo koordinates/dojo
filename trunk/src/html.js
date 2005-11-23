@@ -95,13 +95,20 @@ dojo.html.getDocumentSize = function() {
 
 dojo.html.getViewportWidth = function(){
 
+	var w = 0;
+
 	if (window.innerWidth){
-		return window.innerWidth;
+		w = window.innerWidth;
 	}
 
 	if (document.documentElement && document.documentElement.clientWidth){
 		// IE6 Strict
-		return document.documentElement.clientWidth;
+		var w2 = document.documentElement.clientWidth;
+		// this lets us account for scrollbars
+		if(!w || w2 && w2 < w) {
+			w = w2;
+		}
+		return w;
 	}
 
 	if (document.body){
