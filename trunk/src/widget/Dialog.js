@@ -27,6 +27,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	effectDuration: 250,
 
 	bg: null,
+	bgIframe: null,
 	bgColor: "black",
 	bgOpacity: 0.4,
 	followScroll: 1,
@@ -58,22 +59,39 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	postCreate: function(args, frag, parentComp) {
-		dojo.html.body().appendChild(this.domNode);
+		var b = dojo.html.body();
+		b.appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(this.nodeRef) {
 			this.setContent(this.nodeRef);
 		}
+
+		if(dojo.render.html.ie){
+			this.bgIframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
+			with(this.bgIframe.style) {
+				position = "absolute";
+				left = top = "0px";
+				width = dojo.html.getOuterWidth(b) + "px";
+				zIndex = 997;
+				display = "none";
+				// backgroundColor = "transparent";
+				// border = "0px";
+			}
+			b.appendChild(this.bgIframe);
+			dojo.style.setOpacity(this.bgIframe, 0);
+		}
+
 		this.bg = document.createElement("div");
 		this.bg.className = "dialogUnderlay";
 		with(this.bg.style) {
 			position = "absolute";
 			left = top = "0px";
-			width = dojo.html.getOuterWidth(dojo.html.body()) + "px";
+			width = dojo.html.getOuterWidth(b) + "px";
 			zIndex = 998;
 			display = "none";
 		}
 		this.setBackgroundColor(this.bgColor);
-		dojo.html.body().appendChild(this.bg);
+		b.appendChild(this.bg);
 		with(this.domNode.style) {
 			position = "absolute";
 			zIndex = 999;
@@ -113,6 +131,9 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 	sizeBackground: function() {
 		var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
+		if(this.bgIframe){
+			this.bgIframe.style.height = h + "px";
+		}
 		this.bg.style.height = h + "px";
 	},
 
@@ -145,6 +166,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "block";
+				if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 				this.domNode.style.display = "block";
 				var _this = this;
 				dojo.fx.fade(this.domNode, this.effectDuration, 0, 1, function(node) {
@@ -155,6 +177,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				break;
 			default:
 				this.bg.style.display = "block";
+				if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 				this.domNode.style.display = "block";
 				if(dojo.lang.isFunction(this.onShow)) {
 					this.onShow(node);
@@ -176,6 +199,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "none";
+				if(this.bgIframe){ this.bgIframe.style.display = "none"; }
 				var _this = this;
 				dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) {
 					node.style.display = "none";
@@ -186,6 +210,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				break;
 			default:
 				this.bg.style.display = "none";
+				if(this.bgIframe){ this.bgIframe.style.display = "none"; }
 				this.domNode.style.display = "none";
 				if(dojo.lang.isFunction(this.onHide)) {
 					this.onHide(node);
