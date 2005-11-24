@@ -247,13 +247,15 @@ dojo.inherits(dojo.widget.MenuItem2, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.MenuItem2, {
 	widgetType: "MenuItem2",
-	templateString: '<div>'
-			+'<div dojoAttachPoint="iconNode"></div>'
-			+'<span dojoAttachPoint="labelNode"><span><span></span></span></span>'
-			+'<span dojoAttachPoint="accelNode"><span><span></span></span></span>'
-			+'<div dojoAttachPoint="submenuNode"></div>'
-			+'<div dojoAttachPoint="targetNode" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick;">&nbsp;</div>'
+	templateString:
+			 '<div class="dojoMenuItem2">'
+			+'<div dojoAttachPoint="iconNode" class="dojoMenuItem2Icon"></div>'
+			+'<span dojoAttachPoint="labelNode" class="dojoMenuItem2Label"><span><span></span></span></span>'
+			+'<span dojoAttachPoint="accelNode" class="dojoMenuItem2Accel"><span><span></span></span></span>'
+			+'<div dojoAttachPoint="submenuNode" class="dojoMenuItem2Submenu"></div>'
+			+'<div dojoAttachPoint="targetNode" class="dojoMenuItem2Target" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick;">&nbsp;</div>'
 			+'</div>',
+
 	//
 	// nodes
 	//
@@ -287,13 +289,6 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 
 
 	postCreate: function(){
-
-		dojo.html.addClass(this.domNode, 'dojoMenuItem2');
-		dojo.html.addClass(this.labelNode, 'dojoMenuItem2Label');
-		dojo.html.addClass(this.accelNode, 'dojoMenuItem2Accel');
-		dojo.html.addClass(this.iconNode, 'dojoMenuItem2Icon');
-		dojo.html.addClass(this.submenuNode, 'dojoMenuItem2Submenu');
-		dojo.html.addClass(this.targetNode, 'dojoMenuItem2Target');
 
 		dojo.html.disableSelection(this.domNode);
 
@@ -394,8 +389,6 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		}else{
 
 			this.parent.closeAll();
-
-			alert('clicked on '+this.widgetId);
 		}
 	},
 

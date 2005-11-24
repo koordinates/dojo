@@ -610,7 +610,6 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
 	iconSrc: "",
 	svgSrc: "",
 	caption: "",
-	onclickicon: "",
 
 	blankImgPath: dojo.uri.dojoUri("src/widget/templates/images/blank.gif"),
 
@@ -716,10 +715,6 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
 	},
 
 	onClick: function() {
-		if ( this.onclickicon != "" ) {
-			eval(this.onclickicon);
-		}
-		return false;
 	}
 });
 
