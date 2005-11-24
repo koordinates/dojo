@@ -7,7 +7,7 @@ dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
-dojo.fx._makeFadeable = function(node){
+dojo.fx.html._makeFadeable = function(node){
 	if(dojo.render.html.ie){
 		// only set the zoom if the "tickle" value would be the same as the
 		// default
@@ -28,15 +28,15 @@ dojo.fx._makeFadeable = function(node){
 	}
 }
 
-dojo.fx.html.fadeOut = function(node, duration, callback) {
-	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 0, callback);
+dojo.fx.html.fadeOut = function(node, duration, callback, dontPlay) {
+	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 0, callback, dontPlay);
 };
 
-dojo.fx.html.fadeIn = function(node, duration, callback) {
-	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 1, callback);
+dojo.fx.html.fadeIn = function(node, duration, callback, dontPlay) {
+	return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 1, callback, dontPlay);
 };
 
-dojo.fx.html.fadeHide = function(node, duration, callback) {
+dojo.fx.html.fadeHide = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
 	if(!duration) { duration = 150; } // why not have a default?
 	return dojo.fx.html.fadeOut(node, duration, function(node) {
@@ -45,16 +45,16 @@ dojo.fx.html.fadeHide = function(node, duration, callback) {
 	});
 };
 
-dojo.fx.html.fadeShow = function(node, duration, callback) {
+dojo.fx.html.fadeShow = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
 	if(!duration) { duration = 150; } // why not have a default?
 	node.style.display = "block";
-	return dojo.fx.html.fade(node, duration, 0, 1, callback);
+	return dojo.fx.html.fade(node, duration, 0, 1, callback, dontPlay);
 };
 
-dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
+dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback, dontPlay) {
 	node = dojo.byId(node);
-	dojo.fx._makeFadeable(node);
+	dojo.fx.html._makeFadeable(node);
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([startOpac],[endOpac]),
 		duration, 0);
@@ -66,23 +66,39 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback) {
 			callback(node, anim);
 		});
 	}
-	anim.play(true);
+	if(!dontPlay) { anim.play(true); }
 	return anim;
 };
 
-dojo.fx.html.slideTo = function(node, endCoords, duration, callback) {
+dojo.fx.html.slideTo = function(node, duration, endCoords, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = endCoords;
+		endCoords = tmp;
+	}
 	node = dojo.byId(node);
-	return dojo.fx.html.slide(node, [node.offsetLeft, node.offsetTop], endCoords,
-		duration, callback);
+	return dojo.fx.html.slide(node, duration, [node.offsetLeft, node.offsetTop],
+		endCoords, callback, dontPlay);
 };
 
-dojo.fx.html.slideBy = function(node, coords, duration, callback) {
+dojo.fx.html.slideBy = function(node, duration, coords, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = coords;
+		coords = tmp;
+	}
 	node = dojo.byId(node);
-	return dojo.fx.html.slideTo(node, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
-		duration, callback);
+	return dojo.fx.html.slideTo(node, duration, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
+		callback, dontPlay);
 };
 
-dojo.fx.html.slide = function(node, startCoords, endCoords, duration, callback) {
+dojo.fx.html.slide = function(node, duration, startCoords, endCoords, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = endCoords;
+		endCoords = startCoords;
+		startCoords = tmp;
+	}
 	node = dojo.byId(node);
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
@@ -98,12 +114,17 @@ dojo.fx.html.slide = function(node, startCoords, endCoords, duration, callback) 
 			callback(node, anim);
 		});
 	}
-	anim.play(true);
+	if(!dontPlay) { anim.play(true); }
 	return anim;
 };
 
 // Fade from startColor to the node's background color
-dojo.fx.html.colorFadeIn = function(node, startColor, duration, delay, callback) {
+dojo.fx.html.colorFadeIn = function(node, duration, startColor, delay, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = startColor;
+		startColor = tmp;
+	}
 	node = dojo.byId(node);
 	var color = dojo.html.getBackgroundColor(node);
 	var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
@@ -111,7 +132,7 @@ dojo.fx.html.colorFadeIn = function(node, startColor, duration, delay, callback)
 	while(color.length > 3) { color.pop(); }
 
 	var rgb = new dojo.graphics.color.Color(startColor).toRgb();
-	var anim = dojo.fx.html.colorFade(node, startColor, color, duration, callback, true);
+	var anim = dojo.fx.html.colorFade(node, duration, startColor, color, callback, true);
 	dojo.event.connect(anim, "onEnd", function(e) {
 		if( wasTransparent ) {
 			node.style.backgroundColor = "transparent";
@@ -119,9 +140,9 @@ dojo.fx.html.colorFadeIn = function(node, startColor, duration, delay, callback)
 	});
 	if( delay > 0 ) {
 		node.style.backgroundColor = "rgb(" + rgb.join(",") + ")";
-		setTimeout(function(){anim.play(true)}, delay);
+		if(!dontPlay) { setTimeout(function(){anim.play(true)}, delay); }
 	} else {
-		anim.play(true);
+		if(!dontPlay) { anim.play(true); }
 	}
 	return anim;
 };
@@ -130,15 +151,20 @@ dojo.fx.html.highlight = dojo.fx.html.colorFadeIn;
 dojo.fx.html.colorFadeFrom = dojo.fx.html.colorFadeIn;
 
 // Fade from node's background color to endColor
-dojo.fx.html.colorFadeOut = function(node, endColor, duration, delay, callback) {
+dojo.fx.html.colorFadeOut = function(node, duration, endColor, delay, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = endColor;
+		endColor = tmp;
+	}
 	node = dojo.byId(node);
 	var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node)).toRgb();
 
 	var rgb = new dojo.graphics.color.Color(endColor).toRgb();
-	var anim = dojo.fx.html.colorFade(node, color, rgb, duration, callback, delay > 0);
+	var anim = dojo.fx.html.colorFade(node, duration, color, rgb, callback, delay > 0 || dontPlay);
 	if( delay > 0 ) {
 		node.style.backgroundColor = "rgb(" + color.join(",") + ")";
-		setTimeout(function(){anim.play(true)}, delay);
+		if(!dontPlay) { setTimeout(function(){anim.play(true)}, delay); }
 	}
 	return anim;
 };
@@ -147,7 +173,13 @@ dojo.fx.html.unhighlight = dojo.fx.html.colorFadeOut;
 dojo.fx.html.colorFadeTo = dojo.fx.html.colorFadeOut;
 
 // Fade node background from startColor to endColor
-dojo.fx.html.colorFade = function(node, startColor, endColor, duration, callback, dontPlay) {
+dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = endColor;
+		endColor = startColor;
+		startColor = tmp;
+	}
 	node = dojo.byId(node);
 	var startRgb = new dojo.graphics.color.Color(startColor).toRgb();
 	var endRgb = new dojo.graphics.color.Color(endColor).toRgb();
@@ -229,7 +261,7 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	return anim;
 };
 
-dojo.fx.html.explode = function(startNode, endNode, duration, callback) {
+dojo.fx.html.explode = function(startNode, endNode, duration, callback, dontPlay) {
 	startNode = dojo.byId(startNode);
 	var startCoords = [
 		dojo.html.getAbsoluteX(startNode),
@@ -237,11 +269,17 @@ dojo.fx.html.explode = function(startNode, endNode, duration, callback) {
 		dojo.html.getInnerWidth(startNode),
 		dojo.html.getInnerHeight(startNode)
 	];
-	return dojo.fx.html.explodeFromBox(startCoords, endNode, duration, callback);
+	return dojo.fx.html.explodeFromBox(endNode, duration, startCoords, callback, dontPlay);
 };
 
 // startCoords = [x, y, w, h]
-dojo.fx.html.explodeFromBox = function(startCoords, endNode, duration, callback) {
+dojo.fx.html.explodeFromBox = function(endNode, duration, startCoords, callback, dontPlay) {
+	if(dojo.lang.isArray(endNode)) {
+		var tmp = startCoords;
+		startCoords = endNode;
+		endNode = duration;
+		duration = tmp;
+	}
 	endNode = dojo.byId(endNode);
 	var outline = document.createElement("div");
 	with(outline.style) {
@@ -287,11 +325,11 @@ dojo.fx.html.explodeFromBox = function(startCoords, endNode, duration, callback)
 		outline.parentNode.removeChild(outline);
 		if(callback) { callback(endNode, anim); }
 	});
-	anim.play();
+	if(!dontPlay) { anim.play(); }
 	return anim;
 };
 
-dojo.fx.html.implode = function(startNode, endNode, duration, callback) {
+dojo.fx.html.implode = function(startNode, endNode, duration, callback, dontPlay) {
 	endNode = dojo.byId(endNode);
 	var endCoords = [
 		dojo.html.getAbsoluteX(endNode),
@@ -299,10 +337,15 @@ dojo.fx.html.implode = function(startNode, endNode, duration, callback) {
 		dojo.html.getInnerWidth(endNode),
 		dojo.html.getInnerHeight(endNode)
 	];
-	return dojo.fx.html.implodeToBox(startNode, endCoords, duration, callback);
+	return dojo.fx.html.implodeToBox(startNode, duration, endCoords, callback, dontPlay);
 };
 
-dojo.fx.html.implodeToBox = function(startNode, endCoords, duration, callback) {
+dojo.fx.html.implodeToBox = function(startNode, duration, endCoords, callback, dontPlay) {
+	if(dojo.lang.isArray(duration)) {
+		var tmp = duration;
+		duration = endCoords;
+		endCoords = tmp;
+	}
 	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
 	with(outline.style) {
@@ -338,7 +381,7 @@ dojo.fx.html.implodeToBox = function(startNode, endCoords, duration, callback) {
 		outline.parentNode.removeChild(outline);
 		if(callback) { callback(startNode, anim); }
 	});
-	anim.play();
+	if(!dontPlay) { anim.play(); }
 	return anim;
 };
 
