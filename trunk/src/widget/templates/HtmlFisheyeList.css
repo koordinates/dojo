@@ -1,0 +1,23 @@
+.dojoHtmlFisheyeListItemLabel {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #eee;
+	border: 2px solid #666;
+	padding: 2px;
+	text-align: center;
+}
+
+.dojoHtmlFisheyeListItemImage {
+	border: 0px;
+}
+
+.dojoHtmlFisheyeListItemLink {
+}
+
+.dojoHtmlFisheyeListItem {
+	position: absolute;
+	zindex: 2;
+}
+
+.dojoHtmlFisheyeListBar {
+	position: relative;
+}
