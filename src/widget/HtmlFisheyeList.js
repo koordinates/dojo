@@ -4,89 +4,66 @@ dojo.provide("dojo.widget.HtmlFisheyeListItem");
 
 //
 // TODO
+// fix SVG support, and turn it on only if the browser supports it
 // fix really long labels in vertical mode
-// create widget correctly from source
-// allow proper styling of widget
 //
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.HtmlContainer");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.event");
 
-dojo.widget.HtmlFisheyeList = function() {
+dojo.widget.HtmlFisheyeList = function(){
+	dojo.widget.HtmlContainer.call(this);
+}
+dojo.inherits(dojo.widget.HtmlFisheyeList, dojo.widget.HtmlContainer);
 
-	dojo.widget.HtmlWidget.call(this);
+dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 
-	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css");
-	this.blankImgPath = dojo.uri.dojoUri("src/widget/templates/images/blank.gif");
-	this.widgetType = "FisheyeList";
+	templateString: '<div class="dojoHtmlFisheyeListBar"></div>',
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css"),
+	widgetType: "FisheyeList",
 
-	this.EDGE_CENTER = 0;
-	this.EDGE_LEFT   = 1;
-	this.EDGE_RIGHT  = 2;
-	this.EDGE_TOP    = 3;
-	this.EDGE_BOTTOM = 4;
+	EDGE_CENTER: 0,
+	EDGE_LEFT  : 1,
+	EDGE_RIGHT : 2,
+	EDGE_TOP   : 3,
+	EDGE_BOTTOM: 4,
 
-	//this.isContainer = true;
-	//this.containerNode = ...something...;
+	snarfChildDomOutput: true,
 
 	/////////////////////////////////////////////////////////////////
 	//
 	// i spy OPTIONS!!!!
 	//
 
-	this.itemWidth  = 40;
-	this.itemHeight = 40;
+	itemWidth: 40,
+	itemHeight: 40,
 
-	this.itemMaxWidth  = 150;
-	this.itemMaxHeight = 150;
+	itemMaxWidth: 150,
+	itemMaxHeight: 150,
 
-	this.orientation = 'horizontal';
+	orientation: 'horizontal',
 
-	this.effectUnits = 2;
-	this.itemPadding = 10;
+	effectUnits: 2,
+	itemPadding: 10,
 
-	this.attachEdge = 'center';
-	this.labelEdge = 'bottom';
+	attachEdge: 'center',
+	labelEdge: 'bottom',
 
-	this.enableCrappySvgSupport = 0;
+	enableCrappySvgSupport: false,
 
 	//
 	//
 	//
 	/////////////////////////////////////////////////////////////////
 
-	this.buildRendering = function(args, frag) {
-
+	fillInTemplate: function(args, frag) {
 		//dojo.debug(this.orientation);
 
-		var self = this;
-
-		if (this.templateCssPath) {
-			dojo.style.insertCssFile(this.templateCssPath, null, true);
-		}
-
-		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		dojo.html.disableSelection(this.domNode);
-
-		//
-		// hide the children...
-		//
-
-		for(var i=this.domNode.childNodes.length-1; i>=0; i--){
-
-			if (this.domNode.childNodes[i].nodeType == dojo.dom.ELEMENT_NODE){
-
-				this.domNode.childNodes[i].style.display = 'none';
-			}
-
-			if (this.domNode.childNodes[i].nodeType == dojo.dom.TEXT_NODE){
-
-				dojo.dom.removeNode(this.domNode.childNodes[i]);
-			}
-		}		
-
 
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.selectedNode = -1;
@@ -96,7 +73,6 @@ dojo.widget.HtmlFisheyeList = function() {
 		this.hitY1 = -1;
 		this.hitX2 = -1;
 		this.hitY2 = -1;
-
 
 		//
 		// only some edges make sense...
@@ -126,7 +102,6 @@ dojo.widget.HtmlFisheyeList = function() {
 		this.proximityTop    = this.itemHeight * (this.effectUnits - 0.5);
 		this.proximityBottom = this.itemHeight * (this.effectUnits - 0.5);
 
-
 		if (this.anchorEdge == this.EDGE_LEFT){
 			this.proximityLeft = 0;
 		}
@@ -145,72 +120,11 @@ dojo.widget.HtmlFisheyeList = function() {
 			this.proximityTop    /= 2;
 			this.proximityBottom /= 2;
 		}
+	},
+	
+	postCreate: function(args, frag) {
 
-
-		//
-		// find the items
-		//
-
-		this.items = [];
-
-		var c = 0;
-
-		var subs = this.domNode.getElementsByTagName("div");
-		for(var i=0; i<subs.length; i++){
-
-			if (dojo.dom.getTagName(subs[i]) == 'dojo:fisheyelistitem'){
-
-				//
-				// we've found a list item - create it
-				//
-
-				var item = new Object();
-
-				item.index = c++;
-				item.srcDiv = subs[i];
-				item.labelText = null;
-
-
-				//
-				// find the img node
-				//
-
-				item.imgNode = item.srcDiv.getElementsByTagName('img')[0];
-
-				if (item.imgNode){
-
-					//
-					// find a label if one exists
-					//
-
-					item.labelNode = item.srcDiv.getElementsByTagName('label')[0];
-					if (item.labelNode){
-
-						item.labelText = dojo.dom.textContent(item.labelNode);
-					}
-
-					//dojo.debug(item.imgNode.src + " : " + item.labelText);
-
-					this.items[item.index] = item;
-
-					//
-					// set up the filter if required
-					//
-
-					var src = new String(item.imgNode.src);
-					if((src.toLowerCase().substring(src.length-4)==".png")&&(dojo.render.html.ie)){
-						item.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+src+"', sizingMethod='scale')";
-						item.imgNode.src = this.blankImgPath.toString();
-					}
-
-				}else{
-					dojo.debug("can't find an img node inside this dojo:fisheyelisitem");
-				}
-			}
-		}
-
-
-		this.itemCount = this.items.length;
+		this.itemCount = this.children.length;
 
 		this.barWidth  = (this.isHorizontal ? this.itemCount : 1) * this.itemWidth;
 		this.barHeight = (this.isHorizontal ? 1 : this.itemCount) * this.itemHeight;
@@ -218,22 +132,21 @@ dojo.widget.HtmlFisheyeList = function() {
 		this.totalWidth  = this.proximityLeft + this.proximityRight  + this.barWidth;
 		this.totalHeight = this.proximityTop  + this.proximityBottom + this.barHeight;
 
-
 		//
 		// calculate effect ranges for each item
 		//
 
-		for (var i=0; i<this.itemCount; i++){
+		for (var i=0; i<this.children.length; i++){
 
-			this.items[i].posX = this.itemWidth  * (this.isHorizontal ? i : 0);
-			this.items[i].posY = this.itemHeight * (this.isHorizontal ? 0 : i);
+			this.children[i].posX = this.itemWidth  * (this.isHorizontal ? i : 0);
+			this.children[i].posY = this.itemHeight * (this.isHorizontal ? 0 : i);
 
-			this.items[i].cenX = this.items[i].posX + (this.itemWidth  / 2);
-			this.items[i].cenY = this.items[i].posY + (this.itemHeight / 2);
+			this.children[i].cenX = this.children[i].posX + (this.itemWidth  / 2);
+			this.children[i].cenY = this.children[i].posY + (this.itemHeight / 2);
 
 			var isz = this.isHorizontal ? this.itemWidth : this.itemHeight;
 			var r = this.effectUnits * isz;
-			var c = this.isHorizontal ? this.items[i].cenX : this.items[i].cenY;
+			var c = this.isHorizontal ? this.children[i].cenX : this.children[i].cenY;
 			var lhs = this.isHorizontal ? this.proximityLeft : this.proximityTop;
 			var rhs = this.isHorizontal ? this.proximityRight : this.proximityBottom;
 			var siz = this.isHorizontal ? this.barWidth : this.barHeight;
@@ -244,8 +157,8 @@ dojo.widget.HtmlFisheyeList = function() {
 			if (range_lhs > c+lhs){ range_lhs = c+lhs; }
 			if (range_rhs > (siz-c+rhs)){ range_rhs = siz-c+rhs; }
 
-			this.items[i].effectRangeLeft = range_lhs / isz;
-			this.items[i].effectRangeRght = range_rhs / isz;
+			this.children[i].effectRangeLeft = range_lhs / isz;
+			this.children[i].effectRangeRght = range_rhs / isz;
 
 			//dojo.debug('effect range for '+i+' is '+range_lhs+'/'+range_rhs);
 		}
@@ -255,149 +168,39 @@ dojo.widget.HtmlFisheyeList = function() {
 		// create the bar
 		//
 
-		this.domNode.style.position = 'relative';
-		this.domNode.style.left = '0px';
-		this.domNode.style.top = '0px';
 		this.domNode.style.width = this.barWidth + 'px';
 		this.domNode.style.height = this.barHeight + 'px';
 
-		dojo.html.addClass(this.domNode, "dojoHtmlFisheyeListBar");
-
-
 
 		//
-		// create the listitems
+		// position the items
 		//
-
-		for (var i=0; i<this.itemCount; i++){
-
-			var itm = this.items[i];
-
-			var elm = document.createElement('div');
-			elm.style.position = 'absolute';
+		for (var i=0; i<this.children.length; i++){
+			var itm = this.children[i];
+			var elm = itm.domNode;
 			elm.style.left   = itm.posX + 'px';
 			elm.style.top    = itm.posY + 'px';
 			elm.style.width  = this.itemWidth + 'px';
 			elm.style.height = this.itemHeight + 'px';
-			elm.style.zIndex = 2;
-
-			itm.elm = elm;
-
-			this.domNode.appendChild(elm);
-
-
-			//
-			// create the 'a' tags
-			//
-
-			itm.linkNode = document.createElement('a');
-			itm.linkNode.href = "#"+i;
-			itm.linkNode.onclick = (function(){ var src=itm.srcDiv.getAttribute("onclickicon"); return function(){ eval(src); return false; }})();
-			elm.appendChild(itm.linkNode);
-
-			dojo.html.addClass(itm.linkNode, "dojoHtmlFisheyeListItemLink");
-
-
-			//
-			// move the img tag around
-			//
-
-			dojo.dom.removeNode(itm.imgNode);
-			itm.linkNode.appendChild(itm.imgNode);
-
-			itm.imgNode.style.position = 'absolute';
-			itm.imgNode.style.left = this.itemPadding+'%';
-			itm.imgNode.style.top = this.itemPadding+'%';
-			itm.imgNode.style.width = (100 - 2 * this.itemPadding) + '%';
-			itm.imgNode.style.height = (100 - 2 * this.itemPadding) + '%';
-			itm.imgNode.style.border = '0px';
-			itm.imgNode.style.zIndex = 2;
-
-			dojo.html.addClass(itm.imgNode, "dojoHtmlFisheyeListItemImage");
-
-
-			//
-			// create an svg node instead?
-			//
-
-			//dojo.debug();
-
-			if (itm.srcDiv.getAttribute('svgSrc') && (this.enableCrappySvgSupport == '1')){
-
-				itm.svgNode = this.createSvgNode(itm.srcDiv.getAttribute('svgSrc'));
-				itm.linkNode.appendChild(itm.svgNode);
-
-				itm.imgNode.style.display = 'none';
-
-				itm.imgNode = document.createElement('div');
-				itm.imgNode.style.position = 'absolute';
-				itm.imgNode.style.left = this.itemPadding+'%';
-				itm.imgNode.style.top = this.itemPadding+'%';
-				itm.imgNode.style.width = (100 - 2 * this.itemPadding) + '%';
-				itm.imgNode.style.height = (100 - 2 * this.itemPadding) + '%';
-				itm.imgNode.style.border = '0px';
-				itm.imgNode.style.zIndex = 2;
-				itm.linkNode.appendChild(itm.imgNode);
-
+			
+			if ( itm.svgNode ) {
 				itm.svgNode.style.position = 'absolute';
 				itm.svgNode.style.left = this.itemPadding+'%';
 				itm.svgNode.style.top = this.itemPadding+'%';
 				itm.svgNode.style.width = (100 - 2 * this.itemPadding) + '%';
 				itm.svgNode.style.height = (100 - 2 * this.itemPadding) + '%';
 				itm.svgNode.style.zIndex = 1;
-
+	
 				itm.svgNode.setSize(this.itemWidth, this.itemHeight);
-			}
-
-
-			//
-			// create a label
-			//
-
-			if (itm.labelText){
-
-				itm.hasLabel = 1;
-
-				itm.lblNode = document.createElement('div');
-				itm.lblNode.style.position = 'absolute';
-				itm.lblNode.style.left   = '0px';
-				itm.lblNode.style.top    = '0px';
-				itm.lblNode.style.margin = '0';
-				itm.lblNode.appendChild(document.createTextNode(itm.labelText));
-
-				dojo.html.addClass(itm.lblNode, "dojoHtmlFisheyeListItemLabel");
-
-				this.domNode.appendChild(itm.lblNode);
-
-				itm.labelW = dojo.style.getOuterWidth(itm.lblNode);
-				itm.labelH = dojo.style.getOuterHeight(itm.lblNode);
-
-				dojo.style.setOuterWidth(itm.lblNode, itm.labelW);
-				dojo.style.setOuterHeight(itm.lblNode, itm.labelH);
-				
-				this.domNode.removeChild(itm.lblNode);
-
-				itm.lblNode.style.display = 'none';
-
-				elm.appendChild(itm.lblNode);
-
-
-				//
-				// set up label handlers
-				//
-
-				var h1 = (function(){ var o=self; var j=i; return function(){ o.items[j].lblNode.style.display = 'block'; o.positionLabel(j); } })();
-				var h2 = (function(){ var o=self; var j=i; return function(){ o.items[j].lblNode.style.display = 'none'; } })();
-
-				dojo.event.connect(itm.imgNode, "onmouseover", h1);
-				dojo.event.connect(itm.imgNode, "onmouseout",  h2);
-
-			}else{
-				itm.hasLabel = 0;
+			} else {
+				itm.imgNode.style.left = this.itemPadding+'%';
+				itm.imgNode.style.top = this.itemPadding+'%';
+				itm.imgNode.style.width = (100 - 2 * this.itemPadding) + '%';
+				itm.imgNode.style.height = (100 - 2 * this.itemPadding) + '%';
 			}
 			
+			itm.linkNode.href = "#"+i;
 		}
-
 
 		//
 		// calc the grid
@@ -413,41 +216,30 @@ dojo.widget.HtmlFisheyeList = function() {
 		//
 		// connect the event proc
 		//
+		dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+	},
 
-		var mouse_handler = function(e) {
+	mouseHandler: function(e) {
+		var p = this.getCursorPos(e);
 
-			var p = self.getCursorPos(e);
+		if ((p.x >= this.hitX1) && (p.x <= this.hitX2) &&
+			(p.y >= this.hitY1) && (p.y <= this.hitY2)){
 
-			if ((p.x >= self.hitX1) && (p.x <= self.hitX2) &&
-				(p.y >= self.hitY1) && (p.y <= self.hitY2)){
-
-				self.isOver = 1;
-				self.onGridMouseMove(p.x-self.hitX1, p.y-self.hitY1);
-			}else{
-				if (self.isOver){
-					self.isOver = 0;
-					self.onGridMouseMove(-1, -1);
-				}
+			this.isOver = true;
+			this.onGridMouseMove(p.x-this.hitX1, p.y-this.hitY1);
+		}else{
+			if (this.isOver){
+				this.isOver = false;
+				this.onGridMouseMove(-1, -1);
 			}
+		}
+	},
 
-		};
-
-		var kwArgs = {
-			srcObj: document.documentElement,
-			srcFunc: "onmousemove",
-			adviceFunc: mouse_handler,
-			rate: 50
-		};
-
-		//dojo.event.kwConnect(kwArgs);
-		dojo.event.connect(document.documentElement, "onmousemove", mouse_handler);
-	}
-
-	this.onResized = function() {
+	onResized: function() {
 		this.calcHitGrid();
-	}
+	},
 
-	this.onGridMouseMove = function(x, y){
+	onGridMouseMove: function(x, y){
 
 		//
 		// figure out our main index
@@ -512,7 +304,7 @@ dojo.widget.HtmlFisheyeList = function() {
 
 			if (weight < 0){weight = 0;}
 
-			this.setItemSize(i, weight * off_weight);
+			this.setitemsize(i, weight * off_weight);
 		}
 
 		//
@@ -531,128 +323,125 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		}else{
 
-			offset = (cen - main_p) * ((this.isHorizontal ? this.itemWidth : this.itemHeight) - this.items[main_p].sizeMain);
+			offset = (cen - main_p) * ((this.isHorizontal ? this.itemWidth : this.itemHeight) - this.children[main_p].sizeMain);
 		}
 
 		this.positionElementsFrom(main_p, offset);
-	}
+	},
 
-	this.weightAt = function(cen, i){
+	weightAt: function(cen, i){
 
 		var dist = Math.abs(cen - i);
 
-		var limit = ((cen - i) > 0) ? this.items[i].effectRangeRght : this.items[i].effectRangeLeft;
+		var limit = ((cen - i) > 0) ? this.children[i].effectRangeRght : this.children[i].effectRangeLeft;
 
 		return (dist > limit) ? 0 : (1 - dist / limit);
-	}
+	},
 
-	this.positionFromNode = function(p, w){
+	positionFromNode: function(p, w){
 
 		//
 		// we need to grow all the nodes growing out from node 'i'
 		//
 
-		this.setItemSize(p, w);
+		this.setitemsize(p, w);
 
 		var wx = w;
 		for(var i=p; i<this.itemCount; i++){
 			wx = 0.8 * wx;
-			this.setItemSize(i, wx);
+			this.setitemsize(i, wx);
 		}
 
 		var wx = w;
 		for(var i=p; i>=0; i--){
 			wx = 0.8 * wx;
-			this.setItemSize(i, wx);
+			this.setitemsize(i, wx);
 		}
-	}
+	},
 
-
-
-	this.setItemSize = function(p, scale){
+	setitemsize: function(p, scale){
 
 		var w = Math.round(this.itemWidth  + ((this.itemMaxWidth  - this.itemWidth ) * scale));
 		var h = Math.round(this.itemHeight + ((this.itemMaxHeight - this.itemHeight) * scale));
 
 		if (this.isHorizontal){
 
-			this.items[p].sizeW = w;
-			this.items[p].sizeH = h;
+			this.children[p].sizeW = w;
+			this.children[p].sizeH = h;
 
-			this.items[p].sizeMain = w;
-			this.items[p].sizeOff  = h;
+			this.children[p].sizeMain = w;
+			this.children[p].sizeOff  = h;
 
 			var y = 0;
 
 			if (this.anchorEdge == this.EDGE_TOP){
 
-				y = (this.items[p].cenY - (this.itemHeight / 2));
+				y = (this.children[p].cenY - (this.itemHeight / 2));
 
 			}else if (this.anchorEdge == this.EDGE_BOTTOM){
 
-				y = (this.items[p].cenY - (h - (this.itemHeight / 2)));
+				y = (this.children[p].cenY - (h - (this.itemHeight / 2)));
 
 			}else{
 
-				y = (this.items[p].cenY - (h / 2));
+				y = (this.children[p].cenY - (h / 2));
 			}
 
-			this.items[p].usualX = Math.round(this.items[p].cenX - (w / 2));
-			this.items[p].elm.style.top  = y + 'px';
+			this.children[p].usualX = Math.round(this.children[p].cenX - (w / 2));
+			this.children[p].domNode.style.top  = y + 'px';
 
-			this.items[p].elm.style.left  = this.items[p].usualX + 'px';
+			this.children[p].domNode.style.left  = this.children[p].usualX + 'px';
 
 		}else{
 
-			this.items[p].sizeW = w;
-			this.items[p].sizeH = h;
+			this.children[p].sizeW = w;
+			this.children[p].sizeH = h;
 
-			this.items[p].sizeOff  = w;
-			this.items[p].sizeMain = h;
+			this.children[p].sizeOff  = w;
+			this.children[p].sizeMain = h;
 
 			var x = 0;
 
 			if (this.anchorEdge == this.EDGE_LEFT){
 
-				x = this.items[p].cenX - (this.itemWidth / 2);
+				x = this.children[p].cenX - (this.itemWidth / 2);
 
 			}else if (this.anchorEdge == this.EDGE_RIGHT){
 
-				x = this.items[p].cenX - (w - (this.itemWidth / 2));
+				x = this.children[p].cenX - (w - (this.itemWidth / 2));
 			}else{
 
-				x = this.items[p].cenX - (w / 2);
+				x = this.children[p].cenX - (w / 2);
 			}
 
-			this.items[p].elm.style.left = x + 'px';
-			this.items[p].usualY = Math.round(this.items[p].cenY - (h / 2));
+			this.children[p].domNode.style.left = x + 'px';
+			this.children[p].usualY = Math.round(this.children[p].cenY - (h / 2));
 
-			this.items[p].elm.style.top  = this.items[p].usualY + 'px';
+			this.children[p].domNode.style.top  = this.children[p].usualY + 'px';
 		}
 
-		this.items[p].elm.style.width  = w + 'px';
-		this.items[p].elm.style.height = h + 'px';
+		this.children[p].domNode.style.width  = w + 'px';
+		this.children[p].domNode.style.height = h + 'px';
 
-		if (this.items[p].svgNode){
-			this.items[p].svgNode.setSize(w, h);
+		if (this.children[p].svgNode){
+			this.children[p].svgNode.setSize(w, h);
 		}
 
-		//this.setLabelPosition(this.items[p]);
-	}
+		//this.setLabelPosition(this.children[p]);
+	},
 
-
-	this.positionElementsFrom = function(p, offset){
+	positionElementsFrom: function(p, offset){
 
 		var pos = 0;
 
 		if (this.isHorizontal){
-			pos = Math.round(this.items[p].usualX + offset);
-			this.items[p].elm.style.left = pos + 'px';
+			pos = Math.round(this.children[p].usualX + offset);
+			this.children[p].domNode.style.left = pos + 'px';
 		}else{
-			pos = Math.round(this.items[p].usualY + offset);
-			this.items[p].elm.style.top = pos + 'px';
+			pos = Math.round(this.children[p].usualY + offset);
+			this.children[p].domNode.style.top = pos + 'px';
 		}
-		this.positionLabel(p);
+		this.positionLabel(this.children[p]);
 
 
 		//
@@ -663,14 +452,14 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		for(var i=p-1; i>=0; i--){
 
-			bpos -= this.items[i].sizeMain;
+			bpos -= this.children[i].sizeMain;
 
 			if (this.isHorizontal){
-				this.items[i].elm.style.left = bpos + 'px';
+				this.children[i].domNode.style.left = bpos + 'px';
 			}else{
-				this.items[i].elm.style.top = bpos + 'px';
+				this.children[i].domNode.style.top = bpos + 'px';
 			}
-			this.positionLabel(i);
+			this.positionLabel(this.children[i]);
 		}
 
 		//
@@ -681,26 +470,26 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		for(var i=p+1; i<this.itemCount; i++){
 
-			apos += this.items[i-1].sizeMain;
+			apos += this.children[i-1].sizeMain;
 
 			if (this.isHorizontal){
-				this.items[i].elm.style.left = apos + 'px';
+				this.children[i].domNode.style.left = apos + 'px';
 			}else{
-				this.items[i].elm.style.top = apos + 'px';
+				this.children[i].domNode.style.top = apos + 'px';
 			}
-			this.positionLabel(i);
+			this.positionLabel(this.children[i]);
 		}
 
-	}
+	},
 
-	this.positionLabel = function(i){
-		if (!this.items[i].hasLabel){ return; }
-		if (this.items[i].lblNode.style.display == 'none'){ return; }
+	positionLabel: function(itm){
+		if (!itm.caption == ""){ return; }
+		if (itm.lblNode.style.display == 'none'){ return; }
 
-		this.setLabelPosition(this.items[i]);
-	}
+		this.setLabelPosition(itm);
+	},
 
-	this.setLabelPosition = function(itm){
+	setLabelPosition: function(itm){
 
 		if (!itm.hasLabel){ return; }
 
@@ -733,9 +522,9 @@ dojo.widget.HtmlFisheyeList = function() {
 
 		itm.lblNode.style.left = x + 'px';
 		itm.lblNode.style.top  = y + 'px';
-	}
+	},
 
-	this.findPos = function(obj){
+	findPos: function(obj){
 
 		var x = 0;
 		var y = 0;
@@ -751,9 +540,9 @@ dojo.widget.HtmlFisheyeList = function() {
 		}
 
 		return {'x':x, 'y':y};
-	}
+	},
 
-	this.getCursorPos = function(e){
+	getCursorPos: function(e){
 
 		var x = 0;
 		var y = 0;
@@ -781,10 +570,9 @@ dojo.widget.HtmlFisheyeList = function() {
 		}
 
 		return {'x':x, 'y':y};
-	}
+	},
 
-
-	this.calcHitGrid = function(){
+	calcHitGrid: function(){
 
 		var pos = this.findPos(this.domNode);
 
@@ -794,24 +582,80 @@ dojo.widget.HtmlFisheyeList = function() {
 		this.hitY2 = this.hitY1 + this.totalHeight;
 
 		//dojo.debug(this.hitX1+','+this.hitY1+' // '+this.hitX2+','+this.hitY2);
-	}
+	},
 
-	this.toEdge = function(inp, def){
+	toEdge: function(inp, def){
 		var out = def;
 		if (inp == 'left'  ){ out = this.EDGE_LEFT;   }
 		if (inp == 'right' ){ out = this.EDGE_RIGHT;  }
 		if (inp == 'top'   ){ out = this.EDGE_TOP;    }
 		if (inp == 'bottom'){ out = this.EDGE_BOTTOM; }
 		return out;
-	}
+	},
 
-	this.debug = function(text){
-
+	debug: function(text){
 		dojo.dom.replaceChildren(this.debugElm, document.createTextNode(text));
 	}
+});
 
+dojo.widget.HtmlFisheyeListItem = function(){
+	dojo.widget.HtmlWidget.call(this);
+}
+dojo.inherits(dojo.widget.HtmlFisheyeListItem, dojo.widget.HtmlWidget);
 
-	this.createSvgNode = function(src){
+dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
+	widgetType: "FisheyeListItem",
+	
+	// Constructor arguments
+	iconSrc: "",
+	svgSrc: "",
+	caption: "",
+	onclickicon: "",
+
+	blankImgPath: dojo.uri.dojoUri("src/widget/templates/images/blank.gif"),
+
+	templateString:
+		'<div class="dojoHtmlFisheyeListItem">' +
+		'  <a dojoAttachPoint="linkNode" class="dojoHtmlFisheyeListItemLink" dojoAttachEvent="onClick">' +
+		'    <img class="dojoHtmlFisheyeListItemImage" dojoAttachPoint="imgNode" dojoAttachEvent="onMouseOver;onMouseOut">' +
+		'  </a>' +
+		'  <div class="dojoHtmlFisheyeListItemLabel" dojoAttachPoint="lblNode"></div>' +
+		'</div>',
+	
+	imgNode: null,
+	linkNode: null,
+
+	fillInTemplate: function() {
+		//
+		// set image
+		// TODO: turn on/off SVG support based on browser version.
+		// this.parent.enableCrappySvgSupport is not available to this function
+		//
+		if (this.svgSrc != ""){
+			this.svgNode = this.createSvgNode(this.svgSrc);
+			this.linkNode.appendChild(this.svgNode);
+			this.imgNode.style.display = 'none';
+		} else if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4)==".png")&&(dojo.render.html.ie)){
+			this.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='scale')";
+			this.imgNode.src = this.blankImgPath.toString();
+		} else {
+			this.imgNode.src = this.iconSrc;
+		}
+
+		//
+		// Label
+		//
+		if ( this.lblNode ) {
+			this.lblNode.appendChild(document.createTextNode(this.caption));
+			this.labelW = dojo.style.getOuterWidth(this.lblNode);
+			this.labelH = dojo.style.getOuterHeight(this.lblNode);
+			dojo.style.setOuterWidth(this.lblNode, this.labelW);
+			dojo.style.setOuterHeight(this.lblNode, this.labelH);
+			this.lblNode.style.display = 'none';
+		}
+	},
+	
+	createSvgNode: function(src){
 
 		var elm = document.createElement('embed');
 		elm.src = src;
@@ -820,14 +664,14 @@ dojo.widget.HtmlFisheyeList = function() {
 		elm.style.width = '1px';
 		elm.style.height = '1px';
 		elm.loaded = 0;
-		elm.setSizeOnLoad = 0;
+		elm.setSizeOnLoad = false;
 
 		elm.onload = function(){
 			this.svgRoot = this.getSVGDocument().rootElement;
 			this.svgDoc = this.getSVGDocument().documentElement;
 			this.zeroWidth = this.svgRoot.width.baseVal.value;
 			this.zeroHeight = this.svgRoot.height.baseVal.value;
-			this.loaded = 1;
+			this.loaded = true;
 
 			if (this.setSizeOnLoad){
 				this.setSize(this.setWidth, this.setHeight);
@@ -838,7 +682,7 @@ dojo.widget.HtmlFisheyeList = function() {
 			if (!this.loaded){
 				this.setWidth = w;
 				this.setHeight = h;
-				this.setSizeOnLoad = 1;
+				this.setSizeOnLoad = true;
 				return;
 			}
 
@@ -858,10 +702,26 @@ dojo.widget.HtmlFisheyeList = function() {
 		}
 
 		return elm;
+	},
+
+	onMouseOver: function() {
+		if ( this.caption != "" ) {
+			this.lblNode.style.display="block";
+			this.parent.positionLabel(this);
+		}
+	},
+	
+	onMouseOut: function() {
+		this.lblNode.style.display="none";
+	},
+
+	onClick: function() {
+		if ( this.onclickicon != "" ) {
+			eval(this.onclickicon);
+		}
+		return false;
 	}
-
-}
-
-dojo.inherits(dojo.widget.HtmlFisheyeList, dojo.widget.HtmlWidget);
+});
 
 dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
+dojo.widget.tags.addParseTreeHandler("dojo:FisheyeListItem");
