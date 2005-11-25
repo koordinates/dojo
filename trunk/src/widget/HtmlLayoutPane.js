@@ -168,13 +168,9 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	filterAllowed: function(param, values){
-
-		for(i in values){
-			if (this[param] == values[i]){
-				return;
-			}
+		if ( !dojo.lang.inArray(values, this[param]) ) {
+			this[param] = values[0];
 		}
-		this[param] = values[0];
 	},
 
 	layoutChildren: function(){
@@ -199,112 +195,78 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 		this.clientWidth  = dojo.style.getContentWidth(this.domNode);
 		this.clientHeight = dojo.style.getContentHeight(this.domNode);
-		this.clientLeft   = dojo.style.getPixelValue(this.domNode, "padding-left", true);
-		this.clientTop    = dojo.style.getPixelValue(this.domNode, "padding-top", true);
 
-		this.clientRect['left']   = this.clientLeft;
-		this.clientRect['right']  = this.clientLeft + this.clientWidth;
-		this.clientRect['top']    = this.clientTop;
-		this.clientRect['bottom'] = this.clientTop + this.clientHeight;
+		this.clientRect['left']   = dojo.style.getPixelValue(this.domNode, "padding-left", true);
+		this.clientRect['right']  = dojo.style.getPixelValue(this.domNode, "padding-right", true);
+		this.clientRect['top']    = dojo.style.getPixelValue(this.domNode, "padding-top", true);
+		this.clientRect['bottom'] = dojo.style.getPixelValue(this.domNode, "padding-bottom", true);
 
 		// arrange them in order
 
 		if (this.layoutChildPriority == 'top-bottom'){
 
-			this.layoutTop(kids);
-			this.layoutBottom(kids);
-			this.layoutLeft(kids);
-			this.layoutRight(kids);
+			this.layoutFloat(kids, "top");
+			this.layoutFloat(kids, "bottom");
+			this.layoutFloat(kids, "left");
+			this.layoutFloat(kids, "right");
 		}else{
-			this.layoutLeft(kids);
-			this.layoutRight(kids);
-			this.layoutTop(kids);
-			this.layoutBottom(kids);
+			this.layoutFloat(kids, "left");
+			this.layoutFloat(kids, "right");
+			this.layoutFloat(kids, "top");
+			this.layoutFloat(kids, "bottom");
 		}
 		this.layoutClient(kids);
 	},
 
-	layoutTop: function(kids){
+	// Position the left/right/top/bottom aligned elements
+	layoutFloat: function(kids, position){
+		var ary = kids[position];
+		
+		// figure out which two of the left/right/top/bottom properties to set
+		var lr = (position=="right")?"right":"left";
+		var tb = (position=="bottom")?"bottom":"top";
 
-		for(var i=0; i<kids.top.length; i++){
-
-			this.positionChild(kids.top[i], this.clientRect.left, this.clientRect.top);
-
-			dojo.style.setOuterWidth(kids.top[i].domNode, this.clientRect.right - this.clientRect.left);
-			this.clientRect.top += dojo.style.getOuterHeight(kids.top[i].domNode);
+		for(var i=0; i<ary.length; i++){
+			var elm=ary[i];
+			
+			// set two of left/right/top/bottom properties
+			elm.domNode.style[lr]=this.clientRect[lr] + "px";
+			elm.domNode.style[tb]=this.clientRect[tb] + "px";
+			
+			// adjust record of remaining space
+			if ( (position=="top")||(position=="bottom") ) {
+				dojo.style.setOuterWidth(elm.domNode, this.clientWidth);
+				var height = dojo.style.getOuterHeight(elm.domNode);
+				this.clientHeight -= height;
+				this.clientRect[position] += height;
+			} else {
+				dojo.style.setOuterHeight(elm.domNode, this.clientHeight);
+				var width = dojo.style.getOuterWidth(elm.domNode);
+				this.clientWidth -= width;
+				this.clientRect[position] += width;
+			}
 		}
 	},
 
-	layoutBottom: function(kids){
-
-		for(var i=0; i<kids.bottom.length; i++){
-
-			var h = dojo.style.getOuterHeight(kids.bottom[i].domNode);
-
-			this.positionChild(kids.bottom[i], this.clientRect.left, this.clientRect.bottom - h);
-
-			dojo.style.setOuterWidth(kids.bottom[i].domNode, this.clientRect.right - this.clientRect.left);
-			this.clientRect.bottom -= h;
-		}
-	},
-
-	layoutLeft: function(kids){
-
-		for(var i=0; i<kids.left.length; i++){
-
-			this.positionChild(kids.left[i], this.clientRect.left, this.clientRect.top);
-
-			dojo.style.setOuterHeight(kids.left[i].domNode, this.clientRect.bottom - this.clientRect.top);
-			this.clientRect.left += dojo.style.getOuterWidth(kids.left[i].domNode);
-		}
-	},
-
-	layoutRight: function(kids){
-
-		for(var i=0; i<kids.right.length; i++){
-
-			var w = dojo.style.getOuterWidth(kids.right[i].domNode);
-
-			this.positionChild(kids.right[i], this.clientRect.right - w, this.clientRect.top);
-
-			dojo.style.setOuterHeight(kids.right[i].domNode, this.clientRect.bottom - this.clientRect.top);
-			this.clientRect.right -= w;
-		}
-	},
-
+	// Position the center elements
 	layoutClient: function(kids){
 		// Put every child in the same position.  (If there is more than one
 		// child; caller should set all but one to "display: none")
+		// This is used for Tabs
+		// TODO: this seems to be broken on Safari
 		for(var i=0; i<kids.client.length; i++){
+			var elm=kids.client[i];
 
-			this.positionChild(kids.client[i], this.clientRect.left, this.clientRect.top);
-			
-			dojo.style.setOuterWidth(kids.client[i].domNode, this.clientRect.right - this.clientRect.left);		
-			dojo.style.setOuterHeight(kids.client[i].domNode, this.clientRect.bottom - this.clientRect.top);
-
+			elm.domNode.style.left=this.clientRect.left + "px";
+			elm.domNode.style.top=this.clientRect.top + "px";
+			dojo.style.setOuterWidth(elm.domNode, this.clientWidth);		
+			dojo.style.setOuterHeight(elm.domNode, this.clientHeight);
 		}
 
-	},
-
-	positionChild: function(child, x, y){
-
-		if (child.domNode.style.position == 'relative'){
-
-			x -= this.clientLeft;
-			y -= this.clientTop;
-		}
-
-		child.domNode.style.left = x + 'px';
-		child.domNode.style.top = y + 'px';
 	},
 
 	hasLayoutAlign: function(child){
-		if (child.layoutAlign == 'left'){ return 1; }
-		if (child.layoutAlign == 'right'){ return 1; }
-		if (child.layoutAlign == 'top'){ return 1; }
-		if (child.layoutAlign == 'bottom'){ return 1; }
-		if (child.layoutAlign == 'client'){ return 1; }
-		return 0;
+		return dojo.lang.inArray(['left','right','top','bottom','client'], child.layoutAlign);
 	},
 
 	addPane: function(pane){
@@ -335,7 +297,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	resizeSoon: function(){
-		if ( this.style.display != "none" ) {
+		if ( this.domNode.style.display != "none" ) {
 			dojo.lang.setTimeout(this, this.onResized, 0);
 		}
 	},
