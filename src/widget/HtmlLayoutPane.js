@@ -274,7 +274,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 	layoutClient: function(kids){
 		// Put every child in the same position.  (If there is more than one
-		// child; caller should set all but one to "display: none"
+		// child; caller should set all but one to "display: none")
 		for(var i=0; i<kids.client.length; i++){
 
 			this.positionChild(kids.client[i], this.clientRect.left, this.clientRect.top);
@@ -331,22 +331,20 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 	
 	layoutSoon: function(){
-
-		var self = this;
-		var closure = function(){ return function(){ self.layoutChildren(); } }();
-
-		window.setTimeout(closure, 0);
+		dojo.lang.setTimeout(this, this.layoutChildren, 0);
 	},
 
 	resizeSoon: function(){
-
-		var self = this;
-		var closure = function(){ return function(){ self.onResized(); } }();
-
-		window.setTimeout(closure, 0);
+		if ( this.style.display != "none" ) {
+			dojo.lang.setTimeout(this, this.onResized, 0);
+		}
 	},
 
 	onResized: function(){
+		if ( this.domNode.style.display == "none" ) {
+			return;
+		}
+
 		//dojo.debug(this.widgetId + ": resized");
 
 		// set position/size for my children
@@ -371,8 +369,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		// and the contents are external, then download them.
 		this.loadContents();
 
-		// On IE, if this node was created while display=="none" then it
-		// didn't get laid out correctly; fix that here.
+		// If this node was created while display=="none" then it
+		// hasn't been laid out yet
 		if ( this.domNode.style.display=="none" ) {
 			this.domNode.style.display="";
 			this.onResized();
