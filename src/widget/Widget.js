@@ -33,6 +33,10 @@ dojo.lang.extend(dojo.widget.Widget, {
 	widgetId: "",
 	widgetType: "Widget", // used for building generic widgets
 
+	toString: function() {
+		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']';
+	},
+
 	enable: function(){
 		// should be over-ridden
 		this.isEnabled = true;
