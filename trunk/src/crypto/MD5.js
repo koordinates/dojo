@@ -55,7 +55,7 @@ dojo.crypto.MD5 = new function(){
 		a += b;
 		return a;
 	}
-	function II(a, b, c, d, x s, ac){
+	function II(a, b, c, d, x, s, ac){
 		a += I(b, c, d) + x + ac;
 		a = RL(a, s);
 		a += b;
