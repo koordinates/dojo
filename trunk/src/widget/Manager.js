@@ -98,6 +98,10 @@ dojo.widget.manager = new function(){
 		return ret;
 	}
 
+	this.getAllWidgets = function() {
+		return this.widgets.concat();
+	}
+
 	// shortcuts, baby
 	this.byId = this.getWidgetById;
 	this.byType = this.getWidgetsByType;
@@ -220,8 +224,10 @@ dojo.widget.manager = new function(){
 			}
 		}
 	}
-	dojo.addOnLoad(this, 'onResized');							// initial sizing
-	dojo.event.connect(window, 'onresize', this, 'onResized');	// window resize
+	if(typeof window != "undefined") {
+		dojo.addOnLoad(this, 'onResized');							// initial sizing
+		dojo.event.connect(window, 'onresize', this, 'onResized');	// window resize
+	}
 
 	// FIXME: what else?
 }
@@ -235,6 +241,10 @@ dojo.widget.removeWidgetById = function () { return dojo.widget.manager.removeBy
 dojo.widget.getWidgetById = function () { return dojo.widget.manager.getWidgetById.apply(dojo.widget.manager, arguments); }
 dojo.widget.getWidgetsByType = function () { return dojo.widget.manager.getWidgetsByType.apply(dojo.widget.manager, arguments); }
 dojo.widget.getWidgetsByFilter = function () { return dojo.widget.manager.getWidgetsByFilter.apply(dojo.widget.manager, arguments); }
+dojo.widget.byId = function () { return dojo.widget.manager.getWidgetById.apply(dojo.widget.manager, arguments); }
+dojo.widget.byType = function () { return dojo.widget.manager.getWidgetsByType.apply(dojo.widget.manager, arguments); }
+dojo.widget.byFilter = function () { return dojo.widget.manager.getWidgetsByFilter.apply(dojo.widget.manager, arguments); }
+dojo.widget.all = function () { return dojo.widget.manager.getAllWidgets.apply(dojo.widget.manager, arguments); }
 dojo.widget.registerWidgetPackage = function () { return dojo.widget.manager.registerWidgetPackage.apply(dojo.widget.manager, arguments); }
 dojo.widget.getWidgetImplementation = function () { return dojo.widget.manager.getImplementation.apply(dojo.widget.manager, arguments); }
 dojo.widget.getWidgetImplementationName = function () { return dojo.widget.manager.getImplementationName.apply(dojo.widget.manager, arguments); }
