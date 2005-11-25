@@ -2,11 +2,8 @@ dojo.provide("dojo.lang");
 dojo.provide("dojo.lang.Lang");
 
 dojo.lang.mixin = function(obj, props){
-	var tobj = {};
 	for(var x in props){
-		if(typeof tobj[x] == "undefined"){
-			obj[x] = props[x];
-		}
+		obj[x] = props[x];
 	}
 	return obj;
 }
