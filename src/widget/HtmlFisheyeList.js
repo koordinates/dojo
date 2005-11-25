@@ -426,8 +426,6 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 		if (this.children[p].svgNode){
 			this.children[p].svgNode.setSize(w, h);
 		}
-
-		//this.setLabelPosition(this.children[p]);
 	},
 
 	positionElementsFrom: function(p, offset){
@@ -483,41 +481,30 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 	},
 
 	positionLabel: function(itm){
-		if (!itm.caption == ""){ return; }
-		if (itm.lblNode.style.display == 'none'){ return; }
-
-		this.setLabelPosition(itm);
-	},
-
-	setLabelPosition: function(itm){
-
-		if (!itm.hasLabel){ return; }
 
 		var x = 0;
 		var y = 0;
+		var labelW = dojo.style.getOuterWidth(itm.lblNode);
+		var labelH = dojo.style.getOuterHeight(itm.lblNode);
 
 		if (this.labelEdge == this.EDGE_TOP){
-
-			x = Math.round((itm.sizeW / 2) - (itm.labelW / 2));
-			y = -itm.labelH;
+			x = Math.round((itm.sizeW / 2) - (labelW / 2));
+			y = -labelH;
 		}
 
 		if (this.labelEdge == this.EDGE_BOTTOM){
-
-			x = Math.round((itm.sizeW / 2) - (itm.labelW / 2));
+			x = Math.round((itm.sizeW / 2) - (labelW / 2));
 			y = itm.sizeH;
 		}
 
 		if (this.labelEdge == this.EDGE_LEFT){
-
-			x = -itm.labelW;
-			y = Math.round((itm.sizeH / 2) - (itm.labelH / 2));
+			x = -labelW;
+			y = Math.round((itm.sizeH / 2) - (labelH / 2));
 		}
 
 		if (this.labelEdge == this.EDGE_RIGHT){
-
 			x = itm.sizeW;
-			y = Math.round((itm.sizeH / 2) - (itm.labelH / 2));
+			y = Math.round((itm.sizeH / 2) - (labelH / 2));
 		}
 
 		itm.lblNode.style.left = x + 'px';
@@ -646,10 +633,6 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
 		//
 		if ( this.lblNode ) {
 			this.lblNode.appendChild(document.createTextNode(this.caption));
-			this.labelW = dojo.style.getOuterWidth(this.lblNode);
-			this.labelH = dojo.style.getOuterHeight(this.lblNode);
-			dojo.style.setOuterWidth(this.lblNode, this.labelW);
-			dojo.style.setOuterHeight(this.lblNode, this.labelH);
 			this.lblNode.style.display = 'none';
 		}
 	},
