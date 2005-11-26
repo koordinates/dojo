@@ -122,6 +122,8 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 								break;
 				case "fade"    : this.toggleHandler = new dojo.widget.HtmlWidget.FadeToggle(this.toggleDuration);
 								break;
+				case "explode" : this.toggleHandler = new dojo.widget.HtmlWidget.ExplodeToggle(this, this.toggleDuration);
+								break;
 				default        : this.toggleHandler = new dojo.widget.HtmlWidget.DefaultToggle();
 			}
 		}
@@ -176,5 +178,19 @@ dojo.lang.extend(dojo.widget.HtmlWidget.WipeToggle, {
 
 	hide: function(node) {
 		dojo.fx.html.wipeOut(node, this.toggleDuration);
+	}
+});
+
+dojo.widget.HtmlWidget.ExplodeToggle = function(parent, duration) {
+	this.toggleDuration = duration ? duration : 150;
+	this.parent = parent;
+}
+dojo.lang.extend(dojo.widget.HtmlWidget.ExplodeToggle, {
+	show: function(node) {
+		dojo.fx.html.explode(this.parent.explodeSrc, node, this.toggleDuration);
+	},
+
+	hide: function(node) {
+		dojo.fx.html.implode(node, this.parent.explodeSrc, this.toggleDuration);
 	}
 });

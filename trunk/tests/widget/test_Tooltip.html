@@ -1,35 +1,51 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd"> 
-
-<title>Dojo Tooltip Widget Test</title>
-
-<script type="text/javascript">
-	var djConfig = {isDebug: true, debugAtAllCosts: true };
-</script>
-
-<script type="text/javascript" src="../../dojo.js"></script>
-<script type="text/javascript">
-	dojo.require("dojo.widget.Tooltip");
-	dojo.require("dojo.widget.html.Tooltip");
-	dojo.require("dojo.fx.html");
-	dojo.hostenv.writeIncludes();
-</script>
-
-<p>
-	<span id="one">Hover</span>
-	<span dojoType="tooltip" connectId="one">
-		<b>
-			<span style="color: blue;">rich formatting</span>
-			<span style="color: red; font-size: x-large;"><i>!</i></span>
-		</b>
-	</span>
+<html>
+<head>
+	<title>Dojo Tooltip Widget Test</title>
 	
-	<span id="two">for</span>
-	<span dojoType="tooltip" connectId="two" toggle="fade">gratuitous fade in</span>
+	<script type="text/javascript">
+		var djConfig = {isDebug: true, debugAtAllCosts: true };
+	</script>
+	
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.Tooltip");
+		dojo.require("dojo.widget.html.Tooltip");
+		dojo.require("dojo.fx.html");
+		dojo.hostenv.writeIncludes();
+	</script>
+	
+	<style>
+		.tt { border-bottom: 1px dotted black; cursor: pointer; }
+		body .dojoTooltip { color: blue; }
+	</style>
+</head>
 
-	<span id="three">tooltips</span>
-	<span dojoType="tooltip" connectId="three" caption="inline caption"></span>
-</p>
+<body>
+	<p>
+		<span id="one" class="tt">Hover</span>
+		<span dojoType="tooltip" connectId="one">
+			<b>
+				<span style="color: blue;">rich formatting</span>
+				<span style="color: red; font-size: x-large;"><i>!</i></span>
+			</b>
+		</span>
+		
+		<span id="two" class="tt">for</span>
+		<span dojoType="tooltip" connectId="two" toggle="fade">gratuitous fade in &#x263a;</span>
+	
+		<span id="three" class="tt">tooltips</span>
+		<span dojoType="tooltip" connectId="three" caption="inline caption"></span>
+	</p>
+	
+	<button id="four">submit</button>
+	<span dojoType="tooltip" connectId="four" caption="tooltip on button"></span>
+	
+	<img id="five" src="images/question.gif"></img>
+	<span dojoType="tooltip" connectId="five" toggle="explode">
+		more gratuitous special effects &#x263a;
+	</span>
+</body>
+</html>
 
-<button id="four">submit</button>
-<span dojoType="tooltip" connectId="four" caption="tooltip on button"></span>
