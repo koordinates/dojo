@@ -1,7 +1,6 @@
 dojo.provide("dojo.widget.html.Button");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Button");
-dojo.provide("dojo.string");
 
 dojo.widget.html.Button = function(){
 	// mix in the button properties
