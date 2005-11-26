@@ -1,6 +1,6 @@
 dojo.provide("dojo.io.cookie");
 
-dojo.io.cookie.setCookie = function(name, value, days, path) {
+dojo.io.cookie.setCookie = function(name, value, days, path, domain, secure) {
 	var expires = -1;
 	if(typeof days == "number" && days >= 0) {
 		var d = new Date();
@@ -10,8 +10,12 @@ dojo.io.cookie.setCookie = function(name, value, days, path) {
 	value = escape(value);
 	document.cookie = name + "=" + value + ";"
 		+ (expires != -1 ? " expires=" + expires + ";" : "")
-		+ "path=" + (path || "/");
+		+ (path ? "path=" + path : "")
+		+ (domain ? "; domain=" + domain : "")
+		+ (secure ? "; secure" : "");
 }
+
+dojo.io.cookie.set = dojo.io.cookie.setCookie;
 
 dojo.io.cookie.getCookie = function(name) {
 	var idx = document.cookie.indexOf(name+'=');
@@ -24,11 +28,14 @@ dojo.io.cookie.getCookie = function(name) {
 	return value;
 }
 
+dojo.io.cookie.get = dojo.io.cookie.getCookie;
+
 dojo.io.cookie.deleteCookie = function(name) {
 	dojo.io.cookie.setCookie(name, "-", 0);
 }
 
-dojo.io.cookie.setObjectCookie = function(name, obj, days, path, clearCurrent) {
+dojo.io.cookie.setObjectCookie = function(name, obj, days, path, domain, secure, clearCurrent) {
+	if(arguments.length == 5) { clearCurrent = domain; } // for backwards compat
 	var pairs = [], cookie, value = "";
 	if(!clearCurrent) { cookie = dojo.io.cookie.getObjectCookie(name); }
 	if(days >= 0) {
