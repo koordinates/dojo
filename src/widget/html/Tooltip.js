@@ -38,43 +38,50 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	postCreate: function(args, frag){
+		var self = this;
+		this.timerEvent = function () { self.display.apply(self); };
 		dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
+		dojo.event.connect(this.connectNode, "onmousemove", this, "recordMousePosition");
 		dojo.event.connect(this.connectNode, "onmouseout", this, "onMouseOut");
 	},
 	
 	onMouseOver: function(e) {
-		this.hovering = true;
-
-		// record mouse position and monitor changes to it
-		this.mouseX = e.pageX || e.clientX + dojo.html.body().scrollLeft;
-		this.mouseY = e.pageY || e.clientY + dojo.html.body().scrollTop;
-		dojo.event.connect(this.connectNode, "onmousemove", this, "onMouseMove");
-
-		// display after given delay
-		dojo.lang.setTimeout(this, this.display, this.delay);
+		this.timerEventId = setTimeout(this.timerEvent, this.delay);
+		this.recordMousePosition(e);
 	},
 	
-	onMouseMove: function(e) {
+	recordMousePosition: function(e) {
 		this.mouseX = e.pageX || e.clientX + dojo.html.body().scrollLeft;
 		this.mouseY = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	},
 
 	display: function() {
-		if ( this.hovering ){
-			this.domNode.style.top = this.mouseY + 15 + "px";
-			this.domNode.style.left = this.mouseX + 10 + "px";
-			this.show();
-			this.displayed=true;
+		this.domNode.style.top = this.mouseY + 15 + "px";
+		this.domNode.style.left = this.mouseX + 10 + "px";
+
+		if ( this.toggle == "explode" ) {
+			if ( !this.explodeSrc) {
+				this.explodeSrc = document.createElement("span");
+				this.explodeSrc.style.position="absolute";
+				//this.explodeSrc.style.display="none";
+			}
+			this.explodeSrc.style.top=this.mouseY + "px";
+			this.explodeSrc.style.left=this.mouseX + "px";
+			dojo.html.body().appendChild(this.explodeSrc);	
 		}
+			
+		this.show();
+		this.displayed=true;
 	},
 
 	onMouseOut: function() {
-		dojo.event.disconnect(this.connectNode, "onmousemove", this, "onMouseMove");
-		// TODO: how do I cancel the timer?
+		if ( this.timerEventId ) {
+			clearTimeout(this.timerEventId);
+			delete this.timerEventId;
+		}
 		if ( this.displayed ) {
 			this.hide();
 			this.displayed=false;
 		}
-		this.hovering = false;
 	}
 });
