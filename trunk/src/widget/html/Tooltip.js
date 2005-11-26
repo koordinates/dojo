@@ -35,6 +35,16 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 		dojo.html.body().appendChild(this.domNode);
 		this.connectNode = dojo.byId(this.connectId);
+		if(dojo.render.html.ie){
+			this.bgIframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
+			with(this.bgIframe.style){
+				position = "absolute";
+				left = top = "0px";
+				display = "none";
+			}
+			dojo.html.body().appendChild(this.bgIframe);
+			dojo.style.setOpacity(this.bgIframe, 0);
+		}
 	},
 	
 	postCreate: function(args, frag){
@@ -71,6 +81,17 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 			
 		this.show();
+		if(this.bgIframe){
+			with(this.bgIframe.style){
+				display = "block";
+				top = this.domNode.style.top;
+				left = this.domNode.style.left;
+				zIndex = 998;
+				width = dojo.html.getOuterWidth(this.domNode) + "px";
+				height = dojo.html.getOuterHeight(this.domNode) + "px";
+			}
+
+		}
 		this.displayed=true;
 	},
 
@@ -83,5 +104,12 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 			this.hide();
 			this.displayed=false;
 		}
+	},
+	
+	hide: function() {
+		if(this.bgIframe){
+			this.bgIframe.style.display = "none";
+		}
+		dojo.widget.html.Tooltip.superclass.hide.call(this);
 	}
 });
