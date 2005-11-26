@@ -30,7 +30,7 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 	isHorizontal: 0,
 	paneBefore: null,
 	paneAfter: null,
-	isSizing: 0,
+	isSizing: false,
 	dragOffset: null,
 	startPoint: null,
 	lastPoint: null,
@@ -99,6 +99,7 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 			this.domNode.appendChild(this.sizers[i]);
 
 			dojo.html.disableSelection(this.sizers[i]);
+
 		}
 
 		// create the fake dragger
@@ -112,19 +113,6 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		this.domNode.appendChild(this.virtualSizer);
 
 		dojo.html.disableSelection(this.virtualSizer);
-
-
-		//
-		// attach mouse events
-		//
-
-		var self = this;
-		var h1 = (function(){ return function(e){ if (self.isSizing){ self.changeSizing(e); } } })();
-		var h2 = (function(){ return function(e){ if (self.isSizing){ self.endSizing(e); } } })();
-
-		dojo.event.connect(document.documentElement, "onmousemove", h1);
-		dojo.event.connect(document.documentElement, "onmouseup", h2);
-
 
 		//
 		// size the panels once the browser has caught up
@@ -303,7 +291,6 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 	},
 
 	beginSizing: function(e, i){
-
 		var clientX = window.event ? window.event.offsetX : e.layerX;
 		var clientY = window.event ? window.event.offsetY : e.layerY;
 		var screenX = window.event ? window.event.clientX : e.pageX;
@@ -312,9 +299,9 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		this.paneBefore = this.children[i];
 		this.paneAfter = this.children[i+1];
 
-		this.isSizing = 1;
+		this.isSizing = true;
 		this.sizingSplitter = this.sizers[i];
-		this.originPos = this.findPos(this.domNode);
+		this.originPos = dojo.style.getAbsolutePosition(this.domNode, true);
 		this.dragOffset = {'x':clientX, 'y':clientY};
 		this.startPoint  = {'x':screenX, 'y':screenY};
 		this.lastPoint  = {'x':screenX, 'y':screenY};
@@ -325,6 +312,13 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		if (!this.isActiveResize){
 			this.showSizingLine();
 		}
+		
+		//
+		// attach mouse events
+		//
+
+		dojo.event.connect(document.documentElement, "onmousemove", this, "changeSizing");
+		dojo.event.connect(document.documentElement, "onmouseup", this, "endSizing");
 	},
 
 	changeSizing: function(e){
@@ -352,7 +346,10 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 
 		this.updateSize();
 
-		this.isSizing = 0;
+		this.isSizing = false;
+
+		dojo.event.disconnect(document.documentElement, "onmousemove", this, "changeSizing");
+		dojo.event.disconnect(document.documentElement, "onmouseup", this, "endSizing");
 	},
 
 	movePoint: function(){
@@ -452,24 +449,6 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		}
 
 		this.layoutPanels();
-	},
-
-	findPos: function(obj){
-
-		var x = 0;
-		var y = 0;
-		if (obj.offsetParent){
-			while (obj.offsetParent){
-				x += obj.offsetLeft;
-				y += obj.offsetTop;
-				obj = obj.offsetParent;
-			}
-		}else{
-			if (obj.x) x += obj.x;
-			if (obj.y) y += obj.y;
-		}
-
-		return {'x':x, 'y':y};
 	},
 
 	showSizingLine: function(){
