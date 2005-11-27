@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.PopupMenu2");
 dojo.provide("dojo.widget.MenuItem2");
 
 dojo.require("dojo.html");
+dojo.require("dojo.style");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
@@ -127,9 +128,14 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.menuHeight = dojo.style.getOuterHeight(this.domNode);
 	},
 
-	open: function(x, y, parentMenu){
+	open: function(x, y, parentMenu, explodeSrc){
 
 		if (this.isShowing){ this.close(); }
+
+		if ( !parentMenu ) {
+			// record whenever a top level menu is opened
+			dojo.widget.HtmlMenu2Manager.opened(this);
+		}
 
 		var viewport = dojo.html.getViewportSize();
 		var scrolloffset = dojo.html.getScrollOffset();
@@ -159,22 +165,28 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		}
 
 		this.parentMenu = parentMenu;
+		this.explodeSrc = explodeSrc;
 		this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
 
 		this.menuX = x;
 		this.menuY = y;
 
+		// move the menu into position but make it invisible
+		// (because when menus are initially constructed they are visible but off-screen)
 		this.domNode.style.zIndex = 10 + this.menuIndex;
 		this.domNode.style.left = x + 'px';
 		this.domNode.style.top = y + 'px';
-		this.domNode.style.display = 'block';
+		this.domNode.style.display='none';
+		
+		// then use the user defined method to display it
+		this.show();
 
 		this.isShowing = true;
 	},
 
 	close: function(){
 		this.closeSubmenu();
-		this.domNode.style.display = 'none';
+		this.hide();
 		this.isShowing = false;
 		dojo.widget.HtmlMenu2Manager.closed(this);
 	},
@@ -210,7 +222,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		var y = our_y + item_y;
 
 		this.currentSubmenu = submenu;
-		this.currentSubmenu.open(x, y, this);
+		this.currentSubmenu.open(x, y, this, from_item.domNode);
 
 		this.currentSubmenuTrigger = from_item;
 		this.currentSubmenuTrigger.is_open = true;
@@ -218,10 +230,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 	onShow: function(e){
 
-		dojo.widget.HtmlMenu2Manager.opened(this);
-
 		//dojo.debugShallow(e);
-		this.open(e.clientX, e.clientY, null);
+		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
 
 		e.preventDefault();
 	},
