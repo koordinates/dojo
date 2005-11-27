@@ -261,26 +261,28 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	return anim;
 };
 
-dojo.fx.html.explode = function(startNode, endNode, duration, callback, dontPlay) {
-	startNode = dojo.byId(startNode);
-	var startCoords = [
-		dojo.html.getAbsoluteX(startNode),
-		dojo.html.getAbsoluteY(startNode),
-		dojo.html.getInnerWidth(startNode),
-		dojo.html.getInnerHeight(startNode)
-	];
-	return dojo.fx.html.explodeFromBox(endNode, duration, startCoords, callback, dontPlay);
+// in: coordinate array [xy,y,w,h] or dom node
+// return: coordinate array
+dojo.fx.html.toCoordinateArray = function(foo) {
+	if(dojo.lang.isArray(foo)){
+		// foo is already an array (of format [x,y,w,h]), just return it
+		while ( foo.length < 4 ) { foo.push(0); }
+		return foo;
+	} else {
+		// foo is an dom object (or dom object id); return it's coordinates
+		foo = dojo.byId(foo);
+		return [
+			dojo.html.getAbsoluteX(foo),
+			dojo.html.getAbsoluteY(foo),
+			dojo.html.getInnerWidth(foo),
+			dojo.html.getInnerHeight(foo)
+		];	
+	}
 };
 
-// startCoords = [x, y, w, h]
-dojo.fx.html.explodeFromBox = function(endNode, duration, startCoords, callback, dontPlay) {
-	if(dojo.lang.isArray(endNode)) {
-		var tmp = startCoords;
-		startCoords = endNode;
-		endNode = duration;
-		duration = tmp;
-	}
-	endNode = dojo.byId(endNode);
+dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
+	var startCoords = dojo.fx.html.toCoordinateArray(start);
+
 	var outline = document.createElement("div");
 	with(outline.style) {
 		position = "absolute";
@@ -289,16 +291,13 @@ dojo.fx.html.explodeFromBox = function(endNode, duration, startCoords, callback,
 	}
 	dojo.html.body().appendChild(outline);
 
+	endNode = dojo.byId(endNode);
 	with(endNode.style) {
 		visibility = "hidden";
 		display = "block";
 	}
-	var endCoords = [
-		dojo.html.getAbsoluteX(endNode),
-		dojo.html.getAbsoluteY(endNode),
-		dojo.html.getInnerWidth(endNode),
-		dojo.html.getInnerHeight(endNode)
-	];
+	var endCoords = dojo.fx.html.toCoordinateArray(endNode);
+
 	with(endNode.style) {
 		display = "none";
 		visibility = "visible";
@@ -329,23 +328,10 @@ dojo.fx.html.explodeFromBox = function(endNode, duration, startCoords, callback,
 	return anim;
 };
 
-dojo.fx.html.implode = function(startNode, endNode, duration, callback, dontPlay) {
-	endNode = dojo.byId(endNode);
-	var endCoords = [
-		dojo.html.getAbsoluteX(endNode),
-		dojo.html.getAbsoluteY(endNode),
-		dojo.html.getInnerWidth(endNode),
-		dojo.html.getInnerHeight(endNode)
-	];
-	return dojo.fx.html.implodeToBox(startNode, duration, endCoords, callback, dontPlay);
-};
+dojo.fx.html.implode = function(startNode, end, duration, callback, dontPlay) {
+	var startCoords = dojo.fx.html.toCoordinateArray(startNode);
+	var endCoords = dojo.fx.html.toCoordinateArray(end);
 
-dojo.fx.html.implodeToBox = function(startNode, duration, endCoords, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
-		var tmp = duration;
-		duration = endCoords;
-		endCoords = tmp;
-	}
 	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
 	with(outline.style) {
@@ -356,12 +342,7 @@ dojo.fx.html.implodeToBox = function(startNode, duration, endCoords, callback, d
 	dojo.html.body().appendChild(outline);
 
 	var anim = new dojo.animation.Animation(
-		new dojo.math.curves.Line([
-			dojo.html.getAbsoluteX(startNode),
-			dojo.html.getAbsoluteY(startNode),
-			dojo.html.getInnerWidth(startNode),
-			dojo.html.getInnerHeight(startNode)
-		], endCoords),
+		new dojo.math.curves.Line(startCoords, endCoords),
 		duration, 0
 	);
 	dojo.event.connect(anim, "onBegin", function(e) {
