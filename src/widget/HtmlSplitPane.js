@@ -117,9 +117,7 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 		//
 		// size the panels once the browser has caught up
 		//
-
-		var h3 = (function(){ return function(){ self.onResized(); } })();
-		window.setTimeout(h3, 0);
+		this.resizeSoon();
 	},
 
 
