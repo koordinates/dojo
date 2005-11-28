@@ -300,6 +300,10 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 
 		widget.parent = this;
 		widget.addedTo(this);
+		
+		// If this widget was created programatically, then it was erroneously added
+		// to dojo.widget.manager.topWidgets.  Fix that here.
+		delete dojo.widget.manager.topWidgets[widget.widgetId];
 	},
 
 	// FIXME: we really need to normalize how we do things WRT "destroy" vs. "remove"
@@ -338,10 +342,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 
 		// Register myself with my parent, or with the widget manager if
 		// I have no parent
+		// TODO: the code below erroneously adds all programatically generated widgets
+		// to topWidgets (since we don't know who the parent is until after creation finishes)
 		if ( parentComp ) {
 			parentComp.registerChild(this, args.dojoinsertionindex);
 		} else {
-			dojo.widget.manager.topWidgets.push(this);
+			dojo.widget.manager.topWidgets[this.widgetId]=this;
 		}
 
 		// Expand my children widgets

@@ -7,8 +7,8 @@ dojo.widget.manager = new function(){
 	this.widgets = [];
 	this.widgetIds = [];
 	
-	// list of widgets without parents (top level widgets)
-	this.topWidgets = [];
+	// map of widgetId-->widget for widgets without parents (top level widgets)
+	this.topWidgets = {};
 
 	var widgetTypeCtr = {};
 	var renderPrefixCache = [];
@@ -216,8 +216,8 @@ dojo.widget.manager = new function(){
 
 	// Catch window resize events and notify top level widgets
 	this.onResized = function() {
-		for(var i=0; i<this.topWidgets.length; i++) {
-			var child = this.topWidgets[i];
+		for(var id in this.topWidgets) {
+			var child = this.topWidgets[id];
 			//dojo.debug("root resizing child " + child.widgetId);
 			if ( child.onResized ) {
 				child.onResized();
