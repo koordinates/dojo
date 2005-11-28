@@ -77,7 +77,17 @@ dojo.fx.html.slideTo = function(node, duration, endCoords, callback, dontPlay) {
 		endCoords = tmp;
 	}
 	node = dojo.byId(node);
-	return dojo.fx.html.slide(node, duration, [node.offsetLeft, node.offsetTop],
+
+	var top = node.offsetTop;
+	var left = node.offsetLeft;
+	var pos = dojo.style.getComputedStyle(node, 'position');
+
+	if (pos == 'relative' || pos == 'static') {
+		top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
+		left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+	}
+
+	return dojo.fx.html.slide(node, duration, [left, top],
 		endCoords, callback, dontPlay);
 };
 
@@ -88,7 +98,17 @@ dojo.fx.html.slideBy = function(node, duration, coords, callback, dontPlay) {
 		coords = tmp;
 	}
 	node = dojo.byId(node);
-	return dojo.fx.html.slideTo(node, duration, [node.offsetLeft+coords[0], node.offsetTop+coords[1]],
+
+	var top = node.offsetTop;
+	var left = node.offsetLeft;
+	var pos = dojo.style.getComputedStyle(node, 'position');
+
+	if (pos == 'relative' || pos == 'static') {
+		top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
+		left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+	}
+
+	return dojo.fx.html.slideTo(node, duration, [left+coords[0], top+coords[1]],
 		callback, dontPlay);
 };
 
@@ -100,6 +120,11 @@ dojo.fx.html.slide = function(node, duration, startCoords, endCoords, callback, 
 		startCoords = tmp;
 	}
 	node = dojo.byId(node);
+
+	if (dojo.style.getComputedStyle(node, 'position') == 'static') {
+		node.style.position = 'relative';
+	}
+
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
 		duration, 0);
@@ -261,22 +286,23 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	return anim;
 };
 
-// in: coordinate array [xy,y,w,h] or dom node
+// in: coordinate array [x,y,w,h] or dom node
 // return: coordinate array
-dojo.fx.html.toCoordinateArray = function(foo) {
-	if(dojo.lang.isArray(foo)){
-		// foo is already an array (of format [x,y,w,h]), just return it
-		while ( foo.length < 4 ) { foo.push(0); }
-		return foo;
+dojo.fx.html.toCoordinateArray = function(coords) {
+	if(dojo.lang.isArray(coords)){
+		// coords is already an array (of format [x,y,w,h]), just return it
+		while ( coords.length < 4 ) { coords.push(0); }
+		while ( coords.length > 4 ) { coords.pop(); }
+		return coords;
 	} else {
-		// foo is an dom object (or dom object id); return it's coordinates
-		foo = dojo.byId(foo);
+		// coords is an dom object (or dom object id); return it's coordinates
+		coords = dojo.byId(coords);
 		return [
-			dojo.html.getAbsoluteX(foo),
-			dojo.html.getAbsoluteY(foo),
-			dojo.html.getInnerWidth(foo),
-			dojo.html.getInnerHeight(foo)
-		];	
+			dojo.html.getAbsoluteX(coords),
+			dojo.html.getAbsoluteY(coords),
+			dojo.html.getInnerWidth(coords),
+			dojo.html.getInnerHeight(coords)
+		];
 	}
 };
 
