@@ -14,6 +14,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 dojo.require("dojo.widget.HtmlLayoutPane");
+dojo.require("dojo.widget.html.TaskBar");
 
 dojo.widget.HtmlFloatingPane = function(){
 	dojo.widget.HtmlLayoutPane.call(this);
@@ -27,7 +28,9 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	// Constructor arguments
 	hasShadow: false,
 	title: 'Untitled',
+	iconSrc: '',
 	constrainToContainer: false,
+	taskBarId: "taskbar",
 
 	// If this pane's content is external then set the url here	
 	url: "inline",
@@ -104,7 +107,20 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 			}
 		}
 
+		// add myself to the taskbar after the taskbar has been initialized
+		dojo.addOnLoad(this, "taskBarSetup");
+
 		this.resizeSoon();
+	},
+
+	taskBarSetup: function() {
+		var taskbar = dojo.widget.getWidgetById(this.taskBarId);
+		if ( taskbar ) {
+			this.toggle="explode";
+			var tbi = dojo.widget.fromScript("TaskBarItem",
+				{caption: this.title, iconSrc: this.iconSrc, task: this} );
+			taskbar.addChild(tbi);
+		}
 	},
 
 	onResized: function(){
