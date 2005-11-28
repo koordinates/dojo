@@ -115,7 +115,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	// Functions for showing/hiding widget
 	getToggle: function () {
-		// lazyinstantiation of the toggle object
+		// lazy instantiation of the toggle object
 		if ( !this.toggleHandler ) {
 			switch (this.toggle) {
 				case "wipe"    : this.toggleHandler = new dojo.widget.HtmlWidget.WipeToggle(this.toggleDuration);
@@ -128,6 +128,14 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			}
 		}
 		return this.toggleHandler;
+	},
+	isVisible: function(){
+		return ! ( this.domNode.style.display=="none" ||
+			this.domNode.style.visibility=="hidden" );
+	},
+
+	doToggle: function(){
+		this.isVisible() ? this.hide() : this.show();
 	},
 	show: function() {
 		this.getToggle().show(this.domNode);
