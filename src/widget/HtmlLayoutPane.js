@@ -325,19 +325,19 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		dojo.style.setOuterHeight(this.domNode, h);
 		this.onResized();
 	},
-	
+
 	show: function(){
 		// If this is the first time we are displaying this object,
 		// and the contents are external, then download them.
 		this.loadContents();
 
 		// If this node was created while display=="none" then it
-		// hasn't been laid out yet
-		if ( this.domNode.style.display=="none" ) {
-			this.domNode.style.display="";
-			this.onResized();
-			this.domNode.style.display="none";
-		}
+		// hasn't been laid out yet.  Do that now.
+		this.domNode.style.display="";
+		this.onResized();
+		this.domNode.style.display="none";
+		this.domNode.style.visibility="";
+
 		dojo.widget.HtmlLayoutPane.superclass.show.call(this);
 	},
 
