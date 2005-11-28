@@ -45,6 +45,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	bgOpacity: 0.4,
 	followScroll: 1,
 	_fromTrap: false,
+	anim: null,
 
 	trapTabs: function(e){
 		if(e.target == this.tabStart) {
@@ -183,7 +184,8 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 				this.domNode.style.display = "block";
 				var _this = this;
-				dojo.fx.fade(this.domNode, this.effectDuration, 0, 1, function(node) {
+				if(this.anim){ this.anim.stop(); }
+				this.anim = dojo.fx.fade(this.domNode, this.effectDuration, 0, 1, function(node) {
 					if(dojo.lang.isFunction(_this.onShow)) {
 						_this.onShow(node);
 					}
@@ -225,11 +227,13 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				this.bg.style.display = "none";
 				if(this.bgIframe){ this.bgIframe.style.display = "none"; }
 				var _this = this;
-				dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) {
+				if(this.anim){ this.anim.stop(); }
+				this.anim = dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) {
 					node.style.display = "none";
 					if(dojo.lang.isFunction(_this.onHide)) {
 						_this.onHide(node);
 					}
+					_this.anim = null;
 				});
 				break;
 			default:
