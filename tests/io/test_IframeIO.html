@@ -11,6 +11,7 @@
 			dojo.require("dojo.io.IframeIO");
 
 			var ctr = 0;
+			var foo;
 
 			function sendIt(){
 				var bindArgs = {
@@ -20,8 +21,10 @@
 						increment: ctr++,
 						fileFields: "ul1"
 					},
-					load: function(type, data, evt){
-						dojo.debug(data);
+					handler: function(type, data, evt){
+						dojo.debug("Type:", data);
+						dojo.debug("Response:", data);
+						foo = evt; // to get at afterwards
 					}
 				};
 				var request = dojo.io.bind(bindArgs);
