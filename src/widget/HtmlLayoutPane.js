@@ -105,7 +105,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 	_downloadExternalContent: function(url, useCache) {
 		//dojo.debug(this.widgetId + " downloading " + url);
-		var node = this.domNode;
+		var node = this.containerNode || this.domNode;
 		node.innerHTML = "Loading...";
 
 		var extract = this.extractContent;
@@ -190,16 +190,17 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			return;
 		}
 
+		var container = this.containerNode || this.domNode;
 
 		// calc layout space
 
-		this.clientWidth  = dojo.style.getContentWidth(this.domNode);
-		this.clientHeight = dojo.style.getContentHeight(this.domNode);
+		this.clientWidth  = dojo.style.getContentWidth(container);
+		this.clientHeight = dojo.style.getContentHeight(container);
 
-		this.clientRect['left']   = dojo.style.getPixelValue(this.domNode, "padding-left", true);
-		this.clientRect['right']  = dojo.style.getPixelValue(this.domNode, "padding-right", true);
-		this.clientRect['top']    = dojo.style.getPixelValue(this.domNode, "padding-top", true);
-		this.clientRect['bottom'] = dojo.style.getPixelValue(this.domNode, "padding-bottom", true);
+		this.clientRect['left']   = dojo.style.getPixelValue(container, "padding-left", true);
+		this.clientRect['right']  = dojo.style.getPixelValue(container, "padding-right", true);
+		this.clientRect['top']    = dojo.style.getPixelValue(container, "padding-top", true);
+		this.clientRect['bottom'] = dojo.style.getPixelValue(container, "padding-bottom", true);
 
 		// arrange them in order
 
@@ -271,31 +272,23 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 
 	addPane: function(pane){
 
-		this.children.push(pane);
-		this.domNode.appendChild(pane.domNode);
-
 		pane.domNode.style.position = 'absolute';
 		pane.isChild = true;
+
+		this.addChild(pane);
 
 		this.resizeSoon();
 	},
 
 	removePane: function(pane){
 
-		var idx = dojo.lang.find(this.children, pane);
-		if ( idx != -1 ) {
-			this.children.splice(idx, 1);
-		}
-		
+		this.removeChild(pane);
+
 		dojo.dom.removeNode(pane.domNode);
 
 		this.resizeSoon();
 	},
 	
-	layoutSoon: function(){
-		dojo.lang.setTimeout(this, this.layoutChildren, 0);
-	},
-
 	resizeSoon: function(){
 		if ( this.domNode.style.display != "none" ) {
 			dojo.lang.setTimeout(this, this.onResized, 0);
