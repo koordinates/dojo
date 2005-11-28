@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.HtmlDialog");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
-dojo.require("dojo.graphics.*");
+dojo.require("dojo.graphics.color");
 dojo.require("dojo.fx.*");
 dojo.require("dojo.html");
 
@@ -124,7 +124,9 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 	setBackgroundColor: function(color) {
 		if(arguments.length >= 3) {
-			color = dojo.graphics.color.rgb2hex(arguments[0], arguments[1], arguments[2]);
+			color = new dojo.graphics.color.Color(arguments[0], arguments[1], arguments[2]);
+		} else {
+			color = new dojo.graphics.color.Color(color);
 		}
 		this.bg.style.backgroundColor = color;
 		return this.bgColor = color;
