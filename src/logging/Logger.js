@@ -381,10 +381,11 @@ dojo.logging.logQueueHandler = new dojo.logging.MemoryLogHandler(0,50,0,10000);
 dojo.logging.logQueueHandler.emit = function(record){
 	// we should probably abstract this in the future
 	var logStr = String(dojo.log.getLevelName(record.level)+": "+record.time.toLocaleTimeString())+": "+record.message;
-	if(typeof dj_global["print"] == "function"){
-		print(logStr);
-	}else if(dj_global["dojo.debug"]){
-		dojo.debug(logStr);
+	if(dj_global["dojo.debug"]){
+	 dojo.debug(logStr);
+	}
+	else if(typeof dj_global["print"] == "function"){
+	 print(logStr);
 	}
 	this.data.push(record);
 	if(this.numRecords != -1){
