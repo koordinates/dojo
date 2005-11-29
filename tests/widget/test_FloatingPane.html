@@ -8,7 +8,7 @@
 
 	var djConfig = {isDebug: true};
 
-	//djConfig.debugAtAllCosts = true;
+	djConfig.debugAtAllCosts = true;
 
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -43,9 +43,10 @@
 
 
 <div dojoType="FloatingPane"
-	title="Outer window w/shadow"
+	title="Resizable window w/shadow"
 	constrainToContainer="1"
 	hasShadow="true"
+	resizable="true"
 	style="width: 300px; height: 200px; left: 600px;"
 >
 		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />

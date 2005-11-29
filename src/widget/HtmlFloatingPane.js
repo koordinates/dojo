@@ -15,6 +15,7 @@ dojo.require("dojo.style");
 dojo.require("dojo.dom");
 dojo.require("dojo.widget.HtmlLayoutPane");
 dojo.require("dojo.widget.html.TaskBar");
+dojo.require("dojo.widget.HtmlResizeHandle");
 
 dojo.widget.HtmlFloatingPane = function(){
 	dojo.widget.HtmlLayoutPane.call(this);
@@ -30,6 +31,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	title: 'Untitled',
 	iconSrc: '',
 	constrainToContainer: false,
+	resizable: false,
 	taskBarId: "taskbar",
 
 	// If this pane's content is external then set the url here	
@@ -46,21 +48,11 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	posOrigin: null,
 	maxPosition: null,
 
+	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 	isDragging: false,
 
-	fillInTemplate: function(){
-
-		if (this.templateCssPath) {
-			dojo.style.insertCssFile(this.templateCssPath, null, true);
-		}
-
-		dojo.html.addClass(this.domNode, 'dojoFloatingPane');
-
-		var elm = document.createElement('div');
-		dojo.dom.moveChildren(this.domNode, elm, 0);
-		dojo.html.addClass(elm, 'dojoFloatingPaneClient');
-
+	fillInTemplate: function(args, frag){
 		// add a drop shadow
 		if ( this.hasShadow ) {
 			this.shadow = document.createElement('div');
@@ -70,44 +62,31 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 			dojo.html.disableSelection(this.shadow);
 		}
 
-		// this is our client area
-		this.clientPane = this.createPane(elm, {layoutAlign: "client", url: this.url, id: this.widgetId+"_client"});
-		this.clientPane.ownerPane = this;
-
 		// this is our chrome
-		var elm = document.createElement('div');
-		elm.appendChild(document.createTextNode(this.title));
-		dojo.html.addClass(elm, 'dojoFloatingPaneDragbar');
-		this.dragBar = this.createPane(elm, {layoutAlign: 'top', id: this.widgetId+"_chrome"});
-		this.dragBar.ownerPane = this;
+		this.dragBar.appendChild(document.createTextNode(this.title));
+		dojo.html.disableSelection(this.dragBar);
 
-		dojo.html.disableSelection(this.dragBar.domNode);
-		dojo.event.connect(this.dragBar.domNode, 'onmousedown', this, 'onMyDragStart');
-
+		// copy style info from source node to generated node
+		var sourceNodeRef = this.getFragNodeRef(frag);
+		var targetNodeRef = this.domNode;
+		dojo.lang.forEach(
+			["top", "left", "bottom", "right", "width", "height", "display"],
+			function(x) { targetNodeRef.style[x] = sourceNodeRef.style[x]; } );
+		this.containerNode.style["overflow"] = sourceNodeRef.style["overflow"];
 	},
 
 	postCreate: function(args, fragment, parentComp){
 
-		// move our 'children' into the client pane
-		// we already moved the domnodes, but now we need to move the 'children'
-
-		var kids = this.children.concat();
-		this.children = [];
-
-		for(var i=0; i<kids.length; i++){
-			if (kids[i].ownerPane == this){
-				this.children.push(kids[i]);
-			}else{
-				this.clientPane.children.push(kids[i]);
-
-				if (kids[i].widgetType == 'LayoutPane'){
-					kids[i].domNode.style.position = 'absolute';
-				}
-			}
+		// add the resize handle
+		if ( this.resizable ) {
+			var rh = dojo.widget.fromScript("ResizeHandle", {targetElmId: this.widgetId});
+			this.addChild(rh);
 		}
 
 		// add myself to the taskbar after the taskbar has been initialized
 		dojo.addOnLoad(this, "taskBarSetup");
+
+		this.resizeSoon();
 	},
 
 	taskBarSetup: function() {
@@ -121,23 +100,32 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	},
 
 	onResized: function(){
-		if ( this.domNode.style.display == "none" ) { return; }
-		if ( this.shadow ) {
-			var width = dojo.style.getOuterWidth(this.domNode);
-			var height = dojo.style.getOuterHeight(this.domNode);
-			dojo.style.setOuterWidth(this.shadow, width);
-			dojo.style.setOuterHeight(this.shadow, height);
+		if ( !this.isVisible() ) { return; }
+
+		var newHeight = dojo.style.getOuterHeight(this.domNode);
+		var newWidth = dojo.style.getOuterWidth(this.domNode);
+		
+		if ( newWidth != this.outerWidth || newHeight != this.outerHeight ) {
+			this.outerWidth = newWidth;
+			this.outerHeight = newHeight;
+	
+			// split the available height between the dragBar and the content
+			dojo.style.setOuterHeight(this.containerNode,
+				dojo.style.getContentHeight(this.domNode) - dojo.style.getOuterHeight(this.dragBar));
+			var contentWidth = dojo.style.getContentWidth(this.domNode);
+			dojo.style.setOuterWidth(this.dragBar, contentWidth);
+			dojo.style.setOuterWidth(this.containerNode, contentWidth);
+		
+			if ( this.shadow ) {
+				dojo.style.setOuterWidth(this.shadow, newWidth);
+				dojo.style.setOuterHeight(this.shadow, newHeight);
+			}
 		}
+
 		dojo.widget.HtmlFloatingPane.superclass.onResized.call(this);
 	},
 
-	createPane: function(node, args){
-		var pane = dojo.widget.fromScript("LayoutPane", args, node);
-		this.addPane(pane);
-		return pane;
-	},
-
-	onMyDragStart: function(e){
+	onMouseDown: function(e){
 		if (this.isDragging){ return; }
 
 		this.dragOrigin = {'x': e.clientX, 'y': e.clientY};
