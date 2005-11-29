@@ -8,7 +8,6 @@
 }
 
 .dojoFloatingPaneDragbar {
-	position: absolute;
 	z-index: 10;
 	padding: 4px;
 	margin: 2px 2px 0px 2px;
@@ -16,6 +15,7 @@
 	color: CaptionText;
 	font: small-caption;	
 	cursor: default;
+	width: 100%;
 }
 
 .dojoFloatingPaneClient {
@@ -28,6 +28,8 @@
 	padding: 8px;
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 12px;
+	width: 100%;
+	overflow: auto;
 }
 
 .dojoDropShadow {
