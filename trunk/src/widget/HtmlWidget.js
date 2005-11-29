@@ -114,34 +114,38 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	},
 
 	// Functions for showing/hiding widget
-	getToggle: function () {
+	getToggle: function(){
 		// lazy instantiation of the toggle object
-		if ( !this.toggleHandler ) {
-			switch (this.toggle) {
-				case "wipe"    : this.toggleHandler = new dojo.widget.HtmlWidget.WipeToggle(this.toggleDuration);
-								break;
-				case "fade"    : this.toggleHandler = new dojo.widget.HtmlWidget.FadeToggle(this.toggleDuration);
-								break;
-				case "explode" : this.toggleHandler = new dojo.widget.HtmlWidget.ExplodeToggle(this, this.toggleDuration);
-								break;
-				default        : this.toggleHandler = new dojo.widget.HtmlWidget.DefaultToggle();
+		if(!this.toggleHandler){
+			var tn = "DefaultToggle";
+			if(dojo["fx"]){
+				switch(this.toggle){
+					case "wipe"    : tn = "WipeToggle"; break;
+					case "fade"    : tn = "FadeToggle"; break;
+					case "explode" : tn = "ExplodeToggle"; break;
+					default        : tn = "DefaultToggle"; break;
+				}
 			}
+			this.toggleHandler = new dojo.widget.HtmlWidget[tn](this.toggleDuration, this);
 		}
 		return this.toggleHandler;
 	},
-	isVisible: function(){
+
+	isVisible: function(node){
 		// FIXME: this should also look at visibility!
-		return dojo.style.getComputedStyle(this.domNode, "display") != "none";
+		return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";
 	},
 
-	doToggle: function(){
-		this.isVisible() ? this.hide() : this.show();
+	doToggle: function(node){
+		this.isVisible(node) ? this.hide(node) : this.show(node);
 	},
-	show: function() {
-		this.getToggle().show(this.domNode);
+
+	show: function(node){
+		this.getToggle().show(node||this.domNode);
 	},
-	hide: function() {
-		this.getToggle().hide(this.domNode);
+
+	hide: function(node){
+		this.getToggle().hide(node||this.domNode);
 	}
 });
 
@@ -189,7 +193,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget.WipeToggle, {
 	}
 });
 
-dojo.widget.HtmlWidget.ExplodeToggle = function(parent, duration) {
+dojo.widget.HtmlWidget.ExplodeToggle = function(duration, parent){
 	this.toggleDuration = duration ? duration : 150;
 	this.parent = parent;
 }
