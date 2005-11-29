@@ -231,6 +231,7 @@ dojo.inherits(dojo.widget.DomWidget, dojo.widget.Widget);
 dojo.lang.extend(dojo.widget.DomWidget, {
 	templateNode: null,
 	templateString: null,
+	preventClobber: false,
 	domNode: null, // this is our visible representation of the widget!
 	containerNode: null, // holds child elements
 
@@ -376,13 +377,15 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		// DOM widgets construct themselves from a template
 		var ts = dojo.widget.DomWidget.templates[this.widgetType];
 		if(	
-			(this.templatePath)||
-			(this.templateNode)||
-			(
-				(this["templateString"])&&(this.templateString.length) 
-			)||
-			(
-				(typeof ts != "undefined")&&( (ts["string"])||(ts["node"]) )
+			(!this.preventClobber)&&(
+				(this.templatePath)||
+				(this.templateNode)||
+				(
+					(this["templateString"])&&(this.templateString.length) 
+				)||
+				(
+					(typeof ts != "undefined")&&( (ts["string"])||(ts["node"]) )
+				)
 			)
 		){
 			// if it looks like we can build the thing from a template, do it!
