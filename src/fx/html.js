@@ -239,8 +239,8 @@ dojo.fx.html.wipeInToHeight = function(node, duration, height, callback, dontPla
 	node = dojo.byId(node);
 	var savedOverflow = dojo.html.getStyle(node, "overflow");
 	// FIXME: should we be setting display to something other than "" for the table elements?
+	node.style.height = "0px";
 	node.style.display = "none";
-	node.style.height = 0;
 	if(savedOverflow == "visible") {
 		node.style.overflow = "hidden";
 	}
