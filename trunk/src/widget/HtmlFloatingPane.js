@@ -77,10 +77,14 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 
 	postCreate: function(args, fragment, parentComp){
 
-		// add the resize handle
 		if ( this.resizable ) {
+			// add the resize handle
 			var rh = dojo.widget.fromScript("ResizeHandle", {targetElmId: this.widgetId});
 			this.addChild(rh);
+			
+			// put resize handle is on outer div, not content div.  otherwise it appears
+			// to the left of the scrollbar
+			this.domNode.appendChild(rh.domNode);
 		}
 
 		// add myself to the taskbar after the taskbar has been initialized
@@ -168,9 +172,9 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		var y = this.posOrigin.y + (e.clientY - this.dragOrigin.y);
 
 		if (this.constrainToContainer){
-			if (x < 0){ x = 0; }
+			if (x < 0){ x = 0; alert("x<0, constrain"); }
 			if (y < 0){ y = 0; }
-			if (x > this.maxPosition.x){ x = this.maxPosition.x; }
+			if (x > this.maxPosition.x){ x = this.maxPosition.x; alert("x>max, constrain");}
 			if (y > this.maxPosition.y){ y = this.maxPosition.y; }
 		}
 
@@ -184,7 +188,6 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 
 		this.isDragging = false;
 	}
-	
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:FloatingPane");
