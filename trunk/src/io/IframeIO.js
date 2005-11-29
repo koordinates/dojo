@@ -118,7 +118,7 @@ dojo.io.IframeTransport = new function(){
 				dojo.lang.inArray(kwArgs["mimetype"], 
 				[	"text/plain", "text/html", 
 					"application/xml", "text/xml", 
-					"text/javascript"])
+					"text/javascript", "text/json"])
 			)&&(
 				// make sur we really only get used in file upload cases	
 				(kwArgs["formNode"])&&(dojo.io.checkChildrenForFile(kwArgs["formNode"]))
@@ -155,17 +155,20 @@ dojo.io.IframeTransport = new function(){
 			var value;
 			try{
 				var cmt = _this.currentRequest.mimetype;
-				if(cmt == "text/javascript"){
+				if(cmt == "text/javascript" || cmt == "text/json"){
 					// FIXME: not sure what to do here? try to pull some evalulable
 					// text from a textarea or cdata section? 
 					// how should we set up the contract for that?
 					var cd = dojo.io.iframeContentDocument(_this.iframe);
-					value = cd.getElementsByTagName("textarea")[0].value;
+					var js = cd.getElementsByTagName("textarea")[0].value;
+					if(cmt == "text/json") { js = "(" + js + ")"; }
+					value = dj_eval(js);
 				}else if((cmt == "application/xml")||(cmt == "text/xml")){
 					value = dojo.io.iframeContentDocument(_this.iframe);
 				}else{ // text/plain
 					value = ifw.innerHTML;
 				}
+
 				if(typeof _this.currentRequest.load == "function"){
 					_this.currentRequest.load("load", value, _this.currentRequest);
 				}
