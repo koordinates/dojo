@@ -172,9 +172,9 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		var y = this.posOrigin.y + (e.clientY - this.dragOrigin.y);
 
 		if (this.constrainToContainer){
-			if (x < 0){ x = 0; alert("x<0, constrain"); }
+			if (x < 0){ x = 0; }
 			if (y < 0){ y = 0; }
-			if (x > this.maxPosition.x){ x = this.maxPosition.x; alert("x>max, constrain");}
+			if (x > this.maxPosition.x){ x = this.maxPosition.x; }
 			if (y > this.maxPosition.y){ y = this.maxPosition.y; }
 		}
 

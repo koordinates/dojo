@@ -5,6 +5,7 @@
 	border: 1px solid;
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	background-color: ThreeDFace;
+	overflow: hidden;
 }
 
 .dojoFloatingPaneDragbar {
