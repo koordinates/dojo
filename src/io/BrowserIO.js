@@ -169,6 +169,13 @@ dojo.io.XMLHTTPTransport = new function(){
 					ret = dj_eval(http.responseText);
 				}catch(e){
 					dojo.debug(e);
+					ret = null;
+				}
+			}else if(kwArgs.mimetype == "text/json"){
+				try{
+					ret = dj_eval("("+http.responseText+")");
+				}catch(e){
+					dojo.debug(e);
 					ret = false;
 				}
 			}else if((kwArgs.mimetype == "application/xml")||
@@ -410,7 +417,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
 		return hasXmlHttp
-			&& dojo.lang.inArray(kwArgs["mimetype"], ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript"])
+			&& dojo.lang.inArray((kwArgs["mimetype"]||"".toLowerCase()), ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json"])
 			&& dojo.lang.inArray(kwArgs["method"].toLowerCase(), ["post", "get", "head"])
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
