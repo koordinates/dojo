@@ -130,6 +130,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		return this.toggleHandler;
 	},
 	isVisible: function(){
+		// FIXME: this should also look at visibility!
 		return dojo.style.getComputedStyle(this.domNode, "display") != "none";
 	},
 
@@ -147,16 +148,16 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 
 /**** Strategies for displaying/hiding widget *****/
-dojo.widget.HtmlWidget.DefaultToggle = function() { }
+dojo.widget.HtmlWidget.DefaultToggle = function(){ }
 dojo.lang.extend(dojo.widget.HtmlWidget.DefaultToggle, {
-	show: function(node) {
-		if (node.style) {
-			node.style.display = "block";
+	show: function(node){
+		if(node.style){
+			node.style.display = dojo.lang.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
 		}
 	},
 
-	hide: function(node) {
-		if (node.style) {
+	hide: function(node){
+		if(node.style){
 			node.style.display = "none";
 		}
 	}
@@ -166,11 +167,11 @@ dojo.widget.HtmlWidget.FadeToggle = function(duration) {
 	this.toggleDuration = duration ? duration : 150;
 }
 dojo.lang.extend(dojo.widget.HtmlWidget.FadeToggle, {
-	show: function(node) {
+	show: function(node){
 		dojo.fx.html.fadeShow(node, this.toggleDuration);
 	},
 
-	hide: function(node) {
+	hide: function(node){
 		dojo.fx.html.fadeHide(node, this.toggleDuration);
 	}
 });
@@ -179,11 +180,11 @@ dojo.widget.HtmlWidget.WipeToggle = function(duration) {
 	this.toggleDuration = duration ? duration : 150;
 }
 dojo.lang.extend(dojo.widget.HtmlWidget.WipeToggle, {
-	show: function(node) {
+	show: function(node){
 		dojo.fx.html.wipeIn(node, this.toggleDuration);
 	},
 
-	hide: function(node) {
+	hide: function(node){
 		dojo.fx.html.wipeOut(node, this.toggleDuration);
 	}
 });
@@ -193,11 +194,11 @@ dojo.widget.HtmlWidget.ExplodeToggle = function(parent, duration) {
 	this.parent = parent;
 }
 dojo.lang.extend(dojo.widget.HtmlWidget.ExplodeToggle, {
-	show: function(node) {
+	show: function(node){
 		dojo.fx.html.explode(this.parent.explodeSrc, node, this.toggleDuration);
 	},
 
-	hide: function(node) {
+	hide: function(node){
 		dojo.fx.html.implode(node, this.parent.explodeSrc, this.toggleDuration);
 	}
 });
