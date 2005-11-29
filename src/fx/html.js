@@ -71,7 +71,7 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback, dontP
 };
 
 dojo.fx.html.slideTo = function(node, duration, endCoords, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
+	if(!dojo.lang.isNumber(duration)) {
 		var tmp = duration;
 		duration = endCoords;
 		endCoords = tmp;
@@ -92,7 +92,7 @@ dojo.fx.html.slideTo = function(node, duration, endCoords, callback, dontPlay) {
 };
 
 dojo.fx.html.slideBy = function(node, duration, coords, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
+	if(!dojo.lang.isNumber(duration)) {
 		var tmp = duration;
 		duration = coords;
 		coords = tmp;
@@ -113,7 +113,7 @@ dojo.fx.html.slideBy = function(node, duration, coords, callback, dontPlay) {
 };
 
 dojo.fx.html.slide = function(node, duration, startCoords, endCoords, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
+	if(!dojo.lang.isNumber(duration)) {
 		var tmp = duration;
 		duration = endCoords;
 		endCoords = startCoords;
@@ -145,7 +145,7 @@ dojo.fx.html.slide = function(node, duration, startCoords, endCoords, callback, 
 
 // Fade from startColor to the node's background color
 dojo.fx.html.colorFadeIn = function(node, duration, startColor, delay, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
+	if(!dojo.lang.isNumber(duration)) {
 		var tmp = duration;
 		duration = startColor;
 		startColor = tmp;
@@ -177,7 +177,7 @@ dojo.fx.html.colorFadeFrom = dojo.fx.html.colorFadeIn;
 
 // Fade from node's background color to endColor
 dojo.fx.html.colorFadeOut = function(node, duration, endColor, delay, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
+	if(!dojo.lang.isNumber(duration)) {
 		var tmp = duration;
 		duration = endColor;
 		endColor = tmp;
@@ -199,7 +199,7 @@ dojo.fx.html.colorFadeTo = dojo.fx.html.colorFadeOut;
 
 // Fade node background from startColor to endColor
 dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback, dontPlay) {
-	if(dojo.lang.isArray(duration)) {
+	if(!dojo.lang.isNumber(duration)) {
 		var tmp = duration;
 		duration = endColor;
 		endColor = startColor;
