@@ -2,13 +2,13 @@ dojo.provide("dojo.io.IframeIO");
 dojo.require("dojo.io.BrowserIO");
 dojo.require("dojo.uri.*");
 
-dojo.io.createIFrame = function(fname){
+dojo.io.createIFrame = function(fname, onloadstr){
 	if(window[fname]){ return window[fname]; }
 	if(window.frames[fname]){ return window.frames[fname]; }
 	var r = dojo.render.html;
 	var cframe = null;
 	var turi = dojo.uri.dojoUri("iframe_history.html?noInit=true");
-	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? "<iframe name='"+fname+"' src='"+turi+"' >" : "iframe";
+	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? "<iframe name='"+fname+"' src='"+turi+"' onload='"+onloadstr+"'>" : "iframe";
 	cframe = document.createElement(ifrstr);
 	with(cframe){
 		name = fname;
@@ -34,6 +34,7 @@ dojo.io.createIFrame = function(fname){
 
 	if(!r.ie){
 		dojo.io.setIFrameSrc(cframe, turi, true);
+		cframe.onload = new Function(onloadstr);
 	}
 	return cframe;
 }
@@ -80,6 +81,7 @@ dojo.io.IframeTransport = new function(){
 						var tn;
 						if(dojo.render.html.ie){
 							tn = document.createElement("<input type='hidden' name='"+x+"' value='"+cr.content[x]+"'>");
+							fn.appendChild(tn);
 						}else{
 							tn = document.createElement("input");
 							fn.appendChild(tn);
@@ -139,49 +141,49 @@ dojo.io.IframeTransport = new function(){
 
 	this.setUpIframe = function(){
 
-		this.iframe = dojo.io.createIFrame(this.iframeName);
 		// NOTE: IE 5.0 and earlier Mozilla's don't support an onload event for
 		//       iframes. OTOH, we don't care.
-		this.iframe.onload = function doLoad(){
-			if(!_this.currentRequest){
-				_this.fireNextRequest();
-				return;
-			}
-			var ifr = _this.iframe;
-			var ifw = dojo.io.iframeContentWindow(ifr);
-			// handle successful returns
-			// FIXME: how do we determine success for iframes? Is there an equiv of
-			// the "status" property?
-			var value;
-			try{
-				var cmt = _this.currentRequest.mimetype;
-				if(cmt == "text/javascript" || cmt == "text/json"){
-					// FIXME: not sure what to do here? try to pull some evalulable
-					// text from a textarea or cdata section? 
-					// how should we set up the contract for that?
-					var cd = dojo.io.iframeContentDocument(_this.iframe);
-					var js = cd.getElementsByTagName("textarea")[0].value;
-					if(cmt == "text/json") { js = "(" + js + ")"; }
-					value = dj_eval(js);
-				}else if((cmt == "application/xml")||(cmt == "text/xml")){
-					value = dojo.io.iframeContentDocument(_this.iframe);
-				}else{ // text/plain
-					value = ifw.innerHTML;
-				}
+		this.iframe = dojo.io.createIFrame(this.iframeName, "dojo.io.IframeTransport.iframeOnload();");
+	}
 
-				if(typeof _this.currentRequest.load == "function"){
-					_this.currentRequest.load("load", value, _this.currentRequest);
-				}
-			}catch(e){ 
-				// looks like we didn't get what we wanted!
-				var errObj = new dojo.io.Error("IframeTransport Error");
-				if(typeof _this.currentRequest["error"] == "function"){
-					_this.currentRequest.error("error", errObj, _this.currentRequest);
-				}
-			}
-			_this.currentRequest = null;
+	this.iframeOnload = function(){
+		if(!_this.currentRequest){
 			_this.fireNextRequest();
+			return;
 		}
+		var ifr = _this.iframe;
+		var ifw = dojo.io.iframeContentWindow(ifr);
+		// handle successful returns
+		// FIXME: how do we determine success for iframes? Is there an equiv of
+		// the "status" property?
+		var value;
+		try{
+			var cmt = _this.currentRequest.mimetype;
+			if((cmt == "text/javascript")||(cmt == "text/json")){
+				// FIXME: not sure what to do here? try to pull some evalulable
+				// text from a textarea or cdata section? 
+				// how should we set up the contract for that?
+				var cd = dojo.io.iframeContentDocument(_this.iframe);
+				var js = cd.getElementsByTagName("textarea")[0].value;
+				if(cmt == "text/json") { js = "(" + js + ")"; }
+				value = dj_eval(js);
+			}else if((cmt == "application/xml")||(cmt == "text/xml")){
+				value = dojo.io.iframeContentDocument(_this.iframe);
+			}else{ // text/plain
+				value = ifw.innerHTML;
+			}
+			if(typeof _this.currentRequest.load == "function"){
+				_this.currentRequest.load("load", value, _this.currentRequest);
+			}
+		}catch(e){ 
+			// looks like we didn't get what we wanted!
+			var errObj = new dojo.io.Error("IframeTransport Error");
+			if(typeof _this.currentRequest["error"] == "function"){
+				_this.currentRequest.error("error", errObj, _this.currentRequest);
+			}
+		}
+		_this.currentRequest = null;
+		_this.fireNextRequest();
 	}
 
 	dojo.io.transports.addTransport("IframeTransport");
