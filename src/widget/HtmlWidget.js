@@ -130,8 +130,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		return this.toggleHandler;
 	},
 	isVisible: function(){
-		return ! ( this.domNode.style.display=="none" ||
-			this.domNode.style.visibility=="hidden" );
+		return dojo.style.getComputedStyle(this.domNode, "display") != "none";
 	},
 
 	doToggle: function(){

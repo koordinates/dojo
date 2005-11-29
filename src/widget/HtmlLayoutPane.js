@@ -76,7 +76,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		if ( this.handler != "none" ){
 			this.setHandler(this.handler);
 		}
-		if ( this.domNode.style.display != "none" ){
+		if ( this.isVisible() ){
 			this.loadContents();
 		}
 	},
@@ -98,7 +98,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	setUrl: function(url) {
 		this.url = url;
 		this.isLoaded = false;
-		if ( this.domNode.style.display != "none" ){
+		if ( this.isVisible() ){
 			this.loadContents();
 		}
 	},
@@ -290,13 +290,13 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 	
 	resizeSoon: function(){
-		if ( this.domNode.style.display != "none" ) {
+		if ( this.isVisible() ) {
 			dojo.lang.setTimeout(this, this.onResized, 0);
 		}
 	},
 
 	onResized: function(){
-		if ( this.domNode.style.display == "none" ) {
+		if ( !this.isVisible() ) {
 			return;
 		}
 
