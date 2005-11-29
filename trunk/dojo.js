@@ -24,11 +24,13 @@
 		// attempt to figure out the path to dojo if it isn't set in the config
 		if((this["document"])&&(this["document"]["getElementsByTagName"])){
 			var scripts = document.getElementsByTagName("script");
-			var rePkg = /(__package__|dojo)\.js$/i;
+			var rePkg = /(__package__|dojo)\.js(\?|$)/i;
 			for(var i = 0; i < scripts.length; i++) {
 				var src = scripts[i].getAttribute("src");
-				if( rePkg.test(src) ) {
-					root = src.replace(rePkg, "");
+				if(!src) { continue; }
+				var m = src.match(rePkg);
+				if(m) {
+					root = src.substring(0, m.index);
 					if(!this["djConfig"]) { djConfig = {}; }
 					djConfig["baseScriptUri"] = djConfig["baseRelativePath"] = root;
 					break;
