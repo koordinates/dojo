@@ -55,6 +55,7 @@ dojo.dom.isNode = dojo.lang.isDomNode = function(wh){
 		return !isNaN(wh.nodeType);
 	}
 }
+dojo.lang.whatAmI.custom["node"] = dojo.dom.isNode;
 
 dojo.dom.getTagName = function(node){
 	var tagName = node.tagName;
