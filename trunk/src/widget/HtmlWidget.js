@@ -121,13 +121,20 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		}catch(e){ /* squelch! */ }
 	},
 
+	// Displaying/hiding the widget
+
 	isVisible: function(){
 		return dojo.html.isVisible(this.domNode);
 	},
-
 	doToggle: function(){
 		this.isVisible() ? this.hide() : this.show();
-	}
+	},
+	show: function(){
+		this.showMe();
+	},
+	hide: function(){
+		this.hideMe();
+	}		
 });
 
 
@@ -138,41 +145,41 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 dojo.widget.HtmlWidget.Toggle={}
 
 dojo.widget.HtmlWidget.Toggle.Plain = {
-	show: function(){
+	showMe: function(){
 		dojo.html.show(this.domNode);
 	},
 
-	hide: function(){
+	hideMe: function(){
 		dojo.html.hide(this.domNode);
 	}
 }
 
 dojo.widget.HtmlWidget.Toggle.Fade = {
-	show: function(){
+	showMe: function(){
 		dojo.fx.html.fadeShow(this.domNode, this.toggleDuration);
 	},
 
-	hide: function(){
+	hideMe: function(){
 		dojo.fx.html.fadeHide(this.domNode, this.toggleDuration);
 	}
 }
 
 dojo.widget.HtmlWidget.Toggle.Wipe = {
-	show: function(){
+	showMe: function(){
 		dojo.fx.html.wipeIn(this.domNode, this.toggleDuration);
 	},
 
-	hide: function(){
+	hideMe: function(){
 		dojo.fx.html.wipeOut(this.domNode, this.toggleDuration);
 	}
 }
 
 dojo.widget.HtmlWidget.Toggle.Explode = {
-	show: function(){
+	showMe: function(){
 		dojo.fx.html.explode(this.explodeSrc, this.domNode, this.toggleDuration);
 	},
 
-	hide: function(){
+	hideMe: function(){
 		dojo.fx.html.implode(this.domNode, this.explodeSrc, this.toggleDuration);
 	}
 }
