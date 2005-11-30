@@ -43,10 +43,11 @@ The above goals have given rise to the following policies:
 - Commit privileges are only extended when CLAs have been submitted.
 - All Dojo Foundation projects must release their code under the terms of the
   `Academic Free License`_ v2.1
-- Projects may negotiate to release their code under other (parallel) terms so
-  long as they are compatible with the Foundation's licensing goals (as stated
-  above) and with the OSI's `Open Source Definition`_ . Such dual-licensing
-  agreements must be approved by the Foundation's Board of Directors.
+- Foundation projects may negotiate to release their code under other
+  (parallel) terms so long as they are compatible with the Foundation's
+  licensing goals (as stated above) and with the OSI's `Open Source
+  Definition`_ . Such dual-licensing agreements must be approved by the
+  Foundation's Board of Directors.
 
 .. _`Academic Free License`: http://opensource.org/licenses/afl-2.1.php
 .. _`Open Source Definition`: http://opensource.org/docs/definition.php
