@@ -601,3 +601,21 @@ dojo.html.getAncestorsByTag = function(node, tag, returnFirstHit) {
 dojo.html.getFirstAncestorByTag = function(node, tag) {
 	return dojo.html.getAncestorsByTag(node, tag, true);
 }
+
+dojo.html.isVisible = function(node){
+	// FIXME: this should also look at visibility!
+	return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";
+}
+
+dojo.html.show  = function(node){
+	if(node.style){
+		node.style.display = dojo.lang.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
+	}
+}
+
+dojo.html.hide = function(node){
+	if(node.style){
+		node.style.display = "none";
+	}
+}
+

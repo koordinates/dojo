@@ -60,6 +60,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	create: function(args, fragment, parentComp){
 		this.satisfyPropertySets(args, fragment, parentComp);
 		this.mixInProperties(args, fragment, parentComp);
+		this.postMixInProperties(args, fragment, parentComp);
 		dojo.widget.manager.add(this);
 		this.buildRendering(args, fragment, parentComp);
 		this.initialize(args, fragment, parentComp);
@@ -257,6 +258,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 			}
 		}
 		// dojo.profile.end("mixInProperties");
+	},
+	
+	postMixInProperties: function(){
 	},
 
 	initialize: function(args, frag){
