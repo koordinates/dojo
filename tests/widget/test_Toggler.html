@@ -25,12 +25,13 @@
 
 <div style="border: solid gray;">
 Click each of these targets (repeatedly) to test toggling:
-	<div dojoType="Toggler" targetId="pane1" style="float: left; text-decoration: underline;">
+	<div dojoType="Toggler" targetId="explode" style="float: left; text-decoration: underline;">
 		explode
 	</div>
-	<img dojoType="Toggler" targetId="pane3" style="float: right" src="images/fisheye_3.png" width=20 height=20>
+	<img dojoType="Toggler" targetId="wipe" style="float: right" src="images/fisheye_3.png" width=20 height=20>
 	<div align=center>
-		<button dojoType="Toggler" targetId="pane2">fade</button>
+		<button dojoType="Toggler" targetId="fade">fade</button>
+		<span dojoType="Toggler" targetId="plain">plain</span>
 	</div>
 </div>
 
@@ -40,7 +41,7 @@ Click each of these targets (repeatedly) to test toggling:
 <p>Sed congue. Aenean blandit sollicitudin mi. Maecenas pellentesque. Vivamus ac urna. Nunc consequat nisi vitae quam. Suspendisse sed nunc. Proin suscipit porta magna. Duis accumsan nunc in velit. Nam et nibh. Nulla facilisi. Cras venenatis urna et magna. Aenean magna mauris, bibendum sit amet, semper quis, aliquet nec, sapien. Aliquam aliquam odio quis erat. Etiam est nisi, condimentum non, lacinia ac, vehicula laoreet, elit. Sed interdum augue sit amet quam dapibus semper. Nulla facilisi. Pellentesque lobortis erat nec quam.</p>
 
 <div dojoType="FloatingPane"
-	id="pane1"
+	id="explode"
 	title="window #1"
 	constrainToContainer="true"
 	style="width: 300px; height: 200px; left: 200px; display:none;"
@@ -52,7 +53,7 @@ Click each of these targets (repeatedly) to test toggling:
 
 
 <div dojoType="FloatingPane"
-	id="pane2"
+	id="fade"
 	title="window #2 w/shadow"
 	constrainToContainer="true"
 	hasShadow="true"
@@ -64,12 +65,22 @@ Click each of these targets (repeatedly) to test toggling:
 </div>
 
 <div dojoType="FloatingPane"
-	id="pane3"
+	id="wipe"
 	title="window #3 w/shadow"
 	constrainToContainer="true"
 	hasShadow="true"
 	style="width: 300px; height: 200px; left: 600px; display:none"
 	toggle="wipe"
+>
+		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
+		(to check we're copying children around properly).<br />
+</div>
+
+<div dojoType="FloatingPane"
+	id="plain"
+	title="plain"
+	constrainToContainer="true"
+	style="width: 100px; height: 100px; left: 400px; display:none"
 >
 		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
 		(to check we're copying children around properly).<br />
