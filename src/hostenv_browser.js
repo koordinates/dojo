@@ -271,14 +271,24 @@ dj_addNodeEvtHdlr(window, "load", function(){
 });
 
 dojo.hostenv.makeWidgets = function(){
-	if((djConfig.parseWidgets)||(djConfig.searchIds.length > 0)){
+	// you can put searchIds in djConfig and dojo.hostenv at the moment
+	// we should probably eventually move to one or the other
+	var sids = [];
+	if(djConfig.searchIds && djConfig.searchIds.length > 0) {
+		sids = sids.concat(djConfig.searchIds);
+	}
+	if(dojo.hostenv.searchIds && dojo.hostenv.searchIds.length > 0) {
+		sids = sids.concat(dojo.hostenv.searchIds);
+	}
+	dojo.debug("sids:", sids);
+
+	if((djConfig.parseWidgets)||(sids.length > 0)){
 		if(dojo.evalObjPath("dojo.widget.Parse")){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
 			// IE is such a tremendous peice of shit.
 			try{
 				var parser = new dojo.xml.Parse();
-				var sids = djConfig.searchIds;
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
 						var tmpNode = document.getElementById(sids[x]);
