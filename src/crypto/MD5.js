@@ -54,17 +54,9 @@ dojo.crypto.MD5 = new function(){
 		a = add(a,add(add(H(b, c, d),x),ac));
 		return add(RL(a,s),b);
 	}
-<<<<<<< .mine
 	function II(a, b, c, d, x, s, ac){
 		a = add(a,add(add(I(b, c, d),x),ac));
 		return add(RL(a,s),b);
-=======
-	function II(a, b, c, d, x, s, ac){
-		a += I(b, c, d) + x + ac;
-		a = RL(a, s);
-		a += b;
-		return a;
->>>>>>> .r2288
 	}
 
 	this.compute = function(data, bDoNotEncode){
