@@ -104,12 +104,9 @@ dojo.lang.isArray = function(wh) {
 }
 
 dojo.lang.isArrayLike = function(wh) {
-	var typ = (typeof wh);
-	if(typ == "string"){ return false; }
+	if(dojo.lang.isString(wh)){ return false; }
 	if(dojo.lang.isArray(wh)){ return true; }
-	if((typ == "object")&&(typeof(wh["item"]) == "function")){ return true; }
-	if(typeof(wh["length"]) == "function"){ return true; }
-	if(dojo.lang.isFunction(wh.callee)) { return true; }
+	if(dojo.lang.isNumber(wh.length) && isFinite(wh)){ return true; }
 	return false;
 }
 
@@ -176,10 +173,21 @@ dojo.lang.whatAmI = function(wh) {
 		if(dojo.lang.isBoolean(wh)) { return "boolean"; }
 		if(dojo.lang.isAlien(wh)) { return "alien"; }
 		if(dojo.lang.isUndefined(wh)) { return "undefined"; }
+		// FIXME: should this go first?
+		for(var name in dojo.lang.whatAmI.custom) {
+			if(dojo.lang.whatAmI.custom[name](wh)) {
+				return name;
+			}
+		}
 		if(dojo.lang.isObject(wh)) { return "object"; }
 	} catch(E) {}
 	return "unknown";
 }
+/*
+ * dojo.lang.whatAmI.custom[typeName] = someFunction
+ * will return typeName is someFunction(wh) returns true
+ */
+dojo.lang.whatAmI.custom = {};
 
 dojo.lang.find = function(arr, val, identity){
 	// support both (arr, val) and (val, arr)
