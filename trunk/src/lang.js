@@ -109,6 +109,7 @@ dojo.lang.isArrayLike = function(wh) {
 	if(dojo.lang.isArray(wh)){ return true; }
 	if((typ == "object")&&(typeof(wh["item"]) == "function")){ return true; }
 	if(typeof(wh["length"]) == "function"){ return true; }
+	if(dojo.lang.isFunction(wh.callee)) { return true; }
 	return false;
 }
 
@@ -560,3 +561,24 @@ dojo.lang.reprNumber = function(num){
 	m.registerRepr("boolean", m.isBoolean, m.reprNumber);
 	// m.registerRepr("numbers", m.typeMatcher("number", "boolean"), m.reprNumber);
 })();
+
+/**
+ * Creates a 1-D array out of all the arguments passed,
+ * unravelling any array-like objects in the process
+ *
+ * Ex:
+ * unnest(1, 2, 3) ==> [1, 2, 3]
+ * unnest(1, [2, [3], [[[4]]]]) ==> [1, 2, 3, 4]
+ */
+dojo.lang.unnest = function(/* ... */) {
+	var out = [];
+	for(var i = 0; i < arguments.length; i++) {
+		if(dojo.lang.isArrayLike(arguments[i])) {
+			var add = dojo.lang.unnest.apply(this, arguments[i]);
+			out = out.concat(add);
+		} else {
+			out.push(arguments[i]);
+		}
+	}
+	return out;
+}
