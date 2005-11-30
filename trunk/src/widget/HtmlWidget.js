@@ -139,11 +139,11 @@ dojo.widget.HtmlWidget.Toggle={}
 
 dojo.widget.HtmlWidget.Toggle.Plain = {
 	show: function(){
-		dojo.fx.html.fadeShow(this.domNode, this.toggleDuration);
+		dojo.html.show(this.domNode);
 	},
 
 	hide: function(){
-		dojo.fx.html.fadeHide(this.domNode, this.toggleDuration);
+		dojo.html.hide(this.domNode);
 	}
 }
 
