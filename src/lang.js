@@ -1,4 +1,5 @@
 dojo.provide("dojo.lang");
+dojo.provide("dojo.AdapterRegistry");
 dojo.provide("dojo.lang.Lang");
 
 dojo.lang.mixin = function(obj, props){
@@ -64,13 +65,17 @@ dojo.lang.hitch = function(thisObject, method) {
  * setTimeout (Object context, function func, number delay[, arg1[, ...]]);
  * setTimeout (function func, number delay[, arg1[, ...]]);
  */
-dojo.lang.setTimeout = function (func, delay) {
+dojo.lang.setTimeout = function(func, delay){
 	var context = window, argsStart = 2;
-	if (typeof delay == "function") {
+	if(!dojo.lang.isFunction(func)){
 		context = func;
 		func = delay;
 		delay = arguments[2];
 		argsStart++;
+	}
+
+	if(dojo.lang.isString(func)){
+		func = context[func];
 	}
 	
 	var args = [];
@@ -96,6 +101,15 @@ dojo.lang.isObject = function(wh) {
 
 dojo.lang.isArray = function(wh) {
 	return (wh instanceof Array || typeof wh == "array");
+}
+
+dojo.lang.isArrayLike = function(wh) {
+	var typ = (typeof wh);
+	if(typ == "string"){ return false; }
+	if(dojo.lang.isArray(wh)){ return true; }
+	if((typ == "object")&&(typeof(wh["item"]) == "function")){ return true; }
+	if(typeof(wh["length"]) == "function"){ return true; }
+	return false;
 }
 
 dojo.lang.isFunction = function(wh) {
@@ -262,20 +276,22 @@ dojo.lang.forEach = function(arr, unary_func, fix_length){
 
 dojo.lang.map = function(arr, obj, unary_func){
 	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
+	if(isString){
+		arr = arr.split("");
+	}
 	if(dojo.lang.isFunction(obj)&&(!unary_func)){
 		unary_func = obj;
 		obj = dj_global;
-	} else if(dojo.lang.isFunction(obj) && unary_func) {
+	}else if(dojo.lang.isFunction(obj) && unary_func){
 		// ff 1.5 compat
 		var tmpObj = obj;
 		obj = unary_func;
 		unary_func = tmpObj;
 	}
 
-	if(Array.map) {
-		var outArr = Array.map(arr, unary_func, obj);
-	} else {
+	if(Array.map){
+	 	var outArr = Array.map(arr, unary_func, obj);
+	}else{
 		var outArr = [];
 		for(var i=0;i<arr.length;++i){
 			outArr.push(unary_func.call(obj, arr[i]));
@@ -347,7 +363,7 @@ dojo.lang.every = function(arr, callback, thisObject) {
 		return Array.every(arr, callback, thisObject);
 	} else {
 		if(!thisObject) {
-			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
+			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
 			thisObject = dj_global;
 		}
 
@@ -367,7 +383,7 @@ dojo.lang.some = function(arr, callback, thisObject) {
 		return Array.some(arr, callback, thisObject);
 	} else {
 		if(!thisObject) {
-			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
+			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
 			thisObject = dj_global;
 		}
 
@@ -387,7 +403,7 @@ dojo.lang.filter = function(arr, callback, thisObject) {
 		var outArr = Array.filter(arr, callback, thisObject);
 	} else {
 		if(!thisObject) {
-			if(arguments.length >= 3) { throw new Error("thisObject doesn't exist!"); }
+			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
 			thisObject = dj_global;
 		}
 
@@ -404,3 +420,143 @@ dojo.lang.filter = function(arr, callback, thisObject) {
 		return outArr;
 	}
 }
+
+dojo.AdapterRegistry = function(){
+    /***
+        A registry to facilitate adaptation.
+
+        Pairs is an array of [name, check, wrap] triples
+        
+        All check/wrap functions in this registry should be of the same arity.
+    ***/
+    this.pairs = [];
+}
+
+dojo.lang.extend(dojo.AdapterRegistry, {
+    register: function (name, check, wrap, /* optional */ override) {
+        /***
+            The check function should return true if the given arguments are
+            appropriate for the wrap function.
+
+            If override is given and true, the check function will be given
+            highest priority.  Otherwise, it will be the lowest priority
+            adapter.
+        ***/
+
+        if (override) {
+            this.pairs.unshift([name, check, wrap]);
+        } else {
+            this.pairs.push([name, check, wrap]);
+        }
+    },
+
+    match: function (/* ... */) {
+        /***
+            Find an adapter for the given arguments.
+            
+            If no suitable adapter is found, throws NotFound.
+        ***/
+        for(var i = 0; i < this.pairs.length; i++){
+            var pair = this.pairs[i];
+            if(pair[1].apply(this, arguments)){
+                return pair[2].apply(this, arguments);
+            }
+        }
+        dojo.raise("No match found");
+    },
+
+    unregister: function (name) {
+        /***
+
+            Remove a named adapter from the registry
+
+        ***/
+        for (var i = 0; i < this.pairs.length; i++) {
+            var pair = this.pairs[i];
+            if (pair[0] == name) {
+                this.pairs.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+});
+
+dojo.lang.reprRegistry = new dojo.AdapterRegistry();
+dojo.lang.registerRepr = function(name, check, wrap, /*optional*/ override) {
+        /***
+            Register a repr function.  repr functions should take
+            one argument and return a string representation of it
+            suitable for developers, primarily used when debugging.
+
+            If override is given, it is used as the highest priority
+            repr, otherwise it will be used as the lowest.
+        ***/
+        dojo.lang.reprRegistry.register(name, check, wrap, override);
+    };
+
+dojo.lang.repr = function(obj){
+	/***
+		Return a "programmer representation" for an object
+	***/
+
+	if(typeof(obj) == "undefined"){
+		return "undefined";
+	}else if(obj === null){
+		return "null";
+	}
+
+	try{
+		if(typeof(obj["__repr__"]) == 'function'){
+			return obj["__repr__"]();
+		}else if((typeof(obj["repr"]) == 'function')&&(obj.repr != arguments.callee)){
+			return obj["repr"]();
+		}
+		return dojo.lang.reprRegistry.match(obj);
+	}catch(e){
+		if(typeof(obj.NAME) == 'string' && (
+				obj.toString == Function.prototype.toString ||
+				obj.toString == Object.prototype.toString
+			)){
+			return o.NAME;
+		}
+	}
+
+	if(typeof(obj) == "function"){
+		obj = (obj + "").replace(/^\s+/, "");
+		var idx = obj.indexOf("{");
+		if(idx != -1){
+			obj = obj.substr(0, idx) + "{...}";
+		}
+	}
+	return obj + "";
+}
+
+dojo.lang.reprArrayLike = function(arr){
+	try{
+		var na = dojo.lang.map(arr, dojo.lang.repr);
+		return "[" + na.join(", ") + "]";
+	}catch(e){ }
+};
+
+dojo.lang.reprString = function(str){ 
+	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
+		).replace(/[\f]/g, "\\f"
+		).replace(/[\b]/g, "\\b"
+		).replace(/[\n]/g, "\\n"
+		).replace(/[\t]/g, "\\t"
+		).replace(/[\r]/g, "\\r");
+};
+
+dojo.lang.reprNumber = function(num){
+	return num + "";
+};
+
+(function(){
+	var m = dojo.lang;
+	m.registerRepr("arrayLike", m.isArrayLike, m.reprArrayLike);
+	m.registerRepr("string", m.isString, m.reprString);
+	m.registerRepr("numbers", m.isNumber, m.reprNumber);
+	m.registerRepr("boolean", m.isBoolean, m.reprNumber);
+	// m.registerRepr("numbers", m.typeMatcher("number", "boolean"), m.reprNumber);
+})();
