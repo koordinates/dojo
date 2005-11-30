@@ -293,17 +293,22 @@ dojo.fx.html.toCoordinateArray = function(coords) {
 		// coords is already an array (of format [x,y,w,h]), just return it
 		while ( coords.length < 4 ) { coords.push(0); }
 		while ( coords.length > 4 ) { coords.pop(); }
-		return coords;
+		var ret = coords;
 	} else {
 		// coords is an dom object (or dom object id); return it's coordinates
 		coords = dojo.byId(coords);
-		return [
+		var ret = [
 			dojo.html.getAbsoluteX(coords),
 			dojo.html.getAbsoluteY(coords),
 			dojo.html.getInnerWidth(coords),
 			dojo.html.getInnerHeight(coords)
 		];
 	}
+	ret.x = ret[0];
+	ret.y = ret[1];
+	ret.w = ret[2];
+	ret.h = ret[3];
+	return ret;
 };
 
 dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
