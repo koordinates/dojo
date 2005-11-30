@@ -1,4 +1,4 @@
-//dojo.require("dojo.crypto");
+dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.MD5");
 
 //	rewritten based entirely on RFC 1321, with word functions borrowed from Paul Johnstone.
@@ -31,6 +31,11 @@ dojo.crypto.MD5 = new function(){
 	}
 
 	//	rounds functions.
+	function add(x,y){
+		var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+		return (msw << 16) | (lsw & 0xFFFF);
+	}
 	function RL(x, n){ return ((x<<n)|(x>>(32-n))); }
 	function RR(x, n){ return ((x>>n)|(x<<(32-n))); }
 	function F(x, y, z){ return (x & y)|(~x & z); }
@@ -38,36 +43,48 @@ dojo.crypto.MD5 = new function(){
 	function H(x, y, z){ return x ^ y ^ z; }
 	function I(x, y, z){ return y ^ (x | ~z); }
 	function FF(a, b, c, d, x, s, ac){
-		a += F(b, c, d) + x + ac;
-		a = RL(a, s);
-		a += b;
-		return a;
+		a = add(a,add(add(F(b, c, d),x),ac));
+		return add(RL(a,s),b);
 	}
 	function GG(a, b, c, d, x, s, ac){
-		a += G(b, c, d) + x + ac;
-		a = RL(a, s);
-		a += b;
-		return a;
+		a = add(a,add(add(G(b, c, d),x),ac));
+		return add(RL(a,s),b);
 	}
 	function HH(a, b, c, d, x, s, ac){
-		a += H(b, c, d) + x + ac;
-		a = RL(a, s);
-		a += b;
-		return a;
+		a = add(a,add(add(H(b, c, d),x),ac));
+		return add(RL(a,s),b);
 	}
+<<<<<<< .mine
+	function II(a, b, c, d, x, s, ac){
+		a = add(a,add(add(I(b, c, d),x),ac));
+		return add(RL(a,s),b);
+=======
 	function II(a, b, c, d, x, s, ac){
 		a += I(b, c, d) + x + ac;
 		a = RL(a, s);
 		a += b;
 		return a;
+>>>>>>> .r2288
 	}
 
 	this.compute = function(data, bDoNotEncode){
 		var state = [ 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 ];
+		var t = data.split("");
 		var len = data.length;
+		
+		//	pad the data to congruent to 448 bits, mod 512
+		var padTo = ((Math.floor(len/64)+1)*64)-8;
+		t.push(String.fromCharCode(8));
+		while(t.length < padTo) t.push(String.fromCharCode(0));
+		
+		//	now convert the length to 2 32 byte words and append.
+		var rep = "0000000000000000" + len.toString(16);
+		rep = rep.substr(rep.length-16, 16);
+		for (var i=0; i<rep.length; i+=2) {
+			t.push(rep.substr(i,2));
+		}
+		data = t.join("");
 		var x = decode(data);
-		x[len>>5]|=0x80<<(len%32);
-		x[(((len+64)>>>9)<<4)+14] = len;
 
 		//	do the digest.
 		var a = state[0];
@@ -148,10 +165,10 @@ dojo.crypto.MD5 = new function(){
 			c = II(c, d, a, b, x[i+ 2], 15, 0x2ad7d2bb); /* 63 */
 			b = II(b, c, d, a, x[i+ 9], 21, 0xeb86d391); /* 64 */
 
-			state[0] += a;
-			state[1] += b;
-			state[2] += c;
-			state[3] += d;
+			state[0] = add(state[0],a);
+			state[1] = add(state[1],b);
+			state[2] = add(state[2],c);
+			state[3] = add(state[3],d);
 		}
 		if (bDoNotEncode) return state;
 		return encodeBase64(state);
