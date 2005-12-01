@@ -60,7 +60,7 @@ dojo.provide = function(){
 }
 
 dojo.setModulePrefix = function(module, prefix){
-	return dojo.setModulePrefix(module, prefix);
+	return dojo.hostenv.setModulePrefix(module, prefix);
 }
 
 // stub
