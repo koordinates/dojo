@@ -14,6 +14,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.HtmlFloatingPane");
+	dojo.require("dojo.widget.HtmlResizeHandle");
 	dojo.hostenv.writeIncludes();
 </script>
 </head>
@@ -53,7 +54,7 @@
 		(to check we're copying children around properly).<br />
 
 	<div dojoType="FloatingPane"
-		title="Inner window w/shadow"
+		title="Inner window"
 		constrainToContainer="1"
 		hasShadow="true"
 		style="left: 20px; top: 60px; width: 120px; height: 80px;"

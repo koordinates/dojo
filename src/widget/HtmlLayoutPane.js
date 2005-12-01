@@ -53,7 +53,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	minHeight: 0,
 
 	fillInTemplate: function(){
-		this.filterAllowed('layoutAlign',         ['none', 'left', 'top', 'right', 'bottom', 'client']);
+		this.filterAllowed('layoutAlign',         ['none', 'left', 'top', 'right', 'bottom', 'client', 'flood']);
 		this.filterAllowed('layoutChildPriority', ['left-right', 'top-bottom']);
 
 		// Need to include CSS manually because there is no template file/string
@@ -176,7 +176,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	layoutChildren: function(){
 		// find the children to arrange
 
-		var kids = {'left':[], 'right':[], 'top':[], 'bottom':[], 'client':[]};
+		var kids = {'left':[], 'right':[], 'top':[], 'bottom':[], 'client':[], 'flood':[]};
 		var hits = 0;
 
 		for(var i=0; i<this.children.length; i++){
@@ -203,9 +203,8 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		this.clientRect['bottom'] = dojo.style.getPixelValue(container, "padding-bottom", true);
 
 		// arrange them in order
-
+		this.layoutCenter(kids, "flood");
 		if (this.layoutChildPriority == 'top-bottom'){
-
 			this.layoutFloat(kids, "top");
 			this.layoutFloat(kids, "bottom");
 			this.layoutFloat(kids, "left");
@@ -216,7 +215,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 			this.layoutFloat(kids, "top");
 			this.layoutFloat(kids, "bottom");
 		}
-		this.layoutClient(kids);
+		this.layoutCenter(kids, "client");
 	},
 
 	// Position the left/right/top/bottom aligned elements
@@ -249,15 +248,12 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		}
 	},
 
-	// Position the center elements
-	layoutClient: function(kids){
-		// Put every child in the same position.  (If there is more than one
-		// child; caller should set all but one to "display: none")
-		// This is used for Tabs
-		// TODO: this seems to be broken on Safari
-		for(var i=0; i<kids.client.length; i++){
-			var elm=kids.client[i];
-
+	// Position elements into the remaining space (in the center)
+	// If multiple elements are present they overlap each other
+	layoutCenter: function(kids, position){
+		var ary = kids[position];
+		for(var i=0; i<ary.length; i++){
+			var elm=ary[i];
 			elm.domNode.style.left=this.clientRect.left + "px";
 			elm.domNode.style.top=this.clientRect.top + "px";
 			dojo.style.setOuterWidth(elm.domNode, this.clientWidth);		
@@ -267,7 +263,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	},
 
 	hasLayoutAlign: function(child){
-		return dojo.lang.inArray(['left','right','top','bottom','client'], child.layoutAlign);
+		return dojo.lang.inArray(['left','right','top','bottom','client', 'flood'], child.layoutAlign);
 	},
 
 	addPane: function(pane){
@@ -424,3 +420,4 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:LayoutPane");
+
