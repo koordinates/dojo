@@ -104,13 +104,13 @@ dojo.lang.extend(dojo.widget.html.DropdownButton, {
 	},
 
 	onMouseOver: function(e) {
-		dojo.html.addClass(this.dropdownButton, "dojoButtonHover");
-		dojo.html.removeClass(this.dropdownButton, "dojoButtonNoHover");
+		dojo.html.addClass(this.button, "dojoButtonHover");
+		dojo.html.removeClass(this.button, "dojoButtonNoHover");
 	},
 	
 	onMouseOut: function(e) {
-		dojo.html.removeClass(this.dropdownButton, "dojoButtonHover");
-		dojo.html.addClass(this.dropdownButton, "dojoButtonNoHover");
+		dojo.html.removeClass(this.button, "dojoButtonHover");
+		dojo.html.addClass(this.button, "dojoButtonNoHover");
 	},
 
 	onClick: function(e) {
