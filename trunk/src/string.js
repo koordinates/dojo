@@ -72,6 +72,7 @@ dojo.string.escape = function(type, str) {
 	switch(type.toLowerCase()) {
 		case "xml":
 		case "html":
+		case "xhtml":
 			return dojo.string.escapeXml(str);
 		case "sql":
 			return dojo.string.escapeSql(str);
@@ -79,6 +80,7 @@ dojo.string.escape = function(type, str) {
 		case "regex":
 			return dojo.string.escapeRegExp(str);
 		case "javascript":
+		case "jscript":
 		case "js":
 			return dojo.string.escapeJavaScript(str);
 		default:
@@ -101,6 +103,14 @@ dojo.string.escapeRegExp = function(str) {
 
 dojo.string.escapeJavaScript = function(str) {
 	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
+}
+
+dojo.string.repeat = function(str, count) {
+	var out = "";
+	for(var i = 0; i < count; i++) {
+		out += str;
+	}
+	return out;
 }
 
 // do we even want to offer this? is it worth it?
