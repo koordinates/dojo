@@ -59,5 +59,9 @@ dojo.provide = function(){
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
+dojo.setModulePrefix = function(module, prefix){
+	return dojo.setModulePrefix(module, prefix);
+}
+
 // stub
 dojo.profile = { start: function(){}, end: function(){}, dump: function(){} };
