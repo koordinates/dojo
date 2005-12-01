@@ -8,7 +8,7 @@ try {
 	if((!djConfig.preventBackButtonFix)&&(!dojo.hostenv.post_load_)){
 		document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'iframe_history.html')+"'></iframe>");
 	}
-} catch (e) { }
+}catch(e){/* squelch */}
 
 dojo.io.checkChildrenForFile = function(node){
 	var hasFile = false;
@@ -34,7 +34,7 @@ dojo.io.encodeForm = function(formNode, encoding){
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var values = [];
 
-	for(var i = 0; i < formNode.elements.length; i++) {
+	for(var i = 0; i < formNode.elements.length; i++){
 		var elm = formNode.elements[i];
 		if(elm.disabled || elm.tagName.toLowerCase() == "fieldset" || !elm.name){
 			continue;
@@ -43,7 +43,7 @@ dojo.io.encodeForm = function(formNode, encoding){
 		var type = elm.type.toLowerCase();
 
 		if(type == "select-multiple"){
-			for(var j = 0; j < elm.options.length; j++) {
+			for(var j = 0; j < elm.options.length; j++){
 				if(elm.options[j].selected) {
 					values.push(name + "=" + enc(elm.options[j].value));
 				}
@@ -422,6 +422,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
+	this.multipartBoundary = "45309FFF-BD65-4d50-99C9-36986896A96F";	// unique guid as a boundary value for multipart posts
+
 	this.bind = function(kwArgs){
 		if(!kwArgs["url"]){
 			// are we performing a history action?
@@ -444,21 +446,87 @@ dojo.io.XMLHTTPTransport = new function(){
 			query += dojo.io.encodeForm(kwArgs.formNode, kwArgs.encoding);
 		}
 
-		if(!kwArgs["method"]) {
+		if(kwArgs["file"]){
+			// force post for file transfer
+			kwArgs.method = "post";
+		}
+
+		if(!kwArgs["method"]){
 			kwArgs.method = "get";
 		}
 
-		if(kwArgs["content"]){
-			query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
-		}
-
-		if(kwArgs["postContent"] && kwArgs.method.toLowerCase() == "post") {
-			query = kwArgs.postContent;
+		// guess the multipart value		
+		if(kwArgs.method.toLowerCase() == "get"){
+			// GET cannot use multipart
+			kwArgs.multipart = false;
+		}else{
+			if(kwArgs["file"]){
+				// enforce multipart when sending files
+				kwArgs.multipart = true;
+			}else if(!kwArgs["multipart"]){
+				// default 
+				kwArgs.multipart = false;
+			}
 		}
 
 		if(kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"]){
 			this.addToHistory(kwArgs);
 		}
+
+		do { // break-block
+
+			if(kwArgs.method.toLowerCase() == "get"){
+				if(kwArgs["content"]) {
+					query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
+				}
+				break;
+			}
+
+			if(kwArgs.postContent){
+				query = kwArgs.postContent;
+				break;
+			}
+
+			if(!kwArgs.multipart){
+				query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
+				break;
+			}
+
+			var	t = [];
+			if(kwArgs.content){
+				for(var name in kwArgs.content){
+					t.push(	"--" + this.multipartBoundary,
+							"Content-Disposition: form-data; name=\"" + name + "\"", 
+							"",
+							kwArgs.content[name]);
+				}
+			}
+
+			if(kwArgs.file){
+				if(dojo.lang.isArray(kwArgs.file)){
+					for(var i = 0; i < kwArgs.file.length; ++i){
+						var o = kwArgs.file[i];
+						t.push(	"--" + this.multipartBoundary,
+								"Content-Disposition: form-data; name=\"" + o.name + "\"; filename=\"" + ("fileName" in o ? o.fileName : o.name) + "\"",
+								"Content-Type: " + ("contentType" in o ? o.contentType : "application/octet-stream"),
+								"",
+								o.content);
+					}
+				}else{
+					var o = kwArgs.file;
+					t.push(	"--" + this.multipartBoundary,
+							"Content-Disposition: form-data; name=\"" + o.name + "\"; filename=\"" + ("fileName" in o ? o.fileName : o.name) + "\"",
+							"Content-Type: " + ("contentType" in o ? o.contentType : "application/octet-stream"),
+							"",
+							o.content);
+				}
+			}
+
+			if(t.length){
+				t.push("--"+this.multipartBoundary+"--", "");
+				query = t.join("\r\n");
+			}
+		}while(false);
 
 		// kwArgs.Connection = "close";
 
@@ -497,7 +565,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			// FIXME: need to hack in more flexible Content-Type setting here!
 			http.open("POST", url, async);
 			setHeaders(http, kwArgs);
-			http.setRequestHeader("Content-Type", kwArgs["contentType"] || "application/x-www-form-urlencoded");
+			http.setRequestHeader("Content-Type", kwArgs.multipart ? ("multipart/form-data; boundary=" + this.multipartBoundary) : 
+				(kwArgs.contentType || "application/x-www-form-urlencoded"));
 			http.send(query);
 		}else{
 			var tmpUrl = url;
