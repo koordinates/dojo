@@ -10,59 +10,74 @@ dojo.lang.mixin(dojo.html, dojo.style);
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
 // Need to investigate for KHTML and Opera
 
-	
-dojo.html.clearSelection = function () {
-	try {
-		if (window.getSelection) { window.getSelection().removeAllRanges(); }
-		else if (document.selection && document.selection.clear) {
+dojo.html.clearSelection = function(){
+	try{
+		if(window["getSelection"]){ 
+			if(dojo.render.html.safari){
+				// pulled from WebCore/ecma/kjs_window.cpp, line 2536
+				window.getSelection().collapse();
+			}else{
+				window.getSelection().removeAllRanges();
+			}
+		}else if((document.selection)&&(document.selection.clear)){
 			document.selection.clear();
 		}
-	} catch (e) { dojo.debug(e); }
+	}catch(e){ dojo.debug(e); }
 }
 
-dojo.html.disableSelection = function (element) {
+dojo.html.disableSelection = function (element){
+	if(arguments.length == 0){ element = dojo.html.body(); }
+	var h = dojo.render.html;
+	
+	if(h.mozilla){
+		element.style.MozUserSelect = "none";
+	}else if(h.safari){
+		element.style.KhtmlUserSelect = "none"; 
+	}else if(h.ie){
+		element.unselectable = "on";
+	}
+}
+
+dojo.html.enableSelection = function (element){
 	if (arguments.length == 0) { element = dojo.html.body(); }
 	
-	if (dojo.render.html.mozilla) { element.style.MozUserSelect = "none"; }
-	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = "none"; }
-	else if (dojo.render.html.ie) { element.unselectable = "on"; }
+	var h = dojo.render.html;
+	if(h.mozilla){ 
+		element.style.MozUserSelect = ""; 
+	}else if(h.safari){
+		element.style.KhtmlUserSelect = "";
+	}else if(h.ie){
+		element.unselectable = "off";
+	}
 }
 
-dojo.html.enableSelection = function (element) {
-	if (arguments.length == 0) { element = dojo.html.body(); }
-	
-	if (dojo.render.html.mozilla) { element.style.MozUserSelect = ""; }
-	else if (dojo.render.html.safari) { element.style.KhtmlUserSelect = ""; }
-	else if (dojo.render.html.ie) { element.unselectable = "off"; }
-}
-
-dojo.html.selectElement = function (element) {
+dojo.html.selectElement = function(element){
 	if (document.selection && dojo.html.body().createTextRange) { // IE
 		var range = dojo.html.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
-	} else if (window.getSelection) {
+	}else if(window["getSelection"]){
 		var selection = window.getSelection();
-		if (selection.selectAllChildren) { // Mozilla
+		if(selection["selectAllChildren"]){ // Mozilla
 			selection.selectAllChildren(element);
 		}
 	}
 }
 
-dojo.html.isSelectionCollapsed = function () {
-	if (document.selection) { // IE
+dojo.html.isSelectionCollapsed = function(){
+	if(document["selection"]){ // IE
 		return document.selection.createRange().text == "";
-	} else if (window.getSelection) {
+	}else if(window["getSelection"]){
 		var selection = window.getSelection();
-		if (dojo.lang.isString(selection)) { // Safari
+		if(dojo.lang.isString(selection)){ // Safari
 			return selection == "";
-		} else { // Mozilla/W3
+		}else{ // Mozilla/W3
 			return selection.isCollapsed;
 		}
 	}
 }
 
-dojo.html.getEventTarget = function (evt){
+dojo.html.getEventTarget = function(evt){
 	if((window["event"])&&(window.event["srcElement"])){
 		return window.event.srcElement;
 	}else if((evt)&&(evt.target)){
@@ -70,25 +85,25 @@ dojo.html.getEventTarget = function (evt){
 	}
 }
 
-dojo.html.getScrollTop = function () {
+dojo.html.getScrollTop = function(){
 	return document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
 }
 
-dojo.html.getScrollLeft = function () {
+dojo.html.getScrollLeft = function(){
 	return document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
 }
 
-dojo.html.getDocumentWidth = function() {
+dojo.html.getDocumentWidth = function(){
 	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
 	return dojo.html.getViewportWidth();
 }
 
-dojo.html.getDocumentHeight = function() {
+dojo.html.getDocumentHeight = function(){
 	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
 	return dojo.html.getViewportHeight();
 }
 
-dojo.html.getDocumentSize = function() {
+dojo.html.getDocumentSize = function(){
 	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
 	return dojo.html.getViewportSize();
 }
@@ -97,11 +112,11 @@ dojo.html.getViewportWidth = function(){
 
 	var w = 0;
 
-	if (window.innerWidth){
+	if(window.innerWidth){
 		w = window.innerWidth;
 	}
 
-	if (document.documentElement && document.documentElement.clientWidth){
+	if(document.documentElement && document.documentElement.clientWidth){
 		// IE6 Strict
 		var w2 = document.documentElement.clientWidth;
 		// this lets us account for scrollbars
@@ -111,7 +126,7 @@ dojo.html.getViewportWidth = function(){
 		return w;
 	}
 
-	if (document.body){
+	if(document.body){
 		// IE
 		return document.body.clientWidth;
 	}
@@ -138,7 +153,7 @@ dojo.html.getViewportHeight = function(){
 	return 0;
 }
 
-dojo.html.getViewportSize = function() {
+dojo.html.getViewportSize = function(){
 	return [dojo.html.getViewportWidth(), dojo.html.getViewportHeight()];
 }
 
@@ -205,7 +220,7 @@ dojo.html.getAttribute = function (node, attr){
  *	Determines whether or not the specified node carries a value for the
  *	attribute in question.
  */
-dojo.html.hasAttribute = function (node, attr){
+dojo.html.hasAttribute = function(node, attr){
 	var v = dojo.html.getAttribute(node, attr);
 	return v ? true : false;
 }
@@ -215,7 +230,7 @@ dojo.html.hasAttribute = function (node, attr){
  * directly to the node in question. Returns an empty string if no class attribute
  * is found;
  */
-dojo.html.getClass = function (node) {
+dojo.html.getClass = function(node){
 	if(node.className){
 		return node.className;
 	}else if(dojo.html.hasAttribute(node, "class")){
@@ -243,7 +258,7 @@ dojo.html.hasClass = function (node, classname){
  * when style cascading is calculated for the node. Returns true or
  * false; indicating success or failure of the operation, respectively.
  */
-dojo.html.prependClass = function (node, classStr){
+dojo.html.prependClass = function(node, classStr){
 	if(!node){ return null; }
 	if(dojo.html.hasAttribute(node,"class")||node.className){
 		classStr += " " + (node.className||dojo.html.getAttribute(node, "class"));
@@ -293,7 +308,7 @@ dojo.html.setClass = function (node, classStr){
  * Removes the className from the node;. Returns
  * true or false indicating success or failure.
  */ 
-dojo.html.removeClass = function (node, classStr, allowPartialMatches){
+dojo.html.removeClass = function(node, classStr, allowPartialMatches){
 	if(!node){ return false; }
 	var classStr = dojo.string.trim(new String(classStr));
 
@@ -334,7 +349,7 @@ dojo.html.classMatchType = {
  * Returns an array of nodes for the given classStr, children of a
  * parent, and optionally of a certain nodeType
  */
-dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchType) {
+dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType){
 	if(!parent){ parent = document; }
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
@@ -429,7 +444,7 @@ dojo.html.getElementsByClass = function (classStr, parent, nodeType, classMatchT
  * @return		 The directions, NORTH or SOUTH and EAST or WEST. These
  *						 are properties of the function.
  */
-dojo.html.gravity = function (node, e){
+dojo.html.gravity = function(node, e){
 	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
 	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	
@@ -449,7 +464,7 @@ dojo.html.gravity.SOUTH = 1 << 1;
 dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 	
-dojo.html.overElement = function (element, e) {
+dojo.html.overElement = function(element, e){
 	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
 	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	
@@ -468,7 +483,7 @@ dojo.html.overElement = function (element, e) {
  * Attempts to return the text as it would be rendered, with the line breaks
  * sorted out nicely. Unfinished.
  */
-dojo.html.renderedTextContent = function (node) {
+dojo.html.renderedTextContent = function(node){
 	var result = "";
 	if (node == null) { return result; }
 	for (var i = 0; i < node.childNodes.length; i++) {
@@ -497,14 +512,14 @@ dojo.html.renderedTextContent = function (node) {
 			case 2: // ATTRIBUTE_NODE
 			case 4: // CDATA_SECTION_NODE
 				var text = node.childNodes[i].nodeValue;
-				switch (dojo.style.getStyle(node, "text-transform")) {
+				switch (dojo.style.getStyle(node, "text-transform")){
 					case "capitalize": text = dojo.string.capitalize(text); break;
 					case "uppercase": text = text.toUpperCase(); break;
 					case "lowercase": text = text.toLowerCase(); break;
 					default: break; // leave as is
 				}
 				// TODO: implement
-				switch (dojo.style.getStyle(node, "text-transform")) {
+				switch (dojo.style.getStyle(node, "text-transform")){
 					case "nowrap": break;
 					case "pre-wrap": break;
 					case "pre-line": break;
@@ -524,28 +539,30 @@ dojo.html.renderedTextContent = function (node) {
 	return result;
 }
 
-dojo.html.setActiveStyleSheet = function (title) {
+dojo.html.setActiveStyleSheet = function(title){
 	var i, a, main;
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
-		if (a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")) {
+	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
 			a.disabled = true;
 			if (a.getAttribute("title") == title) { a.disabled = false; }
 		}
 	}
 }
 
-dojo.html.getActiveStyleSheet = function () {
+dojo.html.getActiveStyleSheet = function(){
 	var i, a;
-	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+	// FIXME: getElementsByTagName returns a live collection. This seems like a
+	// bad key for iteration.
+	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
 		if (a.getAttribute("rel").indexOf("style") != -1 &&
 			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
 	}
 	return null;
 }
 
-dojo.html.getPreferredStyleSheet = function () {
+dojo.html.getPreferredStyleSheet = function(){
 	var i, a;
-	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
 		if(a.getAttribute("rel").indexOf("style") != -1
 			&& a.getAttribute("rel").indexOf("alt") == -1
 			&& a.getAttribute("title")) { return a.getAttribute("title"); }
@@ -553,11 +570,11 @@ dojo.html.getPreferredStyleSheet = function () {
 	return null;
 }
 
-dojo.html.body = function() {
+dojo.html.body = function(){
 	return document.body || document.getElementsByTagName("body")[0];
 }
 
-dojo.html.createNodesFromText = function(txt, wrap) {
+dojo.html.createNodesFromText = function(txt, wrap){
 	var tn = document.createElement("div");
 	// tn.style.display = "none";
 	tn.style.visibility= "hidden";
@@ -584,21 +601,21 @@ dojo.html.createNodesFromText = function(txt, wrap) {
 }
 
 // FIXME: this should be removed after 0.2 release
-if(!dojo.evalObjPath("dojo.dom.createNodesFromText")) {
+if(!dojo.evalObjPath("dojo.dom.createNodesFromText")){
 	dojo.dom.createNodesFromText = function() {
 		dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.html.createNodesFromText instead");
 		return dojo.html.createNodesFromText.apply(dojo.html, arguments);
 	}
 }
 
-dojo.html.getAncestorsByTag = function(node, tag, returnFirstHit) {
+dojo.html.getAncestorsByTag = function(node, tag, returnFirstHit){
 	tag = tag.toLowerCase();
 	return dojo.dom.getAncestors(node, function(el) {
 		return el.tagName && (el.tagName.toLowerCase() == tag);
 	}, returnFirstHit);
 }
 
-dojo.html.getFirstAncestorByTag = function(node, tag) {
+dojo.html.getFirstAncestorByTag = function(node, tag){
 	return dojo.html.getAncestorsByTag(node, tag, true);
 }
 
