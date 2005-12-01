@@ -280,7 +280,6 @@ dojo.hostenv.makeWidgets = function(){
 	if(dojo.hostenv.searchIds && dojo.hostenv.searchIds.length > 0) {
 		sids = sids.concat(dojo.hostenv.searchIds);
 	}
-	dojo.debug("sids:", sids);
 
 	if((djConfig.parseWidgets)||(sids.length > 0)){
 		if(dojo.evalObjPath("dojo.widget.Parse")){
