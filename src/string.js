@@ -213,35 +213,35 @@ dojo.string.has = function(str /* , ... */) {
 
 /**
  * Pad 'str' to guarantee that it is at least 'len' length
- * with the character 'char' at either the start (dir=1) or
+ * with the character 'c' at either the start (dir=1) or
  * end (dir=-1) of the string
  */
-dojo.string.pad = function(str, len/*=2*/, char/*='0'*/, dir/*=1*/) {
+dojo.string.pad = function(str, len/*=2*/, c/*='0'*/, dir/*=1*/) {
 	var out = String(str);
-	if(!char) {
-		char = '0';
+	if(!c) {
+		c = '0';
 	}
 	if(!dir) {
 		dir = 1;
 	}
 	while(out.length < len) {
 		if(dir > 0) {
-			out = char + out;
+			out = c + out;
 		} else {
-			out += char;
+			out += c;
 		}
 	}
 	return out;
 }
 
-/** same as dojo.string.pad(str, len, char, 1) */
-dojo.string.padLeft = function(str, len, char) {
-	return dojo.string.pad(str, len, char, 1);
+/** same as dojo.string.pad(str, len, c, 1) */
+dojo.string.padLeft = function(str, len, c) {
+	return dojo.string.pad(str, len, c, 1);
 }
 
-/** same as dojo.string.pad(str, len, char, -1) */
-dojo.string.padRight = function(str, len, char) {
-	return dojo.string.pad(str, len, char, -1);
+/** same as dojo.string.pad(str, len, c, -1) */
+dojo.string.padRight = function(str, len, c) {
+	return dojo.string.pad(str, len, c, -1);
 }
 
 // do we even want to offer this? is it worth it?
