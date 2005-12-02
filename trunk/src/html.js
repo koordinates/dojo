@@ -22,11 +22,15 @@ dojo.html.clearSelection = function(){
 		}else if((document.selection)&&(document.selection.clear)){
 			document.selection.clear();
 		}
-	}catch(e){ dojo.debug(e); }
+		return true;
+	}catch(e){
+		dojo.debug(e);
+		return false;
+	}
 }
 
-dojo.html.disableSelection = function (element){
-	if(arguments.length == 0){ element = dojo.html.body(); }
+dojo.html.disableSelection = function(element){
+	element = element||dojo.html.body();
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -35,11 +39,14 @@ dojo.html.disableSelection = function (element){
 		element.style.KhtmlUserSelect = "none"; 
 	}else if(h.ie){
 		element.unselectable = "on";
+	}else{
+		return false;
 	}
+	return true;
 }
 
-dojo.html.enableSelection = function (element){
-	if (arguments.length == 0) { element = dojo.html.body(); }
+dojo.html.enableSelection = function(element){
+	element = element||dojo.html.body();
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -48,16 +55,20 @@ dojo.html.enableSelection = function (element){
 		element.style.KhtmlUserSelect = "";
 	}else if(h.ie){
 		element.unselectable = "off";
+	}else{
+		return false;
 	}
+	return true;
 }
 
 dojo.html.selectElement = function(element){
-	if (document.selection && dojo.html.body().createTextRange) { // IE
+	if(document.selection && dojo.html.body().createTextRange){ // IE
 		var range = dojo.html.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	}else if(window["getSelection"]){
 		var selection = window.getSelection();
+		// FIXME: does this work on Safari?
 		if(selection["selectAllChildren"]){ // Mozilla
 			selection.selectAllChildren(element);
 		}
@@ -85,6 +96,8 @@ dojo.html.getEventTarget = function(evt){
 	}
 }
 
+// FIXME: should the next set of functions take an optional document to operate
+// on so as to be useful for getting this information from iframes?
 dojo.html.getScrollTop = function(){
 	return document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
 }
@@ -159,22 +172,22 @@ dojo.html.getViewportSize = function(){
 
 dojo.html.getScrollOffset = function(){
 
-	if (window.pageYOffset){
+	if(window.pageYOffset){
 		return [window.pageXOffset, window.pageYOffset];
 	}
 		
-	if (document.documentElement && document.documentElement.scrollTop){
+	if(document.documentElement && document.documentElement.scrollTop){
 		return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
 	}
 
-	if (document.body){
+	if(document.body){
 		return [document.body.scrollLeft, document.body.scrollTop];
 	}
 
 	return [0, 0];
 }
 
-dojo.html.getParentOfType = function (node, type){
+dojo.html.getParentOfType = function(node, type){
 	var parent = node;
 	type = type.toLowerCase();
 	while(parent.nodeName.toLowerCase()!=type){
@@ -188,7 +201,7 @@ dojo.html.getParentOfType = function (node, type){
 
 // RAR: this function comes from nwidgets and is more-or-less unmodified.
 // We should probably look ant Burst and f(m)'s equivalents
-dojo.html.getAttribute = function (node, attr){
+dojo.html.getAttribute = function(node, attr){
 	// FIXME: need to add support for attr-specific accessors
 	if((!node)||(!node.getAttribute)){
 		// if(attr !== 'nwType'){
@@ -244,7 +257,7 @@ dojo.html.getClass = function(node){
  * class list currently applied to the node. Does not cover cascaded
  * styles, only classes directly applied to the node.
  */
-dojo.html.hasClass = function (node, classname){
+dojo.html.hasClass = function(node, classname){
 	var classes = dojo.html.getClass(node).split(/\s+/g);
 	for(var x=0; x<classes.length; x++){
 		if(classname == classes[x]){ return true; }
@@ -270,7 +283,7 @@ dojo.html.prependClass = function(node, classStr){
  * Adds the specified class to the end of the class list on the
  *	passed &node;. Returns &true; or &false; indicating success or failure.
  */
-dojo.html.addClass = function (node, classStr){
+dojo.html.addClass = function(node, classStr){
 	if (!node) { throw new Error("addClass: node does not exist"); }
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
@@ -286,7 +299,7 @@ dojo.html.addClass = function (node, classStr){
  *	the list given in the 2nd argument. Returns true or false
  *	indicating success or failure.
  */
-dojo.html.setClass = function (node, classStr){
+dojo.html.setClass = function(node, classStr){
 	if(!node){ return false; }
 	var cs = new String(classStr);
 	try{
@@ -299,7 +312,7 @@ dojo.html.setClass = function (node, classStr){
 			return false;
 		}
 	}catch(e){
-		dojo.debug("__util__.setClass() failed", e);
+		dojo.debug("dojo.html.setClass() failed", e);
 	}
 	return true;
 }
@@ -315,15 +328,14 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
 	try{
 		var cs = String( node.className ).split(" ");
 		var nca	= [];
-		if (allowPartialMatches) {
+		if(allowPartialMatches){
 			for(var i = 0; i<cs.length; i++){
 				if(cs[i].indexOf(classStr) == -1){ 
 					nca.push(cs[i]);
 				}
 			}
-		}
-		else {
-			for(var i = 0; i<cs.length; i++){
+		}else{
+			for(var i=0; i<cs.length; i++){
 				if(cs[i] != classStr){ 
 					nca.push(cs[i]);
 				}
@@ -331,7 +343,7 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
 		}
 		node.className = nca.join(" ");
 	}catch(e){
-		dojo.debug("__util__.removeClass() failed", e);
+		dojo.debug("dojo.html.removeClass() failed", e);
 	}
 
 	return true;
