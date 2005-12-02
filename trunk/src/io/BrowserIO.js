@@ -447,6 +447,11 @@ dojo.io.XMLHTTPTransport = new function(){
 			query += dojo.io.encodeForm(kwArgs.formNode, kwArgs.encoding);
 		}
 
+		if(url.indexOf("#") > -1) {
+			dojo.debug("Warning: dojo.io.bind: stripping hash values from url:", url);
+			url = url.split("#")[0];
+		}
+
 		if(kwArgs["file"]){
 			// force post for file transfer
 			kwArgs.method = "post";
