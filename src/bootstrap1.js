@@ -132,8 +132,14 @@ dojo.debug = function(){
 			var msg = "[" + args[i].name + ": " + dojo.errorToString(args[i]) +
 				(args[i].fileName ? ", file: " + args[i].fileName : "") +
 				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";
-		}else{ 
+		}else if(args[i].toString){ 
 			var msg = args[i];
+		}else{
+			if(dojo.render.html.ie) {
+				var msg = "[ActiveXObject]";
+			} else {
+				var msg = "[unknown]";
+			}
 		}
 		s.push(msg);
 	}

@@ -164,6 +164,10 @@ dojo.hostenv.getXmlhttpObject = function(){
 				break;
 			}
 		}
+
+		/*if(http && !http.toString) {
+			http.toString = function() { "[object XMLHttpRequest]"; }
+		}*/
 	}
 
 	if(!http){
