@@ -63,13 +63,14 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		dojo.html.addClass(clientDiv, 'dojoFloatingPaneClient');
 
 		// this is our client area
-		this.clientPane = this.createPane(clientDiv, {layoutAlign: "client", url: this.url});
+		this.clientPane = this.createPane(clientDiv, {layoutAlign: "client", url: this.url, id:this.widgetId+"_client"});
+		delete this.url;
 
 		// this is our chrome
 		var chromeDiv = document.createElement('div');
 		//chromeDiv.style.height="15px";
 		dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
-		this.dragBar = this.createPane(chromeDiv, {layoutAlign: 'top'});
+		this.dragBar = this.createPane(chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
 		dojo.html.disableSelection(this.dragBar.domNode);
 
 		if( this.fancyTitleBar ){
@@ -77,7 +78,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 			var img = document.createElement('img');
 			img.src = this.titleBarBackground,
 			dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
-			var backgroundPane = dojo.widget.fromScript("LayoutPane", {layoutAlign:"flood"}, img);
+			var backgroundPane = dojo.widget.fromScript("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
 			this.dragBar.addPane(backgroundPane);
 		}
 		var title = document.createElement("div");
@@ -92,7 +93,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 			// add the resize handle
 			var resizeDiv = document.createElement('div');
 			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
-			var rh = dojo.widget.fromScript("ResizeHandle", {targetElmId: this.widgetId});
+			var rh = dojo.widget.fromScript("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
 			this.resizePane = this.createPane(resizeDiv, {layoutAlign: "bottom"});
 			this.resizePane.addChild(rh);
 		}
@@ -111,7 +112,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		// and add a background div so the shadow doesn't seep through the margin of the title bar
 		var backgroundDiv = document.createElement('div');
 		dojo.html.addClass(backgroundDiv, 'dojoFloatingPaneBackground');
-		this.background = this.createPane(backgroundDiv, {layoutAlign: 'flood'});
+		this.background = this.createPane(backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
 	},
 
 	postCreate: function(args, fragment, parentComp){
