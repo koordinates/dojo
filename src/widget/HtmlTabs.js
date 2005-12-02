@@ -72,6 +72,27 @@ dojo.lang.extend(dojo.widget.HtmlTabs, {
 			isLocal: false
 		};
 
+		function isLocal(a) {
+			var url = a.getAttribute("href");
+			var hash = url.indexOf("#");
+			if(hash == 0) {
+				return true;
+			}
+			var loc = location.href.split("#")[0];
+			var url2 = url.split("#")[0];
+			if(loc == url2) {
+				return true;
+			}
+			if(unescape(loc) == url2) {
+				return true;
+			}
+			var outer = a.outerHTML;
+			if(outer && /href=["']?#/i.test(outer)) {
+				return true;
+			}
+			return false;
+		}
+
 		if(title && title.tagName && title.tagName.toLowerCase() == "a") {
 			// init case
 			var a = title;
@@ -80,7 +101,7 @@ dojo.lang.extend(dojo.widget.HtmlTabs, {
 			url = a.getAttribute("href");
 			var id = null;
 			var hash = url.indexOf("#");
-			if(hash == 0 || (hash > 0 && location.href.split("#")[0] == url.split("#")[0])) {
+			if(isLocal(a)) {
 				id = url.split("#")[1];
 				dj_debug("setting local id:", id);
 				url = "#" + id;
