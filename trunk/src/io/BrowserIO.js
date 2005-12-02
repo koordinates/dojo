@@ -535,7 +535,11 @@ dojo.io.XMLHTTPTransport = new function(){
 		var useCache = kwArgs["useCache"] == true ||
 			(this.useCache == true && kwArgs["useCache"] != false );
 
-		if(useCache){
+		// preventCache is browser-level (add query string junk), useCache
+		// is for the local cache. If we say preventCache, then don't attempt
+		// to look in the cache, but if useCache is true, we still want to cache
+		// the response
+		if(!kwArgs["preventCache"] && useCache){
 			var cachedHttp = getFromCache(url, query, kwArgs.method);
 			if(cachedHttp){
 				doLoad(kwArgs, cachedHttp, url, query, false);
@@ -571,8 +575,12 @@ dojo.io.XMLHTTPTransport = new function(){
 		}else{
 			var tmpUrl = url;
 			if(query != "") {
-				tmpUrl += (url.indexOf("?") > -1 ? "&" : "?") + query;
+				tmpUrl += (tmpUrl.indexOf("?") > -1 ? "&" : "?") + query;
 			}
+			if(kwArgs["preventCache"]) {
+				tmpUrl += (tmpUrl.indexOf("?") > -1 ? "&" : "?") + "dojo.preventCache=" + new Date().valueOf();
+			}
+			dojo.debug("tmpUrl:", tmpUrl);
 			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
 			setHeaders(http, kwArgs);
 			http.send(null);
