@@ -107,6 +107,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	var _cache = {}; // FIXME: make this public? do we even need to?
 	this.useCache = false; // if this is true, we'll cache unless kwArgs.useCache = false
+	this.preventCache = false; // if this is true, we'll always force GET requests to cache
 	this.historyStack = [];
 	this.forwardStack = [];
 	this.historyIframe = null;
@@ -532,6 +533,8 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		var async = kwArgs["sync"] ? false : true;
 
+		var preventCache = kwArgs["preventCache"] ||
+			(this.preventCache == true && kwArgs["preventCache"] != false);
 		var useCache = kwArgs["useCache"] == true ||
 			(this.useCache == true && kwArgs["useCache"] != false );
 
@@ -539,7 +542,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// is for the local cache. If we say preventCache, then don't attempt
 		// to look in the cache, but if useCache is true, we still want to cache
 		// the response
-		if(!kwArgs["preventCache"] && useCache){
+		if(!preventCache && useCache){
 			var cachedHttp = getFromCache(url, query, kwArgs.method);
 			if(cachedHttp){
 				doLoad(kwArgs, cachedHttp, url, query, false);
@@ -577,10 +580,10 @@ dojo.io.XMLHTTPTransport = new function(){
 			if(query != "") {
 				tmpUrl += (tmpUrl.indexOf("?") > -1 ? "&" : "?") + query;
 			}
-			if(kwArgs["preventCache"]) {
-				tmpUrl += (tmpUrl.indexOf("?") > -1 ? "&" : "?") + "dojo.preventCache=" + new Date().valueOf();
+			if(preventCache) {
+				tmpUrl += (dojo.string.endsWithAny(tmpUrl, "?", "&")
+					? "" : (tmpUrl.indexOf("?") > -1 ? "&" : "?")) + "dojo.preventCache=" + new Date().valueOf();
 			}
-			dojo.debug("tmpUrl:", tmpUrl);
 			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
 			setHeaders(http, kwArgs);
 			http.send(null);

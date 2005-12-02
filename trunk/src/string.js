@@ -1,16 +1,43 @@
 dojo.provide("dojo.string");
 dojo.require("dojo.lang");
 
-dojo.string.trim = function(str){
+/**
+ * Trim whitespace from 'str'. If 'wh' > 0,
+ * only trim from start, if 'wh' < 0, only trim
+ * from end, otherwise trim both ends
+ */
+dojo.string.trim = function(str, wh){
 	if(!dojo.lang.isString(str)){ return str; }
 	if(!str.length){ return str; }
-	return str.replace(/^\s*/, "").replace(/\s*$/, "");
+	if(wh > 0) {
+		return str.replace(/^\s+/, "");
+	} else if(wh < 0) {
+		return str.replace(/\s+$/, "");
+	} else {
+		return str.replace(/^\s+|\s+$/g, "");
+	}
 }
 
-// Parameterized string function
-//  str - formatted string with %{values} to be replaces
-//  pairs - object of name: "value" value pairs
-//  killExtra - remove all remaining %{values} after pairs are inserted
+/**
+ * Trim whitespace at the beginning of 'str'
+ */
+dojo.string.trimStart = function(str) {
+	return dojo.string.trim(str, 1);
+}
+
+/**
+ * Trim whitespace at the end of 'str'
+ */
+dojo.string.trimEnd = function(str) {
+	return dojo.string.trim(str, -1);
+}
+
+/**
+ * Parameterized string function
+ * str - formatted string with %{values} to be replaces
+ * pairs - object of name: "value" value pairs
+ * killExtra - remove all remaining %{values} after pairs are inserted
+ */
 dojo.string.paramString = function(str, pairs, killExtra) {
 	for(var name in pairs) {
 		var re = new RegExp("\\%\\{" + name + "\\}", "g");
@@ -39,6 +66,9 @@ dojo.string.capitalize = function (str) {
 	return new String(retval);
 }
 
+/**
+ * Return true if the entire string is whitespace characters
+ */
 dojo.string.isBlank = function (str) {
 	if(!dojo.lang.isString(str)) { return true; }
 	return (dojo.string.trim(str).length == 0);
@@ -83,6 +113,9 @@ dojo.string.escape = function(type, str) {
 		case "jscript":
 		case "js":
 			return dojo.string.escapeJavaScript(str);
+		case "ascii":
+			// so it's encode, but it seems useful
+			return dojo.string.encodeAscii(str);
 		default:
 			return str;
 	}
@@ -105,12 +138,77 @@ dojo.string.escapeJavaScript = function(str) {
 	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
 }
 
-dojo.string.repeat = function(str, count) {
+/**
+ * Return 'str' repeated 'count' times, optionally
+ * placing 'separator' between each rep
+ */
+dojo.string.repeat = function(str, count, separator) {
 	var out = "";
 	for(var i = 0; i < count; i++) {
 		out += str;
+		if(separator && i < count - 1) {
+			out += separator;
+		}
 	}
 	return out;
+}
+
+/**
+ * Returns true if 'str' ends with 'end'
+ */
+dojo.string.endsWith = function(str, end, ignoreCase) {
+	if(ignoreCase) {
+		str = str.toLowerCase();
+		end = end.toLowerCase();
+	}
+	return str.lastIndexOf(end) == str.length - end.length;
+}
+
+/**
+ * Returns true if 'str' ends with any of the arguments[2 -> n]
+ */
+dojo.string.endsWithAny = function(str /* , ... */) {
+	for(var i = 1; i < arguments.length; i++) {
+		if(dojo.string.endsWith(str, arguments[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Returns true if 'str' starts with 'start'
+ */
+dojo.string.startsWith = function(str, start, ignoreCase) {
+	if(ignoreCase) {
+		str = str.toLowerCase();
+		start = start.toLowerCase();
+	}
+	return str.indexOf(start) == 0;
+}
+
+/**
+ * Returns true if 'str' starts with any of the arguments[2 -> n]
+ */
+dojo.string.startsWithAny = function(str /* , ... */) {
+	for(var i = 1; i < arguments.length; i++) {
+		if(dojo.string.startsWith(str, arguments[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Returns true if 'str' starts with any of the arguments 2 -> n
+ */
+dojo.string.has = function(str /* , ... */) {
+	for(var i = 1; i < arguments.length; i++) {
+		if(str.indexOf(arguments[i] > -1)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 // do we even want to offer this? is it worth it?
