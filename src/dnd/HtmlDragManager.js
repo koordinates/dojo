@@ -213,7 +213,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			this.dropTargetDimensions = [];
 			dojo.lang.forEach(this.dropTargets, function(tempTarget){
 				var tn = tempTarget.domNode;
-				if(!tn){ continue; }
+				if(!tn){ return; }
 				var ttx = dojo.style.getAbsoluteX(tn, true);
 				var tty = dojo.style.getAbsoluteY(tn, true);
 				_this.dropTargetDimensions.push([
