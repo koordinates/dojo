@@ -95,7 +95,14 @@ dojo.lang.extend(dojo.io.Request, {
 	sync: false,
 	
 	bindSuccess: false,
+
+	/** Cache/look for the request in the cache before attempting to request?
+	 *  NOTE: this isn't a browser cache, this is internal and would only cache in-page
+	 */
 	useCache: false,
+
+	/** Prevent the browser from caching this by adding a query string argument to the URL */
+	preventCache: false,
 	
 	// events stuff
 	load: function(type, data, evt){ },
