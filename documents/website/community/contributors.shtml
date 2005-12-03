@@ -8,10 +8,11 @@
 <!--#include virtual="/rest_template/header.html" -->
 <h1>Dojo Committers</h1>
 <p>
-	The following individuals are committers on the Dojo project. Committers
-	have submitted <a href="http://dojotoolkit.org/icla.txt">CLAs</a> and have
-	earned the trust of their peers in the Dojo community to the extent that
-	they have been granted write privleges on the Dojo source code repository.
+	The following individuals are committers on one or more Dojo Foundation
+	projects. Committers have submitted <a
+	href="http://dojotoolkit.org/icla.txt">CLAs</a> and have earned the trust
+	of their peers in the Dojo community to the extent that they have been
+	granted write privleges on the Dojo source code repository.
 </p>
 <table cellpadding="0" cellspacing="0" border="0">
 	<thead>
@@ -100,6 +101,10 @@
 		<tr>
 			<td> bob </td>
 			<td> Bob Ippolito </td>
+		</tr>
+		<tr>
+			<td> skinner </td>
+			<td> Brian Skinner </td>
 		</tr>
 	</tbody>
 </table>
