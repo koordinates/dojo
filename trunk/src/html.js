@@ -688,6 +688,78 @@ dojo.html.toCoordinateArray = function(coords, includeScroll) {
 	return ret;
 };
 
+/**
+ * Keeps 'node' in the visible area of the screen while trying to
+ * place closest to desiredX, desiredY. The input coordinates are
+ * expected to be the desired screen position, not accounting for
+ * scrolling. If you already accounted for scrolling, set 'hasScroll'
+ * to true. Set padding to either a number or array for [paddingX, paddingY]
+ * to put some buffer around the element you want to position.
+ * NOTE: node is assumed to be absolutely or relatively positioned.
+ *
+ * Alternate call sig:
+ * keepOnScreen(node, [x, y], padding, hasScroll)
+ *
+ * Examples:
+ * keepOnScreen(node, 100, 200)
+ * keepOnScreen("myId", [800, 623], 5)
+ * keepOnScreen(node, 234, 3284, [2, 5], true)
+ */
+dojo.html.keepOnScreen = function(node, desiredX, desiredY, padding, hasScroll) {
+	if(dojo.lang.isArray(desiredX)) {
+		hasScroll = padding;
+		padding = desiredY;
+		desiredY = desiredX[1];
+		desiredX = desiredX[0];
+	}
+
+	if(!isNaN(padding) {
+		padding = [Number(padding), Number(padding)];
+	} else if(!dojo.lang.isArray(padding)) {
+		padding = [0, 0];
+	}
+
+	var scroll = dojo.html.getScrollOffset();
+	var view = dojo.html.getViewportSize();
+
+	node = dojo.byId(node);
+	var w = node.offsetWidth + padding[0];
+	var h = node.offsetHeight + padding[1];
+
+	if(hasScroll) {
+		desiredX -= scroll.x;
+		desiredY -= scroll.y;
+	}
+
+	var x = desiredX + w;
+	if(x > view.w) {
+		x = view.w - w;
+	} else {
+		x = desiredX;
+	}
+	x = Math.max(padding[0], x) + scroll.x;
+
+	var y = desiredY + h;
+	if(y > view.y) {
+		y = view.y - y;
+	} else {
+		y = desiredY;
+	}
+	y = Math.max(padding[1], y) + scroll.y;
+
+	node.style.left = x + "px";
+	node.style.right = y + "px";
+
+	var ret = [x, y];
+	ret.x = x;
+	ret.y = y;
+	return ret;
+}
+
+/**
+ * For IE z-index schenanigans
+ * See Dialog widget for sample use
+ */
 dojo.html.BackgroundIframe = function() {
 	if(this.ie) {
 		this.iframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
@@ -696,7 +768,6 @@ dojo.html.BackgroundIframe = function() {
 		s.left = s.top = "0px";
 		s.zIndex = 2;
 		s.display = "none";
-		//s.border = "1px solid red";
 		dojo.style.setOpacity(this.iframe, 0.0);
 		dojo.html.body().appendChild(this.iframe);
 	} else {
@@ -712,7 +783,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	sizeCoords: null,
 
 	size: function(node /* or coords */) {
-		if(!this.ie) { return; }
+		if(!this.ie || !this.enabled) { return; }
 
 		if(dojo.dom.isNode(node)) {
 			this.sizeNode = node;
@@ -724,7 +795,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	},
 
 	update: function() {
-		if(!this.ie) { return; }
+		if(!this.ie || !this.enabled) { return; }
 
 		if(this.sizeNode) {
 			this.sizeCoords = dojo.html.toCoordinateArray(this.sizeNode, true);
@@ -733,15 +804,18 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		} else {
 			return;
 		}
-		var dims = this.sizeCoords;
 
-		this.iframe.style.width = dims.w + "px";
-		this.iframe.style.height = dims.h + "px";
-		this.iframe.style.left = dims.x + "px";
-		this.iframe.style.top = dims.y + "px";
+		var s = this.iframe.style;
+		var dims = this.sizeCoords;
+		s.width = dims.w + "px";
+		s.height = dims.h + "px";
+		s.left = dims.x + "px";
+		s.top = dims.y + "px";
 	},
 
 	setZIndex: function(node /* or number */) {
+		if(!this.ie || !this.enabled) { return; }
+
 		if(dojo.dom.isNode(node)) {
 			this.iframe.zIndex = dojo.html.getStyle(node, "z-index") - 1;
 		} else if(!isNaN(node)) {
@@ -764,7 +838,6 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	},
 
 	remove: function() {
-		if(!this.ie) { return; }
 		dojo.dom.removeNode(this.iframe);
 	}
 });
