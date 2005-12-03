@@ -665,7 +665,7 @@ dojo.html.hide = function(node){
 
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate array
-dojo.html.toCoordinateArray = function(coords) {
+dojo.html.toCoordinateArray = function(coords, includeScroll) {
 	if(dojo.lang.isArray(coords)){
 		// coords is already an array (of format [x,y,w,h]), just return it
 		while ( coords.length < 4 ) { coords.push(0); }
@@ -675,8 +675,8 @@ dojo.html.toCoordinateArray = function(coords) {
 		// coords is an dom object (or dom object id); return it's coordinates
 		var node = dojo.byId(coords);
 		var ret = [
-			dojo.html.getAbsoluteX(node),
-			dojo.html.getAbsoluteY(node),
+			dojo.html.getAbsoluteX(node, includeScroll),
+			dojo.html.getAbsoluteY(node, includeScroll),
 			dojo.html.getInnerWidth(node),
 			dojo.html.getInnerHeight(node)
 		];
@@ -687,3 +687,84 @@ dojo.html.toCoordinateArray = function(coords) {
 	ret.h = ret[3];
 	return ret;
 };
+
+dojo.html.BackgroundIframe = function() {
+	if(this.ie) {
+		this.iframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
+		var s = this.iframe.style;
+		s.position = "absolute";
+		s.left = s.top = "0px";
+		s.zIndex = 2;
+		s.display = "none";
+		//s.border = "1px solid red";
+		dojo.style.setOpacity(this.iframe, 0.0);
+		dojo.html.body().appendChild(this.iframe);
+	} else {
+		this.enabled = false;
+	}
+}
+dojo.lang.extend(dojo.html.BackgroundIframe, {
+	ie: dojo.render.html.ie,
+	enabled: true,
+	visibile: false,
+	iframe: null,
+	sizeNode: null,
+	sizeCoords: null,
+
+	size: function(node /* or coords */) {
+		if(!this.ie) { return; }
+
+		if(dojo.dom.isNode(node)) {
+			this.sizeNode = node;
+		} else if(arguments.length > 0) {
+			this.sizeNode = null;
+			this.sizeCoords = node;
+		}
+		this.update();
+	},
+
+	update: function() {
+		if(!this.ie) { return; }
+
+		if(this.sizeNode) {
+			this.sizeCoords = dojo.html.toCoordinateArray(this.sizeNode, true);
+		} else if(this.sizeCoords) {
+			this.sizeCoords = dojo.html.toCoordinateArray(this.sizeCoords, true);
+		} else {
+			return;
+		}
+		var dims = this.sizeCoords;
+
+		this.iframe.style.width = dims.w + "px";
+		this.iframe.style.height = dims.h + "px";
+		this.iframe.style.left = dims.x + "px";
+		this.iframe.style.top = dims.y + "px";
+	},
+
+	setZIndex: function(node /* or number */) {
+		if(dojo.dom.isNode(node)) {
+			this.iframe.zIndex = dojo.html.getStyle(node, "z-index") - 1;
+		} else if(!isNaN(node)) {
+			this.iframe.zIndex = node;
+		}
+	},
+
+	show: function(node /* or coords */) {
+		if(!this.ie || !this.enabled) { return; }
+
+		this.size(node);
+		this.iframe.style.display = "block";
+	},
+
+	hide: function() {
+		if(!this.ie) { return; }
+		var s = this.iframe.style;
+		s.display = "none";
+		s.width = s.height = "1px";
+	},
+
+	remove: function() {
+		if(!this.ie) { return; }
+		dojo.dom.removeNode(this.iframe);
+	}
+});

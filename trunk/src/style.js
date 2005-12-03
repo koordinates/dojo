@@ -269,7 +269,7 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 	var ret = 0;
 	if(node["offsetParent"]){
 		
-		if(includeScroll) {
+		if(includeScroll && node.parentNode != document.body) {
 		  ret -= dojo.style.sumAncestorProperties(node, typeScroll);
 		}
 		// FIXME: this is known not to work sometimes on IE 5.x since nodes
