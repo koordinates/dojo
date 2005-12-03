@@ -89,11 +89,13 @@ dojo.html.isSelectionCollapsed = function(){
 }
 
 dojo.html.getEventTarget = function(evt){
-	if((window["event"])&&(window.event["srcElement"])){
-		return window.event.srcElement;
-	}else if((evt)&&(evt.target)){
+	if(!evt) { evt = window.event || {} };
+	if(evt.srcElement) {
+		return evt.srcElement;
+	} else if(evt.target) {
 		return evt.target;
 	}
+	return null;
 }
 
 // FIXME: should the next set of functions take an optional document to operate
@@ -122,7 +124,6 @@ dojo.html.getDocumentSize = function(){
 }
 
 dojo.html.getViewportWidth = function(){
-
 	var w = 0;
 
 	if(window.innerWidth){
@@ -148,7 +149,6 @@ dojo.html.getViewportWidth = function(){
 }
 
 dojo.html.getViewportHeight = function(){
-
 	if (window.innerHeight){
 		return window.innerHeight;
 	}
@@ -167,27 +167,34 @@ dojo.html.getViewportHeight = function(){
 }
 
 dojo.html.getViewportSize = function(){
-	return [dojo.html.getViewportWidth(), dojo.html.getViewportHeight()];
+	var ret = [dojo.html.getViewportWidth(), dojo.html.getViewportHeight()];
+	ret.w = ret[0];
+	ret.h = ret[1];
+	return ret;
 }
 
 dojo.html.getScrollOffset = function(){
+	var ret = [0, 0];
 
 	if(window.pageYOffset){
-		return [window.pageXOffset, window.pageYOffset];
-	}
-		
-	if(document.documentElement && document.documentElement.scrollTop){
-		return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
-	}
-
-	if(document.body){
-		return [document.body.scrollLeft, document.body.scrollTop];
+		ret = [window.pageXOffset, window.pageYOffset];
+	} else if(document.documentElement && document.documentElement.scrollTop){
+		ret = [document.documentElement.scrollLeft, document.documentElement.scrollTop];
+	} else if(document.body){
+		ret = [document.body.scrollLeft, document.body.scrollTop];
 	}
 
-	return [0, 0];
+	ret.x = ret[0];
+	ret.y = ret[1];
+	return ret;
 }
 
 dojo.html.getParentOfType = function(node, type){
+	dojo.deprecated("dojo.html.getParentOfType has been deprecated in favor of dojo.html.getParentByType*");
+	return dojo.html.getParentByType(node, type);
+}
+
+dojo.html.getParentByType = function(node, type) {
 	var parent = node;
 	type = type.toLowerCase();
 	while(parent.nodeName.toLowerCase()!=type){
@@ -349,6 +356,14 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
 	return true;
 }
 
+/**
+ * Replaces 'oldClass' and adds 'newClass' to node
+ */
+dojo.html.replaceClass = function(node, newClass, oldClass) {
+	dojo.html.removeClass(node, oldClass);
+	dojo.html.addClass(node, newClass);
+}
+
 // Enum type for getElementsByClass classMatchType arg:
 dojo.html.classMatchType = {
 	ContainsAll : 0, // all of the classes are part of the node's class (default)
@@ -438,7 +453,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	}
 	return nodes;
 }
-//this.getElementsByClassName = this.getElementsByClass;
+dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
 
 /**
  * Calculates the mouse's direction of gravity relative to the centre
