@@ -1,88 +1,332 @@
 dojo.provide("dojo.validate");
 dojo.provide("dojo.validate.us");
+dojo.require("dojo.regexp");
 
-dojo.validate.isText = function(value) {
-	return /\S/.test(value);
-}
+// *** Validation Functions ****
 
-dojo.validate.isInteger = function(value) {
-	// No leading zeros allowed
-	return /^[-+]?(0|[1-9]\d*)$/.test(value);	
-}
+/**
+  Checks if a string has non whitespace characters. 
+  Parameters allow you to constrain the length.
 
-dojo.validate.isNumber = function(value) {
-	// Decimal part is optional, exponents are optional, trailing zeros allowed to show precision.
-	return /^[-+]?(0|[1-9]\d*)(\.\d+)?([eE][-+]?(0|[1-9]\d*))?$/.test(value);	
-}
+  @param value  A string.
+  @param flags  An object.
+    flags.length  If set, checks if there are exactly flags.length number of characters.
+    flags.minlength  If set, checks if there are at least flags.minlength number of characters.
+    flags.maxlength  If set, checks if there are at most flags.maxlength number of characters.
+  @return  true or false.
+*/
+dojo.validate.isText = function(value, flags) {
+	flags = (typeof flags == "object") ? flags : {};
 
-dojo.validate.isEmailAddress = function(value, allowLocal, allowCruft) {
-	// It's valid for an email address to contain an apostrophe.
-	if (/^([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}$/i.test(value)) {
-		return true;
-	}
-	// Allow local email addresses
-	if ( allowLocal && /^([\da-z]+[-._+&\'])*[\da-z]+@localhost$/i.test(value) ) {
-		return true;
-	}
-	// Allow email addresses with cruft
-	if ( allowCruft && /^<?(mailto\:)?([\da-z]+[-._+&\'])*[\da-z]+@([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}>?$/i.test(value) ) {
-		return true;
-	}
+	// test for text
+	if ( /^\s*$/.test(value) ) { return false; }
 
-	return false;
-}
+	// length tests
+	if ( typeof flags.length == "number" && flags.length != value.length ) { return false; }
+	if ( typeof flags.minlength == "number" && flags.minlength > value.length ) { return false; }
+	if ( typeof flags.maxlength == "number" && flags.maxlength < value.length ) { return false; }
 
-// FIXME: should this biggyback on isEmailAddress or just have its own RegExp?
-dojo.validate.isEmailAddressList = function(value, allowLocal, allowCruft) {
-	var values = value.split(/\s*[\s;,]\s*/g);
-	var emails = [];
-	for(var i = 0; i < values.length; i++) {
-		if(dojo.string.trim(values[i]) == "") { continue; }
-
-		if(!dojo.validate.isEmailAddress(values[i], allowLocal, allowCruft)) {
-			return false;
-		} else {
-			emails.push(values[i]);
-		}
-	}
-	return emails.length > 0 ? emails : false;
+	return true;
 }
 
 /**
-	Returns true if the date conforms to the format given and is a valid date. Otherwise returns false.
+  Validates an IP address.
+  Supports 5 formats for IPv4: dotted decimal, dotted hex, dotted octal, decimal and hexadecimal.
+  Supports 2 formats for Ipv6.
 
-	@param dateValue The date
-	@param format  The format (default MM/DD/YYYY)
-	@return true or false
+  @param value  A string.
+  @param flags  An object.  All flags are boolean with default = true.
+    flags.allowDottedDecimal  Example, 207.142.131.235.  No zero padding.
+    flags.allowDottedHex  Example, 0x18.0x11.0x9b.0x28.  Case insensitive.  Zero padding allowed.
+    flags.allowDottedOctal  Example, 0030.0021.0233.0050.  Zero padding allowed.
+    flags.allowDecimal  Example, 3482223595.  A decimal number between 0-4294967295.
+    flags.allowHex  Example, 0xCF8E83EB.  Hexadecimal number between 0x0-0xFFFFFFFF.
+      Case insensitive.  Zero padding allowed.
+    flags.allowIPv6   IPv6 address written as eight groups of four hexadecimal digits.
+    flags.allowHybrid   IPv6 address written as six groups of four hexadecimal digits
+      followed by the usual 4 dotted decimal digit notation of IPv4. x:x:x:x:x:x:d.d.d.d
+  @return  true or false
+*/
+dojo.validate.isIpAddress = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.ipAddress(flags) + "$", "i");
+	return re.test(value);
+}
 
-	Accepts any type of format, including ISO8601 and RFC3339.
-	All characters in the format string are treated literally except the 
-	following tokens:
+/**
+  Checks if a string could be a valid URL.
 
-	YYYY - matches a 4 digit year
-	M - matches a non zero-padded month
-	MM - matches a zero-padded month
-	D -  matches a non zero-padded date
-	DD -  matches a zero-padded date
-	DDD -  matches an ordinal date, 1-365, and 366 on leapyear
-	ww - matches week of year, 1-53
-	d - matches day of week, 1-7
+  @param value  A string.
+  @param flags  An object.
+    flags.scheme  Can be true, false, or [true, false]. 
+      This means: required, not allowed, or either.
+    flags in regexp.host can be applied.
+    flags in regexp.ipAddress can be applied.
+    flags in regexp.tld can be applied.
+  @return  true or false
+*/
+dojo.validate.isUrl = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.url(flags) + "$", "i");
+	return re.test(value);
+}
 
-	Examples: These are all today's date.
+/**
+  Checks if a string could be a valid email address.
 
-	Date					Format
-	2005-W42-3		YYYY-Www-d
-	2005-292			YYYY-DDD
-	20051019			YYYYMMDD
-	10/19/2005		M/D/YYYY
-	19.10.2005		D.M.YYYY
+  @param value  A string.
+  @param flags  An object.
+    flags.allowCruft  Allow address like <mailto:foo@yahoo.com>.  Default is false.
+    flags in regexp.host can be applied.
+    flags in regexp.ipAddress can be applied.
+    flags in regexp.tld can be applied.
+  @return  true or false.
+*/
+dojo.validate.isEmailAddress = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.emailAddress(flags) + "$", "i");
+	return re.test(value);
+}
+
+/**
+  Checks if a string could be a valid email address list.
+
+  @param value  A string.
+  @param flags  An object.
+    flags.listSeparator  The character used to separate email addresses.  Default is newline, "\n".
+    flags in regexp.emailAddress can be applied.
+    flags in regexp.host can be applied.
+    flags in regexp.ipAddress can be applied.
+    flags in regexp.tld can be applied.
+	@return  true or false.
+*/
+dojo.validate.isEmailAddressList = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.emailAddressList(flags) + "$", "i");
+	return re.test(value);
+}
+
+/**
+  Validates whether a string is in an integer format. 
+
+  @param value  A string.
+  @param flags  An object.
+    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
+      Default is [true, false], (i.e. sign is optional).
+    flags.separator  The character used as the thousands separator.  Default is no separator.
+      For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
+  @return  true or false.
+*/
+dojo.validate.isInteger = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.integer(flags) + "$");
+	return re.test(value);
+}
+
+/**
+  Validates whether a string is a real valued number. 
+  Format is the usual exponential notation.
+
+  @param value  A string.
+  @param flags  An object.
+    flags.places  The integer number of decimal places.
+      If not given, the decimal part is optional and the number of places is unlimited.
+    flags.decimal  The character used for the decimal point.  Default is ".".
+    flags.exponent  Express in exponential notation.  Can be true, false, or [true, false].
+      Default is [true, false], (i.e. the exponential part is optional).
+    flags.eSigned  The leading plus-or-minus sign on the exponent.  Can be true, false, 
+      or [true, false].  Default is [true, false], (i.e. sign is optional).
+    flags in regexp.integer can be applied.
+  @return  true or false.
+*/
+dojo.validate.isRealNumber = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.realNumber(flags) + "$");
+	return re.test(value);
+}
+
+/**
+  Validates whether a string denotes a monetary value. 
+
+  @param value  A string.
+  @param flags  An object.
+    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
+      Default is [true, false], (i.e. sign is optional).
+    flags.symbol  A currency symbol such as Yen "¥", Pound "£", or the Euro sign "€".  
+      Default is "$".  For more than one symbol use an array, e.g. ["$", ""], makes $ optional.
+    flags.placement  The symbol can come "before" the number or "after".  Default is "before".
+    flags.separator  The character used as the thousands separator. The default is ",".
+    flags.cents  The two decimal places for cents.  Can be true, false, or [true, false].
+      Default is [true, false], (i.e. cents are optional).
+    flags.decimal  The character used for the decimal point.  Default is ".".
+  @return  true or false.
+*/
+dojo.validate.isCurrency = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.currency(flags) + "$");
+	return re.test(value);
+}
+
+/**
+  Validates U.S. currency.
+
+  @param value  A string.
+  @param flags  An object.
+    flags in validate.isCurrency can be applied.
+  @return  true or false.
+*/
+dojo.validate.us.isCurrency = function(value, flags) {
+	return dojo.validate.isCurrency(value, flags);
+}
+
+/**
+  Validates German currency.
+
+  @param value  A string.
+  @return  true or false.
+*/
+dojo.validate.isGermanCurrency = function(value) {
+	flags = {
+		symbol: "€",
+		placement: "after",
+		decimal: ",",
+		separator: "."
+	};
+	return dojo.validate.isCurrency(value, flags);
+}
+
+/**
+  Validates Japanese currency.
+
+  @param value  A string.
+  @return  true or false.
+*/
+dojo.validate.isJapaneseCurrency = function(value) {
+	flags = {
+		symbol: "¥",
+		cents: false
+	};
+	return dojo.validate.isCurrency(value, flags);
+}
+
+/**
+  Validates whether a string denoting an integer, 
+  real number, or monetary value is between a max and min. 
+
+  @param value  A string.
+  @param flags  An object.
+    flags.max  A number, which the value must be less than or equal to for the validation to be true.
+    flags.min  A number, which the value must be greater than or equal to for the validation to be true.
+    flags.decimal  The character used for the decimal point.  Default is ".".
+  @return  true or false.
+*/
+dojo.validate.isInRange = function(value, flags) {
+	// assign default values to missing paramters
+	flags = (typeof flags == "object") ? flags : {};
+	var max = (typeof flags.max == "number") ? flags.max : Infinity;
+	var min = (typeof flags.min == "number") ? flags.min : -Infinity;
+	var dec = (typeof flags.decimal == "string") ? flags.decimal : ".";
+	
+	// splice out anything not part of a number
+	var pattern = "[^" + dec + "\\deE+-]";
+	value = value.replace(RegExp(pattern, "g"), "");
+
+	// trim ends of things like e, E, or the decimal character
+	value = value.replace(/^([+-]?)(\D*)/, "$1");
+	value = value.replace(/(\D*)$/, "");
+
+	// replace decimal with ".". The minus sign '-' could be the decimal!
+	pattern = "(\\d)[" + dec + "](\\d)";
+	value = value.replace(RegExp(pattern, "g"), "$1.$2");
+
+	value = Number(value);
+	if ( value < min || value > max ) { return false; }
+
+	return true;
+}
+
+/**
+  Validates a time value in any International format.
+  The value can be validated against one format or one of multiple formats.
+
+  Format
+  h        12 hour, no zero padding.
+  hh       12 hour, has leading zero.
+  H        24 hour, no zero padding.
+  HH       24 hour, has leading zero.
+  m        minutes, no zero padding.
+  mm       minutes, has leading zero.
+  s        seconds, no zero padding.
+  ss       seconds, has leading zero.
+  All other characters must appear literally in the expression.
+
+  Example
+    "h:m:s t"  ->   2:5:33 PM
+    "HH:mm:ss" ->  14:05:33
+
+  @param value  A string.
+  @param flags  An object.
+    flags.format  A string or an array of strings.  Default is "h:mm:ss t".
+    flags.amSymbol  The symbol used for AM.  Default is "AM".
+    flags.pmSymbol  The symbol used for PM.  Default is "PM".
+  @return  true or false
+*/
+dojo.validate.isValidTime = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.time(flags) + "$", "i");
+	return re.test(value);
+}
+
+/**
+  Validates 12-hour time format.
+  Zero-padding is not allowed for hours, required for minutes and seconds.
+  Seconds are optional.
+
+  @param value  A string.
+  @return  true or false
+*/
+dojo.validate.is12HourTime = function(value) {
+	return dojo.validate.isValidTime(value, {format: ["h:mm:ss t", "h:mm t"]});
+}
+
+/**
+  Validates 24-hour military time format.
+  Zero-padding is required for hours, minutes, and seconds.
+  Seconds are optional.
+
+  @param value  A string.
+  @return  true or false
+*/
+dojo.validate.is24HourTime = function(value) {
+	return dojo.validate.isValidTime(value, {format: ["HH:mm:ss", "HH:mm"]} );
+}
+
+/**
+  Returns true if the date conforms to the format given and is a valid date. Otherwise returns false.
+
+  @param dateValue  A string for the date.
+  @param format  A string, default is  "MM/DD/YYYY".
+  @return  true or false
+
+  Accepts any type of format, including ISO8601.
+  All characters in the format string are treated literally except the following tokens:
+
+  YYYY - matches a 4 digit year
+  M - matches a non zero-padded month
+  MM - matches a zero-padded month
+  D -  matches a non zero-padded date
+  DD -  matches a zero-padded date
+  DDD -  matches an ordinal date, 001-365, and 366 on leapyear
+  ww - matches week of year, 01-53
+  d - matches day of week, 1-7
+
+  Examples: These are all today's date.
+
+  Date          Format
+  2005-W42-3    YYYY-Www-d
+  2005-292      YYYY-DDD
+  20051019      YYYYMMDD
+  10/19/2005    M/D/YYYY
+  19.10.2005    D.M.YYYY
 */
 dojo.validate.isValidDate = function(dateValue, format) {
 	// Default is the American format
-	format = (typeof format == "undefined" || format == "") ? "MM/DD/YYYY" : format;
+	if (typeof format != "string") { format = "MM/DD/YYYY"; }
 
 	// Create a literal regular expression based on format
-	var reLiteral = format.replace(/([$^.*+?=!:|\/\\\(\)\[\]\{\}])/g, "\\$1");		// escape special char
+	var reLiteral = format.replace(/([$^.*+?=!:|\/\\\(\)\[\]\{\}])/g, "\\$1");
 
 	// Convert all the tokens to RE elements
 	reLiteral = reLiteral.replace( "YYYY", "([0-9]{4})" );
@@ -149,116 +393,98 @@ dojo.validate.isValidDate = function(dateValue, format) {
 	return true;
 }
 
-// Validates 24-hour military time format.
-dojo.validate.is24HourTime = function(value) {
-	// Zero-padding is required for hours, minutes, and seconds.  
-	// Seconds are optional. Fractions of seconds are optional.
-	return /^([0-1][0-9]|[2][0-3]):[0-5][0-9](:[0-5][0-9](\.\d+)?)?$/.test(value);	
-}
+/**
+  Validates US state and territory abbreviations.
 
-// Validates 12-hour time format.
-dojo.validate.is12HourTime = function(value) {
-	// Zero-padding is no allowed for hours, required for minutes and seconds.
-	// Seconds are optional. Fractions of seconds are optional.
-	return /^([1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9](\.\d+)?)?\s*(am|pm|a\.m\.|p\.m\.)$/i.test(value);	
-}
-
-// FIXME: add support for IPv6?
-dojo.validate.isIpAddress = function(value) {
-	// Each number is between 0-255.  Zero padding is allowed.
-	return /^((\d|\d\d|[01]\d\d|2[0-4]\d|25[0-5])\.){3}(\d|\d\d|[01]\d\d|2[0-4]\d|25[0-5])$/.test(value);
-}
-
-// FIXME: is this redundant with the dojo.uri.Uri stuff
-dojo.validate.isUrl = function(value) {
-	// Domain name can not start or end with a dash. TLD has 2-6 letters. 
-	if (/^((https?|ftps?)\:\/\/)?([\da-z][-\da-z]*[\da-z]\.)+[a-z]{2,6}(\/\S*)?$/i.test(value)) return true;
-
-	// Otherwise 2nd chance to check for IP based URL
-	return /^((https?|ftps?)\:\/\/)?((\d|\d\d|[01]\d\d|2[0-4]\d|25[0-5])\.){3}(\d|\d\d|[01]\d\d|2[0-4]\d|25[0-5])(\/\S*)?$/.test(value);
-}
-
-// Validates U.S. currency
-dojo.validate.us.isCurrency = function(value) {
-	// Optional plus/minus sign, optional dollar-sign, optional cents, optional commas.
-	return /^[-+]?\$?(0|[1-9]\d{0,2}(,?\d\d\d)*)(\.\d\d)?$/.test(value);	
+	@param value  A two character string.
+  @param flags  An object.
+    flags.allowTerritories  Allow Guam, Puerto Rico, etc.  Default is true.
+    flags.allowMilitary  Allow military 'states', e.g. Armed Forces Europe (AE).  Default is true.
+  @return  true or false
+*/
+dojo.validate.us.isState = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.us.state(flags) + "$", "i");
+	return re.test(value);
 }
 
 /**
-	Validates 10 US digit phone number
+  Validates any sort of number based format.
+  Use it for phone numbers, social security numbers, zip-codes, etc.
+  The value can be validated against one format or one of multiple formats.
 
-	@param value The telephone number string
-	@param flags  An associative array of flags and values specifying additional constraints.
-		flags.ext  Possible values for telephone extension are "yes, "no", or "allow".  Default is "allow".
-		flags.prefix  String that preceeds extention. Default allows "x" or "ext" or "ext." or "".
-		flags.area_code  Possible values are "yes, "no", or "allow".  Default is "allow".
-		flags.par  Parantheses around area code can have values of "yes, "no", or "allow".  Default is "allow".
-		flags.sep  A string that specifies the seperator.  Default is "-" or "." or " ".
-	@return true or false
+  Format
+    #        Stands for a digit, 0-9.
+    ?        Stands for an optional digit, 0-9 or nothing.
+    All other characters must appear literally in the expression.
+
+  Example   
+    "(###) ###-####"       ->   (510) 542-9742
+    "(###) ###-#### x#???" ->   (510) 542-9742 x153
+    "###-##-####"          ->   506-82-1089       i.e. social security number
+    "#####-####"           ->   98225-1649        i.e. zip code
+
+  @param value  A string.
+  @param flags  An object.
+    flags.format  A string or an Array of strings for multiple formats.
+  @return  true or false
 */
-dojo.validate.us.isPhoneNumber = function(value, flags) {
-	flags = (typeof flags == "object") ? flags : {};
-	var ext = (typeof flags.ext == "string") ? flags.ext : "allow";
-	var prefix = (typeof flags.prefix == "string") ? flags.prefix : "(x|ext\\.?)?";
-	var ac = (typeof flags.area_code == "string") ? flags.area_code : "allow";
-	var par = (typeof flags.par == "string") ? flags.par : "allow";
-	var sep = (typeof flags.sep == "string") ? flags.sep : "[- .]";
-
-	// build a regular expression for the area code
-	var areacodeRE = "";
-	if ( ac == "yes" && par == "yes" ) {
-		areacodeRE = "\\(\\d{3}\\) ";
-	}
-	else if ( ac == "allow" && par == "yes" ) {
-		areacodeRE = "(\\(\\d{3}\\) )?";
-	}
-	else if ( ac == "yes" && par == "no" ) {
-		areacodeRE = "\\d{3}" + sep;
-	}
-	else if ( ac == "allow" && par == "no" ) {
-		areacodeRE = "(\\d{3}" + sep + ")?";
-	}
-	else if ( ac == "yes" && par == "allow" ) {
-		areacodeRE = "(\\(\\d{3}\\) |\\d{3}" + sep + ")";
-	}
-	else if ( ac == "allow" && par == "allow" ) {
-		areacodeRE = "(\\(\\d{3}\\) |\\d{3}" + sep + ")?";
-	}
-
-	// build a regular expression for the local number
-	var numberRE = "\\d{3}" + sep + "\\d{4}";
-
-	// build a regular expression for the extention
-	var extentionRE = "";
-	if ( ext == "yes" ) {
-		extentionRE = " \\s*" + prefix + "\\s*\\d{1,4}";
-	}
-	else if ( ext == "allow" ) {
-		extentionRE = "( \\s*" + prefix + "\\s*\\d{1,4})?";
-	}
-
-	// build a regular expression for the phone number
-	var phoneRE = "^" + areacodeRE + numberRE + extentionRE + "$";
-
-	var re = new RegExp(phoneRE);
+dojo.validate.isNumberFormat = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.numberFormat(flags) + "$", "i");
 	return re.test(value);
+}
+
+/**
+  Validates 10 US digit phone number for several common formats:
+
+  @param value The telephone number string
+  @return true or false
+*/
+dojo.validate.us.isPhoneNumber = function(value) {
+	flags = {
+		format: [
+			"###-###-####",
+			"(###) ###-####",
+			"(###) ### ####",
+			"###.###.####",
+			"###/###-####",
+			"### ### ####",
+			"###-###-#### x#???",
+			"(###) ###-#### x#???",
+			"(###) ### #### x#???",
+			"###.###.#### x#???",
+			"###/###-#### x#???",
+			"### ### #### x#???"
+		]
+	};
+
+	return dojo.validate.isNumberFormat(value, flags);
 }
 
 // Validates social security number
 dojo.validate.us.isSocialSecurityNumber = function(value) {
-	// Choice of 2 separators, or no separators.
-	return /^\d{3}([- ]?)\d{2}\1\d{4}$/.test(value);
+	flags = {
+		format: [
+			"###-##-####",
+			"### ## ####",
+			"#########"
+		]
+	};
+
+	return dojo.validate.isNumberFormat(value, flags);
 }
 
 // Validates U.S. zip-code
 dojo.validate.us.isZipCode = function(value) {
-	// Choice of 2 separators, or none, last 4 digits optional.
-	return /^\d{5}([- ]?\d{4})?$/.test(value);
-}
+	flags = {
+		format: [
+			"#####-####",
+			"##### ####",
+			"#########",
+			"#####"
+		]
+	};
 
-// Validates states and and territories of the United States in a 2 character format.
-dojo.validate.us.isState = function(value) {
-	return /^(AL|AK|AS|AZ|AR|CA|CO|CT|DE|DC|FM|FL|GA|GU|HI|ID|IL|IN|IA|KS|KY|LA|ME|MH|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|MP|OH|OK|OR|PW|PA|PR|RI|SC|SD|TN|TX|UT|VT|VI|VA|WA|WV|WI|WY)$/i.test(value);
+	return dojo.validate.isNumberFormat(value, flags);
 }
 
 
@@ -312,7 +538,7 @@ dojo.validate.us.isState = function(value) {
 			confirm: {
 				email_confirm: "email",	
 				pw2: "pw1",	
-			},
+			}
 		};
 
 	Results Object
