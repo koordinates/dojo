@@ -52,7 +52,7 @@ dojo.dom.isNode = dojo.lang.isDomNode = function(wh){
 		return wh instanceof Element;
 	} else {
 		// best-guess
-		return !isNaN(wh.nodeType);
+		return wh && !isNaN(wh.nodeType);
 	}
 }
 dojo.lang.whatAmI.custom["node"] = dojo.dom.isNode;

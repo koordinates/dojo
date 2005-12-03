@@ -73,6 +73,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	postCreate: function(args, frag, parentComp) {
+		foo = this.domNode;
 		var b = dojo.html.body();
 		b.appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
@@ -80,19 +81,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			this.setContent(this.nodeRef);
 		}
 
-		if(dojo.render.html.ie){
-			this.bgIframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
-			with(this.bgIframe.style) {
-				position = "absolute";
-				left = top = "0px";
-				zIndex = 997;
-				display = "none";
-				// backgroundColor = "transparent";
-				// border = "0px";
-			}
-			b.appendChild(this.bgIframe);
-			dojo.style.setOpacity(this.bgIframe, 0);
-		}
+		this.bgIframe = new dojo.html.BackgroundIframe();
 
 		this.bg = document.createElement("div");
 		this.bg.className = "dialogUnderlay";
@@ -109,6 +98,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			zIndex = 999;
 			display = "none";
 		}
+		this.bgIframe.setZIndex(this.bg);
 	},
 
 	setContent: function(content) {
@@ -149,18 +139,17 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			var w = dojo.html.getViewportWidth();
 			this.bg.style.width = w + "px";
 			this.bg.style.height = h + "px";
-			if(this.bgIframe){
-				this.bgIframe.style.height = h + "px";
-				this.bgIframe.style.width = w + "px";
-			}
+			this.bgIframe.size([0, 0, w, h]);
+		} else {
+			this.bgIframe.size(this.domNode);
 		}
 	},
 
 	showBackground: function() {
+		this.sizeBackground();
+		this.bgIframe.show();
 		if(this.bgOpacity > 0) {
-			this.sizeBackground();
 			this.bg.style.display = "block";
-			if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 		}
 	},
 
@@ -182,6 +171,11 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		with(this.domNode.style) {
 			left = x + "px";
 			top = y + "px";
+		}
+
+		// tied to domNode, so we need to update the position
+		if(this.bgOpacity == 0) {
+			this.bgIframe.size([x, y, w, h]);
 		}
 	},
 
@@ -232,7 +226,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
 				this.bg.style.display = "none";
-				if(this.bgIframe){ this.bgIframe.style.display = "none"; }
+				this.bgIframe.hide();
 				var _this = this;
 				if(this.anim){ this.anim.stop(); }
 				this.anim = dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) {
@@ -245,7 +239,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				break;
 			default:
 				this.bg.style.display = "none";
-				if(this.bgIframe){ this.bgIframe.style.display = "none"; }
+				this.bgIframe.hide();
 				this.domNode.style.display = "none";
 				if(dojo.lang.isFunction(this.onHide)) {
 					this.onHide(node);
@@ -254,9 +248,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		}
 
 		this.bg.style.width = this.bg.style.height = "1px";
-		if(this.bgIframe) {
-			this.bgIframe.style.width = this.bgIframe.style.height = "1px";
-		}
 
 		if (this._scrollConnected){
 			this._scrollConnected = false;
