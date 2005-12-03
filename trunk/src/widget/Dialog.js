@@ -128,7 +128,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		} else {
 			color = new dojo.graphics.color.Color(color);
 		}
-		this.bg.style.backgroundColor = color;
+		this.bg.style.backgroundColor = color.toString();
 		return this.bgColor = color;
 	},
 	
@@ -144,18 +144,27 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	sizeBackground: function() {
-		var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
-		var w = dojo.html.getViewportWidth();
-		this.bg.style.width = w + "px";
-		this.bg.style.height = h + "px";
-		if(this.bgIframe){
-			this.bgIframe.style.height = h + "px";
-			this.bgIframe.style.width = w + "px";
+		if(this.bgOpacity > 0) {
+			var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
+			var w = dojo.html.getViewportWidth();
+			this.bg.style.width = w + "px";
+			this.bg.style.height = h + "px";
+			if(this.bgIframe){
+				this.bgIframe.style.height = h + "px";
+				this.bgIframe.style.width = w + "px";
+			}
+		}
+	},
+
+	showBackground: function() {
+		if(this.bgOpacity > 0) {
+			this.sizeBackground();
+			this.bg.style.display = "block";
+			if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 		}
 	},
 
 	placeDialog: function() {
-
 		var scroll_offset = dojo.html.getScrollOffset();
 		var viewport_size = dojo.html.getViewportSize();
 
@@ -178,12 +187,10 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 	show: function() {
 		this.setBackgroundOpacity();
-		this.sizeBackground();
 		this.placeDialog();
+		this.showBackground();
 		switch((this.effect||"").toLowerCase()) {
 			case "fade":
-				this.bg.style.display = "block";
-				if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 				this.domNode.style.display = "block";
 				var _this = this;
 				if(this.anim){ this.anim.stop(); }
@@ -194,8 +201,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 				});
 				break;
 			default:
-				this.bg.style.display = "block";
-				if(this.bgIframe){ this.bgIframe.style.display = "block"; }
 				this.domNode.style.display = "block";
 				if(dojo.lang.isFunction(this.onShow)) {
 					this.onShow(node);

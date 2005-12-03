@@ -1,5 +1,6 @@
 dojo.provide("dojo.graphics.color");
 dojo.require("dojo.lang");
+dojo.require("dojo.string");
 dojo.require("dojo.math");
 
 // TODO: rewrite the "x2y" methods to take advantage of the parsing
@@ -143,14 +144,14 @@ dojo.graphics.color.hex2rgb = function(hex) {
 
 dojo.graphics.color.rgb2hex = function(r, g, b) {
 	if(dojo.lang.isArray(r)) {
-		g = r[1] || "00";
-		b = r[2] || "00";
-		r = r[0] || "00";
+		g = r[1] || 0;
+		b = r[2] || 0;
+		r = r[0] || 0;
 	}
-	r = "00" + r.toString(16);
-	g = "00" + g.toString(16);
-	b = "00" + b.toString(16);
-	return ["#", r.substr(-2,2), g.substr(-2,2), b.substr(-2,2)].join("");
+	return ["#",
+		dojo.string.pad(r.toString(16), 2),
+		dojo.string.pad(g.toString(16), 2),
+		dojo.string.pad(b.toString(16), 2)].join("");
 }
 
 dojo.graphics.color.rgb2hsv = function(r, g, b){
