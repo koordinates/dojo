@@ -286,33 +286,8 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	return anim;
 };
 
-// in: coordinate array [x,y,w,h] or dom node
-// return: coordinate array
-dojo.fx.html.toCoordinateArray = function(coords) {
-	if(dojo.lang.isArray(coords)){
-		// coords is already an array (of format [x,y,w,h]), just return it
-		while ( coords.length < 4 ) { coords.push(0); }
-		while ( coords.length > 4 ) { coords.pop(); }
-		var ret = coords;
-	} else {
-		// coords is an dom object (or dom object id); return it's coordinates
-		coords = dojo.byId(coords);
-		var ret = [
-			dojo.html.getAbsoluteX(coords),
-			dojo.html.getAbsoluteY(coords),
-			dojo.html.getInnerWidth(coords),
-			dojo.html.getInnerHeight(coords)
-		];
-	}
-	ret.x = ret[0];
-	ret.y = ret[1];
-	ret.w = ret[2];
-	ret.h = ret[3];
-	return ret;
-};
-
 dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
-	var startCoords = dojo.fx.html.toCoordinateArray(start);
+	var startCoords = dojo.html.toCoordinateArray(start);
 
 	var outline = document.createElement("div");
 	with(outline.style) {
@@ -327,7 +302,7 @@ dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 		visibility = "hidden";
 		display = "block";
 	}
-	var endCoords = dojo.fx.html.toCoordinateArray(endNode);
+	var endCoords = dojo.html.toCoordinateArray(endNode);
 
 	with(endNode.style) {
 		display = "none";
@@ -360,8 +335,8 @@ dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 };
 
 dojo.fx.html.implode = function(startNode, end, duration, callback, dontPlay) {
-	var startCoords = dojo.fx.html.toCoordinateArray(startNode);
-	var endCoords = dojo.fx.html.toCoordinateArray(end);
+	var startCoords = dojo.html.toCoordinateArray(startNode);
+	var endCoords = dojo.html.toCoordinateArray(end);
 
 	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
