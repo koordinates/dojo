@@ -648,3 +648,27 @@ dojo.html.hide = function(node){
 	}
 }
 
+// in: coordinate array [x,y,w,h] or dom node
+// return: coordinate array
+dojo.html.toCoordinateArray = function(coords) {
+	if(dojo.lang.isArray(coords)){
+		// coords is already an array (of format [x,y,w,h]), just return it
+		while ( coords.length < 4 ) { coords.push(0); }
+		while ( coords.length > 4 ) { coords.pop(); }
+		var ret = coords;
+	} else {
+		// coords is an dom object (or dom object id); return it's coordinates
+		var node = dojo.byId(coords);
+		var ret = [
+			dojo.html.getAbsoluteX(node),
+			dojo.html.getAbsoluteY(node),
+			dojo.html.getInnerWidth(node),
+			dojo.html.getInnerHeight(node)
+		];
+	}
+	ret.x = ret[0];
+	ret.y = ret[1];
+	ret.w = ret[2];
+	ret.h = ret[3];
+	return ret;
+};
