@@ -713,7 +713,7 @@ dojo.html.keepOnScreen = function(node, desiredX, desiredY, padding, hasScroll) 
 		desiredX = desiredX[0];
 	}
 
-	if(!isNaN(padding) {
+	if(!isNaN(padding)) {
 		padding = [Number(padding), Number(padding)];
 	} else if(!dojo.lang.isArray(padding)) {
 		padding = [0, 0];
