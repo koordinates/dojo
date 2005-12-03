@@ -73,7 +73,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	postCreate: function(args, frag, parentComp) {
-		foo = this.domNode;
 		var b = dojo.html.body();
 		b.appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
