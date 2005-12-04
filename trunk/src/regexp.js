@@ -207,6 +207,7 @@ dojo.regexp.emailAddress = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.allowCruft != "boolean") { flags.allowCruft = false; }
+	flags.allowPort = false; // invalid in email addresses
 
 	// user name RE - apostrophes are valid if there's not 2 in a row
 	var usernameRE = "([\\da-z]+[-._+&'])*[\\da-z]+";
