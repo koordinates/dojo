@@ -43,7 +43,7 @@ Classes
     ``arg1``:
         a very arg-like argument
 
-    *returns*:
+    *return*:
         new object of type Foo.
 
 ``Foo.prototype.method1()``:
@@ -69,7 +69,7 @@ Methods
     ``arg1``:
         An argument. Like many others, but different in its own special way.
 
-    *returns*:
+    *return*:
         null
 	
 
