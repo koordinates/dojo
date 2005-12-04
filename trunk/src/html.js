@@ -688,6 +688,18 @@ dojo.html.toCoordinateArray = function(coords, includeScroll) {
 	return ret;
 };
 
+/* TODO: merge keepOnScreen and keepOnScreenPoint to make 1 function that allows you
+ * to define which corner(s) you want to bind to. Something like so:
+ *
+ * kes(node, desiredX, desiredY, "TR")
+ * kes(node, [desiredX, desiredY], ["TR", "BL"])
+ *
+ * TODO: make this function have variable call sigs
+ *
+ * kes(node, ptArray, cornerArray, padding, hasScroll)
+ * kes(node, ptX, ptY, cornerA, cornerB, cornerC, paddingArray, hasScroll)
+ */
+
 /**
  * Keeps 'node' in the visible area of the screen while trying to
  * place closest to desiredX, desiredY. The input coordinates are
@@ -698,12 +710,12 @@ dojo.html.toCoordinateArray = function(coords, includeScroll) {
  * NOTE: node is assumed to be absolutely or relatively positioned.
  *
  * Alternate call sig:
- * keepOnScreen(node, [x, y], padding, hasScroll)
+ *  keepOnScreen(node, [x, y], padding, hasScroll)
  *
  * Examples:
- * keepOnScreen(node, 100, 200)
- * keepOnScreen("myId", [800, 623], 5)
- * keepOnScreen(node, 234, 3284, [2, 5], true)
+ *  keepOnScreen(node, 100, 200)
+ *  keepOnScreen("myId", [800, 623], 5)
+ *  keepOnScreen(node, 234, 3284, [2, 5], true)
  */
 dojo.html.keepOnScreen = function(node, desiredX, desiredY, padding, hasScroll) {
 	if(dojo.lang.isArray(desiredX)) {
@@ -740,15 +752,89 @@ dojo.html.keepOnScreen = function(node, desiredX, desiredY, padding, hasScroll) 
 	x = Math.max(padding[0], x) + scroll.x;
 
 	var y = desiredY + h;
-	if(y > view.y) {
-		y = view.y - y;
+	if(y > view.h) {
+		y = view.h - h;
 	} else {
 		y = desiredY;
 	}
 	y = Math.max(padding[1], y) + scroll.y;
 
 	node.style.left = x + "px";
-	node.style.right = y + "px";
+	node.style.top = y + "px";
+
+	var ret = [x, y];
+	ret.x = x;
+	ret.y = y;
+	return ret;
+}
+
+/**
+ * Like keepOnScreenPoint except that it attempts to keep one of the node's
+ * corners at desiredX, desiredY. Also note that padding is only taken into
+ * account if none of the corners can be kept and thus keepOnScreenPoint falls
+ * back to keepOnScreen to place the node.
+ *
+ * Examples placing node at mouse position (where e = [Mouse event]):
+ *  keepOnScreenPoint(node, e.clientX, e.clientY);
+ */
+dojo.html.keepOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
+	if(dojo.lang.isArray(desiredX)) {
+		hasScroll = padding;
+		padding = desiredY;
+		desiredY = desiredX[1];
+		desiredX = desiredX[0];
+	}
+
+	var scroll = dojo.html.getScrollOffset();
+	var view = dojo.html.getViewportSize();
+
+	node = dojo.byId(node);
+	var w = node.offsetWidth;
+	var h = node.offsetHeight;
+
+	if(hasScroll) {
+		desiredX -= scroll.x;
+		desiredY -= scroll.y;
+	}
+
+	var x = -1, y = -1;
+	//dojo.debug(desiredX + w, "<=", view.w, "&&", desiredY + h, "<=", view.h);
+	if(desiredX + w <= view.w && desiredY + h <= view.h) { // TL
+		x = desiredX;
+		y = desiredY;
+		//dojo.debug("TL", x, y);
+	}
+
+	//dojo.debug(desiredX, "<=", view.w, "&&", desiredY + h, "<=", view.h);
+	if((x < 0 || y < 0) && desiredX <= view.w && desiredY + h <= view.h) { // TR
+		x = desiredX - w;
+		y = desiredY;
+		//dojo.debug("TR", x, y);
+	}
+
+	//dojo.debug(desiredX + w, "<=", view.w, "&&", desiredY, "<=", view.h);
+	if((x < 0 || y < 0) && desiredX + w <= view.w && desiredY <= view.h) { // BL
+		x = desiredX;
+		y = desiredY - h;
+		//dojo.debug("BL", x, y);
+	}
+
+	//dojo.debug(desiredX, "<=", view.w, "&&", desiredY, "<=", view.h);
+	if((x < 0 || y < 0) && desiredX <= view.w && desiredY <= view.h) { // BR
+		x = desiredX - w;
+		y = desiredY - h;
+		//dojo.debug("BR", x, y);
+	}
+
+	if(x < 0 || y < 0 || (x + w > view.w) || (y + h > view.h)) {
+		return dojo.html.keepOnScreen(node, desiredX, desiredY, padding, hasScroll);
+	}
+
+	x += scroll.x;
+	y += scroll.y;
+
+	node.style.left = x + "px";
+	node.style.top = y + "px";
 
 	var ret = [x, y];
 	ret.x = x;

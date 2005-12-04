@@ -452,6 +452,7 @@ dojo.style.toSelectorCase = function (selector) {
 
 /* float between 0.0 (transparent) and 1.0 (opaque) */
 dojo.style.setOpacity = function setOpacity (node, opacity, dontFixOpacity) {
+	node = dojo.byId(node);
 	var h = dojo.render.html;
 	if(!dontFixOpacity){
 		if( opacity >= 1.0){
