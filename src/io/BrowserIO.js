@@ -481,30 +481,30 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		do { // break-block
 
-			if(kwArgs.method.toLowerCase() == "get"){
-				if(kwArgs["content"]) {
-					query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
-				}
-				break;
-			}
-
 			if(kwArgs.postContent){
 				query = kwArgs.postContent;
 				break;
 			}
 
-			if(!kwArgs.multipart){
+			if(kwArgs["content"]) {
 				query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
+			}
+			
+			if(kwArgs.method.toLowerCase() == "get" || !kwArgs.multipart){
 				break;
 			}
 
 			var	t = [];
-			if(kwArgs.content){
-				for(var name in kwArgs.content){
-					t.push(	"--" + this.multipartBoundary,
-							"Content-Disposition: form-data; name=\"" + name + "\"", 
-							"",
-							kwArgs.content[name]);
+			if(query.length){
+				var q = query.split("&");
+				for(var i = 0; i < q.length; ++i){
+					if(q[i].length){
+						var p = q[i].split("=");
+						t.push(	"--" + this.multipartBoundary,
+								"Content-Disposition: form-data; name=\"" + p[0] + "\"", 
+								"",
+								p[1]);
+					}
 				}
 			}
 
