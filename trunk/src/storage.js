@@ -25,6 +25,10 @@ dojo.storage = new function(){
 		}
 		return this.provider.get(key, namespace);
 	}
+
+	this.remove = function(key, namespace){
+		return this.provider.remove(key, namespace);
+	}
 }
 
 dojo.storage.StorageProvider = function(){
@@ -49,5 +53,10 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 
 	get: function(key, namespace){
 		dojo.unimplemented("dojo.storage.StorageProvider.get");
-	}
+	},
+
+	remove: function(key, value, namespace){
+		dojo.unimplemented("dojo.storage.StorageProvider.set");
+	},
+
 });
