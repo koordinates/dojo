@@ -120,62 +120,62 @@ Classes
     *returns*:
         new object of type Foo.
 
-Properties
-+++++++++++++++++++++++++++++++++++
-
-``namespace``:
-    String. Name of the default namespace for this storage provider.
-    Defaults to ``*``.
-
-``initialized``:
-    Boolean. Is the provider ready to accept ``get()`` and ``set()``
-    requests?
-
-Methods
-+++++++++++++++++++++++++++++++++++
-
-``StorageProvider.prototype.set(key, value, namespace)``:
-
-    ``key``:
-        String.
-
-    ``value``:
-        String.
+    Properties
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     ``namespace``:
-        Optional. String.
+        String. Name of the default namespace for this storage provider.
+        Defaults to ``*``.
 
-    *return*
-        Implementation specific
+    ``initialized``:
+        Boolean. Is the provider ready to accept ``get()`` and ``set()``
+        requests?
 
-``StorageProvider.prototype.get(key, namespace)``:
+    Methods
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    ``key``:
-        String.
+    ``set(key, value, namespace)``:
 
-    ``namespace``:
-        Optional. String.
+        ``key``:
+            String.
 
-    *return*
-        String. 
+        ``value``:
+            String.
 
-``StorageProvider.prototype.remove(key, namespace)``:
+        ``namespace``:
+            Optional. String.
 
-    ``key``:
-        String.
+        *return*
+            Implementation specific
 
-    ``namespace``:
-        Optional. String.
+    ``get(key, namespace)``:
 
-    *return*
-        String. 
+        ``key``:
+            String.
 
-``StorageProvider.prototype.free()``:
+        ``namespace``:
+            Optional. String.
 
-    Returns the number of bytes left for storing data in the provider.
+        *return*
+            String. 
 
-    *return*
-        Int.
+    ``remove(key, namespace)``:
+
+        ``key``:
+            String.
+
+        ``namespace``:
+            Optional. String.
+
+        *return*
+            String. 
+
+    ``free()``:
+
+        Returns the number of bytes left for storing data in the provider.
+
+        *return*
+            Int.
 
 Requires
 ===============================================================================
