@@ -141,7 +141,7 @@ dojo.widget.html.DatePicker = function(){
 				nextDate = this.incrementDate(nextDate, false);				
 			}
 		} else {
-			nextDate.setDate(0);
+			nextDate.setDate(1);
 			for(var i=0; i<7; i++) {
 				currentCalendarNode = calendarNodes.item(i);
 				currentCalendarNode.innerHTML = i + 1;
