@@ -29,8 +29,6 @@
 	<li><a href="http://dojotoolkit.org/docs/projectRoadmap.html">Project Roadmap</a></li>
 	<li><a href="http://dojotoolkit.org/docs/projectStatus.html">Project Status</a></li>
 </ul>
-<p>
-</p>
 
 <h3>Wiki</h3>
 <p>
@@ -39,8 +37,14 @@
 	to get Dojo source code and many useful code snippets and HOWTOs.
 </p>
 
+<h3>Licensing</h3>
+<ul>
+	<li><a href="http://dojotoolkit.org/docs/licensing.html">The Licensing Goals of The Dojo Foundation</a></li>
+	<li><a href="http://dojotoolkit.org/community/licensing.shtml">The Licensing Terms of The Dojo Toolkit</a></li>
+</ul>
+
 <!--#include virtual="/rest_template/sidebar.html" -->
-				<h1>Documentation</h1>
+	<h1>Documentation</h1>
 <!--#include virtual="/rest_template/footer.html" -->
 </body>
 </html>
