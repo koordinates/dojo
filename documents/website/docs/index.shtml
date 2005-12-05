@@ -44,7 +44,6 @@
 </ul>
 
 <!--#include virtual="/rest_template/sidebar.html" -->
-	<h1>Documentation</h1>
 <!--#include virtual="/rest_template/footer.html" -->
 </body>
 </html>
