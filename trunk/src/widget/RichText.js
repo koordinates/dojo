@@ -11,7 +11,7 @@ dojo.require("dojo.style");
 try {
 	document.write('<textarea id="dojo.widget.RichText.savedContent" ' +
 		'style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
-} catch (e) { }
+}catch(e){ }
 
 dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 
@@ -50,7 +50,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 /* Init
  *******/
 
-	fillInTemplate: function (){
+	fillInTemplate: function(){
 		this.open();
 
 		// add the formatting functions
@@ -86,7 +86,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.domNode = document.createElement("div");
 			this.textarea.style.display = "none";
 			dojo.dom.insertBefore(this.domNode, this.textarea);
-			this.domNode.innerHTML = html;
+			// this.domNode.innerHTML = html;
 			
 			if (this.textarea.form) {
 				this.connect(this.textarea.form, "onsubmit", "save");
@@ -224,15 +224,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 						'<body' + (contentEditable ? ' contentEditable="true"' : '') + '>' +
 						html + '</body>');
 					close();
-						// '<body' + (contentEditable ? ' contentEditable="true"' : '') + ' onload="document.designMode=\'on\';">' +
-						// '<body' + (contentEditable ? ' contentEditable="true"' : '') + ' onload="document.designMode=\'on\';">' +
-						// '<body ' + (contentEditable ? 'contentEditable="true"' : 'onload="document.designMode=\'on\'; window.parent.dojo.widget.byId("'+this.widgetId+'").delayOnLoad();"') + '>' +
 				}
 				
-				// this.onLoad();
-				// dojo.lang.setTimeout(this, "onLoad", 500);
-				
-			} else {
+				this.onLoad();
+			}else{
 				this.editNode.innerHTML = html;
 				this.onDisplayChanged(e);
 			}
@@ -244,10 +239,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 	},
 	
-	delayOnLoad: function(){
-		dojo.lang.setTimeout(this, "onLoad", 500);
-	},
-
 	/** Draws an active x object, used by IE */
 	_drawObject: function (html) {
 		this.object = document.createElement("object");
@@ -279,12 +270,13 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 /* Event handlers
  *****************/
 
-	onLoad: function (e) {
-		if (this.object) {
+	onLoad: function(e){
+		if (this.object){
 			this.document = this.object.DOM;
 			this.editNode = this.document.body.firstChild;
-		} else if (this.iframe) {
+		}else if (this.iframe){
 			this.editNode = this.document.body;
+			this.connect(this, "onDisplayChanged", "_updateHeight");
 	
 			try { // sanity check for Mozilla
 				this.document.execCommand("useCSS", false, true); // old moz call
@@ -296,7 +288,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.connect(this.editNode, "onblur", "onBlur");
 				this.connect(this.editNode, "onfocus", "onFocus");
 			
-				this.interval = setInterval(dojo.lang.hitch(this, "onDisplayChanged"), 500);
+				this.interval = setInterval(dojo.lang.hitch(this, "onDisplayChanged"), 750);
 			} else if (dojo.render.html.mozilla) {
 
 				// We need to unhook the blur event listener on close as we
@@ -319,7 +311,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}
 
 			// FIXME: when scrollbars appear/disappear this needs to be fired						
-			this.connect(this, "onDisplayChanged", "_updateHeight");
 		}
 		
 		this.focus();
