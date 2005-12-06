@@ -86,6 +86,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.domNode = document.createElement("div");
 			this.textarea.style.display = "none";
 			dojo.dom.insertBefore(this.domNode, this.textarea);
+			this.domNode.innerHTML = html;
 			
 			if (this.textarea.form) {
 				this.connect(this.textarea.form, "onsubmit", "save");
@@ -182,48 +183,69 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 		this.domNode.appendChild(this.iframe);
 
-		if (!this.editNode) {
-			this.window = this.iframe.contentWindow;
-			this.document = this.iframe.contentDocument;
+		var _iframeInitialized = false;
+
+		// now we wait for onload. Janky hack!
+		var ifrFunc = dojo.lang.hitch(this, function(){
+			if(!_iframeInitialized){
+				_iframeInitialized = true;
+			}else{ return; }
+			if(!this.editNode){
+				this.window = this.iframe.contentWindow;
+				this.document = this.iframe.contentDocument;
+			
+				// curry the getStyle function
+				var getStyle = (function (domNode) { return function (style) {
+					return dojo.style.getStyle(domNode, style);
+				}; })(this.domNode);
+				var font = getStyle('font-size') + " " + getStyle('font-family');
 		
-			// curry the getStyle function
-			var getStyle = (function (domNode) { return function (style) {
-				return dojo.style.getStyle(domNode, style);
-			}; })(this.domNode);
-			var font = getStyle('font-size') + " " + getStyle('font-family');
-	
-			var contentEditable = Boolean(document.body.contentEditable);
-			with (this.document) {
-				if (!contentEditable) { designMode = "on"; }
-				open();
-				write(
-					//'<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-					'<title></title>\n' +
-					'<style type="text/css">\n' +
-					'    body,html { padding: 0; margin: 0; font: ' + font + '; }\n' +
-					// TODO: left positioning will case contents to disappear out of view
-					//       if it gets too wide for the visible area
-					'    body { position: fixed; top: 0; left: 0; right: 0;' +
-					'        min-height: ' + this.minHeight + '; }\n' +
-					'    p { margin: 1em 0 !important; }\n' +
-					'    body > *:first-child { padding-top: 0 !important; margin-top: 0 !important; }\n' +
-					'    body > *:last-child { padding-bottom: 0 !important; margin-bottom: 0 !important; }\n' +
-					'    li > ul:-moz-first-node, li > ol:-moz-first-node { padding-top: 1.2em; }\n' +
-					'    li { min-height: 1.2em; }\n' +
-					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }\n' +
-					'</style>\n' +
-					//'<base href="' + window.location + '">' +
-					'<body' + (contentEditable ? ' contentEditable="true"' : '') + '>' +
-					html + '</body>');
-				close();
+				var contentEditable = Boolean(document.body.contentEditable);
+				with(this.document){
+					if(!contentEditable){ designMode = "on"; }
+					open();
+					write(
+						//'<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
+						'<title></title>\n' +
+						'<style type="text/css">\n' +
+						'    body,html { padding: 0; margin: 0; font: ' + font + '; }\n' +
+						// TODO: left positioning will case contents to disappear out of view
+						//       if it gets too wide for the visible area
+						'    body { position: fixed; top: 0; left: 0; right: 0;' +
+						'        min-height: ' + this.minHeight + '; }\n' +
+						'    p { margin: 1em 0 !important; }\n' +
+						'    body > *:first-child { padding-top: 0 !important; margin-top: 0 !important; }\n' +
+						'    body > *:last-child { padding-bottom: 0 !important; margin-bottom: 0 !important; }\n' +
+						'    li > ul:-moz-first-node, li > ol:-moz-first-node { padding-top: 1.2em; }\n' +
+						'    li { min-height: 1.2em; }\n' +
+						//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }\n' +
+						'</style>\n' +
+						//'<base href="' + window.location + '">' +
+						'<body' + (contentEditable ? ' contentEditable="true"' : '') + '>' +
+						html + '</body>');
+					close();
+						// '<body' + (contentEditable ? ' contentEditable="true"' : '') + ' onload="document.designMode=\'on\';">' +
+						// '<body' + (contentEditable ? ' contentEditable="true"' : '') + ' onload="document.designMode=\'on\';">' +
+						// '<body ' + (contentEditable ? 'contentEditable="true"' : 'onload="document.designMode=\'on\'; window.parent.dojo.widget.byId("'+this.widgetId+'").delayOnLoad();"') + '>' +
+				}
+				
+				// this.onLoad();
+				// dojo.lang.setTimeout(this, "onLoad", 500);
+				
+			} else {
+				this.editNode.innerHTML = html;
+				this.onDisplayChanged(e);
 			}
-			
-			this.onLoad();
-			
-		} else {
-			this.editNode.innerHTML = html;
-			this.onDisplayChanged(e);
+		});
+		if(dojo.render.html.moz){
+			this.iframe.onload = ifrFunc;
+		}else{
+			ifrFunc();
 		}
+	},
+	
+	delayOnLoad: function(){
+		dojo.lang.setTimeout(this, "onLoad", 500);
 	},
 
 	/** Draws an active x object, used by IE */
@@ -239,13 +261,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 		this.domNode.appendChild(this.object);
 
-		function hitch (obj, meth) {
-			return function () { return obj[meth].apply(obj, arguments); }
-		}
-		
-		this.object.attachEvent("DocumentComplete", hitch(this, "onLoad"));
-		this.object.attachEvent("DisplayChanged", hitch(this, "_updateHeight"));
-		this.object.attachEvent("DisplayChanged", hitch(this, "onDisplayChanged"));
+		this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
+		this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
+		this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
 
 		this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
 			'<title></title>' +
@@ -272,36 +290,32 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.document.execCommand("useCSS", false, true); // old moz call
 				this.document.execCommand("styleWithCSS", false, false); // new moz call
 				//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
-			} catch (e) { }
-			
-			function hitch (obj, meth) {
-				return function () { return obj[meth].apply(obj, arguments); }
-			}
+			}catch(e){ }
 			
 			if (dojo.render.html.safari) {
 				this.connect(this.editNode, "onblur", "onBlur");
 				this.connect(this.editNode, "onfocus", "onFocus");
 			
-				this.interval = setInterval(hitch(this, "onDisplayChanged"), 500);
+				this.interval = setInterval(dojo.lang.hitch(this, "onDisplayChanged"), 500);
 			} else if (dojo.render.html.mozilla) {
 
 				// We need to unhook the blur event listener on close as we
 				// can encounter a garunteed crash in FF if another event is
 				// also fired
 				var doc = this.document;
-				var blurfp = dojo.event.browser.addListener(this.document, "blur", hitch(this, "onBlur"));
+				var blurfp = dojo.event.browser.addListener(this.document, "blur", dojo.lang.hitch(this, "onBlur"));
 				var unBlur = { unBlur: function(e){
 						dojo.event.browser.removeListener(doc, "blur", blurfp);
 				} };
 				dojo.event.connect("before", this, "close", unBlur, "unBlur");
-				dojo.event.browser.addListener(this.document, "focus", hitch(this, "onFocus"));
+				dojo.event.browser.addListener(this.document, "focus", dojo.lang.hitch(this, "onFocus"));
 			
 				// safari can't handle key listeners, it kills the speed
 				var addListener = dojo.event.browser.addListener;
-				addListener(this.document, "keypress", hitch(this, "onKeyPress"));
-				addListener(this.document, "keydown", hitch(this, "onKeyDown"));
-				addListener(this.document, "keyup", hitch(this, "onKeyUp"));
-				addListener(this.document, "click", hitch(this, "onClick"));
+				addListener(this.document, "keypress", dojo.lang.hitch(this, "onKeyPress"));
+				addListener(this.document, "keydown", dojo.lang.hitch(this, "onKeyDown"));
+				addListener(this.document, "keyup", dojo.lang.hitch(this, "onKeyUp"));
+				addListener(this.document, "click", dojo.lang.hitch(this, "onClick"));
 			}
 
 			// FIXME: when scrollbars appear/disappear this needs to be fired						
@@ -418,7 +432,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	
 	/** this event will be fired everytime the display context changes and the
 	 result needs to be reflected in the UI */
-	onDisplayChanged: function (e) {},
+	onDisplayChanged: function (e){ },
 	
 
 /* Formatting commands
