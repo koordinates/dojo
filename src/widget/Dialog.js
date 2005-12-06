@@ -73,6 +73,11 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	postCreate: function(args, frag, parentComp) {
+		with(this.domNode.style) {
+			position = "absolute";
+			zIndex = 999;
+			display = "none";
+		}
 		var b = dojo.html.body();
 		b.appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
@@ -92,11 +97,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		}
 		this.setBackgroundColor(this.bgColor);
 		b.appendChild(this.bg);
-		with(this.domNode.style) {
-			position = "absolute";
-			zIndex = 999;
-			display = "none";
-		}
 		this.bgIframe.setZIndex(this.bg);
 	},
 
