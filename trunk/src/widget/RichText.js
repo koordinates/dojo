@@ -84,18 +84,29 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			this.textarea = this.domNode;
 			var html = this.textarea.value;
 			this.domNode = document.createElement("div");
-			this.textarea.style.display = "none";
+			with(this.textarea.style){
+				display = "block";
+				position = "absolute";
+				width = "1px";
+				height = "1px";
+				border = margin = padding = "0px";
+				visiblity = "hidden";
+			}
 			dojo.dom.insertBefore(this.domNode, this.textarea);
 			// this.domNode.innerHTML = html;
 			
-			if (this.textarea.form) {
-				this.connect(this.textarea.form, "onsubmit", "save");
+			if(this.textarea.form){
+				dojo.event.connect(this.textarea.form, "onsubmit", 
+					dojo.lang.hitch(this, function(){
+						this.textarea.value = this.getEditorContent();
+					})
+				);
 			}
 			
 			// dojo plucks our original domNode from the document so we need
 			// to go back and put ourselves back in
 			var editor = this;
-			dojo.event.connect(this, "postCreate", function () {
+			dojo.event.connect(this, "postCreate", function (){
 				dojo.dom.insertAfter(editor.textarea, editor.domNode);
 			});
 		} else {
@@ -854,7 +865,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	/**
 	 * Saves the content in an onunload event if the editor has not been closed
 	 */
-	_saveContent: function (e) {
+	_saveContent: function(e){
 		var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
 		saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getEditorContent();
 	},
