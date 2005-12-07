@@ -7,7 +7,7 @@ dojo.hostenv.writeIncludes();
 var TestStorage = {
 	currentProvider: "default",
 	
-	initialize: function() {
+	initialize: function(){
 		// initialize our event handlers
 		var storageProvider = document.getElementById("storageProvider");
 		dojo.event.connect(storageProvider, "onchange", this,
@@ -16,8 +16,8 @@ var TestStorage = {
 		// add onclick listeners to all of our buttons
 		var buttonContainer = document.getElementById("buttonContainer");
 		var currentChild = buttonContainer.firstChild;
-		while (currentChild.nextSibling != null) {
-			if (currentChild.nodeType == dojo.dom.ELEMENT_NODE) {
+		while (currentChild.nextSibling != null){
+			if (currentChild.nodeType == dojo.dom.ELEMENT_NODE){
 				var buttonName = currentChild.id;
 				var functionName = buttonName.match(/^(.*)Button$/)[1];
 				dojo.event.connect(currentChild, "onclick", this, this[functionName]);
@@ -29,13 +29,13 @@ var TestStorage = {
 		
 	},
 	
-	changeProvider: function(evt) {
+	changeProvider: function(evt){
 		var provider = evt.target.value;
 		
 		this._setProvider(provider);
 	},
 	
-	load: function(evt) {
+	load: function(evt){
 		dojo.debug("load");
 		evt.preventDefault();
 		evt.stopPropagation();
@@ -44,7 +44,7 @@ var TestStorage = {
 		dojo.debug("after getting, results="+results);
 	},
 	
-	save: function(evt) {
+	save: function(evt){
 		dojo.debug("save");
 		evt.preventDefault();
 		evt.stopPropagation();
@@ -52,31 +52,31 @@ var TestStorage = {
 		dojo.storage.put("message", "Watson, come quickly!");
 	},
 	
-	clear: function(evt) {
+	clear: function(evt){
 		dojo.debug("clear");
 		evt.preventDefault();
 		evt.stopPropagation();
 	},
 	
-	configure: function(evt) {
+	configure: function(evt){
 		dojo.debug("configure");
 		evt.preventDefault();
 		evt.stopPropagation();
 	},
 	
-	showAllKeys: function(evt) {
+	showAllKeys: function(evt){
 		dojo.debug("showAllKeys");
 		evt.preventDefault();
 		evt.stopPropagation();
 	},
 	
-	remove: function(evt) {
+	remove: function(evt){
 		dojo.debug("remove");
 		evt.preventDefault();
 		evt.stopPropagation();
 	},
 	
-	_printProviderMetadata: function() {
+	_printProviderMetadata: function(){
 		var provider = dojo.storage.manager.getProvider();
 		var maximumSize = provider.getMaximumSize();
 		var permanent = provider.isPermanent();
@@ -86,12 +86,12 @@ var TestStorage = {
 		// TODO: Complete this
 	},
 	
-	_setProvider: function(provider) {
+	_setProvider: function(provider){
 		// change the provider in dojo
 		if (provider == "default")
 			dojo.storage.manager.autodetect();
 		else {
-			if (dojo.storage.manager.supportsProvider(provider)) {
+			if (dojo.storage.manager.supportsProvider(provider)){
 				dojo.storage.manager.setProvider(provider);
 			}
 			else {
