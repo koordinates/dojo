@@ -18,7 +18,7 @@ dojo.provide("dojo.storage.StorageProvider");
 
 /** Initializes the storage systems and figures out the best available 
     storage options on this platform. */
-dojo.storage.manager = new function() {
+dojo.storage.manager = new function(){
 	this.currentProvider = null;
 	this.available = false;
 	this.initialized = false;
@@ -27,7 +27,7 @@ dojo.storage.manager = new function() {
 	this.namespace = "*";
 
 	/** Initializes the storage system. */
-	this.initialize = function() {
+	this.initialize = function(){
 		// autodetect the best storage provider we can provide on this platform
 		this.autodetect();
 	}
@@ -40,13 +40,13 @@ dojo.storage.manager = new function() {
 	    dojo.storage.setProvider(
 	           dojo.storage.browser.IEStorageProvider)
 	*/
-	this.setProvider = function(storageClass) {
+	this.setProvider = function(storageClass){
 	
 	}
 	
 	/** Autodetects the best possible persistent
 			storage provider available on this platform. */
-	this.autodetect = function() {
+	this.autodetect = function(){
 		dojo.debug("autodetect");
 		// right now we only support Flash
 		if (this.initialized == true) // already finished
@@ -54,7 +54,7 @@ dojo.storage.manager = new function() {
 			
 		// do data migration if this user has moved to a better storage provider
 		this.migrator = new dojo.storage._StorageMigrator();
-		if (this.migrator.needsMigration()) {
+		if (this.migrator.needsMigration()){
 			this.migrator.migrate();
 			this.initialized = true;
 			this.available = true;
@@ -62,7 +62,7 @@ dojo.storage.manager = new function() {
 		else {
 			dojo.debug("doing the hard work");
 			// right now we only support Flash
-			if (dojo.storage.browser.FlashStorageProvider.isAvailable()) {
+			if (dojo.storage.browser.FlashStorageProvider.isAvailable()){
 				// create this provider
 				this.currentProvider = new dojo.storage.browser.FlashStorageProvider();
 				
@@ -85,7 +85,7 @@ dojo.storage.manager = new function() {
 	}
 	
 	/** Returns whether any storage options are available. */
-	this.isAvailable = function() {
+	this.isAvailable = function(){
 		return this.available;
 	}
 
@@ -97,7 +97,7 @@ dojo.storage.manager = new function() {
 			dojo.storage.manager.supportsProvider(
 				"dojo.storage.browser.InternetExplorerStorageProvider");
 	*/
-	this.supportsProvider = function(storageClass) {
+	this.supportsProvider = function(storageClass){
 		// construct this class dynamically
 		try {
 			// dynamically call the given providers class level isAvailable()
@@ -107,14 +107,14 @@ dojo.storage.manager = new function() {
 				return false;
 			return results;
 		}
-		catch (exception) {
+		catch (exception){
 			dojo.debug("exception="+exception);
 			return false;
 		}
 	}
 
 	/** Gets the current provider. */
-	this.getProvider = function() {
+	this.getProvider = function(){
 		return this.currentProvider;
 	}
 }
@@ -167,20 +167,20 @@ dojo.storage.SIZE_NO_LIMIT = -2;
     @returns True or false if this storage 
     provider is supported.
  */
-dojo.storage.StorageProvider.isAvailable = function() {
+dojo.storage.StorageProvider.isAvailable = function(){
 	return false;
 }
 
 /** Returns whether this provider can be installed,
 		to upgrade a platform to have the features
 		necessary to use this storage provider. */
-dojo.storage.StorageProvider.isInstallable = function() {
+dojo.storage.StorageProvider.isInstallable = function(){
 	return false;
 }
 
 /** If this provider can be installed at runtime,
 		does so. */
-dojo.storage.StorageProvider.install = function() {
+dojo.storage.StorageProvider.install = function(){
 }
 
 dojo.lang.extend(dojo.storage.StorageProvider, {
@@ -214,13 +214,13 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
     the storage process.
     
     Example:
-      var resultsHandler = function(status, message) {
+      var resultsHandler = function(status, message){
         alert("status="+status+", message="+message);
       };
       dojo.storage.put("test", "hello world", 
                        resultsHandler);
 	*/
-	put: function(key, value, resultsHandler) { },
+	put: function(key, value, resultsHandler){ },
 
 	/** Gets the value with the given key. Returns null
 	    if this key is not in the storage system.
@@ -229,14 +229,14 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 	    @returns Returns any JavaScript object type; 
 	    null if the key is not
 	    present. */
-	get: function(key) {},
+	get: function(key){},
 
 	/** Determines whether the storage has the given 
 	    key. 
 	
 	      @returns Whether this key is 
 	               present or not. */
-	hasKey: function(key) {
+	hasKey: function(key){
 		if (this.get(key) != null)
 			return true;
 		else
@@ -249,11 +249,11 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 	    @returns Array of string keys in this 
 	             storage system.
 	 */
-	getKeys: function() {},
+	getKeys: function(){},
 
 	/** Completely clears this storage system of all 
 	    of it's values and keys. */
-	clear: function() {},
+	clear: function(){},
 
 	/** Returns whether this storage provider's 
 	    values are persisted when this platform 
@@ -261,7 +261,7 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 	
 	    @returns True or false whether this 
 	    storage is permanent. */
-	isPermanent: function() {
+	isPermanent: function(){
 		return false;
 	},
 
@@ -281,7 +281,7 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 	             this provider can return, then
 	             dojo.storage.SIZE_NO_LIMIT is 
 	             returned. */
-	getMaximumSize: function() {},
+	getMaximumSize: function(){},
 
 	/** Determines whether this provider has a 
 	    settings UI.
@@ -291,18 +291,18 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 	             a settings UI to change it's 
 	             values, change the amount of storage
 	             available, etc. */
-	hasSettingsUI: function() {
+	hasSettingsUI: function(){
 		return false;
 	},
 
 	/** If this provider has a settings UI, it is 
 	    shown. */
-	showSettingsUI: function() {
+	showSettingsUI: function(){
 	},
 
 	/** If this provider has a settings UI, hides
 		  it. */
-	hideSettingsUI: function() {
+	hideSettingsUI: function(){
 	}
 	
 });
@@ -320,37 +320,37 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 		store data using InternetExplorerStorageProvider, and they later install 
 		Flash, we don't want to have applications "lose" their data when we 
 		autodetect Flash and move to the FlashStorageProvider.*/
-dojo.storage._StorageMigrator = function() {
+dojo.storage._StorageMigrator = function(){
 }
 
 dojo.lang.extend(dojo.storage._StorageMigrator, {
 	/** Determines if migration is needed. */
-	needsMigration: function() {
+	needsMigration: function(){
 		return false;
 	},
 	
 	/** Does the migration process if it is needed. */
-	migrate: function() {
+	migrate: function(){
 	},
 
 	/** Determines if we have already chosen a
 		  storage provider from a previous session. */
-	_hasSavedProvider: function() {
+	_hasSavedProvider: function(){
 	},
 
 	/** Persists the current storage provider choice
 			as a cookie. */
-	_saveProvider: function() {
+	_saveProvider: function(){
 	},
 
 	/** Loads the storage provider choice chosen in
 			previous sessions. */
-	_loadProvider: function() {
+	_loadProvider: function(){
 	},
 	
 	/** Migrates data from an old storage provider
 			to a new, better one. */
-	_migrateData: function() {
+	_migrateData: function(){
 	}
 });
 
