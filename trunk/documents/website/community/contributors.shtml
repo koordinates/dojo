@@ -106,6 +106,10 @@
 			<td> skinner </td>
 			<td> Brian Skinner </td>
 		</tr>
+		<tr>
+			<td> tildahl </td>
+			<td> Michael Tildahl </td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
