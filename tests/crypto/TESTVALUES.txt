@@ -14,7 +14,10 @@ Values derived from XCrypt test application, C#.
 NB. All encrypted results are Base64 encoded; you MUST use dojo.crypto.fromBase64/toBase64 for comparison.
 --------------------------------------------------------------------------
 MD5
-OUhxbVZ1Mtmu4zx9LzS5cA==
+OUhxbVZ1Mtmu4zx9LzS5cA== (C#)
+OUhxbVZ1Mtmu4zx9LzS5cA== (Python)
+
+(PHP 128-bit int:  0x3948716d567532d9aee33c7d2f34b970)
 
 Rijndael/AES
 QHHcLxph2PC89j0l4XueIvqprjgUaTvCooK31/9fS+SgoLfF1Cns3RD5du5BHF6I
