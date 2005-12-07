@@ -10,7 +10,7 @@ dojo.require("dojo.uri.*");
 		@author Alex Russel, alex@dojotoolkit.org
 		@author Brad Neuberg, bkn3@columbia.edu 
 */
-dojo.storage.browser.FlashStorageProvider = function() {
+dojo.storage.browser.FlashStorageProvider = function(){
 	// output the HTML we need to support our Flash object
 	this._writeStorage();
 	this.flash = (dojo.render.html.ie) ? window["dojoStorage"] : document["dojoStorage"];
@@ -34,20 +34,20 @@ dojo.inherits(dojo.storage.browser.FlashStorageProvider,
     @returns True or false if this storage 
     provider is supported.
  */
-dojo.storage.browser.FlashStorageProvider.isAvailable = function() {
+dojo.storage.browser.FlashStorageProvider.isAvailable = function(){
 	return true;
 }
 
 /** Returns whether this provider can be installed,
 		to upgrade a platform to have the features
 		necessary to use this storage provider. */
-dojo.storage.browser.FlashStorageProvider.isInstallable = function() {
+dojo.storage.browser.FlashStorageProvider.isInstallable = function(){
 	return false;
 }
 
 /** If this provider can be installed at runtime,
 		does so. */
-dojo.storage.browser.FlashStorageProvider.install = function() {
+dojo.storage.browser.FlashStorageProvider.install = function(){
 }
 
 
@@ -85,13 +85,13 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
     the storage process.
     
     Example:
-      var resultsHandler = function(status, message) {
+      var resultsHandler = function(status, message){
         alert("status="+status+", message="+message);
       };
       dojo.storage.put("test", "hello world", 
                        resultsHandler);
 	*/
-	put: function(key, value, resultsHandler) { 
+	put: function(key, value, resultsHandler){
 		// FIXME: Modify Flash to do results handler callback
 		this.flash.set(key, value, dojo.storage.manager.namespace);
 	},
@@ -103,7 +103,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	    @returns Returns any JavaScript object type; 
 	    null if the key is not
 	    present. */
-	get: function(key) {
+	get: function(key){
 		var results = this.flash.get(key, dojo.storage.manager.namespace);
 		return results;
 	},
@@ -113,7 +113,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	
 	      @returns Whether this key is 
 	               present or not. */
-	hasKey: function(key) {
+	hasKey: function(key){
 		if (this.get(key) != null)
 			return true;
 		else
@@ -126,11 +126,11 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	    @returns Array of string keys in this 
 	             storage system.
 	 */
-	getKeys: function() {},
+	getKeys: function(){},
 
 	/** Completely clears this storage system of all 
 	    of it's values and keys. */
-	clear: function() {},
+	clear: function(){},
 
 	/** Returns whether this storage provider's 
 	    values are persisted when this platform 
@@ -138,7 +138,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	
 	    @returns True or false whether this 
 	    storage is permanent. */
-	isPermanent: function() {
+	isPermanent: function(){
 		return false;
 	},
 
@@ -158,7 +158,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	             this provider can return, then
 	             dojo.storage.SIZE_NO_LIMIT is 
 	             returned. */
-	getMaximumSize: function() {},
+	getMaximumSize: function(){},
 
 	/** Determines whether this provider has a 
 	    settings UI.
@@ -168,25 +168,25 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	             a settings UI to change it's 
 	             values, change the amount of storage
 	             available, etc. */
-	hasSettingsUI: function() {
+	hasSettingsUI: function(){
 		return false;
 	},
 
 	/** If this provider has a settings UI, it is 
 	    shown. */
-	showSettingsUI: function() {
+	showSettingsUI: function(){
 	},
 
 	/** If this provider has a settings UI, hides
 		  it. */
-	hideSettingsUI: function() {
+	hideSettingsUI: function(){
 	},
 	
 	_writeStorage: function(){
 		var swfloc = dojo.uri.dojoUri("src/storage/Storage.swf").toString();
 		dojo.debug("swfloc="+swfloc);
 		var storeParts = new Array();
-		if(dojo.render.html.ie) {
+		if(dojo.render.html.ie){
 			storeParts.push('<object');
 			storeParts.push('	style="border: 1px solid black;"');
 			storeParts.push('	classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"');
