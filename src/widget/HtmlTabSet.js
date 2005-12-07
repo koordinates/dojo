@@ -17,9 +17,12 @@ dojo.inherits(dojo.widget.HtmlTabSet, dojo.widget.HtmlLayoutPane);
 
 dojo.lang.extend(dojo.widget.HtmlTabSet, {
 
+	// Constructor arguments
+	labelPosition: "top",
+	useVisibility: false,		// true-->use visibility:hidden instead of display:none
+
 	widgetType: "TabSet",
 
-	labelPosition: "top",
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabSet.css"),
 
@@ -52,9 +55,10 @@ dojo.lang.extend(dojo.widget.HtmlTabSet, {
 		if ( child.widgetType == "Tab" ){
 			this.ul.appendChild(child.li);
 	
-			if (this.selectedTab==child.widgetId ||
-					child.selected) {
+			if (this.selectedTab==child.widgetId || child.selected) {
 				this.onSelected(child);
+			} else {
+				child.hide();
 			}
 		}
 	},
@@ -64,8 +68,8 @@ dojo.lang.extend(dojo.widget.HtmlTabSet, {
 		if (this.selectedTab && this.selectedTab.widgetId) {
 			this.selectedTab.hide();
 		}
-		tab.show();
 		this.selectedTab = tab;		// becomes widget rather than string
+		tab.show();
 	},
 	
 	onResized: function() {
@@ -99,7 +103,6 @@ dojo.lang.extend(dojo.widget.HtmlTab, {
 		this.layoutAlign = "client";
 		dojo.widget.HtmlTab.superclass.fillInTemplate.call(this, args, frag);
 		dojo.html.prependClass(this.domNode, "dojoTabPanel");
-		this.domNode.style.display="none";
 
 		// Create label
 		this.li = document.createElement("li");
@@ -116,13 +119,21 @@ dojo.lang.extend(dojo.widget.HtmlTab, {
 	show: function() {
 		dojo.html.addClass(this.li, "current");
 		this.selected=true;
-		dojo.widget.HtmlTab.superclass.show.call(this);
+		if ( this.parent.useVisibility ) {
+			this.domNode.style.visibility="visible";
+		} else {
+			dojo.widget.HtmlTab.superclass.show.call(this);
+		}
 	},
 
 	hide: function() {
 		dojo.html.removeClass(this.li, "current");
 		this.selected=false;
-		dojo.widget.HtmlTab.superclass.hide.call(this);
+		if( this.parent.useVisibility ){
+			this.domNode.style.visibility="hidden";
+		}else{
+			dojo.widget.HtmlTab.superclass.hide.call(this);
+		}
 	}	
 });
 dojo.widget.tags.addParseTreeHandler("dojo:Tab");

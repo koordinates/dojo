@@ -11,7 +11,6 @@
 	margin : 0;
 	padding : 0;
 	list-style : none;
-	_border : 1px solid white;
 }
 
 .tabs li {
@@ -45,7 +44,7 @@
 
 /* bottom tabs */
 .tabs.bottom {
-	_border-top : 0;
+	border-top : 0;
 }
 
 .tabs.bottom li {
