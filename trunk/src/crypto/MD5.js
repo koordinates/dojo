@@ -1,168 +1,187 @@
-dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.MD5");
 
-//	rewritten based entirely on RFC 1321, with word functions borrowed from Paul Johnstone.
-//	compute will return a Base64 encoded string.
+/*	Return to a port of Paul Johnstone's MD5 implementation
+ *	http://pajhome.org.uk/crypt/md5/index.html
+ *
+ *	2005-12-7
+ *	All conversions are internalized (no dependencies)
+ *	implemented getHMAC for message digest auth.
+ */
 dojo.crypto.MD5 = new function(){
-	function decode(data){
-		var chrsz=8 ;
-		var bin=[] ;
-		var mask=(1<<chrsz)-1;
-		for (var i=0; i<data.length*chrsz; i+=chrsz){
-			bin[i>>5]|=(data.charCodeAt(i/chrsz)&mask)<<(i%32);
-		}
-		return bin;
+	var chrsz=8;
+	var mask=(1<<chrsz)-1;
+	function toWord(s) {
+	  var wa=[];
+	  for(var i=0; i<s.length*chrsz; i+=chrsz)
+		wa[i>>5]|=(s.charCodeAt(i/chrsz)&mask)<<(i%32);
+	  return wa;
 	}
-
-	//	encode
-	function encodeBase64(ba){
-		var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		var s = "";
-		for(var i=0; i<ba.length*4; i+=3){
-			var t = (((ba[i>>2]>>8*(i%4))&0xFF)<<16)
-				|(((ba[i+1>>2]>>8*((i+1)%4))&0xFF)<<8)
-				|((ba[i+2>>2]>>8*((i+2)%4))&0xFF);
+	function toString(wa){
+		var s=[];
+		for(var i=0; i<wa.length*32; i+=chrsz)
+			s.push(String.fromCharCode((wa[i>>5]>>>(i%32))&mask));
+		return s.join("");
+	}
+	function toHex(wa) {
+		var h="0123456789abcdef";
+		var s=[];
+		for(var i=0; i<wa.length*4; i++){
+			s.push(h.charAt((wa[i>>2]>>((i%4)*8+4))&0xF)+h.charAt((wa[i>>2]>>((i%4)*8))&0xF));
+		}
+		return s.join("");
+	}
+	function toBase64(wa){
+		var p="=";
+		var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		var s=[];
+		for(var i=0; i<wa.length*4; i+=3){
+			var t=(((wa[i>>2]>>8*(i%4))&0xFF)<<16)|(((wa[i+1>>2]>>8*((i+1)%4))&0xFF)<<8)|((wa[i+2>>2]>>8*((i+2)%4))&0xFF);
 			for(var j=0; j<4; j++){
-				if(i*8+j*6>ba.length*32) s+="=";
-				else s+=tab.charAt((t>>6*(3-j))&0x3F);
+				if(i*8+j*6>wa.length*32) s.push(p);
+				else s.push(tab.charAt((t>>6*(3-j))&0x3F));
 			}
 		}
-		return s;
+		return s.join("");
 	}
-
-	//	rounds functions.
-	function add(x,y){
-		var lsw = (x & 0xFFFF) + (y & 0xFFFF);
-		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-		return (msw << 16) | (lsw & 0xFFFF);
+	function add(x,y) {
+		var l=(x&0xFFFF)+(y&0xFFFF);
+		var m=(x>>16)+(y>>16)+(l>>16);
+		return (m<<16)|(l&0xFFFF);
 	}
-	function RL(x, n){ return ((x<<n)|(x>>(32-n))); }
-	function RR(x, n){ return ((x>>n)|(x<<(32-n))); }
-	function F(x, y, z){ return (x & y)|(~x & z); }
-	function G(x, y, z){ return (x & z)|(y & ~z); }
-	function H(x, y, z){ return x ^ y ^ z; }
-	function I(x, y, z){ return y ^ (x | ~z); }
-	function FF(a, b, c, d, x, s, ac){
-		a = add(a,add(add(F(b, c, d),x),ac));
-		return add(RL(a,s),b);
-	}
-	function GG(a, b, c, d, x, s, ac){
-		a = add(a,add(add(G(b, c, d),x),ac));
-		return add(RL(a,s),b);
-	}
-	function HH(a, b, c, d, x, s, ac){
-		a = add(a,add(add(H(b, c, d),x),ac));
-		return add(RL(a,s),b);
-	}
-	function II(a, b, c, d, x, s, ac){
-		a = add(a,add(add(I(b, c, d),x),ac));
-		return add(RL(a,s),b);
-	}
-
-	this.compute = function(data, bDoNotEncode){
-		var state = [ 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 ];
-		var t = data.split("");
-		var len = data.length;
-		
-		//	pad the data to congruent to 448 bits, mod 512
-		var padTo = ((Math.floor(len/64)+1)*64)-8;
-		t.push(String.fromCharCode(8));
-		while(t.length < padTo) t.push(String.fromCharCode(0));
-		
-		//	now convert the length to 2 32 byte words and append.
-		var rep = "0000000000000000" + len.toString(16);
-		rep = rep.substr(rep.length-16, 16);
-		for (var i=0; i<rep.length; i+=2) {
-			t.push(rep.substr(i,2));
-		}
-		data = t.join("");
-		var x = decode(data);
-
-		//	do the digest.
-		var a = state[0];
-		var b = state[1];
-		var c = state[2];
-		var d = state[3];
-
+	function R(n,c){ return (n<<c)|(n>>>(32-c)); }
+	function C(q,a,b,x,s,t){ return add(R(add(add(a,q),add(x,t)),s),b); }
+	function FF(a,b,c,d,x,s,t){ return C((b&c)|((~b)&d),a,b,x,s,t); }
+	function GG(a,b,c,d,x,s,t){ return C((b&d)|(c&(~d)),a,b,x,s,t); }
+	function HH(a,b,c,d,x,s,t){ return C(b^c^d,a,b,x,s,t); }
+	function II(a,b,c,d,x,s,t){ return C(c^(b|(~d)),a,b,x,s,t); }
+	function core(x,len){
+		x[len>>5]|=0x80<<((len)%32);
+		x[(((len+64)>>>9)<<4)+14]=len;
+		var a= 1732584193;
+		var b=-271733879;
+		var c=-1732584194;
+		var d= 271733878;
 		for(var i=0; i<x.length; i+=16){
-			/* Round 1 */
-			a = FF(a, b, c, d, x[i+ 0],  7, 0xd76aa478); /* 1 */
-			d = FF(d, a, b, c, x[i+ 1], 12, 0xe8c7b756); /* 2 */
-			c = FF(c, d, a, b, x[i+ 2], 17, 0x242070db); /* 3 */
-			b = FF(b, c, d, a, x[i+ 3], 22, 0xc1bdceee); /* 4 */
-			a = FF(a, b, c, d, x[i+ 4],  7, 0xf57c0faf); /* 5 */
-			d = FF(d, a, b, c, x[i+ 5], 12, 0x4787c62a); /* 6 */
-			c = FF(c, d, a, b, x[i+ 6], 17, 0xa8304613); /* 7 */
-			b = FF(b, c, d, a, x[i+ 7], 22, 0xfd469501); /* 8 */
-			a = FF(a, b, c, d, x[i+ 8],  7, 0x698098d8); /* 9 */
-			d = FF(d, a, b, c, x[i+ 9], 12, 0x8b44f7af); /* 10 */
-			c = FF(c, d, a, b, x[i+10], 17, 0xffff5bb1); /* 11 */
-			b = FF(b, c, d, a, x[i+11], 22, 0x895cd7be); /* 12 */
-			a = FF(a, b, c, d, x[i+12],  7, 0x6b901122); /* 13 */
-			d = FF(d, a, b, c, x[i+13], 12, 0xfd987193); /* 14 */
-			c = FF(c, d, a, b, x[i+14], 17, 0xa679438e); /* 15 */
-			b = FF(b, c, d, a, x[i+15], 22, 0x49b40821); /* 16 */
+			var olda=a;
+			var oldb=b;
+			var oldc=c;
+			var oldd=d;
 
-			/* Round 2 */
-			a = GG(a, b, c, d, x[i+ 1],  5, 0xf61e2562); /* 17 */
-			d = GG(d, a, b, c, x[i+ 6],  9, 0xc040b340); /* 18 */
-			c = GG(c, d, a, b, x[i+11], 14, 0x265e5a51); /* 19 */
-			b = GG(b, c, d, a, x[i+ 0], 20, 0xe9b6c7aa); /* 20 */
-			a = GG(a, b, c, d, x[i+ 5],  5, 0xd62f105d); /* 21 */
-			d = GG(d, a, b, c, x[i+10],  9,  0x2441453); /* 22 */
-			c = GG(c, d, a, b, x[i+15], 14, 0xd8a1e681); /* 23 */
-			b = GG(b, c, d, a, x[i+ 4], 20, 0xe7d3fbc8); /* 24 */
-			a = GG(a, b, c, d, x[i+ 9],  5, 0x21e1cde6); /* 25 */
-			d = GG(d, a, b, c, x[i+14],  9, 0xc33707d6); /* 26 */
-			c = GG(c, d, a, b, x[i+ 3], 14, 0xf4d50d87); /* 27 */
-			b = GG(b, c, d, a, x[i+ 8], 20, 0x455a14ed); /* 28 */
-			a = GG(a, b, c, d, x[i+13],  5, 0xa9e3e905); /* 29 */
-			d = GG(d, a, b, c, x[i+ 2],  9, 0xfcefa3f8); /* 30 */
-			c = GG(c, d, a, b, x[i+ 7], 14, 0x676f02d9); /* 31 */
-			b = GG(b, c, d, a, x[i+12], 20, 0x8d2a4c8a); /* 32 */
+			a=FF(a,b,c,d,x[i+ 0],7 ,-680876936);
+			d=FF(d,a,b,c,x[i+ 1],12,-389564586);
+			c=FF(c,d,a,b,x[i+ 2],17, 606105819);
+			b=FF(b,c,d,a,x[i+ 3],22,-1044525330);
+			a=FF(a,b,c,d,x[i+ 4],7 ,-176418897);
+			d=FF(d,a,b,c,x[i+ 5],12, 1200080426);
+			c=FF(c,d,a,b,x[i+ 6],17,-1473231341);
+			b=FF(b,c,d,a,x[i+ 7],22,-45705983);
+			a=FF(a,b,c,d,x[i+ 8],7 , 1770035416);
+			d=FF(d,a,b,c,x[i+ 9],12,-1958414417);
+			c=FF(c,d,a,b,x[i+10],17,-42063);
+			b=FF(b,c,d,a,x[i+11],22,-1990404162);
+			a=FF(a,b,c,d,x[i+12],7 , 1804603682);
+			d=FF(d,a,b,c,x[i+13],12,-40341101);
+			c=FF(c,d,a,b,x[i+14],17,-1502002290);
+			b=FF(b,c,d,a,x[i+15],22, 1236535329);
 
-			/* Round 3 */
-			a = HH(a, b, c, d, x[i+ 5],  4, 0xfffa3942); /* 33 */
-			d = HH(d, a, b, c, x[i+ 8], 11, 0x8771f681); /* 34 */
-			c = HH(c, d, a, b, x[i+11], 16, 0x6d9d6122); /* 35 */
-			b = HH(b, c, d, a, x[i+14], 23, 0xfde5380c); /* 36 */
-			a = HH(a, b, c, d, x[i+ 1],  4, 0xa4beea44); /* 37 */
-			d = HH(d, a, b, c, x[i+ 4], 11, 0x4bdecfa9); /* 38 */
-			c = HH(c, d, a, b, x[i+ 7], 16, 0xf6bb4b60); /* 39 */
-			b = HH(b, c, d, a, x[i+10], 23, 0xbebfbc70); /* 40 */
-			a = HH(a, b, c, d, x[i+13],  4, 0x289b7ec6); /* 41 */
-			d = HH(d, a, b, c, x[i+ 0], 11, 0xeaa127fa); /* 42 */
-			c = HH(c, d, a, b, x[i+ 3], 16, 0xd4ef3085); /* 43 */
-			b = HH(b, c, d, a, x[i+ 6], 23,  0x4881d05); /* 44 */
-			a = HH(a, b, c, d, x[i+ 9],  4, 0xd9d4d039); /* 45 */
-			d = HH(d, a, b, c, x[i+12], 11, 0xe6db99e5); /* 46 */
-			c = HH(c, d, a, b, x[i+15], 16, 0x1fa27cf8); /* 47 */
-			b = HH(b, c, d, a, x[i+ 2], 23, 0xc4ac5665); /* 48 */
+			a=GG(a,b,c,d,x[i+ 1],5 ,-165796510);
+			d=GG(d,a,b,c,x[i+ 6],9 ,-1069501632);
+			c=GG(c,d,a,b,x[i+11],14, 643717713);
+			b=GG(b,c,d,a,x[i+ 0],20,-373897302);
+			a=GG(a,b,c,d,x[i+ 5],5 ,-701558691);
+			d=GG(d,a,b,c,x[i+10],9 , 38016083);
+			c=GG(c,d,a,b,x[i+15],14,-660478335);
+			b=GG(b,c,d,a,x[i+ 4],20,-405537848);
+			a=GG(a,b,c,d,x[i+ 9],5 , 568446438);
+			d=GG(d,a,b,c,x[i+14],9 ,-1019803690);
+			c=GG(c,d,a,b,x[i+ 3],14,-187363961);
+			b=GG(b,c,d,a,x[i+ 8],20, 1163531501);
+			a=GG(a,b,c,d,x[i+13],5 ,-1444681467);
+			d=GG(d,a,b,c,x[i+ 2],9 ,-51403784);
+			c=GG(c,d,a,b,x[i+ 7],14, 1735328473);
+			b=GG(b,c,d,a,x[i+12],20,-1926607734);
 
-			/* Round 4 */
-			a = II(a, b, c, d, x[i+ 0],  6, 0xf4292244); /* 49 */
-			d = II(d, a, b, c, x[i+ 7], 10, 0x432aff97); /* 50 */
-			c = II(c, d, a, b, x[i+14], 15, 0xab9423a7); /* 51 */
-			b = II(b, c, d, a, x[i+ 5], 21, 0xfc93a039); /* 52 */
-			a = II(a, b, c, d, x[i+12],  6, 0x655b59c3); /* 53 */
-			d = II(d, a, b, c, x[i+ 3], 10, 0x8f0ccc92); /* 54 */
-			c = II(c, d, a, b, x[i+10], 15, 0xffeff47d); /* 55 */
-			b = II(b, c, d, a, x[i+ 1], 21, 0x85845dd1); /* 56 */
-			a = II(a, b, c, d, x[i+ 8],  6, 0x6fa87e4f); /* 57 */
-			d = II(d, a, b, c, x[i+15], 10, 0xfe2ce6e0); /* 58 */
-			c = II(c, d, a, b, x[i+ 6], 15, 0xa3014314); /* 59 */
-			b = II(b, c, d, a, x[i+13], 21, 0x4e0811a1); /* 60 */
-			a = II(a, b, c, d, x[i+ 4],  6, 0xf7537e82); /* 61 */
-			d = II(d, a, b, c, x[i+11], 10, 0xbd3af235); /* 62 */
-			c = II(c, d, a, b, x[i+ 2], 15, 0x2ad7d2bb); /* 63 */
-			b = II(b, c, d, a, x[i+ 9], 21, 0xeb86d391); /* 64 */
+			a=HH(a,b,c,d,x[i+ 5],4 ,-378558);
+			d=HH(d,a,b,c,x[i+ 8],11,-2022574463);
+			c=HH(c,d,a,b,x[i+11],16, 1839030562);
+			b=HH(b,c,d,a,x[i+14],23,-35309556);
+			a=HH(a,b,c,d,x[i+ 1],4 ,-1530992060);
+			d=HH(d,a,b,c,x[i+ 4],11, 1272893353);
+			c=HH(c,d,a,b,x[i+ 7],16,-155497632);
+			b=HH(b,c,d,a,x[i+10],23,-1094730640);
+			a=HH(a,b,c,d,x[i+13],4 , 681279174);
+			d=HH(d,a,b,c,x[i+ 0],11,-358537222);
+			c=HH(c,d,a,b,x[i+ 3],16,-722521979);
+			b=HH(b,c,d,a,x[i+ 6],23, 76029189);
+			a=HH(a,b,c,d,x[i+ 9],4 ,-640364487);
+			d=HH(d,a,b,c,x[i+12],11,-421815835);
+			c=HH(c,d,a,b,x[i+15],16, 530742520);
+			b=HH(b,c,d,a,x[i+ 2],23,-995338651);
 
-			state[0] = add(state[0],a);
-			state[1] = add(state[1],b);
-			state[2] = add(state[2],c);
-			state[3] = add(state[3],d);
+			a=II(a,b,c,d,x[i+ 0],6 ,-198630844);
+			d=II(d,a,b,c,x[i+ 7],10, 1126891415);
+			c=II(c,d,a,b,x[i+14],15,-1416354905);
+			b=II(b,c,d,a,x[i+ 5],21,-57434055);
+			a=II(a,b,c,d,x[i+12],6 , 1700485571);
+			d=II(d,a,b,c,x[i+ 3],10,-1894986606);
+			c=II(c,d,a,b,x[i+10],15,-1051523);
+			b=II(b,c,d,a,x[i+ 1],21,-2054922799);
+			a=II(a,b,c,d,x[i+ 8],6 , 1873313359);
+			d=II(d,a,b,c,x[i+15],10,-30611744);
+			c=II(c,d,a,b,x[i+ 6],15,-1560198380);
+			b=II(b,c,d,a,x[i+13],21, 1309151649);
+			a=II(a,b,c,d,x[i+ 4],6 ,-145523070);
+			d=II(d,a,b,c,x[i+11],10,-1120210379);
+			c=II(c,d,a,b,x[i+ 2],15, 718787259);
+			b=II(b,c,d,a,x[i+ 9],21,-343485551);
+
+			a = add(a,olda);
+			b = add(b,oldb);
+			c = add(c,oldc);
+			d = add(d,oldd);
 		}
-		if (bDoNotEncode) return state;
-		return encodeBase64(state);
+		return [a,b,c,d];
 	}
+	function hmac(data,key){
+		var wa=toWord(key);
+		if(wa.length>16) wa=core(wa,key.length*chrsz);
+		var l=[], r=[];
+		for(var i=0; i<16; i++){
+			l[i]=wa[i]^0x36363636;
+			r[i]=wa[i]^0x5c5c5c5c;
+		}
+		var h=core(l.concat(toWord(data)),512+data.length*chrsz);
+		return core(r.concat(h),640);
+	}
+
+	//	Public functions
+	this.outputTypes={ Base64:0,Hex:1,String:2 };
+	this.compute=function(data,outputType){
+		var out=outputType||this.outputTypes.Base64;
+		switch(out){
+			case this.outputTypes.Hex:{
+				return toHex(core(toWord(data),data.length*chrsz));
+			}
+			case this.outputTypes.String:{
+				return toString(core(toWord(data),data.length*chrsz));
+			}
+			default:{
+				return toBase64(core(toWord(data),data.length*chrsz));
+			}
+		}
+	};
+	this.getHMAC=function(data,key,outputType){
+		var out=outputType||this.outputTypes.Base64;
+		switch(out){
+			case this.outputTypes.Hex:{
+				return toHex(hmac(data,key));
+			}
+			case this.outputTypes.String:{
+				return toString(hmac(data,key));
+			}
+			default:{
+				return toBase64(hmac(data,key));
+			}
+		}
+	};
 }();
