@@ -36,6 +36,11 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 	},
 
 	snarfChildDomOutput: true,
+	
+	pos: {x: -1, y: -1},		// current cursor position, relative to the grid
+	
+	// for conservative trigger mode, when triggered, timerScale is gradually increased from 0 to 1
+	timerScale: 1.0,
 
 	/////////////////////////////////////////////////////////////////
 	//
@@ -49,6 +54,8 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 	itemMaxHeight: 150,
 
 	orientation: 'horizontal',
+	
+	conservativeTrigger: false,		// don't active menu until mouse is over an image (macintosh style)
 
 	effectUnits: 2,
 	itemPadding: 10,
@@ -57,6 +64,7 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 	labelEdge: 'bottom',
 
 	enableCrappySvgSupport: false,
+
 
 	//
 	//
@@ -210,23 +218,70 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 		this.calcHitGrid();
 
 		//
-		// connect the event proc
+		// in liberal trigger mode, activate menu whenever mouse is close
 		//
-		dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+		if( !this.conservativeTrigger ){
+			dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+		}
+		
+		// Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
+		dojo.event.connect(document.documentElement, "onmouseout", this, "onBodyOut");
 	},
 
+	onBodyOut: function(e){
+		// clicking over an object inside of body causes this event to fire; ignore that case
+		if( dojo.html.overElement(dojo.html.body(), e) ){
+			return;
+		}
+		this.setDormant(e);
+	},
+
+	// when mouse moves out of menu's range
+	setDormant: function(e){
+		if( !this.isOver ){ return; }	// already dormant?
+		this.isOver = false;
+
+		if ( this.conservativeTrigger ) {
+			// user can't re-trigger the menu expansion
+			// until he mouses over a icon again
+			dojo.event.disconnect(document.documentElement, "onmousemove", this, "mouseHandler");
+		}
+		this.onGridMouseMove(-1, -1);
+	},
+
+	// when mouse is moved into menu's range
+	setActive: function(e){
+		if( this.isOver ){ return; }	// already activated?
+		this.isOver = true;
+
+		if ( this.conservativeTrigger ) {
+			// switch event handlers so that we handle mouse events from anywhere near
+			// the menu
+			dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+
+			this.timerScale=0.0;
+
+			// call mouse handler to do some initial necessary calculations/positioning
+			this.mouseHandler(e);
+
+			// slowly expand the icon size so it isn't jumpy
+			this.expandSlowly();
+		}
+	},
+
+	// when mouse is moved
 	mouseHandler: function(e) {
 		var p = this.getCursorPos(e);
 
 		if ((p.x >= this.hitX1) && (p.x <= this.hitX2) &&
 			(p.y >= this.hitY1) && (p.y <= this.hitY2)){
-
-			this.isOver = true;
+			if( !this.isOver ){
+				this.setActive(e);
+			}
 			this.onGridMouseMove(p.x-this.hitX1, p.y-this.hitY1);
 		}else{
 			if (this.isOver){
-				this.isOver = false;
-				this.onGridMouseMove(-1, -1);
+				this.setDormant(e);
 			}
 		}
 	},
@@ -236,6 +291,15 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 	},
 
 	onGridMouseMove: function(x, y){
+		this.pos = {x:x, y:y};
+		this.paint();
+	},
+	
+	paint: function(){
+		var x=this.pos.x;
+		var y=this.pos.y;
+
+		if( this.itemCount <= 0 ){ return; }
 
 		//
 		// figure out our main index
@@ -244,7 +308,9 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 		var pos = this.isHorizontal ? x : y;
 		var prx = this.isHorizontal ? this.proximityLeft : this.proximityTop;
 		var siz = this.isHorizontal ? this.itemWidth : this.itemHeight;
-		var sim = this.isHorizontal ? this.itemMaxWidth : this.itemMaxHeight;
+		var sim = this.isHorizontal ? 
+			(1.0-this.timerScale)*this.itemWidth + this.timerScale*this.itemMaxWidth :
+			(1.0-this.timerScale)*this.itemHeight + this.timerScale*this.itemMaxHeight ;
 
 		var cen = ((pos - prx) / siz) - 0.5;
 		var max_off_cen = (sim / siz) - 0.5;
@@ -356,7 +422,7 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 	},
 
 	setitemsize: function(p, scale){
-
+		scale *= this.timerScale;
 		var w = Math.round(this.itemWidth  + ((this.itemMaxWidth  - this.itemWidth ) * scale));
 		var h = Math.round(this.itemHeight + ((this.itemMaxHeight - this.itemHeight) * scale));
 
@@ -384,6 +450,7 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 			}
 
 			this.children[p].usualX = Math.round(this.children[p].cenX - (w / 2));
+			
 			this.children[p].domNode.style.top  = y + 'px';
 
 			this.children[p].domNode.style.left  = this.children[p].usualX + 'px';
@@ -480,6 +547,7 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 
 		var x = 0;
 		var y = 0;
+		
 		var labelW = dojo.style.getOuterWidth(itm.lblNode);
 		var labelH = dojo.style.getOuterHeight(itm.lblNode);
 
@@ -528,7 +596,18 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 
 	toEdge: function(inp, def){
 		return this.EDGE[inp.toUpperCase()] || def;
+	},
+	
+	// slowly expand the image to user specified max size
+	expandSlowly: function(){
+		if( !this.isOver ){ return; }
+		this.timerScale += 0.2;
+		this.paint();
+		if ( this.timerScale<1.0 ) {
+			dojo.lang.setTimeout(this, "expandSlowly", 10);
+		}
 	}
+
 });
 
 dojo.widget.HtmlFisheyeListItem = function(){
@@ -578,6 +657,7 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
 			this.lblNode.appendChild(document.createTextNode(this.caption));
 			this.lblNode.style.display = 'none';
 		}
+		dojo.html.disableSelection(this.domNode);
 	},
 	
 	createSvgNode: function(src){
@@ -629,7 +709,11 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
 		return elm;
 	},
 
-	onMouseOver: function() {
+	onMouseOver: function(e) {
+		// in conservative mode, don't activate the menu until user mouses over an icon
+		if( !this.parent.isOver ){
+			this.parent.setActive(e);
+		}
 		if ( this.caption != "" ) {
 			this.lblNode.style.display="block";
 			this.parent.positionLabel(this);
