@@ -109,35 +109,43 @@ dojo.dom.getUniqueId = function(){
 }
 dojo.dom.getUniqueId._idIncrement = 0;
 
-dojo.dom.firstElement = dojo.dom.getFirstChildElement = function(parentNode){
+dojo.dom.firstElement = dojo.dom.getFirstChildElement = function(parentNode, tagName){
 	var node = parentNode.firstChild;
 	while(node && node.nodeType != dojo.dom.ELEMENT_NODE){
 		node = node.nextSibling;
 	}
-	return node;
-}
-
-dojo.dom.lastElement = dojo.dom.getLastChildElement = function(parentNode){
-	var node = parentNode.lastChild;
-	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
-		node = node.previousSibling;
+	if(tagName && node && node.tagName && node.tagName.toLowerCase() != tagName.toLowerCase()) {
+		node = dojo.dom.nextElement(node, tagName);
 	}
 	return node;
 }
 
-dojo.dom.nextElement = dojo.dom.getNextSiblingElement = function(node){
-	if(!node) { return null; }
-	do {
-		node = node.nextSibling;
-	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+dojo.dom.lastElement = dojo.dom.getLastChildElement = function(parentNode, tagName){
+	var node = parentNode.lastChild;
+	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
+		node = node.previousSibling;
+	}
+	if(tagName && node && node.tagName && node.tagName.toLowerCase() != tagName.toLowerCase()) {
+		node = dojo.dom.prevElement(node, tagName);
+	}
 	return node;
 }
 
-dojo.dom.prevElement = dojo.dom.getPreviousSiblingElement = function(node){
+dojo.dom.nextElement = dojo.dom.getNextSiblingElement = function(node, tagName){
 	if(!node) { return null; }
+	if(tagName) { tagName = tagName.toLowerCase(); }
+	do {
+		node = node.nextSibling;
+	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE && (!tagName || tagName != node.tagName));
+	return node;
+}
+
+dojo.dom.prevElement = dojo.dom.getPreviousSiblingElement = function(node, tagName){
+	if(!node) { return null; }
+	if(tagName) { tagName = tagName.toLowerCase(); }
 	do {
 		node = node.previousSibling;
-	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE && (!tagName || tagName != node.tagName));
 	return node;
 }
 
@@ -284,11 +292,6 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 	}
 	return null;
 }
-
-// referenced for backwards compatibility
-//this.extractRGB = function(color) { return dojo.graphics.color.extractRGB(color); }
-//this.hex2rgb = function(hex) { return dojo.graphics.color.hex2rgb(hex); }
-//this.rgb2hex = function(r, g, b) { return dojo.graphics.color.rgb2hex(r, g, b); }
 
 dojo.dom.insertBefore = function(node, ref, force){
 	if (force != true &&
