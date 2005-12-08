@@ -227,6 +227,7 @@ dojo.io.queueBind = function(request){
 
 	dojo.io._bindQueue.push(request);
 	dojo.io._dispatchNextQueueBind();
+	return request;
 }
 
 dojo.io._dispatchNextQueueBind = function(){
