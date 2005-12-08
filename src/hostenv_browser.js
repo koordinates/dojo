@@ -211,7 +211,11 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		return null;
 	}
 	
-	return http.responseText;
+	if(http.status==200){
+		return http.responseText;
+	}else{
+		return null;
+	}
 }
 
 /*
@@ -220,6 +224,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
  * That is because any subsequent script elements haven't shown up in the document
  * object yet.
  */
+ /*
 function dj_last_script_src() {
     var scripts = window.document.getElementsByTagName('script');
     if(scripts.length < 1){ 
@@ -236,6 +241,7 @@ function dj_last_script_src() {
 if(!dojo.hostenv["library_script_uri_"]){
 	dojo.hostenv.library_script_uri_ = dj_last_script_src();
 }
+*/
 
 dojo.hostenv.defaultDebugContainerId = 'dojoDebug';
 
