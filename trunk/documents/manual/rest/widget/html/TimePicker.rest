@@ -47,7 +47,12 @@ Properties
 
 ``useDefaultTime``:
 
-    A falg, true will set a default time
+    A flag, true will set a default time
+
+``useDefaultMinutes``:
+
+    A flag, true will set a default time with minutes equal to the current time,
+false will set to 0.  Default is false.
 
 ``storedTime``:
 
