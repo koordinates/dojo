@@ -10,14 +10,8 @@ dojo.require("dojo.event.*");
 dojo.provide("dojo.storage");
 dojo.provide("dojo.storage.StorageProvider");
 
-
-
-
-
-
-
 /** Initializes the storage systems and figures out the best available 
-    storage options on this platform. */
+	storage options on this platform. */
 dojo.storage.manager = new function(){
 	this.currentProvider = null;
 	this.available = false;
@@ -26,27 +20,25 @@ dojo.storage.manager = new function(){
 	// TODO: Provide a way for applications to override the default namespace
 	this.namespace = "*";
 
-	/** Initializes the storage system. */
 	this.initialize = function(){
 		// autodetect the best storage provider we can provide on this platform
 		this.autodetect();
 	}
 	
-	/** Instructs the storageManager to use 
-	    the given storage class for all storage requests.
-	    
-	    Example:
-	    
-	    dojo.storage.setProvider(
-	           dojo.storage.browser.IEStorageProvider)
+	/** Instructs the storageManager to use the given storage class for all
+		storage requests.
+		
+		Example:
+		
+		dojo.storage.setProvider(dojo.storage.browser.IEStorageProvider)
 	*/
 	this.setProvider = function(storageClass){
 	
 	}
 	
-	/** Autodetects the best possible persistent
-			storage provider available on this platform. */
 	this.autodetect = function(){
+		// Autodetects the best possible persistent storage provider available
+		// on this platform.
 		dojo.debug("autodetect");
 		// right now we only support Flash
 		if (this.initialized == true) // already finished
@@ -119,207 +111,130 @@ dojo.storage.manager = new function(){
 	}
 }
 
-
-
-
-
-
-
 /** The base class for all storage providers. */
 
 /** The constructor will be called after the page is finished loading,
-	  so you should do all of your initialization in here, such as writing
-	  out DOM nodes needed by your provider, initializing plugings, etc. */
+	  so you should do all of your initialization in here, such as writing out
+	  DOM nodes needed by your provider, initializing plugings, etc. */
 dojo.storage.StorageProvider = function(){
-	// do initialization; all page DOM nodes are available
+	// do initialization
 }
 
-/** Constants that are used by programmers using storage providers. */
-
-/** A put() call to a storage provider was succesfull. */
 dojo.storage.SUCCESS = "success";
-
-/** A put() call to a storage provider failed. */
 dojo.storage.FAILED = "failed";
-
-/** A put() call to a storage provider is pending user approval. */
 dojo.storage.PENDING = "pending";
 
-/** Returned by getMaximumSize() if this storage provider can not determine
-		the maximum amount of data it can support. */
+// Returned by getMaximumSize() if this storage provider can not determine the
+// maximum amount of data it can support.
 dojo.storage.SIZE_NOT_AVAILABLE = -1;
 
-/** Returned by getMaximumSize() if this storage provider has no theoretical
-		limit on the amount of data it can store. */
+// Returned by getMaximumSize() if this storage provider has no theoretical
+// limit on the amount of data it can store.
 dojo.storage.SIZE_NO_LIMIT = -2;
-
-
-/** Static, class level methods; override these in your Storage Provider in
-	  order to support querying this provider about whether it is available,
-	  installable, etc. */
-
-/** Returns whether this storage provider is 
-    available on this platform. Static, class
-    level method that can be called to determine
-    if we can even instantiate this storage
-    provider on this platform.
-
-    @returns True or false if this storage 
-    provider is supported.
- */
-dojo.storage.StorageProvider.isAvailable = function(){
-	return false;
-}
-
-/** Returns whether this provider can be installed,
-		to upgrade a platform to have the features
-		necessary to use this storage provider. */
-dojo.storage.StorageProvider.isInstallable = function(){
-	return false;
-}
-
-/** If this provider can be installed at runtime,
-		does so. */
-dojo.storage.StorageProvider.install = function(){
-}
 
 dojo.lang.extend(dojo.storage.StorageProvider, {
 	/** Puts a key and value into this storage system.
 
-    @param key A string key to use when retrieving 
-           this value in the future.
-    @param value A value to store; this can be 
-           any JavaScript type.
-    @param resultsHandler A callback function 
-           that will receive two arguments.
-           The first argument is one of three 
-           values: dojo.storage.SUCCESS,
-           dojo.storage.FAILED, or 
-           dojo.storage.PENDING; these values 
-           determine how the put request went. 
-           In some storage systems users can deny
-           a storage request, resulting in a 
-           dojo.storage.FAILED, while in 
-           other storage systems a storage 
-           request must wait for user approval,
-           resulting in a dojo.storage.PENDING 
-           status until the request
-           is either approved or denied, 
-           resulting in another call back
-           with dojo.storage.SUCCESS. 
-    
-    The second argument in the call back is an 
-    optional message that details possible error 
-    messages that might have occurred during
-    the storage process.
-    
-    Example:
-      var resultsHandler = function(status, message){
-        alert("status="+status+", message="+message);
-      };
-      dojo.storage.put("test", "hello world", 
-                       resultsHandler);
+	@param	key A string key to use when retrieving this value in the future.
+	@param	value A value to store; this can be any JavaScript type.
+	@param	resultsHandler A callback function that will receive two arguments.
+			The first argument is one of three values: dojo.storage.SUCCESS,
+			dojo.storage.FAILED, or dojo.storage.PENDING; these values
+			determine how the put request went.	 In some storage systems users
+			can deny a storage request, resulting in a dojo.storage.FAILED,
+			while in other storage systems a storage request must wait for user
+			approval, resulting in a dojo.storage.PENDING status until the
+			request is either approved or denied, resulting in another call
+			back with dojo.storage.SUCCESS. 
+	
+	The second argument in the call back is an optional message that details
+	possible error messages that might have occurred during the storage
+	process.
+	
+	Example:
+	  var resultsHandler = function(status, message){
+		alert("status="+status+", message="+message);
+	  };
+	  dojo.storage.put("test", "hello world", 
+					   resultsHandler);
 	*/
 	put: function(key, value, resultsHandler){ },
 
-	/** Gets the value with the given key. Returns null
-	    if this key is not in the storage system.
+	/** Gets the value with the given key. Returns null if this key is not in
+		the storage system.
 	
-	    @param key A string key to get the value of.
-	    @returns Returns any JavaScript object type; 
-	    null if the key is not
-	    present. */
+		@param key A string key to get the value of.
+		@returns Returns any JavaScript object type; null if the key is not
+		present.
+	*/
 	get: function(key){},
 
-	/** Determines whether the storage has the given 
-	    key. 
-	
-	      @returns Whether this key is 
-	               present or not. */
 	hasKey: function(key){
-		if (this.get(key) != null)
-			return true;
-		else
-			return false;
+		// Determines whether the storage has the given key. 
+		return (this.get(key) != null);
 	},
 
-	/** Enumerates all of the available keys in 
-	    this storage system.
+	/** Enumerates all of the available keys in this storage system.
 	
-	    @returns Array of string keys in this 
-	             storage system.
+		@returns Array of string keys in this storage system.
 	 */
 	getKeys: function(){},
 
-	/** Completely clears this storage system of all 
-	    of it's values and keys. */
+	// Completely clears this storage system of all of it's values and keys.
 	clear: function(){},
 
-	/** Returns whether this storage provider's 
-	    values are persisted when this platform 
-	    is shutdown. 
-	
-	    @returns True or false whether this 
-	    storage is permanent. */
 	isPermanent: function(){
+		/** Returns whether this storage provider's 
+			values are persisted when this platform is shutdown. 
+		*/
 		return false;
 	},
 
 	/** The maximum storage allowed by this provider.
 	
-	    @returns Returns the maximum storage size 
-	             supported by this provider, in 
-	             thousands of bytes (i.e., if it 
-	             returns 60 then this means that 60K 
-	             of storage is supported).
-	    
-	             If this provider can not determine 
-	             it's maximum size, then 
-	             dojo.storage.SIZE_NOT_AVAILABLE is 
-	             returned; if there is no theoretical
-	             limit on the amount of storage 
-	             this provider can return, then
-	             dojo.storage.SIZE_NO_LIMIT is 
-	             returned. */
+		@returns	Returns the maximum storage size supported by this
+					provider, in thousands of bytes (i.e., if it returns 60
+					then this means that 60K of storage is supported).
+
+					If this provider can not determine it's maximum size, then
+					dojo.storage.SIZE_NOT_AVAILABLE is returned; if there is no
+					theoretical limit on the amount of storage this provider
+					can return, then dojo.storage.SIZE_NO_LIMIT is returned.
+	*/
 	getMaximumSize: function(){},
 
 	/** Determines whether this provider has a 
-	    settings UI.
+		settings UI.
 	
-	    @returns True or false if this provider has 
-	             the ability to show a
-	             a settings UI to change it's 
-	             values, change the amount of storage
-	             available, etc. */
+		@returns	True or false if this provider has the ability to show a a
+					settings UI to change it's values, change the amount of
+					storage available, etc.
+	*/
 	hasSettingsUI: function(){
 		return false;
 	},
 
-	/** If this provider has a settings UI, it is 
-	    shown. */
 	showSettingsUI: function(){
+		// If this provider has a settings UI, it is shown.
+		dojo.unimplemented("dojo.storage.StorageProvider.showSettingsUI");
 	},
 
-	/** If this provider has a settings UI, hides
-		  it. */
 	hideSettingsUI: function(){
+		// If this provider has a settings UI, hides it.
+		dojo.unimplemented("dojo.storage.StorageProvider.hideSettingsUI");
 	}
 	
 });
 
-
-
-
-
-
-
-/** A private class that helps the storageManager to migrate a user's data
-		to an upgraded storage system, if this occurs. This is necessary so that 
-		we can migrate data between storage providers if a user "upgrades" their 
-		browser. For example, if they are on Internet Explorer, and we
-		store data using InternetExplorerStorageProvider, and they later install 
-		Flash, we don't want to have applications "lose" their data when we 
-		autodetect Flash and move to the FlashStorageProvider.*/
+/** 
+	A private class that helps the storageManager to migrate a user's data to
+	an upgraded storage system, if this occurs. This is necessary so that we
+	can migrate data between storage providers if a user "upgrades" their
+	browser. For example, if they are on Internet Explorer, and we store data
+	using InternetExplorerStorageProvider, and they later install Flash, we
+	don't want to have applications "lose" their data when we autodetect Flash
+	and move to the FlashStorageProvider.
+*/
 dojo.storage._StorageMigrator = function(){
 }
 
@@ -354,5 +269,6 @@ dojo.lang.extend(dojo.storage._StorageMigrator, {
 	}
 });
 
-dojo.event.connect(window, "onload", dojo.storage.manager, 
-							  	 dojo.storage.manager.initialize);
+dojo.addOnLoad(function(){
+	dojo.storage.manager.initialize();
+});
