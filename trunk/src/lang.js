@@ -442,14 +442,14 @@ dojo.AdapterRegistry = function(){
 }
 
 dojo.lang.extend(dojo.AdapterRegistry, {
-    register: function (name, check, wrap, /* optional */ override) {
+    register: function (name, check, wrap, /* optional */ override){
         /***
-            The check function should return true if the given arguments are
-            appropriate for the wrap function.
+			The check function should return true if the given arguments are
+			appropriate for the wrap function.
 
-            If override is given and true, the check function will be given
-            highest priority.  Otherwise, it will be the lowest priority
-            adapter.
+			If override is given and true, the check function will be given
+			highest priority.  Otherwise, it will be the lowest priority
+			adapter.
         ***/
 
         if (override) {
@@ -461,9 +461,9 @@ dojo.lang.extend(dojo.AdapterRegistry, {
 
     match: function (/* ... */) {
         /***
-            Find an adapter for the given arguments.
-            
-            If no suitable adapter is found, throws NotFound.
+			Find an adapter for the given arguments.
+
+			If no suitable adapter is found, throws NotFound.
         ***/
         for(var i = 0; i < this.pairs.length; i++){
             var pair = this.pairs[i];
@@ -476,13 +476,11 @@ dojo.lang.extend(dojo.AdapterRegistry, {
 
     unregister: function (name) {
         /***
-
-            Remove a named adapter from the registry
-
+			Remove a named adapter from the registry
         ***/
-        for (var i = 0; i < this.pairs.length; i++) {
+        for(var i = 0; i < this.pairs.length; i++){
             var pair = this.pairs[i];
-            if (pair[0] == name) {
+            if(pair[0] == name){
                 this.pairs.splice(i, 1);
                 return true;
             }
@@ -492,14 +490,14 @@ dojo.lang.extend(dojo.AdapterRegistry, {
 });
 
 dojo.lang.reprRegistry = new dojo.AdapterRegistry();
-dojo.lang.registerRepr = function(name, check, wrap, /*optional*/ override) {
+dojo.lang.registerRepr = function(name, check, wrap, /*optional*/ override){
         /***
-            Register a repr function.  repr functions should take
-            one argument and return a string representation of it
-            suitable for developers, primarily used when debugging.
+			Register a repr function.  repr functions should take
+			one argument and return a string representation of it
+			suitable for developers, primarily used when debugging.
 
-            If override is given, it is used as the highest priority
-            repr, otherwise it will be used as the lowest.
+			If override is given, it is used as the highest priority
+			repr, otherwise it will be used as the lowest.
         ***/
         dojo.lang.reprRegistry.register(name, check, wrap, override);
     };
@@ -508,7 +506,6 @@ dojo.lang.repr = function(obj){
 	/***
 		Return a "programmer representation" for an object
 	***/
-
 	if(typeof(obj) == "undefined"){
 		return "undefined";
 	}else if(obj === null){
