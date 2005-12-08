@@ -33,36 +33,9 @@
 	<property name="website_dir" value="${docs_dir}/website"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
 	<property name="profile" value=""/>
-	<script language="javascript"><![CDATA[
-		// ok, this is just JANKY. That there's no default way to specify a
-		// multi-line text property value in ant is assinine.
-		var cright = [
-			"\/*",
-			"\tCopyright (c) 2004-2005, The Dojo Foundation",
-			"\tAll Rights Reserved",
-			"",
-			"\tLicensed under the Academic Free License version 2.1 or above OR the",
-			"\tmodified BSD license. For more information on Dojo licensing, see:",
-			"",
-			"\t\thttp://dojotoolkit.org/community/licensing.shtml",
-			"*\/",
-			""
-		];
-		dojo.setNewProperty("copyright", cright.join("\n"));
 
-		var notice = [
-			"\/*",
-			"\tThis is a compiled version of Dojo, built for deployment and not for development.",
-			"\tTo get an editable version, please visit:",
-			"",
-			"\t\thttp://dojotoolkit.org",
-			"",
-			"\tfor documentation and information on getting the source.",
-			"*\/",
-			""
-		];
-		dojo.setNewProperty("build_notice", notice.join("\n"));
-	]]></script>
+	<loadfile property="copyright" srcFile="./copyright.txt"/>
+	<loadfile property="build_notice" srcFile="./build_notice.txt"/>
 
 	<!-- help task -->
 	<target name="help" depends="-fix-config">
