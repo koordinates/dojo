@@ -244,25 +244,37 @@ if(!dojo.hostenv["library_script_uri_"]){
 */
 
 dojo.hostenv.defaultDebugContainerId = 'dojoDebug';
+dojo.hostenv._println_buffer = [];
+dojo.hostenv._println_safe = false;
+dojo.hostenv.println = function (line){
+	if(!dojo.hostenv._println_safe){
+		dojo.hostenv._println_buffer.push(line);
+	}else{
+		try {
+			var console = document.getElementById(djConfig.debugContainerId ?
+				djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
+			if(!console) { console = document.getElementsByTagName("body")[0] || document.body; }
 
-dojo.hostenv.println = function (line) {
-	try {
-		var console = document.getElementById(djConfig.debugContainerId ?
-			djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
-		if(!console) { console = document.getElementsByTagName("body")[0] || document.body; }
-
-		var div = document.createElement("div");
-		div.appendChild(document.createTextNode(line));
-		console.appendChild(div);
-	} catch (e) {
-		try{
-			// safari needs the output wrapped in an element for some reason
-			document.write("<div>" + line + "</div>");
-		}catch(e2){
-			window.status = line;
+			var div = document.createElement("div");
+			div.appendChild(document.createTextNode(line));
+			console.appendChild(div);
+		} catch (e) {
+			try{
+				// safari needs the output wrapped in an element for some reason
+				document.write("<div>" + line + "</div>");
+			}catch(e2){
+				window.status = line;
+			}
 		}
 	}
 }
+
+dojo.addOnLoad(function(){
+	dojo.hostenv._println_safe = true;
+	while(dojo.hostenv._println_buffer.length > 0){
+		dojo.hostenv.println(dojo.hostenv._println_buffer.shift());
+	}
+});
 
 function dj_addNodeEvtHdlr (node, evtName, fp, capture){
 	var oldHandler = node["on"+evtName] || function(){};
