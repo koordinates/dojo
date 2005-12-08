@@ -19,7 +19,7 @@ dojo.inherits(dojo.widget.HtmlEditor, dojo.widget.HtmlWidget);
 
 dojo.widget.HtmlEditor.itemGroups = {
 	textGroup: ["bold", "italic", "underline", "strikethrough"],
-	blockGroup: ["fontFace", "formatBlock"],
+	blockGroup: ["formatBlock", "fontName"],
 	justifyGroup: ["justifyleft", "justifycenter", "justifyright"],
 	commandGroup: ["save", "cancel"],
 	colorGroup: ["forecolor", "hilitecolor"],
@@ -36,6 +36,13 @@ dojo.widget.HtmlEditor.formatBlockValues = {
 	"Preformatted": "pre"
 };
 
+dojo.widget.HtmlEditor.fontNameValues = {
+	"Arial": "Arial, Helvetica, sans-serif",
+	"Verdana": "Verdana, sans-serif",
+	"Times New Roman": "Times New Roman, serif",
+	"Courier": "Courier New, monospace"
+};
+
 dojo.widget.HtmlEditor.defaultItems = [
 	"commandGroup", "|", "linkGroup", "|", "textGroup", "|", "justifyGroup", "|", "listGroup", "indentGroup", "|", "colorGroup"
 ];
@@ -48,8 +55,8 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	widgetType: "Editor",
 
 	items: dojo.widget.HtmlEditor.defaultItems,
-
 	formatBlockItems: dojo.lang.shallowCopy(dojo.widget.HtmlEditor.formatBlockValues),
+	fontNameItems: dojo.lang.shallowCopy(dojo.widget.HtmlEditor.fontNameValues),
 
 	// used to get the properties of an item if it is given as a string
 	getItemProperties: function(name) {
@@ -88,6 +95,10 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 				props.name = "formatBlock";
 				props.values = this.formatBlockItems;
 				break;
+
+			case "fontname":
+				props.name = "fontName";
+				props.values = this.fontNameItems;
 		}
 		return props;
 	},
@@ -224,6 +235,15 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 					dojo.event.connect(select, "onSetValue", function(item, value) {
 						_this.onAction("formatBlock", value);
 					});
+				} else if(cmd == "fontname") {
+					var select = dojo.widget.fromScript("ToolbarSelect", {
+						name: "fontName",
+						values: this.fontNameItems
+					});
+					tb.addChild(select);
+					dojo.event.connect(select, "onSetValue", dojo.lang.hitch(this, function(item, value) {
+						this.onAction("fontName", value);
+					}));
 				} else if(dojo.lang.inArray(cmd, ["forecolor", "hilitecolor"])) {
 					var btn = tb.addChild(dojo.widget.fromScript("ToolbarColorDialog", this.getItemProperties(cmd)));
 					dojo.event.connect(btn, "onSetValue", this, "_setValue");
