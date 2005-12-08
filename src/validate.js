@@ -90,16 +90,14 @@ dojo.validate.isEmailAddress = function(value, flags) {
 
   @param value  A string.
   @param flags  An object.
-    flags.listSeparator  The character used to separate email addresses.  Default is ";", ",", or " ".
+    flags.listSeparator  The character used to separate email addresses.  Default is ";", ",", "\n" or " ".
     flags in regexp.emailAddress can be applied.
     flags in regexp.host can be applied.
     flags in regexp.ipAddress can be applied.
     flags in regexp.tld can be applied.
-	@return  true or false.
+  @return  true or false.
 */
 dojo.validate.isEmailAddressList = function(value, flags) {
-	if(!flags) { flags = {}; }
-	if(!flags.listSeparator) { flags.listSeparator = "\\s;,"; }
 	var re = new RegExp("^" + dojo.regexp.emailAddressList(flags) + "$", "i");
 	return re.test(value);
 }
@@ -116,18 +114,10 @@ dojo.validate.getEmailAddressList = function(value, flags) {
 	if(!flags) { flags = {}; }
 	if(!flags.listSeparator) { flags.listSeparator = "\\s;,"; }
 
-	var re = new RegExp("^" + dojo.regexp.emailAddress(flags) + "$", "i");
-
-	var emails = [];
-	var vals = value.split(new RegExp("\\s*[" + flags.listSeparator + "]\\s*"));
-	for(var i = 0; i < vals.length; i++) {
-		if(re.test(vals[i])) {
-			emails.push(vals[i]);
-		} else {
-			return [];
-		}
+	if ( dojo.validate.isEmailAddressList(value, flags) ) {
+		return value.split(new RegExp("\\s*[" + flags.listSeparator + "]\\s*"));
 	}
-	return emails;
+	return [];
 }
 
 /**

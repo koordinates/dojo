@@ -154,7 +154,7 @@ dojo.regexp.host = function(flags) {
 	var domainNameRE = "([a-zA-Z]([-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?\\.)+" + dojo.regexp.tld(flags);
 
 	// port number RE
-	portRE = ( flags.allowPort ) ? "(\\:" + dojo.regexp.integer({allowSign: false}) + ")?" : "";
+	portRE = ( flags.allowPort ) ? "(\\:" + dojo.regexp.integer({signed: false}) + ")?" : "";
 
 	// build host RE
 	var hostNameRE = domainNameRE;
@@ -186,8 +186,8 @@ dojo.regexp.url = function(flags) {
 		function(q) { if (q) { return "(https?|ftps?)\\://"; }  return ""; }
 	);
 
-	// Path and query RE
-	var pathRE = "(/[^\\s/]+)*(\\?\\S*)?";
+	// Path and query and anchor RE
+	var pathRE = "(/([^?#\\s/]+/)*)?([^?#\\s/]+(\\?[^?#\\s/]*)?(#[A-Za-z][\\w.:-]*)?)?";
 
 	return (protocalRE + dojo.regexp.host(flags) + pathRE);
 }
@@ -227,7 +227,7 @@ dojo.regexp.emailAddress = function(flags) {
   Builds a regular expression that matches a list of email addresses.
 
   @param flags  An object.
-    flags.listSeparator  The character used to separate email addresses.  Default is newline, "\n".
+    flags.listSeparator  The character used to separate email addresses.  Default is ";", ",", "\n" or " ".
     flags in regexp.emailAddress can be applied.
     flags in regexp.host can be applied.
     flags in regexp.ipAddress can be applied.
@@ -238,7 +238,7 @@ dojo.regexp.emailAddress = function(flags) {
 dojo.regexp.emailAddressList = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
-	if (typeof flags.listSeparator != "string") { flags.listSeparator = "\\n"; }
+	if (typeof flags.listSeparator != "string") { flags.listSeparator = "\\s;,"; }
 
 	// build a RE for an Email Address List
 	var emailAddressRE = dojo.regexp.emailAddress(flags);

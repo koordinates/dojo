@@ -90,6 +90,8 @@ function test_validate_isUrl(){
 	jum.assertFalse("test18", dojo.validate.isUrl('localhost:8080', {} ));
 	jum.assertTrue("test19", dojo.validate.isUrl('http://www.yahoo.com/index.html?a=12&b=hello%20world#anchor'));
 	jum.assertFalse("test20", dojo.validate.isUrl('http://www.yahoo.xyz'));
+	jum.assertTrue("test21", dojo.validate.isUrl('http://www.yahoo.com/index.html#anchor'));
+	jum.assertTrue("test22", dojo.validate.isUrl('http://cocoon.apache.org/2.1/'));
 }
 
 function test_validate_isEmailAddress(){
@@ -123,7 +125,7 @@ function test_validate_isEmailAddress(){
 
 function test_validate_isEmailAddressList(){
 	jum.assertTrue("test1", dojo.validate.isEmailAddressList(
-		"x@yahoo.com \n x.y.z.w@yahoo.com \n o'mally@yahoo.com \n fred&barney@stonehenge.com \n" )
+		"x@yahoo.com \n x.y.z.w@yahoo.com ; o'mally@yahoo.com , fred&barney@stonehenge.com \n" )
 	);
 	jum.assertTrue("test2", dojo.validate.isEmailAddressList(
 		"x@yahoo.com \n x.y.z.w@localhost \n o'mally@yahoo.com \n fred&barney@localhost", 
@@ -144,6 +146,15 @@ function test_validate_isEmailAddressList(){
 			"mailto:x@yahoo.com; <x.y.z.w@localhost>; <mailto:o'mally@localhost>; fred&barney@localhost", 
 			{allowLocal: true, allowCruft: true, listSeparator: ";"} )
 	);
+}
+
+function test_validate_getEmailAddressList(){
+	var list = "x@yahoo.com \n x.y.z.w@yahoo.com ; o'mally@yahoo.com , fred&barney@stonehenge.com";
+	jum.assertEquals("test1", 4, dojo.validate.getEmailAddressList(list).length);
+
+	var localhostList = "x@yahoo.com; x.y.z.w@localhost; o'mally@yahoo.com; fred&barney@localhost";
+	jum.assertEquals("test2", 0, dojo.validate.getEmailAddressList(localhostList).length);
+	jum.assertEquals("test3", 4, dojo.validate.getEmailAddressList(localhostList, {allowLocal: true} ).length);
 }
 
 function test_validate_isInRange(){
