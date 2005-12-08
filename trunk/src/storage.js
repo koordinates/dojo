@@ -1,6 +1,6 @@
 /** FIXME: Write better docs.
 
-		@author Alex Russel, alex@dojotoolkit.org
+		@author Alex Russell, alex@dojotoolkit.org
 		@author Brad Neuberg, bkn3@columbia.edu 
 */
 
@@ -41,8 +41,7 @@ dojo.storage.manager = new function(){
 		// on this platform.
 		dojo.debug("autodetect");
 		// right now we only support Flash
-		if (this.initialized == true) // already finished
-			return;
+		if(this.initialized == true){ return; }
 			
 		// do data migration if this user has moved to a better storage provider
 		this.migrator = new dojo.storage._StorageMigrator();
@@ -50,26 +49,26 @@ dojo.storage.manager = new function(){
 			this.migrator.migrate();
 			this.initialized = true;
 			this.available = true;
-		}
-		else {
+		}else{
 			dojo.debug("doing the hard work");
 			// right now we only support Flash
-			if (dojo.storage.browser.FlashStorageProvider.isAvailable()){
+			// FIXME: why are we reaching out into an object which may not be
+			// defined for a property? It will likely throw exceptions.
+			if(dojo.storage.browser.FlashStorageProvider.isAvailable()){
 				// create this provider
 				this.currentProvider = new dojo.storage.browser.FlashStorageProvider();
 				
 				// copy our properties over to dojo.storage so it can be
 				// scripted easily
-				for (var i in this.currentProvider)
-					dojo.storage[i] = this.currentProvider[i];
+				dojo.lang.mixin(dojo.storage, this.currentProvider);
+				// FIXME: why are we doing this?
 				this.currentProvider = dojo.storage;
 				dojo.debug("dojo.storage copied into="+dojo.storage);
 				dojo.debug("currentProvider="+this.currentProvider);
 				
 				this.initialized = true;
 				this.available = true;
-			}
-			else { // no storage available
+			}else{ // no storage available
 				this.initialized = true;
 				this.available = false;
 			}
@@ -81,13 +80,16 @@ dojo.storage.manager = new function(){
 		return this.available;
 	}
 
-	/** Determines if this platform supports
-			the given storage provider.
+	// FIXME: this is kinda dumb. Shouldn't we just be looking for providers
+	// that have registered themselves to see if they can instantiate
+	// themselves? Why do we need to know their fully qualified names!?
+
+	/** Determines if this platform supports the given storage provider.
 			
-			Example:
-			
-			dojo.storage.manager.supportsProvider(
-				"dojo.storage.browser.InternetExplorerStorageProvider");
+		Example:
+		
+		dojo.storage.manager.supportsProvider(
+			"dojo.storage.browser.InternetExplorerStorageProvider");
 	*/
 	this.supportsProvider = function(storageClass){
 		// construct this class dynamically
@@ -95,11 +97,8 @@ dojo.storage.manager = new function(){
 			// dynamically call the given providers class level isAvailable()
 			// method
 			var results = eval(storageClass + ".isAvailable()");
-			if (results == null || typeof results == "undefined")
-				return false;
-			return results;
-		}
-		catch (exception){
+			return (!results) ? false : results;
+		}catch(exception){
 			dojo.debug("exception="+exception);
 			return false;
 		}
@@ -167,21 +166,26 @@ dojo.lang.extend(dojo.storage.StorageProvider, {
 		@returns Returns any JavaScript object type; null if the key is not
 		present.
 	*/
-	get: function(key){},
+	get: function(key){
+		dojo.unimplemented("dojo.storage.StorageProvider.get");
+	},
 
 	hasKey: function(key){
 		// Determines whether the storage has the given key. 
 		return (this.get(key) != null);
 	},
 
-	/** Enumerates all of the available keys in this storage system.
-	
-		@returns Array of string keys in this storage system.
-	 */
-	getKeys: function(){},
+	getKeys: function(){
+		// Enumerates all of the available keys in this storage system.
+		// returns Array of string keys in this storage system.
+		dojo.unimplemented("dojo.storage.StorageProvider.getKeys");
+	},
 
-	// Completely clears this storage system of all of it's values and keys.
-	clear: function(){},
+	clear: function(){
+		// Completely clears this storage system of all of it's values and
+		// keys.
+		dojo.unimplemented("dojo.storage.StorageProvider.clear");
+	},
 
 	isPermanent: function(){
 		/** Returns whether this storage provider's 
