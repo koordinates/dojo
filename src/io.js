@@ -62,9 +62,9 @@ dojo.io.Request = function(url, mimetype, transport, changeUrl){
 		this.fromKwArgs(arguments[0]);
 	}else{
 		this.url = url;
-		if (arguments.length >= 2) { this.mimetype = mimetype; }
-		if (arguments.length >= 3) { this.transport = transport; }
-		if (arguments.length >= 4) { this.changeUrl = changeUrl; }
+		if(mimetype){ this.mimetype = mimetype; }
+		if(transport){ this.transport = transport; }
+		if(arguments.length >= 4){ this.changeUrl = changeUrl; }
 	}
 }
 
@@ -106,11 +106,15 @@ dojo.lang.extend(dojo.io.Request, {
 	
 	// events stuff
 	load: function(type, data, evt){ },
-	error: function (type, error){ },
+	error: function(type, error){ },
+	handle: function(){ },
+
+	// the abort method needs to be filled in by the transport that accepts the
+	// bind() request
+	abort: function(){ },
 	
 	// backButton: function(){ },
 	// forwardButton: function(){ },
-	// handle: function () {},
 
 	fromKwArgs: function(kwArgs){
 		// normalize args
@@ -171,12 +175,15 @@ dojo.io.bind = function(request){
 	// if the request asks for a particular implementation, use it
 	if(!(request instanceof dojo.io.Request)){
 		try{
-		request = new dojo.io.Request(request);
+			request = new dojo.io.Request(request);
 		}catch(e){ dojo.debug(e); }
 	}
 	var tsName = "";
 	if(request["transport"]){
 		tsName = request["transport"];
+		// FIXME: it would be good to call the error handler, although we'd
+		// need to use setTimeout or similar to accomplish this and we can't
+		// garuntee that this facility is available.
 		if(!this[tsName]){ return request; }
 	}else{
 		// otherwise we do our best to auto-detect what available transports
@@ -193,6 +200,43 @@ dojo.io.bind = function(request){
 	request.bindSuccess = true;
 	return request;
 }
+
+dojo.io.queueBind = function(request){
+	if(!(request instanceof dojo.io.Request)){
+		try{
+			request = new dojo.io.Request(request);
+		}catch(e){ dojo.debug(e); }
+	}
+
+	// make sure we get called if/when we get a response
+	var oldLoad = request.load;
+	request.load = function(){
+		dojo.io._queueBindInFlight = false;
+		var ret = oldLoad.apply(this, arguments);
+		dojo.io._dispatchNextQueueBind();
+		return ret;
+	}
+
+	var oldErr = request.error;
+	request.error = function(){
+		dojo.io._queueBindInFlight = false;
+		var ret = oldErr.apply(this, arguments);
+		dojo.io._dispatchNextQueueBind();
+		return ret;
+	}
+
+	dojo.io._bindQueue.push(request);
+	dojo.io._dispatchNextQueueBind();
+}
+
+dojo.io._dispatchNextQueueBind = function(){
+	if(!dojo.io._queueBindInFlight){
+		dojo.io._queueBindInFlight = true;
+		dojo.io.bind(dojo.io._bindQueue.shift());
+	}
+}
+dojo.io._bindQueue = [];
+dojo.io._queueBindInFlight = false;
 
 dojo.io.argsFromMap = function(map, encoding){
 	var control = new Object();

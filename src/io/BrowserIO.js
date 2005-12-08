@@ -192,14 +192,10 @@ dojo.io.XMLHTTPTransport = new function(){
 			if(useCache){ // only cache successful responses
 				addToCache(url, query, kwArgs.method, http);
 			}
-			if(typeof kwArgs.load == "function"){
-				kwArgs.load("load", ret, http);
-			}
+			kwArgs[(typeof kwArgs.load == "function") ? "load" : "handle"]("load", ret, http);
 		}else{
 			var errObj = new dojo.io.Error("XMLHttpTransport Error: "+http.status+" "+http.statusText);
-			if(typeof kwArgs.error == "function"){
-				kwArgs.error("error", errObj, http);
-			}
+			kwArgs[(typeof kwArgs.error == "function") ? "error" : "handle"]("error", errObj, http);
 		}
 	}
 
