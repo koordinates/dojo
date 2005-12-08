@@ -3,32 +3,43 @@ dojo.provide("dojo.widget.DropDownButton2");
 dojo.provide("dojo.widget.ComboButton2");
 dojo.require("dojo.widget.Widget");
 
-dojo.requireIf("html", "dojo.widget.html.Button2");
-
 dojo.widget.tags.addParseTreeHandler("dojo:button2");
 dojo.widget.tags.addParseTreeHandler("dojo:dropdownbutton2");
 dojo.widget.tags.addParseTreeHandler("dojo:combobutton2");
 
 dojo.widget.Button2 = function(){
-	dojo.widget.Widget.call(this);
-
-	this.widgetType = "Button2";
-	this.isContainer = true;
 }
-dojo.inherits(dojo.widget.Button2, dojo.widget.Widget);
+dojo.lang.extend(dojo.widget.Button2, {
+	widgetType: "Button2",
+	isContainer: true,
+
+	// Constructor arguments
+	caption: "",
+	disabled: false,
+	onClick: function(){ }
+});
 
 dojo.widget.DropDownButton2 = function(){
-	dojo.widget.Widget.call(this);
-
-	this.widgetType = "DropDownButton2";
-	this.isContainer = true;
 }
-dojo.inherits(dojo.widget.DropDownButton2, dojo.widget.Widget);
+dojo.inherits(dojo.widget.DropDownButton2, dojo.widget.Button2);
+dojo.lang.extend(dojo.widget.DropDownButton2, {
+	widgetType: "DropDownButton2",
+	isContainer: true,
+
+	// constructor arguments
+	menuId: ''
+});
 
 dojo.widget.ComboButton2 = function(){
-	dojo.widget.Widget.call(this);
-
-	this.widgetType = "ComboButton2";
-	this.isContainer = true;
 }
-dojo.inherits(dojo.widget.ComboButton2, dojo.widget.Widget);
+dojo.inherits(dojo.widget.ComboButton2, dojo.widget.Button2);
+dojo.lang.extend(dojo.widget.ComboButton2, {
+	widgetType: "ComboButton2",
+	isContainer: true,
+
+	// constructor arguments
+	menuId: ''
+});
+
+dojo.requireIf("html", "dojo.widget.html.Button2");
+

@@ -4,7 +4,7 @@
 <title>Dojo Button Widget Test</title>
 
 <script type="text/javascript">
-	var djConfig = {isDebug: true, debugAtAllCosts: true };
+	var djConfig = {isDebug: true /*, debugAtAllCosts: true*/ };
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -15,7 +15,21 @@
 	dojo.require("dojo.widget.html.Button2");
 	dojo.require("dojo.widget.HtmlMenu2");
 	dojo.require("dojo.fx.html");
+	
 	dojo.hostenv.writeIncludes();
+</script>
+
+<script>
+	// Load user custom button
+	
+	// 1. set directory for acme package (which contains widgets)
+	// The path is relative to the dojo/ directory, so typically
+	// it's something like "../acme"
+	dojo.hostenv.setModulePrefix('acme', 'tests/widget/acme');
+	dojo.widget.manager.registerWidgetPackage('acme');
+	
+	// 2. load the user defined button
+	dojo.require("acme.DogButton");
 </script>
 
 <style>
@@ -28,7 +42,10 @@
 		float: left;
 		margin-right: 10px;
 	}
-	
+	.dojoButton .dojoButtonContents {
+		font-size: medium;
+	}
+
 	/* make the menu style match the buttons */
 	.dojoPopupMenu2, .dojoPopupMenu2Client, .dojoMenuItem2,
 		.dojoMenuItem2Label, 
@@ -60,51 +77,123 @@
 </style>
 
 <h1>Buttons, Buttons, Buttons!</h1>
-<p>Short buttons, tall buttons, big buttons, small buttons...
-These buttons size to their content (just like &lt;button&gt;).</p>
 
-<h2>Short</h2>
+<h2>Simple, drop down & combo buttons</h2>
+<p>
+Buttons can do an action, display a menu, or both:
+</p>
 <div class="box">
-	<button dojoType="button2" onclick='dojo.debug("clicked save");'>
-		<img src="images/floppy_frederic_moser_01.gif"> Save
+	<button dojoType="button2">
+		<img src="images/plus.gif"> Create
+	</button>
+	<button dojoType="button2">
+		<img src="images/plus.gif"><br>Create
 	</button>
 	<button dojoType="dropdownbutton2" menuId='editMenu'>
 		<img src="images/note.gif"> Edit
 	</button>
+	<button dojoType="dropdownbutton2" menuId='editMenu'>
+		<img src="images/note.gif"><br>Edit
+	</button>
 	<button dojoType="combobutton2" menuId='saveMenu' onclick='dojo.debug("clicked combo save");'>
 		<img src="images/floppy_frederic_moser_01.gif"> Save
 	</button>
-	<button dojoType="button2" onClick='dojo.debug("clicked save");' disabled=true>
-		<img src="images/floppy_frederic_moser_01.gif"> Save
+	<button dojoType="combobutton2" menuId='saveMenu' onclick='dojo.debug("clicked combo save");'>
+		<img src="images/floppy_frederic_moser_01.gif"><br>Save
+	</button>
+</div>
+<br clear=both>
+And disabled:
+<div class="box">
+	<button dojoType="button2" disabled="true">
+		<img src="images/plus.gif"> Create
+	</button>
+	<button dojoType="button2" disabled="true">
+		<img src="images/plus.gif"><br>Create
 	</button>
 	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"> Edit
 	</button>
+	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
+		<img src="images/note.gif"><br>Edit
+	</button>
 	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
 		<img src="images/floppy_frederic_moser_01.gif"> Save
+	</button>
+	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
+		<img src="images/floppy_frederic_moser_01.gif"><br>Save
 	</button>
 	<div style="clear: both;"></div>
 </div>
 
-<h2>Tall</h2>
+<h2>Sizing</h2>
+<p>Short buttons, tall buttons, big buttons, small buttons...
+These buttons size to their content (just like &lt;button&gt;).</p>
 <div class="box">
-	<button dojoType="button2" onclick='dojo.debug("clicked save");'>
-		<img src="images/floppy_frederic_moser_01.gif"><br>Save
+	<button dojoType="button2" onclick='dojo.debug("big");'>
+		<img src="images/dino_architetto_francesc_04.gif" height=50 width=30>
+		<span style="font-size:xx-large">big</span>
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu'>
-		<img src="images/note.gif"><br>Edit
+	<button id="smallButton1" dojoType="button2" onclick='dojo.debug("small");'>
+		<img src="images/coccinelle_tanguy_jacq_01.gif">
+		<span style="font-size:x-small">small</span>
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onclick='dojo.debug("clicked combo save");'>
-		<img src="images/floppy_frederic_moser_01.gif"><br>Save
+	<button dojoType="button2" onclick='dojo.debug("long");'>
+		<img src="images/snake.gif" height=16>
+		long
 	</button>
-	<button dojoType="button2" onClick='dojo.debug("clicked save");' disabled=true>
-		<img src="images/floppy_frederic_moser_01.gif"><br>Save
+	<button dojoType="button2" onclick='dojo.debug("tall");' width2height="0.1">
+	   <div>
+		<img src="images/giraffe.gif" height=75px width=35px><br>
+		<span style="font-size:medium">tall</span>
+	   </div>
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
-		<img src="images/note.gif"><br>Edit
+	<div style="clear: both;"></div>
+</div>
+<p>Disabled:</p>
+<div class="box">
+	<button dojoType="button2" onclick='dojo.debug("big");' disabled="true">
+		<img src="images/dino_architetto_francesc_04.gif" height=50 width=30>
+		<span style="font-size:xx-large">big</span>
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
-		<img src="images/floppy_frederic_moser_01.gif"><br>Save
+	<button id="smallButton1dis" dojoType="button2" onclick='dojo.debug("small");' disabled="true">
+		<img src="images/coccinelle_tanguy_jacq_01.gif">
+		<span style="font-size:x-small">small</span>
+	</button>
+	<button dojoType="button2" onclick='dojo.debug("long");' disabled="true">
+		<img src="images/snake.gif" height=16>
+		long
+	</button>
+	<button dojoType="button2" onclick='dojo.debug("tall");' width2height="0.1" disabled="true">
+	   <div>
+		<img src="images/giraffe.gif" height=75px width=35px><br>
+		<span style="font-size:medium">tall</span>
+	   </div>
+	</button>
+	<div style="clear: both;"></div>
+</div>
+
+
+
+<h2>User defined button</h2>
+<p>Dojo users can extend the button class and define their own background images.
+Here's an example:</p>
+<style>
+  .dc {
+  	font-size: x-large;
+  	padding-top: 10px;
+  	padding-bottom: 10px;
+  }
+</style>
+<div class="box">
+	<button dojoType="dogbutton" onclick='dojo.debug("short");'>
+		<div class="dc">short</div>
+	</button>
+	<button dojoType="dogbutton" onclick='dojo.debug("longer");'>
+		<div class="dc">bit longer</div>
+	</button>
+	<button dojoType="dogbutton" onclick='dojo.debug("longer yet");'>
+		<div class="dc">ridiculously long</div>
 	</button>
 	<div style="clear: both;"></div>
 </div>
@@ -124,3 +213,5 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 	<div dojoType="MenuItem2" iconSrc="images/floppy_frederic_moser_01.gif" caption="Save As" accelKey="Ctrl+A"
 		onClick="dojo.debug('not actually saving anything, just a test!')"></div>
 </div>
+
+
