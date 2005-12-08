@@ -7,26 +7,23 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Button2");
 
 dojo.widget.html.Button2 = function(){
-	// mix in the button properties
-	dojo.widget.Button2.call(this);
+	// call superclass constructors
 	dojo.widget.HtmlWidget.call(this);
+	dojo.widget.Button2.call(this);
 }
 dojo.inherits(dojo.widget.html.Button2, dojo.widget.HtmlWidget);
+dojo.lang.extend(dojo.widget.html.Button2, dojo.widget.Button2.prototype);
 dojo.lang.extend(dojo.widget.html.Button2, {
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlButton2Template.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlButton2Template.css"),
-
-	// Constructor arguments
-	caption: "",
-	disabled: false,
-	onClick: function(){ },
 	
 	// button images
 	inactiveImg: "src/widget/templates/images/pill-button-blue_benji-",
 	activeImg: "src/widget/templates/images/pill-button-seagreen_benji-",
 	pressedImg: "src/widget/templates/images/pill-button-purple_benji-",
 	disabledImg: "src/widget/templates/images/pill-button-gray_benji-",
+	width2height: 1.0/3.0,
 
 	// attach points
 	containerNode: null,
@@ -51,7 +48,7 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 	sizeMyself: function(e){
 		this.height = dojo.style.getOuterHeight(this.containerNode);
 		this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
-		var endWidth= this.height/3;
+		var endWidth= this.height * this.width2height;
 
 		this.containerNode.style.left=endWidth+"px";
 
@@ -114,17 +111,16 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 	}
 });
 
-
 /**** DropDownButton - push the button and a menu shows up *****/
 dojo.widget.html.DropDownButton2 = function(){
 	// call constructors of superclasses
-	dojo.widget.html.Button2.call(this);
 	dojo.widget.DropDownButton2.call(this);
+	dojo.widget.html.Button2.call(this);
 }
 dojo.inherits(dojo.widget.html.DropDownButton2, dojo.widget.html.Button2);
+dojo.lang.extend(dojo.widget.html.DropDownButton2, dojo.widget.DropDownButton2.prototype);
+
 dojo.lang.extend(dojo.widget.html.DropDownButton2, {
-	// constructor arguments
-	menuId: '',
 
 	downArrow: "src/widget/templates/images/whiteDownArrow.gif",
 	disabledDownArrow: "src/widget/templates/images/whiteDownArrow.gif",
@@ -152,13 +148,11 @@ dojo.widget.html.ComboButton2 = function(){
 	dojo.widget.ComboButton2.call(this);
 }
 dojo.inherits(dojo.widget.html.ComboButton2, dojo.widget.html.Button2);
+dojo.lang.extend(dojo.widget.html.ComboButton2, dojo.widget.ComboButton2.prototype);
 dojo.lang.extend(dojo.widget.html.ComboButton2, {
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboButton2Template.html"),
 
-	// Constructor arguments
-	menuId: '',
-	
 	// attach points
 	leftPart: null,
 	rightPart: null,

@@ -11,6 +11,8 @@ dojo.widget.HtmlWidget = function(args){
 dojo.inherits(dojo.widget.HtmlWidget, dojo.widget.DomWidget);
 
 dojo.lang.extend(dojo.widget.HtmlWidget, {
+	widgetType: "HtmlWidget",
+
 	templateCssPath: null,
 	templatePath: null,
 	allowResizeX: true,
