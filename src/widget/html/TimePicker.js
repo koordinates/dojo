@@ -15,6 +15,8 @@ dojo.widget.html.TimePicker = function(){
 	this.time = "";
 	// set following flag to true if a default time should be set
 	this.useDefaultTime = false;
+	// set the following to true to set default minutes to current time, false to // use zero
+	this.useDefaultMinutes = false;
 	// rfc 3339 date
 	this.storedTime = "";
 	// time currently selected in the UI, stored in hours, minutes, seconds in the format that will be actually displayed
@@ -82,7 +84,11 @@ dojo.widget.html.TimePicker = function(){
 	this.fromRfcDateTime = function(rfcDate) {
 		var tempDate = new Date();
 		if(!rfcDate || !rfcDate.split("T")[1]) {
-			tempDate.setMinutes(Math.floor(tempDate.getMinutes()/5)*5);
+			if(this.useDefaultMinutes) {
+				tempDate.setMinutes(Math.floor(tempDate.getMinutes()/5)*5);
+			} else {
+				tempDate.setMinutes(0);
+			}
 		} else {
 			var tempTime = rfcDate.split("T")[1].split(":");
 			// fullYear, month, date
