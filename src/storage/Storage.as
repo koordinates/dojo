@@ -15,17 +15,17 @@ class Storage {
 		var primeForReHide = false;
 		store = SharedObject.getLocal(namespace);
 		store.onStatus = function(status){
-			ExternalInterface.call("alert", status.code == "SharedObject.Flush.Failed");
-			ExternalInterface.call("alert", status.code == "SharedObject.Flush.Success");
+			// ExternalInterface.call("alert", status.code == "SharedObject.Flush.Failed");
+			// ExternalInterface.call("alert", status.code == "SharedObject.Flush.Success");
 			if(primeForReHide){
 				primeForReHide = false;
-				//ExternalInterface.call("dojo.storage.provider.hideStore");
+				ExternalInterface.call("dojo.storage.provider.hideStore");
 			}
 		}
 		store.data[key] = value;
 		var ret = store.flush();
 		if(typeof ret == "string"){
-			//ExternalInterface.call("dojo.storage.provider.unHideStore");
+			ExternalInterface.call("dojo.storage.provider.unHideStore");
 			primeForReHide = true;
 		}
 		return store.getSize(namespace);

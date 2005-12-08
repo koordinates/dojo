@@ -2,87 +2,66 @@ dojo.provide("dojo.storage.browser");
 dojo.require("dojo.storage");
 dojo.require("dojo.uri.*");
 
-/** 	Storage provider that uses features in Flash to achieve permanent storage.
-		Internally, it uses Flash Shared Objects (Flash 6+) and the External
-		Interface API (Flash 8+) to script and store information in Flash that
-		can later be retrieved. 
-		
-		@author Alex Russell, alex@dojotoolkit.org
-		@author Brad Neuberg, bkn3@columbia.edu 
-*/
-dojo.storage.browser.FlashStorageProvider = function(){
-	// output the HTML we need to support our Flash object
-	this._writeStorage();
-	this.flash = (dojo.render.html.ie) ? window["dojoStorage"] : document["dojoStorage"];
-	dojo.debug("flash="+this.flash);
-	
-	// FIXME: Technically, we should wait for a callback from the Flash file
-	// itself, since it might not be loaded yet
-	this.initialized = true;
+dojo.storage.browser.StorageProvider = function(){
+	this.initialized = false;
+	this.flash = null;
+	this.backlog = [];
 }
 
-dojo.inherits(	dojo.storage.browser.FlashStorageProvider, 
+dojo.inherits(	dojo.storage.browser.StorageProvider, 
 				dojo.storage.StorageProvider);
 
-// static, class level methods
-/*
-	Returns whether this storage provider is available on this platform.
-	Static, class level method that can be called to determine if we can even
-	instantiate this storage provider on this platform.
-
-    @returns True or false if this storage provider is supported.
-*/
-dojo.storage.browser.FlashStorageProvider.isAvailable = function(){
-	return true;
-}
-
-/** Returns whether this provider can be installed, to upgrade a platform to
- * have the features necessary to use this storage provider. */
-dojo.storage.browser.FlashStorageProvider.isInstallable = function(){
-	return false;
-}
-
-dojo.storage.browser.FlashStorageProvider.install = function(){ }
-
-
-// instance methods and properties
-dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
-	initialized: false,
-	
-	put: function(key, value, resultsHandler){
-		// FIXME: Modify Flash to do results handler callback
-		this.flash.set(key, value, dojo.storage.manager.namespace);
+dojo.lang.extend(dojo.storage.browser.StorageProvider, {
+	storageOnLoad: function(){
+		this.initialized = true;
+		this.hideStore();
+		while(this.backlog.length){
+			this.set.apply(this, this.backlog.shift());
+		}
 	},
 
-	get: function(key){
-		var results = this.flash.get(key, dojo.storage.manager.namespace);
-		return results;
+	unHideStore: function(){
+		var container = dojo.byId("dojo-storeContainer");
+		with(container.style){
+			position = "absolute";
+			overflow = "visible";
+			width = "215px";
+			height = "138px";
+			// FIXME: make these positions dependent on screen size/scrolling!
+			left = "30px"; 
+			top = "30px";
+			visiblity = "visible";
+			zIndex = "20";
+			border = "1px solid black";
+		}
 	},
 
-	isPermanent: function(){
-		return false;
+	hideStore: function(status){
+		var container = dojo.byId("dojo-storeContainer");
+		with(container.style){
+			left = "-300px";
+			top = "-300px";
+		}
 	},
 
-	getMaximumSize: function(){},
-
-	hasSettingsUI: function(){
-		return true;
+	set: function(key, value, ns){
+		if(!this.initialized){
+			this.backlog.push([key, value, ns]);
+			return "pending";
+		}
+		return this.flash.set(key, value, ns||this.namespace);
 	},
 
-	/** If this provider has a settings UI, it is 
-	    shown. */
-	showSettingsUI: function(){
+	get: function(key, ns){
+		return this.flash.get(key, ns||this.namespace);
 	},
 
-	/** If this provider has a settings UI, hides
-		  it. */
-	hideSettingsUI: function(){
-	},
-	
-	_writeStorage: function(){
+	writeStorage: function(){
 		var swfloc = dojo.uri.dojoUri("src/storage/Storage.swf").toString();
-		dojo.debug("swfloc="+swfloc);
-		var storeParts = new Array();
+		// alert(swfloc);
+		var storeParts = [
+			'<div id="dojo-storeContainer"',
+				'style="position: absolute; left: -300px; top: -300px;">'];
 		if(dojo.render.html.ie){
 			storeParts.push('<object');
 			storeParts.push('	style="border: 1px solid black;"');
@@ -92,7 +71,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			storeParts.push('	<param name="movie" value="'+swfloc+'">');
 			storeParts.push('	<param name="quality" value="high">');
 			storeParts.push('</object>');
-		} else {
+		}else{
 			storeParts.push('<embed src="'+swfloc+'" width="215" height="138" ');
 			storeParts.push('	quality="high" ');
 			storeParts.push('	pluginspage="http://www.macromedia.com/go/getflashplayer" ');
@@ -100,17 +79,14 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			storeParts.push('	name="dojoStorage">');
 			storeParts.push('</embed>');
 		}
-		
-		var results = storeParts.join("");
-		var container = document.createElement("div");
-		container.id = "dojo-storeContainer";
-		container.style.position = "absolute";
-		container.style.left = "-300px";
-		container.style.top = "-300px";
-		container.innerHTML = results;
-		
-		document.body.appendChild(container);
+		storeParts.push('</div>');
+		document.write(storeParts.join(""));
 	}
-	
 });
 
+dojo.storage.setProvider(new dojo.storage.browser.StorageProvider());
+dojo.storage.provider.writeStorage();
+
+dojo.addOnLoad(function(){
+	dojo.storage.provider.flash = (dojo.render.html.ie) ? window["dojoStorage"] : document["dojoStorage"];
+});
