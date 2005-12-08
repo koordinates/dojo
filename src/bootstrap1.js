@@ -55,7 +55,7 @@ dojo.evalObjPath = function(objpath, create){
 	// fast path for no periods
 	if(typeof objpath != "string"){ return dj_global; }
 	if(objpath.indexOf('.') == -1){
-		if(dj_undef(objpath, dj_global)){
+		if((dj_undef(objpath, dj_global))&&(create)){
 			dj_global[objpath] = {};
 		}
 		return dj_global[objpath];
@@ -475,7 +475,7 @@ dojo.hostenv.getDepsForEval = function(contents){
 		/dojo.hostenv.loadModule\(.*?\)/mg,
 		/dojo.hostenv.require\(.*?\)/mg,
 		/dojo.require\(.*?\)/mg,
-		/dojo.requireIf\([\w\w]*?\)/mg,
+		/dojo.requireIf\([\w\W]*?\)/mg,
 		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
 	];
 	for(var i=0; i<testExps.length; i++){
@@ -572,7 +572,9 @@ dojo.hostenv.moduleLoaded = function(modulename){
 *
 * dj_load is an alias for dojo.hostenv.loadModule
 */
+dojo.hostenv._global_omit_module_check = false;
 dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
+	omit_module_check = this._global_omit_module_check || omit_module_check;
 	var module = this.findModule(modulename, false);
 	if(module){
 		return module;
