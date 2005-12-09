@@ -211,11 +211,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		return null;
 	}
 	
-	if(http.status==200){
-		return http.responseText;
-	}else{
-		return null;
-	}
+	return http.responseText;
 }
 
 /*
