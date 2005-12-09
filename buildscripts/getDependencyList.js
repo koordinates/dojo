@@ -48,18 +48,27 @@ if(dependencies["prefixes"]){
 
 dojo.hostenv.name_ = hostenvType;
 
+function removeComments(contents){
+	// if we get the contents of the file from Rhino, it might not be a JS
+	// string, but rather a Java string, which will cause the replace() method
+	// to bomb.
+	contents = new String((!contents) ? "" : contents);
+	// clobber all comments
+	contents = contents.replace( /^(.*?)\/\/(.*)$/mg , "$1");
+	contents = contents.replace( /(\n)/mg , "__DOJONEWLINE");
+	contents = contents.replace( /\/\*(.*?)\*\//g , "");
+	return contents.replace( /__DOJONEWLINE/mg , "\n");
+}
+
 // over-write dj_eval to prevent actual loading of subsequent files
 dj_eval = function(){ return true; }
 old_load = load;
 load = function(uri){
 	try{
-		var text = readText(uri);
-		// print(text);
+		var text = removeComments(readText(uri));
 		var requires = dojo.hostenv.getDepsForEval(text);
 		var provides = dojo.hostenv.getProvidesForEval(text);
-		// print("provides: "+provides.join(";"));
 		eval(provides.join(";"));
-		// print("requires: "+requires.join(";"));
 		eval(requires.join(";"));
 		dojo.hostenv.loadedUris.push(uri);
 		dojo.hostenv.loadedUris[uri] = true;
@@ -69,8 +78,32 @@ load = function(uri){
 	return true;
 }
 
+dojo.hostenv.getDepsForEval = function(contents){
+	// FIXME: should probably memoize this!
+	if(!contents){ return []; }
+
+	// check to see if we need to load anything else first. Ugg.
+	var deps = [];
+	var tmp;
+	var testExps = [
+		/dojo.hostenv.loadModule\(.*?\)/mg,
+		/dojo.hostenv.require\(.*?\)/mg,
+		/dojo.require\(.*?\)/mg,
+		/dojo.requireIf\([\w\W]*?\)/mg,
+		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
+	];
+	for(var i=0; i<testExps.length; i++){
+		tmp = contents.match(testExps[i]);
+		if(tmp){
+			for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
+		}
+	}
+
+	return deps;
+}
+
 dojo.hostenv.getProvidesForEval = function(contents){
-	if(!contents){ contents = ""; }
+	if(!contents){ return []; }
 	// check to see if we need to load anything else first. Ugg.
 	var mods = [];
 	var tmp = contents.match( /dojo.hostenv.startPackage\(.*?\)/mg );
