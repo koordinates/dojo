@@ -465,29 +465,6 @@ dojo.hostenv.loadUri = function(uri, cb){
 	return 1;
 }
 
-dojo.hostenv.getDepsForEval = function(contents){
-	// FIXME: should probably memoize this!
-	if(!contents){ contents = ""; }
-	// check to see if we need to load anything else first. Ugg.
-	var deps = [];
-	var tmp;
-	var testExps = [
-		/dojo.hostenv.loadModule\(.*?\)/mg,
-		/dojo.hostenv.require\(.*?\)/mg,
-		/dojo.require\(.*?\)/mg,
-		/dojo.requireIf\([\w\W]*?\)/mg,
-		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
-	];
-	for(var i=0; i<testExps.length; i++){
-		tmp = contents.match(testExps[i]);
-		if(tmp){
-			for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
-		}
-	}
-
-	return deps;
-}
-
 // FIXME: probably need to add logging to this method
 dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 	var ok = true;
