@@ -2,8 +2,10 @@ dojo.provide("dojo.lang");
 dojo.provide("dojo.AdapterRegistry");
 dojo.provide("dojo.lang.Lang");
 
-dojo.lang.mixin = function(obj, props){
-	var tobj = [];
+dojo.lang.mixin = function(obj, props, tobj){
+	if(typeof tobj != "object") {
+		tobj = {};
+	}
 	for(var x in props){
 		if(typeof tobj[x] == "undefined" || tobj[x] != props[x]) {
 			obj[x] = props[x];
