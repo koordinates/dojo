@@ -48,8 +48,10 @@ dojo.dom.xmlns = {
 };
 
 dojo.dom.isNode = dojo.lang.isDomNode = function(wh){
-	if(typeof Element != "undefined") {
-		return wh instanceof Element;
+	if(typeof Element == "object") {
+		try {
+			return wh instanceof Element;
+		} catch(E) {}
 	} else {
 		// best-guess
 		return wh && !isNaN(wh.nodeType);
