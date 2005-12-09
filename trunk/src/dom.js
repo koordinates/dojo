@@ -135,10 +135,13 @@ dojo.dom.lastElement = dojo.dom.getLastChildElement = function(parentNode, tagNa
 
 dojo.dom.nextElement = dojo.dom.getNextSiblingElement = function(node, tagName){
 	if(!node) { return null; }
-	if(tagName) { tagName = tagName.toLowerCase(); }
 	do {
 		node = node.nextSibling;
-	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE && (!tagName || tagName != node.tagName));
+	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+
+	if(node && tagName && tagName.toLowerCase() != node.tagName.toLowerCase()) {
+		return dojo.dom.nextElement(node, tagName);
+	}
 	return node;
 }
 
@@ -147,7 +150,11 @@ dojo.dom.prevElement = dojo.dom.getPreviousSiblingElement = function(node, tagNa
 	if(tagName) { tagName = tagName.toLowerCase(); }
 	do {
 		node = node.previousSibling;
-	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE && (!tagName || tagName != node.tagName));
+	} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
+
+	if(node && tagName && tagName.toLowerCase() != node.tagName.toLowerCase()) {
+		return dojo.dom.prevElement(node, tagName);
+	}
 	return node;
 }
 
