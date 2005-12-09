@@ -1,9 +1,23 @@
-dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.Blowfish");
 
+/*	Blowfish
+ *	Created based on the C# implementation by Marcus Hahn (http://www.hotpixel.net/)
+ *	Unsigned math functions derived from Joe Gregorio's SecureSyndication GM script
+ *	http://bitworking.org/projects/securesyndication/
+ *	(Note that this is *not* an adaption of the above script)
+ *
+ *	version 1.0 
+ *	TRT 
+ *	2005-12-08
+ */
 dojo.crypto.Blowfish = new function(){
-	var nRounds=16;
-	var boxes = {
+	var POW2=Math.pow(2,2);
+	var POW3=Math.pow(2,3);
+	var POW4=Math.pow(2,4);
+	var POW8=Math.pow(2,8);
+	var POW16=Math.pow(2,16);
+	var POW24=Math.pow(2,24);
+	var boxes={
 		p:[
 			0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, 0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89, 
 			0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c, 0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917, 
@@ -146,31 +160,97 @@ dojo.crypto.Blowfish = new function(){
 			0x90d4f869, 0xa65cdea0, 0x3f09252d, 0xc208e69f, 0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6
 		]
 	}
+////////////////////////////////////////////////////////////////////////////
+	function add(x,y){
+		var sum=(x+y)&0xffffffff;
+		if (sum<0){
+			sum=-sum;
+			return (0x10000*((sum>>16)^0xffff))+(((sum&0xffff)^0xffff)+1);
+		}
+		return sum;
+	}
+	function split(x){
+		var r=x&0xffffffff;
+		if(r<0) {
+			r=-r;
+			return [((r&0xffff)^0xffff)+1,(r>>16)^0xffff];
+		}
+		return [r&0xffff,(r>>16)];
+	}
+	function xor(x,y){
+		var xs=split(x);
+		var ys=split(y);
+		return (0x10000*(xs[1]^ys[1]))+(xs[0]^ys[0]);
+	}
+	function $(v, box){
+		var d=v&0xff; v>>=8;
+		var c=v&0xff; v>>=8;
+		var b=v&0xff; v>>=8;
+		var a=v&0xff;
+		var r=add(box.s0[a],box.s1[b]);
+		r=xor(r,box.s2[c]);
+		return add(r,box.s3[d]);
+	}
+////////////////////////////////////////////////////////////////////////////
+	function eb(o, box){
+		var l=o.left;
+		var r=o.right;
+		l=xor(l,box.p[0]);
+		r=xor(r,xor($(l,box),box.p[1]));
+		l=xor(l,xor($(r,box),box.p[2]));
+		r=xor(r,xor($(l,box),box.p[3]));
+		l=xor(l,xor($(r,box),box.p[4]));
+		r=xor(r,xor($(l,box),box.p[5]));
+		l=xor(l,xor($(r,box),box.p[6]));
+		r=xor(r,xor($(l,box),box.p[7]));
+		l=xor(l,xor($(r,box),box.p[8]));
+		r=xor(r,xor($(l,box),box.p[9]));
+		l=xor(l,xor($(r,box),box.p[10]));
+		r=xor(r,xor($(l,box),box.p[11]));
+		l=xor(l,xor($(r,box),box.p[12]));
+		r=xor(r,xor($(l,box),box.p[13]));
+		l=xor(l,xor($(r,box),box.p[14]));
+		r=xor(r,xor($(l,box),box.p[15]));
+		l=xor(l,xor($(r,box),box.p[16]));
+		o.right=l;
+		o.left=xor(r,box.p[17]);
+	}
 
-	function r(x, box){
-		return add(add(box.s0[(x>>>24)&0xff], box.s1[(x>>>16)&0xff])^box.s2[(x>>>8)&0xff],box.s3[x&0xff]);
+	function db(o, box){
+		var l=o.left;
+		var r=o.right;
+		l=xor(l,box.p[17]);
+		r=xor(r,xor($(l,box),box.p[16]));
+		l=xor(l,xor($(r,box),box.p[15]));
+		r=xor(r,xor($(l,box),box.p[14]));
+		l=xor(l,xor($(r,box),box.p[13]));
+		r=xor(r,xor($(l,box),box.p[12]));
+		l=xor(l,xor($(r,box),box.p[11]));
+		r=xor(r,xor($(l,box),box.p[10]));
+		l=xor(l,xor($(r,box),box.p[9]));
+		r=xor(r,xor($(l,box),box.p[8]));
+		l=xor(l,xor($(r,box),box.p[7]));
+		r=xor(r,xor($(l,box),box.p[6]));
+		l=xor(l,xor($(r,box),box.p[5]));
+		r=xor(r,xor($(l,box),box.p[4]));
+		l=xor(l,xor($(r,box),box.p[3]));
+		r=xor(r,xor($(l,box),box.p[2]));
+		l=xor(l,xor($(r,box),box.p[1]));
+		o.right=l;
+		o.left=xor(r,box.p[0]);
 	}
-	function add(a, b){
-		var n=(a&0xffff)+(b&0xffff);
-		return ((a>>16)+(b>>16)+(n>>16)<<16)|(n&0xffff);
-	}
-	function parseLongAt(s, i){
-		return s.charCodeAt(i<<2)
-			+ (s.charCodeAt((i<<2)+1)<<8)
-			+ (s.charCodeAt((i<<2)+2)<<16)
-			+ (s.charCodeAt((i<<2)+3)<<24);
-	}
-	function getBlock(s){
-		return {left:parseLongAt(s,0), right:parseLongAt(s,1)};
-	}
-	function fromBlock(o){
-		return String.fromCharCode(
-			o.left&0xff, (o.left>>>8)&0xff, (o.left>>>16)&0xff, (o.left>>>24)&0xff, 
-			o.right&0xff, (o.right>>>8)&0xff, (o.right>>>16)&0xff, (o.right>>>24)&0xff
-		);
-	}
-	
-	function initialize(key){
+
+	//	Note that we aren't caching contexts here; it might take a little longer
+	//	but we should be more secure this way.
+	function init(key){
+		var k=key;
+		if (typeof(k)=="string"){
+			var a=[];
+			for(var i=0; i<k.length; i++) 
+				a.push(k.charCodeAt(i)&0xff);
+			k=a;
+		}
+		//	init the boxes
 		var box = { p:[], s0:[], s1:[], s2:[], s3:[] };
 		for(var i=0; i<boxes.p.length; i++) box.p.push(boxes.p[i]);
 		for(var i=0; i<boxes.s0.length; i++) box.s0.push(boxes.s0[i]);
@@ -178,104 +258,112 @@ dojo.crypto.Blowfish = new function(){
 		for(var i=0; i<boxes.s2.length; i++) box.s2.push(boxes.s2[i]);
 		for(var i=0; i<boxes.s3.length; i++) box.s3.push(boxes.s3[i]);
 
+		//	init p with the key
 		var pos=0;
-		var data = 0x00000000;
-		for(var i=0; i<nRounds+2; i++){
-			data = ((data<<8)&0xffffffff)|parseLongAt(key,pos);
-			pos++;
-			if(pos>=key.length) pos=0;
-			box.p[i]^=data;
+		var data=0;
+		for(var i=0; i < box.p.length; i++){
+			for (var j=0; j<4; j++){
+				data = (data*POW8) | k[pos];
+				if(++pos==k.length) pos=0;
+			}
+			box.p[i] = xor(box.p[i], data);
 		}
-		var res={ left:0x00000000, right:0x00000000 };
-		for(var i=0; i<nRounds+2; i+=2){
-			encryptBlock(res, box);
-			box.p[i]=res.left;
-			box.p[i+1]=res.right;
+
+		//	encrypt p and the s boxes
+		var res={ left:0, right:0 };
+		for(var i=0; i<box.p.length;){
+			eb(res, box);
+			box.p[i++]=res.left;
+			box.p[i++]=res.right;
 		}
 		for (var i=0; i<4; i++){
-			for(var j=0; j<256; j+=2){
-				encryptBlock(res, box);
-				box["s"+i][j]=res.left;
-				box["s"+i][j+1]=res.right;
+			for(var j=0; j<box["s"+i].length;){
+				eb(res, box);
+				box["s"+i][j++]=res.left;
+				box["s"+i][j++]=res.right;
 			}
 		}
 		return box;
 	}
 
-	function encryptBlock(o, box){
-		o.left^=box.p[0];
-		o.right^=r(o.left,box) ^box.p[1];
-		o.left ^=r(o.right,box)^box.p[2];
-		o.right^=r(o.left,box) ^box.p[3];
-		o.left ^=r(o.right,box)^box.p[4];
-		o.right^=r(o.left,box) ^box.p[5];
-		o.left ^=r(o.right,box)^box.p[6];
-		o.right^=r(o.left,box) ^box.p[7];
-		o.left ^=r(o.right,box)^box.p[8];
-		o.right^=r(o.left,box) ^box.p[9];
-		o.left ^=r(o.right,box)^box.p[10];
-		o.right^=r(o.left,box) ^box.p[11];
-		o.left ^=r(o.right,box)^box.p[12];
-		o.right^=r(o.left,box) ^box.p[13];
-		o.left ^=r(o.right,box)^box.p[14];
-		o.right^=r(o.left,box) ^box.p[15];
-		o.left ^=r(o.right,box);
-
-		var left=o.right^box.p[17];
-		var right=o.left^box.p[16];
-		o.left=left;
-		o.right=right;
-	}
-
-	function decryptBlock(o, box){
-		o.left ^=box.p[17];
-		o.right^=r(o.left,box) ^box.p[16];
-		o.left ^=r(o.right,box)^box.p[15];
-		o.right^=r(o.left,box) ^box.p[14];
-		o.left ^=r(o.right,box)^box.p[13];
-		o.right^=r(o.left,box) ^box.p[12];
-		o.left ^=r(o.right,box)^box.p[11];
-		o.right^=r(o.left,box) ^box.p[10];
-		o.left ^=r(o.right,box)^box.p[9];
-		o.right^=r(o.left,box) ^box.p[8];
-		o.left ^=r(o.right,box)^box.p[7];
-		o.right^=r(o.left,box) ^box.p[6];
-		o.left ^=r(o.right,box)^box.p[5];
-		o.right^=r(o.left,box) ^box.p[4];
-		o.left ^=r(o.right,box)^box.p[3];
-		o.right^=r(o.left,box) ^box.p[2];
-		o.left ^=r(o.right,box);
-
-		var left = o.right^box.p[0];
-		var right= o.left^box.p[1];
-		o.left=left;
-		o.right=right;
-	};
-
-	this.encrypt = function(plaintext, key){
-		var bx = initialize(key);
-		var ciphertext="";
-		//	fixme: double check to make sure the following uses the right chars for padding in other langs.
-		var padding = 8 - (plaintext.length & 7);
-		for (var i=0; i<padding; i++) plaintext+=String.fromCharCode(padding);
-		for(var i=0; i<plaintext.length; i+=8){
-			var o=getBlock(plaintext.substr(i,8));
-			encryptBlock(o, bx);
-			ciphertext+=fromBlock(o);
+////////////////////////////////////////////////////////////////////////////
+//	CONVERSION FUNCTIONS
+////////////////////////////////////////////////////////////////////////////
+	function toBase64(wa){ 
+		var p="=";
+		var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		var s=[];
+		for(var i=0; i<wa.length*4; i+=3){
+			var t=(((wa[i>>2]>>8*(i%4))&0xFF)<<16)|(((wa[i+1>>2]>>8*((i+1)%4))&0xFF)<<8)|((wa[i+2>>2]>>8*((i+2)%4))&0xFF);
+			for(var j=0; j<4; j++){
+				if(i*8+j*6>wa.length*32) s.push(p);
+				else s.push(tab.charAt((t>>6*(3-j))&0x3F));
+			}
 		}
-		return ciphertext;
+		return s.join("");
+	}
+	
+////////////////////////////////////////////////////////////////////////////
+//	PUBLIC FUNCTIONS
+////////////////////////////////////////////////////////////////////////////
+	this.outputTypes={ Base64:0,Hex:1,String:2,Raw:3 };
+	this.encrypt = function(plaintext, key, outputType){
+		var out=outputType||this.outputTypes.Raw;
+		var bx = init(key);
+		var padding = 8-(plaintext.length & 7);
+		for (var i=0; i<padding; i++) plaintext+=String.fromCharCode(padding);
+		var cipher=[];
+		var count=plaintext.length >> 3;
+		var pos=0;
+		var o={};
+		for(var i=0; i<count; i++){
+			o.left=plaintext.charCodeAt(pos)*POW24
+				|plaintext.charCodeAt(pos+1)*POW16
+				|plaintext.charCodeAt(pos+2)*POW8
+				|plaintext.charCodeAt(pos+3);
+			o.right=plaintext.charCodeAt(pos+4)*POW24
+				|plaintext.charCodeAt(pos+5)*POW16
+				|plaintext.charCodeAt(pos+6)*POW8
+				|plaintext.charCodeAt(pos+7);
+
+			eb(o, bx);
+
+			cipher.push(o.left.toString(16));
+			cipher.push(o.right.toString(16));
+			pos+=8;
+		}
+		switch(out){
+			case this.outputTypes.Hex:{
+				var s=[];
+				for(var i=0; i<cipher.length; i++)
+					s.push((cipher[i]).toString(16));
+				return s.join("");
+			}
+			case this.outputTypes.String:{
+				return cipher.join("");
+			}
+			case this.outputTypes.Raw:{
+				return cipher;
+			}
+			default:{
+				return toBase64(cipher);
+			}
+		}
 	};
 
+	// TODO once encrypt is finalized
 	this.decrypt = function(ciphertext, key){
-		var bx = initialize(key);
+		return "";
+
+		var bx = init(key);
 		var plaintext="";
+
 		var l=ciphertext.length;
 		for(var i=0; i<l; i+=8){
 			var o=getBlock(ciphertext.substr(i,8));
-			decryptBlock(o, bx);
+			db(o, bx);
 			plaintext+=fromBlock(o);
 		}
-		// fixme: double check to make sure this is part of the original def.
 		return plaintext.substr(0,l-(ciphertext.charCodeAt(l-1)));
 	};
 }();
