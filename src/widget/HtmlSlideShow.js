@@ -1,9 +1,8 @@
 dojo.provide("dojo.widget.SlideShow");
 dojo.provide("dojo.widget.HtmlSlideShow");
 
-dojo.require("dojo.event.*");
+dojo.require("dojo.event");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.graphics.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.style");
 
