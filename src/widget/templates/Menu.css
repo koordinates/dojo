@@ -54,7 +54,7 @@ li:hover.dojoMenuSeparator {
 	padding: 2px;
 	background-color: blue;
 	cursor: pointer;
-	cursor: hand;
+	_cursor: hand;
 	background-color: Highlight;
 	color: HighlightText;
 }
