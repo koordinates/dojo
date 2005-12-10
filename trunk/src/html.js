@@ -531,7 +531,11 @@ dojo.html.renderedTextContent = function(node){
 					case "none": break;
 					
 					default:
-						result += dojo.html.renderedTextContent(node.childNodes[i]);
+						if(node.childNodes[i].tagName && node.childNodes[i].tagName.toLowerCase() == "br") {
+							result += "\n";
+						} else {
+							result += dojo.html.renderedTextContent(node.childNodes[i]);
+						}
 						break;
 				}
 				break;
