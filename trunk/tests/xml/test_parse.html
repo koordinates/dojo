@@ -15,8 +15,8 @@
 		<script type="text/javascript" src="../../dojo.js"></script>
 		<script type="text/javascript">
 			dojo.require("dojo.xml.Parse");
-			dojo.require("dojo.webui.widgets.Parse");
-			dojo.require("dojo.webui.widgets.Button");
+			dojo.require("dojo.widget.Parse");
+			dojo.require("dojo.widget.Button");
 		</script>
 		<style type="text/css">
 			#output {
@@ -25,9 +25,9 @@
 			}
 		</style>
 	</head>
-	<body onload="testHandler();">
+	<body>
 		<script type="text/javascript"><!--
-			
+			dojo.addOnLoad(window, "testHandler");
 			function testHandler() {
 				var testObjects = new dojo.xml.Parse();
 				testItems = testObjects.parseElement(document.getElementById("test"));
