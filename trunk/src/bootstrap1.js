@@ -132,15 +132,15 @@ dojo.debug = function(){
 			var msg = "[" + args[i].name + ": " + dojo.errorToString(args[i]) +
 				(args[i].fileName ? ", file: " + args[i].fileName : "") +
 				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";
-		}else if(typeof args[i] == "undefined") {
-			var msg = args[i];
-		}else if(args[i]["toString"]){ 
-			var msg = args[i];
-		}else{
-			if(dojo.render.html.ie) {
-				var msg = "[ActiveXObject]";
-			} else {
-				var msg = "[unknown]";
+		} else {
+			try {
+				var msg = String(args[i]);
+			} catch(e) {
+				if(dojo.render.html.ie) {
+					var msg = "[ActiveXObject]";
+				} else {
+					var msg = "[unknown]";
+				}
 			}
 		}
 		s.push(msg);
