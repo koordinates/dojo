@@ -139,6 +139,13 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 		if( this.taskBarId != "" ){
 			dojo.addOnLoad(this, "taskBarSetup");
 		}
+		
+		// Prevent IE bleed-through problem
+		this.bgIframe = new dojo.html.BackgroundIframe();
+		this.domNode.appendChild(this.bgIframe.iframe);
+		if ( this.isVisible() ) {
+			this.bgIframe.show();
+		}
 	},
 
 	// add icon to task bar, connected to me
@@ -165,6 +172,19 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 			}
 			dojo.widget.HtmlFloatingPane.superclass.onResized.call(this);
 		//}
+
+		// bgIframe is a child of this.domNode, so position should be relative to [0,0]
+		this.bgIframe.size([0, 0, newWidth, newHeight]);
+	},
+
+	hide: function(){
+		dojo.widget.HtmlFloatingPane.superclass.hide.call(this);
+		this.bgIframe.hide();
+	},
+
+	show: function(){
+		dojo.widget.HtmlFloatingPane.superclass.show.call(this);
+		this.bgIframe.show();
 	},
 
 	createPane: function(node, args){
