@@ -134,9 +134,11 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	show: function(){
 		this.showMe();
 	},
+	onShow: function() {},
 	hide: function(){
 		this.hideMe();
-	}		
+	},
+	onHide: function() {}
 });
 
 
@@ -149,39 +151,43 @@ dojo.widget.HtmlWidget.Toggle={}
 dojo.widget.HtmlWidget.Toggle.Plain = {
 	showMe: function(){
 		dojo.html.show(this.domNode);
+		if(dojo.lang.isFunction(this.onShow)){ this.onShow(); }
 	},
 
 	hideMe: function(){
 		dojo.html.hide(this.domNode);
+		if(dojo.lang.isFunction(this.onHide)){ this.onHide(); }
 	}
 }
 
 dojo.widget.HtmlWidget.Toggle.Fade = {
 	showMe: function(){
-		dojo.fx.html.fadeShow(this.domNode, this.toggleDuration);
+		dojo.fx.html.fadeShow(this.domNode, this.toggleDuration, dojo.lang.hitch(this, this.onShow));
 	},
 
 	hideMe: function(){
-		dojo.fx.html.fadeHide(this.domNode, this.toggleDuration);
+		dojo.fx.html.fadeHide(this.domNode, this.toggleDuration, dojo.lang.hitch(this, this.onHide));
 	}
 }
 
 dojo.widget.HtmlWidget.Toggle.Wipe = {
 	showMe: function(){
-		dojo.fx.html.wipeIn(this.domNode, this.toggleDuration);
+		dojo.fx.html.wipeIn(this.domNode, this.toggleDuration, dojo.lang.hitch(this, this.onShow));
 	},
 
 	hideMe: function(){
-		dojo.fx.html.wipeOut(this.domNode, this.toggleDuration);
+		dojo.fx.html.wipeOut(this.domNode, this.toggleDuration, dojo.lang.hitch(this, this.onHide));
 	}
 }
 
 dojo.widget.HtmlWidget.Toggle.Explode = {
 	showMe: function(){
-		dojo.fx.html.explode(this.explodeSrc, this.domNode, this.toggleDuration);
+		dojo.fx.html.explode(this.explodeSrc, this.domNode, this.toggleDuration,
+			dojo.lang.hitch(this, this.onShow));
 	},
 
 	hideMe: function(){
-		dojo.fx.html.implode(this.domNode, this.explodeSrc, this.toggleDuration);
+		dojo.fx.html.implode(this.domNode, this.explodeSrc, this.toggleDuration,
+			dojo.lang.hitch(this, this.onHide));
 	}
 }
