@@ -441,6 +441,7 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 		dojo.raise("relpath '" + relpath + "'; must be relative");
 	}
 	var uri = this.getBaseScriptUri() + relpath;
+	if(djConfig.cacheBust && dojo.render.html.capable) { uri += "?" + djConfig.cacheBust.replace(/\W+/g,""); }
 	try{
 		return ((!module) ? this.loadUri(uri, cb) : this.loadUriAndCheck(uri, module, cb));
 	}catch(e){
