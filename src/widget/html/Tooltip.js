@@ -44,21 +44,27 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		var self = this;
 		this.timerEvent = function () { self.display.apply(self); };
 		dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
-		dojo.event.connect(this.connectNode, "onmousemove", this, "recordMousePosition");
-		dojo.event.connect(this.connectNode, "onmouseout", this, "onMouseOut");
 	},
 	
 	onMouseOver: function(e) {
+		if( this.displayed ){ return; }
 		this.timerEventId = setTimeout(this.timerEvent, this.delay);
-		this.recordMousePosition(e);
+		dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
 	},
 	
-	recordMousePosition: function(e) {
+	onMouseMove: function(e) {
 		this.mouseX = e.pageX || e.clientX + dojo.html.body().scrollLeft;
 		this.mouseY = e.pageY || e.clientY + dojo.html.body().scrollTop;
+		if( !dojo.html.overElement(this.connectNode, e) ){
+			// Note: can't use onMouseOut because the "explode" effect causes
+			// spurious onMouseOut/onMouseOver events (due to interference from outline)
+			this.erase();
+		}
 	},
 
 	display: function() {
+		if ( this.displayed ) { return; }
+
 		this.domNode.style.top = this.mouseY + 15 + "px";
 		this.domNode.style.left = this.mouseX + 10 + "px";
 
@@ -76,19 +82,16 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.bgIframe.show(this.domNode);
 	},
 
-	onMouseOut: function() {
+	erase: function() {
 		if ( this.timerEventId ) {
 			clearTimeout(this.timerEventId);
 			delete this.timerEventId;
 		}
 		if ( this.displayed ) {
 			this.hide();
+			this.bgIframe.hide();
 			this.displayed=false;
 		}
-	},
-	
-	hide: function() {
-		this.bgIframe.hide();
-		dojo.widget.html.Tooltip.superclass.hide.call(this);
+		dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
 	}
 });
