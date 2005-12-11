@@ -35,16 +35,9 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 		dojo.html.body().appendChild(this.domNode);
 		this.connectNode = dojo.byId(this.connectId);
-		if(dojo.render.html.ie){
-			this.bgIframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
-			with(this.bgIframe.style){
-				position = "absolute";
-				left = top = "0px";
-				display = "none";
-			}
-			dojo.html.body().appendChild(this.bgIframe);
-			dojo.style.setOpacity(this.bgIframe, 0);
-		}
+		
+		// IE bug workaround
+		this.bgIframe = new dojo.html.BackgroundIframe();
 	},
 	
 	postCreate: function(args, frag){
@@ -71,20 +64,16 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 
 		// if rendering using explosion effect, need to set explosion source
 		this.explodeSrc = [this.mouseX, this.mouseY];
-			
-		this.show();
-		if(this.bgIframe){
-			with(this.bgIframe.style){
-				display = "block";
-				top = this.domNode.style.top;
-				left = this.domNode.style.left;
-				zIndex = 998;
-				width = dojo.html.getOuterWidth(this.domNode) + "px";
-				height = dojo.html.getOuterHeight(this.domNode) + "px";
-			}
 
-		}
+		this.show();
+		this.bgIframe.show(this.domNode);
+
 		this.displayed=true;
+	},
+
+	onShow: function() {
+		// for explode effect, have to display the iframe after the effect completes
+		this.bgIframe.show(this.domNode);
 	},
 
 	onMouseOut: function() {
@@ -99,9 +88,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	hide: function() {
-		if(this.bgIframe){
-			this.bgIframe.style.display = "none";
-		}
+		this.bgIframe.hide();
 		dojo.widget.html.Tooltip.superclass.hide.call(this);
 	}
 });
