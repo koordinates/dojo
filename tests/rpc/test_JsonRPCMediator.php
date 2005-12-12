@@ -1,12 +1,19 @@
 <?
-        require_once("./JSON.php");
-        require_once('File.php');
+	require_once("./JSON.php");
+	// NOTE: File.php is installed via Pear using:
+	//	%> sudo pear install File
+	// Your server will also need the Pear library directory included in PHP's
+	// include_path configuration directive
+	require_once('File.php');
 
-        $json = new Services_JSON;
-        $fp = new File();
+	// ensure that we don't try to send "html" down to the client
+	header("Content-Type: text/plain");
 
-        $results = array();
-        $results['error'] = null;
+	$json = new Services_JSON;
+	$fp = new File();
+
+	$results = array();
+	$results['error'] = null;
 
 	$jsonRequest = file_get_contents('php://input');
 //	$jsonRequest = '{"params":["Blah"],"method":"myecho","id":86}';
@@ -19,11 +26,10 @@
 
 	$method = $req->method;
 	$ret = call_user_func_array(array($testObject,$method),$req->params);
-        $results['id'] = $req->id;
-        $results['result'] = $ret;
+	$results['id'] = $req->id;
+	$results['result'] = $ret;
 
 	$encoded = $json->encode($results);
 
 	print $encoded;
-
 ?>
