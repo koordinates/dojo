@@ -173,12 +173,13 @@ applications in less time. It fills in the gaps where JavaScript and browsers
 don't go quite far enough, and gives you powerful, portable, lightweight, and
 tested tools for constructing dynamic interfaces. Dojo lets you prototype
 interactive widgets quickly, animate transitions, and build Ajax requests
-with the most powerful and easiest to use abstractions available. Dojo layers
-these capabilities onto a lightweight packaging system which forms the core of
-Dojo. The package system and optional build tools help you develop quickly and
-optimize transparently.</p>
-<p>Dojo also packs an easy to use widget system. Prototype to deployment, Dojo
-widgets are HTML and CSS all the way. Best of all, since Dojo is portable
+with the most powerful and easiest to use abstractions available. These
+capabilities are built on top of a lightweight packaging system, so you never
+have to figure out which order to request script files in again. Dojo's package
+system and optional build tools help you develop quickly and optimize
+transparently.</p>
+<p>Dojo also packs an easy to use widget system. From prototype to deployment,
+Dojo widgets are HTML and CSS all the way. Best of all, since Dojo is portable
 JavaScript to the core, your widgets can be portable between HTML, SVG, and
 whatever else comes down the pike. The web is changing, and Dojo can help you
 stay ahead.</p>
