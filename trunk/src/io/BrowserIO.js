@@ -170,6 +170,7 @@ dojo.io.XMLHTTPTransport = new function(){
 					ret = dj_eval(http.responseText);
 				}catch(e){
 					dojo.debug(e);
+					dojo.debug(http.responseText);
 					ret = null;
 				}
 			}else if(kwArgs.mimetype == "text/json"){
@@ -177,6 +178,7 @@ dojo.io.XMLHTTPTransport = new function(){
 					ret = dj_eval("("+http.responseText+")");
 				}catch(e){
 					dojo.debug(e);
+					dojo.debug(http.responseText);
 					ret = false;
 				}
 			}else if((kwArgs.mimetype == "application/xml")||
