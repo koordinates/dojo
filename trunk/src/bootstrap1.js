@@ -189,7 +189,6 @@ dj_unimplemented = dojo.unimplemented = function(funcname, extra){
 	// FIXME: need to move this away from dj_*
 	var mess = "'" + funcname + "' not implemented";
 	if((!dj_undef(extra))&&(extra)){ mess += " " + extra; }
-	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
 	dojo.raise(mess);
 }
 
@@ -200,7 +199,6 @@ dj_deprecated = dojo.deprecated = function(behaviour, extra, removal){
 	var mess = "DEPRECATED: " + behaviour;
 	if((!dj_undef(extra))&&(extra)){ mess += " " + extra; }
 	if(!dj_undef(removal)){ mess += " -- will be removed in version" + removal; }
-	// mess += " (host environment '" + dojo.hostenv.getName() + "')";
 	dojo.debug(mess);
 }
 
@@ -296,17 +294,6 @@ dojo.hostenv = (function(){
 	}
 
 	return {
-		// FIXME: why in the heck are we not just naming these the same as the
-		// values on djConfig and then allowing mixin?
-		/*
-		is_debug_: _def(djc, "isDebug", false),
-		base_script_uri_: _def(djc, "baseScriptUri", undefined),
-		base_relative_path_: _def(djc, "baseRelativePath", ""),
-		library_script_uri_: _def(djc, "libraryScriptUri", ""),
-		auto_build_widgets_: _def(djc, "parseWidgets", true),
-		ie_prevent_clobber_: _def(djc, "iePreventClobber", false),
-		ie_clobber_minimal_: _def(djc, "ieClobberMinimal", false),
-		*/
 		name_: '(unset)',
 		version_: '(unset)',
 		pkgFileName: "__package__",
@@ -394,20 +381,6 @@ dojo.hostenv.getBaseScriptUri = function(){
 	}
 	var uri = new String(djConfig.libraryScriptUri||djConfig.baseRelativePath);
 	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
-	/*
-	if((!uri)||(!uri.length)){
-		uri = djConfig.libraryScriptUri = this.getLibraryScriptUri();
-		if((!uri)||(!uri.length)){
-			dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri);
-		}
-	}
-	if (!djConfig.libraryScriptUri) {
-		djConfig.libraryScriptUri = this.getLibraryScriptUri();
-	}
-	var uri = djConfig.libraryScriptUri;
-
-	if (!uri) { dojo.raise("Nothing returned by getLibraryScriptUri(): " + uri); }
-	*/
 
 	var lastslash = uri.lastIndexOf('/');
 	djConfig.baseScriptUri = djConfig.baseRelativePath;
