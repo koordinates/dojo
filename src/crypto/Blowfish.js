@@ -289,26 +289,45 @@ dojo.crypto.Blowfish = new function(){
 ////////////////////////////////////////////////////////////////////////////
 //	CONVERSION FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////
-	function toBase64(wa){ 
+	//	these operate on byte arrays, NOT word arrays.
+	function toBase64(ba){ 
 		var p="=";
 		var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 		var s=[];
-		for(var i=0; i<wa.length*4; i+=3){
-			var t=(((wa[i>>2]>>8*(i%4))&0xFF)<<16)|(((wa[i+1>>2]>>8*((i+1)%4))&0xFF)<<8)|((wa[i+2>>2]>>8*((i+2)%4))&0xFF);
-			for(var j=0; j<4; j++){
-				if(i*8+j*6>wa.length*32) s.push(p);
-				else s.push(tab.charAt((t>>6*(3-j))&0x3F));
-			}
+		var count=0;
+		for (var i =0; i<ba.length;){
+			var t=ba[i++]<<16|ba[i++]<<8|ba[i++];
+			s.push(tab.charAt((t>>>18)&0x3f)); 
+			s.push(tab.charAt((t>>>12)&0x3f));
+			s.push(tab.charAt((t>>>6)&0x3f));
+			s.push(tab.charAt(t&0x3f));
+			count+=4;
 		}
+		var pa=i-ba.length;
+		while((pa--)>0)	s.push(p);	
 		return s.join("");
 	}
-	
+	function fromBase64(str){
+		var s=str.split("");
+		var p="=";
+		var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		var out=[];
+		var l=s.length;
+		while(s[--l]==p){ }
+		for (var i=0; i<l;){
+			var t=tab.indexOf(s[i++])<<18|tab.indexOf(s[i++])<<12|tab.indexOf(s[i++])<<6|tab.indexOf(s[i++]);
+			out.push((t>>>16)&0xff);
+			out.push((t>>>8)&0xff);
+			out.push(t&0xff);
+		}
+		return out;
+	}
 ////////////////////////////////////////////////////////////////////////////
 //	PUBLIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////
 	this.outputTypes={ Base64:0,Hex:1,String:2,Raw:3 };
 	this.encrypt = function(plaintext, key, outputType){
-		var out=outputType||this.outputTypes.Raw;
+		var out=outputType||this.outputTypes.Base64;
 		var bx = init(key);
 		var padding = 8-(plaintext.length & 7);
 		for (var i=0; i<padding; i++) plaintext+=String.fromCharCode(padding);
@@ -326,10 +345,16 @@ dojo.crypto.Blowfish = new function(){
 				|plaintext.charCodeAt(pos+6)*POW8
 				|plaintext.charCodeAt(pos+7);
 
-			eb(o, bx);
+			eb(o, bx);	//	encrypt the block
 
-			cipher.push(o.left.toString(16));
-			cipher.push(o.right.toString(16));
+			cipher.push((o.left>>24)&0xff); 
+			cipher.push((o.left>>16)&0xff); 
+			cipher.push((o.left>>8)&0xff);
+			cipher.push(o.left&0xff);
+			cipher.push((o.right>>24)&0xff); 
+			cipher.push((o.right>>16)&0xff); 
+			cipher.push((o.right>>8)&0xff);
+			cipher.push(o.right&0xff);
 			pos+=8;
 		}
 		switch(out){
@@ -346,24 +371,74 @@ dojo.crypto.Blowfish = new function(){
 				return cipher;
 			}
 			default:{
-				return toBase64(cipher);
+				var t=toBase64(cipher);
+				return t;
 			}
 		}
 	};
 
-	// TODO once encrypt is finalized
-	this.decrypt = function(ciphertext, key){
-		return "";
-
+	this.decrypt = function(ciphertext, key, inputType){
+		var ip = inputType||this.outputTypes.Base64;
 		var bx = init(key);
-		var plaintext="";
-
-		var l=ciphertext.length;
-		for(var i=0; i<l; i+=8){
-			var o=getBlock(ciphertext.substr(i,8));
-			db(o, bx);
-			plaintext+=fromBlock(o);
+		var pt=[];
+	
+		var c=null;
+		switch(ip){
+			case this.outputTypes.Hex:{
+				c=[];
+				var i=0;
+				while (i+1<ciphertext.length){
+					c.push(parseInt(ciphertext.substr(i,2),16));
+					i+=2;
+				}
+				break;
+			}
+			case this.outputTypes.String:{
+				c=[];
+				for (var i=0; i<ciphertext.length; i++){
+					c.push(ciphertext.charCodeAt(i));
+				}
+				break;
+			}
+			case this.outputTypes.Raw:{
+				c=ciphertext;	//	should be a byte array
+				break;
+			}
+			default:{
+				c=fromBase64(ciphertext);
+				break;
+			}
 		}
-		return plaintext.substr(0,l-(ciphertext.charCodeAt(l-1)));
+
+		var count=c.length >> 3;
+		var pos=0;
+		var o={};
+		for(var i=0; i<count; i++){
+			o.left=c[pos]*POW24|c[pos+1]*POW16|c[pos+2]*POW8|c[pos+3];
+			o.right=c[pos+4]*POW24|c[pos+5]*POW16|c[pos+6]*POW8|c[pos+7];
+
+			db(o, bx);	//	decrypt the block
+
+			pt.push((o.left>>24)&0xff);
+			pt.push((o.left>>16)&0xff);
+			pt.push((o.left>>8)&0xff);
+			pt.push(o.left&0xff);
+			pt.push((o.right>>24)&0xff);
+			pt.push((o.right>>16)&0xff);
+			pt.push((o.right>>8)&0xff);
+			pt.push(o.right&0xff);
+			pos+=8;
+		}
+
+		//	check for padding, and remove.
+		if(pt[pt.length-1]==pt[pt.length-2]||pt[pt.length-1]==0x01){
+			var n=pt[pt.length-1];
+			pt.splice(pt.length-n, n);
+		}
+
+		//	convert to string
+		for(var i=0; i<pt.length; i++)
+			pt[i]=String.fromCharCode(pt[i]);
+		return pt.join("");
 	};
 }();
