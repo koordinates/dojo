@@ -40,9 +40,9 @@ dojo.regexp.tld = function(flags) {
 
 	// Build top-level domain RE
 	var a = [];
-	if (flags.allowCC) { a.push(ccRE); }
 	if (flags.allowInfra) { a.push(infraRE); }
 	if (flags.allowGeneric) { a.push(genericRE); }
+	if (flags.allowCC) { a.push(ccRE); }
 
 	var tldRE = "";
 	if (a.length > 0) {
