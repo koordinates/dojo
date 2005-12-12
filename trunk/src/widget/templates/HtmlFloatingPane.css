@@ -4,6 +4,7 @@
 	border: 1px solid;
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	overflow: visible;		/* so drop shadow is displayed */
+	z-index: 10;
 }
 
 .dojoFloatingPaneBackground {
