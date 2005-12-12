@@ -14,14 +14,6 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 	status: "LOADING",
 	lastSubmissionId:0,
 
-	/*
-	JsonServiceRegistry: new dojo.AdapterRegistry(),
-
-	register: function(name, check, wrap, /*optional*/ override){
-		dojo.rpc.JsonService.JsonServiceRegistry.register(name, check, wrap, override);
-	},
-	*/
-
 	createJsonRpcRequest: function(parameters, method, id){
 		dojo.debug("JsonService: Create JSON-RPC Request.");
 
