@@ -63,7 +63,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		if (this.contextMenuForWindow){
 			var doc = document.documentElement  || dojo.html.body(); 
-			dojo.event.connect(doc, "oncontextmenu", this, "onShow");
+			dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
 		}
 
 		this.layoutMenuSoon();
@@ -226,7 +226,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.currentSubmenuTrigger.is_open = true;
 	},
 
-	onShow: function(e){
+	onOpen: function(e){
 
 		//dojo.debugShallow(e);
 		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);

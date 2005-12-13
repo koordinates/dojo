@@ -23,7 +23,7 @@ dojo.widget.html.ContextMenu = function(){
 
 	this.fillInTemplate = function(args, frag){
 
-		var func = "onShow";
+		var func = "onOpen";
 		var attached = false;
 
 		// connect with rightclick if oncontextmenu is not around
@@ -55,7 +55,7 @@ dojo.widget.html.ContextMenu = function(){
 		dojo.event.connect(doc, eventType, this, func);
 	}
 
-	this.onShow = function(evt){
+	this.onOpen = function(evt){
 		// if (this.isShowing){ this.onHide(evt); } // propably not needed
 		this.isShowing = 1;
 
@@ -107,7 +107,7 @@ dojo.widget.html.ContextMenu = function(){
 
 	/*
 	* _canHide is meant to block the onHide call that follows the event that triggered
-	* onShow. This is (hopefully) faster that event.connect and event.disconnect every
+	* onOpen. This is (hopefully) faster that event.connect and event.disconnect every
 	* time the code executes and it makes connecting with onmousedown event possible
 	* and we dont have to stop the event from bubbling further.
 	*
@@ -146,7 +146,7 @@ dojo.widget.html.ContextMenu = function(){
 		// added check for targetnode 
 		if (evt.button==2 && (this.targetNodeIds.length==0 || (evt.currentTarget.id!="" && dojo.lang.inArray(this.targetNodeIds, evt.currentTarget.id)))){
 
-			return this.onShow(evt);
+			return this.onOpen(evt);
 		}
 	}
 
