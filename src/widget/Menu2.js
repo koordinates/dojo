@@ -1,3 +1,4 @@
+dojo.provide("dojo.widget.Menu2");
 dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
 dojo.provide("dojo.widget.MenuItem2");
