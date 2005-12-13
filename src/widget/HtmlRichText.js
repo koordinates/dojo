@@ -1,2 +1,4 @@
 dojo.require("dojo.widget.RichText");
-dj_deprecated("HtmlRichText.js is deprecated, use RichText.js");
+dojo.provide("dojo.widget.HtmlRichText");
+
+dojo.deprecated("dojo.widget.HtmlRichText", "use dojo.widget.RichText", "0.3");
