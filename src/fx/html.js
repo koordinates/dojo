@@ -4,7 +4,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.lang");
 dojo.require("dojo.animation.*");
-dojo.require("dojo.event.browser");
+dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
 dojo.fx.html._makeFadeable = function(node){
