@@ -547,14 +547,18 @@ dojo.html.renderedTextContent = function(node){
 			case 2: // ATTRIBUTE_NODE
 			case 4: // CDATA_SECTION_NODE
 				var text = node.childNodes[i].nodeValue;
-				switch (dojo.style.getStyle(node, "text-transform")){
+				var textTransform = "unknown";
+				try {
+					textTransform = dojo.style.getStyle(node, "text-transform");
+				} catch(E) {}
+				switch (textTransform){
 					case "capitalize": text = dojo.string.capitalize(text); break;
 					case "uppercase": text = text.toUpperCase(); break;
 					case "lowercase": text = text.toLowerCase(); break;
 					default: break; // leave as is
 				}
 				// TODO: implement
-				switch (dojo.style.getStyle(node, "text-transform")){
+				switch (textTransform){
 					case "nowrap": break;
 					case "pre-wrap": break;
 					case "pre-line": break;
