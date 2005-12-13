@@ -5,27 +5,19 @@
 <title>FloatingPane w/Resize Widget Demo</title>
 
 <script type="text/javascript">
-
 	var djConfig = {isDebug: true};
-
-	//djConfig.debugAtAllCosts = true;
-
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 
-	dojo.require("dojo.widget.HtmlFloatingPane");
-	dojo.require("dojo.widget.HtmlResizeHandle");
-	dojo.hostenv.writeIncludes();
+	dojo.require("dojo.widget.FloatingPane");
+	dojo.require("dojo.widget.ResizeHandle");
 </script>
 <style>
-
-.dojoFloatingPaneClient {
-	border: 0 !important;
-	margin: 0 !important;
-}
-
-
+	.dojoFloatingPaneClient {
+		border: 0 !important;
+		margin: 0 !important;
+	}
 </style>
 </head>
 <body style="background-color: ThreeDFace;">

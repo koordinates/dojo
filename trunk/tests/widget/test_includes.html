@@ -6,10 +6,9 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	function init(){
-		dj_debug(dojo.xml.Parse);
+		dojo.debug(dojo.xml.Parse);
 	}
-
-	dojo.event.connect(dojo.hostenv, "loaded", "init");
+	dojo.addOnLoad(init);
 </script>
 
 <p>The scripts should have been loaded in if this test has worked
