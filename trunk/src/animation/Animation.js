@@ -10,11 +10,12 @@ Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js
 */
 
-dojo.animation.Animation = function(curve, duration, accel, repeatCount) {
+dojo.animation.Animation = function(curve, duration, accel, repeatCount, rate) {
 	// public properties
 	this.curve = curve;
 	this.duration = duration;
 	this.repeatCount = repeatCount || 0;
+	this.rate = rate || 10;
 	if(accel) {
 		if(dojo.lang.isFunction(accel.getValue)) {
 			this.accel = accel;
@@ -170,7 +171,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 			if(typeof this.onAnimate == "function") { this.onAnimate(e); }
 
 			if( step < 1 ) {
-				this._timer = setTimeout(dojo.lang.hitch(this, "_cycle"), 10);
+				this._timer = setTimeout(dojo.lang.hitch(this, "_cycle"), this.rate);
 			} else {
 				e.type = "end";
 				this._active = false;
