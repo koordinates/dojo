@@ -97,7 +97,7 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 	this.postCreate = function(){
 		dojo.event.kwConnect({
 			type: "before", 
-			srcObj: dojo.html.getParentOfType(this.domNode, "form"),
+			srcObj: dojo.html.getParentByType(this.domNode, "form"),
 			srcFunc: "onsubmit", 
 			targetObj: this,
 			targetFunc: "unhide"
