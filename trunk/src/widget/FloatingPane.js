@@ -142,7 +142,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		
 		// Prevent IE bleed-through problem
 		this.bgIframe = new dojo.html.BackgroundIframe();
-		this.domNode.appendChild(this.bgIframe.iframe);
+		if( this.bgIframe.iframe ){
+			this.domNode.appendChild(this.bgIframe.iframe);
+		}
 		if ( this.isVisible() ) {
 			this.bgIframe.show();
 		}
