@@ -38,11 +38,6 @@ dojo.lang.extend(dojo.widget.html.TabSet, {
 		dojo.style.insertCssFile(this.templateCssPath);
 		dojo.html.prependClass(this.domNode, "dojoTabSet");
 
-		// workaround problems w/iframe security exceptions
-		if(dojo.render.html.mozilla){
-			this.useVisibility=true;
-		}
-
 		// Create panel to hold the tab labels (as a <ul> with special formatting)
 		// TODO: set "bottom" css tag if label is on bottom
 		this.filterAllowed('labelPosition', ['top', 'bottom']);
@@ -127,7 +122,7 @@ dojo.lang.extend(dojo.widget.html.Tab, {
 	show: function() {
 		dojo.html.addClass(this.li, "current");
 		this.selected=true;
-		if ( this.parent.useVisibility ) {
+		if ( this.parent.useVisibility && !dojo.render.html.ie ) {
 			this.domNode.style.visibility="visible";
 		} else {
 			dojo.widget.html.Tab.superclass.show.call(this);
