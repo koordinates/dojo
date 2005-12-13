@@ -1,11 +1,8 @@
 dojo.provide("dojo.widget.Menu");
 dojo.provide("dojo.widget.DomMenu");
-dojo.provide("dojo.widget.HtmlMenu");
 
-dojo.require("dojo.widget.Widget");
-dojo.require("dojo.widget.DomWidget");
-dojo.require("dojo.widget.HtmlWidget");
-
+dojo.require("dojo.widget.*");
+dojo.requireIf("html", "dojo.widget.html.Menu");
 
 dojo.widget.tags.addParseTreeHandler("dojo:menu");
 
@@ -46,43 +43,4 @@ dojo.lang.extend(dojo.widget.DomMenu, {
 		dojo.widget.Menu.call(this, item);
 		this.domNode.appendChild(item.domNode);
 	}
-});
-
-
-/* HtmlMenu
- ***********/
- 
-dojo.widget.HtmlMenu = function(){
-	dojo.widget.HtmlMenu.superclass.constructor.call(this);
-	this.items = [];
-}
-dojo.inherits(dojo.widget.HtmlMenu, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.HtmlMenu, {
-	widgetType: "Menu",
-	isContainer: true,
-
-	// copy children widgets output directly to parent (this node), to avoid
-	// errors trying to insert an <li> under a <div>
-	snarfChildDomOutput: true,
-
-	templateString: '<ul></ul>',
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu.css"),
-	
-	fillInTemplate: function (args, frag){
-		//dojo.widget.HtmlMenu.superclass.fillInTemplate.apply(this, arguments);
-		this.domNode.className = "dojoMenu";
-	},
-	
- 
-	_register: function (item ) {
-		dojo.event.connect(item, "onSelect", this, "onSelect");
-		this.items.push(item);
-	},
-
-	push: function (item) {
-		this.domNode.appendChild(item.domNode);
-		this._register(item);
-	}
-
 });

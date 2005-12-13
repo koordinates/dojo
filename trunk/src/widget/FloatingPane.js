@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.FloatingPane");
-dojo.provide("dojo.widget.HtmlFloatingPane");
+dojo.provide("dojo.widget.html.FloatingPane");
 
 //
 // this widget provides a window-like floating pane
@@ -13,15 +13,15 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
-dojo.require("dojo.widget.HtmlLayoutPane");
+dojo.require("dojo.widget.html.LayoutPane");
 
-dojo.widget.HtmlFloatingPane = function(){
-	dojo.widget.HtmlLayoutPane.call(this);
+dojo.widget.html.FloatingPane = function(){
+	dojo.widget.html.LayoutPane.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlFloatingPane, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.html.FloatingPane, dojo.widget.HtmlLayoutPane);
 
-dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
+dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	widgetType: "FloatingPane",
 
 	// Constructor arguments
@@ -170,7 +170,7 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 				dojo.style.setOuterWidth(this.shadow, newWidth);
 				dojo.style.setOuterHeight(this.shadow, newHeight);
 			}
-			dojo.widget.HtmlFloatingPane.superclass.onResized.call(this);
+			dojo.widget.html.FloatingPane.superclass.onResized.call(this);
 		//}
 
 		// bgIframe is a child of this.domNode, so position should be relative to [0,0]
@@ -178,12 +178,12 @@ dojo.lang.extend(dojo.widget.HtmlFloatingPane, {
 	},
 
 	hide: function(){
-		dojo.widget.HtmlFloatingPane.superclass.hide.call(this);
+		dojo.widget.html.FloatingPane.superclass.hide.call(this);
 		this.bgIframe.hide();
 	},
 
 	show: function(){
-		dojo.widget.HtmlFloatingPane.superclass.show.call(this);
+		dojo.widget.html.FloatingPane.superclass.show.call(this);
 		this.bgIframe.show();
 	},
 
