@@ -1,16 +1,15 @@
-dojo.provide("dojo.widget.Container");
 dojo.provide("dojo.widget.HtmlContainer");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.Container");
 
-dojo.widget.HtmlContainer = function(){
+dojo.widget.html.Container = function(){
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlContainer, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.Container, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlContainer, {
+dojo.lang.extend(dojo.widget.html.Container, {
 	widgetType: "Container",
 
 	isContainer: true,
