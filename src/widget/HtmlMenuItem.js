@@ -1,3 +1,4 @@
 dojo.require("dojo.widget.MenuItem");
+dojo.provide("dojo.widget.HtmlMenuItem");
 
-dj_deprecated("HtmlMenu.js is deprecated, include Menu.js");
+dojo.deprecated("dojo.widget.HtmlMenuItem", "use dojo.widget.MenuItem", "0.3");

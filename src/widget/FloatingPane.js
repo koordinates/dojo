@@ -30,7 +30,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	hasShadow: false,
 	constrainToContainer: false,
 	taskBarId: "",
-	resizable: true,	// note: if specified, user must include HtmlResizeHandle
+	resizable: true,	// note: if specified, user must include ResizeHandle
 	url: "inline",
 	extractContent: true,
 	parseContent: true,
