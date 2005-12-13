@@ -21,7 +21,6 @@
 			dojo.require("dojo.widget.MenuItem");
 			dojo.require("dojo.widget.Menu");
 			dojo.require("dojo.widget.ContextMenu");
-			dojo.require("dojo.widget.HtmlContextMenu");
 		</script>
 		<style type="text/css">
 			#output {
@@ -63,7 +62,11 @@
 				<div dojoType="menuItem" onClick="alert('four');">four</div>
 				<div dojoType="menuItem" onClick="alert('five');">five</div>
 			</div>
-			<div dojoType="menu">you shouldn't be seeing menu</div>
+			<div dojoType="menu">
+				<div dojoType="menuitem">one</div>
+				<div dojoType="menuitem">two</div>
+				<div dojoType="menuitem">three</div>
+			</div>
 			<dojo:propertySet id="testPropertyList" property1="test">
 				<property2>test2</property2>
 			</dojo:propertySet>
