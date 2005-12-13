@@ -6,7 +6,8 @@
 	<title>Editor From Textarea</title>
 	<script type="text/javascript">
 		var djConfig = {
-			isDebug: false
+			isDebug: true,
+			parseWidgets: true
 		};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
@@ -22,7 +23,8 @@
 	</style>
 </head>
 <body>
-	<textarea class="dojo-Editor">
+<form action="test_Editor_from_textarea.html" method="POST">
+	<textarea class="dojo-Editor" rows="50" cols="100" name="bar">
 		<h3>Editable Content With Default Toolbar</h3>
 		<ul>
 			<li>Sed congue.</li>
@@ -82,5 +84,8 @@
 			Vestibulum sodales. Sed porta ultrices nibh. Vestibulum metus.
 		</p>
 	</textarea>
+	<input type="text" value="some text" name="foo">
+	<button type="submit">submit</button>
+</form>
 </body>
 </html>
