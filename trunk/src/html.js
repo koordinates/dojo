@@ -517,7 +517,11 @@ dojo.html.renderedTextContent = function(node){
 		switch (node.childNodes[i].nodeType) {
 			case 1: // ELEMENT_NODE
 			case 5: // ENTITY_REFERENCE_NODE
-				switch (dojo.style.getStyle(node.childNodes[i], "display")) {
+				var display = "unknown";
+				try {
+					display = dojo.style.getStyle(node.childNodes[i], "display");
+				} catch(E) {}
+				switch (display) {
 					case "block": case "list-item": case "run-in":
 					case "table": case "table-row-group": case "table-header-group":
 					case "table-footer-group": case "table-row": case "table-column-group":
