@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.InlineEditBox");
-dojo.provide("dojo.widget.HtmlInlineEditBox");
+dojo.provide("dojo.widget.html.InlineEditBox");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.fx.*");
@@ -8,16 +8,18 @@ dojo.require("dojo.string");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
 
-dojo.widget.HtmlInlineEditBox = function(){
+dojo.widget.tags.addParseTreeHandler("dojo:inlineeditbox");
+
+dojo.widget.html.InlineEditBox = function(){
 	dojo.widget.HtmlWidget.call(this);
 	// mutable objects need to be in constructor to give each instance its own copy
 	this.history = [];
 	this.storage = document.createElement("span");
 }
 
-dojo.inherits(dojo.widget.HtmlInlineEditBox, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.InlineEditBox, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlInlineEditBox, {
+dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.css"),
 	widgetType: "InlineEditBox",
@@ -182,4 +184,3 @@ dojo.lang.extend(dojo.widget.HtmlInlineEditBox, {
 		}
 	}
 });
-dojo.widget.tags.addParseTreeHandler("dojo:inlineeditbox");
