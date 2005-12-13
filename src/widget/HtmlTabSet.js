@@ -34,6 +34,12 @@ dojo.lang.extend(dojo.widget.HtmlTabSet, {
 		// TODO: prevent multiple includes of the same CSS file, when there are multiple
 		// TabSets on the same screen.
 		dojo.style.insertCssFile(this.templateCssPath);
+		dojo.html.prependClass(this.domNode, "dojoTabSet");
+
+		// workaround problems w/iframe security exceptions
+		if(dojo.render.html.mozilla){
+			this.useVisibility=true;
+		}
 
 		// Create panel to hold the tab labels (as a <ul> with special formatting)
 		// TODO: set "bottom" css tag if label is on bottom
