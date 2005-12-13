@@ -1,3 +1,7 @@
+.dojoTabSet {
+	overflow: hidden;	/* workaround firefox bug */
+}
+
 .dojoTabPanel {
 	padding : 10px;
 	border : 1px solid #765;
