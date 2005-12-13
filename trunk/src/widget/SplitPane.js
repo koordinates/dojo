@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.SplitPane");
 dojo.provide("dojo.widget.SplitPanePanel");
-dojo.provide("dojo.widget.HtmlSplitPane");
-dojo.provide("dojo.widget.HtmlSplitPanePanel");
+dojo.provide("dojo.widget.html.SplitPane");
+dojo.provide("dojo.widget.html.SplitPanePanel");
 
 //
 // TODO
@@ -10,21 +10,21 @@ dojo.provide("dojo.widget.HtmlSplitPanePanel");
 //
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.HtmlLayoutPane");
+dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
-dojo.widget.HtmlSplitPane = function(){
+dojo.widget.html.SplitPane = function(){
 
-	dojo.widget.HtmlLayoutPane.call(this);
+	dojo.widget.html.LayoutPane.call(this);
 
 	this.sizers = [];
 }
 
-dojo.inherits(dojo.widget.HtmlSplitPane, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.html.SplitPane, dojo.widget.html.LayoutPane);
 
-dojo.lang.extend(dojo.widget.HtmlSplitPane, {
+dojo.lang.extend(dojo.widget.html.SplitPane, {
 	widgetType: "SplitPane",
 	virtualSizer: null,
 	isHorizontal: 0,
@@ -484,13 +484,13 @@ dojo.lang.extend(dojo.widget.HtmlSplitPane, {
 	}
 });
 
-dojo.widget.HtmlSplitPanePanel = function(){
-	dojo.widget.HtmlLayoutPane.call(this);
+dojo.widget.html.SplitPanePanel = function(){
+	dojo.widget.html.LayoutPane.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlSplitPanePanel, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.html.SplitPanePanel, dojo.widget.html.LayoutPane);
 
-dojo.lang.extend(dojo.widget.HtmlSplitPanePanel, {
+dojo.lang.extend(dojo.widget.html.SplitPanePanel, {
 
 	widgetType: "SplitPanePanel",
 	sizeActual: 0,
