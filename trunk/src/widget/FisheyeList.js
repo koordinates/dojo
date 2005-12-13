@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.FisheyeList");
-dojo.provide("dojo.widget.HtmlFisheyeList");
-dojo.provide("dojo.widget.HtmlFisheyeListItem");
+dojo.provide("dojo.widget.html.FisheyeList");
+dojo.provide("dojo.widget.html.FisheyeListItem");
 
 //
 // TODO
@@ -10,18 +10,21 @@ dojo.provide("dojo.widget.HtmlFisheyeListItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.HtmlContainer");
+dojo.require("dojo.widget.Container");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.event");
 
-dojo.widget.HtmlFisheyeList = function(){
-	dojo.widget.HtmlContainer.call(this);
-}
-dojo.inherits(dojo.widget.HtmlFisheyeList, dojo.widget.HtmlContainer);
+dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
+dojo.widget.tags.addParseTreeHandler("dojo:FisheyeListItem");
 
-dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
+dojo.widget.html.FisheyeList = function(){
+	dojo.widget.html.Container.call(this);
+}
+dojo.inherits(dojo.widget.html.FisheyeList, dojo.widget.html.Container);
+
+dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	templateString: '<div class="dojoHtmlFisheyeListBar"></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css"),
@@ -610,12 +613,12 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeList, {
 
 });
 
-dojo.widget.HtmlFisheyeListItem = function(){
+dojo.widget.html.FisheyeListItem = function(){
 	dojo.widget.HtmlWidget.call(this);
 }
-dojo.inherits(dojo.widget.HtmlFisheyeListItem, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.FisheyeListItem, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
+dojo.lang.extend(dojo.widget.html.FisheyeListItem, {
 	widgetType: "FisheyeListItem",
 	
 	// Constructor arguments
@@ -728,5 +731,3 @@ dojo.lang.extend(dojo.widget.HtmlFisheyeListItem, {
 	}
 });
 
-dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
-dojo.widget.tags.addParseTreeHandler("dojo:FisheyeListItem");
