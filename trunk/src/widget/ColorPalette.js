@@ -1,28 +1,29 @@
-dojo.provide("dojo.widget.HtmlColorPalette");
+dojo.provide("dojo.widget.ColorPalette");
+dojo.provide("dojo.widget.html.ColorPalette");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
 dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:ToolbarColorDialog");
 
-dojo.widget.HtmlToolbarColorDialog = function () {
-	dojo.widget.HTMLToolbarDialog.call(this);
+dojo.widget.html.ToolbarColorDialog = function () {
+	dojo.widget.html.ToolbarDialog.call(this);
 	
 	for (var method in this.constructor.prototype) {
 		this[method] = this.constructor.prototype[method];
 	}
 }
 
-dojo.inherits(dojo.widget.HtmlToolbarColorDialog, dojo.widget.HTMLToolbarDialog);
+dojo.inherits(dojo.widget.html.ToolbarColorDialog, dojo.widget.html.ToolbarDialog);
 
-dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
+dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 
 	widgetType: "ToolbarColorDialog",
 
 	palette: "7x10",
 
 	fillInTemplate: function (args, frag) {
-		dojo.widget.HtmlToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
+		dojo.widget.html.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
 		this.dialog = dojo.widget.fromScript("ColorPalette", {palette: this.palette});
 		this.dialog.domNode.style.position = "absolute";
 
@@ -35,14 +36,14 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 	},
 	
 	showDialog: function (e) {
-		dojo.widget.HtmlToolbarColorDialog.superclass.showDialog.call(this, e);
+		dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
 		var x = dojo.html.getAbsoluteX(this.domNode);
 		var y = dojo.html.getAbsoluteY(this.domNode) + dojo.html.getInnerHeight(this.domNode);
 		this.dialog.showAt(x, y);
 	},
 	
 	hideDialog: function (e) {
-		dojo.widget.HtmlToolbarColorDialog.superclass.hideDialog.call(this, e);
+		dojo.widget.html.ToolbarColorDialog.superclass.hideDialog.call(this, e);
 		this.dialog.hide();
 	}
 });
@@ -51,13 +52,13 @@ dojo.lang.extend(dojo.widget.HtmlToolbarColorDialog, {
 
 dojo.widget.tags.addParseTreeHandler("dojo:colorpalette");
 
-dojo.widget.HtmlColorPalette = function () {
+dojo.widget.html.ColorPalette = function () {
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlColorPalette, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.ColorPalette, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlColorPalette, {
+dojo.lang.extend(dojo.widget.html.ColorPalette, {
 
 	widgetType: "colorpalette",
 	
