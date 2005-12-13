@@ -84,7 +84,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 
 	addItem: function (item) {
 		// TODO: should be dojo.widget.MenuItem
-		if (item instanceof dojo.widget.HtmlMenuItem) {
+		if (item instanceof dojo.widget.html.MenuItem) {
 			this.menu.push(item);
 		} else {
 			// TODO: create one
