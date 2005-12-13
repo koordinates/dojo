@@ -35,7 +35,11 @@ dojo.io.cookie.deleteCookie = function(name) {
 }
 
 dojo.io.cookie.setObjectCookie = function(name, obj, days, path, domain, secure, clearCurrent) {
-	if(arguments.length == 5) { clearCurrent = domain; } // for backwards compat
+	if(arguments.length == 5) { // for backwards compat
+		clearCurrent = domain;
+		domain = null;
+		secure = null;
+	}
 	var pairs = [], cookie, value = "";
 	if(!clearCurrent) { cookie = dojo.io.cookie.getObjectCookie(name); }
 	if(days >= 0) {
@@ -53,7 +57,7 @@ dojo.io.cookie.setObjectCookie = function(name, obj, days, path, domain, secure,
 		}
 		value = pairs.join("&");
 	}
-	dojo.io.cookie.setCookie(name, value, days, path);
+	dojo.io.cookie.setCookie(name, value, days, path, domain, secure);
 }
 
 dojo.io.cookie.getObjectCookie = function(name) {
