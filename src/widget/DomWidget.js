@@ -318,9 +318,8 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		return widget;
 	},
 
-	getFragNodeRef: function(frag)
-	{
-		if ( !frag["dojo:"+this.widgetType.toLowerCase()] ){
+	getFragNodeRef: function(frag){
+		if( !frag["dojo:"+this.widgetType.toLowerCase()] ){
 			dojo.raise("Error: no frag for widget type " + this.widgetType +
 				", id " + this.widgetId + " (maybe a widget has set it's type incorrectly)");
 		}
