@@ -197,8 +197,8 @@ dj_unimplemented = dojo.unimplemented = function(funcname, extra){
  */
 dj_deprecated = dojo.deprecated = function(behaviour, extra, removal){
 	var mess = "DEPRECATED: " + behaviour;
-	if((!dj_undef(extra))&&(extra)){ mess += " " + extra; }
-	if(!dj_undef(removal)){ mess += " -- will be removed in version" + removal; }
+	if(extra){ mess += " " + extra; }
+	if(removal){ mess += " -- will be removed in version: " + removal; }
 	dojo.debug(mess);
 }
 
