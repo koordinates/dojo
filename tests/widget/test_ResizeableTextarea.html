@@ -10,14 +10,8 @@
 			src="../../dojo.js"></script>
 		<script type="text/javascript">
 			// pull in all the stuff we need to make the widget go
-			dojo.require("dojo.xml.Parse");
-			dojo.require("dojo.widget.Parse");
-			dojo.require("dojo.event.*");
-			dojo.require("dojo.widget.Widget");
-			dojo.require("dojo.widget.DomWidget");
-			dojo.require("dojo.widget.Manager");
-			dojo.require("dojo.widget.DragAndDrop");
-			dojo.require("dojo.widget.HtmlResizableTextarea");
+			dojo.require("dojo.widget.*");
+			dojo.require("dojo.widget.ResizableTextarea");
 		</script>
 		<script type="text/javascript">
 			/*
@@ -31,7 +25,6 @@
 				}
 			}
 			dojo.event.connect("before", dojo.hostenv, "loaded", dj_global, "upgradeTextareas");
-			*/
 
 			function pUpgrade(){
 				var pu = document.getElementById("pUpgrade");
@@ -42,13 +35,14 @@
 			}
 
 			dojo.event.connect(dojo.hostenv, "loaded", dj_global, "pUpgrade");
+			*/
 		</script>
 	</head>
 	<body bgcolor="white">
 		<textarea rows="10" cols="20">
 			we will upgrade this one programatically
 		</textarea>
-		<textarea id="pUpgrade">
+		<textarea dojoType="resizabletextarea">
 			we will upgrade this one programatically
 		</textarea>
 		<textarea dojoType="resizabletextarea" rows="15" cols="40">
