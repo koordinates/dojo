@@ -13,13 +13,13 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
-dojo.require("dojo.widget.html.LayoutPane");
+dojo.require("dojo.widget.LayoutPane");
 
 dojo.widget.html.FloatingPane = function(){
 	dojo.widget.html.LayoutPane.call(this);
 }
 
-dojo.inherits(dojo.widget.html.FloatingPane, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.html.FloatingPane, dojo.widget.html.LayoutPane);
 
 dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	widgetType: "FloatingPane",

@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Toggler");
-dojo.require("dojo.widget.DomWidget");
-dojo.require("dojo.event");
+dojo.require("dojo.widget.*");
+dojo.require("dojo.event.*");
 
 // clicking on this node shows/hides another widget
 
