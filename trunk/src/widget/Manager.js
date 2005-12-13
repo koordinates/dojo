@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Manager");
 dojo.require("dojo.lang");
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 
 // Manager class
 dojo.widget.manager = new function(){
