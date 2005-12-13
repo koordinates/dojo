@@ -13,7 +13,7 @@ dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.HtmlContainer");
+dojo.require("dojo.widget.Container");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
@@ -21,10 +21,10 @@ dojo.require("dojo.string");
 
 
 dojo.widget.html.LayoutPane = function(){
-	dojo.widget.HtmlContainer.call(this);
+	dojo.widget.html.Container.call(this);
 }
 
-dojo.inherits(dojo.widget.html.LayoutPane, dojo.widget.HtmlContainer);
+dojo.inherits(dojo.widget.html.LayoutPane, dojo.widget.html.Container);
 
 dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	widgetType: "LayoutPane",

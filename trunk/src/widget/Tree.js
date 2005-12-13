@@ -5,13 +5,16 @@ dojo.provide("dojo.widget.HtmlTreeNode");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.fx.html");
-dojo.require("dojo.widget.HtmlLayoutPane");
+dojo.require("dojo.widget.LayoutPane");
 
+// make it a tag
+dojo.widget.tags.addParseTreeHandler("dojo:Tree");
+dojo.widget.tags.addParseTreeHandler("dojo:TreeNode");
 
 dojo.widget.HtmlTree = function() {
-	dojo.widget.HtmlLayoutPane.call(this);
+	dojo.widget.html.LayoutPane.call(this);
 }
-dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlLayoutPane);
+dojo.inherits(dojo.widget.HtmlTree, dojo.widget.html.LayoutPane);
 
 dojo.lang.extend(dojo.widget.HtmlTree, {
 	widgetType: "Tree",
@@ -500,8 +503,4 @@ dojo.widget.Tree.WipeToggle = function(duration){
 	}
 }
 
-
-// make it a tag
-dojo.widget.tags.addParseTreeHandler("dojo:Tree");
-dojo.widget.tags.addParseTreeHandler("dojo:TreeNode");
 
