@@ -17,6 +17,11 @@
 	dojo.require("dojo.widget.TabSet");
 </script>
 
+<!-- there's a race condition when tabs get loaded; if the CSS isn't available
+when the tabs are sized then there will be a big gap between the labels and the
+content.  As a workaround, load CSS directly
+-->
+<LINK href="../../src/widget/templates/HtmlTabSet.css" type="text/css" media=screen>
 <style type="text/css">
 body {
 	font-family : sans-serif;
