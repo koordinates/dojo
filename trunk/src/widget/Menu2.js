@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.HtmlMenu2");
+dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
 dojo.provide("dojo.widget.MenuItem2");
 
@@ -130,7 +130,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
-			dojo.widget.HtmlMenu2Manager.opened(this);
+			dojo.widget.html.Menu2Manager.opened(this);
 		}
 
 		var viewport = dojo.html.getViewportSize();
@@ -185,7 +185,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.closeSubmenu();
 		this.hide();
 		this.isShowing = false;
-		dojo.widget.HtmlMenu2Manager.closed(this);
+		dojo.widget.html.Menu2Manager.closed(this);
 	},
 
 	closeAll: function(){
@@ -532,7 +532,7 @@ dojo.lang.extend(dojo.widget.MenuSeparator2, {
 // everything works. lovely.
 //
 
-dojo.widget.HtmlMenu2Manager = new function(){
+dojo.widget.html.Menu2Manager = new function(){
 
 	this.currentMenu = null;
 	this.focusNode = null;
