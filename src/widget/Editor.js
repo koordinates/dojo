@@ -383,6 +383,9 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	},
 
 	_action: function(e) {
+		// djConfig.isDebug = true;
+		// dojo.debug(e);
+		// dojo.debug(e.getValue());
 		this._fire("onAction", e.getValue());
 	},
 
@@ -413,7 +416,7 @@ dojo.lang.extend(dojo.widget.HtmlEditor, {
 	},
 
 	fillInTemplate: function(args, frag) {
-		// useless?
+		// dojo.event.connect(this, "onResized", this._richText, "onResized");
 	},
 
 	_fire: function(eventName) {

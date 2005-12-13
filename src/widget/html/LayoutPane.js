@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.LayoutPane");
-dojo.provide("dojo.widget.HtmlLayoutPane");
+dojo.provide("dojo.widget.html.LayoutPane");
 
 //
 // this widget provides Delphi-style panel layout semantics
@@ -9,6 +9,7 @@ dojo.provide("dojo.widget.HtmlLayoutPane");
 // TODO: allow percentage sizing stuff
 //
 
+dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
@@ -19,13 +20,13 @@ dojo.require("dojo.dom");
 dojo.require("dojo.string");
 
 
-dojo.widget.HtmlLayoutPane = function(){
+dojo.widget.html.LayoutPane = function(){
 	dojo.widget.HtmlContainer.call(this);
 }
 
-dojo.inherits(dojo.widget.HtmlLayoutPane, dojo.widget.HtmlContainer);
+dojo.inherits(dojo.widget.html.LayoutPane, dojo.widget.HtmlContainer);
 
-dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
+dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	widgetType: "LayoutPane",
 
 	isChild: false,
@@ -327,7 +328,7 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 		this.domNode.style.display="none";
 		this.domNode.style.visibility="";
 
-		dojo.widget.HtmlLayoutPane.superclass.show.call(this);
+		dojo.widget.html.LayoutPane.superclass.show.call(this);
 	},
 
 	getMinWidth: function(){
@@ -419,5 +420,4 @@ dojo.lang.extend(dojo.widget.HtmlLayoutPane, {
 	}
 });
 
-dojo.widget.tags.addParseTreeHandler("dojo:LayoutPane");
 

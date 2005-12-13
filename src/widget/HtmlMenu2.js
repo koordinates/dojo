@@ -61,12 +61,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.domNode.style.top = '-9999px'
 
 		if (this.contextMenuForWindow){
-
-			var eventType = "oncontextmenu"; 
 			var doc = document.documentElement  || dojo.html.body(); 
-			var func = "onShow";
-
-			dojo.event.connect(doc, eventType, this, func);
+			dojo.event.connect(doc, "oncontextmenu", this, "onShow");
 		}
 
 		this.layoutMenuSoon();
@@ -74,10 +70,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 	layoutMenuSoon: function(){
 
-		var self = this;
-		var closure = function(){ return function(){ self.layoutMenu(); } }();
-
-		window.setTimeout(closure, 0);
+		dojo.lang.setTimeout(this, "layoutMenu", 0);
 	},
 
 	layoutMenu: function(){
@@ -130,7 +123,10 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 	open: function(x, y, parentMenu, explodeSrc){
 
-		if (this.isShowing){ this.close(); }
+		// NOTE: alex:
+		//	this couldn't have possibly worked. this.open wound up calling
+		//	this.close, which called open...etc..
+		if (this.isShowing){ /* this.close(); */ return; }
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
@@ -152,7 +148,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 			if (x + this.menuWidth > clientRect.right){ x = x - (this.menuWidth + parentMenu.menuWidth - (2 * this.submenuOverlap)); }
 
-			if (y + this.menuHeight > clientRect.bottom){ y = y - (this.menuHeight - (this.itemHeight + 5)); } // TODO: why 5?
+			if (y + this.menuHeight > clientRect.bottom){ y = y -
+			(this.menuHeight - (this.itemHeight + 5)); } // TODO: why 5?
 
 		}else{
 			// top level menu is opening
@@ -233,7 +230,9 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		//dojo.debugShallow(e);
 		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
 
-		e.preventDefault();
+		if(e["preventDefault"]){
+			e.preventDefault();
+		}
 	},
 
 	isPointInMenu: function(x, y){

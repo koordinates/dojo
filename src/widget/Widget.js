@@ -12,7 +12,6 @@ dojo.widget.Widget = function(){
 	this.children = [];
 	// this.selection = new dojo.widget.Selection();
 	// FIXME: need to replace this with context menu stuff
-	this.rightClickItems = [];
 	this.extraArgs = {};
 }
 // FIXME: need to be able to disambiguate what our rendering context is
@@ -35,6 +34,10 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	toString: function() {
 		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']';
+	},
+
+	repr: function(){
+		return this.toString();
 	},
 
 	enable: function(){
@@ -283,7 +286,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	buildRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.buildRendering");
+		dj_unimplemented("dojo.widget.Widget.buildRendering, on "+this.toString()+", ");
 		return false;
 	},
 
