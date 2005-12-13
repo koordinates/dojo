@@ -5,16 +5,12 @@
 <title>SplitPane Widget Demo</title>
 
 <script type="text/javascript">
-
 	var djConfig = {isDebug: true };
-
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-
-	dojo.require("dojo.widget.HtmlLayoutPane");
-	dojo.require("dojo.widget.HtmlSplitPane");
-	dojo.hostenv.writeIncludes();
+	dojo.require("dojo.widget.LayoutPane");
+	dojo.require("dojo.widget.SplitPane");
 </script>
 </head>
 <body style="padding: 50px;">
@@ -27,12 +23,10 @@
 	orientation="vertical"
 	sizerWidth="5"
 	activeSizing="1"
-	style="border: 2px solid black; width: 700px; height: 400px;"
->
+	style="border: 2px solid black; width: 700px; height: 400px;">
+
 	<div dojoType="SplitPanePanel" sizeMin="60" sizeShare="1">
-
 		woo
-
 	</div>
 
 	<div dojoType="SplitPanePanel" sizeMin="100" sizeShare="3">
@@ -42,8 +36,7 @@
 			sizerWidth="5"
 			activeSizing="1"
 			layoutAlign="client"
-			style="border: 2px solid black;"
-		>
+			style="border: 2px solid black;">
 
 			<div dojoType="SplitPanePanel" sizeMin="100" sizeShare="80">
 
