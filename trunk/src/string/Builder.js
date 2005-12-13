@@ -1,58 +1,82 @@
 dojo.provide("dojo.string.Builder");
 dojo.require("dojo.string");
 
+// NOTE: testing shows that direct "+=" concatenation is *much* faster on
+// Spidermoneky and Rhino, while arr.push()/arr.join() style concatenation is
+// significantly quicker on IE (Jscript/wsh/etc.).
+
 dojo.string.Builder = function(str){
+	this.arrConcat = (dojo.render.html.capable && dojo.render.html["ie"]);
+
 	var a = [];
 	var b = str || "";
 	var length = this.length = b.length;
 
-	if(b.length > 0){
-		a.push(b);
+	if(this.arrConcat){
+		if(b.length > 0){
+			a.push(b);
+		}
+		b = "";
 	}
-	b = "";
+
 	this.toString = this.valueOf = function(){ 
-		return a.join(""); 
+		return (this.arrConcat) ? a.join("") : b;
 	};
 
 	this.append = function(s){
-		a.push(s);
+		if(this.arrConcat){
+			a.push(s);
+		}else{
+			b+=s;
+		}
 		length += s.length;
 		this.length = length;
 		return this;
 	};
 
 	this.clear = function(){
-		a=[];
+		a = [];
+		b = "";
 		length = this.length = 0;
 		return this;
 	};
 
 	this.remove = function(f,l){
 		var s = ""; 
-		b = a.join(""); 
+		if(this.arrConcat){
+			b = a.join(""); 
+		}
 		a=[];
 		if(f>0){
 			s = b.substring(0, (f-1));
 		}
 		b = s + b.substring(f + l); 
-		a.push(b);
 		length = this.length = b.length; 
-		b="";
+		if(this.arrConcat){
+			a.push(b);
+			b="";
+		}
 		return this;
 	};
 
 	this.replace = function(o,n){
-		b = a.join(""); 
+		if(this.arrConcat){
+			b = a.join(""); 
+		}
 		a = []; 
 		b = b.replace(o,n); 
-		a.push(b);
 		length = this.length = b.length; 
-		b="";
+		if(this.arrConcat){
+			a.push(b);
+			b="";
+		}
 		return this;
 	};
 
 	this.insert = function(idx,s){
-		b = a.join(""); 
+		if(this.arrConcat){
+			b = a.join(""); 
+		}
 		a=[];
 		if(idx == 0){
 			b = s + b;
@@ -62,8 +86,10 @@ dojo.string.Builder = function(str){
 			b = t.join("")
 		}
 		length = this.length = b.length; 
-		a.push(b); 
-		b="";
+		if(this.arrConcat){
+			a.push(b); 
+			b="";
+		}
 		return this;
 	};
 };
