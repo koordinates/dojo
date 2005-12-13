@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.HtmlContainer");
+dojo.provide("dojo.widget.html.Container");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Container");
