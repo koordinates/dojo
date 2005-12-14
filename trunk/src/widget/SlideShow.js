@@ -27,6 +27,7 @@ dojo.widget.html.SlideShow = function(){
 	this.background = "img2"; // what's in the bg
 	this.foreground = "img1"; // what's in the fg
 	this.stopped = false;	// should I stay or should I go?
+	this.fadeAnim = null; // references our animation
 
 	// our DOM nodes:
 	this.imagesContainer = null;
@@ -79,7 +80,10 @@ dojo.widget.html.SlideShow = function(){
 		// actually start the fadeOut effect
 		// NOTE: if we wanted to use other transition types, we'd set them up
 		// 		 here as well
-		dojo.fx.html.fadeOut(this[this.foreground], 
+		if(this.fadeAnim) {
+			this.fadeAnim.stop();
+		}
+		this.fadeAnim = dojo.fx.html.fadeOut(this[this.foreground], 
 			this.transitionInterval, callback);
 	}
 
