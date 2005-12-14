@@ -700,7 +700,7 @@ dojo.html.toCoordinateArray = function(coords, includeScroll) {
 	return ret;
 };
 
-/* TODO: merge keepOnScreen and keepOnScreenPoint to make 1 function that allows you
+/* TODO: merge placeOnScreen and placeOnScreenPoint to make 1 function that allows you
  * to define which corner(s) you want to bind to. Something like so:
  *
  * kes(node, desiredX, desiredY, "TR")
@@ -722,14 +722,14 @@ dojo.html.toCoordinateArray = function(coords, includeScroll) {
  * NOTE: node is assumed to be absolutely or relatively positioned.
  *
  * Alternate call sig:
- *  keepOnScreen(node, [x, y], padding, hasScroll)
+ *  placeOnScreen(node, [x, y], padding, hasScroll)
  *
  * Examples:
- *  keepOnScreen(node, 100, 200)
- *  keepOnScreen("myId", [800, 623], 5)
- *  keepOnScreen(node, 234, 3284, [2, 5], true)
+ *  placeOnScreen(node, 100, 200)
+ *  placeOnScreen("myId", [800, 623], 5)
+ *  placeOnScreen(node, 234, 3284, [2, 5], true)
  */
-dojo.html.keepOnScreen = function(node, desiredX, desiredY, padding, hasScroll) {
+dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll) {
 	if(dojo.lang.isArray(desiredX)) {
 		hasScroll = padding;
 		padding = desiredY;
@@ -781,15 +781,15 @@ dojo.html.keepOnScreen = function(node, desiredX, desiredY, padding, hasScroll) 
 }
 
 /**
- * Like keepOnScreenPoint except that it attempts to keep one of the node's
+ * Like placeOnScreenPoint except that it attempts to keep one of the node's
  * corners at desiredX, desiredY. Also note that padding is only taken into
- * account if none of the corners can be kept and thus keepOnScreenPoint falls
- * back to keepOnScreen to place the node.
+ * account if none of the corners can be kept and thus placeOnScreenPoint falls
+ * back to placeOnScreen to place the node.
  *
  * Examples placing node at mouse position (where e = [Mouse event]):
- *  keepOnScreenPoint(node, e.clientX, e.clientY);
+ *  placeOnScreenPoint(node, e.clientX, e.clientY);
  */
-dojo.html.keepOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
+dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
 	if(dojo.lang.isArray(desiredX)) {
 		hasScroll = padding;
 		padding = desiredY;
@@ -839,7 +839,7 @@ dojo.html.keepOnScreenPoint = function(node, desiredX, desiredY, padding, hasScr
 	}
 
 	if(x < 0 || y < 0 || (x + w > view.w) || (y + h > view.h)) {
-		return dojo.html.keepOnScreen(node, desiredX, desiredY, padding, hasScroll);
+		return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll);
 	}
 
 	x += scroll.x;
