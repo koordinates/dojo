@@ -9,6 +9,7 @@ dojo.require("dojo.math");
 
 // takes an r, g, b, a(lpha) value, [r, g, b, a] array, "rgb(...)" string, hex string (#aaa, #aaaaaa, aaaaaaa)
 dojo.graphics.color.Color = function(r, g, b, a) {
+	// dojo.debug("r:", r[0], "g:", r[1], "b:", r[2]);
 	if(dojo.lang.isArray(r)) {
 		this.r = r[0];
 		this.g = r[1];
@@ -31,43 +32,45 @@ dojo.graphics.color.Color = function(r, g, b, a) {
 		this.b = b;
 		this.a = a;
 	}
-};
+}
 
-dojo.graphics.color.Color.prototype.toRgb = function(includeAlpha) {
-	if(includeAlpha) {
-		return this.toRgba();
-	} else {
-		return [this.r, this.g, this.b];
+dojo.lang.extend(dojo.graphics.color.Color, {
+	toRgb: function(includeAlpha) {
+		if(includeAlpha) {
+			return this.toRgba();
+		} else {
+			return [this.r, this.g, this.b];
+		}
+	},
+
+	toRgba: function() {
+		return [this.r, this.g, this.b, this.a];
+	},
+
+	toHex: function() {
+		return dojo.graphics.color.rgb2hex(this.toRgb());
+	},
+
+	toCss: function() {
+		return "rgb(" + this.toRgb().join() + ")";
+	},
+
+	toString: function() {
+		return this.toHex(); // decent default?
+	},
+
+	toHsv: function() {
+		return dojo.graphics.color.rgb2hsv(this.toRgb());
+	},
+
+	toHsl: function() {
+		return dojo.graphics.color.rgb2hsl(this.toRgb());
+	},
+
+	blend: function(color, weight) {
+		return dojo.graphics.color.blend(this.toRgb(), new Color(color).toRgb(), weight);
 	}
-};
-
-dojo.graphics.color.Color.prototype.toRgba = function() {
-	return [this.r, this.g, this.b, this.a];
-}
-
-dojo.graphics.color.Color.prototype.toHex = function() {
-	return dojo.graphics.color.rgb2hex(this.toRgb());
-};
-
-dojo.graphics.color.Color.prototype.toCss = function() {
-	return "rgb(" + this.toRgb().join() + ")";
-}
-
-dojo.graphics.color.Color.prototype.toString = function() {
-	return this.toHex(); // decent default?
-}
-
-dojo.graphics.color.Color.prototype.toHsv = function() {
-	return dojo.graphics.color.rgb2hsv(this.toRgb());
-};
-
-dojo.graphics.color.Color.prototype.toHsl = function() {
-	return dojo.graphics.color.rgb2hsl(this.toRgb());
-};
-
-dojo.graphics.color.Color.prototype.blend = function(color, weight) {
-	return dojo.graphics.color.blend(this.toRgb(), new Color(color).toRgb(), weight);
-}
+});
 
 dojo.graphics.color.named = {
 	white:      [255,255,255],
