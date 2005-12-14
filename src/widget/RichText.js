@@ -217,7 +217,16 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					open();
 					write(
 						//'<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-						'<title></title>\n' +
+						'<html><title></title>\n' +
+						'<script type="text/javascript">\n' +
+						'	function init(){\n' +
+						// '		var pwidget = window.parent.dojo.widget.byId("'+this.widgetId+'");\n' +
+						// '		// pwidget.window = window\n' +
+						// '		pwidget.document = document\n' +
+						// '		alert(document.body.innerHTML);\n' +
+						// '		pwidget.onLoad();\n' +
+						'	}\n' +
+						'</script>\n' +
 						'<style type="text/css">\n' +
 						'    body,html { padding: 0; margin: 0; font: ' + font + '; }\n' +
 						// TODO: left positioning will case contents to disappear out of view
@@ -232,8 +241,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 						//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }\n' +
 						'</style>\n' +
 						//'<base href="' + window.location + '">' +
-						'<body' + (contentEditable ? ' contentEditable="true"' : '') + '>' +
-						html + '</body>');
+						'<body' + (contentEditable ? ' contentEditable="true"' : '') + ' onload="init();">' +
+						html + '</body></html>');
 					close();
 				}
 				
@@ -293,13 +302,22 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				this.document.execCommand("useCSS", false, true); // old moz call
 				this.document.execCommand("styleWithCSS", false, false); // new moz call
 				//this.document.execCommand("insertBrOnReturn", false, false); // new moz call
-			}catch(e){ }
+			}catch(e2){ }
 			
 			if (dojo.render.html.safari) {
+				/*
+				this.iframe.style.visiblity = "visible";
+				this.iframe.style.border = "1px solid black";
+				this.editNode.style.visiblity = "visible";
+				this.editNode.style.border = "1px solid black";
+				*/
+				// this.onDisplayChanged();
 				this.connect(this.editNode, "onblur", "onBlur");
 				this.connect(this.editNode, "onfocus", "onFocus");
 			
 				this.interval = setInterval(dojo.lang.hitch(this, "onDisplayChanged"), 750);
+				// dojo.raise("onload");
+				// dojo.debug(this.editNode.parentNode.parentNode.parentNode.nodeName);
 			} else if (dojo.render.html.mozilla) {
 
 				// We need to unhook the blur event listener on close as we
@@ -840,9 +858,16 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 	},
 
+	_lastHeight: 0,
+
 	/** Updates the height of the iframe to fit the contents. */
 	_updateHeight: function () {
 		if (this.iframe) {
+			/*
+			if(!this.document.body["offsetHeight"]){
+				return;
+			}
+			*/
 			// The height includes the padding, borders and margins so these
 			// need to be added on
 			var heights = ["margin-top", "margin-bottom",
@@ -855,8 +880,15 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					chromeheight += Number(height.replace(/[^0-9]/g, ""));
 				}
 			}
-			this.iframe.height = this.document.body.offsetHeight + chromeheight + "px";
-			this.window.scrollTo(0, 0);
+			// dojo.debug(this.document.body.offsetHeight);
+			// dojo.debug(chromeheight);
+			if(this.document.body["offsetHeight"]){
+				this._lastHeight = this.document.body.offsetHeight + chromeheight;
+				this.iframe.height = this._lastHeight + "px";
+				this.window.scrollTo(0, 0);
+			}
+			// this.iframe.height = this._lastHeight + "px";
+			// dojo.debug(this.iframe.height);
 		} else if (this.object) {
 			this.object.height = dojo.style.getInnerHeight(this.editNode);
 		}
