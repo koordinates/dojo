@@ -1,22 +1,20 @@
+<!--
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 
+-->
 <title>Editor Test (RichText + Toolbar)</title>
-<script type="text/javascript"> djConfig = { isDebug: true }; </script>
+<script type="text/javascript"> djConfig = { isDebug: true, debugAtAllCosts: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../src/profile.js"></script>
 <script type="text/javascript">
-	delete dojo["profile"]; // hack!
+	// delete dojo["profile"]; // hack!
 	dojo.require("dojo.profile");
 	dojo.require("dojo.event.*");
 	dojo.require("dojo.widget.Editor");
 	dojo.profile.start("init");
+	dojo.hostenv.writeIncludes();
 </script>
-<!--
-<script type="text/javascript" src="../../src/widget/RichText.js"></script>
-<script type="text/javascript" src="../../src/widget/Toolbar.js"></script>
-<script type="text/javascript" src="../../src/widget/Editor.js"></script>
--->
-
 <script type="text/javascript">
 /*
 // If we wanted to do this pragmatically...
