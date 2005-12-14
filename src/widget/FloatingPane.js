@@ -163,6 +163,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if( !this.isVisible() ){ return; }
 
 		var newHeight = dojo.style.getOuterHeight(this.domNode);
+		if( isNaN(newHeight) || isNaN(newWidth) ){
+			// Browser needs more time to figure out my size
+			this.resizeSoon();
+			return;
+		}
 		var newWidth = dojo.style.getOuterWidth(this.domNode);
 		
 		//if ( newWidth != this.outerWidth || newHeight != this.outerHeight ) {
