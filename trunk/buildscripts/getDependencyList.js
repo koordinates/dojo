@@ -66,59 +66,48 @@ old_load = load;
 load = function(uri){
 	try{
 		var text = removeComments(readText(uri));
-		var requires = dojo.hostenv.getDepsForEval(text);
-		var provides = dojo.hostenv.getProvidesForEval(text);
-		eval(provides.join(";"));
+		var requires = dojo.hostenv.getRequiresAndProvides(text);
 		eval(requires.join(";"));
 		dojo.hostenv.loadedUris.push(uri);
 		dojo.hostenv.loadedUris[uri] = true;
+		var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
+		eval(delayRequires.join(";"));
 	}catch(e){ 
 		print(e);
 	}
 	return true;
 }
 
-dojo.hostenv.getDepsForEval = function(contents){
+dojo.hostenv.getRequiresAndProvides = function(contents){
 	// FIXME: should probably memoize this!
 	if(!contents){ return []; }
 
 	// check to see if we need to load anything else first. Ugg.
 	var deps = [];
 	var tmp;
-	var testExps = [
-		/dojo.hostenv.loadModule\(.*?\)/mg,
-		/dojo.hostenv.require\(.*?\)/mg,
-		/dojo.require\(.*?\)/mg,
-		/dojo.requireIf\([\w\W]*?\)/mg,
-		/dojo.hostenv.conditionalLoadModule\([\w\W]*?\)/mg
-	];
-	for(var i=0; i<testExps.length; i++){
-		tmp = contents.match(testExps[i]);
-		if(tmp){
-			for(var x=0; x<tmp.length; x++){ deps.push(tmp[x]); }
-		}
+	RegExp.lastIndex = 0;
+	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|hostenv.conditionalLoadModule|hostenv.startPackage|hostenv.provide|provide)\([\w\W]*?\)/mg;
+	while((tmp = testExp.exec(contents)) != null){
+		print(tmp[0]);
+		deps.push(tmp[0]);
 	}
-
 	return deps;
 }
 
-dojo.hostenv.getProvidesForEval = function(contents){
+dojo.hostenv.getDelayRequiresAndProvides = function(contents){
+	// FIXME: should probably memoize this!
 	if(!contents){ return []; }
+
 	// check to see if we need to load anything else first. Ugg.
-	var mods = [];
-	var tmp = contents.match( /dojo.hostenv.startPackage\(.*?\)/mg );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
+	var deps = [];
+	var tmp;
+	RegExp.lastIndex = 0;
+	var testExp = /dojo.(requireAfterIf|requireAfter)\([\w\W]*?\)/mg;
+	while((tmp = testExp.exec(contents)) != null){
+		print("delay: "+tmp[0]);
+		deps.push(tmp[0]);
 	}
-	tmp = contents.match( /dojo.hostenv.provide\((.*?)\)/mg );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
-	}
-	tmp = contents.match( /dojo.provide\((.*?)\)/mg );
-	if(tmp){
-		for(var x=0; x<tmp.length; x++){ mods.push(tmp[x]); }
-	}
-	return mods;
+	return deps;
 }
 
 for(var x=0; x<dependencies.length; x++){

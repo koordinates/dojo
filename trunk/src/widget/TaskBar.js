@@ -2,9 +2,6 @@ dojo.provide("dojo.widget.TaskBar");
 dojo.provide("dojo.widget.TaskBarItem");
 dojo.require("dojo.widget.Widget");
 
-dojo.requireIf("html", "dojo.widget.html.TaskBar");
-
-
 dojo.widget.TaskBar = function(){
 	dojo.widget.Widget.call(this);
 
@@ -22,3 +19,4 @@ dojo.widget.TaskBarItem = function(){
 dojo.inherits(dojo.widget.TaskBarItem, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:taskbaritem");
 
+dojo.requireAfterIf("html", "dojo.widget.html.TaskBar");

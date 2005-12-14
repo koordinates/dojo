@@ -1,6 +1,5 @@
 dojo.provide("dojo.widget.DatePicker");
 dojo.require("dojo.widget.DomWidget");
-dojo.requireIf("html", "dojo.widget.html.DatePicker");
 
 dojo.widget.DatePicker = function(){
 	dojo.widget.Widget.call(this);
@@ -13,3 +12,5 @@ dojo.widget.DatePicker = function(){
 
 dojo.inherits(dojo.widget.DatePicker, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:datepicker");
+
+dojo.requireAfterIf("html", "dojo.widget.html.DatePicker");

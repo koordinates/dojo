@@ -1,8 +1,6 @@
 dojo.provide("dojo.widget.Button");
 dojo.require("dojo.widget.Widget");
 
-dojo.requireIf("html", "dojo.widget.html.Button");
-
 dojo.widget.tags.addParseTreeHandler("dojo:button");
 
 dojo.widget.Button = function(){
@@ -12,3 +10,4 @@ dojo.widget.Button = function(){
 	this.isContainer = true;
 }
 dojo.inherits(dojo.widget.Button, dojo.widget.Widget);
+dojo.requireAfterIf("html", "dojo.widget.html.Button");

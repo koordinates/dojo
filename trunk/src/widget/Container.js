@@ -1,2 +1,2 @@
 dojo.provide("dojo.widget.Container");
-dojo.requireIf("html", "dojo.widget.html.Container");
+dojo.requireAfterIf("html", "dojo.widget.html.Container");
