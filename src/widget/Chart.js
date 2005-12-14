@@ -6,8 +6,7 @@ dojo.require("dojo.widget.Widget");
 dojo.require("dojo.graphics.color");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
-dojo.requireIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
-//dojo.requireIf(dojo.render.vml, "dojo.widget.vml.Chart");
+dojo.requireAfterIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
 
 dojo.widget.Chart=function(){
 	dojo.widget.Widget.call(this);

@@ -3,9 +3,6 @@ dojo.provide("dojo.widget.DomMenuItem");
 
 dojo.require("dojo.string");
 dojo.require("dojo.widget.*");
-dojo.requireIf("html", "dojo.widget.html.MenuItem");
-
-dojo.require("dojo.html");
 
 dojo.widget.tags.addParseTreeHandler("dojo:MenuItem");
 
@@ -33,3 +30,6 @@ dojo.inherits(dojo.widget.DomMenuItem, dojo.widget.DomWidget);
 dojo.lang.extend(dojo.widget.DomMenuItem, {
 	widgetType: "MenuItem"
 });
+
+dojo.requireAfterIf("html", "dojo.html");
+dojo.requireAfterIf("html", "dojo.widget.html.MenuItem");

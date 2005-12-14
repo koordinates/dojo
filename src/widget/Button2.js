@@ -41,5 +41,5 @@ dojo.lang.extend(dojo.widget.ComboButton2, {
 	menuId: ''
 });
 
-dojo.requireIf("html", "dojo.widget.html.Button2");
+dojo.requireAfterIf("html", "dojo.widget.html.Button2");
 

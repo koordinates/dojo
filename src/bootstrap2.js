@@ -39,6 +39,7 @@ dojo.hostenv.require = dojo.hostenv.loadModule;
 dojo.require = function(){
 	dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);
 }
+dojo.requireAfter = dojo.require;
 
 dojo.requireIf = function(){
 	if((arguments[0] === true)||(arguments[0]=="common")||(dojo.render[arguments[0]].capable)){
@@ -48,6 +49,7 @@ dojo.requireIf = function(){
 	}
 }
 
+dojo.requireAfterIf = dojo.requireIf;
 dojo.conditionalRequire = dojo.requireIf;
 
 dojo.kwCompoundRequire = function(){

@@ -2,7 +2,6 @@ dojo.provide("dojo.widget.Menu");
 dojo.provide("dojo.widget.DomMenu");
 
 dojo.require("dojo.widget.*");
-dojo.requireIf("html", "dojo.widget.html.Menu");
 
 dojo.widget.tags.addParseTreeHandler("dojo:menu");
 
@@ -44,3 +43,5 @@ dojo.lang.extend(dojo.widget.DomMenu, {
 		this.domNode.appendChild(item.domNode);
 	}
 });
+
+dojo.requireAfterIf("html", "dojo.widget.html.Menu");

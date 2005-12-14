@@ -1,1 +1,1 @@
-ant -Ddocless=true -Dprofile=$1 release intern-strings
+ant -Ddocless=true -Dprofile=$1 $2 release intern-strings

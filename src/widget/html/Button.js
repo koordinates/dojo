@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.html.Button");
-dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Button");
 
 dojo.widget.html.Button = function(){
