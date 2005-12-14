@@ -1,12 +1,18 @@
 var dependencies = [ 
-	"dojo.alg.*",
-	"dojo.lang.*",
+	"dojo.lang",
+	"dojo.html",
+	"dojo.style",
+	"dojo.fx.*",
 	"dojo.event.*",
 	"dojo.logging.*",
 	"dojo.io.*",
-	"dojo.text.*",
-	"dojo.mop.*",
+	"dojo.io.IframeIO",
+	"dojo.date",
+	"dojo.string.*",
+	"dojo.regex",
+	"dojo.rpc.*",
 	"dojo.xml.*",
+	"dojo.storage.*",
 	"dojo.crypto.*",
 	//"dojo.collections.*",
 	"dojo.graphics.*",
@@ -16,7 +22,6 @@ var dependencies = [
 	"dojo.widget.*",
 	"dojo.math.*",
 	//"dojo.reflect.*",
-	"dojo.text.*",
 	"dojo.uri.*"
 ];
 
