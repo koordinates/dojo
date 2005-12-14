@@ -5,6 +5,10 @@ Configuration Changes:
   them at runtime should affect system behavior directly.
 - djConfig.ieClobberMinimal now defaults to true (previously was false)
 - djConfig.preventBackButtonFix now defaults to true (previously was false)
+- djConfig.allowQueryConfig defaults to false but allows use o the query string
+  for providing over-rides of config info, such as ?djConfig.isDebug=true&...
+- dojo.addOnLoad() is now the preferred way to register a function for dispatch
+  when Dojo finishes loading resources
 
 API Changes:
 - dojo.io.bind now returns a dojo.io.Request object instead of a boolean
@@ -16,6 +20,7 @@ Namespace refactoring:
 - dojo.xml.htmlUtil -> dojo.html + dojo.style
 - dojo.xml.domUtil -> dojo.dom
 - dojo.io.cookies -> dojo.io.cookie
+- dojo.widget.Html* -> dojo.widget.* + dojo.widget.html.*
 
 Individual function refactoring
 - dj_unimplmemented() -> dojo.unimpl()
