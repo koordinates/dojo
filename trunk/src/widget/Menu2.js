@@ -94,9 +94,21 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 			}
 		}
 
+		if( isNaN(max_label_w) || isNaN(max_accel_w) ){
+			// Browser needs some more time to calculate sizes
+			this.layoutMenuSoon();
+			return;
+		}
+
 		var clientLeft = dojo.style.getPixelValue(this.domNode, "padding-left", true) + dojo.style.getPixelValue(this.containerNode, "padding-left", true);
 		var clientTop  = dojo.style.getPixelValue(this.domNode, "padding-top", true)  + dojo.style.getPixelValue(this.containerNode, "padding-top", true);
 
+		if( isNaN(clientLeft) || isNaN(clientTop) ){
+			// Browser needs some more time to calculate sizes
+			this.layoutMenuSoon();
+			return;
+		}
+		
 		var y = clientTop;
 		var max_item_width = 0;
 
