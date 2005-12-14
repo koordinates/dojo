@@ -88,7 +88,6 @@ dojo.hostenv.getRequiresAndProvides = function(contents){
 	RegExp.lastIndex = 0;
 	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|hostenv.conditionalLoadModule|hostenv.startPackage|hostenv.provide|provide)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
-		print(tmp[0]);
 		deps.push(tmp[0]);
 	}
 	return deps;
@@ -104,7 +103,6 @@ dojo.hostenv.getDelayRequiresAndProvides = function(contents){
 	RegExp.lastIndex = 0;
 	var testExp = /dojo.(requireAfterIf|requireAfter)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
-		print("delay: "+tmp[0]);
 		deps.push(tmp[0]);
 	}
 	return deps;
