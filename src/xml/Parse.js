@@ -151,7 +151,8 @@ dojo.xml.Parse = function(){
 					continue; 
 				}
 			}
-			parsedAttributeSet[attnode.nodeName] = { 
+			var nn = (attnode.nodeName.indexOf("dojo:") == -1) ? attnode.nodeName : attnode.nodeName.split("dojo:")[1];
+			parsedAttributeSet[nn] = { 
 				value: attnode.nodeValue 
 			};
 		}
