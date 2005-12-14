@@ -49,7 +49,7 @@
 			load(spath);
 		} else {
 			try {
-				document.write("<script type='text/javascript' src='"+spath+"'></script>");
+				document.write("<scr"+"ipt type='text/javascript' src='"+spath+"'></scr"+"ipt>");
 			} catch (e) {
 				var script = document.createElement("script");
 				script.src = spath;
