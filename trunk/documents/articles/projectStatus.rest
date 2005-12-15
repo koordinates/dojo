@@ -45,12 +45,11 @@ More details are available in the `Dojo Roadmap`_
 Releases
 ------------------------
 
+Dojo 0.2.0 was release on 2005/12/15.
+
 Dojo 0.1.0 was released on 2005/08/29. Multiple profile builds were made
 available at that time. New builds of these profiles are made available nighty
 at http://archive.dojotoolkit.org/
-
-No release date has been set for new releases on the 0.1.x line or for 0.2.0,
-but this document will be updated when new release dates are planned.
 
 Code Checkins
 ----------------
@@ -66,8 +65,9 @@ the `dojo interest mailing list`_.
 License
 -------
 
-Dojo is licensed under the very friendly `Academic Free License v 2.1`_. Some
-`thoughts on the AFL license`_.
+Dojo is licensed under the very friendly `Academic Free License v 2.1`_ or
+alternately under the terms of the BSD license should you need to use Dojo with
+(L)GPL software. Some `thoughts on the AFL license`_.
 
 Dojo Foundation
 ---------------
@@ -89,6 +89,9 @@ mundane details like bylaws and tax exemption status.
 
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
+
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
 
 :Author: Alex Russell,Dylan Schiemann
 :Version: 0.4

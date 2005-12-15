@@ -141,6 +141,9 @@ Functionality not in classes::
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
 
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
+
 Proposal For Dojo Class Organization
 ====================================
 

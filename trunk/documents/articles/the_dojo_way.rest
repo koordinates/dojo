@@ -62,6 +62,9 @@ file a bug.
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
 
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
+
 The Dojo Way
 ============
 

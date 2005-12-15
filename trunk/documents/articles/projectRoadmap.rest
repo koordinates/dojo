@@ -337,6 +337,9 @@ mundane details like bylaws and tax exemption status.
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
 
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
+
 :Author: Alex Russell,Dylan Schiemann
 :Version: 0.4
 :Copyright: Dojo Foundation, 2005
