@@ -11,16 +11,17 @@ dojo.collections.DictionaryEntry = function(k,v){
 dojo.collections.Iterator = function(a){
 	var obj = a;
 	var position = 0;
-	this.current = null;
-	this.atEnd = false;
+	this.atEnd = (position>=a.length-1);
+	if(this.atEnd) dojo.raise("dojo.collections.Iterator.ctor: array passed to ctor is empty.");
+	this.current = obj[position];
 	this.moveNext = function(){
+		if(++position==obj.length){
+			this.atEnd = true;
+		}
 		if(this.atEnd){
 			dojo.raise("dojo.collections.Iterator.moveNext: iterator is at end position.");
 		}
-		this.current = obj[position];
-		if(++position == obj.length){
-			this.atEnd = true;
-		}
+		this.current=obj[position];
 	}
 	this.reset = function(){
 		position = 0;
@@ -32,22 +33,23 @@ dojo.collections.DictionaryIterator = function(obj){
 	var arr = [] ;	//	Create an indexing array
 	for (var p in obj) arr.push(obj[p]) ;	//	fill it up
 	var position = 0 ;
-	this.current = null ;
-	this.entry = null ;
-	this.key = null ;
-	this.value = null ;
-	this.atEnd = false ;
+	this.atEnd = (position>=a.length-1);
+	if(this.atEnd) dojo.raise("dojo.collections.DictionaryIterator.ctor: object passed to ctor has no properties.");
+	this.current = arr[position] ;
+	this.entry = this.current ;
+	this.key = this.entry.key ;
+	this.value = this.entry.value ;
 	this.moveNext = function() { 
+		if (++position == arr.length) {
+			this.atEnd = true ;
+		}
 		if(this.atEnd){
-			dojo.raise("dojo.collections.Iterator.moveNext: iterator is at end position.");
+			dojo.raise("dojo.collections.DictionaryIterator.moveNext: iterator is at end position.");
 		}
 		this.entry = this.current = arr[position] ;
 		if (this.entry) {
 			this.key = this.entry.key ;
 			this.value = this.entry.value ;
-		}
-		if (++position == arr.length) {
-			this.atEnd = true ;
 		}
 	} ;
 	this.reset = function() { 
