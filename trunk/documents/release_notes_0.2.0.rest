@@ -8,7 +8,7 @@ Introduction
 
 Dojo 0.2.0 is the second major release of Dojo. Since 0.1.0, more than 70 bugs
 have been fixed, dozens of features added, and over a thousand commits made to
-the project's source control. Major refactorings in many namespaces to make it
+the project's source control. Major refactoring in many namespaces to make it
 even easier to get to the goodies that Dojo makes available.
 
 The full list of closed bugs is available `from the project bug tracker
@@ -36,7 +36,7 @@ Highlights
 - Documentation for many major systems (will be published at
   _`http://manual.dojotoolkit.org`)
 - Numerous fixes for the build and package systems to improve performance and
-  reliaiblity.
+  reliability.
 - New widgets galore:
     * Fisheye list
     * Split pane
@@ -71,7 +71,7 @@ API Stability
 This is an initial release with a "0.x.0" version number. We make no claims for
 forward-looking API stability on the main line, however the following sub-point
 release (0.2.1) should maintain API compatibility with this release. The next
-major release (0.3.0) makes no such garuntees. See the Dojo `bug tracker` for
+major release (0.3.0) makes no such guarantees. See the Dojo `bug tracker` for
 details on anticipated changes.
 
 Known Issues
