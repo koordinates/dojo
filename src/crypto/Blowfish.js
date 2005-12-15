@@ -324,10 +324,16 @@ dojo.crypto.Blowfish = new function(){
 	}
 ////////////////////////////////////////////////////////////////////////////
 //	PUBLIC FUNCTIONS
+//	0.2: Only supporting ECB mode for now.
 ////////////////////////////////////////////////////////////////////////////
-	this.outputTypes={ Base64:0,Hex:1,String:2,Raw:3 };
-	this.encrypt = function(plaintext, key, outputType){
-		var out=outputType||this.outputTypes.Base64;
+	this.encrypt = function(plaintext, key, ao){
+		var out=dojo.crypto.outputTypes.Base64;
+		var mode=dojo.crypto.cipherModes.EBC;
+		if (ao){
+			if (ao.outputType) out=ao.outputType;
+			if (ao.cipherMode) mode=ao.cipherMode;
+		}
+		
 		var bx = init(key);
 		var padding = 8-(plaintext.length & 7);
 		for (var i=0; i<padding; i++) plaintext+=String.fromCharCode(padding);
@@ -358,16 +364,16 @@ dojo.crypto.Blowfish = new function(){
 			pos+=8;
 		}
 		switch(out){
-			case this.outputTypes.Hex:{
+			case dojo.crypto.outputTypes.Hex:{
 				var s=[];
 				for(var i=0; i<cipher.length; i++)
 					s.push((cipher[i]).toString(16));
 				return s.join("");
 			}
-			case this.outputTypes.String:{
+			case dojo.crypto.outputTypes.String:{
 				return cipher.join("");
 			}
-			case this.outputTypes.Raw:{
+			case dojo.crypto.outputTypes.Raw:{
 				return cipher;
 			}
 			default:{
@@ -377,14 +383,19 @@ dojo.crypto.Blowfish = new function(){
 		}
 	};
 
-	this.decrypt = function(ciphertext, key, inputType){
-		var ip = inputType||this.outputTypes.Base64;
+	this.decrypt = function(ciphertext, key, ao){
+		var ip=dojo.crypto.outputTypes.Base64;
+		var mode=dojo.crypto.cipherModes.EBC;
+		if (ao){
+			if (ao.outputType) ip=ao.outputType;
+			if (ao.cipherMode) mode=ao.cipherMode;
+		}
 		var bx = init(key);
 		var pt=[];
 	
 		var c=null;
 		switch(ip){
-			case this.outputTypes.Hex:{
+			case dojo.crypto.outputTypes.Hex:{
 				c=[];
 				var i=0;
 				while (i+1<ciphertext.length){
@@ -393,14 +404,14 @@ dojo.crypto.Blowfish = new function(){
 				}
 				break;
 			}
-			case this.outputTypes.String:{
+			case dojo.crypto.outputTypes.String:{
 				c=[];
 				for (var i=0; i<ciphertext.length; i++){
 					c.push(ciphertext.charCodeAt(i));
 				}
 				break;
 			}
-			case this.outputTypes.Raw:{
+			case dojo.crypto.outputTypes.Raw:{
 				c=ciphertext;	//	should be a byte array
 				break;
 			}
