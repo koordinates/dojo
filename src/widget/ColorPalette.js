@@ -155,7 +155,6 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 			zIndex = 999;
 		}
 		dojo.html.body().appendChild(this.domNode);
-		djConfig.isDebug = true;
 		if(this.bgIframe){
 			with(this.bgIframe.style){
 				display = "block";
