@@ -146,7 +146,7 @@ Methods
 ``moveChildren(srcNode, destNode, trim)``:
 
     Appends children of ``srcNode`` to ``destNode``, optionally removing
-    text nodes at the beginning and end of ``srcNode``s children.
+    text nodes at the beginning and end of ``srcNode``'s children.
 
     ``srcNode``:
         A DOM node.
@@ -160,7 +160,7 @@ Methods
 ``copyChildren(srcNode, destNode, trim)``:
 
     Appends deeply cloned children of ``srcNode`` to ``destNode``, optionally
-    removing text nodes at the beginning and end of ``srcNode``s children.
+    removing text nodes at the beginning and end of ``srcNode``'s children.
 
     ``srcNode``:
         A DOM node.

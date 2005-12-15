@@ -120,8 +120,8 @@ Classes
     *returns*:
         new object of type Foo.
 
-    Properties
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Properties
+~~~~~~~~~~~~~
 
     ``namespace``:
         String. Name of the default namespace for this storage provider.
@@ -131,8 +131,8 @@ Classes
         Boolean. Is the provider ready to accept ``get()`` and ``set()``
         requests?
 
-    Methods
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Methods
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     ``set(key, value, namespace)``:
 

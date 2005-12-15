@@ -26,12 +26,12 @@ Usage
 
 ::
 
-var timePicker = dojo.widget.fromScript("TimePicker", {},  
-dojo.byId("timePickerNode"));
+  var timePicker = dojo.widget.fromScript("TimePicker", {},  
+  dojo.byId("timePickerNode"));
 
-or
+or::
 
-<div dojoType="TimePicker"></div>
+  <div dojoType="TimePicker"></div>
 																		
 
 API Reference
@@ -43,7 +43,7 @@ Properties
 ``time``:
 
     A JavaScript Date object representing the current time, based on the date 
-		of the client computer
+    of the client computer
 
 ``useDefaultTime``:
 
@@ -52,7 +52,7 @@ Properties
 ``useDefaultMinutes``:
 
     A flag, true will set a default time with minutes equal to the current time,
-false will set to 0.  Default is false.
+    false will set to 0.  Default is false.
 
 ``storedTime``:
 

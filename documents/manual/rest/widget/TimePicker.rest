@@ -20,12 +20,12 @@ Usage
 
 ::
 
-var timePicker = dojo.widget.fromScript("TimePicker", {},  
-dojo.byId("timePickerNode"));
+  var timePicker = dojo.widget.fromScript("TimePicker", {},  
+  dojo.byId("timePickerNode"));
 
-or
+or::
 
-<div dojoType="TimePicker"></div>
+  <div dojoType="TimePicker"></div>
 																		
 
 API Reference
