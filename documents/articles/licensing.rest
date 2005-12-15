@@ -57,6 +57,9 @@ The above goals have given rise to the following policies:
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
 
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
+
 Licensing Considerations of the Dojo Foundation
 ===============================================
 

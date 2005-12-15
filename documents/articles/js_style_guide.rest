@@ -326,6 +326,9 @@ C.  Comments
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
 
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
+
 Javascript Programming Conventions
 ==================================
 

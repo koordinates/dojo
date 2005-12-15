@@ -330,6 +330,9 @@ Alex Russell is the project lead for Dojo and can be reached at
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
 
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
+
 Rich Text Editing With Dojo
 ===========================
 

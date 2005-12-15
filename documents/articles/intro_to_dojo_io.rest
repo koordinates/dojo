@@ -329,10 +329,9 @@ Getting Involved with Dojo
 Comitters to Dojo are currently an invite-only group, but that doesn't mean it
 can't include you. If you'd like to contribute to the future of Dojo and
 responsive web applications, do something that impress us (either with Dojo, or
-with JS/DHTML/DSVG in general). Our license is intentionally non-political
-(Academic Free License 2.1) and we support your use of Dojo in software that's
-licensed in other ways, but will not accept differently-licensed patches. We're
-not trying to be exclusive, just productive.
+with JS/DHTML/DSVG in general). Dojo is available under the terms of the AFL
+2.1 or BSD licenses. We support your use of Dojo in software that's licensed in
+other ways, but will not accept differently-licensed patches. 
 
 About The Author
 #########################
@@ -342,6 +341,9 @@ Alex Russell is the project lead for Dojo and  can be reached at
 
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
+
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
 
 dojo.io.bind(): baking usability into XMLHTTP
 =============================================

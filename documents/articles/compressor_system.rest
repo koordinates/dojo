@@ -163,11 +163,14 @@ Dojo build system, as we do today with the compression and package systems.
 About The Author
 #########################
 
-Alex Russell is the project lead for Dojo and  can be reached at
+Alex Russell is the project lead for Dojo and can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. raw:: html
    :file: ../website/rest_template/sidebar.html
+
+.. raw:: html
+   :file: ../website/rest_template/docs_menu.html
 
 Dojo's Compressor
 =================
