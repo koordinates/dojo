@@ -65,8 +65,8 @@ Classes
     *return*:
         new object of type Foo.
 
-    Properties
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Properties
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     ``url``:
         the location of the resource being requested
@@ -119,8 +119,8 @@ Classes
         request should be cached and whether requesting a result for this
         request from the cache is acceptable.
 
-    Methods
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Methods
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     ``handle(type, data, event)``:
         A catch-all handler method that is used when ``load``, ``error`` or
@@ -155,9 +155,8 @@ Classes
 Properties
 ---------------------------------------
 
-``transports``:
-
-		Array of registered transport objects. This is consulted for each
+     ``transports``:
+        Array of registered transport objects. This is consulted for each 
         ``bind`` request and the first transport to accept a particular request
         handles it.
 

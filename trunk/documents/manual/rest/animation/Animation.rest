@@ -53,8 +53,7 @@ Classes
     ``Number duraction``:
         The total time the animation should last, in milliseconds.
 
-    ``Object acceleration``
-    ``Number acceleration``:
+    ``Object acceleration`` or ``Number acceleration``:
         Determines whether or not the animation will speed up, slow down, or
         otherwise change during the course of the animation. It supports two
         types of values:
@@ -72,8 +71,8 @@ Classes
     *returns*:
         new object of type dojo.animation.Animation.
 
-    Properties
-    #####################################
+Properties
+#####################################
 
     ``Object curve``:
         The curve used by the animation to compute coordinate values.
@@ -92,8 +91,8 @@ Classes
         Reference to the ``AnimationSequence`` object that the animation is
         associated with, if any.
 
-    Methods
-    #####################################
+Methods
+#####################################
 
     ``void play(Boolean gotoStart)``:
 
@@ -146,8 +145,8 @@ Classes
         - ``playing``
         - ``stopped``
 
-    Event Handlers
-    #####################################
+Event Handlers
+#####################################
 
     ``onBegin(AnimationEvent event)``:
 

@@ -20,12 +20,12 @@ Usage
 
 ::
 
-var datePicker = dojo.widget.fromScript("DatePicker", {},  
-dojo.byId("datePickerNode"));
+  var datePicker = dojo.widget.fromScript("DatePicker", {},  
+  dojo.byId("datePickerNode"));
 
-or
+or::
 
-<div dojoType="DatePicker"></div>
+  <div dojoType="DatePicker"></div>
 																		
 
 API Reference

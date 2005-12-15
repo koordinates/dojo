@@ -24,8 +24,9 @@ The following several function use the dimensions shown below
 
 .. does this break rest?:
 
-::
-		+-------------------------+
+Box diagram::
+
+    +-------------------------+
     |  margin                 |
     | +---------------------+ |
     | |  border             | |
@@ -43,35 +44,35 @@ The following several function use the dimensions shown below
     |<-------- outer -------->|
     +-------------------------+
 
-    * content-box
+content-box::
 
     |m|b|p|             |p|b|m|
     | |<------ offset ----->| |
     | | |<---- client --->| | |
     | | | |<-- width -->| | | |
 
-    * border-box
+border-box::
 
     |m|b|p|             |p|b|m|
     | |<------ offset ----->| |
     | | |<---- client --->| | |
     | |<------ width ------>| |
 
-	General:
+General:
 		- Uncomputable values are returned as NaN.
 		- setOuterWidth/Height return *false* if the outer size could not be computed, otherwise *true*.
 		- I (sjmiles) know no way to find the calculated values for auto-margins. 
 		- All returned values are floating point in 'px' units. If a non-zero computed style value is not specified in 'px', NaN is returned.
 
-	FF:
+FF:
 		- styles specified as '0' (unitless 0) show computed as '0pt'.
 
-	IE:
+IE:
 		- clientWidth/Height are unreliable (0 unless the object has 'layout').
 		- margins must be specified in px, or 0 (in any unit) for any sizing function to work. Otherwise margins detect as 'auto'.
 		- padding can be empty or, if specified, must be in px, or 0 (in any unit) for any sizing function to work.
 
-	Safari:
+Safari:
 		- Safari defaults padding values to 'auto'.
 
 These work for most elements (e.g. DIV) but not all (e.g. TEXTAREA)
