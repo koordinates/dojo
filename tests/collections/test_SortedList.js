@@ -130,7 +130,7 @@ function test_SortedList_removeAt(){
 	sl.add("buck","shot");
 	sl.add("apple","orange");
 	sl.removeAt(2);
-	jum.assertEquals("SortedList.removeAt", "undefined", sl.item("foo"));
+	jum.assertEquals("SortedList.removeAt", "undefined", sl.item("buck"));
 }
 function test_SortedList_setByIndex(){ 
 	var sl = getSL();
