@@ -266,8 +266,8 @@ Methods
 
     Adds the passed ``className`` to the ``node`` in the highest precedence
     position. Other previously (directly) added classes with conflicting rules
-    will "loose". Directly specified attributes of the ``node``s style property
-    will continue to take precedence in the styling of the ``node``s display.
+    will "loose". Directly specified attributes of the ``node``'s style property
+    will continue to take precedence in the styling of the ``node``'s display.
 
     ``node``:
         A DOM Node.
