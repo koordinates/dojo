@@ -26,6 +26,7 @@ dojo.collections.Iterator = function(a){
 	this.reset = function(){
 		position = 0;
 		this.atEnd = false;
+		this.current = obj[position];
 	}
 }
 
@@ -34,10 +35,10 @@ dojo.collections.DictionaryIterator = function(obj){
 	for (var p in obj) arr.push(obj[p]) ;	//	fill it up
 	var position = 0 ;
 	this.atEnd = (position>=arr.length-1);
-	this.current = arr[position] ;
-	this.entry = this.current ;
-	this.key = this.entry.key ;
-	this.value = this.entry.value ;
+	this.current = arr[position]||null ;
+	this.entry = this.current||null ;
+	this.key = (this.entry)?this.entry.key:null ;
+	this.value = (this.entry)?this.entry.value:null ;
 	this.moveNext = function() { 
 		if (++position>=arr.length) {
 			this.atEnd = true ;
@@ -55,5 +56,9 @@ dojo.collections.DictionaryIterator = function(obj){
 	this.reset = function() { 
 		position = 0 ; 
 		this.atEnd = false ;
+		this.current = arr[position]||null ;
+		this.entry = this.current||null ;
+		this.key = (this.entry)?this.entry.key:null ;
+		this.value = (this.entry)?this.entry.value:null ;
 	} ;
 };
