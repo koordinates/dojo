@@ -1,7 +1,7 @@
 .. title:: Dojo 0.2.0 Release Notes
 
 .. raw:: html
-   :file: website/rest_template/header.html
+   :file: ../website/rest_template/header.html
 
 Introduction
 ------------
@@ -114,6 +114,6 @@ Dojo 0.2.0 Release Notes
 .. contents::
 
 .. raw:: html
-   :file: website/rest_template/footer.html
+   :file: ../website/rest_template/footer.html
 
 .. vim:ts=4:et:tw=0:shiftwidth=4:
