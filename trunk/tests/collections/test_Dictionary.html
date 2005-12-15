@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Crypto Test</title>
+		<title>Dictionary Test</title>
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
@@ -9,15 +9,22 @@
 		</script>
 		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
 		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
-		<script language="JavaScript" type="text/javascript" src="test_crypto.js"></script>
+		<script language="JavaScript" type="text/javascript" src="test_Dictionary.js"></script>
 		<script language="JavaScript" type="text/javascript">
 			function init(){
-				test_crypto_toDWordArray();
-				test_crypto_fromDWordArray();
-				test_crypto_toByteArray();
-				test_crypto_fromByteArray();
-				test_crypto_toBase64();
-				test_crypto_fromBase64();
+				var d = new dojo.collections.Dictionary();
+				d.add("foo","bar");
+				d.add("baz","fab");
+				d.add("buck","shot");
+				d.add("apple","orange");
+
+				var s = [];
+				var e = d.getIterator();
+				while(!e.atEnd){
+					s.push(e.key + " == " + e.value);
+					e.moveNext();
+				}
+				document.getElementsByTagName("body")[0].innerHTML = s.join("<br/>");
 			}
 			dojo.hostenv.modulesLoadedListeners.push(init);
 		</script>
