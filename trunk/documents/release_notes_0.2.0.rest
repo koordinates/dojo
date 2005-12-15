@@ -103,7 +103,7 @@ http://dojotoolkit.org/download/
 .. raw:: html
    :file: website/rest_template/sidebar.html
 
-Dojo 0.1.0 Release Notes
+Dojo 0.2.0 Release Notes
 ================================
 
 :Author: Alex Russell
