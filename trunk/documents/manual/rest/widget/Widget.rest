@@ -8,7 +8,7 @@ dojo.widget.Widget - Base class for all Dojo widget.
 Summary and Overview
 ===============================================================================
 
-Base class for all Dojo widgets. Envirnoment-specific customizations extend this
+Base class for all Dojo widgets. Environment-specific customizations extend this
 base class significantly and very few classes inherit from
 ``dojo.widget.Widget`` directly.
 
