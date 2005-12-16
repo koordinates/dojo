@@ -1,3 +1,4 @@
+dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.MD5");
 
 /*	Return to a port of Paul Johnstone's MD5 implementation
