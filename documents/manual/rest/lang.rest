@@ -41,14 +41,16 @@ Methods
 
 ``mixin(obj, props)``:
 
-    Copies all properties of the 'props' object to the 'obj' object. For example, given
+    Copies all properties of the 'props' object to the 'obj' object. For
+    example, given::
 		
 			var foo = { name: 'foo', a: 20 };
 			var bar = { name: 'bar', b: 60 };
 			var baz = dojo.lang.mixin(foo, bar);
 			
-		foo and baz will reference the same object, and it's properties will be: { name: "bar", a: 20, b: 60 }
-		Properties of the built-in class Object are not copied.
+    ``foo`` and ``baz`` will reference the same object, and it's properties
+    will be: ``{ name: "bar", a: 20, b: 60 }``
+    Properties of the built-in class ``Object`` are not copied.
 		
     ``obj``:
         The object that will receive properties. This object is modified in-place.
@@ -57,23 +59,23 @@ Methods
         The object from which properties are copied. 
 
     *returns*:
-        A reference to the target object 'obj'.
+        A reference to the target object ``obj``.
 				
 ``extend(ctor, props)``:
 
-    Extends class with constructor 'ctor' by copying properties of the 'props' object to the class prototype,  
+    Extends class with constructor ``ctor' by copying properties of the 'props' object to the class prototype,  
 		providing a compact syntax for adding methods or values to a class.
 		
-		For example, given:
+		For example, given::
 		
-  		foo = function() {	};
-			
-		instead of
+                     foo = function() {};
+		
+		instead of::
 		
 		  foo.prototype.name = 'foo';
 			foo.prototype.bar = function() { alert('bar'); };
 			
-		we can write
+		we can write::
 		
 			dojo.lang.extend(foo, { name: 'foo', bar: function() { alert('bar'); } };
 			
