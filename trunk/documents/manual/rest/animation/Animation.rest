@@ -40,7 +40,8 @@ API Reference
 Classes
 ---------------------------------------
 
-``Animation(Object curve, Number duration, Object acceleration, Number repeatCount)``
+``Animation(Object curve, Number duration, Object acceleration, Number repeatCount)``: or
+
 ``Animation(Object curve, Number duration, Number acceleration, Number repeatCount)``:
 
     *Inherits from*:
@@ -141,9 +142,9 @@ Methods
 
         Get the status of the animation object. Possible values are:
 
-        - ``paused``
-        - ``playing``
-        - ``stopped``
+        - ``'paused'``
+        - ``'playing'``
+        - ``'stopped'``
 
 Event Handlers
 #####################################
@@ -179,29 +180,6 @@ Event Handlers
         a one-size-fits all handler. You would then have to look at
         ``event.type`` to figure out which event is being fired.
 
-Properties
----------------------------------------
-
-``foo``:
-
-    A string that has many foo-like propeties. Defaults to "thud".
-
-``bar``:
-
-    Object reference to an instance of ``dojo.namespace.Bar``
-
-Methods
----------------------------------------
-
-``baz(arg1)``:
-
-    describe ``dojo.namespace.baz()`` here.
-
-    ``arg1``:
-        An argument. Like many others, but different in its own special way.
-
-    *returns*:
-        null
 
 Requires
 ===============================================================================
