@@ -333,6 +333,6 @@ dojo.widget.html.DatePicker.util = new function() {
 			year = this.date.getFullYear();
 		}
 		var firstOfMonth = new Date(year, month, 1);
-		return {year: year, month: month, date: 7 - firstOfMonth.getDay()];
+		return {year: year, month: month, date: 7 - firstOfMonth.getDay()};
 	}
 }
