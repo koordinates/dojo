@@ -167,7 +167,7 @@ dojo.event = new function(){
 		return this.connect.apply(this, args);
 	}
 
-	this.kwConnectImpl_ = function(kwArgs, disconnect){
+	this._kwConnectImpl = function(kwArgs, disconnect){
 		var fn = (disconnect) ? "disconnect" : "connect";
 		if(typeof kwArgs["srcFunc"] == "function"){
 			kwArgs.srcObj = kwArgs["srcObj"]||dj_global;
@@ -193,7 +193,7 @@ dojo.event = new function(){
 	}
 
 	this.kwConnect = function(kwArgs){
-		return this.kwConnectImpl_(kwArgs, false);
+		return this._kwConnectImpl(kwArgs, false);
 
 	}
 
@@ -205,7 +205,7 @@ dojo.event = new function(){
 	}
 
 	this.kwDisconnect = function(kwArgs){
-		return this.kwConnectImpl_(kwArgs, true);
+		return this._kwConnectImpl(kwArgs, true);
 	}
 }
 
