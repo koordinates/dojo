@@ -78,5 +78,5 @@ function test_Dictionary_remove(){
 	d.add("apple","orange");
 	d.remove("baz");
 	jum.assertEquals("Dictionary.remove test1", 3, d.count);
-	jum.assertEquals("Dictionary.remove test2", "undefined", d.item("baz"));
+	jum.assertEquals("Dictionary.remove test2", undefined, d.item("baz"));
 }

@@ -121,7 +121,7 @@ function test_SortedList_remove(){
 	sl.add("apple","orange");
 	sl.remove("baz");
 	jum.assertEquals("SortedList.remove test1", 3, sl.count);
-	jum.assertEquals("SortedList.remove test2", "undefined", sl.item("baz"));
+	jum.assertEquals("SortedList.remove test2", undefined, sl.item("baz"));
 }
 function test_SortedList_removeAt(){ 
 	var sl = getSL();
@@ -130,7 +130,7 @@ function test_SortedList_removeAt(){
 	sl.add("buck","shot");
 	sl.add("apple","orange");
 	sl.removeAt(2);
-	jum.assertEquals("SortedList.removeAt", "undefined", sl.item("buck"));
+	jum.assertEquals("SortedList.removeAt", undefined, sl.item("buck"));
 }
 function test_SortedList_setByIndex(){ 
 	var sl = getSL();
