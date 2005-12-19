@@ -40,21 +40,21 @@ API Reference
 Classes
 ---------------------------------------
 
-``Animation(Object curve, Number duration, Object acceleration, Number repeatCount)``: or
+``Animation(curve, duration, acceleration, repeatCount)``: or
 
-``Animation(Object curve, Number duration, Number acceleration, Number repeatCount)``:
+``Animation(curve, duration, acceleration, repeatCount)``:
 
     *Inherits from*:
         nothing
 
-    ``Object curve``:
+    ``curve``:
         A curve object that supports a ``getValue`` method. See
         ``dojo.math.curves`` for example curves.
 
-    ``Number duraction``:
+    ``duraction``:
         The total time the animation should last, in milliseconds.
 
-    ``Object acceleration`` or ``Number acceleration``:
+    ``acceleration``:
         Determines whether or not the animation will speed up, slow down, or
         otherwise change during the course of the animation. It supports two
         types of values:
@@ -65,8 +65,8 @@ Classes
         - *Number* - a numeric value from -1 (max deceleration) to 1 (max
           acceleration), inclusive. A value of 0 means no acceleration.
 
-    ``Number repeatCount``:
-        If set, determines the number of times the animation will repeat when
+    ``repeatCount``:
+        Optional. Determines the number of times the animation will repeat when
         you play it. Defaults to 0. A value of -1 will repeat forever.
 
     *returns*:
@@ -75,70 +75,66 @@ Classes
 Properties
 #####################################
 
-    ``Object curve``:
+    ``curve``:
         The curve used by the animation to compute coordinate values.
 
-    ``Number duration``:
+    ``duration``:
         The total time the animation should last, in milliseconds.
 
-    ``Object accel``:
+    ``accel``:
         Acceleration curve used to determine acceleration. (Note: this should
         only be set to a numeric value (-1 to 1, inclusive) in the constructor.)
 
-    ``Number repeatCount``:
-        Set the numer of times the animation should repeat.
-
-    ``Object _animSequence``:
-        Reference to the ``AnimationSequence`` object that the animation is
-        associated with, if any.
+    ``repeatCount``:
+        Set the number of times the animation should repeat.
 
 Methods
 #####################################
 
-    ``void play(Boolean gotoStart)``:
+    ``play(gotoStart)``:
 
         Plays an animation either from the beginning or from where it was
         paused.
 
-        ``Boolean gotoStart``:
-            If ``true``, plays the animations from the beginning, otherwise it
+        ``gotoStart``:
+            Optional. If ``true``, plays the animation from the beginning, otherwise it
             plays it from where it left off. If the animation has never been
             played, or it has been played to completion, ``play`` will start at
             the beginning regardless of the value of ``gotoStart``.
 
-    ``void pause()``:
+    ``pause()``:
 
         Pauses an animation if it is playing.
 
-    ``void playPause()``:
+    ``playPause()``:
 
         Plays or pauses an animation. If the animation is currently playing, it
         pauses the animation. If the animation is currently paused or stopped,
         it plays the animation.
 
-    ``void gotoPercent(Number pct, Boolean andPlay)``:
+    ``gotoPercent(pct, andPlay)``:
 
         Jump to an arbitrary place in the animation.
 
-        ``Number pct``:
+        ``pct``:
             A decimal value between 0 and 100 inclusive that you want the
             animation to jump to.
 
-        ``Boolean andPlay``:
-            If ``true``, play the animation after jumping to ``pct``. Otherwise,
+        ``andPlay``:
+            Optional. If ``true``, play the animation after jumping to ``pct``. Otherwise,
             the animation will be in the paused state, regardless of the state
             it was in before the call to ``gotoPercent``.
 
-    ``void stop(Boolean gotoEnd)``:
+    ``stop(gotoEnd)``:
 
         Stop the current animation if it is playing.
 
-        ``Boolean gotoEnd``:
-            If ``true``, the AnimationEvent will return coordinates for the end
+        ``gotoEnd``:
+            Optional. If ``true``, the AnimationEvent will return coordinates for the end
             position in the animation, otherwise the coordinates for the current
             position in the animation will be sent.
 
-    ``String status()``:
+    ``status()``:
 
         Get the status of the animation object. Possible values are:
 
@@ -149,37 +145,184 @@ Methods
 Event Handlers
 #####################################
 
-    ``onBegin(AnimationEvent event)``:
+    ``onBegin(animationEvent)``:
 
         Called when an animation begins playing from the start.
 
-    ``onAnimate(AnimationEvent event)``:
+    ``onAnimate(animationEvent)``:
 
         Called every "frame" of the animation.
 
-    ``onEnd(AnimationEvent event)``:
+    ``onEnd(animationEvent)``:
 
         Called when an animation ends playing.
 
-    ``onPlay(AnimationEvent event)``:
+    ``onPlay(animationEvent)``:
 
         Called when an animation begins playing from the start or is resumed
         from the paused state.
 
-    ``onPause(AnimationEvent event)``:
+    ``onPause(animationEvent)``:
 
         Called when a playing animation is paused.
 
-    ``onStop(AnimationEvent event)``:
+    ``onStop(animationEvent)``:
 
         Called when an animation is stopped via ``stop()``
 
-    ``handler(AnimationEvent event)``:
+    ``handler(animationEvent)``:
 
         Called along with any of the other event handlers. This can be used for
         a one-size-fits all handler. You would then have to look at
         ``event.type`` to figure out which event is being fired.
 
+``AnimationSequence(repeatCount)``:
+
+    ``repeatCount``:
+        Optional. The number of times you want the sequence to repeat. Defaults
+        to 0.
+
+Properties
+#####################################
+
+    ``repeatCount``:
+        The number of times you want the sequence to repeat.
+
+Methods
+#####################################
+
+    ``add(...)``:
+
+        Add ``Animation`` object arguments to the sequence in the order they are
+        listed.
+
+    ``remove(anim)``:
+
+        Removes the ``Animation`` object that matches ``anim``.
+
+    ``removeAll()`` or
+
+    ``clear()``:
+
+        Clears out the ``AnimationSequence``.
+
+    ``play(gotoStart)``:
+
+        Starts the ``AnimationSequence`` from the beginning if stopped or
+        resumes if paused.
+
+        ``gotoStart``:
+            Optional. If ``true``, plays the ``Animation`` from the beginning, otherwise it
+            plays it from where it left off. If the ``Animation`` has never been
+            played, or it has been played to completion, ``play`` will start at
+            the beginning regardless of the value of ``gotoStart``.
+
+    ``pause()``:
+
+        Pauses the current ``Animation`` running.
+
+    ``playPause()``:
+
+        If paused or stopped, resume playing the current ``Animation``. If playing,
+        pause the current ``Animation``.
+
+    ``stop()``:
+
+        Stop the currently running ``Animation``.
+
+    ``status()``:
+
+        Return the status of the currently running ``Animation``.
+
+Event Handlers
+#####################################
+
+    ``animationSequenceEvent`` is an object with the following properties:
+
+        ``type``:
+
+            Denotes the type of event. Possible values are ``"begin"``,
+            ``"next"``, or ``"end"``.
+
+        ``animation``:
+
+            Refers to the ``Animation`` object currently running.
+
+    ``onBegin(animationSequenceEvent)``:
+
+        Called when the first ``Animation`` begins.
+
+    ``onEnd(animationSequenceEvent)``:
+
+        Called when the last ``Animation`` ends.
+
+    ``onNext(animationSequenceEvent)``:
+
+        Called when one ``Animation`` ends before the next ``Animation`` begins.
+
+    ``handler(animationSequenceEvent)``:
+
+        Called along with any of the other event handlers. This can be used for
+        a one-size-fits all handler. You would then have to look at
+        ``event.type`` to figure out which event is being fired.
+
+``AnimationEvent(anim, type, coords, sTime, cTime, eTime, dur, pct, fps)``:
+
+    Used to create events for ``Animation`` objects. (Note:
+    ``AnimationSequence`` does not use the ``AnimationEvent`` for its events.)
+
+    See Properties below for description of arguments.
+
+    *Inherits from*:
+        nothing
+
+    *returns*:
+        new object of type ``dojo.animation.AnimationEvent``.
+
+Properties
+#####################################
+
+    ``type``:
+        String type of animation event. Possible values are: ``"animate"``,
+        ``"begin"``, ``"end"``, ``"play"``, ``"pause"``, or ``"stop"``.
+
+    ``animation``:
+        ``Animation`` object that event is associated with.
+
+    ``coords``:
+        Coordinate array of values at the given time in the animation.
+
+    ``x``:
+        Shortcut to ``coords[0]``
+
+    ``y``:
+        Shortcut to ``coords[1]``
+
+    ``z``:
+        Shortcut to ``coords[2]``
+
+    ``startTime``:
+        When the animation started.
+
+    ``endTime``:
+        When the animation will stop.
+
+    ``duration``:
+        How long the animation will run (in milliseconds).
+
+    ``percent``:
+        Percent of animation completed (0 - 100).
+
+    ``fps``:
+        Currently running frames per second.
+
+Methods
+#####################################
+
+    ``coordsAsInts()``:
+
+        Return a copy of the ``coords`` array with all the values rounded to
+        integer values.
 
 Requires
 ===============================================================================
