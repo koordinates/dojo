@@ -158,23 +158,23 @@ dojo.addOnLoad(Picker, "init");
 			</td>
 			<td id="picker-content">
 				<div class="content selected" id="dl-ajax">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.0/dojo-0.2.0-ajax.zip">Download 0.2 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-ajax.zip">Download 0.2 (zip)</a></div>
 					<p>The AJAX edition makes creating applications with <strong>async I/O</strong> (XmlHttp), perform top-notch <strong>visual effects</strong> and tie it all together with an aspect-oriented <strong>event system</strong> to create your next web application.</p>
 				</div>
 				<div class="content" id="dl-io">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.0/dojo-0.2.0-browserio.zip">Download 0.2 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-browserio.zip">Download 0.2 (zip)</a></div>
 					<p>Just need a kick-ass XmlHttp layer? The I/O edition is built with <CODE>dojo.io.bind</CODE> for all your async needs.</p>
 				</div>
 				<div class="content" id="dl-evio">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.0/dojo-0.2.0-event_and_io.zip">Download 0.2 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-event_and_io.zip">Download 0.2 (zip)</a></div>
 					<p>Go for the one-two punch with our aspect-oriented event system and robust XmlHttp layer.</p>
 				</div>
 				<div class="content" id="dl-widgets">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.0/dojo-0.2.0-widgets.zip">Download 0.2 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-widgets.zip">Download 0.2 (zip)</a></div>
 					<p>Make web widgets fun again. No other widget system provides HTML &amp; CSS templating capabilities with loose coupling to the widget implementation. Take "separating style, content, and logic" to a whole new level.</p>
 				</div>
 				<div class="content" id="dl-sink">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.0/dojo-0.2.0-kitchen_sink.zip">Download 0.2 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-kitchen_sink.zip">Download 0.2 (zip)</a></div>
 					<p>This build includes all of the Dojo libraries rolled into a single file so you don't have to think about what to include. A great way to get up-and-running fast.</p>
 				</div>
 			</td>
