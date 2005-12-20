@@ -394,7 +394,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	for(var i = 0; i < candidateNodes.length; i++) {
 		var node = candidateNodes[i];
 		var nodeClasses = dojo.html.getClasses(node);
-		if(nodesClasses.length == 0) { continue outer; }
+		if(nodeClasses.length == 0) { continue outer; }
 		var matches = 0;
 
 		for(var j = 0; j < nodeClasses.length; j++) {
