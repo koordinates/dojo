@@ -295,8 +295,8 @@ Methods
 ``pad(str, len, char, direction)``:
     
     Pad ``str`` to guarantee that it is at least ``len`` length with the
-    character ``char`` at either the start (``direction``=1) or end
-    (``direction``=-1) of the string.
+    character ``char`` at either the start (``direction=1``) or end
+    (``direction=-1``) of the string.
 
     ``str``:
         String.

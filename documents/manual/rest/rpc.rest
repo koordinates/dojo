@@ -8,7 +8,7 @@ dojo.rpc.* - RPC APIs for JavaScript
 Summary and Overview
 ===============================================================================
 
-``dojo.rpc` provides JSON-RPC using a simple JavaScript definition of the
+``dojo.rpc`` provides JSON-RPC using a simple JavaScript definition of the
 available itnerfaces to construct an object whose methods return values from a
 remote function asynchronously.
 
@@ -124,7 +124,7 @@ Requires
 - `dojo.json`_
 - `dojo.lang`_
 
-.. _`dojo.io`: 		io.html
+.. _`dojo.io.*`: 		io.html
 .. _`dojo.json`:	json.html
 .. _`dojo.lang`:	lang.html
 
@@ -132,7 +132,7 @@ Provides
 ===============================================================================
 
 dojo.rpc.JsonService
-    Class constructor that allows ``JsonService``s to be created
+    Class constructor that allows ``JsonService`` instances to be created
 
 To Do
 ===============================================================================
