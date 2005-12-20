@@ -4,22 +4,6 @@ dojo.provide("dojo.event");
 dojo.event = new function(){
 	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
 
-	this.createFunctionPair = function(obj, cb) {
-		var ret = [];
-		if(typeof obj == "function"){
-			ret[1] = dojo.lang.nameAnonFunc(obj, dj_global);
-			ret[0] = dj_global;
-			return ret;
-		}else if((typeof obj == "object")&&(typeof cb == "string")){
-			return [obj, cb];
-		}else if((typeof obj == "object")&&(typeof cb == "function")){
-			ret[1] = dojo.lang.nameAnonFunc(cb, obj);
-			ret[0] = obj;
-			return ret;
-		}
-		return null;
-	}
-
 	// FIXME: where should we put this method (not here!)?
 	function interpolateArgs(args){
 		var ao = {
