@@ -302,6 +302,15 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 	return null;
 }
 
+dojo.dom.prependChild = function(node, parent) {
+	if(parent.firstChild) {
+		parent.insertBefore(node, parent.firstChild);
+	} else {
+		parent.appendChild(node);
+	}
+	return true;
+}
+
 dojo.dom.insertBefore = function(node, ref, force){
 	if (force != true &&
 		(node === ref || node.nextSibling === ref)){ return false; }
