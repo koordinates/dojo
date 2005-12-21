@@ -1,0 +1,220 @@
+.. title:: dojo.* -- The Dojo Manual
+
+.. this is a comment. for more information on reST, see:
+   http://docutils.sf.net/docs/user/rst/quickstart.html
+   http://docutils.sf.net/docs/user/rst/quickref.html
+
+**THIS IS UNREVIEWED DOCUMENTATION -- DO NOT TRUST IT**
+
+Name
+===============================================================================
+
+dojo.* - utility routines which are always available in dojo.
+
+Summary and Overview
+===============================================================================
+
+When dojo.js is included, some functions are always available.  They include
+debugging aids, version information, etc.
+
+Usage
+===============================================================================
+
+::
+
+    dojo.debug("The current version of dojo is: ", dojo.version.toString());
+
+
+API Reference
+===============================================================================
+
+.. contents:: Table of Contents
+   :depth: 2
+  
+The ``render`` object
+------------------------
+
+The ``dojo.render`` object contains information about the environment that dojo is operating under.
+
+
+Properties
+~~~~~~~~~~~
+
+``dojo.render.name``:
+
+    The name of the hosting environment (e.g. XXX)
+    
+``dojo.render.os``:
+
+    An object which describes the operating system.  It has properties which are booleans: ``windows``, ``linux``, ``mac``, ``osx``.
+    
+``dojo.render.ver``:
+
+    The same thing as ``dojo.version``.
+    
+``dojo.render.html``:
+
+    An object which describes the browser capabilities of the current hosting enviroment.  It has its own properties derived from the User-Agent:
+    
+    ``capable``:
+    
+        true if the hosting environment is capable of rendering HTML
+    
+        true if the User-Agent indicates a mozilla browser
+
+    ``safari``:
+    
+        true if the User-Agent indicates Apple's Safari browser
+
+    ``ie``:
+    
+        true if the User-Agent indicates Internet Explorer
+
+    ``khtml``:
+    
+        true if the User-Agent indicates a KHTML browser (e.g. Konqueror)
+
+    ``opera``:
+    
+        true if the User-Agent indicates the Opera browser 
+
+``dojo.render.svg``, ``dojo.render.vml``,
+``dojo.render.swf``, ``dojo.render.swt``:
+
+    Object which describes the SVG, VML, SWF and SWT capabilities of the current hosting environment.  Each has a property:
+    
+    ``capable``:
+    
+        true if the environment can render SVG, VML, SWF, or SWT respectively. For example::
+
+            if (dojo.render.swf.capable) { ... } 
+
+
+The ``version`` object
+---------------------------------------
+
+The ``dojo.version`` object is a singleton object which describes the version of the dojo library in use.
+
+Properties
+~~~~~~~~~~~~~~~
+
+``major``, ``minor``, ``patch``, ``flag``:
+
+    The major, minor, patch numbers, and any eventual flag (beta, alpha, etc.) corresponding to the current
+    version (``flag`` is a String, all the others are Numbers).
+
+``revision``:
+
+    a Number corresponding to the Subversion revision number.  This
+    is useful for identifying builds which don't correspond to official
+    builds but are pulled from Subversion.
+    
+Methods
+~~~~~~~~~~~~~~~
+
+``toString()``:
+
+    The ``toString()`` method returns a string representation of the
+    current version, e.g. ``"2.1.0 (2495)"``.
+
+The ``hostenv`` object
+------------------------
+
+Methods
+~~~~~~~~
+
+``modulesLoaded()``:
+
+    XXX
+    
+``moduleLoaded(modulename)``:
+
+    XXX
+    
+``loadModule(modulename)``:
+
+    XXX
+    
+
+
+Global Functions
+---------------------------------------
+
+``addOnLoad(functionPointer)`` and ``addOnLoad(object, "functionName")``:
+
+    add a function object to the list of functions that are called when the
+    document gets loaded (as part of the ``onload`` handler).
+
+``evalObjPath(objpath, create)``:
+
+    evaluate a string like "A.B" without using eval.
+
+``errorToString(exception)``:
+
+    utility to print an Error. 
+
+``raise(message, exception)``:
+
+    Throws an Error object given the string err. For now, will also do a println to the user first.
+
+``debug(*args)``:
+
+    This function does nothing if ``djConfig.isDebug`` is not true.  Thus it's a good idea to have in your HTML page, prior to the inclusion of dojo.js, a line like::
+    
+        <script type="text/javascript">
+            var djConfig = {isDebug: true, debugAtAllCosts: true};
+        </script>
+    
+    and to comment it or uncomment it depending on whether you want debugging comments to show up.  The caller should not supply a trailing "\n".
+
+``debugShallow(object)``:
+
+    This function prints out a list of all of the properties of ``object`` using the ``dojo.debug`` mechanism.
+    
+``unimpemented(funcname, extras)``:
+
+    Convenience for throwing an exception because some
+    function is not implemented.
+
+``deprecated(behaviour, extra, removal)``:
+
+    Convenience for informing of deprecated behavior.  ``extra`` and ``removal`` are optional, and ``removal`` should refer to a specific future version of Dojo (e.g. ``"0.3"``).
+    
+``inherits(subclass, superclass)``:
+
+    Make ``subclass`` inherit from ``superclass`` using the necessary JavaScript prototype hooks.
+
+
+Requires
+===============================================================================
+
+Nothing.
+
+Provides
+===============================================================================
+
+dojo.version
+    an object describing the current version
+    
+dojo.render
+    an object describing the hosting environment
+    
+dojo.debug
+    a utility function to aid debugging
+    
+
+
+To Do
+===============================================================================
+
+Someone who knows about the code in depth should review this page, to verify the comments and to make sure that deprecated usage is *not* documented.
+
+About
+===============================================================================
+
+:Author: David Ascher
+:Version: 0.1
+:Copyright: Dojo Foundation, 2005
+:Date: 2005/12/20
+
+.. vim:ts=4:et:tw=80:shiftwidth=4:
