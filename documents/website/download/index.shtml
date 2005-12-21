@@ -170,7 +170,7 @@ dojo.addOnLoad(Picker, "init");
 					<p>Go for the one-two punch with our aspect-oriented event system and robust XmlHttp layer.</p>
 				</div>
 				<div class="content" id="dl-widgets">
-					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-widgets.zip">Download 0.2 (zip)</a></div>
+					<div class="download"><a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-widget.zip">Download 0.2 (zip)</a></div>
 					<p>Make web widgets fun again. No other widget system provides HTML &amp; CSS templating capabilities with loose coupling to the widget implementation. Take "separating style, content, and logic" to a whole new level.</p>
 				</div>
 				<div class="content" id="dl-sink">
