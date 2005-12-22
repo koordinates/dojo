@@ -265,25 +265,36 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 	var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
 	var typeScroll = (type=="top") ? "scrollTop" : "scrollLeft";
 	
-	var alt = (type=="top") ? "y" : "x";
-	var ret = 0;
+	var coord = (type=="top") ? "y" : "x";
+	var offset = 0;
 	if(node["offsetParent"]){
 		
+		// in Safari, if the node is an absolutly positioned child of the body
+		// and the body has a margin the offset of the child and the body
+		// contain the body's margins, so we need to end at the body
+		if (dojo.render.html.safari
+			&& node.style.getPropertyValue("position") == "absolute"
+			&& node.parentNode == dojo.html.body())
+		{
+			var endNode = dojo.html.body();
+		} else {
+			var endNode = dojo.html.body().parentNode;
+		}
+		
 		if(includeScroll && node.parentNode != document.body) {
-		  ret -= dojo.style.sumAncestorProperties(node, typeScroll);
+			offset -= dojo.style.sumAncestorProperties(node, typeScroll);
 		}
 		// FIXME: this is known not to work sometimes on IE 5.x since nodes
 		// soemtimes need to be "tickled" before they will display their
 		// offset correctly
 		do {
-			ret += node[typeStr];
+			offset += node[typeStr];
 			node = node.offsetParent;
-		} while (node != document.getElementsByTagName("body")[0].parentNode && node != null);
-		
-	}else if(node[alt]){
-		ret += node[alt];
+		} while (node != endNode && node != null);
+	}else if(node[coord]){
+		offset += node[coord];
 	}
-	return ret;
+	return offset;
 }
 
 dojo.style.sumAncestorProperties = function (node, prop) {
