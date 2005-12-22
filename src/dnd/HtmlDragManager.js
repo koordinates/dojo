@@ -118,10 +118,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	onMouseDown: function(e){
 		if(this.disabled) { return; }
-		
+
+		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
+			e.target.parentNode : e.target;
+
 		// do not start drag involvement if the user is interacting with
 		// a form element.
-		switch(e.target.tagName.toLowerCase()) {
+		switch(target.tagName.toLowerCase()) {
 			case "a": case "button": case "textarea":
 			case "input":
 				return;
