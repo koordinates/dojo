@@ -35,8 +35,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	extractContent: true,
 	parseContent: true,
 	resizable: false,
-	fancyTitleBar: true,
-
+	titleBarDisplay: "fancy",
 	isContainer: true,
 	containerNode: null,
 	domNode: null,
@@ -49,6 +48,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
 	isDragging: false,
+
+	addChild: function(child) {
+		//alert("Adding Child to Floating Pane: " + child.widgetType);
+		this.clientPane.addChild(child);
+	},
 
 	fillInTemplate: function(){
 
@@ -66,28 +70,30 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.clientPane = this.createPane(clientDiv, {layoutAlign: "client", url: this.url, id:this.widgetId+"_client"});
 		delete this.url;
 
-		// this is our chrome
-		var chromeDiv = document.createElement('div');
-		//chromeDiv.style.height="15px";
-		dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
-		this.dragBar = this.createPane(chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
-		dojo.html.disableSelection(this.dragBar.domNode);
-
-		if( this.fancyTitleBar ){
-			// image background to get gradient
-			var img = document.createElement('img');
-			img.src = this.titleBarBackground,
-			dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
-			var backgroundPane = dojo.widget.fromScript("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
-			this.dragBar.addPane(backgroundPane);
-		}
-		var title = document.createElement("div");
-		dojo.html.addClass(title, 'dojoFloatingPaneTitle');
-		dojo.html.disableSelection(title);
-		title.appendChild(document.createTextNode(this.title));
-		chromeDiv.appendChild(title);
+		if (this.titleBarDisplay != "none") {
+			// this is our chrome
+			var chromeDiv = document.createElement('div');
+			//chromeDiv.style.height="15px";
+			dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
+			this.dragBar = this.createPane(chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
+			dojo.html.disableSelection(this.dragBar.domNode);
 		
-		dojo.event.connect(this.dragBar.domNode, 'onmousedown', this, 'onMyDragStart');
+			if( this.titleBarDisplay == "fancy"){
+				// image background to get gradient
+				var img = document.createElement('img');
+				img.src = this.titleBarBackground,
+				dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
+				var backgroundPane = dojo.widget.fromScript("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
+				this.dragBar.addChild(backgroundPane);
+			}
+			var title = document.createElement("div");
+			dojo.html.addClass(title, 'dojoFloatingPaneTitle');
+			dojo.html.disableSelection(title);
+			title.appendChild(document.createTextNode(this.title));
+			chromeDiv.appendChild(title);
+		
+			dojo.event.connect(this.dragBar.domNode, 'onmousedown', this, 'onMyDragStart');
+		}
 
 		if ( this.resizable ) {
 			// add the resize handle
@@ -196,7 +202,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	createPane: function(node, args){
 		var pane = dojo.widget.fromScript("LayoutPane", args, node);
-		this.addPane(pane);
+		//this.addChild(pane);
+		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
 		pane.ownerPane=this;
 		return pane;
 	},

@@ -267,13 +267,12 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		return dojo.lang.inArray(['left','right','top','bottom','client', 'flood'], child.layoutAlign);
 	},
 
-	addPane: function(pane){
-
-		pane.domNode.style.position = 'absolute';
-		pane.isChild = true;
-
-		this.addChild(pane);
-
+	addChild: function(child){
+		if ( this.hasLayoutAlign(child) ){
+			child.domNode.style.position = 'absolute';
+			child.isChild = true;	
+		}
+		dojo.widget.html.LayoutPane.superclass.addChild.call(this,child)
 		this.resizeSoon();
 	},
 

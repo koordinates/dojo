@@ -50,7 +50,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 			{ layoutAlign: "client" },
 			this.textAreaContainerNode
 		);
-		this.rootLayout.addPane(this.textAreaContainer);
+		this.rootLayout.addChild(this.textAreaContainer);
 
 		this.textAreaContainer.domNode.appendChild(this.textAreaNode);
 		with(this.textAreaNode.style){
@@ -66,7 +66,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 			},
 			this.statusBarContainerNode
 		);
-		this.rootLayout.addPane(this.statusBar);
+		this.rootLayout.addChild(this.statusBar);
 
 		this.statusLabel = dojo.widget.fromScript(
 			"LayoutPane",
@@ -76,14 +76,14 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 			},
 			this.statusLabelNode
 		);
-		this.statusBar.addPane(this.statusLabel);
+		this.statusBar.addChild(this.statusLabel);
 
 		this.resizeHandle = dojo.widget.fromScript(
 			"ResizeHandle", 
 			{ targetElmId: this.rootLayout.widgetId },
 			this.resizeHandleNode
 		);
-		this.statusBar.addPane(this.resizeHandle);
+		this.statusBar.addChild(this.resizeHandle);
 		// dojo.debug(this.rootLayout.widgetId);
 
 		// dojo.event.connect(this.resizeHandle, "beginSizing", this, "hideContent");

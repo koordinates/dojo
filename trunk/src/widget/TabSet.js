@@ -46,7 +46,7 @@ dojo.lang.extend(dojo.widget.html.TabSet, {
 		dojo.html.addClass(this.ul, "tabs");
 		dojo.html.addClass(this.ul, this.labelPosition);
 		this.labelPanel.domNode.appendChild(this.ul);
-		this.addPane(this.labelPanel);
+		this.addChild(this.labelPanel);
 	},
 
 	registerChild: function(child, insertionIndex){
