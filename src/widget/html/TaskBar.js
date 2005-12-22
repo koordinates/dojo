@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.html.TaskBarItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toggler");
+dojo.require("dojo.widget.FloatingPane");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event");
 
@@ -20,7 +21,6 @@ dojo.lang.extend(dojo.widget.html.TaskBarItem, {
 	task: null,
 	iconWidth: 18,
 	iconHeight: 18,
-
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTaskBarItemTemplate.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTaskBar.css"),
 
@@ -47,10 +47,13 @@ dojo.lang.extend(dojo.widget.html.TaskBarItem, {
 
 // Collection of widgets in a bar, like Windows task bar
 dojo.widget.html.TaskBar = function(){
+
+	dojo.widget.html.FloatingPane.call(this);
 	dojo.widget.TaskBar.call(this);
-	dojo.widget.HtmlWidget.call(this);
+	this.titleBarDisplay = "none";
 }
-dojo.inherits(dojo.widget.html.TaskBar, dojo.widget.HtmlWidget);
+
+dojo.inherits(dojo.widget.html.TaskBar, dojo.widget.html.FloatingPane);
 
 dojo.lang.extend(dojo.widget.html.TaskBar, {
 });
