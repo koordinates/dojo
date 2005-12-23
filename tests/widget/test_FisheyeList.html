@@ -34,7 +34,8 @@
 >
 
 	<div dojoType="FisheyeListItem"
-		onclick="alert('click on 1!');"
+		id="item1"
+		onclick="alert('click on' + this.caption + '(from widget id ' + this.widgetId + ')!');"
 		caption="Item 1"
 		iconsrc="images/fisheye_1.png">
 	</div>
@@ -83,7 +84,8 @@
 >
 
 	<div dojoType="FisheyeListItem"
-		onclick="alert('click on 1!');"
+		id="item1b"
+		onclick="alert('click on' + this.caption + '(from widget id ' + this.widgetId + ')!');"
 		caption="Item 1"
 		iconsrc="images/fisheye_1.png">
 	</div>
