@@ -222,6 +222,13 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		// FIXME: need to get/assign DOM node names for form participation here.
 		this.comboBoxValue.name = this.name;
 		this.comboBoxSelectionValue.name = this.name+"_selected";
+		
+		// NOTE: this doesn't copy style info inherited from classes;
+		// it's just primitive support for direct style setting
+		var sourceNodeStyle = this.getFragNodeRef(frag).style;
+		if ( sourceNodeStyle ){
+			this.domNode.style.cssText = sourceNodeStyle.cssText;
+		}
 
 		// FIXME: add logic
 		this.dataProvider = new dojo.widget.ComboBoxDataProvider();
