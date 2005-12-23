@@ -1,4 +1,4 @@
-<div style="position: relative;">
+<div style="position: relative; z-index: 100;">
 	<input type="hidden" name="" value="" 
 		dojoAttachPoint="comboBoxValue">
 	<input type="hidden" name="" value="" 
@@ -26,8 +26,9 @@
 			</td>
 		</tr>
 	</table>
-	<div class="comboBoxOptions" dojoAttachPoint="optionsListNode"
-		dojoAttachEvent="onClick: selectOption"
-		style="display: none; position: absolute; cursor: default; z-index: 900;">
+	<div dojoAttachPoint="optionsListWrapper" style="position:relative;">
+		<div class="comboBoxOptions" dojoAttachPoint="optionsListNode"
+			dojoAttachEvent="onClick: selectOption" style="display:none;">
+		</div>
 	</div>
 </div>

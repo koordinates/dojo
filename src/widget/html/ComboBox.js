@@ -18,6 +18,7 @@ dojo.widget.html.ComboBox = function(){
 	this.textInputNode = null;
 	this.comboBoxValue = null;
 	this.comboBoxSelectionValue = null;
+	this.optionsListWrapper = null;
 	this.optionsListNode = null;
 	this.downArrowNode = null;
 	this.cbTableNode = null;
@@ -265,6 +266,9 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 		// Prevent IE bleed-through problem
 		this.bgIframe = new dojo.html.BackgroundIframe();
+		if(this.bgIframe.iframe){
+			this.optionsListWrapper.appendChild(this.bgIframe.iframe);
+		}
 	},
 
 	openResultList: function(results){
@@ -313,14 +317,15 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	},
 
 	showBackgroundIframe: function(){
-		
-		var x = dojo.style.getAbsoluteX(this.optionsListNode);
-		var y = dojo.style.getAbsoluteY(this.optionsListNode);
-		var w= dojo.style.getOuterWidth(this.optionsListNode);
+		var w = dojo.style.getOuterWidth(this.optionsListNode);
 		var h = dojo.style.getOuterHeight(this.optionsListNode);
-		this.bgIframe.show([x,y,w,h]);
-		this.bgIframe.show(this.optionsListNode);
-		this.bgIframe.setZIndex(this.optionsListNode);
+		if ( isNaN(w) || isNaN(h) ){
+			// need more time to calculate size
+			dojo.lang.setTimeout(this, "showBackgroundIframe", 100);
+			return;
+		}
+		this.bgIframe.show([0,0,w,h]);
+		this.bgIframe.setZIndex(1);
 	},
 
 	selectOption: function(evt){
@@ -371,11 +376,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			width = dojo.html.getInnerWidth(this.downArrowNode)+dojo.html.getInnerWidth(this.textInputNode)+"px";
 			if(dojo.render.html.khtml){
 				marginTop = dojo.html.totalOffsetTop(this.optionsListNode.parentNode)+"px";
-			/*
-				left = dojo.html.totalOffsetLeft(this.optionsListNode.parentNode)+3+"px";
-				zIndex = "1000";
-				position = "relative";
-			*/
 			}
 		}
 		dojo.html.setOpacity(this.optionsListNode, 0);
