@@ -262,6 +262,9 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 				this.dataProvider.setData(data);
 			}
 		}
+
+		// Prevent IE bleed-through problem
+		this.bgIframe = new dojo.html.BackgroundIframe();
 	},
 
 	openResultList: function(results){
@@ -297,7 +300,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			this.optionsListNode.appendChild(td);
 		}
 
-		dojo.event.connect(this.optionsListNode, "onclick", this, "selectOption");
 		dojo.event.kwConnect({
 			once: true,
 			srcObj: dojo.html.body(),
@@ -305,7 +307,20 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			adviceObj: this, 
 			adviceFunc: "hideResultList"
 		});
-		// dojo.event.connect(dojo.html.body(), "onclick", this, "hideResultList");
+
+		// prevent IE bleed through
+		dojo.lang.setTimeout(this, "showBackgroundIframe", 100);
+	},
+
+	showBackgroundIframe: function(){
+		
+		var x = dojo.style.getAbsoluteX(this.optionsListNode);
+		var y = dojo.style.getAbsoluteY(this.optionsListNode);
+		var w= dojo.style.getOuterWidth(this.optionsListNode);
+		var h = dojo.style.getOuterHeight(this.optionsListNode);
+		this.bgIframe.show([x,y,w,h]);
+		this.bgIframe.show(this.optionsListNode);
+		this.bgIframe.setZIndex(this.optionsListNode);
 	},
 
 	selectOption: function(evt){
@@ -343,6 +358,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		dojo.fx.fadeHide(this.optionsListNode, 200);
 		dojo.event.disconnect(dojo.html.body(), "onclick", this, "hideResultList");
 		this._result_list_open = false;
+		this.bgIframe.hide();
 		return;
 	},
 
@@ -365,7 +381,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		dojo.html.setOpacity(this.optionsListNode, 0);
 		dojo.fx.fadeIn(this.optionsListNode, 200);
 		this._result_list_open = true;
-		return;
 	},
 
 	handleArrowClick: function(){
