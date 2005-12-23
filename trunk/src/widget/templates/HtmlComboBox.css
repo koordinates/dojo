@@ -3,24 +3,16 @@ input.comboBoxInput {
 	border: 0px;
 }
 
-td.comboBoxOptions {
-	position: relative; 
-	overflow: visible; 
-	height: 1px;
-}
-
-div.comboBoxOptions {
+.comboBoxOptions {
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 0.7em;
 	background-color: white;
-	/* border: 1px solid black; */
 	border: 1px solid #afafaf;
-	/* padding: 2px; */
 	position: absolute;
-	/* FIXME: we probably need an iframe underlay on IE to prevent windowed controls from bleeding through */
 	z-index: 1000; 
 	overflow: auto;
 	-moz-opacity: 0;
+	cursor: default;
 }
 
 table.dojoComboBox {
