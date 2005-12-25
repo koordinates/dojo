@@ -59,26 +59,26 @@ border-box::
     | |<------ width ------>| |
 
 General:
-		- Uncomputable values are returned as NaN.
-        - setOuterWidth/Height return *false* if the outer size could not be
-          computed, otherwise *true*.
-		- Finding the calculated values for auto-margins is not beleived to be
-          practical. 
-        - All returned values are floating point in 'px' units. If a non-zero
-          computed style value is not specified in 'px', NaN is returned.
+    - Uncomputable values are returned as NaN.
+    - setOuterWidth/Height return *false* if the outer size could not be
+      computed, otherwise *true*.
+    - Finding the calculated values for auto-margins is not beleived to be
+      practical. 
+    - All returned values are floating point in 'px' units. If a non-zero
+      computed style value is not specified in 'px', NaN is returned.
 
 Firefox:
-		- styles specified as '0' (unitless 0) show computed as '0pt'.
+    - styles specified as '0' (unitless 0) show computed as '0pt'.
 
 IE:
-		- clientWidth/Height are unreliable (0 unless the object has 'layout').
-        - margins must be specified in px, or 0 (in any unit) for any sizing
-          function to work. Otherwise margins detect as 'auto'.
-        - padding can be empty or, if specified, must be in px, or 0 (in any
-          unit) for any sizing function to work.
+    - clientWidth/Height are unreliable (0 unless the object has 'layout').
+    - margins must be specified in px, or 0 (in any unit) for any sizing
+      function to work. Otherwise margins detect as 'auto'.
+    - padding can be empty or, if specified, must be in px, or 0 (in any unit)
+      for any sizing function to work.
 
 Safari:
-		- Safari defaults padding values to 'auto'.
+    - Safari defaults padding values to 'auto'.
 
 These work for most elements (e.g. DIV) but not all (e.g. TEXTAREA)
 
