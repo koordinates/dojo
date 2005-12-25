@@ -29,6 +29,9 @@ Usage
 API Reference
 ===============================================================================
 
+.. contents:: Table of Contents
+   :depth: 2
+  
 Classes
 ---------------------------------------
 
@@ -38,33 +41,45 @@ Classes
     function.
 
     *Inherits from*:
-        nothing
+        Nothing
 
     ``arg1``:
-        a very arg-like argument
+        A very arg-like argument.
 
     *return*:
-        new object of type Foo.
+        Object of type Foo.
 
-``Foo.prototype.method1()``:
+Properties
+~~~~~~~~~~~~~~~
+
+None
+
+Methods
+~~~~~~~~~~~~~~~
+``method1()``:
+
+    Does something
+
+    *return*:
+        Nothing.
 
 Properties
 ---------------------------------------
 
 ``foo``:
 
-    A string that has many foo-like propeties. Defaults to "thud".
+    String. Has many foo-like propeties. Defaults to "thud".
 
 ``bar``:
 
-    Object reference to an instance of ``dojo.namespace.Bar``
+    Object. Reference to an instance of ``dojo.namespace.Bar``
 
 Methods
 ---------------------------------------
 
 ``baz(arg1)``:
 
-    describe ``dojo.namespace.baz()`` here.
+    Describe ``dojo.namespace.baz()`` here.
 
     ``arg1``:
         An argument. Like many others, but different in its own special way.
