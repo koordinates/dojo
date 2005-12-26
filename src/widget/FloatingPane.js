@@ -31,9 +31,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	constrainToContainer: false,
 	taskBarId: "",
 	resizable: true,	// note: if specified, user must include ResizeHandle
+
 	url: "inline",
 	extractContent: true,
 	parseContent: true,
+	cacheContent: true,
+
 	resizable: false,
 	titleBarDisplay: "fancy",
 	isContainer: true,
@@ -67,7 +70,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.html.addClass(clientDiv, 'dojoFloatingPaneClient');
 
 		// this is our client area
-		this.clientPane = this.createPane(clientDiv, {layoutAlign: "client", url: this.url, id:this.widgetId+"_client"});
+		this.clientPane = this.createPane(clientDiv, {layoutAlign: "client", id:this.widgetId+"_client",
+			url: this.url,cacheContent: this.cacheContent, extractContent: this.extractContent,
+			parseContent: this.parseContent});
 		delete this.url;
 
 		if (this.titleBarDisplay != "none") {
