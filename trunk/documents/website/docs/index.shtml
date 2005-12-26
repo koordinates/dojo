@@ -6,15 +6,15 @@
 <body class="docs">
 <!--#include virtual="/rest_template/header.html" -->
 <h1>Documentation</h1>
+<!--
 <h3>APIS</h3>
 <ul>
 	<li><a href="http://dojotoolkit.org/docs/apis/index.shtml">Dojo 0.1 API Outlines</a></li>
 </ul>
-
-<h3>Release Notes</h3>
+-->
+<h3>Manual (API documentation)</h3>
 <ul>
-	<li><a href="http://dojotoolkit.org/docs/release_notes_0.2.0.html">Dojo 0.2.0 Release Notes</a></li>
-	<li><a href="http://dojotoolkit.org/docs/release_notes_0.1.0.html">Dojo 0.1.0 Release Notes</a></li>
+	<li><a href="http://manual.dojotoolkit.org/index.html">The Dojo Manual</a></li>
 </ul>
 
 <h3>Articles</h3>
@@ -44,7 +44,14 @@
 	<li><a href="http://dojotoolkit.org/community/licensing.shtml">The Licensing Terms of The Dojo Toolkit</a></li>
 </ul>
 
+<h3>Release Notes</h3>
+<ul>
+	<li><a href="http://dojotoolkit.org/docs/release_notes_0.2.0.html">Dojo 0.2.0 Release Notes</a></li>
+	<li><a href="http://dojotoolkit.org/docs/release_notes_0.1.0.html">Dojo 0.1.0 Release Notes</a></li>
+</ul>
+
 <!--#include virtual="/rest_template/sidebar.html" -->
+<h1>Documentation</h1>
 <!--#include virtual="/rest_template/footer.html" -->
 </body>
 </html>
