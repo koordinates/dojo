@@ -46,6 +46,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	url: "inline",
 	extractContent: true,
 	parseContent: true,
+	cacheContent: true,
 	
 	// To generate pane content from a java function
 	handler: "none",
@@ -90,7 +91,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		if ( dojo.lang.isFunction(this.handler)) {
 			this._runHandler();
 		} else if ( this.url != "inline" ) {
-			this._downloadExternalContent(this.url, true);
+			this._downloadExternalContent(this.url, this.cacheContent);
 		}
 		this.isLoaded=true;
 	},
