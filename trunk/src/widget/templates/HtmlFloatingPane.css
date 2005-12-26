@@ -11,6 +11,33 @@
 	z-index: 5;		/* above the shadow */
 	background-color: ThreeDFace;
 }
+.dojoTitleBarIcon {
+	height: 22px;
+	width: 22px;
+	vertical-align: middle;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+.dojoFloatingPaneActions{
+	float: right;
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	vertical-align: middle;
+}
+
+.dojoFloatingPaneTitleBar {
+	vertical-align: top;
+	margin: 2px 4px 2px 2px;
+	color: CaptionText;
+	font: small-caption;
+}
+.dojoFloatingPaneActionItem {
+	vertical-align: middle;
+	margin-right: 1px;
+	height: 22px;
+}
 
 .dojoFloatingPaneDragbar {
 	z-index: 10;
@@ -20,12 +47,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
-}
-
-.dojoFloatingPaneTitle {
-	padding: 4px;
-	color: CaptionText;
-	font: small-caption;	
+	vertical-align: middle;
 }
 
 /* background image for title bar */

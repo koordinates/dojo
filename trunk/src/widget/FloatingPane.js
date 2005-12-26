@@ -10,6 +10,7 @@ dojo.provide("dojo.widget.html.FloatingPane");
 //
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.Manager");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
@@ -47,6 +48,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	dragOrigin: null,
 	posOrigin: null,
 	maxPosition: null,
+	windowState: "normal",
+	displayCloseAction: false,
+
+	minimizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMinimize.gif"),
+	maximizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMaximize.gif"),
+	restoreIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneRestore.gif"),
+	closeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneClose.gif"),
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
@@ -91,11 +99,75 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				var backgroundPane = dojo.widget.fromScript("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
 				this.dragBar.addChild(backgroundPane);
 			}
-			var title = document.createElement("div");
-			dojo.html.addClass(title, 'dojoFloatingPaneTitle');
-			dojo.html.disableSelection(title);
-			title.appendChild(document.createTextNode(this.title));
-			chromeDiv.appendChild(title);
+
+			//Title Bar
+			var titleBar = document.createElement('div');
+			dojo.html.addClass(titleBar, "dojoFloatingPaneTitleBar");
+			dojo.html.disableSelection(titleBar);
+
+			//TitleBarActions
+			var titleBarActions = document.createElement('div');
+			dojo.html.addClass(titleBarActions, "dojoFloatingPaneActions");
+
+			//Title Icon
+			var titleIcon = document.createElement('img');
+			dojo.html.addClass(titleIcon,"dojoTitleBarIcon");
+			titleIcon.src = this.iconSrc;						
+			titleBar.appendChild(titleIcon);
+
+			//Title text  
+			var titleText = document.createTextNode(this.title)
+			titleBar.appendChild(titleText);
+
+			if (this.resizable) {
+
+				//FloatingPane Action Minimize
+				this.minimizeAction = document.createElement("img");
+				dojo.html.addClass(this.minimizeAction, "dojoFloatingPaneActionItem");
+				this.minimizeAction.src = this.minimizeIcon;	
+				titleBarActions.appendChild(this.minimizeAction);
+				dojo.event.connect(this.minimizeAction, 'onclick', this, 'minimizeWindow');
+
+				//FloatingPane Action Restore
+				this.restoreAction = document.createElement("img");
+				dojo.html.addClass(this.restoreAction, "dojoFloatingPaneActionItem");
+				this.restoreAction.src = this.restoreIcon;	
+				titleBarActions.appendChild(this.restoreAction);
+				dojo.event.connect(this.restoreAction, 'onclick', this, 'restoreWindow');
+
+				if (this.windowState != "normal") {
+					this.restoreAction.style.display="inline";
+				} else {
+					this.restoreAction.style.display="none";
+				}
+
+				//FloatingPane Action Maximize
+				this.maximizeAction = document.createElement("img");
+				dojo.html.addClass(this.maximizeAction, "dojoFloatingPaneActionItem");
+				this.maximizeAction.src = this.maximizeIcon;	
+				titleBarActions.appendChild(this.maximizeAction);
+				dojo.event.connect(this.maximizeAction, 'onclick', this, 'maximizeWindow');
+
+				if (this.windowState != "maximized") {
+					this.maximizeAction.style.display="inline";	
+				} else {
+					this.maximizeAction.style.display="none";	
+				}	
+
+			}
+
+			if (this.displayCloseAction) {
+				//FloatingPane Action Close
+				var closeAction= document.createElement("img");
+				dojo.html.addClass(closeAction, "dojoFloatingPaneActionItem");
+				closeAction.src = this.closeIcon;	
+				titleBarActions.appendChild(closeAction);
+				dojo.event.connect(closeAction, 'onclick', this, 'closeWindow');
+			}
+
+
+			chromeDiv.appendChild(titleBar);
+			chromeDiv.appendChild(titleBarActions);
 		
 			dojo.event.connect(this.dragBar.domNode, 'onmousedown', this, 'onMyDragStart');
 		}
@@ -124,6 +196,88 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		var backgroundDiv = document.createElement('div');
 		dojo.html.addClass(backgroundDiv, 'dojoFloatingPaneBackground');
 		this.background = this.createPane(backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
+
+		dojo.event.connect(this.domNode, 'onclick', this, 'onClick');
+
+	},
+
+	maximizeWindow: function(evt) {
+		//alert("Called Maximize");
+		this.previousWidth= this.domNode.style.width;
+		this.previousHeight= this.domNode.style.height;
+		this.previousLeft = this.domNode.style.left;
+		this.previousTop = this.domNode.style.top;
+
+		this.domNode.style.width = "100%";
+		this.domNode.style.height = "100%";
+		this.domNode.style.left = "0px";
+		this.domNode.style.top = "0px";
+		dojo.widget.html.FloatingPane.superclass.onResized.call(this);
+		this.maximizeAction.style.display="none";	
+		this.restoreAction.style.display="inline";	
+		this.windowState="maximized";
+	},
+
+	minimizeWindow: function(evt) {
+		this.hide();
+		if (this.resizable) {
+			this.maximizeAction.style.display="inline";	
+			this.restoreAction.style.display="inline";	
+		}
+
+		this.windowState = "minimized";
+	},
+
+	restoreWindow: function(evt) {
+		if (this.previousWidth && this.previousHeight && this.previousLeft && this.previousTop) {
+			this.domNode.style.width = this.previousWidth;
+			this.domNode.style.height = this.previousHeight;
+			this.domNode.style.left = this.previousLeft;
+			this.domNode.style.top = this.previousTop;
+			dojo.widget.html.FloatingPane.superclass.onResized.call(this);
+		}
+
+		if (this.widgetState != "maximized") {
+			this.show();
+		}
+
+		if (this.resizable) {
+			this.maximizeAction.style.display="inline";	
+			this.restoreAction.style.display="none";	
+		}
+
+		this.bringToTop();
+		this.windowState="normal";
+	},
+
+	closeWindow: function(evt) {
+		this.destroy();
+	},
+
+	onClick: function(evt) {
+		this.bringToTop();
+	},
+
+	bringToTop: function() {
+		var floatingPaneStartingZ = 100;
+		var floatingPanes= dojo.widget.manager.getWidgetsByType("FloatingPane");
+		var windows = []
+		var y=0;
+		for (var x=0; x<floatingPanes.length; x++) {
+			if (this.widgetId != floatingPanes[x].widgetId) {
+					windows.push(floatingPanes[x]);
+			}
+		}
+
+		windows.sort(function(a,b) {
+			return a.domNode.style.zIndex - b.domNode.style.zIndex;
+		});
+		
+		windows.push(this);
+
+		for (x=0; x<windows.length;x++) {
+			windows[x].domNode.style.zIndex = floatingPaneStartingZ + x;
+		}
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -150,6 +304,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if( this.taskBarId != "" ){
 			dojo.addOnLoad(this, "taskBarSetup");
 		}
+
+		dojo.addOnLoad(this, "setInitialWindowState");
 		
 		// Prevent IE bleed-through problem
 		this.bgIframe = new dojo.html.BackgroundIframe();
@@ -158,16 +314,38 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 		if ( this.isVisible() ) {
 			this.bgIframe.show();
+		};
+	},
+
+
+	setInitialWindowState: function() {
+		if (this.windowState == "maximized") {
+			this.maximizeWindow();
+			this.show();
+			this.bringToTop();
+			return;
 		}
+
+		if (this.windowState=="normal") {
+			dojo.lang.setTimeout(this, this.onResized, 50);
+			this.show();
+			this.bringToTop();
+			return;
+		}
+
+		if (this.windowState=="minimized") {
+			this.hide();
+			return;
+		}
+
+		this.windowState="minimized";
 	},
 
 	// add icon to task bar, connected to me
 	taskBarSetup: function() {
 		var taskbar = dojo.widget.getWidgetById(this.taskBarId);
 		if( !taskbar ){ return; }
-		var tbi = dojo.widget.fromScript("TaskBarItem",
-			{caption: this.title, iconSrc: this.iconSrc, task: this} );
-		taskbar.addChild(tbi);
+		taskbar.addChild(this);
 	},
 
 	onResized: function(){
@@ -180,7 +358,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.resizeSoon();
 			return;
 		}
-		
+	
 		//if ( newWidth != this.outerWidth || newHeight != this.outerHeight ) {
 			this.outerWidth = newWidth;
 			this.outerHeight = newHeight;
