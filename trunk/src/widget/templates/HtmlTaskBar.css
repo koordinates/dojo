@@ -16,11 +16,12 @@
 	margin-right: 5px;
 	margin-left: 5px;	
 	height: 32px;
+	width: 32px;
 }
 
 .dojoTaskBarItem a {
-        color: black;
-        text-decoration: none;
+	 color: black;
+	text-decoration: none;
 }
 
 
