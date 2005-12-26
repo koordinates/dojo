@@ -18,9 +18,7 @@ dojo.lang.extend(dojo.widget.html.TaskBarItem, {
 	// constructor arguments
 	iconSrc: '',
 	caption: 'Untitled',
-	task: null,
-	iconWidth: 18,
-	iconHeight: 18,
+	window: null,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTaskBarItemTemplate.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTaskBar.css"),
 
@@ -28,8 +26,6 @@ dojo.lang.extend(dojo.widget.html.TaskBarItem, {
 		if ( this.iconSrc != '' ) {
 			var img = document.createElement("img");
 			img.src = this.iconSrc;
-			img.width = this.iconWidth;
-			img.height = this.iconHeight;
 			this.domNode.appendChild(img);
 		}
 		this.domNode.appendChild(document.createTextNode(this.caption));
@@ -37,11 +33,17 @@ dojo.lang.extend(dojo.widget.html.TaskBarItem, {
 	},
 
 	postCreate: function() {
-		this.task.explodeSrc = this.domNode;
+		this.window=dojo.widget.getWidgetById(this.windowId);
+		this.window.explodeSrc = this.domNode;
+		dojo.event.connect(this.window, "destroy", this, "destroy")
 	},
 
 	onClick: function() {
-		this.task.doToggle();
+		if (this.window.windowState != "minimized") {
+			this.window.bringToTop();
+		} else {
+			this.window.restoreWindow();
+		}
 	}
 });
 
@@ -56,4 +58,8 @@ dojo.widget.html.TaskBar = function(){
 dojo.inherits(dojo.widget.html.TaskBar, dojo.widget.html.FloatingPane);
 
 dojo.lang.extend(dojo.widget.html.TaskBar, {
+	addChild: function(child) {
+		var tbi = dojo.widget.fromScript("TaskBarItem",{windowId:child.domNode.id, caption: child.title, iconSrc: child.iconSrc} );
+                dojo.widget.html.TaskBar.superclass.addChild.call(this,tbi);
+	}
 });
