@@ -197,7 +197,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.html.addClass(backgroundDiv, 'dojoFloatingPaneBackground');
 		this.background = this.createPane(backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
 
-		dojo.event.connect(this.domNode, 'onclick', this, 'onClick');
+		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
 
 	},
 
@@ -254,7 +254,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.destroy();
 	},
 
-	onClick: function(evt) {
+	onMouseDown: function(evt) {
 		this.bringToTop();
 	},
 
