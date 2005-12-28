@@ -5,7 +5,7 @@ dojo.require("dojo.lang");
 dojo.require("dojo.dom");
 
 try {
-	if((!djConfig.preventBackButtonFix)&&(!dojo.hostenv.post_load_)){
+	if((!djConfig["preventBackButtonFix"])&&(!dojo.hostenv.post_load_)){
 		document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'iframe_history.html')+"'></iframe>");
 	}
 }catch(e){/* squelch */}
