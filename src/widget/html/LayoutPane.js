@@ -37,7 +37,6 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	clientWidth: 0,
 	clientHeight: 0,
 
-	layoutAlign: 'none',
 	layoutChildPriority: 'top-bottom',
 
 	cssPath: dojo.uri.dojoUri("src/widget/templates/HtmlLayoutPane.css"),
@@ -55,24 +54,19 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	minHeight: 0,
 
 	fillInTemplate: function(){
-		this.filterAllowed('layoutAlign',         ['none', 'left', 'top', 'right', 'bottom', 'client', 'flood']);
-		this.filterAllowed('layoutChildPriority', ['left-right', 'top-bottom']);
+		this.filterAllowed(this, 'layoutChildPriority', ['left-right', 'top-bottom']);
 
 		// Need to include CSS manually because there is no template file/string
 		dojo.style.insertCssFile(this.cssPath, null, true);
 
 		this.domNode.style.position = 'relative';
 		dojo.html.addClass(this.domNode, "dojoLayoutPane");
-		dojo.html.addClass(this.domNode, "dojoAlign" + dojo.string.capitalize(this.layoutAlign));		
 	},
 
 	postCreate: function(args, fragment, parentComp){
 
 		for(var i=0; i<this.children.length; i++){
-			if (this.hasLayoutAlign(this.children[i])){
-				this.children[i].domNode.style.position = 'absolute';
-				this.children[i].isChild = true;	
-			}
+			this._injectChild(this.children[i]);
 		}
 
 		if ( this.handler != "none" ){
@@ -156,22 +150,11 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 			return false;
 		}
 		return true;
-		/*
-		// in case we want to honor the return value?
-		var ret = true;
-		if(dojo.lang.isFunction(this.handler) {
-			var val = this.handler(this, panel);
-			if(!dojo.lang.isUndefined(val)) {
-				ret = val;
-			}
-		}
-		return ret;
-		*/
 	},
 
-	filterAllowed: function(param, values){
-		if ( !dojo.lang.inArray(values, this[param]) ) {
-			this[param] = values[0];
+	filterAllowed: function(node, param, values){
+		if ( !dojo.lang.inArray(values, node[param]) ) {
+			node[param] = values[0];
 		}
 	},
 
@@ -205,23 +188,23 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		this.clientRect['bottom'] = dojo.style.getPixelValue(container, "padding-bottom", true);
 
 		// arrange them in order
-		this.layoutCenter(kids, "flood");
+		this._layoutCenter(kids, "flood");
 		if (this.layoutChildPriority == 'top-bottom'){
-			this.layoutFloat(kids, "top");
-			this.layoutFloat(kids, "bottom");
-			this.layoutFloat(kids, "left");
-			this.layoutFloat(kids, "right");
+			this._layoutFloat(kids, "top");
+			this._layoutFloat(kids, "bottom");
+			this._layoutFloat(kids, "left");
+			this._layoutFloat(kids, "right");
 		}else{
-			this.layoutFloat(kids, "left");
-			this.layoutFloat(kids, "right");
-			this.layoutFloat(kids, "top");
-			this.layoutFloat(kids, "bottom");
+			this._layoutFloat(kids, "left");
+			this._layoutFloat(kids, "right");
+			this._layoutFloat(kids, "top");
+			this._layoutFloat(kids, "bottom");
 		}
-		this.layoutCenter(kids, "client");
+		this._layoutCenter(kids, "client");
 	},
 
 	// Position the left/right/top/bottom aligned elements
-	layoutFloat: function(kids, position){
+	_layoutFloat: function(kids, position){
 		var ary = kids[position];
 		
 		// figure out which two of the left/right/top/bottom properties to set
@@ -252,7 +235,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 	// Position elements into the remaining space (in the center)
 	// If multiple elements are present they overlap each other
-	layoutCenter: function(kids, position){
+	_layoutCenter: function(kids, position){
 		var ary = kids[position];
 		for(var i=0; i<ary.length; i++){
 			var elm=ary[i];
@@ -269,20 +252,23 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	},
 
 	addChild: function(child){
-		if ( this.hasLayoutAlign(child) ){
-			child.domNode.style.position = 'absolute';
-			child.isChild = true;	
-		}
+		this._injectChild(child);
 		dojo.widget.html.LayoutPane.superclass.addChild.call(this,child)
 		this.resizeSoon();
 	},
 
-	removePane: function(pane){
+	_injectChild: function(child){
+		if ( this.hasLayoutAlign(child) ){
+			child.domNode.style.position = 'absolute';
+			child.isChild = true;	
+			this.filterAllowed(child, 'layoutAlign', ['none', 'left', 'top', 'right', 'bottom', 'client', 'flood']);
+			dojo.html.addClass(child.domNode, "dojoAlign" + dojo.string.capitalize(this.layoutAlign));		
+		}
+	},
 
-		this.removeChild(pane);
-
+	removeChild: function(pane){
+		dojo.widget.html.LayoutPane.superclass.removeChild.call(this,pane);
 		dojo.dom.removeNode(pane.domNode);
-
 		this.resizeSoon();
 	},
 	
