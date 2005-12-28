@@ -5,20 +5,19 @@ dojo.provide("dojo.widget.HtmlTreeNode");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.fx.html");
-dojo.require("dojo.widget.LayoutPane");
+dojo.require("dojo.widget.Container");
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree");
 dojo.widget.tags.addParseTreeHandler("dojo:TreeNode");
 
 dojo.widget.HtmlTree = function() {
-	dojo.widget.html.LayoutPane.call(this);
+	dojo.widget.html.Container.call(this);
 }
-dojo.inherits(dojo.widget.HtmlTree, dojo.widget.html.LayoutPane);
+dojo.inherits(dojo.widget.HtmlTree, dojo.widget.html.Container);
 
 dojo.lang.extend(dojo.widget.HtmlTree, {
 	widgetType: "Tree",
-	isContainer: true,
 
 	domNode: null,
 
