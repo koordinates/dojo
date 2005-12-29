@@ -11,6 +11,7 @@
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.LayoutPane");
 	dojo.require("dojo.widget.SplitPane");
+	dojo.require("dojo.widget.BasicPane");
 </script>
 </head>
 <body style="padding: 50px;">
@@ -25,38 +26,36 @@
 	activeSizing="1"
 	style="border: 2px solid black; width: 700px; height: 400px;">
 
-	<div dojoType="SplitPanePanel" sizeMin="60" sizeShare="1">
+	<div dojoType="BasicPane" sizeMin="60" sizeShare="1">
 		woo
 	</div>
 
-	<div dojoType="SplitPanePanel" sizeMin="100" sizeShare="3">
+	<div dojoType="SplitPane"
+		orientation="horizontal"
+		sizerWidth="5"
+		activeSizing="1"
+		layoutAlign="client"
+		style="border: 2px solid black;"
+		sizeMin="100" sizeShare="3">
 
-		<div dojoType="SplitPane"
-			orientation="horizontal"
-			sizerWidth="5"
-			activeSizing="1"
-			layoutAlign="client"
-			style="border: 2px solid black;">
+		<div dojoType="LayoutPane" sizeMin="100" sizeShare="80">
 
-			<div dojoType="SplitPanePanel" sizeMin="100" sizeShare="80">
-
-				<div dojoType="LayoutPane" layoutAlign="right" style="background-color: #b39b86; padding: 8px;">
-					right<br />bar
-				</div>
-
-				<div dojoType="LayoutPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
-					main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
-				</div>
-
+			<div dojoType="BasicPane" layoutAlign="right" style="background-color: #b39b86; padding: 8px;">
+				right<br />bar
 			</div>
 
-			<div dojoType="SplitPanePanel" sizeMin="60" sizeShare="20">
-				yay
+			<div dojoType="BasicPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
+				main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
 			</div>
+
+		</div>
+
+		<div dojoType="BasicPane" sizeMin="60" sizeShare="20">
+			yay
 		</div>
 	</div>
-</div>
 
+</div>
 
 <p>HTML after</p>
 <p>HTML after</p>

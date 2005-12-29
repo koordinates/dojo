@@ -101,6 +101,11 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		this.resizeGhost.style.display = "none";
 	},
 
+	resizeSoon: function(){
+		if ( this.isVisible() ) {
+			dojo.lang.setTimeout(this, this.onResized, 0);
+		}
+	},
 
 	createNodesFromText: function(txt, wrap){
 		return dojo.html.createNodesFromText(txt, wrap);
