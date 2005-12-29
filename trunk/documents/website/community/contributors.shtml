@@ -110,6 +110,10 @@
 			<td> tildahl </td>
 			<td> Michael Tildahl </td>
 		</tr>
+		<tr>
+			<td> dmachi </td>
+			<td> Dustin Machi </td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
