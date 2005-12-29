@@ -32,6 +32,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	constrainToContainer: false,
 	taskBarId: "",
 	resizable: true,	// note: if specified, user must include ResizeHandle
+	hideScrollBars: false,
 
 	url: "inline",
 	extractContent: true,
@@ -82,6 +83,10 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			url: this.url,cacheContent: this.cacheContent, extractContent: this.extractContent,
 			parseContent: this.parseContent});
 		delete this.url;
+
+		if(this.hideScrollBars){
+			this.clientPane.domNode.style.overflow="hidden";
+		}
 
 		if (this.titleBarDisplay != "none") {
 			// this is our chrome
@@ -183,13 +188,16 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 		// add a drop shadow
 		if ( this.hasShadow ) {
-			this.shadow = document.createElement('div');
-			dojo.html.addClass(this.shadow, "dojoDropShadow");
+			this.shadow = document.createElement('canvas');
+			dojo.html.addClass(this.shadow, "dojoCanvasShadow");
+			// this.shadow = document.createElement('div');
+			// dojo.html.addClass(this.shadow, "dojoDropShadow");
 			this.shadow.style["z-index"]="-100";
-			dojo.style.setOpacity(this.shadow, 0.5);
+			// dojo.style.setOpacity(this.shadow, 0.5);
 			this.domNode.appendChild(this.shadow);
 			dojo.html.disableSelection(this.shadow);
 			dojo.style.setOpacity(this.domNode, 1);
+			this.makeShadow(this.shadow);
 		}
 
 		// and add a background div so the shadow doesn't seep through the margin of the title bar
@@ -199,6 +207,39 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
 
+	},
+
+
+	//draw a filled rounded rectangle on a context for the drop shadow 	
+	roundedRect: function(ctx,x,y,width,height,radius,fillColor){
+		ctx.beginPath();
+		ctx.moveTo(x,y+radius);
+		ctx.lineTo(x,y+height-radius);
+		ctx.quadraticCurveTo(x,y+height,x+radius,y+height);
+		ctx.lineTo(x+width-radius,y+height);
+		ctx.quadraticCurveTo(x+width,y+height,x+width,y+height-radius);
+		ctx.lineTo(x+width,y+radius);
+		ctx.quadraticCurveTo(x+width,y,x+width-radius,y);
+		ctx.lineTo(x+radius,y);
+		ctx.quadraticCurveTo(x,y,x,y+radius);
+		ctx.fillStyle=fillColor;
+		ctx.fill();
+        },
+
+	//draw the drop shadow
+	makeShadow: function( canvas ) {
+		var width = canvas.width;
+		var height = canvas.height;
+		gradientStops=15;
+		radius=15;
+		if (canvas.getContext) {
+			var ctx=canvas.getContext("2d")
+			ctx.clearRect(0,0,width,height);
+			for(x=0;x<gradientStops;x++) {
+				var color = "rgba(0,0,0," + parseFloat(x*.007) + ")";
+				this.roundedRect(ctx,x,x,width-(x*2),height-(x*2),radius,color);
+			}
+		}
 	},
 
 	maximizeWindow: function(evt) {
@@ -363,8 +404,10 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.outerWidth = newWidth;
 			this.outerHeight = newHeight;
 			if ( this.shadow ) {
-				dojo.style.setOuterWidth(this.shadow, newWidth);
+				// dojo.style.setOuterWidth(this.shadow, newWidth);
+				dojo.style.setOuterWidth(this.shadow, newWidth+30);
 				dojo.style.setOuterHeight(this.shadow, newHeight);
+				this.makeShadow(this.shadow);
 			}
 			dojo.widget.html.FloatingPane.superclass.onResized.call(this);
 		//}
