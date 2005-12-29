@@ -40,7 +40,7 @@ dojo.lang.extend(dojo.widget.html.TabSet, {
 
 		// Create panel to hold the tab labels (as a <ul> with special formatting)
 		// TODO: set "bottom" css tag if label is on bottom
-		this.filterAllowed('labelPosition', ['top', 'bottom']);
+		this.filterAllowed(this, 'labelPosition', ['top', 'bottom']);
 		this.labelPanel = dojo.widget.fromScript("LayoutPane", {layoutAlign: this.labelPosition});
 		this.ul = document.createElement("ul");
 		dojo.html.addClass(this.ul, "tabs");
