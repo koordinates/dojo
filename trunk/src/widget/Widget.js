@@ -32,8 +32,6 @@ dojo.lang.extend(dojo.widget.Widget, {
 	widgetId: "",
 	widgetType: "Widget", // used for building generic widgets
 
-	layoutAlign: 'none',	// for children of a LayoutPane
-	
 	toString: function() {
 		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']';
 	},

@@ -5,15 +5,14 @@
 <title>LayoutPane Widget Demo</title>
 
 <script type="text/javascript">
-
 	var djConfig = {isDebug: true};
-
 	//djConfig.debugAtAllCosts = true;
-
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.BasicPane");
 	dojo.require("dojo.widget.LayoutPane");
+	dojo.require("dojo.widget.HtmlWidget");
 	dojo.require("dojo.widget.html.ComboBox");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -28,19 +27,19 @@
 	layoutChildPriority='left-right'
 	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
 >
-	<div dojoType="LayoutPane" layoutAlign="top" style="background-color: #b39b86; ">
+	<div dojoType="BasicPane" layoutAlign="top" style="background-color: #b39b86; ">
 		top bar
 	</div>
-	<div dojoType="LayoutPane" layoutAlign="bottom" style="background-color: #b39b86;">
+	<div dojoType="BasicPane" layoutAlign="bottom" style="background-color: #b39b86;">
 		bottom bar
 	</div>
-	<div dojoType="LayoutPane" layoutAlign="left" style="background-color: #acb386; width: 100px;">
+	<div dojoType="BasicPane" layoutAlign="left" style="background-color: #acb386; width: 100px;">
 		left
 	</div>
-	<div dojoType="LayoutPane" layoutAlign="right" style="background-color: #acb386;">
+	<div dojoType="BasicPane" layoutAlign="right" style="background-color: #acb386;">
 		right
 	</div>
-	<div dojoType="LayoutPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
+	<div dojoType="BasicPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
 		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
 		(to check we're copying children around properly).<br />
 		<select dojoType="combobox">

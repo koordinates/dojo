@@ -184,7 +184,6 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
-		this.children[0].sizeSet(size);
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -197,7 +196,6 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
-			this.children[i].sizeSet(size);
 			pos += size;
 		}
 		
@@ -485,29 +483,23 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 	}
 });
 
+// These arguments can be specified for the children of a SplitPane.
+// Since any widget can be specified as a SplitPane child, mix them
+// into the base widget class.  (This is a hack, but it's effective.)
+dojo.lang.extend(dojo.widget.Widget, {
+	sizeMin: 10,
+	sizeShare: 10
+});
+
+// Deprecated class for split pane children.
+// Actually any widget can be the child of a split pane
 dojo.widget.html.SplitPanePanel = function(){
 	dojo.widget.html.LayoutPane.call(this);
 }
-
 dojo.inherits(dojo.widget.html.SplitPanePanel, dojo.widget.html.LayoutPane);
-
 dojo.lang.extend(dojo.widget.html.SplitPanePanel, {
-
-	widgetType: "SplitPanePanel",
-	sizeActual: 0,
-	position: 0,
-
-	sizeMin: 10,
-	sizeShare: 10,
-
-	sizeSet: function(height){
-	},
-
-	fillInTemplate: function(args, frag) {
-		this.domNode.style.position="relative";	// in case my child does a height=100%
-	}
+	widgetType: "SplitPanePanel"
 });
-
 
 dojo.widget.tags.addParseTreeHandler("dojo:SplitPane");
 dojo.widget.tags.addParseTreeHandler("dojo:SplitPanePanel");

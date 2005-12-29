@@ -271,12 +271,6 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		dojo.dom.removeNode(pane.domNode);
 		this.resizeSoon();
 	},
-	
-	resizeSoon: function(){
-		if ( this.isVisible() ) {
-			dojo.lang.setTimeout(this, this.onResized, 0);
-		}
-	},
 
 	onResized: function(){
 		if ( !this.isVisible() ) {
@@ -406,4 +400,10 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	}
 });
 
+// This arguments can be specified for the children of a LayoutPane.
+// Since any widget can be specified as a LayoutPane child, mix it
+// into the base widget class.  (This is a hack, but it's effective.)
+dojo.lang.extend(dojo.widget.Widget, {
+	layoutAlign: 'none'
+});
 
