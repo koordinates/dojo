@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.html.TimePicker");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
+dojo.require("dojo.widget.TimePicker.util");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
@@ -41,88 +42,6 @@ dojo.widget.html.TimePicker = function(){
 	this.templatePath =  dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.html");
 	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.css");
 
-	// utility functions
-	this.toRfcDateTime = function(jsDate) {
-		if(!jsDate) {
-			jsDate = this.today;
-		}
-		var year = jsDate.getFullYear();
-		var month = jsDate.getMonth() + 1;
-		if (month < 10) {
-			month = "0" + month.toString();
-		}
-		var date = jsDate.getDate();
-		if (date < 10) {
-			date = "0" + date.toString();
-		}
-		var hour = jsDate.getHours();
-		if (hour < 10) {
-			hour = "0" + hour.toString();
-		}
-		var minute = jsDate.getMinutes();
-		if (minute < 10) {
-			minute = "0" + minute.toString();
-		}
-		// no way to set seconds, so set to zero
-		var second = "00";
-		var timeZone = jsDate.getTimezoneOffset();
-		var timeZoneHour = parseInt(timeZone/60);
-		if(timeZoneHour > -10 && timeZoneHour < 0) {
-			timeZoneHour = "-0" + Math.abs(timeZoneHour);
-		} else if(timeZoneHour < 10) {
-			timeZoneHour = "+0" + timeZoneHour.toString();
-		} else if(timeZoneHour >= 10) {
-			timeZoneHour = "+" + timeZoneHour.toString();
-		}
-		var timeZoneMinute = timeZone%60;
-		if(timeZoneMinute < 10) {
-			timeZoneMinute = "0" + timeZoneMinute.toString();
-		}
-		return year + "-" + month + "-" + date + "T" + hour + ":" + minute + ":" + second + timeZoneHour +":" + timeZoneMinute;
-	}
-
-	this.fromRfcDateTime = function(rfcDate) {
-		var tempDate = new Date();
-		if(!rfcDate || !rfcDate.split("T")[1]) {
-			if(this.useDefaultMinutes) {
-				tempDate.setMinutes(Math.floor(tempDate.getMinutes()/5)*5);
-			} else {
-				tempDate.setMinutes(0);
-			}
-		} else {
-			var tempTime = rfcDate.split("T")[1].split(":");
-			// fullYear, month, date
-			var tempDate = new Date();
-			tempDate.setHours(tempTime[0]);
-			tempDate.setMinutes(tempTime[1]);
-		}
-		return tempDate;
-	}
-
-	this.toAmPmHour = function(hour) {
-		var amPmHour = hour;
-		var isAm = true;
-		if (amPmHour == 0) {
-			amPmHour = 12;
-		} else if (amPmHour>12) {
-			amPmHour = amPmHour - 12;
-			isAm = false;
-		} else if (amPmHour == 12) {
-			isAm = false;
-		}
-		return [amPmHour, isAm];
-	}
-
-	this.fromAmPmHour = function(amPmHour, isAm) {
-		var hour = parseInt(amPmHour, 10);
-		if(isAm && hour == 12) {
-			hour = 0;
-		} else if (!isAm && hour<12) {
-			hour = hour + 12;
-		}
-		return hour;
-	}
-
 	this.fillInTemplate = function(){
 		this.initData();
 		this.initUI();
@@ -135,9 +54,9 @@ dojo.widget.html.TimePicker = function(){
 		// FIXME: should normalize against whitespace on storedTime... for now 
 		// just a lame hack
 		if(this.storedTime.split("T")[1] && this.storedTime!=" " && this.storedTime.split("T")[1]!="any") {
-			this.time = this.fromRfcDateTime(this.storedTime);
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime(this.storedTime, this.useDefaultMinutes);
 		} else if (this.useDefaultTime) {
-			this.time = this.fromRfcDateTime();
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes);
 		} else {
 			this.selectedTime.anyTime = true;
 		}
@@ -146,7 +65,7 @@ dojo.widget.html.TimePicker = function(){
 	this.initUI = function() {
 		// set UI to match the currently selected time
 		if(this.time) {
-			var amPmHour = this.toAmPmHour(this.time.getHours());
+			var amPmHour = dojo.widget.TimePicker.util.toAmPmHour(this.time.getHours());
 			var hour = amPmHour[0];
 			var isAm = amPmHour[1];
 			var minute = this.time.getMinutes();
@@ -179,7 +98,7 @@ dojo.widget.html.TimePicker = function(){
 		this.clearSelectedAnyTime();
 		if(this.selectedTime.anyTime) {
 			this.selectedTime.anyTime = false;
-			this.time = this.fromRfcDateTime();
+			this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes);
 			this.initUI();
 		}
 	}
@@ -293,7 +212,7 @@ dojo.widget.html.TimePicker = function(){
 	this.onSetTime = function() {
 		if(this.selectedTime.anyTime) {
 			this.time = new Date();
-			var tempDateTime = this.toRfcDateTime(this.time);
+			var tempDateTime = dojo.widget.TimePicker.util.toRfcDateTime(this.time);
 			this.setDateTime(tempDateTime.split("T")[0] + "T" + this.any);
 		} else {
 			var hour = 12;
@@ -309,9 +228,9 @@ dojo.widget.html.TimePicker = function(){
 				isAm = (this.selectedTime["amPm"].toLowerCase() == "am");
 			}
 			this.time = new Date();
-			this.time.setHours(this.fromAmPmHour(hour, isAm));
+			this.time.setHours(dojo.widget.TimePicker.util.fromAmPmHour(hour, isAm));
 			this.time.setMinutes(minute);
-			this.setDateTime(this.toRfcDateTime(this.time));
+			this.setDateTime(dojo.widget.TimePicker.util.toRfcDateTime(this.time));
 		}
 	}
 

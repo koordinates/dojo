@@ -18,4 +18,42 @@ dojo.requireAfterIf("html", "dojo.widget.html.DatePicker");
 dojo.widget.DatePicker.util = new function() {
 	this.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	this.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+	this.toRfcDate = function(jsDate) {
+		if(!jsDate) {
+			jsDate = this.today;
+		}
+		var year = jsDate.getFullYear();
+		var month = jsDate.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month.toString();
+		}
+		var date = jsDate.getDate();
+		if (date < 10) {
+			date = "0" + date.toString();
+		}
+		// because this is a date picker and not a time picker, we treat time 
+		// as zero
+		return year + "-" + month + "-" + date + "T00:00:00+00:00";
+	}
+	
+	this.fromRfcDate = function(rfcDate) {
+		var tempDate = rfcDate.split("-");
+		if(tempDate.length < 3) {
+			return new Date();
+		}
+		// fullYear, month, date
+		return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
+	}
+	
+	this.initFirstSaturday = function(month, year) {
+		if(!month) {
+			month = this.date.getMonth();
+		}
+		if(!year) {
+			year = this.date.getFullYear();
+		}
+		var firstOfMonth = new Date(year, month, 1);
+		return {year: year, month: month, date: 7 - firstOfMonth.getDay()};
+	}
 }
