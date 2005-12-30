@@ -1,4 +1,5 @@
 dojo.provide("dojo.date");
+dojo.require("dojo.string");
 
 /**
  * Sets the current Date object to the time given in an ISO 8601 date/time
@@ -228,4 +229,29 @@ dojo.date.toRelativeString = function(date) {
 	} else {
 		return dojo.date.toShortDateString(date);
 	}
+}
+
+/**
+ * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
+ */
+dojo.date.toSql = function(date, noTime) {
+	var sql = date.getFullYear() + "-" + dojo.string.pad(date.getMonth(), 2) + "-"
+		+ dojo.string.pad(date.getDate(), 2);
+	if(!noTime) {
+		sql += " " + dojo.string.pad(date.getHours(), 2) + ":"
+			+ dojo.string.pad(date.getMinutes(), 2) + ":"
+			+ dojo.string.pad(date.getSeconds(), 2);
+	}
+	return sql;
+}
+
+/**
+ * Convert a SQL date string to a JavaScript Date object
+ */
+dojo.date.fromSql = function(sqlDate) {
+	var parts = sqlDate.split(/[\- :]/g);
+	while(parts.length < 6) {
+		parts.push(0);
+	}
+	return new Date(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
 }
