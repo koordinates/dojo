@@ -65,7 +65,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	isDragging: false,
 
 	addChild: function(child) {
-		//alert("Adding Child to Floating Pane: " + child.widgetType);
 		this.clientPane.addChild(child);
 	},
 
@@ -243,7 +242,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	maximizeWindow: function(evt) {
-		//alert("Called Maximize");
 		this.previousWidth= this.domNode.style.width;
 		this.previousHeight= this.domNode.style.height;
 		this.previousLeft = this.domNode.style.left;
@@ -393,7 +391,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				dojo.lang.setTimeout(this, this.taskBarSetup, 50);
 				this.taskBarConnectAttempts++;
 			} else {
-				alert("Unable to connect to the taskBar");
+				dojo.debug("Unable to connect to the taskBar");
 			}
 			return;
 		}
