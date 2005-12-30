@@ -3,7 +3,7 @@
 <title>Dojo Testing Script</title>
 
 <script type="text/javascript">
-        var djConfig = {isDebug: true};
+        var djConfig = {isDebug: true,debugContainerId: "dojoDebug" };
         //djConfig.debugAtAllCosts = true;
 </script>
 
@@ -14,6 +14,7 @@
 	dojo.require("dojo.widget.Button");
 	dojo.require("dojo.widget.html.Button");
 	dojo.require("dojo.rpc.JsonService");
+	dojo.require("dojo.rpc.DeferredRequest");
 </script>
 
 </head>
@@ -32,13 +33,13 @@
 	// the submission Id of the json-rpc request
 
         function contentCallBack(result) {
+	 	dojo.debug("in contentCallBack");
                 var handlerNode = document.getElementById("content");
                 handlerNode.innerHTML = result;
         }
 
 	// Create a new object
-        var testClass = new dojo.rpc.JsonService("testClass.jsdl");
-
+        var testClass = new dojo.rpc.JsonService("testClass.smd");
 	</pre>
 </div>
 
@@ -47,17 +48,21 @@
 	<h3>Results will be returned below under "Returned Content"</h3>
 
 	<h4>This button will perform a simple echo</h4>
-	<button id="myecho" dojo:type="button" label='testClass.myecho("blah",contentCallBack);' onClick='testClass.myecho("blah",contentCallBack);'></button><br>
+	<button id="myecho" dojo:type="button" label='testClass.myecho("blah").addCallback(contentCallBack);' onClick='testClass.myecho("blah").addCallback(contentCallBack);'></button><br>
 	<h4>This Button will simply call the function contentB() </h4>
-	<button id="contentB" dojo:type="button" label='testClass.contentB(contentCallBack);' onClick='testClass.contentB(contentCallBack);'></button><br>
+	<button id="contentB" dojo:type="button" label='testClass.contentB().addCallback(contentCallBack);;' onClick='testClass.contentB().addCallback(contentCallBack);'></button><br>
 	<h4>This button will call add() to add two numbers together</h4>
-	<button id="add" dojo:type="button" label='testClass.add(5,6,contentCallBack);' onClick='testClass.add(5,6,contentCallBack);'></button><br>
+	<button id="add" dojo:type="button" label='testClass.add(5,6).addCallback(contentCallBack);;' onClick='testClass.add(5,6).addCallback(contentCallBack);'></button><br>
 <br>
 
 <br>
 <h2>Returned Content:</h2>
 <div id="ReturnedContent">
 None.
+</div>
+
+<div id="dojoDebug">
+<h2>Debug Log:</h2>      
 </div>
 
 <script type="text/javascript">
@@ -67,9 +72,8 @@ None.
 		handlerNode.innerHTML = "<p>" + result + "</p>" ;
 	}
 
-	var testClass = new dojo.rpc.JsonService("testClass.jsdl");
-</script>
+	var testClass = new dojo.rpc.JsonService("testClass.smd");
 
-<h2>Debug Information:</h2>
+</script>
 </head>
 </html>
