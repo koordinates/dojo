@@ -79,7 +79,8 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 		dojo.io.bind({
 			url: smdURL,
 			mimetype: "text/json",
-			load: dojo.lang.hitch(this, function(type, object, e){ return this.processSMD(type,object,e) }) 
+			load: dojo.lang.hitch(this, function(type, object, e){ return this.processSMD(type,object,e) }),
+			sync: true
 		});		
 	}
 });

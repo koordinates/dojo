@@ -36,7 +36,7 @@ None.
 
 	var testClass = new dojo.rpc.JsonService("testClass.smd");
 	var def = testClass.myecho("blah");
-	def.addResultCallback("contentCallBack");
+	def.addCallback(contentCallBack);
 
 </script>
 </head>
