@@ -1,8 +1,8 @@
 dojo.provide("dojo.widget.html.DatePicker");
-dojo.provide("dojo.widget.html.DatePicker.util");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DatePicker");
+dojo.require("dojo.widget.DatePicker.util");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
@@ -55,7 +55,7 @@ dojo.widget.html.DatePicker = function(){
 	this.initData = function() {
 		this.today = new Date();
 		if(this.storedDate && (this.storedDate.split("-").length > 2)) {
-			this.date = dojo.widget.html.DatePicker.util.fromRfcDate(this.storedDate);
+			this.date = dojo.widget.DatePicker.util.fromRfcDate(this.storedDate);
 		} else {
 			this.date = this.today;
 		}
@@ -63,7 +63,7 @@ dojo.widget.html.DatePicker = function(){
 		this.today.setHours(0);
 		this.date.setHours(0);
 		var month = this.date.getMonth();
-		var tempSaturday = dojo.widget.html.DatePicker.util.initFirstSaturday(this.date.getMonth().toString(), this.date.getFullYear());
+		var tempSaturday = dojo.widget.DatePicker.util.initFirstSaturday(this.date.getMonth().toString(), this.date.getFullYear());
 		this.firstSaturday.year = tempSaturday.year;
 		this.firstSaturday.month = tempSaturday.month;
 		this.firstSaturday.date = tempSaturday.date;
@@ -222,7 +222,7 @@ dojo.widget.html.DatePicker = function(){
 				}
 				break;
 		}
-		var tempSaturday = dojo.widget.html.DatePicker.util.initFirstSaturday(month.toString(), year);
+		var tempSaturday = dojo.widget.DatePicker.util.initFirstSaturday(month.toString(), year);
 		this.firstSaturday.year = tempSaturday.year;
 		this.firstSaturday.month = tempSaturday.month;
 		this.firstSaturday.date = tempSaturday.date;
@@ -241,7 +241,7 @@ dojo.widget.html.DatePicker = function(){
 				year--;
 				break;
 		}
-		var tempSaturday = dojo.widget.html.DatePicker.util.initFirstSaturday(this.firstSaturday.month.toString(), year);
+		var tempSaturday = dojo.widget.DatePicker.util.initFirstSaturday(this.firstSaturday.month.toString(), year);
 		this.firstSaturday.year = tempSaturday.year;
 		this.firstSaturday.month = tempSaturday.month;
 		this.firstSaturday.date = tempSaturday.date;
@@ -291,48 +291,8 @@ dojo.widget.html.DatePicker = function(){
 			year = (month==11) ? --year : year;
 		}
 		this.date = new Date(year, month, evt.target.innerHTML);
-		this.setDate(dojo.widget.html.DatePicker.util.toRfcDate(this.date));
+		this.setDate(dojo.widget.DatePicker.util.toRfcDate(this.date));
 		this.initUI();
 	}
 }
 dojo.inherits(dojo.widget.html.DatePicker, dojo.widget.HtmlWidget);
-
-dojo.widget.html.DatePicker.util = new function() {
-	this.toRfcDate = function(jsDate) {
-		if(!jsDate) {
-			jsDate = this.today;
-		}
-		var year = jsDate.getFullYear();
-		var month = jsDate.getMonth() + 1;
-		if (month < 10) {
-			month = "0" + month.toString();
-		}
-		var date = jsDate.getDate();
-		if (date < 10) {
-			date = "0" + date.toString();
-		}
-		// because this is a date picker and not a time picker, we treat time 
-		// as zero
-		return year + "-" + month + "-" + date + "T00:00:00+00:00";
-	}
-	
-	this.fromRfcDate = function(rfcDate) {
-		var tempDate = rfcDate.split("-");
-		if(tempDate.length < 3) {
-			return new Date();
-		}
-		// fullYear, month, date
-		return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
-	}
-	
-	this.initFirstSaturday = function(month, year) {
-		if(!month) {
-			month = this.date.getMonth();
-		}
-		if(!year) {
-			year = this.date.getFullYear();
-		}
-		var firstOfMonth = new Date(year, month, 1);
-		return {year: year, month: month, date: 7 - firstOfMonth.getDay()};
-	}
-}
