@@ -52,6 +52,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	windowState: "normal",
 	displayCloseAction: false,
 
+	maxTaskBarConnectAttempts: 5,
+	taskBarConnectAttempts: 0,
+
 	minimizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMinimize.gif"),
 	maximizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMaximize.gif"),
 	restoreIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneRestore.gif"),
@@ -84,7 +87,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			parseContent: this.parseContent});
 		delete this.url;
 
-		if(this.hideScrollBars){
+		if (this.hideScrollBars) {
 			this.clientPane.domNode.style.overflow="hidden";
 		}
 
@@ -190,10 +193,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if ( this.hasShadow ) {
 			this.shadow = document.createElement('canvas');
 			dojo.html.addClass(this.shadow, "dojoCanvasShadow");
-			// this.shadow = document.createElement('div');
-			// dojo.html.addClass(this.shadow, "dojoDropShadow");
 			this.shadow.style["z-index"]="-100";
-			// dojo.style.setOpacity(this.shadow, 0.5);
 			this.domNode.appendChild(this.shadow);
 			dojo.html.disableSelection(this.shadow);
 			dojo.style.setOpacity(this.domNode, 1);
@@ -341,12 +341,15 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			}
 		}
 
-		// add myself to the taskbar after the taskbar has been initialized
-		if( this.taskBarId != "" ){
-			dojo.addOnLoad(this, "taskBarSetup");
+		if( this.taskBarId ){
+			this.taskBarSetup();
 		}
 
-		dojo.addOnLoad(this, "setInitialWindowState");
+		if (dojo.hostenv.post_load_) {
+			dojo.addOnLoad(this, "setInitialWindowState");
+		} else {
+			this.setInitialWindowState();
+		}
 		
 		// Prevent IE bleed-through problem
 		this.bgIframe = new dojo.html.BackgroundIframe();
@@ -385,7 +388,16 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	// add icon to task bar, connected to me
 	taskBarSetup: function() {
 		var taskbar = dojo.widget.getWidgetById(this.taskBarId);
-		if( !taskbar ){ return; }
+		if (!taskbar){
+			if (this.taskBarConnectAttempts <  this.maxTaskBarConnectAttempts) {
+				dojo.lang.setTimeout(this, this.taskBarSetup, 50);
+				this.taskBarConnectAttempts++;
+			} else {
+				alert("Unable to connect to the taskBar");
+			}
+			return;
+		}
+
 		taskbar.addChild(this);
 	},
 
@@ -404,7 +416,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.outerWidth = newWidth;
 			this.outerHeight = newHeight;
 			if ( this.shadow ) {
-				// dojo.style.setOuterWidth(this.shadow, newWidth);
 				dojo.style.setOuterWidth(this.shadow, newWidth+30);
 				dojo.style.setOuterHeight(this.shadow, newHeight);
 				this.makeShadow(this.shadow);
