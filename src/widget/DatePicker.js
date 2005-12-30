@@ -6,8 +6,12 @@ dojo.widget.DatePicker = function(){
 	dojo.widget.Widget.call(this);
 	this.widgetType = "DatePicker";
 	this.isContainer = false;
+	// the following aliases prevent breaking people using 0.2.x
 	this.months = dojo.widget.DatePicker.util.months;
 	this.weekdays = dojo.widget.DatePicker.util.weekdays;
+	this.toRfcDate = dojo.widget.DatePicker.util.toRfcDate;
+	this.fromRfcDate = dojo.widget.DatePicker.util.fromRfcDate;
+	this.initFirstSaturday = dojo.widget.DatePicker.util.initFirstSaturday;
 }
 
 dojo.inherits(dojo.widget.DatePicker, dojo.widget.Widget);
