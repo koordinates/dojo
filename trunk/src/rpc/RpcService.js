@@ -2,7 +2,7 @@ dojo.provide("dojo.rpc.RpcService");
 dojo.require("dojo.io.*");
 dojo.require("dojo.json");
 dojo.require("dojo.lang");
-dojo.require("dojo.rpc.DeferredRequest");
+dojo.require("dojo.rpc.Deferred");
 
 dojo.rpc.RpcService = function(url){
 	if(url){
@@ -38,7 +38,7 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 	generateMethod: function(method,parameters) {
 		return function() {
 
-			var deferredRequestHandler = new dojo.rpc.DeferredRequest();
+			var deferredRequestHandler = new dojo.rpc.Deferred();
 
 			if(parameters){
 				var numberExpectedParameters = parameters.length;
