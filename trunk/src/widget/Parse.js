@@ -259,14 +259,28 @@ dojo.widget.getParser = function(name){
  *                 refNode argument
  * @return The new Widget object
  */
- dojo.widget.fromScript = function(name, props, refNode, position){
-	if(	(typeof name != "string")&&
-		(typeof props == "string")){
-		// we got called with the old function signature, so just pass it on through
-		// use full deref in case we're called from an alias
-		return dojo.widget._oldFromScript(name, props, refNode);
+ 
+dojo.widget.createWidget = function (name, props, refNode, position) {
+
+	function fromScript (placeKeeperNode, name, props) {
+		var lowerCaseName = name.toLowerCase();
+		var namespacedName = "dojo:" + lowerCaseName;
+		props[namespacedName] = { 
+			dojotype: [{value: lowerCaseName}],
+			nodeRef: placeKeeperNode,
+			fastMixIn: true
+		};
+		return dojo.widget.getParser().createComponentFromScript(
+			placeKeeperNode, name, props, true);
 	}
-	/// otherwise, we just need to keep working a bit...
+
+	if (typeof name != "string" && typeof props == "string") {
+		dojo.deprecated("dojo.widget.createWidget", 
+			"argument order is now of the form " +
+			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])");
+		return fromScript(name, props, refNode);
+	}
+	
 	props = props||{};
 	var notRef = false;
 	var tn = null;
@@ -285,28 +299,20 @@ dojo.widget.getParser = function(name){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var widgetArray = dojo.widget._oldFromScript(tn, name, props);
+	var widgetArray = fromScript(tn, name, props);
 	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
-		throw new Error("Creation of \"" + name + "\" widget fromScript failed.");
+		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}
 	if (notRef) {
 		if (widgetArray[0].domNode.parentNode) {
 			widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode);
 		}
 	}
-	return widgetArray[0]; // not sure what the array wrapper is for, but just return the widget
+	return widgetArray[0]; // just return the widget
 }
-
-dojo.widget._oldFromScript = function(placeKeeperNode, name, props){
-	var ln = name.toLowerCase();
-	var tn = "dojo:"+ln;
-	props[tn] = { 
-		dojotype: [{value: ln}],
-		nodeRef: placeKeeperNode,
-		fastMixIn: true
-	};
-	var ret = dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props, true);
-	return ret;
+ 
+dojo.widget.fromScript = function(name, props, refNode, position){
+	dojo.deprecated("dojo.widget.fromScript", " use " +
+		"dojo.widget.createWidget instead");
+	return dojo.widget.createWidget(name, props, refNode, position);
 }
-
-
