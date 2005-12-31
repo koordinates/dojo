@@ -15,7 +15,7 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount, rate) {
 	this.curve = curve;
 	this.duration = duration;
 	this.repeatCount = repeatCount || 0;
-	this.rate = rate || 10;
+	this.rate = rate || 25;
 	if(accel) {
 		if(dojo.lang.isFunction(accel.getValue)) {
 			this.accel = accel;
