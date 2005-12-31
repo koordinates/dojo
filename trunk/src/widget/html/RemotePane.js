@@ -26,7 +26,7 @@ dojo.inherits(dojo.widget.html.RemotePane, dojo.widget.html.Container);
 dojo.lang.extend(dojo.widget.html.RemotePane, {
 	widgetType: "RemotePane",
 
-	url: "about:blank",
+	href: "about:blank",
 	extractContent: true,
 	parseContent: true,
 	cacheContent: true,
@@ -34,11 +34,24 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 	// To generate pane content from a java function
 	handler: "none",
 
-	fillInTemplate: function(){
-		dojo.html.addClass(this.domNode, "dojoRemotePane");
+	// I'm using a template because the user may specify the input as
+	// <a href="foo.html">label</a>, in which case we need to get rid of the
+	// <a> because we don't want a link.
+	templateString: '<div class="dojoRemotePane"></div>',
+
+	fillInTemplate: function(args, frag){
+		var source = this.getFragNodeRef(frag);
+
+		// If user has specified node contents, they become the label
+		// (markup in the link is not handled correctly, so don't use it)
+		this.label += source.innerHTML;
+
+		// Copy style info from input node to output node
+		this.domNode.style.cssText = source.cssText;
+		this.domNode["class"] = source["class"];
 	},
 
-	postCreate: function(args, fragment, parentComp){
+	postCreate: function(args, frag, parentComp){
 		if ( this.handler != "none" ){
 			this.setHandler(this.handler);
 		}
@@ -54,15 +67,15 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 		}
 		if ( dojo.lang.isFunction(this.handler)) {
 			this._runHandler();
-		} else if ( this.url != "about:blank" ) {
-			this._downloadExternalContent(this.url, this.cacheContent);
+		} else if ( this.href != "about:blank" ) {
+			this._downloadExternalContent(this.href, this.cacheContent);
 		}
 		this.isLoaded=true;
 	},
 
 	// Reset the (external defined) content of this pane
 	setUrl: function(url) {
-		this.url = url;
+		this.href = url;
 		this.isLoaded = false;
 		if ( this.isVisible() ){
 			this.loadContents();
@@ -120,5 +133,5 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 			return false;
 		}
 		return true;
-	},
+	}
 });
