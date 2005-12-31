@@ -47,7 +47,7 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 		this.label += source.innerHTML;
 
 		// Copy style info from input node to output node
-		this.domNode.style.cssText = source.cssText;
+		this.domNode.style.cssText = source.style.cssText;
 		this.domNode["class"] = source["class"];
 	},
 
