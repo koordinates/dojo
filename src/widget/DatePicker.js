@@ -10,8 +10,8 @@ dojo.widget.DatePicker = function(){
 	// the following aliases prevent breaking people using 0.2.x
 	this.months = dojo.date.months;
 	this.weekdays = dojo.date.days;
-	this.toRfcDate = dojo.date.toRfcDate;
-	this.fromRfcDate = dojo.date.fromRfcDate;
+	this.toRfcDate = dojo.widget.DatePicker.util.toRfcDate;
+	this.fromRfcDate = dojo.widget.DatePicker.util.fromRfcDate;
 	this.initFirstSaturday = dojo.widget.DatePicker.util.initFirstSaturday;
 }
 
@@ -23,9 +23,33 @@ dojo.requireAfterIf("html", "dojo.widget.html.DatePicker");
 dojo.widget.DatePicker.util = new function() {
 	this.months = dojo.date.months;
 	this.weekdays = dojo.date.days;
-	this.toRfcDate = dojo.date.toRfcDate;
-	this.fromRfcDate = dojo.date.fromRfcDate;
-
+	
+	this.toRfcDate = function(jsDate) {
+		if(!jsDate) {
+			jsDate = this.today;
+		}
+		var year = jsDate.getFullYear();
+		var month = jsDate.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month.toString();
+		}
+		var date = jsDate.getDate();
+		if (date < 10) {
+			date = "0" + date.toString();
+		}
+		// because this is a date picker and not a time picker, we treat time 
+		// as zero
+		return year + "-" + month + "-" + date + "T00:00:00+00:00";
+	}
+	
+	this.fromRfcDate = function(rfcDate) {
+		var tempDate = rfcDate.split("-");
+		if(tempDate.length < 3) {
+			return new Date();
+		}
+		// fullYear, month, date
+		return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
+	}
 	
 	this.initFirstSaturday = function(month, year) {
 		if(!month) {
