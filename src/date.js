@@ -1,5 +1,4 @@
 dojo.provide("dojo.date");
-dojo.require("dojo.string");
 
 /**
  * Sets the current Date object to the time given in an ISO 8601 date/time
@@ -174,6 +173,33 @@ dojo.date.toShortDateString = function(date) {
 	return dojo.date.shortMonths[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
 }
 
+dojo.date.toRfcDate = function(jsDate) {
+	if(!jsDate) {
+		jsDate = this.today;
+	}
+	var year = jsDate.getFullYear();
+	var month = jsDate.getMonth() + 1;
+	if (month < 10) {
+		month = "0" + month.toString();
+	}
+	var date = jsDate.getDate();
+	if (date < 10) {
+		date = "0" + date.toString();
+	}
+	// because this is a date picker and not a time picker, we treat time 
+	// as zero
+	return year + "-" + month + "-" + date + "T00:00:00+00:00";
+}
+
+dojo.date.fromRfcDate = function(rfcDate) {
+	var tempDate = rfcDate.split("-");
+	if(tempDate.length < 3) {
+		return new Date();
+	}
+	// fullYear, month, date
+	return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
+}
+
 /**
  *
  * Returns military formatted time
@@ -229,29 +255,4 @@ dojo.date.toRelativeString = function(date) {
 	} else {
 		return dojo.date.toShortDateString(date);
 	}
-}
-
-/**
- * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
- */
-dojo.date.toSql = function(date, noTime) {
-	var sql = date.getFullYear() + "-" + dojo.string.pad(date.getMonth(), 2) + "-"
-		+ dojo.string.pad(date.getDate(), 2);
-	if(!noTime) {
-		sql += " " + dojo.string.pad(date.getHours(), 2) + ":"
-			+ dojo.string.pad(date.getMinutes(), 2) + ":"
-			+ dojo.string.pad(date.getSeconds(), 2);
-	}
-	return sql;
-}
-
-/**
- * Convert a SQL date string to a JavaScript Date object
- */
-dojo.date.fromSql = function(sqlDate) {
-	var parts = sqlDate.split(/[\- :]/g);
-	while(parts.length < 6) {
-		parts.push(0);
-	}
-	return new Date(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
 }
