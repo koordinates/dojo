@@ -26,7 +26,7 @@ Usage
 
 ::
 
-  var timePicker = dojo.widget.fromScript("TimePicker", {},  
+  var timePicker = dojo.widget.createWidget("TimePicker", {},  
   dojo.byId("timePickerNode"));
 
 or::
@@ -136,56 +136,6 @@ Methods
 
     *returns*:
         null
-
-``toRfcDate(jsDate)``:
-
-    Convert a JavaScript date object, jsDate, to an `RFC 3339`_ date format. If 
-		no jsDate is passed in, it converts the value of today.  There is currently 
-		little attempt to validate the date inside this method.  Seconds are always set to "00" since the UI does not support setting seconds.
-
-    ``jsDate``:
-        A JavaScript Date object instance
-
-    *returns*:
-        an `RFC 3339`_ date
-
-``fromRfcDate(rfCDate)``:
-
-    Converts an `RFC 3339`_ date string to a JavaScript Date object instance.
-
-    ``rfcDate``:
-        A string representing an `RFC 3339`_ formatted date.
-
-    *returns*:
-        a JavaScript Date object instance representing the value passed in by 
-				rfcDate, or today if rfcDate is not valid.  It always returns today's 
-				Date, but with the correct date and time, since this function is 
-				intended to only be concerned with time information.
-
-``toAmPmHour(hour)``:
-
-    This method accepts a 24 hour clock hour and returns an Array of the hour 
-		on the AM/PM scale, and a boolean that is true if AM, or false if PM
-
-    ``hour``:
-        Integer between 0 and 23
-
-    *returns*:
-        An Array of the hour on the AM/PM scale, and a boolean that is true if 
-				AM, or false if PM
-
-``fromAmPmHour(amPmHour, isAm)``:
-
-    This method accepts an AM/PM hourand a boolean that is true if AM, or false if PM, and returns a 24-hour hour.
-
-    ``asPmHour``:
-        Integer between 1 and 12
-
-    ``isAm``:
-        boolean, true if AM, false if PM
-				
-    *returns*:
-        An interger between 0 and 23 representing the hour on the 24 hour scale.
 
 ``onClearSelectedHour(evt)``:
 
@@ -372,13 +322,13 @@ Requires
 
 - `dojo.widget`_
 - `dojo.widget.HtmlWidget`_
-- `dojo.widget.DatePicker`_
+- `dojo.widget.TimePicker`_
 - `dojo.event`_
 - `dojo.html`_
 
 .. _`dojo.widget`:	widget.html
 .. _`dojo.widget.HtmlWidget`:	widget/HtmlWidget.html
-.. _`dojo.widget.DatePicker`:	widget/DatePicker.html
+.. _`dojo.widget.date`:	widget/TimePicker.html
 .. _`dojo.event`:	event.html
 .. _`dojo.html`:	html.html
 
@@ -394,8 +344,8 @@ About
 ===============================================================================
 
 :Author: Dylan Schiemann
-:Version: 0.1
+:Version: 0.2
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/11/13
+:Date: 2005/12/30
 
 .. vim:ts=4:et:tw=80:shiftwidth=4:

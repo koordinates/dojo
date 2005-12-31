@@ -20,7 +20,7 @@ Usage
 
 ::
 
-  var datePicker = dojo.widget.fromScript("DatePicker", {},  
+  var datePicker = dojo.widget.createWidget("DatePicker", {},  
   dojo.byId("datePickerNode"));
 
 or::
@@ -56,8 +56,6 @@ Classes
 
     Utility collection for any convenience methods specific to a DatePicker, 
 		but not specific to an instance..
-
-
 
 Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
