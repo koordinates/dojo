@@ -256,3 +256,119 @@ dojo.date.toRelativeString = function(date) {
 		return dojo.date.toShortDateString(date);
 	}
 }
+
+/**
+ * Retrieves the day of the week the Date is set to.
+ *
+ * @return The day of the week
+ */
+dojo.date.getDayOfWeekName = function (date) {
+	return dojo.date.days[date.getDay()];
+}
+
+/**
+ * Retrieves the short day of the week name the Date is set to.
+ *
+ * @return The short day of the week name
+ */
+dojo.date.getShortDayOfWeekName = function (date) {
+	return dojo.date.shortDays[date.getDay()];
+}
+
+/**
+ * Retrieves the month name the Date is set to.
+ *
+ * @return The month name
+ */
+dojo.date.getMonthName = function (date) {
+	return dojo.date.months[date.getMonth()];
+}
+
+/**
+ * Retrieves the short month name the Date is set to.
+ *
+ * @return The short month name
+ */
+dojo.date.getShortMonthName = function (date) {
+	return dojo.date.shortMonths[date.getMonth()];
+}
+
+/**
+ *
+ * Format datetime
+ * 
+ * @param date the date object
+ */
+dojo.date.toString = function(date, format){
+
+	if (format.indexOf("#d") > -1) {
+		format = format.replace(/#dddd/g, dojo.date.getDayOfWeekName(date));
+		format = format.replace(/#ddd/g, dojo.date.getShortDayOfWeekName(date));
+		format = format.replace(/#dd/g, dojo.date._padTwo(date.getDate()));
+		format = format.replace(/#d/g, date.getDate());
+	}
+
+	if (format.indexOf("#M") > -1) {
+		format = format.replace(/#MMMM/g, dojo.date.getMonthName(date));
+		format = format.replace(/#MMM/g, dojo.date.getShortMonthName(date));
+		format = format.replace(/#MM/g, dojo.date._padTwo(date.getMonth() + 1));
+		format = format.replace(/#M/g, date.getMonth() + 1);
+	}
+
+	if (format.indexOf("#y") > -1) {
+		var fullYear = date.getFullYear().toString();
+		format = format.replace(/#yyyy/g, fullYear);
+		format = format.replace(/#yy/g, fullYear.substring(2));
+		format = format.replace(/#y/g, fullYear.substring(3));
+	}
+
+	// Return if only date needed;
+	if (format.indexOf("#") == -1) {
+		return format;
+	}
+	
+	if (format.indexOf("#h") > -1) {
+		var hours = date.getHours();
+		hours = hours > 12 ? hours - 12 : hours;
+		format = format.replace(/#hh/g, dojo.date._padTwo(hours));
+		format = format.replace(/#h/g, hours);
+	}
+	
+	if (format.indexOf("#H") > -1) {
+		format = format.replace(/#HH/g, dojo.date._padTwo(date.getHours()));
+		format = format.replace(/#H/g, date.getHours());
+	}
+	
+	if (format.indexOf("#m") > -1) {
+		format = format.replace(/#mm/g, dojo.date._padTwo(date.getMinutes()));
+		format = format.replace(/#m/g, date.getMinutes());
+	}
+
+	if (format.indexOf("#s") > -1) {
+		format = format.replace(/#ss/g, dojo.date._padTwo(date.getSeconds()));
+		format = format.replace(/#s/g, date.getSeconds());
+	}
+	
+	if (format.indexOf("#T") > -1) {
+		format = format.replace(/#TT/g, date.getHours() > 12 ? "PM" : "AM");
+		format = format.replace(/#T/g, date.getHours() > 12 ? "P" : "A");
+	}
+
+	if (format.indexOf("#t") > -1) {
+		format = format.replace(/#tt/g, date.getHours() > 12 ? "pm" : "am");
+		format = format.replace(/#t/g, date.getHours() > 12 ? "p" : "a");
+	}
+					
+	return format;
+	
+}
+
+/**
+ *
+ * Returns padded number
+ * 
+ * @param date the date object
+ */
+dojo.date._padTwo = function (n) {
+    return (n > 9) ? n : "0" + n;
+};
