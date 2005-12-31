@@ -15,6 +15,8 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.TabSet");
+	dojo.require("dojo.widget.RemotePane");
+	dojo.require("dojo.widget.BasicPane");
 </script>
 
 <style type="text/css">
@@ -37,18 +39,18 @@ function boo(panel, node) {
 
 	<div id="mainTabSet" dojoType="TabSet" style="width: 100%; height: 20em;" selectedTab="tab2">
 	
-		<div id="tab1" dojoType="Tab" label="Tab 1" url="tab1.html"></div>
+		<div id="tab1" dojoType="RemotePane" label="Tab 1" url="tab1.html"></div>
 		
-		<div id="tab2" dojoType="Tab" label="Tab 2" url="tab2.html"></div>
+		<div id="tab2" dojoType="RemotePane" label="Tab 2" url="tab2.html"></div>
 		
-		<div dojoType="Tab" label="Tab 3">
+		<div dojoType="BasicPane" label="Tab 3">
 			<h1>I am tab 3</h1>
 			<p>And I was already part of the page! That's cool, no?</p>
 		</div>
 		
-		<div dojoType="Tab" label="Handler tab" handler="boo"></div>
+		<div dojoType="RemotePane" label="Handler tab" handler="boo"></div>
 
-		<div dojoType="Tab" label="Another Tab">
+		<div dojoType="BasicPane" label="Another Tab">
 			<h1>I love local content</h1>
 			<p>And I'm not ashamed to admit it.</p>
 			<p>venga venga venga venga venga venga venga venga venga venga venga venga
@@ -61,8 +63,8 @@ function boo(panel, node) {
 		</div>
 
 		<div id="subTabSet" dojoType="TabSet" label="Sub TabSet">	
-			<div dojoType="Tab" label="SubTab 1" url="tab1.html"></div>		
-			<div dojoType="Tab" label="SubTab 2" url="tab2.html" selected="true"></div>
+			<div dojoType="RemotePane" label="SubTab 1" url="tab1.html"></div>		
+			<div dojoType="RemotePane" label="SubTab 2" url="tab2.html" selected="true"></div>
 		</div>
 
 	</div>
