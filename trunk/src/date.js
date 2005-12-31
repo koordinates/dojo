@@ -173,33 +173,6 @@ dojo.date.toShortDateString = function(date) {
 	return dojo.date.shortMonths[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
 }
 
-dojo.date.toRfcDate = function(jsDate) {
-	if(!jsDate) {
-		jsDate = this.today;
-	}
-	var year = jsDate.getFullYear();
-	var month = jsDate.getMonth() + 1;
-	if (month < 10) {
-		month = "0" + month.toString();
-	}
-	var date = jsDate.getDate();
-	if (date < 10) {
-		date = "0" + date.toString();
-	}
-	// because this is a date picker and not a time picker, we treat time 
-	// as zero
-	return year + "-" + month + "-" + date + "T00:00:00+00:00";
-}
-
-dojo.date.fromRfcDate = function(rfcDate) {
-	var tempDate = rfcDate.split("-");
-	if(tempDate.length < 3) {
-		return new Date();
-	}
-	// fullYear, month, date
-	return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
-}
-
 /**
  *
  * Returns military formatted time
