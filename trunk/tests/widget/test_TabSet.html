@@ -17,11 +17,6 @@
 	dojo.require("dojo.widget.TabSet");
 </script>
 
-<!-- there's a race condition when tabs get loaded; if the CSS isn't available
-when the tabs are sized then there will be a big gap between the labels and the
-content.  As a workaround, load CSS directly
--->
-<LINK href="../../src/widget/templates/HtmlTabSet.css" type="text/css" media=screen>
 <style type="text/css">
 body {
 	font-family : sans-serif;
@@ -65,11 +60,9 @@ function boo(panel, node) {
 			venga venga venga venga venga venga venga venga venga venga venga venga</p>
 		</div>
 
-		<div dojoType="Tab" label="Sub TabSet">
-			<div id="subTabSet" dojoType="TabSet" style="width: 100%; height: 100%;">	
-				<div dojoType="Tab" label="Tab 1" url="tab1.html"></div>		
-				<div dojoType="Tab" label="Tab 2" url="tab2.html" selected="true"></div>
-			</div>
+		<div id="subTabSet" dojoType="TabSet" label="Sub TabSet">	
+			<div dojoType="Tab" label="SubTab 1" url="tab1.html"></div>		
+			<div dojoType="Tab" label="SubTab 2" url="tab2.html" selected="true"></div>
 		</div>
 
 	</div>
