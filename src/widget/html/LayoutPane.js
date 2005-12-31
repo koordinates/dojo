@@ -58,13 +58,10 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 		// Need to include CSS manually because there is no template file/string
 		dojo.style.insertCssFile(this.cssPath, null, true);
-
-		this.domNode.style.position = 'relative';
 		dojo.html.addClass(this.domNode, "dojoLayoutPane");
 	},
 
 	postCreate: function(args, fragment, parentComp){
-
 		for(var i=0; i<this.children.length; i++){
 			this._injectChild(this.children[i]);
 		}
@@ -262,7 +259,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 			child.domNode.style.position = 'absolute';
 			child.isChild = true;	
 			this.filterAllowed(child, 'layoutAlign', ['none', 'left', 'top', 'right', 'bottom', 'client', 'flood']);
-			dojo.html.addClass(child.domNode, "dojoAlign" + dojo.string.capitalize(this.layoutAlign));		
+			dojo.html.addClass(child.domNode, "dojoAlign" + dojo.string.capitalize(child.layoutAlign));		
 		}
 	},
 
