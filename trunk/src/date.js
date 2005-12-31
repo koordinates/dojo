@@ -109,6 +109,7 @@ dojo.date.fromIso8601Time = function (string) {
 dojo.date.setDayOfYear = function (dateObject, dayofyear) {
 	dateObject.setMonth(0);
 	dateObject.setDate(dayofyear);
+	return dateObject;
 }
 
 /**
@@ -345,3 +346,28 @@ dojo.date.toString = function(date, format){
 dojo.date._padTwo = function (n) {
     return (n > 9) ? n : "0" + n;
 };
+
+/**
+ * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
+ */
+dojo.date.toSql = function(date, noTime) {
+	var sql = date.getFullYear() + "-" + dojo.string.pad(date.getMonth(), 2) + "-"
+		+ dojo.string.pad(date.getDate(), 2);
+	if(!noTime) {
+		sql += " " + dojo.string.pad(date.getHours(), 2) + ":"
+			+ dojo.string.pad(date.getMinutes(), 2) + ":"
+			+ dojo.string.pad(date.getSeconds(), 2);
+	}
+	return sql;
+}
+
+/**
+ * Convert a SQL date string to a JavaScript Date object
+ */
+dojo.date.fromSql = function(sqlDate) {
+	var parts = sqlDate.split(/[\- :]/g);
+	while(parts.length < 6) {
+		parts.push(0);
+	}
+	return new Date(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+}
