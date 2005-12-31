@@ -39,9 +39,9 @@ function boo(panel, node) {
 
 	<div id="mainTabSet" dojoType="TabSet" style="width: 100%; height: 20em;" selectedTab="tab2">
 	
-		<div id="tab1" dojoType="RemotePane" label="Tab 1" url="tab1.html"></div>
+		<a id="tab1" dojoType="RemotePane" href="tab1.html">Tab 1</a>
 		
-		<div id="tab2" dojoType="RemotePane" label="Tab 2" url="tab2.html"></div>
+		<a id="tab2" dojoType="RemotePane" href="tab2.html">Tab 2</a>
 		
 		<div dojoType="BasicPane" label="Tab 3">
 			<h1>I am tab 3</h1>
@@ -63,8 +63,8 @@ function boo(panel, node) {
 		</div>
 
 		<div id="subTabSet" dojoType="TabSet" label="Sub TabSet">	
-			<div dojoType="RemotePane" label="SubTab 1" url="tab1.html"></div>		
-			<div dojoType="RemotePane" label="SubTab 2" url="tab2.html" selected="true"></div>
+			<a dojoType="RemotePane" href="tab1.html">SubTab 1</a>		
+			<a dojoType="RemotePane" href="tab2.html" selected="true">SubTab 2</a>
 		</div>
 
 	</div>
