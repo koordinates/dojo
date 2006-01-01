@@ -133,6 +133,9 @@ dojo.style.getMarginWidth = function(node){
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
 	var left = dojo.style.getPixelValue(node, "margin-left", autoIsZero);
 	var right = dojo.style.getPixelValue(node, "margin-right", autoIsZero);
+	if(isNaN(left)||isNaN(right)){
+		return 0;
+	}
 	return left + right;
 }
 
@@ -187,6 +190,9 @@ dojo.style.getMarginHeight = function(node){
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
 	var top = dojo.style.getPixelValue(node, "margin-top", autoIsZero);
 	var bottom = dojo.style.getPixelValue(node, "margin-bottom", autoIsZero);
+	if(isNaN(top)||isNaN(bottom)){
+		return 0;
+	}
 	return top + bottom;
 }
 
