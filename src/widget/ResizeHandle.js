@@ -45,7 +45,7 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	beginSizing: function(e){
 		if (this.isSizing){ return false; }
 
-		this.targetElm = dojo.widget.getWidgetById(this.targetElmId);
+		this.targetElm = dojo.widget.byId(this.targetElmId);
 		if (!this.targetElm){ return; }
 
 		var screenX = window.event ? window.event.clientX : e.pageX;
@@ -55,8 +55,14 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
 		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetElm.domNode), 'h':dojo.style.getOuterHeight(this.targetElm.domNode)};
 
-		dojo.event.connect(document.documentElement, "onmousemove", this, "changeSizing");
-		dojo.event.connect(document.documentElement, "onmouseup", this, "endSizing");
+		dojo.event.kwConnect({
+			srcObj: dojo.html.body(), 
+			srcFunc: "onmousemove",
+			targetObj: this,
+			targetFunc: "changeSizing",
+			rate: 25
+		});
+		dojo.event.connect(dojo.html.body(), "onmouseup", this, "endSizing");
 
 		e.preventDefault();
 	},
@@ -70,8 +76,8 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	},
 
 	endSizing: function(e){
-		dojo.event.disconnect(document.documentElement, "onmousemove", this, "changeSizing");
-		dojo.event.disconnect(document.documentElement, "onmouseup", this, "endSizing");
+		dojo.event.disconnect(dojo.html.body(), "onmousemove", this, "changeSizing");
+		dojo.event.disconnect(dojo.html.body(), "onmouseup", this, "endSizing");
 
 		this.isSizing = false;
 	}
