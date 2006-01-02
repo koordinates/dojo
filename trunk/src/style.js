@@ -117,9 +117,11 @@ dojo.style.getUnitValue = function (element, cssSelector, autoIsZero){
 
 dojo.style.getPixelValue = function (element, cssSelector, autoIsZero){
 	var result = dojo.style.getUnitValue(element, cssSelector, autoIsZero);
+	// FIXME: there is serious debate as to whether or not this is the right solution
+	if(isNaN(result.value)){ return 0; }
 	// FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
 	// but there are cross-browser complexities
-	if (isNaN(result.value) || (result.value && result.units != 'px')) { return NaN; }
+	if((result.value)&&(result.units != 'px')){ return NaN; }
 	return result.value;
 }
 
@@ -133,9 +135,6 @@ dojo.style.getMarginWidth = function(node){
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
 	var left = dojo.style.getPixelValue(node, "margin-left", autoIsZero);
 	var right = dojo.style.getPixelValue(node, "margin-right", autoIsZero);
-	if(isNaN(left)||isNaN(right)){
-		return 0;
-	}
 	return left + right;
 }
 
@@ -190,9 +189,6 @@ dojo.style.getMarginHeight = function(node){
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
 	var top = dojo.style.getPixelValue(node, "margin-top", autoIsZero);
 	var bottom = dojo.style.getPixelValue(node, "margin-bottom", autoIsZero);
-	if(isNaN(top)||isNaN(bottom)){
-		return 0;
-	}
 	return top + bottom;
 }
 
