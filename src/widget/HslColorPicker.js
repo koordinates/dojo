@@ -9,7 +9,7 @@ dojo.requireAfterIf(dojo.render.svg.support.builtin, "dojo.widget.svg.HslColorPi
 
 dojo.widget.HslColorPicker=function(){
 	dojo.widget.Widget.call(this);
-	this.widgetType="HslColorPicker";
-	this.isContainer=false;
+	this.widgetType = "HslColorPicker";
+	this.isContainer = false;
 }
 dojo.inherits(dojo.widget.HslColorPicker, dojo.widget.Widget);
