@@ -9,6 +9,7 @@ dojo.require("dojo.graphics.color");
 dojo.widget.svg.HslColorPicker=function(){
 	dojo.widget.HslColorPicker.call(this);
 	dojo.widget.HtmlWidget.call(this);
+	dojo.debug("warning: the HslColorPicker is not a finished widget, and is not yet ready for general use");
 	this.hue = "0";
 	this.saturation = "0";
 	this.light = "0";
@@ -77,7 +78,7 @@ dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
 	setStoredColor: function(rgbHexColor) {
 		this.storedColor = rgbHexColor;
 	},
-	hsl2rgb: function(hue, saturation, light)  // PRIVATE
+	hsl2rgb: function(hue, saturation, light)
 	{
 		// hsl2rgb in dojo.graphics.color did not behave hte way I expected, so 
 		// I'm using some old code I wrote until I figure out what the issue is
