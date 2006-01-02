@@ -12,7 +12,6 @@ dojo.rpc.RpcService = function(url){
 
 dojo.lang.extend(dojo.rpc.RpcService, {
 
-	status: "LOADING",
 	serviceURL: "",
 
 	parseResults: function(object) {
@@ -70,7 +69,6 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 		}
 
 		this.serviceURL = object.serviceURL;
-		this.status="READY";
 		dojo.debug("RpcService: Dojo RpcService is ready for use.");
 	},
 
