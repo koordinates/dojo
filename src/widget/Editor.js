@@ -142,6 +142,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 		}
 		this._richText = richText;
 		dojo.event.connect(this._richText, "close", this, "onClose");
+		dojo.event.connect(this._richText, "onLoad", this, "onLoad");
 		dojo.event.connect(this._richText, "onDisplayChanged", this, "updateToolbar");
 		if(this._toolbarContainer) {
 			this._toolbarContainer.enable();
@@ -452,8 +453,9 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	},
 
 	// events baby!
-	onSave: null,
-	onCancel: null
+	onLoad: function(){},
+	onSave: function(){},
+	onCancel: function(){}
 });
 
 /*
