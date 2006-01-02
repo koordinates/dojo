@@ -397,3 +397,8 @@ dojo.graphics.color.hsl2hex = function(h, s, l){
 	var rgb = dojo.graphics.color.hsl2rgb(h, s, l);
 	return dojo.graphics.color.rgb2hex(rgb[0], rgb[1], rgb[2]);
 }
+
+dojo.graphics.color.hex2hsl = function(hex){
+	var rgb = dojo.graphics.color.hex2rgb(hex);
+	return dojo.graphics.color.rgb2hsl(rgb[0], rgb[1], rgb[2]);
+}
