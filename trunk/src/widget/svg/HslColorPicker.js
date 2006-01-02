@@ -3,7 +3,6 @@ dojo.provide("dojo.widget.svg.HslColorPicker");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.HslColorPicker");
 dojo.require("dojo.math");
-dojo.require("dojo.html");
 dojo.require("dojo.svg");
 dojo.require("dojo.graphics.color");
 
@@ -41,14 +40,14 @@ dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
 	setHueSlider: function() {
 		// FIXME: need to add some padding around the picker so you can see the slider at the top and bottom of the picker)
 		this.hueSliderNode.setAttribute("y", parseInt((hue/360) * parseInt(this.height) - 2) + "px" );
-	}
+	},
 	setSaturationLight: function(saturation, light) {
 		this.saturation = saturation;
 		this.light = light;
 	},
 	setSaturationLightSlider: function() {
 		// TODO
-	}
+	},
 	onHueClick: function(evt) {
 		// get the position that was clicked on the element
 		// FIXME: handle document scrolling
