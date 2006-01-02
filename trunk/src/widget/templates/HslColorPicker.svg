@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="1.1" baseProfile="full" width="131" height="131">
+	<defs>
+		<linearGradient id="colorGradient" x1="0" x2="127" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+			<stop id="leftGradientColor" offset="0%" stop-color="#828282"/>
+			<stop id="rightGradientColor" offset="100%" stop-color="#053fff"/>
+		</linearGradient>
+		<linearGradient id="Gradient02" x1="0" x2="0" y1="0" y2="127" gradientUnits="userSpaceOnUse">
+			<stop offset="0%" style="stop-color:#000000;"/>
+			<stop offset="50%" style="stop-color:#000000;stop-opacity:0;"/>
+			<stop offset="50%" style="stop-color:#ffffff;stop-opacity:0;"/>
+			<stop offset="100%" style="stop-color:#ffffff;"/>
+		</linearGradient>
+	</defs>
+	<rect x="2" y="2" width="127px" height="127px" fill="url(#colorGradient)"/>
+	<rect x="2" y="2" width="127px" height="127px" style="fill:url(#verticalGradient);"/>
+	<rect dojoAttachPoint="gradientSelectorPaneNode" x="0px" y="0px" width="131px" height="131px" style="stroke-opacity:1;fill-opacity:0;stroke:black;"/>
+	<image xlink:href="images/hue.png" dojoAttachPoint="hueSliderNode"/>
+</svg>
