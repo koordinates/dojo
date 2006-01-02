@@ -12,7 +12,34 @@
 		//]]></script>
 	</head>
 	<body>
-		<p>The following works <strong>only</strong> with a browser capable of inline SVG--that means Firefox 1.5 as of 01-Jan-2006.</p>
-		<svg:g dojo:type="hslcolorpicker" />
+		<svg:svg xmlns="http://www.w3.org/2000/svg"
+				 xmlns:xlink="http://www.w3.org/1999/xlink"
+				 version="1.1"
+				 baseProfile="full" height="160px">
+				 	<defs>
+					<linearGradient id="colorGradient" dojoAttachPoint="colorGradientNode" x1="0" x2="131" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+						<stop id="leftGradientColor" dojoAttachPoint="leftGradientColorNode" offset="0%" stop-color="#828282"/>
+						<stop id="rightGradientColor" dojoAttachPoint="rightGradientColorNode" offset="100%" stop-color="#053fff"/>
+					</linearGradient>
+					<linearGradient id="verticalGradient" x1="0" x2="0" y1="0" y2="131" gradientUnits="userSpaceOnUse">
+						<stop offset="0%" style="stop-color:#000000;"/>
+						<stop offset="50%" style="stop-color:#000000;stop-opacity:0;"/>
+						<stop offset="50%" style="stop-color:#ffffff;stop-opacity:0;"/>
+						<stop offset="100%" style="stop-color:#ffffff;"/>
+					</linearGradient>
+					<linearGradient id="sliderGradient">
+						<stop offset="0%" style="stop-color:#000000;"/>
+						<stop offset="15%" style="stop-color:#ffffff;"/>
+						<stop offset="30%" style="stop-color:#000000;"/>
+						<stop offset="45%" style="stop-color:#ffffff;"/>
+						<stop offset="60%" style="stop-color:#000000;"/>
+						<stop offset="75%" style="stop-color:#ffffff;"/>
+						<stop offset="90%" style="stop-color:#000000;"/>
+					</linearGradient>
+				</defs>
+				 <!--<g dojoType="hslcolorpicker"/>-->
+				 <dojo:hslcolorpicker dojo:storedColor="#828282" />
+		</svg:svg>
+		<p>The above example works <strong>only</strong> with a browser capable of inline SVG--that means Firefox 1.5 as of 01-Jan-2006.  Sliders don't work yet, just the part where you can click on a different hue and get a different range on the Saturation-Light picker.  Lots of bugs and issues, but a decent start.</p>
 	</body>
 </html>
