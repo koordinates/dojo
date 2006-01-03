@@ -9,9 +9,11 @@
 	dojo.require("dojo.widget.ComboBox");
 </script>
 
-<input dojoType="combobox" value="this should be replaced!"
-			dataUrl="comboBoxData.js" style="width: 300px;">
-
+<form action="#" method="GET">
+	<input dojoType="combobox" value="this should be replaced!"
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar">
+	<input type="submit">
+</form>
 <p>
 this is some text below the combo box. It shouldn't get pushed out of the way when search results get returned.
 also: adding a simple combo box to test IE bleed through problem:
