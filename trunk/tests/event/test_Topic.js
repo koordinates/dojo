@@ -42,7 +42,7 @@ function test_topic_publish(){
 	jum.assertEquals("test 60", "foo", tobj.testVal);
 }
 
-function test_event_topic_subscribe(){
+function test_topic_subscribe(){
 	var tobj = new topicTestClass();
 	dojo.event.topic.subscribe("/test4", tobj, "testSubscribe");
 	dojo.event.topic.publish("/test4", "bar");
@@ -57,3 +57,12 @@ function test_topic_unsubscribe(){
 	dojo.event.topic.publish("/test5", "bar");
 	jum.assertEquals("test 80", "foo", tobj.testVal);
 }
+
+function test_topic_permissiveSubscribe(){
+	var foo = "bar";
+	var tf = function(){ foo = "baz"; };
+	dojo.event.topic.subscribe("/test6", tf);
+	dojo.event.topic.publish("/test6", "bar");
+	jum.assertEquals("test 90", "baz", foo);
+}
+
