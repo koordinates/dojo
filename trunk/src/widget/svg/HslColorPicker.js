@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.svg.HslColorPicker");
 
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.HslColorPicker");
+dojo.require("dojo.lang");
 dojo.require("dojo.math");
 dojo.require("dojo.svg");
 dojo.require("dojo.graphics.color");
@@ -14,6 +15,9 @@ dojo.widget.svg.HslColorPicker=function(){
 	this.saturation = "0";
 	this.light = "0";
 	this.storedColor = "#0054aa";
+	var _this = this;
+	this.filterObject = {
+	}
 };
 dojo.inherits(dojo.widget.svg.HslColorPicker, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
@@ -60,23 +64,34 @@ dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
 	},
 	onHueClick: function(evt) {
 		// get the position that was clicked on the element
-		// FIXME: handle document scrolling
+		// FIXME: handle document scrolling, offset
 		var yPosition = parseInt(evt.clientY) - parseInt(evt.target.getAttribute("y"));
 		this.setHue( 360 - parseInt(yPosition*(360/parseInt(this.height))) );
 		this.setSaturationStopColors();
-		this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light).join(""));
+		this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));
 	},
 	onHueDrag: function(evt) {
 		// TODO
 	},
 	onSaturationLightClick: function(evt) {
-		// TODO
+		// get the position that was clicked on the element
+		// FIXME: handle document scrolling, offset
+		var xPosition = parseInt(evt.clientX) - parseInt(evt.target.getAttribute("y"));
+		var yPosition = parseInt(evt.clientY) - parseInt(evt.target.getAttribute("y"));
+		saturation = parseInt(parseInt(xPosition)*(101/106));
+		light = parseInt(parseInt(yPosition)*(101/106));
+		this.setSaturationLight(saturation, light);
+		this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));
 	},
 	onSaturationLightDrag: function(evt) {
 		// TODO
 	},
+	getStoredColor: function() {
+		return this.storedColor;
+	},
 	setStoredColor: function(rgbHexColor) {
 		this.storedColor = rgbHexColor;
+		dojo.event.topic.publish("/" + this.widgetId + "/setStoredColor", this.filterObject);
 	},
 	hsl2rgb: function(hue, saturation, light)
 	{

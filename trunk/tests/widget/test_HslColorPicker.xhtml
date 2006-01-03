@@ -9,6 +9,11 @@
 		<script type="text/javascript" src="../../dojo.js"></script>
 		<script type="text/javascript"><![CDATA[
 			dojo.require("dojo.widget.svg.HslColorPicker");
+			dojo.require("dojo.event.topic");
+			dojo.event.topic.subscribe("/colorPicker/setStoredColor", window, "setColorSwatch");
+			function setColorSwatch(evt) {
+				document.getElementById("colorSwatch").style.backgroundColor = dojo.widget.getWidgetById("colorPicker").getStoredColor();
+			}
 		//]]></script>
 	</head>
 	<body>
@@ -38,8 +43,8 @@
 					</linearGradient>
 				</defs>
 				 <!--<g dojoType="hslcolorpicker"/>-->
-				 <dojo:hslcolorpicker dojo:storedColor="#828282" />
-		</svg:svg>
-		<p>The above example works <strong>only</strong> with a browser capable of inline SVG--that means Firefox 1.5 as of 01-Jan-2006.  Sliders don't work yet, just the part where you can click on a different hue and get a different range on the Saturation-Light picker.  Lots of bugs and issues, but a decent start.</p>
+				 <dojo:hslcolorpicker dojo:storedColor="#828282" dojo:widgetId="colorPicker" />
+		</svg:svg><div id="colorSwatch" style="width:60px;height:20px;border:1px solid black;"></div>
+		<p>The above example works <strong>only</strong> with a browser capable of inline SVG--that means Firefox 1.5 as of 01-Jan-2006.  Sliders don't work yet, color calculations are a bit off, but you can click to select different colors.  Lots of bugs and issues, but a decent start.</p>
 	</body>
 </html>
