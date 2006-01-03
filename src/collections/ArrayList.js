@@ -78,6 +78,10 @@ dojo.collections.ArrayList = function(arr){
 			items.sort();
 		}
 	};
+	this.setByIndex = function(i, obj){
+		items[i]=obj;
+		this.count=items.length;
+	};
 	this.toArray = function(){
 		return [].concat(items);
 	}

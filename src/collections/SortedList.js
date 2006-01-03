@@ -116,6 +116,8 @@ dojo.collections.SortedList = function(dictionary){
 
 	this.setByIndex = function(i,o){
 		items[q[i].key].value = o;
+		build();
+		this.count = q.length;
 	};
 
 	if (dictionary){
