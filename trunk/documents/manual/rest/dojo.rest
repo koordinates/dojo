@@ -24,7 +24,7 @@ Usage
     dojo.deprecated("dojo.foo.api", "please see dojo.bar.api instead", "3.0");
 
     // conditional check for loading an HTML-specific module
-    dojo.requireIf("html, "dojo.foo.html.*");
+    dojo.requireIf("html", "dojo.foo.html.*");
 
     // a check based on boolean criteria
     dojo.requireIf(dojo.render.html.ie, "dojo.foo.bar.*");
