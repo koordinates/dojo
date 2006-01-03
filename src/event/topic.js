@@ -48,11 +48,25 @@ dojo.event.topic.TopicImpl = function(topicName){
 	var self = this;
 
 	self.subscribe = function(listenerObject, listenerMethod){
-		dojo.event.connect("before", self, "sendMessage", listenerObject, listenerMethod);
+		var tf = listenerMethod||listenerObject;
+		var to = (!listenerMethod) ? dj_global : listenerObject;
+		dojo.event.kwConnect({
+			srcObj:		self, 
+			srcFunc:	"sendMessage", 
+			adviceObj:	to,
+			adviceFunc: tf
+		});
 	}
 
 	self.unsubscribe = function(listenerObject, listenerMethod){
-		dojo.event.disconnect("before", self, "sendMessage", listenerObject, listenerMethod);
+		var tf = (!listenerMethod) ? listenerObject : listenerMethod;
+		var to = (!listenerMethod) ? null : listenerObject;
+		dojo.event.kwDisconnect({
+			srcObj:		self, 
+			srcFunc:	"sendMessage", 
+			adviceObj:	to,
+			adviceFunc: tf
+		});
 	}
 
 	self.registerPublisher = function(publisherObject, publisherMethod){
