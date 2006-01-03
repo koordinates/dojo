@@ -181,10 +181,10 @@ Root ``dojo`` Methods
             dojo.require("dojo.html");
 
             // load an entire package
-            dojo.reqiure("dojo.io.*");
+            dojo.require("dojo.io.*");
 
             // explicitly load a module not included in pakcage by default
-            dojo.reqiure("dojo.io.IframeIO");
+            dojo.require("dojo.io.IframeIO");
 
     *return*:
         Nothing.
