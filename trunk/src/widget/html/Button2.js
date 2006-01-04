@@ -109,6 +109,8 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 			var x = dojo.style.getAbsoluteX(this.domNode);
 			var y = dojo.style.getAbsoluteY(this.domNode) + this.height;
 			menu.open(x, y, null, this.domNode);
+		} else if ( menu.close && menu.isShowing ){
+			menu.close();
 		} else {
 			menu.toggle();
 		}

@@ -143,7 +143,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
-			dojo.widget.html.Menu2Manager.opened(this);
+			dojo.widget.html.Menu2Manager.opened(this, explodeSrc);
 		}
 
 		var viewport = dojo.html.getViewportSize();
@@ -548,6 +548,7 @@ dojo.lang.extend(dojo.widget.MenuSeparator2, {
 dojo.widget.html.Menu2Manager = new function(){
 
 	this.currentMenu = null;
+	this.currentButton = null;		// button that opened current menu (if any)
 	this.focusNode = null;
 
 	dojo.event.connect(document, 'onmousedown', this, 'onClick');
@@ -555,10 +556,11 @@ dojo.widget.html.Menu2Manager = new function(){
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
 			this.currentMenu = null;
+			this.currentButton = null;
 		}
 	};
 
-	this.opened = function(menu){
+	this.opened = function(menu, button){
 		if (menu == this.currentMenu){ return; }
 
 		if (this.currentMenu){
@@ -566,6 +568,7 @@ dojo.widget.html.Menu2Manager = new function(){
 		}
 
 		this.currentMenu = menu;
+		this.currentButton = button;
 	};
 
 	this.onClick = function(e){
@@ -587,6 +590,13 @@ dojo.widget.html.Menu2Manager = new function(){
 			}
 
 			m = m.currentSubmenu;
+		}
+
+		// Also, if user clicked the button that opened this menu, then
+		// that button will send the menu a close() command, so this code
+		// shouldn't try to close the menu.  Closing twice messes up animation.
+		if (this.currentButton && dojo.html.overElement(this.currentButton, e)){
+			return;
 		}
 
 		// the click didn't fall within the open menu tree
