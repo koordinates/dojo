@@ -4,7 +4,7 @@
 <title>Dojo Button Widget Test</title>
 
 <script type="text/javascript">
-	var djConfig = { isDebug: true, debugAtAllCosts: true };
+	var djConfig = { isDebug: true };
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -28,7 +28,7 @@
 				dojo.debug("dojo.widget.button.onClick");
 			}
 		};
-		var button = dojo.widget.fromScript("Button", buttonArgs);
+		var button = dojo.widget.createWidget("Button", buttonArgs);
 		dojo.html.body().appendChild(button.domNode);
 	}
 

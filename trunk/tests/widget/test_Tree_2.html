@@ -40,27 +40,27 @@ td {
 
 	dojo.addOnLoad(function(){
 
-		var tree = dojo.widget.fromScript("Tree", {publishSelectionTopic: "treeSelected", toggle: "fade"});
+		var tree = dojo.widget.createWidget("Tree", {publishSelectionTopic: "treeSelected", toggle: "fade"});
 		document.body.appendChild(tree.domNode);
 
-		var rootNode = dojo.widget.fromScript("TreeNode", {title: "Root Node"});
+		var rootNode = dojo.widget.createWidget("TreeNode", {title: "Root Node"});
 		tree.addChild(rootNode);
 
-		var node1 = dojo.widget.fromScript("TreeNode", {title: "Node 1"});
+		var node1 = dojo.widget.createWidget("TreeNode", {title: "Node 1"});
 		rootNode.addChild(node1);
 
-		rootNode.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 2"}));
-		var node3 = dojo.widget.fromScript("TreeNode", {title: "Node 3"});
+		rootNode.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 2"}));
+		var node3 = dojo.widget.createWidget("TreeNode", {title: "Node 3"});
 		rootNode.addChild(node3);
-		var node3_1 = dojo.widget.fromScript("TreeNode", {title: "Node 3.1"});
+		var node3_1 = dojo.widget.createWidget("TreeNode", {title: "Node 3.1"});
 		node3.addChild(node3_1);
-		node3_1.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 3.1.1"}))
+		node3_1.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 3.1.1"}))
 
-		tree.addChild(dojo.widget.fromScript("TreeNode", {title: "Root Node 2"}));
+		tree.addChild(dojo.widget.createWidget("TreeNode", {title: "Root Node 2"}));
 
 		// Add some nodes the first element (rather than the last element) just for testing
 		for(var i=1;i<5;i++) {
-			node1.addChild(dojo.widget.fromScript("TreeNode", {title: "Node 1."+i}));
+			node1.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 1."+i}));
 		}
 
 		var eventSub = new Subscriber(document.getElementById("SelectionEvents"));

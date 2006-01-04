@@ -4,7 +4,7 @@
 
 -->
 <title>Editor Test (RichText + Toolbar)</title>
-<script type="text/javascript"> djConfig = { isDebug: true, debugAtAllCosts: true }; </script>
+<script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript" src="../../src/profile.js"></script>
 <script type="text/javascript">
@@ -20,7 +20,7 @@
 // If we wanted to do this pragmatically...
 dojo.addOnLoad(function(){
 	var div = document.getElementById("editable");
-	var editor = dojo.widget.fromScript("RichText", {}, div);
+	var editor = dojo.widget.createWidget("RichText", {}, div);
 });
 */
 dojo.addOnLoad(function(){
@@ -58,7 +58,7 @@ dojo.addOnLoad(function(){
 	function editDiv(e) {
 		var editor = dojo.widget.manager.getWidgetById("editdiv");
 		//alert(editor._richText);
-		var rte = dojo.widget.fromScript("RichText", {}, e.target);
+		var rte = dojo.widget.createWidget("RichText", {}, e.target);
 		editor.setRichText(rte);
 		dojo.event.disconnect(document.getElementById("foo"), "ondblclick", "editDiv");
 	}

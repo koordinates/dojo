@@ -39,7 +39,7 @@
 
 		for(var x = 0; x<100; x++){
 			dojo.profile.start("build");
-			document.body.appendChild(dojo.widget.fromScript("Button", {label: "button "+x }).domNode);
+			document.body.appendChild(dojo.widget.createWidget("Button", {label: "button "+x }).domNode);
 			dojo.profile.end("build");
 		}
 		dojo.profile.dump(true);

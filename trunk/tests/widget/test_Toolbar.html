@@ -25,11 +25,11 @@ function img(name) {
 
 function init(e) {
 	var now = new Date();
-	tc = dojo.widget.fromScript("ToolbarContainer");
+	tc = dojo.widget.createWidget("ToolbarContainer");
 	document.body.insertBefore(tc.domNode, document.body.firstChild);
-	tb = dojo.widget.fromScript("Toolbar");
+	tb = dojo.widget.createWidget("Toolbar");
 	tc.addChild(tb);
-	var bg = dojo.widget.fromScript("ToolbarButtonGroup", {
+	var bg = dojo.widget.createWidget("ToolbarButtonGroup", {
 		name: "justify",
 		defaultButton: "justifyleft",
 		preventDeselect: true
@@ -39,7 +39,7 @@ function init(e) {
 	bg.addChild(img("justifyright"));
 	bg.addChild(img("justifyfull"));
 	var items = [img("bold"), img("italic"), img("underline"),
-		"|", dojo.widget.fromScript("ToolbarColorDialog", {toggleItem: true, icon: new dojo.widget.Icon(img("backcolor"))}), img("forecolor"),
+		"|", dojo.widget.createWidget("ToolbarColorDialog", {toggleItem: true, icon: new dojo.widget.Icon(img("backcolor"))}), img("forecolor"),
 		"|", bg, //["justify", img("justifyleft"), img("justifycenter"), img("justifyright"), img("justifyfull")],
 		"|", img("createlink"), img("insertimage"),
 		"|", img("indent"), img("outdent"),
@@ -49,7 +49,7 @@ function init(e) {
 		tb.addChild(items[i], null, {toggleItem:i<3});
 	}
 	//tb.getItem("wikiword").setLabel("WikiWord");
-	var headings = dojo.widget.fromScript("ToolbarSelect", {
+	var headings = dojo.widget.createWidget("ToolbarSelect", {
 		name: "formatBlock",
 		values: {
 			"Normal": "p",

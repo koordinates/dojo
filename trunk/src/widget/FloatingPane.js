@@ -103,7 +103,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				var img = document.createElement('img');
 				img.src = this.titleBarBackground,
 				dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
-				var backgroundPane = dojo.widget.fromScript("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
+				var backgroundPane = dojo.widget.createWidget("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
 				this.dragBar.addChild(backgroundPane);
 			}
 
@@ -183,7 +183,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			// add the resize handle
 			var resizeDiv = document.createElement('div');
 			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
-			var rh = dojo.widget.fromScript("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
+			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
 			this.resizePane = this.createPane(resizeDiv, {layoutAlign: "bottom"});
 			this.resizePane.addChild(rh);
 		}
@@ -437,7 +437,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	createPane: function(node, args){
-		var pane = dojo.widget.fromScript("LayoutPane", args, node);
+		var pane = dojo.widget.createWidget("LayoutPane", args, node);
 		//this.addChild(pane);
 		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
 		pane.ownerPane=this;

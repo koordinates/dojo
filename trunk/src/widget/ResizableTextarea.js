@@ -35,7 +35,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		// FIXME: Safari apparently needs this!
 		document.body.appendChild(this.domNode);
 
-		this.rootLayout = dojo.widget.fromScript(
+		this.rootLayout = dojo.widget.createWidget(
 			"LayoutPane",
 			{
 				minHeight: 50,
@@ -45,7 +45,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		);
 
 
-		this.textAreaContainer = dojo.widget.fromScript(
+		this.textAreaContainer = dojo.widget.createWidget(
 			"LayoutPane",
 			{ layoutAlign: "client" },
 			this.textAreaContainerNode
@@ -58,7 +58,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 			height="100%";
 		}
 
-		this.statusBar = dojo.widget.fromScript(
+		this.statusBar = dojo.widget.createWidget(
 			"LayoutPane",
 			{ 
 				layoutAlign: "bottom", 
@@ -68,7 +68,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		);
 		this.rootLayout.addChild(this.statusBar);
 
-		this.statusLabel = dojo.widget.fromScript(
+		this.statusLabel = dojo.widget.createWidget(
 			"LayoutPane",
 			{ 
 				layoutAlign: "client", 
@@ -78,7 +78,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		);
 		this.statusBar.addChild(this.statusLabel);
 
-		this.resizeHandle = dojo.widget.fromScript(
+		this.resizeHandle = dojo.widget.createWidget(
 			"ResizeHandle", 
 			{ targetElmId: this.rootLayout.widgetId },
 			this.resizeHandleNode

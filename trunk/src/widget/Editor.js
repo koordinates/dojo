@@ -119,7 +119,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	buildRendering: function(args, frag) {
 		// get the node from args/frag
 		var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		var trt = dojo.widget.fromScript(this._richTextType, {}, node)
+		var trt = dojo.widget.createWidget(this._richTextType, {}, node)
 		var _this = this;
 		// this appears to fix a weird timing bug on Safari
 		setTimeout(function(){
@@ -153,7 +153,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	initToolbar: function() {
 		// var tic = new Date();
 		if(this._toolbarContainer) { return; } // only create it once
-		this._toolbarContainer = dojo.widget.fromScript(this._toolbarContainerType);
+		this._toolbarContainer = dojo.widget.createWidget(this._toolbarContainerType);
 		var tb = this.addToolbar();
 		var last = true;
 		for(var i = 0; i < this.items.length; i++) {
@@ -180,7 +180,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	addToolbar: function(toolbar) {
 		this.initToolbar();
 		if(!(toolbar instanceof dojo.widget.html.Toolbar)) {
-			toolbar = dojo.widget.fromScript(this._toolbarType);
+			toolbar = dojo.widget.createWidget(this._toolbarType);
 		}
 		this._toolbarContainer.addChild(toolbar);
 		this._toolbars.push(toolbar);
@@ -227,7 +227,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 			if(dontValidate || this.isSupportedCommand(cmd)) {
 				cmd = cmd.toLowerCase();
 				if(cmd == "formatblock") {
-					var select = dojo.widget.fromScript("ToolbarSelect", {
+					var select = dojo.widget.createWidget("ToolbarSelect", {
 						name: "formatBlock",
 						values: this.formatBlockItems
 					});
@@ -237,7 +237,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 						_this.onAction("formatBlock", value);
 					});
 				} else if(cmd == "fontname") {
-					var select = dojo.widget.fromScript("ToolbarSelect", {
+					var select = dojo.widget.createWidget("ToolbarSelect", {
 						name: "fontName",
 						values: this.fontNameItems
 					});
@@ -246,7 +246,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 						this.onAction("fontName", value);
 					}));
 				} else if(dojo.lang.inArray(cmd, ["forecolor", "hilitecolor"])) {
-					var btn = tb.addChild(dojo.widget.fromScript("ToolbarColorDialog", this.getItemProperties(cmd)));
+					var btn = tb.addChild(dojo.widget.createWidget("ToolbarColorDialog", this.getItemProperties(cmd)));
 					dojo.event.connect(btn, "onSetValue", this, "_setValue");
 				} else {
 					var btn = tb.addChild(this.getCommandImage(cmd), null, this.getItemProperties(cmd));
@@ -463,8 +463,8 @@ function dontRunMe() {
 function createToolbar() {
 	tick("createToolbar");
 	tick("ct-init");
-	tbCont = dojo.widget.fromScript("toolbarContainer");
-	tb = dojo.widget.fromScript("toolbar");
+	tbCont = dojo.widget.createWidget("toolbarContainer");
+	tb = dojo.widget.createWidget("toolbar");
 	tbCont.addChild(tb);
 
 	var saveBtn = tb.addChild("Save");
@@ -473,7 +473,7 @@ function createToolbar() {
 	dojo.event.connect(cancelBtn, "onClick", function() { editor.close(false); });
 	tb.addChild("|");
 
-	var headings = dojo.widget.fromScript("ToolbarSelect", {
+	var headings = dojo.widget.createWidget("ToolbarSelect", {
 		name: "formatBlock",
 		values: {
 			"Normal": "p",
@@ -502,8 +502,8 @@ function createToolbar() {
 	var commands = [
 		{ values: ["bold", "italic", "underline", "strikethrough"], toggleItem: true },
 		{ values: [
-				dojo.widget.fromScript("ToolbarColorDialog", {toggleItem: true, name: "forecolor", icon: cmdImg("forecolor")}),
-				dojo.widget.fromScript("ToolbarColorDialog", {toggleItem: true, name: "hilitecolor", icon: cmdImg("hilitecolor")})
+				dojo.widget.createWidget("ToolbarColorDialog", {toggleItem: true, name: "forecolor", icon: cmdImg("forecolor")}),
+				dojo.widget.createWidget("ToolbarColorDialog", {toggleItem: true, name: "hilitecolor", icon: cmdImg("hilitecolor")})
 		]},
 		{ values: ["justifyleft", "justifycenter", "justifyright"], name: "justify", defaultButton: "justifyleft", buttonGroup: true, preventDeselect: true },
 		{ values: ["createlink", "insertimage"] },
@@ -563,7 +563,7 @@ function cmdImg(cmd) {
 function createWysiwyg(node) {
 	tick("createWysiwyg");
 	tick("editor");
-	editor = dojo.widget.fromScript("RichText", {}, node);
+	editor = dojo.widget.createWidget("RichText", {}, node);
 	tock("editor");
 	dojo.event.connect(editor, "close", function(changed) {
 		if(changed) { setTimeout(save, 5); }
