@@ -146,6 +146,13 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 			dojo.widget.html.Menu2Manager.opened(this, explodeSrc);
 		}
 
+		// If we are in the process of closing the menu and we are asked to open it,
+		// we should really cancel the current animation, but for simplicity we will
+		// just ignore the request
+		if(this.animationInProgress){
+			return;
+		}
+
 		var viewport = dojo.html.getViewportSize();
 		var scrolloffset = dojo.html.getScrollOffset();
 
@@ -195,6 +202,13 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	},
 
 	close: function(){
+		// If we are in the process of opening the menu and we are asked to close it,
+		// we should really cancel the current animation, but for simplicity we will
+		// just ignore the request
+		if(this.animationInProgress){
+			return;
+		}
+
 		this.closeSubmenu();
 		this.hide();
 		this.isShowing = false;
