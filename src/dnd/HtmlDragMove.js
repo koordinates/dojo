@@ -11,7 +11,12 @@ dojo.inherits(dojo.dnd.HtmlDragMoveSource, dojo.dnd.HtmlDragSource);
 
 dojo.lang.extend(dojo.dnd.HtmlDragMoveSource, {
 	onDragStart: function(){
-		return new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
+		var dragObj =  new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
+
+		if (this.constrainToContainer) {
+			dragObj.constrainTo(this.constrainingContainer);
+		}
+		return dragObj;
 	}
 });
 
@@ -36,8 +41,19 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 		
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
-	
-		this.domNode.style.position = "absolute";
+
+		if (this.domNode.parentNode.nodeName.toLowerCase() == 'body') {
+			this.parentPosition = {top: 0, left: 0};
+		} else {
+			this.parentPosition = {top: dojo.style.getAbsoluteY(this.domNode.parentNode, true),
+				left: dojo.style.getAbsoluteX(this.domNode.parentNode,true)};
+		}
+
+		this.dragClone.style.position = "absolute";
+
+		if (this.constrainToContainer) {
+			this.constraints = this.getConstraints();
+		}
 	}
 
 });

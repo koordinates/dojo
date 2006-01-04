@@ -11,6 +11,7 @@ dojo.require("dojo.lang");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	node = dojo.byId(node);
+	this.constrainToContainer = false;
 	if(node){
 		this.domNode = node;
 		this.dragObject = node;
@@ -21,11 +22,18 @@ dojo.dnd.HtmlDragSource = function(node, type){
 		// set properties that might have been clobbered by the mixin
 		this.type = type||this.domNode.nodeName.toLowerCase();
 	}
+
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	onDragStart: function(){
-		return new dojo.dnd.HtmlDragObject(this.dragObject, this.type);
+		var dragObj = new dojo.dnd.HtmlDragObject(this.dragObject, this.type);
+
+		if (this.constrainToContainer) {
+			dragObj.constrainTo(this.constrainingContainer);
+		}
+
+		return dragObj;
 	},
 	setDragHandle: function(node){
 		node = dojo.byId(node);
@@ -35,6 +43,16 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	},
 	setDragTarget: function(node){
 		this.dragObject = node;
+	},
+
+	constrainTo: function(container) {
+		this.constrainToContainer = true;
+
+		if (container) {
+			this.constrainingContainer = container;
+		} else {
+			this.constrainingContainer = this.domNode.parentNode;
+		}
 	}
 });
 
@@ -42,6 +60,7 @@ dojo.dnd.HtmlDragObject = function(node, type){
 	node = dojo.byId(node);
 	this.type = type;
 	this.domNode = node;
+	this.constrainToContainer = false;
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragObject, {  
@@ -67,7 +86,20 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 		this.dragClone = this.domNode.cloneNode(true);
 		//this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
-		
+
+
+		//I don't know if this will take care of all cases where we need to assume absolute positioning from the body - dmachi
+		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (this.domNode.parentNode.nodeName.toLowerCase() == 'ul') ) {
+			this.parentPosition = {top: 0, left: 0};
+		} else {
+			this.parentPosition = {top: dojo.style.getAbsoluteY(this.domNode.parentNode, true),
+				left: dojo.style.getAbsoluteX(this.domNode.parentNode,true)};
+		}
+	
+		if (this.constrainToContainer) {
+			this.constraints = this.getConstraints();
+		}
+
 		// set up for dragging
 		with(this.dragClone.style){
 			position = "absolute";
@@ -76,6 +108,22 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		}
 		dojo.style.setOpacity(this.dragClone, 0.5);
 		dojo.html.body().appendChild(this.dragClone);
+	},
+
+	getConstraints: function() {
+
+		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
+			width = dojo.html.getViewportWidth();
+			height = dojo.html.getViewportHeight();
+		} else {
+			width = dojo.style.getInnerWidth(this.constrainingContainer);
+			height = dojo.style.getInnerHeight(this.constrainingContainer);	
+		}
+
+		return {
+			maxX: width - dojo.style.getOuterWidth(this.domNode),
+			maxY: height - dojo.style.getOuterHeight(this.domNode) 
+		}
 	},
 
 	updateDragOffset: function() {
@@ -90,8 +138,17 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	
 	/** Moves the node to follow the mouse */
 	onDragMove: function(e){
-		this.dragClone.style.top = this.dragOffset.top + e.clientY + "px";
-		this.dragClone.style.left = this.dragOffset.left + e.clientX + "px";
+		var x = this.dragOffset.left + e.clientX - this.parentPosition.left;
+		var y = this.dragOffset.top + e.clientY - this.parentPosition.top;
+
+		if (this.constrainToContainer) {
+			if (x < 0) { x = 0; }
+			if (y < 0) { y = 0; }
+			if (x > this.constraints.maxX) { x = this.constraints.maxX; }
+			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
+		}
+		this.dragClone.style.top = y + "px";
+		this.dragClone.style.left = x + "px";
 	},
 
 	/**
@@ -130,6 +187,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				});
 				anim.play();
 				break;
+		}
+	},
+
+	constrainTo: function(container) {
+		this.constrainToContainer=true;
+		if (container) {
+			this.constrainingContainer = container;
+		} else {
+			this.constrainingContainer = this.domNode.parentNode;
 		}
 	}
 });
