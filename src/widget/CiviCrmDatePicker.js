@@ -69,7 +69,7 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 		}
 
 		if(this.mode.indexOf("date") != -1){
-			this.datePicker = dojo.widget.fromScript("DatePicker", {}, this.dateHolderTd);
+			this.datePicker = dojo.widget.createWidget("DatePicker", {}, this.dateHolderTd);
 			dojo.event.connect(	this.datePicker, "onSetDate", 
 								this, "setDateSelects");
 
@@ -80,7 +80,7 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 			}
 		}
 		if(this.mode.indexOf("time") != -1){
-			this.timePicker = dojo.widget.fromScript("TimePicker", {}, this.timeHolderTd);
+			this.timePicker = dojo.widget.createWidget("TimePicker", {}, this.timeHolderTd);
 			dojo.event.connect(	this.timePicker, "onSetTime", 
 								this, "setTimeSelects");
 			var mfd = this.modeFormats.time;

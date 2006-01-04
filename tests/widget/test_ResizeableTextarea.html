@@ -28,7 +28,7 @@
 
 			function pUpgrade(){
 				var pu = document.getElementById("pUpgrade");
-				var ra = dojo.widget.fromScript("ResizableTextarea", {
+				var ra = dojo.widget.createWidget("ResizableTextarea", {
 					allowResizeX: "false",
 					"dojo:resizabletextarea": { nodeRef: pu, }
 				}, pu);

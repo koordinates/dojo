@@ -18,7 +18,7 @@
 // If we wanted to do this pragmatically...
 dojo.event.connect(window, "onload", function (e) {
 	var div = document.getElementById("editable");
-	var editor = dojo.widget.fromScript("RichText", {}, div);
+	var editor = dojo.widget.createWidget("RichText", {}, div);
 });
 */
 </script>
@@ -55,7 +55,7 @@ dojo.event.connect(savebutton, "onclick", function (e) {
 		savebutton.value = "edit";
 		editableRT = null;
 	} else {
-		editableRT = dojo.widget.fromScript("RichText", {}, editable);
+		editableRT = dojo.widget.createWidget("RichText", {}, editable);
 		savebutton.value = "save";
 	}
 });
@@ -68,7 +68,7 @@ dojo.event.connect(savebutton, "onclick", function (e) {
 dojo.event.connect(dojo, "loaded", function (e) {
 	function makeEditable (e) {
 		// create an editor from the table cell and keep it's width
-		var editor = dojo.widget.fromScript("RichText",
+		var editor = dojo.widget.createWidget("RichText",
 			{inheritWidth: true}, e.currentTarget);
 		editor.placeCursorAtEnd();
 

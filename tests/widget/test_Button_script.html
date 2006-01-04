@@ -17,7 +17,7 @@
 			load: function(type, js, evt){ 
 				if(type=="load"){
 					var tempNode = document.body.appendChild(document.createElement("button"));
-					dojo.widget.fromScript("Button", js, tempNode);
+					dojo.widget.createWidget("Button", js, tempNode);
 				}
 			},
 			mimetype: "text/javascript"
@@ -27,4 +27,4 @@
 	dojo.event.connect(window, "onload", init);
 </script>
 
-<p>Some buttons should appear below...
+<p>A button should appear below...
