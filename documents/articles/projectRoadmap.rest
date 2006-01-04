@@ -80,6 +80,7 @@ Core:
 - crypto
 - SVG layout calculations, etc.
 - xhtml issues/testing (to support nested svg widgets, etc.)
+- hostenvs for dashboard, canvas
 
 Widgets:
 - Widget Refactoring
