@@ -2,14 +2,16 @@ dojo.provide("dojo.lang");
 dojo.provide("dojo.AdapterRegistry");
 dojo.provide("dojo.lang.Lang");
 
-dojo.lang.mixin = function(obj, props, tobj){
-	if(typeof tobj != "object") {
-		tobj = {};
-	}
+dojo.lang.mixin = function(obj, props){
+	var tobj = {};
 	for(var x in props){
 		if(typeof tobj[x] == "undefined" || tobj[x] != props[x]) {
 			obj[x] = props[x];
 		}
+	}
+	// IE doesn't recognize custom toStrings in for..in
+	if(dojo.render.html.ie && dojo.lang.isFunction(props["toString"]) && props["toString"] != obj["toString"]) {
+		obj.toString = props.toString;
 	}
 	return obj;
 }
