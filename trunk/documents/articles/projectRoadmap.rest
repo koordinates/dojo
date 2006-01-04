@@ -23,8 +23,7 @@ Other things we are actively working on include our event, IO, and data binding
 systems. This makes Dojo an excellent toolkit for sending messages and data
 between the client and server, and between components in the client. Ongoing
 improvements and refinements are being made to our xml declaration language
-(specifically to support contraints and state) and parser. The parser currently
-supports thoadmap
+(specifically to support contraints and state) and parser. The parser currently supports the most necessary markup constructs, with space to later accomodate more elaborate declaration mechanisms.
 
 .. raw:: html
    :file: ../website/rest_template/header.html
