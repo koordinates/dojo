@@ -9,6 +9,7 @@
 
 .dojoHtmlFisheyeListItemImage {
 	border: 0px;
+	position: absolute;
 }
 
 .dojoHtmlFisheyeListItem {
