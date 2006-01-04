@@ -80,6 +80,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	onShow: function() {
 		// for explode effect, have to display the iframe after the effect completes
 		this.bgIframe.show(this.domNode);
+		dojo.widget.html.Tooltip.superclass.onShow.call(this);
 	},
 
 	erase: function() {

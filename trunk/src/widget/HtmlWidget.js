@@ -20,11 +20,12 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	resizeGhost: null,
 	initialResizeCoords: null,
-	// this.templateString = null;
 
 	// for displaying/hiding widget
 	toggle: "plain",
 	toggleDuration: 150,
+
+	animationInProgress: false,
 
 	initialize: function(args, frag){
 	},
@@ -142,13 +143,19 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		this.isVisible() ? this.hide() : this.show();
 	},
 	show: function(){
+		this.animationInProgress=true;
 		this.showMe();
 	},
-	onShow: function() {},
+	onShow: function(){
+		this.animationInProgress=false;
+	},
 	hide: function(){
+		this.animationInProgress=true;
 		this.hideMe();
 	},
-	onHide: function() {}
+	onHide: function(){
+		this.animationInProgress=false;
+	}
 });
 
 
