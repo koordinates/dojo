@@ -206,6 +206,15 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
 
+		// Prevent IE bleed-through problem
+		this.bgIframe = new dojo.html.BackgroundIframe();
+		if( this.bgIframe.iframe ){
+			this.domNode.appendChild(this.bgIframe.iframe);
+		}
+		if ( this.isVisible() ) {
+			this.bgIframe.show();
+		};
+
 	},
 
 
@@ -349,14 +358,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.setInitialWindowState();
 		}
 		
-		// Prevent IE bleed-through problem
-		this.bgIframe = new dojo.html.BackgroundIframe();
-		if( this.bgIframe.iframe ){
-			this.domNode.appendChild(this.bgIframe.iframe);
-		}
-		if ( this.isVisible() ) {
-			this.bgIframe.show();
-		};
 	},
 
 
