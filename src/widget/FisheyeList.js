@@ -658,7 +658,6 @@ dojo.lang.extend(dojo.widget.html.FisheyeListItem, {
 		//
 		if ( this.lblNode ) {
 			this.lblNode.appendChild(document.createTextNode(this.caption));
-			this.lblNode.style.display = 'none';
 		}
 		dojo.html.disableSelection(this.domNode);
 	},
@@ -718,13 +717,13 @@ dojo.lang.extend(dojo.widget.html.FisheyeListItem, {
 			this.parent.setActive(e);
 		}
 		if ( this.caption != "" ) {
-			this.lblNode.style.display="block";
+			dojo.html.addClass(this.lblNode, "selected");
 			this.parent.positionLabel(this);
 		}
 	},
 	
 	onMouseOut: function() {
-		this.lblNode.style.display="none";
+		dojo.html.removeClass(this.lblNode, "selected");
 	},
 
 	onClick: function() {
