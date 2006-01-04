@@ -100,6 +100,16 @@ Methods
         *return*
             Nothing
 
+    ``constrainTo(constrainingContainer)``:
+	Constraints this drag to stay within the physical boundaries of ``constrainingContainer``.  If
+	container is not supplied, it will default to the objects parent.  Constraints default to off.
+
+	``constrainingContainer``:
+		Containing domnode.
+
+	*return*
+	    Nothing	
+
 ``DropTarget()``:
 
     Class representing the "dropped on" area of a drag operation. 
@@ -230,6 +240,16 @@ Methods
 
         *return*
             Nothing
+
+    ``constrainTo(constrainingContainer)``:
+	Constraints this drag to stay within the physical boundaries of ``constrainingContainer``.  If
+	container is not supplied, it will default to the objects parent.
+
+	``constrainingContainer``:
+		Containing domnode.
+
+	*return*
+	    Nothing	
 
 
 ``DragManager()``:
