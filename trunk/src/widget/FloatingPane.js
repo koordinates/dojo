@@ -15,6 +15,9 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 dojo.require("dojo.widget.LayoutPane");
+dojo.require("dojo.dnd.HtmlDragMove");
+dojo.require("dojo.dnd.HtmlDragMoveSource");
+dojo.require("dojo.dnd.HtmlDragMoveObject");
 
 dojo.widget.html.FloatingPane = function(){
 	dojo.widget.html.LayoutPane.call(this);
@@ -175,14 +178,22 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 			chromeDiv.appendChild(titleBar);
 			chromeDiv.appendChild(titleBarActions);
-		
-			dojo.event.connect(this.dragBar.domNode, 'onmousedown', this, 'onMyDragStart');
+
+			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);
+
+			if (this.constrainToContainer) {
+				drag.constrainTo();
+			}
+
+			drag.setDragHandle(this.dragBar.domNode);
+
 		}
 
 		if ( this.resizable ) {
 			// add the resize handle
 			var resizeDiv = document.createElement('div');
 			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
+			dojo.html.disableSelection(resizeDiv);
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
 			this.resizePane = this.createPane(resizeDiv, {layoutAlign: "bottom"});
 			this.resizePane.addChild(rh);
@@ -442,68 +453,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
 		pane.ownerPane=this;
 		return pane;
-	},
-
-	onMyDragStart: function(e){
-		if (this.isDragging){ return; }
-
-		this.dragOrigin = {'x': e.clientX, 'y': e.clientY};
-		
-		// this doesn't work if (as in the test file) the user hasn't set top
-		// 	this.posOrigin = {'x': dojo.style.getNumericStyle(this.domNode, 'left'), 'y': dojo.style.getNumericStyle(this.domNode, 'top')};
-		this.posOrigin = {'x': this.domNode.offsetLeft, 'y': this.domNode.offsetTop};
-
-		if (this.constrainToContainer){
-			// TODO: this doesn't work with scrolled pages
-
-			// get parent client size...
-
-			if (this.domNode.parentNode.nodeName.toLowerCase() == 'body'){
-				var parentClient = {
-					'w': dojo.html.getViewportWidth(),
-					'h': dojo.html.getViewportHeight()
-				};
-			}else{
-				var parentClient = {
-					'w': dojo.style.getInnerWidth(this.domNode.parentNode),
-					'h': dojo.style.getInnerHeight(this.domNode.parentNode)
-				};
-			}
-
-			this.maxPosition = {
-				'x': parentClient.w - dojo.style.getOuterWidth(this.domNode),
-				'y': parentClient.h - dojo.style.getOuterHeight(this.domNode)
-			};
-		}
-
-		dojo.event.connect(document, 'onmousemove', this, 'onMyDragMove');
-		dojo.event.connect(document, 'onmouseup', this, 'onMyDragEnd');
-
-		this.isDragging = true;
-	},
-
-	onMyDragMove: function(e){
-		var x = this.posOrigin.x + (e.clientX - this.dragOrigin.x);
-		var y = this.posOrigin.y + (e.clientY - this.dragOrigin.y);
-
-		if (this.constrainToContainer){
-			if (x < 0){ x = 0; }
-			if (y < 0){ y = 0; }
-			if (x > this.maxPosition.x){ x = this.maxPosition.x; }
-			if (y > this.maxPosition.y){ y = this.maxPosition.y; }
-		}
-
-		this.domNode.style.left = x + 'px';
-		this.domNode.style.top  = y + 'px';
-	},
-
-	onMyDragEnd: function(e){
-		dojo.event.disconnect(document, 'onmousemove', this, 'onMyDragMove');
-		dojo.event.disconnect(document, 'onmouseup', this, 'onMyDragEnd');
-
-		this.isDragging = false;
 	}
-	
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:FloatingPane");
