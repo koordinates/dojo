@@ -4,10 +4,6 @@ dojo.provide("dojo.widget.html.FloatingPane");
 //
 // this widget provides a window-like floating pane
 //
-// TODO: instead of custom drag code, use HtmlDragMove.js in
-// conjuction with DragHandle).  The only tricky part is the constraint 
-// stuff (to keep the box within the container's boundaries)
-//
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Manager");
@@ -44,14 +40,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	resizable: false,
 	titleBarDisplay: "fancy",
-	isContainer: true,
+
 	containerNode: null,
 	domNode: null,
 	clientPane: null,
 	dragBar: null,
-	dragOrigin: null,
-	posOrigin: null,
-	maxPosition: null,
+
 	windowState: "normal",
 	displayCloseAction: false,
 
@@ -62,10 +56,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	maximizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMaximize.gif"),
 	restoreIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneRestore.gif"),
 	closeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneClose.gif"),
+	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
-	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
-	isDragging: false,
 
 	addChild: function(child) {
 		this.clientPane.addChild(child);
@@ -104,7 +97,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			if( this.titleBarDisplay == "fancy"){
 				// image background to get gradient
 				var img = document.createElement('img');
-				img.src = this.titleBarBackground,
+				img.src = this.titleBarBackground;
 				dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
 				var backgroundPane = dojo.widget.createWidget("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
 				this.dragBar.addChild(backgroundPane);
@@ -225,7 +218,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if ( this.isVisible() ) {
 			this.bgIframe.show();
 		};
-
 	},
 
 
@@ -243,7 +235,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		ctx.quadraticCurveTo(x,y,x,y+radius);
 		ctx.fillStyle=fillColor;
 		ctx.fill();
-        },
+	},
 
 	//draw the drop shadow
 	makeShadow: function( canvas ) {
@@ -368,7 +360,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		} else {
 			this.setInitialWindowState();
 		}
-		
 	},
 
 
@@ -449,7 +440,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	createPane: function(node, args){
 		var pane = dojo.widget.createWidget("LayoutPane", args, node);
-		//this.addChild(pane);
 		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
 		pane.ownerPane=this;
 		return pane;
