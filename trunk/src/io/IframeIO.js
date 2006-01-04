@@ -72,25 +72,27 @@ dojo.io.IframeTransport = new function(){
 		// dojo.debug("fireNextRequest");
 		var cr = this.currentRequest = this.requestQueue.shift();
 		var fn = cr["formNode"];
+		var content = cr["content"] || {};
+		content["dojo.transport"] = "iframe";
 		if(fn){
-			if(cr["content"]){
+			if(content){
 				// if we have things in content, we need to add them to the form
 				// before submission
-				for(var x in cr.content){
+				for(var x in content){
 					if(!fn[x]){
 						var tn;
 						if(dojo.render.html.ie){
-							tn = document.createElement("<input type='hidden' name='"+x+"' value='"+cr.content[x]+"'>");
+							tn = document.createElement("<input type='hidden' name='"+x+"' value='"+content[x]+"'>");
 							fn.appendChild(tn);
 						}else{
 							tn = document.createElement("input");
 							fn.appendChild(tn);
 							tn.type = "hidden";
 							tn.name = x;
-							tn.value = cr.content[x];
+							tn.value = content[x];
 						}
 					}else{
-						fn[x].value = cr.content[x];
+						fn[x].value = content[x];
 					}
 				}
 			}

@@ -477,15 +477,17 @@ dojo.io.XMLHTTPTransport = new function(){
 			this.addToHistory(kwArgs);
 		}
 
-		do { // break-block
+		var content = kwArgs["content"] || {};
+		content["dojo.transport"] = "xmlhttp";
 
+		do { // break-block
 			if(kwArgs.postContent){
 				query = kwArgs.postContent;
 				break;
 			}
 
-			if(kwArgs["content"]) {
-				query += dojo.io.argsFromMap(kwArgs.content, kwArgs.encoding);
+			if(content) {
+				query += dojo.io.argsFromMap(content, kwArgs.encoding);
 			}
 			
 			if(kwArgs.method.toLowerCase() == "get" || !kwArgs.multipart){
