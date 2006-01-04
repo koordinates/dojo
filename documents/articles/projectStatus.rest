@@ -6,30 +6,48 @@
 Current Efforts
 -------------------
 
-0.2
-*********************
-- Improves upon the features shipped in 0.1.x
-- Refactoring of the widget and namespace systems
-- Refactored widget system inheritance model
-- Automated documentation generation
-- Improved build system to allow for more familiar usage
-- Support <connect /> and <propset /> elements
-- Improve widgets shipped in 0.1
+0.2.2
+******************************************
 
-0.1
-*********************
-- 0.1.0 released on 2005/08/29
-- The 0.1.x releases are bug-fixes for the 0.1 branch
-- Highlights for the 0.1.x line:
-    * transparent package system
-    * `dojo.io`_ package
-    * `dojo.event`_ package
-    * animation system with pre-built effects
-    * drag-and-drop system
-    * widget system
-    * portable WYSIWYG rich text editing widget
-    * combo-box ("live search") widget
-    * date-picker widget
+Proposed release date: January 14, 2006 
+
+Fix `0.2.x bugs`_
+
+.. _`0.2.x bugs`: http://dojotoolkit.org/trac/report/10
+
+0.3 "The Widget Release"
+******************************************
+
+Proposed release date: February 28, 2006 
+
+Core:
+- Performance improvements/profiling
+- Provide better/simpler APIs for inheritance (public facing APIs are a bit 
+  challenging)
+- crypto
+- SVG layout calculations, etc.
+- xhtml issues/testing (to support nested svg widgets, etc.)
+
+Widgets:
+- Widget Refactoring
+  + public facing APIs
+	+ widget template improvements
+  + inheritance simplifications
+	+ css-interning
+	+ making it easier to specify an external css document, etc.)
+	+ etc.
+- Widget API cleanup/unification
+- Default widget styles (should have at least 2 default themes)
+- SVG widget facility improvements
+- Begin VML compatibility layer
+- New widgets
+	+ Base widgets/container widgets
+	+ Start Grid widget, data binding (large number of people)
+	+ SVG Color Picker widget(s)
+	+ Validation widgets
+	+ Other widgets as contributed by the community
+- Guide on writing widgets
+- Guide on debugging widgets
 
 Status
 ------------------------
@@ -38,18 +56,22 @@ Dojo is under heavy development. We have finished a significant portion of the
 core "plumbing" for the project. Widgets are under development by multiple open
 source and commercial efforts, and many of these are being contributed back to
 the community. Dojo has been successfully deployed in mutliple commercial
-products including Jot and Renkoo.
+products including Jot, TurboAjax, Renkoo, Loomia, GreenPlum, and several others.
 
 More details are available in the `Dojo Roadmap`_
 
 Releases
 ------------------------
 
-Dojo 0.2.0 was release on 2005/12/15.
+Dojo 0.2.0 was release on 2005/12/15. 
+..FIXME: link to release notes
 
 Dojo 0.1.0 was released on 2005/08/29. Multiple profile builds were made
 available at that time. New builds of these profiles are made available nighty
 at http://archive.dojotoolkit.org/
+..FIXME: link to release notes
+
+A complete release schedule is available in the `Dojo Roadmap`_
 
 Code Checkins
 ----------------
@@ -94,9 +116,9 @@ mundane details like bylaws and tax exemption status.
    :file: ../website/rest_template/docs_menu.html
 
 :Author: Alex Russell,Dylan Schiemann
-:Version: 0.4
+:Version: 0.5
 :Copyright: Dojo Foundation, 2005
-:Date: 2005/03/21
+:Date: 2006/01/03
 
 .. contents::
 
