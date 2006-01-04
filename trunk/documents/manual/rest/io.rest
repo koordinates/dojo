@@ -24,6 +24,13 @@ in the documentation for each transport type. Transports may be explicitly
 requested via the ``transport`` attribute or the request object passed to
 ``bind()``.
 
+Each transport defines a unique name which it sends to the server so you can
+identify which transport was used for the request. The argument is sent as
+``dojo.transport``. Possible values:
+
+    * ``xmlhttp`` for ``XMLHTTPTransport``
+    * ``iframe`` for ``IframeTransport``
+
 Usage
 ===============================================================================
 
