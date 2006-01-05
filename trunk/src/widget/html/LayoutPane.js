@@ -31,9 +31,6 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 	isChild: false,
 
-	clientLeft: 0,
-	clientTop: 0,
-	clientRect: {'left':0, 'right':0, 'top':0, 'bottom':0},
 	clientWidth: 0,
 	clientHeight: 0,
 
@@ -115,7 +112,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 					if(extract) {
 						var matches = data.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
 						if(matches) { data = matches[1]; }
-					}
+			}
 					node.innerHTML = data;
 					if(parse) {
 						var parser = new dojo.xml.Parse();
@@ -181,6 +178,9 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		this.clientWidth  = dojo.style.getContentWidth(container);
 		this.clientHeight = dojo.style.getContentHeight(container);
 
+		// note: don't setup clientRect as a member of the prototype because that
+		// would make the contents shared between instances
+		this.clientRect={};
 		this.clientRect['left']   = dojo.style.getPixelValue(container, "padding-left", true);
 		this.clientRect['right']  = dojo.style.getPixelValue(container, "padding-right", true);
 		this.clientRect['top']    = dojo.style.getPixelValue(container, "padding-top", true);
