@@ -215,13 +215,22 @@ dojo.widget.manager = new function(){
 	}*/
 
 	// Catch window resize events and notify top level widgets
+	this.resizing=false;
 	this.onResized = function() {
-		for(var id in this.topWidgets) {
-			var child = this.topWidgets[id];
-			//dojo.debug("root resizing child " + child.widgetId);
-			if ( child.onResized ) {
-				child.onResized();
+		if(this.resizing){
+			return;	// duplicate event
+		}
+		try {
+			this.resizing=true;
+			for(var id in this.topWidgets) {
+				var child = this.topWidgets[id];
+				//dojo.debug("root resizing child " + child.widgetId);
+				if ( child.onResized ) {
+					child.onResized();
+				}
 			}
+		} finally {
+			this.resizing=false;
 		}
 	}
 	if(typeof window != "undefined") {
