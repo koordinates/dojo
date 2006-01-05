@@ -270,11 +270,11 @@ modules or major components:
         **Unified Interface** : done
             ``dojo.io.bind()`` is the interface through which I/O happens in Dojo
 
-        **Platform-Specific Transports** : in progress
+        **Platform-Specific Transports** : mostly complete for browsers
             a stable transport is provided for XMLHTTP (specific to browsers)
-            and a port of repubsub is mostly complete (also for browsers). No
-            work has yet been done for iframe-based transports or for
-            Java-based transports for Rhino environments.
+            as well as an iframe-based transport (also for browsers) for file upload.
+            A port of repubsub is mostly complete (again, for browsers). No
+            work has yet been done for Java-based transports for Rhino environments.
 
     - Widgets
 
@@ -363,10 +363,9 @@ A complete list of checkins may be found through our `checkins mailing list`_
 Releases
 ------------------------
 
-There are currently no full release builds available other than tarball
-snapshots. The `dojo interest mailing list`_ contains regular updates.
-`Anonymous SVN access`_ is available, as is an `initial profile build`_. Ant is
-required to use our build system.
+Version releases are `available for download`_ on the `Dojo website`_.
+Links to nightly builds and repository downloads are available from the
+download page.
 
 Getting Involved
 ------------------------
@@ -391,6 +390,8 @@ mundane details like bylaws and tax exemption status.
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
 
+.. _`available for download`: http://dojotoolkit.org/download/
+.. _`Dojo website`: http://dojotoolkit.org/
 .. _`checkins mailing list`: http://www.dojotoolkit.org/pipermail/dojo-checkins/
 .. _`dojo interest mailing list`: http://www.dojotoolkit.org/pipermail/dojo-interest/
 .. _`initial profile build` : http://dojotoolkit.org/dojo_browserio.tar.gz
