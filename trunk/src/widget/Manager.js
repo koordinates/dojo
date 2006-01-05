@@ -244,7 +244,13 @@ dojo.widget.getWidgetsByFilter = function () { return dojo.widget.manager.getWid
 dojo.widget.byId = function () { return dojo.widget.manager.getWidgetById.apply(dojo.widget.manager, arguments); }
 dojo.widget.byType = function () { return dojo.widget.manager.getWidgetsByType.apply(dojo.widget.manager, arguments); }
 dojo.widget.byFilter = function () { return dojo.widget.manager.getWidgetsByFilter.apply(dojo.widget.manager, arguments); }
-dojo.widget.all = function () { return dojo.widget.manager.getAllWidgets.apply(dojo.widget.manager, arguments); }
+dojo.widget.all = function (n) {
+	var widgets = dojo.widget.manager.getAllWidgets.apply(dojo.widget.manager, arguments);
+	if(arguments.length > 0) {
+		return widgets[n];
+	}
+	return widgets;
+}
 dojo.widget.registerWidgetPackage = function () { return dojo.widget.manager.registerWidgetPackage.apply(dojo.widget.manager, arguments); }
 dojo.widget.getWidgetImplementation = function () { return dojo.widget.manager.getImplementation.apply(dojo.widget.manager, arguments); }
 dojo.widget.getWidgetImplementationName = function () { return dojo.widget.manager.getImplementationName.apply(dojo.widget.manager, arguments); }
