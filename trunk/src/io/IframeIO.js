@@ -159,6 +159,8 @@ dojo.io.IframeTransport = new function(){
 		// FIXME: how do we determine success for iframes? Is there an equiv of
 		// the "status" property?
 		var value;
+		var success = false;
+
 		try{
 			var cmt = _this.currentRequest.mimetype;
 			if((cmt == "text/javascript")||(cmt == "text/json")){
@@ -174,18 +176,27 @@ dojo.io.IframeTransport = new function(){
 			}else{ // text/plain
 				value = ifw.innerHTML;
 			}
-			if(typeof _this.currentRequest.load == "function"){
-				_this.currentRequest.load("load", value, _this.currentRequest);
-			}
+			success = true;
 		}catch(e){ 
 			// looks like we didn't get what we wanted!
 			var errObj = new dojo.io.Error("IframeTransport Error");
-			if(typeof _this.currentRequest["error"] == "function"){
+			if(dojo.lang.isFunction(_this.currentRequest["error"])){
 				_this.currentRequest.error("error", errObj, _this.currentRequest);
 			}
 		}
-		_this.currentRequest = null;
-		_this.fireNextRequest();
+
+		// don't want to mix load function errors with processing errors, thus
+		// a separate try..catch
+		try {
+			if(success && dojo.lang.isFunction(_this.currentRequest["load"])){
+				_this.currentRequest.load("load", value, _this.currentRequest);
+			}
+		} catch(e) {
+			throw e;
+		} finally {
+			_this.currentRequest = null;
+			_this.fireNextRequest();
+		}
 	}
 
 	dojo.io.transports.addTransport("IframeTransport");
