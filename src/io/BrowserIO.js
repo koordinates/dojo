@@ -82,12 +82,14 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 				frames[iframe.name].location = src;
 			}
 		}else{
+			// Fun with DOM 0 incompatibilities!
 			var idoc;
-			// dojo.debug(iframe.name);
 			if(r.ie){
 				idoc = iframe.contentWindow.document;
 			}else if(r.moz){
 				idoc = iframe.contentWindow;
+			}else if(r.safari){
+				idoc = iframe.document;
 			}
 			idoc.location.replace(src);
 		}
