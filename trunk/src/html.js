@@ -583,13 +583,44 @@ dojo.html.body = function(){
 	return document.body || document.getElementsByTagName("body")[0];
 }
 
-dojo.html.createNodesFromText = function(txt, wrap){
+dojo.html.createNodesFromText = function(txt, trim){
+	if(trim) { txt = dojo.string.trim(txt); }
+
 	var tn = document.createElement("div");
 	// tn.style.display = "none";
 	tn.style.visibility= "hidden";
 	document.body.appendChild(tn);
+	var tableType = "none";
+	if((/^\s*<t[dh][\s>]/mi).test(txt)) {
+		txt = "<table><tbody><tr>" + txt + "</tr></tbody></table>";
+		tableType = "cell";
+	} else if((/^\s*<tr[\s>]/mi).test(txt)) {
+		txt = "<table><tbody>" + txt + "</tbody></table>";
+		tableType = "row";
+	} else if((/^\s*<(thead|tbody|tfoot)[\s>]/mi).test(txt)) {
+		txt = "<table>" + txt + "</table>";
+		tableType = "section";
+	}
 	tn.innerHTML = txt;
 	tn.normalize();
+
+	var parent = null;
+	switch(tableType) {
+		case "cell":
+			parent = tn.getElementsByTagName("tr")[0];
+			break;
+		case "row":
+			parent = tn.getElementsByTagName("tbody")[0];
+			break;
+		case "section":
+			parent = tn.getElementsByTagName("table")[0];
+			break;
+		default:
+			parent = tn;
+			break;
+	}
+
+	/* this doesn't make much sense, I'm assuming it just meant trim() so wrap was replaced with trim
 	if(wrap){ 
 		var ret = [];
 		// start hack
@@ -600,11 +631,12 @@ dojo.html.createNodesFromText = function(txt, wrap){
 		document.body.removeChild(tn);
 		return ret;
 	}
+	*/
 	var nodes = [];
-	for(var x=0; x<tn.childNodes.length; x++){
-		nodes.push(tn.childNodes[x].cloneNode(true));
+	for(var x=0; x<parent.childNodes.length; x++){
+		nodes.push(parent.childNodes[x].cloneNode(true));
 	}
-	tn.style.display = "none";
+	tn.style.display = "none"; // FIXME: why do we do this?
 	document.body.removeChild(tn);
 	return nodes;
 }
