@@ -34,6 +34,8 @@ dojo.lang.extend(dojo.widget.html.Tabs, {
 	extractContent: false, // find the bits inside <body>
 	parseContent: false, // parse externally loaded pages for widgets
 
+	preventCache: false,
+
 	buildRendering: function(args, frag) {
 		dojo.style.insertCssFile(this.templateCssPath);
 		this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
@@ -227,13 +229,13 @@ dojo.lang.extend(dojo.widget.html.Tabs, {
 				// do nothing?
 			} else {
 				if(!panel.isLoaded || !this.useCache) {
-					this.setExternalContent(panel, panel.url, this.useCache);
+					this.setExternalContent(panel, panel.url, this.useCache, this.preventCache);
 				}
 			}
 		}
 	},
 
-	setExternalContent: function(panel, url, useCache) {
+	setExternalContent: function(panel, url, useCache, preventCache) {
 		var node = document.getElementById(panel.id);
 		node.innerHTML = "Loading...";
 
@@ -243,6 +245,7 @@ dojo.lang.extend(dojo.widget.html.Tabs, {
 		dojo.io.bind({
 			url: url,
 			useCache: useCache,
+			preventCache: preventCache,
 			mimetype: "text/html",
 			handler: function(type, data, e) {
 				if(type == "load") {
