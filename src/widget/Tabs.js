@@ -210,17 +210,6 @@ dojo.lang.extend(dojo.widget.html.Tabs, {
 			return false;
 		}
 		return true;
-		/*
-		// in case we want to honor the return value?
-		var ret = true;
-		if(dojo.lang.isFunction(this["tabhandler" + panel.id])) {
-			var val = this["tabhandler" + panel.id](this, panel);
-			if(!dojo.lang.isUndefined(val)) {
-				ret = val;
-			}
-		}
-		return ret;
-		*/
 	},
 
 	getPanel: function(panel) {
