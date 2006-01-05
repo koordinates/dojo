@@ -47,7 +47,7 @@ if(typeof window == 'undefined'){
 
 	if(((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == "")) &&(document && document.getElementsByTagName)){
 		var scripts = document.getElementsByTagName("script");
-		var rePkg = /(__package__|dojo)\.js(\?|$)/i;
+		var rePkg = /(__package__|dojo)\.js([\?\.]|$)/i;
 		for(var i = 0; i < scripts.length; i++) {
 			var src = scripts[i].getAttribute("src");
 			if(!src) { continue; }
