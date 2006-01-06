@@ -250,9 +250,9 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		return dojo.lang.inArray(['left','right','top','bottom','client', 'flood'], child.layoutAlign);
 	},
 
-	addChild: function(child){
+	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		this._injectChild(child);
-		dojo.widget.html.LayoutPane.superclass.addChild.call(this,child)
+		dojo.widget.html.LayoutPane.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
 		this.resizeSoon();
 	},
 
