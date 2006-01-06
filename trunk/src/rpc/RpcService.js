@@ -15,20 +15,20 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 	strictArgChecks: true,
 	serviceUrl: "",
 
-	parseResults: function(object){
-		return object;
+	parseResults: function(obj){
+		return obj;
 	},
 
 	errorCallback: function(deferredRequestHandler){
-		return function(type, object, e){
+		return function(type, obj, e){
 			deferredRequestHandler.errback(e);
 		}
 	},
 
 	resultCallback: function(deferredRequestHandler){
 		return dojo.lang.hitch(this, 
-			function(type, object, e){
-				var results = this.parseResults(object);
+			function(type, obj, e){
+				var results = this.parseResults(obj);
 				deferredRequestHandler.callback(results); 
 			}
 		);
