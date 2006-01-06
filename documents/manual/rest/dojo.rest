@@ -10,7 +10,8 @@ Summary and Overview
 
 When dojo.js is included, some functions are always available.  They include
 debugging aids, version information, etc. These utilites are not provided by
-dojo.js itself, but by the boostrap files and the 
+dojo.js itself, but by the boostrap files and the host environment file which
+provides portability between interpreters and platforms.
 
 Usage
 ===============================================================================
