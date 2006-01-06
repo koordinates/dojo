@@ -56,9 +56,9 @@ dojo.lang.extend(dojo.widget.html.TabSet, {
 		dojo.widget.html.TabSet.superclass.addChild.call(this, this.labelPanel);
 	},
 
-	addChild: function(child){
+	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		this._setupTab(child);
-		dojo.widget.html.TabSet.superclass.addChild.call(this,child);
+		dojo.widget.html.TabSet.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
 	},
 
 	_setupTab: function(tab){
