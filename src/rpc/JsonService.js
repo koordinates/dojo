@@ -11,34 +11,36 @@ dojo.rpc.JsonService = function(args){
 	//	- the text of the SMD to evaluate
 	// 	- a raw SMD object
 	//	- the SMD URL
-	if((args)&&(dojo.lang.isString(args))){
-		// we assume it's an SMD file to be processed, since this was the
-		// earlier function signature
+	if(args){
+		if(dojo.lang.isString(args)){
+			// we assume it's an SMD file to be processed, since this was the
+			// earlier function signature
 
-		// FIXME: also accept dojo.uri.Uri objects?
-		this.connect(args);
-	}else{
-		// otherwise we assume it's an arguments object with the following
-		// (optional) properties:
-		//	- serviceUrl
-		//	- strictArgChecks
-		//	- smdUrl
-		//	- smdStr
-		//	- smdObj
-		if(args["smdUrl"]){
-			this.connect(args.smdUrl);
-		}
-		if(args["smdStr"]){
-			this.processSmd(dj_eval("("+args.smdStr+")"));
-		}
-		if(args["smdObj"]){
-			this.processSmd(args.smdObj);
-		}
-		if(args["serviceUrl"]){
-			this.serviceUrl = args.serviceUrl;
-		}
-		if(args["strictArgChecks"]){
-			this.strictArgChecks = args.strictArgChecks;
+			// FIXME: also accept dojo.uri.Uri objects?
+			this.connect(args);
+		}else{
+			// otherwise we assume it's an arguments object with the following
+			// (optional) properties:
+			//	- serviceUrl
+			//	- strictArgChecks
+			//	- smdUrl
+			//	- smdStr
+			//	- smdObj
+			if(args["smdUrl"]){
+				this.connect(args.smdUrl);
+			}
+			if(args["smdStr"]){
+				this.processSmd(dj_eval("("+args.smdStr+")"));
+			}
+			if(args["smdObj"]){
+				this.processSmd(args.smdObj);
+			}
+			if(args["serviceUrl"]){
+				this.serviceUrl = args.serviceUrl;
+			}
+			if(args["strictArgChecks"]){
+				this.strictArgChecks = args.strictArgChecks;
+			}
 		}
 	}
 }
@@ -68,7 +70,7 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 
 	createRequest: function(method, params){
 		var req = { "params": params, "method": method, "id": this.lastSubmissionId++ };
-		data = dojo.json.serialize(req);
+		var data = dojo.json.serialize(req);
 		dojo.debug("JsonService: JSON-RPC Request: " + data);
 		return data;
 	},
