@@ -436,12 +436,15 @@ dojo.style.getComputedStyle = function (element, cssSelector, inValue) {
 	}
 	if(!value) {
 		if (document.defaultView) { // gecko
-			value = document.defaultView.getComputedStyle(element, "")
-				.getPropertyValue(cssSelector);
+			var cs = document.defaultView.getComputedStyle(element, "");
+			if (cs) { 
+				value = cs.getPropertyValue(cssSelector);
+			} 
 		} else if (element.currentStyle) { // IE
 			value = element.currentStyle[dojo.style.toCamelCase(cssSelector)];
-		}
+		} 
 	}
+	
 	return value;
 }
 
