@@ -61,7 +61,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex) {
-		this.clientPane.addChild(widget, overrideContainerNode, pos, ref, insertIndex);
+		this.clientPane.addChild(child, overrideContainerNode, pos, ref, insertIndex);
 	},
 
 	fillInTemplate: function(){
