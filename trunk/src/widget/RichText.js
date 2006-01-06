@@ -810,6 +810,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
  ********/
 
 	getSelectedNode: function () {
+		if(!this.isLoaded){ return; }
 		if (this.document.selection) {
 			return this.document.selection.createRange().parentElement();
 		} else if (dojo.render.html.mozilla) {
@@ -819,6 +820,11 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	placeCursorAtStart: function () {
+		if(!this.isLoaded){
+			dojo.event.connect(this, "onLoad", this, "placeCursorAtEnd");
+			return;
+		}
+		dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
 		if (this.window.getSelection) {
 			var selection = this.window.getSelection;
 			if (selection.removeAllRanges) { // Mozilla			
@@ -840,6 +846,11 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	},
 	
 	placeCursorAtEnd: function () {
+		if(!this.isLoaded){
+			dojo.event.connect(this, "onLoad", this, "placeCursorAtEnd");
+			return;
+		}
+		dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
 		if (this.window.getSelection) {
 			var selection = this.window.getSelection;
 			if (selection.removeAllRanges) { // Mozilla			
