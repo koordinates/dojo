@@ -62,6 +62,13 @@ dojo.lang.hitch = function(thisObject, method) {
 	}
 }
 
+dojo.lang.forward = function(func){
+	// Returns a function that forwards a method call to this.func(...)
+	return function(){
+		return this[func].apply(this, arguments);
+	};
+}
+
 /**
  * Sets a timeout in milliseconds to execute a function in a given context
  * with optional arguments.
