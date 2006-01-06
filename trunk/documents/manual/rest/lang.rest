@@ -138,6 +138,18 @@ Methods
     *returns*:
         A function which will invoke ``meth`` on ``obj`` (with whatever arguments are sent to the outer function).
 
+``forward(funcName)``:
+    
+    Returns a function that passes calls to itself to another named method of
+    the same object.
+
+    ``funcName``:
+        String. Name of the function to forward to.
+
+    *returns*:
+        A function object.
+
+
 ``setTimeout(context, func, delay, [arg1, arg2, ...]);``
 ``setTimeout(func, delay, [arg1, arg2, ...]);``:
 
