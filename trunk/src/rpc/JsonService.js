@@ -61,7 +61,8 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 			postContent: this.createRequest(method, parameters),
 			method: "POST",
 			mimetype: "text/json",
-			load: this.resultCallback(deferredRequestHandler) 
+			load: this.resultCallback(deferredRequestHandler),
+			preventCache: true
 		});
 	},
 
