@@ -39,6 +39,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	minHeight: "1em",
 	
 	isClosed: true,
+	isLoaded: false,
 	
 	/** whether to use the active-x object in IE */
 	useActiveX: false,
@@ -291,6 +292,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
  *****************/
 
 	onLoad: function(e){
+		this.isLoaded = true;
 		if (this.object){
 			this.document = this.object.DOM;
 			this.editNode = this.document.body.firstChild;
@@ -968,6 +970,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		
 		dojo.html.removeClass(this.domNode, "RichTextEditable");
 		this.isClosed = true;
+		this.isLoaded = false;
 
 		return changed;
 	},
