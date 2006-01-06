@@ -72,7 +72,11 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 		return data;
 	},
 
-	parseResults: function(object){
-		return object.result;
+	parseResults: function(obj){
+		if(obj["result"]){
+			return obj["result"];
+		}else{
+			return obj;
+		}
 	}
 });
