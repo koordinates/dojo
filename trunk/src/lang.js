@@ -62,11 +62,57 @@ dojo.lang.hitch = function(thisObject, method) {
 	}
 }
 
-dojo.lang.forward = function(func){
+dojo.lang.forward = function(funcName){
 	// Returns a function that forwards a method call to this.func(...)
 	return function(){
-		return this[func].apply(this, arguments);
+		return this[funcName].apply(this, arguments);
 	};
+}
+
+dojo.lang.curry = function(ns, func /* args ... */){
+	var outerArgs = [];
+	ns = ns||dj_global;
+	if(dojo.lang.isString(func)){
+		func = ns[func];
+	}
+	for(var x=2; x<arguments.length; x++){
+		outerArgs.push(arguments[x]);
+	}
+	var ecount = func.length - outerArgs.length;
+	// borrowed from svend tofte
+	function gather(nextArgs, innerArgs, expected){
+		var texpected = expected;
+		var totalArgs = innerArgs.slice(0); // copy
+		for(var x=0; x<nextArgs.length; x++){
+			totalArgs.push(nextArgs[x]);
+		}
+		// check the list of provided nextArgs to see if it, plus the
+		// number of innerArgs already supplied, meets the total
+		// expected.
+		expected = expected-nextArgs.length;
+		if(expected<=0){
+			var res = func.apply(ns, totalArgs);
+			expected = texpected;
+			return res;
+		}else{
+			return function(){
+				return gather(arguments,// check to see if we've been run
+										// with enough args
+							totalArgs,	// a copy
+							expected);	// how many more do we need to run?;
+			}
+		}
+	}
+	return gather([], outerArgs, ecount);
+}
+
+dojo.lang.curryArguments = function(ns, func, args, offset){
+	var targs = [];
+	var x = offset||0;
+	for(x=offset; x<args.length; x++){
+		targs.push(args[x]); // ensure that it's an arr
+	}
+	return dojo.lang.curry.apply(dojo.lang, [ns, func].concat(targs));
 }
 
 /**
@@ -482,7 +528,8 @@ dojo.lang.extend(dojo.AdapterRegistry, {
                 return pair[2].apply(this, arguments);
             }
         }
-        dojo.raise("No match found");
+		throw new Error("No match found");
+        // dojo.raise("No match found");
     },
 
     unregister: function (name) {
