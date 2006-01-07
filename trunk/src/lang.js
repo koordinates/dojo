@@ -598,3 +598,15 @@ dojo.lang.unnest = function(/* ... */) {
 	}
 	return out;
 }
+
+/**
+ * Return the first argument that isn't undefined
+ */
+dojo.lang.firstValued = function(/* ... */) {
+	for(var i = 0; i < arguments.length; i++) {
+		if(typeof arguments[i] != "undefined") {
+			return arguments[i];
+		}
+	}
+	return undefined;
+}

@@ -480,7 +480,10 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		var content = kwArgs["content"] || {};
-		content["dojo.transport"] = "xmlhttp";
+
+		if(kwArgs.sendTransport) {
+			content["dojo.transport"] = "xmlhttp";
+		}
 
 		do { // break-block
 			if(kwArgs.postContent){

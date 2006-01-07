@@ -129,13 +129,9 @@ dojo.lang.extend(dojo.io.Request, {
 		if(!kwArgs["changeUrl"] && kwArgs["changeURL"]) { kwArgs.changeUrl = kwArgs.changeURL; }
 
 		// encoding fun!
-		if(!kwArgs["encoding"]) {
-			if(!dojo.lang.isUndefined(djConfig["bindEncoding"])) {
-				kwArgs.encoding = djConfig.bindEncoding;
-			} else {
-				kwArgs.encoding = "";
-			}
-		}
+		kwArgs.encoding = dojo.lang.firstValued(kwArgs["encoding"], djConfig["bindEncoding"], "");
+
+		kwArgs.sendTransport = dojo.lang.firstValued(kwArgs["sendTransport"], djConfig["ioSendTransport"], true);
 
 		var isFunction = dojo.lang.isFunction;
 		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
