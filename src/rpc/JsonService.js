@@ -49,6 +49,8 @@ dojo.inherits(dojo.rpc.JsonService, dojo.rpc.RpcService);
 
 dojo.lang.extend(dojo.rpc.JsonService, {
 
+	bustCache: false,
+
 	lastSubmissionId: 0,
 
 	callRemote: function(method, params){
@@ -67,7 +69,7 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 			method: "POST",
 			mimetype: "text/json",
 			load: this.resultCallback(deferredRequestHandler),
-			preventCache: true
+			preventCache:this.bustCache 
 		});
 	},
 

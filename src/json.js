@@ -82,10 +82,11 @@ dojo.json = {
 		}
 		// look in the registry
 		try {
+			window.o = o;
 			newObj = dojo.json.jsonRegistry.match(o);
 			return me(newObj);
 		}catch(e){
-			dojo.debug(e);
+			// dojo.debug(e);
 		}
 		// it's a function with no adapter, bad
 		if(objtype == "function"){

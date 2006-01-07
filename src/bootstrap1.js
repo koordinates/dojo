@@ -304,6 +304,7 @@ dojo.hostenv = (function(){
 		addedToLoadingCount: [],
 		removedFromLoadingCount: [],
 		inFlightCount: 0,
+		// FIXME: it should be possible to pull module prefixes in from djConfig
 		modulePrefixes_: {
 			dojo: {name: "dojo", value: "src"}
 		},
