@@ -73,7 +73,9 @@ dojo.io.IframeTransport = new function(){
 		var cr = this.currentRequest = this.requestQueue.shift();
 		var fn = cr["formNode"];
 		var content = cr["content"] || {};
-		content["dojo.transport"] = "iframe";
+		if(kwArgs.sendTransport) {
+			content["dojo.transport"] = "iframe";
+		}
 		if(fn){
 			if(content){
 				// if we have things in content, we need to add them to the form
