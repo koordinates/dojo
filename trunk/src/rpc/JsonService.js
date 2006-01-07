@@ -53,6 +53,9 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 
 	callRemote: function(method, params){
 		var deferred = new dojo.rpc.Deferred();
+		if(!dojo.lang.isString(params)){
+			params = dojo.json.serialize(params);
+		}
 		this.bind(method, params, deferred);
 		return deferred;
 	},
