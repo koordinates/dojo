@@ -28,8 +28,6 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 	resultCallback: function(deferredRequestHandler){
 		var tf = dojo.lang.hitch(this, 
 			function(type, obj, e){
-				alert(type);
-				alert(e.responseText);
 				var results = this.parseResults(obj);
 				deferredRequestHandler.callback(results); 
 			}
