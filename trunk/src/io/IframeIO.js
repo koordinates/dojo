@@ -73,7 +73,7 @@ dojo.io.IframeTransport = new function(){
 		var cr = this.currentRequest = this.requestQueue.shift();
 		var fn = cr["formNode"];
 		var content = cr["content"] || {};
-		if(kwArgs.sendTransport) {
+		if(cr.sendTransport) {
 			content["dojo.transport"] = "iframe";
 		}
 		if(fn){
