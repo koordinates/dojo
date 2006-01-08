@@ -125,15 +125,23 @@ dojo.date.getDayOfYear = function (dateObject) {
 }
 
 
+dojo.date.daysInMonth = function (month, year) {
+	dojo.deprecated("daysInMonth(month, year)",
+		"replaced by getDaysInMonth(dateObject)", "0.4");
+	return dojo.date.getDaysInMonth(new Date(year, month, 1));
+}
+
 /**
  * Returns the number of days in the given month. Leap years are accounted
  * for.
  *
- * @param month The month
- * @param year  The year
+ * @param dateObject Date set to the month concerned
  * @return The number of days in the given month
  */
-dojo.date.daysInMonth = function (month, year) {
+dojo.date.getDaysInMonth = function (dateObject) {
+	var month = dateObject.getMonth();
+	var year = dateObject.getFullYear();
+	
 	/*
 	 * Leap years are years with an additional day YYYY-02-29, where the year
 	 * number is a multiple of four with the following exception: If a year
@@ -147,6 +155,7 @@ dojo.date.daysInMonth = function (month, year) {
 		else { return 28; }
 	} else { return days[month]; }
 }
+
 
 dojo.date.months = ["January", "February", "March", "April", "May", "June",
 	"July", "August", "September", "October", "November", "December"];
