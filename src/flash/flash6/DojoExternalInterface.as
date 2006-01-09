@@ -1,7 +1,9 @@
-/** An implementation of Flash 8's ExternalInterface that works with Flash 6
+/** 
+		An implementation of Flash 8's ExternalInterface that works with Flash 6
 		and which is source-compatible with Flash 8. 
 		
-		@author Brad Neuberg, bkn3@columbia.edu */
+		@author Brad Neuberg, bkn3@columbia.edu 
+*/
 		
 class DojoExternalInterface{
 	public static available:Boolean;
