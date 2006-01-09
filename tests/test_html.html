@@ -65,14 +65,14 @@ dojo.event.connect($("updateViewport"), "onclick", function (e) {
 
 
 <!---------------------------------------------------------------------------->
-<h2><code>getParentOfType</code></h2>
+<h2><code>getParentByType</code></h2>
 
 <p>This <b id="bold">is <u>some <i id="italic">crazy <span style="color:red;" id="redChild">text</span></i></u></b></p>
 
 <p>The id on the <code>&lt;b&gt;</code> element is "<b><script type="text/javascript">
-document.write(dojo.html.getParentOfType($("redChild"), "b").id);
+document.write(dojo.html.getParentByType($("redChild"), "b").id);
 </script></b>" (should be "<b>bold</b>")<br>The id on the <code>&lt;i&gt;</code> element is "<b><script type="text/javascript">
-document.write(dojo.html.getParentOfType($("redChild"), "i").id);
+document.write(dojo.html.getParentByType($("redChild"), "i").id);
 </script></b>" (should be "<b>italic</b>")</p>
 
 
