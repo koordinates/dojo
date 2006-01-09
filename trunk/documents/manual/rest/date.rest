@@ -34,13 +34,13 @@ Methods
     stamp
 
     ``dateObject``:
-		    a JavaScript Date object
+    	    a JavaScript Date object
 
     ``string``:
-		    The date/time formted as an ISO 8601 string
+    	    The date/time formted as an ISO 8601 string
 
-		*returns*:
-        dateObject
+    	*returns*:
+            dateObject
 
 ``setIso8601Date(dateObject, string)``:
 
@@ -48,13 +48,13 @@ Methods
     The time is left unchanged.
 
     ``dateObject``:
-		    a JavaScript Date object
+    	    a JavaScript Date object
 
     ``string``:
-		    The date formted as an ISO 8601 string
+    	    The date formted as an ISO 8601 string
 
-		*returns*:
-        dateObject
+    	*returns*:
+            dateObject
 
 ``setIso8601Time(dateObject, string)``:
 
@@ -62,36 +62,36 @@ Methods
     The date is left unchanged.
 
     ``dateObject``:
-		    a JavaScript Date object
+    	    a JavaScript Date object
 
     ``string``:
-		    The time formted as an ISO 8601 string
+    	    The time formted as an ISO 8601 string
 
-		*returns*:
-        dateObject
+    	*returns*:
+            dateObject
 
 ``setDayOfYear(dateObject, dayofyear)``:
 
     Sets the date to the day of year
 
     ``dateObject``:
-		    a JavaScript Date object
+    	    a JavaScript Date object
 
     ``dayofyear``:
-		    The day of year
+    	    The day of year
 
-		*returns*:
-        dateObject
+    	*returns*:
+            dateObject
 
 ``getDayOfYear(dateObject)``:
 
     Retrives the day of the year the Date is set to.
 
     ``dateObject``:
-		    a JavaScript Date object
+    	    a JavaScript Date object
 
-		*returns*:
-        day of year
+    	*returns*:
+            day of year
 
 .. FIXME: finish documenting methods
 

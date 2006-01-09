@@ -150,6 +150,12 @@ Methods
     *return*:
         True if supported and allowed, false otherwise.
 
+Provides
+===============================================================================
+
+dojo.io.cookie
+    Cookie methods for Dojo
+
 About
 ===============================================================================
 
