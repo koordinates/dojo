@@ -6,10 +6,12 @@ dojo.require("dojo.string");
 /** 
 		Provides an easy object for interacting with the Flash plugin. This
 		object provides methods to determine the current version of the Flash
-		plugin; execute Flash instance methods independent of the Flash version
-		being used; write out the necessary markup to dynamically insert a
-		Flash object into the page; and do dynamic installation and upgrading
-		of the current Flash plugin in use.
+		plugin (dojo.flash.info); execute Flash instance methods 
+		independent of the Flash version
+		being used (dojo.flash.comm); write out the necessary markup to 
+		dynamically insert a Flash object into the page (dojo.flash.Embed; and 
+		do dynamic installation and upgrading of the current Flash plugin in 
+		use (dojo.flash.Install).
 		
 		To use dojo.flash, you must first wait until Flash is finished loading 
 		and initializing before you attempt communication or interaction. 
@@ -19,7 +21,9 @@ dojo.require("dojo.string");
 		
 		Then, while the page is still loading provide the file name
 		and the major version of Flash that will be used for Flash/JavaScript
-		communication:
+		communication (see "Flash Communication" below for information on the 
+		different kinds of Flash/JavaScript communication supported and how they 
+		depend on the version of Flash installed):
 		
 		dojo.flash.setSwf({flash8: "src/storage/storage_flash8.swf"});
 		
@@ -33,8 +37,9 @@ dojo.require("dojo.string");
 		dojo.flash.setSwf({flash6: "src/storage/storage_flash6.swf"});
 		
 		Flash 6 is currently the best way to do Flash/JavaScript communication
-		(see the docs for FlashCommunicator below for details), but doesn't work
-		on all browers. If you want dojo.flash to pick the best way of communicating
+		(see the section "Flash Communication" below for further
+		details), but doesn't work on all browers. If you want dojo.flash to 
+		pick the best way of communicating
 		based on the platform, specify Flash files for both forms of 
 		communication:
 		
@@ -44,8 +49,7 @@ dojo.require("dojo.string");
 		If no SWF files are specified, then Flash is not initialized.
 		
 		Your Flash must use DojoExternalInterface to expose Flash methods and
-		to call JavaScript; see the documentation for FlashCommunicator for
-		details.
+		to call JavaScript; see "Flash Communication" below for details.
 		
 		Once finished, you can query Flash version information:
 		
@@ -56,6 +60,107 @@ dojo.require("dojo.string");
 		var results = dojo.flash.comm.sayHello("Some Message");
 		
 		Only string values are currently supported.
+		
+		-------------------
+		Flash Communication
+		-------------------
+		
+		dojo.flash allows Flash/JavaScript communication in 
+		a way that can pass large amounts of data back and forth reliably,
+		very fast, and with synchronous method calls. The dojo.flash
+		framework encapsulates the specific way in which this communication occurs,
+		presenting a common interface to JavaScript irrespective of the underlying
+		Flash version.
+		
+		There are currently three major ways to do Flash/JavaScript communication
+		in the Flash community:
+		
+		1) Flash 6+ - Uses Flash methods, such as SetVariable and TCallLabel,
+		and the fscommand handler to do communication. Strengths: Very fast,
+		mature, and can send extremely large amounts of data; can do
+		synchronous method calls. Problems: Does not work on Safari; works on 
+		Firefox/Mac OS X only if Flash 8 plugin is installed; cryptic to work with.
+		
+		2) Flash 8+ - Uses ExternalInterface, which provides a way for Flash
+		methods to register themselves for callbacks from JavaScript, and a way
+		for Flash to call JavaScript. Strengths: Works on Safari; elegant to
+		work with; can do synchronous method calls. Problems: Extremely buggy 
+		(fails if there are new lines in the data, for example); two orders of 
+		magnitude slower than the Flash 6+ method; locks up the browser while
+		it is communicating.
+		
+		3) Flash 6+ - Uses two seperate Flash applets, one that we 
+		create over and over, passing input data into it using the PARAM tag, 
+		which then uses a Flash LocalConnection to pass the data to the main Flash
+		applet; communication back to Flash is accomplished using a getURL
+		call with a javascript protocol handler, such as "javascript:myMethod()".
+		Strengths: the most cross browser, cross platform pre-Flash 8 method
+		of Flash communication known; works on Safari. Problems: Timing issues;
+		clunky and complicated; slow; can only send very small amounts of
+		data (several K); all method calls are asynchronous.
+		
+		dojo.flash.comm uses only the first two methods. This framework
+		was created primarily for dojo.storage, which needs to pass very large
+		amounts of data synchronously and reliably across the Flash/JavaScript
+		boundary. We use the first method, the Flash 6 method, on all platforms
+		that support it, while using the Flash 8 ExternalInterface method
+		only on Safari with some special code to help correct ExternalInterface's
+		bugs.
+		
+		Since dojo.flash needs to have two versions of the Flash
+		file it wants to generate, a Flash 6 and a Flash 8 version to gain
+		true cross-browser compatibility, several tools are provided to ease
+		development on the Flash side.
+		
+		In your Flash file, if you want to expose Flash methods that can be
+		called, use the DojoExternalInterface class to register methods. This
+		class is an exact API clone of the standard ExternalInterface class, but
+		can work in Flash 6+ browsers. Under the covers it uses the best
+		mechanism to do communication:
+		
+		class MyClass{
+			function MyClass(){
+				// Initialize the DojoExternalInterface class
+				DojoExternalInterface.initialize();
+				
+				// Expose your methods
+				DojoExternalInterface.addCallback("sayHello", this, this.sayHello);
+				
+				// Call some JavaScript
+				DojoExternalInterface.call("someJavaScriptMethod");
+			}
+			
+			function sayHello(){ ... }
+			
+			static main(){ ... }
+		}
+		
+		To generate your SWF files, use the ant task
+		"buildFlash" as follows:
+		
+		ant buildFlash -Ddojo.flash.class=C:\\dev\\myproject\\MyClass.as
+		
+		where "dojo.flash.class" is the full or relative path to your Flash 
+		ActionScript file.
+		
+		This will generate two SWF files, one ending in _flash6.swf and the other
+		ending in _flash8.swf in the same directory as your ActionScript method:
+		
+		MyClass_flash6.swf
+		MyClass_flash8.swf
+		
+		Initialize dojo.flash with the filename and Flash communication version to
+		use during page load; see the documentation for dojo.flash for details:
+		
+		dojo.flash.setSwf({flash6: "src/mypackage/MyClass_flash6.swf",
+											 flash8: "src/mypackage/MyClass_flash8.swf"});
+		
+		Now, your Flash methods can be called from JavaScript as if they are native
+		Flash methods, mirrored exactly on the JavaScript side:
+		
+		dojo.flash.comm.sayHello();
+		
+		Only Strings are supported being passed back and forth currently.
 		
 		@author Brad Neuberg, bkn3@columbia.edu
 */
@@ -392,92 +497,6 @@ dojo.flash.Embed.prototype = {
 		specific way in which this communication occurs,
 		presenting a common interface to JavaScript irrespective of the underlying
 		Flash version.
-		
-		There are currently three major ways to do Flash/JavaScript communication:
-		
-		1) Flash 6+ - Uses Flash methods, such as SetVariable and TCallLabel,
-		and the fscommand handler to do communication. Strengths: Very fast,
-		mature, and can send extremely large amounts of data; can do
-		synchronous method calls. Problems: Does not work on Safari; works on 
-		Firefox/Mac OS X only if Flash 8 plugin is installed; cryptic to work with.
-		
-		2) Flash 8+ - Uses ExternalInterface, which provides a way for Flash
-		methods to register themselves for callbacks from JavaScript, and a way
-		for Flash to call JavaScript. Strengths: Works on Safari; elegant to
-		work with; can do synchronous method calls. Problems: Extremely buggy 
-		(fails if there are new lines in the data, for example); two orders of 
-		magnitude slower than the Flash 6+ method; locks up the browser while
-		it is communicating.
-		
-		3) Flash 6+ - Uses two seperate Flash applets, one that we 
-		create over and over, passing input data into it using the PARAM tag, 
-		which then uses a Flash LocalConnection to pass the data to the main Flash
-		applet; communication back to Flash is accomplished using a getURL
-		call with a javascript protocol handler, such as "javascript:myMethod()".
-		Strengths: the most cross browser, cross platform pre-Flash 8 method
-		of Flash communication known; works on Safari. Problems: Timing issues;
-		clunky and complicated; slow; can only send very small amounts of
-		data (several K); all method calls are asynchronous.
-		
-		The FlashCommunicator uses only the first two methods. This framework
-		was created primarily for dojo.storage, which needs to pass very large
-		amounts of data synchronously and reliably across the Flash/JavaScript
-		boundary. We use the first method, the Flash 6 method, on all platforms
-		that support it, while using the Flash 8 ExternalInterface method
-		only on Safari with some special code to help correct ExternalInterface's
-		bugs.
-		
-		Since the FlashCommunicator needs to have two versions of the Flash
-		file it wants to generate, a Flash 6 and a Flash 8 version to gain
-		true cross-browser compatibility, several tools are provided to ease
-		development on the Flash side.
-		
-		In your Flash file, if you want to expose Flash methods that can be
-		called, use the DojoExternalInterface class to register methods. This
-		class is an exact API clone of the standard ExternalInterface class, but
-		can work in Flash 6+ browsers. Under the covers it uses the best
-		mechanism to do communication:
-		
-		class MyClass {
-			function MyClass(){
-				// Initialize the DojoExternalInterface class
-				DojoExternalInterface.initialize();
-				
-				// Expose your methods
-				DojoExternalInterface.addCallback("sayHello", this, this.sayHello);
-				
-				// Call some JavaScript
-				DojoExternalInterface.call("someJavaScriptMethod");
-			}
-			
-			function sayHello(){ ... }
-			
-			static main(){ ... }
-		}
-		
-		To generate your SWF files, use the included utility 
-		buildscripts/build_flash.sh file to generate the SWF files necessary:
-		
-		./buildscripts/build_flash.sh MyClass.as
-		
-		This will generate two SWF files, one ending in _flash6.swf and the other
-		ending in _flash8.swf:
-		
-		MyClass_flash6.swf
-		MyClass_flash8.swf
-		
-		Initialize dojo.flash with the filename and Flash communication version to
-		use during page load; see the documentation for dojo.flash for details:
-		
-		dojo.flash.setSwf({flash6: "src/mypackage/MyClass_flash6.swf",
-											 flash8: "src/mypackage/MyClass_flash8.swf"});
-		
-		Now, your Flash methods can be called from JavaScript as if they are native
-		Flash methods, mirrored exactly on the JavaScript side:
-		
-		dojo.flash.comm.sayHello();
-		
-		Only Strings are supported being passed back and forth currently.
 */
 dojo.flash.FlashCommunicator = function(){
 	if(dojo.flash.useFlash6()){
