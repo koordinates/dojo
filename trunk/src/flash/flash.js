@@ -136,7 +136,11 @@ dojo.require("dojo.string");
 		}
 		
 		To generate your SWF files, use the ant task
-		"buildFlash" as follows:
+		"buildFlash". You must have the open source Motion Twin ActionScript 
+		compiler (mtasc) installed and in your path to use the "buildFlash"
+		ant task; download and install mtasc from http://www.mtasc.org/.
+		
+		buildFlash usage:
 		
 		ant buildFlash -Ddojo.flash.class=C:\\dev\\myproject\\MyClass.as
 		
