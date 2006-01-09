@@ -24,3 +24,5 @@ class DojoExternalInterface{
 		fscommand("call:"+methodName, arguments[1]);
 	}
 }
+
+// vim:ts=4:noet:tw=0:

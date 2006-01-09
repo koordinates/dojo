@@ -18,3 +18,5 @@ class DojoExternalInterface{
 		ExternalInterface.call.apply(ExternalInterface, arguments);
 	}
 }
+
+// vim:ts=4:noet:tw=0:
