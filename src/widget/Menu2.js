@@ -12,7 +12,8 @@ dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.PopupMenu2 = function(){
 	dojo.widget.HtmlWidget.call(this);
-	this.items = [];
+	this.items = [];	// unused???
+	this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 }
 
 dojo.inherits(dojo.widget.PopupMenu2, dojo.widget.HtmlWidget);
@@ -64,9 +65,17 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		if (this.contextMenuForWindow){
 			var doc = document.documentElement  || dojo.html.body(); 
 			dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
+		} else if ( this.targetNodeIds.length > 0 ){
+			for(var i=0; i<this.targetNodeIds.length; i++){
+				this.bindDomNode(this.targetNodeIds[i]);
+			}			
 		}
 
 		this.layoutMenuSoon();
+	},
+
+	bindDomNode: function(node){
+		dojo.event.connect(dojo.byId(node), "oncontextmenu", this, "onOpen");
 	},
 
 	layoutMenuSoon: function(){
