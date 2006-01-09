@@ -55,12 +55,20 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 		if ( this.handler != "none" ){
 			this.setHandler(this.handler);
 		}
-		if ( this.isVisible() ){
-			this.loadContents();
-		}
 	},
 
-	// If the pane contents are external then load them
+	onResized: function(){
+		if(this.isVisible()){
+			this.loadContents();
+		}
+		dojo.widget.html.RemotePane.superclass.onResized.call(this);
+	},
+
+	show: function(){
+		this.loadContents();
+		dojo.widget.html.RemotePane.superclass.show.call(this);
+	},
+
 	loadContents: function() {
 		if ( this.isLoaded ){
 			return;
@@ -83,7 +91,7 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 	},
 
 	_downloadExternalContent: function(url, useCache) {
-		//dojo.debug(this.widgetId + " downloading " + url);
+		//dojo.debug(this.widgetId + " downloading " + url + "  isVisible == " + this.isVisible());
 		var node = this.containerNode || this.domNode;
 		node.innerHTML = "Loading...";
 
