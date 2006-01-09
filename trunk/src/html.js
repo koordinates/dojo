@@ -591,13 +591,13 @@ dojo.html.createNodesFromText = function(txt, trim){
 	tn.style.visibility= "hidden";
 	document.body.appendChild(tn);
 	var tableType = "none";
-	if((/^<t[dh][\s>]/mi).test(dojo.string.trimStart(txt))) {
+	if((/^<t[dh][\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
 		txt = "<table><tbody><tr>" + txt + "</tr></tbody></table>";
 		tableType = "cell";
-	} else if((/^<tr[\s>]/mi).test(dojo.string.trimStart(txt))) {
+	} else if((/^<tr[\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
 		txt = "<table><tbody>" + txt + "</tbody></table>";
 		tableType = "row";
-	} else if((/^<(thead|tbody|tfoot)[\s>]/mi).test(dojo.string.trimStart(txt))) {
+	} else if((/^<(thead|tbody|tfoot)[\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
 		txt = "<table>" + txt + "</table>";
 		tableType = "section";
 	}
