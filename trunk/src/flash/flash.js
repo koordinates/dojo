@@ -67,8 +67,9 @@ dojo.lang.extend(dojo.flash, {
 	/** Sets the SWF files and versions we are using. See dojo.flash
 			documentation for details. */
 	setSwf: function(fileInfo){
-		if(fileInfo == null || dojo.lang.isUndefined(fileInfo))
+		if(fileInfo == null || dojo.lang.isUndefined(fileInfo)){
 			return;
+		}
 			
 		if(fileInfo.flash6 != null && dojo.lang.isUndefined(fileInfo.flash6)){
 			flash6_version = fileInfo.flash6;
@@ -222,12 +223,13 @@ dojo.flash.FlashInfo.prototype = {
 		// make the revision a decimal (i.e. transform revision 14 into
 		// 0.14
 		reqVer = parseFloat("." + reqVer);
-		if(this.versionMajor > reqMajorVer && this.version >= reqVer)
+		if(this.versionMajor > reqMajorVer && this.version >= reqVer){
 			return true;
-		else if(this.version >= reqVer && this.versionMinor >= reqMinorVer)
+		}else if(this.version >= reqVer && this.versionMinor >= reqMinorVer){
 			return true;
-		else
+		}else{
 			return false;
+		}
 	},
 	
 	_detectVersion: function(){
@@ -235,10 +237,11 @@ dojo.flash.FlashInfo.prototype = {
 		
 		// loop backwards through the versions until we find the newest version	
 		for(var testVersion = 25; testVersion > 0; testVersion--){
-			if(dojo.render.html.ie)
+			if(dojo.render.html.ie){
 				versionStr = VBGetSwfVer(testVersion);
-			else
+			}else{
 				versionStr = this._JSFlashInfo(testVersion);		
+			}
 				
 			if(versionStr == -1 ){
 				this.capable = false; 
@@ -249,8 +252,9 @@ dojo.flash.FlashInfo.prototype = {
 					var tempArray = versionStr.split(" ");
 					var tempString = tempArray[1];
 					versionArray = tempString.split(",");
-				}else
+				}else{
 					versionArray = versionStr.split(".");
+				}
 					
 				this.versionMajor = versionArray[0];
 				this.versionMinor = versionArray[1];
@@ -283,11 +287,11 @@ dojo.flash.FlashInfo.prototype = {
 				var tempArrayMajor = descArray[2].split(".");
 				var versionMajor = tempArrayMajor[0];
 				var versionMinor = tempArrayMajor[1];
-				if(descArray[3] != "")
+				if(descArray[3] != ""){
 					tempArrayMinor = descArray[3].split("r");
-				else
+				}else{
 					tempArrayMinor = descArray[4].split("r");
-	
+				}
 				var versionRevision = tempArrayMinor[1] > 0 ? tempArrayMinor[1] : 0;
 				var version = versionMajor + "." + versionMinor + "." 
 											+ versionRevision;
