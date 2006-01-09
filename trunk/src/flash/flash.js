@@ -115,15 +115,15 @@ dojo.lang.extend(dojo.flash, {
 		}
 	
 		// find out if Flash is installed
-		this.info = new dojo.flash.FlashInfo();
+		this.info = new dojo.flash.Info();
 		
 		// if we are not installed, install Flash
 		if(this.info.capable == false){
-			var installer = new dojo.flash.FlashInstall();
+			var installer = new dojo.flash.Install();
 			installer.install();
 		}else if(this.info.capable == true){
 			// write the flash object into the page
-			dojo.flash.obj = new dojo.flash.FlashObject();
+			dojo.flash.obj = new dojo.flash.Embed();
 			dojo.flash.obj.hidden = true;
 			dojo.flash.obj.write();
 			
@@ -161,7 +161,7 @@ dojo.lang.extend(dojo.flash, {
 		
 		This constructor must be called before the page is finished loading. 
 */
-dojo.flash.FlashInfo = function(){
+dojo.flash.Info = function(){
 	// Visual basic helper required to detect Flash Player ActiveX control 
 	// version information on Internet Explorer
 	if(dojo.render.html.ie){
@@ -183,7 +183,7 @@ dojo.flash.FlashInfo = function(){
 	this._detectCommunicationVersion();
 }
 
-dojo.flash.FlashInfo.prototype = {
+dojo.flash.Info.prototype = {
 	/** The full version string, such as "8r22". */
 	version: -1,
 	
@@ -321,9 +321,9 @@ dojo.flash.FlashInfo.prototype = {
 };
 
 /** A class that is used to write out the Flash object into the page. */
-dojo.flash.FlashObject = new function(){}
+dojo.flash.Embed = new function(){}
 
-dojo.flash.FlashObject.prototype = {
+dojo.flash.Embed.prototype = {
 	/** Controls whether this is a hidden Flash object or not. */
 	hidden: true,
 	
@@ -525,10 +525,12 @@ dojo.flash.FlashCommunicator.prototype = {
 		Figures out the best way to automatically install the Flash plugin
 		for this browser and platform. 
 */
-dojo.flash.FlashInstall = function(){
+dojo.flash.Install = function(){
 }
 
-dojo.flash.FlashInstall.prototype = {
+dojo.flash.Install.prototype = {
 	install: function(){
 	}
 }
+
+// vim:ts=4:noet:tw=0:
