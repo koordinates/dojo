@@ -4,24 +4,27 @@
 		
 		@author Brad Neuberg, bkn3@columbia.edu 
 */
-		
+
 class DojoExternalInterface{
-	public static available:Boolean;
+	public static var available:Boolean;
 	
-	public static initialize(){
+	public static function initialize(){
+		// FIXME: Set available variable
 		// indicate that our flash is loaded
-		this.call("dojo.flash.loaded");
+		DojoExternalInterface.call("dojo.flash.loaded");
 	}
 	
-	static addCallback(methodName:String, instance:Object, 
-										 method:Function) : Boolean{
-		return ExternalInterface.addCallback(methodName, instance, method);									 
+	public static function addCallback(methodName:String, instance:Object, 
+										 								 method:Function) : Boolean{
+		// FIXME: Add a callback								 
+		return false;
 	}
 	
-	static call(methodName:String) : Object{
+	public static function call(methodName:String) : Object{
 		// FIXME: serialize the arguments better
 		// FIXME: We only grab the first argument right now
 		fscommand("call:"+methodName, arguments[1]);
+		return false;
 	}
 }
 
