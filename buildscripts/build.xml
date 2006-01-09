@@ -54,6 +54,8 @@ build targets:
 	docs - builds documentation in all formats from ./${src} and place it in ${release_docs_dir}
 	test - builds and runs command line unit tests
 	testScripting - tests the JS and Jython integration in the build process
+	buildFlash - compiles a Flash ActionScript 2 file to use dojo.flash.comm; provide 
+	relative path to file using -Ddojo.flash.file.
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -614,4 +616,64 @@ internTemplateStrings()
 		<delete file="${release_dir}/${project}_${version}.tar"/>
 	</target>
 	<!-- end tar task -->
+	
+	<!-- buildFlash task -->
+	<target name="buildFlash"
+					description="builds Flash ActionScript class to use dojo.flash.comm">
+		<!-- extract the ActionScript class name and path -->
+		<script language="javascript"><![CDATA[
+			var flashFile = dojo.getProperty("dojo.flash.file");
+			
+			var matches = flashFile.match(/([A-Za-z0-9_]*)\.as$/);
+			var flashClass = matches[1];
+			dojo.setNewProperty("flashClass", flashClass);
+			
+			var flashFileName = matches[0];
+			var flashPath = flashFile.substring(0, flashFileName.length + 1);
+			dojo.setNewProperty("flashPath", flashPath);
+		]]></script>
+		
+		<!-- generate the Flash 6 SWF -->
+		<echo message="Flash 6: Compiling ${dojo.flash.file}..."/>
+		
+		<exec executable="mtasc">
+			<arg value="-version"/>
+			<arg value="6"/>
+			
+			<arg value="-cp"/>
+			<arg value="${root}/${src}/flash/flash6"/>
+			
+			<arg value="-swf"/>
+			<arg value="${flashPath}/${flashClass}_version6.swf"/>
+			
+			<arg value="-main"/>
+			
+			<arg value="-header"/>
+			<arg value="215:138:10"/>
+			
+			<arg value="${dojo.flash.file}"/>
+		</exec>
+		
+		<!-- generate the Flash 8 SWF -->
+		<echo message="Flash 8: Compiling ${dojo.flash.file}..."/>
+		
+		<exec executable="mtasc">
+			<arg value="-version"/>
+			<arg value="8"/>
+			
+			<arg value="-cp"/>
+			<arg value="${root}/${src}/flash/flash8"/>
+			
+			<arg value="-swf"/>
+			<arg value="${flashPath}/${flashClass}_version8.swf"/>
+			
+			<arg value="-main"/>
+			
+			<arg value="-header"/>
+			<arg value="215:138:10"/>
+			
+			<arg value="${dojo.flash.file}"/>
+		</exec>
+	</target>
+	<!-- end buildFlash task -->
 </project>
