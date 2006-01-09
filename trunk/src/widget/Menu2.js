@@ -50,6 +50,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	submenuDelay: 500,
 	submenuOverlap: 5,
 	contextMenuForWindow: false,
+	lastOpenEvent: null,
 
 	submenuIconSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_off.gif").toString(),
 	submenuIconOnSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_on.gif").toString(),
@@ -262,6 +263,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	},
 
 	onOpen: function(e){
+		this.lastOpenEvent = e;
 
 		//dojo.debugShallow(e);
 		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
