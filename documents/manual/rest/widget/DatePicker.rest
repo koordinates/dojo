@@ -26,7 +26,6 @@ Usage
 or::
 
   <div dojoType="DatePicker"></div>
-																		
 
 API Reference
 ===============================================================================
@@ -41,21 +40,21 @@ Properties
 ``isContainer``:
 
     isContainer is set to false as the DatePicker does not currently support 
-		the nesting of other widgets.
+    the nesting of other widgets.
 
 
 Methods
 ---------------------------------------
 
-		none
-		
+    none
+
 Classes
 ---------------------------------------
 
 ``util``
 
     Utility collection for any convenience methods specific to a DatePicker, 
-		but not specific to an instance..
+    but not specific to an instance..
 
 Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -63,11 +62,11 @@ Methods
  ``toRfcDate(jsDate)``:
 
     Convert a JavaScript date object, jsDate, to an `RFC 3339`_ date format. If 
-		no jsDate is passed in, it converts the value of today.  There is currently 
-		little attempt to validate the date inside this method.  Time is treated as 
-		0, in the GMT time zone, since this is a DatePicker.  This should probably 
-		be re-evaluated to chose using the time zone of either the current user, or 
-		a time zone that is passsed to the object.
+    no jsDate is passed in, it converts the value of today.  There is currently 
+    little attempt to validate the date inside this method.  Time is treated as 
+    0, in the GMT time zone, since this is a DatePicker.  This should probably 
+    be re-evaluated to chose using the time zone of either the current user, or 
+    a time zone that is passsed to the object.
 
     ``jsDate``:
         A JavaScript Date object instance
@@ -84,7 +83,7 @@ Methods
 
     *returns*:
         a JavaScript Date object instance representing the value passed in by 
-				rfcDate, or today if rfcDate is not valid.
+        rfcDate, or today if rfcDate is not valid.
 
 ``initFirstSaturday(month, year)``:
 
