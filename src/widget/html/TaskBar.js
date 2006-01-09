@@ -59,7 +59,7 @@ dojo.inherits(dojo.widget.html.TaskBar, dojo.widget.html.FloatingPane);
 
 dojo.lang.extend(dojo.widget.html.TaskBar, {
 	addChild: function(child) {
-		var tbi = dojo.widget.createWidget("TaskBarItem",{windowId:child.domNode.id, caption: child.title, iconSrc: child.iconSrc} );
-                dojo.widget.html.TaskBar.superclass.addChild.call(this,tbi);
+		var tbi = dojo.widget.createWidget("TaskBarItem",{windowId:child.widgetId, caption: child.title, iconSrc: child.iconSrc} );
+		dojo.widget.html.TaskBar.superclass.addChild.call(this,tbi);
 	}
 });

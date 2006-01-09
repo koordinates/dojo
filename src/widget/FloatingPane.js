@@ -10,6 +10,7 @@ dojo.require("dojo.widget.Manager");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.widget.BasicPane");
 dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
@@ -25,18 +26,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	widgetType: "FloatingPane",
 
 	// Constructor arguments
-	title: 'Untitled',
+	title: '',
 	iconSrc: '',
 	hasShadow: false,
 	constrainToContainer: false,
 	taskBarId: "",
 	resizable: true,	// note: if specified, user must include ResizeHandle
 	hideScrollBars: false,
-
-	url: "inline",
-	extractContent: true,
-	parseContent: true,
-	cacheContent: true,
 
 	resizable: false,
 	titleBarDisplay: "fancy",
@@ -58,29 +54,32 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	closeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneClose.gif"),
 	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
 
+	templateString: '<div class="dojoFloatingPane"></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex) {
 		this.clientPane.addChild(child, overrideContainerNode, pos, ref, insertIndex);
 	},
 
-	fillInTemplate: function(){
+	_makeClientPane: function(node){
+		return this.createPane("BasicPane", node, {layoutAlign: "client", id:this.widgetId+"_client"});
+	},
 
-		if (this.templateCssPath) {
-			dojo.style.insertCssFile(this.templateCssPath, null, true);
-		}
+	fillInTemplate: function(args, frag){
+		var source = this.getFragNodeRef(frag);
 
-		dojo.html.addClass(this.domNode, 'dojoFloatingPane');
-
-		var clientDiv = document.createElement('div');
-		dojo.dom.moveChildren(this.domNode, clientDiv, 0);
-		dojo.html.addClass(clientDiv, 'dojoFloatingPaneClient');
-
+		// Copy style info from input node to output node
+		this.domNode.style.cssText = source.style.cssText;
+		this.domNode["class"] = source["class"];
+	
 		// this is our client area
-		this.clientPane = this.createPane(clientDiv, {layoutAlign: "client", id:this.widgetId+"_client",
-			url: this.url,cacheContent: this.cacheContent, extractContent: this.extractContent,
-			parseContent: this.parseContent});
-		delete this.url;
+		// TODO: shouldn't be creating clientDiv for RemotePane case, and shouldn't be copying
+		// over children either
+		var clientDiv = document.createElement('div');
+		dojo.dom.moveChildren(source, clientDiv, 0);
+		this.domNode.appendChild(clientDiv);
+		this.clientPane = this._makeClientPane(clientDiv);
+		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
 
 		if (this.hideScrollBars) {
 			this.clientPane.domNode.style.overflow="hidden";
@@ -89,9 +88,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if (this.titleBarDisplay != "none") {
 			// this is our chrome
 			var chromeDiv = document.createElement('div');
-			//chromeDiv.style.height="15px";
 			dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
-			this.dragBar = this.createPane(chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
+			this.dragBar = this.createPane("LayoutPane", chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
 			dojo.html.disableSelection(this.dragBar.domNode);
 		
 			if( this.titleBarDisplay == "fancy"){
@@ -99,7 +97,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				var img = document.createElement('img');
 				img.src = this.titleBarBackground;
 				dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
-				var backgroundPane = dojo.widget.createWidget("LayoutPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
+				var backgroundPane = dojo.widget.createWidget("BasicPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
 				this.dragBar.addChild(backgroundPane);
 			}
 
@@ -179,7 +177,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			}
 
 			drag.setDragHandle(this.dragBar.domNode);
-
 		}
 
 		if ( this.resizable ) {
@@ -188,7 +185,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
 			dojo.html.disableSelection(resizeDiv);
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-			this.resizePane = this.createPane(resizeDiv, {layoutAlign: "bottom"});
+			this.resizePane = this.createPane("BasicPane", resizeDiv, {layoutAlign: "bottom"});
 			this.resizePane.addChild(rh);
 		}
 
@@ -206,7 +203,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		// and add a background div so the shadow doesn't seep through the margin of the title bar
 		var backgroundDiv = document.createElement('div');
 		dojo.html.addClass(backgroundDiv, 'dojoFloatingPaneBackground');
-		this.background = this.createPane(backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
+		this.background = this.createPane("BasicPane", backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
 
 		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
 
@@ -218,6 +215,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if ( this.isVisible() ) {
 			this.bgIframe.show();
 		};
+
 	},
 
 
@@ -235,7 +233,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		ctx.quadraticCurveTo(x,y,x,y+radius);
 		ctx.fillStyle=fillColor;
 		ctx.fill();
-	},
+        },
 
 	//draw the drop shadow
 	makeShadow: function( canvas ) {
@@ -360,6 +358,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		} else {
 			this.setInitialWindowState();
 		}
+		
 	},
 
 
@@ -398,7 +397,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			}
 			return;
 		}
-
 		taskbar.addChild(this);
 	},
 
@@ -438,8 +436,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.bgIframe.show();
 	},
 
-	createPane: function(node, args){
-		var pane = dojo.widget.createWidget("LayoutPane", args, node);
+	createPane: function(type, node, args){
+		var pane = dojo.widget.createWidget(type, args, node);
 		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
 		pane.ownerPane=this;
 		return pane;
