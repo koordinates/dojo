@@ -118,8 +118,8 @@ dojo.require("dojo.string");
 		can work in Flash 6+ browsers. Under the covers it uses the best
 		mechanism to do communication:
 		
-		class MyClass{
-			function MyClass(){
+		class HelloWorld{
+			function HelloWorld(){
 				// Initialize the DojoExternalInterface class
 				DojoExternalInterface.initialize();
 				
@@ -142,22 +142,22 @@ dojo.require("dojo.string");
 		
 		buildFlash usage:
 		
-		ant buildFlash -Ddojo.flash.class=C:\\dev\\myproject\\MyClass.as
+		ant buildFlash -Ddojo.flash.file=../tests/flash/HelloWorld.as
 		
-		where "dojo.flash.class" is the full or relative path to your Flash 
+		where "dojo.flash.file" is the relative path to your Flash 
 		ActionScript file.
 		
 		This will generate two SWF files, one ending in _flash6.swf and the other
 		ending in _flash8.swf in the same directory as your ActionScript method:
 		
-		MyClass_flash6.swf
-		MyClass_flash8.swf
+		HelloWorld_flash6.swf
+		HelloWorld_flash8.swf
 		
 		Initialize dojo.flash with the filename and Flash communication version to
 		use during page load; see the documentation for dojo.flash for details:
 		
-		dojo.flash.setSwf({flash6: "src/mypackage/MyClass_flash6.swf",
-											 flash8: "src/mypackage/MyClass_flash8.swf"});
+		dojo.flash.setSwf({flash6: "tests/flash/HelloWorld_flash6.swf",
+											 flash8: "tests/flash/HelloWorld_flash8.swf"});
 		
 		Now, your Flash methods can be called from JavaScript as if they are native
 		Flash methods, mirrored exactly on the JavaScript side:
@@ -165,6 +165,24 @@ dojo.require("dojo.string");
 		dojo.flash.comm.sayHello();
 		
 		Only Strings are supported being passed back and forth currently.
+		
+		-------------------
+		Notes
+		-------------------
+		
+		If you have both Flash 6 and Flash 8 versions of your file:
+		
+		dojo.flash.setSwf({flash6: "tests/flash/HelloWorld_flash6.swf",
+											 flash8: "tests/flash/HelloWorld_flash8.swf"});
+											 
+		but want to force the browser to use a certain version of Flash for
+		all platforms (for testing, for example), use the djConfig
+		variable 'forceFlashComm' with the version number to force:
+		
+		var djConfig = { forceFlashComm: 6 };
+		
+		Two values are currently supported, 6 and 8, for the two styles of
+		communication described above.
 		
 		@author Brad Neuberg, bkn3@columbia.edu
 */
