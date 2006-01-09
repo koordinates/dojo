@@ -73,6 +73,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		}
 
 		this.layoutMenuSoon();
+		dojo.event.connect(window, "onscroll", this, "close");
 	},
 
 	bindDomNode: function(node){
