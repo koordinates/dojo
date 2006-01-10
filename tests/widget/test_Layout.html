@@ -10,7 +10,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.LayoutPane");
-	dojo.require("dojo.widget.BasicPane");
+	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.RemotePane");
 	dojo.require("dojo.widget.SplitPane");
 	dojo.require("dojo.widget.ColorPalette");
@@ -32,10 +32,10 @@
 <div dojoType="LayoutPane"
 	layoutChildPriority='top-bottom'
 	style="width: 100%; height: 100%;">
-	<div dojoType="BasicPane" layoutAlign="top" style="background-color: #274383; color: white;">
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #274383; color: white;">
 		top bar
 	</div>
-	<div dojoType="BasicPane" layoutAlign="bottom" style="background-color: #274383; color: white;">
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #274383; color: white;">
 		bottom bar
 	</div>
 	<div dojoType="SplitPane"
@@ -74,7 +74,7 @@
 				
 				<a id="tab2" dojoType="RemotePane" href="tab2.html">Tab 2</a>
 			</div>
-			<div dojoType="BasicPane" sizeMin="20" sizeShare="30">
+			<div dojoType="ContentPane" sizeMin="20" sizeShare="30">
 				This is just a test of the various containers nested inside each other.
 			</div>
 		</div>

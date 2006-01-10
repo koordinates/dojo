@@ -10,7 +10,7 @@ dojo.require("dojo.widget.Manager");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
-dojo.require("dojo.widget.BasicPane");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
@@ -62,7 +62,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	_makeClientPane: function(node){
-		return this.createPane("BasicPane", node, {layoutAlign: "client", id:this.widgetId+"_client"});
+		return this.createPane("ContentPane", node, {layoutAlign: "client", id:this.widgetId+"_client"});
 	},
 
 	fillInTemplate: function(args, frag){
@@ -97,7 +97,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				var img = document.createElement('img');
 				img.src = this.titleBarBackground;
 				dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
-				var backgroundPane = dojo.widget.createWidget("BasicPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
+				var backgroundPane = dojo.widget.createWidget("ContentPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
 				this.dragBar.addChild(backgroundPane);
 			}
 
@@ -185,7 +185,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
 			dojo.html.disableSelection(resizeDiv);
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-			this.resizePane = this.createPane("BasicPane", resizeDiv, {layoutAlign: "bottom"});
+			this.resizePane = this.createPane("ContentPane", resizeDiv, {layoutAlign: "bottom"});
 			this.resizePane.addChild(rh);
 		}
 
@@ -203,7 +203,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		// and add a background div so the shadow doesn't seep through the margin of the title bar
 		var backgroundDiv = document.createElement('div');
 		dojo.html.addClass(backgroundDiv, 'dojoFloatingPaneBackground');
-		this.background = this.createPane("BasicPane", backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
+		this.background = this.createPane("ContentPane", backgroundDiv, {layoutAlign: 'flood', id:this.widgetId+"_background"});
 
 		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
 
