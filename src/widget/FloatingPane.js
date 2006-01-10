@@ -341,11 +341,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			if (kids[i].ownerPane == this){
 				this.children.push(kids[i]);
 			}else{
-				this.clientPane.children.push(kids[i]);
-
-				if (kids[i].widgetType == 'LayoutPane'){
-					kids[i].domNode.style.position = 'absolute';
-				}
+				this.clientPane.addChild(kids[i]);
 			}
 		}
 
