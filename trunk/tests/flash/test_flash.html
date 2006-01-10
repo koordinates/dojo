@@ -14,11 +14,12 @@
 
 	<script language="JavaScript">
 		dojo.require("dojo.event.*");
-		dojo.require("dojo.flash.*");
+		dojo.require("dojo.flash");
 		
 		dojo.event.connect(dojo.flash, "loaded", "flashLoaded");
 		dojo.flash.setSwf({flash6: "tests/flash/HelloWorld_flash6.swf",
-										   flash8: "tests/flash/HelloWorld_flash8.swf"});
+										   flash8: "tests/flash/HelloWorld_flash8.swf",
+											 visible: true});
 		
 		function flashLoaded(){
 			dojo.debug("flashLoaded");
