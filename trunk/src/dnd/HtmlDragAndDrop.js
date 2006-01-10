@@ -283,7 +283,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			}
 		}
 		
-		if (!this.dropIndicator.parentNode) {
+		if(!dojo.html.hasParent(this.dropIndicator)) {
 			dojo.html.body().appendChild(this.dropIndicator);
 		}
 	},

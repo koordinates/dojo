@@ -429,3 +429,10 @@ dojo.dom.collectionToArray = function(collection){
 	}
 	return array;
 }
+
+dojo.dom.hasParent = function(node) {
+	if(!node || !node.parentNode || (node.parentNode && !node.parentNode.tagName)) {
+		return false;
+	}
+	return true;
+}
