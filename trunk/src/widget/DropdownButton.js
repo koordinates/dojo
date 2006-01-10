@@ -1,5 +1,7 @@
 dojo.provide("dojo.widget.DropdownButton");
 
+dojo.deprecated("dojo.widget.DropdownButton",  "use dojo.widget.ComboButton2", "0.4");
+
 // Draws a button with a down arrow;
 // when you press the down arrow something appears (usually a menu)
 
