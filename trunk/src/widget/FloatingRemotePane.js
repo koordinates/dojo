@@ -7,7 +7,7 @@ dojo.provide("dojo.widget.html.FloatingRemotePane");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");
-
+dojo.require("dojo.widget.RemotePane");
 
 // Inner pane is filled from URL
 dojo.widget.html.FloatingRemotePane = function(){
