@@ -13,7 +13,11 @@ class DojoExternalInterface{
 	public static var available:Boolean;
 	
 	public static function initialize(){
+		// set whether communication is available
 		DojoExternalInterface.available = ExternalInterface.available;
+		
+		// indicate that the Flash is loaded
+		DojoExternalInterface.call("loaded");
 	}
 	
 	public static function addCallback(methodName:String, instance:Object, 
