@@ -118,12 +118,13 @@ dojo.date.setDayOfYear = function (dateObject, dayofyear) {
  * @return The day of the year
  */
 dojo.date.getDayOfYear = function (dateObject) {
-	var tmpdate = new Date(0);
-	tmpdate.setMonth(dateObject.getMonth());
-	tmpdate.setDate(dateObject.getDate());
-	return Number(tmpdate) / 86400000; // # milliseconds in a day
+	var tmpdate = new Date("1/1/" + dateObject.getFullYear());
+	return Math.floor((dateObject.getTime() - tmpdate.getTime()) / 86400000);
 }
 
+dojo.date.getWeekOfYear = function (dateObject) {
+	return Math.ceil(dojo.date.getDayOfYear(dateObject) / 7);
+}
 
 dojo.date.daysInMonth = function (month, year) {
 	dojo.deprecated("daysInMonth(month, year)",
