@@ -35,9 +35,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 		dojo.html.clearSelection();
 		
 		this.dragClone = this.domNode;
-	
-		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode),
-			left: dojo.style.getAbsoluteX(this.domNode)};
+
+		this.scrollOffset = {
+			top: dojo.html.getScrollTop(), // document.documentElement.scrollTop,
+			left: dojo.html.getScrollLeft() // document.documentElement.scrollLeft
+		};
+
+		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode) ,
+			left: dojo.style.getAbsoluteX(this.domNode) };
 		
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};

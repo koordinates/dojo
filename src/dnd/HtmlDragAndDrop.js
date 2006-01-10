@@ -81,6 +81,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode, true) + this.scrollOffset.top,
 			left: dojo.style.getAbsoluteX(this.domNode, true) + this.scrollOffset.left};
 		
+
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
 
@@ -137,6 +138,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	
 	/** Moves the node to follow the mouse */
 	onDragMove: function(e){
+		this.updateDragOffset();
 		var x = this.dragOffset.left + e.clientX - this.parentPosition.left;
 		var y = this.dragOffset.top + e.clientY - this.parentPosition.top;
 
