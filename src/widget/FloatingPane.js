@@ -70,7 +70,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 		// Copy style info from input node to output node
 		this.domNode.style.cssText = source.style.cssText;
-		this.domNode["class"] = source["class"];
+		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
 	
 		// this is our client area
 		// TODO: shouldn't be creating clientDiv for RemotePane case, and shouldn't be copying
