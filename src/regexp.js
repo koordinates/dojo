@@ -150,8 +150,8 @@ dojo.regexp.host = function(flags) {
 	if (typeof flags.allowLocal != "boolean") { flags.allowLocal = false; }
 	if (typeof flags.allowPort != "boolean") { flags.allowPort = true; }
 
-	// Domain names must start with letter and can not end with a dash.
-	var domainNameRE = "([a-zA-Z]([-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?\\.)+" + dojo.regexp.tld(flags);
+	// Domain names can not end with a dash.
+	var domainNameRE = "([0-9a-zA-Z]([-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?\\.)+" + dojo.regexp.tld(flags);
 
 	// port number RE
 	portRE = ( flags.allowPort ) ? "(\\:" + dojo.regexp.integer({signed: false}) + ")?" : "";
