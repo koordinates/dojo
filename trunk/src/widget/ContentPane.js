@@ -2,5 +2,5 @@
 // It's useful as a child of LayoutPane, SplitPane, or TabSet.
 // But note that those classes can contain any widget as a child.
 
-dojo.provide("dojo.widget.BasicPane");
-dojo.requireAfterIf("html", "dojo.widget.html.BasicPane");
+dojo.provide("dojo.widget.ContentPane");
+dojo.requireAfterIf("html", "dojo.widget.html.ContentPane");

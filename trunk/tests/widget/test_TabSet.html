@@ -16,7 +16,7 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.TabSet");
 	dojo.require("dojo.widget.RemotePane");
-	dojo.require("dojo.widget.BasicPane");
+	dojo.require("dojo.widget.ContentPane");
 </script>
 
 <style type="text/css">
@@ -43,14 +43,14 @@ function boo(panel, node) {
 		
 		<a id="tab2" dojoType="RemotePane" href="tab2.html">Tab 2</a>
 		
-		<div dojoType="BasicPane" label="Tab 3">
+		<div dojoType="ContentPane" label="Tab 3">
 			<h1>I am tab 3</h1>
 			<p>And I was already part of the page! That's cool, no?</p>
 		</div>
 		
 		<div dojoType="RemotePane" label="Handler tab" handler="boo"></div>
 
-		<div dojoType="BasicPane" label="Another Tab">
+		<div dojoType="ContentPane" label="Another Tab">
 			<h1>I love local content</h1>
 			<p>And I'm not ashamed to admit it.</p>
 			<p>venga venga venga venga venga venga venga venga venga venga venga venga

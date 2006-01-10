@@ -130,7 +130,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 });
 
 // Deprecated class.  Tabset can take any widget as input.
-// Use BasicPane, LayoutPane, etc.
+// Use ContentPane, LayoutPane, etc.
 dojo.widget.html.Tab = function() {
 	dojo.widget.html.LayoutPane.call(this);
 }

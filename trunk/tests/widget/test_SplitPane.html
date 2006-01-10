@@ -10,7 +10,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.SplitPane");
-	dojo.require("dojo.widget.BasicPane");
+	dojo.require("dojo.widget.ContentPane");
 </script>
 </head>
 <body style="padding: 50px;">
@@ -25,13 +25,13 @@
 	activeSizing="0"
 	style="border: 2px solid black; float: left; margin-right: 30px;  width: 400px; height: 300px;"
 >
-	<div dojoType="BasicPane" sizeMin="10" sizeShare="50">
+	<div dojoType="ContentPane" sizeMin="10" sizeShare="50">
 		this box has three split panes
 	</div>
-	<div dojoType="BasicPane" sizeMin="20" sizeShare="50" style="background-color: yellow; border: 3px solid purple;">
+	<div dojoType="ContentPane" sizeMin="20" sizeShare="50" style="background-color: yellow; border: 3px solid purple;">
 		in vertical mode
 	</div>
-	<div dojoType="BasicPane" sizeMin="10" sizeShare="50">
+	<div dojoType="ContentPane" sizeMin="10" sizeShare="50">
 		without active resizing
 	</div>
 </div>
@@ -42,10 +42,10 @@
 	activeSizing="1"
 	style="border: 2px solid black; float: left; width: 400px; height: 300px;"
 >
-	<div dojoType="BasicPane" sizeMin="20" sizeShare="20">
+	<div dojoType="ContentPane" sizeMin="20" sizeShare="20">
 		this box has two horizontal panes
 	</div>
-	<div dojoType="BasicPane" sizeMin="50" sizeShare="50">
+	<div dojoType="ContentPane" sizeMin="50" sizeShare="50">
 		with active resizing, a smaller sizer, different starting sizes and minimum sizes
 	</div>
 </div>
