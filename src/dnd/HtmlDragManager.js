@@ -58,6 +58,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	currentDropTarget: null,
 	currentDropTargetPoints: null,
 	previousDropTarget: null,
+	_dragTriggered: false,
 
 	selectedSources: [],
 	dragObjects: [],
@@ -69,6 +70,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	lastY: null,
 	mouseDownX: null,
 	mouseDownY: null,
+	threshold: 7,
 
 	dropAcceptable: false,
 
@@ -119,6 +121,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	onMouseDown: function(e){
 		if(this.disabled) { return; }
 
+		this.mouseDownX = e.clientX;
+		this.mouseDownY = e.clientY;
+
 		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
 			e.target.parentNode : e.target;
 
@@ -145,6 +150,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	onMouseUp: function(e){
+		this.mouseDownX = null;
+		this.mouseDownY = null;
+		this._dragTriggered = false;
 		var _this = this;
 		e.dragSource = this.dragSource;
 		if((!e.shiftKey)&&(!e.ctrlKey)){
@@ -194,21 +202,51 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		}
 	},
 
+	_dragStartDistance: function(x, y){
+		if((!this.mouseDownX)||(!this.mouseDownX)){
+			return;
+		}
+		var dx = Math.abs(x-this.mouseDownX);
+		var dx2 = dx*dx;
+		var dy = Math.abs(y-this.mouseDownY);
+		var dy2 = dy*dy;
+		return parseInt(Math.sqrt(dx2+dy2), 10);
+	},
+
 	onMouseMove: function(e){
 		var _this = this;
 		// if we've got some sources, but no drag objects, we need to send
 		// onDragStart to all the right parties and get things lined up for
 		// drop target detection
-		if((this.selectedSources.length)&&(!this.dragObjects.length)){
+		if(	(this.selectedSources.length)&&
+			(!this.dragObjects.length) ){
+			var dx;
+			var dy;
+			if(!this._dragTriggered){
+				this._dragTriggered = (this._dragStartDistance(e.clientX, e.clientY) > this.threshold);
+				if(!this._dragTriggered){ return; }
+				dx = e.clientX-this.mouseDownX;
+				dy = e.clientY-this.mouseDownY;
+			}
+		
 			if (this.selectedSources.length == 1) {
 				this.dragSource = this.selectedSources[0];
 			}
-		
+
 			dojo.lang.forEach(this.selectedSources, function(tempSource){
 				if(!tempSource){ return; }
 				var tdo = tempSource.onDragStart(e);
 				if(tdo){
 					tdo.onDragStart(e);
+
+					// "bump" the drag object to account for the drag threshold
+					with(tdo.dragClone.style){
+						top = parseInt(top)+dy+"px";
+						left = parseInt(left)+dx+ "px";
+					}
+					tdo.dragOffset.top += dy;
+					tdo.dragOffset.left += dx;
+
 					_this.dragObjects.push(tdo);
 				}
 			});
