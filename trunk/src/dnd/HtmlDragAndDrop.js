@@ -88,8 +88,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		//this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
 
 
-		//I don't know if this will take care of all cases where we need to assume absolute positioning from the body - dmachi
-		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (this.domNode.parentNode.nodeName.toLowerCase() == 'ul') ) {
+ 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (dojo.style.getComputedStyle(this.domNode.parentNode,"position") == "static")) {
 			this.parentPosition = {top: 0, left: 0};
 		} else {
 			this.parentPosition = {top: dojo.style.getAbsoluteY(this.domNode.parentNode, true),
