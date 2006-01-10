@@ -5,12 +5,9 @@
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	overflow: visible;		/* so drop shadow is displayed */
 	z-index: 10;
-}
-
-.dojoFloatingPaneBackground {
-	z-index: 5;		/* above the shadow */
 	background-color: ThreeDFace;
 }
+
 .dojoTitleBarIcon {
 	height: 22px;
 	width: 22px;
