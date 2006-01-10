@@ -48,7 +48,7 @@ dojo.lang.extend(dojo.widget.html.RemotePane, {
 
 		// Copy style info from input node to output node
 		this.domNode.style.cssText = source.style.cssText;
-		this.domNode["class"] = source["class"];
+		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
 	},
 
 	postCreate: function(args, frag, parentComp){
