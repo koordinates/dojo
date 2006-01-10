@@ -73,7 +73,6 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		}
 
 		this.layoutMenuSoon();
-		dojo.event.connect(window, "onscroll", this, "close");
 	},
 
 	bindDomNode: function(node){
@@ -578,6 +577,7 @@ dojo.widget.html.Menu2Manager = new function(){
 	this.focusNode = null;
 
 	dojo.event.connect(document, 'onmousedown', this, 'onClick');
+	dojo.event.connect(window, "onscroll", this, "close");
 
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
