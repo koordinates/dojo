@@ -2,7 +2,6 @@ dojo.provide("dojo.widget.html.TaskBar");
 dojo.provide("dojo.widget.html.TaskBarItem");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.Toggler");
 dojo.require("dojo.widget.FloatingPane");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event");
