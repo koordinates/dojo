@@ -1,6 +1,8 @@
 dojo.provide("dojo.widget.MenuItem");
 dojo.provide("dojo.widget.DomMenuItem");
 
+dojo.deprecated("dojo.widget.MenuItem, dojo.widget.DomMenuItem",  "use dojo.widget.Menu2", "0.4");
+
 dojo.require("dojo.string");
 dojo.require("dojo.widget.*");
 

@@ -1,6 +1,8 @@
 dojo.provide("dojo.widget.html.Button");
 dojo.require("dojo.widget.Button");
 
+dojo.deprecated("dojo.widget.Button",  "use dojo.widget.Button2", "0.4");
+
 dojo.widget.html.Button = function(){
 	// mix in the button properties
 	dojo.widget.Button.call(this);

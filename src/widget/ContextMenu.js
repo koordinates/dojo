@@ -1,5 +1,7 @@
 dojo.provide("dojo.widget.ContextMenu");
 
+dojo.deprecated("dojo.widget.ContextMenu",  "use dojo.widget.Menu2", "0.4");
+
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DomWidget");
 

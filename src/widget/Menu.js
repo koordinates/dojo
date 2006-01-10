@@ -1,6 +1,8 @@
 dojo.provide("dojo.widget.Menu");
 dojo.provide("dojo.widget.DomMenu");
 
+dojo.deprecated("dojo.widget.Menu, dojo.widget.DomMenu",  "use dojo.widget.Menu2", "0.4");
+
 dojo.require("dojo.widget.*");
 
 dojo.widget.tags.addParseTreeHandler("dojo:menu");
