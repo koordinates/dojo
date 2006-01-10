@@ -6,6 +6,7 @@ dojo.event = new function(){
 
 	// FIXME: where should we put this method (not here!)?
 	function interpolateArgs(args){
+		var dl = dojo.lang;
 		var ao = {
 			srcObj: dj_global,
 			srcFunc: null,
@@ -29,33 +30,31 @@ dojo.event = new function(){
 				ao.adviceFunc = args[1];
 				break;
 			case 3:
-				if((typeof args[0] == "object")&&(typeof args[1] == "string")&&(typeof args[2] == "string")){
+				if((dl.isObject(args[0]))&&(dl.isString(args[1]))&&(dl.isString(args[2]))){
 					ao.adviceType = "after";
 					ao.srcObj = args[0];
 					ao.srcFunc = args[1];
 					ao.adviceFunc = args[2];
-				}else if((typeof args[1] == "string")&&(typeof args[2] == "string")){
+				}else if((dl.isString(args[1]))&&(dl.isString(args[2]))){
 					ao.srcFunc = args[1];
 					ao.adviceFunc = args[2];
-				}else if((typeof args[0] == "object")&&(typeof args[1] == "string")&&(typeof args[2] == "function")){
+				}else if((dl.isObject(args[0]))&&(dl.isString(args[1]))&&(dl.isFunction(args[2]))){
 					ao.adviceType = "after";
 					ao.srcObj = args[0];
 					ao.srcFunc = args[1];
 					var tmpName  = dojo.lang.nameAnonFunc(args[2], ao.adviceObj);
-					ao.adviceObj[tmpName] = args[2];
 					ao.adviceFunc = tmpName;
-				}else if((typeof args[0] == "function")&&(typeof args[1] == "object")&&(typeof args[2] == "string")){
+				}else if((dl.isFunction(args[0]))&&(dl.isObject(args[1]))&&(dl.isString(args[2]))){
 					ao.adviceType = "after";
 					ao.srcObj = dj_global;
 					var tmpName  = dojo.lang.nameAnonFunc(args[0], ao.srcObj);
-					ao.srcObj[tmpName] = args[0];
 					ao.srcFunc = tmpName;
 					ao.adviceObj = args[1];
 					ao.adviceFunc = args[2];
 				}
 				break;
 			case 4:
-				if((typeof args[0] == "object")&&(typeof args[2] == "object")){
+				if((dl.isObject(args[0]))&&(dl.isObject(args[2]))){
 					// we can assume that we've got an old-style "connect" from
 					// the sigslot school of event attachment. We therefore
 					// assume after-advice.
@@ -64,12 +63,25 @@ dojo.event = new function(){
 					ao.srcFunc = args[1];
 					ao.adviceObj = args[2];
 					ao.adviceFunc = args[3];
-				}else if((typeof args[1]).toLowerCase() == "object"){
+				}else if((dl.isString(args[0]))&&(dl.isString(args[1]))&&(dl.isObject(args[2]))){
+					ao.adviceType = args[0];
+					ao.srcObj = dj_global;
+					ao.srcFunc = args[1];
+					ao.adviceObj = args[2];
+					ao.adviceFunc = args[3];
+				}else if((dl.isString(args[0]))&&(dl.isFunction(args[1]))&&(dl.isObject(args[2]))){
+					ao.adviceType = args[0];
+					ao.srcObj = dj_global;
+					var tmpName  = dojo.lang.nameAnonFunc(args[1], dj_global);
+					ao.srcFunc = tmpName;
+					ao.adviceObj = args[2];
+					ao.adviceFunc = args[3];
+				}else if(dl.isObject(args[1])){
 					ao.srcObj = args[1];
 					ao.srcFunc = args[2];
 					ao.adviceObj = dj_global;
 					ao.adviceFunc = args[3];
-				}else if((typeof args[2]).toLowerCase() == "object"){
+				}else if(dl.isObject(args[2])){
 					ao.srcObj = dj_global;
 					ao.srcFunc = args[1];
 					ao.adviceObj = args[2];
