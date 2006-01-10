@@ -577,7 +577,7 @@ dojo.widget.html.Menu2Manager = new function(){
 	this.focusNode = null;
 
 	dojo.event.connect(document, 'onmousedown', this, 'onClick');
-	dojo.event.connect(window, "onscroll", this, "close");
+	dojo.event.connect(window, "onscroll", this, "onClick");
 
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
