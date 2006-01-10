@@ -1,5 +1,5 @@
-dojo.provide("dojo.widget.TabSet");
-dojo.provide("dojo.widget.html.TabSet");
+dojo.provide("dojo.widget.TabPane");
+dojo.provide("dojo.widget.html.TabPane");
 dojo.provide("dojo.widget.Tab");
 dojo.provide("dojo.widget.html.Tab");
 
@@ -10,30 +10,30 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 
 //////////////////////////////////////////
-// TabSet -- a set of Tabs
+// TabPane -- a set of Tabs
 //////////////////////////////////////////
-dojo.widget.html.TabSet = function() {
+dojo.widget.html.TabPane = function() {
 	dojo.widget.html.LayoutPane.call(this);
 }
-dojo.inherits(dojo.widget.html.TabSet, dojo.widget.html.LayoutPane);
+dojo.inherits(dojo.widget.html.TabPane, dojo.widget.html.LayoutPane);
 
-dojo.lang.extend(dojo.widget.html.TabSet, {
-	widgetType: "TabSet",
+dojo.lang.extend(dojo.widget.html.TabPane, {
+	widgetType: "TabPane",
 
 	// Constructor arguments
 	labelPosition: "top",
 	useVisibility: false,		// true-->use visibility:hidden instead of display:none
 
 
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabSet.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabPane.css"),
 
 	selectedTab: "",		// initially selected tab (widgetId)
 
 	fillInTemplate: function(args, frag) {
-		dojo.widget.html.TabSet.superclass.fillInTemplate.call(this, args, frag);
+		dojo.widget.html.TabPane.superclass.fillInTemplate.call(this, args, frag);
 		
 		dojo.style.insertCssFile(this.templateCssPath, null, true);
-		dojo.html.prependClass(this.domNode, "dojoTabSet");
+		dojo.html.prependClass(this.domNode, "dojoTabPane");
 	},
 
 	postCreate: function(args, frag) {
@@ -47,18 +47,18 @@ dojo.lang.extend(dojo.widget.html.TabSet, {
 		for(var i=0; i<this.children.length; i++){
 			this._setupTab(this.children[i]);
 		}
-		dojo.widget.html.TabSet.superclass.postCreate.call(this, args, frag);
+		dojo.widget.html.TabPane.superclass.postCreate.call(this, args, frag);
 
 		// Put tab labels in a panel on the top (or bottom)
 		this.filterAllowed(this, 'labelPosition', ['top', 'bottom']);
 		this.labelPanel = dojo.widget.createWidget("LayoutPane", {layoutAlign: this.labelPosition});
 		this.labelPanel.domNode.appendChild(this.ul);
-		dojo.widget.html.TabSet.superclass.addChild.call(this, this.labelPanel);
+		dojo.widget.html.TabPane.superclass.addChild.call(this, this.labelPanel);
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		this._setupTab(child);
-		dojo.widget.html.TabSet.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.html.TabPane.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
 	},
 
 	_setupTab: function(tab){
@@ -116,20 +116,20 @@ dojo.lang.extend(dojo.widget.html.TabSet, {
 		if(this.selectedTabWidget){
 			this.selectTab(this.selectedTabWidget);
 		}
-		dojo.widget.html.TabSet.superclass.onResized.call(this);
+		dojo.widget.html.TabPane.superclass.onResized.call(this);
 	}
 });
-dojo.widget.tags.addParseTreeHandler("dojo:TabSet");
+dojo.widget.tags.addParseTreeHandler("dojo:TabPane");
 
-// These arguments can be specified for the children of a TabSet.
-// Since any widget can be specified as a TabSet child, mix them
+// These arguments can be specified for the children of a TabPane.
+// Since any widget can be specified as a TabPane child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
 	label: "",
 	selected: false	// is this tab currently selected?
 });
 
-// Deprecated class.  Tabset can take any widget as input.
+// Deprecated class.  TabPane can take any widget as input.
 // Use ContentPane, LayoutPane, etc.
 dojo.widget.html.Tab = function() {
 	dojo.widget.html.LayoutPane.call(this);

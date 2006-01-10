@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.Tabs");
 dojo.provide("dojo.widget.html.Tabs");
 
-dojo.deprecated("dojo.widget.Tabs",  "use dojo.widget.TabSet", "0.3");
+dojo.deprecated("dojo.widget.Tabs",  "use dojo.widget.TabPane", "0.3");
 
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.*");
