@@ -1,4 +1,4 @@
-.dojoTabSet {
+.dojoTabPane {
 	overflow: hidden;	/* workaround firefox bug */
 }
 
