@@ -599,62 +599,70 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
-		var plugin = dojo.flash.obj.get();
 		dojo.debug("handleFSCommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
-			var functionName = args;
-			
-			// do a trick, where we link this function name to our wrapper
-			// function, _call, that does the actual JavaScript to Flash call
-			var callFunc = function(){
-				dojo.debug("callFunc");
-				var args = new Array();
-				if(arguments.length > 1){
-					args = arguments.splice(1);
-				}
-				return dojo.flash.comm._call(functionName, args);
-			};			
-			dojo.debug("About to add this function for callback: " + functionName);
-			dojo.flash.comm[functionName] = callFunc;
-			dojo.debug("dojo.flash.comm[functionName]="+dojo.flash.comm[functionName]);
-			
-			// indicate that the call was successful
-			plugin.SetVariable("_succeeded", true);
+			this._handleAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call
-			var functionName = args;
-			dojo.debug("functionName="+functionName);
-			// get the number of arguments to this method call and build them up
-			var numArgs = parseInt(plugin.GetVariable("_numArgs"));
-			dojo.debug("numArgs="+numArgs);
-			var flashArgs = new Array();
-			for(var i = 0; i < numArgs; i++){
-				var currentArg = plugin.GetVariable("_" + i);
-				flashArgs.push(currentArg);
-			}
-			
-			dojo.debug("flashArgs="+flashArgs);
-
-			// get the function instance; we technically support more capabilities
-			// than ExternalInterface, which can only call global functions; if
-			// the method name has a dot in it, such as "dojo.flash.loaded", we
-			// eval it so that the method gets run against an instance
-			var runMe;
-			if(functionName.indexOf(".") == -1){ // global function
-				runMe = window[functionName];
-			}else{
-				// instance function
-				runMe = eval(functionName);
-			}
-			
-			// make the call and get the results
-			var results = null;
-			if(!dojo.lang.isUndefined(runMe) && runMe != null){
-				results = runMe.apply(null, flashArgs);
-			}
-			
-			// return the results to flash
-			plugin.SetVariable("_returnResult", results);
+			this._handleCall(command, args);
 		}
+	},
+	
+	_handleAddCallback: function(command, args){
+		var functionName = args;
+			
+		// do a trick, where we link this function name to our wrapper
+		// function, _call, that does the actual JavaScript to Flash call
+		var callFunc = function(){
+			dojo.debug("callFunc");
+			var args = new Array();
+			if(arguments.length > 1){
+				args = arguments.splice(1);
+			}
+			return dojo.flash.comm._call(functionName, args);
+		};			
+		dojo.debug("About to add this function for callback: " + functionName);
+		dojo.flash.comm[functionName] = callFunc;
+		dojo.debug("dojo.flash.comm[functionName]="+dojo.flash.comm[functionName]);
+		
+		// indicate that the call was successful
+		dojo.flash.obj.get().SetVariable("_succeeded", true);
+	},
+	
+	_handleCall: function(command, args){
+		var plugin = dojo.flash.obj.get();
+		var functionName = args;
+		dojo.debug("functionName="+functionName);
+		// get the number of arguments to this method call and build them up
+		var numArgs = parseInt(plugin.GetVariable("_numArgs"));
+		dojo.debug("numArgs="+numArgs);
+		var flashArgs = new Array();
+		for(var i = 0; i < numArgs; i++){
+			var currentArg = plugin.GetVariable("_" + i);
+			flashArgs.push(currentArg);
+		}
+		
+		dojo.debug("flashArgs="+flashArgs);
+
+		// get the function instance; we technically support more capabilities
+		// than ExternalInterface, which can only call global functions; if
+		// the method name has a dot in it, such as "dojo.flash.loaded", we
+		// eval it so that the method gets run against an instance
+		var runMe;
+		if(functionName.indexOf(".") == -1){ // global function
+			runMe = window[functionName];
+		}else{
+			// instance function
+			runMe = eval(functionName);
+		}
+		
+		// make the call and get the results
+		var results = null;
+		if(!dojo.lang.isUndefined(runMe) && runMe != null){
+			results = runMe.apply(null, flashArgs);
+		}
+		
+		// return the results to flash
+		plugin.SetVariable("_returnResult", results);
 	},
 	
 	/** 
