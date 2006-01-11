@@ -15,8 +15,6 @@ class DojoExternalInterface{
 	public static function initialize(){
 		// set whether communication is available
 		DojoExternalInterface.available = ExternalInterface.available;
-		
-		// indicate that the Flash is loaded
 		DojoExternalInterface.call("loaded");
 	}
 	
@@ -29,6 +27,17 @@ class DojoExternalInterface{
 		// we might have any number of optional arguments, so we have to 
 		// pass them in dynamically
 		return ExternalInterface.call.apply(ExternalInterface, arguments);
+	}
+	
+	/** 
+			Called by Flash to indicate to JavaScript that we are ready to have
+			our Flash functions called. Calling loaded()
+			will fire the dojo.flash.loaded() event, so that JavaScript can know that
+			Flash has finished loading and adding its callbacks, and can begin to
+			interact with the Flash file.
+	*/
+	public static function loaded(){
+		DojoExternalInterface.call("dojo.flash.loaded");
 	}
 }
 
