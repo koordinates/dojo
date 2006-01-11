@@ -601,24 +601,20 @@ dojo.flash.Communicator.prototype = {
 	_handleFSCommand: function(command, args){
 		dojo.debug("handleFSCommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
-			this._handleAddCallback(command, args);
+			this._fscommandAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call
-			this._handleCall(command, args);
+			this._fscommandCall(command, args);
 		}
 	},
 	
-	_handleAddCallback: function(command, args){
+	_fscommandAddCallback: function(command, args){
 		var functionName = args;
 			
 		// do a trick, where we link this function name to our wrapper
 		// function, _call, that does the actual JavaScript to Flash call
 		var callFunc = function(){
 			dojo.debug("callFunc");
-			var args = new Array();
-			if(arguments.length > 1){
-				args = arguments.splice(1);
-			}
-			return dojo.flash.comm._call(functionName, args);
+			return dojo.flash.comm._call(functionName, arguments);
 		};			
 		dojo.debug("About to add this function for callback: " + functionName);
 		dojo.flash.comm[functionName] = callFunc;
@@ -628,7 +624,7 @@ dojo.flash.Communicator.prototype = {
 		dojo.flash.obj.get().SetVariable("_succeeded", true);
 	},
 	
-	_handleCall: function(command, args){
+	_fscommandCall: function(command, args){
 		var plugin = dojo.flash.obj.get();
 		var functionName = args;
 		dojo.debug("functionName="+functionName);
