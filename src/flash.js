@@ -264,7 +264,6 @@ dojo.flash = {
 	
 	/** Initializes dojo.flash. */
 	_initialize: function(){
-		dojo.debug("initialize");
 		// do nothing if no SWF files are defined
 		if(this.flash6_version == null && this.flash8_version == null){
 			this.info = new Object();
@@ -281,14 +280,12 @@ dojo.flash = {
 			installer.install();
 		}else if(this.info.capable == true){
 			// write the flash object into the page
-			dojo.debug("doing embed");
 			dojo.flash.obj = new dojo.flash.Embed();
 			dojo.flash.obj.setVisible(this._visible);
 			dojo.flash.obj.write();
 			
 			// initialize the way we do Flash/JavaScript communication
 			dojo.flash.comm = new dojo.flash.Communicator();
-			dojo.debug("communicator initialized");
 		}
 	},
 
@@ -300,7 +297,6 @@ dojo.flash = {
 			dojo.event.connect(dojo.flash, "loaded", myInstance, "myCallback");
 	*/
 	loaded: function(){
-		dojo.debug("loaded function");
 	}
 };
 
@@ -519,7 +515,6 @@ dojo.flash.Embed.prototype = {
 		// Flash 6
 		if(dojo.flash.useFlash6()){
 			var swfloc = dojo.flash.flash6_version;
-			dojo.debug("swfloc="+swfloc);
 			
 			document.writeln('<div id="' + this.id + 'Div" style="' + containerStyle + '">');
 			document.writeln('  <embed id="' + this.id + '" src="' + swfloc + '" ');
@@ -599,7 +594,6 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
-		dojo.debug("handleFSCommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call
@@ -613,12 +607,9 @@ dojo.flash.Communicator.prototype = {
 		// do a trick, where we link this function name to our wrapper
 		// function, _call, that does the actual JavaScript to Flash call
 		var callFunc = function(){
-			dojo.debug("callFunc");
 			return dojo.flash.comm._call(functionName, arguments);
 		};			
-		dojo.debug("About to add this function for callback: " + functionName);
 		dojo.flash.comm[functionName] = callFunc;
-		dojo.debug("dojo.flash.comm[functionName]="+dojo.flash.comm[functionName]);
 		
 		// indicate that the call was successful
 		dojo.flash.obj.get().SetVariable("_succeeded", true);
@@ -627,18 +618,15 @@ dojo.flash.Communicator.prototype = {
 	_fscommandCall: function(command, args){
 		var plugin = dojo.flash.obj.get();
 		var functionName = args;
-		dojo.debug("functionName="+functionName);
+		
 		// get the number of arguments to this method call and build them up
 		var numArgs = parseInt(plugin.GetVariable("_numArgs"));
-		dojo.debug("numArgs="+numArgs);
 		var flashArgs = new Array();
 		for(var i = 0; i < numArgs; i++){
 			var currentArg = plugin.GetVariable("_" + i);
 			flashArgs.push(currentArg);
 		}
 		
-		dojo.debug("flashArgs="+flashArgs);
-
 		// get the function instance; we technically support more capabilities
 		// than ExternalInterface, which can only call global functions; if
 		// the method name has a dot in it, such as "dojo.flash.loaded", we
@@ -666,8 +654,6 @@ dojo.flash.Communicator.prototype = {
 			by the Flash 6 communication method. 
 	*/
 	_call: function(functionName, args){
-		dojo.debug("_call, functionName="+functionName+", args="+args);
-		
 		// we do JavaScript to Flash method calls by setting a Flash variable
 		// "_functionName" with the function name; "_numArgs" with the number
 		// of arguments; and "_0", "_1", etc for each numbered argument. Flash
@@ -686,6 +672,7 @@ dojo.flash.Communicator.prototype = {
 		
 		// get the results
 		var results = plugin.GetVariable("_returnResult");
+		dojo.debug("inside, results="+results);
 		
 		return results;
 	}
