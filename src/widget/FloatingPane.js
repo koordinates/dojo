@@ -56,6 +56,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
 
 	shadowPng: dojo.uri.dojoUri("src/widget/templates/images/shadow"),
+	shadowThickness: 8,
+	shadowOffset: 15,
 
 	templateString: '<div class="dojoFloatingPane"></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
@@ -210,21 +212,23 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	_makeShadow: function(){
 		if ( this.hasShadow ) {
-			var y1 = dojo.render.html.ie ? 33 : 30;
-			var y2 = dojo.render.html.ie ? -18 : -15;
-			this._makeShadowPiece("ul", "top", 15, "left", -15);
-			this._makeShadowPiece("l", "top", y1, "left", -15, "scale");
-			this._makeShadowPiece("ur", "top", 15, "left", 15);
-			this._makeShadowPiece("r", "top", y1, "left", 15, "scale");
-			this._makeShadowPiece("bl", "top", y2, "left", -15);
-			this._makeShadowPiece("b", "top", y2, "left", 0, "scale");
-			this._makeShadowPiece("br", "top", y2, "left", 15);
+			// make all the pieces of the shadow, and position/size them as much
+			// as possible (but a lot of the coordinates are set in sizeShadow
+			var x1 = -1 * this.shadowThickness;
+			var y0 = this.shadowOffset;
+			var y1 = this.shadowOffset + this.shadowThickness;
+			this._makeShadowPiece("ul", "top", y0, "left", x1);
+			this._makeShadowPiece("l", "top", y1, "left", x1, "scale");
+			this._makeShadowPiece("ur", "top", y0, "left", 0);
+			this._makeShadowPiece("r", "top", y1, "left", 0, "scale");
+			this._makeShadowPiece("bl", "top", 0, "left", x1);
+			this._makeShadowPiece("b", "top", 0, "left", 0, "crop");
+			this._makeShadowPiece("br", "top", 0, "left", 0);
 		}
 	},
 
 	_makeShadowPiece: function(name, vertAttach, vertCoord, horzAttach, horzCoord, sizing){
 		var img;
-		sizing="scale";
 		var url = this.shadowPng + name.toUpperCase() + ".png";
 		if(dojo.render.html.ie){
 			img=document.createElement("div");
@@ -237,14 +241,14 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		img.style.position="absolute";
 		img.style[vertAttach]=vertCoord+"px";
 		img.style[horzAttach]=horzCoord+"px";
-		img.style.width="15px";
-		img.style.height="15px";
+		img.style.width=this.shadowThickness+"px";
+		img.style.height=this.shadowThickness+"px";
 		this.shadow[name]=img;
 		this.domNode.appendChild(img);
 	},
 
 	_sizeShadow: function(width, height){
-		var sideHeight = dojo.render.html.ie ? height-34 : height-31;
+		var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
 		if ( this.hasShadow ) {
 			this.shadow.l.style.height = sideHeight+"px";
 			this.shadow.r.style.height = sideHeight+"px";
