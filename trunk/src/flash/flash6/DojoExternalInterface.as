@@ -51,8 +51,8 @@ class DojoExternalInterface{
 		// FIXME: support full JSON serialization
 		
 		// First, we pack up all of the arguments to this call and set them
-		// as Flash variable, which the JavaScript side will unpack using
-		// plugin.GetVariable. We set the number of arguments as "_numArgs",
+		// as Flash variables, which the JavaScript side will unpack using
+		// plugin.GetVariable(). We set the number of arguments as "_numArgs",
 		// and add each argument as a variable, such as "_1", "_2", etc., starting
 		// from 0.
 		// We then execute an fscommand with the action "call" and the
