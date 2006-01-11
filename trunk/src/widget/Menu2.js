@@ -77,8 +77,20 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.layoutMenuSoon();
 	},
 
+	// attach menu to given node
 	bindDomNode: function(node){
 		dojo.event.connect(dojo.byId(node), "oncontextmenu", this, "onOpen");
+	},
+
+	// detach menu from given node
+	unBindDomNode: function(node){
+		dojo.event.kwDisconnect({
+			srcObj:     dojo.byId(node),
+			srcFunc:    "oncontextmenu",
+			targetObj:  this,
+			targetFunc: "onOpen",
+			once:       true
+		});
 	},
 
 	layoutMenuSoon: function(){
