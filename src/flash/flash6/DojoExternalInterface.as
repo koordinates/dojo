@@ -31,6 +31,9 @@ class DojoExternalInterface{
 		// argument being the methodName to add, such as "foobar".
 		// The JavaScript takes these values and registers the existence of
 		// this callback point.
+		
+		// precede the method name with a _ character in case it starts
+		// with a number
 		callbacks["_" + methodName] = {_instance: instance, _method: method};
 		fscommand("addCallback", methodName);
 		
@@ -111,6 +114,7 @@ class DojoExternalInterface{
 				// reset the execution request
 				_root._execute = "false";
 				
+				// handle and execute it
 				DojoExternalInterface._handleJSCall();
 			}
 		}
@@ -132,12 +136,15 @@ class DojoExternalInterface{
 		
 		// get our function name
 		var functionName = _root._functionName;
+		getURL("javascript:dojo.debug('FLASH: functionName="+functionName+"');");
 		
 		// now get the actual instance and method object to execute on,
 		// using our lookup table that was constructed by calls to
 		// addCallback on initialization
-		var instance = callbacks[functionName]._instance;
-		var method = callbacks[functionName]._method;
+		var instance = callbacks["_" + functionName]._instance;
+		var method = callbacks["_" + functionName]._method;
+		getURL("javascript:dojo.debug('FLASH: instance="+instance+"');");
+		getURL("javascript:dojo.debug('FLASH: method="+method+"');");
 		
 		// execute it
 		var results = method.apply(instance, jsArgs);
