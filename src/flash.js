@@ -1,7 +1,7 @@
 dojo.provide("dojo.flash");
 
-dojo.require("dojo.lang");
-dojo.require("dojo.string");
+dojo.require("dojo.string.*");
+dojo.require("dojo.uri.*");
 
 /** 
 		Provides an easy object for interacting with the Flash plugin. This
@@ -50,6 +50,13 @@ dojo.require("dojo.string");
 		
 		Your Flash must use DojoExternalInterface to expose Flash methods and
 		to call JavaScript; see "Flash Communication" below for details.
+		
+		setSwf can take an optional 'visible' attribute to control whether
+		the Flash file is visible or not; the default is visible:
+		
+		dojo.flash.setSwf({flash6: "src/storage/storage_flash6.swf",
+											 flash8: "src/storage/storage_flash8.swf",
+											 visible: false});
 		
 		Once finished, you can query Flash version information:
 		
@@ -126,6 +133,9 @@ dojo.require("dojo.string");
 				// Expose your methods
 				DojoExternalInterface.addCallback("sayHello", this, this.sayHello);
 				
+				// Tell JavaScript that you are ready to have method calls
+				DojoExternalInterface.loaded();
+				
 				// Call some JavaScript
 				DojoExternalInterface.call("someJavaScriptMethod");
 			}
@@ -134,6 +144,14 @@ dojo.require("dojo.string");
 			
 			static main(){ ... }
 		}
+		
+		DojoExternalInterface adds to new functions to the ExternalInterface
+		API: initialize() and loaded(). Initialize() must be called before
+		any addCallback() or call() methods are run, and loaded() must be
+		called after you are finished adding your callbacks. Calling loaded()
+		will fire the dojo.flash.loaded() event, so that JavaScript can know that
+		Flash has finished loading and adding its callbacks, and can begin to
+		interact with the Flash file.
 		
 		To generate your SWF files, use the ant task
 		"buildFlash". You must have the open source Motion Twin ActionScript 
@@ -184,28 +202,34 @@ dojo.require("dojo.string");
 		Two values are currently supported, 6 and 8, for the two styles of
 		communication described above.
 		
+		Also note that dojo.flash can currently only work with one Flash applet
+		on the page; it and the API do not yet support multiple Flash applets on
+		the same page.
+		
 		@author Brad Neuberg, bkn3@columbia.edu
 */
 
-dojo.flash = function(){
-}
-
-dojo.lang.extend(dojo.flash, {
+dojo.flash = {
 	flash6_version: null,
 	flash8_version: null,
+	_visible: true,
 	
 	/** Sets the SWF files and versions we are using. */
 	setSwf: function(fileInfo){
 		if(fileInfo == null || dojo.lang.isUndefined(fileInfo)){
 			return;
 		}
-			
-		if(fileInfo.flash6 != null && dojo.lang.isUndefined(fileInfo.flash6)){
+		
+		if(fileInfo.flash6 != null && !dojo.lang.isUndefined(fileInfo.flash6)){
 			this.flash6_version = fileInfo.flash6;
 		}
-			
-		if(fileInfo.flash8 != null && dojo.lang.isUndefined(fileInfo.flash8)){
+		
+		if(fileInfo.flash8 != null && !dojo.lang.isUndefined(fileInfo.flash8)){
 			this.flash8_version = fileInfo.flash8;
+		}
+		
+		if(fileInfo.visible){
+			this._visible = fileInfo.visible;
 		}
 		
 		// now initialize ourselves
@@ -217,6 +241,8 @@ dojo.lang.extend(dojo.flash, {
 		if(this.flash6_version == null){
 			return false;
 		}else if (this.flash6_version != null && dojo.flash.info.commVersion == 6){
+			// if we have a flash 6 version of this SWF, and this browser supports 
+			// communicating using Flash 6 features...
 			return true;
 		}else{
 			return false;
@@ -228,6 +254,8 @@ dojo.lang.extend(dojo.flash, {
 		if(this.flash8_version == null){
 			return false;
 		}else if (this.flash8_version != null && dojo.flash.info.commVersion == 8){
+			// if we have a flash 8 version of this SWF, and this browser supports
+			// communicating using Flash 8 features...
 			return true;
 		}else{
 			return false;
@@ -236,6 +264,7 @@ dojo.lang.extend(dojo.flash, {
 	
 	/** Initializes dojo.flash. */
 	_initialize: function(){
+		dojo.debug("initialize");
 		// do nothing if no SWF files are defined
 		if(this.flash6_version == null && this.flash8_version == null){
 			this.info = new Object();
@@ -252,15 +281,14 @@ dojo.lang.extend(dojo.flash, {
 			installer.install();
 		}else if(this.info.capable == true){
 			// write the flash object into the page
+			dojo.debug("doing embed");
 			dojo.flash.obj = new dojo.flash.Embed();
-			dojo.flash.obj.hidden = true;
+			dojo.flash.obj.setVisible(this._visible);
 			dojo.flash.obj.write();
 			
 			// initialize the way we do Flash/JavaScript communication
 			dojo.flash.comm = new dojo.flash.Communicator();
-			
-			// indicate that flash is now loaded
-			dojo.flash.loaded();
+			dojo.debug("communicator initialized");
 		}
 	},
 
@@ -274,7 +302,7 @@ dojo.lang.extend(dojo.flash, {
 	loaded: function(){
 		dojo.debug("loaded function");
 	}
-});
+};
 
 
 /** 
@@ -449,12 +477,10 @@ dojo.flash.Info.prototype = {
 };
 
 /** A class that is used to write out the Flash object into the page. */
-dojo.flash.Embed = new function(){}
+dojo.flash.Embed = function(){
+}
 
 dojo.flash.Embed.prototype = {
-	/** Controls whether this is a hidden Flash object or not. */
-	hidden: true,
-	
 	/** 
 			The width of this Flash applet. The default is the minimal width
 			necessary to show the Flash settings dialog. 
@@ -469,6 +495,9 @@ dojo.flash.Embed.prototype = {
 	
 	/** The id of the Flash object. */
 	id: "flashObject",
+	
+	/** Controls whether this is a visible Flash applet or not. */
+	_visible: true,
 			
 	/** 
 			Writes the Flash into the page. This must be called before the page
@@ -479,7 +508,7 @@ dojo.flash.Embed.prototype = {
 		var containerStyle = new dojo.string.Builder();
 		containerStyle.append("width: " + this.width + "px; ");
 		containerStyle.append("height: " + this.height + "px; ");
-		if(this.hidden){
+		if(this._visible == false){
 			containerStyle.append("position: absolute; ");
 			containerStyle.append("z-index: 100; ");
 			containerStyle.append("top: -1000px; ");
@@ -489,12 +518,13 @@ dojo.flash.Embed.prototype = {
 	
 		// Flash 6
 		if(dojo.flash.useFlash6()){
-			var swfloc = dojo.uri.dojoUri(dojo.flash.flash6_version).toString();
+			var swfloc = dojo.flash.flash6_version;
+			dojo.debug("swfloc="+swfloc);
 			
 			document.writeln('<div id="' + this.id + 'Div" style="' + containerStyle + '">');
 			document.writeln('  <embed id="' + this.id + '" src="' + swfloc + '" ');
 			document.writeln('    quality="high" bgcolor="#ffffff" ');
-			document.writeln('    width="' + width + '" height="' + height + '" name="' + this.id + '" ');
+			document.writeln('    width="' + this.width + '" height="' + this.height + '" name="' + this.id + '" ');
 			document.writeln('    align="middle" allowScriptAccess="sameDomain" ');
 			document.writeln('    type="application/x-shockwave-flash" swLiveConnect="true" ');
 			document.writeln('    pluginspage="http://www.macromedia.com/go/getflashplayer"> ');
@@ -509,6 +539,15 @@ dojo.flash.Embed.prototype = {
 	/** Gets the Flash object DOM node. */
 	get: function(){
 		return (dojo.render.html.ie) ? window[this.id] : document[this.id];
+	},
+	
+	/** Sets the visibility of this Flash object. */
+	setVisible: function(){
+		//FIXME: Dynamically make the movie visible or not
+	},
+	
+	/** Centers the flash applet on the page. */
+	center: function(){
 	}
 };
 
@@ -560,6 +599,91 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
+		var plugin = dojo.flash.obj.get();
+		dojo.debug("handleFSCommand, command="+command+", args="+args);
+		if(command == "addCallback"){ // add Flash method for JavaScript callback
+			var functionName = args;
+			
+			// do a trick, where we link this function name to our wrapper
+			// function, _call, that does the actual JavaScript to Flash call
+			var callFunc = function(){
+				dojo.debug("callFunc");
+				var args = new Array();
+				if(arguments.length > 1){
+					args = arguments.splice(1);
+				}
+				return dojo.flash.comm._call(functionName, args);
+			};			
+			dojo.debug("About to add this function for callback: " + functionName);
+			dojo.flash.comm[functionName] = callFunc;
+			dojo.debug("dojo.flash.comm[functionName]="+dojo.flash.comm[functionName]);
+			
+			// indicate that the call was successful
+			plugin.SetVariable("_succeeded", true);
+		}else if (command == "call"){ // Flash to JavaScript method call
+			var functionName = args;
+			dojo.debug("functionName="+functionName);
+			// get the number of arguments to this method call and build them up
+			var numArgs = parseInt(plugin.GetVariable("_numArgs"));
+			dojo.debug("numArgs="+numArgs);
+			var flashArgs = new Array();
+			for(var i = 0; i < numArgs; i++){
+				var currentArg = plugin.GetVariable("_" + i);
+				flashArgs.push(currentArg);
+			}
+			
+			dojo.debug("flashArgs="+flashArgs);
+
+			// get the function instance; we technically support more capabilities
+			// than ExternalInterface, which can only call global functions; if
+			// the method name has a dot in it, such as "dojo.flash.loaded", we
+			// eval it so that the method gets run against an instance
+			var runMe;
+			if(functionName.indexOf(".") == -1){ // global function
+				runMe = window[functionName];
+			}else{
+				// instance function
+				runMe = eval(functionName);
+			}
+			
+			// make the call and get the results
+			var results = null;
+			if(!dojo.lang.isUndefined(runMe) && runMe != null){
+				results = runMe.apply(null, flashArgs);
+			}
+			
+			// return the results to flash
+			plugin.SetVariable("_returnResult", results);
+		}
+	},
+	
+	/** 
+			The actual function that will execute a JavaScript to Flash call; used
+			by the Flash 6 communication method. 
+	*/
+	_call: function(functionName, args){
+		dojo.debug("_call, functionName="+functionName+", args="+args);
+		
+		// we do JavaScript to Flash method calls by setting a Flash variable
+		// "_functionName" with the function name; "_numArgs" with the number
+		// of arguments; and "_0", "_1", etc for each numbered argument. Flash
+		// reads these, executes the function call, and returns the result
+		// in "_returnResult"
+		var plugin = dojo.flash.obj.get();
+		plugin.SetVariable("_functionName", functionName);
+		plugin.SetVariable("_numArgs", args.length);
+		for(var i = 0; i < args.length; i++){
+			plugin.SetVariable("_" + i, args[i]);
+		}
+		
+		// now tell Flash to execute this method using the Flash Runner
+		plugin.SetVariable("_execute", true);
+		plugin.Play();
+		
+		// get the results
+		var results = plugin.GetVariable("_returnResult");
+		
+		return results;
 	}
 }
 
