@@ -1,4 +1,5 @@
 dojo.provide("dojo.date");
+dojo.require("dojo.string");
 
 /**
  * Sets the current Date object to the time given in an ISO 8601 date/time
@@ -288,14 +289,14 @@ dojo.date.toString = function(date, format){
 	if (format.indexOf("#d") > -1) {
 		format = format.replace(/#dddd/g, dojo.date.getDayOfWeekName(date));
 		format = format.replace(/#ddd/g, dojo.date.getShortDayOfWeekName(date));
-		format = format.replace(/#dd/g, dojo.date._padTwo(date.getDate()));
+		format = format.replace(/#dd/g, dojo.string.pad(date.getDate()));
 		format = format.replace(/#d/g, date.getDate());
 	}
 
 	if (format.indexOf("#M") > -1) {
 		format = format.replace(/#MMMM/g, dojo.date.getMonthName(date));
 		format = format.replace(/#MMM/g, dojo.date.getShortMonthName(date));
-		format = format.replace(/#MM/g, dojo.date._padTwo(date.getMonth() + 1));
+		format = format.replace(/#MM/g, dojo.string.pad(date.getMonth() + 1));
 		format = format.replace(/#M/g, date.getMonth() + 1);
 	}
 
@@ -314,22 +315,22 @@ dojo.date.toString = function(date, format){
 	if (format.indexOf("#h") > -1) {
 		var hours = date.getHours();
 		hours = hours > 12 ? hours - 12 : hours;
-		format = format.replace(/#hh/g, dojo.date._padTwo(hours));
+		format = format.replace(/#hh/g, dojo.string.pad(hours));
 		format = format.replace(/#h/g, hours);
 	}
 	
 	if (format.indexOf("#H") > -1) {
-		format = format.replace(/#HH/g, dojo.date._padTwo(date.getHours()));
+		format = format.replace(/#HH/g, dojo.string.pad(date.getHours()));
 		format = format.replace(/#H/g, date.getHours());
 	}
 	
 	if (format.indexOf("#m") > -1) {
-		format = format.replace(/#mm/g, dojo.date._padTwo(date.getMinutes()));
+		format = format.replace(/#mm/g, dojo.string.pad(date.getMinutes()));
 		format = format.replace(/#m/g, date.getMinutes());
 	}
 
 	if (format.indexOf("#s") > -1) {
-		format = format.replace(/#ss/g, dojo.date._padTwo(date.getSeconds()));
+		format = format.replace(/#ss/g, dojo.string.pad(date.getSeconds()));
 		format = format.replace(/#s/g, date.getSeconds());
 	}
 	
@@ -346,16 +347,6 @@ dojo.date.toString = function(date, format){
 	return format;
 	
 }
-
-/**
- *
- * Returns padded number
- * 
- * @param date the date object
- */
-dojo.date._padTwo = function (n) {
-    return (n > 9) ? n : "0" + n;
-};
 
 /**
  * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
