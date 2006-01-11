@@ -373,6 +373,18 @@ dojo.lang.extend(dojo.widget.Widget, {
 	setNativeWidth: function(width){
 		// SUBCLASSES MUST IMPLEMENT
 		return false;
+	},
+
+	getDescendants: function() {
+		var result = [];
+		var stack = [this];
+		var elem;
+		while (elem = stack.pop()) {
+			result.push(elem);
+			dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+		}
+ 
+		return result;
 	}
 });
 
