@@ -17,12 +17,12 @@
 		dojo.require("dojo.flash");
 		
 		dojo.event.connect(dojo.flash, "loaded", "flashLoaded");
-		dojo.flash.setSwf({flash6: "tests/flash/HelloWorld_flash6.swf",
-										   flash8: "tests/flash/HelloWorld_flash8.swf",
+		dojo.flash.setSwf({flash6: "HelloWorld_version6.swf",
+										   flash8: "HelloWorld_version8.swf",
 											 visible: true});
 		
 		function flashLoaded(){
-			dojo.debug("flashLoaded");
+			dojo.debug("Flash is loaded!!!");
 			dojo.debug("Calling method");
 			var results = dojo.flash.comm.sayHello("Did I leave the iron on?");
 			dojo.debug(results);
