@@ -14,6 +14,7 @@ dojo.widget.PopupMenu2 = function(){
 	dojo.widget.HtmlWidget.call(this);
 	this.items = [];	// unused???
 	this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
+	this.queueOnAnimationFinish = [];
 }
 
 dojo.inherits(dojo.widget.PopupMenu2, dojo.widget.HtmlWidget);
@@ -50,9 +51,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	submenuDelay: 500,
 	submenuOverlap: 5,
 	contextMenuForWindow: false,
-	lastOpenEvent: null,
-
-	queueOnAnimationFinish: [],
+	openEvent: null,
 
 	submenuIconSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_off.gif").toString(),
 	submenuIconOnSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_on.gif").toString(),
@@ -75,6 +74,13 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		}
 
 		this.layoutMenuSoon();
+	},
+
+	// get open event for current menu
+	getTopOpenEvent: function() {
+		var menu = this;
+		while (menu.parent){ menu = menu.parent; }
+		return menu.openEvent;
 	},
 
 	// attach menu to given node
@@ -307,7 +313,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	},
 
 	onOpen: function(e){
-		this.lastOpenEvent = e;
+		this.openEvent = e;
 
 		//dojo.debugShallow(e);
 		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
