@@ -52,6 +52,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	contextMenuForWindow: false,
 	lastOpenEvent: null,
 
+	queueOnAnimationFinish: [],
+
 	submenuIconSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_off.gif").toString(),
 	submenuIconOnSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_on.gif").toString(),
 
@@ -64,12 +66,12 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.domNode.style.top = '-9999px'
 
 		if (this.contextMenuForWindow){
-			var doc = document.documentElement  || dojo.html.body(); 
+			var doc = document.documentElement  || dojo.html.body();
 			dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
 		} else if ( this.targetNodeIds.length > 0 ){
 			for(var i=0; i<this.targetNodeIds.length; i++){
 				this.bindDomNode(this.targetNodeIds[i]);
-			}			
+			}
 		}
 
 		this.layoutMenuSoon();
@@ -118,7 +120,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 			this.layoutMenuSoon();
 			return;
 		}
-		
+
 		var y = clientTop;
 		var max_item_width = 0;
 
@@ -156,10 +158,12 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 			dojo.widget.html.Menu2Manager.opened(this, explodeSrc);
 		}
 
-		// If we are in the process of closing the menu and we are asked to open it,
-		// we should really cancel the current animation, but for simplicity we will
-		// just ignore the request
+		//dojo.debug("open called for animation "+this.animationInProgress)
+
+		// if I click  right button and menu is opened, then it gets 2 commands: close -> open
+		// so close enables animation and next "open" is put to queue to occur at new location
 		if(this.animationInProgress){
+			this.queueOnAnimationFinish.push(this.open, arguments);
 			return;
 		}
 
@@ -183,6 +187,10 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		}else{
 			// top level menu is opening
+			x+=scrolloffset[0];
+			y+=scrolloffset[1];
+			explodeSrc[0] += scrolloffset[0];
+			explodeSrc[1] += scrolloffset[1];
 
 			if (x < clientRect.left){ x = clientRect.left; }
 			if (x + this.menuWidth > clientRect.right){ x = x - this.menuWidth; }
@@ -204,7 +212,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.domNode.style.left = x + 'px';
 		this.domNode.style.top = y + 'px';
 		this.domNode.style.display='none';
-		
+		this.domNode.style.position='absolute';
+
 		// then use the user defined method to display it
 		this.show();
 
@@ -216,6 +225,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		// we should really cancel the current animation, but for simplicity we will
 		// just ignore the request
 		if(this.animationInProgress){
+			this.queueOnAnimationFinish.push(this.close, []);
 			return;
 		}
 
@@ -224,6 +234,28 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.isShowing = false;
 		dojo.widget.html.Menu2Manager.closed(this);
 	},
+
+	onShow: function() {
+		dojo.widget.HtmlWidget.prototype.onShow.call(this);
+		this.processQueue();
+	},
+
+	// do events from queue
+	processQueue: function() {
+		if (!this.queueOnAnimationFinish.length) return;
+
+		var func = this.queueOnAnimationFinish.shift();
+		var args = this.queueOnAnimationFinish.shift();
+
+		func.apply(this, args);
+	},
+
+	onHide: function() {
+		dojo.widget.HtmlWidget.prototype.onHide.call(this);
+
+		this.processQueue();
+	},
+
 
 	closeAll: function(){
 
@@ -559,7 +591,7 @@ dojo.lang.extend(dojo.widget.MenuSeparator2, {
 		if (isNaN(full_width)){ return; }
 
 		dojo.style.setContentHeight(this.domNode, this.parent.separatorHeight);
-		dojo.style.setContentWidth(this.domNode, full_width);		
+		dojo.style.setContentWidth(this.domNode, full_width);
 	}
 });
 
@@ -601,8 +633,11 @@ dojo.widget.html.Menu2Manager = new function(){
 
 		if (!this.currentMenu){ return; }
 
-		var x = e.clientX;
-		var y = e.clientY;
+		var scrolloffset = dojo.html.getScrollOffset();
+
+		var x = e.clientX + scrolloffset[0];
+		var y = e.clientY + scrolloffset[1];
+
 		var m = this.currentMenu;
 
 		// starting from the base menu, perform a hit test
