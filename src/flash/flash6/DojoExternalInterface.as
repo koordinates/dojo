@@ -125,7 +125,6 @@ class DojoExternalInterface{
 			initializeFlashRunner. 
 	*/
 	public static function _handleJSCall(){
-		getURL("javascript:dojo.debug('FLASH: handleJSCall');");
 		// get our parameters
 		var numArgs = parseInt(_root._numArgs);
 		var jsArgs = new Array();
@@ -136,18 +135,16 @@ class DojoExternalInterface{
 		
 		// get our function name
 		var functionName = _root._functionName;
-		getURL("javascript:dojo.debug('FLASH: functionName="+functionName+"');");
 		
 		// now get the actual instance and method object to execute on,
 		// using our lookup table that was constructed by calls to
 		// addCallback on initialization
 		var instance = callbacks["_" + functionName]._instance;
 		var method = callbacks["_" + functionName]._method;
-		getURL("javascript:dojo.debug('FLASH: instance="+instance+"');");
-		getURL("javascript:dojo.debug('FLASH: method="+method+"');");
 		
 		// execute it
 		var results = method.apply(instance, jsArgs);
+		getURL("javascript:dojo.debug('FLASH: result="+results+"')");
 		
 		// return the results
 		_root._returnResult = results;
