@@ -268,10 +268,17 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.previousLeft = this.domNode.style.left;
 		this.previousTop = this.domNode.style.top;
 
-		this.domNode.style.width = "100%";
-		this.domNode.style.height = "100%";
-		this.domNode.style.left = "0px";
-		this.domNode.style.top = "0px";
+		this.domNode.style.left = dojo.style.getPaddingWidth(this.domNode.parentNode) + "px";
+		this.domNode.style.top = dojo.style.getPaddingHeight(this.domNode.parentNode) + "px";
+
+		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
+			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth());
+			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight());
+		} else {
+			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
+			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
+		}	
+
 		dojo.widget.html.FloatingPane.superclass.onResized.call(this);
 		this.maximizeAction.style.display="none";	
 		this.restoreAction.style.display="inline";	
