@@ -94,7 +94,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	},
 
 	_downloadExternalContent: function(url, useCache) {
-		dojo.deprecated("LayoutPane url parameter.", "use RemotePane to download from a URL", "0.4");
+		dojo.deprecated("LayoutPane url parameter.", "use LinkPane to download from a URL", "0.4");
 		//dojo.debug(this.widgetId + " downloading " + url);
 		var node = this.containerNode || this.domNode;
 		node.innerHTML = "Loading...";
@@ -141,7 +141,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 	_runHandler: function() {
 		if(dojo.lang.isFunction(this.handler)) {
-			dojo.deprecated("use RemotePane to download content from a java function", "0.4");
+			dojo.deprecated("use LinkPane to download content from a java function", "0.4");
 			this.handler(this, this.domNode);
 			return false;
 		}

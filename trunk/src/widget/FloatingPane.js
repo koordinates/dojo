@@ -78,7 +78,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
 	
 		// this is our client area
-		// TODO: shouldn't be creating clientDiv for RemotePane case, and shouldn't be copying
+		// TODO: shouldn't be creating clientDiv for LinkPane case, and shouldn't be copying
 		// over children either
 		var clientDiv = document.createElement('div');
 		dojo.dom.moveChildren(source, clientDiv, 0);

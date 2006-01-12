@@ -7,7 +7,7 @@ dojo.provide("dojo.widget.html.FloatingRemotePane");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");
-dojo.require("dojo.widget.RemotePane");
+dojo.require("dojo.widget.LinkPane");
 
 // Inner pane is filled from URL
 dojo.widget.html.FloatingRemotePane = function(){
@@ -43,7 +43,7 @@ dojo.lang.extend(dojo.widget.html.FloatingRemotePane, {
 		var args = {layoutAlign: "client", id:this.widgetId+"_client",
 			href: this.href, cacheContent: this.cacheContent, extractContent: this.extractContent,
 			parseContent: this.parseContent};
-		var pane = this.createPane("RemotePane", null, args);
+		var pane = this.createPane("LinkPane", null, args);
 		delete this.url;
 		return pane;
 	}
