@@ -30,7 +30,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = element||dojo.html.body();
+	element = dojo.byId(element)||dojo.html.body();
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -46,7 +46,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = element||dojo.html.body();
+	element = dojo.byId(element)||dojo.html.body();
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -62,6 +62,7 @@ dojo.html.enableSelection = function(element){
 }
 
 dojo.html.selectElement = function(element){
+	element = dojo.byId(element);
 	if(document.selection && dojo.html.body().createTextRange){ // IE
 		var range = dojo.html.body().createTextRange();
 		range.moveToElementText(element);
@@ -195,7 +196,7 @@ dojo.html.getParentOfType = function(node, type){
 }
 
 dojo.html.getParentByType = function(node, type) {
-	var parent = node;
+	var parent = dojo.byId(node);
 	type = type.toLowerCase();
 	while((parent)&&(parent.nodeName.toLowerCase()!=type)){
 		if(parent==(document["body"]||document["documentElement"])){
@@ -209,6 +210,7 @@ dojo.html.getParentByType = function(node, type) {
 // RAR: this function comes from nwidgets and is more-or-less unmodified.
 // We should probably look ant Burst and f(m)'s equivalents
 dojo.html.getAttribute = function(node, attr){
+	node = dojo.byId(node);
 	// FIXME: need to add support for attr-specific accessors
 	if((!node)||(!node.getAttribute)){
 		// if(attr !== 'nwType'){
@@ -241,6 +243,7 @@ dojo.html.getAttribute = function(node, attr){
  *	attribute in question.
  */
 dojo.html.hasAttribute = function(node, attr){
+	node = dojo.byId(node);
 	return dojo.html.getAttribute(node, attr) ? true : false;
 }
 	
@@ -250,8 +253,9 @@ dojo.html.hasAttribute = function(node, attr){
  * is found;
  */
 dojo.html.getClass = function(node){
-  if(!node){ return ""; }
-  var cs = "";
+	node = dojo.byId(node);
+	if(!node){ return ""; }
+	var cs = "";
 	if(node.className){
 		cs = node.className;
 	}else if(dojo.html.hasAttribute(node, "class")){
@@ -266,6 +270,7 @@ dojo.html.getClass = function(node){
  * are found;
  */
 dojo.html.getClasses = function(node) {
+	node = dojo.byId(node);
 	var c = dojo.html.getClass(node);
 	return (c == "") ? [] : c.split(/\s+/g);
 }
@@ -276,6 +281,7 @@ dojo.html.getClasses = function(node) {
  * styles, only classes directly applied to the node.
  */
 dojo.html.hasClass = function(node, classname){
+	node = dojo.byId(node);
 	return dojo.lang.inArray(dojo.html.getClasses(node), classname);
 }
 
@@ -286,6 +292,7 @@ dojo.html.hasClass = function(node, classname){
  * false; indicating success or failure of the operation, respectively.
  */
 dojo.html.prependClass = function(node, classStr){
+	node = dojo.byId(node);
 	if(!node){ return false; }
 	classStr += " " + dojo.html.getClass(node);
 	return dojo.html.setClass(node, classStr);
@@ -296,6 +303,7 @@ dojo.html.prependClass = function(node, classStr){
  *	passed &node;. Returns &true; or &false; indicating success or failure.
  */
 dojo.html.addClass = function(node, classStr){
+	node = dojo.byId(node);
 	if (!node) { return false; }
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
@@ -310,6 +318,7 @@ dojo.html.addClass = function(node, classStr){
  *	indicating success or failure.
  */
 dojo.html.setClass = function(node, classStr){
+	node = dojo.byId(node);
 	if(!node){ return false; }
 	var cs = new String(classStr);
 	try{
@@ -332,6 +341,7 @@ dojo.html.setClass = function(node, classStr){
  * true or false indicating success or failure.
  */ 
 dojo.html.removeClass = function(node, classStr, allowPartialMatches){
+	node = dojo.byId(node);
 	if(!node){ return false; }
 	var classStr = dojo.string.trim(new String(classStr));
 
@@ -363,6 +373,7 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
  * Replaces 'oldClass' and adds 'newClass' to node
  */
 dojo.html.replaceClass = function(node, newClass, oldClass) {
+	node = dojo.byId(node);
 	dojo.html.removeClass(node, oldClass);
 	dojo.html.addClass(node, newClass);
 }
@@ -380,6 +391,7 @@ dojo.html.classMatchType = {
  * parent, and optionally of a certain nodeType
  */
 dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType){
+	parent = dojo.byId(parent);
 	if(!parent){ parent = document; }
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
@@ -442,6 +454,7 @@ dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
  *						 are properties of the function.
  */
 dojo.html.gravity = function(node, e){
+	node = dojo.byId(node);
 	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
 	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	
@@ -462,6 +475,7 @@ dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 	
 dojo.html.overElement = function(element, e){
+	element = dojo.byId(element);
 	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
 	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
 	
@@ -481,6 +495,7 @@ dojo.html.overElement = function(element, e){
  * sorted out nicely. Unfinished.
  */
 dojo.html.renderedTextContent = function(node){
+	node = dojo.byId(node);
 	var result = "";
 	if (node == null) { return result; }
 	for (var i = 0; i < node.childNodes.length; i++) {
@@ -650,20 +665,36 @@ if(!dojo.evalObjPath("dojo.dom.createNodesFromText")){
 }
 
 dojo.html.isVisible = function(node){
+	node = dojo.byId(node);
 	// FIXME: this should also look at visibility!
 	return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";
 }
 
 dojo.html.show  = function(node){
+	node = dojo.byId(node);
 	if(node.style){
 		node.style.display = dojo.lang.inArray(['tr', 'td', 'th'], node.tagName.toLowerCase()) ? "" : "block";
 	}
 }
 
 dojo.html.hide = function(node){
+	node = dojo.byId(node);
 	if(node.style){
 		node.style.display = "none";
 	}
+}
+
+/**
+ * Like dojo.dom.isTag, except case-insensitive
+**/
+dojo.html.isTag = function(node /* ... */) {
+	node = dojo.byId(node);
+	if(node && node.tagName) {
+		var arr = dojo.lang.map(dojo.lang.toArray(arguments, 1),
+			function(a) { return String(a).toLowerCase(); });
+		return arr[ dojo.lang.find(node.tagName.toLowerCase(), arr) ] || "";
+	}
+	return "";
 }
 
 // in: coordinate array [x,y,w,h] or dom node

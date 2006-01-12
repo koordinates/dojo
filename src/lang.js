@@ -246,6 +246,11 @@ dojo.lang.whatAmI = function(wh) {
  */
 dojo.lang.whatAmI.custom = {};
 
+/**
+ * See if val is in arr. Call signatures:
+ *  find(array, value, identity)
+*   find(value, array, identity)
+**/
 dojo.lang.find = function(arr, val, identity){
 	// support both (arr, val) and (val, arr)
 	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
@@ -656,4 +661,16 @@ dojo.lang.firstValued = function(/* ... */) {
 		}
 	}
 	return undefined;
+}
+
+/**
+ * Converts an array-like object (i.e. arguments, DOMCollection)
+ * to an array
+**/
+dojo.lang.toArray = function(arrayLike, startOffset) {
+	var array = [];
+	for(var i = startOffset||0; i < arrayLike.length; i++) {
+		array.push(arrayLike[i]);
+	}
+	return array;
 }

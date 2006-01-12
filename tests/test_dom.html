@@ -14,10 +14,10 @@
 		</script>
 		<script type="text/javascript" src="../dojo.js"></script>
 		<script type="text/javascript">
-			dojo.require("dojo.xml.domUtil");
-			onload = function(e) {
+			dojo.require("dojo.dom");
+			dojo.addOnLoad(function(e) {
 				var xmlText = '<response status="ok" />';
-				var xml = dojo.xml.domUtil.createDocumentFromText(xmlText);
+				var xml = dojo.dom.createDocumentFromText(xmlText);
 				dj_debug(xml);
 				if(xml) dj_debug(xml.document);
 				else dj_debug("no xml.document");
@@ -25,7 +25,7 @@
 				else dj_debug("no xml.firstChild");
 				if(xml && xml.firstChild) dj_debug(xml.firstChild.tagName);
 				else dj_debug("no xml.firstChild.tagName");
-			}
+			});
 		</script>
 		<style type="text/css">
 		</style>

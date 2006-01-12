@@ -423,11 +423,8 @@ dojo.dom.textContent = function(node, text){
 }
 
 dojo.dom.collectionToArray = function(collection){
-	var array = new Array(collection.length);
-	for (var i = 0; i < collection.length; i++) {
-		array[i] = collection[i];
-	}
-	return array;
+	dojo.deprecated("dojo.dom.collectionToArray", "use dojo.lang.toArray instead");
+	return dojo.lang.toArray(collection);
 }
 
 dojo.dom.hasParent = function(node) {
@@ -435,4 +432,24 @@ dojo.dom.hasParent = function(node) {
 		return false;
 	}
 	return true;
+}
+
+/**
+ * Determines if node has any of the provided tag names and
+ * returns the tag name that matches, empty string otherwise.
+ *
+ * Examples:
+ *
+ * myFooNode = <foo />
+ * isTag(myFooNode, "foo"); // returns "foo"
+ * isTag(myFooNode, "bar"); // returns ""
+ * isTag(myFooNode, "FOO"); // returns ""
+ * isTag(myFooNode, "hey", "foo", "bar"); // returns "foo"
+**/
+dojo.dom.isTag = function(node /* ... */) {
+	if(node && node.tagName) {
+		var arr = dojo.lang.toArray(arguments, 1);
+		return arr[ dojo.lang.find(node.tagName, arr) ] || "";
+	}
+	return "";
 }
