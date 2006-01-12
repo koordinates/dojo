@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>LayoutPane External Content Test</title>
+<title>Pane External Content Test</title>
 
 <script type="text/javascript">
 	var djConfig = {isDebug: true};
@@ -11,7 +11,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.LayoutPane");
-	dojo.require("dojo.widget.RemotePane");
+	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.ComboBox");
 	dojo.require("dojo.widget.Tree");
@@ -26,7 +26,12 @@
 	            dojo.widget.getWidgetById(message);
 
 			var docPane = dojo.widget.getWidgetById("docpane");
-			docPane.setUrl(clickedTreeNode.title + ".html");
+			var title = clickedTreeNode.title;
+			if ( title=="doc1"||title=="doc2"){
+				docPane.setUrl(clickedTreeNode.title + ".html");
+			}else{
+				docPane.setContent("Try clicking doc1 or doc2 instead...");
+			}
 	    };
 	}
 	var displayer = new DisplayTreeContent();
@@ -50,12 +55,14 @@
 	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #b39b86;">
 		bottom bar
 	</div>
-	<a dojoType="RemotePane" layoutAlign="left" style="width: 200px; background-color: #acb386;" href="tree.html"></a>
+	<a dojoType="LinkPane" layoutAlign="left" style="width: 200px; background-color: #acb386;" href="tree.html"></a>
 	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #acb386;">
 		right
 	</div>
-	<div dojoType="RemotePane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;"
-		href="doc0.html" id="docpane">
+	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;"
+		id="docpane">
+		This is the initial content of the pane (inlined in the HTML file), but
+		it will be overriden when you click "doc1" or "doc2" in the tree on the left (underneath "Item 1")
 	</div>
 </div>
 
