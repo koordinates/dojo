@@ -54,6 +54,9 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		this.labelPanel = dojo.widget.createWidget("LayoutPane", {layoutAlign: this.labelPosition});
 		this.labelPanel.domNode.appendChild(this.ul);
 		dojo.widget.html.TabPane.superclass.addChild.call(this, this.labelPanel);
+
+		// workaround CSS loading race condition bug
+		dojo.lang.setTimeout(this, this.onResized, 50);
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
