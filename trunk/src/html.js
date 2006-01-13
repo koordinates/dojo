@@ -684,6 +684,16 @@ dojo.html.hide = function(node){
 	}
 }
 
+dojo.html.toggleVisible = function(node) {
+	if(dojo.html.isVisible(node)) {
+		dojo.html.hide(node);
+		return false;
+	} else {
+		dojo.html.show(node);
+		return true;
+	}
+}
+
 /**
  * Like dojo.dom.isTag, except case-insensitive
 **/
