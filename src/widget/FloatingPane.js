@@ -36,6 +36,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	resizable: false,
 	titleBarDisplay: "fancy",
+	titleHeight: 22,	// workaround to CSS loading race condition bug
 
 	href: "",
 	extractContent: true,
@@ -72,6 +73,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	templateString: '<div></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
+
+	initialized: false,
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex) {
 		this.clientPane.addChild(child, overrideContainerNode, pos, ref, insertIndex);
@@ -115,9 +118,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			// this is our chrome
 			var chromeDiv = document.createElement('div');
 			dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
+			chromeDiv.style.height=this.titleHeight+"px";	// workaround CSS loading race condition bug
+			
 			this.dragBar = this._createPane("LayoutPane", chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
 			dojo.html.disableSelection(this.dragBar.domNode);
-		
+
 			if( this.titleBarDisplay == "fancy"){
 				// image background to get gradient
 				var img = document.createElement('img');
@@ -195,14 +200,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 			chromeDiv.appendChild(titleBar);
 			chromeDiv.appendChild(titleBarActions);
-
-			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);
-
-			if (this.constrainToContainer) {
-				drag.constrainTo();
-			}
-
-			drag.setDragHandle(this.dragBar.domNode);
 		}
 
 		if ( this.resizable ) {
@@ -234,9 +231,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		if (dojo.hostenv.post_load_) {
-			dojo.addOnLoad(this, "setInitialWindowState");
-		} else {
 			this.setInitialWindowState();
+		} else {
+			dojo.addOnLoad(this, "setInitialWindowState");
 		}
 
 		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
@@ -264,6 +261,18 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				}
 			}
 		}
+
+		if (this.titleBarDisplay != "none") {
+			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);
+	
+			if (this.constrainToContainer) {
+				drag.constrainTo();
+			}
+	
+			drag.setDragHandle(this.dragBar.domNode);
+		}
+
+		this.initialized=true;
 	},
 
 	_makeShadow: function(){
