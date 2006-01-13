@@ -119,6 +119,12 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			var ot = dojo.widget.DomWidget.templates[this.widgetType];
 			dojo.widget.DomWidget.templates[this.widgetType] = {};
 		}
+		if(args["templatecsspath"]){
+			args["templateCssPath"] = args["templatecsspath"];
+		}
+		if(args["templatepath"]){
+			args["templatePath"] = args["templatepath"];
+		}
 		dojo.widget.buildFromTemplate(this, args["templatePath"], args["templateCssPath"]);
 		this._old_buildFromTemplate(args, frag);
 		dojo.widget.DomWidget.templates[this.widgetType] = ot;
