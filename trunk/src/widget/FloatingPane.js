@@ -314,8 +314,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	_sizeShadow: function(width, height){
-		var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
 		if ( this.shadow ) {
+			var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
 			this.shadow.l.style.height = sideHeight+"px";
 			this.shadow.r.style.height = sideHeight+"px";
 			this.shadow.b.style.width = (width-1)+"px";
@@ -334,21 +334,22 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.previousLeft = this.domNode.style.left;
 		this.previousTop = this.domNode.style.top;
 
-		this.domNode.style.left = dojo.style.getPaddingWidth(this.domNode.parentNode) + "px";
-		this.domNode.style.top = dojo.style.getPaddingHeight(this.domNode.parentNode) + "px";
+		this.domNode.style.left =
+			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
+		this.domNode.style.top =
+			dojo.style.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
 
 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
-			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth());
-			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight());
+			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(dojo.html.body()));
+			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(dojo.html.body()));
 		} else {
 			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
 			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
 		}	
-
-		dojo.widget.html.FloatingPane.superclass.onResized.call(this);
 		this.maximizeAction.style.display="none";	
 		this.restoreAction.style.display="inline";	
 		this.windowState="maximized";
+		this.onResized();
 	},
 
 	minimizeWindow: function(evt) {
