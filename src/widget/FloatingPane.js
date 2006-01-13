@@ -87,40 +87,21 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		return pane;
 	},
 
-	postCreate: function(args, frag){
+	fillInTemplate: function(args, frag){
 		var source = this.getFragNodeRef(frag);
 
-		// Copy style info from input node to output node
+		// Copy style info and id from input node to output node
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
 		dojo.html.addClass(this.domNode, "dojoFloatingPane");
 		this.domNode.style.position="absolute";
+		this.domNode.id = source.id;
 
-		if( this.contentWrapper == "none" ){
-			// the user has specified a single widget which will become our content
-			this.clientPane = this.children[0];
-		} else {
-			// make client pane wrapper to hold the contents of this floating pane
+		// make client pane wrapper to hold the contents of this floating pane
+		if(this.contentWrapper!="none"){
 			var clientDiv = document.createElement('div');
 			dojo.dom.moveChildren(source, clientDiv, 0);
 			this.clientPane = this._makeClientPane(clientDiv);
-
-			// move our 'children' into the client pane
-			// we already moved the domnodes, but now we need to move the 'children'
-			var kids = this.children.concat();
-			this.children = [];
-	
-			for(var i=0; i<kids.length; i++){
-				if (kids[i].ownerPane == this){
-					this.children.push(kids[i]);
-				}else{
-					if(this.contentWrapper="layout"){
-						this.clientPane.addChild(kids[i]);
-					}else{
-						this.clientPane.children.push(kids[i]);
-					}
-				}
-			}
 		}
 
 		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
@@ -259,6 +240,30 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
+	},
+
+	postCreate: function(args, frag){
+		if(this.contentWrapper=="none"){
+			// the user has specified a single widget which will become our content
+			this.clientPane = this.children[0];
+		}else{
+			// move our 'children' into the client pane
+			// we already moved the domnodes, but now we need to move the 'children'
+			var kids = this.children.concat();
+			this.children = [];
+	
+			for(var i=0; i<kids.length; i++){
+				if (kids[i].ownerPane == this){
+					this.children.push(kids[i]);
+				}else{
+					if(this.contentWrapper=="layout"){
+						this.clientPane.addChild(kids[i]);
+					}else{
+						this.clientPane.children.push(kids[i]);
+					}
+				}
+			}
+		}
 	},
 
 	_makeShadow: function(){
