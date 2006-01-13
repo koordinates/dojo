@@ -18,7 +18,6 @@ dojo.require("dojo.dnd.HtmlDragMoveObject");
 
 dojo.widget.html.FloatingPane = function(){
 	dojo.widget.html.LayoutPane.call(this);
-	this.shadow={};
 }
 
 dojo.inherits(dojo.widget.html.FloatingPane, dojo.widget.html.LayoutPane);
@@ -37,6 +36,18 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	resizable: false,
 	titleBarDisplay: "fancy",
+
+	href: "",
+	extractContent: true,
+	parseContent: true,
+	cacheContent: true,
+
+	// FloatingPane supports 3 modes for the client area (the part below the title bar)
+	//  default - client area  is a ContentPane, that can hold
+	//      either inlined data and/or data downloaded from a URL
+	//  layout - the client area is a layout pane
+	//  none - the user specifies a single widget which becomes the content pane
+	contentWrapper: "default",
 
 	containerNode: null,
 	domNode: null,
@@ -59,42 +70,71 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	shadowThickness: 8,
 	shadowOffset: 15,
 
-	templateString: '<div class="dojoFloatingPane"></div>',
+	templateString: '<div></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex) {
 		this.clientPane.addChild(child, overrideContainerNode, pos, ref, insertIndex);
 	},
 
-	_makeClientPane: function(node){
-		return this.createPane("ContentPane", node, {layoutAlign: "client", id:this.widgetId+"_client"});
+	// make a widget container to hold all the contents of the floating pane (other than the
+	// title and the resize bar at the bottom)
+	_makeClientPane: function(clientDiv){
+		var args = {layoutAlign: "client", id:this.widgetId+"_client",
+			href: this.href, cacheContent: this.cacheContent, extractContent: this.extractContent,
+			parseContent: this.parseContent};
+		var pane = this._createPane(this.contentWrapper=="layout"?"LayoutPane":"ContentPane", clientDiv, args);
+		return pane;
 	},
 
-	fillInTemplate: function(args, frag){
+	postCreate: function(args, frag){
 		var source = this.getFragNodeRef(frag);
 
 		// Copy style info from input node to output node
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
-	
-		// this is our client area
-		// TODO: shouldn't be creating clientDiv for LinkPane case, and shouldn't be copying
-		// over children either
-		var clientDiv = document.createElement('div');
-		dojo.dom.moveChildren(source, clientDiv, 0);
-		this.domNode.appendChild(clientDiv);
-		this.clientPane = this._makeClientPane(clientDiv);
-		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
+		dojo.html.addClass(this.domNode, "dojoFloatingPane");
+		this.domNode.style.position="absolute";
 
+		if( this.contentWrapper == "none" ){
+			// the user has specified a single widget which will become our content
+			this.clientPane = this.children[0];
+		} else {
+			// make client pane wrapper to hold the contents of this floating pane
+			var clientDiv = document.createElement('div');
+			dojo.dom.moveChildren(source, clientDiv, 0);
+			this.clientPane = this._makeClientPane(clientDiv);
+
+			// move our 'children' into the client pane
+			// we already moved the domnodes, but now we need to move the 'children'
+			var kids = this.children.concat();
+			this.children = [];
+	
+			for(var i=0; i<kids.length; i++){
+				if (kids[i].ownerPane == this){
+					this.children.push(kids[i]);
+				}else{
+					if(this.contentWrapper="layout"){
+						this.clientPane.addChild(kids[i]);
+					}else{
+						this.clientPane.children.push(kids[i]);
+					}
+				}
+			}
+		}
+
+		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
+		this.clientPane.layoutAlign="client";
+		this.clientPane.ownerPane=this;
 		if (this.hideScrollBars) {
 			this.clientPane.domNode.style.overflow="hidden";
 		}
-
+		
 		if (this.titleBarDisplay != "none") {
 			// this is our chrome
 			var chromeDiv = document.createElement('div');
 			dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
-			this.dragBar = this.createPane("LayoutPane", chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
+			this.dragBar = this._createPane("LayoutPane", chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
 			dojo.html.disableSelection(this.dragBar.domNode);
 		
 			if( this.titleBarDisplay == "fancy"){
@@ -190,7 +230,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
 			dojo.html.disableSelection(resizeDiv);
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-			this.resizePane = this.createPane("ContentPane", resizeDiv, {layoutAlign: "bottom"});
+			this.resizePane = this._createPane("ContentPane", resizeDiv, {layoutAlign: "bottom"});
 			this.resizePane.addChild(rh);
 		}
 
@@ -208,12 +248,24 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.bgIframe.show();
 		};
 
+		if( this.taskBarId ){
+			this.taskBarSetup();
+		}
+
+		if (dojo.hostenv.post_load_) {
+			dojo.addOnLoad(this, "setInitialWindowState");
+		} else {
+			this.setInitialWindowState();
+		}
+
+		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
 	},
 
 	_makeShadow: function(){
 		if ( this.hasShadow ) {
 			// make all the pieces of the shadow, and position/size them as much
 			// as possible (but a lot of the coordinates are set in sizeShadow
+			this.shadow={};
 			var x1 = -1 * this.shadowThickness;
 			var y0 = this.shadowOffset;
 			var y1 = this.shadowOffset + this.shadowThickness;
@@ -249,7 +301,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	_sizeShadow: function(width, height){
 		var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
-		if ( this.hasShadow ) {
+		if ( this.shadow ) {
 			this.shadow.l.style.height = sideHeight+"px";
 			this.shadow.r.style.height = sideHeight+"px";
 			this.shadow.b.style.width = (width-1)+"px";
@@ -347,34 +399,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 	},
 
-	postCreate: function(args, fragment, parentComp){
-
-		// move our 'children' into the client pane
-		// we already moved the domnodes, but now we need to move the 'children'
-
-		var kids = this.children.concat();
-		this.children = [];
-
-		for(var i=0; i<kids.length; i++){
-			if (kids[i].ownerPane == this){
-				this.children.push(kids[i]);
-			}else{
-				this.clientPane.addChild(kids[i]);
-			}
-		}
-
-		if( this.taskBarId ){
-			this.taskBarSetup();
-		}
-
-		if (dojo.hostenv.post_load_) {
-			dojo.addOnLoad(this, "setInitialWindowState");
-		} else {
-			this.setInitialWindowState();
-		}
-		
-	},
-
 	setInitialWindowState: function() {
 		if (this.windowState == "maximized") {
 			this.maximizeWindow();
@@ -426,24 +450,38 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		//}
 
 		// bgIframe is a child of this.domNode, so position should be relative to [0,0]
-		this.bgIframe.size([0, 0, newWidth, newHeight]);
+		if(this.bgIframe){
+			this.bgIframe.size([0, 0, newWidth, newHeight]);
+		}
 	},
 
 	hide: function(){
 		dojo.widget.html.FloatingPane.superclass.hide.call(this);
-		this.bgIframe.hide();
+		if(this.bgIframe){
+			this.bgIframe.hide();
+		}
 	},
 
 	show: function(){
 		dojo.widget.html.FloatingPane.superclass.show.call(this);
-		this.bgIframe.show();
+		if(this.bgIframe){
+			this.bgIframe.show();
+		}
 	},
 
-	createPane: function(type, node, args){
+	_createPane: function(type, node, args){
 		var pane = dojo.widget.createWidget(type, args, node);
 		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
 		pane.ownerPane=this;
 		return pane;
+	},
+	
+	setUrl: function(url){
+		this.clientPane.setUrl(url);
+	},
+	
+	setContent: function(str){
+		this.clientPane.setContent(str);
 	}
 });
 
