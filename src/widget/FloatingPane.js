@@ -32,7 +32,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	constrainToContainer: false,
 	taskBarId: "",
 	resizable: true,	// note: if specified, user must include ResizeHandle
-	hideScrollBars: false,
+	overflow: "",
 
 	resizable: false,
 	titleBarDisplay: "fancy",
@@ -106,13 +106,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.dom.moveChildren(source, clientDiv, 0);
 			this.clientPane = this._makeClientPane(clientDiv);
 		}
-
-		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
-		this.clientPane.layoutAlign="client";
-		this.clientPane.ownerPane=this;
-		if (this.hideScrollBars) {
-			this.clientPane.domNode.style.overflow="hidden";
-		}
 		
 		if (this.titleBarDisplay != "none") {
 			// this is our chrome
@@ -142,10 +135,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.html.addClass(titleBarActions, "dojoFloatingPaneActions");
 
 			//Title Icon
-			var titleIcon = document.createElement('img');
-			dojo.html.addClass(titleIcon,"dojoTitleBarIcon");
-			titleIcon.src = this.iconSrc;						
-			titleBar.appendChild(titleIcon);
+			if(this.iconSrc!=""){
+				var titleIcon = document.createElement('img');
+				dojo.html.addClass(titleIcon,"dojoTitleBarIcon");
+				titleIcon.src = this.iconSrc;						
+				titleBar.appendChild(titleIcon);
+			}
 
 			//Title text  
 			var titleText = document.createTextNode(this.title)
@@ -240,9 +235,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	postCreate: function(args, frag){
+		// Make the client pane.  It will either be the widget specified by the user,
+		// or a wrapper widget
 		if(this.contentWrapper=="none"){
 			// the user has specified a single widget which will become our content
 			this.clientPane = this.children[0];
+			this.domNode.appendChild(this.clientPane.domNode);
 		}else{
 			// move our 'children' into the client pane
 			// we already moved the domnodes, but now we need to move the 'children'
@@ -260,6 +258,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 					}
 				}
 			}
+		}
+		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
+		this.clientPane.layoutAlign="client";
+		this.clientPane.ownerPane=this;
+		if (this.overflow != "") {
+			this.clientPane.domNode.style.overflow=this.overflow;
 		}
 
 		if (this.titleBarDisplay != "none") {
