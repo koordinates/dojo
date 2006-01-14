@@ -79,7 +79,6 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		for(var i=0; i<this.children.length; i++){
 			with(this.children[i].domNode.style){
 				position = "absolute";
-				overflow = "hidden";
 			}
 			dojo.html.addClass(this.children[i].domNode, 
 				"dojoHtmlSplitterPanePanel");
