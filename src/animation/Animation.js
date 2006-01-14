@@ -12,6 +12,9 @@ http://pupius.co.uk/js/Toolkit.Drawing.js
 
 dojo.animation.Animation = function(curve, duration, accel, repeatCount, rate) {
 	// public properties
+	if(dojo.lang.isArray(curve)) {
+		curve = new dojo.math.curves.Line(curve[0], curve[1]);
+	}
 	this.curve = curve;
 	this.duration = duration;
 	this.repeatCount = repeatCount || 0;

@@ -7,6 +7,8 @@ dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
+dojo.fx.duration = 500;
+
 dojo.fx.html._makeFadeable = function(node){
 	if(dojo.render.html.ie){
 		// only set the zoom if the "tickle" value would be the same as the
@@ -57,7 +59,7 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback, dontP
 	dojo.fx.html._makeFadeable(node);
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([startOpac],[endOpac]),
-		duration, 0);
+		duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		dojo.style.setOpacity(node, e.x);
 	});
@@ -127,7 +129,7 @@ dojo.fx.html.slide = function(node, duration, startCoords, endCoords, callback, 
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
-		duration, 0);
+		duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		with( node.style ) {
 			left = e.x + "px";
@@ -157,7 +159,7 @@ dojo.fx.html.colorFadeIn = function(node, duration, startColor, delay, callback,
 	while(color.length > 3) { color.pop(); }
 
 	var rgb = new dojo.graphics.color.Color(startColor).toRgb();
-	var anim = dojo.fx.html.colorFade(node, duration, startColor, color, callback, true);
+	var anim = dojo.fx.html.colorFade(node, duration||dojo.fx.duration, startColor, color, callback, true);
 	dojo.event.connect(anim, "onEnd", function(e) {
 		if( wasTransparent ) {
 			node.style.backgroundColor = "transparent";
@@ -186,7 +188,7 @@ dojo.fx.html.colorFadeOut = function(node, duration, endColor, delay, callback, 
 	var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node)).toRgb();
 
 	var rgb = new dojo.graphics.color.Color(endColor).toRgb();
-	var anim = dojo.fx.html.colorFade(node, duration, color, rgb, callback, delay > 0 || dontPlay);
+	var anim = dojo.fx.html.colorFade(node, duration||dojo.fx.duration, color, rgb, callback, delay > 0 || dontPlay);
 	if( delay > 0 ) {
 		node.style.backgroundColor = "rgb(" + color.join(",") + ")";
 		if(!dontPlay) { setTimeout(function(){anim.play(true)}, delay); }
@@ -210,7 +212,7 @@ dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback
 	var endRgb = new dojo.graphics.color.Color(endColor).toRgb();
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startRgb, endRgb),
-		duration, 0);
+		duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		node.style.backgroundColor = "rgb(" + e.coordsAsInts().join(",") + ")";
 	});
@@ -223,11 +225,68 @@ dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback
 	return anim;
 };
 
+dojo.fx.html.wipeShow = function(node, duration, callback, dontPlay) {
+	node = dojo.byId(node);
+	var overflow = dojo.html.getStyle(node, "overflow");
+	node.style.overflow = "hidden";
+	node.style.height = 0;
+	dojo.html.show(node);
+	var anim = new dojo.animation.Animation([[0], [node.scrollHeight]], duration||dojo.fx.duration, 0);
+	dojo.event.connect(anim, "onAnimate", function(e) {
+		node.style.height = e.x + "px";
+	});
+	dojo.event.connect(anim, "onEnd", function() {
+		node.style.overflow = overflow;
+		node.style.height = "auto";
+		if(callback) { callback(node, anim); }
+	});
+	if(!dontPlay) { anim.play(); }
+	return anim;
+}
+
+dojo.fx.html.wipeHide = function(node, duration, callback, dontPlay) {
+	node = dojo.byId(node);
+	var overflow = dojo.html.getStyle(node, "overflow");
+	node.style.overflow = "hidden";
+	var anim = new dojo.animation.Animation([[node.offsetHeight], [0]], duration||dojo.fx.duration, 0);
+	dojo.event.connect(anim, "onAnimate", function(e) {
+		node.style.height = e.x + "px";
+	});
+	dojo.event.connect(anim, "onEnd", function() {
+		node.style.overflow = overflow;
+		dojo.html.hide(node);
+		if(callback) { callback(node, anim); }
+	});
+	if(!dontPlay) { anim.play(); }
+	return anim;
+}
+
+dojo.fx.html.wiper = function(node, controlNode) {
+	this.node = dojo.byId(node);
+	if(controlNode) {
+		dojo.event.connect(dojo.byId(controlNode), "onclick", this, "toggle");
+	}
+}
+dojo.lang.extend(dojo.fx.html.wiper, {
+	duration: dojo.fx.duration,
+	_anim: null,
+
+	toggle: function() {
+		if(!this._anim) {
+			var type = "wipe" + (dojo.html.isVisible(this.node) ? "Hide" : "Show");
+			this._anim = dojo.fx[type](this.node, this.duration, dojo.lang.hitch(this, "_callback"));
+		}
+	},
+
+	_callback: function() {
+		this._anim = null;
+	}
+});
+
 dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
 	var savedHeight = dojo.html.getStyle(node, "height");
-	var dispType = dojo.lang.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
-	node.style.display = dispType;
+	dojo.html.show(node);
 	var height = node.offsetHeight;
 	var anim = dojo.fx.html.wipeInToHeight(node, duration, height, function(e) {
 		node.style.height = savedHeight || "auto";
@@ -249,7 +308,7 @@ dojo.fx.html.wipeInToHeight = function(node, duration, height, callback, dontPla
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([0], [height]),
-		duration, 0);
+		duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		node.style.height = Math.round(e.x) + "px";
 	});
@@ -272,7 +331,7 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line([height], [0]),
-		duration, 0);
+		duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		node.style.height = Math.round(e.x) + "px";
 	});
@@ -311,7 +370,7 @@ dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
-		duration, 0
+		duration||dojo.fx.duration, 0
 	);
 	dojo.event.connect(anim, "onBegin", function(e) {
 		outline.style.display = "block";
@@ -349,7 +408,7 @@ dojo.fx.html.implode = function(startNode, end, duration, callback, dontPlay) {
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
-		duration, 0
+		duration||dojo.fx.duration, 0
 	);
 	dojo.event.connect(anim, "onBegin", function(e) {
 		startNode.style.display = "none";
