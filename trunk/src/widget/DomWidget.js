@@ -244,7 +244,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			return null;
 		}else{
 			this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
-			this.registerChild(widget);
+			this.registerChild(widget, insertIndex);
 		}
 		return widget;
 	},
