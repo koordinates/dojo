@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.html.ContentPane");
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.io.*");
 dojo.require("dojo.widget.Container");
 dojo.require("dojo.widget.ContentPane");
 
