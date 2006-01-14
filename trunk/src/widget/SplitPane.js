@@ -52,8 +52,9 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 	fillInTemplate: function(){
 
 		dojo.style.insertCssFile(this.templateCssPath, null, true);
+		dojo.html.addClass(this.domNode, "dojoHtmlSplitPane");
+		this.domNode.style.overflow='hidden';	// workaround firefox bug
 
-		this.domNode.style.position = 'relative';
 		this.paneWidth = dojo.style.getContentWidth(this.domNode);
 		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 
@@ -119,7 +120,6 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		//
 		this.resizeSoon();
 	},
-
 
 	layoutPanels: function(){
 
