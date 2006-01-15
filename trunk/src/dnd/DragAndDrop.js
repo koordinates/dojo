@@ -145,4 +145,4 @@ dojo.lang.extend(dojo.dnd.DragManager, {
 // prototype
 
 // The renderer-specific file will define the following object:
-dojo.dnd.dragManager = null;
+// dojo.dnd.dragManager = null;
