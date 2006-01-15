@@ -163,7 +163,8 @@ dojo.lang.isArray = function(wh) {
 dojo.lang.isArrayLike = function(wh) {
 	if(dojo.lang.isString(wh)){ return false; }
 	if(dojo.lang.isArray(wh)){ return true; }
-	if(dojo.lang.isNumber(wh.length) && isFinite(wh)){ return true; }
+	if(typeof wh != "undefined" && wh
+        && dojo.lang.isNumber(wh.length) && isFinite(wh.length)){ return true; }
 	return false;
 }
 
@@ -253,7 +254,7 @@ dojo.lang.whatAmI.custom = {};
 **/
 dojo.lang.find = function(arr, val, identity){
 	// support both (arr, val) and (val, arr)
-	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
+	if(!dojo.lang.isArrayLike(arr) && dojo.lang.isArrayLike(val)) {
 		var a = arr;
 		arr = val;
 		val = a;
@@ -276,7 +277,7 @@ dojo.lang.indexOf = dojo.lang.find;
 
 dojo.lang.findLast = function(arr, val, identity) {
 	// support both (arr, val) and (val, arr)
-	if(!dojo.lang.isArray(arr) && dojo.lang.isArray(val)) {
+	if(!dojo.lang.isArrayLike(arr) && dojo.lang.isArrayLike(val)) {
 		var a = arr;
 		arr = val;
 		val = a;
@@ -329,7 +330,7 @@ dojo.lang.isEmpty = function(obj) {
 			} 
 		}
 		return (count == 0);
-	} else if(dojo.lang.isArray(obj) || dojo.lang.isString(obj)) {
+	} else if(dojo.lang.isArrayLike(obj) || dojo.lang.isString(obj)) {
 		return obj.length == 0;
 	}
 }
