@@ -261,6 +261,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				]);
 			});
 		}
+		// FIXME: we need to add dragSources and dragObjects to e
 		for (var i = 0; i < this.dragObjects.length; i++){
 			if(this.dragObjects[i]){ this.dragObjects[i].onDragMove(e); }
 		}

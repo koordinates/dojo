@@ -64,11 +64,29 @@ dojo.lang.extend(dojo.dnd.DragObject, {
 
 dojo.dnd.DropTarget = function(){
 	if (this.constructor == dojo.dnd.DropTarget) { return; } // need to be subclassed
+	this.acceptedTypes = [];
 	dojo.dnd.dragManager.registerDropTarget(this);
 }
 
 dojo.lang.extend(dojo.dnd.DropTarget, {
 	acceptedTypes: [],
+
+	acceptsType: function(type){
+		if(!dojo.lang.inArray(this.acceptedTypes, "*")){ // wildcard
+			if(!dojo.lang.inArray(this.acceptedTypes, type)) { return false; }
+		}
+		return true;
+	},
+
+	accepts: function(dragObjects){
+		if(!dojo.lang.inArray(this.acceptedTypes, "*")){ // wildcard
+			for (var i = 0; i < dragObjects.length; i++) {
+				if (!dojo.lang.inArray(this.acceptedTypes,
+					dragObjects[i].type)) { return false; }
+			}
+		}
+		return true;
+	},
 
 	onDragOver: function(){
 	},
