@@ -10,15 +10,13 @@ dojo.provide("dojo.dnd.TreeDragAndDrop");
 dojo.provide("dojo.dnd.TreeDragSource");
 dojo.provide("dojo.dnd.TreeDropTarget");
 
-dojo.require("dojo.dnd.HtmlDragSource");
+dojo.require("dojo.dnd.HtmlDragAndDrop");
 
 dojo.dnd.TreeDragSource = function(node, syncController, type, treeNode){
 	this.controller = syncController;
 	this.treeNode = treeNode;
 
 	dojo.dnd.HtmlDragSource.call(this, node, type);
-
-
 }
 
 dojo.inherits(dojo.dnd.TreeDragSource, dojo.dnd.HtmlDragSource);

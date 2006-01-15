@@ -2,6 +2,7 @@ dojo.provide("dojo.dnd.HtmlDragAndDrop");
 dojo.provide("dojo.dnd.HtmlDragSource");
 dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
+
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.animation.*");
 dojo.require("dojo.dom");

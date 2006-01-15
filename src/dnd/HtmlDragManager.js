@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above */dojo.provide("dojo.dnd.HtmlDragManager");
+dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang");
 dojo.require("dojo.html");
