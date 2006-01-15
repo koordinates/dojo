@@ -2,7 +2,6 @@ dojo.provide("dojo.widget.html.DatePicker");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DatePicker");
-dojo.require("dojo.widget.DatePicker.util");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
