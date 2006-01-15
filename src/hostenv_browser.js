@@ -198,7 +198,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		http.onreadystatechange = function(){ 
 			if((4==http.readyState)&&(http["status"])){
 				if(http.status==200){
-					dojo.debug("LOADED URI: "+uri);
+					// dojo.debug("LOADED URI: "+uri);
 					async_cb(http.responseText);
 				}
 			}

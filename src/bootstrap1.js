@@ -431,11 +431,12 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
  * The result of the eval is not available to the caller.
  */
 dojo.hostenv.loadUri = function(uri, cb){
-	if(dojo.hostenv.loadedUris[uri]){
+	if(this.loadedUris[uri]){
 		return;
 	}
 	var contents = this.getText(uri, null, true);
 	if(contents == null){ return 0; }
+	this.loadedUris[uri] = true;
 	var value = dj_eval(contents);
 	return 1;
 }
@@ -526,6 +527,7 @@ dojo.hostenv.moduleLoaded = function(modulename){
 */
 dojo.hostenv._global_omit_module_check = false;
 dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
+	if(!modulename){ return; }
 	omit_module_check = this._global_omit_module_check || omit_module_check;
 	var module = this.findModule(modulename, false);
 	if(module){
@@ -631,15 +633,17 @@ dojo.hostenv.findModule = function(modulename, must_exist) {
 	}
 	*/
 
-	if(this.loaded_modules_[(new String(modulename)).toLowerCase()]){
-		return this.loaded_modules_[modulename];
+	var lmn = (new String(modulename)).toLowerCase();
+
+	if(this.loaded_modules_[lmn]){
+		return this.loaded_modules_[lmn];
 	}
 
 	// see if symbol is defined anyway
 	var module = dojo.evalObjPath(modulename);
-	if((typeof module !== 'undefined')&&(module)){
+	if((modulename)&&(typeof module != 'undefined')&&(module)){
+		this.loaded_modules_[lmn] = module;
 		return module;
-		// return this.modules_[modulename] = module;
 	}
 
 	if(must_exist){
