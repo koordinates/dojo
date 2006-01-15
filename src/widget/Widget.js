@@ -115,6 +115,19 @@ dojo.lang.extend(dojo.widget.Widget, {
 		return ret;
 	},
 
+	getDescendants: function(){
+		// FIXME: this does not appear to be recursive. Shouldn't a function 
+		// with this signature get *all* descendants?
+		var result = [];
+		var stack = [this];
+		var elem;
+		while (elem = stack.pop()){
+			result.push(elem);
+			dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+		}
+		return result;
+	},
+
 	satisfyPropertySets: function(args){
 		// dojo.profile.start("satisfyPropertySets");
 		// get the default propsets for our component type
@@ -402,8 +415,8 @@ dojo.widget.lcArgsCache = {};
 dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
-	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex){ 
-		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex);
+	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){ 
+		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
 	}
 }
 dojo.widget.tags.addParseTreeHandler("dojo:widget");
@@ -420,14 +433,14 @@ dojo.widget.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 	var properties = widgetParser.parseProperties(fragment["dojo:connect"]);
 }
 
-dojo.widget.buildWidgetFromParseTree = function(type, frag, parser, parentComp, insertionIndex){
-	var localProperties = {};
+dojo.widget.buildWidgetFromParseTree = function(type, frag, 
+												parser, parentComp, 
+												insertionIndex, localProps){
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
-	// outputObjectInfo(frag["dojo:"+stype]);
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
-	var localProperties = parser.parseProperties(frag["dojo:"+stype]);
+	var localProperties = localProps || parser.parseProperties(frag["dojo:"+stype]);
 	// var tic = new Date();
 	var twidget = dojo.widget.manager.getImplementation(stype);
 	if(!twidget){
