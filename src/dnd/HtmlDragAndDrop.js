@@ -211,13 +211,9 @@ dojo.dnd.HtmlDropTarget = function(node, types){
 dojo.inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
+
 	onDragOver: function(e){
-		if(!dojo.lang.inArray(this.acceptedTypes, "*")){ // wildcard
-			for (var i = 0; i < e.dragObjects.length; i++) {
-				if (!dojo.lang.inArray(this.acceptedTypes,
-					e.dragObjects[i].type)) { return false; }
-			}
-		}
+		if(!this.accepts(e.dragObjects)){ return false; }
 		
 		// cache the positions of the child nodes
 		this.childBoxes = [];
