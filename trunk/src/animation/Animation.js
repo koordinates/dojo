@@ -227,9 +227,11 @@ dojo.lang.extend(dojo.animation.AnimationEvent, {
 	}
 });
 
-dojo.animation.AnimationSequence = function(repeatCount) {
+dojo.animation.AnimationSequence = function(repeatCount){
+	this._anims = [];
 	this.repeatCount = repeatCount || 0;
 }
+
 dojo.lang.extend(dojo.animation.AnimationSequence, {
 	repeateCount: 0,
 
