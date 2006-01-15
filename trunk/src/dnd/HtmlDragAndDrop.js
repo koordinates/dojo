@@ -26,8 +26,10 @@ dojo.dnd.HtmlDragSource = function(node, type){
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
+	dragClass: "", // CSS classname(s) applied to node when it is being dragged
+
 	onDragStart: function(){
-		var dragObj = new dojo.dnd.HtmlDragObject(this.dragObject, this.type);
+		var dragObj = new dojo.dnd.HtmlDragObject(this.dragObject, this.type, this.dragClass);
 
 		if (this.constrainToContainer) {
 			dragObj.constrainTo(this.constrainingContainer);
@@ -56,14 +58,21 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	}
 });
 
-dojo.dnd.HtmlDragObject = function(node, type){
-	node = dojo.byId(node);
+dojo.dnd.HtmlDragObject = function(node, type, dragClass){
+	this.domNode = dojo.byId(node);
 	this.type = type;
-	this.domNode = node;
+	if(dragClass) { this.dragClass = dragClass; }
 	this.constrainToContainer = false;
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragObject, {  
+	dragClass: "",
+	opacity: 0.5,
+
+	// if true, node will not move in X and/or Y direction
+	disableX: false,
+	disableY: false,
+
 	/**
 	 * Creates a clone of this node and replaces this node with the clone in the
 	 * DOM tree. This is done to prevent the browser from selecting the textual
@@ -106,7 +115,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			top = this.dragOffset.top + e.clientY + "px";
 			left = this.dragOffset.left + e.clientX + "px";
 		}
-		dojo.style.setOpacity(this.dragClone, 0.5);
+
+		if(this.dragClass) { dojo.html.addClass(this.dragClone, this.dragClass); }
+		dojo.style.setOpacity(this.dragClone, this.opacity);
 		dojo.html.body().appendChild(this.dragClone);
 	},
 
@@ -148,8 +159,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			if (x > this.constraints.maxX) { x = this.constraints.maxX; }
 			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
 		}
-		this.dragClone.style.top = y + "px";
-		this.dragClone.style.left = x + "px";
+
+		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
+		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
 	},
 
 	/**
@@ -211,7 +223,6 @@ dojo.dnd.HtmlDropTarget = function(node, types){
 dojo.inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
-
 	onDragOver: function(e){
 		if(!this.accepts(e.dragObjects)){ return false; }
 		
@@ -247,40 +258,57 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		
 		return -1;
 	},
+
+	createDropIndicator: function() {
+		this.dropIndicator = document.createElement("div");
+		with (this.dropIndicator.style) {
+			position = "absolute";
+			zIndex = 1;
+			borderTopWidth = "1px";
+			borderTopColor = "black";
+			borderTopStyle = "solid";
+			width = dojo.style.getInnerWidth(this.domNode) + "px";
+			left = dojo.style.getAbsoluteX(this.domNode) + "px";
+		}
+	},
 	
-	onDragMove: function(e){
+	onDragMove: function(e, dragObjects){
 		var i = this._getNodeUnderMouse(e);
 		
 		if(!this.dropIndicator){
-			this.dropIndicator = document.createElement("div");
-			with (this.dropIndicator.style) {
-				position = "absolute";
-				zIndex = 1;
-				borderTopWidth = "1px";
-				borderTopColor = "black";
-				borderTopStyle = "solid";
-				width = dojo.style.getInnerWidth(this.domNode) + "px";
-				left = dojo.style.getAbsoluteX(this.domNode) + "px";
-			}
+			this.createDropIndicator();
 		}
 
+		if(i < 0) {
+			if(this.childBoxes.length) {
+				var before = (dojo.html.gravity(this.childBoxes[0].node, e) & dojo.html.gravity.NORTH);
+			} else {
+				var before = true;
+			}
+		} else {
+			var child = this.childBoxes[i];
+			var before = (dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH);
+		}
+		this.placeIndicator(e, dragObjects, i, before);
+
+		if(!dojo.html.hasParent(this.dropIndicator)) {
+			dojo.html.body().appendChild(this.dropIndicator);
+		}
+	},
+
+	placeIndicator: function(e, dragObjects, boxIndex, before) {
 		with(this.dropIndicator.style){
-			if (i < 0) {
+			if (boxIndex < 0) {
 				if (this.childBoxes.length) {
-					top = ((dojo.html.gravity(this.childBoxes[0].node, e) & dojo.html.gravity.NORTH)
-						? this.childBoxes[0].top : this.childBoxes[this.childBoxes.length - 1].bottom) + "px";
+					top = (before ? this.childBoxes[0].top
+						: this.childBoxes[this.childBoxes.length - 1].bottom) + "px";
 				} else {
 					top = dojo.style.getAbsoluteY(this.domNode) + "px";
 				}
 			} else {
-				var child = this.childBoxes[i];
-				top = ((dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH)
-					? child.top : child.bottom) + "px";
+				var child = this.childBoxes[boxIndex];
+				top = (before ? child.top : child.bottom) + "px";
 			}
-		}
-		
-		if(!dojo.html.hasParent(this.dropIndicator)) {
-			dojo.html.body().appendChild(this.dropIndicator);
 		}
 	},
 
@@ -303,22 +331,34 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		if (i < 0) {
 			if (this.childBoxes.length) {
 				if (dojo.html.gravity(this.childBoxes[0].node, e) & dojo.html.gravity.NORTH) {
-					return dojo.dom.insertBefore(e.dragObject.domNode, 
-						this.childBoxes[0].node);
+					return this.insert(e, this.childBoxes[0].node, "before");
 				} else {
-					return dojo.dom.insertAfter(e.dragObject.domNode, 
-						this.childBoxes[this.childBoxes.length - 1].node);
+					return this.insert(e, this.childBoxes[this.childBoxes.length-1].node, "after");
 				}
 			}
-			this.domNode.appendChild(e.dragObject.domNode);
-			return	true;
+			return this.insert(e, this.domNode, "append");
 		}
 		
 		var child = this.childBoxes[i];
 		if (dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH) {
-			return dojo.dom.insertBefore(e.dragObject.domNode, child.node);
+			return this.insert(e, child.node, "before");
 		} else {
-			return dojo.dom.insertAfter(e.dragObject.domNode, child.node);
+			return this.insert(e, child.node, "after");
 		}
+	},
+
+	insert: function(e, refNode, position) {
+		var node = e.dragObject.domNode;
+
+		if(position == "before") {
+			return dojo.html.insertBefore(node, refNode);
+		} else if(position == "after") {
+			return dojo.html.insertAfter(node, refNode);
+		} else if(position == "append") {
+			refNode.appendChild(node);
+			return true;
+		}
+
+		return false;
 	}
 });
