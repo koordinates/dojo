@@ -182,21 +182,28 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		this.setBackgroundOpacity();
 		this.placeDialog();
 		this.showBackground();
-		switch((this.effect||"").toLowerCase()) {
+		switch((this.effect||"").toLowerCase()){
 			case "fade":
 				this.domNode.style.display = "block";
-				var _this = this;
 				if(this.anim){ this.anim.stop(); }
-				this.anim = dojo.fx.fade(this.domNode, this.effectDuration, 0, 1, function(node) {
-					if(dojo.lang.isFunction(_this.onShow)) {
-						_this.onShow(node);
-					}
-				});
+				// FIXME: we should be supporting other effect types here!
+				this.anim = dojo.fx.fade(this.domNode, 
+					this.effectDuration, 
+					0, 
+					1,
+					dojo.lang.hitch(this, 
+						function(node){
+							if(dojo.lang.isFunction(_this.onShow)) {
+								_this.onShow(node);
+							}
+						}
+					)
+				);
 				break;
 			default:
 				this.domNode.style.display = "block";
-				if(dojo.lang.isFunction(this.onShow)) {
-					this.onShow(node);
+				if(dojo.lang.isFunction(this.onShow)){
+					this.onShow(this.domNode);
 				}
 				break;
 		}
