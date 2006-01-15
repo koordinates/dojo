@@ -96,3 +96,29 @@ dojo.math.variance = function () {
 		- Math.pow(mean / array.length, 2);
 }
 
+/**
+ * Like range() in python
+**/
+dojo.math.range = function(a, b, step) {
+    if(arguments.length < 2) {
+        b = a;
+        a = 0;
+    }
+    if(arguments.length < 3) {
+        step = 1;
+    }
+
+    var range = [];
+    if(step > 0) {
+        for(var i = a; i < b; i += step) {
+            range.push(i);
+        }
+    } else if(step < 0) {
+        for(var i = a; i > b; i += step) {
+            range.push(i);
+        }
+    } else {
+        throw new Error("dojo.math.range: step must be non-zero");
+    }
+    return range;
+}
