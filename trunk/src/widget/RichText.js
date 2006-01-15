@@ -27,6 +27,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 
 	/** whether to inherit the parent's width or simply use 100% */
 	inheritWidth: false,
+	focusOnLoad: true,
 	
 	/**
 	 * If a save name is specified the content is saved and restored if the
@@ -344,7 +345,9 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			// FIXME: when scrollbars appear/disappear this needs to be fired						
 		}
 		
-		this.focus();
+		if(this.focusOnLoad){
+			this.focus();
+		}
 		this.onDisplayChanged(e);
 	},
 

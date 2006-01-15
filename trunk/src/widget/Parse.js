@@ -215,25 +215,16 @@ dojo.widget.Parse = function(fragment) {
 
 		properties is an object of name value pairs
 	*/
-	this.createComponentFromScript = function(nodeRef, componentName, properties, fastMixIn){
-		var frag = {};
-		var tagName = "dojo:" + componentName.toLowerCase();
-		frag[tagName] = {};
-		var bo = {};
-		properties.dojotype = componentName;
-		for(var prop in properties){
-			if(typeof bo[prop] == "undefined"){
-				frag[tagName][prop] = [{value: properties[prop]}];
+	this.createComponentFromScript = function(nodeRef, componentName, properties){
+		var ltn = "dojo:" + componentName.toLowerCase();
+		if(dojo.widget.tags[ltn]){
+			properties.fastMixIn = true;
+			return [dojo.widget.tags[ltn](properties, this, null, null, properties)];
+		}else{
+			if(ltn.substr(0, 5)=="dojo:"){
+				dojo.debug("no tag handler registed for type: ", ltn);
 			}
 		}
-		frag[tagName].nodeRef = nodeRef;
-		frag.tagName = tagName;
-		var fragContainer = [frag];
-		if(fastMixIn){
-			fragContainer[0].fastMixIn = true;
-		}
-		// FIXME: should this really return an array?
-		return this.createComponents(fragContainer);
 	}
 }
 

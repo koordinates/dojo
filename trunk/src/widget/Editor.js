@@ -104,6 +104,8 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	},
 
 	validateItems: true, // set to false to add items, regardless of support
+	focusOnLoad: true,
+	minHeight: "1em",
 
 	_richText: null, // RichText widget
 	_richTextType: "RichText",
@@ -119,7 +121,10 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	buildRendering: function(args, frag) {
 		// get the node from args/frag
 		var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		var trt = dojo.widget.createWidget(this._richTextType, {}, node)
+		var trt = dojo.widget.createWidget(this._richTextType, {
+			focusOnLoad: this.focusOnLoad,
+			minHeight: this.minHeight
+		}, node)
 		var _this = this;
 		// this appears to fix a weird timing bug on Safari
 		setTimeout(function(){
