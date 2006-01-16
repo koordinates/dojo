@@ -192,6 +192,7 @@ dojo.addOnLoad(Picker, "init");
 			you might want to check out:</p>
 			<ul>
 				<li><a href="http://dojotoolkit.org/docs/getting_started_with_packaged_dojo.html">Getting Started with a Dojo Download</a></li>
+				<li><a href="http://manual.dojotoolkit.org/index.html">The Dojo Manual (API Documentation)</a></li>
 				<li><a href="http://dojotoolkit.org/docs/intro_to_dojo_io.html"><code>dojo.io.bind()</code>: Baking Usability into XMLHTTP</a></li>
 				<li><a href="http://dojo.jot.com/Animation">Animations</a> &amp;
 				<a href="http://dojo.jot.com/HTMLEffects">Effects</a> in Dojo</li>
