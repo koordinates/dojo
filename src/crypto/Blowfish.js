@@ -397,7 +397,7 @@ dojo.crypto.Blowfish = new function(){
 		var count=plaintext.length >> 3;
 		var pos=0;
 		var o={};
-		var isCBC=(mode==dojo.crypto.cipherTypes.CBC);
+		var isCBC=(mode==dojo.crypto.cipherModes.CBC);
 		var vector={left:iv.left||null, right:iv.right||null};
 		for(var i=0; i<count; i++){
 			o.left=plaintext.charCodeAt(pos)*POW24
@@ -491,7 +491,7 @@ dojo.crypto.Blowfish = new function(){
 		var count=c.length >> 3;
 		var pos=0;
 		var o={};
-		var isCBC=(mode==dojo.crypto.cipherTypes.CBC);
+		var isCBC=(mode==dojo.crypto.cipherModes.CBC);
 		var vector={left:iv.left||null, right:iv.right||null};
 		for(var i=0; i<count; i++){
 			o.left=c[pos]*POW24|c[pos+1]*POW16|c[pos+2]*POW8|c[pos+3];
