@@ -295,13 +295,15 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		var even = true;
 		while(results.length){
 			var tr = results.shift();
-			var td = document.createElement("div");
-			td.appendChild(document.createTextNode(tr[0]));
-			td.setAttribute("resultName", tr[0]);
-			td.setAttribute("resultValue", tr[1]);
-			td.className = "cbItem "+((even) ? "cbItemEven" : "cbItemOdd");
-			even = (!even);
-			this.optionsListNode.appendChild(td);
+			if(tr){
+				var td = document.createElement("div");
+				td.appendChild(document.createTextNode(tr[0]));
+				td.setAttribute("resultName", tr[0]);
+				td.setAttribute("resultValue", tr[1]);
+				td.className = "cbItem "+((even) ? "cbItemEven" : "cbItemOdd");
+				even = (!even);
+				this.optionsListNode.appendChild(td);
+			}
 		}
 
 		dojo.event.kwConnect({
