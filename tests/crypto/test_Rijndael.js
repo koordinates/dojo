@@ -1,3 +1,4 @@
+/*
 dojo.require("dojo.crypto.Rijndael");
 
 function test_Rijndael_encryption(){
@@ -17,3 +18,4 @@ function test_Rijndael_decryption(){
 	result = dojo.crypto.Rijndael.decrypt(dojo.crypto.fromBase64(base64Encrypted), key);
 	jum.assertEquals("RijndaelDecryption", message, result);
 }
+*/

@@ -1,3 +1,4 @@
+/*
 dojo.require("dojo.crypto.SHA");
 
 function test_SHA_compute(){
@@ -7,3 +8,4 @@ function test_SHA_compute(){
 	var result = dojo.crypto.toBase64(dojo.crypto.SHA.compute(message));
 	jum.assertEquals("SHA Compute Hash", hash, result);
 }
+*/
