@@ -12,7 +12,7 @@ do
 	profile=`echo $pfile | sed 's/.profile.js//g'`
 	echo Building profile: $profile
 	ant -q -Ddocless=true -Dprofile=$profile release
-	proName=dojo-0.2.0-$profile
+	proName=dojo-0.2.2-$profile
 	cd ../release
 	mv dojo $proName
 	tar -zcf $OUT_DIR/$proName.tar.gz $proName/

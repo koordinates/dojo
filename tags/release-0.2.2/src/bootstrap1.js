@@ -39,7 +39,7 @@ var dojo;
 if(dj_undef("dojo")){ dojo = {}; }
 
 dojo.version = {
-	major: 0, minor: 2, patch: 1, flag: "+",
+	major: 0, minor: 2, patch: 2, flag: "",
 	revision: Number("$Rev$".match(/[0-9]+/)[0]),
 	toString: function() {
 		with (dojo.version) {
