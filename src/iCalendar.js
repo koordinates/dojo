@@ -2,7 +2,7 @@ dojo.provide("dojo.iCalendar");
 dojo.provide("dojo.iCalendar.Component");
 dojo.provide("dojo.iCalendar.Property");
 dojo.require("dojo.text.textDirectory");
-
+dojo.require("dojo.date");
 // iCalendar support adapted from Paul Sowden's iCalendar work
 
 dojo.iCalendar = function (/* string */calbody) {
@@ -17,6 +17,43 @@ dojo.iCalendar = function (/* string */calbody) {
 
 	dojo.iCalendar.Component.call(this, "VCALENDAR", calbody);
 }
+
+dojo.lang.extend(dojo.iCalendar, {
+	getEvents: function (/* string */ startDate, /* string */ endDate) {
+	// summary
+	// retrieve an array of events that fall between startDate and endDate
+
+		var evts = [];
+
+		if (dojo.lang.isString(startDate)) {
+			var start = dojo.date.fromIso8601(startDate);
+		} else {
+			start = startDate;
+		}
+
+		if (dojo.lang.isString(endDate)) {
+			var end = dojo.date.fromIso8601(endDate);
+		} else {
+			end = endDate;
+		}	
+
+		//dojo.debug("getting events between " + start+ " and " + end);
+		//dojo.debug("Total events to search: " + this.components.length.toString());
+		for (var x=0; x<this.components.length; x++) {
+			if (this.components[x].name == "VEVENT") {
+				evtStart = dojo.date.fromIso8601(this.components[x].dtstart.value);
+				evtEnd= dojo.date.fromIso8601(this.components[x].dtend.value);
+	 		
+				if (((evtStart >= start) && (evtStart <= end)) || ((evtStart <= end) && (evtEnd >= start))) {
+					//dojo.debug("Outside of range: " + evtStart + " " + evtEnd);
+					evts.push(this.components[x]);
+				} 
+			}
+		}		
+		return /* array */ evts;
+	}
+});
+
 
 dojo.iCalendar.fromText =  function (/* string */text) {
 	// summary
