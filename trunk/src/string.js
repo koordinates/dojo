@@ -248,15 +248,15 @@ dojo.string.padRight = function(str, len, c) {
 	return dojo.string.pad(str, len, c, -1);
 }
 
-dojo.string.normalizeNewlines = function (str,newlineChar) {
+dojo.string.normalizeNewlines = function (text,newlineChar) {
 	if (newlineChar == "\n") {
-		var text = str.replace(/\r\n/g, "\n");
+		text = text.replace(/\r\n/g, "\n");
 		text = text.replace(/\r/g, "\n");
 	} else if (newlineChar == "\r") {
-		var text = str.replace(/\r\n/g, "\r");
+		text = text.replace(/\r\n/g, "\r");
 		text = text.replace(/\n/g, "\r");
 	} else {
-		var text = str.replace(/([^\r])\n/g, "$1\r\n");
+		text = text.replace(/([^\r])\n/g, "$1\r\n");
 		text = text.replace(/\r([^\n])/g, "\r\n$1");
 	}
 	return text;

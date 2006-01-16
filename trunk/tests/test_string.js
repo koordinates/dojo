@@ -74,3 +74,14 @@ function test_string_summary() {
 	jum.assertEquals("test300", "I like candy",
 		dojo.string.summary("I like candy", 30));
 }
+
+function test_normalizeNewlines() {
+	var t1 = "blahblahblah\r\nblahblahblah\rblahblhablhablhablh\nblahbalhablhablhab";
+	var r1 = "blahblahblah\nblahblahblah\nblahblhablhablhablh\nblahbalhablhablhab";
+	var r2 = "blahblahblah\rblahblahblah\rblahblhablhablhablh\rblahbalhablhablhab";
+	var r3 = "blahblahblah\r\nblahblahblah\r\nblahblhablhablhablh\r\nblahbalhablhablhab";
+
+	jum.assertEquals("test401", r1, dojo.string.normalizeNewlines(t1,'\n'));
+	jum.assertEquals("test402", r2, dojo.string.normalizeNewlines(t1,'\r'));
+	jum.assertEquals("test403", r3, dojo.string.normalizeNewlines(t1));
+}
