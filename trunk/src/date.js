@@ -289,14 +289,14 @@ dojo.date.toString = function(date, format){
 	if (format.indexOf("#d") > -1) {
 		format = format.replace(/#dddd/g, dojo.date.getDayOfWeekName(date));
 		format = format.replace(/#ddd/g, dojo.date.getShortDayOfWeekName(date));
-		format = format.replace(/#dd/g, dojo.string.pad(date.getDate()));
+		format = format.replace(/#dd/g, (date.getDate().toString().length==1?"0":"")+date.getDate());
 		format = format.replace(/#d/g, date.getDate());
 	}
 
 	if (format.indexOf("#M") > -1) {
 		format = format.replace(/#MMMM/g, dojo.date.getMonthName(date));
 		format = format.replace(/#MMM/g, dojo.date.getShortMonthName(date));
-		format = format.replace(/#MM/g, dojo.string.pad(date.getMonth() + 1));
+		format = format.replace(/#MM/g, ((date.getMonth()+1).toString().length==1?"0":"")+(date.getMonth()+1));
 		format = format.replace(/#M/g, date.getMonth() + 1);
 	}
 
@@ -315,22 +315,22 @@ dojo.date.toString = function(date, format){
 	if (format.indexOf("#h") > -1) {
 		var hours = date.getHours();
 		hours = hours > 12 ? hours - 12 : hours;
-		format = format.replace(/#hh/g, dojo.string.pad(hours));
+		format = format.replace(/#hh/g, (hours.toString().length==1?"0":"")+hours);
 		format = format.replace(/#h/g, hours);
 	}
 	
 	if (format.indexOf("#H") > -1) {
-		format = format.replace(/#HH/g, dojo.string.pad(date.getHours()));
+		format = format.replace(/#HH/g, (date.getHours().toString().length==1?"0":"")+date.getHours());
 		format = format.replace(/#H/g, date.getHours());
 	}
 	
 	if (format.indexOf("#m") > -1) {
-		format = format.replace(/#mm/g, dojo.string.pad(date.getMinutes()));
+		format = format.replace(/#mm/g, (date.getMinutes().toString().length==1?"0":"")+date.getMinutes());
 		format = format.replace(/#m/g, date.getMinutes());
 	}
 
 	if (format.indexOf("#s") > -1) {
-		format = format.replace(/#ss/g, dojo.string.pad(date.getSeconds()));
+		format = format.replace(/#ss/g, (date.getSeconds().toString().length==1?"0":"")+date.getSeconds());
 		format = format.replace(/#s/g, date.getSeconds());
 	}
 	
