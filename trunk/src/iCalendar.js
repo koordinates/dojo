@@ -3,10 +3,12 @@ dojo.provide("dojo.iCalendar.Component");
 dojo.provide("dojo.iCalendar.Property");
 dojo.require("dojo.text.textDirectory");
 
-/* Dojo iCalendar support, adapted from Paul Sowden's icalendar work */
+// iCalendar support adapted from Paul Sowden's iCalendar work
 
-/** an iCalendar object */
-dojo.iCalendar = function (calbody) {
+dojo.iCalendar = function (/* string */calbody) {
+	// summary
+	// Main iCalendar Object. 
+	// In actuality it is a VCALENDAR component.
 
 	// ugly ugly way to inherit
 	for (prop in dojo.iCalendar.Component.prototype) {
@@ -16,7 +18,37 @@ dojo.iCalendar = function (calbody) {
 	dojo.iCalendar.Component.call(this, "VCALENDAR", calbody);
 }
 
-dojo.iCalendar.Component = function (name, body) {
+dojo.iCalendar.fromText =  function (/* string */text) {
+	// summary
+	// Parse text of an iCalendar and return an array of iCalendar objects
+
+	var properties = dojo.textDirectoryTokeniser.tokenise(text);
+	var calendars = [];
+
+	for (var i = 0, begun = false; i < properties.length; i++) {
+		var prop = properties[i];
+		//dojo.debug("Property Name: " + prop.name + " = " + prop.value);
+		if (!begun) {
+			if (prop.name == 'BEGIN' && prop.value == 'VCALENDAR') {
+				begun = true;
+				var calbody = [];
+			}
+		} else if (prop.name == 'END' && prop.value == 'VCALENDAR') {
+			calendars.push(new dojo.iCalendar(calbody));
+			begun = false;
+		} else {
+			calbody.push(prop);
+		}
+	}
+	return /* array */calendars;
+}
+
+dojo.iCalendar.Component = function (/* string */ name, /* string */ body) {
+	// summary
+	// A component is the basic container of all this stuff.  A VCALENDAR is a component that 
+	// holds VEVENT Componenets for example.  A particular component is made up of its own
+	// properties as well as other components that it holds.
+
 	this.name = name;
 	this.properties = [];
 	this.components = [];
@@ -38,21 +70,34 @@ dojo.iCalendar.Component = function (name, body) {
 	}
 }
 
-dojo.iCalendar.Component.prototype.addProperty = function (prop) {
-	this.properties.push(prop);
-	this[prop.name.toLowerCase()] = prop;
-}
+dojo.lang.extend(dojo.iCalendar.Component, {
 
-dojo.iCalendar.Component.prototype.addComponent = function (prop) {
-	this.components.push(prop);
-}
+	addProperty: function (prop) {
+		// summary
+		// push a nuew propertie onto a component.
+		this.properties.push(prop);
+		this[prop.name.toLowerCase()] = prop;
+	},
 
-dojo.iCalendar.Component.prototype.toString = function () {
-	return "[iCalendar.Component; " + this.name + ", " + this.properties.length +
-		" properties, " + this.components.length + " components]";
-}
+	addComponent: function (prop) {
+		// summary
+		// add a component to this components list of children.
+		this.components.push(prop);
+	},
+
+	
+	toString: function () {
+		// summary
+		// output a string representation of this component.
+		return "[iCalendar.Component; " + this.name + ", " + this.properties.length +
+			" properties, " + this.components.length + " components]";
+	}
+});
 
 dojo.iCalendar.Property = function (prop) {
+	// summary
+	// A single property of a component.
+
 	// unpack the values
 	this.name = prop.name;
 	this.group = prop.group;
@@ -60,35 +105,13 @@ dojo.iCalendar.Property = function (prop) {
 	this.value = prop.value;
 }
 
-dojo.iCalendar.Property.prototype.toString = function () {
-	return "[iCalenday.Property; " + this.name + ": " + this.value + "]";
-}
-
-/** an iCalendar object is basically a Component */
-
-/** read an iCal directory file */
-dojo.iCalendar.fromText = function (text) {
-
-	var properties = dojo.textDirectoryTokeniser.tokenise(text);
-	var calendars = [];
-
-	for (var i = 0, begun = false; i < properties.length; i++) {
-		var prop = properties[i];
-		//dojo.debug("Property Name: " + prop.name + " = " + prop.value);
-		if (!begun) {
-			if (prop.name == 'BEGIN' && prop.value == 'VCALENDAR') {
-				begun = true;
-				var calbody = [];
-			}
-		} else if (prop.name == 'END' && prop.value == 'VCALENDAR') {
-			calendars.push(new dojo.iCalendar(calbody));
-			begun = false;
-		} else {
-			calbody.push(prop);
-		}
+dojo.lang.extend(dojo.iCalendar.Property, {
+	toString: function () {	
+		// summary
+		// output a string reprensentation of this component.
+		return "[iCalenday.Property; " + this.name + ": " + this.value + "]";
 	}
-	return calendars;
-}
+});
 
 /*
  * Here is a whole load of stuff that could go towards making this
