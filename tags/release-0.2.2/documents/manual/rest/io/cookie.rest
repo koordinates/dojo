@@ -1,0 +1,167 @@
+.. title:: dojo.io.cookie.* -- The Dojo Manual
+
+.. this is a comment. for more information on reST, see:
+   http://docutils.sf.net/docs/user/rst/quickstart.html
+   http://docutils.sf.net/docs/user/rst/quickref.html
+
+Name
+===============================================================================
+
+dojo.io.cookie.* - manage browser cookies
+
+Summary and Overview
+===============================================================================
+
+Manage cookies in the browser, from simple key/value cookies to more complex
+"object cookies" (serialized objects).
+
+Usage
+===============================================================================
+
+::
+
+    // set "color" to "green" for 30 days
+    dojo.io.cookie.set("color", "green", 30);
+    dojo.debug( dojo.io.cookie.get("color") ); // prints "green"
+
+    // object cookie
+    var obj = {};
+    obj.foo = "red rover";
+    obj.bar = 8;
+    dojo.io.cookie.setObjectCookie("values", obj, 15);
+    var ck = dojo.io.cookie.getObjectCookie("values");
+    dojo.debug(ck.foo); // "red rover";
+
+    // add value to object cookie
+    var obj2 = { num: 3 };
+    dojo.io.cookie.setObjectCookie("values", obj2, 15);
+    ck = dojo.io.cookie.getObjectCookie("values");
+    dojo.debug(ck.num + ck.bar); // 3 + 8 = 11
+
+    // replace an object cookie
+    var obj3 = { a: "hey", b: "you" }
+    dojo.io.cookie.setObjectCookie("values", obj3, 15, null, null, null, true);
+    ck = dojo.io.cookie.getObjectCookie("values");
+    dojo.debug(ck.foo); // undefined
+    dojo.debug(ck.a, ck.b); // "hey you"
+
+
+API Reference
+===============================================================================
+
+.. contents:: Table of Contents
+   :depth: 2
+  
+Methods
+---------------------------------------
+
+``setCookie(name, value, days, path, domain, secure)``:
+
+``set(name, value, days, path, domain, secure)``:
+
+    Sets a cookie.
+
+    ``name``:
+        Name of the cookie. This will be used when you want to retrieve your
+        cookie later.
+
+    ``value``:
+        Value of the cookie. This will be the ``toString()`` of your passed
+        ``value``.
+
+    ``days``:
+        Number of days to set the cookie for. Set to ``-1`` to create a session
+        cookie.
+
+    ``path``:
+        Optional. Path of the cookie.
+
+    ``domain``:
+        Optional. Domain of the cookie.
+
+    ``secure``:
+        Optional. If true, denote the cookie as secure.
+
+    *return*:
+        null
+
+``getCookie(name)``:
+
+``get(name)``:
+
+    Get a stored cookie's value.
+
+    ``name``:
+        Name of the cookie to retrieve.
+
+    *return*:
+        Value of the ``name``d cookie. If no cookie matches ``name``, returns
+        null.
+
+``setObjectCookie(name, obj, days, path, domain, secure, clearCurrent)``:
+
+``setObjectCookie(name, obj, days, path, clearCurrent)``:
+
+    Set a cookie with object/value pairs as the value instead of simple data
+    type.
+
+    ``name``:
+        Name of the cookie. This will be used when you want to retrieve your
+        cookie later.
+
+    ``obj``:
+        Object to store.
+
+    ``days``:
+        Number of days to set the cookie for. Set to ``-1`` to create a session
+        cookie.
+
+    ``path``:
+        Optional. Path of the cookie.
+
+    ``domain``:
+        Optional. Domain of the cookie.
+
+    ``secure``:
+        Optional. If true, denote the cookie as secure.
+
+    ``clearCurrent``:
+        Optional. If true, ignores the current object cookie stored in ``name``.
+        Otherwise, checks for cookie ``name`` to add/remove values to cookie.
+
+    *return*:
+        null
+
+``getObjectCookie(name)``:
+
+    Retrieves an object cookie's object.
+
+    ``name``:
+        Name of the cookie to retrieve.
+
+    *return*:
+        Object stored in cookie ``name``. If no cookie matches ``name``, returns
+        null.
+
+``isSupported()``:
+
+    Checks to see if the browser supports and allows cookies.
+
+    *return*:
+        True if supported and allowed, false otherwise.
+
+Provides
+===============================================================================
+
+dojo.io.cookie
+    Cookie methods for Dojo
+
+About
+===============================================================================
+
+:Author: David Schontzler
+:Version: 0.1
+:Copyright: Dojo Foundation, 2006
+:Date: 2006/01/09
+
+.. vim:ts=4:et:tw=80:shiftwidth=4:
