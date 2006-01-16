@@ -7,7 +7,7 @@
 	var djConfig = { isDebug: true };
 </script>
 
-<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../../dojo.js"></script>
 <script type="text/javascript">
 	delete dojo["profile"]; // hack!
 	dojo.require("dojo.profile");
@@ -37,13 +37,13 @@
 
 <!-- button from class name -->
 <button class="dojo-button">
-	<img src="images/reply.gif"> Reply
+	<img src="../images/reply.gif"> Reply
 </button>
 
 
 <button id="testDojoButton" class="dojo-button"
 	onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
-	<img src="images/forward.gif"> Forward
+	<img src="../images/forward.gif"> Forward
 </button>
 
 <dojo:button dojo:label="from namespace prefix"></dojo:button>
