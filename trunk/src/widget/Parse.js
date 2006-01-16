@@ -51,16 +51,17 @@ dojo.widget.Parse = function(fragment) {
 							built = true;
 							// var tic = new Date();
 							fragment[item].tagName = ltn;
-							returnValue.push(djTags[ltn](fragment[item], this, parentComp, fragment[item]["index"]));
+							var ret = djTags[ltn](fragment[item], this, parentComp, fragment[item]["index"])
+							returnValue.push(ret);
 						}else{
-							if(ltn.substr(0, 5)=="dojo:"){
+							if((dojo.lang.isString(ltn))&&(ltn.substr(0, 5)=="dojo:")){
 								dojo.debug("no tag handler registed for type: ", ltn);
 							}
 						}
 					}
 				}
 			}catch(e){
-				dojo.debug(e);
+				dojo.debug("fragment creation error:", e);
 				// throw(e);
 				// IE is such a bitch sometimes
 			}
@@ -124,7 +125,7 @@ dojo.widget.Parse = function(fragment) {
 						for(var property in nestedProperties){
 							properties[property] = nestedProperties[property];
 						}
-					}catch(e){ dj_debug(e); }
+					}catch(e){ dojo.debug(e); }
 				}
 			}
 		}
