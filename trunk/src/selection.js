@@ -103,6 +103,14 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	/**
+	 * allows you to filter item in or out of the selection
+	 * depending on the current selection and action to be taken
+	**/
+	selectFilter: function(item, selection, add, grow) {
+		return true;
+	},
+
+	/**
 	 * update -- manages selections, all selecting/deselecting should be done here
 	 *  add => behaves like ctrl in windows selection world
 	 *  grow => behaves like shift
@@ -111,12 +119,14 @@ dojo.lang.extend(dojo.selection.Selection, {
 		if(!this.isItem(item)) { return false; }
 
 		if(grow) {
-			if(!this.isSelected(item)) {
+			if(!this.isSelected(item)
+				&& this.selectFilter(item, this.selection, false, true)) {
 				this.grow(item);
 				this.lastSelected = item;
 			}
 		} else if(add) {
-			if(this.toggleSelected(item)) {
+			if(this.selectFilter(item, this.selection, true, false)
+				&& this.toggleSelected(item)) {
 				this.lastSelected = item;
 			}
 		} else {
@@ -139,7 +149,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 		var fromIdx = this.find(fromItem);
 
 		// get items to deselect (fromItem, lastSelected]
-		var toDeselect = [];
+		var toDeselect = {};
 		var lastIdx = -1;
 		if(this.lastSelected) {
 			lastIdx = this.find(this.lastSelected);
@@ -158,7 +168,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 		if(range.length) {
 			for(var i = range.length-1; i >= 0; i--) {
 				var item = this.items[range[i]];
-				if(this.growFilter(item, this.selection)) {
+				if(this.selectFilter(item, this.selection, false, true)) {
 					if(this.select(item, true) || shrink) {
 						this.lastSelected = item;
 					}
@@ -178,41 +188,39 @@ dojo.lang.extend(dojo.selection.Selection, {
 			}
 			this.deselect(this.items[i]);
 		}
-	},
 
-	// this will be called when trying to figure out if you can
-	// grow the selection to growItem
-	growFilter: function(growItem, selection) {
-		return true;
+		// selecting one thing may deselect another (depends on user onSelect fcn)
+		// so make sure that we can pivot from somewhere
+		if(!this.pivotItem) {
+			this.addPivot(this.lastSelected);
+		}
 	},
 
 	growUp: function() {
 		var idx = this.find(this.lastSelected) - 1;
 		while(idx >= 0) {
-			if(this.growFilter(this.items[idx], this.selection)) {
+			if(this.selectFilter(this.items[idx], this.selection, false, true)) {
 				this.grow(this.items[idx]);
-				return;
+				break;
 			}
 			idx--;
 		}
-		//this.grow(this.items[this.find(this.lastSelected)-1]);
 	},
 
 	growDown: function() {
 		var idx = this.find(this.lastSelected);
-		// FIXME: do we need to select(this.items[0]) in this case?
 		if(idx < 0 && this.allowImplicit) {
+			this.select(this.items[0]);
 			idx = 0;
 		}
 		idx++;
 		while(idx > 0 && idx < this.items.length) {
-			if(this.growFilter(this.items[idx], this.selection)) {
+			if(this.selectFilter(this.items[idx], this.selection, false, true)) {
 				this.grow(this.items[idx]);
-				return;
+				break;
 			}
 			idx++;
 		}
-		//this.grow(this.items[this.find(last)+1]);
 	},
 
 	add: function(item) {
@@ -235,8 +243,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			this.onSelect(item);
 			this.onSelectChange(item, true);
 			if(!noPivot) {
-				this.pivotItems.push(item);
-				this.pivotItem = item;
+				this.addPivot(item);
 			}
 			return true;
 		}
@@ -250,11 +257,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			this.onDeselect(item);
 			this.onSelectChange(item, false);
 
-			idx = dojo.lang.find(item, this.pivotItems);
-			if(idx > -1) {
-				this.pivotItems.splice(idx, 1);
-				this.pivotItem = this.pivotItems[this.pivotItems.length-1];
-			}
+			this.removePivot(item);
 
 			return true;
 		}
@@ -306,6 +309,23 @@ dojo.lang.extend(dojo.selection.Selection, {
 		return this.select(this.items[this.items.length-1]);
 	},
 
+	addPivot: function(item, andClear) {
+		this.pivotItem = item;
+		if(andClear) {
+			this.pivotItems = [item];
+		} else {
+			this.pivotItems.push(item);
+		}
+	},
+
+	removePivot: function(item) {
+		var i = dojo.lang.find(item, this.pivotItems);
+		if(i > -1) {
+			this.pivotItems.splice(i, 1);
+			this.pivotItem = this.pivotItems[this.pivotItems.length-1];
+		}
+	},
+
 	sorted: function() {
 		return dojo.lang.toArray(this.selection).sort(
 			dojo.lang.hitch(this, function(a, b) {
@@ -327,11 +347,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			if(this.find(this.selection[i]) < 0) {
 				var removed = this.selection.splice(i, 1);
 
-				var idx = dojo.lang.find(removed[0], this.pivotItems);
-				if(idx > -1) {
-					this.pivotItems.splice(idx, 1);
-					this.pivotItem = this.pivotItems[this.pivotItems.length-1];
-				}
+				this.removePivot(removed[0]);
 			}
 		}
 	},
