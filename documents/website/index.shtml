@@ -152,12 +152,11 @@
 	<div id="splash">
 		<h1>Introducing Dojo</h1>
 		<p>
-			Dojo 0.2.1 delivers professional JavaScript tools for dynamic
-			applications in one easy-to-use package. Engineered and tested for
-			the real world, Dojo lets you build great user experiences with
-			confidence.
+			Dojo 0.2.2 delivers all the professional JavaScript tools you'll
+			need in one easy-to-use package. Engineered and tested for the real
+			world, Dojo lets you build great user experiences with confidence.
 		</p>
-		<a href="http://download.dojotoolkit.org/release-0.2.1/dojo-0.2.1-ajax.zip" id="btn-top">Download AJAX edition</a>
+		<a href="http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-ajax.zip" id="btn-top">Download AJAX edition</a>
 		<a href="/download" id="btn-bottom">Download other dojo profiles</a>
 	</div>
 
