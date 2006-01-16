@@ -67,13 +67,13 @@ dojo.require("dojo.html");
 dojo.require("dojo.fx.*");
 
 var fadeElem, flash, unflash, wiper;
-onload = function() {
+dojo.addOnLoad(function() {
 	dojo.fx.html.colorFadeIn("flash", 1500, [230, 230, 180], 1500);
 
 	dojo.fx.html.colorFadeOut("unflash", 1500, [255, 200, 180], 1500);
 
 	dojo.fx.html.wipeIn("wiper", 1000);
-}
+});
 
 function testExplode(start) {
 	var end = document.getElementById("explode");
@@ -87,11 +87,11 @@ function testImplode(start) {
 
 function wowi(node) {
 	var h = node.offsetHeight;
-	dojo.fx.wipeOut(node, 400, function(n) {
+	dojo.fx.wipeOut(node, null, function(n) {
 		n.innerHTML = "I have been replaced "
 			+ "with something completely different "
 			+ "in the middle of the wipe effects.";
-		dojo.fx.wipeIn(n, 400);
+		dojo.fx.wipeIn(n);
 	});
 }
 </script>
