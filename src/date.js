@@ -314,7 +314,7 @@ dojo.date.toString = function(date, format){
 	
 	if (format.indexOf("#h") > -1) {
 		var hours = date.getHours();
-		hours = hours > 12 ? hours - 12 : hours;
+		hours = (hours > 12 ? hours - 12 : (hours == 0) ? 12 : hours);
 		format = format.replace(/#hh/g, (hours.toString().length==1?"0":"")+hours);
 		format = format.replace(/#h/g, hours);
 	}
@@ -335,13 +335,13 @@ dojo.date.toString = function(date, format){
 	}
 	
 	if (format.indexOf("#T") > -1) {
-		format = format.replace(/#TT/g, date.getHours() > 12 ? "PM" : "AM");
-		format = format.replace(/#T/g, date.getHours() > 12 ? "P" : "A");
+		format = format.replace(/#TT/g, date.getHours() >= 12 ? "PM" : "AM");
+		format = format.replace(/#T/g, date.getHours() >= 12 ? "P" : "A");
 	}
 
 	if (format.indexOf("#t") > -1) {
-		format = format.replace(/#tt/g, date.getHours() > 12 ? "pm" : "am");
-		format = format.replace(/#t/g, date.getHours() > 12 ? "p" : "a");
+		format = format.replace(/#tt/g, date.getHours() >= 12 ? "pm" : "am");
+		format = format.replace(/#t/g, date.getHours() >= 12 ? "p" : "a");
 	}
 					
 	return format;
