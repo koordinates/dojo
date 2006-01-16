@@ -83,9 +83,14 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	// make a widget container to hold all the contents of the floating pane (other than the
 	// title and the resize bar at the bottom)
 	_makeClientPane: function(clientDiv){
-		var args = {layoutAlign: "client", id:this.widgetId+"_client",
-			href: this.href, cacheContent: this.cacheContent, extractContent: this.extractContent,
-			parseContent: this.parseContent};
+		var args = {
+			layoutAlign: "client", 
+			id:this.widgetId+"_client",
+			href: this.href, 
+			cacheContent: this.cacheContent, 
+			extractContent: this.extractContent,
+			parseContent: this.parseContent
+		};
 		var pane = this._createPane(this.contentWrapper=="layout"?"LayoutPane":"ContentPane", clientDiv, args);
 		return pane;
 	},
@@ -99,6 +104,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.html.addClass(this.domNode, "dojoFloatingPane");
 		this.domNode.style.position="absolute";
 		this.domNode.id = source.id;
+		if(dojo.render.html.safari){
+			dojo.html.body().appendChild(this.domNode);
+		}
 
 		// make client pane wrapper to hold the contents of this floating pane
 		if(this.contentWrapper!="none"){
@@ -229,6 +237,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.setInitialWindowState();
 		} else {
 			dojo.addOnLoad(this, "setInitialWindowState");
+		}
+		if(dojo.render.html.safari){
+			dojo.html.body().removeChild(this.domNode);
 		}
 
 		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
