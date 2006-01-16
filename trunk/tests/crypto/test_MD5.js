@@ -10,9 +10,9 @@ function test_MD5_compute(){
 	var result = dojo.crypto.MD5.compute(message);
 	jum.assertEquals("MD5:toBase64", base64, result);
 	
-	var result = dojo.crypto.MD5.compute(message, dojo.crypto.MD5.outputTypes.Hex);
+	var result = dojo.crypto.MD5.compute(message, dojo.crypto.outputTypes.Hex);
 	jum.assertEquals("MD5:toHex", hex, result);
 	
-	var result = dojo.crypto.MD5.compute(message, dojo.crypto.MD5.outputTypes.String);
+	var result = dojo.crypto.MD5.compute(message, dojo.crypto.outputTypes.String);
 	jum.assertEquals("MD5:toString", s, result);
 }
