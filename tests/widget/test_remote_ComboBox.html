@@ -11,6 +11,13 @@
 	dojo.require("dojo.widget.html.ComboBox");
 </script>
 
+<p>
+Clicking any letter in the box below will display a select-list generated from user specified java code.
+Note that the same select-list is always displayed.
+This isn't a dojo bug; it's just because remoteComboBoxData.js (our dummy test code)
+isn't filtering based on the search string like it should.
+</p>
+
 <input dojoType="combobox" value="this should be replaced!"
 			dataUrl="remoteComboBoxData.js?search=%{searchString}" mode="remote">
 
