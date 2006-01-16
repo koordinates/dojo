@@ -19,8 +19,12 @@ dojo.html.clearSelection = function(){
 			}else{
 				window.getSelection().removeAllRanges();
 			}
-		}else if((document.selection)&&(document.selection.clear)){
-			document.selection.clear();
+		}else if(document.selection){
+			if(document.selection.empty){
+				document.selection.empty();
+			}else if(document.selection.clear){
+				document.selection.clear();
+			}
 		}
 		return true;
 	}catch(e){
