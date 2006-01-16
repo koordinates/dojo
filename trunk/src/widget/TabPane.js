@@ -92,6 +92,7 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		}
 		this.selectedTabWidget = tab;
 		this._showTab(tab);
+		dojo.widget.html.TabPane.superclass.onResized.call(this);
 	},
 	
 	_showTab: function(tab) {
@@ -118,8 +119,9 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		// Display the selected tab
 		if(this.selectedTabWidget){
 			this.selectTab(this.selectedTabWidget);
+		} else {
+			dojo.widget.html.TabPane.superclass.onResized.call(this);
 		}
-		dojo.widget.html.TabPane.superclass.onResized.call(this);
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:TabPane");
