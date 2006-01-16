@@ -2,28 +2,38 @@ dojo.provide("dojo.selection");
 dojo.require("dojo.lang");
 dojo.require("dojo.math");
 
-dojo.selection.Selection = function() {
+dojo.selection.Selection = function(items, isCollection) {
+	this.items = [];
+	this.selection = [];
+	this._pivotItems = [];
 	this.clearItems();
+
+	if(items) {
+		if(isCollection) {
+			this.setItemsCollection(items);
+		} else {
+			this.setItems(items);
+		}
+	}
 }
 dojo.lang.extend(dojo.selection.Selection, {
 	items: null, // items to select from, order matters
 
-	selection: null, // items selected, order doesn't matter
+	selection: null, // items selected, aren't stored in order (see sorted())
 	lastSelected: null, // last item selected
 
-	pivotItems: null, // stack of pivot items
-	pivotItem: null, // item we grow selections from, top of stack
-
 	allowImplicit: true, // if true, grow selection will start from 0th item when nothing is selected
+	length: 0, // number of *selected* items
 
-	length: 0,
+	_pivotItems: null, // stack of pivot items
+	_pivotItem: null, // item we grow selections from, top of stack
 
 	// event handlers
 	onSelect: function(item) {},
 	onDeselect: function(item) {},
 	onSelectChange: function(item, selected) {},
 
-	find: function(item, inSelection) {
+	_find: function(item, inSelection) {
 		if(inSelection) {
 			return dojo.lang.find(item, this.selection);
 		} else {
@@ -64,7 +74,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			item = this.items[item];
 		}
 		if(!item) { throw new Error("addItemsAt: item doesn't exist"); }
-		var idx = this.find(item);
+		var idx = this._find(item);
 		if(idx > 0 && before) { idx--; }
 		for(var i = 2; i < arguments.length; i++) {
 			if(!this.isItem(arguments[i])) {
@@ -75,7 +85,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 
 	removeItem: function(item) {
 		// remove item
-		var idx = this.find(item);
+		var idx = this._find(item);
 		if(idx > -1) {
 			this.items.splice(i, 1);
 		}
@@ -83,7 +93,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 		// FIXME: do we call deselect? I don't think so because this isn't how
 		// you usually want to deselect an item. For example, if you deleted an
 		// item, you don't really want to deselect it -- you want it gone. -DS
-		id = this.find(item, true);
+		id = this._find(item, true);
 		if(idx > -1) {
 			this.selection.splice(i, 1);
 		}
@@ -91,15 +101,15 @@ dojo.lang.extend(dojo.selection.Selection, {
 
 	clearItems: function() {
 		this.items = [];
-		this.clear();
+		this.deselectAll();
 	},
 
 	isItem: function(item) {
-		return this.find(item) > -1;
+		return this._find(item) > -1;
 	},
 
 	isSelected: function(item) {
-		return this.find(item, true) > -1;
+		return this._find(item, true) > -1;
 	},
 
 	/**
@@ -111,11 +121,13 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	/**
-	 * update -- manages selections, all selecting/deselecting should be done here
+	 * update -- manages selections, most selecting should be done here
+	 *  item => item which may be added/grown to/only selected/deselected
 	 *  add => behaves like ctrl in windows selection world
 	 *  grow => behaves like shift
+	 *  noToggle => if true, don't toggle selection on item
 	**/
-	update: function(item, add, grow) {
+	update: function(item, add, grow, noToggle) {
 		if(!this.isItem(item)) { return false; }
 
 		if(grow) {
@@ -125,34 +137,47 @@ dojo.lang.extend(dojo.selection.Selection, {
 				this.lastSelected = item;
 			}
 		} else if(add) {
-			if(this.selectFilter(item, this.selection, true, false)
-				&& this.toggleSelected(item)) {
-				this.lastSelected = item;
+			if(this.selectFilter(item, this.selection, true, false)) {
+				if(noToggle) {
+					if(this.select(item)) {
+						this.lastSelected = item;
+					}
+				} else if(this.toggleSelected(item)) {
+					this.lastSelected = item;
+				}
 			}
 		} else {
-			this.clear();
+			this.deselectAll();
 			this.select(item);
 		}
 
 		this.length = this.selection.length;
 	},
 
+	/**
+	 * Grow a selection.
+	 *  toItem => which item to grow selection to
+	 *  fromItem => which item to start the growth from (it won't be selected)
+	 *
+	 * Any items in (fromItem, lastSelected] that aren't part of
+	 * (fromItem, toItem] will be deselected
+	**/
 	grow: function(toItem, fromItem) {
 		if(arguments.length == 1) {
-			fromItem = this.pivotItem;
+			fromItem = this._pivotItem;
 			if(!fromItem && this.allowImplicit) {
 				fromItem = this.items[0];
 			}
 		}
 		if(!toItem || !fromItem) { return false; }
 
-		var fromIdx = this.find(fromItem);
+		var fromIdx = this._find(fromItem);
 
 		// get items to deselect (fromItem, lastSelected]
 		var toDeselect = {};
 		var lastIdx = -1;
 		if(this.lastSelected) {
-			lastIdx = this.find(this.lastSelected);
+			lastIdx = this._find(this.lastSelected);
 			var step = fromIdx < lastIdx ? -1 : 1;
 			var range = dojo.math.range(lastIdx, fromIdx, step);
 			for(var i = 0; i < range.length; i++) {
@@ -161,7 +186,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 		}
 
 		// add selection (fromItem, toItem]
-		var toIdx = this.find(toItem);
+		var toIdx = this._find(toItem);
 		var step = fromIdx < toIdx ? -1 : 1;
 		var shrink = lastIdx >= 0 && step == 1 ? lastIdx < toIdx : lastIdx > toIdx;
 		var range = dojo.math.range(toIdx, fromIdx, step);
@@ -189,15 +214,15 @@ dojo.lang.extend(dojo.selection.Selection, {
 			this.deselect(this.items[i]);
 		}
 
-		// selecting one thing may deselect another (depends on user onSelect fcn)
-		// so make sure that we can pivot from somewhere
-		if(!this.pivotItem) {
-			this.addPivot(this.lastSelected);
-		}
+		// make sure everything is all kosher after selections+deselections
+		this._updatePivot();
 	},
 
+	/**
+	 * Grow selection upwards one item from lastSelected
+	**/
 	growUp: function() {
-		var idx = this.find(this.lastSelected) - 1;
+		var idx = this._find(this.lastSelected) - 1;
 		while(idx >= 0) {
 			if(this.selectFilter(this.items[idx], this.selection, false, true)) {
 				this.grow(this.items[idx]);
@@ -207,8 +232,11 @@ dojo.lang.extend(dojo.selection.Selection, {
 		}
 	},
 
+	/**
+	 * Grow selection downwards one item from lastSelected
+	**/
 	growDown: function() {
-		var idx = this.find(this.lastSelected);
+		var idx = this._find(this.lastSelected);
 		if(idx < 0 && this.allowImplicit) {
 			this.select(this.items[0]);
 			idx = 0;
@@ -221,10 +249,6 @@ dojo.lang.extend(dojo.selection.Selection, {
 			}
 			idx++;
 		}
-	},
-
-	add: function(item) {
-		return this.select(item);
 	},
 
 	toggleSelected: function(item, noPivot) {
@@ -243,7 +267,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			this.onSelect(item);
 			this.onSelectChange(item, true);
 			if(!noPivot) {
-				this.addPivot(item);
+				this._addPivot(item);
 			}
 			return true;
 		}
@@ -251,13 +275,16 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	deselect: function(item) {
-		var idx = this.find(item, true);
+		var idx = this._find(item, true);
 		if(idx > -1) {
 			this.selection.splice(idx, 1);
 			this.onDeselect(item);
 			this.onSelectChange(item, false);
+			if(item == this.lastSelected) {
+				this.lastSelected = null;
+			}
 
-			this.removePivot(item);
+			this._removePivot(item);
 
 			return true;
 		}
@@ -271,13 +298,13 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	deselectAll: function() {
-		while(this.selection.length) {
+		while(this.selection && this.selection.length) {
 			this.deselect(this.selection[0]);
 		}
 	},
 
 	selectNext: function() {
-		var idx = this.find(this.lastSelected);
+		var idx = this._find(this.lastSelected);
 		while(idx > -1 && ++idx < this.items.length) {
 			if(this.isSelectable(this.items[idx])) {
 				this.deselectAll();
@@ -290,7 +317,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 
 	selectPrevious: function() {
 		//debugger;
-		var idx = this.find(this.lastSelected);
+		var idx = this._find(this.lastSelected);
 		while(idx-- > 0) {
 			if(this.isSelectable(this.items[idx])) {
 				this.deselectAll();
@@ -309,27 +336,39 @@ dojo.lang.extend(dojo.selection.Selection, {
 		return this.select(this.items[this.items.length-1]);
 	},
 
-	addPivot: function(item, andClear) {
-		this.pivotItem = item;
+	_addPivot: function(item, andClear) {
+		this._pivotItem = item;
 		if(andClear) {
-			this.pivotItems = [item];
+			this._pivotItems = [item];
 		} else {
-			this.pivotItems.push(item);
+			this._pivotItems.push(item);
 		}
 	},
 
-	removePivot: function(item) {
-		var i = dojo.lang.find(item, this.pivotItems);
+	_removePivot: function(item) {
+		var i = dojo.lang.find(item, this._pivotItems);
 		if(i > -1) {
-			this.pivotItems.splice(i, 1);
-			this.pivotItem = this.pivotItems[this.pivotItems.length-1];
+			this._pivotItems.splice(i, 1);
+			this._pivotItem = this._pivotItems[this._pivotItems.length-1];
+		}
+
+		this._updatePivot();
+	},
+
+	_updatePivot: function() {
+		if(this._pivotItems.length == 0) {
+			if(this.lastSelected) {
+				this._addPivot(this.lastSelected);
+			}
+		} else {
+			this._pivotItem = null;
 		}
 	},
 
 	sorted: function() {
 		return dojo.lang.toArray(this.selection).sort(
 			dojo.lang.hitch(this, function(a, b) {
-				var A = this.find(a), B = this.find(b);
+				var A = this._find(a), B = this._find(b);
 				if(A > B) {
 					return 1;
 				} else if(A < B) {
@@ -344,25 +383,11 @@ dojo.lang.extend(dojo.selection.Selection, {
 	// remove any items from the selection that are no longer in this.items
 	updateSelected: function() {
 		for(var i = 0; i < this.selection.length; i++) {
-			if(this.find(this.selection[i]) < 0) {
+			if(this._find(this.selection[i]) < 0) {
 				var removed = this.selection.splice(i, 1);
 
-				this.removePivot(removed[0]);
+				this._removePivot(removed[0]);
 			}
 		}
-	},
-
-	clear: function() {
-		if(this.selection) {
-			for(var i = 0; i < this.selection.length; i++) {
-				this.onDeselect(this.selection[i]);
-				this.onSelectChange(this.selection[i], false);
-			}
-		}
-
-		this.selection = [];
-		this.pivotItems = [];
-		this.lastSelected = null;
-		this.pivotItem = null;
 	}
 });
