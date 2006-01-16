@@ -185,6 +185,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		switch((this.effect||"").toLowerCase()){
 			case "fade":
 				this.domNode.style.display = "block";
+				var _this = this;
 				if(this.anim){ this.anim.stop(); }
 				// FIXME: we should be supporting other effect types here!
 				this.anim = dojo.fx.fade(this.domNode, 
