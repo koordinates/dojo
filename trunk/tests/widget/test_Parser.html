@@ -17,7 +17,6 @@
 			dojo.require("dojo.xml.Parse");
 			dojo.require("dojo.widget.Parse");
 			dojo.require("dojo.widget.Button");
-			dojo.require("dojo.widget.Button");
 			dojo.require("dojo.widget.MenuItem");
 			dojo.require("dojo.widget.Menu");
 			dojo.require("dojo.widget.ContextMenu");
@@ -34,7 +33,7 @@
 			function testHandler() {
 				var testObj = new dojo.xml.Parse();
 				var testObjects = testObj.parseElement(document.getElementById("test"));
-				var testParse = dojo.webui.widgets.getParser();
+				var testParse = dojo.widget.getParser();
 				testParse.createComponents(testObjects);
 			} //-->
 		</script>
