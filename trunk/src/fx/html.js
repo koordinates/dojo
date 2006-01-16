@@ -7,7 +7,7 @@ dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
-dojo.fx.duration = 500;
+dojo.fx.duration = 300;
 
 dojo.fx.html._makeFadeable = function(node){
 	if(dojo.render.html.ie){
@@ -225,16 +225,15 @@ dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback
 	return anim;
 };
 
-dojo.fx.html.wipeShow = function(node, duration, callback, dontPlay) {
+dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
 	var overflow = dojo.html.getStyle(node, "overflow");
-	node.style.overflow = "hidden";
+	if(overflow == "visible") {
+		node.style.overflow = "hidden";
+	}
 	node.style.height = 0;
 	dojo.html.show(node);
-	var anim = new dojo.animation.Animation([[0], [node.scrollHeight]], duration||dojo.fx.duration, 0);
-	dojo.event.connect(anim, "onAnimate", function(e) {
-		node.style.height = e.x + "px";
-	});
+	var anim = dojo.fx.html.wipe(node, duration, 0, node.scrollHeight, null, true);
 	dojo.event.connect(anim, "onEnd", function() {
 		node.style.overflow = overflow;
 		node.style.height = "auto";
@@ -244,17 +243,29 @@ dojo.fx.html.wipeShow = function(node, duration, callback, dontPlay) {
 	return anim;
 }
 
-dojo.fx.html.wipeHide = function(node, duration, callback, dontPlay) {
+dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
 	var overflow = dojo.html.getStyle(node, "overflow");
-	node.style.overflow = "hidden";
-	var anim = new dojo.animation.Animation([[node.offsetHeight], [0]], duration||dojo.fx.duration, 0);
+	if(overflow == "visible") {
+		node.style.overflow = "hidden";
+	}
+	var anim = dojo.fx.html.wipe(node, duration, node.offsetHeight, 0, null, true);
+	dojo.event.connect(anim, "onEnd", function() {
+		dojo.html.hide(node);
+		node.style.overflow = overflow;
+		if(callback) { callback(node, anim); }
+	});
+	if(!dontPlay) { anim.play(); }
+	return anim;
+}
+
+dojo.fx.html.wipe = function(node, duration, startHeight, endHeight, callback, dontPlay) {
+	node = dojo.byId(node);
+	var anim = new dojo.animation.Animation([[startHeight], [endHeight]], duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
 		node.style.height = e.x + "px";
 	});
 	dojo.event.connect(anim, "onEnd", function() {
-		node.style.overflow = overflow;
-		dojo.html.hide(node);
 		if(callback) { callback(node, anim); }
 	});
 	if(!dontPlay) { anim.play(); }
@@ -282,68 +293,6 @@ dojo.lang.extend(dojo.fx.html.wiper, {
 		this._anim = null;
 	}
 });
-
-dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
-	node = dojo.byId(node);
-	var savedHeight = dojo.html.getStyle(node, "height");
-	dojo.html.show(node);
-	var height = node.offsetHeight;
-	var anim = dojo.fx.html.wipeInToHeight(node, duration, height, function(e) {
-		node.style.height = savedHeight || "auto";
-		if(callback) { callback(node, anim); }
-	}, dontPlay);
-};
-
-dojo.fx.html.wipeInToHeight = function(node, duration, height, callback, dontPlay) {
-	node = dojo.byId(node);
-	var savedOverflow = dojo.html.getStyle(node, "overflow");
-	// FIXME: should we be setting display to something other than "" for the table elements?
-	node.style.height = "0px";
-	node.style.display = "none";
-	if(savedOverflow == "visible") {
-		node.style.overflow = "hidden";
-	}
-	var dispType = dojo.lang.inArray(node.tagName.toLowerCase(), ['tr', 'td', 'th']) ? "" : "block";
-	node.style.display = dispType;
-
-	var anim = new dojo.animation.Animation(
-		new dojo.math.curves.Line([0], [height]),
-		duration||dojo.fx.duration, 0);
-	dojo.event.connect(anim, "onAnimate", function(e) {
-		node.style.height = Math.round(e.x) + "px";
-	});
-	dojo.event.connect(anim, "onEnd", function(e) {
-		if(savedOverflow != "visible") {
-			node.style.overflow = savedOverflow;
-		}
-		if(callback) { callback(node, anim); }
-	});
-	if( !dontPlay ) { anim.play(true); }
-	return anim;
-}
-
-dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
-	node = dojo.byId(node);
-	var savedOverflow = dojo.html.getStyle(node, "overflow");
-	var savedHeight = dojo.html.getStyle(node, "height");
-	var height = node.offsetHeight;
-	node.style.overflow = "hidden";
-
-	var anim = new dojo.animation.Animation(
-		new dojo.math.curves.Line([height], [0]),
-		duration||dojo.fx.duration, 0);
-	dojo.event.connect(anim, "onAnimate", function(e) {
-		node.style.height = Math.round(e.x) + "px";
-	});
-	dojo.event.connect(anim, "onEnd", function(e) {
-		node.style.display = "none";
-		node.style.overflow = savedOverflow;
-		node.style.height = savedHeight || "auto";
-		if(callback) { callback(node, anim); }
-	});
-	if( !dontPlay ) { anim.play(true); }
-	return anim;
-};
 
 dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 	var startCoords = dojo.html.toCoordinateArray(start);
