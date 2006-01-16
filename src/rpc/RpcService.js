@@ -37,12 +37,13 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 
 
 	generateMethod: function(method, parameters){
+		var _this = this;
 		return function(){
 			var deferredRequestHandler = new dojo.rpc.Deferred();
 
 			// if params weren't specified, then we can assume it's varargs
 			if(
-				(!this.strictArgChecks)||
+				(!_this.strictArgChecks)||
 				(
 					(parameters != null)&&
 					(arguments.length != parameters.length)
@@ -51,7 +52,7 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 				dojo.raise("Invalid number of parameters for remote method.");
 				// put error stuff here, no enough params
 			} else {
-				this.bind(method, arguments, deferredRequestHandler);
+				_this.bind(method, arguments, deferredRequestHandler);
 			}
 
 			return deferredRequestHandler;
@@ -70,7 +71,7 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 			}
 		}
 
-		this.serviceUrl = object.serviceUrl;
+		this.serviceUrl = object.serviceUrl||object.serviceURL;
 		dojo.debug("RpcService: Dojo RpcService is ready for use.");
 	},
 
