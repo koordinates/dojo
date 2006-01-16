@@ -127,14 +127,20 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
 			width = dojo.html.getViewportWidth();
 			height = dojo.html.getViewportHeight();
+			padLeft = 0;
+			padTop = 0;
 		} else {
-			width = dojo.style.getInnerWidth(this.constrainingContainer);
-			height = dojo.style.getInnerHeight(this.constrainingContainer);	
+			width = dojo.style.getContentWidth(this.constrainingContainer);
+			height = dojo.style.getContentHeight(this.constrainingContainer);	
+			padLeft = dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true);
+			padTop = dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true);
 		}
 
 		return {
-			maxX: width - dojo.style.getOuterWidth(this.domNode),
-			maxY: height - dojo.style.getOuterHeight(this.domNode) 
+			minX: padLeft,
+			minY: padTop,
+			maxX: padLeft+width - dojo.style.getOuterWidth(this.domNode),
+			maxY: padTop+height - dojo.style.getOuterHeight(this.domNode) 
 		}
 	},
 
@@ -155,8 +161,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		var y = this.dragOffset.top + e.clientY - this.parentPosition.top;
 
 		if (this.constrainToContainer) {
-			if (x < 0) { x = 0; }
-			if (y < 0) { y = 0; }
+			if (x < this.constraints.minX) { x = this.constraints.minX; }
+			if (y < this.constraints.minY) { y = this.constraints.minY; }
 			if (x > this.constraints.maxX) { x = this.constraints.maxX; }
 			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
 		}
