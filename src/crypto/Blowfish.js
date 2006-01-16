@@ -418,7 +418,7 @@ dojo.crypto.Blowfish = new function(){
 
 			if(isCBC){
 				vector.left=o.left;
-				vector.right=o.right;
+				vector.right=o.right;dojo.crypto.outputTypes.Hex
 			}
 
 			cipher.push((o.left>>24)&0xff); 
@@ -533,4 +533,6 @@ dojo.crypto.Blowfish = new function(){
 			pt[i]=String.fromCharCode(pt[i]);
 		return pt.join("");
 	};
+
+	this.setIV("0000000000000000", dojo.crypto.outputTypes.Hex);
 }();
