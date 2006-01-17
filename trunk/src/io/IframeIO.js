@@ -154,6 +154,14 @@ dojo.io.IframeTransport = new function(){
 		if(!_this.currentRequest){
 			_this.fireNextRequest();
 			return;
+		} else {
+			// remove all the hidden content inputs
+			var content = _this.currentRequest.content;
+			for(var key in content) {
+				var input = _this.currentRequest.formNode[key];
+				_this.currentRequest.formNode.removeChild(input);
+				_this.currentRequest.formNode[key] = null;
+			}
 		}
 		var ifr = _this.iframe;
 		var ifw = dojo.io.iframeContentWindow(ifr);
