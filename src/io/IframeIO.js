@@ -71,6 +71,7 @@ dojo.io.IframeTransport = new function(){
 		if((this.currentRequest)||(this.requestQueue.length == 0)){ return; }
 		// dojo.debug("fireNextRequest");
 		var cr = this.currentRequest = this.requestQueue.shift();
+		cr._contentToClean = [];
 		var fn = cr["formNode"];
 		var content = cr["content"] || {};
 		if(cr.sendTransport) {
@@ -93,6 +94,7 @@ dojo.io.IframeTransport = new function(){
 							tn.name = x;
 							tn.value = content[x];
 						}
+						cr._contentToClean.push(x);
 					}else{
 						fn[x].value = content[x];
 					}
@@ -156,8 +158,9 @@ dojo.io.IframeTransport = new function(){
 			return;
 		} else {
 			// remove all the hidden content inputs
-			var content = _this.currentRequest.content;
-			for(var key in content) {
+			var toClean = _this.currentRequest._contentToClean;
+			for(var i = 0; i < toClean.length; i++) {
+				var key = toClean[i];
 				var input = _this.currentRequest.formNode[key];
 				_this.currentRequest.formNode.removeChild(input);
 				_this.currentRequest.formNode[key] = null;
