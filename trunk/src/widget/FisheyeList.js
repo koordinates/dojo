@@ -233,7 +233,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	onBodyOut: function(e){
 		// clicking over an object inside of body causes this event to fire; ignore that case
-		if( dojo.html.overElement(dojo.html.body(), e) ){
+		if( dojo.html.overElement(document.body, e) ){
 			return;
 		}
 		this.setDormant(e);
@@ -580,8 +580,8 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	getCursorPos: function(e){
 		return {
-			'x': e.pageX || e.clientX + dojo.html.body().scrollLeft,
-			'y': e.pageY || e.clientY + dojo.html.body().scrollTop
+			'x': e.pageX || e.clientX + document.body.scrollLeft,
+			'y': e.pageY || e.clientY + document.body.scrollTop
 			};
 	},
 

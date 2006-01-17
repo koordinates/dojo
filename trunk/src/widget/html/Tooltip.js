@@ -33,7 +33,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		if(this.caption != "undefined"){
 			this.domNode.appendChild(document.createTextNode(this.caption));
 		}
-		dojo.html.body().appendChild(this.domNode);
+		document.body.appendChild(this.domNode);
 		this.connectNode = dojo.byId(this.connectId);
 		
 		// IE bug workaround
@@ -53,8 +53,8 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	onMouseMove: function(e) {
-		this.mouseX = e.pageX || e.clientX + dojo.html.body().scrollLeft;
-		this.mouseY = e.pageY || e.clientY + dojo.html.body().scrollTop;
+		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
+		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
 		if( !dojo.html.overElement(this.connectNode, e) ){
 			// Note: can't use onMouseOut because the "explode" effect causes
 			// spurious onMouseOut/onMouseOver events (due to interference from outline)

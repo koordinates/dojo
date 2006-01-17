@@ -34,7 +34,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = dojo.byId(element)||dojo.html.body();
+	element = dojo.byId(element)||document.body;
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -50,7 +50,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = dojo.byId(element)||dojo.html.body();
+	element = dojo.byId(element)||document.body;
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -67,8 +67,8 @@ dojo.html.enableSelection = function(element){
 
 dojo.html.selectElement = function(element){
 	element = dojo.byId(element);
-	if(document.selection && dojo.html.body().createTextRange){ // IE
-		var range = dojo.html.body().createTextRange();
+	if(document.selection && document.body.createTextRange){ // IE
+		var range = document.body.createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	}else if(window["getSelection"]){
@@ -106,11 +106,11 @@ dojo.html.getEventTarget = function(evt){
 // FIXME: should the next set of functions take an optional document to operate
 // on so as to be useful for getting this information from iframes?
 dojo.html.getScrollTop = function(){
-	return document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
+	return document.documentElement.scrollTop || document.body.scrollTop || 0;
 }
 
 dojo.html.getScrollLeft = function(){
-	return document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
+	return document.documentElement.scrollLeft || document.body.scrollLeft || 0;
 }
 
 dojo.html.getDocumentWidth = function(){
@@ -459,8 +459,8 @@ dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
  */
 dojo.html.gravity = function(node, e){
 	node = dojo.byId(node);
-	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
-	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
+	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+	var mousey = e.pageY || e.clientY + document.body.scrollTop;
 	
 	with (dojo.html) {
 		var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
@@ -480,8 +480,8 @@ dojo.html.gravity.WEST = 1 << 3;
 	
 dojo.html.overElement = function(element, e){
 	element = dojo.byId(element);
-	var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
-	var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
+	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+	var mousey = e.pageY || e.clientY + document.body.scrollTop;
 	
 	with(dojo.html){
 		var top = getAbsoluteY(element);
@@ -599,6 +599,7 @@ dojo.html.getPreferredStyleSheet = function(){
 }
 
 dojo.html.body = function(){
+	dojo.deprecated("dojo.html.body", "use document.body instead");
 	return document.body || document.getElementsByTagName("body")[0];
 }
 
@@ -903,7 +904,7 @@ dojo.html.BackgroundIframe = function() {
 		s.zIndex = 2;
 		s.display = "none";
 		dojo.style.setOpacity(this.iframe, 0.0);
-		dojo.html.body().appendChild(this.iframe);
+		document.body.appendChild(this.iframe);
 	} else {
 		this.enabled = false;
 	}

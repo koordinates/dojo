@@ -78,7 +78,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			zIndex = 999;
 			display = "none";
 		}
-		var b = dojo.html.body();
+		var b = document.body;
 		b.appendChild(this.domNode);
 		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
 		if(this.nodeRef) {
@@ -134,7 +134,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 	sizeBackground: function() {
 		if(this.bgOpacity > 0) {
-			var h = document.documentElement.scrollHeight || dojo.html.body().scrollHeight;
+			var h = document.documentElement.scrollHeight || document.body.scrollHeight;
 			var w = dojo.html.getViewportWidth();
 			this.bg.style.width = w + "px";
 			this.bg.style.height = h + "px";

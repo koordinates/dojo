@@ -308,7 +308,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 		dojo.event.kwConnect({
 			once: true,
-			srcObj: dojo.html.body(),
+			srcObj: document.body,
 			srcFunc: "onclick", 
 			adviceObj: this, 
 			adviceFunc: "hideResultList"
@@ -342,7 +342,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		var tgt = evt.target;
 		while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 			tgt = tgt.parentNode;
-			if(tgt === dojo.html.body()){
+			if(tgt === document.body){
 				return false;
 			}
 		}
@@ -363,7 +363,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 	hideResultList: function(){
 		dojo.fx.fadeHide(this.optionsListNode, 200);
-		dojo.event.disconnect(dojo.html.body(), "onclick", this, "hideResultList");
+		dojo.event.disconnect(document.body, "onclick", this, "hideResultList");
 		this._result_list_open = false;
 		this.bgIframe.hide();
 		return;

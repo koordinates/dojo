@@ -281,11 +281,11 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 		// contain the body's margins, so we need to end at the body
 		if (dojo.render.html.safari
 			&& node.style.getPropertyValue("position") == "absolute"
-			&& node.parentNode == dojo.html.body())
+			&& node.parentNode == document.body)
 		{
-			var endNode = dojo.html.body();
+			var endNode = document.body;
 		} else {
-			var endNode = dojo.html.body().parentNode;
+			var endNode = document.body.parentNode;
 		}
 		
 		if(includeScroll && node.parentNode != document.body) {

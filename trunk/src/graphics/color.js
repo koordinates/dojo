@@ -34,6 +34,10 @@ dojo.graphics.color.Color = function(r, g, b, a) {
 	}
 }
 
+dojo.graphics.color.Color.fromArray = function(arr) {
+	return new dojo.graphics.color.Color(arr[0], arr[1], arr[2], arr[3]);
+}
+
 dojo.lang.extend(dojo.graphics.color.Color, {
 	toRgb: function(includeAlpha) {
 		if(includeAlpha) {

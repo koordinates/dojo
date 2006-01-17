@@ -105,7 +105,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.domNode.style.position="absolute";
 		this.domNode.id = source.id;
 		if(dojo.render.html.safari){
-			dojo.html.body().appendChild(this.domNode);
+			document.body.appendChild(this.domNode);
 		}
 
 		// make client pane wrapper to hold the contents of this floating pane
@@ -239,7 +239,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.addOnLoad(this, "setInitialWindowState");
 		}
 		if(dojo.render.html.safari){
-			dojo.html.body().removeChild(this.domNode);
+			document.body.removeChild(this.domNode);
 		}
 
 		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
@@ -355,8 +355,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
 
 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
-			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(dojo.html.body()));
-			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(dojo.html.body()));
+			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(document.body));
+			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(document.body));
 		} else {
 			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
 			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
