@@ -2,7 +2,6 @@ dojo.provide("dojo.widget.html.TimePicker");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
-dojo.require("dojo.widget.TimePicker.util");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
