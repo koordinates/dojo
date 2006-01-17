@@ -397,6 +397,34 @@ dojo.lang.extend(dojo.widget.Widget, {
 		return false;
 	},
 
+	getPreviousSibling: function() {
+		var idx = this.getParentIndex();
+ 
+		 // first node is idx=0 not found is idx<0
+		if (idx<=0) return null;
+ 
+		return this.getSiblings()[idx-1];
+	},
+ 
+	getSiblings: function() {
+		return this.parent.children;
+	},
+ 
+	getParentIndex: function() {
+		return dojo.lang.indexOf( this.getSiblings(), this, true);
+	},
+ 
+	getNextSibling: function() {
+ 
+		var idx = this.getParentIndex();
+ 
+		if (idx == this.getSiblings().length-1) return null; // last node
+		if (idx < 0) return null; // not found
+ 
+		return this.getSiblings()[idx+1];
+ 
+	},
+
 	getDescendants: function() {
 		var result = [];
 		var stack = [this];
