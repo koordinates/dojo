@@ -373,7 +373,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 		var yes = dojo.lang.inArray(cmd, this.supportedCommands);
 		if(!yes) {
 			try {
-				var richText = this._richText || dojo.widget.html.RichText.prototype;
+				var richText = this._richText || dojo.widget.HtmlRichText.prototype;
 				yes = richText.queryCommandAvailable(cmd);
 			} catch(E) {}
 		}
@@ -389,9 +389,6 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	},
 
 	_action: function(e) {
-		// djConfig.isDebug = true;
-		// dojo.debug(e);
-		// dojo.debug(e.getValue());
 		this._fire("onAction", e.getValue());
 	},
 
