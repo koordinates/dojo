@@ -205,12 +205,12 @@ dojo.widget.HtmlWidget.Toggle.Wipe = {
 
 dojo.widget.HtmlWidget.Toggle.Explode = {
 	showMe: function(){
-		dojo.fx.html.explode(this.explodeSrc, this.domNode, this.toggleDuration,
+		dojo.fx.html.explode(this.explodeSrc||[0,0,0,0], this.domNode, this.toggleDuration,
 			dojo.lang.hitch(this, this.onShow));
 	},
 
 	hideMe: function(){
-		dojo.fx.html.implode(this.domNode, this.explodeSrc, this.toggleDuration,
+		dojo.fx.html.implode(this.domNode, this.explodeSrc||[0,0,0,0], this.toggleDuration,
 			dojo.lang.hitch(this, this.onHide));
 	}
 }
