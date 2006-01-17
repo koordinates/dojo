@@ -119,7 +119,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 		if(this.dragClass) { dojo.html.addClass(this.dragClone, this.dragClass); }
 		dojo.style.setOpacity(this.dragClone, this.opacity);
-		dojo.html.body().appendChild(this.dragClone);
+		document.body.appendChild(this.dragClone);
 	},
 
 	getConstraints: function() {
@@ -252,8 +252,8 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	},
 	
 	_getNodeUnderMouse: function(e){
-		var mousex = e.pageX || e.clientX + dojo.html.body().scrollLeft;
-		var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
+		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+		var mousey = e.pageY || e.clientY + document.body.scrollTop;
 
 		// find the child
 		for (var i = 0, child; i < this.childBoxes.length; i++) {
@@ -299,7 +299,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		this.placeIndicator(e, dragObjects, i, before);
 
 		if(!dojo.html.hasParent(this.dropIndicator)) {
-			dojo.html.body().appendChild(this.dropIndicator);
+			document.body.appendChild(this.dropIndicator);
 		}
 	},
 

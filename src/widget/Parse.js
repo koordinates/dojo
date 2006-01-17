@@ -284,7 +284,7 @@ dojo.widget.createWidget = function (name, props, refNode, position) {
 		notRef = true;
 		refNode = tn;
 		if(h){
-			dojo.html.body().appendChild(refNode);
+			document.body.appendChild(refNode);
 		}
 	}else if(position){
 		dojo.dom.insertAtPosition(tn, refNode, position);

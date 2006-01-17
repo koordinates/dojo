@@ -17,7 +17,7 @@ dojo.widget.html.ContextMenu = function(){
 	// default event detection method 
 	var eventType = "oncontextmenu"; 
 
-	var doc = document.documentElement  || dojo.html.body(); 
+	var doc = document.documentElement  || document.body; 
 
 	var _blockHide = false; 
 

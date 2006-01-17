@@ -806,7 +806,7 @@ dojo.lang.extend(dojo.widget.html.ToolbarSelect, {
 			var y = getAbsoluteY(this.domNode) + getInnerHeight(this.domNode);
 		}
 		with (this.domNode.style) { top = y + "px"; left = x + "px"; }
-		dojo.html.body().appendChild(this.dialog);
+		document.body.appendChild(this.dialog);
 	},
 	
 	hideDialog: function (e) {

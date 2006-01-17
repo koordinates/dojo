@@ -63,7 +63,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			rg.style.backgroundColor = "white";
 			rg.style.border = "1px solid black";
 			dojo.html.setOpacity(rg, 0.3);
-			dojo.html.body().appendChild(rg);
+			document.body.appendChild(rg);
 		}
 		with(this.resizeGhost.style){
 			left = coords.offsetLeft + "px";

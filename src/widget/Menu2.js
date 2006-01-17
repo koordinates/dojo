@@ -65,7 +65,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.domNode.style.top = '-9999px'
 
 		if (this.contextMenuForWindow){
-			var doc = document.documentElement  || dojo.html.body();
+			var doc = document.documentElement  || document.body;
 			dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
 		} else if ( this.targetNodeIds.length > 0 ){
 			for(var i=0; i<this.targetNodeIds.length; i++){
