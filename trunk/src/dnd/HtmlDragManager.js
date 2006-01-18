@@ -56,7 +56,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	dropTargetDimensions: [],
 
 	currentDropTarget: null,
-	currentDropTargetPoints: null,
+	// currentDropTargetPoints: null,
 	previousDropTarget: null,
 	_dragTriggered: false,
 
@@ -191,7 +191,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		}
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
 		this.currentDropTarget = null;
-		this.currentDropTargetPoints = null;
+		// this.currentDropTargetPoints = null;
 	},
 
 	scrollBy: function(x, y) {
@@ -200,6 +200,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				this.dragObjects[i].updateDragOffset();
 			}
 		}
+		// TODO: check if scrolling works fine. It has errors in nightly tests.
+		this.cacheTargetLocations();
 	},
 
 	_dragStartDistance: function(x, y){
@@ -211,6 +213,28 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var dy = Math.abs(y-this.mouseDownY);
 		var dy2 = dy*dy;
 		return parseInt(Math.sqrt(dx2+dy2), 10);
+	},
+
+	cacheTargetLocations: function() {
+		var _this = this;
+
+		this.dropTargetDimensions = [];
+		dojo.lang.forEach(this.dropTargets, function(tempTarget){
+			var tn = tempTarget.domNode;
+			if(!tn){ return; }
+			var ttx = dojo.style.getAbsoluteX(tn, true);
+			var tty = dojo.style.getAbsoluteY(tn, true);
+			_this.dropTargetDimensions.push([
+				[ttx, tty],	// upper-left
+				// lower-right
+				[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
+				tempTarget
+			]);
+			//dojo.debug("Cached for "+tempTarget.title)
+		});
+
+//		/dojo.debug("Cache locations")
+
 	},
 
 	onMouseMove: function(e){
@@ -247,19 +271,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				}
 			});
 
-			this.dropTargetDimensions = [];
-			dojo.lang.forEach(this.dropTargets, function(tempTarget){
-				var tn = tempTarget.domNode;
-				if(!tn){ return; }
-				var ttx = dojo.style.getAbsoluteX(tn, true);
-				var tty = dojo.style.getAbsoluteY(tn, true);
-				_this.dropTargetDimensions.push([
-					[ttx, tty],	// upper-left
-					// lower-right
-					[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
-					tempTarget
-				]);
-			});
+			/* clean previous drop target in dragStart */
+			this.previousDropTarget = null;
+
+			this.cacheTargetLocations();
 		}
 		// FIXME: we need to add dragSources and dragObjects to e
 		for (var i = 0; i < this.dragObjects.length; i++){
@@ -268,7 +283,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 		// if we have a current drop target, check to see if we're outside of
 		// it. If so, do all the actions that need doing.
-		var dtp = this.currentDropTargetPoints;
+		if (this.currentDropTarget) {
+			//dojo.debug(dojo.dom.hasParent(this.currentDropTarget.domNode))
+			var c = dojo.html.toCoordinateArray(this.currentDropTarget.domNode);
+			//		var dtp = this.currentDropTargetPoints;
+			var dtp = [
+				[c[0],c[1]], [c[0]+c[2], c[1]+c[3]]
+			];
+		}
+
 		if((!this.nestedTargets)&&(dtp)&&(this.isInsideBox(e, dtp))){
 			if(this.dropAcceptable){
 				this.currentDropTarget.onDragMove(e, this.dragObjects);
@@ -278,22 +301,24 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			// see if we can find a better drop target
 			var bestBox = this.findBestTarget(e);
 
-			if(bestBox.target == null){
+			if(bestBox.target === null){
 				if(this.currentDropTarget){
 					this.currentDropTarget.onDragOut(e);
+					this.previousDropTarget = this.currentDropTarget;
 					this.currentDropTarget = null;
-					this.currentDropTargetPoints = null;
+					// this.currentDropTargetPoints = null;
 				}
 				this.dropAcceptable = false;
 				return;
 			}
 
-			if(this.currentDropTarget != bestBox.target){
+			if(this.currentDropTarget !== bestBox.target){
 				if(this.currentDropTarget){
+					this.previousDropTarget = this.currentDropTarget;
 					this.currentDropTarget.onDragOut(e);
 				}
 				this.currentDropTarget = bestBox.target;
-				this.currentDropTargetPoints = bestBox.points;
+				// this.currentDropTargetPoints = bestBox.points;
 				e.dragObjects = this.dragObjects;
 				this.dropAcceptable = this.currentDropTarget.onDragOver(e);
 
