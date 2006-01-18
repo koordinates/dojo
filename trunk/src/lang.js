@@ -162,6 +162,7 @@ dojo.lang.isArray = function(wh) {
 
 dojo.lang.isArrayLike = function(wh) {
 	if(dojo.lang.isString(wh)){ return false; }
+	if(dojo.lang.isFunction(wh)){ return false; } // keeps out built-in ctors (Number, String, ...) which have length properties
 	if(dojo.lang.isArray(wh)){ return true; }
 	if(typeof wh != "undefined" && wh
         && dojo.lang.isNumber(wh.length) && isFinite(wh.length)){ return true; }
