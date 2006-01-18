@@ -26,7 +26,7 @@ dojo.widget.DatePicker.util = new function() {
 	
 	this.toRfcDate = function(jsDate) {
 		if(!jsDate) {
-			jsDate = this.today;
+			var jsDate = new Date();
 		}
 		var year = jsDate.getFullYear();
 		var month = jsDate.getMonth() + 1;
