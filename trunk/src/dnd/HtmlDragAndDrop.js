@@ -30,7 +30,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	dragClass: "", // CSS classname(s) applied to node when it is being dragged
 
 	onDragStart: function(){
-		var dragObj = new dojo.dnd.HtmlDragObject(this.dragObject, this.type, this.dragClass);
+		var dragObj = new dojo.dnd.HtmlDragObject(this.dragObject, this.type);
+		if(this.dragClass) { dragObj.dragClass = this.dragClass; }
 
 		if (this.constrainToContainer) {
 			dragObj.constrainTo(this.constrainingContainer);
@@ -59,10 +60,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	}
 });
 
-dojo.dnd.HtmlDragObject = function(node, type, dragClass){
+dojo.dnd.HtmlDragObject = function(node, type){
 	this.domNode = dojo.byId(node);
 	this.type = type;
-	if(dragClass) { this.dragClass = dragClass; }
 	this.constrainToContainer = false;
 }
 
@@ -75,7 +75,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	disableY: false,
 
 	createDragNode: function() {
-		return this.domNode.cloneNode(true);
+		var node = this.domNode.cloneNode(true);
+		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
+		dojo.style.setOpacity(node, this.opacity);
+		return node;
 	},
 
 	onDragStart: function(e){
@@ -114,8 +117,6 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			left = this.dragOffset.left + e.clientX + "px";
 		}
 
-		if(this.dragClass) { dojo.html.addClass(this.dragClone, this.dragClass); }
-		dojo.style.setOpacity(this.dragClone, this.opacity);
 		document.body.appendChild(this.dragClone);
 	},
 
