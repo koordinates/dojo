@@ -74,12 +74,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	disableX: false,
 	disableY: false,
 
-	/**
-	 * Creates a clone of this node and replaces this node with the clone in the
-	 * DOM tree. This is done to prevent the browser from selecting the textual
-	 * content of the node. This node is then set to opaque and drags around as
-	 * the intermediate representation.
-	 */
+	createDragNode: function() {
+		return this.domNode.cloneNode(true);
+	},
+
 	onDragStart: function(e){
 		dojo.html.clearSelection();
 		
@@ -95,8 +93,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
 
-		this.dragClone = this.domNode.cloneNode(true);
-		//this.domNode.parentNode.replaceChild(this.dragClone, this.domNode);
+		this.dragClone = this.createDragNode();
 
 
  		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (dojo.style.getComputedStyle(this.domNode.parentNode,"position") == "static")) {
