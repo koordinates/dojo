@@ -49,7 +49,10 @@ dojo.date.setIso8601Date = function (dateObject, string) {
 		if (day <= 4) { dateObject.setDate(offset + 1 - day); }
 		else { dateObject.setDate(offset + 8 - day); }
 	} else {
-		if (month) { dateObject.setMonth(month - 1); }
+		if (month) { 
+			dateObject.setDate(1);
+			dateObject.setMonth(month - 1); 
+		}
 		if (date) { dateObject.setDate(date); }
 	}
 	
