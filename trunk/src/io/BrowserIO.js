@@ -26,19 +26,24 @@ dojo.io.formHasFile = function(formNode){
 	return dojo.io.checkChildrenForFile(formNode);
 }
 
+dojo.io.formFilter = function(node) {
+	var type = (node.type||"").toLowerCase();
+	return !node.disabled && node.name
+		&& !dojo.lang.inArray(type, ["file", "submit", "reset", "button"]);
+}
+
 // TODO: Move to htmlUtils
-dojo.io.encodeForm = function(formNode, encoding){
+dojo.io.encodeForm = function(formNode, encoding, formFilter){
 	if((!formNode)||(!formNode.tagName)||(!formNode.tagName.toLowerCase() == "form")){
 		dojo.raise("Attempted to encode a non-form element.");
 	}
+	if(!formFilter) { formFilter = dojo.io.formFilter; }
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var values = [];
 
 	for(var i = 0; i < formNode.elements.length; i++){
 		var elm = formNode.elements[i];
-		if(elm.disabled || elm.tagName.toLowerCase() == "fieldset" || !elm.name){
-			continue;
-		}
+		if(!elm || elm.tagName.toLowerCase() == "fieldset" || !formFilter(elm)) { continue; }
 		var name = enc(elm.name);
 		var type = elm.type.toLowerCase();
 
@@ -61,7 +66,8 @@ dojo.io.encodeForm = function(formNode, encoding){
 	var inputs = formNode.getElementsByTagName("input");
 	for(var i = 0; i < inputs.length; i++) {
 		var input = inputs[i];
-		if(input.type.toLowerCase() == "image" && input.form == formNode) {
+		if(input.type.toLowerCase() == "image" && input.form == formNode
+			&& formFilter(input)) {
 			var name = enc(input.name);
 			values.push(name + "=" + enc(input.value));
 			values.push(name + ".x=0");
