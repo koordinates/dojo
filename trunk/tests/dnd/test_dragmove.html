@@ -22,6 +22,9 @@
 		new dojo.dnd.HtmlDragMoveSource(byId("layer1"));
 		new dojo.dnd.HtmlDragSource(byId("layer2"));
 		new dojo.dnd.HtmlDragMoveSource(byId("layer3"));
+		new dojo.dnd.HtmlDragMoveSource(byId("link1"));
+		new dojo.dnd.HtmlDragMoveSource(byId("span1"));
+		new dojo.dnd.HtmlDragMoveSource(byId("table1"));
 	}
 
 	dojo.event.connect(dojo, "loaded", "init");
@@ -46,4 +49,15 @@
 	<li>list 3 item 2</li>
 	<li>list 3 item 3</li>
 </ul>
+
+<a id="link1" href="#">a link</a>
+
+<span id="span1">a span</span>
+
+<table id="table1" border=1>
+<tr><td>i</td><td>'</td><td>m</td></tr>
+<tr><td>a</td><td>t</td><td>a</td></tr>
+<tr><td>b</td><td>l</td><td>e</td></tr>
+</table>
+
 
