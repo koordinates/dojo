@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>dojo.date Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../dojo.js"></script>
+		<script type="text/javascript" src="jsunit_browser.js"></script>
+		<script type="text/javascript" src="test_date.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.string");
+
+			function init(){
+				test_date_fromIso8601();
+				test_date_fromIso8601Date();
+				test_date_fromIso8601Time();
+				dojo.debug("If this is the only message you see, everything worked!");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+
