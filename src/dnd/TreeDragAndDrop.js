@@ -100,7 +100,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		var sourceTreeNode = e.dragObjects[0].treeNode;
 
 
-		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || sourceTreeNode.widgetType != 'EditorTreeNode') {
+		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
 			dojo.raise("Source is not of EditorTreeNode widgetType or not found");
 		}
 		//dojo.debug("This " + this.treeNode.title)
@@ -115,7 +115,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		if (!acceptable) return false;
 
 		// can't drop parent to child etc
-		acceptable = this.controller.canChangeParent(sourceTreeNode, this.treeNode);
+		acceptable = this.controller.canChangeParent(sourceTreeNode, this.treeNode, 0);
 
 
 		//dojo.debug("Check2 "+acceptable)
@@ -147,7 +147,6 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
 		//dojo.debug('drop');
 
-		var child = this.domNode;
 		var targetTreeNode = this.treeNode;
 
 
@@ -164,7 +163,139 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		// I don't check that trees are same! Target/source system deals with it
 
 		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
-		return this.controller.processDrop(sourceTreeNode, targetTreeNode);
+		return this.controller.processDrop(sourceTreeNode, targetTreeNode, 0);
+
+	}
+});
+
+
+// .......................................
+
+dojo.dnd.TreeDropBetweenTarget = function(node, syncController, type, treeNode){
+
+	this.treeNode = treeNode;
+	this.controller = syncController; // I will sync-ly process drops
+
+	dojo.dnd.HtmlDropTarget.apply(this, [node, type]);
+
+}
+
+
+
+dojo.inherits(dojo.dnd.TreeDropBetweenTarget, dojo.dnd.HtmlDropTarget);
+
+dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
+
+	indicatorPosition: null,
+
+	indicatorStyle: "2px black solid",
+
+	showIndicator: function(position) {
+
+		if (this.indicatorPosition == position) {
+			return;
+		}
+
+		//dojo.debug(position)
+
+		this.hideIndicator();
+
+		this.indicatorPosition = position;
+
+		if (position == "before") {
+			this.treeNode.labelNode.style.borderTop = this.indicatorStyle;
+		}
+		else if (position == "after") {
+			this.treeNode.labelNode.style.borderBottom = this.indicatorStyle;
+		}
+
+
+	},
+
+	hideIndicator: function() {
+		this.treeNode.labelNode.style.borderBottom="";
+		this.treeNode.labelNode.style.borderTop="";
+	},
+
+	/**
+	 * Check if I can drop sourceTreeNode here
+	 * only tree node targets are implemented ATM
+	*/
+	onDragOver: function(e){
+
+		var sourceTreeNode = e.dragObjects[0].treeNode;
+
+		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
+			dojo.raise("Source is not of EditorTreeNode widgetType or not found");
+		}
+
+		//dojo.debug("This " + this.treeNode)
+		//dojo.debug("Source " + sourceTreeNode);
+		//dojo.debug("Accepted types "+ this.acceptedTypes)
+
+		// check types compat
+		var acceptable = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
+
+		//dojo.debug("Check1 "+acceptable)
+
+		if (!acceptable) return false;
+
+		// can't drop parent to child etc
+		acceptable = this.controller.canChangeParent(sourceTreeNode, this.treeNode.parent, this.treeNode.getParentIndex());
+
+
+		//dojo.debug("Check2 "+acceptable)
+
+		if (!acceptable) return false;
+
+		return true;
+
+	},
+
+	onDragMove: function(e){
+
+		if (dojo.html.gravity(this.treeNode.labelNode, e) & dojo.html.gravity.NORTH) {
+			this.showIndicator("before");
+		}
+		else {
+			this.showIndicator("after");
+		}
+
+	},
+
+	onDragOut: function(e) {
+		//dojo.debug("Out");
+
+		this.hideIndicator();
+
+		//return dojo.dnd.HtmlDropTarget.prototype.onDragOut.call(this, e);
+	},
+
+
+	onDrop: function(e){
+		this.onDragOut(e);
+
+		//dojo.debug('drop');
+
+		var targetTreeNode = this.treeNode;
+
+
+		if (!dojo.lang.isObject(targetTreeNode)) {
+			dojo.raise("Wrong DropTarget engaged");
+		}
+
+		var sourceTreeNode = e.dragObject.treeNode;
+
+		if (!dojo.lang.isObject(sourceTreeNode)) {
+			return false;
+		}
+
+		// I don't check that trees are same! Target/source system deals with it
+
+		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
+		var index = this.indicatorPosition == "before" ? targetTreeNode.getParentIndex() : targetTreeNode.getParentIndex()+1;
+
+		return this.controller.processDrop(sourceTreeNode, targetTreeNode.parent, index);
 
 	}
 });

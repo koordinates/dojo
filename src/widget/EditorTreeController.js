@@ -23,13 +23,13 @@ dojo.widget.EditorTreeController = function() {
 		expand: "",
 		dblselect: "", // select already selected node.. Edit or whatever
 
-		swap: "", // nodes of same parent were swapped
-		move: "", // a child was moved from one place to another with parent change
+		move: "", // a child was moved from one place to another
 		remove: ""
 	};
 
 
 	this.dragSources = {};
+
 	this.dropTargets = {};
 }
 
@@ -39,8 +39,6 @@ dojo.inherits(dojo.widget.EditorTreeController, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.EditorTreeController, {
 	widgetType: "EditorTreeController",
 
-	//RPCUrl: "http://test.country-info.ru/json_tree.php",
-	//RPCUrl: "http://tmp.x/jstree/www/json_tree.php",
 	RPCUrl: "local",
 
 	initialize: function(args, frag){
@@ -54,7 +52,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 
-	enabledDND: true,
+	DNDMode: "off",
 
 	/**
 	 * Binds controller to tree events
@@ -77,13 +75,13 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * Checks whether it is ok to change parent of child to newParent
 	 * May incur type checks etc
 	 */
-	canChangeParent: function(child, newParent){
+	canChangeParent: function(child, newParent, index){
 
-//		dojo.debug('check for '+child+' '+newParent)
+		//dojo.debug('check for '+child+' '+newParent)
 
 		// Can't move parent under child. check whether new parent is child of "child".
 		var node = newParent;
-		while(node.widgetType !== 'EditorTree') {
+		while(node.isTreeNode) {
 			//dojo.debugShallow(node.title)
 
 
@@ -91,17 +89,20 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 				// parent of newParent is child
 				return false;
 			}
-			node = node.parentNode;
+			node = node.parent;
 		}
 
-		// check for newParent being a folder
-		if (!newParent.isFolder) {
+
+		// check for newParent being a folder (if node)
+		if (newParent.isTreeNode && !newParent.isFolder) {
 			return false;
 		}
 
+
 		// check if newParent is parent for child already
-		for(var i=0;i<newParent.children.length; i++) {
-			if (newParent.children[i] == child) return false;
+		// for onto mode where position is irrelevant => I can't change to same parent
+		if (this.DNDMode=="onto" && child.parent === newParent) {
+			return false;
 		}
 
 		return true;
@@ -136,18 +137,20 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 *
 	 * Also, "loading" icon is not shown until function finishes execution, so no indication for remote request.
 	*/
-	changeParentRemote: function(child, newParent){
+	changeParentRemote: function(child, newParent, index){
 
-			newParent.markLoading();
+			if (newParent.isTreeNode) newParent.markLoading();
 
 			var params = {
 				// where from
 				childId: child.widgetId,
 				childTreeId: child.tree.widgetId,
-				childOldParentId: child.parentNode.widgetId,
+				childOldParentId: child.parent.widgetId,
+				childOldParentIndex: child.getParentIndex(),
 				// where to
 				newParentId: newParent.widgetId,
-				newParentTreeId: newParent.tree.widgetId
+				newParentTreeId: newParent.tree.widgetId,
+				newParentIndex: index
 			}
 
 			var query = dojo.io.argsFromMap(params);
@@ -173,8 +176,10 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 			if (result == true) {
 				/* change parent succeeded */
-				child.tree.changeParent(child, newParent)
+				//dojo.debug(child);
+				child.tree.changeParent(child, newParent, index)
 				this.updateDND(child);
+				//dojo.debug(child);
 				return true;
 			}
 			else if (dojo.lang.isObject(result)) {
@@ -191,28 +196,33 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	/**
 	 * return true on success, false on failure
 	*/
-	changeParent: function(child, newParent) {
+	changeParent: function(child, newParent, index) {
 		// dojo.debug("Drop registered")
 		/* move sourceTreeNode to new parent */
-		if (!this.canChangeParent(child, newParent)) {
+		if (!this.canChangeParent(child, newParent, index)) {
 			return false;
 		}
 
 		/* load nodes into newParent in sync mode, if needed, first */
-		if (newParent.state == newParent.loadStates.UNCHECKED) {
+		if (newParent.isTreeNode && newParent.state == newParent.loadStates.UNCHECKED) {
 			this.loadRemote(newParent, true);
 		}
 
-		var oldParent = child.parentNode;
+		var oldParent = child.parent;
+		var oldParentIndex = child.getParentIndex();
 
-		var result = this.changeParentRemote(child, newParent);
+		var result = this.changeParentRemote(child, newParent, index);
 
 		if (!result) return result;
 
 
 		/* publish many events here about structural changes */
 		dojo.event.topic.publish(this.eventNames.move,
-			{ oldParent: oldParent, newParent: child.parentNode, child: child }
+			{
+				oldParent: oldParent, oldParentIndex: oldParentIndex,
+				newParent: child.parent, newParentIndex: index,
+				child: child
+			}
 		);
 
 		this.expand(newParent);
@@ -234,7 +244,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	/**
 	 * Add all loaded nodes from array obj as node children and expand it
 	*/
-	loadProcessResponse: function(node, newChildren) {
+	loadProcessResponse: function(node, newChildren, callback) {
 		if (!dojo.lang.isArray(newChildren)) {
 			dojo.raise('Not array loaded: '+newChildren);
 		}
@@ -246,7 +256,11 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			//dojo.debug(dojo.widget.manager.getWidgetById(newChild.widgetId))
 		}
 		node.state = node.loadStates.LOADED;
-		this.expand(node);
+
+		if (dojo.lang.isFunction(callback)) {
+			callback.apply(this, [node, newChildren]);
+		}
+		//this.expand(node);
 	},
 
 
@@ -255,7 +269,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * Synchroneous loading doesn't break control flow
 	 * I need sync mode for DnD
 	*/
-	loadRemote: function(node, sync){
+	loadRemote: function(node, sync, callback){
 			node.markLoading();
 
 
@@ -271,7 +285,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 				dojo.io.bind({
 					url: requestUrl,
 					/* I hitch to get this.loadOkHandler */
-					load: dojo.lang.hitch(this, function(type, obj) { this.loadProcessResponse(node, obj) } ),
+					load: dojo.lang.hitch(this, function(type, obj) { this.loadProcessResponse(node, obj, callback) } ),
 					error: dojo.lang.hitch(this, this.RPCErrorHandler),
 					mimetype: "text/json",
 					preventCache: true,
@@ -310,7 +324,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		var node = message.source;
 
 		if (node.state == node.loadStates.UNCHECKED) {
-			this.loadRemote(node);
+			this.loadRemote(node, false, function(node, newChildren) { this.expand(node) } );
 		}
 		else if (node.isExpanded){
 			this.collapse(node);
@@ -350,9 +364,12 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * in event system subscriber can't return a result into _current function control-flow_
 	 * @return true on success, false on failure
 	*/
-	processDrop: function(sourceNode, targetNode){
+	processDrop: function(sourceNode, parentNode, index){
+		if (dojo.lang.isUndefined(index)) {
+			var index = 0;
+		}
 		//dojo.debug('drop')
-		return this.changeParent(sourceNode, targetNode)
+		return this.changeParent(sourceNode, parentNode, index)
 	},
 
 
@@ -392,6 +409,8 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	*/
 	registerDNDNode: function(node) {
 
+		if (this.DNDMode=="off") return;
+
 
 		//dojo.debug("registerDNDNode node "+node.title+" tree "+node.tree+" accepted sources "+node.tree.acceptDropSources);
 
@@ -404,31 +423,31 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		this.dragSources[node.widgetId] = source;
 
 		//dojo.debugShallow(node.tree.widgetId)
-		var target = new dojo.dnd.TreeDropTarget(node.labelNode, this, node.tree.acceptDropSources, node);
+		if (this.DNDMode=="onto") {
+			var target = new dojo.dnd.TreeDropTarget(node.labelNode, this, node.tree.acceptDropSources, node);
+		}
+		else {
+			var target = new dojo.dnd.TreeDropBetweenTarget(node.labelNode, this, node.tree.acceptDropSources, node);
+		}
 		this.dropTargets[node.widgetId] = target;
 
 
-		if (!this.enabledDND) {
-			if (source) dojo.dnd.dragManager.unregisterDragSource(source);
-			if (target) dojo.dnd.dragManager.unregisterDropTarget(target);
-		}
-
 		//dojo.debug("registerDNDNode "+this.dragSources[node.widgetId].treeNode.title)
 
-
 	},
+
 
 	unregisterDNDNode: function(node) {
 
 		//dojo.debug("unregisterDNDNode "+node.title)
 		//dojo.debug("unregisterDNDNode "+this.dragSources[node.widgetId].treeNode.title)
 
-		if (this.dragSources[node]) {
+		if (this.dragSources[node.widgetId]) {
 			dojo.dnd.dragManager.unregisterDragSource(this.dragSources[node.widgetId]);
 			delete this.dragSources[node.widgetId];
 		}
 
-		if (this.dropTargets[node]) {
+		if (this.dropTargets[node.widgetId]) {
 			dojo.dnd.dragManager.unregisterDropTarget(this.dropTargets[node.widgetId]);
 			delete this.dropTargets[node.widgetId];
 		}
@@ -453,106 +472,6 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 
-
-
-	// -----------------------------------------------------------------------------
-	//                             Swap & move nodes stuff
-	// -----------------------------------------------------------------------------
-
-
-	/* after all local checks I run remote call for swap */
-	swapNodesRemote: function(node1, node2, callback) {
-
-			var params = {
-				treeId: this.widgetId,
-				node1Id: node1.widgetId,
-				node1Idx: node1.getParentIndex(),
-				node2Id: node2.widgetId,
-				node2Idx: node2.getParentIndex()
-			}
-
-			dojo.io.bind({
-					url: this.getRPCUrl('swapNodes'),
-					/* I hitch to get this.loadOkHandler */
-					load: dojo.lang.hitch(this, function(type, obj) {
-						this.swapNodesProcessResponse(node1, node2, callback, obj) }
-					),
-					error: dojo.lang.hitch(this, this.RPCErrorHandler),
-					mimetype: "text/json",
-					preventCache: true,
-					content: params
-			});
-
-	},
-
-	swapNodesProcessResponse: function(node1, node2, callback, result) {
-		if (result == true) {
-			/* change parent succeeded */
-			this.doSwapNodes(node1, node2);
-			if (callback) {
-				// provide context manually e.g with dojo.lang.hitch.
-				callback.apply(this, [node1, node2]);
-			}
-
-			return true;
-		}
-		else if (dojo.lang.isObject(result)) {
-			dojo.raise(result.error);
-		}
-		else {
-			dojo.raise("Invalid response "+obj)
-		}
-
-
-	},
-
-	/* node swapping requires remote checks. This function does the real job only w/o any checks */
-	doSwapNodes: function(node1, node2) {
-		/* publish many events here about structural changes */
-
-		node1.tree.swapNodes(node1, node2);
-
-		// nodes AFTER swap
-		dojo.event.topic.publish(this.eventNames.swap,
-			{ node1: node1, node2: node2 }
-		);
-
-	},
-
-	canSwapNodes: function(node1, node2) {
-		return true;
-	},
-
-	/* main command for node swaps, with remote call */
-	swapNodes: function(node1, node2, callback) {
-		if (!this.canSwapNodes(node1, node2)) {
-			return false;
-		}
-
-		return this.swapNodesRemote(node1, node2, callback);
-
-	},
-
-	// return false if local check failed
-	moveUp: function(node, callback) {
-
-		var prevNode = node.getLeftSibling();
-
-		if (!prevNode) return false;
-
-		return this.swapNodes(prevNode, node, callback);
-	},
-
-
-	// return false if local check failed
-	moveDown: function(node, callback) {
-
-		var nextNode = node.getRightSibling();
-
-		if (!nextNode) return false;
-
-		return this.swapNodes(nextNode, node, callback);
-	},
 
 
 	// -----------------------------------------------------------------------------
@@ -618,7 +537,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 
-	/* node swapping requires remote checks. This function does the real job only w/o any checks */
+	/* This function does the real job only w/o any checks */
 	doRemoveNode: function(node) {
 		/* publish many events here about structural changes */
 
@@ -630,7 +549,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		removed_node = node.tree.removeChild(node);
 
-		// nodes AFTER swap
+		// nodes AFTER
 		dojo.event.topic.publish(this.eventNames.remove,
 			{ node: removed_node }
 		);
@@ -697,7 +616,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	createNodeProcessResponse: function(parent, index, data, callback, response) {
 
-		if (parent.widgetType != 'EditorTreeNode') {
+		if (!parent.isTreeNode) {
 			dojo.raise("Can only add children to EditorTreeNode")
 		}
 

@@ -22,17 +22,17 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	loadStates: {
 		UNCHECKED: 1,
-    	LOADING: 2,
-    	LOADED: 3
+    		LOADING: 2,
+    		LOADED: 3
 	},
 
 
 	isContainer: true,
 
 	domNode: null,
-	continerNode: null,
+	containerNode: null,
 
-	templateString: '<div class="dojoTreeNode"><div dojoAttachPoint="containerNode"></div></div>',
+	templateString: '<div class="dojoTreeNode"><div style="display:none" dojoAttachPoint="containerNode"></div></div>',
 
 	//childIconSrc: null,
 	childIconSrc: null,
@@ -40,13 +40,16 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	childIconDocumentSrc: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/document.gif").toString(), // for under root parent item child icon,
 
 	childIcon: null,
+	isTreeNode: true,
+
+	afterLabelNode: null, // node to the left of labelNode
 
 	// an icon left from childIcon: imgs[-2].
 	// if +/- for folders, blank for leaves
 	expandIcon: null,
 
 	title: "",
-	isFolder: "",
+	isFolder: false,
 
 	labelNode: null, // the item label
 	titleNode: null, // the item title
@@ -54,19 +57,23 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	rowNode: null, // the tr
 
 	tree: null,
-	parentNode: null,
+
 	depth: 0,
 
 	isFirstNode: false,
 	isLastNode: false,
 	isExpanded: false,
-	booted: false,
+
 	state: null,  // after creation will change to loadStates: "loaded/loading/unchecked"
 	domNodeInitialized: false,  // domnode is initialized with icons etc
 
-
 	initialize: function(args, frag){
-		this.state = this.loadStates.UNCHECKED
+		this.state = this.loadStates.UNCHECKED;
+
+		if (args['isFolder'] == "true" || args['isfolder'] == "true" ) { // IE || FF
+			this.isFolder = true;
+		}
+
 		//this.domNode.treeNode = this; // domNode knows about its treeNode owner. E.g for DnD
 	},
 
@@ -103,11 +110,15 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	markLoading: function() {
 		this.expandIcon.src = this.tree.expandIconSrcLoading;
-//		this.expandIcon.src = this.tree.expandIconSrcMinus;
+
 
 	},
 
 
+	setFolder: function() {
+		dojo.event.connect(this.expandIcon, 'onclick', this, 'onTreeClick');
+		this.isFolder = true;
+	},
 
 
 	buildNode: function(tree, depth){
@@ -115,10 +126,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		this.tree = tree;
 		this.depth = depth;
 
-		// node with children(from source html) becomes folder on build stage.
-		if (this.children.length) {
-			this.isFolder = true;
-		}
+
 		//
 		// add the tree icons
 		//
@@ -162,18 +170,22 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 		var textNode = document.createTextNode(this.title);
 		this.titleNode.appendChild(textNode);
+		dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelTitle');
 
 
 		this.labelNode.appendChild(this.titleNode);
 
 		this.domNode.insertBefore(this.labelNode, this.containerNode);
 
-		dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelTitle');
+		this.afterLabelNode = document.createElement('span');
+		this.domNode.insertBefore(this.afterLabelNode, this.containerNode);
 
 
-		if (this.isFolder) {
-			dojo.event.connect(this.expandIcon, 'onclick', this, 'onTreeClick');
+		// node with children(from source html) becomes folder on build stage.
+		if (this.children.length || this.isFolder) {
+			this.setFolder();
 		}
+
 		dojo.event.connect(this.childIcon, 'onclick', this, 'onIconClick');
 		dojo.event.connect(this.titleNode, 'onclick', this, 'onTitleClick');
 
@@ -187,7 +199,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 			this.children[i].isFirstNode = (i == 0) ? true : false;
 			this.children[i].isLastNode = (i == this.children.length-1) ? true : false;
-			this.children[i].parentNode = this;
+			this.children[i].parent = this;
 
 			var node = this.children[i].buildNode(this.tree, this.depth+1);
 
@@ -199,7 +211,12 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 			this.state = this.loadStates.LOADED;
 		}
 
-		this.collapse();
+		if (this.isExpanded) {
+			this.expand();
+		}
+		else {
+			this.updateIcons();
+		}
 
 		this.domNodeInitialized = true;
 
@@ -293,7 +310,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		// set the vertical grid icons
 		//
 
-		var parent = this.parentNode;
+		var parent = this.parent;
 
 		for(var i=0; i<this.depth; i++){
 
@@ -304,7 +321,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 				(this.tree.showGrid && !parent.isLastNode) ? this.tree.gridIconSrcV : this.tree.blankIconSrc
 			);
 
-			parent = parent.parentNode;
+			parent = parent.parent;
 		}
 	},
 
@@ -348,7 +365,10 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	expand: function(){
 
-		if (this.children.length) this.showChildren();
+		if (this.children.length) {
+			this.showChildren();
+		}
+
 		this.isExpanded = true;
 
 		this.updateIcons();
@@ -361,31 +381,13 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	},
 
 	hideChildren: function(){
-
-		if (this.booted){
-			this.tree.toggler.hide(this.containerNode);
-		}else{
-			this.containerNode.style.display = 'none';
-		}
+		this.tree.toggler.hide(this.containerNode);
 	},
 
 	showChildren: function(){
-		if (this.booted){
-			this.tree.toggler.show(this.containerNode);
-		}
-		else {
-			this.containerNode.style.display = 'block';
-
-		}
+		this.tree.toggler.show(this.containerNode);
 	},
 
-	startMe: function(){
-
-		this.booted = true;
-		for(var i=0; i<this.children.length; i++){
-			this.children[i].startMe();
-		}
-	},
 
 	addChild: function(){
 		return this.tree.addChild.apply(this, arguments);
@@ -395,34 +397,6 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		return this.tree.removeChild.apply(this, arguments);
 	},
 
-
-	getLeftSibling: function() {
-		var idx = this.getParentIndex();
-
-		 // first node is idx=0 not found is idx<0
-		if (idx<=0) return null;
-
-		return this.getSiblings()[idx-1];
-	},
-
-	getSiblings: function() {
-		return this.parentNode.children;
-	},
-
-	getParentIndex: function() {
-		return dojo.lang.indexOf( this.getSiblings(), this, true);
-	},
-
-	getRightSibling: function() {
-
-		var idx = this.getParentIndex();
-
-		if (idx == this.getSiblings().length-1) return null; // last node
-		if (idx < 0) return null; // not found
-
-		return this.getSiblings()[idx+1];
-
-	},
 
 	/* Edit current node : change properties and update contents */
 	edit: function(props) {
@@ -435,6 +409,10 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		if (props.childIconSrc) {
 			this.childIcon.src = this.childIconSrc;
 		}
+	},
+
+	toString: function() {
+		return "["+this.widgetType+" Tree:"+this.tree+" ID:"+this.widgetId+"]";
 	}
 
 });

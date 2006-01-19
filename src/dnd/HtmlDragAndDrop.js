@@ -66,7 +66,7 @@ dojo.dnd.HtmlDragObject = function(node, type){
 	this.constrainToContainer = false;
 }
 
-dojo.lang.extend(dojo.dnd.HtmlDragObject, {  
+dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	dragClass: "",
 	opacity: 0.5,
 
@@ -83,15 +83,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 	onDragStart: function(e){
 		dojo.html.clearSelection();
-		
+
 		this.scrollOffset = {
 			top: dojo.html.getScrollTop(), // document.documentElement.scrollTop,
 			left: dojo.html.getScrollLeft() // document.documentElement.scrollLeft
 		};
-	
+
 		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode, true) + this.scrollOffset.top,
 			left: dojo.style.getAbsoluteX(this.domNode, true) + this.scrollOffset.left};
-		
+
 
 		this.dragOffset = {top: this.dragStartPosition.top - e.clientY,
 			left: this.dragStartPosition.left - e.clientX};
@@ -105,7 +105,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			this.parentPosition = {top: dojo.style.getAbsoluteY(this.domNode.parentNode, true),
 				left: dojo.style.getAbsoluteX(this.domNode.parentNode,true)};
 		}
-	
+
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
 		}
@@ -129,7 +129,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			padTop = 0;
 		} else {
 			width = dojo.style.getContentWidth(this.constrainingContainer);
-			height = dojo.style.getContentHeight(this.constrainingContainer);	
+			height = dojo.style.getContentHeight(this.constrainingContainer);
 			padLeft = dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true);
 			padTop = dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true);
 		}
@@ -138,7 +138,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			minX: padLeft,
 			minY: padTop,
 			maxX: padLeft+width - dojo.style.getOuterWidth(this.domNode),
-			maxY: padTop+height - dojo.style.getOuterHeight(this.domNode) 
+			maxY: padTop+height - dojo.style.getOuterHeight(this.domNode)
 		}
 	},
 
@@ -151,7 +151,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			this.scrollOffset.top = sTop;
 		}
 	},
-	
+
 	/** Moves the node to follow the mouse */
 	onDragMove: function(e){
 		this.updateDragOffset();
@@ -182,14 +182,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				dojo.dom.removeNode(this.dragClone);
 				this.dragClone = null;
 				break;
-		
+
 			case "dropFailure": // slide back to the start
-				var startCoords = [dojo.style.getAbsoluteX(this.dragClone), 
+				var startCoords = [dojo.style.getAbsoluteX(this.dragClone),
 							dojo.style.getAbsoluteY(this.dragClone)];
 				// offset the end so the effect can be seen
 				var endCoords = [this.dragStartPosition.left + 1,
 					this.dragStartPosition.top + 1];
-	
+
 				// animate
 				var line = new dojo.math.curves.Line(startCoords, endCoords);
 				var anim = new dojo.animation.Animation(line, 300, 0, 0);
@@ -226,10 +226,10 @@ dojo.dnd.HtmlDropTarget = function(node, types){
 }
 dojo.inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
-dojo.lang.extend(dojo.dnd.HtmlDropTarget, {  
+dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	onDragOver: function(e){
 		if(!this.accepts(e.dragObjects)){ return false; }
-		
+
 		// cache the positions of the child nodes
 		this.childBoxes = [];
 		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
@@ -242,12 +242,12 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			this.childBoxes.push({top: top, bottom: bottom,
 				left: left, right: right, node: child});
 		}
-		
+
 		// TODO: use dummy node
-		
+
 		return true;
 	},
-	
+
 	_getNodeUnderMouse: function(e){
 		var mousex = e.pageX || e.clientX + document.body.scrollLeft;
 		var mousey = e.pageY || e.clientY + document.body.scrollTop;
@@ -259,7 +259,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 					mousey >= top && mousey <= bottom) { return i; }
 			}
 		}
-		
+
 		return -1;
 	},
 
@@ -275,10 +275,10 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			left = dojo.style.getAbsoluteX(this.domNode) + "px";
 		}
 	},
-	
+
 	onDragMove: function(e, dragObjects){
 		var i = this._getNodeUnderMouse(e);
-		
+
 		if(!this.dropIndicator){
 			this.createDropIndicator();
 		}
@@ -320,7 +320,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		dojo.dom.removeNode(this.dropIndicator);
 		delete this.dropIndicator;
 	},
-	
+
 	/**
 	 * Inserts the DragObject as a child of this node relative to the
 	 * position of the mouse.
@@ -329,7 +329,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	 */
 	onDrop: function(e){
 		this.onDragOut(e);
-		
+
 		var i = this._getNodeUnderMouse(e);
 
 		if (i < 0) {
@@ -342,7 +342,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			}
 			return this.insert(e, this.domNode, "append");
 		}
-		
+
 		var child = this.childBoxes[i];
 		if (dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH) {
 			return this.insert(e, child.node, "before");

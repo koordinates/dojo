@@ -19,7 +19,6 @@ dojo.widget.tags.addParseTreeHandler("dojo:EditorTree");
 
 dojo.widget.EditorTree = function() {
 	dojo.widget.html.Container.call(this);
-	this.acceptDropSources = [];
 
 	this.eventNames = {
 		// new node built.. Well, just built
@@ -31,6 +30,8 @@ dojo.widget.EditorTree = function() {
 		// node title clicked
 		titleClick: ""
 	};
+
+	this.tree = this;
 }
 dojo.inherits(dojo.widget.EditorTree, dojo.widget.html.Container);
 
@@ -40,7 +41,9 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	domNode: null,
 
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/EditorTree.css"),
+	acceptDropSources: "",
+
+	//templateCssPath: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/EditorTree.css"),
 
 	templateString: '<div class="dojoTree"></div>',
 
@@ -49,24 +52,28 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	toggler: null,
 
+	isExpanded: true, // consider this "root node" to be always expanded
+
+	isTree: true,
+
 	//
 	// these icons control the grid and expando buttons for the whole tree
 	//
 
-	blankIconSrc: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_blank.gif").toString(),
+	blankIconSrc: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_blank.gif"),
 
-	gridIconSrcT: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_t.gif").toString(), // for non-last child grid
-	gridIconSrcL: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_l.gif").toString(), // for last child grid
-	gridIconSrcV: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_v.gif").toString(), // vertical line
-	gridIconSrcP: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_p.gif").toString(), // for under parent item child icons
-	gridIconSrcC: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_c.gif").toString(), // for under child item child icons
-	gridIconSrcX: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_x.gif").toString(), // grid for sole root item
-	gridIconSrcY: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_y.gif").toString(), // grid for last rrot item
-	gridIconSrcZ: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_z.gif").toString(), // for under root parent item child icon
+	gridIconSrcT: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_t.gif"), // for non-last child grid
+	gridIconSrcL: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_l.gif"), // for last child grid
+	gridIconSrcV: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_v.gif"), // vertical line
+	gridIconSrcP: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_p.gif"), // for under parent item child icons
+	gridIconSrcC: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_c.gif"), // for under child item child icons
+	gridIconSrcX: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_x.gif"), // grid for sole root item
+	gridIconSrcY: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_y.gif"), // grid for last rrot item
+	gridIconSrcZ: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_grid_z.gif"), // for under root parent item child icon
 
-	expandIconSrcPlus: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_expand_plus.gif").toString(),
-	expandIconSrcMinus: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_expand_minus.gif").toString(),
-	expandIconSrcLoading: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_loading.gif").toString(),
+	expandIconSrcPlus: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_expand_plus.gif"),
+	expandIconSrcMinus: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_expand_minus.gif"),
+	expandIconSrcLoading: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/treenode_loading.gif"),
 
 
 	iconWidth: 18,
@@ -82,15 +89,17 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	toggle: "default",
 	toggleDuration: 150,
-	title: "My Tree", // used for debug only
 	selector: null,
 
 	initialize: function(args, frag){
 
+		this.acceptDropSources = this.acceptDropSources.split(',');
+		/*
 		var sources;
 		if ( (sources = args['acceptDropSources']) || (sources = args['acceptDropSources']) ) {
-			this.acceptDropSources = sources.split(',');
+
 		}
+		*/
 
 		switch (this.toggle) {
 
@@ -131,8 +140,10 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			this.selector = dojo.widget.manager.getWidgetById(args['selector']);
 		}
 		else {
-			this.selector = new dojo.widget.createWidget("dojo.widget.EditorTreeSelector");
+			this.selector = new dojo.widget.createWidget("EditorTreeSelector");
 		}
+
+		this.containerNode = this.domNode;
 
 	},
 
@@ -150,7 +161,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 			this.children[i].isFirstNode = (i == 0) ? true : false;
 			this.children[i].isLastNode = (i == this.children.length-1) ? true : false;
-			this.children[i].parentNode = this; // root nodes have tree as parent
+			this.children[i].parent = this; // root nodes have tree as parent
 
 			var node = this.children[i].buildNode(this, 0);
 
@@ -170,9 +181,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		}
 
 
-		for(var i=0; i<this.children.length; i++){
-			this.children[i].startMe();
-		}
 	},
 
 
@@ -181,21 +189,23 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	 * Move child to newParent as last child
 	 * redraw tree and update icons
 	*/
-	changeParent: function(child, newParent) {
-		//dojo.debug("Move "+child.title+" to "+newParent.title)
+	changeParent: function(child, newParent, index) {
+		dojo.debug("Move "+child+" to "+newParent)
+
+		//dojo.debug(dojo.widget.manager.getWidgetById('1.3').containerNode.style.display);
 
 		/* do actual parent change here. Write remove child first */
-		child.parentNode.removeChild(child);
+		child.parent.removeChild(child);
 
-		newParent.addChild(child, 0);
+		newParent.addChild(child, index);
 
 	},
 
 	removeChild: function(child) {
 
-		var parentNode = child.parentNode;
+		var parent = child.parent;
 
-		var children = parentNode.children;
+		var children = parent.children;
 
 		for(var i=0; i<children.length; i++){
 			if(children[i] === child){
@@ -212,32 +222,33 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			}
 		}
 
-		child.domNode.parentNode.removeChild(child.domNode);
+		dojo.dom.removeNode(child.domNode);
 
 
-		//dojo.debug("removeChild: "+child.title+" from "+parentNode.title);
+		//dojo.debug("removeChild: "+child.title+" from "+parent.title);
 
 		if (children.length == 0) {
 			// toggle empty container off
-			if (parentNode.widgetType == 'EditorTreeNode') { // if has container
-				parentNode.containerNode.style.display = 'none';
+			if (!parent.isTree) { // if has container
+				parent.containerNode.style.display = 'none';
 			}
 
 		}
 
-		parentNode.updateIconTree();
+		parent.updateIconTree();
 
 		return child;
 
 	},
 
 
-
 	// not called for initial tree building. See buildNode instead.
 	// builds child html node if needed
 	// index is "last node" by default
 	addChild: function(child, index){
-		//dojo.debug("This "+this.title+" Child "+child.title+" index "+index);
+		//dojo.debug("This "+this+" Child "+child+" index "+index);
+
+
 
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
@@ -247,7 +258,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		// this function gets called to add nodes to both trees and nodes, so it's a little confusing :)
 		//
 
-		if (child.widgetType != 'EditorTreeNode'){
+		if (!child.isTreeNode){
 			dojo.raise("You can only add EditorTreeNode widgets to a "+this.widgetType+" widget!");
 			return;
 		}
@@ -276,16 +287,18 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 
 
+
 		// usually it is impossible to change "isFolder" state, but if anyone wants to add a child to leaf,
 		// it is possible program-way.
-		if (this.widgetType == 'EditorTreeNode'){
-			this.isFolder = true;
-			//this.isExpanded = false;
+		if (this.isTreeNode){
+			if (!this.isFolder) { // just became a folder.
+				this.setFolder();
+			}
 		}
 
 		// adjust tree
-		var tree = this.widgetType == 'EditorTreeNode' ? this.tree : this;
-		dojo.lang.forEach(child.getDescendants(), function(elem) { elem.tree = tree; });
+		var _this = this;
+		dojo.lang.forEach(child.getDescendants(), function(elem) { elem.tree = _this.tree; });
 
 		/*
 		var stack = [child];
@@ -299,26 +312,25 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		*/
 
 		// fix parent
-		child.parentNode = this;
+		child.parent = this;
 
 
 		// no dynamic loading for those who are parents already
-		if (this.widgetType == 'EditorTreeNode') {
-			this.loaded = this.loadStates.LOADED;
+		if (this.isTreeNode) {
+			this.state = this.loadStates.LOADED;
 		}
 
 		// if node exists - adjust its depth, otherwise build it
 		if (child.domNodeInitialized) {
 			//dojo.debug(this.widgetType)
-			var d = (this.widgetType == 'EditorTreeNode') ? this.depth : 0;
+			var d = this.isTreeNode ? this.depth : -1;
 			//dojo.debug('Depth is '+this.depth);
 			child.adjustDepth(d-child.depth+1);
 		}
 		else {
-			child.depth = this.widgetType == 'EditorTreeNode' ? this.depth+1 : 0;
+			child.depth = this.isTreeNode ? this.depth+1 : 0;
 			child.buildNode(child.tree, child.depth);
 		}
-
 
 
 		//dojo.debug(child.domNode.outerHTML)
@@ -329,26 +341,17 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			//dojo.debugShallow(child);
 
 			// insert
-			this.children[index].domNode.parentNode.insertBefore(child.domNode, this.children[index].domNode);
+			dojo.dom.insertBefore(child.domNode, this.children[index].domNode);
 		}
 		else {
-			if (this.widgetType == 'EditorTree') {
-				this.domNode.appendChild(node);
-			}
-			else {
-
-				//dojo.debug('append '+index)
-
-			// enable container, cause I add first child into it
-				this.containerNode.style.display = 'block';
-
-				//this.domNode.insertBefore(child.domNode, this.containerNode);
-
-				//dojo.debugShallow(this.containerNode);
-				this.containerNode.appendChild(child.domNode);
-				//dojo.debugShallow(this.containerNode);
-			}
+			this.containerNode.appendChild(child.domNode);
 		}
+
+		/*
+		if (index == this.children.length && this.children.length == 0) {
+			this.containerNode.style.display = 'block';
+		}
+		*/
 
 		this.children.splice(index, 0, child);
 
@@ -356,9 +359,12 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		//dojo.debugShallow(child);
 
-		this.updateIconTree();
+		//this.expand();
 
-		child.startMe();
+
+
+
+		this.updateIconTree();
 
 
 	},
@@ -375,103 +381,11 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	},
 
 
-	/* Swap nodes with SAME parent */
-	swapNodes: function(node1, node2) {
-		if (node1 === node2) return;
-
-		if (node1.parentNode !== node2.parentNode) {
-			dojo.raise("You may only swap nodes with same parent")
-		}
-
-		var parentNode = node1.parentNode;
-
-		var nodeIndex1 = node1.getParentIndex();
-		var nodeIndex2 = node2.getParentIndex();
-
-		/* Fix children order */
-		parentNode.children[nodeIndex1] = node2;
-		parentNode.children[nodeIndex2] = node1;
-
-		/* swap isFirst/isLast flags */
-		var a = node1.isLastNode;
-		var b = node1.isFirstNode;
-		node1.isLastNode = node2.isLastNode;
-		node1.isFirstNode = node2.isFirstNode;
-		node2.isLastNode = a;
-		node2.isFirstNode = b;
-
-		//dojo.debug(node1.title+" : "+node2.title)
-
-		this.swapDomNodes(node1.domNode, node2.domNode);
-		//parentNode.containerNode.insertBefore(node2.domNode, node1.domNode);
-		//parentNode.containerNode.insertBefore(node1.domNode, node2.domNode);
-
-		//parentNode.containerNode.removeChild(this.domNode);
-
-		parentNode.updateIconTree();
-
-
-	},
-
-
-	/* Should go dojo.dom */
-	swapDomNodes: function(node1, node2) {
-		// replace node1 with node2
-		//dojo.debug(node1.parentNode)
-
-		// may have siblings only in n1 -> n2 order
-		if (node2.nextSibling === node1) return this.swapDomNodes(node2, node1);
-
-		var parentNode1 = node1.parentNode;
-		var parentNode2 = node2.parentNode;
-
-		var inserter1;
-		var inserter2;
-		var removed1;
-		var removed2;
-
-		if (node1.nextSibling === node2) {			// node1->node2
-			if (node2.nextSibling) {
-				var a2n = node2.nextSibling;
-				inserter1 = function(newNode) { parentNode1.insertBefore(newNode, a2n); }
-				inserter2 = function(newNode) { parentNode1.insertBefore(newNode, a2n); }
-			}
-			else {
-				inserter1 = function(newNode) { parentNode1.appendChild(newNode); }
-				inserter2 = function(newNode) { parentNode1.appendChild(newNode); }
-			}
-		}
-		else {
-			if (node1.nextSibling) {
-				inserter1 = function(newNode) { parentNode1.insertBefore(newNode, node1.nextSibling); }
-			}
-			else {
-				inserter1 = function(newNode) { parentNode1.appendChild(newNode); }
-			}
-
-			if (node2.nextSibling) {
-				inserter2 = function(newNode) { parentNode2.insertBefore(newNode, node2.nextSibling); }
-			}
-			else {
-				inserter2 = function(newNode) { parentNode2.appendChild(newNode); }
-			}
-		}
-
-
-		removed1 = parentNode1.removeChild(node1);
-		removed2 = parentNode2.removeChild(node2);
-
-		// order is important cause of n1->n2 case
-		inserter1.apply(this, [removed2]);
-		inserter2.apply(this, [removed1]);
-
-
-	},
 
 
 	updateIconTree: function(){
 
-		if (this.widgetType=='EditorTreeNode') {
+		if (!this.isTree) {
 			this.updateIcons();
 		}
 
@@ -479,6 +393,10 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			this.children[i].updateIconTree();
 		}
 
+	},
+
+	toString: function() {
+		return "["+this.widgetType+" ID:"+this.widgetId+"]"
 	}
 
 
