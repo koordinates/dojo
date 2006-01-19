@@ -213,8 +213,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 		if (this.isExpanded) {
 			this.expand();
-		}
-		else {
+		} else {
 			this.updateIcons();
 		}
 
@@ -261,7 +260,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 		if (this.isFolder){
 			this.expandIcon.src = this.isExpanded ? this.tree.expandIconSrcMinus : this.tree.expandIconSrcPlus;
-		}else{
+		} else {
 			this.expandIcon.src = this.tree.blankIconSrc;
 		}
 
@@ -279,6 +278,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 			if (this.depth){
 				this.setGridImage(-2, this.isLastNode ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
 			}else{
+				//dojo.debug("Depth 0 "+this+" first:"+this.isFirstNode+" last:"+this.isLastNode)
 				if (this.isFirstNode){
 					this.setGridImage(-2, this.isLastNode ? this.tree.gridIconSrcX : this.tree.gridIconSrcY);
 				}else{
@@ -336,8 +336,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		if (!this.childIconSrc) {
 			if (this.isFolder){
 				this.childIconSrc = this.childIconFolderSrc;
-			}
-			else {
+			} else {
 				this.childIconSrc = this.childIconDocumentSrc;
 			}
 		}
@@ -382,10 +381,20 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	hideChildren: function(){
 		this.tree.toggler.hide(this.containerNode);
+
+		/* if dnd is in action, recalculate changed coordinates */
+		if(dojo.dnd.dragManager.dragObjects.length) {
+			dojo.dnd.dragManager.cacheTargetLocations();
+		}
 	},
 
 	showChildren: function(){
 		this.tree.toggler.show(this.containerNode);
+
+		/* if dnd is in action, recalculate changed coordinates */
+		if(dojo.dnd.dragManager.dragObjects.length) {
+			dojo.dnd.dragManager.cacheTargetLocations();
+		}
 	},
 
 
@@ -412,7 +421,8 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	},
 
 	toString: function() {
-		return "["+this.widgetType+" Tree:"+this.tree+" ID:"+this.widgetId+"]";
+		return "["+this.widgetType+" Tree:"+this.tree+" ID:"+this.widgetId+" Title:"+this.title+"]";
+
 	}
 
 });
