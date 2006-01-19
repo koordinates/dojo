@@ -161,7 +161,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 	},
 
 	click: function(e) {
-		var node = e.target;
+		var node = e.currentTarget;
 		if(node.disabled) { return; }
 		this.clickedButton = node;
 	},
@@ -172,6 +172,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 		if(node.disabled || !node.name) {
 			accept = false;
 		} else if(dojo.lang.inArray(type, ["submit", "button", "image"])) {
+			if(!this.clickedButton) { this.clickedButton = node; }
 			accept = node == this.clickedButton;
 		} else {
 			accept = !dojo.lang.inArray(type, ["file", "submit", "reset", "button"]);
@@ -187,7 +188,6 @@ dojo.lang.extend(dojo.io.FormBind, {
 			var fcn = dojo.lang.hitch(this, targetFcn);
 			srcObj[srcFcn] = function(e) {
 				if(!e) { e = window.event; }
-				if(!e.target) { e.target = e.srcElement; }
 				if(!e.preventDefault) { e.preventDefault = function() { window.event.returnValue = false; } }
 				fcn(e);
 			}
