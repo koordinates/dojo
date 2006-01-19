@@ -3,42 +3,65 @@
 <head>
 	<title>Sortable Table Widget Demo</title>
 	<script type="text/javascript">
-		var djConfig = {isDebug: true, debugAtAllCosts:true};
+		var djConfig = {isDebug: true};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.widget.SortableTable");
-		dojo.hostenv.writeIncludes();
+
+		function showSelected(){
+			var w=dojo.widget.byId("testTable");
+			if(w){
+				var o=w.getSelection();
+				if(o){
+					var s="({\n";
+					var a=[];
+					for(var p in o){
+						a.push("\t\""+p+"\":\""+o[p]+"\"");
+					}
+					s+=a.join(",\n");
+					s+="\n})";
+					alert(s);
+				}else{
+					alert("No rows are selected.");
+				}
+			}
+		}
 	</script>
 	<style type="text/css">
+		/***
+			The following is just an example of how to use the table.
+			You can override any class names to be used if you wish.
+		***/
 		table {
 			font-family:Lucida Grande, Verdana;
 			font-size:0.8em;
 			border:1px solid #ccc;
+			cursor:default;
 		}
-		table thead {
-			background-color:#ccc;
+		table tr td { padding:0.2em; }
+		table thead { background-color:#ccc; }
+		table thead tr td{ }
+		table thead tr td.selected { background-color:#999; }
+		table tbody {
+			/* Seems like only FF/Moz respects this, that's too bad. */
+			height:18em;
+			overflow:auto;
+			overflow-x:hidden;
 		}
-		table thead tr td.selected {
-			background-color:#999;
-		}
-		table tbody tr:hover {
-			background-color:#cfc;
-		}
-		table tbody tr.alt {
-			background-color:#ccc;
-		}
-		table tbody tr.selected {
-			background-color:#ccf;
-		}
-		table tbody tr td {
-			padding:2px;
-		}
+		table tbody tr.alt { background-color:#ede; }
+		table tbody tr.selected,
+		table tbody tr.selected:hover { background-color:#ff3; }
+		table tbody tr:hover,
+		table tbody tr.alt:hover { background-color:#cfc; }
 	</style>
 </head>
 <body style="padding: 50px;">
-<p>HTML before</p>
-<table dojoType="SortableTable">
+	<p>
+		The SortableTable widget takes a table of data, parses it, and re-renders it to allow you to sort the columns based on attributes set in the thead.
+	</p>
+	<div><button onclick="showSelected();">Show the selected object</button></div>
+<table dojoType="SortableTable" widgetId="testTable" enableAlternateRows="true" cellpadding="0" cellspacing="0">
 	<thead>
 		<tr>
 			<td field="Id" dataType="Number">Id</td>
