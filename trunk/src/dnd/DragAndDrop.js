@@ -11,10 +11,10 @@ dojo.dnd.DragSource = function(){
 
 dojo.lang.extend(dojo.dnd.DragSource, {
 	type: "",
-	
+
 	onDragEnd: function(){
 	},
-	
+
 	onDragStart: function(){
 	},
 
@@ -33,12 +33,12 @@ dojo.dnd.DragObject = function(){
 
 dojo.lang.extend(dojo.dnd.DragObject, {
 	type: "",
-	
+
 	onDragStart: function(){
 		// gets called directly after being created by the DragSource
 		// default action is to clone self as icon
 	},
-	
+
 	onDragMove: function(){
 		// this changes the UI for the drag icon
 		//	"it moves itself"
@@ -46,10 +46,10 @@ dojo.lang.extend(dojo.dnd.DragObject, {
 
 	onDragOver: function(){
 	},
-	
+
 	onDragOut: function(){
 	},
-	
+
 	onDragEnd: function(){
 	},
 
@@ -69,7 +69,6 @@ dojo.dnd.DropTarget = function(){
 }
 
 dojo.lang.extend(dojo.dnd.DropTarget, {
-	acceptedTypes: [],
 
 	acceptsType: function(type){
 		if(!dojo.lang.inArray(this.acceptedTypes, "*")){ // wildcard
@@ -90,13 +89,13 @@ dojo.lang.extend(dojo.dnd.DropTarget, {
 
 	onDragOver: function(){
 	},
-	
+
 	onDragOut: function(){
 	},
-	
+
 	onDragMove: function(){
 	},
-	
+
 	onDrop: function(){
 	}
 });
@@ -108,16 +107,16 @@ dojo.dnd.DragEvent = function(){
 	this.dragSource = null;
 	this.dragObject = null;
 	this.target = null;
-	this.eventStatus = "success"; 
+	this.eventStatus = "success";
 	//
 	// can be one of:
-	//	[	"dropSuccess", "dropFailure", "dragMove", 
+	//	[	"dropSuccess", "dropFailure", "dragMove",
 	//		"dragStart", "dragEnter", "dragLeave"]
 	//
 }
 
 dojo.dnd.DragManager = function(){
-	/* 
+	/*
 	 *	The DragManager handles listening for low-level events and dispatching
 	 *	them to higher-level primitives like drag sources and drop targets. In
 	 *	order to do this, it must keep a list of the items.
