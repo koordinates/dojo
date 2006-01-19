@@ -103,6 +103,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		this.dropTargets.push(dt);
 	},
 
+	unregisterDropTarget: function(dt){
+		var index = dojo.lang.find(this.dropTargets, dt, true);
+		if (index>=0) {
+			this.dropTargets.splice(index, 1);
+		}
+	},
+
 	getDragSource: function(e){
 		var tn = e.target;
 		if(tn === document.body){ return; }
