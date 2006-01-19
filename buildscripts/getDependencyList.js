@@ -29,14 +29,22 @@ if(!this["dependencies"]){
 load("../src/bootstrap1.js");
 load("../src/hostenv_rhino.js");
 load("../src/bootstrap2.js");
+// FIXME: is this really what we want to say?
 dojo.render.html.capable = true;
 
+dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
 if(!this["hostenvType"]){
 	hostenvType = "browser";
 }
 
-dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
-dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
+if(hostenvType.constructor == Array){
+	for(var x=0; x<hostenvType.length; x++){
+		dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType[x]+".js");
+	}
+	hostenvType = hostenvType.pop();
+}else{
+	dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
+}
 dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
 if(dependencies["prefixes"]){
