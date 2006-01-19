@@ -114,6 +114,10 @@
 			<td> dmachi </td>
 			<td> Dustin Machi </td>
 		</tr>
+		<tr>
+			<td> ilia </td>
+			<td> Ilia Kantor </td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
