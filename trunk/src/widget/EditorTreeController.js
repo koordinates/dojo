@@ -74,8 +74,12 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	/**
 	 * Checks whether it is ok to change parent of child to newParent
 	 * May incur type checks etc
+	 *
+	 * It should check only hierarchical possibility w/o index, etc
+	 * because in onDragOver event for Between DND mode we can't calculate index at once on onDragOVer.
+	 * index changes as client moves mouse up-down over the node
 	 */
-	canChangeParent: function(child, newParent, index){
+	canChangeParent: function(child, newParent){
 
 
 		// Can't move parent under child. check whether new parent is child of "child".
@@ -423,7 +427,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		//dojo.debugShallow(node.tree.widgetId)
 
 		if (this.DNDMode=="onto") {
-			var target = new dojo.dnd.TreeDropTarget(node.labelNode, this, node.tree.acceptDropSources, node);
+			var target = new dojo.dnd.TreeDropOntoTarget(node.labelNode, this, node.tree.acceptDropSources, node);
 		} else if (this.DNDMode=="between") {
 			var target = new dojo.dnd.TreeDropBetweenTarget(node.labelNode, this, node.tree.acceptDropSources, node);
 		}

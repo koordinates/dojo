@@ -91,102 +91,166 @@ dojo.inherits(dojo.dnd.TreeDropTarget, dojo.dnd.HtmlDropTarget);
 
 dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
+	autoExpandDelay: 1500,
+	autoExpandTimer: null,
+
 	/**
 	 * Check if I can drop sourceTreeNode here
 	 * only tree node targets are implemented ATM
 	*/
 	onDragOver: function(e){
 
-		var sourceTreeNode = e.dragObjects[0].treeNode;
+		var accepts = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
 
+		dojo.debug("TreeDropTarget.onDragOver accepts:"+accepts)
+
+		if (accepts && this.treeNode.isFolder && !this.treeNode.isExpanded) {
+			this.setAutoExpandTimer();
+		}
+
+		return accepts;
+	},
+
+
+	setAutoExpandTimer: function() {
+		// set up autoexpand timer
+		var _this = this;
+		var autoExpand = function () {
+			if (dojo.dnd.dragManager.currentDropTarget === _this) {
+				_this.controller.expand(_this.treeNode);
+			}
+		}
+
+		this.autoExpandTimer = dojo.lang.setTimeout(autoExpand, _this.autoExpandDelay);
+	},
+
+
+	accepts: function(dragObjects) {
+
+		var accepts = dojo.dnd.HtmlDropTarget.prototype.accepts.apply(this, arguments);
+
+		if (!accepts) return false;
+
+		var sourceTreeNode = dragObjects[0].treeNode;
 
 		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
-			dojo.raise("Source is not of EditorTreeNode widgetType or not found");
+			dojo.raise("Source is not TreeNode or not found");
 		}
-		//dojo.debug("This " + this.treeNode.title)
-		//dojo.debug("Source " + sourceTreeNode);
 
-		// check types compat
-		var acceptable = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
-
-		//dojo.debug("Check1 "+acceptable)
+		return true;
+	},
 
 
-		if (!acceptable) return false;
+	onDragOut: function(e) {
+		this.clearAutoExpandTimer();
+	},
+
+
+	clearAutoExpandTimer: function() {
+		if (this.autoExpandTimer) {
+			clearTimeout(this.autoExpandTimer);
+			delete this.autoExpandTimer;
+			this.autoExpandTimer = null;
+		}
+	},
+
+	onDragMove: function(e, dragObjects){
+	}
+
+
+});
+
+
+dojo.dnd.TreeDropOntoTarget = function(node, syncController, type, treeNode){
+	dojo.dnd.TreeDropTarget.apply(this, arguments);
+}
+
+
+dojo.inherits(dojo.dnd.TreeDropOntoTarget, dojo.dnd.TreeDropTarget);
+
+
+dojo.lang.extend(dojo.dnd.TreeDropOntoTarget, {
+
+
+	accepts: function(dragObjects) {
+		dojo.debug("TreeDropOntoTarget.accepts")
+
+		var accepts = dojo.dnd.TreeDropTarget.prototype.accepts.apply(this, arguments);
+
+		if (!accepts) return false;
+
+		// checked by parent call
+		var sourceTreeNode = dragObjects[0].treeNode;
 
 		// can't drop parent to child etc
-		acceptable = this.controller.canChangeParent(sourceTreeNode, this.treeNode, 0);
+		accepts = this.controller.canChangeParent(sourceTreeNode, this.treeNode);
+
+		if (!accepts) return false;
+
+		// can't drag to same parent in onto mode
+		if (sourceTreeNode.parent === this.treeNode) {
+			return false;
+		}
+
 
 
 		//dojo.debug("Check2 "+acceptable)
 
-		if (!acceptable) return false;
-
-
-		// mark current node being dragged into
-		if (sourceTreeNode !== this.treeNode) {
-			this.treeNode.markSelected();
-		}
 
 		return true;
 
 	},
 
-	onDragMove: function(e, dragObjects){
+	onDragOver: function(e) {
+
+		// perform common DnD actions and learn whether the drop acceptable
+		var accepts = dojo.dnd.TreeDropTarget.prototype.onDragOver.apply(this, arguments);
+
+		dojo.debug("TreeDropOntoTarget.onDragOver accepts:"+accepts)
+
+		if (!accepts) return false;
+
+		// mark current node being dragged into
+		this.treeNode.markSelected();
+
+
+		return true;
+
 	},
 
+	// called for all targets
 	onDragOut: function(e) {
 
-		this.treeNode.unMarkSelected();
+		dojo.dnd.TreeDropTarget.prototype.onDragOut.apply(this, arguments);
 
-		//return dojo.dnd.HtmlDropTarget.prototype.onDragOut.call(this, e);
+		this.treeNode.unMarkSelected();
 	},
 
-	onDrop: function(e){
+
+	// called for accepted objects only
+	onDrop: function(e) {
+
 		this.onDragOut(e);
-
-		//dojo.debug('drop');
-
-		var targetTreeNode = this.treeNode;
-
-
-		if (!dojo.lang.isObject(targetTreeNode)) {
-			dojo.raise("Wrong DropTarget engaged");
-		}
 
 		var sourceTreeNode = e.dragObject.treeNode;
 
-		if (!dojo.lang.isObject(sourceTreeNode)) {
-			return false;
-		}
-
-		// can't drag to same parent in onto mode
-		if (sourceTreeNode.parent === targetTreeNode) {
-			return false;
-		}
-		// I don't check that trees are same! Target/source system deals with it
-
-		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
-		return this.controller.processDrop(sourceTreeNode, targetTreeNode, 0);
-
+		return this.controller.processDrop(sourceTreeNode, this.treeNode, 0);
 	}
+
+
 });
 
 
 // .......................................
 
+
 dojo.dnd.TreeDropBetweenTarget = function(node, syncController, type, treeNode){
-
-	this.treeNode = treeNode;
-	this.controller = syncController; // I will sync-ly process drops
-
-	dojo.dnd.HtmlDropTarget.apply(this, [node, type]);
-
+	dojo.dnd.TreeDropTarget.apply(this, arguments);
 }
 
 
+dojo.inherits(dojo.dnd.TreeDropBetweenTarget, dojo.dnd.TreeDropTarget);
 
-dojo.inherits(dojo.dnd.TreeDropBetweenTarget, dojo.dnd.HtmlDropTarget);
 
 dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 
@@ -194,7 +258,7 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 
 	indicatorStyle: "2px black solid",
 	indicatorVisible: false,
-	autoExpandDelay: 1500,
+
 
 	showIndicator: function(position) {
 
@@ -225,63 +289,42 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 		this.treeNode.labelNode.style.borderTop="";
 	},
 
-	/**
-	 * Check if I can drop sourceTreeNode here
-	 * only tree node targets are implemented ATM
-	 *
-	 * returns true for nodes different from current node even if they are siblings.
-	*/
-	onDragOver: function(e){
-
-		var sourceTreeNode = e.dragObjects[0].treeNode;
-
-		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
-			dojo.raise("Source is not of EditorTreeNode widgetType or not found");
-		}
-
-		if (sourceTreeNode === this.treeNode) return false;
 
 
+	// is the target possibly ok ?
+	// This function is run on dragOver, but drop possibility is also determined by position over node
+	// that's why acceptsWithPosition is called
+	// doesnt take index into account ( can change while moving mouse w/o changing target )
+	accepts: function(dragObjects) {
+		dojo.debug("TreeDropBetweenTarget.accepts")
 
-		//dojo.debug("This " + this.treeNode)
-		//dojo.debug("Source " + sourceTreeNode);
-		//dojo.debug("Accepted types "+ this.acceptedTypes)
+		var accepts = dojo.dnd.TreeDropTarget.prototype.accepts.apply(this, arguments);
 
-		// check types compat
-		var acceptable = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
+		if (!accepts) return false;
 
-		//dojo.debug("Check1 "+acceptable)
-
-		if (!acceptable) return false;
+		// checked by parent call
+		var sourceTreeNode = dragObjects[0].treeNode;
 
 		// can't drop parent to child etc
-		acceptable = this.controller.canChangeParent(sourceTreeNode, this.treeNode.parent, this.treeNode.getParentIndex());
+		accepts = this.controller.canChangeParent(sourceTreeNode, this.treeNode.parent);
+
+		if (!accepts) return false;
 
 
 		//dojo.debug("Check2 "+acceptable)
-
-		if (!acceptable) return false;
-
-		// set up autoexpand timer
-
-		var _this = this;
-		var autoExpand = function () {
-			if (dojo.dnd.dragManager.currentDropTarget === _this) {
-				_this.controller.expand(_this.treeNode);
-			}
-		}
-
-		if (this.treeNode.isFolder && !this.treeNode.isExpanded) {
-			dojo.lang.setTimeout(autoExpand, _this.autoExpandDelay);
-		}
 
 
 		return true;
 
 	},
 
-	isAdjacentNode: function(sourceNode, position) {
 
+	acceptsWithPosition: function(sourceNode, position) {
+		return !this.isAdjacentNode(sourceNode, position);
+	},
+
+
+	isAdjacentNode: function(sourceNode, position) {
 
 		if (sourceNode === this.treeNode) return true;
 		if (sourceNode.getNextSibling() === this.treeNode && position=="before") return true;
@@ -290,19 +333,45 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 		return false;
 	},
 
-	onDragMove: function(e, dragObjects){
 
-		//dojo.debugShallow(dragObjects);
+	/**
+	 * Check if I can drop sourceTreeNode here
+	 * only tree node targets are implemented ATM
+	 *
+	 * returns true for nodes different from current node even if they are siblings.
+	*/
+	onDragOver: function(e){
 
-		var sourceTreeNode = dragObjects[0].treeNode;
+		// perform common DnD actions and learn whether the drop acceptable
+		var accepts = dojo.dnd.TreeDropTarget.prototype.onDragOver.apply(this, arguments);
 
+		if (!accepts) return false;
+
+		return true;
+
+	},
+
+	getPosition: function(e) {
 		if (dojo.html.gravity(this.treeNode.labelNode, e) & dojo.html.gravity.NORTH) {
 			var position = "before";
 		} else {
 			var position = "after";
 		}
 
-		if (!this.isAdjacentNode(sourceTreeNode, position)) {
+		return position;
+	},
+
+
+	// only called if drop acceptable
+	onDragMove: function(e, dragObjects){
+
+		//dojo.debugShallow(dragObjects);
+
+		var position = this.getPosition(e);
+
+		var sourceTreeNode = dragObjects[0].treeNode;
+
+		if (this.acceptsWithPosition(sourceTreeNode, position)) {
 			this.showIndicator(position);
 		}
 
@@ -311,9 +380,23 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 	onDragOut: function(e) {
 		//dojo.debug("Out");
 
+		dojo.dnd.TreeDropTarget.prototype.onDragOut.apply(this, arguments);
+
 		this.hideIndicator();
 
 		//return dojo.dnd.HtmlDropTarget.prototype.onDragOut.call(this, e);
+	},
+
+
+	getTargetParentIndex: function(sourceTreeNode, position) {
+
+		var index = position == "before" ? this.treeNode.getParentIndex() : this.treeNode.getParentIndex()+1;
+		if (this.treeNode.parent === sourceTreeNode.parent
+		  && this.treeNode.getParentIndex() > sourceTreeNode.getParentIndex()) {
+		  	index--;  // dragging a node is different for simple changeParent bacause of before-after issues
+		}
+
+		return index;
 	},
 
 
@@ -322,33 +405,23 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 
 		//dojo.debug('drop');
 
-		var targetTreeNode = this.treeNode;
-
-
-		if (!dojo.lang.isObject(targetTreeNode)) {
-			dojo.raise("Wrong DropTarget engaged");
-		}
-
 		var sourceTreeNode = e.dragObject.treeNode;
 
 		if (!dojo.lang.isObject(sourceTreeNode)) {
-			return false;
+			dojo.raise("TreeNode not found in dragObject")
 		}
 
-		if (this.isAdjacentNode(sourceTreeNode, this.indicatorPosition)) {
+
+		if (!this.acceptsWithPosition(sourceTreeNode, this.indicatorPosition)) {
 			return false;
 		}
 
 		// I don't check that trees are same! Target/source system deals with it
 
 		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
-		var index = this.indicatorPosition == "before" ? targetTreeNode.getParentIndex() : targetTreeNode.getParentIndex()+1;
-		if (targetTreeNode.parent === sourceTreeNode.parent
-		  && targetTreeNode.getParentIndex() > sourceTreeNode.getParentIndex()) {
-		  	index--;  // dragging a node is different for simple changeParent bacause of before-after issues
-		}
+		var index = this.getTargetParentIndex(sourceTreeNode, this.indicatorPosition);
 
-		return this.controller.processDrop(sourceTreeNode, targetTreeNode.parent, index);
+		return this.controller.processDrop(sourceTreeNode, this.treeNode.parent, index);
 
 	},
 
