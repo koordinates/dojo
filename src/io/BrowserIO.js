@@ -105,6 +105,96 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 	}
 }
 
+dojo.io.FormBind = function(args) {
+	this.bindArgs = {};
+
+	if(args && args.formNode) {
+		this.init(args);
+	} else if(args) {
+		this.init({formNode: args});
+	}
+}
+dojo.lang.extend(dojo.io.FormBind, {
+	form: null,
+
+	bindArgs: null,
+
+	clickedButton: null,
+
+	init: function(args) {
+		var form = dojo.byId(args.formNode);
+
+		if(!form || !form.tagName || form.tagName.toLowerCase() != "form") {
+			throw new Error("FormBind: Couldn't apply, invalid form");
+		} else if(this.form == form) {
+			return;
+		} else if(this.form) {
+			throw new Error("FormBind: Already applied to a form");
+		}
+
+		dojo.lang.mixin(this.bindArgs, args);
+		this.form = form;
+
+		this.connect(form, "onsubmit", "submit");
+
+		for(var i = 0; i < form.elements.length; i++) {
+			var node = form.elements[i];
+			if(node && node.type && dojo.lang.inArray(node.type.toLowerCase(), ["submit", "button"])) {
+				this.connect(node, "onclick", "click");
+			}
+		}
+
+		var inputs = form.getElementsByTagName("input");
+		for(var i = 0; i < inputs.length; i++) {
+			var input = inputs[i];
+			if(input.type.toLowerCase() == "image" && input.form == form) {
+				this.connect(input, "onclick", "click");
+			}
+		}
+	},
+
+	submit: function(e) {
+		e.preventDefault();
+		dojo.io.bind(dojo.lang.mixin(this.bindArgs, {
+			formFilter: dojo.lang.hitch(this, "formFilter")
+		}));
+	},
+
+	click: function(e) {
+		var node = e.target;
+		if(node.disabled) { return; }
+		this.clickedButton = node;
+	},
+
+	formFilter: function(node) {
+		var type = (node.type||"").toLowerCase();
+		var accept = false;
+		if(node.disabled || !node.name) {
+			accept = false;
+		} else if(dojo.lang.inArray(type, ["submit", "button", "image"])) {
+			accept = node == this.clickedButton;
+		} else {
+			accept = !dojo.lang.inArray(type, ["file", "submit", "reset", "button"]);
+		}
+		return accept;
+	},
+
+	// in case you don't have dojo.event.* pulled in
+	connect: function(srcObj, srcFcn, targetFcn) {
+		if(dojo.evalObjPath("dojo.event.connect")) {
+			dojo.event.connect(srcObj, srcFcn, this, targetFcn);
+		} else {
+			var fcn = dojo.lang.hitch(this, targetFcn);
+			srcObj[srcFcn] = function(e) {
+				if(!e) { e = window.event; }
+				if(!e.target) { e.target = e.srcElement; }
+				if(!e.preventDefault) { e.preventDefault = function() { window.event.returnValue = false; } }
+				fcn(e);
+			}
+		}
+	}
+});
+
 dojo.io.XMLHTTPTransport = new function(){
 	var _this = this;
 
