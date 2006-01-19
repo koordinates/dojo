@@ -29,7 +29,7 @@ dojo.io.formHasFile = function(formNode){
 dojo.io.formFilter = function(node) {
 	var type = (node.type||"").toLowerCase();
 	return !node.disabled && node.name
-		&& !dojo.lang.inArray(type, ["file", "submit", "reset", "button"]);
+		&& !dojo.lang.inArray(type, ["file", "submit", "image", "reset", "button"]);
 }
 
 // TODO: Move to htmlUtils
