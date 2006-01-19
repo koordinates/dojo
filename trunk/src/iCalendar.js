@@ -35,7 +35,10 @@ dojo.iCalendar.Component = function (/* string */ body ) {
 	// summary
 	// A component is the basic container of all this stuff. 
 
-	this.name = "COMPONENT"
+	if (!this.name) {
+		this.name = "COMPONENT"
+	}
+
 	this.properties = [];
 	this.components = [];
 
@@ -62,11 +65,9 @@ dojo.iCalendar.Component = function (/* string */ body ) {
 				} else if (context=="VFREEBUSY") {
 					this.addComponent(new dojo.iCalendar.VFreeBusy(childprops));
 				} else if (context=="STANDARD") {
-				//	dojo.debug("Before");
-				//	this.addComponent(new dojo.iCalendar.Standard(childprops));
-				//	dojo.debug("After");
+					this.addComponent(new dojo.iCalendar.Standard(childprops));
 				} else if (context=="DAYLIGHT") {
-				//	this.addComponent(new dojo.iCalendar.Daylight(childprops));
+					this.addComponent(new dojo.iCalendar.Daylight(childprops));
 				} else if (context=="VALARM") {
 					this.addComponent(new dojo.iCalendar.VAlarm(childprops));
 				}else {
@@ -78,7 +79,7 @@ dojo.iCalendar.Component = function (/* string */ body ) {
 			}
 		}
 
-		if (_ValidProperties) {
+		if (this._ValidProperties) {
 			this.postCreate();
 		}
 	}
@@ -100,9 +101,9 @@ dojo.lang.extend(dojo.iCalendar.Component, {
 	},
 
 	postCreate: function() {
-		//dojo.debug("Number of properties: " + _ValidProperties.length);
-		for (var x=0; x<_ValidProperties.length; x++) {
-			var evtProperty = _ValidProperties[x];
+		//dojo.debug("Number of properties: " + this._ValidProperties.length);
+		for (var x=0; x<this._ValidProperties.length; x++) {
+			var evtProperty = this._ValidProperties[x];
 			var found = false;
 			//dojo.debug("Number of properties on this event: " + this.properties.length);
 			for (var y=0; y<this.properties.length; y++) {	
@@ -114,7 +115,8 @@ dojo.lang.extend(dojo.iCalendar.Component, {
 					var alreadySet = false;
 					for (var z=0; z<evtProperty.length; z++) {
 						//dojo.debug("Checking for existsance of this." + evtProperty[z].name.toLowerCase());
-						if((this[evtProperty[z].name.toLowerCase()])  && (evtProperty[z].name.toLowerCase() != prop.name.toLowerCase())) {
+						//if((this[evtProperty[z].name.toLowerCase()])  && (evtProperty[z].name.toLowerCase() != prop.name.toLowerCase())) {
+						if(this[evtProperty[z].name.toLowerCase()]) {
 							alreadySet=true;
 							//dojo.debug(prop.name.toLowerCase() + " cannot be set because " + evtProperty[z].name.toLowerCase() + " is already set.");
 						} 
@@ -210,6 +212,47 @@ dojo.lang.extend(dojo.iCalendar.VCalendar, {
 });
 
 
+
+/*
+ * STANDARD
+ */
+
+var StandardProperties = [
+	_P("dtstart", 1, true), _P("tzoffsetto", 1, true), _P("tzoffsetfrom", 1, true),
+	_P("comment"), _P("rdate"), _P("rrule"), _P("tzname")
+];
+
+
+dojo.iCalendar.Standard = function (/* string */ body) {
+	// summary
+	// STANDARD Component
+
+	this.name = "STANDARD";
+	this._ValidProperties = StandardProperties;
+	dojo.iCalendar.Component.call(this, body);
+}
+
+dojo.inherits(dojo.iCalendar.Standard, dojo.iCalendar.Component);
+
+/*
+ * DAYLIGHT
+ */
+
+var DaylightProperties = [
+	_P("dtstart", 1, true), _P("tzoffsetto", 1, true), _P("tzoffsetfrom", 1, true),
+	_P("comment"), _P("rdate"), _P("rrule"), _P("tzname")
+];
+
+dojo.iCalendar.Daylight = function (/* string */ body) {
+	// summary
+	// Daylight Component
+	this.name = "DAYLIGHT";
+	this._ValidProperties = DaylightProperties;
+	dojo.iCalendar.Component.call(this, body);
+}
+
+dojo.inherits(dojo.iCalendar.Daylight, dojo.iCalendar.Component);
+
 /*
  * VEVENT
  */
@@ -231,7 +274,7 @@ var VEventProperties = [
 dojo.iCalendar.VEvent = function (/* string */ body) {
 	// summary 
 	// VEVENT Component
-	_ValidProperties = VEventProperties;
+	this._ValidProperties = VEventProperties;
 	this.name = "VEVENT";
 	dojo.iCalendar.Component.call(this, body);
 }
@@ -263,7 +306,7 @@ dojo.iCalendar.VTimeZone = function (/* string */ body) {
 	// summary
 	// VTIMEZONE Component
 	this.name = "VTIMEZONE";
-	_ValidProperties = VTimeZoneProperties;
+	this._ValidProperties = VTimeZoneProperties;
 	dojo.iCalendar.Component.call(this, body);
 }
 
@@ -292,7 +335,7 @@ dojo.iCalendar.VTodo= function (/* string */ body) {
 	// summary
 	// VTODO Componenet
 	this.name = "VTODO";
-	_ValidProperties = VTodoProperties;
+	this._ValidProperties = VTodoProperties;
 	dojo.iCalendar.Component.call(this, body);
 }
 
@@ -316,7 +359,7 @@ dojo.iCalendar.VJournal= function (/* string */ body) {
 	// summary
 	// VJOURNAL Component
 	this.name = "VJOURNAL";
-	_ValidProperties = VJournalProperties;
+	this._ValidProperties = VJournalProperties;
 	dojo.iCalendar.Component.call(this, body);
 }
 
@@ -325,6 +368,7 @@ dojo.inherits(dojo.iCalendar.VJournal, dojo.iCalendar.Component);
 /*
  * VFREEBUSY
  */
+
 var VFreeBusyProperties = [
 	// these can occur once only
 	_P("contact"), _P("dtstart", 1), _P("dtend"), _P("duration"),
@@ -337,44 +381,11 @@ dojo.iCalendar.VFreeBusy= function (/* string */ body) {
 	// summary
 	// VFREEBUSY Component
 	this.name = "VFREEBUSY";
-	_ValidProperties = VFreeBusyProperties;
+	this._ValidProperties = VFreeBusyProperties;
 	dojo.iCalendar.Component.call(this, body);
 }
 
 dojo.inherits(dojo.iCalendar.VFreeBusy, dojo.iCalendar.Component);
-
-/*
- * STANDARD & Daylight
- */
-var StandardProperties = [
-	_P("dtstart", 1, true), _P("tzoffsett", 1, true), _P("tzoffsetfrom", 1, true),
-	_P("comment"), _P("rdate"), _P("rrule"), _P("tzname")
-];
-
-var DaylightProperties = StandardProperties;
-
-dojo.iCalendar.Standard= function (/* string */ body) {
-	// summary
-	// STANDARD Component
-	this.name = "STANDARD";
-	dojo.debug("Here");
-	//_ValidProperties = StandardProperties;
-	dojo.debug("Here2");
-	dojo.iCalendar.Component.call(this, body);
-	dojo.debug("Here3");
-}
-
-dojo.inherits(dojo.iCalendar.Standard, dojo.iCalendar.Component);
-
-dojo.iCalendar.Daylight = function (/* string */ body) {
-	// summary
-	// Daylight Component
-	this.name = "DAYLIGHT";
-	_ValidProperties = DaylightProperties;
-	dojo.iCalendar.Component.call(this, body);
-}
-
-dojo.inherits(dojo.iCalendar.Daylight, dojo.iCalendar.Component);
 
 /*
  * VALARM
@@ -401,7 +412,7 @@ dojo.iCalendar.VAlarm= function (/* string */ body) {
 	// summary
 	// VALARM Component
 	this.name = "VALARM";
-	_ValidProperties = VAlarmProperties;
+	this._ValidProperties = VAlarmProperties;
 	dojo.iCalendar.Component.call(this, body);
 	dojo.debug(this.summary.value);
 }
