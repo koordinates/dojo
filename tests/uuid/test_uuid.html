@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>dojo.uuid Tests</title>
+		<script type="text/javascript">
+			// Dojo configuration
+			djConfig = {
+				isDebug: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript" src="../jsunit_browser.js"></script>
+		<script type="text/javascript" src="test_uuid.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.uuid.*");
+
+			function init(){
+				// OFF_test_uuid_performance();
+				test_uuid_capitalization();
+				test_uuid_constructor();
+				test_uuid_generators();
+				test_uuid_nilGenerator();
+				test_uuid_timeBasedGenerator();
+				test_uuid_invalidUuids();
+				// test_uuid_get64bitArrayFromFloat();
+				// test_uuid_addTwo64bitArrays();
+				// test_uuid_multiplyTwo64bitArrays();
+				dojo.debug("If this is the only message you see, everything worked!");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+
