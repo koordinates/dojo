@@ -57,7 +57,7 @@ dojo.io.encodeForm = function(formNode, encoding, formFilter){
 			if(elm.checked){
 				values.push(name + "=" + enc(elm.value));
 			}
-		}else if(!dojo.lang.inArray(type, ["file", "submit", "reset", "button"])) {
+		}else{
 			values.push(name + "=" + enc(elm.value));
 		}
 	}
