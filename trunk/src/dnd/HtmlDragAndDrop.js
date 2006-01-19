@@ -77,7 +77,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	createDragNode: function() {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
-		dojo.style.setOpacity(node, this.opacity);
+		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
 		return node;
 	},
 
@@ -220,8 +220,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 dojo.dnd.HtmlDropTarget = function(node, types){
 	if (arguments.length == 0) { return; }
-	node = dojo.byId(node);
-	this.domNode = node;
+	this.domNode = dojo.byId(node);
 	dojo.dnd.DropTarget.call(this);
 	this.acceptedTypes = types || [];
 }

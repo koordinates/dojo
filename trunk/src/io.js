@@ -119,6 +119,7 @@ dojo.lang.extend(dojo.io.Request, {
 	fromKwArgs: function(kwArgs){
 		// normalize args
 		if(kwArgs["url"]){ kwArgs.url = kwArgs.url.toString(); }
+		if(kwArgs["formNode"]) { kwArgs.formNode = dojo.byId(kwArgs.formNode); }
 		if(!kwArgs["method"] && kwArgs["formNode"] && kwArgs["formNode"].method) {
 			kwArgs.method = kwArgs["formNode"].method;
 		}
