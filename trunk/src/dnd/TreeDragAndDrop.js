@@ -132,7 +132,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
 	},
 
-	onDragMove: function(e){
+	onDragMove: function(e, dragObjects){
 	},
 
 	onDragOut: function(e) {
@@ -160,6 +160,10 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 			return false;
 		}
 
+		// can't drag to same parent in onto mode
+		if (sourceTreeNode.parent === targetTreeNode) {
+			return false;
+		}
 		// I don't check that trees are same! Target/source system deals with it
 
 		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
@@ -189,10 +193,13 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 	indicatorPosition: null,
 
 	indicatorStyle: "2px black solid",
+	indicatorVisible: false,
+	autoExpandDelay: 1500,
 
 	showIndicator: function(position) {
 
-		if (this.indicatorPosition == position) {
+		// do not change style too often, cause of blinking possible
+		if (this.indicatorPosition == position && this.indicatorVisible) {
 			return;
 		}
 
@@ -201,11 +208,11 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 		this.hideIndicator();
 
 		this.indicatorPosition = position;
+		this.indicatorVisible = true;
 
 		if (position == "before") {
 			this.treeNode.labelNode.style.borderTop = this.indicatorStyle;
-		}
-		else if (position == "after") {
+		} else if (position == "after") {
 			this.treeNode.labelNode.style.borderBottom = this.indicatorStyle;
 		}
 
@@ -213,6 +220,7 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 	},
 
 	hideIndicator: function() {
+		this.indicatorVisible = false;
 		this.treeNode.labelNode.style.borderBottom="";
 		this.treeNode.labelNode.style.borderTop="";
 	},
@@ -220,6 +228,8 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 	/**
 	 * Check if I can drop sourceTreeNode here
 	 * only tree node targets are implemented ATM
+	 *
+	 * returns true for nodes different from current node even if they are siblings.
 	*/
 	onDragOver: function(e){
 
@@ -228,6 +238,10 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
 			dojo.raise("Source is not of EditorTreeNode widgetType or not found");
 		}
+
+		if (sourceTreeNode === this.treeNode) return false;
+
+
 
 		//dojo.debug("This " + this.treeNode)
 		//dojo.debug("Source " + sourceTreeNode);
@@ -248,17 +262,48 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 
 		if (!acceptable) return false;
 
+		// set up autoexpand timer
+
+		var _this = this;
+		var autoExpand = function () {
+			if (dojo.dnd.dragManager.currentDropTarget === _this) {
+				_this.controller.expand(_this.treeNode);
+			}
+		}
+
+		if (this.treeNode.isFolder && !this.treeNode.isExpanded) {
+			dojo.lang.setTimeout(autoExpand, _this.autoExpandDelay);
+		}
+
+
 		return true;
 
 	},
 
-	onDragMove: function(e){
+	isAdjacentNode: function(sourceNode, position) {
+
+
+		if (sourceNode === this.treeNode) return true;
+		if (sourceNode.getNextSibling() === this.treeNode && position=="before") return true;
+		if (sourceNode.getPreviousSibling() === this.treeNode && position=="after") return true;
+
+		return false;
+	},
+
+	onDragMove: function(e, dragObjects){
+
+		//dojo.debugShallow(dragObjects);
+
+		var sourceTreeNode = dragObjects[0].treeNode;
 
 		if (dojo.html.gravity(this.treeNode.labelNode, e) & dojo.html.gravity.NORTH) {
-			this.showIndicator("before");
+			var position = "before";
+		} else {
+			var position = "after";
 		}
-		else {
-			this.showIndicator("after");
+
+		if (!this.isAdjacentNode(sourceTreeNode, position)) {
+			this.showIndicator(position);
 		}
 
 	},
@@ -290,12 +335,24 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 			return false;
 		}
 
+		if (this.isAdjacentNode(sourceTreeNode, this.indicatorPosition)) {
+			return false;
+		}
+
 		// I don't check that trees are same! Target/source system deals with it
 
 		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
 		var index = this.indicatorPosition == "before" ? targetTreeNode.getParentIndex() : targetTreeNode.getParentIndex()+1;
+		if (targetTreeNode.parent === sourceTreeNode.parent
+		  && targetTreeNode.getParentIndex() > sourceTreeNode.getParentIndex()) {
+		  	index--;  // dragging a node is different for simple changeParent bacause of before-after issues
+		}
 
 		return this.controller.processDrop(sourceTreeNode, targetTreeNode.parent, index);
 
+	},
+
+	toString: function() {
+		return "[TreeDropBetweenTarget "+this.treeNode+"]";
 	}
 });

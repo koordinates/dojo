@@ -138,8 +138,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		if (args['selector']) {
 			this.selector = dojo.widget.manager.getWidgetById(args['selector']);
-		}
-		else {
+		} else {
 			this.selector = new dojo.widget.createWidget("EditorTreeSelector");
 		}
 
@@ -190,14 +189,22 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	 * redraw tree and update icons
 	*/
 	changeParent: function(child, newParent, index) {
-		dojo.debug("Move "+child+" to "+newParent)
+//		dojo.debug("Move "+child+" to "+newParent+" index "+index)
 
 		//dojo.debug(dojo.widget.manager.getWidgetById('1.3').containerNode.style.display);
+
+		var destIdx = index;
+/*
+		if (child.parent === newParent && child.getParentIndex()<=index) {
+			dojo.debug("shift dest index")
+			destIdx--; // shift index cause child.length is less by 1 after removal
+		}
+	*/
 
 		/* do actual parent change here. Write remove child first */
 		child.parent.removeChild(child);
 
-		newParent.addChild(child, index);
+		newParent.addChild(child, destIdx);
 
 	},
 
@@ -237,6 +244,8 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		parent.updateIconTree();
 
+
+
 		return child;
 
 	},
@@ -246,13 +255,14 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	// builds child html node if needed
 	// index is "last node" by default
 	addChild: function(child, index){
-		//dojo.debug("This "+this+" Child "+child+" index "+index);
-
 
 
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
 		}
+
+
+		//dojo.debug("This "+this+" Child "+child+" index "+index+" children.length "+this.children.length);
 
 		//
 		// this function gets called to add nodes to both trees and nodes, so it's a little confusing :)
@@ -268,24 +278,22 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			if (index == 0) {
 				this.children[0].isFirstNode = false;
 				child.isFirstNode = true;
-			}
-			else {
+			} else {
 				child.isFirstNode = false;
 			}
 			if (index == this.children.length) {
 				this.children[index-1].isLastNode = false;
 				child.isLastNode = true;
-			}
-			else {
+			} else {
 				child.isLastNode = false;
 			}
-		}
-		else {
+		} else {
 			child.isLastNode = true;
 			child.isFirstNode = true;
 		}
 
 
+		//dojo.debug("For new child set first:"+child.isFirstNode+" last:"+child.isLastNode);
 
 
 		// usually it is impossible to change "isFolder" state, but if anyone wants to add a child to leaf,
@@ -326,8 +334,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			var d = this.isTreeNode ? this.depth : -1;
 			//dojo.debug('Depth is '+this.depth);
 			child.adjustDepth(d-child.depth+1);
-		}
-		else {
+		} else {
 			child.depth = this.isTreeNode ? this.depth+1 : 0;
 			child.buildNode(child.tree, child.depth);
 		}
@@ -342,8 +349,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 			// insert
 			dojo.dom.insertBefore(child.domNode, this.children[index].domNode);
-		}
-		else {
+		} else {
 			this.containerNode.appendChild(child.domNode);
 		}
 
@@ -385,6 +391,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	updateIconTree: function(){
 
+		//dojo.debug("Update icons for "+this)
 		if (!this.isTree) {
 			this.updateIcons();
 		}

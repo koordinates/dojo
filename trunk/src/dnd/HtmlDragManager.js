@@ -141,18 +141,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			case "input":
 				return;
 		}
-		
+
 		// find a selection object, if one is a parent of the source node
 		var ds = this.getDragSource(e);
 		if(!ds){ return; }
 		if(!dojo.lang.inArray(this.selectedSources, ds)){
 			this.selectedSources.push(ds);
 		}
-		
+
 		// WARNING: preventing the default action on all mousedown events
 		// prevents user interaction with the contents.
 		e.preventDefault();
-		
+
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
 
@@ -168,7 +168,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				if(!tempDragObj){ return; }
 				if(_this.currentDropTarget) {
 					e.dragObject = tempDragObj;
-	
+
 					// NOTE: we can't get anything but the current drop target
 					// here since the drag shadow blocks mouse-over events.
 					// This is probelematic for dropping "in" something
@@ -187,11 +187,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 						 _this.currentDropTarget.onDragOut(e);
 					}
 				}
-				
+
 				e.dragStatus = _this.dropAcceptable && ret ? "dropSuccess" : "dropFailure";
 				tempDragObj.onDragEnd(e);
 			});
-						
+
 			this.selectedSources = [];
 			this.dragObjects = [];
 			this.dragSource = null;
@@ -201,13 +201,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// this.currentDropTargetPoints = null;
 	},
 
-	scrollBy: function(x, y) {
+	onScroll: function() {
 		for(var i = 0; i < this.dragObjects.length; i++) {
 			if(this.dragObjects[i].updateDragOffset) {
 				this.dragObjects[i].updateDragOffset();
 			}
 		}
-		// TODO: check if scrolling works fine. It has errors in nightly tests.
+		// TODO: do not recalculate, only adjust coordinates
 		this.cacheTargetLocations();
 	},
 
@@ -237,10 +237,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
 				tempTarget
 			]);
-			//dojo.debug("Cached for "+tempTarget.title)
+			//dojo.debug("Cached for "+tempTarget)
 		});
 
-//		/dojo.debug("Cache locations")
+		//dojo.debug("Cache locations")
 
 	},
 
@@ -259,7 +259,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				dx = e.clientX-this.mouseDownX;
 				dy = e.clientY-this.mouseDownY;
 			}
-		
+
 			if (this.selectedSources.length == 1) {
 				this.dragSource = this.selectedSources[0];
 			}
@@ -337,7 +337,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 		}
 	},
-    
+
 	findBestTarget: function(e) {
 		var _this = this;
 		var bestBox = new Object();
@@ -366,7 +366,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	onMouseOver: function(e){
 	},
-	
+
 	onMouseOut: function(e){
 	}
 });
@@ -383,5 +383,6 @@ dojo.dnd.dragManager = new dojo.dnd.HtmlDragManager();
 	dojo.event.connect(d, "onmouseout", 	dm, "onMouseOut");
 	dojo.event.connect(d, "onmousedown",	dm, "onMouseDown");
 	dojo.event.connect(d, "onmouseup",		dm, "onMouseUp");
-	dojo.event.connect(window, "scrollBy",	dm, "scrollBy");
+	// TODO: process scrolling of elements, not only window
+	dojo.event.connect(window, "onscroll",	dm, "onScroll");
 })();

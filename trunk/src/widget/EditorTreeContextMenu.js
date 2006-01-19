@@ -65,7 +65,25 @@ dojo.lang.extend(dojo.widget.EditorTreeContextMenu, {
 		dojo.event.topic.publish(this.eventNames.open, { menu:this });
 
 		return result;
+	},
+
+	bindToTree: function(tree) {
+		/* add context menu to all nodes that exist already */
+		var nodes = tree.getDescendants();
+
+		for(var i=0; i<nodes.length; i++) {
+			if (!nodes[i].isTreeNode) continue;
+			this.bindDomNode(nodes[i].labelNode);
+		}
+
+
+		/* bind context menu to all nodes that will be created in the future (e.g loaded from server)*/
+		var _this = this;
+		dojo.event.topic.subscribe(tree.eventNames.nodeCreate,
+			function(message) { _this.bindDomNode(message.source.labelNode); }
+		);
 	}
+
 
 
 
@@ -115,8 +133,7 @@ dojo.lang.extend(dojo.widget.EditorTreeMenuItem, {
 		/* manage for folders status */
 		if (!treeNode.isFolder && this.for_folders==false) {
 			this.setDisabled(true);
-		}
-		else {
+		} else {
 			this.setDisabled(false);
 		}
 	}

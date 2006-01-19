@@ -77,7 +77,6 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 */
 	canChangeParent: function(child, newParent, index){
 
-		//dojo.debug('check for '+child+' '+newParent)
 
 		// Can't move parent under child. check whether new parent is child of "child".
 		var node = newParent;
@@ -98,12 +97,6 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			return false;
 		}
 
-
-		// check if newParent is parent for child already
-		// for onto mode where position is irrelevant => I can't change to same parent
-		if (this.DNDMode=="onto" && child.parent === newParent) {
-			return false;
-		}
 
 		return true;
 	},
@@ -181,11 +174,9 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 				this.updateDND(child);
 				//dojo.debug(child);
 				return true;
-			}
-			else if (dojo.lang.isObject(result)) {
+			} else if (dojo.lang.isObject(result)) {
 				dojo.raise(result.error);
-			}
-			else {
+			} else {
 				dojo.raise("Invalid response "+response)
 			}
 
@@ -294,8 +285,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 				});
 
 				return;
-			}
-			else {
+			} else {
 				var query = dojo.io.argsFromMap(params);
 				if(query != "") {
 					requestUrl += (requestUrl.indexOf("?") > -1 ? "&" : "?") + query;
@@ -323,13 +313,9 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		var node = message.source;
 
-		if (node.state == node.loadStates.UNCHECKED) {
-			this.loadRemote(node, false, function(node, newChildren) { this.expand(node) } );
-		}
-		else if (node.isExpanded){
+		if (node.isExpanded){
 			this.collapse(node);
-		}
-		else {
+		} else {
 			this.expand(node);
 		}
 	},
@@ -368,8 +354,10 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		if (dojo.lang.isUndefined(index)) {
 			var index = 0;
 		}
-		//dojo.debug('drop')
+
+		//dojo.debug('drop index '+index)
 		return this.changeParent(sourceNode, parentNode, index)
+
 	},
 
 
@@ -391,8 +379,18 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	expand: function(node) {
 		if (node.isExpanded) return;
-		node.expand();
-		dojo.event.topic.publish(this.eventNames.expand, {source: node} );
+
+		if (node.state == node.loadStates.UNCHECKED) {
+			this.loadRemote(node, false,
+				function(node, newChildren) {
+					this.expand(node);
+				}
+			);
+		} else {
+			node.expand();
+
+			dojo.event.topic.publish(this.eventNames.expand, {source: node} );
+		}
 	},
 
 	collapse: function(node) {
@@ -423,12 +421,13 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		this.dragSources[node.widgetId] = source;
 
 		//dojo.debugShallow(node.tree.widgetId)
+
 		if (this.DNDMode=="onto") {
 			var target = new dojo.dnd.TreeDropTarget(node.labelNode, this, node.tree.acceptDropSources, node);
-		}
-		else {
+		} else if (this.DNDMode=="between") {
 			var target = new dojo.dnd.TreeDropBetweenTarget(node.labelNode, this, node.tree.acceptDropSources, node);
 		}
+
 		this.dropTargets[node.widgetId] = target;
 
 
@@ -525,11 +524,9 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			}
 
 			return true;
-		}
-		else if (dojo.lang.isObject(result)) {
+		} else if (dojo.lang.isObject(result)) {
 			dojo.raise(result.error);
-		}
-		else {
+		} else {
 			dojo.raise("Invalid response "+obj)
 		}
 
