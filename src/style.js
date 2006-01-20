@@ -1,6 +1,4 @@
 dojo.provide("dojo.style");
-dojo.require("dojo.dom");
-dojo.require("dojo.uri.Uri");
 dojo.require("dojo.graphics.color");
 
 // values: content-box, border-box
@@ -396,30 +394,6 @@ dojo.style.removeCssRule = function (index){
 	return true;
 }
 
-dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
-	if(!URI) { return; }
-	if(!doc){ doc = document; }
-	// Safari doesn't have this property, but it doesn't support
-	// styleSheets.href either so it beomces moot
-	if(doc.baseURI) { URI = new dojo.uri.Uri(doc.baseURI, URI); }
-	if(checkDuplicates && doc.styleSheets){
-		// get the host + port info from location
-		var loc = location.href.split("#")[0].substring(0, location.href.indexOf(location.pathname));
-		for(var i = 0; i < doc.styleSheets.length; i++){
-			if(doc.styleSheets[i].href && URI.toString() ==
-				new dojo.uri.Uri(doc.styleSheets[i].href.toString())) { return; }
-		}
-	}
-	var file = doc.createElement("link");
-	file.setAttribute("type", "text/css");
-	file.setAttribute("rel", "stylesheet");
-	file.setAttribute("href", URI);
-	var head = doc.getElementsByTagName("head")[0];
-	if(head){ // FIXME: why isn't this working on Opera 8?
-		head.appendChild(file);
-	}
-}
-
 dojo.style.getBackgroundColor = function (node) {
 	node = dojo.byId(node);
 	var color;
@@ -542,3 +516,58 @@ dojo.style.clearOpacity = function clearOpacity (node) {
 		node.style.opacity = 1;
 	}
 }
+
+dojo.style.isVisible = function(node){
+	node = dojo.byId(node);
+	// FIXME: this should also look at visibility!
+	return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";
+}
+
+dojo.style.show  = function(node){
+	node = dojo.byId(node);
+	if(node.style){
+		node.style.display = dojo.lang.inArray(['tr', 'td', 'th'], node.tagName.toLowerCase()) ? "" : "block";
+	}
+}
+
+dojo.style.hide = function(node){
+	node = dojo.byId(node);
+	if(node.style){
+		node.style.display = "none";
+	}
+}
+
+dojo.style.toggleVisible = function(node) {
+	if(dojo.style.isVisible(node)) {
+		dojo.style.hide(node);
+		return false;
+	} else {
+		dojo.style.show(node);
+		return true;
+	}
+}
+
+// in: coordinate array [x,y,w,h] or dom node
+// return: coordinate array
+dojo.style.toCoordinateArray = function(coords, includeScroll) {
+	if(dojo.lang.isArray(coords)){
+		// coords is already an array (of format [x,y,w,h]), just return it
+		while ( coords.length < 4 ) { coords.push(0); }
+		while ( coords.length > 4 ) { coords.pop(); }
+		var ret = coords;
+	} else {
+		// coords is an dom object (or dom object id); return it's coordinates
+		var node = dojo.byId(coords);
+		var ret = [
+			dojo.style.getAbsoluteX(node, includeScroll),
+			dojo.style.getAbsoluteY(node, includeScroll),
+			dojo.style.getInnerWidth(node),
+			dojo.style.getInnerHeight(node)
+		];
+	}
+	ret.x = ret[0];
+	ret.y = ret[1];
+	ret.w = ret[2];
+	ret.h = ret[3];
+	return ret;
+};
