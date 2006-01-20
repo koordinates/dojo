@@ -102,10 +102,22 @@ dojo.widget.manager = new function(){
 		return this.widgets.concat();
 	}
 
+	//	added, trt 2006-01-20
+	this.getWidgetByNode = function(/* DOMNode */ node){
+		var w=this.getAllWidgets();
+		for (var i=0; i<w.length; i++){
+			if (w[i].domNode==node){
+				return w[i];
+			}
+		}
+		return null;
+	}
+
 	// shortcuts, baby
 	this.byId = this.getWidgetById;
 	this.byType = this.getWidgetsByType;
 	this.byFilter = this.getWidgetsByFilter;
+	this.byNode = this.getWidgetByNode;
 
 	// map of previousally discovered implementation names to constructors
 	var knownWidgetImplementations = {};
@@ -253,6 +265,7 @@ dojo.widget.getWidgetsByFilter = function () { return dojo.widget.manager.getWid
 dojo.widget.byId = function () { return dojo.widget.manager.getWidgetById.apply(dojo.widget.manager, arguments); }
 dojo.widget.byType = function () { return dojo.widget.manager.getWidgetsByType.apply(dojo.widget.manager, arguments); }
 dojo.widget.byFilter = function () { return dojo.widget.manager.getWidgetsByFilter.apply(dojo.widget.manager, arguments); }
+dojo.widget.byNode = function () { return dojo.widget.manager.getWidgetByNode.apply(dojo.widget.manager, arguments); }
 dojo.widget.all = function (n) {
 	var widgets = dojo.widget.manager.getAllWidgets.apply(dojo.widget.manager, arguments);
 	if(arguments.length > 0) {
