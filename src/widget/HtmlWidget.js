@@ -50,60 +50,8 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		var ch = this.getContainerHeight();
 	},
 
-	startResize: function(coords){
-		// get the left and top offset of our dom node
-		coords.offsetLeft = dojo.html.totalOffsetLeft(this.domNode);
-		coords.offsetTop = dojo.html.totalOffsetTop(this.domNode);
-		coords.innerWidth = dojo.html.getInnerWidth(this.domNode);
-		coords.innerHeight = dojo.html.getInnerHeight(this.domNode);
-		if(!this.resizeGhost){
-			this.resizeGhost = document.createElement("div");
-			var rg = this.resizeGhost;
-			rg.style.position = "absolute";
-			rg.style.backgroundColor = "white";
-			rg.style.border = "1px solid black";
-			dojo.html.setOpacity(rg, 0.3);
-			document.body.appendChild(rg);
-		}
-		with(this.resizeGhost.style){
-			left = coords.offsetLeft + "px";
-			top = coords.offsetTop + "px";
-		}
-		this.initialResizeCoords = coords;
-		this.resizeGhost.style.display = "";
-		this.updateResize(coords, true);
-	},
-
-	updateResize: function(coords, override){
-		var dx = coords.x-this.initialResizeCoords.x;
-		var dy = coords.y-this.initialResizeCoords.y;
-		with(this.resizeGhost.style){
-			if((this.allowResizeX)||(override)){
-				width = this.initialResizeCoords.innerWidth + dx + "px";
-			}
-			if((this.allowResizeY)||(override)){
-				height = this.initialResizeCoords.innerHeight + dy + "px";
-			}
-		}
-	},
-
-	endResize: function(coords){
-		// FIXME: need to actually change the size of the widget!
-		var dx = coords.x-this.initialResizeCoords.x;
-		var dy = coords.y-this.initialResizeCoords.y;
-		with(this.domNode.style){
-			if(this.allowResizeX){
-				width = this.initialResizeCoords.innerWidth + dx + "px";
-			}
-			if(this.allowResizeY){
-				height = this.initialResizeCoords.innerHeight + dy + "px";
-			}
-		}
-		this.resizeGhost.style.display = "none";
-	},
-
 	resizeSoon: function(){
-		if ( this.isVisible() ) {
+		if(this.isVisible()){
 			dojo.lang.setTimeout(this, this.onResized, 0);
 		}
 	},

@@ -60,6 +60,22 @@ dojo.lang.extend(dojo.widget.Widget, {
 		this.isHidden = false;
 	},
 
+	onResized: function(){
+		// Clients should override this function to do special processing,
+		// then call this.notifyChildrenOfResize() to notify children of resize
+		this.notifyChildrenOfResize();
+	},
+	
+	notifyChildrenOfResize: function(){
+		for(var i=0; i<this.children.length; i++){
+			var child = this.children[i];
+			//dojo.debug(this.widgetId + " resizing child " + child.widgetId);
+			if( child.onResized ){
+				child.onResized();
+			}
+		}
+	},
+
 	create: function(args, fragment, parentComp){
 		// dojo.debug(this.widgetType, "create");
 		this.satisfyPropertySets(args, fragment, parentComp);
