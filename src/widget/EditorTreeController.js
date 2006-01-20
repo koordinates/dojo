@@ -81,6 +81,13 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 */
 	canChangeParent: function(child, newParent){
 
+		if (child.actionIsDisabled(child.actions.MOVE)) {
+			return false;
+		}
+
+		if (child.parent !== newParent && newParent.actionIsDisabled(newParent.actions.ADDCHILD)) {
+			return false;
+		}
 
 		// Can't move parent under child. check whether new parent is child of "child".
 		var node = newParent;
@@ -194,7 +201,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	changeParent: function(child, newParent, index) {
 		// dojo.debug("Drop registered")
 		/* move sourceTreeNode to new parent */
-		if (!this.canChangeParent(child, newParent, index)) {
+		if (!this.canChangeParent(child, newParent)) {
 			return false;
 		}
 
@@ -414,6 +421,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		if (this.DNDMode=="off") return;
 
 
+
 		//dojo.debug("registerDNDNode node "+node.title+" tree "+node.tree+" accepted sources "+node.tree.acceptDropSources);
 
 		/* I drag label, not domNode, because large domNodes are very slow to copy and large to drag */
@@ -421,8 +429,11 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		var source = null;
 		var target = null;
 
-		var source = new dojo.dnd.TreeDragSource(node.labelNode, this, node.tree.widgetId, node);
-		this.dragSources[node.widgetId] = source;
+		if (!node.actionIsDisabled(node.actions.MOVE)) {
+			//dojo.debug("reg source")
+			var source = new dojo.dnd.TreeDragSource(node.labelNode, this, node.tree.widgetId, node);
+			this.dragSources[node.widgetId] = source;
+		}
 
 		//dojo.debugShallow(node.tree.widgetId)
 

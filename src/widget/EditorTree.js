@@ -10,7 +10,6 @@ dojo.require("dojo.dnd.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.Container");
-dojo.require("dojo.widget.Tree");
 dojo.require("dojo.widget.EditorTreeNode");
 
 // make it a tag
@@ -91,8 +90,21 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	toggleDuration: 150,
 	selector: null,
 
-	initialize: function(args, frag){
+	actionsDisabled: "",
 
+
+	actionIsDisabled: function(action) {
+		var _this = this;
+		return dojo.lang.inArray(_this.actionsDisabled, action)
+	},
+
+
+	actions: {
+    	ADDCHILD: "ADDCHILD"
+	},
+
+	initialize: function(args, frag){
+		var _this = this;
 		this.acceptDropSources = this.acceptDropSources.split(',');
 		/*
 		var sources;
@@ -100,13 +112,18 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		}
 		*/
+		this.actionsDisabled = this.actionsDisabled.split(",");
+		for(var i=0; i<this.actionsDisabled.length; i++) {
+			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
+		}
+
 
 		switch (this.toggle) {
 
-			case "fade": this.toggler = new dojo.widget.Tree.FadeToggle(); break;
+			case "fade": this.toggler = new dojo.widget.EditorTree.FadeToggle(); break;
 			// buggy - try to open many nodes in FF (IE is ok)
-			case "wipe": this.toggler = new dojo.widget.Tree.WipeToggle(); break;
-			default    : this.toggler = new dojo.widget.Tree.DefaultToggle();
+			case "wipe": this.toggler = new dojo.widget.EditorTree.WipeToggle(); break;
+			default    : this.toggler = new dojo.widget.EditorTree.DefaultToggle();
 		}
 
 
@@ -411,4 +428,43 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 
 });
+
+
+
+dojo.widget.EditorTree.DefaultToggle = function(){
+
+	this.show = function(node){
+		node.style.display = 'block';
+	}
+
+	this.hide = function(node){
+		node.style.display = 'none';
+	}
+}
+
+dojo.widget.EditorTree.FadeToggle = function(duration){
+	this.toggleDuration = duration ? duration : 150;
+
+	this.show = function(node){
+		node.style.display = 'block';
+		dojo.fx.html.fade(node, this.toggleDuration, 0, 1);
+	}
+
+	this.hide = function(node){
+		dojo.fx.html.fadeOut(node, this.toggleDuration, function(node){ node.style.display = 'none'; });
+	}
+}
+
+dojo.widget.EditorTree.WipeToggle = function(duration){
+	this.toggleDuration = duration ? duration : 150;
+
+	this.show = function(node){
+		node.style.display = 'block';
+		dojo.fx.html.wipeIn(node, this.toggleDuration);
+	}
+
+	this.hide = function(node){
+		dojo.fx.html.wipeOut(node, this.toggleDuration, function(node){ node.style.display = 'none'; });
+	}
+}
 
