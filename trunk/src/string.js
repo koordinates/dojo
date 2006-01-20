@@ -9,13 +9,8 @@ dojo.require("dojo.lang");
 dojo.string.trim = function(str, wh){
 	if(!dojo.lang.isString(str)){ return str; }
 	if(!str.length){ return str; }
-	if(wh > 0) {
-		return str.replace(/^\s+/, "");
-	} else if(wh < 0) {
-		return str.replace(/\s+$/, "");
-	} else {
-		return str.replace(/^\s+|\s+$/g, "");
-	}
+	var re = (wh > 0) ? (/^\s+/) : (wh < 0) ? (/\s+$/) : (/^\s+|\s+$/g);
+	return str.replace(re, "");
 }
 
 /**
@@ -96,50 +91,6 @@ dojo.string.summary = function(str, len) {
 	} else {
 		return str.substring(0, len).replace(/\.+$/, "") + "...";
 	}
-}
-
-dojo.string.escape = function(type, str) {
-	var args = [];
-	for(var i = 1; i < arguments.length; i++) { args.push(arguments[i]); }
-	switch(type.toLowerCase()) {
-		case "xml":
-		case "html":
-		case "xhtml":
-			return dojo.string.escapeXml.apply(this, args);
-		case "sql":
-			return dojo.string.escapeSql.apply(this, args);
-		case "regexp":
-		case "regex":
-			return dojo.string.escapeRegExp.apply(this, args);
-		case "javascript":
-		case "jscript":
-		case "js":
-			return dojo.string.escapeJavaScript.apply(this, args);
-		case "ascii":
-			// so it's encode, but it seems useful
-			return dojo.string.encodeAscii.apply(this, args);
-		default:
-			return str;
-	}
-}
-
-dojo.string.escapeXml = function(str, noSingleQuotes) {
-	str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;")
-		.replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-	if(!noSingleQuotes) { str = str.replace(/'/gm, "&#39;"); }
-	return str;
-}
-
-dojo.string.escapeSql = function(str) {
-	return str.replace(/'/gm, "''");
-}
-
-dojo.string.escapeRegExp = function(str) {
-	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r])/gm, "\\$1");
-}
-
-dojo.string.escapeJavaScript = function(str) {
-	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
 }
 
 /**
