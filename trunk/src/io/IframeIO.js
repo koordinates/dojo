@@ -101,11 +101,13 @@ dojo.io.IframeTransport = new function(){
 				}
 			}
 			if(cr["url"]){
+				cr._originalAction = fn.getAttribute("action");
 				fn.setAttribute("action", cr.url);
 			}
 			if(!fn.getAttribute("method")){
 				fn.setAttribute("method", (cr["method"]) ? cr["method"] : "post");
 			}
+			cr._originalTarget = fn.getAttribute("target");
 			fn.setAttribute("target", this.iframeName);
 			fn.target = this.iframeName;
 			fn.submit();
@@ -156,16 +158,23 @@ dojo.io.IframeTransport = new function(){
 		if(!_this.currentRequest){
 			_this.fireNextRequest();
 			return;
-		} else {
-			// remove all the hidden content inputs
-			var toClean = _this.currentRequest._contentToClean;
-			for(var i = 0; i < toClean.length; i++) {
-				var key = toClean[i];
-				var input = _this.currentRequest.formNode[key];
-				_this.currentRequest.formNode.removeChild(input);
-				_this.currentRequest.formNode[key] = null;
-			}
 		}
+
+		var req = _this.currentRequest;
+
+		// remove all the hidden content inputs
+		var toClean = req._contentToClean;
+		for(var i = 0; i < toClean.length; i++) {
+			var key = toClean[i];
+			var input = req.formNode[key];
+			req.formNode.removeChild(input);
+			req.formNode[key] = null;
+		}
+		// restore original action + target
+		req.formNode.setAttribute("action", req._originalAction);
+		req.formNode.setAttribute("target", req._originalTarget);
+		req.formNode.target = req._originalTarget;
+
 		var ifr = _this.iframe;
 		var ifw = dojo.io.iframeContentWindow(ifr);
 		// handle successful returns
@@ -175,7 +184,7 @@ dojo.io.IframeTransport = new function(){
 		var success = false;
 
 		try{
-			var cmt = _this.currentRequest.mimetype;
+			var cmt = req.mimetype;
 			if((cmt == "text/javascript")||(cmt == "text/json")){
 				// FIXME: not sure what to do here? try to pull some evalulable
 				// text from a textarea or cdata section? 
@@ -193,16 +202,16 @@ dojo.io.IframeTransport = new function(){
 		}catch(e){ 
 			// looks like we didn't get what we wanted!
 			var errObj = new dojo.io.Error("IframeTransport Error");
-			if(dojo.lang.isFunction(_this.currentRequest["error"])){
-				_this.currentRequest.error("error", errObj, _this.currentRequest);
+			if(dojo.lang.isFunction(req["error"])){
+				req.error("error", errObj, req);
 			}
 		}
 
 		// don't want to mix load function errors with processing errors, thus
 		// a separate try..catch
 		try {
-			if(success && dojo.lang.isFunction(_this.currentRequest["load"])){
-				_this.currentRequest.load("load", value, _this.currentRequest);
+			if(success && dojo.lang.isFunction(req["load"])){
+				req.load("load", value, req);
 			}
 		} catch(e) {
 			throw e;
