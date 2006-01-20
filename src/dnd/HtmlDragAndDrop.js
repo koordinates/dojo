@@ -78,7 +78,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
 		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
-		node.style["z-index"]=500;		
+		node.style.zIndex = 500;
 		return node;
 	},
 
