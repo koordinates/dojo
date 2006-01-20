@@ -1,5 +1,4 @@
 dojo.provide("dojo.date");
-dojo.require("dojo.string");
 
 /**
  * Sets the current Date object to the time given in an ISO 8601 date/time
@@ -195,10 +194,9 @@ dojo.date.toShortDateString = function(date) {
  * @param date the date object
  */
 dojo.date.toMilitaryTimeString = function(date){
-	var h = "00" + date.getHours();
-	var m = "00" + date.getMinutes();
-	var s = "00" + date.getSeconds();
-	return h.substr(h.length-2,2) + ":" + m.substr(m.length-2,2) + ":" + s.substr(s.length-2,2);
+	dojo.deprecated("dojo.date.toMilitaryTimeString",
+		'use dojo.date.strftime(date, "%T")', "0.4");
+	return dojo.date.strftime(date, "%T");
 }
 
 /**
@@ -355,14 +353,7 @@ dojo.date.toString = function(date, format){
  * Convert a Date to a SQL string, optionally ignoring the HH:MM:SS portion of the Date
  */
 dojo.date.toSql = function(date, noTime) {
-	var sql = date.getFullYear() + "-" + dojo.string.pad(date.getMonth(), 2) + "-"
-		+ dojo.string.pad(date.getDate(), 2);
-	if(!noTime) {
-		sql += " " + dojo.string.pad(date.getHours(), 2) + ":"
-			+ dojo.string.pad(date.getMinutes(), 2) + ":"
-			+ dojo.string.pad(date.getSeconds(), 2);
-	}
-	return sql;
+	return dojo.date.strftime(date, "%F" + !noTime ? " %T" : "");
 }
 
 /**
@@ -374,4 +365,76 @@ dojo.date.fromSql = function(sqlDate) {
 		parts.push(0);
 	}
 	return new Date(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+}
+
+
+
+// UNIXesque strftime, see <http://www.opengroup.org/onlinepubs/007908799/xsh/strftime.html>
+dojo.date.strftime = function (date, string) {
+
+	// cache
+	var properties = {
+		"n": "\n",
+		"t": "\t",
+		"%": "%"
+	};
+
+	// zero pad
+	function $ (s) { s = String(s); while (s.length < 2) { s = "0" + s; } return s; }
+	
+	function getProperty (property) {
+		if (!properties[property]) {
+			switch (property) {
+				case "a": properties["a"] = dojo.date.getShortDayOfWeekName(date); break;
+				case "A": properties["A"] = dojo.date.getDayOfWeekName(date); break;
+				case "b": case "h": properties["b"] = dojo.date.getShortMonthName(date); break;
+				case "B": properties["B"] = dojo.date.getMonthName(date); break;
+				case "c": properties["c"] = date.toLocaleString(); break;
+				case "C": properties["C"] = $(Math.floor(date.getFullYear()/100)); break;
+				case "d": properties["d"] = $(date.getDate()); break;
+				case "D": properties["D"] = getProperty("m") + "/" + getProperty("d") + "/" + getProperty("y");
+				case "e":
+					var e = String(date.getDate());
+					if (e.length < 2) { e = " " + e; }
+					properties["e"] = e;
+				case "F": properties["F"] = getProperty("Y") + "-" + getProperty("m") + "-" + getProperty("d");
+				case "H": properties["H"] = $(date.getHours()); break;
+				case "I":
+					var hours = date.getHours();
+					properties["I"] = $(hours > 12 ? hours - 12 : hours); break;
+				case "j": break; // day of the year as a decimal number [001,366]
+				case "m": properties["m"] = $(date.getMonth() + 1); break;
+				case "M": properties["M"] = $(date.getMinutes()); break;
+				case "p": properties["p"] = date.getHours() < 12 ? "am" : "pm";
+				case "r": properties["r"] = getProperty("I") + ":" + getProperty("M") + ":" + getProperty("S") + " " + getProperty("p");
+				case "R": properties["R"] = getProperty("H") + ":" + getProperty("M");
+				case "S": properties["S"] = $(date.getSeconds()); break;
+				case "T": properties["T"] = getProperty("H") + ":" + getProperty("M") + ":" + getProperty("S");
+				case "u":
+					var day = date.getDay();
+					properties["u"] = $(day == 0 ? 7 : day); break;
+				case "U": break; // week number of the year (Sunday as the first day of the week) as a decimal number [00,53]
+				case "V": break; // eek number of the year (Monday as the first day of the week) as a decimal number [01,53]. If the week containing 1 January has four or more days in the new year, then it is considered week 1. Otherwise, it is the last week of the previous year, and the next week is week 1.
+				case "W": break; // week number of the year (Monday as the first day of the week) as a decimal number [00,53]. All days in a new year preceding the first Monday are considered to be in week 0.
+				case "w": properties["w"] = $(date.getDay()); break;
+				case "y":
+					var y = date.getFullYear();
+					properties["y"] = $(y - Math.floor(y/100)*100);
+				case "Y": properties["Y"] = String(date.getFullYear()); break;
+			}
+		}
+		
+		return properties[property];
+	}
+
+	var str = "";
+	var i = 0, index = 0;
+	while ((index = string.indexOf("%", i)) != -1) {
+		str += string.substring(i, index);
+		str += getProperty(string.charAt(index + 1));
+		i = index + 2;
+	}
+	str += string.substring(i);
+	
+	return str;
 }
