@@ -14,23 +14,7 @@ dojo.lang.extend(dojo.widget.html.Container, {
 
 	isContainer: true,
 	containerNode: null,
-	domNode: null,
-
-	onResized: function() {
-		// Clients should override this function to do special processing,
-		// then call this.notifyChildrenOfResize() to notify children of resize
-		this.notifyChildrenOfResize();
-	},
-	
-	notifyChildrenOfResize: function() {
-		for(var i=0; i<this.children.length; i++) {
-			var child = this.children[i];
-			//dojo.debug(this.widgetId + " resizing child " + child.widgetId);
-			if ( child.onResized ) {
-				child.onResized();
-			}
-		}
-	}
+	domNode: null
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:Container");
