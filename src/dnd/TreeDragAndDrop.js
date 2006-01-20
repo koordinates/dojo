@@ -102,7 +102,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
 		var accepts = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
 
-		dojo.debug("TreeDropTarget.onDragOver accepts:"+accepts)
+		//dojo.debug("TreeDropTarget.onDragOver accepts:"+accepts)
 
 		if (accepts && this.treeNode.isFolder && !this.treeNode.isExpanded) {
 			this.setAutoExpandTimer();
@@ -173,7 +173,7 @@ dojo.lang.extend(dojo.dnd.TreeDropOntoTarget, {
 
 
 	accepts: function(dragObjects) {
-		dojo.debug("TreeDropOntoTarget.accepts")
+		//dojo.debug("TreeDropOntoTarget.accepts")
 
 		var accepts = dojo.dnd.TreeDropTarget.prototype.accepts.apply(this, arguments);
 
@@ -206,7 +206,7 @@ dojo.lang.extend(dojo.dnd.TreeDropOntoTarget, {
 		// perform common DnD actions and learn whether the drop acceptable
 		var accepts = dojo.dnd.TreeDropTarget.prototype.onDragOver.apply(this, arguments);
 
-		dojo.debug("TreeDropOntoTarget.onDragOver accepts:"+accepts)
+		//dojo.debug("TreeDropOntoTarget.onDragOver accepts:"+accepts)
 
 		if (!accepts) return false;
 
@@ -296,7 +296,7 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 	// that's why acceptsWithPosition is called
 	// doesnt take index into account ( can change while moving mouse w/o changing target )
 	accepts: function(dragObjects) {
-		dojo.debug("TreeDropBetweenTarget.accepts")
+		//dojo.debug("TreeDropBetweenTarget.accepts")
 
 		var accepts = dojo.dnd.TreeDropTarget.prototype.accepts.apply(this, arguments);
 
