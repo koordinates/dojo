@@ -15,6 +15,11 @@ dojo.widget.PopupMenu2 = function(){
 	this.items = [];	// unused???
 	this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 	this.queueOnAnimationFinish = [];
+
+	this.eventNames =  {
+		open: ""
+	};
+
 }
 
 dojo.inherits(dojo.widget.PopupMenu2, dojo.widget.HtmlWidget);
@@ -38,6 +43,9 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	domNode: null,
 	containerNode: null,
 
+	eventNaming: "default",
+
+
 	templateString: '<div><div dojoAttachPoint="containerNode"></div></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlMenu2.css"),
 
@@ -56,6 +64,16 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	submenuIconSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_off.gif").toString(),
 	submenuIconOnSrc: dojo.uri.dojoUri("src/widget/templates/images/submenu_on.gif").toString(),
 
+	initialize: function(args, frag) {
+
+		if (this.eventNaming == "default") {
+			for (eventName in this.eventNames) {
+				this.eventNames[eventName] = this.widgetId+"/"+eventName;
+			}
+		}
+
+	},
+
 	postCreate: function(){
 
 		dojo.html.addClass(this.domNode, 'dojoPopupMenu2');
@@ -73,7 +91,18 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 			}
 		}
 
+		this.subscribeSubitemsOnOpen();
+
 		this.layoutMenuSoon();
+	},
+
+	subscribeSubitemsOnOpen: function() {
+		var subItems = this.getChildrenOfType(dojo.widget.MenuItem2);
+
+		for(var i=0; i<subItems.length; i++) {
+			//dojo.debug(subItems);
+			dojo.event.topic.subscribe(this.eventNames.open, subItems[i], "menuOpen")
+		}
 	},
 
 	// get open event for current menu
@@ -338,6 +367,10 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 dojo.widget.MenuItem2 = function(){
 	dojo.widget.HtmlWidget.call(this);
+
+	this.eventNames = {
+		engage: ""
+	};
 }
 
 dojo.inherits(dojo.widget.MenuItem2, dojo.widget.HtmlWidget);
@@ -383,6 +416,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 	iconSrc: '',
 	submenuId: '',
 	isDisabled: false,
+	eventNaming: "default",
 
 
 	postCreate: function(){
@@ -401,6 +435,12 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 
 		this.labelShadowNode.appendChild(document.createTextNode(this.caption));
 		this.accelShadowNode.appendChild(document.createTextNode(this.accelKey));
+
+		if (this.eventNaming == "default") {
+			for (eventName in this.eventNames) {
+				this.eventNames[eventName] = this.widgetId+"/"+eventName;
+			}
+		}
 	},
 
 	layoutItem: function(label_w, accel_w){
@@ -484,9 +524,13 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 			}
 
 		}else{
-
 			this.parent.closeAll();
 		}
+
+		//dojo.debug("GO "+this.eventNames.engage)
+
+		dojo.event.topic.publish(this.eventNames.engage, this);
+
 	},
 
 	highlightItem: function(){
@@ -562,7 +606,11 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		var node = this.accelNode.childNodes[0];
 
 		return dojo.style.getOuterWidth(node);
+	},
+
+	menuOpen: function(message) {
 	}
+
 });
 
 
