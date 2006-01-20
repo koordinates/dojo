@@ -421,12 +421,6 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 			<arg value="${profileFile}" />
 		</java>
 		<script language="javascript"><![CDATA[
-			function echo(msg){
-				var echo = dojo.createTask("echo");
-				echo.setMessage(msg);
-				echo.execute();
-			}
-
 			var currentTask = dojo.getTargets().get("-set-profile-deps");
 			var files = dojo.getProperty("concatFilesProp");
 			dojo.setNewProperty("profileDeps", files);
@@ -441,6 +435,30 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 		<echo>${profileDeps}</echo>
 	</target>
 	<!-- end list-profile-deps task -->
+
+	<!-- list-profile-sizes task -->
+	<target name="list-profile-sizes" depends="-fix-config, -set-profile-deps"
+		description="lists out the contents of the file dependencies">
+		<script language="javascript"><![CDATA[
+			function echo(msg){
+				var echo = dojo.createTask("echo");
+				echo.setMessage(msg);
+				echo.execute();
+			}
+
+			var files = new String(dojo.getProperty("profileDeps"));
+			var outparts = files.split("\n");
+			for(var x=0; x<outparts.length; x++){
+				if(outparts[x][outparts[x].length-1]==","){
+					outparts[x] = outparts[x].substring(0, outparts[x].length-1);
+				}
+				var flen  = parseInt(new java.io.File(new java.lang.String(outparts[x])).length());
+				echo(((flen>=1024) ? parseInt(flen/1024)+"K" : flen+"B") +": \t"+ outparts[x]);
+			}
+		]]></script>
+		<!-- <echo>${profileDeps}</echo> -->
+	</target>
+	<!-- end list-profile-sizes task -->
 
 	<!-- compress task -->
 	<target name="compress" depends="-fix-config, list-profile-deps"
