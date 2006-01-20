@@ -132,7 +132,7 @@ dojo.lang.extend(dojo.io.Request, {
 		// encoding fun!
 		kwArgs.encoding = dojo.lang.firstValued(kwArgs["encoding"], djConfig["bindEncoding"], "");
 
-		kwArgs.sendTransport = dojo.lang.firstValued(kwArgs["sendTransport"], djConfig["ioSendTransport"], true);
+		kwArgs.sendTransport = dojo.lang.firstValued(kwArgs["sendTransport"], djConfig["ioSendTransport"], false);
 
 		var isFunction = dojo.lang.isFunction;
 		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
