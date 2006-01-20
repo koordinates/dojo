@@ -45,7 +45,7 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 	}
 
 	if((cpath)&&(!dojo.widget._cssFiles[cpath])){
-		dojo.html.insertCssFile(cpath);
+		dojo.style.insertCssFile(cpath);
 		obj.templateCssPath = null;
 		dojo.widget._cssFiles[cpath] = true;
 	}
