@@ -161,8 +161,17 @@ dojo.debugShallow = function(obj){
 	if (!djConfig.isDebug) { return; }
 	dojo.debug('------------------------------------------------------------');
 	dojo.debug('Object: '+obj);
-	for(i in obj){
-		dojo.debug(i + ': ' + obj[i]);
+	var props = [];
+	for(var prop in obj){
+		try {
+			props.push(prop + ': ' + obj[prop]);
+		} catch(E) {
+			props.push(prop + ': ERROR - ' + E.message);
+		}
+	}
+	props.sort();
+	for(var i = 0; i < props.length; i++) {
+		dojo.debug(props[i]);
 	}
 	dojo.debug('------------------------------------------------------------');
 }

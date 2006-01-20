@@ -153,11 +153,17 @@ dojo.lang.extend(dojo.io.FormBind, {
 		}
 	},
 
+	onSubmit: function(form) {
+		return true;
+	},
+
 	submit: function(e) {
 		e.preventDefault();
-		dojo.io.bind(dojo.lang.mixin(this.bindArgs, {
-			formFilter: dojo.lang.hitch(this, "formFilter")
-		}));
+		if(this.onSubmit(this.form)) {
+			dojo.io.bind(dojo.lang.mixin(this.bindArgs, {
+				formFilter: dojo.lang.hitch(this, "formFilter")
+			}));
+		}
 	},
 
 	click: function(e) {
@@ -188,6 +194,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 			var fcn = dojo.lang.hitch(this, targetFcn);
 			srcObj[srcFcn] = function(e) {
 				if(!e) { e = window.event; }
+				if(!e.currentTarget) { e.currentTarget = e.srcElement; }
 				if(!e.preventDefault) { e.preventDefault = function() { window.event.returnValue = false; } }
 				fcn(e);
 			}
