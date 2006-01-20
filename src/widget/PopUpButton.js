@@ -55,7 +55,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/PopUpButton.css"),
 	
 	buildRendering: function (args, frag) {
-		dojo.html.insertCssFile(this.templateCssPath, null, true);
+		dojo.style.insertCssFile(this.templateCssPath, null, true);
 	
 		this.domNode = document.createElement("a");
 		this.domNode.className = "PopUpButton";
