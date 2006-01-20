@@ -31,7 +31,7 @@ dojo.event.topic = new function(){
 		// if message is an array, we treat it as a set of arguments,
 		// otherwise, we just pass on the arguments passed in as-is
 		var args = [];
-		if(arguments.length == 2 && dojo.lang.isArray(message)){
+		if(arguments.length == 2 && (dojo.lang.isArray(message) || message.callee)){
 			args = message;
 		}else{
 			var args = [];
