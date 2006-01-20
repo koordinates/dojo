@@ -270,8 +270,23 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 		obj[methname] = function(){ 
 			var args = [];
 
-			if((isNode)&&(!arguments.length)&&(window.event)){
-				args.push(dojo.event.browser.fixEvent(window.event));
+			if((isNode)&&(!arguments.length)){
+				var evt = null;
+				try {
+					if(obj.ownerDocument) {
+						evt = obj.ownerDocument.parentWindow.event;
+					} else if(obj.documentElement) {
+						evt = obj.documentElement.ownerDocument.parentWindow.event;
+					} else {
+						evt = window.event;
+					}
+				} catch(E) {
+					evt = window.event;
+				}
+
+				if(evt) {
+					args.push(dojo.event.browser.fixEvent(evt));
+				}
 			}else{
 				for(var x=0; x<arguments.length; x++){
 					if((x==0)&&(isNode)&&(dojo.event.browser.isEvent(arguments[x]))){
