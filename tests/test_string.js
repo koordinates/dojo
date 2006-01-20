@@ -36,36 +36,6 @@ function test_string_capitalize(){
 	jum.assertEquals("test160", "This One Has  Extra   Space", dojo.string.capitalize("this one has  extra   space"));
 }
 
-function test_string_escape() {
-	// TODO: vary the tests a bit more :)
-	// xml | html
-	jum.assertEquals("test200", '&lt;body bgcolor=&quot;#ffcc00&quot;&gt;&amp; becomes &amp;amp; y&#39;all!',
-		dojo.string.escape("xml", '<body bgcolor="#ffcc00">& becomes &amp; y\'all!'));
-	jum.assertEquals("test201", '&lt;body bgcolor=&quot;#ffcc00&quot;&gt;&amp; becomes &amp;amp; y&#39;all!',
-		dojo.string.escape("html", '<body bgcolor="#ffcc00">& becomes &amp; y\'all!'));
-	jum.assertEquals("test202", '&lt;body bgcolor=&quot;#ffcc00&quot;&gt;&amp; becomes &amp;amp; y&#39;all!',
-		dojo.string.escapeXml('<body bgcolor="#ffcc00">& becomes &amp; y\'all!'));
-	// sql
-	jum.assertEquals("test210", "Hey y''all! How is it ''''going''''?",
-		dojo.string.escape("sql", "Hey y'all! How is it ''going''?"));
-	jum.assertEquals("test210", "Hey y''all! How is it ''''going''''?",
-		dojo.string.escapeSql("Hey y'all! How is it ''going''?"));
-	// regexp
-	jum.assertEquals("test220", "wrong \\\\ divide",
-		dojo.string.escape("regexp", "wrong \\ divide"));
-	jum.assertEquals("test221", "wrong \\\\ divide",
-		dojo.string.escape("regex", "wrong \\ divide"));
-	jum.assertEquals("test222", "wrong \\\\ divide",
-		dojo.string.escapeRegExp("wrong \\ divide"));
-	// js
-	jum.assertEquals("test230", "I have \\\"quotes\\\" of various \\'types\\'",
-		dojo.string.escape("javascript", "I have \"quotes\" of various 'types'"));
-	jum.assertEquals("test231", "I have \\\"quotes\\\" of various \\'types\\'",
-		dojo.string.escape("js", "I have \"quotes\" of various 'types'"));
-	jum.assertEquals("test232", "I have \\\"quotes\\\" of various \\'types\\'",
-		dojo.string.escapeJavaScript("I have \"quotes\" of various 'types'"));
-}
-
 function test_string_summary() {
 	jum.assertEquals("test300", "Every good boy do...",
 		dojo.string.summary("Every good boy does fine", 17));
