@@ -4,7 +4,6 @@ dojo.provide("dojo.widget.tags");
 dojo.require("dojo.lang");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
-dojo.require("dojo.string");
 
 dojo.widget.Widget = function(){
 	// these properties aren't primitives and need to be created on a per-item
@@ -293,7 +292,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 						for(var y=0; y<pairs.length; y++){
 							var si = pairs[y].indexOf(":");
 							if((si != -1)&&(pairs[y].length>si)){
-								this[x][dojo.string.trim(pairs[y].substr(0, si))] = pairs[y].substr(si+1);
+								this[x][pairs[y].substr(0, si).replace(/^\s+|\s+$/g, "")] = pairs[y].substr(si+1);
 							}
 						}
 					}else{
