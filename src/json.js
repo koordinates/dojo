@@ -28,9 +28,15 @@ dojo.json = {
 		dojo.json.jsonRegistry.register(name, check, wrap, override);
 	},
 
-	evalJson: function(/* jsonString */){
+	evalJson: function(/* jsonString */ json){
 		// FIXME: should this accept mozilla's optional second arg?
-		return eval("(" + arguments[0] + ")");
+		try {
+			return eval("(" + json + ")");
+		}catch(e){
+			dojo.debug(e);
+		}finally{
+			return json;
+		}
 	},
 
 	evalJSON: dojo.lang.forward("evalJson"),
