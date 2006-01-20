@@ -128,10 +128,19 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	getChildrenOfType: function(type, recurse){
 		var ret = [];
-		type = type.toLowerCase();
+		var isFunc = dojo.lang.isFunction(type);
+		if(!isFunc){
+			type = type.toLowerCase();
+		}
 		for(var x=0; x<this.children.length; x++){
-			if(this.children[x].widgetType.toLowerCase() == type){
-				ret.push(this.children[x]);
+			if(isFunc){
+				if(this.children[x].widgetType instanceof type){
+					ret.push(this.children[x]);
+				}
+			}else{
+				if(this.children[x].widgetType.toLowerCase() == type){
+					ret.push(this.children[x]);
+				}
 			}
 			if(recurse){
 				ret = ret.concat(this.children[x].getChildrenOfType(type, recurse));
