@@ -237,11 +237,6 @@ dojo.string.addToPrototype = function() {
 					case "addToPrototype":
 						return null;
 						break;
-					case "escape":
-						return function(type) {
-							return dojo.string.escape(type, this);
-						}
-						break;
 					default:
 						return function() {
 							var args = [this];
@@ -253,7 +248,7 @@ dojo.string.addToPrototype = function() {
 						}
 				}
 			})();
-			if(func) { String.prototype[method] = func; }
+			if(func){ String.prototype[method] = func; }
 		}
 	}
 }
