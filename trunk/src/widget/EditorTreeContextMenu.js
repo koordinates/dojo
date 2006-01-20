@@ -16,11 +16,6 @@ dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeMenuItem");
 
 dojo.widget.EditorTreeContextMenu = function() {
 	dojo.widget.PopupMenu2.call(this);
-	this.widgetType = "EditorTreeContextMenu";
-
-	this.eventNames =  {
-		open: ""
-	};
 
 
 }
@@ -30,32 +25,7 @@ dojo.inherits(dojo.widget.EditorTreeContextMenu, dojo.widget.PopupMenu2);
 
 dojo.lang.extend(dojo.widget.EditorTreeContextMenu, {
 
-	initialize: function(args, frag) {
-
-		var result = dojo.widget.PopupMenu2.prototype.initialize.apply(this, arguments);
-
-		if (args['eventNaming'] == "default" || args['eventnaming'] == "default" ) { // IE || FF
-			for (eventName in this.eventNames) {
-				this.eventNames[eventName] = this.widgetId+"/"+eventName;
-			}
-		}
-
-		return result;
-
-	},
-
-	postCreate: function(){
-		var result = dojo.widget.PopupMenu2.prototype.postCreate.apply(this, arguments);
-
-		var subItems = this.getChildrenOfType('EditorTreeMenuItem')
-
-		for(var i=0; i<subItems.length; i++) {
-			dojo.event.topic.subscribe(this.eventNames.open, subItems[i], "menuOpen")
-		}
-
-
-		return result;
-	},
+	widgetType: "EditorTreeContextMenu",
 
 	open: function(x, y, parentMenu, explodeSrc){
 
@@ -96,21 +66,33 @@ dojo.lang.extend(dojo.widget.EditorTreeContextMenu, {
 
 dojo.widget.EditorTreeMenuItem = function() {
 	dojo.widget.MenuItem2.call(this);
-	this.widgetType = "EditorTreeMenuItem";
 
 }
 
 
 dojo.inherits(dojo.widget.EditorTreeMenuItem, dojo.widget.MenuItem2);
 
-dojo.lang.extend(dojo.widget.EditorTreeMenuItem, {
-	for_folders: true,
 
+dojo.lang.extend(dojo.widget.EditorTreeMenuItem, {
+
+	widgetType: "EditorTreeMenuItem",
+
+	// treeActions menu item performs following actions (to be checked for permissions)
+	treeActions: "",
+
+	initialize: function(args, frag) {
+
+		this.treeActions = this.treeActions.split(",");
+		for(var i=0; i<this.treeActions.length; i++) {
+			this.treeActions[i] = this.treeActions[i].toUpperCase();
+		}
+
+	},
 
 	getTreeNode: function() {
 		var menu = this;
 
-		while (menu.widgetType != 'EditorTreeContextMenu') {
+		while (! (menu instanceof dojo.widget.EditorTreeContextMenu) ) {
 			menu = menu.parent;
 		}
 
@@ -127,17 +109,23 @@ dojo.lang.extend(dojo.widget.EditorTreeMenuItem, {
 		return treeNode;
 	},
 
+
 	menuOpen: function(message) {
 		var treeNode = this.getTreeNode();
 
-		/* manage for folders status */
-		if (!treeNode.isFolder && this.for_folders==false) {
-			this.setDisabled(true);
-		} else {
-			this.setDisabled(false);
-		}
+		this.setDisabled(false); // enable by default
+
+		var _this = this;
+		dojo.lang.forEach(_this.treeActions,
+			function(action) {
+				if(treeNode.actionIsDisabled(action)) {
+					_this.setDisabled(true);
+				}
+			}
+		);
+
 	}
 
-
-
 });
+
+

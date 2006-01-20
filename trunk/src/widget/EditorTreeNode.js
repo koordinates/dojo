@@ -21,16 +21,24 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	widgetType: "EditorTreeNode",
 
 	loadStates: {
-		UNCHECKED: 1,
-    		LOADING: 2,
-    		LOADED: 3
+		UNCHECKED: "UNCHECKED",
+    	LOADING: "LOADING",
+    	LOADED: "LOADED"
 	},
 
+
+	actions: {
+		MOVE: "MOVE",
+    	REMOVE: "REMOVE",
+    	EDIT: "EDIT",
+    	ADDCHILD: "ADDCHILD"
+	},
 
 	isContainer: true,
 
 	domNode: null,
 	containerNode: null,
+	actionsDisabled: "",
 
 	templateString: '<div class="dojoTreeNode"><div style="display:none" dojoAttachPoint="containerNode"></div></div>',
 
@@ -67,12 +75,34 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	state: null,  // after creation will change to loadStates: "loaded/loading/unchecked"
 	domNodeInitialized: false,  // domnode is initialized with icons etc
 
+	actionIsDisabled: function(action) {
+		var _this = this;
+
+		//dojo.debug(this+" "+action+" ::"+this.actionsDisabled);
+
+		if (action == this.actions.ADDCHILD && !this.isFolder) return true;
+
+		var disabled = dojo.lang.inArray(_this.actionsDisabled, action);
+
+		return disabled;
+	},
+
 	initialize: function(args, frag){
+		var _this = this;
 		this.state = this.loadStates.UNCHECKED;
 
 		if (args['isFolder'] == "true" || args['isfolder'] == "true" ) { // IE || FF
 			this.isFolder = true;
+		} else {
+			this.isFolder = false;
 		}
+
+		this.actionsDisabled = this.actionsDisabled.split(",");
+		for(var i=0; i<this.actionsDisabled.length; i++) {
+			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
+		}
+
+
 
 		//this.domNode.treeNode = this; // domNode knows about its treeNode owner. E.g for DnD
 	},
