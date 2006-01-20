@@ -1,6 +1,5 @@
 dojo.provide("dojo.fx.html");
 
-dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.lang");
 dojo.require("dojo.animation.*");
@@ -153,7 +152,7 @@ dojo.fx.html.colorFadeIn = function(node, duration, startColor, delay, callback,
 		startColor = tmp;
 	}
 	node = dojo.byId(node);
-	var color = dojo.html.getBackgroundColor(node);
+	var color = dojo.style.getBackgroundColor(node);
 	var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
 	var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
 	while(color.length > 3) { color.pop(); }
@@ -185,7 +184,7 @@ dojo.fx.html.colorFadeOut = function(node, duration, endColor, delay, callback, 
 		endColor = tmp;
 	}
 	node = dojo.byId(node);
-	var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node)).toRgb();
+	var color = new dojo.graphics.color.Color(dojo.style.getBackgroundColor(node)).toRgb();
 
 	var rgb = new dojo.graphics.color.Color(endColor).toRgb();
 	var anim = dojo.fx.html.colorFade(node, duration||dojo.fx.duration, color, rgb, callback, delay > 0 || dontPlay);
@@ -227,12 +226,12 @@ dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback
 
 dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
-	var overflow = dojo.html.getStyle(node, "overflow");
+	var overflow = dojo.style.getStyle(node, "overflow");
 	if(overflow == "visible") {
 		node.style.overflow = "hidden";
 	}
 	node.style.height = 0;
-	dojo.html.show(node);
+	dojo.style.show(node);
 	var anim = dojo.fx.html.wipe(node, duration, 0, node.scrollHeight, null, true);
 	dojo.event.connect(anim, "onEnd", function() {
 		node.style.overflow = overflow;
@@ -245,13 +244,13 @@ dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 
 dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
-	var overflow = dojo.html.getStyle(node, "overflow");
+	var overflow = dojo.style.getStyle(node, "overflow");
 	if(overflow == "visible") {
 		node.style.overflow = "hidden";
 	}
 	var anim = dojo.fx.html.wipe(node, duration, node.offsetHeight, 0, null, true);
 	dojo.event.connect(anim, "onEnd", function() {
-		dojo.html.hide(node);
+		dojo.style.hide(node);
 		node.style.overflow = overflow;
 		if(callback) { callback(node, anim); }
 	});
@@ -284,7 +283,7 @@ dojo.lang.extend(dojo.fx.html.wiper, {
 
 	toggle: function() {
 		if(!this._anim) {
-			var type = "wipe" + (dojo.html.isVisible(this.node) ? "Hide" : "Show");
+			var type = "wipe" + (dojo.style.isVisible(this.node) ? "Hide" : "Show");
 			this._anim = dojo.fx[type](this.node, this.duration, dojo.lang.hitch(this, "_callback"));
 		}
 	},
@@ -295,7 +294,7 @@ dojo.lang.extend(dojo.fx.html.wiper, {
 });
 
 dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
-	var startCoords = dojo.html.toCoordinateArray(start);
+	var startCoords = dojo.style.toCoordinateArray(start);
 
 	var outline = document.createElement("div");
 	with(outline.style) {
@@ -310,7 +309,7 @@ dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 		visibility = "hidden";
 		display = "block";
 	}
-	var endCoords = dojo.html.toCoordinateArray(endNode);
+	var endCoords = dojo.style.toCoordinateArray(endNode);
 
 	with(endNode.style) {
 		display = "none";
@@ -343,8 +342,8 @@ dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 };
 
 dojo.fx.html.implode = function(startNode, end, duration, callback, dontPlay) {
-	var startCoords = dojo.html.toCoordinateArray(startNode);
-	var endCoords = dojo.html.toCoordinateArray(end);
+	var startCoords = dojo.style.toCoordinateArray(startNode);
+	var endCoords = dojo.style.toCoordinateArray(end);
 
 	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
@@ -491,9 +490,16 @@ dojo.fx.html.Exploder = function(triggerNode, boxNode) {
 
 	// document events
 	dojo.event.connect(document.documentElement || document.body, "onclick", function(e) {
+		function isDesc(node, ancestor) {
+			while(node) {
+				if(node == ancestor){ return true; }
+				node = node.parentNode;
+			}
+			return false;
+		}
 		if(_this.autoHide && _this.showing
-			&& !dojo.dom.isDescendantOf(e.target, boxNode)
-			&& !dojo.dom.isDescendantOf(e.target, triggerNode) ) {
+			&& !isDesc(e.target, boxNode)
+			&& !isDesc(e.target, triggerNode) ) {
 			_this.hide();
 		}
 	});

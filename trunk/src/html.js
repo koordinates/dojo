@@ -2,6 +2,7 @@ dojo.provide("dojo.html");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.string");
+dojo.require("dojo.uri.Uri");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
 dojo.lang.mixin(dojo.html, dojo.style);
@@ -669,36 +670,6 @@ if(!dojo.evalObjPath("dojo.dom.createNodesFromText")){
 	}
 }
 
-dojo.html.isVisible = function(node){
-	node = dojo.byId(node);
-	// FIXME: this should also look at visibility!
-	return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";
-}
-
-dojo.html.show  = function(node){
-	node = dojo.byId(node);
-	if(node.style){
-		node.style.display = dojo.lang.inArray(['tr', 'td', 'th'], node.tagName.toLowerCase()) ? "" : "block";
-	}
-}
-
-dojo.html.hide = function(node){
-	node = dojo.byId(node);
-	if(node.style){
-		node.style.display = "none";
-	}
-}
-
-dojo.html.toggleVisible = function(node) {
-	if(dojo.html.isVisible(node)) {
-		dojo.html.hide(node);
-		return false;
-	} else {
-		dojo.html.show(node);
-		return true;
-	}
-}
-
 /**
  * Like dojo.dom.isTag, except case-insensitive
 **/
@@ -711,31 +682,6 @@ dojo.html.isTag = function(node /* ... */) {
 	}
 	return "";
 }
-
-// in: coordinate array [x,y,w,h] or dom node
-// return: coordinate array
-dojo.html.toCoordinateArray = function(coords, includeScroll) {
-	if(dojo.lang.isArray(coords)){
-		// coords is already an array (of format [x,y,w,h]), just return it
-		while ( coords.length < 4 ) { coords.push(0); }
-		while ( coords.length > 4 ) { coords.pop(); }
-		var ret = coords;
-	} else {
-		// coords is an dom object (or dom object id); return it's coordinates
-		var node = dojo.byId(coords);
-		var ret = [
-			dojo.html.getAbsoluteX(node, includeScroll),
-			dojo.html.getAbsoluteY(node, includeScroll),
-			dojo.html.getInnerWidth(node),
-			dojo.html.getInnerHeight(node)
-		];
-	}
-	ret.x = ret[0];
-	ret.y = ret[1];
-	ret.w = ret[2];
-	ret.h = ret[3];
-	return ret;
-};
 
 /* TODO: merge placeOnScreen and placeOnScreenPoint to make 1 function that allows you
  * to define which corner(s) you want to bind to. Something like so:
@@ -889,6 +835,30 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 	ret.x = x;
 	ret.y = y;
 	return ret;
+}
+
+dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
+	if(!URI) { return; }
+	if(!doc){ doc = document; }
+	// Safari doesn't have this property, but it doesn't support
+	// styleSheets.href either so it beomces moot
+	if(doc.baseURI) { URI = new dojo.uri.Uri(doc.baseURI, URI); }
+	if(checkDuplicates && doc.styleSheets){
+		// get the host + port info from location
+		var loc = location.href.split("#")[0].substring(0, location.href.indexOf(location.pathname));
+		for(var i = 0; i < doc.styleSheets.length; i++){
+			if(doc.styleSheets[i].href && URI.toString() ==
+				new dojo.uri.Uri(doc.styleSheets[i].href.toString())) { return; }
+		}
+	}
+	var file = doc.createElement("link");
+	file.setAttribute("type", "text/css");
+	file.setAttribute("rel", "stylesheet");
+	file.setAttribute("href", URI);
+	var head = doc.getElementsByTagName("head")[0];
+	if(head){ // FIXME: why isn't this working on Opera 8?
+		head.appendChild(file);
+	}
 }
 
 /**
