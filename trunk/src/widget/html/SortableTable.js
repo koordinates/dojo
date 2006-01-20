@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.html.SortableTable");
-
 dojo.require("dojo.lang");
 dojo.require("dojo.date");
 dojo.require("dojo.html");
@@ -7,8 +6,9 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.SortableTable");
 
-//	set up the general widget
 dojo.widget.html.SortableTable=function(){
+	//	summary
+	//	Constructor for the SortableTable widget
 	dojo.widget.SortableTable.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
@@ -25,31 +25,31 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	templatePath:null,
 	templateCssPath:null,
 
-	getTypeFromString:function(s){
+	getTypeFromString:function(/* string */ s){
+		//	summary
+		//	Find the constructor that matches param s by searching through the entire object tree.
 		var parts=s.split("."),i=0,obj=dj_global; 
 		do{obj=obj[parts[i++]];}while(i<parts.length&&obj); 
-		return(obj!=dj_global)?obj:null;
+		return(obj!=dj_global)?obj:null;	//	function
 	},
-	
-	compare:function(o1, o2){
-		//	we will compare property values, and only at the top level.
+	compare:function(/* Object */ o1, /* Object */ o2){
+		//	summary
+		//	Compare two objects using a shallow property compare
 		for(var p in o1){
-			if(!o2[p]) return false;
-			if(o1[p]!=o2[p]) return false;
+			if(!o2[p]) return false;	//	boolean
+			if(o1[p].valueOf()!=o2[p].valueOf()) return false;	//	boolean
 		}
-		return true;
+		return true;	// boolean
 	},
 
 	getSelection:function(){
-		return this.selected;
+		//	summary
+		//	return the currently selected object (JSON format)
+		return this.selected;	//	object
 	},
-
-	parseData:function(data){
-		//	this is for receiving raw JSON objects.  We expect an array
-		//	of objects that have properties matching either the field of a
-		//	column or the label on the column.  If we don't find that
-		//	property, we set it to the type's default value.
-		//	NB: you MUST render manually.
+	parseData:function(/* Object */ data){
+		//	summary
+		//	Parse the passed JSON data structure, and cast based on columns.
 		this.data=[];
 		for(var i=0; i<data.length; i++){
 			var o={};	//	new data object.
@@ -57,25 +57,31 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 				var field=this.columns[j].getField();
 				var type=this.columns[j].getType();
 				var val=data[i][field];
-				if (val) o[field]=new type(val);
-				else o[field]=new type();	//	let it use the default.
+				var t=this.columns[j].sortType.toLowerCase();
+				if(val)
+					o[field]=new type(val);
+				else
+					o[field]=new type();	//	let it use the default.
 			}
 			this.data.push(o);
 		}
 	}, 
 
-	//	widget-specific methods
-	getObjectFromRow:function(row){
+	getObjectFromRow:function(/* HTMLTableRowElement */ row){
+		//	summary
+		//	creates a JSON object based on the passed row
 		var cells=row.getElementsByTagName("td");
 		var o={};
 		for(var i=0; i<this.columns.length;i++){
 			var text=dojo.html.renderedTextContent(cells[i]);
-			var val=new (this.columns[i].getType())(text);	//	cast it.
+			var val=new (this.columns[i].getType())(text);
 			o[this.columns[i].getField()]=val;
 		}
-		return o;
+		return o;	//	object
 	},
-	setSelectionByRow:function(row){
+	setSelectionByRow:function(/* HTMLTableElementRow */ row){
+		//	summary
+		//	create the selection object based on the passed row
 		this.selected=this.getObjectFromRow(row);
 		var body=dojo.html.getParentByType(row,"tbody");
 		if(body){
@@ -91,8 +97,9 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		}
 	},
 
-	parseColumns:function(node){
-		//	we expect a thead element here.
+	parseColumns:function(/* HTMLTableHeadElement */ node){
+		//	summary
+		//	parses the passed element to create column objects
 		this.columns=[];	//	reset it.
 		var row=node.getElementsByTagName("tr")[0];
 		var cells=row.getElementsByTagName("td");
@@ -126,7 +133,9 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		}
 	},
 
-	parseDataFromTable:function(tbody){
+	parseDataFromTable:function(/* HTMLTableBodyElement */ tbody){
+		//	summary
+		//	parses the data in the tbody of a table to create a set of objects
 		this.data=[];
 		var rows=tbody.getElementsByTagName("tr");
 		for(var i=0; i<rows.length; i++){
@@ -144,6 +153,8 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	},
 	
 	render:function(){
+		//	summary
+		//	renders the table to the browser
 		var data=[];
 		var body=this.domNode.getElementsByTagName("tbody")[0];
 		for(var i=0; i<this.data.length; i++){
@@ -213,13 +224,20 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	},
 
 	//	the following the user can override.
-	onSelect:function(e){ },
-	onUISelect:function(e){
+	onSelect:function(/* DomEvent */ e){ 
+		//	summary
+		//	empty function for the user to attach code to, fired by onUISelect
+	},
+	onUISelect:function(/* DomEvent */ e){
+		//	summary
+		//	fired when a user selects a row
 		var row=dojo.html.getParentByType(e.target,"tr");
 		this.setSelectionByRow(row);
 		this.onSelect(e);
 	},
-	onHeaderClick:function(e){
+	onHeaderClick:function(/* DomEvent */ e){
+		//	summary
+		//	Main handler function for each header column click.
 		var oldIndex=this.sortIndex;
 		var oldDirection=this.sortDirection;
 		var source=e.target;
@@ -253,9 +271,9 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		this.render();
 	},
 
-	//	overridden from HtmlWidget.
 	postCreate:function(){ 
-		// connect event handlers to the object first.
+		// 	summary
+		//	overridden from HtmlWidget, initializes and renders the widget.
 		var thead=this.domNode.getElementsByTagName("thead")[0];
 
 		//	parse the columns.
