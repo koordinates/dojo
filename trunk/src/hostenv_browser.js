@@ -64,6 +64,7 @@ if(typeof window == 'undefined'){
 
 	var dr = dojo.render;
 	var drh = dojo.render.html;
+	var drs = dojo.render.svg;
 	var dua = drh.UA = navigator.userAgent;
 	var dav = drh.AV = navigator.appVersion;
 	var t = true;
@@ -92,18 +93,18 @@ if(typeof window == 'undefined'){
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 
 	dr.vml.capable=drh.ie;
-	dr.svg.capable = f;
-	dr.svg.support.plugin = f;
-	dr.svg.support.builtin = f;
-	dr.svg.adobe = f;
+	drs.capable = f;
+	drs.support.plugin = f;
+	drs.support.builtin = f;
+	drs.adobe = f;
 	if (document.implementation 
 		&& document.implementation.hasFeature
 		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")
 	){
-		dr.svg.capable = t;
-		dr.svg.support.builtin = t;
-		dr.svg.support.plugin = f;
-		dr.svg.adobe = f;
+		drs.capable = t;
+		drs.support.builtin = t;
+		drs.support.plugin = f;
+		drs.adobe = f;
 	}else{ 
 		//	check for ASVG
 		if(navigator.mimeTypes && navigator.mimeTypes.length > 0){
@@ -111,12 +112,12 @@ if(typeof window == 'undefined'){
 				navigator.mimeTypes["image/svg"] ||
 				navigator.mimeTypes["image/svg-xml"];
 			if (result){
-				dr.svg.adobe = result && result.enabledPlugin &&
+				drs.adobe = result && result.enabledPlugin &&
 					result.enabledPlugin.description && 
 					(result.enabledPlugin.description.indexOf("Adobe") > -1);
-				if(dr.svg.adobe) {
-					dr.svg.capable = t;
-					dr.svg.support.plugin = t;
+				if(drs.adobe) {
+					drs.capable = t;
+					drs.support.plugin = t;
 				}
 			}
 		}else if(drh.ie && dr.os.win){
@@ -126,14 +127,14 @@ if(typeof window == 'undefined'){
 				result = t;
 			} catch(e){}
 			if (result){
-				dr.svg.capable = t;
-				dr.svg.support.plugin = t;
-				dr.svg.adobe = t;
+				drs.capable = t;
+				drs.support.plugin = t;
+				drs.adobe = t;
 			}
 		}else{
-			dr.svg.capable = f;
-			dr.svg.support.plugin = f;
-			dr.svg.adobe = f;
+			drs.capable = f;
+			drs.support.plugin = f;
+			drs.adobe = f;
 		}
 	}
 })();
