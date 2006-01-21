@@ -2,16 +2,17 @@ dojo.provide("dojo.widget.html.ContentPane");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Container");
+dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.ContentPane");
 
 dojo.widget.html.ContentPane = function(){
-	dojo.widget.html.Container.call(this);
+	dojo.widget.HtmlWidget.call(this);
 }
-dojo.inherits(dojo.widget.html.ContentPane, dojo.widget.html.Container);
+dojo.inherits(dojo.widget.html.ContentPane, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.ContentPane, {
 	widgetType: "ContentPane",
+	isContainer: true,
 
 	href: "",
 	extractContent: true,

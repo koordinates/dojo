@@ -9,7 +9,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.dnd.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Container");
+dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.EditorTreeNode");
 
 // make it a tag
@@ -17,7 +17,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:EditorTree");
 
 
 dojo.widget.EditorTree = function() {
-	dojo.widget.html.Container.call(this);
+	dojo.widget.HtmlWidget.call(this);
 
 	this.eventNames = {
 		// new node built.. Well, just built
@@ -32,13 +32,13 @@ dojo.widget.EditorTree = function() {
 
 	this.tree = this;
 }
-dojo.inherits(dojo.widget.EditorTree, dojo.widget.html.Container);
+dojo.inherits(dojo.widget.EditorTree, dojo.widget.HtmlWidget);
 
 /* extend DOES NOT copy recursively */
 dojo.lang.extend(dojo.widget.EditorTree, {
 	widgetType: "EditorTree",
 
-	domNode: null,
+	isContainer: true,
 
 	acceptDropSources: "",
 
