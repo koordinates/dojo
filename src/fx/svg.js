@@ -1,7 +1,6 @@
 dojo.provide("dojo.fx.svg");
 
 dojo.require("dojo.svg");
-dojo.require("dojo.lang");
 dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
 

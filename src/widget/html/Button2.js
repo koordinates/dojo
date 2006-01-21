@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.html.Button2");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.extras");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 

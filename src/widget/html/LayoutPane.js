@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.LayoutPane");
 dojo.provide("dojo.widget.html.LayoutPane");
+dojo.require("dojo.string.extras");
 
 //
 // this widget provides Delphi-style panel layout semantics

@@ -8,7 +8,7 @@ dojo.require("dojo.animation.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.extras");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	node = dojo.byId(node);

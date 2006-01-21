@@ -1,6 +1,8 @@
 dojo.provide("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.html");
+dojo.require("dojo.lang.extras");
+dojo.require("dojo.lang.func");
 
 dojo.widget.HtmlWidget = function(args){
 	// mixin inheritance

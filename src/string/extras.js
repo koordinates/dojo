@@ -1,6 +1,6 @@
 dojo.provide("dojo.string.extras");
 
-dojo.require("dojo.string");
+dojo.require("dojo.string.common");
 dojo.require("dojo.lang");
 
 /**

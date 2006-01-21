@@ -1,5 +1,7 @@
-dojo.require("dojo.lang");
 dojo.provide("dojo.event");
+
+dojo.require("dojo.lang.array");
+dojo.require("dojo.lang.extras");
 
 dojo.event = new function(){
 	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);

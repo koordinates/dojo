@@ -1,5 +1,6 @@
 dojo.provide("dojo.io.IO");
 dojo.require("dojo.string");
+dojo.require("dojo.lang.extras");
 
 /******************************************************************************
  *	Notes about dojo.io design:

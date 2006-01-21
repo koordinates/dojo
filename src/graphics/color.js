@@ -1,5 +1,5 @@
 dojo.provide("dojo.graphics.color");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.array");
 dojo.require("dojo.math");
 
 // TODO: rewrite the "x2y" methods to take advantage of the parsing

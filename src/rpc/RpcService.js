@@ -1,7 +1,7 @@
 dojo.provide("dojo.rpc.RpcService");
 dojo.require("dojo.io.*");
 dojo.require("dojo.json");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.func");
 dojo.require("dojo.rpc.Deferred");
 
 dojo.rpc.RpcService = function(url){

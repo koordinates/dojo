@@ -11,6 +11,9 @@ dojo.provide("dojo.dnd.TreeDragSource");
 dojo.provide("dojo.dnd.TreeDropTarget");
 
 dojo.require("dojo.dnd.HtmlDragAndDrop");
+dojo.require("dojo.lang.func");
+dojo.require("dojo.lang.array");
+dojo.require("dojo.lang.extras");
 
 dojo.dnd.TreeDragSource = function(node, syncController, type, treeNode){
 	this.controller = syncController;
