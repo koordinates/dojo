@@ -5,6 +5,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.Dialog");
+	dojo.require("dojo.fx.html");
 </script>
 
 <script type="text/javascript">
@@ -33,7 +34,7 @@ form {
 
 <a href="javascript:dlg.show()">Show</a>
 
-<div dojoType="dialog" id="DialogContent" bgColor="white" bgOpacity="0.5">
+<div dojoType="dialog" id="DialogContent" bgColor="white" bgOpacity="0.5" toggle="fade" toggleDuration="250">
 	<form onsubmit="return false;">
 		<table>
 			<tr>
