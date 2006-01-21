@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.Manager");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.array");
 dojo.require("dojo.event.*");
 
 // Manager class

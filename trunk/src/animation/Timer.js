@@ -1,5 +1,5 @@
 dojo.provide("dojo.animation.Timer");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.func");
 
 dojo.animation.Timer = function(intvl){
 	var timer = null;

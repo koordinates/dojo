@@ -1,7 +1,8 @@
 dojo.provide("dojo.widget.Widget");
 dojo.provide("dojo.widget.tags");
 
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.func");
+dojo.require("dojo.lang.array");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
 

@@ -8,6 +8,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.ColorPalette");
+dojo.require("dojo.string.extras");
 
 dojo.widget.tags.addParseTreeHandler("dojo:Editor");
 

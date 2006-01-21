@@ -1,5 +1,5 @@
 dojo.provide("dojo.rpc.Deferred");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.func");
 
 dojo.rpc.Deferred = function(/* optional */ canceller){
 	/*

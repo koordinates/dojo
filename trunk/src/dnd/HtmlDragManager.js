@@ -1,6 +1,6 @@
 dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.event.*");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.array");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 

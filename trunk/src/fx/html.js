@@ -1,7 +1,7 @@
 dojo.provide("dojo.fx.html");
 
 dojo.require("dojo.style");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.func");
 dojo.require("dojo.animation.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");

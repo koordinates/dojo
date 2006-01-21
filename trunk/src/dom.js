@@ -1,5 +1,5 @@
 dojo.provide("dojo.dom");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.array");
 
 dojo.dom.ELEMENT_NODE                  = 1;
 dojo.dom.ATTRIBUTE_NODE                = 2;
@@ -47,7 +47,7 @@ dojo.dom.xmlns = {
 	AdobeExtensions : "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 };
 
-dojo.dom.isNode = dojo.lang.isDomNode = function(wh){
+dojo.dom.isNode = function(wh){
 	if(typeof Element == "object") {
 		try {
 			return wh instanceof Element;
@@ -57,7 +57,6 @@ dojo.dom.isNode = dojo.lang.isDomNode = function(wh){
 		return wh && !isNaN(wh.nodeType);
 	}
 }
-dojo.lang.whatAmI.custom["node"] = dojo.dom.isNode;
 
 dojo.dom.getTagName = function(node){
 	var tagName = node.tagName;
