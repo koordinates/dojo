@@ -11,22 +11,24 @@ dojo.provide("dojo.widget.html.SplitPanePanel");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutPane");
-dojo.require("dojo.widget.Container");
+dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
 dojo.widget.html.SplitPane = function(){
 
-	dojo.widget.html.Container.call(this);
+	dojo.widget.HtmlWidget.call(this);
 
 	this.sizers = [];
 }
 
-dojo.inherits(dojo.widget.html.SplitPane, dojo.widget.html.Container);
+dojo.inherits(dojo.widget.html.SplitPane, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.SplitPane, {
 	widgetType: "SplitPane",
+	isContainer: true,
+
 	virtualSizer: null,
 	isHorizontal: 0,
 	paneBefore: null,

@@ -22,13 +22,14 @@ dojo.require("dojo.string");
 
 
 dojo.widget.html.LayoutPane = function(){
-	dojo.widget.html.Container.call(this);
+	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.html.LayoutPane, dojo.widget.html.Container);
+dojo.inherits(dojo.widget.html.LayoutPane, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	widgetType: "LayoutPane",
+	isContainer: true,
 
 	isChild: false,
 

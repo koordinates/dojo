@@ -5,28 +5,25 @@ dojo.provide("dojo.widget.HtmlTreeNode");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.fx.html");
-dojo.require("dojo.widget.Container");
+dojo.require("dojo.widget.HtmlWidget");
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:Tree");
 dojo.widget.tags.addParseTreeHandler("dojo:TreeNode");
 
 dojo.widget.HtmlTree = function() {
-	dojo.widget.html.Container.call(this);
+	dojo.widget.HtmlWidget.call(this);
 }
-dojo.inherits(dojo.widget.HtmlTree, dojo.widget.html.Container);
+dojo.inherits(dojo.widget.HtmlTree, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.HtmlTree, {
 	widgetType: "Tree",
-
-	domNode: null,
+	isContainer: true,
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Tree.css"),
 	templateString: '<div class="dojoTree"></div>',
 
 	selectedNode: null,
-	toggler: null,
-
 
 	//
 	// these icons control the grid and expando buttons for the whole tree

@@ -10,7 +10,6 @@ dojo.provide("dojo.widget.html.FisheyeListItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.Container");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
@@ -20,9 +19,9 @@ dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
 dojo.widget.tags.addParseTreeHandler("dojo:FisheyeListItem");
 
 dojo.widget.html.FisheyeList = function(){
-	dojo.widget.html.Container.call(this);
+	dojo.widget.HtmlWidget.call(this);
 }
-dojo.inherits(dojo.widget.html.FisheyeList, dojo.widget.html.Container);
+dojo.inherits(dojo.widget.html.FisheyeList, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
@@ -38,6 +37,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		BOTTOM: 4
 	},
 
+	isContainer: true,
 	snarfChildDomOutput: true,
 	
 	pos: {x: -1, y: -1},		// current cursor position, relative to the grid
