@@ -133,7 +133,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 		}
 		for(var x=0; x<this.children.length; x++){
 			if(isFunc){
-				if(this.children[x].widgetType instanceof type){
+				if(this.children[x] instanceof type){
 					ret.push(this.children[x]);
 				}
 			}else{
