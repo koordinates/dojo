@@ -1,4 +1,3 @@
-dojo.provide("dojo.animation");
 dojo.provide("dojo.animation.Animation");
 dojo.require("dojo.animation.AnimationEvent");
 
