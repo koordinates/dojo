@@ -2,10 +2,7 @@ dojo.provide("dojo.widget.EditorTreeContextMenu");
 dojo.provide("dojo.widget.EditorTreeMenuItem");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.dnd.*");
-dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Container");
 dojo.require("dojo.widget.Menu2");
 
 

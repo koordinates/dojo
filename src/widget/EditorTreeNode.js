@@ -1,11 +1,8 @@
 dojo.provide("dojo.widget.EditorTreeNode");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.dnd.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Container");
-dojo.require("dojo.widget.Tree");
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeNode");
