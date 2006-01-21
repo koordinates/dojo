@@ -1,0 +1,9 @@
+#!/bin/bash
+mkdir ../usage
+
+for file in $(ls ../src); do
+	part=`echo $file | sed 's/\.js//'`
+	./usage $part > ../usage/$part.txt
+done
+
+exit 0
