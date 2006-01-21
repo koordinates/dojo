@@ -41,7 +41,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	acceptDropSources: "",
 
-	//templateCssPath: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/EditorTree.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/images/EditorTree/EditorTree.css"),
 
 	templateString: '<div class="dojoTree"></div>',
 
