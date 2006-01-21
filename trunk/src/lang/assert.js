@@ -1,4 +1,4 @@
-dojo.provide("dojo.lang");
+dojo.provide("dojo.lang.assert");
 
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.array");
