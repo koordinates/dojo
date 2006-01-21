@@ -38,9 +38,13 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	RPCUrl: "local",
 
+	errorHandler: null, // function pointer on error handler
+
+	eventNaming: "default",
+
 	initialize: function(args, frag){
 
-		if (args['eventNaming'] == "default" || args['eventnaming'] == "default" ) { // IE || FF
+		if (this.eventNaming == "default") { // IE || FF
 			for (eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
@@ -50,6 +54,18 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 
 	DNDMode: "off",
+
+
+	/**
+	 * Common RPC error handler (dies)
+	*/
+	RPCErrorHandler: function(type, obj) {
+		var message = "Error: ";
+		if (obj.message) message = message + obj.message;
+
+		alert(message);
+	},
+
 
 	/**
 	 * Binds controller to tree events
@@ -127,6 +143,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		return this.RPCUrl + ( this.RPCUrl.indexOf("?") > -1 ? "&" : "?") + "action="+action;
 	},
 
+
 	/**
 	 * Make request to server about moving children.
 	 *
@@ -140,63 +157,55 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	*/
 	changeParentRemote: function(child, newParent, index){
 
-			if (newParent.isTreeNode) newParent.markLoading();
+		//if (newParent.isTreeNode) newParent.markLoading();
 
-			var params = {
-				// where from
-				childId: child.widgetId,
-				childTreeId: child.tree.widgetId,
-				childOldParentId: child.parent.widgetId,
-				childOldParentIndex: child.getParentIndex(),
-				// where to
-				newParentId: newParent.widgetId,
-				newParentTreeId: newParent.tree.widgetId,
-				newParentIndex: index
-			}
+		var params = {
+			// where from
+			child: child.getInfo(),
+			childTree: child.tree.getInfo(),
+			// where to
+			newParent: newParent.getInfo(),
+			newParentTree: newParent.tree.getInfo()
+		};
 
-			var query = dojo.io.argsFromMap(params);
-			var requestUrl = this.getRPCUrl('changeParent');
-			if(query != "") {
-				requestUrl += (requestUrl.indexOf("?") > -1 ? "&" : "?") + query;
-			}
+		var success;
 
-			var response;
-			var result;
+		dojo.io.bind({
+			url: this.getRPCUrl('changeParent'),
+			/* I hitch to get this.loadOkHandler */
+			load: dojo.lang.hitch(this,
+				function(type, obj) {
+					success = this.changeParentProcessResponse(type, obj, child, newParent, index) ;
+				}
+			),
+			error: this.RPCErrorHandler,
+			mimetype: "text/json",
+			preventCache: true,
+			sync: true,
+			content: { data: dojo.json.serialize(params) }
+		});
 
-			try{
-				response = dojo.hostenv.getText(requestUrl);
-				result = dj_eval("("+response+")");
-			}catch(e){
-				dojo.debug(e);
-				dojo.debug(response);
-				dojo.raise("Failed to load node");
-			}
-
-
-			//dojo.debugShallow(result)
-
-			if (result == true) {
-				/* change parent succeeded */
-				//dojo.debug(child);
-				child.tree.changeParent(child, newParent, index)
-				this.updateDND(child);
-				//dojo.debug(child);
-				return true;
-			} else if (dojo.lang.isObject(result)) {
-				dojo.raise(result.error);
-			} else {
-				dojo.raise("Invalid response "+response)
-			}
-
-
+		return success;
 	},
 
+	changeParentProcessResponse: function(type, result, child, newParent, index) {
+
+		if (!dojo.lang.isUndefined(result.error)) {
+			this.RPCErrorHandler(result.error);
+			return false;
+		}
+
+		child.tree.changeParent(child, newParent, index);
+		this.updateDND(child);
+
+		return true;
+	},
 
 	/**
 	 * return true on success, false on failure
 	*/
 	changeParent: function(child, newParent, index) {
-		// dojo.debug("Drop registered")
+		//dojo.debug("Drop registered")
 		/* move sourceTreeNode to new parent */
 		if (!this.canChangeParent(child, newParent)) {
 			return false;
@@ -231,25 +240,30 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 
 
-	/**
-	 * Common RPC error handler (dies)
-	*/
-	RPCErrorHandler: function(type, obj) {
-		dojo.raise("RPC error occured! Application restart/tree refresh recommended.");
-	},
-
 
 
 	/**
 	 * Add all loaded nodes from array obj as node children and expand it
 	*/
-	loadProcessResponse: function(node, newChildren, callback) {
+	loadProcessResponse: function(type, node, result, callback) {
+
+		if (!dojo.lang.isUndefined(result.error)) {
+			this.RPCErrorHandler(result.error);
+			return false;
+		}
+
+		var newChildren = result;
+
 		if (!dojo.lang.isArray(newChildren)) {
 			dojo.raise('Not array loaded: '+newChildren);
 		}
+
 		for(var i=0; i<newChildren.length; i++) {
 			// looks like dojo.widget.manager needs no special "add" command
 			var newChild = dojo.widget.createWidget(node.widgetType, newChildren[i]);
+
+		//dojo.debugShallow(newChild);
+
 			node.addChild(newChild);
 
 			//dojo.debug(dojo.widget.manager.getWidgetById(newChild.widgetId))
@@ -269,50 +283,33 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * I need sync mode for DnD
 	*/
 	loadRemote: function(node, sync, callback){
-			node.markLoading();
+		node.markLoading();
 
 
-			var params = {
-				treeId: node.tree.widgetId,
-				nodeId: node.widgetId
-			};
+		var params = {
+			node: node.getInfo(),
+			tree: node.tree.getInfo()
+		};
 
-			var requestUrl = this.getRPCUrl('getChildren');
-			//dojo.debug(requestUrl)
+		var requestUrl = this.getRPCUrl('getChildren');
+		//dojo.debug(requestUrl)
 
-			if (!sync) {
-				dojo.io.bind({
-					url: requestUrl,
-					/* I hitch to get this.loadOkHandler */
-					load: dojo.lang.hitch(this, function(type, obj) { this.loadProcessResponse(node, obj, callback) } ),
-					error: dojo.lang.hitch(this, this.RPCErrorHandler),
-					mimetype: "text/json",
-					preventCache: true,
-					sync: sync,
-					content: params
-				});
-
-				return;
-			} else {
-				var query = dojo.io.argsFromMap(params);
-				if(query != "") {
-					requestUrl += (requestUrl.indexOf("?") > -1 ? "&" : "?") + query;
+		dojo.io.bind({
+			url: requestUrl,
+			/* I hitch to get this.loadOkHandler */
+			load: dojo.lang.hitch(this,
+				function(type, result) {
+					this.loadProcessResponse(type, node, result, callback) ;
 				}
+			),
+			error: this.RPCErrorHandler,
+			mimetype: "text/json",
+			preventCache: true,
+			sync: sync,
+			content: { data: dojo.json.serialize(params) }
+		});
 
-				var newChildren;
 
-				try{
-					var response = dojo.hostenv.getText(requestUrl);
-					newChildren = dj_eval("("+response+")");
-				}catch(e){
-					dojo.debug(e);
-					dojo.debug(response);
-					dojo.raise("Failed to load node");
-				}
-
-				this.loadProcessResponse(node, newChildren);
-
-			}
 	},
 
 	onTreeClick: function(message){
@@ -342,12 +339,15 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			return;
 		}
 
+
 		/* deselect old node */
 		if (node.tree.selector.selectedNode) {
 			this.deselect(node.tree.selector.selectedNode);
 		}
 
 		this.select(node);
+
+
 	},
 
 
@@ -373,9 +373,11 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 	select: function(node){
+
 		node.markSelected();
 
 		node.tree.selector.selectedNode = node;
+
 
 		dojo.event.topic.publish(this.eventNames.select, {source: node} );
 	},
@@ -388,6 +390,8 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 	expand: function(node) {
+		//if (this.node=="Item 1.1") dojo.debug("expand IsExpanded:"+this.isExpanded);
+
 		if (node.isExpanded) return;
 
 		if (node.state == node.loadStates.UNCHECKED) {
@@ -509,26 +513,33 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	removeNodeRemote: function(node, callback) {
 
-			var params = {
-				treeId: node.tree.widgetId,
-				nodeId: node.widgetId
-			}
+		var params = {
+			node: node.getInfo(),
+			tree: node.tree.getInfo()
+		}
 
-			dojo.io.bind({
-					url: this.getRPCUrl('removeNode'),
-					/* I hitch to get this.loadOkHandler */
-					load: dojo.lang.hitch(this, function(type, obj) {
-						this.removeNodeProcessResponse(node, callback, obj) }
-					),
-					error: dojo.lang.hitch(this, this.RPCErrorHandler),
-					mimetype: "text/json",
-					preventCache: true,
-					content: params
-			});
+		dojo.io.bind({
+				url: this.getRPCUrl('removeNode'),
+				/* I hitch to get this.loadOkHandler */
+				load: dojo.lang.hitch(this, function(type, obj) {
+					this.removeNodeProcessResponse(type, node, callback, obj) }
+				),
+				error: this.RPCErrorHandler,
+				mimetype: "text/json",
+				preventCache: true,
+				content: {data: dojo.json.serialize(params) }
+		});
 
 	},
 
-	removeNodeProcessResponse: function(node, callback, result) {
+	removeNodeProcessResponse: function(type, node, callback, result) {
+		if (!dojo.lang.isUndefined(result.error)) {
+			this.RPCErrorHandler(result.error);
+			return false;
+		}
+
+		if (!result) return false;
+
 		if (result == true) {
 			/* change parent succeeded */
 			this.doRemoveNode(node, node);
@@ -615,9 +626,9 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 					url: this.getRPCUrl('createNode'),
 					/* I hitch to get this.loadOkHandler */
 					load: dojo.lang.hitch(this, function(type, obj) {
-						this.createNodeProcessResponse(parent, index, data, callback, obj) }
+						this.createNodeProcessResponse(type, obj, parent, index, callback) }
 					),
-					error: dojo.lang.hitch(this, this.RPCErrorHandler),
+					error: this.RPCErrorHandler,
 					mimetype: "text/json",
 					preventCache: true,
 					content: params
@@ -625,25 +636,26 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	},
 
-	createNodeProcessResponse: function(parent, index, data, callback, response) {
+	createNodeProcessResponse: function(type, result, parent, index, callback) {
+
+		if (!dojo.lang.isUndefined(result.error)) {
+			this.RPCErrorHandler(result.error);
+			return false;
+		}
 
 		if (!parent.isTreeNode) {
 			dojo.raise("Can only add children to EditorTreeNode")
 		}
 
-		if (!dojo.lang.isObject(response)) {
-			dojo.raise("Invalid response "+response)
-		}
-		if (!dojo.lang.isUndefined(response.error)) {
-			dojo.raise(response.error);
+		if (!dojo.lang.isObject(result)) {
+			dojo.raise("Invalid result "+result)
 		}
 
-
-		this.doCreateNode(parent, index, response);
+		this.doCreateNode(parent, index, result);
 
 		if (callback) {
 			// provide context manually e.g with dojo.lang.hitch.
-			callback.apply(this, [parent, index, response]);
+			callback.apply(this, [parent, index, result]);
 		}
 
 	},

@@ -10,6 +10,8 @@ dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeNode");
 
 dojo.widget.EditorTreeNode = function() {
 	dojo.widget.HtmlWidget.call(this);
+
+	this.actionsDisabled = [];
 }
 
 dojo.inherits(dojo.widget.EditorTreeNode, dojo.widget.HtmlWidget);
@@ -35,7 +37,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	domNode: null,
 	containerNode: null,
-	actionsDisabled: "",
+
 
 	templateString: '<div class="dojoTreeNode"><div style="display:none" dojoAttachPoint="containerNode"></div></div>',
 
@@ -46,6 +48,8 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	childIcon: null,
 	isTreeNode: true,
+
+	objectId: "", // the widget represents an object
 
 	afterLabelNode: null, // node to the left of labelNode
 
@@ -84,17 +88,30 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		return disabled;
 	},
 
+	getInfo: function() {
+		var _this = this;
+		var info = {
+			widgetId: _this.widgetId,
+			title: _this.title,
+			objectId: _this.objectId,
+			index: _this.getParentIndex(),
+			isFolder: _this.isFolder
+		}
+
+		return info;
+	},
+
 	initialize: function(args, frag){
 		var _this = this;
 		this.state = this.loadStates.UNCHECKED;
-
-		if (args['isFolder'] == "true" || args['isfolder'] == "true" ) { // IE || FF
+/*
+		if (args['isFolder'] == "true" || args['isFolder'] === true || args['isfolder'] == "true" ) { // IE || program args || FF
 			this.isFolder = true;
 		} else {
 			this.isFolder = false;
 		}
+*/
 
-		this.actionsDisabled = this.actionsDisabled.split(",");
 		for(var i=0; i<this.actionsDisabled.length; i++) {
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
@@ -273,7 +290,10 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		dojo.html.removeClass(this.titleNode, 'dojoTreeNodeLabelSelected');
 	},
 
+
 	updateIcons: function(){
+
+
 
 		//dojo.debug("Update icons for "+this.title)
 		//dojo.debug(this.isFolder)
@@ -286,7 +306,9 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		//
 
 		if (this.isFolder){
+
 			this.expandIcon.src = this.isExpanded ? this.tree.expandIconSrcMinus : this.tree.expandIconSrcPlus;
+
 		} else {
 			this.expandIcon.src = this.tree.blankIconSrc;
 		}
@@ -332,6 +354,9 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 			}
 		}
 
+
+
+			//if (this.title=="Item 1.1") dojo.debug("updateIcons IsExpanded:"+this.isExpanded+" "+this.expandIcon.src);
 
 		//
 		// set the vertical grid icons
@@ -390,6 +415,9 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 
 	expand: function(){
+
+		//if (this.title=="Item 1.1") dojo.debug("expand IsExpanded:"+this.isExpanded);
+
 
 		if (this.children.length) {
 			this.showChildren();
