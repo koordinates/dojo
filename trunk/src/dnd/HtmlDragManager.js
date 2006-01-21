@@ -1,4 +1,5 @@
 dojo.provide("dojo.dnd.HtmlDragManager");
+dojo.require("dojo.dnd.DragAndDrop");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.html");

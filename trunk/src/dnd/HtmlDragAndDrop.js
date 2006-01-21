@@ -4,6 +4,8 @@ dojo.provide("dojo.dnd.HtmlDropTarget");
 dojo.provide("dojo.dnd.HtmlDragObject");
 
 dojo.require("dojo.dnd.HtmlDragManager");
+dojo.require("dojo.dnd.DragAndDrop");
+
 dojo.require("dojo.animation.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
