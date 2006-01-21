@@ -1,5 +1,6 @@
 dojo.provide("dojo.json");
 dojo.require("dojo.lang.func");
+dojo.require("dojo.AdapterRegistry");
 
 dojo.json = {
 	jsonRegistry: new dojo.AdapterRegistry(),
