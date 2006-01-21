@@ -2,13 +2,9 @@
 dojo.provide("dojo.widget.EditorTreeController");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.dnd.*");
 dojo.require("dojo.dnd.TreeDragAndDrop");
-dojo.require("dojo.fx.html");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Container");
-dojo.require("dojo.widget.Tree");
 
 
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeController");
@@ -19,6 +15,7 @@ dojo.widget.EditorTreeController = function() {
 
 	this.eventNames = {
 		select : "",
+		deselect : "",
 		collapse: "",
 		expand: "",
 		dblselect: "", // select already selected node.. Edit or whatever
@@ -350,7 +347,6 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			this.deselect(node.tree.selector.selectedNode);
 		}
 
-		node.tree.selector.selectedNode = node;
 		this.select(node);
 	},
 
@@ -379,6 +375,8 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	select: function(node){
 		node.markSelected();
 
+		node.tree.selector.selectedNode = node;
+
 		dojo.event.topic.publish(this.eventNames.select, {source: node} );
 	},
 
@@ -386,6 +384,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		node.unMarkSelected();
 
 		node.tree.selector.selectedNode = null;
+		dojo.event.topic.publish(this.eventNames.deselect, {source: node} );
 	},
 
 	expand: function(node) {

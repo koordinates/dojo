@@ -1,8 +1,7 @@
-
 dojo.provide("dojo.widget.EditorTreeSelector");
 
-dojo.require("dojo.widget.Container");
-dojo.require("dojo.widget.Tree");
+dojo.require("dojo.widget.HtmlWidget");
+
 
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeSelector");
 
