@@ -30,6 +30,9 @@ dojo.widget.EditorTree = function() {
 	};
 
 	this.tree = this;
+	this.acceptDropSources = [];
+	this.actionsDisabled = [];
+
 }
 dojo.inherits(dojo.widget.EditorTree, dojo.widget.HtmlWidget);
 
@@ -47,12 +50,16 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	/* Model events */
 	eventNames: null,
+	eventNaming: "default",
 
 	toggler: null,
 
 	isExpanded: true, // consider this "root node" to be always expanded
 
 	isTree: true,
+
+	objectId: "",
+
 
 	//
 	// these icons control the grid and expando buttons for the whole tree
@@ -89,8 +96,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	toggleDuration: 150,
 	selector: null,
 
-	actionsDisabled: "",
-
 
 	actionIsDisabled: function(action) {
 		var _this = this;
@@ -102,16 +107,28 @@ dojo.lang.extend(dojo.widget.EditorTree, {
     	ADDCHILD: "ADDCHILD"
 	},
 
-	initialize: function(args, frag){
+
+	getInfo: function() {
 		var _this = this;
-		this.acceptDropSources = this.acceptDropSources.split(',');
+		var info = {
+			widgetId: _this.widgetId,
+			objectId: _this.objectId
+		}
+
+		return info;
+	},
+
+	initialize: function(args, frag){
+
+		var _this = this;
+		//this.acceptDropSources = this.acceptDropSources.split(',');
 		/*
 		var sources;
 		if ( (sources = args['acceptDropSources']) || (sources = args['acceptDropSources']) ) {
 
 		}
 		*/
-		this.actionsDisabled = this.actionsDisabled.split(",");
+		//this.actionsDisabled = this.actionsDisabled.split(",");
 		for(var i=0; i<this.actionsDisabled.length; i++) {
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
@@ -126,7 +143,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		}
 
 
-		if (args['eventNaming'] == "default" || args['eventnaming'] == "default" ) { // IE || FF
+		if (this.eventNaming == "default") { // IE || FF
 
 			for (eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
@@ -250,6 +267,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		//dojo.debug("removeChild: "+child.title+" from "+parent.title);
 
+		/*
 		if (children.length == 0) {
 			// toggle empty container off
 			if (!parent.isTree) { // if has container
@@ -257,6 +275,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			}
 
 		}
+		*/
 
 		parent.updateIconTree();
 
