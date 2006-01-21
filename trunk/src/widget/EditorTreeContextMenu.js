@@ -120,10 +120,16 @@ dojo.lang.extend(dojo.widget.EditorTreeMenuItem, {
 			function(action) {
 				if(treeNode.actionIsDisabled(action)) {
 					_this.setDisabled(true);
+				} else {
+					//dojo.debug("Allowed "+action)
 				}
 			}
 		);
 
+	},
+
+	toString: function() {
+		return "["+this.widgetType+" node "+this.getTreeNode()+"]";
 	}
 
 });

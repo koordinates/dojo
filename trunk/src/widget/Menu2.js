@@ -99,8 +99,10 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	subscribeSubitemsOnOpen: function() {
 		var subItems = this.getChildrenOfType(dojo.widget.MenuItem2);
 
+		//dojo.debug(subItems)
+
 		for(var i=0; i<subItems.length; i++) {
-			//dojo.debug(subItems);
+			//dojo.debug(subItems[i]);
 			dojo.event.topic.subscribe(this.eventNames.open, subItems[i], "menuOpen")
 		}
 	},
