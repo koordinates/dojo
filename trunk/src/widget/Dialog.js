@@ -11,14 +11,6 @@ dojo.widget.tags.addParseTreeHandler("dojo:dialog");
 
 dojo.widget.HtmlDialog = function(){
 	dojo.widget.HtmlWidget.call(this);
-
-	this.resizeConnectArgs = {
-		srcObj: window,
-		srcFunc: "onresize",
-		adviceObj: this,
-		adviceFunc: "onResize",
-		rate: 500
-	}
 }
 
 dojo.inherits(dojo.widget.HtmlDialog, dojo.widget.HtmlWidget);
@@ -29,21 +21,16 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	isContainer: true,
 
 	_scrollConnected: false,
-	_resizeConnected: false,
 	
 	// provide a focusable element or element id if you need to
 	// work around FF's tendency to send focus into outer space on hide
 	focusElement: "",
 
-	// Only supports fade right now
-	effect: "fade",
-	effectDuration: 250,
-
 	bg: null,
 	bgIframe: null,
 	bgColor: "black",
 	bgOpacity: 0.4,
-	followScroll: 1,
+	followScroll: true,
 	_fromTrap: false,
 	anim: null,
 
@@ -80,10 +67,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		}
 		var b = document.body;
 		b.appendChild(this.domNode);
-		this.nodeRef = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-		if(this.nodeRef) {
-			this.setContent(this.nodeRef);
-		}
 
 		this.bgIframe = new dojo.html.BackgroundIframe();
 
@@ -98,17 +81,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		this.setBackgroundColor(this.bgColor);
 		b.appendChild(this.bg);
 		this.bgIframe.setZIndex(this.bg);
-	},
-
-	setContent: function(content) {
-		if(typeof content == "string") {
-			this.containerNode.innerHTML = content;
-		} else if(content.nodeType != undefined) {
-			// dojo.dom.removeChildren(this.containerNode);
-			this.containerNode.appendChild(content);
-		} else {
-			dojo.raise("Tried to setContent with unknown content (" + content + ")");
-		}
 	},
 
 	setBackgroundColor: function(color) {
@@ -182,32 +154,13 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		this.setBackgroundOpacity();
 		this.placeDialog();
 		this.showBackground();
-		switch((this.effect||"").toLowerCase()){
-			case "fade":
-				this.domNode.style.display = "block";
-				var _this = this;
-				if(this.anim){ this.anim.stop(); }
-				// FIXME: we should be supporting other effect types here!
-				this.anim = dojo.fx.fade(this.domNode, 
-					this.effectDuration, 
-					0, 
-					1,
-					dojo.lang.hitch(this, 
-						function(node){
-							if(dojo.lang.isFunction(_this.onShow)) {
-								_this.onShow(node);
-							}
-						}
-					)
-				);
-				break;
-			default:
-				this.domNode.style.display = "block";
-				if(dojo.lang.isFunction(this.onShow)){
-					this.onShow(this.domNode);
-				}
-				break;
-		}
+
+		// resize child widgets
+		this.domNode.style.display="block";
+		dojo.widget.HtmlDialog.superclass.onResized.call(this);
+		this.domNode.style.display="none";
+
+		dojo.widget.HtmlDialog.superclass.show.call(this);
 
 		// FIXME: moz doesn't generate onscroll events for mouse or key scrolling (wtf)
 		// we should create a fake event by polling the scrolltop/scrollleft every X ms.
@@ -217,11 +170,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			this._scrollConnected = true;
 			dojo.event.connect(window, "onscroll", this, "onScroll");
 		}
-
-		if(!this._resizeConnected) {
-			this._resizeConnected = true;
-			dojo.event.kwConnect(this.resizeConnectArgs);
-		}
 	},
 
 	hide: function(){
@@ -230,40 +178,16 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			dojo.byId(this.focusElement).focus(); 
 			dojo.byId(this.focusElement).blur();
 		}
-		switch((this.effect||"").toLowerCase()) {
-			case "fade":
-				this.bg.style.display = "none";
-				this.bgIframe.hide();
-				var _this = this;
-				if(this.anim){ this.anim.stop(); }
-				this.anim = dojo.fx.fadeOut(this.domNode, this.effectDuration, function(node) {
-					node.style.display = "none";
-					if(dojo.lang.isFunction(_this.onHide)) {
-						_this.onHide(node);
-					}
-					_this.anim = null;
-				});
-				break;
-			default:
-				this.bg.style.display = "none";
-				this.bgIframe.hide();
-				this.domNode.style.display = "none";
-				if(dojo.lang.isFunction(this.onHide)) {
-					this.onHide(node);
-				}
-				break;
-		}
 
+		this.bg.style.display = "none";
 		this.bg.style.width = this.bg.style.height = "1px";
+		this.bgIframe.hide();
+
+		dojo.widget.HtmlDialog.superclass.hide.call(this);
 
 		if (this._scrollConnected){
 			this._scrollConnected = false;
 			dojo.event.disconnect(window, "onscroll", this, "onScroll");
-		}
-
-		if(this._resizeConnected) {
-			this._resizeConnected = false;
-			dojo.event.kwDisconnect(this.resizeConnectArgs);
 		}
 	},
 
@@ -280,8 +204,13 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		this.domNode.style.display = "block";
 	},
 
-	onResize: function(e) {
-		this.sizeBackground();
+	onResized: function() {
+		if(this.isVisible()){
+			this.sizeBackground();
+			this.placeDialog();
+			this.domNode.style.display="block";
+			dojo.widget.HtmlDialog.superclass.onResized.call(this);
+		}
 	}
 });
 
