@@ -52,6 +52,10 @@ dojo.requireIf = function(){
 dojo.requireAfterIf = dojo.requireIf;
 dojo.conditionalRequire = dojo.requireIf;
 
+dojo.requireAll = function() {
+	for(var i = 0; i < arguments.length; i++) { dojo.require(arguments[i]); }
+}
+
 dojo.kwCompoundRequire = function(){
 	dojo.hostenv.conditionalLoadModule.apply(dojo.hostenv, arguments);
 }
