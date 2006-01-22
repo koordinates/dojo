@@ -157,6 +157,8 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	*/
 	changeParentRemote: function(child, newParent, index){
 
+
+
 		//if (newParent.isTreeNode) newParent.markLoading();
 
 		var params = {
@@ -169,6 +171,8 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		};
 
 		var success;
+
+		//dojo.debug("changeParentRemote request")
 
 		dojo.io.bind({
 			url: this.getRPCUrl('changeParent'),
@@ -185,10 +189,13 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			content: { data: dojo.json.serialize(params) }
 		});
 
+		//dojo.debug("changeParentRemote request done")
+
 		return success;
 	},
 
 	changeParentProcessResponse: function(type, result, child, newParent, index) {
+
 
 		if (!dojo.lang.isUndefined(result.error)) {
 			this.RPCErrorHandler(result.error);
@@ -205,7 +212,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * return true on success, false on failure
 	*/
 	changeParent: function(child, newParent, index) {
-		//dojo.debug("Drop registered")
+
 		/* move sourceTreeNode to new parent */
 		if (!this.canChangeParent(child, newParent)) {
 			return false;
@@ -219,9 +226,11 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		var oldParent = child.parent;
 		var oldParentIndex = child.getParentIndex();
 
+
 		var result = this.changeParentRemote(child, newParent, index);
 
 		if (!result) return result;
+
 
 
 		/* publish many events here about structural changes */

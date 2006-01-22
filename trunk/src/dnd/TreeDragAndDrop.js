@@ -424,6 +424,8 @@ dojo.lang.extend(dojo.dnd.TreeDropBetweenTarget, {
 		//tree.changeParentRemote(sourceTreeNode, targetTreeNode);
 		var index = this.getTargetParentIndex(sourceTreeNode, this.indicatorPosition);
 
+		//dojo.debug('drop2');
+
 		return this.controller.processDrop(sourceTreeNode, this.treeNode.parent, index);
 
 	},
