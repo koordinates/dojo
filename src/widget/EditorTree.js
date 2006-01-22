@@ -434,6 +434,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	// optimized for fast loading of large collections into empty nodes
 	addAllChildren: function(children) {
 
+		if (children.length == 0) return;
 
 		dojo.profile.start("addAllChildren");
 
