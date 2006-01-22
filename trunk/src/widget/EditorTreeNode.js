@@ -1,3 +1,4 @@
+
 dojo.provide("dojo.widget.EditorTreeNode");
 
 dojo.require("dojo.event.*");
@@ -82,6 +83,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	expandIcon: null,
 
 	title: "",
+	href: "", // node may have href for navigation purposes
 	isFolder: false,
 
 	labelNode: null, // the item label

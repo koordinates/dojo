@@ -10,6 +10,8 @@ dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.EditorTreeNode");
+dojo.require("dojo.widget.EditorTreeSelector");
+dojo.require("dojo.widget.EditorTreeController");
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTree");

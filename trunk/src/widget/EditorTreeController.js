@@ -68,7 +68,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 
 	/**
-	 * Binds controller to tree events
+	 * Binds controller to all tree events
 	*/
 	subscribeTree: function(tree) {
 
