@@ -364,11 +364,13 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 				return false;
 			}
 
-			if (date < dojo.date.fromIso8601(this.dtend.value)) {
-				rrule.cache[dateString] = true;				
-				return true;
+			if (this.dtend) {
+				if (date < dojo.date.fromIso8601(this.dtend.value)) {
+					rrule.cache[dateString] = true;				
+					return true;
+				}
 			}
-			// add one for duration here same as above
+			// TODO: add one for duration here same as above
 
 			// find miniumum unit
 			var order = function() {};
@@ -412,7 +414,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 					} else {
 						if (candidateStartDate.getDate() > this.startDate.getDate()) {
 							while(candidateStartDate.getDate() > this.startDate.getDate()) {
-								canidateStartDate.setDate(candidateStartDate.getDate()-1);
+								candidateStartDate.setDate(candidateStartDate.getDate()-1);
 							}
 						}else {
 							while (candidateStartDate.getDate()<this.startDate.getDate()) {
@@ -437,7 +439,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 						} else {
 							if (candidateStartDate.getDate() > this.startDate.getDate()) {
 								while(candidateStartDate.getDate() > this.startDate.getDate()) {
-									canidateStartDate.setDate(candidateStartDate.getDate()-1);
+									candidateStartDate.setDate(candidateStartDate.getDate()-1);
 								}
 							}else {
 	
@@ -500,7 +502,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 				//get months between set as diff
 			} else if (freq == "yearly") {
 				//get years between set as diff
-				var diff = canidateStartDate.getFullYear() - this.startDate.getFullYear();
+				var diff = candidateStartDate.getFullYear() - this.startDate.getFullYear();
 		   }	
 
 	
