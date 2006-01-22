@@ -125,8 +125,18 @@ dojo.date.getDayOfYear = function (dateObject) {
 	return Math.floor((dateObject.getTime() - tmpdate.getTime()) / 86400000);
 }
 
-dojo.date.getWeekOfYear = function (dateObject) {
-	return Math.ceil(dojo.date.getDayOfYear(dateObject) / 7);
+dojo.date.getWeekOfYear = function (dateObject, firstDay) {
+	if (!firstDay) { firstDay = 0; } // Sunday
+
+	var firstDayOfYear = new Date(dateObject.getFullYear(), 0, 1);
+	var day = firstDayOfYear.getDay();
+	if (day > firstDay) {
+		firstDayOfYear.setDate(firstDayOfYear.getDate() - day + firstDay);
+	} else {
+		firstDayOfYear.setDate(firstDayOfYear.getDate() - day + firstDay - 7);
+	}
+
+	return Math.floor((dateObject.getTime() - firstDayOfYear.getTime()) / 604800000);
 }
 
 dojo.date.daysInMonth = function (month, year) {
@@ -387,7 +397,7 @@ dojo.date.strftime = function (date, string) {
 			switch (property) {
 				case "a": properties["a"] = dojo.date.getShortDayOfWeekName(date); break;
 				case "A": properties["A"] = dojo.date.getDayOfWeekName(date); break;
-				case "b": case "h": properties["b"] = dojo.date.getShortMonthName(date); break;
+				case "b": case "h": property = "b"; properties["b"] = dojo.date.getShortMonthName(date); break;
 				case "B": properties["B"] = dojo.date.getMonthName(date); break;
 				case "c": properties["c"] = date.toLocaleString(); break;
 				case "C": properties["C"] = $(Math.floor(date.getFullYear()/100)); break;
@@ -402,7 +412,10 @@ dojo.date.strftime = function (date, string) {
 				case "I":
 					var hours = date.getHours();
 					properties["I"] = $(hours > 12 ? hours - 12 : hours); break;
-				case "j": break; // day of the year as a decimal number [001,366]
+				case "j":
+					var j = $(dojo.date.getDayOfYear(date));
+					if (j.length < 3) { j = "0" + j; }
+					properties["j"] = j; break;
 				case "m": properties["m"] = $(date.getMonth() + 1); break;
 				case "M": properties["M"] = $(date.getMinutes()); break;
 				case "p": properties["p"] = date.getHours() < 12 ? "am" : "pm";
@@ -413,9 +426,9 @@ dojo.date.strftime = function (date, string) {
 				case "u":
 					var day = date.getDay();
 					properties["u"] = $(day == 0 ? 7 : day); break;
-				case "U": break; // week number of the year (Sunday as the first day of the week) as a decimal number [00,53]
+				case "U": properties["U"] = $(dojo.date.getWeekOfYear(date)); break;
 				case "V": break; // eek number of the year (Monday as the first day of the week) as a decimal number [01,53]. If the week containing 1 January has four or more days in the new year, then it is considered week 1. Otherwise, it is the last week of the previous year, and the next week is week 1.
-				case "W": break; // week number of the year (Monday as the first day of the week) as a decimal number [00,53]. All days in a new year preceding the first Monday are considered to be in week 0.
+				case "W": properties["W"] = $(dojo.date.getWeekOfYear(date, 1)); break;
 				case "w": properties["w"] = $(date.getDay()); break;
 				case "y":
 					var y = date.getFullYear();
