@@ -345,7 +345,7 @@ try {
 dojo.hostenv.writeIncludes = function(){} 
 
 dojo.hostenv.byId = dojo.byId = function(id, doc){
-	if(typeof id == "string" || id instanceof String){
+	if(id && (typeof id == "string" || id instanceof String)){
 		if(!doc){ doc = document; }
 		return doc.getElementById(id);
 	}
