@@ -14,7 +14,6 @@ dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Container");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
