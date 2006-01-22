@@ -102,31 +102,33 @@ dojo.lang.extend(dojo.iCalendar.Component, {
 		for (var x=0; x<this._ValidProperties.length; x++) {
 			var evtProperty = this._ValidProperties[x];
 			var found = false;
-			
+	
 			for (var y=0; y<this.properties.length; y++) {	
 				var prop = this.properties[y];
+				propName = prop.name.toLowerCase();
 				if (dojo.lang.isArray(evtProperty)) {
 
 					var alreadySet = false;
 					for (var z=0; z<evtProperty.length; z++) {
-						if((this[evtProperty[z].name.toLowerCase()])  && (evtProperty[z].name.toLowerCase() != prop.name.toLowerCase())) {
+						var evtPropertyName = evtProperty[z].name.toLowerCase();
+						if((this[evtPropertyName])  && (evtPropertyName != propName )) {
 							alreadySet=true;
 						} 
 					}
 					if (!alreadySet) {
-						this[prop.name.toLowerCase()] = prop;
+						this[propName] = prop;
 					}
 				} else {
-					if (prop.name.toLowerCase() == evtProperty.name.toLowerCase()) {
+					if (propName == evtProperty.name.toLowerCase()) {
 						found = true;
 						if (evtProperty.occurance == 1){
-							this[prop.name.toLowerCase()] = prop;
+							this[propName] = prop;
 						} else {
 							found = true;
-							if (!dojo.lang.isArray(this[prop.name.toLowerCase()])) {
-							 	this[prop.name.toLowerCase()] = [];
+							if (!dojo.lang.isArray(this[propName])) {
+							 	this[propName] = [];
 							}
-							this[prop.name.toLowerCase()].push(prop);
+							this[propName].push(prop);
 						}
 					}
 				}
@@ -228,7 +230,7 @@ dojo.lang.extend(dojo.iCalendar.VCalendar, {
 		// summary
 		// add component to the calenadar that makes it easy to pull them out again later.
 		this.components.push(prop);
-		if (prop.name == "VEVENT") {
+		if (prop.name.toLowerCase() == "vevent") {
 			if (prop.rrule) {
 				this.recurringEvents.push(prop);
 			} else {
@@ -256,7 +258,6 @@ dojo.lang.extend(dojo.iCalendar.VCalendar, {
 			var tmp = events.concat(this[dateStr]);
 			events = tmp;
 		} 
-
 
 		for(var x=0; x<this.recurringEvents.length; x++) {
 			if (this.recurringEvents[x].fallsOn(date)) {
