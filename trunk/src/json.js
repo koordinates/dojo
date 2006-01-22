@@ -1,5 +1,6 @@
 dojo.provide("dojo.json");
 dojo.require("dojo.lang.func");
+dojo.require("dojo.lang.repr");
 dojo.require("dojo.AdapterRegistry");
 
 dojo.json = {
