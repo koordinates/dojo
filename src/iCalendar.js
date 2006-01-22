@@ -357,16 +357,22 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 			var rrule = this.rrule[0];
 
 			if (rrule.cache[dateString]) {
-				return true;
+				if (rrule.cache[dateString]=="FOUND") {
+					return true;
+				} else {
+					return false;
+				}
 			}
+		
 
 			if (date < this.startDate) {
+				rrule.cache[dateString]="NOTFOUND";
 				return false;
 			}
 
 			if (this.dtend) {
 				if (date < dojo.date.fromIso8601(this.dtend.value)) {
-					rrule.cache[dateString] = true;				
+					rrule.cache[dateString] = "FOUND";				
 					return true;
 				}
 			}
@@ -454,12 +460,14 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 			if (!((candidateStartDate.getMonth() == date.getMonth()) &&
 				 (candidateStartDate.getDate() == date.getDate()) &&
 				 (candidateStartDate.getFullYear() == date.getFullYear()))) {
+					rrule.cache[dateString]="NOTFOUND";
 					return false;
 			}
 
 
 			if (rrule.until) {
 				if (candidateStartDate>dojo.date.fromIso8601(rrule.until) ) {
+					rrule.cache[dateString]="NOTFOUND";
 					return false;
 				}
 			}
@@ -471,7 +479,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 				} else {
 					var beginning = 365 - dojo.date.getDayOfYear(this.startDate);
 					if ((candidateStartDate.getFullYear() - this.startDate.getFullYear()) > 1) {
-						var diff = beginning + dojo.date.getDayOfYear(candidateStartDate) + ((candiDateStartDate.getFullYear() - this.startDate.getFullYear())*365);
+						var diff = beginning + dojo.date.getDayOfYear(candidateStartDate) + ((candidateStartDate.getFullYear() - this.startDate.getFullYear())*365);
 					} else {
 						var diff = beginning + dojo.date.getDayOfYear(candidateStartDate);
 					}
@@ -482,7 +490,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 				} else {
 					var beginning = 365 - dojo.date.getDayOfYear(this.startDate);
 					if ((candidateStartDate.getFullYear() - this.startDate.getFullYear()) > 1) {
-						var diff = (beginning + dojo.date.getDayOfYear(candidateStartDate) + ((candiDateStartDate.getFullYear() - this.startDate.getFullYear())*365))/7;
+						var diff = (beginning + dojo.date.getDayOfYear(candidateStartDate) + ((candidateStartDate.getFullYear() - this.startDate.getFullYear())*365))/7;
 					} else {
 						var diff = (beginning + dojo.date.getDayOfYear(candidateStartDate))/7;
 					}
@@ -508,6 +516,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 	
 			if (rrule.interval) {
 				if ((diff % rrule.interval) != 0 ) {
+					rrule.cache[dateString]="NOTFOUND";
 					return false;
 				}
 			}
@@ -522,7 +531,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 					if (name == "byday") {
 						if (weekdays[candidateStartDate.getDay()] == by[x]) {
 
-							rrule.cache[dateString] = true;				
+							rrule.cache[dateString] = "FOUND";				
 							return true;
 						}
 					} else if (name == "bymonthday") {
@@ -533,20 +542,23 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 						}
 						if (tmp == candidateStartDate.getDate()) {
 
-							rrule.cache[dateString] = true;				
+							rrule.cache[dateString] = "FOUND";				
 							return true;
 						}
 					} else if (name == "bymonth") {
 						if (by[x] == candidateStartDate.getMonth() + 1) {
-							rrule.cache[dateString] = true;				
+							rrule.cache[dateString] = "FOUND";				
 							return true;
 						}
 					}
 				}
-				if (!found) { return false; }
+				if (!found) { 
+					rrule.cache[dateString]="NOTFOUND";
+					return false; 
+				}
 			}
 	
-			rrule.cache[dateString] = true;				
+			rrule.cache[dateString] = "FOUND";				
 			return true;
 		},
 
