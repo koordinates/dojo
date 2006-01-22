@@ -521,17 +521,26 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	edit: function(props) {
 		dojo.lang.mixin(this, props);
 		if (props.title) {
-			var textNode = document.createTextNode(this.title);
-			this.titleNode.replaceChild(textNode, this.titleNode.firstChild)
+			var domNode = this.makeTitleNode();
+			this.titleNode.parentNode.replaceChild(domNode, this.titleNode);
+			this.titleNode = domNode;
+		}
+
+		if (props.afterLabel) {
+			var domNode = this.makeAfterLabelNode();
+			this.afterLabelNode.parentNode.replaceChild(domNode, this.afterLabelNode);
+			this.afterLabelNode = domNode;
 		}
 
 		if (props.childIconSrc) {
 			this.childIcon.src = this.childIconSrc;
 		}
+
+
 	},
 
 	toString: function() {
-		return "["+this.widgetType+" Tree:"+this.tree+" ID:"+this.widgetId+" Title:"+this.title+"]";
+		return "["+this.widgetType+" Tree:"+this.tree+" ID:"+this.widgetId+"]";
 
 	}
 

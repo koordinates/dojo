@@ -135,6 +135,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
 			e.target.parentNode : e.target;
 
+		/*
+		 FIXME(algo): I believe that is not a problem any more because of drag tolerance.
+		 	Anyway, why forbid dragging items by clicking on links inside them ?
+		 	There are problems with dragging by links in IE, should be solved another way..
+		*/
 		// do not start drag involvement if the user is interacting with
 		// a form element.
 		switch(target.tagName.toLowerCase()) {
