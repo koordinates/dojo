@@ -89,7 +89,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	labelNode: null, // the item label
 	titleNode: null, // the item title
 	imgs: null, // an array of icons imgs
-	rowNode: null, // the tr
+
 
 	tree: null,
 
@@ -314,7 +314,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 		if (this.isExpanded) {
 			this.expand();
-		} else {
+		}else { // leads to double icon updates
 			this.updateIcons();
 		}
 
@@ -351,8 +351,9 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	updateIcons: function(){
 
 
+		dojo.profile.start("updateIcons")
 
-		//dojo.debug("Update icons for "+this.title)
+		//dojo.debug("Update icons for "+this.widgetId)
 		//dojo.debug(this.isFolder)
 
 		this.imgs[0].style.display = this.tree.showRootGrid ? 'inline' : 'none';
@@ -432,6 +433,10 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 			parent = parent.parent;
 		}
+
+		//alert(dojo.profile.toSource());
+		dojo.profile.stop("updateIcons")
+
 	},
 
 	buildChildIcon: function() {
@@ -512,6 +517,10 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	addChild: function(){
 		return this.tree.addChild.apply(this, arguments);
+	},
+
+	addAllChildren: function(){
+		return this.tree.addAllChildren.apply(this, arguments);
 	},
 
 	removeChild: function(){

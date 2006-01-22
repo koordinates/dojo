@@ -269,14 +269,11 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		for(var i=0; i<newChildren.length; i++) {
 			// looks like dojo.widget.manager needs no special "add" command
-			var newChild = dojo.widget.createWidget(node.widgetType, newChildren[i]);
-
-		//dojo.debugShallow(newChild);
-
-			node.addChild(newChild);
-
-			//dojo.debug(dojo.widget.manager.getWidgetById(newChild.widgetId))
+			newChildren[i] = dojo.widget.createWidget(node.widgetType, newChildren[i]);
 		}
+
+		node.addAllChildren(newChildren);
+
 		node.state = node.loadStates.LOADED;
 
 		if (dojo.lang.isFunction(callback)) {
