@@ -6,7 +6,30 @@ dojo.require("dojo.io.*");
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeNode");
+dojo.widget.tags.addParseTreeHandler("dojo:EditorTreePropertySetter");
 
+dojo.widget.EditorTreePropertySetter = function() {
+	dojo.widget.HtmlWidget.call(this);
+}
+dojo.inherits(dojo.widget.EditorTreePropertySetter, dojo.widget.HtmlWidget);
+
+dojo.lang.extend(dojo.widget.EditorTreePropertySetter, {
+	widgetType: "EditorTreePropertySetter",
+
+	property: "",
+	domNode: null,
+
+	/* delete myself from document and set as parent's property */
+	postCreate: function() {
+		this.parent[this.property] = this;
+
+		this.destroyRendering();
+		dojo.widget.HtmlWidget.prototype.removeChild.apply(this.parent, [this]);
+	}
+
+});
+
+// # //////////
 
 dojo.widget.EditorTreeNode = function() {
 	dojo.widget.HtmlWidget.call(this);
@@ -51,6 +74,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	objectId: "", // the widget represents an object
 
+	afterLabel: "",
 	afterLabelNode: null, // node to the left of labelNode
 
 	// an icon left from childIcon: imgs[-2].
@@ -90,9 +114,9 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	getInfo: function() {
 		var _this = this;
+		// No title here (title may be widget)
 		var info = {
 			widgetId: _this.widgetId,
-			title: _this.title,
 			objectId: _this.objectId,
 			index: _this.getParentIndex(),
 			isFolder: _this.isFolder
@@ -104,6 +128,12 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	initialize: function(args, frag){
 		var _this = this;
 		this.state = this.loadStates.UNCHECKED;
+
+
+		//dojo.lang.forEach(this.children, function(child) { alert(child.widgetType); })
+		//var titleNode = this.getChildrenOfType("dojo.widget.EditorTreeNodeTitle");
+		//alert(titleNode);
+
 /*
 		if (args['isFolder'] == "true" || args['isFolder'] === true || args['isfolder'] == "true" ) { // IE || program args || FF
 			this.isFolder = true;
@@ -120,6 +150,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 		//this.domNode.treeNode = this; // domNode knows about its treeNode owner. E.g for DnD
 	},
+
 
 	/**
 	 * Change visible node depth by appending/prepending with blankImgs
@@ -164,6 +195,35 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		this.isFolder = true;
 	},
 
+	makeTitleNode: function() {
+		var domNode = document.createElement('span');
+
+		if (dojo.lang.isString(this.title)) {
+			var textNode = document.createTextNode(this.title);
+			domNode.appendChild(textNode);
+		} else if (this.title instanceof dojo.widget.EditorTreePropertySetter) {
+			dojo.dom.moveChildren(this.title.domNode, domNode);
+		}
+		dojo.html.addClass(domNode, 'dojoTreeNodeLabelTitle');
+
+		return domNode;
+
+	},
+
+	makeAfterLabelNode: function() {
+
+		var domNode = document.createElement('span');
+
+		if (dojo.lang.isString(this.afterLabel)) {
+			var textNode = document.createTextNode(this.afterLabel);
+			domNode.appendChild(textNode);
+		} else if (this.afterLabel instanceof dojo.widget.EditorTreePropertySetter) {
+			dojo.dom.moveChildren(this.afterLabel.domNode, domNode);
+		}
+		dojo.html.addClass(domNode, 'dojoTreeNodeAfterLabel');
+
+		return domNode;
+	},
 
 	buildNode: function(tree, depth){
 
@@ -209,19 +269,14 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		this.labelNode.appendChild(this.childIcon);
 
 		// add title to label
-		this.titleNode = document.createElement('span');
-		//this.titleNode.treeNode = this.widgetId;
-
-		var textNode = document.createTextNode(this.title);
-		this.titleNode.appendChild(textNode);
-		dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelTitle');
-
+		this.titleNode = this.makeTitleNode();
 
 		this.labelNode.appendChild(this.titleNode);
 
 		this.domNode.insertBefore(this.labelNode, this.containerNode);
 
-		this.afterLabelNode = document.createElement('span');
+		this.afterLabelNode = this.makeAfterLabelNode();
+
 		this.domNode.insertBefore(this.afterLabelNode, this.containerNode);
 
 
@@ -356,7 +411,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 
 
-			//if (this.title=="Item 1.1") dojo.debug("updateIcons IsExpanded:"+this.isExpanded+" "+this.expandIcon.src);
+		//if (this.title=="Item 1.1") dojo.debug("updateIcons IsExpanded:"+this.isExpanded+" "+this.expandIcon.src);
 
 		//
 		// set the vertical grid icons
