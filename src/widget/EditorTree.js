@@ -13,6 +13,8 @@ dojo.require("dojo.widget.EditorTreeNode");
 dojo.require("dojo.widget.EditorTreeSelector");
 dojo.require("dojo.widget.EditorTreeController");
 
+
+
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTree");
 
@@ -294,6 +296,8 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	addChild: function(child, index){
 
 
+		dojo.profile.start("AddChild");
+
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
 		}
@@ -370,7 +374,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			//dojo.debug(this.widgetType)
 			var d = this.isTreeNode ? this.depth : -1;
 			//dojo.debug('Depth is '+this.depth);
-			child.adjustDepth(d-child.depth+1);
+			child.adjustDepth( d - child.depth + 1 );
 		} else {
 			child.depth = this.isTreeNode ? this.depth+1 : 0;
 			child.buildNode(child.tree, child.depth);
@@ -406,9 +410,64 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 
 
+		dojo.profile.end("AddChild");
 
-		this.updateIconTree();
+		dojo.profile.start("updateIconTree");
 
+		//this.updateIconTree();
+		child.updateIcons();
+		if (this.children.length>1) {
+			if (child.isFirstNode) {
+				this.children[1].updateIcons();
+			}
+			if (child.isLastNode) {
+				this.children[this.children.length-2].updateIcons();
+			}
+		}
+
+		dojo.profile.end("updateIconTree");
+
+
+	},
+
+	// adds an array of children in "batch mode" into empty node
+	// optimized for fast loading of large collections into empty nodes
+	addAllChildren: function(children) {
+
+
+		dojo.profile.start("addAllChildren");
+
+		var _this = this;
+
+		children[0].isFirstNode = true;
+		children[children.length-1].isLastNode = true;
+
+		if (this.isTreeNode){
+			if (!this.isFolder) { // just became a folder.
+				this.setFolder();
+			}
+		}
+
+		dojo.lang.forEach(children,
+			function(child) {
+				child.parent = _this;
+				child.buildNode(_this.tree, _this.isTreeNode ? _this.depth+1 : 0);
+				_this.containerNode.appendChild(child.domNode);
+			}
+
+		);
+
+		// no dynamic loading for those who are parents already
+		if (this.isTreeNode) {
+			this.state = this.loadStates.LOADED;
+		}
+
+
+		this.children = children;
+
+		//this.updateIconTree();
+
+		dojo.profile.end("addAllChildren");
 
 	},
 
