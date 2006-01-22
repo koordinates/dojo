@@ -70,7 +70,7 @@ dojo.setModulePrefix = function(module, prefix){
 }
 
 // stub
-dojo.profile = { start: function(){}, end: function(){}, dump: function(){} };
+dojo.profile = { start: function(){}, end: function(){}, stop: function(){}, dump: function(){} };
 
 // determine if an object supports a given method
 // useful for longer api chains where you have to test each object in the chain
