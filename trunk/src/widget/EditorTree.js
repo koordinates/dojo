@@ -56,8 +56,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	eventNames: null,
 	eventNaming: "default",
 
-	toggler: null,
-
 	isExpanded: true, // consider this "root node" to be always expanded
 
 	isTree: true,
@@ -96,8 +94,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	showGrid: true,
 	showRootGrid: true,
 
-	toggle: "default",
-	toggleDuration: 150,
 	selector: null,
 
 
@@ -113,10 +109,9 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 
 	getInfo: function() {
-		var _this = this;
 		var info = {
-			widgetId: _this.widgetId,
-			objectId: _this.objectId
+			widgetId: this.widgetId,
+			objectId: this.objectId
 		}
 
 		return info;
@@ -125,26 +120,13 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	initialize: function(args, frag){
 
 		var _this = this;
-		//this.acceptDropSources = this.acceptDropSources.split(',');
-		/*
-		var sources;
-		if ( (sources = args['acceptDropSources']) || (sources = args['acceptDropSources']) ) {
 
-		}
-		*/
+
 		//this.actionsDisabled = this.actionsDisabled.split(",");
 		for(var i=0; i<this.actionsDisabled.length; i++) {
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
 
-
-		switch (this.toggle) {
-
-			case "fade": this.toggler = new dojo.widget.EditorTree.FadeToggle(); break;
-			// buggy - try to open many nodes in FF (IE is ok)
-			case "wipe": this.toggler = new dojo.widget.EditorTree.WipeToggle(); break;
-			default    : this.toggler = new dojo.widget.EditorTree.DefaultToggle();
-		}
 
 
 		if (this.eventNaming == "default") { // IE || FF
@@ -152,18 +134,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			for (eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
-			/*
-			this.eventNames.watch("nodeCreate",
-   				function (id,oldval,newval) {
-      				alert("o." + id + " changed from " + oldval + " to " + newval);
-      				return newval;
-			   }
-			  );
-			 */
-
-		//	alert(dojo.widget.manager.getWidgetById('firstTree').widgetId)
-		//	alert(dojo.widget.manager.getWidgetById('firstTree').eventNames.nodeCreate);
-
 		}
 
 
@@ -194,9 +164,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		dojo.html.disableSelection(this.domNode);
 
 		for(var i=0; i<this.children.length; i++){
-
-			this.children[i].isFirstNode = (i == 0) ? true : false;
-			this.children[i].isLastNode = (i == this.children.length-1) ? true : false;
 			this.children[i].parent = this; // root nodes have tree as parent
 
 			var node = this.children[i].buildNode(this, 0);
@@ -206,9 +173,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		}
 
 
-		//
-		// when we don't show root toggles, we need to auto-expand root nodes
-		//
 
 		if (!this.showRootGrid){
 			for(var i=0; i<this.children.length; i++){
@@ -253,14 +217,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		for(var i=0; i<children.length; i++){
 			if(children[i] === child){
-				if (children.length>1) {
-					if (i==0) {
-						children[i+1].isFirstNode = true;
-					}
-					if (i==children.length-1) {
-						children[i-1].isLastNode = true;
-					}
-				}
 				children.splice(i, 1);
 				break;
 			}
@@ -269,21 +225,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		dojo.dom.removeNode(child.domNode);
 
 
-		//dojo.debug("removeChild: "+child.title+" from "+parent.title);
-
-		/*
-		if (children.length == 0) {
-			// toggle empty container off
-			if (!parent.isTree) { // if has container
-				parent.containerNode.style.display = 'none';
-			}
-
-		}
-		*/
-
 		parent.updateIconTree();
-
-
 
 		return child;
 
@@ -315,27 +257,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			return;
 		}
 
-		// set/clean isFirstNode and isLastNode
-		if (this.children.length){
-			if (index == 0) {
-				this.children[0].isFirstNode = false;
-				child.isFirstNode = true;
-			} else {
-				child.isFirstNode = false;
-			}
-			if (index == this.children.length) {
-				this.children[index-1].isLastNode = false;
-				child.isLastNode = true;
-			} else {
-				child.isLastNode = false;
-			}
-		} else {
-			child.isLastNode = true;
-			child.isFirstNode = true;
-		}
-
-
-		//dojo.debug("For new child set first:"+child.isFirstNode+" last:"+child.isLastNode);
 
 
 		// usually it is impossible to change "isFolder" state, but if anyone wants to add a child to leaf,
@@ -418,10 +339,13 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		//this.updateIconTree();
 		child.updateIcons();
 		if (this.children.length>1) {
-			if (child.isFirstNode) {
+			if (child.isFirstNode()) {
 				this.children[1].updateIcons();
 			}
-			if (child.isLastNode) {
+			if (child.isLastNode()) {
+				// TODO: fix that so that only expandIcon is updated.
+				// That will make addAllChildren deprecated...
+				// Split updateIcons into lesser pieces will help
 				this.children[this.children.length-2].updateIcons();
 			}
 		}
@@ -441,8 +365,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		var _this = this;
 
-		children[0].isFirstNode = true;
-		children[children.length-1].isLastNode = true;
 
 		if (this.isTreeNode){
 			if (!this.isFolder) { // just became a folder.
@@ -509,43 +431,3 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 
 });
-
-
-
-dojo.widget.EditorTree.DefaultToggle = function(){
-
-	this.show = function(node){
-		node.style.display = 'block';
-	}
-
-	this.hide = function(node){
-		node.style.display = 'none';
-	}
-}
-
-dojo.widget.EditorTree.FadeToggle = function(duration){
-	this.toggleDuration = duration ? duration : 150;
-
-	this.show = function(node){
-		node.style.display = 'block';
-		dojo.fx.html.fade(node, this.toggleDuration, 0, 1);
-	}
-
-	this.hide = function(node){
-		dojo.fx.html.fadeOut(node, this.toggleDuration, function(node){ node.style.display = 'none'; });
-	}
-}
-
-dojo.widget.EditorTree.WipeToggle = function(duration){
-	this.toggleDuration = duration ? duration : 150;
-
-	this.show = function(node){
-		node.style.display = 'block';
-		dojo.fx.html.wipeIn(node, this.toggleDuration);
-	}
-
-	this.hide = function(node){
-		dojo.fx.html.wipeOut(node, this.toggleDuration, function(node){ node.style.display = 'none'; });
-	}
-}
-

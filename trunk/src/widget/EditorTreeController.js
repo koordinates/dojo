@@ -60,10 +60,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * Common RPC error handler (dies)
 	*/
 	RPCErrorHandler: function(type, obj) {
-		var message = "Error: ";
-		if (obj.message) message = message + obj.message;
-
-		alert(message);
+		alert( "RPC Error: " + (obj.message||"no message"));
 	},
 
 
@@ -298,7 +295,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	/**
 	 * Add all loaded nodes from array obj as node children and expand it
 	*/
-	loadProcessResponse: function(type, node, result, callback) {
+	loadProcessResponse: function(type, node, result, callback, callObj) {
 
 		if (!dojo.lang.isUndefined(result.error)) {
 			this.RPCErrorHandler(result.error);
@@ -321,7 +318,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		node.state = node.loadStates.LOADED;
 
 		if (dojo.lang.isFunction(callback)) {
-			callback.apply(this, [node, newChildren]);
+			callback.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node, newChildren]);
 		}
 		//this.expand(node);
 	},
@@ -332,7 +329,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	 * Synchroneous loading doesn't break control flow
 	 * I need sync mode for DnD
 	*/
-	loadRemote: function(node, sync, callback){
+	loadRemote: function(node, sync, callback, callObj){
 		node.markLoading();
 
 
@@ -349,7 +346,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			/* I hitch to get this.loadOkHandler */
 			load: dojo.lang.hitch(this,
 				function(type, result) {
-					this.loadProcessResponse(type, node, result, callback) ;
+					this.loadProcessResponse(type, node, result, callback, callObj) ;
 				}
 			),
 			error: this.RPCErrorHandler,
@@ -557,17 +554,17 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		return true;
 	},
 
-	removeNode: function(node, callback) {
+	removeNode: function(node, callback, callObj) {
 		if (!this.canRemoveNode(node)) {
 			return false;
 		}
 
-		return this.removeNodeRemote(node, callback);
+		return this.removeNodeRemote(node, callback, callObj);
 
 	},
 
 
-	removeNodeRemote: function(node, callback) {
+	removeNodeRemote: function(node, callback, callObj) {
 
 		var params = {
 			node: node.getInfo(),
@@ -578,7 +575,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 				url: this.getRPCUrl('removeNode'),
 				/* I hitch to get this.loadOkHandler */
 				load: dojo.lang.hitch(this, function(type, obj) {
-					this.removeNodeProcessResponse(type, node, callback, obj) }
+					this.removeNodeProcessResponse(type, node, obj, callback, callObj) }
 				),
 				error: this.RPCErrorHandler,
 				mimetype: "text/json",
@@ -588,7 +585,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	},
 
-	removeNodeProcessResponse: function(type, node, callback, result) {
+	removeNodeProcessResponse: function(type, node, result, callback, callObj) {
 		if (!dojo.lang.isUndefined(result.error)) {
 			this.RPCErrorHandler(result.error);
 			return false;
@@ -601,7 +598,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			this.doRemoveNode(node, node);
 			if (callback) {
 				// provide context manually e.g with dojo.lang.hitch.
-				callback.apply(this, [node]);
+				callback.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node]);
 			}
 
 			return true;
@@ -652,7 +649,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	/* send data to server and add child from server */
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/* server responds with child data to be inserted */
-	createNode: function(parent, index, data, callback) {
+	createNode: function(parent, index, data, callback, callObj) {
 		if (!this.canCreateNode(parent, index, data)) {
 			return false;
 		}
@@ -664,12 +661,12 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		}
 
 
-		return this.createNodeRemote(parent, index, data, callback);
+		return this.createNodeRemote(parent, index, data, callback, callObj);
 
 	},
 
 
-	createNodeRemote: function(parent, index, data, callback) {
+	createNodeRemote: function(parent, index, data, callback, callObj) {
 
 			var params = {
 				treeId: parent.tree.widgetId,
@@ -682,7 +679,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 					url: this.getRPCUrl('createNode'),
 					/* I hitch to get this.loadOkHandler */
 					load: dojo.lang.hitch(this, function(type, obj) {
-						this.createNodeProcessResponse(type, obj, parent, index, callback) }
+						this.createNodeProcessResponse(type, obj, parent, index, callback, callObj) }
 					),
 					error: this.RPCErrorHandler,
 					mimetype: "text/json",
@@ -692,7 +689,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 	},
 
-	createNodeProcessResponse: function(type, result, parent, index, callback) {
+	createNodeProcessResponse: function(type, result, parent, index, callback, callObj) {
 
 		if (!dojo.lang.isUndefined(result.error)) {
 			this.RPCErrorHandler(result.error);
@@ -711,7 +708,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		if (callback) {
 			// provide context manually e.g with dojo.lang.hitch.
-			callback.apply(this, [parent, index, result]);
+			callback.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [parent, index, result]);
 		}
 
 	},
