@@ -438,7 +438,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		}
 
 		if (props.childIconSrc) {
-			this.childIcon.src = this.childIconSrc;
+			this.buildChildIcon();
 		}
 
 
