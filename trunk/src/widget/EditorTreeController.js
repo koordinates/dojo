@@ -124,12 +124,13 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 
 
-	saveExpandedIndices: function(node) {
+	saveExpandedIndices: function(node, field) {
 		var obj = {};
 
 		for(var i=0; i<node.children.length; i++) {
 			if (node.children[i].isExpanded) {
-				obj[i] = this.saveExpandedIndices(node.children[i]);
+				var key = dojo.lang.isUndefined(field) ? i : node.children[i][field];
+				obj[key] = this.saveExpandedIndices(node.children[i], field);
 			}
 		}
 
@@ -137,30 +138,57 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 
-	restoreExpandedIndices: function(node, savedIndices) {
+	restoreExpandedIndices: function(node, savedIndices, field) {
 		var _this = this;
 
+
+
+		var handler = function(node, savedIndices) {
+			this.node = node; //.children[i];
+			this.savedIndices = savedIndices; //[i];
+			// recursively read next savedIndices level and apply to opened node
+			this.process = function() {
+				//dojo.debug("Callback applied for "+this.node);
+				_this.restoreExpandedIndices(this.node, this.savedIndices, field);
+			};
+		}
+
+
 		for(var i=0; i<node.children.length; i++) {
-			if (savedIndices[i]) {
-				// node is closed now, but should be opened..
-				// It may be open, but then anyway expand() will pass callback further to children
-				//dojo.debug("Expanding "+node.children[i])
-				var handler = new function() {
-					this.controller = _this;
-					this.node = node.children[i];
-					this.savedIndices = savedIndices[i];
-					// recursively read next savedIndices level and apply to opened node
-					this.process = function() {
-						//dojo.debug("Callback applied for "+this.node);
-						this.controller.restoreExpandedIndices(this.node, this.savedIndices);
-					};
+			var child = node.children[i];
+
+			var found = false;
+			var key = -1;
+
+			dojo.debug("Check "+child)
+			// process field set case
+			if (dojo.lang.isUndefined(field) && savedIndices[i]) {
+				found = true;
+				key = i;
+			}
+
+			// process case when field is not set
+			if (field) {
+				for(var key in savedIndices) {
+					dojo.debug("Compare "+key+" "+child[field])
+					if (key == child[field]) {
+						found = true;
+						break;
+					}
 				}
-				this.expand(node.children[i], handler, handler.process);
-			} else if (node.children[i].isExpanded) {
-				//dojo.debug("Collapsing all descendants "+node.children[i])
-				dojo.lang.forEach(node.children[i].getDescendants(), function(elem) { _this.collapse(elem); });
+			}
+
+			// if we found anything - expand it
+			if (found) {
+				dojo.debug("Found at "+key)
+				var h = new handler(child, savedIndices[key]);
+				this.expand(child, h, h.process);
+			} else if (child.isExpanded) { // not found, so collapse
+				dojo.debug("Collapsing all descendants "+node.children[i])
+				dojo.lang.forEach(child.getDescendants(), function(elem) { _this.collapse(elem); });
 				//this.collapse(node.children[i]);
 			}
+
 		}
 
 
@@ -478,10 +506,6 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		if (this.DNDMode=="off") return;
 
-
-
-		//dojo.debug("registerDNDNode node "+node.title+" tree "+node.tree+" accepted sources "+node.tree.acceptDropSources);
-
 		/* I drag label, not domNode, because large domNodes are very slow to copy and large to drag */
 
 		var source = null;
@@ -493,8 +517,6 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 			this.dragSources[node.widgetId] = source;
 		}
 
-		//dojo.debugShallow(node.tree.widgetId)
-
 		if (this.DNDMode=="onto") {
 			var target = new dojo.dnd.TreeDropOntoTarget(node.labelNode, this, node.tree.acceptDropSources, node);
 		} else if (this.DNDMode=="between") {
@@ -503,16 +525,10 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		this.dropTargets[node.widgetId] = target;
 
-
-		//dojo.debug("registerDNDNode "+this.dragSources[node.widgetId].treeNode.title)
-
 	},
 
 
 	unregisterDNDNode: function(node) {
-
-		//dojo.debug("unregisterDNDNode "+node.title)
-		//dojo.debug("unregisterDNDNode "+this.dragSources[node.widgetId].treeNode.title)
 
 		if (this.dragSources[node.widgetId]) {
 			dojo.dnd.dragManager.unregisterDragSource(this.dragSources[node.widgetId]);
@@ -533,11 +549,7 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 
 		this.registerDNDNode(node);
 
-
-		//dojo.debug("!!!"+this.dropTargets[node].acceptedTypes)
-
 		for(var i=0; i<node.children.length; i++) {
-			// dojo.debug(node.children[i].title);
 			this.updateDND(node.children[i]);
 		}
 
