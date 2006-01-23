@@ -1,8 +1,3 @@
-// TODO: make hierarchy of PopupMenus into a self-contained DOM tree w/ a single root elem
-// TODO: clean up MenuItem markup to be a sequence of <spans> wrapped in a div, less redundant nested spans, etc
-// TODO: add a MenuBar sibling to PopupMenu, perhaps w/ a common base class
-
-
 dojo.provide("dojo.widget.Menu2");
 dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
