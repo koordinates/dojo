@@ -245,19 +245,10 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 			index = this.children.length;
 		}
 
-
-		//dojo.debug("This "+this+" Child "+child+" index "+index+" children.length "+this.children.length);
-
-		//
-		// this function gets called to add nodes to both trees and nodes, so it's a little confusing :)
-		//
-
 		if (!child.isTreeNode){
 			dojo.raise("You can only add EditorTreeNode widgets to a "+this.widgetType+" widget!");
 			return;
 		}
-
-
 
 		// usually it is impossible to change "isFolder" state, but if anyone wants to add a child to leaf,
 		// it is possible program-way.
@@ -270,17 +261,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 		// adjust tree
 		var _this = this;
 		dojo.lang.forEach(child.getDescendants(), function(elem) { elem.tree = _this.tree; });
-
-		/*
-		var stack = [child];
-		var elem;
-		// change tree for all subnodes
-		while (elem = stack.pop()) {
-			//dojo.debug("Tree for "+elem.title);
-			elem.tree = tree;
-			dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-		}
-		*/
 
 		// fix parent
 		child.parent = this;
@@ -324,74 +304,25 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		this.children.splice(index, 0, child);
 
-		//dojo.lang.forEach(this.children, function(child) { dojo.debug("Child "+child.title); } );
-
-		//dojo.debugShallow(child);
-
-		//this.expand();
-
-
-
 		dojo.profile.end("AddChild");
 
 		dojo.profile.start("updateIconTree");
 
 		//this.updateIconTree();
+		//dojo.debug("Update my icons: "+child)
 		child.updateIcons();
-		if (this.children.length>1) {
-			if (child.isFirstNode()) {
-				this.children[1].updateIcons();
-			}
-			if (child.isLastNode()) {
-				// TODO: fix that so that only expandIcon is updated.
-				// That will make addAllChildren deprecated...
-				// Split updateIcons into lesser pieces will help
-				this.children[this.children.length-2].updateIcons();
-			}
+		if (child.isFirstNode() && child.getNextSibling()) {
+			//dojo.debug("Update expand for"+child.getNextSibling())
+			child.getNextSibling().updateExpandIcon();
 		}
+		if (child.isLastNode() && child.getPreviousSibling()) {
+			//dojo.debug("Update expand for"+child.getPreviousSibling())
+			child.getPreviousSibling().updateExpandIcon();
+		}
+
 
 		dojo.profile.end("updateIconTree");
 
-
-	},
-
-	// adds an array of children in "batch mode" into empty node
-	// optimized for fast loading of large collections into empty nodes
-	addAllChildren: function(children) {
-
-		if(children.length == 0){ return; }
-
-		dojo.profile.start("addAllChildren");
-
-		var _this = this;
-
-
-		if (this.isTreeNode){
-			if (!this.isFolder) { // just became a folder.
-				this.setFolder();
-			}
-		}
-
-		dojo.lang.forEach(children,
-			function(child) {
-				child.parent = _this;
-				child.buildNode(_this.tree, _this.isTreeNode ? _this.depth+1 : 0);
-				_this.containerNode.appendChild(child.domNode);
-			}
-
-		);
-
-		// no dynamic loading for those who are parents already
-		if (this.isTreeNode) {
-			this.state = this.loadStates.LOADED;
-		}
-
-
-		this.children = children;
-
-		//this.updateIconTree();
-
-		dojo.profile.end("addAllChildren");
 
 	},
 
@@ -405,8 +336,6 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 		return img;
 	},
-
-
 
 
 	updateIconTree: function(){

@@ -7,28 +7,7 @@ dojo.require("dojo.io.*");
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeNode");
-dojo.widget.tags.addParseTreeHandler("dojo:EditorTreePropertySetter");
 
-dojo.widget.EditorTreePropertySetter = function() {
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.EditorTreePropertySetter, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.EditorTreePropertySetter, {
-	widgetType: "EditorTreePropertySetter",
-
-	property: "",
-	domNode: null,
-
-	/* delete myself from document and set as parent's property */
-	postCreate: function() {
-		this.parent[this.property] = this;
-
-		this.destroyRendering();
-		dojo.widget.HtmlWidget.prototype.removeChild.apply(this.parent, [this]);
-	}
-
-});
 
 // # //////////
 
@@ -62,7 +41,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	templateString: ('<div class="dojoTreeNode"> '
 		+ '<span treeNode="${this.widgetId}" class="dojoTreeNodeLabel" dojoAttachPoint="labelNode"> '
-		+ '	<span dojoAttachPoint="titleNode" dojoAttachEvent="onClick: onTitleClick" class="dojoTreeNodeLabelTitle">${this.title}</span> '
+		+ '		<span dojoAttachPoint="titleNode" dojoAttachEvent="onClick: onTitleClick" class="dojoTreeNodeLabelTitle">${this.title}</span> '
 		+ '</span> '
 		+ '<span class="dojoTreeNodeAfterLabel" dojoAttachPoint="afterLabelNode">${this.afterLabel}</span> '
 		+ '<div dojoAttachPoint="containerNode"></div> '
@@ -280,6 +259,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 	/* et the grid under the expand icon */
 	updateExpandIcon: function() {
 
+
 		if (this.tree.showGrid){
 			if (this.depth){
 				this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
@@ -439,10 +419,6 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 
 	addChild: function(){
 		return this.tree.addChild.apply(this, arguments);
-	},
-
-	addAllChildren: function(){
-		return this.tree.addAllChildren.apply(this, arguments);
 	},
 
 	removeChild: function(){
