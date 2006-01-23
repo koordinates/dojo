@@ -434,7 +434,7 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		}
 
 		if (props.afterLabel) {
-			this.afterLabelNode.innerHTML = this.title;
+			this.afterLabelNode.innerHTML = this.afterLabel;
 		}
 
 		if (props.childIconSrc) {
