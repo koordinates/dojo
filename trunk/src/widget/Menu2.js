@@ -1,3 +1,8 @@
+// TODO: make hierarchy of PopupMenus into a self-contained DOM tree w/ a single root elem
+// TODO: clean up MenuItem markup to be a sequence of <spans> wrapped in a div, less redundant nested spans, etc
+// TODO: add a MenuBar sibling to PopupMenu, perhaps w/ a common base class
+
+
 dojo.provide("dojo.widget.Menu2");
 dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
@@ -137,7 +142,14 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 	layoutMenu: function(){
 
-		// determine menu width
+        // menu must be attached to DOM for size calculations to work
+
+        var parent = this.domNode.parentNode;
+        if (! parent || parent == undefined) {
+            document.body.appendChild(this.domNode);
+        }
+
+        // determine menu width
 
 		var max_label_w = 0;
 		var max_accel_w = 0;
