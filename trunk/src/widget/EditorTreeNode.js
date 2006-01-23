@@ -227,6 +227,43 @@ dojo.lang.extend(dojo.widget.EditorTreeNode, {
 		return domNode;
 	},
 
+	/* NOT USED. Maybe put it into widget.js ? Rarely needed, really.. But may be useful
+	getChildByIndexPath: function(path) {
+		var child = this;
+
+		for(var i=0; i<path.length; i++) {
+			if (dojo.lang.isUndefined(child.children[path[i]])) {
+				return null;
+			}
+			child = child.children[path[i]];
+		}
+
+		return child;
+	},
+
+
+	getIndexPath: function(endNode) {
+		var path = [];
+
+		if (dojo.lang.isUndefined(endNode)) {
+			var checkStop = function(elem) {return elem == null};
+		} else if (typeof endNode == 'function') {
+			var checkStop = function(elem) { return elem instanceof endNode };
+		} else {
+			var checkStop = function(elem) { return elem === endNode };
+		}
+
+		var node = this;
+
+		while (!checkStop(node) && node && node["parent"]) {
+			path.push(node.getParentIndex());
+			node = node.parent;
+		}
+
+		return path.reverse();
+	},
+	*/
+
 	buildNode: function(tree, depth){
 
 		this.tree = tree;

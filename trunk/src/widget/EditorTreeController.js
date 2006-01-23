@@ -126,6 +126,50 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 	},
 
 
+
+	saveExpandedIndices: function(node) {
+		var obj = {};
+
+		for(var i=0; i<node.children.length; i++) {
+			if (node.children[i].isExpanded) {
+				obj[i] = this.saveExpandedIndices(node.children[i]);
+			}
+		}
+
+		return obj;
+	},
+
+
+	restoreExpandedIndices: function(node, savedIndices) {
+		var _this = this;
+
+		for(var i=0; i<node.children.length; i++) {
+			if (savedIndices[i]) {
+				// node is closed now, but should be opened..
+				// It may be open, but then anyway expand() will pass callback further to children
+				//dojo.debug("Expanding "+node.children[i])
+				var handler = new function() {
+					this.controller = _this;
+					this.node = node.children[i];
+					this.savedIndices = savedIndices[i];
+					// recursively read next savedIndices level and apply to opened node
+					this.process = function() {
+						//dojo.debug("Callback applied for "+this.node);
+						this.controller.restoreExpandedIndices(this.node, this.savedIndices);
+					};
+				}
+				this.expand(node.children[i], handler, handler.process);
+			} else if (node.children[i].isExpanded) {
+				//dojo.debug("Collapsing all descendants "+node.children[i])
+				dojo.lang.forEach(node.children[i].getDescendants(), function(elem) { _this.collapse(elem); });
+				//this.collapse(node.children[i]);
+			}
+		}
+
+
+	},
+
+
 	getRPCUrl: function(action) {
 
 		if (this.RPCUrl == "local") { // for demo and tests. May lead to widgetId collisions
@@ -395,19 +439,25 @@ dojo.lang.extend(dojo.widget.EditorTreeController, {
 		dojo.event.topic.publish(this.eventNames.deselect, {source: node} );
 	},
 
-	expand: function(node) {
-		//if (this.node=="Item 1.1") dojo.debug("expand IsExpanded:"+this.isExpanded);
+	expand: function(node, callObj, callFunc, sync) {
 
-		if (node.isExpanded) return;
+		if (node.isExpanded) {
+			// callback is anyway applied
+			if (callFunc) callFunc.apply(callObj, [node]);
+			return;
+		}
 
 		if (node.state == node.loadStates.UNCHECKED) {
-			this.loadRemote(node, false,
+			this.loadRemote(node, sync,
 				function(node, newChildren) {
-					this.expand(node);
+					this.expand(node, callObj, callFunc, sync);
 				}
 			);
 		} else {
 			node.expand();
+
+			// callback after expansion
+			if (callFunc) callFunc.apply(callObj, [node])
 
 			dojo.event.topic.publish(this.eventNames.expand, {source: node} );
 		}

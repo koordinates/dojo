@@ -290,6 +290,7 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 	},
 
 
+
 	// not called for initial tree building. See buildNode instead.
 	// builds child html node if needed
 	// index is "last node" by default
