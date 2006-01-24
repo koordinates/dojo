@@ -17,10 +17,9 @@ dojo.lang.extend(dojo.undo.Manager, {
 	isUndoing: false,
 	isRedoing: false,
 
-	// events which you can use to munge the item to be
-	// undone/redone, usually you just use it for notification though
-	onUndo: function(top) {},
-	onRedo: function(top) {},
+	// these events allow you to hook in and update your code (UI?) as necessary
+	onUndo: function(manager, item) {},
+	onRedo: function(manager, item) {},
 
 	_updateStatus: function() {
 		this.canUndo = this._undoStack.length > 0;
@@ -31,17 +30,17 @@ dojo.lang.extend(dojo.undo.Manager, {
 		this._undoStack = [];
 		this._redoStack = [];
 		this._currentManager = this;
-		this.canUndo = false;
-		this.canRedo = false;
+
 		this.isUndoing = false;
 		this.isRedoing = false;
+
+		this._updateStatus();
 	},
 
 	undo: function() {
 		if(!this.canUndo) { return false; }
 
 		this.isUndoing = true;
-		this.onUndo(top);
 		var top = this._undoStack.pop();
 		if(top instanceof this.constructor) {
 			top.undoAll();
@@ -54,6 +53,7 @@ dojo.lang.extend(dojo.undo.Manager, {
 		this.isUndoing = false;
 
 		this._updateStatus();
+		this.onUndo(this, top);
 		return true;
 	},
 
@@ -62,7 +62,6 @@ dojo.lang.extend(dojo.undo.Manager, {
 
 		this.isRedoing = true;
 		var top = this._redoStack.pop();
-		this.onRedo(top);
 		if(top instanceof this.constructor) {
 			top.redoAll();
 		} else {
@@ -72,6 +71,7 @@ dojo.lang.extend(dojo.undo.Manager, {
 		this.isRedoing = false;
 
 		this._updateStatus();
+		this.onRedo(this, top);
 		return true;
 	},
 
@@ -87,11 +87,12 @@ dojo.lang.extend(dojo.undo.Manager, {
 		}
 	},
 
-	push: function(undo, redo /* optional */) {
+	push: function(undo, redo /* optional */, description /* optional */) {
 		if(this._currentManager == this) {
 			this._undoStack.push({
 				undo: undo,
-				redo: redo
+				redo: redo,
+				description: description
 			});
 		} else {
 			this._currentManager.push.apply(this._currentManager, arguments);
