@@ -40,6 +40,11 @@ dojo.lang.extend(dojo.undo.Manager, {
 	undo: function() {
 		if(!this.canUndo) { return false; }
 
+		// make sure we close any transactions, even if they aren't done
+		while(this._currentManager != this) {
+			this.endTransaction();
+		}
+
 		this.isUndoing = true;
 		var top = this._undoStack.pop();
 		if(top instanceof this.constructor) {
