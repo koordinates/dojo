@@ -329,14 +329,24 @@ dojo.lang.extend(dojo.selection.Selection, {
 		return false;
 	},
 
+	// select first selectable item
 	selectFirst: function() {
 		this.deselectAll();
-		return this.select(this.items[0]);
+		var idx = 0;
+		while(this.items[idx] && !this.select(this.items[idx])) {
+			idx++;
+		}
+		return this.items[idx] ? true : false;
 	},
 
+	// select last selectable item
 	selectLast: function() {
 		this.deselectAll();
-		return this.select(this.items[this.items.length-1]);
+		var idx = this.items.length-1;
+		while(this.items[idx] && !this.select(this.items[idx])) {
+			idx--;
+		}
+		return this.items[idx] ? true : false;
 	},
 
 	_addPivot: function(item, andClear) {
