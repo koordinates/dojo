@@ -667,7 +667,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		// much of this is from getText, but reproduced here because we need
 		// more flexibility
-		var http = dojo.hostenv.getXmlhttpObject();
+		var http = dojo.hostenv.getXmlhttpObject(kwArgs);
 		var received = false;
 
 		// build a handler function that calls back to the handler obj

@@ -2,14 +2,22 @@
 	var hostEnv = "browser";
 	var isRhino = false;
 	var isSpidermonkey = false;
+	var isDashboard = false;
 	if((typeof this["load"] == "function")&&(typeof this["Packages"] == "function")){
 		var isRhino = true;
 		hostEnv = "rhino";
 	}else if(typeof this["load"] == "function"){
 		isSpidermonkey  = true;
 		hostEnv = "spidermonkey";
+	}else if(window.widget){
+		isDashboard = true;
+		hostEnv = "dashboard";
 	}
 	var tmps = ["bootstrap1.js", "hostenv_"+hostEnv+".js", "bootstrap2.js"];
+
+	if(hostEnv == "dashboard"){
+		tmps.splice(1, 0, "hostenv_browser.js");
+	}
 
 	if( (this["djConfig"])&&(djConfig["baseScriptUri"]) ){
 		var root = djConfig["baseScriptUri"];
@@ -39,7 +47,7 @@
 		}
 	}
 
-	if((this["djConfig"])&&(djConfig["debugAtAllCosts"])&&(!isRhino)){
+	if((this["djConfig"])&&(djConfig["debugAtAllCosts"])&&(!isRhino)&&(!isDashboard)){
 		tmps.push("browser_debug.js");
 	}
 
