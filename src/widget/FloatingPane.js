@@ -42,6 +42,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	extractContent: true,
 	parseContent: true,
 	cacheContent: true,
+	executeScripts: false,
 
 	// FloatingPane supports 3 modes for the client area (the part below the title bar)
 	//  default - client area  is a ContentPane, that can hold
@@ -89,7 +90,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			href: this.href, 
 			cacheContent: this.cacheContent, 
 			extractContent: this.extractContent,
-			parseContent: this.parseContent
+			parseContent: this.parseContent,
+			executeScripts: this.executeScripts
 		};
 		var pane = this._createPane(this.contentWrapper=="layout"?"LayoutPane":"ContentPane", clientDiv, args);
 		return pane;
