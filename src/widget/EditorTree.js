@@ -209,6 +209,10 @@ dojo.lang.extend(dojo.widget.EditorTree, {
 
 	},
 
+	// FIXME: removeChild may leak because events do not get cleaned on removal like:
+	// dojo.event.browser.clean( parent.removeChild( child ) );
+	// From the other hand, if I clean events I have to reinsert'em later..
+	// maybe supply "clean" parameter ?
 	removeChild: function(child) {
 
 		var parent = child.parent;
