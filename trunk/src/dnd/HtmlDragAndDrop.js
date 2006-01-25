@@ -329,8 +329,10 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	},
 
 	onDragOut: function(e) {
-		dojo.dom.removeNode(this.dropIndicator);
-		delete this.dropIndicator;
+		if(this.dropIndicator) {
+			dojo.dom.removeNode(this.dropIndicator);
+			delete this.dropIndicator;
+		}
 	},
 
 	/**

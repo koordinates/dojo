@@ -40,10 +40,7 @@ dojo.lang.extend(dojo.undo.Manager, {
 	undo: function() {
 		if(!this.canUndo) { return false; }
 
-		// make sure we close any transactions, even if they aren't done
-		while(this._currentManager != this) {
-			this.endTransaction();
-		}
+		this.endAllTransactions();
 
 		this.isUndoing = true;
 		var top = this._undoStack.pop();
@@ -133,6 +130,12 @@ dojo.lang.extend(dojo.undo.Manager, {
 			}
 		} else {
 			this._currentManager.endTransaction.apply(this._currentManager, arguments);
+		}
+	},
+
+	endAllTransactions: function() {
+		while(this._currentManager != this) {
+			this.endTransaction();
 		}
 	}
 });
