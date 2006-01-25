@@ -97,6 +97,8 @@ dojo.lang.extend(dojo.undo.Manager, {
 		} else {
 			this._currentManager.push.apply(this._currentManager, arguments);
 		}
+		// adding a new undo-able item clears out the redo stack
+		this._redoStack = [];
 		this._updateStatus();
 	},
 
@@ -115,6 +117,13 @@ dojo.lang.extend(dojo.undo.Manager, {
 			if(this._parent) {
 				this._parent._currentManager = this._parent;
 				this._parent.endTransaction.apply(this._parent, arguments);
+				if(this._undoStack.length == 0) {
+					// don't leave empty transactions hangin' around
+					var idx = dojo.lang.find(this._parent._undoStack, this);
+					if(idx >= 0) {
+						this._parent._undoStack.splice(idx, 1);
+					}
+				}
 			}
 		} else {
 			this._currentManager.endTransaction.apply(this._currentManager, arguments);
