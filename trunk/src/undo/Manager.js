@@ -88,6 +88,8 @@ dojo.lang.extend(dojo.undo.Manager, {
 	},
 
 	push: function(undo, redo /* optional */, description /* optional */) {
+		if(!undo) { return; }
+
 		if(this._currentManager == this) {
 			this._undoStack.push({
 				undo: undo,
@@ -116,7 +118,6 @@ dojo.lang.extend(dojo.undo.Manager, {
 		if(this._currentManager == this) {
 			if(this._parent) {
 				this._parent._currentManager = this._parent;
-				this._parent.endTransaction.apply(this._parent, arguments);
 				if(this._undoStack.length == 0) {
 					// don't leave empty transactions hangin' around
 					var idx = dojo.lang.find(this._parent._undoStack, this);
