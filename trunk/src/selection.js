@@ -330,10 +330,12 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	selectFirst: function() {
+		this.deselectAll();
 		return this.select(this.items[0]);
 	},
 
 	selectLast: function() {
+		this.deselectAll();
 		return this.select(this.items[this.items.length-1]);
 	},
 
@@ -361,8 +363,6 @@ dojo.lang.extend(dojo.selection.Selection, {
 			if(this.lastSelected) {
 				this._addPivot(this.lastSelected);
 			}
-		} else {
-			this._pivotItem = null;
 		}
 	},
 
@@ -390,5 +390,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 				this._removePivot(removed[0]);
 			}
 		}
+
+		this.length = this.selection.length;
 	}
 });
