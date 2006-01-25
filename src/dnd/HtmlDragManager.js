@@ -169,6 +169,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var _this = this;
 		e.dragSource = this.dragSource;
 		if((!e.shiftKey)&&(!e.ctrlKey)){
+			if(_this.currentDropTarget) {
+				_this.currentDropTarget.onDropStart();
+			}
 			dojo.lang.forEach(this.dragObjects, function(tempDragObj){
 				var ret = null;
 				if(!tempDragObj){ return; }
@@ -201,6 +204,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			this.selectedSources = [];
 			this.dragObjects = [];
 			this.dragSource = null;
+			if(_this.currentDropTarget) {
+				_this.currentDropTarget.onDropEnd();
+			}
 		}
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
 		this.currentDropTarget = null;
