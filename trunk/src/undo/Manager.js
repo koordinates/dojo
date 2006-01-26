@@ -21,6 +21,11 @@ dojo.lang.extend(dojo.undo.Manager, {
 	onUndo: function(manager, item) {},
 	onRedo: function(manager, item) {},
 
+	// fired when you do *any* undo action, which means you'll have one for every item
+	// in a transaction. this is usually only useful for debugging
+	onUndoAny: function(manager, item) {},
+	onRedoAny: function(manager, item) {},
+
 	_updateStatus: function() {
 		this.canUndo = this._undoStack.length > 0;
 		this.canRedo = this._redoStack.length > 0;
@@ -56,6 +61,9 @@ dojo.lang.extend(dojo.undo.Manager, {
 
 		this._updateStatus();
 		this.onUndo(this, top);
+		if(!(top instanceof this.constructor)) {
+			this.getTop().onUndoAny(this, top);
+		}
 		return true;
 	},
 
@@ -74,6 +82,9 @@ dojo.lang.extend(dojo.undo.Manager, {
 
 		this._updateStatus();
 		this.onRedo(this, top);
+		if(!(top instanceof this.constructor)) {
+			this.getTop().onRedoAny(this, top);
+		}
 		return true;
 	},
 
@@ -136,6 +147,15 @@ dojo.lang.extend(dojo.undo.Manager, {
 	endAllTransactions: function() {
 		while(this._currentManager != this) {
 			this.endTransaction();
+		}
+	},
+
+	// find the top parent of an undo manager
+	getTop: function() {
+		if(this._parent) {
+			return this._parent.getTop();
+		} else {
+			return this;
 		}
 	}
 });
