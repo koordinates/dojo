@@ -118,6 +118,10 @@
 			<td> ilia </td>
 			<td> Ilia Kantor </td>
 		</tr>
+		<tr>
+			<td> pottedmeat </td>
+			<td> Neil Roberts </td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
