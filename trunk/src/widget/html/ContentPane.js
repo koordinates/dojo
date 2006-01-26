@@ -72,10 +72,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			mimetype: "text/html",
 			handler: function(type, data, e) {
 				if(type == "load") {
-					if(self.extractContent) {
-						var matches = data.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
-						if(matches) { data = matches[1]; }
-					}
 					self.setContent.call(self, data);
 				} else {
 					self.setContent.call(self, "Error loading '" + url + "' (" + e.status + " " + e.statusText + ")");
@@ -89,6 +85,10 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		node.innerHTML = data;
 		if(this.executeScripts){
 			data = this._executeScripts(data);
+		}
+		if(this.extractContent) {
+			var matches = data.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+			if(matches) { data = matches[1]; }
 		}
 		if(this.parseContent){
 			var parser = new dojo.xml.Parse();
