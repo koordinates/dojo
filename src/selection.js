@@ -18,13 +18,16 @@ dojo.selection.Selection = function(items, isCollection) {
 	}
 }
 dojo.lang.extend(dojo.selection.Selection, {
-	items: null, // items to select from, order matters
+	items: null, // items to select from, order matters for growable selections
 
 	selection: null, // items selected, aren't stored in order (see sorted())
 	lastSelected: null, // last item selected
 
 	allowImplicit: true, // if true, grow selection will start from 0th item when nothing is selected
 	length: 0, // number of *selected* items
+
+	// if true, the selection is treated as an in-order and can grow by ranges, not just by single item
+	isGrowable: true,
 
 	_pivotItems: null, // stack of pivot items
 	_pivotItem: null, // item we grow selections from, top of stack
@@ -131,7 +134,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 	update: function(item, add, grow, noToggle) {
 		if(!this.isItem(item)) { return false; }
 
-		if(grow) {
+		if(this.isGrowable && grow) {
 			if(!this.isSelected(item)
 				&& this.selectFilter(item, this.selection, false, true)) {
 				this.grow(item);
@@ -164,6 +167,8 @@ dojo.lang.extend(dojo.selection.Selection, {
 	 * (fromItem, toItem] will be deselected
 	**/
 	grow: function(toItem, fromItem) {
+		if(!this.isGrowable) { return; }
+
 		if(arguments.length == 1) {
 			fromItem = this._pivotItem;
 			if(!fromItem && this.allowImplicit) {
@@ -223,6 +228,8 @@ dojo.lang.extend(dojo.selection.Selection, {
 	 * Grow selection upwards one item from lastSelected
 	**/
 	growUp: function() {
+		if(!this.isGrowable) { return; }
+
 		var idx = this._find(this.lastSelected) - 1;
 		while(idx >= 0) {
 			if(this.selectFilter(this.items[idx], this.selection, false, true)) {
@@ -237,6 +244,8 @@ dojo.lang.extend(dojo.selection.Selection, {
 	 * Grow selection downwards one item from lastSelected
 	**/
 	growDown: function() {
+		if(!this.isGrowable) { return; }
+
 		var idx = this._find(this.lastSelected);
 		if(idx < 0 && this.allowImplicit) {
 			this.select(this.items[0]);
