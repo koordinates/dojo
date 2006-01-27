@@ -234,6 +234,9 @@ dojo.dnd.HtmlDropTarget = function(node, types){
 	if (arguments.length == 0) { return; }
 	this.domNode = dojo.byId(node);
 	dojo.dnd.DropTarget.call(this);
+	if(types && dojo.lang.isString(types)) {
+		types = [types];
+	}
 	this.acceptedTypes = types || [];
 }
 dojo.inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
