@@ -108,6 +108,16 @@ dojo.collections.SortedList = function(dictionary){
 		build();
 		this.count = q.length;
 	};
+	
+	this.replace = function(k,v){
+		if (items[k]) {
+			this.add(k,v);
+		} else {
+			items[k] = new dojo.collections.DictionaryEntry(k,v);
+			q.sort(sorter);
+		}
+	};
+
 	this.removeAt = function(i){
 		delete items[q[i].key];
 		build();
