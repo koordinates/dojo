@@ -116,7 +116,7 @@ dojo.collections.SortedList = function(dictionary){
 	};
 
 	this.replace = function(k,v){
-		if (items[k]) {
+		if (!items[k]) {
 			this.add(k,v);
 		} else {
 			items[k] = new dojo.collections.DictionaryEntry(k,v);
