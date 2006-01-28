@@ -118,9 +118,11 @@ dojo.collections.SortedList = function(dictionary){
 	this.replace = function(k,v){
 		if (!items[k]) {
 			this.add(k,v);
+			return false; // returning false because we added rather than replaced
 		} else {
 			items[k] = new dojo.collections.DictionaryEntry(k,v);
 			q.sort(sorter);
+			return true; // returning true because we replaced a value
 		}
 	};
 
