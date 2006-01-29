@@ -283,12 +283,36 @@ function dj_addNodeEvtHdlr (node, evtName, fp, capture){
 	return true;
 }
 
-dj_addNodeEvtHdlr(window, "load", function(){
+/* dj_load_init should be called right after DOM is loaded and parsed. Needs testing. */                   
+                                    
+dj_load_init = function(){      
+	// allow multiple calls, only first one will take effect
+   if (arguments.callee.initialized) return;
+   arguments.callee.initialized = true;
+                    
+   // perform initialization     
 	if(dojo.render.html.ie){
 		dojo.hostenv.makeWidgets();
 	}
 	dojo.hostenv.modulesLoaded();
-});
+};  
+                                
+/* Mozilla exposes the event we could use */
+if (dojo.render.html.mozilla) {
+   document.addEventListener("DOMContentLoaded", dj_load_init, null);
+}       
+                                                     
+/* for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it */
+if (dojo.render.html.ie) {
+   document.write("<script defer>dj_load_init()<"+"/script>");
+}
+ 
+// default for other browsers                                                     
+// potential TODO: apply setTimeout approach for other browsers
+// that will cause flickering though ( document is loaded and THEN is processed) 
+// maybe show/hide required in this case..  
+// TODO: other browsers may support DOMContentLoaded/defer attribute. Add them to above.
+dj_addNodeEvtHdlr(window, "load", dj_load_init);
 
 dojo.hostenv.makeWidgets = function(){
 	// you can put searchIds in djConfig and dojo.hostenv at the moment
