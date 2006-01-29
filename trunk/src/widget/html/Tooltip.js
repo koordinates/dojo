@@ -49,19 +49,33 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	onMouseOver: function(e) {
-		if( this.displayed ){ return; }
+		// ignore duplicate events
+		if(this.hovering){ return; }
+
 		this.timerEventId = setTimeout(this.timerEvent, this.delay);
 		dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
+		this.hovering=true;		
 	},
-	
+
 	onMouseMove: function(e) {
+		if(!this.hovering){ return; }
+
+		// Have the mouse been moved off the element?
+		// Note: can't use onMouseOut because the "explode" effect causes
+		// spurious onMouseOut/onMouseOver events (due to interference from outline)
+		if( !dojo.html.overElement(this.connectNode, e) ){
+			if ( this.timerEventId ) {
+				clearTimeout(this.timerEventId);
+				delete this.timerEventId;
+			}
+			dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
+			this.hovering=false;
+			this.erase();
+			return;
+		}
+
 		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
 		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
-		if( !dojo.html.overElement(this.connectNode, e) ){
-			// Note: can't use onMouseOut because the "explode" effect causes
-			// spurious onMouseOut/onMouseOver events (due to interference from outline)
-			this.erase();
-		}
 	},
 
 	display: function() {
@@ -86,15 +100,10 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	erase: function() {
-		if ( this.timerEventId ) {
-			clearTimeout(this.timerEventId);
-			delete this.timerEventId;
-		}
 		if ( this.displayed ) {
 			this.hide();
 			this.bgIframe.hide();
 			this.displayed=false;
 		}
-		dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
 	}
 });
