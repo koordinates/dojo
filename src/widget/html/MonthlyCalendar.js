@@ -73,6 +73,14 @@ dojo.lang.extend(dojo.widget.html.MonthlyCalendar, {
 		// time change in local time zones
 		previousDate.setHours(8);
 		var nextDate = new Date(this.firstSaturday.year, this.firstSaturday.month, this.firstSaturday.date, 8);
+		var lastDay = new Date(this.firstSaturday.year, this.firstSaturday.month, this.firstSaturday.date + 42, 8);
+		
+		if (this.iCalendars.length > 0) {
+			for (var x=0; x<this.iCalendars.length;x++) {
+				this.iCalendars[x].preComputeRecurringEvents(lastDay);
+			}
+		}
+
 		if(this.firstSaturday.date < 7) {
 			// this means there are days to show from the previous month
 			var dayInWeek = 6;
