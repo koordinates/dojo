@@ -471,8 +471,15 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	onResized: function(){
 		if( !this.isVisible() ){ return; }
+		
+		// get height/width
 		var newHeight = dojo.style.getInnerHeight(this.domNode);
 		var newWidth = dojo.style.getInnerWidth(this.domNode);
+		if (newHeight == 0 || newWidth == 0) {
+			// need more time for browser to compute
+			dojo.lang.setTimeout(50, dojo.lang.hitch(this, this.onResized));
+			return;
+		}
 	
 		//if ( newWidth != this.width || newHeight != this.height ) {
 			this.width = newWidth;
