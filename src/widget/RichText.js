@@ -82,7 +82,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		this._content = "";
 		if (arguments.length == 1) { this.domNode = element; } // else unchanged
 		
-		if (this.domNode.nodeName == "TEXTAREA") {
+		if(this.domNode.nodeName.toLowerCase() == "textarea"){
 			this.textarea = this.domNode;
 			var html = this.textarea.value;
 			this.domNode = document.createElement("div");
@@ -99,6 +99,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			
 			if(this.textarea.form){
 				dojo.event.connect(this.textarea.form, "onsubmit", 
+					// FIXME: should we be calling close() here instead?
 					dojo.lang.hitch(this, function(){
 						this.textarea.value = this.getEditorContent();
 					})
