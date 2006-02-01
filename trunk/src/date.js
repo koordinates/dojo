@@ -19,7 +19,7 @@ dojo.date.getDayOfYear = function (dateObject) {
 
 
 
-dojo.date.setWeekOfYear = function (dateObject, firstDay) {
+dojo.date.setWeekOfYear = function (dateObject, week, firstDay) {
 	if (arguments.length == 1) { firstDay = 0; } // Sunday
 	dojo.unimplemented("dojo.date.setWeekOfYear");
 }
@@ -40,7 +40,7 @@ dojo.date.getWeekOfYear = function (dateObject, firstDay) {
 
 
 
-dojo.date.setIsoWeekOfYear = function (dateObject, firstDay) {
+dojo.date.setIsoWeekOfYear = function (dateObject, week, firstDay) {
 	if (arguments.length == 1) { firstDay = 1; } // Monday
 	dojo.unimplemented("dojo.date.setIsoWeekOfYear");
 }
@@ -190,20 +190,20 @@ dojo.date.shortDays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
 dojo.date.getDaysInMonth = function (dateObject) {
 	var month = dateObject.getMonth();
-	var year = dateObject.getFullYear();
-	
+	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	if (month == 1 && dojo.date.isLeapYear(dateObject)) { return 29; }
+	else { return days[month]; }
+}
+
+dojo.date.isLeapYear = function (dateObject) {
 	/*
 	 * Leap years are years with an additional day YYYY-02-29, where the year
 	 * number is a multiple of four with the following exception: If a year
 	 * is a multiple of 100, then it is only a leap year if it is also a
 	 * multiple of 400. For example, 1900 was not a leap year, but 2000 is one.
 	 */
-	var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	if (month == 1 && year) {
-		if ((!(year % 4) && (year % 100)) ||
-			(!(year % 4) && !(year % 100) && !(year % 400))) { return 29; }
-		else { return 28; }
-	} else { return days[month]; }
+	var year = dateObject.getFullYear();
+	return (year%400 == 0) ? true : (year%100 == 0) ? false : (year%4 == 0) ? true : false;
 }
 
 
@@ -240,9 +240,9 @@ dojo.date.getTimezoneName = function (dateObject) {
 	}
 	
 	// we don't know so return it formatted as "+HH:MM"
-	function (s) { s = String(s); while (s.length < 2) { s = "0" + s; } return s; }
-	return (timezoneOffset < 0 ? "-" : "+") + $(Math.floor(timezoneOffset/60))
-		+ ":" + $(timezoneOffset%60);
+	function $ (s) { s = String(s); while (s.length < 2) { s = "0" + s; } return s; }
+	return (timezoneOffset < 0 ? "-" : "+") + $(Math.floor(Math.abs(
+		timezoneOffset)/60)) + ":" + $(Math.abs(timezoneOffset)%60);
 }
 
 
@@ -251,13 +251,9 @@ dojo.date.getTimezoneName = function (dateObject) {
 dojo.date.getOrdinal = function (dateObject) {
 	var date = dateObject.getDate();
 
-	var ones = date % 10;
-	var tens = date % 100;
-	var teen = tens == 11 || tens == 12 || tens == 13;
-	
-	if (!teen && ones == 1) { return "st"; }
-	else if (!teen && ones == 2) { return "nd"; }
-	else if (!teen && ones == 3) { return "rd"; }
+	if (date%100 != 11 && date%10 == 1) { return "st"; }
+	else if (date%100 != 12 && date%10 == 2) { return "nd"; }
+	else if (date%100 != 13 && date%10 == 3) { return "rd"; }
 	else { return "th"; }
 }
 
@@ -272,14 +268,14 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 
 	// zero pad
 	var padChar = null;
-	function pad (s, n) {
+	function _ (s, n) {
 		s = String(s);
 		n = (n || 2) - s.length;
 		while (n-- > 0) { s = (padChar == null ? "0" : padChar) + s; }
 		return s;
 	}
 	
-	function getProperty (property) {
+	function $ (property) {
 		switch (property) {
 			case "a": // abbreviated weekday name according to the current locale
 				return dojo.date.getDayShortName(dateObject); break;
@@ -300,19 +296,18 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 
 			case "C": // century number (the year divided by 100 and truncated
 				      // to an integer, range 00 to 99)
-				return pad(Math.floor(dateObject.getFullYear()/100)); break;
+				return _(Math.floor(dateObject.getFullYear()/100)); break;
 				
 			case "d": // day of the month as a decimal number (range 01 to 31)
-				return pad(dateObject.getDate()); break;
+				return _(dateObject.getDate()); break;
 				
 			case "D": // same as %m/%d/%y
-				return getProperty("m") + "/" +	getProperty("d") +
-							"/" + getProperty("y"); break;
+				return $("m") + "/" + $("d") + "/" + $("y"); break;
 					
 			case "e": // day of the month as a decimal number, a single digit is
 				      // preceded by a space (range ' 1' to '31')
 				if (padChar == null) { padChar = " "; }
-				return pad(String(dateObject.getDate()), 2); break;
+				return _(dateObject.getDate(), 2); break;
 			
 			case "g": // like %G, but without the century.
 				break;
@@ -324,26 +319,24 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 				break;
 			
 			case "F": // same as %Y-%m-%d
-				return getProperty("Y") + "-" + getProperty("m") +
-						"-" + getProperty("d"); break;
+				return $("Y") + "-" + $("m") + "-" + $("d"); break;
 				
 			case "H": // hour as a decimal number using a 24-hour clock (range
 				      // 00 to 23)
-				return pad(dateObject.getHours()); break;
+				return _(dateObject.getHours()); break;
 				
 			case "I": // hour as a decimal number using a 12-hour clock (range
 				      // 01 to 12)
-				var hours = dateObject.getHours();
-				return pad(hours > 12 ? hours - 12 : hours); break;
+				return _(dateObject.getHours() % 12 || 12); break;
 				
 			case "j": // day of the year as a decimal number (range 001 to 366)
-				return pad(dojo.date.getDayOfYear(dateObject), 3); break;
+				return _(dojo.date.getDayOfYear(dateObject), 3); break;
 				
 			case "m": // month as a decimal number (range 01 to 12)
-				return pad(dateObject.getMonth() + 1); break;
+				return _(dateObject.getMonth() + 1); break;
 				
 			case "M": // minute as a decimal numbe
-				return pad(dateObject.getMinutes()); break;
+				return _(dateObject.getMinutes()); break;
 			
 			case "n":
 				return "\n"; break;
@@ -353,47 +346,43 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 				return dateObject.getHours() < 12 ? "am" : "pm"; break;
 				
 			case "r": // time in a.m. and p.m. notation
-				return getProperty("I") + ":" + getProperty("M") + ":" +
-					getProperty("S") + " " + getProperty("p"); break;
+				return $("I") + ":" + $("M") + ":" + $("S") + " " + $("p"); break;
 				
 			case "R": // time in 24 hour notation
-				return getProperty("H") + ":" + getProperty("M"); break;
+				return $("H") + ":" + $("M"); break;
 				
 			case "S": // second as a decimal number
-				return pad(dateObject.getSeconds()); break;
+				return _(dateObject.getSeconds()); break;
 
 			case "t":
 				return "\t"; break;
 
 			case "T": // current time, equal to %H:%M:%S
-				return getProperty("H") + ":" + getProperty("M") +
-					":" + getProperty("S"); break;
+				return $("H") + ":" + $("M") + ":" + $("S"); break;
 				
 			case "u": // weekday as a decimal number [1,7], with 1 representing
 				      // Monday
-				var day = dateObject.getDay();
-				return pad(day == 0 ? 7 : day); break;
+				return dateObject.getDay() || 7; break;
 				
 			case "U": // week number of the current year as a decimal number,
 				      // starting with the first Sunday as the first day of the
 				      // first week
-				return pad(dojo.date.getWeekOfYear(dateObject)); break;
+				return _(dojo.date.getWeekOfYear(dateObject)); break;
 
 			case "V": // week number of the year (Monday as the first day of the
 				      // week) as a decimal number [01,53]. If the week containing
 				      // 1 January has four or more days in the new year, then it 
 				      // is considered week 1. Otherwise, it is the last week of 
 				      // the previous year, and the next week is week 1.
-				return pad(dojo.date.getIsoWeekOfYear(dateObject)); break;
-				break;
+				return _(dojo.date.getIsoWeekOfYear(dateObject)); break;
 				
 			case "W": // week number of the current year as a decimal number,
 				      // starting with the first Monday as the first day of the
 				      // first week
-				return pad(dojo.date.getWeekOfYear(dateObject, 1)); break;
+				return _(dojo.date.getWeekOfYear(dateObject, 1)); break;
 				
 			case "w": // day of the week as a decimal, Sunday being 0
-				return pad(dateObject.getDay()); break;
+				return _(dateObject.getDay()); break;
 
 			case "x": // preferred date representation for the current locale
 				      // without the time
@@ -405,8 +394,7 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 
 			case "y": // year as a decimal number without a century (range 00 to
 				      // 99)
-				var y = dateObject.getFullYear();
-				return pad(y - Math.floor(y/100)*100); break;
+				return _(dateObject.getFullYear()%100); break;
 				
 			case "Y": // year as a decimal number including the century
 				return String(dateObject.getFullYear()); break;
@@ -414,8 +402,8 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 			case "z": // time zone or name or abbreviation
 				var timezoneOffset = dateObject.getTimezoneOffset();
 				return (timezoneOffset < 0 ? "-" : "+") + 
-					pad(Math.floor(timezoneOffset/60)) + ":" +
-					pad(timezoneOffset%60); break;
+					_(Math.floor(Math.abs(timezoneOffset)/60)) + ":" +
+					_(Math.abs(timezoneOffset)%60); break;
 				
 			case "Z": // time zone or name or abbreviation
 				return dojo.date.getTimezoneName(dateObject); break;
@@ -448,7 +436,7 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 		}
 
 		// toggle case if a flag is set
-		property = getProperty(format.charAt(index++));
+		property = $(format.charAt(index++));
 		if (switchCase == "upper" ||
 			(switchCase == "swap" && /[a-z]/.test(property))) {
 			property = property.toUpperCase();
