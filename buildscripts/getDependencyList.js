@@ -150,13 +150,19 @@ for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 
 var depList = [];
 var seen = {};
-for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
+uris: for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 	var curi = dojo.hostenv.loadedUris[x];
 	if(!seen[curi]){
 		seen[curi] = true;
+		if(dependencies["filters"]){
+			for(var i in dependencies.filters){
+				if(curi.match(dependencies.filters[i])){
+					continue uris;
+				}}}
 		depList.push(curi);
 	}
 }
+
 
 // print(dojo.hostenv.loadedUris.join(",\n"));
 print(depList.join(",\n"));
