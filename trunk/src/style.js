@@ -102,7 +102,7 @@ dojo.style.getUnitValue = function (node, cssSelector, autoIsZero){
 		result.value = NaN;
 	}else{
 		// FIXME: is regex inefficient vs. parseInt or some manual test? 
-		var match = s.match(/([\d.]+)([a-z%]*)/i);
+		var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
 		if (!match){
 			result.value = NaN;
 		}else{
