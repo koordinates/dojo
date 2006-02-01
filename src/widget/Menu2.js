@@ -264,7 +264,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		// move the menu into position but make it invisible
 		// (because when menus are initially constructed they are visible but off-screen)
-		this.domNode.style.zIndex = 10 + this.menuIndex;
+		this.domNode.style.zIndex = 200 + this.menuIndex;
 		this.domNode.style.left = x + 'px';
 		this.domNode.style.top = y + 'px';
 		this.domNode.style.display='none';
