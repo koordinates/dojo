@@ -1,4 +1,4 @@
-dojo.provide("dojo.selection");
+dojo.provide("dojo.selection.Selection");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.math");
