@@ -66,6 +66,7 @@ dojo.dnd.HtmlDragObject = function(node, type){
 	this.domNode = dojo.byId(node);
 	this.type = type;
 	this.constrainToContainer = false;
+	this.dragSource = null;
 }
 
 dojo.lang.extend(dojo.dnd.HtmlDragObject, {
