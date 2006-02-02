@@ -28,6 +28,8 @@ dojo.dnd.HtmlDragSource = function(node, type){
 
 }
 
+dojo.inherits(dojo.dnd.HtmlDragSource, dojo.dnd.DragSource);
+
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	dragClass: "", // CSS classname(s) applied to node when it is being dragged
 
@@ -41,12 +43,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 
 		return dragObj;
 	},
+
 	setDragHandle: function(node){
 		node = dojo.byId(node);
 		dojo.dnd.dragManager.unregisterDragSource(this);
 		this.domNode = node;
 		dojo.dnd.dragManager.registerDragSource(this);
 	},
+
 	setDragTarget: function(node){
 		this.dragObject = node;
 	},
@@ -68,6 +72,8 @@ dojo.dnd.HtmlDragObject = function(node, type){
 	this.constrainToContainer = false;
 	this.dragSource = null;
 }
+
+dojo.inherits(dojo.dnd.HtmlDragObject, dojo.dnd.DragObject);
 
 dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	dragClass: "",

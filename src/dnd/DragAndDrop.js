@@ -5,7 +5,10 @@ dojo.provide("dojo.dnd.DragObject");
 dojo.provide("dojo.dnd.DragAndDrop");
 
 dojo.dnd.DragSource = function(){
-	dojo.dnd.dragManager.registerDragSource(this);
+	var dm = dojo.dnd.dragManager;
+	if(dm["registerDragSource"]){ // side-effect prevention
+		dm.registerDragSource(this);
+	}
 }
 
 dojo.lang.extend(dojo.dnd.DragSource, {
@@ -27,7 +30,10 @@ dojo.lang.extend(dojo.dnd.DragSource, {
 });
 
 dojo.dnd.DragObject = function(){
-	dojo.dnd.dragManager.registerDragObject(this);
+	var dm = dojo.dnd.dragManager;
+	if(dm["registerDragObject"]){ // side-effect prevention
+		dm.registerDragObject(this);
+	}
 }
 
 dojo.lang.extend(dojo.dnd.DragObject, {
