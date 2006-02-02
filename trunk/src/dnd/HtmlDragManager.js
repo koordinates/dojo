@@ -204,6 +204,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				}
 
 				e.dragStatus = _this.dropAcceptable && ret ? "dropSuccess" : "dropFailure";
+				if(tempDragObj.dragSource){
+					tempDragObj.dragSource.onDragEnd(e);
+				}
 				tempDragObj.dragSource.onDragEnd(e);
 				tempDragObj.onDragEnd(e);
 			});
