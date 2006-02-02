@@ -14,19 +14,21 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	widgetType: "ContentPane",
 	isContainer: true,
 
+	// remote loading options
 	href: "",
 	extractContent: true,
 	parseContent: true,
 	cacheContent: true,
 	executeScripts: false,
-	
-	// To generate pane content from a java function
-	handler: "",
+	preload: false,			// force load of data even if pane is hidden
+	handler: "",			// generate pane content from a java function
+
 
 	postCreate: function(args, frag, parentComp){
 		if ( this.handler != "" ){
 			this.setHandler(this.handler);
 		}
+		if(this.preload){ this.loadContents(); }
 	},
 
 	onResized: function(){
@@ -57,7 +59,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	setUrl: function(url) {
 		this.href = url;
 		this.isLoaded = false;
-		if ( this.isVisible() ){
+		if ( this.preload || this.isVisible() ){
 			this.loadContents();
 		}
 	},
