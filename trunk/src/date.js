@@ -453,7 +453,84 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 	return string;
 }
 
+/* compare and add
+ ******************/
+dojo.date.compareTypes={
+	// 	summary
+	//	bitmask for comparison operations.
+	DATE:1, TIME:2 
+};
+dojo.date.compare=function(/* Date */ dateA, /* Date */ dateB, /* int */ options){
+	//	summary
+	//	Compare two date objects by date, time, or both.
+	var dA=dateA;
+	var dB=dateB||new Date();
+	var now=new Date();
+	var opt=options||(dojo.date.compareTypes.DATE|dojo.date.compareTypes.TIME);
+	var d1=new Date(
+		((opt&dojo.date.compareTypes.DATE)?(dA.getFullYear()):now.getFullYear()), 
+		((opt&dojo.date.compareTypes.DATE)?(dA.getMonth()):now.getMonth()), 
+		((opt&dojo.date.compareTypes.DATE)?(dA.getDate()):now.getDate()), 
+		((opt&dojo.date.compareTypes.TIME)?(dA.getHours()):0), 
+		((opt&dojo.date.compareTypes.TIME)?(dA.getMinutes()):0), 
+		((opt&dojo.date.compareTypes.TIME)?(dA.getSeconds()):0)
+	);
+	var d2=new Date(
+		((opt&dojo.date.compareTypes.DATE)?(dB.getFullYear()):now.getFullYear()), 
+		((opt&dojo.date.compareTypes.DATE)?(dB.getMonth()):now.getMonth()), 
+		((opt&dojo.date.compareTypes.DATE)?(dB.getDate()):now.getDate()), 
+		((opt&dojo.date.compareTypes.TIME)?(dB.getHours()):0), 
+		((opt&dojo.date.compareTypes.TIME)?(dB.getMinutes()):0), 
+		((opt&dojo.date.compareTypes.TIME)?(dB.getSeconds()):0)
+	);
+	if(d1.valueOf()>d2.valueOf()){
+		return 1;	//	int
+	}
+	if(d1.valueOf()<d2.valueOf()){
+		return -1;	//	int
+	}
+	return 0;	//	int
+}
 
+dojo.date.dateParts={ 
+	//	summary
+	//	constants for use in dojo.date.add
+	YEAR:0, MONTH:1, DAY:2, HOUR:3, MINUTE:4, SECOND:5, MILLISECOND:6 
+};
+dojo.date.add=function(/* Date */ d, /* dojo.date.dateParts */ unit, /* int */ amount){
+	var n=amount||1;
+	var v;
+	switch(unit){
+		case dojo.date.dateParts.YEAR:{
+			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+			break;
+		}
+		case dojo.date.dateParts.MONTH:{
+			v=new Date(d.getFullYear()+n, d.getMonth()+n, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+			break;
+		}
+		case dojo.date.dateParts.HOUR:{
+			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours()+n, d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+			break;
+		}
+		case dojo.date.dateParts.MINUTE:{
+			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()+n, d.getSeconds(), d.getMilliseconds());
+			break;
+		}
+		case dojo.date.dateParts.SECOND:{
+			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()+n, d.getMilliseconds());
+			break;
+		}
+		case dojo.date.dateParts.MILLISECOND:{
+			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()+n);
+			break;
+		}
+		default:{
+			v=new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+		}
+	};
+	return v;	//	Date
+};
 
 /* Deprecated
  *************/
