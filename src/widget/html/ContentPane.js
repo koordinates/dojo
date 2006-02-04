@@ -83,6 +83,10 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	},
 
 	setContent: function(data){
+		// remove old children
+		dojo.lang.forEach(this.children, function(child){ child.remove(); });
+		this.children=[];
+
 		var node = this.containerNode || this.domNode;
 		node.innerHTML = data;
 		if(this.executeScripts){
@@ -95,7 +99,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		if(this.parseContent){
 			var parser = new dojo.xml.Parse();
 			var frag = parser.parseElement(node, null, true);
-			dojo.widget.getParser().createComponents(frag);
+			dojo.widget.getParser().createComponents(frag, this);
 			this.onResized();
 		}
 	},
