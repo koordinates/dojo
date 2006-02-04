@@ -238,7 +238,7 @@ digraph dhtml_universe
 		jgwebber	[ label="Joel Webber" ];
 		dcrockford	[ label="Douglas Crockford" ];
 		smorais		[ label="Stephan Morais" ];
-		pcorcoran	[ label="Patrick Corcoran" ];;
+		pcorcoran	[ label="Patrick Corcoran" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
