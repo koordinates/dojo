@@ -131,7 +131,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 		// only begin on left click
 		if(dojo.render.html.ie) {
-			if(e.button != 0) { return; }
+			if(e.button != 1) { return; }
 		} else if(e.which != 1) {
 			return;
 		}
