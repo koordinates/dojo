@@ -8,6 +8,7 @@ dojo.provide("dojo.widget.html.FloatingPane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.html");
+dojo.require("dojo.html.shadow");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 dojo.require("dojo.widget.ContentPane");
@@ -67,10 +68,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	restoreIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneRestore.gif"),
 	closeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneClose.gif"),
 	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
-
-	shadowPng: dojo.uri.dojoUri("src/widget/templates/images/shadow"),
-	shadowThickness: 8,
-	shadowOffset: 15,
 
 	templateString: '<div></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
@@ -218,7 +215,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		// add a drop shadow
-		this._makeShadow();
+		if(this.hasShadow){
+			this.shadow=new dojo.html.shadow(this.domNode);
+		}
 
 		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
 
@@ -290,59 +289,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		this.initialized=true;
-	},
-
-	_makeShadow: function(){
-		if ( this.hasShadow ) {
-			// make all the pieces of the shadow, and position/size them as much
-			// as possible (but a lot of the coordinates are set in sizeShadow
-			this.shadow={};
-			var x1 = -1 * this.shadowThickness;
-			var y0 = this.shadowOffset;
-			var y1 = this.shadowOffset + this.shadowThickness;
-			this._makeShadowPiece("ul", "top", y0, "left", x1);
-			this._makeShadowPiece("l", "top", y1, "left", x1, "scale");
-			this._makeShadowPiece("ur", "top", y0, "left", 0);
-			this._makeShadowPiece("r", "top", y1, "left", 0, "scale");
-			this._makeShadowPiece("bl", "top", 0, "left", x1);
-			this._makeShadowPiece("b", "top", 0, "left", 0, "crop");
-			this._makeShadowPiece("br", "top", 0, "left", 0);
-		}
-	},
-
-	_makeShadowPiece: function(name, vertAttach, vertCoord, horzAttach, horzCoord, sizing){
-		var img;
-		var url = this.shadowPng + name.toUpperCase() + ".png";
-		if(dojo.render.html.ie){
-			img=document.createElement("div");
-			img.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+url+"'"+
-			(sizing?", sizingMethod='"+sizing+"'":"") + ")";
-		}else{
-			img=document.createElement("img");
-			img.src=url;
-		}
-		img.style.position="absolute";
-		img.style[vertAttach]=vertCoord+"px";
-		img.style[horzAttach]=horzCoord+"px";
-		img.style.width=this.shadowThickness+"px";
-		img.style.height=this.shadowThickness+"px";
-		this.shadow[name]=img;
-		this.domNode.appendChild(img);
-	},
-
-	_sizeShadow: function(width, height){
-		if ( this.shadow ) {
-			var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
-			this.shadow.l.style.height = sideHeight+"px";
-			this.shadow.r.style.height = sideHeight+"px";
-			this.shadow.b.style.width = (width-1)+"px";
-			this.shadow.bl.style.top = (height-1)+"px";
-			this.shadow.b.style.top = (height-1)+"px";
-			this.shadow.br.style.top = (height-1)+"px";
-			this.shadow.ur.style.left = (width-1)+"px";
-			this.shadow.r.style.left = (width-1)+"px";
-			this.shadow.br.style.left = (width-1)+"px";
-		}
 	},
 
 	maximizeWindow: function(evt) {
@@ -484,7 +430,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		//if ( newWidth != this.width || newHeight != this.height ) {
 			this.width = newWidth;
 			this.height = newHeight;
-			this._sizeShadow(newWidth, newHeight);
+			if( this.shadow ){
+				this.shadow.size(newWidth, newHeight);
+			}
 			dojo.widget.html.FloatingPane.superclass.onResized.call(this);
 		//}
 
