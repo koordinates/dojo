@@ -365,18 +365,6 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		}
 	},
 
-	startResize: function(coords){
-		dj_unimplemented("dojo.widget.DomWidget.startResize");
-	},
-
-	updateResize: function(coords){
-		dj_unimplemented("dojo.widget.DomWidget.updateResize");
-	},
-
-	endResize: function(coords){
-		dj_unimplemented("dojo.widget.DomWidget.endResize");
-	},
-
 	// method over-ride
 	buildRendering: function(args, frag){
 		// DOM widgets construct themselves from a template
