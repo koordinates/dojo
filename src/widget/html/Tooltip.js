@@ -32,7 +32,6 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		if(this.caption != ""){
 			this.domNode.appendChild(document.createTextNode(this.caption));
 		}
-		document.body.appendChild(this.domNode);
 		this.connectNode = dojo.byId(this.connectId);
 		
 		// IE bug workaround
@@ -42,6 +41,10 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	postCreate: function(args, frag){
+		// The domnode was appended to my parent widget's domnode, but the positioning
+		// only works if the domnode is a child of document.body
+		document.body.appendChild(this.domNode);
+
 		var self = this;
 		this.timerEvent = function () { self.display.apply(self); };
 		dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
