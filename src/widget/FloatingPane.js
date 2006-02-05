@@ -59,6 +59,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	windowState: "normal",
 	displayCloseAction: false,
+	displayMinimizeAction: false,
+	displayMaximizeAction: false,
 
 	maxTaskBarConnectAttempts: 5,
 	taskBarConnectAttempts: 0,
@@ -153,15 +155,16 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			var titleText = document.createTextNode(this.title)
 			titleBar.appendChild(titleText);
 
-			if (this.resizable) {
-
+			if (this.displayMinimizeAction) {
 				//FloatingPane Action Minimize
 				this.minimizeAction = document.createElement("img");
 				dojo.html.addClass(this.minimizeAction, "dojoFloatingPaneActionItem");
 				this.minimizeAction.src = this.minimizeIcon;	
 				titleBarActions.appendChild(this.minimizeAction);
 				dojo.event.connect(this.minimizeAction, 'onclick', this, 'minimizeWindow');
+			}
 
+			if (this.displayMaximizeAction) {
 				//FloatingPane Action Restore
 				this.restoreAction = document.createElement("img");
 				dojo.html.addClass(this.restoreAction, "dojoFloatingPaneActionItem");
@@ -187,7 +190,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				} else {
 					this.maximizeAction.style.display="none";	
 				}	
-
 			}
 
 			if (this.displayCloseAction) {
