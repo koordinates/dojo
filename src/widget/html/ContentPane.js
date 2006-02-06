@@ -83,9 +83,8 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	},
 
 	setContent: function(data){
-		// remove old children
-		dojo.lang.forEach(this.children, function(child){ child.remove(); });
-		this.children=[];
+		// remove old children from current content
+		this.destroyDescendants();
 
 		var node = this.containerNode || this.domNode;
 		node.innerHTML = data;
