@@ -93,36 +93,9 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 
 	// All functions below are called by create from dojo.widget.Widget
 	mixInProperties: function(localProperties, frag) {
-		// Get widget properties from markup attibutes, and convert to correct type.
-		if ( localProperties.id ) { 
-			this.id = localProperties.id;
-		}
+		dojo.widget.validate.Textbox.superclass.mixInProperties.apply(this, arguments);
 		if ( localProperties["class"] ) { 
 			this.className = localProperties["class"];
-		}
-		if ( localProperties.name ) { 
-			this.name = localProperties.name;
-		}
-		if ( localProperties.value ) { 
-			this.value = localProperties.value;
-		}
-		if ( localProperties.name ) { 
-			this.name = localProperties.name;
-		}
-		if ( localProperties.trim ) { 
-			this.trim = ( localProperties.trim == "true" );
-		}
-		if ( localProperties.uppercase ) { 
-			this.uppercase = ( localProperties.uppercase == "true" );
-		}
-		if ( localProperties.lowercase ) { 
-			this.lowercase = ( localProperties.lowercase == "true" );
-		}
-		if ( localProperties.ucfirst ) { 
-			this.ucFirst = ( localProperties.ucfirst == "true" );
-		}
-		if ( localProperties.digit ) { 
-			this.digit = ( localProperties.digit == "true" );
 		}
 	},
 
@@ -240,31 +213,6 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 		} 
 	},
 
-	mixInProperties: function(localProperties, frag) {
-		// First initialize properties in super-class.
-		dojo.widget.validate.Textbox.prototype.mixInProperties.call(this, localProperties, frag);
-
-		// Get widget properties from markup attibutes, and convert to correct type.
-		if ( localProperties.listenonkeypress ) { 
-			this.listenOnKeyPress = ( localProperties.listenonkeypress == "true" );
-		}
-		if ( localProperties.required ) { 
-			this.required = ( localProperties.required == "true" );
-		}
-		if ( localProperties.invalidmessage ) { 
-			this.invalidMessage = localProperties.invalidmessage;
-		}
-		if ( localProperties.missingmessage ) { 
-			this.missingMessage = localProperties.missingmessage;
-		}
-		if ( localProperties.validcolor ) { 
-			this.validColor = localProperties.validcolor;
-		}
-		if ( localProperties.invalidcolor ) { 
-			this.invalidColor = localProperties.invalidcolor;
-		}
-	},
-
 	fillInTemplate: function() {
 		// Attach isMissing and isValid methods to the textbox.
 		// We may use them later in connection with a submit button widget.
@@ -312,7 +260,7 @@ dojo.lang.extend(dojo.widget.validate.IntegerTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.IntegerTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.signed ) { 
@@ -356,7 +304,7 @@ dojo.lang.extend(dojo.widget.validate.RealNumberTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.IntegerTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.RealNumberTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.places ) { 
@@ -403,7 +351,7 @@ dojo.lang.extend(dojo.widget.validate.CurrencyTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.IntegerTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.CurrencyTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.cents ) { 
@@ -451,7 +399,7 @@ dojo.lang.extend(dojo.widget.validate.IpAddressTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.IpAddressTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.allowdotteddecimal ) { 
@@ -511,7 +459,7 @@ dojo.lang.extend(dojo.widget.validate.UrlTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.IpAddressTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.UrlTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.scheme ) { 
@@ -563,7 +511,7 @@ dojo.lang.extend(dojo.widget.validate.EmailTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.UrlTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.EmailTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.allowcruft ) { 
@@ -603,7 +551,7 @@ dojo.lang.extend(dojo.widget.validate.EmailListTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.EmailTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.EmailListTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.listseparator ) { 
@@ -641,7 +589,7 @@ dojo.lang.extend(dojo.widget.validate.DateTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.DateTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.format ) { 
@@ -681,7 +629,7 @@ dojo.lang.extend(dojo.widget.validate.TimeTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// First initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.TimeTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.format ) { 
@@ -726,7 +674,7 @@ dojo.lang.extend(dojo.widget.validate.UsStateTextbox, {
 
 	mixInProperties: function(localProperties, frag) {
 		// Initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
+		dojo.widget.validate.UsStateTextbox.superclass.mixInProperties.apply(this, arguments);
 
 		// Get properties from markup attibutes, and assign to flags object.
 		if ( localProperties.allowterritories ) { 
@@ -761,11 +709,6 @@ dojo.lang.extend(dojo.widget.validate.UsZipTextbox, {
 	// new subclass properties
 	widgetType: "UsZipTextbox", 
 
-	mixInProperties: function(localProperties, frag) {
-		// Initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
-	},
-
 	isValid: function() { 
 		return dojo.validate.us.isZipCode(this.textbox.value);
 	}
@@ -789,11 +732,6 @@ dojo.lang.extend(dojo.widget.validate.UsSocialSecurityNumberTextbox, {
 	// new subclass properties
 	widgetType: "UsSocialSecurityNumberTextbox", 
 
-	mixInProperties: function(localProperties, frag) {
-		// Initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
-	},
-
 	isValid: function() { 
 		return dojo.validate.us.isSocialSecurityNumber(this.textbox.value);
 	}
@@ -816,11 +754,6 @@ dojo.inherits(dojo.widget.validate.UsPhoneNumberTextbox, dojo.widget.validate.Va
 dojo.lang.extend(dojo.widget.validate.UsPhoneNumberTextbox, {
 	// new subclass properties
 	widgetType: "UsPhoneNumberTextbox", 
-
-	mixInProperties: function(localProperties, frag) {
-		// Initialize properties in super-class.
-		dojo.widget.validate.ValidationTextbox.prototype.mixInProperties.call(this, localProperties, frag);
-	},
 
 	isValid: function() { 
 		return dojo.validate.us.isPhoneNumber(this.textbox.value);
