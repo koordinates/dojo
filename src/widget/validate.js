@@ -15,7 +15,7 @@ dojo.provide("dojo.widget.validate.UsStateTextbox");
 dojo.provide("dojo.widget.validate.UsZipTextbox");
 dojo.provide("dojo.widget.validate.UsPhoneNumberTextbox");
 
-dojo.require("dojo.widget.Widget");
+dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.widget.Parse");
 dojo.require("dojo.xml.Parse");
@@ -44,7 +44,7 @@ dojo.widget.manager.registerWidgetPackage("dojo.widget.validate");
 */
 dojo.widget.validate.Textbox = function() {  }
 
-dojo.inherits(dojo.widget.validate.Textbox, dojo.widget.Widget);
+dojo.inherits(dojo.widget.validate.Textbox, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.validate.Textbox, {
 	// default values for new subclass properties
@@ -60,9 +60,11 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 	ucFirst: false,
 	digit: false,
 	
+	templateString: "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus'"
+					+ " id='${this.id}' name='${this.name}' "
+					+ " value='${this.value}' class='${this.className}'></input>",
+
 	// our DOM nodes
-	replaceNode: null,
-	widgetDomNode: null,
 	textbox: null,
 
 	// Apply various filters to textbox value
@@ -91,9 +93,6 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 
 	// All functions below are called by create from dojo.widget.Widget
 	mixInProperties: function(localProperties, frag) {
-		// Save the reference to the node in the DOM that we are going to replace with the widget.
-		this.replaceNode = frag["dojo:" + this.widgetType.toLowerCase()].nodeRef;
-
 		// Get widget properties from markup attibutes, and convert to correct type.
 		if ( localProperties.id ) { 
 			this.id = localProperties.id;
@@ -127,31 +126,9 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 		}
 	},
 
-	buildRendering: function() {
-		this.textbox = document.createElement("input");
-
-		// Attach widget methods as event handlers to the textbox.  The tricky part is
-		// that 'this' must continue to refer this widget object while in the event handler.
-		var _this = this;
-		this.textbox.onblur = function() { _this.onblur.call(_this); };
-		this.textbox.onfocus = function() { _this.onfocus.call(_this); };
-
-		this.widgetDomNode = this.textbox;
-	},
-
-	initialize: function() {
-		this.textbox.id = this.id;
-		this.textbox.name = this.name;
-		this.textbox.value = this.value;
-		this.textbox.className = this.className;
-
+	fillInTemplate: function() {
 		// apply any filters to initial value
 		this.filter();
-	},
-
-	postCreate: function() {
-		// Attach widget to DOM
-		this.replaceNode.parentNode.replaceChild(this.widgetDomNode, this.replaceNode);
 	}
 
 });
@@ -186,6 +163,14 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 	invalidMessage: "* The value entered is not valid.",
 	missingMessage: "* This value is required.",
 	listenOnKeyPress: true,
+
+	templateString:   "<div>"
+					+   "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus;onkeyup'"
+					+     " id='${this.id}' name='${this.name}' "
+					+     " value='${this.value}' class='${this.className}'></input>"
+					+   "<span dojoAttachPoint='invalidSpan' class='invalid'>${this.invalidMessage}</span>"
+					+   "<span dojoAttachPoint='missingSpan' class='missing'>${this.missingMessage}</span>"
+					+ "</div>",
 
 	// new DOM nodes
 	invalidSpan: null,
@@ -248,7 +233,7 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 		this.highlight(); 
 	},
 
-	onkeypress: function() { 
+	onkeyup: function() { 
 		if ( this.listenOnKeyPress ) { 
 			//this.filter();  trim is problem if you have to type two words
 			this.update(); 
@@ -280,52 +265,20 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 		}
 	},
 
-	buildRendering: function() {
-		this.textbox = document.createElement("input");
-
-		// Attach widget methods as event handlers to the textbox.  The tricky part is
-		// that 'this' must continue to refer this widget object while in the event handler.
-		var _this = this;
-		this.textbox.onblur = function() { _this.onblur.call(_this); };
-		this.textbox.onfocus = function() { _this.onfocus.call(_this); };
-		this.textbox.onkeyup = function() { _this.onkeypress.call(_this); };
-
+	fillInTemplate: function() {
 		// Attach isMissing and isValid methods to the textbox.
 		// We may use them later in connection with a submit button widget.
+		// TODO: this is unorthodox; it seems better to do it another way -- Bill
 		this.textbox.isValid = function() { _this.isValid.call(_this); };
 		this.textbox.isMissing = function() { _this.isMissing.call(_this); };
-
-		// Create spans for error messages.
-		this.invalidSpan = document.createElement("span");
-		this.missingSpan = document.createElement("span");
-
-		// Put it all together
-		var container = document.createElement("div");
-		container.appendChild(this.textbox);
-		container.appendChild(this.invalidSpan);
-		container.appendChild(this.missingSpan);
-
-		this.widgetDomNode = container;
 	},
 
-	initialize: function() {
-		// init textbox
-		this.textbox.id = this.id;
-		this.textbox.name = this.name;
-		this.textbox.value = this.value;
-		this.textbox.className = this.className;
-
+	fillInTemplate: function() {
 		// apply any filters to initial value
 		this.filter();
 
 		// highlight textbox as valid or invalid
 		this.highlight(); 
-
-		// init error message spans
-		this.invalidSpan.innerHTML = this.invalidMessage;
-		this.invalidSpan.className = "invalid";
-		this.missingSpan.innerHTML = this.missingMessage;
-		this.missingSpan.className = "missing";
 
 		// show missing or invalid messages on init
 		this.update(); 
@@ -435,7 +388,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:RealNumberTextbox");
   Has 2 new properties that can be specified as attributes in the markup.
 
   @attr cents      The two decimal places for cents.  Can be true or false, optional if omitted.
-  @attr symbol     A currency symbol such as Yen "¥", Pound "£", or the Euro "€". Default is "$".
+  @attr symbol     A currency symbol such as Yen "ï¿½", Pound "ï¿½", or the Euro "ï¿½". Default is "$".
   @attr separator  Default is "," instead of no separator as in IntegerTextbox.
 */
 dojo.widget.validate.CurrencyTextbox = function(node) {
