@@ -33,6 +33,10 @@
 			The following is just an example of how to use the table.
 			You can override any class names to be used if you wish.
 		***/
+		div.tableContainer {
+			width: 100%;
+			height: 10em;
+		}
 		table {
 			font-family:Lucida Grande, Verdana;
 			font-size:0.8em;
@@ -61,13 +65,13 @@
 		The SortableTable widget takes a table of data, parses it, and re-renders it to allow you to sort the columns based on attributes set in the thead.
 	</p>
 	<div><button onclick="showSelected();">Show the selected object</button></div>
-<table dojoType="SortableTable" widgetId="testTable" enableAlternateRows="true" cellpadding="0" cellspacing="0">
+	<table dojoType="SortableTable" widgetId="testTable" containerClass="tableContainer" headClass="fixedHead" enableAlternateRows="true" cellpadding="0" cellspacing="0">
 	<thead>
 		<tr>
 			<td field="Id" dataType="Number">Id</td>
 			<td field="Name" dataType="String">Name</td>
 			<td field="DateAdded" dataType="Date">Date Added</td>
-			<td field="DateModified" dataType="Date" format="#MMM #d, #yyyy">Date Modified</td>
+			<td field="DateModified" dataType="Date" format="%b %d, %Y">Date Modified</td>
 			<td>Label</td>
 		</tr>
 	</thead>

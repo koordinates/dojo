@@ -12,6 +12,8 @@ dojo.widget.html.SortableTable=function(){
 	dojo.widget.SortableTable.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
+	this.containerClass="";
+	this.headClass="";
 	this.headerClass="";
 	this.headerSortUpClass="selected";
 	this.headerSortDownClass="selected";
@@ -192,7 +194,7 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 				if(this.columns[j].getType()==Date){
 					var format=this.defaultDateFormat;
 					if(this.columns[j].format) format=this.columns[j].format;
-					cell.appendChild(document.createTextNode(dojo.date.toString(data[i][this.columns[j].getField()], format)));
+					cell.appendChild(document.createTextNode(dojo.date.format(data[i][this.columns[j].getField()], format)));
 				}else{
 					cell.appendChild(document.createTextNode(data[i][this.columns[j].getField()]));
 				}
@@ -274,7 +276,18 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	postCreate:function(){ 
 		// 	summary
 		//	overridden from HtmlWidget, initializes and renders the widget.
+		var div=document.createElement("div");
+		if(this.containerClass.length>0){
+			div.className=this.containerClass;
+		}
+		var p=this.domNode.parentNode;
+		div.appendChild(this.domNode);
+		p.appendChild(div);
+		
 		var thead=this.domNode.getElementsByTagName("thead")[0];
+		if(this.headClass.length>0){
+			thead.className=this.headClass;
+		}
 
 		//	parse the columns.
 		this.parseColumns(thead);
