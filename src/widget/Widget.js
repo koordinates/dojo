@@ -97,11 +97,8 @@ dojo.lang.extend(dojo.widget.Widget, {
 		return this;
 	},
 
-	destroy: function(finalize, recurse){
+	destroy: function(finalize){
 		// FIXME: this is woefully incomplete
-		if(recurse){
-			this.destroyDescendants(finalize);
-		}
 		this.uninitialize();
 		this.destroyRendering(finalize);
 		dojo.widget.manager.removeById(this.widgetId);
@@ -109,7 +106,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	destroyDescendants: function(finalize){
 		for(var x=0; x<this.children.length; x++){
-			this.children[x].destroy(finalize, true);
+			var tc = this.children[x];
+			tc.destroyDescendants();
+			tc.destroy();
 		}
 		this.children=[];
 	},
