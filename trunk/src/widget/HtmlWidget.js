@@ -61,20 +61,6 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		return dojo.html.createNodesFromText(txt, wrap);
 	},
 
-	_old_buildFromTemplate: dojo.widget.DomWidget.prototype.buildFromTemplate,
-
-	buildFromTemplate: function(args, frag){
-		var wt = dojo.widget.DomWidget.templates;
-		if(args["templatecsspath"]){
-			args["templateCssPath"] = args["templatecsspath"];
-		}
-		if(args["templatepath"]){
-			args["templatePath"] = args["templatepath"];
-		}
-		dojo.widget.buildFromTemplate(this, args["templatePath"], args["templateCssPath"]);
-		this._old_buildFromTemplate(args, frag);
-	},
-
 	destroyRendering: function(finalize){
 		try{
 			var tempNode = this.domNode.parentNode.removeChild(this.domNode);

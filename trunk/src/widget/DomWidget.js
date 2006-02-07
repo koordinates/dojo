@@ -5,40 +5,40 @@ dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.uri.*");
+dojo.require("dojo.lang.func");
 
 dojo.widget._cssFiles = {};
+dojo.widget._templateCache = {};
 
 dojo.widget.defaultStrings = {
 	dojoRoot: dojo.hostenv.getBaseScriptUri(),
 	baseScriptUri: dojo.hostenv.getBaseScriptUri()
 };
 
+dojo.widget.buildFromTemplate = function() {
+	dojo.lang.forward("fillFromTemplateCache");
+}
 
 // static method to build from a template w/ or w/o a real widget in place
-dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, templateString) {
+dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath, templateString, avoidCache){
+	// dojo.debug("avoidCache:", avoidCache);
 	var tpath = templatePath || obj.templatePath;
 	var cpath = templateCssPath || obj.templateCssPath;
-
-	if (!cpath && obj.templateCSSPath) {
-		obj.templateCssPath = cpath = obj.templateCSSPath;
-		obj.templateCSSPath = null;
-		dj_deprecated("templateCSSPath is deprecated, use templateCssPath");
-	}
 
 	// DEPRECATED: use Uri objects, not strings
 	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
 		tpath = dojo.uri.dojoUri(tpath);
-		dj_deprecated("templatePath should be of type dojo.uri.Uri");
+		dojo.deprecated("templatePath should be of type dojo.uri.Uri");
 	}
 	if (cpath && !(cpath instanceof dojo.uri.Uri)) {
 		cpath = dojo.uri.dojoUri(cpath);
-		dj_deprecated("templateCssPath should be of type dojo.uri.Uri");
+		dojo.deprecated("templateCssPath should be of type dojo.uri.Uri");
 	}
 	
-	var tmplts = dojo.widget.DomWidget.templates;
+	var tmplts = dojo.widget._templateCache;
 	if(!obj["widgetType"]) { // don't have a real template here
 		do {
-			var dummyName = "__dummyTemplate__" + dojo.widget.buildFromTemplate.dummyCount++;
+			var dummyName = "__dummyTemplate__" + dojo.widget._templateCache.dummyCount++;
 		} while(tmplts[dummyName]);
 		obj.widgetType = dummyName;
 	}
@@ -53,7 +53,11 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 	var ts = tmplts[wt];
 	if(!ts){
 		tmplts[wt] = { "string": null, "node": null };
-		ts = tmplts[wt];
+		if(avoidCache){
+			ts = {};
+		}else{
+			ts = tmplts[wt];
+		}
 	}
 	if(!obj.templateString){
 		obj.templateString = templateString || ts["string"];
@@ -74,13 +78,15 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 			tstring = "";
 		}
 		obj.templateString = tstring;
-		tmplts[wt]["string"] = tstring;
+		if(!avoidCache){
+			tmplts[wt]["string"] = tstring;
+		}
 	}
-	if(!ts["string"]) {
+	if((!ts["string"])&&(!avoidCache)){
 		ts.string = obj.templateString;
 	}
 }
-dojo.widget.buildFromTemplate.dummyCount = 0;
+dojo.widget._templateCache.dummyCount = 0;
 
 dojo.widget.attachProperties = ["dojoAttachPoint", "id"];
 dojo.widget.eventAttachProperty = "dojoAttachEvent";
@@ -369,7 +375,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	// method over-ride
 	buildRendering: function(args, frag){
 		// DOM widgets construct themselves from a template
-		var ts = dojo.widget.DomWidget.templates[this.widgetType];
+		var ts = dojo.widget._templateCache[this.widgetType];
 		if(	
 			(!this.preventClobber)&&(
 				(this.templatePath)||
@@ -398,8 +404,21 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	buildFromTemplate: function(args, frag){
 		// var start = new Date();
 		// copy template properties if they're already set in the templates object
-		var ts = dojo.widget.DomWidget.templates[this.widgetType];
-		if(ts){
+		var avoidCache = false;
+		if(args["templatecsspath"]){
+			args["templateCssPath"] = args["templatecsspath"];
+		}
+		if(args["templatepath"]){
+			avoidCache = true;
+			args["templatePath"] = args["templatepath"];
+		}
+		dojo.widget.fillFromTemplateCache(	this, 
+											args["templatePath"], 
+											args["templateCssPath"],
+											null,
+											avoidCache);
+		var ts = dojo.widget._templateCache[this.widgetType];
+		if((ts)&&(!avoidCache)){
 			if(!this.templateString.length){
 				this.templateString = ts["string"];
 			}
@@ -409,7 +428,8 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		}
 		var matches = false;
 		var node = null;
-		var tstr = new String(this.templateString); 
+		// var tstr = new String(this.templateString); 
+		var tstr = this.templateString; 
 		// attempt to clone a template node, if there is one
 		if((!this.templateNode)&&(this.templateString)){
 			matches = this.templateString.match(/\$\{([^\}]+)\}/g);
@@ -512,4 +532,3 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		dj_unimplemented("dojo.widget.DomWidget.createNodesFromText");
 	}
 });
-dojo.widget.DomWidget.templates = {};
