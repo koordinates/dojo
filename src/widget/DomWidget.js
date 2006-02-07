@@ -42,6 +42,7 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 		} while(tmplts[dummyName]);
 		obj.widgetType = dummyName;
 	}
+	var wt = obj.widgetType;
 
 	if((cpath)&&(!dojo.widget._cssFiles[cpath])){
 		dojo.style.insertCssFile(cpath);
@@ -49,10 +50,10 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 		dojo.widget._cssFiles[cpath] = true;
 	}
 
-	var ts = tmplts[obj.widgetType];
+	var ts = tmplts[wt];
 	if(!ts){
-		tmplts[obj.widgetType] = {};
-		ts = tmplts[obj.widgetType];
+		tmplts[wt] = { "string": null, "node": null };
+		ts = tmplts[wt];
 	}
 	if(!obj.templateString){
 		obj.templateString = templateString || ts["string"];
@@ -73,7 +74,7 @@ dojo.widget.buildFromTemplate = function(obj, templatePath, templateCssPath, tem
 			tstring = "";
 		}
 		obj.templateString = tstring;
-		ts.string = tstring;
+		tmplts[wt]["string"] = tstring;
 	}
 	if(!ts["string"]) {
 		ts.string = obj.templateString;
