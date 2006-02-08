@@ -392,7 +392,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 			+'<span dojoAttachPoint="labelNode" class="dojoMenuItem2Label"><span><span></span></span></span>'
 			+'<span dojoAttachPoint="accelNode" class="dojoMenuItem2Accel"><span><span></span></span></span>'
 			+'<div dojoAttachPoint="submenuNode" class="dojoMenuItem2Submenu"></div>'
-			+'<div dojoAttachPoint="targetNode" class="dojoMenuItem2Target" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick;">&nbsp;</div>'
+			+'<div dojoAttachPoint="targetNode" class="dojoMenuItem2Target" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">&nbsp;</div>'
 			+'</div>',
 
 	//
@@ -414,7 +414,6 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 	hover_timer: null,
 	is_open: false,
 	topPosition: 0,
-	is_disabled: false,
 
 	//
 	// options
@@ -424,7 +423,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 	accelKey: '',
 	iconSrc: '',
 	submenuId: '',
-	isDisabled: false,
+	disabled: false,
 	eventNaming: "default",
 
 
@@ -432,7 +431,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 
 		dojo.html.disableSelection(this.domNode);
 
-		if (this.isDisabled){
+		if (this.disabled){
 			this.setDisabled(true);
 		}
 
@@ -521,9 +520,10 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		this.stopSubmenuTimer();
 	},
 
-	onClick: function(){
+	// Internal function for clicks
+	_onClick: function(){
 
-		if (this.is_disabled){ return; }
+		if (this.disabled){ return; }
 
 		if (this.submenuId){
 
@@ -536,11 +536,13 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 			this.parent.closeAll();
 		}
 
+		this.onClick();
 		//dojo.debug("GO "+this.eventNames.engage)
-
 		dojo.event.topic.publish(this.eventNames.engage, this);
-
 	},
+
+	// User defined function to handle clicks
+	onClick: function() { },
 
 	highlightItem: function(){
 
@@ -557,7 +559,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 	startSubmenuTimer: function(){
 		this.stopSubmenuTimer();
 
-		if (this.is_disabled){ return; }
+		if (this.disabled){ return; }
 
 		var self = this;
 		var closure = function(){ return function(){ self.openSubmenu(); } }();
@@ -591,12 +593,9 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 	},
 
 	setDisabled: function(value){
+		this.disabled = value;
 
-		if (value == this.is_disabled){ return; }
-
-		this.is_disabled = value;
-
-		if (this.is_disabled){
+		if (this.disabled){
 			dojo.html.addClass(this.domNode, 'dojoMenuItem2Disabled');
 		}else{
 			dojo.html.removeClass(this.domNode, 'dojoMenuItem2Disabled');
