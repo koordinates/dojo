@@ -17,7 +17,7 @@
 <body style="background-color: #3A6EA5; color: white;">
 
 <div dojoType="PopupMenu2" contextMenuForWindow="true" toggle="explode">
-	<div dojoType="MenuItem2" caption="Select All" isDisabled="true" onClick="alert('The test has errors! Never use onClick for menu items that may be disabled!');"></div>
+	<div dojoType="MenuItem2" caption="Select All" disabled="true" onClick="alert('Shouldn\'t see this!');"></div>
 	<div dojoType="MenuItem2" iconSrc="images/tango-actions-edit-copy.png" caption="Cut" accelKey="Ctrl+C"
 		onClick="alert('not actually cutting anything, just a test!')"></div>
 	<div dojoType="MenuItem2" iconSrc="images/tango-actions-edit-cut.png" caption="Copy" accelKey="Ctrl+X"
@@ -29,7 +29,7 @@
 </div>
 
 <div dojoType="PopupMenu2" widgetId="submenu1" toggle="explode">
-	<div dojoType="MenuItem2" caption="One" submenuId="submenu2" isDisabled="true"></div>
+	<div dojoType="MenuItem2" caption="One" submenuId="submenu2" disabled="true"></div>
 	<div dojoType="MenuItem2" caption="Two" submenuId="submenu2"></div>
 </div>
 
