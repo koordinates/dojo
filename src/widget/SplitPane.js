@@ -77,20 +77,18 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 
 		// dojo.debug("post create for "+this.debugName);
 
-		// attach the children
+		// attach the children and create the draggers
 
 		for(var i=0; i<this.children.length; i++){
-			with(this.children[i].domNode.style){
-				position = "absolute";
-			}
-			dojo.html.addClass(this.children[i].domNode, 
-				"dojoHtmlSplitterPanePanel");
-		}
-
-		// create the draggers
-
-		for(var i=0; i<this.children.length-1; i++){
-
+            with(this.children[i].domNode.style){
+                position = "absolute";
+            }
+            dojo.html.addClass(this.children[i].domNode,
+                "dojoHtmlSplitterPanePanel");
+            
+            if(i == this.children.length){
+                break;
+            }
 
 			this.sizers[i] = document.createElement('div');
 			this.sizers[i].style.position = 'absolute';
@@ -178,13 +176,14 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 
 
 		//
-		// now loop, positioning each pane
+		// now loop, positioning each pane and letting children resize themselves
 		//
 
 		var pos = 0;
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
+        this.children[0].onResized();
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -197,14 +196,8 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
+            this.children[i].onResized();
 			pos += size;
-		}
-		
-		//
-		// if children are widgets, then let them resize themselves (if they want to)
-		//
-		for(var i=0; i<this.children.length; i++){
-			this.children[i].onResized();
 		}
 	},
 
