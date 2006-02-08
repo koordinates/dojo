@@ -316,15 +316,12 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		delete dojo.widget.manager.topWidgets[widget.widgetId];
 	},
 
-	// FIXME: we really need to normalize how we do things WRT "destroy" vs. "remove"
 	removeChild: function(widget){
-		for(var x=0; x<this.children.length; x++){
-			if(this.children[x] === widget){
-				this.children.splice(x, 1);
-				break;
-			}
-		}
-		return widget;
+		// detach child domNode from parent domNode
+		dojo.dom.removeNode(widget.domNode);
+
+		// remove child widget from parent widget
+		return dojo.widget.Widget.removeChild(widget);
 	},
 
 	getFragNodeRef: function(frag){
@@ -510,8 +507,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	// method over-ride
 	destroyRendering: function(){
 		try{
-			var tempNode = this.domNode.parentNode.removeChild(this.domNode);
-			delete tempNode;
+			delete this.domNode;
 		}catch(e){ /* squelch! */ }
 	},
 

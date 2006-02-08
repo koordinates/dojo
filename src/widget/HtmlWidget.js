@@ -63,11 +63,10 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	destroyRendering: function(finalize){
 		try{
-			var tempNode = this.domNode.parentNode.removeChild(this.domNode);
 			if(!finalize){
-				dojo.event.browser.clean(tempNode);
+				dojo.event.browser.clean(this.domNode);
 			}
-			delete tempNode;
+			delete this.domNode;
 		}catch(e){ /* squelch! */ }
 	},
 
