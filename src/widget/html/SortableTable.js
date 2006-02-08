@@ -14,6 +14,7 @@ dojo.widget.html.SortableTable=function(){
 
 	this.containerClass="";
 	this.headClass="";
+	this.tbodyClass="";
 	this.headerClass="";
 	this.headerSortUpClass="selected";
 	this.headerSortDownClass="selected";
@@ -302,6 +303,10 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 
 		//	parse the tbody element and re-render it.
 		var tbody=this.domNode.getElementsByTagName("tbody")[0];
+		if (this.tbodyClass.length>0) {
+			tbody.className=this.tbodyClass;
+		}
+
 		this.parseDataFromTable(tbody);
 		this.render();
 	}
