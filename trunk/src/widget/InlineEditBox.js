@@ -41,8 +41,6 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 	defaultText: "",
 	doFade: false,
 	
-	isContainer: true,
-
 	onSave: function(newValue, oldValue){},
 	onUndo: function(value){},
 
