@@ -97,31 +97,25 @@ dojo.lang.extend(dojo.widget.Widget, {
 		return this;
 	},
 
+	// Destroy this widget and it's descendants
 	destroy: function(finalize){
 		// FIXME: this is woefully incomplete
+		this.destroyChildren();
 		this.uninitialize();
 		this.destroyRendering(finalize);
 		dojo.widget.manager.removeById(this.widgetId);
 	},
 
-	destroyDescendants: function(finalize){
-		for(var x=0; x<this.children.length; x++){
-			var tc = this.children[x];
-			tc.destroyDescendants();
-			tc.destroy();
-		}
-		this.children=[];
-	},
-
+	// Destroy the children of this widget, and their descendents
 	destroyChildren: function(testFunc){
 		testFunc = (!testFunc) ? function(){ return true; } : testFunc;
 		for(var x=0; x<this.children.length; x++){
 			var tc = this.children[x];
 			if((tc)&&(testFunc(tc))){
+				this.removeChild(tc);
 				tc.destroy();
 			}
 		}
-		// this.children = [];
 	},
 
 	destroyChildrenOfType: function(type){
@@ -368,22 +362,15 @@ dojo.lang.extend(dojo.widget.Widget, {
 		return false;
 	},
 
-	addChildAtIndex: function(child, index){
-		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.addChildAtIndex");
-		return false;
-	},
-
-	removeChild: function(childRef){
-		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.removeChild");
-		return false;
-	},
-
-	removeChildAtIndex: function(index){
-		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.removeChildAtIndex");
-		return false;
+	// Detach the given child widget from me, but don't destroy it
+	removeChild: function(widget){
+		for(var x=0; x<this.children.length; x++){
+			if(this.children[x] === widget){
+				this.children.splice(x, 1);
+				break;
+			}
+		}
+		return widget;
 	},
 
 	resize: function(width, height){
