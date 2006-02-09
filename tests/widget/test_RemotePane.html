@@ -26,10 +26,10 @@
 
 			var docPane = dojo.widget.getWidgetById("docpane");
 			var title = clickedTreeNode.title;
-			if ( title=="doc1"||title=="doc2"){
+			if ( title=="doc0"||title=="doc1"||title=="doc2"){
 				docPane.setUrl(clickedTreeNode.title + ".html");
 			}else{
-				docPane.setContent("Try clicking doc1 or doc2 instead...");
+				docPane.setContent("Try clicking doc0, doc1 or doc2 instead...");
 			}
 	    };
 	}
