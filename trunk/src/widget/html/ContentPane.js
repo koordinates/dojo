@@ -21,6 +21,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	cacheContent: true,
 	executeScripts: false,
 	preload: false,			// force load of data even if pane is hidden
+	refreshOnShow: false,
 	handler: "",			// generate pane content from a java function
 
 
@@ -39,8 +40,18 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	},
 
 	show: function(){
-		this.loadContents();
+		// if refreshOnShow is true, reload the contents every time; otherwise, load only the first time
+		if(this.refreshOnShow){
+			this.refresh();
+		}else{
+			this.loadContents();
+		}
 		dojo.widget.html.ContentPane.superclass.show.call(this);
+	},
+
+	refresh: function(){
+		this.isLoaded=false;
+		this.loadContents();
 	},
 
 	loadContents: function() {
@@ -66,7 +77,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 	_downloadExternalContent: function(url, useCache) {
 		this.setContent("Loading...");
-
 		var self = this;
 		dojo.io.bind({
 			url: url,
