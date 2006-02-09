@@ -225,6 +225,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				anim.play();
 				break;
 		}
+
+		// shortly the browser will fire an onClick() event,
+		// but since this was really a drag, just squelch it
+		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
+	},
+
+	squelchOnClick: function(e){
+		// squelch this onClick() event because it's the result of a drag (it's not a real click)
+		e.preventDefault();
+
+		// but if a real click comes along, allow it
+		dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
 	},
 
 	constrainTo: function(container) {
