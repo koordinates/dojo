@@ -321,7 +321,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 		dojo.dom.removeNode(widget.domNode);
 
 		// remove child widget from parent widget
-		return dojo.widget.Widget.removeChild(widget);
+		return dojo.widget.DomWidget.superclass.removeChild.call(this, widget);
 	},
 
 	getFragNodeRef: function(frag){
@@ -515,13 +515,11 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	cleanUp: function(){},
 	
 	getContainerHeight: function(){
-		// FIXME: the generic DOM widget shouldn't be using HTML utils!
-		return dojo.html.getInnerHeight(this.domNode.parentNode);
+		dj_unimplemented("dojo.widget.DomWidget.getContainerHeight");
 	},
 
 	getContainerWidth: function(){
-		// FIXME: the generic DOM widget shouldn't be using HTML utils!
-		return dojo.html.getInnerWidth(this.domNode.parentNode);
+		dj_unimplemented("dojo.widget.DomWidget.getContainerWidth");
 	},
 
 	createNodesFromText: function(){
