@@ -107,26 +107,12 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	// Destroy the children of this widget, and their descendents
-	destroyChildren: function(testFunc){
-		testFunc = (!testFunc) ? function(){ return true; } : testFunc;
-		for(var x=0; x<this.children.length; x++){
-			var tc = this.children[x];
-			if((tc)&&(testFunc(tc))){
-				this.removeChild(tc);
-				tc.destroy();
-			}
+	destroyChildren: function(){
+		while(this.children.length > 0){
+			var tc = this.children[0];
+			this.removeChild(tc);
+			tc.destroy();
 		}
-	},
-
-	destroyChildrenOfType: function(type){
-		type = type.toLowerCase();
-		this.destroyChildren(function(item){
-			if(item.widgetType.toLowerCase() == type){
-				return true;
-			}else{
-				return false;
-			}
-		});
 	},
 
 	getChildrenOfType: function(type, recurse){
