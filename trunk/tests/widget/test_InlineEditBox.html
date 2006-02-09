@@ -8,13 +8,26 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.InlineEditBox");
+	dojo.require("dojo.event.*");
+
+	function saveHandler(newValue, oldValue) {
+		dojo.debug("New Value: " + newValue + " Old Value: " + oldValue);
+	}
+
+	function init() {
+		var editable = dojo.widget.byId("editable");
+		editable.onSave = saveHandler;
+	}
+
+	dojo.addOnLoad(init)
+
 </script>
 
 <style type="text/css">
 	body { font-family : sans-serif; background:#ccc; }
 </style>
 
-<h1 dojoType="inlineEditBox">Edit me</h1>
+<h1 id="editable" dojoType="inlineEditBox">Edit me - I will trigger a custom onSave Handler</h1>
 
 <p dojoType="inlineEditBox" mode="textarea">
 I'm one big paragraph.  Go ahead and edit me.
