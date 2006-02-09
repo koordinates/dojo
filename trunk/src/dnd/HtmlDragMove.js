@@ -28,10 +28,13 @@ dojo.inherits(dojo.dnd.HtmlDragMoveObject, dojo.dnd.HtmlDragObject);
 
 dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 	onDragEnd: function(e){
-		delete this.dragClone;
+		// shortly the browser will fire an onClick() event,
+		// but since this was really a drag, just squelch it
+		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
 	},
 	
 	onDragStart: function(e){
+
 		dojo.html.clearSelection();
 		
 		this.dragClone = this.domNode;

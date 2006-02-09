@@ -75,6 +75,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	dropAcceptable: false,
 
+	cancelEvent: function(e){ e.stopPropagation(); e.preventDefault();},
+
 	// method over-rides
 	registerDragSource: function(ds){
 		if(ds["domNode"]){
@@ -86,6 +88,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			ds.dragSourceId = dpIdx;
 			this.dragSources[dpIdx] = ds;
 			ds.domNode.setAttribute(dp, dpIdx);
+
+			// so we can drag links
+			if(dojo.render.html.ie){
+				dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
+			}
 		}
 	},
 
@@ -97,6 +104,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			delete ds.dragSourceId;
 			delete this.dragSources[dpIdx];
 			ds.domNode.setAttribute(dp, null);
+		}
+		if(dojo.render.html.ie){
+			dojo.event.disconnect(ds.domNode, "ondragstart", this.cancelEvent );
 		}
 	},
 
@@ -142,14 +152,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
 			e.target.parentNode : e.target;
 
-		/*
-		 FIXME(algo): I believe that is not a problem any more because of drag tolerance.
-		 	Anyway, why forbid dragging items by clicking on links inside them ?
-		 	There are problems with dragging by links in IE, should be solved another way..
-		*/
 		// do not start drag involvement if the user is interacting with
 		// a form element.
-		if(dojo.html.isTag(target, "a", "button", "textarea", "input")) {
+		if(dojo.html.isTag(target, "button", "textarea", "input")) {
 			return;
 		}
 
@@ -160,9 +165,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			this.selectedSources.push(ds);
 		}
 
+		// Enable dragging of links in firefox.
 		// WARNING: preventing the default action on all mousedown events
 		// prevents user interaction with the contents.
-		//e.preventDefault();
+		e.preventDefault();
 
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
