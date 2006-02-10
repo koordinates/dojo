@@ -362,7 +362,7 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 				
 			case "u": // weekday as a decimal number [1,7], with 1 representing
 				      // Monday
-				return dateObject.getDay() || 7; break;
+				return String(dateObject.getDay() || 7); break;
 				
 			case "U": // week number of the current year as a decimal number,
 				      // starting with the first Sunday as the first day of the
@@ -382,7 +382,7 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 				return _(dojo.date.getWeekOfYear(dateObject, 1)); break;
 				
 			case "w": // day of the week as a decimal, Sunday being 0
-				return _(dateObject.getDay()); break;
+				return String(dateObject.getDay()); break;
 
 			case "x": // preferred date representation for the current locale
 				      // without the time
