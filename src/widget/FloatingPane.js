@@ -359,7 +359,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	bringToTop: function() {
 		var floatingPaneStartingZ = 100;
-		var floatingPanes= dojo.widget.manager.getWidgetsByType("FloatingPane");
+		var floatingPanes= dojo.widget.manager.getWidgetsByType(this.widgetType);
 		var windows = []
 		var y=0;
 		for (var x=0; x<floatingPanes.length; x++) {
