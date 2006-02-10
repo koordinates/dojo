@@ -142,6 +142,7 @@ dojo.io.IframeTransport = new function(){
 	}
 
 	this.bind = function(kwArgs){
+		if(!this["iframe"]){ this.setUpIframe(); }
 		this.requestQueue.push(kwArgs);
 		this.fireNextRequest();
 		return;
@@ -223,7 +224,3 @@ dojo.io.IframeTransport = new function(){
 
 	dojo.io.transports.addTransport("IframeTransport");
 }
-
-dojo.addOnLoad(function(){
-	dojo.io.IframeTransport.setUpIframe();
-});
