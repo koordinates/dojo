@@ -26,7 +26,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	connectNode: null,
 
 	hovering: false,
-	displayed: false,
+	state: "erased",	// "displaying", "displayed", "erasing", "erased"
 
 	fillInTemplate: function(args, frag){
 		if(this.caption != ""){
@@ -82,7 +82,12 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	display: function() {
-		if ( this.displayed ) { return; }
+		if(this.state=="erasing"){
+			// we are in the process of erasing; when that is finished, display it.
+			this.displayScheduled=true;
+			return;
+		}
+		if ( this.state=="displaying" || this.state=="displayed" ) { return; }
 
 		this.domNode.style.top = this.mouseY + 15 + "px";
 		this.domNode.style.left = this.mouseX + 10 + "px";
@@ -93,20 +98,45 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.show();
 		this.bgIframe.show(this.domNode);
 
-		this.displayed=true;
+		this.state="displaying";
 	},
 
 	onShow: function() {
 		// for explode effect, have to display the iframe after the effect completes
 		this.bgIframe.show(this.domNode);
 		dojo.widget.html.Tooltip.superclass.onShow.call(this);
+		
+		this.state="displayed";
+		
+		// in the corner case where the user has moved his mouse away
+		// while the tip was fading in
+		if(this.eraseScheduled){
+			this.erase();
+			this.eraseScheduled=false;
+		}
 	},
 
 	erase: function() {
-		if ( this.displayed ) {
+		if(this.state=="displaying"){
+			// in the process of fading in.  wait until that is finished and then fade out
+			this.eraseScheduled=true;
+			return;
+		}
+		if ( this.state=="displayed" ) {
 			this.hide();
 			this.bgIframe.hide();
-			this.displayed=false;
+			this.state="erasing";
+		}
+	},
+	
+	onHide: function(){
+		this.state="erased";
+
+		// in the corner case where the user has moved his mouse back
+		// while the tip was fading out
+		if(this.displayScheduled){
+			this.display();
+			this.displayScheduled=false;
 		}
 	}
 });
