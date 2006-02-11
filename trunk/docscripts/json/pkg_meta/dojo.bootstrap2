@@ -1,0 +1,1 @@
+{"dojo.hostenv.require":{"is":"dojo.hostenv.loadModule"},"dojo.requireAfter":{"is":"dojo.require"},"dojo.requireAfterIf":{"is":"dojo.requireIf"},"dojo.conditionalRequire":{"is":"dojo.requireIf"},"dojo.hostenv.provide":{"is":"dojo.hostenv.startPackage"}}
