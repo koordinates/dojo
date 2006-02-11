@@ -37,13 +37,15 @@ if(isset($_GET['inheritance'])){
   widget_inheritance($contents);
 }
 elseif(isset($_GET['file'])) {
+	$package = file_to_package($_GET['file']);
+
   if(isset($_GET['signatures'])){
-    foreach($contents[$_GET['file']] as $function){
+    foreach($contents[$package] as $function){
       print implode("\n", array_diff(array_keys($function), array('inherits', 'variables'))) . "\n";
     }
   }
   else {
-    print_r($contents[$_GET['file']]);
+    print_r($contents[$package]);
   }
 }
 else{
@@ -51,7 +53,10 @@ else{
 
 	require_once('lib/JSON.php');
   $json = new Services_JSON();
+
+	// These are the things that will be saved as JSON objects
   $function_names = array();
+	$pkg_meta = array();
 
 	$last = array('package' => '');
 	foreach($contents as $file_name => $content){
@@ -59,32 +64,65 @@ else{
 			print '*' . $file_name . "\n";
 		}
     foreach($content as $function_name => $function){
+			$file_name_root = str_replace('.*', '', $file_name) . '.';
+			if($function_name == 'requires'){
+				foreach($function as $hostenv => $child_function){
+					foreach($child_function as $child_function_name){
+						if(strpos($child_function_name, $file_name_root) === 0){
+							$pkg_meta[$file_name]['requires'][$hostenv][] = $child_function_name;
+						}
+					}
+				}
+			}elseif($function['is']){
+				$pkg_meta[$file_name][$function_name]['is'] = $function['is'];
+			}
+			
+    	if(preg_match('%_' . $var['variable'] . '$%', $function_name)){
+				continue;
+			}
+    
+			if($function_name == 'requires'){
+				continue;
+			}
 	 		if(is_array($function)){
 				if(isset($_GET['signatures'])){
  	      	print implode("\n", array_diff(array_keys($function), array('inherits', 'variables'))) . "\n";					
 				}
 				else{
 					$empty_test = array_diff(array_keys($function), array('inherits', 'variables'));
-					if(!empty($empty_test)){
+					if(strrpos($function_name, '*') == strlen($function_name)-1 || !empty($empty_test)){
 						if($last['package'] && strpos($function_name, $last['package']) !== false){
 							// This guarantees that the .* function won't get inserted unless it has children
-							$function_names[] = $last['package'] . '*';
+							$function_names[$last['package'] . '*'][] = $last['package'] . '*';
 							$last['package'] = '';
 						}
 						if(strrpos($function_name, '*') == strlen($function_name)-1){
 							$last['package'] = substr($function_name, 0, -1);
 						}else{
-							$function_names[] = $function_name;// . ' (' . $file_name . ')';
+							if($function_name){
+								$function_names[$file_name][] = $function_name;// . ' (' . $file_name . ')';
+							}
 						}
 					}
 				}
 			}
 		}
 	}
-	file_put_contents('json/function_names.json', $json->encode($function_names));
+	file_put_contents('json/function_names', $json->encode($function_names));
+	$pkg_meta_files = scandir('json/pkg_meta/');
+	foreach($pkg_meta_files as $file){
+		if($file{0} != '.'){
+			unlink('json/pkg_meta/' . $file);
+		}
+	}
+	foreach($pkg_meta as $file_name => $pkg){
+		if(array_key_exists($file_name, $function_names)){
+			file_put_contents('json/pkg_meta/' . $file_name, $json->encode($pkg));
+		}
+	}
 	header("Content-type: text/html");	
 ?>
-<form method="get" action="parser.php">File: (from dojo root)<input name="file" /></form>
+<a href="parser.php?file=src/lang/common.js">Search by file</a><br />
 <a href="parser.php?inheritance">Widget inheritance tree</a><br />
 <a href="parser.php?signatures">View all function signatures</a><br />
 <?php
@@ -141,7 +179,7 @@ function dir_plunge($path = array(), $file = 'initialize') {
 
 function equality_parse($matches){
 	global $contents, $last;
-	$contents[$last['file']][$matches[1]]['is'] = $matches[2];
+	$contents[$last['package']][$matches[1]]['is'] = $matches[2];
 	return $matches[2];
 }
 
@@ -151,11 +189,14 @@ function require_parse($matches){
 		if($matches[2] == 'dojo.render.svg.support.builtin'){
 			$matches[2] = 'svg';
 		}
-		$contents[$last['file']]['requires'][$matches[2]][] = $matches[3];
+		$contents[$last['package']]['requires'][$matches[2]][] = $matches[3];
 	}else{
-		$contents[$last['file']]['requires']['common'][] = $matches[2];
+		$contents[$last['package']]['requires']['common'][] = $matches[2];
 	}
-	print_r($contents[$last['file']]);
+}
+
+function file_to_package($file){
+	return str_replace('.js', '', str_replace('__package__.js', '*', preg_replace('%^src%', 'dojo', str_replace('/', '.', $file))));
 }
 
 /**
@@ -170,12 +211,13 @@ function package_parse($file){
 	$started = array('object' => false);
 	$content = array('hostenv' => '');
 	
-	$package = str_replace('__package__.js', '*', preg_replace('%^src%', 'dojo', str_replace('/', '.', $file)));
+	$package = file_to_package($file);
 	$lines = explode("\n", file_get_contents('../' . $file));
 	foreach($lines as $line){
 		if(preg_match('%^\s*dojo\.require\(["\'](.*)[\'"]%U', $line, $matches)){
-			$contents[$file][$package]['requires']['common'][] = $matches[1];
-		}elseif(preg_match('%^\s*dojo.hostenv.conditionalLoadModule\s*\(\s*{%', $line, $matches)){
+			$contents[$package]['requires']['common'][] = $matches[1];
+			$contents[$package][$package] = array();
+		}elseif(preg_match('%^\s*dojo.hostenv.(?:kwCompoundRequire|conditionalLoadModule)\s*\(\s*{%', $line, $matches)){
 			$line = str_replace($matches[0], '', $line);
 			$started['object'] = true;
 		}
@@ -188,7 +230,8 @@ function package_parse($file){
 			if(!empty($content['hostenv'])){
 				if(preg_match_all('%"(.*)"%U', $line, $matches)){
 					foreach($matches[1] as $match){
-						$contents[$file][$package]['requires'][$content['hostenv']][] = $match;
+						$contents[$package]['requires'][$content['hostenv']][] = $match;
+						$contents[$package][$package] = array();
 					}
 				}
 			}
@@ -208,9 +251,9 @@ function package_parse($file){
 function file_parse($file){
 	global $regex, $contents, $var, $last;
 	
-	$last['file'] = $file; // Used in the preg_replace_callbacks below
-
   $content = file_get_contents('../' . $file);
+	$package = file_to_package($file);
+	$last['package'] = $package; // Used in the preg_replace_callbacks below
   	
   if(preg_match('%^\s*dj_deprecated\s*\(%m', $content)){
 		return;
@@ -285,7 +328,7 @@ function file_parse($file){
         }
       }
       
-      if(!empty($contents[$file][$function_name])){
+      if(!empty($contents[$package][$function_name])){
         // If this is being set twice, it's because we've matched a foo: function
         // that is not within a declaring function (ie extends).
         // As such, it tries to use the last function_name
@@ -434,7 +477,7 @@ function file_parse($file){
             $content['this'] = true;
           }
           function_parse($content);
-          $contents[$file][$function_name][function_signature($content, $function_name)] = $content;
+          $contents[$package][$function_name][function_signature($content, $function_name)] = $content;
           $content['function'] = array();
           $started['function'] = false;
           break;
@@ -450,13 +493,13 @@ function file_parse($file){
   
   foreach($actual_lines as $line){
     if(preg_match('%dojo.inherits\(\s*([^,\s]+)\s*,\s*(.*)\s*\)%', $line, $match)){
-      $contents[$file][$match[1]]['inherits'][] = $match[2];
+      $contents[file_to_package($file)][$match[1]]['inherits'][] = $match[2];
     }
   }
 
   foreach($actual_lines as $line){
     if(preg_match('%^\s*(' . $var['variable'] . '(?:\.' . $var['variable'] . ')*)\.(' . $var['variable'] . ')\s+=%', $line, $var_matches)){
-      $contents[$file][$var_matches[1]]['variables'][] = $var_matches[2];
+      $contents[file_to_package($file)][$var_matches[1]]['variables'][] = $var_matches[2];
     }
   }
 }
