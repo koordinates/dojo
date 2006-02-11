@@ -47,10 +47,13 @@ elseif(isset($_GET['file'])) {
   }
 }
 else{
+	// Make sure to leave out files (particularly dojo.package.* files) where everything is deprecated.
+
 	require_once('lib/JSON.php');
   $json = new Services_JSON();
   $function_names = array();
 
+	$last = array('package' => '');
 	foreach($contents as $file_name => $content){
 		if(isset($_GET['signatures'])){
 			print '*' . $file_name . "\n";
@@ -63,13 +66,28 @@ else{
 				else{
 					$empty_test = array_diff(array_keys($function), array('inherits', 'variables'));
 					if(!empty($empty_test)){
-						$function_names[] = $function_name;// . ' (' . $file_name . ')';
+						if($last['package'] && strpos($function_name, $last['package']) !== false){
+							// This guarantees that the .* function won't get inserted unless it has children
+							$function_names[] = $last['package'] . '*';
+							$last['package'] = '';
+						}
+						if(strrpos($function_name, '*') == strlen($function_name)-1){
+							$last['package'] = substr($function_name, 0, -1);
+						}else{
+							$function_names[] = $function_name;// . ' (' . $file_name . ')';
+						}
 					}
 				}
 			}
 		}
 	}
 	file_put_contents('json/function_names.json', $json->encode($function_names));
+	header("Content-type: text/html");	
+?>
+<form method="get" action="parser.php">File: (from dojo root)<input name="file" /></form>
+<a href="parser.php?inheritance">Widget inheritance tree</a><br />
+<a href="parser.php?signatures">View all function signatures</a><br />
+<?php
 }
 
 $time = time() - $time . " seconds to process";
@@ -108,7 +126,11 @@ function dir_plunge($path = array(), $file = 'initialize') {
         }
       }
       else {
-        file_parse($absolute_path);
+				if($file == '__package__.js'){
+					package_parse($absolute_path);
+				}else{
+        	file_parse($absolute_path);
+				}
       }
     }
     elseif(!in_array($file, $var['bad_dirs'])){
@@ -123,6 +145,60 @@ function equality_parse($matches){
 	return $matches[2];
 }
 
+function require_parse($matches){
+	global $contents, $last;
+	if($matches[1] == 'If' && count($matches) == 4){
+		if($matches[2] == 'dojo.render.svg.support.builtin'){
+			$matches[2] = 'svg';
+		}
+		$contents[$last['file']]['requires'][$matches[2]][] = $matches[3];
+	}else{
+		$contents[$last['file']]['requires']['common'][] = $matches[2];
+	}
+	print_r($contents[$last['file']]);
+}
+
+/**
+ * This function goes through the standard package file
+ * and finds out what is loaded in different situations.
+ * It checks require and conditionalLoadModule
+ *
+ * Note: I don't know everything that dojo.require does
+ */
+function package_parse($file){
+	global $contents, $var;
+	$started = array('object' => false);
+	$content = array('hostenv' => '');
+	
+	$package = str_replace('__package__.js', '*', preg_replace('%^src%', 'dojo', str_replace('/', '.', $file)));
+	$lines = explode("\n", file_get_contents('../' . $file));
+	foreach($lines as $line){
+		if(preg_match('%^\s*dojo\.require\(["\'](.*)[\'"]%U', $line, $matches)){
+			$contents[$file][$package]['requires']['common'][] = $matches[1];
+		}elseif(preg_match('%^\s*dojo.hostenv.conditionalLoadModule\s*\(\s*{%', $line, $matches)){
+			$line = str_replace($matches[0], '', $line);
+			$started['object'] = true;
+		}
+
+		if($started['object']){
+			if(preg_match('%^\s(' . $var['variable'] . ')\s*:\s*\[%', $line, $matches)){
+				$content['hostenv'] = $matches[1];
+				$line = str_replace($matches[0], '', $line);
+			}
+			if(!empty($content['hostenv'])){
+				if(preg_match_all('%"(.*)"%U', $line, $matches)){
+					foreach($matches[1] as $match){
+						$contents[$file][$package]['requires'][$content['hostenv']][] = $match;
+					}
+				}
+			}
+			if(strpos($line, ']') !== false){
+				$content['hostenv'] = '';
+			}
+		}
+	}
+}
+
 /*
  * Several things are at work here... Once we find a valid function,
  * we're going to start looking for its parameters.
@@ -130,13 +206,21 @@ function equality_parse($matches){
  * Then we're going to need to find the type hinting of its parameters.
  */
 function file_parse($file){
-  // Most importantly, we need to match function blocks
-  $actual_lines = $lines = explode("\n", file_get_contents('../' . $file));
-
 	global $regex, $contents, $var, $last;
+	
+	$last['file'] = $file; // Used in the preg_replace_callbacks below
+
+  $content = file_get_contents('../' . $file);
+  	
+  if(preg_match('%^\s*dj_deprecated\s*\(%m', $content)){
+		return;
+  }
+
+	preg_replace_callback('%^\s*dojo\.require(?:After)?(If)?\(["\']?([^,\'"]*)[\'"]?(?:\s*,\s*["\'](.*)[\'"])?%m', "require_parse", $content);
+
+	$actual_lines = $lines = explode("\n", $content);
 
 	$started = array('multiline' => false);
-	$last['file'] = $file;
   foreach($actual_lines as $key => $line){
 		if(!$started['multiline'] && ($pos = strpos($line, '//')) !== false){
 			$line = $actual_lines[$key] = substr($line, 0, $pos);
@@ -368,14 +452,6 @@ function file_parse($file){
     if(preg_match('%dojo.inherits\(\s*([^,\s]+)\s*,\s*(.*)\s*\)%', $line, $match)){
       $contents[$file][$match[1]]['inherits'][] = $match[2];
     }
-  }
-
-  if(preg_grep('%^\s*dj_deprecated\(%', $lines)){
-		if(is_array($contents[$file])){
-	  	foreach($contents[$file] as $function_name => $content){
-				$contents[$file][$function_name]['deprecated'] = true;
-			}
-		}
   }
 
   foreach($actual_lines as $line){
