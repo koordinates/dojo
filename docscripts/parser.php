@@ -81,9 +81,9 @@ else{
 						continue;
 					}
 				
-					$pkg_meta[$file_name][$function_name][$function_signature] = array();
+					$pkg_meta[$file_name][$function_name][$function_signature] = '';
 					if($function_content['comments']['summary']){
-						$pkg_meta[$file_name][$function_name][$function_signature]['comments']['summary'] = $function_content['comments']['summary'];
+						$pkg_meta[$file_name][$function_name][$function_signature] = $function_content['comments']['summary'];
 					}
 				}
 			}
