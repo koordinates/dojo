@@ -75,6 +75,13 @@ else{
 				}
 			}elseif($function['is']){
 				$pkg_meta[$file_name][$function_name]['is'] = $function['is'];
+			}else{
+				foreach($function as $function_signature => $function_content){
+					$pkg_meta[$file_name][$function_name][$function_signature] = array();
+					if($function_content['comments']['summary']){
+						$pkg_meta[$file_name][$function_name][$function_signature]['comments']['summary'] = $function_content['comments']['summary'];
+					}
+				}
 			}
 			
     	if(preg_match('%_' . $var['variable'] . '$%', $function_name)){
@@ -115,6 +122,7 @@ else{
 			unlink('json/pkg_meta/' . $file);
 		}
 	}
+	print_r($pkg_meta);
 	foreach($pkg_meta as $file_name => $pkg){
 		if(array_key_exists($file_name, $function_names)){
 			file_put_contents('json/pkg_meta/' . $file_name, $json->encode($pkg));
