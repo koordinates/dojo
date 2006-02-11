@@ -1,1 +1,1 @@
-{"dojo.crypto.AES":{"is":"dojo.crypto.Rijndael"}}
+{"dojo.crypto.AES":{"is":"dojo.crypto.Rijndael"},"dojo.crypto.Rijndael":{"undefined dojo.crypto.Rijndael()":[]}}
