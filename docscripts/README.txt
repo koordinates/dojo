@@ -6,11 +6,61 @@ This is only for starters, to give you a good idea of how things are going down,
 JSON Objects
 ------------
 
-* The "function_name" JSON object has a list of packages (eg that which is called by dojo.require) and the methods associated with that package.
+In all of the following examples, a key with "" around it means that it is a text link. That is, it does not change.
+	
+This object is found in json/function_names and is a list of all dojo methods by package. It uses the following keys and variables:
+* package: The name of the dojo package.
+* "method": The name of the dojo method.
+	{
+		package: [
+			"method",
+			"method",
+			"method"
+		],
+		package: [
+			"method",
+			"method"
+		]
+	}
 
-* Each file in the pkg_meta directory is listed by package and has the following structure:
-** requires->*hostenv*->packages
-** function signatures (each function signature could have an 'is' key that points to another function) and their descriptions.
+This object is found in json/pkg_meta/[package] and is a list of all package metadata. It uses the following keys and variables:
+* "requires": A key that holds the *hostenv* and *package* values.
+* hostenv: The environmental variables (browser, html, svg, etc)
+* "package": The name of the dojo package (is limited to child packages)
+* method: The name of the dojo method
+* "is": A key that holds a pointer to another method
+* id: The id of the polymorphic sygnature (default is "default")
+* signature: The function signature: returnType functionName(paramType param, paramType param)
+* "summary": A brief description of what this function signature does.
+	{
+		"requires": {
+			hostenv: [
+				"package",
+				"package",
+				"package"
+			],
+			hostenv: [
+				"package",
+				"package"
+			]
+		},
+		method: {
+			"is": "method"
+		},
+		method: {
+			id: {
+				signature: "summary"
+			},
+			id: {
+				signature: "summary"
+			}
+		},
+		method: {
+			id: {
+				signature: "summary"
+			}
+		}
+	}
 
 Searching docs
 --------------
@@ -24,7 +74,7 @@ Searching docs requires the following options:
 Search Box
 ----------
 
-This is an autocompleting search box. The values used for autocomplete are found in the "function_name" JSON object in the second level of the object. (eg the values of each value). As the user types, as long as the entered text matches "dojo." then we limit the autocomplete to functions within the dojo namespace. If this is not true, it searches the entire list.
+This is an autocompleting search box. The values used for autocomplete are found in the "function_name" JSON object in the second level of the object. (eg the values of each value, the methods). As the user types, as long as the entered text matches "dojo." then we limit the autocomplete to functions beginning with that. If this is not true, it searches the entire list.
 
 Hostenv Options
 ---------------
@@ -36,14 +86,27 @@ Extra environmental options
 
 The options that aren't set by hostenv (eg "browser" hostenv implies "html" as an option) can be chosen here (eg svg).
 
-Results
--------
+Results for dojo.package.* search
+---------------------------------
 
-If the user has searched for something that has an exact match in the method list, then we do the following:
+* Load the package metadata from the pkg_meta directory.
+* Find all function signatures by loading the current file and all packages that are required, paying attention to hostenv.
 
-* First check to see if the method has source in the fnc_src directory (this can be neglected by dojo.package.* stuff). If it does, display a method page. Everything below can be skipped at this point.
-* Check for package metadata in the pkg_meta directory. Check to see if the file requires other files. Display to the user a list of methods with their descriptions. Allow the user to click each method.
+Results for an exact method match
+---------------------------------
 
-If the user has searched for something that has a partial match in the method list, then we do the following:
+* If source exists in the fnc_src directory, go to the method display page.
+* Otherwise, load package metadata from the pkg_meta directory. Several things can happen here:
+** If the method has an "is" key, then we need to redirect them to that method.
+** If the method has multiple signatures (more than just the "default" id) then have them choose from a list of methods.
+** If the method has a single signature, go to the method display page.
 
-Go through each matching method in the list, load the pkg_meta for each package and display function signatures and descriptions for all matching methods. Allow the user to click each method.
+Results for a match with multiple method matches
+------------------------------------------------
+
+* Go through each matching method in the list, load the pkg_meta for each package and display function signatures and descriptions for all matching methods. Allow the user to click each method.
+
+Method Display Page
+-------------------
+
+Descriptions to come. I still have to finalize the JSON breakdown

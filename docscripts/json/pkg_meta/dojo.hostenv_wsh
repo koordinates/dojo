@@ -1,1 +1,1 @@
-{"dojo.hostenv.getCurrentScriptUri":{"undefined dojo.hostenv.getCurrentScriptUri()":""},"dojo.hostenv.getText":{"undefined dojo.hostenv.getText(fpath)":""},"dojo.hostenv.exit":{"undefined dojo.hostenv.exit(exitcode)":""}}
+{"dojo.hostenv.getCurrentScriptUri":{"default":{"undefined dojo.hostenv.getCurrentScriptUri()":""}},"dojo.hostenv.getText":{"default":{"undefined dojo.hostenv.getText(fpath)":""}},"dojo.hostenv.exit":{"default":{"undefined dojo.hostenv.exit(exitcode)":""}}}
