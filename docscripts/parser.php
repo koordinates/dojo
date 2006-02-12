@@ -128,7 +128,7 @@ else{
 	}
 	foreach($pkg_meta as $file_name => $pkg){
 		if(array_key_exists($file_name, $function_names)){
-			file_put_contents('json/pkg_meta/' . $file_name, $json->encode($pkg));
+			file_put_contents('json/pkg_meta/' . str_replace('*', '_', $file_name), $json->encode($pkg));
 		}
 	}
 	header("Content-type: text/html");	
