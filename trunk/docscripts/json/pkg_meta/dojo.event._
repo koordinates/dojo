@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.event.topic"],"browser":["dojo.event.browser"],"dashboard":["dojo.event.browser"]}}
