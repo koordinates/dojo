@@ -81,9 +81,9 @@ else{
 						continue;
 					}
 				
-					$pkg_meta[$file_name][$function_name][$function_signature] = '';
+					$pkg_meta[$file_name][$function_name]['default'][$function_signature] = '';
 					if($function_content['comments']['summary']){
-						$pkg_meta[$file_name][$function_name][$function_signature] = $function_content['comments']['summary'];
+						$pkg_meta[$file_name][$function_name]['default'][$function_signature] = $function_content['comments']['summary'];
 					}
 				}
 			}
@@ -645,7 +645,7 @@ function widget_inheritance($contents){
         }
       }
       foreach($function_signatures as $function_values){
-        if(!empty($function_values['this_inherits'])){
+        if(is_array($function_values['this_inherits'])){
           foreach($function_values['this_inherits'] as $inherits) {
             if(empty($inheritance[$inherits]) || !in_array($function_name, $inheritance[$inherits])){
               $inheritance[$inherits][] = $function_name . '*';
@@ -661,7 +661,7 @@ function widget_inheritance($contents){
   $output = printr_fun($inheritance['dojo.widget.Widget']);
   print_r(array('dojo.widget.Widget' => $output));  
 }
-	
+
 function function_signature($content, $function_name){
   $return_type = array_diff(array_unique($content['returns']), array(''));
   if(empty($return_type)){

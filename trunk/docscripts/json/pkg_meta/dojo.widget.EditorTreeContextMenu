@@ -1,1 +1,1 @@
-{"dojo.widget.EditorTreeContextMenu":{"undefined dojo.widget.EditorTreeContextMenu()":""},"dojo.widget.EditorTreeContextMenu.open":{"undefined dojo.widget.EditorTreeContextMenu.open(x, y, parentMenu, explodeSrc)":""}}
+{"dojo.widget.EditorTreeContextMenu":{"default":{"undefined dojo.widget.EditorTreeContextMenu()":""}},"dojo.widget.EditorTreeContextMenu.open":{"default":{"undefined dojo.widget.EditorTreeContextMenu.open(x, y, parentMenu, explodeSrc)":""}}}
