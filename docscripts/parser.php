@@ -97,7 +97,10 @@ else{
 			}
 	 		if(is_array($function)){
 				if(isset($_GET['signatures'])){
- 	      	print implode("\n", array_diff(array_keys($function), array('inherits', 'variables'))) . "\n";					
+					$signatures = array_diff(array_keys($function), array('inherits', 'variables', 'is'));
+					if(!empty($signatures)){
+ 	      		print implode("\n", $signatures) . "\n";					
+					}
 				}
 				else{
 					$empty_test = array_diff(array_keys($function), array('inherits', 'variables'));
@@ -131,12 +134,14 @@ else{
 			file_put_contents('json/pkg_meta/' . str_replace('*', '_', $file_name), $json->encode($pkg));
 		}
 	}
-	header("Content-type: text/html");	
+	if(!isset($_GET['signatures'])){
+		header("Content-type: text/html");		
 ?>
 <a href="parser.php?file=src/lang/common.js">Search by file</a><br />
 <a href="parser.php?inheritance">Widget inheritance tree</a><br />
 <a href="parser.php?signatures">View all function signatures</a><br />
 <?php
+	}
 }
 
 $time = time() - $time . " seconds to process";

@@ -63,6 +63,31 @@ The next object is found in json/pkg_meta/[package] and is a list of all package
 	}
 	
 The next object is found in json/fnc_src/[method].[id] and is the source code for each method. It is plain text.
+	
+The next object is found in json/fnc_meta/[method].[id] and is the metadata for each function. That means it contains things like parameters and return type. It uses the following keys and variables
+* "variables": A static key that holds all the publicly exposed variables.
+* "variable": The name of a publicly exposed variable
+* "inherits": A static key that holds the methods that this function inherits from.
+* "metod": A dojo method
+* "this_variables": A static key that holds all variables set within the constructor
+* "this_inherits": A static key that holds all of the constructors that dojo inherits from (that is, the "this_variables" of another function)
+	{
+		"variables": [
+			"variable",
+			"variable"
+		],
+		"inherits": [
+			"method",
+			"method"
+		],
+		"this_variables": [
+			"variable",
+			"variable"
+		],
+		"this_inherits": [
+			"method"
+		]
+	}
 
 Searching docs
 --------------
@@ -109,3 +134,11 @@ Results for a match with multiple method matches
 
 Method Display Page
 -------------------
+
+The focal point of this page is the source code. Eventually, it will have syntax highlighting. The function signature must be used since the source has none of its own.
+	
+Take a look at the JSON object for method metadata. It holds a lot of the information concerning public variables and inheritance. Public variables are a combination of "this_variables" and "variables". "this_inherits" only inherits variables set by the "this_variables" of the corresponding method.
+	
+From this, build a JavaDoc style layout of inheritance and variables using all the information aggregated so far.
+
+In the near future, even more information will be loaded from a jot site. Also, editing by administrators and comment submission by users will be added. Flagging, etc after that.
