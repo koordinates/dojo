@@ -23,7 +23,7 @@ This object is found in json/function_names and is a list of all dojo methods by
 		]
 	}
 
-This object is found in json/pkg_meta/[package] and is a list of all package metadata. It uses the following keys and variables:
+The next object is found in json/pkg_meta/[package] and is a list of all package metadata. Note: Windows can't take the * character, so it is replaced with _. It uses the following keys and variables:
 * "requires": A key that holds the *hostenv* and *package* values.
 * hostenv: The environmental variables (browser, html, svg, etc)
 * "package": The name of the dojo package (is limited to child packages)
@@ -61,6 +61,8 @@ This object is found in json/pkg_meta/[package] and is a list of all package met
 			}
 		}
 	}
+	
+The next object is found in json/fnc_src/[method].[id] and is the source code for each method. It is plain text.
 
 Searching docs
 --------------
@@ -95,8 +97,7 @@ Results for dojo.package.* search
 Results for an exact method match
 ---------------------------------
 
-* If source exists in the fnc_src directory, go to the method display page.
-* Otherwise, load package metadata from the pkg_meta directory. Several things can happen here:
+* Load package metadata from the pkg_meta directory. Several things can happen here:
 ** If the method has an "is" key, then we need to redirect them to that method.
 ** If the method has multiple signatures (more than just the "default" id) then have them choose from a list of methods.
 ** If the method has a single signature, go to the method display page.
@@ -108,5 +109,3 @@ Results for a match with multiple method matches
 
 Method Display Page
 -------------------
-
-Descriptions to come. I still have to finalize the JSON breakdown
