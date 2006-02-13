@@ -59,9 +59,9 @@
 		right
 	</div>
 	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;"
-		id="docpane">
+		id="docpane" onLoad="dojo.debug('loaded data from ' + arguments[0]);">
 		This is the initial content of the pane (inlined in the HTML file), but
-		it will be overriden when you click "doc1" or "doc2" in the tree on the left (underneath "Item 1")
+		it will be overriden when you click "doc0" or "doc1" or "doc2" in the tree on the left (underneath "Item 1")
 	</div>
 </div>
 

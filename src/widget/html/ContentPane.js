@@ -84,12 +84,16 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			mimetype: "text/html",
 			handler: function(type, data, e) {
 				if(type == "load") {
-					self.setContent.call(self, data);
+					self.onLoad.call(self, url, data);
 				} else {
 					self.setContent.call(self, "Error loading '" + url + "' (" + e.status + " " + e.statusText + ")");
 				}
 			}
 		});
+	},
+
+	onLoad: function(url, data){
+		this.setContent(data);
 	},
 
 	setContent: function(data){
