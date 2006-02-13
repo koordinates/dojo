@@ -34,6 +34,7 @@ dojo.widget.html.ComboBox = function(){
 	this._prev_key_esc = false;
 	this._result_list_open = false;
 	this._gotFocus = false;
+	this._mousewheel_connected = false;
 
 }
 
@@ -335,6 +336,10 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 	onFocusInput: function(){
 		this._hasFocus = true;
+		if (dojo.render.html.ie && !this._mousewheel_connected) {
+			dojo.event.connect(document, "onmousewheel", this, "onMouseWheel");
+			this._mousewheel_connected = true;
+		}
 	},
 
 	onBlurInput: function(){
@@ -348,6 +353,10 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	checkBlurred: function(){
 		if (!this._hasFocus) {
 			this.hideResultList();
+		}
+		if (this._mousewheel_connected) {
+			dojo.event.disconnect(document, "onmousewheel", this, "onMouseWheel");
+			this._mousewheel_connected = false;
 		}
 	},
 
@@ -449,9 +458,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 		dojo.event.connect(this.textInputNode, "onblur", this, "onBlurInput");
 		dojo.event.connect(this.textInputNode, "onfocus", this, "onFocusInput");
-		if (dojo.render.html.ie) {
-			dojo.event.connect(this.textInputNode, "onmousewheel", this, "onMouseWheel");
-		}
 
 		var s = dojo.widget.html.stabile.getState(this.widgetId);
 		if (s) {
