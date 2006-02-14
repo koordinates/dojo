@@ -340,10 +340,7 @@ Alex Russell is the project lead for Dojo and  can be reached at
 <alex@dojotoolkit.org>. His blog is at: http://alex.dojotoolkit.org
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 dojo.io.bind(): baking usability into XMLHTTP
 =============================================
@@ -354,6 +351,9 @@ dojo.io.bind(): baking usability into XMLHTTP
 :Date: 2005/03/11
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

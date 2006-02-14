@@ -324,10 +324,7 @@ C.  Comments
     6.  Comments SHOULD NOT be included for every single line of code.
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 Javascript Programming Conventions
 ==================================
@@ -339,6 +336,9 @@ Javascript Programming Conventions
 :Date: $Date: 2004/07/30 04:02:28 $
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html
