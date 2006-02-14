@@ -328,10 +328,7 @@ Alex Russell is the project lead for Dojo and can be reached at
 .. _`Quick link to the Editor demo`: http://dojotoolkit.org/archive/dojo-2005-11-07/demos/widget/Editor.html
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 Rich Text Editing With Dojo
 ===========================
@@ -342,6 +339,9 @@ Rich Text Editing With Dojo
 :Date: 2005/11/5
 
 .. contents::
+
+.. raw:: html
+   :file: ../website/docs/menu.html
 
 .. raw:: html
    :file: ../website/rest_template/footer.html

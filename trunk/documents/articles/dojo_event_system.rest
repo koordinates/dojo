@@ -434,10 +434,7 @@ Alex Russell is the project lead for Dojo and  can be reached at
 .. _`Venkman`: http://www.hacksrus.com/~ginda/venkman/
 
 .. raw:: html
-   :file: ../website/rest_template/sidebar.html
-
-.. raw:: html
-   :file: ../website/rest_template/docs_menu.html
+   :file: ../website/docs/sidebar.html
 
 The Dojo Event System
 =====================
@@ -449,6 +446,9 @@ The Dojo Event System
 
 .. contents::
 	
+.. raw:: html
+   :file: ../website/docs/menu.html
+
 .. raw:: html
    :file: ../website/rest_template/footer.html
 
