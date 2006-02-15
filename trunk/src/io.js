@@ -231,7 +231,11 @@ dojo.io.queueBind = function(request){
 dojo.io._dispatchNextQueueBind = function(){
 	if(!dojo.io._queueBindInFlight){
 		dojo.io._queueBindInFlight = true;
-		dojo.io.bind(dojo.io._bindQueue.shift());
+		if(dojo.io._bindQueue.length > 0){
+			dojo.io.bind(dojo.io._bindQueue.shift());
+		}else{
+			dojo.io._queueBindInFlight = false;
+		}
 	}
 }
 dojo.io._bindQueue = [];
