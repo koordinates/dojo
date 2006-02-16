@@ -7,6 +7,10 @@ dojo.require("dojo.event");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
 
+// TODO: way to leave tooltip open so user can click things inside the tooltip.
+// But this is problematic because then 2 tooltips might open at once and
+// interfere w/each other.
+
 dojo.widget.html.Tooltip = function(){
 	// mix in the tooltip properties
 	dojo.widget.Tooltip.call(this);
@@ -46,7 +50,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		document.body.appendChild(this.domNode);
 
 		var self = this;
-		this.timerEvent = function () { self.display.apply(self); };
+		this.timerEvent = function () { self.show.apply(self); };
 		dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
 		dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);
 	},
@@ -58,6 +62,9 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.timerEventId = setTimeout(this.timerEvent, this.delay);
 		dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
 		this.hovering=true;		
+
+		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
+		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
 	},
 
 	onMouseMove: function(e) {
@@ -73,7 +80,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 			}
 			dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
 			this.hovering=false;
-			this.erase();
+			this.hide();
 			return;
 		}
 
@@ -81,7 +88,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
 	},
 
-	display: function() {
+	show: function() {
 		if(this.state=="erasing"){
 			// we are in the process of erasing; when that is finished, display it.
 			this.displayScheduled=true;
@@ -95,10 +102,12 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		// if rendering using explosion effect, need to set explosion source
 		this.explodeSrc = [this.mouseX, this.mouseY];
 
-		this.show();
-		this.bgIframe.show(this.domNode);
-
 		this.state="displaying";
+
+		dojo.widget.html.Tooltip.superclass.show.call(this);
+
+		// for fade effect, need to display the iframe before the fade starts
+		this.bgIframe.show(this.domNode);
 	},
 
 	onShow: function() {
@@ -111,21 +120,21 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		// in the corner case where the user has moved his mouse away
 		// while the tip was fading in
 		if(this.eraseScheduled){
-			this.erase();
+			this.hide();
 			this.eraseScheduled=false;
 		}
 	},
 
-	erase: function() {
+	hide: function() {
 		if(this.state=="displaying"){
 			// in the process of fading in.  wait until that is finished and then fade out
 			this.eraseScheduled=true;
 			return;
 		}
 		if ( this.state=="displayed" ) {
-			this.hide();
-			this.bgIframe.hide();
 			this.state="erasing";
+			dojo.widget.html.Tooltip.superclass.hide.call(this);
+			this.bgIframe.hide();
 		}
 	},
 	
