@@ -121,6 +121,7 @@ digraph dhtml_universe
 		bradneuberg -> Storage;
 		bscott -> RICO;
 		bscott -> Yahoo;
+		bscott -> Yui;
 		djames -> RICO;
 		djames -> Yahoo;
 		sschiller -> Yahoo;
@@ -138,6 +139,25 @@ digraph dhtml_universe
 		pcorcoran -> Microsoft;
 		smorais -> ActiveSpace;
 		mwubben -> Q42;
+		rdargahi -> ZATK;
+		rdargahi -> Zimbra;
+		amoore -> Yahoo;
+		amoore -> Yui;
+		msweeney -> Yahoo;
+		msweeney -> Yui;
+		nkoechley -> Yahoo;
+		nkoechley -> Yui;
+		jhan -> Yahoo;
+		jhan -> Yui;
+		speterson -> Yahoo;
+		speterson -> Yui;
+		tkloots -> Yahoo;
+		tkloots -> Yui;
+		bkeese -> Dojo;
+		jandrews -> Dojo;
+		bskinner -> Dojo;
+		ikantor -> Dojo;
+		nroberts -> Dojo;
 
 		// project and company relationships
 		INFA -> NW;
@@ -174,6 +194,8 @@ digraph dhtml_universe
 		jscontrols -> WebFX;
 		Plumtree -> jscontrols;
 		Microsoft -> Atlas;
+		Yahoo -> Yui;
+		IBM -> Dojo;
 
 		// developers
 		psowden		[ label="Paul Sowden" ];
@@ -239,6 +261,18 @@ digraph dhtml_universe
 		dcrockford	[ label="Douglas Crockford" ];
 		smorais		[ label="Stephan Morais" ];
 		pcorcoran	[ label="Patrick Corcoran" ];
+		rdargahi	[ label="Ross Dargahi" ];
+		amoore		[ label="Adam Moore" ];
+		msweeney	[ label="Matt Sweeney" ];
+		nkoechley	[ label="Nate Koechley" ];
+		jhan		[ label="Jenny Han" ];
+		speterson	[ label="Steven Peterson" ];
+		tkloots		[ label="Todd Kloots" ];
+		bkeese		[ label="Bill Keese" ];
+		jandrews	[ label="Jesse Andrews" ];
+		bskinner	[ label="Brian Skinner" ];
+		ikantor		[ label="Ilia Kantor" ];
+		nroberts	[ label="Neil Roberts" ];
 
 		// companies
 		DotNetSol 	[ label="Dot Net\nSolutions",shape=box ];
@@ -312,6 +346,7 @@ digraph dhtml_universe
 		JSLint		[ shape=diamond ];
 		ZATK		[ label="Zimbra AjaxTK",shape=diamond ];
 		Atlas		[ label="Microsoft Atlas",shape=diamond ];
+		Yui			[ label="Yahoo UI",shape=diamond ];
 	}
 
 // vim:ts=4:noet:ai
