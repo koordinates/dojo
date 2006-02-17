@@ -85,22 +85,12 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
             }
             dojo.html.addClass(this.children[i].domNode,
                 "dojoHtmlSplitterPanePanel");
-            
+
             if(i == this.children.length){
                 break;
             }
 
-			this.sizers[i] = document.createElement('div');
-			this.sizers[i].style.position = 'absolute';
-			this.sizers[i].className = this.isHorizontal ? 'dojoHtmlSplitPaneSizerH' : 'dojoHtmlSplitPaneSizerV';
-
-			var self = this;
-			var handler = (function(){ var sizer_i = i; return function(e){ self.beginSizing(e, sizer_i); } })();
-			dojo.event.connect(this.sizers[i], "onmousedown", handler);
-
-			this.domNode.appendChild(this.sizers[i]);
-			dojo.html.disableSelection(this.sizers[i]);
-
+            this._addSizer();
 		}
 
 		// create the fake dragger
@@ -121,7 +111,61 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		this.resizeSoon();
 	},
 
-	layoutPanels: function(){
+    _injectChild: function(child) {
+        with(child.domNode.style){
+            position = "absolute";
+        }
+        dojo.html.addClass(child.domNode,
+            "dojoHtmlSplitterPanePanel");
+    },
+
+    _addSizer: function() {
+        var i = this.sizers.length;
+
+        this.sizers[i] = document.createElement('div');
+        this.sizers[i].style.position = 'absolute';
+        this.sizers[i].className = this.isHorizontal ? 'dojoHtmlSplitPaneSizerH' : 'dojoHtmlSplitPaneSizerV';
+
+        var self = this;
+        var handler = (function(){ var sizer_i = i; return function(e){ self.beginSizing(e, sizer_i); } })();
+        dojo.event.connect(this.sizers[i], "onmousedown", handler);
+
+        this.domNode.appendChild(this.sizers[i]);
+        dojo.html.disableSelection(this.sizers[i]);
+    },
+
+    removeChild: function(widget){
+        // Remove sizer, but only if widget is really our child and
+        // we have at least one sizer to throw away
+        if (this.sizers.length > 0) {
+            for(var x=0; x<this.children.length; x++){
+                if(this.children[x] === widget){
+                    var i = this.sizers.length - 1;
+                    this.domNode.removeChild(this.sizers[i]);
+                    this.sizers.length = i;
+                    break;
+                }
+            }
+        }
+
+        // Remove widget and repaint
+        dojo.widget.html.Container.prototype.removeChild.call(this, widget, arguments);
+        this.onResized();
+    },
+
+    addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
+        dojo.widget.html.Container.prototype.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
+        this._injectChild(widget);
+
+        if (this.children.length > 1) {
+            this._addSizer();
+        }
+
+        this.layoutPanels();
+    },
+
+    layoutPanels: function(){
+        if (this.children.length == 0){ return; }
 
 		//
 		// calculate space
@@ -303,7 +347,7 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		if (!this.isActiveResize){
 			this.showSizingLine();
 		}
-		
+
 		//
 		// attach mouse events
 		//
