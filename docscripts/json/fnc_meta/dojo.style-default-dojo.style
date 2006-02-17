@@ -1,1 +1,1 @@
-{"variables":["boxSizing","getNumericStyle","getContentBoxWidth","getBorderBoxWidth","getMarginBoxWidth","setMarginBoxWidth","getContentBoxHeight","getBorderBoxHeight","getMarginBoxHeight","setMarginBoxHeight","getAbsoluteX","getAbsoluteY","styleSheet"]}
+{"variables":["boxSizing","styleSheet"]}

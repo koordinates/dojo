@@ -1,1 +1,1 @@
-{"variables":["PlotTypes","PlotTypes"],"inherits":["dojo.widget.HtmlWidget","dojo.widget.HtmlWidget"]}
+{"this_variables":["vectorNode","plotArea","dataGroup","axisGroup"],"variables":["PlotTypes","PlotTypes"],"inherits":["dojo.widget.HtmlWidget"]}

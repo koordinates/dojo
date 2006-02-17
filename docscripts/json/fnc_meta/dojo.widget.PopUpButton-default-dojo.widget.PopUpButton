@@ -1,1 +1,1 @@
-{"inherits":["dojo.widget.Widget","dojo.widget.Widget"],"this_inherits":["dojo.widget.PopUpButton.superclass.constructor"]}
+{"inherits":["dojo.widget.Widget"],"this_inherits":["dojo.widget.Widget.constructor"]}

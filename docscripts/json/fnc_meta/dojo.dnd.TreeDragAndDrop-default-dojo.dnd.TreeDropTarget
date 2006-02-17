@@ -1,1 +1,1 @@
-{"this_variables":["treeNode","controller"],"inherits":["dojo.dnd.HtmlDropTarget","dojo.dnd.HtmlDropTarget"]}
+{"this_variables":["treeNode","controller","autoExpandTimer"],"inherits":["dojo.dnd.HtmlDropTarget"]}

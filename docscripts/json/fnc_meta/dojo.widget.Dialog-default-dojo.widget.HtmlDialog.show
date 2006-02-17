@@ -1,1 +1,1 @@
-{"this_inherits":["dojo.widget.HtmlDialog.superclass.onResized","dojo.widget.HtmlDialog.superclass.show"]}
+{"this_inherits":["dojo.widget.HtmlWidget.onResized","dojo.widget.HtmlWidget.show"]}

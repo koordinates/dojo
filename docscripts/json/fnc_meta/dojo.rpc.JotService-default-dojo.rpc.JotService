@@ -1,1 +1,1 @@
-{"this_variables":["serviceUrl"],"inherits":["dojo.rpc.JsonService","dojo.rpc.JsonService"]}
+{"this_variables":["serviceUrl"],"inherits":["dojo.rpc.JsonService"]}

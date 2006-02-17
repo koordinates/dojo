@@ -1,1 +1,1 @@
-{"this_variables":["eraseScheduled","state"],"this_inherits":["dojo.widget.html.Tooltip.superclass.hide"]}
+{"this_inherits":["dojo.widget.html.ContentPane.hide"]}
