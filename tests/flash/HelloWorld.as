@@ -11,7 +11,7 @@ class HelloWorld{
 		msg = "Hello World! message=" + msg;
 		getURL("javascript:dojo.debug('FLASH: " + msg + "');");
 		
-		return "Goodbye cruel world!";
+		return "Goodbye cruel world! You gave me " + msg;
 	}
 	
 	static function main(mc){
