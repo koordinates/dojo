@@ -81,11 +81,30 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		dojo.event.connect(tab.li, "onclick", function(){ self.selectTab(tab); });
 		
 		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
-			this.selectedTabWidget=tab;
-		}
+            this.selectTab(tab);
+        } else {
+            this._hideTab(tab);
+        }
 	},
 
-	selectTab: function(tab) {
+    removeChild: function(tab) {
+        dojo.widget.html.TabPane.superclass.removeChild.call(this, tab);
+
+        dojo.html.removeClass(tab.domNode, "dojoTabPanel");
+        this.ul.removeChild(tab.li);
+        delete(tab.li);
+
+        // FIXME: do we need to disconnect event handler?
+
+        if (this.selectedTabWidget === tab) {
+            this.selectedTabWidget = undefined;
+            if (this.children.length > 0) {
+                this.selectTab(this.children[0]);
+            }
+        }
+    },
+
+    selectTab: function(tab) {
 		// Deselect old tab and select new one
 		if (this.selectedTabWidget) {
 			this._hideTab(this.selectedTabWidget);
