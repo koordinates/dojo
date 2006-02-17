@@ -259,7 +259,10 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
-		if((http.status==200)||(location.protocol=="file:" && (http.status==0 || http.status==undefined))) {
+		if(	(http.status==200)||
+			(http.status==304)||
+			(location.protocol=="file:" && (http.status==0 || http.status==undefined))
+		){
 			var ret;
 			if(kwArgs.method.toLowerCase() == "head"){
 				var headers = http.getAllResponseHeaders();
