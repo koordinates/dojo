@@ -1,1 +1,1 @@
-{"variables":["defaults","defaults","defaults"],"inherits":["dojo.widget.Widget","dojo.widget.Widget","dojo.widget.Widget"],"this_inherits":["dojo.widget.Widget"]}
+{"variables":["defaults","defaults","defaults"],"inherits":["dojo.widget.Widget"],"this_inherits":["dojo.widget.Widget"]}

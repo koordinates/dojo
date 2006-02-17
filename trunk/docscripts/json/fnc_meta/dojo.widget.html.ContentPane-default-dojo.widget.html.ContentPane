@@ -1,1 +1,1 @@
-{"inherits":["dojo.widget.HtmlWidget","dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"]}
+{"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"],"this_variables":["isLoaded","href"]}

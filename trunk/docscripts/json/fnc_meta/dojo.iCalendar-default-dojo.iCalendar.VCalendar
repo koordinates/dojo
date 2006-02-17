@@ -1,1 +1,1 @@
-{"this_variables":["name","recurring"],"inherits":["dojo.iCalendar.Component","dojo.iCalendar.Component"]}
+{"this_variables":["name","recurring"],"inherits":["dojo.iCalendar.Component"]}

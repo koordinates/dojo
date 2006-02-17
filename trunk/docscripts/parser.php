@@ -7,7 +7,6 @@ TODO:
 Handle polymorphic ID signatures
 Parse variables that point to objects for its keys
 De-indent code
-Figure out how to handle hostenv_browser.js
 
 */ 
 
@@ -98,23 +97,21 @@ else{
 					if($function_content['this_variables']){
 						foreach($function_content['this_variables'] as $value){
 							if($value{0} != '_'){
-								// We're assuming that dojo.package.name.function will be setting a this. value
-								// that applies to its parent.
-								$tmp_function_name_split = explode('.', $function_name);
-								while(count($tmp_function_name_split) > 3){
-									array_pop($tmp_function_name_split);
-
-									$tmp_function_name = implode('.', $tmp_function_name_split);
+								// Assume that this.stuff takes place in the parent.
+								$tmp_function_name = explode('.', $function_name);
+								if(count($tmp_function_name) > 3){
+									array_pop($tmp_function_name);
+									$tmp_function_name = implode('.', $tmp_function_name);
 									if($content[$tmp_function_name]){
-										foreach($content[$tmp_function_name] as $tmp_function_content){											
-											if(is_array($tmp_function_content['this_variables']) && in_array($value, $tmp_function_content['this_variables'])){
-												continue 3;
-											}
+										foreach($content[$tmp_function_name] as $tmp_function_content){
+											$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $tmp_function_name]['this_variables'][] = $value;
 										}
+									}else{
+										$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_variables'][] = $value;
 									}
+								}else{
+									$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_variables'][] = $value;
 								}
-									
-								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_variables'][] = $value;
 							}
 						}
 					}
@@ -128,7 +125,15 @@ else{
 					if($function_content['this_inherits']){
 						foreach($function_content['this_inherits'] as $value){
 							if($value{0} != '_'){
-								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = $value;
+								if(preg_match('%^(.*)\.superclass\.([^.]+)$%', $value, $match)){
+									if($content[$match[1]]['inherits']){
+										$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = end($content[$match[1]]['inherits']) . '.' . $match[2];
+									}else{
+										$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = $value;
+									}
+								}else{
+									$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = $value;
+								}
 							}
 						}
 					}
@@ -209,6 +214,12 @@ else{
 		}
 	}
 	foreach($fnc_meta as $file_name => $fnc){
+		if($fnc['inherits']){
+			$fnc['inherits'] = array_values(array_unique($fnc['inherits']));
+		}
+		if($fnc['this_variables']){
+			$fnc['this_variables'] = array_values(array_unique($fnc['this_variables']));
+		}
 		file_put_contents('json/fnc_meta/' . $file_name, $json->encode($fnc));
 	}
 	
@@ -376,10 +387,10 @@ function file_parse($file){
 		}elseif($started['multiline']){
 			unset($actual_lines[$key]);
 		}
-	}
 
-	if($actual_lines[$key]){
- 		$actual_lines[$key] = preg_replace_callback('%(dojo(?:\.' . $var['variable'] . ')+)\s*=\s*(dojo(?:\.' . $var['variable'] . ')+)(?=;|\s*=)%U', "equality_parse", $line);
+		if($actual_lines[$key]){
+	 		$actual_lines[$key] = preg_replace_callback('%(dojo(?:\.' . $var['variable'] . ')+)\s*=\s*(dojo(?:\.' . $var['variable'] . ')+)(?=;|\s*=)%U', "equality_parse", $line);
+		}
 	}
 
   $matches = preg_grep('%(?:' . implode('|', $regex['functions']) . ')%m', $actual_lines);   
