@@ -4,8 +4,11 @@
 
 TODO:
 
-Add polymorphism to function_parse
-Parse variables that point to objects for its keys (We can check variable type too)
+Add polymorphic ID signatures
+Parse variables that point to objects for its keys
+De-indent code
+Deal with hostenv
+
 
 */ 
 
@@ -33,6 +36,8 @@ $contents = array();
 $time = time();
 dir_plunge();
 
+//print_r($contents);
+
 if(isset($_GET['inheritance'])){
   widget_inheritance($contents);
 }
@@ -57,6 +62,8 @@ else{
 	// These are the things that will be saved as JSON objects
   $function_names = array();
 	$pkg_meta = array();
+	$fnc_meta = array();
+	
 
 	$last = array('package' => '');
 	foreach($contents as $file_name => $content){
@@ -77,13 +84,63 @@ else{
 				$pkg_meta[$file_name][$function_name]['is'] = $function['is'];
 			}else{
 				foreach($function as $function_signature => $function_content){
+					$polymorphic_id = 'default';
+					if($function_content['comments']['id']){
+						$polymorphic_id = $function_content['comments']['id'];
+					}
+					
+					if($function['variables']){
+						foreach($function['variables'] as $value){
+							if($value{0} != '_'){
+								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['variables'][] = $value;
+							}
+						}
+					}
+					if($function_content['this_variables']){
+						foreach($function_content['this_variables'] as $value){
+							if($value{0} != '_'){
+								// We're assuming that dojo.package.name.function will be setting a this. value
+								// that applies to its parent.
+								$tmp_function_name_split = explode('.', $function_name);
+								while(count($tmp_function_name_split) > 3){
+									array_pop($tmp_function_name_split);
+
+									$tmp_function_name = implode('.', $tmp_function_name_split);
+									if($content[$tmp_function_name]){
+										foreach($content[$tmp_function_name] as $tmp_function_content){											
+											if(is_array($tmp_function_content['this_variables']) && in_array($value, $tmp_function_content['this_variables'])){
+												continue 3;
+											}
+										}
+									}
+								}
+									
+								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_variables'][] = $value;
+							}
+						}
+					}
+					if($function['inherits']){
+						foreach($function['inherits'] as $value){
+							if($value{0} != '_'){
+								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['inherits'][] = $value;
+							}
+						}
+					}
+					if($function_content['this_inherits']){
+						foreach($function_content['this_inherits'] as $value){
+							if($value{0} != '_'){
+								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = $value;
+							}
+						}
+					}
+					
 					if($function_signature == 'inherits' || $function_signature == 'variables'){
 						continue;
 					}
 				
-					$pkg_meta[$file_name][$function_name]['default'][$function_signature] = '';
+					$pkg_meta[$file_name][$function_name][$polymorphic_id][$function_signature] = '';
 					if($function_content['comments']['summary']){
-						$pkg_meta[$file_name][$function_name]['default'][$function_signature] = $function_content['comments']['summary'];
+						$pkg_meta[$file_name][$function_name][$polymorphic_id][$function_signature] = $function_content['comments']['summary'];
 					}
 				}
 			}
@@ -122,7 +179,15 @@ else{
 			}
 		}
 	}
+	
+	if(isset($_GET['function_names'])){
+		print_r($function_names);
+	}
 	file_put_contents('json/function_names', $json->encode($function_names));
+
+	if(isset($_GET['pkg_meta'])){
+  	print_r($pkg_meta);
+	}
 	$pkg_meta_files = scandir('json/pkg_meta/');
 	foreach($pkg_meta_files as $file){
 		if($file{0} != '.'){
@@ -134,6 +199,20 @@ else{
 			file_put_contents('json/pkg_meta/' . str_replace('*', '_', $file_name), $json->encode($pkg));
 		}
 	}
+	
+	if(isset($_GET['fnc_meta'])){
+  	print_r($fnc_meta);
+	}
+	$fnc_meta_files = scandir('json/fnc_meta/');
+	foreach($fnc_meta_files as $file){
+		if($file{0} != '.'){
+			unlink('json/fnc_meta/' . $file);
+		}
+	}
+	foreach($fnc_meta as $file_name => $fnc){
+		file_put_contents('json/fnc_meta/' . $file_name, $json->encode($fnc));
+	}
+	
 	if(!isset($_GET['signatures'])){
 		header("Content-type: text/html");		
 ?>
@@ -212,7 +291,8 @@ function require_parse($matches){
 }
 
 function file_to_package($file){
-	return str_replace('.js', '', str_replace('__package__.js', '*', preg_replace('%^src%', 'dojo', str_replace('/', '.', $file))));
+	// Makes the file names pretty!
+	return str_replace('.js', '', str_replace('__package__.js', '*', preg_replace('%^src\.%', '', preg_replace('%^src(?!\.hostenv)%', 'dojo', str_replace('/', '.', $file)))));
 }
 
 /**
@@ -281,26 +361,29 @@ function file_parse($file){
 
 	$started = array('multiline' => false);
   foreach($actual_lines as $key => $line){
+	  $line = $actual_lines[$key] = preg_replace('%/\*.*\*/%U', '', $line);
+	
 		if(!$started['multiline'] && ($pos = strpos($line, '//')) !== false){
 			$line = $actual_lines[$key] = substr($line, 0, $pos);
-		}else{
-			if(($pos = strpos($line, '/*')) !== false){
-				$started['multiline'] = true;
-				$line = $actual_lines[$key] = substr($line, 0, $pos);
-			}
-			if(($pos = strpos($line, '*/')) !== false){
-				$started['multiline'] = false;
-				$line = $actual_lines[$key] = substr($line, $pos+2);
-			}elseif($started['multiline']){
-				unset($actual_lines[$key]);
-			}
 		}
-		if($actual_lines[$key]){
-  		$actual_lines[$key] = preg_replace_callback('%(dojo(?:\.' . $var['variable'] . ')+)\s*=\s*(dojo(?:\.' . $var['variable'] . ')+)(?=;|\s*=)%U', "equality_parse", $line);
+
+		if(($pos = strpos($line, '/*')) !== false){
+			$started['multiline'] = true;
+			$line = $actual_lines[$key] = substr($line, 0, $pos);			
+		}
+		if(($pos = strpos($line, '*/')) !== false){
+			$started['multiline'] = false;
+			$line = $actual_lines[$key] = substr($line, $pos+2);
+		}elseif($started['multiline']){
+			unset($actual_lines[$key]);
 		}
 	}
 
-  $matches = preg_grep('%(?:' . implode('|', $regex['functions']) . ')%m', $actual_lines); 
+	if($actual_lines[$key]){
+ 		$actual_lines[$key] = preg_replace_callback('%(dojo(?:\.' . $var['variable'] . ')+)\s*=\s*(dojo(?:\.' . $var['variable'] . ')+)(?=;|\s*=)%U', "equality_parse", $line);
+	}
+
+  $matches = preg_grep('%(?:' . implode('|', $regex['functions']) . ')%m', $actual_lines);   
 
   // Handle "anonymous" objects
   $extends = '';
@@ -549,7 +632,7 @@ function function_parse(&$contents){
     }
     
     // These inherit only by things set in the calling function by using this.foo syntax
-    if(preg_match('%^\s*(' . $var['variable'] . '(?:\.' . $var['variable'] . ')+)\.call\(this\)%', $line, $this_matches)){
+    if(preg_match('%^\s*(dojo(?:\.' . $var['variable'] . ')+)\.(?:apply|call)\(this\)%', $line, $this_matches)){
       $contents['this_inherits'][] = $this_matches[1];
     }
     

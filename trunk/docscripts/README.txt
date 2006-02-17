@@ -28,7 +28,7 @@ The next object is found in json/pkg_meta/[package] and is a list of all package
 * hostenv: The environmental variables (browser, html, svg, etc)
 * "package": The name of the dojo package (is limited to child packages)
 * method: The name of the dojo method
-* "is": A key that holds a pointer to another method
+* "is": A key that holds a pointer to another method (dojo.requireAfterIf "is" dojo.requireIf)
 * id: The id of the polymorphic sygnature (default is "default")
 * signature: The function signature: returnType functionName(paramType param, paramType param)
 * "summary": A brief description of what this function signature does.
@@ -62,7 +62,7 @@ The next object is found in json/pkg_meta/[package] and is a list of all package
 		}
 	}
 	
-The next object is found in json/fnc_src/[method].[id] and is the source code for each method. It is plain text.
+The next object is found in json/fnc_src/[package]-[id]-[method] and is the source code for each method. It is plain text.
 	
 The next object is found in json/fnc_meta/[method].[id] and is the metadata for each function. That means it contains things like parameters and return type. It uses the following keys and variables
 * "variables": A static key that holds all the publicly exposed variables.
