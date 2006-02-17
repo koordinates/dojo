@@ -56,6 +56,8 @@ build targets:
 	testScripting - tests the JS and Jython integration in the build process
 	buildFlash - compiles a Flash ActionScript 2 file to use dojo.flash.comm; provide 
 	relative path to file using -Ddojo.flash.file.
+	buildDojoFlash - compiles the dojo.flash package, including its testing
+	and example files.
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -635,6 +637,19 @@ internTemplateStrings()
 	</target>
 	<!-- end tar task -->
 	
+	<!-- buildDojoFlash task -->
+	<target name="buildDojoFlash"
+					description="builds the Dojo Flash package and its testing files">	
+		<antcall target="buildFlash">
+			<param name="dojo.flash.file" value="${root}/tests/flash/HelloWorld.as"/>
+		</antcall>
+		
+		<antcall target="buildFlash">
+			<param name="dojo.flash.file" value="${root}/tests/flash/TestFlash.as"/>
+		</antcall>
+	</target>
+	<!-- end buildDojoFlash task -->
+	
 	<!-- buildFlash task -->
 	<target name="buildFlash"
 					description="builds Flash ActionScript class to use dojo.flash.comm">
@@ -647,7 +662,8 @@ internTemplateStrings()
 			dojo.setNewProperty("flashClass", flashClass);
 			
 			var flashFileName = matches[0];
-			var flashPath = flashFile.substring(0, flashFileName.length + 1);
+			var endCut = new String(flashFile).length - flashFileName.length;
+			var flashPath = flashFile.substring(0, endCut);
 			dojo.setNewProperty("flashPath", flashPath);
 		]]></script>
 		
