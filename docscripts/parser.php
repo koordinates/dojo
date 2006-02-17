@@ -7,7 +7,7 @@ TODO:
 Handle polymorphic ID signatures
 Parse variables that point to objects for its keys
 De-indent code
-
+Figure out how to handle hostenv_browser.js
 
 */ 
 
@@ -440,29 +440,8 @@ function file_parse($file){
         $function_lines[] = $i;
         $line = str_replace("\t", "    ", $line); // For some reason, tabs sometimes force line breaks?
         
-        // Only run balancing on non-comment blocks.        
-        $line_without_comments = '';
-        if($started['global_comment'] && ($pos = strpos($line, '*/')) !== false){
-          $started['global_comment'] = false;
-          $line_without_comments = substr($temp_line, $pos+2);
-        }
-        if(!$started['global_comment']){
-          if(empty($line_without_comments)){
-            $line_without_comments = $line;
-          }
-          $temp_line = preg_replace('%/\*.*\*/%U', '', $line_without_comments);
-          $line_without_comments = $temp_line;
-          if(($pos = strpos($temp_line, '//')) !== false){
-            $line_without_comments = substr($temp_line, 0, $pos);
-          }
-          if(($pos = strpos($temp_line, '/*')) !== false){
-            $line_without_comments = substr($temp_line, 0, $pos);
-            $started['global_comment'] = true;
-          }
-        }
-        
         // Matches: {, }, (
-        preg_match_all('%(?<![/])[{}(]%', $line_without_comments, $blocks);
+        preg_match_all('%(?<![/])[{}(]%', $actual_lines[$i], $blocks);
         $types = array_count_values($blocks[0]);
         
         // Handle this. functions
