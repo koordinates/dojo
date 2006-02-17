@@ -4,10 +4,9 @@
 
 TODO:
 
-Add polymorphic ID signatures
+Handle polymorphic ID signatures
 Parse variables that point to objects for its keys
 De-indent code
-Deal with hostenv
 
 
 */ 
@@ -589,16 +588,20 @@ function file_parse($file){
   foreach($function_lines as $line_number){
     unset($actual_lines[$line_number]);
   }
+
+	$package = file_to_package($file);
   
   foreach($actual_lines as $line){
     if(preg_match('%dojo.inherits\(\s*([^,\s]+)\s*,\s*(.*)\s*\)%', $line, $match)){
-      $contents[file_to_package($file)][$match[1]]['inherits'][] = $match[2];
+      $contents[$package][$match[1]]['inherits'][] = $match[2];
     }
   }
 
   foreach($actual_lines as $line){
     if(preg_match('%^\s*(' . $var['variable'] . '(?:\.' . $var['variable'] . ')*)\.(' . $var['variable'] . ')\s+=%', $line, $var_matches)){
-      $contents[file_to_package($file)][$var_matches[1]]['variables'][] = $var_matches[2];
+			if(!is_array($contents[$package][$var_matches[1]]['variables']) || !in_array($var_matches[2], $contents[$package][$var_matches[1]]['variables'])){
+      	$contents[$package][$var_matches[1]]['variables'][] = $var_matches[2];
+			}
     }
   }
 }

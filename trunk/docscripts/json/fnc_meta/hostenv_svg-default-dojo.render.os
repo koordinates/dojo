@@ -1,1 +1,1 @@
-{"variables":["osx","linux","win","linux"]}
+{"variables":["osx","linux","win"]}
