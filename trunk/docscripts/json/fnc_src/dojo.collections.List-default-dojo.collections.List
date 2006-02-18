@@ -1,0 +1,2 @@
+dojo.deprecated("dojo.collections.List", "Use dojo.collections.Dictionary instead.");
+return new dojo.collections.Dictionary(dictionary);

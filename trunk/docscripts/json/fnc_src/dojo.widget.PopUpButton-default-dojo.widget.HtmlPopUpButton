@@ -1,0 +1,1 @@
+dojo.widget.HtmlPopUpButton.superclass.constructor.call(this);

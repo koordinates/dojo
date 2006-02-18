@@ -1,0 +1,36 @@
+var versionStr;
+
+ loop backwards through the versions until we find the newest version	
+for(var testVersion = 25; testVersion > 0; testVersion--){
+	if(dojo.render.html.ie){
+		versionStr = VBGetSwfVer(testVersion);
+	}else{
+		versionStr = this._JSFlashInfo(testVersion);		
+	}
+		
+	if(versionStr == -1 ){
+		this.capable = false; 
+		return;
+	}else if(versionStr != 0){
+		var versionArray;
+		if(dojo.render.html.ie){
+			var tempArray = versionStr.split(" ");
+			var tempString = tempArray[1];
+			versionArray = tempString.split(",");
+		}else{
+			versionArray = versionStr.split(".");
+		}
+			
+		this.versionMajor = versionArray[0];
+		this.versionMinor = versionArray[1];
+		this.versionRevision = versionArray[2];
+		
+		 7.0r24 == 7.24
+		versionString = this.versionMajor + "." + this.versionRevision;
+		this.version = parseFloat(versionString);
+		
+		this.capable = true;
+		
+		break;
+	}
+}

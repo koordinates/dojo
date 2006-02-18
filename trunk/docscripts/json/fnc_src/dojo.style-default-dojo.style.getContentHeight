@@ -1,0 +1,2 @@
+node = dojo.byId(node);
+return node.offsetHeight - dojo.style.getPaddingHeight(node) - dojo.style.getBorderHeight(node);

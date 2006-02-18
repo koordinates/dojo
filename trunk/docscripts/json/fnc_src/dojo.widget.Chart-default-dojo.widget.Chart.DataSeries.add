@@ -1,0 +1,4 @@
+if(v.x==null||v.value==null){
+	dojo.raise("dojo.widget.Chart.DataSeries.add: v must have both an 'x' and 'value' property.");
+}
+this.values.push(v);

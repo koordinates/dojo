@@ -1,0 +1,3 @@
+ var res = dojo.dnd.HtmlDragSource.prototype.onDragEnd.call(this, e);
+
+ return res;

@@ -1,0 +1,7 @@
+if((clobber)&&(clobber==true)){ document.cookie = ""; }
+var cs = "";
+for(var x=0; x<keypairs.length; x++){
+	cs += keypairs[x][0]+"="+keypairs[x][1];
+	if(x!=keypairs.length-1){ cs+=";"; }
+}
+document.cookie = cs;

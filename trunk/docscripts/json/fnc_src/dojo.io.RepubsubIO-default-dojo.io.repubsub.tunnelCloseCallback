@@ -1,0 +1,1 @@
+dojo.io.setIFrameSrc(this.rcvNode, this.initDoc+"?callback=repubsub.rcvNodeReady&domain="+document.domain);

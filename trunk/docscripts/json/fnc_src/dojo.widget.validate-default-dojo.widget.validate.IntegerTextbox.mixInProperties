@@ -1,0 +1,9 @@
+dojo.widget.validate.IntegerTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.signed ) { 
+	this.flags.signed = ( localProperties.signed == "true" );
+}
+if ( localProperties.separator ) { 
+	this.flags.separator = localProperties.separator;
+}

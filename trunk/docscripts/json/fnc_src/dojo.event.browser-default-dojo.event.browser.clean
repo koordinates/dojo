@@ -1,0 +1,3 @@
+if(dojo.render.html.ie){ 
+	dojo_ie_clobber.clobber(node);
+}

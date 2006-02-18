@@ -1,0 +1,1 @@
+return this.logType("ERROR", this.argsToArr(arguments));

@@ -1,0 +1,27 @@
+dojo.style.insertCssFile(this.templateCssPath);
+this.domNode = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+if(!this.domNode) { dj_error("html.Tabs: No node reference"); }
+
+if(args["tabtarget"]) {
+	this.tabtarget = args["tabtarget"];
+	this.containerNode = document.getElementById(args["tabtarget"]);
+} else {
+	this.containerNode = document.createElement("div");
+	var next = this.domNode.nextSibling;
+	if(next) {
+		this.domNode.parentNode.insertBefore(this.containerNode, next);
+	} else {
+		this.domNode.parentNode.appendChild(this.containerNode);
+	}
+}
+dojo.html.addClass(this.containerNode, "dojoTabPanelContainer");
+
+var li = dojo.dom.getFirstChildElement(this.domNode);
+while(li) {
+	var a = li.getElementsByTagName("a").item(0);
+	this.addTab(a);
+	li = dojo.dom.getNextSiblingElement(li);
+}
+
+if(this.selected == -1) { this.selected = 0; }
+this.selectTab(null, this.tabs[this.selected]);

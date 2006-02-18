@@ -1,0 +1,6 @@
+var container = dojo.byId(this.id + "Container");
+if(visible == true){
+	container.style.visibility = "visible";
+}else{
+	container.style.visibility = "hidden";
+}

@@ -1,0 +1,5 @@
+var syms = packname.split(/\./);
+if(syms[syms.length-1]=="*"){
+	syms.pop();
+}
+return dojo.evalObjPath(syms.join("."), true);

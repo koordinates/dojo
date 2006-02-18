@@ -1,0 +1,10 @@
+var accepts = dojo.dnd.TreeDropTarget.prototype.onDragOver.apply(this, arguments);
+
+dojo.debug("TreeDropOntoTarget.onDragOver accepts:"+accepts)
+
+if (!accepts) return false;
+
+ mark current node being dragged into
+this.treeNode.markSelected();
+
+return true;

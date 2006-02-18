@@ -1,0 +1,64 @@
+if(!_this.currentRequest){
+	_this.fireNextRequest();
+	return;
+}
+
+var req = _this.currentRequest;
+
+ remove all the hidden content inputs
+var toClean = req._contentToClean;
+for(var i = 0; i < toClean.length; i++) {
+	var key = toClean[i];
+	var input = req.formNode[key];
+	req.formNode.removeChild(input);
+	req.formNode[key] = null;
+}
+ restore original action + target
+req.formNode.setAttribute("action", req._originalAction);
+req.formNode.setAttribute("target", req._originalTarget);
+req.formNode.target = req._originalTarget;
+
+var ifr = _this.iframe;
+var ifw = dojo.io.iframeContentWindow(ifr);
+ handle successful returns
+ FIXME: how do we determine success for iframes? Is there an equiv of
+ the "status" property?
+var value;
+var success = false;
+
+try{
+	var cmt = req.mimetype;
+	if((cmt == "text/javascript")||(cmt == "text/json")){
+		 FIXME: not sure what to do here? try to pull some evalulable
+		 text from a textarea or cdata section? 
+		 how should we set up the contract for that?
+		var cd = dojo.io.iframeContentDocument(_this.iframe);
+		var js = cd.getElementsByTagName("textarea")[0].value;
+		if(cmt == "text/json") { js = "(" + js + ")"; }
+		value = dj_eval(js);
+	}else if((cmt == "application/xml")||(cmt == "text/xml")){
+		value = dojo.io.iframeContentDocument(_this.iframe);
+	}else{  text/plain
+		value = ifw.innerHTML;
+	}
+	success = true;
+}catch(e){ 
+	 looks like we didn't get what we wanted!
+	var errObj = new dojo.io.Error("IframeTransport Error");
+	if(dojo.lang.isFunction(req["error"])){
+		req.error("error", errObj, req);
+	}
+}
+
+ don't want to mix load function errors with processing errors, thus
+ a separate try..catch
+try {
+	if(success && dojo.lang.isFunction(req["load"])){
+		req.load("load", value, req);
+	}
+} catch(e) {
+	throw e;
+} finally {
+	_this.currentRequest = null;
+	_this.fireNextRequest();
+}

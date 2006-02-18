@@ -1,0 +1,20 @@
+if (node.isExpanded) {
+	 callback is anyway applied
+	if (callFunc) callFunc.apply(callObj, [node]);
+	return;
+}
+
+if (node.state == node.loadStates.UNCHECKED) {
+	this.loadRemote(node, sync,
+		function(node, newChildren) {
+			this.expand(node, callObj, callFunc, sync);
+		}
+	);
+} else {
+	node.expand();
+
+	 callback after expansion
+	if (callFunc) callFunc.apply(callObj, [node])
+
+	dojo.event.topic.publish(this.eventNames.expand, {source: node} );
+}

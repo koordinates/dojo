@@ -1,0 +1,15 @@
+this.data=[];
+for(var i=0; i<data.length; i++){
+	var o={};		new data object.
+	for(var j=0; j<this.columns.length; j++){
+		var field=this.columns[j].getField();
+		var type=this.columns[j].getType();
+		var val=data[i][field];
+		var t=this.columns[j].sortType.toLowerCase();
+		if(val)
+			o[field]=new type(val);
+		else
+			o[field]=new type();		let it use the default.
+	}
+	this.data.push(o);
+}

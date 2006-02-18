@@ -1,0 +1,5 @@
+var cints = new Array(this.coords.length);
+for(var i = 0; i < this.coords.length; i++) {
+	cints[i] = Math.round(this.coords[i]);
+}
+return cints;

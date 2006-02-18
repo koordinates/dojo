@@ -1,0 +1,6 @@
+if( !this.isOver ){ return; }
+this.timerScale += 0.2;
+this.paint();
+if ( this.timerScale<1.0 ) {
+	dojo.lang.setTimeout(this, "expandSlowly", 10);
+}

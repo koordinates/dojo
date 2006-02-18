@@ -1,0 +1,6 @@
+dojo.widget.validate.EmailTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.allowcruft ) { 
+	this.flags.allowCruft = ( localProperties.allowcruft == "true" );
+}

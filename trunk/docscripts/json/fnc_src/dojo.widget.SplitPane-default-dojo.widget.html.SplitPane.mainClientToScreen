@@ -1,0 +1,4 @@
+pt.x += this.offsetX;
+pt.y += this.offsetY;
+
+return pt;

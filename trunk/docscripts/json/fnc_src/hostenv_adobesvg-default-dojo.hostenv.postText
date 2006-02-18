@@ -1,0 +1,24 @@
+var http = null;
+
+var async_callback = function(httpResponse){
+	if (!httpResponse.success) {
+		dj_throw("Request for uri '" + uri + "' resulted in " + httpResponse.status);
+	}
+	
+	if(!httpResponse.content) {
+		if (!fail_ok) dj_throw("Request for uri '" + uri + "' resulted in no content");
+		return null;
+	}
+	 FIXME: wtf, I'm losing a reference to async_cb
+	async_cb(httpResponse.content);
+}
+
+try {
+	if(async_cb) {
+		http = window.postURL(uri, text, async_callback, mimeType, encoding);
+	} else {
+	return dj_throw("No synchronous XMLHTTP post implementation available, for uri " + uri);
+	}
+} catch(e) {
+	return dj_throw("No XMLHTTP post implementation available, for uri " + uri);
+}

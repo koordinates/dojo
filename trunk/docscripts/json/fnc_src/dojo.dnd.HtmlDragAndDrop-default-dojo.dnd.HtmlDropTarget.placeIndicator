@@ -1,0 +1,13 @@
+with(this.dropIndicator.style){
+	if (boxIndex < 0) {
+		if (this.childBoxes.length) {
+			top = (before ? this.childBoxes[0].top
+				: this.childBoxes[this.childBoxes.length - 1].bottom) + "px";
+		} else {
+			top = dojo.style.getAbsoluteY(this.domNode) + "px";
+		}
+	} else {
+		var child = this.childBoxes[boxIndex];
+		top = (before ? child.top : child.bottom) + "px";
+	}
+}

@@ -1,0 +1,3 @@
+node = dojo.byId(node);
+ FIXME: this should also look at visibility!
+return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";

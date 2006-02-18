@@ -1,0 +1,14 @@
+var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+var trt = dojo.widget.createWidget(this._richTextType, {
+	focusOnLoad: this.focusOnLoad,
+	minHeight: this.minHeight
+}, node)
+var _this = this;
+ this appears to fix a weird timing bug on Safari
+setTimeout(function(){
+	_this.setRichText(trt);
+
+	_this.initToolbar();
+
+	_this.fillInTemplate(args, frag);
+}, 0);

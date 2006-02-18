@@ -1,0 +1,3 @@
+this.name = "STANDARD";
+this._ValidProperties = StandardProperties;
+dojo.iCalendar.Component.call(this, body);

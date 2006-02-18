@@ -1,0 +1,10 @@
+is = Boolean(is);
+if(force || this._enabled != is) {
+	this._enabled = is;
+	this.update();
+	if(!preventEvent) {
+		this._fireEvent(this._enabled ? "onEnable" : "onDisable");
+		this._fireEvent("onChangeEnabled");
+	}
+}
+return this._enabled;

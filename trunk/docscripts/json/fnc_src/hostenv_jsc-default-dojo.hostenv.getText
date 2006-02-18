@@ -1,0 +1,7 @@
+if(!System.IO.File.Exists(uri)){
+	 dj_throw("No such file '" + uri + "'");
+	return 0;
+}
+var reader = new System.IO.StreamReader(uri);
+var contents : String = reader.ReadToEnd();
+return contents;

@@ -1,0 +1,5 @@
+dojo.widget.HtmlWidget.call(this);
+
+this.eventNames = {
+	engage: ""
+};

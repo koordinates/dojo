@@ -1,0 +1,6 @@
+dojo.style.show(this.containerNode);
+
+ if dnd is in action, recalculate changed coordinates 
+if(dojo.dnd.dragManager.dragObjects.length) {
+	dojo.dnd.dragManager.cacheTargetLocations();
+}

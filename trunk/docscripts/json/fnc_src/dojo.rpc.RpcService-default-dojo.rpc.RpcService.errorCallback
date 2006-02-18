@@ -1,0 +1,3 @@
+return function(type, obj, e){
+	deferredRequestHandler.errback(e);
+}

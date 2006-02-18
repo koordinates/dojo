@@ -1,0 +1,4 @@
+var oln = this.optionsListNode;
+while(oln.firstChild){
+	oln.removeChild(oln.firstChild);
+}

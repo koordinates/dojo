@@ -1,0 +1,20 @@
+dojo.html.disableSelection(this.domNode);
+
+if (this.disabled){
+	this.setDisabled(true);
+}
+
+this.labelNode.childNodes[0].appendChild(document.createTextNode(this.caption));
+this.accelNode.childNodes[0].appendChild(document.createTextNode(this.accelKey));
+
+this.labelShadowNode = this.labelNode.childNodes[0].childNodes[0];
+this.accelShadowNode = this.accelNode.childNodes[0].childNodes[0];
+
+this.labelShadowNode.appendChild(document.createTextNode(this.caption));
+this.accelShadowNode.appendChild(document.createTextNode(this.accelKey));
+
+if (this.eventNaming == "default") {
+	for (eventName in this.eventNames) {
+		this.eventNames[eventName] = this.widgetId+"/"+eventName;
+	}
+}

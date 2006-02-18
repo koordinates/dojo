@@ -1,0 +1,15 @@
+var s = ""; 
+if(this.arrConcat){
+	b = a.join(""); 
+}
+a=[];
+if(f>0){
+	s = b.substring(0, (f-1));
+}
+b = s + b.substring(f + l); 
+length = this.length = b.length; 
+if(this.arrConcat){
+	a.push(b);
+	b="";
+}
+return this;

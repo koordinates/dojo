@@ -1,0 +1,10 @@
+var src = this.munge('Luv', arguments);
+
+var L = src.L;
+var C = Math.pow(src.u * src.u + src.v * src.v, 0.5);
+var H = Math.atan2(src.v, src.u) * (180 / Math.PI);
+
+if (H < 0){ H += 360; }
+if (H > 360){ H -= 360; }
+
+return [L, C, H];

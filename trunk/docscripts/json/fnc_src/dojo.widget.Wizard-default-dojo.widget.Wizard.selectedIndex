@@ -1,0 +1,4 @@
+if (this.selected) {
+	return dojo.lang.indexOf(this.getPanels(), this.selected);
+}
+return -1;

@@ -1,0 +1,5 @@
+if (this.isExpanded){
+	this.collapse();
+}else{
+	this.expand();
+}

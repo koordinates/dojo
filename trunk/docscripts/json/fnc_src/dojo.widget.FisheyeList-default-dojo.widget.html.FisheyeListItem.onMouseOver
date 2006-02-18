@@ -1,0 +1,7 @@
+if( !this.parent.isOver ){
+	this.parent.setActive(e);
+}
+if ( this.caption != "" ) {
+	dojo.html.addClass(this.lblNode, "selected");
+	this.parent.positionLabel(this);
+}

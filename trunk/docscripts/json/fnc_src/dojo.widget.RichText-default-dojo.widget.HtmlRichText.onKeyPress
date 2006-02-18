@@ -1,0 +1,39 @@
+var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
+var code = e.keyCode;
+		
+var preventDefault = true;  by default assume we cancel;
+
+ define some key combos
+if (e.ctrlKey || e.metaKey) {  modifier pressed
+	switch (character) {
+		case "b": this.execCommand("bold"); break;
+		case "i": this.execCommand("italic"); break;
+		case "u": this.execCommand("underline"); break;
+		case "a": this.execCommand("selectall"); break;
+		case "k": this.execCommand("createlink", ""); break;
+		case "Z": this.execCommand("redo"); break;
+		case "s": this.close(true); break;  saves
+		default: switch (code) {
+			case e.KEY_LEFT_ARROW:
+			case e.KEY_RIGHT_ARROW:
+				break;  preventDefault stops the browser
+						going through its history
+			default:
+				preventDefault = false; break;  didn't handle here
+		}
+	}
+} else {
+	switch (code) {
+		case e.KEY_TAB:
+		   commenting out bcs it's crashing FF
+			 this.execCommand(e.shiftKey ? "unindent" : "indent");
+			 break;
+		default:
+			preventDefault = false; break;  didn't handle here
+	}
+}
+
+if (preventDefault) { e.preventDefault(); }
+
+ function call after the character has been inserted
+dojo.lang.setTimeout(this, this.onKeyPressed, 1, e);

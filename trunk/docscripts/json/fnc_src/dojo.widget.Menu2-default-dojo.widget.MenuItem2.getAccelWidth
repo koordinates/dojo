@@ -1,0 +1,3 @@
+var node = this.accelNode.childNodes[0];
+
+return dojo.style.getOuterWidth(node);

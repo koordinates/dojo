@@ -1,0 +1,2 @@
+var selectedIndex = this.selectedIndex();
+return (selectedIndex > 0);

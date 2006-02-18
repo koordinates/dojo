@@ -1,0 +1,1 @@
+return dojo.validate.isValidTime(value, {format: ["h:mm:ss t", "h:mm t"]});

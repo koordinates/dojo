@@ -1,0 +1,27 @@
+var _this = this;
+
+this.actionsDisabled = this.actionsDisabled.split(",");
+for(var i=0; i<this.actionsDisabled.length; i++) {
+	this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
+}
+
+if (this.eventNaming == "default") {  IE || FF
+
+	for (eventName in this.eventNames) {
+		this.eventNames[eventName] = this.widgetId+"/"+eventName;
+	}
+}
+
+if (args['controller']) {
+	var controller = dojo.widget.manager.getWidgetById(args['controller']);
+
+	controller.subscribeTree(this);  controller listens to my events
+}
+
+if (args['selector']) {
+	this.selector = dojo.widget.manager.getWidgetById(args['selector']);
+} else {
+	this.selector = new dojo.widget.createWidget("EditorTreeSelector");
+}
+
+this.containerNode = this.domNode;

@@ -1,0 +1,10 @@
+this.dropIndicator = document.createElement("div");
+with (this.dropIndicator.style) {
+	position = "absolute";
+	zIndex = 1;
+	borderTopWidth = "1px";
+	borderTopColor = "black";
+	borderTopStyle = "solid";
+	width = dojo.style.getInnerWidth(this.domNode) + "px";
+	left = dojo.style.getAbsoluteX(this.domNode) + "px";
+}

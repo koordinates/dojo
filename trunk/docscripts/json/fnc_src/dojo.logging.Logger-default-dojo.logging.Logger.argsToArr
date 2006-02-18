@@ -1,0 +1,5 @@
+var ret = [];
+for(var x=0; x<args.length; x++){
+	ret.push(args[x]);
+}
+return ret;

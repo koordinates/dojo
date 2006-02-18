@@ -1,0 +1,16 @@
+if (!order) var order = dojo.collections.BinaryTree.TraversalMethods.Inorder;
+if (!sep) var sep = " ";
+var s = "";
+switch (order){
+	case dojo.collections.BinaryTree.TraversalMethods.Preorder:
+		s = preorderTraversal(root, sep);
+		break;
+	case dojo.collections.BinaryTree.TraversalMethods.Inorder:
+		s = inorderTraversal(root, sep);
+		break;
+	case dojo.collections.BinaryTree.TraversalMethods.Postorder:
+		s = postorderTraversal(root, sep);
+		break;
+};
+if (s.length == 0) return "";
+else return s.substring(0, s.length - sep.length);

@@ -1,0 +1,4 @@
+pt.x -= (this.offsetX + this.sizingSplitter.position);
+pt.y -= (this.offsetY + this.sizingSplitter.position);
+
+return pt;

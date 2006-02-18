@@ -1,0 +1,18 @@
+dojo.widget.validate.UrlTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.scheme ) { 
+	this.flags.scheme = ( localProperties.scheme == "true" );
+}
+if ( localProperties.allowip ) { 
+	this.flags.allowIP = ( localProperties.allowip == "true" );
+}
+if ( localProperties.allowlocal ) { 
+	this.flags.allowLocal = ( localProperties.allowlocal == "true" );
+}
+if ( localProperties.allowcc ) { 
+	this.flags.allowCC = ( localProperties.allowcc == "true" );
+}
+if ( localProperties.allowgeneric ) { 
+	this.flags.allowGeneric = ( localProperties.allowgeneric == "true" );
+}

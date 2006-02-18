@@ -1,0 +1,28 @@
+if (this.iframe) {
+	if(!this.document.body["offsetHeight"]){
+		return;
+	}
+	 The height includes the padding, borders and margins so these
+	 need to be added on
+	var heights = ["margin-top", "margin-bottom",
+		"padding-bottom", "padding-top",
+		"border-width-bottom", "border-width-top"];
+	for (var i = 0, chromeheight = 0; i < heights.length; i++) {
+		var height = dojo.style.getStyle(this.iframe, heights[i]);
+		 Safari doesn't have all the heights so we have to test
+		if (height) {
+			chromeheight += Number(height.replace(/[^0-9]/g, ""));
+		}
+	}
+	 dojo.debug(this.document.body.offsetHeight);
+	 dojo.debug(chromeheight);
+	if(this.document.body["offsetHeight"]){
+		this._lastHeight = this.document.body.offsetHeight + chromeheight;
+		this.iframe.height = this._lastHeight + "px";
+		this.window.scrollTo(0, 0);
+	}
+	 this.iframe.height = this._lastHeight + "px";
+	 dojo.debug(this.iframe.height);
+} else if (this.object) {
+	this.object.height = dojo.style.getInnerHeight(this.editNode);
+}

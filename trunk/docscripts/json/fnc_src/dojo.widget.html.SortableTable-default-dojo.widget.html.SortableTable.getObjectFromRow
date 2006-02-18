@@ -1,0 +1,8 @@
+var cells=row.getElementsByTagName("td");
+var o={};
+for(var i=0; i<this.columns.length;i++){
+	var text=dojo.html.renderedTextContent(cells[i]);
+	var val=new (this.columns[i].getType())(text);
+	o[this.columns[i].getField()]=val;
+}
+return o;		

@@ -1,0 +1,19 @@
+if(this.state=="erasing"){
+	 we are in the process of erasing; when that is finished, display it.
+	this.displayScheduled=true;
+	return;
+}
+if ( this.state=="displaying" || this.state=="displayed" ) { return; }
+
+this.domNode.style.top = this.mouseY + 15 + "px";
+this.domNode.style.left = this.mouseX + 10 + "px";
+
+ if rendering using explosion effect, need to set explosion source
+this.explodeSrc = [this.mouseX, this.mouseY];
+
+this.state="displaying";
+
+dojo.widget.html.Tooltip.superclass.show.call(this);
+
+ for fade effect, need to display the iframe before the fade starts
+this.bgIframe.show(this.domNode);

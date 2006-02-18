@@ -1,0 +1,9 @@
+if(this.runPanelHandler(panel)) {
+	if(panel.isLocal) {
+		 do nothing?
+	} else {
+		if(!panel.isLoaded || !this.useCache) {
+			this.setExternalContent(panel, panel.url, this.useCache, this.preventCache);
+		}
+	}
+}

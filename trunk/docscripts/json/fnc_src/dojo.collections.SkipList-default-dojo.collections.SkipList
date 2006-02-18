@@ -1,0 +1,26 @@
+function node(height, val){
+	this.value = val;
+	this.height = height;
+	this.nodes = new nodeList(height);
+}
+function nodeList(height){
+	var arr = [];
+	this.height = height;
+	for (var i = 0; i < height; i++) arr[i] = null;
+}
+function iterator(list){
+	this.current = list.head;
+	this.atEnd = false;
+}
+
+function chooseRandomHeight(max){
+	var level = 1;
+	while (Math.random() < PROB && level < max) level++;
+	return level;
+}
+
+var PROB = 0.5;
+var comparisons = 0;
+
+this.head = new node(1);
+this.count = 0;

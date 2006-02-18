@@ -1,0 +1,1 @@
+dojo.hostenv.loadModule.apply(dojo.hostenv, arguments);

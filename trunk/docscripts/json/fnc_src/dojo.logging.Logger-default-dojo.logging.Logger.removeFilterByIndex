@@ -1,0 +1,5 @@
+if(this.filters[fltIndex]){
+	delete this.filters[fltIndex];
+	return true;
+}
+return false;

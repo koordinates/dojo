@@ -1,0 +1,14 @@
+if ( dojo.render.html.ie ) {
+	 Compensate for IE's weird padding of button content, which seems to be relative
+	 to the length of the content
+	var contentWidth = dojo.style.getOuterWidth(this.table);
+	this.labelCell.style["left"] = "-" + (contentWidth / 10) + "px";
+	this.arrowCell.style["left"] = (contentWidth / 10) + "px";
+}
+
+ Make menu at least as wide as the button
+var buttonWidth = dojo.style.getOuterWidth(this.button);
+var menuWidth = dojo.style.getOuterWidth(this.menu);
+if ( buttonWidth > menuWidth ) {
+	dojo.style.setOuterWidth(this.menu, buttonWidth);
+}

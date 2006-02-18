@@ -1,0 +1,63 @@
+var tpath = templatePath || obj.templatePath;
+var cpath = templateCssPath || obj.templateCssPath;
+
+ DEPRECATED: use Uri objects, not strings
+if (tpath && !(tpath instanceof dojo.uri.Uri)) {
+	tpath = dojo.uri.dojoUri(tpath);
+	dojo.deprecated("templatePath should be of type dojo.uri.Uri");
+}
+if (cpath && !(cpath instanceof dojo.uri.Uri)) {
+	cpath = dojo.uri.dojoUri(cpath);
+	dojo.deprecated("templateCssPath should be of type dojo.uri.Uri");
+}
+
+var tmplts = dojo.widget._templateCache;
+if(!obj["widgetType"]) {  don't have a real template here
+	do {
+		var dummyName = "__dummyTemplate__" + dojo.widget._templateCache.dummyCount++;
+	} while(tmplts[dummyName]);
+	obj.widgetType = dummyName;
+}
+var wt = obj.widgetType;
+
+if((cpath)&&(!dojo.widget._cssFiles[cpath])){
+	dojo.style.insertCssFile(cpath);
+	obj.templateCssPath = null;
+	dojo.widget._cssFiles[cpath] = true;
+}
+
+var ts = tmplts[wt];
+if(!ts){
+	tmplts[wt] = { "string": null, "node": null };
+	if(avoidCache){
+		ts = {};
+	}else{
+		ts = tmplts[wt];
+	}
+}
+if(!obj.templateString){
+	obj.templateString = templateString || ts["string"];
+}
+if(!obj.templateNode){
+	obj.templateNode = ts["node"];
+}
+if((!obj.templateNode)&&(!obj.templateString)&&(tpath)){
+	 fetch a text fragment and assign it to templateString
+	 NOTE: we rely on blocking IO here!
+	var tstring = dojo.hostenv.getText(tpath);
+	if(tstring){
+		var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+		if(matches){
+			tstring = matches[1];
+		}
+	}else{
+		tstring = "";
+	}
+	obj.templateString = tstring;
+	if(!avoidCache){
+		tmplts[wt]["string"] = tstring;
+	}
+}
+if((!ts["string"])&&(!avoidCache)){
+	ts.string = obj.templateString;
+}

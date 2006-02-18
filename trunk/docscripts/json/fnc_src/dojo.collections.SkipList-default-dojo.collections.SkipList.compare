@@ -1,0 +1,3 @@
+if (this.value > val) return 1;
+if (this.value < val) return -1;
+return 0;

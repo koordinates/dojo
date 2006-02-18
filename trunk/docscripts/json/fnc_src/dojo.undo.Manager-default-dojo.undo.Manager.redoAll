@@ -1,0 +1,3 @@
+while(this._redoStack.length > 0) {
+	this.redo();
+}

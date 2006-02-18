@@ -1,0 +1,20 @@
+if(dojo.lang.isArray(coords)){
+	 coords is already an array (of format [x,y,w,h]), just return it
+	while ( coords.length < 4 ) { coords.push(0); }
+	while ( coords.length > 4 ) { coords.pop(); }
+	var ret = coords;
+} else {
+	 coords is an dom object (or dom object id); return it's coordinates
+	var node = dojo.byId(coords);
+	var ret = [
+		dojo.style.getAbsoluteX(node, includeScroll),
+		dojo.style.getAbsoluteY(node, includeScroll),
+		dojo.style.getInnerWidth(node),
+		dojo.style.getInnerHeight(node)
+	];
+}
+ret.x = ret[0];
+ret.y = ret[1];
+ret.w = ret[2];
+ret.h = ret[3];
+return ret;

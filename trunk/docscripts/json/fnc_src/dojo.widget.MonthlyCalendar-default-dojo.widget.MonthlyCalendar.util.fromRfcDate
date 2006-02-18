@@ -1,0 +1,6 @@
+var tempDate = rfcDate.split("-");
+if(tempDate.length < 3) {
+	return new Date();
+}
+ fullYear, month, date
+return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));

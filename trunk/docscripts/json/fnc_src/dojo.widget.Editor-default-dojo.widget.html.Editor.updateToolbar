@@ -1,0 +1,55 @@
+if(!this._toolbarContainer) { return; }
+
+ keeps the toolbar from updating too frequently
+ TODO: generalize this functionality?
+var diff = new Date() - this._updateToolbarLastRan;
+if(!force && this._updateToolbarLastRan && (diff < this._updateToolbarFrequency)) {
+	clearTimeout(this._updateToolbarTimer);
+	var _this = this;
+	this._updateToolbarTimer = setTimeout(function() {
+		_this.updateToolbar();
+	}, this._updateToolbarFrequency/2);
+	return;
+} else {
+	this._updateToolbarLastRan = new Date();
+}
+ end frequency checker
+
+var items = this._toolbarContainer.getItems();
+for(var i = 0; i < items.length; i++) {
+	var item = items[i];
+	if(item instanceof dojo.widget.html.ToolbarSeparator) { continue; }
+	var cmd = item._name;
+	if (cmd == "save" || cmd == "cancel") { continue; }
+	else if(cmd == "justifyGroup") {
+		try {
+			if(!this._richText.queryCommandEnabled("justifyleft")) {
+				item.disable(false, true);
+			} else {
+				item.enable(false, true);
+				var jitems = item.getItems();
+				for(var j = 0; j < jitems.length; j++) {
+					var name = jitems[j]._name;
+					var value = this._richText.queryCommandValue(name);
+					if(typeof value == "boolean" && value) {
+						value = name;
+						break;
+					} else if(typeof value == "string") {
+						value = "justify"+value;
+					} else {
+						value = null;
+					}
+				}
+				if(!value) { value = "justifyleft"; }  TODO: query actual style
+				item.setValue(value, false, true);
+			}
+		} catch(err) {}
+	} else if(cmd == "listGroup") {
+		var litems = item.getItems();
+		for(var j = 0; j < litems.length; j++) {
+			this.updateItem(litems[j]);
+		}
+	} else {
+		this.updateItem(item);
+	}
+}

@@ -1,0 +1,4 @@
+node = dojo.byId(node);
+if(node.style){
+	node.style.display = "none";
+}

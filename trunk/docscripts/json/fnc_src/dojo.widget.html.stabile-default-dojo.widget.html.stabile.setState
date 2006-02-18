@@ -1,0 +1,5 @@
+dojo.widget.html.stabile.setup();
+dojo.widget.html.stabile.widgetState[id] = state;
+if(isCommit){
+	dojo.widget.html.stabile.commit(dojo.widget.html.stabile.widgetState);
+}

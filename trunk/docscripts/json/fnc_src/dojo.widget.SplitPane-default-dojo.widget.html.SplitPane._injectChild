@@ -1,0 +1,5 @@
+with(child.domNode.style){
+	position = "absolute";
+}
+dojo.html.addClass(child.domNode,
+	"dojoHtmlSplitterPanePanel");

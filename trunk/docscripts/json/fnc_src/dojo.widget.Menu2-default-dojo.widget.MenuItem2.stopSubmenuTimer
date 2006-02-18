@@ -1,0 +1,4 @@
+if (this.hover_timer){
+	window.clearTimeout(this.hover_timer);
+	this.hover_timer = null;
+}

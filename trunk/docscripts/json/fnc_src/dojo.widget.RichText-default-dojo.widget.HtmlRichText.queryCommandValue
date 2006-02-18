@@ -1,0 +1,17 @@
+if (this.object) {
+	switch (command) {
+		case "forecolor":
+		case "backcolor":
+		case "fontsize":
+		case "fontname":
+		case "blockformat":
+			command = "get" + command;
+			return this.object.execCommand(
+				this._activeX.command[command],
+				this._activeX.ui.noprompt);
+	}			
+
+	var status = this.object.QueryStatus(this._activeX.command[command]);
+} else {
+	return this.document.queryCommandValue(command);
+}

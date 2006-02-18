@@ -1,0 +1,45 @@
+var startCoords = dojo.style.toCoordinateArray(start);
+
+var outline = document.createElement("div");
+with(outline.style) {
+	position = "absolute";
+	border = "1px solid black";
+	display = "none";
+}
+document.body.appendChild(outline);
+
+endNode = dojo.byId(endNode);
+with(endNode.style) {
+	visibility = "hidden";
+	display = "block";
+}
+var endCoords = dojo.style.toCoordinateArray(endNode);
+
+with(endNode.style) {
+	display = "none";
+	visibility = "visible";
+}
+
+var anim = new dojo.animation.Animation(
+	new dojo.math.curves.Line(startCoords, endCoords),
+	duration||dojo.fx.duration, 0
+);
+dojo.event.connect(anim, "onBegin", function(e) {
+	outline.style.display = "block";
+});
+dojo.event.connect(anim, "onAnimate", function(e) {
+	with(outline.style) {
+		left = e.x + "px";
+		top = e.y + "px";
+		width = e.coords[2] + "px";
+		height = e.coords[3] + "px";
+	}
+});
+
+dojo.event.connect(anim, "onEnd", function() {
+	endNode.style.display = "block";
+	outline.parentNode.removeChild(outline);
+	if(callback) { callback(endNode, anim); }
+});
+if(!dontPlay) { anim.play(); }
+return anim;

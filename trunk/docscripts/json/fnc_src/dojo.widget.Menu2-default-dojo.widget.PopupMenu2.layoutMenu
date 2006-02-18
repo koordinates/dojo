@@ -1,0 +1,61 @@
+var parent = this.domNode.parentNode;
+if (! parent || parent == undefined) {
+	document.body.appendChild(this.domNode);
+}
+
+ determine menu width
+
+var max_label_w = 0;
+var max_accel_w = 0;
+
+for(var i=0; i<this.children.length; i++){
+
+	if (this.children[i].getLabelWidth){
+
+		max_label_w = Math.max(max_label_w, this.children[i].getLabelWidth());
+	}
+
+	if (dojo.lang.isFunction(this.children[i].getAccelWidth)){
+
+		max_accel_w = Math.max(max_accel_w, this.children[i].getAccelWidth());
+	}
+}
+
+if( isNaN(max_label_w) || isNaN(max_accel_w) ){
+	 Browser needs some more time to calculate sizes
+	this.layoutMenuSoon();
+	return;
+}
+
+var clientLeft = dojo.style.getPixelValue(this.domNode, "padding-left", true) + dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+var clientTop  = dojo.style.getPixelValue(this.domNode, "padding-top", true)  + dojo.style.getPixelValue(this.containerNode, "padding-top", true);
+
+if( isNaN(clientLeft) || isNaN(clientTop) ){
+	 Browser needs some more time to calculate sizes
+	this.layoutMenuSoon();
+	return;
+}
+
+var y = clientTop;
+var max_item_width = 0;
+
+for(var i=0; i<this.children.length; i++){
+
+	var ch = this.children[i];
+
+	ch.layoutItem(max_label_w, max_accel_w);
+
+	ch.topPosition = y;
+
+	y += dojo.style.getOuterHeight(ch.domNode);
+	max_item_width = Math.max(max_item_width, dojo.style.getOuterWidth(ch.domNode));
+}
+
+dojo.style.setContentWidth(this.containerNode, max_item_width);
+dojo.style.setContentHeight(this.containerNode, y-clientTop);
+
+dojo.style.setContentWidth(this.domNode, dojo.style.getOuterWidth(this.containerNode));
+dojo.style.setContentHeight(this.domNode, dojo.style.getOuterHeight(this.containerNode));
+
+this.menuWidth = dojo.style.getOuterWidth(this.domNode);
+this.menuHeight = dojo.style.getOuterHeight(this.domNode);

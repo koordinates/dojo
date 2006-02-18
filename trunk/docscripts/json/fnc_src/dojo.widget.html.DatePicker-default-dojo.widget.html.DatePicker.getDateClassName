@@ -1,0 +1,10 @@
+var currentClassName = this.classNames[monthState];
+if ((!this.selectedIsUsed) && (date.getDate() == this.date.getDate()) && (date.getMonth() == this.date.getMonth()) && (date.getFullYear() == this.date.getFullYear())) {
+	currentClassName = this.classNames.selectedDate + " " + currentClassName;
+	this.selectedIsUsed = 1;
+}
+if((!this.currentIsUsed) && (date.getDate() == this.today.getDate()) && (date.getMonth() == this.today.getMonth()) && (date.getFullYear() == this.today.getFullYear())) {
+	currentClassName = currentClassName + " "  + this.classNames.currentDate;
+	this.currentIsUsed = 1;
+}
+return currentClassName;

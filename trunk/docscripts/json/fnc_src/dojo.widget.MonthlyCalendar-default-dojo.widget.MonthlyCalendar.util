@@ -1,0 +1,2 @@
+this.months = dojo.date.months;
+this.weekdays = dojo.date.days;

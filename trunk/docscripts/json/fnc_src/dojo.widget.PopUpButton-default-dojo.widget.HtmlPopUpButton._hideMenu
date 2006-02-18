@@ -1,0 +1,3 @@
+this.menu.domNode.parentNode.removeChild(this.menu.domNode);
+dojo.event.disconnect(document, "onmousedown", this, "_hideMenu");
+this._menuVisible = false;

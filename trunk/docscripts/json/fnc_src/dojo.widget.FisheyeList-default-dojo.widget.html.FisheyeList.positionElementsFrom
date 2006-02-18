@@ -1,0 +1,42 @@
+var pos = 0;
+
+if (this.isHorizontal){
+	pos = Math.round(this.children[p].usualX + offset);
+	this.children[p].domNode.style.left = pos + 'px';
+}else{
+	pos = Math.round(this.children[p].usualY + offset);
+	this.children[p].domNode.style.top = pos + 'px';
+}
+this.positionLabel(this.children[p]);
+
+ position before
+
+var bpos = pos;
+
+for(var i=p-1; i>=0; i--){
+
+	bpos -= this.children[i].sizeMain;
+
+	if (this.isHorizontal){
+		this.children[i].domNode.style.left = bpos + 'px';
+	}else{
+		this.children[i].domNode.style.top = bpos + 'px';
+	}
+	this.positionLabel(this.children[i]);
+}
+
+ position after
+
+var apos = pos;
+
+for(var i=p+1; i<this.itemCount; i++){
+
+	apos += this.children[i-1].sizeMain;
+
+	if (this.isHorizontal){
+		this.children[i].domNode.style.left = apos + 'px';
+	}else{
+		this.children[i].domNode.style.top = apos + 'px';
+	}
+	this.positionLabel(this.children[i]);
+}

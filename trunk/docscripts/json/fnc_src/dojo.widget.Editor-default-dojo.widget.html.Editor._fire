@@ -1,0 +1,11 @@
+if(dojo.lang.isFunction(this[eventName])) {
+	var args = [];
+	if(arguments.length == 1) {
+		args.push(this);
+	} else {
+		for(var i = 1; i < arguments.length; i++) {
+			args.push(arguments[i]);
+		}
+	}
+	this[eventName].apply(this, args);
+}

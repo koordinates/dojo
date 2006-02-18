@@ -1,0 +1,5 @@
+if( this._anims.length == 0 ) { return; }
+if( this._currAnim == -1 ) { this._currAnim = 0; }
+if( this._anims[this._currAnim] ) {
+	this._anims[this._currAnim].playPause();
+}
