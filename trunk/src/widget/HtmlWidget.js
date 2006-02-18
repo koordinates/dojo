@@ -16,11 +16,6 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	templateCssPath: null,
 	templatePath: null,
-	allowResizeX: true,
-	allowResizeY: true,
-
-	resizeGhost: null,
-	initialResizeCoords: null,
 
 	// for displaying/hiding widget
 	toggle: "plain",
@@ -31,11 +26,26 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	initialize: function(args, frag){
 	},
 
+	toggleObj: {
+		show: function(node, duration, explodeSrc, callback){
+			dojo.style.show(node);
+			if(dojo.lang.isFunction(callback)){ callback(); }
+		},
+	
+		hide: function(node, duration, explodeSrc, callback){
+			dojo.style.hide(node);
+			if(dojo.lang.isFunction(callback)){ callback(); }
+		}
+	},
+
 	postMixInProperties: function(args, frag){
 		// now that we know the setting for toggle, get toggle object
-		this.toggleObj =
-			dojo.widget.HtmlWidget.toggle[this.toggle.toLowerCase()] ||
-			dojo.widget.HtmlWidget.toggle.plain;
+		// If user hasn't included dojo.fx.html then we fall back to plain toggle
+		var specialToggler =
+			(dojo.fx && dojo.fx.html && dojo.fx.html.toggle[this.toggle.toLowerCase()]);
+		if(specialToggler){
+			this.toggleObj=specialToggler;
+		}
 	},
 
 	getContainerHeight: function(){
@@ -100,52 +110,3 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		this.animationInProgress=false;
 	}
 });
-
-
-/**** 
-	Strategies for displaying/hiding widget
-*****/
-
-dojo.widget.HtmlWidget.toggle={}
-
-dojo.widget.HtmlWidget.toggle.plain = {
-	show: function(node, duration, explodeSrc, callback){
-		dojo.style.show(node);
-		if(dojo.lang.isFunction(callback)){ callback(); }
-	},
-
-	hide: function(node, duration, explodeSrc, callback){
-		dojo.html.hide(node);
-		if(dojo.lang.isFunction(callback)){ callback(); }
-	}
-}
-
-dojo.widget.HtmlWidget.toggle.fade = {
-	show: function(node, duration, explodeSrc, callback){
-		dojo.fx.html.fadeShow(node, duration, callback);
-	},
-
-	hide: function(node, duration, explodeSrc, callback){
-		dojo.fx.html.fadeHide(node, duration, callback);
-	}
-}
-
-dojo.widget.HtmlWidget.toggle.wipe = {
-	show: function(node, duration, explodeSrc, callback){
-		dojo.fx.html.wipeIn(node, duration, callback);
-	},
-
-	hide: function(node, duration, explodeSrc, callback){
-		dojo.fx.html.wipeOut(node, duration, callback);
-	}
-}
-
-dojo.widget.HtmlWidget.toggle.explode = {
-	show: function(node, duration, explodeSrc, callback){
-		dojo.fx.html.explode(explodeSrc||[0,0,0,0], node, duration, callback);
-	},
-
-	hide: function(node, duration, explodeSrc, callback){
-		dojo.fx.html.implode(node, explodeSrc||[0,0,0,0], duration, callback);
-	}
-}
