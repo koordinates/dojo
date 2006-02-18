@@ -4,9 +4,11 @@
 
 TODO:
 
-Handle polymorphic ID signatures
 Parse variables that point to objects for its keys
 De-indent code
+Handle "extends" variables
+Handle variables that are simple "set" but have nothing assigned
+Handle extraArgs in widget objects
 
 */ 
 
@@ -100,7 +102,17 @@ else{
 								// Assume that this.stuff takes place in the parent.
 								$tmp_function_name = explode('.', $function_name);
 								if(count($tmp_function_name) > 3){
-									array_pop($tmp_function_name);
+									// Find the first capitalized block
+									for($i = count($tmp_function_name)-1; $i > -1; $i--){
+										if(preg_match('%[A-Z]%', substr($tmp_function_name[$i], 0, 1))){
+											$tmp_function_name = array_slice($tmp_function_name, 0, $i+1);
+											break;
+										}
+									}
+									// If nothing is found, assume that this.stuff takes place in the immediate parent
+									if($i == -1){
+										array_pop($tmp_function_name);
+									}
 									$tmp_function_name = implode('.', $tmp_function_name);
 									if($content[$tmp_function_name]){
 										foreach($content[$tmp_function_name] as $tmp_function_content){
