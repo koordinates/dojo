@@ -1,1 +1,1 @@
-{"dojo.uuid.LightweightGenerator":{"default":{"for example: \"3B12F1DF\" dojo.uuid.LightweightGenerator()":""}},"dojo.uuid.LightweightGenerator.generate":{"default":{"undefined dojo.uuid.LightweightGenerator.generate(returnType)":""}}}
+{"dojo.uuid.LightweightGenerator":{"default":{"for example: dojo.uuid.LightweightGenerator()":""}},"dojo.uuid.LightweightGenerator.generate":{"default":{"undefined dojo.uuid.LightweightGenerator.generate(returnType)":""}}}

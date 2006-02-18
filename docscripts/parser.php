@@ -4,11 +4,11 @@
 
 TODO:
 
+Handle polymorphic IDs
 Parse variables that point to objects for its keys
-De-indent code
 Handle "extends" variables
-Handle variables that are simple "set" but have nothing assigned
-Handle extraArgs in widget objects
+Handle extraArgs in widget objects (so far, it doesn't appear to be used)
+Parameter ending in ? now means optional
 
 */ 
 
@@ -36,7 +36,9 @@ $contents = array();
 $time = time();
 dir_plunge();
 
-//print_r($contents);
+if(isset($_GET['contents'])){
+	print_r($contents);
+}
 
 if(isset($_GET['inheritance'])){
   widget_inheritance($contents);
@@ -63,6 +65,7 @@ else{
   $function_names = array();
 	$pkg_meta = array();
 	$fnc_meta = array();
+	$fns_src = array();
 	
 
 	$last = array('package' => '');
@@ -153,7 +156,35 @@ else{
 					if($function_signature == 'inherits' || $function_signature == 'variables'){
 						continue;
 					}
-				
+					
+					$shortest = '																										';
+					$trimmed = true;					
+					foreach($function_content['function_content'] as $key => $line){
+						while($tmp_line = preg_replace('%^(\t*) {4}%', "\$1\t", $line)){
+							if($line == $tmp_line){
+								break;
+							}
+							$line = $tmp_line;
+						}
+						$function_content['function_content'][$key] = $line;
+
+						if(trim($line) == ''){
+							if($trimmed){
+								unset($function_content['function_content'][$key]);
+							}
+							$trimmed = true;
+						}else{
+							$trimmed = false;
+							if(preg_match('%^\t+%', $line, $matches) && strlen($matches[0]) < strlen($shortest)){
+								$shortest = $matches[0];
+							}
+						}
+					}					
+					foreach($function_content['function_content'] as $key => $line){
+						$function_content['function_content'][$key] = preg_replace('%^' . $shortest . '%', '', $line);
+					}
+					$fnc_src[$file_name . '-' . $polymorphic_id . '-' . $function_name] = implode("\n", $function_content['function_content']);
+
 					$pkg_meta[$file_name][$function_name][$polymorphic_id][$function_signature] = '';
 					if($function_content['comments']['summary']){
 						$pkg_meta[$file_name][$function_name][$polymorphic_id][$function_signature] = $function_content['comments']['summary'];
@@ -233,6 +264,19 @@ else{
 			$fnc['this_variables'] = array_values(array_unique($fnc['this_variables']));
 		}
 		file_put_contents('json/fnc_meta/' . $file_name, $json->encode($fnc));
+	}
+		
+	if(isset($_GET['fnc_src'])){
+		print_r($fnc_src);
+	}
+	$fnc_src_files = scandir('json/fnc_src/');
+	foreach($fnc_src_files as $file){
+		if($file{0} != '.'){
+			unlink('json/fnc_src/' . $file);
+		}
+	}
+	foreach($fnc_src as $file_name => $fnc){
+		file_put_contents('json/fnc_src/' . $file_name, $fnc);
 	}
 	
 	if(!isset($_GET['signatures'])){
@@ -461,7 +505,6 @@ function file_parse($file){
       $content = array('function' => array(), 'function_content' => array(), 'parameters' => array(), 'comments' => array(), 'returns' => array(), 'parameter' => '', 'comment' => '', 'return' => '');
       for($i = $line_number; ($line = $lines[$i]) !== null; $i++) {
         $function_lines[] = $i;
-        $line = str_replace("\t", "    ", $line); // For some reason, tabs sometimes force line breaks?
         
         // Matches: {, }, (
         preg_match_all('%(?<![/])[{}(]%', $actual_lines[$i], $blocks);
@@ -620,6 +663,13 @@ function function_parse(&$contents){
       ++$content['line_breaks'];
       continue;
     }
+
+		// Deal with "multiline" comments that happen on the same line
+		if(preg_match_all('%/\*(.*)\*/%U', $line, $comment_matches)){
+			$line = str_replace($comment_matches[0], '', $line);
+			$line .= '// ' . implode(' ', $comment_matches[1]);
+		}
+		
     if(substr($line, 0, 2) == '/*'){
       $started['multiline'] = true;
     }
@@ -643,11 +693,13 @@ function function_parse(&$contents){
     
     // Find the variables set by this.foo
     // We don't need to worry about finding functions here. They've been handled.
-    if(preg_match('%\s*this\.(' . $var['variable'] . ')\s*=(?!=)%', $line, $this_matches)){
+    if(preg_match('%this\.(' . $var['variable'] . ')\s*=(?!=)%', $line, $this_matches)){
       $contents['this_variables'][] = $this_matches[1];
-    }
+    }elseif(preg_match('%^\s*this\.(' . $var['variable'] . ');%', $line, $this_matches)){
+      $contents['this_variables'][] = $this_matches[1];
+		}
     
-    // Deal with the comment block
+    // Deal with the comment block ('block' defaults to true)
     if($started['block']){
       preg_match('%[\w()\'"]%', $line, $first_word);
       $line = substr($line, strpos($line, $first_word[0]));
@@ -676,32 +728,37 @@ function function_parse(&$contents){
     }
     
     // Deal with the returns
-    if(preg_match('%[{;]?\s*return(.*)%', $line, $match)){
-      $line = $match[1];
-      if(($pos = strpos($line, '/*')) !== false){
-        $content['return'] = trim(substr($line, $pos+2));
-        $started['return'] = true;
-      }elseif(($pos = strpos($line, '//')) !== false){
-        $contents['returns'][] = trim(substr($line, $pos+2));
+		$tmp_line = preg_replace('%(\'.*\'|".*")%U', '', $line);
+    if(preg_match('%[{;]?\s*return(.*)%', $tmp_line, $match)){
+      $tmp_line = $match[1];
+      if(($pos = strpos($tmp_line, '/*')) !== false){
+        $content['return'] = trim(substr($tmp_line, $pos+2));
+        $started['return'] = true;        
+      }elseif(($pos = strpos($tmp_line, '//')) !== false){
+        $contents['returns'][] = trim(substr($tmp_line, $pos+2));
       }else {
         $contents['returns'][] = '';
       }
     }
     if($started['return']){
-      if(($pos = strpos($line, '*/')) !== false){
+      if(($pos = strpos($tmp_line, '*/')) !== false){
         if(!empty($match[1])) {
           $content['return'] = trim(substr($content['return'], 0, strpos($content['return'], '*/')));
         }
         else {
-          $content['return'] .= ' ' . trim(substr($line, 0, $pos));
+          $content['return'] .= ' ' . trim(substr($tmp_line, 0, $pos));
         }
-        $contents['returns'][] = $content['return'];
+        $contents['returns'][] = trim($content['return']);
         $content['return'] = '';
         $started['return'] = false;
       }elseif(empty($match[1])){
-        $content['return'] .= ' ' . trim($line);
+        $content['return'] .= ' ' . trim($tmp_line);
       }
     }
+   	$contents['function_content'][$key] = str_replace(array_merge($contents['returns'], array('/*', '*/', '//')), '', $contents['function_content'][$key]);
+		if(trim($contents['function_content'][$key]) == ''){
+			unset($contents['function_content'][$key]);
+		}
   }
 
   if(!empty($contents['this_variables'])){
