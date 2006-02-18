@@ -1,0 +1,2 @@
+if (arguments.length == 1) { firstDay = 0; }  Sunday
+dojo.unimplemented("dojo.date.setWeekOfYear");

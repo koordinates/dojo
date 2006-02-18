@@ -1,0 +1,6 @@
+if ( this.hasLayoutAlign(child) ){
+	child.domNode.style.position = 'absolute';
+	child.isChild = true;	
+	this.filterAllowed(child, 'layoutAlign', ['none', 'left', 'top', 'right', 'bottom', 'client', 'flood']);
+	dojo.html.addClass(child.domNode, "dojoAlign" + dojo.string.capitalize(child.layoutAlign));		
+}

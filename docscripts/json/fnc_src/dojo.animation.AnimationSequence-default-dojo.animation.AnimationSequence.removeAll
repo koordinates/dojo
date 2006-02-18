@@ -1,0 +1,5 @@
+for(var i = 0; i < this._anims.length; i++) {
+	this._anims[i]._animSequence = null;
+}
+this._anims = [];
+this._currAnim = -1;

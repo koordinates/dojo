@@ -1,0 +1,1 @@
+return dojo.fx.svg.fade(node, duration, dojo.svg.getOpacity(node), 0, callback);

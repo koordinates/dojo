@@ -1,0 +1,34 @@
+switch(e.dragStatus){
+
+	case "dropSuccess":
+		dojo.dom.removeNode(this.dragClone);
+		this.dragClone = null;
+		break;
+
+	case "dropFailure":  slide back to the start
+		var startCoords = [dojo.style.getAbsoluteX(this.dragClone),
+					dojo.style.getAbsoluteY(this.dragClone)];
+		 offset the end so the effect can be seen
+		var endCoords = [this.dragStartPosition.left + 1,
+			this.dragStartPosition.top + 1];
+
+		 animate
+		var line = new dojo.math.curves.Line(startCoords, endCoords);
+		var anim = new dojo.animation.Animation(line, 300, 0, 0);
+		var dragObject = this;
+		dojo.event.connect(anim, "onAnimate", function(e) {
+			dragObject.dragClone.style.left = e.x + "px";
+			dragObject.dragClone.style.top = e.y + "px";
+		});
+		dojo.event.connect(anim, "onEnd", function (e) {
+			 pause for a second (not literally) and disappear
+			dojo.lang.setTimeout(dojo.dom.removeNode, 200,
+				dragObject.dragClone);
+		});
+		anim.play();
+		break;
+}
+
+ shortly the browser will fire an onClick() event,
+ but since this was really a drag, just squelch it
+dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");

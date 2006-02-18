@@ -1,0 +1,34 @@
+var h = this.minHeight;
+
+if ((this.layoutAlign == 'top') || (this.layoutAlign == 'bottom')){
+
+	h = dojo.style.getOuterHeight(this.domNode);
+}
+
+for(var i=0; i<this.children.length; i++){
+	var ch = this.children[i];
+	var a = ch.layoutAlign;
+
+	if ((a == 'top') || (a == 'bottom') || (a == 'client')){
+
+		if (dojo.lang.isFunction(ch.getMinHeight)){
+			h += ch.getMinHeight();
+		}
+	}
+}
+
+ but then we need to check to see if the left/right kids are larger
+
+for(var i=0; i<this.children.length; i++){
+	var ch = this.children[i];
+	var a = ch.layoutAlign;
+
+	if ((a == 'left') || (a == 'right')){
+
+		if (dojo.lang.isFunction(ch.getMinHeight)){
+			h = Math.max(h, ch.getMinHeight());
+		}
+	}
+}
+
+return h;

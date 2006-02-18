@@ -1,0 +1,12 @@
+var src = this.munge('LCH', arguments);
+
+var H_rad = src.H * (Math.PI / 180);
+
+var L = src.L;
+var u = src.C / Math.pow(Math.pow(Math.tan(H_rad), 2) + 1, 0.5);
+var v = Math.pow(src.C * src.C - u * u, 0.5);
+
+if ((90 < src.H) && (src.H < 270)){ u *= -1; }
+if (src.H > 180){ v *= -1; }
+
+return [L, u, v];

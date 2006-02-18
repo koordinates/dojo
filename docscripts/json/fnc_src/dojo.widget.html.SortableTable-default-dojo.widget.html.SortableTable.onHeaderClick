@@ -1,0 +1,31 @@
+var oldIndex=this.sortIndex;
+var oldDirection=this.sortDirection;
+var source=e.target;
+var row=dojo.html.getParentByType(source,"tr");
+var cellTag="td";
+if(row.getElementsByTagName(cellTag).length==0) cellTag="th";
+
+var headers=row.getElementsByTagName(cellTag);
+var header=dojo.html.getParentByType(source,cellTag);
+
+for(var i=0; i<headers.length; i++){
+	if(headers[i]==header){
+		if(i!=oldIndex){
+				new col.
+			this.sortIndex=i;
+			this.sortDirection=0;
+			headers[i].className=this.headerSortDownClass
+		}else{
+			this.sortDirection=(oldDirection==0)?1:0;
+			if(this.sortDirection==0){
+				headers[i].className=this.headerSortDownClass;
+			}else{
+				headers[i].className=this.headerSortUpClass;
+			}
+		}
+	}else{
+			reset the header class.
+		headers[i].className=this.headerClass;
+	}
+}
+this.render();

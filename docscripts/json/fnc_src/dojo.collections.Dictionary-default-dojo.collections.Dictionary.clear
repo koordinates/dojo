@@ -1,0 +1,2 @@
+items = {};
+this.count = 0;

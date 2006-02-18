@@ -1,0 +1,28 @@
+if (!this.canChangeParent(child, newParent)) {
+	return false;
+}
+
+ load nodes into newParent in sync mode, if needed, first 
+if (newParent.isTreeNode && newParent.state == newParent.loadStates.UNCHECKED) {
+	this.loadRemote(newParent, true);
+}
+
+var oldParent = child.parent;
+var oldParentIndex = child.getParentIndex();
+
+var result = this.changeParentRemote(child, newParent, index);
+
+if (!result) return result;
+
+ publish many events here about structural changes 
+dojo.event.topic.publish(this.eventNames.move,
+	{
+		oldParent: oldParent, oldParentIndex: oldParentIndex,
+		newParent: child.parent, newParentIndex: index,
+		child: child
+	}
+);
+
+this.expand(newParent);
+
+return result;

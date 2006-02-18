@@ -1,0 +1,24 @@
+this.object = document.createElement("object");
+
+with (this.object) {
+	classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
+	width = this.inheritWidth ? this._oldWidth : "100%";
+	height = this._oldHeight;
+	Scrollbars = false;
+	Appearance = this._activeX.appearance.flat;
+}
+this.domNode.appendChild(this.object);
+
+this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
+this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
+this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
+
+this.object.DocumentHTML = '<!doctype HTML PUBLIC "-W3CDTD HTML 4.01EN" "http:www.w3.org/TR/html4/strict.dtd">' +
+	'<title></title>' +
+	'<style type="text/css">' +
+	'    body,html { padding: 0; margin: 0; }' + font: ' + font + '; }' +
+	'    body { overflow: hidden; }' +
+	'    #bodywrapper {  }' +
+	'</style>' +
+	'<base href="' + window.location + '">' +
+	'<body><div id="bodywrapper">' + html + '</div></body>';

@@ -1,0 +1,1 @@
+dojo.event.connect(this.domNode, "onmousedown", this, "beginSizing");

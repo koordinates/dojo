@@ -1,0 +1,16 @@
+if(!this.ie || !this.enabled) { return; }
+
+if(this.sizeNode) {
+	this.sizeCoords = dojo.html.toCoordinateArray(this.sizeNode, true);
+} else if(this.sizeCoords) {
+	this.sizeCoords = dojo.html.toCoordinateArray(this.sizeCoords, true);
+} else {
+	return;
+}
+
+var s = this.iframe.style;
+var dims = this.sizeCoords;
+s.width = dims.w + "px";
+s.height = dims.h + "px";
+s.left = dims.x + "px";
+s.top = dims.y + "px";

@@ -1,0 +1,9 @@
+dojo.widget.validate.UsStateTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.allowterritories ) { 
+	this.flags.allowTerritories = ( localProperties.allowterritories == "true" );
+}
+if ( localProperties.allowmilitary ) { 
+	this.flags.allowMilitary = ( localProperties.allowmilitary == "true" );
+}

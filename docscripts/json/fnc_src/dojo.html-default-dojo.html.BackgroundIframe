@@ -1,0 +1,12 @@
+if(this.ie) {
+	this.iframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
+	var s = this.iframe.style;
+	s.position = "absolute";
+	s.left = s.top = "0px";
+	s.zIndex = 2;
+	s.display = "none";
+	dojo.style.setOpacity(this.iframe, 0.0);
+	document.body.appendChild(this.iframe);
+} else {
+	this.enabled = false;
+}

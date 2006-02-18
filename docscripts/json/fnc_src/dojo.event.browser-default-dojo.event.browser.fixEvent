@@ -1,0 +1,30 @@
+if((!evt)&&(window["event"])){
+	var evt = window.event;
+}
+
+if((evt["type"])&&(evt["type"].indexOf("key") == 0)){  key events
+	evt.keys = this.revKeys;
+	 FIXME: how can we eliminate this iteration?
+	for(var key in this.keys) {
+		evt[key] = this.keys[key];
+	}
+	if((dojo.render.html.ie)&&(evt["type"] == "keypress")){
+		evt.charCode = evt.keyCode;
+	}
+}
+	
+if(dojo.render.html.ie){
+	if(!evt.target){ evt.target = evt.srcElement; }
+	if(!evt.currentTarget){ evt.currentTarget = evt.srcElement; }
+	if(!evt.layerX){ evt.layerX = evt.offsetX; }
+	if(!evt.layerY){ evt.layerY = evt.offsetY; }
+	 mouseover
+	if(evt.fromElement){ evt.relatedTarget = evt.fromElement; }
+	 mouseout
+	if(evt.toElement){ evt.relatedTarget = evt.toElement; }
+	this.currentEvent = evt;
+	evt.callListener = this.callListener;
+	evt.stopPropagation = this.stopPropagation;
+	evt.preventDefault = this.preventDefault;
+}
+return evt;

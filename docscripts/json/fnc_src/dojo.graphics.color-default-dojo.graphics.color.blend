@@ -1,0 +1,10 @@
+if(typeof a == "string") { return dojo.graphics.color.blendHex(a, b, weight); }
+if(!weight) { weight = 0; }
+else if(weight > 1) { weight = 1; }
+else if(weight < -1) { weight = -1; }
+var c = new Array(3);
+for(var i = 0; i < 3; i++) {
+	var half = Math.abs(a[i] - b[i])/2;
+	c[i] = Math.floor(Math.min(a[i], b[i]) + half + (half * weight));
+}
+return c;

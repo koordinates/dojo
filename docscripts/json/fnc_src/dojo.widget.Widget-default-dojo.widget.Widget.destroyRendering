@@ -1,0 +1,2 @@
+dj_unimplemented("dojo.widget.Widget.destroyRendering");
+return false;

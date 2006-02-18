@@ -1,0 +1,1 @@
+return "rgb(" + this.toRgb().join() + ")";

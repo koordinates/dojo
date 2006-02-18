@@ -1,0 +1,5 @@
+var dist = Math.abs(cen - i);
+
+var limit = ((cen - i) > 0) ? this.children[i].effectRangeRght : this.children[i].effectRangeLeft;
+
+return (dist > limit) ? 0 : (1 - dist / limit);

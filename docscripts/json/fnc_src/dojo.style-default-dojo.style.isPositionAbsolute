@@ -1,0 +1,2 @@
+node = dojo.byId(node);
+return (dojo.style.getComputedStyle(node, 'position') == 'absolute');

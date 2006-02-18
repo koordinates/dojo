@@ -1,0 +1,3 @@
+var count = node.childNodes.length;
+while(node.hasChildNodes()){ node.removeChild(node.firstChild); }
+return count;

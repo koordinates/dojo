@@ -1,0 +1,13 @@
+if(this.stopped){ return; }
+ closure magic for callback
+var _this = this; 
+var callback = function(){ _this.endTransition(); };
+
+ actually start the fadeOut effect
+ NOTE: if we wanted to use other transition types, we'd set them up
+ 		 here as well
+if(this.fadeAnim) {
+	this.fadeAnim.stop();
+}
+this.fadeAnim = dojo.fx.html.fadeOut(this[this.foreground], 
+	this.transitionInterval, callback);

@@ -1,0 +1,11 @@
+if(evt && evt.target) {
+	dojo.html.setClass(evt.target, this.classNames.selectedTime);
+	this.selectedTime["hour"] = evt.target.innerHTML;
+} else if (!isNaN(evt)) {
+	var hourNodes = this.hourContainerNode.getElementsByTagName("td");
+	if(hourNodes.item(evt)) {
+		dojo.html.setClass(hourNodes.item(evt), this.classNames.selectedTime);
+		this.selectedTime["hour"] = hourNodes.item(evt).innerHTML;
+	}
+}
+this.selectedTime.anyTime = false;

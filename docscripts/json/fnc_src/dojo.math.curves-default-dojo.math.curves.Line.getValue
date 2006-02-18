@@ -1,0 +1,4 @@
+var retVal = new Array(this.dimensions);
+for(var i=0;i<this.dimensions;i++)
+	retVal[i] = ((this.end[i] - this.start[i]) * n) + this.start[i];
+return retVal;

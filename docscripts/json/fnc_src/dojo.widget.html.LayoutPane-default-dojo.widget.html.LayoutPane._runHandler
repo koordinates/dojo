@@ -1,0 +1,6 @@
+if(dojo.lang.isFunction(this.handler)) {
+	dojo.deprecated("use LinkPane to download content from a java function", "0.4");
+	this.handler(this, this.domNode);
+	return false;
+}
+return true;

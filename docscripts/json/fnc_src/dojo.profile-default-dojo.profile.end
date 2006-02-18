@@ -1,0 +1,12 @@
+var ed = new Date();
+if((profiles[name])&&(profiles[name]["start"])){
+	with(profiles[name]){
+		end = ed;
+		total += (end - start);
+		start = null;
+		iters++;
+	}
+}else{
+	 oops! bad call to end(), what should we do here?
+	return true;
+}

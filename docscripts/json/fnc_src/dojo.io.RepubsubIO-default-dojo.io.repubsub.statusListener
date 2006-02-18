@@ -1,0 +1,2 @@
+this.log("status listener called");
+this.log(evt.status, "info");

@@ -1,0 +1,3 @@
+this.name = "VJOURNAL";
+this._ValidProperties = VJournalProperties;
+dojo.iCalendar.Component.call(this, body);

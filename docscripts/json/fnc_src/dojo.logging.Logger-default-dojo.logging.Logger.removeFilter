@@ -1,0 +1,7 @@
+for(var x=0; x<this.filters.length; x++){
+	if(this.filters[x]===fltRef){
+		delete this.filters[x];
+		return true;
+	}
+}
+return false;

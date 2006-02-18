@@ -1,0 +1,3 @@
+if(this.allowCache){
+	this.cache[keyword] = data;
+}

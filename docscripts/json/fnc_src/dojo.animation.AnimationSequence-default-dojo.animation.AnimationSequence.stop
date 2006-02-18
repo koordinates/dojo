@@ -1,0 +1,3 @@
+if( this._anims[this._currAnim] ) {
+	this._anims[this._currAnim].stop();
+}

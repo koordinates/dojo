@@ -1,0 +1,7 @@
+var items = arguments.length ? arguments : this.children;
+for(var i = 0; i < items.length; i++) {
+	var child = this.getItem(items[i]);
+	if(child instanceof dojo.widget.ToolbarItem) {
+		child.enable(false, true);
+	}
+}

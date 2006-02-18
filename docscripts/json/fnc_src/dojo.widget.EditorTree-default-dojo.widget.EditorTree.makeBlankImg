@@ -1,0 +1,8 @@
+var img = document.createElement('img');
+
+img.style.width = this.iconWidth + 'px';
+img.style.height = this.iconHeight + 'px';
+img.src = this.blankIconSrc;
+img.style.verticalAlign = 'middle';
+
+return img;

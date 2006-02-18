@@ -1,0 +1,16 @@
+var range=this.createRange(len);
+if (range.index<0) return 0;
+var o={}, ret=0, m=0;
+for (var i=range.index; i>=range.start; i--){
+	var n=parseFloat(this.values[i].value);
+	if (!isNaN(n)){
+		if (!o[this.values[i].value]) o[this.values[i].value] = 1;
+		else o[this.values[i].value]++;
+	}
+}
+for (var p in o){
+	if(m<o[p]){
+		m=o[p]; ret=p;
+	}
+}
+return parseFloat(ret);

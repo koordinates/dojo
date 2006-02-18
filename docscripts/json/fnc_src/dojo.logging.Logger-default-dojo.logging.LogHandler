@@ -1,0 +1,4 @@
+this.cutOffLevel = (level) ? level : 0;
+this.formatter = null;  FIXME: default formatter?
+this.data = [];
+this.filters = [];

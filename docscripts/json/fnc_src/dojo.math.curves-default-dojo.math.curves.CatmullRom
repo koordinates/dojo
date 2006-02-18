@@ -1,0 +1,5 @@
+if(!c) this.c = 0.7;
+else this.c = c;
+this.p = pnts;
+
+return this;

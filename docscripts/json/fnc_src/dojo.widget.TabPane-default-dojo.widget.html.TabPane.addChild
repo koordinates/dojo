@@ -1,0 +1,2 @@
+this._setupTab(child);
+dojo.widget.html.TabPane.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);

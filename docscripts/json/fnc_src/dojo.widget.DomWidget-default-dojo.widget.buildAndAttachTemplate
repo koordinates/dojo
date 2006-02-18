@@ -1,0 +1,4 @@
+this.buildFromTemplate(obj, templatePath, templateCssPath, templateString);
+var node = dojo.dom.createNodesFromText(obj.templateString, true)[0];
+this.attachTemplateNodes(node, targetObj||obj, dojo.widget.getDojoEventsFromStr(templateString));
+return node;

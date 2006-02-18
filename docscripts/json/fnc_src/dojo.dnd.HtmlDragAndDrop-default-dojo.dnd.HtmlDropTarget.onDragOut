@@ -1,0 +1,4 @@
+if(this.dropIndicator) {
+	dojo.dom.removeNode(this.dropIndicator);
+	delete this.dropIndicator;
+}

@@ -1,0 +1,4 @@
+this.treeNode = treeNode;
+this.controller = syncController;  I will sync-ly process drops
+
+dojo.dnd.HtmlDropTarget.apply(this, [node, type]);

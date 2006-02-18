@@ -1,0 +1,18 @@
+var n = new node(data);
+var i;
+var current = root;
+var parent = null;
+while (current){
+	i = current.compare(n);
+	if (i == 0) return;
+	parent = current;
+	if (i > 0) current = current.left;
+	else current = current.right;
+}
+this.count++;
+if (!parent) root = n;
+else {
+	i = parent.compare(n);
+	if (i > 0) parent.left = n;
+	else parent.right = n;
+}

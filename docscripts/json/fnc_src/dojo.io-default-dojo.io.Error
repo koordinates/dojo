@@ -1,0 +1,3 @@
+this.message = msg;
+this.type =  type || "unknown";  must be one of "io", "parse", "unknown"
+this.number = num || 0;  per-substrate error number, not normalized

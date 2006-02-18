@@ -1,0 +1,7 @@
+if(typeof this[evt] == "function") {
+	var args = [this];
+	for(var i = 1; i < arguments.length; i++) {
+		args.push(arguments[i]);
+	}
+	this[evt].apply(this, args);
+}

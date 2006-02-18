@@ -1,0 +1,22 @@
+if(dojo.lang.isArray(r)) {
+	this.r = r[0];
+	this.g = r[1];
+	this.b = r[2];
+	this.a = r[3]||1.0;
+} else if(dojo.lang.isString(r)) {
+	var rgb = dojo.graphics.color.extractRGB(r);
+	this.r = rgb[0];
+	this.g = rgb[1];
+	this.b = rgb[2];
+	this.a = g||1.0;
+} else if(r instanceof dojo.graphics.color.Color) {
+	this.r = r.r;
+	this.b = r.b;
+	this.g = r.g;
+	this.a = r.a;
+} else {
+	this.r = r;
+	this.g = g;
+	this.b = b;
+	this.a = a;
+}

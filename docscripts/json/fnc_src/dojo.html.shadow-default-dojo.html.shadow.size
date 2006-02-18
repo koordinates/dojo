@@ -1,0 +1,10 @@
+var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
+this.pieces.l.style.height = sideHeight+"px";
+this.pieces.r.style.height = sideHeight+"px";
+this.pieces.b.style.width = (width-1)+"px";
+this.pieces.bl.style.top = (height-1)+"px";
+this.pieces.b.style.top = (height-1)+"px";
+this.pieces.br.style.top = (height-1)+"px";
+this.pieces.ur.style.left = (width-1)+"px";
+this.pieces.r.style.left = (width-1)+"px";
+this.pieces.br.style.left = (width-1)+"px";

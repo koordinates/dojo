@@ -1,0 +1,1 @@
+return dojo.validate.us.isState(this.textbox.value, this.flags);

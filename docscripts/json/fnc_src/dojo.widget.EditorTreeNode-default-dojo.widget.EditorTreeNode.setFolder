@@ -1,0 +1,2 @@
+dojo.event.connect(this.expandIcon, 'onclick', this, 'onTreeClick');
+this.isFolder = true;

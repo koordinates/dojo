@@ -1,0 +1,6 @@
+dojo.widget.validate.EmailListTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.listseparator ) { 
+	this.flags.listSeparator = localProperties.listseparator;
+}

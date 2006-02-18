@@ -1,0 +1,12 @@
+dojo.lang.mixin(this, props);
+if (props.title) {
+	this.titleNode.innerHTML = this.title;
+}
+
+if (props.afterLabel) {
+	this.afterLabelNode.innerHTML = this.afterLabel;
+}
+
+if (props.childIconSrc) {
+	this.buildChildIcon();
+}

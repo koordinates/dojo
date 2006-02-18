@@ -1,0 +1,5 @@
+this.onClearSelectedAnyTime();
+this.onClearSelectedMinute();
+this.setSelectedMinute(evt);
+this.selectedTime.anyTime = false;
+this.onSetTime();

@@ -1,0 +1,8 @@
+var node = parentNode.lastChild;
+while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
+	node = node.previousSibling;
+}
+if(tagName && node && node.tagName && node.tagName.toLowerCase() != tagName.toLowerCase()) {
+	node = dojo.dom.prevElement(node, tagName);
+}
+return node;

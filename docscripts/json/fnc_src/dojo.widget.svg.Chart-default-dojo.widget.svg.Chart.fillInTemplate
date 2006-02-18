@@ -1,0 +1,3 @@
+this.parseData();
+this.initialize();
+this.render();
