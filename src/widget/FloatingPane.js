@@ -185,10 +185,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				titleBarActions.appendChild(this.maximizeAction);
 				dojo.event.connect(this.maximizeAction, 'onclick', this, 'maximizeWindow');
 
-				if (this.windowState != "maximized") {
-					this.maximizeAction.style.display="inline";	
-				} else {
-					this.maximizeAction.style.display="none";	
+				if(this.maximizeAction){
+					if (this.windowState != "maximized") {
+						this.maximizeAction.style.display="inline";	
+					} else {
+						this.maximizeAction.style.display="none";	
+					}
 				}	
 			}
 
@@ -310,20 +312,17 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		} else {
 			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
 			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
-		}	
-		this.maximizeAction.style.display="none";	
-		this.restoreAction.style.display="inline";	
+		}
+		this.maximizeAction && (this.maximizeAction.style.display="none");
+		this.restoreAction && (this.restoreAction.style.display="inline");
 		this.windowState="maximized";
 		this.onResized();
 	},
 
 	minimizeWindow: function(evt) {
 		this.hide();
-		if (this.resizable) {
-			this.maximizeAction.style.display="inline";	
-			this.restoreAction.style.display="inline";	
-		}
-
+		this.maximizeAction && (this.maximizeAction.style.display="inline");
+		this.restoreAction && (this.restoreAction.style.display="inline");
 		this.windowState = "minimized";
 	},
 
@@ -340,10 +339,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.show();
 		}
 
-		if (this.resizable) {
-			this.maximizeAction.style.display="inline";	
-			this.restoreAction.style.display="none";	
-		}
+		this.maximizeAction && (this.maximizeAction.style.display="inline");
+		this.restoreAction && (this.restoreAction.style.display="none");
 
 		this.bringToTop();
 		this.windowState="normal";
