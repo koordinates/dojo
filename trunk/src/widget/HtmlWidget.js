@@ -76,6 +76,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			if(!finalize){
 				dojo.event.browser.clean(this.domNode);
 			}
+			this.domNode.parentNode.removeChild(this.domNode);
 			delete this.domNode;
 		}catch(e){ /* squelch! */ }
 	},
