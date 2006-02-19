@@ -1,6 +1,0 @@
-this.disableToolbar(hide);
-if(save) {
-	this._fire("onSave");
-} else {
-	this._fire("onCancel");
-}

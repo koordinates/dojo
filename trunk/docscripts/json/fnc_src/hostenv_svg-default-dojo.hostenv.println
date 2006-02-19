@@ -1,7 +1,0 @@
-try {
-	var ti = document.createElement("text");
-	ti.setAttribute("x","50");
-	ti.setAttribute("y", (25 + 15 * document.getElementsByTagName("text").length));
-	ti.appendChild(document.createTextNode(s));
-	document.documentElement.appendChild(ti);
-} catch(e){ }

@@ -1,5 +1,0 @@
-if (fn){
-	items.sort(fn);
-} else {
-	items.sort();
-}

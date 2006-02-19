@@ -1,2 +1,0 @@
-this.clearItems();
-this.addItems.call(this, arguments);

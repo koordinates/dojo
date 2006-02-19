@@ -1,1 +1,0 @@
-dojo.event.browser.stopEvent(evt)

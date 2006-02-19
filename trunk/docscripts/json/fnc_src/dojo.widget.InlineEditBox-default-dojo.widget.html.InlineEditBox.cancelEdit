@@ -1,5 +1,0 @@
-if(!this.editing){ return false; }
-this.editing = false;
-this.form.style.display="none";
-this.editable.style.display = "";
-return true;

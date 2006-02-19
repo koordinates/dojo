@@ -1,4 +1,0 @@
-if(!node || !node.parentNode || (node.parentNode && !node.parentNode.tagName)) {
-	return false;
-}
-return true;

@@ -1,8 +1,0 @@
-if(typeof superclass != 'function'){ 
-	dojo.raise("superclass: "+superclass+" borken");
-}
-subclass.prototype = new superclass();
-subclass.prototype.constructor = subclass;
-subclass.superclass = superclass.prototype;
- DEPRICATED: super is a reserved word, use 'superclass'
-subclass['super'] = superclass.prototype;

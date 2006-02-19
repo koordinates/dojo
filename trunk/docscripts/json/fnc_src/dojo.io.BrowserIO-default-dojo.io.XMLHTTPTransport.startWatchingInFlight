@@ -1,3 +1,0 @@
-if(!this.inFlightTimer){
-	this.inFlightTimer = setInterval("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
-}

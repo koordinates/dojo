@@ -1,1 +1,0 @@
-{"this_variables":["time","useDefaultTime","useDefaultMinutes","storedTime","currentTime","classNames","any","selectedTime","hourIndexMap","minuteIndexMap","templatePath","templateCssPath"],"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.TimePicker","dojo.widget.HtmlWidget"]}

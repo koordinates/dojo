@@ -1,4 +1,0 @@
-if(!this._anim) {
-	var type = "wipe" + (dojo.style.isVisible(this.node) ? "Hide" : "Show");
-	this._anim = dojo.fx[type](this.node, this.duration, dojo.lang.hitch(this, "_callback"));
-}

@@ -1,4 +1,0 @@
-if((kwArgs["mimetype"] == "text/javascript")&&(kwArgs["method"] == "repubsub")){
-	return true;
-}
-return false;

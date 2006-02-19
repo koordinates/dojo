@@ -1,7 +1,0 @@
-for(var i=0; i<this.children.length; i++){
-	var child = this.children[i];
-	dojo.debug(this.widgetId + " resizing child " + child.widgetId);
-	if( child.onResized ){
-		child.onResized();
-	}
-}

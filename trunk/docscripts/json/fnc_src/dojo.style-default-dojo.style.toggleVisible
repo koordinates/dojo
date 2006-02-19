@@ -1,7 +1,0 @@
-if(dojo.style.isVisible(node)) {
-	dojo.style.hide(node);
-	return false;
-} else {
-	dojo.style.show(node);
-	return true;
-}

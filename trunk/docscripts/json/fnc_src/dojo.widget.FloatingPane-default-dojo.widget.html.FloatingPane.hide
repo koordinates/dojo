@@ -1,4 +1,0 @@
-dojo.widget.html.FloatingPane.superclass.hide.call(this);
-if(this.bgIframe){
-	this.bgIframe.hide();
-}

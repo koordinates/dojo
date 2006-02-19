@@ -1,8 +1,0 @@
-if(!arr){ arr = this.getArr(advice_kind); }
-var ind = -1;
-for(var x=0; x<arr.length; x++){
-	if((arr[x][0] == thisAdviceObj)&&(arr[x][1] == thisAdvice)){
-		ind = x;
-	}
-}
-return ind;

@@ -1,2 +1,0 @@
-var re = new RegExp("^" + dojo.regexp.emailAddressList(flags) + "$", "i");
-return re.test(value);

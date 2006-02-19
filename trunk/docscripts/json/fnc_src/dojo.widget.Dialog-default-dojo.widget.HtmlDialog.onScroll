@@ -1,2 +1,0 @@
-this.placeDialog();
-this.domNode.style.display = "block";

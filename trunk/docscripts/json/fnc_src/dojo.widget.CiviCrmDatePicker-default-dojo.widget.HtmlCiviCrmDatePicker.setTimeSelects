@@ -1,4 +1,0 @@
-var st = this.timePicker.selectedTime;
-this.hourSelect.value = new String(st.hour);
-this.minSelect.value = new String(st.minute);
-this.apSelect.value = st.amPm.toUpperCase();

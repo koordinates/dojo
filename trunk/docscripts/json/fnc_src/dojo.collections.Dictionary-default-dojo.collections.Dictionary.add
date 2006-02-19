@@ -1,2 +1,0 @@
-items[k] = new dojo.collections.DictionaryEntry(k,v);
-this.count++;

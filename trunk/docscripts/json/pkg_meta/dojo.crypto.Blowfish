@@ -1,1 +1,0 @@
-{"dojo.crypto.Blowfish":{"default":{"undefined dojo.crypto.Blowfish()":""}},"dojo.crypto.Blowfish.encrypt":{"default":{"undefined dojo.crypto.Blowfish.encrypt(plaintext, key, ao)":""}},"dojo.crypto.Blowfish.decrypt":{"default":{"undefined dojo.crypto.Blowfish.decrypt(ciphertext, key, ao)":""}}}

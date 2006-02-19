@@ -1,4 +1,0 @@
-node = dojo.byId(node);
-var top = dojo.style.getPixelValue(node, "padding-top", true);
-var bottom = dojo.style.getPixelValue(node, "padding-bottom", true);
-return top + bottom;

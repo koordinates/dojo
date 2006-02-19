@@ -1,7 +1,0 @@
-if(!this.isLoaded){ return; }
-if (this.document.selection) {
-	return this.document.selection.createRange().parentElement();
-} else if (dojo.render.html.mozilla) {
-	return this.window.getSelection().getRangeAt(0).commonAncestorContainer;
-}
-return this.editNode;

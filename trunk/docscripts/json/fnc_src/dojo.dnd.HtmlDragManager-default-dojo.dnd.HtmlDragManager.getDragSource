@@ -1,9 +1,0 @@
-var tn = e.target;
-if(tn === document.body){ return; }
-var ta = dojo.html.getAttribute(tn, this.dsPrefix);
-while((!ta)&&(tn)){
-	tn = tn.parentNode;
-	if((!tn)||(tn === document.body)){ return; }
-	ta = dojo.html.getAttribute(tn, this.dsPrefix);
-}
-return this.dragSources[ta];

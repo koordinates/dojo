@@ -1,5 +1,0 @@
-this._hasFocus = true;
-if (dojo.render.html.ie && !this._mousewheel_connected) {
-	dojo.event.connect(document, "onmousewheel", this, "onMouseWheel");
-	this._mousewheel_connected = true;
-}

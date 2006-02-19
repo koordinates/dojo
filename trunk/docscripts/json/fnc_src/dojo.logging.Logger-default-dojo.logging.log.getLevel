@@ -1,6 +1,0 @@
-for(var x=0; x<this.levels.length; x++){
-	if(this.levels[x].name.toUpperCase() == name.toUpperCase()){
-		return this.levels[x].level;
-	}
-}
-return null;

@@ -1,9 +1,0 @@
-var arr = [] ;
-for (var p in obj) { 
-	if(this.getType(obj[p]) != Function){
-		arr.push(new dojo.reflect.PropertyInfo(p, this.getType(obj[p]))) ;
-	}else{
-		arr.push(new dojo.reflect.MethodInfo(p, obj[p]));
-	}
-}
-return arr ;

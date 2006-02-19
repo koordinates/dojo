@@ -1,3 +1,0 @@
-var ok = load(uri);
- dojo.debug("spidermonkey load(", uri, ") returned ", ok);
-return 1;

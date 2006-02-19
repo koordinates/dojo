@@ -1,2 +1,0 @@
-dojo.html.insertBefore(tbNode, richTextNode);
-dojo.html.insertBefore(this._toolbarContainer.domNode, this._richText.domNode);

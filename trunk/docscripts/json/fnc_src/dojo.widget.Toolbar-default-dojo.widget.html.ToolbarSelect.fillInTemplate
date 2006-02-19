@@ -1,9 +1,0 @@
-oldFillInTemplate.call(this, args, frag, true);
-var keys = args.values;
-var i = 0;
-for(var val in keys) {
-	var opt = document.createElement("option");
-	opt.setAttribute("value", keys[val]);
-	opt.innerHTML = val;
-	this.selectBox.appendChild(opt);
-}

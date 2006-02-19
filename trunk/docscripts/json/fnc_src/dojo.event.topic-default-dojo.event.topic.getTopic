@@ -1,4 +1,0 @@
-if(!this.topics[topicName]){
-	this.topics[topicName] = new this.TopicImpl(topicName);
-}
-return this.topics[topicName];

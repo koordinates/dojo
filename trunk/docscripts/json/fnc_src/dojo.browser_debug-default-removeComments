@@ -1,6 +1,0 @@
-contents = new String((!contents) ? "" : contents);
- clobber all comments
-contents = contents.replace( /^(.*?)\/\/(.*)$/mg , "$1");
-contents = contents.replace( /(\n)/mg , "__DOJONEWLINE");
-contents = contents.replace( /\/\*(.*?)\*\g , "");
-return contents.replace( /__DOJONEWLINE/mg , "\n");

@@ -1,4 +1,0 @@
-this.controller = syncController;
-this.treeNode = treeNode;
-
-dojo.dnd.HtmlDragSource.call(this, node, type);

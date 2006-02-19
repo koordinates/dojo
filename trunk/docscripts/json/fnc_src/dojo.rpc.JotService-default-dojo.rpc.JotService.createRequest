@@ -1,2 +1,0 @@
-var req = { "params": params, "method": method, "id": this.lastSubmissionId++ };
-return dojo.json.serialize(req);

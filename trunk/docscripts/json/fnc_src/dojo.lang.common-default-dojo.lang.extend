@@ -1,1 +1,0 @@
-this.mixin(ctor.prototype, props);

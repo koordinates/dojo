@@ -1,4 +1,0 @@
-this.treeActions = this.treeActions.split(",");
-for(var i=0; i<this.treeActions.length; i++) {
-	this.treeActions[i] = this.treeActions[i].toUpperCase();
-}

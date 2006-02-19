@@ -1,9 +1,0 @@
-var state;
-if(this.fired == -1){
-	state = 'unfired';
-}else if(this.fired == 0){
-	state = 'success';
-} else {
-	state = 'error';
-}
-return 'Deferred(' + this.id + ', ' + state + ')';

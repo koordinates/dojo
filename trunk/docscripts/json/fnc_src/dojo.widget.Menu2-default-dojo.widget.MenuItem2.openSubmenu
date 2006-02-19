@@ -1,9 +1,0 @@
-this.parent.closeSubmenu();
-
-var submenu = dojo.widget.getWidgetById(this.submenuId);
-if (submenu){
-
-	this.parent.openSubmenu(submenu, this);
-}
-
-dojo.debug('open submenu for item '+this.widgetId);

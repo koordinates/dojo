@@ -1,5 +1,0 @@
-if(id && (typeof id == "string" || id instanceof String)){
-	if(!doc){ doc = document; }
-	return doc.getElementById(id);
-}
-return id;  

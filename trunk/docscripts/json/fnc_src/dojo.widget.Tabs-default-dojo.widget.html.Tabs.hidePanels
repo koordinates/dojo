@@ -1,8 +1,0 @@
-for(var i = 0; i < this.panels.length; i++) {
-	if(this.panels[i] != except && this.panels[i].id) {
-		var p = document.getElementById(this.panels[i].id);
-		if(p) {
-			p.style.display = "none";
-		}
-	}
-}

@@ -1,4 +1,0 @@
-var pane = dojo.widget.createWidget(type, args, node);
-dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
-pane.ownerPane=this;
-return pane;

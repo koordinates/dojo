@@ -1,1 +1,0 @@
-return "[iCalenday.Property; " + this.name + ": " + this.value + "]";

@@ -1,2 +1,0 @@
-this.selectedTime.anyTime = true;
-dojo.html.setClass(this.anyTimeContainerNode, this.classNames.selectedTime + " " + "anyTimeContainer");

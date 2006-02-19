@@ -1,4 +1,0 @@
-dojo.widget.Widget.call(this);
-if((arguments.length>0)&&(typeof arguments[0] == "object")){
-	this.create(arguments[0]);
-}

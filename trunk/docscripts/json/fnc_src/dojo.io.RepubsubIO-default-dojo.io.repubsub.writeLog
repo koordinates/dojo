@@ -1,1 +1,0 @@
-dojo.debug(((new Date()).toLocaleTimeString())+": "+str);

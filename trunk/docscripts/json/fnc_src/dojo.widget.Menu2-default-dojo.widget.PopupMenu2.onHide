@@ -1,3 +1,0 @@
-dojo.widget.HtmlWidget.prototype.onHide.call(this);
-
-this.processQueue();

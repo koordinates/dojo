@@ -1,7 +1,0 @@
-var src = this.munge('CMYK', arguments);
-
-var R = 1 - Math.min(1, src.C * (1-src.K) + src.K);
-var G = 1 - Math.min(1, src.M * (1-src.K) + src.K);
-var B = 1 - Math.min(1, src.Y * (1-src.K) + src.K);
-
-return [R, G, B];

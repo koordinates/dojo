@@ -1,5 +1,0 @@
-if(cmd == "|") {
-	return cmd;
-} else {
-	return dojo.uri.dojoUri("src/widget/templates/buttons/" + cmd + ".gif");
-}

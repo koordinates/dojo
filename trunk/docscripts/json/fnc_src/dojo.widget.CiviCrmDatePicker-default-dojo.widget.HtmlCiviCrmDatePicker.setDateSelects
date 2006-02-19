@@ -1,4 +1,0 @@
-var dateObj = this.datePicker.date;
-this.monthSelect.value = new String(dateObj.getMonth()+1);
-this.daySelect.value = new String(dateObj.getDate());
-this.yearSelect.value = new String(dateObj.getFullYear());

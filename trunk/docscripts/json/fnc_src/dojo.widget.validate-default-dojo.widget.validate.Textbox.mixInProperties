@@ -1,4 +1,0 @@
-dojo.widget.validate.Textbox.superclass.mixInProperties.apply(this, arguments);
-if ( localProperties["class"] ) { 
-	this.className = localProperties["class"];
-}

@@ -1,5 +1,0 @@
-if(!this.cancelEdit(e)){ return; }
-if(this.doFade) {
-	dojo.fx.highlight(this.editable, dojo.graphics.color.hex2rgb("#ffc"), 700, 300);
-}
-this.doFade = false;

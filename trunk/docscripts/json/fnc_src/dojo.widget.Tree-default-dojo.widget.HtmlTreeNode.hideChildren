@@ -1,6 +1,0 @@
-if (this.booted){
-	this.tree.toggler.hide(this.containerNode);
-}else{
-	this.containerNode.style.display = 'none';
-}
-dojo.event.topic.publish(this.tree.publishCollapsedTopic, this.widgetId);

@@ -1,3 +1,0 @@
-var deferred = new dojo.rpc.Deferred();
-this.bind(method, params, deferred);
-return deferred;

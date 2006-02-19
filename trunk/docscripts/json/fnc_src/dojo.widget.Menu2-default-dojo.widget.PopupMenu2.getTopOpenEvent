@@ -1,3 +1,0 @@
-var menu = this;
-while (menu.parent){ menu = menu.parent; }
-return menu.openEvent;

@@ -1,9 +1,0 @@
-dojo.widget.HtmlWidget.call(this);
-
-this.widgetType = "SimpleDropdownButtons";
-this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlSimpleDropdownButtons.css");
-
-this.menuTriggerClass = "dojoSimpleDropdownButtons";
-this.menuClass = "dojoSimpleDropdownButtonsMenu";
-
- overwrite buildRendering so we don't clobber our list

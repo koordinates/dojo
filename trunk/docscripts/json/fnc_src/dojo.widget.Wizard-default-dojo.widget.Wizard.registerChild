@@ -1,8 +1,0 @@
-dojo.widget.Wizard.superclass.registerChild.call(this, panel, insertionIndex);
-this.wizardPanelContainerNode.appendChild(panel.domNode);
-panel.hide();
-
-if(!this.selected){
-	this.onSelected(panel);
-}
-this.checkButtons();

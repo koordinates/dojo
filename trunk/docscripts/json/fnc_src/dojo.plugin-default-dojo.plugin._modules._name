@@ -1,5 +1,0 @@
-file = file.split("/").pop().split(".");
-if (file.pop() == "js") {
-  return file.join(".");
-}
-return false;

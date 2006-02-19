@@ -1,4 +1,0 @@
-this.domNode = dojo.byId(node);
-this.type = type;
-this.constrainToContainer = false;
-this.dragSource = null;

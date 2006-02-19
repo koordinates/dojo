@@ -1,2 +1,0 @@
-location = parseInt(location);
-this.setSelectedRange(element, location, location);

@@ -1,2 +1,0 @@
-if(!dojo.lang.isString(str)) { return true; }
-return (dojo.string.trim(str).length == 0);

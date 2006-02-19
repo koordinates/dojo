@@ -1,9 +1,0 @@
-if(!this.ie || !this.enabled) { return; }
-
-if(dojo.dom.isNode(node)) {
-	this.sizeNode = node;
-} else if(arguments.length > 0) {
-	this.sizeNode = null;
-	this.sizeCoords = node;
-}
-this.update();

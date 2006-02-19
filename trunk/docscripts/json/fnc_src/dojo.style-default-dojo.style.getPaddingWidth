@@ -1,4 +1,0 @@
-node = dojo.byId(node);
-var left = dojo.style.getPixelValue(node, "padding-left", true);
-var right = dojo.style.getPixelValue(node, "padding-right", true);
-return left + right;

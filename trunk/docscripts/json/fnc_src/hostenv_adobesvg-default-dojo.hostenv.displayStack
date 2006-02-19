@@ -1,6 +1,0 @@
-var oa = [];
-var stack = this.loadUriStack;
-for(var x=0; x<stack.length; x++){
-	oa.unshift([stack[x][0], (typeof stack[x][2])]);
-}
-dojo.debug("<pre>"+oa.join("\n")+"</pre>");

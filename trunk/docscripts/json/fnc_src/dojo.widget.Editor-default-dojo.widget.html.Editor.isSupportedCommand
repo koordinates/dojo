@@ -1,8 +1,0 @@
-var yes = dojo.lang.inArray(cmd, this.supportedCommands);
-if(!yes) {
-	try {
-		var richText = this._richText || dojo.widget.HtmlRichText.prototype;
-		yes = richText.queryCommandAvailable(cmd);
-	} catch(E) {}
-}
-return yes;

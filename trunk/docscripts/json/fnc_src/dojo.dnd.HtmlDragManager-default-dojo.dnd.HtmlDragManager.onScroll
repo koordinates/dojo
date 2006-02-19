@@ -1,7 +1,0 @@
-for(var i = 0; i < this.dragObjects.length; i++) {
-	if(this.dragObjects[i].updateDragOffset) {
-		this.dragObjects[i].updateDragOffset();
-	}
-}
- TODO: do not recalculate, only adjust coordinates
-this.cacheTargetLocations();

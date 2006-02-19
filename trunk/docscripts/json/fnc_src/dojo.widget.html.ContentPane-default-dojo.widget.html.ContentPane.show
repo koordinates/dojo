@@ -1,6 +1,0 @@
-if(this.refreshOnShow){
-	this.refresh();
-}else{
-	this.loadContents();
-}
-dojo.widget.html.ContentPane.superclass.show.call(this);

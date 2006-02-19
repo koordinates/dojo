@@ -1,7 +1,0 @@
-this.hide();
-if (this.resizable) {
-	this.maximizeAction.style.display="inline";	
-	this.restoreAction.style.display="inline";	
-}
-
-this.windowState = "minimized";

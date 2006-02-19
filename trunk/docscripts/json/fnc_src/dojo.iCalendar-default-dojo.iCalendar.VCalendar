@@ -1,3 +1,0 @@
-this.name = "VCALENDAR";
-this.recurring = [];
-dojo.iCalendar.Component.call(this, calbody);

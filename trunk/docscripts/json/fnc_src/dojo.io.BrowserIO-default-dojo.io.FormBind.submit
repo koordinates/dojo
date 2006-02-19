@@ -1,6 +1,0 @@
-e.preventDefault();
-if(this.onSubmit(this.form)) {
-	dojo.io.bind(dojo.lang.mixin(this.bindArgs, {
-		formFilter: dojo.lang.hitch(this, "formFilter")
-	}));
-}

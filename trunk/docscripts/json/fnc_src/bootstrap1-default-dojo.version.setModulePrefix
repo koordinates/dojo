@@ -1,1 +1,0 @@
-this.modulePrefixes_[module] = {name: module, value: prefix};

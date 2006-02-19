@@ -1,6 +1,0 @@
-this.searchUrl = url;
-this.inFlight = false;
-this.activeRequest = null;
-this.allowCache = false;
-
-this.cache = {};

@@ -1,9 +1,0 @@
-if(hide){
-	if(this._toolbarContainer){
-		this._toolbarContainer.domNode.style.display = "none";
-	}
-}else{
-	if(this._toolbarContainer){
-		this._toolbarContainer.disable();
-	}
-}
