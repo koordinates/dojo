@@ -1,0 +1,14 @@
+p = this.screenToMainClient(this.lastPoint);
+
+if (this.isHorizontal){
+
+	var a = p.x - this.dragOffset.x;
+	a = this.legaliseSplitPoint(a);
+	p.x = a + this.dragOffset.x;
+}else{
+	var a = p.y - this.dragOffset.y;
+	a = this.legaliseSplitPoint(a);
+	p.y = a + this.dragOffset.y;
+}
+
+this.lastPoint = this.mainClientToScreen(p);

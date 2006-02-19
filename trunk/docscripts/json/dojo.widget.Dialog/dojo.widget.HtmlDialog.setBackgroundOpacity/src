@@ -1,0 +1,8 @@
+if(arguments.length == 0) { op = this.bgOpacity; }
+dojo.style.setOpacity(this.bg, op);
+try {
+	this.bgOpacity = dojo.style.getOpacity(this.bg);
+} catch (e) {
+	this.bgOpacity = op;
+}
+return this.bgOpacity;

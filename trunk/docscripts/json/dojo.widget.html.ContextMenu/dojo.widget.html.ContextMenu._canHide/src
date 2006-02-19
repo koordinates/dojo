@@ -1,0 +1,13 @@
+if(_blockHide){
+	 the onclick check is needed to prevent displaying multiple
+	 menus when we have 2 or more contextmenus loaded and are using
+	 the onmousedown hack
+	if(evt.type=='click' || eventType=='oncontextmenu'){
+		_blockHide = false;
+		return;
+	}else{
+		return;
+	}
+}
+
+this.onHide(evt);

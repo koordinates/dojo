@@ -1,0 +1,16 @@
+if(this._richText && this._richText == richText) {
+	dojo.debug("Already set the richText to this richText!");
+	return;
+}
+
+if(this._richText && !this._richText.isClosed) {
+	dojo.debug("You are switching richTexts yet you haven't closed the current one. Losing reference!");
+}
+this._richText = richText;
+dojo.event.connect(this._richText, "close", this, "onClose");
+dojo.event.connect(this._richText, "onLoad", this, "onLoad");
+dojo.event.connect(this._richText, "onDisplayChanged", this, "updateToolbar");
+if(this._toolbarContainer) {
+	this._toolbarContainer.enable();
+	this.updateToolbar(true);
+}

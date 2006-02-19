@@ -1,0 +1,5 @@
+if((typeof height == "string")&&(height.substr(-1) == "%")){
+	this.setPercentageHeight(height);
+}else{
+	this.setNativeHeight(height);
+}

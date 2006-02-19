@@ -1,0 +1,7 @@
+this.unregisterDNDNode(node);
+
+this.registerDNDNode(node);
+
+for(var i=0; i<node.children.length; i++) {
+	this.updateDND(node.children[i]);
+}

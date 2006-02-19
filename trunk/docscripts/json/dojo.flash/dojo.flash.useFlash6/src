@@ -1,0 +1,9 @@
+if(this.flash6_version == null){
+	return false;
+}else if (this.flash6_version != null && dojo.flash.info.commVersion == 6){
+	 if we have a flash 6 version of this SWF, and this browser supports 
+	 communicating using Flash 6 features...
+	return true;
+}else{
+	return false;
+}

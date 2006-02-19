@@ -1,0 +1,7 @@
+if(!this.ie || !this.enabled) { return; }
+
+if(dojo.dom.isNode(node)) {
+	this.iframe.zIndex = dojo.html.getStyle(node, "z-index") - 1;
+} else if(!isNaN(node)) {
+	this.iframe.zIndex = node;
+}

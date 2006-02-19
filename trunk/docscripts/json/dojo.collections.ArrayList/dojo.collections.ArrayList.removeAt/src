@@ -1,0 +1,2 @@
+items.splice(i,1);
+this.count = items.length;

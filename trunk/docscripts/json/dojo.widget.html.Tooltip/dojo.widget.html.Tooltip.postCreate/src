@@ -1,0 +1,6 @@
+document.body.appendChild(this.domNode);
+
+var self = this;
+this.timerEvent = function () { self.show.apply(self); };
+dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
+dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);

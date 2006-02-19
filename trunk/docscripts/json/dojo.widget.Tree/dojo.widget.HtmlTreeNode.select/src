@@ -1,0 +1,3 @@
+dojo.html.addClass(this.labelNode, 'dojoTreeNodeLabelSelected');
+
+dojo.event.topic.publish(this.tree.publishSelectionTopic, this.widgetId);

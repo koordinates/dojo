@@ -1,0 +1,4 @@
+var n = this.getGroup(node) || node;
+if (this.getFirstChildElement(n.parentNode) != n){
+	this.insertBefore(n, this.getPreviousSiblingElement(n), true);
+}

@@ -1,0 +1,30 @@
+var func = "onOpen";
+var attached = false;
+
+ connect with rightclick if oncontextmenu is not around
+ NOTE: It would be very nice to have a dojo.event.browser.supportsEvent here
+ NOTE: Opera does not have rightclick events, it is listed here only because
+	 it bails out when connecting with oncontextmenu event
+
+if((dojo.render.html.khtml && !dojo.render.html.safari) || (dojo.render.html.opera)){
+	eventType = "onmousedown";
+	func = "_checkRightClick";
+}
+
+ attach event listeners to our selected nodes
+for(var i=0; i<this.targetNodeIds.length; i++){
+	var node = document.getElementById(this.targetNodeIds[i]);
+	if(node){
+		dojo.event.connect(node, eventType, this, func);
+		attached = true;
+	}else{
+		 remove this nodeId
+		dj_debug("Couldent find "+this.targetNodeIds[i]+", cant do ContextMenu on this node");
+		this.targetNodeIds.splice(i,1);
+	}
+}
+
+ if we got attached to a node, hide on all non node contextevents
+if(attached){ func = "_canHide"; }
+
+dojo.event.connect(doc, eventType, this, func);

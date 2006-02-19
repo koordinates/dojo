@@ -1,0 +1,5 @@
+if(this.iframe){
+	this.window.focus();
+}else if(this.editNode){
+	this.editNode.focus();
+}

@@ -1,0 +1,34 @@
+var HEX_RADIX = 16;
+
+ --------------------------------------------------
+ Private functions
+ --------------------------------------------------
+function _generateRandomEightCharacterHexString() {
+	 Make random32bitNumber be a randomly generated floating point number
+	 between 0 and (4,294,967,296 - 1), inclusive.
+	var random32bitNumber = Math.floor( (Math.random() % 1) * Math.pow(2, 32) );
+	var eightCharacterHexString = random32bitNumber.toString(HEX_RADIX);
+	while (eightCharacterHexString.length < 8) {
+		eightCharacterHexString = "0" + eightCharacterHexString;
+	}
+	return eightCharacterHexString;   "3B12F1DF"
+}
+
+ --------------------------------------------------
+ Public functions
+ --------------------------------------------------
+
+*
+ * This function generates random UUIDs, meaning "version 4" UUIDs.
+ * For example, a typical generated value would be something like
+ * "3b12f1df-5232-4804-897e-917bf397618a".
+ *
+ * Examples:
+ * <pre>
+ *   var string = dojo.uuid.LightweightGenerator.generate();
+ *   var string = dojo.uuid.LightweightGenerator.generate(String);
+ *   var uuid   = dojo.uuid.LightweightGenerator.generate(dojo.uuid.Uuid);
+ * </pre>
+ *
+ * @param	returnType	Optional. The type of instance to return.
+ * @return	A newly generated version 4 UUID.

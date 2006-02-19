@@ -1,0 +1,5 @@
+dojo.dnd.TreeDropTarget.prototype.onDragOut.apply(this, arguments);
+
+this.hideIndicator();
+
+return dojo.dnd.HtmlDropTarget.prototype.onDragOut.call(this, e);

@@ -1,0 +1,12 @@
+var node = e.dragObject.domNode;
+
+if(position == "before") {
+	return dojo.html.insertBefore(node, refNode);
+} else if(position == "after") {
+	return dojo.html.insertAfter(node, refNode);
+} else if(position == "append") {
+	refNode.appendChild(node);
+	return true;
+}
+
+return false;

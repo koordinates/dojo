@@ -1,0 +1,23 @@
+var updates = [];
+var current = this.head;
+for (var i = this.head.height; i >= 0; i--){
+	if (!(current.nodes[i] != null && current.nodes[i].compare(val) < 0)) comparisons++;
+	while (current.nodes[i] != null && current.nodes[i].compare(val) < 0){
+		current = current.nodes[i];
+		comparisons++;
+	}
+	updates[i] = current;
+}
+if (current.nodes[0] != null && current.nodes[0].compare(val) == 0) return;
+var n = new node(val, chooseRandomHeight(head.height + 1));
+this.count++;
+if (n.height > head.height){
+	head.incrementHeight();
+	head.nodes[head.height - 1] = n;
+}
+for (i = 0; i < n.height; i++){
+	if (i < updates.length) {
+		n.nodes[i] = updates[i].nodes[i];
+		updates[i].nodes[i] = n;
+	}
+}

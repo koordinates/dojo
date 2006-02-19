@@ -1,0 +1,17 @@
+var isString = dojo.lang.isString(arr);
+if(isString) { arr = arr.split(""); }
+if(Array.some) {
+	return Array.some(arr, callback, thisObject);
+} else {
+	if(!thisObject) {
+		if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
+		thisObject = dj_global;
+	}
+
+	for(var i = 0; i < arr.length; i++) {
+		if(callback.call(thisObject, arr[i], i, arr)) {
+			return true;
+		}
+	}
+	return false;
+}

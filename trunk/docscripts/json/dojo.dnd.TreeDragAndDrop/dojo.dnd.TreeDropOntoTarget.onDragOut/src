@@ -1,0 +1,3 @@
+dojo.dnd.TreeDropTarget.prototype.onDragOut.apply(this, arguments);
+
+this.treeNode.unMarkSelected();

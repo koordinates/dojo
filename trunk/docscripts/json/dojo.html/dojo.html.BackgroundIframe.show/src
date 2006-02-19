@@ -1,0 +1,4 @@
+if(!this.ie || !this.enabled) { return; }
+
+this.size(node);
+this.iframe.style.display = "block";

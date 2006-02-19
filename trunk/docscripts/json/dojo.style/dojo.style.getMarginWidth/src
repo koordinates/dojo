@@ -1,0 +1,5 @@
+node = dojo.byId(node);
+var autoIsZero = dojo.style.isPositionAbsolute(node);
+var left = dojo.style.getPixelValue(node, "margin-left", autoIsZero);
+var right = dojo.style.getPixelValue(node, "margin-right", autoIsZero);
+return left + right;

@@ -1,0 +1,18 @@
+var src = this.munge('Luv', arguments);
+
+var wp = this.getWhitePoint();
+
+var uz = (4 * wp.X) / (wp.X + 15 * wp.Y + 3 * wp.Z);
+var vz = (9 * wp.Y) / (wp.X + 15 * wp.Y + 3 * wp.Z);
+
+var Y = (src.L > this.kappa() * this.epsilon()) ? Math.pow((src.L + 16) / 116, 3) : src.L / this.kappa();
+
+var a = (1 / 3) * (((52 * src.L) / (src.u + 13 * src.L * uz)) - 1);
+var b = -5 * Y;
+var c = - (1 / 3);
+var d = Y * (((39 * src.L) / (src.v + 13 * src.L * vz)) - 5);
+
+var X = (d - b) / (a - c);
+var Z = X * a + b;
+
+return [X, Y, Z];

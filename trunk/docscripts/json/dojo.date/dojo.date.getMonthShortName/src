@@ -1,0 +1,1 @@
+return dojo.date.shortMonths[dateObject.getMonth()];

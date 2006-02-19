@@ -1,0 +1,5 @@
+var container = dojo.byId("dojo-storeContainer");
+with(container.style){
+	left = "-300px";
+	top = "-300px";
+}

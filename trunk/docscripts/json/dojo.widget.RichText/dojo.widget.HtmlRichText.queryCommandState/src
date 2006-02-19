@@ -1,0 +1,11 @@
+if (this.object) {
+	if (command == "forecolor") { command = "setforecolor"; }
+	else if (command == "backcolor") { command = "setbackcolor"; }
+
+	if (typeof this._activeX.command[command] == "undefined") { return null; }
+	var status = this.object.QueryStatus(this._activeX.command[command]);
+	return (status == this._activeX.status.enabled ||
+		status == this._activeX.status.ninched);
+} else {
+	return this.document.queryCommandState(command);
+}

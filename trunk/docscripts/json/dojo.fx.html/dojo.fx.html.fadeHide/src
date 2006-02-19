@@ -1,0 +1,6 @@
+node = dojo.byId(node);
+if(!duration) { duration = 150; }  why not have a default?
+return dojo.fx.html.fadeOut(node, duration, function(node) {
+	node.style.display = "none";
+	if(typeof callback == "function") { callback(node); }
+});

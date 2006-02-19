@@ -1,0 +1,4 @@
+var month = dateObject.getMonth();
+var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+if (month == 1 && dojo.date.isLeapYear(dateObject)) { return 29; }
+else { return days[month]; }

@@ -1,0 +1,23 @@
+if(arguments.length == 5) {  for backwards compat
+	clearCurrent = domain;
+	domain = null;
+	secure = null;
+}
+var pairs = [], cookie, value = "";
+if(!clearCurrent) { cookie = dojo.io.cookie.getObjectCookie(name); }
+if(days >= 0) {
+	if(!cookie) { cookie = {}; }
+	for(var prop in obj) {
+		if(prop == null) {
+			delete cookie[prop];
+		} else if(typeof obj[prop] == "string" || typeof obj[prop] == "number") {
+			cookie[prop] = obj[prop];
+		}
+	}
+	prop = null;
+	for(var prop in cookie) {
+		pairs.push(escape(prop) + "=" + escape(cookie[prop]));
+	}
+	value = pairs.join("&");
+}
+dojo.io.cookie.setCookie(name, value, days, path, domain, secure);

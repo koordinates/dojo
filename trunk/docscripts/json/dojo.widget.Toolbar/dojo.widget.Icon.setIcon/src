@@ -1,0 +1,6 @@
+for(var i = 0; i < states.length; i++) {
+	if(icon[states[i]]) {
+		this.setSrc(states[i], icon[states[i]]);
+	}
+}
+this.update();

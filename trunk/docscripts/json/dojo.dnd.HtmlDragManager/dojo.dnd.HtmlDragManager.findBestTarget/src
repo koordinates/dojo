@@ -1,0 +1,13 @@
+var _this = this;
+var bestBox = new Object();
+bestBox.target = null;
+bestBox.points = null;
+dojo.lang.forEach(this.dropTargetDimensions, function(tmpDA) {
+	if(_this.isInsideBox(e, tmpDA)){
+		bestBox.target = tmpDA[2];
+		bestBox.points = tmpDA;
+		if(!_this.nestedTargets){ return "break"; }
+	}
+});
+
+return bestBox;

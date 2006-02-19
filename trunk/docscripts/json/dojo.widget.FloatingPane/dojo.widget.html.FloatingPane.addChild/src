@@ -1,0 +1,1 @@
+this.clientPane.addChild(child, overrideContainerNode, pos, ref, insertIndex);

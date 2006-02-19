@@ -1,0 +1,58 @@
+var x = 0;
+var y = 0;
+var t = 0;
+
+ ref: http:en.wikipedia.org/wiki/White_point
+ TODO: i need some good/better white point values
+
+switch(this.stdObserver){
+	case '2' :
+		switch(this.whitePoint){
+			case 'E'   : x=1/3    ; y=1/3    ; t=5400; break; Equal energy
+			case 'D50' : x=0.34567; y=0.35850; t=5000; break;
+			case 'D55' : x=0.33242; y=0.34743; t=5500; break;
+			case 'D65' : x=0.31271; y=0.32902; t=6500; break;
+			case 'D75' : x=0.29902; y=0.31485; t=7500; break;
+			case 'A'   : x=0.44757; y=0.40745; t=2856; break; Incandescent tungsten
+			case 'B'   : x=0.34842; y=0.35161; t=4874; break;
+			case 'C'   : x=0.31006; y=0.31616; t=6774; break;
+			case '9300': x=0.28480; y=0.29320; t=9300; break; Blue phosphor monitors
+			case 'F2'  : x=0.37207; y=0.37512; t=4200; break; Cool White Fluorescent
+			case 'F7'  : x=0.31285; y=0.32918; t=6500; break; Narrow Band Daylight Fluorescent
+			case 'F11' : x=0.38054; y=0.37691; t=4000; break; Narrow Band White Fluorescent
+			default: dojo.debug('White point '+this.whitePoint+" isn't defined for Std. Observer "+this.strObserver);
+		};
+		break;
+	case '10' :
+		switch(this.whitePoint){
+			case 'E'   : x=1/3    ; y=1/3    ; t=5400; break; Equal energy
+			case 'D50' : x=0.34773; y=0.35952; t=5000; break;
+			case 'D55' : x=0.33411; y=0.34877; t=5500; break;
+			case 'D65' : x=0.31382; y=0.33100; t=6500; break;
+			case 'D75' : x=0.29968; y=0.31740; t=7500; break;
+			case 'A'   : x=0.45117; y=0.40594; t=2856; break; Incandescent tungsten
+			case 'B'   : x=0.3498 ; y=0.3527 ; t=4874; break;
+			case 'C'   : x=0.31039; y=0.31905; t=6774; break;
+			case 'F2'  : x=0.37928; y=0.36723; t=4200; break; Cool White Fluorescent
+			case 'F7'  : x=0.31565; y=0.32951; t=6500; break; Narrow Band Daylight Fluorescent
+			case 'F11' : x=0.38543; y=0.37110; t=4000; break; Narrow Band White Fluorescent
+			default: dojo.debug('White point '+this.whitePoint+" isn't defined for Std. Observer "+this.strObserver);
+		};
+		break;
+	default:
+		dojo.debug("Std. Observer "+this.strObserver+" isn't defined");
+}
+
+var z = 1 - x - y;
+
+var wp = {'x':x, 'y':y, 'z':z, 't':t};
+
+wp.Y = 1;
+
+var XYZ = this.xyY_to_XYZ([wp.x, wp.y, wp.Y]);
+
+wp.X = XYZ[0];
+wp.Y = XYZ[1];
+wp.Z = XYZ[2];
+
+return wp

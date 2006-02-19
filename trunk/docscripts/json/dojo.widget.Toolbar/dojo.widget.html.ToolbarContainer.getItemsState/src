@@ -1,0 +1,8 @@
+var values = {};
+for(var i = 0; i < this.children.length; i++) {
+	var child = this.children[i];
+	if(child instanceof dojo.widget.html.Toolbar) {
+		dojo.lang.mixin(values, child.getItemsState());
+	}
+}
+return values;

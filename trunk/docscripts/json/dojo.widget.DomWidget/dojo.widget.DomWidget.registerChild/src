@@ -1,0 +1,17 @@
+widget.dojoInsertionIndex = insertionIndex;
+
+var idx = -1;
+for(var i=0; i<this.children.length; i++){
+	if (this.children[i].dojoInsertionIndex < insertionIndex){
+		idx = i;
+	}
+}
+
+this.children.splice(idx+1, 0, widget);
+
+widget.parent = this;
+widget.addedTo(this);
+
+ If this widget was created programatically, then it was erroneously added
+ to dojo.widget.manager.topWidgets.  Fix that here.
+delete dojo.widget.manager.topWidgets[widget.widgetId];

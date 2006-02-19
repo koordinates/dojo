@@ -1,0 +1,4 @@
+var _this = this;
+setTimeout(function() {
+	_this._fromTrap = false;
+}, 100);

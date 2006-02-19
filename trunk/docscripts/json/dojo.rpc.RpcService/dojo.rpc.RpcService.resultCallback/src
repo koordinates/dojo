@@ -1,0 +1,7 @@
+var tf = dojo.lang.hitch(this, 
+	function(type, obj, e){
+		var results = this.parseResults(obj);
+		deferredRequestHandler.callback(results); 
+	}
+);
+return tf;

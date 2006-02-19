@@ -1,0 +1,1 @@
+return this.logType("WARNING", this.argsToArr(arguments));

@@ -1,0 +1,4 @@
+this.addClobberNode(node);
+for(var x=0; x<props.length; x++){
+	node.__clobberAttrs__.push(props[x]);
+}

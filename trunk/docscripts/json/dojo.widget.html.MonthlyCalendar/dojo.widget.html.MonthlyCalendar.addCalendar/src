@@ -1,0 +1,3 @@
+dojo.debug("Adding Calendar");
+this.iCalendars.push(cal);
+this.initUI();

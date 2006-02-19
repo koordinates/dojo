@@ -1,0 +1,10 @@
+if(!booleanValue){
+	var errorMessage = "An assert statement failed.\n" +
+		"The method dojo.lang.assert() was called with a 'false' value.\n";
+	if(message){
+		errorMessage += "Here's the assert message:\n" + message + "\n";
+	}
+	 Use throw instead of dojo.raise, until bug #264 is fixed:
+	 dojo.raise(errorMessage);
+	throw new Error(errorMessage);
+}

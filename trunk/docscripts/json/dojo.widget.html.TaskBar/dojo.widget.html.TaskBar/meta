@@ -1,0 +1,1 @@
+{"this_variables":["titleBarDisplay"],"inherits":["dojo.widget.html.FloatingPane"],"this_inherits":["dojo.widget.html.FloatingPane","dojo.widget.TaskBar"]}

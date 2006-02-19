@@ -1,0 +1,7 @@
+if(!dojo.lang.inArray(this.acceptedTypes, "*")){  wildcard
+	for (var i = 0; i < dragObjects.length; i++) {
+		if (!dojo.lang.inArray(this.acceptedTypes,
+			dragObjects[i].type)) { return false; }
+	}
+}
+return true;

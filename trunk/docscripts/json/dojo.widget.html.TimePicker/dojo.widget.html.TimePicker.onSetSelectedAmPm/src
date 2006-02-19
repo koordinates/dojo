@@ -1,0 +1,5 @@
+this.onClearSelectedAnyTime();
+this.onClearSelectedAmPm();
+this.setSelectedAmPm(evt);
+this.selectedTime.anyTime = false;
+this.onSetTime();

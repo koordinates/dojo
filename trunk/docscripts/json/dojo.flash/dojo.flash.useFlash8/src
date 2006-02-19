@@ -1,0 +1,9 @@
+if(this.flash8_version == null){
+	return false;
+}else if (this.flash8_version != null && dojo.flash.info.commVersion == 8){
+	 if we have a flash 8 version of this SWF, and this browser supports
+	 communicating using Flash 8 features...
+	return true;
+}else{
+	return false;
+}

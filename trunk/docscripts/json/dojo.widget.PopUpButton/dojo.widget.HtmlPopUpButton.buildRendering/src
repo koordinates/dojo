@@ -1,0 +1,27 @@
+dojo.style.insertCssFile(this.templateCssPath, null, true);
+	
+this.domNode = document.createElement("a");
+this.domNode.className = "PopUpButton";
+dojo.event.connect(this.domNode, "onmousedown", this, "onMouseDown");
+
+ draw the arrow
+var arrow = document.createElement("img");
+arrow.src = dojo.uri.dojoUri("src/widget/templates/images/dropdownButtonsArrow.gif");
+dojo.html.setClass(arrow, "downArrow");
+this.domNode.appendChild(arrow);
+
+this.menu = dojo.widget.fromScript("Menu");
+dojo.html.addClass(this.menu.domNode, "PopUpButtonMenu");
+dojo.event.connect(this.menu, "onSelect", this, "onSelect");
+
+if (frag["dojo:" + this.widgetType.toLowerCase()].nodeRef) {
+	var node = frag["dojo:" + this.widgetType.toLowerCase()].nodeRef;
+	var options = node.getElementsByTagName("option");
+	for (var i = 0; i < options.length; i++) {
+		var properties = {
+			title: dojo.dom.textContent(options[i]),
+			value: options[i].value
+		}
+		this.addItem(dojo.widget.fromScript("MenuItem", properties));
+	}
+}

@@ -1,0 +1,5 @@
+if (node.getBBox){
+	var box = node.getBBox();
+	return { width: box.width, height : box.height };
+}
+return null;

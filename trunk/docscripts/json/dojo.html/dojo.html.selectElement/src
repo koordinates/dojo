@@ -1,0 +1,12 @@
+element = dojo.byId(element);
+if(document.selection && document.body.createTextRange){  IE
+	var range = document.body.createTextRange();
+	range.moveToElementText(element);
+	range.select();
+}else if(window["getSelection"]){
+	var selection = window.getSelection();
+	 FIXME: does this work on Safari?
+	if(selection["selectAllChildren"]){  Mozilla
+		selection.selectAllChildren(element);
+	}
+}

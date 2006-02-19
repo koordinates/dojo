@@ -1,0 +1,1 @@
+this.tree.addChild.call(this, child);

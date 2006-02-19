@@ -1,0 +1,3 @@
+var m = this.getRGB_XYZ_Matrix();
+
+return dojo.math.matrix.inverse(m);

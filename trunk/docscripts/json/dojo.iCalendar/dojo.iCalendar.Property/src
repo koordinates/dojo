@@ -1,0 +1,4 @@
+this.name = prop.name;
+this.group = prop.group;
+this.params = prop.params;
+this.value = prop.value;

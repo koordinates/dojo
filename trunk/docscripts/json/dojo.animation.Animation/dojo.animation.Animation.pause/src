@@ -1,0 +1,7 @@
+clearTimeout(this._timer);
+if( !this._active ) { return; }
+this._paused = true;
+var e = new dojo.animation.AnimationEvent(this, "pause", this.curve.getValue(this._percent),
+	this._startTime, new Date().valueOf(), this._endTime, this.duration, this._percent, 0);
+if(typeof this.handler == "function") { this.handler(e); }
+if(typeof this.onPause == "function") { this.onPause(e); }

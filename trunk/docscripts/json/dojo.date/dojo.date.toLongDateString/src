@@ -1,0 +1,3 @@
+dojo.deprecated("dojo.date.toLongDateString",
+	'use dojo.date.format(date, "%B %e, %Y") instead', "0.4");
+return dojo.date.format(date, "%B %e, %Y")

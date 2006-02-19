@@ -1,0 +1,47 @@
+evt.stopPropagation();
+var month = this.firstSaturday.month;
+var year = this.firstSaturday.year;
+switch(evt.currentTarget) {
+	case this.increaseMonthNode:
+		if(month < 11) {
+			month++;
+		} else {
+			month = 0;
+			year++;
+			
+			this.setYearLabels(year);
+		}
+		break;
+	case this.decreaseMonthNode:
+		if(month > 0) {
+			month--;
+		} else {
+			month = 11;
+			year--;
+			this.setYearLabels(year);
+		}
+		break;
+	case this.increaseMonthNode.getElementsByTagName("img").item(0):
+		if(month < 11) {
+			month++;
+		} else {
+			month = 0;
+			year++;
+			this.setYearLabels(year);
+		}
+		break;
+	case this.decreaseMonthNode.getElementsByTagName("img").item(0):
+		if(month > 0) {
+			month--;
+		} else {
+			month = 11;
+			year--;
+			this.setYearLabels(year);
+		}
+		break;
+}
+var tempSaturday = dojo.widget.DatePicker.util.initFirstSaturday(month.toString(), year);
+this.firstSaturday.year = tempSaturday.year;
+this.firstSaturday.month = tempSaturday.month;
+this.firstSaturday.date = tempSaturday.date;
+this.initUI();

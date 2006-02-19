@@ -1,0 +1,9 @@
+var hasFile = false;
+var inputs = node.getElementsByTagName("input");
+dojo.lang.forEach(inputs, function(input){
+	if(hasFile){ return; }
+	if(input.getAttribute("type")=="file"){
+		hasFile = true;
+	}
+});
+return hasFile;

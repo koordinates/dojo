@@ -1,0 +1,30 @@
+if(kwArgs["url"]){ kwArgs.url = kwArgs.url.toString(); }
+if(kwArgs["formNode"]) { kwArgs.formNode = dojo.byId(kwArgs.formNode); }
+if(!kwArgs["method"] && kwArgs["formNode"] && kwArgs["formNode"].method) {
+	kwArgs.method = kwArgs["formNode"].method;
+}
+
+ backwards compatibility
+if(!kwArgs["handle"] && kwArgs["handler"]){ kwArgs.handle = kwArgs.handler; }
+if(!kwArgs["load"] && kwArgs["loaded"]){ kwArgs.load = kwArgs.loaded; }
+if(!kwArgs["changeUrl"] && kwArgs["changeURL"]) { kwArgs.changeUrl = kwArgs.changeURL; }
+
+ encoding fun!
+kwArgs.encoding = dojo.lang.firstValued(kwArgs["encoding"], djConfig["bindEncoding"], "");
+
+kwArgs.sendTransport = dojo.lang.firstValued(kwArgs["sendTransport"], djConfig["ioSendTransport"], false);
+
+var isFunction = dojo.lang.isFunction;
+for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
+	var fn = dojo.io.hdlrFuncNames[x];
+	if(isFunction(kwArgs[fn])){ continue; }
+	if(isFunction(kwArgs["handle"])){
+		kwArgs[fn] = kwArgs.handle;
+	}
+	 handler is aliased above, shouldn't need this check
+	 else if(dojo.lang.isObject(kwArgs.handler)){
+		if(isFunction(kwArgs.handler[fn])){
+			kwArgs[fn] = kwArgs.handler[fn]||kwArgs.handler["handle"]||function(){};
+		}
+}
+dojo.lang.mixin(this, kwArgs);

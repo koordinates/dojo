@@ -1,0 +1,2 @@
+this.items = [];
+this.deselectAll();

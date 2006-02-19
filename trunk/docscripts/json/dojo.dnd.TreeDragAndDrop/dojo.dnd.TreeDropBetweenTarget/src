@@ -1,0 +1,1 @@
+dojo.dnd.TreeDropTarget.apply(this, arguments);

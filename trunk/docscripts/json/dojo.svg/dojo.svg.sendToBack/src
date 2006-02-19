@@ -1,0 +1,2 @@
+var n = this.getGroup(node) || node;
+n.ownerSVGElement.insertBefore(n, n.ownerSVGElement.firstChild);

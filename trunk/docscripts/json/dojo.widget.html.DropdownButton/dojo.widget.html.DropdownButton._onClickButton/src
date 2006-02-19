@@ -1,0 +1,7 @@
+if ( this.a ) {
+	if ( this.a.click ) {
+		this.a.click();
+	} else if ( this.a.href ) {
+		location.href = this.a.href;
+	}
+}

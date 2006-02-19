@@ -1,0 +1,4 @@
+this.node = dojo.byId(node);
+if(controlNode) {
+	dojo.event.connect(dojo.byId(controlNode), "onclick", this, "toggle");
+}
