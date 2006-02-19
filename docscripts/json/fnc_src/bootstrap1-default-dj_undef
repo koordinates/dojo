@@ -1,2 +1,0 @@
-if(!obj){ obj = dj_global; }
-return (typeof obj[name] == "undefined");

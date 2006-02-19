@@ -1,3 +1,0 @@
-this.domNode.style.display = "none";
-dojo.event.disconnect(doc, "onclick", this, "onHide");
-this.isShowing = 0;

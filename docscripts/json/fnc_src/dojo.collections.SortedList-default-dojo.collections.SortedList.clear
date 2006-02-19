@@ -1,3 +1,0 @@
-items = {};
-q = [];
-this.count = q.length;

@@ -1,2 +1,0 @@
-dojo.widget.ComboBox.call(this);
-dojo.widget.DomWidget.call(this, true);

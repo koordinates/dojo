@@ -1,1 +1,0 @@
-dojo.widget.DomPopUpButton.superclass.constructor.call(this);

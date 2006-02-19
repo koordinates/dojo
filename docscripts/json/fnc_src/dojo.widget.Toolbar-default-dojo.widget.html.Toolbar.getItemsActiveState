@@ -1,5 +1,0 @@
-var values = this.getItemsState();
-for(var item in values) {
-	values[item] = values[item].enabled;
-}
-return values;

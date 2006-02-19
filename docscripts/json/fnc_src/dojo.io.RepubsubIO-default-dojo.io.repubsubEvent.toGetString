@@ -1,9 +1,0 @@
-var qs = [ ((noQmark) ? "" : "?") ];
-for(var x=0; x<this.properties.length; x++){
-	var tp = this.properties[x];
-	if(this[tp[0]]){
-		qs.push(tp[1]+"="+encodeURIComponent(String(this[tp[0]])));
-	}
-	 FIXME: we need to be able to serialize non-stock properties!!!
-}
-return qs.join("&");

@@ -1,2 +1,0 @@
-this._value = color;
-this._fireEvent("onSetValue", color);

@@ -1,3 +1,0 @@
-if( this.disabled ){ return; }
-dojo.html.removeClass(this.leftPart, "dojoButtonHover");
-this._setImageL(this.inactiveImg);

@@ -1,8 +1,0 @@
-if (!this._nodeString) {
-	var errorMessage = "Called getNode() on a dojo.uuid.Uuid that was not a TIME_BASED UUID.";
-	dojo.lang.assert(this.getVersion() == dojo.uuid.Uuid.Version.TIME_BASED, errorMessage);
-
-	var arrayOfStrings = this._uuidString.split('-');
-	this._nodeString = arrayOfStrings[4];
-}
-return this._nodeString;

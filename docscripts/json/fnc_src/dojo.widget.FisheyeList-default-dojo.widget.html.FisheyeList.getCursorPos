@@ -1,4 +1,0 @@
-return {
-	'x': e.pageX || e.clientX + document.body.scrollLeft,
-	'y': e.pageY || e.clientY + document.body.scrollTop
-	};

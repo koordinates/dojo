@@ -1,8 +1,0 @@
-evt.stopPropagation();
-dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementWeek');
-switch(evt.target) {
-	case this.increaseWeekNode:
-		break;
-	case this.decreaseWeekNode:
-		break;
-}

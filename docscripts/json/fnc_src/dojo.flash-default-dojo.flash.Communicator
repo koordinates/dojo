@@ -1,5 +1,0 @@
-if(dojo.flash.useFlash6()){
-	this._writeFlash6();
-}else if (dojo.flash.useFlash8()){
-	this._writeFlash8();
-}

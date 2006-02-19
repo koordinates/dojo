@@ -1,1 +1,0 @@
-return typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh);

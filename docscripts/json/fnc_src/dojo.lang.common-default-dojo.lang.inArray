@@ -1,1 +1,0 @@
-return dojo.lang.find(arr, val) > -1;

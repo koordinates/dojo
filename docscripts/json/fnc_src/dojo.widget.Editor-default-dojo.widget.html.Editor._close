@@ -1,3 +1,0 @@
-if(!this._richText.isClosed) {
-	this._richText.close(e.getName().toLowerCase() == "save");
-}

@@ -1,5 +1,0 @@
-this.sizeBackground();
-this.bgIframe.show();
-if(this.bgOpacity > 0) {
-	this.bg.style.display = "block";
-}

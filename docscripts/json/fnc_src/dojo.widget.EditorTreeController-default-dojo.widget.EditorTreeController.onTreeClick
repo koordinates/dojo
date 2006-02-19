@@ -1,7 +1,0 @@
-var node = message.source;
-
-if (node.isExpanded){
-	this.collapse(node);
-} else {
-	this.expand(node);
-}

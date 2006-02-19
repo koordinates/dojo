@@ -1,5 +1,0 @@
-if( !this._active || this._paused ) {
-	this.play();
-} else {
-	this.pause();
-}

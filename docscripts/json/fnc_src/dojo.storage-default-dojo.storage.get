@@ -1,4 +1,0 @@
-if(!this.provider){
-	return false;
-}
-return this.provider.get(key, namespace);

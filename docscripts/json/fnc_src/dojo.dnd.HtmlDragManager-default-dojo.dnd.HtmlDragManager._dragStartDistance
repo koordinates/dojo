@@ -1,8 +1,0 @@
-if((!this.mouseDownX)||(!this.mouseDownX)){
-	return;
-}
-var dx = Math.abs(x-this.mouseDownX);
-var dx2 = dx*dx;
-var dy = Math.abs(y-this.mouseDownY);
-var dy2 = dy*dy;
-return parseInt(Math.sqrt(dx2+dy2), 10);

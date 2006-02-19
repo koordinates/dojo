@@ -1,3 +1,0 @@
-this.toggleObj =
-	dojo.widget.HtmlWidget.toggle[this.toggle.toLowerCase()] ||
-	dojo.widget.HtmlWidget.toggle.plain;

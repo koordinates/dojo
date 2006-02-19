@@ -1,5 +1,0 @@
-if(obj["result"]){
-	return obj["result"];
-}else{
-	return obj;
-}

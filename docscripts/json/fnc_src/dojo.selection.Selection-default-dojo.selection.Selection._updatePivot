@@ -1,5 +1,0 @@
-if(this._pivotItems.length == 0) {
-	if(this.lastSelected) {
-		this._addPivot(this.lastSelected);
-	}
-}

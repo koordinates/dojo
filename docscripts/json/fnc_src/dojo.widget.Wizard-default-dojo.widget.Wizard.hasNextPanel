@@ -1,2 +1,0 @@
-var selectedIndex = this.selectedIndex();
-return (selectedIndex < (this.getPanels().length - 1));

@@ -1,4 +1,0 @@
-var dm = dojo.dnd.dragManager;
-if(dm["registerDragObject"]){  side-effect prevention
-	dm.registerDragObject(this);
-}

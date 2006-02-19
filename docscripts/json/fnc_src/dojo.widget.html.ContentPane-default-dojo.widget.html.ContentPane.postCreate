@@ -1,4 +1,0 @@
-if ( this.handler != "" ){
-	this.setHandler(this.handler);
-}
-if(this.preload){ this.loadContents(); }

@@ -1,3 +1,0 @@
-var rps = dojo.io.repubsub;
-
-dojo.io.transports.addTransport("repubsubTranport");

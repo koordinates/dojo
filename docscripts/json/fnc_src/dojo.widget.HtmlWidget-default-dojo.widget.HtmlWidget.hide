@@ -1,3 +1,0 @@
-this.animationInProgress=true;
-this.toggleObj.hide(this.domNode, this.toggleDuration, this.explodeSrc,
-	dojo.lang.hitch(this, this.onHide));

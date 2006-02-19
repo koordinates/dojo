@@ -1,3 +1,0 @@
-var row=dojo.html.getParentByType(e.target,"tr");
-this.setSelectionByRow(row);
-this.onSelect(e);

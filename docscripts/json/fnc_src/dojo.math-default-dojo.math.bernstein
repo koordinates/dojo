@@ -1,1 +1,0 @@
-return (dojo.math.combinations(n,i) * Math.pow(t,i) * Math.pow(1-t,n-i));

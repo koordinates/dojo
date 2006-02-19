@@ -1,8 +1,0 @@
-var isString = dojo.lang.isString(arr);
-if(isString) { arr = arr.split(""); }
-var il = arr.length;
-for(var i=0; i< ((fix_length) ? il : arr.length); i++){
-	if(unary_func(arr[i], i, arr) == "break"){
-		break;
-	}
-}

@@ -1,5 +1,0 @@
-dojo.widget.html.ToolbarSeparator.call(this);
-
-this.widgetType = "ToolbarSpace";
-
-var oldFillInTemplate = this.fillInTemplate;

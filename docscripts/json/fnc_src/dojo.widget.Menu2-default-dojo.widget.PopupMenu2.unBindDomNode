@@ -1,7 +1,0 @@
-dojo.event.kwDisconnect({
-	srcObj:     dojo.byId(node),
-	srcFunc:    "oncontextmenu",
-	targetObj:  this,
-	targetFunc: "onOpen",
-	once:       true
-});

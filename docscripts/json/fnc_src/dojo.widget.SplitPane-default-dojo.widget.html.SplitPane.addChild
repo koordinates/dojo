@@ -1,8 +1,0 @@
-dojo.widget.html.Container.prototype.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
-this._injectChild(widget);
-
-if (this.children.length > 1) {
-	this._addSizer();
-}
-
-this.layoutPanels();

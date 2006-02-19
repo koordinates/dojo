@@ -1,7 +1,0 @@
-this.bindArgs = {};
-
-if(args && args.formNode) {
-	this.init(args);
-} else if(args) {
-	this.init({formNode: args});
-}

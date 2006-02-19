@@ -1,1 +1,0 @@
-this._fire("onAction", e.getValue());

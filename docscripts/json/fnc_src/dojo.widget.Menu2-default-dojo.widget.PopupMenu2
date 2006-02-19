@@ -1,8 +1,0 @@
-dojo.widget.HtmlWidget.call(this);
-this.items = [];	 unused???
-this.targetNodeIds = [];  fill this with nodeIds upon widget creation and it becomes context menu for those nodes
-this.queueOnAnimationFinish = [];
-
-this.eventNames =  {
-	open: ""
-};

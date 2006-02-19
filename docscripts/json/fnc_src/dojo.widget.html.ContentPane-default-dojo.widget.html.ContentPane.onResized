@@ -1,4 +1,0 @@
-if(this.isVisible()){
-	this.loadContents();
-}
-dojo.widget.html.ContentPane.superclass.onResized.call(this);

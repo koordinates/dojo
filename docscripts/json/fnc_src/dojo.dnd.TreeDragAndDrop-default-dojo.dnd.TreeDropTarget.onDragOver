@@ -1,9 +1,0 @@
-var accepts = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
-
-dojo.debug("TreeDropTarget.onDragOver accepts:"+accepts)
-
-if (accepts && this.treeNode.isFolder && !this.treeNode.isExpanded) {
-	this.setAutoExpandTimer();
-}
-
-return accepts;

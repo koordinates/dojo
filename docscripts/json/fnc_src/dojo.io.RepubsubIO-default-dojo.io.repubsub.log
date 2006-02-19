@@ -1,7 +1,0 @@
-if(!this.debug){ return; }  
-while(this.logBacklog.length>0){
-	if(!this.canLog){ break; }
-	var blo = this.logBacklog.shift();
-	this.writeLog("["+blo[0]+"]: "+blo[1], blo[2]);
-}
-this.writeLog(str, lvl);

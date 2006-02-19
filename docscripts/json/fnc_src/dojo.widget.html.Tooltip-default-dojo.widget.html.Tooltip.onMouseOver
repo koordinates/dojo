@@ -1,8 +1,0 @@
-if(this.hovering){ return; }
-
-this.timerEventId = setTimeout(this.timerEvent, this.delay);
-dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
-this.hovering=true;		
-
-this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
-this.mouseY = e.pageY || e.clientY + document.body.scrollTop;

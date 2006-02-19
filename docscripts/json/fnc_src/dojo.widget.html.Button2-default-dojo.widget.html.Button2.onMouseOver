@@ -1,3 +1,0 @@
-if( this.disabled ){ return; }
-dojo.html.prependClass(this.domNode, "dojoButtonHover");
-this._setImage(this.activeImg);

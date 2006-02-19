@@ -1,1 +1,0 @@
-dojo.lang.setTimeout(this, "layoutMenu", 0);

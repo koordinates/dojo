@@ -1,5 +1,0 @@
-if (this.eventNaming == "default") {
-	for (eventName in this.eventNames) {
-		this.eventNames[eventName] = this.widgetId+"/"+eventName;
-	}
-}

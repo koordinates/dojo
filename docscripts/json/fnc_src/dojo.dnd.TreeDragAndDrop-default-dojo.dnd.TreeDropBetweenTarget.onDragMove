@@ -1,7 +1,0 @@
-var position = this.getPosition(e);
-
-var sourceTreeNode = dragObjects[0].treeNode;
-
-if (this.acceptsWithPosition(sourceTreeNode, position)) {
-	this.showIndicator(position);
-}

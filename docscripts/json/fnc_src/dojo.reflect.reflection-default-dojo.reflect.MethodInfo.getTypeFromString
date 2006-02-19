@@ -1,3 +1,0 @@
-var parts = s.split("."), i = 0, obj = dj_global ; 
-do { obj = obj[parts[i++]] ; } while (i < parts.length && obj) ; 
-return (obj != dj_global) ? obj : null ;

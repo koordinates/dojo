@@ -1,1 +1,0 @@
-{"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"],"this_variables":["svgNode","svgRoot","svgDoc","zeroWidth","zeroHeight","loaded","setWidth","setHeight","setSizeOnLoad"]}

@@ -1,4 +1,0 @@
-node.unMarkSelected();
-
-node.tree.selector.selectedNode = null;
-dojo.event.topic.publish(this.eventNames.deselect, {source: node} );

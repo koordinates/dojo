@@ -1,1 +1,0 @@
-{"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"],"this_variables":["isHorizontal","selectedNode","isOver","hitX1","hitY1","hitX2","hitY2","anchorEdge","labelEdge","proximityLeft","proximityRight","proximityTop","proximityBottom","itemCount","barWidth","barHeight","totalWidth","totalHeight","timerScale","pos"]}

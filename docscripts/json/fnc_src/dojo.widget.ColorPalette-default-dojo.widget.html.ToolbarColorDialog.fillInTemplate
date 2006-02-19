@@ -1,5 +1,0 @@
-dojo.widget.html.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
-this.dialog = dojo.widget.createWidget("ColorPalette", {palette: this.palette});
-this.dialog.domNode.style.position = "absolute";
-
-dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");

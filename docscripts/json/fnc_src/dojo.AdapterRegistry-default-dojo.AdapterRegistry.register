@@ -1,5 +1,0 @@
-if (override) {
-	this.pairs.unshift([name, check, wrap]);
-} else {
-	this.pairs.push([name, check, wrap]);
-}

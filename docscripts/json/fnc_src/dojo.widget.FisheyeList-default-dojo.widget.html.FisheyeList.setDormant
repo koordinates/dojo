@@ -1,9 +1,0 @@
-if( !this.isOver ){ return; }	 
-this.isOver = false;
-
-if ( this.conservativeTrigger ) {
-	 user can't re-trigger the menu expansion
-	 until he mouses over a icon again
-	dojo.event.disconnect(document.documentElement, "onmousemove", this, "mouseHandler");
-}
-this.onGridMouseMove(-1, -1);

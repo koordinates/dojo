@@ -1,3 +1,0 @@
-dojo.deprecated("daysInMonth(month, year)",
-	"replaced by getDaysInMonth(dateObject)", "0.4");
-return dojo.date.getDaysInMonth(new Date(year, month, 1));

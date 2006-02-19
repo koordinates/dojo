@@ -1,4 +1,0 @@
-node = dojo.byId(node);
-if(!node){ return false; }
-classStr += " " + dojo.html.getClass(node);
-return dojo.html.setClass(node, classStr);

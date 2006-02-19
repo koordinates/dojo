@@ -1,2 +1,0 @@
-return (!isNaN(wh) && isFinite(wh) && (wh != null) &&
-		!dojo.lang.isBoolean(wh) && !dojo.lang.isArray(wh));

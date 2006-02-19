@@ -1,4 +1,0 @@
-for(var name in pairs) {
-	var re = new RegExp("\\%\\{" + name + "\\}", "g");
-	str = str.replace(re, pairs[name]);
-}

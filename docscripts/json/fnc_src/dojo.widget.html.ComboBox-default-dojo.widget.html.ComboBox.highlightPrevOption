@@ -1,9 +1,0 @@
-if(this._highlighted_option){
-	dojo.html.removeClass(this._highlighted_option, "cbItemHighlight");
-}
-if((!this._highlighted_option)||(!this._highlighted_option.previousSibling)){
-	this._highlighted_option = this.optionsListNode.lastChild;
-}else{
-	this._highlighted_option = this._highlighted_option.previousSibling;
-}
-dojo.html.addClass(this._highlighted_option, "cbItemHighlight");

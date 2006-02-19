@@ -1,2 +1,0 @@
-if(!this._enabled) { return };
-dojo.html.addClass(this.domNode, "hover");

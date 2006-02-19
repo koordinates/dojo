@@ -1,3 +1,0 @@
-if (this.constructor == dojo.dnd.DropTarget) { return; }  
-this.acceptedTypes = [];
-dojo.dnd.dragManager.registerDropTarget(this);

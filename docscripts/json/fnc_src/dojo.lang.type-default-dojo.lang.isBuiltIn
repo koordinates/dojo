@@ -1,8 +1,0 @@
-return (dojo.lang.isArray(wh)		|| 
-		dojo.lang.isFunction(wh)	|| 
-		dojo.lang.isString(wh)		|| 
-		dojo.lang.isNumber(wh)		|| 
-		dojo.lang.isBoolean(wh)		|| 
-		(wh == null)				|| 
-		(wh instanceof Error)		|| 
-		(typeof wh == "error") );

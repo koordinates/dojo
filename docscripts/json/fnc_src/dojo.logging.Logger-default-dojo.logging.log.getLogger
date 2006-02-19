@@ -1,5 +1,0 @@
-if(!this.loggers[name]){
-	this.loggers[name] = new dojo.logging.Logger();
-	this.loggers[name].parent = this;
-}
-return this.loggers[name];

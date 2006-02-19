@@ -1,8 +1,0 @@
-if(/^img$/i.test(value.tagName)) {
-	this[state] = value;
-} else if(typeof value == "string" || value instanceof String
-	|| value instanceof dojo.uri.Uri) {
-	this[state] = new Image();
-	this[state].src = value.toString();
-}
-return this[state];

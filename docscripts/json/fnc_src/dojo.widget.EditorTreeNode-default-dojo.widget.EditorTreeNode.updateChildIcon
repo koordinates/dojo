@@ -1,9 +1,0 @@
-if ((this.depth || this.tree.showRootGrid) && this.tree.showGrid){
-	this.setGridImage(-1, (this.children.length && this.isExpanded) ? this.tree.gridIconSrcP : this.tree.gridIconSrcC);
-}else{
-	if (this.tree.showGrid && !this.tree.showRootGrid){
-		this.setGridImage(-1, (this.children.length && this.isExpanded) ? this.tree.gridIconSrcZ : this.tree.blankIconSrc);
-	}else{
-		this.setGridImage(-1, this.tree.blankIconSrc);
-	}
-}

@@ -1,4 +1,0 @@
-e.preventDefault();
-
- but if a real click comes along, allow it
-dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");

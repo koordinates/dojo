@@ -1,1 +1,0 @@
-dojo.dom.removeNode(this.iframe);

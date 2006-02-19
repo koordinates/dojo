@@ -1,7 +1,0 @@
-if (dojo.html.gravity(this.treeNode.labelNode, e) & dojo.html.gravity.NORTH) {
-	var position = "before";
-} else {
-	var position = "after";
-}
-
-return position;

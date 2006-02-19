@@ -1,7 +1,0 @@
-if (x < this.menuX){ return 0; }
-if (x > this.menuX + this.menuWidth){ return 0; }
-
-if (y < this.menuY){ return 0; }
-if (y > this.menuY + this.menuHeight){ return 0; }
-
-return 1;

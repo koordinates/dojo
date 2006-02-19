@@ -1,1 +1,0 @@
-{"dojo.profile":{"default":{"undefined dojo.profile()":""}},"dojo.profile.start":{"default":{"undefined dojo.profile.start(name)":""}},"dojo.profile.end":{"default":{"undefined dojo.profile.end(name)":""}},"dojo.profile.dump":{"default":{"undefined dojo.profile.dump(appendToDoc)":""}}}
