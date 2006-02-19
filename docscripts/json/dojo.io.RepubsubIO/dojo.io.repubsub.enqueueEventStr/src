@@ -1,0 +1,3 @@
+this.log("enqueueEventStr");
+this.backlog.push(evtStr);
+this.dequeueEvent();

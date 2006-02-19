@@ -1,0 +1,1 @@
+return Math.min(1.0, dojo.svg.getNumericStyle(node, "fill-opacity"));

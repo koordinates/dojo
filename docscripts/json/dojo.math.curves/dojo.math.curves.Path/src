@@ -1,0 +1,16 @@
+var curves = [];
+var weights = [];
+var ranges = [];
+var totalWeight = 0;
+
+function computeRanges() {
+	var start = 0;
+	for(var i = 0; i < weights.length; i++) {
+		var end = start + weights[i] / totalWeight;
+		var len = end - start;
+		ranges[i] = [start, end, len];
+		start = end;
+	}
+}
+
+return this;

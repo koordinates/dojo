@@ -1,0 +1,8 @@
+var src = this.munge('RGB', arguments);
+
+var K = Math.min(1-src.R, 1-src.G, 1-src.B);
+var C = (1 - src.R - K) / (1 - K);
+var M = (1 - src.G - K) / (1 - K);
+var Y = (1 - src.B - K) / (1 - K);
+
+return [C, M, Y, K];

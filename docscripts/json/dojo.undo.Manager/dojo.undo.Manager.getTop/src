@@ -1,0 +1,5 @@
+if(this._parent) {
+	return this._parent.getTop();
+} else {
+	return this;
+}

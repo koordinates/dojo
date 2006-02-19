@@ -1,0 +1,20 @@
+var ret = [];
+var isFunc = dojo.lang.isFunction(type);
+if(!isFunc){
+	type = type.toLowerCase();
+}
+for(var x=0; x<this.children.length; x++){
+	if(isFunc){
+		if(this.children[x] instanceof type){
+			ret.push(this.children[x]);
+		}
+	}else{
+		if(this.children[x].widgetType.toLowerCase() == type){
+			ret.push(this.children[x]);
+		}
+	}
+	if(recurse){
+		ret = ret.concat(this.children[x].getChildrenOfType(type, recurse));
+	}
+}
+return ret;

@@ -1,0 +1,22 @@
+var uri = null;
+var method = "POST";
+var isAsync = true;	
+var cb = function(d){
+	this.responseText = d.content;
+	try {
+		this.responseXML = parseXML(this.responseText, window.document);
+	} catch(e){}
+	this.status = "200";
+	this.statusText = "OK";
+	if (!d.success) {
+		this.status = "500";
+		this.statusText = "Internal Server Error";
+	}
+	this.onload();
+	this.onreadystatechange();
+};
+this.statusText = "";
+this.responseBody = null;
+this.responseStream = null;
+this.responseXML = null;
+this.responseText = null;

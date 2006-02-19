@@ -1,0 +1,46 @@
+function nodeToString(n, a) {
+	function fixText(s) { return String(s).replace(/\&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;"); }
+	function fixAttribute(s) { return fixText(s).replace(/\"/g, "&quot;"); }
+	switch (n.nodeType) {
+		case 1:	{		ELEMENT
+			var name = n.nodeName;
+			a.push("<" + name);
+			for (var i = 0; i < n.attributes.length; i++) {
+				if (n.attributes.item(i).specified) {
+					a.push(" " + n.attributes.item(i).nodeName.toLowerCase() + "=\"" + fixAttribute(n.attributes.item(i).nodeValue) + "\"");
+				}
+			}
+			if (n.canHaveChildren || n.hasChildNodes()) {
+				a.push(">");
+				for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
+				a.push("</" + name + ">\n");
+			} else a.push(" />\n");
+			break;
+		}
+		case 3: {		TEXT
+			a.push(fixText(n.nodeValue));
+			break;
+		}
+		case 4: {		CDATA
+			a.push("<![CDA" + "TA[\n" + n.nodeValue + "\n]" + "]>");
+			break;
+		}
+		case 7:{		PROCESSING INSTRUCTION
+			a.push(n.nodeValue);
+			if (/(^<\?xml)|(^<\!DOCTYPE)/.test(n.nodeValue)) a.push("\n");
+			break;
+		}
+		case 8:{		COMMENT
+			a.push("<!-- " + n.nodeValue + " -->\n");
+			break;
+		}
+		case 9:			DOCUMENT
+		case 11:{		DOCUMENT FRAGMENT
+			for (var i = 0; i < n.childNodes.length; i++) nodeToString(n.childNodes.item(i), a);
+			break;
+		}
+		default:{
+			a.push("<!--\nNot Supported:\n\n" + "nodeType: " + n.nodeType + "\nnodeName: " + n.nodeName + "\n-->");
+		}
+	}
+}

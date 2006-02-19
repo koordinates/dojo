@@ -1,0 +1,10 @@
+if (!this.canCreateNode(parent, index, data)) {
+	return false;
+}
+
+ load nodes into newParent in sync mode, if needed, first 
+if (parent.state == parent.loadStates.UNCHECKED) {
+	this.loadRemote(parent, true);
+}
+
+return this.createNodeRemote(parent, index, data, callback, callObj);

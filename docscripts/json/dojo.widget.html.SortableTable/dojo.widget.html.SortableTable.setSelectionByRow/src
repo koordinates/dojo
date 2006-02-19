@@ -1,0 +1,13 @@
+this.selected=this.getObjectFromRow(row);
+var body=dojo.html.getParentByType(row,"tbody");
+if(body){
+	var rows=body.getElementsByTagName("tr");
+	for(var i=0; i<rows.length; i++){
+		if(rows[i].className==this.rowSelectedClass){
+			if(this.enableAlternateRows&&i%2==1){
+				rows[i].className=this.rowAlternateClass;
+			}else rows[i].className="";
+		}
+	}
+	row.className=this.rowSelectedClass;
+}

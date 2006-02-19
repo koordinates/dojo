@@ -1,0 +1,8 @@
+var fcn = dojo.lang.isFunction(handler) ? handler : window[handler];
+if(!dojo.lang.isFunction(fcn)) {
+	throw new Error("Unable to set panel handler, '" + handler + "' not a function.");
+	return;
+}
+this["tabHandler" + panel.id] = function() {
+	return fcn.apply(this, arguments);
+}

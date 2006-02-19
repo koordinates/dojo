@@ -1,0 +1,2 @@
+this.canUndo = this._undoStack.length > 0;
+this.canRedo = this._redoStack.length > 0;

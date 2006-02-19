@@ -1,0 +1,4 @@
+var hourNodes = this.hourContainerNode.getElementsByTagName("td");
+for (var i=0; i<hourNodes.length; i++) {
+	dojo.html.setClass(hourNodes.item(i), "");
+}

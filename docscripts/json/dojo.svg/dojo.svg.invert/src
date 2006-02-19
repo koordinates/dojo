@@ -1,0 +1,5 @@
+if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+	var t = node.ownerSVGElement.createSVGTransform();
+	t.setMatrix(t.matrix.inverse());
+	node.transform.baseVal.appendItem(t);
+}

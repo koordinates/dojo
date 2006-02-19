@@ -1,0 +1,6 @@
+this.clearSelectedAnyTime();
+if(this.selectedTime.anyTime) {
+	this.selectedTime.anyTime = false;
+	this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes);
+	this.initUI();
+}

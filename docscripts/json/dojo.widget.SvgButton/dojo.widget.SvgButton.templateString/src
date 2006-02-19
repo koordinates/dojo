@@ -1,0 +1,1 @@
+return "<g class='dojoButton' dojoAttachEvent='onClick; onMouseMove: onFoo;' dojoAttachPoint='labelNode'>"+ dojo.widgets.SVGButton.prototype.shapeString(x, y, textSize, label, shape) + dojo.widget.SVGButton.prototype.labelString(x, y, textSize, label, shape) + "</g>";

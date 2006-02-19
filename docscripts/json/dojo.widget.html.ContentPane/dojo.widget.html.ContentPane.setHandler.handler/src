@@ -1,0 +1,1 @@
+return fcn.apply(this, arguments);

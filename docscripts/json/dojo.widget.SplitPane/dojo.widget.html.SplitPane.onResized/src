@@ -1,0 +1,4 @@
+this.paneWidth = dojo.style.getContentWidth(this.domNode);
+this.paneHeight = dojo.style.getContentHeight(this.domNode);
+this.layoutPanels();
+this.notifyChildrenOfResize();	 notify children they've been moved/resized

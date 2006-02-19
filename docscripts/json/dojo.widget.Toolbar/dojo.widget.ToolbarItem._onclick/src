@@ -1,0 +1,3 @@
+if(this._enabled && !this._toggleItem) {
+	this._fireEvent("onClick");
+}

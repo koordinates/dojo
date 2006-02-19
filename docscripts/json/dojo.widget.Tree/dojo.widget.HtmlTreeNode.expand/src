@@ -1,0 +1,3 @@
+this.showChildren();
+this.isExpanded = true;
+this.updateIcons();

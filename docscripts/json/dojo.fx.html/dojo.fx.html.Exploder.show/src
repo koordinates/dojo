@@ -1,0 +1,16 @@
+clearTimeout(showTimer);
+clearTimeout(hideTimer);
+triggerNode.blur();
+
+if( (animHide && animHide.status() == "playing")
+	|| (animShow && animShow.status() == "playing")
+	|| _this.showing ) { return; }
+
+if(typeof _this.onBeforeExplode == "function") { _this.onBeforeExplode(triggerNode, boxNode); }
+animShow = dojo.fx.html.explode(triggerNode, boxNode, _this.timeToShow, function(e) {
+	_this.showing = true;
+	if(typeof _this.onAfterExplode == "function") { _this.onAfterExplode(triggerNode, boxNode); }
+});
+if(typeof _this.onExploding == "function") {
+	dojo.event.connect(animShow, "onAnimate", this, "onExploding");
+}

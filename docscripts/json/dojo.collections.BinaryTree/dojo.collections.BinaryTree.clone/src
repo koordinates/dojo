@@ -1,0 +1,5 @@
+var c = new node();
+if (this.value.value) c.value = this.value.clone();
+else c.value = this.value;
+if (this.left) c.left = this.left.clone();
+if (this.right) c.right = this.right.clone();

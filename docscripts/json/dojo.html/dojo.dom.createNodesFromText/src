@@ -1,0 +1,2 @@
+dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.html.createNodesFromText instead");
+return dojo.html.createNodesFromText.apply(dojo.html, arguments);

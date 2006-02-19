@@ -1,0 +1,7 @@
+dojo.widget.html.DropDownButton2.superclass.fillInTemplate.call(this, args, frag);
+
+ draw the arrow
+var arrow = document.createElement("img");
+arrow.src = dojo.uri.dojoUri(this.disabled ? this.disabledDownArrow : this.downArrow);
+dojo.html.setClass(arrow, "downArrow");
+this.containerNode.appendChild(arrow);

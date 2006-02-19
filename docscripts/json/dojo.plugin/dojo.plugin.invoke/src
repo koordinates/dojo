@@ -1,0 +1,17 @@
+var args = [];
+for (var i = 0, argument; argument = arguments[i]; i++) {
+  args.push(argument);
+}
+
+try {
+  if (dojo.lang.isFunction(dojo.plugin._plugins[module][hook])) {
+	return dojo.plugin._plugins[module][hook].call(this, args);
+  }
+  else {
+	return dojo.plugin._plugins[module][hook];
+  }
+}
+catch(e) {
+  dojo.debug(module + "_" + hook + " does not exist.");
+}
+return false;

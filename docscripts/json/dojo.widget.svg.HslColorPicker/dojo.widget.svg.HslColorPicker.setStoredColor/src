@@ -1,0 +1,2 @@
+this.storedColor = rgbHexColor;
+dojo.event.topic.publish("/" + this.widgetId + "/setStoredColor", this.filterObject);

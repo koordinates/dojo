@@ -1,0 +1,5 @@
+if ( this.eventWasOverArrow(e) ) {
+	this._onClickArrow();
+} else {
+	this._onClickButton();
+}

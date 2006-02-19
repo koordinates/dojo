@@ -1,0 +1,5 @@
+switch (this.toggle) {
+	case "fade": this.toggler = new dojo.widget.Tree.FadeToggle(); break;
+	case "wipe": this.toggler = new dojo.widget.Tree.WipeToggle(); break;
+	default    : this.toggler = new dojo.widget.Tree.DefaultToggle();
+}

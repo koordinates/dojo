@@ -1,0 +1,1 @@
+dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "deselect");

@@ -1,0 +1,4 @@
+this.paused--;
+if ((this.paused == 0) && (this.fired >= 0)) {
+	this._fire();
+}

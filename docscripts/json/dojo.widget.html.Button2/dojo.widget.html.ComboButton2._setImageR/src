@@ -1,0 +1,2 @@
+this.arrowBackgroundImage.src=dojo.uri.dojoUri(prefix + "c.gif");
+this.rightImage.src=dojo.uri.dojoUri(prefix + "r.gif");

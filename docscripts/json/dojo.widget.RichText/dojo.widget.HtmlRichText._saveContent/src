@@ -1,0 +1,2 @@
+var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
+saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getEditorContent();

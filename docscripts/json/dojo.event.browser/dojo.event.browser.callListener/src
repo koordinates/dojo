@@ -1,0 +1,5 @@
+if(typeof listener != 'function'){
+	dojo.raise("listener not a function: " + listener);
+}
+dojo.event.browser.currentEvent.currentTarget = curTarget;
+return listener.call(curTarget, dojo.event.browser.currentEvent);

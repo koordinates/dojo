@@ -1,0 +1,24 @@
+dojo.widget.validate.IpAddressTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.allowdotteddecimal ) { 
+	this.flags.allowDottedDecimal = ( localProperties.allowdotteddecimal == "true" );
+}
+if ( localProperties.allowdottedhex ) { 
+	this.flags.allowDottedHex = ( localProperties.allowdottedhex == "true" );
+}
+if ( localProperties.allowdottedoctal ) { 
+	this.flags.allowDottedOctal = ( localProperties.allowdottedoctal == "true" );
+}
+if ( localProperties.allowdecimal ) { 
+	this.flags.allowDecimal = ( localProperties.allowdecimal == "true" );
+}
+if ( localProperties.allowhex ) { 
+	this.flags.allowHex = ( localProperties.allowhex == "true" );
+}
+if ( localProperties.allowipv6 ) { 
+	this.flags.allowIPv6 = ( localProperties.allowipv6 == "true" );
+}
+if ( localProperties.allowhybrid ) { 
+	this.flags.allowHybrid = ( localProperties.allowhybrid == "true" );
+}

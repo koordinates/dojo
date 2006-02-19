@@ -1,0 +1,5 @@
+var i = this.indexOf(obj);
+if (i >=0) {
+	items.splice(i,1);
+}
+this.count = items.length;

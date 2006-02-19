@@ -1,0 +1,1 @@
+this.toggleDuration = duration ? duration : 150;

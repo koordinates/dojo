@@ -1,0 +1,5 @@
+for(var i = 0; i < arguments.length; i++) {
+	var name = arguments[i];
+	var item = this.getItem(name);
+	if(item) { item.disable(); }
+}

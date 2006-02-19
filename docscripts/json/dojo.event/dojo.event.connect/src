@@ -1,0 +1,12 @@
+var ao = interpolateArgs(arguments);
+
+ FIXME: just doing a "getForMethod()" seems to be enough to put this into infinite recursion!!
+var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
+if(ao.adviceFunc){
+	var mjp2 = dojo.event.MethodJoinPoint.getForMethod(ao.adviceObj, ao.adviceFunc);
+}
+
+mjp.kwAddAdvice(ao);
+
+return mjp;	 
+			 manually

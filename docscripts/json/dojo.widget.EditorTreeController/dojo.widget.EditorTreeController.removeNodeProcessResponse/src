@@ -1,0 +1,21 @@
+if (!dojo.lang.isUndefined(result.error)) {
+	this.RPCErrorHandler(result.error);
+	return false;
+}
+
+if (!result) return false;
+
+if (result == true) {
+	 change parent succeeded 
+	this.doRemoveNode(node, node);
+	if (callback) {
+		 provide context manually e.g with dojo.lang.hitch.
+		callback.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node]);
+	}
+
+	return true;
+} else if (dojo.lang.isObject(result)) {
+	dojo.raise(result.error);
+} else {
+	dojo.raise("Invalid response "+obj)
+}

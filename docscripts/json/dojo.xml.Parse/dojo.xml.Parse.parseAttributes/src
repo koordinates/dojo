@@ -1,0 +1,21 @@
+var parsedAttributeSet = {};
+var atts = node.attributes;
+ TODO: should we allow for duplicate attributes at this point...
+ would any of the relevant dom implementations even allow this?
+for(var i=0; i<atts.length; i++) {
+	var attnode = atts.item(i);
+	if((dojo.render.html.capable)&&(dojo.render.html.ie)){
+		if(!attnode){ continue; }
+		if(	(typeof attnode == "object")&&
+			(typeof attnode.nodeValue == 'undefined')||
+			(attnode.nodeValue == null)||
+			(attnode.nodeValue == '')){ 
+			continue; 
+		}
+	}
+	var nn = (attnode.nodeName.indexOf("dojo:") == -1) ? attnode.nodeName : attnode.nodeName.split("dojo:")[1];
+	parsedAttributeSet[nn] = { 
+		value: attnode.nodeValue 
+	};
+}
+return parsedAttributeSet;

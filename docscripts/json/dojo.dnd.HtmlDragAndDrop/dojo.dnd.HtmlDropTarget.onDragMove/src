@@ -1,0 +1,21 @@
+var i = this._getNodeUnderMouse(e);
+
+if(!this.dropIndicator){
+	this.createDropIndicator();
+}
+
+if(i < 0) {
+	if(this.childBoxes.length) {
+		var before = (dojo.html.gravity(this.childBoxes[0].node, e) & dojo.html.gravity.NORTH);
+	} else {
+		var before = true;
+	}
+} else {
+	var child = this.childBoxes[i];
+	var before = (dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH);
+}
+this.placeIndicator(e, dragObjects, i, before);
+
+if(!dojo.html.hasParent(this.dropIndicator)) {
+	document.body.appendChild(this.dropIndicator);
+}

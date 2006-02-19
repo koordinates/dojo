@@ -1,0 +1,18 @@
+var p = this.clientToScreen(this.lastPoint);
+var p = this.screenToClient(this.lastPoint);
+
+var pos = this.isHorizontal ? p.x - (this.dragOffset.x + this.originPos.x) : p.y - (this.dragOffset.y + this.originPos.y);
+
+var start_region = this.paneBefore.position;
+var end_region   = this.paneAfter.position + this.paneAfter.sizeActual;
+
+this.paneBefore.sizeActual = pos - start_region;
+this.paneAfter.position    = pos + this.sizerWidth;
+this.paneAfter.sizeActual  = end_region - this.paneAfter.position;
+
+for(var i=0; i<this.children.length; i++){
+
+	this.children[i].sizeShare = this.children[i].sizeActual;
+}
+
+this.layoutPanels();

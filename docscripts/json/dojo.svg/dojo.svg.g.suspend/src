@@ -1,0 +1,1 @@
+try { d.documentElement.suspendRedraw(0); } catch(e){ }

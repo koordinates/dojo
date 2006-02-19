@@ -1,0 +1,13 @@
+node = dojo.byId(node);
+var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+var mousey = e.pageY || e.clientY + document.body.scrollTop;
+
+with (dojo.html) {
+	var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
+	var nodecentery = getAbsoluteY(node) + (getInnerHeight(node) / 2);
+}
+
+with (dojo.html.gravity) {
+	return ((mousex < nodecenterx ? WEST : EAST) |
+		(mousey < nodecentery ? NORTH : SOUTH));
+}

@@ -1,0 +1,5 @@
+this.onDragOut(e);
+
+var sourceTreeNode = e.dragObject.treeNode;
+
+return this.controller.processDrop(sourceTreeNode, this.treeNode, 0);

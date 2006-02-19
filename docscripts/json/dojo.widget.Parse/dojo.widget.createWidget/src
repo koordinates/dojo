@@ -1,0 +1,47 @@
+function fromScript (placeKeeperNode, name, props) {
+	var lowerCaseName = name.toLowerCase();
+	var namespacedName = "dojo:" + lowerCaseName;
+	props[namespacedName] = { 
+		dojotype: [{value: lowerCaseName}],
+		nodeRef: placeKeeperNode,
+		fastMixIn: true
+	};
+	return dojo.widget.getParser().createComponentFromScript(
+		placeKeeperNode, name, props, true);
+}
+
+if (typeof name != "string" && typeof props == "string") {
+	dojo.deprecated("dojo.widget.createWidget", 
+		"argument order is now of the form " +
+		"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])");
+	return fromScript(name, props, refNode);
+}
+
+props = props||{};
+var notRef = false;
+var tn = null;
+var h = dojo.render.html.capable;
+if(h){
+	tn = document.createElement("span");
+}
+if(!refNode){
+	notRef = true;
+	refNode = tn;
+	if(h){
+		document.body.appendChild(refNode);
+	}
+}else if(position){
+	dojo.dom.insertAtPosition(tn, refNode, position);
+}else{  otherwise don't replace, but build in-place
+	tn = refNode;
+}
+var widgetArray = fromScript(tn, name, props);
+if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
+	throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
+}
+if (notRef) {
+	if (widgetArray[0].domNode.parentNode) {
+		widgetArray[0].domNode.parentNode.removeChild(widgetArray[0].domNode);
+	}
+}
+return widgetArray[0];  

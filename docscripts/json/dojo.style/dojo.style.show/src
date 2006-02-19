@@ -1,0 +1,4 @@
+node = dojo.byId(node);
+if(node.style){
+	node.style.display = dojo.lang.inArray(['tr', 'td', 'th'], node.tagName.toLowerCase()) ? "" : "block";
+}

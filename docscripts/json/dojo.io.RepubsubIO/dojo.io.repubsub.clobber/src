@@ -1,0 +1,7 @@
+if(this.rcvNode){
+	this.setCookie( [
+			[this.tunnelFrameKey,"closed"],
+			["path","/"]
+		], false 
+	);
+}

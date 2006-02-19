@@ -1,0 +1,8 @@
+if(typeof Element == "object") {
+	try {
+		return wh instanceof Element;
+	} catch(E) {}
+} else {
+	 best-guess
+	return wh && !isNaN(wh.nodeType);
+}

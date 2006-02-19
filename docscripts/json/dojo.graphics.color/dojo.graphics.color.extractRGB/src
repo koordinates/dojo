@@ -1,0 +1,15 @@
+var hex = "0123456789abcdef";
+color = color.toLowerCase();
+if( color.indexOf("rgb") == 0 ) {
+	var matches = color.match(/rgba*\((\d+), *(\d+), *(\d+)/i);
+	var ret = matches.splice(1, 3);
+	return ret;
+} else {
+	var colors = dojo.graphics.color.hex2rgb(color);
+	if(colors) {
+		return colors;
+	} else {
+		 named color (how many do we support?)
+		return dojo.graphics.color.named[color] || [255, 255, 255];
+	}
+}

@@ -1,0 +1,6 @@
+if (!cb) var cb = function(result){ window.alert(result); };
+if (!data) {
+	window.getUrl(uri, cb);
+} else {
+	window.postUrl(uri, data, cb);
+}

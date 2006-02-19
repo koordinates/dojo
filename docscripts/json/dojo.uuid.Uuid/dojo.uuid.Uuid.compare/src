@@ -1,0 +1,5 @@
+var uuidStringOne = uuidOne.toString();
+var uuidStringTwo = uuidTwo.toString();
+if (uuidStringOne > uuidStringTwo) return 1;
+if (uuidStringOne < uuidStringTwo) return -1;
+return 0;

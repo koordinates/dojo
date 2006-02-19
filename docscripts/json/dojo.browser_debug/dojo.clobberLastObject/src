@@ -1,0 +1,16 @@
+if(objpath.indexOf('.') == -1){
+	if(!dj_undef(objpath, dj_global)){
+		delete dj_global[objpath];
+	}
+	return true;
+}
+
+var syms = objpath.split(/\./);
+var base = dojo.evalObjPath(syms.slice(0, -1).join("."), false);
+var child = syms[syms.length-1];
+if(!dj_undef(child, base)){
+	 alert(objpath);
+	delete base[child];
+	return true;
+}
+return false;

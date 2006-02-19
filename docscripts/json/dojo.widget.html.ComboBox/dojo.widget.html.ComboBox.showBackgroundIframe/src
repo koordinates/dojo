@@ -1,0 +1,9 @@
+var w = dojo.style.getOuterWidth(this.optionsListNode);
+var h = dojo.style.getOuterHeight(this.optionsListNode);
+if ( isNaN(w) || isNaN(h) ){
+	 need more time to calculate size
+	dojo.lang.setTimeout(this, "showBackgroundIframe", 100);
+	return;
+}
+this.bgIframe.show([0,0,w,h]);
+this.bgIframe.setZIndex(1);

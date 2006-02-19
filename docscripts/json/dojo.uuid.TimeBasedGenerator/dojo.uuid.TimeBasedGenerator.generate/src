@@ -1,0 +1,50 @@
+var nodeString = null;
+var returnType = null;
+
+if (input) {
+	if (dojo.lang.isObject(input) && !dojo.lang.isBuiltIn(input)) {
+		var namedParameters = input;
+		dojo.lang.assertValidKeywords(namedParameters, ["node", "hardwareNode", "pseudoNode", "returnType"]);
+		var node = namedParameters["node"];
+		var hardwareNode = namedParameters["hardwareNode"];
+		var pseudoNode = namedParameters["pseudoNode"];
+		nodeString = (node || pseudoNode || hardwareNode);
+		if (nodeString) {
+			var firstCharacter = nodeString.charAt(0);
+			var firstDigit = parseInt(firstCharacter, HEX_RADIX);
+			if (hardwareNode) {
+				dojo.lang.assert((firstDigit >= 0x0) && (firstDigit <= 0x7));
+			}
+			if (pseudoNode) {
+				dojo.lang.assert((firstDigit >= 0x8) && (firstDigit <= 0xF));
+			}
+		}
+		returnType = namedParameters["returnType"];
+		dojo.lang.assertType(returnType, [Function, "optional"]);
+	} else {
+		if (dojo.lang.isString(input)) {
+			nodeString = input;
+			returnType = null;
+		} else {
+			if (dojo.lang.isFunction(input)) {
+				nodeString = null;
+				returnType = input;
+			}
+		}
+	}
+	if (nodeString) {
+		dojo.lang.assert(nodeString.length == 12);
+		var integer = parseInt(nodeString, HEX_RADIX);
+		dojo.lang.assert(isFinite(integer));
+	}
+	dojo.lang.assertType(returnType, [Function, "optional"]);
+}
+
+var uuidString = _generateUuidString(nodeString);
+var returnValue;
+if (returnType && (returnType != String)) {
+	returnValue = new returnType(uuidString);
+} else {
+	returnValue = uuidString;
+}
+return returnValue;

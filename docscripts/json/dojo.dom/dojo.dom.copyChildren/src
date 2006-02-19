@@ -1,0 +1,2 @@
+var clonedNode = srcNode.cloneNode(true);
+return this.moveChildren(clonedNode, destNode, trim);

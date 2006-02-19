@@ -1,0 +1,17 @@
+var src = this.munge('XYZ', arguments);
+
+var sum = src.X + src.Y + src.Z;
+
+if (sum == 0){
+
+	var wp = this.getWhitePoint();
+	var x = wp.x;
+	var y = wp.y;
+}else{
+	var x = src.X / sum;
+	var y = src.Y / sum;
+}
+
+var Y = src.Y;
+
+return [x, y, Y];

@@ -1,0 +1,27 @@
+var http = null;
+var last_e = null;
+try{ http = new XMLHttpRequest(); }catch(e){}
+if(!http){
+	for(var i=0; i<3; ++i){
+		var progid = DJ_XMLHTTP_PROGIDS[i];
+		try{
+			http = new ActiveXObject(progid);
+		}catch(e){
+			last_e = e;
+		}
+
+		if(http){
+			DJ_XMLHTTP_PROGIDS = [progid];   so faster next time
+			break;
+		}
+	}
+
+	if(http && !http.toString) {
+		http.toString = function() { "[object XMLHttpRequest]"; }
+}
+
+if(!http){
+	return dojo.raise("XMLHTTP not available", last_e);
+}
+
+return http;

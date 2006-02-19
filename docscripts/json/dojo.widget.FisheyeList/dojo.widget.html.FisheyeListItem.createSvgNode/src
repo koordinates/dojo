@@ -1,0 +1,45 @@
+var elm = document.createElement('embed');
+elm.src = src;
+elm.type = 'image/svg+xml';
+elm.style.border = '1px solid black';
+elm.style.width = '1px';
+elm.style.height = '1px';
+elm.loaded = 0;
+elm.setSizeOnLoad = false;
+
+elm.onload = function(){
+	this.svgRoot = this.getSVGDocument().rootElement;
+	this.svgDoc = this.getSVGDocument().documentElement;
+	this.zeroWidth = this.svgRoot.width.baseVal.value;
+	this.zeroHeight = this.svgRoot.height.baseVal.value;
+	this.loaded = true;
+
+	if (this.setSizeOnLoad){
+		this.setSize(this.setWidth, this.setHeight);
+	}
+}
+
+elm.setSize = function(w, h){
+	if (!this.loaded){
+		this.setWidth = w;
+		this.setHeight = h;
+		this.setSizeOnLoad = true;
+		return;
+	}
+
+	this.style.width = w+'px';
+	this.style.height = h+'px';
+	this.svgRoot.width.baseVal.value = w;
+	this.svgRoot.height.baseVal.value = h;
+
+	var scale_x = w / this.zeroWidth;
+	var scale_y = h / this.zeroHeight;
+
+	for(var i=0; i<this.svgDoc.childNodes.length; i++){
+		if (this.svgDoc.childNodes[i].setAttribute){
+			this.svgDoc.childNodes[i].setAttribute( "transform", "scale("+scale_x+","+scale_y+")" );
+		}
+	}
+}
+
+return elm;

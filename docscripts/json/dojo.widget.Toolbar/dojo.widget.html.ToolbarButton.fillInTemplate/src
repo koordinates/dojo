@@ -1,0 +1,19 @@
+dojo.widget.html.ToolbarButton.superclass.fillInTemplate.call(this, args, frag);
+dojo.html.addClass(this.domNode, "toolbarButton");
+if(this._icon) {
+	this.setIcon(this._icon);
+}
+if(this._label) {
+	this.setLabel(this._label);
+}
+
+if(!this._name) {
+	if(this._label) {
+		this.setName(this._label);
+	} else if(this._icon) {
+		var src = this._icon.getSrc("enabled").match(/[\/^]([^\.\/]+)\.(gif|jpg|jpeg|png)$/i);
+		if(src) { this.setName(src[1]); }
+	} else {
+		this._name = this._widgetId;
+	}
+}

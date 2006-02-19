@@ -1,0 +1,3 @@
+dojo.widget.Widget.call(this);
+
+this.widgetType = "TaskBarItem";

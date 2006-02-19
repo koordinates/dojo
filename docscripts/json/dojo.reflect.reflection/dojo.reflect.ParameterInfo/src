@@ -1,0 +1,2 @@
+this.name = name ;
+this.type = (type) ? type : dojo.reflect.$unknownType ;

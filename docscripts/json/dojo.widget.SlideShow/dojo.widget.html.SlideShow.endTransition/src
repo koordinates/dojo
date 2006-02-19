@@ -1,0 +1,10 @@
+with(this[this.background].style){ zIndex = parseInt(zIndex)+1; }
+with(this[this.foreground].style){ zIndex = parseInt(zIndex)-1; }
+
+ fg/bg book-keeping
+var tmp = this.foreground;
+this.foreground = this.background;
+this.background = tmp;
+
+ keep on truckin
+this.loadNextImage();

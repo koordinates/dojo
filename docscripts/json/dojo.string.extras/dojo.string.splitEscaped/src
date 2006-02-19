@@ -1,0 +1,10 @@
+var components = [];
+for (var i = 0, prevcomma = 0; i < str.length; i++) {
+	if (str.charAt(i) == '\\') { i++; continue; }
+	if (str.charAt(i) == charac) {
+		components.push(str.substring(prevcomma, i));
+		prevcomma = i + 1;
+	}
+}
+components.push(str.substr(prevcomma));
+return components;

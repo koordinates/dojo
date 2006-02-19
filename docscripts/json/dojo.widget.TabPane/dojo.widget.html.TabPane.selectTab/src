@@ -1,0 +1,6 @@
+if (this.selectedTabWidget) {
+	this._hideTab(this.selectedTabWidget);
+}
+this.selectedTabWidget = tab;
+this._showTab(tab);
+dojo.widget.html.TabPane.superclass.onResized.call(this);

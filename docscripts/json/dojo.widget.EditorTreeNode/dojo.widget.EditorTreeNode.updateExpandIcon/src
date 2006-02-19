@@ -1,0 +1,13 @@
+if (this.tree.showGrid){
+	if (this.depth){
+		this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
+	}else{
+		if (this.isFirstNode()){
+			this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcX : this.tree.gridIconSrcY);
+		}else{
+			this.setGridImage(-2, this.isLastNode() ? this.tree.gridIconSrcL : this.tree.gridIconSrcT);
+		}
+	}
+}else{
+	this.setGridImage(-2, this.tree.blankIconSrc);
+}

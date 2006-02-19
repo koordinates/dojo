@@ -1,0 +1,7 @@
+var ret = "_"+this.anonCtr++;
+var nso = (namespaceObj || this.anon);
+while(typeof nso[ret] != "undefined"){
+	ret = "_"+this.anonCtr++;
+}
+nso[ret] = anonFuncPtr;
+return ret;

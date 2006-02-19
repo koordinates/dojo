@@ -1,0 +1,10 @@
+switch(label){
+	case "Referer":
+		this._referrer = value;
+		break;
+	case "content-type":
+		break;
+	default:
+		this._headers.push(label + "=" + value);
+		break;
+}
