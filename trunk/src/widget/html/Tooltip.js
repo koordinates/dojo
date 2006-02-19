@@ -97,8 +97,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 		if ( this.state=="displaying" || this.state=="displayed" ) { return; }
 
-		this.domNode.style.top = this.mouseY + 15 + "px";
-		this.domNode.style.left = this.mouseX + 10 + "px";
+		dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);
 
 		// if rendering using explosion effect, need to set explosion source
 		this.explodeSrc = [this.mouseX, this.mouseY];
