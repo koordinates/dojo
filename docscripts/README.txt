@@ -7,6 +7,17 @@ JSON Objects
 ------------
 
 In all of the following examples, a key with "" around it means that it is a text link. That is, it does not change.
+
+Directory structure:
+
+package/
+	"meta"
+	function/
+		"meta"
+		"src"
+		id/
+			"meta"
+			"src"
 	
 This object is found in json/function_names and is a list of all dojo methods by package. It uses the following keys and variables:
 * package: The name of the dojo package.
@@ -29,7 +40,7 @@ The next object is found in json/pkg_meta/[package] and is a list of all package
 * "package": The name of the dojo package (is limited to child packages)
 * method: The name of the dojo method
 * "is": A key that holds a pointer to another method (dojo.requireAfterIf "is" dojo.requireIf)
-* id: The id of the polymorphic sygnature (default is "default")
+* id: The id of the polymorphic sygnature. Default signature doesn't have a key (it is immediately below "method:")
 * signature: The function signature: returnType functionName(paramType param, paramType param)
 * "summary": A brief description of what this function signature does.
 	{
@@ -55,10 +66,8 @@ The next object is found in json/pkg_meta/[package] and is a list of all package
 				signature: "summary"
 			}
 		},
-		method: {
-			id: {
-				signature: "summary"
-			}
+		method: { // This has the default ID
+			signature: "summary"
 		}
 	}
 	

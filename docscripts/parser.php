@@ -62,29 +62,30 @@ else{
   $json = new Services_JSON();
 
 	// These are the things that will be saved as JSON objects
-  $function_names = array();
-	$pkg_meta = array();
-	$fnc_meta = array();
-	$fns_src = array();
+  $output = array();
 	
+	deltree('json');
 
 	$last = array('package' => '');
-	foreach($contents as $file_name => $content){
+	foreach($contents as $package => $content){
 		if(isset($_GET['signatures'])){
-			print '*' . $file_name . "\n";
+			print '*' . $package . "\n";
 		}
     foreach($content as $function_name => $function){
-			$file_name_root = str_replace('.*', '', $file_name) . '.';
+			if($function_name == 'default'){
+				print_r($function);
+			}
+			$package_root = str_replace('.*', '', $package) . '.';
 			if($function_name == 'requires'){
 				foreach($function as $hostenv => $child_function){
 					foreach($child_function as $child_function_name){
-						if(strpos($child_function_name, $file_name_root) === 0){
-							$pkg_meta[$file_name]['requires'][$hostenv][] = $child_function_name;
+						if(strpos($child_function_name, $package_root) === 0){
+							$output[$package]['meta']['requires'][$hostenv][] = $child_function_name;
 						}
 					}
 				}
 			}elseif($function['is']){
-				$pkg_meta[$file_name][$function_name]['is'] = $function['is'];
+				$output[$package]['meta'][$function_name]['is'] = $function['is'];
 			}else{
 				foreach($function as $function_signature => $function_content){
 					$polymorphic_id = 'default';
@@ -95,7 +96,11 @@ else{
 					if($function['variables']){
 						foreach($function['variables'] as $value){
 							if($value{0} != '_'){
-								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['variables'][] = $value;
+								if($polymorphic_id != 'default'){
+									$output[$package][$function_name]['meta'][$polymorphic_id]['variables'][] = $value;
+								}else{
+									$output[$package][$function_name]['meta']['variables'][] = $value;
+								}
 							}
 						}
 					}
@@ -119,13 +124,25 @@ else{
 									$tmp_function_name = implode('.', $tmp_function_name);
 									if($content[$tmp_function_name]){
 										foreach($content[$tmp_function_name] as $tmp_function_content){
-											$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $tmp_function_name]['this_variables'][] = $value;
+											if($polymorphic_id != 'default'){
+												$output[$package][$tmp_function_name]['meta'][$polymorphic_id]['this_variables'][] = $value;
+											}else{
+												$output[$package][$tmp_function_name]['meta']['this_variables'][] = $value;
+											}
 										}
 									}else{
-										$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_variables'][] = $value;
+										if($polymorphic_id != 'default'){
+											$output[$package][$function_name]['meta'][$polymorphic_id]['this_variables'][] = $value;
+										}else{
+											$output[$package][$function_name]['meta']['this_variables'][] = $value;
+										}
 									}
 								}else{
-									$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_variables'][] = $value;
+									if($polymorphic_id != 'default'){
+										$output[$package][$function_name]['meta'][$polymorphic_id]['this_variables'][] = $value;
+									}else{
+										$output[$package][$function_name]['meta']['this_variables'][] = $value;
+									}
 								}
 							}
 						}
@@ -133,7 +150,11 @@ else{
 					if($function['inherits']){
 						foreach($function['inherits'] as $value){
 							if($value{0} != '_'){
-								$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['inherits'][] = $value;
+								if($polymorphic_id != 'default'){
+									$output[$package][$function_name]['meta'][$polymorphic_id]['inherits'][] = $value;
+								}else{
+									$output[$package][$function_name]['meta']['inherits'][] = $value;
+								}
 							}
 						}
 					}
@@ -142,12 +163,24 @@ else{
 							if($value{0} != '_'){
 								if(preg_match('%^(.*)\.superclass\.([^.]+)$%', $value, $match)){
 									if($content[$match[1]]['inherits']){
-										$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = end($content[$match[1]]['inherits']) . '.' . $match[2];
+										if($polymorphic_id != 'default'){
+											$output[$package][$function_name]['meta'][$polymorphic_id]['this_inherits'][] = end($content[$match[1]]['inherits']) . '.' . $match[2];
+										}else{
+											$output[$package][$function_name]['meta']['this_inherits'][] = end($content[$match[1]]['inherits']) . '.' . $match[2];
+										}
 									}else{
-										$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = $value;
+										if($polymorphic_id != 'default'){
+											$output[$package][$function_name]['meta'][$polymorphic_id]['this_inherits'][] = $value;
+										}else{
+											$output[$package][$function_name]['meta']['this_inherits'][] = $value;
+										}
 									}
 								}else{
-									$fnc_meta[$file_name . '-' . $polymorphic_id . '-' . $function_name]['this_inherits'][] = $value;
+									if($polymorphic_id != 'default'){
+										$output[$package][$function_name]['meta'][$polymorphic_id]['this_inherits'][] = $value;
+									}else{
+										$output[$package][$function_name]['meta']['this_inherits'][] = $value;
+									}
 								}
 							}
 						}
@@ -183,11 +216,20 @@ else{
 					foreach($function_content['function_content'] as $key => $line){
 						$function_content['function_content'][$key] = preg_replace('%^' . $shortest . '%', '', $line);
 					}
-					$fnc_src[$file_name . '-' . $polymorphic_id . '-' . $function_name] = implode("\n", $function_content['function_content']);
-
-					$pkg_meta[$file_name][$function_name][$polymorphic_id][$function_signature] = '';
+					
+					if($polymorphic_id != 'default'){
+						$output[$package]['meta'][$function_name][$polymorphic_id][$function_signature] = '';
+						$output[$package][$function_name][$polymorphic_id]['src'] = implode("\n", $function_content['function_content']);
+					}else{
+						$output[$package]['meta'][$function_name][$function_signature] = '';
+						$output[$package][$function_name]['src'] = implode("\n", $function_content['function_content']);
+					}
 					if($function_content['comments']['summary']){
-						$pkg_meta[$file_name][$function_name][$polymorphic_id][$function_signature] = $function_content['comments']['summary'];
+						if($polymorphic_id != 'default'){
+							$output[$package]['meta'][$function_name][$polymorphic_id][$function_signature] = $function_content['comments']['summary'];
+						}else{
+							$output[$package]['meta'][$function_name][$function_signature] = $function_content['comments']['summary'];							
+						}
 					}
 				}
 			}
@@ -211,14 +253,14 @@ else{
 					if(strrpos($function_name, '*') == strlen($function_name)-1 || !empty($empty_test)){
 						if($last['package'] && strpos($function_name, $last['package']) !== false){
 							// This guarantees that the .* function won't get inserted unless it has children
-							$function_names[$last['package'] . '*'][] = $last['package'] . '*';
+							$output['function_names'][$last['package'] . '*'][] = $last['package'] . '*';
 							$last['package'] = '';
 						}
 						if(strrpos($function_name, '*') == strlen($function_name)-1){
 							$last['package'] = substr($function_name, 0, -1);
 						}else{
 							if($function_name){
-								$function_names[$file_name][] = $function_name;// . ' (' . $file_name . ')';
+								$output['function_names'][$package][] = $function_name;// . ' (' . $package . ')';
 							}
 						}
 					}
@@ -226,59 +268,69 @@ else{
 			}
 		}
 	}
+
+	if(isset($_GET['output'])){
+		print_r($output);
+	}
 	
 	if(isset($_GET['function_names'])){
-		print_r($function_names);
+		print_r($output['function_names']);
 	}
-	file_put_contents('json/function_names', $json->encode($function_names));
+	file_put_contents('json/function_names', $json->encode($output['function_names']));
+	unset($output['function_names']);
 
-	if(isset($_GET['pkg_meta'])){
-  	print_r($pkg_meta);
-	}
-	$pkg_meta_files = scandir('json/pkg_meta/');
-	foreach($pkg_meta_files as $file){
-		if($file{0} != '.'){
-			unlink('json/pkg_meta/' . $file);
+	foreach($output as $package => $function){
+		$package = str_replace('*', '_', $package);
+
+		if(!is_dir('json/' . $package)){
+			mkdir('json/' . $package);
+			chmod('json/' . $package, 0777);
 		}
-	}
-	foreach($pkg_meta as $file_name => $pkg){
-		if(array_key_exists($file_name, $function_names)){
-			file_put_contents('json/pkg_meta/' . str_replace('*', '_', $file_name), $json->encode($pkg));
+
+		if($function['meta']){
+			file_put_contents('json/' . $package . '/meta', $json->encode($function['meta']));
+			unset($function['meta']);
 		}
-	}
-	
-	if(isset($_GET['fnc_meta'])){
-  	print_r($fnc_meta);
-	}
-	$fnc_meta_files = scandir('json/fnc_meta/');
-	foreach($fnc_meta_files as $file){
-		if($file{0} != '.'){
-			unlink('json/fnc_meta/' . $file);
+		
+		foreach($function as $function_name => $content){
+			if(!is_dir('json/' . $package . '/' . $function_name)){
+				mkdir('json/' . $package . '/' . $function_name);
+				chmod('json/' . $package . '/' . $function_name, 0777);
+			}
+
+			foreach($content as $polymorphic_id => $contents){
+				if($polymorphic_id == 'meta'){
+					if($contents['inherits']){
+						$contents['inherits'] = array_values(array_unique($contents['inherits']));
+					}
+					if($contents['this_variables']){
+						$contents['this_variables'] = array_values(array_unique($contents['this_variables']));
+					}
+					file_put_contents('json/' . $package . '/' . $function_name . '/meta', $json->encode($contents));
+				}elseif($polymorphic_id == 'src'){
+					file_put_contents('json/' . $package . '/' . $function_name . '/src', $contents);
+				}else{
+					if(!is_dir('json/' . $package . '/' . $function_name . '/' . $polymorphic_id)){
+						mkdir('json/' . $package . '/' . $function_name . '/' . $polymorphic_id);
+						chmod('json/' . $package . '/' . $function_name . '/' . $polymorphic_id, 0777);
+					}
+					if($contents['meta']){
+						if($contents['inherits']){
+							$contents['inherits'] = array_values(array_unique($contents['inherits']));
+						}
+						if($contents['this_variables']){
+							$contents['this_variables'] = array_values(array_unique($contents['this_variables']));
+						}
+						file_put_contents('json/' . $package . '/' . $function_name . '/' . $polymorphic_id . '/meta', $json->encode($contents['meta']));
+					}
+					if($contents['src']){
+						file_put_contents('json/' . $package . '/' . $function_name . '/' . $polymorphic_id . '/src', $json->encode($contents['src']));
+					}
+				}
+			}
 		}
-	}
-	foreach($fnc_meta as $file_name => $fnc){
-		if($fnc['inherits']){
-			$fnc['inherits'] = array_values(array_unique($fnc['inherits']));
-		}
-		if($fnc['this_variables']){
-			$fnc['this_variables'] = array_values(array_unique($fnc['this_variables']));
-		}
-		file_put_contents('json/fnc_meta/' . $file_name, $json->encode($fnc));
 	}
 		
-	if(isset($_GET['fnc_src'])){
-		print_r($fnc_src);
-	}
-	$fnc_src_files = scandir('json/fnc_src/');
-	foreach($fnc_src_files as $file){
-		if($file{0} != '.'){
-			unlink('json/fnc_src/' . $file);
-		}
-	}
-	foreach($fnc_src as $file_name => $fnc){
-		file_put_contents('json/fnc_src/' . $file_name, $fnc);
-	}
-	
 	if(!isset($_GET['signatures'])){
 		header("Content-type: text/html");		
 ?>
@@ -842,7 +894,23 @@ function function_signature($content, $function_name){
 
   return $output;
 }
-	
 
+function deltree($directory, $last_directory = false){
+	if($last_directory){
+		$directory .= '/' . $last_directory;
+	}
+		
+	$files = scandir($directory);
+	foreach($files as $file){
+		if($file{0} != '.'){
+			if(is_dir($directory . '/' . $file)){
+				deltree($directory, $file);
+				rmdir($directory . '/' . $file);
+			}else{
+				unlink($directory . '/' . $file);
+			}
+		}
+	}
+}
 
 ?>
