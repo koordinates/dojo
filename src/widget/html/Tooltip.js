@@ -7,10 +7,6 @@ dojo.require("dojo.event");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
 
-// TODO: way to leave tooltip open so user can click things inside the tooltip.
-// But this is problematic because then 2 tooltips might open at once and
-// interfere w/each other.
-
 dojo.widget.html.Tooltip = function(){
 	// mix in the tooltip properties
 	dojo.widget.Tooltip.call(this);
@@ -21,7 +17,8 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 
 	// Constructor arguments (should these be in tooltip.js rather than html/tooltip.js???)
 	caption: "",
-	delay: 500,
+	showDelay: 500,
+	hideDelay: 100,
 	connectId: "",
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.html"),
@@ -29,8 +26,12 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 
 	connectNode: null,
 
-	hovering: false,
-	state: "erased",	// "displaying", "displayed", "erasing", "erased"
+	// Tooltip has the following possible states:
+	//   erased - nothing on screen
+	//   displaying - currently being faded in (partially displayed)
+	//   displayed - fully displayed
+	//   erasing - currently being faded out (partially erased)
+	state: "erased",
 
 	fillInTemplate: function(args, frag){
 		if(this.caption != ""){
@@ -49,43 +50,43 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		// only works if the domnode is a child of document.body
 		document.body.appendChild(this.domNode);
 
-		var self = this;
-		this.timerEvent = function () { self.show.apply(self); };
 		dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
 		dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);
 	},
 	
 	onMouseOver: function(e) {
-		// ignore duplicate events
-		if(this.hovering){ return; }
-
-		this.timerEventId = setTimeout(this.timerEvent, this.delay);
-		dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
-		this.hovering=true;		
-
 		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
 		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+
+		if(!this.showTimer){
+			this.showTimer = setTimeout(dojo.lang.hitch(this, "show"), this.showDelay);
+			dojo.event.connect(document.documentElement, "onmousemove", this, "onMouseMove");
+		}
 	},
 
 	onMouseMove: function(e) {
-		if(!this.hovering){ return; }
-
-		// Have the mouse been moved off the element?
-		// Note: can't use onMouseOut because the "explode" effect causes
-		// spurious onMouseOut/onMouseOver events (due to interference from outline)
-		if( !dojo.html.overElement(this.connectNode, e) ){
-			if ( this.timerEventId ) {
-				clearTimeout(this.timerEventId);
-				delete this.timerEventId;
-			}
-			dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
-			this.hovering=false;
-			this.hide();
-			return;
-		}
-
 		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
 		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+
+		if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.domNode, e)) {
+			// If the tooltip has been scheduled to be erased, cancel that timer
+			// since we are hovering over element/tooltip again
+			if(this.hideTimer) {
+				clearTimeout(this.hideTimer);
+				delete this.hideTimer;
+			}
+		} else {
+			// mouse has been moved off the element/tooltip
+			// note: can't use onMouseOut to detect this because the "explode" effect causes
+			// spurious onMouseOut/onMouseOver events (due to interference from outline)
+			if(this.showTimer){
+				clearTimeout(this.showTimer);
+				delete this.showTimer;
+			}
+			if((this.state=="displaying"||this.state=="displayed") && !this.hideTimer){
+				this.hideTimer = setTimeout(dojo.lang.hitch(this, "hide"), this.hideDelay);
+			}
+		}
 	},
 
 	show: function() {
@@ -133,11 +134,20 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 		if ( this.state=="displayed" ) {
 			this.state="erasing";
+			if ( this.showTimer ) {
+				clearTimeout(this.showTimer);
+				delete this.showTimer;
+			}
+			if ( this.hideTimer ) {
+				clearTimeout(this.hideTimer);
+				delete this.hideTimer;
+			}
+			dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
 			dojo.widget.html.Tooltip.superclass.hide.call(this);
 			this.bgIframe.hide();
 		}
 	},
-	
+
 	onHide: function(){
 		this.state="erased";
 
