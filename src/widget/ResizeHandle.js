@@ -70,7 +70,12 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	changeSizing: function(e){
 		// On IE, if you move the mouse above/to the left of the object being resized,
 		// sometimes clientX/Y aren't set, apparently.  Just ignore the event.
-		if(!e.clientX  || !e.clientY){ return; }
+		try{
+			if(!e.clientX  || !e.clientY){ return; }
+		}catch(e){
+			// sometimes you get an exception accessing above fields...
+			return;
+		}
 		var dx = this.startPoint.x - e.clientX;
 		var dy = this.startPoint.y - e.clientY;
 		this.targetElm.resizeTo(this.startSize.w - dx, this.startSize.h - dy);
