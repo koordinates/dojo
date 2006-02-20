@@ -54,37 +54,25 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
 		dojo.html.addClass(this.domNode, "dojoFloatingPane");
-		this.domNode.style.position="absolute";
-		this.domNode.id = source.id;
 
-		if(this.iconSrc==""){
-			this.titleBarIcon.style.display="none";
-		}
+		this.titleBarIcon.style.display = (this.iconSrc=="" ? "none" : "");
+
 		if(this.titleBarDisplay!="none"){	
 			this.titleBar.style.display="";
 			dojo.html.disableSelection(this.titleBar);
 
-			if (this.displayMinimizeAction) {
-				this.minimizeAction.style.display="";
-			}
+			this.minimizeAction.style.display= (this.displayMinimizeAction ? "" : "none");
+			this.maximizeAction.style.display= 
+				(this.displayMaximizeAction && this.windowState!="maximized" ? "" : "none");
+			this.restoreAction.style.display= 
+				(this.displayMaximizeAction && this.windowState!="normal" ? "" : "none");
+			this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
 
-			if (this.displayMaximizeAction) {
-				if (this.windowState != "normal") {
-					this.restoreAction.style.display="";
-				} else {
-					this.restoreAction.style.display="none";
-				}
-
-				if (this.windowState != "maximized") {
-					this.maximizeAction.style.display="inline";	
-				} else {
-					this.maximizeAction.style.display="none";	
-				}
+			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
+			if (this.constrainToContainer) {
+				drag.constrainTo();
 			}
-
-			if (this.displayCloseAction) {
-				this.closeAction.style.display="";
-			}
+			drag.setDragHandle(this.titleBar);
 		}
 
 		if ( this.resizable ) {
@@ -102,13 +90,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		// Prevent IE bleed-through problem
-		this.bgIframe = new dojo.html.BackgroundIframe();
-		this.bgIframe.setZIndex(-1);
-		if( this.bgIframe.iframe ){
-			this.domNode.appendChild(this.bgIframe.iframe);
-		}
+		//this.bgIframe = new dojo.html.BackgroundIframe();
+		//this.bgIframe.setZIndex(-1);
+		//if( this.bgIframe.iframe ){
+		//	this.domNode.appendChild(this.bgIframe.iframe);
+		//}
 		if ( this.isVisible() ) {
-			this.bgIframe.show();
+			//this.bgIframe.show();
 		};
 
 		if( this.taskBarId ){
@@ -143,21 +131,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 	},
 
-	postCreate: function(args, frag){
-		if (this.titleBarDisplay != "none") {
-			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);
-	
-			if (this.constrainToContainer) {
-				drag.constrainTo();
-			}
-	
-			drag.setDragHandle(this.titleBar);
-		}
-
-		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
-		this.initialized=true;
-	},
-
 	maximizeWindow: function(evt) {
 		this.previousWidth= this.domNode.style.width;
 		this.previousHeight= this.domNode.style.height;
@@ -176,16 +149,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
 			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
 		}
-		this.maximizeAction && (this.maximizeAction.style.display="none");
-		this.restoreAction && (this.restoreAction.style.display="inline");
+		this.maximizeAction.style.display="none";
+		this.restoreAction.style.display=this.displayRestoreAction ? "" : "none";
 		this.windowState="maximized";
-		this.onResized();
 	},
 
 	minimizeWindow: function(evt) {
 		this.hide();
-		this.maximizeAction && (this.maximizeAction.style.display="inline");
-		this.restoreAction && (this.restoreAction.style.display="inline");
 		this.windowState = "minimized";
 	},
 
@@ -201,8 +171,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.show();
 		}
 
-		this.maximizeAction && (this.maximizeAction.style.display="inline");
-		this.restoreAction && (this.restoreAction.style.display="none");
+		this.restoreAction.style.display="none";
+		this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
 
 		this.bringToTop();
 		this.windowState="normal";
@@ -220,7 +190,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	bringToTop: function() {
 		var floatingPaneStartingZ = 100;
 		var floatingPanes= dojo.widget.manager.getWidgetsByType(this.widgetType);
-		var windows = []
+		var windows = [];
 		var y=0;
 		for (var x=0; x<floatingPanes.length; x++) {
 			if (this.widgetId != floatingPanes[x].widgetId) {
@@ -275,32 +245,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			return;
 		}
 		taskbar.addChild(this);
-	},
-
-	onResized: function(){
-		if( !this.isVisible() ){ return; }
-		
-		// get height/width
-		var newHeight = dojo.style.getInnerHeight(this.domNode);
-		var newWidth = dojo.style.getInnerWidth(this.domNode);
-		if (newHeight == 0 || newWidth == 0) {
-			// need more time for browser to compute
-			dojo.lang.setTimeout(50, dojo.lang.hitch(this, this.onResized));
-			return;
-		}
-		//if ( newWidth != this.width || newHeight != this.height ) {
-			this.width = newWidth;
-			this.height = newHeight;
-			if( this.shadow ){
-				this.shadow.size(newWidth, newHeight);
-			}
-			dojo.widget.html.FloatingPane.superclass.onResized.call(this);
-		//}
-
-		// bgIframe is a child of this.domNode, so position should be relative to [0,0]
-		if(this.bgIframe){
-			this.bgIframe.size([0, 0, newWidth, newHeight]);
-		}
 	},
 
 	hide: function(){
