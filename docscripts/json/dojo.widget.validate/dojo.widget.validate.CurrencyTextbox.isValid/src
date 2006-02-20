@@ -1,1 +1,0 @@
-return dojo.validate.isCurrency(this.textbox.value, this.flags);

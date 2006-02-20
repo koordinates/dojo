@@ -1,2 +1,0 @@
-this.isLoaded=false;
-this.loadContents();

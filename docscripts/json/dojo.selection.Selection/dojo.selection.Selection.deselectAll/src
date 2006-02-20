@@ -1,3 +1,0 @@
-while(this.selection && this.selection.length) {
-	this.deselect(this.selection[0]);
-}

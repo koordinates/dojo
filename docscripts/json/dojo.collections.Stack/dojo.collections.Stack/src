@@ -1,3 +1,0 @@
-var q = [];
-if (arr) q = q.concat(arr);
-this.count = q.length;

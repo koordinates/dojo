@@ -1,4 +1,0 @@
-dojo.widget.html.DebugConsole.superclass.postCreate.call(this);
-this.clientPane.domNode.id = "debugConsoleClientPane"
-djConfig.isDebug = true;
-djConfig.debugContainerId = this.clientPane.domNode.id;

@@ -1,8 +1,0 @@
-dojo.io.bind({
-	url: this.serviceUrl,
-	postContent: this.createRequest(method, parameters),
-	method: "POST",
-	mimetype: "text/json",
-	load: this.resultCallback(deferredRequestHandler),
-	preventCache:this.bustCache 
-});

@@ -1,6 +1,0 @@
-if(parent.firstChild) {
-	parent.insertBefore(node, parent.firstChild);
-} else {
-	parent.appendChild(node);
-}
-return true;

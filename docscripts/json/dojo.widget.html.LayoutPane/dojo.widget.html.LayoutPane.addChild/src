@@ -1,3 +1,0 @@
-this._injectChild(child);
-dojo.widget.html.LayoutPane.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
-this.resizeSoon();

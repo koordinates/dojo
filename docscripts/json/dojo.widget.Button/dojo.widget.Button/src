@@ -1,4 +1,0 @@
-dojo.widget.Widget.call(this);
-
-this.widgetType = "Button";
-this.isContainer = true;

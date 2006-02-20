@@ -1,4 +1,0 @@
-document.body.appendChild(this.domNode);
-
-dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
-dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);

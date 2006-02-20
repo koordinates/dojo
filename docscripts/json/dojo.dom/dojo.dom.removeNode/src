@@ -1,4 +1,0 @@
-if(node && node.parentNode){
-	 return a ref to the removed child
-	return node.parentNode.removeChild(node);
-}

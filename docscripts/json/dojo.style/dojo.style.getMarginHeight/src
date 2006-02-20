@@ -1,5 +1,0 @@
-node = dojo.byId(node);
-var autoIsZero = dojo.style.isPositionAbsolute(node);
-var top = dojo.style.getPixelValue(node, "margin-top", autoIsZero);
-var bottom = dojo.style.getPixelValue(node, "margin-bottom", autoIsZero);
-return top + bottom;

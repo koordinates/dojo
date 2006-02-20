@@ -1,1 +1,0 @@
-return this._find(item) > -1;

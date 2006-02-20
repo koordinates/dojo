@@ -1,7 +1,0 @@
-var ok = true;
-try{
-	ok = this.loadUri(uri, cb);
-}catch(e){
-	dojo.debug("failed loading ", uri, " with error: ", e);
-}
-return ((ok)&&(this.findModule(module, false))) ? true : false;

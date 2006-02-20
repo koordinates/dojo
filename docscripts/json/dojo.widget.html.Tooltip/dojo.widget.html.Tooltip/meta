@@ -1,1 +1,0 @@
-{"inherits":["dojo.widget.html.ContentPane"],"this_inherits":["dojo.widget.Tooltip","dojo.widget.html.ContentPane"],"this_variables":["connectNode","bgIframe","mouseX","mouseY","showTimer","hideTimer","displayScheduled","explodeSrc","state","eraseScheduled"]}

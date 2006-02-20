@@ -1,5 +1,0 @@
-if( this._anims[this._currAnim] ) {
-	return this._anims[this._currAnim].status();
-} else {
-	return "stopped";
-}

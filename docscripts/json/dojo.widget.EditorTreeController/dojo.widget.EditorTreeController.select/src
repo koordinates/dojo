@@ -1,5 +1,0 @@
-node.markSelected();
-
-node.tree.selector.selectedNode = node;
-
-dojo.event.topic.publish(this.eventNames.select, {source: node} );

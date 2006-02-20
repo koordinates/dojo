@@ -1,2 +1,0 @@
-node.style.display = 'block';
-dojo.fx.html.wipeIn(node, this.toggleDuration);

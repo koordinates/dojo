@@ -1,4 +1,0 @@
-if (evt.button==2 && (this.targetNodeIds.length==0 || (evt.currentTarget.id!="" && dojo.lang.inArray(this.targetNodeIds, evt.currentTarget.id)))){
-
-	return this.onOpen(evt);
-}

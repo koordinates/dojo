@@ -1,2 +1,0 @@
-items.splice(0, items.length);
-this.count = 0;

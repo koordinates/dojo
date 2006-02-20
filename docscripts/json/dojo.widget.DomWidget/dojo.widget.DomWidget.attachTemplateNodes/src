@@ -1,3 +1,0 @@
-if(!targetObj){ targetObj = this; }
-return dojo.widget.attachTemplateNodes(baseNode, targetObj, 
-			dojo.widget.getDojoEventsFromStr(this.templateString));

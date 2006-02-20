@@ -1,1 +1,0 @@
-{"inherits":["dojo.dnd.DragManager"],"this_variables":["mouseDownX","mouseDownY","selectedSources","dragObjects","dragSource","currentDropTarget","currentDropTargetPoints","dropTargetDimensions","previousDropTarget","dropAcceptable"]}

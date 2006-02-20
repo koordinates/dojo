@@ -1,1 +1,0 @@
-return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;

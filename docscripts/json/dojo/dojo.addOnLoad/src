@@ -1,7 +1,0 @@
-if(arguments.length == 1) {
-	dojo.hostenv.modulesLoadedListeners.push(obj);
-} else if(arguments.length > 1) {
-	dojo.hostenv.modulesLoadedListeners.push(function() {
-		obj[fcnName]();
-	});
-}

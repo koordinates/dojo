@@ -1,3 +1,0 @@
-this.provider = null;
-
- similar API as with dojo.io.addTransport()

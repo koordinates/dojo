@@ -1,8 +1,0 @@
-if(this.loadedUris[uri]){
-	return;
-}
-var contents = this.getText(uri, null, true);
-if(contents == null){ return 0; }
-this.loadedUris[uri] = true;
-var value = dj_eval(contents);
-return 1;

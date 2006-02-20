@@ -1,1 +1,0 @@
-return this.setEnabled(!this._enabled, force, preventEvent);

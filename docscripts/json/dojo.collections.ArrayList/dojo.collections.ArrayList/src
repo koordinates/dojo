@@ -1,3 +1,0 @@
-var items = [];
-if (arr) items = items.concat(arr);
-this.count = items.length;
