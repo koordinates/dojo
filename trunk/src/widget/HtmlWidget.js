@@ -67,6 +67,12 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		}
 	},
 
+	resizeTo: function(w, h){
+		dojo.style.setOuterWidth(this.domNode, w);
+		dojo.style.setOuterHeight(this.domNode, h);
+		this.onResized();
+	},
+
 	createNodesFromText: function(txt, wrap){
 		return dojo.html.createNodesFromText(txt, wrap);
 	},
