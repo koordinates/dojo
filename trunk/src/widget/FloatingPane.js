@@ -247,10 +247,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			document.body.removeChild(this.domNode);
 		}
 
-		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
+//		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
 	},
 
 	postCreate: function(args, frag){
+
+		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
+
 		// Make the client pane.  It will either be the widget specified by the user,
 		// or a wrapper widget
 		if(this.contentWrapper=="none"){
