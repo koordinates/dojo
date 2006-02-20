@@ -1,3 +1,0 @@
-with (dojo.version) {
-	return major + "." + minor + "." + patch + flag + " (" + revision + ")";
-}

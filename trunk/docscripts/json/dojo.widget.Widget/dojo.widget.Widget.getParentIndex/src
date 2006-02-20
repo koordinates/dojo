@@ -1,1 +1,0 @@
-return dojo.lang.indexOf( this.getSiblings(), this, true);

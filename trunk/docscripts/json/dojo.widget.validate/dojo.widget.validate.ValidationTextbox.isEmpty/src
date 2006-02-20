@@ -1,1 +1,0 @@
-return ( /^\s*$/.test(this.textbox.value) );

@@ -1,5 +1,0 @@
-var fcn = dojo.lang.isFunction(handler) ? handler : window[handler];
-if(!dojo.lang.isFunction(fcn)) {
-	throw new Error("Unable to set handler, '" + handler + "' not a function.");
-	return;
-}

@@ -1,1 +1,0 @@
-return dojo.math.round(this.free()/1024, 0);

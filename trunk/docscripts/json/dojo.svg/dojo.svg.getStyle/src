@@ -1,1 +1,0 @@
-return document.defaultView.getComputedStyle(node, cssSelector);

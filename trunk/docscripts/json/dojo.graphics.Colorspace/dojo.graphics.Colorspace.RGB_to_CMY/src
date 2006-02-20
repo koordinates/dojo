@@ -1,7 +1,0 @@
-var src = this.munge('RGB', arguments);
-
-var C = 1 - src.R;
-var M = 1 - src.G;
-var Y = 1 - src.B;
-
-return [C, M, Y];

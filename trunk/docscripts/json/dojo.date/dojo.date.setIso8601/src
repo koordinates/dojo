@@ -1,4 +1,0 @@
-var comps = string.split('T');
-dojo.date.setIso8601Date(dateObject, comps[0]);
-if (comps.length == 2) { dojo.date.setIso8601Time(dateObject, comps[1]); }
-return dateObject;

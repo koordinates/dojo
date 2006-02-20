@@ -1,4 +1,0 @@
-this.leftGradientStopColor = dojo.graphics.color.rgb2hex(this.hsl2rgb(this.hue, 0, 50));
-this.rightGradientStopColor = dojo.graphics.color.rgb2hex(this.hsl2rgb(this.hue, 100, 50));
-this.leftGradientColorNode.setAttributeNS(null,'stop-color',this.leftGradientStopColor);
-this.rightGradientColorNode.setAttributeNS(null,'stop-color',this.rightGradientStopColor);

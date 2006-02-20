@@ -1,3 +1,0 @@
-try{
-	delete this.domNode;
-}catch(e){  squelch!  }

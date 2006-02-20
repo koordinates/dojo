@@ -1,4 +1,0 @@
-node = dojo.byId(node);
-var camelCased = dojo.style.toCamelCase(cssSelector);
-var value = node.style[camelCased];  dom-ish
-return (value ? value : dojo.style.getComputedStyle(node, cssSelector, value));

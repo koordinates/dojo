@@ -1,3 +1,0 @@
-if (!parent.isFolder) return false;
-
-return true;

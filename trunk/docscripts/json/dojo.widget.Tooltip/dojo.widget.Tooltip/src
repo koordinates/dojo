@@ -1,4 +1,0 @@
-dojo.widget.Widget.call(this);
-
-this.widgetType = "Tooltip";
-this.isContainer = true;

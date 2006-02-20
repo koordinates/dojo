@@ -1,5 +1,0 @@
-if(dojo.lang.isFunction(this.handler)) {
-	this.handler(this, this.domNode);
-	return false;
-}
-return true;

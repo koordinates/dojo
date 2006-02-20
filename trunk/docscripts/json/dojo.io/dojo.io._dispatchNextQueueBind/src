@@ -1,8 +1,0 @@
-if(!dojo.io._queueBindInFlight){
-	dojo.io._queueBindInFlight = true;
-	if(dojo.io._bindQueue.length > 0){
-		dojo.io.bind(dojo.io._bindQueue.shift());
-	}else{
-		dojo.io._queueBindInFlight = false;
-	}
-}

@@ -1,8 +1,0 @@
-var info = {
-	widgetId: this.widgetId,
-	objectId: this.objectId,
-	index: this.getParentIndex(),
-	isFolder: this.isFolder
-}
-
-return info;

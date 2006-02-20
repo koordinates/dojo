@@ -1,6 +1,0 @@
-var idx = this.getParentIndex();
- 
-  first node is idx=0 not found is idx<0
-if (idx<=0) return null;
- 
-return this.getSiblings()[idx-1];

@@ -1,5 +1,0 @@
-if (this.window.windowState != "minimized") {
-	this.window.bringToTop();
-} else {
-	this.window.restoreWindow();
-}

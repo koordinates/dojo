@@ -1,1 +1,0 @@
-dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelSelected');

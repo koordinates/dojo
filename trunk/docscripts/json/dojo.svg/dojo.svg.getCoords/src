@@ -1,5 +1,0 @@
-if (node.getBBox) {
-	var box = node.getBBox();
-	return { x: box.x, y: box.y };
-}
-return null;

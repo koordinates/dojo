@@ -1,5 +1,0 @@
-if (dojo.widget.html.stabile.dataField) {
-	return dojo.widget.html.stabile.dataField;
-}
-var form = document.forms._dojo_form;
-return dojo.widget.html.stabile.dataField = form ? form.stabile : {value: ""};

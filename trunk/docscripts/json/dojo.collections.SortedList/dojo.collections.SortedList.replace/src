@@ -1,8 +1,0 @@
-if (!items[k]) {
-	this.add(k,v);
-	return false;  
-} else {
-	items[k] = new dojo.collections.DictionaryEntry(k,v);
-	q.sort(sorter);
-	return true;  
-}

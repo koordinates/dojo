@@ -1,6 +1,0 @@
-if (!scaleY) var scaleY = scaleX;
-if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
-	var t = node.ownerSVGElement.createSVGTransform();
-	t.setScale(scaleX, scaleY);
-	node.transform.baseVal.appendItem(t);
-}

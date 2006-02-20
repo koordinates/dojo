@@ -1,3 +1,0 @@
-if (this.isRunning) window.clearInterval(timer);
-this.interval = ms;
-if (this.isRunning) timer = window.setInterval(dojo.lang.hitch(this, "onTick"), this.interval);

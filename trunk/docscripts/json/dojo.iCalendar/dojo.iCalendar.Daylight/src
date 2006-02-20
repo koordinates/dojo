@@ -1,3 +1,0 @@
-this.name = "DAYLIGHT";
-this._ValidProperties = DaylightProperties;
-dojo.iCalendar.Component.call(this, body);

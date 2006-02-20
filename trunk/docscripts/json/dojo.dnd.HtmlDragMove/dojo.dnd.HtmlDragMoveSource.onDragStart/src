@@ -1,6 +1,0 @@
-var dragObj =  new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
-
-if (this.constrainToContainer) {
-	dragObj.constrainTo(this.constrainingContainer);
-}
-return dragObj;

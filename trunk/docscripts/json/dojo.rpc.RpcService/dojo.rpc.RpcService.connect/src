@@ -1,7 +1,0 @@
-dojo.debug("RpcService: Attempting to load SMD document from:", smdUrl);
-dojo.io.bind({
-	url: smdUrl,
-	mimetype: "text/json",
-	load: dojo.lang.hitch(this, function(type, object, e){ return this.processSmd(object); }),
-	sync: true
-});		

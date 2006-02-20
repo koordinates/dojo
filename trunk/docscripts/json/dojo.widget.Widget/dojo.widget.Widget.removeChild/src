@@ -1,7 +1,0 @@
-for(var x=0; x<this.children.length; x++){
-	if(this.children[x] === widget){
-		this.children.splice(x, 1);
-		break;
-	}
-}
-return widget;

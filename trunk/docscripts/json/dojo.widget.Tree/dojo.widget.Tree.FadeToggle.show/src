@@ -1,2 +1,0 @@
-node.style.display = 'block';
-dojo.fx.html.fade(node, this.toggleDuration, 0, 1);

@@ -1,2 +1,0 @@
-items.push(obj);
-this.count = items.length;

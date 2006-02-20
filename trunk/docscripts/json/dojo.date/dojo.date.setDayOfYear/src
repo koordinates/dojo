@@ -1,3 +1,0 @@
-dateObject.setMonth(0);
-dateObject.setDate(dayofyear);
-return dateObject;

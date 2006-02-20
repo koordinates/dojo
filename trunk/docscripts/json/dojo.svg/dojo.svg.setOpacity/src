@@ -1,2 +1,0 @@
-node.setAttributeNS(this.xmlns.svg, "fill-opacity", opacity);
-node.setAttributeNS(this.xmlns.svg, "stroke-opacity", opacity);

@@ -1,2 +1,0 @@
-var tbi = dojo.widget.createWidget("TaskBarItem",{windowId:child.widgetId, caption: child.title, iconSrc: child.iconSrc} );
-dojo.widget.html.TaskBar.superclass.addChild.call(this,tbi);

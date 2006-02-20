@@ -1,7 +1,0 @@
-if (!this._hasFocus) {
-	this.hideResultList();
-}
-if (this._mousewheel_connected) {
-	dojo.event.disconnect(document, "onmousewheel", this, "onMouseWheel");
-	this._mousewheel_connected = false;
-}

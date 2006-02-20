@@ -1,6 +1,0 @@
-if(!this.hideDisabledButtons){
-	button.style.display = "";
-	dojo.html.setClass(button, button.disabled ? "WizardButtonDisabled" : "WizardButton");
-}else{
-	button.style.display = button.disabled ? "none" : "";
-}

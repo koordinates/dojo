@@ -1,5 +1,0 @@
-if(!this.initialized){
-	this.backlog.push([key, value, ns]);
-	return "pending";
-}
-return this.flash.set(key, value, ns||this.namespace);

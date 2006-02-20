@@ -1,1 +1,0 @@
-dojo.fx.html.fadeOut(node, this.toggleDuration, function(node){ node.style.display = 'none'; });

@@ -1,6 +1,0 @@
-if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
-	var t = node.ownerSVGElement.createSVGTransform();
-	if (!cx) t.setMatrix(t.matrix.rotate(ang));
-	else t.setRotate(ang, cx, cy);
-	node.transform.baseVal.appendItem(t);
-}

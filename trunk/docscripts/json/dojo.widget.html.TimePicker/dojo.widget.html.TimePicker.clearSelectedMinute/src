@@ -1,4 +1,0 @@
-var minuteNodes = this.minuteContainerNode.getElementsByTagName("td");
-for (var i=0; i<minuteNodes.length; i++) {
-	dojo.html.setClass(minuteNodes.item(i), "");
-}

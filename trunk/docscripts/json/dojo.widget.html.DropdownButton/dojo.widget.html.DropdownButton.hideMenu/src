@@ -1,3 +1,0 @@
-this.menu.style.display = "none";
-dojo.event.disconnect(document.documentElement, "onmousedown", this, "onCanvasMouseDown");
-dojo.event.disconnect(this.menu, "onclick", this, "hideMenu");

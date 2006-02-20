@@ -1,5 +1,0 @@
-this.url = url;
-this.isLoaded = false;
-if ( this.isVisible() ){
-	this.loadContents();
-}
