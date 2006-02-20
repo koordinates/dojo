@@ -14,8 +14,8 @@ if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
 } else {
 	dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
 	dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
-}	
-this.maximizeAction.style.display="none";	
-this.restoreAction.style.display="inline";	
+}
+this.maximizeAction && (this.maximizeAction.style.display="none");
+this.restoreAction && (this.restoreAction.style.display="inline");
 this.windowState="maximized";
 this.onResized();

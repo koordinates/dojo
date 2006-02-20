@@ -117,9 +117,9 @@ else{
 											break;
 										}
 									}
-									// If nothing is found, assume that this.stuff takes place in the immediate parent
+									// If nothing is found, assume that this.stuff takes place in the package class
 									if($i == -1){
-										array_pop($tmp_function_name);
+										$tmp_function_name = array_slice($tmp_function_name, 0, 3);
 									}
 									$tmp_function_name = implode('.', $tmp_function_name);
 									if($content[$tmp_function_name]){
@@ -410,7 +410,11 @@ function require_parse($matches){
 
 function file_to_package($file){
 	// Makes the file names pretty!
-	return str_replace('.js', '', str_replace('__package__.js', '*', preg_replace('%^src\.%', '', preg_replace('%^src(?!\.hostenv|\.bootstrap)%', 'dojo', str_replace('/', '.', $file)))));
+	$package = str_replace('.js', '', str_replace('__package__.js', '*', preg_replace('%^src\.%', '', preg_replace('%^src(?!\.hostenv|\.bootstrap)%', 'dojo', str_replace('/', '.', $file)))));
+	if($package == 'bootstrap1' || $package == 'bootstrap2'){
+		return 'dojo';
+	}
+	return $package;
 }
 
 /**
@@ -905,7 +909,7 @@ function deltree($directory, $last_directory = false){
 		if($file{0} != '.'){
 			if(is_dir($directory . '/' . $file)){
 				deltree($directory, $file);
-				rmdir($directory . '/' . $file);
+				//rmdir($directory . '/' . $file);
 			}else{
 				unlink($directory . '/' . $file);
 			}

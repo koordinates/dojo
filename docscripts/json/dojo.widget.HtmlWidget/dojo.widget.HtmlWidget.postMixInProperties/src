@@ -1,3 +1,5 @@
-this.toggleObj =
-	dojo.widget.HtmlWidget.toggle[this.toggle.toLowerCase()] ||
-	dojo.widget.HtmlWidget.toggle.plain;
+var specialToggler =
+	(dojo.fx && dojo.fx.html && dojo.fx.html.toggle[this.toggle.toLowerCase()]);
+if(specialToggler){
+	this.toggleObj=specialToggler;
+}

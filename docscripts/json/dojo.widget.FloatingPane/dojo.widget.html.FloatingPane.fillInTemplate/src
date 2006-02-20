@@ -86,10 +86,12 @@ if (this.titleBarDisplay != "none") {
 		titleBarActions.appendChild(this.maximizeAction);
 		dojo.event.connect(this.maximizeAction, 'onclick', this, 'maximizeWindow');
 
-		if (this.windowState != "maximized") {
-			this.maximizeAction.style.display="inline";	
-		} else {
-			this.maximizeAction.style.display="none";	
+		if(this.maximizeAction){
+			if (this.windowState != "maximized") {
+				this.maximizeAction.style.display="inline";	
+			} else {
+				this.maximizeAction.style.display="none";	
+			}
 		}	
 	}
 

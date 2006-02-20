@@ -5,12 +5,21 @@ if(dojo.lang.isArray(desiredX)) {
 	desiredX = desiredX[0];
 }
 
+if(!isNaN(padding)) {
+	padding = [Number(padding), Number(padding)];
+} else if(!dojo.lang.isArray(padding)) {
+	padding = [0, 0];
+}
+
 var scroll = dojo.html.getScrollOffset();
 var view = dojo.html.getViewportSize();
 
 node = dojo.byId(node);
-var w = node.offsetWidth;
-var h = node.offsetHeight;
+var oldDisplay = node.style.display;
+node.style.display="";
+var w = dojo.style.getInnerWidth(node);
+var h = dojo.style.getInnerHeight(node);
+node.style.display=oldDisplay;
 
 if(hasScroll) {
 	desiredX -= scroll.x;
@@ -18,31 +27,31 @@ if(hasScroll) {
 }
 
 var x = -1, y = -1;
-dojo.debug(desiredX + w, "<=", view.w, "&&", desiredY + h, "<=", view.h);
-if(desiredX + w <= view.w && desiredY + h <= view.h) {  TL
-	x = desiredX;
-	y = desiredY;
+dojo.debug((desiredX+padding[0]) + w, "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
+if((desiredX+padding[0]) + w <= view.w && (desiredY+padding[1]) + h <= view.h) {  TL
+	x = (desiredX+padding[0]);
+	y = (desiredY+padding[1]);
 	dojo.debug("TL", x, y);
 }
 
-dojo.debug(desiredX, "<=", view.w, "&&", desiredY + h, "<=", view.h);
-if((x < 0 || y < 0) && desiredX <= view.w && desiredY + h <= view.h) {  TR
-	x = desiredX - w;
-	y = desiredY;
+dojo.debug((desiredX-padding[0]), "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
+if((x < 0 || y < 0) && (desiredX-padding[0]) <= view.w && (desiredY+padding[1]) + h <= view.h) {  TR
+	x = (desiredX-padding[0]) - w;
+	y = (desiredY+padding[1]);
 	dojo.debug("TR", x, y);
 }
 
-dojo.debug(desiredX + w, "<=", view.w, "&&", desiredY, "<=", view.h);
-if((x < 0 || y < 0) && desiredX + w <= view.w && desiredY <= view.h) {  BL
-	x = desiredX;
-	y = desiredY - h;
+dojo.debug((desiredX+padding[0]) + w, "<=", view.w, "&&", (desiredY-padding[1]), "<=", view.h);
+if((x < 0 || y < 0) && (desiredX+padding[0]) + w <= view.w && (desiredY-padding[1]) <= view.h) {  BL
+	x = (desiredX+padding[0]);
+	y = (desiredY-padding[1]) - h;
 	dojo.debug("BL", x, y);
 }
 
-dojo.debug(desiredX, "<=", view.w, "&&", desiredY, "<=", view.h);
-if((x < 0 || y < 0) && desiredX <= view.w && desiredY <= view.h) {  BR
-	x = desiredX - w;
-	y = desiredY - h;
+dojo.debug((desiredX-padding[0]), "<=", view.w, "&&", (desiredY-padding[1]), "<=", view.h);
+if((x < 0 || y < 0) && (desiredX-padding[0]) <= view.w && (desiredY-padding[1]) <= view.h) {  BR
+	x = (desiredX-padding[0]) - w;
+	y = (desiredY-padding[1]) - h;
 	dojo.debug("BR", x, y);
 }
 
