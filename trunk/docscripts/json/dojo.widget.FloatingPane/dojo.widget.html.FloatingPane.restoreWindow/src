@@ -10,10 +10,8 @@ if (this.widgetState != "maximized") {
 	this.show();
 }
 
-if (this.resizable) {
-	this.maximizeAction.style.display="inline";	
-	this.restoreAction.style.display="none";	
-}
+this.maximizeAction && (this.maximizeAction.style.display="inline");
+this.restoreAction && (this.restoreAction.style.display="none");
 
 this.bringToTop();
 this.windowState="normal";

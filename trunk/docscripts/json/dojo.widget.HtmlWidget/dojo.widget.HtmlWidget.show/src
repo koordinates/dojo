@@ -1,3 +1,2 @@
-this.animationInProgress=true;
-this.toggleObj.show(this.domNode, this.toggleDuration, this.explodeSrc,
-	dojo.lang.hitch(this, this.onShow));
+dojo.style.show(node);
+if(dojo.lang.isFunction(callback)){ callback(); }

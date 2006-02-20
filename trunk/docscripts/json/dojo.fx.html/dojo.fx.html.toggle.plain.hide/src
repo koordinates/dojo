@@ -1,2 +1,2 @@
-dojo.html.hide(node);
+dojo.style.hide(node);
 if(dojo.lang.isFunction(callback)){ callback(); }
