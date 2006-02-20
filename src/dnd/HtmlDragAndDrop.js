@@ -38,7 +38,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 		if(this.dragClass) { dragObj.dragClass = this.dragClass; }
 
 		if (this.constrainToContainer) {
-			dragObj.constrainTo(this.constrainingContainer);
+			dragObj.constrainTo(this.constrainingContainer || this.domNode.parentNode);
 		}
 
 		return dragObj;
@@ -57,11 +57,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 
 	constrainTo: function(container) {
 		this.constrainToContainer = true;
-
 		if (container) {
 			this.constrainingContainer = container;
-		} else {
-			this.constrainingContainer = this.domNode.parentNode;
 		}
 	}
 });
