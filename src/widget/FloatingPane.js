@@ -12,16 +12,15 @@ dojo.require("dojo.html.shadow");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 dojo.require("dojo.widget.ContentPane");
-dojo.require("dojo.widget.LayoutPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
 dojo.require("dojo.dnd.HtmlDragMoveObject");
 
 dojo.widget.html.FloatingPane = function(){
-	dojo.widget.html.LayoutPane.call(this);
+	dojo.widget.html.ContentPane.call(this);
 }
 
-dojo.inherits(dojo.widget.html.FloatingPane, dojo.widget.html.LayoutPane);
+dojo.inherits(dojo.widget.html.FloatingPane, dojo.widget.html.ContentPane);
 
 dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	widgetType: "FloatingPane",
@@ -32,30 +31,10 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	hasShadow: false,
 	constrainToContainer: false,
 	taskBarId: "",
-	resizable: true,	// note: if specified, user must include ResizeHandle
-	overflow: "",
+	resizable: true,	// note: if specified, user must dojo.require("dojo.widget.html.ResizeHandle")
 
 	resizable: false,
 	titleBarDisplay: "fancy",
-	titleHeight: 22,	// workaround to CSS loading race condition bug
-
-	href: "",
-	extractContent: true,
-	parseContent: true,
-	cacheContent: true,
-	executeScripts: false,
-
-	// FloatingPane supports 3 modes for the client area (the part below the title bar)
-	//  default - client area  is a ContentPane, that can hold
-	//      either inlined data and/or data downloaded from a URL
-	//  layout - the client area is a layout pane
-	//  none - the user specifies a single widget which becomes the content pane
-	contentWrapper: "default",
-
-	containerNode: null,
-	domNode: null,
-	clientPane: null,
-	dragBar: null,
 
 	windowState: "normal",
 	displayCloseAction: false,
@@ -65,36 +44,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	maxTaskBarConnectAttempts: 5,
 	taskBarConnectAttempts: 0,
 
-	minimizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMinimize.gif"),
-	maximizeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneMaximize.gif"),
-	restoreIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneRestore.gif"),
-	closeIcon: dojo.uri.dojoUri("src/widget/templates/images/floatingPaneClose.gif"),
-	titleBarBackground: dojo.uri.dojoUri("src/widget/templates/images/titlebar-bg.jpg"),
-
-	templateString: '<div></div>',
+	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
-
-	initialized: false,
-
-	addChild: function(child, overrideContainerNode, pos, ref, insertIndex) {
-		this.clientPane.addChild(child, overrideContainerNode, pos, ref, insertIndex);
-	},
-
-	// make a widget container to hold all the contents of the floating pane (other than the
-	// title and the resize bar at the bottom)
-	_makeClientPane: function(clientDiv){
-		var args = {
-			layoutAlign: "client", 
-			id:this.widgetId+"_client",
-			href: this.href, 
-			cacheContent: this.cacheContent, 
-			extractContent: this.extractContent,
-			parseContent: this.parseContent,
-			executeScripts: this.executeScripts
-		};
-		var pane = this._createPane(this.contentWrapper=="layout"?"LayoutPane":"ContentPane", clientDiv, args);
-		return pane;
-	},
 
 	fillInTemplate: function(args, frag){
 		var source = this.getFragNodeRef(frag);
@@ -105,128 +56,54 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.html.addClass(this.domNode, "dojoFloatingPane");
 		this.domNode.style.position="absolute";
 		this.domNode.id = source.id;
-		if(dojo.render.html.safari){
-			document.body.appendChild(this.domNode);
+
+		if(this.iconSrc==""){
+			this.titleBarIcon.style.display="none";
 		}
-
-		// make client pane wrapper to hold the contents of this floating pane
-		if(this.contentWrapper!="none"){
-			var clientDiv = document.createElement('div');
-			dojo.dom.moveChildren(source, clientDiv, 0);
-			this.clientPane = this._makeClientPane(clientDiv);
-		}
-		
-		if (this.titleBarDisplay != "none") {
-			// this is our chrome
-			var chromeDiv = document.createElement('div');
-			dojo.html.addClass(chromeDiv, 'dojoFloatingPaneDragbar');
-			chromeDiv.style.height=this.titleHeight+"px";	// workaround CSS loading race condition bug
-			
-			this.dragBar = this._createPane("LayoutPane", chromeDiv, {layoutAlign: 'top', id:this.widgetId+"_chrome"});
-			dojo.html.disableSelection(this.dragBar.domNode);
-
-			if( this.titleBarDisplay == "fancy"){
-				// image background to get gradient
-				var img = document.createElement('img');
-				img.src = this.titleBarBackground;
-				dojo.html.addClass(img, 'dojoFloatingPaneDragbarBackground');
-				var backgroundPane = dojo.widget.createWidget("ContentPane", {layoutAlign:"flood", id:this.widgetId+"_titleBackground"}, img);
-				this.dragBar.addChild(backgroundPane);
-			}
-
-			//Title Bar
-			var titleBar = document.createElement('div');
-			dojo.html.addClass(titleBar, "dojoFloatingPaneTitleBar");
-			dojo.html.disableSelection(titleBar);
-
-			//TitleBarActions
-			var titleBarActions = document.createElement('div');
-			dojo.html.addClass(titleBarActions, "dojoFloatingPaneActions");
-
-			//Title Icon
-			if(this.iconSrc!=""){
-				var titleIcon = document.createElement('img');
-				dojo.html.addClass(titleIcon,"dojoTitleBarIcon");
-				titleIcon.src = this.iconSrc;						
-				titleBar.appendChild(titleIcon);
-			}
-
-			//Title text  
-			var titleText = document.createTextNode(this.title)
-			titleBar.appendChild(titleText);
+		if(this.titleBarDisplay!="none"){	
+			this.titleBar.style.display="";
+			dojo.html.disableSelection(this.titleBar);
 
 			if (this.displayMinimizeAction) {
-				//FloatingPane Action Minimize
-				this.minimizeAction = document.createElement("img");
-				dojo.html.addClass(this.minimizeAction, "dojoFloatingPaneActionItem");
-				this.minimizeAction.src = this.minimizeIcon;	
-				titleBarActions.appendChild(this.minimizeAction);
-				dojo.event.connect(this.minimizeAction, 'onclick', this, 'minimizeWindow');
+				this.minimizeAction.style.display="";
 			}
 
 			if (this.displayMaximizeAction) {
-				//FloatingPane Action Restore
-				this.restoreAction = document.createElement("img");
-				dojo.html.addClass(this.restoreAction, "dojoFloatingPaneActionItem");
-				this.restoreAction.src = this.restoreIcon;	
-				titleBarActions.appendChild(this.restoreAction);
-				dojo.event.connect(this.restoreAction, 'onclick', this, 'restoreWindow');
-
 				if (this.windowState != "normal") {
-					this.restoreAction.style.display="inline";
+					this.restoreAction.style.display="";
 				} else {
 					this.restoreAction.style.display="none";
 				}
 
-				//FloatingPane Action Maximize
-				this.maximizeAction = document.createElement("img");
-				dojo.html.addClass(this.maximizeAction, "dojoFloatingPaneActionItem");
-				this.maximizeAction.src = this.maximizeIcon;	
-				titleBarActions.appendChild(this.maximizeAction);
-				dojo.event.connect(this.maximizeAction, 'onclick', this, 'maximizeWindow');
-
-				if(this.maximizeAction){
-					if (this.windowState != "maximized") {
-						this.maximizeAction.style.display="inline";	
-					} else {
-						this.maximizeAction.style.display="none";	
-					}
-				}	
+				if (this.windowState != "maximized") {
+					this.maximizeAction.style.display="inline";	
+				} else {
+					this.maximizeAction.style.display="none";	
+				}
 			}
 
 			if (this.displayCloseAction) {
-				//FloatingPane Action Close
-				var closeAction= document.createElement("img");
-				dojo.html.addClass(closeAction, "dojoFloatingPaneActionItem");
-				closeAction.src = this.closeIcon;	
-				titleBarActions.appendChild(closeAction);
-				dojo.event.connect(closeAction, 'onclick', this, 'closeWindow');
+				this.closeAction.style.display="";
 			}
-
-
-			chromeDiv.appendChild(titleBar);
-			chromeDiv.appendChild(titleBarActions);
 		}
 
 		if ( this.resizable ) {
-			// add the resize handle
-			var resizeDiv = document.createElement('div');
-			dojo.html.addClass(resizeDiv, "dojoFloatingPaneResizebar");
-			dojo.html.disableSelection(resizeDiv);
+			this.resizeBar.style.display="";
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-			this.resizePane = this._createPane("ContentPane", resizeDiv, {layoutAlign: "bottom"});
-			this.resizePane.addChild(rh);
+			this.resizeHandle.appendChild(rh.domNode);
 		}
+
+		// make the content pane take all the remaining space
+		this._setPadding();
 
 		// add a drop shadow
 		if(this.hasShadow){
 			this.shadow=new dojo.html.shadow(this.domNode);
 		}
 
-		dojo.event.connect(this.domNode, 'onmousedown', this, 'onMouseDown');
-
 		// Prevent IE bleed-through problem
 		this.bgIframe = new dojo.html.BackgroundIframe();
+		this.bgIframe.setZIndex(-1);
 		if( this.bgIframe.iframe ){
 			this.domNode.appendChild(this.bgIframe.iframe);
 		}
@@ -247,44 +124,26 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			document.body.removeChild(this.domNode);
 		}
 
-//		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
+		dojo.widget.html.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
+	},
+
+	// Configure the content pane to take up all the space between the title bar and the resize bar
+	_setPadding: function(){
+		var t=dojo.style.getOuterHeight(this.titleBar);
+		var b=dojo.style.getOuterHeight(this.resizeBar);
+		if(t==0||b==0){
+			// browser needs more time to compute sizes (maybe CSS hasn't downloaded yet)
+			dojo.lang.setTimeout(this, this._setPadding, 50);
+			return;
+		}
+
+		with(this.domNode.style){
+			paddingTop=t+"px";
+			paddingBottom=b+"px";
+		}
 	},
 
 	postCreate: function(args, frag){
-
-		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
-
-		// Make the client pane.  It will either be the widget specified by the user,
-		// or a wrapper widget
-		if(this.contentWrapper=="none"){
-			// the user has specified a single widget which will become our content
-			this.clientPane = this.children[0];
-			this.domNode.appendChild(this.clientPane.domNode);
-		}else{
-			// move our 'children' into the client pane
-			// we already moved the domnodes, but now we need to move the 'children'
-			var kids = this.children.concat();
-			this.children = [];
-	
-			for(var i=0; i<kids.length; i++){
-				if (kids[i].ownerPane == this){
-					this.children.push(kids[i]);
-				}else{
-					if(this.contentWrapper=="layout"){
-						this.clientPane.addChild(kids[i]);
-					}else{
-						this.clientPane.children.push(kids[i]);
-					}
-				}
-			}
-		}
-		dojo.html.addClass(this.clientPane.domNode, 'dojoFloatingPaneClient');
-		this.clientPane.layoutAlign="client";
-		this.clientPane.ownerPane=this;
-		if (this.overflow != "") {
-			this.clientPane.domNode.style.overflow=this.overflow;
-		}
-
 		if (this.titleBarDisplay != "none") {
 			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);
 	
@@ -292,9 +151,10 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 				drag.constrainTo();
 			}
 	
-			drag.setDragHandle(this.dragBar.domNode);
+			drag.setDragHandle(this.titleBar);
 		}
 
+		dojo.widget.html.FloatingPane.superclass.postCreate.call(this, args, frag);
 		this.initialized=true;
 	},
 
@@ -335,7 +195,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.domNode.style.height = this.previousHeight;
 			this.domNode.style.left = this.previousLeft;
 			this.domNode.style.top = this.previousTop;
-			dojo.widget.html.FloatingPane.superclass.onResized.call(this);
 		}
 
 		if (this.widgetState != "maximized") {
@@ -350,6 +209,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	closeWindow: function(evt) {
+		dojo.dom.removeNode(this.domNode);
 		this.destroy();
 	},
 
@@ -428,7 +288,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.lang.setTimeout(50, dojo.lang.hitch(this, this.onResized));
 			return;
 		}
-	
 		//if ( newWidth != this.width || newHeight != this.height ) {
 			this.width = newWidth;
 			this.height = newHeight;
@@ -453,24 +312,16 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	show: function(){
 		dojo.widget.html.FloatingPane.superclass.show.call(this);
+		
+		// TODO: move this into HtmlWidget
 		if(this.bgIframe){
 			this.bgIframe.show();
 		}
 	},
 
-	_createPane: function(type, node, args){
-		var pane = dojo.widget.createWidget(type, args, node);
-		dojo.widget.html.FloatingPane.superclass.addChild.call(this,pane);
-		pane.ownerPane=this;
-		return pane;
-	},
-	
-	setUrl: function(url){
-		this.clientPane.setUrl(url);
-	},
-	
-	setContent: function(str){
-		this.clientPane.setContent(str);
+	onShow: function(){
+		dojo.widget.html.FloatingPane.superclass.onShow.call(this);
+		this.onResized();
 	}
 });
 
