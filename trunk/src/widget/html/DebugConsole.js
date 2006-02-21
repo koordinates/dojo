@@ -13,9 +13,9 @@ dojo.widget.html.DebugConsole= function(){
 dojo.inherits(dojo.widget.html.DebugConsole, dojo.widget.html.FloatingPane);
 
 dojo.lang.extend(dojo.widget.html.DebugConsole, {
-	postCreate: function() {
+	fillInTemplate: function() {
 		dojo.widget.html.DebugConsole.superclass.postCreate.call(this);
-		this.clientPane.domNode.id = "debugConsoleClientPane"
+		this.containerNode.id = "debugConsoleClientPane"
 		djConfig.isDebug = true;
 		djConfig.debugContainerId = this.clientPane.domNode.id;
 	}
