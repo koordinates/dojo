@@ -84,6 +84,23 @@ dojo.html.selectElement = function(element){
 	}
 }
 
+dojo.html.selectInputText = function(element){
+	element = dojo.byId(element);
+	if(document.selection && document.body.createTextRange){ // IE
+		var range = element.createTextRange();
+		range.moveStart("character", 0);
+		range.moveEnd("character", element.value.length);
+		range.select();
+		range.focus();
+	}else if(window["getSelection"]){
+		var selection = window.getSelection();
+		// FIXME: does this work on Safari?
+		element.setSelectionRange(0, element.value.length);
+		element.focus();
+	}
+}
+
+
 dojo.html.isSelectionCollapsed = function(){
 	if(document["selection"]){ // IE
 		return document.selection.createRange().text == "";
