@@ -413,7 +413,7 @@ function require_parse($matches){
 
 function file_to_package($file){
 	// Makes the file names pretty!
-	$package = str_replace('.js', '', str_replace('__package__.js', '*', preg_replace('%^src\.%', '', preg_replace('%^src(?!\.hostenv|\.bootstrap)%', 'dojo', str_replace('/', '.', $file)))));
+	$package = preg_replace('%.js$%', '', str_replace('__package__.js', '*', preg_replace('%^src\.%', '', preg_replace('%^src(?!\.hostenv|\.bootstrap)%', 'dojo', str_replace('/', '.', $file)))));
 	if($package == 'bootstrap1' || $package == 'bootstrap2'){
 		return 'dojo';
 	}
