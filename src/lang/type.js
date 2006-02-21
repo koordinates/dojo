@@ -224,31 +224,23 @@ dojo.lang.getConstructor=function(/* object */ obj){
 dojo.lang.isConstructedBy=function(/* object */ obj, /* function */ type){
 	//	summary
 	//	Returns a boolean if the passed [obj] was created by [type]
-	return (dojo.lang.getConstructor(obj)==type);	//	boolean
+	return dojo.lang.getConstructor(obj)==type;	//	boolean
 }
 
 dojo.lang.isSubOf=function(/* object */ obj, /* object */ type){
 	//	summary
 	//	Test to see if type is in obj's prototype chain
-	return (obj instanceof type); 	// boolean
+	return obj instanceof type; 	// boolean
 }
 
-dojo.lang.getBase=function(/* object */ obj){
+dojo.lang.isBaseOf=function(/* object */ type, /* object */ obj){
 	//	summary
-	//	Return the constructor of the passed object's prototype.
-	if (dojo.lang.getConstructor(obj).prototype.prototype.constructor){
-		return dojo.lang.getConstructor(obj).prototype.prototype.constructor; 	//	Function
-	}
-	return Object;	//	Object
+	//	Test to see if obj is in type's prototype chain
+	return obj instanceof type; 	// boolean
 }
 
-dojo.lang.isBaseOf=function(/* object */ baseObj, /* object */ obj){
-	//	summary
-	//	Test to see if baseObj is in obj's prototype chain
-	return (obj instanceOf baseObj);	//	boolean
-}
-
-dojo.lang.createInstance=function(/* string */ type, /* Array? */ args){
+//	TODO: pass the constructor an arguments object.
+dojo.lang.createInstance=function(/* string */ type){
 	//	summary
 	//	create an instance of type.
 	var o=null;
@@ -257,7 +249,10 @@ dojo.lang.createInstance=function(/* string */ type, /* Array? */ args){
 		f=dojo.lang.getObject(type);
 	}
 	if(typeof(f)=="function"){
-		f.apply(o,args);
+		try{
+			o=new f();
+		}catch(e){
+		}
 	}
 	return o;	//	object
 }
