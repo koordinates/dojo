@@ -93,8 +93,8 @@
 		dojo.debug("Loading flash...");
 		dojo.event.connect(dojo.flash, "loaded", "flashLoaded");
 		dojo.event.connect(dojo.flash, "installing", "flashInstalling");
-		dojo.flash.setSwf({flash6: "UnitTests_version6.swf",
-										   flash8: "UnitTests_version8.swf",
+		dojo.flash.setSwf({flash6: "resources/UnitTests_version6.swf",
+										   flash8: "resources/UnitTests_version8.swf",
 											 visible: false});
 											 
 		/** Find out when the page is finished loading */
@@ -112,7 +112,7 @@
 		var testBook = null;
 
 		dojo.io.bind({
-				url: "test.xml",
+				url: "resources/test.xml",
 				load: function(type, data, evt){ 
 					dojo.debug("Test XML data loaded");
 					testXML = data;
@@ -125,7 +125,7 @@
 		});
 
 		dojo.io.bind({
-				url: "testBook.txt",
+				url: "resources/testBook.txt",
 				load: function(type, data, evt){ 
 					dojo.debug("Test large data file loaded");
 					testBook = data;
