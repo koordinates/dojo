@@ -8,6 +8,14 @@ JSON Objects
 
 In all of the following examples, a key with "" around it means that it is a text link. That is, it does not change.
 
+Also, it is assumed that if anything begins with a _, then it is replaced by its parents. It should be intuitive after looking at the functions.
+
+Examples:
+
+* function_names packages have "dojo" as their parent
+* function_names functions have package as their parent
+* etc
+
 Directory structure:
 
 package/
