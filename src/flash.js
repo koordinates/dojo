@@ -361,7 +361,6 @@ dojo.flash = {
 		// see if we need to rev or install Flash on this platform
 		var installer = new dojo.flash.Install();
 
-		dojo.debug("Install needed="+installer.needed());
 		if(installer.needed() == true){		
 			installer.install();
 		}else{
@@ -394,7 +393,7 @@ dojo.flash = {
 			dojo.event.connect(dojo.flash, "installing", myInstance, "myCallback");
 	*/
 	installing: function(){
-	 dojo.debug("installing");
+	 //dojo.debug("installing");
 	}
 };
 
@@ -473,16 +472,9 @@ dojo.flash.Info.prototype = {
 			dojo.flash.info.isVersionOrAbove(7, 0, 14)
 	*/
 	isVersionOrAbove: function(reqMajorVer, reqMinorVer, reqVer){
-		dojo.debug("isVersionOrAbove, reqMajorVer="+reqMajorVer+", reqMinorVer="+reqMinorVer+", reqVer="+reqVer);
 		// make the revision a decimal (i.e. transform revision 14 into
 		// 0.14
 		reqVer = parseFloat("." + reqVer);
-		dojo.debug("reqVer="+reqVer);
-		dojo.debug("versionMajor="+this.versionMajor);
-		dojo.debug("version="+this.version);
-		dojo.debug("versionMinor="+this.versionMinor);
-		dojo.debug("part 1="+(this.version >= reqVer));
-		dojo.debug("part 2="+(this.versionMinor >= reqMinorVer));
 		
 		if(this.versionMajor >= reqMajorVer && this.versionMinor >= reqMinorVer
 			 && this.versionRevision >= reqVer){
@@ -490,17 +482,6 @@ dojo.flash.Info.prototype = {
 		}else{
 			return false;
 		}
-		
-		/*
-		if(this.versionMajor > reqMajorVer && this.version >= reqVer){
-			dojo.debug("1");
-			return true;
-		}else if(this.version >= reqVer && this.versionMinor >= reqMinorVer){
-			dojo.debug("2");
-			return true;
-		}else{
-			return false;
-		}*/
 	},
 	
 	_detectVersion: function(){
@@ -669,9 +650,7 @@ dojo.flash.Embed.prototype = {
 		}
 		// Flash 8
 		else{
-			dojo.debug("flash 8 version");
 			swfloc = dojo.flash.flash8_version;
-			dojo.debug("swfloc="+swfloc);
 			
 			objectHTML =
 				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
@@ -932,7 +911,6 @@ dojo.flash.Communicator.prototype = {
 	*/
 	_addExternalInterfaceCallback: function(methodName){
 		var wrapperCall = function(){
-			//dojo.debug("wrapperCall, methodName="+methodName);
 			// some browsers don't like us changing values in the 'arguments' array, so
 			// make a fresh copy of it
 			var methodArgs = new Array(arguments.length);
@@ -978,7 +956,6 @@ dojo.flash.Communicator.prototype = {
 			Flash 8 communication.
 	*/
 	_decodeData: function(data){
-		//dojo.debug("data before decoding="+data);
 		if(data == null || typeof data == "undefined"){
 			return data;
 		}
@@ -991,14 +968,12 @@ dojo.flash.Communicator.prototype = {
 		// that are being used in the string itself
 		data = data.replace(/\&custom_lt\;/g, "<");
 		data = data.replace(/\&custom_gt\;/g, ">");
-		//dojo.debug("data after decoding replace="+data);
 		
 		// Unfortunately, Flash returns us our String with special characters
 		// like newlines broken into seperate characters. So if \n represents
 		// a new line, Flash returns it as "\" and "n". This means the character
 		// is _not_ a newline. This forces us to eval() the string to cause
 		// escaped characters to turn into their real special character values.
-		//dojo.debug("about to eval, data="+data);
 		data = eval('"' + data + '"');
 		
 		return data;
@@ -1054,7 +1029,6 @@ dojo.flash.Communicator.prototype = {
 		
 		var numSegments = plugin.getReturnLength();
 		var resultsArray = new Array();
-		//dojo.debug("-----------------------------------------------");
 		for(var i = 0; i < numSegments; i++){
 			// directly use the underlying CallFunction method used by
 			// ExternalInterface, which is vastly faster for large strings
@@ -1070,19 +1044,15 @@ dojo.flash.Communicator.prototype = {
 			// our String when it comes back from Flash since we bypass Flash's
 			// deserialization routines by directly calling CallFunction on the
 			// plugin
-			//dojo.debug("!!!!!!!!!!!!!!!!!!!!!javascript piece before="+piece);
 			if(piece == '""' || piece == "''"){
 				piece = "";
 			}else{
 				piece = piece.substring(1, piece.length-1);
 			}
 		
-			//dojo.debug("!!!!!!!!!!!!!!!!!!!!!javascript piece after="+piece);
 			resultsArray.push(piece);
 		}
 		var results = resultsArray.join("");
-		//dojo.debug("-----------------------------------------------");
-		//dojo.debug("javascript chunkReturnData="+results);
 		
 		return results;
 	},
@@ -1093,9 +1063,7 @@ dojo.flash.Communicator.prototype = {
 			Flash 8 communication.
 	*/
 	_execFlash: function(methodName, methodArgs){
-		//dojo.debug("_execFlash");
 		var plugin = dojo.flash.obj.get();
-		//dojo.debug("plugin="+plugin);
 				
 		// begin Flash method execution
 		plugin.startExec();
@@ -1147,8 +1115,6 @@ dojo.flash.Install.prototype = {
 		// are we on the Mac? Safari needs Flash version 8 to do Flash 8
 		// communication, while Firefox/Mac needs Flash 8 to fix bugs it has
 		// with Flash 6 communication
-		dojo.debug("ismac="+dojo.render.os.mac);
-		dojo.debug("isVersionOrABove="+dojo.flash.info.isVersionOrAbove(8, 0, 0));
 		if(dojo.render.os.mac == true && !dojo.flash.info.isVersionOrAbove(8, 0, 0)){
 			return true;
 		}
@@ -1164,7 +1130,6 @@ dojo.flash.Install.prototype = {
 
 	/** Performs installation or revving of the Flash plugin. */
 	install: function(){
-		dojo.debug("installing Flash");
 		// indicate that we are installing
 		dojo.flash.info.installing = true;
 		dojo.flash.installing();
