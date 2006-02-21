@@ -72,9 +72,8 @@ else{
 			print '*' . $package . "\n";
 		}
     foreach($content as $function_name => $function){
-			if($function_name == 'default'){
-				print_r($function);
-			}
+			$real_function_name = $function_name;
+			$function_name = preg_replace('%^' . str_replace('.', '\.', $package) . '%', '_', $function_name);
 			$package_root = str_replace('.*', '', $package) . '.';
 			if($function_name == 'requires'){
 				foreach($function as $hostenv => $child_function){
@@ -88,6 +87,7 @@ else{
 				$output[$package]['meta'][$function_name]['is'] = $function['is'];
 			}else{
 				foreach($function as $function_signature => $function_content){
+//					$function_signature = preg_replace('%(?<= )' . str_replace('.', '\.', $package) .'(?=[^ ]*\()%U', '_', $function_signature);
 					$polymorphic_id = 'default';
 					if($function_content['comments']['id']){
 						$polymorphic_id = $function_content['comments']['id'];
@@ -216,7 +216,9 @@ else{
 					foreach($function_content['function_content'] as $key => $line){
 						$function_content['function_content'][$key] = preg_replace('%^' . $shortest . '%', '', $line);
 					}
-					
+
+					// Get rid of "undefined" and the function name
+					$function_signature = preg_replace('%^undefined\s*%', '', preg_replace('%(?<= )[^ ]+(?=\()%U', '', $function_signature));
 					if($polymorphic_id != 'default'){
 						$output[$package]['meta'][$function_name][$polymorphic_id][$function_signature] = '';
 						$output[$package][$function_name][$polymorphic_id]['src'] = implode("\n", $function_content['function_content']);
@@ -251,16 +253,16 @@ else{
 				else{
 					$empty_test = array_diff(array_keys($function), array('inherits', 'variables'));
 					if(strrpos($function_name, '*') == strlen($function_name)-1 || !empty($empty_test)){
-						if($last['package'] && strpos($function_name, $last['package']) !== false){
+						if($last['package'] && strpos($real_function_name, $last['package']) !== false){
 							// This guarantees that the .* function won't get inserted unless it has children
-							$output['function_names'][$last['package'] . '*'][] = $last['package'] . '*';
+							$output['function_names'][preg_replace('%^dojo%', '_', $last['package']) . '*'][] = $last['package'] . '*';
 							$last['package'] = '';
 						}
-						if(strrpos($function_name, '*') == strlen($function_name)-1){
-							$last['package'] = substr($function_name, 0, -1);
+						if(strrpos($real_function_name, '*') == strlen($real_function_name)-1){
+							 	$last['package'] = substr($real_function_name, 0, -1);
 						}else{
-							if($function_name){
-								$output['function_names'][$package][] = $function_name;// . ' (' . $package . ')';
+							if($real_function_name){
+								$output['function_names'][preg_replace('%^dojo%', '_', $package)][] = $function_name;// . ' (' . $package . ')';
 							}
 						}
 					}
@@ -293,6 +295,7 @@ else{
 		}
 		
 		foreach($function as $function_name => $content){
+			$function_name = preg_replace('%^' . str_replace('.', '\.', $package) . '%', '_', $function_name);
 			if(!is_dir('json/' . $package . '/' . $function_name)){
 				mkdir('json/' . $package . '/' . $function_name);
 				chmod('json/' . $package . '/' . $function_name, 0777);
