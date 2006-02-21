@@ -252,6 +252,10 @@ dojo.require("dojo.uri.*");
 		when installation is finished the full page will be refreshed and the
 		user will be placed back on your page with Flash installed.
 		
+		Two utility methods exist if you want to add loading and installing
+		listeners without creating dependencies on dojo.event; these are
+		'addLoadingListener' and 'addInstallingListener'.
+		
 		-------------------
 		Todo/Known Issues
 		-------------------
@@ -295,6 +299,8 @@ dojo.flash = {
 	flash6_version: null,
 	flash8_version: null,
 	_visible: true,
+	_loadedListeners: new Array(),
+	_installingListeners: new Array(),
 	
 	/** Sets the SWF files and versions we are using. */
 	setSwf: function(fileInfo){
@@ -345,6 +351,50 @@ dojo.flash = {
 		}
 	},
 	
+	/** Adds a listener to know when Flash is finished loading. 
+			Useful if you don't want a dependency on dojo.event. */
+	addLoadedListener: function(listener){
+		this._loadedListeners.push(listener);
+	},
+
+	/** Adds a listener to know if Flash is being installed. 
+			Useful if you don't want a dependency on dojo.event. */
+	addInstallingListener: function(listener){
+		this._installingListeners.push(listener);
+	},	
+	
+	/** 
+			A callback when the Flash subsystem is finished loading and can be
+			worked with. To be notified when Flash is finished loading, connect
+			your callback to this method using the following:
+			
+			dojo.event.connect(dojo.flash, "loaded", myInstance, "myCallback");
+	*/
+	loaded: function(){
+		dojo.debug("dojo.flash.loaded");
+		if(dojo.flash._loadedListeners.length > 0){
+			for(var i = 0;i < dojo.flash._loadedListeners.length; i++){
+				dojo.flash._loadedListeners[i].call(null);
+			}
+		}
+	},
+	
+	/** 
+			A callback to know if Flash is currently being installed or
+			having its version revved. To be notified if Flash is installing, connect
+			your callback to this method using the following:
+			
+			dojo.event.connect(dojo.flash, "installing", myInstance, "myCallback");
+	*/
+	installing: function(){
+	 //dojo.debug("installing");
+	 if(dojo.flash._installingListeners.length > 0){
+			for(var i = 0;i < dojo.flash._installingListeners.length; i++){
+				dojo.flash._installingListeners[i].call(null);
+			}
+		}
+	},
+	
 	/** Initializes dojo.flash. */
 	_initialize: function(){
 		//dojo.debug("_initialize");
@@ -362,28 +412,6 @@ dojo.flash = {
 			// initialize the way we do Flash/JavaScript communication
 			dojo.flash.comm = new dojo.flash.Communicator();
 		}
-	},
-
-	/** 
-			A callback when the Flash subsystem is finished loading and can be
-			worked with. To be notified when Flash is finished loading, connect
-			your callback to this method using the following:
-			
-			dojo.event.connect(dojo.flash, "loaded", myInstance, "myCallback");
-	*/
-	loaded: function(){
-		//dojo.debug("loaded");
-	},
-	
-	/** 
-			A callback to know if Flash is currently being installed or
-			having its version revved. To be notified if Flash is installing, connect
-			your callback to this method using the following:
-			
-			dojo.event.connect(dojo.flash, "installing", myInstance, "myCallback");
-	*/
-	installing: function(){
-	 //dojo.debug("installing");
 	}
 };
 
