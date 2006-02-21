@@ -301,14 +301,14 @@
 		}
 		
 		function testCallingJavaScript(msg){
-			dojo.debug("testCallingJavaScript, msg="+msg);
+			//dojo.debug("testCallingJavaScript, msg="+msg);
 			return msg;
 		}
 		
 		/** Called by Flash so that we can assert that testCallingJavaScript
 				above, when called from Flash, returned the right return results. */
 		function returnResults(msg){
-			dojo.debug("returnResults, msg="+msg);
+			//dojo.debug("returnResults, msg="+msg);
 			window.returnValue = msg;
 		}
 	</script>	
