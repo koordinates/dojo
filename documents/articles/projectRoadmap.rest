@@ -1,5 +1,8 @@
 .. title:: The Dojo Roadmap
 
+.. raw:: html
+   :file: ../website/rest_template/header.html
+
 Status
 ------------------------
 
@@ -372,8 +375,8 @@ alternately under the terms of the BSD license should you need to use Dojo with
 Dojo Foundation
 ---------------
 
-Dojo is a California nonprofit corporation.  We're currently working on 
-mundane details like bylaws and tax exemption status.
+Dojo is a California nonprofit corporation. We're currently working on mundane
+details like bylaws and tax exemption status.
 
 
 .. FIXME: insert correct urls, and additional urls to make this more useful
@@ -386,13 +389,15 @@ mundane details like bylaws and tax exemption status.
 .. _`baking usability into XMLHTTP` : http://dojotoolkit.org/intro_to_dojo_io.html
 .. _`Anonymous SVN access` : http://dojotoolkit.org/svn/dojo/
 .. _`Academic Free License v 2.1` : http://opensource.org/licenses/afl-2.1.php
-.. _`thoughts on the AFL license` : http://netwindows.org/pipermail/ng-dhtml_netwindows.org/2005-January/000643.html
+.. _`thoughts on the AFL license` : http://dojotoolkit.org/pipermail/dojo-contributors/2005-January/000643.html
 
 .. raw:: html
    :file: ../website/docs/sidebar.html
 
-:Author: Alex Russell,Dylan Schiemann
+:Author: Alex Russell, Dylan Schiemann
 :Version: 0.6 (revised January 25, 2006)
+
+.. contents::
 
 .. raw:: html
    :file: ../website/docs/menu.html
