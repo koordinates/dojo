@@ -285,18 +285,6 @@ with a copyright notice comment.
 .. FIXME: discuss fast creation/removal of RichText controls
 .. FIXME: discuss customizing event handlers
 
-Availability
-------------
-
-The Editor component covered in this article is part of the upcoming 0.2
-release of Dojo. To take advantage of it before 0.2 becomes available, you can
-download a nightly build, available at http://archive.dojotoolkit.org/ and the
-latest builds of the various Editions of Dojo are available from
-http://archive.dojotoolkit.org/nightly-profiles/
-
-Developers familiar with Subversion can get the lastest Dojo directly from:
-http://dojotoolkit.org/svn/dojo/trunk/
-
 Endnotes
 --------
 
