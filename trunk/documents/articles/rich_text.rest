@@ -113,7 +113,7 @@ As you can see...
         <!-- outline the editor so people know where they can type -->
         <div style="border: 1px solid #908f8f;" id="testEditor">
             <div dojoType="Editor"
-                items="blockGroup;|;textGroup;|;justifyGroup;|;colorGroup;">
+                items="textGroup;|;justifyGroup;|;colorGroup;">
                 <br />
                 ...It could scarcely be easier.
                 <br />
