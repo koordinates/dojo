@@ -91,13 +91,12 @@ dojo.html.selectInputText = function(element){
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);
 		range.select();
-		range.focus();
 	}else if(window["getSelection"]){
 		var selection = window.getSelection();
 		// FIXME: does this work on Safari?
 		element.setSelectionRange(0, element.value.length);
-		element.focus();
 	}
+	element.focus();
 }
 
 
