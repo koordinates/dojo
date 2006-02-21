@@ -645,8 +645,14 @@ internTemplateStrings()
 		</antcall>
 		
 		<antcall target="buildFlash">
-			<param name="dojo.flash.file" value="${root}/tests/flash/TestFlash.as"/>
+			<param name="dojo.flash.file" value="${root}/tests/flash/UnitTests.as"/>
 		</antcall>
+		
+		<move todir="${root}/tests/flash/resources">
+	    <fileset dir="${root}/tests/flash/">
+	      <include name="*.swf"/>
+	    </fileset>
+  	</move>
 	</target>
 	<!-- end buildDojoFlash task -->
 	
