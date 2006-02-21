@@ -26,8 +26,7 @@ Proposed release date: March 15, 2006
 
 Core:
 - Performance improvements/profiling, smaller base namespaces
-- Provide better/simpler APIs for inheritance (public facing APIs are a bit 
-  challenging)
+- Provide better/simpler APIs for inheritance (public facing APIs are a bit challenging)
 - crypto
 - SVG layout calculations, etc.
 - xhtml issues/testing (to support nested svg widgets, etc.)
@@ -35,22 +34,29 @@ Core:
 
 Widgets:
 - Widget Refactoring
+
   + public facing APIs
+
 	+ widget template improvements
+
   + inheritance simplifications
+
 	+ css-interning
 	+ making it easier to specify an external css document, etc.)
 	+ etc.
+
 - Widget API cleanup/unification
 - Default widget styles (should have at least 2 default themes)
 - SVG widget facility improvements
 - Begin VML compatibility layer
 - New widgets
+
 	+ Base widgets/container widgets
 	+ Start Grid widget, data binding (large number of people)
 	+ SVG Color Picker widget(s)
 	+ Validation widgets
 	+ Other widgets as contributed by the community
+
 - Guide on writing widgets
 - Guide on debugging widgets
 
@@ -87,7 +93,9 @@ Widgets:
 - start work on expression-based UI constraints
 - port some html widgets to svg to better test SVG support
 - new widgets
+
   + SVG clock style time picker
+
 .. FIXME: are the following two already done?
   + Accordion widget
   + basic menu widgets
@@ -126,11 +134,11 @@ Widgets:
 Beyond 0.5
 **********************
 
-Past 0.5, we will be implementing what the
-community has use for and need of. 1.0 is still a while away, and at about the 
-0.5 milestone, a re-evaluation of goals and acheivements will take place which 
-will allow the project contributors to then take stock of the situation and 
-decide what the explicit goals for 1.0 are.
+Past 0.5, we will be implementing what the community has use for and need of.
+1.0 is still a while away, and at about the 0.5 milestone, a re-evaluation of
+goals and acheivements will take place which will allow the project
+contributors to then take stock of the situation and decide what the explicit
+goals for 1.0 are.
 
 Some items that aren't explicitly on the roadmap, but that are part of our 
 efforts include:
