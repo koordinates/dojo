@@ -81,7 +81,7 @@ toolbar. assuming that Dojo and the Editor control are included. To include
 them, unpack Dojo into a directory and add the following code in the header of
 the document::
 
-    <script src="/path/to/dojo.js"
+    <script src="/path/to/dojo/dojo.js"
         type="text/javascript"></script>
     <script type="text/javascript">
         dojo.require("dojo.widget.Editor");
@@ -103,12 +103,7 @@ As you can see...
 
         <!-- pull in the core of Dojo -->
         <script type="text/javascript" 
-            src="/archive/dojo-2005-11-07/editor/dojo/dojo.js"></script>
-
-        <!--
-        <script type="text/javascript" 
-            src="/~alex/dojo/trunk/dojo.js"></script>
-        -->
+            src="/path/to/dojo/dojo.js"></script>
 
         <!-- Dojo is loaded, include the widget  -->
         <script type="text/javascript">
