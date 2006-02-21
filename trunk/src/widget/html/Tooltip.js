@@ -97,7 +97,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 		if ( this.state=="displaying" || this.state=="displayed" ) { return; }
 
-		dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);
+		this.position();
 
 		// if rendering using explosion effect, need to set explosion source
 		this.explodeSrc = [this.mouseX, this.mouseY];
@@ -156,5 +156,15 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 			this.display();
 			this.displayScheduled=false;
 		}
+	},
+
+	position: function(){
+		dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);
+	},
+
+	onLoad: function(){
+		// the tooltip has changed size due to downloaded contents, so reposition it
+		dojo.lang.setTimeout(this, this.position, 50);
+		dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
 	}
 });
