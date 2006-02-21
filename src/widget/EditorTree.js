@@ -6,7 +6,6 @@
 dojo.provide("dojo.widget.EditorTree");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.EditorTreeNode");
