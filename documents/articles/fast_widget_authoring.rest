@@ -17,7 +17,7 @@ article. To get a feel for how it's being used, do a view-source on this page.
 
         <!-- Dojo is loaded, include the widget  -->
         <script type="text/javascript">
-            dojo.require("dojo.widget.HtmlSlideShow");
+            dojo.require("dojo.widget.SlideShow");
         </script>
 
         <!-- upgrade a static image to a slideshow -->
@@ -61,13 +61,12 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
 
     // tell the package system what classes get defined here
     dojo.provide("dojo.widget.SlideShow");
-    dojo.provide("dojo.widget.HtmlSlideShow");
 
     // load dependencies
     dojo.require("dojo.widget.*");
 
     // define the widget class
-    dojo.widget.HtmlSlideShow = function(){
+    dojo.widget.SlideShow = function(){
         // inheritance
         // see: http://www.cs.rit.edu/~atk/JavaScript/manuals/jsobj/
         dojo.widget.HtmlWidget.call(this);
@@ -78,7 +77,7 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
         this.widgetType = "SlideShow";
     }
     // complete the inheritance process
-    dj_inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
+    dj_inherits(dojo.widget.SlideShow, dojo.widget.HtmlWidget);
     // make it a tag
     dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 
@@ -208,7 +207,7 @@ Here's the new code we'd add to our widget class (other code removed for
 readability)::
 
     // ...
-    dojo.widget.HtmlSlideShow = function(){
+    dojo.widget.SlideShow = function(){
         // ...boilerplate and template* code here
 
         // over-ride defaults
@@ -248,7 +247,7 @@ Making It A Tag
 
 The last hurdle to making this widget something we'd consider working with is
 to make it easy to instantiate. Even in the first listing of
-`HtmlSlideShow.js`, we do that. Have a look at the last line::
+`SlideShow.js`, we do that. Have a look at the last line::
 
     dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 
@@ -349,17 +348,16 @@ be late than broken. Don't worry if the event-driven code is a little bit
 difficult to follow. The entirety of the widget and an improved template
 follow. We omit the CSS file since it hasn't changed.
 
-HtmlSlideShow.js::
+SlideShow.js::
 
     dojo.provide("dojo.widget.SlideShow");
-    dojo.provide("dojo.widget.HtmlSlideShow");
 
     dojo.require("dojo.event.*");
     dojo.require("dojo.xml.*");
     dojo.require("dojo.widget.*");
     dojo.require("dojo.graphics.htmlEffects");
 
-    dojo.widget.HtmlSlideShow = function(){
+    dojo.widget.SlideShow = function(){
 
         dojo.widget.HtmlWidget.call(this);
 
@@ -460,7 +458,7 @@ HtmlSlideShow.js::
         }
     }
 
-    dj_inherits(dojo.widget.HtmlSlideShow, dojo.widget.HtmlWidget);
+    dj_inherits(dojo.widget.SlideShow, dojo.widget.HtmlWidget);
     dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 
 HtmlSlideShow.html::
