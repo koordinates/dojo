@@ -1,5 +1,4 @@
 var cache = {};
-dojo.require("dojo.lang.*");
 dojo.require("dojo.event");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.ComboBox");
@@ -17,6 +16,9 @@ function docToolInit(){
 					data[new_key] = data[key];
 					delete data[key];
 					key = new_key;
+				}
+				if(!dojo.lang.inArray(data[key], key)){
+					searchData.push([key, key]);
 				}
 				for(var pkg_key in data[key]){
 					if(data[key][pkg_key].charAt(0) == "_"){
