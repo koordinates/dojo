@@ -8,10 +8,9 @@ class HelloWorld{
 	}
 	
 	public function sayHello(msg){
-		msg = "Hello World! message=" + msg;
 		getURL("javascript:dojo.debug('FLASH: " + msg + "');");
 		
-		return "Goodbye cruel world! You gave me " + msg;
+		return "Message received from JavaScript was: " + msg;
 	}
 	
 	static function main(mc){
