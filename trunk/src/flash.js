@@ -348,16 +348,6 @@ dojo.flash = {
 	/** Initializes dojo.flash. */
 	_initialize: function(){
 		//dojo.debug("_initialize");
-		// do nothing if no SWF files are defined
-		if(this.flash6_version == null && this.flash8_version == null){
-			this.info = new Object();
-			this.info.capable = false;
-			return;
-		}
-	
-		// find out if Flash is installed
-		this.info = new dojo.flash.Info();
-		
 		// see if we need to rev or install Flash on this platform
 		var installer = new dojo.flash.Install();
 
@@ -1154,5 +1144,8 @@ dojo.flash.Install.prototype = {
 		}*/
 	}
 }
+
+// find out if Flash is installed
+dojo.flash.info = new dojo.flash.Info();
 
 // vim:ts=4:noet:tw=0:
