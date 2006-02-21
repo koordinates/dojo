@@ -163,7 +163,7 @@ dojo.string.startsWithAny = function(str /* , ... */) {
  */
 dojo.string.has = function(str /* , ... */) {
 	for(var i = 1; i < arguments.length; i++) {
-		if(str.indexOf(arguments[i] > -1)) {
+		if(str.indexOf(arguments[i]) > -1){
 			return true;
 		}
 	}
