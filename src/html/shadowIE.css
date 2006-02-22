@@ -1,0 +1,58 @@
+.dojoShadowTL{
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	width: 8px;
+	height: 8px;
+}
+.dojoShadowTR{
+	position: absolute;
+	top: -8px;
+	right: -6px;
+	width: 8px;
+	height: 8px;
+}
+.dojoShadowBL{
+	position: absolute;
+	bottom: -6px;
+	left: -8px;
+	width: 8px;
+	height: 8px;
+}
+.dojoShadowBR{
+	position: absolute;
+	bottom: -6px;
+	right: -6px;
+	width: 8px;
+	height: 8px;
+}
+
+.dojoShadowT{
+	position: absolute;
+	top: -8px;
+	left: 0px;
+	width: 100%;
+	height: 8px;
+}
+
+.dojoShadowB{
+	position: absolute;
+	bottom: -6px;
+	left: 0px;
+	width: 100%;
+	height: 8px;
+}
+.dojoShadowL{
+	position: absolute;
+	top: 0px;
+	left: -8px;
+	width: 8px;
+	height: 100%;
+}
+.dojoShadowR{
+	position: absolute;
+	top: 0px;
+	right: -6px;
+	width: 8px;
+	height: 100%;
+}
