@@ -1,44 +1,24 @@
 <div id="${this.widgetId}" class="dojoFloatingPane" dojoAttachEvent="onMouseDown">
-	<table width=100% cellPadding=0 cellSpacing=0 border=0
-			dojoAttachPoint="titleBar" class="dojoFloatingPaneTitleBar"
-	  		style="position: absolute; top: 0px; left; 0px; display: none;">
-	  <tr>
-	  	<td>
-	  	  <img dojoAttachPoint="titleBarIcon" src="${this.iconSrc}" class="dojoTitleBarIcon">
-	  	</td>
-	  	<td width=100% dojoAttachPoint="titleBarText">${this.title}</td>
-	  	<td nowrap>
-	   	  <img dojoAttachPoint="minimizeAction"
-	   	  	src="${dojoRoot}/src/widget/templates/images/floatingPaneMinimize.gif"
-	   	  	dojoAttachEvent="onClick:minimizeWindow"
-	   	  	class="dojoFloatingPaneActionItem" style="display: none;">
-	   	  <img dojoAttachPoint="maximizeAction"
-	   	  	src="${dojoRoot}/src/widget/templates/images/floatingPaneMaximize.gif"
-	   	  	dojoAttachEvent="onClick:maximizeWindow"
-	   	  	class="dojoFloatingPaneActionItem" style="display: none;">
-	   	  <img dojoAttachPoint="restoreAction"
-	   	  	src="${dojoRoot}/src/widget/templates/images/floatingPaneRestore.gif"
-	   	  	dojoAttachEvent="onClick:restoreWindow"
-	   	  	class="dojoFloatingPaneActionItem" style="display: none;">
-	   	  <img dojoAttachPoint="closeAction"
-	   	  	src="${dojoRoot}/src/widget/templates/images/floatingPaneClose.gif"
-	   	  	dojoAttachEvent="onClick:closeWindow"
-	   	  	class="dojoFloatingPaneActionItem" style="display: none;">
-	  	</td>
-	  </tr>
-	</table>
+	<div dojoAttachPoint="titleBar" class="dojoFloatingPaneTitleBar"
+	  		style="position: absolute; top: 0px; left; 0px; width: 100%; display: none;">
+	  	<img dojoAttachPoint="titleBarIcon" src="${this.iconSrc}" class="dojoTitleBarIcon">
+		<div dojoAttachPoint="closeAction" dojoAttachEvent="onClick:closeWindow"
+   	  		class="dojoFloatingPaneCloseIcon"></div>
+		<div dojoAttachPoint="restoreAction" dojoAttachEvent="onClick:restoreWindow"
+   	  		class="dojoFloatingPaneRestoreIcon"></div>
+		<div dojoAttachPoint="maximizeAction" dojoAttachEvent="onClick:maximizeWindow"
+   	  		class="dojoFloatingPaneMaximizeIcon"></div>
+		<div dojoAttachPoint="minimizeAction" dojoAttachEvent="onClick:minimizeWindow"
+   	  		class="dojoFloatingPaneMinimizeIcon"></div>
+	  	<div dojoAttachPoint="titleBarText" class="dojoFloatingPaneTitleText">${this.title}</div>
+	</div>
 
 	<div dojoAttachPoint="containerNode" class="dojoFloatingPaneClient"
 		style="position: relative; height: 100%; width: 100%;">
 	</div>
 
-	<table dojoAttachPoint="resizeBar" class="dojoFloatingPaneResizebar"
+	<div dojoAttachPoint="resizeBar" class="dojoFloatingPaneResizebar"
 		style="position: absolute; bottom: 0px; left: 0px; width: 100%;">
-		<tr>
-			<td width=100%></td>
-			<td dojoAttachPoint="resizeHandle"></td>
-		</tr>
-	</table>
 	</div>
 
 </div>
