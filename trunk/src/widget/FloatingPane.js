@@ -78,7 +78,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if(this.resizable){
 			this.resizeBar.style.display="";
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-			this.resizeHandle.appendChild(rh.domNode);
+			this.resizeBar.appendChild(rh.domNode);
 		}
 
 		// make the content pane take all the remaining space

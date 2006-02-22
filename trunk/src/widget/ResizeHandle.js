@@ -20,23 +20,10 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	startPoint: null,
 	startSize: null,
 
-	grabImg: null,
-
 	targetElmId: '',
-	imgSrc: dojo.uri.dojoUri("src/widget/templates/grabCorner.gif"),
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlResizeHandle.css"),
-	templateString: '<div dojoAttachPoint="domNode"><img dojoAttachPoint="grabImg" /></div>',
-
-	fillInTemplate: function(){
-
-		dojo.style.insertCssFile(this.templateCssPath);
-
-		dojo.html.addClass(this.domNode, 'dojoHtmlResizeHandle');
-		dojo.html.addClass(this.grabImg, 'dojoHtmlResizeHandleImage');
-
-		this.grabImg.src = this.imgSrc;
-	},
+	templateString: '<div class="dojoHtmlResizeHandle"></div>',
 
 	postCreate: function(){
 		dojo.event.connect(this.domNode, "onmousedown", this, "beginSizing");
