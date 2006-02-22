@@ -51,6 +51,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
+		if(dojo.render.html.safari){
+			document.body.appendChild(this.domNode);
+		}
 
 		if(this.titleBarDisplay!="none"){	
 			this.titleBar.style.display="";
