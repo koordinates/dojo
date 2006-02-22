@@ -1,6 +1,7 @@
 dojo.provide("dojo.fx.html");
 
 dojo.require("dojo.style");
+dojo.require("dojo.math.curves");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.animation");
 dojo.require("dojo.event.*");
