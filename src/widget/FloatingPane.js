@@ -125,10 +125,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	maximizeWindow: function(evt) {
-		this.previousWidth= this.domNode.style.width;
-		this.previousHeight= this.domNode.style.height;
-		this.previousLeft = this.domNode.style.left;
-		this.previousTop = this.domNode.style.top;
+		this.previous={};
+		var self=this;
+		dojo.lang.forEach(["width", "height", "left", "top", "bottom", "right"],
+			function(attr){ self.previous[attr] = self.domNode.style[attr]; });
+		dojo.debugShallow(this.previous);
 
 		this.domNode.style.left =
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
@@ -143,7 +144,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
 		}
 		this.maximizeAction.style.display="none";
-		this.restoreAction.style.display=this.displayRestoreAction ? "" : "none";
+		this.restoreAction.style.display="";
 		this.windowState="maximized";
 	},
 
@@ -153,12 +154,10 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	restoreWindow: function(evt) {
-		if (this.previousWidth && this.previousHeight && this.previousLeft && this.previousTop) {
-			this.domNode.style.width = this.previousWidth;
-			this.domNode.style.height = this.previousHeight;
-			this.domNode.style.left = this.previousLeft;
-			this.domNode.style.top = this.previousTop;
+		for(var attr in this.previous){
+			this.domNode.style[attr]=this.previous[attr];
 		}
+		this.previous=null;
 
 		if (this.widgetState != "maximized") {
 			this.show();
