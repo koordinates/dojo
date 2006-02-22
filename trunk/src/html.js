@@ -889,75 +889,74 @@ dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
 
 /**
  * For IE z-index schenanigans
- * See Dialog widget for sample use
+ * Two possible uses:
+ *   1. new dojo.html.BackgroundIframe(node)
+ *        Makes a background iframe as a child of node, that fills area (and position) of node
+ *
+ *   2. new dojo.html.BackgroundIframe()
+ *        Attaches frame to document.body.  User must call size() to set size.
  */
-dojo.html.BackgroundIframe = function() {
-	if(this.ie) {
-		this.iframe = document.createElement("<iframe frameborder='0' src='about:blank'>");
-		var s = this.iframe.style;
-		s.position = "absolute";
-		s.left = s.top = "0px";
-		s.zIndex = 2;
-		s.display = "none";
-		dojo.style.setOpacity(this.iframe, 0.0);
-		document.body.appendChild(this.iframe);
-	} else {
-		this.enabled = false;
+dojo.html.BackgroundIframe = function(node) {
+	if(dojo.render.html.ie) {
+		var html=
+				 "<iframe src='javascript:void(0)' "
+				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
+				+        "z-index: -1; filter:Alpha(Opacity=\"0\");' "
+				+">";
+		this.iframe = document.createElement(html);
+		if(node){
+			node.appendChild(this.iframe);
+			this.domNode=node;
+		}else{
+			document.body.appendChild(this.iframe);
+			this.iframe.style.display="none";
+		}
 	}
 }
 dojo.lang.extend(dojo.html.BackgroundIframe, {
-	ie: dojo.render.html.ie,
-	enabled: true,
-	visibile: false,
 	iframe: null,
-	sizeNode: null,
-	sizeCoords: null,
 
-	size: function(node /* or coords */) {
-		if(!this.ie || !this.enabled) { return; }
-
-		if(dojo.dom.isNode(node)) {
-			this.sizeNode = node;
-		} else if(arguments.length > 0) {
-			this.sizeNode = null;
-			this.sizeCoords = node;
+	// TODO: this function shouldn't be necessary but setting width=height=100% doesn't work!
+	onResized: function(){
+		if(this.iframe && this.domNode){
+			var w = dojo.style.getOuterWidth(this.domNode);
+			var h = dojo.style.getOuterHeight(this.domNode);
+			if (w  == 0 || h == 0 ){
+				dojo.lang.setTimeout(this, this.onResized, 50);
+				return;
+			}
+			var s = this.iframe.style;
+			s.width = w + "px";
+			s.height = h + "px";
 		}
-		this.update();
 	},
 
-	update: function() {
-		if(!this.ie || !this.enabled) { return; }
+	// Call this function if the iframe is connected to document.body rather
+	// than the node being shadowed (TODO: erase)
+	size: function(node) {
+		if(!this.iframe) { return; }
 
-		if(this.sizeNode) {
-			this.sizeCoords = dojo.html.toCoordinateArray(this.sizeNode, true);
-		} else if(this.sizeCoords) {
-			this.sizeCoords = dojo.html.toCoordinateArray(this.sizeCoords, true);
-		} else {
-			return;
-		}
+		coords = dojo.html.toCoordinateArray(node, true);
 
 		var s = this.iframe.style;
-		var dims = this.sizeCoords;
-		s.width = dims.w + "px";
-		s.height = dims.h + "px";
-		s.left = dims.x + "px";
-		s.top = dims.y + "px";
+		s.width = coords.w + "px";
+		s.height = coords.h + "px";
+		s.left = coords.x + "px";
+		s.top = coords.y + "px";
 	},
 
 	setZIndex: function(node /* or number */) {
-		if(!this.ie || !this.enabled) { return; }
+		if(!this.iframe) { return; }
 
 		if(dojo.dom.isNode(node)) {
-			this.iframe.zIndex = dojo.html.getStyle(node, "z-index") - 1;
+			this.iframe.style.zIndex = dojo.html.getStyle(node, "z-index") - 1;
 		} else if(!isNaN(node)) {
-			this.iframe.zIndex = node;
+			this.iframe.style.zIndex = node;
 		}
 	},
 
-	show: function(node /* or coords */) {
-		if(!this.ie || !this.enabled) { return; }
-
-		this.size(node);
+	show: function() {
+		if(!this.iframe) { return; }
 		this.iframe.style.display = "block";
 	},
 
@@ -965,7 +964,6 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		if(!this.ie) { return; }
 		var s = this.iframe.style;
 		s.display = "none";
-		s.width = s.height = "1px";
 	},
 
 	remove: function() {

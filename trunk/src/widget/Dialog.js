@@ -27,7 +27,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	focusElement: "",
 
 	bg: null,
-	bgIframe: null,
 	bgColor: "black",
 	bgOpacity: 0.4,
 	followScroll: true,
@@ -68,7 +67,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		var b = document.body;
 		b.appendChild(this.domNode);
 
-		this.bgIframe = new dojo.html.BackgroundIframe();
+		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
 
 		this.bg = document.createElement("div");
 		this.bg.className = "dialogUnderlay";
@@ -80,7 +79,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		}
 		this.setBackgroundColor(this.bgColor);
 		b.appendChild(this.bg);
-		this.bgIframe.setZIndex(this.bg);
 	},
 
 	setBackgroundColor: function(color) {
@@ -110,15 +108,11 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			var w = dojo.html.getViewportWidth();
 			this.bg.style.width = w + "px";
 			this.bg.style.height = h + "px";
-			this.bgIframe.size([0, 0, w, h]);
-		} else {
-			this.bgIframe.size(this.domNode);
 		}
 	},
 
 	showBackground: function() {
 		this.sizeBackground();
-		this.bgIframe.show();
 		if(this.bgOpacity > 0) {
 			this.bg.style.display = "block";
 		}
@@ -142,11 +136,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		with(this.domNode.style) {
 			left = x + "px";
 			top = y + "px";
-		}
-
-		// tied to domNode, so we need to update the position
-		if(this.bgOpacity == 0) {
-			this.bgIframe.size([x, y, w, h]);
 		}
 	},
 
@@ -181,7 +170,6 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 		this.bg.style.display = "none";
 		this.bg.style.width = this.bg.style.height = "1px";
-		this.bgIframe.hide();
 
 		dojo.widget.HtmlDialog.superclass.hide.call(this);
 

@@ -289,10 +289,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		}
 
 		// Prevent IE bleed-through problem
-		this.bgIframe = new dojo.html.BackgroundIframe();
-		if(this.bgIframe.iframe){
-			this.optionsListWrapper.appendChild(this.bgIframe.iframe);
-		}
+		this.optionsIframe = new dojo.html.BackgroundIframe(this.optionsListWrapper);
+		this.optionsIframe.size([0,0,0,0]);
 	},
 
 	openResultList: function(results){
@@ -331,7 +329,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		}
 
 		// prevent IE bleed through
-		dojo.lang.setTimeout(this, "showBackgroundIframe", 100);
+		dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 	},
 
 	onFocusInput: function(){
@@ -360,16 +358,15 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		}
 	},
 
-	showBackgroundIframe: function(){
+	sizeBackgroundIframe: function(){
 		var w = dojo.style.getOuterWidth(this.optionsListNode);
 		var h = dojo.style.getOuterHeight(this.optionsListNode);
-		if ( isNaN(w) || isNaN(h) ){
+		if ( w==0 || h==0 ){
 			// need more time to calculate size
-			dojo.lang.setTimeout(this, "showBackgroundIframe", 100);
+			dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 			return;
 		}
-		this.bgIframe.show([0,0,w,h]);
-		this.bgIframe.setZIndex(1);
+		this.optionsIframe.size([0,0,w,h]);
 	},
 
 	selectOption: function(evt){
@@ -409,7 +406,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		if (this._result_list_open) {
 			this._result_list_open = false;
 			dojo.fx.fadeHide(this.optionsListNode, 200);
-			this.bgIframe.hide();
+			this.optionsIframe.size([0,0,0,0]);
 		}
 		return;
 	},

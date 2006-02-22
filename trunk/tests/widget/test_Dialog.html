@@ -11,11 +11,11 @@
 <script type="text/javascript">
 var dlg;
 function init(e) {
-	dlg = dojo.widget.manager.getWidgetsByType("Dialog")[0];
+	dlg = dojo.widget.byId("DialogContent");
 	var btn = document.getElementById("hider");
 	dlg.setCloseControl(btn);
 }
-dojo.event.connect(dojo.hostenv, "loaded", window, "init");
+dojo.addOnLoad(init);
 
 </script>
 <style type="text/css">
