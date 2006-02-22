@@ -4,7 +4,7 @@
 	border: 1px solid;
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	overflow: visible;		/* so drop shadow is displayed */
-	z-index: 10;
+	z-index: 5;
 	background-color: ThreeDFace;
 	-moz-box-sizing: border-box;
 	-khtml-box-sizing: border-box;
@@ -20,14 +20,13 @@
 	vertical-align: top;
 	z-index: 2;
 	/*padding: 2px 4px 2px 2px;*/
-	height: 25px;
+	height: 27px;
 	color: CaptionText;
 	font: small-caption;
 	background-color: #7596c6;
 	cursor: default;
 	border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
 	border-bottom: 2px;
-	z-index: 10;
 }
 
 .dojoFloatingPaneActionItem {
@@ -38,7 +37,7 @@
 
 /* bar at bottom of window that holds resize handle */
 .dojoFloatingPaneResizebar {
-	z-index: 10;
+	z-index: 2;
 	height: 13px;
 	background-color: ThreeDFace;
 }
@@ -55,5 +54,5 @@
 	overflow: auto;
 	-moz-box-sizing: border-box;
 	-khtml-box-sizing: border-box;
-	z-index: 10;
+	z-index: 2;
 }
