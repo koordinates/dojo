@@ -88,8 +88,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		if(dojo.render.html.ie && this.createIframe){
 			var outer = document.createElement("div");
 			outer.appendChild(node);
-			this.bgIframe = new dojo.html.BackgroundIframe();
-			this.bgIframe.size([0,0,dojo.style.getOuterWidth(node),dojo.style.getOuterHeight(node)]);
+			this.bgIframe = new dojo.html.BackgroundIframe(outer);
 			outer.appendChild(this.bgIframe.iframe);
 			node = outer;
 		}

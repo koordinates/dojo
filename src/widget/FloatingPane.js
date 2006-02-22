@@ -15,6 +15,7 @@ dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
 dojo.require("dojo.dnd.HtmlDragMoveObject");
+dojo.require("dojo.widget.ResizeHandle");
 
 dojo.widget.html.FloatingPane = function(){
 	dojo.widget.html.ContentPane.call(this);
@@ -31,9 +32,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	hasShadow: false,
 	constrainToContainer: false,
 	taskBarId: "",
-	resizable: true,	// note: if specified, user must dojo.require("dojo.widget.html.ResizeHandle")
-
-	resizable: false,
+	resizable: true,
 	titleBarDisplay: "fancy",
 
 	windowState: "normal",
@@ -48,18 +47,16 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
 	fillInTemplate: function(args, frag){
-		var source = this.getFragNodeRef(frag);
-
 		// Copy style info and id from input node to output node
+		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
-		dojo.html.addClass(this.domNode, "dojoFloatingPane");
-
-		this.titleBarIcon.style.display = (this.iconSrc=="" ? "none" : "");
 
 		if(this.titleBarDisplay!="none"){	
 			this.titleBar.style.display="";
 			dojo.html.disableSelection(this.titleBar);
+
+			this.titleBarIcon.style.display = (this.iconSrc=="" ? "none" : "");
 
 			this.minimizeAction.style.display= (this.displayMinimizeAction ? "" : "none");
 			this.maximizeAction.style.display= 
@@ -75,7 +72,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			drag.setDragHandle(this.titleBar);
 		}
 
-		if ( this.resizable ) {
+		if(this.resizable){
 			this.resizeBar.style.display="";
 			var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
 			this.resizeHandle.appendChild(rh.domNode);
@@ -90,14 +87,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		// Prevent IE bleed-through problem
-		//this.bgIframe = new dojo.html.BackgroundIframe();
-		//this.bgIframe.setZIndex(-1);
-		//if( this.bgIframe.iframe ){
-		//	this.domNode.appendChild(this.bgIframe.iframe);
-		//}
-		if ( this.isVisible() ) {
-			//this.bgIframe.show();
-		};
+		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
 
 		if( this.taskBarId ){
 			this.taskBarSetup();
@@ -245,22 +235,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			return;
 		}
 		taskbar.addChild(this);
-	},
-
-	hide: function(){
-		dojo.widget.html.FloatingPane.superclass.hide.call(this);
-		if(this.bgIframe){
-			this.bgIframe.hide();
-		}
-	},
-
-	show: function(){
-		dojo.widget.html.FloatingPane.superclass.show.call(this);
-		
-		// TODO: move this into HtmlWidget
-		if(this.bgIframe){
-			this.bgIframe.show();
-		}
 	},
 
 	onShow: function(){

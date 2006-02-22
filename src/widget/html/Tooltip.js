@@ -40,7 +40,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.connectNode = dojo.byId(this.connectId);
 		
 		// IE bug workaround
-		this.bgIframe = new dojo.html.BackgroundIframe();
+		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
 		
 		dojo.widget.html.Tooltip.superclass.fillInTemplate.call(this, args, frag);
 	},
@@ -105,14 +105,9 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.state="displaying";
 
 		dojo.widget.html.Tooltip.superclass.show.call(this);
-
-		// for fade effect, need to display the iframe before the fade starts
-		this.bgIframe.show(this.domNode);
 	},
 
 	onShow: function() {
-		// for explode effect, have to display the iframe after the effect completes
-		this.bgIframe.show(this.domNode);
 		dojo.widget.html.Tooltip.superclass.onShow.call(this);
 		
 		this.state="displayed";
@@ -143,7 +138,6 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 			}
 			dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
 			dojo.widget.html.Tooltip.superclass.hide.call(this);
-			this.bgIframe.hide();
 		}
 	},
 

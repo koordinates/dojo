@@ -22,6 +22,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	toggleDuration: 150,
 
 	animationInProgress: false,
+	bgIframe: null,
 
 	initialize: function(args, frag){
 	},
@@ -115,5 +116,10 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	onHide: function(){
 		this.animationInProgress=false;
+	},
+	
+	onResized: function(){
+		dojo.widget.HtmlWidget.superclass.onResized.call(this);
+		if(this.bgIframe){ this.bgIframe.onResized(); }
 	}
 });
