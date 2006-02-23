@@ -54,6 +54,20 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		}
 		return false;	// boolean
 	},
+	removeFromSelected:function(/* object */ o){
+		//	summary
+		//	remove the passed object from the current selection.
+		var idx=-1;
+		for(var i=0;i<this.selected.length;i++){
+			if(this.compare(this.selected[i],o)){
+				idx=i;
+				break;
+			}
+		}
+		if(idx>=0){
+			this.selected.splice(idx,1);
+		}
+	},
 	getSelection:function(){
 		//	summary
 		//	return the array of currently selected objects (JSON format)
@@ -116,9 +130,19 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	},
 	setSelectionByRow:function(/* HTMLTableElementRow */ row){
 		//	summary
-		//	create the selection object based on the passed row
+		//	create the selection object based on the passed row, makes sure it's unique.
 		//	note that you need to call render manually (because of multi-select operations)
-		this.selected.push(this.getObjectFromRow(row));
+		var o=this.getObjectFromRow(row);
+		var b=false;
+		for(var i=0;i<this.selected.length;i++){
+			if(this.compare(this.selected[i], o)){
+				b=true;
+				break;
+			}
+		}
+		if(!b){
+			this.selected.push(o);
+		}
 	},
 
 	parseColumns:function(/* HTMLTableHeadElement */ node){
@@ -372,9 +396,14 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		var body=dojo.html.getParentByType(row,"tbody");
 		if(this.enableMultipleSelect){
 			if(e.metaKey||e.ctrlKey){
-				//	push onto the selection stack.
-				this.setSelectionByRow(row);
-				row.setAttribute("selected","true");
+				if(this.isSelected(this.getObjectFromRow(row))){
+					this.removeFromSelected(this.getObjectFromRow(row));
+					row.removeAttribute("selected");
+				}else{
+					//	push onto the selection stack.
+					this.setSelectionByRow(row);
+					row.setAttribute("selected","true");
+				}
 			}else if(e.shiftKey){
 				//	the tricky one.  We need to figure out the *last* selected row above, 
 				//	and select all the rows in between.
@@ -490,6 +519,9 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		if(this.headClass.length>0){
 			thead.className=this.headClass;
 		}
+
+		//	disable selections
+		dojo.html.disableSelection(this.domNode);
 
 		//	parse the columns.
 		this.parseColumns(thead);
