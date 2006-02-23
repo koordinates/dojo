@@ -561,17 +561,27 @@ dojo.widget.html.ToolbarButtonGroup = function() {
 	// if this is set to a number, the button at that index will be selected
 	this.defaultButton = "";
 
-	var oldAddChild = this.addChild;
+    this.postCreate = function() {
+        for (var i = 0; i < this.children.length; i++) {
+            this._injectChild(this.children[i]);
+        }
+    }
+
+    var oldAddChild = this.addChild;
 	this.addChild = function(item, pos, props) {
 		var widget = dojo.widget.ToolbarItem.make(item, null, dojo.lang.mixin(props||{}, {toggleItem:true}));
-		dojo.event.connect(widget, "onSelect", this, "onChildSelected");
 		var ret = oldAddChild.call(this, widget, null, pos, null);
-		if(widget._name == this.defaultButton
+        this._injectChild(widget);
+        return ret;
+    }
+
+    this._injectChild = function(widget) {
+        dojo.event.connect(widget, "onSelect", this, "onChildSelected");
+        if(widget._name == this.defaultButton
 			|| (typeof this.defaultButton == "number"
 			&& this.children.length-1 == this.defaultButton)) {
 			widget.select(false, true);
 		}
-		return ret;
 	}
 
 	this.getItem = function(name) {
