@@ -12,19 +12,9 @@
 		function showSelected(){
 			var w=dojo.widget.byId("testTable");
 			if(w){
-				var o=w.getSelection();
-				if(o){
-					var s="({\n";
-					var a=[];
-					for(var p in o){
-						a.push("\t\""+p+"\":\""+o[p]+"\"");
-					}
-					s+=a.join(",\n");
-					s+="\n})";
-					alert(s);
-				}else{
-					alert("No rows are selected.");
-				}
+				var s=w.getValue();
+				if(s.length>0) alert(s);
+				else alert("No rows are selected.");
 			}
 		}
 	</script>
@@ -193,14 +183,14 @@
 		The SortableTable widget takes a table of data, parses it, and re-renders it to allow you to sort the columns based on attributes set in the thead.
 	</p>
 	<div><button onclick="showSelected();">Show the selected object</button></div>
-	<table dojoType="SortableTable" widgetId="testTable" containerClass="tableContainer" headClass="fixedHeader" tbodyClass="scrollContent" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
+	<table dojoType="SortableTable" widgetId="testTable" containerClass="tableContainer" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
 			<th field="Id" dataType="Number">Id</th>
 			<th field="Name" dataType="String">Name</th>
 			<th field="DateAdded" dataType="Date">Date Added</th>
 			<th field="DateModified" dataType="Date" format="%b %d, %Y">Date Modified</th>
-			<th>Label</th>
+			<th dataType="html">Label</th>
 		</tr>
 	</thead>
 	<tbody>
