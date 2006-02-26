@@ -116,7 +116,13 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 	// attach menu to given node
 	bindDomNode: function(node){
-		dojo.event.connect(dojo.byId(node), "oncontextmenu", this, "onOpen");
+		dojo.event.kwConnect({
+			srcObj:     dojo.byId(node),
+			srcFunc:    "oncontextmenu",
+			targetObj:  this,
+			targetFunc: "onOpen",
+			once:       true
+		});
 	},
 
 	// detach menu from given node
