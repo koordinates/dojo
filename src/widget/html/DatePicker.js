@@ -169,19 +169,7 @@ dojo.widget.html.DatePicker = function(){
 		var daysIn = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
 		
 		if (month==1) {
-			if (year%400==0) {
-				return 29;
-			} else {
-				if (year%100==0) {
-					return 28;
-				} else {
-					if (year%4==0) {
-						return 29;
-					} else {
-						return 28;
-					}
-				}
-			}
+			return (year%400 == 0) ? 29: (year%100 == 0) ? 28: (year%4 == 0) ? 29: 28;
 		} else {
 			return daysIn[month];
 		}
@@ -197,8 +185,8 @@ dojo.widget.html.DatePicker = function(){
 			case this.increaseWeekNode.getElementsByTagName("img").item(0): 
 			case this.increaseWeekNode:
 				date = date + 7;
-				if (date>this._daysIn(month)) {
-					date = date - this._daysIn(month);
+				if (date>this._daysIn(month,year)) {
+					date = date - this._daysIn(month,year);
 					if (month < 11) {
 						month++;	
 					} else {
@@ -215,7 +203,7 @@ dojo.widget.html.DatePicker = function(){
 					var diff = 7 - date;
 					if (month > 0) {
 						month--;
-						date = this._daysIn(month) - diff;
+						date = this._daysIn(month,year) - diff;
 					}else {
 						year--;
 						month=11;
