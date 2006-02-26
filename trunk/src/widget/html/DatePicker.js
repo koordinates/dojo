@@ -4,6 +4,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
+dojo.require("dojo.date");
 
 /*
 	Some assumptions:
@@ -84,7 +85,6 @@ dojo.widget.html.DatePicker = function(){
 		// time change in local time zones
 		previousDate.setHours(8);
 		var nextDate = new Date(this.firstSaturday.year, this.firstSaturday.month, this.firstSaturday.date, 8);
-
 		
 		if(this.firstSaturday.date < 7) {
 			// this means there are days to show from the previous month
@@ -105,10 +105,10 @@ dojo.widget.html.DatePicker = function(){
 				nextDate = this.incrementDate(nextDate, false);				
 			}
 		} else {
-			nextDate.setDate(1);
+			nextDate.setDate(this.firstSaturday.date-6);
 			for(var i=0; i<7; i++) {
 				currentCalendarNode = calendarNodes.item(i);
-				currentCalendarNode.innerHTML = i + 1;
+				currentCalendarNode.innerHTML = nextDate.getDate();
 				dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
 				previousDate = nextDate;
 				nextDate = this.incrementDate(nextDate, true);				
@@ -164,17 +164,72 @@ dojo.widget.html.DatePicker = function(){
 	this.onIncrementDate = function(evt) {
 		dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementDate');
 	}
-	
+
+	this._daysIn = function(month,year) {
+		var daysIn = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
+		
+		if (month==1) {
+			if (year%400==0) {
+				return 29;
+			} else {
+				if (year%100==0) {
+					return 28;
+				} else {
+					if (year%4==0) {
+						return 29;
+					} else {
+						return 28;
+					}
+				}
+			}
+		} else {
+			return daysIn[month];
+		}
+	}	
+
 	this.onIncrementWeek = function(evt) {
 		// FIXME: should make a call to incrementWeek when that is implemented
 		evt.stopPropagation();
-		dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementWeek');
+		var date = this.firstSaturday.date;
+		var month = this.firstSaturday.month;
+		var year = this.firstSaturday.year;
 		switch(evt.target) {
+			case this.increaseWeekNode.getElementsByTagName("img").item(0): 
 			case this.increaseWeekNode:
+				date = date + 7;
+				if (date>this._daysIn(month)) {
+					date = date - this._daysIn(month);
+					if (month < 11) {
+						month++;	
+					} else {
+						month=0;
+						year++;
+					}
+				}
 				break;
+			case this.decreaseWeekNode.getElementsByTagName("img").item(0):
 			case this.decreaseWeekNode:
+				if (date > 7) {
+					date = date - 7;
+				} else {
+					var diff = 7 - date;
+					if (month > 0) {
+						month--;
+						date = this._daysIn(month) - diff;
+					}else {
+						year--;
+						month=11;
+						date = 31 - diff;
+					}
+				}
 				break;
+
 		}
+
+		this.firstSaturday.date=date;
+		this.firstSaturday.month=month;
+		this.firstSaturday.year=year;
+		this.initUI();
 	}
 
 	this.onIncrementMonth = function(evt) {
