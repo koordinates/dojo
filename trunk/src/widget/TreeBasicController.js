@@ -207,7 +207,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		}
 
 		return newChild;
-	},
+	}
 
 
 
