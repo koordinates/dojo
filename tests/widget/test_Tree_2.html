@@ -24,6 +24,7 @@ td {
 	dojo.require("dojo.lang.*");
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.TreeSelector");
 	dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
@@ -34,13 +35,13 @@ td {
 		this.displayNode = displayNode;
 
 		this.update = function(message) {
-			this.displayNode.innerHTML = message;
+			this.displayNode.innerHTML = message.node.title;
 		};
 	}
 
 	dojo.addOnLoad(function(){
 
-		var tree = dojo.widget.createWidget("Tree", {publishSelectionTopic: "treeSelected", toggle: "fade"});
+		var tree = dojo.widget.createWidget("Tree", {toggle: "fade", selector: "treeSelector"});
 		document.body.appendChild(tree.domNode);
 
 		var rootNode = dojo.widget.createWidget("TreeNode", {title: "Root Node"});
@@ -63,16 +64,18 @@ td {
 			node1.addChild(dojo.widget.createWidget("TreeNode", {title: "Node 1."+i}));
 		}
 
+		var selectedEventName = dojo.widget.byId("firstTree").selector.eventNames.select;
+
 		var eventSub = new Subscriber(document.getElementById("SelectionEvents"));
-		var selectionTopic = dojo.event.topic.getTopic("treeSelected");
+		var selectionTopic = dojo.event.topic.getTopic(selectedEventName);
 		selectionTopic.subscribe(eventSub, "update");
 	});
 
+
 	function get_selected_node(){
-		var tree = dojo.widget.getWidgetById('firstTree');
-		var node = tree.selectedNode;
+		var node = dojo.widget.byId('treeSelector').selectedNode;
 		if (node){
-			alert("The selected node is "+node.widgetId);
+			alert("The selected node is "+node.title);
 		}else{
 			alert("There is no selected node");
 		}
@@ -82,7 +85,11 @@ td {
 </head>
 <body>
 
-<div dojoType="Tree" publishSelectionTopic="treeSelected" toggle="fade" widgetId="firstTree">
+<h4>Create two trees with HTML & program way. Use same selector for both.</h4>
+
+<dojo:TreeSelector widgetId="treeSelector"></dojo:TreeSelector>
+
+<div dojoType="Tree" toggle="fade" selector="treeSelector" widgetId="firstTree">
     <div dojoType="TreeNode" title="Item 1">
         <div dojoType="TreeNode" title="Item 1.1"><br/></div>
         <div dojoType="TreeNode" title="Item 1.2">
@@ -101,7 +108,7 @@ td {
 
 <p>this is some text below the tree.</p>
 
-<p><input type="button" value="What node is selected in the top tree?" onclick="get_selected_node();" /></p>
+<p><input type="button" value="What node is selected ?" onclick="get_selected_node();" /></p>
 
 <div id="SelectionEvents" style="background:#dcdcdc; color:#191970;">Selection events should show up here</div>
 
