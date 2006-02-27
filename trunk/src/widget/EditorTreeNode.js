@@ -5,6 +5,9 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
 
+
+dojo.deprecated("dojo.widget.EditorTreeNode",  "refactored & moved to dojo.widget.TreeNode");
+
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:EditorTreeNode");
 
