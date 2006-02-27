@@ -3,9 +3,148 @@ dojo.provide("dojo.flash");
 dojo.require("dojo.string.*");
 dojo.require("dojo.uri.*");
 
-/** 
-		The goal of dojo.flash is to make it easy to extend Flash's capabilities
-		into an AJAX/DHTML environment. Robust, performant, reliable 
+/** ------------
+		Introduction
+		------------
+
+		dojo.flash has four goals: 
+			* Easily find out if Flash is installed on the system, and if so, what
+				version
+			* Easily embed Flash files into the page
+			* Fast, reliable Flash/JavaScript communication
+			* Automatically install Flash if it is not currently on the system,
+				or if a higher version is needed
+			
+		Dojo.flash provides easy objects for interacting with the Flash plugin. 
+		These object provides methods to determine the current version of the Flash
+		plugin (dojo.flash.info); execute Flash instance methods 
+		independent of the Flash version
+		being used (dojo.flash.comm); write out the necessary markup to 
+		dynamically insert a Flash object into the page (dojo.flash.Embed); and 
+		do dynamic installation and upgrading of the current Flash plugin in 
+		use (dojo.flash.Install).
+		
+		The following sections below cover each major area of functionality and
+		how to use it.
+		
+
+		----------------------------------
+		Flash Embedding (dojo.flash.Embed)
+		----------------------------------
+		
+		Using dojo.flash.Embed is easy. Simply include the dojo.js Javascript file, 
+		then use a small amount of Javascript on your page to embed your Flash movie. 
+		Here is an example showing the minimum amount of code needed to embed a 
+		Flash movie:
+
+		<script type="text/javascript" src="dojo.js"></script>
+				
+		<div id="flashcontent">
+		  This text is replaced by the Flash movie.
+		</div>
+		
+		<script type="text/javascript">
+			 dojo.require("dojo.flash");
+		   var fo = new dojo.flash.Embed("movie.swf", "mymovie", "200", "100", 
+			 															 "7", "#336699");
+		   fo.write("flashcontent");
+		</script>
+
+		Here is a breakdown of what the code does:
+		
+		<div id="flashcontent">[...]</div>
+
+		Prepare an HTML element that will hold our Flash movie. The content 
+		placed in the 'holder' element will be replaced by the Flash content, 
+		so users with the Flash plugin installed will never see the content 
+		inside this element. This feature has the added bonus of letting 
+		search engines index your alternate content.
+
+		var fo = new dojo.flash.Embed("movie.swf", "mymovie", "200", "100", "7", 
+																	"#336699");
+		
+		Create a new dojo.flash.Embed object and pass in the required parameters:
+
+    * swf - The file path and name to your swf file.
+    * id - The ID of your object or embed tag. The embed tag will also have 
+			this value set as it's name attribute for files that take advantage of 
+			swliveconnect.
+    * width - The width of your Flash movie.
+    * height - The height of your Flash movie.
+    * version - The required player version for your Flash content. This can 
+			be a string in the format of 'majorVersion.minorVersion.revision'. 
+			An example would be: "6.0.65". Or you can just require the major 
+			version, such as "6".
+    * background color - This is the hex value of the background color of your 
+			Flash movie.
+
+	Optional parameters are:
+	
+	    * useExpressInstall - If you would like to upgrade users using the 
+				ExpressInstall feature, use 'true' for this value.
+	    * quality - The quality you wish your Flash movie to play at. If no 
+				quality is specified, the default is "high".
+	    * xiRedirectUrl - If you would like to redirect users who complete the 
+				ExpressInstall upgrade, you can specify an alternate URL here
+	    * redirectUrl - If you wish to redirect users who don't have the correct 
+				plugin version, use this parameter and they will be redirected.
+	    * detectKey - This is the url variable name the FlashObject script 
+				will look for when bypassing the detection. Default is 'dojoDetectFlash'. 
+				Example: To bypass the Flash detection and simply write the Flash movie 
+				to the page, you could add ?dojoDetectFlash=false to the url of the 
+				document containing the Flash movie. You can also pass this variable
+				in by setting dojoConfig:
+				
+				<script type="text/javascript">
+					var djConfig = { dojoDetectFlash: false };
+				</script>
+
+		fo.write("flashcontent");
+
+		Tell the dojo.flash.Embed object to write the Flash content to the page 
+		(if the correct version of the plugin is installed on the user's 
+		system) by replacing the content inside the specified HTML element.
+
+		
+		----------------------------
+		Flash Info (dojo.flash.info)
+		----------------------------
+		
+		The dojo.flash.info object provides basic information on the Flash
+		plugin on this system, and exposes the following attributes:
+		
+		dojo.flash.info.capable - true or false on whether this platform
+		is Flash capable or not.
+		dojo.flash.info.major,
+		dojo.flash.info.minor,
+		dojo.flash.info.rev - The major, minor, and revisions of the 
+			plugin. For example, if the
+			plugin is 8r22, then the major version is 8, the minor version is 0,
+			and the revision is 22. These are Numbers, not Strings.
+		dojo.flash.info.commVersion - The major version number for how our Flash 
+			and JavaScript communicate. For full details see the section 
+			below on dojo.flash.comm for Flash/JavaScript communication.
+			This can currently be the following values:
+			6 - We use a combination of the Flash plugin methods, such as SetVariable
+			and TCallLabel, along with fscommands, to do communication.
+			8 - We use the ExternalInterface API. 
+			-1 - For some reason neither method is supported, and no communication
+			is possible. 
+			
+		dojo.flash.info has the following methods:
+		
+		dojo.flash.info.versionIsValid(reqMajorVer, reqMinorVer, reqVer) -
+			Detects if we have the required major, minor, and revision Flash
+			numbers or above installed on this platform. Returns true or false.
+		dojo.flash.info.getVersion() - The full version string, such as "8.0r22".
+			-1 is returned if this platform is not Flash enabled.
+
+
+		------------------------------------------------
+		Flash/JavaScript Communication (dojo.flash.comm)
+		------------------------------------------------
+		
+		Robust, performant, reliable 
 		JavaScript/Flash communication is harder than most realize when they
 		delve into the topic, especially if you want it
 		to work on Internet Explorer, Firefox, and Safari, and to be able to
@@ -13,19 +152,11 @@ dojo.require("dojo.uri.*");
 		possible to support these platforms; you have to jump through a few
 		hoops to get its capabilites, but if you are a library writer 
 		who wants to bring Flash's storage or streaming sockets ability into
-		DHTML, for example, then dojo.flash is perfect for you.
+		DHTML in a fast and cross browser way, for example, then dojo.flash.comm 
+		is perfect for you.
   
-		Dojo.flash provides an easy object for interacting with the Flash plugin. 
-		This object provides methods to determine the current version of the Flash
-		plugin (dojo.flash.info); execute Flash instance methods 
-		independent of the Flash version
-		being used (dojo.flash.comm); write out the necessary markup to 
-		dynamically insert a Flash object into the page (dojo.flash.Embed; and 
-		do dynamic installation and upgrading of the current Flash plugin in 
-		use (dojo.flash.Install).
-		
-		To use dojo.flash, you must first wait until Flash is finished loading 
-		and initializing before you attempt communication or interaction. 
+		To use dojo.flash.com, you must first wait until Flash is finished loading 
+		and initializing before you attempt communication. 
 		To know when Flash is finished use dojo.event.connect:
 		
 		dojo.event.connect(dojo.flash, "loaded", myInstance, "myCallback");
@@ -54,21 +185,13 @@ dojo.require("dojo.uri.*");
 											 flash8: "src/storage/storage_flash8.swf",
 											 visible: false});
 		
-		Once finished, you can query Flash version information:
-		
-		dojo.flash.info.version
-		
-		Or can communicate with Flash methods that were exposed:
+		Once finished, you can communicate with Flash methods that were exposed:
 		
 		var results = dojo.flash.comm.sayHello("Some Message");
 		
 		Only string values are currently supported for both arguments and
 		for return results. Everything will be cast to a string on both
 		the JavaScript and Flash sides.
-		
-		-------------------
-		Flash Communication
-		-------------------
 		
 		dojo.flash allows Flash/JavaScript communication in 
 		a way that can pass large amounts of data back and forth reliably and
@@ -256,6 +379,9 @@ dojo.require("dojo.uri.*");
 		listeners without creating dependencies on dojo.event; these are
 		'addLoadingListener' and 'addInstallingListener'.
 		
+		Portions of this code were adopted from Geoff Stearn's 
+		FlashObject v1.3c, located at http://blog.deconcept.com/flashobject/.
+		
 		-------------------
 		Todo/Known Issues
 		-------------------
@@ -292,7 +418,12 @@ dojo.require("dojo.uri.*");
 		http://blog.deconcept.com/flashobject/ after getting permission from
 		that author to sign a Dojo Contributors Agreement.
 		
+		* Add a test to the Flash unit tests, where Flash calls a JavaScript
+		method, and within that method we then call back to a Flash method; make
+		sure this kind of nesting works both ways.
+		
 		@author Brad Neuberg, bkn3@columbia.edu
+		@author Geoff Stearns, http://blog.deconcept.com
 */
 
 dojo.flash = {
@@ -371,7 +502,7 @@ dojo.flash = {
 			dojo.event.connect(dojo.flash, "loaded", myInstance, "myCallback");
 	*/
 	loaded: function(){
-		dojo.debug("dojo.flash.loaded");
+		//dojo.debug("flash loaded");
 		if(dojo.flash._loadedListeners.length > 0){
 			for(var i = 0;i < dojo.flash._loadedListeners.length; i++){
 				dojo.flash._loadedListeners[i].call(null);
@@ -419,34 +550,22 @@ dojo.flash = {
 /** 
 		A class that helps us determine whether Flash is available,
 		it's major and minor versions, and what Flash version features should
-		be used for Flash/JavaScript communication. Parts of this code
-		are adapted from the automatic Flash plugin detection code autogenerated 
-		by the Macromedia Flash 8 authoring environment. 
+		be used for Flash/JavaScript communication. Parts of this code are
+		adapted from Geoff Stearn's FlashObject 1.3c, located at
+		http://blog.deconcept.com/flashobject/.
 		
-		An instance of this class can be accessed on dojo.flash.info after
-		the page is finished loading.
-		
-		This constructor must be called before the page is finished loading. 
+		An instance of this class can be accessed on dojo.flash.info.
 */
-dojo.flash.Info = function(){
-	// Visual basic helper required to detect Flash Player ActiveX control 
-	// version information on Internet Explorer
-	if(dojo.render.html.ie){
-		document.writeln('<script language="VBScript" type="text/vbscript"\>');
-		document.writeln('Function VBGetSwfVer(i)');
-		document.writeln('  on error resume next');
-		document.writeln('  Dim swControl, swVersion');
-		document.writeln('  swVersion = 0');
-		document.writeln('  set swControl = CreateObject("ShockwaveFlash.ShockwaveFlash." + CStr(i))');
-		document.writeln('  if (IsObject(swControl)) then');
-		document.writeln('    swVersion = swControl.GetVariable("$version")');
-		document.writeln('  end if');
-		document.writeln('  VBGetSwfVer = swVersion');
-		document.writeln('End Function');
-		document.writeln('</script\>');
-	}
-	
-	this._detectVersion();
+	/** 
+	 		@param reqVer - An optional object with three values,
+	 		reqObj.major, reqObj.minor, reqObj.rev, used to test against the
+	 		found Flash version; this is used to prevent IE from crashing
+	 		in some conditions.
+	 		@param xiInstall - An optional value whether we will be trying
+			to use ExpressInstall. 
+	*/
+dojo.flash.Info = function(reqVer, xiInstall){
+	this._detectVersion(reqVer, xiInstall);
 	this._detectCommunicationVersion();
 }
 
@@ -459,9 +578,9 @@ dojo.flash.Info.prototype = {
 			plugin is 8r22, then the major version is 8, the minor version is 0,
 			and the revision is 22. 
 	*/
-	versionMajor: -1,
-	versionMinor: -1,
-	versionRevision: -1,
+	major: 0,
+	minor: 0,
+	rev: 0,
 	
 	/** Whether this platform has Flash already installed. */
 	capable: false,
@@ -477,100 +596,76 @@ dojo.flash.Info.prototype = {
 	*/
 	commVersion: 6,
 	
-	/** Set if we are in the middle of a Flash installation session. */
-	installing: false,
-	
-	/** 
-			Asserts that this environment has the given major, minor, and revision
-			numbers for the Flash player. Returns true if the player is equal
-			or above the given version, false otherwise.
-			
-			Example: To test for Flash Player 7r14:
-			
-			dojo.flash.info.isVersionOrAbove(7, 0, 14)
-	*/
-	isVersionOrAbove: function(reqMajorVer, reqMinorVer, reqVer){
-		// make the revision a decimal (i.e. transform revision 14 into
-		// 0.14
-		reqVer = parseFloat("." + reqVer);
-		
-		if(this.versionMajor >= reqMajorVer && this.versionMinor >= reqMinorVer
-			 && this.versionRevision >= reqVer){
-			return true;
-		}else{
+	versionIsValid: function(major, minor, rev){
+		if(this.major < major){
 			return false;
 		}
+		
+		if(this.major > major){
+			return true;
+		}
+		
+		if(this.minor < minor){
+			return false;
+		}
+		
+		if(this.minor > minor){
+			return true;
+		}
+		
+		if(this.rev < rev){
+			return false;
+		}
+		
+		return true;
 	},
 	
-	_detectVersion: function(){
-		var versionStr;
-		
-		// loop backwards through the versions until we find the newest version	
-		for(var testVersion = 25; testVersion > 0; testVersion--){
-			if(dojo.render.html.ie){
-				versionStr = VBGetSwfVer(testVersion);
-			}else{
-				versionStr = this._JSFlashInfo(testVersion);		
-			}
-				
-			if(versionStr == -1 ){
-				this.capable = false; 
-				return;
-			}else if(versionStr != 0){
-				var versionArray;
-				if(dojo.render.html.ie){
-					var tempArray = versionStr.split(" ");
-					var tempString = tempArray[1];
-					versionArray = tempString.split(",");
-				}else{
-					versionArray = versionStr.split(".");
-				}
-					
-				this.versionMajor = versionArray[0];
-				this.versionMinor = versionArray[1];
-				this.versionRevision = versionArray[2];
-				
-				// 7.0r24 == 7.24
-				versionString = this.versionMajor + "." + this.versionRevision;
-				this.version = parseFloat(versionString);
-				
+	/** Gets the version as a string, such as 8.0r22. Returns -1
+	 *	if this platform does not have Flash.	*/
+	getVersion: function(){
+		if(this.capable == false){
+			return -1;
+		}else{
+			var versionStr = this.major + "." + this.minor + "r" + this.rev;
+			return versionStr;
+		}
+	},
+	
+	_detectVersion: function(reqVer, xiInstall){
+		this._setVersion(0,0,0);
+		if(navigator.plugins && navigator.mimeTypes.length){
+			var x = navigator.plugins["Shockwave Flash"];
+			if(x && x.description){
+				var versionStr = x.description.replace(/([a-z]|[A-Z]|\s)+/, "");
+				versionStr = versionStr.replace(/(\s+r|\s+b[0-9]+)/, ".".split("."));
+				this._setVersion(versionStr);
 				this.capable = true;
-				
-				break;
 			}
-		}
-	},
-	
-	/** 
-			JavaScript helper required to detect Flash Player PlugIn version 
-			information. Internet Explorer uses a corresponding Visual Basic
-			version to interact with the Flash ActiveX control. 
-	*/
-	_JSFlashInfo: function(testVersion){
-		// NS/Opera version >= 3 check for Flash plugin in plugin array
-		if(navigator.plugins != null && navigator.plugins.length > 0){
-			if(navigator.plugins["Shockwave Flash 2.0"] || 
-				 navigator.plugins["Shockwave Flash"]){
-				var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-				var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
-				var descArray = flashDescription.split(" ");
-				var tempArrayMajor = descArray[2].split(".");
-				var versionMajor = tempArrayMajor[0];
-				var versionMinor = tempArrayMajor[1];
-				if(descArray[3] != ""){
-					tempArrayMinor = descArray[3].split("r");
-				}else{
-					tempArrayMinor = descArray[4].split("r");
+		}else{
+			try{
+				var axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+				for (var i=3; axo!=null; i++){
+					axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash."+i);
+					this._setVersion([i,0,0]);
 				}
-				var versionRevision = tempArrayMinor[1] > 0 ? tempArrayMinor[1] : 0;
-				var version = versionMajor + "." + versionMinor + "." 
-											+ versionRevision;
-											
-				return version;
+				this.capable = true;
+			}catch(e){}
+			if (reqVer && this.major > reqVer.major){
+				this.capable = true;
+				return; // version is ok, skip minor detection
+			}
+			
+			// this only does the minor rev lookup if the user's major version 
+			// is not 6 or we are checking for a specific minor or revision number
+			// see http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
+			if (!reqVer || ((reqVer.minor != 0 || reqVer.rev != 0) && this.major == reqVer.major) 
+					|| this.major != 6 || xiInstall){
+				try{
+					this._setVersion(axo.GetVariable("$version").split(" ")[1].split(","));
+					this.capable = true;
+				}catch(e){}
 			}
 		}
-		
-		return -1;
 	},
 	
 	/** 
@@ -603,6 +698,12 @@ dojo.flash.Info.prototype = {
 		}else{
 			this.commVersion = 6;
 		}
+	},
+	
+	_setVersion: function(arrVersion){
+		this.major = parseInt(arrVersion[0]) || 0;
+		this.minor = parseInt(arrVersion[1]) || 0;
+		this.rev = parseInt(arrVersion[2]) || 0;
 	}
 };
 
@@ -1133,12 +1234,12 @@ dojo.flash.Install.prototype = {
 		// are we on the Mac? Safari needs Flash version 8 to do Flash 8
 		// communication, while Firefox/Mac needs Flash 8 to fix bugs it has
 		// with Flash 6 communication
-		if(dojo.render.os.mac == true && !dojo.flash.info.isVersionOrAbove(8, 0, 0)){
+		if(dojo.render.os.mac == true && !dojo.flash.info.versionIsValid(8, 0, 0)){
 			return true;
 		}
 
 		// other platforms need at least Flash 6 or above
-		if(!dojo.flash.info.isVersionOrAbove(6, 0, 0)){
+		if(!dojo.flash.info.versionIsValid(6, 0, 0)){
 			return true;
 		}
 
@@ -1165,7 +1266,7 @@ dojo.flash.Install.prototype = {
 			// the user to install things
 			var installObj = new dojo.flash.Embed(false);
 			installObj.write(8); // write out HTML for Flash 8 version+
-		}else if(dojo.flash.info.isVersionOrAbove(6, 0, 65)){ // Express Install
+		}else if(dojo.flash.info.versionIsValid(6, 0, 65)){ // Express Install
 			dojo.debug("Express install");
 		}else{ // older Flash install
 			dojo.debug("old install");
