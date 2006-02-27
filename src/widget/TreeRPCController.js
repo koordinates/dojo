@@ -46,10 +46,8 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 
 		var success;
 
-		//dojo.debug("changeParentRemote request")
-
 		dojo.io.bind({
-			url: this.getRPCUrl('changeParent'),
+			url: this.getRPCUrl('move'),
 			/* I hitch to get this.loadOkHandler */
 			load: dojo.lang.hitch(this,
 				function(type, response) {
@@ -63,7 +61,6 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 			content: { data: dojo.json.serialize(params) }
 		});
 
-		//dojo.debug("changeParentRemote request done")
 
 		return success;
 	},
