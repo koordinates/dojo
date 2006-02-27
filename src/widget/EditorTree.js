@@ -12,6 +12,7 @@ dojo.require("dojo.widget.EditorTreeNode");
 dojo.require("dojo.widget.EditorTreeSelector");
 dojo.require("dojo.widget.EditorTreeController");
 
+dojo.deprecated("dojo.widget.EditorTree",  "refactored & moved to dojo.widget.Tree");
 
 
 // make it a tag
