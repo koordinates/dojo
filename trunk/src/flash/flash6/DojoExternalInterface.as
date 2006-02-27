@@ -12,7 +12,7 @@ class DojoExternalInterface{
 								 _loadedFired = false;
 	
 	public static function initialize(){
-		// FIXME: Set available variable
+		// FIXME: Set available variable by testing for capabilities
 		DojoExternalInterface.available = true;
 		// FIXME: do a test run to see if we can communicate from Flash to JavaScript
 		// and back again to make sure we can actually communicate (set 'available'
@@ -63,9 +63,9 @@ class DojoExternalInterface{
 		// retrieves the arguments using GetVariable, executes the method,
 		// and then places the return result in a Flash variable
 		// named "_returnResult".
-		_root._numArgs = arguments.length - 1;
+		_root._numArgs = arguments.length - 2;
 		for(var i = 2; i < arguments.length; i++){
-			var argIndex = i - 1;
+			var argIndex = i - 2;
 			_root["_" + argIndex] = arguments[i];
 		}
 		
@@ -77,7 +77,6 @@ class DojoExternalInterface{
 			 resultsCallback == null){
 			return;
 		}
-		
 		
 		// check at regular intervals for return results	
 		var resultsChecker = function(){
