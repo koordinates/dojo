@@ -23,7 +23,7 @@ dojo.event.connect(window, "onload", function (e) {
 */
 </script>
 
-<div id="editable" dojoType="RichText" widgetId="editdiv"><!--div id="editable" dojoType="RichText" saveName="main-content"--><!-- don't want space here
+<div id="editable" dojoType="RichText" widgetId="editdiv" style="border: 1px solid black;"><!-- don't want space here
 
 --><h1>Lorem Ipsum</h1>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
@@ -101,3 +101,21 @@ dojo.event.connect(dojo, "loaded", function (e) {
 <h2>Blank area!</h2>
 
 <p style="border: 1px inset gray;" dojoType="RichText" widgetId="blank"> </p>
+
+<h2>Fixed size rich text area</h2>
+<div id="fixed" dojoType="RichText" widgetId="fixed" style="width: 300px; height: 200px; overflow: auto; border: solid black 1px;"><!--no
+spaces--><h1>Lorem Ipsum</h1>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.
+<h2>More Ipsum...</h2>
+<p>Sed sollicitudin suscipit risus. Nam ullamcorper. Sed nisl lectus, pellentesque nec, malesuada eget, ornare a, libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+<ul>
+	<li>list item one
+		<ol>
+			<li>sub list item two
+			<li>this is a sub item two
+		</ol>
+	<li>more wonderful list items
+	<li>and a last one for every list fan out there
+</ul>
+<p>In lacinia varius odio. Fusce elementum dolor at massa. Suspendisse ullamcorper arcu vitae enim feugiat ultrices. Duis neque metus, gravida sit amet, mollis at, nonummy id, eros. Mauris aliquet quam quis nibh. Curabitur sit amet arcu et erat commodo tincidunt.
+</div>
