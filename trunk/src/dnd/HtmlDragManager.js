@@ -173,7 +173,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		dojo.event.connect(document, "onmousemove", this, "onMouseMove");
 	},
 
-	onMouseUp: function(e){
+	onMouseUp: function(e, cancel){
 		this.mouseDownX = null;
 		this.mouseDownY = null;
 		this._dragTriggered = false;
@@ -271,6 +271,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	onMouseMove: function(e){
 		var _this = this;
+		if(dojo.render.html.ie && e.button != 1) {
+			// Oooops - mouse up occurred - e.g. when mouse was not over the window.
+			// I don't think we can detect this for FF - but at least we can be nice in IE.
+			this.currentDropTarget = null;
+			this.onMouseUp(e, true);
+			return;
+		}
 		// if we've got some sources, but no drag objects, we need to send
 		// onDragStart to all the right parties and get things lined up for
 		// drop target detection
