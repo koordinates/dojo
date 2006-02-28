@@ -23,6 +23,9 @@
 body {
 	font-family : sans-serif;
 }
+.dojoTabContainer {
+  padding : 10px 10px 10px 10px;
+}
 
 </style>
 <script type="text/javascript">
@@ -67,6 +70,27 @@ function boo(panel, node) {
 			<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
 		</div>
 
+	</div>
+
+	<p>some text here</p>
+
+	<div id="btabs" dojoType="TabPane" labelPosition="bottom" style="width: 100%; height: 10em;" selectedTab="tab2">
+		<div id="btab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
+		<div id="btab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
+	</div>
+	
+	<p>some text here</p>
+
+	<div id="lhtabs" dojoType="TabPane" labelPosition="left-h" style="width: 100%; height: 10em;" selectedTab="tab2">
+		<div id="lhtab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
+		<div id="lhtab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
+	</div>
+	
+	<p>some text here</p>
+
+	<div id="lrtabs" dojoType="TabPane" labelPosition="right-h" style="width: 100%; height: 10em;" selectedTab="tab2">
+		<div id="rhtab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
+		<div id="rhtab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
 	</div>
 
 </body>
