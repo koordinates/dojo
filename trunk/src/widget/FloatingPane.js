@@ -159,14 +159,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 		this.previous=null;
 
-		if (this.widgetState != "maximized") {
-			this.show();
-		}
-
 		this.restoreAction.style.display="none";
 		this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
 
-		this.bringToTop();
 		this.windowState="normal";
 	},
 
@@ -205,14 +200,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		if (this.windowState == "maximized") {
 			this.maximizeWindow();
 			this.show();
-			this.bringToTop();
 			return;
 		}
 
 		if (this.windowState=="normal") {
 			dojo.lang.setTimeout(this, this.onResized, 50);
 			this.show();
-			this.bringToTop();
 			return;
 		}
 
@@ -237,6 +230,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			return;
 		}
 		taskbar.addChild(this);
+	},
+
+	show: function(){
+		if(!this.isVisible()){
+			dojo.widget.html.FloatingPane.superclass.show.apply(this, arguments);
+		}
+		this.bringToTop();
 	},
 
 	onShow: function(){
