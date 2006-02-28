@@ -10,9 +10,11 @@ Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js
 */
 
-dojo.animation.Animation = function(curve, duration, accel, repeatCount, rate) {
+dojo.animation.Animation = function(/*dojo.math.curves.Line*/ curve, /*int*/ duration, /*Decimal?*/ accel, /*int?*/ repeatCount, /*int?*/ rate) {
 	// public properties
 	if(dojo.lang.isArray(curve)) {
+		// curve: Array
+		// id: i
 		curve = new dojo.math.curves.Line(curve[0], curve[1]);
 	}
 	this.curve = curve;
@@ -20,7 +22,11 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount, rate) {
 	this.repeatCount = repeatCount || 0;
 	this.rate = rate || 25;
 	if(accel) {
+		// accel: Decimal
+		// id: j
 		if(dojo.lang.isFunction(accel.getValue)) {
+			// accel: dojo.math.curves.CatmullRom
+			// id: k
 			this.accel = accel;
 		} else {
 			var i = 0.35*accel+0.5;	// 0.15 <= i <= 0.85
@@ -28,6 +34,7 @@ dojo.animation.Animation = function(curve, duration, accel, repeatCount, rate) {
 		}
 	}
 }
+
 dojo.lang.extend(dojo.animation.Animation, {
 	// public properties
 	curve: null,
