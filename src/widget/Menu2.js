@@ -83,7 +83,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		if (this.contextMenuForWindow){
 			var doc = document.documentElement  || document.body;
-			this._fixDomNode(doc);
+			dojo.widget.Menu2.OperaAndKonqFixer.fixNode(doc);
 			dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
 		} else if ( this.targetNodeIds.length > 0 ){
 			for(var i=0; i<this.targetNodeIds.length; i++){
@@ -117,7 +117,10 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	// attach menu to given node
 	bindDomNode: function(nodeName){
 		var node = dojo.byId(nodeName);
-		this._fixDomNode(node);
+
+		// fixes node so that it supports oncontextmenu if not natively supported, Konqueror, Opera more?
+		dojo.widget.Menu2.OperaAndKonqFixer.fixNode(node);
+
 		dojo.event.kwConnect({
 			srcObj:     node,
 			srcFunc:    "oncontextmenu",
@@ -127,32 +130,19 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		});
 	},
 
-	// fixes node so that it supports oncontextmenu if not natively supported, Konqueror, Opera more?
-	_fixDomNode: function(node){
-		if (dojo.widget.Menu2.OperaAndKonqFixer){
-			dojo.widget.Menu2.OperaAndKonqFixer.fixNode(node);
-		}
-	},
-
 	// detach menu from given node
-	unBindDomNode: function(node){
+	unBindDomNode: function(nodeName){
+		var node = dojo.byId(nodeName);
 		dojo.event.kwDisconnect({
-			srcObj:     dojo.byId(node),
+			srcObj:     node,
 			srcFunc:    "oncontextmenu",
 			targetObj:  this,
 			targetFunc: "onOpen",
 			once:       true
 		});
 
-		// clean our node
-		this._cleanDomNode(node);
-	},
-
-	// cleans a fixed node, konqueror and opera
-	_cleanDomNode: function(node){
-		if (dojo.widget.Menu2.OperaAndKonqFixer){
-			dojo.widget.Menu2.OperaAndKonqFixer.cleanNode(node);
-		}
+		// cleans a fixed node, konqueror and opera
+		dojo.widget.Menu2.OperaAndKonqFixer.cleanNode(node);
 	},
 
 	layoutMenuSoon: function(){
