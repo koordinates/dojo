@@ -1,0 +1,159 @@
+<html>
+<head>
+	<script language="JavaScript" type="text/javascript">
+		// Dojo configuration
+		//djConfig = { isDebug: true, debugAtAllCosts: true, preventBackButtonFix: false };
+		djConfig = { isDebug: true, preventBackButtonFix: false };
+	</script>
+	<script language="JavaScript" type="text/javascript" 
+		src="../../dojo.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		dojo.require("dojo.lang.common");
+		dojo.require("dojo.undo.browser");
+		dojo.require("dojo.io.*");
+		//dojo.hostenv.writeIncludes();
+	
+		var data = {
+			link1: 'This is data for link 1',
+			link2: 'This is data for link 2',
+			link3: 'This is data for link 3',
+			link4: 'This is data for link 4',
+			link5: 'This is data for link 5',
+			link6: 'This is data for link 6',
+			link7: 'This is data for link 7'
+		};
+	
+		var HistoryTracker = function(id){
+			this._id = id;
+			//TODO: commenting this out breaks FF 1.5. Others? Can't seem to find iframe id/name?
+			this.changeUrl = shouldChangeUrl();
+		}
+		
+		HistoryTracker.prototype.back = function(){
+			updateOutput('BACK for id: ' + this._id);
+			showDataForId(this._id);
+		}
+
+		HistoryTracker.prototype.forward = function(){
+			updateOutput('FORWARD for id: ' + this._id);
+			showDataForId(this._id);
+		}
+
+		createXhrHistoryTracker = function(url){
+			var request = new dojo.io.Request(url, 'text/xml', null, shouldChangeUrl());
+			dojo.lang.mixin(request, {
+				data: null,
+				load: function(type, evaldObj){
+					if(type == "load"){
+						this.data = evaldObj.getElementsByTagName('data')[0].childNodes[0].nodeValue; //evaldObj.getElementsByTagName('data')[0].text;//.getElementsByTagName('data')[0];
+						updateDataDisplay(this.data);
+					}
+				},
+				
+				back: function(){
+					updateOutput('XHR BACK for URL: ' + this.url);
+					updateDataDisplay(this.data);
+				},
+				
+				forward: function(){
+					updateOutput('XHR FORWARD for URL: ' + this.url);
+					updateDataDisplay(this.data);
+				}
+			});
+			
+			return request;
+		}
+		
+		function goIoBind(url){
+			dojo.io.bind(createXhrHistoryTracker(url));
+		}
+		
+		function goNav(id){
+			showDataForId(id);
+			var historyTracker = new HistoryTracker(id);
+			dojo.undo.browser.addToHistory(historyTracker);
+		}
+	
+		function shouldChangeUrl(){
+			return document.getElementById('changeUrlCheckbox').checked;
+		}
+		
+		function showDataForId(id){
+			updateDataDisplay(data[id]);
+		}
+	
+		function updateDataDisplay(dataString){
+			document.getElementById('dataOutput').innerHTML = dataString;			
+		}
+		
+		function updateOutput(message){
+			document.getElementById('output').innerHTML += message + '<br />';
+		}
+	</script>
+</head>
+<body>
+	<div style="padding-bottom: 20px; width: 100%; border-bottom: 1px solid gray">
+	<h3>dojo.undo.browser test</h3>
+	<p><i>dojo.undo.browser usage:</i></p>
+	<ul>
+		<li>dojo.require("dojo.undo.browser");</li>
+		<li>Define <b>preventBackButtonFix: false</b> in your djConfig.</li>
+	</ul>
+	
+	<p>This page tests the dojo.undo.browser back/forward code. Click on the
+	buttons to create a navigation history, then use the browser back/forward
+	buttons to try out the code. You should see messages in the <i>Back/Forward
+	Info</i> section of the page indicating that a back or forward action was
+	detected.  The <b>Data Output</b> section should also update to the correct
+	data for that point in the navigation history.</p>
+	
+	<p>The buttons that start with "Link" on them don't use any dojo.io calls,
+	just JS data already in the page.  The buttons that start with "XHR" use
+	dojo.io.bind to do some XMLHTTPRequest calls for some test data, and they
+	also define back/forward handlers, so dojo.io should use dojo.undo.browser
+	add to history tracking.</p>
+	
+	<p>If the <b>Change URL</b> checkbox is checked, then the test
+	links/io.binds will ask dojo.undo.browser to change the URL (done by adding
+	a unique hash to the URL in the browser location bar). Other notes:</p>
+	
+	<ul>
+		<li>Don't test this page using local disk for MSIE. MSIE will not
+		create a history list for iframe_history.html if served from a file:
+		URL. The XML served back from the XHR tests will also not be properly
+		created if served from local disk. Serve the test pages from a web
+		server to test in that browser.</li>
+		<li>Safari 2.0.3+ (and probably 1.3.2+): works fine, except when
+		changeUrl is used. When changeUrl is used, Safari jumps all the way
+		back to whatever page was shown before the page that uses
+		dojo.undo.browser support.</li>
+	</ul>
+	</div>
+	<div style="float:left; padding: 20px">
+		<input type="checkbox" id="changeUrlCheckbox" /> Change URL<br />
+		<i style="font-size: smaller">Either check or uncheck<br />
+		this box for the whole test.<br />
+		The test WILL NOT WORK if you <br />
+		check and uncheck the box during a test run.</i><br /><br />
+		<button onclick="goNav('link1')">Link 1</button><br />
+		<button onclick="goNav('link2')">Link 2</button><br />
+		<button onclick="goNav('link3')">Link 3</button><br />
+		<button onclick="goNav('link4')">Link 4</button><br />
+		<button onclick="goNav('link5')">Link 5</button><br />
+		<button onclick="goNav('link6')">Link 6</button><br />
+		<button onclick="goNav('link7')">Link 7</button><br />
+		<p>&nbsp;</p>
+		<button onclick="goIoBind('browser/xhr1.xml')">XHR 1</button><br />
+		<button onclick="goIoBind('browser/xhr2.xml')">XHR 2</button><br />
+		<button onclick="goIoBind('browser/xhr3.xml')">XHR 3</button><br />
+		<button onclick="goIoBind('browser/xhr4.xml')">XHR 4</button><br />	
+	</div>
+	<div style="float: left; padding: 20px">
+		<b>Data Output:</b><br />
+		<div id="dataOutput"></div>
+		<hr />
+		<i>Back/Forward Info:</i><br />
+		<div id="output"></div>
+	</div>
+</body>
+</html>

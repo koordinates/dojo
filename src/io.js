@@ -254,6 +254,34 @@ dojo.io.argsFromMap = function(map, encoding){
 	return mapStr;
 }
 
+dojo.io.setIFrameSrc = function(iframe, src, replace){
+	try{
+		var r = dojo.render.html;
+		// dojo.debug(iframe);
+		if(!replace){
+			if(r.safari){
+				iframe.location = src;
+			}else{
+				frames[iframe.name].location = src;
+			}
+		}else{
+			// Fun with DOM 0 incompatibilities!
+			var idoc;
+			if(r.ie){
+				idoc = iframe.contentWindow.document;
+			}else if(r.moz){
+				idoc = iframe.contentWindow;
+			}else if(r.safari){
+				idoc = iframe.document;
+			}
+			idoc.location.replace(src);
+		}
+	}catch(e){ 
+		dojo.debug(e); 
+		dojo.debug("setIFrameSrc: "+e); 
+	}
+}
+
 /*
 dojo.io.sampleTranport = new function(){
 	this.canHandle = function(kwArgs){
