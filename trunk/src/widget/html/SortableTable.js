@@ -550,6 +550,13 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 			if(!this.columns[i].noSort){
 				dojo.event.connect(headers[i], "onclick", this, "onHeaderClick");
 			}
+			if(this.sortIndex==i){
+				if(this.sortDirection==0){
+					headers[i].className=this.headerSortDownClass;
+				}else{
+					headers[i].className=this.headerSortUpClass;
+				}
+			}
 		}
 
 		//	parse the tbody element and re-render it.

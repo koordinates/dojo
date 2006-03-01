@@ -68,6 +68,9 @@
 			text-align: left
 			padding: 2px 2px;
 		}
+		thead.fixedHeader th.selected {
+			background-color:#fcc;
+		}
 
 		thead.fixedHeader a, thead.fixedHeader a:link, thead.fixedHeader a:visited {
 			color: #FFF;
@@ -188,7 +191,7 @@
 		<tr>
 			<th field="Id" dataType="Number">Id</th>
 			<th field="Name" dataType="String">Name</th>
-			<th field="DateAdded" dataType="Date">Date Added</th>
+			<th field="DateAdded" dataType="Date" sort="asc">Date Added</th>
 			<th field="DateModified" dataType="Date" format="%b %d, %Y">Date Modified</th>
 			<th dataType="html">Label</th>
 		</tr>
