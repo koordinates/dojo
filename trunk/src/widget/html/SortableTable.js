@@ -21,6 +21,7 @@ dojo.widget.html.SortableTable=function(){
 	this.rowClass="";
 	this.rowAlternateClass="alt";
 	this.rowSelectedClass="selected";
+	this.columnSelected="sorted-column";
 };
 dojo.inherits(dojo.widget.html.SortableTable, dojo.widget.HtmlWidget);
 
@@ -178,8 +179,8 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 			if(dojo.html.hasAttribute(cells[i], "nosort")){
 				o.noSort=dojo.html.getAttribute(cells[i],"nosort")=="true";
 			}
-			if(dojo.html.hasAttribute(cells[i], "sort")){
-				var trans=dojo.html.getAttribute(cells[i],"sort");
+			if(dojo.html.hasAttribute(cells[i], "sortusing")){
+				var trans=dojo.html.getAttribute(cells[i],"sortusing");
 				var f=this.getTypeFromString(trans);
 				if (f!=null && f!=window && typeof(f)=="function") 
 					o.sortFunction=f;
@@ -206,6 +207,18 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 			}
 			o.label=dojo.html.renderedTextContent(cells[i]);
 			this.columns.push(o);
+
+			//	check to see if there's a default sort, and set the properties necessary
+			if(dojo.html.hasAttribute(cells[i], "sort")){
+				this.sortIndex=i;
+				var dir=dojo.html.getAttribute(cells[i], "sort");
+				if(!isNaN(parseInt(dir))){
+					dir=parseInt(dir);
+					this.sortDirection=(dir!=0)?1:0;
+				}else{
+					this.sortDirection=(dir.toLowerCase()=="desc")?1:0;
+				}
+			}
 		}
 	},
 
@@ -345,6 +358,9 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 				var cell=document.createElement("td");
 				cell.setAttribute("align", this.columns[j].align);
 				cell.setAttribute("valign", this.columns[j].valign);
+				if(this.sortIndex==j){
+					cell.className=this.columnSelected;
+				}
 				if(this.columns[j].sortType=="__markup__"){
 					cell.innerHTML=data[i][this.columns[j].getField()];
 				}else{
