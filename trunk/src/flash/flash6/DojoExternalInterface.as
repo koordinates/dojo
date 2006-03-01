@@ -99,7 +99,7 @@ class DojoExternalInterface{
 		_movieLoaded = true;
 		if(_movieLoaded == true && _gatewayLoaded == true && _loadedFired == false){
 			_loadedFired = true;
-			DojoExternalInterface.call("dojo.flash.loaded");
+			call("dojo.flash.loaded");
 		}
 	}
 	
@@ -137,7 +137,7 @@ class DojoExternalInterface{
 		_gatewayLoaded = true;
 		if(_movieLoaded == true && _gatewayLoaded == true && _loadedFired == false){
 			_loadedFired = true;
-			DojoExternalInterface.call("dojo.flash.loaded");
+			call("dojo.flash.loaded");
 		}
 	}
 	
