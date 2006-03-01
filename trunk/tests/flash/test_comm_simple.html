@@ -4,7 +4,7 @@
 <html>
 
 <head>
-	<title>Dojo Flash Test</title>
+	<title>dojo.flash.comm Simple Test</title>
 
 	<script type="text/javascript">
 		var djConfig = { isDebug: true };
@@ -22,8 +22,7 @@
 											 visible: false});
 		
 		function flashLoaded(){
-			dojo.debug("Flash is loaded!!!");
-			dojo.debug("Calling method");
+			dojo.debug("Flash is loaded");
 			var results = dojo.flash.comm.sayHello("Did I leave the iron on?");
 			dojo.debug(results);
 			results = dojo.flash.comm.sayHello("Did I leave the iron on2?");
@@ -41,7 +40,7 @@
 </head>
 
 <body>
-	<h1>Dojo.Plugin.Flash Test</h1>
+	<h1>dojo.flash.comm Simple Test</h1>
 </body>
 
 </html>

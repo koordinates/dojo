@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>dojo.flash.Embed</title>
+<script type="text/javascript">
+		var djConfig = { isDebug: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<style type="text/css">
+	body {
+		background-color: #eeeeee;
+		font: .8em/1.3em verdana,arial,helvetica,sans-serif;
+	}
+
+	#info {
+		width: 300px;
+		overflow: auto;
+	}
+
+	#flashcontent {
+		border: solid 1px #000;
+		width: 300px;
+		height: 300px;
+		float: left;
+		margin: 15px 20px;
+	}
+</style>
+</head>
+<body>
+
+	<div id="flashcontent">
+		<strong>You need to upgrade your Flash Player</strong>
+		This is replaced by the Flash content. 
+		Place your alternate content here and users without the Flash plugin or with 
+		Javascript turned off will see this. Content here allows you to leave out <code>noscript</code> 
+		tags. Include a link to <a href="flashobject.html?detectflash=false">bypass the detection</a> if you wish.
+	</div>
+
+	<script type="text/javascript">
+		dojo.require("dojo.flash");
+		var fo = new dojo.flash.Embed({
+																	swf: "resources/embed_tester.swf",
+																	id: "embed_tester",
+																	width: "300",
+																	height: "300",
+																	version: "8.0.0",
+																	bgcolor: "#FF6600"
+																	});
+		// this line is optional, but this example uses the variable and displays 
+		// this text inside the flash movie
+		fo.addVariable("flashVarText", 
+									 "this is passed in via FlashVars for example only"); 
+		fo.write("flashcontent");
+	</script>
+
+	<div id="info">
+		<p>
+			This Flash movie was embedded using dojo.flash.Embed, based on 
+			code and work by <a href="http://blog.deconcept.com">Geoff Stearns</a>.
+		</p>
+		<p>Other sample embeds:</p>
+		<ul>
+			<li>Basic Flash Embed with alternate content</li>
+			<li><a href="test_embed_fullpage.html">Full page Flash embed</a></li>
+			<li><a href="test_embed_expressinstall.html">Basic Flash Embed with 
+																									Express Install allowed</a></li>
+		</ul>
+	</div>
+</body>
+</html>

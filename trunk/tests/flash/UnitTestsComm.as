@@ -1,9 +1,9 @@
 import DojoExternalInterface;
 
-class UnitTests{
+class UnitTestsComm{
 	private var values = new Object();
 	
-	public function UnitTests(){
+	public function UnitTestsComm(){
 		DojoExternalInterface.initialize();
 		DojoExternalInterface.addCallback("testString", this, testString);
 		DojoExternalInterface.addCallback("setValue", this, setValue);
@@ -37,6 +37,6 @@ class UnitTests{
 	
 	static function main(mc){
 		//getURL("javascript:alert('FLASH: TestFlash loaded')");
-		_root.testFlash = new UnitTests();
+		_root.testFlash = new UnitTestsComm();
 	}
 }

@@ -8,13 +8,11 @@ class HelloWorld{
 	}
 	
 	public function sayHello(msg){
-		getURL("javascript:dojo.debug('FLASH: " + msg + "');");
-		
-		return "Message received from JavaScript was: " + msg;
+		return "FLASH: Message received from JavaScript was: " + msg;
 	}
 	
 	static function main(mc){
-		getURL("javascript:dojo.debug('FLASH:main method of flash')");
+		//getURL("javascript:dojo.debug('FLASH:main method of flash')");
 		_root.helloWorld = new HelloWorld();
 	}
 }
