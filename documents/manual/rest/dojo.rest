@@ -52,7 +52,7 @@ Properties
 ``dojo.render.os``:
 
     An object which describes the operating system.  It has properties which are
-    booleans: ``windows``, ``linux``, ``mac``, ``osx``.
+    booleans: ``win``, ``linux``, ``osx``.
     
 ``dojo.render.ver``:
 
