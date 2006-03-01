@@ -58,6 +58,7 @@ build targets:
 	relative path to file using -Ddojo.flash.file.
 	buildDojoFlash - compiles the dojo.flash package, including its testing
 	and example files.
+	buildDojoStorage - compiles the dojo.storage package
 
 	**** all following build types can take an optional parameter in the form of: -Dversion='currentVer'
 		where 'currentVer' is the version of ${project} being built, default is 'development'
@@ -645,7 +646,7 @@ internTemplateStrings()
 		</antcall>
 		
 		<antcall target="buildFlash">
-			<param name="dojo.flash.file" value="${root}/tests/flash/UnitTests.as"/>
+			<param name="dojo.flash.file" value="${root}/tests/flash/UnitTestsComm.as"/>
 		</antcall>
 		
 		<move todir="${root}/tests/flash/resources">
@@ -655,6 +656,21 @@ internTemplateStrings()
   	</move>
 	</target>
 	<!-- end buildDojoFlash task -->
+	
+	<!-- buildDojoStorage task -->
+	<target name="buildDojoStorage"
+					description="builds the Dojo Storage package">	
+		<antcall target="buildFlash">
+			<param name="dojo.flash.file" value="${root}/${src}/storage/Storage.as"/>
+		</antcall>
+		
+		<move todir="${root}">
+	    <fileset dir="${root}/${src}/storage/">
+	      <include name="*.swf"/>
+	    </fileset>
+  	</move>
+	</target>
+	<!-- end buildDojoStorage task -->
 	
 	<!-- buildFlash task -->
 	<target name="buildFlash"
