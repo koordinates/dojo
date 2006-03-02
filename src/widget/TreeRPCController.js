@@ -41,7 +41,8 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 			childTree: this.getInfo(child.tree),
 			// where to
 			newParent: this.getInfo(newParent),
-			newParentTree: this.getInfo(newParent.tree)
+			newParentTree: this.getInfo(newParent.tree),
+			newIndex: index
 		};
 
 		var success;
