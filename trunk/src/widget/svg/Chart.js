@@ -350,17 +350,10 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 	}
 });
 
-dojo.widget.svg.Chart.PlotTypes = {
-	Bar:"bar",
-	Line:"line",
-	Scatter:"scatter",
-	Bubble:"bubble"
-};
-
 dojo.widget.svg.Chart.Plotter=new function(){
 	var _this=this;
 	var plotters = {};
-	var types=dojo.widget.svg.Chart.PlotTypes;
+	var types=dojo.widget.Chart.PlotTypes;
 	
 	this.getX=function(value, chart){
 		var v=parseFloat(value);
@@ -399,9 +392,6 @@ dojo.widget.svg.Chart.Plotter=new function(){
 		else if (chart.plotType && plotters[chart.plotType]){
 			return plotters[chart.plotType](series, chart);
 		}
-//		else {
-//			return plotters[types.Bar](series, chart);
-//		}
 	};
 
 	//	plotting

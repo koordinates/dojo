@@ -369,11 +369,11 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 	}
 });
 
-// we assume that we haven't hit onload yet. Lord help us.
 try {
 	if (dojo.render.html.ie) {
-		document.write('<style>v\:*{ behavior:url(#default#VML); }</style>');
-		document.write('<xml:namespace ns="urn:schemas-microsoft-com:vml" prefix="v"/>');
+		//	easier and safer VML addition.  Thanks Emil!
+		document.namespaces.add("v", "urn:schemas-microsoft-com:vml");
+		document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML)");
 	}
 } catch (e) { }
 
