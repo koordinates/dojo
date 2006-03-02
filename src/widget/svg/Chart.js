@@ -435,7 +435,7 @@ dojo.widget.svg.Chart.Plotter=new function(){
 		var line = document.createElementNS(dojo.svg.xmlns.svg, "path");
 		line.setAttribute("fill", "none");
 		line.setAttribute("stroke", series.color);
-		line.setAttribute("stroke-width", "1.5");
+		line.setAttribute("stroke-width", "2");
 		line.setAttribute("stroke-opacity", "0.85");
 		line.setAttribute("title", series.label);
 		chart.dataGroup.appendChild(line);

@@ -71,8 +71,13 @@ dojo.lang.extend(dojo.widget.vml.Chart, {
 	parseData:function(){
 	},
 	initialize:function(){
+		alert("we are initializing");
 	},
 	destroy:function(){
+		while(this.domNode.childNodes.length>0){
+			this.domNode.removeChild(this.domNode.childNodes[0]);
+		}
+		this.vectorNode=this.plotArea=this.dataGroup=this.axisGroup=null;
 	},
 	render:function(){
 		if (this.dataGroup){
@@ -134,11 +139,143 @@ dojo.widget.vml.Chart.Plotter=new function(){
 
 	//	plotting
 	plotters[types.Bar]=function(series, chart){
+		var space=1;
+		var lastW = 0;
+		for (var i=0; i<series.values.length; i++){
+			var x=_this.getX(series.values[i].x, chart);
+			var w;
+			if (i==series.values.length-1){
+				w=lastW;
+			} else{
+				w=_this.getX(series.values[i+1].x, chart)-x-space;
+				lastW=w;
+			}
+			x-=(w/2);
+
+			var yA=_this.getY(chart.properties.axes.x.plotAt, chart);
+			var y=_this.getY(series.values[i].value, chart);
+			var h=Math.abs(yA-y);
+			if (parseFloat(series.values[i].value)<chart.properties.axes.x.plotAt){
+				var oy=yA;
+				yA=y;
+				y=oy;
+			}
+
+			var bar=document.createElement("v:rect");
+			bar.style.position="absolute";
+			bar.style.top=x+"px";
+			bar.style.left=y+"px";
+			bar.style.width=w+"px";
+			bar.style.height=h+"px";
+			bar.setAttribute("fillColor", series.color);
+			bar.setAttribute("title", series.label + ": " + series.values[i].value);
+			bar.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.9");
+			bar.appendChild(fill);
+			chart.dataGroup.appendChild(bar);
+		}
 	};	
 	plotters[types.Line]=function(series, chart){
+		var tension=3;
+
+		var line=document.createElement("v:shape");
+		line.setAttribute("strokeweight", "2px");
+		line.setAttribute("strokecolor", series.color);
+		line.setAttribute("fillcolor", "none");	
+		line.setAttribute("title", series.label);
+		line.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
+		line.style.position="absolute";
+		line.style.top="0px";
+		line.style.left="0px";
+		line.style.width= chart.properties.width+"px";
+		line.style.height=chart.properties.height+"px";
+		var stroke=document.createElement("v:stroke");
+		stroke.setAttribute("opacity", "0.85");
+		line.appendChild(stroke);
+
+		var path = [];
+		for (var i=0; i<series.values.length; i++){
+			var x = _this.getX(series.values[i].x, chart)
+			var y = _this.getY(series.values[i].value, chart);
+
+			if (i==0){
+				path.push("m");
+				path.push(x+","+y);
+			}else{
+				var lastx=_this.getX(series.values[i-1].x, chart);
+				var lasty=_this.getY(series.values[i-1].value, chart);
+				var dx=x-lastx;
+				
+				path.push("v");
+				var cx=x-(tension-1)*(dx/tension);
+				path.push(cx+",0");
+				cx=x-(dx/tension);
+				path.push(cx+","+y-lasty);
+				path.push(dx, y-lasty);
+			}
+		}
+		line.setAttribute("path", path.join(" ")+" e");
+		chart.dataGroup.appendChild(line);
 	};
 	plotters[types.Scatter]=function(series, chart){
+		var r=7;
+		for (var i=0; i<series.values.length; i++){
+			var x=_this.getX(series.values[i].x, chart);
+			var y=_this.getY(series.values[i].value, chart);
+
+			var point=document.createElement("v:shape");
+			point.setAttribute("fillcolor", series.color);
+			point.setAttribute("strokecolor", series.color);
+			point.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
+			point.setAttribute("title", series.label + ": " + series.values[i].value);
+			point.style.position="absolute";
+			point.style.top="0px";
+			point.style.left="0px";
+			point.style.width= chart.properties.width+"px";
+			point.style.height=chart.properties.height+"px";
+			point.setAttribute("v",
+				"m " + x + "," + (y-r) + " " +
+				"qb " + x + "," + y + " " + (x+r) + "," + y +
+				"qb " + x + "," + y + " " + x + "," + (y+r) +
+				"qb " + x + "," + y + " " + (x-r) + "," + y +
+				"qb " + x + "," + y + " " + x + "," + (y-r) +
+				" x e"
+			);
+			var fill=document.createElement("v:fill");
+			fill.setAttribute("opacity", "0.5");
+			point.appendChild(fill);
+			chart.dataGroup.appendChild(point);
+		}
 	};	
 	plotters[types.Bubble]=function(series, chart){
+		//	added param for series[n].value: size
+		var minR=1;
+		
+		//	do this off the x axis?
+		var min=chart.properties.axes.x.range.min;
+		var max=chart.properties.axes.x.range.max;
+		var ofst=0-min;
+		min+=ofst; max+=ofst; v+=ofst;
+		var xmin=chart.properties.padding.left;
+		var xmax=chart.properties.width-chart.properties.padding.right;
+		var factor=(max-min)/(xmax-xmin)*25;
+		
+		for (var i=0; i<series.values.length; i++){
+			var size = series.values[i].size;
+			if (isNaN(parseFloat(size))) size=minR;
+			var mod=(parseFloat(size)*factor)/2;
+
+			var point=document.createElement("v:oval");
+			point.setAttribute("strokecolor", series.color);
+			point.setAttribute("fillcolor", series.color);
+			point.setAttribute("title", series.label + ": " + series.values[i].value + " (" + size + ")");
+			point.style.position="absolute";
+			point.style.top=(_this.getY(series.values[i].value, chart)-mod) + "px";
+			point.style.left=(_this.getX(series.values[i].x, chart)-mod) + "px";
+			point.style.width=mod+"px";
+			point.style.height=mod+"px";
+			chart.dataGroup.appendChild(point);
+		}
 	};
 }();

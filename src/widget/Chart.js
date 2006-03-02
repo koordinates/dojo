@@ -1,13 +1,11 @@
 dojo.provide("dojo.widget.Chart");
+dojo.provide("dojo.widget.Chart.PlotTypes");
 dojo.provide("dojo.widget.Chart.DataSeries");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.graphics.color");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
-
-dojo.requireAfterIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
-dojo.requireAfterIf(dojo.render.html.ie, "dojo.widget.vml.Chart");
 
 dojo.widget.Chart=function(){
 	dojo.widget.Widget.call(this);
@@ -166,3 +164,9 @@ dojo.widget.Chart.DataSeries.prototype={
 		return parseFloat(ret);
 	}
 };
+
+if(dojo.render.svg.support.builtin){
+	dojo.require("dojo.widget.svg.Chart");
+}else if(dojo.render.html.ie){
+	dojo.require("dojo.widget.vml.Chart");
+}
