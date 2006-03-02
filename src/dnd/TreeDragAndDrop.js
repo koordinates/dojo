@@ -401,7 +401,7 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 			this.dragSources[node.widgetId] = source;
 		}
 
-		var target = new dojo.dnd.TreeDropTarget(node.labelNode, this.treeController, node.tree.DNDacceptTypes, node, node.tree.DNDMode);
+		var target = new dojo.dnd.TreeDropTarget(node.labelNode, this.treeController, node.tree.DNDAcceptTypes, node, node.tree.DNDMode);
 
 		this.dropTargets[node.widgetId] = target;
 

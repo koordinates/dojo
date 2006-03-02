@@ -42,7 +42,7 @@ dojo.widget.Tree = function() {
 	};
 
 	this.tree = this;
-	this.DNDacceptTypes = [];
+	this.DNDAcceptTypes = [];
 	this.actionsDisabled = [];
 
 }
@@ -60,7 +60,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		ONTO: 2
 	},
 
-	DNDacceptTypes: "",
+	DNDAcceptTypes: "",
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/images/Tree/Tree.css"),
 
