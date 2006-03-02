@@ -37,6 +37,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 
 	listenTree: function(tree) {
 		dojo.event.topic.subscribe(tree.eventNames.titleClick, this, "select");
+		dojo.event.topic.subscribe(tree.eventNames.iconClick, this, "select");
 		dojo.event.topic.subscribe(tree.eventNames.collapse, this, "onCollapse");
 		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
 		dojo.event.topic.subscribe(tree.eventNames.removeChild, this, "onRemoveChild");

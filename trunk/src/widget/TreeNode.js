@@ -110,6 +110,9 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	initialize: function(args, frag){
+
+		//dojo.debug(this.title)
+
 		this.state = this.loadStates.UNCHECKED;
 
 		for(var i=0; i<this.actionsDisabled.length; i++) {
