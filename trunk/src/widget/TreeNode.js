@@ -84,11 +84,11 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 
 	isFirstNode: function() {
-		return this.getPreviousSibling() ? false : true;
+		return this.getParentIndex() == 0 ? true: false;
 	},
 
 	isLastNode: function() {
-		return this.getNextSibling() ? false : true;
+		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
 	},
 
 	actionIsDisabled: function(action) {

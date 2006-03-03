@@ -69,7 +69,7 @@
 
 <h4>firstTree</h4>
 
-<div dojoType="Tree" DNDMode="between" menu="treeContextMenu" toggle="fade" DNDAcceptTypes="firstTree;secondTree" widgetId="firstTree">
+<div dojoType="Tree" DNDMode="between" controller="treeController" menu="treeContextMenu" toggle="fade" DNDAcceptTypes="firstTree;secondTree" widgetId="firstTree">
     <div dojoType="TreeNode" title="Item 1">
         <div dojoType="TreeNode" title="Item 1.1"><br/></div>
         <div dojoType="TreeNode" title="Item 1.2">
@@ -90,7 +90,7 @@
 
 <h4>secondTree</h4>
 
-<div dojoType="Tree" DNDMode="between" DNDAcceptTypes="firstTree;secondTree" widgetId="secondTree">
+<div dojoType="Tree" DNDMode="between" controller="treeController" DNDAcceptTypes="firstTree;secondTree" widgetId="secondTree">
     <div dojoType="TreeNode" title="Node 1"></div>
     <div dojoType="TreeNode" title="Node 2">
         <div dojoType="TreeNode" isFolder="true" title="Node 2.1"></div>
