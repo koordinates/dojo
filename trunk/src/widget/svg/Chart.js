@@ -64,13 +64,14 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 	},
 	
 	fillInTemplate:function(args,frag){
-		this.parseData();
 		this.initialize();
 		this.render();
 	},
 	parseData:function(){
 	},
 	initialize:function(){
+		this.parseData();
+	
 		//	begin by grabbing the table, and reading it in.
 		var table=this.domNode.getElementsByTagName("table")[0];
 		if (!table) return;
@@ -279,14 +280,14 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 		text.setAttribute("x", this.properties.padding.left);
 		text.setAttribute("y", this.properties.height-this.properties.padding.bottom+textSize+2);
 		text.setAttribute("style", "text-anchor:middle;font-size:"+textSize+"px;fill:#000;");
-		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.x.range.min)),2));
+		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.x.range.min),2)));
 		this.axisGroup.appendChild(text);
 		
 		var text = document.createElementNS(dojo.svg.xmlns.svg, "text");
 		text.setAttribute("x", this.properties.width-this.properties.padding.right-(textSize/2));
 		text.setAttribute("y", this.properties.height-this.properties.padding.bottom+textSize+2);
 		text.setAttribute("style", "text-anchor:middle;font-size:"+textSize+"px;fill:#000;");
-		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.x.range.max)),2));
+		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.x.range.max),2)));
 		this.axisGroup.appendChild(text);	
 		
 		//	y axis
@@ -304,14 +305,14 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 		text.setAttribute("x", this.properties.padding.left-4);
 		text.setAttribute("y", this.properties.height-this.properties.padding.bottom);
 		text.setAttribute("style", "text-anchor:end;font-size:"+textSize+"px;fill:#000;");
-		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.y.range.min)),2));
+		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.y.range.min),2)));
 		this.axisGroup.appendChild(text);
 		
 		var text = document.createElementNS(dojo.svg.xmlns.svg, "text");
 		text.setAttribute("x", this.properties.padding.left-4);
 		text.setAttribute("y", this.properties.padding.top+(textSize/2));
 		text.setAttribute("style", "text-anchor:end;font-size:"+textSize+"px;fill:#000;");
-		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.y.range.max)),2));
+		text.appendChild(document.createTextNode(dojo.math.round(parseFloat(this.properties.axes.y.range.max),2)));
 		this.axisGroup.appendChild(text);	
 
 		this.domNode.appendChild(this.vectorNode);

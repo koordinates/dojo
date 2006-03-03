@@ -64,14 +64,154 @@ dojo.lang.extend(dojo.widget.vml.Chart, {
 	},
 	
 	fillInTemplate:function(args,frag){
-		this.parseData();
 		this.initialize();
 		this.render();
 	},
 	parseData:function(){
 	},
 	initialize:function(){
-		alert("we are initializing");
+		//	parse the data first.
+		this.parseData();
+	
+		// render the body of the chart, not the chart data.
+		if(this.vectorNode){ this.destroy(); }
+		this.vectorNode=document.createElement("div");
+		this.vectorNode.style.width=this.properties.width+"px";
+		this.vectorNode.style.height=this.properties.height+"px";
+		this.vectorNode.style.position="relative";
+		this.domNode.appendChild(this.vectorNode);
+
+		var plotWidth=this.properties.width-this.properties.padding.left-this.properties.padding.right;
+		var plotHeight=this.properties.height-this.properties.padding.top-this.properties.padding.bottom;
+
+		this.plotArea=document.createElement("div");
+		this.plotArea.style.position="absolute";
+		this.plotArea.style.backgroundColor="#fff";
+		this.plotArea.style.top=(this.properties.padding.top)-2+"px";
+		this.plotArea.style.left=(this.properties.padding.left-1)+"px";
+		this.plotArea.style.width=plotWidth+"px";
+		this.plotArea.style.height=plotHeight+"px";
+		this.vectorNode.appendChild(this.plotArea);
+		
+		this.dataGroup=document.createElement("div");
+		this.dataGroup.style.position="relative";
+		this.plotArea.appendChild(this.dataGroup);
+
+		//	clipping rects, what a fucking pain.
+		var bg=this.domNode.style.backgroundColor;
+		var r=document.createElement("v:rect");
+		r.setAttribute("fillcolor", bg);
+		r.setAttribute("stroked", "false");
+		r.style.position="absolute";
+		r.style.top=(-1*this.properties.padding.top)-1+"px";
+		r.style.left=(-1*this.properties.padding.left)+"px";
+		r.style.width=(this.properties.width-3)+"px";
+		r.style.height=(this.properties.padding.top)-2+"px";
+		this.vectorNode.appendChild(r);
+
+		r=document.createElement("v:rect");
+		r.setAttribute("fillcolor", bg);
+		r.setAttribute("stroked", "false");
+		r.style.position="absolute";
+		r.style.top=plotHeight-2+"px";
+		r.style.left=(-1*this.properties.padding.left)+"px";
+		r.style.width=(this.properties.width-3)+"px";
+		r.style.height=(this.properties.padding.bottom)-2+"px"; // fixme: check this.
+		this.vectorNode.appendChild(r);
+
+		r=document.createElement("v:rect");
+		r.setAttribute("fillcolor", bg);
+		r.setAttribute("stroked", "false");
+		r.style.position="absolute";
+		r.style.top="-2px";
+		r.style.left=(-1*this.properties.padding.left)+"px";
+		r.style.width=(this.properties.padding.left-1)+"px";
+		r.style.height=plotHeight+"px";
+		this.vectorNode.appendChild(r);
+		
+		r=document.createElement("v:rect");
+		r.setAttribute("fillcolor", bg);
+		r.setAttribute("stroked", "false");
+		r.style.position="absolute";
+		r.style.top="-2px";
+		r.style.right=(-1*this.properties.padding.right)+1+"px";
+		r.style.width=(this.properties.padding.right-1)+"px";
+		r.style.height=plotHeight+"px";
+		this.vectorNode.appendChild(r);
+		//	end clipping rects.  god that sucks, i wish VML had clipping outside of that crap vmlframe...
+
+		this.axisGroup=document.createElement("div");
+		this.axisGroup.style.position="relative";
+		this.plotArea.appendChild(this.axisGroup);
+
+		var stroke=1;
+
+		//	x axis
+		var line=document.createElement("v:line");
+		var y=dojo.widget.vml.Chart.Plotter.getY(this.properties.axes.x.plotAt, this);
+		line.setAttribute("from", this.properties.padding.left-stroke + "," + y);
+		line.setAttribute("to", plotWidth + "," + y);
+		line.style.position="absolute";
+		line.style.antialias="false";
+		line.setAttribute("strokecolor", "#666");
+		line.setAttribute("strokeweight", stroke*2+"px");
+		this.axisGroup.appendChild(line);
+
+		//	y axis
+		var line=document.createElement("v:line");
+		var y=dojo.widget.vml.Chart.Plotter.getX(this.properties.axes.y.plotAt, this);
+		line.setAttribute("from", x+","+this.properties.padding.top);
+		line.setAttribute("to", x+","+this.properties.height-this.properties.padding.bottom);
+		line.style.position="absolute";
+		line.style.antialias="false";
+		line.setAttribute("strokecolor", "#666");
+		line.setAttribute("strokeweight", stroke*2+"px");
+		this.axisGroup.appendChild(line);
+		
+		//	labels
+		var size=10;
+
+		//	x axis labels.
+		var t=document.createElement("div");
+		t.style.position="absolute";
+		t.style.top=(this.properties.height-this.properties.padding.bottom+size+2)+"px";
+		t.style.left=this.properties.padding.left+"px";
+		t.style.fontFamily="sans-serif";
+		t.style.fontSize=size+"px";
+		t.innerHTML=dojo.math.round(parseFloat(this.properties.axes.x.range.min),2);
+		this.axisGroup.appendChild(t);
+
+		t=document.createElement("div");
+		t.style.position="absolute";
+		t.style.top=(this.properties.height-this.properties.padding.bottom+size+2)+"px";
+		t.style.left=(this.properties.width-this.properties.padding.right-(size/2))+"px";
+		t.style.fontFamily="sans-serif";
+		t.style.fontSize=size+"px";
+		t.innerHTML=dojo.math.round(parseFloat(this.properties.axes.x.range.max),2);
+		this.axisGroup.appendChild(t);
+
+		//	y axis labels.
+		t=document.createElement("div");
+		t.style.position="absolute";
+		t.style.top=-1*(size/2)+"px";
+		t.style.right=(plotWidth+4)+"px";
+		t.style.fontFamily="sans-serif";
+		t.style.fontSize=size+"px";
+		t.innerHTML=dojo.math.round(parseFloat(this.properties.axes.y.range.max),2);
+		this.axisGroup.appendChild(t);
+		
+		t=document.createElement("div");
+		t.style.position="absolute";
+		t.style.top=(this.properties.height-this.properties.padding.bottom)+"px";
+		t.style.right=(plotWidth+4)+"px";
+		t.style.fontFamily="sans-serif";
+		t.style.fontSize=size+"px";
+		t.innerHTML=dojo.math.round(parseFloat(this.properties.axes.y.range.min),2);
+		this.axisGroup.appendChild(t);
+		
+		//	this is last.
+		this.assignColors();
+		this._isInitialized=true;
 	},
 	destroy:function(){
 		while(this.domNode.childNodes.length>0){
@@ -182,7 +322,8 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		var line=document.createElement("v:shape");
 		line.setAttribute("strokeweight", "2px");
 		line.setAttribute("strokecolor", series.color);
-		line.setAttribute("fillcolor", "none");	
+		line.setAttribute("fillcolor", "none");
+		line.setAttribute("filled", "false");
 		line.setAttribute("title", series.label);
 		line.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
 		line.style.position="absolute";
@@ -219,29 +360,22 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		chart.dataGroup.appendChild(line);
 	};
 	plotters[types.Scatter]=function(series, chart){
-		var r=7;
+		var r=8;
 		for (var i=0; i<series.values.length; i++){
 			var x=_this.getX(series.values[i].x, chart);
 			var y=_this.getY(series.values[i].value, chart);
+			var mod=r/2;
 
-			var point=document.createElement("v:shape");
+			var point=document.createElement("v:rect");
 			point.setAttribute("fillcolor", series.color);
 			point.setAttribute("strokecolor", series.color);
-			point.setAttribute("coordsize", chart.properties.width + "," + chart.properties.height);
 			point.setAttribute("title", series.label + ": " + series.values[i].value);
 			point.style.position="absolute";
-			point.style.top="0px";
-			point.style.left="0px";
-			point.style.width= chart.properties.width+"px";
-			point.style.height=chart.properties.height+"px";
-			point.setAttribute("v",
-				"m " + x + "," + (y-r) + " " +
-				"qb " + x + "," + y + " " + (x+r) + "," + y +
-				"qb " + x + "," + y + " " + x + "," + (y+r) +
-				"qb " + x + "," + y + " " + (x-r) + "," + y +
-				"qb " + x + "," + y + " " + x + "," + (y-r) +
-				" x e"
-			);
+			point.style.rotation="45";
+			point.style.top=(y-mod)+"px";
+			point.style.left=(x-mod)+"px";
+			point.style.width=r+"px";
+			point.style.height=r+"px";
 			var fill=document.createElement("v:fill");
 			fill.setAttribute("opacity", "0.5");
 			point.appendChild(fill);
