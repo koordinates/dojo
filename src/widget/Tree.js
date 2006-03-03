@@ -80,6 +80,8 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 	menu: "", // bind menu if set
 
+	expandLevel: "", // expand to level
+	
 	//
 	// these icons control the grid and expando buttons for the whole tree
 	//
@@ -188,6 +190,8 @@ dojo.lang.extend(dojo.widget.Tree, {
 		} else if (this.DNDMode == "onto") {
 			this.DNDMode = this.DNDModes.ONTO;
 		}
+		
+		this.expandLevel = parseInt(this.expandLevel);
 
 		this.initializeController();
 		this.initializeSelector();
