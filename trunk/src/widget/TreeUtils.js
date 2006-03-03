@@ -49,7 +49,7 @@ dojo.lang.extend(dojo.widget.TreeUtils, {
 			var found = false;
 			var key = -1;
 
-			dojo.debug("Check "+child)
+			//dojo.debug("Check "+child)
 			// process field set case
 			if (dojo.lang.isUndefined(field) && savedIndices[i]) {
 				found = true;
@@ -59,7 +59,7 @@ dojo.lang.extend(dojo.widget.TreeUtils, {
 			// process case when field is not set
 			if (field) {
 				for(var key in savedIndices) {
-					dojo.debug("Compare "+key+" "+child[field])
+					//dojo.debug("Compare "+key+" "+child[field])
 					if (key == child[field]) {
 						found = true;
 						break;
@@ -69,11 +69,11 @@ dojo.lang.extend(dojo.widget.TreeUtils, {
 
 			// if we found anything - expand it
 			if (found) {
-				dojo.debug("Found at "+key)
+				//dojo.debug("Found at "+key)
 				var h = new handler(child, savedIndices[key]);
 				this.expand(child, h, h.process);
 			} else if (child.isExpanded) { // not found, so collapse
-				dojo.debug("Collapsing all descendants "+node.children[i])
+				//dojo.debug("Collapsing all descendants "+node.children[i])
 				dojo.lang.forEach(child.getDescendants(), function(elem) { _this.collapse(elem); });
 				//this.collapse(node.children[i]);
 			}

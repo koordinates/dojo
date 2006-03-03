@@ -122,13 +122,13 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	},
 
 
-	expand: function(node, sync, callFunc, callObj) {
+	expand: function(node, sync, callObj, callFunc) {
 
-		if (node.state == node.loadStates.UNCHECKED) {
+		if (node.state == node.loadStates.UNCHECKED && node.isFolder) {
 
 			this.loadRemote(node, sync,
 				function(node, newChildren) {
-					this.expand(node, callObj, callFunc, sync);
+					this.expand(node, sync, callObj, callFunc);
 				}
 			);
 

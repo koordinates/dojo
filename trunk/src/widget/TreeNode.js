@@ -72,6 +72,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	titleNode: null, // the item title
 	imgs: null, // an array of icons imgs
 
+	expandLevel: "", // expand to level
 
 	tree: null,
 
@@ -118,6 +119,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		for(var i=0; i<this.actionsDisabled.length; i++) {
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
+			
+		this.expandLevel = parseInt(this.expandLevel);
 
 	},
 

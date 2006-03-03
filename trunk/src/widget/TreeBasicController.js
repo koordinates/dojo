@@ -44,13 +44,64 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		//dojo.debug("Event "+tree.eventNames.treeClick);
 		dojo.event.topic.subscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
 		dojo.event.topic.subscribe(tree.eventNames.treeClick, this, "onTreeClick");
+		dojo.event.topic.subscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
 
 		if (this.DNDController) {
 			this.DNDController.listenTree(tree);
 		}
 	},
 
-	onCreateDOMNode: function() {},
+	onCreateDOMNode: function(message) {
+		
+		var node = message.source;
+				
+				
+		if (node.expandLevel > 0) {
+			//dojo.debug(node.expandLevel);
+			this.expandToLevel(node, node.expandLevel);
+		}		
+	},
+	
+	// perform actions-initializers for tree
+	onTreeCreate: function(message) {
+		var tree = message.source;
+		var _this = this;
+		if (tree.expandLevel) {
+			dojo.lang.forEach(tree.children,
+				function(child) { _this.expandToLevel(child, tree.expandLevel-1) }
+			);
+		}
+	},
+	
+	expandToLevel: function(node, level) {				
+		if (level == 0) return;
+		
+		var children = node.children;
+		var _this = this;
+		
+		var handler = function(node, expandLevel) {
+			this.node = node; 
+			this.expandLevel = expandLevel; 
+			// recursively expand opened node
+			this.process = function() {
+				//dojo.debug("Process "+node+" level "+level);
+				for(var i=0; i<this.node.children.length; i++) {
+					var child = node.children[i];					
+					
+					_this.expandToLevel(child, this.expandLevel);
+				}
+			};
+		}
+		
+		var h = new handler(node, level-1);					
+				
+				
+		this.expand(node, false, h, h.process);
+			
+	},
+		
+		
+		
 
 	onTreeClick: function(message){
 		var node = message.source;
