@@ -448,23 +448,23 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 		var children = parent.children;
 
-		var found = false;
-		/* FIXME: replace with getParentIndex() */
-		for(var i=0; i<children.length; i++){
-			if(children[i] === child){
-				children.splice(i, 1);
-				found = true;
-				break;
-			}
-		}
 
-		if (!found) {
+		var index = child.getParentIndex();
+		if (index < 0) {
 			dojo.raise("Couldn't find node "+child+" for removal");
 		}
 
+
+		children.splice(index,1);
 		dojo.dom.removeNode(child.domNode);
 
-		parent.updateIconTree();
+		// if WAS last node (children.length decreased already) and has prevSibling
+		if (index == children.length && index>0) {
+			children[index-1].updateExpandGridColumn();
+		}
+
+		//parent.updateIconTree();
+
 
 		child.parent = child.tree = null;
 
