@@ -1,7 +1,0 @@
-dojo.html.addClass(this.domNode, 'dojoMenuSeparator2');
-dojo.html.addClass(this.topNode, 'dojoMenuSeparator2Top');
-dojo.html.addClass(this.bottomNode, 'dojoMenuSeparator2Bottom');
-
-dojo.html.disableSelection(this.domNode);
-
-this.layoutItem();

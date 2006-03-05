@@ -1,2 +1,0 @@
-var widget = this._getItem(e.target);
-if(widget && widget._onmouseout) { widget._onmouseout(e); }

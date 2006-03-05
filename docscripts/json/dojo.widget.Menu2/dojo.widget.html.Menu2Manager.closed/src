@@ -1,4 +1,0 @@
-if (this.currentMenu == menu){
-	this.currentMenu = null;
-	this.currentButton = null;
-}

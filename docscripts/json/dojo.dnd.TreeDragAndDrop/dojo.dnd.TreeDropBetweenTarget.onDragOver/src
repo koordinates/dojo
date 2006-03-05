@@ -1,5 +1,0 @@
-var accepts = dojo.dnd.TreeDropTarget.prototype.onDragOver.apply(this, arguments);
-
-if (!accepts) return false;
-
-return true;

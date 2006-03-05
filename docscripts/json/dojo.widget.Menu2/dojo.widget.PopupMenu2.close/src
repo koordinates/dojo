@@ -1,9 +1,0 @@
-if(this.animationInProgress){
-	this.queueOnAnimationFinish.push(this.close, []);
-	return;
-}
-
-this.closeSubmenu();
-this.hide();
-this.isShowing = false;
-dojo.widget.html.Menu2Manager.closed(this);

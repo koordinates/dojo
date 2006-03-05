@@ -1,2 +1,0 @@
-this._richText.contentFilters = this.contentFilters;
-return this._richText.getEditorContent();

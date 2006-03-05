@@ -1,1 +1,0 @@
-dojo.event.disconnect(document, "onmousedown", this, "deselect");

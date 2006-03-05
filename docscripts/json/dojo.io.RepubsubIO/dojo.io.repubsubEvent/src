@@ -1,9 +1,0 @@
-this.to = to;
-this.from = from;
-this.method = method||"route";
-this.id = id||repubsub.getRandStr();
-this.uri = routeURI;
-this.displayname = dispname||repubsub.displayname;
-this.userid = uid||repubsub.userid;
-this.payload = payload||"";
-this.flushChars = 4096;

@@ -1,4 +1,0 @@
-if (o.getType().prototype.prototype.constructor){
-	return (o.getType()).prototype.prototype.constructor ;
-}
-return Object ;

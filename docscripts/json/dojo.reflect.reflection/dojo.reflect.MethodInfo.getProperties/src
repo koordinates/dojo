@@ -1,8 +1,0 @@
-var arr = [] ;
-var fi = this.getFields(obj) ;
-for (var i = 0; i < fi.length; i++){
-	if (this.isInstanceOf(fi[i], dojo.reflect.PropertyInfo)){
-		arr.push(fi[i]) ;
-	}
-}
-return arr ;

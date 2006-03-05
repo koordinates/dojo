@@ -1,1 +1,0 @@
-dojo.event.connect(dojo.byId(node), "oncontextmenu", this, "onOpen");

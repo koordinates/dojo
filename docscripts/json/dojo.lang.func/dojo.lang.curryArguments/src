@@ -1,6 +1,0 @@
-var targs = [];
-var x = offset||0;
-for(x=offset; x<args.length; x++){
-	targs.push(args[x]);  ensure that it's an arr
-}
-return dojo.lang.curry.apply(dojo.lang, [ns, func].concat(targs));

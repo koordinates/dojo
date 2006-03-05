@@ -1,8 +1,0 @@
-if(!ns){ ns = dj_global; }
-
-for(var x in ns){
-	if(ns[x] === item){
-		return new String(x);
-	}
-}
-return null;

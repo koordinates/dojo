@@ -1,6 +1,0 @@
-var type = s ;
-if (typeof(s) == "string") {
-	type = this.getTypeFromString(s) ;
-}
-var nullArgs = (new dojo.reflect.MethodInfo(type)).getNullArgumentsObject() ;
-return this.getMethods(dojo.reflect.Activator.createInstance(s, nullArgs)) ;
