@@ -1,3 +1,0 @@
-this.indicatorVisible = false;
-this.treeNode.labelNode.style.borderBottom="";
-this.treeNode.labelNode.style.borderTop="";

@@ -1,6 +1,0 @@
-dojo.style.insertCssFile(this.templateCssPath);
-
-dojo.html.addClass(this.domNode, 'dojoHtmlResizeHandle');
-dojo.html.addClass(this.grabImg, 'dojoHtmlResizeHandleImage');
-
-this.grabImg.src = this.imgSrc;

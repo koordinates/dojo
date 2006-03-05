@@ -1,1 +1,0 @@
-{"dojo.AdapterRegistry":{"undefined dojo.AdapterRegistry()":""},"dojo.AdapterRegistry.register":{"undefined dojo.AdapterRegistry.register(name, check, wrap, optional override)":""},"dojo.AdapterRegistry.match":{"undefined dojo.AdapterRegistry.match()":""},"dojo.AdapterRegistry.unregister":{"undefined dojo.AdapterRegistry.unregister(name)":""}}

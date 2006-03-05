@@ -1,9 +1,0 @@
-var widget = dojo.widget.ToolbarItem.make(item, null, dojo.lang.mixin(props||{}, {toggleItem:true}));
-dojo.event.connect(widget, "onSelect", this, "onChildSelected");
-var ret = oldAddChild.call(this, widget, null, pos, null);
-if(widget._name == this.defaultButton
-	|| (typeof this.defaultButton == "number"
-	&& this.children.length-1 == this.defaultButton)) {
-	widget.select(false, true);
-}
-return ret;

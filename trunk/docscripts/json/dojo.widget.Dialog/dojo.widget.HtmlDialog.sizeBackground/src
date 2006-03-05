@@ -1,9 +1,0 @@
-if(this.bgOpacity > 0) {
-	var h = document.documentElement.scrollHeight || document.body.scrollHeight;
-	var w = dojo.html.getViewportWidth();
-	this.bg.style.width = w + "px";
-	this.bg.style.height = h + "px";
-	this.bgIframe.size([0, 0, w, h]);
-} else {
-	this.bgIframe.size(this.domNode);
-}

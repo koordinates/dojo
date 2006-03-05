@@ -1,1 +1,0 @@
-return (this.getType(o) == type) ; 

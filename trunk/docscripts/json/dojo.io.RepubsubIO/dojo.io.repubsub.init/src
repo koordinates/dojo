@@ -1,8 +1,0 @@
-this.widenDomain();
- this.findPeers();
-this.openTunnel();
-this.isInitialized = true;
- FIXME: this seems like entirely the wrong place to replay the backlog
-while(this.subscriptionBacklog.length){
-	this.subscribe.apply(this, this.subscriptionBacklog.shift());
-}

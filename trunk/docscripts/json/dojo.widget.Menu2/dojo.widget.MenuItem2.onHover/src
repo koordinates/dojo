@@ -1,9 +1,0 @@
-if (this.is_hovering){ return; }
-if (this.is_open){ return; }
-
-this.parent.closeSubmenu();
-this.highlightItem();
-
-if (this.is_hovering){ this.stopSubmenuTimer(); }
-this.is_hovering = 1;
-this.startSubmenuTimer();

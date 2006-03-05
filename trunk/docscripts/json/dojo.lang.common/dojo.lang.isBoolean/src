@@ -1,1 +1,0 @@
-return (wh instanceof Boolean || typeof wh == "boolean");

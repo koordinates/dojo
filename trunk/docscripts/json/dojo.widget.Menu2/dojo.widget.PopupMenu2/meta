@@ -1,1 +1,0 @@
-{"this_variables":["items","targetNodeIds","queueOnAnimationFinish","eventNames","menuWidth","menuHeight","parentMenu","explodeSrc","menuIndex","menuX","menuY","isShowing","currentSubmenu","currentSubmenuTrigger","openEvent"],"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"]}

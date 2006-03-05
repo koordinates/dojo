@@ -1,4 +1,0 @@
-this.domNode.parentNode.removeChild(this.domNode);
-if(this.bgIframe){
-	this.bgIframe.style.display = "none";
-}

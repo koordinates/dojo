@@ -1,3 +1,0 @@
-if ( !this.disabled && this.onClick ) {
-	this.onClick(e);
-}

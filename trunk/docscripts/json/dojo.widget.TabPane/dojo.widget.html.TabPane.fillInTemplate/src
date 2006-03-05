@@ -1,4 +1,0 @@
-dojo.widget.html.TabPane.superclass.fillInTemplate.call(this, args, frag);
-
-dojo.style.insertCssFile(this.templateCssPath, null, true);
-dojo.html.prependClass(this.domNode, "dojoTabPane");

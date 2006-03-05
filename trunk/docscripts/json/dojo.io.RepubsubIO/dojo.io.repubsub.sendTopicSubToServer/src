@@ -1,5 +1,0 @@
-if(!this.attachPathList[topic]["subscriptions"]){
-	this.enqueueEventStr(str);
-	this.attachPathList[topic].subscriptions = 0;
-}
-this.attachPathList[topic].subscriptions++;

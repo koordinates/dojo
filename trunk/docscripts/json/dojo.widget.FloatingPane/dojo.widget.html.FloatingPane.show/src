@@ -1,4 +1,0 @@
-dojo.widget.html.FloatingPane.superclass.show.call(this);
-if(this.bgIframe){
-	this.bgIframe.show();
-}

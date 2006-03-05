@@ -1,4 +1,0 @@
-this.hide();
-this.maximizeAction && (this.maximizeAction.style.display="inline");
-this.restoreAction && (this.restoreAction.style.display="inline");
-this.windowState = "minimized";

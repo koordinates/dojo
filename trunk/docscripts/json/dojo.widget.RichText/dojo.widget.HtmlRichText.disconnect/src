@@ -1,9 +1,0 @@
-for (var i = 0; i < this._connected.length; i++) {
-	if (this._connected[0] == targetObj &&
-		this._connected[1] == targetFunc &&
-		this._connected[2] == thisFunc) {
-		dojo.event.disconnect(targetObj, targetFunc, this, thisFunc);
-		this._connected.splice(i, 1);
-		break;
-	}
-}
