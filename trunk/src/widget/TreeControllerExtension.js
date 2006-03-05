@@ -2,16 +2,12 @@
  * Additional tree utils
  *
  */
-dojo.provide("dojo.widget.TreeUtils");
-
-dojo.require("dojo.event.*");
-dojo.require("dojo.json")
-dojo.require("dojo.io.*");
+dojo.provide("dojo.widget.TreeControllerExtension");
 
 
-dojo.widget.TreeUtils = function() { }
+dojo.widget.TreeControllerExtension = function() { }
 
-dojo.lang.extend(dojo.widget.TreeUtils, {
+dojo.lang.extend(dojo.widget.TreeControllerExtension, {
 
 	saveExpandedIndices: function(node, field) {
 		var obj = {};
@@ -29,8 +25,6 @@ dojo.lang.extend(dojo.widget.TreeUtils, {
 
 	restoreExpandedIndices: function(node, savedIndices, field) {
 		var _this = this;
-
-
 
 		var handler = function(node, savedIndices) {
 			this.node = node; //.children[i];
@@ -71,7 +65,7 @@ dojo.lang.extend(dojo.widget.TreeUtils, {
 			if (found) {
 				//dojo.debug("Found at "+key)
 				var h = new handler(child, savedIndices[key]);
-				this.expand(child, h, h.process);
+				_this.expand(child, false, h, h.process);
 			} else if (child.isExpanded) { // not found, so collapse
 				//dojo.debug("Collapsing all descendants "+node.children[i])
 				dojo.lang.forEach(child.getDescendants(), function(elem) { _this.collapse(elem); });

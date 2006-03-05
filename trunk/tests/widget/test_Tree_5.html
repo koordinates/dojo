@@ -12,7 +12,6 @@
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.Tree");
 	dojo.require("dojo.widget.TreeLoadingController");
-	dojo.require("dojo.widget.TreeBasicController");
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -33,8 +32,8 @@
 <div dojoType="Tree" expandLevel="1" widgetId="firstTree" controller="treeController" DNDMode="between" DNDAcceptTypes="firstTree">
     <div dojoType="TreeNode" title="Node 1"></div>
     <div dojoType="TreeNode" expandLevel="1" title="Expanded to level 1">
-        <div dojoType="TreeNode" title="Node 2.1"></div>   
-        <div dojoType="TreeNode" isFolder="true" title="Node 2.2"></div>  
+        <div dojoType="TreeNode" title="Node 2.1"></div>
+        <div dojoType="TreeNode" isFolder="true" title="Node 2.2"></div>
     </div>
     <div dojoType="TreeNode" expandLevel="2" title="Expanded to level 2" isFolder="true">
     </div>
