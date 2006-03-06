@@ -1,0 +1,5 @@
+this.treeController = treeController;
+
+this.dragSources = {};
+
+this.dropTargets = {};

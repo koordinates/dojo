@@ -1,0 +1,17 @@
+var parent = this.parent;
+
+dojo.debug("updateParentGrid "+this);
+
+for(var i=0; i<this.depth; i++){
+
+	dojo.debug("Parent "+parent);
+
+	var idx = this.imgs.length-(3+i);
+	var img = (this.tree.showGrid && !parent.isLastNode()) ? this.tree.gridIconSrcV : this.tree.blankIconSrc;
+
+	dojo.debug("Image "+img+" for "+idx);
+
+	this.setGridImage(idx, img);
+
+	parent = parent.parent;
+}

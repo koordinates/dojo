@@ -1,0 +1,7 @@
+this.disabled = value;
+
+if (this.disabled){
+	dojo.html.addClass(this.domNode, 'dojoMenuItem2Disabled');
+}else{
+	dojo.html.removeClass(this.domNode, 'dojoMenuItem2Disabled');
+}

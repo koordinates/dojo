@@ -1,0 +1,17 @@
+dojo.widget.html.TabPane.superclass.removeChild.call(this, tab);
+
+dojo.html.removeClass(tab.domNode, "dojoTabPanel");
+this.ul.removeChild(tab.div);
+delete(tab.div);
+
+ FIXME: do we need to disconnect event handler?
+
+if (this.selectedTabWidget === tab) {
+	this.selectedTabWidget = undefined;
+	if (this.children.length > 0) {
+		this.selectTab(this.children[0]);
+	}
+}
+
+ in case the tab labels have overflowed from one line to two lines
+this._setPadding();

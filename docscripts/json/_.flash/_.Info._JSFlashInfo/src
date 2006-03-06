@@ -1,0 +1,23 @@
+if(navigator.plugins != null && navigator.plugins.length > 0){
+	if(navigator.plugins["Shockwave Flash 2.0"] || 
+		 navigator.plugins["Shockwave Flash"]){
+		var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
+		var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
+		var descArray = flashDescription.split(" ");
+		var tempArrayMajor = descArray[2].split(".");
+		var versionMajor = tempArrayMajor[0];
+		var versionMinor = tempArrayMajor[1];
+		if(descArray[3] != ""){
+			tempArrayMinor = descArray[3].split("r");
+		}else{
+			tempArrayMinor = descArray[4].split("r");
+		}
+		var versionRevision = tempArrayMinor[1] > 0 ? tempArrayMinor[1] : 0;
+		var version = versionMajor + "." + versionMinor + "." 
+									+ versionRevision;
+									
+		return version;
+	}
+}
+
+return -1;

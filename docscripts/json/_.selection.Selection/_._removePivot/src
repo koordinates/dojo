@@ -1,0 +1,7 @@
+var i = dojo.lang.find(item, this._pivotItems);
+if(i > -1) {
+	this._pivotItems.splice(i, 1);
+	this._pivotItem = this._pivotItems[this._pivotItems.length-1];
+}
+
+this._updatePivot();

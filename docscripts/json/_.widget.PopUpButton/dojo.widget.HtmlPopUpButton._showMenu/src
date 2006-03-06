@@ -1,0 +1,12 @@
+if (!this._enabled) { return; }
+this._menuVisible = true;
+with (dojo.html) {
+	var y = getAbsoluteY(this.domNode) + getInnerHeight(this.domNode);
+	var x = getAbsoluteX(this.domNode);
+}
+	
+document.body.appendChild(this.menu.domNode);
+with (this.menu.domNode.style) {
+	top = y + "px";
+	left = x + "px";
+}

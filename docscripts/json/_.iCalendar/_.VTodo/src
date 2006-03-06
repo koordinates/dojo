@@ -1,0 +1,3 @@
+this.name = "VTODO";
+this._ValidProperties = VTodoProperties;
+dojo.iCalendar.Component.call(this, body);

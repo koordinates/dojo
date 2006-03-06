@@ -1,0 +1,4 @@
+this.labelNode = this.containerNode;
+if(this.label != "undefined"){
+	this.domNode.appendChild(document.createTextNode(this.label));
+}

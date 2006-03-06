@@ -1,0 +1,8 @@
+if(!node["__doClobber__"]){
+	node.__doClobber__ = true;
+	dojo_ie_clobber.clobberNodes.push(node);
+	 this might not be the most efficient thing to do, but it's
+	 much less error prone than other approaches which were
+	 previously tried and failed
+	node.__clobberAttrs__ = [];
+}

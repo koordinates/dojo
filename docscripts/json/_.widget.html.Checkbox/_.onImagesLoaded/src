@@ -1,0 +1,18 @@
+this.domNode.style.position = "absolute";
+this.domNode.style.left = "-9000px";
+
+ create a replacement image
+this.imgNode = document.createElement("img");
+dojo.html.addClass(this.imgNode, "dojoHtmlCheckbox");
+this.updateImgSrc();
+dojo.event.connect(this.imgNode, 'onclick', this, 'onClick');
+dojo.event.connect(this.domNode, 'onchange', this, 'onChange');
+this.domNode.parentNode.insertBefore(this.imgNode, this.domNode.nextSibling)
+
+ real ugly - make sure the image has all the events that the checkbox did
+for(var i=0; i<this._events.length; i++){
+	if(this.domNode[this._events[i]]){
+		dojo.event.connect(	this.imgNode, this._events[i], 
+							this.domNode[this._events[i]]);
+	}
+}

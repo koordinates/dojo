@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.widget.html.ContentPane","dojo.widget.Tooltip","dojo.widget.*"]},"_":{"()":""},"_.fillInTemplate":{"(args, frag)":""},"_.postCreate":{"(args, frag)":""},"_.onMouseOver":{"(e)":""},"_.onMouseMove":{"(e)":""},"_.show":{"()":""},"_.onShow":{"()":""},"_.hide":{"()":""},"_.onHide":{"()":""},"_.position":{"()":""},"_.onLoad":{"()":""}}

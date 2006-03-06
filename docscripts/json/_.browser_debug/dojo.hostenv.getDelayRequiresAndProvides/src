@@ -1,0 +1,11 @@
+if(!contents){ return []; }
+
+ check to see if we need to load anything else first. Ugg.
+var deps = [];
+var tmp;
+RegExp.lastIndex = 0;
+var testExp = /dojo.(requireAfterIf|requireAfter)\([\w\W]*?\)/mg;
+while((tmp = testExp.exec(contents)) != null){
+	deps.push(tmp[0]);
+}
+return deps;

@@ -1,0 +1,4 @@
+if (!node.isExpanded) return;
+
+node.collapse();
+dojo.event.topic.publish(this.eventNames.collapse, {source: node} );

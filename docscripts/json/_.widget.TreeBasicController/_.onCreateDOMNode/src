@@ -1,0 +1,6 @@
+var node = message.source;
+		
+if (node.expandLevel > 0) {
+	dojo.debug(node.expandLevel);
+	this.expandToLevel(node, node.expandLevel);
+}		

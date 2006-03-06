@@ -1,0 +1,5 @@
+if (newParent.isTreeNode && newParent.state == newParent.loadStates.UNCHECKED) {
+	this.loadRemote(newParent, true);
+}
+
+return dojo.widget.TreeBasicController.prototype.doMove.apply(this, arguments);

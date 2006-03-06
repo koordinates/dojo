@@ -1,0 +1,5 @@
+dojo.widget.html.ToolbarDialog.call(this);
+
+for (var method in this.constructor.prototype) {
+	this[method] = this.constructor.prototype[method];
+}

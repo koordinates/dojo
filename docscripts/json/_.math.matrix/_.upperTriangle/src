@@ -1,0 +1,45 @@
+m = dojo.math.matrix.copy(m);
+
+var f1 = 0;
+var temp = 0;
+var tms = m.length;
+var v = 1;
+
+dojo.math.matrix.iDF = 1;
+
+for (var col = 0; col < tms - 1; col++) {
+	for (var row = col + 1; row < tms; row++) {
+		v = 1;
+
+		var stop_loop = 0;
+
+		 check if 0 in diagonal
+ 			while ((m[col][col] == 0) && !stop_loop){
+
+			 if so switch until not
+			if (col + v >= tms){
+
+				 check if switched all rows
+				dojo.math.matrix.iDF = 0;
+				stop_loop = 1;
+			}else{
+				for (var c = 0; c < tms; c++) {
+					temp = m[col][c];
+					m[col][c] = m[col + v][c];  switch rows
+					m[col + v][c] = temp;
+				}
+				v++;  count row switchs
+				dojo.math.matrix.iDF *= -1;  each switch changes determinant factor
+			}
+		}
+
+		if (m[col][col] != 0) {
+			f1 = (-1) * m[row][col] / m[col][col];
+			for (var i = col; i < tms; i++) {
+				m[row][i] = f1 * m[col][i] + m[row][i];
+			}
+		}
+	}
+}
+
+return m;  

@@ -1,0 +1,1 @@
+return this.EDGE[inp.toUpperCase()] || def;

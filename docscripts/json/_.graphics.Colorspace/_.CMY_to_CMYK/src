@@ -1,0 +1,8 @@
+var src = this.munge('CMY', arguments);
+
+var K = Math.min(src.C, src.M, src.Y);
+var C = (src.C - K) / (1 - K);
+var M = (src.M - K) / (1 - K);
+var Y = (src.Y - K) / (1 - K);
+
+return [C, M, Y, K];

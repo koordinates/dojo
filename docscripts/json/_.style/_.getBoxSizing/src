@@ -1,0 +1,14 @@
+node = dojo.byId(node);
+if (dojo.render.html.ie || dojo.render.html.opera){ 
+	var cm = document["compatMode"];
+	if (cm == "BackCompat" || cm == "QuirksMode"){ 
+		return .borderBox;  
+	}else{
+		return .contentBox;  
+	}
+}else{
+	if(arguments.length == 0){ node = document.documentElement; }
+	var sizing = dojo.style.getStyle(node, "-moz-box-sizing");
+	if(!sizing){ sizing = dojo.style.getStyle(node, "box-sizing"); }
+	return (sizing ? sizing : .contentBox);  
+}

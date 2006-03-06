@@ -1,0 +1,1 @@
+return this.getParentIndex() == 0 ? true: false;

@@ -1,0 +1,8 @@
+this.state="erased";
+
+ in the corner case where the user has moved his mouse back
+ while the tip was fading out
+if(this.displayScheduled){
+	this.display();
+	this.displayScheduled=false;
+}

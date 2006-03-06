@@ -1,0 +1,10 @@
+dojo.event.kwDisconnect({
+	srcObj: this.attachPathList, 
+	srcFunc: topic, 
+	adviceObj: toObj, 
+	adviceFunc: toFunc
+});
+
+ FIXME: figure out if there are any remaining listeners to the topic,
+ 		  and if not, inform the server of our desire not to be
+ 		  notified of updates to the topic

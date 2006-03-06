@@ -1,0 +1,3 @@
+var tt = dojo.string.trim(txt);
+this.textValue = tt
+this.editable.innerHTML = tt;

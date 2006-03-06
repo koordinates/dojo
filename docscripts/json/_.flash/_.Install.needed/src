@@ -1,0 +1,18 @@
+if(dojo.flash.info.capable == false){
+	return true;
+}
+
+ are we on the Mac? Safari needs Flash version 8 to do Flash 8
+ communication, while Firefox/Mac needs Flash 8 to fix bugs it has
+ with Flash 6 communication
+if(dojo.render.os.mac == true && !dojo.flash.info.isVersionOrAbove(8, 0, 0)){
+	return true;
+}
+
+ other platforms need at least Flash 6 or above
+if(!dojo.flash.info.isVersionOrAbove(6, 0, 0)){
+	return true;
+}
+
+ otherwise we don't need installation
+return false;

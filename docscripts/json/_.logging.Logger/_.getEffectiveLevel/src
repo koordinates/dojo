@@ -1,0 +1,4 @@
+if((this.cutOffLevel==0)&&(this.parent)){
+	return this.parent.getEffectiveLevel();
+}
+return this.cutOffLevel;

@@ -1,0 +1,9 @@
+var idx = this._find(this.lastSelected);
+while(idx > -1 && ++idx < this.items.length) {
+	if(this.isSelectable(this.items[idx])) {
+		this.deselectAll();
+		this.select(this.items[idx]);
+		return true;
+	}
+}
+return false;

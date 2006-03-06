@@ -1,0 +1,15 @@
+this.type = type;  "animate", "begin", "end", "play", "pause", "stop"
+this.animation = anim;
+
+this.coords = coords;
+this.x = coords[0];
+this.y = coords[1];
+this.z = coords[2];
+
+this.startTime = sTime;
+this.currentTime = cTime;
+this.endTime = eTime;
+
+this.duration = dur;
+this.percent = pct;
+this.fps = fps;

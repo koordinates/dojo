@@ -1,0 +1,8 @@
+node = dojo.byId(node);
+var position = [
+	dojo.style.getAbsoluteX(node, includeScroll),
+	dojo.style.getAbsoluteY(node, includeScroll)
+];
+position.x = position[0];
+position.y = position[1];
+return position;

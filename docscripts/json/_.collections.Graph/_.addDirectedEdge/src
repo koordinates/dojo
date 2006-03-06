@@ -1,0 +1,10 @@
+var uNode, vNode;
+if (uKey.constructor != node) {
+	uNode = this.nodes.item(uKey);
+	vNode = this.nodes.item(vKey);
+} else {
+	uNode = uKey;
+	vNode = vKey;
+}
+var c = cost || 0;
+uNode.addDirected(vNode, c);

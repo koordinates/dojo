@@ -1,0 +1,10 @@
+var control = new Object();
+var mapStr = "";
+var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
+for(var x in map){
+	if(!control[x]){
+		mapStr+= enc(x)+"="+enc(map[x])+"&";
+	}
+}
+
+return mapStr;

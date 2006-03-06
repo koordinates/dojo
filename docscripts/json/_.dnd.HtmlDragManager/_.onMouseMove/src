@@ -1,0 +1,99 @@
+var _this = this;
+if(dojo.render.html.ie && e.button != 1) {
+	 Oooops - mouse up occurred - e.g. when mouse was not over the window.
+	 I don't think we can detect this for FF - but at least we can be nice in IE.
+	this.currentDropTarget = null;
+	this.onMouseUp(e, true);
+	return;
+}
+ if we've got some sources, but no drag objects, we need to send
+ onDragStart to all the right parties and get things lined up for
+ drop target detection
+if(	(this.selectedSources.length)&&
+	(!this.dragObjects.length) ){
+	var dx;
+	var dy;
+	if(!this._dragTriggered){
+		this._dragTriggered = (this._dragStartDistance(e.clientX, e.clientY) > this.threshold);
+		if(!this._dragTriggered){ return; }
+		dx = e.clientX-this.mouseDownX;
+		dy = e.clientY-this.mouseDownY;
+	}
+
+	if (this.selectedSources.length == 1) {
+		this.dragSource = this.selectedSources[0];
+	}
+
+	dojo.lang.forEach(this.selectedSources, function(tempSource){
+		if(!tempSource){ return; }
+		var tdo = tempSource.onDragStart(e);
+		if(tdo){
+			tdo.onDragStart(e);
+
+			 "bump" the drag object to account for the drag threshold
+			tdo.dragOffset.top += dy;
+			tdo.dragOffset.left += dx;
+			tdo.dragSource = tempSource;
+
+			_this.dragObjects.push(tdo);
+		}
+	});
+
+	 clean previous drop target in dragStart 
+	this.previousDropTarget = null;
+
+	this.cacheTargetLocations();
+}
+ FIXME: we need to add dragSources and dragObjects to e
+for (var i = 0; i < this.dragObjects.length; i++){
+	if(this.dragObjects[i]){ this.dragObjects[i].onDragMove(e); }
+}
+
+ if we have a current drop target, check to see if we're outside of
+ it. If so, do all the actions that need doing.
+if (this.currentDropTarget) {
+	dojo.debug(dojo.dom.hasParent(this.currentDropTarget.domNode))
+	var c = dojo.html.toCoordinateArray(this.currentDropTarget.domNode);
+			var dtp = this.currentDropTargetPoints;
+	var dtp = [
+		[c[0],c[1]], [c[0]+c[2], c[1]+c[3]]
+	];
+}
+
+if((!this.nestedTargets)&&(dtp)&&(this.isInsideBox(e, dtp))){
+	if(this.dropAcceptable){
+		this.currentDropTarget.onDragMove(e, this.dragObjects);
+	}
+}else{
+	 FIXME: need to fix the event object!
+	 see if we can find a better drop target
+	var bestBox = this.findBestTarget(e);
+
+	if(bestBox.target === null){
+		if(this.currentDropTarget){
+			this.currentDropTarget.onDragOut(e);
+			this.previousDropTarget = this.currentDropTarget;
+			this.currentDropTarget = null;
+			 this.currentDropTargetPoints = null;
+		}
+		this.dropAcceptable = false;
+		return;
+	}
+
+	if(this.currentDropTarget !== bestBox.target){
+		if(this.currentDropTarget){
+			this.previousDropTarget = this.currentDropTarget;
+			this.currentDropTarget.onDragOut(e);
+		}
+		this.currentDropTarget = bestBox.target;
+		 this.currentDropTargetPoints = bestBox.points;
+		e.dragObjects = this.dragObjects;
+		this.dropAcceptable = this.currentDropTarget.onDragOver(e);
+
+	}else{
+		if(this.dropAcceptable){
+			this.currentDropTarget.onDragMove(e, this.dragObjects);
+		}
+	}
+
+}

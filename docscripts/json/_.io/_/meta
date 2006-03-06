@@ -1,0 +1,1 @@
+{"variables":["transports","hdlrFuncNames"]}

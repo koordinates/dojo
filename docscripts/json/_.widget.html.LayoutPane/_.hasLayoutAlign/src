@@ -1,0 +1,1 @@
+return dojo.lang.inArray(['left','right','top','bottom','client', 'flood'], child.layoutAlign);

@@ -1,0 +1,6 @@
+var p = name.split(".");
+for(var i = 0; i < p.length; i++){
+if(!(obj[p[i]])) return false;
+	obj = obj[p[i]];
+}
+return true;  

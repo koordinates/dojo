@@ -1,0 +1,3 @@
+for(name in this.eventNames) {
+	this.eventNames[name] = this.widgetId+"/"+this.eventNames[name];
+}

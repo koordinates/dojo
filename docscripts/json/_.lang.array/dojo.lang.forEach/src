@@ -1,0 +1,2 @@
+var isString = dojo.lang.isString(arr);
+if(isString) {  arr: String

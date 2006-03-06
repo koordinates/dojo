@@ -1,0 +1,1 @@
+return ((wh == undefined)&&(typeof wh == "undefined"));  

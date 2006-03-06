@@ -1,0 +1,16 @@
+if( this.isOver ){ return; }	 
+this.isOver = true;
+
+if ( this.conservativeTrigger ) {
+	 switch event handlers so that we handle mouse events from anywhere near
+	 the menu
+	dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+
+	this.timerScale=0.0;
+
+	 call mouse handler to do some initial necessary calculations/positioning
+	this.mouseHandler(e);
+
+	 slowly expand the icon size so it isn't jumpy
+	this.expandSlowly();
+}

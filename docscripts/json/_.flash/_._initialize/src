@@ -1,0 +1,13 @@
+var installer = new dojo.flash.Install();
+
+if(installer.needed() == true){		
+	installer.install();
+}else{
+	dojo.debug("Writing object out");
+	 write the flash object into the page
+	dojo.flash.obj = new dojo.flash.Embed(this._visible);
+	dojo.flash.obj.write(dojo.flash.info.commVersion);
+	
+	 initialize the way we do Flash/JavaScript communication
+	dojo.flash.comm = new dojo.flash.Communicator();
+}

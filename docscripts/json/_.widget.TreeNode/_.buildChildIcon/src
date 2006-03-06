@@ -1,0 +1,2 @@
+this.childIcon.src = this.childIconSrc ? this.childIconSrc : "url()";
+this.childIcon.style.display = this.childIconSrc ? 'inline' : 'none';

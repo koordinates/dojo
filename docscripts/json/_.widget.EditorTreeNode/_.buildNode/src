@@ -1,0 +1,57 @@
+this.tree = tree;
+this.depth = depth;
+
+ add the tree icons
+
+this.imgs = [];
+
+for(var i=0; i<this.depth+1; i++){
+
+	var img = this.tree.makeBlankImg();
+
+	this.domNode.insertBefore(img, this.labelNode);
+
+	this.imgs.push(img);
+}
+
+this.expandIcon = this.imgs[this.imgs.length-1];
+
+this.childIcon = this.tree.makeBlankImg();
+
+ add to images before the title
+this.imgs.push(this.childIcon);
+
+dojo.dom.insertBefore(this.childIcon, this.titleNode);
+
+ node with children(from source html) becomes folder on build stage.
+if (this.children.length || this.isFolder) {
+	this.setFolder();
+}
+
+dojo.event.connect(this.childIcon, 'onclick', this, 'onIconClick');
+
+ create the child rows
+
+for(var i=0; i<this.children.length; i++){
+	this.children[i].parent = this;
+
+	var node = this.children[i].buildNode(this.tree, this.depth+1);
+
+	this.containerNode.appendChild(node);
+}
+
+if (this.children.length) {
+	this.state = this.loadStates.LOADED;
+}
+
+if (this.isExpanded) {
+	this.expand();
+}else {  leads to double icon updates
+	this.updateIcons();
+}
+
+this.domNodeInitialized = true;
+
+dojo.event.topic.publish(this.tree.eventNames.nodeCreate, { source: this } );
+
+return this.domNode;

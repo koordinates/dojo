@@ -1,0 +1,4 @@
+for(var i = 0; i < arguments.length; i++) {
+	this._anims.push(arguments[i]);
+	arguments[i]._animSequence = this;
+}

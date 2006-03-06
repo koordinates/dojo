@@ -1,0 +1,7 @@
+if (this.DNDController == "create") {
+	dojo.require("dojo.dnd.TreeDragAndDrop");
+	this.DNDController = new dojo.dnd.TreeDNDController(this);
+}
+else if (this.DNDController) {
+	this.DNDController = dojo.widget.byId(this.DNDController);
+}

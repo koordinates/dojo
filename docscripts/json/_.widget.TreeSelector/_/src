@@ -1,0 +1,9 @@
+dojo.widget.HtmlWidget.call(this);
+
+this.eventNames = {
+	select : "select",
+	deselect : "deselect",
+	dblselect: "dblselect"  select already selected node.. Edit or whatever
+};
+
+this.listenedTrees = [];

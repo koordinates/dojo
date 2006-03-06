@@ -1,0 +1,15 @@
+if(dojo.hostenv.loadedUris[uri]){
+	return;
+}
+try{
+	var text = this.getText(uri, null, true);
+	var requires = dojo.hostenv.getRequiresAndProvides(text);
+	eval(requires.join(";"));
+	dojo.hostenv.loadedUris.push(uri);
+	dojo.hostenv.loadedUris[uri] = true;
+	var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
+	eval(delayRequires.join(";"));
+}catch(e){ 
+	alert(e);
+}
+return true;

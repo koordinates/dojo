@@ -1,0 +1,10 @@
+dojo.io.bind({
+	url: dataUrl,
+	load: function(type, evaldObj){
+		if(type=="load"){
+			objRef.dataProvider = evaldObj;
+		}
+	},
+	mimetype: "text/javascript",
+	sync: true
+});

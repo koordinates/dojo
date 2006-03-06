@@ -1,0 +1,11 @@
+if(dojo.lang.isString(method)) {
+	 method: String
+	var fcn = thisObject[method];
+} else {
+	 method: Function
+	var fcn = method;
+}
+
+return function() {
+	return fcn.apply(thisObject, arguments);
+}  Function

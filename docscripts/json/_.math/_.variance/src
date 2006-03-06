@@ -1,0 +1,8 @@
+var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
+var mean = 0, squares = 0;
+for (var i = 0; i < array.length; i++) {
+	mean += array[i];
+	squares += Math.pow(array[i], 2);
+}
+return (squares / array.length)
+	- Math.pow(mean / array.length, 2);  Decimal

@@ -1,0 +1,3 @@
+position = 0;
+this.atEnd = false;
+this.current = obj[position];

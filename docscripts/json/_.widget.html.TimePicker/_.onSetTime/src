@@ -1,0 +1,22 @@
+if(this.selectedTime.anyTime) {
+	this.time = new Date();
+	var tempDateTime = dojo.widget.TimePicker.util.toRfcDateTime(this.time);
+	this.setDateTime(tempDateTime.split("T")[0] + "T" + this.any);
+} else {
+	var hour = 12;
+	var minute = 0;
+	var isAm = false;
+	if(this.selectedTime["hour"]) {
+		hour = parseInt(this.selectedTime["hour"], 10);
+	}
+	if(this.selectedTime["minute"]) {
+		minute = parseInt(this.selectedTime["minute"], 10);
+	}
+	if(this.selectedTime["amPm"]) {
+		isAm = (this.selectedTime["amPm"].toLowerCase() == "am");
+	}
+	this.time = new Date();
+	this.time.setHours(dojo.widget.TimePicker.util.fromAmPmHour(hour, isAm));
+	this.time.setMinutes(minute);
+	this.setDateTime(dojo.widget.TimePicker.util.toRfcDateTime(this.time));
+}

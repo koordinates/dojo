@@ -1,0 +1,11 @@
+var functionName = args;
+	
+ do a trick, where we link this function name to our wrapper
+ function, _call, that does the actual JavaScript to Flash call
+var callFunc = function(){
+	return dojo.flash.comm._call(functionName, arguments);
+};			
+dojo.flash.comm[functionName] = callFunc;
+
+ indicate that the call was successful
+dojo.flash.obj.get().SetVariable("_succeeded", true);

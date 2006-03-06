@@ -1,0 +1,1 @@
+return dojo.fx.html.fade(node, duration, dojo.style.getOpacity(node), 1, callback, dontPlay);

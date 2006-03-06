@@ -1,0 +1,7 @@
+this.chain = [];
+this.id = this._nextId();
+this.fired = -1;
+this.paused = 0;
+this.results = [null, null];
+this.canceller = canceller;
+this.silentlyCancelled = false;

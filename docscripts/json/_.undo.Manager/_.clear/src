@@ -1,0 +1,8 @@
+this._undoStack = [];
+this._redoStack = [];
+this._currentManager = this;
+
+this.isUndoing = false;
+this.isRedoing = false;
+
+this._updateStatus();

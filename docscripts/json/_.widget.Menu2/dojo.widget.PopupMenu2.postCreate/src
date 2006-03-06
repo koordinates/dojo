@@ -1,0 +1,19 @@
+if (this.domNode.style.display=="none"){
+	this.domNode.style.display = "";
+}
+this.domNode.style.left = '-9999px'
+this.domNode.style.top = '-9999px'
+
+if (this.contextMenuForWindow){
+	var doc = document.documentElement  || document.body;
+	dojo.widget.Menu2.OperaAndKonqFixer.fixNode(doc);
+	dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
+} else if ( this.targetNodeIds.length > 0 ){
+	for(var i=0; i<this.targetNodeIds.length; i++){
+		this.bindDomNode(this.targetNodeIds[i]);
+	}
+}
+
+this.subscribeSubitemsOnOpen();
+
+this.layoutMenuSoon();

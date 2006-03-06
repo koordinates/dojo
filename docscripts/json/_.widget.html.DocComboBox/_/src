@@ -1,0 +1,4 @@
+dojo.widget.html.ComboBox.call(this);
+
+this.widgetType = "DocComboBox";
+this.autoComplete = false;

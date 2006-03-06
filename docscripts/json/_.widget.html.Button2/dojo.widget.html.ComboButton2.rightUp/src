@@ -1,0 +1,4 @@
+if( this.disabled ){ return; }
+dojo.html.prependClass(this.rightPart, "dojoButtonHover");
+dojo.html.removeClass(this.rightPart, "dojoButtonDepressed");
+this._setImageR(this.activeImg);

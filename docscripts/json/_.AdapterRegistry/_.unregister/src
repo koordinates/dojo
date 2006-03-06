@@ -1,0 +1,8 @@
+for(var i = 0; i < this.pairs.length; i++){
+	var pair = this.pairs[i];
+	if(pair[0] == name){
+		this.pairs.splice(i, 1);
+		return true;
+	}
+}
+return false;

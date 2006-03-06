@@ -1,0 +1,8 @@
+a = dojo.math.matrix.copy(a);
+
+var m = dojo.math.matrix.create(a.length, a[0].length);
+
+for (var i = 0; i < a.length; i++)
+	for (var j = 0; j < a[i].length; j++)
+		m[j][i] = a[i][j];
+return m;  

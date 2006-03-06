@@ -1,0 +1,22 @@
+this._uuidString = dojo.uuid.Uuid.NIL_UUID;
+if (input) {
+	if (dojo.lang.isString(input)) {
+		this._uuidString = input.toLowerCase();
+		dojo.lang.assert(this.isValid());
+	} else {
+		if (dojo.lang.isObject(input) && input.generate) {
+			var generator = input;
+			this._uuidString = generator.generate();
+			dojo.lang.assert(this.isValid());
+		} else {
+			 we got passed something other than a string
+			dojo.lang.assert(false, "The dojo.uuid.Uuid() constructor must be initializated with a UUID string.");
+		}
+	}
+} else {
+	var ourGenerator = dojo.uuid.Uuid.getGenerator();
+	if (ourGenerator) {
+		this._uuidString = ourGenerator.generate();
+		dojo.lang.assert(this.isValid());
+	}
+}

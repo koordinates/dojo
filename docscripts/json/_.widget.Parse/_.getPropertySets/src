@@ -1,0 +1,23 @@
+var ppl = "dojo:propertyproviderlist";
+var propertySets = [];
+var tagname = fragment["tagName"];
+if(fragment[ppl]){ 
+	var propertyProviderIds = fragment[ppl].value.split(" ");
+	 FIXME: should the propertyProviderList attribute contain #
+	 		  syntax for reference to ids or not?
+	 FIXME: need a better test to see if this is local or external
+	 FIXME: doesn't handle nested propertySets, or propertySets that
+	 		  just contain information about css documents, etc.
+	for(propertySetId in propertyProviderIds){
+		if((propertySetId.indexOf("..")==-1)&&(propertySetId.indexOf(":")==-1)){
+			 get a reference to a propertySet within the current parsed structure
+			var propertySet = this.getPropertySetById(propertySetId);
+			if(propertySet != ""){
+				propertySets.push(propertySet);
+			}
+		}else{
+			 FIXME: add code to parse and return a propertySet from
+			 another document
+			 alex: is this even necessaray? Do we care? If so, why?
+		}
+	}

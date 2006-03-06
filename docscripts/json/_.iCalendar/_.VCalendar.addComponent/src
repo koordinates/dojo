@@ -1,0 +1,14 @@
+this.components.push(prop);
+if (prop.name.toLowerCase() == "vevent") {
+	if (prop.rrule) {
+		this.recurring.push(prop);
+	} else {
+		startDate = prop.getDate();
+		month = startDate.getMonth() + 1;
+		dateString= month + "-" + startDate.getDate() + "-" + startDate.getFullYear();
+		if (!dojo.lang.isArray(this[dateString])) {
+			this.nonRecurringEvents[dateString] = [];
+		}
+		this.nonRecurringEvents[dateString].push(prop);
+	}
+}

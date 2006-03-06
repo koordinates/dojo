@@ -1,0 +1,14 @@
+this.missingSpan.style.display = "none";
+this.invalidSpan.style.display = "none";
+
+var empty = this.isEmpty();
+var valid = this.isValid();
+var missing = this.isMissing();
+
+ Display at most one error message
+if ( missing ){
+	this.missingSpan.style.display = "";
+}
+else if ( !empty && !valid ){
+	this.invalidSpan.style.display = "";
+}

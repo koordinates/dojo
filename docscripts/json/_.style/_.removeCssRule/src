@@ -1,0 +1,16 @@
+if(!dojo.style.styleSheet){
+	dojo.debug("no stylesheet defined for removing rules");
+	return false;
+}
+if(dojo.render.html.ie){
+	if(!index){
+		index = dojo.style.styleSheet.rules.length;
+		dojo.style.styleSheet.removeRule(index);
+	}
+}else if(document.styleSheets[0]){
+	if(!index){
+		index = dojo.style.styleSheet.cssRules.length;
+	}
+	dojo.style.styleSheet.deleteRule(index);
+}
+return true;

@@ -1,0 +1,3 @@
+items[q[i].key].value = o;
+build();
+this.count = q.length;

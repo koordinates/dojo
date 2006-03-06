@@ -1,0 +1,7 @@
+var index = position == "before" ? this.treeNode.getParentIndex() : this.treeNode.getParentIndex()+1;
+if (this.treeNode.parent === sourceTreeNode.parent
+  && this.treeNode.getParentIndex() > sourceTreeNode.getParentIndex()) {
+  	index--;   dragging a node is different for simple move bacause of before-after issues
+}
+
+return index;

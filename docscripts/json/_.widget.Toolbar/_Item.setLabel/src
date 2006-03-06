@@ -1,0 +1,9 @@
+var ret = this._label = value;
+if(!this.labelNode) {
+	this.labelNode = document.createElement("span");
+	this.domNode.appendChild(this.labelNode);
+}
+this.labelNode.innerHTML = "";
+this.labelNode.appendChild(document.createTextNode(this._label));
+this.update();
+return ret;

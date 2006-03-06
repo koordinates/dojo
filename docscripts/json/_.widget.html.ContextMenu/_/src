@@ -1,0 +1,27 @@
+dojo.widget.ContextMenu.call(this);
+dojo.widget.HtmlWidget.call(this);
+
+this.isShowing = 0;
+this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlContextMenuTemplate.html");
+this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/Menu.css");
+
+this.targetNodeIds = [];  fill this with nodeIds upon widget creation and it only responds to those nodes
+
+ default event detection method 
+var eventType = "oncontextmenu"; 
+
+var doc = document.documentElement  || document.body; 
+
+var _blockHide = false; 
+
+* _canHide is meant to block the onHide call that follows the event that triggered
+* onOpen. This is (hopefully) faster that event.connect and event.disconnect every
+* time the code executes and it makes connecting with onmousedown event possible
+* and we dont have to stop the event from bubbling further.
+*
+* this code is moved into a separete function because it makes it possible for the
+* user to connect to a onHide event, if anyone would like that.
+
+ callback for rightclicks, needed for browsers that doesnt implement oncontextmenu, konqueror and more? 
+
+dojo.event.connect(doc, "onclick", this, "_canHide");

@@ -1,0 +1,22 @@
+var src = this.munge('XYZ', arguments);
+
+var mi = this.getXYZ_RGB_Matrix();
+var pr = this.getPrimaries();
+
+var rgb = dojo.math.matrix.multiply([[src.X, src.Y, src.Z]], mi);
+var r = rgb[0][0];
+var g = rgb[0][1];
+var b = rgb[0][2];
+
+if (this.RGBWorkingSpace == 's_rgb'){
+
+	var R = (r > 0.0031308) ? (1.055 * Math.pow(r, 1.0/2.4)) - 0.055 : 12.92 * r;
+	var G = (g > 0.0031308) ? (1.055 * Math.pow(g, 1.0/2.4)) - 0.055 : 12.92 * g;
+	var B = (b > 0.0031308) ? (1.055 * Math.pow(b, 1.0/2.4)) - 0.055 : 12.92 * b;
+}else{
+	var R = Math.pow(r, 1/pr.gamma);
+	var G = Math.pow(g, 1/pr.gamma);
+	var B = Math.pow(b, 1/pr.gamma);
+}
+
+return [R, G, B];

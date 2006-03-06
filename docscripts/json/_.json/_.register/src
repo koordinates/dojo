@@ -1,0 +1,1 @@
+dojo.json.jsonRegistry.register(name, check, wrap, override);

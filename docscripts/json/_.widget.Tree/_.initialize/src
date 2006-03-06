@@ -1,0 +1,28 @@
+var _this = this;
+
+for(name in this.eventNames) {
+	this.eventNames[name] = this.widgetId+"/"+this.eventNames[name];
+}
+
+for(var i=0; i<this.actionsDisabled.length; i++) {
+	this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
+}
+
+if (this.DNDMode == "off") {
+	this.DNDMode = 0;
+} else if (this.DNDMode == "between") {
+	this.DNDMode = this.DNDModes.ONTO | this.DNDModes.BETWEEN;
+} else if (this.DNDMode == "onto") {
+	this.DNDMode = this.DNDModes.ONTO;
+}
+
+this.expandLevel = parseInt(this.expandLevel);
+
+this.initializeController();
+this.initializeSelector();
+
+if (this.menu) {
+	dojo.widget.byId(this.menu).listenTree(this);
+}
+
+this.containerNode = this.domNode;

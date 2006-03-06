@@ -1,0 +1,4 @@
+node = dojo.byId(node);
+dojo.dnd.dragManager.unregisterDragSource(this);
+this.domNode = node;
+dojo.dnd.dragManager.registerDragSource(this);

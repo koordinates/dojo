@@ -1,0 +1,3 @@
+dojo.deprecated("dojo.widget.fromScript", " use " +
+	"dojo.widget.createWidget instead");
+return dojo.widget.createWidget(name, props, refNode, position);

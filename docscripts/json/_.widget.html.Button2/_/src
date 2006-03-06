@@ -1,0 +1,2 @@
+dojo.widget.HtmlWidget.call(this);
+dojo.widget.Button2.call(this);

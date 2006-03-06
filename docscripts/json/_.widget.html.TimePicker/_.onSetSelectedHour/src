@@ -1,0 +1,4 @@
+this.onClearSelectedAnyTime();
+this.onClearSelectedHour();
+this.setSelectedHour(evt);
+this.onSetTime();

@@ -1,0 +1,26 @@
+var clientX = window.event ? window.event.offsetX : e.layerX;
+var clientY = window.event ? window.event.offsetY : e.layerY;
+var screenX = window.event ? window.event.clientX : e.pageX;
+var screenY = window.event ? window.event.clientY : e.pageY;
+
+this.paneBefore = this.children[i];
+this.paneAfter = this.children[i+1];
+
+this.isSizing = true;
+this.sizingSplitter = this.sizers[i];
+this.originPos = dojo.style.getAbsolutePosition(this.domNode, true);
+this.dragOffset = {'x':clientX, 'y':clientY};
+this.startPoint  = {'x':screenX, 'y':screenY};
+this.lastPoint  = {'x':screenX, 'y':screenY};
+
+this.offsetX = screenX - clientX;
+this.offsetY = screenY - clientY;
+
+if (!this.isActiveResize){
+	this.showSizingLine();
+}
+
+ attach mouse events
+
+dojo.event.connect(document.documentElement, "onmousemove", this, "changeSizing");
+dojo.event.connect(document.documentElement, "onmouseup", this, "endSizing");

@@ -1,0 +1,17 @@
+var oldParent = child.parent;
+var oldTree = child.tree;
+
+this.doMove.apply(this, arguments);
+
+var newParent = child.parent;
+var newTree = child.tree;
+
+var message = {
+		oldParent: oldParent, oldTree: oldTree,
+		newParent: newParent, newTree: newTree,
+		child: child
+};
+
+ publish events here about structural changes for both source and target trees 
+dojo.event.topic.publish(oldTree.eventNames.moveFrom, message);
+dojo.event.topic.publish(newTree.eventNames.moveTo, message);

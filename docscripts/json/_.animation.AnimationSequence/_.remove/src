@@ -1,0 +1,7 @@
+for(var i = 0; i < this._anims.length; i++) {
+	if( this._anims[i] == anim ) {
+		this._anims[i]._animSequence = null;
+		this._anims.splice(i, 1);
+		break;
+	}
+}

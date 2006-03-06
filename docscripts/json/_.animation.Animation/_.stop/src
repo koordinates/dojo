@@ -1,0 +1,11 @@
+clearTimeout(this._timer);
+var step = this._percent / 100;
+if( gotoEnd ) {
+	step = 1;
+}
+var e = new dojo.animation.AnimationEvent(this, "stop", this.curve.getValue(step),
+	this._startTime, new Date().valueOf(), this._endTime, this.duration, this._percent, Math.round(fps));
+if(typeof this.handler == "function") { this.handler(e); }
+if(typeof this.onStop == "function") { this.onStop(e); }
+this._active = false;
+this._paused = false;

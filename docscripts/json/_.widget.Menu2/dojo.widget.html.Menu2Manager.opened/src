@@ -1,0 +1,8 @@
+if (menu == this.currentMenu){ return; }
+
+if (this.currentMenu){
+	this.currentMenu.close();
+}
+
+this.currentMenu = menu;
+this.currentButton = button;

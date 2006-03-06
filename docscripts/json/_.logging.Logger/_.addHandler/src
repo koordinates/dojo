@@ -1,0 +1,2 @@
+this.handlers.push(hdlr);
+return this.handlers.length-1;

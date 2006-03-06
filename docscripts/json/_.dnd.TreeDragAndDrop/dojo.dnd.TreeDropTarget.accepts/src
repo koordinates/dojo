@@ -1,0 +1,13 @@
+var accepts = dojo.dnd.HtmlDropTarget.prototype.accepts.apply(this, arguments);
+
+if (!accepts) return false;
+
+var sourceTreeNode = dragObjects[0].treeNode;
+
+if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
+	dojo.raise("Source is not TreeNode or not found");
+}
+
+if (sourceTreeNode === this.treeNode) return false;
+
+return true;

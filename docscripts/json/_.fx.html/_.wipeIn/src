@@ -1,0 +1,15 @@
+node = dojo.byId(node);
+var overflow = dojo.style.getStyle(node, "overflow");
+if(overflow == "visible") {
+	node.style.overflow = "hidden";
+}
+node.style.height = 0;
+dojo.style.show(node);
+var anim = dojo.fx.html.wipe(node, duration, 0, node.scrollHeight, null, true);
+dojo.event.connect(anim, "onEnd", function() {
+	node.style.overflow = overflow;
+	node.style.height = "auto";
+	if(callback) { callback(node, anim); }
+});
+if(!dontPlay) { anim.play(); }
+return anim;

@@ -1,0 +1,2 @@
+var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
+this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;

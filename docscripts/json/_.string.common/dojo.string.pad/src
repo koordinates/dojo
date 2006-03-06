@@ -1,0 +1,17 @@
+var out = String(str);
+if(!c) {
+	 c: null
+	c = '0';
+}
+if(!dir) {
+	 dir: null
+	dir = 1;
+}
+while(out.length < len) {
+	if(dir > 0) {
+		out = c + out;
+	} else {
+		out += c;
+	}
+}
+return out;  

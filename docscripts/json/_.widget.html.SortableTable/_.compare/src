@@ -1,0 +1,5 @@
+for(var p in o1){
+	if(!o2[p]) return false;		
+	if(o1[p].valueOf()!=o2[p].valueOf()) return false;		
+}
+return true;	 

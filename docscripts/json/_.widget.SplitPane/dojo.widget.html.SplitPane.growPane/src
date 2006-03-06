@@ -1,0 +1,15 @@
+if (growth > 0){
+	if (pane.sizeActual > pane.sizeMin){
+		if ((pane.sizeActual - pane.sizeMin) > growth){
+
+			 stick all the growth in this pane
+			pane.sizeActual = pane.sizeActual - growth;
+			growth = 0;
+		}else{
+			 put as much growth in here as we can
+			growth -= pane.sizeActual - pane.sizeMin;
+			pane.sizeActual = pane.sizeMin;
+		}
+	}
+}
+return growth;

@@ -1,0 +1,6 @@
+if(ignoreCase) {
+	 ignoreCase: bool
+	str = str.toLowerCase();
+	start = start.toLowerCase();
+}
+return str.indexOf(start) == 0;  

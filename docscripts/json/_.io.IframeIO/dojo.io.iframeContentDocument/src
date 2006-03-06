@@ -1,0 +1,9 @@
+var doc = iframe_el.contentDocument ||  W3
+	(
+		(iframe_el.contentWindow)&&(iframe_el.contentWindow.document)
+	) ||   IE
+	(
+		(iframe_el.name)&&(document.frames[iframe_el.name])&&
+		(document.frames[iframe_el.name].document)
+	) || null;
+return doc;

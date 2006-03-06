@@ -1,0 +1,12 @@
+var logStr = String(dojo.log.getLevelName(record.level)+": "+record.time.toLocaleTimeString())+": "+record.message;
+if(!dj_undef("debug", dj_global)){
+	dojo.debug(logStr);
+}else if((typeof dj_global["print"] == "function")&&(!dojo.render.html.capable)){
+	print(logStr);
+}
+this.data.push(record);
+if(this.numRecords != -1){
+	while(this.data.length>this.numRecords){
+		this.data.shift();
+	}
+}

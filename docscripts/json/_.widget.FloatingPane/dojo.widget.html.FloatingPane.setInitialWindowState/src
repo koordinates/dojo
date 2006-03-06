@@ -1,0 +1,18 @@
+if (this.windowState == "maximized") {
+	this.maximizeWindow();
+	this.show();
+	return;
+}
+
+if (this.windowState=="normal") {
+	dojo.lang.setTimeout(this, this.onResized, 50);
+	this.show();
+	return;
+}
+
+if (this.windowState=="minimized") {
+	this.hide();
+	return;
+}
+
+this.windowState="minimized";

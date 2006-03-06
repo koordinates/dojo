@@ -1,0 +1,6 @@
+for(var i = 0; i < this._anims.length; i++) {
+	if( this._anims[i] == anim ) {
+		this._currAnim = i;
+		break;
+	}
+}

@@ -1,0 +1,21 @@
+if(data == null || typeof data == "undefined"){
+	return data;
+}
+
+ certain XMLish characters break Flash's wire serialization for
+ ExternalInterface; these are encoded on the 
+ DojoExternalInterface side into a custom encoding, rather than
+ the standard entity encoding, because otherwise we won't be able to
+ differentiate between our own encoding and any entity characters
+ that are being used in the string itself
+data = data.replace(/\&custom_lt\;/g, "<");
+data = data.replace(/\&custom_gt\;/g, ">");
+
+ Unfortunately, Flash returns us our String with special characters
+ like newlines broken into seperate characters. So if \n represents
+ a new line, Flash returns it as "\" and "n". This means the character
+ is _not_ a newline. This forces us to eval() the string to cause
+ escaped characters to turn into their real special character values.
+data = eval('"' + data + '"');
+
+return data;

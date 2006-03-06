@@ -1,0 +1,18 @@
+if(!this.accepts(e.dragObjects)){ return false; }
+
+ cache the positions of the child nodes
+this.childBoxes = [];
+for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
+	child = this.domNode.childNodes[i];
+	if (child.nodeType != dojo.dom.ELEMENT_NODE) { continue; }
+	var top = dojo.style.getAbsoluteY(child);
+	var bottom = top + dojo.style.getInnerHeight(child);
+	var left = dojo.style.getAbsoluteX(child);
+	var right = left + dojo.style.getInnerWidth(child);
+	this.childBoxes.push({top: top, bottom: bottom,
+		left: left, right: right, node: child});
+}
+
+ TODO: use dummy node
+
+return true;

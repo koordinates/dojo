@@ -1,0 +1,1 @@
+{"dojo.hostenv.getVersion":{"()":""},"dojo.hostenv.loadUri":{"(uri, cb)":""},"dojo.hostenv.exit":{"(exitcode)":""},"dj_rhino_current_script_via_java":{"(depth)":""},"readText":{"(uri)":""}}

@@ -1,0 +1,4 @@
+dojo.dom.removeNode(widget.domNode);
+
+ remove child widget from parent widget
+return dojo.widget.DomWidget.superclass.removeChild.call(this, widget);

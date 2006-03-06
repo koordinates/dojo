@@ -1,0 +1,12 @@
+var timezoneOffset = dateObject.getTimezoneOffset();
+
+for (var i = 0; i < dojo.date.timezoneOffsets.length; i++) {
+	if (dojo.date.timezoneOffsets[i] == timezoneOffset) {
+		return dojo.date.shortTimezones[i];
+	}
+}
+
+ we don't know so return it formatted as "+HH:MM"
+function $ (s) { s = String(s); while (s.length < 2) { s = "0" + s; } return s; }
+return (timezoneOffset < 0 ? "-" : "+") + $(Math.floor(Math.abs(
+	timezoneOffset)/60)) + ":" + $(Math.abs(timezoneOffset)%60);

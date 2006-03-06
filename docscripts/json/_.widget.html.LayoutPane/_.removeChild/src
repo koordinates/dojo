@@ -1,0 +1,3 @@
+dojo.widget.html.LayoutPane.superclass.removeChild.call(this,pane);
+dojo.dom.removeNode(pane.domNode);
+this.resizeSoon();

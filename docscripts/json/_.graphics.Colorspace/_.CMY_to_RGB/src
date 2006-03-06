@@ -1,0 +1,7 @@
+var src = this.munge('CMY', arguments);
+
+var R = 1 - src.C;
+var G = 1 - src.M;
+var B = 1 - src.Y;
+
+return [R, G, B];

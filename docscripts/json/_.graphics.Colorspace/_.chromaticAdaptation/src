@@ -1,0 +1,55 @@
+col = this.munge('XYZ', [col]);
+
+ gather white point data for the source and dest
+
+var old_wp = this.whitePoint;
+
+this.whitePoint = src_w;
+var wp_src = this.getWhitePoint();
+
+this.whitePoint = dst_w;
+var wp_dst = this.getWhitePoint();
+
+this.whitePoint = old_wp;
+
+ get a transformation matricies
+
+switch(this.chromaticAdaptationAlg){
+	case 'xyz_scaling':
+		var ma = [[1,0,0],[0,1,0],[0,0,1]];
+		var mai = [[1,0,0],[0,1,0],[0,0,1]];
+		break;
+	case 'bradford':
+		var ma = [[0.8951, -0.7502, 0.0389],[0.2664, 1.7135, -0.0685],[-0.1614, 0.0367, 1.0296]];
+		var mai = [[0.986993, 0.432305, -0.008529],[-0.147054, 0.518360, 0.040043],[0.159963, 0.049291, 0.968487]];
+		break;
+	case 'von_kries':
+		var ma = [[0.40024, -0.22630, 0.00000],[0.70760, 1.16532, 0.00000],[-0.08081, 0.04570, 0.91822]]
+		var mai = [[1.859936, 0.361191, 0.000000],[-1.129382, 0.638812, 0.000000],[0.219897, -0.000006, 1.089064]]
+		break;
+	default:
+		dojo.debug("The "+this.chromaticAdaptationAlg+" chromatic adaptation algorithm matricies are not defined");
+}
+
+ calculate the cone response domains
+
+var domain_src = dojo.math.matrix.multiply( [[wp_src.x, wp_src.y, wp_src.z]], ma);
+var domain_dst = dojo.math.matrix.multiply( [[wp_dst.x, wp_dst.y, wp_dst.z]], ma);
+
+ construct the centre matrix
+
+var centre = [
+	[domain_dst[0][0]/domain_src[0][0], 0, 0],
+	[0, domain_dst[0][1]/domain_src[0][1], 0],
+	[0, 0, domain_dst[0][2]/domain_src[0][2]]
+];
+
+ caclulate 'm'
+
+var m = dojo.math.matrix.multiply( dojo.math.matrix.multiply( ma, centre ), mai );
+
+ construct source color matrix
+
+var dst = dojo.math.matrix.multiply( [[ col.X, col.Y, col.Z ]], m );
+
+return dst[0];

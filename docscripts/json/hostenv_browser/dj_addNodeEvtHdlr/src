@@ -1,0 +1,6 @@
+var oldHandler = node["on"+evtName] || function(){};
+node["on"+evtName] = function(){
+	fp.apply(node, arguments);
+	oldHandler.apply(node, arguments);
+}
+return true;

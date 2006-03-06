@@ -1,0 +1,2 @@
+dojo.unimplemented("dojo.storage.StorageProvider.free");
+return 0;

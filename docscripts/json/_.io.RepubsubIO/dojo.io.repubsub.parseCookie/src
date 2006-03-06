@@ -1,0 +1,7 @@
+var cs = document.cookie;
+var keypairs = cs.split(";");
+for(var x=0; x<keypairs.length; x++){
+	keypairs[x] = keypairs[x].split("=");
+	if(x!=keypairs.length-1){ cs+=";"; }
+}
+return keypairs;

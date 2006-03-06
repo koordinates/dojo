@@ -1,0 +1,36 @@
+if(!dojo.doc._cache['function_names']){
+	dojo.io.bind({
+		url: "json/function_names",
+		mimetype: "text/json",
+		sync: !async,
+		load: function(type, data, evt){
+			for(var key in data){
+				 Packages starting with _ have a parent of "dojo"
+				if(key.charAt(0) == "_"){
+					var new_key = "dojo" + key.substring(1, key.length);
+					data[new_key] = data[key];
+					delete data[key];
+					key = new_key;
+				}
+				 Function names starting with _ have a parent of their package name
+				for(var pkg_key in data[key]){
+					if(data[key][pkg_key].charAt(0) == "_"){
+						var new_value = key + data[key][pkg_key].substring(1, data[key][pkg_key].length);
+						data[key][pkg_key] = new_value;
+					}
+				}
+				 Save data to the cache
+			}
+			dojo.doc._cache['function_names'] = data;
+			if(async){
+				var searchData = dojo.doc._expandFN();
+				dojo.doc._docFN.sendMessage(searchData);
+			}
+		}
+	});
+}
+
+if(!async){
+	var searchData = dojo.doc._expandFN();
+  return searchData;
+}

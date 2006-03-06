@@ -1,0 +1,7 @@
+if(window.event){
+	ev.returnValue = false;
+	ev.cancelBubble = true;
+}else{
+	ev.preventDefault();
+	ev.stopPropagation();
+}

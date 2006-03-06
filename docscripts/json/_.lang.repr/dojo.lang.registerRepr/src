@@ -1,0 +1,1 @@
+dojo.lang.reprRegistry.register(name, check, wrap, override);

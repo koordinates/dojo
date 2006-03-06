@@ -1,0 +1,4 @@
+dojo.widget.html.SplitPane.call(this);
+this.widgetType = "Accordion";
+this._super = dojo.widget.AccordionPanel.superclass;
+dojo.event.connect(this, "postCreate", this, "myPostCreate");

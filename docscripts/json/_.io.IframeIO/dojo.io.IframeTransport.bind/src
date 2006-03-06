@@ -1,0 +1,4 @@
+if(!this["iframe"]){ this.setUpIframe(); }
+this.requestQueue.push(kwArgs);
+this.fireNextRequest();
+return;

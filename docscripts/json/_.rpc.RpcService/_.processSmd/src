@@ -1,0 +1,13 @@
+dojo.debug("RpcService: Processing returned SMD.");
+for(var n = 0; n < object.methods.length; n++){
+	dojo.debug("RpcService: Creating Method: this.", object.methods[n].name, "()");
+  			this[object.methods[n].name] = this.generateMethod(object.methods[n].name,object.methods[n].parameters);
+	if (dojo.lang.isFunction(this[object.methods[n].name])) {
+		dojo.debug("RpcService: Successfully created", object.methods[n].name, "()");
+	} else {
+		dojo.debug("RpcService: Failed to create", object.methods[n].name, "()");
+	}
+}
+
+this.serviceUrl = object.serviceUrl||object.serviceURL;
+dojo.debug("RpcService: Dojo RpcService is ready for use.");

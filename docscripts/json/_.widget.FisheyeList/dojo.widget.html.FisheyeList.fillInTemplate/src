@@ -1,0 +1,52 @@
+dojo.html.disableSelection(this.domNode);
+
+this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
+this.selectedNode = -1;
+
+this.isOver = false;
+this.hitX1 = -1;
+this.hitY1 = -1;
+this.hitX2 = -1;
+this.hitY2 = -1;
+
+ only some edges make sense...
+
+this.anchorEdge = this.toEdge(this.attachEdge, this.EDGE.CENTER);
+this.labelEdge  = this.toEdge(this.labelEdge,  this.EDGE.TOP);
+
+if ( this.isHorizontal && (this.anchorEdge == this.EDGE.LEFT  )){ this.anchorEdge = this.EDGE.CENTER; }
+if ( this.isHorizontal && (this.anchorEdge == this.EDGE.RIGHT )){ this.anchorEdge = this.EDGE.CENTER; }
+if (!this.isHorizontal && (this.anchorEdge == this.EDGE.TOP   )){ this.anchorEdge = this.EDGE.CENTER; }
+if (!this.isHorizontal && (this.anchorEdge == this.EDGE.BOTTOM)){ this.anchorEdge = this.EDGE.CENTER; }
+
+if (this.labelEdge == this.EDGE.CENTER){ this.labelEdge = this.EDGE.TOP; }
+if ( this.isHorizontal && (this.labelEdge == this.EDGE.LEFT  )){ this.labelEdge = this.EDGE.TOP; }
+if ( this.isHorizontal && (this.labelEdge == this.EDGE.RIGHT )){ this.labelEdge = this.EDGE.TOP; }
+if (!this.isHorizontal && (this.labelEdge == this.EDGE.TOP   )){ this.labelEdge = this.EDGE.LEFT; }
+if (!this.isHorizontal && (this.labelEdge == this.EDGE.BOTTOM)){ this.labelEdge = this.EDGE.LEFT; }
+
+ figure out the proximity size
+
+this.proximityLeft   = this.itemWidth  * (this.effectUnits - 0.5);
+this.proximityRight  = this.itemWidth  * (this.effectUnits - 0.5);
+this.proximityTop    = this.itemHeight * (this.effectUnits - 0.5);
+this.proximityBottom = this.itemHeight * (this.effectUnits - 0.5);
+
+if (this.anchorEdge == this.EDGE.LEFT){
+	this.proximityLeft = 0;
+}
+if (this.anchorEdge == this.EDGE.RIGHT){
+	this.proximityRight = 0;
+}
+if (this.anchorEdge == this.EDGE.TOP){
+	this.proximityTop = 0;
+}
+if (this.anchorEdge == this.EDGE.BOTTOM){
+	this.proximityBottom = 0;
+}
+if (this.anchorEdge == this.EDGE.CENTER){
+	this.proximityLeft   /= 2;
+	this.proximityRight  /= 2;
+	this.proximityTop    /= 2;
+	this.proximityBottom /= 2;
+}

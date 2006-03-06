@@ -1,0 +1,6 @@
+var cd = domainStr||document.domain;
+if(cd.indexOf(".")==-1){ return; }  
+var dps = cd.split(".");
+if(dps.length<=2){ return; }  
+dps = dps.slice(dps.length-2);
+document.domain = dps.join(".");

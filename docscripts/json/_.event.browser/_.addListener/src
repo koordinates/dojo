@@ -1,0 +1,38 @@
+if(!node){ return; }  
+if(!capture){ var capture = false; }
+evtName = evtName.toLowerCase();
+if(evtName.substr(0,2)!="on"){ evtName = "on"+evtName; }
+
+if(!dontFix){
+	 build yet another closure around fp in order to inject fixEvent
+	 around the resulting event
+	var newfp = function(evt){
+		if(!evt){ evt = window.event; }
+		var ret = fp(dojo.event.browser.fixEvent(evt));
+		if(capture){
+			dojo.event.browser.stopEvent(evt);
+		}
+		return ret;
+	}
+}else{
+	newfp = fp;
+}
+
+if(node.addEventListener){ 
+	node.addEventListener(evtName.substr(2), newfp, capture);
+	return newfp;
+}else{
+	if(typeof node[evtName] == "function" ){
+		var oldEvt = node[evtName];
+		node[evtName] = function(e){
+			oldEvt(e);
+			return newfp(e);
+		}
+	}else{
+		node[evtName]=newfp;
+	}
+	if(dojo.render.html.ie){
+		this.addClobberNodeAttrs(node, [evtName]);
+	}
+	return newfp;
+}

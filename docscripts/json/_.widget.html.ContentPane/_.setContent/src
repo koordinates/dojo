@@ -1,0 +1,17 @@
+this.destroyChildren();
+
+var node = this.containerNode || this.domNode;
+node.innerHTML = data;
+if(this.executeScripts){
+	data = this._executeScripts(data);
+}
+if(this.extractContent) {
+	var matches = data.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+	if(matches) { data = matches[1]; }
+}
+if(this.parseContent){
+	var parser = new dojo.xml.Parse();
+	var frag = parser.parseElement(node, null, true);
+	dojo.widget.getParser().createComponents(frag, this);
+	this.onResized();
+}

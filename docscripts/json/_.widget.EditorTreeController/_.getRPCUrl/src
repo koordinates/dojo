@@ -1,0 +1,12 @@
+if (this.RPCUrl == "local") {  for demo and tests. May lead to widgetId collisions
+	var dir = document.location.href.substr(0, document.location.href.lastIndexOf('/'));
+	var localUrl = dir+"/"+action;
+	dojo.debug(localUrl);
+	return localUrl;
+}
+
+if (!this.RPCUrl) {
+	dojo.raise("Empty RPCUrl: can't load");
+}
+
+return this.RPCUrl + ( this.RPCUrl.indexOf("?") > -1 ? "&" : "?") + "action="+action;

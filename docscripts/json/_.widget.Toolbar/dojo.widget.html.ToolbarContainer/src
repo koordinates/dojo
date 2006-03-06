@@ -1,0 +1,7 @@
+dojo.widget.HtmlWidget.call(this);
+
+this.widgetType = "ToolbarContainer";
+this.isContainer = true;
+
+this.templateString = '<div class="toolbarContainer" dojoAttachPoint="containerNode"></div>';
+this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlToolbar.css");

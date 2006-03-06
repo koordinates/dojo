@@ -1,0 +1,12 @@
+if (node.state == node.loadStates.UNCHECKED && node.isFolder) {
+
+	this.loadRemote(node, sync,
+		function(node, newChildren) {
+			this.expand(node, sync, callObj, callFunc);
+		}
+	);
+
+	return;
+}
+
+dojo.widget.TreeBasicController.prototype.expand.apply(this, arguments);

@@ -1,0 +1,24 @@
+this.height = dojo.style.getOuterHeight(this.containerNode);
+this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
+var endWidth= this.height/3;
+
+ left part
+this.leftImage.height = this.rightImage.height = this.centerImage.height = 
+	this.arrowBackgroundImage.height = this.height;
+this.leftImage.width = endWidth+1;
+this.centerImage.width = this.containerWidth;
+this.leftPart.style.height = this.height + "px";
+this.leftPart.style.width = endWidth + this.containerWidth + "px";
+this._setImageL(this.disabled ? this.disabledImg : this.inactiveImg);
+
+ right part
+this.arrowBackgroundImage.width=this.arrowWidth;
+this.rightImage.width = endWidth+1;
+this.rightPart.style.height = this.height + "px";
+this.rightPart.style.width = this.arrowWidth + endWidth + "px";
+this._setImageR(this.disabled ? this.disabledImg : this.inactiveImg);
+
+ outer container
+this.domNode.style.height=this.height + "px";
+var totalWidth = this.containerWidth+this.splitWidth+this.arrowWidth+2*endWidth;
+this.domNode.style.width= totalWidth + "px";

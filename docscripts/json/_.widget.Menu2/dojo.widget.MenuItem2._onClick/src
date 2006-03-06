@@ -1,0 +1,16 @@
+if (this.disabled){ return; }
+
+if (this.submenuId){
+
+	if (!this.is_open){
+		this.stopSubmenuTimer();
+		this.openSubmenu();
+	}
+
+}else{
+	this.parent.closeAll();
+}
+
+this.onClick();
+dojo.debug("GO "+this.eventNames.engage)
+dojo.event.topic.publish(this.eventNames.engage, this);

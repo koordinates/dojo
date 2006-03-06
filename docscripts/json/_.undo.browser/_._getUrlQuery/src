@@ -1,0 +1,7 @@
+var segments = url.split("?");
+if (segments.length < 2){
+	return null;
+}
+else{
+	return segments[1];
+}

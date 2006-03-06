@@ -1,0 +1,1 @@
+this.imgNode.src = this.domNode.checked ? this.srcOn : this.srcOff;

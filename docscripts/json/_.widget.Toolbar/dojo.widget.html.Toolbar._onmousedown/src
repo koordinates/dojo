@@ -1,0 +1,2 @@
+var widget = this._getItem(e.target);
+if(widget && widget._onmousedown) { widget._onmousedown(e); }

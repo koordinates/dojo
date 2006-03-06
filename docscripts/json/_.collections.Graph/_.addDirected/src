@@ -1,0 +1,7 @@
+if (arguments[0].constructor == edgeToNeighbor){
+	this.neighbors.add(arguments[0]);
+} else {
+	var n = arguments[0];
+	var cost = arguments[1] || 0;
+	this.neighbors.add(new edgeToNeighbor(n, cost));
+}

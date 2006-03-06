@@ -1,0 +1,15 @@
+for(var i = 0; i < this.children.length; i++) {
+	var child = this.children[i];
+	if(child instanceof dojo.widget.ToolbarItem) {
+		if(child._name == name) {
+			child.select(force, preventEvent);
+			this._value = name;
+		} else {
+			child.deselect(true, preventEvent);
+		}
+	}
+}
+if(!preventEvent) {
+	this._fireEvent("onSelect", this._value);
+	this._fireEvent("onChangeSelect", this._value);
+}

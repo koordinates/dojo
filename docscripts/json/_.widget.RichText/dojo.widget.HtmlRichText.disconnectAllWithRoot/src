@@ -1,0 +1,7 @@
+for (var i = 0; i < this._connected.length; i++) {
+	if (this._connected[0] == targetObj) {
+		dojo.event.disconnect(targetObj,
+			this._connected[1], this, this._connected[2]);
+		this._connected.splice(i, 1);
+	}
+}	

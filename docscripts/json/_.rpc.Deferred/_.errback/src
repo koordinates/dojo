@@ -1,0 +1,5 @@
+this._check();
+if(!(res instanceof Error)){
+	res = new Error(res);
+}
+this._resback(res);

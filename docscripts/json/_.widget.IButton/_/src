@@ -1,0 +1,4 @@
+dojo.widget.HtmlWidget.call(this);
+
+this.widgetType = "IButton";
+  this.color = "";

@@ -1,0 +1,12 @@
+var node = this.domNode.cloneNode(true);
+if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
+if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
+if(dojo.render.html.ie && this.createIframe){
+	var outer = document.createElement("div");
+	outer.appendChild(node);
+	this.bgIframe = new dojo.html.BackgroundIframe(outer);
+	outer.appendChild(this.bgIframe.iframe);
+	node = outer;
+}
+node.style.zIndex = 500;
+return node;

@@ -1,0 +1,3 @@
+if ( !dojo.lang.inArray(values, node[param]) ) {
+	node[param] = values[0];
+}

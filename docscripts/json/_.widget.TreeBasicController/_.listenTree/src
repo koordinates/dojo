@@ -1,0 +1,7 @@
+dojo.event.topic.subscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
+dojo.event.topic.subscribe(tree.eventNames.treeClick, this, "onTreeClick");
+dojo.event.topic.subscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
+
+if (this.DNDController) {
+	this.DNDController.listenTree(tree);
+}

@@ -1,0 +1,5 @@
+this.addAdvice(	args["adviceObj"], args["adviceFunc"], 
+				args["aroundObj"], args["aroundFunc"], 
+				args["adviceType"], args["precedence"], 
+				args["once"], args["delay"], args["rate"], 
+				args["adviceMsg"]);

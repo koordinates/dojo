@@ -1,0 +1,1 @@
+{"inherits":["dojo.widget.html.Button2"],"this_inherits":["dojo.widget.html.Button2","dojo.widget.ComboButton2"],"this_variables":["height","containerWidth"]}

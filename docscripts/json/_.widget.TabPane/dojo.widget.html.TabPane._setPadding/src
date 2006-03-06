@@ -1,0 +1,30 @@
+var t=dojo.style.getOuterHeight(this.dojoTabLabels);
+var w=dojo.style.getInnerWidth(this.dojoTabLabels);
+var c=dojo.style.getOuterHeight(this.containerNode);
+if(t==0 || c==0){
+	 browser needs more time to compute sizes (maybe CSS hasn't downloaded yet)
+	dojo.lang.setTimeout(this, this._setPadding, 10);
+	return;
+}
+with(this.domNode.style){
+	switch (this.labelPosition) {
+		case 'top': 
+			paddingTop=t+"px";
+			break;
+		case 'bottom':
+			paddingBottom=t+"px";
+			break;
+		case 'left':
+			paddingLeft=w+"px";
+			break;
+		case 'right':
+			paddingRight=w+"px";
+			break;
+		case 'left-h':
+			paddingLeft=w+"px";
+			break;
+		case 'right-h':
+			paddingRight=w+"px";
+			break;
+	}
+}

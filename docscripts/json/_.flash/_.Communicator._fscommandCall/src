@@ -1,0 +1,31 @@
+var plugin = dojo.flash.obj.get();
+var functionName = args;
+
+ get the number of arguments to this method call and build them up
+var numArgs = parseInt(plugin.GetVariable("_numArgs"));
+var flashArgs = new Array();
+for(var i = 0; i < numArgs; i++){
+	var currentArg = plugin.GetVariable("_" + i);
+	flashArgs.push(currentArg);
+}
+
+ get the function instance; we technically support more capabilities
+ than ExternalInterface, which can only call global functions; if
+ the method name has a dot in it, such as "dojo.flash.loaded", we
+ eval it so that the method gets run against an instance
+var runMe;
+if(functionName.indexOf(".") == -1){  global function
+	runMe = window[functionName];
+}else{
+	 instance function
+	runMe = eval(functionName);
+}
+
+ make the call and get the results
+var results = null;
+if(!dojo.lang.isUndefined(runMe) && runMe != null){
+	results = runMe.apply(null, flashArgs);
+}
+
+ return the results to flash
+plugin.SetVariable("_returnResult", results);

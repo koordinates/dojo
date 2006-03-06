@@ -1,0 +1,13 @@
+for(var i=0; i<this.sizers.length; i++){
+	var sn = this.sizers[i];
+	if(sn){
+		sn.style.border = "0px";
+	}
+}
+for(var i=0; i<this.children.length; i++){
+	this.children[i].setMinHeight();
+	if(this.children[i].open){
+		this.openPanel = this.children[i];
+	}
+}
+this.onResized();

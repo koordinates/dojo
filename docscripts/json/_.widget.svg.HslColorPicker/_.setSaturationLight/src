@@ -1,0 +1,2 @@
+this.saturation = saturation;
+this.light = light;

@@ -1,0 +1,12 @@
+if(widget.system && kwArgs){
+	if((kwArgs.contentType && kwArgs.contentType.indexOf("text/") != 0) || (kwArgs.headers && kwArgs.headers["content-type"] && kwArgs.headers["content-type"].indexOf("text/") != 0)){
+		var curl = new dojo.hostenv.CurlRequest;
+		curl._save = true;
+		return curl;
+	}else if(kwArgs.method && kwArgs.method.toUpperCase() == "HEAD"){
+		return new dojo.hostenv.CurlRequest;
+	}else if(kwArgs.headers && kwArgs.header.referer){
+		return new dojo.hostenv.CurlRequest; 
+	}
+}
+return new ;  

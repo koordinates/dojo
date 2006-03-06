@@ -1,0 +1,8 @@
+this.openEvent = e;
+
+dojo.debugShallow(e);
+this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
+
+if(e["preventDefault"]){
+	e.preventDefault();
+}

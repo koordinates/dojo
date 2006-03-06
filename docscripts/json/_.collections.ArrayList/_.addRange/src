@@ -1,0 +1,13 @@
+if (a.getIterator) {
+	var e = a.getIterator();
+	while (!e.atEnd) {
+		this.add(e.current);
+		e.moveNext();
+	}
+	this.count = items.length;
+} else {
+	for (var i=0; i<a.length; i++){
+		items.push(a[i]);
+	}
+	this.count = items.length;
+}

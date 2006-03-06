@@ -1,0 +1,3 @@
+dojo.widget.PopupMenu2.call(this);
+
+this.listenedTrees = [];

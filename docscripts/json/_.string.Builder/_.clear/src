@@ -1,0 +1,4 @@
+a = [];
+b = "";
+length = this.length = 0;
+return this;

@@ -1,0 +1,15 @@
+var docFrag;
+if (window.parseXML) docFrag = parseXML(txt, window.document);
+else if (window.DOMParser) docFrag = (new DOMParser()).parseFromString(txt, "text/xml");
+else dojo.raise("dojo.dom.createNodesFromText: environment does not support XML parsing");
+docFrag.normalize();
+if(wrap){ 
+	var ret = [docFrag.firstChild.cloneNode(true)];
+	return ret;
+}
+var nodes = [];
+for(var x=0; x<docFrag.childNodes.length; x++){
+	nodes.push(docFrag.childNodes.item(x).cloneNode(true));
+}
+ tn.style.display = "none";
+return nodes;

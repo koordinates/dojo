@@ -1,0 +1,5 @@
+if((typeof width == "string")&&(width.substr(-1) == "%")){
+	this.setPercentageWidth(width);
+}else{
+	this.setNativeWidth(width);
+}

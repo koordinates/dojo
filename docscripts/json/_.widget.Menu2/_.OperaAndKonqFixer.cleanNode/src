@@ -1,0 +1,13 @@
+ 		if (implement){
+ 			 checks needed if we gets a non fixed node
+ 			if (node._menufixer_opera){
+ 				dojo.event.disconnect(node, "onclick", node, "_menufixer_opera");
+ 				delete node._menufixer_opera;
+ 			} else if(node._menufixer_konq){
+ 				dojo.event.disconnect(node, "onmousedown", node, "_menufixer_konq");
+ 				delete node._menufixer_konq;
+ 			}
+ 			if (node.oncontextmenu){
+ 				delete node.oncontextmenu;
+ 			}
+ 		}
