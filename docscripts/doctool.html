@@ -1,6 +1,9 @@
 <html>
 <head>
 <title>Dojo API Reference</title>
+<script>
+  var djConfig = {isDebug: true};
+</script>
 <script type="text/javascript" src="../dojo.js"></script>
 <script type="text/javascript" src="doctool.js"></script>
 <link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/screen.css" media="screen" />
@@ -27,28 +30,21 @@
 		</div>
 	</div>
 	<div id="content-body">
-		<div id="content" class="content"><div id="content2">
-			<h1>Search</h1>
+		<div id="content" dojoType="docpane" class="content">
+			<h1>Dojo API</h1>
 
 			<p>
-			Dojo offers a number of builds, called <em>Editions</em>, that
-			combine related parts of Dojo into a single, compressed file.
-			Don't worry, you can still use all the APIs Dojo provides no matter
-			what edition you snag, but the "baked in" libraries in a given
-			Edition will be faster loading.
+			Welcome
 			</p>
 
 			<h1>Getting Started</h1>
-			<p>So you've downloaded and extracted a Dojo edition to your development
-			environment, now what? Dojo offers a number of resources to help you get
-			off the ground and using your new JavaScript buddy. Some of the articles
-			you might want to check out:</p>
-		</div></div>
+			<p>Search on the right</p>
+		</div>
 		<div id="sidebar">
 			<h1>Doc Tool</h1>
 
 			<h2>Search</h2>
-			<p><input dojoType="combobox" id="search" value="" style="width: 300px;" autoComplete="false" ></p>
+			<p><input dojoType="doccombobox" id="search" value="" style="width: 300px;" ></p>
 
 			<div class="clear"></div>
 			<div id="footer">
