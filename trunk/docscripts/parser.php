@@ -76,17 +76,12 @@ else{
 			$function_name = preg_replace('%^' . str_replace('.', '\.', $package) . '%', '_', $function_name);
 			$package_root = str_replace('.*', '', $package) . '.';
 			if($function_name == 'requires'){
-				foreach($function as $hostenv => $child_function){
-					foreach($child_function as $child_function_name){
-						if(strpos($child_function_name, $package_root) === 0){
-							$output[$package]['meta']['requires'][$hostenv][] = $child_function_name;
-						}
-					}
-				}
+				$output[$package]['meta']['requires'] = $function;
 			}elseif($function['is']){
 				$output[$package]['meta'][$function_name]['is'] = $function['is'];
 			}else{
 				foreach($function as $function_signature => $function_content){
+				
 //					$function_signature = preg_replace('%(?<= )' . str_replace('.', '\.', $package) .'(?=[^ ]*\()%U', '_', $function_signature);
 					$polymorphic_id = 'default';
 					if($function_content['comments']['id']){
@@ -243,6 +238,7 @@ else{
 			if($function_name == 'requires'){
 				continue;
 			}
+
 	 		if(is_array($function)){
 				if(isset($_GET['signatures'])){
 					$signatures = array_diff(array_keys($function), array('inherits', 'variables', 'is'));
@@ -282,7 +278,7 @@ else{
 	unset($output['function_names']);
 
 	foreach($output as $package => $function){
-		$package = str_replace('*', '_', $package);
+		$package = preg_replace('%^dojo%', '_', str_replace('*', '_', $package));
 
 		if(!is_dir('json/' . $package)){
 			mkdir('json/' . $package);
