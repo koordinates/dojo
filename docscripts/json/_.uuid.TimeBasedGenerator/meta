@@ -1,1 +1,1 @@
-{"_":{"()":""},"_.setNode":{"(node)":""},"_.getNode":{"()":""},"_.generate":{"(input)":""}}
+{"requires":{"common":["dojo.lang.*"]},"_":{"()":""},"_.setNode":{"(node)":""},"_.getNode":{"()":""},"_.generate":{"(input)":""}}

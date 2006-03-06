@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.widget.html.ComboBox"]},"_":{"()":""},"_.fillInTemplate":{"()":""}}
+{"requires":{"common":["dojo.widget.html.ComboBox","dojo.doc"]},"_":{"()":""},"_.fillInTemplate":{"()":""}}

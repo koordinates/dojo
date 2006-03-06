@@ -1,1 +1,1 @@
-{"requires":{"browser":["dojo.storage.browser"],"dashboard":["dojo.storage.dashboard"]}}
+{"requires":{"common":["dojo.storage"],"browser":["dojo.storage.browser"],"dashboard":["dojo.storage.dashboard"]}}

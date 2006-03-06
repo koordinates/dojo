@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.widget.*"],"html":["dojo.widget.html.MenuItem"]},"_":{"()":""},"dojo.widget.DomMenuItem":{"()":""}}
+{"requires":{"common":["dojo.string","dojo.widget.*"],"html":["dojo.html","dojo.widget.html.MenuItem"]},"_":{"()":""},"dojo.widget.DomMenuItem":{"()":""}}

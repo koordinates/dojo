@@ -1,2 +1,0 @@
-dojo.event.connect(item, "onSelect", this, "onSelect");
-this.items.push(item);

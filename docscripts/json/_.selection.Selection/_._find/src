@@ -1,5 +1,0 @@
-if(inSelection) {
-	return dojo.lang.find(item, this.selection);
-} else {
-	return dojo.lang.find(item, this.items);
-}
