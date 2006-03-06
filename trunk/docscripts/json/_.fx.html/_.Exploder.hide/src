@@ -1,0 +1,14 @@
+clearTimeout(showTimer);
+clearTimeout(hideTimer);
+if( animShow && animShow.status() == "playing" ) {
+	return;
+}
+
+_this.showing = false;
+if(typeof _this.onBeforeImplode == "function") { _this.onBeforeImplode(triggerNode, boxNode); }
+animHide = dojo.fx.html.implode(boxNode, triggerNode, _this.timeToHide, function(e){
+	if(typeof _this.onAfterImplode == "function") { _this.onAfterImplode(triggerNode, boxNode); }
+});
+if(typeof _this.onImploding == "function") {
+	dojo.event.connect(animHide, "onAnimate", this, "onImploding");
+}

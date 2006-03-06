@@ -1,0 +1,3 @@
+while(this._undoStack.length > 0) {
+	this.undo();
+}

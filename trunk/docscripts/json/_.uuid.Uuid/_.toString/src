@@ -1,0 +1,27 @@
+if (format) {
+	switch (format) {
+		case '{}':
+			return '{' + this._uuidString + '}';
+			break;
+		case '()':
+			return '(' + this._uuidString + ')';
+			break;
+		case '""':
+			return '"' + this._uuidString + '"';
+			break;
+		case "''":
+			return "'" + this._uuidString + "'";
+			break;
+		case 'urn':
+			return 'urn:uuid:' + this._uuidString;
+			break;
+		case '!-':
+			return this._uuidString.split('-').join('');
+			break;
+		default:
+			 we got passed something other than what we expected
+			dojo.lang.assert(false, "The toString() method of dojo.uuid.Uuid was passed a bogus format.");
+	}
+} else {
+	return this._uuidString;
+}

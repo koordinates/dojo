@@ -1,0 +1,7 @@
+var sTop = dojo.html.getScrollTop();  document.documentElement.scrollTop;
+var sLeft = dojo.html.getScrollLeft();  document.documentElement.scrollLeft;
+if(sTop != this.scrollOffset.top) {
+	var diff = sTop - this.scrollOffset.top;
+	this.dragOffset.top += diff;
+	this.scrollOffset.top = sTop;
+}

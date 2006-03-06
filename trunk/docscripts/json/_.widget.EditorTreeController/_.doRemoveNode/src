@@ -1,0 +1,12 @@
+if (node.tree.selector.selectedNode === node) {
+	this.deselect(node);
+}
+
+this.unregisterDNDNode(node);
+
+removed_node = node.tree.removeChild(node);
+
+ nodes AFTER
+dojo.event.topic.publish(this.eventNames.remove,
+	{ node: removed_node }
+);

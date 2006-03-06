@@ -1,0 +1,5 @@
+if( weight < 0 ) { dojo.raise("dojo.math.curves.Path.add: weight cannot be less than 0"); }
+curves.push(curve);
+weights.push(weight);
+totalWeight += weight;
+computeRanges();

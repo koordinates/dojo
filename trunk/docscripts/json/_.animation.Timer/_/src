@@ -1,0 +1,5 @@
+var timer = null;
+this.isRunning = false;
+this.interval = intvl;
+
+this.onStop = null;

@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.logging.Logger"],"rhino":["dojo.logging.RhinoLogger"]}}

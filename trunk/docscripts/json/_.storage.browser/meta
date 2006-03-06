@@ -1,0 +1,1 @@
+{"_.StorageProvider":{"()":""},"_.StorageProvider.storageOnLoad":{"()":""},"_.StorageProvider.unHideStore":{"()":""},"_.StorageProvider.hideStore":{"(status)":""},"_.StorageProvider.set":{"(key, value, ns)":""},"_.StorageProvider.get":{"(key, ns)":""},"_.StorageProvider.writeStorage":{"()":""}}

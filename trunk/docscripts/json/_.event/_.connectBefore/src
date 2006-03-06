@@ -1,0 +1,3 @@
+var args = ["before"];
+for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
+return this.connect.apply(this, args);

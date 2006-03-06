@@ -1,0 +1,4 @@
+this.sizeBackground();
+if(this.bgOpacity > 0) {
+	this.bg.style.display = "block";
+}

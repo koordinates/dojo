@@ -1,0 +1,5 @@
+if(this.isItem(item)) {
+	if(this.select(item, noPivot)) { return 1; }
+	if(this.deselect(item)) { return -1; }
+}
+return 0;

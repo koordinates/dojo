@@ -1,0 +1,6 @@
+this.constrainToContainer=true;
+if (container) {
+	this.constrainingContainer = container;
+} else {
+	this.constrainingContainer = this.domNode.parentNode;
+}

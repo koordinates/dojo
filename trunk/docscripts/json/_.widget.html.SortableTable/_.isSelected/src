@@ -1,0 +1,6 @@
+for(var i=0;i<this.selected.length;i++){
+	if(this.compare(this.selected[i],o)){
+		return true;  
+	}
+}
+return false;	 

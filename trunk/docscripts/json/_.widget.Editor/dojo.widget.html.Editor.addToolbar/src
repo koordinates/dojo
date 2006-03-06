@@ -1,0 +1,7 @@
+this.initToolbar();
+if(!(toolbar instanceof dojo.widget.html.Toolbar)) {
+	toolbar = dojo.widget.createWidget(this._toolbarType);
+}
+this._toolbarContainer.addChild(toolbar);
+this._toolbars.push(toolbar);
+return toolbar;

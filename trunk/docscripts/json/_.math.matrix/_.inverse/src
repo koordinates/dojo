@@ -1,0 +1,26 @@
+a = dojo.math.matrix.copy(a);
+
+ Formula used to Calculate Inverse:
+ inv(A) = 1/det(A) * adj(A)
+
+var tms = a.length;
+
+var m = dojo.math.matrix.create(tms, tms);
+var mm = dojo.math.matrix.adjoint(a);
+
+var det = dojo.math.matrix.determinant(a);
+var dd = 0;
+
+if (det == 0){
+	dojo.debug("Determinant Equals 0, Not Invertible.");
+	return [[0]];  
+}else{
+	dd = 1 / det;
+}
+
+for (var i = 0; i < tms; i++)
+	for (var j = 0; j < tms; j++) {
+		m[i][j] = dd * mm[i][j];
+	}
+
+return m;  

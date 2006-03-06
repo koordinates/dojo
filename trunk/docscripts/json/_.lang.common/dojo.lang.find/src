@@ -1,0 +1,9 @@
+if(!dojo.lang.isArrayLike(arr) && dojo.lang.isArrayLike(val)) {
+	 arr: Object
+	   val: Array
+	var a = arr;
+	arr = val;
+	val = a;
+}
+var isString = dojo.lang.isString(arr);
+if(isString) {  arr: String

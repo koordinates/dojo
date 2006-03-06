@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.widget.*"]},"dojo.widget.html.SlideShow":{"()":""},"dojo.widget.html.SlideShow.fillInTemplate":{"()":""},"dojo.widget.html.SlideShow.togglePaused":{"()":""},"dojo.widget.html.SlideShow.backgroundImageLoaded":{"()":""},"dojo.widget.html.SlideShow.endTransition":{"()":""},"dojo.widget.html.SlideShow.loadNextImage":{"()":""}}

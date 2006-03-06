@@ -1,0 +1,33 @@
+var properties = {};
+for(var item in fragment){
+	 FIXME: need to check for undefined?
+	 case: its a tagName or nodeRef
+	if((fragment[item] == fragment["tagName"])||
+		(fragment[item] == fragment.nodeRef)){
+		 do nothing
+	}else{
+		if((fragment[item]["tagName"])&&
+			(dojo.widget.tags[fragment[item].tagName.toLowerCase()])){
+			 TODO: it isn't a property or property set, it's a fragment, 
+			 so do something else
+			 FIXME: needs to be a better/stricter check
+			 TODO: handle xlink:href for external property sets
+		}else if((fragment[item][0])&&(fragment[item][0].value!="")&&(fragment[item][0].value!=null)){
+			try{
+				 FIXME: need to allow more than one provider
+				if(item.toLowerCase() == "dataprovider") {
+					var _this = this;
+					this.getDataProvider(_this, fragment[item][0].value);
+					properties.dataProvider = this.dataProvider;
+				}
+				properties[item] = fragment[item][0].value;
+				var nestedProperties = this.parseProperties(fragment[item]);
+				 FIXME: this kind of copying is expensive and inefficient!
+				for(var property in nestedProperties){
+					properties[property] = nestedProperties[property];
+				}
+			}catch(e){ dojo.debug(e); }
+		}
+	}
+}
+return properties;

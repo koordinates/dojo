@@ -1,0 +1,19 @@
+var entityRE = /\&([^;]*)\;/g;
+data = data.replace(entityRE, "&amp;$1;");
+
+ entity encode XML-ish characters, or Flash's broken XML serializer
+ breaks
+data = data.replace(/</g, "&lt;");
+data = data.replace(/>/g, "&gt;");
+
+ transforming \ into \\ doesn't work; just use a custom encoding
+data = data.replace("\\", "&custom_backslash;&custom_backslash;");
+
+data = data.replace(/\n/g, "\\n");
+data = data.replace(/\r/g, "\\r");
+data = data.replace(/\f/g, "\\f");
+data = data.replace(/\0/g, "\\0");  null character
+data = data.replace(/\'/g, "\\\'");
+data = data.replace(/\"/g, '\\\"');
+
+return data;

@@ -1,0 +1,14 @@
+var lastStep = !this.hasNextPanel();
+this.nextButton.disabled = lastStep;
+this.setButtonClass(this.nextButton);
+if(this.selected.doneFunction){
+	this.doneButton.style.display = "";
+	 hide the next button if this is the last one and we have a done function
+	if(lastStep){
+		this.nextButton.style.display = "none";
+	}
+}else{
+	this.doneButton.style.display = "none";
+}
+this.previousButton.disabled = ((!this.hasPreviousPanel()) || (!this.selected.canGoBack));
+this.setButtonClass(this.previousButton);

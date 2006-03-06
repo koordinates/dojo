@@ -1,0 +1,103 @@
+var module = this.findModule(modulename, 0);
+if(module){
+	return module;
+}
+
+ dojo.debug("dojo.hostenv.loadModule('"+modulename+"');");
+
+ protect against infinite recursion from mutual dependencies
+if (typeof this.loading_modules_[modulename] !== 'undefined'){
+	 NOTE: this should never throw an exception!! "recursive" includes
+	 are normal in the course of app and module building, so blow out of
+	 it gracefully, but log it in debug mode
+
+	 dj_throw("recursive attempt to load module '" + modulename + "'");
+	dojo.debug("recursive attempt to load module '" + modulename + "'");
+}else{
+	this.addedToLoadingCount.push(modulename);
+}
+this.loading_modules_[modulename] = 1;
+
+ convert periods to slashes
+var relpath = modulename.replace(/\./g, '/') + '.js';
+
+var syms = modulename.split(".");
+var nsyms = modulename.split(".");
+if(syms[0]=="dojo"){  FIXME: need a smarter way to do this!
+	syms[0] = "src"; 
+}
+var last = syms.pop();
+syms.push(last);
+ figure out if we're looking for a full package, if so, we want to do
+ things slightly diffrently
+var _this = this;
+var pfn = this.pkgFileName;
+if(last=="*"){
+	modulename = (nsyms.slice(0, -1)).join('.');
+
+	var module = this.findModule(modulename, 0);
+	 dojo.debug("found: "+modulename+"="+module);
+	if(module){
+		_this.removedFromLoadingCount.push(modulename);
+		return module;
+	}
+
+	var nextTry = function(lastStatus){
+		if(lastStatus){ 
+			module = _this.findModule(modulename, false);  pass in false so we can give better error
+			if((!module)&&(syms[syms.length-1]!=pfn)){
+				dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+			}
+			if(module){
+				_this.removedFromLoadingCount.push(modulename);
+				dojo.hostenv.modulesLoaded();
+				return;
+			}
+		}
+		syms.pop();
+		syms.push(pfn);
+		 dojo.debug("syms: "+syms);
+		relpath = syms.join("/") + '.js';
+		if(relpath.charAt(0)=="/"){
+			relpath = relpath.slice(1);
+		}
+		 dojo.debug("relpath: "+relpath);
+		_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
+	}
+
+	nextTry();
+}else{
+	relpath = syms.join("/") + '.js';
+	modulename = nsyms.join('.');
+
+	var nextTry = function(lastStatus){
+		 dojo.debug("lastStatus: "+lastStatus);
+		if(lastStatus){ 
+			 dojo.debug("inital relpath: "+relpath);
+			module = _this.findModule(modulename, false);  pass in false so we can give better error
+			 if(!module){
+			if((!module)&&(syms[syms.length-1]!=pfn)){
+				dj_throw("Module symbol '" + modulename + "' is not defined after loading '" + relpath + "'"); 
+			}
+			if(module){
+				_this.removedFromLoadingCount.push(modulename);
+				dojo.hostenv.modulesLoaded();
+				return;
+			}
+		}
+		var setPKG = (syms[syms.length-1]==pfn) ? false : true;
+		syms.pop();
+		if(setPKG){
+			syms.push(pfn);
+		}
+		relpath = syms.join("/") + '.js';
+		if(relpath.charAt(0)=="/"){
+			relpath = relpath.slice(1);
+		}
+		 dojo.debug("relpath: "+relpath);
+		_this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
+	}
+
+	this.loadPath(relpath, ((!omit_module_check) ? modulename : null), nextTry);
+}
+return;

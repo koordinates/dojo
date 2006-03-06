@@ -1,0 +1,12 @@
+var message = {
+	child: child,
+	index: index,
+	parent: this,
+	 remember if dom was already initialized
+	 initialized => no createDOMNode => no createDOMNode event
+	domNodeInitialized: child.domNodeInitialized
+}
+
+this.doAddChild.apply(this, arguments);
+
+dojo.event.topic.publish(this.tree.eventNames.addChild, message);

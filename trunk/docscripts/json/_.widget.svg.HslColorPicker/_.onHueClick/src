@@ -1,0 +1,4 @@
+var yPosition = parseInt(evt.clientY) - parseInt(evt.target.getAttribute("y"));
+this.setHue( 360 - parseInt(yPosition*(360/parseInt(this.height))) );
+this.setSaturationStopColors();
+this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));

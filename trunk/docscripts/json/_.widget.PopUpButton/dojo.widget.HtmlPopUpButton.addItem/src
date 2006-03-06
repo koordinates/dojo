@@ -1,0 +1,7 @@
+if (item instanceof dojo.widget.html.MenuItem) {
+	this.menu.push(item);
+} else {
+	 TODO: create one
+	var menuItem = dojo.widget.fromScript("MenuItem", {title: item});
+	this.menu.push(menuItem);
+}

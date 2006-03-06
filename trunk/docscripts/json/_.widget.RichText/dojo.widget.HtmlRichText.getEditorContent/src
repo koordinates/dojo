@@ -1,0 +1,10 @@
+var ec = "";
+try{
+	ec = (this._content.length > 0) ? this._content : this.editNode.innerHTML;
+	if(dojo.string.trim(ec) == "&nbsp;"){ ec = ""; }
+}catch(e){  squelch  }
+
+dojo.lang.forEach(this.contentFilters, function(ef){
+	ec = ef(ec);
+});
+return ec;

@@ -1,0 +1,7 @@
+node = dojo.byId(node);
+if (!node) { return false; }
+if (dojo.html.hasClass(node, classStr)) {
+  return false;
+}
+classStr = dojo.string.trim(dojo.html.getClass(node) + " " + classStr);
+return dojo.html.setClass(node, classStr);

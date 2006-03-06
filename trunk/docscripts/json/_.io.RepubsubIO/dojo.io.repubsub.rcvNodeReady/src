@@ -1,0 +1,19 @@
+var statusURI = [this.tunnelURI, '/kn_status/', this.getRandStr(), '_', 
+				 String(this.tunnelInitCount++)].join(""); 
+	 (kn._seqNum++);  FIXME: !!!!
+ this.canRcv = true;
+this.log("rcvNodeReady");
+ FIXME: initialize receiver and request the base topic
+ dojo.io.setIFrameSrc(this.rcvNode, this.serverBaseURL+"/kn?do_method=blank");
+var initURIArr = [	this.serverBaseURL, "/kn?kn_from=", escape(this.tunnelURI),
+					"&kn_id=", escape(this.tunnelID), "&kn_status_from=", 
+					escape(statusURI)];
+ FIXME: does the above really need a kn_response_flush? won't the
+ 		  server already know? If not, what good is it anyway?
+dojo.io.setIFrameSrc(this.rcvNode, initURIArr.join(""));
+
+ setup a status path listener, but don't tell the server about it,
+ since it already knows we're itnerested in our own tunnel status
+this.subscribe(statusURI, this, "statusListener", true);
+
+this.log(initURIArr.join(""));

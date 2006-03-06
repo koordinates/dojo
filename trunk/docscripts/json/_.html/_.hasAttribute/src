@@ -1,0 +1,2 @@
+node = dojo.byId(node);
+return dojo.html.getAttribute(node, attr) ? true : false;

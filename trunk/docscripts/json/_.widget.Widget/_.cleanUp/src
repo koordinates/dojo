@@ -1,0 +1,2 @@
+dj_unimplemented("dojo.widget.Widget.cleanUp");
+return false;

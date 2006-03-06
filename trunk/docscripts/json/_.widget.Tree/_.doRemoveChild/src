@@ -1,0 +1,24 @@
+if (!child.parent) return;
+
+var parent = child.parent;
+
+var children = parent.children;
+
+var index = child.getParentIndex();
+if (index < 0) {
+	dojo.raise("Couldn't find node "+child+" for removal");
+}
+
+children.splice(index,1);
+dojo.dom.removeNode(child.domNode);
+
+ if WAS last node (children.length decreased already) and has prevSibling
+if (index == children.length && index>0) {
+	children[index-1].updateExpandGridColumn();
+}
+
+parent.updateIconTree();
+
+child.parent = child.tree = null;
+
+return child;

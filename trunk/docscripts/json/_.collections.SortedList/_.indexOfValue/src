@@ -1,0 +1,6 @@
+for (var i = 0; i < q.length; i++){
+	if (q[i].value == o) {
+		return i;
+	}
+}
+return -1;  

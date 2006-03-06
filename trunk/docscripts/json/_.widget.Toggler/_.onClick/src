@@ -1,0 +1,4 @@
+var pane = dojo.widget.getWidgetById(this.targetId);
+if ( !pane || !pane.toggle ) { return; }
+pane.explodeSrc = this.domNode;
+pane.doToggle();

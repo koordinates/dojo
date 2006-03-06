@@ -1,0 +1,12 @@
+dojo.widget.validate.RealNumberTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.places ) { 
+	this.flags.places = Number( localProperties.places );
+}
+if ( localProperties.exponent ) { 
+	this.flags.exponent = ( localProperties.exponent == "true" );
+}
+if ( localProperties.esigned ) { 
+	this.flags.eSigned = ( localProperties.esigned == "true" );
+}

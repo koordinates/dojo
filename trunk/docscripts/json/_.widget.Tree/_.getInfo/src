@@ -1,0 +1,6 @@
+var info = {
+	widgetId: this.widgetId,
+	objectId: this.objectId
+}
+
+return info;

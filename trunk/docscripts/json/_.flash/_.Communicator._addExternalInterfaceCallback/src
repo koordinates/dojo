@@ -1,0 +1,11 @@
+var wrapperCall = function(){
+	 some browsers don't like us changing values in the 'arguments' array, so
+	 make a fresh copy of it
+	var methodArgs = new Array(arguments.length);
+	for(var i = 0; i < arguments.length; i++){
+		methodArgs[i] = arguments[i];
+	}
+	return dojo.flash.comm._execFlash(methodName, methodArgs);
+};
+
+dojo.flash.comm[methodName] = wrapperCall;

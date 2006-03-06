@@ -1,0 +1,12 @@
+var tmp = {
+	capable: false,
+	support: {
+		builtin: false,
+		plugin: false
+	},
+	prefixes: prefs
+};
+for(var x in names){
+	tmp[x] = false;
+}
+return tmp;

@@ -1,0 +1,3 @@
+domNode.width = w;
+domNode.height = h;
+return { width: w, height: h };

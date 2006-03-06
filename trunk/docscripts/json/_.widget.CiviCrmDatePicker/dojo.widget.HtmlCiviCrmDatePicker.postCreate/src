@@ -1,0 +1,7 @@
+dojo.event.kwConnect({
+	type: "before", 
+	srcObj: dojo.html.getParentByType(this.domNode, "form"),
+	srcFunc: "onsubmit", 
+	targetObj: this,
+	targetFunc: "unhide"
+});

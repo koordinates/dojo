@@ -1,0 +1,11 @@
+if (node.width){
+	node.width.baseVal.value = dim.width;
+	node.height.baseVal.vaule = dim.height;
+}
+else if (node.r){
+	node.r.baseVal.value = Math.min(dim.width, dim.height)/2;
+}
+else if (node.rx){
+	node.rx.baseVal.value = dim.width/2;
+	node.ry.baseVal.value = dim.height/2;
+}

@@ -1,0 +1,15 @@
+if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+	var m;
+	if (b){
+		var m = node.ownerSVGElement.createSVGMatrix();
+		m.a = a;
+		m.b = b;
+		m.c = c;
+		m.d = d;
+		m.e = e;
+		m.f = f;
+	} else m = a;
+	var t = node.ownerSVGElement.createSVGTransform();
+	t.setMatrix(m);
+	node.transform.baseVal.appendItem(t);
+}

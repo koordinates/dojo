@@ -1,0 +1,20 @@
+dojo.style.setOpacity(this.img1, 0.9999);
+dojo.style.setOpacity(this.img2, 0.9999);
+with(this.imagesContainer.style){
+	width = this.imgWidth+"px";
+	height = this.imgHeight+"px";
+}
+with(this.img1.style){
+	width = this.imgWidth+"px";
+	height = this.imgHeight+"px";
+}
+with(this.img2.style){
+	width = this.imgWidth+"px";
+	height = this.imgHeight+"px";
+}
+if(this.imgUrls.length>1){
+	this.img2.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
+	this.endTransition();
+}else{
+	this.img1.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
+}

@@ -1,0 +1,10 @@
+flags = {
+	format: [
+		"#####-####",
+		"##### ####",
+		"#########",
+		"#####"
+	]
+};
+
+return dojo.validate.isNumberFormat(value, flags);

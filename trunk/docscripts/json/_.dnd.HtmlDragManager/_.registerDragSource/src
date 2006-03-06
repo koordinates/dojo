@@ -1,0 +1,15 @@
+if(ds["domNode"]){
+	 FIXME: dragSource objects SHOULD have some sort of property that
+	 references their DOM node, we shouldn't just be passing nodes and
+	 expecting it to work.
+	var dp = this.dsPrefix;
+	var dpIdx = dp+"Idx_"+(this.dsCounter++);
+	ds.dragSourceId = dpIdx;
+	this.dragSources[dpIdx] = ds;
+	ds.domNode.setAttribute(dp, dpIdx);
+
+	 so we can drag links
+	if(dojo.render.html.ie){
+		dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
+	}
+}

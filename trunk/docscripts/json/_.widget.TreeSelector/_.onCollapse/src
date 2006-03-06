@@ -1,0 +1,10 @@
+if (!this.selectedNode) return;
+
+var node = message.source;
+var parent = this.selectedNode.parent;
+while (parent !== node && parent.isTreeNode) {
+	parent = parent.parent;
+}
+if (parent.isTreeNode) {
+	this.deselect();
+}

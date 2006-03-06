@@ -1,0 +1,13 @@
+var img;
+var url = this.shadowPng + name.toUpperCase() + ".png";
+if(dojo.render.html.ie){
+	img=document.createElement("div");
+	img.style.cssText="position: absolute;" + cssText +
+		"filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+url+"'"+
+		(sizing?", sizingMethod='"+sizing+"'":"") + ")";
+}else{
+	img=document.createElement("img");
+	img.src=url;
+	img.style.cssText="position: absolute;" + cssText;
+}
+this.node.appendChild(img);

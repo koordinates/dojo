@@ -1,0 +1,14 @@
+this.open();
+
+ add the formatting functions
+var funcs = ["queryCommandEnabled", "queryCommandState",
+	"queryCommandValue", "execCommand"];
+for (var i = 0; i < funcs.length; i++) {
+	dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
+}
+
+ backwards compatibility, needs to be removed
+dojo.event.connect(this, "onKeyPressed", this, "afterKeyPress");
+dojo.event.connect(this, "onKeyPress", this, "keyPress");
+dojo.event.connect(this, "onKeyDown", this, "keyDown");
+dojo.event.connect(this, "onKeyUp", this, "keyUp");

@@ -1,0 +1,17 @@
+this.satisfyPropertySets(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "-> mixInProperties");
+this.mixInProperties(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "-> postMixInProperties");
+this.postMixInProperties(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "-> dojo.widget.manager.add");
+dojo.widget.manager.add(this);
+ dojo.debug(this.widgetType, "-> buildRendering");
+this.buildRendering(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "-> initialize");
+this.initialize(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "-> postInitialize");
+this.postInitialize(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "-> postCreate");
+this.postCreate(args, fragment, parentComp);
+ dojo.debug(this.widgetType, "done!");
+return this;

@@ -1,0 +1,2 @@
+dojo.widget.html.ToolbarColorDialog.superclass.hideDialog.call(this, e);
+this.dialog.hide();

@@ -1,0 +1,21 @@
+if(dojo.lang.isArray(curve)) {
+	 curve: Array
+	 id: i
+	curve = new dojo.math.curves.Line(curve[0], curve[1]);
+}
+this.curve = curve;
+this.duration = duration;
+this.repeatCount = repeatCount || 0;
+this.rate = rate || 25;
+if(accel) {
+	 accel: Decimal
+	 id: j
+	if(dojo.lang.isFunction(accel.getValue)) {
+		 accel: dojo.math.curves.CatmullRom
+		 id: k
+		this.accel = accel;
+	} else {
+		var i = 0.35*accel+0.5;	 0.15 <= i <= 0.85
+		this.accel = new dojo.math.curves.CatmullRom([[0], [i], [1]], 0.45);
+	}
+}

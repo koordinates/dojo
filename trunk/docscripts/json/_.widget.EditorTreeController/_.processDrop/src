@@ -1,0 +1,6 @@
+if (dojo.lang.isUndefined(index)) {
+	var index = 0;
+}
+
+dojo.debug('drop index '+index)
+return this.changeParent(sourceNode, parentNode, index)

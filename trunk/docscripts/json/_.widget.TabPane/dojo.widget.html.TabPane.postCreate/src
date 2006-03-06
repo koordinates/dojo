@@ -1,0 +1,7 @@
+for(var i=0; i<this.children.length; i++){
+	this._setupTab(this.children[i]);
+}
+
+dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+this._setPadding();
+this._Resized();

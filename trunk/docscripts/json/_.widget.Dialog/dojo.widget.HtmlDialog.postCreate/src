@@ -1,0 +1,20 @@
+with(this.domNode.style) {
+	position = "absolute";
+	zIndex = 999;
+	display = "none";
+}
+var b = document.body;
+b.appendChild(this.domNode);
+
+this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
+
+this.bg = document.createElement("div");
+this.bg.className = "dialogUnderlay";
+with(this.bg.style) {
+	position = "absolute";
+	left = top = "0px";
+	zIndex = 998;
+	display = "none";
+}
+this.setBackgroundColor(this.bgColor);
+b.appendChild(this.bg);

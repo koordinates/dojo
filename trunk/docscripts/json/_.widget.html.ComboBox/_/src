@@ -1,0 +1,26 @@
+dojo.widget.ComboBox.call(this);
+dojo.widget.HtmlWidget.call(this);
+
+this.autoComplete = true;
+this.formInputName = "";
+this.name = "";  clone in the name from the DOM node
+this.textInputNode = null;
+this.comboBoxValue = null;
+this.comboBoxSelectionValue = null;
+this.optionsListWrapper = null;
+this.optionsListNode = null;
+this.downArrowNode = null;
+this.cbTableNode = null;
+this.searchTimer = null;
+this.searchDelay = 100;
+this.dataUrl = "";
+ mode can also be "remote" for JSON-returning live search or "html" for
+ dumber live search
+this.mode = "local"; 
+this.selectedResult = null;
+this._highlighted_option = null;
+this._prev_key_backspace = false;
+this._prev_key_esc = false;
+this._result_list_open = false;
+this._gotFocus = false;
+this._mousewheel_connected = false;

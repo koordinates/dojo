@@ -1,0 +1,19 @@
+var properties = dojo.textDirectoryTokeniser.tokenise(text);
+var calendars = [];
+
+dojo.debug("Parsing iCal String");
+for (var i = 0, begun = false; i < properties.length; i++) {
+	var prop = properties[i];
+	if (!begun) {
+		if (prop.name == 'BEGIN' && prop.value == 'VCALENDAR') {
+			begun = true;
+			var calbody = [];
+		}
+	} else if (prop.name == 'END' && prop.value == 'VCALENDAR') {
+		calendars.push(new dojo.iCalendar.VCalendar(calbody));
+		begun = false;
+	} else {
+		calbody.push(prop);
+	}
+}
+return   calendars;

@@ -1,0 +1,3 @@
+if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+	this.unBindTreeNode(message.child);
+}

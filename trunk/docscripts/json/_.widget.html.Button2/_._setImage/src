@@ -1,0 +1,3 @@
+this.leftImage.src=dojo.uri.dojoUri(prefix + "l.gif");
+this.centerImage.src=dojo.uri.dojoUri(prefix + "c.gif");
+this.rightImage.src=dojo.uri.dojoUri(prefix + "r.gif");

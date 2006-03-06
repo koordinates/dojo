@@ -1,0 +1,4 @@
+var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
+var mean = 0;
+for (var i = 0; i < array.length; i++) { mean += array[i]; }
+return mean / array.length;  

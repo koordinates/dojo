@@ -1,0 +1,8 @@
+if(this.arrConcat){
+	a.push(s);
+}else{
+	b+=s;
+}
+length += s.length;
+this.length = length;
+return this;

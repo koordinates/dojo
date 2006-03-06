@@ -1,0 +1,7 @@
+this.cutOffLevel = 0;
+this.propagate = true;
+this.parent = null;
+ storage for dojo.logging.Record objects seen and accepted by this logger
+this.data = [];
+this.filters = [];
+this.handlers = [];

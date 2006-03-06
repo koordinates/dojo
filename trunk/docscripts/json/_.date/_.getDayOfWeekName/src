@@ -1,0 +1,3 @@
+dojo.deprecated("dojo.date.getDayOfWeekName",
+	"use dojo.date.getDayName instead", "0.4");
+return dojo.date.days[date.getDay()];

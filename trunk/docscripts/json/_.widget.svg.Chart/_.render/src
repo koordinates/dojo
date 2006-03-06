@@ -1,0 +1,19 @@
+dojo.svg.g.suspend();
+
+if (this.dataGroup){
+	while(this.dataGroup.childNodes.length>0){
+		this.dataGroup.removeChild(this.dataGroup.childNodes.item(0));
+	}
+} else {
+	this.initialize();
+}
+
+	the remove/append is an attempt to streamline the rendering, it's totally optional
+var p=this.dataGroup.parentNode;
+p.removeChild(this.dataGroup);
+for(var i=0; i<this.series.length; i++){
+	dojo.widget.svg.Chart.Plotter.plot(this.series[i], this);
+}
+p.appendChild(this.dataGroup);
+
+dojo.svg.g.resume();

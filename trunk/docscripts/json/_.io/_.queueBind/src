@@ -1,0 +1,26 @@
+if(!(request instanceof dojo.io.Request)){
+	try{
+		request = new dojo.io.Request(request);
+	}catch(e){ dojo.debug(e); }
+}
+
+ make sure we get called if/when we get a response
+var oldLoad = request.load;
+request.load = function(){
+	dojo.io._queueBindInFlight = false;
+	var ret = oldLoad.apply(this, arguments);
+	dojo.io._dispatchNextQueueBind();
+	return ret;
+}
+
+var oldErr = request.error;
+request.error = function(){
+	dojo.io._queueBindInFlight = false;
+	var ret = oldErr.apply(this, arguments);
+	dojo.io._dispatchNextQueueBind();
+	return ret;
+}
+
+dojo.io._bindQueue.push(request);
+dojo.io._dispatchNextQueueBind();
+return request;

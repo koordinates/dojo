@@ -1,0 +1,5 @@
+if(this.selectedTabWidget){
+	this.selectTab(this.selectedTabWidget);
+} else {
+	dojo.widget.html.TabPane.superclass.onResized.call(this);
+}

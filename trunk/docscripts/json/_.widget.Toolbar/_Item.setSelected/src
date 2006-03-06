@@ -1,0 +1,10 @@
+if(!this._toggleItem && !force) { return; }
+is = Boolean(is);
+if(force || this._enabled && this._selected != is) {
+	this._selected = is;
+	this.update();
+	if(!preventEvent) {
+		this._fireEvent(is ? "onSelect" : "onDeselect");
+		this._fireEvent("onChangeSelect");
+	}
+}

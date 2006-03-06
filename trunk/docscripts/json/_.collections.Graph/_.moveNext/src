@@ -1,0 +1,9 @@
+if (this.atEnd) return !this.atEnd ;
+this.entry = this.current = o[position] ;
+if (this.entry) {
+	this.key = this.entry.key ;
+	this.value = this.entry.data ;
+}
+if (position == o.length) this.atEnd = true ;
+position++ ;
+return !this.atEnd ;

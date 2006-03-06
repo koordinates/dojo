@@ -1,0 +1,24 @@
+node.markLoading();
+
+var params = {
+	node: node.getInfo(),
+	tree: node.tree.getInfo()
+};
+
+var requestUrl = this.getRPCUrl('getChildren');
+dojo.debug(requestUrl)
+
+dojo.io.bind({
+	url: requestUrl,
+	 I hitch to get this.loadOkHandler 
+	load: dojo.lang.hitch(this,
+		function(type, result) {
+			this.loadProcessResponse(type, node, result, callback, callObj) ;
+		}
+	),
+	error: this.RPCErrorHandler,
+	mimetype: "text/json",
+	preventCache: true,
+	sync: sync,
+	content: { data: dojo.json.serialize(params) }
+});

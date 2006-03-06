@@ -1,0 +1,12 @@
+var t=dojo.style.getOuterHeight(this.titleBar);
+var b=dojo.style.getOuterHeight(this.resizeBar);
+if(t==0||b==0){
+	 browser needs more time to compute sizes (maybe CSS hasn't downloaded yet)
+	dojo.lang.setTimeout(this, this._setPadding, 50);
+	return;
+}
+
+with(this.domNode.style){
+	paddingTop=t+"px";
+	paddingBottom=b+"px";
+}

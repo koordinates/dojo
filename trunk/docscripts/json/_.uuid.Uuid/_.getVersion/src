@@ -1,0 +1,12 @@
+if (!this._versionNumber) {
+	var errorMessage = "Called getVersion() on a dojo.uuid.Uuid that was not a DCE Variant UUID.";
+	dojo.lang.assert(this.getVariant() == dojo.uuid.Uuid.Variant.DCE, errorMessage);
+
+	 "b4308fb0-86cd-11da-a72b-0800200c9a66"
+					^
+					|
+		   (version 1 == TIME_BASED)
+	var versionCharacter = this._uuidString.charAt(14);
+	this._versionNumber = parseInt(versionCharacter, dojo.uuid.Uuid.HEX_RADIX);
+}
+return this._versionNumber;

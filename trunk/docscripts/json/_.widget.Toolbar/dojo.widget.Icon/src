@@ -1,0 +1,16 @@
+if(arguments.length == 0) {
+	throw new Error("Icon must have at least an enabled state");
+}
+var states = ["enabled", "disabled", "hover", "selected"];
+var currentState = "enabled";
+var domNode = document.createElement("img");
+
+for(var i = 0; i < states.length; i++) {
+	var arg = arguments[i];
+	var state = states[i];
+	this[state] = null;
+	if(!arg) { continue; }
+	this.setSrc(state, arg);
+}
+
+this.enable();

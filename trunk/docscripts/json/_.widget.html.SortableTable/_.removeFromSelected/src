@@ -1,0 +1,10 @@
+var idx=-1;
+for(var i=0;i<this.selected.length;i++){
+	if(this.compare(this.selected[i],o)){
+		idx=i;
+		break;
+	}
+}
+if(idx>=0){
+	this.selected.splice(idx,1);
+}

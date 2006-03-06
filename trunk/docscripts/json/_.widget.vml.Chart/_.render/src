@@ -1,0 +1,10 @@
+if (this.dataGroup){
+	while(this.dataGroup.childNodes.length>0){
+		this.dataGroup.removeChild(this.dataGroup.childNodes[0]);
+	}
+} else {
+	this.initialize();
+}
+for(var i=0; i<this.series.length; i++){
+	dojo.widget.vml.Chart.Plotter.plot(this.series[i], this);
+}

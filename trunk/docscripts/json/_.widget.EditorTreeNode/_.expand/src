@@ -1,0 +1,7 @@
+if (this.children.length) {
+	this.showChildren();
+}
+
+this.isExpanded = true;
+
+this.updateIcons();

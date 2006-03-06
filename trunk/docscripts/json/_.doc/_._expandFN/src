@@ -1,0 +1,14 @@
+var data = dojo.doc._cache['function_names'];
+var searchData = [];
+for(var key in data){
+	 Add the package if it doesn't exist in its children
+	if(!dojo.lang.inArray(data[key], key)){
+		searchData.push([key, key]);
+	}
+	 Add the functions
+	for(var pkg_key in data[key]){
+		searchData.push([data[key][pkg_key], data[key][pkg_key]]);
+	}
+}
+
+return searchData.sort(dojo.doc._sort);

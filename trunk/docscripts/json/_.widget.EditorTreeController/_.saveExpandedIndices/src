@@ -1,0 +1,10 @@
+var obj = {};
+
+for(var i=0; i<node.children.length; i++) {
+	if (node.children[i].isExpanded) {
+		var key = dojo.lang.isUndefined(field) ? i : node.children[i][field];
+		obj[key] = this.saveExpandedIndices(node.children[i], field);
+	}
+}
+
+return obj;

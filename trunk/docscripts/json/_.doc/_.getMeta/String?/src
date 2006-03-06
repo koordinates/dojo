@@ -1,0 +1,1 @@
+"return dojo.doc._localData(\"meta\", name, id);"

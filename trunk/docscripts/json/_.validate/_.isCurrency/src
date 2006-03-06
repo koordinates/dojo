@@ -1,0 +1,2 @@
+var re = new RegExp("^" + dojo.regexp.currency(flags) + "$");
+return re.test(value);

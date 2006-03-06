@@ -1,0 +1,16 @@
+if (!node.tree.DNDMode) return;
+
+ I drag label, not domNode, because large domNodes are very slow to copy and large to drag 
+
+var source = null;
+var target = null;
+
+if (!node.actionIsDisabled(node.actions.MOVE)) {
+	dojo.debug("reg source")
+	var source = new dojo.dnd.TreeDragSource(node.labelNode, this, node.tree.widgetId, node);
+	this.dragSources[node.widgetId] = source;
+}
+
+var target = new dojo.dnd.TreeDropTarget(node.labelNode, this.treeController, node.tree.DNDAcceptTypes, node, node.tree.DNDMode);
+
+this.dropTargets[node.widgetId] = target;

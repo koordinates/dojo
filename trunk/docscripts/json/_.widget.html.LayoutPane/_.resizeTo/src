@@ -1,0 +1,6 @@
+w = Math.max(w, this.getMinWidth());
+h = Math.max(h, this.getMinHeight());
+
+dojo.style.setOuterWidth(this.domNode, w);
+dojo.style.setOuterHeight(this.domNode, h);
+this.onResized();

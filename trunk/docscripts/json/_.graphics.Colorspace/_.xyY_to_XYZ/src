@@ -1,0 +1,14 @@
+var src = this.munge('xyY', arguments);
+
+if (src.y == 0){
+
+	var X = 0;
+	var Y = 0;
+	var Z = 0;
+}else{
+	var X = (src.x * src.Y) / src.y;
+	var Y = src.Y;
+	var Z = ((1 - src.x - src.y) * src.Y) / src.y;
+}
+
+return [X, Y, Z];

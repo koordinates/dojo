@@ -1,0 +1,10 @@
+for(var i=0; i<this.children.length; i++){
+	this._injectChild(this.children[i]);
+}
+
+if ( this.handler != "none" ){
+	this.setHandler(this.handler);
+}
+if ( this.isVisible() ){
+	this.loadContents();
+}

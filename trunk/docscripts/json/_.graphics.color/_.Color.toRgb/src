@@ -1,0 +1,5 @@
+if(includeAlpha) {
+	return this.toRgba();
+} else {
+	return [this.r, this.g, this.b];
+}

@@ -1,0 +1,9 @@
+node = dojo.byId(node);
+if(!node){ return ""; }
+var cs = "";
+if(node.className){
+	cs = node.className;
+}else if(dojo.html.hasAttribute(node, "class")){
+	cs = dojo.html.getAttribute(node, "class");
+}
+return dojo.string.trim(cs);

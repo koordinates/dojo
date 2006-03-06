@@ -1,0 +1,7 @@
+if(this._currentManager == this) {
+	var mgr = new dojo.undo.Manager(this);
+	this._undoStack.push(mgr);
+	this._currentManager = mgr;
+} else {
+	this._currentManager.beginTransaction.apply(this._currentManager, arguments);
+}

@@ -1,0 +1,28 @@
+for(var i=0; i<this.children.length; i++){
+	with(this.children[i].domNode.style){
+		position = "absolute";
+	}
+	dojo.html.addClass(this.children[i].domNode,
+		"dojoHtmlSplitterPanePanel");
+
+	if(i == this.children.length){
+		break;
+	}
+
+	this._addSizer();
+}
+
+ create the fake dragger
+
+this.virtualSizer = document.createElement('div');
+this.virtualSizer.style.position = 'absolute';
+this.virtualSizer.style.display = 'none';
+this.virtualSizer.style.backgroundColor = 'lime';
+this.virtualSizer.style.zIndex = 10;
+this.virtualSizer.className = this.isHorizontal ? 'dojoHtmlSplitPaneVirtualSizerH' : 'dojoHtmlSplitPaneVirtualSizerV';
+this.domNode.appendChild(this.virtualSizer);
+
+dojo.html.disableSelection(this.virtualSizer);
+
+ size the panels once the browser has caught up
+this.resizeSoon();

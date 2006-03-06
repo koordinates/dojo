@@ -1,0 +1,5 @@
+var array = [];
+for(var i = startOffset||0; i < arrayLike.length; i++) {
+	array.push(arrayLike[i]);
+}
+return array;  

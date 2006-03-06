@@ -1,0 +1,27 @@
+dojo.widget.HtmlWidget.call(this);
+
+this.eventNames = {
+	 new child does not get domNode filled in (only template draft)
+	 until addChild->createDOMNode is called(program way) OR createDOMNode (html-way)
+	 hook events to operate on new DOMNode, create dropTargets etc
+	createDOMNode: "createDOMNode",
+	 tree created.. Perform tree-wide actions if needed
+	treeCreate: "treeCreate",
+	 expand icon clicked
+	treeClick: "treeClick",
+	 node icon clicked
+	iconClick: "iconClick",
+	 node title clicked
+	titleClick: "titleClick",
+
+	moveFrom: "moveFrom",
+	moveTo: "moveTo",
+	addChild: "addChild",
+	removeChild: "removeChild",
+	expand: "expand",
+	collapse: "collapse"
+};
+
+this.tree = this;
+this.DNDAcceptTypes = [];
+this.actionsDisabled = [];

@@ -1,0 +1,1 @@
+{"this_variables":["templatePath","templateCssPath","isContainer","widgetType","imgUrls","imgUrlBase","urlsIdx","delay","transitionInterval","imgWidth","imgHeight","background","foreground","stopped","fadeAnim","imagesContainer","startStopButton","controlsContainer","img1","img2"],"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"]}

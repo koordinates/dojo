@@ -1,0 +1,9 @@
+var ltn = "dojo:" + componentName.toLowerCase();
+if(dojo.widget.tags[ltn]){
+	properties.fastMixIn = true;
+	return [dojo.widget.tags[ltn](properties, this, null, null, properties)];
+}else{
+	if(ltn.substr(0, 5)=="dojo:"){
+		dojo.debug("no tag handler registed for type: ", ltn);
+	}
+}

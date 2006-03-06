@@ -1,0 +1,75 @@
+var row=dojo.html.getParentByType(e.target,"tr");
+var body=dojo.html.getParentByType(row,"tbody");
+if(this.enableMultipleSelect){
+	if(e.metaKey||e.ctrlKey){
+		if(this.isSelected(this.getObjectFromRow(row))){
+			this.removeFromSelected(this.getObjectFromRow(row));
+			row.removeAttribute("selected");
+		}else{
+				push onto the selection stack.
+			this.setSelectionByRow(row);
+			row.setAttribute("selected","true");
+		}
+	}else if(e.shiftKey){
+			the tricky one.  We need to figure out the *last* selected row above, 
+			and select all the rows in between.
+		var startRow;
+		var rows=body.getElementsByTagName("tr");
+			if there's a selection above, we go with that first. 
+		for(var i=0;i<rows.length;i++){
+			if(rows[i].parentNode==body){
+				if(rows[i]==row) break;
+				if(dojo.html.getAttribute(rows[i],"selected")=="true"){
+					startRow=rows[i];
+				}
+			}
+		}
+			if there isn't a selection above, we continue with a selection below.
+		if(!startRow){
+			startRow=row;
+			for(;i<rows.length;i++){
+				if(dojo.html.getAttribute(rows[i],"selected")=="true"){
+					row=rows[i];
+					break;
+				}
+			}
+		}
+		this.resetSelections(body);
+		if(startRow==row){
+				this is the only selection
+			row.setAttribute("selected","true");
+			this.setSelectionByRow(row);
+		}else{
+			var doSelect=false;
+			for(var i=0; i<rows.length; i++){
+				if(rows[i].parentNode==body){
+					rows[i].removeAttribute("selected");
+					if(rows[i]==startRow){
+						doSelect=true;
+					}
+					if(doSelect){
+						this.setSelectionByRow(rows[i]);
+						rows[i].setAttribute("selected","true");
+					}
+					if(rows[i]==row){
+						doSelect=false;
+					}
+				}
+			}
+		}
+	}else{
+			reset the selection
+		this.resetSelections(body);
+		row.setAttribute("selected","true");
+		this.setSelectionByRow(row);
+	}
+}else{
+		reset the data selection and go.
+	this.resetSelections(body);
+	row.setAttribute("selected","true");
+	this.setSelectionByRow(row);
+}
+this.showSelections();
+this.onSelect(e);
+e.stopPropagation();
+e.preventDefault();

@@ -1,0 +1,5 @@
+while(this.children.length > 0){
+	var tc = this.children[0];
+	this.removeChild(tc);
+	tc.destroy();
+}

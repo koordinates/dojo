@@ -1,0 +1,1 @@
+return parseInt(lvl) >= this.cutOffLevel;

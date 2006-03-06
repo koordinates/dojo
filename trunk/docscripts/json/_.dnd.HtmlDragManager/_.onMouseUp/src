@@ -1,0 +1,50 @@
+this.mouseDownX = null;
+this.mouseDownY = null;
+this._dragTriggered = false;
+var _this = this;
+e.preventDefault();
+e.dragSource = this.dragSource;
+if((!e.shiftKey)&&(!e.ctrlKey)){
+	if(_this.currentDropTarget) {
+		_this.currentDropTarget.onDropStart();
+	}
+	dojo.lang.forEach(this.dragObjects, function(tempDragObj){
+		var ret = null;
+		if(!tempDragObj){ return; }
+		if(_this.currentDropTarget) {
+			e.dragObject = tempDragObj;
+
+			 NOTE: we can't get anything but the current drop target
+			 here since the drag shadow blocks mouse-over events.
+			 This is probelematic for dropping "in" something
+			var ce = _this.currentDropTarget.domNode.childNodes;
+			if(ce.length > 0){
+				e.dropTarget = ce[0];
+				while(e.dropTarget == tempDragObj.domNode){
+					e.dropTarget = e.dropTarget.nextSibling;
+				}
+			}else{
+				e.dropTarget = _this.currentDropTarget.domNode;
+			}
+			if (_this.dropAcceptable){
+				ret = _this.currentDropTarget.onDrop(e);
+			} else {
+				 _this.currentDropTarget.onDragOut(e);
+			}
+		}
+
+		e.dragStatus = _this.dropAcceptable && ret ? "dropSuccess" : "dropFailure";
+		tempDragObj.dragSource.onDragEnd(e);
+		tempDragObj.onDragEnd(e);
+	});
+
+	this.selectedSources = [];
+	this.dragObjects = [];
+	this.dragSource = null;
+	if(_this.currentDropTarget) {
+		_this.currentDropTarget.onDropEnd();
+	}
+}
+dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
+this.currentDropTarget = null;
+ this.currentDropTargetPoints = null;

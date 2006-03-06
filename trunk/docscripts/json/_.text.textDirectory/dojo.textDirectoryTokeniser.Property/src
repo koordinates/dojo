@@ -1,0 +1,33 @@
+var left = dojo.string.trim(line.substring(0, line.indexOf(':')));
+var right = dojo.string.trim(line.substr(line.indexOf(':') + 1));
+
+ seperate name and paramters	
+var parameters = dojo.string.splitEscaped(left,';');
+this.name = parameters[0]
+parameters.splice(0, 1);
+
+ parse paramters
+this.params = [];
+for (var i = 0; i < parameters.length; i++) {
+	var arr = parameters[i].split("=");
+	var key = dojo.string.trim(arr[0].toUpperCase());
+	
+	if (arr.length == 1) { this.params.push([key]); continue; }
+	
+	var values = dojo.string.splitEscaped(arr[1],',');
+	for (var j = 0; j < values.length; j++) {
+		if (dojo.string.trim(values[j]) != '') {
+			this.params.push([key, dojo.string.trim(values[j])]);
+		}
+	}
+}
+
+ seperate group
+if (this.name.indexOf('.') > 0) {
+	var arr = this.name.split('.');
+	this.group = arr[0];
+	this.name = arr[1];
+}
+
+ don't do any parsing, leave to implementation
+this.value = right;

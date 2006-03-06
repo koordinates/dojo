@@ -1,0 +1,5 @@
+if (parent.state == parent.loadStates.UNCHECKED) {
+	this.loadRemote(parent, true);
+}
+
+return dojo.widget.TreeBasicController.prototype.doCreateChild.apply(this, arguments);

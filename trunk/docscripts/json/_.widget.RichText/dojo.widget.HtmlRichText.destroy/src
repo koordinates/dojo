@@ -1,0 +1,7 @@
+if (!this.isClosed) { this.close(false); }
+	
+ disconnect those listeners.
+while (this._connected.length) {
+	this.disconnect(this._connected[0],
+		this._connected[1], this._connected[2]);
+}

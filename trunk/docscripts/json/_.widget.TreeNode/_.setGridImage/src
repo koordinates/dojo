@@ -1,0 +1,6 @@
+if (idx < 0){
+	idx = this.imgs.length + idx;
+}
+
+if (idx >= this.imgs.length-2) return;
+this.imgs[idx].style.backgroundImage = 'url(' + src + ')';

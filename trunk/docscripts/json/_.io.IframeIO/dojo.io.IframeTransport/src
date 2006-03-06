@@ -1,0 +1,6 @@
+var _this = this;
+this.currentRequest = null;
+this.requestQueue = [];
+this.iframeName = "dojoIoIframe";
+
+dojo.io.transports.addTransport("IframeTransport");

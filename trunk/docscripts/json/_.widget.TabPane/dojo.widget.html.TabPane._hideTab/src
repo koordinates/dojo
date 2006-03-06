@@ -1,0 +1,7 @@
+dojo.html.removeClass(tab.div, "current");
+tab.selected=false;
+if( this.useVisibility ){
+	tab.domNode.style.visibility="hidden";
+}else{
+	tab.hide();
+}

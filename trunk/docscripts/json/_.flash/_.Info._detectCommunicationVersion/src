@@ -1,0 +1,22 @@
+if(this.capable == false){
+	this.commVersion = null;
+	return;
+}
+
+ detect if the user has over-ridden the default flash version
+if (typeof djConfig["forceFlashComm"] != "undefined" &&
+		typeof djConfig["forceFlashComm"] != null){
+	this.commVersion = djConfig["forceFlashComm"];
+	return;
+}
+
+ we prefer Flash 6 features over Flash 8, because they are much faster
+ and much less buggy
+
+ at this point, we don't have a flash file to detect features on,
+ so we need to instead look at the browser environment we are in
+if(dojo.render.html.safari == true || dojo.render.html.opera == true){
+	this.commVersion = 8;
+}else{
+	this.commVersion = 6;
+}

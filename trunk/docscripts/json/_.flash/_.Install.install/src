@@ -1,0 +1,20 @@
+dojo.flash.info.installing = true;
+dojo.flash.installing();
+
+ write out a simple Flash object to force the browser to prompt
+ the user to install things
+var installObj = new dojo.flash.Embed(false);
+installObj.write(8);  write out HTML for Flash 8 version+
+
+ more sophisticated installation mechanisms commented out until
+ we support them
+if(dojo.flash.info.capable == false){  we have no Flash at all
+	dojo.debug("Completely new install");
+	 write out a simple Flash object to force the browser to prompt
+	 the user to install things
+	var installObj = new dojo.flash.Embed(false);
+	installObj.write(8);  write out HTML for Flash 8 version+
+}else if(dojo.flash.info.isVersionOrAbove(6, 0, 65)){  Express Install
+	dojo.debug("Express install");
+}else{  older Flash install
+	dojo.debug("old install");

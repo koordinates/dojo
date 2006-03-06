@@ -1,0 +1,15 @@
+if(dojo.lang.isObject(obj)) {
+	 obj: Object
+	var tmp = {};
+	var count = 0;
+	for(var x in obj){
+		if(obj[x] && (!tmp[x])){
+			count++;
+			break;
+		} 
+	}
+	return (count == 0);  
+} else if(dojo.lang.isArrayLike(obj) || dojo.lang.isString(obj)) {
+	 obj: String
+	return obj.length == 0;  
+}

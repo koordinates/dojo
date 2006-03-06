@@ -1,0 +1,7 @@
+dojo.html.addClass(tab.div, "current");
+tab.selected=true;
+if ( this.useVisibility && !dojo.render.html.ie ) {
+	tab.domNode.style.visibility="visible";
+} else {
+	tab.show();
+}

@@ -1,0 +1,4 @@
+if( !dojo.dom.isDescendantOf(e.target, this.button) &&
+	!dojo.dom.isDescendantOf(e.target, this.menu) ) {
+	this.hideMenu();
+}

@@ -1,0 +1,5 @@
+for(var i=0; i<this.node.children.length; i++) {
+	var child = node.children[i];					
+	
+	_this.expandToLevel(child, this.expandLevel);
+}

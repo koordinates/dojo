@@ -1,0 +1,11 @@
+if (newlineChar == "\n") {
+	text = text.replace(/\r\n/g, "\n");
+	text = text.replace(/\r/g, "\n");
+} else if (newlineChar == "\r") {
+	text = text.replace(/\r\n/g, "\r");
+	text = text.replace(/\n/g, "\r");
+} else {
+	text = text.replace(/([^\r])\n/g, "$1\r\n");
+	text = text.replace(/\r([^\n])/g, "\r\n$1");
+}
+return text;

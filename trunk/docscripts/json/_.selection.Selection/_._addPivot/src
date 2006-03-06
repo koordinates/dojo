@@ -1,0 +1,6 @@
+this._pivotItem = item;
+if(andClear) {
+	this._pivotItems = [item];
+} else {
+	this._pivotItems.push(item);
+}

@@ -1,0 +1,5 @@
+var _this = this;
+dojo.lang.forEach(
+	message.child.getDescendants(),
+	function(node) { _this.registerDNDNode(node); }
+);

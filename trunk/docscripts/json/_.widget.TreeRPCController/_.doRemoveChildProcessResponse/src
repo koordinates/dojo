@@ -1,0 +1,18 @@
+if (!dojo.lang.isUndefined(response.error)) {
+	this.RPCErrorHandler(response.error);
+	return false;
+}
+
+if (!response) return false;
+
+if (response == true) {
+	 change parent succeeded 
+	var args = [ node, callFunc, callObj ];
+	dojo.widget.TreeLoadingController.prototype.doRemoveChild.apply(this, args);
+
+	return;
+} else if (dojo.lang.isObject(response)) {
+	dojo.raise(response.error);
+} else {
+	dojo.raise("Invalid response "+obj)
+}

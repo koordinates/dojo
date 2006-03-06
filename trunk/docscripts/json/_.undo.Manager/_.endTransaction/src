@@ -1,0 +1,14 @@
+if(this._currentManager == this) {
+	if(this._parent) {
+		this._parent._currentManager = this._parent;
+		if(this._undoStack.length == 0) {
+			 don't leave empty transactions hangin' around
+			var idx = dojo.lang.find(this._parent._undoStack, this);
+			if(idx >= 0) {
+				this._parent._undoStack.splice(idx, 1);
+			}
+		}
+	}
+} else {
+	this._currentManager.endTransaction.apply(this._currentManager, arguments);
+}

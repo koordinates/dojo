@@ -1,0 +1,18 @@
+if(this.state=="displaying"){
+	 in the process of fading in.  wait until that is finished and then fade out
+	this.eraseScheduled=true;
+	return;
+}
+if ( this.state=="displayed" ) {
+	this.state="erasing";
+	if ( this.showTimer ) {
+		clearTimeout(this.showTimer);
+		delete this.showTimer;
+	}
+	if ( this.hideTimer ) {
+		clearTimeout(this.hideTimer);
+		delete this.hideTimer;
+	}
+	dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
+	dojo.widget.html.Tooltip.superclass.hide.call(this);
+}

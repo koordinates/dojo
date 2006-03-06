@@ -1,0 +1,3 @@
+if(!this.ie) { return; }
+var s = this.iframe.style;
+s.display = "none";

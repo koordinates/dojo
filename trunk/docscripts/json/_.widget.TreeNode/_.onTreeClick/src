@@ -1,0 +1,1 @@
+dojo.event.topic.publish(this.tree.eventNames.treeClick, { source: this, event: e });
