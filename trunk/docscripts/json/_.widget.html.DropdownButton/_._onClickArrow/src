@@ -1,5 +1,0 @@
-if ( this.menu.style.display == "none" ) {
-	this.showMenu();
-} else {
-	this.hideMenu();
-}

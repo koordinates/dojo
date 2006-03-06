@@ -1,9 +1,0 @@
-if(e.preventDefault) { e.preventDefault(); }
-if(!this._enabled) { return };
-dojo.html.addClass(this.domNode, "down");
-if(this._toggleItem) {
-	if(this.parent.preventDeselect && this._selected) {
-		return;
-	}
-	this.toggleSelected();
-}

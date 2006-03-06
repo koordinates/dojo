@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.rpc.RpcService","dojo.rpc.JsonService"]},"_":{"()":""},"_.bind":{"(method, parameters, deferredRequestHandler)":""},"_.createRequest":{"(method, params)":""}}
+{"requires":{"common":["dojo.rpc.RpcService","dojo.rpc.JsonService","dojo.json"]},"_":{"()":""},"_.bind":{"(method, parameters, deferredRequestHandler)":""},"_.createRequest":{"(method, params)":""}}

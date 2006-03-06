@@ -1,8 +1,0 @@
-var ary = kids[position];
-for(var i=0; i<ary.length; i++){
-	var elm=ary[i];
-	elm.domNode.style.left=this.clientRect.left + "px";
-	elm.domNode.style.top=this.clientRect.top + "px";
-	dojo.style.setOuterWidth(elm.domNode, this.clientWidth);		
-	dojo.style.setOuterHeight(elm.domNode, this.clientHeight);
-}

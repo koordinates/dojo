@@ -72,6 +72,9 @@ else{
 			print '*' . $package . "\n";
 		}
     foreach($content as $function_name => $function){
+	    if(preg_match('%_' . $var['variable'] . '$%', $function_name)){
+				continue;
+			}
 			$real_function_name = $function_name;
 			$function_name = preg_replace('%^' . str_replace('.', '\.', $package) . '%', '_', $function_name);
 			$package_root = str_replace('.*', '', $package) . '.';
@@ -84,8 +87,8 @@ else{
 				
 //					$function_signature = preg_replace('%(?<= )' . str_replace('.', '\.', $package) .'(?=[^ ]*\()%U', '_', $function_signature);
 					$polymorphic_id = 'default';
-					if($function_content['comments']['id']){
-						$polymorphic_id = $function_content['comments']['id'];
+					if($function_content['comments']['pId']){
+						$polymorphic_id = preg_replace('%\W%', '', $function_content['comments']['pId']);
 					}
 					
 					if($function['variables']){

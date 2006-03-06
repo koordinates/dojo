@@ -1,1 +1,1 @@
-{"dojo.textDirectoryTokeniser":{"()":""},"dojo.textDirectoryTokeniser.Property":{"(line)":""},"dojo.textDirectoryTokeniser.tokenise":{"(text)":""}}
+{"requires":{"common":["dojo.string"]},"dojo.textDirectoryTokeniser":{"()":""},"dojo.textDirectoryTokeniser.Property":{"(line)":""},"dojo.textDirectoryTokeniser.tokenise":{"(text)":""}}

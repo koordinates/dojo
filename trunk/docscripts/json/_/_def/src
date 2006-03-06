@@ -1,1 +1,0 @@
-return (dj_undef(name, obj) ? def : obj[name]);

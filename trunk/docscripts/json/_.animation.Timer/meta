@@ -1,1 +1,1 @@
-{"_":{"(intvl)":""},"_.onTick":{"()":""},"_.setInterval":{"(ms)":""},"_.start":{"()":""},"_.stop":{"()":""}}
+{"requires":{"common":["dojo.lang.func"]},"_":{"(intvl)":""},"_.onTick":{"()":""},"_.setInterval":{"(ms)":""},"_.start":{"()":""},"_.stop":{"()":""}}

@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.crypto.MD5"]}}
+{"requires":{"common":["dojo.crypto","dojo.crypto.MD5"]}}

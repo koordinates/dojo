@@ -1,4 +1,0 @@
-var widget = this._getItem(e.target);
-if(widget && widget._onclick){ 
-	widget._onclick(e);
-}

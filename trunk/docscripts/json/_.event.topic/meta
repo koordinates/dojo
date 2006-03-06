@@ -1,1 +1,1 @@
-{"_":{"()":""},"_.getTopic":{"(topicName)":""},"_.registerPublisher":{"(topic, obj, funcName)":""},"_.subscribe":{"(topic, obj, funcName)":""},"_.unsubscribe":{"(topic, obj, funcName)":""},"_.publish":{"(topic, message)":""},"_.TopicImpl":{"(topicName)":""}}
+{"requires":{"common":["dojo.event"]},"_":{"()":""},"_.getTopic":{"(topicName)":""},"_.registerPublisher":{"(topic, obj, funcName)":""},"_.subscribe":{"(topic, obj, funcName)":""},"_.unsubscribe":{"(topic, obj, funcName)":""},"_.publish":{"(topic, message)":""},"_.TopicImpl":{"(topicName)":""}}

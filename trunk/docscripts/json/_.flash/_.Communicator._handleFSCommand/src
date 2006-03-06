@@ -1,5 +1,0 @@
-if(command == "addCallback"){  add Flash method for JavaScript callback
-	this._fscommandAddCallback(command, args);
-}else if (command == "call"){  Flash to JavaScript method call
-	this._fscommandCall(command, args);
-}

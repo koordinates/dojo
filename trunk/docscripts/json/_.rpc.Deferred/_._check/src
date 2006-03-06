@@ -1,7 +1,0 @@
-if(this.fired != -1){
-	if(!this.silentlyCancelled){
-		dojo.raise("already called!");
-	}
-	this.silentlyCancelled = false;
-	return;
-}

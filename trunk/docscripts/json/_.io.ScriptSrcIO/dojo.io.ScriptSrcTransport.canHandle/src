@@ -1,0 +1,6 @@
+return dojo.lang.inArray((kwArgs["mimetype"].toLowerCase()), ["text/javascript", "text/json"])
+	&& (kwArgs["method"].toLowerCase() == "get")
+	&& !(kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]))
+	&& (!kwArgs["sync"] || kwArgs["sync"] == false)
+	&& !kwArgs["file"]
+	&& !kwArgs["multipart"];

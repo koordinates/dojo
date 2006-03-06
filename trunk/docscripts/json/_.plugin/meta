@@ -1,1 +1,1 @@
-{"_.invoke":{"(module, hook)":""},"_.invoke_all":{"(hook)":""},"_.load":{"(uri)":""},"_._modules._name":{"(file)":""}}
+{"requires":{"common":["dojo.lang"]},"_.invoke":{"(module, hook)":""},"_.load":{"(uri)":""}}
