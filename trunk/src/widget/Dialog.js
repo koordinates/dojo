@@ -63,6 +63,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 			position = "absolute";
 			zIndex = 999;
 			display = "none";
+			overflow = "visible";
 		}
 		var b = document.body;
 		b.appendChild(this.domNode);
@@ -123,12 +124,8 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 		var viewport_size = dojo.html.getViewportSize();
 
 		// find the size of the dialog
-		// we should really be using dojo.style but i'm not sure
-		// which (inner, outer, box, content, client) --cal
-		this.domNode.style.display = "block";
-		var w = this.domNode.offsetWidth;
-		var h = this.domNode.offsetHeight;
-		this.domNode.style.display = "none";
+		var w = dojo.style.getOuterWidth(this.containerNode);
+		var h = dojo.style.getOuterHeight(this.containerNode);
 
 		var x = scroll_offset[0] + (viewport_size[0] - w)/2;
 		var y = scroll_offset[1] + (viewport_size[1] - h)/2;
@@ -141,13 +138,15 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 
 	show: function() {
 		this.setBackgroundOpacity();
-		this.placeDialog();
 		this.showBackground();
 
-		// resize child widgets
-		this.domNode.style.display="block";
+		this.domNode.style.visibility = "hidden";
+		this.domNode.style.display = "block";
 		dojo.widget.HtmlDialog.superclass.onResized.call(this);
+		this.placeDialog();
+
 		this.domNode.style.display="none";
+		this.domNode.style.visibility = "";
 
 		dojo.widget.HtmlDialog.superclass.show.call(this);
 
