@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.TabPane");
 dojo.provide("dojo.widget.html.TabPane");
 dojo.provide("dojo.widget.Tab");
 
+dojo.require("dojo.lang.func");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
@@ -23,6 +24,8 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 
 	// Constructor arguments
 	labelPosition: "top",
+	closeButton: "none",
+
 	useVisibility: false,		// true-->use visibility:hidden instead of display:none
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTabPane.html"),
@@ -42,6 +45,16 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		// Load all the tabs, creating a label for each one
 		for(var i=0; i<this.children.length; i++){
 			this._setupTab(this.children[i]);
+		}
+
+		if (this.closeButton=="pane") {
+			var div = document.createElement("div");
+			dojo.html.addClass(div, "dojoTabPanePaneClose");
+			var self = this;
+			dojo.event.connect(div, "onclick", function(){ self._runOnCloseTab(self.selectedTabWidget); });
+			dojo.event.connect(div, "onmouseover", function(){ dojo.html.addClass(div, "dojoTabPanePaneCloseHover"); });
+			dojo.event.connect(div, "onmouseout", function(){ dojo.html.removeClass(div, "dojoTabPanePaneCloseHover"); });
+			this.dojoTabLabels.appendChild(div);
 		}
 
 		dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
@@ -66,6 +79,15 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		var span = document.createElement("span");
 		span.innerHTML = tab.label;
 		dojo.html.disableSelection(span);
+		if (this.closeButton=="tab") {
+			var img = document.createElement("div");
+			dojo.html.addClass(img, "dojoTabPaneTabClose");
+			var self = this;
+			dojo.event.connect(img, "onclick", function(){ self._runOnCloseTab(tab); });
+			dojo.event.connect(img, "onmouseover", function(){ dojo.html.addClass(img,"dojoTabPaneTabCloseHover"); });
+			dojo.event.connect(img, "onmouseout", function(){ dojo.html.removeClass(img,"dojoTabPaneTabCloseHover"); });
+			span.appendChild(img);
+		}
 		tab.div.appendChild(span);
 		this.dojoTabLabels.appendChild(tab.div);
 		
@@ -74,7 +96,6 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		
 		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
     		this.selectedTabWidget = tab;
-//            this.selectTab(tab);
         } else {
             this._hideTab(tab);
         }
@@ -115,13 +136,24 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 	},
 
     removeChild: function(tab) {
+
+		// remove tab event handlers
+		dojo.event.disconnect(tab.div, "onclick", function () { });
+		if (this.closeButton=="tab") {
+			var img = tab.div.lastChild.lastChild;
+			if (img) {
+				dojo.html.removeClass(img, "dojoTabPaneTabClose", function () { });
+				dojo.event.disconnect(img, "onclick", function () { });
+				dojo.event.disconnect(img, "onmouseover", function () { });
+				dojo.event.disconnect(img, "onmouseout", function () { });
+			}
+		}
+
         dojo.widget.html.TabPane.superclass.removeChild.call(this, tab);
 
         dojo.html.removeClass(tab.domNode, "dojoTabPanel");
-        this.ul.removeChild(tab.div);
+        this.dojoTabLabels.removeChild(tab.div);
         delete(tab.div);
-
-        // FIXME: do we need to disconnect event handler?
 
         if (this.selectedTabWidget === tab) {
             this.selectedTabWidget = undefined;
@@ -162,6 +194,17 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		}else{
 			tab.hide();
 		}
+	},
+
+	_runOnCloseTab: function(tab) {
+		var onc = tab.extraArgs.onClose || tab.extraArgs.onclose;
+		var fcn = dojo.lang.isFunction(onc) ? onc : window[onc];
+		if(dojo.lang.isFunction(fcn)) {
+			if(fcn(this,tab)) {
+				this.removeChild(tab);
+			}
+		} else
+			this.removeChild(tab);
 	},
 
 	// TODO: why is this a separate function?  (also, name is weird)
