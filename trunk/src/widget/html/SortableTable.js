@@ -528,8 +528,8 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 			div.className=this.containerClass;
 		}
 		var p=this.domNode.parentNode;
+		p.replaceChild(div, this.domNode);
 		div.appendChild(this.domNode);
-		p.appendChild(div);
 		
 		var thead=this.domNode.getElementsByTagName("thead")[0];
 		if(this.headClass.length>0){
