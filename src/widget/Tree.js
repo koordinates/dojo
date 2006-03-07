@@ -73,15 +73,22 @@ dojo.lang.extend(dojo.widget.Tree, {
 	objectId: "",
 
 	// autoCreate if not "off"
+	// used to get the autocreated controller ONLY.
+	// generally, tree DOES NOT KNOW about its CONTROLLER, it just doesn't care
+	// controller gets messages via dojo.event
 	controller: "",
 
 	// autoCreate if not "off"
+	// used to get the autocreated selector ONLY.
+	// generally, tree DOES NOT KNOW its SELECTOR
+	// binding is made with dojo.event
 	selector: "",
 
-	menu: "", // bind menu if set
+	// used ONLY at initialization time
+	menu: "", // autobind menu if menu's widgetId is set here
 
-	expandLevel: "", // expand to level
-	
+	expandLevel: "", // expand to level automatically
+
 	//
 	// these icons control the grid and expando buttons for the whole tree
 	//
@@ -190,14 +197,15 @@ dojo.lang.extend(dojo.widget.Tree, {
 		} else if (this.DNDMode == "onto") {
 			this.DNDMode = this.DNDModes.ONTO;
 		}
-		
+
 		this.expandLevel = parseInt(this.expandLevel);
 
 		this.initializeController();
 		this.initializeSelector();
 
 		if (this.menu) {
-			dojo.widget.byId(this.menu).listenTree(this);
+			this.menu = dojo.widget.byId(this.menu);
+			this.menu.listenTree(this);
 		}
 
 
