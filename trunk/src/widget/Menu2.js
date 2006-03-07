@@ -328,7 +328,6 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 
 	closeAll: function(){
-
 		if (this.parentMenu){
 			this.parentMenu.closeAll();
 		}else{
@@ -377,13 +376,13 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 	isPointInMenu: function(x, y){
 
-		if (x < this.menuX){ return 0; }
-		if (x > this.menuX + this.menuWidth){ return 0; }
+		if (x < this.menuX){ return false; }
+		if (x > this.menuX + this.menuWidth){ return false; }
 
-		if (y < this.menuY){ return 0; }
-		if (y > this.menuY + this.menuHeight){ return 0; }
+		if (y < this.menuY){ return false; }
+		if (y > this.menuY + this.menuHeight){ return false; }
 
-		return 1;
+		return true;
 	}
 });
 
@@ -522,36 +521,36 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		this.highlightItem();
 
 		if (this.is_hovering){ this.stopSubmenuTimer(); }
-		this.is_hovering = 1;
+		this.is_hovering = true;
 		this.startSubmenuTimer();
 	},
 
 	onUnhover: function(){
-
 		if (!this.is_open){ this.unhighlightItem(); }
 
-		this.is_hovering = 0;
+		this.is_hovering = false;
 		this.stopSubmenuTimer();
 	},
 
 	// Internal function for clicks
 	_onClick: function(){
-
 		if (this.disabled){ return; }
 
 		if (this.submenuId){
-
 			if (!this.is_open){
 				this.stopSubmenuTimer();
 				this.openSubmenu();
 			}
-
 		}else{
 			this.parent.closeAll();
+
+			// for some browsers the onMouseOut doesn't get called (?), so call it manually
+			this.onUnhover();
 		}
 
+		// user defined handler for click
 		this.onClick();
-		//dojo.debug("GO "+this.eventNames.engage)
+
 		dojo.event.topic.publish(this.eventNames.engage, this);
 	},
 
@@ -559,13 +558,11 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 	onClick: function() { },
 
 	highlightItem: function(){
-
 		dojo.html.addClass(this.domNode, 'dojoMenuItem2Hover');
 		this.submenuNode.style.backgroundImage = 'url('+this.parent.submenuIconOnSrc+')';
 	},
 
 	unhighlightItem: function(){
-
 		dojo.html.removeClass(this.domNode, 'dojoMenuItem2Hover');
 		this.submenuNode.style.backgroundImage = 'url('+this.parent.submenuIconSrc+')';
 	},
