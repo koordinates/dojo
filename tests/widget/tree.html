@@ -3,7 +3,8 @@
 
 <h1>Tree</h1>
 <p>Clicking on doc1/doc2 in the tree below should make the contents show up on the right.</p>
-<div dojoType="Tree" toggle="wipe" toggleDuration="500" publishSelectionTopic="treeSelected">
+<div dojoType="TreeSelector" eventNames="select:nodeSelected" widgetId="treeSelector"></div>
+<div dojoType="Tree" toggle="wipe" toggleDuration="500" selector="treeSelector">
 	<div dojoType="TreeNode" title="Item 1">
 		<div dojoType="TreeNode" title="doc0"></div>
 		<div dojoType="TreeNode" title="doc1"></div>

@@ -19,7 +19,19 @@ dojo.widget.tags.addParseTreeHandler("dojo:Tree");
 dojo.widget.Tree = function() {
 	dojo.widget.HtmlWidget.call(this);
 
-	this.eventNames = {
+	this.eventNames = {};
+
+	this.tree = this;
+	this.DNDAcceptTypes = [];
+	this.actionsDisabled = [];
+
+}
+dojo.inherits(dojo.widget.Tree, dojo.widget.HtmlWidget);
+
+dojo.lang.extend(dojo.widget.Tree, {
+	widgetType: "Tree",
+
+	eventNamesDefault: {
 		// new child does not get domNode filled in (only template draft)
 		// until addChild->createDOMNode is called(program way) OR createDOMNode (html-way)
 		// hook events to operate on new DOMNode, create dropTargets etc
@@ -39,17 +51,7 @@ dojo.widget.Tree = function() {
 		removeChild: "removeChild",
 		expand: "expand",
 		collapse: "collapse"
-	};
-
-	this.tree = this;
-	this.DNDAcceptTypes = [];
-	this.actionsDisabled = [];
-
-}
-dojo.inherits(dojo.widget.Tree, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.Tree, {
-	widgetType: "Tree",
+	},
 
 	isContainer: true,
 
@@ -182,8 +184,10 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 		var _this = this;
 
-		for(name in this.eventNames) {
-			this.eventNames[name] = this.widgetId+"/"+this.eventNames[name];
+		for(name in this.eventNamesDefault) {
+			if (dojo.lang.isUndefined(this.eventNames[name])) {
+				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
+			}
 		}
 
 		for(var i=0; i<this.actionsDisabled.length; i++) {

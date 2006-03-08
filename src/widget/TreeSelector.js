@@ -11,11 +11,7 @@ dojo.widget.TreeSelector = function() {
 	dojo.widget.HtmlWidget.call(this);
 
 
-	this.eventNames = {
-		select : "select",
-		deselect : "deselect",
-		dblselect: "dblselect" // select already selected node.. Edit or whatever
-	};
+	this.eventNames = {};
 
 	this.listenedTrees = [];
 
@@ -28,10 +24,21 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 	widgetType: "TreeSelector",
 	selectedNode: null,
 
+
+	eventNamesDefault: {
+		select : "select",
+		deselect : "deselect",
+		dblselect: "dblselect" // select already selected node.. Edit or whatever
+	},
+
 	initialize: function() {
-		for(name in this.eventNames) {
-			this.eventNames[name] = this.widgetId+"/"+this.eventNames[name];
+
+		for(name in this.eventNamesDefault) {
+			if (dojo.lang.isUndefined(this.eventNames[name])) {
+				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
+			}
 		}
+
 	},
 
 
