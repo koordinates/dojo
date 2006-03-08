@@ -218,6 +218,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				var font = getStyle('font-size') + " " + getStyle('font-family');
 		
 				var contentEditable = Boolean(document.body.contentEditable);
+				var currentDomain = (new dojo.uri.Uri(document.location)).host;
+				// alert(currentDomain);
 				with(this.document){
 					if(!contentEditable){ designMode = "on"; }
 					open();
@@ -231,6 +233,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 						// '		pwidget.document = document\n' +
 						// '		alert(document.body.innerHTML);\n' +
 						// '		pwidget.onLoad();\n' +
+						// FIXME: this might not work on high ports!!!
+						'		document.domain = "'+currentDomain+'";\n' +
 						'	}\n' +
 						'</script>\n' +
 						'<style type="text/css">\n' +
@@ -979,6 +983,8 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 		// dojo.dom.removeChildren(this.domNode);
 		if(save){
+			// kill listeners on the saved content
+			dojo.event.browser.clean(this.savedContent);
 			if(dojo.render.html.moz){
 				var nc = document.createElement("span");
 				this.domNode.appendChild(nc);
@@ -986,8 +992,6 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			}else{
 				this.domNode.innerHTML = this._content;
 			}
-			// kill listeners on the saved content
-			dojo.event.browser.clean(this.savedContent);
 		} else {
 			while (this.savedContent.hasChildNodes()) {
 				this.domNode.appendChild(this.savedContent.firstChild);
