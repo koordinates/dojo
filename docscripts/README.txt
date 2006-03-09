@@ -1,7 +1,39 @@
 How the dojo-driven Doc Tool Will Work
 ======================================
 
-This is only for starters, to give you a good idea of how things are going down, and to give me a good idea of building practical JSON objects. Enjoy!
+The various pieces
+------------------
+
+* parser.php runs through all of the files and searches for patterns. It can do everything except handle polymorphism properly.
+* parser.php creates a bunch of JSON files (stored in the json directory)
+* dojo.doc has three important functions
+** functionNames loads the list function names from the function_names object
+** getMeta grabs the meta information for a function from a JSON object
+** getSrc grabs the source from a stored file
+** getDoc goes out to http://manual.dojotoolkit.org and grabs external documentation
+* dojo.widget.html.DocComboBox provides a search interface to dojo.doc
+* dojo.widget.html.DocDetail gives a front end to displaying search results, package, and function information
+
+There will be a bunch of topic events that get thrown around. This is basically how they will interact:
+
+* dojo.widget.html.DocComboBox calls dojo.doc.functionNames to create a drop down
+* When the search is executed, it sends a topic event ("docSearch") with the current item
+* dojo.doc.search responds to that event by returning a topic event ("docRes") which contains an array of objects that have the following keys:
+** name: The name of the function
+** id: The polymorphic ID of the function (might be blank if default)
+** summary: A one line summary of the function
+* dojo.widget.html.DocDetail listens for that event
+* If there is only one result, it throws a topic event ("docSelFn") with the result
+* If there is more than one result, it displays the search results. Clicking on a search result throws the topic event ("docSelFn") with the row's result
+* dojo.doc.selectFunction responds to that event by throwing a topic event ("docFnInfo") which has a very complicated array of the results that match the JSON objects below. Its root keys are: meta, src, doc
+* dojo.widget.html.DocDetail responds to that event by displaying the method details
+
+Where I need your help
+----------------------
+
+Much of the help I need is theoretical, I guess.
+
+What really needs work right now is getting the stuff in place to bounce the topics back and forth. I guess a lot of this can be emulated and I'll fill in the blanks as we go along. Please look through dojo.doc to get an idea of what's involved. There's a steep learning curve, but I'd be glad to answer any questions.
 
 JSON Objects
 ------------
