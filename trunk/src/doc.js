@@ -1,6 +1,7 @@
 dojo.provide("dojo.doc");
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.topic");
+dojo.require("dojo.rpc.JotService");
 
 /*
  * This is only BASIC functionality. It doesn't yet provide support for multiple host
@@ -14,9 +15,6 @@ dojo.require("dojo.event.topic");
  * And the package NEEDS to be passed when calling a function since more than one
  * file might declare the function (the latest require winning, of course)
  */
-
-dojo.doc._cache = {} // Saves the JSON objects in cache
-dojo.doc._docFN = dojo.event.topic.getTopic("docFN"); // The topic event for function names
 
 dojo.doc.functionNames = function(/*bool*/ async){
 	// summary: Returns an ordered list of package and function names.
@@ -58,8 +56,15 @@ dojo.doc.functionNames = function(/*bool*/ async){
 	}
 }
 
-dojo.doc.function = function(/*String*/ name, /*String?*/ id){
-	
+dojo.doc.selectFunction = function(/*String*/ name, /*String?*/ id){
+	// summary: The combined information
+}
+
+dojo.doc._results = function(){
+	var i = arguments.length;
+	while(i-- > 0){
+		dojo.debug(dojo.json.serialize(arguments[i]));
+	}
 }
 
 dojo.doc.getMeta = function(/*String*/ name, /*String?*/ id){
@@ -68,10 +73,35 @@ dojo.doc.getMeta = function(/*String*/ name, /*String?*/ id){
 }
 
 dojo.doc.getSrc = function(/*String*/ name, /*String?*/ id){
+	// summary: Gets src file (created by the doc parser)
 	return dojo.doc._localData("src", name, id);
 }
 
-dojo.doc._localData = function(/*String*/ file, /*String*/ name, /*String?*/ id){
+dojo.doc.getDoc = function(/*String*/ name, /*String?*/ id){
+	var pkg = dojo.doc._functionPackage(name);
+	// summary: Gets external documentation stored on jot
+	dojo.doc._rpc.callRemote(
+		"search",
+		{
+			forFormName: "DocPkgForm",
+			filter: "it/DocPkgForm/require = '" + pkg + "'"
+		}
+	).addCallback(dojo.doc._results);
+}
+
+dojo.doc.savePackage = function(/*String*/ name, /*String*/ description){
+	dojo.doc._rpc.callRemote(
+		"saveForm",
+		{
+			form: "DocPkgForm",
+			path: "/WikiHome/DojoDotDoc/id",
+			pname1: "main/text",
+			pvalue1: "Test"
+		}
+	).addCallback(dojo.doc._results);
+}
+
+dojo.doc._functionPackage = function(/*String*/ name, /*bool?*/ async){
 	dojo.doc.functionNames();
 	var pkg = '';
 
@@ -83,6 +113,11 @@ dojo.doc._localData = function(/*String*/ file, /*String*/ name, /*String?*/ id)
 		}
 	}
 	
+	return pkg;
+}
+
+dojo.doc._localData = function(/*String*/ file, /*String*/ name, /*String?*/ id){
+	var pkg = dojo.doc._functionPackage(name);
 	if(!pkg){
 		return {}; // Object
 	}
@@ -150,3 +185,8 @@ dojo.doc._sort = function(a, b){
 	}
   return 0
 }
+
+dojo.doc._cache = {} // Saves the JSON objects in cache
+dojo.doc._docFN = dojo.event.topic.getTopic("docFN"); // The topic event for function names
+dojo.doc._rpc = new dojo.rpc.JotService;
+dojo.doc._rpc.serviceUrl = "http://manual.dojotoolkit.org/_/jsonrpc";
