@@ -201,7 +201,7 @@ dojo.html.getViewportSize = function(){
 dojo.html.getScrollOffset = function(){
 	var ret = [0, 0];
 
-	if(window.pageYOffset){
+	if(window.pageXOffset || window.pageYOffset){
 		ret = [window.pageXOffset, window.pageYOffset];
 	}else if(dojo.exists(document, "documentElement.scrollTop")){
 		ret = [document.documentElement.scrollLeft, document.documentElement.scrollTop];
