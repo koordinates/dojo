@@ -78,7 +78,6 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		// dojo.debug("post create for "+this.debugName);
 
 		// attach the children and create the draggers
-
 		for(var i=0; i<this.children.length; i++){
             with(this.children[i].domNode.style){
                 position = "absolute";
@@ -86,7 +85,7 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
             dojo.html.addClass(this.children[i].domNode,
                 "dojoHtmlSplitterPanePanel");
 
-            if(i == this.children.length){
+            if(i == this.children.length-1){
                 break;
             }
 
@@ -94,7 +93,6 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		}
 
 		// create the fake dragger
-
 		this.virtualSizer = document.createElement('div');
 		this.virtualSizer.style.position = 'absolute';
 		this.virtualSizer.style.display = 'none';
@@ -105,9 +103,7 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 
 		dojo.html.disableSelection(this.virtualSizer);
 
-		//
 		// size the panels once the browser has caught up
-		//
 		this.resizeSoon();
 	},
 
