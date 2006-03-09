@@ -396,6 +396,76 @@ dojo.style.removeCssRule = function (index){
 	return true;
 }
 
+// calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
+dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
+	if(!URI){ return; }
+	if(!doc){ doc = document; }
+	var cssStr = dojo.hostenv.getText(URI);
+	var cssStr = dojo.style.fixPathsInCssText(cssStr, URI);
+
+	if(checkDuplicates){
+		var styles = doc.getElementsByTagName("style");
+		var cssText = "";
+		for(var i = 0; i<styles.length; i++){
+			cssText = (styles[i].styleSheet && styles[i].styleSheet.cssText) ? styles[i].styleSheet.cssText : styles[i].innerHTML;
+			if(cssStr == cssText){ return; }
+		}
+	}
+
+	var style = dojo.style.insertCssText(cssStr);
+	// insert custom attribute ex dbgHref="../foo.css" usefull when debugging in DOM inspectors, no?
+	if(style && djConfig.isDebug){
+		style.setAttribute("dbgHref", URI);
+	}
+	return style
+}
+
+// DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
+dojo.style.insertCssText = function(cssStr, doc, URI){
+	if(!cssStr){ return; }
+	if(!doc){ doc = document; }
+	if(URI){// fix paths in cssStr
+		cssStr = dojo.style.fixPathsInCssText(cssStr, URI);
+	}
+	var style = doc.createElement("style");
+	style.setAttribute("type", "text/css");
+	if(style.styleSheet){// IE
+		style.styleSheet.cssText = cssStr;
+	} else {// w3c
+		var cssText = doc.createTextNode(cssStr);
+		style.appendChild(cssText);
+	}
+	var head = doc.getElementsByTagName("head")[0];
+	if(head){// must have a head tag
+		head.appendChild(style);
+	}
+	return style;
+}
+
+// String cssText = fixPathsInCssText(String cssStr, dojo.uri.Uri URI)
+// usage: cssText comes from dojoroot/src/widget/templates/HtmlFoobar.css
+// 	it has .dojoFoo { background-image: url(images/bar.png);} 
+//	then uri should point to dojoroot/src/widget/templates/
+dojo.style.fixPathsInCssText = function(cssStr, URI){
+	if(!cssStr || !URI){ return; }
+	var pos = 0; var str = ""; var url = "";
+	while(pos!=-1){
+		pos = 0;url = "";
+		pos = cssStr.indexOf("url(", pos);
+		if(pos<0){ break; }
+		str += cssStr.slice(0,pos+4);
+		cssStr = cssStr.substring(pos+4, cssStr.length);
+		url += cssStr.match(/^[\t\s\w()\/.\\'"-:#=&?]*\)/)[0]; // url string
+		cssStr = cssStr.substring(url.length-1, cssStr.length); // remove url from css string til next loop
+		url = url.replace(/^[\s\t]*(['"]?)([\w()\/.\\'"-:#=&?]*)\1[\s\t]*?\)/,"$2"); // clean string
+		if(url.search(/(file|https?|ftps?):\/\//)==-1){
+			url = (new dojo.uri.Uri(URI,url).toString());
+		}
+		str += url;
+	};
+	return str+cssStr;
+}
+
 dojo.style.getBackgroundColor = function (node) {
 	node = dojo.byId(node);
 	var color;
