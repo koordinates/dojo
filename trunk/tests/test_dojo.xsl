@@ -9,9 +9,19 @@
 	<xsl:template match="index">
 		<html>
 			<head>
-				<script language="javascript" src="../dojo.js" type="text/javascript" />
+				<!--
+				pointing at the dojo.js directly only works if it's from a build
+				<script src="../dojo.js" type="text/javascript"></script>
+				-->
+				<!--
+				manually including the bootstraps works fine
+				-->
+				<script src="../src/bootstrap1.js" type="text/javascript"></script>
+				<script src="../src/hostenv_browser.js" type="text/javascript"></script>
+				<script src="../src/bootstrap2.js" type="text/javascript"></script>
 			</head>
 			<body>
+				this is content
 			</body>
 		</html>
 	</xsl:template>
