@@ -145,12 +145,12 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
         }
 
         // Remove widget and repaint
-        dojo.widget.html.Container.prototype.removeChild.call(this, widget, arguments);
+        dojo.widget.html.SplitPane.superclass.removeChild.call(this, widget, arguments);
         this.onResized();
     },
 
     addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
-        dojo.widget.html.Container.prototype.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
+        dojo.widget.html.SplitPane.superclass.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
         this._injectChild(widget);
 
         if (this.children.length > 1) {
