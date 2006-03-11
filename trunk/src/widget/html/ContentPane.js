@@ -147,7 +147,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	   
 		if (matches != null)
 		{
-			for (i = 0; i < matches.length; i++)
+			for (var i = 0; i < matches.length; i++)
 			{
 				// get the src of the script
 				var scriptSrc = matches[i].replace(repl, '');
@@ -185,7 +185,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		// For each match that is found...
 		if (matches != null)
 		{
-			for (i = 0; i < matches.length; i++)
+			for (var i = 0; i < matches.length; i++)
 			{
 				// Remove begin tag
 				var repl = new RegExp('<script.*?>', 'gm');
