@@ -199,7 +199,8 @@ dojo.io.XMLHTTPTransport = new function(){
 	function doLoad(kwArgs, http, url, query, useCache) {
 		if(	(http.status==200)||
 			(http.status==304)||
-			(location.protocol=="file:" && (http.status==0 || http.status==undefined))
+			(location.protocol=="file:" && (http.status==0 || http.status==undefined))||
+			(location.protocol=="chrome:" && (http.status==0 || http.status==undefined))
 		){
 			var ret;
 			if(kwArgs.method.toLowerCase() == "head"){
