@@ -23,7 +23,7 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	targetElmId: '',
 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlResizeHandle.css"),
-	templateString: '<div class="dojoHtmlResizeHandle"></div>',
+	templateString: '<div class="dojoHtmlResizeHandle"><div></div></div>',
 
 	postCreate: function(){
 		dojo.event.connect(this.domNode, "onmousedown", this, "beginSizing");
