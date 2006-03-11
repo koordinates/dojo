@@ -16,17 +16,90 @@ The various pieces
 
 There will be a bunch of topic events that get thrown around. This is basically how they will interact:
 
-* dojo.widget.html.DocComboBox calls dojo.doc.functionNames to create a drop down
+* dojo.widget.html.DocComboBox calls dojo.doc.functionNames to create its drop down
 * When the search is executed, it sends a topic event ("docSearch") with the current item
-* dojo.doc.search responds to that event by returning a topic event ("docRes") which contains an array of objects that have the following keys:
-** name: The name of the function
-** id: The polymorphic ID of the function (might be blank if default)
-** summary: A one line summary of the function
+* dojo.doc.search responds to that event by returning a topic event ("docResults")
 * dojo.widget.html.DocDetail listens for that event
-* If there is only one result, it throws a topic event ("docSelFn") with the result
-* If there is more than one result, it displays the search results. Clicking on a search result throws the topic event ("docSelFn") with the row's result
-* dojo.doc.selectFunction responds to that event by throwing a topic event ("docFnInfo") which has a very complicated array of the results that match the JSON objects below. Its root keys are: meta, src, doc
+* If there is only one result, it throws a topic event ("docSelFunction") with the result
+* If there is more than one result, it displays the search results. Clicking on a search result throws the topic event ("docSelFunction") with the row's result
+* dojo.doc.selectFunction responds to that event by throwing a topic event ("docFunctionDetail")
 * dojo.widget.html.DocDetail responds to that event by displaying the method details
+
+The topic registry
+------------------
+
+*publisher*: the expected widgets or code that are typically expected to publish data on that topic.
+(of course anyone is free to publish on any topic at any time)
+*subscriber*: types of widgets or code that are expected to subscribe to this topic
+*message*: the format of that particular topics message:
+*returns*: what the object returns
+
+"docSearch": 
+	publisher: any widget or code that wishes to search for documents
+	subscriber: dojo.doc
+	messsage: string containing function to search for
+	returns: int representing the searchKey that will be returned by docResults
+
+"docResults":
+	publisher: dojo.doc
+	subscriber: any widget or code that wishes to see the results of current docSearches
+	message: {
+		searchKey: id of the docSearch request,
+		docResults: [{
+			name: string with name of function,
+			id: the polymorphic id of the function (may be blank if the default)
+			summary: string containing one line summary of the function,
+		}]
+	}
+
+"docSelectFunction":
+	publisher: any widget that can select a function
+	subscriber: dojo.doc and any other widget that wishes to be aware of a selection
+	message: {
+		name: string with name of the function,
+		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
+	}
+	returns: int representing the searchKey that will be returned by docFunctionDetail
+
+"docFunctionDetail":
+	publisher: dojo.doc
+	subscriber: any widget that wishes to be aware of a selection's details
+	message:
+			selectKey: id indentifying selection
+			meta: object of the metadata (as shown in the meta JSON object)
+			src: source
+			doc: docs (TBD: Things like parameter descriptions, extended description, return description)
+
+Note: docSelectionFunction can return the exact result as returned by docResults. That means that you can do something like
+
+onDocResults: function(result){ if(result.docResults.length == 1){ dojo.event.topic.publish("docFunctionDetail", result.DocResults[0])}}
+
+and expect proper results
+
+In dojo.doc's constructor
+-------------------------
+
+dojo.event.topic.registerPublisher("docSearch");  	
+dojo.event.topic.registerPublisher("docResults");  	
+dojo.event.topic.registerPublisher("docSelectFunction");  	
+dojo.event.topic.registerPublisher("docFunctionDetail");  	
+
+dojo.event.topic.subscribe("docSearch", this, "onDocSearch");
+dojo.event.topic.subscribe("docSelectFunction", this, "onDocSelectFunction");
+
+In the init of an application that uses dojo.doc and some widgets:
+
+	dojo.addOnLoad(function() {
+		var searchWidget = dojo.widget.byId("SearchWidget");
+    dojo.event.topic.subscribe("docResults", searchWidget, "onDocResults"); 
+ 
+  	var detailWidget= dojo.widget.byId("detailWidget");
+  	dojo.event.topic.subscribe("docFunctionDetail",detailWidget,"onDocFunctionDetail"); 
+	});
+
+Any widget or code can publish to any of these topics at any time like this:
+
+dojo.event.topic.publish("docSearch",message); 	
 
 Where I need your help
 ----------------------

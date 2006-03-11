@@ -78,15 +78,20 @@ dojo.doc.getSrc = function(/*String*/ name, /*String?*/ id){
 }
 
 dojo.doc.getDoc = function(/*String*/ name, /*String?*/ id){
-	var pkg = dojo.doc._functionPackage(name);
 	// summary: Gets external documentation stored on jot
-	dojo.doc._rpc.callRemote(
-		"search",
-		{
-			forFormName: "DocPkgForm",
-			filter: "it/DocPkgForm/require = '" + pkg + "'"
-		}
-	).addCallback(dojo.doc._results);
+	var pkg = dojo.doc._functionPackage(name);
+
+	var search = {};
+	search.forFormName = "DocFnForm";
+	search.limit = 1;
+	
+	if(!id){
+		search.filter = "it/DocFnForm/require = '" + pkg + "' and it/DocFnForm/name = '" + name + "' and not(it/DocFnForm/id)";
+	}else{
+		search.filter = "it/DocFnForm/require = '" + pkg + "' and it/DocFnForm/name = '" + name + "' and it/DocFnForm/id = '" + id + "'";
+	}
+
+	dojo.doc._rpc.callRemote("search", search).addCallback(dojo.doc._results);
 }
 
 dojo.doc.savePackage = function(/*String*/ name, /*String*/ description){
