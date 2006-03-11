@@ -37,8 +37,10 @@ The topic registry
 "docSearch": 
 	publisher: any widget or code that wishes to search for documents
 	subscriber: dojo.doc
-	messsage: string containing function to search for
-	returns: int representing the searchKey that will be returned by docResults
+	messsage: {
+		searchKey: id of the docSearch request,
+		string containing function to search for
+	}
 
 "docResults":
 	publisher: dojo.doc
@@ -56,10 +58,10 @@ The topic registry
 	publisher: any widget that can select a function
 	subscriber: dojo.doc and any other widget that wishes to be aware of a selection
 	message: {
+		searchKey: id of the docSelectFunction request,
 		name: string with name of the function,
 		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
 	}
-	returns: int representing the searchKey that will be returned by docFunctionDetail
 
 "docFunctionDetail":
 	publisher: dojo.doc
