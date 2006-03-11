@@ -58,8 +58,13 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		}
 
 		dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+
         this._setPadding();
-		this._Resized();
+
+		// Display the selected tab
+		if(this.selectedTabWidget){
+			this.selectTab(this.selectedTabWidget);
+		}
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
@@ -205,16 +210,6 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 			}
 		} else
 			this.removeChild(tab);
-	},
-
-	// TODO: why is this a separate function?  (also, name is weird)
-	_Resized: function() {
-		// Display the selected tab
-		if(this.selectedTabWidget){
-			this.selectTab(this.selectedTabWidget);
-		} else {
-			dojo.widget.html.TabPane.superclass.onResized.call(this);
-		}
 	},
 
 	onResized: function() {
