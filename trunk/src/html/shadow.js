@@ -30,7 +30,7 @@ dojo.lang.extend(dojo.html.shadow, {
 				
 				// to get the pathnames right we have to generate the CSS :-(
 				if(dojo.render.html.ie){
-					child.innerHTML = "&nbsp;";
+					child.innerHTML = "<div></div>";
 					var url = urlBase + piece + ".png";
 					sizing=(dojo.lang.inArray(['T','L','R','B'],piece)?"scale":"");
 					child.style.filter=
