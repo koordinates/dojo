@@ -466,7 +466,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
 			if(kwArgs.user && kwArgs.pass){
-				http.open("POST", url, async, user, pass);
+				http.open("POST", url, async, kwArgs.user, kwArgs.pass);
 			}else{
 				http.open("POST", url, async);
 			}
@@ -484,7 +484,7 @@ dojo.io.XMLHTTPTransport = new function(){
 					? "" : (tmpUrl.indexOf("?") > -1 ? "&" : "?")) + "dojo.preventCache=" + new Date().valueOf();
 			}
 			if(kwArgs.user && kwArgs.pass){
-				http.open(kwArgs.method.toUpperCase(), tmpUrl, async, user, pass);
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async, kwArgs.user, kwArgs.pass);
 			}else{
 				http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
 			}
