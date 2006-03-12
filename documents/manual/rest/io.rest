@@ -130,12 +130,6 @@ Properties
         Object, that can have its content attached to the event
         and can be accessed by the ``attach`` property of the event object.
 
-    ``user``:
-        The username that is sent to the server for simple login
-
-    ``pass``:
-        The password that is sent to the server for simple login
-
 Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
