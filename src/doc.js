@@ -16,8 +16,14 @@ dojo.require("dojo.rpc.JotService");
  * Basically, if the package meta contains require statments, we need to follow them.
  */
 
-dojo.doc.functionNames = function(/*Function*/ callback){
+dojo.doc.functionNames = function(/*Function*/ reference, /*Function?*/ callback){
 	// summary: Returns an ordered list of package and function names.
+	if(dojo.lang.isFunction(callback)){
+		// pId: i
+		// reference: Object
+		// callback: Function
+		callback = [reference, callback];
+	}
 	dojo.doc._buildCache({
 		type: "function_names",
 		callbacks: [dojo.doc._functionNames, callback]
@@ -28,7 +34,11 @@ dojo.doc._functionNames = function(/*Function*/ input){
 	var searchData = dojo.doc._expandFN();
 	if(input.callbacks && input.callbacks.length){
 		var callback = input.callbacks.shift();
-		callback.call(null, searchData);
+		if(dojo.lang.isArray(callback)){
+			callback[1].call(callback[0], searchData);
+		}else{
+			callback.call(null, searchData);
+		}
 	}
 }
 
