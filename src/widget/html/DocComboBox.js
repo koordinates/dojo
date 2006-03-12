@@ -21,7 +21,7 @@ dojo.lang.extend(dojo.widget.html.DocComboBox, {
 			}
 			this._preformSearch(searchStr);
 		}
-		this.dataProvider.setData(dojo.doc.functionNames());		
+		dojo.doc.functionNames(this.dataProvider.setData);
 	}
 });
 
