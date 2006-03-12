@@ -39,7 +39,7 @@ The topic registry
 	subscriber: dojo.doc
 	messsage: {
 		searchKey: id of the docSearch request,
-		string containing function to search for
+		name: string containing function to search for
 	}
 
 "docResults":
@@ -48,8 +48,9 @@ The topic registry
 	message: {
 		searchKey: id of the docSearch request,
 		docResults: [{
+			pkg: string with the package (require statement) containing the function
 			name: string with name of function,
-			id: the polymorphic id of the function (may be blank if the default)
+			id: the polymorphic id of the function (may be blank if the default),
 			summary: string containing one line summary of the function,
 		}]
 	}
@@ -59,6 +60,7 @@ The topic registry
 	subscriber: dojo.doc and any other widget that wishes to be aware of a selection
 	message: {
 		searchKey: id of the docSelectFunction request,
+		pkg: string with the package (require statement) containing the function
 		name: string with name of the function,
 		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
 	}
@@ -78,25 +80,25 @@ onDocResults: function(result){ if(result.docResults.length == 1){ dojo.event.to
 
 and expect proper results
 
-In dojo.doc's constructor
--------------------------
+Topic Registry
+--------------
 
 dojo.event.topic.registerPublisher("docSearch");  	
 dojo.event.topic.registerPublisher("docResults");  	
 dojo.event.topic.registerPublisher("docSelectFunction");  	
 dojo.event.topic.registerPublisher("docFunctionDetail");  	
 
-dojo.event.topic.subscribe("docSearch", this, "onDocSearch");
-dojo.event.topic.subscribe("docSelectFunction", this, "onDocSelectFunction");
+dojo.event.topic.subscribe("docSearch", dojo.doc, "_onDocSearch");
+dojo.event.topic.subscribe("docSelectFunction", dojo.doc, "_onDocSelectFunction");
 
 In the init of an application that uses dojo.doc and some widgets:
 
 	dojo.addOnLoad(function() {
 		var searchWidget = dojo.widget.byId("SearchWidget");
-    dojo.event.topic.subscribe("docResults", searchWidget, "onDocResults"); 
+    dojo.event.topic.subscribe("docResults", searchWidget, "_onDocResults"); 
  
   	var detailWidget= dojo.widget.byId("detailWidget");
-  	dojo.event.topic.subscribe("docFunctionDetail",detailWidget,"onDocFunctionDetail"); 
+  	dojo.event.topic.subscribe("docFunctionDetail",detailWidget,"_onDocFunctionDetail"); 
 	});
 
 Any widget or code can publish to any of these topics at any time like this:

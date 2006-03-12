@@ -5,6 +5,7 @@
   var djConfig = {isDebug: true};
 </script>
 <script type="text/javascript" src="../dojo.js"></script>
+<script type="text/javascript" src="../src/doc.js"></script>
 <script type="text/javascript" src="doctool.js"></script>
 <link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/screen.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="http://dojotoolkit.org/css/print.css" media="print" />
@@ -44,6 +45,7 @@
 			<h1>Doc Tool</h1>
 
 			<h2>Search</h2>
+			<form onsubmit="return docSubmit();">
 			<p><input dojoType="doccombobox" id="search" value="" style="width: 300px;" ></p>
 
 			<div class="clear"></div>
