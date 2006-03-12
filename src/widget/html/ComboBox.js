@@ -421,9 +421,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			// visibility = "hidden";
 			height = "";
 			width = dojo.html.getInnerWidth(this.downArrowNode)+dojo.html.getInnerWidth(this.textInputNode)+"px";
-			if(dojo.render.html.khtml){
-				marginTop = dojo.html.totalOffsetTop(this.optionsListNode.parentNode)+"px";
-			}
 		}
 		dojo.html.setOpacity(this.optionsListNode, 0);
 		dojo.fx.fadeIn(this.optionsListNode, 200);
