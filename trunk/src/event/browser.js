@@ -16,7 +16,7 @@ dojo_ie_clobber = new function(){
 		var na;
 		var tna;
 		if(nodeRef){
-			tna = nodeRef.getElementsByTagName("*");
+			tna = nodeRef.all || nodeRef.getElementsByTagName("*");
 			na = [nodeRef];
 			for(var x=0; x<tna.length; x++){
 				// if we're gonna be clobbering the thing, at least make sure
