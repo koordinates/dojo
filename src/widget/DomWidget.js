@@ -113,7 +113,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 	}
 	// alert(events.length);
 
-	var nodes = rootNode.getElementsByTagName("*");
+	var nodes = rootNode.all || rootNode.getElementsByTagName("*");
 	var _this = targetObj;
 	for(var x=-1; x<nodes.length; x++){
 		var baseNode = (x == -1) ? rootNode : nodes[x];
