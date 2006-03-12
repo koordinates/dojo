@@ -465,7 +465,11 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
-			http.open("POST", url, async);
+			if(kwArgs.user && kwArgs.pass){
+				http.open("POST", url, async, user, pass);
+			}else{
+				http.open("POST", url, async);
+			}
 			setHeaders(http, kwArgs);
 			http.setRequestHeader("Content-Type", kwArgs.multipart ? ("multipart/form-data; boundary=" + this.multipartBoundary) : 
 				(kwArgs.contentType || "application/x-www-form-urlencoded"));
@@ -479,7 +483,11 @@ dojo.io.XMLHTTPTransport = new function(){
 				tmpUrl += (dojo.string.endsWithAny(tmpUrl, "?", "&")
 					? "" : (tmpUrl.indexOf("?") > -1 ? "&" : "?")) + "dojo.preventCache=" + new Date().valueOf();
 			}
-			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
+			if(kwArgs.user && kwArgs.pass){
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async, user, pass);
+			}else{
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
+			}
 			setHeaders(http, kwArgs);
 			http.send(null);
 		}

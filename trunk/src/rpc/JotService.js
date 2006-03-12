@@ -5,6 +5,8 @@ dojo.require("dojo.json");
 
 dojo.rpc.JotService = function(){
 	this.serviceUrl = "/_/jsonrpc";
+	this.user = "";
+	this.pass = "";
 }
 
 dojo.inherits(dojo.rpc.JotService, dojo.rpc.JsonService);
@@ -19,7 +21,9 @@ dojo.lang.extend(dojo.rpc.JotService, {
 			method: "POST",
 			mimetype: "text/json",
 			load: this.resultCallback(deferredRequestHandler),
-			preventCache: true
+			preventCache: true,
+			user: this.user,
+			pass: this.pass
 		});
 	},
 
