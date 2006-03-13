@@ -799,7 +799,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			} else if (command == "inserttable" && dojo.render.html.mozilla) {
 				return true;
 			}
-			return this.document.queryCommandEnabled(command);
+
+			// return this.document.queryCommandEnabled(command);
+			var elem = (dojo.render.html.ie) ? this.document.selection.createRange() : this.document;
+			return elem.queryCommandEnabled(command);
 		}
 	},
 
