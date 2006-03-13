@@ -308,7 +308,7 @@ Alex Russell is the project lead for Dojo and can be reached at
 .. _`David Schontzler`: http://stilleye.com
 .. _`JotSpot`: http://www.jot.com
 .. _`liberal license`: http://opensource.org/licenses/afl-2.1.php
-.. _`Quick link to the Editor demo`: http://dojotoolkit.org/archive/dojo-2005-11-07/demos/widget/Editor.html
+.. _`Quick link to the Editor demo`: http://download.dojotoolkit.org/release-0.2.2/dojo-0.2.2-widget/demos/widget/Editor.html
 
 .. raw:: html
    :file: ../website/docs/sidebar.html
