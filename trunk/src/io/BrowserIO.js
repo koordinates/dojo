@@ -23,6 +23,27 @@ dojo.io.formHasFile = function(formNode){
 	return dojo.io.checkChildrenForFile(formNode);
 }
 
+dojo.io.updateNode = function(node, urlOrArgs){
+	node = dojo.byId(node);
+	var args = urlOrArgs;
+	if(dojo.lang.isString(urlOrArgs)){
+		args = { url: urlOrArgs };
+	}
+	args.mimetype = "text/html";
+	args.load = function(t, d, e){
+		while(node.firstChild){
+			if(dojo["event"]){
+				try{
+					dojo.event.browser.clean(node.firstChild);
+				}catch(e){}
+			}
+			node.removeChild(node.firstChild);
+		}
+		node.innerHTML = d;
+	};
+	dojo.io.bind(args);
+}
+
 dojo.io.formFilter = function(node) {
 	var type = (node.type||"").toLowerCase();
 	return !node.disabled && node.name
