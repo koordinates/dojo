@@ -462,7 +462,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 	},
 
 	getHtml: function(){
-		this._richText.contentFilters = this.contentFilters;
+		this._richText.contentFilters = this._richText.contentFilters.concat(this.contentFilters);
 		return this._richText.getEditorContent();
 	},
 
