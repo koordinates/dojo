@@ -11,7 +11,7 @@ dojo.require("dojo.string");
 // used to save content
 try {
 	document.write('<textarea id="dojo.widget.RichText.savedContent" ' +
-		'style="display:none;position:absolute;top:-100px;left:-100px;"></textarea>');
+		'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
 }catch(e){ }
 
 dojo.widget.tags.addParseTreeHandler("dojo:richtext");
@@ -19,6 +19,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 dojo.widget.HtmlRichText = function () {
 	dojo.widget.HtmlWidget.call(this);
 	this.contentFilters = [];
+	// this.contentFilters.push(this.defaultContentCleaner);
 }
 dojo.inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
 
@@ -49,6 +50,18 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
 	// contentFilters: [],
+
+	/*
+	defaultContentCleaner: function(content){
+		if(!dojo.render.html.ie){
+			return content;
+		}
+
+		content = content.replace(/\x20/g, " ");
+		// alert(content);
+		return content;
+	},
+	*/
 
 /* Init
  *******/
