@@ -579,6 +579,7 @@ dojo.lang.extend(dojo.widget.html.ToolbarButtonGroup, {
 
     _injectChild: function(widget) {
         dojo.event.connect(widget, "onSelect", this, "onChildSelected");
+        dojo.event.connect(widget, "onDeselect", this, "onChildDeSelected");
         if(widget._name == this.defaultButton
 			|| (typeof this.defaultButton == "number"
 			&& this.children.length-1 == this.defaultButton)) {
@@ -609,6 +610,10 @@ dojo.lang.extend(dojo.widget.html.ToolbarButtonGroup, {
 
 	onChildSelected: function(e) {
 		this.select(e._name);
+	},
+
+	onChildDeSelected: function(e) {
+		this._fireEvent("onChangeSelect", this._value);
 	},
 
 	enable: function(force, preventEvent) {
@@ -643,7 +648,7 @@ dojo.lang.extend(dojo.widget.html.ToolbarButtonGroup, {
 					child.select(force, preventEvent);
 					this._value = name;
 				} else {
-					child.deselect(true, preventEvent);
+					child.deselect(true, true);
 				}
 			}
 		}
