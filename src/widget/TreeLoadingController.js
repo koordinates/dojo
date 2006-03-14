@@ -55,7 +55,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	loadProcessResponse: function(type, node, result, callFunc, callObj) {
 
 		if (!dojo.lang.isUndefined(result.error)) {
-			this.RPCErrorHandler(result.error);
+			this.RPCErrorHandler("server", result.error);
 			return false;
 		}
 
