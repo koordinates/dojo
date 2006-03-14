@@ -31,17 +31,17 @@ function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 
 function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
 	if(docKeys[evt.selectKey] == "meta"){
-		dojo.debug(type + ": " + dojo.json.serialize(data));
+		dojo.debug(type + " meta: " + dojo.json.serialize(data));
 	}else if(docKeys[evt.selectKey] == "src"){
-		dojo.debug(type + ": " + data);
-	}else{
-		dojo.debug(type + ": " + dojo.json.serialize(data));
+		dojo.debug(type + " src: " + data);
+	}else if(docKeys[evt.selectKey] == "doc"){
+		dojo.debug(type + " doc: " + dojo.json.serialize(data));
 	}
 }
 
 function docSubmit(){
 	dojo.widget.byId("search").hideResultList();
-	dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").domNode.getElementsByTagName("input")[2].value});
+	dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
 	return false;
 }
 
