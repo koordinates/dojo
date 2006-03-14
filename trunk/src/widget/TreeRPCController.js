@@ -69,7 +69,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	doMoveProcessResponse: function(type, response, child, newParent, index) {
 
 		if (!dojo.lang.isUndefined(response.error)) {
-			this.RPCErrorHandler(response.error);
+			this.RPCErrorHandler("server", response.error);
 			return false;
 		}
 
@@ -103,7 +103,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 
 	doRemoveChildProcessResponse: function(type, response, node, callFunc, callObj) {
 		if (!dojo.lang.isUndefined(response.error)) {
-			this.RPCErrorHandler(response.error);
+			this.RPCErrorHandler("server", response.error);
 			return false;
 		}
 
@@ -158,7 +158,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	doCreateChildProcessResponse: function(type, response, parent, index, callFunc, callObj) {
 
 		if (!dojo.lang.isUndefined(response.error)) {
-			this.RPCErrorHandler(response.error);
+			this.RPCErrorHandler("server",response.error);
 			return false;
 		}
 
