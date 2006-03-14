@@ -325,7 +325,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 			dojo.io.bind({
 				url: "json/function_names",
 				mimetype: "text/json",
-				error: function(type, evt){
+				error: function(type, data, evt){
 					for(var i = 0, callback; callback = dojo.doc._callbacks.function_names[i]; i++){
 						callback[1].call(null, "error", {}, callback[0]);
 					}
@@ -411,7 +411,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 				url: url,
 				attach: input,
 				mimetype: mimetype,
-				error: function(type, evt){
+				error: function(type, data, evt){
 					if(evt.attach.callbacks && evt.attach.callbacks.length){
 						var callback = evt.attach.callbacks.shift();
 						callback.call(null, "error", {}, evt.attach);
@@ -457,7 +457,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 			url: "json/" + pkg + "/meta",
 			attach: input,
 			mimetype: "text/json",
-			error: function(type, evt){
+			error: function(type, data, evt){
 				if(evt.attach.callbacks && evt.attach.callbacks.length){
 					var callback = evt.attach.callbacks.shift();
 					callback.call(null, "error", {}, evt.attach);
