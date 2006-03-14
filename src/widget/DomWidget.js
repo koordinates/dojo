@@ -117,14 +117,14 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 	var _this = targetObj;
 	for(var x=-1; x<nodes.length; x++){
 		var baseNode = (x == -1) ? rootNode : nodes[x];
-		// FIXME: is this going to have capitalization problems?
+		// FIXME: is this going to have capitalization problems?  Could use getAttribute(name, 0); to get attributes case-insensitve
 		var attachPoint = [];
 		for(var y=0; y<this.attachProperties.length; y++){
 			var tmpAttachPoint = baseNode.getAttribute(this.attachProperties[y]);
 			if(tmpAttachPoint){
 				attachPoint = tmpAttachPoint.split(";");
-				for(var z=0; z<this.attachProperties.length; z++){
-					if((targetObj[attachPoint[z]])&&(dojo.lang.isArray(targetObj[attachPoint[z]]))){
+				for(var z=0; z<attachPoint.length; z++){
+					if(dojo.lang.isArray(targetObj[attachPoint[z]])){
 						targetObj[attachPoint[z]].push(baseNode);
 					}else{
 						targetObj[attachPoint[z]]=baseNode;
@@ -197,8 +197,8 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 			eval("var node = baseNode; var widget = targetObj; "+onBuild);
 		}
 
-		// strip IDs to prevent dupes
-		baseNode.id = "";
+		// strip IDs to prevent dupes. removeAttribute() doesnt care if attribute doesnt exist
+		baseNode.removeAttribute('id');
 	}
 
 }
@@ -325,7 +325,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	},
 
 	getFragNodeRef: function(frag){
-		if( !frag["dojo:"+this.widgetType.toLowerCase()] ){
+		if( !frag || !frag["dojo:"+this.widgetType.toLowerCase()] ){
 			dojo.raise("Error: no frag for widget type " + this.widgetType +
 				", id " + this.widgetId + " (maybe a widget has set it's type incorrectly)");
 		}
