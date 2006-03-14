@@ -1,5 +1,6 @@
 dojo.require("dojo.widget.html.ComboBox");
 dojo.require("dojo.doc");
+dojo.require("dojo.widget.DocPane");
 
 var docCount = 0;
 var docKeys = [];
@@ -21,7 +22,6 @@ function docInit(){
 		}
 		this._preformSearch(searchStr);
 	}
-	dojo.event.topic.publish("docSelectFunction", {selectKey: ++docCount, name: "dojo.animation.Animation.play"});
 }
 dojo.addOnLoad(docInit);
 
@@ -32,11 +32,11 @@ function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 
 function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
 	if(docKeys[evt.selectKey] == "meta"){
-		dojo.debug(type + " meta: " + dojo.json.serialize(data));
+		//dojo.debug(type + " meta: " + dojo.json.serialize(data));
 	}else if(docKeys[evt.selectKey] == "src"){
-		dojo.debug(type + " src: " + data);
+		//dojo.debug(type + " src: " + data);
 	}else if(docKeys[evt.selectKey] == "doc"){
-		dojo.debug(type + " doc: " + dojo.json.serialize(data));
+		//dojo.debug(type + " doc: " + dojo.json.serialize(data));
 	}
 }
 
@@ -50,4 +50,4 @@ function docResults(/*Object*/ input){
 	dojo.debug(dojo.json.serialize(input));
 }
 
-dojo.event.topic.subscribe("docResults", docResults);
+//dojo.event.topic.subscribe("docResults", docResults);
