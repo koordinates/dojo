@@ -38,7 +38,7 @@ The topic registry
 	publisher: any widget or code that wishes to search for documents
 	subscriber: dojo.doc
 	messsage: {
-		searchKey: id of the docSearch request,
+		selectKey: id of the docSearch request,
 		name: string containing function to search for
 	}
 
@@ -46,7 +46,7 @@ The topic registry
 	publisher: dojo.doc
 	subscriber: any widget or code that wishes to see the results of current docSearches
 	message: {
-		searchKey: id of the docSearch request,
+		selectKey: id of the docSearch request,
 		docResults: [{
 			pkg: string with the package (require statement) containing the function
 			name: string with name of function,
@@ -59,8 +59,7 @@ The topic registry
 	publisher: any widget that can select a function
 	subscriber: dojo.doc and any other widget that wishes to be aware of a selection
 	message: {
-		searchKey: id of the docSelectFunction request,
-		pkg: string with the package (require statement) containing the function
+		selectKey: id of the docSelectFunction request,
 		name: string with name of the function,
 		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
 	}
@@ -73,6 +72,7 @@ The topic registry
 			meta: object of the metadata (as shown in the meta JSON object)
 			src: source
 			doc: docs (TBD: Things like parameter descriptions, extended description, return description)
+			sig: Function signature
 
 Note: docSelectionFunction can return the exact result as returned by docResults. That means that you can do something like
 
