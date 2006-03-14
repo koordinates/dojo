@@ -51,7 +51,7 @@
 		tmps.push("browser_debug.js");
 	}
 
-	for(var x in tmps){
+	for(var x=0; x < tmps.length; x++){
 		var spath = root+"src/"+tmps[x];
 		if(isRhino||isSpidermonkey){
 			load(spath);
