@@ -7,7 +7,6 @@ dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.html.DocPane= function(){
 	dojo.widget.HtmlWidget.call(this);
-	dojo.debug("init docpane");
 	dojo.event.topic.subscribe("docResults", this, "onDocResults");
 	dojo.event.topic.subscribe("docSelectFunction", this, "onDocSelectFunction");
 }
@@ -17,22 +16,13 @@ dojo.inherits(dojo.widget.html.DocPane, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.html.DocPane, {
 	widgetType: "DocPane",
 
-	
 	onDocSelectFunction: function(message) {
 		dojo.dom.removeChildren(this.domNode);
 
-		//header for search results
-	//	var header = document.createElement("h1");
-	//	header.appendChild(document.createTextNode("Detail: ");
-	//	this.domNode.appendChild(header);
+		var header = document.createElement("h1");
+		header.appendChild(document.createTextNode("Detail: " + message.name));
+		this.domNode.appendChild(header);
 	},
-
-	_createSelectOnClick: function(message) {
-		msg = message;
-		return function(e) {
-			dojo.debug("name: " + msg.name);
-		};
-	},	
 
 	onDocResults: function(message) {
 		dojo.dom.removeChildren(this.domNode);
@@ -45,8 +35,6 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		for (var i=0; i < message.docResults.length; i++) {
 			var newDiv = document.createElement("div");
 
-			//dojo.debug(message.docResults[i].name);
-			//dojo.debug(message.docResults[i].summary);
 			var packageSpan = document.createElement("span");
 			var packageA = document.createElement("a");
 
@@ -56,14 +44,9 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 			}
 
 			packageA.appendChild(document.createTextNode(message.docResults[i].name));
-			packageA.data = message.docResults[i];
-			var select = function() {
-				
-			}
 
 			function makeSelect(x) {
 				return function(e) {
-					for (i in x) {dojo.debug(i + ": " + x[i]);}
 					//dojo.debug("Select: " + x.name);
 					dojo.event.topic.publish("docSelectFunction",x);
 				}
