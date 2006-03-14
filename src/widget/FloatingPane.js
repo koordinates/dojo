@@ -55,6 +55,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			document.body.appendChild(this.domNode);
 		}
 
+		// <img src=""> can hang IE!  better get rid of it
+		if(this.iconSrc==""){
+			dojo.dom.removeNode(this.titleBarIcon);
+		}
+
 		if(this.titleBarDisplay!="none"){	
 			this.titleBar.style.display="";
 			dojo.html.disableSelection(this.titleBar);
