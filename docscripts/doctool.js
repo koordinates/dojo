@@ -21,6 +21,7 @@ function docInit(){
 		}
 		this._preformSearch(searchStr);
 	}
+	dojo.event.topic.publish("docSelectFunction", {selectKey: ++docCount, name: "dojo.animation.Animation.play"});
 }
 dojo.addOnLoad(docInit);
 

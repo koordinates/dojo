@@ -16,6 +16,7 @@ dojo.require("dojo.dom");
 
 dojo.doc._count = 0;
 dojo.doc._keys = {};
+dojo.doc._myKeys = [];
 dojo.doc._callbacks = {function_names: []};
 dojo.doc._cache = {}; // Saves the JSON objects in cache
 dojo.doc._rpc = new dojo.rpc.JotService;
@@ -143,7 +144,7 @@ dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		search.filter = "it/DocFnForm/require = '" + evt.pkg + "' and it/DocFnForm/name = '" + evt.name + "' and it/DocFnForm/id = '" + evt.id + "'";
 	}
 	
-	dojo.doc._rpc.callRemote("search", search).addCallback(function(data){ dojo.doc._gotDoc("fn", data.list[0], evt); });
+	dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ dojo.doc._gotDoc("fn", data.list[0], evt); }, function(data){ dojo.doc._gotDoc("fn", data.list[0], evt); });
 	
 	search.forFormName = "DocParamForm";
 
@@ -154,7 +155,7 @@ dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 	}
 	delete search.limit;
 	
-	dojo.doc._rpc.callRemote("search", search).addCallback(function(data){ dojo.doc._gotDoc("param", data.list, evt); });
+	dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ dojo.doc._gotDoc("param", data.list, evt); }, function(data){ dojo.doc._gotDoc("param", data.list, evt); });
 }
 
 dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
@@ -205,14 +206,10 @@ dojo.doc._getPkgMeta = function(/*Object*/ input){
 	dojo.doc._buildCache(input);
 }
 
-// First make sure the functions have been loaded
-// Look through each function to find any matches. Create an array of the matching packages
-// Make sure all packages have been loaded
-// Go through and return all summaries for all matching functions
 dojo.doc._onDocSearch = function(/*Object*/ input){
 	dojo.debug("_onDocSearch()");
 	if(!input.name){
-		return false;
+		return;
 	}
 	if(!input.selectKey){
 		input.selectKey = ++dojo.doc._count;
@@ -222,7 +219,6 @@ dojo.doc._onDocSearch = function(/*Object*/ input){
 	input.type = "function_names";
 
 	dojo.doc._buildCache(input);
-	return false;
 }
 
 dojo.doc._onDocSearchFn = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
@@ -257,7 +253,7 @@ dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ e
 	}
 	
 	if(done){
-		var results = [];
+		var results = {selectKey: evt.selectKey, docResults: []};
 		var data = dojo.doc._cache;
 		var packages = dojo.doc._keys[evt.selectKey];
 		var name = packages.pkg;
@@ -270,7 +266,7 @@ dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ e
 					}
 					if(fn != "requires"){
 						for(var sig in data[pkg]["meta"][fn]){
-							results.push({
+							results.docResults.push({
 								pkg: pkg,
 								name: fn,
 								summary: data[pkg]["meta"][fn][sig]
@@ -281,11 +277,40 @@ dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ e
 			}
 		}
 
-		dojo.event.topic.publish("docResults", [results]);
+		dojo.event.topic.publish("docResults", results);
 	}
 }
 
-dojo.doc._onDocSelectFunction = function(/*Object*/ input){	
+// Get doc
+// Get meta
+// Get src
+// Get function signature
+dojo.doc._onDocSelectFunction = function(/*Object*/ input){
+	dojo.debug("_onDocSelectFunction()");
+	if(!input.name){
+		return false;
+	}
+	if(!input.selectKey){
+		input.selectKey = ++dojo.doc._count;
+	}
+
+	dojo.doc._keys[input.selectKey] = [];
+	dojo.doc.getMeta(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
+	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "meta"}
+	dojo.doc.getSrc(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
+	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "src"}
+	dojo.doc.getDoc(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
+	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "doc"}
+}
+
+dojo.doc._onDocSelectResults = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
+	dojo.debug("_onDocSelectResults()");
+	var key = dojo.doc._myKeys[evt.selectKey];
+	dojo.doc._keys[key.selectKey][key.type] = data;
+	if(dojo.doc._keys[key.selectKey]["meta"] && dojo.doc._keys[key.selectKey]["src"] && dojo.doc._keys[key.selectKey]["doc"]){
+		dojo.doc._keys[key.selectKey].selectKey = evt.selectKey;
+		dojo.event.topic.publish("docFunctionDetail", dojo.doc._keys[key.selectKey]);
+	}
 }
 
 dojo.doc._buildCache = function(/*Object*/ input){
@@ -300,6 +325,11 @@ dojo.doc._buildCache = function(/*Object*/ input){
 			dojo.io.bind({
 				url: "json/function_names",
 				mimetype: "text/json",
+				error: function(type, evt){
+					for(var i = 0, callback; callback = dojo.doc._callbacks.function_names[i]; i++){
+						callback[1].call(null, "error", {}, callback[0]);
+					}
+				},
 				load: function(type, data, evt){
 					for(var key in data){
 						// Packages starting with _ have a parent of "dojo"
@@ -381,6 +411,12 @@ dojo.doc._buildCache = function(/*Object*/ input){
 				url: url,
 				attach: input,
 				mimetype: mimetype,
+				error: function(type, evt){
+					if(evt.attach.callbacks && evt.attach.callbacks.length){
+						var callback = evt.attach.callbacks.shift();
+						callback.call(null, "error", {}, evt.attach);
+					}
+				},
 				load: function(type, data, evt){
 					if(!dojo.doc._cache[evt.attach.pkg]){
 						dojo.doc._cache[evt.attach.pkg] = {};
@@ -393,7 +429,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 					}else{
 						dojo.doc._cache[evt.attach.pkg][evt.attach.name][evt.attach.type] = data;
 					}
-					if(input.callbacks && input.callbacks.length){
+					if(evt.attach.callbacks && evt.attach.callbacks.length){
 						var callback = input.callbacks.shift();
 						callback.call(null, "load", data, evt.attach);
 					}
@@ -421,6 +457,12 @@ dojo.doc._buildCache = function(/*Object*/ input){
 			url: "json/" + pkg + "/meta",
 			attach: input,
 			mimetype: "text/json",
+			error: function(type, evt){
+				if(evt.attach.callbacks && evt.attach.callbacks.length){
+					var callback = evt.attach.callbacks.shift();
+					callback.call(null, "error", {}, evt.attach);
+				}
+			},
 			load: function(type, data, evt){
 				for(var key in data){
 					if(key != "requires"){
@@ -461,7 +503,7 @@ dojo.doc.savePackage = function(/*String*/ name, /*String*/ description){
 			pname1: "main/text",
 			pvalue1: "Test"
 		}
-	).addCallback(dojo.doc._results);
+	).addCallbacks(dojo.doc._results, dojo.doc._results);
 }
 
 dojo.doc.functionPackage = function(/*Function*/ callback, /*Object*/ input){
