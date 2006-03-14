@@ -139,8 +139,6 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	getDescendants: function(){
-		// FIXME: this does not appear to be recursive. Shouldn't a function 
-		// with this signature get *all* descendants?
 		var result = [];
 		var stack = [this];
 		var elem;
