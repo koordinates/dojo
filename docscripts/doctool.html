@@ -2,7 +2,7 @@
 <head>
 <title>Dojo API Reference</title>
 <script>
-  var djConfig = {isDebug: true};
+  var djConfig = {isDebug: true, debugContainerId: "debug"} ;
 </script>
 <script type="text/javascript" src="../dojo.js"></script>
 <script type="text/javascript" src="doctool.js"></script>
@@ -30,7 +30,7 @@
 		</div>
 	</div>
 	<div id="content-body">
-		<div id="content" dojoType="docpane" class="content">
+		<div id="content" widgetId="content" dojoType="docpane" class="content">
 			<h1>Dojo API</h1>
 
 			<p>
@@ -52,5 +52,6 @@
 				<div style="float:left;">&copy; Dojo Foundation, All Rights Reserved.</div>
 		</div>
 	</div>
+	<div id="debug" style="overflow: auto;z-index: 300;border: 2px solid black;background: #ffffff;position:absolute; float: right; width:500px;height: 200px; right: 25px; top:420px;/*display: none;*/"></div> 
 </body>
 </html>
