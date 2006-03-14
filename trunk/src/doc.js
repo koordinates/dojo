@@ -2,6 +2,7 @@ dojo.provide("dojo.doc");
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.topic");
 dojo.require("dojo.rpc.JotService");
+dojo.require("dojo.dom");
 
 /*
  * TODO:
@@ -9,6 +10,7 @@ dojo.require("dojo.rpc.JotService");
  * Handle host environments
  * Rewrite function signatures
  * Deal with dojo.widget weirdness
+ * Limit function parameters to only the valid ones
  *
  */
 
@@ -17,7 +19,7 @@ dojo.doc._keys = {};
 dojo.doc._callbacks = {function_names: []};
 dojo.doc._cache = {}; // Saves the JSON objects in cache
 dojo.doc._rpc = new dojo.rpc.JotService;
-dojo.doc._rpc.serviceUrl = "http://manual.dojotoolkit.org/_/jsonrpc";
+dojo.doc._rpc.serviceUrl = "http://doc:doc@manual.dojotoolkit.org/_/jsonrpc";
 
 dojo.doc.functionNames = function(/*mixed*/ selectKey, /*Function*/ callback){
 	// summary: Returns an ordered list of package and function names.
@@ -128,6 +130,8 @@ dojo.doc.getDoc = function(/*mixed*/ selectKey, /*Function*/ callback, /*String*
 
 dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 	dojo.debug("_getDoc(" + evt.pkg + "/" + evt.name + ")");
+	
+	dojo.doc._keys[evt.selectKey] = {};
 
 	var search = {};
 	search.forFormName = "DocFnForm";
@@ -139,16 +143,46 @@ dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		search.filter = "it/DocFnForm/require = '" + evt.pkg + "' and it/DocFnForm/name = '" + evt.name + "' and it/DocFnForm/id = '" + evt.id + "'";
 	}
 	
-	if(evt.callbacks && evt.callbacks.length){
-		dojo.doc._rpc.callRemote("search", search).addCallback(function(){ dojo.doc._gotDoc(evt, arguments); });
+	dojo.doc._rpc.callRemote("search", search).addCallback(function(data){ dojo.doc._gotDoc("fn", data.list[0], evt); });
+	
+	search.forFormName = "DocParamForm";
+
+	if(!evt.id){
+		search.filter = "it/DocParamForm/fns = '" + evt.pkg + "=>" + evt.name + "'";
+	}else{
+		search.filter = "it/DocParamForm/fns = '" + evt.pkg + "=>" + evt.name + "=>" + evt.id + "'";
 	}
+	delete search.limit;
+	
+	dojo.doc._rpc.callRemote("search", search).addCallback(function(data){ dojo.doc._gotDoc("param", data.list, evt); });
 }
 
-dojo.doc._gotDoc = function(/*Object*/ evt, /*Array*/ results){
-	dojo.debug("_gotDoc()");
-	if(evt.callbacks && evt.callbacks.length){
-		var callback = evt.callbacks.shift();
-		callback.call(null, "load", results, evt);
+dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
+	dojo.debug("_gotDoc(" + type + ")");
+
+	dojo.doc._keys[evt.selectKey][type] = data;
+	if(dojo.doc._keys[evt.selectKey]["fn"] && dojo.doc._keys[evt.selectKey]["param"]){
+		var keys = dojo.doc._keys[evt.selectKey];
+		var description = dojo.dom.createDocumentFromText(keys["fn"]["main/text"]).childNodes[0].innerHTML;
+		if(!description){
+			description = keys["fn"]["main/text"];
+		}
+		data = {
+			description: description,
+			returns: keys["fn"]["DocFnForm/returns"],
+			id: keys["fn"]["DocFnForm/id"],
+			parameters: []
+		}
+		for(var i = 0, param; param = keys["param"][i]; i++){
+			data.parameters.push({
+				name: param["DocParamForm/name"],
+				description: param["DocParamForm/desc"]
+			});
+		}
+		if(evt.callbacks && evt.callbacks.length){
+			var callback = evt.callbacks.shift();
+			callback.call(null, "load", data, evt);
+		}
 	}
 }
 
@@ -177,6 +211,9 @@ dojo.doc._getPkgMeta = function(/*Object*/ input){
 // Go through and return all summaries for all matching functions
 dojo.doc._onDocSearch = function(/*Object*/ input){
 	dojo.debug("_onDocSearch()");
+	if(!input.name){
+		return false;
+	}
 	if(!input.selectKey){
 		input.selectKey = ++dojo.doc._count;
 	}
