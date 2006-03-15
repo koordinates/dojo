@@ -22,6 +22,7 @@ function docInit(){
 		}
 		this._preformSearch(searchStr);
 	}
+	dojo.event.connect(dojo.widget.byId("search").textInputNode, "onkeyup", docSearch);
 }
 dojo.addOnLoad(docInit);
 
@@ -36,14 +37,15 @@ function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
 	}else if(docKeys[evt.selectKey] == "src"){
 		//dojo.debug(type + " src: " + data);
 	}else if(docKeys[evt.selectKey] == "doc"){
-		//dojo.debug(type + " doc: " + dojo.json.serialize(data));
+		dojo.debug(type + " doc: " + dojo.json.serialize(data));
 	}
 }
 
-function docSubmit(){
-	dojo.widget.byId("search").hideResultList();
-	dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
-	return false;
+function docSearch(evt){
+	if(evt.keyCode == 13){
+		dojo.widget.byId("search").hideResultList();
+		dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
+	}
 }
 
 function docResults(/*Object*/ input){
