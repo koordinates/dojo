@@ -3,6 +3,16 @@ function getJsonpCallback(url){
 	var idMatch = url.match(/jsonp=(.*?)(&|$)/);
 	if(idMatch){
 		result = idMatch[1];
+	}else{
+		//jsonp didn't match, so maybe it is the jsonCallback thing.
+		idMatch = url.match(/callback=(.*?)(&|$)/);
+		if(idMatch){
+			result = idMatch[1];
+		}
+	}
+	
+	if(result){
+		result = decodeURIComponent(result);
 	}
 	return result;
 }
