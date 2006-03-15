@@ -1,15 +1,11 @@
 <html>
 	<head>
-		<script language="JavaScript" type="text/javascript">
+		<script type="text/javascript">
 			// Dojo configuration
-			djConfig = { 
-				parseWidgets: false,
-				isDebug: true
-			};
+			djConfig = { isDebug: true };
 		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../dojo.js"></script>
-		<script language="JavaScript" type="text/javascript">
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
 			dojo.require("dojo.event.topic");
 
 			function Subscriber(displayNode){
@@ -32,9 +28,9 @@
                 topic2.sendMessage("Message " + ++clickCount);
             }
 
-			dojo.hostenv.modulesLoadedListeners.push(function(){
-				var sub1 = new Subscriber(document.getElementById("subscriber1"));
-				var sub2 = new Subscriber(document.getElementById("subscriber2"));
+			dojo.addOnLoad(function(){
+				var sub1 = new Subscriber(dojo.byId("subscriber1"));
+				var sub2 = new Subscriber(dojo.byId("subscriber2"));
 
                 topic1.subscribe(sub1, "update");
                 topic1.subscribe(sub2, "update");
