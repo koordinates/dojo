@@ -128,17 +128,22 @@ dojo.io.ScriptSrcTransport = new function(){
 			dojo.undo.browser.addToHistory(kwArgs);
 		}
 
-		var content = kwArgs["content"];
+		//Create an ID for the request.
+		var id = kwArgs["apiId"] ? kwArgs["apiId"] : "id" + this._counter++;
 
-		if(kwArgs.sendTransport || kwArgs.jsonp) {
+		//Fill out any other content pieces.
+		var content = kwArgs["content"];
+		if(kwArgs.sendTransport || kwArgs.jsonp || kwArgs.jsonParamName) {
 			if (!content){
 				content = {};
 			}
 			if(kwArgs.sendTransport){
 				content["dojo.transport"] = "scriptsrc";
 			}
-			if(kwArgs.jsonp){
-				content["jsonp"] = kwArgs.jsonp;
+
+			if(kwArgs.jsonp || kwArgs.jsonParamName){
+				var jsonpName = kwArgs.jsonParamName || "jsonp";
+				content[jsonpName] = "dojo.io.ScriptSrcTransport._state['" + id + "'].jsonpCall";
 			}
 		}
 
@@ -157,7 +162,6 @@ dojo.io.ScriptSrcTransport = new function(){
 		}
 
 		//Set up the state for this request.
-		var id = kwArgs["apiId"] ? kwArgs["apiId"] : "id" + this._counter++;
 		var state = {
 			"id": id,
 			"idParam": "_dsrid=" + id,
@@ -174,13 +178,12 @@ dojo.io.ScriptSrcTransport = new function(){
 		}
 
 		//If this is a jsonp request, intercept the jsonp callback
-		var jsonpMatch = query.match(/jsonp=([^\&]*)/);
-		if(jsonpMatch){
-			state.jsonp = jsonpMatch[1];
+		var jsonCallback = kwArgs.jsonp || kwArgs.jsonParamValue;
+		if(jsonCallback){
+			state.jsonp = jsonCallback;
 			state.jsonpCall = function(data){
 				dojo.io.ScriptSrcTransport._finish(this, "jsonp", data);
 			};
-			state.query = query.replace(/jsonp=([^\&]*)/, "jsonp=dojo.io.ScriptSrcTransport._state['" + id + "'].jsonpCall");
 		}
 
 		//Only store the request state on the state tracking object if a callback
@@ -354,7 +357,7 @@ dojo.io.ScriptSrcTransport = new function(){
 			switch(callback){
 				case "load":
 					var response = event ? event.response : null;
-					state.kwArgs[(typeof state.kwArgs.load == "function") ? "load" : "handle"]("load", response, event);
+					state.kwArgs[(typeof state.kwArgs.load == "function") ? "load" : "handle"]("load", response, event, state.kwArgs);
 					state.isDone = true;
 					break;
 				case "partOk":
@@ -367,11 +370,11 @@ dojo.io.ScriptSrcTransport = new function(){
 					state.isDone = false;
 					break;
 				case "error":
-					state.kwArgs[(typeof state.kwArgs.error == "function") ? "error" : "handle"]("error", event.response, event);
+					state.kwArgs[(typeof state.kwArgs.error == "function") ? "error" : "handle"]("error", event.response, event, state.kwArgs);
 					state.isDone = true;
 					break;
 				default:
-					state.kwArgs[(typeof state.kwArgs[callback] == "function") ? callback : "handle"](callback, event, event);
+					state.kwArgs[(typeof state.kwArgs[callback] == "function") ? callback : "handle"](callback, event, event, state.kwArgs);
 					state.isDone = true;
 			}
 		}

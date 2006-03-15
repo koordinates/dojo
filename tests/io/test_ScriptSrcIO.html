@@ -124,14 +124,20 @@
 			}
 
 			var kwArgs = createSimpleKwArgs();
+
 			kwArgs.url = url + query;
-			kwArgs.jsonp = "handleJsonpAnimalType";
-			
+			if(dojo.byId("useJsonCallback").checked){
+				kwArgs.jsonParamName = "callback";
+				kwArgs.jsonParamValue = "handleJsonpAnimalType";
+			}else{
+				kwArgs.jsonp = "handleJsonpAnimalType";
+			}
 			dojo.io.bind(kwArgs);
 		}
 		
 		function testJsonpBad(){
 			transport.removeScripts();
+
 			var query = gi("myJsonpQuery").value;
 			if(query){
 				query = "?" + query;
@@ -140,8 +146,14 @@
 			}
 
 			var kwArgs = createSimpleKwArgs();
+
 			kwArgs.url = "Bad.js" + query;
-			kwArgs.jsonp = "handleJsonpAnimalType";
+			if(dojo.byId("useJsonCallback").checked){
+				kwArgs.jsonParamName = "callback";
+				kwArgs.jsonParamValue = "handleJsonpAnimalType";
+			}else{
+				kwArgs.jsonp = "handleJsonpAnimalType";
+			}
 			
 			dojo.io.bind(kwArgs);
 		}
@@ -267,7 +279,7 @@
 <b>ScriptSrcIO test page:</b>
 <a href="javascript:void(0);" onclick="showHowTo()">How To</a> |
 <a href="javascript:void(0);" onclick="showSimple()">Simple and Polling Tests</a> |
-<a href="javascript:void(0);" onclick="showJsonp()">JSONP Tests</a> |
+<a href="javascript:void(0);" onclick="showJsonp()">JSONP And JSON Callback Tests</a> |
 <a href="javascript:void(0);" onclick="showDsr()">DSR ID/Multipart Tests</a>
 <hr>
 
@@ -292,8 +304,9 @@
 	</ul>
 </div>
 <div id="jsonpTests" class="sectionTest">
-	<p><b>JSONP Tests</b></p>
+	<p><b>JSONP and JSON Callback Tests</b></p>
 
+	<input type="checkbox" id="useJsonCallback"> Use "callback" as JSON callback parameter instead of "jsonp"<br>
 	URL: <input type="text" size="50" id="myJsonpUrl" value="scriptsrc/TestJsonp.js"><br>
 	Query Params (should be proper name=urlEncodedValue&name=urlEncodedValue... syntax):
 	<br><textarea id="myJsonpQuery" cols="50" rows="10"></textarea><br>
@@ -325,7 +338,7 @@
 <ul>
 	<li><a href="#Simple">Simple</a></li>
 	<li><a href="#Polling">Polling</a></li>
-	<li><a href="#JSONP">JSONP</a></li>
+	<li><a href="#JSONP">JSONP and JSON Callbacks</a></li>
 	<li><a href="#DSR">DSR/Multipart</a></li>
 </ul>
 
@@ -373,8 +386,8 @@ dojo.io.bind({
 </pre></p>
 
 
-<p><a name="JSONP"></a><b><a href="javascript:void(0)" onclick="showJsonp()">JSONP</a></b><br>
-Adds a script element with a src. Uses the <a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/" target="_blank">JSONP
+<p><a name="JSONP"></a><b><a href="javascript:void(0)" onclick="showJsonp()">JSONP and JSON Callbacks</a></b><br>
+<b>JSONP</b>: Adds a script element with a src. Uses the <a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/" target="_blank">JSONP
 convention</a> to specify the callback that the server will use. A load callback is not used in this scenario, 
 since the jsonp string will be used for the callback. Timeouts are supported with this type of request. Example:</p>
 
@@ -382,7 +395,25 @@ since the jsonp string will be used for the callback. Timeouts are supported wit
 dojo.io.bind({
 	url: "http://the.script.url/goes/here",
 	transport: "ScriptSrcTransport",
-	jsonp: "myJsonpLoadFunction", //This means a callback will be myJsonpLoadFunction(data);
+	jsonp: "myJsonpLoadFunction",
+	timeout: function() { /* Called if there is a timeout */},
+	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
+});
+</pre></p>
+
+<p><b>JSON Callbacks</b>: The same as JSONP, but instead of using
+"jsonp" as the URL parameter, a different name for the URL parameter can be used. This allows usage of
+API services like <a href="http://developer.yahoo.net/common/json.html">Yahoo! Web Services</a> (which uses
+the parameter name "callback"). Don't use the <i>jsonp</i> keyword argument to bind, but instead, specify the name
+of the URL parameter by using <i>jsonParamName</i> and the callback string in <i>jsonParamValue</i>. Example 
+for a data service that uses "callback" as the URL parameter:</p>
+
+<p><pre>
+dojo.io.bind({
+	url: "http://the.script.url/goes/here",
+	transport: "ScriptSrcTransport",
+	jsonParamName: "callback",
+	jsonParamValue: "myCallbackFunc",
 	timeout: function() { /* Called if there is a timeout */},
 	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
 });
