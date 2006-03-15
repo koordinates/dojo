@@ -140,7 +140,30 @@ dojo.event = new function(){
 	}
 
 	this.connect = function(){
-		var ao = interpolateArgs(arguments);
+		if(arguments.length == 1){
+			var ao = arguments[0];
+		}else{
+			var ao = interpolateArgs(arguments);
+		}
+
+		if(dojo.lang.isArray(ao.srcObj)){
+			var tmpAO = {};
+			for(var x in ao){
+				tmpAO[x] = ao[x];
+			}
+			var mjps = [];
+			dojo.lang.forEach(ao.srcObj, function(src){
+				if((dojo.render.html.capable)&&(dojo.lang.isString(src))){
+					src = dojo.byId(src);
+					// dojo.debug(src);
+				}
+				tmpAO.srcObj = src;
+				// dojo.debug(tmpAO.srcObj, tmpAO.srcFunc);
+				// dojo.debug(tmpAO.adviceObj, tmpAO.adviceFunc);
+				mjps.push(dojo.event.connect.call(dojo.event, tmpAO));
+			});
+			return mjps;
+		}
 
 		// FIXME: just doing a "getForMethod()" seems to be enough to put this into infinite recursion!!
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
@@ -275,19 +298,19 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 
 			if((isNode)&&(!arguments.length)){
 				var evt = null;
-				try {
-					if(obj.ownerDocument) {
+				try{
+					if(obj.ownerDocument){
 						evt = obj.ownerDocument.parentWindow.event;
-					} else if(obj.documentElement) {
+					}else if(obj.documentElement){
 						evt = obj.documentElement.ownerDocument.parentWindow.event;
-					} else {
+					}else{
 						evt = window.event;
 					}
-				} catch(E) {
+				}catch(e){
 					evt = window.event;
 				}
 
-				if(evt) {
+				if(evt){
 					args.push(dojo.event.browser.fixEvent(evt));
 				}
 			}else{
