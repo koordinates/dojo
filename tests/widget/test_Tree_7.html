@@ -33,19 +33,19 @@
 
 	dojo.addOnLoad(function() {
 		dojo.event.topic.subscribe('treeContextMenuRemove/engage',
-			function (menuItem) { dojo.widget.byId('treeController').removeChild(menuItem.getTreeNode()); }
+			function (menuItem) { dojo.widget.byId('treeController').removeNode(menuItem.getTreeNode()); }
 		);
 
-		
+
 		dojo.event.topic.subscribe('treeContextMenuCreate/engage',
 			function (menuItem) {
                             dojo.widget.byId('treeController').createChild(menuItem.getTreeNode(), 0, {title:"New node"});
                         }
 		);
 
-                
+
 		dojo.event.topic.subscribe('treeContextMenuUp/engage',
-			function (menuItem) {                        
+			function (menuItem) {
                             var node = menuItem.getTreeNode();
                             if (node.isFirstNode()) return;
                             dojo.widget.byId('treeController').move(node, node.parent, node.getParentIndex()-1);
@@ -60,7 +60,7 @@
                             dojo.widget.byId('treeController').move(node, node.parent, node.getParentIndex()+1);
                         }
 		);
-		
+
 	});
 </script>
 

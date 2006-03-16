@@ -47,7 +47,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		dojo.event.topic.subscribe(tree.eventNames.iconClick, this, "select");
 		dojo.event.topic.subscribe(tree.eventNames.collapse, this, "onCollapse");
 		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
-		dojo.event.topic.subscribe(tree.eventNames.removeChild, this, "onRemoveChild");
+		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
 		/* remember all my trees to deselect when element is movedFrom them */
 		this.listenedTrees.push(tree);
 	},
@@ -99,7 +99,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		}
 	},
 
-	onRemoveChild: function(message) {
+	onRemoveNode: function(message) {
 		if (message.child !== this.selectedNode) {
 			return;
 		}
