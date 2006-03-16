@@ -14,6 +14,7 @@
 		//dojo.hostenv.writeIncludes();
 	
 		var data = {
+			link0: 'This is the initial state (page first loaded)',
 			link1: 'This is data for link 1',
 			link2: 'This is data for link 2',
 			link3: 'This is data for link 3',
@@ -89,15 +90,21 @@
 		function updateOutput(message){
 			document.getElementById('output').innerHTML += message + '<br />';
 		}
+		
+		dojo.addOnLoad(function(){
+			dojo.undo.browser.setInitialState(new HistoryTracker('link0'));
+		});
 	</script>
 </head>
 <body>
 	<div style="padding-bottom: 20px; width: 100%; border-bottom: 1px solid gray">
 	<h3>dojo.undo.browser test</h3>
-	<p><i>dojo.undo.browser usage:</i></p>
+	<p><i>Required steps for using dojo.undo.browser:</i></p>
 	<ul>
 		<li>dojo.require("dojo.undo.browser");</li>
 		<li>Define <b>preventBackButtonFix: false</b> in your djConfig.</li>
+		<li>Look at the source of this page to see how dojo.undo.browser.addToHistory()
+		and dojo.undo.browser.setInitialState() are used.</li>
 	</ul>
 	
 	<p>This page tests the dojo.undo.browser back/forward code. Click on the
@@ -118,15 +125,27 @@
 	a unique hash to the URL in the browser location bar). Other notes:</p>
 	
 	<ul>
+		<li>Do not mix dojo.undo.browser.addToHistory() calls that use changeUrl
+		with ones that do not use changeUrl. Always use one or the other. If you are
+		using changeUrl, you don't always have to provide a string for the value, but
+		at least set it to <b>true</b> to get an auto-generated URL hash.</li>
+		<li>There might be an issue in Mozilla Firefox 1.5 (other Mozilla browsers?)
+		where adding to the history sometimes results in a back and forward handler
+		call immediately. The end result is the correct state, but it might
+		cause problems for the application code if it is trying to keep up.
+		Still investigating this issue.</li>
 		<li>Don't test this page using local disk for MSIE. MSIE will not
 		create a history list for iframe_history.html if served from a file:
 		URL. The XML served back from the XHR tests will also not be properly
 		created if served from local disk. Serve the test pages from a web
 		server to test in that browser.</li>
-		<li>Safari 2.0.3+ (and probably 1.3.2+): works fine, except when
-		changeUrl is used. When changeUrl is used, Safari jumps all the way
+		<li>Safari 2.0.3+ (and probably 1.3.2+): Only the back button works OK
+		(not the forward button), and only if changeUrl is NOT used. 
+		When changeUrl is used, Safari jumps all the way
 		back to whatever page was shown before the page that uses
 		dojo.undo.browser support.</li>
+		<li>Opera 8.5.3: Does not work.</li>
+		<li>Konqueror: Unknown. The latest may have Safari's behavior.</li>
 	</ul>
 	</div>
 	<div style="float:left; padding: 20px">

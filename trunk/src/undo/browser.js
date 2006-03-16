@@ -45,7 +45,15 @@ dojo.undo.browser = {
 	bookmarkAnchor: null,
 	locationTimer: null,
 
-	//FIXME: what about allowing for a handler for the first page that comes up?
+	/**
+	 * setInitialState sets the state object and back callback for the very first page that is loaded.
+	 * It is recommended that you call this method as part of an event listener that is registered via
+	 * dojo.addOnLoad().
+	 */
+	setInitialState: function(args){
+		this.initialState = {"url": this.initialHref, "kwArgs": args, "urlHash": this.initialHash};
+	},
+
 	//FIXME: Would like to support arbitrary back/forward jumps. Have to rework iframeLoaded among other things.
 	//FIXME: is there a slight race condition in moz using change URL with the timer check and when
 	//       the hash gets set? I think I have seen a back/forward call in quick succession, but not consistent.
@@ -141,7 +149,7 @@ dojo.undo.browser = {
 				}else if(args["handle"]){
 					args.handle = tfw;
 				}
-		
+
 			}else if(dojo.render.html.moz){
 				// start the timer
 				if(!this.locationTimer){
@@ -210,8 +218,11 @@ dojo.undo.browser = {
 	handleBackButton: function(){
 		//The "current" page is always at the top of the history stack.
 		var current = this.historyStack.pop();
-		var last = this.historyStack[this.historyStack.length-1];
 		if(!current){ return; }
+		var last = this.historyStack[this.historyStack.length-1];
+		if(!last && this.historyStack.length == 0){
+			last = this.initialState;
+		}
 		if (last){
 			if(last.kwArgs["back"]){
 				last.kwArgs["back"]();
