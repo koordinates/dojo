@@ -48,7 +48,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		moveFrom: "moveFrom",
 		moveTo: "moveTo",
 		addChild: "addChild",
-		removeChild: "removeChild",
+		removeNode: "removeNode",
 		expand: "expand",
 		collapse: "collapse"
 	},
@@ -431,25 +431,25 @@ dojo.lang.extend(dojo.widget.Tree, {
 	/* do actual parent change here. Write remove child first */
 	doMove: function(child, newParent, index) {
 		//var parent = child.parent;
-		child.parent.doRemoveChild(child);
+		child.parent.doRemoveNode(child);
 
 		newParent.doAddChild(child, index);
 	},
 
 
 
-// ================================ removeChild ===================================
+// ================================ removeNode ===================================
 
-	removeChild: function(child) {
+	removeNode: function(child) {
 		if (!child.parent) return;
 
 		var oldTree = child.tree;
 		var oldParent = child.parent;
 
-		var removedChild = this.doRemoveChild.apply(this, arguments);
+		var removedChild = this.doRemoveNode.apply(this, arguments);
 
 
-		dojo.event.topic.publish(this.tree.eventNames.removeChild,
+		dojo.event.topic.publish(this.tree.eventNames.removeNode,
 			{ child: removedChild, tree: oldTree, parent: oldParent }
 		);
 
@@ -457,7 +457,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 	},
 
 
-	doRemoveChild: function(child) {
+	doRemoveNode: function(child) {
 		if (!child.parent) return;
 
 		var parent = child.parent;
@@ -493,7 +493,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 	destroyChild: function(child) {
 		dojo.debug("destroyed");
 		//dojo.debugShallow(child);
-		child.parent.removeChild(child);
+		child.parent.removeNode(child);
 		child.cleanUp();
 		delete child;
 	}

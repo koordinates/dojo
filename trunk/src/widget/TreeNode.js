@@ -119,7 +119,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		for(var i=0; i<this.actionsDisabled.length; i++) {
 			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
 		}
-			
+
 		this.expandLevel = parseInt(this.expandLevel);
 
 	},
@@ -149,7 +149,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		if (depthDiff<0) {
 			for(var i=0; i<-depthDiff;i++) {
 				this.imgs.shift();
-				this.domNode.removeChild(this.domNode.firstChild);
+				this.domNode.removeNode(this.domNode.firstChild);
 			}
 		}
 
@@ -474,9 +474,9 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 
-	removeChild: function(){ return this.tree.removeChild.apply(this, arguments) },
+	removeNode: function(){ return this.tree.removeNode.apply(this, arguments) },
 	destroyChild: function(){ return this.tree.destroyChild.apply(this, arguments) },
-	doRemoveChild: function(){ return this.tree.doRemoveChild.apply(this, arguments) },
+	doRemoveNode: function(){ return this.tree.doRemoveNode.apply(this, arguments) },
 
 
 	toString: function() {

@@ -33,7 +33,7 @@
 
 	dojo.addOnLoad(function() {
 		dojo.event.topic.subscribe('treeContextMenuRemove/engage',
-			function (menuItem) { dojo.widget.byId('treeController').removeChild(menuItem.getTreeNode()); }
+			function (menuItem) { dojo.widget.byId('treeController').removeNode(menuItem.getTreeNode()); }
 		);
 
 

@@ -79,7 +79,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	},
 
 
-	doRemoveChild: function(node, callFunc, callObj) {
+	doRemoveNode: function(node, callFunc, callObj) {
 
 		var params = {
 			node: this.getInfo(node),
@@ -87,10 +87,10 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 		}
 
 		dojo.io.bind({
-				url: this.getRPCUrl('removeChild'),
+				url: this.getRPCUrl('removeNode'),
 				/* I hitch to get this.loadOkHandler */
 				load: dojo.lang.hitch(this, function(type, response) {
-					this.doRemoveChildProcessResponse(type, response, node, callFunc, callObj) }
+					this.doRemoveNodeProcessResponse(type, response, node, callFunc, callObj) }
 				),
 				error: this.RPCErrorHandler,
 				mimetype: "text/json",
@@ -101,7 +101,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	},
 
 
-	doRemoveChildProcessResponse: function(type, response, node, callFunc, callObj) {
+	doRemoveNodeProcessResponse: function(type, response, node, callFunc, callObj) {
 		if (!dojo.lang.isUndefined(response.error)) {
 			this.RPCErrorHandler("server", response.error);
 			return false;
@@ -112,7 +112,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 		if (response == true) {
 			/* change parent succeeded */
 			var args = [ node, callFunc, callObj ];
-			dojo.widget.TreeLoadingController.prototype.doRemoveChild.apply(this, args);
+			dojo.widget.TreeLoadingController.prototype.doRemoveNode.apply(this, args);
 
 			return;
 		} else if (dojo.lang.isObject(response)) {

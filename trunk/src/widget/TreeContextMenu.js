@@ -52,7 +52,7 @@ dojo.lang.extend(dojo.widget.TreeContextMenu, {
 		dojo.event.topic.subscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
 		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
 		dojo.event.topic.subscribe(tree.eventNames.moveTo, this, "onMoveTo");
-		dojo.event.topic.subscribe(tree.eventNames.removeChild, this, "onRemoveChild");
+		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
 		dojo.event.topic.subscribe(tree.eventNames.addChild, this, "onAddChild");
 
 		this.listenedTrees.push(tree);
@@ -93,7 +93,7 @@ dojo.lang.extend(dojo.widget.TreeContextMenu, {
 		}
 	},
 
-	onRemoveChild: function(message) {
+	onRemoveNode: function(message) {
 		this.unBindTreeNode(message.child);
 	},
 

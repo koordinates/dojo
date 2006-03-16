@@ -354,7 +354,7 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
 		dojo.event.topic.subscribe(tree.eventNames.moveTo, this, "onMoveTo");
 		dojo.event.topic.subscribe(tree.eventNames.addChild, this, "onAddChild");
-		dojo.event.topic.subscribe(tree.eventNames.removeChild, this, "onRemoveChild");
+		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
 	},
 
 
