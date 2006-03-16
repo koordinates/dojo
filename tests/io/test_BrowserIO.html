@@ -6,7 +6,7 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				// preventBackButtonFix: true,
+				preventBackButtonFix: false,
 				isDebug: true
 			};
 		</script>
@@ -14,8 +14,20 @@
 			src="../../dojo.js"></script>
 		<script language="JavaScript" type="text/javascript">
 			dojo.require("dojo.io.*");
+			dojo.require("dojo.undo.browser");
 
 			function init(){
+				var initialState = {
+					back: function(){
+						alert("We are BACK at initial state.");
+					},
+					forward: function(){
+						alert("We are FORWARD at initial state (you should never see this alert.");
+					}
+				};
+
+				dojo.undo.browser.setInitialState(initialState);
+				
 				var bindArgs = {
 					url: "test_BrowserIO_data.txt",
 					load: function(type, data, evt){
@@ -33,16 +45,6 @@
 					changeURL: "foo"+(new Date()).getTime()
 				};
 				var canBind = dojo.io.bind(bindArgs);
-			}
-
-			function initRequest(){
-				var req = new dojo.io.Request("test_BrowserIO_data.txt");
-				req.changeURL = "foobar" + (new Date()).getTime();
-				req.onload = function (e) {
-					dj_debug(e.data);
-				}
-				req.addEventListener("backbutton", function (e) { alert("we intercepted the back button"); });
-				dojo.io.bind(req);
 			}
 
 			dojo.hostenv.modulesLoadedListeners.push(init);
