@@ -146,7 +146,7 @@ dojo.event = new function(){
 			var ao = interpolateArgs(arguments);
 		}
 
-		if(dojo.lang.isArray(ao.srcObj)){
+		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
 			var tmpAO = {};
 			for(var x in ao){
 				tmpAO[x] = ao[x];
