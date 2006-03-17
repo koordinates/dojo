@@ -4,6 +4,7 @@
 
 TODO:
 
+Summary should be a key, not a direct value.
 Handle polymorphic IDs
 Parse variables that point to objects for its keys
 Handle "extends" variables
@@ -254,7 +255,7 @@ else{
 					if(strrpos($function_name, '*') == strlen($function_name)-1 || !empty($empty_test)){
 						if($last['package'] && strpos($real_function_name, $last['package']) !== false){
 							// This guarantees that the .* function won't get inserted unless it has children
-							$output['function_names'][preg_replace('%^dojo%', '_', $last['package']) . '*'][] = $last['package'] . '*';
+							$output['function_names'][preg_replace('%^dojo%', '_', $last['package']) . '*'] = array();
 							$last['package'] = '';
 						}
 						if(strrpos($real_function_name, '*') == strlen($real_function_name)-1){
