@@ -7,8 +7,9 @@ dojo.require("dojo.dom");
 /*
  * TODO:
  *
- * Package summary needs to compensate for "is" (dojo.dom.firstElement)
+ * Package summary needs to compensate for "is" (dojo.dom.firstElement) when parser is fixed
  * unset dojo.doc._keys when they've been used up
+ * Move multi-load checks to a timer
  * Handle host environments
  * Rewrite function signatures
  * Deal with dojo.widget weirdness
@@ -227,11 +228,13 @@ dojo.doc._onDocSearch = function(/*Object*/ input){
 dojo.doc._onDocSearchFn = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 	dojo.debug("_onDocSearchFn(" + evt.name + ")");
 	var packages = {};
+	var size = 0;
 	pkgLoop:
 	for(var pkg in data){
 		for(var i = 0, fn; fn = data[pkg][i]; i++){
 			if(fn.toLowerCase().indexOf(evt.name) > -1){
 				// Build a list of all packages that need to be loaded and their loaded state.
+				++size;
 				packages[pkg] = false;
 				continue pkgLoop;
 			}
@@ -244,28 +247,33 @@ dojo.doc._onDocSearchFn = function(/*String*/ type, /*Array*/ data, /*Object*/ e
 			dojo.doc.getPkgMeta(evt.selectKey, dojo.doc._onDocResults, pkg);
 		}
 	}
+	setTimeout("dojo.doc._onDocSearchInterval(\"" + evt.selectKey + "\", " + size + ", 0);", size * 10);
 }
 
-dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-	dojo.debug("_onDocResults(" + evt.name + "/" + dojo.doc._keys[evt.selectKey].pkg + ") " + type);
-	dojo.doc._keys[evt.selectKey][evt.name] = true;
-
+dojo.doc._onDocSearchInterval = function(selectKey, size, cycles){
+	// summary: Timer depends on how many items we're loading
 	var done = true;
-	for(var pkg in dojo.doc._keys[evt.selectKey]){
-		if(!dojo.doc._keys[evt.selectKey][pkg]){
+	var pkgs = dojo.doc._keys[selectKey];
+	for(var pkg in pkgs){
+		if(!pkgs[pkg]){
 			done = false;
 			break;
 		}
 	}
-
-	if(done){
-		var results = {selectKey: evt.selectKey, docResults: []};
+	if(!done){
+		++cycles;
+		setTimeout("dojo.doc._onDocSearchInterval(\"" + selectKey + "\", " + size + ", " + cycles + ");", size * (10 + cycles));
+		dojo.debug("dojo.doc._onDocSearchInterval() in " + size * (10 + cycles) + " millis");
+	}else{
+		var results = {selectKey: selectKey, docResults: []};
 		var data = dojo.doc._cache;
-		var packages = dojo.doc._keys[evt.selectKey];
-		var name = packages.pkg;
+		var name = pkgs.pkg;
 		
-		for(var pkg in packages){
-			if(packages[pkg] === true){;
+		for(var pkg in pkgs){
+			if(pkgs[pkg] === true){;
+				if(!data[pkg]){
+					continue;
+				}
 				for(var fn in data[pkg]["meta"]){
 					if(fn.toLowerCase().indexOf(name) == -1){
 						continue;
@@ -286,6 +294,11 @@ dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ e
 		dojo.debug("Publishing docResults");
 		dojo.event.topic.publish("docResults", results);
 	}
+}
+
+dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
+	dojo.debug("_onDocResults(" + evt.name + "/" + dojo.doc._keys[evt.selectKey].pkg + ") " + type);
+	dojo.doc._keys[evt.selectKey][evt.name] = true;
 }
 
 // Get doc
@@ -489,7 +502,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 				dojo.doc._cache[args.input.name]["meta"] = data;
 				if(input.callbacks && input.callbacks.length){
 					var callback = input.callbacks.shift();
-					callback.call(null, "pkgmeta", data, input);
+					callback.call(null, "load", data, input);
 				}
 			}
 		});
