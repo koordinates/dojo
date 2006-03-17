@@ -294,6 +294,7 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	this.watchInFlight = function(){
+		var now = null;
 		for(var x=this.inFlight.length-1; x>=0; x--){
 			var tif = this.inFlight[x];
 			if(!tif){ this.inFlight.splice(x, 1); continue; }
@@ -301,11 +302,22 @@ dojo.io.XMLHTTPTransport = new function(){
 				// remove it so we can clean refs
 				this.inFlight.splice(x, 1);
 				doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
-				if(this.inFlight.length == 0){
-					clearInterval(this.inFlightTimer);
-					this.inFlightTimer = null;
+			}else if (tif.startTime){
+				//See if this is a timeout case.
+				if(!now){
+					now = (new Date()).getTime();
 				}
-			} // FIXME: need to implement a timeout param here!
+				if(tif.startTime + (tif.req.timeoutSeconds * 1000) < now){
+					// remove it so we can clean refs
+					this.inFlight.splice(x, 1);
+					tif.req[(typeof tif.req.timeout == "function") ? "timeout" : "handle"]("timeout", null, tif.http, tif.req);
+				}
+			}
+		}
+
+		if(this.inFlight.length == 0){
+			clearInterval(this.inFlightTimer);
+			this.inFlightTimer = null;
 		}
 	}
 
@@ -468,13 +480,15 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		// build a handler function that calls back to the handler obj
 		if(async){
+			var startTime = 
 			// FIXME: setting up this callback handler leaks on IE!!!
 			this.inFlight.push({
 				"req":		kwArgs,
 				"http":		http,
-				"url":		url,
+				"url":	 	url,
 				"query":	query,
-				"useCache":	useCache
+				"useCache":	useCache,
+				"startTime": kwArgs.timeoutSeconds ? (new Date()).getTime() : 0
 			});
 			this.startWatchingInFlight();
 		}
