@@ -129,11 +129,6 @@
 		with ones that do not use changeUrl. Always use one or the other. If you are
 		using changeUrl, you don't always have to provide a string for the value, but
 		at least set it to <b>true</b> to get an auto-generated URL hash.</li>
-		<li>There might be an issue in Mozilla Firefox 1.5 (other Mozilla browsers?)
-		where adding to the history sometimes results in a back and forward handler
-		call immediately. The end result is the correct state, but it might
-		cause problems for the application code if it is trying to keep up.
-		Still investigating this issue.</li>
 		<li>Don't test this page using local disk for MSIE. MSIE will not
 		create a history list for iframe_history.html if served from a file:
 		URL. The XML served back from the XHR tests will also not be properly
