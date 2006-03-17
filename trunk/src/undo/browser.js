@@ -95,8 +95,9 @@ dojo.undo.browser = {
 			dojo.io.setIFrameSrc(this.historyIframe, url, false);
 		}
 		if(args["changeUrl"]){
+			this.changingUrl = true;
 			hash = "#"+ ((args["changeUrl"]!==true) ? args["changeUrl"] : (new Date()).getTime());
-			setTimeout("window.location.href = '"+hash+"';", 1);
+			setTimeout("window.location.href = '"+hash+"'; dojo.undo.browser.changingUrl = false;", 1);
 			this.bookmarkAnchor.href = hash;
 			
 			if(dojo.render.html.ie){
@@ -162,29 +163,31 @@ dojo.undo.browser = {
 	},
 
 	checkLocation: function(){
-		var hsl = this.historyStack.length;
-
-		if((window.location.hash == this.initialHash)||(window.location.href == this.initialHref)&&(hsl == 1)){
-			// FIXME: could this ever be a forward button?
-			// we can't clear it because we still need to check for forwards. Ugg.
-			// clearInterval(this.locationTimer);
-			this.handleBackButton();
-			return;
-		}
-		// first check to see if we could have gone forward. We always halt on
-		// a no-hash item.
-		if(this.forwardStack.length > 0){
-			if(this.forwardStack[this.forwardStack.length-1].urlHash == window.location.hash){
-				this.handleForwardButton();
-				return;
-			}
-		}
-
-		// ok, that didn't work, try someplace back in the history stack
-		if((hsl >= 2)&&(this.historyStack[hsl-2])){
-			if(this.historyStack[hsl-2].urlHash==window.location.hash){
+		if (!this.changingUrl){
+			var hsl = this.historyStack.length;
+	
+			if((window.location.hash == this.initialHash)||(window.location.href == this.initialHref)&&(hsl == 1)){
+				// FIXME: could this ever be a forward button?
+				// we can't clear it because we still need to check for forwards. Ugg.
+				// clearInterval(this.locationTimer);
 				this.handleBackButton();
 				return;
+			}
+			// first check to see if we could have gone forward. We always halt on
+			// a no-hash item.
+			if(this.forwardStack.length > 0){
+				if(this.forwardStack[this.forwardStack.length-1].urlHash == window.location.hash){
+					this.handleForwardButton();
+					return;
+				}
+			}
+	
+			// ok, that didn't work, try someplace back in the history stack
+			if((hsl >= 2)&&(this.historyStack[hsl-2])){
+				if(this.historyStack[hsl-2].urlHash==window.location.hash){
+					this.handleBackButton();
+					return;
+				}
 			}
 		}
 	},
