@@ -165,7 +165,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 					var ntf = new String(thisFunc);
 					return function(evt){
 						if(_this[ntf]){
-							_this[ntf](dojo.event.browser.fixEvent(evt));
+							_this[ntf](dojo.event.browser.fixEvent(evt, this));
 						}
 					};
 				}();
@@ -184,7 +184,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 					var ntf = new String(thisFunc);
 					return function(evt){
 						if(_this[ntf]){
-							_this[ntf](dojo.event.browser.fixEvent(evt));
+							_this[ntf](dojo.event.browser.fixEvent(evt, this));
 						}
 					}
 				}();
