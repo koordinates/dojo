@@ -1,5 +1,5 @@
 if (!dojo.lang.isUndefined(response.error)) {
-	this.RPCErrorHandler(response.error);
+	this.RPCErrorHandler("server", response.error);
 	return false;
 }
 

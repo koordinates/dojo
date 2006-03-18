@@ -23,6 +23,8 @@ if(dojo.render.html.moz){
 }
  dojo.dom.removeChildren(this.domNode);
 if(save){
+	 kill listeners on the saved content
+	dojo.event.browser.clean(this.savedContent);
 	if(dojo.render.html.moz){
 		var nc = document.createElement("span");
 		this.domNode.appendChild(nc);
@@ -30,8 +32,6 @@ if(save){
 	}else{
 		this.domNode.innerHTML = this._content;
 	}
-	 kill listeners on the saved content
-	dojo.event.browser.clean(this.savedContent);
 } else {
 	while (this.savedContent.hasChildNodes()) {
 		this.domNode.appendChild(this.savedContent.firstChild);

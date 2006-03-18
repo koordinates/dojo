@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.collections.Collections","dojo.collections.ArrayList"]},"_":{"()":""},"_.union":{"(setA, setB)":""},"_.intersection":{"(setA, setB)":""},"_.difference":{"(setA, setB)":""},"_.isSubSet":{"(setA, setB)":""},"_.isSuperSet":{"(setA, setB)":""}}
+{"requires":{"common":["dojo.collections.Collections","dojo.collections.ArrayList"]},"_":{"()":[]},"_.union":{"(setA, setB)":[]},"_.intersection":{"(setA, setB)":[]},"_.difference":{"(setA, setB)":[]},"_.isSubSet":{"(setA, setB)":[]},"_.isSuperSet":{"(setA, setB)":[]}}

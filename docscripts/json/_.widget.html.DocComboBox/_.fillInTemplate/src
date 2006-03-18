@@ -1,2 +1,0 @@
-dojo.widget.html.ComboBox.prototype.fillInTemplate.apply(this, arguments);
-this.dataProvider.setData(dojo.doc.functionNames());		

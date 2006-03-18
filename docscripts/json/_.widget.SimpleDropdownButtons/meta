@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.event.*","dojo.widget.*","dojo.uri.Uri","dojo.dom","dojo.style","dojo.html"]},"dojo.widget.HtmlSimpleDropdownButtons":{"()":""},"dojo.widget.HtmlSimpleDropdownButtons.buildRendering":{"(args, frag)":""}}
+{"requires":{"common":["dojo.event.*","dojo.widget.*","dojo.uri.Uri","dojo.dom","dojo.style","dojo.html"]},"dojo.widget.HtmlSimpleDropdownButtons":{"()":[]},"dojo.widget.HtmlSimpleDropdownButtons.buildRendering":{"(args, frag)":[]}}

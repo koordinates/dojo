@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.lang.common","dojo.AdapterRegistry"]},"dojo.lang.registerRepr":{"(name, check, wrap, optional override)":""}}
+{"requires":{"common":["dojo.lang.common","dojo.AdapterRegistry"]},"dojo.lang.registerRepr":{"(name, check, wrap, optional override)":[]}}

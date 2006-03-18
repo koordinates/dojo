@@ -1,4 +1,4 @@
-oldFillInTemplate.call(this, args, frag, true);
+dojo.widget.html.ToolbarSpace.superclass.fillInTemplate.call(this, args, frag, true);
 if(!skip) {
 	dojo.html.addClass(this.domNode, "toolbarSpace");
 }

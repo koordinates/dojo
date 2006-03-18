@@ -1,1 +1,1 @@
-{"this_variables":["widgetType","isContainer","templateString","defaultButton","setValue","preventDeselect"],"inherits":["dojo.widget.ToolbarItem"],"this_inherits":["dojo.widget.ToolbarItem"]}
+{"inherits":["dojo.widget.ToolbarItem"],"this_inherits":["dojo.widget.ToolbarItem"]}

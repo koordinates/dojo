@@ -1,0 +1,71 @@
+if(!url) { url = dojo.hostenv.getBaseScriptUri(); }
+
+ fix up paths in data
+var titles = []; var scripts = []; var linkStyles = [];
+var styles = []; var remoteScripts = [];
+
+ khtml is much more picky about dom faults, you can't for example attach a style node under body of document
+ must go into head, as does a title node, so we need to cut out those tags
+ cut out title tags
+var match = [];
+while(match){
+	match = s.match(/<title[^>]*>([\s\S]*?)<\/title>/i);  can't match with dot as that 
+	if(!match){ break;}					doesnt match newline in js
+	titles.push(match[1]);
+	s = s.replace(/<title[^>]*>[\s\S]*?<\/title>/i, "");
+}
+
+ cut out <style> url(...) </style>, as that bails out in khtml
+var match = [];
+while(match){
+	match = s.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+	if(!match){ break; }
+	styles.push(dojo.style.fixPathsInCssText(match[1], url));
+	s = s.replace(/<style[^>]*?>[\s\S]*?<\/style>/i, "");
+}
+
+ attributepaths one tag can have multiple paths example:
+ <input src="..." style="url(..)"/> or <a style="url(..)" href="..">
+ strip out the tag and run fix on that.
+ this guarantees that we won't run replace another tag's attribute + it was easier do
+var pos = 0; var pos2 = 0; var stop = 0 ;var str = ""; var fixedPath = "";
+var attr = []; var fix = ""; var tagFix = ""; var tag = ""; var regex = ""; 
+while(pos>-1){
+	pos = s.search(/<[a-z][a-z0-9]*[^>]*\s(?:(?:src|href|style)=[^>])+[^>]*>/i);
+	if(pos==-1){ break; }
+	str += s.substring(0, pos);
+	s = s.substring(pos, s.length);
+	tag = s.match(/^<[a-z][a-z0-9]*[^>]*>/i)[0];
+	s = s.substring(tag.length, s.length);
+
+	 loop through attributes
+	pos2 = 0; tagFix = ""; fix = ""; regex = "";
+	while(pos2!=-1){
+		 slices up before next attribute check, values from previous loop
+		tagFix += tag.substring(0, pos2) + fix;
+		tag = tag.substring(pos2+regex.length, tag.length);
+
+		 fix next attribute or bail out when done
+		attr = tag.match(/ (src|href|style)=(['"]?)([^>]+)\2[^>]*>/i);
+		if(!attr){ break; }
+
+		switch(attr[1].toLowerCase()){
+			case "src": falltrough
+			case "href":
+				if(attr[3].search(/(https?|ftps?|file):\/\)==-1){ 
+					fixedPath = (new dojo.uri.Uri(url, attr[3]).toString());
+				}
+				break;
+			case "style": style
+				fixedPath = dojo.style.fixPathsInCssText(attr[3], url);
+				break;
+			default:
+				fixedPath = attr[3];
+		}
+
+		regex = " " + attr[1] + "=" + attr[2] + attr[3] + attr[2];
+		fix = " " + attr[1] + "=" + attr[2] + fixedPath + attr[2];
+		pos2 = tag.search(new RegExp(regex));
+	}
+	str += tagFix + tag;
+	pos = 0;  reset for next mainloop

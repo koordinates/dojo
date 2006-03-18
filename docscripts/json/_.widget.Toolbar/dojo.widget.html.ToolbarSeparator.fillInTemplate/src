@@ -1,4 +1,4 @@
-oldFillInTemplate.call(this, args, frag);
+dojo.widget.html.ToolbarSeparator.superclass.fillInTemplate.call(this, args, frag);
 this._name = this.widgetId;
 if(!skip) {
 	if(!this._icon) {

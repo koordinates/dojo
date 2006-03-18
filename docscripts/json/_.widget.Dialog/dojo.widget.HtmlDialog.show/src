@@ -1,11 +1,13 @@
 this.setBackgroundOpacity();
-this.placeDialog();
 this.showBackground();
 
- resize child widgets
-this.domNode.style.display="block";
+this.domNode.style.visibility = "hidden";
+this.domNode.style.display = "block";
 dojo.widget.HtmlDialog.superclass.onResized.call(this);
+this.placeDialog();
+
 this.domNode.style.display="none";
+this.domNode.style.visibility = "";
 
 dojo.widget.HtmlDialog.superclass.show.call(this);
 

@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.lang","dojo.math.matrix"]},"_.convert":{"(col, model_from, model_to)":""},"_.munge":{"(keys, args)":""},"_.getWhitePoint":{"()":""},"_.getPrimaries":{"()":""},"_.epsilon":{"()":""},"_.kappa":{"()":""},"_.chromaticAdaptation":{"(col, src_w, dst_w)":""}}
+{"requires":{"common":["dojo.lang","dojo.math.matrix"]},"_.convert":{"(col, model_from, model_to)":[]},"_.munge":{"(keys, args)":[]},"_.getWhitePoint":{"()":[]},"_.getPrimaries":{"()":[]},"_.epsilon":{"()":[]},"_.kappa":{"()":[]},"_.chromaticAdaptation":{"(col, src_w, dst_w)":[]}}

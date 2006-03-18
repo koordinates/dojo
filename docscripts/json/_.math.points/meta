@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.math"]},"_.translate":{"Array (Array a, Array b)":""},"_.midpoint":{"Array (Array a, Array b)":""},"_.invert":{"Array (Array a)":""},"_.distance":{"Decimal (Array a, Array b)":""}}
+{"requires":{"common":["dojo.math"]},"_.translate":{"Array (Array a, Array b)":[]},"_.midpoint":{"Array (Array a, Array b)":[]},"_.invert":{"Array (Array a)":[]},"_.distance":{"Decimal (Array a, Array b)":[]}}

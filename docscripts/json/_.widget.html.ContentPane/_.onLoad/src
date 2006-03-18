@@ -1,1 +1,2 @@
+data = this.splitAndFixPaths(data, url);
 this.setContent(data);

@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.widget.HtmlWidget","dojo.widget.Chart","dojo.math","dojo.html","dojo.svg","dojo.graphics.color"]},"_.fillInTemplate":{"(args, frag)":""},"_.parseData":{"()":""},"_.initialize":{"()":""},"_.destroy":{"()":""},"_.render":{"()":""}}
+{"requires":{"common":["dojo.widget.HtmlWidget","dojo.widget.Chart","dojo.math","dojo.html","dojo.svg","dojo.graphics.color"]},"_.fillInTemplate":{"(args, frag)":[]},"_.parseData":{"()":[]},"_.initialize":{"()":[]},"_.destroy":{"()":[]},"_.render":{"()":[]}}

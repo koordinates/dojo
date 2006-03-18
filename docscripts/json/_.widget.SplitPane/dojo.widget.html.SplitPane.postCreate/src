@@ -5,7 +5,7 @@ for(var i=0; i<this.children.length; i++){
 	dojo.html.addClass(this.children[i].domNode,
 		"dojoHtmlSplitterPanePanel");
 
-	if(i == this.children.length){
+	if(i == this.children.length-1){
 		break;
 	}
 
@@ -13,7 +13,6 @@ for(var i=0; i<this.children.length; i++){
 }
 
  create the fake dragger
-
 this.virtualSizer = document.createElement('div');
 this.virtualSizer.style.position = 'absolute';
 this.virtualSizer.style.display = 'none';

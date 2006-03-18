@@ -1,11 +1,1 @@
 dojo.widget.HtmlWidget.call(this);
-
-this.widgetType = "Toolbar";
-this.isContainer = true;
-
-this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></div>';
-this.templateString = '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on"></div>';
-
- given a node, tries to find it's toolbar item
-
-var oldAddChild = this.addChild;

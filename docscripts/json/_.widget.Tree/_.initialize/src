@@ -1,7 +1,9 @@
 var _this = this;
 
-for(name in this.eventNames) {
-	this.eventNames[name] = this.widgetId+"/"+this.eventNames[name];
+for(name in this.eventNamesDefault) {
+	if (dojo.lang.isUndefined(this.eventNames[name])) {
+		this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
+	}
 }
 
 for(var i=0; i<this.actionsDisabled.length; i++) {
@@ -22,7 +24,8 @@ this.initializeController();
 this.initializeSelector();
 
 if (this.menu) {
-	dojo.widget.byId(this.menu).listenTree(this);
+	this.menu = dojo.widget.byId(this.menu);
+	this.menu.listenTree(this);
 }
 
 this.containerNode = this.domNode;

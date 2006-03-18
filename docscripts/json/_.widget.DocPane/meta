@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.widget.*","dojo.widget.HtmlWidget"]},"_":{"()":""}}
+{"requires":{"html":["dojo.widget.html.DocPane"]}}

@@ -5,7 +5,7 @@ for(var i = 0; i < this.children.length; i++) {
 			child.select(force, preventEvent);
 			this._value = name;
 		} else {
-			child.deselect(true, preventEvent);
+			child.deselect(true, true);
 		}
 	}
 }

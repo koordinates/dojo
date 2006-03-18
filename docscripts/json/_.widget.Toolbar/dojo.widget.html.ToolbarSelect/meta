@@ -1,1 +1,1 @@
-{"this_variables":["widgetType","templateString"],"inherits":["dojo.widget.ToolbarItem"],"this_inherits":["dojo.widget.ToolbarItem"]}
+{"inherits":["dojo.widget.ToolbarItem"],"this_inherits":["dojo.widget.ToolbarItem"]}

@@ -2,6 +2,7 @@ with(this.domNode.style) {
 	position = "absolute";
 	zIndex = 999;
 	display = "none";
+	overflow = "visible";
 }
 var b = document.body;
 b.appendChild(this.domNode);
