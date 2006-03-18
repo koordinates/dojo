@@ -37,7 +37,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 	onDocSelectFunction: function(message){
 		dojo.dom.removeChildren(this.domNode);
 		this.fn.innerHTML = message.name;
-		dojo.dom.copyChildren(this.selectSave, this.domNode);
+		this.domNode.appendChild(this.selectSave.cloneNode(true));
 	},
 
 	onDocResults: function(message){
@@ -65,7 +65,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 			}
 		}
 
-		dojo.dom.copyChildren(this.resultSave, this.domNode);
+		this.domNode.appendChild(this.resultSave.cloneNode(true));
 		var as = this.domNode.getElementsByTagName("a");
 		for(var i = 0, a; a = as[i]; i++){
 			dojo.event.connect(a, "onclick", makeSelect(message.docResults[i]));
