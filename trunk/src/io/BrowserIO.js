@@ -499,7 +499,14 @@ dojo.io.XMLHTTPTransport = new function(){
 			setHeaders(http, kwArgs);
 			http.setRequestHeader("Content-Type", kwArgs.multipart ? ("multipart/form-data; boundary=" + this.multipartBoundary) : 
 				(kwArgs.contentType || "application/x-www-form-urlencoded"));
-			http.send(query);
+			try{
+				http.send(query);
+			}catch(e){
+				if(typeof http.abort == "function"){
+					http.abort();
+				}
+				doLoad(kwArgs, {status: 404}, url, query, useCache);
+			}
 		}else{
 			var tmpUrl = url;
 			if(query != "") {
@@ -511,7 +518,14 @@ dojo.io.XMLHTTPTransport = new function(){
 			}
 			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
 			setHeaders(http, kwArgs);
-			http.send(null);
+			try {
+				http.send(null);
+			}catch(e)	{
+				if(typeof http.abort == "function"){
+					http.abort();
+				}
+				doLoad(kwArgs, {status: 404}, url, query, useCache);
+			}
 		}
 
 		if( !async ) {
