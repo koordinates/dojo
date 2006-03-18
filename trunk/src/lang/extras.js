@@ -65,19 +65,23 @@ dojo.lang.firstValued = function(/* ... */) {
 
 /**
  * Set a value on a reference specified as a string descriptor. 
- * If inCreate is true, undefined objects in the descriptor are created.
+ * 
+ * setObjPathValue(String descriptor, value [, Object context, Boolean nocreate])
+ *
+ * If context is not specified, dj_global is used
+ * If nocreate is true, undefined objects in the descriptor are not created.
  */
-dojo.lang.setObjPathValue = function(inDescriptor, inValue, inCreate)
+dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate)
 {
-	var obj = dj_global;
-	var names = inDescriptor.split('.');
+	var obj = (context ? context : dj_global);
+	var names = descriptor.split('.');
 	var prop = names.pop();
 	var name = '';
 	while(names.length && obj){
 		name = names.shift();
-		obj = (name in obj ? obj[name] : (inCreate ? obj[name] = {} : null));
+		obj = (name in obj ? obj[name] : (nocreate ? null : obj[name] = {}));
 	}
-	if (obj && (inCreate || (prop in obj))){
-  	obj[prop] = inValue;
+	if (obj && (!nocreate || (prop in obj))){
+  	obj[prop] = value;
 	}
 }
