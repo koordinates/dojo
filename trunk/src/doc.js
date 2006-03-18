@@ -38,7 +38,6 @@ dojo.doc.functionNames = function(/*mixed*/ selectKey, /*Function*/ callback){
 }
 
 dojo.doc._functionNames = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
-	dojo.debug("_functionNames()");
 	var searchData = [];
 	for(var key in data){
 		// Add the package if it doesn't exist in its children
@@ -75,8 +74,8 @@ dojo.doc.getMeta = function(/*mixed*/ selectKey, /*Function*/ callback, /*Functi
 }
 
 dojo.doc._getMeta = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-	dojo.debug("_getMeta(" + evt.name + ")");
-	if(evt.pkg){	
+	dojo.debug("_getMeta(" + evt.name + ") has package: " + evt.pkg + " with: " + type);
+	if("load" == type && evt.pkg){
 		evt.type = "meta";
 		dojo.doc._buildCache(evt);
 	}else{
@@ -304,7 +303,7 @@ dojo.doc._onDocSelectFunction = function(/*Object*/ input){
 		input.selectKey = ++dojo.doc._count;
 	}
 
-	dojo.doc._keys[input.selectKey] = [];
+	dojo.doc._keys[input.selectKey] = {size: 0};
 	dojo.doc.getMeta(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
 	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "meta"}
 	dojo.doc.getSrc(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
@@ -314,11 +313,12 @@ dojo.doc._onDocSelectFunction = function(/*Object*/ input){
 }
 
 dojo.doc._onDocSelectResults = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-	dojo.debug("_onDocSelectResults()");
 	var key = dojo.doc._myKeys[evt.selectKey];
 	dojo.doc._keys[key.selectKey][key.type] = data;
-	if(dojo.doc._keys[key.selectKey]["meta"] && dojo.doc._keys[key.selectKey]["src"] && dojo.doc._keys[key.selectKey]["doc"]){
+	++dojo.doc._keys[key.selectKey].size;
+	if(dojo.doc._keys[key.selectKey].size == 3){
 		dojo.doc._keys[key.selectKey].selectKey = evt.selectKey;
+		delete dojo.doc._keys[key.selectKey].size;
 		dojo.debug("Publishing docFunctionDetail");
 		dojo.event.topic.publish("docFunctionDetail", dojo.doc._keys[key.selectKey]);
 		delete dojo.doc._keys[key.selectKey];
@@ -528,7 +528,7 @@ dojo.doc.functionPackage = function(/*Function*/ callback, /*Object*/ input){
 }
 
 dojo.doc._functionPackage = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
-	dojo.debug("_functionPackage() name: " + evt.name);
+	dojo.debug("_functionPackage() name: " + evt.name + " for: " + evt.type + " with: " + type);
 	evt.pkg = '';
 
 	var data = dojo.doc._cache['function_names'];
