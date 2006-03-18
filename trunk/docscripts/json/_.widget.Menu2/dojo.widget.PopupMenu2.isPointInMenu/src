@@ -1,7 +1,7 @@
-if (x < this.menuX){ return 0; }
-if (x > this.menuX + this.menuWidth){ return 0; }
+if (x < this.menuX){ return false; }
+if (x > this.menuX + this.menuWidth){ return false; }
 
-if (y < this.menuY){ return 0; }
-if (y > this.menuY + this.menuHeight){ return 0; }
+if (y < this.menuY){ return false; }
+if (y > this.menuY + this.menuHeight){ return false; }
 
-return 1;
+return true;

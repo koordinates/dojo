@@ -5,5 +5,5 @@ this.parent.closeSubmenu();
 this.highlightItem();
 
 if (this.is_hovering){ this.stopSubmenuTimer(); }
-this.is_hovering = 1;
+this.is_hovering = true;
 this.startSubmenuTimer();

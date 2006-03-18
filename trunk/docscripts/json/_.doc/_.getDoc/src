@@ -1,0 +1,12 @@
+dojo.debug("getDoc()");
+if(!selectKey){
+	selectKey = ++dojo.doc._count;
+}
+var input = {
+	type: "doc",
+	callbacks: [callback],
+	name: name,
+	id: id,
+	selectKey: selectKey
+}
+dojo.doc.functionPackage(dojo.doc._getDoc, input);

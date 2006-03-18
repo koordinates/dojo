@@ -1,4 +1,4 @@
-oldFillInTemplate.call(this, args, frag, true);
+dojo.widget.html.ToolbarSelect.superclass.fillInTemplate.call(this, args, frag, true);
 var keys = args.values;
 var i = 0;
 for(var val in keys) {

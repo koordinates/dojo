@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.widget.Widget"],"html":["dojo.widget.html.Button2"]},"_":{"()":""},"_.onClick":{"()":""},"dojo.widget.DropDownButton2":{"()":""},"dojo.widget.ComboButton2":{"()":""}}
+{"requires":{"common":["dojo.widget.Widget"],"html":["dojo.widget.html.Button2"]},"_":{"()":[]},"_.onClick":{"()":[]},"dojo.widget.DropDownButton2":{"()":[]},"dojo.widget.ComboButton2":{"()":[]}}

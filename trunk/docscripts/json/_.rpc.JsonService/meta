@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.rpc.RpcService","dojo.io.*","dojo.json","dojo.lang"]},"_":{"(args)":""},"_.callRemote":{"(method, params)":""},"_.bind":{"(method, parameters, deferredRequestHandler)":""},"_.createRequest":{"(method, params)":""},"_.parseResults":{"(obj)":""}}
+{"requires":{"common":["dojo.rpc.RpcService","dojo.io.*","dojo.json","dojo.lang"]},"_":{"(args)":[]},"_.callRemote":{"(method, params)":[]},"_.bind":{"(method, parameters, deferredRequestHandler)":[]},"_.createRequest":{"(method, params)":[]},"_.parseResults":{"(obj)":[]}}

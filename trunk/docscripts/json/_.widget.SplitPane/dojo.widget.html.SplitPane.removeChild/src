@@ -10,5 +10,5 @@ if (this.sizers.length > 0) {
 }
 
  Remove widget and repaint
-dojo.widget.html.Container.prototype.removeChild.call(this, widget, arguments);
+dojo.widget.html.SplitPane.superclass.removeChild.call(this, widget, arguments);
 this.onResized();

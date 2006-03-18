@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.lang"]},"_":{"(anim, type, coords, sTime, cTime, eTime, dur, pct, fps)":""},"_.coordsAsInts":{"()":""}}
+{"requires":{"common":["dojo.lang"]},"_":{"(anim, type, coords, sTime, cTime, eTime, dur, pct, fps)":[]},"_.coordsAsInts":{"()":[]}}

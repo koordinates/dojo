@@ -1,11 +1,1 @@
 dojo.widget.ToolbarItem.call(this);
-this.widgetType = "ToolbarSelect";
-this.templateString = '<span class="toolbarItem toolbarSelect" unselectable="on"><select dojoAttachPoint="selectBox" dojoOnChange="changed"></select></span>';
-
-var oldFillInTemplate = this.fillInTemplate;
-
-var oldSetEnabled = this.setEnabled;
-
- don't want events!
-this._onmouseover = this._onmouseout = this._onclick
-	= this._onmousedown = this._onmouseup = null;

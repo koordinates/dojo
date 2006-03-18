@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.lang"]},"_.invoke":{"(module, hook)":""},"_.load":{"(uri)":""}}
+{"requires":{"common":["dojo.lang"]},"_.invoke":{"(module, hook)":[]},"_.load":{"(uri)":[]}}

@@ -1,1 +1,11 @@
-return dojo.doc._localData("src", name, id);
+dojo.debug("getSrc()");
+if(!selectKey){
+	selectKey = ++dojo.doc._count;
+}	
+dojo.doc._buildCache({
+	type: "src",
+	callbacks: [callback],
+	name: name,
+	id: id,
+	selectKey: selectKey
+});

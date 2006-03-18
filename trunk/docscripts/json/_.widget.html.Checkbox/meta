@@ -1,1 +1,1 @@
-{"requires":{"common":["dojo.widget.Checkbox"]},"_":{"()":""},"_.fillInTemplate":{"()":""},"_.onImagesLoaded":{"()":""},"_.onClick":{"()":""},"_.onChange":{"()":""},"_.updateImgSrc":{"()":""}}
+{"requires":{"common":["dojo.widget.Checkbox"]},"_":{"()":[]},"_.fillInTemplate":{"()":[]},"_.onImagesLoaded":{"()":[]},"_.onClick":{"()":[]},"_.onChange":{"()":[]},"_.updateImgSrc":{"()":[]}}
