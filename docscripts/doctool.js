@@ -5,12 +5,14 @@ dojo.require("dojo.widget.DocPane");
 var docCount = 0;
 var docKeys = [];
 
-dojo.doc.getMeta(++docCount, _result, "dojo.animation.Animation");
-docKeys[docCount] = "meta";
-dojo.doc.getSrc(++docCount, _result, "dojo.animation.Animation");
-docKeys[docCount] = "src";
-dojo.doc.getDoc(++docCount, _result, "dojo.animation.Animation.play");
-docKeys[docCount] = "doc";
+//dojo.doc.getMeta(++docCount, _result, "dojo.animation.Animation.play");
+//docKeys[docCount] = "meta";
+//dojo.doc.getSrc(++docCount, _result, "dojo.animation.Animation");
+//docKeys[docCount] = "src";
+//dojo.doc.getDoc(++docCount, _result, "dojo.animation.Animation.play");
+//docKeys[docCount] = "doc";
+//dojo.event.topic.publish("docSelectFunction", {selectKey: ++docCount, name: "dojo.animation.Animation.play"});
+//dojo.event.topic.subscribe("docFunctionDetail", _docResult);
 
 function docInit(){
 	var search = dojo.widget.byId("search").dataProvider;
@@ -33,13 +35,17 @@ function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 
 function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
 	if(docKeys[evt.selectKey] == "meta"){
-		//dojo.debug(type + " meta: " + dojo.json.serialize(data));
+		dojo.debug(type + " meta: " + dojo.json.serialize(data));
 	}else if(docKeys[evt.selectKey] == "src"){
-		//dojo.debug(type + " src: " + data);
+		dojo.debug(type + " src: " + data);
 	}else if(docKeys[evt.selectKey] == "doc"){
 		dojo.debug(type + " doc: " + dojo.json.serialize(data));
 	}
 	delete docKeys[evt.selectKey];
+}
+
+function _docResult(){
+	dojo.debug(dojo.json.serialize(arguments));
 }
 
 function docSearch(evt){
