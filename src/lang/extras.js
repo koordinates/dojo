@@ -63,15 +63,12 @@ dojo.lang.firstValued = function(/* ... */) {
 	return undefined;
 }
 
+
 /**
- * Set a value on a reference specified as a string descriptor. 
- * 
- * setObjPathValue(String descriptor, value [, Object context, Boolean nocreate])
- *
- * If context is not specified, dj_global is used
- * If nocreate is true, undefined objects in the descriptor are not created.
+ * Parse a reference specified as a string descriptor into 
+ * an object reference and a prop name.
  */
-dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate)
+dojo.lang.evalDescriptor = function(descriptor, context, create)
 {
 	var obj = (context ? context : dj_global);
 	var names = descriptor.split('.');
@@ -79,9 +76,39 @@ dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate)
 	var name = '';
 	while(names.length && obj){
 		name = names.shift();
-		obj = (name in obj ? obj[name] : (nocreate ? null : obj[name] = {}));
+		obj = (name in obj ? obj[name] : (create ? obj[name] = {} : null));
 	}
-	if (obj && (!nocreate || (prop in obj))){
-  	obj[prop] = value;
+	return {obj: obj, prop: prop};
+}
+
+/**
+ * Get a value from a reference specified as a string descriptor. 
+ * 
+ * getObjPathValue(String descriptor, [, Object context, Boolean create])
+ *
+ * If context is not specified, dj_global is used
+ * If create is true, undefined objects in the descriptor are created.
+ */
+dojo.lang.getObjPathValue = function(descriptor, context, create)
+{
+	with (dojo.lang.evalDescriptor(descriptor, context, create)){
+		return (obj && (prop in obj) ? obj[prop] : (create ? obj[prop] = undefined : undefined));
+	}
+}
+
+/**
+ * Set a value on a reference specified as a string descriptor. 
+ * 
+ * setObjPathValue(String descriptor, value [, Object context, Boolean nocreate])
+ *
+ * If context is not specified, dj_global is used
+ * If nocreate is true, undefined objects in the descriptor are NOT created.
+ */
+dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate)
+{
+	with (dojo.lang.evalDescriptor(descriptor, context, create)){
+		if (obj && (!nocreate || (prop in obj))){
+  		obj[prop] = value;
+		}
 	}
 }
