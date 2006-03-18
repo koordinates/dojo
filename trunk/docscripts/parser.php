@@ -222,14 +222,14 @@ else{
 						$output[$package]['meta'][$function_name][$polymorphic_id][$function_signature] = '';
 						$output[$package][$function_name][$polymorphic_id]['src'] = implode("\n", $function_content['function_content']);
 					}else{
-						$output[$package]['meta'][$function_name][$function_signature] = '';
+						$output[$package]['meta'][$function_name][$function_signature] = array();
 						$output[$package][$function_name]['src'] = implode("\n", $function_content['function_content']);
 					}
 					if($function_content['comments']['summary']){
 						if($polymorphic_id != 'default'){
-							$output[$package]['meta'][$function_name][$polymorphic_id][$function_signature] = $function_content['comments']['summary'];
+							$output[$package]['meta'][$function_name][$polymorphic_id][$function_signature] = array('summary' => $function_content['comments']['summary']);
 						}else{
-							$output[$package]['meta'][$function_name][$function_signature] = $function_content['comments']['summary'];							
+							$output[$package]['meta'][$function_name][$function_signature] = array('summary' => $function_content['comments']['summary']);
 						}
 					}
 				}
@@ -731,6 +731,7 @@ function function_parse(&$contents){
 		
     if(substr($line, 0, 2) == '/*'){
       $started['multiline'] = true;
+			$line = substr($line, 2);
     }
     if($started['multiline'] && strpos($line, '*/') !== false){
       $started['multiline'] = false;
@@ -763,7 +764,7 @@ function function_parse(&$contents){
       preg_match('%[\w()\'"]%', $line, $first_word);
       $line = substr($line, strpos($line, $first_word[0]));
       preg_match('%^[\w]+\b%', $line, $first_word);
-      if(in_array($first_word[0], array_merge(array('summary'), $contents['parameters']))) {
+      if(in_array($first_word[0], array_merge(array('summary', 'description'), $contents['parameters']))) {
         $content['key'] = $first_word[0];
         $line = preg_replace('%^' . $first_word[0] . '%', '', $line);
         preg_match('%[\w()\'"]%', $line, $first_word);
