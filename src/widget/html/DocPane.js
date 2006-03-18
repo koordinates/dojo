@@ -7,67 +7,73 @@ dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.html.DocPane = function(){
 	dojo.widget.HtmlWidget.call(this);
+
+	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html");
+	this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css");
+	this.widgetType = "DocPane";
+	
+	this.select;
+	this.result;
+	this.fn;
+	this.fnLink;
+	this.count;
+	this.row;
+	this.summary;
+
 	dojo.event.topic.subscribe("docResults", this, "onDocResults");
-	dojo.event.topic.subscribe("docSelectFunction", this, "onDocSelectFunction");
+	dojo.event.topic.subscribe("docFunctionDetail", this, "onDocSelectFunction");
 }
 
 dojo.inherits(dojo.widget.html.DocPane, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.DocPane, {
-	widgetType: "DocPane",
-
-	onDocSelectFunction: function(message) {
-		dojo.dom.removeChildren(this.domNode);
-
-		var header = document.createElement("h1");
-		header.appendChild(document.createTextNode("Detail: " + message.name));
-		this.domNode.appendChild(header);
+	fillInTemplate: function(){
+		this.selectSave = dojo.dom.removeNode(this.select);
+		this.resultSave = dojo.dom.removeNode(this.result);
+		this.rowParent = this.row.parentNode;
+		this.rowSave = dojo.dom.removeNode(this.row);
 	},
 
-	onDocResults: function(message) {
+	onDocSelectFunction: function(message){
+		dojo.dom.removeChildren(this.domNode);
+		this.fn.innerHTML = message.name;
+		dojo.dom.copyChildren(this.selectSave, this.domNode);
+	},
+
+	onDocResults: function(message){
 		dojo.dom.removeChildren(this.domNode);
 
-		//header for search results
-		var header = document.createElement("h1");
-		header.appendChild(document.createTextNode("Search Results: " + message.docResults.length + " matches"));
-		this.domNode.appendChild(header);
-
-		for (var i=0; i < message.docResults.length; i++) {
-			var newDiv = document.createElement("div");
-
-			var packageSpan = document.createElement("span");
-			var packageA = document.createElement("a");
-
-			packageA.href = "#" + message.docResults[i].name;
-			if (message.docResults[i].id) {
-				packageA.href = packageA.href + "," + message.docResults[i].id;	
+		this.count.innerHTML = message.docResults.length;
+		var appends = [];
+		for(var i = 0, row; row = message.docResults[i]; i++){
+			this.fnLink.innerHTML = row.name;
+			this.fnLink.href = "#" + row.name;
+			if (row.id) {
+				this.fnLink.href = this.fnLink.href + "," + row.id;	
 			}
-
-			packageA.appendChild(document.createTextNode(message.docResults[i].name));
-
-			function makeSelect(x) {
-				return function(e) {
-					//dojo.debug("Select: " + x.name);
-					dojo.event.topic.publish("docSelectFunction",x);
-				}
+			this.summary.parentNode.style.display = "none";
+			if (row.summary) {
+				this.summary.parentNode.style.display = "inline";				
+				this.summary.innerHTML = row.summary;
 			}
-
-			dojo.event.connect(packageA,"onclick", makeSelect(message.docResults[i]));
-
-			packageSpan.appendChild(packageA);
-			newDiv.appendChild(packageSpan);
-
-			if (message.docResults[i].summary) {
-				var summarySpan = document.createElement("span");
-				summarySpan.appendChild(document.createTextNode(" - " + message.docResults[i].summary));
-				newDiv.appendChild(summarySpan);
+			appends.push(this.rowParent.appendChild(this.rowSave.cloneNode(true)));
+		}
+		
+		function makeSelect(x){
+			return function(e) {
+				dojo.event.topic.publish("docSelectFunction", x);
 			}
-
-			this.domNode.appendChild(newDiv);
-			
 		}
 
-
+		dojo.dom.copyChildren(this.resultSave, this.domNode);
+		var as = this.domNode.getElementsByTagName("a");
+		for(var i = 0, a; a = as[i]; i++){
+			dojo.event.connect(a, "onclick", makeSelect(message.docResults[i]));
+		}
+		
+		for(var i = 0, append; append = appends[i]; i++){
+			this.rowParent.removeChild(append);
+		}
 	}
 });
 

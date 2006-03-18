@@ -133,7 +133,7 @@ dojo.doc.getDoc = function(/*mixed*/ selectKey, /*Function*/ callback, /*String*
 dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 	dojo.debug("_getDoc(" + evt.pkg + "/" + evt.name + ")");
 	
-	dojo.doc._keys[evt.selectKey] = {};
+	dojo.doc._keys[evt.selectKey] = {count: 0};
 
 	var search = {};
 	search.forFormName = "DocFnForm";
@@ -145,7 +145,7 @@ dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		search.filter = "it/DocFnForm/require = '" + evt.pkg + "' and it/DocFnForm/name = '" + evt.name + "' and it/DocFnForm/id = '" + evt.id + "'";
 	}
 	
-	dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ dojo.debug(dojo.json.serialize(data)); dojo.doc._gotDoc("fn", data.list[0], evt); }, function(data){ dojo.doc._gotDoc("fn", data.list[0], evt); });
+	dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ evt.type = "fn"; dojo.doc._gotDoc("load", data.list[0], evt); }, function(data){ evt.type = "fn"; dojo.doc._gotDoc("error", {}, evt); });
 	
 	search.forFormName = "DocParamForm";
 
@@ -155,24 +155,30 @@ dojo.doc._getDoc = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		search.filter = "it/DocParamForm/fns = '" + evt.pkg + "=>" + evt.name + "=>" + evt.id + "'";
 	}
 	delete search.limit;
-	
-	dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ dojo.doc._gotDoc("param", data.list, evt); }, function(data){ dojo.doc._gotDoc("param", data.list, evt); });
+
+	dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ evt.type = "param"; dojo.doc._gotDoc("load", data.list, evt); }, function(data){ evt.type = "param"; dojo.doc._gotDoc("error", {}, evt); });
 }
 
 dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
-	dojo.debug("_gotDoc(" + type + ")");
-
-	dojo.doc._keys[evt.selectKey][type] = data;
-	if(dojo.doc._keys[evt.selectKey]["fn"] && dojo.doc._keys[evt.selectKey]["param"]){
+	dojo.debug("_gotDoc(" + evt.type + ") for " + evt.selectKey);
+	dojo.doc._keys[evt.selectKey][evt.type] = data;
+	if(++dojo.doc._keys[evt.selectKey].count == 2){
+		dojo.debug("_gotDoc() finished");
 		var keys = dojo.doc._keys[evt.selectKey];
-		var description = dojo.dom.createDocumentFromText(keys["fn"]["main/text"]).childNodes[0].innerHTML;
-		if(!description){
-			description = keys["fn"]["main/text"];
+		var description = '';
+		if(!keys.fn){
+			keys.fn = {}
+		}
+		if(keys.fn["main/text"]){
+			description = dojo.dom.createDocumentFromText(keys.fn["main/text"]).childNodes[0].innerHTML;
+			if(!description){
+				description = keys.fn["main/text"];
+			}			
 		}
 		data = {
 			description: description,
-			returns: keys["fn"]["DocFnForm/returns"],
-			id: keys["fn"]["DocFnForm/id"],
+			returns: keys.fn["DocFnForm/returns"],
+			id: keys.fn["DocFnForm/id"],
 			parameters: []
 		}
 		for(var i = 0, param; param = keys["param"][i]; i++){
@@ -181,7 +187,7 @@ dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 				description: param["DocParamForm/desc"]
 			});
 		}
-		
+
 		delete dojo.doc._keys[evt.selectKey];
 		
 		if(evt.callbacks && evt.callbacks.length){
@@ -295,7 +301,7 @@ dojo.doc._onDocResults = function(/*String*/ type, /*Object*/ data, /*Object*/ e
 // Get src
 // Get function signature
 dojo.doc._onDocSelectFunction = function(/*Object*/ input){
-	dojo.debug("_onDocSelectFunction()");
+	dojo.debug("_onDocSelectFunction(" + input.name + ")");
 	if(!input.name){
 		return false;
 	}
@@ -304,19 +310,20 @@ dojo.doc._onDocSelectFunction = function(/*Object*/ input){
 	}
 
 	dojo.doc._keys[input.selectKey] = {size: 0};
-	dojo.doc.getMeta(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
-	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "meta"}
-	dojo.doc.getSrc(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
-	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "src"}
-	dojo.doc.getDoc(++dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
-	dojo.doc._myKeys[dojo.doc._count] = {selectKey: input.selectKey, type: "doc"}
+	dojo.doc._myKeys[++dojo.doc._count] = {selectKey: input.selectKey, type: "meta"}
+	dojo.doc.getMeta(dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
+	dojo.doc._myKeys[++dojo.doc._count] = {selectKey: input.selectKey, type: "src"}
+	dojo.doc.getSrc(dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
+	dojo.doc._myKeys[++dojo.doc._count] = {selectKey: input.selectKey, type: "doc"}
+	dojo.doc.getDoc(dojo.doc._count, dojo.doc._onDocSelectResults, input.name);
 }
 
 dojo.doc._onDocSelectResults = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
+	dojo.debug("dojo.doc._onDocSelectResults(" + evt.type + ", " + evt.name + ")");
 	var myKey = dojo.doc._myKeys[evt.selectKey];
 	dojo.doc._keys[myKey.selectKey][myKey.type] = data;
-	++dojo.doc._keys[myKey.selectKey].size;
-	if(dojo.doc._keys[myKey.selectKey].size == 3){
+	dojo.doc._keys[myKey.selectKey].size;
+	if(++dojo.doc._keys[myKey.selectKey].size == 3){
 		var key = dojo.lang.mixin(evt, dojo.doc._keys[myKey.selectKey]);
 		delete key.size;
 		dojo.debug("Publishing docFunctionDetail");
