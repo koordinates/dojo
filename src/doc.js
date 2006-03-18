@@ -313,15 +313,15 @@ dojo.doc._onDocSelectFunction = function(/*Object*/ input){
 }
 
 dojo.doc._onDocSelectResults = function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-	var key = dojo.doc._myKeys[evt.selectKey];
-	dojo.doc._keys[key.selectKey][key.type] = data;
-	++dojo.doc._keys[key.selectKey].size;
-	if(dojo.doc._keys[key.selectKey].size == 3){
-		dojo.doc._keys[key.selectKey].selectKey = evt.selectKey;
-		delete dojo.doc._keys[key.selectKey].size;
+	var myKey = dojo.doc._myKeys[evt.selectKey];
+	dojo.doc._keys[myKey.selectKey][myKey.type] = data;
+	++dojo.doc._keys[myKey.selectKey].size;
+	if(dojo.doc._keys[myKey.selectKey].size == 3){
+		var key = dojo.lang.mixin(evt, dojo.doc._keys[myKey.selectKey]);
+		delete key.size;
 		dojo.debug("Publishing docFunctionDetail");
-		dojo.event.topic.publish("docFunctionDetail", dojo.doc._keys[key.selectKey]);
-		delete dojo.doc._keys[key.selectKey];
+		dojo.event.topic.publish("docFunctionDetail", key);
+		delete dojo.doc._keys[myKey.selectKey];
 		delete dojo.doc._myKeys[evt.selectKey];
 	}
 }

@@ -69,7 +69,10 @@ The topic registry
 	subscriber: any widget that wishes to be aware of a selection's details
 	message:
 			selectKey: id indentifying selection
-			meta: object of the metadata (as shown in the meta JSON object)
+			pkg: The package of the function
+			name: The function name
+			id: If this has a polymorphic ID, here it is
+			meta: object of the metadata (as shown in the meta JSON object),
 			src: source
 			doc: docs (TBD: Things like parameter descriptions, extended description, return description)
 			sig: Function signature
