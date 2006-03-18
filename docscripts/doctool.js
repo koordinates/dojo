@@ -39,6 +39,7 @@ function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
 	}else if(docKeys[evt.selectKey] == "doc"){
 		dojo.debug(type + " doc: " + dojo.json.serialize(data));
 	}
+	delete docKeys[evt.selectKey];
 }
 
 function docSearch(evt){

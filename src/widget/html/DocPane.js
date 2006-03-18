@@ -5,7 +5,7 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.HtmlWidget");
 
-dojo.widget.html.DocPane= function(){
+dojo.widget.html.DocPane = function(){
 	dojo.widget.HtmlWidget.call(this);
 	dojo.event.topic.subscribe("docResults", this, "onDocResults");
 	dojo.event.topic.subscribe("docSelectFunction", this, "onDocSelectFunction");
