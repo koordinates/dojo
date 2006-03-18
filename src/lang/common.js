@@ -2,9 +2,16 @@ dojo.provide("dojo.lang.common");
 
 dojo.require("dojo.lang");
 
+/*
+ * Adds the given properties/methods to the specified object
+ */
 dojo.lang.mixin = function(obj, props){
 	var tobj = {};
 	for(var x in props){
+		// the "tobj" condition avoid copying properties in "props"
+		// inherited from Object.prototype.  For example, if obj has a custom
+		// toString() method, don't overwrite it with the toString() method
+		// that props inherited from Object.protoype
 		if(typeof tobj[x] == "undefined" || tobj[x] != props[x]) {
 			obj[x] = props[x];
 		}
@@ -16,6 +23,9 @@ dojo.lang.mixin = function(obj, props){
 	return obj;
 }
 
+/*
+ * Adds the given properties/methods to the specified object's prototype
+ */
 dojo.lang.extend = function(ctor, props){
 	this.mixin(ctor.prototype, props);
 }
