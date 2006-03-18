@@ -308,6 +308,11 @@ dojo.io.XMLHTTPTransport = new function(){
 					now = (new Date()).getTime();
 				}
 				if(tif.startTime + (tif.req.timeoutSeconds * 1000) < now){
+					//Stop the request.
+					if(typeof tif.http.abort == "function"){
+						tif.http.abort();
+					}
+
 					// remove it so we can clean refs
 					this.inFlight.splice(x, 1);
 					tif.req[(typeof tif.req.timeout == "function") ? "timeout" : "handle"]("timeout", null, tif.http, tif.req);
