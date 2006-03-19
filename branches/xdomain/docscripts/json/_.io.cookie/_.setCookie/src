@@ -1,0 +1,12 @@
+var expires = -1;
+if(typeof days == "number" && days >= 0) {
+	var d = new Date();
+	d.setTime(d.getTime()+(days*24*60*60*1000));
+	expires = d.toGMTString();
+}
+value = escape(value);
+document.cookie = name + "=" + value + ";"
+	+ (expires != -1 ? " expires=" + expires + ";" : "")
+	+ (path ? "path=" + path : "")
+	+ (domain ? "; domain=" + domain : "")
+	+ (secure ? "; secure" : "");

@@ -1,0 +1,7 @@
+if (message.child !== this.selectedNode) {
+	return;
+}
+
+if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+	this.deselect();
+}

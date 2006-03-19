@@ -1,0 +1,4 @@
+if ( this.listenOnKeyPress ) { 
+	this.filter();  trim is problem if you have to type two words
+	this.update(); 
+} 

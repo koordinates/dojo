@@ -1,0 +1,5 @@
+if (this.parentMenu){
+	this.parentMenu.closeAll();
+}else{
+	this.close();
+}

@@ -1,0 +1,7 @@
+var arr = [];
+var e = this.getIterator();
+while (!e.atEnd) {
+	arr.push(e.value);
+	e.moveNext();
+}
+return arr;  

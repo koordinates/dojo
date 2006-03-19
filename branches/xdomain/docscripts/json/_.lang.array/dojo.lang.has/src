@@ -1,0 +1,1 @@
+return (typeof obj[name] !== 'undefined');  

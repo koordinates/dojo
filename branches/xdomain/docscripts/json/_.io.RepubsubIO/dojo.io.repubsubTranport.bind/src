@@ -1,0 +1,39 @@
+if(!rps.isInitialized){
+	 open up our tunnel, queue up requests anyway
+	rps.init();
+}
+ FIXME: we need to turn this into a topic subscription
+ var tgtURL = kwArgs.url+"?"+dojo.io.argsFromMap(kwArgs.content);
+ sampleTransport.sendRequest(tgtURL, hdlrFunc);
+
+ a normal "bind()" call in a request-response transport layer is
+ something that (usually) encodes most of it's payload with the
+ request. Multi-event systems like repubsub are a bit more complex,
+ and repubsub in particular distinguishes the publish and subscribe
+ portions of thep rocess with different method calls to handle each.
+ Therefore, a "bind" in the sense of repubsub must first determine if
+ we have an open subscription to a channel provided by the server,
+ and then "publish" the request payload if there is any. We therefore
+ must take care not to incorrectly or too agressively register or
+ file event handlers which are provided with the kwArgs method.
+
+ NOTE: we ONLY pay attention to those event handlers that are
+ registered with the bind request that subscribes to the channel. If
+ event handlers are provided with subsequent requests, we might in
+ the future support some additive or replacement syntax, but for now
+ they get dropped on the floor.
+
+ NOTE: in this case, url MUST be the "topic" to which we
+ subscribe/publish for this channel
+if(!rps.topics[kwArgs.url]){
+	kwArgs.rpsLoad = function(evt){
+		kwArgs.load("load", evt);
+	}
+	rps.subscribe = function(kwArgs.url, kwArgs, "rpsLoad");
+}
+
+if(kwArgs["content"]){
+	 what we wanted to send
+	var cEvt = dojo.io.repubsubEvent.initFromProperties(kwArgs.content);
+	rps.publish(kwArgs.url, cEvt);
+}

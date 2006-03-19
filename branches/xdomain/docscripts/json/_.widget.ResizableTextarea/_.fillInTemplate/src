@@ -1,0 +1,57 @@
+this.textAreaNode = this.getFragNodeRef(frag).cloneNode(true);
+
+ FIXME: Safari apparently needs this!
+document.body.appendChild(this.domNode);
+
+this.rootLayout = dojo.widget.createWidget(
+	"LayoutPane",
+	{
+		minHeight: 50,
+		minWidth: 100
+	},
+	this.rootLayoutNode
+);
+
+this.textAreaContainer = dojo.widget.createWidget(
+	"LayoutPane",
+	{ layoutAlign: "client" },
+	this.textAreaContainerNode
+);
+this.rootLayout.addChild(this.textAreaContainer);
+
+this.textAreaContainer.domNode.appendChild(this.textAreaNode);
+with(this.textAreaNode.style){
+	width="100%";
+	height="100%";
+}
+
+this.statusBar = dojo.widget.createWidget(
+	"LayoutPane",
+	{ 
+		layoutAlign: "bottom", 
+		minHeight: 28
+	},
+	this.statusBarContainerNode
+);
+this.rootLayout.addChild(this.statusBar);
+
+this.statusLabel = dojo.widget.createWidget(
+	"LayoutPane",
+	{ 
+		layoutAlign: "client", 
+		minWidth: 50
+	},
+	this.statusLabelNode
+);
+this.statusBar.addChild(this.statusLabel);
+
+this.resizeHandle = dojo.widget.createWidget(
+	"ResizeHandle", 
+	{ targetElmId: this.rootLayout.widgetId },
+	this.resizeHandleNode
+);
+this.statusBar.addChild(this.resizeHandle);
+ dojo.debug(this.rootLayout.widgetId);
+
+ dojo.event.connect(this.resizeHandle, "beginSizing", this, "hideContent");
+ dojo.event.connect(this.resizeHandle, "endSizing", this, "showContent");

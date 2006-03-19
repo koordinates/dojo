@@ -1,0 +1,13 @@
+element = dojo.byId(element);
+var mousex = e.pageX || e.clientX + document.body.scrollLeft;
+var mousey = e.pageY || e.clientY + document.body.scrollTop;
+
+with(dojo.html){
+	var top = getAbsoluteY(element);
+	var bottom = top + getInnerHeight(element);
+	var left = getAbsoluteX(element);
+	var right = left + getInnerWidth(element);
+}
+
+return (mousex >= left && mousex <= right &&
+	mousey >= top && mousey <= bottom);

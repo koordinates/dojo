@@ -1,0 +1,24 @@
+if(typeof objpath != "string"){ return dj_global; }
+if(objpath.indexOf('.') == -1){
+	if((dj_undef(objpath, dj_global))&&(create)){
+		dj_global[objpath] = {};
+	}
+	return dj_global[objpath];
+}
+
+var syms = objpath.split(/\./);
+var obj = dj_global;
+for(var i=0;i<syms.length;++i){
+	if(!create){
+		obj = obj[syms[i]];
+		if((typeof obj == 'undefined')||(!obj)){
+			return obj;
+		}
+	}else{
+		if(dj_undef(syms[i], obj)){
+			obj[syms[i]] = {};
+		}
+		obj = obj[syms[i]];
+	}
+}
+return obj;

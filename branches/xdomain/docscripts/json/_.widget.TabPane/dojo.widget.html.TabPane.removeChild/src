@@ -1,0 +1,26 @@
+dojo.event.disconnect(tab.div, "onclick", function () { });
+if (this.closeButton=="tab") {
+	var img = tab.div.lastChild.lastChild;
+	if (img) {
+		dojo.html.removeClass(img, "dojoTabPaneTabClose", function () { });
+		dojo.event.disconnect(img, "onclick", function () { });
+		dojo.event.disconnect(img, "onmouseover", function () { });
+		dojo.event.disconnect(img, "onmouseout", function () { });
+	}
+}
+
+dojo.widget.html.TabPane.superclass.removeChild.call(this, tab);
+
+dojo.html.removeClass(tab.domNode, "dojoTabPanel");
+this.dojoTabLabels.removeChild(tab.div);
+delete(tab.div);
+
+if (this.selectedTabWidget === tab) {
+	this.selectedTabWidget = undefined;
+	if (this.children.length > 0) {
+		this.selectTab(this.children[0]);
+	}
+}
+
+ in case the tab labels have overflowed from one line to two lines
+this._setPadding();

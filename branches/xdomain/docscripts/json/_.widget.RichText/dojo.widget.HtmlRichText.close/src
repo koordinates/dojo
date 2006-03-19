@@ -1,0 +1,46 @@
+if(this.isClosed){return false; }
+
+if (arguments.length == 0) { save = true; }
+this._content = this.editNode.innerHTML;
+var changed = (this.savedContent.innerHTML != this._content);
+
+ line height is squashed for iframes
+if (this.iframe){ this.domNode.style.lineHeight = null; }
+
+if(this.interval){ clearInterval(this.interval); }
+
+if(dojo.render.html.ie && !this.object){
+	dojo.event.browser.clean(this.editNode);
+}
+if(dojo.render.html.moz){
+	var ifr = this.domNode.firstChild;
+	ifr.style.display = "none";
+	setTimeout(function(){
+		ifr.parentNode.removeChild(ifr);
+	}, 0);
+}else{
+	this.domNode.innerHTML = "";
+}
+ dojo.dom.removeChildren(this.domNode);
+if(save){
+	 kill listeners on the saved content
+	dojo.event.browser.clean(this.savedContent);
+	if(dojo.render.html.moz){
+		var nc = document.createElement("span");
+		this.domNode.appendChild(nc);
+		nc.innerHTML = this.editNode.innerHTML;
+	}else{
+		this.domNode.innerHTML = this._content;
+	}
+} else {
+	while (this.savedContent.hasChildNodes()) {
+		this.domNode.appendChild(this.savedContent.firstChild);
+	}
+}
+delete this.savedContent;
+
+dojo.html.removeClass(this.domNode, "RichTextEditable");
+this.isClosed = true;
+this.isLoaded = false;
+
+return changed;

@@ -1,0 +1,14 @@
+if (this.selector != "off") {
+	if (this.selector) {
+		this.selector = dojo.widget.byId(this.selector);
+	}
+	else {
+		 create default controller here
+		dojo.require("dojo.widget.TreeSelector");
+		this.selector = dojo.widget.createWidget("TreeSelector");
+	}
+
+	this.selector.listenTree(this);
+} else {
+	this.selector = null;
+}

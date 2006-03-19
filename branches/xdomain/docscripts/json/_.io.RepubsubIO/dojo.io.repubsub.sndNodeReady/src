@@ -1,0 +1,7 @@
+this.canSnd = true;
+this.log("sndNodeReady");
+this.log(this.backlog.length);
+ FIXME: handle any pent-up send commands
+if(this.backlog.length > 0){
+	this.dequeueEvent();
+}

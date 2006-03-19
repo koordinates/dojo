@@ -1,0 +1,9 @@
+var _this = this;
+
+var autoExpand = function () {
+	if (dojo.dnd.dragManager.currentDropTarget === _this) {
+		_this.controller.expand(_this.treeNode);
+	}
+}
+
+this.autoExpandTimer = dojo.lang.setTimeout(autoExpand, _this.autoExpandDelay);

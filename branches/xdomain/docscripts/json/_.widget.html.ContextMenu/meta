@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.html","dojo.widget.HtmlWidget","dojo.widget.ContextMenu","dojo.lang"]},"_":{"()":[]},"_.fillInTemplate":{"(args, frag)":[]},"_.onOpen":{"we propably doesnt need to return false as we dont stop the event as we did before (evt)":[]},"_.onHide":{"(evt)":[]}}

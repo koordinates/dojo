@@ -1,0 +1,41 @@
+var total_min_size = 0;
+var total_size = 0;
+
+for(var i=0; i<this.children.length; i++){
+
+	total_size += this.children[i].sizeActual;
+	total_min_size += this.children[i].sizeMin;
+}
+
+ only make adjustments if we have enough space for all the minimums
+
+if (total_min_size <= total_size){
+
+	var growth = 0;
+
+	for(var i=0; i<this.children.length; i++){
+
+		if (this.children[i].sizeActual < this.children[i].sizeMin){
+
+			growth += this.children[i].sizeMin - this.children[i].sizeActual;
+			this.children[i].sizeActual = this.children[i].sizeMin;
+		}
+	}
+
+	if (growth > 0){
+		if (this.isDraggingLeft){
+			for(var i=this.children.length-1; i>=0; i--){
+				growth = this.growPane(growth, this.children[i]);
+			}
+		}else{
+			for(var i=0; i<this.children.length; i++){
+				growth = this.growPane(growth, this.children[i]);
+			}
+		}
+	}
+}else{
+
+	for(var i=0; i<this.children.length; i++){
+		this.children[i].sizeActual = Math.round(total_size * (this.children[i].sizeMin / total_min_size));
+	}
+}

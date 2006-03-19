@@ -1,0 +1,5 @@
+if (sourceNode === this.treeNode) return true;
+if (sourceNode.getNextSibling() === this.treeNode && position=="before") return true;
+if (sourceNode.getPreviousSibling() === this.treeNode && position=="after") return true;
+
+return false;

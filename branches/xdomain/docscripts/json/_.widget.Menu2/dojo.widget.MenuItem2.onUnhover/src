@@ -1,0 +1,4 @@
+if (!this.is_open){ this.unhighlightItem(); }
+
+this.is_hovering = false;
+this.stopSubmenuTimer();

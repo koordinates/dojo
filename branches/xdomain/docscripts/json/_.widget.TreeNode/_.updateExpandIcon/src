@@ -1,0 +1,5 @@
+if (this.isFolder){
+	this.expandIcon.src = this.isExpanded ? this.tree.expandIconSrcMinus : this.tree.expandIconSrcPlus;
+} else {
+	this.expandIcon.src = this.tree.blankIconSrc;
+}

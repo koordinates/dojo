@@ -1,0 +1,4 @@
+if (!this._menuVisible) {
+	this._showMenu(e);
+	dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "_hideMenu");
+}

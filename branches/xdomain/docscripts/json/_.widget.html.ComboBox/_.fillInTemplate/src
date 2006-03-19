@@ -1,0 +1,46 @@
+this.comboBoxValue.name = this.name;
+this.comboBoxSelectionValue.name = this.name+"_selected";
+
+ NOTE: this doesn't copy style info inherited from classes;
+ it's just primitive support for direct style setting
+var sourceNodeStyle = this.getFragNodeRef(frag).style;
+if ( sourceNodeStyle ){
+	this.domNode.style.cssText = sourceNodeStyle.cssText;
+}
+
+ FIXME: add logic
+this.dataProvider = new dojo.widget.ComboBoxDataProvider();
+
+if(!dojo.string.isBlank(this.dataUrl)){
+	if("local" == this.mode){
+		var _this = this;
+		dojo.io.bind({
+			url: this.dataUrl,
+			load: function(type, data, evt){ 
+				if(type=="load"){
+					_this.dataProvider.setData(data);
+				}
+			},
+			mimetype: "text/javascript"
+		});
+	}else if("remote" == this.mode){
+		this.dataProvider = new dojo.widget.incrementalComboBoxDataProvider(this.dataUrl);
+	}
+}else{
+	 check to see if we can populate the list from <option> elements
+	var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
+	if((node)&&(node.nodeName.toLowerCase() == "select")){
+		 NOTE: we're not handling <optgroup> here yet
+		var opts = node.getElementsByTagName("option");
+		var ol = opts.length;
+		var data = [];
+		for(var x=0; x<ol; x++){
+			data.push([new String(opts[x].innerHTML), new String(opts[x].value)]);
+		}
+		this.dataProvider.setData(data);
+	}
+}
+
+ Prevent IE bleed-through problem
+this.optionsIframe = new dojo.html.BackgroundIframe(this.optionsListWrapper);
+this.optionsIframe.size([0,0,0,0]);

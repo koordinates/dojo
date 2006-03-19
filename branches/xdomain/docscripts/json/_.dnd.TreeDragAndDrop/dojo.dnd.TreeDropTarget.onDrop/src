@@ -1,0 +1,18 @@
+var position = this.position;
+
+this.onDragOut(e);
+
+var sourceTreeNode = e.dragObject.treeNode;
+
+if (!dojo.lang.isObject(sourceTreeNode)) {
+	dojo.raise("TreeNode not found in dragObject")
+}
+
+if (position == "onto") {
+	return this.controller.move(sourceTreeNode, this.treeNode, 0);
+} else {
+	var index = this.getTargetParentIndex(sourceTreeNode, position);
+	return this.controller.move(sourceTreeNode, this.treeNode.parent, index);
+}
+
+dojo.debug('drop2');

@@ -1,0 +1,28 @@
+var _this = this;
+var items = {};
+var q = [];
+var sorter = function(a,b){
+	if (a.key > b.key) return 1;
+	if (a.key < b.key) return -1;
+	return 0;
+};
+var build = function(){
+	q = [];
+	var e = _this.getIterator();
+	while (!e.atEnd) {
+		q.push(e.entry);
+		e.moveNext();
+	}
+	q.sort(sorter);
+};
+
+this.count = q.length;
+
+if (dictionary){
+	var e = dictionary.getIterator();
+	while (!e.atEnd) {
+		q[q.length] = items[e.key] = new dojo.collections.DictionaryEntry(e.key, e.value);
+		e.moveNext();
+	}
+	q.sort(sorter);
+}

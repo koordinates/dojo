@@ -1,0 +1,5 @@
+dojo.debug("functionPackage() name: " + input.name + " for type: " + input.type);
+input.type = "function_names";
+input.callbacks.unshift(callback);
+input.callbacks.unshift(dojo.doc._functionPackage);
+dojo.doc._buildCache(input);

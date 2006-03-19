@@ -1,0 +1,5 @@
+if( this._active ) {
+	return this._paused ? "paused" : "playing";
+} else {
+	return "stopped";
+}

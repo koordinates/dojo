@@ -1,0 +1,10 @@
+this.around_index++;
+if(this.around_index >= this.jp_.around.length){
+	return this.jp_.object[this.jp_.methodname].apply(this.jp_.object, this.args);
+	 return this.jp_.run_before_after(this.object, this.args);
+}else{
+	var ti = this.jp_.around[this.around_index];
+	var mobj = ti[0]||dj_global;
+	var meth = ti[1];
+	return mobj[meth].call(mobj, this);
+}

@@ -1,0 +1,22 @@
+var args = [];
+for(var i = 1; i < arguments.length; i++) { args.push(arguments[i]); }
+switch(type.toLowerCase()) {
+	case "xml":
+	case "html":
+	case "xhtml":
+		return dojo.string.escapeXml.apply(this, args);
+	case "sql":
+		return dojo.string.escapeSql.apply(this, args);
+	case "regexp":
+	case "regex":
+		return dojo.string.escapeRegExp.apply(this, args);
+	case "javascript":
+	case "jscript":
+	case "js":
+		return dojo.string.escapeJavaScript.apply(this, args);
+	case "ascii":
+		 so it's encode, but it seems useful
+		return dojo.string.encodeAscii.apply(this, args);
+	default:
+		return str;  
+}

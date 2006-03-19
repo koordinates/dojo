@@ -1,0 +1,2 @@
+this.comboBoxSelectionValue.value = value;
+this.hideResultList();

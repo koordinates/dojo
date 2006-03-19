@@ -1,0 +1,12 @@
+this.imgs[0].style.display = this.tree.showRootGrid ? 'inline' : 'none';
+
+ set the expand icon
+
+ set the child icon
+this.buildChildIcon();
+
+this.updateExpandGrid();
+this.updateChildGrid();
+this.updateParentGrid();
+
+dojo.profile.stop("updateIcons")

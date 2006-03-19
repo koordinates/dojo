@@ -1,0 +1,1 @@
+dojo.fx.html.fadeShow(node, duration, callback);

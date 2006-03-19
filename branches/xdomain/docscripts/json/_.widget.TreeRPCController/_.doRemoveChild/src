@@ -1,0 +1,16 @@
+var params = {
+	node: this.getInfo(node),
+	tree: this.getInfo(node.tree)
+}
+
+dojo.io.bind({
+		url: this.getRPCUrl('removeChild'),
+		 I hitch to get this.loadOkHandler 
+		load: dojo.lang.hitch(this, function(type, response) {
+			this.doRemoveChildProcessResponse(type, response, node, callFunc, callObj) }
+		),
+		error: this.RPCErrorHandler,
+		mimetype: "text/json",
+		preventCache: true,
+		content: {data: dojo.json.serialize(params) }
+});

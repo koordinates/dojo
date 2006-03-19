@@ -1,0 +1,30 @@
+node = dojo.byId(this.treeNode.labelNode);
+var mousey = e.pageY || e.clientY + document.body.scrollTop;
+var nodey = dojo.html.getAbsoluteY(node);
+var height = dojo.html.getInnerHeight(node);
+
+var relY = mousey - nodey;
+var p = relY / height;
+
+var position = "";  "" <=> forbidden
+if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO
+  && DNDMode & dojo.widget.Tree.prototype.DNDModes.BETWEEN) {
+	if (p<=0.3) {
+		position = "before";
+	} else if (p<=0.7) {
+		position = "onto";
+	} else {
+		position = "after";
+	}
+} else if (DNDMode & dojo.widget.Tree.prototype.DNDModes.BETWEEN) {
+	if (p<=0.5) {
+		position = "before";
+	} else {
+		position = "after";
+	}
+}
+else if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO) {
+	position = "onto";
+}
+
+return position;

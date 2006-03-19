@@ -1,0 +1,4 @@
+var ao = interpolateArgs(arguments);
+if(!ao.adviceFunc){ return; }  
+var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
+return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once);

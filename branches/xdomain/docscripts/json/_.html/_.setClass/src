@@ -1,0 +1,16 @@
+node = dojo.byId(node);
+if(!node){ return false; }
+var cs = new String(classStr);
+try{
+	if(typeof node.className == "string"){
+		node.className = cs;
+	}else if(node.setAttribute){
+		node.setAttribute("class", classStr);
+		node.className = cs;
+	}else{
+		return false;
+	}
+}catch(e){
+	dojo.debug("dojo.html.setClass() failed", e);
+}
+return true;

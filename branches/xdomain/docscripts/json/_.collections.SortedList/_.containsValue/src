@@ -1,0 +1,6 @@
+var e = this.getIterator();
+while (!e.atEnd){
+	if (e.value == o) return true;
+	e.moveNext();
+}
+return false;  

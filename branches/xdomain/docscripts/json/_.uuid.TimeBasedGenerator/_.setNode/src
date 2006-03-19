@@ -1,0 +1,2 @@
+dojo.lang.assert((node === null) || (node.length == 12));
+_uniformNode = node;

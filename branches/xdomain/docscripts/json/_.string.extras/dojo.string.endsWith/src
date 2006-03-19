@@ -1,0 +1,6 @@
+if(ignoreCase) {
+	 ignoreCase: bool
+	str = str.toLowerCase();
+	end = end.toLowerCase();
+}
+return str.lastIndexOf(end) == str.length - end.length;  

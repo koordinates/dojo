@@ -1,0 +1,9 @@
+dojo.debug("functionNames()");
+if(!selectKey){
+	selectKey = ++dojo.doc._count;
+}
+dojo.doc._buildCache({
+	type: "function_names",
+	callbacks: [dojo.doc._functionNames, callback],
+	selectKey: selectKey
+});

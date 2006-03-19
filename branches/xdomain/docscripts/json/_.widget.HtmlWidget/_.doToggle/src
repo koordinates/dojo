@@ -1,0 +1,1 @@
+this.isVisible() ? this.hide() : this.show();

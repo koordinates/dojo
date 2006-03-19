@@ -1,0 +1,44 @@
+var _this = this;
+
+var handler = function(node, savedIndices) {
+	this.node = node; .children[i];
+	this.savedIndices = savedIndices; [i];
+	 recursively read next savedIndices level and apply to opened node
+}
+
+for(var i=0; i<node.children.length; i++) {
+	var child = node.children[i];
+
+	var found = false;
+	var key = -1;
+
+	dojo.debug("Check "+child)
+	 process field set case
+	if (dojo.lang.isUndefined(field) && savedIndices[i]) {
+		found = true;
+		key = i;
+	}
+
+	 process case when field is not set
+	if (field) {
+		for(var key in savedIndices) {
+			dojo.debug("Compare "+key+" "+child[field])
+			if (key == child[field]) {
+				found = true;
+				break;
+			}
+		}
+	}
+
+	 if we found anything - expand it
+	if (found) {
+		dojo.debug("Found at "+key)
+		var h = new handler(child, savedIndices[key]);
+		_this.expand(child, false, h, h.process);
+	} else if (child.isExpanded) {  not found, so collapse
+		dojo.debug("Collapsing all descendants "+node.children[i])
+		dojo.lang.forEach(child.getDescendants(), function(elem) { _this.collapse(elem); });
+		this.collapse(node.children[i]);
+	}
+
+}

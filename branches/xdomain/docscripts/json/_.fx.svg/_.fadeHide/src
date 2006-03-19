@@ -1,0 +1,4 @@
+if(!duration) { duration = 150; }  why not have a default?
+return dojo.fx.svg.fadeOut(node, duration, function(node) {
+	if(typeof callback == "function") { callback(node); }
+});

@@ -1,0 +1,4 @@
+this.children = [];
+ this.selection = new dojo.widget.Selection();
+ FIXME: need to replace this with context menu stuff
+this.extraArgs = {};

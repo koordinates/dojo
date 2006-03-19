@@ -1,0 +1,4 @@
+do {
+	var id = "dj_unique_" + (++arguments.callee._idIncrement);
+}while(document.getElementById(id));
+return id;

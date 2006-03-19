@@ -1,0 +1,1 @@
+return dojo.graphics.color.rgb2hex(this.toRgb());

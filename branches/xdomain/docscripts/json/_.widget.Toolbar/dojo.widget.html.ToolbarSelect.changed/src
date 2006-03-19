@@ -1,0 +1,1 @@
+this._fireEvent("onSetValue", this.selectBox.value);

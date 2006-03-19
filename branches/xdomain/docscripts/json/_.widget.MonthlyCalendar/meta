@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.widget.DomWidget","dojo.date"],"html":["dojo.widget.html.MonthlyCalendar"]},"_":{"()":[]},"_.util":{"()":[]},"_.util.toRfcDate":{"(jsDate)":[]},"_.util.fromRfcDate":{"(rfcDate)":[]},"_.util.initFirstSaturday":{"(month, year)":[]}}

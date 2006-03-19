@@ -1,0 +1,6 @@
+this.deselectAll();
+var idx = this.items.length-1;
+while(this.items[idx] && !this.select(this.items[idx])) {
+	idx--;
+}
+return this.items[idx] ? true : false;

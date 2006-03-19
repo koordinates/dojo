@@ -1,0 +1,2 @@
+this.setWidth(width);
+this.setHeight(height);

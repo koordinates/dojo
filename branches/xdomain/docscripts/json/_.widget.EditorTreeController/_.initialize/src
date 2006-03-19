@@ -1,0 +1,5 @@
+if (this.eventNaming == "default") {  IE || FF
+	for (eventName in this.eventNames) {
+		this.eventNames[eventName] = this.widgetId+"/"+eventName;
+	}
+}

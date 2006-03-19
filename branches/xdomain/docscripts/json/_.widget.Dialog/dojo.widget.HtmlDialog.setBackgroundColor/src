@@ -1,0 +1,7 @@
+if(arguments.length >= 3) {
+	color = new dojo.graphics.color.Color(arguments[0], arguments[1], arguments[2]);
+} else {
+	color = new dojo.graphics.color.Color(color);
+}
+this.bg.style.backgroundColor = color.toString();
+return this.bgColor = color;

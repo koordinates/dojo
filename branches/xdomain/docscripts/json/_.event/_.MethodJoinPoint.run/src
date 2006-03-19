@@ -1,0 +1,108 @@
+var obj = this.object||dj_global;
+var args = arguments;
+
+ optimization. We only compute once the array version of the arguments
+ pseudo-arr in order to prevent building it each time advice is unrolled.
+var aargs = [];
+for(var x=0; x<args.length; x++){
+	aargs[x] = args[x];
+}
+
+var unrollAdvice  = function(marr){ 
+	if(!marr){
+		dojo.debug("Null argument to unrollAdvice()");
+		return;
+	}
+  
+	var callObj = marr[0]||dj_global;
+	var callFunc = marr[1];
+	
+	if(!callObj[callFunc]){
+		dojo.raise("function \"" + callFunc + "\" does not exist on \"" + callObj + "\"");
+	}
+	
+	var aroundObj = marr[2]||dj_global;
+	var aroundFunc = marr[3];
+	var msg = marr[6];
+	var undef;
+
+	var to = {
+		args: [],
+		jp_: this,
+		object: obj,
+		proceed: function(){
+			return callObj[callFunc].apply(callObj, to.args);
+		}
+	};
+	to.args = aargs;
+
+	var delay = parseInt(marr[4]);
+	var hasDelay = ((!isNaN(delay))&&(marr[4]!==null)&&(typeof marr[4] != "undefined"));
+	if(marr[5]){
+		var rate = parseInt(marr[5]);
+		var cur = new Date();
+		var timerSet = false;
+		if((marr["last"])&&((cur-marr.last)<=rate)){
+			if(dojo.event.canTimeout){
+				if(marr["delayTimer"]){
+					clearTimeout(marr.delayTimer);
+				}
+				var tod = parseInt(rate*2);  is rate*2 naive?
+				var mcpy = dojo.lang.shallowCopy(marr);
+				marr.delayTimer = setTimeout(function(){
+					 FIXME: on IE at least, event objects from the
+					 browser can go out of scope. How (or should?) we
+					 deal with it?
+					mcpy[5] = 0;
+					unrollAdvice(mcpy);
+				}, tod);
+			}
+			return;
+		}else{
+			marr.last = cur;
+		}
+	}
+
+	 FIXME: need to enforce rates for a connection here!
+
+	if(aroundFunc){
+		 NOTE: around advice can't delay since we might otherwise depend
+		 on execution order!
+		aroundObj[aroundFunc].call(aroundObj, to);
+	}else{
+		 var tmjp = dojo.event.MethodJoinPoint.getForMethod(obj, methname);
+		if((hasDelay)&&((dojo.render.html)||(dojo.render.svg))){   FIXME: the render checks are grotty!
+			dj_global["setTimeout"](function(){
+				if(msg){
+					callObj[callFunc].call(callObj, to); 
+				}else{
+					callObj[callFunc].apply(callObj, args); 
+				}
+			}, delay);
+		}else{  many environments can't support delay!
+			if(msg){
+				callObj[callFunc].call(callObj, to); 
+			}else{
+				callObj[callFunc].apply(callObj, args); 
+			}
+		}
+	}
+}
+
+if(this.before.length>0){
+	dojo.lang.forEach(this.before, unrollAdvice, true);
+}
+
+var result;
+if(this.around.length>0){
+	var mi = new dojo.event.MethodInvocation(this, obj, args);
+	result = mi.proceed();
+}else if(this.methodfunc){
+	result = this.object[this.methodname].apply(this.object, args);
+}
+
+if(this.after.length>0){
+	dojo.lang.forEach(this.after, unrollAdvice, true);
+}
+
+return (this.methodfunc) ? result : null;

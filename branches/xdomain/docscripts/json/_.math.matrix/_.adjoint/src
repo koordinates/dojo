@@ -1,0 +1,54 @@
+a = dojo.math.matrix.copy(a);
+
+var tms = a.length;
+
+if (a.length != a[0].length){
+	dojo.debug("Can't find the adjoint of a non-square matrix");
+	return [[0]];  
+}
+
+if (tms == 1){
+	dojo.debug("Can't find the adjoint of a 1x1 matrix");
+	return [[0]];  
+}
+
+var m = dojo.math.matrix.create(tms, tms);
+
+var ii = 0;
+var jj = 0;
+var ia = 0;
+var ja = 0;
+var det = 0;
+
+for (var i = 0; i < tms; i++){
+	for (var j = 0; j < tms; j++){
+
+		ia = 0;
+		ja = 0;
+
+		var ap = dojo.math.matrix.create(tms-1, tms-1);
+
+		for (ii = 0; ii < tms; ii++) {
+			for (jj = 0; jj < tms; jj++) {
+
+				if ((ii != i) && (jj != j)) {
+					ap[ia][ja] = a[ii][jj];
+					ja++;
+				}
+
+			}
+
+			if ((ii != i) && (jj != j)) {
+				ia++;
+			}
+			ja = 0;
+		}
+
+		det = dojo.math.matrix.determinant(ap);
+		m[i][j] = Math.pow(-1 , (i + j)) * det;
+	}
+}
+
+m = dojo.math.matrix.transpose(m);
+
+return m;  

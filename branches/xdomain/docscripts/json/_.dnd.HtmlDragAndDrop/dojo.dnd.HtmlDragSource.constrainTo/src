@@ -1,0 +1,4 @@
+this.constrainToContainer = true;
+if (container) {
+	this.constrainingContainer = container;
+}

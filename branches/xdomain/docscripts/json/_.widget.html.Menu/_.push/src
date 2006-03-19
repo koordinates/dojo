@@ -1,0 +1,2 @@
+this.domNode.appendChild(item.domNode);
+this._register(item);

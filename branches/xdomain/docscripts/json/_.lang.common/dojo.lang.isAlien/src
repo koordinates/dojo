@@ -1,0 +1,1 @@
+return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));  

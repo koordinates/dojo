@@ -1,0 +1,38 @@
+var totalCount = 0;
+var doneCount = 0;
+for(var param in this._state){
+	totalCount++;
+	var currentState = this._state[param];
+	if(currentState.isDone){
+		doneCount++;
+		delete this._state[param];
+	}else{
+		var listener = currentState.kwArgs;
+		try{
+			if(currentState.checkString && eval("typeof(" + currentState.checkString + ") != 'undefined'")){
+				this._finish(currentState, "load");
+				doneCount++;
+				delete this._state[param];
+			}else if(listener.timeoutSeconds && listener.timeout){
+				if(currentState.startTime + (listener.timeoutSeconds * 1000) < (new Date()).getTime()){
+					this._finish(currentState, "timeout");
+					doneCount++;
+					delete this._state[param];
+				}
+			}else if(!listener.timeoutSeconds){
+				Increment the done count if no timeout is specified, so
+				that we turn off the timer if all that is left in the state
+				list are things we can't clean up because they fail without
+				getting a callback.
+				doneCount++;
+			}
+		}catch(e){
+			this._finish(currentState, "error", {status: this.DsrStatusCodes.Error, response: e});
+		}
+	}
+}
+	
+if(doneCount == totalCount){
+	clearInterval(this.inFlightTimer);
+	this.inFlightTimer = null;
+}

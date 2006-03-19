@@ -1,0 +1,6 @@
+this.object = obj||dj_global;
+this.methodname = methname;
+this.methodfunc = this.object[methname];
+this.before = [];
+this.after = [];
+this.around = [];

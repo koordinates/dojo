@@ -1,0 +1,18 @@
+var _this = this;
+
+this.dropTargetDimensions = [];
+dojo.lang.forEach(this.dropTargets, function(tempTarget){
+	var tn = tempTarget.domNode;
+	if(!tn){ return; }
+	var ttx = dojo.style.getAbsoluteX(tn, true);
+	var tty = dojo.style.getAbsoluteY(tn, true);
+	_this.dropTargetDimensions.push([
+		[ttx, tty],	 upper-left
+		 lower-right
+		[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
+		tempTarget
+	]);
+	dojo.debug("Cached for "+tempTarget)
+});
+
+dojo.debug("Cache locations")

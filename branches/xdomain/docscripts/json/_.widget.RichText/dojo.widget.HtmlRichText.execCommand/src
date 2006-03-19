@@ -1,0 +1,87 @@
+if (this.object) {
+	if (command == "forecolor") { command = "setforecolor"; }
+	else if (command == "backcolor") { command = "setbackcolor"; }
+
+	if (typeof this._activeX.command[command] == "undefined") { return null; }
+
+	if (command == "inserttable") {
+		var tableInfo = this.constructor._tableInfo;
+		if (!tableInfo) {
+			tableInfo = document.createElement("object");
+			tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
+			document.body.appendChild(tableInfo);
+			this.constructor._table = tableInfo;
+		}
+		
+		tableInfo.NumRows = argument.rows;
+		tableInfo.NumCols = argument.cols;
+		tableInfo.TableAttrs = argument["TableAttrs"];
+		tableInfo.CellAttrs = arr["CellAttrs"];
+		tableInfo.Caption = arr["Caption"];
+	}
+
+	if (arguments.length == 1) {
+		return this.object.ExecCommand(this._activeX.command[command],
+			this._activeX.ui.noprompt);
+	} else {
+		return this.object.ExecCommand(this._activeX.command[command],
+			this._activeX.ui.noprompt, argument);
+	}
+	
+ fix up unlink in Mozilla to unlink the link and not just the selection
+} else if (command == "unlink" &&
+	this.queryCommandEnabled("unlink") && dojo.render.html.mozilla) {
+	 grab selection
+	 Mozilla gets upset if we just store the range so we have to
+	 get the basic properties and recreate to save the selection
+	var selection = this.window.getSelection();
+	var selectionRange = selection.getRangeAt(0);
+	var selectionStartContainer = selectionRange.startContainer;
+	var selectionStartOffset = selectionRange.startOffset;
+	var selectionEndContainer = selectionRange.endContainer;
+	var selectionEndOffset = selectionRange.endOffset;
+	
+	 select our link and unlink
+	var range = document.createRange();
+	var a = this.getSelectedNode();
+	while (a.nodeName != "A") { a = a.parentNode; }
+	range.selectNode(a);
+	selection.removeAllRanges();
+	selection.addRange(range);
+	
+	var returnValue = this.document.execCommand("unlink", false, null);
+	
+	 restore original selection
+	var selectionRange = document.createRange();
+	selectionRange.setStart(selectionStartContainer, selectionStartOffset);
+	selectionRange.setEnd(selectionEndContainer, selectionEndOffset);
+	selection.removeAllRanges();
+	selection.addRange(selectionRange);
+	
+	return returnValue;
+} else if (command == "inserttable" && dojo.render.html.mozilla) {
+
+	var cols = "<tr>";
+	for (var i = 0; i < argument.cols; i++) { cols += "<td></td>"; }
+	cols += "</tr>";
+
+	var table = "<table><tbody>";
+	for (var i = 0; i < argument.rows; i++) { table += cols; }
+	table += "</tbody></table>";
+	var returnValue = this.document.execCommand("inserthtml", false, table);
+
+} else if (command == "hilitecolor" && dojo.render.html.mozilla) {
+	 mozilla doesn't support hilitecolor properly when useCSS is
+	 set to false (bugzilla #279330)
+	
+	this.document.execCommand("useCSS", false, false);
+	var returnValue = this.document.execCommand(command, false, argument);			
+	this.document.execCommand("useCSS", false, true);
+
+} else {
+	argument = arguments.length > 1 ? argument : null;
+	var returnValue = this.document.execCommand(command, false, argument);
+}
+
+this.onDisplayChanged();
+return returnValue;

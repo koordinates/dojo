@@ -1,0 +1,9 @@
+dojo.widget.validate.CurrencyTextbox.superclass.mixInProperties.apply(this, arguments);
+
+ Get properties from markup attibutes, and assign to flags object.
+if ( localProperties.cents ) { 
+	this.flags.cents = ( localProperties.cents == "true" );
+}
+if ( localProperties.symbol ) { 
+	this.flags.symbol = localProperties.symbol;
+}

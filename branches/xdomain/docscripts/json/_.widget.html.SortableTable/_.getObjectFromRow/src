@@ -1,0 +1,16 @@
+var cells=row.getElementsByTagName("td");
+var o={};
+for(var i=0; i<this.columns.length;i++){
+	if(this.columns[i].sortType=="__markup__"){
+			FIXME: should we parse this instead?  Because if the user may not get back the markup they put in...
+		o[this.columns[i].getField()]=cells[i].innerHTML;
+	}else{
+		var text=dojo.html.renderedTextContent(cells[i]);
+		var val=new (this.columns[i].getType())(text);
+		o[this.columns[i].getField()]=val;
+	}
+}
+if(dojo.html.hasAttribute(row,"value")){
+	o[this.valueField]=dojo.html.getAttribute(row,"value");
+}
+return o;		

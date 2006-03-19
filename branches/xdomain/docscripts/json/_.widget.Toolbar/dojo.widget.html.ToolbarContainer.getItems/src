@@ -1,0 +1,8 @@
+var items = [];
+for(var i = 0; i < this.children.length; i++) {
+	var child = this.children[i];
+	if(child instanceof dojo.widget.html.Toolbar) {
+		items = items.concat(child.getItems());
+	}
+}
+return items;

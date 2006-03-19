@@ -1,0 +1,29 @@
+a = dojo.math.matrix.copy(a);
+b = dojo.math.matrix.copy(b);
+
+var ax = a[0].length;
+var ay = a.length;
+var bx = b[0].length;
+var by = b.length;
+
+if (ax != by){
+	dojo.debug("Can't multiply matricies of sizes "+ax+','+ay+' and '+bx+','+by);
+	return [[0]];  
+}
+
+var c = [];
+
+for(var k=0; k<ay; k++){
+	c[k] = [];
+	for(var i=0; i<bx; i++){
+
+		c[k][i] = 0;
+
+		for(var m=0; m<ax; m++){
+
+			c[k][i] += a[k][m]*b[m][i];
+		}
+	}
+}
+
+return c;  

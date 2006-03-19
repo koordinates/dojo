@@ -1,0 +1,6 @@
+this.currentMenu = null;
+this.currentButton = null;		 button that opened current menu (if any)
+this.focusNode = null;
+
+dojo.event.connect(document, 'onmousedown', this, 'onClick');
+dojo.event.connect(window, "onscroll", this, "onClick");

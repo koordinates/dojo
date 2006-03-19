@@ -1,0 +1,9 @@
+for(var attr in this.previous){
+	this.domNode.style[attr]=this.previous[attr];
+}
+this.previous=null;
+
+this.restoreAction.style.display="none";
+this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
+
+this.windowState="normal";

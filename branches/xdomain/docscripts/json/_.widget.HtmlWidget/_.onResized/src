@@ -1,0 +1,2 @@
+dojo.widget.HtmlWidget.superclass.onResized.call(this);
+if(this.bgIframe){ this.bgIframe.onResized(); }

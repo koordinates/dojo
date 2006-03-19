@@ -1,0 +1,6 @@
+var dir = axis || "x";
+if (node.transform && node.ownerSVGElement && node.ownerSVGElement.createSVGTransform){
+	var t = node.ownerSVGElement.createSVGTransform();
+	t.setMatrix((dir != "x") ? t.matrix.flipY() : t.matrix.flipX());
+	node.transform.baseVal.appendItem(t);
+}

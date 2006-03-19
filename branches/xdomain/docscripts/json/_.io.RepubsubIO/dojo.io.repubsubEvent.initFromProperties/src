@@ -1,0 +1,16 @@
+if(evt.constructor = dojo.io.repubsubEvent){ 
+	for(var x in evt){
+		this[x] = evt[x];
+	}
+}else{
+	 we want to copy all the properties of the evt object, and transform
+	 those that are "stock" properties of dojo.io.repubsubEvent. All others should
+	 be copied as-is
+	for(var x in evt){
+		if(typeof this.forwardPropertiesMap[x] == "string"){
+			this[this.forwardPropertiesMap[x]] = evt[x];
+		}else{
+			this[x] = evt[x];
+		}
+	}
+}

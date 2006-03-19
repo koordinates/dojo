@@ -1,0 +1,2 @@
+node.expand();
+if (callFunc) callFunc.apply(callObj, [node]);

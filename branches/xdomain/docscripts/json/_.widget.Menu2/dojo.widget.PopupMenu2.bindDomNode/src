@@ -1,0 +1,12 @@
+var node = dojo.byId(nodeName);
+
+ fixes node so that it supports oncontextmenu if not natively supported, Konqueror, Opera more?
+dojo.widget.Menu2.OperaAndKonqFixer.fixNode(node);
+
+dojo.event.kwConnect({
+	srcObj:     node,
+	srcFunc:    "oncontextmenu",
+	targetObj:  this,
+	targetFunc: "onOpen",
+	once:       true
+});

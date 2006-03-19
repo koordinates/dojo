@@ -1,0 +1,62 @@
+this.selectedIsUsed = false;
+this.currentIsUsed = false;
+var currentClassName = "";
+var previousDate = new Date();
+var calendarNodes = this.calendarDatesContainerNode.getElementsByTagName("td");
+var currentCalendarNode;
+ set hours of date such that there is no chance of rounding error due to 
+ time change in local time zones
+previousDate.setHours(8);
+var nextDate = new Date(this.firstSaturday.year, this.firstSaturday.month, this.firstSaturday.date, 8);
+
+if(this.firstSaturday.date < 7) {
+	 this means there are days to show from the previous month
+	var dayInWeek = 6;
+	for (var i=this.firstSaturday.date; i>0; i--) {
+		currentCalendarNode = calendarNodes.item(dayInWeek);
+		currentCalendarNode.innerHTML = nextDate.getDate();
+		dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
+		dayInWeek--;
+		previousDate = nextDate;
+		nextDate = this.incrementDate(nextDate, false);
+	}
+	for(var i=dayInWeek; i>-1; i--) {
+		currentCalendarNode = calendarNodes.item(i);
+		currentCalendarNode.innerHTML = nextDate.getDate();
+		dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "previous"));
+		previousDate = nextDate;
+		nextDate = this.incrementDate(nextDate, false);				
+	}
+} else {
+	nextDate.setDate(this.firstSaturday.date-6);
+	for(var i=0; i<7; i++) {
+		currentCalendarNode = calendarNodes.item(i);
+		currentCalendarNode.innerHTML = nextDate.getDate();
+		dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
+		previousDate = nextDate;
+		nextDate = this.incrementDate(nextDate, true);				
+	}
+}
+previousDate.setDate(this.firstSaturday.date);
+previousDate.setMonth(this.firstSaturday.month);
+previousDate.setFullYear(this.firstSaturday.year);
+nextDate = this.incrementDate(previousDate, true);
+var count = 7;
+currentCalendarNode = calendarNodes.item(count);
+while((nextDate.getMonth() == previousDate.getMonth()) && (count<42)) {
+	currentCalendarNode.innerHTML = nextDate.getDate();
+	dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "current"));
+	currentCalendarNode = calendarNodes.item(++count);
+	previousDate = nextDate;
+	nextDate = this.incrementDate(nextDate, true);
+}
+
+while(count < 42) {
+	currentCalendarNode.innerHTML = nextDate.getDate();
+	dojo.html.setClass(currentCalendarNode, this.getDateClassName(nextDate, "next"));
+	currentCalendarNode = calendarNodes.item(++count);
+	previousDate = nextDate;
+	nextDate = this.incrementDate(nextDate, true);
+}
+this.setMonthLabel(this.firstSaturday.month);
+this.setYearLabels(this.firstSaturday.year);

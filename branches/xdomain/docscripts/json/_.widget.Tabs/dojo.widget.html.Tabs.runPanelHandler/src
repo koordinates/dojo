@@ -1,0 +1,5 @@
+if(dojo.lang.isFunction(this["tabHandler" + panel.id])) {
+	this["tabHandler" + panel.id](panel, document.getElementById(panel.id));
+	return false;
+}
+return true;

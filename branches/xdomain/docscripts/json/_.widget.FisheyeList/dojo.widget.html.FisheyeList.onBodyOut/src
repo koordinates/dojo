@@ -1,0 +1,4 @@
+if( dojo.html.overElement(document.body, e) ){
+	return;
+}
+this.setDormant(e);

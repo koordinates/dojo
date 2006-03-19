@@ -1,0 +1,4 @@
+var ret = [dojo.html.getViewportWidth(), dojo.html.getViewportHeight()];
+ret.w = ret[0];
+ret.h = ret[1];
+return ret;

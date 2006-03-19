@@ -1,0 +1,7 @@
+if (!dojo.lang.isUndefined(response.error)) {
+	this.RPCErrorHandler("server", response.error);
+	return false;
+}
+
+var args = [child, newParent, index];
+return dojo.widget.TreeLoadingController.prototype.doMove.apply(this, args);

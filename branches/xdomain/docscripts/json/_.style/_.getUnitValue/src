@@ -1,0 +1,17 @@
+node = dojo.byId(node);
+var result = { value: 0, units: 'px' };
+var s = dojo.style.getComputedStyle(node, cssSelector);
+if (s == '' || (s == 'auto' && autoIsZero)){ return result; }
+if (dojo.lang.isUndefined(s)){ 
+	result.value = NaN;
+}else{
+	 FIXME: is regex inefficient vs. parseInt or some manual test? 
+	var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
+	if (!match){
+		result.value = NaN;
+	}else{
+		result.value = Number(match[1]);
+		result.units = match[2].toLowerCase();
+	}
+}
+return result;		

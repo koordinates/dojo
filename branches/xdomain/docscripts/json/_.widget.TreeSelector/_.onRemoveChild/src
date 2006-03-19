@@ -1,0 +1,5 @@
+if (message.child !== this.selectedNode) {
+	return;
+}
+
+this.deselect();

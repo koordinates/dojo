@@ -1,0 +1,2 @@
+var _this = this;
+return dojo.lang.inArray(_this.actionsDisabled, action)

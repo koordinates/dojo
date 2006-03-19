@@ -1,0 +1,6 @@
+if(this.getLevelName(name)){
+	this.err("could not add log level "+name+" because a level with that name already exists");
+	return false;
+}
+this.levels.append({"name": name, "level": parseInt(lvl)});
+return true;

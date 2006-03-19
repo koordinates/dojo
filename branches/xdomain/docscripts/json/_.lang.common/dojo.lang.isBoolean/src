@@ -1,0 +1,1 @@
+return (wh instanceof Boolean || typeof wh == "ean");  

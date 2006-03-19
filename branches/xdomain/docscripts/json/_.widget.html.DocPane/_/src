@@ -1,0 +1,3 @@
+dojo.widget.HtmlWidget.call(this);
+dojo.event.topic.subscribe("docResults", this, "onDocResults");
+dojo.event.topic.subscribe("docSelectFunction", this, "onDocSelectFunction");

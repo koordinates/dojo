@@ -1,0 +1,7 @@
+var ret = {}, key;
+for(key in obj) {
+	if(dojo.lang.isUndefined(ret[key])) {
+		ret[key] = obj[key];
+	}
+}
+return ret;

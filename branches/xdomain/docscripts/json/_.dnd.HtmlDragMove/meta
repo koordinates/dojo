@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.dnd.*"]},"_Source":{"(node, type)":[]},"_Source.onDragStart":{"()":[]},"_Object":{"(node, type)":[]},"_Object.onDragEnd":{"(e)":[]},"_Object.onDragStart":{"(e)":[]}}

@@ -1,0 +1,5 @@
+dojo.widget.DomButton.call(this);
+dojo.widget.SvgWidget.call(this);
+
+ FIXME: freaking implement this already!
+this.label = "huzzah!";

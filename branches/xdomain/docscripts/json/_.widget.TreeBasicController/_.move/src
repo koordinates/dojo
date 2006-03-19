@@ -1,0 +1,13 @@
+if (!this.canMove(child, newParent)) {
+	return false;
+}
+
+var result = this.doMove(child, newParent, index);
+
+if (!result) return result;
+
+if (newParent.isTreeNode) {
+	this.expand(newParent);
+}
+
+return result;

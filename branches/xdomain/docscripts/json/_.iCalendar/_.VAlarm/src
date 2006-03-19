@@ -1,0 +1,3 @@
+this.name = "VALARM";
+this._ValidProperties = VAlarmProperties;
+dojo.iCalendar.Component.call(this, body);

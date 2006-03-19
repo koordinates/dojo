@@ -1,0 +1,79 @@
+this.itemCount = this.children.length;
+
+this.barWidth  = (this.isHorizontal ? this.itemCount : 1) * this.itemWidth;
+this.barHeight = (this.isHorizontal ? 1 : this.itemCount) * this.itemHeight;
+
+this.totalWidth  = this.proximityLeft + this.proximityRight  + this.barWidth;
+this.totalHeight = this.proximityTop  + this.proximityBottom + this.barHeight;
+
+ calculate effect ranges for each item
+
+for (var i=0; i<this.children.length; i++){
+
+	this.children[i].posX = this.itemWidth  * (this.isHorizontal ? i : 0);
+	this.children[i].posY = this.itemHeight * (this.isHorizontal ? 0 : i);
+
+	this.children[i].cenX = this.children[i].posX + (this.itemWidth  / 2);
+	this.children[i].cenY = this.children[i].posY + (this.itemHeight / 2);
+
+	var isz = this.isHorizontal ? this.itemWidth : this.itemHeight;
+	var r = this.effectUnits * isz;
+	var c = this.isHorizontal ? this.children[i].cenX : this.children[i].cenY;
+	var lhs = this.isHorizontal ? this.proximityLeft : this.proximityTop;
+	var rhs = this.isHorizontal ? this.proximityRight : this.proximityBottom;
+	var siz = this.isHorizontal ? this.barWidth : this.barHeight;
+
+	var range_lhs = r;
+	var range_rhs = r;
+
+	if (range_lhs > c+lhs){ range_lhs = c+lhs; }
+	if (range_rhs > (siz-c+rhs)){ range_rhs = siz-c+rhs; }
+
+	this.children[i].effectRangeLeft = range_lhs / isz;
+	this.children[i].effectRangeRght = range_rhs / isz;
+
+	dojo.debug('effect range for '+i+' is '+range_lhs+'/'+range_rhs);
+}
+
+ create the bar
+
+this.domNode.style.width = this.barWidth + 'px';
+this.domNode.style.height = this.barHeight + 'px';
+
+ position the items
+for (var i=0; i<this.children.length; i++){
+	var itm = this.children[i];
+	var elm = itm.domNode;
+	elm.style.left   = itm.posX + 'px';
+	elm.style.top    = itm.posY + 'px';
+	elm.style.width  = this.itemWidth + 'px';
+	elm.style.height = this.itemHeight + 'px';
+	
+	if ( itm.svgNode ) {
+		itm.svgNode.style.position = 'absolute';
+		itm.svgNode.style.left = this.itemPadding+'%';
+		itm.svgNode.style.top = this.itemPadding+'%';
+		itm.svgNode.style.width = (100 - 2 * this.itemPadding) + '%';
+		itm.svgNode.style.height = (100 - 2 * this.itemPadding) + '%';
+		itm.svgNode.style.zIndex = 1;
+	
+		itm.svgNode.setSize(this.itemWidth, this.itemHeight);
+	} else {
+		itm.imgNode.style.left = this.itemPadding+'%';
+		itm.imgNode.style.top = this.itemPadding+'%';
+		itm.imgNode.style.width = (100 - 2 * this.itemPadding) + '%';
+		itm.imgNode.style.height = (100 - 2 * this.itemPadding) + '%';
+	}
+}
+
+ calc the grid
+
+this.calcHitGrid();
+
+ in liberal trigger mode, activate menu whenever mouse is close
+if( !this.conservativeTrigger ){
+	dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+}
+
+ Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
+dojo.event.connect(document.documentElement, "onmouseout", this, "onBodyOut");

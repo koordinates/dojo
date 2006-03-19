@@ -1,0 +1,6 @@
+this.tryFocus();
+if(this._result_list_open){
+	this.hideResultList();
+}else{
+	this.startSearchFromInput();
+}

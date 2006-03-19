@@ -1,0 +1,4 @@
+if (message.domNodeInitialized) {
+	 dom node was there already => I did not process onNodeDomCreate
+	this.bindTreeNode(message.child);
+}

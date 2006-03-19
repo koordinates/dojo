@@ -1,0 +1,1 @@
+return dojo.style.isVisible(this.domNode);

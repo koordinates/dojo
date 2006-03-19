@@ -1,0 +1,1 @@
+return dojo.validate.isValidDate(this.textbox.value, this.flags.format);

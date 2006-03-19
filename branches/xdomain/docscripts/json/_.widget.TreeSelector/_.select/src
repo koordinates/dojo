@@ -1,0 +1,15 @@
+var node = message.source;
+var e = message.event;
+
+if (this.selectedNode === node) {
+	dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
+	return;
+}
+
+if (this.selectedNode) {
+	this.deselect();
+}
+
+this.doSelect(node);
+
+dojo.event.topic.publish(this.eventNames.select, {node: node} );

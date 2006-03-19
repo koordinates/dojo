@@ -1,0 +1,8 @@
+dojo.widget.html.ToolbarSeparator.superclass.fillInTemplate.call(this, args, frag);
+this._name = this.widgetId;
+if(!skip) {
+	if(!this._icon) {
+		this.setIcon(this.defaultIconPath);
+	}
+	this.domNode.appendChild(this._icon.getNode());
+}

@@ -1,0 +1,25 @@
+this.data=[];
+this.selected=[];
+for(var i=0; i<data.length; i++){
+	var o={};		new data object.
+	for(var j=0; j<this.columns.length; j++){
+		var field=this.columns[j].getField();
+		if(this.columns[j].sortType=="__markup__"){
+			o[field]=String(data[i][field]);
+		}else{
+			var type=this.columns[j].getType();
+			var val=data[i][field];
+			var t=this.columns[j].sortType.toLowerCase();
+			if(val){
+				o[field]=new type(val);
+			}else{
+				o[field]=new type();		let it use the default.
+			}
+		}
+	}
+		check for the valueField if not already parsed.
+	if(data[i][this.valueField]&&!o[this.valueField]){
+		o[this.valueField]=data[i][this.valueField];
+	}
+	this.data.push(o);
+}

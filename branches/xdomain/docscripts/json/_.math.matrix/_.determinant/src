@@ -1,0 +1,19 @@
+a = dojo.math.matrix.copy(a);
+
+if (a.length != a[0].length){
+	dojo.debug("Can't calculate the determiant of a non-squre matrix!");
+	return 0;  
+}
+
+var tms = a.length;
+var det = 1;
+
+var b = dojo.math.matrix.upperTriangle(a);
+
+for (var i=0; i < tms; i++){
+	det *= b[i][i];
+}
+
+det = det * dojo.math.matrix.iDF;
+
+return det;  

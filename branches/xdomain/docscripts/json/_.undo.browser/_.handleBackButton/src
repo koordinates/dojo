@@ -1,0 +1,13 @@
+var current = this.historyStack.pop();
+var last = this.historyStack[this.historyStack.length-1];
+if(!current){ return; }
+if (last){
+	if(last.kwArgs["back"]){
+		last.kwArgs["back"]();
+	}else if(last.kwArgs["backButton"]){
+		last.kwArgs["backButton"]();
+	}else if(last.kwArgs["handle"]){
+		last.kwArgs.handle("back");
+	}
+}
+this.forwardStack.push(current);

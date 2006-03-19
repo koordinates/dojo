@@ -1,0 +1,2 @@
+var array = dojo.lang.isArray(arguments[0]) ? arguments[0] : arguments;
+return Math.sqrt(dojo.math.variance(array));  

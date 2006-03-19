@@ -1,0 +1,27 @@
+this.preventCache = false;  if this is true, we'll always force GET requests to not cache
+this.maxUrlLength = 1000; Used to calculate if script request should be multipart.
+this.inFlightTimer = null;
+
+this.DsrStatusCodes = {
+	Continue: 100,
+	Ok: 200,
+	Error: 500
+};
+
+*
+ * Removes any script tags from the DOM that may have been added by ScriptSrcTransport.
+ * Be careful though, by removing them from the script, you may invalidate some
+ * script objects that were defined by the js file that was pulled in as the
+ * src of the script tag. Test carefully if you decide to call this method.
+ * 
+ * In MSIE 6 (and probably 5.x), if you removed the script element while 
+ * part of the script is still executing, the browser will crash.
+
+Private properties/methods
+this._counter = 1;
+this._state = {};
+this._extraPaddingLength = 16;
+
+Is there a dojo function for this already?
+
+dojo.io.transports.addTransport("ScriptSrcTransport");

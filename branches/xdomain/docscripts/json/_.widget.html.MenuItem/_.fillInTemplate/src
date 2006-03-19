@@ -1,0 +1,7 @@
+dojo.html.disableSelection(this.domNode);
+
+if(!dojo.string.isBlank(this.title)){
+	this.domNode.appendChild(document.createTextNode(this.title));
+}else{
+	this.domNode.appendChild(frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"]);
+}

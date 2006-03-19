@@ -1,0 +1,1 @@
+this.monthLabelNode.innerHTML = this.months[monthIndex];

@@ -1,0 +1,6 @@
+if (!this.queueOnAnimationFinish.length) return;
+
+var func = this.queueOnAnimationFinish.shift();
+var args = this.queueOnAnimationFinish.shift();
+
+func.apply(this, args);

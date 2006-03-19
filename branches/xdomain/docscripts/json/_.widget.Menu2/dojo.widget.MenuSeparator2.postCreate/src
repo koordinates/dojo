@@ -1,0 +1,2 @@
+dojo.html.disableSelection(this.domNode);
+this.layoutItem();

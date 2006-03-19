@@ -1,0 +1,6 @@
+var win = iframe_el.contentWindow ||  IE
+	dojo.io.iframeContentDocument(iframe_el).defaultView ||  Moz, opera
+	 Moz. TODO: is this available when defaultView isn't?
+	dojo.io.iframeContentDocument(iframe_el).__parent__ || 
+	(iframe_el.name && document.frames[iframe_el.name]) || null;
+return win;

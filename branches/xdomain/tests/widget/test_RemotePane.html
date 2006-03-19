@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>Pane External Content Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true};
+// 	djConfig.debugAtAllCosts = true;
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.LayoutPane");
+	dojo.require("dojo.widget.LinkPane");
+	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.TreeSelector");
+	dojo.require("dojo.widget.FloatingPane");
+	dojo.hostenv.writeIncludes();
+</script>
+
+<script>
+	function DisplayTreeContent(){
+	    this.update = function(message) {
+	        var clickedTreeNode = message.node;
+
+			var docPane = dojo.widget.getWidgetById("docpane");
+			var title = clickedTreeNode.title;
+			if ( title=="doc0"||title=="doc1"||title=="doc2"){
+				docPane.setUrl(clickedTreeNode.title + ".html");
+			}else if(title =="Item 2"){
+				docPane.setUrl("acme/test_Button2.html");
+			}else{
+				docPane.setContent("Try clicking doc0, doc1 or doc2 instead...");
+			}
+	    };
+	}
+
+	var displayer = new DisplayTreeContent();
+
+	var nodeSelectionTopic = dojo.event.topic.getTopic("nodeSelected");
+	nodeSelectionTopic.subscribe(displayer, "update");
+</script>
+</head>
+<body>
+
+<p>HTML before</p>
+<p>HTML before</p>
+<p>HTML before</p>
+<a href="#" onclick="dojo.widget.byId('docpane').setUrl('acme/test_Button2.html');">test remote paths</a>
+<div dojoType="LayoutPane" id="me"
+	layoutChildPriority='left-right'
+	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
+>
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86; ">
+		top bar
+	</div>
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #b39b86;">
+		bottom bar
+	</div>
+	<div dojoType="LinkPane" layoutAlign="left" style="width: 200px; background-color: #acb386;" href="tree.html"></div>
+	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #acb386;">
+		right
+	</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;"
+		id="docpane" onLoad="dojo.debug('loaded data from ' + arguments[0]);" executeScripts="true">
+		This is the initial content of the pane (inlined in the HTML file), but
+		it will be overriden when you click "doc0" or "doc1" or "doc2" in the tree on the left (underneath "Item 1")
+	</div>
+</div>
+
+<div dojoType="FloatingPane" style="width: 300px; height: 300px;"
+	href="doc0.html" title="externally loaded"  executeScripts="true"></div>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+
+</body>
+</html>

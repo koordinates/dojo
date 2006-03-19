@@ -1,0 +1,3 @@
+child.tree.move(child, newParent, index);
+
+return true;

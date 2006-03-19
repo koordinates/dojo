@@ -1,0 +1,11 @@
+if ( !this.isVisible() ) {
+	return;
+}
+
+dojo.debug(this.widgetId + ": resized");
+
+ set position/size for my children
+this.layoutChildren();
+
+ notify children that they have been moved/resized
+this.notifyChildrenOfResize();

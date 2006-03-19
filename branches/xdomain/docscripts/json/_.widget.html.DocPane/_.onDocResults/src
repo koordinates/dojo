@@ -1,0 +1,41 @@
+dojo.dom.removeChildren(this.domNode);
+
+header for search results
+var header = document.createElement("h1");
+header.appendChild(document.createTextNode("Search Results: " + message.docResults.length + " matches"));
+this.domNode.appendChild(header);
+
+for (var i=0; i < message.docResults.length; i++) {
+	var newDiv = document.createElement("div");
+
+	var packageSpan = document.createElement("span");
+	var packageA = document.createElement("a");
+
+	packageA.href = "#" + message.docResults[i].name;
+	if (message.docResults[i].id) {
+		packageA.href = packageA.href + "," + message.docResults[i].id;	
+	}
+
+	packageA.appendChild(document.createTextNode(message.docResults[i].name));
+
+	function makeSelect(x) {
+		return function(e) {
+			dojo.debug("Select: " + x.name);
+			dojo.event.topic.publish("docSelectFunction",x);
+		}
+	}
+
+	dojo.event.connect(packageA,"onclick", makeSelect(message.docResults[i]));
+
+	packageSpan.appendChild(packageA);
+	newDiv.appendChild(packageSpan);
+
+	if (message.docResults[i].summary) {
+		var summarySpan = document.createElement("span");
+		summarySpan.innerHTML = " - " + message.docResults[i].summary;
+		newDiv.appendChild(summarySpan);
+	}
+
+	this.domNode.appendChild(newDiv);
+	
+}

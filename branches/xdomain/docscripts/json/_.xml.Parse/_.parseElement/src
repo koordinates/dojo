@@ -1,0 +1,66 @@
+var parsedNodeSet = {};
+var tagName = dojo.dom.getTagName(node);
+parsedNodeSet[tagName] = [];
+if((!optimizeForDojoML)||(tagName.substr(0,4).toLowerCase()=="dojo")){
+	var attributeSet = this.parseAttributes(node);
+	for(var attr in attributeSet){
+		if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
+			parsedNodeSet[tagName][attr] = [];
+		}
+		parsedNodeSet[tagName][attr].push(attributeSet[attr]);
+	}
+	
+	 FIXME: we might want to make this optional or provide cloning instead of
+	 referencing, but for now, we include a node reference to allow
+	 instantiated components to figure out their "roots"
+	parsedNodeSet[tagName].nodeRef = node;
+	parsedNodeSet.tagName = tagName;
+	parsedNodeSet.index = thisIdx||0;
+}
+	
+var count = 0;
+for(var i=0; i<node.childNodes.length; i++){
+	var tcn = node.childNodes.item(i);
+	switch(tcn.nodeType){
+		case  dojo.dom.ELEMENT_NODE:  element nodes, call this function recursively
+			count++;
+			var ctn = dojo.dom.getTagName(tcn);
+			if(!parsedNodeSet[ctn]){
+				parsedNodeSet[ctn] = [];
+			}
+			parsedNodeSet[ctn].push(this.parseElement(tcn, true, optimizeForDojoML, count));
+			if(	(tcn.childNodes.length == 1)&&
+				(tcn.childNodes.item(0).nodeType == dojo.dom.TEXT_NODE)){
+				parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
+			}
+			break;
+		case  dojo.dom.TEXT_NODE:  if a single text node is the child, treat it as an attribute
+			if(node.childNodes.length == 1) {
+				parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
+			}
+			break;
+		default: break;
+		case  dojo.dom.ATTRIBUTE_NODE:  attribute node... not meaningful here
+			break;
+		case  dojo.dom.CDATA_SECTION_NODE:  cdata section... not sure if this would ever be meaningful... might be...
+			break;
+		case  dojo.dom.ENTITY_REFERENCE_NODE:  entity reference node... not meaningful here
+			break;
+		case  dojo.dom.ENTITY_NODE:  entity node... not sure if this would ever be meaningful
+			break;
+		case  dojo.dom.PROCESSING_INSTRUCTION_NODE:  processing instruction node... not meaningful here
+			break;
+		case  dojo.dom.COMMENT_NODE:  comment node... not not sure if this would ever be meaningful 
+			break;
+		case  dojo.dom.DOCUMENT_NODE:  document node... not sure if this would ever be meaningful
+			break;
+		case  dojo.dom.DOCUMENT_TYPE_NODE:  document type node... not meaningful here
+			break;
+		case  dojo.dom.DOCUMENT_FRAGMENT_NODE:  document fragment node... not meaningful here
+			break;
+		case  dojo.dom.NOTATION_NODE: notation node... not meaningful here
+			break;
+	}
+}
+return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
+return parsedNodeSet;

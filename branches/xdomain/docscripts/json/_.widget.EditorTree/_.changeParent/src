@@ -1,0 +1,10 @@
+var destIdx = index;
+if (child.parent === newParent && child.getParentIndex()<=index) {
+	dojo.debug("shift dest index")
+	destIdx--;  shift index cause child.length is less by 1 after removal
+}
+
+ do actual parent change here. Write remove child first 
+child.parent.removeChild(child);
+
+newParent.addChild(child, destIdx);

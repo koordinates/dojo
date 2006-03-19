@@ -1,0 +1,54 @@
+if(!data.xml){
+	data = this.splitAndFixPaths(data);
+}
+
+ remove old children from current content
+this.destroyChildren();
+
+ remove old stylenodes
+if(this._remoteStyles){
+	for(var i = 0; i < this._remoteStyles.length; i++){
+		if(this._remoteStyles[i] && this._remoteStyles.parentNode){
+			this._remoteStyles[i].parentNode.removeChild(this._remoteStyles[i]);
+		}
+	}
+	this._remoteStyles = null;
+}
+
+var node = this.containerNode || this.domNode;
+try{
+	node.innerHTML = data.xml;
+} catch(e){
+	 FIXME: should this get pushed to an onError function?
+	dojo.debug("couldnt load html:"+e);
+	dojo.debugShallow(data);
+	return;
+}
+ insert styleNodes, from <style>....
+for(var i = 0; i < data.styles.length; i++){
+	if(i==0){ 
+		this._remoteStyles = []; 
+	}
+	this._remoteStyles.push(dojo.style.insertCssText(data.styles[i]));
+}
+ insert styleNodes, form <link href="...">
+for(var i = 0; i < data.linkStyles.length; i++){
+	if(i==0){ 
+		this._remoteStyles = []; 
+	}
+	this._remoteStyles.push(dojo.style.insertCssFile(data.linkStyles[i]));
+}
+
+if(this.executeScripts){
+	this._executeScripts(data);
+}
+if(this.extractContent) {
+	var matches = data.xml.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+	if(matches) { data.xml = matches[1]; }
+}
+if(this.parseContent){
+	var parser = new dojo.xml.Parse();
+	var frag = parser.parseElement(node, null, true);
+	dojo.widget.getParser().createComponents(frag, this);
+	this.onResized();
+}

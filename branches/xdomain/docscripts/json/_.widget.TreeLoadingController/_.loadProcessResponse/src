@@ -1,0 +1,25 @@
+if (!dojo.lang.isUndefined(result.error)) {
+	this.RPCErrorHandler("server", result.error);
+	return false;
+}
+
+var newChildren = result;
+
+if (!dojo.lang.isArray(newChildren)) {
+	dojo.raise('Not array loaded: '+newChildren);
+}
+
+for(var i=0; i<newChildren.length; i++) {
+	 looks like dojo.widget.manager needs no special "add" command
+	newChildren[i] = dojo.widget.createWidget(node.widgetType, newChildren[i]);
+	node.addChild(newChildren[i]);
+}
+
+node.addAllChildren(newChildren);
+
+node.state = node.loadStates.LOADED;
+
+if (dojo.lang.isFunction(callFunc)) {
+	callFunc.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node, newChildren]);
+}
+this.expand(node);

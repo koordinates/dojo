@@ -1,0 +1,9 @@
+dojo.widget.Widget.call(this);
+this.widgetType = "MonthlyCalendar";
+this.isContainer = false;
+ the following aliases prevent breaking people using 0.2.x
+this.months = dojo.date.months;
+this.weekdays = dojo.date.days;
+this.toRfcDate = dojo.widget.MonthlyCalendar.util.toRfcDate;
+this.fromRfcDate = dojo.widget.MonthlyCalendar.util.fromRfcDate;
+this.initFirstSaturday = dojo.widget.MonthlyCalendar.util.initFirstSaturday;

@@ -1,0 +1,8 @@
+if(++position>=obj.length){
+	this.atEnd = true;
+}
+if(this.atEnd){
+	return false;  
+}
+this.current=obj[position];
+return true;  

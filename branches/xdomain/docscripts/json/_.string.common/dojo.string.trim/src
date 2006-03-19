@@ -1,0 +1,4 @@
+if(!str.replace){ return str; }
+if(!str.length){ return str; }
+var re = (wh > 0) ? (/^\s+/) : (wh < 0) ? (/\s+$/) : (/^\s+|\s+$/g);
+return str.replace(re, "");  

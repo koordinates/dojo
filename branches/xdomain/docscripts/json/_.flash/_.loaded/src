@@ -1,0 +1,6 @@
+dojo.debug("dojo.flash.loaded");
+if(dojo.flash._loadedListeners.length > 0){
+	for(var i = 0;i < dojo.flash._loadedListeners.length; i++){
+		dojo.flash._loadedListeners[i].call(null);
+	}
+}

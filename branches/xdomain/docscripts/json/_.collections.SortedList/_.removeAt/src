@@ -1,0 +1,3 @@
+delete items[q[i].key];
+build();
+this.count = q.length;

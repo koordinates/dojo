@@ -1,0 +1,14 @@
+if(!undo) { return; }
+
+if(this._currentManager == this) {
+	this._undoStack.push({
+		undo: undo,
+		redo: redo,
+		description: description
+	});
+} else {
+	this._currentManager.push.apply(this._currentManager, arguments);
+}
+ adding a new undo-able item clears out the redo stack
+this._redoStack = [];
+this._updateStatus();

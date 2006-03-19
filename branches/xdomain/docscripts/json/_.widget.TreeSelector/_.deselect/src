@@ -1,0 +1,5 @@
+var node = this.selectedNode;
+
+this.selectedNode = null;
+node.unMarkSelected();
+dojo.event.topic.publish(this.eventNames.deselect, {node: node} );

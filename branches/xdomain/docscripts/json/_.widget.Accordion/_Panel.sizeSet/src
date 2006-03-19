@@ -1,0 +1,16 @@
+if(!this.scrollContent){
+	return;
+}
+if(size <= this.sizeMin){
+	this.contentNode.style.display = "none";
+}else{
+	 this.domNode.style.overflow = "hidden";
+	this.contentNode.style.display = "block";
+	this.contentNode.style.overflow = "auto";
+	var scrollSize = (size-((this.initialSizeMin) ? this.initialSizeMin : this.sizeMin));
+	if(dojo.render.html.ie){
+		this.contentNode.style.height =  scrollSize+"px";
+	}else{
+		dojo.style.setOuterHeight(this.contentNode, scrollSize);
+	}
+}

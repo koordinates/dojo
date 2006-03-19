@@ -1,0 +1,5 @@
+if (!this.canRemoveNode(node)) {
+	return false;
+}
+
+return this.removeNodeRemote(node, callback, callObj);

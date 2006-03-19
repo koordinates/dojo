@@ -1,0 +1,10 @@
+if (arguments.length == 1) { firstDay = 0; }  Sunday
+
+ work out the first day of the year corresponding to the week
+var firstDayOfYear = new Date(dateObject.getFullYear(), 0, 1);
+var day = firstDayOfYear.getDay();
+firstDayOfYear.setDate(firstDayOfYear.getDate() -
+		day + firstDay - (day > firstDay ? 7 : 0));
+
+return Math.floor((dateObject.getTime() -
+	firstDayOfYear.getTime()) / 604800000);

@@ -1,0 +1,8 @@
+if(excep){
+	message = message + ": "+dojo.errorToString(excep);
+}
+var he = dojo.hostenv;
+if((!dj_undef("hostenv", dojo))&&(!dj_undef("println", dojo.hostenv))){ 
+	dojo.hostenv.println("FATAL: " + message);
+}
+throw Error(message);

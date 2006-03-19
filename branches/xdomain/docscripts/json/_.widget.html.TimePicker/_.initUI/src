@@ -1,0 +1,12 @@
+if(this.time) {
+	var amPmHour = dojo.widget.TimePicker.util.toAmPmHour(this.time.getHours());
+	var hour = amPmHour[0];
+	var isAm = amPmHour[1];
+	var minute = this.time.getMinutes();
+	var minuteIndex = parseInt(minute/5);
+	this.onSetSelectedHour(this.hourIndexMap[hour]);
+	this.onSetSelectedMinute(this.minuteIndexMap[minuteIndex]);
+	this.onSetSelectedAmPm(isAm);
+} else {
+	this.onSetSelectedAnyTime();
+}

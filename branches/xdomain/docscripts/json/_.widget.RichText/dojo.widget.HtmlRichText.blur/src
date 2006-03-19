@@ -1,0 +1,2 @@
+if (this.iframe) { this.window.blur(); }
+else if (this.editNode) { this.editNode.blur(); }

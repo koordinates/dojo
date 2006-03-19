@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.widget.*","dojo.widget.FloatingPane","dojo.widget.HtmlWidget","dojo.event"]},"_Item":{"()":[]},"_Item.fillInTemplate":{"()":[]},"_Item.postCreate":{"()":[]},"_Item.onClick":{"()":[]},"_":{"()":[]},"_.addChild":{"(child)":[]}}

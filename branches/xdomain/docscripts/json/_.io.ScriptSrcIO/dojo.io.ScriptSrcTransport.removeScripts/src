@@ -1,0 +1,9 @@
+var scripts = document.getElementsByTagName("script");
+for(var i = 0; scripts && i < scripts.length; i++){
+	var scriptTag = scripts[i];
+	if(scriptTag.className == "ScriptSrcTransport"){
+		var parent = scriptTag.parentNode;
+		parent.removeChild(scriptTag);
+		i--; Set the index back one since we removed an item.
+	}
+}

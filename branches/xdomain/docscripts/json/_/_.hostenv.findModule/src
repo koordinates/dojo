@@ -1,0 +1,17 @@
+var lmn = (new String(modulename)).toLowerCase();
+
+if(this.loaded_modules_[lmn]){
+	return this.loaded_modules_[lmn];
+}
+
+ see if symbol is defined anyway
+var module = dojo.evalObjPath(modulename);
+if((modulename)&&(typeof module != 'undefined')&&(module)){
+	this.loaded_modules_[lmn] = module;
+	return module;
+}
+
+if(must_exist){
+	dojo.raise("no loaded module named '" + modulename + "'");
+}
+return null;

@@ -1,0 +1,4 @@
+tag = tag.toLowerCase();
+return dojo.dom.getAncestors(node, function(el){
+	return ((el.tagName)&&(el.tagName.toLowerCase() == tag));
+}, returnFirstHit);

@@ -1,0 +1,28 @@
+dojo.widget.HtmlWidget.call(this);
+
+this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html");
+this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
+
+ over-ride some defaults
+this.isContainer = false;
+this.widgetType = "SlideShow";
+
+ useful properties
+this.imgUrls = [];		 the images we'll go through
+this.imgUrlBase = "";
+this.urlsIdx = 0;		 where in the images we are
+this.delay = 4000; 		 give it 4 seconds
+this.transitionInterval = 2000;  2 seconds
+this.imgWidth = 800;	 img width
+this.imgHeight = 600;	 img height
+this.background = "img2";  what's in the bg
+this.foreground = "img1";  what's in the fg
+this.stopped = false;	 should I stay or should I go?
+this.fadeAnim = null;  references our animation
+
+ our DOM nodes:
+this.imagesContainer = null;
+this.startStopButton = null;
+this.controlsContainer = null;
+this.img1 = null;
+this.img2 = null;

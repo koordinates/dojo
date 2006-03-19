@@ -1,0 +1,10 @@
+var range=this.createRange(len);
+if (range.index < 0) return 0;
+var t=0;
+for (var i=range.index; i>=range.start; i--){
+	var n=parseFloat(this.values[i].value);
+	if (!isNaN(n)){
+		t=Math.min(n,t);
+	}
+}
+return t;

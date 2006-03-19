@@ -1,0 +1,3 @@
+var d = data || null;
+if (method == "GET") getURL(uri, cb);
+else postURL(uri, data, cb);

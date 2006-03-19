@@ -1,0 +1,25 @@
+if (child.actionIsDisabled(child.actions.MOVE)) {
+	return false;
+}
+
+if (child.parent !== newParent && newParent.actionIsDisabled(newParent.actions.ADDCHILD)) {
+	return false;
+}
+
+ Can't move parent under child. check whether new parent is child of "child".
+var node = newParent;
+while(node.isTreeNode) {
+	dojo.debugShallow(node.title)
+	if (node === child) {
+		 parent of newParent is child
+		return false;
+	}
+	node = node.parent;
+}
+
+ check for newParent being a folder (if node)
+if (newParent.isTreeNode && !newParent.isFolder) {
+	return false;
+}
+
+return true;

@@ -1,0 +1,12 @@
+dojo.event.connect(this.nextButton, "onclick", this, "nextPanel");
+dojo.event.connect(this.previousButton, "onclick", this, "previousPanel");
+if (this.cancelFunction){
+	dojo.event.connect(this.cancelButton, "onclick", this.cancelFunction);
+}else{
+	this.cancelButton.style.display = "none";
+}
+dojo.event.connect(this.doneButton, "onclick", this, "done");
+this.nextButton.value = this.nextButtonLabel;
+this.previousButton.value = this.previousButtonLabel;
+this.cancelButton.value = this.cancelButtonLabel;
+this.doneButton.value = this.doneButtonLabel;

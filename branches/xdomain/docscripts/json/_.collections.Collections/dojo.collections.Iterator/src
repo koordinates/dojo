@@ -1,0 +1,4 @@
+var obj = a;
+var position = 0;
+this.atEnd = (position>=obj.length-1);
+this.current = obj[position];

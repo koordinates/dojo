@@ -1,0 +1,5 @@
+var p = dojo.svg.getCoords();
+if (!p) return;
+var dx = p.x - coords.x;
+var dy = p.y - coords.y;
+dojo.svg.translate(node, dx, dy);

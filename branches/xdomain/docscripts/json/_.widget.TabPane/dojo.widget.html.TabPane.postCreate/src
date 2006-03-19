@@ -1,0 +1,22 @@
+for(var i=0; i<this.children.length; i++){
+	this._setupTab(this.children[i]);
+}
+
+if (this.closeButton=="pane") {
+	var div = document.createElement("div");
+	dojo.html.addClass(div, "dojoTabPanePaneClose");
+	var self = this;
+	dojo.event.connect(div, "onclick", function(){ self._runOnCloseTab(self.selectedTabWidget); });
+	dojo.event.connect(div, "onmouseover", function(){ dojo.html.addClass(div, "dojoTabPanePaneCloseHover"); });
+	dojo.event.connect(div, "onmouseout", function(){ dojo.html.removeClass(div, "dojoTabPanePaneCloseHover"); });
+	this.dojoTabLabels.appendChild(div);
+}
+
+dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+
+this._setPadding();
+
+ Display the selected tab
+if(this.selectedTabWidget){
+	this.selectTab(this.selectedTabWidget);
+}

@@ -1,0 +1,8 @@
+if (this.currentSubmenu == null){ return; }
+
+this.currentSubmenu.close();
+this.currentSubmenu = null;
+
+this.currentSubmenuTrigger.is_open = false;
+this.currentSubmenuTrigger.closedSubmenu();
+this.currentSubmenuTrigger = null;

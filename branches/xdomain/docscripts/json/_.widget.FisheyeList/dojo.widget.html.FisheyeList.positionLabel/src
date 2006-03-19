@@ -1,0 +1,28 @@
+var x = 0;
+var y = 0;
+
+var labelW = dojo.style.getOuterWidth(itm.lblNode);
+var labelH = dojo.style.getOuterHeight(itm.lblNode);
+
+if (this.labelEdge == this.EDGE.TOP){
+	x = Math.round((itm.sizeW / 2) - (labelW / 2));
+	y = -labelH;
+}
+
+if (this.labelEdge == this.EDGE.BOTTOM){
+	x = Math.round((itm.sizeW / 2) - (labelW / 2));
+	y = itm.sizeH;
+}
+
+if (this.labelEdge == this.EDGE.LEFT){
+	x = -labelW;
+	y = Math.round((itm.sizeH / 2) - (labelH / 2));
+}
+
+if (this.labelEdge == this.EDGE.RIGHT){
+	x = itm.sizeW;
+	y = Math.round((itm.sizeH / 2) - (labelH / 2));
+}
+
+itm.lblNode.style.left = x + 'px';
+itm.lblNode.style.top  = y + 'px';

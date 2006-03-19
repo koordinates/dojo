@@ -1,0 +1,7 @@
+if (x < this.menuX){ return false; }
+if (x > this.menuX + this.menuWidth){ return false; }
+
+if (y < this.menuY){ return false; }
+if (y > this.menuY + this.menuHeight){ return false; }
+
+return true;

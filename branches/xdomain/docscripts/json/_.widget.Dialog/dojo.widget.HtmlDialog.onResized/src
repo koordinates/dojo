@@ -1,0 +1,6 @@
+if(this.isVisible()){
+	this.sizeBackground();
+	this.placeDialog();
+	this.domNode.style.display="block";
+	dojo.widget.HtmlDialog.superclass.onResized.call(this);
+}

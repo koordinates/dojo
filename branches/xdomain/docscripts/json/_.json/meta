@@ -1,0 +1,1 @@
+{"requires":{"common":["dojo.lang.func","dojo.lang.repr","dojo.AdapterRegistry"]},"_.register":{"(name, check, wrap, optional override)":[]},"_.evalJson":{"(jsonString json)":[]},"_.serialize":{"(o)":[]}}

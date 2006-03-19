@@ -1,0 +1,9 @@
+var node = message.source;
+
+dojo.debug("Subscribed to "+node);
+
+if (node.isExpanded){
+	this.collapse(node);
+} else {
+	this.expand(node);
+}

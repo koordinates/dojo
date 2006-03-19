@@ -1,0 +1,13 @@
+this.updateDragOffset();
+var x = this.dragOffset.left + e.clientX - this.parentPosition.left;
+var y = this.dragOffset.top + e.clientY - this.parentPosition.top;
+
+if (this.constrainToContainer) {
+	if (x < this.constraints.minX) { x = this.constraints.minX; }
+	if (y < this.constraints.minY) { y = this.constraints.minY; }
+	if (x > this.constraints.maxX) { x = this.constraints.maxX; }
+	if (y > this.constraints.maxY) { y = this.constraints.maxY; }
+}
+
+if(!this.disableY) { this.dragClone.style.top = y + "px"; }
+if(!this.disableX) { this.dragClone.style.left = x + "px"; }

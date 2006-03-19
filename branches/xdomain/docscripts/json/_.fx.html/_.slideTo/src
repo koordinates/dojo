@@ -1,0 +1,18 @@
+if(!dojo.lang.isNumber(duration)) {
+	var tmp = duration;
+	duration = endCoords;
+	endCoords = tmp;
+}
+node = dojo.byId(node);
+
+var top = node.offsetTop;
+var left = node.offsetLeft;
+var pos = dojo.style.getComputedStyle(node, 'position');
+
+if (pos == 'relative' || pos == 'static') {
+	top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
+	left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+}
+
+return dojo.fx.html.slide(node, duration, [left, top],
+	endCoords, callback, dontPlay);
