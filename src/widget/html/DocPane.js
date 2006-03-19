@@ -11,7 +11,8 @@ dojo.widget.html.DocPane = function(){
 	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html");
 	this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css");
 	this.widgetType = "DocPane";
-	
+	this.isContainer = true;
+
 	this.select;
 	this.result;
 	this.fn;
@@ -28,6 +29,7 @@ dojo.inherits(dojo.widget.html.DocPane, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.DocPane, {
 	fillInTemplate: function(){
+		this.homeSave = this.containerNode.cloneNode(true);
 		this.selectSave = dojo.dom.removeNode(this.select);
 		this.resultSave = dojo.dom.removeNode(this.result);
 		this.rowParent = this.row.parentNode;
