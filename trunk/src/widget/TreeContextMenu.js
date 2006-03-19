@@ -54,9 +54,32 @@ dojo.lang.extend(dojo.widget.TreeContextMenu, {
 		dojo.event.topic.subscribe(tree.eventNames.moveTo, this, "onMoveTo");
 		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
 		dojo.event.topic.subscribe(tree.eventNames.addChild, this, "onAddChild");
+		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
 
 		this.listenedTrees.push(tree);
 
+	},
+
+	unlistenTree: function(tree) {
+		/* clear event listeners */
+
+		dojo.event.topic.unsubscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveTo, this, "onMoveTo");
+		dojo.event.topic.unsubscribe(tree.eventNames.removeNode, this, "onRemoveNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.addChild, this, "onAddChild");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+
+		for(var i=0; i<this.listenedTrees.length; i++){
+           if(this.listenedTrees[i] === tree){
+                   this.listenedTrees.splice(i, 1);
+                   break;
+           }
+		}
+	},
+
+	onTreeDestroy: function(message) {
+		this.unlistenTree(message.source);
 	},
 
 	bindTreeNode: function(node) {
