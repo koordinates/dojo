@@ -38,6 +38,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		createDOMNode: "createDOMNode",
 		// tree created.. Perform tree-wide actions if needed
 		treeCreate: "treeCreate",
+		treeDestroy: "treeDestroy",
 		// expand icon clicked
 		treeClick: "treeClick",
 		// node icon clicked
@@ -245,6 +246,13 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 		dojo.event.topic.publish(this.tree.eventNames.treeCreate, { source: this } );
 
+	},
+
+
+	destroy: function() {
+		dojo.event.topic.publish(this.tree.eventNames.treeDestroy, { source: this } );
+
+		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 
 

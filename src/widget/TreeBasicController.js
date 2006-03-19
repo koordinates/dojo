@@ -45,10 +45,24 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		dojo.event.topic.subscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
 		dojo.event.topic.subscribe(tree.eventNames.treeClick, this, "onTreeClick");
 		dojo.event.topic.subscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
+		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
 
 		if (this.DNDController) {
 			this.DNDController.listenTree(tree);
 		}
+	},
+
+	unlistenTree: function(tree) {
+		dojo.event.topic.unsubscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeClick, this, "onTreeClick");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+	},
+
+	onTreeDestroy: function(message) {
+		var tree = message.source;
+
+		this.unlistenTree(tree);
 	},
 
 	onCreateDOMNode: function(message) {
@@ -105,8 +119,6 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 	onTreeClick: function(message){
 		var node = message.source;
-
-		//dojo.debug("Subscribed to "+node);
 
 		if (node.isExpanded){
 			this.collapse(node);
