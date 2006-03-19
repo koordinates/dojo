@@ -106,7 +106,7 @@ dojo.lang.getObjPathValue = function(descriptor, context, create)
  */
 dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate)
 {
-	with (dojo.lang.evalDescriptor(descriptor, context, create)){
+	with (dojo.lang.evalDescriptor(descriptor, context, !nocreate)){
 		if (obj && (!nocreate || (prop in obj))){
   		obj[prop] = value;
 		}
