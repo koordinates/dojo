@@ -27,6 +27,7 @@ dojo.widget.html.DocPane = function(){
 	this.pRow;
 	this.pLink;
 	this.pDesc;
+	this.source;
 
 	dojo.event.topic.subscribe("docResults", this, "onDocResults");
 	dojo.event.topic.subscribe("docFunctionDetail", this, "onDocSelectFunction");
@@ -54,7 +55,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		if(!message.doc.variables.length){
 			this.variables.style.display = "none";
 		}
-
+		
 		this.parameters.style.display = "block";		
 		if(!message.doc.parameters.length){
 			this.parameters.style.display = "none";
@@ -68,6 +69,8 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 				}
 			}
 		}
+
+		this.source.innerHTML = message.meta.sig + "{\n\t" + message.src.replace(/\n/g, "\n\t") + "\n}";
 		
 		this.domNode.appendChild(this.selectSave.cloneNode(true));
 	},
