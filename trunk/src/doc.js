@@ -179,7 +179,8 @@ dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 			description: description,
 			returns: keys.fn["DocFnForm/returns"],
 			id: keys.fn["DocFnForm/id"],
-			parameters: []
+			parameters: [],
+			variables: []
 		}
 		for(var i = 0, param; param = keys["param"][i]; i++){
 			data.parameters.push({
