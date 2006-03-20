@@ -51,9 +51,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
-		if(dojo.render.html.safari){
-			document.body.appendChild(this.domNode);
-		}
+
+		// necessary for safari, khtml (for computing width/height)
+		document.body.appendChild(this.domNode);
 
 		// <img src=""> can hang IE!  better get rid of it
 		if(this.iconSrc==""){
@@ -106,9 +106,9 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		} else {
 			dojo.addOnLoad(this, "setInitialWindowState");
 		}
-		if(dojo.render.html.safari){
-			document.body.removeChild(this.domNode);
-		}
+
+		// counteract body.appendChild above
+		document.body.removeChild(this.domNode);
 
 		dojo.widget.html.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
 	},
@@ -117,11 +117,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	_setPadding: function(){
 		var t=dojo.style.getOuterHeight(this.titleBar);
 		var b=dojo.style.getOuterHeight(this.resizeBar);
-		if(t==0||b==0){
-			// browser needs more time to compute sizes (maybe CSS hasn't downloaded yet)
-			dojo.lang.setTimeout(this, this._setPadding, 50);
-			return;
-		}
 
 		with(this.domNode.style){
 			paddingTop=t+"px";
@@ -209,7 +204,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		if (this.windowState=="normal") {
-			dojo.lang.setTimeout(this, this.onResized, 50);
 			this.show();
 			return;
 		}
