@@ -23,6 +23,8 @@ dojo.widget.html.DocPane = function(){
 	this.description;
 	this.variables;
 	this.vRow;
+	this.vLink;
+	this.vDesc;
 	this.parameters;
 	this.pRow;
 	this.pLink;
@@ -42,18 +44,38 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.resultSave = dojo.dom.removeNode(this.result);
 		this.rowParent = this.row.parentNode;
 		this.rowSave = dojo.dom.removeNode(this.row);
-		this.vRowSave = dojo.dom.removeNode(this.vRow);
-		this.pRowSave = dojo.dom.removeNode(this.vRow);
+		this.vParent = this.vRow.parentNode;
+		this.vSave = dojo.dom.removeNode(this.vRow);
+		this.pSave = dojo.dom.removeNode(this.vRow);
 	},
 
 	onDocSelectFunction: function(message){
+		var appends = [];
 		dojo.dom.removeChildren(this.domNode);
 		this.fn.innerHTML = message.name;
 		this.description.innerHTML = message.doc.description;
 
-		this.variables.style.display = "block";		
-		if(!message.doc.variables.length){
+		this.variables.style.display = "block";
+		var all = [];
+		if(message.meta){
+			if(message.meta.variables){
+				all = message.meta.variables;
+			}
+			if(message.meta.this_variables){
+				all = all.concat(message.meta.this_variables);
+			}
+			if(message.meta.child_variables){
+				all = all.concat(message.meta.child_variables);
+			}
+		}
+		if(!all){
 			this.variables.style.display = "none";
+		}else{
+			for(var i = 0, one; one = all[i]; i++){
+				this.vLink.innerHTML = one;
+				this.vDesc.parentNode.style.display = "none";
+				appends.push(this.vParent.appendChild(this.vSave.cloneNode(true)));
+			}
 		}
 		
 		this.parameters.style.display = "block";		
@@ -73,6 +95,10 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.source.innerHTML = message.meta.sig + "{\n\t" + message.src.replace(/\n/g, "\n\t") + "\n}";
 		
 		this.domNode.appendChild(this.selectSave.cloneNode(true));
+
+		for(var i = 0, append; append = appends[i]; i++){
+			this.vParent.removeChild(append);
+		}
 	},
 
 	onDocResults: function(message){
