@@ -53,6 +53,10 @@ dojo.lang.extend(dojo.widget.html.TitlePane, {
 		this.containerNode.innerHTML=content;
 	}
 
+	setLabel: function(label) {
+		this.labelNode.innerHTML=label;
+	}
+
 
 
 });
