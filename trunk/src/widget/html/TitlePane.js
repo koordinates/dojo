@@ -51,7 +51,7 @@ dojo.lang.extend(dojo.widget.html.TitlePane, {
 
 	setContent: function(content) {
 		this.containerNode.innerHTML=content;
-	}
+	},
 
 	setLabel: function(label) {
 		this.labelNode.innerHTML=label;
