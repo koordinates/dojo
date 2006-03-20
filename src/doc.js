@@ -524,7 +524,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 									real_sig = "undefined " + real_sig;
 								}
 								real_sig = real_sig.split("(");
-								real_sig = real_sig[0] + args.input.name + "(" + real_sig[1];
+								real_sig = real_sig[0] + new_key + "(" + real_sig[1];
 								if(data[new_key][sig].summary || dojo.lang.isArray(data[new_key][sig])){
 									if(!dojo.doc._cache[args.input.name][new_key]){
 										dojo.doc._cache[args.input.name][new_key] = {};
