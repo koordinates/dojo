@@ -9,8 +9,8 @@ dojo.require("dojo.dom");
  *
  * Package summary needs to compensate for "is"
  * Handle host environments
- * Rewrite function signatures
  * Deal with dojo.widget weirdness
+ * Parse parameters
  * Limit function parameters to only the valid ones (Involves packing parameters onto meta during rewriting)
  * Package display page
  *
