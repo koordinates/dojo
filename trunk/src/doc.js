@@ -179,14 +179,13 @@ dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 			description: description,
 			returns: keys.fn["DocFnForm/returns"],
 			id: keys.fn["DocFnForm/id"],
-			parameters: [],
+			parameters: {},
 			variables: []
 		}
 		for(var i = 0, param; param = keys["param"][i]; i++){
-			data.parameters.push({
-				name: param["DocParamForm/name"],
+			data.parameters[param["DocParamForm/name"]] = {
 				description: param["DocParamForm/desc"]
-			});
+			};
 		}
 
 		delete dojo.doc._keys[evt.selectKey];
@@ -441,8 +440,10 @@ dojo.doc._buildCache = function(/*Object*/ input){
 						if(args.input.type == "meta"){
 							if(args.input.id){
 								data.sig = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].sig;
+								data.params = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].params;
 							}else{
 								data.sig = dojo.doc._cache[args.input.pkg][args.input.name].sig;								
+								data.params = dojo.doc._cache[args.input.pkg][args.input.name].params;
 							}
 						}
 						var callback = args.input.callbacks.shift();
@@ -463,11 +464,13 @@ dojo.doc._buildCache = function(/*Object*/ input){
 						dojo.doc._cache[args.input.pkg][args.input.name][args.input.id][args.input.type] = data;
 						if(args.input.type == "meta"){
 							data.sig = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].sig;
+							data.params = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].params;
 						}
 					}else{
 						dojo.doc._cache[args.input.pkg][args.input.name][args.input.type] = data;
 						if(args.input.type == "meta"){
 							data.sig = dojo.doc._cache[args.input.pkg][args.input.name].sig;
+							data.params = dojo.doc._cache[args.input.pkg][args.input.name].params;
 						}
 					}
 					if(args.input.callbacks && args.input.callbacks.length){
@@ -525,11 +528,31 @@ dojo.doc._buildCache = function(/*Object*/ input){
 								}
 								real_sig = real_sig.split("(");
 								real_sig = real_sig[0] + new_key + "(" + real_sig[1];
+								var parameters = {};
+								var parRegExp = /(?:\(|,)([^,\)]+)/g;
+								var result;
+								while(result = parRegExp.exec(real_sig)){
+									var parts = result[1].split(" ");
+									if(parts.length > 1){
+										var pName = parts.pop();
+										var pType = parts.join(" ");
+										var pOpt = false;
+										if(pType.indexOf("?") != -1){
+											pType = pType.replace("?", "");
+											pOpt = true;
+										}
+										parameters[pName] = {type: pType, opt: pOpt};
+									}else{
+										parameters[parts[0]] = {type: "", opt: false};
+									}
+								}
+								real_sig = real_sig.replace(/\?/g, "").replace(/(?<=\(|,)[^,\)]+ (?=[^,\)]+)/g, "").replace(/,/g, ", ");
 								if(data[new_key][sig].summary || dojo.lang.isArray(data[new_key][sig])){
 									if(!dojo.doc._cache[args.input.name][new_key]){
 										dojo.doc._cache[args.input.name][new_key] = {};
 									}
 									dojo.doc._cache[args.input.name][new_key].sig = real_sig;
+									dojo.doc._cache[args.input.name][new_key].params = parameters;
 								}else{
 									// Polymorphic sigs
 								}

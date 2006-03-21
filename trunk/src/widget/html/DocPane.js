@@ -29,6 +29,8 @@ dojo.widget.html.DocPane = function(){
 	this.pRow;
 	this.pLink;
 	this.pDesc;
+	this.pOpt;
+	this.pType;
 	this.source;
 
 	dojo.event.topic.subscribe("docResults", this, "onDocResults");
@@ -46,7 +48,8 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.rowSave = dojo.dom.removeNode(this.row);
 		this.vParent = this.vRow.parentNode;
 		this.vSave = dojo.dom.removeNode(this.vRow);
-		this.pSave = dojo.dom.removeNode(this.vRow);
+		this.pParent = this.pRow.parentNode;
+		this.pSave = dojo.dom.removeNode(this.pRow);
 	},
 
 	onDocSelectFunction: function(message){
@@ -68,7 +71,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 				all = all.concat(message.meta.child_variables);
 			}
 		}
-		if(!all){
+		if(!all.length){
 			this.variables.style.display = "none";
 		}else{
 			for(var i = 0, one; one = all[i]; i++){
@@ -78,18 +81,25 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 			}
 		}
 		
-		this.parameters.style.display = "block";		
-		if(!message.doc.parameters.length){
-			this.parameters.style.display = "none";
-		}else{
-			for(var i = 0, param; param = message.doc.parameters[i]; i++){
-				this.pLink.innerHTML = param.name;
-				this.pDesc.parentNode.style.display = "none";
-				if(param.description){
-					this.pDesc.parentNode.style.display = "inline";
-					this.pDesc.innerHTML = param.description;
-				}
+		this.parameters.style.display = "none";
+		for(var param in message.meta.params){
+			this.parameters.style.display = "block";		
+			this.pLink.innerHTML = param;
+			this.pOpt.style.display = "none";
+			if(message.meta.params[param].opt){
+				this.pOpt.style.display = "inline";				
 			}
+			this.pType.parentNode.style.display = "none";
+			if(message.meta.params[param].type){
+				this.pType.parentNode.style.display = "inline";
+				this.pType.innerHTML = message.meta.params[param].type;
+			}
+			this.pDesc.parentNode.style.display = "none";			
+			if(message.doc.parameters[param].description){
+				this.pDesc.parentNode.style.display = "inline";
+				this.pDesc.innerHTML = message.doc.parameters[param].description;
+			}
+			appends.push(this.pParent.appendChild(this.pSave.cloneNode(true)));
 		}
 
 		dojo.dom.removeChildren(this.source);
