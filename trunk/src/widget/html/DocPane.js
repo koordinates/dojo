@@ -108,7 +108,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.domNode.appendChild(this.selectSave.cloneNode(true));
 
 		for(var i = 0, append; append = appends[i]; i++){
-			this.vParent.removeChild(append);
+			dojo.dom.removeNode(append);
 		}
 	},
 

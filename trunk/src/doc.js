@@ -437,6 +437,12 @@ dojo.doc._buildCache = function(/*Object*/ input){
 						if(!data){
 							data = {};
 						}
+						if(!dojo.doc._cache[args.input.pkg]){
+							dojo.doc._cache[args.input.pkg] = {};
+						}
+						if(!dojo.doc._cache[args.input.pkg][args.input.name]){
+							dojo.doc._cache[args.input.pkg][args.input.name] = {};
+						}
 						if(args.input.type == "meta"){
 							if(args.input.id){
 								data.sig = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].sig;
@@ -546,7 +552,7 @@ dojo.doc._buildCache = function(/*Object*/ input){
 										parameters[parts[0]] = {type: "", opt: false};
 									}
 								}
-								real_sig = real_sig.replace(/\?/g, "").replace(/(?<=\(|,)[^,\)]+ (?=[^,\)]+)/g, "").replace(/,/g, ", ");
+								real_sig = real_sig.replace(/\?/g, "");
 								if(data[new_key][sig].summary || dojo.lang.isArray(data[new_key][sig])){
 									if(!dojo.doc._cache[args.input.name][new_key]){
 										dojo.doc._cache[args.input.name][new_key] = {};
