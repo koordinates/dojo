@@ -146,9 +146,6 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			return;
 		}
 
-		this.mouseDownX = e.clientX;
-		this.mouseDownY = e.clientY;
-
 		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
 			e.target.parentNode : e.target;
 
@@ -160,12 +157,21 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 		// find a selection object, if one is a parent of the source node
 		var ds = this.getDragSource(e);
+		
+		// this line is important.  if we aren't selecting anything then
+		// we need to return now, so preventDefault() isn't called, and thus
+		// the event is propogated to other handling code
 		if(!ds){ return; }
+
 		if(!dojo.lang.inArray(this.selectedSources, ds)){
 			this.selectedSources.push(ds);
 		}
 
-		// Enable dragging of links in firefox.
+		this.mouseDownX = e.clientX;
+		this.mouseDownY = e.clientY;
+
+		// Must stop the mouse down from being propogated, or otherwise can't
+		// drag links in firefox.
 		// WARNING: preventing the default action on all mousedown events
 		// prevents user interaction with the contents.
 		e.preventDefault();
@@ -174,11 +180,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	onMouseUp: function(e, cancel){
+		// if we aren't dragging then ignore the mouse-up
+		// (in particular, don't call preventDefault(), because other
+		// code may need to process this event)
+		if(this.selectedSources.length==0){
+			return;
+		}
+
 		this.mouseDownX = null;
 		this.mouseDownY = null;
 		this._dragTriggered = false;
 		var _this = this;
-		e.preventDefault();
+ 		e.preventDefault();
 		e.dragSource = this.dragSource;
 		if((!e.shiftKey)&&(!e.ctrlKey)){
 			if(_this.currentDropTarget) {
@@ -221,9 +234,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				_this.currentDropTarget.onDropEnd();
 			}
 		}
+
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
 		this.currentDropTarget = null;
-		// this.currentDropTargetPoints = null;
 	},
 
 	onScroll: function() {
