@@ -83,7 +83,8 @@
 	
 	/* styling css */
 	background-color: ThreeDFace;
-	padding: 8px;
+	/*padding: 8px;	doesn't work!  can't figure out why */
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
 	font-size: 12px;
+
 }
