@@ -95,7 +95,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 				this.pType.innerHTML = message.meta.params[param].type;
 			}
 			this.pDesc.parentNode.style.display = "none";			
-			if(message.doc.parameters[param].description){
+			if(message.doc.parameters[param] && message.doc.parameters[param].description){
 				this.pDesc.parentNode.style.display = "inline";
 				this.pDesc.innerHTML = message.doc.parameters[param].description;
 			}
