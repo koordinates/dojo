@@ -15,6 +15,14 @@
 	-khtml-box-sizing: border-box;
 }
 
+.dojoTabContainers {
+	position : relative;
+	height : 100%;
+	width : 100%;
+	-moz-box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+}
+
 .dojoTabLabels-top {
 	position : absolute;
 	top : 0px;
