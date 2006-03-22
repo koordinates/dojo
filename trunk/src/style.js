@@ -476,10 +476,9 @@ dojo.style.getBackgroundColor = function (node) {
 		if(node == document.getElementsByTagName("body")[0]) { node = null; break; }
 		node = node.parentNode;
 	}while(node && dojo.lang.inArray(color, ["transparent", ""]));
-
-	if( color == "transparent" ) {
+	if(color == "transparent"){
 		color = [255, 255, 255, 0];
-	} else {
+	}else{
 		color = dojo.graphics.color.extractRGB(color);
 	}
 	return color;
@@ -487,29 +486,29 @@ dojo.style.getBackgroundColor = function (node) {
 
 dojo.style.getComputedStyle = function (node, cssSelector, inValue) {
 	node = dojo.byId(node);
-	var value = inValue;
-	if (node.style.getPropertyValue) { // W3
-		value = node.style.getPropertyValue(cssSelector);
-	}
-	if(!value) {
-		if (document.defaultView) { // gecko
+	if(document.defaultView){ // W3, gecko, KHTML
+		try{			
 			var cs = document.defaultView.getComputedStyle(node, "");
-			if (cs) { 
-				value = cs.getPropertyValue(cssSelector);
+			if (cs){ 
+				return cs.getPropertyValue(cssSelector);
 			} 
-		} else if (node.currentStyle) { // IE
-			value = node.currentStyle[dojo.style.toCamelCase(cssSelector)];
-		} 
-	}
-	
-	return value;
+		}catch(e){ // reports are that Safari can throw an exception above
+			if (node.style.getPropertyValue){ // W3
+				return node.style.getPropertyValue(cssSelector);
+			}else return inValue;
+		}
+	}else if (node.currentStyle){ // IE
+		return node.currentStyle[dojo.style.toCamelCase(cssSelector)];
+	}if (node.style.getPropertyValue) { // W3
+		return node.style.getPropertyValue(cssSelector);
+	}else return inValue;
 }
 
 dojo.style.getStyle = function (node, cssSelector) {
 	node = dojo.byId(node);
 	var camelCased = dojo.style.toCamelCase(cssSelector);
 	var value = node.style[camelCased]; // dom-ish
-	return (value ? value : dojo.style.getComputedStyle(node, cssSelector, value));
+	return (value ? value : dojo.style.getComputedStyle(node, cssSelector));
 }
 
 dojo.style.toCamelCase = function (selector) {
@@ -589,16 +588,19 @@ dojo.style.clearOpacity = function clearOpacity (node) {
 	}
 }
 
-dojo.style.isVisible = function(node){
-	node = dojo.byId(node);
-	// FIXME: this should also look at visibility!
-	return dojo.style.getComputedStyle(node||this.domNode, "display") != "none";
-}
-
+// show/hide are library constructs
+//
+// show() only affects style.display, making it a complement to hide(): 
+//   the computed style of node may still cause it to not "display"
+//
+// isShowing() only tests style.display so it is compatible with show/hide
+//
+// toggleShowing() again operates only on style.display
+//
 dojo.style.show  = function(node){
 	node = dojo.byId(node);
 	if(node.style){
-		node.style.display = dojo.lang.inArray(['tr', 'td', 'th'], node.tagName.toLowerCase()) ? "" : "block";
+		node.style.display = "";
 	}
 }
 
@@ -609,14 +611,53 @@ dojo.style.hide = function(node){
 	}
 }
 
-dojo.style.toggleVisible = function(node) {
-	if(dojo.style.isVisible(node)) {
-		dojo.style.hide(node);
-		return false;
-	} else {
-		dojo.style.show(node);
-		return true;
+dojo.style.isShowing = function(node){
+	node = dojo.byId(node);
+	return Boolean(node.style && node.style.display != "none");
+}
+
+dojo.style.toggleShowing = function(node){
+	var result = dojo.style.isShowing(node);  
+	dojo.style[(result ? 'hide' : 'show')](node);
+	return result;
+}
+
+// display is a CSS concept
+
+// FIXME: this mapping is simplistic 
+dojo.style.displayMap = { tr: '', td: '', th: '', img: 'inline', span: 'inline', input: 'inline', button: 'inline' };
+
+dojo.style.suggestDisplayForTagName = function(node)
+{
+	node = dojo.byId(node);
+	if(node && node.tagName){
+		var tag = node.tagName.toLowerCase();
+		return (tag in dojo.style.displayMap ? dojo.style.displayMap[tag] : 'block');
 	}
+}
+
+dojo.style.setDisplay = function(node, display){
+	node = dojo.byId(node);
+	if(node.style){
+		node.style.display = (dojo.lang.isString(display) ? display : (display ? dojo.style.suggestDisplayForTagName(node) : 'none'));
+	}
+}
+
+dojo.style.isDisplayed = function(node){
+	return (dojo.style.getComputedStyle(node, 'display') != 'none');
+}
+
+// visibility is a CSS concept
+
+dojo.style.setVisibility = function(node, visibility){
+	node = dojo.byId(node);
+	if(node.style){
+		node.style.visibility = (dojo.lang.isString(visibility) ? visibility : (visibility ? 'visible' : 'hidden'));
+	}
+}
+
+dojo.style.isVisible = function(node){
+	return (dojo.style.getComputedStyle(node, 'visibility') != 'hidden');
 }
 
 // in: coordinate array [x,y,w,h] or dom node
