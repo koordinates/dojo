@@ -120,6 +120,9 @@ dojo.string.endsWith = function(str, end, ignoreCase) {
 		str = str.toLowerCase();
 		end = end.toLowerCase();
 	}
+	if((str.length - end.length) < 0){
+		return false;
+	}
 	return str.lastIndexOf(end) == str.length - end.length;
 }
 
