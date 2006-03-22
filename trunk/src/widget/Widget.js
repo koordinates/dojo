@@ -291,7 +291,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 				}
 			}else{
 				// collect any extra 'non mixed in' args
-				this.extraArgs[x] = args[x];
+				this.extraArgs[x.toLowerCase()] = args[x];
 			}
 		}
 		// dojo.profile.end("mixInProperties");
