@@ -3,6 +3,11 @@
  * Throws events about clicks on it, so someone may catch them and process
  * Tree knows nothing about DnD stuff, covered in TreeDragAndDrop and (if enabled) attached by controller
 */
+
+/**
+ * TODO: use domNode.cloneNode instead of createElement for grid
+ * Should be faster (lyxsus)
+ */
 dojo.provide("dojo.widget.Tree");
 
 dojo.require("dojo.event.*");
@@ -152,7 +157,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 				// create default controller here
 				dojo.require("dojo.widget.TreeBasicController");
 				this.controller = dojo.widget.createWidget("TreeBasicController",
-					{ DNDController: this.DNDMode ? "create" : "" }
+					{ DNDController: (this.DNDMode ? "create" : ""), dieWithTree: true }
 				 );
 
 			}
@@ -172,10 +177,11 @@ dojo.lang.extend(dojo.widget.Tree, {
 			else {
 				// create default controller here
 				dojo.require("dojo.widget.TreeSelector");
-				this.selector = dojo.widget.createWidget("TreeSelector");
+				this.selector = dojo.widget.createWidget("TreeSelector", {dieWithTree: true});
 			}
 
 			this.selector.listenTree(this);
+
 		} else {
 			this.selector = null;
 		}

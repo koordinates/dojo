@@ -344,9 +344,11 @@ dojo.dnd.TreeDNDController = function(treeController) {
 	this.dragSources = {};
 
 	this.dropTargets = {};
+
 }
 
 dojo.lang.extend(dojo.dnd.TreeDNDController, {
+
 
 	listenTree: function(tree) {
 		//dojo.debug("Listen tree "+tree);
@@ -371,6 +373,7 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 
 	onTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
+		// I'm not widget so don't use destroy() call and dieWithTree
 	},
 
 	onCreateDOMNode: function(message) {

@@ -24,6 +24,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 	widgetType: "TreeSelector",
 	selectedNode: null,
 
+	dieWithTree: false,
 
 	eventNamesDefault: {
 		select : "select",
@@ -82,6 +83,12 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 
 	onTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
+
+		if (this.dieWithTree) {
+			//dojo.debug("Killing myself "+this.widgetId);
+			this.destroy();
+			//dojo.debug("done");
+		}
 	},
 
 
