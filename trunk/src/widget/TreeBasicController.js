@@ -21,6 +21,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 	DNDController: "",
 
+	dieWithTree: false,
 
 	initialize: function(args, frag){
 
@@ -29,9 +30,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 			dojo.require("dojo.dnd.TreeDragAndDrop");
 			this.DNDController = new dojo.dnd.TreeDNDController(this);
 		}
-		else if (this.DNDController) {
-			this.DNDController = dojo.widget.byId(this.DNDController);
-		}
+
 
 
 	},
@@ -63,6 +62,12 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		var tree = message.source;
 
 		this.unlistenTree(tree);
+
+		if (this.dieWithTree) {
+			//alert("Killing myself "+this.widgetId);
+			this.destroy();
+			//dojo.debug("done");
+		}
 	},
 
 	onCreateDOMNode: function(message) {
