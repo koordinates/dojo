@@ -40,7 +40,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	},
 
 	onResized: function(){
-		if(this.isVisible()){
+		if(this.isShowing()){
 			this.loadContents();
 		}
 		dojo.widget.html.ContentPane.superclass.onResized.call(this);
@@ -77,7 +77,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	setUrl: function(url) {
 		this.href = url;
 		this.isLoaded = false;
-		if ( this.preload || this.isVisible() ){
+		if ( this.preload || this.isShowing() ){
 			this.loadContents();
 		}
 	},

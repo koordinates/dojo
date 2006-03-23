@@ -192,7 +192,7 @@ dojo.lang.extend(dojo.widget.HtmlDialog, {
 	},
 
 	onResized: function() {
-		if(this.isVisible()){
+		if(this.isShowing()){
 			this.sizeBackground();
 			this.placeDialog();
 			this.domNode.style.display="block";
