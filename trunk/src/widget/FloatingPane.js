@@ -232,9 +232,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	show: function(){
-		if(!this.isVisible()){
-			dojo.widget.html.FloatingPane.superclass.show.apply(this, arguments);
-		}
+		dojo.widget.html.FloatingPane.superclass.show.apply(this, arguments);
 		this.bringToTop();
 	},
 
