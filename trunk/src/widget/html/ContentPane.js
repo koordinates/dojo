@@ -5,6 +5,7 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.string");
+dojo.require("dojo.string.extras");
 dojo.require("dojo.style");
 
 dojo.widget.html.ContentPane = function(){
@@ -134,7 +135,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			s = s.replace(/<style[^>]*?>[\s\S]*?<\/style>/i, "");
 		}
 
-
 		// attributepaths one tag can have multiple paths example:
 		// <input src="..." style="url(..)"/> or <a style="url(..)" href="..">
 		// strip out the tag and run fix on that.
@@ -157,7 +157,8 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				tag = tag.substring(pos2+regex.length, tag.length);
 
 				// fix next attribute or bail out when done
-				attr = tag.match(/ (src|href|style)=(['"]?)([^>]+)\2[^>]*>/i);
+				// hopefully this charclass covers most urls
+				attr = tag.match(/ (src|href|style)=(['"]?)([\w()\/.\\'"-:#=&?]+)\2/i);
 				if(!attr){ break; }
 
 				switch(attr[1].toLowerCase()){
@@ -165,6 +166,8 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 					case "href":
 						if(attr[3].search(/(https?|ftps?|file):\/\//)==-1){ 
 							fixedPath = (new dojo.uri.Uri(url, attr[3]).toString());
+						} else {
+							fixedPath = attr[3];
 						}
 						break;
 					case "style":// style
@@ -174,7 +177,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 						fixedPath = attr[3];
 				}
 
-				regex = " " + attr[1] + "=" + attr[2] + attr[3] + attr[2];
+				regex = dojo.string.escapeRegExp(" " + attr[1] + "=" + attr[2] + attr[3] + attr[2]);
 				fix = " " + attr[1] + "=" + attr[2] + fixedPath + attr[2];
 				pos2 = tag.search(new RegExp(regex));
 			}
@@ -192,10 +195,10 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				attr = match[1].match(/src=(['"]?)([^"']*)\1/i);
 				if(attr){
 					// remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
-					if( (attr[2].search(/\/?dojo.js(?:\.uncompressed.js)?/i) != -1) &&
+					if( (attr[2].search(/\/?\bdojo.js(?:\.uncompressed.js)?/i) != -1) &&
 					(dojo.hostenv.getBaseScriptUri() == attr[2].match(/[.\/]*/)[0]) )
 					{	
-						dojo.debug("Security note! inhibit:"+attr[2]+" from  beeing remotly loaded.");
+						dojo.debug("Security note! inhibit:"+attr[2]+" from  beeing loaded again.");
 					}else{
 						remoteScripts.push(attr[2]);
 					}
@@ -205,7 +208,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				// strip out all djConfig variables from script tags nodeValue
 				// this is ABSOLUTLY needed as reinitialize djConfig after dojo is initialised
 				// makes a dissaster greater than Titanic
-				scripts.push(match[2].replace(/(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?/g, ""));
+				scripts.push(match[2].replace(/(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo.hostenv.writeIncludes\(\s*\);?/g, ""));
 			}
 			s = s.replace(/<script[^>]*>[\s\S]*?<\/script>/i, "");
 		}
