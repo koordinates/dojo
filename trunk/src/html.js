@@ -877,7 +877,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 dojo.html.BackgroundIframe = function(node) {
 	if(dojo.render.html.ie) {
 		var html=
-				 "<iframe src='javascript:void(0)' "
+				 "<iframe "
 				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
 				+        "z-index: -1; filter:Alpha(Opacity=\"0\");' "
 				+">";
