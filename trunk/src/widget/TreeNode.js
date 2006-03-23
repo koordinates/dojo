@@ -437,14 +437,6 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		}
 	},
 
-	/* clean my domNodes before destruction */
-	cleanUp: function() {
-		try{
-			dojo.event.browser.clean(this.domNode);
-			delete this.domNode;
-		}catch(e){ }
-	},
-
 	addChild: function(){
 		return this.tree.addChild.apply(this, arguments);
 	},
@@ -475,7 +467,6 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 
 	removeNode: function(){ return this.tree.removeNode.apply(this, arguments) },
-	destroyChild: function(){ return this.tree.destroyChild.apply(this, arguments) },
 	doRemoveNode: function(){ return this.tree.doRemoveNode.apply(this, arguments) },
 
 

@@ -499,19 +499,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		child.parent = child.tree = null;
 
 		return child;
-	},
-
-// ================================ destroyChild ===================================
-
-
-	destroyChild: function(child) {
-		dojo.debug("destroyed");
-		//dojo.debugShallow(child);
-		child.parent.removeNode(child);
-		child.cleanUp();
-		delete child;
 	}
-
 
 });
 
