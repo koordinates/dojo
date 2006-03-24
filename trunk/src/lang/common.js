@@ -81,6 +81,50 @@ dojo.lang.inArray = function(arr, val){
 }
 
 /**
+* Loop through the given Array, object or String and call the unary_func for each member item. 
+* Each character of an input String is considered an item.
+* The function each_func is called with the parameters: 
+* 	current element value, the index/property, the entire array|object|string.
+*
+* Example usage:
+*  dojo.lang.forEach([1,2,3,4,5], dojo.debug); // prints all the numbers 1..5 using dojo.debug()
+*  dojo.lang.forEach({x:1, y:2, z:3}, dojo.debug); // prints all the values of x,y,z
+*  dojo.lang.forEach("a string", dojo.debug); // prints each character of the string
+*	 dojo.lang.forEach("a string", dojo.debug, 3); // prints the first three chars of the string
+*
+* Parameters:
+*   object Either an array, object or string to loop through.
+*   function A reference to a function that shall be called for each element.
+*   int The maximum elements to loop through.
+*/
+dojo.lang.forEach = function(arr /* Object */, each_func /* Function */, fix_length /* Int */){
+	if(dojo.lang.isString(arr)){ 
+		arr = arr.split(""); 
+	}
+	if (dojo.lang.isArray(arr)){
+		// handle arrays by looping over the elements using their index, since 
+		// sjmiles mentioned: we cannot use for..in on arrays in general because users tend to stuff their own properties into Array
+		var il = (fix_length ? fix_length: arr.length);
+		for(var i=0; i<il; i++){ 
+			if(each_func(arr[i], i, arr) == "break"){ 
+				break;
+			}
+		}
+	}else{
+		// when three arguments are given, means fix_length is given, evaluate it.
+		var length = (arguments.length == 3 ? fix_length : 0);
+		var count = 0;
+		for (var i in arr){
+			count++;
+			// If the unary_func returns the string "break", quit the forEach(), see #1078.
+			if(each_func(arr[i], i, arr) == "break" || length == count){
+				break;
+			}
+		}
+ 	}
+}
+
+/**
  * Partial implmentation of is* functions from
  * http://www.crockford.com/javascript/recommend.html
  * NOTE: some of these may not be the best thing to use in all situations
