@@ -38,7 +38,7 @@ dojo.rpc.JsonService = function(args){
 			if(args["serviceUrl"]){
 				this.serviceUrl = args.serviceUrl;
 			}
-			if(args["strictArgChecks"]){
+			if(typeof args["strictArgChecks"] != "undefined"){
 				this.strictArgChecks = args.strictArgChecks;
 			}
 		}
