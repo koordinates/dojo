@@ -97,27 +97,28 @@ dojo.lang.inArray = function(arr, val){
 *   function A reference to a function that shall be called for each element.
 *   int The maximum elements to loop through.
 */
-dojo.lang.forEach = function(arr /* Object */, each_func /* Function */, fix_length /* Int */){
-	if(dojo.lang.isString(arr)){ 
-		arr = arr.split(""); 
+dojo.lang.forEach = function(obj /* Object */, each_func /* Function */, fix_length /* Int */){
+	if(dojo.lang.isString(obj)){ 
+		obj = obj.split(""); 
 	}
-	if (dojo.lang.isArray(arr)){
+	if (dojo.lang.isArray(obj)){
 		// handle arrays by looping over the elements using their index, since 
 		// sjmiles mentioned: we cannot use for..in on arrays in general because users tend to stuff their own properties into Array
-		var il = (fix_length ? fix_length: arr.length);
-		for(var i=0; i<il; i++){ 
-			if(each_func(arr[i], i, arr) == "break"){ 
+		var length = (fix_length ? fix_length : obj.length);
+		for(var i=0; i<length; i++){ 
+			// If the each_func returns the string "break", quit the forEach(), see #1078.
+			if(each_func(obj[i], i, obj) == "break"){ 
 				break;
 			}
 		}
 	}else{
 		// when three arguments are given, means fix_length is given, evaluate it.
-		var length = (arguments.length == 3 ? fix_length : 0);
+		var length = (fix_length ? fix_length : 0);
 		var count = 0;
-		for (var i in arr){
+		for(var i in obj){
 			count++;
-			// If the unary_func returns the string "break", quit the forEach(), see #1078.
-			if(each_func(arr[i], i, arr) == "break" || length == count){
+			// If the each_func returns the string "break", quit the forEach(), see #1078.
+			if(each_func(obj[i], i, obj) == "break" || length == count){
 				break;
 			}
 		}
