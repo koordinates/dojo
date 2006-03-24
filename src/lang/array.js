@@ -24,17 +24,6 @@ dojo.lang.isEmpty = function(obj) {
 	}
 }
 
-dojo.lang.forEach = function(arr, unary_func, fix_length){
-	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
-	var il = arr.length;
-	for(var i=0; i< ((fix_length) ? il : arr.length); i++){
-		if(unary_func(arr[i], i, arr) == "break"){
-			break;
-		}
-	}
-}
-
 dojo.lang.map = function(arr, obj, unary_func){
 	var isString = dojo.lang.isString(arr);
 	if(isString){
