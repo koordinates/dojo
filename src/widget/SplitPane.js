@@ -15,6 +15,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.io.cookie");
 
 dojo.widget.html.SplitPane = function(){
 
@@ -44,6 +45,7 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 	isDraggingLeft: 0,
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSplitPane.css"),
 	originPos: null,
+	persist: true,		// save splitter positions in a cookie
 
 	activeSizing: '',
 	sizerWidth: 15,
@@ -102,6 +104,10 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		this.domNode.appendChild(this.virtualSizer);
 
 		dojo.html.disableSelection(this.virtualSizer);
+
+		if(this.persist){
+			this.restoreState();
+		}
 
 		// size the panels once the browser has caught up
 		this.resizeSoon();
@@ -381,6 +387,10 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 
 		dojo.event.disconnect(document.documentElement, "onmousemove", this, "changeSizing");
 		dojo.event.disconnect(document.documentElement, "onmouseup", this, "endSizing");
+		
+		if(this.persist){
+			this.saveState(this);
+		}
 	},
 
 	movePoint: function(){
@@ -514,6 +524,28 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 
 		this.virtualSizer.style.left = origin.x + 'px';
 		this.virtualSizer.style.top = origin.y + 'px';
+	},
+	
+	_getCookieName: function _getCookieName(i) {
+		return this.widgetId + "_" + i;
+	},
+
+	restoreState: function () {
+		for(var i=0; i<this.children.length; i++) {
+			var cookieName = this._getCookieName(i);
+			var cookieValue = dojo.io.cookie.getCookie(cookieName);
+			if (cookieValue != null) {
+				var pos = parseInt(cookieValue);
+				this.children[i].sizeShare=pos;
+			}
+		}
+	},
+
+	saveState: function (){
+		for(var i=0; i<this.children.length; i++) {
+			var cookieName = this._getCookieName(i);
+			dojo.io.cookie.setCookie(cookieName, this.children[i].sizeShare, null, null, null, null);
+		}
 	}
 });
 
