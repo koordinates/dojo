@@ -100,19 +100,15 @@ dojo.lang.forEach = function(obj /* Object */, each_func /* Function */, fix_len
 	if(dojo.lang.isString(obj)){ 
 		obj = obj.split(""); 
 	}
+	// If the each_func returns the string "break", quit the forEach(), see #1078.
 	if (dojo.lang.isArray(obj)){
-		// handle arrays by looping over the elements using their index, since 
-		// sjmiles mentioned: we cannot use for..in on arrays in general because users tend to stuff their own properties into Array
 		for(var i=0; i<obj.length; i++){ 
-			// If the each_func returns the string "break", quit the forEach(), see #1078.
 			if(each_func(obj[i], i, obj) == "break"){ 
 				break;
 			}
 		}
 	}else{
 		for(var i in obj){
-			count++;
-			// If the each_func returns the string "break", quit the forEach(), see #1078.
 			if(each_func(obj[i], i, obj) == "break"){
 				break;
 			}
