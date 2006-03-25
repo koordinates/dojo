@@ -84,12 +84,13 @@ dojo.behavior = new function(){
 
 	this.apply = function(){
 		dojo.profile.start("dojo.behavior.apply");
+		var r = dojo.render.html;
 		// note, we apply one way for fast queries and one way for slow
 		// iteration. So be it.
-		var safariGoodEnough = false;
-		if(dojo.render.html.safari){
+		var safariGoodEnough = (!r.safari);
+		if(r.safari){
 			// Anything over release #420 should work the fast way
-			var uas = dojo.render.html.UA.split("AppleWebKit/")[1];
+			var uas = r.UA.split("AppleWebKit/")[1];
 			if(parseInt(uas.match(/[0-9.]{3,}/)) >= 420){
 				safariGoodEnough = true;
 			}
