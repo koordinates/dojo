@@ -216,12 +216,14 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.menuHeight = dojo.style.getOuterHeight(this.domNode);
 	},
 
-	open: function(x, y, parentMenu, explodeSrc){
+	open: function(x, y, parent, explodeSrc){
 
-		// NOTE: alex:
-		//	this couldn't have possibly worked. this.open wound up calling
-		//	this.close, which called open...etc..
-		if (this.isShowing){ /* this.close(); */ return; }
+		// if explodeSrc isn't specified then explode from my parent widget
+		explodeSrc = explodeSrc || parent["domNode"] || [];
+
+		if (this.isShowing){ return; }
+
+		var parentMenu = (parent && parent.widgetType=="PopupMenu2") ? parent : null;
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
