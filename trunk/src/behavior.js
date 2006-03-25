@@ -121,12 +121,18 @@ dojo.behavior = new function(){
 		}
 		var tElem = dojo.byId(id);
 		while(tElem){
-			added.push(tElem);
+			if(!tElem["idcached"]){
+				added.push(tElem);
+			}
 			tElem.id = "";
 			tElem = dojo.byId(id);
 		}
 		this.matchCache[id] = this.matchCache[id].concat(added);
-		return { "removed": removed, "added": added };
+		dojo.lang.forEach(this.matchCache[id], function(node){
+			node.id = id;
+			node.idcached = true;
+		});
+		return { "removed": removed, "added": added, "match": this.matchCache[id] };
 	}
 
 	this.applyToNode = function(node, action, ruleSetName){
