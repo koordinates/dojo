@@ -90,35 +90,30 @@ dojo.lang.inArray = function(arr, val){
 *  dojo.lang.forEach([1,2,3,4,5], dojo.debug); // prints all the numbers 1..5 using dojo.debug()
 *  dojo.lang.forEach({x:1, y:2, z:3}, dojo.debug); // prints all the values of x,y,z
 *  dojo.lang.forEach("a string", dojo.debug); // prints each character of the string
-*	 dojo.lang.forEach("a string", dojo.debug, 3); // prints the first three chars of the string
 *
 * Parameters:
 *   object Either an array, object or string to loop through.
 *   function A reference to a function that shall be called for each element.
-*   int The maximum elements to loop through.
+*   fix_length true if the function is guaranteed not to change the array's length
 */
-dojo.lang.forEach = function(obj /* Object */, each_func /* Function */, fix_length /* Int */){
+dojo.lang.forEach = function(obj /* Object */, each_func /* Function */, fix_length /* Boolean */){
 	if(dojo.lang.isString(obj)){ 
 		obj = obj.split(""); 
 	}
 	if (dojo.lang.isArray(obj)){
 		// handle arrays by looping over the elements using their index, since 
 		// sjmiles mentioned: we cannot use for..in on arrays in general because users tend to stuff their own properties into Array
-		var length = (fix_length ? fix_length : obj.length);
-		for(var i=0; i<length; i++){ 
+		for(var i=0; i<obj.length; i++){ 
 			// If the each_func returns the string "break", quit the forEach(), see #1078.
 			if(each_func(obj[i], i, obj) == "break"){ 
 				break;
 			}
 		}
 	}else{
-		// when three arguments are given, means fix_length is given, evaluate it.
-		var length = (fix_length ? fix_length : 0);
-		var count = 0;
 		for(var i in obj){
 			count++;
 			// If the each_func returns the string "break", quit the forEach(), see #1078.
-			if(each_func(obj[i], i, obj) == "break" || length == count){
+			if(each_func(obj[i], i, obj) == "break"){
 				break;
 			}
 		}
