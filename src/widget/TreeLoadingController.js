@@ -20,7 +20,7 @@ dojo.inherits(dojo.widget.TreeLoadingController, dojo.widget.TreeBasicController
 dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	widgetType: "TreeLoadingController",
 
-	RPCUrl: "local",
+	RPCUrl: "",
 
 
 	/**
