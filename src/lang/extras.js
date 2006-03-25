@@ -68,8 +68,7 @@ dojo.lang.firstValued = function(/* ... */) {
  * Parse a reference specified as a string descriptor into 
  * an object reference and a prop name.
  */
-dojo.lang.evalDescriptor = function(descriptor, context, create)
-{
+dojo.lang.evalDescriptor = function(descriptor, context, create){
 	var obj = (context ? context : dj_global);
 	var names = descriptor.split('.');
 	var prop = names.pop();
@@ -89,8 +88,7 @@ dojo.lang.evalDescriptor = function(descriptor, context, create)
  * If context is not specified, dj_global is used
  * If create is true, undefined objects in the descriptor are created.
  */
-dojo.lang.getObjPathValue = function(descriptor, context, create)
-{
+dojo.lang.getObjPathValue = function(descriptor, context, create) {
 	with (dojo.lang.evalDescriptor(descriptor, context, create)){
 		return (obj && (prop in obj) ? obj[prop] : (create ? obj[prop] = undefined : undefined));
 	}
@@ -104,8 +102,7 @@ dojo.lang.getObjPathValue = function(descriptor, context, create)
  * If context is not specified, dj_global is used
  * If nocreate is true, undefined objects in the descriptor are NOT created.
  */
-dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate)
-{
+dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate){
 	with (dojo.lang.evalDescriptor(descriptor, context, !nocreate)){
 		if (obj && (!nocreate || (prop in obj))){
   		obj[prop] = value;
