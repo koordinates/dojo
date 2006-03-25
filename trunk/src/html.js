@@ -426,9 +426,9 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	if(!nodeType){ nodeType = "*"; }
 	var candidateNodes = parent.getElementsByTagName(nodeType);
 
+	var node, i = 0;
 	outer:
-	for(var i = 0; i < candidateNodes.length; i++) {
-		var node = candidateNodes[i];
+	while (node = candidateNodes[i++]) {
 		var nodeClasses = dojo.html.getClasses(node);
 		if(nodeClasses.length == 0) { continue outer; }
 		var matches = 0;
@@ -599,8 +599,6 @@ dojo.html.setActiveStyleSheet = function(title){
 
 dojo.html.getActiveStyleSheet = function(){
 	var i, a;
-	// FIXME: getElementsByTagName returns a live collection. This seems like a
-	// bad key for iteration.
 	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
 		if (a.getAttribute("rel").indexOf("style") != -1 &&
 			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
