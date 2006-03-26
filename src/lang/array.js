@@ -55,44 +55,32 @@ dojo.lang.map = function(arr, obj, unary_func){
 	}
 }
 
-dojo.lang.every = function(arr, callback, thisObject) {
+dojo.lang._everyOrSome = function(every, arr, callback, thisObject){
 	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
-	if(Array.every) {
-		return Array.every(arr, callback, thisObject);
-	} else {
+	if(isString){ arr = arr.split(""); }
+	if(Array.every){
+		return Array[ (every) ? "every" : "some" ](arr, callback, thisObject);
+	}else{
 		if(!thisObject) {
 			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
 			thisObject = dj_global;
 		}
 
-		for(var i = 0; i < arr.length; i++) {
-			if(!callback.call(thisObject, arr[i], i, arr)) {
-				return false;
+		for(var i = 0; i<arr.length; i++){
+			if(!callback.call(thisObject, arr[i], i, arr)){
+				return (every) ? false : true;
 			}
 		}
-		return true;
+		return (every) ? true : false;
 	}
 }
 
-dojo.lang.some = function(arr, callback, thisObject) {
-	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
-	if(Array.some) {
-		return Array.some(arr, callback, thisObject);
-	} else {
-		if(!thisObject) {
-			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
-			thisObject = dj_global;
-		}
+dojo.lang.every = function(arr, callback, thisObject){
+	return this._everyOrSome(true, arr, callback, thisObject);
+}
 
-		for(var i = 0; i < arr.length; i++) {
-			if(callback.call(thisObject, arr[i], i, arr)) {
-				return true;
-			}
-		}
-		return false;
-	}
+dojo.lang.some = function(arr, callback, thisObject){
+	return this._everyOrSome(false, arr, callback, thisObject);
 }
 
 dojo.lang.filter = function(arr, callback, thisObject) {
