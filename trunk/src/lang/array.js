@@ -63,14 +63,19 @@ dojo.lang._everyOrSome = function(every, arr, callback, thisObject){
 	if(Array.every){
 		return Array[ (every) ? "every" : "some" ](arr, callback, thisObject);
 	}else{
-		if(!thisObject) {
-			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
+		if(!thisObject){
+			if(arguments.length >= 3){
+				dojo.raise("thisObject doesn't exist!");
+			}
 			thisObject = dj_global;
 		}
 
 		for(var i = 0; i<arr.length; i++){
-			if(!callback.call(thisObject, arr[i], i, arr)){
-				return (every) ? false : true;
+			var result = callback.call(thisObject, arr[i], i, arr);
+			if((every)&&(!result)){
+				return false;
+			}else if((!every)&&(result)){
+				return true;
 			}
 		}
 		return (every) ? true : false;
