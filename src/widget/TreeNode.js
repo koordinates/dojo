@@ -366,7 +366,11 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	buildChildIcon: function() {
-		this.childIcon.src = this.childIconSrc ? this.childIconSrc : "url()";
+		// IE (others?) tries to download whatever is on src attribute so setting "url()" like before isnt a good idea
+		// Only results in a 404 
+		if(this.childIconSrc){ 
+			this.childIcon.src = this.childIconSrc;
+		}
 		this.childIcon.style.display = this.childIconSrc ? 'inline' : 'none';
 	},
 

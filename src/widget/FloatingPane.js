@@ -58,6 +58,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		// <img src=""> can hang IE!  better get rid of it
 		if(this.iconSrc==""){
 			dojo.dom.removeNode(this.titleBarIcon);
+		}else{
+			this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
 		}
 
 		if(this.titleBarDisplay!="none"){	
