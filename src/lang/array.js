@@ -5,7 +5,9 @@ dojo.require("dojo.lang.common");
 // FIXME: Is this worthless since you can do: if(name in obj)
 // is this the right place for this?
 dojo.lang.has = function(obj, name){
-	return (typeof obj[name] !== 'undefined');
+	try{
+		return (typeof obj[name] != "undefined");
+	}catch(e){ return false; }
 }
 
 dojo.lang.isEmpty = function(obj) {
