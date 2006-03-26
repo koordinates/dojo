@@ -32,6 +32,15 @@
 .dojoFloatingPaneTitleText {
 	padding: 2px 4px 2px 2px;
 }
+.dojoFloatingPaneTitleBarIcon {
+	/* essential css */
+	float: left;
+
+	/* styling css */
+	margin-left: 2px;
+	margin-right: 4px;
+	height: 22px;
+}
 
 /* minimize/maximize icons are specified by CSS only */
 .dojoFloatingPaneMinimizeIcon,
