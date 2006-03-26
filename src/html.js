@@ -588,8 +588,8 @@ dojo.html.renderedTextContent = function(node){
 }
 
 dojo.html.setActiveStyleSheet = function(title){
-	var i, a, main;
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+	var i = 0, a, els = document.getElementsByTagName("link");
+	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
 			a.disabled = true;
 			if (a.getAttribute("title") == title) { a.disabled = false; }
@@ -598,8 +598,8 @@ dojo.html.setActiveStyleSheet = function(title){
 }
 
 dojo.html.getActiveStyleSheet = function(){
-	var i, a;
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+	var i = 0, a, els = document.getElementsByTagName("link");
+	while (a = els[i++]) {
 		if (a.getAttribute("rel").indexOf("style") != -1 &&
 			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
 	}
@@ -607,8 +607,8 @@ dojo.html.getActiveStyleSheet = function(){
 }
 
 dojo.html.getPreferredStyleSheet = function(){
-	var i, a;
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+	var i = 0, a, els = document.getElementsByTagName("link");
+	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1
 			&& a.getAttribute("rel").indexOf("alt") == -1
 			&& a.getAttribute("title")) { return a.getAttribute("title"); }
