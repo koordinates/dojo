@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<title>Live Collections</title>
+
+<script type="text/javascript">
+
+function bench () {
+	var div = document.createElement("div");
+	var span = "<span><" + "/span>";
+	// order 2^n, so 2^20 = 1 048 576
+	for (var i = 0; i < 11; i++) { span += span; }
+	div.innerHTML = span;
+
+	// first hit all the elements to turn them into JS objects for a fair test
+	var el, i = 0, els = div.getElementsByTagName("span");
+	while (el = els[i++]) { }
+
+
+	tic();
+	var els = div.getElementsByTagName("span");
+	for (var i = 0; i < els.length; i++) { var el = els[i]; }
+	toc("for loop, accessing length");
+
+	tic();
+	var el
+	for (var i = 0; el = div.getElementsByTagName("span")[i]; i++) { }
+	toc("for loop, calling inline");
+	
+	tic();
+	var el, i = 0;
+	while (el = div.getElementsByTagName("span")[i++]) { }
+	toc("while loop, calling inline");
+
+	tic();
+	var el, els = div.getElementsByTagName("span");
+	for (var i = 0; el = els[i]; i++) { }
+	toc("for loop, accessing var");
+	
+	tic();
+	var el, i = 0, els = div.getElementsByTagName("span");
+	while (el = els[i++]) { }
+	toc("while loop, accessing var");
+}
+
+function tic () {
+	tic.time = new Date();
+}
+
+function toc (str) {
+	var time = new Date().getTime() - tic.time.getTime();
+	var p = document.createElement("p");
+	p.appendChild(document.createTextNode(time + " - " + str));
+	document.body.appendChild(p);
+}
+
+</script>
+
+<h1>Live Collections</h1>
+
+<a href="javascript:bench()">Run benchmarks</a> <strong style="color:red">Warning:</strong> these benchmarks will take a number of seconds to run.  Other system activity will cause these benchmarks to skew.
