@@ -43,11 +43,12 @@ dojo.lang.extend(dojo.dnd.TreeDragSource, {
 
 			var result = dojo.dnd.HtmlDragObject.prototype.onDragStart.apply(this, arguments);
 
+
 			/* remove background grid from cloned object */
-			dojo.lang.forEach(
-				this.dragClone.getElementsByTagName('img'),
-				function(elem) { elem.style.backgroundImage='url()' }
-			);
+			var cloneGrid = this.dragClone.getElementsByTagName('img');
+			for(var i=0; i<cloneGrid.length; i++) {
+				cloneGrid.item(i).style.backgroundImage='url()';
+			}
 
 			return result;
 
