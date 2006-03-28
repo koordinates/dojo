@@ -20,6 +20,8 @@ dojo.widget.HtmlRichText = function () {
 	dojo.widget.HtmlWidget.call(this);
 	this.contentFilters = [];
 	// this.contentFilters.push(this.defaultContentCleaner);
+	
+	this._keyHandlers = {};
 }
 dojo.inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
 
@@ -81,6 +83,30 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		dojo.event.connect(this, "onKeyPress", this, "keyPress");
 		dojo.event.connect(this, "onKeyDown", this, "keyDown");
 		dojo.event.connect(this, "onKeyUp", this, "keyUp");
+
+
+		// add default some key handlers		
+		var ctrl = this.KEY_CTRL;
+		var exec = function (cmd, arg) {
+			return arguments.length == 1 ? function () { this.execCommand(cmd); } :
+				function () { this.execCommand(cmd, arg); }
+		}
+			
+		this.addKeyHandler("b", ctrl, exec("bold"));
+		this.addKeyHandler("i", ctrl, exec("italic"));
+		this.addKeyHandler("u", ctrl, exec("underline"));
+		this.addKeyHandler("a", ctrl, exec("selectall"));
+		//this.addKeyHandler("k", ctrl, exec("createlink", ""));
+		//this.addKeyHandler("K", ctrl, exec("unlink"));
+		this.addKeyHandler("Z", ctrl, exec("redo"));
+		this.addKeyHandler("s", ctrl, function () { this.save(true); });
+		
+		this.addKeyHandler("1", ctrl, exec("formatblock", "h1"));
+		this.addKeyHandler("2", ctrl, exec("formatblock", "h2"));
+		this.addKeyHandler("3", ctrl, exec("formatblock", "h3"));
+		this.addKeyHandler("4", ctrl, exec("formatblock", "h4"));
+				
+		this.addKeyHandler("\\", ctrl, exec("insertunorderedlist"));
 	},
 
 	/**
@@ -228,7 +254,10 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				var getStyle = (function (domNode) { return function (style) {
 					return dojo.style.getStyle(domNode, style);
 				}; })(this.domNode);
-				var font = getStyle('font-size') + " " + getStyle('font-family');
+				var font =
+					getStyle('font-weight') + " " +
+					getStyle('font-size') + " " +
+					getStyle('font-family');
 		
 				var contentEditable = Boolean(document.body.contentEditable);
 				var currentDomain = (new dojo.uri.Uri(document.location)).host;
@@ -383,15 +412,30 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 	onKeyUp: function (e) {
 	},
 	
+	KEY_CTRL: 1,
+	
 	/** Fired on keypress. */
 	onKeyPress: function (e) {
 		// handle the various key events
 
 		var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
 		var code = e.keyCode;
-				
-		var preventDefault = true; // by default assume we cancel;
 
+		var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
+
+		if (this._keyHandlers[character]) {
+			var handlers = this._keyHandlers[character], i = 0, handler;
+			while (handler = handlers[i++]) {
+				if (modifiers == handler.modifiers) {
+					handler.handler.call(this);
+					e.preventDefault();
+					break;
+				}
+			}
+		}
+		
+		
+		/*
 		// define some key combos
 		if (e.ctrlKey || e.metaKey) { // modifier pressed
 			switch (character) {
@@ -400,8 +444,17 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 				case "u": this.execCommand("underline"); break;
 				//case "a": this.execCommand("selectall"); break;
 				//case "k": this.execCommand("createlink", ""); break;
+				//case "K": this.execCommand("unlink"); break;
 				case "Z": this.execCommand("redo"); break;
 				case "s": this.close(true); break; // saves
+				
+				case "1": this.execCommand("formatblock", "h1"); break;
+				case "2": this.execCommand("formatblock", "h2"); break;
+				case "3": this.execCommand("formatblock", "h3"); break;
+				case "4": this.execCommand("formatblock", "h4"); break;
+				
+				case "\\": this.execCommand("insertunorderedlist"); break;
+				
 				default: switch (code) {
 					case e.KEY_LEFT_ARROW:
 					case e.KEY_RIGHT_ARROW:
@@ -423,10 +476,21 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 		}
 		
 		if (preventDefault) { e.preventDefault(); }
+		*/
 
 		// function call after the character has been inserted
 		dojo.lang.setTimeout(this, this.onKeyPressed, 1, e);
 	},
+	
+	addKeyHandler: function (key, modifiers, handler) {
+		if (!(this._keyHandlers[key] instanceof Array)) { this._keyHandlers[key] = []; }
+		this._keyHandlers[key].push({
+			modifiers: modifiers || 0,
+			handler: handler
+		});
+	},
+	
+	
 	
 	/**
 	 * Fired after a keypress event has occured and it's action taken. This
