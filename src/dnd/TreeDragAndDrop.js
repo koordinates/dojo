@@ -223,7 +223,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO &&
 			// check if ONTO is allowed localy
 			!(
-			  this.treeNode.isFolder // check dynamically cause may change w/o regeneration of dropTarget
+			  !this.treeNode.actionIsDisabled(dojo.widget.TreeNode.prototype.actions.ADDCHILD) // check dynamically cause may change w/o regeneration of dropTarget
 			  && sourceTreeNode.parent !== this.treeNode
 			  && this.controller.canMove(sourceTreeNode, this.treeNode)
 			 )
@@ -232,9 +232,10 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 			DNDMode &= ~dojo.widget.Tree.prototype.DNDModes.ONTO;
 		}
 
+
 		var position = this.getPosition(e, DNDMode);
 
-		//dojo.debug(DNDMode+" : "+position);
+		//dojo.debug(DNDMode & +" : "+position);
 
 
 		// if onto is here => it was allowed before, no accept check is needed

@@ -158,6 +158,9 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 			return false;
 		}
 
+		// if we move under same parent then no matter if ADDCHILD disabled for him
+		// but if we move to NEW parent then check if action is disabled for him
+		// also covers case for newParent being a non-folder in strict mode etc
 		if (child.parent !== newParent && newParent.actionIsDisabled(newParent.actions.ADDCHILD)) {
 			return false;
 		}
@@ -171,12 +174,6 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 				return false;
 			}
 			node = node.parent;
-		}
-
-
-		// check for newParent being a folder (if node)
-		if (newParent.isTreeNode && !newParent.isFolder) {
-			return false;
 		}
 
 		return true;
