@@ -89,11 +89,11 @@ The following several function use the dimensions shown below
 
 // FIXME: these work for most elements (e.g. DIV) but not all (e.g. TEXTAREA)
 
-dojo.style.isBorderBox = function(node) {
+dojo.style.isBorderBox = function(node){
 	return (dojo.style.getBoxSizing(node) == dojo.style.boxSizing.borderBox);
 }
 
-dojo.style.getUnitValue = function (node, cssSelector, autoIsZero){
+dojo.style.getUnitValue = function(node, cssSelector, autoIsZero){
 	node = dojo.byId(node);
 	var result = { value: 0, units: 'px' };
 	var s = dojo.style.getComputedStyle(node, cssSelector);
@@ -113,7 +113,7 @@ dojo.style.getUnitValue = function (node, cssSelector, autoIsZero){
 	return result;		
 }
 
-dojo.style.getPixelValue = function (node, cssSelector, autoIsZero){
+dojo.style.getPixelValue = function(node, cssSelector, autoIsZero){
 	node = dojo.byId(node);
 	var result = dojo.style.getUnitValue(node, cssSelector, autoIsZero);
 	// FIXME: there is serious debate as to whether or not this is the right solution
@@ -153,22 +153,22 @@ dojo.style.getPaddingWidth = function(node){
 	return left + right;
 }
 
-dojo.style.getContentWidth = function (node){
+dojo.style.getContentWidth = function(node){
 	node = dojo.byId(node);
 	return node.offsetWidth - dojo.style.getPaddingWidth(node) - dojo.style.getBorderWidth(node);
 }
 
-dojo.style.getInnerWidth = function (node){
+dojo.style.getInnerWidth = function(node){
 	node = dojo.byId(node);
 	return node.offsetWidth;
 }
 
-dojo.style.getOuterWidth = function (node){
+dojo.style.getOuterWidth = function(node){
 	node = dojo.byId(node);
 	return dojo.style.getInnerWidth(node) + dojo.style.getMarginWidth(node);
 }
 
-dojo.style.setOuterWidth = function (node, pxWidth){
+dojo.style.setOuterWidth = function(node, pxWidth){
 	node = dojo.byId(node);
 	if (!dojo.style.isBorderBox(node)){
 		pxWidth -= dojo.style.getPaddingWidth(node) + dojo.style.getBorderWidth(node);
@@ -177,7 +177,9 @@ dojo.style.setOuterWidth = function (node, pxWidth){
 	if (!isNaN(pxWidth) && pxWidth > 0){
 		node.style.width = pxWidth + 'px';
 		return true;
-	}else return false;
+	}else{
+		return false;
+	}
 }
 
 // FIXME: these aliases are actually the preferred names
@@ -208,22 +210,22 @@ dojo.style.getPaddingHeight = function(node){
 	return top + bottom;
 }
 
-dojo.style.getContentHeight = function (node){
+dojo.style.getContentHeight = function(node){
 	node = dojo.byId(node);
 	return node.offsetHeight - dojo.style.getPaddingHeight(node) - dojo.style.getBorderHeight(node);
 }
 
-dojo.style.getInnerHeight = function (node){
+dojo.style.getInnerHeight = function(node){
 	node = dojo.byId(node);
 	return node.offsetHeight; // FIXME: does this work?
 }
 
-dojo.style.getOuterHeight = function (node){
+dojo.style.getOuterHeight = function(node){
 	node = dojo.byId(node);
 	return dojo.style.getInnerHeight(node) + dojo.style.getMarginHeight(node);
 }
 
-dojo.style.setOuterHeight = function (node, pxHeight){
+dojo.style.setOuterHeight = function(node, pxHeight){
 	node = dojo.byId(node);
 	if (!dojo.style.isBorderBox(node)){
 		pxHeight -= dojo.style.getPaddingHeight(node) + dojo.style.getBorderHeight(node);
@@ -232,7 +234,9 @@ dojo.style.setOuterHeight = function (node, pxHeight){
 	if (!isNaN(pxHeight) && pxHeight > 0){
 		node.style.height = pxHeight + 'px';
 		return true;
-	}else return false;
+	}else{
+		return false;
+	}
 }
 
 dojo.style.setContentWidth = function(node, pxWidth){
@@ -240,11 +244,12 @@ dojo.style.setContentWidth = function(node, pxWidth){
 	if (dojo.style.isBorderBox(node)){
 		pxWidth += dojo.style.getPaddingWidth(node) + dojo.style.getBorderWidth(node);
 	}
-
 	if (!isNaN(pxWidth) && pxWidth > 0){
 		node.style.width = pxWidth + 'px';
 		return true;
-	}else return false;
+	}else{
+		return false;
+	}
 }
 
 dojo.style.setContentHeight = function(node, pxHeight){
@@ -252,11 +257,12 @@ dojo.style.setContentHeight = function(node, pxHeight){
 	if (dojo.style.isBorderBox(node)){
 		pxHeight += dojo.style.getPaddingHeight(node) + dojo.style.getBorderHeight(node);
 	}
-
 	if (!isNaN(pxHeight) && pxHeight > 0){
 		node.style.height = pxHeight + 'px';
 		return true;
-	}else return false;
+	}else{
+		return false;
+	}
 }
 
 // FIXME: these aliases are actually the preferred names
@@ -265,7 +271,7 @@ dojo.style.getBorderBoxHeight = dojo.style.getInnerHeight;
 dojo.style.getMarginBoxHeight = dojo.style.getOuterHeight;
 dojo.style.setMarginBoxHeight = dojo.style.setOuterHeight;
 
-dojo.style.getTotalOffset = function (node, type, includeScroll){
+dojo.style.getTotalOffset = function(node, type, includeScroll){
 	node = dojo.byId(node);
 	var typeStr = (type=="top") ? "offsetTop" : "offsetLeft";
 	var typeScroll = (type=="top") ? "scrollTop" : "scrollLeft";
@@ -273,7 +279,7 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 	var coord = (type=="top") ? "y" : "x";
 	var offset = 0;
 	if(node["offsetParent"]){
-		
+		var endNode;		
 		// in Safari, if the node is an absolutly positioned child of the body
 		// and the body has a margin the offset of the child and the body
 		// contain the body's margins, so we need to end at the body
@@ -281,9 +287,9 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 			&& node.style.getPropertyValue("position") == "absolute"
 			&& node.parentNode == document.body)
 		{
-			var endNode = document.body;
+			endNode = document.body;
 		} else {
-			var endNode = document.body.parentNode;
+			endNode = document.body.parentNode;
 		}
 		
 		if(includeScroll && node.parentNode != document.body) {
@@ -304,7 +310,7 @@ dojo.style.getTotalOffset = function (node, type, includeScroll){
 	return offset;
 }
 
-dojo.style.sumAncestorProperties = function (node, prop) {
+dojo.style.sumAncestorProperties = function(node, prop) {
 	node = dojo.byId(node);
 	if (!node) { return 0; } // FIXME: throw an error?
 	
@@ -319,14 +325,14 @@ dojo.style.sumAncestorProperties = function (node, prop) {
 	return retVal;
 }
 
-dojo.style.totalOffsetLeft = function (node, includeScroll){
+dojo.style.totalOffsetLeft = function(node, includeScroll){
 	node = dojo.byId(node);
 	return dojo.style.getTotalOffset(node, "left", includeScroll);
 }
 
 dojo.style.getAbsoluteX = dojo.style.totalOffsetLeft;
 
-dojo.style.totalOffsetTop = function (node, includeScroll){
+dojo.style.totalOffsetTop = function(node, includeScroll){
 	node = dojo.byId(node);
 	return dojo.style.getTotalOffset(node, "top", includeScroll);
 }
@@ -350,7 +356,7 @@ dojo.style.styleSheet = null;
 // it assumes that you know the index of the cssRule that you want to add 
 // or remove, making it less than useful.  So we need something that can 
 // search for the selector that you you want to remove.
-dojo.style.insertCssRule = function (selector, declaration, index) {
+dojo.style.insertCssRule = function(selector, declaration, index) {
 	if (!dojo.style.styleSheet) {
 		if (document.createStyleSheet) { // IE
 			dojo.style.styleSheet = document.createStyleSheet();
@@ -377,7 +383,7 @@ dojo.style.insertCssRule = function (selector, declaration, index) {
 	} else { return null; } // fail
 }
 
-dojo.style.removeCssRule = function (index){
+dojo.style.removeCssRule = function(index){
 	if(!dojo.style.styleSheet){
 		dojo.debug("no stylesheet defined for removing rules");
 		return false;
@@ -397,11 +403,11 @@ dojo.style.removeCssRule = function (index){
 }
 
 // calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
-dojo.style.insertCssFile = function (URI, doc, checkDuplicates){
+dojo.style.insertCssFile = function(URI, doc, checkDuplicates){
 	if(!URI){ return; }
 	if(!doc){ doc = document; }
 	var cssStr = dojo.hostenv.getText(URI);
-	var cssStr = dojo.style.fixPathsInCssText(cssStr, URI);
+	cssStr = dojo.style.fixPathsInCssText(cssStr, URI);
 
 	if(checkDuplicates){
 		var styles = doc.getElementsByTagName("style");
@@ -466,7 +472,7 @@ dojo.style.fixPathsInCssText = function(cssStr, URI){
 	return str+cssStr;
 }
 
-dojo.style.getBackgroundColor = function (node) {
+dojo.style.getBackgroundColor = function(node) {
 	node = dojo.byId(node);
 	var color;
 	do{
@@ -484,34 +490,58 @@ dojo.style.getBackgroundColor = function (node) {
 	return color;
 }
 
-dojo.style.getComputedStyle = function (node, cssSelector, inValue) {
+dojo.style.getComputedStyle = function(node, cssSelector, inValue){
 	node = dojo.byId(node);
-	if(document.defaultView){ // W3, gecko, KHTML
+	var property = dojo.style.toCamelCase(cssSelector);
+	if(!node || !node.style){
+		return inValue;
+	}else if(document.defaultView){ // W3, gecko, KHTML
 		try{			
 			var cs = document.defaultView.getComputedStyle(node, "");
 			if (cs){ 
-				return cs.getPropertyValue(cssSelector);
+				return cs.getPropertyValue(property);
 			} 
 		}catch(e){ // reports are that Safari can throw an exception above
 			if (node.style.getPropertyValue){ // W3
-				return node.style.getPropertyValue(cssSelector);
+				return node.style.getPropertyValue(property);
 			}else return inValue;
 		}
 	}else if (node.currentStyle){ // IE
-		return node.currentStyle[dojo.style.toCamelCase(cssSelector)];
+		return node.currentStyle[dojo.style.toCamelCase(property)];
 	}if (node.style.getPropertyValue) { // W3
-		return node.style.getPropertyValue(cssSelector);
+		return node.style.getPropertyValue(property);
 	}else return inValue;
 }
 
-dojo.style.getStyle = function (node, cssSelector) {
+/** 
+ * Retrieve a property value from a node's style object.
+ */
+dojo.style.getStyleProperty = function(node, cssSelector){
 	node = dojo.byId(node);
-	var camelCased = dojo.style.toCamelCase(cssSelector);
-	var value = node.style[camelCased]; // dom-ish
+	// FIXME: should we use node.style.getPropertyValue over style[property]?
+	// style[property] works in all (modern) browsers, getPropertyValue is W3 but not supported in IE
+	// FIXME: what about runtimeStyle?
+	return (node && node.style ? node.style[dojo.style.toCamelCase(cssSelector)] : undefined);
+}
+
+/** 
+ * Retrieve a property value from a node's style object.
+ */
+dojo.style.getStyle = function(node, cssSelector){
+	node = dojo.byId(node);
+	var value = dojo.style.getStyleProperty(node, cssSelector);
 	return (value ? value : dojo.style.getComputedStyle(node, cssSelector));
 }
 
-dojo.style.toCamelCase = function (selector) {
+dojo.style.setStyle = function(node, cssSelector, value){
+	node = dojo.byId(node);
+	if(node && node.style){
+		var camelCased = dojo.style.toCamelCase(cssSelector);
+		node.style[camelCased] = value;
+	}
+}
+
+dojo.style.toCamelCase = function(selector) {
 	var arr = selector.split('-'), cc = arr[0];
 	for(var i = 1; i < arr.length; i++) {
 		cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
@@ -519,12 +549,12 @@ dojo.style.toCamelCase = function (selector) {
 	return cc;		
 }
 
-dojo.style.toSelectorCase = function (selector) {
+dojo.style.toSelectorCase = function(selector) {
 	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase() ;
 }
 
 /* float between 0.0 (transparent) and 1.0 (opaque) */
-dojo.style.setOpacity = function setOpacity (node, opacity, dontFixOpacity) {
+dojo.style.setOpacity = function setOpacity(node, opacity, dontFixOpacity) {
 	node = dojo.byId(node);
 	var h = dojo.render.html;
 	if(!dontFixOpacity){
@@ -588,46 +618,49 @@ dojo.style.clearOpacity = function clearOpacity (node) {
 	}
 }
 
+dojo.style._toggle = function(node, inTester, inSetter){
+	node = dojo.byId(node);
+	inSetter(node, !inTester(node));
+	return inTester(node);
+}
+
 // show/hide are library constructs
-//
-// show() only affects style.display, making it a complement to hide(): 
-//   the computed style of node may still cause it to not "display"
-//
-// isShowing() only tests style.display so it is compatible with show/hide
-//
-// toggleShowing() again operates only on style.display
-//
-dojo.style.show  = function(node){
-	node = dojo.byId(node);
-	if(node.style){
-		node.style.display = "";
-	}
+
+// setShowing() sets style.display to either '' or 'none'
+// note: the computed style of node may still cause it to "display" (or not)
+dojo.style.setShowing = function(node, showing){
+	dojo.style.setStyle(node, 'display', (showing ? '' : 'none'));
 }
 
-dojo.style.hide = function(node){
-	node = dojo.byId(node);
-	if(node.style){
-		node.style.display = "none";
-	}
-}
-
+// isShowing() is true if the node.style.display is not 'none'
+// FIXME: returns true if node is bad, isHidden would be easier to make correct
 dojo.style.isShowing = function(node){
-	node = dojo.byId(node);
-	return Boolean(node.style && node.style.display != "none");
+	return (dojo.style.getStyleProperty(node, 'display') != 'none');
 }
 
+// Call setShowing() on node with the complement of isShowing(), then return the new value of isShowing()
 dojo.style.toggleShowing = function(node){
-	var result = dojo.style.isShowing(node);  
-	dojo.style[(result ? 'hide' : 'show')](node);
-	return result;
+	return dojo.style._toggle(node, dojo.style.isShowing, dojo.style.setShowing);
+}
+
+// show() calls setShowing(true)
+dojo.style.show  = function(node){
+	dojo.style.setShowing(node, true);
+}
+
+// hide() calls setShowing(false)
+dojo.style.hide = function(node){
+	dojo.style.setShowing(node, false);
 }
 
 // display is a CSS concept
 
-// FIXME: this mapping is simplistic 
+// Simple mapping of tag names to display values
+// FIXME: simplistic 
 dojo.style.displayMap = { tr: '', td: '', th: '', img: 'inline', span: 'inline', input: 'inline', button: 'inline' };
 
-dojo.style.suggestDisplayForTagName = function(node)
+// Suggest a value for the display property that will show 'node' based on it's tag
+dojo.style.suggestDisplayByTagName = function(node)
 {
 	node = dojo.byId(node);
 	if(node && node.tagName){
@@ -636,28 +669,42 @@ dojo.style.suggestDisplayForTagName = function(node)
 	}
 }
 
+// setDisplay() sets the value of style.display to value of 'display' parameter if it is a string.
+// Otherwise, if 'display' is false, set style.display to 'none'.
+// Finally, set 'display' to a suggested display value based on the node's tag
 dojo.style.setDisplay = function(node, display){
-	node = dojo.byId(node);
-	if(node.style){
-		node.style.display = (dojo.lang.isString(display) ? display : (display ? dojo.style.suggestDisplayForTagName(node) : 'none'));
-	}
+	dojo.style.setStyle(node, 'display', (dojo.lang.isString(display) ? display : (display ? dojo.style.suggestDisplayByTagName(node) : 'none')));
 }
 
+// isDisplayed() is true if the the computed display style for node is not 'none'
+// FIXME: returns true if node is bad, isNotDisplayed would be easier to make correct
 dojo.style.isDisplayed = function(node){
 	return (dojo.style.getComputedStyle(node, 'display') != 'none');
 }
 
-// visibility is a CSS concept
-
-dojo.style.setVisibility = function(node, visibility){
-	node = dojo.byId(node);
-	if(node.style){
-		node.style.visibility = (dojo.lang.isString(visibility) ? visibility : (visibility ? 'visible' : 'hidden'));
-	}
+// Call setDisplay() on node with the complement of isDisplayed(), then return the new value of isDisplayed()
+dojo.style.toggleDisplay = function(node){
+	return dojo.style._toggle(node, dojo.style.isDisplayed, dojo.style.setDisplay);
 }
 
+// visibility is a CSS concept
+
+// setVisibility() sets the value of style.visibility to value of 'visibility' parameter if it is a string.
+// Otherwise, if 'visibility' is false, set style.visibility to 'hidden'.
+// Finally, set style.visibility to 'visible'.
+dojo.style.setVisibility = function(node, visibility){
+	dojo.style.setStyle(node, 'visibility', (dojo.lang.isString(visibility) ? visibility : (visibility ? 'visible' : 'hidden')));
+}
+
+// isVisible() is true if the the computed visibility style for node is not 'hidden'
+// FIXME: returns true if node is bad, isInvisible would be easier to make correct
 dojo.style.isVisible = function(node){
 	return (dojo.style.getComputedStyle(node, 'visibility') != 'hidden');
+}
+
+// Call setVisibility() on node with the complement of isVisible(), then return the new value of isVisible()
+dojo.style.toggleVisibility = function(node){
+	return dojo.style._toggle(node, dojo.style.isVisible, dojo.style.setVisibility);
 }
 
 // in: coordinate array [x,y,w,h] or dom node
