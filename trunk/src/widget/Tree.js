@@ -63,6 +63,8 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 	DNDMode: "off",
 
+	strictFolders: true,
+
 	DNDModes: {
 		BETWEEN: 1,
 		ONTO: 2
