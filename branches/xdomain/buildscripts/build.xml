@@ -732,4 +732,30 @@ internTemplateStrings()
 		</exec>
 	</target>
 	<!-- end buildFlash task -->
+	
+	
+	<!-- xdgen task -->
+	<target name="xdgen"
+		description="XDGEN EXPERIMENT">
+		
+		
+		<path id="xdgen.classpath">
+	      <pathelement path="${classpath}"/>
+	      <fileset dir="./lib">
+	        <include name="**/*.jar"/>
+	        <include name="**/*.zip"/>
+	      </fileset>
+	    </path>
+
+		<!-- java jar="./lib/js.jar" fork="true" outputproperty="concatFilesProp" errorproperty="concatFilesError">
+			<arg value="${profileFile}" />
+		</java -->
+
+		<java jar="./lib/js.jar" fork="true" classpathref="xdgen.classpath">
+			<!-- arg value="getDependencyList.js" / -->
+			<arg value="xdgen.js" />
+		</java>
+	</target>
+	<!-- end xdgen task -->
+
 </project>
