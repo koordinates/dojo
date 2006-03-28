@@ -164,7 +164,7 @@ public class JsToXml
   
   public static void main( String args[] )
   {
-    JsToXml xml = new JsToXml("C:\\eclipse-workspace\\dojo\\src\\animation\\Animation.js");
+    JsToXml xml = new JsToXml("..\\src\\animation\\Animation.js");
     xml.println(xml.parse());
   }
 }
