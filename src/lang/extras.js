@@ -63,48 +63,36 @@ dojo.lang.firstValued = function(/* ... */) {
 	return undefined;
 }
 
-
 /**
- * Parse a reference specified as a string descriptor into 
- * an object reference and a prop name.
- */
-dojo.lang.evalDescriptor = function(descriptor, context, create){
-	var obj = (context ? context : dj_global);
-	var names = descriptor.split('.');
-	var prop = names.pop();
-	var name = '';
-	while(names.length && obj){
-		name = names.shift();
-		obj = (name in obj ? obj[name] : (create ? obj[name] = {} : null));
-	}
-	return {obj: obj, prop: prop};
-}
-
-/**
- * Get a value from a reference specified as a string descriptor. 
+ * Get a value from a reference specified as a string descriptor,
+ * (e.g. "A.B") in the given context.
  * 
- * getObjPathValue(String descriptor, [, Object context, Boolean create])
+ * getObjPathValue(String objpath [, Object context, Boolean create])
  *
  * If context is not specified, dj_global is used
- * If create is true, undefined objects in the descriptor are created.
+ * If create is true, undefined objects in the path are created.
  */
-dojo.lang.getObjPathValue = function(descriptor, context, create) {
-	with (dojo.lang.evalDescriptor(descriptor, context, create)){
-		return (obj && (prop in obj) ? obj[prop] : (create ? obj[prop] = undefined : undefined));
+dojo.lang.getObjPathValue = function(objpath, context, create) {
+	with (dojo.parseObjPath(objpath, context, create)){
+		return dojo.evalProp(prop, obj, create);
 	}
 }
 
 /**
  * Set a value on a reference specified as a string descriptor. 
+ * (e.g. "A.B") in the given context.
  * 
- * setObjPathValue(String descriptor, value [, Object context, Boolean nocreate])
+ * setObjPathValue(String objpath, value [, Object context, Boolean create])
  *
  * If context is not specified, dj_global is used
- * If nocreate is true, undefined objects in the descriptor are NOT created.
+ * If create is true, undefined objects in the path are created.
  */
-dojo.lang.setObjPathValue = function(descriptor, value, context, nocreate){
-	with (dojo.lang.evalDescriptor(descriptor, context, !nocreate)){
-		if (obj && (!nocreate || (prop in obj))){
+dojo.lang.setObjPathValue = function(objpath, value, context, create){
+	if (arguments.length < 4){
+		create = true;
+	}
+	with (dojo.parseObjPath(objpath, context, create)){
+		if (obj && (create || (prop in obj))){
   		obj[prop] = value;
 		}
 	}
