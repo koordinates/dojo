@@ -526,7 +526,7 @@ dojo.lang.extend(dojo.widget.html.SplitPane, {
 		this.virtualSizer.style.top = origin.y + 'px';
 	},
 	
-	_getCookieName: function _getCookieName(i) {
+	_getCookieName: function(i) {
 		return this.widgetId + "_" + i;
 	},
 
