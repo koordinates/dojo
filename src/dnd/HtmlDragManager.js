@@ -389,11 +389,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		var bestBox = new Object();
 		bestBox.target = null;
 		bestBox.points = null;
-		dojo.lang.forEach(this.dropTargetDimensions, function(tmpDA) {
+		dojo.lang.every(this.dropTargetDimensions, function(tmpDA) {
 			if(_this.isInsideBox(e, tmpDA)){
 				bestBox.target = tmpDA[2];
 				bestBox.points = tmpDA;
-				if(!_this.nestedTargets){ return "break"; }
+				// continue only if _this.nestedTargets == true
+				return Boolean(_this.nestedTargets);
 			}
 		});
 

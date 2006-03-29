@@ -81,42 +81,6 @@ dojo.lang.inArray = function(arr, val){
 }
 
 /**
-* Loop through the given Array, object or String and call the unary_func for each member item. 
-* Each character of an input String is considered an item.
-* The function each_func is called with the parameters: 
-* 	current element value, the index/property, the entire array|object|string.
-*
-* Example usage:
-*  dojo.lang.forEach([1,2,3,4,5], dojo.debug); // prints all the numbers 1..5 using dojo.debug()
-*  dojo.lang.forEach({x:1, y:2, z:3}, dojo.debug); // prints all the values of x,y,z
-*  dojo.lang.forEach("a string", dojo.debug); // prints each character of the string
-*
-* Parameters:
-*   object Either an array, object or string to loop through.
-*   function A reference to a function that shall be called for each element.
-*   fix_length true if the function is guaranteed not to change the array's length
-*/
-dojo.lang.forEach = function(obj /* Object */, each_func /* Function */, fix_length /* Boolean */){
-	if(dojo.lang.isString(obj)){ 
-		obj = obj.split(""); 
-	}
-	// If the each_func returns the string "break", quit the forEach(), see #1078.
-	if (dojo.lang.isArray(obj)){
-		for(var i=0; i<obj.length; i++){ 
-			if(each_func(obj[i], i, obj) == "break"){ 
-				break;
-			}
-		}
-	}else{
-		for(var i in obj){
-			if(each_func(obj[i], i, obj) == "break"){
-				break;
-			}
-		}
- 	}
-}
-
-/**
  * Partial implmentation of is* functions from
  * http://www.crockford.com/javascript/recommend.html
  * NOTE: some of these may not be the best thing to use in all situations
