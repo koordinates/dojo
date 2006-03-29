@@ -427,7 +427,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 
 		if(this.before.length>0){
-			dojo.lang.forEach(this.before, unrollAdvice, true);
+			dojo.lang.forEach(this.before, unrollAdvice);
 		}
 
 		var result;
@@ -439,7 +439,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 
 		if(this.after.length>0){
-			dojo.lang.forEach(this.after, unrollAdvice, true);
+			dojo.lang.forEach(this.after, unrollAdvice);
 		}
 
 		return (this.methodfunc) ? result : null;

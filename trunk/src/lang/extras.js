@@ -72,8 +72,8 @@ dojo.lang.firstValued = function(/* ... */) {
  * If context is not specified, dj_global is used
  * If create is true, undefined objects in the path are created.
  */
-dojo.lang.getObjPathValue = function(objpath, context, create) {
-	with (dojo.parseObjPath(objpath, context, create)){
+dojo.lang.getObjPathValue = function(objpath, context, create){
+	with(dojo.parseObjPath(objpath, context, create)){
 		return dojo.evalProp(prop, obj, create);
 	}
 }
@@ -88,11 +88,11 @@ dojo.lang.getObjPathValue = function(objpath, context, create) {
  * If create is true, undefined objects in the path are created.
  */
 dojo.lang.setObjPathValue = function(objpath, value, context, create){
-	if (arguments.length < 4){
+	if(arguments.length < 4){
 		create = true;
 	}
-	with (dojo.parseObjPath(objpath, context, create)){
-		if (obj && (create || (prop in obj))){
+	with(dojo.parseObjPath(objpath, context, create)){
+		if(obj && (create || (prop in obj))){
   		obj[prop] = value;
 		}
 	}
