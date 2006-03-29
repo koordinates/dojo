@@ -213,8 +213,8 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 		this.expandLevel = parseInt(this.expandLevel);
 
-		this.initializeController();
 		this.initializeSelector();
+		this.initializeController();
 
 		if (this.menu) {
 			this.menu = dojo.widget.byId(this.menu);
