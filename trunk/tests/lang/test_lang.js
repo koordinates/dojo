@@ -27,32 +27,6 @@ function test_lang_extend(){
 	jum.assertEquals("21", "string", typeof test["bar"]);
 }
 
-function test_lang_forEach(){
-	var foo = new Array(128, "bbb", 512);
-	var bar = { 'alpha': 2, 'beta': 16, 'delta': 'samiam' };
-	var ok = true;
-	dojo.lang.forEach(foo, function(elt, idx){
-		switch (idx) {
-			case 0: ok = (elt==128); break;
-			case 1: ok = (elt=="bbb"); break;
-			case 2: ok = false; break;
-		}
-		return (!ok || idx == 1 ? 'break' : '');
-	});
-	jum.assertTrue("30", ok);
-	
-	var ok = true;
-	dojo.lang.forEach(bar, function(elt, idx){
-		switch(idx) {
-			case 0: ok = (elt==12); break;
-			case 1: ok = (elt==16); break;
-			case 2: ok = false; break;
-		}
-		return (!ok || idx == 1 ? 'break' : '');
-	});
-	jum.assertTrue("31", ok);
-}
-
 function test_lang_isObject(){
 	jum.assertFalse("40", dojo.lang.isObject(true));
 	jum.assertFalse("41", dojo.lang.isObject(false));
