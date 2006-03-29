@@ -20,9 +20,12 @@
 
 		// Hook before dojo.event.publish to print all events
 		var reporter = {
-			report: function(topic, message) {
-				dojo.debug("Topic:"+topic);
-				//dojo.debugShallow(message);
+			beforePublish: function(topic, message) {
+				dojo.debug("Going to publish:"+topic);
+			},
+
+			beforeSubscribe: function(topic, message) {
+				dojo.debug("Going to subscribe:"+topic);
 			}
 		}
 
@@ -31,11 +34,30 @@
 			srcObj: dojo.event.topic,
 			srcFunc: "publish",
 			targetObj: reporter,
-			targetFunc: "report"
+			targetFunc: "beforePublish"
 		});
 
 
+		dojo.event.kwConnect({
+			type: "before",
+			srcObj: dojo.event.topic.TopicImpl,
+			srcFunc: "subscribe",
+			targetObj: reporter,
+			targetFunc: "report"
+		});
+
 	});
+
+
+	function kill() {
+		dojo.widget.byId('tree').destroy();
+	}
+
+	function print() {
+		dojo.debug("Dumping all widgets:");
+		dojo.debug(dojo.widget.manager.getAllWidgets());
+	}
+
 
 </script>
 
@@ -57,7 +79,9 @@
 	<div dojoType="TreeNode" title="Item 2" ></div>
 </div>
 
-<a href="#" onClick="dojo.widget.byId('tree').destroy()">Destroy tree</a><p>
+
+<input type=button onClick="print();kill();print(); this.disabled='disabled';" value="Destroy tree"/>
+
 
 
 </body>

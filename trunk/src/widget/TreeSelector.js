@@ -58,12 +58,14 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
 		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
 		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+
 		/* remember all my trees to deselect when element is movedFrom them */
 		this.listenedTrees.push(tree);
 	},
 
 
 	unlistenTree: function(tree) {
+
 		dojo.event.topic.unsubscribe(tree.eventNames.titleClick, this, "select");
 		dojo.event.topic.unsubscribe(tree.eventNames.iconClick, this, "select");
 		dojo.event.topic.unsubscribe(tree.eventNames.collapse, this, "onCollapse");
@@ -82,6 +84,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 
 
 	onTreeDestroy: function(message) {
+
 		this.unlistenTree(message.source);
 
 		if (this.dieWithTree) {
