@@ -240,7 +240,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 
 	canCreateChild: function(parent, index, data) {
-		if (!parent.isFolder) return false;
+		if (parent.actionIsDisabled(parent.actions.ADDCHILD)) return false;
 
 		return true;
 	},

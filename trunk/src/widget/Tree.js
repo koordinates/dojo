@@ -265,6 +265,9 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 
 	addChild: function(child, index) {
+
+//		dojo.debug("doAddChild "+index+" called for "+child);
+
 		var message = {
 			child: child,
 			index: index,
@@ -288,9 +291,6 @@ dojo.lang.extend(dojo.widget.Tree, {
 	 * if yes, then only attach events in addChild and detach in remove.. Seems all ok yet.
 	*/
 	doAddChild: function(child, index){
-
-		//dojo.debug("doAddChild "+index+" called for "+child);
-
 
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
@@ -322,7 +322,6 @@ dojo.lang.extend(dojo.widget.Tree, {
 		if (this.isTreeNode) {
 			this.state = this.loadStates.LOADED;
 		}
-
 
 		// add new child into DOM after it was added into children
 		if (index < this.children.length) { // children[] already has child
@@ -358,6 +357,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 			child.depth = this.isTreeNode ? this.depth+1 : 0;
 			child.createDOMNode(child.tree, child.depth);
 		}
+
 
 
 		// Use-case:

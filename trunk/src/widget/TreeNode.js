@@ -39,12 +39,15 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	isContainer: true,
 
 
+	// SOMEHOW <br> comes to <somehowBRcomeshere/> for ORDINARY nodes, not children
+	// TODO: use menu-right-click->create for NOTFOLDER to add children
+	// see empty space -> that is that <br>
 	templateString: ('<div class="dojoTreeNode"> '
 		+ '<span treeNode="${this.widgetId}" class="dojoTreeNodeLabel" dojoAttachPoint="labelNode"> '
 		+ '		<span dojoAttachPoint="titleNode" dojoAttachEvent="onClick: onTitleClick" class="dojoTreeNodeLabelTitle">${this.title}</span> '
 		+ '</span> '
 		+ '<span class="dojoTreeNodeAfterLabel" dojoAttachPoint="afterLabelNode">${this.afterLabel}</span> '
-		+ '<div dojoAttachPoint="containerNode" style="display:none"></div> '
+		+ '<div dojoAttachPoint="containerNode" style="display:none"><somehowBRcomeshere/></div> '
 		+ '</div>').replace(/(>|<)\s+/g, '$1'), // strip whitespaces between nodes
 
 
@@ -203,6 +206,11 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		// node with children(from source html) becomes folder on build stage.
 		if (this.children.length || this.isFolder) {
 			this.setFolder();
+		}
+		else {
+			// leaves are always loaded
+			//dojo.debug("Set "+this+" state to loaded");
+			this.state = this.loadStates.LOADED;
 		}
 
 		dojo.event.connect(this.childIcon, 'onclick', this, 'onIconClick');
