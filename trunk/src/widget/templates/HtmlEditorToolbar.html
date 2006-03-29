@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<title>A New Toolbar</title>
+		<style type="text/css">
+			@import url(HtmlEditorToolbar.css);
+		</style>
+	</head>
+	<body>
+		<div dojoAttachPoint="domNode" 
+			style="background-image: url(buttons/bg-fade.png); background-repeat: repeat-x; background-position: 0px -50px;">
+			<table cellpadding="3" cellspacing="0" border="0">
+				<!--
+					our toolbar should look something like:
+
+					+=======+=======+=======+=============================================+
+					| w   w | style | copy  | bo | it | un | le | ce | ri |
+					| w w w | style |=======|==============|==============|
+					|  w w  | style | paste |  undo | redo | change style |
+					+=======+=======+=======+=============================================+
+				-->
+				<tbody>
+					<tr valign="top">
+						<td rowspan="2">
+							<div class="bigIcon" dojoAttachPoint="wikiWordButton"
+								dojoOnClick="wikiWordClick">
+								<span style="font-size: 30px; margin-left: 5px;">
+									W
+								</span>
+							</div>
+						</td>	
+						<td rowspan="2">
+							<div class="bigIcon" dojoAttachPoint="styleDropdownButton"
+								dojoOnClick="styleDropdownClick">
+								<span style="font-size: 30px; margin-left: 5px;">
+									S
+								</span>
+							</div>
+						</td>	
+						<td>
+							<!-- copy -->
+							<span class="iconContainer" dojoAttachPoint="copyButton"
+								dojoOnClick="copyClick">
+								<span class="icon copy" style="float: left;">&nbsp;</span> copy
+							</span>
+							<!-- "droppable" options -->
+							<span class="iconContainer" dojoAttachPoint="boldButton"
+								dojoOnClick="boldClick">
+								<span class="icon bold">&nbsp;</span>
+							</span>
+							<span class="iconContainer" dojoAttachPoint="italicButton"
+								dojoOnClick="italicButton">
+								<span class="icon italic">&nbsp;</span>
+							</span>
+							<span class="iconContainer" dojoAttachPoint="underlineButton"
+								dojoOnClick="underlineClick">
+								<span class="icon underline">&nbsp;</span>
+							</span>
+							<span class="iconContainer" dojoAttachPoint="leftButton"
+								dojoOnClick="leftClick">
+								<span class="icon justifyleft">&nbsp;</span>
+							</span>
+							<span class="iconContainer" dojoAttachPoint="fullButton"
+								dojoOnClick="fullClick">
+								<span class="icon justifyfull">&nbsp;</span>
+							</span>
+							<span class="iconContainer" dojoAttachPoint="rightButton"
+								dojoOnClick="rightClick">
+								<span class="icon justifyright">&nbsp;</span>
+							</span>
+						</td>	
+					</tr>
+					<tr>
+						<td>
+							<!-- paste -->
+							<span class="iconContainer" dojoAttachPoint="pasteButton"
+								dojoOnClick="pasteClick">
+								<span class="icon paste" style="float: left;">&nbsp;</span> paste
+							</span>
+							<!-- "droppable" options -->
+							<span class="iconContainer" dojoAttachPoint="undoButton"
+								dojoOnClick="undoClick">
+								<span class="icon undo" style="float: left;">&nbsp;</span> undo
+							</span>
+							<span class="iconContainer" dojoAttachPoint="redoButton"
+								dojoOnClick="redoClick">
+								<span class="icon redo" style="float: left;">&nbsp;</span> redo
+							</span>
+						</td>	
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
