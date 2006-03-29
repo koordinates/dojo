@@ -309,14 +309,16 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 			}
 		}
 	},
-	render:function(){
+	render:function(bDontPreserve){
 		//	summary
 		//	renders the table to the browser
 		var data=[];
 		var body=this.domNode.getElementsByTagName("tbody")[0];
 
-		//	rebuild data and selection
-		this.parseDataFromTable(body);
+		if(!bDontPreserve){
+			//	rebuild data and selection
+			this.parseDataFromTable(body);
+		}
 
 		//	clone this.data for sorting purposes.
 		for(var i=0; i<this.data.length; i++){
@@ -566,6 +568,6 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		}
 
 		this.parseDataFromTable(tbody);
-		this.render();
+		this.render(true);
 	}
 });
