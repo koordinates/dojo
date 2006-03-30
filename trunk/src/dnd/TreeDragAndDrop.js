@@ -90,7 +90,6 @@ dojo.dnd.TreeDropTarget = function(domNode, controller, type, treeNode, DNDMode)
 	this.DNDMode = DNDMode;
 
 	dojo.dnd.HtmlDropTarget.apply(this, [domNode, type]);
-
 }
 
 dojo.inherits(dojo.dnd.TreeDropTarget, dojo.dnd.HtmlDropTarget);
@@ -149,6 +148,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	 * We can't determine real accepts status w/o position
 	*/
 	onDragOver: function(e){
+//dojo.debug("Create for "+treeNode);
+
 
 		var accepts = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
 
@@ -407,8 +408,9 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 	 * I can't process DnD with events cause an event can't return result success/false
 	*/
 	registerDNDNode: function(node) {
-
 		if (!node.tree.DNDMode) return;
+
+//dojo.debug("registerDNDNode "+node);
 
 		/* I drag label, not domNode, because large domNodes are very slow to copy and large to drag */
 
