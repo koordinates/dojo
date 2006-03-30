@@ -39,6 +39,10 @@ dojo.lang.extend(dojo.widget.AccordionContainer, {
 		this.children=[];
 		dojo.html.removeChildren(this.domNode);
 		dojo.lang.forEach(tmpChildren, dojo.lang.hitch(this,"addChild"));
+	},
+
+	removeChild: function(widget) {
+		dojo.widget.AccordionContainer.superclass.removeChild.call(this, widget.parent);
 	}
 });
 
