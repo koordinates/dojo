@@ -27,6 +27,9 @@ dojo.collections.Dictionary = function(dictionary){
 		}
 		return false;
 	};
+	this.entry=function(k){
+		return items[k];
+	};
 	this.getKeyList = function(){
 		var arr = [];
 		var e = this.getIterator();
@@ -46,7 +49,7 @@ dojo.collections.Dictionary = function(dictionary){
 		return arr;
 	};
 	this.item = function(k){
-		return items[k];
+		return items[k].valueOf();
 	};
 	this.getIterator = function(){
 		return new dojo.collections.DictionaryIterator(items);
