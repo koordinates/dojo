@@ -39,15 +39,12 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	isContainer: true,
 
 
-	// SOMEHOW <br> comes to <somehowBRcomeshere/> for ORDINARY nodes, not children
-	// TODO: use menu-right-click->create for NOTFOLDER to add children
-	// see empty space -> that is that <br>
 	templateString: ('<div class="dojoTreeNode"> '
 		+ '<span treeNode="${this.widgetId}" class="dojoTreeNodeLabel" dojoAttachPoint="labelNode"> '
 		+ '		<span dojoAttachPoint="titleNode" dojoAttachEvent="onClick: onTitleClick" class="dojoTreeNodeLabelTitle">${this.title}</span> '
 		+ '</span> '
 		+ '<span class="dojoTreeNodeAfterLabel" dojoAttachPoint="afterLabelNode">${this.afterLabel}</span> '
-		+ '<div dojoAttachPoint="containerNode" style="display:none"><somehowBRcomeshere/></div> '
+		+ '<div dojoAttachPoint="containerNode" style="display:none"></div> '
 		+ '</div>').replace(/(>|<)\s+/g, '$1'), // strip whitespaces between nodes
 
 
@@ -145,14 +142,14 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 				var img = this.tree.makeBlankImg();
 				this.imgs.unshift(img);
 				//dojo.debugShallow(this.domNode);
-				this.domNode.insertBefore(this.imgs[0], this.domNode.firstChild);
+				dojo.dom.insertBefore(this.imgs[0], this.domNode.firstChild);
 
 			}
 		}
 		if (depthDiff<0) {
 			for(var i=0; i<-depthDiff;i++) {
 				this.imgs.shift();
-				this.domNode.removeNode(this.domNode.firstChild);
+				dojo.dom.removeNode(this.domNode.firstChild);
 			}
 		}
 
