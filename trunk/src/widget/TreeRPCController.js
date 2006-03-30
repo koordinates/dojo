@@ -137,20 +137,20 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 				tree: this.getInfo(parent.tree),
 				parent: this.getInfo(parent),
 				index: index,
-				data: dojo.json.serialize(output)
+				data: output
 			}
 
 			dojo.io.bind({
 					url: this.getRPCUrl('createChild'),
 					/* I hitch to get this.loadOkHandler */
 					load: dojo.lang.hitch(this, function(type, response) {
-						// data is dead, new data is used
+						// suggested data is dead, fresh data from server is used
 						this.doCreateChildProcessResponse(type, response, parent, index, callFunc, callObj) }
 					),
 					error: this.RPCErrorHandler,
 					mimetype: "text/json",
 					preventCache: true,
-					content: params
+					content: {data: dojo.json.serialize(params) }
 			});
 
 	},

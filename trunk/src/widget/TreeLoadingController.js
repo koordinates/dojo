@@ -22,6 +22,8 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 
 	RPCUrl: "",
 
+	RPCActionParam: "action", // used for GET for RPCUrl
+
 
 	/**
 	 * Common RPC error handler (dies)
@@ -34,7 +36,9 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 
 	getRPCUrl: function(action) {
 
-		if (this.RPCUrl == "local") { // for demo and tests. May lead to widgetId collisions
+		// RPCUrl=local meant SOLELY for DEMO and LOCAL TESTS.
+		// May lead to widgetId collisions
+		if (this.RPCUrl == "local") {
 			var dir = document.location.href.substr(0, document.location.href.lastIndexOf('/'));
 			var localUrl = dir+"/"+action;
 			//dojo.debug(localUrl);
@@ -45,7 +49,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 			dojo.raise("Empty RPCUrl: can't load");
 		}
 
-		return this.RPCUrl + ( this.RPCUrl.indexOf("?") > -1 ? "&" : "?") + "action="+action;
+		return this.RPCUrl + ( this.RPCUrl.indexOf("?") > -1 ? "&" : "?") + this.RPCActionParam+"="+action;
 	},
 
 
