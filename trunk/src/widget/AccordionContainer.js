@@ -43,6 +43,7 @@ dojo.lang.extend(dojo.widget.AccordionContainer, {
 
 	removeChild: function(widget) {
 		dojo.widget.AccordionContainer.superclass.removeChild.call(this, widget.parent);
+		this.children[0].setSizes();
 	}
 });
 
