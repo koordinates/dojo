@@ -23,6 +23,7 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 		this.domNode.widgetType=this.widgetType;
 		this.setSizes();
 		dojo.html.addClass(this.labelNode, this.labelNodeClass);
+		dojo.html.disableSelection(this.labelNode);
 		dojo.html.addClass(this.containerNode, this.containerNodeClass);
         },
 
