@@ -8,6 +8,11 @@ dojo.widget.html.AccordionPane = function(){
 
 	this.open=false;
 	this.allowCollapse=true;
+	this.label="";
+	this.open=false;
+
+	this.labelNodeClass="";
+	this.containerNodeClass="";
 }
 
 dojo.inherits(dojo.widget.html.AccordionPane, dojo.widget.html.TitlePane);
@@ -16,7 +21,9 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
         postCreate: function() {
                 dojo.widget.html.AccordionPane.superclass.postCreate.call(this);
 		this.domNode.widgetType=this.widgetType;
-		this._setSizes();
+		this.setSizes();
+		dojo.html.addClass(this.labelNode, this.labelNodeClass);
+		dojo.html.addClass(this.containerNode, this.containerNodeClass);
         },
 
 	collapse: function() {
@@ -34,10 +41,10 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 	},
 
 	getCollapsedHeight: function() {
-		return dojo.style.getOuterHeight(this.labelNode);
+		return dojo.style.getOuterHeight(this.labelNode)+1;
 	},
 
-	_setSizes: function() {
+	setSizes: function() {
 		var siblings = this.domNode.parentNode.childNodes;
 		var height=dojo.style.getInnerHeight(this.domNode.parentNode)-this.getCollapsedHeight();
 
@@ -61,7 +68,7 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 	},
 
 	onLabelClick: function() {
-		this._setSizes();
+		this.setSizes();
 		if (!this.open) { 
 			for (var x=0; x<this.siblingWidgets.length;x++) {
 				if (this.siblingWidgets[x].open) {
