@@ -24,6 +24,13 @@ class DojoExternalInterface{
 	private static var resultData = null;
 	
 	public static function initialize(){
+		// see if we need to do an express install
+		var install:ExpressInstall = new ExpressInstall();
+		if(install.needsUpdate){
+			install.init();
+		}
+		
+		// register our callback functions
 		ExternalInterface.addCallback("startExec", DojoExternalInterface, startExec);
 		ExternalInterface.addCallback("setNumberArguments", DojoExternalInterface,
 																	setNumberArguments);
@@ -59,16 +66,18 @@ class DojoExternalInterface{
 		// pass them in dynamically; strip out the results callback
 		var parameters = new Array();
 		for(var i = 0; i < arguments.length; i++){
-			if(i != 1){
+			if(i != 1){ // skip the callback
 				parameters.push(arguments[i]);
 			}
 		}
 		
-		var results = ExternalInterface.call.apply(ExternalInterface, arguments);
+		var results = ExternalInterface.call.apply(ExternalInterface, parameters);
 		
 		// immediately give the results back, since ExternalInterface is
 		// synchronous
-		resultsCallback.call(null, results);
+		if(resultsCallback != null && typeof resultsCallback != "undefined"){
+			resultsCallback.call(null, results);
+		}
 	}
 	
 	/** 
@@ -157,18 +166,6 @@ class DojoExternalInterface{
 		data = DojoExternalInterface.replaceStr(data, "\\\'", "\'");
 		data = DojoExternalInterface.replaceStr(data, "\\\"", "\"");
 		
-		// ocassionaly, an argument can be broken into pieces, where a null
-		// character, represented as \0, will be split; this means the null
-		// value will not be encoded on the JavaScript side. This is not a problem
-		// for other characters, but Flash has bugs with the null value. If
-		// we detect a null character _encode_ it now rather than decoding it
-		//data = DojoExternalInterface.replaceStr(data, "\\\0", "
-		/*getURL("javascript:dojo.debug('test')");
-		getURL("javascript:dojo.debug('FLASH:, indexof2="+DojoExternalInterface.replaceStr.indexOf("\\0")+"')");
-		getURL("javascript:dojo.debug('FLASH: two slash=\\0')");
-		getURL("javascript:dojo.debug('FLASH: four slash=\\\\0')");
-		*/
-		//getURL("javascript:dojo.debug('inside flash, decode data="+data+"')");
 		return data;
 	}
 	
