@@ -11,7 +11,8 @@ class DojoExternalInterface{
 	private static var _movieLoaded = false, _gatewayLoaded = false,
 								 _loadedFired = false;
 	
-	public static function initialize(){
+	public static function initialize(){ 
+		//getURL("javascript:alert('FLASH:DojoExternalInterface initialize')");
 		// FIXME: Set available variable by testing for capabilities
 		DojoExternalInterface.available = true;
 		// FIXME: do a test run to see if we can communicate from Flash to JavaScript
