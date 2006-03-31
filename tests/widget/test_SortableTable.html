@@ -27,158 +27,65 @@
 		table {
 			font-family:Lucida Grande, Verdana;
 			font-size:0.8em;
+			width:100%;
 			border:1px solid #ccc;
 			cursor:default;
 		}
 
-		div.tableContainer {
-			clear: both;
-			border: 1px solid #963;
+		* html div.tableContainer {	/* IE only hack */
+			width:95%;
+			border:1px solid #ccc;
 			height: 285px;
-			overflow: auto;
-			padding: 0px;
-			width: 800px; 
+			overflow-x:hidden;
+			overflow-y: auto;
 		}
 
-		html>body div.tableContainer {
-			overflow: hidden;
-			width: 800px;
+		table td,
+		table th{
+			border-right:1px solid #999;
+			padding:2px;
+			font-weight:normal;
 		}
-
-		div.tableContainer table {
-			float: left;
-			width: 783px;
+		table thead td, table thead th {
+			background:#ccc;
 		}
-
-		html>body div.tableContainer table {
-			width: 800px;
+		
+		* html div.tableContainer table thead tr td,
+		* html div.tableContainer table thead tr th{
+			/* IE Only hacks */
+			position:relative;
+			top:expression(dojo.html.getFirstAncestorByTag(this,'table').parentNode.scrollTop-2);
 		}
-
-		thead.fixedHeader tr {
-			position: relative
-		}
-
-		html>body thead.fixedHeader tr {
-			display: block
-		}
-
-		thead.fixedHeader th {
-			background: #ccc;
-			font-weight: normal;
-			text-align: left
-			padding: 2px 2px;
-		}
-		thead.fixedHeader th.selected {
-			background-color:#fcc;
-		}
-
-		thead.fixedHeader a, thead.fixedHeader a:link, thead.fixedHeader a:visited {
-			color: #FFF;
-			display: block;
-			text-decoration: none;
-			width: 100%
-		}
-
-		thead.fixedHeader a:hover {
-			color: #FFF;
-			display: block;
-			text-decoration: underline;
-			width: 100%
-		}
-
+		
 		html>body tbody.scrollContent {
-			display: block;
 			height: 262px;
-			overflow: auto;
-			width: 100%;
+			overflow-x:hidden;
+			overflow-y: auto;
 		}
 
 		tbody.scrollContent td, tbody.scrollContent tr td {
 			background: #FFF;
-			border-bottom: none;
-			border-left: none;
-			border-right: 1px solid #CCC;
-			border-top: 1px solid #DDD;
 			padding: 2px;
 		}
 
 		tbody.scrollContent tr.alternateRow td {
 			background: #EDE;
-			border-bottom: none;
-			border-left: none;
-			border-right: 1px solid #CCC;
-			border-top: 1px solid #DDD;
 			padding: 2px;
 		}
 
 		tbody.scrollContent tr.selected td {
 			background: yellow;
-			border-bottom: none;
-			border-left: none;
-			border-right: 1px solid #CCC;
-			border-top: 1px solid #DDD;
 			padding: 2px;
 		}
-
-
 		tbody.scrollContent tr:hover td {
 			background: #cfc;
-			border-bottom: none;
-			border-left: none;
-			border-right: 1px solid #CCC;
-			border-top: 1px solid #DDD;
 			padding: 2px;
 		}
-
 		tbody.scrollContent tr.selected:hover td {
 			background: #ff3;
-			border-bottom: none;
-			border-left: none;
-			border-right: 1px solid #CCC;
-			border-top: 1px solid #DDD;
 			padding: 2px;
 		}
 
-
-		html>body thead.fixedHeader th {
-			width: 25px;
-		}
-
-		html>body thead.fixedHeader th + th {
-			width: 75px;
-		}
-
-		html>body thead.fixedHeader th + th + th {
-			width: 100px;
-		}
-
-		html>body thead.fixedHeader th + th + th + th {
-			width: 100px;
-		}
-
-		html>body thead.fixedHeader th + th + th + th + th{
-			width: 499px;
-		}
-
-		html>body tbody.scrollContent td {
-			width: 25px;
-		}
-
-		html>body tbody.scrollContent td + td {
-			width: 75px;
-		}
-
-		html>body tbody.scrollContent td + td + td {
-			width: 100px;
-		}
-
-		html>body tbody.scrollContent td + td + td + td {
-			width: 100px;
-		}
-
-		html>body tbody.scrollContent td + td + td + td +td {
-			width: 499px;
-		}
 	</style>
 </head>
 <body style="padding: 50px;">
@@ -186,7 +93,8 @@
 		The SortableTable widget takes a table of data, parses it, and re-renders it to allow you to sort the columns based on attributes set in the thead.
 	</p>
 	<div><button onclick="showSelected();">Show the selected object</button></div>
-	<table dojoType="SortableTable" widgetId="testTable" containerClass="tableContainer" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
+	<div class="tableContainer">
+	<table dojoType="SortableTable" widgetId="testTable" headClass="fixedHeader" tbodyClass="scrollContent" enableMultipleSelect="true" enableAlternateRows="true" rowAlternateClass="alternateRow" cellpadding="0" cellspacing="0" border="0">
 	<thead>
 		<tr>
 			<th field="Id" dataType="Number">Id</th>
@@ -224,7 +132,8 @@
 		<tr><td>25</td><td>Yanni</td><td>1/7/2006</td><td>1/7/2006</td><td><p><strong>Lorem ipsum</strong> dolor sit amet...</p><div>consectetuer</div></td></tr>
 		<tr><td>26</td><td>Zelda</td><td>3/1/2004</td><td>3/1/2004</td><td>adipiscing elit, sed diam nonummy nibh euismod</td></tr>
 	</tbody>
-</table>
+	</table>
+	</div>
 
 <p>HTML after</p>
 
