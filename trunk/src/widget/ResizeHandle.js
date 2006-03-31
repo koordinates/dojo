@@ -19,6 +19,7 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	isSizing: false,
 	startPoint: null,
 	startSize: null,
+	minSize: null,
 
 	targetElmId: '',
 
@@ -65,8 +66,22 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 		}
 		var dx = this.startPoint.x - e.clientX;
 		var dy = this.startPoint.y - e.clientY;
-		this.targetElm.resizeTo(this.startSize.w - dx, this.startSize.h - dy);
+		
+		var newW = this.startSize.w - dx;
+		var newH = this.startSize.h - dy;
 
+		// minimum size check
+		if (this.minSize) {
+			if (newW < this.minSize.w) {
+				newW = dojo.style.getOuterWidth(this.targetElm.domNode);
+			}
+			if (newH < this.minSize.h) {
+				newH = dojo.style.getOuterHeight(this.targetElm.domNode);
+			}
+		}
+		
+		this.targetElm.resizeTo(newW, newH);
+		
 		e.preventDefault();
 	},
 
