@@ -492,6 +492,8 @@ dojo.style.getBackgroundColor = function(node) {
 
 dojo.style.getComputedStyle = function(node, cssSelector, inValue){
 	node = dojo.byId(node);
+	// cssSelector may actually be in camel case, so force selector version
+	var cssSelector = dojo.style.toSelectorCase(cssSelector);
 	var property = dojo.style.toCamelCase(cssSelector);
 	if(!node || !node.style){
 		return inValue;
@@ -499,17 +501,17 @@ dojo.style.getComputedStyle = function(node, cssSelector, inValue){
 		try{			
 			var cs = document.defaultView.getComputedStyle(node, "");
 			if (cs){ 
-				return cs.getPropertyValue(property);
+				return cs.getPropertyValue(cssSelector);
 			} 
 		}catch(e){ // reports are that Safari can throw an exception above
 			if (node.style.getPropertyValue){ // W3
-				return node.style.getPropertyValue(property);
+				return node.style.getPropertyValue(cssSelector);
 			}else return inValue;
 		}
 	}else if (node.currentStyle){ // IE
-		return node.currentStyle[dojo.style.toCamelCase(property)];
+		return node.currentStyle[property];
 	}if (node.style.getPropertyValue) { // W3
-		return node.style.getPropertyValue(property);
+		return node.style.getPropertyValue(cssSelector);
 	}else return inValue;
 }
 
