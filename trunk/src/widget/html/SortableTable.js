@@ -12,7 +12,6 @@ dojo.widget.html.SortableTable=function(){
 	dojo.widget.SortableTable.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
-	this.containerClass="";
 	this.headClass="";
 	this.tbodyClass="";
 	this.headerClass="";
@@ -525,14 +524,6 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	postCreate:function(){ 
 		// 	summary
 		//	overridden from HtmlWidget, initializes and renders the widget.
-		var div=document.createElement("div");
-		if(this.containerClass.length>0){
-			div.className=this.containerClass;
-		}
-		var p=this.domNode.parentNode;
-		p.replaceChild(div, this.domNode);
-		div.appendChild(this.domNode);
-		
 		var thead=this.domNode.getElementsByTagName("thead")[0];
 		if(this.headClass.length>0){
 			thead.className=this.headClass;
