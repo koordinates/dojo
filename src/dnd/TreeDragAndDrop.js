@@ -148,7 +148,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	 * We can't determine real accepts status w/o position
 	*/
 	onDragOver: function(e){
-//dojo.debug("Create for "+treeNode);
+//dojo.debug("onDragOver for "+e);
 
 
 		var accepts = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
