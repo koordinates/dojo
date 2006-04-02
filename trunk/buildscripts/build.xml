@@ -588,9 +588,11 @@ internTemplateStrings()
 			</fileset>
 		</copy>
 		
-		<antcall target="buildDojoFlash" />
-		<antcall target="buildDojoStorage" />
-
+		<!--
+			<antcall target="buildDojoFlash" />
+			<antcall target="buildDojoStorage" />
+		-->
+		
 		<antcall target="-docs-and-tests" />
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
