@@ -494,6 +494,11 @@ dojo.lang.extend(dojo.widget.Tree, {
 		if (index == children.length && index>0) {
 			children[index-1].updateExpandGridColumn();
 		}
+		// if it WAS first node in WHOLE TREE -
+		// update link up of its former lower neighbour(if exists still)
+		if (parent instanceof dojo.widget.Tree && index == 0 && children.length>0) {
+			children[0].updateExpandGrid();
+		}
 
 		//parent.updateIconTree();
 

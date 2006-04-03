@@ -33,6 +33,7 @@
 <script>
 
 
+	// Process every DOMNode at creation-time for tree, add checkbox to it
 	function addCheckBox(message) {
 		// add checkBox before titleNode
 		var node = message.source;
@@ -46,6 +47,8 @@
 		dojo.dom.insertBefore(checkBox, node.titleNode);
 	}
 
+	// need to subscribe BEFORE dojo.addOnLoad
+	// BEFORE widgets are made.
 	dojo.event.topic.subscribe("tree/createDOMNode", addCheckBox);
 
 
@@ -54,7 +57,9 @@
 </head>
 <body>
 
-<h2>Tree with selector events</h2>
+<h2>Tree with checkboxes</h2>
+
+
 
 <form method="get">
 
@@ -71,7 +76,7 @@
 	<div dojoType="TreeNode" title="Item 2" objectId="2"></div>
 </div>
 
-<input type="submit" value="Press here to see checked boxes in the URL-string of your browser">
+<input type="submit" value="Press to see checked boxes in the URL-string of your browser">
 
 </form>
 
