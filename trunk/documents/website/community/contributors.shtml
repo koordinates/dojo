@@ -122,6 +122,14 @@
 			<td> pottedmeat </td>
 			<td> Neil Roberts </td>
 		</tr>
+		<tr>
+			<td> mumme </td>
+			<td> Fredrik Johansson </td>
+		</tr>
+		<tr>
+			<td> morris </td>
+			<td> Morris Johns </td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
