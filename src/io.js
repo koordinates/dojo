@@ -247,19 +247,25 @@ dojo.io._dispatchNextQueueBind = function(){
 dojo.io._bindQueue = [];
 dojo.io._queueBindInFlight = false;
 
-//FIXME: This seems to return a string with an extra & at the end. Is that the desired behavior?
-//       ScriptSrcIO.js would prefer that it is not on the end, but it is not a critical thing.
 dojo.io.argsFromMap = function(map, encoding){
-	var control = new Object();
-	var mapStr = "";
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
-	for(var x in map){
-		if(!control[x]){
-			mapStr+= enc(x)+"="+enc(map[x])+"&";
+	var mapped = [];
+	var domap = function(elt){
+		mapped.push(enc(name)+"="+enc(elt));
+	}
+	var control = new Object();
+	for(var name in map){
+		if(!control[name]){
+			var value = map[name];
+			// FIXME: should be isArrayLike?
+			if (dojo.lang.isArray(value)){
+				dojo.lang.forEach(value, domap);
+			}else{
+				domap(value);
+			}
 		}
 	}
-
-	return mapStr;
+	return mapped.join("&");
 }
 
 dojo.io.setIFrameSrc = function(iframe, src, replace){
