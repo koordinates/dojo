@@ -22,8 +22,9 @@ dojo.widget.manager = new function(){
 		dojo.profile.start("dojo.widget.manager.add");
 		this.widgets.push(widget);
 		// Opera9 uses ID (caps)
-		if (!widget.extraArgs["id"])
+		if (!widget.extraArgs["id"]){
 			widget.extraArgs["id"] = widget.extraArgs["ID"];
+		}
 		// FIXME: the rest of this method is very slow!
 		if(widget.widgetId == ""){
 			if(widget["id"]){
