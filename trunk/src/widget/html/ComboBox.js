@@ -270,10 +270,9 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 								for(var key in data){
 									arrData.push([data[key], key]);
 								}
-								_this.dataProvider.setData(arrData);
-							}else{
-								_this.dataProvider.setData(data);
+								data = arrData;
 							}
+							_this.dataProvider.setData(data);
 						}
 					},
 					mimetype: "text/json"
