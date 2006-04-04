@@ -1,5 +1,5 @@
-dojo.provide("dojo.widget.LayoutPane");
-dojo.provide("dojo.widget.html.LayoutPane");
+dojo.provide("dojo.widget.LayoutContainer");
+dojo.provide("dojo.widget.html.LayoutContainer");
 dojo.require("dojo.string.extras");
 
 //
@@ -10,7 +10,7 @@ dojo.require("dojo.string.extras");
 // TODO: allow percentage sizing stuff
 //
 
-dojo.require("dojo.widget.LayoutPane");
+dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
@@ -20,14 +20,14 @@ dojo.require("dojo.dom");
 dojo.require("dojo.string");
 
 
-dojo.widget.html.LayoutPane = function(){
+dojo.widget.html.LayoutContainer = function(){
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.html.LayoutPane, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.LayoutContainer, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.html.LayoutPane, {
-	widgetType: "LayoutPane",
+dojo.lang.extend(dojo.widget.html.LayoutContainer, {
+	widgetType: "LayoutContainer",
 	isContainer: true,
 
 	isChild: false,
@@ -37,7 +37,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 	layoutChildPriority: 'top-bottom',
 
-	cssPath: dojo.uri.dojoUri("src/widget/templates/HtmlLayoutPane.css"),
+	cssPath: dojo.uri.dojoUri("src/widget/templates/HtmlLayoutContainer.css"),
 	
 	// To generate pane content from a java function
 	handler: "none",
@@ -50,7 +50,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 		// Need to include CSS manually because there is no template file/string
 		dojo.style.insertCssFile(this.cssPath, null, true);
-		dojo.html.addClass(this.domNode, "dojoLayoutPane");
+		dojo.html.addClass(this.domNode, "dojoLayoutContainer");
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -163,7 +163,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		this._injectChild(child);
-		dojo.widget.html.LayoutPane.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.html.LayoutContainer.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
 		this.resizeSoon();
 	},
 
@@ -177,7 +177,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	},
 
 	removeChild: function(pane){
-		dojo.widget.html.LayoutPane.superclass.removeChild.call(this,pane);
+		dojo.widget.html.LayoutContainer.superclass.removeChild.call(this,pane);
 		dojo.dom.removeNode(pane.domNode);
 		this.resizeSoon();
 	},
@@ -218,7 +218,7 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 		this.domNode.style.display="none";
 		this.domNode.style.visibility="";
 
-		dojo.widget.html.LayoutPane.superclass.show.call(this);
+		dojo.widget.html.LayoutContainer.superclass.show.call(this);
 	},
 
 	getMinWidth: function(){
@@ -310,8 +310,8 @@ dojo.lang.extend(dojo.widget.html.LayoutPane, {
 	}
 });
 
-// This arguments can be specified for the children of a LayoutPane.
-// Since any widget can be specified as a LayoutPane child, mix it
+// This arguments can be specified for the children of a LayoutContainer.
+// Since any widget can be specified as a LayoutContainer child, mix it
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
 	layoutAlign: 'none'
