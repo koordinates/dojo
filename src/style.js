@@ -296,7 +296,7 @@ dojo.style.getTotalOffset = function(node, type, includeScroll){
 			offset -= dojo.style.sumAncestorProperties(node, typeScroll);
 		}
 		// FIXME: this is known not to work sometimes on IE 5.x since nodes
-		// soemtimes need to be "tickled" before they will display their
+		// sometimes need to be "tickled" before they will display their
 		// offset correctly
 		do {
 			var n = node[typeStr];
@@ -307,6 +307,11 @@ dojo.style.getTotalOffset = function(node, type, includeScroll){
 		var n = node[coord];
 		offset += isNaN(n) ? 0 : n;
 	}
+	
+	// Account for any document scrolling
+	//dojo.debug("Before: "+offset);
+	offset += (type=="top") ? dojo.html.getScrollTop() : dojo.html.getScrollLeft();
+	//dojo.debug("After: "+offset);
 	return offset;
 }
 

@@ -459,7 +459,23 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	
 	return nodes;
 }
+
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
+
+dojo.html.getCursorPosition = function(e){
+	e = e || window.event;
+	var cursor = {x:0, y:0};
+	if(e.pageX || e.pageY){
+		cursor.x = e.pageX;
+		cursor.y = e.pageY;
+	}else{
+		var de = document.documentElement;
+		var db = document.body;
+		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
+		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
+	}
+	return cursor;
+}
 
 /**
  * Calculates the mouse's direction of gravity relative to the centre
@@ -479,17 +495,16 @@ dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
  */
 dojo.html.gravity = function(node, e){
 	node = dojo.byId(node);
-	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-	var mousey = e.pageY || e.clientY + document.body.scrollTop;
-	
+	var mouse = dojo.html.getCursorPosition(e);
+
 	with (dojo.html) {
-		var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
-		var nodecentery = getAbsoluteY(node) + (getInnerHeight(node) / 2);
+		var nodecenterx = getAbsoluteX(node, true) + (getInnerWidth(node) / 2);
+		var nodecentery = getAbsoluteY(node, true) + (getInnerHeight(node) / 2);
 	}
 	
 	with (dojo.html.gravity) {
-		return ((mousex < nodecenterx ? WEST : EAST) |
-			(mousey < nodecentery ? NORTH : SOUTH));
+		return ((mouse.x < nodecenterx ? WEST : EAST) |
+			(mouse.y < nodecentery ? NORTH : SOUTH));
 	}
 }
 
@@ -500,18 +515,17 @@ dojo.html.gravity.WEST = 1 << 3;
 	
 dojo.html.overElement = function(element, e){
 	element = dojo.byId(element);
-	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-	var mousey = e.pageY || e.clientY + document.body.scrollTop;
-	
+	var mouse = dojo.html.getCursorPosition(e);
+
 	with(dojo.html){
-		var top = getAbsoluteY(element);
+		var top = getAbsoluteY(element, true);
 		var bottom = top + getInnerHeight(element);
-		var left = getAbsoluteX(element);
+		var left = getAbsoluteX(element, true);
 		var right = left + getInnerWidth(element);
 	}
 	
-	return (mousex >= left && mousex <= right &&
-		mousey >= top && mousey <= bottom);
+	return (mouse.x >= left && mouse.x <= right &&
+		mouse.y >= top && mouse.y <= bottom);
 }
 
 /**
@@ -912,7 +926,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	size: function(node) {
 		if(!this.iframe) { return; }
 
-		coords = dojo.html.toCoordinateArray(node, true);
+		coords = dojo.style.toCoordinateArray(node, true);
 
 		var s = this.iframe.style;
 		s.width = coords.w + "px";
