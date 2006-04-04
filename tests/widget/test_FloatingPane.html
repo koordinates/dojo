@@ -11,7 +11,7 @@
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.FloatingPane");
 	dojo.require("dojo.widget.ContentPane");
-	dojo.require("dojo.widget.TabPane");
+	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.ResizeHandle");
 	dojo.require("dojo.widget.Tree");
 	dojo.require("dojo.widget.ComboBox");
@@ -99,7 +99,7 @@ Testing to make sure floating panes appear above textareas...
 	href="doc0.html" executeScripts="true" title="externally loaded"></div>
 
 <div dojoType="FloatingPane" title="Tabbed Floating Pane" hasShadow="true" resizable="true" contentWrapper="none" style="width: 300px; height: 300px;">
-	<div dojoType="TabPane" style="width:100%; height: 100%">
+	<div dojoType="TabContainer" style="width:100%; height: 100%">
 		<div dojoType="ContentPane" label="tab1">Tab1 Content</div>
 		<div dojoType="ContentPane" label="tab2">Tab2 Content</div>
 	</div>

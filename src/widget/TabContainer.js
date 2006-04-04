@@ -1,5 +1,5 @@
-dojo.provide("dojo.widget.TabPane");
-dojo.provide("dojo.widget.html.TabPane");
+dojo.provide("dojo.widget.TabContainer");
+dojo.provide("dojo.widget.html.TabContainer");
 dojo.provide("dojo.widget.Tab");
 
 dojo.require("dojo.lang.func");
@@ -10,16 +10,16 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 
 //////////////////////////////////////////
-// TabPane -- a set of Tabs
+// TabContainer -- a set of Tabs
 //////////////////////////////////////////
-dojo.widget.html.TabPane = function() {
+dojo.widget.html.TabContainer = function() {
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.html.TabPane, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.TabContainer, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.html.TabPane, {
-	widgetType: "TabPane",
+dojo.lang.extend(dojo.widget.html.TabContainer, {
+	widgetType: "TabContainer",
     isContainer: true,
 
 	// Constructor arguments
@@ -28,8 +28,8 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 
 	useVisibility: false,		// true-->use visibility:hidden instead of display:none
 
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTabPane.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabPane.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTabContainer.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabContainer.css"),
 
 	selectedTab: "",		// initially selected tab (widgetId)
 
@@ -38,7 +38,7 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
-		dojo.widget.html.TabPane.superclass.fillInTemplate.call(this, args, frag);
+		dojo.widget.html.TabContainer.superclass.fillInTemplate.call(this, args, frag);
 	},
 
 	postCreate: function(args, frag) {
@@ -69,7 +69,7 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		this._setupTab(child);
-		dojo.widget.html.TabPane.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.html.TabContainer.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
 
 		// in case the tab labels have overflowed from one line to two lines
 		this._setPadding();
@@ -154,9 +154,9 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 			}
 		}
 
-        dojo.widget.html.TabPane.superclass.removeChild.call(this, tab);
+        dojo.widget.html.TabContainer.superclass.removeChild.call(this, tab);
 
-        dojo.html.removeClass(tab.domNode, "dojoTabPanel");
+        dojo.html.removeClass(tab.domNode, "dojoTabPane");
         this.dojoTabLabels.removeChild(tab.div);
         delete(tab.div);
 
@@ -178,7 +178,7 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		}
 		this.selectedTabWidget = tab;
 		this._showTab(tab);
-		dojo.widget.html.TabPane.superclass.onResized.call(this);
+		dojo.widget.html.TabContainer.superclass.onResized.call(this);
 	},
 	
 	_showTab: function(tab) {
@@ -217,10 +217,10 @@ dojo.lang.extend(dojo.widget.html.TabPane, {
 		this._setPadding();
 	}
 });
-dojo.widget.tags.addParseTreeHandler("dojo:TabPane");
+dojo.widget.tags.addParseTreeHandler("dojo:TabContainer");
 
-// These arguments can be specified for the children of a TabPane.
-// Since any widget can be specified as a TabPane child, mix them
+// These arguments can be specified for the children of a TabContainer.
+// Since any widget can be specified as a TabContainer child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
 	label: "",
