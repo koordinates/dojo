@@ -1,24 +1,16 @@
-.dojoTabPane {
-	position : relative;
-	height : 100%;
-	width : 100%;
-	-moz-box-sizing: border-box;
-	-khtml-box-sizing: border-box;
-}
-
 .dojoTabContainer {
 	position : relative;
 	height : 100%;
 	width : 100%;
-	border : 1px solid;
 	-moz-box-sizing: border-box;
 	-khtml-box-sizing: border-box;
 }
 
-.dojoTabContainers {
+.dojoTabPaneWrapper {
 	position : relative;
 	height : 100%;
 	width : 100%;
+	border : 1px solid;
 	-moz-box-sizing: border-box;
 	-khtml-box-sizing: border-box;
 }

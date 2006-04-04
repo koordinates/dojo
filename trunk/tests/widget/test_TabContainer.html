@@ -8,16 +8,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>TabPane Demo</title>
+<title>TabContainer Demo</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 
 <script type="text/javascript">
 	var djConfig = { isDebug: true };
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
-<script type="text/javascript" src="../../src/widget/TabPane.js"></script>
+<script type="text/javascript" src="../../src/widget/TabContainer.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.widget.TabPane");
+	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.Tooltip");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
@@ -27,7 +27,7 @@
 body {
 	font-family : sans-serif;
 }
-.dojoTabContainer {
+.dojoTabPane {
   padding : 10px 10px 10px 10px;
 }
 
@@ -47,7 +47,7 @@ function testClose(pane,tab) {
 	files tab1.html and tab2.html. Tab 3 and Another Tab are using content that is already
 	part of this page.</p>
 
-	<div id="mainTabPane" dojoType="TabPane" style="width: 100%; height: 20em;" selectedTab="tab2">
+	<div id="mainTabContainer" dojoType="TabContainer" style="width: 100%; height: 20em;" selectedTab="tab2">
 	
 		<div id="tab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		
@@ -74,7 +74,7 @@ function testClose(pane,tab) {
 			venga venga venga venga venga venga venga venga venga venga venga venga</p>
 		</div>
 
-		<div id="subTabPane" dojoType="TabPane" label="Sub TabPane">	
+		<div id="subTabContainer" dojoType="TabContainer" label="Sub TabContainer">	
 			<a dojoType="LinkPane" href="tab1.html">SubTab 1</a>		
 			<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
 		</div>
@@ -83,7 +83,7 @@ function testClose(pane,tab) {
 
 	<p>some text here</p>
 
-	<div id="ttabs" dojoType="TabPane" labelPosition="top" style="width: 100%; height: 10em;"
+	<div id="ttabs" dojoType="TabContainer" labelPosition="top" style="width: 100%; height: 10em;"
       selectedTab="tab2" closeButton="tab">
 		<div id="ttab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="ttab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
@@ -95,7 +95,7 @@ function testClose(pane,tab) {
 	
 	<p>some text here</p>
 
-	<div id="btabs" dojoType="TabPane" labelPosition="bottom" style="width: 100%; height: 10em;" 
+	<div id="btabs" dojoType="TabContainer" labelPosition="bottom" style="width: 100%; height: 10em;" 
         selectedTab="tab2" closeButton="pane">
 		<div id="btab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="btab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
@@ -103,14 +103,14 @@ function testClose(pane,tab) {
 	
 	<p>some text here</p>
 
-	<div id="lhtabs" dojoType="TabPane" labelPosition="left-h" style="width: 100%; height: 10em;" selectedTab="tab2">
+	<div id="lhtabs" dojoType="TabContainer" labelPosition="left-h" style="width: 100%; height: 10em;" selectedTab="tab2">
 		<div id="lhtab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="lhtab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
 	</div>
 	
 	<p>some text here</p>
 
-	<div id="lrtabs" dojoType="TabPane" labelPosition="right-h" style="width: 100%; height: 10em;" selectedTab="tab2">
+	<div id="lrtabs" dojoType="TabContainer" labelPosition="right-h" style="width: 100%; height: 10em;" selectedTab="tab2">
 		<div id="rhtab1" dojoType="ContentPane" href="tab1.html" label="Tab 1"></div>
 		<div id="rhtab2" dojoType="ContentPane" href="tab2.html" refreshOnShow="true" label="Tab 2"></div>
 	</div>
