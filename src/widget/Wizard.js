@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.Wizard");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.LayoutPane");
+dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
@@ -10,9 +10,9 @@ dojo.require("dojo.style");
 // Wizard -- a set of panels
 //////////////////////////////////////////
 dojo.widget.Wizard = function() {
-	dojo.widget.html.LayoutPane.call(this);
+	dojo.widget.html.LayoutContainer.call(this);
 }
-dojo.inherits(dojo.widget.Wizard, dojo.widget.html.LayoutPane);
+dojo.inherits(dojo.widget.Wizard, dojo.widget.html.LayoutContainer);
 
 dojo.lang.extend(dojo.widget.Wizard, {
 
@@ -157,9 +157,9 @@ dojo.widget.tags.addParseTreeHandler("dojo:Wizard");
 // WizardPane -- a panel in a wizard
 //////////////////////////////////////////
 dojo.widget.WizardPane = function() {
-	dojo.widget.html.LayoutPane.call(this);
+	dojo.widget.html.LayoutContainer.call(this);
 }
-dojo.inherits(dojo.widget.WizardPane, dojo.widget.html.LayoutPane);
+dojo.inherits(dojo.widget.WizardPane, dojo.widget.html.LayoutContainer);
 
 dojo.lang.extend(dojo.widget.WizardPane, {
 	widgetType: "WizardPane",

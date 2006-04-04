@@ -11,7 +11,7 @@
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-	dojo.require("dojo.widget.LayoutPane");
+	dojo.require("dojo.widget.LayoutContainer");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.Tree");
@@ -49,7 +49,7 @@
 <p>HTML before</p>
 <p>HTML before</p>
 <a href="#" onclick="dojo.widget.byId('docpane').setUrl('acme/test_Button2.html');">test remote paths</a>
-<div dojoType="LayoutPane" id="me"
+<div dojoType="LayoutContainer" id="me"
 	layoutChildPriority='left-right'
 	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
 >

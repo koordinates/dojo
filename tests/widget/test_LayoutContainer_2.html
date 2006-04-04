@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>LayoutPane / StatusBar Widget Test</title>
+<title>LayoutContainer / StatusBar Widget Test</title>
 
 <script type="text/javascript">
 
@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 
-	dojo.require("dojo.widget.LayoutPane");
+	dojo.require("dojo.widget.LayoutContainer");
 	dojo.require("dojo.widget.ResizeHandle");
 
 	dojo.hostenv.writeIncludes();
@@ -47,20 +47,20 @@ div.statusPanel {
 <p>HTML before</p>
 <p>HTML before</p>
 
-<div dojoType="LayoutPane"
+<div dojoType="LayoutContainer"
 	widgetId="mywindow"
 	minHeight="20"
 	style="border: 2px solid black; width: 90%; height: 200px;"
 >
-	<div dojoType="LayoutPane" layoutAlign="bottom" class="statusBar" minHeight="28" widgetId="statusBar">
+	<div dojoType="LayoutContainer" layoutAlign="bottom" class="statusBar" minHeight="28" widgetId="statusBar">
 
-		<div dojoType="LayoutPane" layoutAlign="left" class="statusPanel">
+		<div dojoType="LayoutContainer" layoutAlign="left" class="statusPanel">
 			panel 1
 		</div>
-		<div dojoType="LayoutPane" layoutAlign="left" class="statusPanel">
+		<div dojoType="LayoutContainer" layoutAlign="left" class="statusPanel">
 			panel 2
 		</div>
-		<div dojoType="LayoutPane" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;" minWidth="80">
+		<div dojoType="LayoutContainer" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;" minWidth="80">
 			panel 3
 		</div>
 		<div dojoType="ResizeHandle" targetElmId="mywindow"></div>

@@ -10,7 +10,7 @@ dojo.provide("dojo.widget.html.SplitPanePanel");
 //
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.LayoutPane");
+dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
@@ -560,9 +560,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 // Deprecated class for split pane children.
 // Actually any widget can be the child of a split pane
 dojo.widget.html.SplitPanePanel = function(){
-	dojo.widget.html.LayoutPane.call(this);
+	dojo.widget.html.LayoutContainer.call(this);
 }
-dojo.inherits(dojo.widget.html.SplitPanePanel, dojo.widget.html.LayoutPane);
+dojo.inherits(dojo.widget.html.SplitPanePanel, dojo.widget.html.LayoutContainer);
 dojo.lang.extend(dojo.widget.html.SplitPanePanel, {
 	widgetType: "SplitPanePanel"
 });
