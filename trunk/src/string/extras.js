@@ -97,7 +97,7 @@ dojo.string.escapeSql = function(str) {
 }
 
 dojo.string.escapeRegExp = function(str) {
-	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r])/gm, "\\$1");
+	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1");
 }
 
 dojo.string.escapeJavaScript = function(str) {
