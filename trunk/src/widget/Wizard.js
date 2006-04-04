@@ -2,21 +2,22 @@ dojo.provide("dojo.widget.Wizard");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 
 //////////////////////////////////////////
-// Wizard -- a set of panels
+// WizardContainer -- a set of panels
 //////////////////////////////////////////
-dojo.widget.Wizard = function() {
+dojo.widget.WizardContainer = function() {
 	dojo.widget.html.LayoutContainer.call(this);
 }
-dojo.inherits(dojo.widget.Wizard, dojo.widget.html.LayoutContainer);
+dojo.inherits(dojo.widget.WizardContainer, dojo.widget.html.LayoutContainer);
 
-dojo.lang.extend(dojo.widget.Wizard, {
+dojo.lang.extend(dojo.widget.WizardContainer, {
 
-	widgetType: "Wizard",
+	widgetType: "WizardContainer",
 
 	labelPosition: "top",
 
@@ -81,7 +82,7 @@ dojo.lang.extend(dojo.widget.Wizard, {
 	},
 
 	registerChild: function(panel, insertionIndex){
-		dojo.widget.Wizard.superclass.registerChild.call(this, panel, insertionIndex);
+		dojo.widget.WizardContainer.superclass.registerChild.call(this, panel, insertionIndex);
 		this.wizardPanelContainerNode.appendChild(panel.domNode);
 		panel.hide();
 
@@ -151,15 +152,15 @@ dojo.lang.extend(dojo.widget.Wizard, {
 		this.selected.done();
 	}
 });
-dojo.widget.tags.addParseTreeHandler("dojo:Wizard");
+dojo.widget.tags.addParseTreeHandler("dojo:WizardContainer");
 
 //////////////////////////////////////////
 // WizardPane -- a panel in a wizard
 //////////////////////////////////////////
 dojo.widget.WizardPane = function() {
-	dojo.widget.html.LayoutContainer.call(this);
+	dojo.widget.html.ContentPane.call(this);
 }
-dojo.inherits(dojo.widget.WizardPane, dojo.widget.html.LayoutContainer);
+dojo.inherits(dojo.widget.WizardPane, dojo.widget.html.ContentPane);
 
 dojo.lang.extend(dojo.widget.WizardPane, {
 	widgetType: "WizardPane",
