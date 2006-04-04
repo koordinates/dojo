@@ -1,14 +1,3 @@
-/**
-* @file hostenv_browser.js
-*
-* Implements the hostenv interface for a browser environment.
-*
-* Perhaps it could be called a "dom" or "useragent" environment.
-*
-* @author Copyright 2004 Mark D. Anderson (mda@discerning.com)
-* @author Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
-*/
-
 // make jsc shut up (so we can use jsc to sanity check the code even if it will never run it).
 /*@cc_on
 @if (@_jscript_version >= 7)
@@ -63,6 +52,7 @@ if(typeof window == 'undefined'){
 		}
 	}
 
+	// fill in the rendering support information in dojo.render.*
 	var dr = dojo.render;
 	var drh = dojo.render.html;
 	var drs = dojo.render.svg;
@@ -142,7 +132,7 @@ if(typeof window == 'undefined'){
 
 dojo.hostenv.startPackage("dojo.hostenv");
 
-dojo.hostenv.name_ = 'browser';
+dojo.render.name = dojo.hostenv.name_ = 'browser';
 dojo.hostenv.searchIds = [];
 
 // These are in order of decreasing likelihood; this will change in time.

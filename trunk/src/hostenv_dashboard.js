@@ -1,4 +1,4 @@
-dojo.hostenv.name_ = "dashboard";
+dojo.render.name = dojo.hostenv.name_ = "dashboard";
 
 dojo.hostenv.println = function(/*String*/ message){
 	// summary: Prints a message to the OS X console
