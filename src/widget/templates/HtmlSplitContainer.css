@@ -1,14 +1,14 @@
-.dojoHtmlSplitPane{
+.dojoSplitContainer{
 	position: relative;
 	overflow: hidden;
 }
 
-.dojoHtmlSplitterPanePanel{
+.dojoSplitPane{
 	position: absolute;
 }
 
-.dojoHtmlSplitPaneSizerH,
-.dojoHtmlSplitPaneSizerV {
+.dojoSplitContainerSizerH,
+.dojoSplitContainerSizerV {
 	font-size: 1px;
 	cursor: move;
 	cursor: w-resize;
@@ -18,14 +18,12 @@
 	margin: 0;
 }
 
-.dojoHtmlSplitPaneSizerV {
-
+.dojoSplitContainerSizerV {
 	cursor: n-resize;
 }
 
-.dojoHtmlSplitPaneVirtualSizerH,
-.dojoHtmlSplitPaneVirtualSizerV {
-
+.dojoSplitContainerVirtualSizerH,
+.dojoSplitContainerVirtualSizerV {
 	font-size: 1px;
 	cursor: move;
 	cursor: w-resize;
@@ -36,7 +34,6 @@
 	margin: 0;
 }
 
-.dojoHtmlSplitPaneVirtualSizerV {
-
+.dojoSplitContainerVirtualSizerV {
 	cursor: n-resize;
 }

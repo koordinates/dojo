@@ -9,19 +9,19 @@ dojo.provide("dojo.widget.Accordion");
 // pull in widget infrastructure
 dojo.require("dojo.widget.*");
 // pull in our superclass
-dojo.require("dojo.widget.SplitPane");
+dojo.require("dojo.widget.SplitContainer");
 // pull in animation libraries
 dojo.require("dojo.animation.Animation");
 
 dojo.widget.Accordion = function(){
 
-	dojo.widget.html.SplitPane.call(this);
+	dojo.widget.html.SplitContainer.call(this);
 	this.widgetType = "Accordion";
 	this._super = dojo.widget.AccordionPanel.superclass;
 	dojo.event.connect(this, "postCreate", this, "myPostCreate");
 	
 }
-dojo.inherits(dojo.widget.Accordion, dojo.widget.html.SplitPane);
+dojo.inherits(dojo.widget.Accordion, dojo.widget.html.SplitContainer);
 dojo.lang.extend(dojo.widget.Accordion, {
 	sizerWidth: 1,
 	activeSizing: 1,
@@ -94,13 +94,13 @@ dojo.lang.extend(dojo.widget.Accordion, {
 dojo.widget.tags.addParseTreeHandler("dojo:Accordion");
 
 dojo.widget.AccordionPanel = function(){
-	dojo.widget.html.SplitPanePanel.call(this);
+	dojo.widget.html.SplitContainerPanel.call(this);
 	this.widgetType = "AccordionPanel";
 	dojo.event.connect(this, "fillInTemplate", this, "myFillInTemplate");
 	dojo.event.connect(this, "postCreate", this, "myPostCreate");
 }
 
-dojo.inherits(dojo.widget.AccordionPanel, dojo.widget.html.SplitPanePanel);
+dojo.inherits(dojo.widget.AccordionPanel, dojo.widget.html.SplitContainerPanel);
 
 dojo.lang.extend(dojo.widget.AccordionPanel, {
 	sizeMin:0,

@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>SplitPane Widget Demo</title>
+<title>SplitContainer Widget Demo</title>
 
 <script type="text/javascript">
 	var djConfig = {isDebug: true };
@@ -10,7 +10,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
 	dojo.require("dojo.widget.LayoutContainer");
-	dojo.require("dojo.widget.SplitPane");
+	dojo.require("dojo.widget.SplitContainer");
 	dojo.require("dojo.widget.ContentPane");
 </script>
 </head>
@@ -20,7 +20,7 @@
 <p>HTML before</p>
 <p>HTML before</p>
 
-<div dojoType="SplitPane"
+<div dojoType="SplitContainer"
 	orientation="vertical"
 	sizerWidth="5"
 	activeSizing="1"
@@ -30,7 +30,7 @@
 		woo
 	</div>
 
-	<div dojoType="SplitPane"
+	<div dojoType="SplitContainer"
 		orientation="horizontal"
 		sizerWidth="5"
 		activeSizing="1"
