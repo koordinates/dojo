@@ -34,10 +34,9 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 					for(var key in data){
 						arrData.push([data[key], key]);
 					}
-					_this.addToCache(searchStr, arrData);
-				}else{
-					_this.addToCache(searchStr, data);
+					data = arrData;
 				}
+				_this.addToCache(searchStr, data);
 				_this.provideSearchResults(data);
 			}
 		});
