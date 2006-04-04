@@ -265,10 +265,18 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 					url: this.dataUrl,
 					load: function(type, data, evt){ 
 						if(type=="load"){
-							_this.dataProvider.setData(data);
+							if(!dojo.lang.isArray(data)){
+								var arrData = [];
+								for(var key in data){
+									arrData.push([data[key], key]);
+								}
+								_this.dataProvider.setData(arrData);
+							}else{
+								_this.dataProvider.setData(data);
+							}
 						}
 					},
-					mimetype: "text/javascript"
+					mimetype: "text/json"
 				});
 			}else if("remote" == this.mode){
 				this.dataProvider = new dojo.widget.incrementalComboBoxDataProvider(this.dataUrl);
