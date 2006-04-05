@@ -100,11 +100,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.taskBarSetup();
 		}
 
-		if (dojo.hostenv.post_load_) {
-			this.setInitialWindowState();
-		} else {
-			dojo.addOnLoad(this, "setInitialWindowState");
-		}
 
 		// figure out how much space is used for padding/borders etc.
 		this.lostHeight=
@@ -114,8 +109,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.lostWidth=
 			dojo.style.getOuterWidth(this.domNode)-dojo.style.getContentWidth(this.domNode);
 
-		// make the content pane take all the remaining space
-		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+		if (dojo.hostenv.post_load_) {
+			this.setInitialWindowState();
+		} else {
+			dojo.addOnLoad(this, "setInitialWindowState");
+		}
 
 		// counteract body.appendChild above
 		document.body.removeChild(this.domNode);
@@ -124,11 +122,14 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	maximizeWindow: function(evt) {
-		this.previous={};
-		var self=this;
-		dojo.lang.forEach(["width", "height", "left", "top", "bottom", "right"],
-			function(attr){ self.previous[attr] = self.domNode.style[attr]; });
-		//dojo.debugShallow(this.previous);
+		this.previous={
+			width: this.width,
+			height: this.height,
+			left: this.domNode.style.left,
+			top: this.domNode.style.top,
+			bottom: this.domNode.style.bottom,
+			right: this.domNode.style.right
+			};
 
 		this.domNode.style.left =
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
@@ -136,16 +137,19 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
 
 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
-			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(document.body));
-			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(document.body));
+			this.resizeTo(
+				dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(document.body),
+				dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(document.body)
+			);
 		} else {
-			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
-			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
+			this.resizeTo(
+				dojo.style.getContentWidth(this.domNode.parentNode),
+				dojo.style.getContentHeight(this.domNode.parentNode)
+			);
 		}
 		this.maximizeAction.style.display="none";
 		this.restoreAction.style.display="";
 		this.windowState="maximized";
-		this.onResized();
 	},
 
 	minimizeWindow: function(evt) {
@@ -157,13 +161,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		for(var attr in this.previous){
 			this.domNode.style[attr]=this.previous[attr];
 		}
+		this.resizeTo(this.previous.width, this.previous.height);
 		this.previous=null;
 
 		this.restoreAction.style.display="none";
 		this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
 
 		this.windowState="normal";
-		this.onResized();
 	},
 
 	closeWindow: function(evt) {
@@ -176,10 +180,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	bringToTop: function() {
-		var floatingPaneStartingZ = 100;
 		var floatingPanes= dojo.widget.manager.getWidgetsByType(this.widgetType);
 		var windows = [];
-		var y=0;
 		for (var x=0; x<floatingPanes.length; x++) {
 			if (this.widgetId != floatingPanes[x].widgetId) {
 					windows.push(floatingPanes[x]);
@@ -192,6 +194,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		
 		windows.push(this);
 
+		var floatingPaneStartingZ = 100;
 		for (x=0; x<windows.length;x++) {
 			windows[x].domNode.style.zIndex = floatingPaneStartingZ + x;
 		}
@@ -239,7 +242,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	onShow: function(){
 		dojo.widget.html.FloatingPane.superclass.onShow.call(this);
-		this.onResized();
+		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
 	},
 
 	resizeTo: function(w, h){
