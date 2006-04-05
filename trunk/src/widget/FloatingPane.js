@@ -88,9 +88,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.resizeBar.appendChild(rh.domNode);
 		}
 
-		// make the content pane take all the remaining space
-		this._setPadding();
-
 		// add a drop shadow
 		if(this.hasShadow){
 			this.shadow=new dojo.html.shadow(this.domNode);
@@ -109,21 +106,21 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.addOnLoad(this, "setInitialWindowState");
 		}
 
+		// figure out how much space is used for padding/borders etc.
+		this.lostHeight=
+			(dojo.style.getOuterHeight(this.domNode)-dojo.style.getContentHeight(this.domNode))
+			+dojo.style.getOuterHeight(this.titleBar)
+			+dojo.style.getOuterHeight(this.resizeBar);
+		this.lostWidth=
+			dojo.style.getOuterWidth(this.domNode)-dojo.style.getContentWidth(this.domNode);
+
+		// make the content pane take all the remaining space
+		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+
 		// counteract body.appendChild above
 		document.body.removeChild(this.domNode);
 
 		dojo.widget.html.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
-	},
-
-	// Configure the content pane to take up all the space between the title bar and the resize bar
-	_setPadding: function(){
-		var t=dojo.style.getOuterHeight(this.titleBar);
-		var b=dojo.style.getOuterHeight(this.resizeBar);
-
-		with(this.domNode.style){
-			paddingTop=t+"px";
-			paddingBottom=b+"px";
-		}
 	},
 
 	maximizeWindow: function(evt) {
@@ -131,7 +128,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		var self=this;
 		dojo.lang.forEach(["width", "height", "left", "top", "bottom", "right"],
 			function(attr){ self.previous[attr] = self.domNode.style[attr]; });
-		dojo.debugShallow(this.previous);
+		//dojo.debugShallow(this.previous);
 
 		this.domNode.style.left =
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
@@ -148,6 +145,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.maximizeAction.style.display="none";
 		this.restoreAction.style.display="";
 		this.windowState="maximized";
+		this.onResized();
 	},
 
 	minimizeWindow: function(evt) {
@@ -165,6 +163,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
 
 		this.windowState="normal";
+		this.onResized();
 	},
 
 	closeWindow: function(evt) {
@@ -240,6 +239,27 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	onShow: function(){
 		dojo.widget.html.FloatingPane.superclass.onShow.call(this);
+		this.onResized();
+	},
+
+	resizeTo: function(w, h){
+		if(w==this.width && h == this.height){
+			return;
+		}
+		this.width=w;
+		this.height=h;
+
+		// IE won't let you decrease the width of the domnode unless you decrease the
+		// width of the inner nodes first (???)
+		dojo.lang.forEach(
+			[this.titleBar, this.resizeBar, this.containerNode],
+			function(node){ dojo.style.setOuterWidth(node, w - this.lostWidth); }, this
+		);
+		dojo.style.setOuterWidth(this.domNode, w);
+
+		dojo.style.setOuterHeight(this.domNode, h);
+		dojo.style.setOuterHeight(this.containerNode, h-this.lostHeight);
+
 		this.onResized();
 	}
 });
