@@ -1,7 +1,7 @@
-dojo.provide("dojo.rpc.Deferred");
+dojo.provide("dojo.Deferred");
 dojo.require("dojo.lang.func");
 
-dojo.rpc.Deferred = function(/* optional */ canceller){
+dojo.Deferred = function(/* optional */ canceller){
 	/*
 	NOTE: this namespace and documentation are imported wholesale 
 		from MochiKit
@@ -101,7 +101,7 @@ dojo.rpc.Deferred = function(/* optional */ canceller){
 	this.silentlyCancelled = false;
 };
 
-dojo.lang.extend(dojo.rpc.Deferred, {
+dojo.lang.extend(dojo.Deferred, {
 	getFunctionFromArgs: function(){
 		var a = arguments;
 		if((a[0])&&(!a[1])){
@@ -154,7 +154,7 @@ dojo.lang.extend(dojo.rpc.Deferred, {
 				this.errback(new Error(this.repr()));
 			}
 		}else if(	(this.fired == 0)&&
-					(this.results[0] instanceof dojo.rpc.Deferred)){
+					(this.results[0] instanceof dojo.Deferred)){
 			this.results[0].cancel();
 		}
 	},
@@ -277,7 +277,7 @@ dojo.lang.extend(dojo.rpc.Deferred, {
 			try {
 				res = f(res);
 				fired = ((res instanceof Error) ? 1 : 0);
-				if(res instanceof dojo.rpc.Deferred) {
+				if(res instanceof dojo.Deferred) {
 					cb = function(res){
 						self._continue(res);
 					}
@@ -297,66 +297,3 @@ dojo.lang.extend(dojo.rpc.Deferred, {
 		}
 	}
 });
-
-/*
-dojo.lang.extend(dojo.rpc.Deferred, {
-	
-	getFunctionFromArgs: function(){
-		var a = arguments;
-		if((a[0])&&(!a[1])){
-			if(dojo.lang.isFunction(a[0])){
-				return a[0];
-			}else if(dojo.lang.isString(a[0])){
-				return dj_global[a[0]];
-			}
-		}else if((a[0])&&(a[1])){
-			return dojo.lang.hitch(a[0], a[1]);
-		}
-		return null;
-	},
-
-	addCallback: function(cb, cbfn){
-		var enclosed = this.getFunctionFromArgs(cb, cbfn)
-		if(enclosed){
-			this._callbacks.push(enclosed);
-			if(this.results){
-				enclosed(this.results);
-			}
-		}else{
-			dojo.raise("Deferred: object supplied to addCallback is not a function");
-		}
-	},
-
-	addErrback: function(eb, ebfn){
-		var enclosed = this.getFunctionFromArgs(eb, ebfn)
-		if(enclosed){
-			this._errbacks.push(enclosed);
-			if(this.error){
-				enclosed(this.error);
-			}	
-		}else{
-			dojo.raise("Deferred: object supplied to addErrback is not a function");
-		}
-	},
-
-	addBoth: function(cb, eb){
-		this.addCallback(cb);
-		this.addErrback(eb);
-	},
-
-	callback: function(results){
-		this.results = results;
-		dojo.lang.forEach(this._callbacks, function(func){
-			func(results);
-		});
-	},
-
-	errback: function(error){
-		this.error = error;
-		dojo.lang.forEach(this._errbacks, function(func){
-			func(error);
-		});
-	}
-
-});
-*/
