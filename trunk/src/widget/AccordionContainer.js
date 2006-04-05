@@ -27,6 +27,8 @@ dojo.lang.extend(dojo.widget.AccordionContainer, {
 			wrapper.setSizes();
 			return wrapper;
 		} else {
+			dojo.html.addClass(widget.containerNode, this.containerNodeClass);
+			dojo.html.addClass(widget.labelNode, this.labelNodeClass);
 			this.addWidgetAsDirectChild(widget);
 			this.registerChild(widget);	
 			widget.setSizes();
