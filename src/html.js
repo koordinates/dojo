@@ -693,14 +693,6 @@ dojo.html.createNodesFromText = function(txt, trim){
 	return nodes;
 }
 
-// FIXME: this should be removed after 0.2 release
-if(!dojo.evalObjPath("dojo.dom.createNodesFromText")){
-	dojo.dom.createNodesFromText = function() {
-		dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.html.createNodesFromText instead");
-		return dojo.html.createNodesFromText.apply(dojo.html, arguments);
-	}
-}
-
 /**
  * Like dojo.dom.isTag, except case-insensitive
 **/
