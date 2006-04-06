@@ -62,7 +62,7 @@ dojo.version = {
  * caveat: 'defined' and 'exists' are not the same concept
  */
 dojo.evalProp = function(name, obj, create){
-	return (!dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined));
+	return (obj && !dj_undef(name, obj) ? obj[name] : (create ? (obj[name]={}) : undefined));
 }
 
 /**
