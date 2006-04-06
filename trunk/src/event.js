@@ -177,13 +177,33 @@ dojo.event = new function(){
 					// manually
 	}
 
-	this.connectBefore = function() {
+	this.log = function(a1, a2){
+		var kwArgs;
+		if((arguments.length == 1)&&(typeof a1 == "object")){
+			kwArgs = a1;
+		}else{
+			kwArgs = {
+				srcObj: a1,
+				srcFunc: a2
+			};
+		}
+		kwArgs.adviceFunc = function(){
+			var argsStr = [];
+			for(var x=0; x<arguments.length; x++){
+				argsStr.push(arguments[x]);
+			}
+			dojo.debug("("+kwArgs.srcObj+")."+kwArgs.srcFunc, ":", argsStr.join(", "));
+		}
+		this.kwConnect(kwArgs);
+	}
+
+	this.connectBefore = function(){
 		var args = ["before"];
 		for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
 		return this.connect.apply(this, args);
 	}
 
-	this.connectAround = function() {
+	this.connectAround = function(){
 		var args = ["around"];
 		for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
 		return this.connect.apply(this, args);
