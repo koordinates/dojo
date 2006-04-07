@@ -37,6 +37,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	isContainer: true,
+	
+	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
 
 
 	templateString: ('<div class="dojoTreeNode"> '
@@ -92,10 +94,37 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
 	},
 
+	lock: function(){ return this.tree.lock.apply(this, arguments) },
+	unlock: function(){ return this.tree.unlock.apply(this, arguments) },
+	isLocked: function(){ return this.tree.isLocked.apply(this, arguments) },
+	cleanLock: function(){ return this.tree.cleanLock.apply(this, arguments) },
+
 	actionIsDisabled: function(action) {
 		var _this = this;
-
-		return (this.tree.strictFolders && action == this.actions.ADDCHILD && !this.isFolder) || dojo.lang.inArray(_this.actionsDisabled, action);
+		
+		var disabled = false;
+		
+		if (this.tree.strictFolders &&action == this.actions.ADDCHILD && !this.isFolder) {
+			disabled = true;
+		}
+			
+		if (dojo.lang.inArray(_this.actionsDisabled, action)) {
+			disabled = true;
+		}
+		
+		var node = this;
+		while (true) {
+			if (node.isLocked()) {
+				disabled = true;
+				break;
+			}
+			if (node instanceof dojo.widget.Tree) {
+				break;
+			}
+			node = node.parent;
+		}
+		
+		return disabled;
 	},
 
 	getInfo: function() {
@@ -157,7 +186,22 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 
 	markLoading: function() {
+		this._markLoadingSavedIcon = this.expandIcon.src;
 		this.expandIcon.src = this.tree.expandIconSrcLoading;
+	},
+
+	// if icon is "Loading" then 	
+	unMarkLoading: function() {
+		if (!this._markLoadingSavedIcon) return;
+		
+		var im = new Image();
+		im.src = this.tree.expandIconSrcLoading;
+		
+		//dojo.debug("Unmark "+this.expandIcon.src+" : "+im.src);
+		if (this.expandIcon.src == im.src) {
+			this.expandIcon.src = this._markLoadingSavedIcon;
+		}
+		this._markLoadingSavedIcon = null;
 	},
 
 
@@ -257,8 +301,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 
-	unMarkSelected: function() {
-		//dojo.debug('unmark')
+	unMarkSelected: function() {		
+		//dojo.debug('unmark')		
 		dojo.html.removeClass(this.titleNode, 'dojoTreeNodeLabelSelected');
 	},
 
