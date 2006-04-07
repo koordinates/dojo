@@ -5,7 +5,6 @@ dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.string");
 dojo.require("dojo.string.extras"); // only necessary until we move renderedTextContent
-dojo.require("dojo.uri.Uri");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
 dojo.lang.mixin(dojo.html, dojo.style);
