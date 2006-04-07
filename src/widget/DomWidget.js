@@ -180,15 +180,22 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				var thisFunc = null;
 				var domEvt = events[y].substr(4); // clober the "dojo" prefix
 				thisFunc = trim(evtVal);
-				var tf = function(){ 
-					var ntf = new String(thisFunc);
-					return function(evt){
-						if(_this[ntf]){
-							_this[ntf](dojo.event.browser.fixEvent(evt, this));
+				var funcs = [thisFunc];
+				if(thisFunc.indexOf(";")>=0){
+					funcs = dojo.lang.map(thisFunc.split(";"), trim);
+				}
+				for(var z=0; z<funcs.length; z++){
+					if(!funcs[z].length){ continue; }
+					var tf = function(){ 
+						var ntf = new String(funcs[z]);
+						return function(evt){
+							if(_this[ntf]){
+								_this[ntf](dojo.event.browser.fixEvent(evt, this));
+							}
 						}
-					}
-				}();
-				dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
+					}();
+					dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
+				}
 			}
 		}
 
