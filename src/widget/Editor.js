@@ -16,6 +16,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:Editor");
 dojo.widget.html.Editor = function() {
 	dojo.widget.HtmlWidget.call(this);
 	this.contentFilters = [];
+	this._toolbars = [];
 }
 dojo.inherits(dojo.widget.html.Editor, dojo.widget.HtmlWidget);
 
