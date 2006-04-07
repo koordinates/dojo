@@ -428,11 +428,8 @@ dojo.dom.collectionToArray = function(collection){
 	return dojo.lang.toArray(collection);
 }
 
-dojo.dom.hasParent = function(node) {
-	if(!node || !node.parentNode || (node.parentNode && !node.parentNode.tagName)) {
-		return false;
-	}
-	return true;
+dojo.dom.hasParent = function (node) {
+	return node && node.parentNode && dojo.dom.isNode(node.parentNode);
 }
 
 /**
