@@ -1,5 +1,6 @@
 dojo.provide("dojo.style");
 dojo.require("dojo.graphics.color");
+dojo.require("dojo.uri.Uri");
 
 // values: content-box, border-box
 dojo.style.boxSizing = {
