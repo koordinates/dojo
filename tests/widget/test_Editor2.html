@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<title>Dojo Editor2 Test</title>
+
+<script type="text/javascript">
+	var djConfig = { isDebug: true };
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Editor2");
+</script>
+
+this is text above the editor
+<div style="border: 1px solid black;">
+	<div dojoType="Editor2" widgetId="editor">
+		look ma! it's editable content!
+		<ul>
+			<li>foo</li>
+			<li>bar</li>
+			<li>baz</li>
+			<ul>
+				<li>thud</li>
+			</ul>
+		</ul>
+	</div>
+</div>
+this is text after the editor
+<br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+this is more text
