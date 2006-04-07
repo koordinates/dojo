@@ -39,7 +39,7 @@ dojo.widget.DatePicker.util = new function() {
 			rfcDate = rfcDate.replace("Tany","");
 		}
 		var jsDate = new Date();
-		dojo.date.setIso8601Date(jsDate, rfcDate);
+		dojo.date.setIso8601(jsDate, rfcDate);
 		return jsDate;
 	}
 	
