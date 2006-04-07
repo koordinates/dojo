@@ -63,6 +63,8 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 	DNDMode: "off",
 
+	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
+
 	strictFolders: true,
 
 	DNDModes: {
@@ -506,8 +508,30 @@ dojo.lang.extend(dojo.widget.Tree, {
 		child.parent = child.tree = null;
 
 		return child;
-	}
+	},
 
+	markLoading: function() {
+		// no way to mark tree loading
+	},
+
+	unMarkLoading: function() {
+		// no way to show that tree finished loading
+	},
+
+
+	lock: function() {
+		!this.lockLevel && this.markLoading();		
+		this.lockLevel++;		
+	},
+	unlock: function() {
+		this.lockLevel--;
+		!this.lockLevel && this.unMarkLoading();
+	},
+	isLocked: function() { return this.lockLevel > 0; },
+	flushLock: function() {
+		this.lockLevel = 0;
+		this.unMarkLoading();
+	}
 });
 
 

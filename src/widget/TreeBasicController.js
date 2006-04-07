@@ -216,16 +216,16 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	},
 
 
-	removeNode: function(node, callFunc, callObj) {
+	removeNode: function(node, callObj, callFunc) {
 		if (!this.canRemoveNode(node)) {
 			return false;
 		}
 
-		return this.doRemoveNode(node, callFunc, callObj);
+		return this.doRemoveNode(node, callObj, callFunc);
 	},
 
 
-	doRemoveNode: function(node, callFunc, callObj) {
+	doRemoveNode: function(node, callObj, callFunc) {
 		node.tree.removeNode(node);
 
 		if (callFunc) {
@@ -249,7 +249,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	/* send data to server and add child from server */
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/*in RPC controllers server responds with child data to be inserted */
-	createChild: function(parent, index, data, callFunc, callObj) {
+	createChild: function(parent, index, data, callObj, callFunc) {
 		if (!this.canCreateChild(parent, index, data)) {
 			return false;
 		}
@@ -257,7 +257,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		return this.doCreateChild.apply(this, arguments);
 	},
 
-	doCreateChild: function(parent, index, data, callFunc, callObj) {
+	doCreateChild: function(parent, index, data, callObj, callFunc) {
 
 		var widgetType = data.widgetType ? data.widgetType : "TreeNode";
 

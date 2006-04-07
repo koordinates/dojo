@@ -28,7 +28,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	/**
 	 * Common RPC error handler (dies)
 	*/
-	RPCErrorHandler: function(type, obj) {
+	RPCErrorHandler: function(type, obj, evt) {
 		alert( "RPC Error: " + (obj.message||"no message"));
 	},
 
@@ -56,17 +56,19 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	/**
 	 * Add all loaded nodes from array obj as node children and expand it
 	*/
-	loadProcessResponse: function(type, node, result, callFunc, callObj) {
+	loadProcessResponse: function(node, result, callObj, callFunc) {
 
 		if (!dojo.lang.isUndefined(result.error)) {
 			this.RPCErrorHandler("server", result.error);
 			return false;
 		}
+		
+		//dojo.debugShallow(result);
 
 		var newChildren = result;
 
 		if (!dojo.lang.isArray(newChildren)) {
-			dojo.raise('Not array loaded: '+newChildren);
+			dojo.raise('loadProcessResponse: Not array loaded: '+newChildren);
 		}
 
 		for(var i=0; i<newChildren.length; i++) {
@@ -80,6 +82,8 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 
 		node.state = node.loadStates.LOADED;
 
+		//dojo.debug(callFunc);
+
 		if (dojo.lang.isFunction(callFunc)) {
 			callFunc.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node, newChildren]);
 		}
@@ -90,39 +94,71 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 		return obj.getInfo();
 	},
 
+	runRPC: function(kw) {
+		var _this = this;
+		
+		var handle = function(type, data, evt) {
+			// unlock BEFORE any processing is done
+			// so errorHandler may apply locking			
+			if (kw.lock) {
+				dojo.lang.forEach(kw.lock,
+					function(t) { t.unlock() }
+				);
+			}
+			
+			if(type == "load"){				
+				kw.load.call(this, data);							
+			}else{
+				this.RPCErrorHandler(type, data, evt);
+			}
+			
+		}
+		
+		if (kw.lock) {
+			dojo.lang.forEach(kw.lock,
+				function(t) { t.lock() }
+			);
+		}
+		
+		
+		dojo.io.bind({
+			url: kw.url,
+			/* I hitch to get this.loadOkHandler */
+			handle: dojo.lang.hitch(this, handle),
+			mimetype: "text/json",
+			preventCache: true,
+			sync: kw.sync,
+			content: { data: dojo.json.serialize(kw.params) }
+		});
+	},
+
+		
+		
 	/**
 	 * Load children of the node from server
 	 * Synchroneous loading doesn't break control flow
 	 * I need sync mode for DnD
 	*/
-	loadRemote: function(node, sync, callFunc, callObj){
-		node.markLoading();
-
-
+	loadRemote: function(node, sync, callObj, callFunc){
+		var _this = this;
+		
 		var params = {
 			node: this.getInfo(node),
 			tree: this.getInfo(node.tree)
 		};
+		
+		//dojo.debug(callFunc)
 
-		var requestUrl = this.getRPCUrl('getChildren');
-		//dojo.debug(requestUrl)
-
-		dojo.io.bind({
-			url: requestUrl,
-			/* I hitch to get this.loadOkHandler */
-			load: dojo.lang.hitch(this,
-				function(type, result) {
-					this.loadProcessResponse(type, node, result, callFunc, callObj) ;
-				}
-			),
-			error: this.RPCErrorHandler,
-			mimetype: "text/json",
-			preventCache: true,
+		this.runRPC({
+			url: this.getRPCUrl('getChildren'),
+			load: function(result) {
+				_this.loadProcessResponse(node, result, callObj, callFunc) ;
+			},
 			sync: sync,
-			content: { data: dojo.json.serialize(params) }
+			lock: [node],
+			params: params
 		});
-
-
+			
 	},
 
 
@@ -131,6 +167,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 		if (node.state == node.loadStates.UNCHECKED && node.isFolder) {
 
 			this.loadRemote(node, sync,
+				this,
 				function(node, newChildren) {
 					this.expand(node, sync, callObj, callFunc);
 				}
@@ -155,7 +192,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	},
 
 
-	doCreateChild: function(parent, index, data, callFunc, callObj) {
+	doCreateChild: function(parent, index, data, callObj, callFunc) {
 
 		/* load nodes into newParent in sync mode, if needed, first */
 		if (parent.state == parent.loadStates.UNCHECKED) {
