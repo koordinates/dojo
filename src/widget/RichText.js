@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.RichText");
-dojo.provide("dojo.widget.HtmlRichText");
+dojo.provide("dojo.widget.html.RichText");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.dom");
@@ -16,16 +16,16 @@ try {
 
 dojo.widget.tags.addParseTreeHandler("dojo:richtext");
 
-dojo.widget.HtmlRichText = function () {
+dojo.widget.html.RichText = function () {
 	dojo.widget.HtmlWidget.call(this);
 	this.contentFilters = [];
 	// this.contentFilters.push(this.defaultContentCleaner);
 	
 	this._keyHandlers = {};
 }
-dojo.inherits(dojo.widget.HtmlRichText, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.html.RichText, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.HtmlRichText, {
+dojo.lang.extend(dojo.widget.html.RichText, {
 
 	widgetType: "richtext",
 
@@ -721,6 +721,7 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 			case "inserthorizontalrule": case "insertimage":
 			case "insertorderedlist": case "insertunorderedlist":
 			case "indent": case "outdent": case "formatblock": case "strikethrough": 
+			case "inserthtml":
 				supportedBy = isSupportedBy(mozilla | ie | opera);
 				break;
 				
@@ -786,6 +787,48 @@ dojo.lang.extend(dojo.widget.HtmlRichText, {
 					this._activeX.ui.noprompt, argument);
 			}
 	
+		/* */
+		}else if(command == "inserthtml"){
+			// on IE, we can use the pasteHTML method of the textRange object
+			// to get an undo-able innerHTML modification
+			if(dojo.render.html.ie){
+				var insertRange = this.document.selection.createRange();
+				insertRange.collapse(true);
+				/*
+				insertRange.pasteHTML("&nbsp;");
+				insertRange.select();
+				*/
+
+				/*
+				argument = argument.replace(/</g, "&#060;");
+				argument = argument.replace(/>/g, "&#060;");
+				alert(argument);
+				*/
+				// FIXME: this never inserts actual. It does not appear
+				// possible to provide an HTML serialization to the clipboard
+				// via setData from script
+				this.window.clipboardData.setData("Text", argument);
+				this.document.execCommand("paste");
+
+				// var range = this.document.selection.createRange();
+
+				// alert(range.pasteHTML);
+				// this.document.body.fireEvent("ondragstart");
+
+				// range.pasteHTML(argument);
+
+				// this.window.clipboardData.setData("Text", argument);
+				// var tevt = document.createEventObject();
+				// tevt.ctrlKey = true;
+				// tevt.keyCode = 67;
+				// this.document.body.fireEvent("onkeydown", tevt);
+				// this.document.body.fireEvent("onkeyup", tevt);
+
+				return true;
+			}else{
+				return this.document.execCommand(command, false, argument);			
+			}
+		/* */
 		// fix up unlink in Mozilla to unlink the link and not just the selection
 		} else if (command == "unlink" &&
 			this.queryCommandEnabled("unlink") && dojo.render.html.mozilla) {
