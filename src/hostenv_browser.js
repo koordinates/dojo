@@ -295,7 +295,8 @@ dj_load_init = function(){
 	}
 	dojo.hostenv.modulesLoaded();
 };
-/*
+
+/* Uncomment this to allow init after DOMLoad, not after window.onload
 
 // Mozilla exposes the event we could use
 if (dojo.render.html.mozilla) {
@@ -303,9 +304,10 @@ if (dojo.render.html.mozilla) {
 }
 
 // for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
-if (dojo.render.html.ie) {
-   document.write("<script defer>dj_load_init()<"+"/script>");
-}
+/*@cc_on @*/
+/*@if (@_win32)
+    document.write("<script defer>dj_load_init()<"+"/script>");
+/*@end @*/
 */
 
 // default for other browsers
