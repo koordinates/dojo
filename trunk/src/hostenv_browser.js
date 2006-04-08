@@ -302,12 +302,12 @@ dj_load_init = function(){
 if (dojo.render.html.mozilla) {
    document.addEventListener("DOMContentLoaded", dj_load_init, null);
 }
-
 // for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
-/*@cc_on @*/
-/*@if (@_win32)
+//Tighten up the comments below to allow init after DOMLoad, not after window.onload
+/ * @cc_on @ * /
+/ * @if (@_win32)
     document.write("<script defer>dj_load_init()<"+"/script>");
-/*@end @*/
+/ * @end @ * /
 */
 
 // default for other browsers
