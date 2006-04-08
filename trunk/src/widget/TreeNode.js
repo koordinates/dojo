@@ -37,7 +37,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	isContainer: true,
-	
+
 	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
 
 
@@ -101,29 +101,21 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 	actionIsDisabled: function(action) {
 		var _this = this;
-		
+
 		var disabled = false;
-		
-		if (this.tree.strictFolders &&action == this.actions.ADDCHILD && !this.isFolder) {
+
+		if (this.tree.strictFolders && action == this.actions.ADDCHILD && !this.isFolder) {
 			disabled = true;
 		}
-			
+
 		if (dojo.lang.inArray(_this.actionsDisabled, action)) {
 			disabled = true;
 		}
-		
-		var node = this;
-		while (true) {
-			if (node.isLocked()) {
-				disabled = true;
-				break;
-			}
-			if (node instanceof dojo.widget.Tree) {
-				break;
-			}
-			node = node.parent;
+
+		if (this.isLocked()) {
+			disabled = true;
 		}
-		
+
 		return disabled;
 	},
 
@@ -190,13 +182,13 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		this.expandIcon.src = this.tree.expandIconSrcLoading;
 	},
 
-	// if icon is "Loading" then 	
+	// if icon is "Loading" then
 	unMarkLoading: function() {
 		if (!this._markLoadingSavedIcon) return;
-		
+
 		var im = new Image();
 		im.src = this.tree.expandIconSrcLoading;
-		
+
 		//dojo.debug("Unmark "+this.expandIcon.src+" : "+im.src);
 		if (this.expandIcon.src == im.src) {
 			this.expandIcon.src = this._markLoadingSavedIcon;
@@ -301,8 +293,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 
-	unMarkSelected: function() {		
-		//dojo.debug('unmark')		
+	unMarkSelected: function() {
+		//dojo.debug('unmark')
 		dojo.html.removeClass(this.titleNode, 'dojoTreeNodeLabelSelected');
 	},
 

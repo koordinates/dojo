@@ -25,16 +25,20 @@
 <li>DND is working in between mode.
 </ul>
 
-<div dojoType="TreeLoadingController" RPCUrl="local" widgetId="treeController" DNDcontroller="create"></div>
+<div dojoType="TreeLoadingController" RPCUrl="http://tmp.x/5.php" widgetId="treeController" DNDcontroller="create"></div>
 
 
 
 <div dojoType="Tree" expandLevel="1" widgetId="firstTree" controller="treeController" DNDMode="between" DNDAcceptTypes="firstTree">
-    <div dojoType="TreeNode" title="folder" isFolder="true">
+    <div dojoType="TreeNode" title="Node 1"></div>
+    <div dojoType="TreeNode" expandLevel="1" title="Expanded to level 1">
+        <div dojoType="TreeNode" title="Node 2.1"></div>
+        <div dojoType="TreeNode" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNode" expandLevel="2" title="Expanded to level 2" isFolder="true">
     </div>
 
 </div>
-
 
 
 </body>

@@ -18,7 +18,7 @@
 
 	dojo.addOnLoad(function(){
 
-		var tree = dojo.widget.createWidget("Tree", {toggle: "wipe"});
+		var tree = dojo.widget.createWidget("Tree", {toggle: "wipe", expandLevel: 2});
 		document.body.appendChild(tree.domNode);
 
 		var rootNode = dojo.widget.createWidget("TreeNode", {title: "Root Node"});

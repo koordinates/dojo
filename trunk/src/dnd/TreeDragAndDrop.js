@@ -196,28 +196,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	},
 
 
-
-
-	onDragOut: function(e) {
-		this.clearAutoExpandTimer();
-
-		this.hideIndicator();
-	},
-
-
-	clearAutoExpandTimer: function() {
-		if (this.autoExpandTimer) {
-			clearTimeout(this.autoExpandTimer);
-			delete this.autoExpandTimer;
-			this.autoExpandTimer = null;
-		}
-	},
-
-
-
-	onDragMove: function(e, dragObjects){
-
-		var sourceTreeNode = dragObjects[0].treeNode;
+	getAcceptPosition: function(e, sourceTreeNode) {
 
 		var DNDMode = this.DNDMode;
 
@@ -245,6 +224,36 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 			 && this.controller.canMove(sourceTreeNode, this.treeNode.parent)
 			)
 		) {
+			return position;
+		} else {
+			return false;
+		}
+
+	},
+
+	onDragOut: function(e) {
+		this.clearAutoExpandTimer();
+
+		this.hideIndicator();
+	},
+
+
+	clearAutoExpandTimer: function() {
+		if (this.autoExpandTimer) {
+			clearTimeout(this.autoExpandTimer);
+			this.autoExpandTimer = null;
+		}
+	},
+
+
+
+	onDragMove: function(e, dragObjects){
+
+		var sourceTreeNode = dragObjects[0].treeNode;
+
+		var position = this.getAcceptPosition(e, sourceTreeNode);
+
+		if (position) {
 			this.showIndicator(position);
 		}
 
@@ -259,6 +268,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		return false;
 	},
 
+
+	/* get DNDMode and see which position e fits */
 	getPosition: function(e, DNDMode) {
 		node = dojo.byId(this.treeNode.labelNode);
 		var mousey = e.pageY || e.clientY + document.body.scrollTop;
@@ -312,6 +323,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
 
 		var position = this.position;
+
+//dojo.debug(position);
 
 		this.onDragOut(e);
 
