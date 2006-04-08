@@ -130,7 +130,17 @@ class Storage {
 	}
 
 	static function main(mc){
-		var app = new Storage();
+		/* Very rarely, on Internet Explorer, a timing issue will
+		 * cause the Flash file to load before the ActiveX infrastructure
+		 * has loaded, squelching our callbacks into JavaScript. Put
+		 * initializing the Storage system on a very slight timeout
+		 * to avoid this problem.
+		 * 
+		 * TODO: Move this timeout into dojo.flash somehow.
+		 */
+		_global.setTimeout(function(){ 
+			var app = new Storage(); 
+		}, 20);
 	}
 }
 

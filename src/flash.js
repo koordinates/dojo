@@ -398,7 +398,7 @@ dojo.flash = {
 	
 	/** Initializes dojo.flash. */
 	_initialize: function(){
-		dojo.debug("_initialize");
+		//dojo.debug("_initialize");
 		// see if we need to rev or install Flash on this platform
 		var installer = new dojo.flash.Install();
 		dojo.flash.installer = installer;
@@ -640,7 +640,7 @@ dojo.flash.Embed.prototype = {
 			information. Optional value; defaults to false.
 	*/
 	write: function(flashVer, doExpressInstall){
-		dojo.debug("write");
+		//dojo.debug("write");
 		if(dojo.lang.isUndefined(doExpressInstall)){
 			doExpressInstall = false;
 		}
@@ -846,6 +846,7 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
+		//dojo.debug("fscommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call

@@ -74,8 +74,7 @@ class DojoExternalInterface{
 		fscommand("call", methodName);
 		
 		// immediately return if the caller is not waiting for return results
-		if(resultsCallback == undefined ||
-			 resultsCallback == null){
+		if(resultsCallback == undefined || resultsCallback == null){
 			return;
 		}
 		
