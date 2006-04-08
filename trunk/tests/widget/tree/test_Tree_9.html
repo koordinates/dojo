@@ -50,12 +50,25 @@
 
 
 	function kill() {
+		dojo.debug("RUN DESTROY...");
 		dojo.widget.byId('tree').destroy();
+		dojo.debug("...DONE DESTROY");
 	}
 
 	function print() {
+		dojo.debug('---');
 		dojo.debug("Dumping all widgets:");
-		dojo.debug(dojo.widget.manager.getAllWidgets());
+		dojo.lang.forEach(dojo.widget.manager.getAllWidgets(),
+			function(t) { dojo.debug(t.widgetType) }
+		);
+		dojo.debug('---');
+	}
+
+	function test() {
+		print();
+		kill();
+		dojo.debug("Must be no widgets now");
+		print();
 	}
 
 
@@ -69,18 +82,12 @@
 <div dojoType="Tree" id="tree">
 	<div dojoType="TreeNode" title="Item 1">
 		<div dojoType="TreeNode" title="Item 1.1" ></div>
-		<div dojoType="TreeNode" title="Item 1.2" >
-			<div dojoType="TreeNode" title="Item 1.2.1" >
-				<div dojoType="TreeNode" title="Item 1.2.1.1" ></div>
-			</div>
-			<div dojoType="TreeNode" title="Item 1.2.2" ></div>
-		</div>
 	</div>
 	<div dojoType="TreeNode" title="Item 2" ></div>
 </div>
 
 
-<input type=button onClick="print();kill();print(); this.disabled='disabled';" value="Destroy tree"/>
+<input type=button onClick="test(); this.disabled='disabled'" value="Destroy tree"/>
 
 
 
