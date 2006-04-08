@@ -492,6 +492,10 @@ dojo.lang.extend(dojo.widget.Tree, {
 		children.splice(index,1);
 		dojo.dom.removeNode(child.domNode);
 
+		if (parent.children.length == 0) {
+			parent.containerNode.style.display = "none";
+		}
+
 		// if WAS last node (children.length decreased already) and has prevSibling
 		if (index == children.length && index>0) {
 			children[index-1].updateExpandGridColumn();
@@ -530,7 +534,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		this.lockLevel--;
 		!this.lockLevel && this.unMarkLoading();
 	},
-	
+
 	isLocked: function() {
 		var node = this;
 		while (true) {
