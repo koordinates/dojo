@@ -76,7 +76,6 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 
 		if (node.expandLevel > 0) {
-			//dojo.debug(node.expandLevel);
 			this.expandToLevel(node, node.expandLevel);
 		}
 	},
@@ -87,7 +86,9 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		var _this = this;
 		if (tree.expandLevel) {
 			dojo.lang.forEach(tree.children,
-				function(child) { _this.expandToLevel(child, tree.expandLevel-1) }
+				function(child) {
+					_this.expandToLevel(child, tree.expandLevel-1)
+				}
 			);
 		}
 	},
@@ -125,6 +126,10 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	onTreeClick: function(message){
 		var node = message.source;
 
+		if(node.isLocked()) {
+			return false;
+		}
+
 		if (node.isExpanded){
 			this.collapse(node);
 		} else {
@@ -133,12 +138,12 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	},
 
 	expand: function(node, sync, callObj, callFunc) {
-		//dojo.debug(node);
 		node.expand();
 		if (callFunc) callFunc.apply(callObj, [node]);
 	},
 
 	collapse: function(node) {
+
 		node.collapse();
 	},
 

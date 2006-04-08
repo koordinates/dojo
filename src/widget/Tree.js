@@ -254,7 +254,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 			}
 		}
 
-		dojo.event.topic.publish(this.tree.eventNames.treeCreate, { source: this } );
+		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 
 	},
 
@@ -520,14 +520,32 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 
 	lock: function() {
-		!this.lockLevel && this.markLoading();		
-		this.lockLevel++;		
+		!this.lockLevel && this.markLoading();
+		this.lockLevel++;
 	},
 	unlock: function() {
+		if (!this.lockLevel) {
+			dojo.raise("unlock: not locked");
+		}
 		this.lockLevel--;
 		!this.lockLevel && this.unMarkLoading();
 	},
-	isLocked: function() { return this.lockLevel > 0; },
+	
+	isLocked: function() {
+		var node = this;
+		while (true) {
+			if (node.lockLevel) {
+				return true;
+			}
+			if (node instanceof dojo.widget.Tree) {
+				break;
+			}
+			node = node.parent;
+		}
+
+		return false;
+	},
+
 	flushLock: function() {
 		this.lockLevel = 0;
 		this.unMarkLoading();

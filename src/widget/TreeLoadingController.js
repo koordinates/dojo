@@ -62,7 +62,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 			this.RPCErrorHandler("server", result.error);
 			return false;
 		}
-		
+
 		//dojo.debugShallow(result);
 
 		var newChildren = result;
@@ -96,31 +96,31 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 
 	runRPC: function(kw) {
 		var _this = this;
-		
+
 		var handle = function(type, data, evt) {
 			// unlock BEFORE any processing is done
-			// so errorHandler may apply locking			
+			// so errorHandler may apply locking
 			if (kw.lock) {
 				dojo.lang.forEach(kw.lock,
 					function(t) { t.unlock() }
 				);
 			}
-			
-			if(type == "load"){				
-				kw.load.call(this, data);							
+
+			if(type == "load"){
+				kw.load.call(this, data);
 			}else{
 				this.RPCErrorHandler(type, data, evt);
 			}
-			
+
 		}
-		
+
 		if (kw.lock) {
 			dojo.lang.forEach(kw.lock,
 				function(t) { t.lock() }
 			);
 		}
-		
-		
+
+
 		dojo.io.bind({
 			url: kw.url,
 			/* I hitch to get this.loadOkHandler */
@@ -132,8 +132,8 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 		});
 	},
 
-		
-		
+
+
 	/**
 	 * Load children of the node from server
 	 * Synchroneous loading doesn't break control flow
@@ -141,12 +141,12 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 	*/
 	loadRemote: function(node, sync, callObj, callFunc){
 		var _this = this;
-		
+
 		var params = {
 			node: this.getInfo(node),
 			tree: this.getInfo(node.tree)
 		};
-		
+
 		//dojo.debug(callFunc)
 
 		this.runRPC({
@@ -158,7 +158,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 			lock: [node],
 			params: params
 		});
-			
+
 	},
 
 
