@@ -530,6 +530,14 @@ ${profileDeps}
 		<!-- we copy over iframe_history.html here just in case this is a truly
 		stand-alone build that isn't being kicked off via release -->
 		<copy file="../iframe_history.html" todir="${release_dir}/" />
+		
+		<!-- copy our dojo.storage and dojo.flash SWFs -->
+		<copy todir="${release_dir}/" preservelastmodified="true">
+			<fileset dir="${root}/">
+				<include name="**/*.swf" />
+			</fileset>
+		</copy>
+		
 	</target>
 	<!-- end compress task -->
 
