@@ -100,15 +100,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.taskBarSetup();
 		}
 
-
-		// figure out how much space is used for padding/borders etc.
-		this.lostHeight=
-			(dojo.style.getOuterHeight(this.domNode)-dojo.style.getContentHeight(this.domNode))
-			+dojo.style.getOuterHeight(this.titleBar)
-			+dojo.style.getOuterHeight(this.resizeBar);
-		this.lostWidth=
-			dojo.style.getOuterWidth(this.domNode)-dojo.style.getContentWidth(this.domNode);
-
 		if (dojo.hostenv.post_load_) {
 			this.setInitialWindowState();
 		} else {
@@ -252,16 +243,21 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.width=w;
 		this.height=h;
 
+		var paddingW = dojo.style.getPaddingWidth(this.domNode);
+
 		// IE won't let you decrease the width of the domnode unless you decrease the
 		// width of the inner nodes first (???)
 		dojo.lang.forEach(
 			[this.titleBar, this.resizeBar, this.containerNode],
-			function(node){ dojo.style.setOuterWidth(node, w - this.lostWidth); }, this
+			function(node){ dojo.style.setOuterWidth(node, w - paddingW); }, this
 		);
 		dojo.style.setOuterWidth(this.domNode, w);
 
 		dojo.style.setOuterHeight(this.domNode, h);
-		dojo.style.setOuterHeight(this.containerNode, h-this.lostHeight);
+		var paddingH = dojo.style.getPaddingHeight(this.domNode)
+			+dojo.style.getOuterHeight(this.titleBar)
+			+dojo.style.getOuterHeight(this.resizeBar);
+		dojo.style.setOuterHeight(this.containerNode, h-paddingH);
 
 		this.onResized();
 	}
