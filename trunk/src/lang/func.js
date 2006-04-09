@@ -1,7 +1,6 @@
 dojo.provide("dojo.lang.func");
 
 dojo.require("dojo.lang.common");
-dojo.require("dojo.lang.type");
 
 /**
  * Runs a function in a given scope (thisObject), can
