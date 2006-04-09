@@ -103,6 +103,16 @@ dojo.string.escapeRegExp = function(str) {
 dojo.string.escapeJavaScript = function(str) {
 	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
 }
+
+dojo.string.escapeString = function(str){ 
+	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
+		).replace(/[\f]/g, "\\f"
+		).replace(/[\b]/g, "\\b"
+		).replace(/[\n]/g, "\\n"
+		).replace(/[\t]/g, "\\t"
+		).replace(/[\r]/g, "\\r");
+}
+
 // TODO: make an HTML version
 dojo.string.summary = function(str, len) {
 	if(!len || str.length <= len) {
