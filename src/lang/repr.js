@@ -2,6 +2,7 @@ dojo.provide("dojo.lang.repr");
 
 dojo.require("dojo.lang.common");
 dojo.require("dojo.AdapterRegistry");
+dojo.require("dojo.string.extras");
 
 dojo.lang.reprRegistry = new dojo.AdapterRegistry();
 dojo.lang.registerRepr = function(name, check, wrap, /*optional*/ override){
@@ -60,15 +61,12 @@ dojo.lang.reprArrayLike = function(arr){
 };
 
 dojo.lang.reprString = function(str){ 
-	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
-		).replace(/[\f]/g, "\\f"
-		).replace(/[\b]/g, "\\b"
-		).replace(/[\n]/g, "\\n"
-		).replace(/[\t]/g, "\\t"
-		).replace(/[\r]/g, "\\r");
+	dojo.deprecated("dojo.lang.reprNumber", "use `String(num)` instead", "0.4");
+	return dojo.string.escapeString(str);
 };
 
 dojo.lang.reprNumber = function(num){
+	dojo.deprecated("dojo.lang.reprNumber", "use `String(num)` instead", "0.4");
 	return num + "";
 };
 
