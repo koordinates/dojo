@@ -1,7 +1,0 @@
-var e = this.getIterator();
-var idx = i;
-while (!e.atEnd){
-	arr.splice(idx, 0, e.entry);
-	idx++;
-	e.moveNext();
-}

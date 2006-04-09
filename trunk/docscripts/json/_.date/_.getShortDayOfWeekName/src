@@ -1,3 +1,0 @@
-dojo.deprecated("dojo.date.getShortDayOfWeekName",
-	"use dojo.date.getDayShortName instead", "0.4");
-return dojo.date.shortDays[date.getDay()];

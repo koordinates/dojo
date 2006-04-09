@@ -1,3 +1,0 @@
-var r = q.shift();
-this.count = q.length;
-return r;  

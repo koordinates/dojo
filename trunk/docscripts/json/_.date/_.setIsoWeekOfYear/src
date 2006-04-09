@@ -1,2 +1,0 @@
-if (arguments.length == 1) { firstDay = 1; }  Monday
-dojo.unimplemented("dojo.date.setIsoWeekOfYear");

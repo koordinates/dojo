@@ -1,2 +1,0 @@
-clearTimeout(showTimer);
-showTimer = setTimeout(_this.show, _this.waitToShow);

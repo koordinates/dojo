@@ -1,3 +1,0 @@
-delete items[k];
-build();
-this.count = q.length;

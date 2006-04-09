@@ -1,3 +1,0 @@
-return (typeof obj != "undefined")&&(typeof Event != "undefined")&&(obj.eventPhase);
- Event does not support instanceof in Opera, otherwise:
-return (typeof Event != "undefined")&&(obj instanceof Event);

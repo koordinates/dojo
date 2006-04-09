@@ -1,5 +1,0 @@
-this.href = url;
-this.isLoaded = false;
-if ( this.preload || this.isVisible() ){
-	this.loadContents();
-}

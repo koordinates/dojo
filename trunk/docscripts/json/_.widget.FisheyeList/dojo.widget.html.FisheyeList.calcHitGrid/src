@@ -1,8 +1,0 @@
-var pos = dojo.style.getAbsolutePosition(this.domNode);
-
-this.hitX1 = pos.x - this.proximityLeft;
-this.hitY1 = pos.y - this.proximityTop;
-this.hitX2 = this.hitX1 + this.totalWidth;
-this.hitY2 = this.hitY1 + this.totalHeight;
-
-dojo.debug(this.hitX1+','+this.hitY1+'  '+this.hitX2+','+this.hitY2);

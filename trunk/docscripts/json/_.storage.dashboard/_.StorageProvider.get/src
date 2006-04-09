@@ -1,9 +1,0 @@
-if (ns && widget.system) {
-	var system = widget.system("/bin/cat " + ns + "/" + key);
-	if(system.errorString){
-		return "";
-	}
-	return system.outputString;
-}
-
-return dojo.json.evalJSON(widget.preferenceForKey(key));

@@ -1,4 +1,0 @@
-var ltype = type.toLowerCase();
-this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){ 
-	return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
-}

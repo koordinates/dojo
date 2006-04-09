@@ -1,2 +1,0 @@
-dojo.widget.Menu.call(this, item);
-this.domNode.appendChild(item.domNode);

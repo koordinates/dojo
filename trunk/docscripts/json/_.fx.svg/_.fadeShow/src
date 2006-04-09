@@ -1,2 +1,0 @@
-if(!duration) { duration = 150; }  why not have a default?
-return dojo.fx.svg.fade(node, duration, 0, 1, callback);

@@ -1,7 +1,0 @@
-if ( this.iconSrc != '' ) {
-	var img = document.createElement("img");
-	img.src = this.iconSrc;
-	this.domNode.appendChild(img);
-}
-this.domNode.appendChild(document.createTextNode(this.caption));
-dojo.html.disableSelection(this.domNode);

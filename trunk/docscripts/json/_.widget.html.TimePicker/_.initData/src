@@ -1,7 +1,0 @@
-if(this.storedTime.split("T")[1] && this.storedTime!=" " && this.storedTime.split("T")[1]!="any") {
-	this.time = dojo.widget.TimePicker.util.fromRfcDateTime(this.storedTime, this.useDefaultMinutes);
-} else if (this.useDefaultTime) {
-	this.time = dojo.widget.TimePicker.util.fromRfcDateTime("", this.useDefaultMinutes);
-} else {
-	this.selectedTime.anyTime = true;
-}

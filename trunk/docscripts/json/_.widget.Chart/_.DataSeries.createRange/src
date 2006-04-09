@@ -1,3 +1,0 @@
-var idx=this.values.length-1;
-var length=len||this.values.length;
-return {index:idx, length:length, start:Math.max(idx-length,0)};

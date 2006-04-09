@@ -1,8 +1,0 @@
-dojo.widget.Widget.call(this);
-this.widgetType = "TimePicker";
-this.isContainer = false;
- the following aliases prevent breaking people using 0.2.x
-this.toRfcDateTime = dojo.widget.TimePicker.util.toRfcDateTime;
-this.fromRfcDateTime = dojo.widget.TimePicker.util.fromRfcDateTime;
-this.toAmPmHour = dojo.widget.TimePicker.util.toAmPmHour;
-this.fromAmPmHour = dojo.widget.TimePicker.util.fromAmPmHour;

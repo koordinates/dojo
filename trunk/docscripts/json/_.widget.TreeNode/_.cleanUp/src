@@ -1,4 +1,0 @@
-try{
-	dojo.event.browser.clean(this.domNode);
-	delete this.domNode;
-}catch(e){ }

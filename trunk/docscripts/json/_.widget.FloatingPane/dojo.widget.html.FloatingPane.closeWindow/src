@@ -1,2 +1,0 @@
-dojo.dom.removeNode(this.domNode);
-this.destroy();

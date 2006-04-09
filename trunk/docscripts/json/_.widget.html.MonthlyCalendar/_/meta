@@ -1,1 +1,0 @@
-{"this_variables":["widgetType","templatePath","templateCssPath","iCalendars"],"inherits":["dojo.widget.html.DatePicker"],"this_inherits":["dojo.widget.MonthlyCalendar"]}

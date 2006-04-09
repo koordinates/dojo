@@ -1,4 +1,0 @@
-str = str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;")
-	.replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-if(!noSingleQuotes) { str = str.replace(/'/gm, "&#39;"); }
-return str;

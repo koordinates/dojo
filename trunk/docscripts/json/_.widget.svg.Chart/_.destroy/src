@@ -1,4 +1,0 @@
-while(this.domNode.childNodes.length>0){
-	this.domNode.removeChild(this.domNode.childNodes.item(0));
-}
-this.vectorNode=this.plotArea=this.dataGroup=this.axisGroup=null;

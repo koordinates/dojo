@@ -1,1 +1,0 @@
-return this.getNextSibling() ? false : true;

@@ -1,8 +1,0 @@
-var w = dojo.style.getOuterWidth(this.optionsListNode);
-var h = dojo.style.getOuterHeight(this.optionsListNode);
-if ( w==0 || h==0 ){
-	 need more time to calculate size
-	dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
-	return;
-}
-this.optionsIframe.size([0,0,w,h]);

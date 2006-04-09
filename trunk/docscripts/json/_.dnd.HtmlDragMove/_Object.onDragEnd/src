@@ -1,1 +1,0 @@
-dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");

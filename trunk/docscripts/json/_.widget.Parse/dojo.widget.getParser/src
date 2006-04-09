@@ -1,5 +1,0 @@
-if(!name){ name = "dojo"; }
-if(!this._parser_collection[name]){
-	this._parser_collection[name] = new dojo.widget.Parse();
-}
-return this._parser_collection[name];

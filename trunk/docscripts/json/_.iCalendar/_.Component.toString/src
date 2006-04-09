@@ -1,2 +1,0 @@
-return "[iCalendar.Component; " + this.name + ", " + this.properties.length +
-	" properties, " + this.components.length + " components]";

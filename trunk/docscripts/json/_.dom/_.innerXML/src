@@ -1,5 +1,0 @@
-if(node.innerXML){
-	return node.innerXML;
-}else if(typeof XMLSerializer != "undefined"){
-	return (new XMLSerializer()).serializeToString(node);
-}

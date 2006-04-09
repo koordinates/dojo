@@ -1,1 +1,0 @@
-return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']';

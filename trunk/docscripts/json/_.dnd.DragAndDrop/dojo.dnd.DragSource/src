@@ -1,4 +1,0 @@
-var dm = dojo.dnd.dragManager;
-if(dm["registerDragSource"]){  side-effect prevention
-	dm.registerDragSource(this);
-}

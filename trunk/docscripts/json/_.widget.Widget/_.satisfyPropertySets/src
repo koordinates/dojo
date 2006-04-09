@@ -1,3 +1,0 @@
- dojo.profile.end("satisfyPropertySets");
-
-return args;

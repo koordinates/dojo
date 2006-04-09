@@ -1,7 +1,0 @@
-var hour = parseInt(amPmHour, 10);
-if(isAm && hour == 12) {
-	hour = 0;
-} else if (!isAm && hour<12) {
-	hour = hour + 12;
-}
-return hour;

@@ -1,1 +1,0 @@
-return this.tree.addChild.apply(this, arguments);

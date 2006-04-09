@@ -1,3 +1,0 @@
-this.initialized = false;
-this.flash = null;
-this.backlog = [];

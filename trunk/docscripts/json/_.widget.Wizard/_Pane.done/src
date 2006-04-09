@@ -1,3 +1,0 @@
-if (this.doneFunction && dojo.lang.isFunction(this.doneFunction)) {
-	this.doneFunction();
-}

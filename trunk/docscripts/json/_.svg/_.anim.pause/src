@@ -1,1 +1,0 @@
-try { d.documentElement.pauseAnimations(); } catch(e){ }

@@ -1,4 +1,0 @@
-this.treeNode.labelNode.style.borderBottom="";
-this.treeNode.labelNode.style.borderTop="";
-this.treeNode.unMarkSelected();
-this.position = null;

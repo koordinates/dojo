@@ -1,7 +1,0 @@
-flags = {
-	symbol: "€",
-	placement: "after",
-	decimal: ",",
-	separator: "."
-};
-return dojo.validate.isCurrency(value, flags);

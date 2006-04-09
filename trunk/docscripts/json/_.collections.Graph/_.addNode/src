@@ -1,8 +1,0 @@
-var n = arguments[0];
-if (arguments.length > 1) {
-	n = new node(arguments[0], arguments[1]);
-}
-if (!this.nodes.containsKey(n.key)) {
-	this.nodes.add(n);
-	this.count++;
-}

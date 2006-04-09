@@ -1,1 +1,0 @@
-return dojo.date.days[dateObject.getDay()];

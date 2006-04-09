@@ -1,5 +1,0 @@
-var enclosed = this.getFunctionFromArgs(cb, cbfn);
-if(arguments.length > 2){
-	enclosed = dojo.lang.curryArguments(null, enclosed, arguments, 2);
-}
-return this.addCallbacks(enclosed, null);

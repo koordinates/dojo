@@ -1,1 +1,0 @@
-dojo.widget.DomMenuItem.superclass.constructor.call(this);

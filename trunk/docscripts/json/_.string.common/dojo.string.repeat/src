@@ -1,9 +1,0 @@
-var out = "";
-for(var i = 0; i < count; i++) {
-	out += str;
-	if(separator && i < count - 1) {
-		 separator: String
-		out += separator;
-	}
-}
-return out;  

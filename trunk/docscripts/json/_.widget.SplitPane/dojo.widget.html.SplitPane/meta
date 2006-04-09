@@ -1,1 +1,0 @@
-{"this_variables":["sizers","paneWidth","paneHeight","isHorizontal","isActiveResize","virtualSizer","paneBefore","paneAfter","isSizing","sizingSplitter","originPos","dragOffset","startPoint","lastPoint","offsetX","offsetY","isDraggingLeft"],"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.HtmlWidget"]}

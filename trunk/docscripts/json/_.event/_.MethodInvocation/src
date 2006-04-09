@@ -1,8 +1,0 @@
-this.jp_ = join_point;
-this.object = obj;
-this.args = [];
-for(var x=0; x<args.length; x++){
-	this.args[x] = args[x];
-}
- the index of the 'around' that is currently being executed.
-this.around_index = -1;

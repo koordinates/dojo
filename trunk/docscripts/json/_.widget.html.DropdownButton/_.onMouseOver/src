@@ -1,2 +1,0 @@
-dojo.html.addClass(this.button, "dojoButtonHover");
-dojo.html.removeClass(this.button, "dojoButtonNoHover");

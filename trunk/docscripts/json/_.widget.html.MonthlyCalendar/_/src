@@ -1,7 +1,0 @@
-dojo.widget.MonthlyCalendar.call(this);
-dojo.widget.html.DatePicker.call(this);
-this.widgetType = "MonthlyCalendar";
-this.templatePath =  dojo.uri.dojoUri("src/widget/templates/HtmlMonthlyCalendar.html");
-this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlMonthlyCalendar.css");
-
-this.iCalendars = [];

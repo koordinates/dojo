@@ -1,3 +1,0 @@
-var _this = this;
-
-return (action == this.actions.ADDCHILD && !this.isFolder) || dojo.lang.inArray(_this.actionsDisabled, action);

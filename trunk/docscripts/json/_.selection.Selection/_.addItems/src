@@ -1,4 +1,0 @@
-var args = dojo.lang.unnest(arguments);
-for(var i = 0; i < args.length; i++) {
-	this.items.push(args[i]);
-}

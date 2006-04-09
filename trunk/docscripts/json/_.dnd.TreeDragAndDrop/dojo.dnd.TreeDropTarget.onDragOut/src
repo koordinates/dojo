@@ -1,3 +1,0 @@
-this.clearAutoExpandTimer();
-
-this.hideIndicator();

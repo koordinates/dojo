@@ -1,4 +1,0 @@
-if(!dojo.lang.inArray(this.acceptedTypes, "*")){  wildcard
-	if(!dojo.lang.inArray(this.acceptedTypes, type)) { return false; }
-}
-return true;

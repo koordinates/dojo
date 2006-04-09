@@ -1,5 +1,0 @@
-this._hasFocus = false;
-if(this.blurTimer){
-	clearTimeout(this.blurTimer);
-}
-this.blurTimer = dojo.lang.setTimeout(this, "checkBlurred", 100);

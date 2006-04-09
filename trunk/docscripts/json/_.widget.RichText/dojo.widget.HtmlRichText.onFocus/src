@@ -1,7 +1,0 @@
-if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
-	this._initialFocus = false;
-	if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
-		this.execCommand("selectall");
-		this.window.getSelection().collapseToStart();
-	}
-}

@@ -1,2 +1,0 @@
-this.domNode.checked = !this.domNode.checked ? true : false;
-this.updateImgSrc();

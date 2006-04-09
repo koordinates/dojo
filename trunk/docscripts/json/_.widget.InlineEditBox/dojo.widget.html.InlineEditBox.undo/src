@@ -1,6 +1,0 @@
-if(this.history.length > 0){
-	var value = this.history.pop();
-	this.editable.innerHTML = value;
-	this.textValue = value;
-	this.onUndo(value);
-}

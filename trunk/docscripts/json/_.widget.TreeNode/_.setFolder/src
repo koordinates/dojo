@@ -1,3 +1,0 @@
-dojo.event.connect(this.expandIcon, 'onclick', this, 'onTreeClick');
-this.expandIcon.src = this.isExpanded ? this.tree.expandIconSrcMinus : this.tree.expandIconSrcPlus;
-this.isFolder = true;

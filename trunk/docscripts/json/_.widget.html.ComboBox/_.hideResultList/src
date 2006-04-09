@@ -1,6 +1,0 @@
-if (this._result_list_open) {
-	this._result_list_open = false;
-	dojo.fx.fadeHide(this.optionsListNode, 200);
-	this.optionsIframe.size([0,0,0,0]);
-}
-return;

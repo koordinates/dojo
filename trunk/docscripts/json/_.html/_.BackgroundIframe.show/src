@@ -1,2 +1,0 @@
-if(!this.iframe) { return; }
-this.iframe.style.display = "block";

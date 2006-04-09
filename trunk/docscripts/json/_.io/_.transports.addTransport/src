@@ -1,4 +1,0 @@
-this.push(name);
- FIXME: do we need to handle things that aren't direct children of the
- dojo.io namespace? (say, dojo.io.foo.fooTransport?)
-this[name] = dojo.io[name];

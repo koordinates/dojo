@@ -1,5 +1,0 @@
-dojo.debug("Adding Calendar");
-this.iCalendars.push(cal);
-dojo.debug("Starting init");
-this.initUI()
-dojo.debug("done init");

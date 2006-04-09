@@ -1,3 +1,0 @@
-node.markSelected();
-
-this.selectedNode = node;

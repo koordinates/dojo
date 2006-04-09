@@ -1,9 +1,0 @@
-dojo.doc._rpc.callRemote(
-	"saveForm",
-	{
-		form: "DocPkgForm",
-		path: "/WikiHome/DojoDotDoc/id",
-		pname1: "main/text",
-		pvalue1: "Test"
-	}
-).addCallbacks(dojo.doc._results, dojo.doc._results);

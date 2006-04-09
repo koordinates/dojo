@@ -1,1 +1,0 @@
-return dojo.graphics.color.blend(this.toRgb(), new Color(color).toRgb(), weight);

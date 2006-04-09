@@ -1,9 +1,0 @@
-var _this = this;
-this.tree.toggleObj.show(
-	_this.containerNode, _this.toggleDuration,	_this.explodeSrc, _this.onShow
-);
-
- if dnd is in action, recalculate changed coordinates 
-if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
-	dojo.dnd.dragManager.cacheTargetLocations();
-}

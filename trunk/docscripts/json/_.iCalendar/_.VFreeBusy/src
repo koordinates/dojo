@@ -1,3 +1,0 @@
-this.name = "VFREEBUSY";
-this._ValidProperties = VFreeBusyProperties;
-dojo.iCalendar.Component.call(this, body);

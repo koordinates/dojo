@@ -1,1 +1,0 @@
-this.hueSliderNode.setAttribute("y", parseInt((this.hue/360) * parseInt(this.height) - 2) + "px" );
