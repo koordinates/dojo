@@ -1,7 +1,6 @@
 dojo.provide("dojo.lang.extras");
 
 dojo.require("dojo.lang.common");
-dojo.require("dojo.lang.type");
 
 /**
  * Sets a timeout in milliseconds to execute a function in a given context
