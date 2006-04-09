@@ -1,4 +1,0 @@
-if(this._toolbarContainer) {
-	this._toolbarContainer.domNode.style.display = "";
-	this._toolbarContainer.enable();
-}

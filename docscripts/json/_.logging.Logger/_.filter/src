@@ -1,8 +1,0 @@
-for(var x=0; x<this.filters.length; x++){
-	if((this.filters[x]["filter"])&&
-	   (!this.filters[x].filter(rec))||
-	   (rec.level<this.cutOffLevel)){
-		return false;
-	}
-}
-return true;

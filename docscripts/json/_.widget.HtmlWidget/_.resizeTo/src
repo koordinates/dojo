@@ -1,3 +1,0 @@
-dojo.style.setOuterWidth(this.domNode, w);
-dojo.style.setOuterHeight(this.domNode, h);
-this.onResized();

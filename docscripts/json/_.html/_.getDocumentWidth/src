@@ -1,2 +1,0 @@
-dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
-return dojo.html.getViewportWidth();

@@ -1,3 +1,0 @@
-if (typeof this.onStart == "function") this.onStart();
-this.isRunning = true;
-timer = window.setInterval(this.onTick, this.interval);

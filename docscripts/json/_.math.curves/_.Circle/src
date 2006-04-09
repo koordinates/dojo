@@ -1,2 +1,0 @@
-dojo.math.curves.CenteredArc.call(this, center, radius, 0, 360);
-return this;

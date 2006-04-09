@@ -1,2 +1,0 @@
-var n = this.getGroup(node) || node;
-n.ownerSVGElement.appendChild(n);

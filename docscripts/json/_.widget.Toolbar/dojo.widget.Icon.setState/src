@@ -1,8 +1,0 @@
-if(dojo.lang.inArray(value, states)) {
-	if(this[value]) {
-		currentState = value;
-		domNode.setAttribute("src", this[currentState].src);
-	}
-} else {
-	throw new Error("Invalid state set on Icon (state: " + value + ")");
-}

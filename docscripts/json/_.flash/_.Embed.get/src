@@ -1,1 +1,0 @@
-return (dojo.render.html.ie) ? window[this.id] : document[this.id];

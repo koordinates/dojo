@@ -1,3 +1,0 @@
-this.previousYearLabelNode.innerHTML = year - 1;
-this.currentYearLabelNode.innerHTML = year;
-this.nextYearLabelNode.innerHTML = year + 1;

@@ -1,3 +1,0 @@
-dojo.widget.HtmlWidget.call(this);
-this.contentFilters = [];
- this.contentFilters.push(this.defaultContentCleaner);

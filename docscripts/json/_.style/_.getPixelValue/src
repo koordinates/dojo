@@ -1,8 +1,0 @@
-node = dojo.byId(node);
-var result = dojo.style.getUnitValue(node, cssSelector, autoIsZero);
- FIXME: there is serious debate as to whether or not this is the right solution
-if(isNaN(result.value)){ return 0; }
- FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
- but there are cross-browser complexities
-if((result.value)&&(result.units != 'px')){ return NaN; }
-return result.value;

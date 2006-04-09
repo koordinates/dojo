@@ -1,2 +1,0 @@
-dojo.html.addClass(this.domNode, 'dojoMenuItem2Hover');
-this.submenuNode.style.backgroundImage = 'url('+this.parent.submenuIconOnSrc+')';

@@ -1,4 +1,0 @@
-for (var i = 0; i < q.length; i++){
-	if (q[i] == o) return true;
-}
-return false;  

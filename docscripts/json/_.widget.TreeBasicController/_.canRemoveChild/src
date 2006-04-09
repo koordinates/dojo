@@ -1,5 +1,0 @@
-if (child.actionIsDisabled(child.actions.REMOVE)) {
-	return false;
-}
-
-return true;

@@ -1,3 +1,0 @@
-return function(){
-	return this[funcName].apply(this, arguments);
-};

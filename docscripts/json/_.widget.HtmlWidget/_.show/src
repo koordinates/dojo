@@ -1,2 +1,0 @@
-dojo.style.show(node);
-if(dojo.lang.isFunction(callback)){ callback(); }

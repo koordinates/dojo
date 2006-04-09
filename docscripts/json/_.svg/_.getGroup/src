@@ -1,6 +1,0 @@
-var a = this.getAncestors(node);
-for (var i = 0; i < a.length; i++){
-	if (a[i].nodeType == this.ELEMENT_NODE && a[i].nodeName.toLowerCase() == "g")
-		return a[i];
-}
-return null;

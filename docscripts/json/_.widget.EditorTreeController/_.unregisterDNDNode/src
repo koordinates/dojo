@@ -1,9 +1,0 @@
-if (this.dragSources[node.widgetId]) {
-	dojo.dnd.dragManager.unregisterDragSource(this.dragSources[node.widgetId]);
-	delete this.dragSources[node.widgetId];
-}
-
-if (this.dropTargets[node.widgetId]) {
-	dojo.dnd.dragManager.unregisterDropTarget(this.dropTargets[node.widgetId]);
-	delete this.dropTargets[node.widgetId];
-}

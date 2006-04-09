@@ -1,2 +1,0 @@
-node = dojo.byId(node);
-return dojo.style.getInnerWidth(node) + dojo.style.getMarginWidth(node);

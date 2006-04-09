@@ -1,1 +1,0 @@
-return (wh instanceof Array || typeof wh == "array");  

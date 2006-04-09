@@ -1,3 +1,0 @@
-node = dojo.byId(node);
-dojo.html.removeClass(node, oldClass);
-dojo.html.addClass(node, newClass);

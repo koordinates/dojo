@@ -1,1 +1,0 @@
-return Math.sqrt(this.getVariance(len));

@@ -1,1 +1,0 @@
-return dojo.date.setIso8601(new Date(0), string);

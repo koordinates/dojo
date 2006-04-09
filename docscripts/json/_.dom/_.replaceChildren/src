@@ -1,2 +1,0 @@
-dojo.dom.removeChildren(node);
-node.appendChild(newChild);

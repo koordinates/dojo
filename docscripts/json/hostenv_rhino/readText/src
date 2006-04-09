@@ -1,9 +1,0 @@
-var jf = new java.io.File(uri);
-var sb = new java.lang.StringBuffer();
-var input = new java.io.BufferedReader(new java.io.FileReader(jf));
-var line = "";
-while((line = input.readLine()) != null){
-	sb.append(line);
-	sb.append(java.lang.System.getProperty("line.separator"));
-}
-return sb.toString();

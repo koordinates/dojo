@@ -1,6 +1,0 @@
-if (this.passFunction) {
-	this.passFunction = dj_global[this.passFunction];
-}
-if (this.doneFunction) {
-	this.doneFunction = dj_global[this.doneFunction];
-}

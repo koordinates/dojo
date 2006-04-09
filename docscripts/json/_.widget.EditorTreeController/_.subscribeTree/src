@@ -1,9 +1,0 @@
-if (!tree.eventNames.nodeCreate) dojo.raise("Can't subscribe controller to empty nodeCreate")
-if (!tree.eventNames.treeClick) dojo.raise("Can't subscribe controller to empty treeClick")
-if (!tree.eventNames.iconClick) dojo.raise("Can't subscribe controller to empty iconClick")
-if (!tree.eventNames.titleClick) dojo.raise("Can't subscribe controller to empty titleClick")
-
-dojo.event.topic.subscribe(tree.eventNames.nodeCreate, this, "onNodeCreate");
-dojo.event.topic.subscribe(tree.eventNames.treeClick, this, "onTreeClick");
-dojo.event.topic.subscribe(tree.eventNames.iconClick, this, "onIconClick");
-dojo.event.topic.subscribe(tree.eventNames.titleClick, this, "onTitleClick");

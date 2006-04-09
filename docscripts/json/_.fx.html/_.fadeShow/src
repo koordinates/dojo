@@ -1,4 +1,0 @@
-node = dojo.byId(node);
-if(!duration) { duration = 150; }  why not have a default?
-node.style.display = "block";
-return dojo.fx.html.fade(node, duration, 0, 1, callback, dontPlay);

@@ -1,9 +1,0 @@
-if(!this.iframe) { return; }
-
-coords = dojo.html.toCoordinateArray(node, true);
-
-var s = this.iframe.style;
-s.width = coords.w + "px";
-s.height = coords.h + "px";
-s.left = coords.x + "px";
-s.top = coords.y + "px";

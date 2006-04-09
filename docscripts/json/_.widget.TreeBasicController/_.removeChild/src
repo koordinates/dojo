@@ -1,5 +1,0 @@
-if (!this.canRemoveChild(node)) {
-	return false;
-}
-
-return this.doRemoveChild(node, callFunc, callObj);

@@ -1,5 +1,0 @@
-var _this = this;
-dojo.debug("Unbind from "+node);
-dojo.lang.forEach(node.getDescendants(),
-	function(e) {_this.unBindDomNode(e.labelNode); }
-);

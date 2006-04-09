@@ -1,1 +1,0 @@
-return this.logType("DEBUG", this.argsToArr(arguments));

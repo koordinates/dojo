@@ -1,5 +1,0 @@
-if (force != true &&
-	(node === ref || node.nextSibling === ref)){ return false; }
-var parent = ref.parentNode;
-parent.insertBefore(node, ref);
-return true;

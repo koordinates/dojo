@@ -1,7 +1,0 @@
-if(!capture){ var capture = false; }
-evtName = evtName.toLowerCase();
-if(evtName.substr(0,2)=="on"){ evtName = evtName.substr(2); }
- FIXME: this is mostly a punt, we aren't actually doing anything on IE
-if(node.removeEventListener){
-	node.removeEventListener(evtName, fp, capture);
-}

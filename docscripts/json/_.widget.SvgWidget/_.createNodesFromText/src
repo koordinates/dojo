@@ -1,1 +1,0 @@
-return dojo.dom.createNodesFromText(txt, wrap);

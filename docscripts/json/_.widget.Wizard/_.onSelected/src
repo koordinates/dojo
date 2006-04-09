@@ -1,9 +1,0 @@
-if(this.selected ){
-	if (this.selected.checkPass()) {
-		this.selected.hide();
-	} else {
-		return;
-	}
-}
-panel.show();
-this.selected = panel;

@@ -1,9 +1,0 @@
-var propertySets = [];
-for(var x=0; x < this.propertySetsList.length; x++){
-	var cpl = this.propertySetsList[x];
-	var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
-	if((cpcc)&&(propertySetId == cpcc[0].value)){
-		propertySets.push(cpl);
-	}
-}
-return propertySets;

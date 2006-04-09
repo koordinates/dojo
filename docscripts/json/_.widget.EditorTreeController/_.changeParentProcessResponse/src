@@ -1,9 +1,0 @@
-if (!dojo.lang.isUndefined(result.error)) {
-	this.RPCErrorHandler(result.error);
-	return false;
-}
-
-child.tree.changeParent(child, newParent, index);
-this.updateDND(child);
-
-return true;

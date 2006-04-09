@@ -1,9 +1,0 @@
-if(!node) { return null; }
-do {
-	node = node.nextSibling;
-} while(node && node.nodeType != dojo.dom.ELEMENT_NODE);
-
-if(node && tagName && tagName.toLowerCase() != node.tagName.toLowerCase()) {
-	return dojo.dom.nextElement(node, tagName);
-}
-return node;

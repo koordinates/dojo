@@ -1,1 +1,0 @@
-dojo.deprecated("size", "stop calling this function, it's no longer necessary");

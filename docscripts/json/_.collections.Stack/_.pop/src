@@ -1,3 +1,0 @@
-var r = q.pop();
-this.count = q.length;
-return r;  

@@ -1,1 +1,0 @@
-return this.flash.get(key, ns||this.namespace);

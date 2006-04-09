@@ -1,3 +1,0 @@
-var eventX = e.clientX;
-var borderX = dojo.style.totalOffsetLeft(this.borderCell);
-return (eventX > borderX );

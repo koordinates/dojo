@@ -1,5 +1,0 @@
-flags = {
-	symbol: "¥",
-	cents: false
-};
-return dojo.validate.isCurrency(value, flags);

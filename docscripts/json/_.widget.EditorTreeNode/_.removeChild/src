@@ -1,1 +1,0 @@
-return this.tree.removeChild.apply(this, arguments);

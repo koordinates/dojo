@@ -1,3 +1,0 @@
-node = dojo.byId(node);
-var c = dojo.html.getClass(node);
-return (c == "") ? [] : c.split(/\s+/g);
