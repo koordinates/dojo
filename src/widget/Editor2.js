@@ -20,13 +20,14 @@ dojo.widget.defineWidget(
 		saveArgName: "editorContent",
 		closeOnSave: false,
 
-		_toolbarContainer: null, // ToolbarContainer widget
-
-		_toolbars: [],
-		_toolbarType: "Toolbar",
+		toolbarWidget: null,
 
 		editorOnLoad: function(){
-			var et = dojo.widget.createWidget("Editor2Toolbar", {}, this.domNode, "before");
+			var tbFiller = document.createElement("div");
+			// FXIME: insert tbFiller before the editor to prevent toolbar creation "flash"
+			var tbOpts = {};
+			tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
+			var et = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode, "before");
 			dojo.event.connect(et, "exec", this, "execCommand");
 			// dojo.debug(et);
 		},

@@ -832,9 +832,8 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 			case "subscript": case "superscript":
 			case "fontname": case "fontsize":
 			case "forecolor": case "hilitecolor":
-			case "justifycenter": case "justifyfull": case "justifyleft": case "justifyright":
-			case "cut": case "copy": case "paste": case "delete":
-			case "undo": case "redo":
+			case "justifycenter": case "justifyfull": case "justifyleft": 
+			case "justifyright": case "delete": case "undo": case "redo":
 				supportedBy = isSupportedBy(mozilla | ie | safari | opera);
 				break;
 				
@@ -849,6 +848,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 			case "blockdirltr": case "blockdirrtl":
 			case "dirltr": case "dirrtl":
 			case "inlinedirltr": case "inlinedirrtl":
+			case "cut": case "copy": case "paste": 
 				supportedBy = isSupportedBy(ie);
 				break;
 			
@@ -878,6 +878,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 	 * @param argument An optional argument to the command
 	 */
 	execCommand: function (command, argument) {
+		var returnValue;
 		if (this.object) {
 			if (command == "forecolor") { command = "setforecolor"; }
 			else if (command == "backcolor") { command = "setbackcolor"; }
@@ -971,7 +972,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 			selection.removeAllRanges();
 			selection.addRange(range);
 			
-			var returnValue = this.document.execCommand("unlink", false, null);
+			returnValue = this.document.execCommand("unlink", false, null);
 			
 			// restore original selection
 			var selectionRange = document.createRange();
@@ -990,19 +991,23 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 			var table = "<table><tbody>";
 			for (var i = 0; i < argument.rows; i++) { table += cols; }
 			table += "</tbody></table>";
-			var returnValue = this.document.execCommand("inserthtml", false, table);
+			returnValue = this.document.execCommand("inserthtml", false, table);
 
 		} else if (command == "hilitecolor" && dojo.render.html.mozilla) {
 			// mozilla doesn't support hilitecolor properly when useCSS is
 			// set to false (bugzilla #279330)
 			
 			this.document.execCommand("useCSS", false, false);
-			var returnValue = this.document.execCommand(command, false, argument);			
+			returnValue = this.document.execCommand(command, false, argument);			
 			this.document.execCommand("useCSS", false, true);
 		
 		} else {
 			argument = arguments.length > 1 ? argument : null;
-			var returnValue = this.document.execCommand(command, false, argument);
+			// try{
+				returnValue = this.document.execCommand(command, false, argument);
+			// }catch(e){
+			// 	dojo.debug(e);
+			// }
 		}
 		
 		this.onDisplayChanged();

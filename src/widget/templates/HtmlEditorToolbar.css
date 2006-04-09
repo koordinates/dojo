@@ -9,10 +9,27 @@
 	border: 1px solid black;
 }
 
+.ColorDropdownContainer {
+	position: absolute;
+	z-index: 1000;
+	overflow: auto;
+	cursor: default;
+	width: 250px;
+	height: 150px;
+	background-color: white;
+	border: 1px solid black;
+}
+
 .EditorToolbarDomNode {
 	background-image: url(buttons/bg-fade.png);
 	background-repeat: repeat-x;
 	background-position: 0px -50px;
+}
+
+.EditorToolbarSmallBg {
+	background-image: url(images/toolbar-bg.gif);
+	background-repeat: repeat-x;
+	background-position: 0px 0px;
 }
 
 div.bigIcon {
@@ -62,7 +79,7 @@ span.icon[class~=icon] {
 	border-top: 1px solid white;
 }
 
-.sep { width: 5px; min-width: 5px; background-position: 0px 0px}
+.sep { width: 5px; min-width: 5px; max-width: 5px; background-position: 0px 0px}
 .backcolor { background-position: -18px 0px}
 .bold { background-position: -36px 0px}
 .cancel { background-position: -54px 0px}
