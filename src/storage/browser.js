@@ -86,7 +86,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			 && /^string:/.test(results)){
 			results = results.substring("string:".length);
 		}else{
-			results = dojo.json.evalJSON(results);
+			results = dojo.json.evalJson(results);
 		}
     
 		return results;

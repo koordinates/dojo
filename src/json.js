@@ -40,7 +40,10 @@ dojo.json = {
 		}
 	},
 
-	evalJSON: dojo.lang.forward("evalJson"),
+	evalJSON: function (json) {
+		dojo.deprecated("dojo.json.evalJSON", "use dojo.json.evalJson", "0.4");
+		return this.evalJson(json);
+	},
 
 	serialize: function(o){
 		/***
