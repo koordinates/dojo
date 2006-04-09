@@ -1,6 +1,5 @@
 dojo.provide("dojo.AdapterRegistry");
 dojo.require("dojo.lang.func");
-dojo.require("dojo.lang.type");
 
 dojo.AdapterRegistry = function(){
     /***
