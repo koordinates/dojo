@@ -4,6 +4,7 @@ dojo.provide("dojo.widget.html.Editor2Toolbar");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.RichText");
+dojo.require("dojo.widget.ColorPalette");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Editor2Toolbar",
@@ -45,7 +46,7 @@ dojo.widget.defineWidget(
 		hilitecolorButton: null,
 		formatSelectBox: null,
 
-		buttonClick: function(){ dojo.debug("buttonClick"); },
+		buttonClick: function(e){ e.preventDefault(); /* dojo.debug("buttonClick"); */ },
 
 		buttonMouseOver: function(e){  },
 		buttonMouseOut: function(e){  },
@@ -71,6 +72,7 @@ dojo.widget.defineWidget(
 		undoClick: function(){ this.exec("undo"); },
 		redoClick: function(){ this.exec("redo"); },
 		linkClick: function(){ 
+			// FIXME: we need to alert the user if they haven't selected any text
 			this.exec(	"createlink", 
 						prompt("Please enter the URL of the link:", "http://"));
 		},
@@ -119,6 +121,27 @@ dojo.widget.defineWidget(
 					}
 				},
 				this);
+		},
+
+		highlightButton: function(name){
+			var bn = name+"Button";
+			if(this[bn]){
+				with(this[bn].style){
+					backgroundColor = "White";
+					border = "1px solid #aeaeab";
+				}
+			}
+		},
+
+		unhighlightButton: function(name){
+			var bn = name+"Button";
+			if(this[bn]){
+				dojo.debug("unhighlighting:", name);
+				with(this[bn].style){
+					backgroundColor = "";
+					border = "";
+				}
+			}
 		}
 	},
 	"html",
