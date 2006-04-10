@@ -11,7 +11,6 @@ dojo.style.boxSizing = {
 };
 
 dojo.style.getBoxSizing = function(node) {
-	node = dojo.byId(node);
 	if (dojo.render.html.ie || dojo.render.html.opera){ 
 		var cm = document["compatMode"];
 		if (cm == "BackCompat" || cm == "QuirksMode"){ 
@@ -95,7 +94,6 @@ dojo.style.isBorderBox = function(node){
 }
 
 dojo.style.getUnitValue = function(node, cssSelector, autoIsZero){
-	node = dojo.byId(node);
 	var result = { value: 0, units: 'px' };
 	var s = dojo.style.getComputedStyle(node, cssSelector);
 	if (s == '' || (s == 'auto' && autoIsZero)){ return result; }
@@ -115,7 +113,6 @@ dojo.style.getUnitValue = function(node, cssSelector, autoIsZero){
 }
 
 dojo.style.getPixelValue = function(node, cssSelector, autoIsZero){
-	node = dojo.byId(node);
 	var result = dojo.style.getUnitValue(node, cssSelector, autoIsZero);
 	// FIXME: there is serious debate as to whether or not this is the right solution
 	if(isNaN(result.value)){ return 0; }
@@ -128,12 +125,10 @@ dojo.style.getPixelValue = function(node, cssSelector, autoIsZero){
 dojo.style.getNumericStyle = dojo.style.getPixelValue; // backward compat
 
 dojo.style.isPositionAbsolute = function(node){
-	node = dojo.byId(node);
 	return (dojo.style.getComputedStyle(node, 'position') == 'absolute');
 }
 
 dojo.style.getMarginWidth = function(node){
-	node = dojo.byId(node);
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
 	var left = dojo.style.getPixelValue(node, "margin-left", autoIsZero);
 	var right = dojo.style.getPixelValue(node, "margin-right", autoIsZero);
@@ -141,14 +136,12 @@ dojo.style.getMarginWidth = function(node){
 }
 
 dojo.style.getBorderWidth = function(node){
-	node = dojo.byId(node);
 	var left = (dojo.style.getStyle(node, 'border-left-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-left-width"));
 	var right = (dojo.style.getStyle(node, 'border-right-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-right-width"));
 	return left + right;
 }
 
 dojo.style.getPaddingWidth = function(node){
-	node = dojo.byId(node);
 	var left = dojo.style.getPixelValue(node, "padding-left", true);
 	var right = dojo.style.getPixelValue(node, "padding-right", true);
 	return left + right;
@@ -165,7 +158,6 @@ dojo.style.getInnerWidth = function(node){
 }
 
 dojo.style.getOuterWidth = function(node){
-	node = dojo.byId(node);
 	return dojo.style.getInnerWidth(node) + dojo.style.getMarginWidth(node);
 }
 
@@ -190,7 +182,6 @@ dojo.style.getMarginBoxWidth = dojo.style.getOuterWidth;
 dojo.style.setMarginBoxWidth = dojo.style.setOuterWidth;
 
 dojo.style.getMarginHeight = function(node){
-	node = dojo.byId(node);
 	var autoIsZero = dojo.style.isPositionAbsolute(node);
 	var top = dojo.style.getPixelValue(node, "margin-top", autoIsZero);
 	var bottom = dojo.style.getPixelValue(node, "margin-bottom", autoIsZero);
@@ -198,14 +189,12 @@ dojo.style.getMarginHeight = function(node){
 }
 
 dojo.style.getBorderHeight = function(node){
-	node = dojo.byId(node);
 	var top = (dojo.style.getStyle(node, 'border-top-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-top-width"));
 	var bottom = (dojo.style.getStyle(node, 'border-bottom-style') == 'none' ? 0 : dojo.style.getPixelValue(node, "border-bottom-width"));
 	return top + bottom;
 }
 
 dojo.style.getPaddingHeight = function(node){
-	node = dojo.byId(node);
 	var top = dojo.style.getPixelValue(node, "padding-top", true);
 	var bottom = dojo.style.getPixelValue(node, "padding-bottom", true);
 	return top + bottom;
@@ -222,7 +211,6 @@ dojo.style.getInnerHeight = function(node){
 }
 
 dojo.style.getOuterHeight = function(node){
-	node = dojo.byId(node);
 	return dojo.style.getInnerHeight(node) + dojo.style.getMarginHeight(node);
 }
 
@@ -332,21 +320,18 @@ dojo.style.sumAncestorProperties = function(node, prop) {
 }
 
 dojo.style.totalOffsetLeft = function(node, includeScroll){
-	node = dojo.byId(node);
 	return dojo.style.getTotalOffset(node, "left", includeScroll);
 }
 
 dojo.style.getAbsoluteX = dojo.style.totalOffsetLeft;
 
 dojo.style.totalOffsetTop = function(node, includeScroll){
-	node = dojo.byId(node);
 	return dojo.style.getTotalOffset(node, "top", includeScroll);
 }
 
 dojo.style.getAbsoluteY = dojo.style.totalOffsetTop;
 
 dojo.style.getAbsolutePosition = function(node, includeScroll) {
-	node = dojo.byId(node);
 	var position = [
 		dojo.style.getAbsoluteX(node, includeScroll),
 		dojo.style.getAbsoluteY(node, includeScroll)
@@ -536,7 +521,6 @@ dojo.style.getStyleProperty = function(node, cssSelector){
  * Retrieve a property value from a node's style object.
  */
 dojo.style.getStyle = function(node, cssSelector){
-	node = dojo.byId(node);
 	var value = dojo.style.getStyleProperty(node, cssSelector);
 	return (value ? value : dojo.style.getComputedStyle(node, cssSelector));
 }
