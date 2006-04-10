@@ -293,7 +293,6 @@ dojo.html.getClass = function(node){
  * are found;
  */
 dojo.html.getClasses = function(node) {
-	node = dojo.byId(node);
 	var c = dojo.html.getClass(node);
 	return (c == "") ? [] : c.split(/\s+/g);
 }
@@ -304,7 +303,6 @@ dojo.html.getClasses = function(node) {
  * styles, only classes directly applied to the node.
  */
 dojo.html.hasClass = function(node, classname){
-	node = dojo.byId(node);
 	return dojo.lang.inArray(dojo.html.getClasses(node), classname);
 }
 
@@ -315,8 +313,6 @@ dojo.html.hasClass = function(node, classname){
  * false; indicating success or failure of the operation, respectively.
  */
 dojo.html.prependClass = function(node, classStr){
-	node = dojo.byId(node);
-	if(!node){ return false; }
 	classStr += " " + dojo.html.getClass(node);
 	return dojo.html.setClass(node, classStr);
 }
@@ -326,8 +322,6 @@ dojo.html.prependClass = function(node, classStr){
  *	passed &node;. Returns &true; or &false; indicating success or failure.
  */
 dojo.html.addClass = function(node, classStr){
-	node = dojo.byId(node);
-	if (!node) { return false; }
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
 	}
@@ -342,7 +336,6 @@ dojo.html.addClass = function(node, classStr){
  */
 dojo.html.setClass = function(node, classStr){
 	node = dojo.byId(node);
-	if(!node){ return false; }
 	var cs = new String(classStr);
 	try{
 		if(typeof node.className == "string"){
@@ -364,8 +357,6 @@ dojo.html.setClass = function(node, classStr){
  * true or false indicating success or failure.
  */ 
 dojo.html.removeClass = function(node, classStr, allowPartialMatches){
-	node = dojo.byId(node);
-	if(!node){ return false; }
 	var classStr = dojo.string.trim(new String(classStr));
 
 	try{
@@ -396,7 +387,6 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
  * Replaces 'oldClass' and adds 'newClass' to node
  */
 dojo.html.replaceClass = function(node, newClass, oldClass) {
-	node = dojo.byId(node);
 	dojo.html.removeClass(node, oldClass);
 	dojo.html.addClass(node, newClass);
 }
@@ -414,8 +404,7 @@ dojo.html.classMatchType = {
  * parent, and optionally of a certain nodeType
  */
 dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType){
-	parent = dojo.byId(parent);
-	if(!parent){ parent = document; }
+	parent = dojo.byId(parent) || document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
