@@ -51,6 +51,7 @@ div.bigIcon {
 	/* border: 1px solid #a6a7a3; */
 	padding-right: 3px;
 	cursor: pointer;
+	border: 1px solid transparent;
 }
 
 span.icon {

@@ -19,18 +19,87 @@ dojo.widget.defineWidget(
 		saveMethod: "post",
 		saveArgName: "editorContent",
 		closeOnSave: false,
+		shareToolbar: false,
+		staticToolbar: false,
 
+		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
 
 		editorOnLoad: function(){
-			var tbFiller = document.createElement("div");
-			// FXIME: insert tbFiller before the editor to prevent toolbar creation "flash"
-			var tbOpts = {};
-			tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
-			var et = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode, "before");
-			dojo.event.connect(et, "exec", this, "execCommand");
+			var toolbars = dojo.widget.byType("Editor2Toolbar");
+			if((!toolbars.length)||(!this.shareToolbar)){
+				var tbOpts = {};
+				tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
+				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode, "before");
+			}else{
+				// FIXME: 	should we try harder to explicitly manage focus in
+				// 			order to prevent too many editors from all querying
+				// 			for button status concurrently?
+				this.toolbarWidget = toolbars[0];
+			}
+			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
 			// dojo.debug(et);
 		},
+
+		_updateToolbarLastRan: null,
+		_updateToolbarTimer: null,
+		_updateToolbarFrequency: 500,
+
+		updateToolbar: function(force){
+			if((!this.isLoaded)||(!this.toolbarWidget)){ return; }
+
+			// keeps the toolbar from updating too frequently
+			// TODO: generalize this functionality?
+			var diff = new Date() - this._updateToolbarLastRan;
+			if( (!force)&&(this._updateToolbarLastRan)&&
+				((diff < this._updateToolbarFrequency)) ){
+
+				clearTimeout(this._updateToolbarTimer);
+				var _this = this;
+				this._updateToolbarTimer = setTimeout(function() {
+					_this.updateToolbar();
+				}, this._updateToolbarFrequency/2);
+				return;
+
+			}else{
+				this._updateToolbarLastRan = new Date();
+			}
+			// end frequency checker
+
+			dojo.lang.forEach(this.commandList, function(cmd){
+					if(cmd == "inserthtml"){ return; }
+					try{
+						if(this.queryCommandEnabled(cmd)){
+							if(this.queryCommandState(cmd)){
+								this.toolbarWidget.highlightButton(cmd);
+							}else{
+								this.toolbarWidget.unhighlightButton(cmd);
+							}
+						}
+					}catch(e){
+						// alert(cmd+":"+e);
+					}
+				}, this);
+		},
+
+		updateItem: function(item) {
+			try {
+				var cmd = item._name;
+				var enabled = this._richText.queryCommandEnabled(cmd);
+				item.setEnabled(enabled, false, true);
+
+				var active = this._richText.queryCommandState(cmd);
+				if(active && cmd == "underline") {
+					// don't activate underlining if we are on a link
+					active = !this._richText.queryCommandEnabled("unlink");
+				}
+				item.setSelected(active, false, true);
+				return true;
+			} catch(err) {
+				return false;
+			}
+		},
+
 
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?
@@ -77,51 +146,12 @@ dojo.widget.defineWidget(
 	function(){
 		dojo.event.log(this, "onLoad");
 		dojo.event.connect(this, "onLoad", this, "editorOnLoad");
+		dojo.event.connect(this, "onDisplayChanged", this, "updateToolbar");
 	}
 );
 
 
 /*
-dojo.widget.html.Editor.itemGroups = {
-	textGroup: ["bold", "italic", "underline", "strikethrough"],
-	blockGroup: ["formatBlock", "fontName", "fontSize"],
-	justifyGroup: ["justifyleft", "justifycenter", "justifyright"],
-	commandGroup: ["save", "cancel"],
-	colorGroup: ["forecolor", "hilitecolor"],
-	listGroup: ["insertorderedlist", "insertunorderedlist"],
-	indentGroup: ["outdent", "indent"],
-	linkGroup: ["createlink", "insertimage", "inserthorizontalrule"]
-};
-
-dojo.widget.html.Editor.formatBlockValues = {
-	"Normal": "p",
-	"Main heading": "h2",
-	"Sub heading": "h3",
-	"Sub sub heading": "h4",
-	"Preformatted": "pre"
-};
-
-dojo.widget.html.Editor.fontNameValues = {
-	"Arial": "Arial, Helvetica, sans-serif",
-	"Verdana": "Verdana, sans-serif",
-	"Times New Roman": "Times New Roman, serif",
-	"Courier": "Courier New, monospace"
-};
-
-dojo.widget.html.Editor.fontSizeValues = {
-	"1 (8 pt)" : "1",
-	"2 (10 pt)": "2",
-	"3 (12 pt)": "3",
-	"4 (14 pt)": "4",
-	"5 (18 pt)": "5",
-	"6 (24 pt)": "6",
-	"7 (36 pt)": "7"
-};
-
-dojo.widget.html.Editor.defaultItems = [
-	"commandGroup", "|", "blockGroup", "|", "textGroup", "|", "colorGroup", "|", "justifyGroup", "|", "listGroup", "indentGroup", "|", "linkGroup"
-];
-
 // ones we support by default without asking the RichText component
 // NOTE: you shouldn't put buttons like bold, italic, etc in here
 dojo.widget.html.Editor.supportedCommands = ["save", "cancel", "|", "-", "/", " "];
