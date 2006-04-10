@@ -43,8 +43,12 @@ dojo.widget.defineWidget(
 		insertunorderedlistButton: null,
 		insertorderedlistButton: null,
 		forecolorButton: null,
+		forecolorDropDown: null,
 		hilitecolorButton: null,
+		hilitecolorDropDown: null,
 		formatSelectBox: null,
+		inserthorizontalruleButton: null,
+		strikethroughButton: null,
 
 		buttonClick: function(e){ e.preventDefault(); /* dojo.debug("buttonClick"); */ },
 
@@ -52,7 +56,7 @@ dojo.widget.defineWidget(
 		buttonMouseOut: function(e){  },
 
 		// event signals
-		wikiWordClick: function(){ dojo.debug("wikiWordButtonClick"); },
+		wikiWordClick: function(){ /* dojo.debug("wikiWordButtonClick"); */ },
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
 			dojo.style.toggleShowing(this.styleDropdownContainer);
@@ -78,6 +82,8 @@ dojo.widget.defineWidget(
 		},
 		insertunorderedlistClick: function(){ this.exec("insertunorderedlist"); },
 		insertorderedlistClick: function(){ this.exec("insertorderedlist"); },
+		inserthorizontalruleClick: function(){ this.exec("inserthorizontalrule"); },
+		strikethroughClick: function(){ this.exec("strikethrough"); },
 
 		formatSelectClick: function(){ 
 			// dojo.debug(this.formatSelectBox.value);
@@ -97,11 +103,11 @@ dojo.widget.defineWidget(
 		h4TextClick: function(){ this.exec("formatblock", "h4"); },
 
 		forecolorClick: function(){
-			//TODO
+			dojo.style.toggleShowing(this.forecolorDropDown);
 		},
 
 		hilitecolorClick: function(){
-			//TODO
+			dojo.style.toggleShowing(this.hilitecolorDropDown);
 		},
 
 		indentClick: function(){ this.exec("indent"); },
@@ -136,7 +142,7 @@ dojo.widget.defineWidget(
 		unhighlightButton: function(name){
 			var bn = name+"Button";
 			if(this[bn]){
-				dojo.debug("unhighlighting:", name);
+				// dojo.debug("unhighlighting:", name);
 				with(this[bn].style){
 					backgroundColor = "";
 					border = "";

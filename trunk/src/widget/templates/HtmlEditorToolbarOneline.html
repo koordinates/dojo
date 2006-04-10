@@ -35,7 +35,7 @@
 
 				-->
 				<tbody>
-					<tr valign="top">
+					<tr valign="top" align="left">
 						<td>
 							<!-- wikiword -->
 							<span class="iconContainer" dojoAttachPoint="wikiWordButton"
@@ -46,12 +46,12 @@
 							<!-- paste -->
 							<span class="iconContainer" dojoAttachPoint="copyButton"
 								unselectable="on" dojoOnClick="copyClick; buttonClick;">
-								<span title="Paste (Ctrl-V)" class="icon copy" unselectable="on">&nbsp;</span>
+								<span title="Copy (Ctrl-C)" class="icon copy" unselectable="on">&nbsp;</span>
 							</span>
 							<!-- copy -->
 							<span class="iconContainer" dojoAttachPoint="pasteButton"
 								dojoOnClick="pasteClick; buttonClick;" unselectable="on">
-								<span title="Copy (Ctrl-C)" class="icon paste" unselectable="on">&nbsp;</span>
+								<span title="Paste (Ctrl-V)" class="icon paste" unselectable="on">&nbsp;</span>
 							</span>
 							<!-- undo -->
 							<span class="iconContainer" dojoAttachPoint="undoButton"
@@ -75,7 +75,9 @@
 								<span title="Create Link" class="icon createlink" unselectable="on">&nbsp;</span>
 							</span>
 							<!-- insertimage -->
-							<span class="iconContainer" dojoAttachPoint="insertimageButton"
+							<span class="iconContainer" 
+								style="display: none;"
+								dojoAttachPoint="insertimageButton"
 								unselectable="on" dojoOnClick="insertimageClick; buttonClick;">
 								<span title="Insert Image" class="icon insertimage" unselectable="on">&nbsp;</span>
 							</span>
@@ -207,6 +209,7 @@
 								<span title="Justify Right" class="icon justifyright" unselectable="on">&nbsp;</span>
 							</span>
 						</td>	
+						<td width="*">&nbsp;</td>
 					</tr>
 				</tbody>
 			</table>
