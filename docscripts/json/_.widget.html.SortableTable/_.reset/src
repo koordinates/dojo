@@ -1,3 +1,0 @@
-this.columns=[];
-this.data=[];
-this.resetSelections(this.domNode.getElementsByTagName("tbody")[0]);

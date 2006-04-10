@@ -1,4 +1,0 @@
-var index = dojo.lang.find(this.dropTargets, dt, true);
-if (index>=0) {
-	this.dropTargets.splice(index, 1);
-}

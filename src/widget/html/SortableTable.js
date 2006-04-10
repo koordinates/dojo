@@ -12,7 +12,6 @@ dojo.widget.html.SortableTable=function(){
 	dojo.widget.SortableTable.call(this);
 	dojo.widget.HtmlWidget.call(this);
 
-	this.containerClass="";
 	this.headClass="";
 	this.tbodyClass="";
 	this.headerClass="";
@@ -309,14 +308,16 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 			}
 		}
 	},
-	render:function(){
+	render:function(bDontPreserve){
 		//	summary
 		//	renders the table to the browser
 		var data=[];
 		var body=this.domNode.getElementsByTagName("tbody")[0];
 
-		//	rebuild data and selection
-		this.parseDataFromTable(body);
+		if(!bDontPreserve){
+			//	rebuild data and selection
+			this.parseDataFromTable(body);
+		}
 
 		//	clone this.data for sorting purposes.
 		for(var i=0; i<this.data.length; i++){
@@ -523,14 +524,6 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 	postCreate:function(){ 
 		// 	summary
 		//	overridden from HtmlWidget, initializes and renders the widget.
-		var div=document.createElement("div");
-		if(this.containerClass.length>0){
-			div.className=this.containerClass;
-		}
-		var p=this.domNode.parentNode;
-		p.replaceChild(div, this.domNode);
-		div.appendChild(this.domNode);
-		
 		var thead=this.domNode.getElementsByTagName("thead")[0];
 		if(this.headClass.length>0){
 			thead.className=this.headClass;
@@ -566,6 +559,6 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		}
 
 		this.parseDataFromTable(tbody);
-		this.render();
+		this.render(true);
 	}
 });

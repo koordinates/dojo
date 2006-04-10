@@ -1,6 +1,0 @@
-this.data.push(record);
-if(this.numRecords != -1){
-	while(this.data.length>this.numRecords){
-		this.data.shift();
-	}
-}

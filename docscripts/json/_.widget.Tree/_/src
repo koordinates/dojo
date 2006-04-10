@@ -1,7 +1,0 @@
-dojo.widget.HtmlWidget.call(this);
-
-this.eventNames = {};
-
-this.tree = this;
-this.DNDAcceptTypes = [];
-this.actionsDisabled = [];

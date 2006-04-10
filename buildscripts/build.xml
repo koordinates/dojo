@@ -530,6 +530,14 @@ ${profileDeps}
 		<!-- we copy over iframe_history.html here just in case this is a truly
 		stand-alone build that isn't being kicked off via release -->
 		<copy file="../iframe_history.html" todir="${release_dir}/" />
+		
+		<!-- copy our dojo.storage and dojo.flash SWFs -->
+		<copy todir="${release_dir}/" preservelastmodified="true">
+			<fileset dir="${root}/">
+				<include name="**/*.swf" />
+			</fileset>
+		</copy>
+		
 	</target>
 	<!-- end compress task -->
 
@@ -587,7 +595,35 @@ internTemplateStrings()
 				<exclude name="**/.svn*" />
 			</fileset>
 		</copy>
+		
+		<!-- 
+			Call our Dojo Flash and Storage tasks
+			in such a way that they won't cause the
+			entire release task to fail if mtasc is not
+			available - make mtasc optional.
+		-->
+		<script language="javascript"><![CDATA[
+			function echo(msg){
+				var echo = dojo.createTask("echo");
+				echo.setMessage(msg);
+				echo.execute();
+			}
+			
+			function antCall(target){
+				var antCall = dojo.createTask("antcall");
+				antCall.setTarget(target);
+				antCall.execute();
+			}
 
+			try{
+				antCall("buildDojoFlash");
+				antCall("buildDojoStorage");
+			}catch(exp){
+				echo("WARNING: buildDojoFlash and buildDojoStorage could not run.");
+				echo("Please download and install mtasc from http://www.mtasc.org and place it in your path.");
+			}
+		]]></script>
+		
 		<antcall target="-docs-and-tests" />
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->

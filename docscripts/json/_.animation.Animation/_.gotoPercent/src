@@ -1,5 +1,0 @@
-clearTimeout(this._timer);
-this._active = true;
-this._paused = true;
-this._percent = pct;
-if( andPlay ) { this.play(); }

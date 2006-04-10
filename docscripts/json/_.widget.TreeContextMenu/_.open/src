@@ -1,6 +1,0 @@
-var result = dojo.widget.PopupMenu2.prototype.open.apply(this, arguments);
-
- publish many events here about structural changes 
-dojo.event.topic.publish(this.eventNames.open, { menu:this });
-
-return result;

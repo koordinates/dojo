@@ -1,9 +1,0 @@
-if ( this.isEmpty() ) {
-	this.textbox.style.backgroundColor = "";
-}
-else if ( this.isValid() ) {
-	this.textbox.style.backgroundColor = this.validColor;
-}
-else {
-	this.textbox.style.backgroundColor = this.invalidColor;
-}

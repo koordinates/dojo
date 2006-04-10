@@ -1,5 +1,0 @@
- if(dojo.flash._installingListeners.length > 0){
-		for(var i = 0;i < dojo.flash._installingListeners.length; i++){
-			dojo.flash._installingListeners[i].call(null);
-		}
-	}

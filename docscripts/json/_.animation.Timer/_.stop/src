@@ -1,3 +1,0 @@
-if (typeof this.onStop == "function") this.onStop();
-this.isRunning = false;
-window.clearInterval(timer);

@@ -2,6 +2,9 @@ dojo.provide("dojo.io.IframeIO");
 dojo.require("dojo.io.BrowserIO");
 dojo.require("dojo.uri.*");
 
+// FIXME: is it possible to use the Google htmlfile hack to prevent the
+// background click with this transport?
+
 dojo.io.createIFrame = function(fname, onloadstr){
 	if(window[fname]){ return window[fname]; }
 	if(window.frames[fname]){ return window.frames[fname]; }
@@ -172,7 +175,9 @@ dojo.io.IframeTransport = new function(){
 			req.formNode[key] = null;
 		}
 		// restore original action + target
-		req.formNode.setAttribute("action", req._originalAction);
+		if(req["_originalAction"]){
+			req.formNode.setAttribute("action", req._originalAction);
+		}
 		req.formNode.setAttribute("target", req._originalTarget);
 		req.formNode.target = req._originalTarget;
 

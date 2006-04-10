@@ -1,1 +1,0 @@
-return this.getParentIndex() == this.parent.children.length-1 ? true : false;

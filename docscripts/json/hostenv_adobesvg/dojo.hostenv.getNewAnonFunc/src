@@ -1,7 +1,0 @@
-var ret = "_"+this.anonCtr++;
-while(typeof this.anon[ret] != "undefined"){
-	ret = "_"+this.anonCtr++;
-}
- this.anon[ret] = function(){};
-eval("dojo.nostenv.anon."+ret+" = function(){};");
-return [ret, this.anon[ret]];

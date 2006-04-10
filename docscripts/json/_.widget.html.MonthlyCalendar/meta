@@ -1,1 +1,0 @@
-{"requires":{"common":["dojo.widget.*","dojo.widget.html.DatePicker","dojo.widget.MonthlyCalendar","dojo.event.*","dojo.html"]},"_":{"()":[]},"_.cache":{"()":[]},"_.addCalendar":{"(dojo.iCalendar cal)":[]},"_.createDayContents":{"(node, mydate)":[]},"_.initUI":{"()":[]}}

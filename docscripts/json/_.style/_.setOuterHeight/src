@@ -1,9 +1,0 @@
-node = dojo.byId(node);
-if (!dojo.style.isBorderBox(node)){
-	pxHeight -= dojo.style.getPaddingHeight(node) + dojo.style.getBorderHeight(node);
-}
-pxHeight -= dojo.style.getMarginHeight(node);
-if (!isNaN(pxHeight) && pxHeight > 0){
-	node.style.height = pxHeight + 'px';
-	return true;
-}else return false;

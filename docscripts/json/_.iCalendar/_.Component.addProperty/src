@@ -1,2 +1,0 @@
-this.properties.push(prop);
-this[prop.name.toLowerCase()] = prop;

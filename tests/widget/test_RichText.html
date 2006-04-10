@@ -3,6 +3,7 @@
 
 <script type="text/javascript"> 
 	djConfig = { 
+		// debugAtAllCosts: true,
 		isDebug: true,
 		ieClobberMinimal: true
 	};
@@ -17,7 +18,7 @@
 /*
 // If we wanted to do this pragmatically...
 dojo.event.connect(window, "onload", function (e) {
-	var div = document.getElementById("editable");
+	var div = dojo.byId("editable");
 	var editor = dojo.widget.createWidget("RichText", {}, div);
 });
 */
@@ -42,9 +43,10 @@ dojo.event.connect(window, "onload", function (e) {
 </div>
 
 <p><input type="button" value="save" id="savebutton">
+<input type="button" value="paste in gunk" id="pastebutton">
 <script type="text/javascript">
-var editable = document.getElementById("editable");
-var savebutton = document.getElementById("savebutton");
+var editable = dojo.byId("editable");
+var savebutton = dojo.byId("savebutton");
 var editableRT;
 dojo.event.connect(dojo.hostenv, "loaded", function (e) {
 	editableRT = dojo.widget.manager.getWidgetById("editdiv");
@@ -58,6 +60,11 @@ dojo.event.connect(savebutton, "onclick", function (e) {
 		editableRT = dojo.widget.createWidget("RichText", {}, editable);
 		savebutton.value = "save";
 	}
+});
+
+var pasteButton = dojo.byId("pastebutton");
+dojo.event.connect(pasteButton, "onclick", function(){
+	editableRT.execCommand("inserthtml", "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque iaculis, nulla id semper faucibus, pede tellus nonummy magna, vitae adipiscing orci arcu ut augue. Nunc condimentum, magna a vestibulum convallis, libero purus pulvinar orci, sed vestibulum urna sem ut pede.</p>");
 });
 </script>
 
@@ -78,7 +85,7 @@ dojo.event.connect(dojo, "loaded", function (e) {
 		});
 	}
 
-	var table = document.getElementById("editabletable");
+	var table = dojo.byId("editabletable");
 	var tds = table.getElementsByTagName("td");
 	for (var i = 0; i < tds.length; i++) {
 		dojo.event.connect(tds[i], "onclick", makeEditable);

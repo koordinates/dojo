@@ -1,1 +1,0 @@
-dojo.widget.html.stabile.getStorage().value = dojo.widget.html.stabile.description(state);

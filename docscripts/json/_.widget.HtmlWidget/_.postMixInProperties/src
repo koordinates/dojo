@@ -1,5 +1,0 @@
-var specialToggler =
-	(dojo.fx && dojo.fx.html && dojo.fx.html.toggle[this.toggle.toLowerCase()]);
-if(specialToggler){
-	this.toggleObj=specialToggler;
-}

@@ -1,2 +1,0 @@
-this.pos = {x:x, y:y};
-this.paint();

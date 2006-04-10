@@ -1,8 +1,0 @@
-reqVer = parseFloat("." + reqVer);
-
-if(this.versionMajor >= reqMajorVer && this.versionMinor >= reqMinorVer
-	 && this.versionRevision >= reqVer){
-	return true;
-}else{
-	return false;
-}

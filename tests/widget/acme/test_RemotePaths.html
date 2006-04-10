@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- used from test_RemotePane.html -->
+<html>
+<head>
+
+<title>ContentPane External pathsfixes Test</title>
+
+<link rel="stylesheet" href="test_RemotePaths.css" />
+<script>
+	// needs executescripts true
+	top.inFileScriptToggle = function(){
+		var a = document.getElementById("inFileToggler");
+		var txt = a.firstChild.nodeValue;
+		if(txt == "In file scripttest, Released"){
+			txt = "In file scripttest, Pushed";
+		}else{
+			txt = "In file scripttest, Released";
+		}
+		a.firstChild.nodeValue = txt;
+	}; // note the ;, needed
+
+	//path check
+	top.isCorrectPath = function(nodeId, correctPath){
+		var node = dojo.byId(nodeId);
+		var href = node.href.toLowerCase(); // FF converts file://C:\... etc to file://c:\
+		href = href.replace(/ /g, "%20").replace(/(.*)\/$/, "$1"); // strip / from last char
+		correctPath = correctPath.toLowerCase().replace(/ /g, "%20");
+		if(href==correctPath){
+			alert("Success! "+href);
+		}else{
+			alert("Failure: "+href+"\n should be \n"+correctPath);
+		}
+		return false;
+	};
+</script>
+<script type="text/javascript" src="test_RemotePaths.js"></script>
+</head>
+<body>
+<style type="text/css">
+	/*!!!note not in head on purpose, should get ripped out of content before _setContent and inserted to document head*/
+	#bgstyleimagetest{
+		background-image: url(../images/tools.gif);
+	}
+	.border{
+		border: 1px solid black;
+	}
+	.linkSimulants{
+		cursor: pointer;
+		text-decoration:underline;
+		color: blue;
+	}
+</style>
+	<h3>Image and css paths</h3>
+	<img class="border" src="../images/tools.gif"/>&lt;-image path test, should be a tool image<br/>
+
+	<span class="border" id="bgimagetest">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-remote css file test, background should be toolimage (may be cut)<br/>
+
+	<span class="border" style="background-image: url(../images/tools.gif);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-inline css test, background should be toolimage (may be cut)<br/>
+
+	<span class="border" id="bgstyleimagetest">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-stylenode css test, background should be toolimage (may be cut)<br/><br/>
+
+	<h3/>Link paths</h3>
+	<a href="https://some.secure.site" id="https" onclick="top.isCorrectPath('https', 'https://some.secure.site');return false;"> unfixed link</a><br/>
+
+	<a href="http://some.ordinary.site" id="http" onclick="top.isCorrectPath('http', 'http://some.ordinary.site');return false;"> unfixed link</a><br/>
+
+	<a href="ftps://some.secure.ftp" id="ftps" onclick="top.isCorrectPath('ftps','ftps://some.secure.ftp');return false;"> unfixed link</a><br/>
+
+	<a href="ftp://some.ordinary.ftp" id="ftp" onclick="top.isCorrectPath('ftp','ftp://some.ordinary.ftp');return false;"> unfixed link</a><br/>
+
+	<a href="file://c:\Document and settings\All users\local.html" id="file" onclick="top.isCorrectPath('file','file://c:\\Document and settings\\All users\\local.html');return false;"> unfixed link</a><br/>
+
+	<a href="news:dojotoolkit.org" id="news" onclick="top.isCorrectPath('news','news:dojotoolkit.org');return false;"> unfixed link</a><br/>
+
+	<a href="mailto:nospam@dojotoolkit.org" id="mailto" onclick="top.isCorrectPath('mailto','mailto:nospam@dojotoolkit.org');return false;"> unfixed link</a><br/>
+
+	<a href="javascript:alert('This link should go unfixed\njavascript:etc...');" id="javascript" onclick="top.isCorrectPath('javascript','javascript:alert(\'This link should go unfixed\\njavascript:etc...\');');return false;"> unfixed link</a><br/><br/>
+
+	Fixed linkpaths, why anyone would ever want to do ordinary links in a ajax app is beyond me, but here it goes.<br/>
+	<a href="../test_Button2.html?key=value&value=key" id="relative" onclick="top.isCorrectPath('relative',location.href.replace(/(.*\/).+/, '$1')+'test_Button2.html?key=value&value=key');return false;"> fixed link</a><br/>
+
+	<h3>Scrips, needs executescripts=true</h3>
+	<span class="linkSimulants" onclick="if(top.inFileScriptToggle){top.inFileScriptToggle();}else{alert('You need to set executeScripts=true');}" id="inFileToggler">In file scripttest, Released</span><br/>
+
+	<span class="linkSimulants" onclick="if(top.extScriptToggle){top.extScriptToggle();}else{alert('You need to set executeScripts=true');}" id="extToggler">Ext js file scripttest, Released</span><br/>
+
+	
+</body>
+</html>

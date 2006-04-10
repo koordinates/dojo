@@ -1,4 +1,0 @@
-this.level = lvl;
-this.message = msg;
-this.time = new Date();
- FIXME: what other information can we receive/discover here?

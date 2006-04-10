@@ -1,2 +1,0 @@
-dojo.event.connect(targetObj, targetFunc, this, thisFunc);
- this._connected.push([targetObj, targetFunc, thisFunc]);	

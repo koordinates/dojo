@@ -1,5 +1,0 @@
-try {    
-	this.textInputNode.focus();
-} catch (e) {
-	 element isnt focusable if disabled, or not visible etc - not easy to test for.
- 		};

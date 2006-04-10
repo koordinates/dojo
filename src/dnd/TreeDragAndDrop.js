@@ -43,11 +43,12 @@ dojo.lang.extend(dojo.dnd.TreeDragSource, {
 
 			var result = dojo.dnd.HtmlDragObject.prototype.onDragStart.apply(this, arguments);
 
+
 			/* remove background grid from cloned object */
-			dojo.lang.forEach(
-				this.dragClone.getElementsByTagName('img'),
-				function(elem) { elem.style.backgroundImage='url()' }
-			);
+			var cloneGrid = this.dragClone.getElementsByTagName('img');
+			for(var i=0; i<cloneGrid.length; i++) {
+				cloneGrid.item(i).style.backgroundImage='url()';
+			}
 
 			return result;
 
@@ -89,7 +90,6 @@ dojo.dnd.TreeDropTarget = function(domNode, controller, type, treeNode, DNDMode)
 	this.DNDMode = DNDMode;
 
 	dojo.dnd.HtmlDropTarget.apply(this, [domNode, type]);
-
 }
 
 dojo.inherits(dojo.dnd.TreeDropTarget, dojo.dnd.HtmlDropTarget);
@@ -148,6 +148,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	 * We can't determine real accepts status w/o position
 	*/
 	onDragOver: function(e){
+//dojo.debug("onDragOver for "+e);
+
 
 		var accepts = dojo.dnd.HtmlDropTarget.prototype.onDragOver.apply(this, arguments);
 
@@ -194,7 +196,40 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	},
 
 
+	getAcceptPosition: function(e, sourceTreeNode) {
 
+		var DNDMode = this.DNDMode;
+
+		if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO &&
+			// check if ONTO is allowed localy
+			!(
+			  !this.treeNode.actionIsDisabled(dojo.widget.TreeNode.prototype.actions.ADDCHILD) // check dynamically cause may change w/o regeneration of dropTarget
+			  && sourceTreeNode.parent !== this.treeNode
+			  && this.controller.canMove(sourceTreeNode, this.treeNode)
+			 )
+		) {
+			// disable ONTO if can't move
+			DNDMode &= ~dojo.widget.Tree.prototype.DNDModes.ONTO;
+		}
+
+
+		var position = this.getPosition(e, DNDMode);
+
+		//dojo.debug(DNDMode & +" : "+position);
+
+
+		// if onto is here => it was allowed before, no accept check is needed
+		if (position=="onto" ||
+			(!this.isAdjacentNode(sourceTreeNode, position)
+			 && this.controller.canMove(sourceTreeNode, this.treeNode.parent)
+			)
+		) {
+			return position;
+		} else {
+			return false;
+		}
+
+	},
 
 	onDragOut: function(e) {
 		this.clearAutoExpandTimer();
@@ -206,7 +241,6 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	clearAutoExpandTimer: function() {
 		if (this.autoExpandTimer) {
 			clearTimeout(this.autoExpandTimer);
-			delete this.autoExpandTimer;
 			this.autoExpandTimer = null;
 		}
 	},
@@ -217,31 +251,9 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
 		var sourceTreeNode = dragObjects[0].treeNode;
 
-		var DNDMode = this.DNDMode;
+		var position = this.getAcceptPosition(e, sourceTreeNode);
 
-		if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO &&
-			// check if ONTO is allowed localy
-			!(
-			  this.treeNode.isFolder // check dynamically cause may change w/o regeneration of dropTarget
-			  && sourceTreeNode.parent !== this.treeNode
-			  && this.controller.canMove(sourceTreeNode, this.treeNode)
-			 )
-		) {
-			// disable ONTO if can't move
-			DNDMode &= ~dojo.widget.Tree.prototype.DNDModes.ONTO;
-		}
-
-		var position = this.getPosition(e, DNDMode);
-
-		//dojo.debug(DNDMode+" : "+position);
-
-
-		// if onto is here => it was allowed before, no accept check is needed
-		if (position=="onto" ||
-			(!this.isAdjacentNode(sourceTreeNode, position)
-			 && this.controller.canMove(sourceTreeNode, this.treeNode.parent)
-			)
-		) {
+		if (position) {
 			this.showIndicator(position);
 		}
 
@@ -256,6 +268,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		return false;
 	},
 
+
+	/* get DNDMode and see which position e fits */
 	getPosition: function(e, DNDMode) {
 		node = dojo.byId(this.treeNode.labelNode);
 		var mousey = e.pageY || e.clientY + document.body.scrollTop;
@@ -310,6 +324,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 
 		var position = this.position;
 
+//dojo.debug(position);
+
 		this.onDragOut(e);
 
 		var sourceTreeNode = e.dragObject.treeNode;
@@ -344,9 +360,11 @@ dojo.dnd.TreeDNDController = function(treeController) {
 	this.dragSources = {};
 
 	this.dropTargets = {};
+
 }
 
 dojo.lang.extend(dojo.dnd.TreeDNDController, {
+
 
 	listenTree: function(tree) {
 		//dojo.debug("Listen tree "+tree);
@@ -355,8 +373,24 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 		dojo.event.topic.subscribe(tree.eventNames.moveTo, this, "onMoveTo");
 		dojo.event.topic.subscribe(tree.eventNames.addChild, this, "onAddChild");
 		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
+		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
 	},
 
+
+	unlistenTree: function(tree) {
+		//dojo.debug("Listen tree "+tree);
+		dojo.event.topic.unsubscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveTo, this, "onMoveTo");
+		dojo.event.topic.unsubscribe(tree.eventNames.addChild, this, "onAddChild");
+		dojo.event.topic.unsubscribe(tree.eventNames.removeNode, this, "onRemoveNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+	},
+
+	onTreeDestroy: function(message) {
+		this.unlistenTree(message.source);
+		// I'm not widget so don't use destroy() call and dieWithTree
+	},
 
 	onCreateDOMNode: function(message) {
 		this.registerDNDNode(message.source);
@@ -387,8 +421,9 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 	 * I can't process DnD with events cause an event can't return result success/false
 	*/
 	registerDNDNode: function(node) {
-
 		if (!node.tree.DNDMode) return;
+
+//dojo.debug("registerDNDNode "+node);
 
 		/* I drag label, not domNode, because large domNodes are very slow to copy and large to drag */
 

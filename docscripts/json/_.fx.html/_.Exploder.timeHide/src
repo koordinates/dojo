@@ -1,5 +1,0 @@
-clearTimeout(showTimer);
-clearTimeout(hideTimer);
-if(_this.showing) {
-	hideTimer = setTimeout(_this.hide, _this.waitToHide);
-}

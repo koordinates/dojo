@@ -1,2 +1,0 @@
-dojo.lang.assert(!generator || (dojo.lang.isObject(generator) && generator.generate));
-dojo.uuid.Uuid._ourGenerator = generator;

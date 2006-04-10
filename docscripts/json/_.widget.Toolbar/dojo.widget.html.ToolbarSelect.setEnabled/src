@@ -1,3 +1,0 @@
-var ret = dojo.widget.html.ToolbarSelect.superclass.setEnabled.call(this, is, force, preventEvent);
-this.selectBox.disabled = !this._enabled;
-return ret;

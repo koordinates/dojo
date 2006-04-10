@@ -1,1 +1,0 @@
-return (dojo.style.getBoxSizing(node) == dojo.style.boxSizing.borderBox);

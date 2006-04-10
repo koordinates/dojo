@@ -1,5 +1,0 @@
-this.filterAllowed(this, 'layoutChildPriority', ['left-right', 'top-bottom']);
-
- Need to include CSS manually because there is no template file/string
-dojo.style.insertCssFile(this.cssPath, null, true);
-dojo.html.addClass(this.domNode, "dojoLayoutPane");

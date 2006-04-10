@@ -1,3 +1,0 @@
-var firstDayOfYear = new Date(dateObject.getFullYear(), 0, 1);
-return Math.floor((dateObject.getTime() -
-	firstDayOfYear.getTime()) / 86400000);

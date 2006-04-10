@@ -1,11 +1,11 @@
 input.comboBoxInput {
-	font-size: 0.8em;
+	/* font-size: 0.8em; */
 	border: 0px;
 }
 
 .comboBoxOptions {
 	font-family: Verdana, Helvetica, Garamond, sans-serif;
-	font-size: 0.7em;
+	/* font-size: 0.7em; */
 	background-color: white;
 	border: 1px solid #afafaf;
 	position: absolute;

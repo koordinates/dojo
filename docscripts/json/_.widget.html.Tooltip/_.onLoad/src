@@ -1,2 +1,0 @@
-dojo.lang.setTimeout(this, this.position, 50);
-dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);

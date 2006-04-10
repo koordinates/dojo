@@ -1,2 +1,0 @@
-if( this.disabled ){ return; }
-this._toggleMenu(this.menuId);

@@ -1,4 +1,0 @@
-this.destroyChildren();
-this.uninitialize();
-this.destroyRendering(finalize);
-dojo.widget.manager.removeById(this.widgetId);

@@ -1,6 +1,0 @@
-if(args.name) { this._name = args.name; }
-if(args.selected) { this.select(); }
-if(args.disabled) { this.disable(); }
-if(args.label) { this.setLabel(args.label); }
-if(args.icon) { this.setIcon(args.icon); }
-if(args.toggleitem||args.toggleItem) { this.setToggleItem(true); }

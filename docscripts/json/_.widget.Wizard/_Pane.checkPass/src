@@ -1,8 +1,0 @@
-if (this.passFunction && dojo.lang.isFunction(this.passFunction)) {
-	var failMessage = this.passFunction();
-	if (failMessage) {
-		alert(failMessage);
-		return false;
-	}
-}
-return true;

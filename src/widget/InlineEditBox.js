@@ -14,7 +14,6 @@ dojo.widget.html.InlineEditBox = function(){
 	dojo.widget.HtmlWidget.call(this);
 	// mutable objects need to be in constructor to give each instance its own copy
 	this.history = [];
-	this.storage = document.createElement("span");
 }
 
 dojo.inherits(dojo.widget.html.InlineEditBox, dojo.widget.HtmlWidget);

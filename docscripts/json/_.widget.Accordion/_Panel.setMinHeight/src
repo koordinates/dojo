@@ -1,6 +1,0 @@
-var lh = dojo.style.getContentHeight(this.labelNode);
-if(!ignoreIC){
-	lh += dojo.style.getContentHeight(this.initialContentNode);
-	this.initialSizeMin = lh;
-}
-this.sizeMin = lh;

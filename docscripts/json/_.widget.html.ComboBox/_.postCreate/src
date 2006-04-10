@@ -1,9 +1,0 @@
-dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
-dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
-dojo.event.connect(this.textInputNode, "onblur", this, "onBlurInput");
-dojo.event.connect(this.textInputNode, "onfocus", this, "onFocusInput");
-
-var s = dojo.widget.html.stabile.getState(this.widgetId);
-if (s) {
-	this.setState(s);
-}

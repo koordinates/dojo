@@ -4,6 +4,7 @@
 */
 dojo.provide("dojo.widget.Editor");
 dojo.provide("dojo.widget.html.Editor");
+dojo.require("dojo.io.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
 dojo.require("dojo.widget.RichText");
@@ -15,6 +16,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:Editor");
 dojo.widget.html.Editor = function() {
 	dojo.widget.HtmlWidget.call(this);
 	this.contentFilters = [];
+	this._toolbars = [];
 }
 dojo.inherits(dojo.widget.html.Editor, dojo.widget.HtmlWidget);
 
@@ -65,6 +67,10 @@ dojo.widget.html.Editor.supportedCommands = ["save", "cancel", "|", "-", "/", " 
 dojo.lang.extend(dojo.widget.html.Editor, {
 	widgetType: "Editor",
 
+	saveUrl: "",
+	saveMethod: "post",
+	saveArgName: "editorContent",
+	closeOnSave: false,
 	items: dojo.widget.html.Editor.defaultItems,
 	formatBlockItems: dojo.lang.shallowCopy(dojo.widget.html.Editor.formatBlockValues),
 	fontNameItems: dojo.lang.shallowCopy(dojo.widget.html.Editor.fontNameValues),
@@ -227,7 +233,15 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 						worked = false;
 					}
 				}
-				if(btnGroup.length) {
+				if(btnGroup.length){
+					/*
+					// the addChild interface is assinine. Work around it.
+					var tprops = this.getItemProperties(cmd);
+					var tmpGroup = dojo.widget.createWidget("ToolbarButtonGroup", tprops);
+					dojo.debug(btnGroup);
+					dojo.event.connect(tmpGroup, "onClick", this, "_action");
+					dojo.event.connect(tmpGroup, "onChangeSelect", this, "_action");
+					*/
 					var btn = tb.addChild(btnGroup, null, this.getItemProperties(cmd));
 					dojo.event.connect(btn, "onClick", this, "_action");
 					dojo.event.connect(btn, "onChangeSelect", this, "_action");
@@ -280,7 +294,9 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 					dojo.event.connect(btn, "onSetValue", this, "_setValue");
 				} else {
 					var btn = tb.addChild(this.getCommandImage(cmd), null, this.getItemProperties(cmd));
-					if(dojo.lang.inArray(cmd, ["save", "cancel"])) {
+					if(cmd == "save"){
+						dojo.event.connect(btn, "onClick", this, "_save");
+					}else if(cmd == "cancel"){
 						dojo.event.connect(btn, "onClick", this, "_close");
 					} else {
 						dojo.event.connect(btn, "onClick", this, "_action");
@@ -419,6 +435,26 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 
 	_setValue: function(a, b) {
 		this._fire("onAction", a.getValue(), b);
+	},
+
+	_save: function(e){
+		// FIXME: how should this behave when there's a larger form in play?
+		if(!this._richText.isClosed){
+			if(this.saveUrl.length){
+				var content = {};
+				content[this.saveArgName] = this.getHtml();
+				dojo.io.bind({
+					method: this.saveMethod,
+					url: this.saveUrl,
+					content: content
+				});
+			}else{
+				dojo.debug("please set a saveUrl for the editor");
+			}
+			if(this.closeOnSave){
+				this._richText.close(e.getName().toLowerCase() == "save");
+			}
+		}
 	},
 
 	_close: function(e) {

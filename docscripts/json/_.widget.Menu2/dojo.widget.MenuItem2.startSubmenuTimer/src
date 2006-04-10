@@ -1,8 +1,0 @@
-this.stopSubmenuTimer();
-
-if (this.disabled){ return; }
-
-var self = this;
-var closure = function(){ return function(){ self.openSubmenu(); } }();
-
-this.hover_timer = window.setTimeout(closure, this.parent.submenuDelay);

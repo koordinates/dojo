@@ -1,1 +1,0 @@
-return ((wh != null) && dojo.lang.isObject(wh) && wh.constructor == Object);  

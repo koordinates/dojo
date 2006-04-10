@@ -21,6 +21,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 	DNDController: "",
 
+	dieWithTree: false,
 
 	initialize: function(args, frag){
 
@@ -29,9 +30,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 			dojo.require("dojo.dnd.TreeDragAndDrop");
 			this.DNDController = new dojo.dnd.TreeDNDController(this);
 		}
-		else if (this.DNDController) {
-			this.DNDController = dojo.widget.byId(this.DNDController);
-		}
+
 
 
 	},
@@ -45,9 +44,29 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		dojo.event.topic.subscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
 		dojo.event.topic.subscribe(tree.eventNames.treeClick, this, "onTreeClick");
 		dojo.event.topic.subscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
+		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
 
 		if (this.DNDController) {
 			this.DNDController.listenTree(tree);
+		}
+	},
+
+	unlistenTree: function(tree) {
+		dojo.event.topic.unsubscribe(tree.eventNames.createDOMNode, this, "onCreateDOMNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeClick, this, "onTreeClick");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+	},
+
+	onTreeDestroy: function(message) {
+		var tree = message.source;
+
+		this.unlistenTree(tree);
+
+		if (this.dieWithTree) {
+			//alert("Killing myself "+this.widgetId);
+			this.destroy();
+			//dojo.debug("done");
 		}
 	},
 
@@ -57,7 +76,6 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 
 		if (node.expandLevel > 0) {
-			//dojo.debug(node.expandLevel);
 			this.expandToLevel(node, node.expandLevel);
 		}
 	},
@@ -68,7 +86,9 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		var _this = this;
 		if (tree.expandLevel) {
 			dojo.lang.forEach(tree.children,
-				function(child) { _this.expandToLevel(child, tree.expandLevel-1) }
+				function(child) {
+					_this.expandToLevel(child, tree.expandLevel-1)
+				}
 			);
 		}
 	},
@@ -106,7 +126,9 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	onTreeClick: function(message){
 		var node = message.source;
 
-		//dojo.debug("Subscribed to "+node);
+		if(node.isLocked()) {
+			return false;
+		}
 
 		if (node.isExpanded){
 			this.collapse(node);
@@ -116,12 +138,12 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	},
 
 	expand: function(node, sync, callObj, callFunc) {
-		//dojo.debug(node);
 		node.expand();
 		if (callFunc) callFunc.apply(callObj, [node]);
 	},
 
 	collapse: function(node) {
+
 		node.collapse();
 	},
 
@@ -141,6 +163,9 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 			return false;
 		}
 
+		// if we move under same parent then no matter if ADDCHILD disabled for him
+		// but if we move to NEW parent then check if action is disabled for him
+		// also covers case for newParent being a non-folder in strict mode etc
 		if (child.parent !== newParent && newParent.actionIsDisabled(newParent.actions.ADDCHILD)) {
 			return false;
 		}
@@ -154,12 +179,6 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 				return false;
 			}
 			node = node.parent;
-		}
-
-
-		// check for newParent being a folder (if node)
-		if (newParent.isTreeNode && !newParent.isFolder) {
-			return false;
 		}
 
 		return true;
@@ -202,16 +221,16 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	},
 
 
-	removeNode: function(node, callFunc, callObj) {
+	removeNode: function(node, callObj, callFunc) {
 		if (!this.canRemoveNode(node)) {
 			return false;
 		}
 
-		return this.doRemoveNode(node, callFunc, callObj);
+		return this.doRemoveNode(node, callObj, callFunc);
 	},
 
 
-	doRemoveNode: function(node, callFunc, callObj) {
+	doRemoveNode: function(node, callObj, callFunc) {
 		node.tree.removeNode(node);
 
 		if (callFunc) {
@@ -226,7 +245,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 
 	canCreateChild: function(parent, index, data) {
-		if (!parent.isFolder) return false;
+		if (parent.actionIsDisabled(parent.actions.ADDCHILD)) return false;
 
 		return true;
 	},
@@ -235,7 +254,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 	/* send data to server and add child from server */
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/*in RPC controllers server responds with child data to be inserted */
-	createChild: function(parent, index, data, callFunc, callObj) {
+	createChild: function(parent, index, data, callObj, callFunc) {
 		if (!this.canCreateChild(parent, index, data)) {
 			return false;
 		}
@@ -243,7 +262,7 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 		return this.doCreateChild.apply(this, arguments);
 	},
 
-	doCreateChild: function(parent, index, data, callFunc, callObj) {
+	doCreateChild: function(parent, index, data, callObj, callFunc) {
 
 		var widgetType = data.widgetType ? data.widgetType : "TreeNode";
 

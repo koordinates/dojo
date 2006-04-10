@@ -1,5 +1,0 @@
-this.initialized = true;
-this.hideStore();
-while(this.backlog.length){
-	this.set.apply(this, this.backlog.shift());
-}

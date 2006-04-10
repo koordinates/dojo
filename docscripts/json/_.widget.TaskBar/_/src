@@ -1,4 +1,0 @@
-dojo.widget.Widget.call(this);
-
-this.widgetType = "TaskBar";
-this.isContainer = true;

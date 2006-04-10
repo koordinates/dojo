@@ -1,1 +1,0 @@
-return this.setSelected(false, force, preventEvent);

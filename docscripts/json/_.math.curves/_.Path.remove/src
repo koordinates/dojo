@@ -1,8 +1,0 @@
-for(var i = 0; i < curves.length; i++) {
-	if( curves[i] == curve ) {
-		curves.splice(i, 1);
-		totalWeight -= weights.splice(i, 1)[0];
-		break;
-	}
-}
-computeRanges();

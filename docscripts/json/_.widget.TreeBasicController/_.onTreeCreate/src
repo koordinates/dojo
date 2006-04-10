@@ -1,7 +1,0 @@
-var tree = message.source;
-var _this = this;
-if (tree.expandLevel) {
-	dojo.lang.forEach(tree.children,
-		function(child) { _this.expandToLevel(child, tree.expandLevel-1) }
-	);
-}

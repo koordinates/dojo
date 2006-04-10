@@ -1,3 +1,0 @@
-if(!this.inFlightTimer){
-	this.inFlightTimer = setInterval("dojo.io.ScriptSrcTransport.watchInFlight();", 100);
-}

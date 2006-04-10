@@ -1,9 +1,0 @@
-var source = this.getFragNodeRef(frag);
-
- If user has specified node contents, they become the label
- (the link must be plain text)
-this.label += source.innerHTML;
-
- Copy style info from input node to output node
-this.domNode.style.cssText = source.style.cssText;
-dojo.html.addClass(this.domNode, dojo.html.getClass(source));

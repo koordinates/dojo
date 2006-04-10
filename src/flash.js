@@ -3,6 +3,7 @@ dojo.provide("dojo.flash");
 dojo.require("dojo.string.*");
 dojo.require("dojo.uri.*");
 
+
 /** 
 		The goal of dojo.flash is to make it easy to extend Flash's capabilities
 		into an AJAX/DHTML environment. Robust, performant, reliable 
@@ -371,7 +372,7 @@ dojo.flash = {
 			dojo.event.connect(dojo.flash, "loaded", myInstance, "myCallback");
 	*/
 	loaded: function(){
-		dojo.debug("dojo.flash.loaded");
+		//dojo.debug("dojo.flash.loaded");
 		if(dojo.flash._loadedListeners.length > 0){
 			for(var i = 0;i < dojo.flash._loadedListeners.length; i++){
 				dojo.flash._loadedListeners[i].call(null);
@@ -400,6 +401,7 @@ dojo.flash = {
 		//dojo.debug("_initialize");
 		// see if we need to rev or install Flash on this platform
 		var installer = new dojo.flash.Install();
+		dojo.flash.installer = installer;
 
 		if(installer.needed() == true){		
 			installer.install();
@@ -633,9 +635,16 @@ dojo.flash.Embed.prototype = {
 	/** 
 			Writes the Flash into the page. This must be called before the page
 			is finished loading. 
+			@param flashVer The Flash version to write.
+			@param doExpressInstall Whether to write out Express Install
+			information. Optional value; defaults to false.
 	*/
-	write: function(flashVer){
+	write: function(flashVer, doExpressInstall){
 		//dojo.debug("write");
+		if(dojo.lang.isUndefined(doExpressInstall)){
+			doExpressInstall = false;
+		}
+		
 		// determine our container div's styling
 		var containerStyle = new dojo.string.Builder();
 		containerStyle.append("width: " + this.width + "px; ");
@@ -658,32 +667,39 @@ dojo.flash.Embed.prototype = {
 			var dojoPath = djConfig.baseRelativePath;
 			swfloc = swfloc + "?baseRelativePath=" + escape(dojoPath);
 			objectHTML = 
-						  '  <embed id="' + this.id + '" src="' + swfloc + '" '
+						  '<embed id="' + this.id + '" src="' + swfloc + '" '
 						+ '    quality="high" bgcolor="#ffffff" '
 						+ '    width="' + this.width + '" height="' + this.height + '" '
 						+ '    name="' + this.id + '" '
 						+ '    align="middle" allowScriptAccess="sameDomain" '
 						+ '    type="application/x-shockwave-flash" swLiveConnect="true" '
-						+ '    pluginspage="http://www.macromedia.com/go/getflashplayer"> ';
-		}
-		// Flash 8
-		else{
+						+ '    pluginspage="http://www.macromedia.com/go/getflashplayer">';
+		}else{ // Flash 8
 			swfloc = dojo.flash.flash8_version;
+			var swflocObject = swfloc, swflocEmbed = swfloc;
+			if(doExpressInstall){
+				// the location to redirect to after installing
+				var redirectURL = escape(window.location);
+				document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+				var docTitle = escape(document.title);
+				swflocObject += "?MMredirectURL=" + redirectURL
+				                + "&MMplayerType=ActiveX"
+				                + "&MMdoctitle="+docTitle;
+				swflocEmbed += "?MMredirectURL=" + redirectURL + "&MMplayerType=PlugIn";
+			}
 			
 			objectHTML =
 				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
-					+ 'codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" '
+				  + 'codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" '
 				  + 'width="' + this.width + '" '
 				  + 'height="' + this.height + '" '
 				  + 'id="' + this.id + '" '
 				  + 'align="middle"> '
 				  + '<param name="allowScriptAccess" value="sameDomain" /> '
-				  + '<param name="movie" value="' + swfloc + '" /> '
+				  + '<param name="movie" value="' + swflocObject + '" /> '
 				  + '<param name="quality" value="high" /> '
 				  + '<param name="bgcolor" value="#ffffff" /> '
-				  + '<param name="redirectUrl" value="http://google.com" /> '
-				  + '<param name="xiredirectUrl" value="http://google.com" /> '
-				 + '<embed src="' + swfloc + '" '
+				  + '<embed src="' + swflocEmbed + '" '
 				  + 'quality="high" '
 				  + 'bgcolor="#ffffff" '
 				  + 'width="' + this.width + '" '
@@ -694,21 +710,24 @@ dojo.flash.Embed.prototype = {
 				  + 'align="middle" '
 				  + 'allowScriptAccess="sameDomain" '
 				  + 'type="application/x-shockwave-flash" '
-				  + 'redirectUrl="http://google.com" '
-				  + 'xiredirectUrl="http://google.com" '
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}
 		
 		// now write everything out
-		document.writeln('<div id="' + this.id + 'Container" style="' + containerStyle + '">');
+		objectHTML = '<div id="' + this.id + 'Container" style="' + containerStyle + '">'
+						+ objectHTML
+						+ '</div>';
 		document.writeln(objectHTML);
-		document.writeln('</div>');
-	},
+	},  
 	
 	/** Gets the Flash object DOM node. */
 	get: function(){
-		return (dojo.render.html.ie) ? window[this.id] : document[this.id];
+		//return (dojo.render.html.ie) ? window[this.id] : document[this.id];
+		
+		// more robust way to get Flash object; version above can break
+		// communication on IE sometimes
+		return document.getElementById(this.id);
 	},
 	
 	/** Sets the visibility of this Flash object. */
@@ -724,7 +743,7 @@ dojo.flash.Embed.prototype = {
 	/** Centers the flash applet on the page. */
 	center: function(){
 		// FIXME: replace this with Dojo's centering code rather than our own
-		// We want to center the applet vertically and horizontally
+		// We want to center the Flash applet vertically and horizontally
 		var elementWidth = this.width;
 		var elementHeight = this.height;
     
@@ -827,6 +846,7 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
+		//dojo.debug("fscommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call
@@ -1148,28 +1168,48 @@ dojo.flash.Install.prototype = {
 
 	/** Performs installation or revving of the Flash plugin. */
 	install: function(){
+		//dojo.debug("install");
 		// indicate that we are installing
 		dojo.flash.info.installing = true;
 		dojo.flash.installing();
 		
-		// write out a simple Flash object to force the browser to prompt
-		// the user to install things
-		var installObj = new dojo.flash.Embed(false);
-		installObj.write(8); // write out HTML for Flash 8 version+
-		
-		// more sophisticated installation mechanisms commented out until
-		// we support them
-		/*if(dojo.flash.info.capable == false){ // we have no Flash at all
-			dojo.debug("Completely new install");
+		if(dojo.flash.info.capable == false){ // we have no Flash at all
+			//dojo.debug("Completely new install");
 			// write out a simple Flash object to force the browser to prompt
 			// the user to install things
 			var installObj = new dojo.flash.Embed(false);
 			installObj.write(8); // write out HTML for Flash 8 version+
 		}else if(dojo.flash.info.isVersionOrAbove(6, 0, 65)){ // Express Install
-			dojo.debug("Express install");
-		}else{ // older Flash install
-			dojo.debug("old install");
-		}*/
+			//dojo.debug("Express install");
+			var installObj = new dojo.flash.Embed(false);
+			installObj.write(8, true); // write out HTML for Flash 8 version+
+			installObj.setVisible(true);
+			installObj.center();
+		}else{ // older Flash install than version 6r65
+			alert("This content requires a more recent version of the Macromedia "
+						+" Flash Player.");
+			window.location.href = "http://www.macromedia.com/go/getflashplayer";
+		}
+	},
+	
+	/** 
+			Called when the Express Install is either finished, failed, or was
+			rejected by the user.
+	*/
+	_onInstallStatus: function(msg){
+		if (msg == "Download.Complete"){
+			// Installation is complete.
+			dojo.flash._initialize();
+		}else if(msg == "Download.Cancelled"){
+			alert("This content requires a more recent version of the Macromedia "
+						+" Flash Player.");
+			window.location.href = "http://www.macromedia.com/go/getflashplayer";
+		}else if (msg == "Download.Failed"){
+			// The end user failed to download the installer due to a network failure
+			alert("There was an error downloading the Flash Player update. "
+						+ "Please try again later, or visit macromedia.com to download "
+						+ "the latest version of the Flash plugin.");
+		}	
 	}
 }
 

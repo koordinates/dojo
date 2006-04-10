@@ -63,7 +63,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	},
 
 	resizeSoon: function(){
-		if(this.isVisible()){
+		if(this.isShowing()){
 			dojo.lang.setTimeout(this, this.onResized, 0);
 		}
 	},
@@ -90,12 +90,12 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	// Displaying/hiding the widget
 
-	isVisible: function(){
-		return dojo.style.isVisible(this.domNode);
+	isShowing: function(){
+		return dojo.style.isShowing(this.domNode);
 	},
 
-	doToggle: function(){
-		this.isVisible() ? this.hide() : this.show();
+	toggleShowing: function(){
+		dojo.style.toggleShowing(this.domNode);
 	},
 
 	show: function(){

@@ -97,12 +97,22 @@ dojo.string.escapeSql = function(str) {
 }
 
 dojo.string.escapeRegExp = function(str) {
-	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r])/gm, "\\$1");
+	return str.replace(/\\/gm, "\\\\").replace(/([\f\b\n\t\r[\^$|?*+(){}])/gm, "\\$1");
 }
 
 dojo.string.escapeJavaScript = function(str) {
 	return str.replace(/(["'\f\b\n\t\r])/gm, "\\$1");
 }
+
+dojo.string.escapeString = function(str){ 
+	return ('"' + str.replace(/(["\\])/g, '\\$1') + '"'
+		).replace(/[\f]/g, "\\f"
+		).replace(/[\b]/g, "\\b"
+		).replace(/[\n]/g, "\\n"
+		).replace(/[\t]/g, "\\t"
+		).replace(/[\r]/g, "\\r");
+}
+
 // TODO: make an HTML version
 dojo.string.summary = function(str, len) {
 	if(!len || str.length <= len) {
@@ -119,6 +129,9 @@ dojo.string.endsWith = function(str, end, ignoreCase) {
 	if(ignoreCase) {
 		str = str.toLowerCase();
 		end = end.toLowerCase();
+	}
+	if((str.length - end.length) < 0){
+		return false;
 	}
 	return str.lastIndexOf(end) == str.length - end.length;
 }

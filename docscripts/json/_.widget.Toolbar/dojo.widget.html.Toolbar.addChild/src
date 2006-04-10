@@ -1,3 +1,0 @@
-var widget = dojo.widget.ToolbarItem.make(item, null, props);
-var ret = dojo.widget.html.Toolbar.superclass.addChild.call(this, widget, null, pos, null);
-return ret;

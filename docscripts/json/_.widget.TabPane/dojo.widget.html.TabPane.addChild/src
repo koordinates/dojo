@@ -1,5 +1,0 @@
-this._setupTab(child);
-dojo.widget.html.TabPane.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
-
- in case the tab labels have overflowed from one line to two lines
-this._setPadding();

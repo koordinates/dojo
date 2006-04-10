@@ -71,8 +71,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 
 	getCaretPos: function(element){
-		// FIXME: we need to figure this out for Konq/Safari!
-		if(dojo.render.html.mozilla){
+		// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
+		if(dojo.lang.isNumber(element.selectionStart)){
 			// FIXME: this is totally borked on Moz < 1.3. Any recourse?
 			return element.selectionStart;
 		}else if(dojo.render.html.ie){
@@ -265,10 +265,17 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 					url: this.dataUrl,
 					load: function(type, data, evt){ 
 						if(type=="load"){
+							if(!dojo.lang.isArray(data)){
+								var arrData = [];
+								for(var key in data){
+									arrData.push([data[key], key]);
+								}
+								data = arrData;
+							}
 							_this.dataProvider.setData(data);
 						}
 					},
-					mimetype: "text/javascript"
+					mimetype: "text/json"
 				});
 			}else if("remote" == this.mode){
 				this.dataProvider = new dojo.widget.incrementalComboBoxDataProvider(this.dataUrl);

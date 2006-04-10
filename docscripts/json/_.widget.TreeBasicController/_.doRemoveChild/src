@@ -1,5 +1,0 @@
-node.tree.removeChild(node);
-
-if (callFunc) {
-	callFunc.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node]);
-}

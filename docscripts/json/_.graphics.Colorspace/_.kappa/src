@@ -1,1 +1,0 @@
-return this.useApproxCIELabMapping ? 903.3 : 24389 / 27;

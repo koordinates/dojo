@@ -51,13 +51,15 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
-		if(dojo.render.html.safari){
-			document.body.appendChild(this.domNode);
-		}
+
+		// necessary for safari, khtml (for computing width/height)
+		document.body.appendChild(this.domNode);
 
 		// <img src=""> can hang IE!  better get rid of it
 		if(this.iconSrc==""){
 			dojo.dom.removeNode(this.titleBarIcon);
+		}else{
+			this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
 		}
 
 		if(this.titleBarDisplay!="none"){	
@@ -86,9 +88,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.resizeBar.appendChild(rh.domNode);
 		}
 
-		// make the content pane take all the remaining space
-		this._setPadding();
-
 		// add a drop shadow
 		if(this.hasShadow){
 			this.shadow=new dojo.html.shadow(this.domNode);
@@ -106,35 +105,22 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		} else {
 			dojo.addOnLoad(this, "setInitialWindowState");
 		}
-		if(dojo.render.html.safari){
-			document.body.removeChild(this.domNode);
-		}
+
+		// counteract body.appendChild above
+		document.body.removeChild(this.domNode);
 
 		dojo.widget.html.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
 	},
 
-	// Configure the content pane to take up all the space between the title bar and the resize bar
-	_setPadding: function(){
-		var t=dojo.style.getOuterHeight(this.titleBar);
-		var b=dojo.style.getOuterHeight(this.resizeBar);
-		if(t==0||b==0){
-			// browser needs more time to compute sizes (maybe CSS hasn't downloaded yet)
-			dojo.lang.setTimeout(this, this._setPadding, 50);
-			return;
-		}
-
-		with(this.domNode.style){
-			paddingTop=t+"px";
-			paddingBottom=b+"px";
-		}
-	},
-
 	maximizeWindow: function(evt) {
-		this.previous={};
-		var self=this;
-		dojo.lang.forEach(["width", "height", "left", "top", "bottom", "right"],
-			function(attr){ self.previous[attr] = self.domNode.style[attr]; });
-		dojo.debugShallow(this.previous);
+		this.previous={
+			width: this.width,
+			height: this.height,
+			left: this.domNode.style.left,
+			top: this.domNode.style.top,
+			bottom: this.domNode.style.bottom,
+			right: this.domNode.style.right
+			};
 
 		this.domNode.style.left =
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
@@ -142,11 +128,15 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
 
 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
-			dojo.style.setOuterWidth(this.domNode, dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(document.body));
-			dojo.style.setOuterHeight(this.domNode, dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(document.body));
+			this.resizeTo(
+				dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(document.body),
+				dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(document.body)
+			);
 		} else {
-			dojo.style.setOuterWidth(this.domNode, dojo.style.getContentWidth(this.domNode.parentNode));
-			dojo.style.setOuterHeight(this.domNode, dojo.style.getContentHeight(this.domNode.parentNode));
+			this.resizeTo(
+				dojo.style.getContentWidth(this.domNode.parentNode),
+				dojo.style.getContentHeight(this.domNode.parentNode)
+			);
 		}
 		this.maximizeAction.style.display="none";
 		this.restoreAction.style.display="";
@@ -162,6 +152,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		for(var attr in this.previous){
 			this.domNode.style[attr]=this.previous[attr];
 		}
+		this.resizeTo(this.previous.width, this.previous.height);
 		this.previous=null;
 
 		this.restoreAction.style.display="none";
@@ -180,10 +171,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	bringToTop: function() {
-		var floatingPaneStartingZ = 100;
 		var floatingPanes= dojo.widget.manager.getWidgetsByType(this.widgetType);
 		var windows = [];
-		var y=0;
 		for (var x=0; x<floatingPanes.length; x++) {
 			if (this.widgetId != floatingPanes[x].widgetId) {
 					windows.push(floatingPanes[x]);
@@ -196,6 +185,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		
 		windows.push(this);
 
+		var floatingPaneStartingZ = 100;
 		for (x=0; x<windows.length;x++) {
 			windows[x].domNode.style.zIndex = floatingPaneStartingZ + x;
 		}
@@ -209,7 +199,6 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		if (this.windowState=="normal") {
-			dojo.lang.setTimeout(this, this.onResized, 50);
 			this.show();
 			return;
 		}
@@ -238,14 +227,38 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	show: function(){
-		if(!this.isVisible()){
-			dojo.widget.html.FloatingPane.superclass.show.apply(this, arguments);
-		}
+		dojo.widget.html.FloatingPane.superclass.show.apply(this, arguments);
 		this.bringToTop();
 	},
 
 	onShow: function(){
 		dojo.widget.html.FloatingPane.superclass.onShow.call(this);
+		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+	},
+
+	resizeTo: function(w, h){
+		if(w==this.width && h == this.height){
+			return;
+		}
+		this.width=w;
+		this.height=h;
+
+		var paddingW = dojo.style.getPaddingWidth(this.domNode);
+
+		// IE won't let you decrease the width of the domnode unless you decrease the
+		// width of the inner nodes first (???)
+		dojo.lang.forEach(
+			[this.titleBar, this.resizeBar, this.containerNode],
+			function(node){ dojo.style.setOuterWidth(node, w - paddingW); }, this
+		);
+		dojo.style.setOuterWidth(this.domNode, w);
+
+		dojo.style.setOuterHeight(this.domNode, h);
+		var paddingH = dojo.style.getPaddingHeight(this.domNode)
+			+dojo.style.getOuterHeight(this.titleBar)
+			+dojo.style.getOuterHeight(this.resizeBar);
+		dojo.style.setOuterHeight(this.containerNode, h-paddingH);
+
 		this.onResized();
 	}
 });

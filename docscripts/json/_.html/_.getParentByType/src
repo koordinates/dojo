@@ -1,9 +1,0 @@
-var parent = dojo.byId(node);
-type = type.toLowerCase();
-while((parent)&&(parent.nodeName.toLowerCase()!=type)){
-	if(parent==(document["body"]||document["documentElement"])){
-		return null;
-	}
-	parent = parent.parentNode;
-}
-return parent;

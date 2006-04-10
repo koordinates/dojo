@@ -1,3 +1,0 @@
-if(this.isVisible()){
-	dojo.lang.setTimeout(this, this.onResized, 0);
-}
