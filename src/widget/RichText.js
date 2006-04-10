@@ -222,7 +222,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 			this.window = window;
 			this.document = document;
 			
-			//this.onLoad();
+			this.onLoad();
 		} else { // designMode in iframe
 			this._drawIframe(html);
 		}
@@ -294,7 +294,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 
 		// if this element has a border, return full child margin immediately
 		// as there won't be any margin collapsing
-		dojo.debug(childMargin);
+		// dojo.debug(childMargin);
 		if (isIsolated(element, topOrBottom)) return parseInt(childMargin);
 
 		// find margin supplied by nearest sibling
@@ -314,7 +314,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 											marginProp, false);
 		}
 
-		dojo.debug(childMargin, elementMargin, contextMargin);
+		// dojo.debug(childMargin, elementMargin, contextMargin);
 
 		if (childMargin > elementMargin) {
 			return parseInt(Math.max((childMargin-elementMargin)-contextMargin, 0));

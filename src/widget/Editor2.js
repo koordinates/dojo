@@ -20,25 +20,66 @@ dojo.widget.defineWidget(
 		saveArgName: "editorContent",
 		closeOnSave: false,
 		shareToolbar: false,
-		staticToolbar: false,
+		toolbarAlwaysVisible: false,
 
 		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
 
 		editorOnLoad: function(){
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
+			dojo.debug(toolbars);
 			if((!toolbars.length)||(!this.shareToolbar)){
 				var tbOpts = {};
 				tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
-				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", tbOpts, this.domNode, "before");
+				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
+										tbOpts, this.domNode, "before");
+				dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
+
+				// need to set position fixed to wherever this thing has landed
+				if(this.toolbarAlwaysVisible){
+					dojo.event.connect(window, "onscroll", this, "globalOnScrollHandler");
+				}
 			}else{
 				// FIXME: 	should we try harder to explicitly manage focus in
 				// 			order to prevent too many editors from all querying
 				// 			for button status concurrently?
+				// FIXME: 	selecting in one shared toolbar doesn't clobber
+				// 			selection in the others. This is problematic.
 				this.toolbarWidget = toolbars[0];
 			}
 			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
-			// dojo.debug(et);
+		},
+
+		_scrollSetUp: false,
+		_fixedEnabled: false,
+		_scrollThreshold: false,
+		globalOnScrollHandler: function(){
+			if(!this._scrollSetUp){
+				this._scrollSetUp = true;
+				var tdn = this.toolbarWidget.domNode;
+				var totalHeight = dojo.style.getOuterHeight(tdn);
+				var editorWidth =  dojo.style.getOuterWidth(this.domNode); 
+				this.domNode.style.marginTop = totalHeight+"px";
+				this._scrollThreshold = dojo.style.getAbsoluteY(tdn);
+			}
+
+			if(document.body.scrollTop > this.scrollThreshold){
+				if(!this._fixEnabled){
+					with(tdn.style){
+						position = "fixed";
+						top = "0px";
+						// width = editorWidth+"px";
+					}
+				}
+				this._fixEnabled = true;
+			}else if(this._fixedEnabled){
+				this._fixEnabled = false;
+				with(tdn.style){
+					position = "";
+					top = "";
+				}
+			}
+
 		},
 
 		_updateToolbarLastRan: null,
@@ -144,7 +185,7 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		dojo.event.log(this, "onLoad");
+		// dojo.event.log(this, "onLoad");
 		dojo.event.connect(this, "onLoad", this, "editorOnLoad");
 		dojo.event.connect(this, "onDisplayChanged", this, "updateToolbar");
 	}
