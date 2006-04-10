@@ -207,10 +207,6 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 	},
 
 	show: function(){
-		// If this is the first time we are displaying this object,
-		// and the contents are external, then download them.
-		this.loadContents();
-
 		// If this node was created while display=="none" then it
 		// hasn't been laid out yet.  Do that now.
 		this.domNode.style.display="";
