@@ -1,8 +1,0 @@
-if(	(this.propagate)&&(this.parent)&&
-	(this.parent.rec.level>=this.cutOffLevel)){
-	this.parent.log(lvl, msg);
-	return false;
-}
- FIXME: need to call logging providers here!
-this.handle(new dojo.logging.Record(lvl, msg));
-return true;

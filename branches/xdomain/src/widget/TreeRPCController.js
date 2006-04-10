@@ -47,26 +47,22 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 
 		var success;
 
-		dojo.io.bind({
+		this.runRPC({		
 			url: this.getRPCUrl('move'),
 			/* I hitch to get this.loadOkHandler */
-			load: dojo.lang.hitch(this,
-				function(type, response) {
-					success = this.doMoveProcessResponse(type, response, child, newParent, index) ;
-				}
-			),
-			error: this.RPCErrorHandler,
-			mimetype: "text/json",
-			preventCache: true,
+			load: function(response) {
+				success = this.doMoveProcessResponse(response, child, newParent, index) ;
+			},
 			sync: true,
-			content: { data: dojo.json.serialize(params) }
+			lock: [child, newParent],
+			params: params
 		});
 
 
 		return success;
 	},
 
-	doMoveProcessResponse: function(type, response, child, newParent, index) {
+	doMoveProcessResponse: function(response, child, newParent, index) {
 
 		if (!dojo.lang.isUndefined(response.error)) {
 			this.RPCErrorHandler("server", response.error);
@@ -79,29 +75,27 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	},
 
 
-	doRemoveNode: function(node, callFunc, callObj) {
+	doRemoveNode: function(node, callObj, callFunc) {
 
 		var params = {
 			node: this.getInfo(node),
 			tree: this.getInfo(node.tree)
 		}
 
-		dojo.io.bind({
+		this.runRPC({
 				url: this.getRPCUrl('removeNode'),
 				/* I hitch to get this.loadOkHandler */
-				load: dojo.lang.hitch(this, function(type, response) {
-					this.doRemoveNodeProcessResponse(type, response, node, callFunc, callObj) }
-				),
-				error: this.RPCErrorHandler,
-				mimetype: "text/json",
-				preventCache: true,
-				content: {data: dojo.json.serialize(params) }
+				load: function(response) {
+					this.doRemoveNodeProcessResponse(response, node, callObj, callFunc) 
+				},
+				params: params,
+				lock: [node]
 		});
 
 	},
 
 
-	doRemoveNodeProcessResponse: function(type, response, node, callFunc, callObj) {
+	doRemoveNodeProcessResponse: function(response, node, callObj, callFunc) {
 		if (!dojo.lang.isUndefined(response.error)) {
 			this.RPCErrorHandler("server", response.error);
 			return false;
@@ -111,7 +105,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 
 		if (response == true) {
 			/* change parent succeeded */
-			var args = [ node, callFunc, callObj ];
+			var args = [ node, callObj, callFunc ];
 			dojo.widget.TreeLoadingController.prototype.doRemoveNode.apply(this, args);
 
 			return;
@@ -131,46 +125,40 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	// -----------------------------------------------------------------------------
 
 
-	doCreateChild: function(parent, index, output, callFunc, callObj) {
+	doCreateChild: function(parent, index, output, callObj, callFunc) {
 
 			var params = {
 				tree: this.getInfo(parent.tree),
 				parent: this.getInfo(parent),
 				index: index,
-				data: dojo.json.serialize(output)
+				data: output
 			}
 
-			dojo.io.bind({
-					url: this.getRPCUrl('createChild'),
-					/* I hitch to get this.loadOkHandler */
-					load: dojo.lang.hitch(this, function(type, response) {
-						// data is dead, new data is used
-						this.doCreateChildProcessResponse(type, response, parent, index, callFunc, callObj) }
-					),
-					error: this.RPCErrorHandler,
-					mimetype: "text/json",
-					preventCache: true,
-					content: params
+			this.runRPC({
+				url: this.getRPCUrl('createChild'),
+				load: function(response) {
+					// suggested data is dead, fresh data from server is used
+					this.doCreateChildProcessResponse( response, parent, index, callObj, callFunc) 
+				},
+				params: params,
+				lock: [parent]
 			});
 
 	},
 
-	doCreateChildProcessResponse: function(type, response, parent, index, callFunc, callObj) {
+	doCreateChildProcessResponse: function(response, parent, index, callObj, callFunc) {
 
 		if (!dojo.lang.isUndefined(response.error)) {
 			this.RPCErrorHandler("server",response.error);
 			return false;
 		}
 
-		if (!parent.isTreeNode) {
-			dojo.raise("Can only add children to TreeNode")
-		}
-
 		if (!dojo.lang.isObject(response)) {
 			dojo.raise("Invalid result "+response)
 		}
 
-		var args = [parent, index, response, callFunc, callObj];
+		var args = [parent, index, response, callObj, callFunc];
+		
 		dojo.widget.TreeLoadingController.prototype.doCreateChild.apply(this, args);
 
 	}

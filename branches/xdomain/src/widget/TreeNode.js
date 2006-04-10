@@ -38,6 +38,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 	isContainer: true,
 
+	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
+
 
 	templateString: ('<div class="dojoTreeNode"> '
 		+ '<span treeNode="${this.widgetId}" class="dojoTreeNodeLabel" dojoAttachPoint="labelNode"> '
@@ -92,10 +94,29 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
 	},
 
+	lock: function(){ return this.tree.lock.apply(this, arguments) },
+	unlock: function(){ return this.tree.unlock.apply(this, arguments) },
+	isLocked: function(){ return this.tree.isLocked.apply(this, arguments) },
+	cleanLock: function(){ return this.tree.cleanLock.apply(this, arguments) },
+
 	actionIsDisabled: function(action) {
 		var _this = this;
 
-		return (action == this.actions.ADDCHILD && !this.isFolder) || dojo.lang.inArray(_this.actionsDisabled, action);
+		var disabled = false;
+
+		if (this.tree.strictFolders && action == this.actions.ADDCHILD && !this.isFolder) {
+			disabled = true;
+		}
+
+		if (dojo.lang.inArray(_this.actionsDisabled, action)) {
+			disabled = true;
+		}
+
+		if (this.isLocked()) {
+			disabled = true;
+		}
+
+		return disabled;
 	},
 
 	getInfo: function() {
@@ -142,14 +163,14 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 				var img = this.tree.makeBlankImg();
 				this.imgs.unshift(img);
 				//dojo.debugShallow(this.domNode);
-				this.domNode.insertBefore(this.imgs[0], this.domNode.firstChild);
+				dojo.dom.insertBefore(this.imgs[0], this.domNode.firstChild);
 
 			}
 		}
 		if (depthDiff<0) {
 			for(var i=0; i<-depthDiff;i++) {
 				this.imgs.shift();
-				this.domNode.removeNode(this.domNode.firstChild);
+				dojo.dom.removeNode(this.domNode.firstChild);
 			}
 		}
 
@@ -157,7 +178,22 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 
 	markLoading: function() {
+		this._markLoadingSavedIcon = this.expandIcon.src;
 		this.expandIcon.src = this.tree.expandIconSrcLoading;
+	},
+
+	// if icon is "Loading" then
+	unMarkLoading: function() {
+		if (!this._markLoadingSavedIcon) return;
+
+		var im = new Image();
+		im.src = this.tree.expandIconSrcLoading;
+
+		//dojo.debug("Unmark "+this.expandIcon.src+" : "+im.src);
+		if (this.expandIcon.src == im.src) {
+			this.expandIcon.src = this._markLoadingSavedIcon;
+		}
+		this._markLoadingSavedIcon = null;
 	},
 
 
@@ -203,6 +239,11 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		// node with children(from source html) becomes folder on build stage.
 		if (this.children.length || this.isFolder) {
 			this.setFolder();
+		}
+		else {
+			// leaves are always loaded
+			//dojo.debug("Set "+this+" state to loaded");
+			this.state = this.loadStates.LOADED;
 		}
 
 		dojo.event.connect(this.childIcon, 'onclick', this, 'onIconClick');
@@ -366,7 +407,11 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	buildChildIcon: function() {
-		this.childIcon.src = this.childIconSrc ? this.childIconSrc : "url()";
+		// IE (others?) tries to download whatever is on src attribute so setting "url()" like before isnt a good idea
+		// Only results in a 404
+		if(this.childIconSrc){
+			this.childIcon.src = this.childIconSrc;
+		}
 		this.childIcon.style.display = this.childIconSrc ? 'inline' : 'none';
 	},
 
@@ -437,14 +482,6 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		}
 	},
 
-	/* clean my domNodes before destruction */
-	cleanUp: function() {
-		try{
-			dojo.event.browser.clean(this.domNode);
-			delete this.domNode;
-		}catch(e){ }
-	},
-
 	addChild: function(){
 		return this.tree.addChild.apply(this, arguments);
 	},
@@ -475,7 +512,6 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 
 	removeNode: function(){ return this.tree.removeNode.apply(this, arguments) },
-	destroyChild: function(){ return this.tree.destroyChild.apply(this, arguments) },
 	doRemoveNode: function(){ return this.tree.doRemoveNode.apply(this, arguments) },
 
 

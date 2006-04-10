@@ -1,7 +1,0 @@
-if (fn){
-	 fn: Function
-	items.sort(fn);
-} else {
-	 fn: null
-	items.sort();
-}

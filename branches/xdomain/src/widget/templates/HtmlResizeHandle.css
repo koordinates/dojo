@@ -1,5 +1,8 @@
 .dojoHtmlResizeHandle {
 	float: right;
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
 	width: 13px;
 	height: 13px;
 	z-index: 20;

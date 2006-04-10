@@ -1,5 +1,0 @@
-var _this = this;
-dojo.debug("bind to "+node);
-dojo.lang.forEach(node.getDescendants(),
-	function(e) {_this.bindDomNode(e.labelNode); }
-);

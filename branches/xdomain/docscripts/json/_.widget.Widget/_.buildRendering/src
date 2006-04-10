@@ -1,2 +1,0 @@
-dj_unimplemented("dojo.widget.Widget.buildRendering, on "+this.toString()+", ");
-return false;

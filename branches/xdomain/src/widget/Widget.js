@@ -291,7 +291,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 				}
 			}else{
 				// collect any extra 'non mixed in' args
-				this.extraArgs[x] = args[x];
+				this.extraArgs[x.toLowerCase()] = args[x];
 			}
 		}
 		// dojo.profile.end("mixInProperties");
@@ -463,6 +463,13 @@ dojo.widget.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 	var properties = widgetParser.parseProperties(fragment["dojo:connect"]);
 }
 
+// FIXME: if we know the insertion point (to a reasonable location), why then do we:
+//	- create a template node
+//	- clone the template node
+//	- render the clone and set properties
+//	- remove the clone from the render tree
+//	- place the clone
+// this is quite dumb
 dojo.widget.buildWidgetFromParseTree = function(type, frag, 
 												parser, parentComp, 
 												insertionIndex, localProps){
@@ -483,4 +490,48 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	var ret = twidget.create(localProperties, frag, parentComp);
 	// dojo.debug(new Date() - tic);
 	return ret;
+}
+
+/*
+ * it would be best to be able to call defineWidget for any widget namespace
+ */
+dojo.widget.defineWidget = function(	widgetClass 	/*string*/, 
+										superclass 		/*function*/, 
+										props 			/*object*/,
+										renderer 		/*string*/, 
+										ctor 			/*function*/){
+	if((!ctor)&&(props["classConstructor"])){
+		ctor = props.classConstructor;
+	}
+	if(!ctor){ ctor = function(){}; }
+	var nsref;
+	var namespace;
+	var type;
+	if(renderer){
+		// widgetClass takes the form foo.bar.baz.html.WidgetName
+		var parts = widgetClass.split("."+renderer+".");
+		namespace = parts[0];
+		nsref = dojo.evalObjPath(namespace+"."+renderer, true);
+		type = parts[1];
+	}else{
+		// widgetClass takes the form foo.bar.baz.WidgetName
+		var parts = widgetClass.split(".");
+		type = parts.pop();
+		namespace = parts.join(".");
+		nsref = dojo.evalObjPath(namespace, true);
+	}
+	
+	if(!props){ props = {}; }
+	props.widgetType = type;
+
+	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+
+	nsref[type] = function(){
+		superclass.call(this);
+		ctor.call(this);
+	}
+
+	dojo.inherits(nsref[type], superclass);
+
+	dojo.lang.extend(nsref[type], props);
 }

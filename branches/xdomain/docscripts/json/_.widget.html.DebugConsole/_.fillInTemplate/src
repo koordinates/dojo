@@ -1,4 +1,0 @@
-dojo.widget.html.DebugConsole.superclass.fillInTemplate.apply(this, arguments);
-this.containerNode.id = "debugConsoleClientPane";
-djConfig.isDebug = true;
-djConfig.debugContainerId = this.containerNode.id;

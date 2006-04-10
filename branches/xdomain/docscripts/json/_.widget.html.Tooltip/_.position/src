@@ -1,1 +1,0 @@
-dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);

@@ -1,4 +1,0 @@
-var n = this.getGroup(node) || node;
-if (this.getLastChildElement(n.parentNode) != n){
-	this.insertAfter(n, this.getNextSiblingElement(n), true);
-}

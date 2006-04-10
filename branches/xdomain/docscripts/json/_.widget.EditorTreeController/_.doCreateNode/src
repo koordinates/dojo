@@ -1,5 +1,0 @@
-var newChild = dojo.widget.createWidget("EditorTreeNode", child);
-
-parent.addChild(newChild, index);
-
-this.expand(parent);

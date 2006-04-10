@@ -1,5 +1,0 @@
-this._ValidProperties = VEventProperties;
-this.name = "VEVENT";
-dojo.iCalendar.Component.call(this, body);
-this.recurring = false;
-this.startDate = dojo.date.fromIso8601(this.dtstart.value);

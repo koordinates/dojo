@@ -1,3 +1,0 @@
-this.hideChildren();
-this.isExpanded = false;
-this.updateIcons();

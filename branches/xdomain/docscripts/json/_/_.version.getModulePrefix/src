@@ -1,5 +1,0 @@
-var mp = this.modulePrefixes_;
-if((mp[module])&&(mp[module]["name"])){
-	return mp[module].value;
-}
-return module;

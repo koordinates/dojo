@@ -1,1 +1,0 @@
-{"requires":{"common":["dojo.storage","dojo.json"]},"_.StorageProvider":{"()":[]},"_.StorageProvider.storageOnLoad":{"()":[]},"_.StorageProvider.set":{"(key, value, ns)":[]},"_.StorageProvider.get":{"(key, ns)":[]}}

@@ -1,5 +1,0 @@
-var p = nodes.item(0).parentNode;
-var g = document.createElementNS(this.xmlns.svg, "g");
-for (var i = 0; i < nodes.length; i++) g.appendChild(nodes.item(i));
-p.appendChild(g);
-return g;

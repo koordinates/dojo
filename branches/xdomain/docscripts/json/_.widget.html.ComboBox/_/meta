@@ -1,1 +1,0 @@
-{"this_variables":["autoComplete","formInputName","name","textInputNode","comboBoxValue","comboBoxSelectionValue","optionsListWrapper","optionsListNode","downArrowNode","cbTableNode","searchTimer","searchDelay","dataUrl","mode","selectedResult"],"inherits":["dojo.widget.HtmlWidget"],"this_inherits":["dojo.widget.ComboBox","dojo.widget.HtmlWidget"]}

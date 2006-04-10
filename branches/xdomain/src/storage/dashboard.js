@@ -35,7 +35,7 @@ dojo.lang.extend(dojo.storage.dashboard.StorageProvider, {
 			return system.outputString;
 		}
 
-		return dojo.json.evalJSON(widget.preferenceForKey(key));
+		return dojo.json.evalJson(widget.preferenceForKey(key));
 	}
 });
 

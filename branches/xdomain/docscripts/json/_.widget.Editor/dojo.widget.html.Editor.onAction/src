@@ -1,9 +1,0 @@
-switch(cmd) {
-	case "createlink":
-		if(!(value = prompt("Please enter the URL of the link:", "http:"))) {
-			return;
-		}
-		break;
-	case "insertimage":
-		if(!(value = prompt("Please enter the URL of the image:", "http:"))) {
-			return;

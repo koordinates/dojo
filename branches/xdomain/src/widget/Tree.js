@@ -3,6 +3,11 @@
  * Throws events about clicks on it, so someone may catch them and process
  * Tree knows nothing about DnD stuff, covered in TreeDragAndDrop and (if enabled) attached by controller
 */
+
+/**
+ * TODO: use domNode.cloneNode instead of createElement for grid
+ * Should be faster (lyxsus)
+ */
 dojo.provide("dojo.widget.Tree");
 
 dojo.require("dojo.event.*");
@@ -38,6 +43,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		createDOMNode: "createDOMNode",
 		// tree created.. Perform tree-wide actions if needed
 		treeCreate: "treeCreate",
+		treeDestroy: "treeDestroy",
 		// expand icon clicked
 		treeClick: "treeClick",
 		// node icon clicked
@@ -56,6 +62,10 @@ dojo.lang.extend(dojo.widget.Tree, {
 	isContainer: true,
 
 	DNDMode: "off",
+
+	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
+
+	strictFolders: true,
 
 	DNDModes: {
 		BETWEEN: 1,
@@ -151,7 +161,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 				// create default controller here
 				dojo.require("dojo.widget.TreeBasicController");
 				this.controller = dojo.widget.createWidget("TreeBasicController",
-					{ DNDController: this.DNDMode ? "create" : "" }
+					{ DNDController: (this.DNDMode ? "create" : ""), dieWithTree: true }
 				 );
 
 			}
@@ -171,10 +181,11 @@ dojo.lang.extend(dojo.widget.Tree, {
 			else {
 				// create default controller here
 				dojo.require("dojo.widget.TreeSelector");
-				this.selector = dojo.widget.createWidget("TreeSelector");
+				this.selector = dojo.widget.createWidget("TreeSelector", {dieWithTree: true});
 			}
 
 			this.selector.listenTree(this);
+
 		} else {
 			this.selector = null;
 		}
@@ -204,8 +215,8 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 		this.expandLevel = parseInt(this.expandLevel);
 
-		this.initializeController();
 		this.initializeSelector();
+		this.initializeController();
 
 		if (this.menu) {
 			this.menu = dojo.widget.byId(this.menu);
@@ -243,12 +254,22 @@ dojo.lang.extend(dojo.widget.Tree, {
 			}
 		}
 
-		dojo.event.topic.publish(this.tree.eventNames.treeCreate, { source: this } );
+		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 
 	},
 
 
+	destroy: function() {
+		dojo.event.topic.publish(this.tree.eventNames.treeDestroy, { source: this } );
+
+		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
+	},
+
+
 	addChild: function(child, index) {
+
+//		dojo.debug("doAddChild "+index+" called for "+child);
+
 		var message = {
 			child: child,
 			index: index,
@@ -272,9 +293,6 @@ dojo.lang.extend(dojo.widget.Tree, {
 	 * if yes, then only attach events in addChild and detach in remove.. Seems all ok yet.
 	*/
 	doAddChild: function(child, index){
-
-		//dojo.debug("doAddChild "+index+" called for "+child);
-
 
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
@@ -306,7 +324,6 @@ dojo.lang.extend(dojo.widget.Tree, {
 		if (this.isTreeNode) {
 			this.state = this.loadStates.LOADED;
 		}
-
 
 		// add new child into DOM after it was added into children
 		if (index < this.children.length) { // children[] already has child
@@ -342,6 +359,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 			child.depth = this.isTreeNode ? this.depth+1 : 0;
 			child.createDOMNode(child.tree, child.depth);
 		}
+
 
 
 		// Use-case:
@@ -474,9 +492,18 @@ dojo.lang.extend(dojo.widget.Tree, {
 		children.splice(index,1);
 		dojo.dom.removeNode(child.domNode);
 
+		if (parent.children.length == 0) {
+			parent.containerNode.style.display = "none";
+		}
+
 		// if WAS last node (children.length decreased already) and has prevSibling
 		if (index == children.length && index>0) {
 			children[index-1].updateExpandGridColumn();
+		}
+		// if it WAS first node in WHOLE TREE -
+		// update link up of its former lower neighbour(if exists still)
+		if (parent instanceof dojo.widget.Tree && index == 0 && children.length>0) {
+			children[0].updateExpandGrid();
 		}
 
 		//parent.updateIconTree();
@@ -487,18 +514,46 @@ dojo.lang.extend(dojo.widget.Tree, {
 		return child;
 	},
 
-// ================================ destroyChild ===================================
+	markLoading: function() {
+		// no way to mark tree loading
+	},
+
+	unMarkLoading: function() {
+		// no way to show that tree finished loading
+	},
 
 
-	destroyChild: function(child) {
-		dojo.debug("destroyed");
-		//dojo.debugShallow(child);
-		child.parent.removeNode(child);
-		child.cleanUp();
-		delete child;
+	lock: function() {
+		!this.lockLevel && this.markLoading();
+		this.lockLevel++;
+	},
+	unlock: function() {
+		if (!this.lockLevel) {
+			dojo.raise("unlock: not locked");
+		}
+		this.lockLevel--;
+		!this.lockLevel && this.unMarkLoading();
+	},
+
+	isLocked: function() {
+		var node = this;
+		while (true) {
+			if (node.lockLevel) {
+				return true;
+			}
+			if (node instanceof dojo.widget.Tree) {
+				break;
+			}
+			node = node.parent;
+		}
+
+		return false;
+	},
+
+	flushLock: function() {
+		this.lockLevel = 0;
+		this.unMarkLoading();
 	}
-
-
 });
 
 

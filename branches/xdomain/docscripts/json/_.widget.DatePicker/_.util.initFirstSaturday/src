@@ -1,8 +1,0 @@
-if(!month) {
-	month = this.date.getMonth();
-}
-if(!year) {
-	year = this.date.getFullYear();
-}
-var firstOfMonth = new Date(year, month, 1);
-return {year: year, month: month, date: 7 - firstOfMonth.getDay()};

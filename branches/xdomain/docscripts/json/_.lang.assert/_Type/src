@@ -1,9 +1,0 @@
-if(!dojo.lang.isOfType(value, type)){
-	if(!message){
-		if(!dojo.lang.assertType._errorMessage){
-			dojo.lang.assertType._errorMessage = "Type mismatch: dojo.lang.assertType() failed.";
-		}
-		message = dojo.lang.assertType._errorMessage;
-	}
-	dojo.lang.assert(false, message);
-}

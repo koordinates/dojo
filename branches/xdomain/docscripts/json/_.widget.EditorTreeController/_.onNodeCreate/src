@@ -1,1 +1,0 @@
-this.registerDNDNode(message.source);

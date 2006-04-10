@@ -1,5 +1,0 @@
-try {
-	return d.documentElement.animationsPaused();
-} catch(e){
-	return false;
-}

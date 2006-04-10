@@ -1,2 +1,0 @@
-var re = new RegExp("^" + dojo.regexp.realNumber(flags) + "$");
-return re.test(value);

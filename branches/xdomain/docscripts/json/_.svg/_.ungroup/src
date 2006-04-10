@@ -1,3 +1,0 @@
-var p = g.parentNode;
-while (g.childNodes.length > 0) p.appendChild(g.childNodes.item(0));
-p.removeChild(g);

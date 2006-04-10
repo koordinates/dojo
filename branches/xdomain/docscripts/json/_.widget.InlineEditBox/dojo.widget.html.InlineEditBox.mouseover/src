@@ -1,6 +1,0 @@
-if(!this.editing){
-	dojo.html.addClass(this.editable, "editableRegion");
-	if(this.mode == "textarea"){
-		dojo.html.addClass(this.editable, "editableTextareaRegion");
-	}
-}

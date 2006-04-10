@@ -1,7 +1,0 @@
-this.state = this.loadStates.UNCHECKED;
-
-for(var i=0; i<this.actionsDisabled.length; i++) {
-	this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
-}
-	
-this.expandLevel = parseInt(this.expandLevel);

@@ -1,4 +1,0 @@
-var source = this.getFragNodeRef(frag);
-this.domNode.style.cssText = source.style.cssText;
-dojo.html.addClass(this.domNode, dojo.html.getClass(source));
-dojo.widget.html.TabPane.superclass.fillInTemplate.call(this, args, frag);

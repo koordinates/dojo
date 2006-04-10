@@ -1,1 +1,0 @@
-return parseFloat(dojo.svg.getStyle(node, cssSelector));

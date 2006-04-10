@@ -1,7 +1,0 @@
-if(!flags) { flags = {}; }
-if(!flags.listSeparator) { flags.listSeparator = "\\s;,"; }
-
-if ( dojo.validate.isEmailAddressList(value, flags) ) {
-	return value.split(new RegExp("\\s*[" + flags.listSeparator + "]\\s*"));
-}
-return [];

@@ -1,3 +1,0 @@
-this.window=dojo.widget.getWidgetById(this.windowId);
-this.window.explodeSrc = this.domNode;
-dojo.event.connect(this.window, "destroy", this, "destroy")

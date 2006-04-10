@@ -1,5 +1,0 @@
-if (this.autoExpandTimer) {
-	clearTimeout(this.autoExpandTimer);
-	delete this.autoExpandTimer;
-	this.autoExpandTimer = null;
-}

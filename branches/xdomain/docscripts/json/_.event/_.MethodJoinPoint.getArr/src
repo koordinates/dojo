@@ -1,8 +1,0 @@
-var arr = this.after;
- FIXME: we should be able to do this through props or Array.in()
-if((typeof kind == "string")&&(kind.indexOf("before")!=-1)){
-	arr = this.before;
-}else if(kind=="around"){
-	arr = this.around;
-}
-return arr;

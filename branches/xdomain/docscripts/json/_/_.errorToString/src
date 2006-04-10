@@ -1,1 +1,0 @@
-return ((!dj_undef("message", excep)) ? excep.message : (dj_undef("description", excep) ? excep : excep.description ));  

@@ -1,7 +1,0 @@
-if(	(e.clientX > coords[0][0])&&
-	(e.clientX < coords[1][0])&&
-	(e.clientY > coords[0][1])&&
-	(e.clientY < coords[1][1]) ){
-	return true;
-}
-return false;

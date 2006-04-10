@@ -1,4 +1,0 @@
-dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
-var x = dojo.html.getAbsoluteX(this.domNode);
-var y = dojo.html.getAbsoluteY(this.domNode) + dojo.html.getInnerHeight(this.domNode);
-this.dialog.showAt(x, y);

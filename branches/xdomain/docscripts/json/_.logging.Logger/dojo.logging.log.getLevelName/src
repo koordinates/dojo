@@ -1,6 +1,0 @@
-for(var x=0; x<this.levels.length; x++){
-	if(this.levels[x].level == lvl){
-		return this.levels[x].name;
-	}
-}
-return null;

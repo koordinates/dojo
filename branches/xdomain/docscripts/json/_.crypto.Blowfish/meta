@@ -1,1 +1,0 @@
-{"requires":{"common":["dojo.crypto"]},"_":{"()":[]},"_.encrypt":{"(plaintext, key, ao)":[]},"_.decrypt":{"(ciphertext, key, ao)":[]}}

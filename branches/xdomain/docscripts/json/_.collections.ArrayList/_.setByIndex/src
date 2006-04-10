@@ -1,2 +1,0 @@
-items[i]=obj;
-this.count=items.length;

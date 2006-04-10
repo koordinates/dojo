@@ -1,1 +1,0 @@
-{"_.getState":{"(id)":[]},"_.setState":{"(id, state, isCommit)":[]},"_.setup":{"()":[]},"_.commit":{"(state)":[]},"_.description":{"(v, showAll)":[]},"_.getStorage":{"()":[]}}

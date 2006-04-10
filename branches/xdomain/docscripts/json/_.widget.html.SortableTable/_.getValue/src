@@ -1,7 +1,0 @@
-var a=[];
-for(var i=0;i<this.selected.length;i++){
-	if (this.selected[i][this.valueField]){
-		a.push(this.selected[i][this.valueField]);
-	}
-}
-return a.join();		

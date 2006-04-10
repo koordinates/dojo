@@ -9,8 +9,8 @@ dojo.require("dojo.dom");
  *
  * Package summary needs to compensate for "is"
  * Handle host environments
- * Rewrite function signatures
  * Deal with dojo.widget weirdness
+ * Parse parameters
  * Limit function parameters to only the valid ones (Involves packing parameters onto meta during rewriting)
  * Package display page
  *
@@ -179,13 +179,13 @@ dojo.doc._gotDoc = function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 			description: description,
 			returns: keys.fn["DocFnForm/returns"],
 			id: keys.fn["DocFnForm/id"],
-			parameters: []
+			parameters: {},
+			variables: []
 		}
 		for(var i = 0, param; param = keys["param"][i]; i++){
-			data.parameters.push({
-				name: param["DocParamForm/name"],
+			data.parameters[param["DocParamForm/name"]] = {
 				description: param["DocParamForm/desc"]
-			});
+			};
 		}
 
 		delete dojo.doc._keys[evt.selectKey];
@@ -326,6 +326,7 @@ dojo.doc._onDocSelectResults = function(/*String*/ type, /*Object*/ data, /*Obje
 	if(++dojo.doc._keys[myKey.selectKey].size == 3){
 		var key = dojo.lang.mixin(evt, dojo.doc._keys[myKey.selectKey]);
 		delete key.size;
+		dojo.debug(dojo.json.serialize(key));
 		dojo.debug("Publishing docFunctionDetail");
 		dojo.event.topic.publish("docFunctionDetail", key);
 		delete dojo.doc._keys[myKey.selectKey];
@@ -433,11 +434,32 @@ dojo.doc._buildCache = function(/*Object*/ input){
 				mimetype: mimetype,
 				error: function(type, data, evt, args){
 					if(args.input.callbacks && args.input.callbacks.length){
+						if(!data){
+							data = {};
+						}
+						if(!dojo.doc._cache[args.input.pkg]){
+							dojo.doc._cache[args.input.pkg] = {};
+						}
+						if(!dojo.doc._cache[args.input.pkg][args.input.name]){
+							dojo.doc._cache[args.input.pkg][args.input.name] = {};
+						}
+						if(args.input.type == "meta"){
+							if(args.input.id){
+								data.sig = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].sig;
+								data.params = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].params;
+							}else{
+								data.sig = dojo.doc._cache[args.input.pkg][args.input.name].sig;								
+								data.params = dojo.doc._cache[args.input.pkg][args.input.name].params;
+							}
+						}
 						var callback = args.input.callbacks.shift();
-						callback.call(null, "error", {}, args.input);
+						callback.call(null, "error", data, args.input);
 					}
 				},
 				load: function(type, data, evt, args){
+					if(!data){
+						data = {};
+					}
 					if(!dojo.doc._cache[args.input.pkg]){
 						dojo.doc._cache[args.input.pkg] = {};
 					}
@@ -446,8 +468,16 @@ dojo.doc._buildCache = function(/*Object*/ input){
 					}
 					if(args.input.id){
 						dojo.doc._cache[args.input.pkg][args.input.name][args.input.id][args.input.type] = data;
+						if(args.input.type == "meta"){
+							data.sig = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].sig;
+							data.params = dojo.doc._cache[args.input.pkg][args.input.name][args.input.id].params;
+						}
 					}else{
 						dojo.doc._cache[args.input.pkg][args.input.name][args.input.type] = data;
+						if(args.input.type == "meta"){
+							data.sig = dojo.doc._cache[args.input.pkg][args.input.name].sig;
+							data.params = dojo.doc._cache[args.input.pkg][args.input.name].params;
+						}
 					}
 					if(args.input.callbacks && args.input.callbacks.length){
 						var callback = input.callbacks.shift();
@@ -484,20 +514,59 @@ dojo.doc._buildCache = function(/*Object*/ input){
 				}
 			},
 			load: function(type, data, evt, args){
+				if(!dojo.doc._cache[args.input.name]){
+					dojo.doc._cache[args.input.name] = {};
+				}
+				
 				for(var key in data){
 					if(key != "requires"){
 						if(key.charAt(0) == "_"){
 							var new_key = args.input.name + key.substring(1, key.length);
 							data[new_key] = data[key];
 							delete data[key];
-							key = new_key;
+							for(var sig in data[new_key]){
+								if(sig == "is"){
+									continue;
+								}
+								var real_sig = sig;
+								if(sig.charAt(0) == "("){
+									real_sig = "undefined " + real_sig;
+								}
+								real_sig = real_sig.split("(");
+								real_sig = real_sig[0] + new_key + "(" + real_sig[1];
+								var parameters = {};
+								var parRegExp = /(?:\(|,)([^,\)]+)/g;
+								var result;
+								while(result = parRegExp.exec(real_sig)){
+									var parts = result[1].split(" ");
+									if(parts.length > 1){
+										var pName = parts.pop();
+										var pType = parts.join(" ");
+										var pOpt = false;
+										if(pType.indexOf("?") != -1){
+											pType = pType.replace("?", "");
+											pOpt = true;
+										}
+										parameters[pName] = {type: pType, opt: pOpt};
+									}else{
+										parameters[parts[0]] = {type: "", opt: false};
+									}
+								}
+								real_sig = real_sig.replace(/\?/g, "");
+								if(data[new_key][sig].summary || dojo.lang.isArray(data[new_key][sig])){
+									if(!dojo.doc._cache[args.input.name][new_key]){
+										dojo.doc._cache[args.input.name][new_key] = {};
+									}
+									dojo.doc._cache[args.input.name][new_key].sig = real_sig;
+									dojo.doc._cache[args.input.name][new_key].params = parameters;
+								}else{
+									// Polymorphic sigs
+								}
+							}
 						}
 					}
 				}
-				
-				if(!dojo.doc._cache[args.input.name]){
-					dojo.doc._cache[args.input.name] = {};
-				}
+
 				dojo.doc._cache[args.input.name]["meta"] = data;
 				if(input.callbacks && input.callbacks.length){
 					var callback = input.callbacks.shift();

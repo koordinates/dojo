@@ -1,8 +1,0 @@
-if((arguments.length == 1)&&(arguments[0].constructor == Object)){
-	this.fromKwArgs(arguments[0]);
-}else{
-	this.url = url;
-	if(mimetype){ this.mimetype = mimetype; }
-	if(transport){ this.transport = transport; }
-	if(arguments.length >= 4){ this.changeUrl = changeUrl; }
-}

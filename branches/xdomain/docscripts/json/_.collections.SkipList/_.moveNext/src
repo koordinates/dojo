@@ -1,4 +1,0 @@
-if (this.atEnd) return !this.atEnd;
-this.current = this.current.nodes[0];
-this.atEnd = (current == null);
-return !this.atEnd;

@@ -1,1 +1,0 @@
-return dojo.validate.isValidTime(this.textbox.value, this.flags);

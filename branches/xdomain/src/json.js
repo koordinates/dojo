@@ -1,6 +1,6 @@
 dojo.provide("dojo.json");
 dojo.require("dojo.lang.func");
-dojo.require("dojo.lang.repr");
+dojo.require("dojo.string.extras");
 dojo.require("dojo.AdapterRegistry");
 
 dojo.json = {
@@ -40,7 +40,10 @@ dojo.json = {
 		}
 	},
 
-	evalJSON: dojo.lang.forward("evalJson"),
+	evalJSON: function (json) {
+		dojo.deprecated("dojo.json.evalJSON", "use dojo.json.evalJson", "0.4");
+		return this.evalJson(json);
+	},
 
 	serialize: function(o){
 		/***
@@ -56,10 +59,7 @@ dojo.json = {
 		}else if(o === null){
 			return "null";
 		}
-		var m = dojo.lang;
-		if(objtype == "string"){
-			return m.reprString(o);
-		}
+		if (objtype == "string") { return dojo.string.escapeString(o); }
 		// recurse
 		var me = arguments.callee;
 		// short-circuit for objects that support "json" serialization
@@ -108,7 +108,7 @@ dojo.json = {
 			if (typeof(k) == "number"){
 				useKey = '"' + k + '"';
 			}else if (typeof(k) == "string"){
-				useKey = m.reprString(k);
+				useKey = dojo.string.escapeString(k);
 			}else{
 				// skip non-string or number keys
 				continue;

@@ -1,2 +1,0 @@
-dojo.deprecated("dojo.dom.collectionToArray", "use dojo.lang.toArray instead");
-return dojo.lang.toArray(collection);

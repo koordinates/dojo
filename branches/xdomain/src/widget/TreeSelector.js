@@ -24,9 +24,11 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 	widgetType: "TreeSelector",
 	selectedNode: null,
 
+	dieWithTree: false,
 
 	eventNamesDefault: {
 		select : "select",
+		destroy : "destroy",
 		deselect : "deselect",
 		dblselect: "dblselect" // select already selected node.. Edit or whatever
 	},
@@ -42,15 +44,56 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 	},
 
 
+	destroy: function() {
+		dojo.event.topic.publish(this.eventNames.destroy, { source: this } );
+
+		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
+	},
+
+
 	listenTree: function(tree) {
 		dojo.event.topic.subscribe(tree.eventNames.titleClick, this, "select");
 		dojo.event.topic.subscribe(tree.eventNames.iconClick, this, "select");
 		dojo.event.topic.subscribe(tree.eventNames.collapse, this, "onCollapse");
 		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
 		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
+		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+
 		/* remember all my trees to deselect when element is movedFrom them */
 		this.listenedTrees.push(tree);
 	},
+
+
+	unlistenTree: function(tree) {
+
+		dojo.event.topic.unsubscribe(tree.eventNames.titleClick, this, "select");
+		dojo.event.topic.unsubscribe(tree.eventNames.iconClick, this, "select");
+		dojo.event.topic.unsubscribe(tree.eventNames.collapse, this, "onCollapse");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
+		dojo.event.topic.unsubscribe(tree.eventNames.removeNode, this, "onRemoveNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
+
+
+		for(var i=0; i<this.listenedTrees.length; i++){
+           if(this.listenedTrees[i] === tree){
+                   this.listenedTrees.splice(i, 1);
+                   break;
+           }
+		}
+	},
+
+
+	onTreeDestroy: function(message) {
+
+		this.unlistenTree(message.source);
+
+		if (this.dieWithTree) {
+			//dojo.debug("Killing myself "+this.widgetId);
+			this.destroy();
+			//dojo.debug("done");
+		}
+	},
+
 
 	// deselect node if parent is collapsed
 	onCollapse: function(message) {

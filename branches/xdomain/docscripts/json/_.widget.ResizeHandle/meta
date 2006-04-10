@@ -1,1 +1,0 @@
-{"requires":{"common":["dojo.widget.*","dojo.html","dojo.style","dojo.dom","dojo.event"]},"dojo.widget.html.ResizeHandle":{"()":[]},"dojo.widget.html.ResizeHandle.postCreate":{"()":[]},"dojo.widget.html.ResizeHandle.beginSizing":{"(e)":[]},"dojo.widget.html.ResizeHandle.changeSizing":{"(e)":[]},"dojo.widget.html.ResizeHandle.endSizing":{"(e)":[]}}

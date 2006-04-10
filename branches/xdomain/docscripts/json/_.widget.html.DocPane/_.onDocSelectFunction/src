@@ -1,5 +1,0 @@
-dojo.dom.removeChildren(this.domNode);
-
-var header = document.createElement("h1");
-header.appendChild(document.createTextNode("Detail: " + message.name));
-this.domNode.appendChild(header);

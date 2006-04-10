@@ -20,6 +20,18 @@ dojo.widget.html.DocPane = function(){
 	this.count;
 	this.row;
 	this.summary;
+	this.description;
+	this.variables;
+	this.vRow;
+	this.vLink;
+	this.vDesc;
+	this.parameters;
+	this.pRow;
+	this.pLink;
+	this.pDesc;
+	this.pOpt;
+	this.pType;
+	this.source;
 
 	dojo.event.topic.subscribe("docResults", this, "onDocResults");
 	dojo.event.topic.subscribe("docFunctionDetail", this, "onDocSelectFunction");
@@ -34,12 +46,70 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.resultSave = dojo.dom.removeNode(this.result);
 		this.rowParent = this.row.parentNode;
 		this.rowSave = dojo.dom.removeNode(this.row);
+		this.vParent = this.vRow.parentNode;
+		this.vSave = dojo.dom.removeNode(this.vRow);
+		this.pParent = this.pRow.parentNode;
+		this.pSave = dojo.dom.removeNode(this.pRow);
 	},
 
 	onDocSelectFunction: function(message){
+		var appends = [];
 		dojo.dom.removeChildren(this.domNode);
 		this.fn.innerHTML = message.name;
+		this.description.innerHTML = message.doc.description;
+
+		this.variables.style.display = "block";
+		var all = [];
+		if(message.meta){
+			if(message.meta.variables){
+				all = message.meta.variables;
+			}
+			if(message.meta.this_variables){
+				all = all.concat(message.meta.this_variables);
+			}
+			if(message.meta.child_variables){
+				all = all.concat(message.meta.child_variables);
+			}
+		}
+		if(!all.length){
+			this.variables.style.display = "none";
+		}else{
+			for(var i = 0, one; one = all[i]; i++){
+				this.vLink.innerHTML = one;
+				this.vDesc.parentNode.style.display = "none";
+				appends.push(this.vParent.appendChild(this.vSave.cloneNode(true)));
+			}
+		}
+		
+		this.parameters.style.display = "none";
+		for(var param in message.meta.params){
+			this.parameters.style.display = "block";		
+			this.pLink.innerHTML = param;
+			this.pOpt.style.display = "none";
+			if(message.meta.params[param].opt){
+				this.pOpt.style.display = "inline";				
+			}
+			this.pType.parentNode.style.display = "none";
+			if(message.meta.params[param].type){
+				this.pType.parentNode.style.display = "inline";
+				this.pType.innerHTML = message.meta.params[param].type;
+			}
+			this.pDesc.parentNode.style.display = "none";			
+			if(message.doc.parameters[param] && message.doc.parameters[param].description){
+				this.pDesc.parentNode.style.display = "inline";
+				this.pDesc.innerHTML = message.doc.parameters[param].description;
+			}
+			appends.push(this.pParent.appendChild(this.pSave.cloneNode(true)));
+		}
+
+		dojo.dom.removeChildren(this.source);
+		this.source.appendChild(document.createTextNode(message.meta.sig + "{\r\n\t" + message.src.replace(/\n/g, "\r\n\t") + "\r\n}"));
+		
 		this.domNode.appendChild(this.selectSave.cloneNode(true));
+
+		for(var i = 0, append; append = appends[i]; i++){
+			dojo.dom.removeNode(append);
+		}
 	},
 
 	onDocResults: function(message){
@@ -50,11 +120,11 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		for(var i = 0, row; row = message.docResults[i]; i++){
 			this.fnLink.innerHTML = row.name;
 			this.fnLink.href = "#" + row.name;
-			if (row.id) {
+			if(row.id){
 				this.fnLink.href = this.fnLink.href + "," + row.id;	
 			}
 			this.summary.parentNode.style.display = "none";
-			if (row.summary) {
+			if(row.summary){
 				this.summary.parentNode.style.display = "inline";				
 				this.summary.innerHTML = row.summary;
 			}

@@ -1,6 +1,0 @@
-for(var i = 1; i < arguments.length; i++) {
-	if(str.indexOf(arguments[i]) > -1){
-		return true;
-	}
-}
-return false;  

@@ -1,1 +1,0 @@
-{"this_variables":["domNode","type","constrainToContainer","dragSource","bgIframe","scrollOffset","dragStartPosition","dragOffset","dragClone","parentPosition","constraints","constrainingContainer"],"inherits":["dojo.dnd.DragObject"]}

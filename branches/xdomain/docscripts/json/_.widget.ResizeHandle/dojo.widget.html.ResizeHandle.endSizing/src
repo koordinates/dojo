@@ -1,4 +1,0 @@
-dojo.event.disconnect(document.body, "onmousemove", this, "changeSizing");
-dojo.event.disconnect(document.body, "onmouseup", this, "endSizing");
-
-this.isSizing = false;

@@ -1,3 +1,0 @@
-if((this.filter(record))&&(record.level>=this.cutOffLevel)){
-	this.emit(record);
-}

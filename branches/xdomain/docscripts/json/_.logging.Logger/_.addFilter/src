@@ -1,2 +1,0 @@
-this.filters.push(flt);
-return this.filters.length-1;

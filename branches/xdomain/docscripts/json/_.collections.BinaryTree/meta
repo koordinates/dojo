@@ -1,1 +1,0 @@
-{"requires":{"common":["dojo.collections.Collections"]},"_":{"(data)":[]},"_.clone":{"()":[]},"_.compare":{"(n)":[]},"_.compareData":{"(d)":[]},"_.add":{"(data)":[]},"_.clear":{"()":[]},"_.contains":{"(data)":[]},"_.deleteData":{"(data)":[]},"_.getIterator":{"()":[]},"_.search":{"(data)":[]},"_.toString":{"(order, sep)":[]}}

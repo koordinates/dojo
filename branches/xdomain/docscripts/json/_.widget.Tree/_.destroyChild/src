@@ -1,5 +1,0 @@
-dojo.debug("destroyed");
-dojo.debugShallow(child);
-child.parent.removeChild(child);
-child.cleanUp();
-delete child;

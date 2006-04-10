@@ -1,4 +1,0 @@
-return {
-	width: domNode.width||domNode.offsetWidth,
-	height: domNode.height||domNode.offsetHeight
-};

@@ -1,3 +1,0 @@
-while(this._currentManager != this) {
-	this.endTransaction();
-}

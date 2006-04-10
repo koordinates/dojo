@@ -1,1 +1,0 @@
-_this.restoreExpandedIndices(this.node, this.savedIndices, field);

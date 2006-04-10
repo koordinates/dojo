@@ -5,7 +5,6 @@ dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.string");
 dojo.require("dojo.string.extras"); // only necessary until we move renderedTextContent
-dojo.require("dojo.uri.Uri");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
 dojo.lang.mixin(dojo.html, dojo.style);
@@ -294,7 +293,6 @@ dojo.html.getClass = function(node){
  * are found;
  */
 dojo.html.getClasses = function(node) {
-	node = dojo.byId(node);
 	var c = dojo.html.getClass(node);
 	return (c == "") ? [] : c.split(/\s+/g);
 }
@@ -305,7 +303,6 @@ dojo.html.getClasses = function(node) {
  * styles, only classes directly applied to the node.
  */
 dojo.html.hasClass = function(node, classname){
-	node = dojo.byId(node);
 	return dojo.lang.inArray(dojo.html.getClasses(node), classname);
 }
 
@@ -316,8 +313,6 @@ dojo.html.hasClass = function(node, classname){
  * false; indicating success or failure of the operation, respectively.
  */
 dojo.html.prependClass = function(node, classStr){
-	node = dojo.byId(node);
-	if(!node){ return false; }
 	classStr += " " + dojo.html.getClass(node);
 	return dojo.html.setClass(node, classStr);
 }
@@ -327,8 +322,6 @@ dojo.html.prependClass = function(node, classStr){
  *	passed &node;. Returns &true; or &false; indicating success or failure.
  */
 dojo.html.addClass = function(node, classStr){
-	node = dojo.byId(node);
-	if (!node) { return false; }
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
 	}
@@ -343,7 +336,6 @@ dojo.html.addClass = function(node, classStr){
  */
 dojo.html.setClass = function(node, classStr){
 	node = dojo.byId(node);
-	if(!node){ return false; }
 	var cs = new String(classStr);
 	try{
 		if(typeof node.className == "string"){
@@ -365,8 +357,6 @@ dojo.html.setClass = function(node, classStr){
  * true or false indicating success or failure.
  */ 
 dojo.html.removeClass = function(node, classStr, allowPartialMatches){
-	node = dojo.byId(node);
-	if(!node){ return false; }
 	var classStr = dojo.string.trim(new String(classStr));
 
 	try{
@@ -397,7 +387,6 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
  * Replaces 'oldClass' and adds 'newClass' to node
  */
 dojo.html.replaceClass = function(node, newClass, oldClass) {
-	node = dojo.byId(node);
 	dojo.html.removeClass(node, oldClass);
 	dojo.html.addClass(node, newClass);
 }
@@ -415,8 +404,7 @@ dojo.html.classMatchType = {
  * parent, and optionally of a certain nodeType
  */
 dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType){
-	parent = dojo.byId(parent);
-	if(!parent){ parent = document; }
+	parent = dojo.byId(parent) || document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
@@ -426,9 +414,9 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	if(!nodeType){ nodeType = "*"; }
 	var candidateNodes = parent.getElementsByTagName(nodeType);
 
+	var node, i = 0;
 	outer:
-	for(var i = 0; i < candidateNodes.length; i++) {
-		var node = candidateNodes[i];
+	while (node = candidateNodes[i++]) {
 		var nodeClasses = dojo.html.getClasses(node);
 		if(nodeClasses.length == 0) { continue outer; }
 		var matches = 0;
@@ -459,7 +447,23 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	
 	return nodes;
 }
+
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
+
+dojo.html.getCursorPosition = function(e){
+	e = e || window.event;
+	var cursor = {x:0, y:0};
+	if(e.pageX || e.pageY){
+		cursor.x = e.pageX;
+		cursor.y = e.pageY;
+	}else{
+		var de = document.documentElement;
+		var db = document.body;
+		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
+		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
+	}
+	return cursor;
+}
 
 /**
  * Calculates the mouse's direction of gravity relative to the centre
@@ -479,17 +483,16 @@ dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
  */
 dojo.html.gravity = function(node, e){
 	node = dojo.byId(node);
-	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-	var mousey = e.pageY || e.clientY + document.body.scrollTop;
-	
+	var mouse = dojo.html.getCursorPosition(e);
+
 	with (dojo.html) {
-		var nodecenterx = getAbsoluteX(node) + (getInnerWidth(node) / 2);
-		var nodecentery = getAbsoluteY(node) + (getInnerHeight(node) / 2);
+		var nodecenterx = getAbsoluteX(node, true) + (getInnerWidth(node) / 2);
+		var nodecentery = getAbsoluteY(node, true) + (getInnerHeight(node) / 2);
 	}
 	
 	with (dojo.html.gravity) {
-		return ((mousex < nodecenterx ? WEST : EAST) |
-			(mousey < nodecentery ? NORTH : SOUTH));
+		return ((mouse.x < nodecenterx ? WEST : EAST) |
+			(mouse.y < nodecentery ? NORTH : SOUTH));
 	}
 }
 
@@ -500,18 +503,17 @@ dojo.html.gravity.WEST = 1 << 3;
 	
 dojo.html.overElement = function(element, e){
 	element = dojo.byId(element);
-	var mousex = e.pageX || e.clientX + document.body.scrollLeft;
-	var mousey = e.pageY || e.clientY + document.body.scrollTop;
-	
+	var mouse = dojo.html.getCursorPosition(e);
+
 	with(dojo.html){
-		var top = getAbsoluteY(element);
+		var top = getAbsoluteY(element, true);
 		var bottom = top + getInnerHeight(element);
-		var left = getAbsoluteX(element);
+		var left = getAbsoluteX(element, true);
 		var right = left + getInnerWidth(element);
 	}
 	
-	return (mousex >= left && mousex <= right &&
-		mousey >= top && mousey <= bottom);
+	return (mouse.x >= left && mouse.x <= right &&
+		mouse.y >= top && mouse.y <= bottom);
 }
 
 /**
@@ -588,8 +590,8 @@ dojo.html.renderedTextContent = function(node){
 }
 
 dojo.html.setActiveStyleSheet = function(title){
-	var i, a, main;
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+	var i = 0, a, els = document.getElementsByTagName("link");
+	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
 			a.disabled = true;
 			if (a.getAttribute("title") == title) { a.disabled = false; }
@@ -598,10 +600,8 @@ dojo.html.setActiveStyleSheet = function(title){
 }
 
 dojo.html.getActiveStyleSheet = function(){
-	var i, a;
-	// FIXME: getElementsByTagName returns a live collection. This seems like a
-	// bad key for iteration.
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+	var i = 0, a, els = document.getElementsByTagName("link");
+	while (a = els[i++]) {
 		if (a.getAttribute("rel").indexOf("style") != -1 &&
 			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
 	}
@@ -609,8 +609,8 @@ dojo.html.getActiveStyleSheet = function(){
 }
 
 dojo.html.getPreferredStyleSheet = function(){
-	var i, a;
-	for(i=0; (a = document.getElementsByTagName("link")[i]); i++){
+	var i = 0, a, els = document.getElementsByTagName("link");
+	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1
 			&& a.getAttribute("rel").indexOf("alt") == -1
 			&& a.getAttribute("title")) { return a.getAttribute("title"); }
@@ -679,14 +679,6 @@ dojo.html.createNodesFromText = function(txt, trim){
 	tn.style.display = "none"; // FIXME: why do we do this?
 	document.body.removeChild(tn);
 	return nodes;
-}
-
-// FIXME: this should be removed after 0.2 release
-if(!dojo.evalObjPath("dojo.dom.createNodesFromText")){
-	dojo.dom.createNodesFromText = function() {
-		dojo.deprecated("dojo.dom.createNodesFromText", "use dojo.html.createNodesFromText instead");
-		return dojo.html.createNodesFromText.apply(dojo.html, arguments);
-	}
 }
 
 /**
@@ -877,7 +869,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 dojo.html.BackgroundIframe = function(node) {
 	if(dojo.render.html.ie) {
 		var html=
-				 "<iframe src='javascript:void(0)' "
+				 "<iframe "
 				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
 				+        "z-index: -1; filter:Alpha(Opacity=\"0\");' "
 				+">";
@@ -914,7 +906,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	size: function(node) {
 		if(!this.iframe) { return; }
 
-		coords = dojo.html.toCoordinateArray(node, true);
+		coords = dojo.style.toCoordinateArray(node, true);
 
 		var s = this.iframe.style;
 		s.width = coords.w + "px";

@@ -1,2 +1,0 @@
-items.splice(i,0,obj);
-this.count = items.length;

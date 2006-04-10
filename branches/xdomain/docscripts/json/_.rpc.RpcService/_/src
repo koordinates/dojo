@@ -1,3 +1,0 @@
-if(url){
-	this.connect(url);
-}

@@ -1,4 +1,0 @@
-if(!this.editing){
-	dojo.html.removeClass(this.editable, "editableRegion");
-	dojo.html.removeClass(this.editable, "editableTextareaRegion");
-}

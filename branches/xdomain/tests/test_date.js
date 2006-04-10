@@ -246,10 +246,10 @@ function test_date_compare(){
 
 function test_date_add(){
 	var d=new Date(2005,10,1,12,0,0,0);
-	jum.assertEquals("add_test1", 2006, (dojo.date.add(d, dojo.date.dateParts.YEAR)).getFullYear());
-	jum.assertEquals("add_test2", 9, (dojo.date.add(d, dojo.date.dateParts.MONTH, -1)).getMonth());
-	jum.assertEquals("add_test3", 5, (dojo.date.add(d, dojo.date.dateParts.DAY, 4)).getDate());
-	jum.assertEquals("add_test4", 10, (dojo.date.add(d, dojo.date.dateParts.HOUR, -2)).getHours());
-	jum.assertEquals("add_test5", 10, (dojo.date.add(d, dojo.date.dateParts.MINUTE, 10)).getMinutes());
-	jum.assertEquals("add_test6", 25, (dojo.date.add(d, dojo.date.dateParts.SECOND, -35)).getSeconds());
+	jum.assertEquals("add_test1", new Date(2006,10,1,12,0,0,0), dojo.date.add(d, dojo.date.dateParts.YEAR));
+	jum.assertEquals("add_test2", new Date(2005,9,1,12,0,0,0), dojo.date.add(d, dojo.date.dateParts.MONTH, -1));
+	jum.assertEquals("add_test3", new Date(2005,10,5,12,0,0,0), dojo.date.add(d, dojo.date.dateParts.DAY, 4));
+	jum.assertEquals("add_test4", new Date(2005,10,1,10,0,0,0), dojo.date.add(d, dojo.date.dateParts.HOUR, -2));
+	jum.assertEquals("add_test5", new Date(2005,10,1,12,10,0,0), dojo.date.add(d, dojo.date.dateParts.MINUTE, 10));
+	jum.assertEquals("add_test6", new Date(2005,10,1,11,59,25,0), dojo.date.add(d, dojo.date.dateParts.SECOND, -35));
 }

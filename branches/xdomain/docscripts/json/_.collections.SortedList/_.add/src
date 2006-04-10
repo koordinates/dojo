@@ -1,5 +1,0 @@
-if (!items[k]) {
-	items[k] = new dojo.collections.DictionaryEntry(k,v);
-	this.count = q.push(items[k]);
-	q.sort(sorter);
-}

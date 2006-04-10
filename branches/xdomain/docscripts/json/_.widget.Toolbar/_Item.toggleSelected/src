@@ -1,1 +1,0 @@
-return this.setSelected(!this._selected, force);

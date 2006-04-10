@@ -1,9 +1,0 @@
-if ( this.isLoaded ){
-	return;
-}
-if ( dojo.lang.isFunction(this.handler)) {
-	this._runHandler();
-} else if ( this.url != "inline" ) {
-	this._downloadExternalContent(this.url, this.cacheContent);
-}
-this.isLoaded=true;

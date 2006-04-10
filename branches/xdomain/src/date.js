@@ -71,10 +71,14 @@ dojo.date.fromIso8601 = function (string) {
 
 
 dojo.date.setIso8601Date = function (dateObject, string) {
+	//dojo.debug(string);
 	var regexp = "^([0-9]{4})((-?([0-9]{2})(-?([0-9]{2}))?)|" +
 			"(-?([0-9]{3}))|(-?W([0-9]{2})(-?([1-7]))?))?$";
 	var d = string.match(new RegExp(regexp));
-
+	if(!d) {
+		dojo.debug("invalid date string: " + string);
+		return false;
+	}
 	var year = d[1];
 	var month = d[4];
 	var date = d[6];
@@ -130,6 +134,10 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 	// then work out the time
 	var regexp = "^([0-9]{2})(:?([0-9]{2})(:?([0-9]{2})(\.([0-9]+))?)?)?$";
 	var d = string.match(new RegExp(regexp));
+	if(!d) {
+		dojo.debug("invalid time string: " + string);
+		return false;
+	}
 
 	var hours = d[1];
 	var mins = Number((d[3]) ? d[3] : 0) + offset;
@@ -506,23 +514,23 @@ dojo.date.add=function(/* Date */ d, /* dojo.date.dateParts */ unit, /* int */ a
 			break;
 		}
 		case dojo.date.dateParts.MONTH:{
-			v=new Date(d.getFullYear()+n, d.getMonth()+n, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+			v=new Date(d.getFullYear(), d.getMonth()+n, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
 			break;
 		}
 		case dojo.date.dateParts.HOUR:{
-			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours()+n, d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()+n, d.getMinutes(), d.getSeconds(), d.getMilliseconds());
 			break;
 		}
 		case dojo.date.dateParts.MINUTE:{
-			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()+n, d.getSeconds(), d.getMilliseconds());
+			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()+n, d.getSeconds(), d.getMilliseconds());
 			break;
 		}
 		case dojo.date.dateParts.SECOND:{
-			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()+n, d.getMilliseconds());
+			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()+n, d.getMilliseconds());
 			break;
 		}
 		case dojo.date.dateParts.MILLISECOND:{
-			v=new Date(d.getFullYear()+n, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()+n);
+			v=new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()+n);
 			break;
 		}
 		default:{

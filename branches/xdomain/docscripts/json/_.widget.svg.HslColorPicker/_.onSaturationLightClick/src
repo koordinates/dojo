@@ -1,6 +1,0 @@
-var xPosition = parseInt(evt.clientX) - parseInt(evt.target.getAttribute("y"));
-var yPosition = parseInt(evt.clientY) - parseInt(evt.target.getAttribute("y"));
-saturation = parseInt(parseInt(xPosition)*(101/106));
-light = parseInt(parseInt(yPosition)*(101/106));
-this.setSaturationLight(saturation, light);
-this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));

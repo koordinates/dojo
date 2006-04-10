@@ -1,8 +1,0 @@
-var selectedIndex = this.selectedIndex();
-if ( selectedIndex > -1 ) {
-	var childPanels = this.getPanels();
-	if (childPanels[selectedIndex - 1]) {
-		this.onSelected(childPanels[selectedIndex - 1]);
-	}
-}
-this.checkButtons();
