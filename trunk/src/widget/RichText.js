@@ -1,3 +1,4 @@
+ /* -*- tab-width: 4 -*- */
 dojo.provide("dojo.widget.RichText");
 dojo.provide("dojo.widget.html.RichText");
 
@@ -162,8 +163,9 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 				
 		this._oldHeight = dojo.style.getContentHeight(this.domNode);
 		this._oldWidth = dojo.style.getContentWidth(this.domNode);
-		this._oldFirstChildActualMargin = this._getContributingMargin(this.domNode, "top");
-		this._oldLastChildActualMargin = this._getContributingMargin(this.domNode, "bottom");
+
+		this._firstChildContributingMargin = this._getContributingMargin(this.domNode, "top");
+		this._lastChildContributingMargin = this._getContributingMargin(this.domNode, "bottom");
 
 		this.savedContent = document.createElement("div");
 		while (this.domNode.hasChildNodes()) {
@@ -202,14 +204,16 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 				contentEditable = true;
 				style.height = this.height ? this.height : this.minHeight;
 			}
+
 			if (this.height) this.editNode.style.overflowY="scroll";
 			// FIXME: setting contentEditable on switches this element to
 			// IE's hasLayout mode, triggering weird margin collapsing
 			// behavior. It's particularly bad if the element you're editing
 			// contains childnodes that don't have margin: defined in local
 			// css rules. It would be nice if it was possible to hack around
-			// this. Sadly _firstChildOffset and _lastChildOffset don't work
-			// on IE unless all elements have margins set in CSS :-(
+			// this. Sadly _firstChildContributingMargin and 
+			// _lastChildContributingMargin don't work on IE unless all
+			// elements have margins set in CSS :-(
 
 			this.domNode.appendChild(this.editNode);
 
@@ -234,6 +238,22 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		this.isClosed = false;
 	},
 
+	_hasCollapseableMargin: function(element, side) {
+		// check if an element has padding or borders on the given side
+		// which would prevent it from collapsing margins
+		if (dojo.style.getPixelValue(element, 
+									 'border-'+side+'-width', 
+									 false)) {
+			return false;
+		} else if (dojo.style.getPixelValue(element, 
+											'padding-'+side,
+											false)) {
+			return false;
+		} else {
+			return true;
+		}
+	},
+
 	_getContributingMargin:	function(element, topOrBottom) {
 		// calculate how much margin this element and its first or last
 		// child are contributing to the total margin between this element
@@ -256,25 +276,12 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 
 		var elementMargin = dojo.style.getPixelValue(element, marginProp, false);
 
-		function isSignificantElement(element) {
-			// check if an element counts for purposes of calculating margins
+		function isSignificantNode(element) {
+			// see if an node is significant in the current context
+			// for calulating margins
 			return !(element.nodeType==3 && dojo.string.isBlank(element.data)) 
 				&& dojo.style.getStyle(element, "display") != "none" 
 				&& !dojo.style.isPositionAbsolute(element);
-		}
-
-		function isIsolated(element, side) {
-			if (dojo.style.getPixelValue(element, 
-										 'border-'+side+'-width', 
-										 false)) {
-				return true;
-			} else if (dojo.style.getPixelValue(element, 
-												'padding-'+side,
-												false)) {
-				return true;
-			} else {
-				return false;
-			}
 		}
 
 		// walk throuh first/last children to find total collapsed margin size
@@ -282,26 +289,25 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		var child = element[childAttr];
 		while (child) {
 			// skip over insignificant elements (whitespace, etc)
-			while ((!isSignificantElement(child)) && child[childSiblingAttr]) {
+			while ((!isSignificantNode(child)) && child[childSiblingAttr]) {
 				child = child[childSiblingAttr];
 			}
 					  
 			childMargin = Math.max(childMargin, dojo.style.getPixelValue(child, marginProp, false));
 			// stop if we hit a bordered/padded element
-			if (isIsolated(child, topOrBottom)) break;
+			if (!this._hasCollapseableMargin(child, topOrBottom)) break;
 			child = child[childAttr];								   
 		}
 
 		// if this element has a border, return full child margin immediately
 		// as there won't be any margin collapsing
-		// dojo.debug(childMargin);
-		if (isIsolated(element, topOrBottom)) return parseInt(childMargin);
+		if (!this._hasCollapseableMargin(element, topOrBottom)){ return parseInt(childMargin); }
 
 		// find margin supplied by nearest sibling
 		var contextMargin = 0;
 		var sibling = element[siblingAttr];
 		while (sibling) {
-			if (isSignificantElement(sibling)) {
+			if (isSignificantNode(sibling)) {
 				contextMargin = dojo.style.getPixelValue(sibling, 
 														 siblingMarginProp, 
 														 false);
@@ -314,8 +320,6 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 											marginProp, false);
 		}
 
-		// dojo.debug(childMargin, elementMargin, contextMargin);
-
 		if (childMargin > elementMargin) {
 			return parseInt(Math.max((childMargin-elementMargin)-contextMargin, 0));
 		} else {
@@ -324,7 +328,8 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		
 	},
 	
-	/** Draws an iFrame using the existing one if one exists. Used by Mozilla and Safari */
+	/** Draws an iFrame using the existing one if one exists. 
+		Used by Mozilla, Safari, and Opera */
 	_drawIframe: function (html) {
 
 		// detect firefox < 1.5, which has some iframe loading issues
@@ -343,18 +348,18 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		}
 		// opera likes this to be outside the with block
 		this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + "#" + ((document.domain != currentDomain) ? document.domain : "");
-		with (this.iframe) {
-			width = this.inheritWidth ? this._oldWidth : "100%";
-			if (this.height) {
-				style.height = this.height;
-			} else {
-				height = this._oldHeight  +
-					this._oldFirstChildActualMargin + 
-					this._oldLastChildActualMargin;
+		this.iframe.width = this.inheritWidth ? this._oldWidth : "100%";
+		if (this.height) {
+			this.iframe.style.height = this.height;
+		} else {
+			var height = this._oldHeight;
+			if (this._hasCollapseableMargin(this.domNode, 'top')) {
+				height += this._firstChildContributingMargin;
 			}
-
-			//style.paddingTop = this._oldFirstChildActualMargin+"px";
-			//style.paddingBottom = this._oldLastChildActualMargin+"px";
+			if (this._hasCollapseableMargin(this.domNode, 'bottom')) {
+				height += this._lastChildContributingMargin;
+			}
+			this.iframe.height = height;
 		}
 
 		// show existing content behind iframe for now
@@ -362,8 +367,8 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		tmpContent.style.position = "absolute";
 		tmpContent.innerHTML = html;
 		if (tmpContent.firstChild && tmpContent.firstChild.style) {
-			tmpContent.firstChild.style.marginTop = this._oldFirstChildActualMargin+"px";
-			tmpContent.lastChild.style.marginBottom = this._oldLastChildActualMargin+"px";
+			tmpContent.firstChild.style.marginTop = this._firstChildContributingMargin+"px";
+			tmpContent.lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
 			
 		}
 		this.domNode.appendChild(tmpContent);
@@ -384,8 +389,8 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 					this.window = this.iframe.contentDocument.window;
 				}
 				this.document = this.iframe.contentDocument;
-			
-				// curry the getStyle function
+							// curry the getStyle function
+
 				var getStyle = (function (domNode) { return function (style) {
 					return dojo.style.getStyle(domNode, style);
 				}; })(this.domNode);
@@ -394,6 +399,14 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 					getStyle('font-weight') + " " +
 					getStyle('font-size') + " " +
 					getStyle('font-family');
+				
+				// line height is tricky - applying a units value will mess things up.
+				// if we can't get a non-units value, bail out.
+				var lineHeight = "1.0";
+				var lineHeightStyle = dojo.style.getUnitValue(this.domNode, 'line-height');
+				if (lineHeightStyle.value && lineHeightStyle.units=="") {
+					lineHeight = lineHeightStyle.value;
+				}
 
 				dojo.style.insertCssText(
 					'    body,html { background: transparent; padding: 0; margin: 0; }\n' +
@@ -402,10 +415,11 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 					'    body { top: 0; left: 0; right: 0;' +
 					(this.height ? '' : ' position: fixed; ') + 
 					'        font: ' + font + ';\n' + 
-					'        min-height: ' + this.minHeight + '; }\n' +
+					'        min-height: ' + this.minHeight + '; \n' +
+					'        line-height: ' + lineHeight + '} \n' +
 					'    p { margin: 1em 0 !important; }\n' +
-					'    body > *:first-child { padding-top: 0 !important; margin-top: ' + this._oldFirstChildActualMargin + 'px !important; }\n' + // FIXME: test firstChild nodeType
-					'    body > *:last-child { padding-bottom: 0 !important; margin-bottom: ' + this._oldLastChildActualMargin + 'px !important; }\n' +
+					'    body > *:first-child { padding-top: 0 !important; margin-top: ' + this._firstChildContributingMargin + 'px !important; }\n' + // FIXME: test firstChild nodeType
+					'    body > *:last-child { padding-bottom: 0 !important; margin-bottom: ' + this._lastChildContributingMargin + 'px !important; }\n' +
 					'    li > ul:-moz-first-node, li > ol:-moz-first-node { padding-top: 1.2em; }\n' +
 					'    li { min-height: 1.2em; }\n' +
 					//'    p,ul,li { padding-top: 0; padding-bottom: 0; margin-top:0; margin-bottom: 0; }\n' + 
@@ -1162,12 +1176,12 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 					chromeheight += Number(height.replace(/[^0-9]/g, ""));
 				}
 			}
+
 			if(this.document.body["offsetHeight"]){
 				this._lastHeight = Math.max(this.document.body.scrollHeight, this.document.body.offsetHeight) + chromeheight;
 				this.iframe.height = this._lastHeight + "px";
 				this.window.scrollTo(0, 0);
 			}
-			// this.iframe.height = this._lastHeight + "px";
 			// dojo.debug(this.iframe.height);
 		} else if (this.object) {
 			this.object.height = dojo.style.getInnerHeight(this.editNode);
@@ -1211,25 +1225,20 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		var changed = (this.savedContent.innerHTML != this._content);
 		
 		// line height is squashed for iframes
-		if (this.iframe){ this.domNode.style.lineHeight = null; }
+		// FIXME: why was this here? if (this.iframe){ this.domNode.style.lineHeight = null; }
 
 		if(this.interval){ clearInterval(this.interval); }
 		
 		if(dojo.render.html.ie && !this.object){
 			dojo.event.browser.clean(this.editNode);
 		}
-		if(dojo.render.html.moz){
-			var ifr = this.domNode.firstChild;
-			ifr.style.display = "none";
-			/*
-			setTimeout(function(){
-				ifr.parentNode.removeChild(ifr);
-			}, 0);
-			*/
-		}else{
-			this.domNode.innerHTML = "";
+		
+		if (this.iframe) {
+			// FIXME: should keep iframe around for later re-use
+			delete this.iframe;
 		}
-		// dojo.dom.removeChildren(this.domNode);
+		this.domNode.innerHTML = "";
+
 		if(save){
 			// kill listeners on the saved content
 			dojo.event.browser.clean(this.savedContent);
