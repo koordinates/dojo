@@ -56,7 +56,11 @@ dojo.lang.curry = function(ns, func /* args ... */){
 	for(var x=2; x<arguments.length; x++){
 		outerArgs.push(arguments[x]);
 	}
-	var ecount = func.length - outerArgs.length;
+	// since the event system replaces the original function with a new
+	// join-point runner with an arity of 0, we check to see if it's left us
+	// any clues about the original arity in lieu of the function's actual
+	// length property
+	var ecount = (func["__preJoinArity"]||func.length) - outerArgs.length;
 	// borrowed from svend tofte
 	function gather(nextArgs, innerArgs, expected){
 		var texpected = expected;
