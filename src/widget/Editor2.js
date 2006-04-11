@@ -194,8 +194,7 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		// dojo.event.log(this, "onLoad");
-		dojo.event.connect(this, "onLoad", this, "editorOnLoad");
+		dojo.event.connect(this, "fillInTemplate", this, "editorOnLoad");
 		dojo.event.connect(this, "onDisplayChanged", this, "updateToolbar");
 	}
 );
