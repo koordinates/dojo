@@ -10,35 +10,32 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import org.tagnetic.core.framework.TagContext;
-import org.tagnetic.core.parser.Parser;
-import org.tagnetic.core.util.FileUtil;
-
 class XdGen{
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		if(args == null || args.length == 0){
 			System.out.println("This program requires a file name or a list of file names.");
 			return;
 		}
 
 		for(int i = 0; i < args.length; i++){
-			this.generate(args[i]);
+			XdGen.generate(args[i]);
 		}
 	}
 
-	public static void generate(String fileName){
+	public static void generate(String fileName)
+		throws FileNotFoundException, IOException, UnsupportedEncodingException{
 		File file = new File(fileName);
 		if(file.exists()){
 			if(file.isFile()){
 				//Read the file and construct xdomain contents
 				String contents = readFile(fileName);
-				contents = this.buildXdPackage(contents);
+				contents = XdGen.buildXDomainPackage(contents);
 
 				//Construct the output file name
 				//Find the last dot so we can insert a ".xd" before the file extension.
-				int lastIndex = fileName.lastIndexOf('.'));
+				int lastIndex = fileName.lastIndexOf('.');
 				if(lastIndex <= 0){
-					lastIndex - fileName.length() - 1;
+					lastIndex = fileName.length() - 1;
 				}
 
 				StringBuffer outNameBuffer = new StringBuffer(fileName.substring(0, lastIndex));
@@ -55,7 +52,7 @@ class XdGen{
 			}else if(file.isDirectory()){
 				String[] dirFiles = file.list();
 				for(int i = 0; i < dirFiles.length; i++){
-					this.generate(dirFiles[i]);
+					XdGen.generate(dirFiles[i]);
 				}
 			}
 		}

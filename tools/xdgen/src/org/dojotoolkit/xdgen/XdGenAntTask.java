@@ -34,7 +34,7 @@ public class XdGenAntTask extends MatchingTask{
 
 			String[] fileNames = (String[])fileNameList
 					.toArray(new String[fileNameList.size()]);
-			XdGen.main(fileName);
+			XdGen.main(fileNames);
 		}
 	}
 }
