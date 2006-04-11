@@ -768,30 +768,56 @@ internTemplateStrings()
 		</exec>
 	</target>
 	<!-- end buildFlash task -->
-	
-	
+
 	<!-- xdgen task -->
-	<target name="xdgen"
-		description="XDGEN EXPERIMENT">
-		
-		
+	<target name="xdgen" 
+			description="Create package files that can be used as part of a cross domain dojo installation.">
+		<property name="xdgen.basedir" location="../tools/xdgen"/>
+		<property name="xdgen.src" location="${xdgen.basedir}/src"/>
+		<property name="xdgen.build" location="${xdgen.basedir}/build"/>
+
+		<mkdir dir="${xdgen.build}"/>
+
+		<!-- Compile xdgen if it hasn't been compiled yet -->
+		<javac srcdir="${xdgen.src}" destdir="${xdgen.build}" debug="true">
+			<classpath>
+				<fileset dir="${xdgen.basedir}/lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+
+		<!-- Set up the classpath for the xdgen ant task. -->
 		<path id="xdgen.classpath">
-	      <pathelement path="${classpath}"/>
-	      <fileset dir="./lib">
-	        <include name="**/*.jar"/>
-	        <include name="**/*.zip"/>
-	      </fileset>
-	    </path>
+			<pathelement path="${classpath}"/>
+			<pathelement location="${xdgen.build}"/>
+			<fileset dir="./lib">
+				<include name="**/*.jar"/>
+				<include name="**/*.zip"/>
+			</fileset>
+		</path>
 
-		<!-- java jar="./lib/js.jar" fork="true" outputproperty="concatFilesProp" errorproperty="concatFilesError">
-			<arg value="${profileFile}" />
-		</java -->
+		<!-- Define the xdgen ant task -->
+		<taskdef name="xdgenTask" classname="org.dojotoolkit.xdgen.XdGenAntTask">
+			<classpath refid="xdgen.classpath"/>
+		</taskdef>
 
-		<java jar="./lib/js.jar" fork="true" classpathref="xdgen.classpath">
-			<!-- arg value="getDependencyList.js" / -->
-			<arg value="xdgen.js" />
-		</java>
+		<!-- Call the xdgen ant task -->
+		<xdgenTask>
+			<fileset dir="../src">
+				<include name="**/*.js"/>
+			</fileset>
+		</xdgenTask>
 	</target>
 	<!-- end xdgen task -->
+
+	<!-- xdgenRemove task -->
+	<target name="xdgenRemove" 
+			description="Removes package files that were created by xdgen.">
+		<delete>
+			<fileset dir="../src" includes="**/*.xd.js"/>
+		</delete>
+	</target>
+	<!-- end xdgenRemove task -->
 
 </project>
