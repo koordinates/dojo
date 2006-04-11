@@ -169,33 +169,27 @@ dojo.widget.defineWidget(
 					this.close(e.getName().toLowerCase() == "save");
 				}
 			}
-		}
-
-		/*
-		buildRenderingFoo: function(args, frag) {
-			// get the node from args/frag
-			var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-			var trt = dojo.widget.createWidget(this._richTextType, {
-				focusOnLoad: this.focusOnLoad,
-				minHeight: this.minHeight
-			}, node)
-			var _this = this;
-			// this appears to fix a weird timing bug on Safari
-			setTimeout(function(){
-				_this.setRichText(trt);
-
-				_this.initToolbar();
-
-				_this.fillInTemplate(args, frag);
-			}, 0);
 		},
 
-	*/
+		wireUpOnLoad: function(){
+			if(!dojo.render.html.ie){
+				/*
+				dojo.event.kwConnect({
+					srcObj:		this.document,
+					srcFunc:	"click", 
+					targetObj:	this.toolbarWidget,
+					targetFunc:	"hideAllDropDowns",
+					once:		true
+				});
+				*/
+			}
+		}
 	},
 	"html",
 	function(){
 		dojo.event.connect(this, "fillInTemplate", this, "editorOnLoad");
 		dojo.event.connect(this, "onDisplayChanged", this, "updateToolbar");
+		dojo.event.connect(this, "onLoad", this, "wireUpOnLoad");
 	}
 );
 
