@@ -37,7 +37,8 @@ dojo.widget.defineWidget(
 
 				// need to set position fixed to wherever this thing has landed
 				if(this.toolbarAlwaysVisible){
-					dojo.event.connect(window, "onscroll", this, "globalOnScrollHandler");
+					var src = document["documentElement"]||window;
+					dojo.event.connect(src, "onscroll", this, "globalOnScrollHandler");
 				}
 			}else{
 				// FIXME: 	should we try harder to explicitly manage focus in
