@@ -32,6 +32,16 @@
 	background-position: 0px 0px;
 }
 
+body {
+	background:url(images/blank.gif) fixed;
+}
+
+.IEFixedToolbar {
+	position:absolute;
+	/* top:0; */
+	top: expression(eval((document.documentElement||document.body).scrollTop));
+}
+
 div.bigIcon {
 	width: 40px;
 	height: 40px; 
@@ -52,7 +62,7 @@ div.bigIcon {
 	padding-right: 3px;
 	cursor: pointer;
 	border: 1px solid transparent;
-	-border: 1px solid white;
+	_border: none;
 }
 
 span.icon {
