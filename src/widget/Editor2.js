@@ -77,12 +77,14 @@ dojo.widget.defineWidget(
 							top = "0px";
 						}
 					}
+					tdn.style.zIndex = 1000;
 					this._fixEnabled = true;
 				}
 			}else if(this._fixEnabled){
 				with(tdn.style){
 					position = "";
 					top = "";
+					zIndex = "";
 				}
 				if(dojo.render.html.ie){
 					dojo.html.removeClass(tdn, "IEFixedToolbar");
