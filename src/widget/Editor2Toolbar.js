@@ -121,6 +121,7 @@ dojo.widget.defineWidget(
 				with(this.forecolorDropDown.style){
 					width = dojo.html.getOuterWidth(fcp) + "px";
 					height = dojo.html.getOuterHeight(fcp) + "px";
+					zIndex = 1002;
 				}
 
 				dojo.event.connect(	"after",
@@ -159,6 +160,7 @@ dojo.widget.defineWidget(
 				with(this.hilitecolorDropDown.style){
 					width = dojo.html.getOuterWidth(hcp) + "px";
 					height = dojo.html.getOuterHeight(hcp) + "px";
+					zIndex = 1002;
 				}
 
 				dojo.event.connect(	"after",
