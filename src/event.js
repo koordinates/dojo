@@ -101,8 +101,14 @@ dojo.event = new function(){
 				ao.srcFunc = args[2];
 				ao.adviceObj = args[3]
 				ao.adviceFunc = args[4];
-				ao.aroundFunc = args[5];
-				ao.aroundObj = dj_global;
+				if(dl.isFunction(args[5])){
+					var tmpName  = dojo.lang.nameAnonFunc(args[5], dj_global);
+					ao.aroundFunc = tmpName;
+					ao.aroundObj = dj_global;
+				}else{
+					ao.aroundFunc = args[5];
+					ao.aroundObj = dj_global;
+				}
 				break;
 			default:
 				ao.srcObj = args[1];
