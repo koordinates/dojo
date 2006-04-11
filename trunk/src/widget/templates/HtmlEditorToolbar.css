@@ -32,9 +32,10 @@
 	background-position: 0px 0px;
 }
 
+/*
 body {
 	background:url(images/blank.gif) fixed;
-}
+}*/
 
 .IEFixedToolbar {
 	position:absolute;
@@ -89,6 +90,10 @@ span.icon[class~=icon] {
 	line-height: 25px;
 	border-bottom: 1px solid black;
 	border-top: 1px solid white;
+}
+
+.EditorToolbarDomNode select {
+	font-size: 14px;
 }
 
 .sep { width: 5px; min-width: 5px; max-width: 5px; background-position: 0px 0px}
