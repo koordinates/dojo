@@ -101,14 +101,8 @@ dojo.event = new function(){
 				ao.srcFunc = args[2];
 				ao.adviceObj = args[3]
 				ao.adviceFunc = args[4];
-				if(dl.isFunction(args[5])){
-					var tmpName  = dojo.lang.nameAnonFunc(args[5], dj_global);
-					ao.aroundFunc = tmpName;
-					ao.aroundObj = dj_global;
-				}else{
-					ao.aroundFunc = args[5];
-					ao.aroundObj = dj_global;
-				}
+				ao.aroundFunc = args[5];
+				ao.aroundObj = dj_global;
 				break;
 			default:
 				ao.srcObj = args[1];
@@ -124,15 +118,20 @@ dojo.event = new function(){
 				break;
 		}
 
-		if((typeof ao.srcFunc).toLowerCase() != "string"){
+		if(dl.isFunction(ao.aroundFunc)){
+			var tmpName  = dojo.lang.nameAnonFunc(ao.aroundFunc, ao.aroundObj);
+			ao.aroundFunc = tmpName;
+		}
+
+		if(!dl.isString(ao.srcFunc)){
 			ao.srcFunc = dojo.lang.getNameInObj(ao.srcObj, ao.srcFunc);
 		}
 
-		if((typeof ao.adviceFunc).toLowerCase() != "string"){
+		if(!dl.isString(ao.adviceFunc)){
 			ao.adviceFunc = dojo.lang.getNameInObj(ao.adviceObj, ao.adviceFunc);
 		}
 
-		if((ao.aroundObj)&&((typeof ao.aroundFunc).toLowerCase() != "string")){
+		if((ao.aroundObj)&&(!dl.isString(ao.aroundFunc))){
 			ao.aroundFunc = dojo.lang.getNameInObj(ao.aroundObj, ao.aroundFunc);
 		}
 
