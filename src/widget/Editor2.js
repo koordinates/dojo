@@ -54,32 +54,41 @@ dojo.widget.defineWidget(
 		_fixedEnabled: false,
 		_scrollThreshold: false,
 		globalOnScrollHandler: function(){
+			var tdn = this.toolbarWidget.domNode;
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
-				var tdn = this.toolbarWidget.domNode;
 				var totalHeight = dojo.style.getOuterHeight(tdn);
 				var editorWidth =  dojo.style.getOuterWidth(this.domNode); 
 				this.domNode.style.marginTop = totalHeight+"px";
 				this._scrollThreshold = dojo.style.getAbsoluteY(tdn);
+				dojo.debug("threshold:", this._scrollThreshold);
 			}
 
-			if(document.body.scrollTop > this.scrollThreshold){
+			var scrollPos = (window["pageYOffset"]) ? window["pageYOffset"] : (document["documentElement"]||document["body"]).scrollTop ;
+
+			if(scrollPos > this._scrollThreshold){
+				dojo.debug(scrollPos);
 				if(!this._fixEnabled){
-					with(tdn.style){
-						position = "fixed";
-						top = "0px";
-						// width = editorWidth+"px";
+					if(dojo.render.html.ie){
+						dojo.html.addClass(tdn, "IEFixedToolbar");
+					}else{
+						with(tdn.style){
+							position = "fixed";
+							top = "0px";
+						}
 					}
+					this._fixEnabled = true;
 				}
-				this._fixEnabled = true;
-			}else if(this._fixedEnabled){
-				this._fixEnabled = false;
+			}else if(this._fixEnabled){
 				with(tdn.style){
 					position = "";
 					top = "";
 				}
+				if(dojo.render.html.ie){
+					dojo.html.removeClass(tdn, "IEFixedToolbar");
+				}
+				this._fixEnabled = false;
 			}
-
 		},
 
 		_updateToolbarLastRan: null,
