@@ -315,6 +315,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 				dojo.event.browser.addClobberNodeAttrs(obj, [jpname, jpfuncname, methname]);
 			}
 		}
+		var origArity = obj[methname].length;
 		obj[jpfuncname] = obj[methname];
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, methname);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
@@ -350,6 +351,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 			// return joinpoint.run.apply(joinpoint, arguments); 
 			return joinpoint.run.apply(joinpoint, args); 
 		}
+		obj[methname].__preJoinArity = origArity;
 	}
 	return joinpoint;
 }
