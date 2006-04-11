@@ -25,6 +25,9 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbar.css"),
 
+		forecolorPalette: null,
+		hilitecolorPalette: null,
+
 		// DOM Nodes
 		wikiWordButton: null,
 		styleDropdownButton: null,
@@ -104,10 +107,30 @@ dojo.widget.defineWidget(
 
 		forecolorClick: function(){
 			dojo.style.toggleShowing(this.forecolorDropDown);
+			if(!this.forecolorPalette){
+				this.forecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.forecolorDropDown, "first");
+				var fcp = this.forecolorPalette.domNode;
+				with(this.forecolorDropDown.style){
+					width = dojo.html.getOuterWidth(fcp) + "px";
+					height = dojo.html.getOuterHeight(fcp) + "px";
+				}
+			}
 		},
 
 		hilitecolorClick: function(){
 			dojo.style.toggleShowing(this.hilitecolorDropDown);
+			if(!this.hilitecolorPalette){
+				this.hilitecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.hilitecolorDropDown, "first");
+				var hcp = this.hilitecolorPalette.domNode;
+				with(this.hilitecolorDropDown.style){
+					width = dojo.html.getOuterWidth(hcp) + "px";
+					height = dojo.html.getOuterHeight(hcp) + "px";
+				}
+
+				// FIXME: almost working...not quite!
+				dojo.event.connect(this.hilitecolorPalette, "onColorSelect", 
+									dojo.lang.curry(this, this.exec, "hilitecolor"));
+			}
 		},
 
 		indentClick: function(){ this.exec("indent"); },
