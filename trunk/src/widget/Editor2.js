@@ -24,6 +24,7 @@ dojo.widget.defineWidget(
 
 		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
+		scrollMJP: null,
 
 		editorOnLoad: function(){
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
@@ -39,6 +40,7 @@ dojo.widget.defineWidget(
 				if(this.toolbarAlwaysVisible){
 					var src = document["documentElement"]||window;
 					dojo.event.connect(src, "onscroll", this, "globalOnScrollHandler");
+					dojo.event.connect("before", this, "destroyRendering", this, "unhookScroller");
 				}
 			}else{
 				// FIXME: 	should we try harder to explicitly manage focus in
@@ -54,7 +56,9 @@ dojo.widget.defineWidget(
 		_scrollSetUp: false,
 		_fixedEnabled: false,
 		_scrollThreshold: false,
+		_handleScroll: true,
 		globalOnScrollHandler: function(){
+			if(!this._handleScroll){ return; }
 			var tdn = this.toolbarWidget.domNode;
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
@@ -91,6 +95,15 @@ dojo.widget.defineWidget(
 					dojo.html.removeClass(tdn, "IEFixedToolbar");
 				}
 				this._fixEnabled = false;
+			}
+		},
+
+		unhookScroller: function(){
+			this._handleScroll = false;
+			var src = document["documentElement"]||window;
+			dojo.event.disconnect(src, "onscroll", this, "globalOnScrollHandler");
+			if(dojo.render.html.ie){
+				dojo.html.removeClass(this.toolbarWidget.domNode, "IEFixedToolbar");
 			}
 		},
 

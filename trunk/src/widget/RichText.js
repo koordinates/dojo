@@ -1262,12 +1262,15 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 
 		return changed;
 	},
+
+	destroyRendering: function(){}, // stub!
 	
-	destroy: function () {
-		if (!this.isClosed) { this.close(false); }
+	destroy: function (){
+		this.destroyRendering();
+		if(!this.isClosed){ this.close(false); }
 	
 		// disconnect those listeners.
-		while (this._connected.length) {
+		while(this._connected.length){
 			this.disconnect(this._connected[0],
 				this._connected[1], this._connected[2]);
 		}
