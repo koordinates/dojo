@@ -357,9 +357,11 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 }
 
 dojo.lang.extend(dojo.event.MethodJoinPoint, {
-	unintercept: function() {
+	unintercept: function(){
 		this.object[this.methodname] = this.methodfunc;
 	},
+
+	disconnect: dojo.lang.forward("unintercept"),
 
 	run: function() {
 		var obj = this.object||dj_global;
