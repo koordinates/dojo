@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
@@ -15,7 +16,7 @@ public class XdGenAntTask extends MatchingTask{
 		mFileSetList.add(fileset);
 	}
 
-	public void execute(){
+	public void execute() throws BuildException{
 		if(mFileSetList.size() > 0){
 			ArrayList fileNameList = new ArrayList();
 			for(int listIndex = 0; listIndex < mFileSetList.size(); listIndex++){
@@ -34,7 +35,11 @@ public class XdGenAntTask extends MatchingTask{
 
 			String[] fileNames = (String[])fileNameList
 					.toArray(new String[fileNameList.size()]);
-			XdGen.main(fileNames);
+			try{
+				XdGen.main(fileNames);
+			}catch (Exception exception){
+				throw new BuildException(exception);
+			}
 		}
 	}
 }
