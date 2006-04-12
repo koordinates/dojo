@@ -160,7 +160,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				if(!thisFunc){
 					thisFunc = tevt;
 				}
-				dojo.event.browser.addListener(baseNode, domEvt, dojo.lang.hitch(_this, thisFunc));
+				dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
 			}
 		}
 
