@@ -8,8 +8,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class XdGen{
+	private static final int DEPEND_TYPE_GROUP = 1;
+	private static final int DEPEND_VALUE_GROUP = 2;
+
+	private final static String DEPEND_EXPRESSION = "dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|hostenv\\.conditionalLoadModule)\\(([\\w\\W]*?)\\)";
+	private static final Pattern DEPEND_PATTERN;
+	static{
+		DEPEND_PATTERN = Pattern.compile(DEPEND_EXPRESSION, Pattern.MULTILINE | Pattern.DOTALL);
+	}
+
 	public static void main(String[] args) throws Exception{
 		if(args == null || args.length == 0){
 			System.out.println("This program requires a file name or a list of file names.");
@@ -61,8 +73,46 @@ class XdGen{
 	//***************************************************************
 	//***************************************************************
 	//Private methods
+
+	private static ArrayList findDependencies(String contents){
+		ArrayList deps = new ArrayList();
+		Matcher matcher = DEPEND_PATTERN.matcher(contents);
+		while (matcher.find()){
+			deps.add("\"" + matcher.group(DEPEND_TYPE_GROUP) + "\", " + matcher.group(DEPEND_VALUE_GROUP));
+		}
+		return deps;
+	}
+
 	private static String buildXDomainPackage(String contents){
-		return "";
+		//Build the dependencies.
+		ArrayList deps = findDependencies(contents);
+
+		//Write out the xd.js file.
+		StringBuffer output = new StringBuffer(contents.length());
+		output.append("dojo.packageLoad({\n");
+		
+		//Add the depedencies.
+		if(deps != null && deps.size() > 0){
+			output.append("depends: [");
+			
+			for(int i = 0; i < deps.size(); i++){
+				if(i > 0){
+					output.append(",\n");
+				}
+				output.append("[" + deps.get(i) + "]");
+			}
+			
+			output.append("],");
+		}
+
+		//Add the contents of the file inside a function.
+		//Pass in dojo as an argument to the function to help with
+		//allowing multiple versions of dojo in a page.
+		output.append("\ndefinePackage: function(dojo){");
+		output.append(contents);
+		output.append("\n}});");
+		
+		return output.toString();
 	}
 
 	private static String readFile(String fileName)
