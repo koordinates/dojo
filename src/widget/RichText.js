@@ -176,7 +176,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 		// bullet to nicely align at the top of text
 		if (this.domNode.nodeName == "LI") { this.domNode.innerHTML = " <br>"; }
 				
-		if (this.saveName != "") {
+		if(this.saveName != ""){
 			var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
 			if (saveTextarea.value != "") {
 				var datas = saveTextarea.value.split(this._SEPARATOR);
@@ -189,7 +189,7 @@ dojo.lang.extend(dojo.widget.html.RichText, {
 					}
 				}				
 			}
-			this.connect(window, "onunload", "_saveContent");
+			dojo.event.connect("before", window, "onunload", this, "_saveContent");
 		}
 
 		// Safari's selections go all out of whack if we do it inline,
