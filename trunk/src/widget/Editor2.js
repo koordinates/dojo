@@ -59,21 +59,34 @@ dojo.widget.defineWidget(
 		_handleScroll: true,
 		globalOnScrollHandler: function(){
 			if(!this._handleScroll){ return; }
+			var ds = dojo.style;
 			var tdn = this.toolbarWidget.domNode;
+			var db = document["documentElement"]||document["body"];
+			var totalHeight = ds.getOuterHeight(tdn);
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
-				var totalHeight = dojo.style.getOuterHeight(tdn);
-				var editorWidth =  dojo.style.getOuterWidth(this.domNode); 
-				this.domNode.style.marginTop = totalHeight+"px";
-				this._scrollThreshold = dojo.style.getAbsoluteY(tdn);
+				var editorWidth =  ds.getOuterWidth(this.domNode); 
+				this._scrollThreshold = ds.getAbsoluteY(tdn);
 				dojo.debug("threshold:", this._scrollThreshold);
+				if((dojo.render.html.ie)&&(ds.getStyle(db, "background-image")=="none")){
+					// set background-image and background-attachment
+					// if background-image is not already in use, to take
+					// advantage of an IE quirk to enable smooth scrolling
+					// of pseudo-position-fixed elements like this one
+					with(db.style){
+						backgroundImage = "url(" + dojo.uri.dojoUri("src/widget/templates/images/blank.gif") + ")";
+						backgroundAttachment = "fixed";
+					}
+				}
 			}
 
 			var scrollPos = (window["pageYOffset"]) ? window["pageYOffset"] : (document["documentElement"]||document["body"]).scrollTop ;
 
+			// FIXME: need to have top and bottom thresholds so toolbar doesn't keep scrolling past the bottom
 			if(scrollPos > this._scrollThreshold){
 				dojo.debug(scrollPos);
 				if(!this._fixEnabled){
+					this.domNode.style.marginTop = totalHeight+"px";
 					if(dojo.render.html.ie){
 						dojo.html.addClass(tdn, "IEFixedToolbar");
 					}else{
@@ -86,6 +99,7 @@ dojo.widget.defineWidget(
 					this._fixEnabled = true;
 				}
 			}else if(this._fixEnabled){
+				this.domNode.style.marginTop = null;
 				with(tdn.style){
 					position = "";
 					top = "";
