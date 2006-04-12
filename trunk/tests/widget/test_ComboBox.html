@@ -4,10 +4,15 @@
 <head>
 <title>Dojo ComboBox Widget Test</title>
 
-<script type="text/javascript"> var djConfig = {isDebug: true}; </script>
+<script type="text/javascript"> 
+	var djConfig = {
+		debugAtAllCosts: true,
+		isDebug: true};
+</script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.ComboBox");
+	dojo.hostenv.writeIncludes();
 </script>
 </head>
 
@@ -18,7 +23,7 @@
 	<input type="submit">
     <p>The combo above uses an input tag. The combo below uses a select tag</p>
 	<select dojoType="ComboBox" value="this should never be seen - it is replaced!"
-		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar">
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar1" maxListLength="15">
     </select>
 </form>
 <p>
@@ -28,7 +33,7 @@ also: adding a simple combo box to test IE bleed through problem:
 
 <select>
   <option>test for</option>
-  <option>IE bleed through</option
+  <option>IE bleed through</option>
   <option>problem</option>
 </select>
 
@@ -40,7 +45,7 @@ also: adding a simple combo box to test IE bleed through problem:
 <li>Open dropdown, click an item, it selects and closes dropdown.</li>
 <li>Click triangle icon - dropdown shows. Click it again - dropdown goes.</li>
 <li>Check that you can type in more than required (e.g. alaba for alabama) and it still correctly shows alabama</li>
-<li>Tab into the combo works [borked? keyup event for tab key causes dropdown to show?].</li>
+<li>Tab into the combo works, list should not apear.</li>
 <li>Tab out of the combo works - closes dropdown and goes to next control (focus should not go to the dropdown because tabindex="-1").</li>
 <li>Do the dropdown and click outside of it - the dropdown disappears.</li>
 <li>Javascript disabled -> fallback to old style combo?</li>
@@ -64,6 +69,6 @@ also: adding a simple combo box to test IE bleed through problem:
 <li>(Add any other tests here)</li>
 </ol>
 <!-- maintain state of combo box if user presses back/forward button -->
-<form name="_dojo_form" style="display:none"><textarea name=stabile cols=80 rows=10></textarea></form>
+<form name="_dojo_form" style="display:none" disabled="true"><textarea name="stabile" cols="80" rows="10"></textarea></form>
 </body>
 </html>
