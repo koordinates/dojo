@@ -293,4 +293,4 @@ var TestStorage = {
 
 // wait until the storage system is finished loading
 dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
-                   TestStorage.initialize);
+                  TestStorage.initialize);
