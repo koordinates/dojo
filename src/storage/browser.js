@@ -26,8 +26,6 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	_allKeys: null,
 	
 	initialize: function(){
-		//dojo.debug("browser initialize");
-		
 		// initialize our Flash
 		var loadedListener = function(){
 			dojo.storage._flashLoaded();
@@ -144,7 +142,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	/** Called when the Flash is finished loading. */
 	_flashLoaded: function(){
 		// load up our index of keys, to support getKeys()
-		this._allKeys = this.getKeys();
+		//this._allKeys = this.getKeys();
 
 		this.initialized = true;
 

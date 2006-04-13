@@ -61,7 +61,6 @@ class Storage {
 			statusResults = Storage.FAILED;
 		}
 		
-		//getURL("javascript:dojo.debug('FLASH: flat, statusResults="+statusResults+"')");
 		DojoExternalInterface.call("dojo.storage._onStatus", null, statusResults, 
 															 keyName);
 	}
@@ -99,7 +98,6 @@ class Storage {
 	}
 	
 	public function getKeys(namespace){
-		//getURL("javascript:dojo.debug('FLASH:getKeys, namespace="+namespace+"')");
 		// Returns a list of the available keys in this namespace
 		
 		// get the storage object
@@ -130,17 +128,7 @@ class Storage {
 	}
 
 	static function main(mc){
-		/* Very rarely, on Internet Explorer, a timing issue will
-		 * cause the Flash file to load before the ActiveX infrastructure
-		 * has loaded, squelching our callbacks into JavaScript. Put
-		 * initializing the Storage system on a very slight timeout
-		 * to avoid this problem.
-		 * 
-		 * TODO: Move this timeout into dojo.flash somehow.
-		 */
-		_global.setTimeout(function(){ 
-			var app = new Storage(); 
-		}, 20);
+		var app = new Storage(); 
 	}
 }
 

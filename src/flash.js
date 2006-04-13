@@ -851,6 +851,8 @@ dojo.flash.Communicator.prototype = {
 			this._fscommandAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call
 			this._fscommandCall(command, args);
+		}else if (command == "fscommandReady"){ // see if fscommands are ready
+			this._fscommandReady();
 		}
 	},
 	
@@ -902,6 +904,12 @@ dojo.flash.Communicator.prototype = {
 		
 		// return the results to flash
 		plugin.SetVariable("_returnResult", results);
+	},
+	
+	/** Reports that fscommands are ready to run if executed from Flash. */
+	_fscommandReady: function(){
+		var plugin = dojo.flash.obj.get();
+		plugin.SetVariable("fscommandReady", "true");
 	},
 	
 	/** 
