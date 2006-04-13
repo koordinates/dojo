@@ -186,9 +186,6 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 		if(onBuild){
 			eval("var node = baseNode; var widget = targetObj; "+onBuild);
 		}
-
-		// strip IDs to prevent dupes. removeAttribute() doesnt care if attribute doesnt exist
-		baseNode.removeAttribute('id');
 	}
 
 }
