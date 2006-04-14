@@ -16,8 +16,8 @@ dojo.require("dojo.lang.common");
 		contentBox: "content-box"
 	};
 
-	ds.getBoxSizing = function(node) {
-		if (h.ie || h.opera){ 
+	ds.getBoxSizing = function(node){
+		if((h.ie)||(h.opera)){ 
 			var cm = document["compatMode"];
 			if((cm == "BackCompat")||(cm == "QuirksMode")){ 
 				return ds.boxSizing.borderBox; 
@@ -568,7 +568,6 @@ dojo.require("dojo.lang.common");
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
 	ds.setOpacity = function setOpacity(node, opacity, dontFixOpacity) {
 		node = dojo.byId(node);
-		var h = h;
 		if(!dontFixOpacity){
 			if( opacity >= 1.0){
 				if(h.ie){
