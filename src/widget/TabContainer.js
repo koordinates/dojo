@@ -8,6 +8,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
+dojo.require("dojo.layout");
 
 //////////////////////////////////////////
 // TabContainer -- a set of Tabs
@@ -59,7 +60,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 		dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
 
-        this._setPadding();
+        this._doSizing();
 
 		// Display the selected tab
 		if(this.selectedTabWidget){
@@ -72,7 +73,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		dojo.widget.html.TabContainer.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
 
 		// in case the tab labels have overflowed from one line to two lines
-		this._setPadding();
+		this._doSizing();
 	},
 
 	_setupTab: function(tab){
@@ -107,37 +108,21 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	},
 
 	// Configure the content pane to take up all the space except for where the tab labels are
-	_setPadding: function(){
-		var t=dojo.style.getOuterHeight(this.dojoTabLabels);
-		var w=dojo.style.getInnerWidth(this.dojoTabLabels);
-		var c=dojo.style.getOuterHeight(this.containerNode);
-		if(t==0 || c==0){
-			// browser needs more time to compute sizes (maybe CSS hasn't downloaded yet)
-			dojo.lang.setTimeout(this, this._setPadding, 10);
-			return;
-		}
-		with(this.domNode.style){
-			switch (this.labelPosition) {
-				case 'top': 
-					paddingTop=t+"px";
-					break;
-				case 'bottom':
-					paddingBottom=t+"px";
-					break;
-				case 'left':
-					paddingLeft=w+"px";
-					break;
-				case 'right':
-					paddingRight=w+"px";
-					break;
-				case 'left-h':
-					paddingLeft=w+"px";
-					break;
-				case 'right-h':
-					paddingRight=w+"px";
-					break;
-			}
-		}
+	_doSizing: function(){
+		// position the labels and the container node
+		var labelAlign=this.labelPosition.replace(/-h/,"");
+		var children = [
+			{domNode: this.dojoTabLabels, layoutAlign: labelAlign},
+			{domNode: this.containerNode, layoutAlign: "client"}
+		];
+		dojo.layout(this.domNode, children);
+		
+		// make each child widget expand to fill the container
+		var grandchildren = [];
+		dojo.lang.forEach(this.children, function(child){
+			grandchildren.push({domNode: child.domNode, layoutAlign: "flood"});
+		});
+		dojo.layout(this.containerNode, grandchildren);
 	},
 
     removeChild: function(tab) {
@@ -168,7 +153,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
         }
 
 		// in case the tab labels have overflowed from one line to two lines
-		this._setPadding();
+		this._doSizing();
     },
 
     selectTab: function(tab) {
@@ -213,8 +198,8 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	},
 
 	onResized: function() {
-		// in case the tab labels have overflowed from one line to two lines
-		this._setPadding();
+		this._doSizing();
+		dojo.widget.html.TabContainer.superclass.onResized.call(this);
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:TabContainer");
