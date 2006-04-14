@@ -24,11 +24,11 @@ dojo.widget.defineWidget(
 
 		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
-		scrollMJP: null,
+		scrollInterval: null,
+		
 
 		editorOnLoad: function(){
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
-			dojo.debug(toolbars);
 			if((!toolbars.length)||(!this.shareToolbar)){
 				var tbOpts = {};
 				tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
@@ -39,7 +39,8 @@ dojo.widget.defineWidget(
 				// need to set position fixed to wherever this thing has landed
 				if(this.toolbarAlwaysVisible){
 					var src = document["documentElement"]||window;
-					dojo.event.connect(src, "onscroll", this, "globalOnScrollHandler");
+					this.scrollInterval = setInterval(dojo.lang.hitch(this, "globalOnScrollHandler"), 100);
+					// dojo.event.connect(src, "onscroll", this, "globalOnScrollHandler");
 					dojo.event.connect("before", this, "destroyRendering", this, "unhookScroller");
 				}
 			}else{
@@ -50,7 +51,20 @@ dojo.widget.defineWidget(
 				// 			selection in the others. This is problematic.
 				this.toolbarWidget = toolbars[0];
 			}
+			dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onfocus");
+			// dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onclick");
+			dojo.event.topic.subscribe("Editor2.clobberFocus", this, "setBlur");
+			dojo.event.connect(this.editNode, "onfocus", this, "setFocus");
+		},
+
+		setFocus: function(){
+			dojo.debug("setFocus:", this);
 			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
+		},
+
+		setBlur: function(){
+			dojo.debug("setBlur:", this);
+			dojo.event.disconnect(this.toolbarWidget, "exec", this, "execCommand");
 		},
 
 		_scrollSetUp: false,
@@ -58,6 +72,7 @@ dojo.widget.defineWidget(
 		_scrollThreshold: false,
 		_handleScroll: true,
 		globalOnScrollHandler: function(){
+			var isIE = dojo.render.html.ie;
 			if(!this._handleScroll){ return; }
 			var ds = dojo.style;
 			var tdn = this.toolbarWidget.domNode;
@@ -66,28 +81,34 @@ dojo.widget.defineWidget(
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
 				var editorWidth =  ds.getOuterWidth(this.domNode); 
-				this._scrollThreshold = ds.getAbsoluteY(tdn);
-				dojo.debug("threshold:", this._scrollThreshold);
-				if((dojo.render.html.ie)&&(ds.getStyle(db, "background-image")=="none")){
+				this._scrollThreshold = ds.abs(tdn, false).y;
+				// dojo.debug("threshold:", this._scrollThreshold);
+				if((isIE)&&(ds.getStyle(db, "background-image")=="none")){
 					// set background-image and background-attachment
 					// if background-image is not already in use, to take
 					// advantage of an IE quirk to enable smooth scrolling
 					// of pseudo-position-fixed elements like this one
 					with(db.style){
+						/*
 						backgroundImage = "url(" + dojo.uri.dojoUri("src/widget/templates/images/blank.gif") + ")";
 						backgroundAttachment = "fixed";
+						*/
 					}
 				}
 			}
 
-			var scrollPos = (window["pageYOffset"]) ? window["pageYOffset"] : (document["documentElement"]||document["body"]).scrollTop ;
+			var scrollPos = (window["pageYOffset"]) ? window["pageYOffset"] : (document["documentElement"]||document["body"]).scrollTop;
 
 			// FIXME: need to have top and bottom thresholds so toolbar doesn't keep scrolling past the bottom
 			if(scrollPos > this._scrollThreshold){
-				dojo.debug(scrollPos);
+				// dojo.debug(scrollPos);
 				if(!this._fixEnabled){
 					this.domNode.style.marginTop = totalHeight+"px";
-					if(dojo.render.html.ie){
+					if(isIE){
+						// FIXME: should we just use setBehvior() here instead?
+						var cl = dojo.style.abs(tdn).x;
+						document.body.appendChild(tdn);
+						tdn.style.left = cl+dojo.style.getPixelValue(document.body, "margin-left")+"px";
 						dojo.html.addClass(tdn, "IEFixedToolbar");
 					}else{
 						with(tdn.style){
@@ -104,9 +125,13 @@ dojo.widget.defineWidget(
 					position = "";
 					top = "";
 					zIndex = "";
+					if(isIE){
+						marginTop = "";
+					}
 				}
-				if(dojo.render.html.ie){
+				if(isIE){
 					dojo.html.removeClass(tdn, "IEFixedToolbar");
+					dojo.html.insertBefore(tdn, this.domNode);
 				}
 				this._fixEnabled = false;
 			}
@@ -114,8 +139,9 @@ dojo.widget.defineWidget(
 
 		unhookScroller: function(){
 			this._handleScroll = false;
-			var src = document["documentElement"]||window;
-			dojo.event.disconnect(src, "onscroll", this, "globalOnScrollHandler");
+			clearInterval(this.scrollInterval);
+			// var src = document["documentElement"]||window;
+			// dojo.event.disconnect(src, "onscroll", this, "globalOnScrollHandler");
 			if(dojo.render.html.ie){
 				dojo.html.removeClass(this.toolbarWidget.domNode, "IEFixedToolbar");
 			}

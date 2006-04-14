@@ -519,11 +519,13 @@ dojo.require("dojo.lang.common");
 					return node.style.getPropertyValue(cssSelector);
 				}else return inValue;
 			}
-		}else if (node.currentStyle){ // IE
+		}else if(node.currentStyle){ // IE
 			return node.currentStyle[property];
-		}if (node.style.getPropertyValue) { // W3
+		}if(node.style.getPropertyValue){ // W3
 			return node.style.getPropertyValue(cssSelector);
-		}else return inValue;
+		}else{
+			return inValue;
+		}
 	}
 
 	/** 
