@@ -265,6 +265,16 @@ dojo.hostenv.println = function (line){
 	}
 }
 
+dojo.hostenv.finishedLoad = function(){
+	if(this.inFlightCount > 0){
+		// perform initialization
+		if(dojo.render.html.ie){
+			dojo.hostenv.makeWidgets();
+		}
+		dojo.hostenv.modulesLoaded();
+	}
+}
+
 dojo.addOnLoad(function(){
 	dojo.hostenv._println_safe = true;
 	while(dojo.hostenv._println_buffer.length > 0){
@@ -286,15 +296,12 @@ function dj_addNodeEvtHdlr (node, evtName, fp, capture){
 
 dj_load_init = function(){
 	// allow multiple calls, only first one will take effect
-   if (arguments.callee.initialized) return;
-   arguments.callee.initialized = true;
+	if (arguments.callee.initialized) return;
+	arguments.callee.initialized = true;
 
-   // perform initialization
-	if(dojo.render.html.ie){
-		dojo.hostenv.makeWidgets();
-	}
-	dojo.hostenv.modulesLoaded();
+	dojo.hostenv.finishedLoad();
 };
+
 
 /* Uncomment this to allow init after DOMLoad, not after window.onload
 
