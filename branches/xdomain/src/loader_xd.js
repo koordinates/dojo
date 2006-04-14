@@ -35,22 +35,22 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	}
 }
 
-//XD: Overriding loadUri for now. Wanted to override getText(), but it is used by
-//    the widget code in too many, synchronous ways right now. This means the xd stuff
-//    is not suitable for widgets yet.
+//Overriding loadUri for now. Wanted to override getText(), but it is used by
+//the widget code in too many, synchronous ways right now. This means the xd stuff
+//is not suitable for widgets yet.
 dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 	if(this.loadedUris[uri]){
 		return;
 	}
-	
+
 	//Add the module (package) to the list of modules.
 	if(this.isXDomain){
-		//TODO: WARNING: is this array going to get whacked with multiple access since scripts
+		//Curious: is this array going to get whacked with multiple access since scripts
 		//load asynchronously and may be accessing the array at the same time?
 		this.xdPackages.push({name: module, contents: null});
 	}
-	
-	if (currentIsXDomain){		
+
+	if (currentIsXDomain){
 		//Add to waiting packages. 
 		this.xdInFlight[module] = true;
 		
@@ -83,6 +83,8 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 		}
 	}
 
+	//These steps are done in the non-xd loader version of this function.
+	//Maintain these steps to fit in with the existing system.
 	this.loadedUris[uri] = true;
 	return 1;
 }
@@ -97,11 +99,6 @@ dojo.hostenv.packageLoaded = function(package){
 			dep = deps[i];
 			if(dep[0] == "provide"){
 				provide = dep[1];
-				if(!attachedPackage){
-					//XD: TODO: Where to attach package?
-					//          Have to do it in the right order.
-					attachedPackage = true;
-				}
 			}
 
 			//XD: TODO: How to know to push the dependencies before this
@@ -117,9 +114,7 @@ dojo.hostenv.packageLoaded = function(package){
 				provide = null;
 			}
 			
-			//Find the first provide in the xdPackages list, and attach the
-			//package code to that entry.
-			//name: xx, content: xx
+			//Find the first provide in the xdPackages list (the winner).
 			var winner = 9999;
 			var currentProvide;
 			for(var i = 0; i < this.provideList.length; i++){
@@ -132,11 +127,17 @@ dojo.hostenv.packageLoaded = function(package){
 				}
 			}
 			
+			//Attach the package code to the winning entry.
 			if(winner < this.xdPackages.length){
-			
+				this.xdPackages[winner].content = package.definePackage;
 			}else{
-				//TODO.
-				XXX ABORT.
+				dojo.raise("Winning package is outside of range of xdPackages: " + winner);
+			}
+			
+			//Now update the inflight status for any provided packages in this loaded package.
+			//Do this at the very end to avoid issues with the inflight timer check.
+			for(var i = 0; i < this.provideList.length; i++){
+				this.xdInFlight[this.provideList[i]] = true;
 			}
 		}
 	}
@@ -155,11 +156,16 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	clearInterval(this.xdTimer);
 	this.xdTimer = null;
 	
-	//XD: TODO: Need to now evaluate all the packages to bring them into being.
-	
+	//Evaluate all the packages to bring them into being.
+	//Pass dojo in so that later, to support multiple versions of dojo
+	//in a page, we can pass which version of dojo to use.
+	for(var i = 0; i < this.xdPackages.length; i++){
+		if(this.xdPackages[i].content){
+			this.xdPackages[i].content(dojo);
+		}
+	}
+
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
 	this.finishedLoad();
 }
-
-//TODO: need to know when a package loads and set the xdInFlight to true.
