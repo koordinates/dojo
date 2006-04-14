@@ -24,7 +24,7 @@ dojo.layout = function(container, children, layoutPriority) {
 	});
 
 	// order the children according to layoutPriority
-	if(layoutPriority){
+	if(layoutPriority && layoutPriority!="none"){
 		var rank = function(child){
 			switch(child.layoutAlign){
 				case "flood":
