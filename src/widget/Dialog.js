@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.Dialog");
 dojo.provide("dojo.widget.html.Dialog");
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.fx.*");
@@ -9,7 +10,7 @@ dojo.require("dojo.html");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Dialog",
-	dojo.widget.HtmlWidget,
+	dojo.widget.html.ContentPane,
 	{
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDialog.html"),
 		isContainer: true,
