@@ -262,6 +262,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.layout(this.containerNode, this.children);
 		
 		this.bgIframe.onResized();
+		if(this.shadow){ this.shadow.size(w, h); }
 	}
 });
 
