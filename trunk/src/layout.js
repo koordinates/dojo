@@ -43,46 +43,48 @@ dojo.layout = function(container, children, layoutPriority) {
 		children.sort(function(a,b){ return rank(a)-rank(b); });
 	}
 
-	// record the width/height of all the floating elements added so far (plus padding)
-	var usedSpace={
-		'left': dojo.style.getPixelValue(container, "padding-left", true),
-		'right': dojo.style.getPixelValue(container, "padding-right", true),
-		'top': dojo.style.getPixelValue(container, "padding-top", true),
-		'bottom': dojo.style.getPixelValue(container, "padding-bottom", true)
+	// remaining space (blank area where nothing has been written)
+	var f={
+		top: dojo.style.getPixelValue(container, "padding-top", true),
+		left: dojo.style.getPixelValue(container, "padding-left", true),
+		height: dojo.style.getContentHeight(container),
+		width: dojo.style.getContentWidth(container)
 	};
-
-	// track how much space is remaining
-	var remainingWidth  = dojo.style.getContentWidth(container);
-	var remainingHeight =  dojo.style.getContentHeight(container);
 
 	// set positions/sizes
 	dojo.lang.forEach(children, function(child){
 		var elm=child.domNode;
 		var position=child.layoutAlign;
 
-		// set two of left/right/top/bottom properties
+		// set elem to upper left corner of unused space; may move it later
 		elm.style.position="absolute";
-		var lr = (position=="right")?"right":"left";
-		elm.style[lr]=usedSpace[lr] + "px";
-		var tb = (position=="bottom")?"bottom":"top";
-		elm.style[tb]=usedSpace[tb] + "px";
+		elm.style.left = f.left+"px";
+		elm.style.top = f.top+"px";
 
 		// set size && adjust record of remaining space.
 		// note that setting the width of a <div> may affect it's height.
 		// TODO: same is true for widgets but need to implement API to support that
 		if ( (position=="top")||(position=="bottom") ) {
-			dojo.style.setOuterWidth(elm, remainingWidth);
+			dojo.style.setOuterWidth(elm, f.width);
 			var h = dojo.style.getOuterHeight(elm);
-			usedSpace[position] += h;
-			remainingHeight -= h;
+			f.height -= h;
+			if(position=="top"){
+				f.top += h;
+			}else{
+				elm.style.top = f.top + f.height + "px";
+			}
 		}else if(position=="left" || position=="right"){
-			dojo.style.setOuterHeight(elm, remainingHeight);
+			dojo.style.setOuterHeight(elm, f.height);
 			var w = dojo.style.getOuterWidth(elm);
-			usedSpace[position] += w;
-			remainingWidth -= w;
+			f.width -= w;
+			if(position=="left"){
+				f.left += w;
+			}else{
+				elm.style.left = f.left + f.width + "px";
+			}
 		} else if(position=="flood" || position=="client"){
-			dojo.style.setOuterWidth(elm, remainingWidth);
-			dojo.style.setOuterHeight(elm, remainingHeight);
+			dojo.style.setOuterWidth(elm, f.width);
+			dojo.style.setOuterHeight(elm, f.height);
 		}
 		if(child.onResized){
 			child.onResized();
