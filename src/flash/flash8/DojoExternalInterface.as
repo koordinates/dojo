@@ -113,7 +113,6 @@ class DojoExternalInterface{
 	}
 	
 	public static function exec(methodName):Void{
-		//getURL("javascript:alert('test')");
 		// decode all of the arguments that were passed in
 		for(var i = 0; i < DojoExternalInterface.argData.length; i++){
 			DojoExternalInterface.argData[i] = 
