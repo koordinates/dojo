@@ -21,7 +21,6 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 	layoutChildPriority: 'top-bottom',
 
 	postCreate: function(){
-		debugger;
 		dojo.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
