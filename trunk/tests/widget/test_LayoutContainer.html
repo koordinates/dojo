@@ -19,13 +19,11 @@
 </head>
 <body>
 
-<p>HTML before</p>
-<p>HTML before</p>
-<p>HTML before</p>
+<p>Basic layout</p>
 
 <div dojoType="LayoutContainer"
 	layoutChildPriority='left-right'
-	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;"
 >
 	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86; ">
 		top bar
@@ -51,31 +49,27 @@
 	</div>
 </div>
 
-<p>HTML after</p>
-<p>HTML after</p>
-<p>HTML after</p>
-
 <p>Advanced layout:</p>
 <div dojoType="LayoutContainer"
 	layoutChildPriority='none'
-	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;"
 >
-	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #acb386; width: 100px;">
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #acb386; width: 100px; margin: 5px;">
 		left
 	</div>
-	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86; ">
+	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86;  margin: 5px;">
 		top bar
 	</div>
-	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #b39b86;">
+	<div dojoType="ContentPane" layoutAlign="bottom" style="background-color: #b39b86; margin: 5px;">
 		bottom bar
 	</div>
-	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #eeeeee; width: 100px;">
+	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #eeeeee; width: 100px; margin: 5px;">
 		inner left
 	</div>
-	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #eeeeee; width: 100px;">
+	<div dojoType="ContentPane" layoutAlign="right" style="background-color: #eeeeee; width: 100px; margin: 5px;">
 		inner right
 	</div>
-	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px;">
+	<div dojoType="ContentPane" layoutAlign="client" style="background-color: #f5ffbf; padding: 10px; margin: 5px;">
 		main panel with <a href="http://www.dojotoolkit.org/">a link</a>.<br />
 		(to check we're copying children around properly).<br />
 		<select dojoType="combobox">
@@ -90,7 +84,7 @@
 <p>Goofy spiral layout:</p>
 <div dojoType="LayoutContainer"
 	layoutChildPriority='none'
-	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
+	style="border: 2px solid black; width: 90%; height: 300px; padding: 10px;"
 >
 	<div dojoType="ContentPane" layoutAlign="left" style="background-color: #663333; color: white; width: 100px;">
 		outer left
