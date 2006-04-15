@@ -24,7 +24,7 @@ dojo.hostenv.resetXd();
 dojo.hostenv.createXdPackage = function(contents){
 	//Find dependencies.
 	var deps = new Array();
-    var depRegExp = /dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|hostenv\.conditionalLoadModule|.hostenv\.loadModule|hostenv\.moduleLoaded)\(([\w\W]*?)\)/mg;
+    var depRegExp = /dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\.conditionalLoadModule|.hostenv\.loadModule|hostenv\.moduleLoaded)\(([\w\W]*?)\)/mg;
     var match;
 	while((match = depRegExp.exec(contents)) != null){
 		deps.push("\"" + match[1] + "\", " + match[2]);
@@ -188,38 +188,69 @@ dojo.hostenv.packageLoaded = function(package){
 	}
 }
 
+//This is a bit brittle: it has to know about the dojo methods that deal with dependencies
+//It would be ideal to intercept the actual methods and do something fancy at that point,
+//but I have concern about knowing which provide to match to the dependency in that case,
+//since scripts can load whenever they want, and trigger new calls to dojo.hostenv.packageLoaded().
 dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
-	//This is a bit brittle: it has to know about the dojo methods that deal with dependencies
-	//It would be ideal to intercept the actual methods and do something fancy at that point,
-	//but I have concern about knowing which provide to match to the dependency in that case,
-	//since scripts can load whenever they want, and trigger new calls to dojo.hostenv.packageLoaded().
 	
+	if(!insertHint){
+		insertHint = 0;
+	}
+	
+	//Find the provide so that we can insert any depedencies before it.
+	var provideIndex = 0;
+	for(var i = insertHint; i < this.xdPackages.length; i++){
+		if(this.xdPackages[i].name == provide){
+			provideIndex = i;
+			break;
+		}
+	}
+	
+	//This case seems unlikely, but doing it just in case:
+	if(provideIndex == 0 && insertHint != 0){
+		return this.addXdDependency(0, dep, provide);
+	}
+	
+	//Extract the dependency(ies).
+	var newDeps = null;
 	switch(dep[0]){
 		case "requireIf":
 		case "requireAfterIf":
 		case "conditionalRequire":
-			//disregard first arg (dep[1]). Start with dep[2].
+			//First arg (dep[1]) is the test. Depedency is dep[2].
 			if((dep[1] === true)||(dep[1]=="common")||(dep[1] && dojo.render[dep[1]].capable)){
-		
+				newDeps = [{name: dep[2], content: null}];
+			}
+			break;
 		case "requireAll":
-			(the arguments are an array for require)
-
+			//the arguments are an array, each element a call to require.
+			newDeps = deps.slice(1);
+			dojo.hostenv.flattenRequireArray(newDeps);
+			break;
 		case "kwCompoundRequire":
 		case "hostenv.conditionalLoadModule":
 			var common = modMap["common"]||[];
-			var result = (modMap[dojo.hostenv.name_]) ? common.concat(modMap[dojo.hostenv.name_]||[]) : common.concat(modMap["default"]||[]);
-
-		
+			var newDeps = (modMap[dojo.hostenv.name_]) ? common.concat(modMap[dojo.hostenv.name_]||[]) : common.concat(modMap["default"]||[]);	
+			dojo.hostenv.flattenRequireArray(newDeps);
+			break;
 		case "require":
 		case "requireAfter":
 		case "hostenv.loadModule":
 			//Just worry about dep[1]
-	
+			newDeps = [{name: dep[1], content: null}];
+			break;
 	}
-	//XD: TODO: How to know to push the dependencies before this provide?
+	
+	//Add the new dependencies to dependency array before the provide.
+	//Add them in bulk with splice to avoid too much movement by other scripts
+	//asychronously loading and calling.
+	if(newDeps && newDeps.length){
+		this.xdPackages.splice(provideIndex, 0, newDeps);
+		provideIndex += newDeps.length;
+	}
 
-	//TODO: Add dojo.kwCompoundRequire to my regexps, but also the browser_debug and getDependencyList.js. 
-	//dojo.conditionalRequire too.
+	return provideIndex;
 }
 
 dojo.hostenv.xdPositionContents = function(){
@@ -287,3 +318,17 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//load more packages, and it adds another load listener? Change the modulesLoaded method instead.
 }
 
+dojo.hostenv.flattenRequireArray = function(target){
+	//Each result could be an array of 3 elements  (the 3 arguments to dojo.require).
+	//We only need the first one.
+	if(target){
+		for(var i = 0; i < target.length; i++){
+			if(target[i] instanceof Array){
+				target[i] = {name: target[i][0], content: null};
+			}else{
+				target[i] = {name: target[i], content: null};
+			}
+		}
+	}
+
+}

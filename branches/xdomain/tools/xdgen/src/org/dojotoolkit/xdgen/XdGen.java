@@ -16,7 +16,7 @@ class XdGen{
 	private static final int DEPEND_TYPE_GROUP = 1;
 	private static final int DEPEND_VALUE_GROUP = 2;
 
-	private final static String DEPEND_EXPRESSION = "dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|hostenv\\.conditionalLoadModule|.hostenv\\.loadModule|hostenv\\.moduleLoaded)\\(([\\w\\W]*?)\\)";
+	private final static String DEPEND_EXPRESSION = "dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\\.conditionalLoadModule|.hostenv\\.loadModule|hostenv\\.moduleLoaded)\\(([\\w\\W]*?)\\)";
 	private static final Pattern DEPEND_PATTERN;
 	static{
 		DEPEND_PATTERN = Pattern.compile(DEPEND_EXPRESSION, Pattern.MULTILINE | Pattern.DOTALL);
