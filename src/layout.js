@@ -12,13 +12,14 @@ dojo.require("dojo.lang");
 dojo.require("dojo.style");
 
 dojo.layout = function(container, children, layoutPriority) {
-	// container has to be either relative or absolute position so that we
+	// container must be either relative or absolute position so that we
 	// can position nodes inside of it
-	if(container.style.position != "absolute"){
-		container.style.position = "relative";
+	var position=dojo.style.getStyle(container, "position");
+	if(position != "absolute" && position != "relative"){
+		dojo.style.setStyle(container, "relative");
 	}
 
-	// copy input array and remove elements w/out layout
+	// copy children array and remove elements w/out layout
 	children = dojo.lang.filter(children, function(child){
 		return dojo.lang.inArray(["top","bottom","left","right","client","flood"], child.layoutAlign)
 	});
@@ -66,20 +67,25 @@ dojo.layout = function(container, children, layoutPriority) {
 		var tb = (position=="bottom")?"bottom":"top";
 		elm.style[tb]=usedSpace[tb] + "px";
 
-		// set size && adjust record of remaining space
+		// set size && adjust record of remaining space.
+		// note that setting the width of a <div> may affect it's height.
+		// TODO: same is true for widgets but need to implement API to support that
 		if ( (position=="top")||(position=="bottom") ) {
 			dojo.style.setOuterWidth(elm, remainingWidth);
 			var h = dojo.style.getOuterHeight(elm);
 			usedSpace[position] += h;
 			remainingHeight -= h;
-		} else if(position=="left" || position=="right"){
+		}else if(position=="left" || position=="right"){
 			dojo.style.setOuterHeight(elm, remainingHeight);
 			var w = dojo.style.getOuterWidth(elm);
 			usedSpace[position] += w;
 			remainingWidth -= w;
 		} else if(position=="flood" || position=="client"){
-			dojo.style.setOuterWidth(elm, remainingWidth);		
+			dojo.style.setOuterWidth(elm, remainingWidth);
 			dojo.style.setOuterHeight(elm, remainingHeight);
+		}
+		if(child.onResized){
+			child.onResized();
 		}
 	});
 };
