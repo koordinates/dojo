@@ -16,7 +16,7 @@ class XdGen{
 	private static final int DEPEND_TYPE_GROUP = 1;
 	private static final int DEPEND_VALUE_GROUP = 2;
 
-	private final static String DEPEND_EXPRESSION = "dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|hostenv\\.conditionalLoadModule)\\(([\\w\\W]*?)\\)";
+	private final static String DEPEND_EXPRESSION = "dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|hostenv\\.conditionalLoadModule|.hostenv\\.loadModule|hostenv\\.moduleLoaded)\\(([\\w\\W]*?)\\)";
 	private static final Pattern DEPEND_PATTERN;
 	static{
 		DEPEND_PATTERN = Pattern.compile(DEPEND_EXPRESSION, Pattern.MULTILINE | Pattern.DOTALL);
@@ -74,22 +74,17 @@ class XdGen{
 	//***************************************************************
 	//Private methods
 
-	private static ArrayList findDependencies(String contents){
+	private static String buildXDomainPackage(String contents){
+		//Build the dependencies.
 		ArrayList deps = new ArrayList();
 		Matcher matcher = DEPEND_PATTERN.matcher(contents);
 		while (matcher.find()){
 			deps.add("\"" + matcher.group(DEPEND_TYPE_GROUP) + "\", " + matcher.group(DEPEND_VALUE_GROUP));
 		}
-		return deps;
-	}
-
-	private static String buildXDomainPackage(String contents){
-		//Build the dependencies.
-		ArrayList deps = findDependencies(contents);
 
 		//Write out the xd.js file.
 		StringBuffer output = new StringBuffer(contents.length());
-		output.append("dojo.packageLoad({\n");
+		output.append("dojo.hostenv.packageLoaded({\n");
 		
 		//Add the depedencies.
 		if(deps != null && deps.size() > 0){

@@ -1,15 +1,59 @@
 
-//This flag indicates where or not we have crossed into xdomain territory. Once any package says
-//it is cross domain, then the rest of the packages have to be treated as xdomain because we need
-//to evaluate packages in order. If there is a xdomain package followed by a xhr package, we can't load
-//the xhr package until the one before it finishes loading.
-dojo.hostenv.isXDomain = false;
+//TODO: what about case where we get a provide before the require for same package? Any race condition
+//that would cause trouble?
+//TODO: Test the __package__.js file for src/undo: it does a require then a provide.
 
-dojo.hostenv.xdInFlight = {};
-dojo.hostenv.xdPackages = new Array();
+dojo.hostenv.resetXd = function(){
+	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
+	//it is cross domain, then the rest of the packages have to be treated as xdomain because we need
+	//to evaluate packages in order. If there is a xdomain package followed by a xhr package, we can't load
+	//the xhr package until the one before it finishes loading. The text of the xhr package will be converted
+	//to match the format for a xd package and put in the xd load queue.
+	//You can force all packages to be treated as xd by setting the djConfig.forceXDomain. This might
+	//make debugging easier for non-xd dojo uses.
+	this.isXDomain = djConfig.forceXDomain || false;
+	
+	this.xdInFlight = {};
+	this.xdPackages = new Array();
+	this.xdContents = new Array();
+}
+
+//Call reset immediately to set the state.
+dojo.hostenv.resetXd();
 
 dojo.hostenv.createXdPackage = function(contents){
-	//TODO: Implement.
+	//Find dependencies.
+	var deps = new Array();
+    var depRegExp = /dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|hostenv\.conditionalLoadModule|.hostenv\.loadModule|hostenv\.moduleLoaded)\(([\w\W]*?)\)/mg;
+    var match;
+	while((match = depRegExp.exec(contents)) != null){
+		deps.push("\"" + match[1] + "\", " + match[2]);
+	}
+
+	//Create package object and the call to packageLoaded.
+	var output = new Array();
+	output.push("dojo.hostenv.packageLoaded({\n");
+
+	//Add dependencies
+	if(deps.length > 0){
+		output.push("depends: [");
+		for(int i = 0; i < deps.length; i++){
+			if(i > 0){
+				output.push(",\n");
+			}
+			output.push("[" + deps[i] + "]");
+		}
+		output.push("],");
+	}
+
+	//Add the contents of the file inside a function.
+	//Pass in dojo as an argument to the function to help with
+	//allowing multiple versions of dojo in a page.
+	output.push("\ndefinePackage: function(dojo){");
+	output.push(contents);
+	output.push("\n}});");
+	
+	return output.join("");
 }
 
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
@@ -92,54 +136,117 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 dojo.hostenv.packageLoaded = function(package){
 	var deps = package.depends;
 	if(deps && deps.length > 0){
-		var dep, provide;
+		var dep, provide = null;
+		var insertHint = 0;
+		var waitingDeps = new Array();
 		var provideList = new Array();
 		var attachedPackage = false;
 		for(var i = 0; i < deps.length; i++){
 			dep = deps[i];
-			if(dep[0] == "provide"){
-				provide = dep[1];
-			}
 
-			//XD: TODO: How to know to push the dependencies before this
-			//  provide?
-			dojo[dep[0]].apply(dojo, splice[1,xxx]);
-			
-			//Indicate package is not in flight anymore.
-			//Do this step last to avoid triggering the loaded
-			//notification too early.
-			if(provide){
-				this.xdInFlight[provide] = false;
-				provideList.push(provide);
-				provide = null;
-			}
-			
-			//Find the first provide in the xdPackages list (the winner).
-			var winner = 9999;
-			var currentProvide;
-			for(var i = 0; i < this.provideList.length; i++){
-				currentProvide = this.provideList[i];
-				for(var j = 0; j < this.xdPackages.length && j < winner; j++){
-					if(this.xdPackages[j].name == currentProvide){
-						winner = j;
-						break;
+			//Look for specific dependency indicators.
+			if (dep[0] == "provide" || dep[0] == "hostenv.moduleLoaded"){
+				provide = dep[1];
+				provideList.push(dep[1]);
+				
+				//If we had some waiting dependencies, now add them
+				//now that we found a provide (probably happens mostly with moduleLoaded)
+				if(waitingDeps.length > 0){
+					for(var i = 0; i < waitingDeps.length; i++){
+						insertHint = this.addXdDependency(insertHint, waitingDeps[i], provide);
 					}
+					waitingDeps = new Array();
+				}
+
+				//Now that we have a new provide, we're not sure where it is in 
+				//the dependency list, so reset the hint.
+				insertHint = 0;
+			}else{
+				if(!provide){
+					waitingDeps.push(dep);
+				}else{
+					insertHint = this.addXdDependency(insertHint, dep, provide);
 				}
 			}
-			
-			//Attach the package code to the winning entry.
-			if(winner < this.xdPackages.length){
-				this.xdPackages[winner].content = package.definePackage;
-			}else{
-				dojo.raise("Winning package is outside of range of xdPackages: " + winner);
-			}
-			
-			//Now update the inflight status for any provided packages in this loaded package.
-			//Do this at the very end to avoid issues with the inflight timer check.
-			for(var i = 0; i < this.provideList.length; i++){
-				this.xdInFlight[this.provideList[i]] = true;
+
+			//Call the dependency indicator to allow for the normal dojo setup.
+			//TODO: separate out hostenv.moduleLoaded type calls: account for a . structure.
+			dojo[dep[0]].apply(dojo, dep.slice[1]);			
+		}
+
+		//Save off the package contents with the provider list.
+		//Use this later to sequence the package contents correctly,
+		//once everything is loaded.
+		this.xdContents.push({provideList: provideList, content: package.definePackage});
+
+		//Now update the inflight status for any provided packages in this loaded package.
+		//Do this at the very end to avoid issues with the inflight timer check.
+		for(var i = 0; i < provideList.length; i++){
+			this.xdInFlight[provideList[i]] = false;
+		}
+	
+	}
+}
+
+dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
+	//This is a bit brittle: it has to know about the dojo methods that deal with dependencies
+	//It would be ideal to intercept the actual methods and do something fancy at that point,
+	//but I have concern about knowing which provide to match to the dependency in that case,
+	//since scripts can load whenever they want, and trigger new calls to dojo.hostenv.packageLoaded().
+	
+	switch(dep[0]){
+		case "requireIf":
+		case "requireAfterIf":
+		case "conditionalRequire":
+			//disregard first arg (dep[1]). Start with dep[2].
+			if((dep[1] === true)||(dep[1]=="common")||(dep[1] && dojo.render[dep[1]].capable)){
+		
+		case "requireAll":
+			(the arguments are an array for require)
+
+		case "kwCompoundRequire":
+		case "hostenv.conditionalLoadModule":
+			var common = modMap["common"]||[];
+			var result = (modMap[dojo.hostenv.name_]) ? common.concat(modMap[dojo.hostenv.name_]||[]) : common.concat(modMap["default"]||[]);
+
+		
+		case "require":
+		case "requireAfter":
+		case "hostenv.loadModule":
+			//Just worry about dep[1]
+	
+	}
+	//XD: TODO: How to know to push the dependencies before this provide?
+
+	//TODO: Add dojo.kwCompoundRequire to my regexps, but also the browser_debug and getDependencyList.js. 
+	//dojo.conditionalRequire too.
+}
+
+dojo.hostenv.xdPositionContents = function(){
+	for(var k = 0; k < this.xdContents.length; k++){
+		var provideList = this.xdContents[k].provideList;
+		var content = this.xdContents[k].provideList;
+		
+		//Find the first provide in the xdPackages list (the winner).
+		//The winner gets to hold the package contents for evaluation later.
+		var winner = 9999;
+		var provide;
+		for(var i = 0; i < provideList.length; i++){
+			provide = provideList[i];
+			for(var j = 0; j < this.xdPackages.length && j < winner; j++){
+				if(this.xdPackages[j].name == provide){
+					winner = j;
+					break;
+				}
 			}
 		}
+
+		//Attach the package code to the winning entry.
+		if(winner < this.xdPackages.length){
+			this.xdPackages[winner].content = content;
+		}else{
+			dojo.raise("Winning package is outside of range of xdPackages: " + winner);
+		}		
 	}
 }
 
@@ -155,7 +262,10 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//All done loading. Clean up and notify that we are loaded.
 	clearInterval(this.xdTimer);
 	this.xdTimer = null;
-	
+
+	//Make sure the package contents are sorted in the right order.
+	this.xdPositionContents();
+
 	//Evaluate all the packages to bring them into being.
 	//Pass dojo in so that later, to support multiple versions of dojo
 	//in a page, we can pass which version of dojo to use.
@@ -165,7 +275,15 @@ dojo.hostenv.watchInFlightXDomain = function(){
 		}
 	}
 
+	//Clean up for the next round of xd loading.
+	this.resetXd();
+
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
 	this.finishedLoad();
+
+	//TODO: Clear out the xd lists and remove all addLoad listeners(?).
+	//Will there be issues if as a result of calling finishLoad, if it tries to
+	//load more packages, and it adds another load listener? Change the modulesLoaded method instead.
 }
+
