@@ -19,7 +19,7 @@ dojo.hostenv.getRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|hostenv.conditionalLoadModule|hostenv.startPackage|hostenv.provide|provide)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|kwCompoundRequire|conditionalRequire|hostenv.conditionalLoadModule|hostenv.startPackage|hostenv.provide|provide)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}
