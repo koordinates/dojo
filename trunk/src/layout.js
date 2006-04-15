@@ -16,7 +16,7 @@ dojo.layout = function(container, children, layoutPriority) {
 	// can position nodes inside of it
 	var position=dojo.style.getStyle(container, "position");
 	if(position != "absolute" && position != "relative"){
-		dojo.style.setStyle(container, "relative");
+		dojo.style.setStyle(container, "position", "relative");
 	}
 
 	// copy children array and remove elements w/out layout
