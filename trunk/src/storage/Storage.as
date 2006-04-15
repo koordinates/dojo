@@ -79,16 +79,22 @@ class Storage {
 		System.showSettings(1);
 		
 		// there is no way we can intercept when the Close button is pressed, allowing us
-		// to hide the Flash dialog. Instead, we have an image behind that tells the user
-		// to press the Close button again when they are finished. We do this on a slight
-		// timeout so that it appears _after_ the storage settings have appeared, otherwise
-		// we will get a flicker effect as the user sees the underlying image a little before
-		// the settings dialog appears
-		var showCloseButton = function(){
-			// TODO: Draw a simple box and button that tells the user to press
-			// the button when they are finished with the settings dialog
-		};
-		_root.setTimeout(showCloseButton, 400);
+		// to hide the Flash dialog. Instead, we need to load a movie in the
+		// background that we can show a close button on.
+		// load our gateway helper file
+		if(_root._settingsBackground == null 
+			|| typeof _root._settingsBackground == "undefined"){
+			_root.createEmptyMovieClip("_settingsBackground", 1);
+			
+			_root._settingsBackground.onLoad = function(){
+				_root._settingsBackground.hideSettingsUI = function(){
+					getURL("javascript:alert('foobar')");
+				}
+			}
+			
+			_root._lockroot = true;
+			_root._settingsBackground.loadMovie("../../storage_dialog.swf");
+		}
 	}
 	
 	public function clear(namespace){
@@ -128,6 +134,7 @@ class Storage {
 	}
 
 	static function main(mc){
+		//getURL("javascript:dojo.debug('FLASH: storage loaded')");
 		var app = new Storage(); 
 	}
 }
