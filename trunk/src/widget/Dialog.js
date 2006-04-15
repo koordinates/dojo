@@ -61,8 +61,6 @@ dojo.widget.defineWidget(
 			var b = document.body;
 			b.appendChild(this.domNode);
 
-			this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
-
 			this.bg = document.createElement("div");
 			this.bg.className = "dialogUnderlay";
 			with(this.bg.style) {
@@ -73,6 +71,7 @@ dojo.widget.defineWidget(
 			}
 			this.setBackgroundColor(this.bgColor);
 			b.appendChild(this.bg);
+			this.bgIframe = new dojo.html.BackgroundIframe(this.bg);
 		},
 
 		setBackgroundColor: function(color) {
@@ -103,6 +102,7 @@ dojo.widget.defineWidget(
 				this.bg.style.width = w + "px";
 				this.bg.style.height = h + "px";
 			}
+			this.bgIframe.onResized();
 		},
 
 		showBackground: function() {
