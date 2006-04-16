@@ -18,7 +18,6 @@ public class FunctionCall implements JsBlock {
 	
 	// containing blocks
 	protected List<JsBlock> _blocks = new ArrayList<JsBlock>();
-	protected List<Parameter> _parms = new ArrayList<Parameter>();
 	
 	// start position taken from in original parse 
 	protected int _startPosition;
@@ -90,10 +89,7 @@ public class FunctionCall implements JsBlock {
 	 */
 	public void addBlock(JsBlock block)
 	{
-		if (Parameter.class.isInstance(block))
-			_parms.add((Parameter)block);
-		else
-			_blocks.add(block);
+		_blocks.add(block);
 	}
 	
 	/**
@@ -115,16 +111,12 @@ public class FunctionCall implements JsBlock {
 		func.setAttribute("type", "call");
 		func.setAttribute("name", _name);
 		
-		if (_parms.size() > 0) {
-			Element parms = doc.createElement("parameters");
-			func.appendChild(parms);
-			
-			for (JsBlock block : _parms)
-				block.renderBlock(parms, doc);
-		}
-		
-		for (JsBlock block : _blocks)
-			block.renderBlock(func, doc);
+		Element parms = doc.createElement("parameters");
+		func.appendChild(parms);
+
+		for (JsBlock block : _blocks) {
+			block.renderBlock(parms, doc);
+    }
 	}
   
   /**

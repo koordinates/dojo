@@ -58,7 +58,7 @@ public class ParserTest extends TestCase {
       throw new RuntimeException(e);
     }
     
-    assertEquals(output.toString(), expected);
+    assertEquals(expected, output.toString());
   }
   
   /**

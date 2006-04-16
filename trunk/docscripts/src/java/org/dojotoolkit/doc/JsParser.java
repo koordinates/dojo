@@ -30,6 +30,7 @@ public class JsParser {
 	
 	// Various pre-configured block parsers, each one handles
 	// a different type of block, like comments, functions, etc..
+  // They must be in their nesting order.
 	protected static List<BlockParser> _blockParsers;
 	static {
 		_blockParsers = new ArrayList<BlockParser>();
@@ -37,8 +38,8 @@ public class JsParser {
     _blockParsers.add(new SingleLineCommentParser());
 		_blockParsers.add(new SingleQuotedStringParser());
 		_blockParsers.add(new DoubleQuotedStringParser());
-		_blockParsers.add(new FunctionCallParser());
-		_blockParsers.add(new ParameterParser());
+    _blockParsers.add(new FunctionCallParser());
+    _blockParsers.add(new ParameterParser());
 	}
 	
 	// Whether or not we have started a block

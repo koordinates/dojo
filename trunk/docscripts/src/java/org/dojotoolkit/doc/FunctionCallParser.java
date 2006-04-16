@@ -20,19 +20,21 @@ public class FunctionCallParser implements BlockParser {
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
+    if (!blocks.isEmpty() && FunctionCall.class.isInstance(blocks.peek())) return null;
+
 		if (data[position] == '(') {
 			// now need to seek to start of call position
-			for (int cursor=(position - 1); cursor > -1; cursor--) {
+			for (int cursor = (position - 1); cursor > -1; cursor--) {
 				if (!Character.isLetterOrDigit(data[cursor]) &&
 						data[cursor] != '_' && data[cursor] != '.') {
-					return new FunctionCall(position, cursor, position);
+					return new FunctionCall(position, cursor, position-1);
 				}
 			}
 			
-			//if we get here then there wasn't anything else to parse
-			return new FunctionCall(position, 0, position);
+			//if we get here then there wasn't anything else to parse (beginning of file)
+			return new FunctionCall(position, 0, position-1);
 		}
-		
+
 		return null;
 	}
 	
@@ -41,9 +43,9 @@ public class FunctionCallParser implements BlockParser {
 	 */
 	public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
-		if (data[position] == ')') {
+		if (data[position] == ')' && FunctionCall.class.isInstance(blocks.peek())) {
 			FunctionCall func = (FunctionCall)blocks.pop();
-			
+
 			func.setName(new String(data, func.getCallStartPosition(), 
 					func.getStartPosition() - func.getCallStartPosition()).trim());
 			func.setNextPosition(position + 1);
