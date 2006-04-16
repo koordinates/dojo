@@ -81,6 +81,8 @@ public class Parameter implements JsBlock {
 	 */
 	public void renderBlock(Element parent, Document doc) 
 	{
+    if (_blocks.isEmpty()) return;
+
 		Element parm = doc.createElement("parameter");
 		parent.appendChild(parm);
     

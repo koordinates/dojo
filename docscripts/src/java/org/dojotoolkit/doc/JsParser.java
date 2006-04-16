@@ -36,8 +36,7 @@ public class JsParser {
 		_blockParsers = new ArrayList<BlockParser>();
 		_blockParsers.add(new MultiLineCommentParser());
     _blockParsers.add(new SingleLineCommentParser());
-		_blockParsers.add(new SingleQuotedStringParser());
-		_blockParsers.add(new DoubleQuotedStringParser());
+		_blockParsers.add(new QuotedStringParser());
     _blockParsers.add(new FunctionCallParser());
     _blockParsers.add(new ParameterParser());
 	}

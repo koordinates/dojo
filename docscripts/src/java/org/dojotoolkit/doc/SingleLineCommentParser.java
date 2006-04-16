@@ -5,8 +5,7 @@ package org.dojotoolkit.doc;
 
 import java.util.Stack;
 import org.dojotoolkit.doc.data.JsBlock;
-import org.dojotoolkit.doc.data.MultiLineComment;
-import org.dojotoolkit.doc.data.SingleLineComment;
+import org.dojotoolkit.doc.data.Comment;
 
 /**
  * Handles comments that span a single line
@@ -20,7 +19,9 @@ public class SingleLineCommentParser implements BlockParser {
    */
   public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) {
     if (data[position] == '/' && (position + 1) < data.length && data[position + 1] == '/') {
-      return new SingleLineComment(position, position + 2);
+      Comment comment = new Comment(position, position + 2);
+      comment.setType("single-line");
+      return comment;
     }
 
     return null;
@@ -30,9 +31,11 @@ public class SingleLineCommentParser implements BlockParser {
    * {@inheritDoc}
    */
   public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks) {
-    if ((data[position] == '\n' || data[position] == EOT) && SingleLineComment.class.isInstance(blocks.peek())) {
-
-        SingleLineComment comment = (SingleLineComment)blocks.pop();
+    if (!Comment.class.isInstance(blocks.peek())) return null;
+    
+    Comment comment = (Comment)blocks.peek();
+    if (comment.getType() == "single-line" && (data[position] == '\n' || data[position] == EOT)) {
+        blocks.pop();
 
         StringBuffer str = new StringBuffer();
         int i = comment.getStartPosition()+2;
