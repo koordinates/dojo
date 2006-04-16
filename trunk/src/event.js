@@ -214,6 +214,12 @@ dojo.event = new function(){
 		return this.connect.apply(this, args);
 	}
 
+	this.connectOnce = function(){
+		var ao = interpolateArgs(arguments);
+		ao.once = true;
+		return this.connect(ao);
+	}
+
 	this._kwConnectImpl = function(kwArgs, disconnect){
 		var fn = (disconnect) ? "disconnect" : "connect";
 		if(typeof kwArgs["srcFunc"] == "function"){
