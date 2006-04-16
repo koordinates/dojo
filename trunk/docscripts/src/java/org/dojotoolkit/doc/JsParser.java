@@ -34,6 +34,7 @@ public class JsParser {
 	static {
 		_blockParsers = new ArrayList<BlockParser>();
 		_blockParsers.add(new MultiLineCommentParser());
+    _blockParsers.add(new SingleLineCommentParser());
 		_blockParsers.add(new SingleQuotedStringParser());
 		_blockParsers.add(new DoubleQuotedStringParser());
 		_blockParsers.add(new FunctionCallParser());
@@ -58,26 +59,31 @@ public class JsParser {
 		if (data == null || data.length <= 0)
 			throw new IllegalArgumentException("Data was null or empty.");
 		
-		_data = data;
+    _data = new char[data.length + 1];
 		_cursor = 0;
 		_js = new JsObject();
 		int length = _data.length;
-		
+
+    for (int i = 0; i < data.length; i++) {
+      _data[i] = data[i];
+    }
+    _data[data.length] = 4;
+    
 		while (_cursor < length) {
-			
+     
 			// skip any whitespace
-			if (Character.isWhitespace(_data[_cursor])) {
+			if (Character.isSpaceChar(_data[_cursor])) {
 				_cursor++;
 				continue;
 			}
 			
 			// checks for any block closures, and closes them
-			if (closeBlock()) continue;
+			if (_blocks.size() > 0 && closeBlock()) continue;
 			
 			// the start of some kind of block
 			startBlock();
 		}
-		
+	
 		return _js;
 	}
 	
@@ -93,7 +99,7 @@ public class JsParser {
 		while (_cursor < length) {
 			
 			// ignore whitespace
-			if (Character.isWhitespace(_data[_cursor])) {
+			if (Character.isSpaceChar(_data[_cursor])) {
 				_cursor++;
 				continue;
 			}
