@@ -101,6 +101,12 @@ public class JsParser {
 			for (BlockParser parser : _blockParsers) {
 				block = parser.startsBlock(_data, _cursor, _blocks);
 				if (block != null) {
+          if (!_blocks.isEmpty()) {
+            JsBlock parent = _blocks.peek();
+            if(!parent.allowedChild(block)) {
+              continue;
+            }
+          }
 					_blocks.add(block);
 					_cursor = block.getNextPosition();
 					_blockOpen = true;

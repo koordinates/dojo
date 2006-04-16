@@ -105,4 +105,12 @@ public class SingleQuotedString implements JsBlock {
 		node.setAttribute("type", "single");
 		node.appendChild(doc.createTextNode(_data));
 	}
+
+  /**
+   * {@inheritDoc}
+   */
+  public boolean allowedChild(JsBlock block)
+  {
+    return false;
+  }
 }

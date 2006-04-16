@@ -20,9 +20,10 @@ public class CommentParserTest extends ParserTest {
 	public void testMultiLineCommentParse()
 	{
 		String str = "/** This is comment data */";
+    char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
-		JsObject js = parser.parseContent(str.toCharArray());
+		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
 		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));
@@ -42,9 +43,10 @@ public class CommentParserTest extends ParserTest {
 			+ " * I'm not sure what to expect from it.\n"
 			+ " * @param value The value passed in \n"
 			+ " */";
+    char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
-		JsObject js = parser.parseContent(str.toCharArray());
+		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
 		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));

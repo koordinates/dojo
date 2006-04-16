@@ -126,4 +126,12 @@ public class FunctionCall implements JsBlock {
 		for (JsBlock block : _blocks)
 			block.renderBlock(func, doc);
 	}
+  
+  /**
+   * {@inheritDoc}
+   */
+  public boolean allowedChild(JsBlock block)
+  {
+    return true;
+  }
 }

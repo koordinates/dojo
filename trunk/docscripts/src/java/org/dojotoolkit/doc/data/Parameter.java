@@ -103,4 +103,12 @@ public class Parameter implements JsBlock {
 		
 		node.setAttribute("name", _name);
 	}
+  
+  /**
+   * {@inheritDoc}
+   */
+  public boolean allowedChild(JsBlock block)
+  {
+    return true;
+  }
 }

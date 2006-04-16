@@ -23,7 +23,7 @@ public class SingleQuotedStringParser implements BlockParser {
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) 
 	{
-		if (data[position] == '\'' && !containsIgnorableBlock(blocks))
+		if (data[position] == '\'')
 			return new SingleQuotedString(position, position + 1);
 		
 		return null;
@@ -34,7 +34,7 @@ public class SingleQuotedStringParser implements BlockParser {
 	 */
 	public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks) 
 	{
-		if (data[position] == '\'' && !containsIgnorableBlock(blocks)) {
+		if (data[position] == '\'' && SingleQuotedString.class.isInstance(blocks.peek())) {
 			
 			SingleQuotedString string = (SingleQuotedString)blocks.pop();
 			
@@ -47,24 +47,6 @@ public class SingleQuotedStringParser implements BlockParser {
 		}
 		
 		return null;
-	}
-	
-	/**
-	 * Checks for a containing ignorable block.
-	 * @param blocks
-	 * @return
-	 */
-	protected boolean containsIgnorableBlock(Stack<JsBlock> blocks)
-	{
-		if (blocks.size() <= 0) 
-			return false;
-		
-		JsBlock parent = blocks.peek();
-		if (DoubleQuotedString.class.isInstance(parent) ||
-				MultiLineComment.class.isInstance(parent))
-			return true;
-		
-		return false;
 	}
 
 }
