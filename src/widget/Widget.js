@@ -527,8 +527,12 @@ dojo.widget.defineWidget = function(	widgetClass 	/*string*/,
 	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
 
 	nsref[type] = function(){
-		superclass.call(this);
-		ctor.call(this);
+		try{
+			superclass.call(this);
+		}catch(e){ dojo.debug("superclass construction failed: ", e); }
+		try{
+			ctor.call(this);
+		}catch(e){ dojo.debug("constructor failed: ", e); }
 	}
 
 	dojo.inherits(nsref[type], superclass);
