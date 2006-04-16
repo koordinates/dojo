@@ -14,7 +14,11 @@ import org.dojotoolkit.doc.data.JsBlock;
  * @author jkuhnert
  */
 public interface BlockParser {
-
+  /**
+   * End of Text/Transmission
+   */
+  char EOT = 4;
+  
 	/**
 	 * Checks if the character position passed in starts a block handled
 	 * by this parser.
