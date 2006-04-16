@@ -37,11 +37,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		if(this.caption != ""){
 			this.domNode.appendChild(document.createTextNode(this.caption));
 		}
-		this.connectNode = dojo.byId(this.connectId);
-		
-		// IE bug workaround
-		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
-		
+		this.connectNode = dojo.byId(this.connectId);		
 		dojo.widget.html.Tooltip.superclass.fillInTemplate.call(this, args, frag);
 	},
 	
@@ -96,6 +92,12 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 			return;
 		}
 		if ( this.state=="displaying" || this.state=="displayed" ) { return; }
+
+		// prevent IE bleed through (iframe creation is deferred until first show()
+		// call because apparently it takes a long time)
+		if(!this.bgIframe){
+			this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
+		}
 
 		this.position();
 
@@ -154,6 +156,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 
 	position: function(){
 		dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);
+		this.bgIframe.onResized();
 	},
 
 	onLoad: function(){
