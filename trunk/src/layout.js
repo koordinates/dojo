@@ -54,35 +54,40 @@ dojo.layout = function(container, children, layoutPriority) {
 	// set positions/sizes
 	dojo.lang.forEach(children, function(child){
 		var elm=child.domNode;
-		var position=child.layoutAlign;
+		var pos=child.layoutAlign;
 
 		// set elem to upper left corner of unused space; may move it later
-		elm.style.position="absolute";
-		elm.style.left = f.left+"px";
-		elm.style.top = f.top+"px";
+		with(elm.style){
+			position = "absolute";
+			left = f.left+"px";
+			top = f.top+"px";
+			if(pos=="client"||pos=="flood"){
+				overflow = "auto";
+			}
+		}
 
 		// set size && adjust record of remaining space.
 		// note that setting the width of a <div> may affect it's height.
 		// TODO: same is true for widgets but need to implement API to support that
-		if ( (position=="top")||(position=="bottom") ) {
+		if ( (pos=="top")||(pos=="bottom") ) {
 			dojo.style.setOuterWidth(elm, f.width);
 			var h = dojo.style.getOuterHeight(elm);
 			f.height -= h;
-			if(position=="top"){
+			if(pos=="top"){
 				f.top += h;
 			}else{
 				elm.style.top = f.top + f.height + "px";
 			}
-		}else if(position=="left" || position=="right"){
+		}else if(pos=="left" || pos=="right"){
 			dojo.style.setOuterHeight(elm, f.height);
 			var w = dojo.style.getOuterWidth(elm);
 			f.width -= w;
-			if(position=="left"){
+			if(pos=="left"){
 				f.left += w;
 			}else{
 				elm.style.left = f.left + f.width + "px";
 			}
-		} else if(position=="flood" || position=="client"){
+		} else if(pos=="flood" || pos=="client"){
 			dojo.style.setOuterWidth(elm, f.width);
 			dojo.style.setOuterHeight(elm, f.height);
 		}
