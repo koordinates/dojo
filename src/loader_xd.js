@@ -170,8 +170,13 @@ dojo.hostenv.packageLoaded = function(package){
 			}
 
 			//Call the dependency indicator to allow for the normal dojo setup.
-			//TODO: separate out hostenv.moduleLoaded type calls: account for a . structure.
-			dojo[dep[0]].apply(dojo, dep.slice[1]);			
+			//Only allow for one dot reference, for the hostenv.* type calls.
+			var objPath = dep[0].split(".");
+			if(objPath.length == 2){
+				dojo[objPath[0]][objPath[1]].apply(dojo[objPath[0]], dep.slice[1]);
+			}else{
+				dojo[dep[0]].apply(dojo, dep.slice[1]);
+			}
 		}
 
 		//Save off the package contents with the provider list.
@@ -313,7 +318,7 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	this.inFlightCount = 0; 
 	this.finishedLoad();
 
-	//TODO: Clear out the xd lists and remove all addLoad listeners(?).
+	//TODO: Remove all addLoad listeners(?).
 	//Will there be issues if as a result of calling finishLoad, if it tries to
 	//load more packages, and it adds another load listener? Change the modulesLoaded method instead.
 }
