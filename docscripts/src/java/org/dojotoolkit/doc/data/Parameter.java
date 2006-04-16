@@ -3,6 +3,7 @@
  */
 package org.dojotoolkit.doc.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -14,13 +15,13 @@ import org.w3c.dom.Element;
  * @author jkuhnert
  */
 public class Parameter implements JsBlock {
-	
+  // containing blocks
+  protected List<JsBlock> _blocks = new ArrayList<JsBlock>();
+  
 	/* start position taken from in original parse */
 	protected int _startPosition;
 	
 	protected int _nextPosition;
-	
-	protected String _name;
 	
 	/* does nothing */
 	public Parameter() { }
@@ -34,24 +35,6 @@ public class Parameter implements JsBlock {
 	{
 		_startPosition = startPosition;
 		_nextPosition = nextPosition;
-	}
-	
-	/**
-	 * The name of the parameter.
-	 * @return The name of the parameter.
-	 */
-	public String getName() 
-	{
-		return _name;
-	}
-	
-	/**
-	 * Sets the param name.
-	 * @param name Parameter name
-	 */
-	public void setName(String name)
-	{
-		_name = name;
 	}
 	
 	public void setStartPosition(int position)
@@ -82,7 +65,7 @@ public class Parameter implements JsBlock {
 	 */
 	public void addBlock(JsBlock block) 
 	{
-		throw new UnsupportedOperationException("String quotes don't contain blocks.");
+		_blocks.add(block);
 	}
 	
 	/**
@@ -90,7 +73,7 @@ public class Parameter implements JsBlock {
 	 */
 	public List<JsBlock> getBlocks() 
 	{
-		throw new UnsupportedOperationException("String quotes don't contain blocks.");
+		return _blocks;
 	}
 	
 	/**
@@ -98,10 +81,12 @@ public class Parameter implements JsBlock {
 	 */
 	public void renderBlock(Element parent, Document doc) 
 	{
-		Element node = doc.createElement("parameter");
-		parent.appendChild(node);
-		
-		node.setAttribute("name", _name);
+		Element parm = doc.createElement("parameter");
+		parent.appendChild(parm);
+    
+    for (JsBlock block : _blocks) {
+      block.renderBlock(parm, doc);
+    }
 	}
   
   /**
