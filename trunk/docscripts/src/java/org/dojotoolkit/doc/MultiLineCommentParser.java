@@ -46,12 +46,7 @@ public class MultiLineCommentParser implements BlockParser {
 				
 				StringBuffer str = new StringBuffer();
 				boolean ignoreWhitespace = false;
-				for (int i=comment.getStartPosition(); i < (position + 1); i++) {
-					
-					if (data[i] == '*' || data[i] == '/') {
-						ignoreWhitespace = true;
-						continue;
-					}
+				for (int i=comment.getStartPosition()+2; i < (position - 1); i++) {
 					
 					if (ignoreWhitespace && Character.isWhitespace(data[i])) continue;
 					else ignoreWhitespace = false;
