@@ -21,12 +21,22 @@ import junit.framework.TestCase;
  */
 public class ParserTest extends TestCase {
 
-  public void assertOutput(String expected, JsObject js)
+  public void assertXmlEquals(String expected, JsObject js)
   {
     Document doc = newDocument();
     js.renderXmlOutput(doc);
     
-    assertOutput(expected, doc);
+    assertXmlEquals(expected, doc);
+  }
+  
+  public void assertXmlEquals(JsObject js, String expected)
+  {
+    assertXmlEquals(expected, js);
+  }
+  
+  public void assertXmlEquals(Document doc, String expected)
+  {
+    assertXmlEquals(expected, doc);
   }
   
   /**
@@ -34,9 +44,10 @@ public class ParserTest extends TestCase {
    * @param expected
    * @param doc
    */
-  public void assertOutput(String expected, Document doc)
+  public void assertXmlEquals(String expected, Document doc)
   {
     StringWriter output = new StringWriter();
+    expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + output;
     
     try {
       
@@ -47,8 +58,7 @@ public class ParserTest extends TestCase {
       throw new RuntimeException(e);
     }
     
-    assert output.toString().equals(expected) :
-      "Expected output of [ " + expected + " ] but found [ " + output.toString() + " ]";
+    assertEquals(output.toString(), expected);
   }
   
   /**

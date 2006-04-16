@@ -24,18 +24,13 @@ public class FunctionCallParserTest extends ParserTest {
 		JsParser parser = new JsParser();
 		JsObject js = parser.parseContent(str.toCharArray());
 		
-		assert js.getBlocks().size() > 0;
-		assert FunctionCall.class.isInstance(js.getBlocks().get(0));
-		
-		Document doc = newDocument();
-		js.renderXmlOutput(doc);
-		
-		assertOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?><javascript>"
+		assertTrue(js.getBlocks().size() > 0);
+		assertTrue(FunctionCall.class.isInstance(js.getBlocks().get(0)));
+		assertXmlEquals(js, "<javascript>"
 				+ "<function name=\"dojo.function.call\" type=\"call\">"
 				+ "<parameters><parameter name=\"param1\"/>"
 				+ "<parameter name=\"param2\"/>"
 				+ "</parameters>"
-				+ "</function></javascript>",
-				js);
+				+ "</function></javascript>");
 	}
 }

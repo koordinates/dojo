@@ -24,16 +24,12 @@ public class CommentParserTest extends ParserTest {
 		JsParser parser = new JsParser();
 		JsObject js = parser.parseContent(str.toCharArray());
 		
-		assert js.getBlocks().size() > 0;
-		assert MultiLineComment.class.isInstance(js.getBlocks().get(0));
-		
-		Document doc = newDocument();
-		js.renderXmlOutput(doc);
-		
-		assertOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?><javascript>"
+		assertTrue(js.getBlocks().size() > 0);
+		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));
+		assertXmlEquals(js, "<javascript>"
 				+ "<comment type=\"multi-line\">" 
 				+ "This is comment data"
-				+ "</comment></javascript>", js);
+				+ "</comment></javascript>");
 	}
 	
 	/**
@@ -50,17 +46,13 @@ public class CommentParserTest extends ParserTest {
 		JsParser parser = new JsParser();
 		JsObject js = parser.parseContent(str.toCharArray());
 		
-		assert js.getBlocks().size() > 0;
-		assert MultiLineComment.class.isInstance(js.getBlocks().get(0));
-		
-		Document doc = newDocument();
-		js.renderXmlOutput(doc);
-		
-		assertOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?><javascript>"
+		assertTrue(js.getBlocks().size() > 0);
+		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));
+		assertXmlEquals(js, "<javascript>"
 				+ "<comment type=\"multi-line\">" 
 				+ "This is the start of a complicated comment block.\n"
 				+ "I'm not sure what to expect from it.\n"
 				+ "@param value The value passed in"
-				+ "</comment></javascript>", js);
+				+ "</comment></javascript>");
 	}
 }
