@@ -243,8 +243,29 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		dojo.event.connect(this, "fillInTemplate", this, "editorOnLoad");
-		dojo.event.connect(this, "onDisplayChanged", this, "updateToolbar");
-		dojo.event.connect(this, "onLoad", this, "wireUpOnLoad");
+		var cp = dojo.widget.html.Editor2.prototype;
+		if(!cp._wrappersSet){
+			cp._wrappersSet = true;
+			cp.fillInTemplate = (function(fit){
+				return function(){
+					fit.call(this);
+					this.editorOnLoad();
+				};
+			})(cp.fillInTemplate);
+		
+			cp.onDisplayChanged = (function(odc){
+				return function(){
+					odc.call(this);
+					this.updateToolbar();
+				};
+			})(cp.onDisplayChanged);
+
+			cp.onLoad = (function(ol){
+				return function(){
+					ol.call(this);
+					this.wireUpOnLoad();
+				};
+			})(cp.onLoad);
+		}
 	}
 );
