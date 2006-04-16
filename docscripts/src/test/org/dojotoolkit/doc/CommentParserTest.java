@@ -19,7 +19,7 @@ public class CommentParserTest extends ParserTest {
 	 */
 	public void testMultiLineCommentParse()
 	{
-		String str = "/** This is comment data */";
+		String str = "/* This is comment data */";
     char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
@@ -38,10 +38,9 @@ public class CommentParserTest extends ParserTest {
 	 */
 	public void testMultiLineCommentParse2()
 	{
-		String str = "/**\n"
+		String str = "/*\n"
 			+ " * This is the start of a complicated comment block.\n"
 			+ " * I'm not sure what to expect from it.\n"
-			+ " * @param value The value passed in \n"
 			+ " */";
     char[] input = str.toCharArray();
 		
@@ -52,9 +51,8 @@ public class CommentParserTest extends ParserTest {
 		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
 				+ "<comment type=\"multi-line\">" 
-				+ "This is the start of a complicated comment block.\n"
-				+ "I'm not sure what to expect from it.\n"
-				+ "@param value The value passed in"
+				+ "* This is the start of a complicated comment block.\n"
+				+ "* I'm not sure what to expect from it."
 				+ "</comment></javascript>");
 	}
 }
