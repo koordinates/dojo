@@ -40,7 +40,7 @@ public class MultiLineCommentParser implements BlockParser {
 	{	
 		if (data[position] == COMMENT 
 				&& (position - 1) >= 0)
-			if (data[position - 1] == STAR) {
+			if (data[position - 1] == STAR && MultiLineComment.class.isInstance(blocks.peek())) {
 				
 				MultiLineComment comment = (MultiLineComment)blocks.pop();
 				

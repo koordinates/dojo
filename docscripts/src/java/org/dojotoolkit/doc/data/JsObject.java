@@ -71,4 +71,12 @@ public class JsObject implements JsBlock {
 		for (JsBlock block : _blocks)
 			block.renderBlock(parent, doc);
 	}
+  
+  /**
+   * {@inheritDoc}
+   */
+  public boolean allowedChild(JsBlock block)
+  {
+    return true;
+  }
 }

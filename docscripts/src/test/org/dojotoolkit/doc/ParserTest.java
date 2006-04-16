@@ -47,7 +47,7 @@ public class ParserTest extends TestCase {
   public void assertXmlEquals(String expected, Document doc)
   {
     StringWriter output = new StringWriter();
-    expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + output;
+    expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + expected;
     
     try {
       

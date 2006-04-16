@@ -20,9 +20,10 @@ public class FunctionCallParserTest extends ParserTest {
 	public void testFunctionCallParse()
 	{
 		String str = "dojo.function.call(param1, param2);";
+    char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
-		JsObject js = parser.parseContent(str.toCharArray());
+		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
 		assertTrue(FunctionCall.class.isInstance(js.getBlocks().get(0)));

@@ -21,9 +21,10 @@ public class StringParserTest extends ParserTest {
 	public void testSingleQuoteParse()
 	{
 		String str = "'single quoted string'";
+    char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
-		JsObject js = parser.parseContent(str.toCharArray());
+		JsObject js = parser.parseContent(input);
 		
     assertTrue(js.getBlocks().size() > 0);
     assertTrue(SingleQuotedString.class.isInstance(js.getBlocks().get(0)));
@@ -37,9 +38,10 @@ public class StringParserTest extends ParserTest {
 	public void testDoubleQuoteParse()
 	{
 		String str = "\"double quoted string\"";
+    char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
-		JsObject js = parser.parseContent(str.toCharArray());
+		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
 		assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
@@ -48,18 +50,54 @@ public class StringParserTest extends ParserTest {
 	}
 
 	/**
-	 * Tests parsing strings with escape symbols
+	 * Tests parsing single quote within double quote
 	 */
-	public void testEscapeStringParse()
+	public void testDoubleQuoteWithSingleQuote()
 	{
-		String str = "\"double \\\"quoted\\\" string /* with comment */\"";
+		String str = "\"double quoted's string\"";
+    char[] input = str.toCharArray();
 		
 		JsParser parser = new JsParser();
-		JsObject js = parser.parseContent(str.toCharArray());
+		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
 		assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
-				+ "<string type=\"double\">double \"quoted\" string /* with comment */</string></javascript>");
+				+ "<string type=\"double\">double quoted's string</string></javascript>");
 	}
+  
+  /**
+   * Tests parsing double quote within single quote
+   */
+  public void testSingleQuoteWithDoubleQuote()
+  {
+    String str = "'single \"quoted\" string'";
+    char[] input = str.toCharArray();
+    
+    JsParser parser = new JsParser();
+    JsObject js = parser.parseContent(input);
+    
+    assertTrue(js.getBlocks().size() > 0);
+    assertTrue(SingleQuotedString.class.isInstance(js.getBlocks().get(0)));
+    assertXmlEquals(js, "<javascript>"
+        + "<string type=\"single\">single \"quoted\" string</string></javascript>");
+  }
+  
+  /**
+   * Tests comment within a quoted string
+   */
+  public void testCommentWithinQuotes()
+  {
+    String str = "\"double /*quoted*/ string\"";
+    char[] input = str.toCharArray();
+    
+    JsParser parser = new JsParser();
+    JsObject js = parser.parseContent(input);
+    
+    assertTrue(js.getBlocks().size() > 0);
+    assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
+    assertXmlEquals(js, "<javascript>"
+        + "<string type=\"double\">double /*quoted*/ string</string></javascript>");
+  }
+  
 }

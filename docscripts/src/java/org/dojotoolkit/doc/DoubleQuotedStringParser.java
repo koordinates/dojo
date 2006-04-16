@@ -23,7 +23,7 @@ public class DoubleQuotedStringParser implements BlockParser {
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) 
 	{
-		if (data[position] == '"' && !containsIgnorableBlock(blocks))
+		if (data[position] == '"')
 			return new DoubleQuotedString(position, position + 1);
 		
 		return null;
@@ -34,7 +34,7 @@ public class DoubleQuotedStringParser implements BlockParser {
 	 */
 	public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks) 
 	{
-		if (data[position] == '"' && !containsIgnorableBlock(blocks)) {
+		if (data[position] == '"' && DoubleQuotedString.class.isInstance(blocks.peek())) {
 			DoubleQuotedString string = (DoubleQuotedString)blocks.pop();
 			
 			string.setNextPosition(position + 1);
@@ -47,24 +47,5 @@ public class DoubleQuotedStringParser implements BlockParser {
 		
 		return null;
 	}
-	
-	/**
-	 * Checks for a containing ignorable block on the stack
-	 * 
-	 * @param blocks
-	 * @return
-	 */
-	protected boolean containsIgnorableBlock(Stack<JsBlock> blocks)
-	{
-		if (blocks.size() <= 0) 
-			return false;
-		
-		JsBlock parent = blocks.peek();
-		if (SingleQuotedString.class.isInstance(parent) ||
-				MultiLineComment.class.isInstance(parent))
-			return true;
-		
-		return false;
-	}
-	
+
 }

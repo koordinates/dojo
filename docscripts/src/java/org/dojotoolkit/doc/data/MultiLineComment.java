@@ -106,4 +106,12 @@ public class MultiLineComment implements JsBlock {
 	{
 		throw new UnsupportedOperationException("Multi line comments don't contain blocks.");
 	}
+  
+  /**
+   * {@inheritDoc}
+   */
+  public boolean allowedChild(JsBlock block)
+  {
+    return false;
+  }
 }

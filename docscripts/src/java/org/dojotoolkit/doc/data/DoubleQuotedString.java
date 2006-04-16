@@ -106,4 +106,12 @@ public class DoubleQuotedString implements JsBlock {
 		node.setAttribute("type", "double");
 		node.appendChild(doc.createTextNode(_data));
 	}
+  
+  /**
+   * {@inheritDoc}
+   */
+  public boolean allowedChild(JsBlock block)
+  {
+    return false;
+  }
 }

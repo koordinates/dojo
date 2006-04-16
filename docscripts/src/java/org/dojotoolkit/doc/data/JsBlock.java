@@ -48,4 +48,15 @@ public interface JsBlock {
 	 * @return The next good start position.
 	 */
 	int getNextPosition();
+  
+  /**
+   * Checks to see if the passed block is allowed to be added as a child of
+   * the current block
+   * 
+   * @param block
+   *      The block to check
+   * @return
+   *      If allowed
+   */
+  boolean allowedChild(JsBlock block);
 }
