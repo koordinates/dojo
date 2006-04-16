@@ -50,7 +50,8 @@
 		color: blue;
 	}
 </style>
-	<h3>Image and css paths</h3>
+	<a href="#bottom">Test anchor tags</a>
+	<h3><a name="top">Image and css paths</a></h3>
 	<img class="border" src="../images/tools.gif"/>&lt;-image path test, should be a tool image<br/>
 
 	<span class="border" id="bgimagetest">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&lt;-remote css file test, background should be toolimage (may be cut)<br/>
@@ -79,11 +80,11 @@
 	Fixed linkpaths, why anyone would ever want to do ordinary links in a ajax app is beyond me, but here it goes.<br/>
 	<a href="../test_Button2.html?key=value&value=key" id="relative" onclick="top.isCorrectPath('relative',location.href.replace(/(.*\/).+/, '$1')+'test_Button2.html?key=value&value=key');return false;"> fixed link</a><br/>
 
-	<h3>Scrips, needs executescripts=true</h3>
+	<h3><a name="bottom">Scrips, needs executescripts=true</a></h3>
 	<span class="linkSimulants" onclick="if(top.inFileScriptToggle){top.inFileScriptToggle();}else{alert('You need to set executeScripts=true');}" id="inFileToggler">In file scripttest, Released</span><br/>
 
-	<span class="linkSimulants" onclick="if(top.extScriptToggle){top.extScriptToggle();}else{alert('You need to set executeScripts=true');}" id="extToggler">Ext js file scripttest, Released</span><br/>
+	<span class="linkSimulants" onclick="if(top.extScriptToggle){top.extScriptToggle();}else{alert('You need to set executeScripts=true');}" id="extToggler">Ext js file scripttest, Released</span><br/><br/>
 
-	
+	<a href="#top">To top!</a>
 </body>
 </html>
