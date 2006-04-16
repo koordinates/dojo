@@ -3,7 +3,7 @@
  */
 package org.dojotoolkit.doc;
 
-import org.dojotoolkit.doc.data.FunctionCall;
+import org.dojotoolkit.doc.data.Function;
 import org.dojotoolkit.doc.data.JsObject;
 
 /**
@@ -25,7 +25,7 @@ public class FunctionCallParserTest extends ParserTest {
     JsObject js = parser.parseContent(input);
     
     assertTrue(js.getBlocks().size() > 0);
-    assertTrue(FunctionCall.class.isInstance(js.getBlocks().get(0)));
+    assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
     assertXmlEquals(js, "<javascript>"
         + "<function name=\"dojo.function.call\" type=\"call\">"
         + "<parameters><parameter><string type=\"double\">param1</string></parameter>"
@@ -45,13 +45,30 @@ public class FunctionCallParserTest extends ParserTest {
     JsObject js = parser.parseContent(input);
     
     assertTrue(js.getBlocks().size() > 0);
-    assertTrue(FunctionCall.class.isInstance(js.getBlocks().get(0)));
+    assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
     assertXmlEquals(js, "<javascript>"
         + "<function name=\"dojo.function.call\" type=\"call\">"
         + "<parameters><parameter><string type=\"double\">param1</string></parameter>"
         + "<parameter><string type=\"single\">param2</string></parameter>"
         + "</parameters>"
         + "</function></javascript>");
+  }
+  
+  /**
+   * Tests parsing an empty function call
+   */
+  public void testFunctionCallEmptyParse()
+  {
+    String str = "dojo.function.call();";
+    char[] input = str.toCharArray();
+    
+    JsParser parser = new JsParser();
+    JsObject js = parser.parseContent(input);
+    
+    assertTrue(js.getBlocks().size() > 0);
+    assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
+    assertXmlEquals(js, "<javascript>"
+        + "<function name=\"dojo.function.call\" type=\"call\"><parameters/></function></javascript>");
   }
 
 }

@@ -5,7 +5,7 @@ package org.dojotoolkit.doc;
 
 import java.util.Stack;
 
-import org.dojotoolkit.doc.data.FunctionCall;
+import org.dojotoolkit.doc.data.Function;
 import org.dojotoolkit.doc.data.JsBlock;
 import org.dojotoolkit.doc.data.Parameter;
 
@@ -21,7 +21,7 @@ public class ParameterParser implements BlockParser {
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
-    if (blocks.isEmpty() || !FunctionCall.class.isInstance(blocks.peek())) return null;
+    if (blocks.isEmpty() || !Function.class.isInstance(blocks.peek())) return null;
 
 		if (data[position] == '(' || data[position] == ',') {
 				return new Parameter(position, position);

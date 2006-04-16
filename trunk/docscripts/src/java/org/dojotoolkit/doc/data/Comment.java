@@ -1,4 +1,4 @@
-/* SingleLineComment.java
+/* Comment.java
  * Created on Apr 16, 2006
  */
 package org.dojotoolkit.doc.data;
@@ -12,7 +12,7 @@ import org.w3c.dom.Element;
  * 
  * @author neildogg
  */
-public class SingleLineComment implements JsBlock {
+public class Comment implements JsBlock {
 
   /* start position taken from in original parse */
   protected int _startPosition;
@@ -21,6 +21,9 @@ public class SingleLineComment implements JsBlock {
   
   /* The comments! */
   protected String _data;
+
+  /* The type (multi-line, single-line)! */
+  protected String _type;
   
   /**
    * Creates a new single line comment with a pre-configured start position,
@@ -29,7 +32,7 @@ public class SingleLineComment implements JsBlock {
    * @param startPosition
    * @param nextPosition
    */
-  public SingleLineComment(int startPosition, int nextPosition)
+  public Comment(int startPosition, int nextPosition)
   {
     _startPosition = startPosition;
     _nextPosition = nextPosition;
@@ -70,7 +73,7 @@ public class SingleLineComment implements JsBlock {
     Element comment = doc.createElement("comment");
     parent.appendChild(comment);
     
-    comment.setAttribute("type", "single-line");
+    comment.setAttribute("type", _type);
     comment.appendChild(doc.createTextNode(_data));
   }
 
@@ -90,6 +93,14 @@ public class SingleLineComment implements JsBlock {
    */
   public boolean allowedChild(JsBlock block) {
     return false;
+  }
+
+  public void setType(String type) {
+    _type = type;
+  }
+  
+  public String getType() {
+    return _type;
   }
 
 }

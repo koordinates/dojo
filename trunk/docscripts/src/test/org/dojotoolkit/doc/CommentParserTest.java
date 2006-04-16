@@ -4,8 +4,7 @@
 package org.dojotoolkit.doc;
 
 import org.dojotoolkit.doc.data.JsObject;
-import org.dojotoolkit.doc.data.MultiLineComment;
-import org.dojotoolkit.doc.data.SingleLineComment;
+import org.dojotoolkit.doc.data.Comment;
 
 /**
  * Tests parsing of various types of comments.
@@ -26,7 +25,7 @@ public class CommentParserTest extends ParserTest {
 		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
-		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));
+		assertTrue(Comment.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
 				+ "<comment type=\"multi-line\">" 
 				+ "This is comment data"
@@ -46,7 +45,7 @@ public class CommentParserTest extends ParserTest {
     JsObject js = parser.parseContent(input);
     
     assertTrue(js.getBlocks().size() > 0);
-    assertTrue(SingleLineComment.class.isInstance(js.getBlocks().get(0)));
+    assertTrue(Comment.class.isInstance(js.getBlocks().get(0)));
     assertXmlEquals(js, "<javascript>"
         + "<comment type=\"single-line\">"
         + "This is comment data"
@@ -70,11 +69,11 @@ public class CommentParserTest extends ParserTest {
 		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
-		assertTrue(MultiLineComment.class.isInstance(js.getBlocks().get(0)));
+		assertTrue(Comment.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
 				+ "<comment type=\"multi-line\">" 
 				+ "* This is the start of a complicated comment block.\n"
-				+ "* I'm not sure what to expect from it."
+				+ " * I'm not sure what to expect from it."
 				+ "</comment></javascript>");
 	}
 }

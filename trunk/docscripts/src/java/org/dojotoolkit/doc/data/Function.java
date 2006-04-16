@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
  * 
  * @author jkuhnert
  */
-public class FunctionCall implements JsBlock {
+public class Function implements JsBlock {
 	
 	// containing blocks
 	protected List<JsBlock> _blocks = new ArrayList<JsBlock>();
@@ -29,7 +29,7 @@ public class FunctionCall implements JsBlock {
 	protected String _name;
 	
 	/* does nothing */
-	public FunctionCall() { }
+	public Function() { }
 	
 	/**
 	 * Creates a new function call with a pre-configured start position,
@@ -37,7 +37,7 @@ public class FunctionCall implements JsBlock {
 	 * 
 	 * @param startPosition
 	 */
-	public FunctionCall(int startPosition, int callStartPosition, int nextPosition)
+	public Function(int startPosition, int callStartPosition, int nextPosition)
 	{
 		_startPosition = startPosition;
 		_callStartPosition = callStartPosition;

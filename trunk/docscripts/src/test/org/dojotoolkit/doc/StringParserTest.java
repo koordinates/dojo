@@ -3,10 +3,8 @@
  */
 package org.dojotoolkit.doc;
 
-import org.dojotoolkit.doc.data.DoubleQuotedString;
+import org.dojotoolkit.doc.data.QuotedString;
 import org.dojotoolkit.doc.data.JsObject;
-import org.dojotoolkit.doc.data.SingleQuotedString;
-import org.w3c.dom.Document;
 
 /**
  * Tests parsing various types of strings.
@@ -27,7 +25,7 @@ public class StringParserTest extends ParserTest {
 		JsObject js = parser.parseContent(input);
 		
     assertTrue(js.getBlocks().size() > 0);
-    assertTrue(SingleQuotedString.class.isInstance(js.getBlocks().get(0)));
+    assertTrue(QuotedString.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
 				+ "<string type=\"single\">single quoted string</string></javascript>");
 	}
@@ -44,7 +42,7 @@ public class StringParserTest extends ParserTest {
 		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
-		assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
+		assertTrue(QuotedString.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
 				+ "<string type=\"double\">double quoted string</string></javascript>");
 	}
@@ -61,7 +59,7 @@ public class StringParserTest extends ParserTest {
 		JsObject js = parser.parseContent(input);
 		
 		assertTrue(js.getBlocks().size() > 0);
-		assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
+		assertTrue(QuotedString.class.isInstance(js.getBlocks().get(0)));
 		assertXmlEquals(js, "<javascript>"
 				+ "<string type=\"double\">double quoted's string</string></javascript>");
 	}
@@ -78,7 +76,7 @@ public class StringParserTest extends ParserTest {
     JsObject js = parser.parseContent(input);
     
     assertTrue(js.getBlocks().size() > 0);
-    assertTrue(SingleQuotedString.class.isInstance(js.getBlocks().get(0)));
+    assertTrue(QuotedString.class.isInstance(js.getBlocks().get(0)));
     assertXmlEquals(js, "<javascript>"
         + "<string type=\"single\">single \"quoted\" string</string></javascript>");
   }
@@ -95,7 +93,7 @@ public class StringParserTest extends ParserTest {
     JsObject js = parser.parseContent(input);
     
     assertTrue(js.getBlocks().size() > 0);
-    assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
+    assertTrue(QuotedString.class.isInstance(js.getBlocks().get(0)));
     assertXmlEquals(js, "<javascript>"
         + "<string type=\"double\">double /*quoted*/ string</string></javascript>");
   }

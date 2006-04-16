@@ -9,11 +9,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Represents a mult-line comment data block.
+ * Block of " or ' of quoted character string.
  * 
  * @author jkuhnert
  */
-public class MultiLineComment implements JsBlock {
+public class QuotedString implements JsBlock {
 	
 	/* start position taken from in original parse */
 	protected int _startPosition;
@@ -22,25 +22,28 @@ public class MultiLineComment implements JsBlock {
 	
 	/* The comments! */
 	protected String _data;
+  
+  /* The type (single, double)! */
+  protected String _type;
 	
 	/* does nothing */
-	public MultiLineComment() { }
+	public QuotedString() { }
 	
 	/**
-	 * Creates a new comment with a pre-configured start position,
+	 * Creates a new string with a pre-configured start position,
 	 * mostly used in javascript parsing operations.
 	 * 
 	 * @param startPosition
 	 */
-	public MultiLineComment(int startPosition, int nextPosition)
+	public QuotedString(int startPosition, int nextPosition)
 	{
 		_startPosition = startPosition;
 		_nextPosition = nextPosition;
 	}
 	
 	/**
-	 * The textual comment data encapsulated by this class.
-	 * @return The string value of the comment data.
+	 * The textual string data encapsulated by this class.
+	 * @return The string value of the string data.
 	 */
 	public String getData() 
 	{
@@ -70,6 +73,16 @@ public class MultiLineComment implements JsBlock {
 	{
 		_nextPosition = position;
 	}
+  
+  public void setType(String type)
+  {
+    _type = type;
+  }
+  
+  public String getType()
+  {
+    return _type;
+  }
 	
 	/**
 	 * {@inheritDoc}
@@ -82,21 +95,9 @@ public class MultiLineComment implements JsBlock {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void renderBlock(Element parent, Document doc) 
-	{
-		Element comment = doc.createElement("comment");
-		parent.appendChild(comment);
-		
-		comment.setAttribute("type", "multi-line");
-		comment.appendChild(doc.createTextNode(_data));
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 	public void addBlock(JsBlock block) 
 	{
-		throw new UnsupportedOperationException("Multi line comments don't contain blocks.");
+		throw new UnsupportedOperationException("String quotes don't contain blocks.");
 	}
 	
 	/**
@@ -104,7 +105,19 @@ public class MultiLineComment implements JsBlock {
 	 */
 	public List<JsBlock> getBlocks() 
 	{
-		throw new UnsupportedOperationException("Multi line comments don't contain blocks.");
+		throw new UnsupportedOperationException("String quotes don't contain blocks.");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void renderBlock(Element parent, Document doc) 
+	{
+		Element node = doc.createElement("string");
+		parent.appendChild(node);
+		
+		node.setAttribute("type", _type);
+		node.appendChild(doc.createTextNode(_data));
 	}
   
   /**
