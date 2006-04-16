@@ -25,17 +25,12 @@ public class StringParserTest extends ParserTest {
 		JsParser parser = new JsParser();
 		JsObject js = parser.parseContent(str.toCharArray());
 		
-		assert js.getBlocks().size() > 0;
-		assert SingleQuotedString.class.isInstance(js.getBlocks().get(0));
-		
-		Document doc = newDocument();
-		js.renderXmlOutput(doc);
-		
-		assertOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?><javascript>"
-				+ "<string type=\"single\">single quoted string</string></javascript>",
-				js);
+    assertTrue(js.getBlocks().size() > 0);
+    assertTrue(SingleQuotedString.class.isInstance(js.getBlocks().get(0)));
+		assertXmlEquals(js, "<javascript>"
+				+ "<string type=\"single\">single quoted string</string></javascript>");
 	}
-	
+ 
 	/**
 	 * Tests parsing double quoted strings.
 	 */
@@ -46,35 +41,25 @@ public class StringParserTest extends ParserTest {
 		JsParser parser = new JsParser();
 		JsObject js = parser.parseContent(str.toCharArray());
 		
-		assert js.getBlocks().size() > 0;
-		assert DoubleQuotedString.class.isInstance(js.getBlocks().get(0));
-		
-		Document doc = newDocument();
-		js.renderXmlOutput(doc);
-		
-		assertOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?><javascript>"
-				+ "<string type=\"double\">double quoted string</string></javascript>",
-				js);
+		assertTrue(js.getBlocks().size() > 0);
+		assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
+		assertXmlEquals(js, "<javascript>"
+				+ "<string type=\"double\">double quoted string</string></javascript>");
 	}
-	
+
 	/**
 	 * Tests parsing strings with escape symbols
 	 */
 	public void testEscapeStringParse()
 	{
-		String str = "\"double 'quoted' string\"";
+		String str = "\"double \\\"quoted\\\" string /* with comment */\"";
 		
 		JsParser parser = new JsParser();
 		JsObject js = parser.parseContent(str.toCharArray());
 		
-		assert js.getBlocks().size() > 0;
-		assert DoubleQuotedString.class.isInstance(js.getBlocks().get(0));
-		
-		Document doc = newDocument();
-		js.renderXmlOutput(doc);
-		
-		assertOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?><javascript>"
-				+ "<string type=\"double\">double 'quoted' string</string></javascript>",
-				js);
+		assertTrue(js.getBlocks().size() > 0);
+		assertTrue(DoubleQuotedString.class.isInstance(js.getBlocks().get(0)));
+		assertXmlEquals(js, "<javascript>"
+				+ "<string type=\"double\">double \"quoted\" string /* with comment */</string></javascript>");
 	}
 }
