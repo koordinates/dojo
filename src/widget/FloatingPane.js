@@ -47,7 +47,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
 	fillInTemplate: function(args, frag){
-		// Copy style info and id from input node to output node
+		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
