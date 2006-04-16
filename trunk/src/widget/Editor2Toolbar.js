@@ -101,6 +101,7 @@ dojo.widget.defineWidget(
 
 
 		hideAllDropDowns: function(){
+			this.domNode.style.height = "";
 			dojo.lang.forEach(dojo.widget.byType("Editor2Toolbar"), function(tb){
 				try{
 					dojo.style.hide(tb.forecolorDropDown);
@@ -113,6 +114,7 @@ dojo.widget.defineWidget(
 		// FIXME: these methods aren't currently dealing with clicking in the
 		// general document to hide the menu
 		forecolorClick: function(e){
+			// FIXME: if we've been "popped out", we need to set the height of the toolbar.
 			e.stopPropagation();
 			dojo.style.toggleShowing(this.forecolorDropDown);
 			if(!this.forecolorPalette){
@@ -153,14 +155,19 @@ dojo.widget.defineWidget(
 
 		hilitecolorClick: function(e){
 			e.stopPropagation();
+			var h = dojo.html;
 			dojo.style.toggleShowing(this.hilitecolorDropDown);
 			if(!this.hilitecolorPalette){
 				this.hilitecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.hilitecolorDropDown, "first");
 				var hcp = this.hilitecolorPalette.domNode;
 				with(this.hilitecolorDropDown.style){
-					width = dojo.html.getOuterWidth(hcp) + "px";
-					height = dojo.html.getOuterHeight(hcp) + "px";
+					width = h.getOuterWidth(hcp) + "px";
+					height = h.getOuterHeight(hcp) + "px";
 					zIndex = 1002;
+				}
+
+				if(dojo.render.html.ie){
+					this.domNode.style.height = h.getOuterHeight(hcp)+h.getOuterHeight(this.domNode)+"px";
 				}
 
 				dojo.event.connect(	"after",
@@ -191,7 +198,7 @@ dojo.widget.defineWidget(
 		},
 
 		// stub for observers
-		exec: function(what, arg){ },
+		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
 
 		hideUnusableButtons: function(){
 			dojo.lang.forEach(this.commandList,
