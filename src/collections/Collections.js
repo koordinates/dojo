@@ -18,18 +18,6 @@ dojo.collections.DictionaryEntry=function(/* string */k, /* object */v){
  *	The collections.Iterators (Iterator and DictionaryIterator) are built to
  *	work with the Collections included in this namespace.  However, they *can*
  *	be used with arrays and objects, respectively, should one choose to do so.
- *
- *	Usage:
- *	var e=new dojo.collection.Iterator(myArray);
- *	while(e.current()) doSomething(e.element);
- *	OR
- *	while(!e.atEnd()) doSomething(e.current());
- * 	OR
- *	for(e.current();!e.atEnd();e.current()) doSomething(e.element);
- *	OR
- *	do{ doSomething(e.element); }while(e.current());
- *	OR
- *	(new dojo.collections.Iterator(myArray)).map(doSomething);
  */
 dojo.collections.Iterator=function(/* array */arr){
 	//	summary
