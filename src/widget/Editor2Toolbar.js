@@ -30,7 +30,8 @@ dojo.widget.defineWidget(
 		hilitecolorPalette: null,
 
 		// DOM Nodes
-		wikiWordButton: null,
+		wikiwordButton: null,
+		insertimageButton: null,
 		styleDropdownButton: null,
 		styleDropdownContainer: null,
 		copyButton: null,
@@ -60,7 +61,9 @@ dojo.widget.defineWidget(
 		buttonMouseOut: function(e){  },
 
 		// event signals
-		wikiWordClick: function(){ /* dojo.debug("wikiWordButtonClick"); */ },
+		wikiwordClick: function(){ },
+		insertimageClick: function(){ },
+
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
 			dojo.style.toggleShowing(this.styleDropdownContainer);
