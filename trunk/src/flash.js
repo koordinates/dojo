@@ -738,6 +738,9 @@ dojo.flash.Embed.prototype = {
 		if(visible == true){
 			container.style.visibility = "visible";
 		}else{
+			container.style.position = "absolute";
+			container.style.x = "-1000px";
+			container.style.y = "-1000px";
 			container.style.visibility = "hidden";
 		}
 	},
@@ -850,12 +853,12 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
-		//dojo.debug("fscommand, command="+command+", args="+args);
+		dojo.debug("fscommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
-		}else if (command == "call"){ // Flash to JavaScript method call
+		}else if(command == "call"){ // Flash to JavaScript method call
 			this._fscommandCall(command, args);
-		}else if (command == "fscommandReady"){ // see if fscommands are ready
+		}else if(command == "fscommandReady"){ // see if fscommands are ready
 			this._fscommandReady();
 		}
 	},

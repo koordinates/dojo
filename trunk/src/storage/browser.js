@@ -129,6 +129,7 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 
 	hideSettingsUI: function(){
+		dojo.flash.obj.setVisible(false);
 	},
 	
 	/** 
