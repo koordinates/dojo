@@ -76,23 +76,17 @@ dojo.widget.defineWidget(
 			if(!this._handleScroll){ return; }
 			var ds = dojo.style;
 			var tdn = this.toolbarWidget.domNode;
-			var db = document["documentElement"]||document["body"];
+			var db = document["body"];
 			var totalHeight = ds.getOuterHeight(tdn);
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
 				var editorWidth =  ds.getOuterWidth(this.domNode); 
 				this._scrollThreshold = ds.abs(tdn, false).y;
 				// dojo.debug("threshold:", this._scrollThreshold);
-				if((isIE)&&(ds.getStyle(db, "background-image")=="none")){
-					// set background-image and background-attachment
-					// if background-image is not already in use, to take
-					// advantage of an IE quirk to enable smooth scrolling
-					// of pseudo-position-fixed elements like this one
+				if((isIE)&&(db)&&(ds.getStyle(db, "background-image")=="none")){
 					with(db.style){
-						/*
 						backgroundImage = "url(" + dojo.uri.dojoUri("src/widget/templates/images/blank.gif") + ")";
 						backgroundAttachment = "fixed";
-						*/
 					}
 				}
 			}
