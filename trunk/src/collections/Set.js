@@ -10,12 +10,12 @@ dojo.collections.Set = new function(){
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList(setA.toArray());
 		var e = setB.getIterator();
-		do{
-			if (!result.contains(e.current)){
-				result.add(e.current);
+		while(!e.atEnd()){
+			var item=e.get();
+			if(!result.contains(item)){
+				result.add(item);
 			}
-			e.moveNext();
-		} while (!e.atEnd);
+		}
 		return result;
 	};
 	this.intersection = function(setA, setB){
@@ -24,10 +24,12 @@ dojo.collections.Set = new function(){
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList();
 		var e = setB.getIterator();
-		do{
-			if (setA.contains(e.current)) result.add(e.current);
-			e.moveNext();
-		}while(!e.atEnd);
+		while(!e.atEnd()){
+			var item=e.get();
+			if(setA.contains(item)){
+				result.add(item);
+			}
+		}
 		return result;
 	};
 	//	returns everything in setA that is not in setB.
@@ -37,10 +39,12 @@ dojo.collections.Set = new function(){
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var result = new dojo.collections.ArrayList();
 		var e=setA.getIterator();
-		do{
-			if (!setB.contains(e.current)) result.add(e.current);
-			e.moveNext();
-		}while(!e.atEnd);
+		while(!e.atEnd()){
+			var item=e.get();
+			if(!setB.contains(item)){
+				result.add(item);
+			}
+		}
 		return result;
 	};
 	this.isSubSet = function(setA, setB) {
@@ -48,10 +52,11 @@ dojo.collections.Set = new function(){
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var e = setA.getIterator();
-		do{
-			if (!setB.contains(e.current)) return false;
-			e.moveNext();
-		}while(!e.atEnd);
+		while(!e.atEnd()){
+			if(!setB.contains(e.get())){
+				return false;
+			}
+		}
 		return true;
 	};
 	this.isSuperSet = function(setA, setB){
@@ -59,10 +64,11 @@ dojo.collections.Set = new function(){
 		if (setB.constructor == Array) var setB = new dojo.collections.ArrayList(setB);
 		if (!setA.toArray || !setB.toArray) dojo.raise("Set operations can only be performed on array-based collections.");
 		var e = setB.getIterator();
-		do{
-			if (!setA.contains(e.current)) return false;
-			e.moveNext();
-		}while(!e.atEnd);
+		while(!e.atEnd()){
+			if(!setA.contains(e.get())){
+				return false;
+			}
+		}
 		return true;
 	};
 }();
