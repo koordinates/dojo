@@ -1,6 +1,8 @@
 dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.SHA1");
 
+dojo.experimental("dojo.crypto.SHA1");
+
 dojo.crypto.SHA1 = new function(){
 	var chrsz=8;
 	var mask=(1<<chrsz)-1;
