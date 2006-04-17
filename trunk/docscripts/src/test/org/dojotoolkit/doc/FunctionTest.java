@@ -18,19 +18,13 @@ public class FunctionTest extends ParserTest {
    */
   public void testFunctionCallParse()
   {
-    String str = "dojo.function.call(\"param1\");";
-    char[] input = str.toCharArray();
-    
-    JsParser parser = new JsParser();
-    JsObject js = parser.parseContent(input);
-    
-    assertTrue(js.getBlocks().size() > 0);
-    assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
-    assertXmlEquals(js, "<javascript>"
-        + "<function name=\"dojo.function.call\" type=\"call\">"
-        + "<parameters><parameter><string type=\"double\">param1</string></parameter>"
-        + "</parameters>"
-        + "</function></javascript>");
+    String input = "dojo.function.call(\"param1\");";
+    String output = "<javascript>"
+      + "<function name=\"dojo.function.call\" type=\"call\">"
+      + "<parameters><parameter><string type=\"double\">param1</string></parameter>"
+      + "</parameters>"
+      + "</function></javascript>";
+    assertXmlEquals(input, output);
   }
   
   /**
@@ -38,20 +32,14 @@ public class FunctionTest extends ParserTest {
    */
   public void testFunctionCallMultiParamParse()
   {
-    String str = "dojo.function.call(\"param1\", 'param2');";
-    char[] input = str.toCharArray();
-    
-    JsParser parser = new JsParser();
-    JsObject js = parser.parseContent(input);
-    
-    assertTrue(js.getBlocks().size() > 0);
-    assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
-    assertXmlEquals(js, "<javascript>"
-        + "<function name=\"dojo.function.call\" type=\"call\">"
-        + "<parameters><parameter><string type=\"double\">param1</string></parameter>"
-        + "<parameter><string type=\"single\">param2</string></parameter>"
-        + "</parameters>"
-        + "</function></javascript>");
+    String input = "dojo.function.call(\"param1\", 'param2');";
+    String output = "<javascript>"
+      + "<function name=\"dojo.function.call\" type=\"call\">"
+      + "<parameters><parameter><string type=\"double\">param1</string></parameter>"
+      + "<parameter><string type=\"single\">param2</string></parameter>"
+      + "</parameters>"
+      + "</function></javascript>";
+    assertXmlEquals(input, output);
   }
   
   /**
@@ -59,16 +47,10 @@ public class FunctionTest extends ParserTest {
    */
   public void testFunctionCallEmptyParse()
   {
-    String str = "dojo.function.call();";
-    char[] input = str.toCharArray();
-    
-    JsParser parser = new JsParser();
-    JsObject js = parser.parseContent(input);
-    
-    assertTrue(js.getBlocks().size() > 0);
-    assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
-    assertXmlEquals(js, "<javascript>"
-        + "<function name=\"dojo.function.call\" type=\"call\"><parameters/></function></javascript>");
+    String input = "dojo.function.call();";
+    String output = "<javascript>"
+      + "<function name=\"dojo.function.call\" type=\"call\"><parameters/></function></javascript>";
+    assertXmlEquals(input, output);
   }
   
   /**
@@ -76,17 +58,12 @@ public class FunctionTest extends ParserTest {
    */
   public void testFunctionDeclareParse()
   {
-    String str = "function name(){}";
-    char[] input = str.toCharArray();
-    
-    JsParser parser = new JsParser();
-    JsObject js = parser.parseContent(input);
-    
-    assertTrue(js.getBlocks().size() > 0);
-    assertXmlEquals(js, "<javascript>" +
-          "<function name=\"name\" type=\"declare\">" +
-          "<parameters/><block/>" +
-          "</function></javascript>");
+    String input = "function name(){}";
+    String output = "<javascript>" +
+    "<function name=\"name\" type=\"declare\">" +
+    "<parameters/><block/>" +
+    "</function></javascript>";
+    assertXmlEquals(input, output);
   }
   
   /**
@@ -94,17 +71,12 @@ public class FunctionTest extends ParserTest {
    */
   public void testFunctionObjectDeclareParse()
   {
-    String str = "name = function(){}";
-    char[] input = str.toCharArray();
-    
-    JsParser parser = new JsParser();
-    JsObject js = parser.parseContent(input);
-    
-    assertTrue(js.getBlocks().size() > 0);
-    assertXmlEquals(js, "<javascript>" +
-          "<function name=\"name\" type=\"declare\">" +
-          "<parameters/><block/>" +
-          "</function></javascript>");
+    String input = "name = function(){}";
+    String output = "<javascript>" +
+    "<function name=\"name\" type=\"declare\">" +
+    "<parameters/><block/>" +
+    "</function></javascript>";
+    assertXmlEquals(input, output);
   }
 
 }

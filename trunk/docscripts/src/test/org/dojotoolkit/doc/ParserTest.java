@@ -21,6 +21,15 @@ import junit.framework.TestCase;
  */
 public class ParserTest extends TestCase {
 
+  public void assertXmlEquals(String input, String output)
+  {
+    JsParser parser = new JsParser();
+    JsObject js = parser.parseContent(input.toCharArray());
+    
+    assertTrue(js.getBlocks().size() > 0);
+    assertXmlEquals(js, output);
+  }
+  
   public void assertXmlEquals(String expected, JsObject js)
   {
     Document doc = newDocument();
