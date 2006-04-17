@@ -14,7 +14,7 @@ import org.dojotoolkit.doc.data.JsBlock;
  * @see {@link QuotedString}
  * @author jkuhnert
  */
-public class QuotedStringParser implements BlockParser {
+public class QuotedStringParser implements JsBlockParser {
 	
 	/**
 	 * {@inheritDoc}

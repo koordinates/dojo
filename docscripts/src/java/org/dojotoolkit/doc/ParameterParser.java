@@ -14,7 +14,7 @@ import org.dojotoolkit.doc.data.Parameter;
  * 
  * @author jkuhnert
  */
-public class ParameterParser implements BlockParser {
+public class ParameterParser implements JsBlockParser {
 	
 	/**
 	 * {@inheritDoc}

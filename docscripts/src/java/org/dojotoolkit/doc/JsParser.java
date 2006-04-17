@@ -31,13 +31,14 @@ public class JsParser {
 	// Various pre-configured block parsers, each one handles
 	// a different type of block, like comments, functions, etc..
   // They must be in their nesting order.
-	protected static List<BlockParser> _blockParsers;
+	protected static List<JsBlockParser> _blockParsers;
 	static {
-		_blockParsers = new ArrayList<BlockParser>();
+		_blockParsers = new ArrayList<JsBlockParser>();
 		_blockParsers.add(new MultiLineCommentParser());
     _blockParsers.add(new SingleLineCommentParser());
 		_blockParsers.add(new QuotedStringParser());
-    _blockParsers.add(new FunctionCallParser());
+    _blockParsers.add(new FunctionParser());
+    _blockParsers.add(new BlockParser());
     _blockParsers.add(new ParameterParser());
 	}
 	
@@ -104,12 +105,12 @@ public class JsParser {
 				continue;
 			}
 			
-			for (BlockParser parser : _blockParsers) {
+			for (JsBlockParser parser : _blockParsers) {
 				block = parser.startsBlock(_data, _cursor, _blocks);
 				if (block != null) {
           if (!_blocks.isEmpty()) {
             JsBlock parent = _blocks.peek();
-            if(!parent.allowedChild(block)) {
+            if(!parent.canAcceptBlock(block)) {
               continue;
             }
           }
@@ -137,7 +138,7 @@ public class JsParser {
 		
 		JsBlock block = null;
 		
-		for (BlockParser parser : _blockParsers) {
+		for (JsBlockParser parser : _blockParsers) {
 			block = parser.endsBlock(_data, _cursor, _blocks);
 			
 			if (block != null) {

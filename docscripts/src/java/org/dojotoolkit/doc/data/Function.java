@@ -5,12 +5,11 @@ package org.dojotoolkit.doc.data;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Represents a function call.
+ * Represents a function.
  * 
  * @author jkuhnert
  */
@@ -18,6 +17,9 @@ public class Function implements JsBlock {
 	
 	// containing blocks
 	protected List<JsBlock> _blocks = new ArrayList<JsBlock>();
+  
+  // parameters
+  protected List<Parameter> _params = new ArrayList<Parameter>();
 	
 	// start position taken from in original parse 
 	protected int _startPosition;
@@ -27,6 +29,8 @@ public class Function implements JsBlock {
 	
 	// function name
 	protected String _name;
+
+  private String _type = "call";
 	
 	/* does nothing */
 	public Function() { }
@@ -89,7 +93,12 @@ public class Function implements JsBlock {
 	 */
 	public void addBlock(JsBlock block)
 	{
-		_blocks.add(block);
+    if (Parameter.class.isInstance(block)) {
+      _params.add((Parameter)block);
+    }
+    else {
+      _blocks.add(block);
+    }
 	}
 	
 	/**
@@ -108,22 +117,34 @@ public class Function implements JsBlock {
 		Element func = doc.createElement("function");
 		parent.appendChild(func);
 		
-		func.setAttribute("type", "call");
+		func.setAttribute("type", _type);
 		func.setAttribute("name", _name);
 		
 		Element parms = doc.createElement("parameters");
 		func.appendChild(parms);
 
+    for (Parameter block : _params) {
+      block.renderBlock(parms, doc);
+    }
+    
 		for (JsBlock block : _blocks) {
-			block.renderBlock(parms, doc);
+			block.renderBlock(func, doc);
     }
 	}
   
   /**
    * {@inheritDoc}
    */
-  public boolean allowedChild(JsBlock block)
+  public boolean canAcceptBlock(JsBlock block)
   {
     return true;
+  }
+
+  public void setType(String type) {
+    _type = type;
+  }
+
+  public String getType() {
+    return _type;
   }
 }

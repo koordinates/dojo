@@ -13,7 +13,7 @@ import org.dojotoolkit.doc.data.JsBlock;
  * 
  * @author jkuhnert
  */
-public interface BlockParser {
+public interface JsBlockParser {
   /**
    * End of Text/Transmission
    */

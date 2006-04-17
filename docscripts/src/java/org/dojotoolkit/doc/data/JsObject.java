@@ -29,6 +29,8 @@ public class JsObject implements JsBlock {
 	{
 		throw new UnsupportedOperationException("JsObject shouldn't be a parsed object.");
 	}
+  
+  public void setNextPosition(int nextPosition) {}
 	
 	/**
 	 * Adds a new block to this structure.
@@ -75,7 +77,7 @@ public class JsObject implements JsBlock {
   /**
    * {@inheritDoc}
    */
-  public boolean allowedChild(JsBlock block)
+  public boolean canAcceptBlock(JsBlock block)
   {
     return true;
   }

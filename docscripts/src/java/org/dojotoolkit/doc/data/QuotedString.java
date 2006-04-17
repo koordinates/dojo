@@ -123,7 +123,7 @@ public class QuotedString implements JsBlock {
   /**
    * {@inheritDoc}
    */
-  public boolean allowedChild(JsBlock block)
+  public boolean canAcceptBlock(JsBlock block)
   {
     return false;
   }
