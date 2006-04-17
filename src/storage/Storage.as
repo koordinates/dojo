@@ -75,26 +75,14 @@ class Storage {
 	
 	public function showSettings(){
 		// Show the configuration options for the Flash player, opened to the
-		// section for local storage controls
+		// section for local storage controls (pane 1)
 		System.showSettings(1);
 		
 		// there is no way we can intercept when the Close button is pressed, allowing us
 		// to hide the Flash dialog. Instead, we need to load a movie in the
 		// background that we can show a close button on.
-		// load our gateway helper file
-		if(_root._settingsBackground == null 
-			|| typeof _root._settingsBackground == "undefined"){
-			_root.createEmptyMovieClip("_settingsBackground", 1);
-			
-			_root._settingsBackground.onLoad = function(){
-				_root._settingsBackground.hideSettingsUI = function(){
-					getURL("javascript:alert('foobar')");
-				}
-			}
-			
-			_root._lockroot = true;
-			_root._settingsBackground.loadMovie("../../storage_dialog.swf");
-		}
+		_root.createEmptyMovieClip("_settingsBackground", 1);
+		_root._settingsBackground.loadMovie("../../storage_dialog.swf");		
 	}
 	
 	public function clear(namespace){
@@ -135,7 +123,7 @@ class Storage {
 
 	static function main(mc){
 		//getURL("javascript:dojo.debug('FLASH: storage loaded')");
-		var app = new Storage(); 
+		_root.app = new Storage(); 
 	}
 }
 
