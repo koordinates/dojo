@@ -126,6 +126,9 @@ dojo.widget.defineWidget(
 					height = "1px";
 					border = margin = padding = "0px";
 					visiblity = "hidden";
+					if(dojo.render.html.ie){
+						overflow = "hidden";
+					}
 				}
 				dojo.dom.insertBefore(this.domNode, this.textarea);
 				// this.domNode.innerHTML = html;
