@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 /**
  * Represents a function.
  * 
+ * @see org.dojotoolkit.doc.FunctionParser
  * @author jkuhnert
  */
 public class Function implements JsBlock {

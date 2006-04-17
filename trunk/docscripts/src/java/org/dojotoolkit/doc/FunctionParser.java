@@ -11,6 +11,7 @@ import org.dojotoolkit.doc.data.JsBlock;
 /**
  * Parses function calls.
  * 
+ * @see Function
  * @author jkuhnert
  */
 public class FunctionParser implements JsBlockParser {

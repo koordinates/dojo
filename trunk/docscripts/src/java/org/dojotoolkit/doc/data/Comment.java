@@ -10,6 +10,8 @@ import org.w3c.dom.Element;
 /**
  * Represents a single line comment block
  * 
+ * @see org.dojotoolkit.doc.SingleLineCommentParser
+ * @see org.dojotoolkit.doc.MultiLineCommentParser
  * @author neildogg
  */
 public class Comment implements JsBlock {

@@ -49,8 +49,8 @@ public class JsParser {
 	public JsParser() { }
 	
 	/**
-	 * Parses the incoming content into a usable {@link JsOBject}.
-	 * @param is
+	 * Parses the incoming content into a usable {@link JsObject}.
+	 * @param data
 	 * 			The data to read in.
 	 * @return
 	 * 			A {@link JsObject} that represents the content read.

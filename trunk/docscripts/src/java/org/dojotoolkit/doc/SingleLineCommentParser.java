@@ -10,6 +10,7 @@ import org.dojotoolkit.doc.data.Comment;
 /**
  * Handles comments that span a single line
  * 
+ * @see Comment
  * @author neildogg
  */
 public class SingleLineCommentParser implements JsBlockParser {

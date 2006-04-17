@@ -9,6 +9,12 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Represents Block data
+ * 
+ * @see org.dojotoolkit.doc.BlockParser
+ * @author nroberts
+ */
 public class Block implements JsBlock {
   // containing blocks
   protected List<JsBlock> _blocks = new ArrayList<JsBlock>();

@@ -9,6 +9,12 @@ import org.dojotoolkit.doc.data.Block;
 import org.dojotoolkit.doc.data.Function;
 import org.dojotoolkit.doc.data.JsBlock;
 
+/**
+ * Parses block calls
+ * 
+ * @see Block
+ * @author nroberts
+ */
 public class BlockParser implements JsBlockParser {
 
   public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) {

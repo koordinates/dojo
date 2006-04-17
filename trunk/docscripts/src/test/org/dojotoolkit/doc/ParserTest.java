@@ -72,7 +72,7 @@ public class ParserTest extends TestCase {
   
   /**
    * Creates xml documents.
-   * @return
+   * @return A new document
    */
   public Document newDocument()
   {

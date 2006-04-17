@@ -11,7 +11,7 @@ import org.dojotoolkit.doc.data.JsBlock;
 /**
  * Parses strings that are double quoted.
  * 
- * @see {@link QuotedString}
+ * @see QuotedString
  * @author jkuhnert
  */
 public class QuotedStringParser implements JsBlockParser {

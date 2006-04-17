@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 /**
  * Block of " or ' of quoted character string.
  * 
+ * @see org.dojotoolkit.doc.QuotedStringParser
  * @author jkuhnert
  */
 public class QuotedString implements JsBlock {
