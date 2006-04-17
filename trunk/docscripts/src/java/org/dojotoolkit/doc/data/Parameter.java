@@ -94,7 +94,7 @@ public class Parameter implements JsBlock {
   /**
    * {@inheritDoc}
    */
-  public boolean allowedChild(JsBlock block)
+  public boolean canAcceptBlock(JsBlock block)
   {
     return true;
   }

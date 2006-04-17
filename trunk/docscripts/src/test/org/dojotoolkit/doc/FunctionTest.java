@@ -11,7 +11,7 @@ import org.dojotoolkit.doc.data.JsObject;
  * 
  * @author jkuhnert
  */
-public class FunctionCallParserTest extends ParserTest {
+public class FunctionTest extends ParserTest {
 
   /**
    * Tests parsing a function call
@@ -69,6 +69,42 @@ public class FunctionCallParserTest extends ParserTest {
     assertTrue(Function.class.isInstance(js.getBlocks().get(0)));
     assertXmlEquals(js, "<javascript>"
         + "<function name=\"dojo.function.call\" type=\"call\"><parameters/></function></javascript>");
+  }
+  
+  /**
+   * Tests parsing "standard" function declaration
+   */
+  public void testFunctionDeclareParse()
+  {
+    String str = "function name(){}";
+    char[] input = str.toCharArray();
+    
+    JsParser parser = new JsParser();
+    JsObject js = parser.parseContent(input);
+    
+    assertTrue(js.getBlocks().size() > 0);
+    assertXmlEquals(js, "<javascript>" +
+          "<function name=\"name\" type=\"declare\">" +
+          "<parameters/><block/>" +
+          "</function></javascript>");
+  }
+  
+  /**
+   * Tests function object assignment
+   */
+  public void testFunctionObjectDeclareParse()
+  {
+    String str = "name = function(){}";
+    char[] input = str.toCharArray();
+    
+    JsParser parser = new JsParser();
+    JsObject js = parser.parseContent(input);
+    
+    assertTrue(js.getBlocks().size() > 0);
+    assertXmlEquals(js, "<javascript>" +
+          "<function name=\"name\" type=\"declare\">" +
+          "<parameters/><block/>" +
+          "</function></javascript>");
   }
 
 }

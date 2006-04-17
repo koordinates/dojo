@@ -12,7 +12,7 @@ import org.dojotoolkit.doc.data.Comment;
  * 
  * @author jkuhnert
  */
-public class MultiLineCommentParser implements BlockParser {
+public class MultiLineCommentParser implements JsBlockParser {
 
 	/**
 	 * {@inheritDoc}

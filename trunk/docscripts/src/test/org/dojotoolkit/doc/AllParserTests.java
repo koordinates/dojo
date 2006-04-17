@@ -12,7 +12,7 @@ public class AllParserTests {
     TestSuite suite = new TestSuite("Test for org.dojotoolkit.doc");
     //$JUnit-BEGIN$
     suite.addTestSuite(StringParserTest.class);
-    suite.addTestSuite(FunctionCallParserTest.class);
+    suite.addTestSuite(FunctionTest.class);
     suite.addTestSuite(CommentParserTest.class);
     //$JUnit-END$
     return suite;

@@ -16,6 +16,16 @@ import org.w3c.dom.Element;
  */
 public interface JsBlock {
 	
+  /**
+   * Position where the block starts
+   */
+  public int _startPosition = 0;
+  
+  /*
+   * Position of the first location after the block starts
+   */
+  public int _nextPosition = 0;
+  
 	/**
 	 * Adds a new block to this structure.
 	 * @param block
@@ -50,13 +60,26 @@ public interface JsBlock {
 	int getNextPosition();
   
   /**
+   * If this is a javascript parse, sets the next starting character
+   * position that should be used to parse content after this block
+   * has been started.
+   * 
+   * @return The next good start position.
+   */
+  void setNextPosition(int nextPosition);
+  
+  /**
    * Checks to see if the passed block is allowed to be added as a child of
    * the current block
+   * 
+   * This should almost always be set to true/false and only be used
+   * if you're unable to keep a child/parent relationship from happening
+   * in any other way.
    * 
    * @param block
    *      The block to check
    * @return
    *      If allowed
    */
-  boolean allowedChild(JsBlock block);
+  boolean canAcceptBlock(JsBlock block);
 }
