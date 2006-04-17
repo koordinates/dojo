@@ -10,6 +10,7 @@ import org.dojotoolkit.doc.data.Comment;
 /**
  * Handles comments that extend multiple lines. 
  * 
+ * @see Comment
  * @author jkuhnert
  */
 public class MultiLineCommentParser implements JsBlockParser {
@@ -44,7 +45,7 @@ public class MultiLineCommentParser implements JsBlockParser {
           str.append(data[i]);
         }
 				
-				comment.setData(str.toString().trim());
+				comment.setData(str.toString());
 				
 				comment.setNextPosition(position + 1);
 				

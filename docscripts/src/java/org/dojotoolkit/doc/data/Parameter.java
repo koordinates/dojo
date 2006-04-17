@@ -12,6 +12,7 @@ import org.w3c.dom.Element;
 /**
  * Represents a function parameter.
  * 
+ * @see org.dojotoolkit.doc.ParameterParser
  * @author jkuhnert
  */
 public class Parameter implements JsBlock {

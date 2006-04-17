@@ -12,6 +12,7 @@ import org.dojotoolkit.doc.data.Parameter;
 /**
  * Parses function parameters.
  * 
+ * @see Parameter
  * @author jkuhnert
  */
 public class ParameterParser implements JsBlockParser {
