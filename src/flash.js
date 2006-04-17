@@ -853,7 +853,7 @@ dojo.flash.Communicator.prototype = {
 	
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
-		dojo.debug("fscommand, command="+command+", args="+args);
+		//dojo.debug("fscommand, command="+command+", args="+args);
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
 		}else if(command == "call"){ // Flash to JavaScript method call

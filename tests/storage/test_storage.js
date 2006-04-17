@@ -149,6 +149,15 @@ var TestStorage = {
 		evt.stopPropagation();
 		
 		if(dojo.storage.hasSettingsUI()){
+			// redraw our keys after the dialog is closed, in
+			// case they have all been erased
+			var self = this;
+			dojo.storage.onHideSettingsUI = function(){
+				alert("onHide");
+				self._printAvailableKeys();
+			}
+			
+			// show the dialog
 			dojo.storage.showSettingsUI();
 		}
 	},
@@ -294,7 +303,7 @@ var TestStorage = {
 };
 
 // wait until the storage system is finished loading
-if(dojo.flash.ready == false){ // might already be loaded when we get here
+if(dojo.flash.ready == false){ // storage might already be loaded when we get here
 	dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
 	                  TestStorage.initialize);
 }else{
