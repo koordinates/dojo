@@ -96,8 +96,8 @@
 				Storage Provider:
 			</label>
 			
-			<select id="storageProvider" name="storageProvider">
-				<option default="true" value="dojo.storage.browser.FlashStorageProvider">default</option>
+			<select id="storageProvider" name="storageProvider" disabled="true">
+				<option default="true" value="dojo.storage.browser.FlashStorageProvider">default (Flash)</option>
 				<option value="dojo.storage.browser.FlashStorageProvider">Flash</option>
 				<option value="dojo.storage.browser.InternetExplorerStorageProvider">Proprietary Internet Explorer Features</option>
 				<option value="dojo.storage.browser.FormStorageProvider">Hidden Form Using AutoSave Features</option>
@@ -113,7 +113,7 @@
 				Key:
 			</label>
 			
-			<input type="text" id="storageKey" name="storageKey" size="40">
+			<input type="text" id="storageKey" name="storageKey" size="40" disabled="true">
 		</div>
 		
 		<div id="storageValueContainer">
@@ -121,15 +121,15 @@
 				Value:
 			</label>
 			
-			<textarea id="storageValue" name="storageValue"></textarea>
+			<textarea id="storageValue" name="storageValue" disabled="true"></textarea>
 		</div>
 		
 		<div id="buttonContainer">
-			<button id="loadButton">Load</button>
-			<button id="saveButton">Save</button>
-			<button id="removeButton">Remove</button>
-			<button id="clearButton">Clear</button>
-			<button id="configureButton">Configure</button>
+			<button id="loadButton" disabled="true">Load</button>
+			<button id="saveButton" disabled="true">Save</button>
+			<button id="removeButton" disabled="true">Remove</button>
+			<button id="clearButton" disabled="true">Clear</button>
+			<button id="configureButton" disabled="true">Configure</button>
 		</div>
 	</form>
 </body>
