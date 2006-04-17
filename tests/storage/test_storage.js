@@ -10,9 +10,11 @@ var TestStorage = {
 	initialize: function(){
 		//dojo.debug("test_storage.initialize()");
 		
-		// clear out old values
+		// clear out old values and enable input forms
 		dojo.byId("storageKey").value = "";
+		dojo.byId("storageKey").disabled = false;
 		dojo.byId("storageValue").value = "";
+		dojo.byId("storageValue").disabled = false;
 		
 		// write out our available keys
 		this._printAvailableKeys();
@@ -21,6 +23,7 @@ var TestStorage = {
 		var storageProvider = dojo.byId("storageProvider");
 		dojo.event.connect(storageProvider, "onchange", this,
 		                   this.changeProvider);
+		storageProvider.disabled = false;
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		var storageValueElem = dojo.byId("storageValue");
@@ -40,6 +43,7 @@ var TestStorage = {
 				var buttonName = currentChild.id;
 				var functionName = buttonName.match(/^(.*)Button$/)[1];
 				dojo.event.connect(currentChild, "onclick", this, this[functionName]);
+				currentChild.disabled = false;
 			}		
 			
 			currentChild = currentChild.nextSibling;
@@ -153,7 +157,6 @@ var TestStorage = {
 			// case they have all been erased
 			var self = this;
 			dojo.storage.onHideSettingsUI = function(){
-				alert("onHide");
 				self._printAvailableKeys();
 			}
 			
