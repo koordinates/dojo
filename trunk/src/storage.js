@@ -49,6 +49,16 @@ dojo.lang.extend(dojo.storage, {
 	  domain but want different storage silos. 
 	*/
 	namespace: "dojoStorage",
+	
+	/**  
+	  If a function is assigned to this property, then 
+	  when the settings provider's UI is closed this
+	  function is called. Useful, for example, if the
+	  user has just cleared out all storage for this
+	  provider using the settings UI, and you want to 
+	  update your UI.
+	*/
+	onHideSettingsUI: null,
 
 	/** 
 	  Allows this storage provider to initialize itself. This is called
