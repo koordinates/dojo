@@ -642,7 +642,7 @@ dojo.flash.Embed.prototype = {
 			information. Optional value; defaults to false.
 	*/
 	write: function(flashVer, doExpressInstall){
-		//dojo.debug("write");
+		dojo.debug("write");
 		if(dojo.lang.isUndefined(doExpressInstall)){
 			doExpressInstall = false;
 		}
@@ -715,11 +715,11 @@ dojo.flash.Embed.prototype = {
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}
-		
+
 		// now write everything out
-		objectHTML = '<div id="' + this.id + 'Container" style="' + containerStyle + '">'
+		objectHTML = '<div id="' + this.id + 'Container" style="' + containerStyle + '"> '
 						+ objectHTML
-						+ '</div>';
+					 + '</div>';
 		document.writeln(objectHTML);
 	},  
 	
