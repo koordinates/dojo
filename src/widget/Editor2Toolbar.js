@@ -114,78 +114,46 @@ dojo.widget.defineWidget(
 			});
 		},
 
-		// FIXME: these methods aren't currently dealing with clicking in the
-		// general document to hide the menu
 		forecolorClick: function(e){
-			// FIXME: if we've been "popped out", we need to set the height of the toolbar.
-			e.stopPropagation();
-			dojo.style.toggleShowing(this.forecolorDropDown);
-			if(!this.forecolorPalette){
-				this.forecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.forecolorDropDown, "first");
-				var fcp = this.forecolorPalette.domNode;
-				with(this.forecolorDropDown.style){
-					width = dojo.html.getOuterWidth(fcp) + "px";
-					height = dojo.html.getOuterHeight(fcp) + "px";
-					zIndex = 1002;
-				}
-
-				dojo.event.connect(	"after",
-									this.forecolorPalette, "onColorSelect",
-									this, "exec",
-									function(mi){
-										mi.args.unshift("forecolor");
-										return mi.proceed();
-									}
-				);
-				dojo.event.connect(	"after",
-									this.forecolorPalette, "onColorSelect",
-									dojo.style, "toggleShowing",
-									this, function(mi){
-										mi.args.unshift(this.forecolorDropDown);
-										return mi.proceed();
-									}
-				);
-
-				dojo.event.kwConnect({
-					srcObj:		document.body, 
-					srcFunc:	"onclick", 
-					targetObj:	this,
-					targetFunc:	"hideAllDropDowns",
-					once:		true
-				});
-			}
+			this.colorClick(e, "forecolor");
 		},
 
 		hilitecolorClick: function(e){
-			e.stopPropagation();
-			var h = dojo.html;
-			dojo.style.toggleShowing(this.hilitecolorDropDown);
-			if(!this.hilitecolorPalette){
-				this.hilitecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.hilitecolorDropDown, "first");
-				var hcp = this.hilitecolorPalette.domNode;
-				with(this.hilitecolorDropDown.style){
-					width = h.getOuterWidth(hcp) + "px";
-					height = h.getOuterHeight(hcp) + "px";
-					zIndex = 1002;
-				}
+			this.colorClick(e, "hilitecolor");
+		},
 
-				if(dojo.render.html.ie){
-					this.domNode.style.height = h.getOuterHeight(hcp)+h.getOuterHeight(this.domNode)+"px";
+		// FIXME: these methods aren't currently dealing with clicking in the
+		// general document to hide the menu
+		colorClick: function(e, type){
+			this.hideAllDropDowns();
+			// FIXME: if we've been "popped out", we need to set the height of the toolbar.
+			e.stopPropagation();
+			var dd = this[type+"DropDown"];
+			var pal = this[type+"Palette"];
+			dojo.style.toggleShowing(dd);
+			if(!pal){
+				pal = this[type+"Palette"] = dojo.widget.createWidget("ColorPalette", {}, dd, "first");
+				var fcp = pal.domNode;
+				with(dd.style){
+					width = dojo.html.getOuterWidth(fcp) + "px";
+					height = dojo.html.getOuterHeight(fcp) + "px";
+					zIndex = 1002;
+					position = "absolute";
 				}
 
 				dojo.event.connect(	"after",
-									this.hilitecolorPalette, "onColorSelect",
+									pal, "onColorSelect",
 									this, "exec",
 									function(mi){
-										mi.args.unshift("hilitecolor");
+										mi.args.unshift(type);
 										return mi.proceed();
 									}
 				);
 				dojo.event.connect(	"after",
-									this.hilitecolorPalette, "onColorSelect",
+									pal, "onColorSelect",
 									dojo.style, "toggleShowing",
 									this, function(mi){
-										mi.args.unshift(this.hilitecolorDropDown);
+										mi.args.unshift(dd);
 										return mi.proceed();
 									}
 				);
@@ -197,8 +165,16 @@ dojo.widget.defineWidget(
 					targetFunc:	"hideAllDropDowns",
 					once:		true
 				});
+				document.body.appendChild(dd);
 			}
+			var pos = dojo.style.abs(this[type+"Button"]);
+			// FIXME: when "snapped out" by the parent widget, IE scrolling
+			// seems to get added back into this. It should probably be
+			// accounted for in the editor widget instead of here, but it's a
+			// serious issue.
+			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
 		},
+
 
 		// stub for observers
 		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
