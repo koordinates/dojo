@@ -145,7 +145,12 @@ dojo.lang.extend(dojo.widget.svg.Chart, {
 		var rows=tbody.getElementsByTagName("tr");
 		var xMin=Number.MAX_VALUE,xMax=Number.MIN_VALUE;
 		var yMin=Number.MAX_VALUE,yMax=Number.MIN_VALUE;
-		var ignore = ["accesskey","align","bgcolor","class","colspan","height","id","nowrap","rowspan","style","tabindex","title","valign","width"];
+		var ignore = [
+			"accesskey","align","bgcolor","class",
+			"colspan","height","id","nowrap",
+			"rowspan","style","tabindex","title",
+			"valign","width"
+		];
 
 		for(var i=0; i<rows.length; i++){
 			var row=rows[i];
