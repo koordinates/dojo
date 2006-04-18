@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Google Maps Widget Demo</title>
+	<script type="text/javascript">
+		var djConfig = {isDebug: true};
+	</script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAOQlMNe3AWkq27kRV3hWmghQyacgg3RW3kBqapZchmVLUYsjpkBQx9YjRzQ1EjBYEE7r0vXMZFfrAdA" type="text/javascript"></script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.GoogleMap");
+	</script>
+	<style type="text/css">
+		#mapTest{
+			width:400px;
+			height:400px;
+			border:1px solid black;
+		}
+	</style>
+</head>
+<body style="padding: 50px;">
+	<p>Testing the map widget.</p>
+
+	<div dojoType="googlemap" id="mapTest">
+	</div>
+	
+	<p>HTML after</p>
+</body>
+</html>
