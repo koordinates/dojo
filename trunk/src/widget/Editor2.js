@@ -55,6 +55,22 @@ dojo.widget.defineWidget(
 			// dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onclick");
 			dojo.event.topic.subscribe("Editor2.clobberFocus", this, "setBlur");
 			dojo.event.connect(this.editNode, "onfocus", this, "setFocus");
+			dojo.event.connect(this.toolbarWidget.linkButton, "onclick", 
+				dojo.lang.hitch(this, function(){
+					var range;
+					if(this.document.selection){
+						range = this.document.selection.createRange().text;
+					}else if(dojo.render.html.mozilla){
+						range = this.window.getSelection().toString();
+					}
+					if(range.length){
+						this.toolbarWidget.exec("createlink", 
+							prompt("Please enter the URL of the link:", "http://"));
+					}else{
+						alert("Please select text to link");
+					}
+				})
+			);
 		},
 
 		setFocus: function(){

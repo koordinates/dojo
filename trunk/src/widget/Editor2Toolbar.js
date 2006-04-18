@@ -81,8 +81,8 @@ dojo.widget.defineWidget(
 		redoClick: function(){ this.exec("redo"); },
 		linkClick: function(){ 
 			// FIXME: we need to alert the user if they haven't selected any text
-			this.exec(	"createlink", 
-						prompt("Please enter the URL of the link:", "http://"));
+			// this.exec(	"createlink", 
+			// 			prompt("Please enter the URL of the link:", "http://"));
 		},
 		insertunorderedlistClick: function(){ this.exec("insertunorderedlist"); },
 		insertorderedlistClick: function(){ this.exec("insertorderedlist"); },
