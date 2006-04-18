@@ -273,25 +273,12 @@ dojo.require("dojo.uri.*");
 		sophisticated Flash to JavaScript unit tests, including large
 		amounts of data.
 		
-		* dojo.flash.Install does not currently support the Express Install
-		mechanism for easy upgrading.
-		
 		* On Internet Explorer, after doing a basic install, the page is
 		not refreshed or does not detect that Flash is now available. The way
 		to fix this is to create a custom small Flash file that is pointed to
 		during installation; when it is finished loading, it does a callback
 		that says that Flash installation is complete on IE, and we can proceed
 		to initialize the dojo.flash subsystem.
-		
-		* On Safari, installing Flash for the first time involves you closing 
-		the browser. When reopening the browser, you are not taken to the 
-		original page; not sure if there is a way to have Safari go back to 
-		your original page that was using dojo.flash before installation. Need
-		to ask Safari developers.
-		
-		* Refactoring dojo.flash.Embed to use the code from 
-		http://blog.deconcept.com/flashobject/ after getting permission from
-		that author to sign a Dojo Contributors Agreement.
 		
 		@author Brad Neuberg, bkn3@columbia.edu
 */
@@ -642,7 +629,7 @@ dojo.flash.Embed.prototype = {
 			information. Optional value; defaults to false.
 	*/
 	write: function(flashVer, doExpressInstall){
-		dojo.debug("write");
+		//dojo.debug("write");
 		if(dojo.lang.isUndefined(doExpressInstall)){
 			doExpressInstall = false;
 		}
@@ -668,6 +655,7 @@ dojo.flash.Embed.prototype = {
 			swfloc = dojo.flash.flash6_version;
 			var dojoPath = djConfig.baseRelativePath;
 			swfloc = swfloc + "?baseRelativePath=" + escape(dojoPath);
+			
 			objectHTML = 
 						  '<embed id="' + this.id + '" src="' + swfloc + '" '
 						+ '    quality="high" bgcolor="#ffffff" '
