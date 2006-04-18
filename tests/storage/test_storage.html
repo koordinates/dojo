@@ -7,7 +7,7 @@
 	<title>Dojo Storage Test</title>
 
 	<script type="text/javascript">
-		var djConfig = { isDebug: true };
+		var djConfig = { isDebug: false };
 	</script>
 	
 	<script type="text/javascript" src="../../dojo.js"></script>
@@ -22,6 +22,8 @@
 		form { float: right; width: 80%; }
 		#top { width: 70%; }
 		#directoryContainer { float: left; clear: left; width: 20%; }
+		#templates { text-align: center; }
+		#templates a { display: block; margin-top: 1em; }
 		#directory { width: 100%; }
 		#storageValue { vertical-align: top; width: 100%; height: 10em; }
 		#buttonContainer { text-align: center; }
@@ -43,6 +45,11 @@
 		<h2>All Keys:</h2>
 		<select id="directory" size="10">
 		</select>
+		
+		<div id="templates">
+			<a href="#" onclick="return TestStorage.saveBook()">Save Test Book (238K - Faust by Goethe)</a>
+			<a href="#" onclick="return TestStorage.saveXML()">Save Test XML</a>
+		</div>
 	</div>
 	
 	<form id="storageForm">

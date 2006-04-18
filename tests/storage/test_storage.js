@@ -1,4 +1,5 @@
 dojo.require("dojo.dom");
+dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.fx.*");
@@ -109,31 +110,7 @@ var TestStorage = {
 		this.printValueSize(); 
 		
 		// do the save
-		this._printStatus("Saving '" + key + "'...");
-		var self = this;
-		var saveHandler = function(status, keyName) {
-			if(status == dojo.storage.FAILED){
-				alert("You do not have permission to store data for this web site. "
-			        + "Press the Configure button to grant permission.");
-			}else if(status == dojo.storage.SUCCESS){
-				// clear out the old value
-				dojo.byId("storageValue").value = "";
-				self._printStatus("Saved '" + key + "'");
-				
-				// update the list of available keys
-				// put this on a slight timeout, because saveHandler is called back
-				// from Flash, which can cause problems in Flash 8 communication
-				// which affects Safari
-				// FIXME: Find out what is going on in the Flash 8 layer and fix it
-				// there
-				window.setTimeout(function(){ self._printAvailableKeys() }, 1);
-			}
-		};
-		try{
-			dojo.storage.put(key, value, saveHandler);
-		}catch(exp){
-			alert(exp);
-		}
+		this._save(key, value)
 	},
 	
 	clear: function(evt){
@@ -221,6 +198,77 @@ var TestStorage = {
 		
 		var valueSize = dojo.byId("valueSize");
 		valueSize.innerHTML = size;
+	},
+	
+	saveBook: function(evt){
+		this._printStatus("Loading book...");
+		var self = this;
+		dojo.io.bind({
+				url: "resources/testBook.txt",
+				load: function(type, data, evt){
+					self._printStatus("Book loaded");
+					self._save("testBook", data);
+				},
+				error: function(type, error){ 
+					alert("Unable to load testBook.txt");
+				},
+				mimetype: "text/plain"
+		});
+		
+		evt.preventDefault();
+		evt.stopPropagation();
+		
+		return false;
+	},
+	
+	saveXML: function(evt){
+		this._printStatus("Loading XML...");
+		var self = this;
+		dojo.io.bind({
+				url: "../flash/resources/test.xml",
+				load: function(type, data, evt){
+					self._printStatus("XML loaded");
+					self._save("testXML", data);
+				},
+				error: function(type, error){ 
+					alert("Unable to load test.XML");
+				},
+				mimetype: "text/plain"
+		});
+		
+		evt.preventDefault();
+		evt.stopPropagation();
+		
+		return false;
+	},
+	
+	_save: function(key, value){
+		this._printStatus("Saving '" + key + "'...");
+		var self = this;
+		var saveHandler = function(status, keyName) {
+			if(status == dojo.storage.FAILED){
+				alert("You do not have permission to store data for this web site. "
+			        + "Press the Configure button to grant permission.");
+			}else if(status == dojo.storage.SUCCESS){
+				// clear out the old value
+				dojo.byId("storageKey").value = "";
+				dojo.byId("storageValue").value = "";
+				self._printStatus("Saved '" + key + "'");
+				
+				// update the list of available keys
+				// put this on a slight timeout, because saveHandler is called back
+				// from Flash, which can cause problems in Flash 8 communication
+				// which affects Safari
+				// FIXME: Find out what is going on in the Flash 8 layer and fix it
+				// there
+				window.setTimeout(function(){ self._printAvailableKeys() }, 1);
+			}
+		};
+		try{
+			dojo.storage.put(key, value, saveHandler);
+		}catch(exp){
+			alert(exp);
+		}
 	},
 	
 	_printAvailableKeys: function(){
