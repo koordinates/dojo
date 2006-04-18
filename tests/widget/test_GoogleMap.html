@@ -19,11 +19,14 @@
 	</style>
 </head>
 <body style="padding: 50px;">
-	<p>Testing the map widget.</p>
-
-	<div dojoType="googlemap" id="mapTest">
+	<p>This is an example of the Dojo Google Map widget. Note that you have to include your own Google Map API script tag at the top of your document, with your own API key.</p>
+	<div dojoType="googlemap" 
+		plot="37.421890,-122.084692;37.331800,-122.029009;37.832912,-122.284055;37.688643,-121.703753;37.413775,-122.060369;37.434529,-122.161102"
+		center="37.4419,-122.1419"
+		zoom="12"
+		controls="smallmap;scale"
+		id="mapTest">
 	</div>
-	
 	<p>HTML after</p>
 </body>
 </html>
