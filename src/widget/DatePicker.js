@@ -18,7 +18,7 @@ dojo.widget.DatePicker = function(){
 dojo.inherits(dojo.widget.DatePicker, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:datepicker");
 
-dojo.requireAfterIf("html", "dojo.widget.html.DatePicker");
+dojo.requireIf("html", "dojo.widget.html.DatePicker");
 
 dojo.widget.DatePicker.util = new function() {
 	this.months = dojo.date.months;

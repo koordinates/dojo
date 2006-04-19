@@ -190,5 +190,5 @@ dojo.inherits(dojo.widget.DomComboBox, dojo.widget.DomWidget);
 dojo.widget.tags.addParseTreeHandler("dojo:combobox");
 
 // render-specific includes
-dojo.requireAfterIf("html", "dojo.widget.html.ComboBox");
+dojo.requireIf("html", "dojo.widget.html.ComboBox");
 

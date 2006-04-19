@@ -1,6 +1,6 @@
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
-dojo.hostenv.loadedUris.push("../src/hostenv_browser.js");
 dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+dojo.hostenv.loadedUris.push("../src/hostenv_browser.js");
 
 function removeComments(contents){
 	contents = new String((!contents) ? "" : contents);
@@ -14,12 +14,13 @@ function removeComments(contents){
 dojo.hostenv.getRequiresAndProvides = function(contents){
 	// FIXME: should probably memoize this!
 	if(!contents){ return []; }
+	
 
 	// check to see if we need to load anything else first. Ugg.
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|hostenv.conditionalLoadModule|hostenv.startPackage|hostenv.provide|provide)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|hostenv.conditionalLoadModule|hostenv.startPackage|provide)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}
@@ -34,7 +35,7 @@ dojo.hostenv.getDelayRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(requireAfterIf|requireAfter)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(requireAfterIf|requireIf)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}

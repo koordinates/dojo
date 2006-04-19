@@ -17,7 +17,7 @@ dojo.widget.TimePicker = function(){
 dojo.inherits(dojo.widget.TimePicker, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:timepicker");
 
-dojo.requireAfterIf("html", "dojo.widget.html.TimePicker");
+dojo.requireIf("html", "dojo.widget.html.TimePicker");
 
 dojo.widget.TimePicker.util = new function() {
 	// utility functions
