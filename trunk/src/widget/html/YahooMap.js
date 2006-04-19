@@ -10,7 +10,8 @@ dojo.widget.html.YahooMap=function(){
 	dojo.widget.YahooMap.call(this);
 
 	this.map=null;
-	this.locations=[];
+	this.datasrc="";
+	this.data=[];
 	this.controls=["zoomlong","maptype","pan"];
 };
 dojo.inherits(dojo.widget.html.YahooMap, dojo.widget.HtmlWidget);
@@ -60,42 +61,85 @@ dojo.lang.extend(dojo.widget.html.YahooMap, {
 		}
 	},
 	
-	initialize:function(args, frag){
-		if(frag && frag.location){
-			this.locations=frag.location;
+	parse:function(table){
+		this.data=[];
+
+		//	get the column indices
+		var h=table.getElementsByTagName("thead")[0];
+		if(!h){
+			return;
+		}
+
+		var a=[];
+		var cols=h.getElementsByTagName("td");
+		if(cols.length==0){
+			cols=h.getElementsByTagName("th");
+		}
+		for(var i=0; i<cols.length; i++){
+			a.push(cols[i].innerHTML.toLowerCase());
+		}
+		
+		//	parse the data
+		var b=table.getElementsByTagName("tbody")[0];
+		if(!b){
+			return;
+		}
+		for(var i=0; i<b.childNodes.length; i++){
+			if(!(b.childNodes[i].nodeName&&b.childNodes[i].nodeName.toLowerCase()=="tr")){
+				continue;
+			}
+			var cells=b.childNodes[i].getElementsByTagName("td");
+			var o={};
+			for(var j=0; j<a.length; j++){
+				var col=a[j];
+				if(col=="lat"||col=="long"){
+					o[col]=parseFloat(cells[j].innerHTML);					
+				}else{
+					o[col]=cells[j].innerHTML;
+				}
+			}
+			this.data.push(o);
 		}
 	},
-	postCreate:function(){
+	render:function(){
+		var pts=[];
+		var d=this.data;
+		for(var i=0; i<d.length; i++){
+			var pt=new YGeoPoint(d[i].lat, d[i].long);
+			pts.push(pt);
+			var icon=d[i].icon||null;
+			if(icon){
+				icon=new YImage(icon);
+			}
+			var m=new YMarker(pt,icon);
+			if(d[i].description){
+				m.addAutoExpand("<div>"+d[i].description+"</div>");
+			}
+			this.map.addOverlay(m);
+		}
+		var c=this.findCenter(pts);
+		var z=this.map.getZoomLevel(pts);
+		this.map.drawZoomAndCenter(c,z);
+	},
+	
+	initialize:function(args, frag){
 		if(!YMap){
 			dojo.raise("dojo.widget.YahooMap: The Yahoo Map script must be included in order to use this widget.");
 		}
-
+		if(this.datasrc){
+			this.parse(dojo.byId(this.datasrc));
+		}
+		else if(this.domNode.getElementsByTagName("table")[0]){
+			this.parse(this.domNode.getElementsByTagName("table")[0]);
+		}
+	},
+	postCreate:function(){
 		//	clean the domNode before creating the map.
 		while(this.domNode.childNodes.length>0){
 			this.domNode.removeChild(this.domNode.childNodes[0]);
 		}
 		this.map=new YMap(this.domNode);
-
-		var pts=[];
-		if(this.locations){
-			var l=this.locations;
-			for(var i=0; i<l.length; i++){
-				var p=l[i].point[0];
-				if(!p) continue;	//	no point to attach to.
-				var t=p.value.split(",");
-				var pt=new YGeoPoint(parseFloat(t[0]),parseFloat(t[1]));
-				pts.push(pt);
-				var m=new YMarker(pt);
-				if(l[i].overlay[0]){
-					m.addLabel("<div>"+l[i].overlay[0].value+"</div>");
-				}
-				this.map.addOverlay(m);
-			}
-		}
-		var c=this.findCenter(pts);
-		var z=this.map.getZoomLevel(pts);
-		this.map.drawZoomAndCenter(c,z);
-
 		this.setControls();
+		this.render();
 	}
 });
