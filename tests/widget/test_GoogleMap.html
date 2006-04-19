@@ -3,7 +3,10 @@
 <head>
 	<title>Google Maps Widget Demo</title>
 	<script type="text/javascript">
-		var djConfig = {isDebug: true};
+		var djConfig={
+			isDebug: true
+			,debugAtAllCosts:true
+		};
 	</script>
 	<!-- script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAOQlMNe3AWkq27kRV3hWmghQyacgg3RW3kBqapZchmVLUYsjpkBQx9YjRzQ1EjBYEE7r0vXMZFfrAdA" type="text/javascript"></script -->
 	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAACUNdgv_7FGOmUslbm9l6_hTaQpDt0dyGLIHbXMPTzg1kWeAfwRTwZNyrUfbfxYE9yIvRivEjcXoDTg" type="text/javascript"></script>
@@ -11,6 +14,7 @@
 	<script type="text/javascript">
 		dojo.require("dojo.widget.GoogleMap");
 	</script>
+	<script>dojo.hostenv.writeIncludes();</script>
 	<style type="text/css">
 		#mapTest{
 			width:100%;
@@ -22,11 +26,18 @@
 <body>
 	<h1>Dojo Google Map Widget</h1>
 	<p>This is an example of the Dojo Google Map widget. Note that you have to include your own Google Map API script tag at the top of your document, with your own API key.</p>
-	<div dojoType="googlemap" 
-		plot="37.4419,-122.14193;37.421890,-122.084692;37.331800,-122.029009;37.832912,-122.284055;37.688643,-121.703753;37.413775,-122.060369;37.434529,-122.161102"
-		controls="largemap;scale;maptype"
-		id="mapTest">
-	</div>
+	<div dojoType="googlemap" id="mapTest" datasrc="mapData"></div>
+	<table id="mapData">
+		<thead><tr><th>Lat</th><th>Long</th><th>Icon</th><th>Description</th></tr></thead>
+		<tbody>
+			<tr><td>37.4419</td><td>-122.14193</td><td></td><td><div>This is the first place on the map.</td></tr>
+			<tr><td>37.42189</td><td>-122.084692</td><td></td><td><div>This is the second place on the map.</td></tr>
+			<tr><td>37.3318</td><td>-122.029009</td><td></td><td><div>This is the third place on the map.</td></tr>
+			<tr><td>37.832912</td><td>-122.284055</td><td></td><td><div>This is the fourth place on the map.</td></tr>
+			<tr><td>37.688643</td><td>-122.0703753</td><td></td><td><div>This is the fifth place on the map.</td></tr>
+			<tr><td>37.413775</td><td>-122.060369</td><td></td><td><div>This is the sixth place on the map.</td></tr>
+		</tbody>
+	</table>
 	<p>HTML after</p>
 </body>
 </html>

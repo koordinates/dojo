@@ -123,7 +123,7 @@ dojo.lang.extend(dojo.widget.html.YahooMap, {
 	},
 	
 	initialize:function(args, frag){
-		if(!YMap){
+		if(!YMap || !YGeoPoint){
 			dojo.raise("dojo.widget.YahooMap: The Yahoo Map script must be included in order to use this widget.");
 		}
 		if(this.datasrc){
