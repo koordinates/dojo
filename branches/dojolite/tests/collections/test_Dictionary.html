@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<title>Dictionary Test</title>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
+		<script language="JavaScript" type="text/javascript" src="test_Dictionary.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			function init(){
+				var d = new dojo.collections.Dictionary();
+				d.add("foo",{test:"bar"});
+				d.add("baz","fab");
+				d.add("buck","shot");
+				d.add("apple",{test:"orange",toString:function(){ return this.test; }});
+				
+				var s = [];
+				var e = d.getIterator();
+				
+				//	testing while form.
+				s.push("...testing while(!atEnd) form...");
+				while(!e.atEnd()){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+
+				s.push("...testing while(var item=e.get()) form...");
+				var item;
+				while(item=e.get()){
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+				
+				//	testing do...while form.
+				s.push(" ");
+				s.push("...testing do...while form...");
+				do {
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				} while (!e.atEnd());
+				e.reset();
+				
+				//	testing for form
+				s.push(" ");
+				s.push("...testing for form...");
+				for (var item=e.element; item=e.get();){
+					s.push(item.key + " == " + item.value);
+				}
+				
+				s.push(" ");
+				s.push("...testing with no elements...");
+				var d = new dojo.collections.Dictionary();
+				var e = d.getIterator();
+				s.push("...testing while form...");
+				while(!e.atEnd()){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+
+				s.push("...testing while(var item=e.get()) form...");
+				var item;
+				while(item=e.get()){
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+				
+				//	testing do...while form.
+				s.push(" ");
+				s.push("...testing do...while form...");
+				do {
+					var item=e.get();
+					try{
+						s.push(item.key + " == " + item.value);
+					} catch(e){
+						s.push("do...while: " +e.message);
+					}
+				} while (!e.atEnd());
+				e.reset();
+				
+				//	testing for form
+				s.push(" ");
+				s.push("...testing for form...");
+				for (;!e.atEnd();){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+
+				s.push(" ");
+				s.push("...testing with one element...");
+				var d = new dojo.collections.Dictionary();
+				d.add("apple",{test:"orange",toString:function(){ return this.test; }});
+				var e = d.getIterator();
+				s.push("...testing while form...");
+				while(!e.atEnd()){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+
+				s.push("...testing while(var item=e.get()) form...");
+				var item;
+				while(item=e.get()){
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+				
+				//	testing do...while form.
+				s.push(" ");
+				s.push("...testing do...while form...");
+				do {
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				} while (!e.atEnd());
+				e.reset();
+				
+				//	testing for form
+				s.push(" ");
+				s.push("...testing for form...");
+				for (;!e.atEnd();){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+				
+				document.getElementsByTagName("body")[0].innerHTML = s.join("<br/>");
+				
+				//	run the unit tests now.
+				test_Dictionary_ctor();
+				test_Dictionary_add();
+				test_Dictionary_clear();
+				test_Dictionary_clone();
+				test_Dictionary_contains();
+				test_Dictionary_containsKey();
+				test_Dictionary_containsValue();
+				test_Dictionary_getKeyList();
+				test_Dictionary_getValueList();
+				test_Dictionary_remove();
+			}
+			dojo.hostenv.modulesLoadedListeners.push(init);
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
