@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="docs.xsl"?>
+
+<modules>
+
+<module name="dojo">
+
+<description>
+	<p>The Dojo root</p>
+</description>
+
+<property name="version">
+
+	<description><p>Defines the version of Dojo</p></description>
+	
+	<property name="major" type="Number">
+		<description><p>The major version number.</p></description>
+	</property>
+
+	<property name="minor" type="Number">
+		<description><p>The minor version number.</p></description>
+	</property>
+
+	<property name="patch" type="Number">
+		<description><p>The patch version number.</p></description>
+	</property>
+
+	<property name="flag" type="String">
+		<description><p>A flag for the version.  In beta releases this is set to <code>"b"</code> and development versions this is set to <code>"+"</code>.</p></description>
+	</property>
+
+	<property name="revision" type="Number">
+		<description><p>The SVN revision number.</p></description>
+	</property>
+
+</property>
+
+</module>
+
+<property name="dj_global" type="Object">
+	<description>
+		<p>This variable points at the root of the JavaScript execution environment.  In a Web browser this is the <code>window</code> object of the browser window that Dojo was loaded into.  In a pure JavaScript enviroment, like Rhino or a standalone SeaMonkey, this is the context in which Dojo was initially executed in.</p>
+		<p>This property is not particularly useful in a Web browser environment, as the <code>window</code> object is always available, however in other environments developers are encouraged to use this object when they want to refer to the global execution context.</p>
+	</description>
+</property>
+
+<module name="djConfig">
+
+<description>
+	<p>The global Dojo configuration registry.  Configuration options for any module can be stored in this registry and are easily modifiable.</p>
+	<p>To define a default configuration object the <function>add</function> method is provided:</p>
+	<pre>djConfig.add('my_option', 'my_default');</pre>
+</description>
+
+<function name="add">
+	<args>
+		<arg type="String">name</arg>
+		<arg type="Object">value</arg>
+	</args>
+	<description>
+		<p>If the options specified by <arg>name</arg> is not already defined then <arg>value</arg> is defined as the default.</p>
+	</description>
+	<example>
+		<p>At the beginning of the debugging module the module owner adds the default property for the <code>isDebug</code> option like this:</p>
+		<pre>djConfig.add('isDebug', false); // off by default</pre>
+		<p>However at any time a developer can turn on debugging by specifying:</p>
+		<pre>djConfig.isDebug</pre>
+		<p>and this option will be honoured.</p>
+	</example>
+</function>
+
+</module>
+
+</modules>

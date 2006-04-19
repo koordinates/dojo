@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="docs.xsl"?>
+
+<module name="packaging">
+
+<description>
+	<p>A dynamic packaging system which manages JavaScript dependencies using <function>require</function> and <function>provide</function> function calls.</p>
+</description>
+
+
+
+</modules>
