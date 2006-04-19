@@ -127,6 +127,7 @@ dojo.widget.defineWidget(
 		// FIXME: these methods aren't currently dealing with clicking in the
 		// general document to hide the menu
 		colorClick: function(e, type){
+			var h = dojo.render.html;
 			this.hideAllDropDowns();
 			// FIXME: if we've been "popped out", we need to set the height of the toolbar.
 			e.stopPropagation();
@@ -167,14 +168,18 @@ dojo.widget.defineWidget(
 					targetFunc:	"hideAllDropDowns",
 					once:		true
 				});
-				document.body.appendChild(dd);
+				if(!h.ie){
+					document.body.appendChild(dd);
+				}
 			}
 			var pos = dojo.style.abs(this[type+"Button"]);
 			// FIXME: when "snapped out" by the parent widget, IE scrolling
 			// seems to get added back into this. It should probably be
 			// accounted for in the editor widget instead of here, but it's a
 			// serious issue.
-			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
+			if(!h.ie){
+				dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
+			}
 		},
 
 
