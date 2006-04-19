@@ -18,7 +18,7 @@ dojo.widget.MonthlyCalendar= function(){
 dojo.inherits(dojo.widget.MonthlyCalendar, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:monthlycalendar");
 
-dojo.requireAfterIf("html", "dojo.widget.html.MonthlyCalendar");
+dojo.requireIf("html", "dojo.widget.html.MonthlyCalendar");
 
 dojo.widget.MonthlyCalendar.util= new function() {
 	this.months = dojo.date.months;

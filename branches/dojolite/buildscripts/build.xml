@@ -485,15 +485,15 @@ ${profileDeps}
 				files="${profileDeps}" />
 		</concat>
 		<!-- 
-			clobber requireAfterIf and requireAfter statements since they
+			clobber requireIf and requireAfterIf statements since they
 			aren't applicable in build
 		-->
-		<replaceregexp match="dojo.requireAfterIf\((.*?)\);" 
+		<replaceregexp match="dojo.requireIf\((.*?)\);" 
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
 
-		<replaceregexp match="dojo.requireAfter\((.*?)\);" 
+		<replaceregexp match="dojo.requireAfterIf\((.*?)\);" 
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>

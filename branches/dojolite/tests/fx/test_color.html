@@ -24,40 +24,40 @@ var c = dojo.graphics.color;
 var hex = ["#003399", "#039", "003399", "039"];
 for(var i = 0; i < hex.length; i++) {
 	var rgb = c.hex2rgb(hex[i]);
-	dj_debug(hex[i], "-> hex2rgb ->", rgb, "-> rgb2hex ->", c.rgb2hex(rgb));
-	dj_debug("extractRGB(" + hex[i] + ")", c.extractRGB(hex[i]));
+	dojo.debug(hex[i], "-> hex2rgb ->", rgb, "-> rgb2hex ->", c.rgb2hex(rgb));
+	dojo.debug("extractRGB(" + hex[i] + ")", c.extractRGB(hex[i]));
 }
 
-dj_debug();
-dj_debug("Color object:");
+dojo.debug();
+dojo.debug("Color object:");
 var color = new dojo.graphics.color.Color("ffc");
-dj_debug("toRgb:", color.toRgb());
-dj_debug("toHex:", color.toHex());
-dj_debug("toCss:", color.toCss());
-dj_debug("toString:", color.toString());
-dj_debug("toHsv:", color.toHsv());
-dj_debug("toHsl:", color.toHsl());
+dojo.debug("toRgb:", color.toRgb());
+dojo.debug("toHex:", color.toHex());
+dojo.debug("toCss:", color.toCss());
+dojo.debug("toString:", color.toString());
+dojo.debug("toHsv:", color.toHsv());
+dojo.debug("toHsl:", color.toHsl());
 
-dj_debug();
-dj_debug("Named colors:");
+dojo.debug();
+dojo.debug("Named colors:");
 for(var clr in c.named) {
 	var rgb = c.extractRGB(clr);
-	dj_debug(clr, "->", rgb, "->", c.rgb2hex(rgb));
+	dojo.debug(clr, "->", rgb, "->", c.rgb2hex(rgb));
 }
 
 
-dj_debug();
-dj_debug("Color spaces:");
+dojo.debug();
+dojo.debug("Color spaces:");
 
 var a = [255,255,204];
 var b = dojo.graphics.color.rgb2hsv(a);
 var c = dojo.graphics.color.hsv2rgb(b);
-dj_debug("HSV:", a, "->", b, "->", c);
+dojo.debug("HSV:", a, "->", b, "->", c);
 
 var d = [255,255,204];
 var e = dojo.graphics.color.rgb2hsl(d);
 var f = dojo.graphics.color.hsl2rgb(e);
-dj_debug("HSL:", d, "->", e, "->", f);
+dojo.debug("HSL:", d, "->", e, "->", f);
 
 </script>
 </head>

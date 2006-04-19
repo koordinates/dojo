@@ -488,7 +488,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	},
 
 	fillInTemplate: function(){
-		// dj_unimplemented("dojo.widget.DomWidget.fillInTemplate");
+		// dojo.unimplemented("dojo.widget.DomWidget.fillInTemplate");
 	},
 	
 	// method over-ride
@@ -502,14 +502,14 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	cleanUp: function(){},
 	
 	getContainerHeight: function(){
-		dj_unimplemented("dojo.widget.DomWidget.getContainerHeight");
+		dojo.unimplemented("dojo.widget.DomWidget.getContainerHeight");
 	},
 
 	getContainerWidth: function(){
-		dj_unimplemented("dojo.widget.DomWidget.getContainerWidth");
+		dojo.unimplemented("dojo.widget.DomWidget.getContainerWidth");
 	},
 
 	createNodesFromText: function(){
-		dj_unimplemented("dojo.widget.DomWidget.createNodesFromText");
+		dojo.unimplemented("dojo.widget.DomWidget.createNodesFromText");
 	}
 });

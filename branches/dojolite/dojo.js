@@ -13,7 +13,7 @@
 		isDashboard = true;
 		hostEnv = "dashboard";
 	}
-	var tmps = ["bootstrap1.js", "hostenv_"+hostEnv+".js", "bootstrap2.js"];
+	var tmps = ["bootstrap1.js", "bootstrap2.js", "hostenv_"+hostEnv+".js"];
 
 	if(hostEnv == "dashboard"){
 		tmps.splice(1, 0, "hostenv_browser.js");
@@ -49,6 +49,10 @@
 				}
 			}
 		}
+	}
+
+	if((this["djConfig"])&&(djConfig["isDebug"])){
+		tmps.push("debug.js");
 	}
 
 	if((this["djConfig"])&&(djConfig["debugAtAllCosts"])&&(!isRhino)&&(!isDashboard)){

@@ -10,4 +10,4 @@ dojo.widget.Button = function(){
 	this.isContainer = true;
 }
 dojo.inherits(dojo.widget.Button, dojo.widget.Widget);
-dojo.requireAfterIf("html", "dojo.widget.html.Button");
+dojo.requireIf("html", "dojo.widget.html.Button");
