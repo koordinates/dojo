@@ -21,7 +21,24 @@
 <body>
 	<h1>Dojo Yahoo Map Widget</h1>
 	<p>This is an example of the Dojo Yahoo Map widget. Note that you have to include the Yahoo Map script tag (as written in this file) at the top of your document.  You may use the Dojo Toolkit application ID, as Yahoo's API is IP-address dependant and not domain-dependant.</p>
-	<div dojoType="yahoomap" id="mapTest"></div>
+	<div dojoType="yahoomap" id="mapTest">
+		<location>
+			<point>37.404196,-122.008194</point>
+			<overlay>Y!</overlay>
+		</location>
+		<location>
+			<point>37.4419,-122.14193</point>
+			<overlay>Stanford</overlay>
+		</location>
+		<location>
+			<point>37.421890,-122.084692</point>
+			<overlay>Google</overlay>
+		</location>
+		<location>
+			<point>37.331800,-122.029009</point>
+			<overlay>Apple</overlay>
+		</location>
+	</div>
 	<p>HTML after</p>
 </body>
 </html>

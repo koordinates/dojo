@@ -12,24 +12,10 @@ dojo.widget.YahooMap=function(){
 }
 dojo.inherits(dojo.widget.YahooMap, dojo.widget.Widget);
 
-//FIXME
 dojo.widget.YahooMap.Controls={
-	LargeMap:"largemap",
-	SmallMap:"smallmap",
-	SmallZoom:"smallzoom",
-	Scale:"scale",
 	MapType:"maptype",
-	Overview:"overview",
-	get:function(s){
-		for(var p in this){
-			if(typeof(this[p])=="string"
-				&& this[p]==s
-			){
-				return p;
-			}
-		}
-		return null;
-	}
+	Pan:"pan",
+	ZoomLong:"zoomlong",
+	ZoomShort:"zoomshort"
 };
-
 dojo.requireAfterIf("html", "dojo.widget.html.YahooMap");
