@@ -241,8 +241,12 @@ dojo.widget.manager = new function(){
 			this.resizing=true;
 			for(var id in this.topWidgets){
 				var child = this.topWidgets[id];
+				if(!child.isShowing || !child.isShowing()){
+					// don't try to resize hidden widgets; it's meaningless and breaks things
+					continue;
+				}
 				//dojo.debug("root resizing child " + child.widgetId);
-				if(child.onResized){
+				if(child.onResized ){
 					child.onResized();
 				}
 			}
