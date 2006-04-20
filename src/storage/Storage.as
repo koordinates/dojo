@@ -82,7 +82,9 @@ class Storage {
 		// to hide the Flash dialog. Instead, we need to load a movie in the
 		// background that we can show a close button on.
 		_root.createEmptyMovieClip("_settingsBackground", 1);
-		_root._settingsBackground.loadMovie("../../storage_dialog.swf");		
+		_root._settingsBackground.loadMovie("../../storage_dialog.swf");
+		_root._settingsBackground.testMe = "hello world";
+		_root.testMe = "hello world2";		
 	}
 	
 	public function clear(namespace){
