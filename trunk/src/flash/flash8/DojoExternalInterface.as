@@ -61,7 +61,7 @@ class DojoExternalInterface{
 	}
 	
 	public static function call(methodName:String,
-															resultsCallback:Function) : Void{
+								resultsCallback:Function) : Void{
 		// we might have any number of optional arguments, so we have to 
 		// pass them in dynamically; strip out the results callback
 		var parameters = new Array();
