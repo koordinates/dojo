@@ -280,7 +280,7 @@ var TestStorage = {
 		var availableKeys = dojo.storage.getKeys();
 		for (var i = 0; i < availableKeys.length; i++) {
 			var optionNode = document.createElement("option");
-			optionNode.appendChild(document.createTextNode(availableKeys[i]))
+			optionNode.appendChild(document.createTextNode(availableKeys[i]));
 			optionNode.value = availableKeys[i];
 			directory.appendChild(optionNode);
 		}
