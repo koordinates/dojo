@@ -640,7 +640,7 @@ dojo.flash.Embed.prototype = {
 		containerStyle.append("height: " + this.height + "px; ");
 		if(this._visible == false){
 			containerStyle.append("position: absolute; ");
-			containerStyle.append("z-index: 100; ");
+			containerStyle.append("z-index: 10000; ");
 			containerStyle.append("top: -1000px; ");
 			containerStyle.append("left: -1000px; ");
 		}
@@ -842,6 +842,13 @@ dojo.flash.Communicator.prototype = {
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
 		//dojo.debug("fscommand, command="+command+", args="+args);
+		// Flash 8 on Mac/Firefox precedes all commands with the string "FSCommand:";
+		// strip it off if it is present
+		if(command != null && !dojo.lang.isUndefined(command)
+			&& /^FSCommand:(.*)/.test(command) == true){
+			command = command.match(/^FSCommand:(.*)/)[1];
+		}
+		 
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
 		}else if(command == "call"){ // Flash to JavaScript method call
