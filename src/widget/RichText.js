@@ -534,6 +534,14 @@ dojo.widget.defineWidget(
 			// we need this event at the moment to get the events from control keys
 			// such as the backspace. It might be possible to add this to Dojo, so that
 			// keyPress events can be emulated by the keyDown and keyUp detection.
+			if((dojo.render.html.ie)&&(e.keyCode == e.KEY_TAB)){
+				e.preventDefault();
+				e.stopPropagation();
+				// FIXME: this is a poor-man's indent/outdent. It would be
+				// better if it added 4 "&nbsp;" chars in an undoable way.
+				// Unfortuantly pasteHTML does not prove to be undoable 
+				this.execCommand((e.shiftKey ? "outdent" : "indent"));
+			}
 		},
 		
 		/** Fired on keyup */
@@ -561,7 +569,6 @@ dojo.widget.defineWidget(
 					}
 				}
 			}
-			
 			
 			/*
 			// define some key combos
