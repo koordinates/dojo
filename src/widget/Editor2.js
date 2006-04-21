@@ -74,12 +74,12 @@ dojo.widget.defineWidget(
 		},
 
 		setFocus: function(){
-			dojo.debug("setFocus:", this);
+			// dojo.debug("setFocus:", this);
 			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
 		},
 
 		setBlur: function(){
-			dojo.debug("setBlur:", this);
+			// dojo.debug("setBlur:", this);
 			dojo.event.disconnect(this.toolbarWidget, "exec", this, "execCommand");
 		},
 
@@ -265,8 +265,10 @@ dojo.widget.defineWidget(
 		
 			cp.onDisplayChanged = (function(odc){
 				return function(){
-					odc.call(this);
-					this.updateToolbar();
+					try{
+						odc.call(this);
+						this.updateToolbar();
+					}catch(e){}
 				};
 			})(cp.onDisplayChanged);
 
