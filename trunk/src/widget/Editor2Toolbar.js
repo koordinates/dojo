@@ -247,5 +247,10 @@ dojo.widget.defineWidget(
 	"html",
 	function(){
 		dojo.event.connect(this, "fillInTemplate", this, "hideUnusableButtons");
+		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
+			if(dojo.render.html.ie){
+				this.domNode.style.zoom = 1.0;
+			}
+		}));
 	}
 );

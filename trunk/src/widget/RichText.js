@@ -521,6 +521,9 @@ dojo.widget.defineWidget(
 				}
 
 				// FIXME: when scrollbars appear/disappear this needs to be fired						
+			}else if(dojo.render.html.ie){
+				// IE contentEditable
+				this.editNode.style.zoom = 1.0;
 			}
 			
 			if(this.focusOnLoad){
