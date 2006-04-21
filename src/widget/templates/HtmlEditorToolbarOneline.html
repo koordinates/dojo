@@ -95,19 +95,6 @@
 					</span>
 				</td>
 				<td>
-					<!-- font select -->
-					<select dojoOnClick="formatSelectClick; buttonClick;"
-						dojoAttachPoint="formatSelectBox">
-						<!-- FIXME: using "p" here inserts a paragraph in most cases! -->
-						<option value="span">Normal</option>
-						<option value="pre">Fixed Font</option>
-						<option value="h1">Main Heading</option>
-						<option value="h2">Section Heading</option>
-						<option value="h3">Sub-Heading</option>
-						<!-- <option value="blockquote">Block Quote</option> -->
-					</select>
-				</td>
-				<td>
 					<!-- bold -->
 					<span class="iconContainer" dojoAttachPoint="boldButton"
 						unselectable="on" dojoOnClick="boldClick; buttonClick;">
@@ -249,6 +236,19 @@
 						<span title="Justify Both" class="icon justifyfull" unselectable="on">&nbsp;</span>
 					</span>
 				</td>	
+				<td>
+					<!-- font select -->
+					<select dojoOnClick="formatSelectClick; buttonClick;"
+						dojoAttachPoint="formatSelectBox">
+						<!-- FIXME: using "p" here inserts a paragraph in most cases! -->
+						<option value="span">Normal</option>
+						<option value="pre">Fixed Font</option>
+						<option value="h1">Main Heading</option>
+						<option value="h2">Section Heading</option>
+						<option value="h3">Sub-Heading</option>
+						<!-- <option value="blockquote">Block Quote</option> -->
+					</select>
+				</td>
 				<td width="*">&nbsp;</td>
 			</tr>
 		</tbody>
