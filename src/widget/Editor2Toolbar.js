@@ -197,6 +197,15 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		uninitialize: function(){
+			dojo.event.kwDisconnect({
+				srcObj:		document.body, 
+				srcFunc:	"onclick", 
+				targetObj:	this,
+				targetFunc:	"hideAllDropDowns",
+				once:		true
+			});
+		},
 
 		// stub for observers
 		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
