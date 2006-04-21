@@ -67,7 +67,7 @@ dojo.widget.defineWidget(
 			// add the formatting functions
 			var funcs = ["queryCommandEnabled", "queryCommandState",
 				"queryCommandValue", "execCommand"];
-			for (var i = 0; i < funcs.length; i++) {
+			for(var i = 0; i < funcs.length; i++){
 				dojo.event.connect("around", this, funcs[i], this, "_normalizeCommand");
 			}
 			
@@ -1008,6 +1008,15 @@ dojo.widget.defineWidget(
 				returnValue = this.document.execCommand(command, false, argument);			
 				this.document.execCommand("useCSS", false, true);
 			
+			} else if ((dojo.render.html.ie)&&( (command == "backcolor")||(command == "forecolor")) ){
+				// IE weirdly collapses ranges when we exec these commands, so prevent it	
+				var tr = this.document.selection.createRange();
+				argument = arguments.length > 1 ? argument : null;
+				returnValue = this.document.execCommand(command, false, argument);
+				// timeout is workaround for weird IE behavior were the text
+				// selection gets correctly re-created, but subsequent input
+				// apparently isn't bound to it
+				setTimeout(function(){tr.select();}, 1);
 			} else {
 				// dojo.debug("command:", command, "arg:", argument);
 				argument = arguments.length > 1 ? argument : null;
