@@ -16,6 +16,11 @@ class Storage {
 		DojoExternalInterface.addCallback("getKeys", this, getKeys);
 		DojoExternalInterface.addCallback("remove", this, remove);
 		DojoExternalInterface.loaded();
+		
+		// preload the System Settings finished button movie for offline
+		// access so it is in the cache
+		_root.createEmptyMovieClip("_settingsBackground", 1);
+		_root._settingsBackground.loadMovie("../../storage_dialog.swf");
 	}
 
 	public function put(keyName, keyValue, namespace){
@@ -83,8 +88,6 @@ class Storage {
 		// background that we can show a close button on.
 		_root.createEmptyMovieClip("_settingsBackground", 1);
 		_root._settingsBackground.loadMovie("../../storage_dialog.swf");
-		_root._settingsBackground.testMe = "hello world";
-		_root.testMe = "hello world2";		
 	}
 	
 	public function clear(namespace){
