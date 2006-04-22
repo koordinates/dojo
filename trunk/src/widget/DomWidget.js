@@ -160,7 +160,17 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				if(!thisFunc){
 					thisFunc = tevt;
 				}
-				dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
+
+				var tf = function(){ 
+					var ntf = new String(thisFunc);
+					return function(evt){
+						if(_this[ntf]){
+							_this[ntf](dojo.event.browser.fixEvent(evt, this));
+						}
+					};
+				}();
+				dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
+				// dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
 			}
 		}
 
@@ -177,7 +187,16 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				}
 				for(var z=0; z<funcs.length; z++){
 					if(!funcs[z].length){ continue; }
-					dojo.event.browser.addListener(baseNode, domEvt, dojo.lang.hitch(_this, funcs[z]));
+					var tf = function(){ 
+						var ntf = new String(funcs[z]);
+						return function(evt){
+							if(_this[ntf]){
+								_this[ntf](dojo.event.browser.fixEvent(evt, this));
+							}
+						}
+					}();
+					dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
+					// dojo.event.browser.addListener(baseNode, domEvt, dojo.lang.hitch(_this, funcs[z]));
 				}
 			}
 		}
