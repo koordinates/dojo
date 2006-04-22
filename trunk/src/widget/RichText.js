@@ -430,7 +430,7 @@ dojo.widget.defineWidget(
 
 			if(this.editNode){
 				ifrFunc(); // iframe already exists, just set content
-			}else if(oldMoz){
+			}else if(dojo.render.html.moz){
 				this.iframe.onload = function(){
 					setTimeout(ifrFunc, 250);
 				}
