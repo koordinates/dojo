@@ -525,6 +525,7 @@ dojo.widget.defineWidget = function(	widgetClass 	/*string*/,
 	props.widgetType = type;
 
 	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+	dojo.widget.manager.registerWidgetPackage(namespace);
 
 	nsref[type] = function(){
 		try{
