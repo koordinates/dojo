@@ -72,7 +72,6 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		this.paneWidth = dojo.style.getContentWidth(this.domNode);
 		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 		this.layoutPanels();
-		this.notifyChildrenOfResize();	// notify children they've been moved/resized
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -229,7 +228,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
-        this.children[0].onResized();
+        this.children[0].onParentResized();
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -242,7 +241,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
-            this.children[i].onResized();
+            this.children[i].onParentResized();
 			pos += size;
 		}
 	},

@@ -40,13 +40,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		if(this.preload){ this.loadContents(); }
 	},
 
-	onResized: function(){
-		if(this.isShowing()){
-			this.loadContents();
-		}
-		dojo.widget.html.ContentPane.superclass.onResized.call(this);
-	},
-
 	show: function(){
 		// if refreshOnShow is true, reload the contents every time; otherwise, load only the first time
 		if(this.refreshOnShow){

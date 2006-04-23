@@ -45,10 +45,6 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 		dojo.lang.setTimeout(this, this.sizeMyself, 0);
 	},
 
-	onResized: function(){
-		this.sizeMyself();
-	},
-
 	sizeMyself: function(e){
 		this.height = dojo.style.getOuterHeight(this.containerNode);
 		this.containerWidth = dojo.style.getOuterWidth(this.containerNode);

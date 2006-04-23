@@ -138,8 +138,7 @@ dojo.widget.defineWidget(
 
 			this.domNode.style.visibility = "hidden";
 			this.domNode.style.display = "block";
-			dojo.widget.html.Dialog.superclass.onResized.call(this);
-			this.placeDialog();
+			this.onParentResized();
 
 			this.domNode.style.display="none";
 			this.domNode.style.visibility = "";
@@ -187,13 +186,12 @@ dojo.widget.defineWidget(
 			this.domNode.style.display = "block";
 		},
 
-		onResized: function() {
-			if(this.isShowing()){
-				this.sizeBackground();
-				this.placeDialog();
-				this.domNode.style.display="block";
-				dojo.widget.html.Dialog.superclass.onResized.call(this);
-			}
+		// Called when the browser window's size is changed
+		onParentResized: function() {
+			this.sizeBackground();
+			this.placeDialog();
+			this.domNode.style.display="block";
+			this.onResized();
 		}
 	}
 );

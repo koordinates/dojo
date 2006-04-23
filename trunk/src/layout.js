@@ -91,6 +91,10 @@ dojo.layout = function(container, children, layoutPriority) {
 			dojo.style.setOuterWidth(elm, f.width);
 			dojo.style.setOuterHeight(elm, f.height);
 		}
+		
+		// TODO: for widgets I want to call resizeTo(), but for top/bottom
+		// alignment I only want to set the width, and have the size determined
+		// dynamically.  (The thinner you make a div, the more height it consumes.)
 		if(child.onResized){
 			child.onResized();
 		}
