@@ -196,6 +196,35 @@ dojo.widget.defineWidget(
 						// alert(cmd+":"+e);
 					}
 				}, this);
+
+			var h = dojo.render.html;
+			
+			// safari f's us for selection primitives
+			if(h.safari){ return; }
+
+			var selectedNode = (h.ie) ? this.document.selection.createRange().parentElement() : this.window.getSelection().anchorNode;
+			// make sure we actuall have an element
+			while((selectedNode)&&(selectedNode.nodeType != 1)){
+				selectedNode = selectedNode.parentNode;
+			}
+			if(!selectedNode){ return; }
+
+			var formats = ["span", "pre", "h1", "h2", "h3"];
+			// gotta run some specialized updates for the various
+			// formatting options
+			var type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
+			while((selectedNode)&&(selectedNode!=this.editNode)&&(!type)){
+				selectedNode = selectedNode.parentNode;
+				type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
+			}
+			if(!type){
+				type = "";
+			}else{
+				if(type.charAt(0)=="h"){
+					this.toolbarWidget.unhighlightButton("bold");
+				}
+			}
+			this.toolbarWidget.selectFormat(type);
 		},
 
 		updateItem: function(item) {
