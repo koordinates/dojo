@@ -74,6 +74,13 @@ public class JsObject implements JsBlock {
 			block.renderBlock(parent, doc);
 	}
   
+  public void setStartPosition(int startPosition) {}
+  
+  public int getStartPosition()
+  {
+    return 0;
+  }
+  
   /**
    * {@inheritDoc}
    */

@@ -27,17 +27,11 @@ public class Comment implements JsBlock {
   /* The type (multi-line, single-line)! */
   protected String _type;
   
-  /**
-   * Creates a new single line comment with a pre-configured start position,
-   * mostly used in javascript parsing operations.
-   * 
-   * @param startPosition
-   * @param nextPosition
-   */
-  public Comment(int startPosition, int nextPosition)
+  public Comment() {}
+  
+  public void setStartPosition(int startPosition)
   {
     _startPosition = startPosition;
-    _nextPosition = nextPosition;
   }
   
   public int getStartPosition()

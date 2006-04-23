@@ -40,6 +40,8 @@ public class JsParser {
     _blockParsers.add(new FunctionParser());
     _blockParsers.add(new BlockParser());
     _blockParsers.add(new ParameterParser());
+    _blockParsers.add(new OperatorParser());
+    _blockParsers.add(new VariableParser());
 	}
 	
 	// Whether or not we have started a block
@@ -71,12 +73,6 @@ public class JsParser {
     _data[data.length] = 4;
     
 		while (_cursor < length) {
-     
-			// skip any whitespace
-			if (Character.isSpaceChar(_data[_cursor])) {
-				_cursor++;
-				continue;
-			}
 			
 			// checks for any block closures, and closes them
 			if (_blocks.size() > 0 && closeBlock()) continue;
@@ -99,13 +95,12 @@ public class JsParser {
 		
 		while (_cursor < length) {
 			
-			// ignore whitespace
-			if (Character.isSpaceChar(_data[_cursor])) {
-				_cursor++;
-				continue;
-			}
-			
+      int _nextPosition = -1;
 			for (JsBlockParser parser : _blockParsers) {
+        if (!_blocks.isEmpty() && !parser.canStartWithBlock((JsBlock)_blocks.peek())) {
+          continue;
+        }
+        
 				block = parser.startsBlock(_data, _cursor, _blocks);
 				if (block != null) {
           if (!_blocks.isEmpty()) {
@@ -115,13 +110,19 @@ public class JsParser {
             }
           }
 					_blocks.add(block);
-					_cursor = block.getNextPosition();
+					_nextPosition = block.getNextPosition();
 					_blockOpen = true;
 					break;
 				}
 			}
 			
-			_cursor++;
+      if (_nextPosition > -1) {
+        _cursor = _nextPosition;
+      }
+      else {
+        _cursor++;
+      }
+
 			break;
 		}
 	}
@@ -139,6 +140,9 @@ public class JsParser {
 		JsBlock block = null;
 		
 		for (JsBlockParser parser : _blockParsers) {
+      if (!_blocks.isEmpty() && !parser.canEndWithBlock((JsBlock)_blocks.peek())) {
+        continue;
+      }
 			block = parser.endsBlock(_data, _cursor, _blocks);
 			
 			if (block != null) {

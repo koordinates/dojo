@@ -25,7 +25,6 @@ public class Function implements JsBlock {
 	// start position taken from in original parse 
 	protected int _startPosition;
 	protected int _callStartPosition;
-	
 	protected int _nextPosition;
 	
 	// function name
@@ -33,21 +32,7 @@ public class Function implements JsBlock {
 
   private String _type = "call";
 	
-	/* does nothing */
-	public Function() { }
-	
-	/**
-	 * Creates a new function call with a pre-configured start position,
-	 * mostly used in javascript parsing operations.
-	 * 
-	 * @param startPosition
-	 */
-	public Function(int startPosition, int callStartPosition, int nextPosition)
-	{
-		_startPosition = startPosition;
-		_callStartPosition = callStartPosition;
-		_nextPosition = nextPosition;
-	}
+	public Function() {}
 	
 	/**
 	 * 
@@ -58,6 +43,11 @@ public class Function implements JsBlock {
 		return _startPosition;
 	}
 	
+  public void setCallStartPosition(int callStartPosition)
+  {
+    _callStartPosition = callStartPosition;
+  }
+  
 	/**
 	 * 
 	 * @return The start position of the complete function call.
@@ -132,6 +122,11 @@ public class Function implements JsBlock {
 			block.renderBlock(func, doc);
     }
 	}
+  
+  public void setStartPosition(int startPosition)
+  {
+    _startPosition = startPosition;
+  }
   
   /**
    * {@inheritDoc}

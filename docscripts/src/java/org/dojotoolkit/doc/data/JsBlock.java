@@ -103,6 +103,10 @@ public interface JsBlock {
    */
   void setNextPosition(int nextPosition);
   
+  int getStartPosition();
+  
+  void setStartPosition(int startPosition);
+  
   /**
    * Checks to see if the passed block is allowed to be added as a child of
    * the current block.
@@ -117,4 +121,5 @@ public interface JsBlock {
    *      true if it's allowed
    */
   boolean canAcceptBlock(JsBlock block);
+
 }

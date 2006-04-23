@@ -14,6 +14,8 @@ public class AllParserTests {
     suite.addTestSuite(StringTest.class);
     suite.addTestSuite(FunctionTest.class);
     suite.addTestSuite(CommentTest.class);
+    suite.addTestSuite(OperatorTest.class);
+    suite.addTestSuite(VariableTest.class);
     //$JUnit-END$
     return suite;
   }

@@ -27,20 +27,7 @@ public class QuotedString implements JsBlock {
   /* The type (single, double)! */
   protected String _type;
 	
-	/* does nothing */
-	public QuotedString() { }
-	
-	/**
-	 * Creates a new string with a pre-configured start position,
-	 * mostly used in javascript parsing operations.
-	 * 
-	 * @param startPosition
-	 */
-	public QuotedString(int startPosition, int nextPosition)
-	{
-		_startPosition = startPosition;
-		_nextPosition = nextPosition;
-	}
+	public QuotedString() {	}
 	
 	/**
 	 * The textual string data encapsulated by this class.
@@ -128,4 +115,5 @@ public class QuotedString implements JsBlock {
   {
     return false;
   }
+
 }

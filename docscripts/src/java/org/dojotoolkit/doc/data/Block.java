@@ -24,10 +24,7 @@ public class Block implements JsBlock {
   
   protected int _nextPosition;
   
-  public Block(int startPosition, int nextPosition) {
-    _startPosition = startPosition;
-    _nextPosition = nextPosition;
-  }
+  public Block() {}
   
   public void setNextPosition(int nextPosition) {
     _nextPosition = nextPosition;
@@ -49,9 +46,26 @@ public class Block implements JsBlock {
   public int getNextPosition() {
     return _nextPosition;
   }
+  
+  public void setStartPosition(int startPosition)
+  {
+    _startPosition = startPosition;
+  }
+  
+  public int getStartPosition()
+  {
+    return _startPosition;
+  }
 
   public boolean canAcceptBlock(JsBlock block) {
     return true;
+  }
+  
+  public boolean canEndWithBlock(JsBlock block) {
+    if (Block.class.isInstance(block)) {
+      return true;
+    }
+    return false;
   }
 
 }

@@ -16,14 +16,20 @@ import org.dojotoolkit.doc.data.JsBlock;
  */
 public class FunctionParser implements JsBlockParser {
 	
+  public boolean canStartWithBlock(JsBlock block)
+  {
+    if (Function.class.isInstance(block)) {
+      return false;
+    }
+    return true;
+  }
+  
 	/**
 	 * {@inheritDoc}
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
-    if (!blocks.isEmpty() && Function.class.isInstance(blocks.peek())) return null;
-
-		if (data[position] == '(') {
+    if (data[position] == '(') {
 			// now need to seek to start of call position
       boolean started = false;
 			for (int j, i = (position - 1); i > -1; i--) {
@@ -32,8 +38,11 @@ public class FunctionParser implements JsBlockParser {
         }
         started = true;
 
-        if (!Character.isLetterOrDigit(data[i]) &&	data[i] != '_' && data[i] != '.') {
-          Function fun = new Function(position, i, position-1);
+        if (!Character.isJavaIdentifierPart(data[i]) &&	 data[i] != '.') {
+          Function fun = new Function();
+          fun.setStartPosition(position);
+          fun.setCallStartPosition(i);
+          fun.setNextPosition(position - 1);
           String name = new String(data, i + 1, position - i - 1);
           fun.setName(name);
 
@@ -74,7 +83,10 @@ public class FunctionParser implements JsBlockParser {
 			}
 			
 			//if we get here then there wasn't anything else to parse (beginning of file)
-			Function fun = new Function(position, 0, position-1);
+			Function fun = new Function();
+      fun.setStartPosition(position);
+      fun.setCallStartPosition(0);
+      fun.setNextPosition(position - 1);
       fun.setName(new String(data, 0, position));
       return fun;
 		}
@@ -82,13 +94,19 @@ public class FunctionParser implements JsBlockParser {
 		return null;
 	}
 	
+  public boolean canEndWithBlock(JsBlock block)
+  {
+    if (Function.class.isInstance(block)) {
+      return true;
+    }
+    return false;
+  }
+  
 	/**
 	 * {@inheritDoc}
 	 */
 	public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
-    if (!Function.class.isInstance(blocks.peek())) return null;
-
     Function fun = (Function)blocks.peek();
     
     if (data[position] == EOT || data[position] == ')') {
