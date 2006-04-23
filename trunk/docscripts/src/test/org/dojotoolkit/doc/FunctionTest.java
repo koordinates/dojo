@@ -3,9 +3,6 @@
  */
 package org.dojotoolkit.doc;
 
-import org.dojotoolkit.doc.data.Function;
-import org.dojotoolkit.doc.data.JsObject;
-
 /**
  * Tests parsing function calls.
  * 
@@ -67,6 +64,20 @@ public class FunctionTest extends ParserTest {
   }
   
   /**
+   * Tests parsing function declaration with comment
+   */
+  public void testFunctionDeclareWithCommentParse()
+  {
+    String input = "function name(/*String*/){}";
+    String output = "<javascript>" +
+        "<function name=\"name\" type=\"declare\">" +
+        "<parameters><parameter><comment type=\"block\">" +
+        "String</comment></parameter></parameters><block/>" +
+        "</function></javascript>";
+    assertXmlEquals(input, output);
+  }
+  
+  /**
    * Tests function object assignment
    */
   public void testFunctionObjectDeclareParse()
@@ -78,5 +89,5 @@ public class FunctionTest extends ParserTest {
     "</function></javascript>";
     assertXmlEquals(input, output);
   }
-
+  
 }

@@ -15,27 +15,39 @@ import org.dojotoolkit.doc.data.Comment;
  */
 public class SingleLineCommentParser implements JsBlockParser {
 
+  public boolean canStartWithBlock(JsBlock block)
+  {
+    return true;
+  }
+  
   /** 
    * {@inheritDoc}
    */
   public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) {
     if (data[position] == '/' && (position + 1) < data.length && data[position + 1] == '/') {
-      Comment comment = new Comment(position, position + 2);
-      comment.setType("single-line");
+      Comment comment = new Comment();
+      comment.setStartPosition(position);
+      comment.setNextPosition(position + 2);
+      comment.setType("line");
       return comment;
     }
 
     return null;
   }
 
+  public boolean canEndWithBlock(JsBlock block) {
+    if (Comment.class.isInstance(block)) {
+      return true;
+    }
+    return false;
+  }
+  
   /**
    * {@inheritDoc}
    */
   public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks) {
-    if (!Comment.class.isInstance(blocks.peek())) return null;
-    
     Comment comment = (Comment)blocks.peek();
-    if (comment.getType() == "single-line" && (data[position] == '\n' || data[position] == EOT)) {
+    if (comment.getType() == "line" && (data[position] == '\n' || data[position] == EOT)) {
         blocks.pop();
 
         StringBuffer str = new StringBuffer();

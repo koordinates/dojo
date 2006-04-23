@@ -24,19 +24,7 @@ public class Parameter implements JsBlock {
 	
 	protected int _nextPosition;
 	
-	/* does nothing */
-	public Parameter() { }
-	
-	/**
-	 * Creates a new parameter.
-	 * 
-	 * @param startPosition
-	 */
-	public Parameter(int startPosition, int nextPosition)
-	{
-		_startPosition = startPosition;
-		_nextPosition = nextPosition;
-	}
+	public Parameter() {}
 	
 	public void setStartPosition(int position)
 	{
@@ -99,4 +87,5 @@ public class Parameter implements JsBlock {
   {
     return true;
   }
+
 }

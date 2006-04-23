@@ -3,9 +3,6 @@
  */
 package org.dojotoolkit.doc;
 
-import org.dojotoolkit.doc.data.JsObject;
-import org.dojotoolkit.doc.data.Comment;
-
 /**
  * Tests parsing of various types of comments.
  * 
@@ -20,8 +17,8 @@ public class CommentTest extends ParserTest {
 	{
 		String input = "/* This is comment data */";
     String output = "<javascript>"
-      + "<comment type=\"multi-line\">" 
-      + "This is comment data"
+      + "<comment type=\"block\">" 
+      + " This is comment data "
       + "</comment></javascript>";
 		assertXmlEquals(input, output);
 	}
@@ -34,9 +31,9 @@ public class CommentTest extends ParserTest {
     String input = "// This is comment data\n" +
         "// and EOT comment data";
     String output = "<javascript>"
-      + "<comment type=\"single-line\">"
+      + "<comment type=\"line\">"
       + "This is comment data"
-      + "</comment><comment type=\"single-line\">"
+      + "</comment><comment type=\"line\">"
       + "and EOT comment data"
       + "</comment></javascript>";
     assertXmlEquals(input, output);
@@ -52,10 +49,10 @@ public class CommentTest extends ParserTest {
 			+ " * I'm not sure what to expect from it.\n"
 			+ " */";
     String output = "<javascript>"
-      + "<comment type=\"multi-line\">" 
-      + "* This is the start of a complicated comment block.\n"
-      + " * I'm not sure what to expect from it."
-      + "</comment></javascript>";
+      + "<comment type=\"block\">\n" 
+      + " * This is the start of a complicated comment block.\n"
+      + " * I'm not sure what to expect from it.\n"
+      + " </comment></javascript>";
 		assertXmlEquals(input, output);
 	}
 }

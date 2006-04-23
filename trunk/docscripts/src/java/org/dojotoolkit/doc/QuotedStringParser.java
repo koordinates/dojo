@@ -16,13 +16,20 @@ import org.dojotoolkit.doc.data.JsBlock;
  */
 public class QuotedStringParser implements JsBlockParser {
 	
+  public boolean canStartWithBlock(JsBlock block)
+  {
+    return true;
+  }
+  
 	/**
 	 * {@inheritDoc}
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) 
 	{
 		if (data[position] == '"' || data[position] == '\'') {
-			QuotedString qs = new QuotedString(position, position + 1);
+			QuotedString qs = new QuotedString();
+      qs.setStartPosition(position);
+      qs.setNextPosition(position + 1);
       if(data[position] == '"') {
         qs.setType("double");
       }
@@ -35,13 +42,19 @@ public class QuotedStringParser implements JsBlockParser {
 		return null;
 	}
 	
+  public boolean canEndWithBlock(JsBlock block)
+  {
+    if (QuotedString.class.isInstance(block)) {
+      return true;
+    }
+    return false;
+  }
+  
 	/**
 	 * {@inheritDoc}
 	 */
 	public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks) 
 	{
-    if (!QuotedString.class.isInstance(blocks.peek())) return null;
-    
     QuotedString string = (QuotedString)blocks.peek();
     if (("double".equals(string.getType()) && data[position] == '"') || ("single".equals(string.getType()) && data[position] == '\'')) {
 			blocks.pop();

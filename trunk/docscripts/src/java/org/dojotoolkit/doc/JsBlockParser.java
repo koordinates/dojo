@@ -70,4 +70,16 @@ public interface JsBlockParser {
 	 * 		 If a block was started, a non null object
 	 */
 	JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks);
+
+  /**
+   * Checks to see if the last block in the stack is an acceptable starting point.
+   */
+  boolean canStartWithBlock(JsBlock block);
+  
+  /**
+   * Checks to see if the last block in the stack is an acceptable ending point.
+   * 
+   * Generally, this will be the same name as the current block
+   */
+  boolean canEndWithBlock(JsBlock block);
 }

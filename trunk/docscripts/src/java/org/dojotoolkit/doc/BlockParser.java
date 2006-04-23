@@ -17,19 +17,32 @@ import org.dojotoolkit.doc.data.JsBlock;
  */
 public class BlockParser implements JsBlockParser {
 
+  public boolean canStartWithBlock(JsBlock block) {
+    if (Function.class.isInstance(block)) {
+      return true;
+    }
+    return false;
+  }
+  
   public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks) {
-    if (blocks.isEmpty() || !Function.class.isInstance(blocks.peek())) return null;
-    
     if (data[position] == '{') {
-      return new Block(position, position);
+      JsBlock block = new Block();
+      block.setStartPosition(position);
+      block.setNextPosition(position);
+      return block;
     }
 
     return null;
   }
+  
+  public boolean canEndWithBlock(JsBlock block) {
+    if (Block.class.isInstance(block)) {
+      return true;
+    }
+    return false;
+  }
 
   public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks) {
-    if (!blocks.isEmpty() && !Block.class.isInstance(blocks.peek())) return null;
-    
     if (data[position] == '}') {
       Block block = (Block)blocks.pop();
       block.setNextPosition(position + 1);

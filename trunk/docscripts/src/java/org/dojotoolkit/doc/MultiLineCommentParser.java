@@ -15,37 +15,46 @@ import org.dojotoolkit.doc.data.Comment;
  */
 public class MultiLineCommentParser implements JsBlockParser {
 
+  public boolean canStartWithBlock(JsBlock block)
+  {
+    return true;
+  }
+  
 	/**
 	 * {@inheritDoc}
 	 */
 	public JsBlock startsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
 		if (data[position] == '/' && (position + 1) < data.length && data[position + 1] == '*') { 
-		    Comment comment = new Comment(position, position + 2);
-        comment.setType("multi-line");
+		    Comment comment = new Comment();
+        comment.setStartPosition(position);
+        comment.setNextPosition(position + 2);
+        comment.setType("block");
         return comment;
     }
 		
 		return null;
 	}
-	
+
+  public boolean canEndWithBlock(JsBlock block) {
+    if (Comment.class.isInstance(block)) {
+      return true;
+    }
+    return false;
+  }
+  
 	/**
 	 * {@inheritDoc}
 	 */
 	public JsBlock endsBlock(char[] data, int position, Stack<JsBlock> blocks)
 	{	
-    if(!Comment.class.isInstance(blocks.peek())) return null;
-    
     Comment comment = (Comment)blocks.peek();
-		if (comment.getType() == "multi-line" && data[position] == '/' 	&& (position - 1) >= 0 && data[position - 1] == '*') {
+		if (comment.getType() == "block" && data[position] == '/' 	&& (position - 1) >= 0 && data[position - 1] == '*') {
 				blocks.pop();
 				
-        StringBuffer str = new StringBuffer();
-        for (int i = comment.getStartPosition()+2; i < position - 2; i++) {
-          str.append(data[i]);
-        }
+        String str = new String(data, comment.getStartPosition() + 2, position - comment.getStartPosition() - 3);
 				
-				comment.setData(str.toString());
+				comment.setData(str);
 				
 				comment.setNextPosition(position + 1);
 				
