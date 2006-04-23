@@ -72,15 +72,16 @@ dojo.widget.defineWidget(
 				})
 			);
 
-			dojo.event.connect(this.toolbarWidget, "formatSelectClick", 
-				dojo.lang.hitch(this, function(){ 
-					if(dojo.render.html.ie){
-						this.editNode.focus();
-					}else{
-						this.window.focus(); 
-					}
-				})
-			);
+			var focusFunc = dojo.lang.hitch(this, function(){ 
+				if(dojo.render.html.ie){
+					this.editNode.focus();
+				}else{
+					this.window.focus(); 
+				}
+			});
+
+			dojo.event.connect(this.toolbarWidget, "formatSelectClick", focusFunc);
+			dojo.event.connect(this, "execCommand", focusFunc);
 		},
 
 		setFocus: function(){
