@@ -241,13 +241,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
 	},
 
+	// This is called when the user adjusts the size of the floating pane
 	resizeTo: function(w, h){
-		if(w==this.width && h == this.height){
-			return;
-		}
-		this.width=w;
-		this.height=h;
-
 		dojo.style.setOuterWidth(this.domNode, w);
 		dojo.style.setOuterHeight(this.domNode, h);
 
@@ -263,6 +258,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		
 		this.bgIframe.onResized();
 		if(this.shadow){ this.shadow.size(w, h); }
+	},
+
+	onParentResized: function() {
+		// onParentResized() is called when the user has resized the browser window,
+		// but that doesn't affect this widget (or this widget's children)
+		// so it can be safely ignored...
+		// TODO: unless we are maximized.  then we should resize ourself.
 	}
 });
 

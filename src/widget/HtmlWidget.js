@@ -22,7 +22,6 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	toggleDuration: 150,
 
 	animationInProgress: false,
-	bgIframe: null,
 
 	initialize: function(args, frag){
 	},
@@ -62,18 +61,6 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		var ch = this.getContainerHeight();
 	},
 
-	resizeSoon: function(){
-		if(this.isShowing()){
-			dojo.lang.setTimeout(this, this.onResized, 0);
-		}
-	},
-
-	resizeTo: function(w, h){
-		dojo.style.setOuterWidth(this.domNode, w);
-		dojo.style.setOuterHeight(this.domNode, h);
-		this.onResized();
-	},
-
 	createNodesFromText: function(txt, wrap){
 		return dojo.html.createNodesFromText(txt, wrap);
 	},
@@ -88,8 +75,9 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 		}catch(e){ /* squelch! */ }
 	},
 
+	/////////////////////////////////////////////////////////
 	// Displaying/hiding the widget
-
+	/////////////////////////////////////////////////////////
 	isShowing: function(){
 		return dojo.style.isShowing(this.domNode);
 	},
@@ -104,6 +92,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			dojo.lang.hitch(this, this.onShow));
 	},
 
+	// called after the show() animation has completed
 	onShow: function(){
 		this.animationInProgress=false;
 	},
@@ -114,12 +103,61 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 			dojo.lang.hitch(this, this.onHide));
 	},
 
+	// called after the hide() animation has completed
 	onHide: function(){
 		this.animationInProgress=false;
 	},
-	
+
+	//////////////////////////////////////////////////////////////////////////////
+	// Sizing related methods
+	//  If the parent changes size then for each child it should call either
+	//   - resizeTo(): size the child explicitly
+	//   - or onParentResized(): notify the child the the parent has changed size
+	//////////////////////////////////////////////////////////////////////////////
+
+	// Test if my size has changed.
+	// If width & height are specified then that's my new size; otherwise,
+	// query outerWidth/outerHeight of my domNode
+	_isResized: function(w, h){
+		// If I'm not being displayed then disregard (show() must
+		// check if the size has changed)
+		if(!this.isShowing()){ return false; }
+
+		// If my parent has been resized and I have style="height: 100%"
+		// or something similar then my size has changed too.
+		w=w||dojo.style.getOuterWidth(this.domNode);
+		h=h||dojo.style.getOuterHeight(this.domNode);
+		if(this.width == w && this.height == h){ return false; }
+
+		this.width=w;
+		this.height=h;
+		return true;
+	},
+
+	// Called when my parent has changed size, but my parent won't call resizeTo().
+	// This is useful if my size is height:100% or something similar
+	onParentResized: function(){
+		if(!this._isResized()){ return; }
+		this.onResized();
+	},
+
+	// Explicitly set this widget's size (in pixels).
+	resizeTo: function(w, h){
+		if(!this._isResized(w,h)){ return; }
+		dojo.style.setOuterWidth(this.domNode, w);
+		dojo.style.setOuterHeight(this.domNode, h);
+		this.onResized();
+	},
+
+	resizeSoon: function(){
+		if(this.isShowing()){
+			dojo.lang.setTimeout(this, this.onResized, 0);
+		}
+	},
+
+	// Called when my size has changed.
+	// Must notify children if their size has (possibly) changed
 	onResized: function(){
-		dojo.widget.HtmlWidget.superclass.onResized.call(this);
-		if(this.bgIframe){ this.bgIframe.onResized(); }
+		dojo.lang.forEach(this.children, function(child){ child.onParentResized(); });
 	}
 });

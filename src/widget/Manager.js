@@ -233,7 +233,7 @@ dojo.widget.manager = new function(){
 
 	// Catch window resize events and notify top level widgets
 	this.resizing=false;
-	this.onResized = function(){
+	this.onWindowResized = function(){
 		if(this.resizing){
 			return;	// duplicate event
 		}
@@ -241,23 +241,18 @@ dojo.widget.manager = new function(){
 			this.resizing=true;
 			for(var id in this.topWidgets){
 				var child = this.topWidgets[id];
-				if(!child.isShowing || !child.isShowing()){
-					// don't try to resize hidden widgets; it's meaningless and breaks things
-					continue;
+				if(child.onParentResized ){
+					child.onParentResized();
 				}
-				//dojo.debug("root resizing child " + child.widgetId);
-				if(child.onResized ){
-					child.onResized();
-				}
-			}
+			};
 		}catch(e){
 		}finally{
 			this.resizing=false;
 		}
 	}
 	if(typeof window != "undefined") {
-		dojo.addOnLoad(this, 'onResized');							// initial sizing
-		dojo.event.connect(window, 'onresize', this, 'onResized');	// window resize
+		dojo.addOnLoad(this, 'onWindowResized');							// initial sizing
+		dojo.event.connect(window, 'onresize', this, 'onWindowResized');	// window resize
 	}
 
 	// FIXME: what else?

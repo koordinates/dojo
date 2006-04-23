@@ -163,5 +163,11 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		// the tooltip has changed size due to downloaded contents, so reposition it
 		dojo.lang.setTimeout(this, this.position, 50);
 		dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
+	},
+
+	onParentResized: function() {
+		// onParentResized() is called when the user has resized the browser window,
+		// but that doesn't affect this widget (or this widget's children)
+		// so it can be safely ignored
 	}
 });
