@@ -71,6 +71,16 @@ dojo.widget.defineWidget(
 					}
 				})
 			);
+
+			dojo.event.connect(this.toolbarWidget, "formatSelectClick", 
+				dojo.lang.hitch(this, function(){ 
+					if(dojo.render.html.ie){
+						this.editNode.focus();
+					}else{
+						this.window.focus(); 
+					}
+				})
+			);
 		},
 
 		setFocus: function(){
@@ -209,7 +219,7 @@ dojo.widget.defineWidget(
 			}
 			if(!selectedNode){ return; }
 
-			var formats = ["span", "pre", "h1", "h2", "h3"];
+			var formats = ["p", "pre", "h1", "h2", "h3", "h4"];
 			// gotta run some specialized updates for the various
 			// formatting options
 			var type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
