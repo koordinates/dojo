@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				forceXDomain: true,
+				isDebug: true
+			};
+		</script>
+		<script language="JavaScript" type="text/javascript" 
+			src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.event.*");
+
+			function click1(){
+				dj_debug("click1");
+			}
+
+			function init(){
+				var clickNode = document.getElementById("testButton1");
+				dojo.event.connect(clickNode, "onclick", "click1");
+			}
+
+			dojo.addOnLoad(init);
+		</script>
+	</head>
+	<body>
+		<button id="testButton1">Test Button</button>
+	</body>
+</html>

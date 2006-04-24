@@ -37,7 +37,7 @@ dojo.hostenv.createXdPackage = function(contents){
 	//Add dependencies
 	if(deps.length > 0){
 		output.push("depends: [");
-		for(int i = 0; i < deps.length; i++){
+		for(var i = 0; i < deps.length; i++){
 			if(i > 0){
 				output.push(",\n");
 			}
