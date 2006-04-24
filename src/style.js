@@ -283,7 +283,9 @@ dojo.require("dojo.lang.common");
 				ret.x = left-2+sl;
 				ret.y = top-2+st;
 			}
-		// FIXME: should we be using getBoxObjectFor() on Moz/FF?
+		}else if(document.getBoxObjectFor){
+			// mozilla
+			ret = document.getBoxObjectFor(node);
 		}else{
 			if(node["offsetParent"]){
 				var endNode;		
@@ -319,10 +321,8 @@ dojo.require("dojo.lang.common");
 				ret.y += isNaN(node.y) ? 0 : node.y;
 			}
 		}
+
 		// account for document scrolling!
-		// FIXME: why in the hell do we have calls to dojo.html.* when we don't
-		// require() it? Does that imply that this method should be in
-		// dojo.html instead?
 		if(includeScroll){
 			ret.y += st;
 			ret.x += sl;
