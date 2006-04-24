@@ -15,6 +15,10 @@
 	}
 	var tmps = ["bootstrap1.js", "hostenv_"+hostEnv+".js", "bootstrap2.js"];
 
+	if((this["djConfig"])&&((djConfig["forceXDomain"])||(djConfig["useXDomain"]))){
+		tmps.push("loader_xd.js");
+	}
+
 	if(hostEnv == "dashboard"){
 		tmps.splice(1, 0, "hostenv_browser.js");
 	}
