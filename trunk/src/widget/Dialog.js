@@ -188,10 +188,12 @@ dojo.widget.defineWidget(
 
 		// Called when the browser window's size is changed
 		onParentResized: function() {
-			this.sizeBackground();
-			this.placeDialog();
-			this.domNode.style.display="block";
-			this.onResized();
+			if(this.isShowing()){
+				this.sizeBackground();
+				this.placeDialog();
+				this.domNode.style.display="block";
+				this.onResized();
+			}
 		}
 	}
 );
