@@ -744,6 +744,6 @@ dojo.date.fromSql = function(sqlDate) {
 	while(parts.length < 6) {
 		parts.push(0);
 	}
-	return new Date(parts[0], (parseInt(parts[1])-1), parts[2], parts[3], parts[4], parts[5]);
+	return new Date(parts[0], (parseInt(parts[1],10)-1), parts[2], parts[3], parts[4], parts[5]);
 }
 
