@@ -1,3 +1,10 @@
+dojo.provide("dojo.layout");
+
+dojo.require("dojo.lang");
+dojo.require("dojo.string");
+dojo.require("dojo.style");
+dojo.require("dojo.html");
+
 /**
  * Layout a bunch of child dom nodes within a parent dom node
  * Input is an array of objects like:
@@ -5,19 +12,8 @@
  * @ layoutPriority - "top-bottom" or "left-right"
  * @ children an array like [ {domNode: foo, layoutAlign: "bottom" }, {domNode: bar, layoutAlign: "client"} ]
  */
- 
-dojo.provide("dojo.layout");
-
-dojo.require("dojo.lang");
-dojo.require("dojo.style");
-
 dojo.layout = function(container, children, layoutPriority) {
-	// container must be either relative or absolute position so that we
-	// can position nodes inside of it
-	var position=dojo.style.getStyle(container, "position");
-	if(position != "absolute" && position != "relative"){
-		dojo.style.setStyle(container, "position", "relative");
-	}
+	dojo.html.addClass(container, "dojoLayoutContainer");
 
 	// copy children array and remove elements w/out layout
 	children = dojo.lang.filter(children, function(child){
@@ -58,12 +54,12 @@ dojo.layout = function(container, children, layoutPriority) {
 
 		// set elem to upper left corner of unused space; may move it later
 		with(elm.style){
-			position = "absolute";
 			left = f.left+"px";
 			top = f.top+"px";
-			if(pos=="client"||pos=="flood"){
-				overflow = "auto";
-			}
+		}
+		var classStr = "dojoAlign" + dojo.string.capitalize(pos);
+		if (!dojo.html.hasClass(elm, classStr)) {
+			dojo.html.prependClass(elm, classStr);
 		}
 
 		// set size && adjust record of remaining space.
@@ -100,3 +96,11 @@ dojo.layout = function(container, children, layoutPriority) {
 		}
 	});
 };
+
+// This is essential CSS to make layout work (it isn't "styling" CSS)
+dojo.style.insertCssText(
+	".dojoLayoutContainer{ position: relative; display: block; }\n" +
+	".dojoAlignTop, .dojoAlignBottom, .dojoAlignLeft, .dojoAlignRight { position: absolute; overflow: hidden; }\n" +
+	".dojoAlignClient, .dojoAlignFloat { position: absolute; overflow: auto; }\n"
+);
+
