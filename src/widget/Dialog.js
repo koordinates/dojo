@@ -136,13 +136,6 @@ dojo.widget.defineWidget(
 			this.setBackgroundOpacity();
 			this.showBackground();
 
-			this.domNode.style.visibility = "hidden";
-			this.domNode.style.display = "block";
-			this.onParentResized();
-
-			this.domNode.style.display="none";
-			this.domNode.style.visibility = "";
-
 			dojo.widget.html.Dialog.superclass.show.call(this);
 
 			// FIXME: moz doesn't generate onscroll events for mouse or key scrolling (wtf)
@@ -153,6 +146,14 @@ dojo.widget.defineWidget(
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "onScroll");
 			}
+
+			this.onParentResized();
+		},
+
+		onLoad: function(){
+			// when href is specified we need to reposition
+			// the dialog after the data is loaded
+			this.placeDialog();
 		},
 
 		hide: function(){
