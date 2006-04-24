@@ -11,6 +11,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.html.shadow");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.layout");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
