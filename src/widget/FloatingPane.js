@@ -56,6 +56,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		// necessary for safari, khtml (for computing width/height)
 		document.body.appendChild(this.domNode);
 
+		// if display:none then state=minimized, otherwise state=normal
+		if(!this.isShowing()){
+			this.windowState="minimized";
+		}
+
 		// <img src=""> can hang IE!  better get rid of it
 		if(this.iconSrc==""){
 			dojo.dom.removeNode(this.titleBarIcon);
@@ -255,10 +260,11 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			] );
 
 		// If any of the children have layoutAlign specified, obey it
-		dojo.layout(this.containerNode, this.children);
+		dojo.layout(this.containerNode, this.children, "top-bottom");
 		
 		this.bgIframe.onResized();
 		if(this.shadow){ this.shadow.size(w, h); }
+		this.onResized();
 	},
 
 	onParentResized: function() {

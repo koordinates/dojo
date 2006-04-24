@@ -57,10 +57,7 @@ dojo.layout = function(container, children, layoutPriority) {
 			left = f.left+"px";
 			top = f.top+"px";
 		}
-		var classStr = "dojoAlign" + dojo.string.capitalize(pos);
-		if (!dojo.html.hasClass(elm, classStr)) {
-			dojo.html.prependClass(elm, classStr);
-		}
+		dojo.html.addClass(elm, "dojoAlign" + dojo.string.capitalize(pos));
 
 		// set size && adjust record of remaining space.
 		// note that setting the width of a <div> may affect it's height.
@@ -98,9 +95,10 @@ dojo.layout = function(container, children, layoutPriority) {
 };
 
 // This is essential CSS to make layout work (it isn't "styling" CSS)
+// make sure that the position:absolute in dojoAlign* overrides other classes
 dojo.style.insertCssText(
 	".dojoLayoutContainer{ position: relative; display: block; }\n" +
-	".dojoAlignTop, .dojoAlignBottom, .dojoAlignLeft, .dojoAlignRight { position: absolute; overflow: hidden; }\n" +
-	".dojoAlignClient, .dojoAlignFloat { position: absolute; overflow: auto; }\n"
+	"body .dojoAlignTop, body .dojoAlignBottom, body .dojoAlignLeft, body .dojoAlignRight { position: absolute; overflow: hidden; }\n" +
+	"body .dojoAlignClient, body .dojoAlignFloat { position: absolute; overflow: auto; }\n"
 );
 

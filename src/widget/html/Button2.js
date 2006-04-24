@@ -110,6 +110,12 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 		} else {
 			menu.toggle();
 		}
+	},
+	
+	onParentResized: function(){
+		// Not sure why this is necessary; but if button is inside a hidden floating
+		// pane (see Mail.html demo).  Revisit when buttons are redesigned
+		this.sizeMyself();
 	}
 });
 
