@@ -48,7 +48,7 @@ dojo.lang.extend(dojo.widget.AccordionContainer, {
 		this.children[0].setSizes();
 	},
 	
-	onResized(): function(){
+	onResized: function(){
 		this.children[0].setSizes();
 	}
 });
