@@ -123,7 +123,7 @@ dojo.svg.setDimensions=function(node, dim){
 	//	will only support shape-based and container elements; path-based elements are ignored.
 	if (node.width){
 		node.width.baseVal.value=dim.width;
-		node.height.baseVal.vaule=dim.height;
+		node.height.baseVal.value=dim.height;
 	}
 	else if (node.r){
 		node.r.baseVal.value=Math.min(dim.width, dim.height)/2;
