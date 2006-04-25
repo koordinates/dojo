@@ -335,8 +335,9 @@ dojo.storage.manager = new function(){
 			
 		// create this provider and copy over it's properties
 		this.currentProvider = providerToUse;
-	  for(var i in providerToUse)
-	  	dojo.storage[i] = providerToUse[i];
+	  	for(var i in providerToUse){
+	  		dojo.storage[i] = providerToUse[i];
+		}
 		dojo.storage.manager = this;
 		
 		// have the provider initialize itself
@@ -349,6 +350,19 @@ dojo.storage.manager = new function(){
 	/** Returns whether any storage options are available. */
 	this.isAvailable = function(){
 		return this.available;
+	}
+	
+	/** 
+	 	Returns whether the storage system is initialized and
+	 	ready to be used. 
+	*/
+	this.isInitialized = function(){
+		// FIXME: This should _really_ not be in here, but it fixes a bug
+		if(dojo.flash.ready == false){
+			return false;
+		}else{
+			return this.initialized;
+		}
 	}
 
 	/**
