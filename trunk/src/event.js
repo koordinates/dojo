@@ -79,6 +79,12 @@ dojo.event = new function(){
 					ao.srcFunc = tmpName;
 					ao.adviceObj = args[2];
 					ao.adviceFunc = args[3];
+				}else if((dl.isString(args[0]))&&(dl.isObject(args[1]))&&(dl.isString(args[2]))&&(dl.isFunction(args[3]))){
+					ao.srcObj = args[1];
+					ao.srcFunc = args[2];
+					var tmpName  = dojo.lang.nameAnonFunc(args[3], dj_global);
+					ao.adviceObj = dj_global;
+					ao.adviceFunc = tmpName;
 				}else if(dl.isObject(args[1])){
 					ao.srcObj = args[1];
 					ao.srcFunc = args[2];
