@@ -245,7 +245,7 @@ var TestStorage = {
 	_save: function(key, value){
 		this._printStatus("Saving '" + key + "'...");
 		var self = this;
-		var saveHandler = function(status, keyName) {
+		var saveHandler = function(status, keyName){
 			if(status == dojo.storage.FAILED){
 				alert("You do not have permission to store data for this web site. "
 			        + "Press the Configure button to grant permission.");
@@ -278,7 +278,7 @@ var TestStorage = {
 		
 		// add new ones
 		var availableKeys = dojo.storage.getKeys();
-		for (var i = 0; i < availableKeys.length; i++) {
+		for (var i = 0; i < availableKeys.length; i++){
 			var optionNode = document.createElement("option");
 			optionNode.appendChild(document.createTextNode(availableKeys[i]));
 			optionNode.value = availableKeys[i];
@@ -320,10 +320,10 @@ var TestStorage = {
 	_printStatus: function(message){
 		// remove the old status
 		var top = dojo.byId("top");
-		for (var i = 0; i < top.childNodes.length; i++) {
+		for (var i = 0; i < top.childNodes.length; i++){
 			var currentNode = top.childNodes[i];
 			if (currentNode.nodeType == dojo.dom.ELEMENT_NODE &&
-					currentNode.className == "status") {
+					currentNode.className == "status"){
 				top.removeChild(currentNode);
 			}		
 		}
@@ -338,9 +338,9 @@ var TestStorage = {
 	
 	_setProvider: function(provider){
 		// change the provider in dojo
-		if (provider == "default")
+		if (provider == "default"){
 			dojo.storage.manager.autodetect();
-		else {
+		}else {
 			if (dojo.storage.manager.supportsProvider(provider)){
 				dojo.storage.manager.setProvider(provider);
 			}
@@ -354,7 +354,7 @@ var TestStorage = {
 };
 
 // wait until the storage system is finished loading
-if(dojo.flash.ready == false){ // storage might already be loaded when we get here
+if(dojo.storage.manager.isInitialized() == false){ // storage might already be loaded when we get here
 	dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
 	                  TestStorage.initialize);
 }else{
