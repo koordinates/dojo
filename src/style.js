@@ -285,7 +285,9 @@ dojo.require("dojo.lang.common");
 			}
 		}else if(document.getBoxObjectFor){
 			// mozilla
-			ret = document.getBoxObjectFor(node);
+			var bo=document.getBoxObjectFor(node);
+			ret.x=bo.x;
+			ret.y=bo.y;
 		}else{
 			if(node["offsetParent"]){
 				var endNode;		
