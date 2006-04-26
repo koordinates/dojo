@@ -89,7 +89,9 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 			cols=h.getElementsByTagName("th");
 		}
 		for(var i=0; i<cols.length; i++){
-			a.push(cols[i].innerHTML.toLowerCase());
+			var c=cols[i].innerHTML.toLowerCase();
+			if(c=="long") c="lng";
+			a.push(c);
 		}
 		
 		//	parse the data
@@ -105,7 +107,7 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 			var o={};
 			for(var j=0; j<a.length; j++){
 				var col=a[j];
-				if(col=="lat"||col=="long"){
+				if(col=="lat"||col=="lng"){
 					o[col]=parseFloat(cells[j].innerHTML);					
 				}else{
 					o[col]=cells[j].innerHTML;
@@ -119,13 +121,13 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 		var d=this.data;
 		var pts=[];
 		for(var i=0; i<d.length; i++){
-			bounds.extend(new GLatLng(d[i].lat,d[i].long));
+			bounds.extend(new GLatLng(d[i].lat,d[i].lng));
 		}
 
 		this.map.setCenter(this.findCenter(bounds), this.map.getBoundsZoomLevel(bounds));
 
 		for(var i=0; i<this.data.length; i++){
-			var p=new GLatLng(this.data[i].lat,this.data[i].long);
+			var p=new GLatLng(this.data[i].lat,this.data[i].lng);
 			var d=this.data[i].description||null;
 			var m=this.createPinpoint(p,d);
 			this.map.addOverlay(m);
