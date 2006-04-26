@@ -167,7 +167,7 @@ dojo.widget.defineWidget(
 						this.closeNode.style.display = "none";
 					}
 				}
-				this.timer = setInterval(dojo.lang.hitch(this, "onTick"), 1000);
+				this.timer = setInterval(dojo.lang.hitch(this, "onTick"), 100);
 			}
 
 			this.onParentResized();
@@ -220,7 +220,7 @@ dojo.widget.defineWidget(
 		
 		onTick: function(){
 			if(this.timer){
-				this.timeRemaining -= 1000;
+				this.timeRemaining -= 100;
 				if(this.lifetime - this.timeRemaining >= this.blockDuration){
 					dojo.event.connect(this.bg, "onclick", this, "hide");
 					if(this.closeNode){
