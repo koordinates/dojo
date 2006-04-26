@@ -26,6 +26,8 @@ dojo.widget.defineWidget(
 		followScroll: true,
 		_fromTrap: false,
 		anim: null,
+		blockDuration: 0,
+		lifetime: 0,
 
 		trapTabs: function(e){
 			if(e.target == this.tabStart) {
@@ -72,6 +74,7 @@ dojo.widget.defineWidget(
 			}
 			this.setBackgroundColor(this.bgColor);
 			b.appendChild(this.bg);
+
 			this.bgIframe = new dojo.html.BackgroundIframe(this.bg);
 		},
 
@@ -146,6 +149,26 @@ dojo.widget.defineWidget(
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "onScroll");
 			}
+			
+			if(this.lifetime){
+				this.timeRemaining = this.lifetime;
+				if(!this.blockDuration){
+					dojo.event.connect(this.bg, "onclick", this, "hide");
+				}else{
+					dojo.event.disconnect(this.bg, "onclick", this, "hide");
+				}
+				if(this.timerNode){
+					this.timerNode.innerHTML = Math.ceil(this.timeRemaining/1000);
+				}
+				if(this.blockDuration && this.closeNode){
+					if(this.lifetime > this.blockDuration){
+						this.closeNode.style.visibility = "hidden";
+					}else{
+						this.closeNode.style.display = "none";
+					}
+				}
+				this.timer = setInterval(dojo.lang.hitch(this, "onTick"), 1000);
+			}
 
 			this.onParentResized();
 		},
@@ -155,12 +178,20 @@ dojo.widget.defineWidget(
 			// the dialog after the data is loaded
 			this.placeDialog();
 		},
+		
+		fillInTemplate: function(){
+			dojo.event.connect(this.domNode, "onclick", this, "killEvent");
+		},
 
 		hide: function(){
 			// workaround for FF focus going into outer space
 			if (this.focusElement) { 
 				dojo.byId(this.focusElement).focus(); 
 				dojo.byId(this.focusElement).blur();
+			}
+			
+			if(this.timer){
+				clearInterval(this.timer);
 			}
 
 			this.bg.style.display = "none";
@@ -173,13 +204,36 @@ dojo.widget.defineWidget(
 				dojo.event.disconnect(window, "onscroll", this, "onScroll");
 			}
 		},
+		
+		setTimerNode: function(node){
+			this.timerNode = node;
+		},
 
 		setCloseControl: function(node) {
+			this.closeNode = node;
 			dojo.event.connect(node, "onclick", this, "hide");
 		},
 
 		setShowControl: function(node) {
 			dojo.event.connect(node, "onclick", this, "show");
+		},
+		
+		onTick: function(){
+			if(this.timer){
+				this.timeRemaining -= 1000;
+				if(this.lifetime - this.timeRemaining >= this.blockDuration){
+					dojo.event.connect(this.bg, "onclick", this, "hide");
+					if(this.closeNode){
+						this.closeNode.style.visibility = "visible";
+					}
+				}
+				if(!this.timeRemaining){
+					clearInterval(this.timer);
+					this.hide();
+				}else if(this.timerNode){
+					this.timerNode.innerHTML = Math.ceil(this.timeRemaining/1000);
+				}
+			}
 		},
 
 		onScroll: function(){
@@ -195,6 +249,12 @@ dojo.widget.defineWidget(
 				this.domNode.style.display="block";
 				this.onResized();
 			}
+		},
+		
+		killEvent: function(evt){
+			evt.preventDefault();
+			evt.stopPropagation();
 		}
+
 	}
 );
