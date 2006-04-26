@@ -76,7 +76,9 @@ dojo.lang.extend(dojo.widget.html.YahooMap, {
 			cols=h.getElementsByTagName("th");
 		}
 		for(var i=0; i<cols.length; i++){
-			a.push(cols[i].innerHTML.toLowerCase());
+			var c=cols[i].innerHTML.toLowerCase();
+			if(c=="long") c="lng";
+			a.push(c);
 		}
 		
 		//	parse the data
@@ -92,7 +94,7 @@ dojo.lang.extend(dojo.widget.html.YahooMap, {
 			var o={};
 			for(var j=0; j<a.length; j++){
 				var col=a[j];
-				if(col=="lat"||col=="long"){
+				if(col=="lat"||col=="lng"){
 					o[col]=parseFloat(cells[j].innerHTML);					
 				}else{
 					o[col]=cells[j].innerHTML;
@@ -105,7 +107,7 @@ dojo.lang.extend(dojo.widget.html.YahooMap, {
 		var pts=[];
 		var d=this.data;
 		for(var i=0; i<d.length; i++){
-			var pt=new YGeoPoint(d[i].lat, d[i].long);
+			var pt=new YGeoPoint(d[i].lat, d[i].lng);
 			pts.push(pt);
 			var icon=d[i].icon||null;
 			if(icon){
