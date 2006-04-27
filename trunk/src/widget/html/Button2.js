@@ -102,8 +102,8 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 		if ( !menu ) { return; }
 
 		if ( menu.open && !menu.isShowing) {
-			var x = dojo.style.getAbsoluteX(this.domNode, true);
-			var y = dojo.style.getAbsoluteY(this.domNode, true) + this.height;
+			var x = dojo.style.getAbsoluteX(this.domNode, 'inverted');
+			var y = dojo.style.getAbsoluteY(this.domNode, 'inverted') + this.height;
 			menu.open(x, y, this);
 		} else if ( menu.close && menu.isShowing ){
 			menu.close();
