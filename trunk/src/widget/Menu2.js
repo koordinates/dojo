@@ -216,6 +216,10 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.menuHeight = dojo.style.getOuterHeight(this.domNode);
 	},
 
+	/**
+	 * Open the menu at position (x,y), relative to the viewport
+	 * (usually positions are relative to the document; why is this different??)
+	 */
 	open: function(x, y, parent, explodeSrc){
 
 		// if explodeSrc isn't specified then explode from my parent widget
