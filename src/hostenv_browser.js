@@ -266,7 +266,7 @@ dojo.hostenv.println = function (line){
 }
 
 dojo.hostenv.finishedLoad = function(){
-	if(this.inFlightCount > 0){
+	if(this.inFlightCount == 0){
 		// perform initialization
 		if(dojo.render.html.ie){
 			dojo.hostenv.makeWidgets();

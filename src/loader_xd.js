@@ -6,12 +6,6 @@
 
 //TODO: is isDebug and browser_debug interfering with these methods?
 
-//Since xdomain loading is asynchronous by nature, turn off the the module check that
-//dojo does after trying to load a package. However, this turns off module checking
-//even for XHR sync-loaded packages, so only exact package calls will work. That should
-//be OK since the xdomain calls must be exact matches.
-dojo.hostenv._global_omit_module_check = true;
-
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
 	//it is cross domain, then the rest of the packages have to be treated as xdomain because we need
@@ -101,7 +95,7 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 	if(this.isXDomain){
 		//Curious: is this array going to get whacked with multiple access since scripts
 		//load asynchronously and may be accessing the array at the same time?
-		this.xdPackages.push({name: module, contents: null});
+		this.xdPackages.push({name: module, content: null});
 		
 		//Add to waiting packages. 
 		this.xdInFlight[module] = true;
@@ -264,7 +258,8 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 	//Add them in bulk with splice to avoid too much movement by other scripts
 	//asychronously loading and calling.
 	if(newDeps && newDeps.length){
-		this.xdPackages.splice(provideIndex, 0, newDeps);
+		var args = [provideIndex, 0].concat(newDeps);
+		this.xdPackages.splice.apply(this.xdPackages, args);
 		provideIndex += newDeps.length;
 	}
 
@@ -274,7 +269,7 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 dojo.hostenv.xdPositionContents = function(){
 	for(var k = 0; k < this.xdContents.length; k++){
 		var provideList = this.xdContents[k].provideList;
-		var content = this.xdContents[k].provideList;
+		var content = this.xdContents[k].content;
 		
 		//Find the first provide in the xdPackages list (the winner).
 		//The winner gets to hold the package contents for evaluation later.
@@ -293,7 +288,9 @@ dojo.hostenv.xdPositionContents = function(){
 		//Attach the package code to the winning entry.
 		if(winner < this.xdPackages.length){
 			this.xdPackages[winner].content = content;
-		}else{
+		}else if (provide.indexOf("*") == -1){
+			//Only raise the exception if it was not a * package, like dojo.pkg.*,
+			//Since those are aggregate packages.
 			dojo.raise("Winning package is outside of range of xdPackages: " + winner);
 		}		
 	}
