@@ -85,11 +85,11 @@ dojo.xml.Parse = function(){
 			}
 			parsedFragment[attr][parsedFragment[attr].length] = attributeSet[attr];
 		}
-		var nodes = documentFragment.childNodes;
-		for(var childNode in nodes){
-			switch(nodes[childNode].nodeType){
+		var child, i = 0, nodes = documentFragment.childNodes;
+		while(child = nodes[i++]){
+			switch(child.nodeType){
 				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
-					parsedFragment[tagName].push(this.parseElement(nodes[childNode]));
+					parsedFragment[tagName].push(this.parseElement(child));
 					break;
 				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 					if(nodes.length == 1){
@@ -128,8 +128,8 @@ dojo.xml.Parse = function(){
 		}
 	
 		var count = 0;
-		for(var i=0; i<node.childNodes.length; i++){
-			var tcn = node.childNodes.item(i);
+		var tcn, i = 0, nodes = node.childNodes;
+		while(tcn = nodes[i++]){
 			switch(tcn.nodeType){
 				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
 					count++;
@@ -184,8 +184,8 @@ dojo.xml.Parse = function(){
 		var atts = node.attributes;
 		// TODO: should we allow for duplicate attributes at this point...
 		// would any of the relevant dom implementations even allow this?
-		for(var i=0; i<atts.length; i++) {
-			var attnode = atts.item(i);
+		var attnode, i=0;
+		while(attnode=atts[i++]) {
 			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
 				if(!attnode){ continue; }
 				if(	(typeof attnode == "object")&&
