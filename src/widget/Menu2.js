@@ -227,7 +227,9 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
-			dojo.widget.html.Menu2Manager.opened(this, explodeSrc);
+			// explodeSrc may or may not be a node - it may also be an [x,y] position array
+			var button = explodeSrc instanceof Array ? null : explodeSrc;
+			dojo.widget.html.Menu2Manager.opened(this, button);
 		}
 
 		//dojo.debug("open called for animation "+this.animationInProgress)
