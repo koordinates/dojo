@@ -24,6 +24,8 @@
 			dojo.byId("f").innerHTML= pns.x + ", " + pns.y;
 			dojo.byId("t").innerHTML= pws.x + ", " + pws.y;
 			dojo.byId("o").innerHTML= dojo.html.overElement(btn, e);
+			dojo.byId("s").innerHTML=
+				dojo.html.getScrollLeft() + ", " + dojo.html.getScrollTop();
 		}
 	</script>
 </head>
@@ -68,6 +70,7 @@ by event.clientX/Y if the mouse were directly over the top/left of this node.
 <tr><td width=30%>getAbsolutePosition(btn, true)<br> (document)</td><td id="t"></td></tr>
 <tr><td>getAbsolutePosition(btn, false)<br> (viewport)</td><td id="f"></td></tr>
 <tr><td>dojo.html.overElement(btn, e)</td><td id="o"></td></tr>
+<tr><td>dojo.html.getScrollLeft()/Top()</td><td id="s"></td></tr>
 </table>
 <script>
 	dojo.event.connect(document, "onmousemove", onMouseMove);

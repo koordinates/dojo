@@ -286,19 +286,17 @@ dojo.require("dojo.lang.common");
 		var sl = dojo.html.getScrollLeft();
 
 		if(h.ie){
-			// getBoundingClientRect gives us a location relative to the
-			// viewport which means we have to add document scrolling back in,
-			// no matter what, and it may be wrong WRT sub-viewport scrolling.
 			with(node.getBoundingClientRect()){
-				ret.x = left-2+sl;
-				ret.y = top-2+st;
+				ret.x = left-2;
+				ret.y = top-2;
 			}
+/**
 		}else if(document.getBoxObjectFor){
 			// mozilla
 			var bo=document.getBoxObjectFor(node);
-			ret.x=bo.x;
-			ret.y=bo.y;
-		}else{
+			ret.x=bo.x-sl;
+			ret.y=bo.y-st;
+**/		}else{
 			if(node["offsetParent"]){
 				var endNode;		
 				// in Safari, if the node is an absolutely positioned child of
@@ -313,14 +311,9 @@ dojo.require("dojo.lang.common");
 					endNode = db.parentNode;
 				}
 				
-				if((includeScroll)&&(node.parentNode != db)){
-					if (includeScroll == 'inverted'){
-						ret.x += ds.sumAncestorProperties(node, "scrollLeft");
-						ret.y += ds.sumAncestorProperties(node, "scrollTop");
-					}else{
-						ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
-						ret.y -= ds.sumAncestorProperties(node, "scrollTop");
-					}
+				if((node.parentNode != db)){
+					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
+					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
 				}
 				// FIXME: this is known not to work sometimes on IE 5.x since nodes
 				// sometimes need to be "tickled" before they will display their
@@ -341,13 +334,8 @@ dojo.require("dojo.lang.common");
 
 		// account for document scrolling!
 		if(includeScroll){
-			if (includeScroll == 'inverted'){
-				ret.y -= st;
-				ret.x -= sl;
-			}else{
-				ret.y += st;
-				ret.x += sl;
-			}
+			ret.y += st;
+			ret.x += sl;
 		}
 
 		ret[0] = ret.x;
