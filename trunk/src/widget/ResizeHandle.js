@@ -36,9 +36,6 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 		this.targetElm = dojo.widget.byId(this.targetElmId);
 		if (!this.targetElm){ return; }
 
-		var screenX = window.event ? window.event.clientX : e.pageX;
-		var screenY = window.event ? window.event.clientY : e.pageY;
-
 		this.isSizing = true;
 		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
 		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetElm.domNode), 'h':dojo.style.getOuterHeight(this.targetElm.domNode)};
