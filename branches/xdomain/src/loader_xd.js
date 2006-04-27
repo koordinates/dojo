@@ -2,6 +2,15 @@
 //TODO: what about case where we get a provide before the require for same package? Any race condition
 //that would cause trouble?
 //TODO: Test the __package__.js file for src/undo: it does a require then a provide.
+//TODO: how will xd loading work with debugAtAllCosts?
+
+//TODO: is isDebug and browser_debug interfering with these methods?
+
+//Since xdomain loading is asynchronous by nature, turn off the the module check that
+//dojo does after trying to load a package. However, this turns off module checking
+//even for XHR sync-loaded packages, so only exact package calls will work. That should
+//be OK since the xdomain calls must be exact matches.
+dojo.hostenv._global_omit_module_check = true;
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -13,6 +22,7 @@ dojo.hostenv.resetXd = function(){
 	//make debugging easier for non-xd dojo uses.
 	this.isXDomain = djConfig.forceXDomain || false;
 	
+	this.xdTimer = 0;
 	this.xdInFlight = {};
 	this.xdPackages = new Array();
 	this.xdContents = new Array();
@@ -92,9 +102,7 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 		//Curious: is this array going to get whacked with multiple access since scripts
 		//load asynchronously and may be accessing the array at the same time?
 		this.xdPackages.push({name: module, contents: null});
-	}
-
-	if (currentIsXDomain){
+		
 		//Add to waiting packages. 
 		this.xdInFlight[module] = true;
 		
@@ -106,7 +114,9 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 		if(!this.xdTimer){
 			this.xdTimer = setInterval("dojo.hostenv.watchInFlightXDomain();", 100);
 		}
-		
+	}
+
+	if (currentIsXDomain){
 		//Add to script src
 		var element = document.createElement("script");
 		element.type = "text/javascript";
@@ -120,8 +130,8 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 		if(contents == null){ return 0; }
 		
 		if(this.isXDomain){
-			var package = this.createXdPackage(contents);
-			this.packageLoaded(package);
+			var pkg = this.createXdPackage(contents);
+			dj_eval(pkg);
 		}else{
 			var value = dj_eval(contents);
 		}
@@ -133,8 +143,8 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 	return 1;
 }
 
-dojo.hostenv.packageLoaded = function(package){
-	var deps = package.depends;
+dojo.hostenv.packageLoaded = function(pkg){
+	var deps = pkg.depends;
 	if(deps && deps.length > 0){
 		var dep, provide = null;
 		var insertHint = 0;
@@ -171,18 +181,19 @@ dojo.hostenv.packageLoaded = function(package){
 
 			//Call the dependency indicator to allow for the normal dojo setup.
 			//Only allow for one dot reference, for the hostenv.* type calls.
-			var objPath = dep[0].split(".");
+			var depType = dep.shift();
+			var objPath = depType.split(".");
 			if(objPath.length == 2){
-				dojo[objPath[0]][objPath[1]].apply(dojo[objPath[0]], dep.slice[1]);
+				dojo[objPath[0]][objPath[1]].apply(dojo[objPath[0]], dep);
 			}else{
-				dojo[dep[0]].apply(dojo, dep.slice[1]);
+				dojo[depType].apply(dojo, dep);
 			}
 		}
 
 		//Save off the package contents with the provider list.
 		//Use this later to sequence the package contents correctly,
 		//once everything is loaded.
-		this.xdContents.push({provideList: provideList, content: package.definePackage});
+		this.xdContents.push({provideList: provideList, content: pkg.definePackage});
 
 		//Now update the inflight status for any provided packages in this loaded package.
 		//Do this at the very end to avoid issues with the inflight timer check.
@@ -230,7 +241,9 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 			break;
 		case "requireAll":
 			//the arguments are an array, each element a call to require.
-			newDeps = deps.slice(1);
+			//Get rid of first item, which is "requireAll".
+			deps.shift();
+			newDeps = deps;
 			dojo.hostenv.flattenRequireArray(newDeps);
 			break;
 		case "kwCompoundRequire":
@@ -288,7 +301,7 @@ dojo.hostenv.xdPositionContents = function(){
 
 dojo.hostenv.watchInFlightXDomain = function(){
 	//If any are true, then still waiting.
-	//Come back later.
+	//Come back later.	
 	for(var param in this.xdInFlight){
 		if(this.xdInFlight[param]){
 			return;
@@ -297,8 +310,8 @@ dojo.hostenv.watchInFlightXDomain = function(){
 
 	//All done loading. Clean up and notify that we are loaded.
 	clearInterval(this.xdTimer);
-	this.xdTimer = null;
-
+	this.xdTimer = 0;
+	
 	//Make sure the package contents are sorted in the right order.
 	this.xdPositionContents();
 

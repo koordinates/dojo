@@ -3,8 +3,8 @@
 		<script language="JavaScript" type="text/javascript">
 			// Dojo configuration
 			djConfig = { 
-				forceXDomain: true,
-				isDebug: true
+				isDebug: true,
+				forceXDomain: true
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
@@ -13,10 +13,11 @@
 			dojo.require("dojo.event.*");
 
 			function click1(){
-				dj_debug("click1");
+				alert("click1");
 			}
 
 			function init(){
+				alert("here");
 				var clickNode = document.getElementById("testButton1");
 				dojo.event.connect(clickNode, "onclick", "click1");
 			}
