@@ -740,9 +740,10 @@ dojo.require("dojo.lang.common");
 		} else {
 			// coords is an dom object (or dom object id); return it's coordinates
 			var node = dojo.byId(coords);
+			var pos = ds.getAbsolutePosition(node, includeScroll);
 			var ret = [
-				ds.getAbsoluteX(node, includeScroll),
-				ds.getAbsoluteY(node, includeScroll),
+				pos.x,
+				pos.y,
 				ds.getInnerWidth(node),
 				ds.getInnerHeight(node)
 			];
