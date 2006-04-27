@@ -51,8 +51,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	onMouseOver: function(e) {
-		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
-		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+		this.mouse = dojo.html.getCursorPosition(e);
 
 		if(!this.showTimer){
 			this.showTimer = setTimeout(dojo.lang.hitch(this, "show"), this.showDelay);
@@ -61,8 +60,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	onMouseMove: function(e) {
-		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
-		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+		this.mouse = dojo.html.getCursorPosition(e);
 
 		if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.domNode, e)) {
 			// If the tooltip has been scheduled to be erased, cancel that timer
@@ -102,7 +100,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		this.position();
 
 		// if rendering using explosion effect, need to set explosion source
-		this.explodeSrc = [this.mouseX, this.mouseY];
+		this.explodeSrc = [this.mouse.x, this.mouse.y];
 
 		this.state="displaying";
 
@@ -155,7 +153,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	position: function(){
-		dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);
+		dojo.html.placeOnScreenPoint(this.domNode, this.mouse.x, this.mouse.y, [10,15], true);
 		this.bgIframe.onResized();
 	},
 
