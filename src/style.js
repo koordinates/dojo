@@ -269,6 +269,16 @@ dojo.require("dojo.lang.common");
 	ds.getMarginBoxHeight = ds.getOuterHeight;
 	ds.setMarginBoxHeight = ds.setOuterHeight;
 
+	/**
+	 * dojo.style.getAbsolutePosition(xyz, true) returns xyz's position relative to the document.
+	 * Itells you where you would position a node
+	 * inside document.body such that it was on top of xyz.  Most people set the flag to true when calling
+	 * getAbsolutePosition().
+	 *
+	 * dojo.style.getAbsolutePosition(xyz, false) returns xyz's position relative to the viewport.
+	 * It returns the position that would be returned
+	 * by event.clientX/Y if the mouse were directly over the top/left of this node.
+	 */
 	ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
 		var ret = [];
 		ret.x = ret.y = 0;
