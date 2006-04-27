@@ -311,18 +311,14 @@ dojo.require("dojo.lang.common");
 					endNode = db.parentNode;
 				}
 				
-				if((node.parentNode != db)){
+				if(node.parentNode != db){
 					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
 					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
 				}
-				// FIXME: this is known not to work sometimes on IE 5.x since nodes
-				// sometimes need to be "tickled" before they will display their
-				// offset correctly
 				do{
 					var n = node["offsetLeft"];
 					ret.x += isNaN(n) ? 0 : n;
 					var m = node["offsetTop"];
-					// dojo.debug(m, node.nodeName)
 					ret.y += isNaN(m) ? 0 : m;
 					node = node.offsetParent;
 				}while((node != endNode)&&(node != null));
