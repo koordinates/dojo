@@ -104,27 +104,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		dojo.html.clearSelection();
 
 		var mouse = dojo.html.getCursorPosition(e);
+		this.scrollOffset = dojo.html.getScrollOffset();
+		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
 
-		this.scrollOffset = {
-			top: dojo.html.getScrollTop(),
-			left: dojo.html.getScrollLeft()
-		};
-
-		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode, true),
-			left: dojo.style.getAbsoluteX(this.domNode, true)};
-
-
-		this.dragOffset = {top: this.dragStartPosition.top - mouse.y,
-			left: this.dragStartPosition.left - mouse.x};
+		this.dragOffset = {y: this.dragStartPosition.y - mouse.y,
+			x: this.dragStartPosition.x - mouse.x};
 
 		this.dragClone = this.createDragNode();
 
-
  		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (dojo.style.getComputedStyle(this.domNode.parentNode,"position") == "static")) {
-			this.parentPosition = {top: 0, left: 0};
+			this.parentPosition = {y: 0, x: 0};
 		} else {
-			this.parentPosition = {top: dojo.style.getAbsoluteY(this.domNode.parentNode, true),
-				left: dojo.style.getAbsoluteX(this.domNode.parentNode, true)};
+			this.parentPosition = dojo.style.getAbsolutePosition(this.domNode.parentNode, true);
 		}
 
 		if (this.constrainToContainer) {
@@ -134,8 +125,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		// set up for dragging
 		with(this.dragClone.style){
 			position = "absolute";
-			top = this.dragOffset.top + mouse.y + "px";
-			left = this.dragOffset.left + mouse.x + "px";
+			top = this.dragOffset.y + mouse.y + "px";
+			left = this.dragOffset.x + mouse.x + "px";
 		}
 
 		document.body.appendChild(this.dragClone);
@@ -164,12 +155,16 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	},
 
 	updateDragOffset: function() {
-		var sTop = dojo.html.getScrollTop();
-		var sLeft = dojo.html.getScrollLeft();
-		if(sTop != this.scrollOffset.top) {
-			var diff = sTop - this.scrollOffset.top;
-			this.dragOffset.top += diff;
-			this.scrollOffset.top = sTop;
+		var scroll = dojo.html.getScrollOffset();
+		if(scroll.y != this.scrollOffset.y) {
+			var diff = scroll.y - this.scrollOffset.y;
+			this.dragOffset.y += diff;
+			this.scrollOffset.y = scroll.y;
+		}
+		if(scroll.x != this.scrollOffset.x) {
+			var diff = scroll.x - this.scrollOffset.x;
+			this.dragOffset.x += diff;
+			this.scrollOffset.x = scroll.x;
 		}
 	},
 
@@ -177,8 +172,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	onDragMove: function(e){
 		var mouse = dojo.html.getCursorPosition(e);
 		this.updateDragOffset();
-		var x = this.dragOffset.left + mouse.x;
-		var y = this.dragOffset.top + mouse.y;
+		var x = this.dragOffset.x + mouse.x;
+		var y = this.dragOffset.y + mouse.y;
 
 		if (this.constrainToContainer) {
 			if (x < this.constraints.minX) { x = this.constraints.minX; }
@@ -206,11 +201,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				break;
 
 			case "dropFailure": // slide back to the start
-				var startCoords = [dojo.style.getAbsoluteX(this.dragClone, true),
-							dojo.style.getAbsoluteY(this.dragClone, true)];
+				var startCoords = dojo.style.getAbsolutePosition(this.dragClone, true);
 				// offset the end so the effect can be seen
-				var endCoords = [this.dragStartPosition.left + 1,
-					this.dragStartPosition.top + 1];
+				var endCoords = [this.dragStartPosition.x + 1,
+					this.dragStartPosition.y + 1];
 
 				// animate
 				var line = new dojo.math.curves.Line(startCoords, endCoords);
@@ -272,12 +266,11 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
 			child = this.domNode.childNodes[i];
 			if (child.nodeType != dojo.dom.ELEMENT_NODE) { continue; }
-			var top = dojo.style.getAbsoluteY(child, true);
-			var bottom = top + dojo.style.getInnerHeight(child);
-			var left = dojo.style.getAbsoluteX(child, true);
-			var right = left + dojo.style.getInnerWidth(child);
-			this.childBoxes.push({top: top, bottom: bottom,
-				left: left, right: right, node: child});
+			var pos = dojo.style.getAbsolutePosition(child, true);
+			var height = dojo.style.getInnerHeight(child);
+			var width = dojo.style.getInnerWidth(child);
+			this.childBoxes.push({top: pos.y, bottom: pos.y+height,
+				left: pos.x, right: pos.x+width, node: child});
 		}
 
 		// TODO: use dummy node
@@ -336,6 +329,9 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		}
 	},
 
+	/**
+	 * Position the horizontal line that indicates "insert between these two items"
+	 */
 	placeIndicator: function(e, dragObjects, boxIndex, before) {
 		with(this.dropIndicator.style){
 			if (boxIndex < 0) {
