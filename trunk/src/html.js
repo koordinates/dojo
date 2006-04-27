@@ -447,6 +447,13 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
 
+/**
+ * Returns the mouse position relative to the document (not the viewport).
+ * For example, if you have a document that is 10000px tall,
+ * but your browser window is only 100px tall,
+ * if you scroll to the bottom of the document and call this function it
+ * will return {x: 0, y: 10000}
+ */
 dojo.html.getCursorPosition = function(e){
 	e = e || window.event;
 	var cursor = {x:0, y:0};
