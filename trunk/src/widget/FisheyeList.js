@@ -274,7 +274,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	// when mouse is moved
 	mouseHandler: function(e) {
-		var p = this.getCursorPos(e);
+		var p = dojo.html.getCursorPosition(e);
 
 		if ((p.x >= this.hitX1) && (p.x <= this.hitX2) &&
 			(p.y >= this.hitY1) && (p.y <= this.hitY2)){
@@ -578,16 +578,9 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		itm.lblNode.style.top  = y + 'px';
 	},
 
-	getCursorPos: function(e){
-		return {
-			'x': e.pageX || e.clientX + document.body.scrollLeft,
-			'y': e.pageY || e.clientY + document.body.scrollTop
-			};
-	},
-
 	calcHitGrid: function(){
 
-		var pos = dojo.style.getAbsolutePosition(this.domNode);
+		var pos = dojo.style.getAbsolutePosition(this.domNode, true);
 
 		this.hitX1 = pos.x - this.proximityLeft;
 		this.hitY1 = pos.y - this.proximityTop;
