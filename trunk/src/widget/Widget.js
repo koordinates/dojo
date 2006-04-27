@@ -495,48 +495,22 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 /*
  * it would be best to be able to call defineWidget for any widget namespace
  */
-dojo.widget.defineWidget = function(	widgetClass 	/*string*/, 
-										superclass 		/*function*/, 
-										props 			/*object*/,
-										renderer 		/*string*/, 
-										ctor 			/*function*/){
-	if((!ctor)&&(props["classConstructor"])){
-		ctor = props.classConstructor;
-	}
-	if(!ctor){ ctor = function(){}; }
-	var nsref;
-	var namespace;
-	var type;
+dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*function*/, props /*object*/, renderer /*string*/, ctor /*function*/){
+	// widgetClass takes the form foo.bar.baz<.renderer>.WidgetName (e.g. foo.bar.baz.WidgetName or foo.bar.baz.html.WidgetName)
+	var namespace = widgetClass.split(".");
+	var type = namespace.pop(); // type <= WidgetName, namespace <= foo.bar.baz<.renderer>
 	if(renderer){
-		// widgetClass takes the form foo.bar.baz.html.WidgetName
-		var parts = widgetClass.split("."+renderer+".");
-		namespace = parts[0];
-		nsref = dojo.evalObjPath(namespace+"."+renderer, true);
-		type = parts[1];
-	}else{
-		// widgetClass takes the form foo.bar.baz.WidgetName
-		var parts = widgetClass.split(".");
-		type = parts.pop();
-		namespace = parts.join(".");
-		nsref = dojo.evalObjPath(namespace, true);
+		// FIXME: could just be namespace.pop(), unless there can be foo.bar.baz.html.zot.WidgetName
+		while ((namespace.length)&&(namespace.pop() != renderer)); // namespace <= foo.bar.baz
 	}
-	
+	namespace = namespace.join(".");
+
+	dojo.widget.manager.registerWidgetPackage(namespace);
+	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+
 	if(!props){ props = {}; }
 	props.widgetType = type;
 
-	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
-	dojo.widget.manager.registerWidgetPackage(namespace);
-
-	nsref[type] = function(){
-		try{
-			superclass.call(this);
-		}catch(e){ dojo.debug("superclass construction failed: ", e); }
-		try{
-			ctor.call(this);
-		}catch(e){ dojo.debug("constructor failed: ", e); }
-	}
-
-	dojo.inherits(nsref[type], superclass);
-
-	dojo.lang.extend(nsref[type], props);
+	dojo.defineClass(widgetClass, superclass, props, ctor);
 }
+
