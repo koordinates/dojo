@@ -114,12 +114,9 @@ dojo.html.isSelectionCollapsed = function(){
 
 dojo.html.getEventTarget = function(evt){
 	if(!evt) { evt = window.event || {} };
-	if(evt.srcElement) {
-		return evt.srcElement;
-	} else if(evt.target) {
-		return evt.target;
-	}
-	return null;
+	var t = (evt.srcElement ? evt.srcElement : (evt.target ? evt.target : null));
+	while((t)&&(t.nodeType!=1)){ t = t.parentNode; }
+	return t;
 }
 
 // FIXME: should the next set of functions take an optional document to operate
