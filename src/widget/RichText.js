@@ -431,6 +431,8 @@ dojo.widget.defineWidget(
 			if(this.editNode){
 				ifrFunc(); // iframe already exists, just set content
 			}else if(dojo.render.html.moz){
+				// FIXME: if we put this on a delay, we get a height of 20px.
+				// Otherwise we get the correctly specified minHeight value.
 				this.iframe.onload = function(){
 					setTimeout(ifrFunc, 250);
 				}
@@ -469,6 +471,8 @@ dojo.widget.defineWidget(
 
 	/* Event handlers
 	 *****************/
+
+	 	_isResized: function(){ return false; },
 
 		onLoad: function(e){
 			this.isLoaded = true;
@@ -1170,8 +1174,9 @@ dojo.widget.defineWidget(
 
 		/** Updates the height of the iframe to fit the contents. */
 		_updateHeight: function () {
-			if (this.height) return;
-			if (this.iframe) {
+			if(!this.isLoaded){ return; }
+			if(this.height){ return; }
+			if(this.iframe){
 				/*
 				if(!this.document.body["offsetHeight"]){
 					return;
