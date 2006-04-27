@@ -37,7 +37,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		if ( this.handler != "" ){
 			this.setHandler(this.handler);
 		}
-		if(this.preload){ this.loadContents(); }
+		if(this.isShowing()||this.preload){ this.loadContents(); }
 	},
 
 	show: function(){
