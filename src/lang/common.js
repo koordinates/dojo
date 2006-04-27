@@ -30,6 +30,67 @@ dojo.lang.extend = function(ctor, props){
 	this.mixin(ctor.prototype, props);
 }
 
+/*
+ * Creates a class
+ *
+ * - inherits from "superclass" (via dojo.inherits, null is ok)
+ * - "props" are mixed-in to the prototype (via dojo.lang.extend)
+ * - can have an initializer function that fires when the class is created. 
+ * 
+ * The initializer function works just like a constructor, except it has the following benefits:
+ * - it doesn't fire at inheritance time (when prototyping)
+ * - properties set in the initializer do not become part of subclass prototypes
+ *
+ * The initializer can be specified in the "init" argument, or by including a function called
+ * either "classConstructor" in "props".
+ *
+ * Aliased as "dojo.defineClass"
+ *
+ * Usage:
+ *
+ * dojo.defineClass("my.classes.bar", my.classes.foo, {
+ *	classConstructor: function() {
+ *		this.myComplicatedObject = new ReallyComplicatedObject(); 
+ *	},
+ *	someValue: 2,
+ *	someOtherValue: "abc",
+ *	aMethod: function() { doStuff(); }
+ * });
+ *
+ * FIXME: the name "classConstructor" is bit cumbersome (it's a carry-over from defineWidget).
+ */
+ dojo.lang.defineClass = function(className /*string*/, superclass /*function*/ , props /*object*/, init /*function*/){
+	var ctor = function(){ 
+		var c = this.constructor;
+		var s = c.superclass;
+		if(s){
+			s.prototyping = this.prototyping;
+			// FIXME: this error checking was copied in from defineWidget. Do we need it?
+			try{
+				s.constructor.apply(s, arguments); // using superclass context is the tricky bit
+			}catch(e){ dojo.debug("defined class: superclass construction failed: ", e); }
+		}
+		if((!this.prototyping)&&(c.prototype.classConstructor)){
+			try{
+				c.prototype.classConstructor.apply(this, arguments);
+			}catch(e){ dojo.debug("defined class: instance initializer failed: ", e); }
+		}
+		this.prototyping = false;
+	}
+	if(superclass){
+		superclass.prototype.prototyping = true;
+		dojo.inherits(ctor, superclass);
+		superclass.prototype.prototyping = false; // needed if superclass was not generated from defineClass
+	}
+	if(props){
+		if(init){props.classConstructor = init;}
+		dojo.lang.extend(ctor, props);
+	}	
+	dojo.lang.setObjPathValue(className, ctor, null, true);
+};
+
+dojo.defineClass = dojo.lang.defineClass;
+
 /**
  * See if val is in arr. Call signatures:
  *  find(array, value, identity) // recommended
