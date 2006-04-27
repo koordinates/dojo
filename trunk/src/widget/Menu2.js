@@ -33,7 +33,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	currentSubmenu: null,
 	currentSubmenuTrigger: null,
 	parentMenu: null,
-	isShowing: false,
+	isShowingNow: false,
 	menuX: 0,
 	menuY: 0,
 	menuWidth: 0,
@@ -225,7 +225,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		// if explodeSrc isn't specified then explode from my parent widget
 		explodeSrc = explodeSrc || parent["domNode"] || [];
 
-		if (this.isShowing){ return; }
+		if (this.isShowingNow){ return; }
 
 		var parentMenu = (parent && parent.widgetType=="PopupMenu2") ? parent : null;
 
@@ -295,7 +295,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		// then use the user defined method to display it
 		this.show();
 
-		this.isShowing = true;
+		this.isShowingNow = true;
 	},
 
 	close: function(){
@@ -309,7 +309,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		this.closeSubmenu();
 		this.hide();
-		this.isShowing = false;
+		this.isShowingNow = false;
 		dojo.widget.html.Menu2Manager.closed(this);
 	},
 
