@@ -304,8 +304,13 @@ dojo.require("dojo.lang.common");
 				}
 				
 				if((includeScroll)&&(node.parentNode != db)){
-					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
-					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
+					if (includeScroll == 'inverted'){
+						ret.x += ds.sumAncestorProperties(node, "scrollLeft");
+						ret.y += ds.sumAncestorProperties(node, "scrollTop");
+					}else{
+						ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
+						ret.y -= ds.sumAncestorProperties(node, "scrollTop");
+					}
 				}
 				// FIXME: this is known not to work sometimes on IE 5.x since nodes
 				// sometimes need to be "tickled" before they will display their
@@ -326,8 +331,13 @@ dojo.require("dojo.lang.common");
 
 		// account for document scrolling!
 		if(includeScroll){
-			ret.y += st;
-			ret.x += sl;
+			if (includeScroll == 'inverted'){
+				ret.y -= st;
+				ret.x -= sl;
+			}else{
+				ret.y += st;
+				ret.x += sl;
+			}
 		}
 
 		ret[0] = ret.x;
