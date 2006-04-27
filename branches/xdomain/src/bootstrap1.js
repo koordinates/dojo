@@ -629,7 +629,8 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	}
 
 	// check that the symbol was defined
-	if(!omit_module_check){
+	//Don't bother if we're doing xdomain (asynchronous) loading.
+	if(!omit_module_check && !this["isXDomain"]){
 		// pass in false so we can give better error
 		module = this.findModule(modulename, false);
 		if(!module){
