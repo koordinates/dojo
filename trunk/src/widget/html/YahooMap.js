@@ -12,6 +12,8 @@ dojo.widget.html.YahooMap=function(){
 	this.map=null;
 	this.datasrc="";
 	this.data=[];
+	this.width=0;
+	this.height=0;
 	this.controls=["zoomlong","maptype","pan"];
 };
 dojo.inherits(dojo.widget.html.YahooMap, dojo.widget.HtmlWidget);
@@ -140,7 +142,12 @@ dojo.lang.extend(dojo.widget.html.YahooMap, {
 		while(this.domNode.childNodes.length>0){
 			this.domNode.removeChild(this.domNode.childNodes[0]);
 		}
-		this.map=new YMap(this.domNode);
+
+		if(this.width>0&&this.height>0){
+			this.map=new YMap(this.domNode, YAHOO_MAP_REG, new YSize(this.width, this.height));
+		}else{
+			this.map=new YMap(this.domNode);
+		}
 		this.setControls();
 		this.render();
 	}
