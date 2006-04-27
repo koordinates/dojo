@@ -86,6 +86,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
 		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
 		if(dojo.render.html.ie && this.createIframe){
+			with(node.style) {
+				top="0px";
+				left="0px";
+			}
 			var outer = document.createElement("div");
 			outer.appendChild(node);
 			this.bgIframe = new dojo.html.BackgroundIframe(outer);
