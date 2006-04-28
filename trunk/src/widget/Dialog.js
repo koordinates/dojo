@@ -5,7 +5,6 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
-dojo.require("dojo.fx.*");
 dojo.require("dojo.html");
 
 dojo.widget.defineWidget(
