@@ -1,8 +1,6 @@
 dojo.provide("dojo.lfx.toggle");
 dojo.require("dojo.lfx.*");
 
-dojo.lfx.toggle={}
-
 dojo.lfx.toggle.plain = {
 	show: function(node, duration, easing, callback){
 		dojo.style.show(node);
@@ -35,7 +33,4 @@ dojo.lfx.toggle.wipe = {
 	}
 }
 
-if(dj_undef("dojo.fx")){dojo.fx = {};}
-if(dj_undef("dojo.fx.html")){dojo.fx.html = {};}
-if(dj_undef("dojo.fx.toggle")){dojo.fx.html.toggle = {};}
-dojo.mixin(dojo.fx.html.toggle, dojo.lfx.toggle);
+dojo.mixin(dojo.evalObjPath("dojo.fx.html.toggle", true), dojo.lfx.toggle);
