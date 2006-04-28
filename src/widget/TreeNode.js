@@ -2,7 +2,6 @@
 dojo.provide("dojo.widget.TreeNode");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.fx.html");
 dojo.require("dojo.io.*");
 
 // make it a tag
