@@ -103,12 +103,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	onDragStart: function(e){
 		dojo.html.clearSelection();
 
-		var mouse = dojo.html.getCursorPosition(e);
 		this.scrollOffset = dojo.html.getScrollOffset();
 		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
 
-		this.dragOffset = {y: this.dragStartPosition.y - mouse.y,
-			x: this.dragStartPosition.x - mouse.x};
+		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
+			x: this.dragStartPosition.x - e.pageX};
 
 		this.dragClone = this.createDragNode();
 
@@ -125,8 +124,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		// set up for dragging
 		with(this.dragClone.style){
 			position = "absolute";
-			top = this.dragOffset.y + mouse.y + "px";
-			left = this.dragOffset.x + mouse.x + "px";
+			top = this.dragOffset.y + e.pageY + "px";
+			left = this.dragOffset.x + e.pageX + "px";
 		}
 
 		document.body.appendChild(this.dragClone);
@@ -170,10 +169,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 	/** Moves the node to follow the mouse */
 	onDragMove: function(e){
-		var mouse = dojo.html.getCursorPosition(e);
 		this.updateDragOffset();
-		var x = this.dragOffset.x + mouse.x;
-		var y = this.dragOffset.y + mouse.y;
+		var x = this.dragOffset.x + e.pageX;
+		var y = this.dragOffset.y + e.pageY;
 
 		if (this.constrainToContainer) {
 			if (x < this.constraints.minX) { x = this.constraints.minX; }
@@ -279,13 +277,11 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	},
 
 	_getNodeUnderMouse: function(e){
-		var mouse = dojo.html.getCursorPosition(e);
-
 		// find the child
 		for (var i = 0, child; i < this.childBoxes.length; i++) {
 			with (this.childBoxes[i]) {
-				if (mouse.x >= left && mouse.x <= right &&
-					mouse.y >= top && mouse.y <= bottom) { return i; }
+				if (e.pageX >= left && e.pageX <= right &&
+					e.pageY >= top && e.pageY <= bottom) { return i; }
 			}
 		}
 

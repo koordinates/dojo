@@ -37,15 +37,13 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 
 		dojo.html.clearSelection();
 
-		var mouse = dojo.html.getCursorPosition(e);
-
 		this.dragClone = this.domNode;
 
 		this.scrollOffset = dojo.html.getScrollOffset();
 		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
 		
-		this.dragOffset = {y: this.dragStartPosition.y - mouse.y,
-			x: this.dragStartPosition.x - mouse.x};
+		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
+			x: this.dragStartPosition.x - e.pageX};
 
 		if (this.domNode.parentNode.nodeName.toLowerCase() == 'body') {
 			this.parentPosition = {y: 0, x: 0};

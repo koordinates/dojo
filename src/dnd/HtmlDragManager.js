@@ -167,9 +167,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			this.selectedSources.push(ds);
 		}
 
- 		var mouse = dojo.html.getCursorPosition(e);
- 		this.mouseDownX = mouse.x;
- 		this.mouseDownY = mouse.y;
+ 		this.mouseDownX = e.pageX;
+ 		this.mouseDownY = e.pageY;
 
 		// Must stop the mouse down from being propogated, or otherwise can't
 		// drag links in firefox.
@@ -292,16 +291,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// onDragStart to all the right parties and get things lined up for
 		// drop target detection
 
-		var mouse = dojo.html.getCursorPosition(e);
 		if(	(this.selectedSources.length)&&
 			(!this.dragObjects.length) ){
 			var dx;
 			var dy;
 			if(!this._dragTriggered){
-				this._dragTriggered = (this._dragStartDistance(mouse.x, mouse.y) > this.threshold);
+				this._dragTriggered = (this._dragStartDistance(e.pageX, e.pageY) > this.threshold);
 				if(!this._dragTriggered){ return; }
-				dx = mouse.x - this.mouseDownX;
-				dy = mouse.y - this.mouseDownY;
+				dx = e.pageX - this.mouseDownX;
+				dy = e.pageY - this.mouseDownY;
 			}
 
 			if (this.selectedSources.length == 1) {
@@ -401,11 +399,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	isInsideBox: function(e, coords){
-		var mouse = dojo.html.getCursorPosition(e);
-		if(	(mouse.x > coords[0][0])&&
-			(mouse.x < coords[1][0])&&
-			(mouse.y > coords[0][1])&&
-			(mouse.y < coords[1][1]) ){
+		if(	(e.pageX > coords[0][0])&&
+			(e.pageX < coords[1][0])&&
+			(e.pageY > coords[0][1])&&
+			(e.pageY < coords[1][1]) ){
 			return true;
 		}
 		return false;
