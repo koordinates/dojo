@@ -196,7 +196,7 @@ dojo.html.getScrollOffset = function(){
 	var off = [dojo.html.getScrollLeft(), dojo.html.getScrollTop()];
 	off.x = off[0];
 	off.y = off[1];
-	return ret;
+	return off;
 }
 
 dojo.html.getParentOfType = function(node, type){
