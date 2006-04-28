@@ -70,6 +70,11 @@ dojo.lfx.html._makeFadeable = function(node){
 }
 
 dojo.lfx.html.fadeIn = function(node, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	dojo.lfx.html._makeFadeable(node);
 	var anim = dojo.lfx.propertyAnimation(node, [
@@ -86,6 +91,11 @@ dojo.lfx.html.fadeIn = function(node, duration, easing, callback){
 }
 
 dojo.lfx.html.fadeOut = function(node, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	dojo.lfx.html._makeFadeable(node);
 	var anim = dojo.lfx.propertyAnimation(node, [
@@ -102,6 +112,11 @@ dojo.lfx.html.fadeOut = function(node, duration, easing, callback){
 }
 
 dojo.lfx.html.wipeIn = function(node, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	var overflow = dojo.style.getStyle(node, "overflow");
 	
@@ -130,6 +145,11 @@ dojo.lfx.html.wipeIn = function(node, duration, easing, callback){
 }
 
 dojo.lfx.html.wipeOut = function(node, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	var overflow = dojo.style.getStyle(node, "overflow");
 	
@@ -157,6 +177,11 @@ dojo.lfx.html.wipeOut = function(node, duration, easing, callback){
 }
 
 dojo.lfx.html.slideTo = function(node, coords, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	var top = null;
 	var left = null;

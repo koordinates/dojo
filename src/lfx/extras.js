@@ -4,6 +4,11 @@ dojo.require("dojo.lfx");
 dojo.require("dojo.lfx.Animation");
 
 dojo.lfx.fadeWipeIn = function(node, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	var anim = dojo.lfx.combine(
 		dojo.lfx.wipeIn(node, duration, easing),
@@ -19,6 +24,11 @@ dojo.lfx.fadeWipeIn = function(node, duration, easing, callback){
 }
 
 dojo.lfx.fadeWipeOut = function(node, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	var anim = dojo.lfx.combine(dojo.lfx.wipeOut(node, duration, easing), dojo.lfx.fadeOut(node, duration, easing));
 	
@@ -32,6 +42,11 @@ dojo.lfx.fadeWipeOut = function(node, duration, easing, callback){
 }
 
 dojo.lfx.scale = function(node, percentage, scaleContent, fromCenter, duration, easing, callback){
+	if(dojo.lang.isFunction(duration)){
+		callback = easing;
+		easing = duration;
+		duration = null;
+	}
 	var node = dojo.byId(node);
 	var origWidth = dojo.style.getOuterWidth(node);
 	var origHeight = dojo.style.getOuterHeight(node);
