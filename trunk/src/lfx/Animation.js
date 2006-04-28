@@ -37,13 +37,6 @@ dojo.lfx.easeInOut = function(n){
 	return ( (3 * n * n) - (2 * n * n * n) );
 }
 
-dojo.lfx.EasingTypes = {
-	EASE_NONE: -1,
-	EASE_IN: 0,
-	EASE_OUT: 1,
-	EASE_INOUT: 2
-};
-
 dojo.lang.defineClass("dojo.lfx.IAnimation", null, {
 	// public properties
 	curve: null,
@@ -122,29 +115,8 @@ dojo.lang.defineClass("dojo.lfx.Animation", dojo.lfx.IAnimation, {
 			this.onStop = handlers.onStop;
 			this.onAnimate = handlers.onAnimate;
 		}
-		if(easing){
-			if(dojo.lang.isFunction(easing)){
-				this.easing=easing;
-			}else{
-				switch(easing){
-					case 0:
-					case "in":
-						this.easing = dojo.lfx.easeIn;
-						break;
-					case 1:
-					case "out":
-						this.easing = dojo.lfx.easeOut;
-						break;
-					case 2:
-					case "inout":
-						this.easing = dojo.lfx.easeInOut;
-						break;
-					default:
-					case -1:
-					case "none":
-						break;
-				}
-			}
+		if(easing && dojo.lang.isFunction(easing)){
+			this.easing=easing;
 		}
 	},
 
