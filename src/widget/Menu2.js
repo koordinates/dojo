@@ -81,6 +81,12 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.domNode.style.left = '-9999px'
 		this.domNode.style.top = '-9999px'
 
+		// attach menu to document body if it's not already there
+		if (this.domNode.parentNode != document.body){
+			document.body.appendChild(this.domNode);
+		}
+
+
 		if (this.contextMenuForWindow){
 			var doc = document.documentElement  || document.body;
 			dojo.widget.Menu2.OperaAndKonqFixer.fixNode(doc);
