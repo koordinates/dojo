@@ -15,11 +15,11 @@ dojo.lfx.toggle.plain = {
 
 dojo.lfx.toggle.fade = {
 	show: function(node, duration, easing, callback){
-		dojo.lfx.fadeIn(node, duration, easing, callback).play();
+		dojo.lfx.fadeShow(node, duration, easing, callback).play();
 	},
 
 	hide: function(node, duration, easing, callback){
-		dojo.lfx.fadeOut(node, duration, easing, callback).play();
+		dojo.lfx.fadeHide(node, duration, easing, callback).play();
 	}
 }
 
@@ -32,5 +32,3 @@ dojo.lfx.toggle.wipe = {
 		dojo.lfx.wipeOut(node, duration, easing, callback).play();
 	}
 }
-
-dojo.mixin(dojo.evalObjPath("dojo.fx.html.toggle", true), dojo.lfx.toggle);

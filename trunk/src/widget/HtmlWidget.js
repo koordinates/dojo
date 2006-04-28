@@ -3,6 +3,7 @@ dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.html");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
+dojo.require("dojo.lfx.toggle");
 
 dojo.widget.HtmlWidget = function(args){
 	// mixin inheritance
@@ -26,25 +27,11 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	initialize: function(args, frag){
 	},
 
-	toggleObj: {
-		show: function(node, duration, explodeSrc, callback){
-			dojo.style.show(node);
-			if(dojo.lang.isFunction(callback)){ callback(); }
-		},
-	
-		hide: function(node, duration, explodeSrc, callback){
-			dojo.style.hide(node);
-			if(dojo.lang.isFunction(callback)){ callback(); }
-		}
-	},
-
 	postMixInProperties: function(args, frag){
 		// now that we know the setting for toggle, get toggle object
-		// If user hasn't included dojo.fx.html then we fall back to plain toggle
-		var specialToggler = dojo.evalObjPath("dojo.fx.html.toggle."+this.toggle.toLowerCase(), false);
-		if(specialToggler){
-			this.toggleObj=specialToggler;
-		}
+		// (default to plain toggler if user specified toggler not present)
+		this.toggleObj =
+			dojo.lfx.toggle[this.toggle.toLowerCase()] || dojo.lfx.toggle.plain;
 	},
 
 	getContainerHeight: function(){
@@ -87,7 +74,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	show: function(){
 		this.animationInProgress=true;
-		this.toggleObj.show(this.domNode, this.toggleDuration, this.explodeSrc,
+		this.toggleObj.show(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onShow));
 	},
 
@@ -98,7 +85,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	hide: function(){
 		this.animationInProgress=true;
-		this.toggleObj.hide(this.domNode, this.toggleDuration, this.explodeSrc,
+		this.toggleObj.hide(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onHide));
 	},
 
