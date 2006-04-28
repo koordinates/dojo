@@ -274,14 +274,12 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	// when mouse is moved
 	mouseHandler: function(e) {
-		var p = dojo.html.getCursorPosition(e);
-
-		if ((p.x >= this.hitX1) && (p.x <= this.hitX2) &&
-			(p.y >= this.hitY1) && (p.y <= this.hitY2)){
+		if ((e.pageX >= this.hitX1) && (e.pageX <= this.hitX2) &&
+			(e.pageY >= this.hitY1) && (e.pageY <= this.hitY2)){
 			if( !this.isOver ){
 				this.setActive(e);
 			}
-			this.onGridMouseMove(p.x-this.hitX1, p.y-this.hitY1);
+			this.onGridMouseMove(e.pageX-this.hitX1, e.pageY-this.hitY1);
 		}else{
 			if (this.isOver){
 				this.setDormant(e);

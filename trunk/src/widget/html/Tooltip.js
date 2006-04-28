@@ -51,7 +51,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	onMouseOver: function(e) {
-		this.mouse = dojo.html.getCursorPosition(e);
+		this.mouse = {x: e.pageX, y: e.pageY};
 
 		if(!this.showTimer){
 			this.showTimer = setTimeout(dojo.lang.hitch(this, "show"), this.showDelay);
@@ -60,7 +60,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	onMouseMove: function(e) {
-		this.mouse = dojo.html.getCursorPosition(e);
+		this.mouse = {x: e.pageX, y: e.pageY};
 
 		if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.domNode, e)) {
 			// If the tooltip has been scheduled to be erased, cancel that timer
