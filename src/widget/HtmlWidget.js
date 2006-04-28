@@ -41,8 +41,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	postMixInProperties: function(args, frag){
 		// now that we know the setting for toggle, get toggle object
 		// If user hasn't included dojo.fx.html then we fall back to plain toggle
-		var specialToggler =
-			(dojo.fx && dojo.fx.html && dojo.fx.html.toggle[this.toggle.toLowerCase()]);
+		var specialToggler = dojo.evalObjPath("dojo.fx.html.toggle."+this.toggle.toLowerCase(), false);
 		if(specialToggler){
 			this.toggleObj=specialToggler;
 		}
