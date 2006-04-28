@@ -119,16 +119,6 @@ dojo.html.getEventTarget = function(evt){
 	return t;
 }
 
-// FIXME: should the next set of functions take an optional document to operate
-// on so as to be useful for getting this information from iframes?
-dojo.html.getScrollTop = function(){
-	return document.documentElement.scrollTop || document.body.scrollTop || 0;
-}
-
-dojo.html.getScrollLeft = function(){
-	return document.documentElement.scrollLeft || document.body.scrollLeft || 0;
-}
-
 dojo.html.getDocumentWidth = function(){
 	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
 	return dojo.html.getViewportWidth();
@@ -194,19 +184,18 @@ dojo.html.getViewportSize = function(){
 	return ret;
 }
 
+dojo.html.getScrollTop = function(){
+	return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+}
+
+dojo.html.getScrollLeft = function(){
+	return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+}
+
 dojo.html.getScrollOffset = function(){
-	var ret = [0, 0];
-
-	if(window.pageXOffset || window.pageYOffset){
-		ret = [window.pageXOffset, window.pageYOffset];
-	}else if(dojo.exists(document, "documentElement.scrollTop")){
-		ret = [document.documentElement.scrollLeft, document.documentElement.scrollTop];
-	} else if(document.body){
-		ret = [document.body.scrollLeft, document.body.scrollTop];
-	}
-
-	ret.x = ret[0];
-	ret.y = ret[1];
+	var off = [dojo.html.getScrollLeft(), dojo.html.getScrollTop()];
+	off.x = off[0];
+	off.y = off[1];
 	return ret;
 }
 
