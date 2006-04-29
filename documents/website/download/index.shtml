@@ -75,7 +75,7 @@
 <script type="text/javascript" src="dojo/dojo.js"></script>
 <script type="text/javascript">
 dojo.require("dojo.xml.*");
-dojo.require("dojo.event.BrowserEvent");
+dojo.require("dojo.event.*");
 
 var Picker = {
 	init: function() {
@@ -231,6 +231,7 @@ dojo.addOnLoad(Picker, "init");
 					<a href="http://dojotoolkit.org/blog/feed/" title="RSS 2.0 Feed">RSS</a>
 					<span>|</span>
 					<a href="http://dojotoolkit.org/blog/feed/atom/" title="Atom 0.3">Atom</a>
+				</div>
 			</div>
 		</div>
 	</div>
