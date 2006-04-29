@@ -490,6 +490,9 @@ dojo.loaded = function(){ }
 dojo.hostenv.loaded = function(){
 	this.post_load_ = true;
 	var mll = this.modulesLoadedListeners;
+	//Clear listeners so new ones can be added
+	//For other xdomain package loads after the initial load.
+	this.modulesLoadedListeners = [];
 	for(var x=0; x<mll.length; x++){
 		mll[x]();
 	}

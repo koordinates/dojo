@@ -3,8 +3,8 @@
 //that would cause trouble?
 //TODO: Test the __package__.js file for src/undo: it does a require then a provide.
 //TODO: how will xd loading work with debugAtAllCosts?
-
-//TODO: is isDebug and browser_debug interfering with these methods?
+//TODO: test xdomain packages:
+//TODO: have a test that does a load after the fact, and has onload listeners.
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -18,8 +18,8 @@ dojo.hostenv.resetXd = function(){
 	
 	this.xdTimer = 0;
 	this.xdInFlight = {};
-	this.xdPackages = new Array();
-	this.xdContents = new Array();
+	this.xdPackages = [];
+	this.xdContents = [];
 }
 
 //Call reset immediately to set the state.
@@ -27,7 +27,7 @@ dojo.hostenv.resetXd();
 
 dojo.hostenv.createXdPackage = function(contents){
 	//Find dependencies.
-	var deps = new Array();
+	var deps = [];
     var depRegExp = /dojo.(require|requireIf|requireAll|provide|requireAfterIf|requireAfter|kwCompoundRequire|conditionalRequire|hostenv\.conditionalLoadModule|.hostenv\.loadModule|hostenv\.moduleLoaded)\(([\w\W]*?)\)/mg;
     var match;
 	while((match = depRegExp.exec(contents)) != null){
@@ -35,7 +35,7 @@ dojo.hostenv.createXdPackage = function(contents){
 	}
 
 	//Create package object and the call to packageLoaded.
-	var output = new Array();
+	var output = [];
 	output.push("dojo.hostenv.packageLoaded({\n");
 
 	//Add dependencies
@@ -142,8 +142,8 @@ dojo.hostenv.packageLoaded = function(pkg){
 	if(deps && deps.length > 0){
 		var dep, provide = null;
 		var insertHint = 0;
-		var waitingDeps = new Array();
-		var provideList = new Array();
+		var waitingDeps = [];
+		var provideList = [];
 		var attachedPackage = false;
 		for(var i = 0; i < deps.length; i++){
 			dep = deps[i];
@@ -159,7 +159,7 @@ dojo.hostenv.packageLoaded = function(pkg){
 					for(var i = 0; i < waitingDeps.length; i++){
 						insertHint = this.addXdDependency(insertHint, waitingDeps[i], provide);
 					}
-					waitingDeps = new Array();
+					waitingDeps = [];
 				}
 
 				//Now that we have a new provide, we're not sure where it is in 
@@ -327,10 +327,6 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
 	this.finishedLoad();
-
-	//TODO: Remove all addLoad listeners(?).
-	//Will there be issues if as a result of calling finishLoad, if it tries to
-	//load more packages, and it adds another load listener? Change the modulesLoaded method instead.
 }
 
 dojo.hostenv.flattenRequireArray = function(target){
