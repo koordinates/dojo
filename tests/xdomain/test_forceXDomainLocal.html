@@ -13,11 +13,11 @@
 			dojo.require("dojo.event.*");
 
 			function click1(){
-				alert("click1");
+				dojo.debug("click1");
 			}
 
 			function init(){
-				alert("here");
+				dojo.debug("init was called.");
 				var clickNode = document.getElementById("testButton1");
 				dojo.event.connect(clickNode, "onclick", "click1");
 			}
