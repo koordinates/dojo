@@ -5,6 +5,21 @@ dojo.require("dojo.math");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.YahooMap");
 
+(function(){
+	var yappid = djConfig["yAppId"]||djConfig["yahooAppId"]||"dojotoolkit";
+	if(!dojo.hostenv.post_load_){
+		if(yappid == "dojotoolkit"){
+			dojo.debug("please provide a unique Yahoo App ID in djConfig.yahooAppId when using the map widget");
+		}
+		var tag = "<scr"+"ipt src='http://api.maps.yahoo.com/ajaxymap?v=3.0&appid="+yappid+"'></scri"+"pt>";
+		if(!dj_global["YMap"]){
+			document.write(tag);
+		}
+	}else{
+		dojo.debug("cannot initialize map system after the page has been loaded! Please either manually include the script block provided by Yahoo in your page or require() the YahooMap widget before onload has fired");
+	}
+})();
+
 dojo.widget.html.YahooMap=function(){
 	dojo.widget.HtmlWidget.call(this);
 	dojo.widget.YahooMap.call(this);
@@ -19,6 +34,7 @@ dojo.widget.html.YahooMap=function(){
 dojo.inherits(dojo.widget.html.YahooMap, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.YahooMap, {
+	widgetType: "YahooMap",
 	templatePath:null,
 	templateCssPath:null,
 
