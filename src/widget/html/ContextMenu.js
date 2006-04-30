@@ -44,7 +44,7 @@ dojo.widget.html.ContextMenu = function(){
 				attached = true;
 			}else{
 				// remove this nodeId
-				dj_debug("Couldent find "+this.targetNodeIds[i]+", cant do ContextMenu on this node");
+				dojo.debug("Couldent find "+this.targetNodeIds[i]+", cant do ContextMenu on this node");
 				this.targetNodeIds.splice(i,1);
 			}
 		}

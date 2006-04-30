@@ -77,7 +77,7 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
         this.widgetType = "SlideShow";
     }
     // complete the inheritance process
-    dj_inherits(dojo.widget.SlideShow, dojo.widget.HtmlWidget);
+    dojo.inherits(dojo.widget.SlideShow, dojo.widget.HtmlWidget);
     // make it a tag
     dojo.widget.tags.addParseTreeHandler("dojo:slideshow");
 

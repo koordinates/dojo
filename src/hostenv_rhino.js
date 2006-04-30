@@ -10,7 +10,7 @@ var loadClass; var print; var load; var quit; var version; var Packages; var jav
 @*/
 
 // TODO: not sure what we gain from the next line, anyone?
-//if (typeof loadClass == 'undefined') { dj_throw("attempt to use Rhino host environment when no 'loadClass' global"); }
+//if (typeof loadClass == 'undefined') { dojo.raise("attempt to use Rhino host environment when no 'loadClass' global"); }
 
 dojo.render.name = dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version()};
@@ -101,7 +101,7 @@ dojo.hostenv.exit = function(exitcode){
 // do it by using java java.lang.Exception
 function dj_rhino_current_script_via_java(depth) {
     var optLevel = Packages.org.mozilla.javascript.Context.getCurrentContext().getOptimizationLevel();  
-    if (optLevel == -1) dj_unimplemented("getCurrentScriptURI (determine current script path for rhino when interpreter mode)", '');
+    if (optLevel == -1) dojo.unimplemented("getCurrentScriptURI (determine current script path for rhino when interpreter mode)", '');
     var caw = new java.io.CharArrayWriter();
     var pw = new java.io.PrintWriter(caw);
     var exc = new java.lang.Exception();

@@ -3,4 +3,4 @@
 // But note that those classes can contain any widget as a child.
 
 dojo.provide("dojo.widget.ContentPane");
-dojo.requireAfterIf("html", "dojo.widget.html.ContentPane");
+dojo.requireIf("html", "dojo.widget.html.ContentPane");

@@ -1,5 +1,6 @@
 dojo.provide("dojo.collections.SkipList");
 dojo.require("dojo.collections.Collections");
+dojo.require("dojo.experimental");
 
 dojo.experimental("dojo.collections.SkipList");
 

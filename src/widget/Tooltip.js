@@ -11,4 +11,4 @@ dojo.widget.Tooltip = function(){
 }
 dojo.inherits(dojo.widget.Tooltip, dojo.widget.Widget);
 
-dojo.requireAfterIf("html", "dojo.widget.html.Tooltip");
+dojo.requireIf("html", "dojo.widget.html.Tooltip");

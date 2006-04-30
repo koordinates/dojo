@@ -1,6 +1,6 @@
 //	hostenv_svg
 if(typeof window == 'undefined'){
-	dj_throw("attempt to use adobe svg hostenv when no window object");
+	dojo.raise("attempt to use adobe svg hostenv when no window object");
 }
 dojo.debug = function(){ 
 	if (!djConfig.isDebug) { return; }
@@ -86,7 +86,7 @@ dojo.hostenv.loadModule = function(moduleName){
 		if (a[i] == "*") continue;
 		s.push(a[i]);
 		if (!currentObj[a[i]]){
-			dj_throw("dojo.require('" + moduleName + "'): module does not exist.");
+			dojo.raise("dojo.require('" + moduleName + "'): module does not exist.");
 		} else currentObj = currentObj[a[i]];
 	}
 	return; 

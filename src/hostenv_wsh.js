@@ -13,7 +13,7 @@ var WScript;
 
 // make sure we are in right environment
 if(typeof WScript == 'undefined'){
-	dj_throw("attempt to use WSH host environment when no WScript global");
+	dojo.raise("attempt to use WSH host environment when no WScript global");
 }
 
 dojo.hostenv.println = WScript.Echo;

@@ -18,13 +18,13 @@
 			dojo.addOnLoad(function(e) {
 				var xmlText = '<response status="ok" />';
 				var xml = dojo.dom.createDocumentFromText(xmlText);
-				dj_debug(xml);
-				if(xml) dj_debug(xml.document);
-				else dj_debug("no xml.document");
-				if(xml) dj_debug(xml.firstChild);
-				else dj_debug("no xml.firstChild");
-				if(xml && xml.firstChild) dj_debug(xml.firstChild.tagName);
-				else dj_debug("no xml.firstChild.tagName");
+				dojo.debug(xml);
+				if(xml) dojo.debug(xml.document);
+				else dojo.debug("no xml.document");
+				if(xml) dojo.debug(xml.firstChild);
+				else dojo.debug("no xml.firstChild");
+				if(xml && xml.firstChild) dojo.debug(xml.firstChild.tagName);
+				else dojo.debug("no xml.firstChild.tagName");
 			});
 		</script>
 		<style type="text/css">
