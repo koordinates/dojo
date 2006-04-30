@@ -6,11 +6,11 @@ dojo.provide("dojo.dnd.HtmlDragObject");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.dnd.DragAndDrop");
 
-dojo.require("dojo.animation.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
 dojo.require("dojo.lang.extras");
+dojo.require("dojo.lfx.*");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	node = dojo.byId(node);
@@ -205,8 +205,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 					this.dragStartPosition.y + 1];
 
 				// animate
-				var line = new dojo.math.curves.Line(startCoords, endCoords);
-				var anim = new dojo.animation.Animation(line, 300, 0, 0);
+				var line = new dojo.lfx.Line(startCoords, endCoords);
+				var anim = new dojo.lfx.Animation(500, line, dojo.lfx.easeOut);
 				var dragObject = this;
 				dojo.event.connect(anim, "onAnimate", function(e) {
 					dragObject.dragClone.style.left = e.x + "px";

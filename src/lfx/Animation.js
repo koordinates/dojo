@@ -9,13 +9,21 @@ dojo.require("dojo.lang.func");
 dojo.lfx.Line = function(start, end){
 	this.start = start;
 	this.end = end;
-	// calculate end - start to optimize a bit
-	var diff = end - start;
-
-	this.getValue = function(/*float*/ n){
-		//	summary: returns the point on the line
-		//	n: a floating point number greater than 0 and less than 1
-		return (diff * n) + this.start;
+	if(dojo.lang.isArray(start)){
+		var diff = [end[0] - start[0], end[1] - start[1]];
+		
+		this.getValue = function(/*float*/ n){
+			return { x: (diff[0] * n) + this.start[0],
+					 y: (diff[1] * n) + this.start[1] };
+		}
+	}else{
+		var diff = end - start;
+			
+		this.getValue = function(/*float*/ n){
+			//	summary: returns the point on the line
+			//	n: a floating point number greater than 0 and less than 1
+			return (diff * n) + this.start;
+		}
 	}
 }
 
@@ -95,7 +103,7 @@ dojo.lfx.Animation = function(/*Object*/ handlers, /*int*/ duration, /*Array*/ c
 		curve = duration;
 		duration = handlers;
 		handlers = null;
-	}else if(dojo.lang.isFunction(handlers)||dojo.lang.isArray(handlers)){
+	}else if(handlers.getValue||dojo.lang.isArray(handlers)){
 		// no handlers or duration:
 		rate = easing;
 		repeatCount = curve;
