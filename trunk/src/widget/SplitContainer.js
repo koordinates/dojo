@@ -15,6 +15,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
 dojo.require("dojo.io.cookie");
 
 dojo.widget.html.SplitContainer = function(){
@@ -327,10 +328,10 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	beginSizing: function(e, i){
-		var clientX = window.event ? window.event.offsetX : e.layerX;
-		var clientY = window.event ? window.event.offsetY : e.layerY;
-		var screenX = window.event ? window.event.clientX : e.pageX;
-		var screenY = window.event ? window.event.clientY : e.pageY;
+		var clientX = e.layerX;
+		var clientY = e.layerY;
+		var screenX = e.pageX;
+		var screenY = e.pageY;
 
 		this.paneBefore = this.children[i];
 		this.paneAfter = this.children[i+1];
@@ -358,10 +359,8 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	changeSizing: function(e){
-
-		// FIXME: is this fixed in connect()?
-		var screenX = window.event ? window.event.clientX : e.pageX;
-		var screenY = window.event ? window.event.clientY : e.pageY;
+		var screenX = e.pageX;
+		var screenY = e.pageY;
 
 		if (this.isActiveResize){
 			this.lastPoint = {'x':screenX, 'y':screenY};
