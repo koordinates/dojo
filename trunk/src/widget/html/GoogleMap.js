@@ -5,6 +5,18 @@ dojo.require("dojo.math");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.GoogleMap");
 
+(function(){
+	var gkey = djConfig["gMapKey"]||djConfig["googleMapKey"];
+	if(!dojo.hostenv.post_load_){
+		var tag = "<scr"+"ipt src='http://maps.google.com/maps?file=api&amp;v=2&amp;key="+gkey+"'></scri"+"pt>";
+		if(!dj_global["GMap2"]){ // prevent multi-inclusion
+			document.write(tag);
+		}
+	}else{
+		dojo.debug("cannot initialize map system after the page has been loaded! Please either manually include the script block provided by Google in your page or require() the GoogleMap widget before onload has fired");
+	}
+})();
+
 dojo.widget.html.GoogleMap=function(){
 	dojo.widget.HtmlWidget.call(this);
 	dojo.widget.GoogleMap.call(this);
@@ -14,6 +26,7 @@ dojo.widget.html.GoogleMap=function(){
 	this.map=null;
 	this.data=[];
 	this.datasrc="";
+	// FIXME: this is pehraps the stupidest way to specify this enum I can think of
 	this.controls=[gm.Controls.LargeMap,gm.Controls.Scale,gm.Controls.MapType];
 };
 dojo.inherits(dojo.widget.html.GoogleMap, dojo.widget.HtmlWidget);
