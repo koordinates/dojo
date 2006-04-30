@@ -1,10 +1,9 @@
 dojo.provide("dojo.widget.html.TitlePane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.fx.*");
+dojo.require("dojo.lfx.*");
 
 dojo.widget.html.TitlePane = function(){
-
 	dojo.widget.HtmlWidget.call(this);
 	this.widgetType = "TitlePane";
 
@@ -35,16 +34,16 @@ dojo.lang.extend(dojo.widget.html.TitlePane, {
 		}	
 
 		if (!this.open) {
-			dojo.fx.html.wipeOut(this.containerNode,0);
+			dojo.lfx.wipeOut(this.containerNode,0).play();
 		}
 	},
 
 	onLabelClick: function() {
 		if (this.open) {
-			dojo.fx.html.wipeOut(this.containerNode,250);
+			dojo.lfx.wipeOut(this.containerNode,250).play();
 			this.open=false;
 		}else {
-			dojo.fx.html.wipeIn(this.containerNode,250);
+			dojo.lfx.wipeIn(this.containerNode,250).play();
 			this.open=true;
 		}
 	},
@@ -56,9 +55,6 @@ dojo.lang.extend(dojo.widget.html.TitlePane, {
 	setLabel: function(label) {
 		this.labelNode.innerHTML=label;
 	}
-
-
-
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:TitlePane");
