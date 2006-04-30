@@ -36,7 +36,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 
 	getContainerHeight: function(){
 		// NOTE: container height must be returned as the INNER height
-		dj_unimplemented("dojo.widget.HtmlWidget.getContainerHeight");
+		dojo.unimplemented("dojo.widget.HtmlWidget.getContainerHeight");
 	},
 
 	getContainerWidth: function(){

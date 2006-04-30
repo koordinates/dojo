@@ -301,7 +301,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	initialize: function(args, frag){
-		// dj_unimplemented("dojo.widget.Widget.initialize");
+		// dojo.unimplemented("dojo.widget.Widget.initialize");
 		return false;
 	},
 
@@ -314,25 +314,25 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	uninitialize: function(){
-		// dj_unimplemented("dojo.widget.Widget.uninitialize");
+		// dojo.unimplemented("dojo.widget.Widget.uninitialize");
 		return false;
 	},
 
 	buildRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.buildRendering, on "+this.toString()+", ");
+		dojo.unimplemented("dojo.widget.Widget.buildRendering, on "+this.toString()+", ");
 		return false;
 	},
 
 	destroyRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.destroyRendering");
+		dojo.unimplemented("dojo.widget.Widget.destroyRendering");
 		return false;
 	},
 
 	cleanUp: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.cleanUp");
+		dojo.unimplemented("dojo.widget.Widget.cleanUp");
 		return false;
 	},
 
@@ -342,7 +342,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	addChild: function(child){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.addChild");
+		dojo.unimplemented("dojo.widget.Widget.addChild");
 		return false;
 	},
 

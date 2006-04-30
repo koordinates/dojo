@@ -7,7 +7,7 @@
 		- task for firing off jslink.pl against a set of "app files". TBD:
 		  should we support these as HTML? Or just JS files?
 		  NOTE: the following command issued from the top-level seems to work correctly:
-		  	perl buildscripts/jslink.pl -pre cat -i release/testUsage.js -l src/bootstrap1.js -l src/hostenv_browser.js -l src/bootstrap2.js -l src/io/IO.js -l src/io/BrowserIO.js -o - > release/minimal.js
+		  	perl buildscripts/jslink.pl -pre cat -i release/testUsage.js -l src/bootstrap1.js -l src/bootstrap2.js -l src/hostenv_browser.js -l src/io/IO.js -l src/io/BrowserIO.js -o - > release/minimal.js
 		  This correctly "links" the files together, but mangles some
 		  identifiers and places anonymous inner functions at the wrong places
 		  OTOH, running the linker over the pre-compressed version of the file doesn't seem to work at all
@@ -485,15 +485,15 @@ ${profileDeps}
 				files="${profileDeps}" />
 		</concat>
 		<!-- 
-			clobber requireAfterIf and requireAfter statements since they
+			clobber requireIf and requireAfterIf statements since they
 			aren't applicable in build
 		-->
-		<replaceregexp match="dojo.requireAfterIf\((.*?)\);" 
+		<replaceregexp match="dojo.requireIf\((.*?)\);" 
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
 
-		<replaceregexp match="dojo.requireAfter\((.*?)\);" 
+		<replaceregexp match="dojo.requireAfterIf\((.*?)\);" 
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>

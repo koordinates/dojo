@@ -1,4 +1,4 @@
-dojo.kwCompoundRequire({
+dojo.hostenv.conditionalLoadModule({
 	common: [
 		"dojo.uuid.Uuid",
 		"dojo.uuid.LightweightGenerator",

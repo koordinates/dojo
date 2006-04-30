@@ -34,24 +34,6 @@ if(typeof window == 'undefined'){
 		}
 	}
 
-	if(((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == "")) &&(document && document.getElementsByTagName)){
-		var scripts = document.getElementsByTagName("script");
-		var rePkg = /(__package__|dojo|bootstrap1)\.js([\?\.]|$)/i;
-		for(var i = 0; i < scripts.length; i++) {
-			var src = scripts[i].getAttribute("src");
-			if(!src) { continue; }
-			var m = src.match(rePkg);
-			if(m) {
-				root = src.substring(0, m.index);
-				if(src.indexOf("bootstrap1") > -1) { root += "../"; }
-				if(!this["djConfig"]) { djConfig = {}; }
-				if(djConfig["baseScriptUri"] == "") { djConfig["baseScriptUri"] = root; }
-				if(djConfig["baseRelativePath"] == "") { djConfig["baseRelativePath"] = root; }
-				break;
-			}
-		}
-	}
-
 	// fill in the rendering support information in dojo.render.*
 	var dr = dojo.render;
 	var drh = dojo.render.html;
@@ -373,24 +355,10 @@ try {
 // breaking when it's not included
 dojo.hostenv.writeIncludes = function(){}
 
-dojo.hostenv.byId = dojo.byId = function(id, doc){
+dojo.byId = function(id, doc){
 	if(id && (typeof id == "string" || id instanceof String)){
 		if(!doc){ doc = document; }
 		return doc.getElementById(id);
 	}
 	return id; // assume it's a node
-}
-
-dojo.hostenv.byIdArray = dojo.byIdArray = function(){
-	var ids = [];
-	for(var i = 0; i < arguments.length; i++){
-		if((arguments[i] instanceof Array)||(typeof arguments[i] == "array")){
-			for(var j = 0; j < arguments[i].length; j++){
-				ids = ids.concat(dojo.hostenv.byIdArray(arguments[i][j]));
-			}
-		}else{
-			ids.push(dojo.hostenv.byId(arguments[i]));
-		}
-	}
-	return ids;
 }

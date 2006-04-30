@@ -1,5 +1,6 @@
 dojo.provide("dojo.crypto.Rijndael");
 dojo.require("dojo.crypto");
+dojo.require("dojo.experimental");
 
 dojo.experimental("dojo.crypto.Rijndael");
 

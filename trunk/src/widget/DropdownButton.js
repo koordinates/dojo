@@ -16,4 +16,4 @@ dojo.widget.DropdownButton = function(){
 }
 dojo.inherits(dojo.widget.DropdownButton, dojo.widget.Widget);
 
-dojo.requireAfterIf("html", "dojo.widget.html.DropdownButton");
+dojo.requireIf("html", "dojo.widget.html.DropdownButton");

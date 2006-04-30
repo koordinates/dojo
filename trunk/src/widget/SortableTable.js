@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.SortableTable");
 dojo.require("dojo.widget.*");
-dojo.requireAfterIf("html", "dojo.widget.html.SortableTable");
+dojo.requireIf("html", "dojo.widget.html.SortableTable");
 dojo.widget.tags.addParseTreeHandler("dojo:sortableTable");
 
 //	set up the general widget

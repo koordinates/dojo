@@ -46,4 +46,4 @@ dojo.lang.extend(dojo.widget.DomMenu, {
 	}
 });
 
-dojo.requireAfterIf("html", "dojo.widget.html.Menu");
+dojo.requireIf("html", "dojo.widget.html.Menu");

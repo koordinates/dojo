@@ -3,7 +3,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
-dj_deprecated("dojo.xml.htmlUtil is deprecated, use dojo.html instead");
+dojo.deprecated("dojo.xml.htmlUtil is deprecated, use dojo.html instead");
 
 dojo.xml.htmlUtil = new function(){
 	this.styleSheet = dojo.style.styleSheet;
@@ -15,13 +15,13 @@ dojo.xml.htmlUtil = new function(){
 	this.getInnerWidth = function(){return dojo.style.getInnerWidth.apply(dojo.style, arguments);}
 	
 	this.getOuterWidth = function(node){
-		dj_unimplemented("dojo.xml.htmlUtil.getOuterWidth");
+		dojo.unimplemented("dojo.xml.htmlUtil.getOuterWidth");
 	}
 
 	this.getInnerHeight = function(){return dojo.style.getInnerHeight.apply(dojo.style, arguments);}
 
 	this.getOuterHeight = function(node){
-		dj_unimplemented("dojo.xml.htmlUtil.getOuterHeight");
+		dojo.unimplemented("dojo.xml.htmlUtil.getOuterHeight");
 	}
 
 	this.getTotalOffset = function(){return dojo.style.getTotalOffset.apply(dojo.style, arguments);}
@@ -42,13 +42,13 @@ dojo.xml.htmlUtil = new function(){
 	this.getParentOfType = function(){return dojo.html.getParentOfType.apply(dojo.html, arguments);}
 	this.getAttribute = function(){return dojo.html.getAttribute.apply(dojo.html, arguments);}
 	this.getAttr = function (node, attr) { // for backwards compat (may disappear!!!)
-		dj_deprecated("dojo.xml.htmlUtil.getAttr is deprecated, use dojo.xml.htmlUtil.getAttribute instead");
+		dojo.deprecated("dojo.xml.htmlUtil.getAttr is deprecated, use dojo.xml.htmlUtil.getAttribute instead");
 		return dojo.xml.htmlUtil.getAttribute(node, attr);
 	}
 	this.hasAttribute = function(){return dojo.html.hasAttribute.apply(dojo.html, arguments);}
 
 	this.hasAttr = function (node, attr) { // for backwards compat (may disappear!!!)
-		dj_deprecated("dojo.xml.htmlUtil.hasAttr is deprecated, use dojo.xml.htmlUtil.hasAttribute instead");
+		dojo.deprecated("dojo.xml.htmlUtil.hasAttr is deprecated, use dojo.xml.htmlUtil.hasAttribute instead");
 		return dojo.xml.htmlUtil.hasAttribute(node, attr);
 	}
 	
@@ -85,21 +85,21 @@ dojo.xml.htmlUtil = new function(){
 	this.insertCssRule = function(){return dojo.style.insertCssRule.apply(dojo.style, arguments)}
 	
 	this.insertCSSRule = function(selector, declaration, index){
-		dj_deprecated("dojo.xml.htmlUtil.insertCSSRule is deprecated, use dojo.xml.htmlUtil.insertCssRule instead");
+		dojo.deprecated("dojo.xml.htmlUtil.insertCSSRule is deprecated, use dojo.xml.htmlUtil.insertCssRule instead");
 		return dojo.xml.htmlUtil.insertCssRule(selector, declaration, index);
 	}
 	
 	this.removeCssRule = function(){return dojo.style.removeCssRule.apply(dojo.style, arguments)}
 
 	this.removeCSSRule = function(index){
-		dj_deprecated("dojo.xml.htmlUtil.removeCSSRule is deprecated, use dojo.xml.htmlUtil.removeCssRule instead");
+		dojo.deprecated("dojo.xml.htmlUtil.removeCSSRule is deprecated, use dojo.xml.htmlUtil.removeCssRule instead");
 		return dojo.xml.htmlUtil.removeCssRule(index);
 	}
 
 	this.insertCssFile = function(){return dojo.style.insertCssFile.apply(dojo.style, arguments)}
 
 	this.insertCSSFile = function(URI, doc, checkDuplicates){
-		dj_deprecated("dojo.xml.htmlUtil.insertCSSFile is deprecated, use dojo.xml.htmlUtil.insertCssFile instead");
+		dojo.deprecated("dojo.xml.htmlUtil.insertCSSFile is deprecated, use dojo.xml.htmlUtil.insertCssFile instead");
 		return dojo.xml.htmlUtil.insertCssFile(URI, doc, checkDuplicates);
 	}
 

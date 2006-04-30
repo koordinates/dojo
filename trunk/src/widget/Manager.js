@@ -89,7 +89,7 @@ dojo.widget.manager = new function(){
 	}
 
 	this.getWidgetsOfType = function (id) {
-		dj_deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
+		dojo.deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
 		return dojo.widget.manager.getWidgetsByType(id);
 	}
 
@@ -224,11 +224,11 @@ dojo.widget.manager = new function(){
 	// NOTE: this method is implemented by DomWidget.js since not all
 	// hostenv's would have an implementation.
 	/*this.getWidgetFromPrimitive = function(baseRenderType){
-		dj_unimplemented("dojo.widget.manager.getWidgetFromPrimitive");
+		dojo.unimplemented("dojo.widget.manager.getWidgetFromPrimitive");
 	}
 
 	this.getWidgetFromEvent = function(nativeEvt){
-		dj_unimplemented("dojo.widget.manager.getWidgetFromEvent");
+		dojo.unimplemented("dojo.widget.manager.getWidgetFromEvent");
 	}*/
 
 	// Catch window resize events and notify top level widgets

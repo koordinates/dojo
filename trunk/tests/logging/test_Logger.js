@@ -47,7 +47,7 @@ function test_logging_err(){
 function test_logging_exception(){
 	var msg = "dojo.log.exception() working correctly";
 	try{
-		dj_throw("a synthetic exception");
+		dojo.raise("a synthetic exception");
 	}catch(e){
 		// catch and squelch
 		dojo.log.exception(msg, e, true);

@@ -27,12 +27,13 @@ if(!this["dependencies"]){
 }
 
 load("../src/bootstrap1.js");
-load("../src/hostenv_rhino.js");
 load("../src/bootstrap2.js");
+load("../src/hostenv_rhino.js");
 // FIXME: is this really what we want to say?
 dojo.render.html.capable = true;
 
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
+dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 if(!this["hostenvType"]){
 	hostenvType = "browser";
 }
@@ -45,7 +46,6 @@ if(hostenvType.constructor == Array){
 }else{
 	dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
 }
-dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
 if(dependencies["prefixes"]){
 	var tmp = dependencies.prefixes;
@@ -94,7 +94,7 @@ dojo.hostenv.getRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|requireAll|hostenv.conditionalLoadModule|hostenv.startPackage|hostenv.provide|provide)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|hostenv.conditionalLoadModule|hostenv.startPackage|provide)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}
@@ -109,7 +109,7 @@ dojo.hostenv.getDelayRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(requireAfterIf|requireAfter)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(requireAfterIf|requireIf)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}

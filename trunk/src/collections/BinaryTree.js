@@ -1,5 +1,6 @@
 dojo.provide("dojo.collections.BinaryTree");
 dojo.require("dojo.collections.Collections");
+dojo.require("dojo.experimental");
 
 dojo.experimental("dojo.collections.BinaryTree");
 
