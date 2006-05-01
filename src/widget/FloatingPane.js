@@ -78,9 +78,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.maximizeAction.style.display= 
 				(this.displayMaximizeAction && this.windowState!="maximized" ? "" : "none");
 			this.restoreAction.style.display= 
-				(this.displayMaximizeAction && this.windowState!="normal" ? "" : "none");
+				(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
 			this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
-
 			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
 			if (this.constrainToContainer) {
 				drag.constrainTo();
@@ -119,20 +118,21 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	postCreate: function(){
-		this.width=-1;	// force resize
-		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+		if(this.isShowing()){
+			this.width=-1;	// force resize
+			this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+		}
 	},
 
 	maximizeWindow: function(evt) {
 		this.previous={
-			width: this.width,
-			height: this.height,
+			width: this.width || dojo.style.getOuterWidth(this.domNode),
+			height: this.height || dojo.style.getOuterHeight(this.domNode),
 			left: this.domNode.style.left,
 			top: this.domNode.style.top,
 			bottom: this.domNode.style.bottom,
 			right: this.domNode.style.right
 			};
-
 		this.domNode.style.left =
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
 		this.domNode.style.top =
