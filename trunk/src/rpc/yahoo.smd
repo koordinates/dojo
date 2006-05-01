@@ -1,0 +1,18 @@
+{
+	"SMDVersion":".1",
+	"objectName":"yahoo",
+	"serviceType":"JSON-P",
+	"methods":[
+		{
+			"name":"geocode",
+			"serviceURL": "http://api.local.yahoo.com/MapsService/V1/geocode",
+			// FIXME: need to set this up with the correct geocode params
+			"parameters":[
+				{ "name":"street", "type":"STRING" },
+				{ "name":"city", "type":"STRING" },
+				{ "name":"zip", "type":"INTEGER" },
+				{ "name":"location", "type":"STRING" }
+			]
+		}
+	]
+}
