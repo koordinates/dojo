@@ -160,7 +160,17 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				if(!thisFunc){
 					thisFunc = tevt;
 				}
-				dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
+
+				var tf = function(){ 
+					var ntf = new String(thisFunc);
+					return function(evt){
+						if(_this[ntf]){
+							_this[ntf](dojo.event.browser.fixEvent(evt, this));
+						}
+					};
+				}();
+				dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
+				// dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
 			}
 		}
 
@@ -186,6 +196,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 						}
 					}();
 					dojo.event.browser.addListener(baseNode, domEvt, tf, false, true);
+					// dojo.event.browser.addListener(baseNode, domEvt, dojo.lang.hitch(_this, funcs[z]));
 				}
 			}
 		}
@@ -496,7 +507,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	},
 
 	fillInTemplate: function(){
-		// dj_unimplemented("dojo.widget.DomWidget.fillInTemplate");
+		// dojo.unimplemented("dojo.widget.DomWidget.fillInTemplate");
 	},
 	
 	// method over-ride
@@ -510,14 +521,14 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 	cleanUp: function(){},
 	
 	getContainerHeight: function(){
-		dj_unimplemented("dojo.widget.DomWidget.getContainerHeight");
+		dojo.unimplemented("dojo.widget.DomWidget.getContainerHeight");
 	},
 
 	getContainerWidth: function(){
-		dj_unimplemented("dojo.widget.DomWidget.getContainerWidth");
+		dojo.unimplemented("dojo.widget.DomWidget.getContainerWidth");
 	},
 
 	createNodesFromText: function(){
-		dj_unimplemented("dojo.widget.DomWidget.createNodesFromText");
+		dojo.unimplemented("dojo.widget.DomWidget.createNodesFromText");
 	}
 });

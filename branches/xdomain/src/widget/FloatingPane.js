@@ -11,6 +11,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.html.shadow");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.layout");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
@@ -47,13 +48,18 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
 	fillInTemplate: function(args, frag){
-		// Copy style info and id from input node to output node
+		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
 		this.domNode.style.cssText = source.style.cssText;
 		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
 
 		// necessary for safari, khtml (for computing width/height)
 		document.body.appendChild(this.domNode);
+
+		// if display:none then state=minimized, otherwise state=normal
+		if(!this.isShowing()){
+			this.windowState="minimized";
+		}
 
 		// <img src=""> can hang IE!  better get rid of it
 		if(this.iconSrc==""){
@@ -72,9 +78,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.maximizeAction.style.display= 
 				(this.displayMaximizeAction && this.windowState!="maximized" ? "" : "none");
 			this.restoreAction.style.display= 
-				(this.displayMaximizeAction && this.windowState!="normal" ? "" : "none");
+				(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
 			this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
-
 			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
 			if (this.constrainToContainer) {
 				drag.constrainTo();
@@ -113,20 +118,21 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	postCreate: function(){
-		this.width=-1;	// force resize
-		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+		if(this.isShowing()){
+			this.width=-1;	// force resize
+			this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+		}
 	},
 
 	maximizeWindow: function(evt) {
 		this.previous={
-			width: this.width,
-			height: this.height,
+			width: this.width || dojo.style.getOuterWidth(this.domNode),
+			height: this.height || dojo.style.getOuterHeight(this.domNode),
 			left: this.domNode.style.left,
 			top: this.domNode.style.top,
 			bottom: this.domNode.style.bottom,
 			right: this.domNode.style.right
 			};
-
 		this.domNode.style.left =
 			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
 		this.domNode.style.top =
@@ -241,13 +247,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
 	},
 
+	// This is called when the user adjusts the size of the floating pane
 	resizeTo: function(w, h){
-		if(w==this.width && h == this.height){
-			return;
-		}
-		this.width=w;
-		this.height=h;
-
 		dojo.style.setOuterWidth(this.domNode, w);
 		dojo.style.setOuterHeight(this.domNode, h);
 
@@ -259,10 +260,18 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			] );
 
 		// If any of the children have layoutAlign specified, obey it
-		dojo.layout(this.containerNode, this.children);
+		dojo.layout(this.containerNode, this.children, "top-bottom");
 		
 		this.bgIframe.onResized();
 		if(this.shadow){ this.shadow.size(w, h); }
+		this.onResized();
+	},
+
+	onParentResized: function() {
+		// onParentResized() is called when the user has resized the browser window,
+		// but that doesn't affect this widget (or this widget's children)
+		// so it can be safely ignored...
+		// TODO: unless we are maximized.  then we should resize ourself.
 	}
 });
 

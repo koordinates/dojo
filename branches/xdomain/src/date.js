@@ -56,8 +56,8 @@ dojo.date.getIsoWeekOfYear = function (dateObject, firstDay) {
 /* ISO 8601 Functions
  *********************/
 
-dojo.date.setIso8601 = function (dateObject, string) {
-	var comps = string.split('T');
+dojo.date.setIso8601 = function (dateObject, string){
+	var comps = (string.indexOf("T") == -1) ? string.split(" ") : string.split("T");
 	dojo.date.setIso8601Date(dateObject, comps[0]);
 	if (comps.length == 2) { dojo.date.setIso8601Time(dateObject, comps[1]); }
 	return dateObject;
@@ -744,6 +744,6 @@ dojo.date.fromSql = function(sqlDate) {
 	while(parts.length < 6) {
 		parts.push(0);
 	}
-	return new Date(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+	return new Date(parts[0], (parseInt(parts[1],10)-1), parts[2], parts[3], parts[4], parts[5]);
 }
 

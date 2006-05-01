@@ -29,8 +29,8 @@
 			<tr valign="top" align="left">
 				<td>
 					<!-- wikiword -->
-					<span class="iconContainer" dojoAttachPoint="wikiWordButton"
-						dojoOnClick="wikiWordClick; buttonClick;" style="display: none;">
+					<span class="iconContainer" dojoAttachPoint="wikiwordButton"
+						dojoOnClick="wikiwordClick; buttonClick;" style="display: none;">
 						<span title="Toggle Wiki Word" class="icon wikiword" 
 						unselectable="on">&nbsp;</span>
 					</span>
@@ -54,14 +54,14 @@
 					<span class="iconContainer" dojoAttachPoint="undoButton"
 						dojoOnClick="undoClick; buttonClick;" unselectable="on">
 						<!-- FIXME: should we have the text "undo" here? -->
-						<span title="Undo" class="icon undo" unselectable="on">&nbsp;</span>
+						<span title="Undo (Ctrl-Z)" class="icon undo" unselectable="on">&nbsp;</span>
 					</span>
 				</td>
 				<td>
 					<!-- redo -->
 					<span class="iconContainer" dojoAttachPoint="redoButton"
 						dojoOnClick="redoClick; buttonClick;" unselectable="on">
-						<span title="Redo" class="icon redo" unselectable="on">&nbsp;</span>
+						<span title="Redo (Ctrl-R)" class="icon redo" unselectable="on">&nbsp;</span>
 					</span>
 				</td>
 				<td>
@@ -91,21 +91,8 @@
 					<!-- inserthorizontalrule -->
 					<span class="iconContainer" dojoAttachPoint="inserthorizontalruleButton"
 						unselectable="on" dojoOnClick="inserthorizontalruleClick; buttonClick;">
-						<span title="Insert Image" class="icon inserthorizontalrule " unselectable="on">&nbsp;</span>
+						<span title="Insert Horizontal Rule" class="icon inserthorizontalrule " unselectable="on">&nbsp;</span>
 					</span>
-				</td>
-				<td>
-					<!-- font select -->
-					<select dojoOnClick="formatSelectClick; buttonClick;"
-						dojoAttachPoint="formatSelectBox">
-						<!-- FIXME: using "p" here inserts a paragraph in most cases! -->
-						<option value="span">Normal</option>
-						<option value="pre">Fixed Font</option>
-						<option value="h1">Main Heading</option>
-						<option value="h2">Section Heading</option>
-						<option value="h3">Sub-Heading</option>
-						<!-- <option value="blockquote">Block Quote</option> -->
-					</select>
 				</td>
 				<td>
 					<!-- bold -->
@@ -132,7 +119,7 @@
 					<!-- strikethrough -->
 					<span class="iconContainer" dojoAttachPoint="strikethroughButton"
 						dojoOnClick="strikethroughClick; buttonClick;">
-						<span title="Toggle Strike-Through (Ctrl-U)" 
+						<span title="Toggle Strike-Through" 
 							class="icon strikethrough" unselectable="on">&nbsp;</span>
 					</span>
 				</td>
@@ -148,7 +135,7 @@
 					<span class="iconContainer" dojoAttachPoint="insertunorderedlistButton"
 						unselectable="on" 
 						dojoOnClick="insertunorderedlistClick; buttonClick;">
-						<span title="Insert Un-Ordered List" 
+						<span title="Insert Bullet List" 
 							class="icon insertunorderedlist" unselectable="on">&nbsp;</span>
 					</span>
 				</td>
@@ -156,7 +143,7 @@
 					<!-- insertorderedlist -->
 					<span class="iconContainer" dojoAttachPoint="insertorderedlistButton"
 						unselectable="on" dojoOnClick="insertorderedlistClick; buttonClick;">
-						<span title="Insert Ordered List" 
+						<span title="Insert Numbered List" 
 							class="icon insertorderedlist" unselectable="on">&nbsp;</span>
 					</span>
 				</td>
@@ -229,10 +216,10 @@
 					</span>
 				</td>
 				<td>
-					<!-- justify full -->
-					<span class="iconContainer" dojoAttachPoint="justifyfullButton"
-						dojoOnClick="justifyfullClick; buttonClick;">
-						<span title="Justify Both" class="icon justifyfull" unselectable="on">&nbsp;</span>
+					<!-- justify center -->
+					<span class="iconContainer" dojoAttachPoint="justifycenterButton"
+						dojoOnClick="justifycenterClick; buttonClick;">
+						<span title="Center" class="icon justifycenter" unselectable="on">&nbsp;</span>
 					</span>
 				</td>
 				<td>
@@ -241,7 +228,28 @@
 						dojoOnClick="justifyrightClick; buttonClick;">
 						<span title="Justify Right" class="icon justifyright" unselectable="on">&nbsp;</span>
 					</span>
+				</td>
+				<td>
+					<!-- justify full -->
+					<span class="iconContainer" dojoAttachPoint="justifyfullButton"
+						dojoOnClick="justifyfullClick; buttonClick;">
+						<span title="Justify Both" class="icon justifyfull" unselectable="on">&nbsp;</span>
+					</span>
 				</td>	
+				<td>
+					<!-- font select -->
+					<select dojoOnChange="formatSelectClick; buttonClick;"
+						dojoAttachPoint="formatSelectBox" unselectable="on">
+						<!-- FIXME: using "p" here inserts a paragraph in most cases! -->
+						<option value="">-- format --</option>
+						<option value="p">Normal</option>
+						<option value="pre">Fixed Font</option>
+						<option value="h1">Main Heading</option>
+						<option value="h2">Section Heading</option>
+						<option value="h3">Sub-Heading</option>
+						<!-- <option value="blockquote">Block Quote</option> -->
+					</select>
+				</td>
 				<td width="*">&nbsp;</td>
 			</tr>
 		</tbody>

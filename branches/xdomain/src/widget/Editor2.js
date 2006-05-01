@@ -53,16 +53,43 @@ dojo.widget.defineWidget(
 			// dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onclick");
 			dojo.event.topic.subscribe("Editor2.clobberFocus", this, "setBlur");
 			dojo.event.connect(this.editNode, "onfocus", this, "setFocus");
+			dojo.event.connect(this.toolbarWidget.linkButton, "onclick", 
+				dojo.lang.hitch(this, function(){
+					var range;
+					if(this.document.selection){
+						range = this.document.selection.createRange().text;
+					}else if(dojo.render.html.mozilla){
+						range = this.window.getSelection().toString();
+					}
+					if(range.length){
+						this.toolbarWidget.exec("createlink", 
+							prompt("Please enter the URL of the link:", "http://"));
+					}else{
+						alert("Please select text to link");
+					}
+				})
+			);
+
+			var focusFunc = dojo.lang.hitch(this, function(){ 
+				if(dojo.render.html.ie){
+					this.editNode.focus();
+				}else{
+					this.window.focus(); 
+				}
+			});
+
+			dojo.event.connect(this.toolbarWidget, "formatSelectClick", focusFunc);
+			dojo.event.connect(this, "execCommand", focusFunc);
 		},
 
 		setFocus: function(){
-			dojo.debug("setFocus:", this);
+			// dojo.debug("setFocus:", this);
 			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
 			// dojo.debug(et);
 		},
 
 		setBlur: function(){
-			dojo.debug("setBlur:", this);
+			// dojo.debug("setBlur:", this);
 			dojo.event.disconnect(this.toolbarWidget, "exec", this, "execCommand");
 		},
 
@@ -75,23 +102,17 @@ dojo.widget.defineWidget(
 			if(!this._handleScroll){ return; }
 			var ds = dojo.style;
 			var tdn = this.toolbarWidget.domNode;
-			var db = document["documentElement"]||document["body"];
+			var db = document["body"];
 			var totalHeight = ds.getOuterHeight(tdn);
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
 				var editorWidth =  ds.getOuterWidth(this.domNode); 
 				this._scrollThreshold = ds.abs(tdn, false).y;
 				// dojo.debug("threshold:", this._scrollThreshold);
-				if((isIE)&&(ds.getStyle(db, "background-image")=="none")){
-					// set background-image and background-attachment
-					// if background-image is not already in use, to take
-					// advantage of an IE quirk to enable smooth scrolling
-					// of pseudo-position-fixed elements like this one
+				if((isIE)&&(db)&&(ds.getStyle(db, "background-image")=="none")){
 					with(db.style){
-						/*
 						backgroundImage = "url(" + dojo.uri.dojoUri("src/widget/templates/images/blank.gif") + ")";
 						backgroundAttachment = "fixed";
-						*/
 					}
 				}
 			}
@@ -185,6 +206,35 @@ dojo.widget.defineWidget(
 						// alert(cmd+":"+e);
 					}
 				}, this);
+
+			var h = dojo.render.html;
+			
+			// safari f's us for selection primitives
+			if(h.safari){ return; }
+
+			var selectedNode = (h.ie) ? this.document.selection.createRange().parentElement() : this.window.getSelection().anchorNode;
+			// make sure we actuall have an element
+			while((selectedNode)&&(selectedNode.nodeType != 1)){
+				selectedNode = selectedNode.parentNode;
+			}
+			if(!selectedNode){ return; }
+
+			var formats = ["p", "pre", "h1", "h2", "h3", "h4"];
+			// gotta run some specialized updates for the various
+			// formatting options
+			var type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
+			while((selectedNode)&&(selectedNode!=this.editNode)&&(!type)){
+				selectedNode = selectedNode.parentNode;
+				type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
+			}
+			if(!type){
+				type = "";
+			}else{
+				if(type.charAt(0)=="h"){
+					this.toolbarWidget.unhighlightButton("bold");
+				}
+			}
+			this.toolbarWidget.selectFormat(type);
 		},
 
 		updateItem: function(item) {
@@ -242,8 +292,31 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		dojo.event.connect(this, "fillInTemplate", this, "editorOnLoad");
-		dojo.event.connect(this, "onDisplayChanged", this, "updateToolbar");
-		dojo.event.connect(this, "onLoad", this, "wireUpOnLoad");
+		var cp = dojo.widget.html.Editor2.prototype;
+		if(!cp._wrappersSet){
+			cp._wrappersSet = true;
+			cp.fillInTemplate = (function(fit){
+				return function(){
+					fit.call(this);
+					this.editorOnLoad();
+				};
+			})(cp.fillInTemplate);
+		
+			cp.onDisplayChanged = (function(odc){
+				return function(){
+					try{
+						odc.call(this);
+						this.updateToolbar();
+					}catch(e){}
+				};
+			})(cp.onDisplayChanged);
+
+			cp.onLoad = (function(ol){
+				return function(){
+					ol.call(this);
+					this.wireUpOnLoad();
+				};
+			})(cp.onLoad);
+		}
 	}
 );

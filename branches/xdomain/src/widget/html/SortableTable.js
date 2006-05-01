@@ -344,6 +344,7 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		while(body.childNodes.length>0) body.removeChild(body.childNodes[0]);
 		for(var i=0; i<data.length;i++){
 			var row=document.createElement("tr");
+			dojo.html.disableSelection(row);
 			if (data[i][this.valueField]){
 				row.setAttribute("value",data[i][this.valueField]);
 			}
@@ -359,11 +360,18 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 				var cell=document.createElement("td");
 				cell.setAttribute("align", this.columns[j].align);
 				cell.setAttribute("valign", this.columns[j].valign);
+				dojo.html.disableSelection(cell);
 				if(this.sortIndex==j){
 					cell.className=this.columnSelected;
 				}
 				if(this.columns[j].sortType=="__markup__"){
 					cell.innerHTML=data[i][this.columns[j].getField()];
+					for(var k=0; k<cell.childNodes.length; k++){
+						var node=cell.childNodes[k];
+						if(node&&node.nodeType==dojo.html.ELEMENT_NODE){
+							dojo.html.disableSelection(node);
+						}
+					}
 				}else{
 					if(this.columns[j].getType()==Date){
 						var format=this.defaultDateFormat;

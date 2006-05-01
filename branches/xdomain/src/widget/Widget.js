@@ -301,7 +301,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	initialize: function(args, frag){
-		// dj_unimplemented("dojo.widget.Widget.initialize");
+		// dojo.unimplemented("dojo.widget.Widget.initialize");
 		return false;
 	},
 
@@ -314,25 +314,25 @@ dojo.lang.extend(dojo.widget.Widget, {
 	},
 
 	uninitialize: function(){
-		// dj_unimplemented("dojo.widget.Widget.uninitialize");
+		// dojo.unimplemented("dojo.widget.Widget.uninitialize");
 		return false;
 	},
 
 	buildRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.buildRendering, on "+this.toString()+", ");
+		dojo.unimplemented("dojo.widget.Widget.buildRendering, on "+this.toString()+", ");
 		return false;
 	},
 
 	destroyRendering: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.destroyRendering");
+		dojo.unimplemented("dojo.widget.Widget.destroyRendering");
 		return false;
 	},
 
 	cleanUp: function(){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.cleanUp");
+		dojo.unimplemented("dojo.widget.Widget.cleanUp");
 		return false;
 	},
 
@@ -342,7 +342,7 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 	addChild: function(child){
 		// SUBCLASSES MUST IMPLEMENT
-		dj_unimplemented("dojo.widget.Widget.addChild");
+		dojo.unimplemented("dojo.widget.Widget.addChild");
 		return false;
 	},
 
@@ -495,43 +495,22 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 /*
  * it would be best to be able to call defineWidget for any widget namespace
  */
-dojo.widget.defineWidget = function(	widgetClass 	/*string*/, 
-										superclass 		/*function*/, 
-										props 			/*object*/,
-										renderer 		/*string*/, 
-										ctor 			/*function*/){
-	if((!ctor)&&(props["classConstructor"])){
-		ctor = props.classConstructor;
-	}
-	if(!ctor){ ctor = function(){}; }
-	var nsref;
-	var namespace;
-	var type;
+dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*function*/, props /*object*/, renderer /*string*/, ctor /*function*/){
+	// widgetClass takes the form foo.bar.baz<.renderer>.WidgetName (e.g. foo.bar.baz.WidgetName or foo.bar.baz.html.WidgetName)
+	var namespace = widgetClass.split(".");
+	var type = namespace.pop(); // type <= WidgetName, namespace <= foo.bar.baz<.renderer>
 	if(renderer){
-		// widgetClass takes the form foo.bar.baz.html.WidgetName
-		var parts = widgetClass.split("."+renderer+".");
-		namespace = parts[0];
-		nsref = dojo.evalObjPath(namespace+"."+renderer, true);
-		type = parts[1];
-	}else{
-		// widgetClass takes the form foo.bar.baz.WidgetName
-		var parts = widgetClass.split(".");
-		type = parts.pop();
-		namespace = parts.join(".");
-		nsref = dojo.evalObjPath(namespace, true);
+		// FIXME: could just be namespace.pop(), unless there can be foo.bar.baz.html.zot.WidgetName
+		while ((namespace.length)&&(namespace.pop() != renderer)); // namespace <= foo.bar.baz
 	}
-	
+	namespace = namespace.join(".");
+
+	dojo.widget.manager.registerWidgetPackage(namespace);
+	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+
 	if(!props){ props = {}; }
 	props.widgetType = type;
 
-	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
-
-	nsref[type] = function(){
-		superclass.call(this);
-		ctor.call(this);
-	}
-
-	dojo.inherits(nsref[type], superclass);
-
-	dojo.lang.extend(nsref[type], props);
+	dojo.defineClass(widgetClass, superclass, props, ctor);
 }
+

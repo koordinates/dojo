@@ -37,26 +37,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 
 		dojo.html.clearSelection();
 
-		var mouse = dojo.html.getCursorPosition(e);
-
 		this.dragClone = this.domNode;
 
-		this.scrollOffset = {
-			top: dojo.html.getScrollTop(), // document.documentElement.scrollTop,
-			left: dojo.html.getScrollLeft() // document.documentElement.scrollLeft
-		};
-
-		this.dragStartPosition = {top: dojo.style.getAbsoluteY(this.domNode, true),
-			left: dojo.style.getAbsoluteX(this.domNode, true) };
+		this.scrollOffset = dojo.html.getScrollOffset();
+		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
 		
-		this.dragOffset = {top: this.dragStartPosition.top - mouse.y,
-			left: this.dragStartPosition.left - mouse.x};
+		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
+			x: this.dragStartPosition.x - e.pageX};
 
 		if (this.domNode.parentNode.nodeName.toLowerCase() == 'body') {
-			this.parentPosition = {top: 0, left: 0};
+			this.parentPosition = {y: 0, x: 0};
 		} else {
-			this.parentPosition = {top: dojo.style.getAbsoluteY(this.domNode.parentNode, true),
-				left: dojo.style.getAbsoluteX(this.domNode.parentNode, true)};
+			this.parentPosition = dojo.style.getAbsolutePosition(this.domNode.parentNode, true);
 		}
 
 		this.dragClone.style.position = "absolute";

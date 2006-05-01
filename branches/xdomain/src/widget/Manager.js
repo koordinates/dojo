@@ -89,7 +89,7 @@ dojo.widget.manager = new function(){
 	}
 
 	this.getWidgetsOfType = function (id) {
-		dj_deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
+		dojo.deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
 		return dojo.widget.manager.getWidgetsByType(id);
 	}
 
@@ -224,16 +224,16 @@ dojo.widget.manager = new function(){
 	// NOTE: this method is implemented by DomWidget.js since not all
 	// hostenv's would have an implementation.
 	/*this.getWidgetFromPrimitive = function(baseRenderType){
-		dj_unimplemented("dojo.widget.manager.getWidgetFromPrimitive");
+		dojo.unimplemented("dojo.widget.manager.getWidgetFromPrimitive");
 	}
 
 	this.getWidgetFromEvent = function(nativeEvt){
-		dj_unimplemented("dojo.widget.manager.getWidgetFromEvent");
+		dojo.unimplemented("dojo.widget.manager.getWidgetFromEvent");
 	}*/
 
 	// Catch window resize events and notify top level widgets
 	this.resizing=false;
-	this.onResized = function(){
+	this.onWindowResized = function(){
 		if(this.resizing){
 			return;	// duplicate event
 		}
@@ -241,19 +241,18 @@ dojo.widget.manager = new function(){
 			this.resizing=true;
 			for(var id in this.topWidgets){
 				var child = this.topWidgets[id];
-				//dojo.debug("root resizing child " + child.widgetId);
-				if(child.onResized){
-					child.onResized();
+				if(child.onParentResized ){
+					child.onParentResized();
 				}
-			}
+			};
 		}catch(e){
 		}finally{
 			this.resizing=false;
 		}
 	}
 	if(typeof window != "undefined") {
-		dojo.addOnLoad(this, 'onResized');							// initial sizing
-		dojo.event.connect(window, 'onresize', this, 'onResized');	// window resize
+		dojo.addOnLoad(this, 'onWindowResized');							// initial sizing
+		dojo.event.connect(window, 'onresize', this, 'onWindowResized');	// window resize
 	}
 
 	// FIXME: what else?

@@ -61,7 +61,7 @@ function init(e) {
 	});
 	tb.addChild(headings);
 	var timeSpent = (new Date() - now);
-	dj_debug("Total build time: " + timeSpent);
+	dojo.debug("Total build time: " + timeSpent);
 	return timeSpent;
 }
 
@@ -70,7 +70,7 @@ dojo.event.connect(dojo, "loaded", function() {
 	for(var i = 0; i < 1; i++) {
 		total += init();
 	}
-	dj_debug("Avg time: " + (total/i));
+	dojo.debug("Avg time: " + (total/i));
 });
 </script>
 

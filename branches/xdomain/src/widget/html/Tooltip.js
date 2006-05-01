@@ -37,11 +37,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		if(this.caption != ""){
 			this.domNode.appendChild(document.createTextNode(this.caption));
 		}
-		this.connectNode = dojo.byId(this.connectId);
-		
-		// IE bug workaround
-		this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
-		
+		this.connectNode = dojo.byId(this.connectId);		
 		dojo.widget.html.Tooltip.superclass.fillInTemplate.call(this, args, frag);
 	},
 	
@@ -55,8 +51,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 	
 	onMouseOver: function(e) {
-		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
-		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+		this.mouse = {x: e.pageX, y: e.pageY};
 
 		if(!this.showTimer){
 			this.showTimer = setTimeout(dojo.lang.hitch(this, "show"), this.showDelay);
@@ -65,8 +60,7 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	onMouseMove: function(e) {
-		this.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
-		this.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+		this.mouse = {x: e.pageX, y: e.pageY};
 
 		if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.domNode, e)) {
 			// If the tooltip has been scheduled to be erased, cancel that timer
@@ -97,10 +91,16 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 		if ( this.state=="displaying" || this.state=="displayed" ) { return; }
 
+		// prevent IE bleed through (iframe creation is deferred until first show()
+		// call because apparently it takes a long time)
+		if(!this.bgIframe){
+			this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
+		}
+
 		this.position();
 
 		// if rendering using explosion effect, need to set explosion source
-		this.explodeSrc = [this.mouseX, this.mouseY];
+		this.explodeSrc = [this.mouse.x, this.mouse.y];
 
 		this.state="displaying";
 
@@ -153,12 +153,19 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	position: function(){
-		dojo.html.placeOnScreenPoint(this.domNode, this.mouseX, this.mouseY, [10,15], true);
+		dojo.html.placeOnScreenPoint(this.domNode, this.mouse.x, this.mouse.y, [10,15], true);
+		this.bgIframe.onResized();
 	},
 
 	onLoad: function(){
 		// the tooltip has changed size due to downloaded contents, so reposition it
 		dojo.lang.setTimeout(this, this.position, 50);
 		dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
+	},
+
+	onParentResized: function() {
+		// onParentResized() is called when the user has resized the browser window,
+		// but that doesn't affect this widget (or this widget's children)
+		// so it can be safely ignored
 	}
 });

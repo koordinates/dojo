@@ -273,25 +273,12 @@ dojo.require("dojo.uri.*");
 		sophisticated Flash to JavaScript unit tests, including large
 		amounts of data.
 		
-		* dojo.flash.Install does not currently support the Express Install
-		mechanism for easy upgrading.
-		
 		* On Internet Explorer, after doing a basic install, the page is
 		not refreshed or does not detect that Flash is now available. The way
 		to fix this is to create a custom small Flash file that is pointed to
 		during installation; when it is finished loading, it does a callback
 		that says that Flash installation is complete on IE, and we can proceed
 		to initialize the dojo.flash subsystem.
-		
-		* On Safari, installing Flash for the first time involves you closing 
-		the browser. When reopening the browser, you are not taken to the 
-		original page; not sure if there is a way to have Safari go back to 
-		your original page that was using dojo.flash before installation. Need
-		to ask Safari developers.
-		
-		* Refactoring dojo.flash.Embed to use the code from 
-		http://blog.deconcept.com/flashobject/ after getting permission from
-		that author to sign a Dojo Contributors Agreement.
 		
 		@author Brad Neuberg, bkn3@columbia.edu
 */
@@ -653,7 +640,7 @@ dojo.flash.Embed.prototype = {
 		containerStyle.append("height: " + this.height + "px; ");
 		if(this._visible == false){
 			containerStyle.append("position: absolute; ");
-			containerStyle.append("z-index: 100; ");
+			containerStyle.append("z-index: 10000; ");
 			containerStyle.append("top: -1000px; ");
 			containerStyle.append("left: -1000px; ");
 		}
@@ -668,6 +655,7 @@ dojo.flash.Embed.prototype = {
 			swfloc = dojo.flash.flash6_version;
 			var dojoPath = djConfig.baseRelativePath;
 			swfloc = swfloc + "?baseRelativePath=" + escape(dojoPath);
+			
 			objectHTML = 
 						  '<embed id="' + this.id + '" src="' + swfloc + '" '
 						+ '    quality="high" bgcolor="#ffffff" '
@@ -715,11 +703,11 @@ dojo.flash.Embed.prototype = {
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}
-		
+
 		// now write everything out
-		objectHTML = '<div id="' + this.id + 'Container" style="' + containerStyle + '">'
+		objectHTML = '<div id="' + this.id + 'Container" style="' + containerStyle + '"> '
 						+ objectHTML
-						+ '</div>';
+					 + '</div>';
 		document.writeln(objectHTML);
 	},  
 	
@@ -738,6 +726,9 @@ dojo.flash.Embed.prototype = {
 		if(visible == true){
 			container.style.visibility = "visible";
 		}else{
+			container.style.position = "absolute";
+			container.style.x = "-1000px";
+			container.style.y = "-1000px";
 			container.style.visibility = "hidden";
 		}
 	},
@@ -851,11 +842,18 @@ dojo.flash.Communicator.prototype = {
 	/** Handles fscommand's from Flash to JavaScript. Flash 6 communication. */
 	_handleFSCommand: function(command, args){
 		//dojo.debug("fscommand, command="+command+", args="+args);
+		// Flash 8 on Mac/Firefox precedes all commands with the string "FSCommand:";
+		// strip it off if it is present
+		if(command != null && !dojo.lang.isUndefined(command)
+			&& /^FSCommand:(.*)/.test(command) == true){
+			command = command.match(/^FSCommand:(.*)/)[1];
+		}
+		 
 		if(command == "addCallback"){ // add Flash method for JavaScript callback
 			this._fscommandAddCallback(command, args);
-		}else if (command == "call"){ // Flash to JavaScript method call
+		}else if(command == "call"){ // Flash to JavaScript method call
 			this._fscommandCall(command, args);
-		}else if (command == "fscommandReady"){ // see if fscommands are ready
+		}else if(command == "fscommandReady"){ // see if fscommands are ready
 			this._fscommandReady();
 		}
 	},

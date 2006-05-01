@@ -14,17 +14,17 @@ dojo.inherits(dojo.widget.SvgWidget, dojo.widget.DomWidget);
 dojo.lang.extend(dojo.widget.SvgWidget, {
 	getContainerHeight: function(){
 		// NOTE: container height must be returned as the INNER height
-		dj_unimplemented("dojo.widget.SvgWidget.getContainerHeight");
+		dojo.unimplemented("dojo.widget.SvgWidget.getContainerHeight");
 	},
 
 	getContainerWidth: function(){
 		// return this.parent.domNode.offsetWidth;
-		dj_unimplemented("dojo.widget.SvgWidget.getContainerWidth");
+		dojo.unimplemented("dojo.widget.SvgWidget.getContainerWidth");
 	},
 
 	setNativeHeight: function(height){
 		// var ch = this.getContainerHeight();
-		dj_unimplemented("dojo.widget.SVGWidget.setNativeHeight");
+		dojo.unimplemented("dojo.widget.SVGWidget.setNativeHeight");
 	},
 
 	createNodesFromText: function(txt, wrap){

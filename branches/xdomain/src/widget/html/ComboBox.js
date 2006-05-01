@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.html.ComboBox");
 dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
-dojo.require("dojo.fx.*");
+dojo.require("dojo.lfx.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
@@ -496,7 +496,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		if(this._result_list_open){
 			this._result_list_open = false;
 			this.optionsIframe.size([0,0,0,0]);
-			dojo.fx.fadeHide(this.optionsListNode, 200);
+			dojo.lfx.fadeHide(this.optionsListNode, 200).play();
 		}
 	},
 
@@ -517,7 +517,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			// only fadein once (flicker)
 			if(!this._result_list_open){
 				dojo.html.setOpacity(this.optionsListNode, 0);
-				dojo.fx.fadeIn(this.optionsListNode, 200);
+				dojo.lfx.fadeIn(this.optionsListNode, 200).play();
 			}
 			
 			// prevent IE bleed through

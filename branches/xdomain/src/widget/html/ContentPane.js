@@ -37,14 +37,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		if ( this.handler != "" ){
 			this.setHandler(this.handler);
 		}
-		if(this.preload){ this.loadContents(); }
-	},
-
-	onResized: function(){
-		if(this.isShowing()){
-			this.loadContents();
-		}
-		dojo.widget.html.ContentPane.superclass.onResized.call(this);
+		if(this.isShowing()||this.preload){ this.loadContents(); }
 	},
 
 	show: function(){
@@ -212,7 +205,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 					case "src":// falltrough
 					case "href":
 						// this hopefully covers most common protocols
-						if(attr[3].search(/^(https?|ftps?|file|javascript|mailto|news):/)==-1){ 
+						if(attr[3].search(/^(?:[#]|(?:(?:https?|ftps?|file|javascript|mailto|news):))/)==-1){ 
 							fixedPath = (new dojo.uri.Uri(url, attr[3]).toString());
 						} else {
 							pos2 = pos2 + attr[3].length;

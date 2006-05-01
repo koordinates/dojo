@@ -1,5 +1,7 @@
+dojo.require("dojo.experimental");
+
 dojo.experimental("dojo.data.*");
-dojo.kwCompoundRequire({
+dojo.hostenv.conditionalLoadModule({
 	common: [
 		"dojo.data.Item",
 		"dojo.data.ResultSet",

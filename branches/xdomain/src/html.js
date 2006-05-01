@@ -114,22 +114,9 @@ dojo.html.isSelectionCollapsed = function(){
 
 dojo.html.getEventTarget = function(evt){
 	if(!evt) { evt = window.event || {} };
-	if(evt.srcElement) {
-		return evt.srcElement;
-	} else if(evt.target) {
-		return evt.target;
-	}
-	return null;
-}
-
-// FIXME: should the next set of functions take an optional document to operate
-// on so as to be useful for getting this information from iframes?
-dojo.html.getScrollTop = function(){
-	return document.documentElement.scrollTop || document.body.scrollTop || 0;
-}
-
-dojo.html.getScrollLeft = function(){
-	return document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	var t = (evt.srcElement ? evt.srcElement : (evt.target ? evt.target : null));
+	while((t)&&(t.nodeType!=1)){ t = t.parentNode; }
+	return t;
 }
 
 dojo.html.getDocumentWidth = function(){
@@ -197,20 +184,19 @@ dojo.html.getViewportSize = function(){
 	return ret;
 }
 
+dojo.html.getScrollTop = function(){
+	return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+}
+
+dojo.html.getScrollLeft = function(){
+	return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+}
+
 dojo.html.getScrollOffset = function(){
-	var ret = [0, 0];
-
-	if(window.pageXOffset || window.pageYOffset){
-		ret = [window.pageXOffset, window.pageYOffset];
-	}else if(dojo.exists(document, "documentElement.scrollTop")){
-		ret = [document.documentElement.scrollLeft, document.documentElement.scrollTop];
-	} else if(document.body){
-		ret = [document.body.scrollLeft, document.body.scrollTop];
-	}
-
-	ret.x = ret[0];
-	ret.y = ret[1];
-	return ret;
+	var off = [dojo.html.getScrollLeft(), dojo.html.getScrollTop()];
+	off.x = off[0];
+	off.y = off[1];
+	return off;
 }
 
 dojo.html.getParentOfType = function(node, type){
@@ -450,6 +436,13 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
 
+/**
+ * Returns the mouse position relative to the document (not the viewport).
+ * For example, if you have a document that is 10000px tall,
+ * but your browser window is only 100px tall,
+ * if you scroll to the bottom of the document and call this function it
+ * will return {x: 0, y: 10000}
+ */
 dojo.html.getCursorPosition = function(e){
 	e = e || window.event;
 	var cursor = {x:0, y:0};

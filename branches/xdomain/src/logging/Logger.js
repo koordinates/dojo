@@ -260,19 +260,19 @@ dojo.logging.LogHandler = function(level){
 
 dojo.logging.LogHandler.prototype.setFormatter = function(fmtr){
 	// FIXME: need to vet that it is indeed a formatter object
-	dj_unimplemented("setFormatter");
+	dojo.unimplemented("setFormatter");
 }
 
 dojo.logging.LogHandler.prototype.flush = function(){
-	dj_unimplemented("flush");
+	dojo.unimplemented("flush");
 }
 
 dojo.logging.LogHandler.prototype.close = function(){
-	dj_unimplemented("close");
+	dojo.unimplemented("close");
 }
 
 dojo.logging.LogHandler.prototype.handleError = function(){
-	dj_unimplemented("handleError");
+	dojo.unimplemented("handleError");
 }
 
 dojo.logging.LogHandler.prototype.handle = function(record){
@@ -284,7 +284,7 @@ dojo.logging.LogHandler.prototype.handle = function(record){
 
 dojo.logging.LogHandler.prototype.emit = function(record){
 	// do whatever is necessaray to actually log the record
-	dj_unimplemented("emit");
+	dojo.unimplemented("emit");
 }
 
 // set aliases since we don't want to inherit from dojo.logging.Logger
@@ -364,7 +364,7 @@ dojo.logging.MemoryLogHandler = function(level, recordsToKeep, postType, postInt
 dojo.logging.MemoryLogHandler.prototype = new dojo.logging.LogHandler();
 
 // FIXME
-// dj_inherits(dojo.logging.MemoryLogHandler, 
+// dojo.inherits(dojo.logging.MemoryLogHandler, 
 
 // over-ride base-class
 dojo.logging.MemoryLogHandler.prototype.emit = function(record){

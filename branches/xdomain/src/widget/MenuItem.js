@@ -33,5 +33,5 @@ dojo.lang.extend(dojo.widget.DomMenuItem, {
 	widgetType: "MenuItem"
 });
 
-dojo.requireAfterIf("html", "dojo.html");
-dojo.requireAfterIf("html", "dojo.widget.html.MenuItem");
+dojo.requireIf("html", "dojo.html");
+dojo.requireIf("html", "dojo.widget.html.MenuItem");

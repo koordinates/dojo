@@ -29,7 +29,7 @@ dojo.widget.Parse = function(fragment) {
 					returnValue.push(djTags[ltn](fragment, this, parentComp, count++));
 				}else{
 					if(ltn.substr(0, 5)=="dojo:"){
-						dj_debug("no tag handler registed for type: ", ltn);
+						dojo.debug("no tag handler registed for type: ", ltn);
 					}
 				}
 			}

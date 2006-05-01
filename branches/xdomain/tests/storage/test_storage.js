@@ -1,4 +1,5 @@
 dojo.require("dojo.dom");
+dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.fx.*");
@@ -10,9 +11,11 @@ var TestStorage = {
 	initialize: function(){
 		//dojo.debug("test_storage.initialize()");
 		
-		// clear out old values
+		// clear out old values and enable input forms
 		dojo.byId("storageKey").value = "";
+		dojo.byId("storageKey").disabled = false;
 		dojo.byId("storageValue").value = "";
+		dojo.byId("storageValue").disabled = false;
 		
 		// write out our available keys
 		this._printAvailableKeys();
@@ -21,6 +24,7 @@ var TestStorage = {
 		var storageProvider = dojo.byId("storageProvider");
 		dojo.event.connect(storageProvider, "onchange", this,
 		                   this.changeProvider);
+		storageProvider.disabled = false;
 		var directory = dojo.byId("directory");
 		dojo.event.connect(directory, "onchange", this, this.directoryChange);
 		var storageValueElem = dojo.byId("storageValue");
@@ -40,6 +44,7 @@ var TestStorage = {
 				var buttonName = currentChild.id;
 				var functionName = buttonName.match(/^(.*)Button$/)[1];
 				dojo.event.connect(currentChild, "onclick", this, this[functionName]);
+				currentChild.disabled = false;
 			}		
 			
 			currentChild = currentChild.nextSibling;
@@ -105,31 +110,7 @@ var TestStorage = {
 		this.printValueSize(); 
 		
 		// do the save
-		this._printStatus("Saving '" + key + "'...");
-		var self = this;
-		var saveHandler = function(status, keyName) {
-			if(status == dojo.storage.FAILED){
-				alert("You do not have permission to store data for this web site. "
-			        + "Press the Configure button to grant permission.");
-			}else if(status == dojo.storage.SUCCESS){
-				// clear out the old value
-				dojo.byId("storageValue").value = "";
-				self._printStatus("Saved '" + key + "'");
-				
-				// update the list of available keys
-				// put this on a slight timeout, because saveHandler is called back
-				// from Flash, which can cause problems in Flash 8 communication
-				// which affects Safari
-				// FIXME: Find out what is going on in the Flash 8 layer and fix it
-				// there
-				window.setTimeout(function(){ self._printAvailableKeys() }, 1);
-			}
-		};
-		try{
-			dojo.storage.put(key, value, saveHandler);
-		}catch(exp){
-			alert(exp);
-		}
+		this._save(key, value)
 	},
 	
 	clear: function(evt){
@@ -149,6 +130,14 @@ var TestStorage = {
 		evt.stopPropagation();
 		
 		if(dojo.storage.hasSettingsUI()){
+			// redraw our keys after the dialog is closed, in
+			// case they have all been erased
+			var self = this;
+			dojo.storage.onHideSettingsUI = function(){
+				self._printAvailableKeys();
+			}
+			
+			// show the dialog
 			dojo.storage.showSettingsUI();
 		}
 	},
@@ -211,6 +200,77 @@ var TestStorage = {
 		valueSize.innerHTML = size;
 	},
 	
+	saveBook: function(evt){
+		this._printStatus("Loading book...");
+		var self = this;
+		dojo.io.bind({
+				url: "resources/testBook.txt",
+				load: function(type, data, evt){
+					self._printStatus("Book loaded");
+					self._save("testBook", data);
+				},
+				error: function(type, error){ 
+					alert("Unable to load testBook.txt");
+				},
+				mimetype: "text/plain"
+		});
+		
+		evt.preventDefault();
+		evt.stopPropagation();
+		
+		return false;
+	},
+	
+	saveXML: function(evt){
+		this._printStatus("Loading XML...");
+		var self = this;
+		dojo.io.bind({
+				url: "../flash/resources/test.xml",
+				load: function(type, data, evt){
+					self._printStatus("XML loaded");
+					self._save("testXML", data);
+				},
+				error: function(type, error){ 
+					alert("Unable to load test.XML");
+				},
+				mimetype: "text/plain"
+		});
+		
+		evt.preventDefault();
+		evt.stopPropagation();
+		
+		return false;
+	},
+	
+	_save: function(key, value){
+		this._printStatus("Saving '" + key + "'...");
+		var self = this;
+		var saveHandler = function(status, keyName){
+			if(status == dojo.storage.FAILED){
+				alert("You do not have permission to store data for this web site. "
+			        + "Press the Configure button to grant permission.");
+			}else if(status == dojo.storage.SUCCESS){
+				// clear out the old value
+				dojo.byId("storageKey").value = "";
+				dojo.byId("storageValue").value = "";
+				self._printStatus("Saved '" + key + "'");
+				
+				// update the list of available keys
+				// put this on a slight timeout, because saveHandler is called back
+				// from Flash, which can cause problems in Flash 8 communication
+				// which affects Safari
+				// FIXME: Find out what is going on in the Flash 8 layer and fix it
+				// there
+				window.setTimeout(function(){ self._printAvailableKeys() }, 1);
+			}
+		};
+		try{
+			dojo.storage.put(key, value, saveHandler);
+		}catch(exp){
+			alert(exp);
+		}
+	},
+	
 	_printAvailableKeys: function(){
 		var directory = dojo.byId("directory");
 		// clear out any old keys
@@ -218,9 +278,9 @@ var TestStorage = {
 		
 		// add new ones
 		var availableKeys = dojo.storage.getKeys();
-		for (var i = 0; i < availableKeys.length; i++) {
+		for (var i = 0; i < availableKeys.length; i++){
 			var optionNode = document.createElement("option");
-			optionNode.appendChild(document.createTextNode(availableKeys[i]))
+			optionNode.appendChild(document.createTextNode(availableKeys[i]));
 			optionNode.value = availableKeys[i];
 			directory.appendChild(optionNode);
 		}
@@ -260,10 +320,10 @@ var TestStorage = {
 	_printStatus: function(message){
 		// remove the old status
 		var top = dojo.byId("top");
-		for (var i = 0; i < top.childNodes.length; i++) {
+		for (var i = 0; i < top.childNodes.length; i++){
 			var currentNode = top.childNodes[i];
 			if (currentNode.nodeType == dojo.dom.ELEMENT_NODE &&
-					currentNode.className == "status") {
+					currentNode.className == "status"){
 				top.removeChild(currentNode);
 			}		
 		}
@@ -278,9 +338,9 @@ var TestStorage = {
 	
 	_setProvider: function(provider){
 		// change the provider in dojo
-		if (provider == "default")
+		if (provider == "default"){
 			dojo.storage.manager.autodetect();
-		else {
+		}else {
 			if (dojo.storage.manager.supportsProvider(provider)){
 				dojo.storage.manager.setProvider(provider);
 			}
@@ -294,7 +354,7 @@ var TestStorage = {
 };
 
 // wait until the storage system is finished loading
-if(dojo.flash.ready == false){ // might already be loaded when we get here
+if(dojo.storage.manager.isInitialized() == false){ // storage might already be loaded when we get here
 	dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
 	                  TestStorage.initialize);
 }else{

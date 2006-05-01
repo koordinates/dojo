@@ -131,7 +131,7 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 	finishEdit: function(e){
 		if(!this.cancelEdit(e)){ return; }
 		if(this.doFade) {
-			dojo.fx.highlight(this.editable, dojo.graphics.color.hex2rgb("#ffc"), 700, 300);
+			dojo.lfx.highlight(this.editable, dojo.graphics.color.hex2rgb("#ffc"), 300, 700).play();
 		}
 		this.doFade = false;
 	},

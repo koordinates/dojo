@@ -13,7 +13,7 @@
 		isDashboard = true;
 		hostEnv = "dashboard";
 	}
-	var tmps = ["bootstrap1.js", "hostenv_"+hostEnv+".js", "bootstrap2.js"];
+	var tmps = ["bootstrap1.js", "bootstrap2.js", "hostenv_"+hostEnv+".js"];
 
 	if((this["djConfig"])&&((djConfig["forceXDomain"])||(djConfig["useXDomain"]))){
 		tmps.push("loader_xd.js");
@@ -53,6 +53,17 @@
 				}
 			}
 		}
+	}
+
+	//Support compatibility packages. Right now this only allows setting one
+	//compatibility package. Might need to revisit later down the line to support
+	//more than one.
+	if((this["djConfig"])&&(djConfig["compat"])){
+		tmps.push("compat/" + djConfig["compat"] + ".js");
+	}
+
+	if((this["djConfig"])&&((djConfig["isDebug"])||(djConfig["debugAtAllCosts"]))){
+		tmps.push("debug.js");
 	}
 
 	if((this["djConfig"])&&(djConfig["debugAtAllCosts"])&&(!isRhino)&&(!isDashboard)){
