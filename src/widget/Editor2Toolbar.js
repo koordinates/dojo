@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.Editor2Toolbar");
 dojo.provide("dojo.widget.html.Editor2Toolbar");
 
+dojo.require("dojo.lang.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.RichText");
@@ -24,6 +25,9 @@ dojo.widget.defineWidget(
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbar.css"),
+
+		forecolorPalette: null,
+		hilitecolorPalette: null,
 
 		// DOM Nodes
 		wikiWordButton: null,
@@ -58,9 +62,6 @@ dojo.widget.defineWidget(
 			dojo.style.toggleShowing(this.styleDropdownContainer);
 		},
 
-		closeAllDropDowns: function(){
-		},
-
 		copyClick: function(){ this.exec("copy"); },
 		boldClick: function(){ this.exec("bold"); },
 		italicClick: function(){ this.exec("italic"); },
@@ -80,14 +81,8 @@ dojo.widget.defineWidget(
 		insertorderedlistClick: function(){ this.exec("insertorderedlist"); },
 
 		formatSelectClick: function(){ 
-			// dojo.debug(this.formatSelectBox.value);
 			var sv = this.formatSelectBox.value.toLowerCase();
 			this.exec("formatblock", sv);
-			/*
-			if(sv == "blockquote"){
-				this.exec("italic");
-			}
-			*/
 		},
 
 		normalTextClick: function(){ this.exec("formatblock", "p"); },
@@ -95,19 +90,101 @@ dojo.widget.defineWidget(
 		h2TextClick: function(){ this.exec("formatblock", "h2"); },
 		h3TextClick: function(){ this.exec("formatblock", "h3"); },
 		h4TextClick: function(){ this.exec("formatblock", "h4"); },
-
-		forecolorClick: function(){
-			//TODO
-		},
-
-		hilitecolorClick: function(){
-			//TODO
-		},
-
 		indentClick: function(){ this.exec("indent"); },
 		outdentClick: function(){ this.exec("outdent"); },
 
-		// stub that an observer can connect to
+
+		hideAllDropDowns: function(){
+			dojo.lang.forEach(dojo.widget.byType("Editor2Toolbar"), function(tb){
+				try{
+					dojo.style.hide(tb.forecolorDropDown);
+					dojo.style.hide(tb.hilitecolorDropDown);
+					dojo.style.hide(tb.styleDropdownContainer);
+				}catch(e){}
+			});
+		},
+
+		// FIXME: these methods aren't currently dealing with clicking in the
+		// general document to hide the menu
+		forecolorClick: function(e){
+			e.stopPropagation();
+			//TODO
+			if(!this.forecolorPalette){
+				this.forecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.forecolorDropDown, "first");
+				var fcp = this.forecolorPalette.domNode;
+				with(this.forecolorDropDown.style){
+					width = dojo.html.getOuterWidth(fcp) + "px";
+					height = dojo.html.getOuterHeight(fcp) + "px";
+					zIndex = 1002;
+				}
+
+				dojo.event.connect(	"after",
+									this.forecolorPalette, "onColorSelect",
+									this, "exec",
+									function(mi){
+										mi.args.unshift("forecolor");
+										return mi.proceed();
+									}
+				);
+				dojo.event.connect(	"after",
+									this.forecolorPalette, "onColorSelect",
+									dojo.style, "toggleShowing",
+									this, function(mi){
+										mi.args.unshift(this.forecolorDropDown);
+										return mi.proceed();
+									}
+				);
+
+				dojo.event.kwConnect({
+					srcObj:		document.body, 
+					srcFunc:	"onclick", 
+					targetObj:	this,
+					targetFunc:	"hideAllDropDowns",
+					once:		true
+				});
+			}
+		},
+
+		hilitecolorClick: function(e){
+			e.stopPropagation();
+			//TODO
+			if(!this.hilitecolorPalette){
+				this.hilitecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.hilitecolorDropDown, "first");
+				var hcp = this.hilitecolorPalette.domNode;
+				with(this.hilitecolorDropDown.style){
+					width = dojo.html.getOuterWidth(hcp) + "px";
+					height = dojo.html.getOuterHeight(hcp) + "px";
+					zIndex = 1002;
+				}
+
+				dojo.event.connect(	"after",
+									this.hilitecolorPalette, "onColorSelect",
+									this, "exec",
+									function(mi){
+										mi.args.unshift("hilitecolor");
+										return mi.proceed();
+									}
+				);
+				dojo.event.connect(	"after",
+									this.hilitecolorPalette, "onColorSelect",
+									dojo.style, "toggleShowing",
+									this, function(mi){
+										mi.args.unshift(this.hilitecolorDropDown);
+										return mi.proceed();
+									}
+				);
+
+				dojo.event.kwConnect({
+					srcObj:		document.body, 
+					srcFunc:	"onclick", 
+					targetObj:	this,
+					targetFunc:	"hideAllDropDowns",
+					once:		true
+				});
+			}
+		},
+
+		// stub for observers
 		exec: function(what, arg){ },
 
 		hideUnusableButtons: function(){

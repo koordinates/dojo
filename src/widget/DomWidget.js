@@ -160,16 +160,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 				if(!thisFunc){
 					thisFunc = tevt;
 				}
-
-				var tf = function(){ 
-					var ntf = new String(thisFunc);
-					return function(evt){
-						if(_this[ntf]){
-							_this[ntf](dojo.event.browser.fixEvent(evt, this));
-						}
-					};
-				}();
-				dojo.event.browser.addListener(baseNode, tevt, tf, false, true);
+				dojo.event.browser.addListener(baseNode, tevt, dojo.lang.hitch(_this, thisFunc));
 			}
 		}
 
@@ -203,9 +194,6 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 		if(onBuild){
 			eval("var node = baseNode; var widget = targetObj; "+onBuild);
 		}
-
-		// strip IDs to prevent dupes. removeAttribute() doesnt care if attribute doesnt exist
-		baseNode.removeAttribute('id');
 	}
 
 }

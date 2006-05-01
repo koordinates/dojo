@@ -29,8 +29,12 @@
 		var root = djConfig["baseRelativePath"];
 	}else{
 		var root = "./";
+		if(isSpidermonkey){
+			// auto-detect the base path via an exception. Hack!
+			try{ throw new Error(""); }catch(e){ root = e.fileName.split("dojo.js")[0]; };
+		}
 		if(!this["djConfig"]){
-			djConfig = { baseRelativePath: "./" };
+			djConfig = { baseRelativePath: root };
 		}
 
 		// attempt to figure out the path to dojo if it isn't set in the config

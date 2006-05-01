@@ -32,6 +32,17 @@
 	background-position: 0px 0px;
 }
 
+/*
+body {
+	background:url(images/blank.gif) fixed;
+}*/
+
+.IEFixedToolbar {
+	position:absolute;
+	/* top:0; */
+	top: expression(eval((document.documentElement||document.body).scrollTop));
+}
+
 div.bigIcon {
 	width: 40px;
 	height: 40px; 
@@ -52,6 +63,7 @@ div.bigIcon {
 	padding-right: 3px;
 	cursor: pointer;
 	border: 1px solid transparent;
+	_border: none;
 }
 
 span.icon {
@@ -78,6 +90,10 @@ span.icon[class~=icon] {
 	line-height: 25px;
 	border-bottom: 1px solid black;
 	border-top: 1px solid white;
+}
+
+.EditorToolbarDomNode select {
+	font-size: 14px;
 }
 
 .sep { width: 5px; min-width: 5px; max-width: 5px; background-position: 0px 0px}

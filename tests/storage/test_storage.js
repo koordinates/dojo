@@ -8,6 +8,8 @@ var TestStorage = {
 	currentProvider: "default",
 	
 	initialize: function(){
+		//dojo.debug("test_storage.initialize()");
+		
 		// clear out old values
 		dojo.byId("storageKey").value = "";
 		dojo.byId("storageValue").value = "";
@@ -292,5 +294,9 @@ var TestStorage = {
 };
 
 // wait until the storage system is finished loading
-dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
-                   TestStorage.initialize);
+if(dojo.flash.ready == false){ // might already be loaded when we get here
+	dojo.event.connect(dojo.storage.manager, "loaded", TestStorage, 
+	                  TestStorage.initialize);
+}else{
+	dojo.event.connect(dojo, "loaded", TestStorage, TestStorage.initialize);
+}

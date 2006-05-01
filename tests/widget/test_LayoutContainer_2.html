@@ -15,14 +15,10 @@
 <script language="JavaScript" type="text/javascript">
 
 	dojo.require("dojo.widget.LayoutContainer");
+	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.ResizeHandle");
 
 	dojo.hostenv.writeIncludes();
-
-	//dojo.addOnLoad(function(){
-	//	dojo.debug('status bar min width: '+dojo.widget.getWidgetById('statusBar').getMinWidth());
-	//	dojo.debug('window thing min width: '+dojo.widget.getWidgetById('mywindow').getMinWidth());
-	//});
 </script>
 <style>
 
@@ -52,15 +48,15 @@ div.statusPanel {
 	minHeight="20"
 	style="border: 2px solid black; width: 90%; height: 200px;"
 >
-	<div dojoType="LayoutContainer" layoutAlign="bottom" class="statusBar" minHeight="28" widgetId="statusBar">
+	<div dojoType="LayoutContainer" layoutAlign="bottom" class="statusBar" style="height: 28px" widgetId="statusBar">
 
-		<div dojoType="LayoutContainer" layoutAlign="left" class="statusPanel">
+		<div dojoType="ContentPane" layoutAlign="left" class="statusPanel">
 			panel 1
 		</div>
-		<div dojoType="LayoutContainer" layoutAlign="left" class="statusPanel">
+		<div dojoType="ContentPane" layoutAlign="left" class="statusPanel">
 			panel 2
 		</div>
-		<div dojoType="LayoutContainer" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;" minWidth="80">
+		<div dojoType="ContentPane" layoutAlign="client" class="statusPanel" style="padding-right: 0px; z-index: 1;">
 			panel 3
 		</div>
 		<div dojoType="ResizeHandle" targetElmId="mywindow"></div>

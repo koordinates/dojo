@@ -71,7 +71,6 @@ dojo.date.fromIso8601 = function (string) {
 
 
 dojo.date.setIso8601Date = function (dateObject, string) {
-	//dojo.debug(string);
 	var regexp = "^([0-9]{4})((-?([0-9]{2})(-?([0-9]{2}))?)|" +
 			"(-?([0-9]{3}))|(-?W([0-9]{2})(-?([1-7]))?))?$";
 	var d = string.match(new RegExp(regexp));
@@ -138,9 +137,8 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 		dojo.debug("invalid time string: " + string);
 		return false;
 	}
-
 	var hours = d[1];
-	var mins = Number((d[3]) ? d[3] : 0) + offset;
+	var mins = Number((d[3]) ? d[3] : 0);
 	var secs = (d[5]) ? d[5] : 0;
 	var ms = d[7] ? (Number("0." + d[7]) * 1000) : 0;
 

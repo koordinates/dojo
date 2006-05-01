@@ -118,15 +118,20 @@ dojo.event = new function(){
 				break;
 		}
 
-		if((typeof ao.srcFunc).toLowerCase() != "string"){
+		if(dl.isFunction(ao.aroundFunc)){
+			var tmpName  = dojo.lang.nameAnonFunc(ao.aroundFunc, ao.aroundObj);
+			ao.aroundFunc = tmpName;
+		}
+
+		if(!dl.isString(ao.srcFunc)){
 			ao.srcFunc = dojo.lang.getNameInObj(ao.srcObj, ao.srcFunc);
 		}
 
-		if((typeof ao.adviceFunc).toLowerCase() != "string"){
+		if(!dl.isString(ao.adviceFunc)){
 			ao.adviceFunc = dojo.lang.getNameInObj(ao.adviceObj, ao.adviceFunc);
 		}
 
-		if((ao.aroundObj)&&((typeof ao.aroundFunc).toLowerCase() != "string")){
+		if((ao.aroundObj)&&(!dl.isString(ao.aroundFunc))){
 			ao.aroundFunc = dojo.lang.getNameInObj(ao.aroundObj, ao.aroundFunc);
 		}
 
@@ -310,6 +315,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 				dojo.event.browser.addClobberNodeAttrs(obj, [jpname, jpfuncname, methname]);
 			}
 		}
+		var origArity = obj[methname].length;
 		obj[jpfuncname] = obj[methname];
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, methname);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
@@ -345,14 +351,17 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 			// return joinpoint.run.apply(joinpoint, arguments); 
 			return joinpoint.run.apply(joinpoint, args); 
 		}
+		obj[methname].__preJoinArity = origArity;
 	}
 	return joinpoint;
 }
 
 dojo.lang.extend(dojo.event.MethodJoinPoint, {
-	unintercept: function() {
+	unintercept: function(){
 		this.object[this.methodname] = this.methodfunc;
 	},
+
+	disconnect: dojo.lang.forward("unintercept"),
 
 	run: function() {
 		var obj = this.object||dj_global;
