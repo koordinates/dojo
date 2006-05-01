@@ -32,3 +32,13 @@ dojo.lfx.toggle.wipe = {
 		dojo.lfx.wipeOut(node, duration, easing, callback).play();
 	}
 }
+
+dojo.lfx.toggle.explode = {
+	show: function(node, duration, easing, callback, explodeSrc){
+		dojo.lfx.explode(explodeSrc||[0,0,0,0], node, duration, easing, callback).play();
+	},
+
+	hide: function(node, duration, easing, callback, explodeSrc){
+		dojo.lfx.implode(node, explodeSrc||[0,0,0,0], duration, easing, callback).play();
+	}
+}

@@ -209,8 +209,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				var anim = new dojo.lfx.Animation(500, line, dojo.lfx.easeOut);
 				var dragObject = this;
 				dojo.event.connect(anim, "onAnimate", function(e) {
-					dragObject.dragClone.style.left = e.x + "px";
-					dragObject.dragClone.style.top = e.y + "px";
+					dragObject.dragClone.style.left = e[0] + "px";
+					dragObject.dragClone.style.top = e[1] + "px";
 				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
