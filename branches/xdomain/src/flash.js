@@ -299,6 +299,7 @@ dojo.require("dojo.uri.*");
 dojo.flash = {
 	flash6_version: null,
 	flash8_version: null,
+	ready: false,
 	_visible: true,
 	_loadedListeners: new Array(),
 	_installingListeners: new Array(),
@@ -373,6 +374,7 @@ dojo.flash = {
 	*/
 	loaded: function(){
 		//dojo.debug("dojo.flash.loaded");
+		dojo.flash.ready = true;
 		if(dojo.flash._loadedListeners.length > 0){
 			for(var i = 0;i < dojo.flash._loadedListeners.length; i++){
 				dojo.flash._loadedListeners[i].call(null);
@@ -398,7 +400,7 @@ dojo.flash = {
 	
 	/** Initializes dojo.flash. */
 	_initialize: function(){
-		//dojo.debug("_initialize");
+		//dojo.debug("dojo.flash._initialize");
 		// see if we need to rev or install Flash on this platform
 		var installer = new dojo.flash.Install();
 		dojo.flash.installer = installer;
@@ -765,6 +767,8 @@ dojo.flash.Embed.prototype = {
 			// differently
 			browserWidth = document.documentElement.clientWidth;
 			browserHeight = document.documentElement.clientHeight;
+		}else if(dojo.render.html.safari){ // Safari works different
+			browserHeight = self.innerHeight;
 		}
     
 		// get where we are scrolled to in the document
@@ -787,7 +791,7 @@ dojo.flash.Embed.prototype = {
 		// compute the centered position    
 		var x = scrolledByWidth + (browserWidth - elementWidth) / 2;
 		var y = scrolledByHeight + (browserHeight - elementHeight) / 2; 
-    
+
 		// set the centered position
 		var container = dojo.byId(this.id + "Container");
 		container.style.top = y + "px";
@@ -851,6 +855,8 @@ dojo.flash.Communicator.prototype = {
 			this._fscommandAddCallback(command, args);
 		}else if (command == "call"){ // Flash to JavaScript method call
 			this._fscommandCall(command, args);
+		}else if (command == "fscommandReady"){ // see if fscommands are ready
+			this._fscommandReady();
 		}
 	},
 	
@@ -902,6 +908,12 @@ dojo.flash.Communicator.prototype = {
 		
 		// return the results to flash
 		plugin.SetVariable("_returnResult", results);
+	},
+	
+	/** Reports that fscommands are ready to run if executed from Flash. */
+	_fscommandReady: function(){
+		var plugin = dojo.flash.obj.get();
+		plugin.SetVariable("fscommandReady", "true");
 	},
 	
 	/** 

@@ -25,6 +25,8 @@ dojo.widget.html.ComboBox = function(){
 	this.searchTimer = null;
 	this.searchDelay = 100;
 	this.dataUrl = "";
+	// maxListLength limits list to X visible rows, scroll on rest 
+	this.maxListLength = 8; 
 	// mode can also be "remote" for JSON-returning live search or "html" for
 	// dumber live search
 	this.mode = "local"; 
@@ -34,7 +36,7 @@ dojo.widget.html.ComboBox = function(){
 	this._prev_key_esc = false;
 	this._result_list_open = false;
 	this._gotFocus = false;
-	this._mousewheel_connected = false;
+	this._mouseover_list = false;
 
 }
 
@@ -134,68 +136,104 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		}
 	},
 
-	onKeyDown: function(evt){
-		if (evt.ctrlKey || evt.altKey) {
-			return;
+	// does the keyboard related stuff
+	_handleKeyEvents: function(evt){
+		if(evt.ctrlKey || evt.altKey){ return; }
+
+		// reset these
+		this._prev_key_backspace = false;
+		this._prev_key_esc = false;
+
+		var k = dojo.event.browser.keys;
+		var doSearch = true;
+
+		// mozilla quirk 
+		// space has no keyCode in mozilla
+		var keyCode = evt.keyCode;
+		if(keyCode==0 && evt.charCode==k.KEY_SPACE){
+			keyCode = k.KEY_SPACE;
 		}
-		// These need to be detected in onKeyDown so that the events can be cancelled.
-		// Perhaps use dojo.event.browser.keys.KEY_ENTER etc? 
-		if(this._result_list_open && ((evt.keyCode == 32)||(evt.keyCode == 13))){ // space is 32, enter is 13.
-			this.selectOption();
-			dojo.event.browser.stopEvent(evt);
-			return;
-		}else if(evt.keyCode == 40){ // down is 40
-			if(!this._result_list_open){
-				this.startSearchFromInput();
-			}
-			this.highlightNextOption();
-			dojo.event.browser.stopEvent(evt);
-			return;
-		}else if(evt.keyCode == 38){ // up is 38
-			this.highlightPrevOption();
-			dojo.event.browser.stopEvent(evt);
-			return;
+		switch(keyCode){
+ 			case k.KEY_DOWN_ARROW:
+				if(!this._result_list_open){
+					this.startSearchFromInput();
+				}
+				this.highlightNextOption();
+				dojo.event.browser.stopEvent(evt);
+				return;
+			case k.KEY_UP_ARROW:
+				this.highlightPrevOption();
+				dojo.event.browser.stopEvent(evt);
+				return;
+			case k.KEY_ENTER:
+				// prevent to send form if we press enter with list open
+				if(this._result_list_open){
+					dojo.event.browser.stopEvent(evt);
+				}
+				// falltrough
+			case k.KEY_TAB:
+				this.selectOption();
+				this.hideResultList();
+				return; 
+			case k.KEY_SPACE:
+				if(this._result_list_open && this._highlighted_option){
+					dojo.event.browser.stopEvent(evt);
+					this.selectOption();
+					this.hideResultList();
+					return;
+				}
+				break;
+			case k.KEY_ESCAPE:
+				this.hideResultList();
+				this._prev_key_esc = true;
+				return;
+			case k.KEY_BACKSPACE:
+				this._prev_key_backspace = true;
+				if(!this.textInputNode.value.length){
+					this.hideResultList();
+					doSearch = false;
+				}
+				break;
+			case k.KEY_RIGHT_ARROW: // falltrough
+			case k.KEY_LEFT_ARROW: // falltrough
+			case k.KEY_SHIFT:
+				doSearch = false;
+				break;
+			default:// non char keys (F1-F12 etc..)  shouldnt open list
+				if(evt.charCode==0){
+					doSearch = false;
+				}
+		}
+
+// 		this.setValue(this.textInputNode.value);
+		if(this.searchTimer){
+			clearTimeout(this.searchTimer);
+		}
+		if(doSearch){
+			// if we have gotten this far we dont to keep our highlight
+			this.blurOptionNode();
+
+			// need to wait a tad before start search so that the event bubbels through DOM and we have value visible
+			this.searchTimer = setTimeout(dojo.lang.hitch(this, this.startSearchFromInput), this.searchDelay);
+		}
+	},
+
+	onKeyDown: function(evt){
+		// IE needs to stop keyDown others need to stop keyPress
+		if(!document.createEvent){ // only IE
+			this._handleKeyEvents(evt);
+		}
+		// FIXME: What about ESC ??
+	},
+
+	onKeyPress: function(evt){
+		if(document.createEvent){ // never IE
+			this._handleKeyEvents(evt);
 		}
 	},
 
 	onKeyUp: function(evt){
-		if (evt.ctrlKey || evt.altKey) {
-			return;
-		}
-		if((evt.keyCode == 32)||(evt.keyCode == 13)||(evt.keyCode == 40)||(evt.keyCode == 38)){
-			return;
-		}
-		// FIXME Everything below here should really be moved into onKeyDown?
-		if(evt.keyCode == 27){ // esc is 27
-			this.hideResultList();
-			if(this._prev_key_esc){
-				// FIXME - probably get rid of?
-				// Shouldnt deselect if something was selected on entry to form. Also it doesnt clear the input text for IE.
-				// And shouldnt lose focus - users are likely to press escape more than once when they want to cancel something.
-				/* 
-				this.textInputNode.blur();
-				this.selectedResult = null;
-				*/
-			}
-			this._prev_key_esc = true;
-			return;
-		}else{
-			this.setValue(this.textInputNode.value);
-		}
-
-		// backspace is 8
-		this._prev_key_backspace = (evt.keyCode == 8) ? true : false;
-		this._prev_key_esc = false;
-
-		if(this.searchTimer){
-			clearTimeout(this.searchTimer);
-		}
-		if((this._prev_key_backspace)&&(!this.textInputNode.value.length)){
-			this.hideResultList();
-		}else{
-			// FIXME This is untidy. Occurs when tabbing in to a control gives a keyup event and maybe other wierd keys too?
-			this.searchTimer = setTimeout(dojo.lang.hitch(this, this.startSearchFromInput), this.searchDelay);
-		}
+		this.setValue(this.textInputNode.value);
 	},
 
 	setSelectedValue: function(value){
@@ -204,45 +242,74 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		this.hideResultList();
 	},
 
-	highlightNextOption: function(){
-		if(this._highlighted_option){
-			dojo.html.removeClass(this._highlighted_option, "cbItemHighlight");
-		}
-		if((!this._highlighted_option)||(!this._highlighted_option.nextSibling)){
-			this._highlighted_option = this.optionsListNode.firstChild;
+	// opera, khtml, safari doesnt support node.scrollIntoView(), workaround
+	scrollIntoView: function(){
+		var node = this._highlighted_option;
+		var parent = this.optionsListNode;
+		// dont rely on that node.scrollIntoView works just because the function is there
+		// it doesnt work in Konqueror or Opera even though the function is there and probably
+		// not safari either
+		// dont like browser sniffs implementations but sometimes you have to use it
+		if(dojo.render.html.ie || dojo.render.html.mozilla){
+			// IE, mozilla
+			node.scrollIntoView(false);	
 		}else{
-			this._highlighted_option = this._highlighted_option.nextSibling;
+			var parentBottom = parent.scrollTop + dojo.style.getInnerHeight(parent);
+			var nodeBottom = node.offsetTop + dojo.style.getOuterHeight(node);
+			if(parentBottom < nodeBottom){
+				parent.scrollTop += (nodeBottom - parentBottom);
+			}else if(parent.scrollTop > node.offsetTop){
+				parent.scrollTop -= (parent.scrollTop - node.offsetTop);
+			}
 		}
-		dojo.html.addClass(this._highlighted_option, "cbItemHighlight");
+	},
+
+	// does the actual highlight
+	focusOptionNode: function(node){
+		if(this._highlighted_option != node){
+			this.blurOptionNode();
+			this._highlighted_option = node;
+			dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
+		}
+	},
+
+	// removes highlight on highlighted
+	blurOptionNode: function(){
+		if(this._highlighted_option){
+			dojo.html.removeClass(this._highlighted_option, "dojoComboBoxItemHighlight");
+			this._highlighted_option = null;
+		}
+	},
+
+	highlightNextOption: function(){
+		if((!this._highlighted_option) || !this._highlighted_option.parentNode){
+			this.focusOptionNode(this.optionsListNode.firstChild);
+		}else if(this._highlighted_option.nextSibling){
+			this.focusOptionNode(this._highlighted_option.nextSibling);
+		}
+		this.scrollIntoView();
 	},
 
 	highlightPrevOption: function(){
-		if(this._highlighted_option){
-			dojo.html.removeClass(this._highlighted_option, "cbItemHighlight");
-		}
-		if((!this._highlighted_option)||(!this._highlighted_option.previousSibling)){
-			this._highlighted_option = this.optionsListNode.lastChild;
+		if(this._highlighted_option && this._highlighted_option.previousSibling){
+			this.focusOptionNode(this._highlighted_option.previousSibling);
 		}else{
-			this._highlighted_option = this._highlighted_option.previousSibling;
+			this._highlighted_option = null;
+			this.hideResultList();
+			return;
 		}
-		dojo.html.addClass(this._highlighted_option, "cbItemHighlight");
+		this.scrollIntoView();
 	},
 
-	onMouseWheel: function(evt) {
-		if (this._hasFocus) {
-			if (evt.wheelDelta < 0) {
-				if(!this._result_list_open){
-					this.startSearchFromInput();
-				}
-				this.highlightNextOption();
-			} else if (evt.wheelDelta > 0) {
-				this.highlightPrevOption();
-			}
-			evt.preventDefault(); // so don't scroll window
-			return false;
-		};
+	itemMouseOver: function(evt){
+		this.focusOptionNode(evt.target);
+		dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 	},
-  
+
+	itemMouseOut: function(evt){
+		this.blurOptionNode();
+	},
+
 	fillInTemplate: function(args, frag){
 		// FIXME: need to get/assign DOM node names for form participation here.
 		this.comboBoxValue.name = this.name;
@@ -304,17 +371,17 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		this.clearResultList();
 		if(!results.length){
 			this.hideResultList();
-		}else{
-			this.showResultList();
 		}
+
 		if(	(this.autoComplete)&&
 			(results.length)&&
 			(!this._prev_key_backspace)&&
 			(this.textInputNode.value.length > 0)){
 			var cpos = this.getCaretPos(this.textInputNode);
 			// only try to extend if we added the last charachter at the end of the input
-			if((cpos+1) >= this.textInputNode.value.length){
-				this.textInputNode.value = results[0][0];
+			if((cpos+1) > this.textInputNode.value.length){
+				// only add to input node as we would overwrite Capitalisation of chars
+				this.textInputNode.value += results[0][0].substr(cpos);
 				// build a new range that has the distance from the earlier
 				// caret position to the end of the first string selected
 				this.setSelectedRange(this.textInputNode, cpos, this.textInputNode.value.length);
@@ -329,51 +396,65 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 				td.appendChild(document.createTextNode(tr[0]));
 				td.setAttribute("resultName", tr[0]);
 				td.setAttribute("resultValue", tr[1]);
-				td.className = "cbItem "+((even) ? "cbItemEven" : "cbItemOdd");
+				td.className = "dojoComboBoxItem "+((even) ? "dojoComboBoxItemEven" : "dojoComboBoxItemOdd");
 				even = (!even);
 				this.optionsListNode.appendChild(td);
+				dojo.event.connect(td, "onmouseover", this, "itemMouseOver");
+				dojo.event.connect(td, "onmouseout", this, "itemMouseOut");
 			}
 		}
 
-		// prevent IE bleed through
-		dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
+		// show our list (only if we have content, else nothing)
+		this.showResultList();
 	},
 
 	onFocusInput: function(){
 		this._hasFocus = true;
-		if (dojo.render.html.ie && !this._mousewheel_connected) {
-			dojo.event.connect(document, "onmousewheel", this, "onMouseWheel");
-			this._mousewheel_connected = true;
-		}
 	},
 
 	onBlurInput: function(){
 		this._hasFocus = false;
-		if(this.blurTimer){
+		this._handleBlurTimer(true, 100);
+	},
+
+	// collect all blur timers issues here
+	_handleBlurTimer: function(/*Boolean*/clear, /*Number*/ millisec){
+		if(this.blurTimer && (clear || millisec)){
 			clearTimeout(this.blurTimer);
 		}
-		this.blurTimer = dojo.lang.setTimeout(this, "checkBlurred", 100);
+		if(millisec){ // we ignore that zero is false and never sets as that never happens in this widget
+			this.blurTimer = dojo.lang.setTimeout(this, "checkBlurred", millisec);
+		}
+	},
+
+	// these 2 are needed in IE and only in IE as input looses focus when scrolling optionslist
+	_onMouseEnterList: function(){
+		this._handleBlurTimer(true, 0);
+		this._mouseover_list = true;
+	},
+
+	_onMouseLeaveList: function(evt){
+		this._mouseover_list = false;
+		this.tryFocus();
 	},
 
 	checkBlurred: function(){
-		if (!this._hasFocus) {
+		if(!this._hasFocus && !this._mouseover_list){
 			this.hideResultList();
-		}
-		if (this._mousewheel_connected) {
-			dojo.event.disconnect(document, "onmousewheel", this, "onMouseWheel");
-			this._mousewheel_connected = false;
 		}
 	},
 
 	sizeBackgroundIframe: function(){
 		var w = dojo.style.getOuterWidth(this.optionsListNode);
 		var h = dojo.style.getOuterHeight(this.optionsListNode);
-		if ( w==0 || h==0 ){
+		if( w==0 || h==0 ){
 			// need more time to calculate size
 			dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 			return;
 		}
-		this.optionsIframe.size([0,0,w,h]);
+		if(this._result_list_open){
+			this.optionsIframe.size([0,0,w,h]);
+		}
 	},
 
 	selectOption: function(evt){
@@ -405,35 +486,50 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	clearResultList: function(){
 		var oln = this.optionsListNode;
 		while(oln.firstChild){
+			dojo.event.disconnect(oln.firstChild, "onmouseover", this, "itemMouseOver");
+			dojo.event.disconnect(oln.firstChild, "onmouseout", this, "itemMouseOut");
 			oln.removeChild(oln.firstChild);
 		}
 	},
 
 	hideResultList: function(){
-		if (this._result_list_open) {
+		if(this._result_list_open){
 			this._result_list_open = false;
-			dojo.fx.fadeHide(this.optionsListNode, 200);
 			this.optionsIframe.size([0,0,0,0]);
+			dojo.fx.fadeHide(this.optionsListNode, 200);
 		}
-		return;
 	},
 
 	showResultList: function(){
-		if(this._result_list_open){
-		  return;
+		// Our dear friend IE doesnt take max-height so we need to calculate that on our own every time
+		var childs = this.optionsListNode.childNodes;
+		if(childs.length){
+			var visibleCount = this.maxListLength;
+			if(childs.length < visibleCount){
+				visibleCount = childs.length;
+			}
+
+			with(this.optionsListNode.style){
+				display = "";
+				height = ((visibleCount) ? (dojo.style.getOuterHeight(childs[0]) * visibleCount) : 0)+"px";
+				width = dojo.html.getOuterWidth(this.cbTableNode)+"px";
+			}
+			// only fadein once (flicker)
+			if(!this._result_list_open){
+				dojo.html.setOpacity(this.optionsListNode, 0);
+				dojo.fx.fadeIn(this.optionsListNode, 200);
+			}
+			
+			// prevent IE bleed through
+			this._iframeTimer = dojo.lang.setTimeout(this, "sizeBackgroundIframe", 200);
+			this._result_list_open = true;
+		}else{
+			this.hideResultList();
 		}
-		this._result_list_open = true;
-		with(this.optionsListNode.style){
-			display = "";
-			// visibility = "hidden";
-			height = "";
-			width = dojo.html.getInnerWidth(this.downArrowNode)+dojo.html.getInnerWidth(this.textInputNode)+"px";
-		}
-		dojo.html.setOpacity(this.optionsListNode, 0);
-		dojo.fx.fadeIn(this.optionsListNode, 200);
 	},
 
 	handleArrowClick: function(){
+		this._handleBlurTimer(true, 0);
 		this.tryFocus();
 		if(this._result_list_open){
 			this.hideResultList();
@@ -465,5 +561,4 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			this.setState(s);
 		}
 	}
-
 });

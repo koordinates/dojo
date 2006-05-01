@@ -14,6 +14,9 @@ dojo.provide("dojo.widget.validate.TimeTextbox");
 dojo.provide("dojo.widget.validate.UsStateTextbox");
 dojo.provide("dojo.widget.validate.UsZipTextbox");
 dojo.provide("dojo.widget.validate.UsPhoneNumberTextbox");
+dojo.provide("dojo.widget.validate.FloatValidationTextbox");
+dojo.provide("dojo.widget.validate.FloatIntegerTextbox");
+dojo.provide("dojo.widget.validate.FloatDateTextbox");
 
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Manager");
@@ -61,7 +64,7 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 	digit: false,
 	
 	templateString: "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus'"
-					+ " id='${this.id}' name='${this.name}' "
+					+ " id='${this.widgetId}' name='${this.name}' "
 					+ " value='${this.value}' class='${this.className}'></input>",
 
 	// our DOM nodes
@@ -114,14 +117,20 @@ dojo.widget.tags.addParseTreeHandler("dojo:Textbox");
 
   A subclass of Textbox.
   Over-ride isValid in subclasses to perform specific kinds of validation.
-  Has 4 new properties that can be specified as attributes in the markup.
+  Has several new properties that can be specified as attributes in the markup.
 
+	@attr type          		Basic input tag type declaration.
+	@attr size          		Basic input tag size declaration.
+	@attr type          		Basic input tag maxlength declaration.	
   @attr required          Can be true or false, default is false.
   @attr validColor        The color textbox is highlighted for valid input. Default is #cfc.
   @attr invalidColor      The color textbox is highlighted for invalid input. Default is #fcc.
-  @attr missingMessage    The message to display if value is missing.
+  @attr invalidClass			Class used to format displayed text in page if necessary to override default class
   @attr invalidMessage    The message to display if value is invalid.
+  @attr missingMessage    The message to display if value is missing.
+  @attr missingClass		  Override default class used for missing input data
   @attr listenOnKeyPress  Updates messages on each key press.  Default is true.
+  @attr promptMessage			Will not issue invalid message if field is populated with default user-prompt text
 */
 dojo.widget.validate.ValidationTextbox = function() {}
 
@@ -130,19 +139,25 @@ dojo.inherits(dojo.widget.validate.ValidationTextbox, dojo.widget.validate.Textb
 dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 	// default values for new subclass properties
 	widgetType: "ValidationTextbox", 
+	type: "",
 	required: false,
 	validColor: "#cfc",
 	invalidColor: "#fcc",
+	invalidClass: "invalid",
+	missingClass: "missing",
+	size: "",
+	maxlength: "",
+	promptMessage: "",
 	invalidMessage: "* The value entered is not valid.",
 	missingMessage: "* This value is required.",
 	listenOnKeyPress: true,
 
 	templateString:   "<div>"
-					+   "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus;onkeyup'"
-					+     " id='${this.id}' name='${this.name}' "
+					+   "<input dojoAttachPoint='textbox' type='${this.type}' dojoAttachEvent='onblur;onfocus;onkeyup'"
+					+     " id='${this.widgetId}' name='${this.name}' size='${this.size}' maxlength='${this.maxlength}'"
 					+     " value='${this.value}' class='${this.className}'></input>"
-					+   "<span dojoAttachPoint='invalidSpan' class='invalid'>${this.invalidMessage}</span>"
-					+   "<span dojoAttachPoint='missingSpan' class='missing'>${this.missingMessage}</span>"
+					+   "<span dojoAttachPoint='invalidSpan' class='${this.invalidClass}'>${this.invalidMessage}</span>"
+					+   "<span dojoAttachPoint='missingSpan' class='${this.missingClass}'>${this.missingMessage}</span>"
 					+ "</div>",
 
 	// new DOM nodes
@@ -169,7 +184,10 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 		this.invalidSpan.style.display = "none";
 
 		var empty = this.isEmpty();
-		var valid = this.isValid();
+		var valid = true;
+		if(this.promptMessage != this.textbox.value) { 
+				valid = this.isValid(); 
+		}
 		var missing = this.isMissing();
 
 		// Display at most one error message
@@ -191,7 +209,9 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 			this.textbox.style.backgroundColor = this.validColor;
 		}
 		else {
-			this.textbox.style.backgroundColor = this.invalidColor;
+			if(this.textbox.value != this.promptMessage) { 
+				this.textbox.style.backgroundColor = this.invalidColor;
+			}
 		}
 	},
 
@@ -336,7 +356,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:RealNumberTextbox");
   Has 2 new properties that can be specified as attributes in the markup.
 
   @attr cents      The two decimal places for cents.  Can be true or false, optional if omitted.
-  @attr symbol     A currency symbol such as Yen "�", Pound "�", or the Euro "�". Default is "$".
+  @attr symbol     A currency symbol such as Yen "???", Pound "???", or the Euro "???". Default is "$".
   @attr separator  Default is "," instead of no separator as in IntegerTextbox.
 */
 dojo.widget.validate.CurrencyTextbox = function(node) {
@@ -762,3 +782,112 @@ dojo.lang.extend(dojo.widget.validate.UsPhoneNumberTextbox, {
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:UsPhoneNumberTextbox");
+
+
+/*
+  ****** FloatValidationTextbox, ******
+
+  A subclass of ValidationTextbox.
+  Over-rides isValid to test if input is a 10-digit US phone number, an extension is optional.
+*/
+dojo.widget.validate.FloatValidationTextbox = function(node) {}
+
+dojo.inherits(dojo.widget.validate.FloatValidationTextbox, dojo.widget.validate.ValidationTextbox);
+
+dojo.lang.extend(dojo.widget.validate.FloatValidationTextbox, {
+	// new subclass properties
+	widgetType: "FloatValidationTextbox", 
+	size: "",
+	maxlength: "",
+
+	templateString:   "<div style='float: left; display: inline'>"
+					+   "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus;onkeyup'"
+					+     " id='${this.widgetId}' name='${this.name}' size='${this.size}' maxlength='${this.maxlength}'"
+					+     " value='${this.value}' class='${this.className}'></input>"
+					+   "<span dojoAttachPoint='invalidSpan' class='invalid'>${this.invalidMessage}</span>"
+					+   "<span dojoAttachPoint='missingSpan' class='missing'>${this.missingMessage}</span>"
+					+ "</div>"
+					
+});
+
+dojo.widget.tags.addParseTreeHandler("dojo:FloatValidationTextbox");
+
+/*
+  ****** FloatIntegerTextbox ******
+
+  A subclass of FloatValidationTextbox.
+  Over-rides isValid to test for integer input.
+  Has two new properties that can be specified as attributes in the markup.
+
+  @attr signed     The leading plus-or-minus sign. Can be true or false, default is either.
+  @attr separator  The character used as the thousands separator.  Default is no separator.
+*/
+dojo.widget.validate.FloatIntegerTextbox = function(node) {
+	// this property isn't a primitive and needs to be created on a per-item basis.
+	this.flags = {};
+}
+
+dojo.inherits(dojo.widget.validate.FloatIntegerTextbox, dojo.widget.validate.FloatValidationTextbox);
+
+dojo.lang.extend(dojo.widget.validate.FloatIntegerTextbox, {
+	// new subclass properties
+	widgetType: "FloatIntegerTextbox", 
+
+	mixInProperties: function(localProperties, frag) {
+		// First initialize properties in super-class.
+		dojo.widget.validate.FloatIntegerTextbox.superclass.mixInProperties.apply(this, arguments);
+
+		// Get properties from markup attibutes, and assign to flags object.
+		if ( localProperties.signed ) { 
+			this.flags.signed = ( localProperties.signed == "true" );
+		}
+		if ( localProperties.separator ) { 
+			this.flags.separator = localProperties.separator;
+		}
+	},
+
+	// Over-ride for integer validation
+	isValid: function() { 
+		return dojo.validate.isInteger(this.textbox.value, this.flags);
+	}
+
+});
+
+dojo.widget.tags.addParseTreeHandler("dojo:FloatIntegerTextbox");
+
+/*
+  ****** FloatDateTextbox ******
+
+  A subclass of FloatValidationTextbox.
+  Over-rides isValid to test if input is in a valid date format.
+
+  @attr format  Described in dojo.validate.js.  Default is  "MM/DD/YYYY".
+*/
+dojo.widget.validate.FloatDateTextbox = function(node) {
+	this.flags = {};
+}
+
+dojo.inherits(dojo.widget.validate.FloatDateTextbox, dojo.widget.validate.FloatValidationTextbox);
+
+dojo.lang.extend(dojo.widget.validate.FloatDateTextbox, {
+	// new subclass properties
+	widgetType: "FloatDateTextbox", 
+
+	mixInProperties: function(localProperties, frag) {
+		// First initialize properties in super-class.
+		dojo.widget.validate.FloatDateTextbox.superclass.mixInProperties.apply(this, arguments);
+
+		// Get properties from markup attibutes, and assign to flags object.
+		if ( localProperties.format ) { 
+			this.flags.format = localProperties.format;
+		}
+	},
+
+	// Over-ride for date validation
+	isValid: function() { 
+		return dojo.validate.isValidDate(this.textbox.value, this.flags.format);
+	}
+
+});
+
+dojo.widget.tags.addParseTreeHandler("dojo:FloatDateTextbox");
