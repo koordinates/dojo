@@ -30,13 +30,15 @@ dojo.widget.defineWidget(
 		hilitecolorPalette: null,
 
 		// DOM Nodes
-		wikiWordButton: null,
+		wikiwordButton: null,
+		insertimageButton: null,
 		styleDropdownButton: null,
 		styleDropdownContainer: null,
 		copyButton: null,
 		boldButton: null,
 		italicButton: null,
 		underlineButton: null,
+		justifycenterButton: null,
 		justifyleftButton: null,
 		justifyfullButton: null,
 		justifyrightButton: null,
@@ -49,6 +51,7 @@ dojo.widget.defineWidget(
 		forecolorButton: null,
 		hilitecolorButton: null,
 		formatSelectBox: null,
+		clickInterceptDiv: null,
 
 		buttonClick: function(e){ e.preventDefault(); /* dojo.debug("buttonClick"); */ },
 
@@ -56,7 +59,9 @@ dojo.widget.defineWidget(
 		buttonMouseOut: function(e){  },
 
 		// event signals
-		wikiWordClick: function(){ dojo.debug("wikiWordButtonClick"); },
+		wikiwordClick: function(){ },
+		insertimageClick: function(){ },
+
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
 			dojo.style.toggleShowing(this.styleDropdownContainer);
@@ -67,6 +72,7 @@ dojo.widget.defineWidget(
 		italicClick: function(){ this.exec("italic"); },
 		underlineClick: function(){ this.exec("underline"); },
 		justifyleftClick: function(){ this.exec("justifyleft"); },
+		justifycenterClick: function(){ this.exec("justifycenter"); },
 		justifyfullClick: function(){ this.exec("justifyfull"); },
 		justifyrightClick: function(){ this.exec("justifyright"); },
 		pasteClick: function(){ this.exec("paste"); },
@@ -74,8 +80,8 @@ dojo.widget.defineWidget(
 		redoClick: function(){ this.exec("redo"); },
 		linkClick: function(){ 
 			// FIXME: we need to alert the user if they haven't selected any text
-			this.exec(	"createlink", 
-						prompt("Please enter the URL of the link:", "http://"));
+			// this.exec(	"createlink", 
+			// 			prompt("Please enter the URL of the link:", "http://"));
 		},
 		insertunorderedlistClick: function(){ this.exec("insertunorderedlist"); },
 		insertorderedlistClick: function(){ this.exec("insertorderedlist"); },
@@ -95,84 +101,85 @@ dojo.widget.defineWidget(
 
 
 		hideAllDropDowns: function(){
+			this.domNode.style.height = "";
 			dojo.lang.forEach(dojo.widget.byType("Editor2Toolbar"), function(tb){
 				try{
 					dojo.style.hide(tb.forecolorDropDown);
 					dojo.style.hide(tb.hilitecolorDropDown);
 					dojo.style.hide(tb.styleDropdownContainer);
+					if(tb.clickInterceptDiv){
+						dojo.style.hide(tb.clickInterceptDiv);
+					}
 				}catch(e){}
 			});
 		},
 
-		// FIXME: these methods aren't currently dealing with clicking in the
-		// general document to hide the menu
-		forecolorClick: function(e){
-			e.stopPropagation();
-			//TODO
-			if(!this.forecolorPalette){
-				this.forecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.forecolorDropDown, "first");
-				var fcp = this.forecolorPalette.domNode;
-				with(this.forecolorDropDown.style){
-					width = dojo.html.getOuterWidth(fcp) + "px";
-					height = dojo.html.getOuterHeight(fcp) + "px";
-					zIndex = 1002;
+		selectFormat: function(format){
+			dojo.lang.forEach(this.formatSelectBox.options, function(item){
+				if(item.value.toLowerCase() == format.toLowerCase()){
+					item.selected = true;
 				}
+			});
+		},
 
-				dojo.event.connect(	"after",
-									this.forecolorPalette, "onColorSelect",
-									this, "exec",
-									function(mi){
-										mi.args.unshift("forecolor");
-										return mi.proceed();
-									}
-				);
-				dojo.event.connect(	"after",
-									this.forecolorPalette, "onColorSelect",
-									dojo.style, "toggleShowing",
-									this, function(mi){
-										mi.args.unshift(this.forecolorDropDown);
-										return mi.proceed();
-									}
-				);
-
-				dojo.event.kwConnect({
-					srcObj:		document.body, 
-					srcFunc:	"onclick", 
-					targetObj:	this,
-					targetFunc:	"hideAllDropDowns",
-					once:		true
-				});
-			}
+		forecolorClick: function(e){
+			this.colorClick(e, "forecolor");
 		},
 
 		hilitecolorClick: function(e){
+			this.colorClick(e, "hilitecolor");
+		},
+
+		// FIXME: these methods aren't currently dealing with clicking in the
+		// general document to hide the menu
+		colorClick: function(e, type){
+			var h = dojo.render.html;
+			this.hideAllDropDowns();
+			// FIXME: if we've been "popped out", we need to set the height of the toolbar.
 			e.stopPropagation();
-			//TODO
-			if(!this.hilitecolorPalette){
-				this.hilitecolorPalette = dojo.widget.createWidget("ColorPalette", {}, this.hilitecolorDropDown, "first");
-				var hcp = this.hilitecolorPalette.domNode;
-				with(this.hilitecolorDropDown.style){
-					width = dojo.html.getOuterWidth(hcp) + "px";
-					height = dojo.html.getOuterHeight(hcp) + "px";
+			var dd = this[type+"DropDown"];
+			var pal = this[type+"Palette"];
+			dojo.style.toggleShowing(dd);
+			if(!pal){
+				pal = this[type+"Palette"] = dojo.widget.createWidget("ColorPalette", {}, dd, "first");
+				var fcp = pal.domNode;
+				with(dd.style){
+					width = dojo.html.getOuterWidth(fcp) + "px";
+					height = dojo.html.getOuterHeight(fcp) + "px";
 					zIndex = 1002;
+					position = "absolute";
 				}
 
 				dojo.event.connect(	"after",
-									this.hilitecolorPalette, "onColorSelect",
+									pal, "onColorSelect",
 									this, "exec",
-									function(mi){
-										mi.args.unshift("hilitecolor");
-										return mi.proceed();
-									}
+									function(mi){ mi.args.unshift(type); return mi.proceed(); }
 				);
+
 				dojo.event.connect(	"after",
-									this.hilitecolorPalette, "onColorSelect",
+									pal, "onColorSelect",
 									dojo.style, "toggleShowing",
-									this, function(mi){
-										mi.args.unshift(this.hilitecolorDropDown);
-										return mi.proceed();
-									}
+									this, function(mi){ mi.args.unshift(dd); return mi.proceed(); }
 				);
+
+				if(!h.ie){
+					var cid = this.clickInterceptDiv;
+					if(!cid){
+						cid = this.clickInterceptDiv = document.createElement("div");
+						document.body.appendChild(cid);
+						with(cid.style){
+							backgroundColor = "transparent";
+							top = left = "0px";
+							height = width = "100%";
+							position = "absolute";
+							border = "none";
+							display = "none";
+							zIndex = 1001;
+						}
+						dojo.event.connect(cid, "onclick", function(){ cid.style.display = "none"; });
+					}
+					dojo.event.connect(pal, "onColorSelect", function(){ cid.style.display = "none"; });
+				}
 
 				dojo.event.kwConnect({
 					srcObj:		document.body, 
@@ -181,11 +188,29 @@ dojo.widget.defineWidget(
 					targetFunc:	"hideAllDropDowns",
 					once:		true
 				});
+				if(!h.ie){
+					document.body.appendChild(dd);
+				}
+			}
+			dojo.style.toggleShowing(this.clickInterceptDiv);
+			var pos = dojo.style.abs(this[type+"Button"]);
+			if(!h.ie){
+				dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
 			}
 		},
 
+		uninitialize: function(){
+			dojo.event.kwDisconnect({
+				srcObj:		document.body, 
+				srcFunc:	"onclick", 
+				targetObj:	this,
+				targetFunc:	"hideAllDropDowns",
+				once:		true
+			});
+		},
+
 		// stub for observers
-		exec: function(what, arg){ },
+		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
 
 		hideUnusableButtons: function(){
 			dojo.lang.forEach(this.commandList,
@@ -224,5 +249,10 @@ dojo.widget.defineWidget(
 	"html",
 	function(){
 		dojo.event.connect(this, "fillInTemplate", this, "hideUnusableButtons");
+		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
+			if(dojo.render.html.ie){
+				this.domNode.style.zoom = 1.0;
+			}
+		}));
 	}
 );

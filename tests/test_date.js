@@ -228,6 +228,10 @@ function test_date_format () {
 
 }
 
+function test_date_sql() {
+	jum.assertEquals("date.fromSql test", new Date("5/1/2006").valueOf(), dojo.date.fromSql("2006-05-01 00:00:00").valueOf());
+}
+
 /* Date compare and add Functions
  *********************************/
 

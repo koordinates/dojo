@@ -71,47 +71,20 @@ dojo.xml.Parse = function(){
 		return tagName.toLowerCase();
 	}
 
-	this.parseFragment = function(documentFragment) {
-		// handle parent element
-		var parsedFragment = {};
-		// var tagName = dojo.xml.domUtil.getTagName(node);
-		var tagName = getDojoTagName(documentFragment);
-		// TODO: What if document fragment is just text... need to check for nodeType perhaps?
-		parsedFragment[tagName] = new Array(documentFragment.tagName);
-		var attributeSet = this.parseAttributes(documentFragment);
-		for(var attr in attributeSet){
-			if(!parsedFragment[attr]){
-				parsedFragment[attr] = [];
-			}
-			parsedFragment[attr][parsedFragment[attr].length] = attributeSet[attr];
-		}
-		var nodes = documentFragment.childNodes;
-		for(var childNode in nodes){
-			switch(nodes[childNode].nodeType){
-				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
-					parsedFragment[tagName].push(this.parseElement(nodes[childNode]));
-					break;
-				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
-					if(nodes.length == 1){
-						if(!parsedFragment[documentFragment.tagName]){
-							parsedFragment[tagName] = [];
-						}
-						parsedFragment[tagName].push({ value: nodes[0].nodeValue });
-					}
-					break;
-			}
-		}
-		
-		return parsedFragment;
-	}
-
 	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
+
+        // if parseWidgets="false" don't search inside this node for widgets
+        if (node.getAttribute("parseWidgets") == "false") {
+            return {};
+        }
+
 		// TODO: make this namespace aware
 		var parsedNodeSet = {};
+
 		var tagName = getDojoTagName(node);
 		parsedNodeSet[tagName] = [];
 		if((!optimizeForDojoML)||(tagName.substr(0,4).toLowerCase()=="dojo")){
-			var attributeSet = this.parseAttributes(node);
+			var attributeSet = parseAttributes(node);
 			for(var attr in attributeSet){
 				if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
 					parsedNodeSet[tagName][attr] = [];
@@ -128,8 +101,8 @@ dojo.xml.Parse = function(){
 		}
 	
 		var count = 0;
-		for(var i=0; i<node.childNodes.length; i++){
-			var tcn = node.childNodes.item(i);
+		var tcn, i = 0, nodes = node.childNodes;
+		while(tcn = nodes[i++]){
 			switch(tcn.nodeType){
 				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
 					count++;
@@ -178,14 +151,14 @@ dojo.xml.Parse = function(){
 	}
 
 	/* parses a set of attributes on a node into an object tree */
-	this.parseAttributes = function(node) {
+	function parseAttributes(node) {
 		// TODO: make this namespace aware
 		var parsedAttributeSet = {};
 		var atts = node.attributes;
 		// TODO: should we allow for duplicate attributes at this point...
 		// would any of the relevant dom implementations even allow this?
-		for(var i=0; i<atts.length; i++) {
-			var attnode = atts.item(i);
+		var attnode, i=0;
+		while(attnode=atts[i++]) {
 			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
 				if(!attnode){ continue; }
 				if(	(typeof attnode == "object")&&

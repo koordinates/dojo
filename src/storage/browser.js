@@ -23,7 +23,6 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	initialized: false,
 	_available: null,
 	_statusHandler: null,
-	_allKeys: null,
 	
 	initialize: function(){
 		// initialize our Flash
@@ -129,6 +128,15 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	},
 
 	hideSettingsUI: function(){
+		// hide the dialog
+		dojo.flash.obj.setVisible(false);
+		
+		// call anyone who wants to know the dialog is
+		// now hidden
+		if(dojo.storage.onHideSettingsUI != null &&
+			!dojo.lang.isUndefined(dojo.storage.onHideSettingsUI)){
+			dojo.storage.onHideSettingsUI.call(null);	
+		}
 	},
 	
 	/** 
@@ -141,9 +149,6 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	
 	/** Called when the Flash is finished loading. */
 	_flashLoaded: function(){
-		// load up our index of keys, to support getKeys()
-		//this._allKeys = this.getKeys();
-
 		this.initialized = true;
 
 		// indicate that this storage provider is now loaded
@@ -159,6 +164,8 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 		if(statusResult == dojo.storage.PENDING){
 			dojo.flash.obj.center();
 			dojo.flash.obj.setVisible(true);
+		}else{
+			dojo.flash.obj.setVisible(false);
 		}
 		
 		if(!dojo.lang.isUndefined(dojo.storage._statusHandler) 

@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.Menu2");
 dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
 dojo.provide("dojo.widget.MenuItem2");
+dojo.provide("dojo.widget.MenuBar2");
 
 dojo.require("dojo.html");
 dojo.require("dojo.style");
@@ -33,7 +34,8 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	currentSubmenu: null,
 	currentSubmenuTrigger: null,
 	parentMenu: null,
-	isShowing: false,
+	parentMenuBar: null,
+	isShowingNow: false,
 	menuX: 0,
 	menuY: 0,
 	menuWidth: 0,
@@ -80,6 +82,12 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		}
 		this.domNode.style.left = '-9999px'
 		this.domNode.style.top = '-9999px'
+
+		// attach menu to document body if it's not already there
+		if (this.domNode.parentNode != document.body){
+			document.body.appendChild(this.domNode);
+		}
+
 
 		if (this.contextMenuForWindow){
 			var doc = document.documentElement  || document.body;
@@ -216,18 +224,24 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		this.menuHeight = dojo.style.getOuterHeight(this.domNode);
 	},
 
+	/**
+	 * Open the menu at position (x,y), relative to the viewport
+	 * (usually positions are relative to the document; why is this different??)
+	 */
 	open: function(x, y, parent, explodeSrc){
 
 		// if explodeSrc isn't specified then explode from my parent widget
 		explodeSrc = explodeSrc || parent["domNode"] || [];
 
-		if (this.isShowing){ return; }
+		if (this.isShowingNow){ return; }
 
 		var parentMenu = (parent && parent.widgetType=="PopupMenu2") ? parent : null;
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
-			dojo.widget.html.Menu2Manager.opened(this, explodeSrc);
+			// explodeSrc may or may not be a node - it may also be an [x,y] position array
+			var button = explodeSrc instanceof Array ? null : explodeSrc;
+			dojo.widget.html.Menu2Manager.opened(this, button);
 		}
 
 		//dojo.debug("open called for animation "+this.animationInProgress)
@@ -289,7 +303,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 		// then use the user defined method to display it
 		this.show();
 
-		this.isShowing = true;
+		this.isShowingNow = true;
 	},
 
 	close: function(){
@@ -303,8 +317,12 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 
 		this.closeSubmenu();
 		this.hide();
-		this.isShowing = false;
+		this.isShowingNow = false;
 		dojo.widget.html.Menu2Manager.closed(this);
+
+		if (this.parentMenuBar){
+			this.parentMenuBar.closedMenu(this);
+		}
 	},
 
 	onShow: function() {
@@ -848,7 +866,320 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  	}
 };
 
+
+dojo.widget.MenuBar2 = function(){
+	dojo.widget.HtmlWidget.call(this);
+}
+
+dojo.inherits(dojo.widget.MenuBar2, dojo.widget.HtmlWidget);
+
+dojo.lang.extend(dojo.widget.MenuBar2, {
+	widgetType: "MenuBar2",
+	isContainer: true,
+
+	snarfChildDomOutput: true,
+
+	currentItem: null,
+	isExpanded: false,
+
+	currentSubmenu: null,
+	currentSubmenuTrigger: null,
+
+	domNode: null,
+	containerNode: null,
+
+	templateString: '<div class="dojoMenuBar2"><div dojoAttachPoint="containerNode" class="dojoMenuBar2Client"></div></div>',
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlMenu2.css"),
+
+	itemHeight: 18,
+	openEvent: null,
+
+
+	postCreate: function(){
+
+		// do something here
+
+		this.layoutMenuSoon();
+	},
+
+	layoutMenuSoon: function(){
+		dojo.lang.setTimeout(this, "layoutMenu", 0);
+	},
+
+	layoutMenu: function(){
+
+		// menu must be attached to DOM for size calculations to work
+
+		var parent = this.domNode.parentNode;
+		if (! parent || parent == undefined) {
+			document.body.appendChild(this.domNode);
+		}
+
+
+		// determine menu height
+
+		var max_label_h = 0;
+
+		for(var i=0; i<this.children.length; i++){
+
+			if (this.children[i].getLabelHeight){
+
+				max_label_h = Math.max(max_label_h, this.children[i].getLabelHeight());
+			}
+		}
+
+		if (isNaN(max_label_h)){
+			// Browser needs some more time to calculate sizes
+			this.layoutMenuSoon();
+			return;
+		}
+
+		var clientLeft = dojo.style.getPixelValue(this.domNode, "padding-left", true)
+				+ dojo.style.getPixelValue(this.containerNode, "margin-left", true)
+				+ dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+		var clientTop  = dojo.style.getPixelValue(this.domNode, "padding-top", true)
+				+ dojo.style.getPixelValue(this.containerNode, "padding-top", true);
+
+		if (isNaN(clientLeft) || isNaN(clientTop)){
+			// Browser needs some more time to calculate sizes
+			this.layoutMenuSoon();
+			return;
+		}
+
+		var max_item_height = 0;
+		var x = clientLeft;
+
+		for (var i=0; i<this.children.length; i++){
+
+			var ch = this.children[i];
+
+			ch.layoutItem(max_label_h);
+
+			ch.leftPosition = x;
+			ch.domNode.style.left = x + 'px';
+
+			x += dojo.style.getOuterWidth(ch.domNode);
+			max_item_height = Math.max(max_item_height, dojo.style.getOuterHeight(ch.domNode));
+		}
+
+		dojo.style.setContentHeight(this.containerNode, max_item_height);
+		dojo.style.setContentHeight(this.domNode, dojo.style.getOuterHeight(this.containerNode));
+	},
+
+	openSubmenu: function(submenu, from_item){
+
+		var our_pos = dojo.style.getAbsolutePosition(this.domNode, false);
+
+		var our_h = dojo.style.getOuterHeight(this.domNode);
+		var item_x = from_item.leftPosition;
+
+		var x = our_pos.x + item_x;
+		var y = our_pos.y + our_h;
+
+		this.currentSubmenu = submenu;
+		this.currentSubmenu.open(x, y, this, from_item.domNode);
+		this.currentSubmenu.parentMenuBar = this;
+	},
+
+	closeSubmenu: function(){
+
+		if (this.currentSubmenu == null){ return; }
+
+		var menu = this.currentSubmenu;
+		this.currentSubmenu = null;
+		menu.close();
+	},
+
+	itemHover: function(item){
+
+		if (item == this.currentItem) return;
+
+		if (this.currentItem){
+			this.currentItem.unhighlightItem();
+
+			if (this.isExpanded){
+				this.closeSubmenu();
+			}
+		}
+
+		this.currentItem = item;
+		this.currentItem.highlightItem();
+
+		if (this.isExpanded){
+			this.currentItem.expandMenu();
+		}
+	},
+
+	itemUnhover: function(item){
+
+		if (item != this.currentItem) return;
+
+		if (!this.isExpanded){
+			this.currentItem.unhighlightItem();
+			this.currentItem = null;
+		}
+	},
+
+	itemClick: function(item){
+
+		if (item != this.currentItem){
+
+			this.itemHover(item);
+		}
+
+		if (this.isExpanded){
+
+			this.isExpanded = false;
+			this.closeSubmenu();
+
+		}else{
+
+			this.isExpanded = true;
+			this.currentItem.expandMenu();
+		}
+	},
+
+	closedMenu: function(menu){
+
+		if (this.currentSubmenu == menu){
+
+			this.isExpanded = false;
+			this.itemUnhover(this.currentItem);
+		}
+	}
+});
+
+
+dojo.widget.MenuBarItem2 = function(){
+	dojo.widget.HtmlWidget.call(this);
+}
+
+dojo.inherits(dojo.widget.MenuBarItem2, dojo.widget.HtmlWidget);
+
+dojo.lang.extend(dojo.widget.MenuBarItem2, {
+
+	widgetType: "MenuBarItem2",
+	templateString:
+			 '<div class="dojoMenuBarItem2">'
+			+'<span dojoAttachPoint="labelNode" class="dojoMenuBarItem2Label"><span><span></span></span></span>'
+			+'<div dojoAttachPoint="targetNode" class="dojoMenuBarItem2Target" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">&nbsp;</div>'
+			+'</div>',
+
+	//
+	// nodes
+	//
+
+	domNode: null,
+	labelNode: null,
+	targetNode: null,
+
+	//
+	// internal settings
+	//
+
+	is_hovering: false,
+	hover_timer: null,
+	is_open: false,
+
+	//
+	// options
+	//
+
+	caption: 'Untitled',
+	accelKey: '',
+	iconSrc: '',
+	submenuId: '',
+	disabled: false,
+	eventNaming: "default",
+
+
+	postCreate: function(){
+
+		dojo.html.disableSelection(this.domNode);
+
+		if (this.disabled){
+			this.setDisabled(true);
+		}
+
+		this.labelNode.childNodes[0].appendChild(document.createTextNode(this.caption));
+
+		this.labelShadowNode = this.labelNode.childNodes[0].childNodes[0];
+		this.labelShadowNode.appendChild(document.createTextNode(this.caption));
+
+		if (this.eventNaming == "default") {
+			for (eventName in this.eventNames) {
+				this.eventNames[eventName] = this.widgetId+"/"+eventName;
+			}
+		}
+	},
+
+	layoutItem: function(item_h){
+
+		var label_w = dojo.style.getOuterWidth(this.labelNode);
+
+		var clientLeft = dojo.style.getPixelValue(this.domNode, "padding-left", true);
+		var clientTop  = dojo.style.getPixelValue(this.domNode, "padding-top", true);
+
+		this.labelNode.style.left = clientLeft + 'px';
+
+		dojo.style.setOuterHeight(this.labelNode, item_h);
+		dojo.style.setContentWidth(this.domNode, label_w);
+		dojo.style.setContentHeight(this.domNode, item_h);
+
+		this.labelNode.style.left = '0px';
+
+		dojo.style.setOuterWidth(this.targetNode, label_w);
+		dojo.style.setOuterHeight(this.targetNode, item_h);
+	},
+
+	getLabelHeight: function(){
+
+		return dojo.style.getOuterHeight(this.labelNode);
+	},
+
+	onHover: function(){
+		this.parent.itemHover(this);
+	},
+
+	onUnhover: function(){
+		this.parent.itemUnhover(this);
+	},
+
+	_onClick: function(){
+		this.parent.itemClick(this);
+	},
+
+	highlightItem: function(){
+		dojo.html.addClass(this.domNode, 'dojoMenuBarItem2Hover');
+	},
+
+	unhighlightItem: function(){
+		dojo.html.removeClass(this.domNode, 'dojoMenuBarItem2Hover');
+	},
+
+	expandMenu: function(){
+
+		var submenu = dojo.widget.getWidgetById(this.submenuId);
+		if (submenu){
+
+			this.parent.openSubmenu(submenu, this);
+		}
+	},
+
+	setDisabled: function(value){
+		this.disabled = value;
+
+		if (this.disabled){
+			dojo.html.addClass(this.domNode, 'dojoMenuBarItem2Disabled');
+		}else{
+			dojo.html.removeClass(this.domNode, 'dojoMenuBarItem2Disabled');
+		}
+	}
+});
+
 // make it a tag
+dojo.widget.tags.addParseTreeHandler("dojo:MenuBar2");
+dojo.widget.tags.addParseTreeHandler("dojo:MenuBarItem2");
 dojo.widget.tags.addParseTreeHandler("dojo:PopupMenu2");
 dojo.widget.tags.addParseTreeHandler("dojo:MenuItem2");
 dojo.widget.tags.addParseTreeHandler("dojo:MenuSeparator2");

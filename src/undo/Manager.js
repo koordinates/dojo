@@ -117,31 +117,55 @@ dojo.lang.extend(dojo.undo.Manager, {
 		this._updateStatus();
 	},
 
+	concat: function(manager) {
+		if ( !manager ) { return; }
+
+		if (this._currentManager == this ) {
+			for(var x=0; x < manager._undoStack.length; x++) {
+				this._undoStack.push(manager._undoStack[x]);
+			}
+			this._updateStatus();
+		} else {
+			this._currentManager.concat.apply(this._currentManager, arguments);
+		}
+	},
+
 	beginTransaction: function(description /* optional */) {
 		if(this._currentManager == this) {
 			var mgr = new dojo.undo.Manager(this);
 			mgr.description = description ? description : "";
 			this._undoStack.push(mgr);
 			this._currentManager = mgr;
+			return mgr;
 		} else {
-			this._currentManager.beginTransaction.apply(this._currentManager, arguments);
+			//for nested transactions need to make sure the top level _currentManager is set
+			this._currentManager = this._currentManager.beginTransaction.apply(this._currentManager, arguments);
 		}
 	},
 
-	endTransaction: function() {
+	endTransaction: function(flatten /* optional */) {
 		if(this._currentManager == this) {
 			if(this._parent) {
 				this._parent._currentManager = this._parent;
-				if(this._undoStack.length == 0) {
-					// don't leave empty transactions hangin' around
+				// don't leave empty transactions hangin' around
+				if(this._undoStack.length == 0 || flatten) {
 					var idx = dojo.lang.find(this._parent._undoStack, this);
-					if(idx >= 0) {
+					if (idx >= 0) {
 						this._parent._undoStack.splice(idx, 1);
+						//add the current transaction to parents undo stack
+						if (flatten) {
+							for(var x=0; x < this._undoStack.length; x++){
+								this._parent._undoStack.splice(idx++, 0, this._undoStack[x]);
+							}
+							this._updateStatus();
+						}
 					}
 				}
+				return this._parent;
 			}
 		} else {
-			this._currentManager.endTransaction.apply(this._currentManager, arguments);
+			//for nested transactions need to make sure the top level _currentManager is set
+			this._currentManager = this._currentManager.endTransaction.apply(this._currentManager, arguments);
 		}
 	},
 

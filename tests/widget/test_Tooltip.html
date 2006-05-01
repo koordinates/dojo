@@ -11,7 +11,6 @@
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.widget.Tooltip");
-		dojo.require("dojo.fx.html");
 	</script>
 	
 	<style>
@@ -64,12 +63,14 @@
 		<input type="input" id="id6" value="5"/><br>
 	</form>
 	<br>
-	
-	<span id="s1">text</span><br>
-	<span id="s2">text</span><br>
-	<span id="s3">text</span><br>
-	<span id="s4">text</span><br>
-	<span id="s5">text</span><br>
+
+<div style="overflow: auto; height: 100px; position: relative; border: solid blue 3px;">
+	<span id="s1">text</span><br><br><br>
+	<span id="s2">text</span><br><br><br>
+	<span id="s3">text</span><br><br><br>
+	<span id="s4">text</span><br><br><br>
+	<span id="s5">text</span><br><br><br>
+</div>
 
 	<span dojoType="tooltip" connectId="id1" delay="100" toggle="explode">some text 1</span>
 	<span dojoType="tooltip" connectId="id2" delay="100" toggle="explode">some text 2</span>

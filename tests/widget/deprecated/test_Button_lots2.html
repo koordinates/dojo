@@ -49,7 +49,7 @@
 				for(var x = 0; x<100; x++){
 					dojo.widget.createWidget("Button", { label: "button "+x }, document.body, "last");
 				}
-				dj_debug("constructing ", x, " items took ", (new Date())-start, "ms");
+				dojo.debug("constructing ", x, " items took ", (new Date())-start, "ms");
 			}
 
 			dojo.event.connect(dojo.hostenv, "loaded", dj_global, "init");

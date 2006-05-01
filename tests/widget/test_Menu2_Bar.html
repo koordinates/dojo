@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Menu System Test</title>
+<script type="text/javascript">
+
+	var djConfig = {
+		debugAtAllCosts: true,
+		isDebug: true
+	};
+
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Menu2");
+	dojo.require("dojo.fx.html");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body style="background-color: #3A6EA5; color: white; padding: 0; margin: 0">
+
+<div dojoType="PopupMenu2" widgetId="submenu1" contextMenuForWindow="true">
+	<div dojoType="MenuItem2" caption="One" submenuId="submenu2" disabled="true"></div>
+	<div dojoType="MenuItem2" caption="Two" submenuId="submenu2"></div>
+</div>
+
+<div dojoType="PopupMenu2" widgetId="submenu2">
+	<div dojoType="MenuItem2" caption="Three" onClick="alert('Three!')"></div>
+	<div dojoType="MenuItem2" caption="Four" onClick="alert('Four!')"></div>
+</div>
+
+<div dojoType="MenuBar2">
+	<div dojoType="MenuBarItem2" caption="File" submenuId="submenu1"></div>
+	<div dojoType="MenuBarItem2" caption="Edit" submenuId="submenu2"></div>
+	<div dojoType="MenuBarItem2" caption="View" disabled="true"></div>
+	<div dojoType="MenuBarItem2" caption="Help" submenuId="submenu2"></div>
+</div>
+
+<div style="padding: 1em">
+
+	<h1>This page has a menu bar and context menu</h1>
+
+	<h2>Contextmenu should always apear within browser window, no scrolling needed</h2>
+
+	<h3 style="color: yellow;">In Opera, press ctrl-button while clicking. This is needed as opera doesn't support right-click events</h3> 
+
+	<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus risus. Praesent eu lacus et enim laoreet sollicitudin. Quisque mollis mi a lectus. Cras ante. Aliquam tempus justo laoreet justo. Vestibulum egestas feugiat nisi. Nulla ultrices consequat felis. Curabitur dignissim augue vel enim. Fusce tempus tempor mauris. Praesent suscipit pede in nunc. Duis mi neque, malesuada non, volutpat et, nonummy et, ante. Aliquam neque. Nulla rhoncus, turpis eget mattis molestie, magna nulla dictum ligula, quis tempor odio justo vel pede. Donec sit amet tellus. Phasellus sapien. Nulla id massa at nunc condimentum fringilla. Fusce suscipit ipsum et lorem consequat pulvinar. Quisque lacinia sollicitudin tellus.</p>
+
+</div>
+
+</body>
+</html>

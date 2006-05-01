@@ -49,6 +49,16 @@ dojo.lang.extend(dojo.storage, {
 	  domain but want different storage silos. 
 	*/
 	namespace: "dojoStorage",
+	
+	/**  
+	  If a function is assigned to this property, then 
+	  when the settings provider's UI is closed this
+	  function is called. Useful, for example, if the
+	  user has just cleared out all storage for this
+	  provider using the settings UI, and you want to 
+	  update your UI.
+	*/
+	onHideSettingsUI: null,
 
 	/** 
 	  Allows this storage provider to initialize itself. This is called
@@ -325,8 +335,9 @@ dojo.storage.manager = new function(){
 			
 		// create this provider and copy over it's properties
 		this.currentProvider = providerToUse;
-	  for(var i in providerToUse)
-	  	dojo.storage[i] = providerToUse[i];
+	  	for(var i in providerToUse){
+	  		dojo.storage[i] = providerToUse[i];
+		}
 		dojo.storage.manager = this;
 		
 		// have the provider initialize itself
@@ -339,6 +350,19 @@ dojo.storage.manager = new function(){
 	/** Returns whether any storage options are available. */
 	this.isAvailable = function(){
 		return this.available;
+	}
+	
+	/** 
+	 	Returns whether the storage system is initialized and
+	 	ready to be used. 
+	*/
+	this.isInitialized = function(){
+		// FIXME: This should _really_ not be in here, but it fixes a bug
+		if(dojo.flash.ready == false){
+			return false;
+		}else{
+			return this.initialized;
+		}
 	}
 
 	/**

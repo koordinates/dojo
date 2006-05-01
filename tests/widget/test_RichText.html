@@ -3,7 +3,7 @@
 
 <script type="text/javascript"> 
 	djConfig = { 
-		// debugAtAllCosts: true,
+		//debugAtAllCosts: true,
 		isDebug: true,
 		ieClobberMinimal: true
 	};
@@ -22,6 +22,7 @@ dojo.event.connect(window, "onload", function (e) {
 	var editor = dojo.widget.createWidget("RichText", {}, div);
 });
 */
+	//dojo.hostenv.writeIncludes();
 </script>
 
 <div id="editable" dojoType="RichText" widgetId="editdiv" style="border: 1px solid black;"><!-- don't want space here

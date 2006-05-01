@@ -35,28 +35,14 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 	},
 
 	onResized: function(){
-		if ( !this.isShowing() ) {
-			return;
-		}
-		
-		// TODO: this code should be somewhere else
-		var w = dojo.style.getOuterWidth(this.domNode);
-		var h = dojo.style.getOuterWidth(this.domNode);
-		if( h == this.height && w == this.width ) { return; }
-		this.height = h; this.width = w;
-
-		//dojo.debug(this.widgetId + ": resized to " + w + ", " + h);
 		dojo.layout(this.domNode, this.children, this.layoutChildPriority);
-
-		// notify children that they have been moved/resized
-		this.notifyChildrenOfResize();
 	},
 
 	show: function(){
 		// If this node was created while display=="none" then it
 		// hasn't been laid out yet.  Do that now.
 		this.domNode.style.display="";
-		this.onResized();
+		this.onParentResized();
 		this.domNode.style.display="none";
 		this.domNode.style.visibility="";
 

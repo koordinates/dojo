@@ -117,12 +117,15 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		];
 		dojo.layout(this.domNode, children);
 		
-		// make each child widget expand to fill the container
-		var grandchildren = [];
+		// size the current tab
+		// TODO: should have ptr to current tab rather than searching
+		var cw=dojo.style.getContentWidth(this.containerNode);
+		var ch=dojo.style.getContentHeight(this.containerNode);
 		dojo.lang.forEach(this.children, function(child){
-			grandchildren.push({domNode: child.domNode, layoutAlign: "flood"});
+			if(child.selected){
+				child.resizeTo(cw, ch);
+			}
 		});
-		dojo.layout(this.containerNode, grandchildren);
 	},
 
     removeChild: function(tab) {
@@ -163,7 +166,6 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		}
 		this.selectedTabWidget = tab;
 		this._showTab(tab);
-		dojo.widget.html.TabContainer.superclass.onResized.call(this);
 	},
 	
 	_showTab: function(tab) {
@@ -173,6 +175,10 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			tab.domNode.style.visibility="visible";
 		} else {
 			tab.show();
+			tab.resizeTo(
+				dojo.style.getContentWidth(this.containerNode),
+				dojo.style.getContentHeight(this.containerNode)
+			);
 		}
 	},
 
@@ -199,7 +205,6 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 	onResized: function() {
 		this._doSizing();
-		dojo.widget.html.TabContainer.superclass.onResized.call(this);
 	}
 });
 dojo.widget.tags.addParseTreeHandler("dojo:TabContainer");

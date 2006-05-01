@@ -1,5 +1,8 @@
 dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.SHA1");
+dojo.require("dojo.experimental");
+
+dojo.experimental("dojo.crypto.SHA1");
 
 dojo.crypto.SHA1 = new function(){
 	var chrsz=8;

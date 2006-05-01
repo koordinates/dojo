@@ -45,10 +45,6 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 		dojo.lang.setTimeout(this, this.sizeMyself, 0);
 	},
 
-	onResized: function(){
-		this.sizeMyself();
-	},
-
 	sizeMyself: function(e){
 		this.height = dojo.style.getOuterHeight(this.containerNode);
 		this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
@@ -106,14 +102,19 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 		if ( !menu ) { return; }
 
 		if ( menu.open && !menu.isShowing) {
-			var x = dojo.style.getAbsoluteX(this.domNode, true);
-			var y = dojo.style.getAbsoluteY(this.domNode, true) + this.height;
-			menu.open(x, y, this);
+			var pos = dojo.style.getAbsolutePosition(this.domNode, false);
+			menu.open(pos.x, pos.y+this.height, this);
 		} else if ( menu.close && menu.isShowing ){
 			menu.close();
 		} else {
 			menu.toggle();
 		}
+	},
+	
+	onParentResized: function(){
+		// Not sure why this is necessary; but if button is inside a hidden floating
+		// pane (see Mail.html demo).  Revisit when buttons are redesigned
+		this.sizeMyself();
 	}
 });
 

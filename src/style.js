@@ -269,6 +269,16 @@ dojo.require("dojo.lang.common");
 	ds.getMarginBoxHeight = ds.getOuterHeight;
 	ds.setMarginBoxHeight = ds.setOuterHeight;
 
+	/**
+	 * dojo.style.getAbsolutePosition(xyz, true) returns xyz's position relative to the document.
+	 * Itells you where you would position a node
+	 * inside document.body such that it was on top of xyz.  Most people set the flag to true when calling
+	 * getAbsolutePosition().
+	 *
+	 * dojo.style.getAbsolutePosition(xyz, false) returns xyz's position relative to the viewport.
+	 * It returns the position that would be returned
+	 * by event.clientX/Y if the mouse were directly over the top/left of this node.
+	 */
 	ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
 		var ret = [];
 		ret.x = ret.y = 0;
@@ -276,15 +286,17 @@ dojo.require("dojo.lang.common");
 		var sl = dojo.html.getScrollLeft();
 
 		if(h.ie){
-			// getBoundingClientRect gives us a location relative to the
-			// viewport which means we have to add document scrolling back in,
-			// no matter what, and it may be wrong WRT sub-viewport scrolling.
 			with(node.getBoundingClientRect()){
-				ret.x = left-2+sl;
-				ret.y = top-2+st;
+				ret.x = left-2;
+				ret.y = top-2;
 			}
-		// FIXME: should we be using getBoxObjectFor() on Moz/FF?
-		}else{
+/**
+		}else if(document.getBoxObjectFor){
+			// mozilla
+			var bo=document.getBoxObjectFor(node);
+			ret.x=bo.x-sl;
+			ret.y=bo.y-st;
+**/		}else{
 			if(node["offsetParent"]){
 				var endNode;		
 				// in Safari, if the node is an absolutely positioned child of
@@ -299,18 +311,14 @@ dojo.require("dojo.lang.common");
 					endNode = db.parentNode;
 				}
 				
-				if((includeScroll)&&(node.parentNode != db)){
+				if(node.parentNode != db){
 					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
 					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
 				}
-				// FIXME: this is known not to work sometimes on IE 5.x since nodes
-				// sometimes need to be "tickled" before they will display their
-				// offset correctly
 				do{
 					var n = node["offsetLeft"];
 					ret.x += isNaN(n) ? 0 : n;
 					var m = node["offsetTop"];
-					// dojo.debug(m, node.nodeName)
 					ret.y += isNaN(m) ? 0 : m;
 					node = node.offsetParent;
 				}while((node != endNode)&&(node != null));
@@ -319,10 +327,8 @@ dojo.require("dojo.lang.common");
 				ret.y += isNaN(node.y) ? 0 : node.y;
 			}
 		}
+
 		// account for document scrolling!
-		// FIXME: why in the hell do we have calls to dojo.html.* when we don't
-		// require() it? Does that imply that this method should be in
-		// dojo.html instead?
 		if(includeScroll){
 			ret.y += st;
 			ret.x += sl;
@@ -734,9 +740,10 @@ dojo.require("dojo.lang.common");
 		} else {
 			// coords is an dom object (or dom object id); return it's coordinates
 			var node = dojo.byId(coords);
+			var pos = ds.getAbsolutePosition(node, includeScroll);
 			var ret = [
-				ds.getAbsoluteX(node, includeScroll),
-				ds.getAbsoluteY(node, includeScroll),
+				pos.x,
+				pos.y,
 				ds.getInnerWidth(node),
 				ds.getInnerHeight(node)
 			];

@@ -17,46 +17,118 @@
 				d.add("baz","fab");
 				d.add("buck","shot");
 				d.add("apple",{test:"orange",toString:function(){ return this.test; }});
-
+				
 				var s = [];
 				var e = d.getIterator();
 				
 				//	testing while form.
-				s.push("...testing while form...");
-				while(!e.atEnd){
-					s.push(e.key + " == " + e.value);
-					e.moveNext();
+				s.push("...testing while(!atEnd) form...");
+				while(!e.atEnd()){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
 				}
 				e.reset();
 
+				s.push("...testing while(var item=e.get()) form...");
+				var item;
+				while(item=e.get()){
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+				
 				//	testing do...while form.
 				s.push(" ");
 				s.push("...testing do...while form...");
-				if (!e.atEnd){
-					do {
-						s.push(e.key + " == " + e.value);
-					} while (e.moveNext());
-				}
+				do {
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				} while (!e.atEnd());
 				e.reset();
 				
 				//	testing for form
 				s.push(" ");
 				s.push("...testing for form...");
-				for (; !e.atEnd; e.moveNext()){
-					s.push(e.key + " == " + e.value);
+				for (var item=e.element; item=e.get();){
+					s.push(item.key + " == " + item.value);
 				}
 				
 				s.push(" ");
 				s.push("...testing with no elements...");
 				var d = new dojo.collections.Dictionary();
 				var e = d.getIterator();
-				if (!e.atEnd){
-					do {
-						s.push(e.key + " == " + e.value);
-					} while (e.moveNext());
+				s.push("...testing while form...");
+				while(!e.atEnd()){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
 				}
-				document.getElementsByTagName("body")[0].innerHTML = s.join("<br/>");
+				e.reset();
 
+				s.push("...testing while(var item=e.get()) form...");
+				var item;
+				while(item=e.get()){
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+				
+				//	testing do...while form.
+				s.push(" ");
+				s.push("...testing do...while form...");
+				do {
+					var item=e.get();
+					try{
+						s.push(item.key + " == " + item.value);
+					} catch(e){
+						s.push("do...while: " +e.message);
+					}
+				} while (!e.atEnd());
+				e.reset();
+				
+				//	testing for form
+				s.push(" ");
+				s.push("...testing for form...");
+				for (;!e.atEnd();){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+
+				s.push(" ");
+				s.push("...testing with one element...");
+				var d = new dojo.collections.Dictionary();
+				d.add("apple",{test:"orange",toString:function(){ return this.test; }});
+				var e = d.getIterator();
+				s.push("...testing while form...");
+				while(!e.atEnd()){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+
+				s.push("...testing while(var item=e.get()) form...");
+				var item;
+				while(item=e.get()){
+					s.push(item.key + " == " + item.value);
+				}
+				e.reset();
+				
+				//	testing do...while form.
+				s.push(" ");
+				s.push("...testing do...while form...");
+				do {
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				} while (!e.atEnd());
+				e.reset();
+				
+				//	testing for form
+				s.push(" ");
+				s.push("...testing for form...");
+				for (;!e.atEnd();){
+					var item=e.get();
+					s.push(item.key + " == " + item.value);
+				}
+				
+				document.getElementsByTagName("body")[0].innerHTML = s.join("<br/>");
+				
 				//	run the unit tests now.
 				test_Dictionary_ctor();
 				test_Dictionary_add();

@@ -15,6 +15,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
+dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
 dojo.require("dojo.io.cookie");
 
 dojo.widget.html.SplitContainer = function(){
@@ -72,7 +73,6 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		this.paneWidth = dojo.style.getContentWidth(this.domNode);
 		this.paneHeight = dojo.style.getContentHeight(this.domNode);
 		this.layoutPanels();
-		this.notifyChildrenOfResize();	// notify children they've been moved/resized
 	},
 
 	postCreate: function(args, fragment, parentComp){
@@ -229,7 +229,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
-        this.children[0].onResized();
+        this.children[0].onParentResized();
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -242,7 +242,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
-            this.children[i].onResized();
+            this.children[i].onParentResized();
 			pos += size;
 		}
 	},
@@ -328,10 +328,10 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	beginSizing: function(e, i){
-		var clientX = window.event ? window.event.offsetX : e.layerX;
-		var clientY = window.event ? window.event.offsetY : e.layerY;
-		var screenX = window.event ? window.event.clientX : e.pageX;
-		var screenY = window.event ? window.event.clientY : e.pageY;
+		var clientX = e.layerX;
+		var clientY = e.layerY;
+		var screenX = e.pageX;
+		var screenY = e.pageY;
 
 		this.paneBefore = this.children[i];
 		this.paneAfter = this.children[i+1];
@@ -359,10 +359,8 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	changeSizing: function(e){
-
-		// FIXME: is this fixed in connect()?
-		var screenX = window.event ? window.event.clientX : e.pageX;
-		var screenY = window.event ? window.event.clientY : e.pageY;
+		var screenX = e.pageX;
+		var screenY = e.pageY;
 
 		if (this.isActiveResize){
 			this.lastPoint = {'x':screenX, 'y':screenY};
