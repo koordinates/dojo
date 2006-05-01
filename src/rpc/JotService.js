@@ -10,9 +10,9 @@ dojo.rpc.JotService = function(){
 dojo.inherits(dojo.rpc.JotService, dojo.rpc.JsonService);
 
 dojo.lang.extend(dojo.rpc.JotService, {
-	bind: function(method, parameters, deferredRequestHandler){
+	bind: function(method, parameters, deferredRequestHandler, url){
 		dojo.io.bind({
-			url: this.serviceUrl,
+			url: url||this.serviceUrl,
 			content: {
 				json: this.createRequest(method, parameters)
 			},
