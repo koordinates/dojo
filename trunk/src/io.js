@@ -250,11 +250,11 @@ dojo.io._queueBindInFlight = false;
 dojo.io.argsFromMap = function(map, encoding){
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var mapped = [];
-	var domap = function(elt){
-		mapped.push(enc(name)+"="+enc(elt));
-	}
 	var control = new Object();
 	for(var name in map){
+		var domap = function(elt){
+			mapped.push(enc(name)+"="+enc(elt));
+		}
 		if(!control[name]){
 			var value = map[name];
 			// FIXME: should be isArrayLike?
