@@ -10,11 +10,17 @@ dojo.lfx.Line = function(start, end){
 	this.start = start;
 	this.end = end;
 	if(dojo.lang.isArray(start)){
-		var diff = [end[0] - start[0], end[1] - start[1]];
+		var diff = [];
+		dojo.lang.forEach(this.start, dojo.lang.hitch(this, function(s,i){
+			diff[i] = this.end[i] - s;
+		}));
 		
 		this.getValue = function(/*float*/ n){
-			return { x: (diff[0] * n) + this.start[0],
-					 y: (diff[1] * n) + this.start[1] };
+			var res = [];
+			dojo.lang.forEach(this.start, dojo.lang.hitch(this, function(s, i){
+				res[i] = (diff[i] * n) + s;
+			}));
+			return res;
 		}
 	}else{
 		var diff = end - start;
@@ -30,7 +36,7 @@ dojo.lfx.Line = function(start, end){
 dojo.lfx.easeIn = function(n){
 	//	summary: returns the point on an easing curve
 	//	n: a floating point number greater than 0 and less than 1
-	return ( n * n * n );
+	return Math.pow(n, 3);
 }
 
 dojo.lfx.easeOut = function(n){
@@ -42,7 +48,7 @@ dojo.lfx.easeOut = function(n){
 dojo.lfx.easeInOut = function(n){
 	//	summary: returns the point on the line
 	//	n: a floating point number greater than 0 and less than 1
-	return ( (3 * n * n) - (2 * n * n * n) );
+	return ( (3 * Math.pow(n, 2)) - (2 * Math.pow(n, 3)) );
 }
 
 dojo.lfx.IAnimation = function(){}
@@ -117,7 +123,7 @@ dojo.lfx.Animation = function(/*Object*/ handlers, /*int*/ duration, /*Array*/ c
 	}else{
 		this.curve = curve;
 	}
-	if(duration){ this.duration = duration; }
+	if(duration != null && duration > 0){ this.duration = duration; }
 	if(repeatCount){ this.repeatCount = repeatCount; }
 	if(rate){ this.rate = rate; }
 	if(handlers){

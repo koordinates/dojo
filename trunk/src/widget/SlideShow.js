@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.html.SlideShow");
 
 dojo.require("dojo.event");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.fx.html");
+dojo.require("dojo.lfx.*");
 dojo.require("dojo.style");
 
 dojo.widget.html.SlideShow = function(){
@@ -83,8 +83,9 @@ dojo.widget.html.SlideShow = function(){
 		if(this.fadeAnim) {
 			this.fadeAnim.stop();
 		}
-		this.fadeAnim = dojo.fx.html.fadeOut(this[this.foreground], 
-			this.transitionInterval, callback);
+		this.fadeAnim = dojo.lfx.fadeOut(this[this.foreground], 
+			this.transitionInterval, null, callback);
+		this.fadeAnim.play();
 	}
 
 	this.endTransition = function(){

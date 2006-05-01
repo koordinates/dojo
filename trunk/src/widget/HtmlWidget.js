@@ -75,7 +75,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	show: function(){
 		this.animationInProgress=true;
 		this.toggleObj.show(this.domNode, this.toggleDuration, null,
-			dojo.lang.hitch(this, this.onShow));
+			dojo.lang.hitch(this, this.onShow), this.explodeSrc);
 	},
 
 	// called after the show() animation has completed
@@ -86,7 +86,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	hide: function(){
 		this.animationInProgress=true;
 		this.toggleObj.hide(this.domNode, this.toggleDuration, null,
-			dojo.lang.hitch(this, this.onHide));
+			dojo.lang.hitch(this, this.onHide), this.explodeSrc);
 	},
 
 	// called after the hide() animation has completed
