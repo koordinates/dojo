@@ -59,9 +59,9 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 		return deferred;
 	},
 
-	bind: function(method, parameters, deferredRequestHandler){
+	bind: function(method, parameters, deferredRequestHandler, url){
 		dojo.io.bind({
-			url: this.serviceUrl,
+			url: url||this.serviceUrl,
 			postContent: this.createRequest(method, parameters),
 			method: "POST",
 			mimetype: "text/json",
