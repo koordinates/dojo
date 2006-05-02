@@ -41,6 +41,12 @@ dojo.widget.defineWidget(
 		
 		/** whether to use the active-x object in IE */
 		useActiveX: false,
+
+		/* whether to use relative URLs for images - if this is enabled
+       	images will be given absolute URLs when inside the editor but
+       	will be changed to use relative URLs (to the current page) on save
+		*/
+		relativeImageUrls: false,
 		
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
@@ -131,7 +137,7 @@ dojo.widget.defineWidget(
 					}
 				}
 				dojo.dom.insertBefore(this.domNode, this.textarea);
-				// this.domNode.innerHTML = html;
+				this.domNode.innerHTML = html;
 				
 				if(this.textarea.form){
 					dojo.event.connect(this.textarea.form, "onsubmit", 
@@ -355,15 +361,28 @@ dojo.widget.defineWidget(
 				this.iframe.height = height;
 			}
 
-			// show existing content behind iframe for now
 			var tmpContent = document.createElement('div');
-			tmpContent.style.position = "absolute";
 			tmpContent.innerHTML = html;
-			if (tmpContent.firstChild && tmpContent.firstChild.style) {
-				tmpContent.firstChild.style.marginTop = this._firstChildContributingMargin+"px";
-				tmpContent.lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
-				
+
+			// make relative image urls absolute
+			if (this.relativeImageUrls) {
+				var imgs = tmpContent.getElementsByTagName('img');
+				for (var i=0; i<imgs.length; i++) {
+					imgs[i].src = (new dojo.uri.Uri(window.location, imgs[i].src)).toString();
+				}
+				html = tmpContent.innerHTML;
 			}
+
+			// fix margins on tmpContent
+			var firstChild = dojo.dom.firstElement(tmpContent);
+			var lastChild = dojo.dom.lastElement(tmpContent);
+			if (firstChild) {
+				firstChild.style.marginTop = this._firstChildContributingMargin+"px";
+				lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
+			}
+
+			// show existing content behind iframe for now
+			tmpContent.style.position = "absolute";
 			this.domNode.appendChild(tmpContent);
 			this.domNode.appendChild(this.iframe);
 
@@ -1224,6 +1243,29 @@ dojo.widget.defineWidget(
 			dojo.lang.forEach(this.contentFilters, function(ef){
 				ec = ef(ec);
 			});
+
+			if (this.relativeImageUrls) {
+				// why use a regexp instead of dom? because IE is stupid 
+				// and won't let us set img.src to a relative URL
+				// this comes after contentFilters because once content
+				// gets innerHTML'd img urls will be fully qualified
+				var siteBase = window.location.protocol + "//" + window.location.host;
+				var pathBase = window.location.pathname;
+				if (pathBase.match(/\/$/)) {
+					// ends with slash, match full path
+				} else {
+					// match parent path to find siblings
+					var pathParts = pathBase.split("/");
+					if (pathParts.length) {
+						pathParts.pop();
+					}
+					pathBase = pathParts.join("/") + "/";
+
+				}
+				
+				var sameSite = new RegExp("(<img[^>]*\ src=[\"'])("+siteBase+"("+pathBase+")?)", "ig");
+				ec = ec.replace(sameSite, "$1");
+			}
 			return ec;
 		},
 		
