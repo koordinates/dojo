@@ -38,7 +38,7 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 		// create callback that calls the Deferred's callback method
 		var tf = dojo.lang.hitch(this, 
 			function(type, obj, e){
-				var results = this.parseResults(obj);
+				var results = this.parseResults(obj||e);
 				deferredRequestHandler.callback(results); 
 			}
 		);
@@ -72,17 +72,21 @@ dojo.lang.extend(dojo.rpc.RpcService, {
 		// callback method for reciept of a smd object.  Parse the smd and
 		// generate functions based on the description
 		dojo.debug("RpcService: Processing returned SMD.");
-		dojo.lang.forEach(object.methods, function(m){
-			dojo.debug("RpcService: Creating Method: this.", m.name, "()");
-  			this[m.name] = this.generateMethod(	m.name,
-												m.parameters, 
-												m["url"]||m["serviceUrl"]||m["serviceURL"]);
-			if (dojo.lang.isFunction(this[m.name])) {
-				dojo.debug("RpcService: Successfully created", m.name, "()");
-			} else {
-				dojo.debug("RpcService: Failed to create", m.name, "()");
-			}
-		}, this);
+		if(object.methods){
+			dojo.lang.forEach(object.methods, function(m){
+				if(m && m["name"]){
+					dojo.debug("RpcService: Creating Method: this.", m.name, "()");
+					this[m.name] = this.generateMethod(	m.name,
+														m.parameters, 
+														m["url"]||m["serviceUrl"]||m["serviceURL"]);
+					if(dojo.lang.isFunction(this[m.name])){
+						dojo.debug("RpcService: Successfully created", m.name, "()");
+					}else{
+						dojo.debug("RpcService: Failed to create", m.name, "()");
+					}
+				}
+			}, this);
+		}
 
 		this.serviceUrl = object.serviceUrl||object.serviceURL;
 		dojo.debug("RpcService: Dojo RpcService is ready for use.");

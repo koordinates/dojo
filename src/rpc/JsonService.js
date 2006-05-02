@@ -78,8 +78,11 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 	},
 
 	parseResults: function(obj){
-		if(obj["result"]){
-			return obj["result"];
+		if(!obj){ return; }
+		if(obj["Result"]||obj["result"]){
+			return obj["result"]||obj["Result"];
+		}else if(obj["ResultSet"]){
+			return obj["ResultSet"];
 		}else{
 			return obj;
 		}
