@@ -5,6 +5,7 @@
 //TODO: how will xd loading work with debugAtAllCosts?
 //TODO: test xdomain packages:
 //TODO: have a test that does a load after the fact, and has onload listeners.
+//TODO: test using dojo.hostenv.setModulePrefix() for a subpackage in dojo.
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
