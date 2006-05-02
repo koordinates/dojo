@@ -3,9 +3,9 @@
 //that would cause trouble?
 //TODO: Test the __package__.js file for src/undo: it does a require then a provide.
 //TODO: how will xd loading work with debugAtAllCosts?
-//TODO: test xdomain packages:
 //TODO: have a test that does a load after the fact, and has onload listeners.
 //TODO: test using dojo.hostenv.setModulePrefix() for a subpackage in dojo.
+//TODO: there seem to be extra requests, for things like __package__.js. Need to trace those.
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -73,6 +73,13 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 		this.isXDomain = currentIsXDomain = true;
 	}else{
 		uri = this.getBaseScriptUri() + relpath;
+
+		//Is ithe base script URI-based URL a cross domain URL?
+		colonIndex = uri.indexOf(":");
+		slashIndex = uri.indexOf("/");
+		if(colonIndex > 0 && colonIndex < slashIndex && (!location.host || uri.indexOf("http://" + location.host) != 0)){
+			this.isXDomain = currentIsXDomain = true;
+		}
 	}
 
 	if(djConfig.cacheBust && dojo.render.html.capable) { uri += "?" + String(djConfig.cacheBust).replace(/\W+/g,""); }
@@ -112,10 +119,21 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 	}
 
 	if (currentIsXDomain){
+		//Fix name to be a .xd.fileextension name.
+		var lastIndex = uri.lastIndexOf('.');
+		if(lastIndex <= 0){
+			lastIndex = uri.length - 1;
+		}
+
+		var xdUri = uri.substring(0, lastIndex) + ".xd";
+		if(lastIndex != uri.length - 1){
+			xdUri += uri.substring(lastIndex, uri.length);
+		}
+
 		//Add to script src
 		var element = document.createElement("script");
 		element.type = "text/javascript";
-		element.src = uri;
+		element.src = xdUri;
 		if(!this.headElement){
 			this.headElement = document.getElementsByTagName("head")[0];
 		}
