@@ -134,6 +134,10 @@
 			<td> morris </td>
 			<td> Morris Johns </td>
 		</tr>
+		<tr>
+			<td> BryanForbes </td>
+			<td> Bryan Forbes</td>
+		</tr>
 	</tbody>
 </table>
 <!--#include virtual="/rest_template/sidebar.html" -->
