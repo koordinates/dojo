@@ -6,7 +6,6 @@ dojo.require("dojo.uri.*");
 dojo.require("dojo.io.ScriptSrcIO");
 
 dojo.rpc.YahooService = function(appId){
-	this.scrictArgChecks = false;
 	this.appId = appId;
 	if(!appId){
 		this.appId = "dojotoolkit";
@@ -15,19 +14,27 @@ dojo.rpc.YahooService = function(appId){
 					"deployment of your application");
 	}
 	this.connect(dojo.uri.dojoUri("src/rpc/yahoo.smd"));
+	this.scrictArgChecks = false;
 }
 
 dojo.inherits(dojo.rpc.YahooService, dojo.rpc.JsonService);
 
 dojo.lang.extend(dojo.rpc.YahooService, {
+	strictArgChecks: false,
+
 	bind: function(method, parameters, deferredRequestHandler, url){
-		parameters.output = "json";
-		parameters.appid= this.appId;
+		var params = parameters;
+		if(	(dojo.lang.isArrayLike(parameters))&&
+			(parameters.length == 1)){
+			params = parameters[0];
+		}
+		params.output = "json";
+		params.appid= this.appId;
 		dojo.io.bind({
 			url: url||this.serviceUrl,
 			transport: "ScriptSrcTransport",
 			// FIXME: need to get content interpolation fixed
-			content: parameters,
+			content: params,
 			jsonParamName: "callback",
 			mimetype: "text/json",
 			load: this.resultCallback(deferredRequestHandler),
