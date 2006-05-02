@@ -96,7 +96,7 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 //is not suitable for widgets yet.
 dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 	if(this.loadedUris[uri]){
-		return;
+		return 1;
 	}
 
 	//Add the module (package) to the list of modules.
