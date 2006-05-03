@@ -56,6 +56,7 @@ dojo.widget.defineWidget(
 		inserthorizontalruleButton: null,
 		strikethroughButton: null,
 		clickInterceptDiv: null,
+		oneLineTr: null,
 
 		buttonClick: function(e){ e.preventDefault(); /* dojo.debug("buttonClick"); */ },
 
@@ -168,24 +169,22 @@ dojo.widget.defineWidget(
 									this, function(mi){ mi.args.unshift(dd); return mi.proceed(); }
 				);
 
-				// if(!h.ie){
-					var cid = this.clickInterceptDiv;
-					if(!cid){
-						cid = this.clickInterceptDiv = document.createElement("div");
-						document.body.appendChild(cid);
-						with(cid.style){
-							backgroundColor = "transparent";
-							top = left = "0px";
-							height = width = "100%";
-							position = "absolute";
-							border = "none";
-							display = "none";
-							zIndex = 1001;
-						}
-						dojo.event.connect(cid, "onclick", function(){ cid.style.display = "none"; });
+				var cid = this.clickInterceptDiv;
+				if(!cid){
+					cid = this.clickInterceptDiv = document.createElement("div");
+					document.body.appendChild(cid);
+					with(cid.style){
+						backgroundColor = "transparent";
+						top = left = "0px";
+						height = width = "100%";
+						position = "absolute";
+						border = "none";
+						display = "none";
+						zIndex = 1001;
 					}
-					dojo.event.connect(pal, "onColorSelect", function(){ cid.style.display = "none"; });
-				// }
+					dojo.event.connect(cid, "onclick", function(){ cid.style.display = "none"; });
+				}
+				dojo.event.connect(pal, "onColorSelect", function(){ cid.style.display = "none"; });
 
 				dojo.event.kwConnect({
 					srcObj:		document.body, 
@@ -194,15 +193,11 @@ dojo.widget.defineWidget(
 					targetFunc:	"hideAllDropDowns",
 					once:		true
 				});
-				// if(!h.ie){
-					document.body.appendChild(dd);
-				// }
+				document.body.appendChild(dd);
 			}
 			dojo.style.toggleShowing(this.clickInterceptDiv);
 			var pos = dojo.style.abs(this[type+"Button"]);
-			// if(!h.ie){
-				dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
-			// }
+			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
 		},
 
 		uninitialize: function(){
@@ -225,10 +220,34 @@ dojo.widget.defineWidget(
 						var cb = this[cmd+"Button"];
 						if(!dojo.widget.html.RichText.prototype.queryCommandAvailable(cmd)){
 							cb.style.display = "none";
+							cb.parentNode.style.display = "none";
 						}
 					}
 				},
 				this);
+				if(this.oneLineTr){
+					var lastVisibleIsSpacer = false;
+					var lastVisible = false;
+					var tds = this.oneLineTr.getElementsByTagName("td");
+					dojo.lang.forEach(tds, function(td){
+						if(td.getAttribute("isSpacer")){
+							if(td.style.display != "none"){
+								if(lastVisibleIsSpacer){
+									td.style.display = "none";
+								}
+								lastVisibleIsSpacer = true;
+							}else{
+								lastVisible = td;
+								lastVisibleIsSpacer = true;
+							}
+						}else{
+							if(td.style.display != "none"){
+								lastVisible = td;
+								lastVisibleIsSpacer = false;
+							}
+						}
+					});
+				}
 		},
 
 		highlightButton: function(name){
