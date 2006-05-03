@@ -336,7 +336,6 @@ dojo.io.XMLHTTPTransport = new function(){
 		// requests.
 		return hasXmlHttp
 			&& dojo.lang.inArray((kwArgs["mimetype"].toLowerCase()||""), ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json"])
-			&& dojo.lang.inArray(kwArgs["method"].toLowerCase(), ["post", "get", "head"])
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
