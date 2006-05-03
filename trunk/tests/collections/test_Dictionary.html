@@ -11,7 +11,19 @@
 		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
 		<script language="JavaScript" type="text/javascript" src="test_Dictionary.js"></script>
 		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.collections.ArrayList");
 			function init(){
+				//	start with the array list
+				var a=["foo","bar","baz"];
+				var al=new dojo.collections.ArrayList(a);
+				var i=al.getIterator();
+				alert(al.count);
+				var s=[];
+				while(!i.atEnd()){
+					s.push(i.get());
+				}
+				alert(s);
+
 				var d = new dojo.collections.Dictionary();
 				d.add("foo",{test:"bar"});
 				d.add("baz","fab");
@@ -127,8 +139,8 @@
 					s.push(item.key + " == " + item.value);
 				}
 				
-				document.getElementsByTagName("body")[0].innerHTML = s.join("<br/>");
-				
+			//	document.getElementsByTagName("body")[0].innerHTML = s.join("<br/>");
+
 				//	run the unit tests now.
 				test_Dictionary_ctor();
 				test_Dictionary_add();

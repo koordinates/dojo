@@ -16,9 +16,8 @@ dojo.collections.SortedList=function(/* object? */ dictionary){
 	var build=function(){
 		q=[];
 		var e=_this.getIterator();
-		while (!e.atEnd) {
-			q.push(e.entry);
-			e.moveNext();
+		while (!e.atEnd()){
+			q.push(e.get());
 		}
 		q.sort(sorter);
 	};
