@@ -64,6 +64,6 @@ dojo.debugShallow = function(obj){
 dojo.debugDeep = function(obj){
 	if (!djConfig.isDebug) { return; }
 	if (!window.open){ return dojo.debug('Deep debugging is only supported in host environments with window.open'); }
-	var win = window.open(dojo.uri.dojoUri("src/debug/deep.html"), '_blank', 'width=600, height=400, resizable=yes, scrollbars=1, statusbar=1');
+	var win = window.open(dojo.uri.dojoUri("src/debug/deep.html"), '_blank', 'width=600, height=400, resizable=yes, scrollbars=yes, status=yes');
 	win.debugVar = obj;
 }
