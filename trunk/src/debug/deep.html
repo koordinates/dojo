@@ -3,8 +3,6 @@
 <title>Deep Debugger</title>
 <script>
 
-window.onload = init;
-
 var tableRows = {};
 var tableCels = {};
 var tableObjs = {};
@@ -12,7 +10,10 @@ var tablesBuilt = {};
 var tableShows = {};
 var tableHides = {};
 
-function init(){
+// IE: nodes w/id need to be redeclared or getElementById is b0rked
+var frame = null;
+
+window.onload = function(){
 	frame = document.getElementById('frame');
 	buildTable('root', frame, window.debugVar);
 	//debugObj(window.debugVar);
@@ -75,7 +76,6 @@ function buildTable(path, parent, obj){
 
 
 	for(var i = 0; i < keys.length; i++) {
-
 		buildTableRow(path+'-'+keys[i], tb, keys[i], vals[keys[i]]);
 	}
 
@@ -89,19 +89,17 @@ function buildTable(path, parent, obj){
 	tablesBuilt[path] = true;
 }
 
-function buildTableRow(path, tb, name, value){
+function buildTableRow(path, tb, name, value) {
 
 	var simpleType = typeof(value);
-	var createSubrow = simpleType == 'object';
+	var createSubrow = (simpleType == 'object');
 	var complexType = simpleType;
 
 	if (simpleType == 'object'){
 		var cls = getConstructorClass(value);
 		if (cls){
 			if (cls == 'Object'){
-
 			}else if (cls == 'Array'){
-
 				complexType = 'array';
 			}else{
 				complexType += ' ('+cls+')';
@@ -109,12 +107,19 @@ function buildTableRow(path, tb, name, value){
 		}
 	}
 
-	var tr1 = document.createElement('tr');
+/*var tr1 = document.createElement('tr');
 	var td1 = document.createElement('td');
 	var td2 = document.createElement('td');
 	var td3 = document.createElement('td');
-	var td4 = document.createElement('td');
+	var td4 = document.createElement('td');*/
 
+	var row = tb.rows.length;
+	var tr1 = tb.insertRow(row++);
+	var td1 = tr1.insertCell(0);
+	var td2 = tr1.insertCell(1);
+	var td3 = tr1.insertCell(2);
+	var td4 = tr1.insertCell(3);
+	
 	tr1.style.verticalAlign = 'top';
 	td1.style.verticalAlign = 'middle';
 
@@ -123,10 +128,10 @@ function buildTableRow(path, tb, name, value){
 	td3.className = 'propType';
 	td4.className = 'propVal';
 
-	tr1.appendChild(td1);
-	tr1.appendChild(td2);
-	tr1.appendChild(td3);
-	tr1.appendChild(td4);
+	//tr1.appendChild(td1);
+	//tr1.appendChild(td2);
+	//tr1.appendChild(td3);
+	//tr1.appendChild(td4);
 
 	if (createSubrow){
 		var img1 = document.createElement('img');
@@ -166,14 +171,16 @@ function buildTableRow(path, tb, name, value){
 	td3.appendChild(document.createTextNode(complexType));
 	td4.appendChild(buildPreBlock(value));
 
-	tb.appendChild(tr1);
-
+	//tb.appendChild(tr1);
 
 	if (createSubrow){
-
-		var tr2 = document.createElement('tr');
-		var td5 = document.createElement('td');
-		var td6 = document.createElement('td');
+		var tr2 = tb.insertRow(row++);
+		var td5 = tr2.insertCell(0);
+		var td6 = tr2.insertCell(1);
+		
+		//var tr2 = document.createElement('tr');
+		//var td5 = document.createElement('td');
+		//var td6 = document.createElement('td');
 
 		td5.innerHTML = '&nbsp;';
 		//td6.innerHTML = '&nbsp;';
