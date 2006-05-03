@@ -4,8 +4,8 @@
 //TODO: Test the __package__.js file for src/undo: it does a require then a provide.
 //TODO: how will xd loading work with debugAtAllCosts?
 //TODO: have a test that does a load after the fact, and has onload listeners.
+//TODO: change build process so you can ask for a dojo.js that has this loader.
 //TODO: test using dojo.hostenv.setModulePrefix() for a subpackage in dojo.
-//TODO: there seem to be extra requests, for things like __package__.js. Need to trace those.
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -116,6 +116,7 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 		if(!this.xdTimer){
 			this.xdTimer = setInterval("dojo.hostenv.watchInFlightXDomain();", 100);
 		}
+		this.xdStartTime = (new Date()).getTime();
 	}
 
 	if (currentIsXDomain){
@@ -315,7 +316,26 @@ dojo.hostenv.xdPositionContents = function(){
 	}
 }
 
+dojo.hostenv.clearXdInterval = function(){
+	clearInterval(this.xdTimer);
+	this.xdTimer = 0;
+}
+
 dojo.hostenv.watchInFlightXDomain = function(){
+	//Make sure we haven't waited timed out.
+	var waitInterval = djConfig.xdWaitMs || 30000;
+	
+	if(this.xdStartTime + waitInterval < (new Date()).getTime()){
+		this.clearXdInterval();
+		var noLoads = "";
+		for(var param in this.xdInFlight){
+			if(this.xdInFlight[param]){
+				noLoads += param + " ";
+			}
+		}
+		dojo.raise("Could not load cross-domain packages: " + noLoads);
+	}
+
 	//If any are true, then still waiting.
 	//Come back later.	
 	for(var param in this.xdInFlight){
@@ -325,9 +345,8 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	}
 
 	//All done loading. Clean up and notify that we are loaded.
-	clearInterval(this.xdTimer);
-	this.xdTimer = 0;
-	
+	this.clearXdInterval();
+
 	//Make sure the package contents are sorted in the right order.
 	this.xdPositionContents();
 
