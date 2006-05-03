@@ -504,7 +504,7 @@ dojo.date.dateParts={
 	YEAR:0, MONTH:1, DAY:2, HOUR:3, MINUTE:4, SECOND:5, MILLISECOND:6 
 };
 dojo.date.add=function(/* Date */ d, /* dojo.date.dateParts */ unit, /* int */ amount){
-	var n=amount||1;
+	var n=(amount)?amount:1;
 	var v;
 	switch(unit){
 		case dojo.date.dateParts.YEAR:{
