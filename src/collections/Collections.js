@@ -98,7 +98,7 @@ dojo.collections.DictionaryIterator=function(/* object */obj){
 		}else{
 			var arr=[];
 			for(var i=0; i<a.length; i++){
-				arr.push(fn.call(s,a[i].value));
+				arr.push(fn.call(s,a[i]));
 			}
 			return arr;		//	array
 		}

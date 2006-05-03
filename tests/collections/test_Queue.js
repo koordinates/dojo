@@ -28,8 +28,8 @@ function test_Queue_contains(){
 function test_Queue_getIterator(){ 
 	var queue = getQ();
 	var e = queue.getIterator();
-	while (!e.atEnd) e.moveNext();
-	jum.assertEquals("Queue.getIterator()", "bull", e.current);
+	while(!e.atEnd()) e.get();
+	jum.assertEquals("Queue.getIterator()", "bull", e.element);
 }
 function test_Queue_peek(){ 
 	var queue = getQ();

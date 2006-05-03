@@ -27,8 +27,8 @@ function test_Stack_contains(){
 function test_Stack_getIterator(){ 
 	var stack = getStack();
 	var e = stack.getIterator();
-	while (!e.atEnd) e.moveNext();
-	jum.assertEquals("Stack.getIterator()", "bull", e.current);
+	while (!e.atEnd()) e.get();
+	jum.assertEquals("Stack.getIterator()", "bull", e.element);
 }
 function test_Stack_peek(){ 
 	var stack = getStack();
