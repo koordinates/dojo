@@ -5,7 +5,7 @@
 //TODO: how will xd loading work with debugAtAllCosts?
 //TODO: have a test that does a load after the fact, and has onload listeners.
 //TODO: change build process so you can ask for a dojo.js that has this loader.
-//TODO: test using dojo.hostenv.setModulePrefix() for a subpackage in dojo.
+//TODO: test using setModulePrefix for dojo, but loading widget HTML/CSS locally.
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -69,7 +69,7 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	var uri;
 	var currentIsXDomain = false;
 	if(colonIndex > 0 && colonIndex < slashIndex){
-		uri = relPath;
+		uri = relpath;
 		this.isXDomain = currentIsXDomain = true;
 	}else{
 		uri = this.getBaseScriptUri() + relpath;
