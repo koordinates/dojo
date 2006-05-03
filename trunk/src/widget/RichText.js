@@ -400,9 +400,13 @@ dojo.widget.defineWidget(
 						// for opera
 						this.window = this.iframe.contentDocument.window;
 					}
-					this.document = this.iframe.contentDocument;
-								// curry the getStyle function
+					if(dojo.render.html.moz){
+						this.document = this.iframe.contentWindow.document
+					}else{
+						this.document = this.iframe.contentDocument;
+					}
 
+					// curry the getStyle function
 					var getStyle = (function (domNode) { return function (style) {
 						return dojo.style.getStyle(domNode, style);
 					}; })(this.domNode);
@@ -439,6 +443,9 @@ dojo.widget.defineWidget(
 
 					tmpContent.parentNode.removeChild(tmpContent);
 					this.document.body.innerHTML = html;
+					if(oldMoz){
+						this.document.designMode = "on";
+					}
 					this.onLoad();
 				}else{
 					tmpContent.parentNode.removeChild(tmpContent);
@@ -1052,9 +1059,14 @@ dojo.widget.defineWidget(
 				setTimeout(function(){tr.select();}, 1);
 			} else {
 				// dojo.debug("command:", command, "arg:", argument);
+
 				argument = arguments.length > 1 ? argument : null;
+				if(dojo.render.html.moz){
+					this.document = this.iframe.contentWindow.document
+				}
+				returnValue = this.document.execCommand(command, false, argument);
+
 				// try{
-					returnValue = this.document.execCommand(command, false, argument);
 				// }catch(e){
 				// 	dojo.debug(e);
 				// }
