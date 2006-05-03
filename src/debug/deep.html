@@ -14,34 +14,14 @@ var tableHides = {};
 var frame = null;
 
 window.onload = function(){
-	frame = document.getElementById('frame');
-	buildTable('root', frame, window.debugVar);
-	//debugObj(window.debugVar);
+	// if IE loads this page too quickly (instantly) then 
+	// window.debugVar might not have been set
+	window.setTimeout(startMeUp, 100);
 }
 
-function debugObj(obj){
-
-	var buffer = '';
-	buffer += '------------------------------------------------------------'+"\n";
-	buffer += 'Object: '+obj+"\n";
-
-	var props = [];
-	for(var prop in obj){
-		try {
-			//props.push(prop + ': ' + obj[prop]);
-			props.push(prop);
-		} catch(E) {
-			props.push(prop + ': ERROR - ' + E.message);
-		}
-	}
-	props.sort();
-	for(var i = 0; i < props.length; i++) {
-		buffer += props[i]+", ";
-	}
-
-	buffer += '------------------------------------------------------------'+"\n";
-
-	alert(buffer);
+function startMeUp(){
+	frame = document.getElementById('frame');
+	buildTable('root', frame, window.debugVar);
 }
 
 function buildTable(path, parent, obj){
