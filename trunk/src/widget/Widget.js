@@ -511,6 +511,19 @@ dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*functio
 	if(!props){ props = {}; }
 	props.widgetType = type;
 
-	dojo.defineClass(widgetClass, superclass, props, ctor);
+	if((!ctor)&&(props["classConstructor"])){
+		ctor = props.classConstructor;
+	}
+	if(!ctor){ ctor = function(){}; }
+	var subclass = function(){
+		try{
+			superclass.call(this);
+		}catch(e){ dojo.debug("superclass construction failed: ", e); }
+		try{
+			ctor.call(this);
+		}catch(e){ dojo.debug("constructor failed: ", e); }
+	}
+	dojo.inherits(subclass, superclass);
+	dojo.lang.extend(subclass, props);
+	dojo.lang.setObjPathValue(widgetClass, subclass);
 }
-

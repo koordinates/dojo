@@ -56,13 +56,22 @@ dojo.lang.setObjPathValue = function(objpath, value, context, create){
  * - inherits from "superclass" (via dojo.inherits, null is ok)
  * - "props" are mixed-in to the prototype (via dojo.lang.extend)
  * - can have an initializer function that fires when the class is created. 
+ * - name of the class ("className" argument) is stored in "clasName" property
  * 
  * The initializer function works just like a constructor, except it has the following benefits:
  * - it doesn't fire at inheritance time (when prototyping)
  * - properties set in the initializer do not become part of subclass prototypes
  *
  * The initializer can be specified in the "init" argument, or by including a function called
- * either "classConstructor" in "props".
+ * "initializer" in "props".
+ *
+ * An optional inherits-time construtor can be specified or by including a function called
+ * "classConstructor" in "props".
+ *
+ * Superclass methods (inherited methods) can be invoked using "inherited" method:
+ * this.inherited(<method name>[, <argument array>]);
+ * - inherited will continue up the prototype chain until it finds an implementation of method
+ * - nested calls to inherited are supported (i.e. inherited method "A" can succesfully call inherited("A"), and so on)
  *
  * Aliased as "dojo.defineClass"
  *
@@ -77,38 +86,45 @@ dojo.lang.setObjPathValue = function(objpath, value, context, create){
  *	aMethod: function() { doStuff(); }
  * });
  *
- * FIXME: the name "classConstructor" is bit cumbersome (it's a carry-over from defineWidget).
  */
- dojo.lang.defineClass = function(className /*string*/, superclass /*function*/ , props /*object*/, init /*function*/){
+dojo.lang.defineClass = function(className /*string*/, superclass /*function*/ , props /*object*/, init /*function*/){
 	var ctor = function(){ 
 		var c = this.constructor;
 		var s = c.superclass;
 		if(s){
 			s.prototyping = this.prototyping;
-			// FIXME: this error checking was copied in from defineWidget. Do we need it?
-			try{
-				s.constructor.apply(s, arguments); // using superclass context is the tricky bit
-			}catch(e){ dojo.debug("defined class: superclass construction failed: ", e); }
+			s.constructor.apply(s, arguments); // using superclass context is the tricky bit
 		}
-		if((!this.prototyping)&&(c.prototype.classConstructor)){
-			try{
-				c.prototype.classConstructor.apply(this, arguments);
-			}catch(e){ dojo.debug("defined class: instance initializer failed: ", e); }
+		if((!this.prototyping)&&(c.prototype.initializer)){
+			c.prototype.initializer.apply(this, arguments);
 		}
 		this.prototyping = false;
+	}
+	ctor.prototype.inherited=function(method, args){
+		// searches backward thru prototype chain to find nearest ancestral iplementation of method
+		// this could be shorter by half if we remove idiot proofing and ancestor skipping
+		var p = (this._proto || this);
+		do{
+			if((!p.constructor)||(!p.constructor.superclass)){return;}
+			p = p.constructor.superclass;
+		}while(!(method in p));
+		var stack = this._proto;
+		this._proto = p;
+		var result = p[method].apply(this, args);
+		this._proto = stack;
+		return result;
 	}
 	if(superclass){
 		superclass.prototype.prototyping = true;
 		dojo.inherits(ctor, superclass);
 		superclass.prototype.prototyping = false; // needed if superclass was not generated from defineClass
 	}
-	if(props){
-		if(init){props.classConstructor = init;}
-		dojo.lang.extend(ctor, props);
-	}	
+	props=(props||{});
+	props.className = className;
+	props.initializer = (props.initializer)||(init)||null;
+	dojo.lang.extend(ctor, props);
 	dojo.lang.setObjPathValue(className, ctor, null, true);
 };
-
 dojo.defineClass = dojo.lang.defineClass;
 
 /**
