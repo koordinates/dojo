@@ -1,7 +1,7 @@
-/*		This is the dojo logging facility, which is stolen from nWidgets, which
-		is patterned on the Python logging module, which in turn has been
-		heavily influenced by log4j (execpt with some more pythonic choices,
-		which we adopt as well).
+/*		This is the dojo logging facility, which is imported from nWidgets
+		(written by Alex Russell, CLA on file), which is patterned on the
+		Python logging module, which in turn has been heavily influenced by
+		log4j (execpt with some more pythonic choices, which we adopt as well).
 
 		While the dojo logging facilities do provide a set of familiar
 		interfaces, many of the details are changed to reflect the constraints
