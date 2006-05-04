@@ -65,7 +65,7 @@ dojo.widget.defineWidget(
 
 
 		// event signals
-		preventSelect: function(e){ e.preventDefault(); },
+		preventSelect: function(e){ if(dojo.render.html.safari){ e.preventDefault(); } },
 		wikiwordClick: function(){ },
 		insertimageClick: function(){ },
 
