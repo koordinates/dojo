@@ -63,7 +63,9 @@ dojo.widget.defineWidget(
 		buttonMouseOver: function(e){  },
 		buttonMouseOut: function(e){  },
 
+
 		// event signals
+		preventSelect: function(e){ e.preventDefault(); },
 		wikiwordClick: function(){ },
 		insertimageClick: function(){ },
 
@@ -71,6 +73,7 @@ dojo.widget.defineWidget(
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
 			dojo.style.toggleShowing(this.styleDropdownContainer);
 		},
+
 
 		copyClick: function(){ this.exec("copy"); },
 		boldClick: function(){ this.exec("bold"); },
