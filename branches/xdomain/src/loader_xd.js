@@ -6,6 +6,7 @@
 //TODO: have a test that does a load after the fact, and has onload listeners.
 //TODO: change build process so you can ask for a dojo.js that has this loader.
 //TODO: test using setModulePrefix for dojo, but loading widget HTML/CSS locally.
+//TODO: FATAL: bad srcObj for srcFunc: onclick in FF windows?
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -105,9 +106,17 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 		//load asynchronously and may be accessing the array at the same time?
 		this.xdPackages.push({name: module, content: null});
 		
-		//Add to waiting packages. 
+		//Add to waiting packages.
+		//If this is a __package__.js file, then this must be
+		//a package.* request (since xdomain can only work with the first
+		//path in a package search list. However, .* module names are not
+		//passed to this function, so do an adjustment here.
+		if(uri.indexOf("__package__") != -1){
+			module += ".*";
+		}
+
 		this.xdInFlight[module] = true;
-		
+
 		//Increment inFlightCount
 		//This will stop the modulesLoaded from firing all the way.
 		this.inFlightCount++;
@@ -195,12 +204,12 @@ dojo.hostenv.packageLoaded = function(pkg){
 
 			//Call the dependency indicator to allow for the normal dojo setup.
 			//Only allow for one dot reference, for the hostenv.* type calls.
-			var depType = dep.shift();
+			var depType = dep[0];
 			var objPath = depType.split(".");
 			if(objPath.length == 2){
-				dojo[objPath[0]][objPath[1]].apply(dojo[objPath[0]], dep);
+				dojo[objPath[0]][objPath[1]].apply(dojo[objPath[0]], dep.slice(1));
 			}else{
-				dojo[depType].apply(dojo, dep);
+				dojo[depType].apply(dojo, dep.slice(1));
 			}
 		}
 
@@ -214,7 +223,6 @@ dojo.hostenv.packageLoaded = function(pkg){
 		for(var i = 0; i < provideList.length; i++){
 			this.xdInFlight[provideList[i]] = false;
 		}
-	
 	}
 }
 
@@ -227,6 +235,8 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 	if(!insertHint){
 		insertHint = 0;
 	}
+	
+	insertHint = 0;
 	
 	//Find the provide so that we can insert any depedencies before it.
 	var provideIndex = 0;
@@ -241,7 +251,7 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 	if(provideIndex == 0 && insertHint != 0){
 		return this.addXdDependency(0, dep, provide);
 	}
-	
+
 	//Extract the dependency(ies).
 	var newDeps = null;
 	switch(dep[0]){
@@ -262,6 +272,7 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 			break;
 		case "kwCompoundRequire":
 		case "hostenv.conditionalLoadModule":
+			var modMap = dep[1];
 			var common = modMap["common"]||[];
 			var newDeps = (modMap[dojo.hostenv.name_]) ? common.concat(modMap[dojo.hostenv.name_]||[]) : common.concat(modMap["default"]||[]);	
 			dojo.hostenv.flattenRequireArray(newDeps);
