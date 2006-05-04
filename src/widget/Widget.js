@@ -264,8 +264,15 @@ dojo.lang.extend(dojo.widget.Widget, {
 						// that these event handlers should execute in the
 						// context of the widget, so that the "this" pointer
 						// takes correctly.
-						var tn = dojo.lang.nameAnonFunc(new Function(args[x]), this);
-						dojo.event.connect(this, x, this, tn);
+						
+						// argument that contains no punctuation other than . is 
+						// considered a function spec, not code
+						if(args[x].search(/[^\w\.]+/i) == -1){
+							this[x] = dojo.evalObjPath(args[x], false);
+						}else{
+							var tn = dojo.lang.nameAnonFunc(new Function(args[x]), this);
+							dojo.event.connect(this, x, this, tn);
+						}
 					}else if(dojo.lang.isArray(this[x])){ // typeof [] == "object"
 						this[x] = args[x].split(";");
 					} else if (this[x] instanceof Date) {
