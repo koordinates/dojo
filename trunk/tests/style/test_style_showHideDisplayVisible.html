@@ -13,7 +13,8 @@ dojo.require("dojo.style");
 body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px;}
 h2, h3 { font-size: 1em; } 
 h3 { color: black; font-weight: normal; font-style: italic; } 
-.box { background-color: lightblue; width: 100px; height: 100px; padding: 16px; }
+.box, .hidden { background-color: lightblue; width: 100px; height: 100px; padding: 16px; }
+.hidden { display: none; };
 </style>
 <!---------------------------------------------------------------------------->
 
@@ -34,6 +35,26 @@ h3 { color: black; font-weight: normal; font-style: italic; }
 <br>
 
 <div id="b0" class="box">Box</div>
+
+<br>
+<!---------------------------------------------------------------------------->
+<hr />
+
+<h2><code>style: show, preserve style.display</code></h2>
+
+<button onclick="dojo.style.setShowing('h0', true)">dojo.style.setShowing('Box', true)</button>
+<button onclick="dojo.style.setShowing('h0', false)">dojo.style.setShowing('Box', false)</button>
+<button onclick="dojo.style.toggleShowing('h0')">dojo.style.toggleShowing('Box')</button>
+<br />
+<button onclick="dojo.style.show('h0')">dojo.style.show('Box')</button>
+<button onclick="dojo.style.hide('h0')">dojo.style.hide('Box')</button>
+<br />
+<button onclick="alert(dojo.style.isShowing('b0'))">dojo.style.isShowing('Box')</button><br>
+
+<br>
+
+Box is hidden by stylesheet style. Displayed by virtue of inline style.
+<div id="h0" class="hidden" style="display: block">Box</div>
 
 <br>
 <!---------------------------------------------------------------------------->
