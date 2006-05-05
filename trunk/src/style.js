@@ -652,10 +652,7 @@ dojo.require("dojo.lang.common");
 		node = dojo.byId(node);
 		if(ds.getStyleProperty(node, 'display')=='none'){
 			ds.setStyle(node, 'display', (node.dojoDisplayCache||''));
-			if('dojoDisplayCache' in node){ // it could == '', so we cannot say if (node.dojoDisplayCount)
-				// IE throws if the prop doesn't exist
-				delete node.dojoDisplayCache;	
-			}
+			node.dojoDisplayCache = undefined;	
 		}
 	}
 
@@ -663,7 +660,7 @@ dojo.require("dojo.lang.common");
 	// set style.display to '' or the value cached by hide()
 	ds.hide = function(node){
 		node = dojo.byId(node);
-		if(!('dojoDisplayCache' in node)){ // it could == '', so we cannot say !node.dojoDisplayCount
+		if(node.dojoDisplayCache===undefined){ // it could == '', so we cannot say !node.dojoDisplayCount
 			node.dojoDisplayCache = ds.getStyleProperty(node, 'display');
 		}
 		ds.setStyle(node, 'display', 'none');
