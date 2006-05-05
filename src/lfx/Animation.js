@@ -11,15 +11,15 @@ dojo.lfx.Line = function(start, end){
 	this.end = end;
 	if(dojo.lang.isArray(start)){
 		var diff = [];
-		dojo.lang.forEach(this.start, dojo.lang.hitch(this, function(s,i){
+		dojo.lang.forEach(this.start, function(s,i){
 			diff[i] = this.end[i] - s;
-		}));
+		}, this);
 		
 		this.getValue = function(/*float*/ n){
 			var res = [];
-			dojo.lang.forEach(this.start, dojo.lang.hitch(this, function(s, i){
+			dojo.lang.forEach(this.start, function(s, i){
 				res[i] = (diff[i] * n) + s;
-			}));
+			}, this);
 			return res;
 		}
 	}else{
@@ -342,9 +342,9 @@ dojo.lang.extend(dojo.lfx.Combine, {
 			}
 		}
 		var _this = this;
-		dojo.lang.forEach(this._anims, dojo.lang.hitch(_this, function(anim){
+		dojo.lang.forEach(this._anims, function(anim){
 			anim[funcName](args);
-		}));
+		}, _this);
 	}
 });
 
@@ -359,14 +359,14 @@ dojo.lfx.Chain = function() {
 	}
 	
 	var _this = this;
-	dojo.lang.forEach(anims, dojo.lang.hitch(_this, function(anim, i, anims_arr){
+	dojo.lang.forEach(anims, function(anim, i, anims_arr){
 		_this._anims.push(anim);
 		if(i < anims_arr.length - 1){
 			dojo.event.connect(anim, "onEnd", function(){ _this._playNext(); });
 		}else{
 			dojo.event.connect(anim, "onEnd", function(){ _this.fire("onEnd"); });
 		}
-	}));
+	}, _this);
 }
 dojo.inherits(dojo.lfx.Chain, dojo.lfx.IAnimation);
 dojo.lang.extend(dojo.lfx.Chain, {

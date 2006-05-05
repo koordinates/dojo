@@ -29,7 +29,7 @@ dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ node, /*Array*/ propertyM
 	var propLine = function(properties){
 		this._properties = properties;
 		this.diffs = new Array(properties.length);
-		dojo.lang.forEach(properties, dojo.lang.hitch(this, function(prop, i){
+		dojo.lang.forEach(properties, function(prop, i){
 			// calculate the end - start to optimize a bit
 			if(dojo.lang.isArray(prop.start)){
 				// don't loop through the arrays
@@ -37,10 +37,10 @@ dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ node, /*Array*/ propertyM
 			}else{
 				this.diffs[i] = prop.end - prop.start;
 			}
-		}));
+		}, this);
 		this.getValue = function(n){
 			var ret = new Array(this._properties.length);
-			dojo.lang.forEach(this._properties, dojo.lang.hitch(this, function(prop, i){
+			dojo.lang.forEach(this._properties, function(prop, i){
 				var value = null;
 				var units = null;
 				if(dojo.lang.isArray(prop.start)){
@@ -58,7 +58,7 @@ dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ node, /*Array*/ propertyM
 					value: value,
 					units: units
 				};
-			}));
+			}, this);
 			return ret;
 		}
 	}
