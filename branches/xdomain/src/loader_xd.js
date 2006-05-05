@@ -7,6 +7,9 @@
 //TODO: change build process so you can ask for a dojo.js that has this loader.
 //TODO: test using setModulePrefix for dojo, but loading widget HTML/CSS locally.
 //TODO: FATAL: bad srcObj for srcFunc: onclick in FF windows?
+//TODO: make sure reset is being called, remove debugger and debug messages.
+//TODO: widgets won't work fully (HTML/CSS) and also because of goofy requireIf() thing.
+//TODO: a better circular dependency breaker?
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -18,10 +21,14 @@ dojo.hostenv.resetXd = function(){
 	//make debugging easier for non-xd dojo uses.
 	this.isXDomain = djConfig.forceXDomain || false;
 	
+	//TODO: scrub these. Are they all still valid?
 	this.xdTimer = 0;
 	this.xdInFlight = {};
 	this.xdPackages = [];
+	this.xdDepMap = {};
+	this.xdResolved = {};
 	this.xdContents = [];
+	this.xdPkgCounter = 1;
 }
 
 //Call reset immediately to set the state.
@@ -168,38 +175,23 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 
 dojo.hostenv.packageLoaded = function(pkg){
 	var deps = pkg.depends;
+	var requireList = null;
+	var provideList = [];
 	if(deps && deps.length > 0){
-		var dep, provide = null;
+		var dep = null;
 		var insertHint = 0;
-		var waitingDeps = [];
-		var provideList = [];
 		var attachedPackage = false;
 		for(var i = 0; i < deps.length; i++){
 			dep = deps[i];
 
 			//Look for specific dependency indicators.
 			if (dep[0] == "provide" || dep[0] == "hostenv.moduleLoaded"){
-				provide = dep[1];
 				provideList.push(dep[1]);
-				
-				//If we had some waiting dependencies, now add them
-				//now that we found a provide (probably happens mostly with moduleLoaded)
-				if(waitingDeps.length > 0){
-					for(var i = 0; i < waitingDeps.length; i++){
-						insertHint = this.addXdDependency(insertHint, waitingDeps[i], provide);
-					}
-					waitingDeps = [];
-				}
-
-				//Now that we have a new provide, we're not sure where it is in 
-				//the dependency list, so reset the hint.
-				insertHint = 0;
 			}else{
-				if(!provide){
-					waitingDeps.push(dep);
-				}else{
-					insertHint = this.addXdDependency(insertHint, dep, provide);
+				if(!requireList){
+					requireList = [];
 				}
+				requireList = requireList.concat(this.unpackXdDependency(dep));
 			}
 
 			//Call the dependency indicator to allow for the normal dojo setup.
@@ -213,13 +205,20 @@ dojo.hostenv.packageLoaded = function(pkg){
 			}
 		}
 
-		//Save off the package contents with the provider list.
-		//Use this later to sequence the package contents correctly,
-		//once everything is loaded.
-		this.xdContents.push({provideList: provideList, content: pkg.definePackage});
+		//Save off the package contents for definition later.
+		var contentIndex = this.xdContents.push({content: pkg.definePackage, isDefined: false}) - 1;
+		
+		//Use a counter to know when this package was received. Used for circular reference breaking.
+		var pkgOrder = this.xdPkgCounter++;
+		
+		//Add provide/requires to dependency map.
+		for(var i = 0; i < provideList.length; i++){
+			this.xdDepMap[provideList[i]] = { requires: requireList, contentIndex: contentIndex, pkgOrder: pkgOrder };
+		}
 
 		//Now update the inflight status for any provided packages in this loaded package.
-		//Do this at the very end to avoid issues with the inflight timer check.
+		//Do this at the very end (in a *separate* for loop) to avoid shutting down the 
+		//inflight timer check too soon.
 		for(var i = 0; i < provideList.length; i++){
 			this.xdInFlight[provideList[i]] = false;
 		}
@@ -230,28 +229,7 @@ dojo.hostenv.packageLoaded = function(pkg){
 //It would be ideal to intercept the actual methods and do something fancy at that point,
 //but I have concern about knowing which provide to match to the dependency in that case,
 //since scripts can load whenever they want, and trigger new calls to dojo.hostenv.packageLoaded().
-dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
-	
-	if(!insertHint){
-		insertHint = 0;
-	}
-	
-	insertHint = 0;
-	
-	//Find the provide so that we can insert any depedencies before it.
-	var provideIndex = 0;
-	for(var i = insertHint; i < this.xdPackages.length; i++){
-		if(this.xdPackages[i].name == provide){
-			provideIndex = i;
-			break;
-		}
-	}
-	
-	//This case seems unlikely, but doing it just in case:
-	if(provideIndex == 0 && insertHint != 0){
-		return this.addXdDependency(0, dep, provide);
-	}
-
+dojo.hostenv.unpackXdDependency = function(dep){
 	//Extract the dependency(ies).
 	var newDeps = null;
 	switch(dep[0]){
@@ -284,46 +262,99 @@ dojo.hostenv.addXdDependency = function(insertHint, dep, provide){
 			newDeps = [{name: dep[1], content: null}];
 			break;
 	}
-	
-	//Add the new dependencies to dependency array before the provide.
-	//Add them in bulk with splice to avoid too much movement by other scripts
-	//asychronously loading and calling.
-	if(newDeps && newDeps.length){
-		var args = [provideIndex, 0].concat(newDeps);
-		this.xdPackages.splice.apply(this.xdPackages, args);
-		provideIndex += newDeps.length;
-	}
 
-	return provideIndex;
+	return newDeps;
 }
 
-dojo.hostenv.xdPositionContents = function(){
-	for(var k = 0; k < this.xdContents.length; k++){
-		var provideList = this.xdContents[k].provideList;
-		var content = this.xdContents[k].content;
-		
-		//Find the first provide in the xdPackages list (the winner).
-		//The winner gets to hold the package contents for evaluation later.
-		var winner = 9999;
-		var provide;
-		for(var i = 0; i < provideList.length; i++){
-			provide = provideList[i];
-			for(var j = 0; j < this.xdPackages.length && j < winner; j++){
-				if(this.xdPackages[j].name == provide){
-					winner = j;
-					break;
+//Evaluate package contents for the given provide.
+dojo.hostenv.xdResolve = function(provide, pkg){
+	var contents = this.xdContents[pkg.contentIndex];
+	if(!contents.isDefined){
+		//Evaluate the package to bring it into being.
+		//Pass dojo in so that later, to support multiple versions of dojo
+		//in a page, we can pass which version of dojo to use.
+		contents.content(dojo);
+		contents.isDefined = true;
+	}
+
+	this.xdDepMap[provide] = null;
+	this.xdResolved[provide] = true;
+}
+
+//Walks the dependency map and evaluates package contents in
+//the right order.
+//TODO: Maybe make the circular dependency breaker better.
+//Right now it just uses a simple, who was brought in last
+//as the place to start, but given the async nature of loading
+//this isn't a 100% guarantee. It would be better to examine the
+//JS contents of each package to see if the dependencies are used
+//inside or outside of functions or constructors. If used only in methods
+//then it is a weak dependency, and that dependency can be evaled first.
+dojo.hostenv.xdWalkMap = function(){
+	while(true){
+		var hasOneResolved = false;
+		var hasOneUnresolved = false;
+		var largest = 0;
+		var circBreaker = null;
+		var pkg = null;
+		for(var provide in this.xdDepMap){
+			pkg = this.xdDepMap[provide];
+			if(pkg){
+				hasOneUnresolved = true;
+				if(!pkg.requires){
+					//No requires. Resolve the package.
+					this.xdResolve(provide, pkg);
+					hasOneResolved = true;
+				}else{
+					//Try to prune the requires with packages that
+					//are done already.
+					for(var i = pkg.requires.length - 1; i >= 0; i--){
+						if(this.xdResolved[pkg.requires[i]]){
+							pkg.requires.splice(i, 1);
+						}
+					}
+					
+					if(pkg.requires.length == 0){
+						this.xdResolve(provide, pkg);
+						hasOneResolved = true;
+					}else if (!hasOneResolved){
+						var largestLocal = 0;
+						var dist;
+						for(var i = pkg.requires.length - 1; i >= 0; i--){
+							var reqPkg = this.xdDepMap[pkg.requires[i].name];
+							if(reqPkg){
+								dist = pkg.pkgOrder - reqPkg.pkgOrder;
+								if(dist > 0){
+									if(dist > largest){
+										largestLocal = dist;
+									}
+								}else{
+									//Distance is negative, so that means there is some require
+									//package that got loaded after this package. This one is out
+									//of the running as the circ breaker.
+									largestLocal = 0;
+									break;
+								}
+							}
+						}
+						if (largestLocal > largest){
+							largest = largestLocal;
+							circBreaker = provide;
+						}						
+					}
 				}
 			}
 		}
-
-		//Attach the package code to the winning entry.
-		if(winner < this.xdPackages.length){
-			this.xdPackages[winner].content = content;
-		}else if (provide.indexOf("*") == -1){
-			//Only raise the exception if it was not a * package, like dojo.pkg.*,
-			//Since those are aggregate packages.
-			dojo.raise("Winning package is outside of range of xdPackages: " + winner);
-		}		
+		
+		if(hasOneUnresolved){
+			if(!hasOneResolved){
+				alert("Circular Dependency! Breaking it with: " + circBreaker);
+				this.xdResolve(circBreaker, this.xdDepMap[circBreaker]);
+			}
+		}else{
+			//All done!
+			return;
+		}
 	}
 }
 
@@ -358,20 +389,23 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//All done loading. Clean up and notify that we are loaded.
 	this.clearXdInterval();
 
-	//Make sure the package contents are sorted in the right order.
-	this.xdPositionContents();
+	this.xdWalkMap();
 
-	//Evaluate all the packages to bring them into being.
+	//Evaluate any packages that were not evaled before.
+	//This normally shouldn't happen with proper dojo.provide and dojo.require
+	//usage, but providing it just in case. Note that these may not be executed
+	//in the original order that the developer intended.
 	//Pass dojo in so that later, to support multiple versions of dojo
 	//in a page, we can pass which version of dojo to use.
-	for(var i = 0; i < this.xdPackages.length; i++){
-		if(this.xdPackages[i].content){
-			this.xdPackages[i].content(dojo);
+	for(var i = 0; i < this.xdContents.length; i++){
+		var current = this.xdContents[i];
+		if(current.content && !current.isDefined){
+			current.content(dojo);
 		}
 	}
 
 	//Clean up for the next round of xd loading.
-	this.resetXd();
+	//this.resetXd();
 
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
