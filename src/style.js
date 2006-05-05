@@ -648,7 +648,15 @@ dojo.require("dojo.lang.common");
 	// setShowing() sets style.display to either '' or 'none'
 	// note: the computed style of node may still cause it to "display" (or not)
 	ds.setShowing = function(node, showing){
-		ds.setStyle(node, 'display', (showing ? '' : 'none'));
+		node = dojo.byId(node);
+		var d = 'display';
+		if(!showing){
+			node.dojoDisplayCache = ds.getStyleProperty(node, d);
+			ds.setStyle(node, d, 'none');
+		}else{
+			ds.setStyle(node, d, (''||node.dojoDisplayCache));
+			delete node.dojoDisplayCache;
+		}
 	}
 
 	// isShowing() is true if the node.style.display is not 'none'
