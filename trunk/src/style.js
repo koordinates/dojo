@@ -648,7 +648,7 @@ dojo.require("dojo.lang.common");
 	// show() 
 	// if the node.style.display == 'none' then 
 	// set style.display to '' or the value cached by hide()
-	ds.show  = function(node){
+	ds.show = function(node){
 		node = dojo.byId(node);
 		if(ds.getStyleProperty(node, 'display')=='none'){
 			ds.setStyle(node, 'display', (node.dojoDisplayCache||''));
@@ -660,8 +660,11 @@ dojo.require("dojo.lang.common");
 	// set style.display to '' or the value cached by hide()
 	ds.hide = function(node){
 		node = dojo.byId(node);
-		if(typeof node.dojoDisplayCache == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
-			node.dojoDisplayCache = ds.getStyleProperty(node, 'display');
+		if(typeof node["dojoDisplayCache"] == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
+			var d = ds.getStyleProperty(node, 'display')
+			if(d!='none'){
+				node.dojoDisplayCache = d;
+			}
 		}
 		ds.setStyle(node, 'display', 'none');
 	}
