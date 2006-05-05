@@ -652,7 +652,7 @@ dojo.require("dojo.lang.common");
 		node = dojo.byId(node);
 		if(ds.getStyleProperty(node, 'display')=='none'){
 			ds.setStyle(node, 'display', (node.dojoDisplayCache||''));
-			node.dojoDisplayCache = undefined;	
+			node.dojoDisplayCache = undefined;	// cannot use delete on a node in IE6
 		}
 	}
 
@@ -660,7 +660,7 @@ dojo.require("dojo.lang.common");
 	// set style.display to '' or the value cached by hide()
 	ds.hide = function(node){
 		node = dojo.byId(node);
-		if(node.dojoDisplayCache===undefined){ // it could == '', so we cannot say !node.dojoDisplayCount
+		if(typeof node.dojoDisplayCache == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
 			node.dojoDisplayCache = ds.getStyleProperty(node, 'display');
 		}
 		ds.setStyle(node, 'display', 'none');
