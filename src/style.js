@@ -654,7 +654,7 @@ dojo.require("dojo.lang.common");
 			node.dojoDisplayCache = ds.getStyleProperty(node, d);
 			ds.setStyle(node, d, 'none');
 		}else{
-			ds.setStyle(node, d, (''||node.dojoDisplayCache));
+			ds.setStyle(node, d, (node.dojoDisplayCache||''));
 			delete node.dojoDisplayCache;
 		}
 	}
