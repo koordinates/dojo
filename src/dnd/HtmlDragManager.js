@@ -151,7 +151,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 		// do not start drag involvement if the user is interacting with
 		// a form element.
-		if(dojo.html.isTag(target, "button", "textarea", "input")) {
+		if(dojo.html.isTag(target, "button", "textarea", "input", "select", "option")) {
 			return;
 		}
 
