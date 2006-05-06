@@ -5,11 +5,7 @@
 //TODO: how will xd loading work with debugAtAllCosts?
 //TODO: have a test that does a load after the fact, and has onload listeners.
 //TODO: change build process so you can ask for a dojo.js that has this loader.
-//TODO: test using setModulePrefix for dojo, but loading widget HTML/CSS locally.
-//TODO: FATAL: bad srcObj for srcFunc: onclick in FF windows?
-//TODO: make sure reset is being called, remove debugger and debug messages.
 //TODO: widgets won't work fully (HTML/CSS) and also because of goofy requireIf() thing.
-//TODO: a better circular dependency breaker?
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -20,15 +16,12 @@ dojo.hostenv.resetXd = function(){
 	//You can force all packages to be treated as xd by setting the djConfig.forceXDomain. This might
 	//make debugging easier for non-xd dojo uses.
 	this.isXDomain = djConfig.forceXDomain || false;
-	
-	//TODO: scrub these. Are they all still valid?
+
 	this.xdTimer = 0;
 	this.xdInFlight = {};
-	this.xdPackages = [];
+	this.xdOrderedReqs = [];
 	this.xdDepMap = {};
-	this.xdResolved = {};
 	this.xdContents = [];
-	this.xdPkgCounter = 1;
 }
 
 //Call reset immediately to set the state.
@@ -111,8 +104,10 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 	if(this.isXDomain){
 		//Curious: is this array going to get whacked with multiple access since scripts
 		//load asynchronously and may be accessing the array at the same time?
-		this.xdPackages.push({name: module, content: null});
-		
+		//JS is single-threaded supposedly, so it should be ok. And we don't need
+		//a precise ordering.
+		this.xdOrderedReqs.push(module);
+
 		//Add to waiting packages.
 		//If this is a __package__.js file, then this must be
 		//a package.* request (since xdomain can only work with the first
@@ -207,13 +202,10 @@ dojo.hostenv.packageLoaded = function(pkg){
 
 		//Save off the package contents for definition later.
 		var contentIndex = this.xdContents.push({content: pkg.definePackage, isDefined: false}) - 1;
-		
-		//Use a counter to know when this package was received. Used for circular reference breaking.
-		var pkgOrder = this.xdPkgCounter++;
-		
+
 		//Add provide/requires to dependency map.
 		for(var i = 0; i < provideList.length; i++){
-			this.xdDepMap[provideList[i]] = { requires: requireList, contentIndex: contentIndex, pkgOrder: pkgOrder };
+			this.xdDepMap[provideList[i]] = { requires: requireList, contentIndex: contentIndex };
 		}
 
 		//Now update the inflight status for any provided packages in this loaded package.
@@ -278,122 +270,51 @@ dojo.hostenv.xdResolve = function(provide, pkg){
 	}
 
 	this.xdDepMap[provide] = null;
-	this.xdResolved[provide] = true;
 }
 
-//Walks the dependency map and evaluates package contents in
+//Walks the requires and evaluates package contents in
 //the right order.
-//TODO: Maybe make the circular dependency breaker better.
-//Right now it just uses a simple, who was brought in last
-//as the place to start, but given the async nature of loading
-//this isn't a 100% guarantee. It would be better to examine the
-//JS contents of each package to see if the dependencies are used
-//inside or outside of functions or constructors. If used only in methods
-//then it is a weak dependency, and that dependency can be evaled first.
-dojo.hostenv.xdWalkMap = function(){
-	while(true){
-		var hasOneResolved = false;
-		var hasOneUnresolved = false;
-		var pkg = null;
-		for(var provide in this.xdDepMap){
-			pkg = this.xdDepMap[provide];
-			if(pkg){
-				hasOneUnresolved = true;
-				if(!pkg.requires){
-					//No requires. Resolve the package.
-					this.xdResolve(provide, pkg);
-					hasOneResolved = true;
-				}else{
-					//Try to prune the requires with packages that
-					//are done already.
-					hasOneResolved = dojo.hostenv.trimXdResolved(provide, pkg);
-				}
-			}
-		}
-		
-		if(hasOneUnresolved){
-			if(!hasOneResolved){
-				//Find the path that has the longest depedency chain and use that
-				//one to break the cycle.
-				var winner = 0;
-				var circBreaker = null;
-				for(var provide in this.xdDepMap){
-					if(this.xdDepMap[provide]){
-						currentLevel = this.getXdDepLevel(provide, 0, provide);
-						if(currentLevel > winner){
-							circBreaker = provide;
-							winner = currentLevel;
-						}
-					}
-					/*
-					var reqs = this.xdDepMap[provide].requires;
-					var level = startLevel = 1;
-					var currentLevel = 1;
-					if(reqs){
-						for(var i = 0; i < reqs.length; i++){
-							if(reqs[i] != provide){
-								currentLevel = this.getDepLevel(provide, startLevel, reqs[i]);
-								if(currentLevel > level){
-									level = currentLevel;
-								}
-							}
-						}
-					}
-					*/
-				}
-
-				alert("Circular Breaker: " + circBreaker);
-				this.xdResolve(circBreaker, this.xdDepMap[circBreaker]);
-				
-				//Remove the breaker from any requires lists.
-				for(var provide in this.xdDepMap){
-					pkg = this.xdDepMap[provide];
-					if(pkg){
-						dojo.hostenv.trimXdResolved(provide, pkg);
-					}
-				}
-			}
-		}else{
-			//All done!
-			return;
+dojo.hostenv.xdWalkReqs = function(){
+	var reqChain = null;
+	var req;
+	for(var i = 0; i < this.xdOrderedReqs.length; i++){
+		req = this.xdOrderedReqs[i];
+		if(this.xdDepMap[req]){
+			reqChain = [req];
+			reqChain[req] = true; //Allow for fast lookup of the req in the array
+			this.xdEvalReqs(reqChain);
 		}
 	}
 }
 
-dojo.hostenv.trimXdResolved = function(provide, pkg){
-	var hasNewResolve = false;
-	for(var i = pkg.requires.length - 1; i >= 0; i--){
-		if(this.xdResolved[pkg.requires[i]]){
-			pkg.requires.splice(i, 1);
-		}
-	}
-	
-	if(pkg.requires.length == 0){
-		this.xdResolve(provide, pkg);
-		hasNewResolve = true;
-	}
-
-	return hasNewResolve;
-}
-
-dojo.hostenv.getXdDepLevel = function(provide, startLevel, currentReq){
-	var level = 1;
-	var reqHolder = this.xdDepMap[currentReq];
-	if(reqHolder){
-		var reqs = this.xdDepMap[currentReq].requires;
-		var currentLevel = 0;
-		if(reqs){
-			for(var i = 0; i < reqs.length; i++){
-				if(reqs[i] && reqs[i].name && reqs[i].name != provide && this.xdDepMap[reqs[i]]){
-					currentLevel = this.getXdDepLevel(provide, startLevel, reqs[i].name);
-					if(currentLevel > level){
-						level = currentLevel;
+//Do a depth first, breadth second search and eval or reqs.
+dojo.hostenv.xdEvalReqs = function(reqChain){
+	if(reqChain.length > 0){
+		var req = reqChain[reqChain.length - 1];
+		var pkg = this.xdDepMap[req];
+		if(pkg){
+			//Trace down any dependencies for this package.
+			if(pkg.requires && pkg.requires.length > 0){
+				var nextReq;
+				for(var i = 0; i < pkg.requires.length; i++){
+					nextReq = pkg.requires[i].name;
+					if(nextReq && !reqChain[nextReq]){
+						//New req depedency. Follow it down.
+						reqChain.push(nextReq);
+						reqChain[nextReq] = true;
+						this.xdEvalReqs(reqChain);
 					}
 				}
 			}
+
+			//Evaluate the package.
+			this.xdResolve(req, pkg);
 		}
+
+		//Done with that require. Remove it and go to the next one.
+		reqChain.pop();
+		this.xdEvalReqs(reqChain);
 	}
-	return level + startLevel;
 }
 
 dojo.hostenv.clearXdInterval = function(){
@@ -427,7 +348,7 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	//All done loading. Clean up and notify that we are loaded.
 	this.clearXdInterval();
 
-	this.xdWalkMap();
+	this.xdWalkReqs();
 
 	//Evaluate any packages that were not evaled before.
 	//This normally shouldn't happen with proper dojo.provide and dojo.require
@@ -443,7 +364,7 @@ dojo.hostenv.watchInFlightXDomain = function(){
 	}
 
 	//Clean up for the next round of xd loading.
-	//this.resetXd();
+	this.resetXd();
 
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
@@ -462,5 +383,4 @@ dojo.hostenv.flattenRequireArray = function(target){
 			}
 		}
 	}
-
 }
