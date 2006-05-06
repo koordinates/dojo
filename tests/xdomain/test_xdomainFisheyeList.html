@@ -7,7 +7,7 @@
 <script type="text/javascript">
 	var djConfig = {
 			isDebug: true,
-			baseScriptUri: "http://tagneto.org/dojo/xd/",
+			baseLoaderUri: "http://tagneto.org/dojo/xd/",
 			useXDomain: true,
 			xdWaitMs: 10000
 	};
@@ -15,7 +15,7 @@
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-	//dojo.setModulePrefix("dojo", "http://tagneto.org/dojo/xd/src");
+	dojo.setModulePrefix("dojo", "http://tagneto.org/dojo/xd/src");
 	dojo.require("dojo.widget.FisheyeList");
 	
 	function init(){
