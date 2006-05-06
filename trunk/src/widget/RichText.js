@@ -96,7 +96,6 @@ dojo.widget.defineWidget(
 			this.addKeyHandler("a", ctrl, exec("selectall"));
 			//this.addKeyHandler("k", ctrl, exec("createlink", ""));
 			//this.addKeyHandler("K", ctrl, exec("unlink"));
-			this.addKeyHandler("Z", ctrl, exec("redo"));
 			this.addKeyHandler("s", ctrl, function () { this.save(true); });
 			
 			this.addKeyHandler("1", ctrl, exec("formatblock", "h1"));
@@ -105,7 +104,13 @@ dojo.widget.defineWidget(
 			this.addKeyHandler("4", ctrl, exec("formatblock", "h4"));
 					
 			this.addKeyHandler("\\", ctrl, exec("insertunorderedlist"));
+			if(!dojo.render.html.ie){
+				this.addKeyHandler("Z", ctrl, exec("redo"));
+			}
 		},
+
+
+		events: ["onBlur", "onFocus", "onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
 
 		/**
 		 * Transforms the node referenced in this.domNode into a rich text editing
@@ -196,6 +201,7 @@ dojo.widget.defineWidget(
 			//if (typeof document.body.contentEditable != "undefined") {
 			if (this.useActiveX && dojo.render.html.ie) { // active-x
 				this._drawObject(html);
+				// dojo.debug(this.object.document);
 			} else if (dojo.render.html.ie) { // contentEditable, easy
 				this.editNode = document.createElement("div");
 				with (this.editNode) {
@@ -216,11 +222,9 @@ dojo.widget.defineWidget(
 
 				this.domNode.appendChild(this.editNode);
 
-				var events = ["onBlur", "onFocus", "onKeyPress",
-					"onKeyDown", "onKeyUp", "onClick"];
-				for (var i = 0; i < events.length; i++) {
-					this.connect(this.editNode, events[i].toLowerCase(), events[i]);
-				}
+				dojo.lang.forEach(this.events, function(e){
+					dojo.event.connect(this.editNode, e.toLowerCase(), this, e);
+				}, this);
 			
 				this.window = window;
 				this.document = document;
@@ -484,6 +488,10 @@ dojo.widget.defineWidget(
 			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
 			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
 
+			dojo.lang.forEach(this.events, function(e){
+				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
+			}, this);
+
 			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
 				'<title></title>' +
 				'<style type="text/css">' +
@@ -504,6 +512,7 @@ dojo.widget.defineWidget(
 			this.isLoaded = true;
 			if (this.object){
 				this.document = this.object.DOM;
+				this.window = this.document.parentWindow;
 				this.editNode = this.document.body.firstChild;
 			}else if (this.iframe){
 				this.editNode = this.document.body;
@@ -563,7 +572,11 @@ dojo.widget.defineWidget(
 		},
 
 		/** Fired on keydown */
-		onKeyDown: function (e) {
+		onKeyDown: function(e){
+			if((!e)&&(this.object)){
+				e = dojo.event.browser.fixEvent(this.window.event);
+			}
+			dojo.debug("onkeydown:", e.keyCode);
 			// we need this event at the moment to get the events from control keys
 			// such as the backspace. It might be possible to add this to Dojo, so that
 			// keyPress events can be emulated by the keyDown and keyUp detection.
@@ -574,20 +587,34 @@ dojo.widget.defineWidget(
 				// better if it added 4 "&nbsp;" chars in an undoable way.
 				// Unfortuantly pasteHTML does not prove to be undoable 
 				this.execCommand((e.shiftKey ? "outdent" : "indent"));
+			}else if(dojo.render.html.ie){
+				if((65 <= e.keyCode)&&(e.keyCode <= 90)){
+					e.charCode = e.keyCode;
+					this.onKeyPress(e);
+				}
+				// dojo.debug(e.ctrlKey);
+				// dojo.debug(e.keyCode);
+				// dojo.debug(e.charCode);
+				// this.onKeyPress(e);
 			}
 		},
 		
 		/** Fired on keyup */
-		onKeyUp: function (e) {
+		onKeyUp: function(e){
+			return;
 		},
 		
 		KEY_CTRL: 1,
 		
 		/** Fired on keypress. */
-		onKeyPress: function (e) {
+		onKeyPress: function(e){
+			if((!e)&&(this.object)){
+				e = dojo.event.browser.fixEvent(this.window.event);
+			}
 			// handle the various key events
 
 			var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
+			dojo.debug("char:", character);
 			var code = e.keyCode;
 
 			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
@@ -917,7 +944,7 @@ dojo.widget.defineWidget(
 				(dojo.render.html.safari && supportedBy.safari) ||
 				(dojo.render.html.opera && supportedBy.opera);
 		},
-		
+
 		/**
 		 * Executes a command in the Rich Text area
 		 *
@@ -948,10 +975,17 @@ dojo.widget.defineWidget(
 					tableInfo.Caption = arr["Caption"];
 				}
 			
-				if (arguments.length == 1) {
+				dojo.debug(this.object.object.DOM.documentElement.document.body.innerHTML);
+				if(command == "inserthtml"){
+					var insertRange = this.document.selection.createRange();
+					insertRange.select();
+					insertRange.pasteHTML(argument);
+					insertRange.collapse(true);
+					return true;
+				}else if(arguments.length == 1){
 					return this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt);
-				} else {
+				}else{
 					return this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt, argument);
 				}
@@ -961,38 +995,11 @@ dojo.widget.defineWidget(
 				// on IE, we can use the pasteHTML method of the textRange object
 				// to get an undo-able innerHTML modification
 				if(dojo.render.html.ie){
+					dojo.debug("inserthtml breaks the undo stack when not using the ActiveX version of the control!");
 					var insertRange = this.document.selection.createRange();
-					insertRange.collapse(true);
-					/*
-					insertRange.pasteHTML("&nbsp;");
 					insertRange.select();
-					*/
-
-					/*
-					argument = argument.replace(/</g, "&#060;");
-					argument = argument.replace(/>/g, "&#060;");
-					alert(argument);
-					*/
-					// FIXME: this never inserts actual. It does not appear
-					// possible to provide an HTML serialization to the clipboard
-					// via setData from script
-					this.window.clipboardData.setData("Text", argument);
-					this.document.execCommand("paste");
-
-					// var range = this.document.selection.createRange();
-
-					// alert(range.pasteHTML);
-					// this.document.body.fireEvent("ondragstart");
-
-					// range.pasteHTML(argument);
-
-					// this.window.clipboardData.setData("Text", argument);
-					// var tevt = document.createEventObject();
-					// tevt.ctrlKey = true;
-					// tevt.keyCode = 67;
-					// this.document.body.fireEvent("onkeydown", tevt);
-					// this.document.body.fireEvent("onkeyup", tevt);
-
+					insertRange.pasteHTML(argument);
+					insertRange.collapse(true);
 					return true;
 				}else{
 					return this.document.execCommand(command, false, argument);			
