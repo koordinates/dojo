@@ -294,8 +294,6 @@ dojo.hostenv.xdWalkMap = function(){
 	while(true){
 		var hasOneResolved = false;
 		var hasOneUnresolved = false;
-		var largest = 0;
-		var circBreaker = null;
 		var pkg = null;
 		for(var provide in this.xdDepMap){
 			pkg = this.xdDepMap[provide];
@@ -308,54 +306,94 @@ dojo.hostenv.xdWalkMap = function(){
 				}else{
 					//Try to prune the requires with packages that
 					//are done already.
-					for(var i = pkg.requires.length - 1; i >= 0; i--){
-						if(this.xdResolved[pkg.requires[i]]){
-							pkg.requires.splice(i, 1);
-						}
-					}
-					
-					if(pkg.requires.length == 0){
-						this.xdResolve(provide, pkg);
-						hasOneResolved = true;
-					}else if (!hasOneResolved){
-						var largestLocal = 0;
-						var dist;
-						for(var i = pkg.requires.length - 1; i >= 0; i--){
-							var reqPkg = this.xdDepMap[pkg.requires[i].name];
-							if(reqPkg){
-								dist = pkg.pkgOrder - reqPkg.pkgOrder;
-								if(dist > 0){
-									if(dist > largest){
-										largestLocal = dist;
-									}
-								}else{
-									//Distance is negative, so that means there is some require
-									//package that got loaded after this package. This one is out
-									//of the running as the circ breaker.
-									largestLocal = 0;
-									break;
-								}
-							}
-						}
-						if (largestLocal > largest){
-							largest = largestLocal;
-							circBreaker = provide;
-						}						
-					}
+					hasOneResolved = dojo.hostenv.trimXdResolved(provide, pkg);
 				}
 			}
 		}
 		
 		if(hasOneUnresolved){
 			if(!hasOneResolved){
-				alert("Circular Dependency! Breaking it with: " + circBreaker);
+				//Find the path that has the longest depedency chain and use that
+				//one to break the cycle.
+				var winner = 0;
+				var circBreaker = null;
+				for(var provide in this.xdDepMap){
+					if(this.xdDepMap[provide]){
+						currentLevel = this.getXdDepLevel(provide, 0, provide);
+						if(currentLevel > winner){
+							circBreaker = provide;
+							winner = currentLevel;
+						}
+					}
+					/*
+					var reqs = this.xdDepMap[provide].requires;
+					var level = startLevel = 1;
+					var currentLevel = 1;
+					if(reqs){
+						for(var i = 0; i < reqs.length; i++){
+							if(reqs[i] != provide){
+								currentLevel = this.getDepLevel(provide, startLevel, reqs[i]);
+								if(currentLevel > level){
+									level = currentLevel;
+								}
+							}
+						}
+					}
+					*/
+				}
+
+				alert("Circular Breaker: " + circBreaker);
 				this.xdResolve(circBreaker, this.xdDepMap[circBreaker]);
+				
+				//Remove the breaker from any requires lists.
+				for(var provide in this.xdDepMap){
+					pkg = this.xdDepMap[provide];
+					if(pkg){
+						dojo.hostenv.trimXdResolved(provide, pkg);
+					}
+				}
 			}
 		}else{
 			//All done!
 			return;
 		}
 	}
+}
+
+dojo.hostenv.trimXdResolved = function(provide, pkg){
+	var hasNewResolve = false;
+	for(var i = pkg.requires.length - 1; i >= 0; i--){
+		if(this.xdResolved[pkg.requires[i]]){
+			pkg.requires.splice(i, 1);
+		}
+	}
+	
+	if(pkg.requires.length == 0){
+		this.xdResolve(provide, pkg);
+		hasNewResolve = true;
+	}
+
+	return hasNewResolve;
+}
+
+dojo.hostenv.getXdDepLevel = function(provide, startLevel, currentReq){
+	var level = 1;
+	var reqHolder = this.xdDepMap[currentReq];
+	if(reqHolder){
+		var reqs = this.xdDepMap[currentReq].requires;
+		var currentLevel = 0;
+		if(reqs){
+			for(var i = 0; i < reqs.length; i++){
+				if(reqs[i] && reqs[i].name && reqs[i].name != provide && this.xdDepMap[reqs[i]]){
+					currentLevel = this.getXdDepLevel(provide, startLevel, reqs[i].name);
+					if(currentLevel > level){
+						level = currentLevel;
+					}
+				}
+			}
+		}
+	}
+	return level + startLevel;
 }
 
 dojo.hostenv.clearXdInterval = function(){
