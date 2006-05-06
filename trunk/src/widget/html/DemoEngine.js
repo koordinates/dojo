@@ -174,8 +174,8 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		this.demoTabContainer.addChild(cn);
 		demoIframe.parentNode.style.display="inline";
 
-		//cn2 = dojo.widget.createWidget("ContentPane",{label: "Source"});
-		//this.demoTabContainer.addChild(cn2);
+		cn2 = dojo.widget.createWidget("ContentPane",{label: "Source"});
+		this.demoTabContainer.addChild(cn2);
 
 		this.demoTabContainer.selectTab(cn);
 
