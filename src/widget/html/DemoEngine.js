@@ -148,7 +148,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	launchDemo: function(e) {
 		dojo.debug("Launching Demo: " + e.currentTarget.lastChild.firstChild.innerHTML);
 
-		implode = dojo.lfx.html.implode(this.navigationNode, this.collapseToNode,1000).play();
+		implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1000).play();
 		//show = dojo.lfx.html.fadeShow(this.demoContainerNode,250).play();
 		dojo.style.setOpacity(this.demoContainerNode, 1);
 		dojo.style.show(this.demoContainerNode);
