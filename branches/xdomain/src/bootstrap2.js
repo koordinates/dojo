@@ -131,12 +131,21 @@ Call styles:
 	dojo.addOnLoad(object, "functionName")
 */
 dojo.addOnLoad = function(obj, fcnName) {
+	var dh = dojo.hostenv;
 	if(arguments.length == 1) {
-		dojo.hostenv.modulesLoadedListeners.push(obj);
+		dh.modulesLoadedListeners.push(obj);
 	} else if(arguments.length > 1) {
-		dojo.hostenv.modulesLoadedListeners.push(function() {
+		dh.modulesLoadedListeners.push(function() {
 			obj[fcnName]();
 		});
+	}
+
+	//Added for xdomain loading. dojo.addOnLoad is used to
+	//indicate callbacks after doing some dojo.require() statements.
+	//In the xdomain case, if all the requires are loaded (after initial
+	//page load), then immediately call any listeners.
+	if(dh.post_load_ && dh.inFlightCount == 0){
+		dh.callLoaded();
 	}
 }
 
@@ -147,11 +156,15 @@ dojo.hostenv.modulesLoaded = function(){
 			dojo.debug("files still in flight!");
 			return;
 		}
-		if(typeof setTimeout == "object"){
-			setTimeout("dojo.hostenv.loaded();", 0);
-		}else{
-			dojo.hostenv.loaded();
-		}
+		dojo.hostenv.callLoaded();
+	}
+}
+
+dojo.hostenv.callLoaded = function(){
+	if(typeof setTimeout == "object"){
+		setTimeout("dojo.hostenv.loaded();", 0);
+	}else{
+		dojo.hostenv.loaded();
 	}
 }
 

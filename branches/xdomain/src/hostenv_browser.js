@@ -247,16 +247,6 @@ dojo.hostenv.println = function (line){
 	}
 }
 
-dojo.hostenv.finishedLoad = function(){
-	if(this.inFlightCount == 0){
-		// perform initialization
-		if(dojo.render.html.ie){
-			dojo.hostenv.makeWidgets();
-		}
-		dojo.hostenv.modulesLoaded();
-	}
-}
-
 dojo.addOnLoad(function(){
 	dojo.hostenv._println_safe = true;
 	while(dojo.hostenv._println_buffer.length > 0){
@@ -281,7 +271,19 @@ dj_load_init = function(){
 	if (arguments.callee.initialized) return;
 	arguments.callee.initialized = true;
 
-	dojo.hostenv.finishedLoad();
+	var initFunc = function(){
+		//perform initialization
+		if(dojo.render.html.ie){
+			dojo.hostenv.makeWidgets();
+		}
+	};
+
+	if(this.inFlightCount == 0){
+		initFunc();
+		dojo.hostenv.modulesLoaded();
+	}else{
+		dojo.addOnLoad(initFunc);
+	}
 };
 
 

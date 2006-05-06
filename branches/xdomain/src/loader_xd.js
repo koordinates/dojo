@@ -368,7 +368,7 @@ dojo.hostenv.watchInFlightXDomain = function(){
 
 	//Clear inflight count so we will finally do finish work.
 	this.inFlightCount = 0; 
-	this.finishedLoad();
+	this.callLoaded();
 }
 
 dojo.hostenv.flattenRequireArray = function(target){
