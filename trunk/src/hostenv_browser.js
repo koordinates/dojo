@@ -282,29 +282,6 @@ function dj_addNodeEvtHdlr (node, evtName, fp, capture){
 }
 
 
-// dj_load_init should be called right after DOM is loaded and parsed. Needs testing.
-
-dj_load_init = function(){
-	// allow multiple calls, only first one will take effect
-	if (arguments.callee.initialized) return;
-	arguments.callee.initialized = true;
-
-	var initFunc = function(){
-		//perform initialization
-		if(dojo.render.html.ie){
-			dojo.hostenv.makeWidgets();
-		}
-	};
-
-	if(this.inFlightCount == 0){
-		initFunc();
-		dojo.hostenv.modulesLoaded();
-	}else{
-		dojo.addOnLoad(initFunc);
-	}
-};
-
-
 /* Uncomment this to allow init after DOMLoad, not after window.onload
 
 // Mozilla exposes the event we could use
@@ -324,9 +301,25 @@ if (dojo.render.html.mozilla) {
 // that will cause flickering though ( document is loaded and THEN is processed)
 // maybe show/hide required in this case..
 // TODO: other browsers may support DOMContentLoaded/defer attribute. Add them to above.
-dj_addNodeEvtHdlr(window, "load", dj_load_init);
+dj_addNodeEvtHdlr(window, "load", function(){
+	// allow multiple calls, only first one will take effect
+	if(arguments.callee.initialized){ return; }
+	arguments.callee.initialized = true;
 
+	var initFunc = function(){
+		//perform initialization
+		if(dojo.render.html.ie){
+			dojo.hostenv.makeWidgets();
+		}
+	};
 
+	if(dojo.hostenv.inFlightCount == 0){
+		initFunc();
+		dojo.hostenv.modulesLoaded();
+	}else{
+		dojo.addOnLoad(initFunc);
+	}
+});
 
 dojo.hostenv.makeWidgets = function(){
 	// you can put searchIds in djConfig and dojo.hostenv at the moment
@@ -364,7 +357,7 @@ dojo.hostenv.makeWidgets = function(){
 	}
 }
 
-dojo.hostenv.modulesLoadedListeners.push(function(){
+dojo.addOnLoad(function(){
 	if(!dojo.render.html.ie) {
 		dojo.hostenv.makeWidgets();
 	}
