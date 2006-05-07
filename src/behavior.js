@@ -1,6 +1,9 @@
 dojo.provide("dojo.behavior");
 dojo.require("dojo.event.*");
 
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.behavior");
+
 dojo.behavior = new function(){
 	function arrIn(obj, name){
 		if(!obj[name]){ obj[name] = []; }
@@ -26,7 +29,7 @@ dojo.behavior = new function(){
 		/*	behavior objects are specified in the following format:
 		 *
 		 *	{ 
-		 *	 	"id": {
+		 *	 	"#id": {
 		 *			"found": function(element){
 		 *				// ...
 		 *			},
@@ -43,13 +46,52 @@ dojo.behavior = new function(){
 		 *			}
 		 *		},
 		 *
-		 *		"id2": {
+		 *		"#id2": {
 		 *			// ...
 		 *		},
 		 *
-		 *		"id3": function(element){
+		 *		"#id3": function(element){
 		 *			// ...
-		 *		}
+		 *		},
+		 *
+		 *		// publish the match on a topic
+		 *		"#id4": "/found/topic/name",
+		 *
+		 *		// match all direct descendants
+		 *		"#id4 > *": function(element){
+		 *			// ...
+		 *		},
+		 *
+		 *		// match the first child node that's an element
+		 *		"#id4 > @firstElement": { ... },
+		 *
+		 *		// match the last child node that's an element
+		 *		"#id4 > @lastElement":  { ... },
+		 *
+		 *		// all elements of type tagname
+		 *		"tagname": {
+		 *			// ...
+		 *		},
+		 *
+		 *		// maps to roughly:
+		 *		//	dojo.lang.forEach(body.getElementsByTagName("tagname1"), function(node){
+		 *		//		dojo.lang.forEach(node.getElementsByTagName("tagname2"), function(node2){
+		 *		//			dojo.lang.forEach(node2.getElementsByTagName("tagname3", function(node3){
+		 *		//				// apply rules
+		 *		//			});
+		 *		//		});
+		 *		//	});
+		 *		"tagname1 tagname2 tagname3": {
+		 *			// ...
+		 *		},
+		 *
+		 *		".classname": {
+		 *			// ...
+		 *		},
+		 *
+		 *		"tagname.classname": {
+		 *			// ...
+		 *		},
 		 *	}
 		 *
 		 *	The "found" method is a generalized handler that's called as soon
