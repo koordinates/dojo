@@ -210,7 +210,7 @@ dojo.widget.defineWidget(
 					style.height = this.height ? this.height : this.minHeight;
 				}
 
-				if (this.height) this.editNode.style.overflowY="scroll";
+				if(this.height){ this.editNode.style.overflowY="scroll"; }
 				// FIXME: setting contentEditable on switches this element to
 				// IE's hasLayout mode, triggering weird margin collapsing
 				// behavior. It's particularly bad if the element you're editing
@@ -514,6 +514,8 @@ dojo.widget.defineWidget(
 				this.document = this.object.DOM;
 				this.window = this.document.parentWindow;
 				this.editNode = this.document.body.firstChild;
+				this.domNode.style.height = this.height ? this.height : this.minHeight;
+				this.connect(this, "onDisplayChanged", "_updateHeight");
 			}else if (this.iframe){
 				this.editNode = this.document.body;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
@@ -1240,7 +1242,7 @@ dojo.widget.defineWidget(
 				}
 				// dojo.debug(this.iframe.height);
 			} else if (this.object) {
-				this.object.height = dojo.style.getInnerHeight(this.editNode);
+				this.object.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
 			}
 		},
 		
