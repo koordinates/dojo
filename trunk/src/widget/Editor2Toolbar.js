@@ -31,6 +31,7 @@ dojo.widget.defineWidget(
 
 		// DOM Nodes
 		wikiwordButton: null,
+		htmltoggleButton: null,
 		insertimageButton: null,
 		styleDropdownButton: null,
 		styleDropdownContainer: null,
@@ -68,6 +69,7 @@ dojo.widget.defineWidget(
 		preventSelect: function(e){ if(dojo.render.html.safari){ e.preventDefault(); } },
 		wikiwordClick: function(){ },
 		insertimageClick: function(){ },
+		htmltoggleClick: function(){ },
 
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
