@@ -18,9 +18,6 @@ input.dojoComboBoxInput {
 
 table.dojoComboBox {
 	border: 1px solid #afafaf;
-
-	/*opera looks uggly we doesnt set a default width*/
-	width: 300px;
 }
 
 .dojoComboBoxItem {

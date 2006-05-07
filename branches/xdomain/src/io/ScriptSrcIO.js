@@ -133,6 +133,7 @@ dojo.io.ScriptSrcTransport = new function(){
 
 		//Fill out any other content pieces.
 		var content = kwArgs["content"];
+		var jsonpName = kwArgs.jsonParamName || "jsonp";
 		if(kwArgs.sendTransport || kwArgs.jsonp || kwArgs.jsonParamName) {
 			if (!content){
 				content = {};
@@ -142,15 +143,14 @@ dojo.io.ScriptSrcTransport = new function(){
 			}
 
 			if(kwArgs.jsonp || kwArgs.jsonParamName){
-				var jsonpName = kwArgs.jsonParamName || "jsonp";
-				content[jsonpName] = "dojo.io.ScriptSrcTransport._state['" + id + "'].jsonpCall";
+				content[jsonpName] = "dojo.io.ScriptSrcTransport._state." + id + ".jsonpCall";
 			}
 		}
 
 		if(kwArgs.postContent){
 			query = kwArgs.postContent;
 		}else if(content){
-			query += ((query) ? "&" : "") + dojo.io.argsFromMap(content, kwArgs.encoding);
+			query += ((query) ? "&" : "") + dojo.io.argsFromMap(content, kwArgs.encoding, jsonpName);
 		}
 		//END duplication from BrowserIO.js
 
@@ -183,6 +183,16 @@ dojo.io.ScriptSrcTransport = new function(){
 			state.jsonp = jsonCallback;
 			state.jsonpCall = function(data){
 				dojo.io.ScriptSrcTransport._finish(this, "jsonp", data);
+			};
+		}else if(content[jsonpName]){
+			state.jsonp = content[jsonpName];
+			state.jsonpCall = function(data){
+				if(data["Error"]||data["error"]){
+					dojo.debug(dojo.json.serialize(data));
+					dojo.io.ScriptSrcTransport._finish(this, "error", data);
+				}else{
+					dojo.io.ScriptSrcTransport._finish(this, "load", data);
+				}
 			};
 		}
 
@@ -235,9 +245,9 @@ dojo.io.ScriptSrcTransport = new function(){
 			}
 		}else{
 			//Send one URL.
-			var queryParams = [state.query, state.constantParams, state.nocacheParam];
+			var queryParams = [state.constantParams, state.nocacheParam, state.query];
 			if(kwArgs["useRequestId"] && !state["jsonp"]){
-				queryParams.push(state.idParam);
+				queryParams.unshift(state.idParam);
 			}
 			var finalUrl = this._buildUrl(state.url, queryParams);
 

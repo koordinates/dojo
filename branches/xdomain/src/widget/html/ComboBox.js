@@ -71,7 +71,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		this.setValue(state.value);
 	},
 
-
 	getCaretPos: function(element){
 		// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
 		if(dojo.lang.isNumber(element.selectionStart)){
@@ -172,9 +171,18 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 				}
 				// falltrough
 			case k.KEY_TAB:
-				this.selectOption();
-				this.hideResultList();
-				return; 
+				// using linux alike tab for autocomplete
+				if(!this.autoComplete && this._result_list_open && this._highlighted_option){
+					dojo.event.browser.stopEvent(evt);
+					this.selectOption({ 'target': this._highlighted_option, 'noHide': true });
+
+					// put caret last
+					this.setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
+				}else{
+					this.selectOption();
+					return;
+				}
+				break;
 			case k.KEY_SPACE:
 				if(this._result_list_open && this._highlighted_option){
 					dojo.event.browser.stopEvent(evt);
@@ -210,7 +218,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			clearTimeout(this.searchTimer);
 		}
 		if(doSearch){
-			// if we have gotten this far we dont to keep our highlight
+			// if we have gotten this far we dont want to keep our highlight
 			this.blurOptionNode();
 
 			// need to wait a tad before start search so that the event bubbels through DOM and we have value visible
@@ -314,12 +322,17 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		// FIXME: need to get/assign DOM node names for form participation here.
 		this.comboBoxValue.name = this.name;
 		this.comboBoxSelectionValue.name = this.name+"_selected";
-		
+
 		// NOTE: this doesn't copy style info inherited from classes;
 		// it's just primitive support for direct style setting
-		var sourceNodeStyle = this.getFragNodeRef(frag).style;
-		if ( sourceNodeStyle ){
-			this.domNode.style.cssText = sourceNodeStyle.cssText;
+		var source = this.getFragNodeRef(frag);
+		if ( source.style ){
+			// get around opera wich doesnt have cssText, and IE wich bugs on setAttribute 
+			if(dojo.lang.isUndefined(source.style.cssText)){ 
+				this.domNode.setAttribute("style", source.getAttribute("style")); 
+			}else{
+				this.domNode.style.cssText = source.style.cssText; 
+			}
 		}
 
 		// FIXME: add logic
@@ -365,6 +378,13 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		// Prevent IE bleed-through problem
 		this.optionsIframe = new dojo.html.BackgroundIframe(this.optionsListWrapper);
 		this.optionsIframe.size([0,0,0,0]);
+	},
+
+
+	focus: function(){
+		// summary
+		//	set focus to input node from code
+		this.tryFocus();
 	},
 
 	openResultList: function(results){
@@ -478,8 +498,10 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
 		this.setValue(tgt.getAttribute("resultName"));
 		this.comboBoxSelectionValue.value = tgt.getAttribute("resultValue");
-		this.hideResultList();
-		this.setSelectedRange(this.textInputNode, 0, null);
+		if(!evt.noHide){
+			this.hideResultList();
+			this.setSelectedRange(this.textInputNode, 0, null);
+		}
 		this.tryFocus();
 	},
 

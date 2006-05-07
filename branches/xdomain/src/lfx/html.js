@@ -29,7 +29,7 @@ dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ node, /*Array*/ propertyM
 	var propLine = function(properties){
 		this._properties = properties;
 		this.diffs = new Array(properties.length);
-		dojo.lang.forEach(properties, dojo.lang.hitch(this, function(prop, i){
+		dojo.lang.forEach(properties, function(prop, i){
 			// calculate the end - start to optimize a bit
 			if(dojo.lang.isArray(prop.start)){
 				// don't loop through the arrays
@@ -37,10 +37,10 @@ dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ node, /*Array*/ propertyM
 			}else{
 				this.diffs[i] = prop.end - prop.start;
 			}
-		}));
+		}, this);
 		this.getValue = function(n){
 			var ret = new Array(this._properties.length);
-			dojo.lang.forEach(this._properties, dojo.lang.hitch(this, function(prop, i){
+			dojo.lang.forEach(this._properties, function(prop, i){
 				var value = null;
 				var units = null;
 				if(dojo.lang.isArray(prop.start)){
@@ -58,7 +58,7 @@ dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ node, /*Array*/ propertyM
 					value: value,
 					units: units
 				};
-			}));
+			}, this);
 			return ret;
 		}
 	}
@@ -126,7 +126,7 @@ dojo.lfx.html.fadeOut = function(node, duration, easing, callback){
 
 dojo.lfx.html.fadeShow = function(node, duration, easing, callback){
 	var anim = dojo.lfx.html.fadeIn(node, duration, easing, callback);
-	dojo.event.connect(anim, "onBegin", function(){ dojo.style.show(node); });
+	dojo.event.connect(anim, "beforeBegin", function(){ dojo.style.show(node); });
 	
 	return anim;
 }
@@ -158,7 +158,7 @@ dojo.lfx.html.wipeIn = function(node, duration, easing, callback){
 			start: 0,
 			end: node.scrollHeight }], duration, easing);
 	
-	dojo.event.connect(anim, "onBegin", init);
+	dojo.event.connect(anim, "beforeBegin", init);
 	dojo.event.connect(anim, "onEnd", function(){
 		node.style.overflow = overflow;
 		node.style.height = "auto";
@@ -185,7 +185,7 @@ dojo.lfx.html.wipeOut = function(node, duration, easing, callback){
 			start: node.offsetHeight,
 			end: 0 } ], duration, easing);
 	
-	dojo.event.connect(anim, "onBegin", init);
+	dojo.event.connect(anim, "beforeBegin", init);
 	dojo.event.connect(anim, "onEnd", function(){
 		dojo.style.hide(node);
 		node.style.overflow = overflow;
@@ -221,7 +221,7 @@ dojo.lfx.html.slideTo = function(node, coords, duration, easing, callback){
 			start: left,
 			end: coords[1] }], duration, easing);
 	
-	dojo.event.connect(anim, "onBegin", init);
+	dojo.event.connect(anim, "beforeBegin", init);
 	if(callback){
 		dojo.event.connect(anim, "onEnd", function(){
 			callback(node, anim);
@@ -253,7 +253,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	}
 
 	var anim = new dojo.lfx.Animation({
-		onBegin: function(){
+		beforeBegin: function(){
 			dojo.style.show(outline);
 		},
 		onAnimate: function(value){
@@ -291,7 +291,7 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	document.body.appendChild(outline);
 
 	var anim = new dojo.lfx.Animation({
-		onBegin: function(){
+		beforeBegin: function(){
 			dojo.style.hide(startNode);
 			dojo.style.show(outline);
 		},
@@ -315,7 +315,7 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	return anim;
 }
 
-dojo.lfx.html.highlight = function(node, startColor, delay, duration, easing, callback){
+dojo.lfx.html.highlight = function(node, startColor, duration, easing, callback){
 	node = dojo.byId(node);
 	var color = dojo.style.getBackgroundColor(node);
 	var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
@@ -331,6 +331,10 @@ dojo.lfx.html.highlight = function(node, startColor, delay, duration, easing, ca
 		end: endRgb
 	}], duration, easing);
 
+	dojo.event.connect(anim, "beforeBegin", function(){
+		node.style.backgroundColor = "rgb(" + rgb.join(",") + ")";
+	});
+
 	dojo.event.connect(anim, "onEnd", function(){
 		if(wasTransparent){
 			node.style.backgroundColor = "transparent";
@@ -339,7 +343,30 @@ dojo.lfx.html.highlight = function(node, startColor, delay, duration, easing, ca
 			callback(node, anim);
 		}
 	});
+
+	return anim;
+}
+
+dojo.lfx.html.unhighlight = function(node, endColor, duration, easing, callback){
+	node = dojo.byId(node);
+	var color = new dojo.graphics.color.Color(dojo.style.getBackgroundColor(node)).toRgb();
+	var rgb = new dojo.graphics.color.Color(endColor).toRgb();
 	
+	var anim = dojo.lfx.propertyAnimation(node, [{
+		property: "background-color",
+		start: color,
+		end: rgb
+	}], duration, easing);
+
+	dojo.event.connect(anim, "beforeBegin", function(){
+		node.style.backgroundColor = "rgb(" + color.join(",") + ")";
+	});
+	if(callback){
+		dojo.event.connect(anim, "onEnd", function(){
+			callback(node, anim);
+		});
+	}
+
 	return anim;
 }
 

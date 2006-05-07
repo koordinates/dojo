@@ -11,15 +11,15 @@ dojo.lfx.Line = function(start, end){
 	this.end = end;
 	if(dojo.lang.isArray(start)){
 		var diff = [];
-		dojo.lang.forEach(this.start, dojo.lang.hitch(this, function(s,i){
+		dojo.lang.forEach(this.start, function(s,i){
 			diff[i] = this.end[i] - s;
-		}));
+		}, this);
 		
 		this.getValue = function(/*float*/ n){
 			var res = [];
-			dojo.lang.forEach(this.start, dojo.lang.hitch(this, function(s, i){
+			dojo.lang.forEach(this.start, function(s, i){
 				res[i] = (diff[i] * n) + s;
-			}));
+			}, this);
 			return res;
 		}
 	}else{
@@ -62,6 +62,7 @@ dojo.lang.extend(dojo.lfx.IAnimation, {
 	
 	// events
 	handler: null,
+	beforeBegin: null,
 	onBegin: null,
 	onAnimate: null,
 	onEnd: null,
@@ -150,13 +151,20 @@ dojo.lang.extend(dojo.lfx.Animation, {
 	_startRepeatCount: 0,
 
 	// public methods
-	play: function(gotoStart) {
+	play: function(delay, gotoStart) {
 		if( gotoStart ) {
 			clearTimeout(this._timer);
 			this._active = false;
 			this._paused = false;
 			this._percent = 0;
 		} else if( this._active && !this._paused ) {
+			return;
+		}
+		
+		this.fire("beforeBegin");
+
+		if(delay > 0){
+			setTimeout(dojo.lang.hitch(this, function(){ this.play(null, gotoStart); }), delay);
 			return;
 		}
 		
@@ -255,9 +263,9 @@ dojo.lang.extend(dojo.lfx.Animation, {
 
 				if( this.repeatCount > 0 ) {
 					this.repeatCount--;
-					this.play(true);
+					this.play(null, true);
 				} else if( this.repeatCount == -1 ) {
-					this.play(true);
+					this.play(null, true);
 				} else {
 					if(this._startRepeatCount) {
 						this.repeatCount = this._startRepeatCount;
@@ -291,13 +299,21 @@ dojo.lang.extend(dojo.lfx.Combine, {
 	_animsEnded: 0,
 	
 	// public methods
-	play: function(gotoStart){
+	play: function(delay, gotoStart){
 		if( !this._anims.length ){ return; }
+
+		this.fire("beforeBegin");
+
+		if(delay > 0){
+			setTimeout(dojo.lang.hitch(this, function(){ this.play(null, gotoStart); }), delay);
+			return;
+		}
+		
 		if(gotoStart || this._anims[0].percent == 0){
 			this.fire("onBegin");
 		}
 		this.fire("onPlay");
-		this._animsCall("play", gotoStart);
+		this._animsCall("play", null, gotoStart);
 	},
 	
 	pause: function(){
@@ -326,9 +342,9 @@ dojo.lang.extend(dojo.lfx.Combine, {
 			}
 		}
 		var _this = this;
-		dojo.lang.forEach(this._anims, dojo.lang.hitch(_this, function(anim){
+		dojo.lang.forEach(this._anims, function(anim){
 			anim[funcName](args);
-		}));
+		}, _this);
 	}
 });
 
@@ -343,14 +359,14 @@ dojo.lfx.Chain = function() {
 	}
 	
 	var _this = this;
-	dojo.lang.forEach(anims, dojo.lang.hitch(_this, function(anim, i, anims_arr){
+	dojo.lang.forEach(anims, function(anim, i, anims_arr){
 		_this._anims.push(anim);
 		if(i < anims_arr.length - 1){
 			dojo.event.connect(anim, "onEnd", function(){ _this._playNext(); });
 		}else{
 			dojo.event.connect(anim, "onEnd", function(){ _this.fire("onEnd"); });
 		}
-	}));
+	}, _this);
 }
 dojo.inherits(dojo.lfx.Chain, dojo.lfx.IAnimation);
 dojo.lang.extend(dojo.lfx.Chain, {
@@ -358,18 +374,25 @@ dojo.lang.extend(dojo.lfx.Chain, {
 	_currAnim: -1,
 	
 	// public methods
-	play: function(gotoStart){
+	play: function(delay, gotoStart){
 		if( !this._anims.length ) { return; }
 		if( gotoStart || !this._anims[this._currAnim] ) {
 			this._currAnim = 0;
 		}
+
+		this.fire("beforeBegin");
+		if(delay > 0){
+			setTimeout(dojo.lang.hitch(this, function(){ this.play(null, gotoStart); }), delay);
+			return;
+		}
+		
 		if( this._anims[this._currAnim] ){
 			if( this._currAnim == 0 ){
 				this.fire("handler", ["begin", this._currAnim]);
 				this.fire("onBegin", [this._currAnim]);
 			}
 			this.fire("onPlay", [this._currAnim]);
-			this._anims[this._currAnim].play(gotoStart);
+			this._anims[this._currAnim].play(null, gotoStart);
 		}
 	},
 	
@@ -405,7 +428,7 @@ dojo.lang.extend(dojo.lfx.Chain, {
 		if( this._currAnim == -1 || this._anims.length == 0 ) { return; }
 		this._currAnim++;
 		if( this._anims[this._currAnim] ){
-			this._anims[this._currAnim].play(true);
+			this._anims[this._currAnim].play(null, true);
 		}
 	}
 });
