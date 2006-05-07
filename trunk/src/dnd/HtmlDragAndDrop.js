@@ -9,6 +9,7 @@ dojo.require("dojo.dnd.DragAndDrop");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
+dojo.require("dojo.html.extras");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lfx.*");
 
