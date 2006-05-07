@@ -15,11 +15,15 @@
 	}
 	var tmps = ["bootstrap1.js", "bootstrap2.js", "hostenv_"+hostEnv+".js"];
 
+	if((this["djConfig"])&&((djConfig["forceXDomain"])||(djConfig["useXDomain"]))){
+		tmps.push("loader_xd.js");
+	}
+
 	if(hostEnv == "dashboard"){
 		tmps.splice(1, 0, "hostenv_browser.js");
 	}
 
-	if( (this["djConfig"])&&(djConfig["baseScriptUri"]) ){
+	if((this["djConfig"])&&(djConfig["baseScriptUri"])){
 		var root = djConfig["baseScriptUri"];
 	}else if((this["djConfig"])&&(djConfig["baseRelativePath"])){
 		var root = djConfig["baseRelativePath"];
@@ -66,8 +70,13 @@
 		tmps.push("browser_debug.js");
 	}
 
+	var loaderRoot = root;
+	if((this["djConfig"])&&(djConfig["baseLoaderUri"])){
+		loaderRoot = djConfig["baseLoaderUri"];
+	}
+
 	for(var x=0; x < tmps.length; x++){
-		var spath = root+"src/"+tmps[x];
+		var spath = loaderRoot+"src/"+tmps[x];
 		if(isRhino||isSpidermonkey){
 			load(spath);
 		} else {

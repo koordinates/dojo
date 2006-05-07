@@ -416,12 +416,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				}else{
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
-			}
+			}			
 		]]></script>
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 		<java jar="./lib/js.jar" fork="true" outputproperty="concatFilesProp" errorproperty="concatFilesError">
 			<arg value="${profileFile}" />
+			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
 		<script language="javascript"><![CDATA[
 			var currentTask = dojo.getTargets().get("-set-profile-deps");
@@ -622,12 +623,25 @@ internTemplateStrings()
 				echo("WARNING: buildDojoFlash and buildDojoStorage could not run.");
 				echo("Please download and install mtasc from http://www.mtasc.org and place it in your path.");
 			}
+
+			//Get the preferred package loader.
+			var loader = dojo.getProperty("dojoLoader");
+			if((!loader)||(loader=="null")||(loader=="")){
+				loader = "default";
+			}
+			dojo.setNewProperty("dojoLoader", loader);
 		]]></script>
 		
 		<antcall target="-docs-and-tests" />
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
 
+		<!-- Run xdgen if it xdomain loading is wanted. -->
+		<condition property="xdgenRun">
+			<equals arg1="xdomain" arg2="${dojoLoader}"/>
+		</condition>
+		<antcall target="xdgenRelease"/>
+		
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
@@ -635,7 +649,7 @@ internTemplateStrings()
 		<copy file="${root}/README" todir="${release_dir}/"  preservelastmodified="true" />
 	</target>
 	<!-- end release task -->
-
+	
 	<target name="-docs-and-tests"
 		unless="docless"
 		description="builds docs, copies in tests, and constructs API outlines">
@@ -768,4 +782,64 @@ internTemplateStrings()
 		</exec>
 	</target>
 	<!-- end buildFlash task -->
+
+	<!-- xdgenRelease task -->
+	<target name="xdgenRelease" if="xdgenRun">
+		<antcall target="xdgen">
+			<param name="xdgenDir" value="${release_dir}/src" />
+		</antcall>		
+	</target>
+	<!-- end xdgenRelease task -->
+
+	<!-- xdgen task -->
+	<target name="xdgen" 
+			description="Create package files that can be used as part of a cross domain dojo installation.">
+		<property name="xdgen.basedir" location="../tools/xdgen"/>
+		<property name="xdgen.src" location="${xdgen.basedir}/src"/>
+		<property name="xdgen.build" location="${xdgen.basedir}/build"/>
+
+		<mkdir dir="${xdgen.build}"/>
+
+		<!-- Compile xdgen if it hasn't been compiled yet -->
+		<javac srcdir="${xdgen.src}" destdir="${xdgen.build}" debug="true">
+			<classpath>
+				<fileset dir="${xdgen.basedir}/lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+
+		<!-- Set up the classpath for the xdgen ant task. -->
+		<path id="xdgen.classpath">
+			<pathelement path="${classpath}"/>
+			<pathelement location="${xdgen.build}"/>
+			<fileset dir="./lib">
+				<include name="**/*.jar"/>
+				<include name="**/*.zip"/>
+			</fileset>
+		</path>
+
+		<!-- Define the xdgen ant task -->
+		<taskdef name="xdgenTask" classname="org.dojotoolkit.xdgen.XdGenAntTask">
+			<classpath refid="xdgen.classpath"/>
+		</taskdef>
+
+		<!-- Call the xdgen ant task -->
+		<xdgenTask>
+			<fileset dir="${xdgenDir}">
+				<include name="**/*.js"/>
+			</fileset>
+		</xdgenTask>
+	</target>
+	<!-- end xdgen task -->
+
+	<!-- xdgenRemove task -->
+	<target name="xdgenRemove" 
+			description="Removes package files that were created by xdgen.">
+		<delete>
+			<fileset dir="${xdgenDir}" includes="**/*.xd.js"/>
+		</delete>
+	</target>
+	<!-- end xdgenRemove task -->
+
 </project>

@@ -116,6 +116,9 @@ dojo.loaded = function(){ }
 dojo.hostenv.loaded = function(){
 	this.post_load_ = true;
 	var mll = this.modulesLoadedListeners;
+	//Clear listeners so new ones can be added
+	//For other xdomain package loads after the initial load.
+	this.modulesLoadedListeners = [];
 	for(var x=0; x<mll.length; x++){
 		mll[x]();
 	}
@@ -128,12 +131,21 @@ Call styles:
 	dojo.addOnLoad(object, "functionName")
 */
 dojo.addOnLoad = function(obj, fcnName) {
+	var dh = dojo.hostenv;
 	if(arguments.length == 1) {
-		dojo.hostenv.modulesLoadedListeners.push(obj);
+		dh.modulesLoadedListeners.push(obj);
 	} else if(arguments.length > 1) {
-		dojo.hostenv.modulesLoadedListeners.push(function() {
+		dh.modulesLoadedListeners.push(function() {
 			obj[fcnName]();
 		});
+	}
+
+	//Added for xdomain loading. dojo.addOnLoad is used to
+	//indicate callbacks after doing some dojo.require() statements.
+	//In the xdomain case, if all the requires are loaded (after initial
+	//page load), then immediately call any listeners.
+	if(dh.post_load_ && dh.inFlightCount == 0){
+		dh.callLoaded();
 	}
 }
 
@@ -144,11 +156,15 @@ dojo.hostenv.modulesLoaded = function(){
 			dojo.debug("files still in flight!");
 			return;
 		}
-		if(typeof setTimeout == "object"){
-			setTimeout("dojo.hostenv.loaded();", 0);
-		}else{
-			dojo.hostenv.loaded();
-		}
+		dojo.hostenv.callLoaded();
+	}
+}
+
+dojo.hostenv.callLoaded = function(){
+	if(typeof setTimeout == "object"){
+		setTimeout("dojo.hostenv.loaded();", 0);
+	}else{
+		dojo.hostenv.loaded();
 	}
 }
 
@@ -255,7 +271,8 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	}
 
 	// check that the symbol was defined
-	if(!omit_module_check){
+	//Don't bother if we're doing xdomain (asynchronous) loading.
+	if(!omit_module_check && !this["isXDomain"]){
 		// pass in false so we can give better error
 		module = this.findModule(modulename, false);
 		if(!module){
