@@ -286,15 +286,24 @@ function dj_addNodeEvtHdlr (node, evtName, fp, capture){
 
 dj_load_init = function(){
 	// allow multiple calls, only first one will take effect
-   if (arguments.callee.initialized) return;
-   arguments.callee.initialized = true;
+	if (arguments.callee.initialized) return;
+	arguments.callee.initialized = true;
 
-   // perform initialization
-	if(dojo.render.html.ie){
-		dojo.hostenv.makeWidgets();
+	var initFunc = function(){
+		//perform initialization
+		if(dojo.render.html.ie){
+			dojo.hostenv.makeWidgets();
+		}
+	};
+
+	if(this.inFlightCount == 0){
+		initFunc();
+		dojo.hostenv.modulesLoaded();
+	}else{
+		dojo.addOnLoad(initFunc);
 	}
-	dojo.hostenv.modulesLoaded();
 };
+
 
 /* Uncomment this to allow init after DOMLoad, not after window.onload
 

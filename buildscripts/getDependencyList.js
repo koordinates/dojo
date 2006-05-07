@@ -26,6 +26,11 @@ if(!this["dependencies"]){
 	];
 }
 
+var dojoLoader = java.lang.System.getProperty("DOJO_LOADER");
+if(!dojoLoader || dojoLoader=="null" || dojoLoader==""){
+	dojoLoader = "default";
+}
+
 load("../src/bootstrap1.js");
 load("../src/bootstrap2.js");
 load("../src/hostenv_rhino.js");
@@ -33,7 +38,15 @@ load("../src/hostenv_rhino.js");
 dojo.render.html.capable = true;
 
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
-dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+
+if(dojoLoader == "default"){
+	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+
+}else if(dojoLoader=="xdomain"){
+	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+	dojo.hostenv.loadedUris.push("../src/loader_xd.js");
+}
+
 if(!this["hostenvType"]){
 	hostenvType = "browser";
 }
@@ -81,7 +94,7 @@ load = function(uri){
 		var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
 		eval(delayRequires.join(";"));
 	}catch(e){ 
-		print(e);
+		print("load exception for: " + uri + ", exception: " + e);
 	}
 	return true;
 }
@@ -122,7 +135,13 @@ for(var x=0; x<dependencies.length; x++){
 		if(dep.indexOf("(") != -1){
 			dep = dojo.hostenv.getDepsForEval(dep)[0];
 		}
-		dojo.hostenv.loadModule(dep, null, true);
+
+		//Don't process loader_xd.js since it has some regexps 
+		//and mentions of dojo.require/provide, which will cause 
+		//havoc in the dojo.hostenv.loadModule() method.
+		if(dep.indexOf("loader_xd.js") == -1){
+			dojo.hostenv.loadModule(dep, null, true);
+		}
 	}catch(e){
 		print(e);
 	}
