@@ -16,24 +16,33 @@ dojo.widget.html.DemoEngine = function(){
 
 	this.navigationNode="";
 	this.navigationClass="demoEngineNavigation";
+
 	this.collapseToNode="";
 	this.collapseToClass="collapseTo";
+
 	this.menuNavigationNode="";
 	this.menuNavigationClass="demoEngineMenuNavigation";
+
 	this.demoNavigationNode="";
 	this.demoNavigationClass="demoEngineDemoNavigation";
+
 	this.demoListingsNode="";
 	this.demoListingsClass="demoEngineDemoListings";
+
 	this.demoListingsTbody="";
 
 	this.demoContainerNode="";
 	this.demoContainerClass="demoEngineDemoContainer";
+
 	this.demoHeaderNode="";
 	this.demoHeaderClass="demoEngineDemoHeader";
+
 	this.collapsedMenuNode="";
 	this.collapsedMenuClass="demoEngineCollapsedMenu";
+
 	this.aboutNode="";
 	this.aboutClass="demoEngineAbout";
+
 	this.demoPaneNode="";	
 	this.demoTabContainer="";
 	this.registry = function() {};	
@@ -64,9 +73,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		dojo.style.hide(this.demoContainerNode);
 		dojo.style.setOpacity(this.demoContainerNode,0);
 
-		//connect to the collapsedMenuNode onclick
-		//dojo.event.connect(this.collapsedMenuNode, "onclick", this, "expandDemoNavigation");
-	
 		//Populate the menu
 		this.buildMenu();
 
@@ -145,6 +151,10 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		}
 	},
 
+	showIframe: function(e) {
+		dojo.lfx.html.fadeShow(e.currentTarget,250).play();
+	},
+
 	launchDemo: function(e) {
 		dojo.debug("Launching Demo: " + e.currentTarget.lastChild.firstChild.innerHTML);
 
@@ -156,9 +166,17 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 		this.demoTabContainer.destroyChildren();
 
-		var tempDiv =document.createElement("div");
 		demoIframe = document.createElement("iframe");
 		demoIframe.src=this.registry.definitions[e.currentTarget.lastChild.firstChild.innerHTML].url;
+		dojo.style.hide(demoIframe);
+
+		dojo.event.kwConnect({
+			srcObj:     demoIframe, 
+			srcFunc:    "onload", 
+			targetObj:    this,
+			targetFunc: "showIframe",
+			once:       true
+		});
 
 		dojo.html.removeChildren(this.aboutNode);
 		var name = document.createElement("h1");
@@ -168,10 +186,10 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		this.aboutNode.appendChild(name);
 		this.aboutNode.appendChild(about);
 
-		cn = dojo.widget.createWidget("ContentPane",{label: "Live Demo"});
-		cn.domNode.appendChild(demoIframe);
+		liveDemo = dojo.widget.createWidget("ContentPane",{label: "Live Demo"});
+		liveDemo.domNode.appendChild(demoIframe);
 
-		this.demoTabContainer.addChild(cn);
+		this.demoTabContainer.addChild(liveDemo);
 		demoIframe.parentNode.style.display="inline";
 		demoIframe.parentNode.parentNode.style.overflow="hidden";
 		dojo.io.bind({
@@ -180,18 +198,18 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 			load: dojo.lang.hitch(this, function(type,data,e) {
 				source = document.createElement("textarea");
 				source.appendChild(document.createTextNode(data));
-				var cn2 = dojo.widget.createWidget("ContentPane",{label: "Source"});
-				cn2.domNode.appendChild(source);
-				this.demoTabContainer.addChild(cn2);
-				dojo.style.show(cn2.domNode);
+				var sourcePane = dojo.widget.createWidget("ContentPane",{label: "Source"});
+				sourcePane.domNode.appendChild(source);
+				this.demoTabContainer.addChild(sourcePane);
+				dojo.style.show(sourcePane.domNode);
 
 				//let the text area take care of the scrolling 
-				cn2.domNode.style.overflow="hidden";
+				sourcePane.domNode.style.overflow="hidden";
 				
 			})
 		});
 
-		this.demoTabContainer.selectTab(cn);
+		this.demoTabContainer.selectTab(liveDemo);
 	},
 
 	expandDemoNavigation: function(e) {
