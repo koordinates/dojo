@@ -95,8 +95,8 @@ function test_combobox_dataprovider(){
 		}
 		jum.assertEquals("test40", data.length, 4);
 		for(var x=0; x<data.length; x++){
-			// jum.debug(data[x][0]);
-			jum.assertTrue("testfoo", dojo.alg.inArr(expectedLabels, data[x][0]));
+			//jum.debug(data[x][0]);
+			jum.assertTrue("testfoo", dojo.lang.find(expectedLabels, data[x][0]) != -1);
 		}
 	}
 
