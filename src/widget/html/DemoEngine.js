@@ -173,12 +173,25 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 		this.demoTabContainer.addChild(cn);
 		demoIframe.parentNode.style.display="inline";
+		demoIframe.parentNode.parentNode.style.overflow="hidden";
+		dojo.io.bind({
+			url: this.registry.definitions[e.currentTarget.lastChild.firstChild.innerHTML].url,
+			mimetype: "text/plain",
+			load: dojo.lang.hitch(this, function(type,data,e) {
+				source = document.createElement("textarea");
+				source.appendChild(document.createTextNode(data));
+				var cn2 = dojo.widget.createWidget("ContentPane",{label: "Source"});
+				cn2.domNode.appendChild(source);
+				this.demoTabContainer.addChild(cn2);
+				dojo.style.show(cn2.domNode);
 
-		cn2 = dojo.widget.createWidget("ContentPane",{label: "Source"});
-		this.demoTabContainer.addChild(cn2);
+				//let the text area take care of the scrolling 
+				cn2.domNode.style.overflow="hidden";
+				
+			})
+		});
 
 		this.demoTabContainer.selectTab(cn);
-
 	},
 
 	expandDemoNavigation: function(e) {
