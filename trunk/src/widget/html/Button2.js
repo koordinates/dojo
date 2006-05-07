@@ -101,10 +101,10 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 		var menu = dojo.widget.getWidgetById(menuId);
 		if ( !menu ) { return; }
 
-		if ( menu.open && !menu.isShowing) {
+		if ( menu.open && !menu.isShowingNow) {
 			var pos = dojo.style.getAbsolutePosition(this.domNode, false);
 			menu.open(pos.x, pos.y+this.height, this);
-		} else if ( menu.close && menu.isShowing ){
+		} else if ( menu.close && menu.isShowingNow ){
 			menu.close();
 		} else {
 			menu.toggle();
