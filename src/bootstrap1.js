@@ -165,7 +165,7 @@ dojo.deprecated = function(behaviour, extra, removal){
  */
 dojo.inherits = function(subclass, superclass){
 	if(typeof superclass != 'function'){ 
-		dojo.raise("superclass: "+superclass+" borken");
+		dojo.raise("dojo.inherits: superclass argument ["+superclass+"] must be a function (subclass: [" + subclass + "']");
 	}
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
