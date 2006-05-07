@@ -179,7 +179,7 @@ dojo.widget.defineWidget(
 		},
 		
 		fillInTemplate: function(){
-			dojo.event.connect(this.domNode, "onclick", this, "killEvent");
+			// dojo.event.connect(this.domNode, "onclick", this, "killEvent");
 		},
 
 		hide: function(){

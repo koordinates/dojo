@@ -232,8 +232,7 @@ dojo.event.browser = new function(){
 			if(!evt.currentTarget){ evt.currentTarget = (sender ? sender : evt.srcElement); }
 			if(!evt.layerX){ evt.layerX = evt.offsetX; }
 			if(!evt.layerY){ evt.layerY = evt.offsetY; }
-			// FIXME: scroll position query is duped from dojo.html ... otherwise we'd have a dependency on that whole module.
-			// Various factions could be upset either way, I don't know how to square that circle.
+			// FIXME: scroll position query is duped from dojo.html to avoid dependency on that entire module
 			if(!evt.pageX){ evt.pageX = evt.clientX + (window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0) }
 			if(!evt.pageY){ evt.pageY = evt.clientY + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) }
 			// mouseover

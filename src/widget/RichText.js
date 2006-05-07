@@ -41,6 +41,12 @@ dojo.widget.defineWidget(
 		
 		/** whether to use the active-x object in IE */
 		useActiveX: false,
+
+		/* whether to use relative URLs for images - if this is enabled
+       	images will be given absolute URLs when inside the editor but
+       	will be changed to use relative URLs (to the current page) on save
+		*/
+		relativeImageUrls: false,
 		
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
@@ -90,7 +96,6 @@ dojo.widget.defineWidget(
 			this.addKeyHandler("a", ctrl, exec("selectall"));
 			//this.addKeyHandler("k", ctrl, exec("createlink", ""));
 			//this.addKeyHandler("K", ctrl, exec("unlink"));
-			this.addKeyHandler("Z", ctrl, exec("redo"));
 			this.addKeyHandler("s", ctrl, function () { this.save(true); });
 			
 			this.addKeyHandler("1", ctrl, exec("formatblock", "h1"));
@@ -99,7 +104,13 @@ dojo.widget.defineWidget(
 			this.addKeyHandler("4", ctrl, exec("formatblock", "h4"));
 					
 			this.addKeyHandler("\\", ctrl, exec("insertunorderedlist"));
+			if(!dojo.render.html.ie){
+				this.addKeyHandler("Z", ctrl, exec("redo"));
+			}
 		},
+
+
+		events: ["onBlur", "onFocus", "onKeyPress", "onKeyDown", "onKeyUp", "onClick"],
 
 		/**
 		 * Transforms the node referenced in this.domNode into a rich text editing
@@ -131,7 +142,7 @@ dojo.widget.defineWidget(
 					}
 				}
 				dojo.dom.insertBefore(this.domNode, this.textarea);
-				// this.domNode.innerHTML = html;
+				this.domNode.innerHTML = html;
 				
 				if(this.textarea.form){
 					dojo.event.connect(this.textarea.form, "onsubmit", 
@@ -190,6 +201,7 @@ dojo.widget.defineWidget(
 			//if (typeof document.body.contentEditable != "undefined") {
 			if (this.useActiveX && dojo.render.html.ie) { // active-x
 				this._drawObject(html);
+				// dojo.debug(this.object.document);
 			} else if (dojo.render.html.ie) { // contentEditable, easy
 				this.editNode = document.createElement("div");
 				with (this.editNode) {
@@ -210,11 +222,9 @@ dojo.widget.defineWidget(
 
 				this.domNode.appendChild(this.editNode);
 
-				var events = ["onBlur", "onFocus", "onKeyPress",
-					"onKeyDown", "onKeyUp", "onClick"];
-				for (var i = 0; i < events.length; i++) {
-					this.connect(this.editNode, events[i].toLowerCase(), events[i]);
-				}
+				dojo.lang.forEach(this.events, function(e){
+					dojo.event.connect(this.editNode, e.toLowerCase(), this, e);
+				}, this);
 			
 				this.window = window;
 				this.document = document;
@@ -355,15 +365,28 @@ dojo.widget.defineWidget(
 				this.iframe.height = height;
 			}
 
-			// show existing content behind iframe for now
 			var tmpContent = document.createElement('div');
-			tmpContent.style.position = "absolute";
 			tmpContent.innerHTML = html;
-			if (tmpContent.firstChild && tmpContent.firstChild.style) {
-				tmpContent.firstChild.style.marginTop = this._firstChildContributingMargin+"px";
-				tmpContent.lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
-				
+
+			// make relative image urls absolute
+			if (this.relativeImageUrls) {
+				var imgs = tmpContent.getElementsByTagName('img');
+				for (var i=0; i<imgs.length; i++) {
+					imgs[i].src = (new dojo.uri.Uri(window.location, imgs[i].src)).toString();
+				}
+				html = tmpContent.innerHTML;
 			}
+
+			// fix margins on tmpContent
+			var firstChild = dojo.dom.firstElement(tmpContent);
+			var lastChild = dojo.dom.lastElement(tmpContent);
+			if (firstChild) {
+				firstChild.style.marginTop = this._firstChildContributingMargin+"px";
+				lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
+			}
+
+			// show existing content behind iframe for now
+			tmpContent.style.position = "absolute";
 			this.domNode.appendChild(tmpContent);
 			this.domNode.appendChild(this.iframe);
 
@@ -381,9 +404,13 @@ dojo.widget.defineWidget(
 						// for opera
 						this.window = this.iframe.contentDocument.window;
 					}
-					this.document = this.iframe.contentDocument;
-								// curry the getStyle function
+					if(dojo.render.html.moz){
+						this.document = this.iframe.contentWindow.document
+					}else{
+						this.document = this.iframe.contentDocument;
+					}
 
+					// curry the getStyle function
 					var getStyle = (function (domNode) { return function (style) {
 						return dojo.style.getStyle(domNode, style);
 					}; })(this.domNode);
@@ -420,6 +447,9 @@ dojo.widget.defineWidget(
 
 					tmpContent.parentNode.removeChild(tmpContent);
 					this.document.body.innerHTML = html;
+					if(oldMoz){
+						this.document.designMode = "on";
+					}
 					this.onLoad();
 				}else{
 					tmpContent.parentNode.removeChild(tmpContent);
@@ -458,6 +488,10 @@ dojo.widget.defineWidget(
 			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
 			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
 
+			dojo.lang.forEach(this.events, function(e){
+				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
+			}, this);
+
 			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
 				'<title></title>' +
 				'<style type="text/css">' +
@@ -478,6 +512,7 @@ dojo.widget.defineWidget(
 			this.isLoaded = true;
 			if (this.object){
 				this.document = this.object.DOM;
+				this.window = this.document.parentWindow;
 				this.editNode = this.document.body.firstChild;
 			}else if (this.iframe){
 				this.editNode = this.document.body;
@@ -537,7 +572,11 @@ dojo.widget.defineWidget(
 		},
 
 		/** Fired on keydown */
-		onKeyDown: function (e) {
+		onKeyDown: function(e){
+			if((!e)&&(this.object)){
+				e = dojo.event.browser.fixEvent(this.window.event);
+			}
+			dojo.debug("onkeydown:", e.keyCode);
 			// we need this event at the moment to get the events from control keys
 			// such as the backspace. It might be possible to add this to Dojo, so that
 			// keyPress events can be emulated by the keyDown and keyUp detection.
@@ -548,20 +587,34 @@ dojo.widget.defineWidget(
 				// better if it added 4 "&nbsp;" chars in an undoable way.
 				// Unfortuantly pasteHTML does not prove to be undoable 
 				this.execCommand((e.shiftKey ? "outdent" : "indent"));
+			}else if(dojo.render.html.ie){
+				if((65 <= e.keyCode)&&(e.keyCode <= 90)){
+					e.charCode = e.keyCode;
+					this.onKeyPress(e);
+				}
+				// dojo.debug(e.ctrlKey);
+				// dojo.debug(e.keyCode);
+				// dojo.debug(e.charCode);
+				// this.onKeyPress(e);
 			}
 		},
 		
 		/** Fired on keyup */
-		onKeyUp: function (e) {
+		onKeyUp: function(e){
+			return;
 		},
 		
 		KEY_CTRL: 1,
 		
 		/** Fired on keypress. */
-		onKeyPress: function (e) {
+		onKeyPress: function(e){
+			if((!e)&&(this.object)){
+				e = dojo.event.browser.fixEvent(this.window.event);
+			}
 			// handle the various key events
 
 			var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
+			dojo.debug("char:", character);
 			var code = e.keyCode;
 
 			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
@@ -891,7 +944,7 @@ dojo.widget.defineWidget(
 				(dojo.render.html.safari && supportedBy.safari) ||
 				(dojo.render.html.opera && supportedBy.opera);
 		},
-		
+
 		/**
 		 * Executes a command in the Rich Text area
 		 *
@@ -922,10 +975,17 @@ dojo.widget.defineWidget(
 					tableInfo.Caption = arr["Caption"];
 				}
 			
-				if (arguments.length == 1) {
+				dojo.debug(this.object.object.DOM.documentElement.document.body.innerHTML);
+				if(command == "inserthtml"){
+					var insertRange = this.document.selection.createRange();
+					insertRange.select();
+					insertRange.pasteHTML(argument);
+					insertRange.collapse(true);
+					return true;
+				}else if(arguments.length == 1){
 					return this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt);
-				} else {
+				}else{
 					return this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt, argument);
 				}
@@ -935,38 +995,11 @@ dojo.widget.defineWidget(
 				// on IE, we can use the pasteHTML method of the textRange object
 				// to get an undo-able innerHTML modification
 				if(dojo.render.html.ie){
+					dojo.debug("inserthtml breaks the undo stack when not using the ActiveX version of the control!");
 					var insertRange = this.document.selection.createRange();
-					insertRange.collapse(true);
-					/*
-					insertRange.pasteHTML("&nbsp;");
 					insertRange.select();
-					*/
-
-					/*
-					argument = argument.replace(/</g, "&#060;");
-					argument = argument.replace(/>/g, "&#060;");
-					alert(argument);
-					*/
-					// FIXME: this never inserts actual. It does not appear
-					// possible to provide an HTML serialization to the clipboard
-					// via setData from script
-					this.window.clipboardData.setData("Text", argument);
-					this.document.execCommand("paste");
-
-					// var range = this.document.selection.createRange();
-
-					// alert(range.pasteHTML);
-					// this.document.body.fireEvent("ondragstart");
-
-					// range.pasteHTML(argument);
-
-					// this.window.clipboardData.setData("Text", argument);
-					// var tevt = document.createEventObject();
-					// tevt.ctrlKey = true;
-					// tevt.keyCode = 67;
-					// this.document.body.fireEvent("onkeydown", tevt);
-					// this.document.body.fireEvent("onkeyup", tevt);
-
+					insertRange.pasteHTML(argument);
+					insertRange.collapse(true);
 					return true;
 				}else{
 					return this.document.execCommand(command, false, argument);			
@@ -1033,9 +1066,14 @@ dojo.widget.defineWidget(
 				setTimeout(function(){tr.select();}, 1);
 			} else {
 				// dojo.debug("command:", command, "arg:", argument);
+
 				argument = arguments.length > 1 ? argument : null;
+				if(dojo.render.html.moz){
+					this.document = this.iframe.contentWindow.document
+				}
+				returnValue = this.document.execCommand(command, false, argument);
+
 				// try{
-					returnValue = this.document.execCommand(command, false, argument);
 				// }catch(e){
 				// 	dojo.debug(e);
 				// }
@@ -1224,6 +1262,29 @@ dojo.widget.defineWidget(
 			dojo.lang.forEach(this.contentFilters, function(ef){
 				ec = ef(ec);
 			});
+
+			if (this.relativeImageUrls) {
+				// why use a regexp instead of dom? because IE is stupid 
+				// and won't let us set img.src to a relative URL
+				// this comes after contentFilters because once content
+				// gets innerHTML'd img urls will be fully qualified
+				var siteBase = window.location.protocol + "//" + window.location.host;
+				var pathBase = window.location.pathname;
+				if (pathBase.match(/\/$/)) {
+					// ends with slash, match full path
+				} else {
+					// match parent path to find siblings
+					var pathParts = pathBase.split("/");
+					if (pathParts.length) {
+						pathParts.pop();
+					}
+					pathBase = pathParts.join("/") + "/";
+
+				}
+				
+				var sameSite = new RegExp("(<img[^>]*\ src=[\"'])("+siteBase+"("+pathBase+")?)", "ig");
+				ec = ec.replace(sameSite, "$1");
+			}
 			return ec;
 		},
 		

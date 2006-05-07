@@ -34,6 +34,24 @@ if(typeof window == 'undefined'){
 		}
 	}
 
+	if(((djConfig["baseScriptUri"] == "")||(djConfig["baseRelativePath"] == "")) &&(document && document.getElementsByTagName)){
+		var scripts = document.getElementsByTagName("script");
+		var rePkg = /(__package__|dojo|bootstrap1)\.js([\?\.]|$)/i;
+		for(var i = 0; i < scripts.length; i++) {
+			var src = scripts[i].getAttribute("src");
+			if(!src) { continue; }
+			var m = src.match(rePkg);
+			if(m) {
+				root = src.substring(0, m.index);
+				if(src.indexOf("bootstrap1") > -1) { root += "../"; }
+				if(!this["djConfig"]) { djConfig = {}; }
+				if(djConfig["baseScriptUri"] == "") { djConfig["baseScriptUri"] = root; }
+				if(djConfig["baseRelativePath"] == "") { djConfig["baseRelativePath"] = root; }
+				break;
+			}
+		}
+	}
+
 	// fill in the rendering support information in dojo.render.*
 	var dr = dojo.render;
 	var drh = dojo.render.html;

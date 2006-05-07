@@ -247,14 +247,15 @@ dojo.io._dispatchNextQueueBind = function(){
 dojo.io._bindQueue = [];
 dojo.io._queueBindInFlight = false;
 
-dojo.io.argsFromMap = function(map, encoding){
+dojo.io.argsFromMap = function(map, encoding, last){
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var mapped = [];
-	var domap = function(elt){
-		mapped.push(enc(name)+"="+enc(elt));
-	}
 	var control = new Object();
 	for(var name in map){
+		var domap = function(elt){
+			var val = enc(name)+"="+enc(elt);
+			mapped[(last == name) ? "push" : "unshift"](val);
+		}
 		if(!control[name]){
 			var value = map[name];
 			// FIXME: should be isArrayLike?

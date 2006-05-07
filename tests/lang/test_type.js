@@ -191,28 +191,4 @@ function test_lang_isOfTypeToo() {
 function test_lang_type(){
 	jum.assertEquals("dojo.lang.getObject", dojo.lang.getObject, dojo.lang.getObject("dojo.lang.getObject")); 
 	jum.assertEquals("dojo.lang.doesObjectExist", true, dojo.lang.doesObjectExist("dojo.lang.doesObjectExist"));
-
-	//	for the rest
-	var baseClass=function(s){
-		this.str=s;
-	};
-	var subClass=function(s, t){
-		baseClass.call(this, s);
-		this.test=t;
-	};
-	subClass.prototype=new baseClass("foo");
-	subClass.prototype.constructor=subClass;
-	
-	var base=new baseClass("foo");
-	var sub=new subClass("bar", "baz");
-
-	jum.assertEquals("dojo.lang.getConstructor", subClass, dojo.lang.getConstructor(sub));
-	jum.assertEquals("dojo.lang.isConstructedBy0", true, dojo.lang.isConstructedBy(sub, subClass));
-	jum.assertEquals("dojo.lang.isConstructedBy1", false, dojo.lang.isConstructedBy(sub, baseClass));
-	jum.assertEquals("dojo.lang.isSubOf", true, dojo.lang.isSubOf(sub, baseClass));
-	jum.assertEquals("dojo.lang.isBaseOf", true, dojo.lang.isBaseOf(baseClass, sub));
-
-	//	for create instance
-	var test=dojo.lang.createInstance("Date");
-	jum.assertEquals("dojo.lang.createInstance", new Date().getFullYear(), test.getFullYear());
 }

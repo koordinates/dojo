@@ -74,8 +74,8 @@
 </style>
 <script type="text/javascript" src="dojo/dojo.js"></script>
 <script type="text/javascript">
-dojo.require("dojo.xml.*");
 dojo.require("dojo.event.*");
+dojo.require("dojo.html");
 
 var Picker = {
 	init: function() {
@@ -87,7 +87,7 @@ var Picker = {
 			dojo.event.connect(a[i], "onclick", Picker, "click");
 		}
 
-		Picker.select(dojo.xml.domUtil.getFirstChildTag(td[0]));
+		Picker.select(dojo.html.firstElement(td[0], "a"));
 	},
 
 	click: function(e) {
@@ -96,22 +96,22 @@ var Picker = {
 	},
 
 	select: function(node) {
-		dojo.xml.htmlUtil.addClass(node, "selected");
+		dojo.html.addClass(node, "selected");
 		try { node.blur(); } catch(e) {}
 
-		var lnk = dojo.xml.domUtil.getFirstChildTag(node.parentNode);
+		var lnk = dojo.html.firstElement(node.parentNode,"a");
 		while(lnk) {
 			if(lnk != node) {
-				dojo.xml.htmlUtil.removeClass(lnk, "selected");
+				dojo.html.removeClass(lnk, "selected");
 			}
-			lnk = dojo.xml.domUtil.getNextSiblingTag(lnk);
+			lnk = dojo.html.nextElement(lnk, "a");
 		}
 
 		var id = node.href.split("#")[1];
-		var div = dojo.xml.domUtil.getFirstChildTag(document.getElementById("picker-content"));
+		var div = dojo.html.firstElement(document.getElementById("picker-content"), "div");
 		while(div) {
 			div.style.display = (div.id == id ? "block" : "none");
-			div = dojo.xml.domUtil.getNextSiblingTag(div);
+			div = dojo.html.nextElement(div, "div");
 		}
 	}
 };

@@ -93,14 +93,16 @@ dojo.widget.manager = new function(){
 		return dojo.widget.manager.getWidgetsByType(id);
 	}
 
-	this.getWidgetsByFilter = function(unaryFunc){
+	this.getWidgetsByFilter = function(unaryFunc, onlyOne){
 		var ret = [];
-		dojo.lang.forEach(this.widgets, function(x){
+		dojo.lang.every(this.widgets, function(x){
 			if(unaryFunc(x)){
 				ret.push(x);
+				if(onlyOne){return false;}
 			}
+			return true;
 		});
-		return ret;
+		return (onlyOne ? ret[0] : ret);
 	}
 
 	this.getAllWidgets = function() {

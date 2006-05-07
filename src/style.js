@@ -645,10 +645,33 @@ dojo.require("dojo.lang.common");
 
 	// show/hide are library constructs
 
-	// setShowing() sets style.display to either '' or 'none'
-	// note: the computed style of node may still cause it to "display" (or not)
+	// show() 
+	// if the node.style.display == 'none' then 
+	// set style.display to '' or the value cached by hide()
+	ds.show = function(node){
+		node = dojo.byId(node);
+		if(ds.getStyleProperty(node, 'display')=='none'){
+			ds.setStyle(node, 'display', (node.dojoDisplayCache||''));
+			node.dojoDisplayCache = undefined;	// cannot use delete on a node in IE6
+		}
+	}
+
+	// if the node.style.display == 'none' then 
+	// set style.display to '' or the value cached by hide()
+	ds.hide = function(node){
+		node = dojo.byId(node);
+		if(typeof node["dojoDisplayCache"] == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
+			var d = ds.getStyleProperty(node, 'display')
+			if(d!='none'){
+				node.dojoDisplayCache = d;
+			}
+		}
+		ds.setStyle(node, 'display', 'none');
+	}
+
+	// setShowing() calls show() if showing is true, hide() otherwise
 	ds.setShowing = function(node, showing){
-		ds.setStyle(node, 'display', (showing ? '' : 'none'));
+		ds[(showing ? 'show' : 'hide')](node);
 	}
 
 	// isShowing() is true if the node.style.display is not 'none'
@@ -660,16 +683,6 @@ dojo.require("dojo.lang.common");
 	// Call setShowing() on node with the complement of isShowing(), then return the new value of isShowing()
 	ds.toggleShowing = function(node){
 		return ds._toggle(node, ds.isShowing, ds.setShowing);
-	}
-
-	// show() calls setShowing(true)
-	ds.show  = function(node){
-		ds.setShowing(node, true);
-	}
-
-	// hide() calls setShowing(false)
-	ds.hide = function(node){
-		ds.setShowing(node, false);
 	}
 
 	// display is a CSS concept

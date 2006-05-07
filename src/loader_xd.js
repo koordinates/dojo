@@ -1,11 +1,7 @@
+//Cross-domain package loader.
 
-//TODO: what about case where we get a provide before the require for same package? Any race condition
-//that would cause trouble?
-//TODO: Test the __package__.js file for src/undo: it does a require then a provide.
-//TODO: how will xd loading work with debugAtAllCosts?
-//TODO: have a test that does a load after the fact, and has onload listeners.
-//TODO: change build process so you can ask for a dojo.js that has this loader.
-//TODO: widgets won't work fully (HTML/CSS) and also because of goofy requireIf() thing.
+//FIXME: How will xd loading work with debugAtAllCosts? Any bad interactions?
+//FIXME: widgets won't work fully (HTML/CSS) and also because of the requireIf() thing.
 
 dojo.hostenv.resetXd = function(){
 	//This flag indicates where or not we have crossed into xdomain territory. Once any package says
@@ -13,8 +9,7 @@ dojo.hostenv.resetXd = function(){
 	//to evaluate packages in order. If there is a xdomain package followed by a xhr package, we can't load
 	//the xhr package until the one before it finishes loading. The text of the xhr package will be converted
 	//to match the format for a xd package and put in the xd load queue.
-	//You can force all packages to be treated as xd by setting the djConfig.forceXDomain. This might
-	//make debugging easier for non-xd dojo uses.
+	//You can force all packages to be treated as xd by setting the djConfig.forceXDomain.
 	this.isXDomain = djConfig.forceXDomain || false;
 
 	this.xdTimer = 0;
