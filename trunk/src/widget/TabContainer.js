@@ -69,7 +69,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 		// Display the selected tab
 		if(this.selectedTabWidget){
-			this.selectTab(this.selectedTabWidget);
+			this.selectTab(this.selectedTabWidget, true);
 		}
 	},
 
@@ -94,7 +94,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			var img = document.createElement("div");
 			dojo.html.addClass(img, "dojoTabPaneTabClose");
 			var self = this;
-			dojo.event.connect(img, "onclick", function(){ self._runOnCloseTab(tab); });
+			dojo.event.connect(img, "onclick", function(evt){ self._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt); });
 			dojo.event.connect(img, "onmouseover", function(){ dojo.html.addClass(img,"dojoTabPaneTabCloseHover"); });
 			dojo.event.connect(img, "onmouseout", function(){ dojo.html.removeClass(img,"dojoTabPaneTabCloseHover"); });
 			span.appendChild(img);
@@ -104,7 +104,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		
 		var self = this;
 		dojo.event.connect(tab.div, "onclick", function(){ self.selectTab(tab); });
-		
+
 		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
     		this.selectedTabWidget = tab;
         } else {
@@ -156,7 +156,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
         if (this.selectedTabWidget === tab) {
             this.selectedTabWidget = undefined;
             if (this.children.length > 0) {
-                this.selectTab(this.children[0]);
+                this.selectTab(this.children[0], true);
             }
         }
 
@@ -164,22 +164,32 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		this._doSizing();
     },
 
-    selectTab: function(tab) {
+    selectTab: function(tab, _noRefresh) {
 		// Deselect old tab and select new one
 		if (this.selectedTabWidget) {
 			this._hideTab(this.selectedTabWidget);
 		}
 		this.selectedTabWidget = tab;
-		this._showTab(tab);
+		this._showTab(tab, _noRefresh);
 	},
-	
-	_showTab: function(tab) {
+
+	_showTab: function(tab, _noRefresh) {
 		dojo.html.addClass(tab.div, "current");
 		tab.selected=true;
 		if ( this.useVisibility && !dojo.render.html.ie ) {
 			tab.domNode.style.visibility="visible";
 		} else {
-			tab.show();
+			// make sure we dont refresh onClose and on postCreate
+			// speeds up things a bit when using refreshOnShow and fixes #646
+			if(_noRefresh && tab.refreshOnShow){
+				var tmp = tab.refreshOnShow;
+				tab.refreshOnShow = false;
+				tab.show();
+				tab.refreshOnShow = tmp;
+			}else{
+				tab.show();
+			}
+
 			tab.resizeTo(
 				dojo.style.getContentWidth(this.containerNode),
 				dojo.style.getContentHeight(this.containerNode)
@@ -204,8 +214,11 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			if(fcn(this,tab)) {
 				this.removeChild(tab);
 			}
-		} else
+		} else {
 			this.removeChild(tab);
+		}
+		// makes sure we can clean up executeScripts in ContentPane onUnLoad
+		tab.destroy();
 	},
 
 	onResized: function() {
@@ -221,4 +234,3 @@ dojo.lang.extend(dojo.widget.Widget, {
 	label: "",
 	selected: false	// is this tab currently selected?
 });
-
