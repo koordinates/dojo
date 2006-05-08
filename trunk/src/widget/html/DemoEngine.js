@@ -158,25 +158,16 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	launchDemo: function(e) {
 		dojo.debug("Launching Demo: " + e.currentTarget.lastChild.firstChild.innerHTML);
 
-		implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1000).play();
-		//show = dojo.lfx.html.fadeShow(this.demoContainerNode,250).play();
-		dojo.style.setOpacity(this.demoContainerNode, 1);
+		implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1500);
+		show = dojo.lfx.html.fadeIn(this.demoContainerNode,500);
+		dojo.style.setOpacity(this.demoContainerNode, 0);
 		dojo.style.show(this.demoContainerNode);
-		//dojo.lfx.combine(implode,show).play();
+		dojo.lfx.chain(implode,show).play();
 
 		this.demoTabContainer.destroyChildren();
 
 		demoIframe = document.createElement("iframe");
 		demoIframe.src=this.registry.definitions[e.currentTarget.lastChild.firstChild.innerHTML].url;
-		dojo.style.hide(demoIframe);
-
-		dojo.event.kwConnect({
-			srcObj:     demoIframe, 
-			srcFunc:    "onload", 
-			targetObj:    this,
-			targetFunc: "showIframe",
-			once:       true
-		});
 
 		dojo.html.removeChildren(this.aboutNode);
 		var name = document.createElement("h1");
