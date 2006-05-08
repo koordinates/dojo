@@ -3,23 +3,26 @@ dojo.provide("dojo.widget.tags");
 
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
+dojo.require("dojo.lang.extras");
+dojo.require("dojo.lang.declare");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
 
-dojo.widget.Widget = function(){
-	// these properties aren't primitives and need to be created on a per-item
-	// basis.
-	this.children = [];
-	// this.selection = new dojo.widget.Selection();
-	// FIXME: need to replace this with context menu stuff
-	this.extraArgs = {};
-}
-// FIXME: need to be able to disambiguate what our rendering context is
-//        here!
-
-// needs to be a string with the end classname. Every subclass MUST
-// over-ride.
-dojo.lang.extend(dojo.widget.Widget, {
+dojo.declare("dojo.widget.Widget", null, {
+	initializer: function() {								 
+		// these properties aren't primitives and need to be created on a per-item
+		// basis.
+		this.children = [];
+		// this.selection = new dojo.widget.Selection();
+		// FIXME: need to replace this with context menu stuff
+		this.extraArgs = {};
+	},
+	// FIXME: need to be able to disambiguate what our rendering context is
+	//        here!
+	//
+	// needs to be a string with the end classname. Every subclass MUST
+	// over-ride.
+	//
 	// base widget properties
 	parent: null,
 	// obviously, top-level and modal widgets should set these appropriately
@@ -520,17 +523,7 @@ dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*functio
 
 	if((!ctor)&&(props["classConstructor"])){
 		ctor = props.classConstructor;
+		delete props.classConstrutor;
 	}
-	if(!ctor){ ctor = function(){}; }
-	var subclass = function(){
-		try{
-			superclass.call(this);
-		}catch(e){ dojo.debug("superclass construction failed: ", e); }
-		try{
-			ctor.call(this);
-		}catch(e){ dojo.debug("constructor failed: ", e); }
-	}
-	dojo.inherits(subclass, superclass);
-	dojo.lang.extend(subclass, props);
-	dojo.lang.setObjPathValue(widgetClass, subclass);
+	dojo.declare(widgetClass, superclass, props, ctor);
 }

@@ -227,23 +227,22 @@ dojo.widget.getDojoEventsFromStr = function(str){
 	return ret;
 }
 
-
+/*
 dojo.widget.buildAndAttachTemplate = function(obj, templatePath, templateCssPath, templateString, targetObj) {
 	this.buildFromTemplate(obj, templatePath, templateCssPath, templateString);
 	var node = dojo.dom.createNodesFromText(obj.templateString, true)[0];
 	this.attachTemplateNodes(node, targetObj||obj, dojo.widget.getDojoEventsFromStr(templateString));
 	return node;
 }
+*/
 
-dojo.widget.DomWidget = function(){
-	dojo.widget.Widget.call(this);
-	if((arguments.length>0)&&(typeof arguments[0] == "object")){
-		this.create(arguments[0]);
-	}
-}
-dojo.inherits(dojo.widget.DomWidget, dojo.widget.Widget);
-
-dojo.lang.extend(dojo.widget.DomWidget, {
+dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
+	initializer: function() {
+		if((arguments.length>0)&&(typeof arguments[0] == "object")){
+			this.create(arguments[0]);
+		}
+	},
+								 
 	templateNode: null,
 	templateString: null,
 	preventClobber: false,
@@ -371,7 +370,7 @@ dojo.lang.extend(dojo.widget.DomWidget, {
 			//alert("recurse from " + this.widgetId);
 			// build any sub-components with us as the parent
 			var fragParser = dojo.widget.getParser();
-			fragParser.createComponents(frag, this);
+			fragParser.createSubComponents(frag, this);
 		}
 	},
 

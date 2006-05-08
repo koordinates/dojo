@@ -6,73 +6,55 @@ dojo.require("dojo.dom");
 dojo.widget.Parse = function(fragment) {
 	this.propertySetsList = [];
 	this.fragment = fragment;
-
-	/*	createComponents recurses over a raw JavaScript object structure,
-			and calls the corresponding handler for its normalized tagName if it exists
-	*/
-	this.createComponents = function(fragment, parentComp){
-		var djTags = dojo.widget.tags;
-		var returnValue = [];
-		// this allows us to parse without having to include the parent
-		// it is commented out as it currently breaks the existing mechanism for
-		// adding widgets programmatically.  Once that is fixed, this can be used
-		/*if( (fragment["tagName"])&&
-			(fragment != fragment["nodeRef"])){
-			var tn = new String(fragment["tagName"]);
-			// we split so that you can declare multiple
-			// non-destructive widgets from the same ctor node
-			var tna = tn.split(";");
-			for(var x=0; x<tna.length; x++){
-				var ltn = dojo.text.trim(tna[x]).toLowerCase();
-				if(djTags[ltn]){
-					fragment.tagName = ltn;
-					returnValue.push(djTags[ltn](fragment, this, parentComp, count++));
-				}else{
-					if(ltn.substr(0, 5)=="dojo:"){
-						dojo.debug("no tag handler registed for type: ", ltn);
-					}
-				}
-			}
-		}*/
-		for(var item in fragment){
-			var built = false;
-			// if we have items to parse/create at this level, do it!
-			try{
-				if( fragment[item] && (fragment[item]["tagName"])&&
-					(fragment[item] != fragment["nodeRef"])){
-					var tn = new String(fragment[item]["tagName"]);
-					// we split so that you can declare multiple
-					// non-destructive widgets from the same ctor node
-					var tna = tn.split(";");
-					for(var x=0; x<tna.length; x++){
-						var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
-						if(djTags[ltn]){
-							built = true;
-							// var tic = new Date();
-							fragment[item].tagName = ltn;
-							var ret = djTags[ltn](fragment[item], this, parentComp, fragment[item]["index"]);
-							returnValue.push(ret);
-						}else{
-							if((dojo.lang.isString(ltn))&&(ltn.substr(0, 5)=="dojo:")){
-								dojo.debug("no tag handler registed for type: ", ltn);
-							}
+	
+	this.createComponents = function(frag, parentComp){
+		var comps = [ ];
+		var built = false;
+		// if we have items to parse/create at this level, do it!
+		try{
+			if((frag)&&(frag["tagName"])&&(frag!=frag["nodeRef"])){
+				var djTags = dojo.widget.tags;
+				// we split so that you can declare multiple
+				// non-destructive widgets from the same ctor node
+				var tna = String(frag["tagName"]).split(";");
+				for(var x=0; x<tna.length; x++){
+					var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
+					if(djTags[ltn]){
+						built = true;
+						frag.tagName = ltn;
+						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
+						comps.push(ret);
+					}else{
+						if((dojo.lang.isString(ltn))&&(ltn.substr(0, 5)=="dojo:")){
+							dojo.debug("no tag handler registed for type: ", ltn);
 						}
 					}
 				}
-			}catch(e){
-				dojo.debug("fragment creation error:", e);
-				// throw(e);
-				// IE is such a bitch sometimes
 			}
+		}catch(e){
+			dojo.debug("dojo.widget.Parse: error:", e);
+			// throw(e);
+			// IE is such a bitch sometimes
+		}
+		// if there's a sub-frag, build widgets from that too
+		if(!built){
+			comps = comps.concat(this.createSubComponents(frag, parentComp));
+		}
+		return comps;
+	}
 
-			// if there's a sub-frag, build widgets from that too
-			if( (!built) && (typeof fragment[item] == "object")&&
-				(fragment[item] != fragment.nodeRef)&&
-				(fragment[item] != fragment["tagName"])){
-				returnValue.push(this.createComponents(fragment[item], parentComp));
+	/*	createSubComponents recurses over a raw JavaScript object structure,
+			and calls the corresponding handler for its normalized tagName if it exists
+	*/
+	this.createSubComponents = function(fragment, parentComp){
+		var frag, comps = [];
+		for(var item in fragment){
+			frag = fragment[item];
+			if ((frag)&&(typeof frag == "object")&&(frag!=fragment.nodeRef)&&(frag!=fragment["tagName"])){
+				comps = comps.concat(this.createComponents(frag, parentComp));
 			}
 		}
-		return returnValue;
+		return comps;
 	}
 
 	/*  parsePropertySets checks the top level of a raw JavaScript object
