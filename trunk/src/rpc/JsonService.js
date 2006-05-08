@@ -50,6 +50,8 @@ dojo.inherits(dojo.rpc.JsonService, dojo.rpc.RpcService);
 dojo.lang.extend(dojo.rpc.JsonService, {
 
 	bustCache: false,
+	
+	contentType: "application/json-rpc",
 
 	lastSubmissionId: 0,
 
@@ -64,6 +66,7 @@ dojo.lang.extend(dojo.rpc.JsonService, {
 			url: url||this.serviceUrl,
 			postContent: this.createRequest(method, parameters),
 			method: "POST",
+			contentType: this.contentType,
 			mimetype: "text/json",
 			load: this.resultCallback(deferredRequestHandler),
 			preventCache:this.bustCache 
