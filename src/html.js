@@ -546,6 +546,6 @@ dojo.html.renderedTextContent = function() {
 	return dojo.html._callExtrasDeprecated('renderedTextContent', arguments);
 }
 
-dojo.html.renderedTextContent = function() {
+dojo.html.BackgroundIframe = function() {
 	return dojo.html._callExtrasDeprecated('BackgroundIframe', arguments);
 }
