@@ -39,6 +39,7 @@ dojo.widget.defineWidget(
 			var tmp = new Date(this.inputNode.value);
 			this.datePicker.date = tmp;
 			this.datePicker.setDate(dojo.widget.DatePicker.util.toRfcDate(tmp));
+			this.datePicker.initData();
 			this.datePicker.initUI();
 		}
 	},

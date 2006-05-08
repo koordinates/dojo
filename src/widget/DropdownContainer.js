@@ -43,7 +43,7 @@ dojo.widget.defineWidget(
 			if(this.iconURL){ this.buttonNode.src = this.iconURL; }
 			if(this.iconAlt){ this.buttonNode.alt = this.iconAlt; }
 
-			dojo.event.connect(this.valueInputNode, "onkeyup", this, "onInputChange");
+			dojo.event.connect(this.valueInputNode, "onchange", this, "onInputChange");
 		},
 
 		onDropdown: function(evt){
