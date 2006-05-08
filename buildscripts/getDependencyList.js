@@ -63,7 +63,7 @@ if(hostenvType.constructor == Array){
 if(dependencies["prefixes"]){
 	var tmp = dependencies.prefixes;
 	for(var x=0; x<tmp.length; x++){
-		dojo.hostenv.setModulePrefix(tmp[x][0], tmp[x][1]);
+		dojo.setModulePrefix(tmp[x][0], tmp[x][1]);
 	}
 }
 
