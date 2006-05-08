@@ -184,7 +184,7 @@ dojo.io.ScriptSrcTransport = new function(){
 			state.jsonpCall = function(data){
 				dojo.io.ScriptSrcTransport._finish(this, "jsonp", data);
 			};
-		}else if(content[jsonpName]){
+		}else if(content && content[jsonpName]){
 			state.jsonp = content[jsonpName];
 			state.jsonpCall = function(data){
 				if(data["Error"]||data["error"]){
