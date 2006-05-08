@@ -12,7 +12,7 @@ dojo.lfx.html._byId = function(nodes){
 			dojo.lang.forEach(nodes, function(node){
 				n.push(dojo.byId(node));
 			});
-			nodes.alreadyChecked = true;
+			n.alreadyChecked = true;
 			return n;
 		}else{
 			return nodes;

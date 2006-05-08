@@ -434,9 +434,17 @@ dojo.lang.extend(dojo.lfx.Chain, {
 });
 
 dojo.lfx.combine = function(){
-	return new dojo.lfx.Combine(arguments);
+	var anims = arguments;
+	if(dojo.lang.isArray(arguments[0])){
+		anims = arguments[0];
+	}
+	return new dojo.lfx.Combine(anims);
 }
 
 dojo.lfx.chain = function(){
-	return new dojo.lfx.Chain(arguments);
+	var anims = arguments;
+	if(dojo.lang.isArray(arguments[0])){
+		anims = arguments[0];
+	}
+	return new dojo.lfx.Chain(anims);
 }
