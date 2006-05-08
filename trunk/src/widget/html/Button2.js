@@ -19,10 +19,10 @@ dojo.lang.extend(dojo.widget.html.Button2, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlButton2Template.css"),
 	
 	// button images
-	inactiveImg: "src/widget/templates/images/pill-button-blue_benji-",
-	activeImg: "src/widget/templates/images/pill-button-seagreen_benji-",
-	pressedImg: "src/widget/templates/images/pill-button-purple_benji-",
-	disabledImg: "src/widget/templates/images/pill-button-gray_benji-",
+	inactiveImg: "src/widget/templates/images/soriaButton-",
+	activeImg: "src/widget/templates/images/soriaActive-",
+	pressedImg: "src/widget/templates/images/soriaPressed-",
+	disabledImg: "src/widget/templates/images/soriaDisabled-",
 	width2height: 1.0/3.0,
 
 	// attach points

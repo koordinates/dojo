@@ -4,6 +4,7 @@
 	font-size: 8pt;
 	white-space: nowrap;
 	cursor: pointer;
+	font-family: Myriad, Tahoma, Verdana, sans-serif;
 }
 
 .dojoButton .dojoButtonContents {
@@ -31,8 +32,7 @@
 }
 
 .dojoButtonDepressed .dojoButtonContents {
-	font-style: italic;
-	color: yellow;
+	color: #293a4b;
 }
 
 .dojoButtonDisabled .dojoButtonContents {

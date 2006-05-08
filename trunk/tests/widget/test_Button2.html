@@ -95,12 +95,6 @@ Buttons can do an action, display a menu, or both:
 	<button dojoType="dropdownbutton2" menuId='editMenu'>
 		<img src="images/note.gif"><br>Edit
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onclick='dojo.debug("clicked combo save");'>
-		<img src="images/floppy_frederic_moser_01.gif"> Save
-	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onclick='dojo.debug("clicked combo save");'>
-		<img src="images/floppy_frederic_moser_01.gif"><br>Save
-	</button>
 </div>
 <br clear=both>
 And disabled:
@@ -117,12 +111,6 @@ And disabled:
 	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"><br>Edit
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
-		<img src="images/floppy_frederic_moser_01.gif"> Save
-	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
-		<img src="images/floppy_frederic_moser_01.gif"><br>Save
-	</button>
 	<div style="clear: both;"></div>
 </div>
 
@@ -131,20 +119,20 @@ And disabled:
 These buttons size to their content (just like &lt;button&gt;).</p>
 <div class="box">
 	<button dojoType="button2" onclick='dojo.debug("big");'>
-		<img src="images/dino_architetto_francesc_04.gif" height=50 width=30>
+			<img src="images/flatScreen.gif">
 		<span style="font-size:xx-large">big</span>
 	</button>
 	<button id="smallButton1" dojoType="button2" onclick='dojo.debug("small");'>
-		<img src="images/coccinelle_tanguy_jacq_01.gif">
+		<img src="images/createsmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
 	<button dojoType="button2" onclick='dojo.debug("long");'>
-		<img src="images/snake.gif" height=16>
+		<img src="images/tube.gif" height=16>
 		long
 	</button>
 	<button dojoType="button2" onclick='dojo.debug("tall");' width2height="0.1">
 	   <div>
-		<img src="images/giraffe.gif" height=75px width=35px><br>
+		<img src="images/tubeTall.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>
 	   </div>
 	</button>
@@ -153,20 +141,20 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 <p>Disabled:</p>
 <div class="box">
 	<button dojoType="button2" onclick='dojo.debug("big");' disabled="true">
-		<img src="images/dino_architetto_francesc_04.gif" height=50 width=30>
+		<img src="images/flatScreen.gif">
 		<span style="font-size:xx-large">big</span>
 	</button>
 	<button id="smallButton1dis" dojoType="button2" onclick='dojo.debug("small");' disabled="true">
-		<img src="images/coccinelle_tanguy_jacq_01.gif">
+		<img src="images/createsmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
 	<button dojoType="button2" onclick='dojo.debug("long");' disabled="true">
-		<img src="images/snake.gif" height=16>
+		<img src="images/tube.gif" height=16>
 		long
 	</button>
 	<button dojoType="button2" onclick='dojo.debug("tall");' width2height="0.1" disabled="true">
 	   <div>
-		<img src="images/giraffe.gif" height=75px width=35px><br>
+		<img src="images/tubeTall.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>
 	   </div>
 	</button>
@@ -208,9 +196,9 @@ Here's an example:</p>
 </div>
 
 <div dojoType="PopupMenu2" id="saveMenu" toggle="wipe">
-	<div dojoType="MenuItem2" iconSrc="images/floppy_frederic_moser_01.gif" caption="Save" accelKey="Ctrl+S"
+	<div dojoType="MenuItem2" iconSrc="images/note.gif" caption="Save" accelKey="Ctrl+S"
 		onClick="dojo.debug('not actually saving anything, just a test!')"></div>
-	<div dojoType="MenuItem2" iconSrc="images/floppy_frederic_moser_01.gif" caption="Save As" accelKey="Ctrl+A"
+	<div dojoType="MenuItem2" iconSrc="images/note.gif" caption="Save As" accelKey="Ctrl+A"
 		onClick="dojo.debug('not actually saving anything, just a test!')"></div>
 </div>
 
