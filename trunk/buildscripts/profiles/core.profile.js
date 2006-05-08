@@ -1,13 +1,23 @@
 // pull in the dependency list and define it in the var "dependencies". This
-// over-rides the default built into getDependencyList.js. The bootstrap and
+// overrides the default built into getDependencyList.js. The bootstrap and
 // hostenv files are included by default and don't need to be included here,
 // but you can change the hostenv file that's included by setting the value of
 // the variable "hostenvType" (defaults to "browser").
 var dependencies = [ 
-	"dojo.lang",
+	"dojo.lang.common",
+	"dojo.lang.array",
+	"dojo.lang.extras",
+	"dojo.lang.declare",
+	"dojo.lang.func",
 	"dojo.event",
-	"dojo.io.*",
+	"dojo.string.common",
+	"dojo.string.extras",
+	"dojo.io",
+	"dojo.io.BrowserIo",
+	"dojo.io.cookie",
 	"dojo.json",
+	"dojo.dom",
+	"dojo.style",
 	"dojo.html"
 ];
 
