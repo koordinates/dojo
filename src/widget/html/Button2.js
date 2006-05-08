@@ -166,8 +166,8 @@ dojo.lang.extend(dojo.widget.html.ComboButton2, {
 	arrowBackgroundImage: null,
 
 	// constants
-	splitWidth: 1,		// pixels between left&right part of button
-	arrowWidth: 10,		// width of segment holding down arrow
+	splitWidth: 2,		// pixels between left&right part of button
+	arrowWidth: 5,		// width of segment holding down arrow
 
 	sizeMyself: function(e){
 		this.height = dojo.style.getOuterHeight(this.containerNode);

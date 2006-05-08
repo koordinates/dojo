@@ -95,6 +95,12 @@ Buttons can do an action, display a menu, or both:
 	<button dojoType="dropdownbutton2" menuId='editMenu'>
 		<img src="images/note.gif"><br>Edit
 	</button>
+	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
+		<img src="images/note.gif"> Save
+	</button>
+	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
+		<img src="images/note.gif"><br>Save
+	</button>
 </div>
 <br clear=both>
 And disabled:
@@ -110,6 +116,12 @@ And disabled:
 	</button>
 	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"><br>Edit
+	</button>
+	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
+		<img src="images/note.gif"> Save
+	</button>
+	<button dojoType="combobutton2" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
+		<img src="images/note.gif"><br>Save
 	</button>
 	<div style="clear: both;"></div>
 </div>
