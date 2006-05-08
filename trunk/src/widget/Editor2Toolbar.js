@@ -123,6 +123,14 @@ dojo.widget.defineWidget(
 						dojo.style.hide(tb.clickInterceptDiv);
 					}
 				}catch(e){}
+				if(dojo.render.html.ie){
+					try{
+						dojo.style.hide(tb.forecolorPalette.bgIframe);
+					}catch(e){}
+					try{
+						dojo.style.hide(tb.hilitecolorPalette.bgIframe);
+					}catch(e){}
+				}
 			});
 		},
 
@@ -203,6 +211,15 @@ dojo.widget.defineWidget(
 			dojo.style.toggleShowing(this.clickInterceptDiv);
 			var pos = dojo.style.abs(this[type+"Button"]);
 			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
+			if(pal.bgIframe){
+				with(pal.bgIframe.style){
+					display = "block";
+					left = dd.style.left;
+					top = dd.style.top;
+					width = dojo.style.getOuterWidth(dd)+"px";
+					height = dojo.style.getOuterHeight(dd)+"px";
+				}
+			}
 		},
 
 		uninitialize: function(){
