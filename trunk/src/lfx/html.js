@@ -151,7 +151,7 @@ dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
 		if(dojo.lang.isArrayLike(nodes)){
 			dojo.lang.forEach(nodes, dojo.style.show);
 		}else{
-			dojo.style.show(node);
+			dojo.style.show(nodes);
 		}
 	});
 	
