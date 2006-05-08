@@ -168,11 +168,6 @@ dojo.hostenv.callLoaded = function(){
 	}
 }
 
-dojo.hostenv.moduleLoaded = function(modulename){
-	var modref = dojo.evalObjPath((modulename.split(".").slice(0, -1)).join('.'));
-	this.loaded_modules_[(new String(modulename)).toLowerCase()] = modref;
-}
-
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
 * If it is, it is simply returned (nothing to do).
@@ -288,6 +283,9 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 * object or uses what already exists. It returns the result.
 */
 dojo.hostenv.startPackage = function(packname){
+	var modref = dojo.evalObjPath((packname.split(".").slice(0, -1)).join('.'));
+	this.loaded_modules_[(new String(packname)).toLowerCase()] = modref;
+
 	var syms = packname.split(/\./);
 	if(syms[syms.length-1]=="*"){
 		syms.pop();
@@ -339,7 +337,7 @@ dojo.hostenv.findModule = function(modulename, must_exist){
  * loaded, regardless of which list is chosen.  Here's how it's normally
  * called:
  *
- *	dojo.hostenv.conditionalLoadModule({
+ *	dojo.kwCompoundRequire({
  *		browser: [
  *			["foo.bar.baz", true, true], // an example that passes multiple args to loadModule()
  *			"foo.sample.*",
@@ -349,7 +347,7 @@ dojo.hostenv.findModule = function(modulename, must_exist){
  *		common: [ "really.important.module.*" ]
  *	});
  */
-dojo.hostenv.conditionalLoadModule = function(modMap){
+dojo.kwCompoundRequire = function(modMap){
 	var common = modMap["common"]||[];
 	var result = (modMap[dojo.hostenv.name_]) ? common.concat(modMap[dojo.hostenv.name_]||[]) : common.concat(modMap["default"]||[]);
 

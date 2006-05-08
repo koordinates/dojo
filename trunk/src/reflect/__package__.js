@@ -1,5 +1,5 @@
 dojo.deprecated("dojo.reflect is merged into dojo.lang (dojo.lang[type]).  Will be removed by 0.4");
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: ["dojo.reflect.reflection"]
 });
-dojo.hostenv.moduleLoaded("dojo.reflect.*");
+dojo.provide("dojo.reflect.*");

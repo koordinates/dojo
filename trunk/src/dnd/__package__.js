@@ -1,6 +1,6 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: ["dojo.dnd.DragAndDrop"],
 	browser: ["dojo.dnd.HtmlDragAndDrop"],
 	dashboard: ["dojo.dnd.HtmlDragAndDrop"]
 });
-dojo.hostenv.moduleLoaded("dojo.dnd.*");
+dojo.provide("dojo.dnd.*");

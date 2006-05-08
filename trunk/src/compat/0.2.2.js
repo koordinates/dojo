@@ -28,6 +28,10 @@ dojo.hostenv.setBaseScriptUri = function(uri){ djConfig.baseScriptUri = uri }
 
 //**********************************
 //From bootstrap2.js
+dojo.hostenv.moduleLoaded = function(){
+	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
+}
+
 dojo.hostenv.require = dojo.hostenv.loadModule;
 dojo.requireAfter = dojo.require;
 dojo.conditionalRequire = dojo.requireIf;
@@ -36,8 +40,8 @@ dojo.requireAll = function() {
 	for(var i = 0; i < arguments.length; i++) { dojo.require(arguments[i]); }
 }
 
-dojo.kwCompoundRequire = function(){
-	dojo.hostenv.conditionalLoadModule.apply(dojo.hostenv, arguments);
+dojo.hostenv.conditionalLoadModule = function(){
+	dojo.kwCompoundRequire.apply(dojo, arguments);
 }
 
 dojo.hostenv.provide = dojo.hostenv.startPackage;

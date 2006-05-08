@@ -1,5 +1,5 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	browser: ["dojo.lfx.html"],
 	dashboard: ["dojo.lfx.html"]
 });
-dojo.hostenv.moduleLoaded("dojo.lfx.*");
+dojo.provide("dojo.lfx.*");

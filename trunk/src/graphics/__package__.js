@@ -1,5 +1,5 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	browser:	["dojo.graphics.htmlEffects"],
 	dashboard:	["dojo.graphics.htmlEffects"]
 });
-dojo.hostenv.moduleLoaded("dojo.graphics.*");
+dojo.provide("dojo.graphics.*");
