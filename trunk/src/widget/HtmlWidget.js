@@ -6,14 +6,7 @@ dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lfx.toggle");
 
-dojo.widget.HtmlWidget = function(args){
-	// mixin inheritance
-	dojo.widget.DomWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.HtmlWidget, dojo.widget.DomWidget);
-
-dojo.lang.extend(dojo.widget.HtmlWidget, {
+dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {								 
 	widgetType: "HtmlWidget",
 
 	templateCssPath: null,

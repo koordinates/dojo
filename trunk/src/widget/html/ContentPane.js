@@ -423,7 +423,8 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				var node = this.containerNode || this.domNode;
 				var parser = new dojo.xml.Parse();
 				var frag = parser.parseElement(node, null, true);
-				dojo.widget.getParser().createComponents(frag, this);
+				// createSubComponents not createComponents because frag has already been created
+				dojo.widget.getParser().createSubComponents(frag, this);
 			}
 
 			if(this.executeScripts){
