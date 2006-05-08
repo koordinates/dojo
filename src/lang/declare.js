@@ -18,9 +18,6 @@ dojo.require("dojo.lang.extras");
  * The initializer can be specified in the "init" argument, or by including a function called
  * "initializer" in "props".
  *
- * An optional inherits-time construtor can be specified or by including a function called
- * "classConstructor" in "props".
- *
  * Superclass methods (inherited methods) can be invoked using "inherited" method:
  * this.inherited(<method name>[, <argument array>]);
  * - inherited will continue up the prototype chain until it finds an implementation of method
