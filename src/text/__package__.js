@@ -1,7 +1,7 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: [
 		"dojo.text.String",
 		"dojo.text.Builder"
 	]
 });
-dojo.hostenv.moduleLoaded("dojo.text.*");
+dojo.provide("dojo.text.*");

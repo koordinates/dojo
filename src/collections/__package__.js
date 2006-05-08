@@ -1,4 +1,4 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: [
 		"dojo.collections.Collections",
 		"dojo.collections.SortedList", 
@@ -9,4 +9,4 @@ dojo.hostenv.conditionalLoadModule({
 		"dojo.collections.Set"
 	]
 });
-dojo.hostenv.moduleLoaded("dojo.collections.*");
+dojo.provide("dojo.collections.*");

@@ -1,7 +1,7 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: [
 		"dojo.crypto",
 		"dojo.crypto.MD5"
 	]
 });
-dojo.hostenv.moduleLoaded("dojo.crypto.*");
+dojo.provide("dojo.crypto.*");
