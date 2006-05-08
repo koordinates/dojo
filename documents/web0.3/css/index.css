@@ -1,0 +1,113 @@
+/* 
+	dojotoolkit.org
+	The Summer Theme
+	Index page specific CSS code.
+*/
+#index-header{
+	width:100%;
+	height:241px;
+	position:relative;
+	background-image:url(../img/idx-header-bg.jpg);
+	background-repeat:repeat-x;
+}
+#index-logo{
+	position:absolute;
+	top:48px;
+	left:48px;
+	margin:0;
+	text-indent:-5000px;
+	width:400px;
+	height:150px;
+	background-image:url(../img/idx-logo.gif);
+	background-repeat:no-repeat;
+	z-index:50;
+}
+#index-download{
+	position:absolute;
+	top:85px;
+	right:50px;
+	width:255px;
+	height:102px;
+	z-index:49;
+}
+#index-download a{
+	position:relative;
+	display:block;
+	width:255px;
+	height:102px;
+	text-indent:-5000px;
+	background-image:url(../img/idx-download.png);
+	background-repeat:no-repeat;
+}
+* html #index-download a{
+	background-image:url(../img/idx-download.gif);
+	background-repeat:no-repeat;
+}
+
+#body {
+	position:relative;
+	width:100%;
+	min-height:400px;
+}
+* html #body{
+	height:400px;
+	overflow:visible;
+}
+
+#content {
+	width:auto;	/* stretch to fill */
+	margin:0 348px 50px 50px;
+}
+
+#content #actionTabs {
+	width:100%;
+	height:400px;
+	overflow:visible;
+}
+
+/* override the fucking dojo defaults */
+#actionTabs .dojoTabPaneWrapper{
+	border:0;
+	height:auto;
+}
+#actionTabs .dojoTabPaneTab span {
+	font-size:1em;
+}
+
+/* sidebar */
+#sidebar {
+	position:absolute;
+	top:16px;
+	right:50px;
+	width:248px;
+}
+
+#sidebar .blurb {
+	text-indent:-5000px;
+	width:250px;
+	height:90px;
+	background-image:url(../img/idx-blurb.png);
+	background-repeat:no-repeat;
+}
+#sidebar .license {
+	margin:16px 0 16px -16px;
+}
+
+#sidebar .license a{
+	display:block;
+	width:282px;
+	height:107px;
+	text-indent:-5000px;
+	background-image:url(../img/idx-license.gif);
+	background-repeat:no-repeat;
+}
+
+#sidebar ul {
+	margin-left:0;
+	padding-left:0;
+}
+
+#sidebar ul li { 
+	font-size:0.85em;
+	margin-bottom:0.5em;
+}
