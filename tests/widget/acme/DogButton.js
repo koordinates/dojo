@@ -23,10 +23,10 @@ dojo.lang.extend(acme.DogButton, {
 	widgetType: "DogButton",
 	
 	// override icons
-	inactiveImg: "tests/widget/acme/dog-",
-	activeImg: "tests/widget/acme/dogwag-",
-	pressedImg: "tests/widget/acme/dogred-",
-	disabledImg: "tests/widget/acme/dog-",
+	inactiveImg: "tests/widget/acme/user-",
+	activeImg: "tests/widget/acme/userActive-",
+	pressedImg: "tests/widget/acme/userPressed-",
+	disabledImg: "tests/widget/acme/userPressed-",
 	width2height: 1.3
 });
 
