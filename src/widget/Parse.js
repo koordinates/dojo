@@ -233,11 +233,21 @@ dojo.widget.getParser = function(name){
  * @return The new Widget object
  */
  
-dojo.widget.createWidget = function (name, props, refNode, position) {
+dojo.widget.createWidget = function(name, props, refNode, position){
+	var lowerCaseName = name.toLowerCase();
+	var namespacedName = "dojo:" + lowerCaseName;
+	var isNode = ( dojo.byId(name) && (!dojo.widget.tags[namespacedName]) );
+
+	// if we got a node or an unambiguious ID, build a widget out of it
+	if(	(arguments.length==1) && ((typeof name != "string")||(isNode)) ){
+		// we got a DOM node
+		var xp = new dojo.xml.Parse();
+		// FIXME: we should try to find the parent!
+		var tn = (isNode) ? dojo.byId(name) : name;
+		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0];
+	}
 
 	function fromScript (placeKeeperNode, name, props) {
-		var lowerCaseName = name.toLowerCase();
-		var namespacedName = "dojo:" + lowerCaseName;
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
