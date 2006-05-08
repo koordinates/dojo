@@ -26,7 +26,7 @@
 	// 1. set directory for acme package (which contains widgets)
 	// The path is relative to the dojo/ directory, so typically
 	// it's something like "../acme"
-	dojo.hostenv.setModulePrefix('acme', 'tests/widget/acme');
+	dojo.setModulePrefix('acme', 'tests/widget/acme');
 	dojo.widget.manager.registerWidgetPackage('acme');
 	
 	// 2. load the user defined button
