@@ -218,12 +218,13 @@ dojo.widget.defineWidget(
 		// stub for observers
 		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
 
-		hideUnusableButtons: function(){
+		hideUnusableButtons: function(obj){
+			var op = obj||dojo.widget.html.RichText.prototype;
 			dojo.lang.forEach(this.commandList,
 				function(cmd){
 					if(this[cmd+"Button"]){
 						var cb = this[cmd+"Button"];
-						if(!dojo.widget.html.RichText.prototype.queryCommandAvailable(cmd)){
+						if(!op.queryCommandAvailable(cmd)){
 							cb.style.display = "none";
 							cb.parentNode.style.display = "none";
 						}
@@ -278,7 +279,7 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		dojo.event.connect(this, "fillInTemplate", this, "hideUnusableButtons");
+		// dojo.event.connect(this, "fillInTemplate", this, "hideUnusableButtons");
 		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
 			if(dojo.render.html.ie){
 				this.domNode.style.zoom = 1.0;

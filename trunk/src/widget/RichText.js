@@ -616,12 +616,12 @@ dojo.widget.defineWidget(
 			// handle the various key events
 
 			var character = e.charCode > 0 ? String.fromCharCode(e.charCode) : null;
-			dojo.debug("char:", character);
 			var code = e.keyCode;
 
 			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
 
 			if (this._keyHandlers[character]) {
+				dojo.debug("char:", character);
 				var handlers = this._keyHandlers[character], i = 0, handler;
 				while (handler = handlers[i++]) {
 					if (modifiers == handler.modifiers) {
@@ -916,11 +916,15 @@ dojo.widget.defineWidget(
 				case "createlink": case "unlink": case "removeformat":
 				case "inserthorizontalrule": case "insertimage":
 				case "insertorderedlist": case "insertunorderedlist":
-				case "indent": case "outdent": case "formatblock": case "strikethrough": 
+				case "indent": case "outdent": case "formatblock": 
 				case "inserthtml":
 					supportedBy = isSupportedBy(mozilla | ie | opera);
 					break;
 					
+				case "strikethrough": 
+					supportedBy = isSupportedBy(mozilla |  opera | (this.object ? 0 : ie));
+					break;
+
 				case "blockdirltr": case "blockdirrtl":
 				case "dirltr": case "dirrtl":
 				case "inlinedirltr": case "inlinedirrtl":
@@ -977,7 +981,6 @@ dojo.widget.defineWidget(
 					tableInfo.Caption = arr["Caption"];
 				}
 			
-				dojo.debug(this.object.object.DOM.documentElement.document.body.innerHTML);
 				if(command == "inserthtml"){
 					var insertRange = this.document.selection.createRange();
 					insertRange.select();
@@ -1148,23 +1151,23 @@ dojo.widget.defineWidget(
 	/* Misc.
 	 ********/
 
-		getSelectedNode: function () {
+		getSelectedNode: function (){
 			if(!this.isLoaded){ return; }
-			if (this.document.selection) {
+			if(this.document.selection){
 				return this.document.selection.createRange().parentElement();
-			} else if (dojo.render.html.mozilla) {
+			}else if(dojo.render.html.mozilla){
 				return this.window.getSelection().getRangeAt(0).commonAncestorContainer;
 			}
 			return this.editNode;
 		},
 		
-		placeCursorAtStart: function () {
+		placeCursorAtStart: function(){
 			if(!this.isLoaded){
 				dojo.event.connect(this, "onLoad", this, "placeCursorAtEnd");
 				return;
 			}
 			dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
-			if (this.window.getSelection) {
+			if(this.window.getSelection){
 				var selection = this.window.getSelection;
 				if (selection.removeAllRanges) { // Mozilla			
 					var range = this.document.createRange();
@@ -1181,6 +1184,29 @@ dojo.widget.defineWidget(
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();
+			}
+		},
+
+		replaceEditorContent: function(html){
+			if(this.window.getSelection){
+				var selection = this.window.getSelection;
+				// if(selection.removeAllRanges){ // Mozilla			
+				if(dojo.render.html.moz){ // Mozilla			
+					var range = this.document.createRange();
+					range.selectNodeContents(this.editNode);
+					var selection = this.window.getSelection();
+					selection.removeAllRanges();
+					selection.addRange(range);
+					this.execCommand("inserthtml", html);
+				}else{ // Safari
+					// look ma! it's a totally f'd browser!
+					this.editNode.innerHTML = html;
+				}
+			}else if(this.document.selection){ // IE
+				var range = this.document.body.createTextRange();
+				range.moveToElementText(this.editNode);
+				range.select();
+				this.execCommand("inserthtml", html);
 			}
 		},
 		
@@ -1241,7 +1267,7 @@ dojo.widget.defineWidget(
 					this.window.scrollTo(0, 0);
 				}
 				// dojo.debug(this.iframe.height);
-			} else if (this.object) {
+			}else if(this.object){
 				this.object.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
 			}
 		},
