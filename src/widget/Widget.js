@@ -523,7 +523,7 @@ dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*functio
 
 	if((!ctor)&&(props["classConstructor"])){
 		ctor = props.classConstructor;
-		delete props.classConstrutor;
+		delete props.classConstructor;
 	}
 	dojo.declare(widgetClass, superclass, props, ctor);
 }
