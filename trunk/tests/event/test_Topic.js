@@ -66,3 +66,11 @@ function test_topic_permissiveSubscribe(){
 	jum.assertEquals("test 90", "baz", foo);
 }
 
+function test_topic_destroy(){
+	var tobj = new topicTestClass();
+	dojo.event.topic.subscribe("/test5", tobj, "testSubscribe");
+	dojo.event.topic.publish("/test5", "foo");
+	dojo.event.topic.destroy("/test5");
+	dojo.event.topic.publish("/test5", "bar");
+	jum.assertEquals("test 80", "foo", tobj.testVal);
+}
