@@ -41,27 +41,26 @@ dojo.lang.declare = function(className /*string*/, superclass /*function*/ , pro
 		// get the generational context (which object [or prototype] should be constructed)
 		var self = this._getPropContext();
 		var s = self.constructor.superclass;
-		//dojo.debug('in ' + self.className + ' constructor...');
 		if((s)&&(s.constructor)){
 			// if this constructor is invoked directly by some constructor (my.ancestor.call(this))
 			if(s.constructor==arguments.callee){
-				//dojo.debug('calling ancestor constructor');
 				this.inherited("constructor", arguments);
 			}else{
-				//dojo.debug('calling ' + s.className + ' constructor');
 				this._inherited(s, "constructor", arguments);
 			}
 		}
 		if((!this.prototyping)&&(self.initializer)){
-			//dojo.debug('calling ' + self.className + ' initializer');
 			self.initializer.apply(this, arguments);
 		}
 	}
-	if(superclass){
-		superclass.prototype.prototyping = true;
-		dojo.inherits(ctor, superclass);
-		superclass.prototype.prototyping = false; 
+	var scp = (superclass ? superclass.prototype : null);
+	if(scp){
+		scp.prototyping = true;
+		ctor.prototype = new superclass();
+		scp.prototyping = false; 
 	}
+	ctor.prototype.constructor = ctor;
+	ctor.superclass = scp;
 	dojo.lang.extend(ctor, dojo.lang.declare.base);
 	props=(props||{});
 	props.initializer = (props.initializer)||(init)||(function(){ });
