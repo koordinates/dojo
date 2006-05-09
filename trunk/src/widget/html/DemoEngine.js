@@ -157,12 +157,14 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 	launchDemo: function(e) {
 		dojo.debug("Launching Demo: " + e.currentTarget.lastChild.firstChild.innerHTML);
-
-		implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1500);
-		show = dojo.lfx.html.fadeIn(this.demoContainerNode,500);
+		//implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1500);
+		//show = dojo.lfx.html.fadeShow(this.demoContainerNode,1500);
 		dojo.style.setOpacity(this.demoContainerNode, 0);
-		dojo.style.show(this.demoContainerNode);
-		dojo.lfx.chain(implode,show).play();
+		hide = dojo.lfx.html.fadeHide(this.navigationNode, 500);
+		show = dojo.lfx.html.fadeShow(this.demoContainerNode,500);
+		//dojo.style.setOpacity(this.demoContainerNode, 0);
+		//dojo.style.show(this.demoContainerNode);
+		dojo.lfx.combine(hide,show).play();
 
 		this.demoTabContainer.destroyChildren();
 
@@ -205,11 +207,14 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 	expandDemoNavigation: function(e) {
 		dojo.debug("re expanding navigation");
-		dojo.style.hide(this.demoContainerNode);
+		//dojo.style.hide(this.demoContainerNode);
 		//explode = dojo.lfx.html.explode(this.navigationNode,this.collapseToNode,1000);
-		dojo.style.show(this.navigationNode);
+		//dojo.style.show(this.navigationNode);
 		//hide = dojo.lfx.html.fadeHide(this.demoContainerNode,250);
-		//dojo.lfx.combine(hide,explode).play();
+
+		show = dojo.lfx.html.fadeShow(this.navigationNode, 1000);
+		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 1000);
+		dojo.lfx.combine(show,hide).play();
 	}
 });
 
