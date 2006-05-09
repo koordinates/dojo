@@ -9,7 +9,7 @@ dj_throw = dj_rethrow = function(m, e){
 	dojo.raise(m, e);
 }
 
-var dj_debug = dojo.debug;
+dj_debug = dojo.debug;
 dj_unimplemented = dojo.unimplemented;
 dj_deprecated = dojo.deprecated;
 
@@ -27,7 +27,7 @@ dj_inherits = function(subclass, superclass){
 dojo.hostenv.setBaseScriptUri = function(uri){ djConfig.baseScriptUri = uri }
 
 //**********************************
-//From bootstrap2.js
+//From the old bootstrap2.js
 dojo.hostenv.moduleLoaded = function(){
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }

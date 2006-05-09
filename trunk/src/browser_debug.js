@@ -1,6 +1,7 @@
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
-dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+dojo.hostenv.loadedUris.push("../src/loader.js");
 dojo.hostenv.loadedUris.push("../src/hostenv_browser.js");
+dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
 function removeComments(contents){
 	contents = new String((!contents) ? "" : contents);
@@ -139,7 +140,7 @@ dojo.hostenv.writeIncludes = function(){
 	}
 
 	dojo.hostenv._global_omit_module_check = true;
-	for(var x=3; x<depList.length; x++){
+	for(var x=4; x<depList.length; x++){
 		document.write("<script type='text/javascript' src='"+depList[x]+"'></script>");
 	}
 	document.write("<script type='text/javascript'>dojo.hostenv._global_omit_module_check = false;</script>");
