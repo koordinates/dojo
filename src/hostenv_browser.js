@@ -87,7 +87,6 @@ if(typeof window == 'undefined'){
 	drs.capable = f;
 	drs.support.plugin = f;
 	drs.support.builtin = f;
-	drs.adobe = f;
 	if (document.implementation
 		&& document.implementation.hasFeature
 		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")
@@ -95,38 +94,6 @@ if(typeof window == 'undefined'){
 		drs.capable = t;
 		drs.support.builtin = t;
 		drs.support.plugin = f;
-		drs.adobe = f;
-	}else{
-		//	check for ASVG
-		if(navigator.mimeTypes && navigator.mimeTypes.length > 0){
-			var result = navigator.mimeTypes["image/svg+xml"] ||
-				navigator.mimeTypes["image/svg"] ||
-				navigator.mimeTypes["image/svg-xml"];
-			if (result){
-				drs.adobe = result && result.enabledPlugin &&
-					result.enabledPlugin.description &&
-					(result.enabledPlugin.description.indexOf("Adobe") > -1);
-				if(drs.adobe) {
-					drs.capable = t;
-					drs.support.plugin = t;
-				}
-			}
-		}else if(drh.ie && dr.os.win){
-			var result = f;
-			try {
-				var test = new ActiveXObject("Adobe.SVGCtl");
-				result = t;
-			} catch(e){}
-			if (result){
-				drs.capable = t;
-				drs.support.plugin = t;
-				drs.adobe = t;
-			}
-		}else{
-			drs.capable = f;
-			drs.support.plugin = f;
-			drs.adobe = f;
-		}
 	}
 })();
 
