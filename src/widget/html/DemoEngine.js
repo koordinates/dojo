@@ -4,7 +4,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.style");
 dojo.require("dojo.io.*");
-dojo.require("dojo.widget.Button2");
+dojo.require("dojo.widget.Button");
 dojo.require("dojo.widget.TabContainer");
 dojo.require("dojo.widget.ContentPane");
 
@@ -105,7 +105,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 	_addMenuItem: function(category) {
 		dojo.debug("Adding button for " + category.name);
-		var newCat = dojo.widget.createWidget("Button2");
+		var newCat = dojo.widget.createWidget("Button");
 		newCat.containerNode.innerHTML=category.name;
 		this.menuNavigationNode.appendChild(newCat.domNode);
 		dojo.event.connect(newCat,"onClick", this, "selectCategory");

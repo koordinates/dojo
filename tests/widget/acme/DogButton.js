@@ -3,20 +3,20 @@
 // that extends dojo's button widget by setting custom images
 //
 // In java terminology, this file defines
-// a class called acme.DogButton that extends dojo.widget.Button2
+// a class called acme.DogButton that extends dojo.widget.Button
 //
 
 dojo.provide("acme.DogButton");
-dojo.require("dojo.widget.Button2");
+dojo.require("dojo.widget.Button");
 
 // define DogButton's constructor
 acme.DogButton = function(){
 	// call superclass's constructor
-	dojo.widget.html.Button2.call(this);
+	dojo.widget.html.Button.call(this);
 }
 
-// set DogButton's superclass to Button2
-dojo.inherits(acme.DogButton, dojo.widget.html.Button2);
+// set DogButton's superclass to Button
+dojo.inherits(acme.DogButton, dojo.widget.html.Button);
 
 // define DogButton's functions and variables
 dojo.lang.extend(acme.DogButton, {
