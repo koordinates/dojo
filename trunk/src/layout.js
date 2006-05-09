@@ -56,6 +56,8 @@ dojo.layout = function(container, children, layoutPriority) {
 		with(elm.style){
 			left = f.left+"px";
 			top = f.top+"px";
+			bottom = "auto";
+			right = "auto";
 		}
 		dojo.html.addClass(elm, "dojoAlign" + dojo.string.capitalize(pos));
 
