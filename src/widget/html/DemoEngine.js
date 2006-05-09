@@ -39,6 +39,7 @@ dojo.widget.html.DemoEngine = function(){
 
 	this.collapsedMenuNode="";
 	this.collapsedMenuClass="demoEngineCollapsedMenu";
+	this.collapsedMenuButton="";
 
 	this.aboutNode="";
 	this.aboutClass="demoEngineAbout";
@@ -81,6 +82,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 		//turn demoPaneNode into a tabset
 		this.demoTabContainer = dojo.widget.createWidget("TabContainer",{},this.demoPaneNode);	
+
 	},
 
 	buildMenu: function() {
