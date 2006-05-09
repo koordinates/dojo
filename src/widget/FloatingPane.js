@@ -11,7 +11,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.html.shadow");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
-dojo.require("dojo.layout");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.dnd.HtmlDragMoveSource");
@@ -257,7 +257,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.style.setOuterWidth(this.domNode, w);
 		dojo.style.setOuterHeight(this.domNode, h);
 
-		dojo.layout(this.domNode,
+		dojo.html.layout(this.domNode,
 			[
 			  {domNode: this.titleBar, layoutAlign: "top"},
 			  {domNode: this.resizeBar, layoutAlign: "bottom"},
@@ -265,7 +265,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			] );
 
 		// If any of the children have layoutAlign specified, obey it
-		dojo.layout(this.containerNode, this.children, "top-bottom");
+		dojo.html.layout(this.containerNode, this.children, "top-bottom");
 		
 		this.bgIframe.onResized();
 		if(this.shadow){ this.shadow.size(w, h); }
