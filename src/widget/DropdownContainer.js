@@ -24,7 +24,7 @@ dojo.widget.defineWidget(
 		containerNode: null,
 		subWidgetNode: null,
 
-		templateString: '<div><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" /> <img src="" alt="" dojoAttachPoint="buttonNode" dojoAttachEvent="onclick: onDropdown;" style="vertical-align:middle; cursor:pointer; cursor:hand;" /><div dojoAttachPoint="containerNode" style="display:none;position:absolute;width:12em;background-color:#fff;"></div></div>',
+		templateString: '<span style="white-space:nowrap"><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" /> <img src="" alt="" dojoAttachPoint="buttonNode" dojoAttachEvent="onclick: onDropdown;" style="vertical-align:middle; cursor:pointer; cursor:hand;" /><div dojoAttachPoint="containerNode" style="display:none;position:absolute;width:12em;background-color:#fff;"></div></span>',
 		templateCssPath: "",
 
 		fillInTemplate: function(args, frag){
