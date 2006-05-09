@@ -236,9 +236,9 @@ dojo.event.browser = new function(){
 			if(!evt.pageX){ evt.pageX = evt.clientX + (window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0) }
 			if(!evt.pageY){ evt.pageY = evt.clientY + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) }
 			// mouseover
-			if(evt.fromElement){ evt.relatedTarget = evt.fromElement; }
+			if(evt.type == "mouseover"){ evt.relatedTarget = evt.fromElement; }
 			// mouseout
-			if(evt.toElement){ evt.relatedTarget = evt.toElement; }
+			if(evt.type == "mouseout"){ evt.relatedTarget = evt.toElement; }
 			this.currentEvent = evt;
 			evt.callListener = this.callListener;
 			evt.stopPropagation = this.stopPropagation;
