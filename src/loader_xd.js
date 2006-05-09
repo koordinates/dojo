@@ -319,8 +319,8 @@ dojo.hostenv.clearXdInterval = function(){
 
 dojo.hostenv.watchInFlightXDomain = function(){
 	//Make sure we haven't waited timed out.
-	var waitInterval = djConfig.xdWaitMs || 30000;
-	
+	var waitInterval = (djConfig.xdWaitSeconds || 30) * 1000;
+
 	if(this.xdStartTime + waitInterval < (new Date()).getTime()){
 		this.clearXdInterval();
 		var noLoads = "";
