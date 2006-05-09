@@ -11,8 +11,8 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.event.*");
-	dojo.require("dojo.widget.Button2");
-	dojo.require("dojo.widget.html.Button2");
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.html.Button");
 	dojo.require("dojo.widget.Menu2");
 	dojo.require("dojo.fx.html");
 	dojo.require("dojo.Firebug");
@@ -106,44 +106,44 @@
 Buttons can do an action, display a menu, or both:
 </p>
 <div class="box">
-	<button dojoType="button2">
+	<button dojoType="Button">
 		<img src="images/plus.gif"> Create
 	</button>
-	<button dojoType="button2">
+	<button dojoType="Button">
 		<img src="images/plus.gif"><br>Create
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu'>
+	<button dojoType="dropdownButton" menuId='editMenu'>
 		<img src="images/note.gif"> Edit
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu'>
+	<button dojoType="dropdownButton" menuId='editMenu'>
 		<img src="images/note.gif"><br>Edit
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onclick='widgetClick'>
+	<button dojoType="comboButton" menuId='saveMenu' onclick='widgetClick'>
 		<img src="images/floppy_frederic_moser_01.gif"> Save
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onclick='widgetClick'>
+	<button dojoType="comboButton" menuId='saveMenu' onclick='widgetClick'>
 		<img src="images/floppy_frederic_moser_01.gif"><br>Save
 	</button>
 </div>
 <br clear=both>
 And disabled:
 <div class="box">
-	<button dojoType="button2" disabled="true">
+	<button dojoType="Button" disabled="true">
 		<img src="images/plus.gif"> Create
 	</button>
-	<button dojoType="button2" disabled="true">
+	<button dojoType="Button" disabled="true">
 		<img src="images/plus.gif"><br>Create
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
+	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"> Edit
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
+	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"><br>Edit
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onClick='widgetClick' disabled=true>
+	<button dojoType="comboButton" menuId='saveMenu' onClick='widgetClick' disabled=true>
 		<img src="images/floppy_frederic_moser_01.gif"> Save
 	</button>
-	<button dojoType="combobutton2" menuId='saveMenu' onClick='widgetClick' disabled=true>
+	<button dojoType="comboButton" menuId='saveMenu' onClick='widgetClick' disabled=true>
 		<img src="images/floppy_frederic_moser_01.gif"><br>Save
 	</button>
 	<div style="clear: both;"></div>
@@ -153,19 +153,19 @@ And disabled:
 <p>Short buttons, tall buttons, big buttons, small buttons...
 These buttons size to their content (just like &lt;button&gt;).</p>
 <div class="box">
-	<button dojoType="button2" onclick='widgetClick'>
+	<button dojoType="Button" onclick='widgetClick'>
 		<img src="images/dino_architetto_francesc_04.gif" height=50 width=30>
 		<span style="font-size:xx-large">big</span>
 	</button>
-	<button id="smallButton1" dojoType="button2" onclick='widgetClick'>
+	<button id="smallButton1" dojoType="Button" onclick='widgetClick'>
 		<img src="images/coccinelle_tanguy_jacq_01.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
-	<button dojoType="button2" onclick='widgetClick'>
+	<button dojoType="Button" onclick='widgetClick'>
 		<img src="images/snake.gif" height=16>
 		long
 	</button>
-	<button dojoType="button2" onclick='widgetClick' width2height="0.1">
+	<button dojoType="Button" onclick='widgetClick' width2height="0.1">
 	   <div>
 		<img src="images/giraffe.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>
@@ -175,19 +175,19 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 </div>
 <p>Disabled:</p>
 <div class="box">
-	<button dojoType="button2" onclick='widgetClick' disabled="true">
+	<button dojoType="Button" onclick='widgetClick' disabled="true">
 		<img src="images/dino_architetto_francesc_04.gif" height=50 width=30>
 		<span style="font-size:xx-large">big</span>
 	</button>
-	<button id="smallButton1dis" dojoType="button2" onclick='widgetClick' disabled="true">
+	<button id="smallButton1dis" dojoType="Button" onclick='widgetClick' disabled="true">
 		<img src="images/coccinelle_tanguy_jacq_01.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
-	<button dojoType="button2" onclick='widgetClick' disabled="true">
+	<button dojoType="Button" onclick='widgetClick' disabled="true">
 		<img src="images/snake.gif" height=16>
 		long
 	</button>
-	<button dojoType="button2" onclick='widgetClick' width2height="0.1" disabled="true">
+	<button dojoType="Button" onclick='widgetClick' width2height="0.1" disabled="true">
 	   <div>
 		<img src="images/giraffe.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>

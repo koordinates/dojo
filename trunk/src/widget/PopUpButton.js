@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.PopUpButton");
 dojo.provide("dojo.widget.DomPopUpButton");
 dojo.provide("dojo.widget.HtmlPopUpButton");
 
-dojo.deprecated("dojo.widget.PopUpButton, dojo.widget.DomPopUpButton, dojo.widget.HtmlPopUpButton",  "use dojo.widget.DropDownButton2", "0.4");
+dojo.deprecated("dojo.widget.PopUpButton, dojo.widget.DomPopUpButton, dojo.widget.HtmlPopUpButton",  "use dojo.widget.DropDownButton", "0.4");
 
 //dojo.require("dojo.widget.Button");
 //dojo.require("dojo.widget.HtmlButton");

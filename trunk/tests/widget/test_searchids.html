@@ -10,30 +10,30 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
-	dojo.require("dojo.widget.Button2");
+	dojo.require("dojo.widget.Button");
 	
 	function doClick() {
 		alert(this.domNode.innerHTML);	
 	}
 </script>
 
-<button id="testDojoButton" dojoType="Button2" 
+<button id="testDojoButton" dojoType="Button" 
 	onClick="doClick" onFoo="dojo.debug('onFoo');">
 	nice soria button
 </button>
 <br>
-<button dojoType="Button2" 
+<button dojoType="Button" 
 	onClick="alert(this.innerHTML)" onFoo="dojo.debug('onFoo');">
 	plain vanilla button
 </button>
 <br><br>
 <div id="pn">
-	<button dojoType="Button2" 
+	<button dojoType="Button" 
 		onClick="doClick" onFoo="dojo.debug('onFoo');">
 		nice soria button 2
 	</button>
 	<br>
-	<button dojoType="Button2" 
+	<button dojoType="Button" 
 		onClick="doClick" onFoo="dojo.debug('onFoo');">
 		nice soria button 3
 	</button>

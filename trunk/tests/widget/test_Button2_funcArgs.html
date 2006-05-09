@@ -11,8 +11,8 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.event.*");
-	dojo.require("dojo.widget.Button2");
-	dojo.require("dojo.widget.html.Button2");
+	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.html.Button");
 	dojo.require("dojo.widget.Menu2");
 	dojo.require("dojo.fx.html");
 	dojo.require("dojo.Firebug");
@@ -88,32 +88,32 @@
 Buttons can do an action, display a menu, or both:
 </p>
 <div class="box">
-	<button dojoType="button2">
+	<button dojoType="Button">
 		<img src="images/plus.gif"> Create
 	</button>
-	<button dojoType="button2">
+	<button dojoType="Button">
 		<img src="images/plus.gif"><br>Create
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu'>
+	<button dojoType="dropdownButton" menuId='editMenu'>
 		<img src="images/note.gif"> Edit
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu'>
+	<button dojoType="dropdownButton" menuId='editMenu'>
 		<img src="images/note.gif"><br>Edit
 	</button>
 </div>
 <br clear=both>
 And disabled:
 <div class="box">
-	<button dojoType="button2" disabled="true">
+	<button dojoType="Button" disabled="true">
 		<img src="images/plus.gif"> Create
 	</button>
-	<button dojoType="button2" disabled="true">
+	<button dojoType="Button" disabled="true">
 		<img src="images/plus.gif"><br>Create
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
+	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"> Edit
 	</button>
-	<button dojoType="dropdownbutton2" menuId='editMenu' disabled="true">
+	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"><br>Edit
 	</button>
 	<div style="clear: both;"></div>
@@ -123,19 +123,19 @@ And disabled:
 <p>Short buttons, tall buttons, big buttons, small buttons...
 These buttons size to their content (just like &lt;button&gt;).</p>
 <div class="box">
-	<button dojoType="button2" onclick='dojo.debug("big");'>
+	<button dojoType="Button" onclick='dojo.debug("big");'>
 			<img src="images/flatScreen.gif">
 		<span style="font-size:xx-large">big</span>
 	</button>
-	<button id="smallButton1" dojoType="button2" onclick='dojo.debug("small");'>
+	<button id="smallButton1" dojoType="Button" onclick='dojo.debug("small");'>
 		<img src="images/createsmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
-	<button dojoType="button2" onclick='dojo.debug("long");'>
+	<button dojoType="Button" onclick='dojo.debug("long");'>
 		<img src="images/tube.gif" height=16>
 		long
 	</button>
-	<button dojoType="button2" onclick='dojo.debug("tall");' width2height="0.1">
+	<button dojoType="Button" onclick='dojo.debug("tall");' width2height="0.1">
 	   <div>
 		<img src="images/tubeTall.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>
@@ -145,19 +145,19 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 </div>
 <p>Disabled:</p>
 <div class="box">
-	<button dojoType="button2" onclick='dojo.debug("big");' disabled="true">
+	<button dojoType="Button" onclick='dojo.debug("big");' disabled="true">
 		<img src="images/flatScreen.gif">
 		<span style="font-size:xx-large">big</span>
 	</button>
-	<button id="smallButton1dis" dojoType="button2" onclick='dojo.debug("small");' disabled="true">
+	<button id="smallButton1dis" dojoType="Button" onclick='dojo.debug("small");' disabled="true">
 		<img src="images/createsmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
-	<button dojoType="button2" onclick='dojo.debug("long");' disabled="true">
+	<button dojoType="Button" onclick='dojo.debug("long");' disabled="true">
 		<img src="images/tube.gif" height=16>
 		long
 	</button>
-	<button dojoType="button2" onclick='dojo.debug("tall");' width2height="0.1" disabled="true">
+	<button dojoType="Button" onclick='dojo.debug("tall");' width2height="0.1" disabled="true">
 	   <div>
 		<img src="images/tubeTall.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>

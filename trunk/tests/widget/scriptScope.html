@@ -61,7 +61,7 @@
 		createdPanes.push(pane);
 
 		var cont = "<scr"+"ipt>"
-		+"dojo.require('dojo.widget.Button2');"
+		+"dojo.require('dojo.widget.Button');"
 		+"this.onUnLoad = function(){"
 		+"	dojo.event.disconnect(_container_, 'onLoad', this, 'onLoad');"
 		+"	dojo.event.disconnect(_container_, 'onUnLoad', this, 'onUnLoad');"
@@ -78,7 +78,7 @@
 		+"dojo.event.connect(_container_, 'onLoad', this, 'onLoad');"
 		+"dojo.event.connect(_container_, 'onUnLoad', this, 'onUnLoad');"
 		+"</scr"+"ipt>"
-		+"<button dojoType='Button2' onClick='scriptScope.destroyMe();'>Destroy me with widget event please!</button>"
+		+"<button dojoType='Button' onClick='scriptScope.destroyMe();'>Destroy me with widget event please!</button>"
 		+"<a href='javascript:scriptScope[\"destroyMe\"]();'>Destroy me from &lt;a href='javascript:handler...</a>"
 		+"<div style='text-align:center; font-size:20pt;'>Pane "+createdPanes.length+"</div>";
 
