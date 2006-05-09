@@ -1,4 +1,4 @@
-dojo.provide("dojo.layout");
+dojo.provide("dojo.html.layout");
 
 dojo.require("dojo.lang");
 dojo.require("dojo.string");
@@ -12,7 +12,7 @@ dojo.require("dojo.html");
  * @ layoutPriority - "top-bottom" or "left-right"
  * @ children an array like [ {domNode: foo, layoutAlign: "bottom" }, {domNode: bar, layoutAlign: "client"} ]
  */
-dojo.layout = function(container, children, layoutPriority) {
+dojo.html.layout = function(container, children, layoutPriority) {
 	dojo.html.addClass(container, "dojoLayoutContainer");
 
 	// copy children array and remove elements w/out layout

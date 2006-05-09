@@ -6,7 +6,7 @@ dojo.provide("dojo.widget.LayoutContainer");
 dojo.provide("dojo.widget.html.LayoutContainer");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.layout");
+dojo.require("dojo.html.layout");
 
 dojo.widget.html.LayoutContainer = function(){
 	dojo.widget.HtmlWidget.call(this);
@@ -21,21 +21,21 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 	layoutChildPriority: 'top-bottom',
 
 	postCreate: function(){
-		dojo.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		dojo.widget.html.LayoutContainer.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
-		dojo.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	removeChild: function(pane){
 		dojo.widget.html.LayoutContainer.superclass.removeChild.call(this,pane);
-		dojo.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	onResized: function(){
-		dojo.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	show: function(){
