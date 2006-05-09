@@ -563,10 +563,10 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 			}
 		}else{
 			this.parent.closeAll();
-
-			// for some browsers the onMouseOut doesn't get called (?), so call it manually
-			this.onUnhover();
 		}
+
+		// for some browsers the onMouseOut doesn't get called (?), so call it manually
+		this.onUnhover();
 
 		// user defined handler for click
 		this.onClick();
@@ -1014,7 +1014,7 @@ dojo.lang.extend(dojo.widget.MenuBar2, {
 
 		if (item != this.currentItem) return;
 
-		if (!this.isExpanded){
+		if (this.currentItem && !this.isExpanded){
 			this.currentItem.unhighlightItem();
 			this.currentItem = null;
 		}
