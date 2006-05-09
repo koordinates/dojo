@@ -75,7 +75,7 @@ dojo.hostenv.getLibaryScriptUri = function(){ };
 dojo.hostenv.loadUri = function(uri){ };
 dojo.hostenv.loadUriAndCheck = function(uri, module){ };
 
-//	aliased in bootstrap2, don't ignore
+//	aliased in loader.js, don't ignore
 //	we are going to kill loadModule for the first round of SVG stuff, and include shit manually.
 dojo.hostenv.loadModule = function(moduleName){
 	//	just like startPackage, but this time we're just checking to make sure it exists already.

@@ -32,18 +32,19 @@ if(!dojoLoader || dojoLoader=="null" || dojoLoader==""){
 }
 
 load("../src/bootstrap1.js");
-load("../src/bootstrap2.js");
+load("../src/loader.js");
 load("../src/hostenv_rhino.js");
+load("../src/bootstrap2.js");
 // FIXME: is this really what we want to say?
 dojo.render.html.capable = true;
 
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
 
 if(dojoLoader == "default"){
-	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+	dojo.hostenv.loadedUris.push("../src/loader.js");
 
 }else if(dojoLoader=="xdomain"){
-	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+	dojo.hostenv.loadedUris.push("../src/loader.js");
 	dojo.hostenv.loadedUris.push("../src/loader_xd.js");
 }
 
@@ -59,6 +60,9 @@ if(hostenvType.constructor == Array){
 }else{
 	dojo.hostenv.loadedUris.push("../src/hostenv_"+hostenvType+".js");
 }
+
+dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+
 
 if(dependencies["prefixes"]){
 	var tmp = dependencies.prefixes;
