@@ -97,7 +97,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			outer.appendChild(this.bgIframe.iframe);
 			node = outer;
 		}
-		node.style.zIndex = 500;
+		node.style.zIndex = 999;
 		return node;
 	},
 
@@ -293,7 +293,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		this.dropIndicator = document.createElement("div");
 		with (this.dropIndicator.style) {
 			position = "absolute";
-			zIndex = 1;
+			zIndex = 999;
 			borderTopWidth = "1px";
 			borderTopColor = "black";
 			borderTopStyle = "solid";
