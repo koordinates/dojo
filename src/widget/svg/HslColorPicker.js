@@ -5,6 +5,7 @@ dojo.require("dojo.widget.HslColorPicker");
 dojo.require("dojo.math");
 dojo.require("dojo.svg");
 dojo.require("dojo.graphics.color");
+dojo.require("dojo.graphics.color.hsl");
 
 dojo.widget.svg.HslColorPicker=function(){
 	dojo.widget.HslColorPicker.call(this);
