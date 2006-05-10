@@ -136,7 +136,7 @@
 
 	.demoEngineCollapsedMenu {
 		cursor: pointer;
-		background:  url("/~dmachi/demoTrunk/www/img/dojoDemos.gif") no-repeat;
+		background:  url("../img/dojoDemos.gif") no-repeat;
 		width: 50px;
 		height: 50px;
 		margin-left: 15px;
