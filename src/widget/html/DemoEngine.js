@@ -76,10 +76,11 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		// Make sure navigation node is hidden and opaque
 		//dojo.style.hide(this.navigationNode);
 		//dojo.style.setOpacity(this.navigationNode, 0);
+		dojo.style.show(this.navigationNode);
 
 		//Make sure demoNavigationNode is hidden and opaque;
-		//dojo.style.hide(this.demoNavigationNode);
-		//dojo.style.setOpacity(this.demoNavigationNode,0);
+		dojo.style.hide(this.demoNavigationNode);
+		dojo.style.setOpacity(this.demoNavigationNode,0);
 
 		//Make sure demoContainerNode is hidden and opaque
 		dojo.style.hide(this.demoContainerNode);
