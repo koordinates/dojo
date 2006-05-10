@@ -171,9 +171,13 @@ dojo.require("dojo.lang.common");
 		return ds._sumPixelValues(node, ["padding-left", "padding-right"], true);
 	}
 
+	ds.getPadBorderWidth = function(node) {
+		return ds.getPaddingWidth(node) + ds.getBorderWidth(node);
+	}
+	
 	ds.getContentBoxWidth = function(node){
 		node = dojo.byId(node);
-		return node.offsetWidth - ds.getPaddingWidth(node) - ds.getBorderWidth(node);
+		return node.offsetWidth - ds.getPadBorderWidth(node);
 	}
 
 	ds.getBorderBoxWidth = function(node){
@@ -188,7 +192,7 @@ dojo.require("dojo.lang.common");
 	ds.setContentBoxWidth = function(node, pxWidth){
 		node = dojo.byId(node);
 		if (ds.isBorderBox(node)){
-			pxWidth += ds.getPaddingWidth(node) + ds.getBorderWidth(node);
+			pxWidth += ds.getPadBorderWidth(node);
 		}
 		return ds.setPositivePixelValue(node, "width", pxWidth);
 	}
@@ -196,7 +200,7 @@ dojo.require("dojo.lang.common");
 	ds.setMarginBoxWidth = function(node, pxWidth){
 		node = dojo.byId(node);
 		if (!ds.isBorderBox(node)){
-			pxWidth -= ds.getPaddingWidth(node) + ds.getBorderWidth(node);
+			pxWidth -= ds.getPadBorderWidth(node);
 		}
 		pxWidth -= ds.getMarginWidth(node);
 		return ds.setPositivePixelValue(node, "width", pxWidth);
@@ -223,9 +227,13 @@ dojo.require("dojo.lang.common");
 		return ds._sumPixelValues(node, ["padding-top", "padding-bottom"], true);
 	}
 
+	ds.getPadBorderHeight = function(node) {
+		return ds.getPaddingHeight(node) + ds.getBorderHeight(node);
+	}
+	
 	ds.getContentBoxHeight = function(node){
 		node = dojo.byId(node);
-		return node.offsetHeight - ds.getPaddingHeight(node) - ds.getBorderHeight(node);
+		return node.offsetHeight - ds.getPadBorderHeight(node);
 	}
 
 	ds.getBorderBoxHeight = function(node){
@@ -240,7 +248,7 @@ dojo.require("dojo.lang.common");
 	ds.setContentBoxHeight = function(node, pxHeight){
 		node = dojo.byId(node);
 		if (ds.isBorderBox(node)){
-			pxHeight += ds.getPaddingHeight(node) + ds.getBorderHeight(node);
+			pxHeight += ds.getPadBorderHeight(node);
 		}
 		return ds.setPositivePixelValue(node, "height", pxHeight);
 	}
@@ -248,7 +256,7 @@ dojo.require("dojo.lang.common");
 	ds.setMarginBoxHeight = function(node, pxHeight){
 		node = dojo.byId(node);
 		if (!ds.isBorderBox(node)){
-			pxHeight -= ds.getPaddingHeight(node) + ds.getBorderHeight(node);
+			pxHeight -= ds.getPadBorderHeight(node);
 		}
 		pxHeight -= ds.getMarginHeight(node);
 		return ds.setPositivePixelValue(node, "height", pxHeight);
