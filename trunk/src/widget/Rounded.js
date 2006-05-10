@@ -42,7 +42,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 	isSafari: dojo.render.html.safari,
 	widgetType: "Rounded",
 	boxMargin: "50px", // margin outside rounded corner box
-	radius: "14", // radius of corners
+	radius: 14, // radius of corners
 	domNode: "",
 	corners: "TR,TL,BR,BL", // corner string to render
 	antiAlias: true, // false to disable anti-aliasing
@@ -66,17 +66,17 @@ dojo.lang.extend(dojo.widget.Rounded, {
 		cornersAvailable = ["TR", "TL", "BR", "BL"];
 		cornersPassed = this.corners.split(",");
 
-		this.settings = new Object;
-		this.settings['antiAlias'] =  this.antiAlias;
+		this.settings = {
+			antiAlias: this.antiAlias
+		};
 
 		setCorner = function(currentCorner, cornersAvailable, radius, settings) {
 			this.settings = settings;
 			val = currentCorner.toLowerCase(); 
 			if(dojo.lang.inArray(cornersAvailable, currentCorner)) {
-				this.settings[val] = new Object;
-				this.settings[val].radius=radius;
+				this.settings[val] = { radius: radius, enabled: true };
 			} else { 
-				this.settings[val] = false;
+				this.settings[val] = { radius: 0 }
 			}
 		}
 
@@ -143,7 +143,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 			        // Top
 			        case 0:
 						// Only build top bar if a top corner is to be draw
-						if(this.settings.tl || this.settings.tr) {
+						if(this.settings.tl.enabled || this.settings.tr.enabled ) {
 							var newMainContainer = document.createElement("DIV");
 			
 							with(newMainContainer.style){
@@ -167,7 +167,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 			        // Bottom
 			        case 1:      
 			            // Only build bottom bar if a top corner is to be draw
-			            if(this.settings.bl || this.settings.br) {
+			            if(this.settings.bl.enabled || this.settings.br.enabled) {
 							var newMainContainer = document.createElement("DIV");
 							with(newMainContainer.style){
 								width    = "100%";
@@ -314,14 +314,14 @@ dojo.lang.extend(dojo.widget.Rounded, {
 									var y3 = (Math.floor(Math.sqrt(Math.pow(j ,2) - Math.pow((intx+1), 2))) - 1);
 								}
 							}
-		
+
 							// Calculate y4
 							if((intx) >= j) {
 								var y4 = -1;
 							} else {
 								var y4 = Math.ceil(Math.sqrt(Math.pow(j ,2) - Math.pow(intx, 2)));
 							}
-		
+
 							// Draw bar on inside of the border with foreground colour
 							if(y1 > -1) this.drawPixel(intx, 0, this.boxColour, 100, (y1+1), newCorner, -1, this.settings[cc].radius);
 	
@@ -404,20 +404,20 @@ dojo.lang.extend(dojo.widget.Rounded, {
 					
 							switch(cc) {
 								case "tr":
-									value = (-1 *( Math.abs((this.boxWidth - this.settings[cc].radius + this.borderWidth) + pixelBarLeft) - (Math.abs(this.settings[cc].radius -pixelBarHeight -pixelBarTop - this.borderWidth))))+"px";
-									pixelBar.style.backgroundPosition  = value;
+									value = (-1 *( Math.abs((this.boxWidth - this.settings[cc].radius + this.borderWidth) + pixelBarLeft) - (Math.abs(this.settings[cc].radius -pixelBarHeight -pixelBarTop - this.borderWidth))));
+									pixelBar.style.backgroundPosition  = value + "px";
 									
 								break;
 				
 								case "tl":
-									value = (-1 *( Math.abs((this.settings[cc].radius -pixelBarLeft -1)  - this.borderWidth) + "px -" + (Math.abs(this.settings[cc].radius -pixelBarHeight -pixelBarTop - this.borderWidth))))+"px";
-									pixelBar.style.backgroundPosition  = value;
+									value = (-1 *( Math.abs((this.settings[cc].radius -pixelBarLeft -1)  - this.borderWidth) - (Math.abs(this.settings[cc].radius -pixelBarHeight -pixelBarTop - this.borderWidth))));
+									pixelBar.style.backgroundPosition  = value + "px";
 
 								break;
 				
 								case "bl":
-									value = (-1 *( Math.abs((this.settings[cc].radius -pixelBarLeft -1) - this.borderWidth) + "px -" + (Math.abs((this.boxHeight + this.settings[cc].radius + pixelBarTop) -this.borderWidth))))+"px";
-									pixelBar.style.backgroundPosition  = value;
+									value = (-1 *( Math.abs((this.settings[cc].radius -pixelBarLeft -1) - this.borderWidth) - (Math.abs((this.boxHeight + this.settings[cc].radius + pixelBarTop) -this.borderWidth))));
+									pixelBar.style.backgroundPosition  = value + "px";
 
 								break;
 							}
@@ -446,7 +446,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 						break;
 						
 						case "br":
-							if(newCorner.style.position == "absolute") newCorner.style.bottom   = "0px";
+							if(newCorner.style.position == "absolute") newCorner.style.bottom = "0px";
 							if(newCorner.style.position == "absolute") newCorner.style.right = "0px";
 							if(this.bottomContainer) this.bottomContainer.appendChild(newCorner);
 						break;
@@ -459,8 +459,8 @@ dojo.lang.extend(dojo.widget.Rounded, {
 	
 			// Find out which corner has the biiger radius and get the difference amount
 			var radiusDiff = [];
-			radiusDiff["t"] = Math.abs(this.settings.tl.radius - this.settings.tr.radius)
-			radiusDiff["b"] = Math.abs(this.settings.bl.radius - this.settings.br.radius);
+			radiusDiff["t"] = this.settings.tl.enabled && this.settings.tr.enabled ? Math.abs(this.settings.tl.radius - this.settings.tr.radius) : 0;
+			radiusDiff["b"] = this.settings.bl.enabled && this.settings.br.enabled ? Math.abs(this.settings.bl.radius - this.settings.br.radius) : 0;
 
 			for(z in radiusDiff) {
 				if(radiusDiff[z]) {
