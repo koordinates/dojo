@@ -151,7 +151,22 @@
 		font-size: 1.1em;
 		width: 100px;
 	}
+	
+	.demoEngineMenuNavigation {
+		text-align:left !important;
+	}
 
+	
+	.navigationCell {
+		padding-right:1em;
+	}
+	
+.demoEngineNavigation h1 {
+		font-size:1.25em;
+		border-bottom:1px solid #a9ccf5;
+		margin-bottom:7px;
+		margin-top:0;
+}
 
 .demoListWrapper {
 	border:1px solid #dcdbdb;
