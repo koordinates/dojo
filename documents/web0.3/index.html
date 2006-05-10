@@ -8,7 +8,8 @@
 	<link rel="stylesheet" type="text/css" href="css/index.css" />
 	<link rel="stylesheet" type="text/css" href="css/demoEngine.css" />
 
-	<script type="text/javascript" src="../dojo.js"></script>
+	<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=dojotoolkit"></script>
+	<script type="text/javascript" src="/dojo/dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.widget.TabContainer");
 		dojo.require("dojo.widget.LinkPane");
@@ -48,8 +49,8 @@
 		<div id="content"> 
 			<div id="actionTabs" dojoType="TabContainer" labelPosition="top" selectedTab="news" doLayout="false">
 				<div id="demoApp" dojoType="DemoEngine" label="see it in action" viewLinkImage="img/viewDemo.png"></div> 
-				<div id="help" dojoType="ContentPane" label="get help" href="help.html" parseContent="true"></div>
-				<div id="news" dojoType="ContentPane" label="news &amp; announcements" href="newsItems.html" parseContent="true"></div>
+				<div id="help" dojoType="ContentPane" label="get help" href="help.html" parseContent="true" executeScripts="true"></div>
+				<div id="news" dojoType="ContentPane" label="news &amp; announcements" href="newsItems.html" parseContent="true" executeScripts="true"></div>
 			</div>
 		</div>
 	</div>
