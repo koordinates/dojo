@@ -6,11 +6,14 @@
 	<link rel="stylesheet" type="text/css" href="css/common.css" />
 	<link rel="stylesheet" type="text/css" href="css/text.css" />
 	<link rel="stylesheet" type="text/css" href="css/index.css" />
-	<script type="text/javascript" src="/dojo/dojo.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/demoEngine.css" />
+
+	<script type="text/javascript" src="../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.widget.TabContainer");
 		dojo.require("dojo.widget.LinkPane");
 		dojo.require("dojo.widget.ContentPane");
+		dojo.require("dojo.widget.DemoEngine");
 	</script>
 </head>
 <body>
@@ -42,11 +45,11 @@
 				<li>Keep abreast of Dojo by <a href="http://dojotoolkit.org/mailman/listinfo/dojo-interest">subscribing to our mailing list</a>.</li>
 			</ul>
 		</div>
-		<div id="content">
-			<div id="actionTabs" dojoType="TabContainer" labelPosition="bottom" selectedTab="news">
-				<div id="demoApp" dojoType="ContentPane" label="see it in action">test tab one</div>
-				<div id="help" dojoType="ContentPane" label="get help">test tab two</div>
-				<div id="news" dojoType="ContentPane" label="news &amp; announcements">current news</div>
+		<div id="content"> 
+			<div id="actionTabs" dojoType="TabContainer" labelPosition="top" selectedTab="help" doLayout="false">
+				<div id="demoApp" dojoType="DemoEngine" label="see it in action" viewLinkImage="img/viewDemo.png"></div> 
+				<div id="help" dojoType="ContentPane" label="get help" href="help.html" parseContent="true"></div>
+				<div id="news" dojoType="ContentPane" label="news &amp; announcements" href="newsItems.html" parseContent="true"></div>
 			</div>
 		</div>
 	</div>

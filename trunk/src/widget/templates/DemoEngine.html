@@ -1,15 +1,15 @@
 <div dojoAttachPoint="domNode">
 	<div dojoAttachPoint="navigationNode">
 
-		<div dojoAttachPoint="menuNavigationNode">
-		</div>
-
-		<div dojoAttachPoint="demoNavigationNode">
-			<table dojoAttachPoint="demoListingsNode">
-				<tbody dojoAttachPoint="demoListingsTbody">
-				</tbody>
-			</table>
-		</div>
+		<table>
+			<tr>
+				<td width="1%" valign="top"><div dojoAttachPoint="menuNavigationNode"></div></td>
+				<td width="99%" valign="top">
+					<div dojoAttachPoint="demoNavigationNode">
+					</div>
+				</td>
+			</tr>
+		</table>
 
 	</div>
 
@@ -19,7 +19,7 @@
 		</div>
 
 		<div dojoAttachPoint="demoHeaderNode">
-			<div dojoAttachPoint="collapsedMenuNode" dojoAttachEvent="onclick: expandDemoNavigation">Dojo Demos</div>
+			<div dojoAttachPoint="collapsedMenuNode" dojoAttachEvent="onclick: expandDemoNavigation"></div>
 			<div dojoAttachPoint="aboutNode">About this Demo</div>
 		</div>
 	</div>

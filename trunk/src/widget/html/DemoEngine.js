@@ -14,6 +14,8 @@ dojo.widget.html.DemoEngine = function(){
 
 	this.templatePath = dojo.uri.dojoUri("src/widget/templates/DemoEngine.html");
 
+	this.demoEngineClass="demoEngine";
+
 	this.navigationNode="";
 	this.navigationClass="demoEngineNavigation";
 
@@ -26,10 +28,14 @@ dojo.widget.html.DemoEngine = function(){
 	this.demoNavigationNode="";
 	this.demoNavigationClass="demoEngineDemoNavigation";
 
-	this.demoListingsNode="";
-	this.demoListingsClass="demoEngineDemoListings";
-
-	this.demoListingsTbody="";
+	this.demoListWrapperClass="demoListWrapper";
+	this.demoListContainerClass="demoListContainer";
+	this.demoSummaryClass = "demoSummary";
+	this.demoSummaryBoxClass="demoSummaryBox";
+	this.demoListScreenshotClass="screenshot";
+	this.demoListSummaryContainerClass="summaryContainer";
+	this.demoSummaryClass="summary";
+	this.demoViewLinkClass="view";	
 
 	this.demoContainerNode="";
 	this.demoContainerClass="demoEngineDemoContainer";
@@ -46,6 +52,11 @@ dojo.widget.html.DemoEngine = function(){
 
 	this.demoPaneNode="";	
 	this.demoTabContainer="";
+
+	this.viewLinkImage="viewDemo.png";
+	this.dojoDemosImage = "dojoDemos.gif";
+	this.dojoDemosImageNode="";
+
 	this.registry = function() {};	
 }
 
@@ -53,22 +64,22 @@ dojo.inherits(dojo.widget.html.DemoEngine, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	postCreate: function() {
+		dojo.html.addClass(this.domNode, this.demoEngineClass);
 		dojo.html.addClass(this.navigationNode, this.navigationClass);
 		dojo.html.addClass(this.collapseToNode, this.collapseToClass);
 		dojo.html.addClass(this.menuNavigationNode, this.menuNavigationClass);
-		dojo.html.addClass(this.demoNavigationNode, this.demoNavigationClass);
-		dojo.html.addClass(this.demoListingsNode, this.demoListingsClass);
+		dojo.html.addClass(this.demoNavigationNode, this.demoListWrapperClass);
 		dojo.html.addClass(this.collapsedMenuNode, this.collapsedMenuClass);
 		dojo.html.addClass(this.demoHeaderNode, this.demoHeaderClass);
 		dojo.html.addClass(this.demoContainerNode, this.demoContainerClass);
 
 		// Make sure navigation node is hidden and opaque
-		dojo.style.hide(this.navigationNode);
-		dojo.style.setOpacity(this.navigationNode, 0);
+		//dojo.style.hide(this.navigationNode);
+		//dojo.style.setOpacity(this.navigationNode, 0);
 
 		//Make sure demoNavigationNode is hidden and opaque;
-		dojo.style.hide(this.demoNavigationNode);
-		dojo.style.setOpacity(this.demoNavigationNode,0);
+		//dojo.style.hide(this.demoNavigationNode);
+		//dojo.style.setOpacity(this.demoNavigationNode,0);
 
 		//Make sure demoContainerNode is hidden and opaque
 		dojo.style.hide(this.demoContainerNode);
@@ -78,10 +89,12 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		this.buildMenu();
 
 		//show navigationNode
-		dojo.lfx.html.fadeShow(this.navigationNode, 500).play();
+		//dojo.lfx.html.fadeShow(this.navigationNode, 500).play();
 
 		//turn demoPaneNode into a tabset
 		this.demoTabContainer = dojo.widget.createWidget("TabContainer",{},this.demoPaneNode);	
+
+		this.show();
 
 	},
 
@@ -98,7 +111,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	_buildMenu: function(type, data) {
 		this.registry = data;
 		dojo.debug("_buildMenu");
-		dojo.debugShallow(this.registry.navigation[0]);
 
 		dojo.lang.forEach(this.registry.navigation, dojo.lang.hitch(this,function(category) {
 			this._addMenuItem(category);
@@ -118,7 +130,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		var showDemoNav = dojo.lfx.html.fadeShow(this.demoNavigationNode, 600);
 		var moveMenuNav = dojo.lfx.html.slideTo(this.menuNavigationNode,[0,0], 250);
 
-		dojo.html.removeChildren(this.demoListingsTbody);
+		dojo.html.removeChildren(this.demoNavigationNode);
 	
 		dojo.lfx.combine(showDemoNav, moveMenuNav).play()	
 
@@ -128,26 +140,69 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 					dojo.debug("demo: " + this.registry.navigation[x].demos[y]);
 					var d = this.registry.definitions[this.registry.navigation[x].demos[y]];
 
-					var newRow = document.createElement("tr");
-					var thumbTd = document.createElement("td");
-					var thumb = document.createElement("img");
-					var detailTd = document.createElement("td");
+					//var demoListWrapper = document.createElement("div");
+					//dojo.html.addClass(demoListWrapper,this.demoListWrapperClass);
+					//this.demoNavigationNode.appendChild(demoListWrapper);
 
-					thumb.src = d.thumbnail;
-					thumbTd.appendChild(thumb);	
+					var demoListContainer=document.createElement("div");
+					dojo.html.addClass(demoListContainer, this.demoListContainerClass);
+					this.demoNavigationNode.appendChild(demoListContainer);
 
-					var title=document.createElement("h2");
+					var demoSummary = document.createElement("div");
+					dojo.html.addClass(demoSummary,this.demoSummaryClass);
+					demoListContainer.appendChild(demoSummary);
+
+					var demoSummaryBox = document.createElement("div");
+					dojo.html.addClass(demoSummaryBox, this.demoSummaryBoxClass);
+					demoSummary.appendChild(demoSummaryBox);
+
+					var table = document.createElement("table");
+					table.width="100%";
+					table.cellspacing="0";
+					table.cellpadding="0";
+					demoSummaryBox.appendChild(table);
+
+					var tbody = document.createElement("tbody");
+					table.appendChild(tbody);
+
+					var tr= document.createElement("tr");
+					tbody.appendChild(tr);
+
+					var screenshotTd = document.createElement("td");
+					dojo.html.addClass(screenshotTd,this.demoListScreenshotClass);
+					screenshotTd.valign="top";
+					tr.appendChild(screenshotTd);
+
+					var ss = document.createElement("img");
+					ss.src=d.thumbnail;
+					screenshotTd.appendChild(ss);
+
+					var summaryTd = document.createElement("td");
+					dojo.html.addClass(summaryTd,this.demoListSummaryContainerClass);
+					summaryTd.valign="top";
+					tr.appendChild(summaryTd);
+
+					var name = document.createElement("h1");
+					name.appendChild(document.createTextNode(this.registry.navigation[x].demos[y]));
+					summaryTd.appendChild(name);
+
+					var summary = document.createElement("div");
+					dojo.html.addClass(summary, this.demoSummaryClass);		
+					summaryTd.appendChild(summary);
+
 					var desc = document.createElement("p");
-					title.appendChild(document.createTextNode(this.registry.navigation[x].demos[y]));
 					desc.appendChild(document.createTextNode(d.description));
-					detailTd.appendChild(title);
-					detailTd.appendChild(desc);
-						
-
-					newRow.appendChild(thumbTd);
-					newRow.appendChild(detailTd);
-					this.demoListingsTbody.appendChild(newRow);
-					dojo.event.connect(newRow, "onclick", this, "launchDemo");
+					summary.appendChild(desc);
+					
+					var viewDiv = document.createElement("div");
+					dojo.html.addClass(viewDiv, this.demoViewLinkClass);
+					summary.appendChild(viewDiv);
+				
+					var viewLink = document.createElement("img");
+					viewLink.src = this.viewLinkImage;
+					viewDiv.appendChild(viewLink);	
+							
+					dojo.event.connect(viewLink, "onclick", this, "launchDemo");
 				}
 			}
 		}
@@ -158,7 +213,8 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	launchDemo: function(e) {
-		dojo.debug("Launching Demo: " + e.currentTarget.lastChild.firstChild.innerHTML);
+		dojo.debug("Launching Demo: " + e.currentTarget.parentNode.parentNode.parentNode.firstChild.innerHTML);
+		var demo = e.currentTarget.parentNode.parentNode.parentNode.firstChild.innerHTML;
 		//implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1500);
 		//show = dojo.lfx.html.fadeShow(this.demoContainerNode,1500);
 		dojo.style.setOpacity(this.demoContainerNode, 0);
@@ -171,13 +227,13 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		this.demoTabContainer.destroyChildren();
 
 		demoIframe = document.createElement("iframe");
-		demoIframe.src=this.registry.definitions[e.currentTarget.lastChild.firstChild.innerHTML].url;
+		demoIframe.src=this.registry.definitions[demo].url;
 
 		dojo.html.removeChildren(this.aboutNode);
 		var name = document.createElement("h1");
 		var about= document.createElement("h2");
-		name.appendChild(document.createTextNode(e.currentTarget.lastChild.firstChild.innerHTML));
-		about.appendChild(document.createTextNode(this.registry.definitions[e.currentTarget.lastChild.firstChild.innerHTML].description));
+		name.appendChild(document.createTextNode(demo));
+		about.appendChild(document.createTextNode(this.registry.definitions[demo].description));
 		this.aboutNode.appendChild(name);
 		this.aboutNode.appendChild(about);
 
@@ -188,7 +244,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		demoIframe.parentNode.style.display="inline";
 		demoIframe.parentNode.parentNode.style.overflow="hidden";
 		dojo.io.bind({
-			url: this.registry.definitions[e.currentTarget.lastChild.firstChild.innerHTML].url,
+			url: this.registry.definitions[demo].url,
 			mimetype: "text/plain",
 			load: dojo.lang.hitch(this, function(type,data,e) {
 				source = document.createElement("textarea");
@@ -217,7 +273,12 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		show = dojo.lfx.html.fadeShow(this.navigationNode, 1000);
 		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 1000);
 		dojo.lfx.combine(show,hide).play();
-	}
+	},
+/*
+	show: function() {
+		this.onResized();
+		dojo.widget.html.DemoEngine.superclass.show.call(this);
+	}*/
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:DemoEngine");

@@ -1,7 +1,7 @@
 	#container {
 		width: 700px;
 		height: 450px;
-		border: 1px solid black;
+		/*border: 1px solid black;*/
 		padding: 0px;
 		margin: 0px;
 		overflow: hidden;
@@ -27,7 +27,7 @@
 		color: black;
 	}
 
-	div.dojoTabContainer {
+	.demoEngine div.dojoTabContainer {
 		width: 100%;
 		height: 450px;
 		top: 0px;
@@ -37,7 +37,11 @@
 		border: 0px;
 	}
 
-	div.dojoTabContainer iframe {
+	.demoEngine .dojoTabPaneWrapper {
+		border: 1px solid #efefef;
+	}
+
+	.demoEngine div.dojoTabContainer iframe {
 		overflow: auto;
 		width: 100%;
 		height: 100%;
@@ -47,7 +51,7 @@
 		background: #ffffff;
 	}
 
-	div.dojoTabContainer textarea {
+	.demoEngine div.dojoTabContainer textarea {
 		width: 100%;
 		height: 100%;
 		padding: 0px;
@@ -57,7 +61,7 @@
 	}
 
 	div.demoEngineDemoHeader {
-		top: 10px;
+		top: 35px;
 		left: 0px;
 		width: 550px;
 		height: 65px;
@@ -89,22 +93,22 @@
 
 	div.demoEngineDemoHeader div:first-child {
 		left: 5px;
-		top: 10px;
+		top: 2px;
 		width: 75px;
 	}
 
-	div.dojoTabLabels-top {
+	.demoEngine div.dojoTabLabels-top {
 		position : absolute;
 		top : 0px;
 		left : 0px;
 		overflow : visible;
 		padding-top: 20px;
 		padding-bottom: 20px;
-		margin-right: 0px;
+		margin-right: 10px;
 		width : 150px;
 	}
 
-	div.dojoTabPaneTab {
+	.demoEngine div.dojoTabPaneTab {
 		float: right;
 		background: #f5f5f5;
 		border: 0px;
@@ -112,19 +116,19 @@
 		margin-left: 10px;
 	}
 
-	div.dojoTabPaneTab span {	
+	.demoEngine div.dojoTabPaneTab span {	
 		background: #f5f5f5;
 		border: 0px;
 		padding: 0px;
 		margin: 0px;
 	}
 
-	div.dojoTabPaneTab.current {
+	.demoEngine div.dojoTabPaneTab.current {
 		background: #f5f5f5;
 		border-bottom: 5px solid #95bfff;
 	}
 
-	div.demoEngineDemoNavigation {
+	.demoEngine div.demoEngineDemoNavigation {
 		width: 100%;
 		margin: 0px;
 		padding: 0px;
@@ -132,22 +136,19 @@
 
 	.demoEngineCollapsedMenu {
 		cursor: pointer;
-		background:  url("dojoDemos.gif") no-repeat;
+		background:  url("/~dmachi/demoTrunk/www/img/dojoDemos.gif") no-repeat;
 		width: 50px;
 		height: 50px;
 		margin-left: 15px;
 		margin-top: 0px;
 	}
 
-	.dojoButton {
+	.demoEngine .dojoButton {
 		margin: 10px;
 		margin-top: 0px;
 	}	
-	.dojoButton .dojoButtonContents {
+	.demoEngine .dojoButton .dojoButtonContents {
 		font-size: 1.1em;
-	}
-
-	.dojoButtonContents {
 		width: 100px;
 	}
 
