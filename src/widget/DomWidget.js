@@ -8,6 +8,7 @@ dojo.require("dojo.uri.*");
 dojo.require("dojo.lang.func");
 
 dojo.widget._cssFiles = {};
+dojo.widget._cssStrings = {};
 dojo.widget._templateCache = {};
 
 dojo.widget.defaultStrings = {
@@ -44,10 +45,14 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 	}
 	var wt = obj.widgetType;
 
-	if((cpath)&&(!dojo.widget._cssFiles[cpath])){
-		dojo.style.insertCssFile(cpath);
+	if(!obj.templateCssString&&cpath&&!dojo.widget._cssFiles[cpath]){
+		obj.templateCssString = dojo.hostenv.getText(cpath);
 		obj.templateCssPath = null;
 		dojo.widget._cssFiles[cpath] = true;
+	}
+	if(obj.templateCssString&&!obj.templateCssString.loaded){
+		dojo.style.insertCssText(obj.templateCssString, null, cpath);
+		obj.templateCssString.loaded = true;
 	}
 
 	var ts = tmplts[wt];
@@ -245,6 +250,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 								 
 	templateNode: null,
 	templateString: null,
+	templateCssString: null,
 	preventClobber: false,
 	domNode: null, // this is our visible representation of the widget!
 	containerNode: null, // holds child elements
