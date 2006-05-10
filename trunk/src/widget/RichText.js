@@ -380,8 +380,10 @@ dojo.widget.defineWidget(
 			// fix margins on tmpContent
 			var firstChild = dojo.dom.firstElement(tmpContent);
 			var lastChild = dojo.dom.lastElement(tmpContent);
-			if (firstChild) {
+			if(firstChild){
 				firstChild.style.marginTop = this._firstChildContributingMargin+"px";
+			}
+			if(lastChild){
 				lastChild.style.marginBottom = this._lastChildContributingMargin+"px";
 			}
 
