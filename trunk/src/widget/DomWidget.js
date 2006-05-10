@@ -45,13 +45,14 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 	}
 	var wt = obj.widgetType;
 
-	if(!obj.templateCssString&&cpath&&!dojo.widget._cssFiles[cpath]){
+	if((!obj.templateCssString)&&(cpath)&&(!dojo.widget._cssFiles[cpath])){
 		obj.templateCssString = dojo.hostenv.getText(cpath);
 		obj.templateCssPath = null;
 		dojo.widget._cssFiles[cpath] = true;
 	}
-	if(obj.templateCssString&&!obj.templateCssString.loaded){
+	if((obj["templateCssString"])&&(!obj.templateCssString["loaded"])){
 		dojo.style.insertCssText(obj.templateCssString, null, cpath);
+		if(!obj.templateCssString){ obj.templateCssString = ""; }
 		obj.templateCssString.loaded = true;
 	}
 

@@ -131,7 +131,9 @@ dojo.html.createNodesFromText = function(txt, trim){
 		tableType = "section";
 	}
 	tn.innerHTML = txt;
-	tn.normalize();
+	if(tn["normalize"]){
+		tn.normalize();
+	}
 
 	var parent = null;
 	switch(tableType) {
