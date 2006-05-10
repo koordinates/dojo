@@ -159,8 +159,9 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 					var table = document.createElement("table");
 					table.width="100%";
-					table.cellspacing="0";
-					table.cellpadding="0";
+					table.cellSpacing="0";
+					table.cellPadding="0";
+					table.border="0";
 					demoSummaryBox.appendChild(table);
 
 					var tbody = document.createElement("tbody");

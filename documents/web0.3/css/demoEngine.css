@@ -151,10 +151,6 @@
 		font-size: 1.1em;
 		width: 100px;
 	}
-	
-	.demoEngineMenuNavigation {
-		text-align:left !important;
-	}
 
 	
 	.navigationCell {
@@ -187,14 +183,15 @@
 }
 
 .demoSummaryBox table {
-	border-collapse:collapse;
+	
 }
 
 .screenshot {
 	padding:0.65em;
 	width:175px;
-	border-right:1px solid #fafafa;
+	border-right:1px solid #fafafa !important;
 	text-align:center;
+	padding-right:0;
 }
 
 .demoSummary {
@@ -207,7 +204,8 @@
 }
 
 .summaryContainer {
-	border-left:1px solid #ddd;
+	border-left:1px solid #ddd !important;
+	padding-left:0;
 }
 
 .summaryContainer h1 {
@@ -236,11 +234,6 @@
 	font-size:0.85em;
 	padding:0;
 	margin:0;
-}
-
-.reflection {
-	background: url("images/demoBoxReflection.gif") repeat-x top left;
-	height:25px;
 }
 
 .view {
