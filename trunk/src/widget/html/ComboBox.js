@@ -447,15 +447,21 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		}
 	},
 
-	// these 2 are needed in IE and only in IE as input looses focus when scrolling optionslist
-	_onMouseEnterList: function(){
-		this._handleBlurTimer(true, 0);
-		this._mouseover_list = true;
+	// these 2 are needed in IE and Safari as inputTextNode looses focus when scrolling optionslist
+	_onMouseOver: function(evt){
+		if(!this._mouseover_list){
+			this._handleBlurTimer(true, 0);
+			this._mouseover_list = true;
+		}
 	},
 
-	_onMouseLeaveList: function(evt){
-		this._mouseover_list = false;
-		this.tryFocus();
+	_onMouseOut:function(evt){
+		var relTarget = evt.relatedTarget;
+		if(!relTarget || relTarget.parentNode!=this.optionsListNode){
+			this._mouseover_list = false;
+			this._handleBlurTimer(true, 100);
+			this.tryFocus();
+		}
 	},
 
 	checkBlurred: function(){
