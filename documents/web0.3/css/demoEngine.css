@@ -156,18 +156,23 @@
 .demoListWrapper {
 	border:1px solid #dcdbdb;
 	background-color:#f8f8f8;
-	padding:2px;
+	padding:4px;
 }
 
 .demoListContainer {
-	border:1px solid #f0f0f0;
 	background-color:#fff;
 	padding:1em;
+	border-left:1px solid #f0f0f0;
+	border-right:1px solid #f0f0f0;
 }
 
 .demoSummaryBox {
 	background: #efefef;
 	border:1px solid #dae3ee;
+}
+
+.demoSummaryBox table {
+	border-collapse:collapse;
 }
 
 .screenshot {
