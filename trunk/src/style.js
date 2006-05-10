@@ -623,8 +623,15 @@ dojo.require("dojo.lang.common");
 		node = dojo.byId(node);
 		var ns = node.style;
 		if(h.ie){
-			if( node.filters && node.filters.alpha ){
-				ns.filter = ""; // FIXME: may get rid of other filter effects
+			try {
+				if( node.filters && node.filters.alpha ){
+					ns.filter = ""; // FIXME: may get rid of other filter effects
+				}
+			} catch(e) {
+				/*
+				 * IE7 gives error if node.filters not set;
+				 * don't know why or how to workaround (other than this)
+				 */
 			}
 		}else if(h.moz){
 			ns.opacity = 1;
