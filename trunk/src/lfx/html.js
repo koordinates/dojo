@@ -22,8 +22,23 @@ dojo.lfx.html._byId = function(nodes){
 	}
 }
 
-dojo.lfx.html.propertyAnimation = function(/*DOMNode*/ nodes, /*Array*/ propertyMap, /*int*/ duration,/*function*/ easing){
+dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes, 
+											/*Array*/ propertyMap, 
+											/*int*/ duration,
+											/*function*/ easing){
 	nodes = dojo.lfx.html._byId(nodes);
+
+	if(nodes.length==1){
+		// FIXME: we're only supporting start-value filling when one node is
+		// passed
+
+		dojo.lang.forEach(propertyMap, function(prop){
+			if(typeof prop["start"] == "undefined"){
+				prop.start = parseInt(dojo.style.getComputedStyle(nodes[0], prop.property));
+				dojo.debug(prop.start);
+			}
+		});
+	}
 
 	var coordsAsInts = function(coords){
 		var cints = new Array(coords.length);
