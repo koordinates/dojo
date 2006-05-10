@@ -305,7 +305,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		}
 	},
 
-	/* et the grid under the expand icon */
+	/* set the grid under the expand icon */
 	updateExpandGrid: function() {
 
 		if (this.tree.showGrid){
