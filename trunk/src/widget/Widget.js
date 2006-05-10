@@ -284,13 +284,21 @@ dojo.declare("dojo.widget.Widget", null, {
 						// FIXME: should we be allowing extension here to handle
 						// other object types intelligently?
 
-						// FIXME: unlike all other types, we do not replace the
-						// object with a new one here. Should we change that?
-						var pairs = args[x].split(";");
-						for(var y=0; y<pairs.length; y++){
-							var si = pairs[y].indexOf(":");
-							if((si != -1)&&(pairs[y].length>si)){
-								this[x][pairs[y].substr(0, si).replace(/^\s+|\s+$/g, "")] = pairs[y].substr(si+1);
+						// if we defined a URI, we probablt want to allow plain strings
+						// to override it
+						if (this[x] instanceof dojo.uri.Uri){
+
+							this[x] = args[x];
+						}else{
+
+							// FIXME: unlike all other types, we do not replace the
+							// object with a new one here. Should we change that?
+							var pairs = args[x].split(";");
+							for(var y=0; y<pairs.length; y++){
+								var si = pairs[y].indexOf(":");
+								if((si != -1)&&(pairs[y].length>si)){
+									this[x][pairs[y].substr(0, si).replace(/^\s+|\s+$/g, "")] = pairs[y].substr(si+1);
+								}
 							}
 						}
 					}else{
