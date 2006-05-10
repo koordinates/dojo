@@ -5,6 +5,7 @@ dojo.provide("dojo.widget.Chart.DataSeries");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.graphics.color");
+dojo.require("dojo.graphics.color.hsl");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
 dojo.widget.Chart=function(){
