@@ -8,27 +8,27 @@ dojo.require("dojo.lang.common");
 	var ds = dojo.style;
 	var db = document["body"]||document["documentElement"];
 
-	// values: content-box, border-box
 	ds.boxSizing = {
-		marginBox: "margin-box",
-		borderBox: "border-box",
-		paddingBox: "padding-box",
-		contentBox: "content-box"
+		MARGIN_BOX: "margin-box",
+		BORDER_BOX: "border-box",
+		PADDING_BOX: "padding-box",
+		CONTENT_BOX: "content-box"
 	};
-
+	var bs = ds.boxSizing;
+	
 	ds.getBoxSizing = function(node){
 		if((h.ie)||(h.opera)){ 
 			var cm = document["compatMode"];
 			if((cm == "BackCompat")||(cm == "QuirksMode")){ 
-				return ds.boxSizing.borderBox; 
+				return bs.BORDER_BOX; 
 			}else{
-				return ds.boxSizing.contentBox; 
+				return bs.CONTENT_BOX; 
 			}
 		}else{
 			if(arguments.length == 0){ node = document.documentElement; }
 			var sizing = ds.getStyle(node, "-moz-box-sizing");
 			if(!sizing){ sizing = ds.getStyle(node, "box-sizing"); }
-			return (sizing ? sizing : ds.boxSizing.contentBox);
+			return (sizing ? sizing : bs.CONTENT_BOX);
 		}
 	}
 
@@ -76,7 +76,7 @@ dojo.require("dojo.lang.common");
 			- Uncomputable values are returned as NaN.
 			- setOuterWidth/Height return *false* if the outer size could not
 			  be computed, otherwise *true*.
-			- I (sjmiles) know no way to find the calculated values for auto-margins. 
+			- (sjmiles) knows no way to find the calculated values for auto-margins. 
 			- All returned values are floating point in 'px' units. If a
 			  non-zero computed style value is not specified in 'px', NaN is
 			  returned.
@@ -98,10 +98,10 @@ dojo.require("dojo.lang.common");
 
 	*/
 
-	// FIXME: these work for most elements (e.g. DIV) but not all (e.g. TEXTAREA)
+	// FIXME: these work for some elements (e.g. DIV) but not others (e.g. TABLE, TEXTAREA)
 
 	ds.isBorderBox = function(node){
-		return (ds.getBoxSizing(node) == ds.boxSizing.borderBox);
+		return (ds.getBoxSizing(node) == bs.BORDER_BOX);
 	}
 
 	ds.getUnitValue = function(node, cssSelector, autoIsZero){
@@ -132,7 +132,19 @@ dojo.require("dojo.lang.common");
 		if((result.value)&&(result.units != 'px')){ return NaN; }
 		return result.value;
 	}
+	
+	// FIXME: deprecated
+	ds.getNumericStyle = function() {
+		dojo.deprecated('dojo.(style|html).getNumericStyle', 'in favor of dojo.(style|html).getPixelValue', '0.4');
+		return ds.getPixelValue.apply(this, arguments); 
+	}
 
+	ds.setPositivePixelValue = function(node, selector, value){
+		if(isNaN(value)){return false;}
+		node.style[selector] = Math.max(0, value) + 'px'; 
+		return true;
+	}
+	
 	ds._sumPixelValues = function(node, selectors, autoIsZero){
 		var total = 0;
 		for(x=0; x<selectors.length; x++){
@@ -140,8 +152,6 @@ dojo.require("dojo.lang.common");
 		}
 		return total;
 	}
-
-	ds.getNumericStyle = ds.getPixelValue; // backward compat
 
 	ds.isPositionAbsolute = function(node){
 		return (ds.getComputedStyle(node, 'position') == 'absolute');
@@ -161,39 +171,43 @@ dojo.require("dojo.lang.common");
 		return ds._sumPixelValues(node, ["padding-left", "padding-right"], true);
 	}
 
-	ds.getContentWidth = function(node){
+	ds.getContentBoxWidth = function(node){
 		node = dojo.byId(node);
 		return node.offsetWidth - ds.getPaddingWidth(node) - ds.getBorderWidth(node);
 	}
 
-	ds.getInnerWidth = function(node){
+	ds.getBorderBoxWidth = function(node){
 		node = dojo.byId(node);
 		return node.offsetWidth;
 	}
 
-	ds.getOuterWidth = function(node){
+	ds.getMarginBoxWidth = function(node){
 		return ds.getInnerWidth(node) + ds.getMarginWidth(node);
 	}
 
-	ds.setOuterWidth = function(node, pxWidth){
+	ds.setContentBoxWidth = function(node, pxWidth){
+		node = dojo.byId(node);
+		if (ds.isBorderBox(node)){
+			pxWidth += ds.getPaddingWidth(node) + ds.getBorderWidth(node);
+		}
+		return ds.setPositivePixelValue(node, "width", pxWidth);
+	}
+
+	ds.setMarginBoxWidth = function(node, pxWidth){
 		node = dojo.byId(node);
 		if (!ds.isBorderBox(node)){
 			pxWidth -= ds.getPaddingWidth(node) + ds.getBorderWidth(node);
 		}
 		pxWidth -= ds.getMarginWidth(node);
-		if (!isNaN(pxWidth) && pxWidth > 0){
-			node.style.width = pxWidth + 'px';
-			return true;
-		}else{
-			return false;
-		}
+		return ds.setPositivePixelValue(node, "width", pxWidth);
 	}
 
-	// FIXME: these aliases are actually the preferred names
-	ds.getContentBoxWidth = ds.getContentWidth;
-	ds.getBorderBoxWidth = ds.getInnerWidth;
-	ds.getMarginBoxWidth = ds.getOuterWidth;
-	ds.setMarginBoxWidth = ds.setOuterWidth;
+	// FIXME: deprecate and remove
+	ds.getContentWidth = ds.getContentBoxWidth;
+	ds.getInnerWidth = ds.getBorderBoxWidth;
+	ds.getOuterWidth = ds.getMarginBoxWidth;
+	ds.setContentWidth = ds.setContentBoxWidth;
+	ds.setOuterWidth = ds.setMarginBoxWidth;
 
 	ds.getMarginHeight = function(node){
 		return ds._sumPixelValues(node, ["margin-top", "margin-bottom"], ds.isPositionAbsolute(node));
@@ -209,65 +223,43 @@ dojo.require("dojo.lang.common");
 		return ds._sumPixelValues(node, ["padding-top", "padding-bottom"], true);
 	}
 
-	ds.getContentHeight = function(node){
+	ds.getContentBoxHeight = function(node){
 		node = dojo.byId(node);
 		return node.offsetHeight - ds.getPaddingHeight(node) - ds.getBorderHeight(node);
 	}
 
-	ds.getInnerHeight = function(node){
+	ds.getBorderBoxHeight = function(node){
 		node = dojo.byId(node);
 		return node.offsetHeight; // FIXME: does this work?
 	}
 
-	ds.getOuterHeight = function(node){
+	ds.getMarginBoxHeight = function(node){
 		return ds.getInnerHeight(node) + ds.getMarginHeight(node);
 	}
 
-	ds.setOuterHeight = function(node, pxHeight){
+	ds.setContentBoxHeight = function(node, pxHeight){
+		node = dojo.byId(node);
+		if (ds.isBorderBox(node)){
+			pxHeight += ds.getPaddingHeight(node) + ds.getBorderHeight(node);
+		}
+		return ds.setPositivePixelValue(node, "height", pxHeight);
+	}
+
+	ds.setMarginBoxHeight = function(node, pxHeight){
 		node = dojo.byId(node);
 		if (!ds.isBorderBox(node)){
 			pxHeight -= ds.getPaddingHeight(node) + ds.getBorderHeight(node);
 		}
 		pxHeight -= ds.getMarginHeight(node);
-		if (!isNaN(pxHeight) && pxHeight > 0){
-			node.style.height = pxHeight + 'px';
-			return true;
-		}else{
-			return false;
-		}
+		return ds.setPositivePixelValue(node, "height", pxHeight);
 	}
 
-	ds.setContentWidth = function(node, pxWidth){
-		node = dojo.byId(node);
-		if (ds.isBorderBox(node)){
-			pxWidth += ds.getPaddingWidth(node) + ds.getBorderWidth(node);
-		}
-		if (!isNaN(pxWidth) && pxWidth > 0){
-			node.style.width = pxWidth + 'px';
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	ds.setContentHeight = function(node, pxHeight){
-		node = dojo.byId(node);
-		if (ds.isBorderBox(node)){
-			pxHeight += ds.getPaddingHeight(node) + ds.getBorderHeight(node);
-		}
-		if (!isNaN(pxHeight) && pxHeight > 0){
-			node.style.height = pxHeight + 'px';
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	// FIXME: these aliases are actually the preferred names
-	ds.getContentBoxHeight = ds.getContentHeight;
-	ds.getBorderBoxHeight = ds.getInnerHeight;
-	ds.getMarginBoxHeight = ds.getOuterHeight;
-	ds.setMarginBoxHeight = ds.setOuterHeight;
+	// FIXME: deprecate and remove
+	ds.getContentHeight = ds.getContentBoxHeight;
+	ds.getInnerHeight = ds.getBorderBoxHeight;
+	ds.getOuterHeight = ds.getMarginBoxHeight;
+	ds.setContentHeight = ds.setContentBoxHeight;
+	ds.setOuterHeight = ds.setMarginBoxHeight;
 
 	/**
 	 * dojo.style.getAbsolutePosition(xyz, true) returns xyz's position relative to the document.
@@ -764,8 +756,8 @@ dojo.require("dojo.lang.common");
 			var ret = [
 				pos.x,
 				pos.y,
-				ds.getInnerWidth(node),
-				ds.getInnerHeight(node)
+				ds.getBorderBoxWidth(node),
+				ds.getBorderBoxHeight(node)
 			];
 		}
 		ret.x = ret[0];
