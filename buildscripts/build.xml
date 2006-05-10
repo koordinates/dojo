@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
-<!-- Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above --> 
+<!-- 
+	Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
+	Free License version 2.1 or BSD licenses
+--> 
 <!--
 	TODO: 
 		- single-file builds
@@ -332,7 +335,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+			<fileset dir="${destdir}">
+				<include name="**/*.js" />
+				<include name="**/*.as" />
+				<not>
+					<contains text="copyright" casesensitive="no"  />
+				</not>
+			</fileset>
 		</replaceregexp>
 
 		<replace dir="${release_dir}/${project}/${nodocs}">
@@ -344,7 +353,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+			<fileset dir="${destdir}">
+				<include name="**/*.js" />
+				<include name="**/*.as" />
+				<not>
+					<contains text="copyright" casesensitive="no"  />
+				</not>
+			</fileset>
 		</replaceregexp>
 	</target>
 	<!-- end gen-strip-docs task -->
@@ -524,7 +539,13 @@ ${profileDeps}
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${release_dir}" includes="**/*.js"/>
+			<fileset dir="${release_dir}">
+				<include name="**/*.js" />
+				<include name="**/*.as" />
+				<not>
+					<contains text="copyright" casesensitive="no"  />
+				</not>
+			</fileset>
 		</replaceregexp>
 
 		<delete file="${release_dir}/source.__package__.js"/>
