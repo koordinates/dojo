@@ -570,7 +570,8 @@ sys.path.append(".")
 import os
 from buildUtil import *
 
-internTemplateStrings()
+print "Interning strings for directory: " + dojo.getProperty("release_dir")
+internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_dir"))
 ]]></script>
 	</target>
 	<!-- end intern-strings task -->

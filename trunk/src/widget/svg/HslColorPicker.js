@@ -23,7 +23,6 @@ dojo.inherits(dojo.widget.svg.HslColorPicker, dojo.widget.HtmlWidget);
 dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
 	//	widget props
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HslColorPicker.svg"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HslColorPicker.css"),
 	fillInTemplate: function() {
 		this.height = "131px";
 		this.svgDoc = this.hueNode.ownerDocument;
