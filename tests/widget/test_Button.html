@@ -2,7 +2,7 @@
         "http://www.w3.org/TR/html4/strict.dtd"> 
 
 <title>Dojo Button Widget Test</title>
-
+	<link rel="stylesheet" type="text/css" href="css/demos.css" />
 <script type="text/javascript">
 	var djConfig = {isDebug: true /*, debugAtAllCosts: true*/ };
 </script>
@@ -45,18 +45,17 @@
 	.dojoPopupMenu2, .dojoPopupMenu2Client, .dojoMenuItem2,
 		.dojoMenuItem2Label, 
 		.dojoMenuItem2Accel {
-		border: 1px solid;
-		border-color: #0b42be;
 		color: white;
-		background-color: #0b42be;
+		background-color: #B9D4FE;
+		border:1px solid #b8d4fe;
 	}
 	
 	body .dojoMenuItem2.dojoMenuItem2Hover,
 		.dojoMenuItem2.dojoMenuItem2Hover .dojoMenuItem2Label, 
 		.dojoMenuItem2.dojoMenuItem2Hover .dojoMenuItem2Accel,
 		.dojoMenuItem2.dojoMenuItem2Hover .dojoMenuItem2Icon {
-		background-color: #0bc2a2;
-		border-color: #0bc2a2;
+		background-color: #6F95CD;
+		border-color:#6F95CD;
 	}
 
 	/* todo: find good color for disabled menuitems, and teset */
@@ -70,8 +69,6 @@
 		color: ThreeDHighlight;
 	}
 </style>
-
-<h1>Buttons, Buttons, Buttons!</h1>
 
 <h2>Simple, drop down & combo buttons</h2>
 <p>
@@ -130,7 +127,7 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 		<span style="font-size:xx-large">big</span>
 	</button>
 	<button id="smallButton1" dojoType="Button" onclick='dojo.debug("small");'>
-		<img src="images/createsmall.gif">
+		<img src="images/arrowSmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("long");'>
@@ -152,7 +149,7 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 		<span style="font-size:xx-large">big</span>
 	</button>
 	<button id="smallButton1dis" dojoType="Button" onclick='dojo.debug("small");' disabled="true">
-		<img src="images/createsmall.gif">
+		<img src="images/arrowSmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("long");' disabled="true">
