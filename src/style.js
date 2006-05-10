@@ -105,24 +105,17 @@ dojo.require("dojo.lang.common");
 	}
 
 	ds.getUnitValue = function(node, cssSelector, autoIsZero){
-		var result = { value: 0, units: 'px' };
 		var s = ds.getComputedStyle(node, cssSelector);
-		if (s == '' || (s == 'auto' && autoIsZero)){ return result; }
-		if (dojo.lang.isUndefined(s)){ 
-			result.value = NaN;
-		}else{
-			// FIXME: is regex inefficient vs. parseInt or some manual test? 
-			var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
-			if (!match){
-				result.value = NaN;
-			}else{
-				result.value = Number(match[1]);
-				result.units = match[2].toLowerCase();
-			}
-		}
-		return result;		
+		if((s == '')||((s == 'auto')&&(autoIsZero))){ return { value: 0, units: 'px' }; }
+		if(dojo.lang.isUndefined(s)){return ds.getUnitValue.bad;}
+		// FIXME: is regex inefficient vs. parseInt or some manual test? 
+		var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
+		if (!match){return ds.getUnitValue.bad;}
+		return { value: Number(match[1]), units: match[2].toLowerCase() };
 	}
-
+	// FIXME: 'bad' value should be 0?
+	ds.getUnitValue.bad = { value: NaN, units: '' };
+	
 	ds.getPixelValue = function(node, cssSelector, autoIsZero){
 		var result = ds.getUnitValue(node, cssSelector, autoIsZero);
 		// FIXME: there is serious debate as to whether or not this is the right solution
@@ -157,14 +150,16 @@ dojo.require("dojo.lang.common");
 		return (ds.getComputedStyle(node, 'position') == 'absolute');
 	}
 
+	ds.getBorderExtent = function(node, side){
+		return (ds.getStyle(node, 'border-' + side + '-style') == 'none' ? 0 : ds.getPixelValue(node, 'border-' + side + '-width'));
+	}
+
 	ds.getMarginWidth = function(node){
 		return ds._sumPixelValues(node, ["margin-left", "margin-right"], ds.isPositionAbsolute(node));
 	}
 
 	ds.getBorderWidth = function(node){
-		var left = (ds.getStyle(node, 'border-left-style') == 'none' ? 0 : ds.getPixelValue(node, "border-left-width"));
-		var right = (ds.getStyle(node, 'border-right-style') == 'none' ? 0 : ds.getPixelValue(node, "border-right-width"));
-		return left + right;
+		return ds.getBorderExtent(node, 'left') + ds.getBorderExtent(node, 'right');
 	}
 
 	ds.getPaddingWidth = function(node){
@@ -218,9 +213,7 @@ dojo.require("dojo.lang.common");
 	}
 
 	ds.getBorderHeight = function(node){
-		var top = (ds.getStyle(node, 'border-top-style') == 'none' ? 0 : ds.getPixelValue(node, "border-top-width"));
-		var bottom = (ds.getStyle(node, 'border-bottom-style') == 'none' ? 0 : ds.getPixelValue(node, "border-bottom-width"));
-		return top + bottom;
+		return ds.getBorderExtent(node, 'top') + ds.getBorderExtent(node, 'bottom');
 	}
 
 	ds.getPaddingHeight = function(node){
@@ -644,10 +637,10 @@ dojo.require("dojo.lang.common");
 		}
 	}
 
-	ds._toggle = function(node, inTester, inSetter){
+	ds._toggle = function(node, tester, setter){
 		node = dojo.byId(node);
-		inSetter(node, !inTester(node));
-		return inTester(node);
+		setter(node, !tester(node));
+		return tester(node);
 	}
 
 	// show/hide are library constructs
