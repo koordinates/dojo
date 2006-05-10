@@ -16,21 +16,29 @@ dojo.widget.defineWidget(
 		datePicker: null,
 		
 		dateFormat: "%m/%d/%Y",
+		date: null,
 		
 		fillInTemplate: function(args, frag){
 			dojo.widget.DropdownDatePicker.superclass.fillInTemplate.call(this, args, frag);
 			var source = this.getFragNodeRef(frag);
 			
 			if(args.dateFormat){ this.dateFormat = args.dateFormat; }
+			if(args.date){ this.date = new Date(args.date); }
 			
 			var dpNode = document.createElement("div");
 			this.containerNode.appendChild(dpNode);
 			
-			this.datePicker = dojo.widget.createWidget("DatePicker", { widgetContainerId: this.widgetId }, dpNode);
-			dojo.event.connect(this.datePicker, "onSetDate", this, "onPopulate");
+			var dateProps = { widgetContainerId: this.widgetId };
+			if(this.date){
+				dateProps["date"] = this.date;
+				dateProps["storedDate"] = dojo.widget.DatePicker.util.toRfcDate(this.date);
+				this.inputNode.value = dojo.date.format(this.date, this.dateFormat);
+			}
+			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
+			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
 		},
 		
-		onPopulate: function(){
+		onSetDate: function(){
 			this.inputNode.value = dojo.date.format(this.datePicker.date, this.dateFormat);
 			this.onHide();
 		},
