@@ -122,14 +122,14 @@ css after url fix
 			+'<span id="cssText" style="border: 1px solid black;">Should be blue text and yellow background</span>'
 			+' &nbsp; <span style="border: 1px solid black;color: blue; background: yellow;">&lt;- left one should look like this</span>'
 			+'<br /><br /><span id="cssBgImage" style="border: 1px solid black;">Should get background image</span>'
-			+' &nbsp; <span style="border: 1px solid black; background-image: url(../src/widget/templates/images/tab_top_right.gif);">&lt;- left one should look like this</span>';
+			+' &nbsp; <span style="border: 1px solid black; background-image: url(../../src/widget/templates/images/tab_top_right.gif);">&lt;- left one should look like this</span>';
 	var cssStr = "#cssText{color: blue; background: yellow;}"
 	if(!dojo.style.insertCssText(cssStr)){
 		debug("Failure insertCssText from string", "red");
 		success = 0;
 	}
 
-	var URI = new dojo.uri.Uri("../src/widget/").toString();
+	var URI = new dojo.uri.Uri("../../src/widget/").toString();
 	if(!dojo.style.insertCssText("#cssBgImage{ background-image: url(templates/images/tab_top_right.gif);}", document,URI)){
 		debug("Failure insertCssText with backgroundImage", "red");
 		success = 0;
@@ -149,16 +149,15 @@ css after url fix
 	span.innerHTML = '<h2><code>insertCssFile</code></h2>'
 			+'download and insert a css file using sync load<br />'
 			+'<span class="toolbarContainer" style="border: 1px solid black;">Gets toolbar background image and fonts, font color etc..</span>'
-			+' &nbsp; <span style="border: 1px solid black; background-color: #def; color: ButtonText;  font: Menu; background-image: url(../src/widget/templates/images/toolbar-bg.gif);">&lt;- left one should look like this</span>';
-	var URI = new dojo.uri.Uri("../src/widget/templates/HtmlToolbar.css").toString();
+			+' &nbsp; <span style="border: 1px solid black; background-color: #def; color: ButtonText;  font: Menu; background-image: url(../../src/widget/templates/images/toolbar-bg.gif);">&lt;- left one should look like this</span>';
+	var URI = new dojo.uri.Uri("../../src/widget/templates/HtmlToolbar.css").toString();
 	var ret = dojo.style.insertCssFile(URI);
 	if(!ret){
 		debug("failure returning style node ref in insertCssFile", "red");
 	}
-	
+
 	ret = dojo.style.insertCssFile(URI, document, true);
 	if(ret){
-		dojo.debug(ret);
 		debug("failure in insertCssFile, inserts file twice dispite checkDuplicates=true", "red");
 	}
 	
@@ -169,5 +168,3 @@ css after url fix
 </script>
 
 </body></html>
-
-<html><body></body></html>

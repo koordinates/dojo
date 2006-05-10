@@ -452,7 +452,9 @@ dojo.require("dojo.lang.common");
 			style.appendChild(cssText);
 		}
 		var head = doc.getElementsByTagName("head")[0];
-		if(head){// must have a head tag
+		if(head){ // must have a head tag 
+			dojo.debug("No head tag in document, aborting styles");
+		}else{
 			head.appendChild(style);
 		}
 		return style;
