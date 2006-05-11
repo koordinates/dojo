@@ -369,7 +369,12 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 				var ol = opts.length;
 				var data = [];
 				for(var x=0; x<ol; x++){
-					data.push([new String(opts[x].innerHTML), new String(opts[x].value)]);
+					var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
+					data.push(keyValArr);
+					if(opts[x].selected){ 
+						this.setValue(keyValArr[0]); 
+						this.comboBoxSelectionValue.value = keyValArr[1];
+					}
 				}
 				this.dataProvider.setData(data);
 			}
