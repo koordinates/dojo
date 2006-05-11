@@ -24,6 +24,6 @@
 	</div>
 	<div id="header">
 		<h1 id="logo">Dojo, the Javascript Toolkit</h1>
-		<div id="blog-title">the Dojo Diaries</div>
+		<a href="http://blog.dojotoolkit.org"><span id="blog-title">the Dojo Diaries</span></a>
 	</div>
 	<div class="body">
