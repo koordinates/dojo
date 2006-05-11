@@ -4,7 +4,7 @@ var dependencies = [
 	"dojo.widget.*",
 	"dojo.io.*",
 	"dojo.event.*",
-	"dojo.fx.*",
+	"dojo.lfx.*",
 	"dojo.widget.Editor",
 	"dojo.flash",
 	"dojo.storage.*",
