@@ -1,4 +1,4 @@
-			<div class="sidebar" style="font-size:0.85em;">
+			<div class="sidebar" style="font-size:0.85em;padding:1em;">
 				<div id="section-sidebar">
 					<h2 style="margin-top:0;">Search</h2>
 					<div><?php include (TEMPLATEPATH . '/searchform.php'); ?></div>
@@ -7,9 +7,6 @@
 					<h2><?php _e('Sections'); ?></h2>
 					<ul><?php list_cats(0, '', 'name', 'asc', '', 1, 0, 1, 1, 1, 1, 0,'','','','','') ?></ul>
 					<ul><?php get_links_list(); ?></ul>
-					<h2><?php _e('Other'); ?></h2>
-					<ul>
-						<li><a href="<?php echo get_settings('siteurl'); ?>/wp-login.php"><?php _e('Login'); ?></a></li>
-					</ul>
+					<div><a href="<?php echo get_settings('siteurl'); ?>/wp-login.php"><?php _e('Login'); ?></a></div>
 				</div>
 			</div>
