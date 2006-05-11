@@ -106,7 +106,7 @@ dojo.require("dojo.lang.common");
 
 	ds.getUnitValue = function(node, cssSelector, autoIsZero){
 		var s = ds.getComputedStyle(node, cssSelector);
-		if((s == '')||((s == 'auto')&&(autoIsZero))){ return { value: 0, units: 'px' }; }
+		if((!s)||((s == 'auto')&&(autoIsZero))){ return { value: 0, units: 'px' }; }
 		if(dojo.lang.isUndefined(s)){return ds.getUnitValue.bad;}
 		// FIXME: is regex inefficient vs. parseInt or some manual test? 
 		var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
