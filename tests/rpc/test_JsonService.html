@@ -12,7 +12,6 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.Button");
-	dojo.require("dojo.widget.html.Button");
 	dojo.require("dojo.rpc.JsonService");
 	dojo.require("dojo.rpc.Deferred");
 </script>
@@ -49,11 +48,11 @@
 	<h3>Results will be returned below under "Returned Content"</h3>
 
 	<h4>This button will perform a simple echo</h4>
-	<button id="myecho" dojo:type="button" label='testClass.myecho("blah").addCallback(contentCallBack);' onClick='testClass.myecho("blah").addCallback(contentCallBack);'></button><br>
+	<div id="myecho" dojoType="Button" onClick='testClass.myecho("blah").addCallback(contentCallBack);'>testClass.myecho("blah").addCallback(contentCallBack); </div><br>
 	<h4>This Button will simply call the function contentB() </h4>
-	<button id="contentB" dojo:type="button" label='testClass.contentB().addCallback(contentCallBack);;' onClick='testClass.contentB().addCallback(contentCallBack);'></button><br>
+	<div id="contentB" dojoType="Button" onClick='testClass.contentB().addCallback(contentCallBack);'>testClass.contentB().addCallback(contentCallBack);</div><br>
 	<h4>This button will call add() to add two numbers together</h4>
-	<button id="add" dojo:type="button" label='testClass.add(5,6).addCallback(contentCallBack);;' onClick='testClass.add(5,6).addCallback(contentCallBack);'></button><br>
+	<div id="add" dojoType="Button" onClick='testClass.add(5,6).addCallback(contentCallBack);'>testClass.add(5,6).addCallback(contentCallBack);</div><br>
 </div>
 <br>
 
