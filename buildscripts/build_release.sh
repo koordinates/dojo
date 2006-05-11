@@ -11,12 +11,12 @@ for pfile in $(cd profiles; ls *.profile.js; cd ..)
 do
 	profile=`echo $pfile | sed 's/.profile.js//g'`
 	echo Building profile: $profile
-	ant -q -Ddocless=true -Dprofile=$profile release
-	proName=dojo-0.2.0-$profile
+	CLASSPATH="/home/alex/.ant/lib/js.jar:/home/alex/.ant/lib/jython.jar" ant -q -Ddocless=true -Dprofile=$profile release
+	proName=dojo-0.3.0-$profile
 	cd ../release
 	mv dojo $proName
-	tar -zcf $OUT_DIR/$proName.tar.gz $proName/
-	zip -rq $OUT_DIR/$proName.zip $proName/
-	rm -rf proName
+	tar -zcf $proName.tar.gz $proName/
+	zip -rq $proName.zip $proName/
+	rm -rf $proName
 	cd ../buildscripts
 done
