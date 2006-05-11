@@ -215,8 +215,10 @@ var TestStorage = {
 				mimetype: "text/plain"
 		});
 		
-		evt.preventDefault();
-		evt.stopPropagation();
+		if(!dojo.lang.isUndefined(evt) && evt != null){
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
 		
 		return false;
 	},
@@ -236,8 +238,10 @@ var TestStorage = {
 				mimetype: "text/plain"
 		});
 		
-		evt.preventDefault();
-		evt.stopPropagation();
+		if(!dojo.lang.isUndefined(evt) && evt != null){
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
 		
 		return false;
 	},
