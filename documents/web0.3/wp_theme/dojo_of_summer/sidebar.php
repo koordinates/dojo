@@ -1,4 +1,4 @@
-			<div id="sidebar">
+			<div class="sidebar">
 				<h1>planet::dojo</h1>
 				<div id="section-sidebar">
 					<ul>
