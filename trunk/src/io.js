@@ -284,10 +284,10 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 			var idoc;
 			if(r.ie){
 				idoc = iframe.contentWindow.document;
-			}else if(r.moz){
-				idoc = iframe.contentWindow;
 			}else if(r.safari){
 				idoc = iframe.document;
+			}else{ //  if(r.moz){
+				idoc = iframe.contentWindow;
 			}
 			idoc.location.replace(src);
 		}
