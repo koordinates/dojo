@@ -50,10 +50,6 @@ dojo.widget.defineWidget(
 			
 			this.containerIframe = new dojo.html.BackgroundIframe(this.containerNode);
 			this.containerIframe.size([0,0,0,0]);
-			
-			if(dojo.render.html.ie) {
-				new dojo.html.BackgroundIframe(this.domNode);
-			}
 		},
 
 		onIconClick: function(evt){
