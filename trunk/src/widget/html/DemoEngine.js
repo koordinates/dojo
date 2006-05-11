@@ -76,7 +76,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		// Make sure navigation node is hidden and opaque
 		//dojo.style.hide(this.navigationNode);
 		//dojo.style.setOpacity(this.navigationNode, 0);
-		dojo.style.show(this.navigationNode);
 
 		//Make sure demoNavigationNode is hidden and opaque;
 		dojo.style.hide(this.demoNavigationNode);
@@ -94,8 +93,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 		//turn demoPaneNode into a tabset
 		this.demoTabContainer = dojo.widget.createWidget("TabContainer",{},this.demoPaneNode);	
-
-		this.show();
 
 	},
 
@@ -173,6 +170,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 					var screenshotTd = document.createElement("td");
 					dojo.html.addClass(screenshotTd,this.demoListScreenshotClass);
 					screenshotTd.valign="top";
+					screenshotTd.demoName = this.registry.navigation[x].demos[y];
 					tr.appendChild(screenshotTd);
 
 					var ss = document.createElement("img");
@@ -202,9 +200,11 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 				
 					var viewLink = document.createElement("img");
 					viewLink.src = this.viewLinkImage;
+					viewLink.demoName = this.registry.navigation[x].demos[y];
 					viewDiv.appendChild(viewLink);	
 							
 					dojo.event.connect(viewLink, "onclick", this, "launchDemo");
+					dojo.event.connect(screenshotTd, "onclick", this, "launchDemo");
 				}
 			}
 		}
@@ -216,7 +216,8 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 	launchDemo: function(e) {
 		dojo.debug("Launching Demo: " + e.currentTarget.parentNode.parentNode.parentNode.firstChild.innerHTML);
-		var demo = e.currentTarget.parentNode.parentNode.parentNode.firstChild.innerHTML;
+		var demo = e.currentTarget.demoName;
+
 		//implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1500);
 		//show = dojo.lfx.html.fadeShow(this.demoContainerNode,1500);
 		dojo.style.setOpacity(this.demoContainerNode, 0);
@@ -252,6 +253,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 				source = document.createElement("textarea");
 				source.appendChild(document.createTextNode(data));
 				var sourcePane = dojo.widget.createWidget("ContentPane",{label: "Source"});
+				source.rows="20";
 				sourcePane.domNode.appendChild(source);
 				this.demoTabContainer.addChild(sourcePane);
 				dojo.style.show(sourcePane.domNode);
@@ -275,12 +277,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		show = dojo.lfx.html.fadeShow(this.navigationNode, 1000);
 		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 1000);
 		dojo.lfx.combine(show,hide).play();
-	},
-/*
-	show: function() {
-		this.onResized();
-		dojo.widget.html.DemoEngine.superclass.show.call(this);
-	}*/
+	}
 });
 
 dojo.widget.tags.addParseTreeHandler("dojo:DemoEngine");

@@ -80,14 +80,14 @@
 	definitions: {
 
 		"JSON-RPC Client": {
-			url: "../tests/rpc/test_JsonService.html",
+			url: "dojo/tests/rpc/test_JsonService.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
 			description: "Example of using Dojo's JSON-RPC Client. Lighweight JSON is ideal for marshalling RPC in webapps."
 		},
 		"DragDrop": {
-			url: "../tests/dnd/test_simple.html",
+			url: "dojo/tests/dnd/test_simple.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -95,7 +95,7 @@
 		},
 
 		"DragMove": {
-			url: "../tests/dnd/test_dragmove.html",
+			url: "dojo/tests/dnd/test_dragmove.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -103,7 +103,7 @@
 		},
 
 		"DragHandle": {
-			url: "../tests/dnd/test_draghandle_2.html",
+			url: "dojo/tests/dnd/test_draghandle_2.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -111,7 +111,7 @@
 		},
 
 		"Effects": {
-			url: "../tests/lfx/test_lfx.html",
+			url: "dojo/tests/lfx/test_lfx.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -119,7 +119,7 @@
 		},
 
 		"YahooMap": {
-			url: "../tests/widget/test_YahooMap.html",
+			url: "dojo/tests/widget/test_YahooMap.html",
 			author: "Tom Trenka",
 			thumbnail: "",
 			screenShot: "",
@@ -127,7 +127,7 @@
 		},
 
 		"Wizard": {
-			url: "../tests/widget/test_Wizard.html",
+			url: "dojo/tests/widget/test_Wizard.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -135,7 +135,7 @@
 		},
 
 		"Tooltip": {
-			url: "widget/tooltip.html",
+			url: "dojo/demos/widget/tooltip.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -143,7 +143,7 @@
 		},
 
 		"Toggler": {
-			url: "../tests/widget/test_Toggler.html",
+			url: "dojo/tests/widget/test_Toggler.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -151,7 +151,7 @@
 		},
 
 		"TitlePane": {
-			url: "../tests/widget/test_TitlePane.html",
+			url: "dojo/tests/widget/test_TitlePane.html",
 			author: "Dustin Machi",
 			thumbnail: "",
 			screenShot: "",
@@ -159,7 +159,7 @@
 		},
 
 		"TimePicker": {
-			url: "../tests/widget/test_TimePicker.html",
+			url: "dojo/tests/widget/test_TimePicker.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -167,7 +167,7 @@
 		},
 
 		"Validation": {
-			url: "../tests/widget/test_validate.html",
+			url: "dojo/tests/widget/test_validate.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -175,7 +175,7 @@
 		},
 
 		"Windows": {
-			url: "../tests/widget/test_TaskBar.html",
+			url: "dojo/tests/widget/test_TaskBar.html",
 			author: "various",
 			thumbnail: "",
 			screenShot: "",
@@ -183,7 +183,7 @@
 		},
 
 		"TabContainer": {
-			url: "widget/tabContainer.html",
+			url: "dojo/demos/widget/tabContainer.html",
 			author: "Bill Keese",
 			thumbnail: "",
 			screenShot: "",
@@ -191,7 +191,7 @@
 		},
 
 		"SplitContainer": {
-			url: "widget/splitContainer.html",
+			url: "dojo/demos/widget/splitContainer.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -199,7 +199,7 @@
 		},
 
 		"SlideShow": {
-			url: "../tests/widget/test_SlideShow.html",
+			url: "dojo/tests/widget/test_SlideShow.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -207,7 +207,7 @@
 		},
 
 		"ContentPane": {
-			url: "widget/contentPane.html",
+			url: "dojo/demos/widget/contentPane.html",
 			author: "Bill Keese, Fredrik Johansson",
 			thumbnail: "",
 			screenShot: "",
@@ -215,7 +215,7 @@
 		},
 
 		"Menu": {
-			url: "../tests/widget/test_Menu2_Bar.html",
+			url: "dojo/tests/widget/test_Menu2_Bar.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -223,7 +223,7 @@
 		},
 
 		"LayoutContainer": {
-			url: "widget/layoutContainer.html",
+			url: "dojo/demos/widget/layoutContainer.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -231,7 +231,7 @@
 		},
 
 		"Layout": {
-			url: "../tests/widget/test_Layout.html",
+			url: "dojo/tests/widget/test_Layout.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -239,7 +239,7 @@
 		},
 
 		"InlineEditBox": {
-			url: "../tests/widget/test_InlineEditBox.html",
+			url: "dojo/tests/widget/test_InlineEditBox.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -247,7 +247,7 @@
 		},
 
 		"GoogleMap": {
-			url: "../tests/widget/test_GoogleMap.html",
+			url: "dojo/tests/widget/test_GoogleMap.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -255,7 +255,7 @@
 		},
 
 		"Editor": {
-			url: "widget/Editor.html",
+			url: "dojo/demos/widget/Editor.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -263,7 +263,7 @@
 		},
 
 		"Dialog": {
-			url: "../tests/widget/test_Dialog.html",
+			url: "dojo/tests/widget/test_Dialog.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -271,7 +271,7 @@
 		},
 
 		"DatePicker": {
-			url: "widget/datePicker.html",
+			url: "dojo/demos/widget/datePicker.html",
 			author: "Dylan Schiemann",
 			thumbnail: "screenshots/test_DatePickerThumb.png",
 			screenShot: "screenshots/test_DatePicker.png",
@@ -279,7 +279,7 @@
 		},
 
 		"Accordion": {
-			url: "widget/accordionContainer.html",
+			url: "dojo/demos/widget/accordionContainer.html",
 			author: "Dustin Machi",
 			thumbnail: "",
 			screenShot: "",
@@ -287,7 +287,7 @@
 		},
 
 		"Button": {
-			url: "../tests/widget/test_Button.html",
+			url: "dojo/tests/widget/test_Button.html",
 			author: "Bill Keese",
 			thumbnail: "",
 			screenShot: "",
@@ -295,7 +295,7 @@
 		},
 
 		"Chart": {
-			url: "../tests/widget/test_Chart.html",
+			url: "dojo/tests/widget/test_Chart.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -303,7 +303,7 @@
 		},
 
 		"Checkbox": {
-			url: "../tests/widget/test_Checkbox.html",
+			url: "dojo/tests/widget/test_Checkbox.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -311,7 +311,7 @@
 		},
 
 		"CiviCrmDateTimePicker": {
-			url: "../tests/widget/test_CiviCrmDateTimePicker.html",
+			url: "dojo/tests/widget/test_CiviCrmDateTimePicker.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -319,7 +319,7 @@
 		},
 
 		"ColorPalette": {
-			url: "../tests/widget/test_ColorPalette.html",
+			url: "dojo/tests/widget/test_ColorPalette.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -327,7 +327,7 @@
 		},
 
 		"ComboBox": {
-			url: "widget/comboBox.html",
+			url: "dojo/demos/widget/comboBox.html",
 			author: "",
 			thumbnail: "",
 			screenShot: "",
@@ -335,7 +335,7 @@
 		},
 
 		"Tree": {
-			url: "widget/Tree/tree.html",
+			url: "dojo/demos/widget/Tree/tree.html",
 			author: "Ilia Kantor",
 			thumbnail: "",
 			screenShot: "",
@@ -343,7 +343,7 @@
 		},
 
 		"Moxie": {
-			url: "storage/editor.html",
+			url: "dojo/demos/storage/editor.html",
 			author: "Brad Neuburg",
 			thumbnail: "",
 			screenShot: "",
@@ -351,7 +351,7 @@
 		},
 
 		"FormTour": {
-			url: "widget/Form.html",
+			url: "dojo/demos/widget/Form.html",
 			author: "Anonymous",
 			thumbnail: "",
 			screenShot: "",
@@ -359,7 +359,7 @@
 		},
 
 		"Fisheye": {
-			url: "widget/Fisheye.html",
+			url: "dojo/demos/widget/Fisheye.html",
 			author: "Cal Henderson",
 			thumbnail: "",
 			screenShot: "",
@@ -367,7 +367,7 @@
 		},
 
 		"JsonService": {
-			url: "../tests/rpc/test_JsonService.html",
+			url: "dojo/tests/rpc/test_JsonService.html",
 			author: "Dustin Machi",
 			thumbnail: "",
 			screenShot: "",
@@ -375,7 +375,7 @@
 		},
 
 		"Mail": {
-			url: "widget/Mail.html",
+			url: "dojo/demos/widget/Mail.html",
 			author: "Bill Keese",
 			thumbnail: "",
 			screenShot: "",
@@ -383,7 +383,7 @@
 		},
 
 		"SortableTable": {
-			url: "../tests/widget/test_SortableTable.html",
+			url: "dojo/tests/widget/test_SortableTable.html",
 			author: "Tom Trenka",
 			thumbnail: "",
 			screenShot: "",
