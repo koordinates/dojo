@@ -123,9 +123,10 @@ dojo.widget.defineWidget(
 
 			if (!this.isClosed) { this.close(); }
 			this._content = "";
-			if (arguments.length == 1) { this.domNode = element; } // else unchanged
+			if((arguments.length == 1)&&(element["nodeName"])){ this.domNode = element; } // else unchanged
 
-			if(this.domNode.nodeName.toLowerCase() == "textarea"){
+			if(	(this.domNode["nodeName"])&&
+				(this.domNode.nodeName.toLowerCase() == "textarea")){
 				this.textarea = this.domNode;
 				var html = dojo.string.trim(this.textarea.value);
 				if(html == ""){ html = "&nbsp;"; }
@@ -177,7 +178,10 @@ dojo.widget.defineWidget(
 			
 			// If we're a list item we have to put in a blank line to force the
 			// bullet to nicely align at the top of text
-			if (this.domNode.nodeName == "LI") { this.domNode.innerHTML = " <br>"; }
+			if(	(this.domNode["nodeName"])&&
+				(this.domNode.nodeName == "LI")){
+				this.domNode.innerHTML = " <br>";
+			}
 					
 			if(this.saveName != ""){
 				var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
@@ -1368,6 +1372,8 @@ dojo.widget.defineWidget(
 			dojo.html.removeClass(this.domNode, "RichTextEditable");
 			this.isClosed = true;
 			this.isLoaded = false;
+			// FIXME: is this always the right thing to do?
+			delete this.editNode;
 
 			return changed;
 		},
