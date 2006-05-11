@@ -145,8 +145,8 @@ dojo.graphics.color.rgb2hex = function(r, g, b) {
 		b = r[2] || 0;
 		r = r[0] || 0;
 	}
-	function pad(x) { while(x.length < 2) { x = "0" + x; } return x; }
 	var ret = dojo.lang.map([r, g, b], function(x) {
+		x = new Number(x);
 		var s = x.toString(16);
 		while(s.length < 2) { s = "0" + s; }
 		return s;

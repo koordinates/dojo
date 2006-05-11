@@ -14,12 +14,12 @@
 		isDebug: true
 	};
 </script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../dojo.js"></script>
-<script language="JavaScript" type="text/javascript" 
-	src="../../src/graphics/color.js"></script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-//dojo.require("dojo.graphics.color");
+dojo.require("dojo.graphics.color");
+dojo.require("dojo.graphics.color.hsv");
+dojo.require("dojo.graphics.color.hsl");
+
 var c = dojo.graphics.color;
 var hex = ["#003399", "#039", "003399", "039"];
 for(var i = 0; i < hex.length; i++) {
@@ -58,6 +58,13 @@ var d = [255,255,204];
 var e = dojo.graphics.color.rgb2hsl(d);
 var f = dojo.graphics.color.hsl2rgb(e);
 dojo.debug("HSL:", d, "->", e, "->", f);
+
+
+dojo.debug();
+dojo.debug("String handling:");
+
+dojo.debug('Hex from rgb(100,100,100): ' + new dojo.graphics.color.Color('rgb(100,100,100)').toHex());
+dojo.debug('Hex from rgb(255,0,128): ' + new dojo.graphics.color.Color('rgb(255,0,128)').toHex());
 
 </script>
 </head>
