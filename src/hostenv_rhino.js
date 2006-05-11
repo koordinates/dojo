@@ -105,7 +105,6 @@ function dj_rhino_current_script_via_java(depth) {
     var caw = new java.io.CharArrayWriter();
     var pw = new java.io.PrintWriter(caw);
     var exc = new java.lang.Exception();
-    exc.printStackTrace(pw);
     var s = caw.toString();
     // we have to exclude the ones with or without line numbers because they put double entries in:
     //   at org.mozilla.javascript.gen.c3._c4(/Users/mda/Sites/burstproject/burst/Runtime.js:56)
@@ -161,6 +160,19 @@ function readText(uri){
 
 // call this now because later we may not be on the top of the stack
 if(!djConfig.libraryScriptUri.length){
-	djConfig.libraryScriptUri = dj_rhino_current_script_via_java(1);
+	try{
+		djConfig.libraryScriptUri = dj_rhino_current_script_via_java(1);
+	}catch(e){
+		// otherwise just fake it
+		print("\n");
+		print("we have no idea where Dojo is located from.");
+		print("Please try loading rhino in a non-interpreted mode or set a");
+		print("\n	djConfig.libraryScriptUri\n");
+		print("Setting the dojo path to './'");
+		print("This is probably wrong!");
+		print("\n");
+		print("Dojo will try to load anyway");
+		djConfig.libraryScriptUri = "./";
+	}
 }
 
