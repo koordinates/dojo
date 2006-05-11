@@ -164,14 +164,16 @@ if(!djConfig.libraryScriptUri.length){
 		djConfig.libraryScriptUri = dj_rhino_current_script_via_java(1);
 	}catch(e){
 		// otherwise just fake it
-		print("\n");
-		print("we have no idea where Dojo is located from.");
-		print("Please try loading rhino in a non-interpreted mode or set a");
-		print("\n	djConfig.libraryScriptUri\n");
-		print("Setting the dojo path to './'");
-		print("This is probably wrong!");
-		print("\n");
-		print("Dojo will try to load anyway");
+		if(djConfig["isDebug"]){
+			print("\n");
+			print("we have no idea where Dojo is located from.");
+			print("Please try loading rhino in a non-interpreted mode or set a");
+			print("\n	djConfig.libraryScriptUri\n");
+			print("Setting the dojo path to './'");
+			print("This is probably wrong!");
+			print("\n");
+			print("Dojo will try to load anyway");
+		}
 		djConfig.libraryScriptUri = "./";
 	}
 }
