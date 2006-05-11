@@ -1,32 +1,15 @@
-			<div class="sidebar">
-				<h1>planet::dojo</h1>
+			<div class="sidebar" style="font-size:0.85em;">
 				<div id="section-sidebar">
+					<h2 style="margin-top:0;">Search</h2>
+					<div><?php include (TEMPLATEPATH . '/searchform.php'); ?></div>
+					<h2><?php _e('Archives'); ?></h2>
+					<ul><?php wp_get_archives('type=monthly'); ?></ul>
+					<h2><?php _e('Sections'); ?></h2>
+					<ul><?php list_cats(0, '', 'name', 'asc', '', 1, 0, 1, 1, 1, 1, 0,'','','','','') ?></ul>
+					<ul><?php get_links_list(); ?></ul>
+					<h2><?php _e('Other'); ?></h2>
 					<ul>
-						<li>
-							<h2 style="margin-top:0;"><?php _e('Archives'); ?></h2>
-							<ul><?php wp_get_archives('type=monthly'); ?></ul>
-						</li>
-						<li>
-							<h2><?php _e('Sections'); ?></h2>
-							<ul><?php list_cats(0, '', 'name', 'asc', '', 1, 0, 1, 1, 1, 1, 0,'','','','','') ?></ul>
-						</li>
-						<li>
-							<h2>Search</h2>
-							<ul style="list-style:none;">
-								<li><?php include (TEMPLATEPATH . '/searchform.php'); ?></li>
-							</ul>
-						</li>
-						<li><h2><?php _e('Other'); ?></h2>
-							<ul>
-								<li><a href="<?php echo get_settings('siteurl'); ?>/wp-login.php"><?php _e('Login'); ?></a></li>
-								<!-- li><a href="<?php echo get_settings('siteurl'); ?>/wp-register.php"><?php _e('Register'); ?></a></li -->
-							</ul>
-						</li>
-					</ul>
-				</div>
-				<div id="site-sidebar">
-					<ul>
-						<?php get_links_list(); ?>
+						<li><a href="<?php echo get_settings('siteurl'); ?>/wp-login.php"><?php _e('Login'); ?></a></li>
 					</ul>
 				</div>
 			</div>
