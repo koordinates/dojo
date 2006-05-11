@@ -102,6 +102,7 @@
 .content {
 	width:auto;	/* stretch to fill */
 	margin:30px 300px 50px 50px;
+	padding:0 1.5em;
 }
 .sidebar {
 	position:absolute;
@@ -110,7 +111,4 @@
 	width:248px;
 	background-color:#eee;
 }
-.sidebar h1{
-	font-size:1em;
-	margin:0;
-}
+
