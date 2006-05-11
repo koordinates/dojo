@@ -5,14 +5,14 @@
 			djConfig = { 
 				isDebug: true,
 				useXDomain: true,
-				baseScriptUri: "http://tagneto.org/dojo/xd/",
+				baseLoaderUri: "http://tagneto.org/dojo/xd/",
 				xdWaitSeconds: 10
 			};
 		</script>
 		<script language="JavaScript" type="text/javascript" 
 			src="http://tagneto.org/dojo/xd/dojo.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.event.*");
+			dojo.setModulePrefix("dojo", "http://tagneto.org/dojo/xd/src");
 
 			function click1(){
 				dojo.debug("click1");

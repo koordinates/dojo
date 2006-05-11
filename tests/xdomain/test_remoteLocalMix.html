@@ -1,46 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-	<head>
-		<script language="JavaScript" type="text/javascript">
-			// Dojo configuration
-			djConfig = { 
-				isDebug: true,
-				useXDomain: true,
-				xdWaitSeconds: 10
-			};
-		</script>
-		<script language="JavaScript" type="text/javascript" 
-			src="../../dojo.js"></script>
-		<script language="JavaScript" type="text/javascript">
-			dojo.setModulePrefix("dojo.event", "http://tagneto.org/dojo/xd/src/event");
+<head>
 
-			dojo.require("dojo.event.*");
+<title>FisheyeList Widget Demo</title>
 
-			function click1(){
-				dojo.debug("click1");
-			}
+<script type="text/javascript">
+	var djConfig = {
+			isDebug: true,
+			baseLoaderUri: "http://tagneto.org/dojo/xd/",
+			baseScriptUri: "../../",
+			forceXDomain: true,
+			xdWaitSeconds: 10
+	};
 
-			function init(){
-				dojo.debug("init was called.");
-				var clickNode = document.getElementById("testButton1");
-				dojo.event.connect(clickNode, "onclick", "click1");
-			}
+</script>
+<script type="text/javascript" src="http://tagneto.org/dojo/xd/dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.setModulePrefix("dojo", "http://tagneto.org/dojo/xd/src");
+	dojo.setModulePrefix("dojo.widget", "src/widget");
 
-			dojo.addOnLoad(init);
-		</script>
-	</head>
-	<body>
-		<h1>Mixed XDomain and Local XHR Test Page</h1>
-		<p>
-		This test should succeed. It tests loading the event stuff via xdomain,
-		but the dojo.lang stuff should be loaded locally (and src/event.js loaded locally).
-		If you click on the Test Button, there should be a debug message saying "click1".
-		</p>
-		<p><b>IMPORTANT:</b> Change the domain name in the source of this file
-		to be the domain name that you want to test. You can change the paths too.
-		In this file /dojo/xd refers to a dojo installation that has run the xdgen
-		build command to build cross-domain compatible packages.
-		<p>
-				<button id="testButton1">Test Button</button>
-		</p>
-	</body>
+	dojo.require("dojo.widget.FisheyeList");
+</script>
+</head>
+<body style="padding-left: 150px;">
+
+<h1>Mixed XDomain and Local XHR Test Page</h1>
+<p>
+This test should succeed. It tests loading via xdomain,
+but dojo.widget.* should be loaded locally. The fisheye widget should load successfully.
+</p>
+<p><b>IMPORTANT:</b> Change the domain name in the source of this file
+to be the domain name that you want to test. You can change the paths too.
+In this file /dojo/xd refers to a dojo installation that has run the xdgen
+build command to build cross-domain compatible packages.
+
+<p>HTML before</p>
+<p>HTML before</p>
+<p>HTML before</p>
+<p>Liberal trigger: move the mouse anywhere near the menu and it will start to expand:</p>
+<div dojoType="FisheyeList"
+	itemWidth="40" itemHeight="40"
+	itemMaxWidth="150" itemMaxHeight="150"
+	orientation="horizontal"
+	effectUnits="2"
+	itemPadding="10"
+	attachEdge="center"
+	labelEdge="bottom"
+>
+
+	<div dojoType="FisheyeListItem"
+		id="item1"
+		onclick="alert('click on' + this.caption + '(from widget id ' + this.widgetId + ')!');"
+		caption="Item 1"
+		iconsrc="images/fisheye_1.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 2"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 3"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_4.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Really Long Item Label"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_1.png">
+	</div>
+</div>
+
+<p>HTML after</p>
+<p>HTML after</p>
+<p>HTML after</p>
+<p>This was has strict triggering, so you actually have to mouse over the menu to make it start moving:</p>
+<div dojoType="FisheyeList"
+	itemWidth="40" itemHeight="40"
+	itemMaxWidth="150" itemMaxHeight="150"
+	orientation="horizontal"
+	effectUnits="2"
+	itemPadding="10"
+	attachEdge="center"
+	labelEdge="bottom"
+	conservativeTrigger="true"
+>
+
+	<div dojoType="FisheyeListItem"
+		id="item1b"
+		onclick="alert('click on' + this.caption + '(from widget id ' + this.widgetId + ')!');"
+		caption="Item 1"
+		iconsrc="images/fisheye_1.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 2"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Item 3"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_4.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		caption="Really Long Item Label"
+		iconsrc="images/fisheye_3.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_2.png">
+	</div>
+
+	<div dojoType="FisheyeListItem"
+		iconsrc="images/fisheye_1.png">
+	</div>
+</div>
+</body>
 </html>
