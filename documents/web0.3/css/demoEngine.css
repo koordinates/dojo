@@ -144,12 +144,13 @@
 	}
 
 	.demoEngine .dojoButton {
-		margin: 10px;
+		margin: 5px;
 		margin-top: 0px;
 	}	
 	.demoEngine .dojoButton .dojoButtonContents {
 		font-size: 1.1em;
 		width: 100px;
+		color: black;
 	}
 
 	
@@ -168,6 +169,8 @@
 	border:1px solid #dcdbdb;
 	background-color:#f8f8f8;
 	padding:4px;
+	max-height: 450px;
+	overflow: auto;
 }
 
 .demoListContainer {
