@@ -168,3 +168,19 @@ div.dojoTabPaneTab {
 	background-color:#eee;
 	padding:10px;
 }
+#faqs h3 {
+	border-bottom:1px solid #666;
+	font-family: sans-serif;
+	font-size:0.85em;
+	text-transform:uppercase;
+	margin-top:2.5em;
+}
+#faqs pre {
+	width:100%;
+	overflow:auto;
+}
+#faqs p.quotation{
+	background-color:#b9d3f6;
+	padding:0.5em;
+	font-style:italic;
+}
