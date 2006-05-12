@@ -289,7 +289,7 @@
 		"Button": {
 			url: "dojo/tests/widget/test_Button.html",
 			author: "Bill Keese",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_ButtonThumb.gif",
 			screenShot: "",
 			description: "Dojo supports simple buttons, drop down list buttons, and combobuttons; users can customize the button style."
 		},
@@ -337,7 +337,7 @@
 		"Tree": {
 			url: "dojo/demos/widget/Tree/tree.html",
 			author: "Ilia Kantor",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_TreeThumb.gif",
 			screenShot: "",
 			description: "Tree widget featuring lazy loading of data, drag & drop, etc."
 		},
