@@ -63,11 +63,17 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	},
 
 	toggleShowing: function(){
-		dojo.style.toggleShowing(this.domNode);
+		// dojo.style.toggleShowing(this.domNode);
+		if(this.isHidden){
+			this.show();
+		}else{
+			this.hide();
+		}
 	},
 
 	show: function(){
 		this.animationInProgress=true;
+		this.isHidden = false;
 		this.toggleObj.show(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onShow), this.explodeSrc);
 	},
@@ -78,7 +84,8 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	},
 
 	hide: function(){
-		this.animationInProgress=true;
+		this.animationInProgress = true;
+		this.isHidden = true;
 		this.toggleObj.hide(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onHide), this.explodeSrc);
 	},
