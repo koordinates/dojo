@@ -35,6 +35,9 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 		dojo.lang.forEach(propertyMap, function(prop){
 			if(typeof prop["start"] == "undefined"){
 				prop.start = parseInt(dojo.style.getComputedStyle(nodes[0], prop.property));
+				if(isNaN(prop.start) && (prop.property == "opacity")){
+					prop.start = 1;
+				}
 			}
 		});
 	}
