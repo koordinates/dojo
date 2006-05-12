@@ -217,7 +217,7 @@
 		"Menu": {
 			url: "dojo/tests/widget/test_Menu2_Bar.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_MenuThumb.gif",
 			screenShot: "",
 			description: "Demonstrates the use of the MenuBar (like a File menu) and ContextMenu (right-click menu) widgets."
 		},
@@ -241,7 +241,7 @@
 		"InlineEditBox": {
 			url: "dojo/tests/widget/test_InlineEditBox.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_InlineEditThumb.gif",
 			screenShot: "",
 			description: "This widget essentially lets you edit page items in-place, without bringing up an edit page."
 		},
@@ -361,7 +361,7 @@
 		"Fisheye": {
 			url: "dojo/demos/widget/Fisheye.html",
 			author: "Cal Henderson",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_FisheyeThumb.gif",
 			screenShot: "",
 			description: "A menu that balloons out, similar to the launcher on OS X"
 		},
@@ -385,7 +385,7 @@
 		"SortableTable": {
 			url: "dojo/tests/widget/test_SortableTable.html",
 			author: "Tom Trenka",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_SortableTableThumb.gif",
 			screenShot: "",
 			description: "A table where the user can sort by column, the rows can be color coded, etc."
 		}
