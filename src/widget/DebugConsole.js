@@ -9,4 +9,4 @@ dojo.widget.DebugConsole= function(){
 }
 dojo.inherits(dojo.widget.DebugConsole, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:debugconsole");
-dojo.requireIf("html", "dojo.widget.html.DebugConsole");
+dojo.requireAfterIf("html", "dojo.widget.html.DebugConsole");

@@ -19,4 +19,4 @@ dojo.widget.TaskBarItem = function(){
 dojo.inherits(dojo.widget.TaskBarItem, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:taskbaritem");
 
-dojo.requireIf("html", "dojo.widget.html.TaskBar");
+dojo.requireAfterIf("html", "dojo.widget.html.TaskBar");

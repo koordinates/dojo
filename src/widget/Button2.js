@@ -8,7 +8,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:combobutton2");
 
 dojo.deprecated("dojo.widget.Button2", "Use dojo.widget.Button instead", "0.4");
 
-dojo.requireIf("html", "dojo.widget.html.Button2");
+dojo.requireAfterIf("html", "dojo.widget.html.Button2");
 
 dojo.widget.Button2 = function(){}
 dojo.inherits(dojo.widget.Button2, dojo.widget.Button);
