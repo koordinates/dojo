@@ -11,16 +11,14 @@
 		<script language="JavaScript" type="text/javascript" 
 			src="../../dojo.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.graphics.htmlEffects");
+			dojo.require("dojo.fx.*");
 
 			function wipeOut(elId){
-				var row = document.getElementById(elId);
-				dojo.graphics.htmlEffects.wipeOut(row, 300);
+				dojo.fx.wipeOut(dojo.byId(elId), 300);
 			}
 			
 			function wipeIn(elId) {
-				var row = document.getElementById(elId);
-				dojo.graphics.htmlEffects.wipeIn(row, 300);			
+				dojo.fx.wipeIn(dojo.byId(elId), 300);			
 			}
 		</script>
 	</head>
