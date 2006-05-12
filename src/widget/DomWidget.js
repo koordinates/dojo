@@ -276,7 +276,11 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		}
 		var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
 		if(!pos){ pos = "after"; }
-		if(!ref){ ref = cn.lastChild; }
+		if(!ref){ 
+			// if(!cn){ cn = document.body; }
+			if(!cn){ cn = document.body; }
+			ref = cn.lastChild; 
+		}
 		if(!insertIndex) { insertIndex = 0; }
 		widget.domNode.setAttribute("dojoinsertionindex", insertIndex);
 
@@ -413,6 +417,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 	buildFromTemplate: function(args, frag){
 		// var start = new Date();
 		// copy template properties if they're already set in the templates object
+		// dojo.debug("buildFromTemplate:", this);
 		var avoidCache = false;
 		if(args["templatecsspath"]){
 			args["templateCssPath"] = args["templatecsspath"];
