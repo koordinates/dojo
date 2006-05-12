@@ -15,4 +15,4 @@ dojo.lang.extend(dojo.widget.Checkbox, {
 	widgetType: "Checkbox"
 });
 
-dojo.requireIf("html", "dojo.widget.html.Checkbox");
+dojo.requireAfterIf("html", "dojo.widget.html.Checkbox");

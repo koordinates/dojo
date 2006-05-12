@@ -373,9 +373,6 @@ dojo.requireIf = function(){
 	}
 }
 
-//Would like to remove requireAfterIf, but would too many widgets
-//outside of dojo use it? Since the dojo widgets used to, and outside
-//widgets may have done copy/paste from them to start the widget.
 dojo.requireAfterIf = dojo.requireIf;
 
 dojo.provide = function(){

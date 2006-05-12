@@ -36,7 +36,7 @@ dojo.hostenv.getDelayRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(requireAfterIf|requireIf)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(requireAfterIf)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}

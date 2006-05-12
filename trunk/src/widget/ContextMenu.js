@@ -20,4 +20,4 @@ dojo.widget.ContextMenu = function(){
 dojo.inherits(dojo.widget.ContextMenu, dojo.widget.Widget);
 dojo.widget.tags.addParseTreeHandler("dojo:contextmenu");
 
-dojo.requireIf("html", "dojo.widget.html.ContextMenu");
+dojo.requireAfterIf("html", "dojo.widget.html.ContextMenu");
