@@ -1,0 +1,33 @@
+<script type="text/javascript">
+	dojo.require("dojo.widget.YahooMap");
+	(function(){
+		var w=dojo.widget.byId("devdaymap");
+		w.map.setZoomLevel(5);
+	})();	
+</script>
+<div class="newsItem">
+	<h1>Dojo Developer Day!</h1>
+	<h2>AOL Headquarters, 401 Ellis St. Mountain View, CA</h2>
+	<h3>May 13, 2006 10am - 6pm...and it's FREE!</h3><br/>
+	<p>Join us for the first annual <strong>Dojo Developer Day</strong>. The day will mostly be focused on Dojo Development, with time to hack, test, and socialize. It will be very light on talks, if any at all. <strong>Drinks, food, and wifi</strong> are on AOL! We will also <em>have Dojo t-shirts available for sale</em>. Please rsvp by <a href="mailto:rsvp@dojotoolkit.org?Subject=RSVP for Dojo Developer Day">e-mail</a> or posting to one of the mailing lists.</p>
+	<div dojoType="yahoomap" id="devdaymap" width="250" height="250" controls="zoomshort">
+		<table>
+			<thead><tr><th>Lat</th><th>Long</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr>
+					<td>37.39817</td>
+					<td>-122.053337</td>
+					<td>
+						<div>
+							<h3>Dojo Developer Day at AOL</h3>
+							<div>401 Ellis Street, Mountain View, CA</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<p>The day will revolve around hacking and discussions around the various topics that everyone is hacking on. The day will start with getting to know everyone and at 10:30 we'll open up the whiteboard to listing ad-hoc discussion groups that will meet to hack and discuss throught the day. Participation in any of the groups is entirely optional, but they provide a place for people thinking about the same problem to work on it and not miss other discussions that interest them. At about 5:30 we'll break for lightning demos. If you've got something cool to show, this is your chance but it'll have to be very short. 10 minutes tops (5 preferred). After that, we break for food and beer!</p>
+	<p></p>
+	<p><a href="http://www.aol.com">AOL</a> is graciously hosting Dojo Developer Day. If you would like to help sponsor Dojo Developer Day, please contact Dylan Schiemann (mail at dylans dot org).</p>
+</div>
