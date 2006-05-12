@@ -236,6 +236,7 @@ dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 	var anim = dojo.fx.html.wipe(node, duration, 0, node.scrollHeight, null, true);
 	dojo.event.connect(anim, "onEnd", function() {
 		node.style.overflow = overflow;
+		node.style.visibility = "";
 		node.style.height = "auto";
 		if(callback) { callback(node, anim); }
 	});
@@ -252,6 +253,7 @@ dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	var anim = dojo.fx.html.wipe(node, duration, node.offsetHeight, 0, null, true);
 	dojo.event.connect(anim, "onEnd", function() {
 		dojo.style.hide(node);
+		node.style.visibility = "hidden";
 		node.style.overflow = overflow;
 		if(callback) { callback(node, anim); }
 	});
@@ -284,7 +286,7 @@ dojo.lang.extend(dojo.fx.html.wiper, {
 
 	toggle: function() {
 		if(!this._anim) {
-			var type = "wipe" + (dojo.style.isVisible(this.node) ? "Hide" : "Show");
+			var type = "wipe" + (dojo.style.isVisible(this.node) ? "Out" : "In");
 			this._anim = dojo.fx[type](this.node, this.duration, dojo.lang.hitch(this, "_callback"));
 		}
 	},
