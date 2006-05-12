@@ -368,7 +368,12 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 		var node = this.containerNode || this.domNode;
 		try{
-			node.innerHTML = xml;
+			if(typeof xml != "string"){
+				node.innerHTML = "";
+				node.appendChild(xml);
+			}else{
+				node.innerHTML = xml;
+			}
 		} catch(e){
 			e = "Could'nt load html:"+e;
 			this._handleDefaults(e, "onContentError");
