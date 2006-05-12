@@ -121,7 +121,7 @@
 		"YahooMap": {
 			url: "dojo/tests/widget/test_YahooMap.html",
 			author: "Tom Trenka",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_YahooMapThumb.gif",
 			screenShot: "",
 			description: "Demonstrates the use of the Map widget with Yahoo as the source"
 		},
@@ -137,7 +137,7 @@
 		"Tooltip": {
 			url: "dojo/demos/widget/tooltip.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_TooltipThumb.gif",
 			screenShot: "",
 			description: "Displays up a little description box when you mouse over a button, link, etc."
 		},
@@ -201,7 +201,7 @@
 		"SlideShow": {
 			url: "dojo/tests/widget/test_SlideShow.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_SlideShowThumb.gif",
 			screenShot: "",
 			description: "Cycles through various images fading between them."
 		},
@@ -249,7 +249,7 @@
 		"GoogleMap": {
 			url: "dojo/tests/widget/test_GoogleMap.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_GoogleMapThumb.gif",
 			screenShot: "",
 			description: "Demonstrates the use of the GoogleMap Widget (use from sites outside of dojotoolkit.org will require a google key)"
 		},
@@ -297,7 +297,7 @@
 		"Chart": {
 			url: "dojo/tests/widget/test_Chart.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_ChartThumb.gif",
 			screenShot: "",
 			description: "Chart demonstrates SVG Charting in dojo.  It requires a browser capable of inline SVG"
 		},
