@@ -74,12 +74,7 @@ dojo.lang.declare.base = {
 	_inherited: function(ptype, method, args){
 		var stack = this.___proto;
 		this.___proto = ptype;
-		var result;
-		if(!args){
-			result = ptype[method].apply(this);
-		}else{
-			result = ptype[method].apply(this, args);
-		}
+		var result = ptype[method].apply(this, (args||[]));
 		this.___proto = stack;
 		return result;
 	},
