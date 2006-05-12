@@ -389,8 +389,8 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		}
 		this._callOnUnLoad = true;
 
-		if(!data){
-			// if we do a clean using setContent(""); bypass all parseing, extractContent etc
+		if(!data || dojo.dom.isNode(data)){
+			// if we do a clean using setContent(""); or setContent(#node) bypass all parseing, extractContent etc
 			this._setContent(data);
 		}else{
 			// need to run splitAndFixPaths? ie. manually setting content
