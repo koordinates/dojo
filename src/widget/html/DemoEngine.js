@@ -179,7 +179,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 					var summaryTd = document.createElement("td");
 					dojo.html.addClass(summaryTd,this.demoListSummaryContainerClass);
-					summaryTd.valign="top";
+					summaryTd.vAlign="top";
 					tr.appendChild(summaryTd);
 
 					var name = document.createElement("h1");
