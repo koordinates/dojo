@@ -377,7 +377,7 @@
 		"Mail": {
 			url: "dojo/demos/widget/Mail.html",
 			author: "Bill Keese",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_MailThumb.gif",
 			screenShot: "",
 			description: "Simple Mail Application demonstration"
 		},
