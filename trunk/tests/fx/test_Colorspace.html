@@ -55,77 +55,77 @@ function convert_test_do(c, col, model_from, model_to){
 }
 
 
-window.onload = function(){
+dojo.addOnLoad(function(){
 
-var c = new dojo.graphics.Colorspace();
+	var c = new dojo.graphics.Colorspace();
 
-var spaces = ['RGB', 'XYZ', 'xyY', 'Lab', 'LCHab', 'Luv', 'LCHuv', 'CMY', 'CMYK', 'HSV', 'HSL'];
+	var spaces = ['RGB', 'XYZ', 'xyY', 'Lab', 'LCHab', 'Luv', 'LCHuv', 'CMY', 'CMYK', 'HSV', 'HSL'];
 
 
-// create table
+	// create table
 
-var tbl = document.createElement('table');
-document.getElementById('main').appendChild(tbl);
-tbl.border = 1;
+	var tbl = document.createElement('table');
+	var tb = document.createElement('tbody');
+	tbl.appendChild(tb);
+	document.getElementById('main').appendChild(tbl);
+	tbl.border = 1;
 
-// create header row
-
-var tr = document.createElement('tr');
-tbl.appendChild(tr);
-
-var th = document.createElement('th');
-tr.appendChild(th);
-th.appendChild(document.createTextNode('-'));
-
-for(var i=0; i<spaces.length; i++){
-
-	var th = document.createElement('th');
-	tr.appendChild(th);
-	th.appendChild(document.createTextNode(spaces[i]));
-}
-
-for(var i=0; i<spaces.length; i++){
+	// create header row
 
 	var tr = document.createElement('tr');
-	tbl.appendChild(tr);
+	tb.appendChild(tr);
 
 	var th = document.createElement('th');
 	tr.appendChild(th);
-	th.appendChild(document.createTextNode(spaces[i]));
+	th.appendChild(document.createTextNode('-'));
 
-	for(var j=0; j<spaces.length; j++){
+	for(var i=0; i<spaces.length; i++){
 
-		if (spaces[i] == spaces[j]){
-
-			var text = '-';
-		}else{
-
-			var col = (spaces[i] == 'CMYK') ? [0.2, 0.5, 0.7, 0.4] : [0.2, 0.5, 0.7];
-
-			var text = convert_test(c, col, spaces[i], spaces[j]);
-		}
-
-		var td = document.createElement('td');
-		td.align = 'center';
-		tr.appendChild(td);
-		td.appendChild(document.createTextNode(text));
-
+		var th = document.createElement('th');
+		tr.appendChild(th);
+		th.appendChild(document.createTextNode(spaces[i]));
 	}
-}
+
+	for(var i=0; i<spaces.length; i++){
+
+		var tr = document.createElement('tr');
+		tb.appendChild(tr);
+
+		var th = document.createElement('th');
+		tr.appendChild(th);
+		th.appendChild(document.createTextNode(spaces[i]));
+
+		for(var j=0; j<spaces.length; j++){
+
+			if (spaces[i] == spaces[j]){
+
+				var text = '-';
+			}else{
+
+				var col = (spaces[i] == 'CMYK') ? [0.2, 0.5, 0.7, 0.4] : [0.2, 0.5, 0.7];
+
+				var text = convert_test(c, col, spaces[i], spaces[j]);
+			}
+
+			var td = document.createElement('td');
+			td.align = 'center';
+			tr.appendChild(td);
+			td.appendChild(document.createTextNode(text));
+
+		}
+	}
 
 
 
+	//d(c.chromaticAdaptation([0.5, 0.5, 0.5], 'A', 'B'));
 
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(5000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(6000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(7000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(8000));
+	//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(9000));
 
-//d(c.chromaticAdaptation([0.5, 0.5, 0.5], 'A', 'B'));
-
-//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(5000));
-//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(6000));
-//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(7000));
-//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(8000));
-//dojo.debug(dojo.graphics.colorspace.colorTemp_to_whitePoint(9000));
-
-};
+});
 
 </script>
 </head>
