@@ -161,7 +161,7 @@
 		"TimePicker": {
 			url: "dojo/tests/widget/test_TimePicker.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_TimePickerThumb.gif",
 			screenShot: "",
 			description: "Widget to input a time (ex: 3:15PM)"
 		},
@@ -169,7 +169,7 @@
 		"Validation": {
 			url: "dojo/tests/widget/test_validate.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_ValidationThumb.gif",
 			screenShot: "",
 			description: "Dojo has many widgets to validate and/or correct user keyboard input."
 		},
@@ -257,7 +257,7 @@
 		"Editor": {
 			url: "dojo/demos/widget/Editor.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_EditorThumb.gif",
 			screenShot: "",
 			description: "Dojo's rich text editor"
 		},
@@ -273,7 +273,7 @@
 		"DatePicker": {
 			url: "dojo/demos/widget/datePicker.html",
 			author: "Dylan Schiemann",
-			thumbnail: "screenshots/test_DatePickerThumb.png",
+			thumbnail: "dojo/demos/screenshots/test_DatePickerThumb.gif",
 			screenShot: "screenshots/test_DatePicker.png",
 			description: "Pick a date from a calendar"
 		},
@@ -305,7 +305,7 @@
 		"Checkbox": {
 			url: "dojo/tests/widget/test_Checkbox.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_CheckboxThumb.gif",
 			screenShot: "",
 			description: "Check box with customizable image for checkmark"
 		},
@@ -313,7 +313,7 @@
 		"CiviCrmDateTimePicker": {
 			url: "dojo/tests/widget/test_CiviCrmDateTimePicker.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_CiviCrmDateTimePickerThumb.gif",
 			screenShot: "",
 			description: "Form input widget for specifying date and time"
 		},
@@ -321,7 +321,7 @@
 		"ColorPalette": {
 			url: "dojo/tests/widget/test_ColorPalette.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_ColorPaletteThumb.gif",
 			screenShot: "",
 			description: "Widget to pick a color"
 		},
@@ -329,7 +329,7 @@
 		"ComboBox": {
 			url: "dojo/demos/widget/comboBox.html",
 			author: "",
-			thumbnail: "",
+			thumbnail: "dojo/demos/screenshots/test_ComboBoxThumb.gif",
 			screenShot: "",
 			description: "Drop down select list featuring dynamic loading of matching data from the server (like Google Suggests?)"
 		},
