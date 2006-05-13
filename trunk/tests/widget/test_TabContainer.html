@@ -21,6 +21,7 @@
 	dojo.require("dojo.widget.Tooltip");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
+	dojo.require("dojo.widget.Button");
 </script>
 
 <style type="text/css">
@@ -61,6 +62,9 @@ function testClose(pane,tab) {
 			<p>And I was already part of the page! That's cool, no?</p>
 			<p id="foo">tooltip on this paragraph</p>
 			<div dojoType="Tooltip" connectId="foo">I'm a tooltip!</div>
+			<button dojoType="Button">I'm a button</button>
+			<br>
+			<button dojoType="Button">So am I!</button>
 			<p>
 			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
 			semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
