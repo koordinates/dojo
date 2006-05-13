@@ -22,7 +22,6 @@ dojo.widget.defineWidget(
 			dojo.widget.DropdownDatePicker.superclass.fillInTemplate.call(this, args, frag);
 			var source = this.getFragNodeRef(frag);
 			
-			if(args.dateFormat){ this.dateFormat = args.dateFormat; }
 			if(args.date){ this.date = new Date(args.date); }
 			
 			var dpNode = document.createElement("div");
@@ -40,7 +39,7 @@ dojo.widget.defineWidget(
 		
 		onSetDate: function(){
 			this.inputNode.value = dojo.date.format(this.datePicker.date, this.dateFormat);
-			this.onHide();
+			this.hideContainer();
 		},
 		
 		onInputChange: function(){
