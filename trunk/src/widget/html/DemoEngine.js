@@ -24,6 +24,7 @@ dojo.widget.html.DemoEngine = function(){
 
 	this.menuNavigationNode="";
 	this.menuNavigationClass="demoEngineMenuNavigation";
+	this.menuChildren =[];
 
 	this.demoNavigationNode="";
 	this.demoNavigationClass="demoEngineDemoNavigation";
@@ -73,10 +74,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		dojo.html.addClass(this.demoHeaderNode, this.demoHeaderClass);
 		dojo.html.addClass(this.demoContainerNode, this.demoContainerClass);
 
-		// Make sure navigation node is hidden and opaque
-		//dojo.style.hide(this.navigationNode);
-		//dojo.style.setOpacity(this.navigationNode, 0);
-
 		//Make sure demoNavigationNode is hidden and opaque;
 		dojo.style.hide(this.demoNavigationNode);
 		dojo.style.setOpacity(this.demoNavigationNode,0);
@@ -87,9 +84,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 		//Populate the menu
 		this.buildMenu();
-
-		//show navigationNode
-		//dojo.lfx.html.fadeShow(this.navigationNode, 500).play();
 
 		//turn demoPaneNode into a tabset
 		this.demoTabContainer = dojo.widget.createWidget("TabContainer",{},this.demoPaneNode);	
@@ -108,7 +102,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 
 	_buildMenu: function(type, data) {
 		this.registry = data;
-		dojo.debug("_buildMenu");
 
 		dojo.lang.forEach(this.registry.navigation, dojo.lang.hitch(this,function(category) {
 			this._addMenuItem(category);
@@ -116,15 +109,18 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	_addMenuItem: function(category) {
-		dojo.debug("Adding button for " + category.name);
 		var newCat = dojo.widget.createWidget("Button");
 		newCat.containerNode.innerHTML=category.name;
+		this.menuChildren.push(newCat);
 		this.menuNavigationNode.appendChild(newCat.domNode);
 		dojo.event.connect(newCat,"onClick", this, "selectCategory");
 	},
 
 	selectCategory: function(e) {
-		dojo.debug("Selecting: " + e.target.innerHTML);
+		if (dojo.style.getOpacity(this.demoNavigationNode)>0) {
+			dojo.style.setOpacity(this.demoNavigationNode, 0);
+		}
+
 		var showDemoNav = dojo.lfx.html.fadeShow(this.demoNavigationNode, 600);
 		var moveMenuNav = dojo.lfx.html.slideTo(this.menuNavigationNode,[0,0], 250);
 
@@ -135,7 +131,6 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		for (var x = 0 ; x< this.registry.navigation.length; x++) {
 			if (this.registry.navigation[x].name == e.target.innerHTML) {
 				for (var y=0; y< this.registry.navigation[x].demos.length; y++) {
-					dojo.debug("demo: " + this.registry.navigation[x].demos[y]);
 					var d = this.registry.definitions[this.registry.navigation[x].demos[y]];
 
 					//var demoListWrapper = document.createElement("div");
@@ -215,16 +210,11 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	launchDemo: function(e) {
-		dojo.debug("Launching Demo: " + e.currentTarget.parentNode.parentNode.parentNode.firstChild.innerHTML);
 		var demo = e.currentTarget.demoName;
 
-		//implode = dojo.lfx.html.implode(this.navigationNode, this.collapsedMenuNode,1500);
-		//show = dojo.lfx.html.fadeShow(this.demoContainerNode,1500);
 		dojo.style.setOpacity(this.demoContainerNode, 0);
 		hide = dojo.lfx.html.fadeHide(this.navigationNode, 500);
 		show = dojo.lfx.html.fadeShow(this.demoContainerNode,500);
-		//dojo.style.setOpacity(this.demoContainerNode, 0);
-		//dojo.style.show(this.demoContainerNode);
 		dojo.lfx.combine(hide,show).play();
 
 		this.demoTabContainer.destroyChildren();
@@ -268,15 +258,19 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	expandDemoNavigation: function(e) {
-		dojo.debug("re expanding navigation");
-		//dojo.style.hide(this.demoContainerNode);
-		//explode = dojo.lfx.html.explode(this.navigationNode,this.collapseToNode,1000);
-		//dojo.style.show(this.navigationNode);
-		//hide = dojo.lfx.html.fadeHide(this.demoContainerNode,250);
-
 		show = dojo.lfx.html.fadeShow(this.navigationNode, 1000);
 		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 1000);
-		dojo.lfx.combine(show,hide).play();
+		dojo.lfx.combine(show,hide,{},{},function() {
+			this.show();
+		}).play();
+	},
+
+	show: function() {
+		dojo.widget.html.DemoEngine.superclass.show.call(this);
+		
+		dojo.lang.forEach(this.menuChildren, function(child) {
+			child.onParentResized();
+		});
 	}
 });
 

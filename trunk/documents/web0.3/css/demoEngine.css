@@ -199,6 +199,7 @@
 	border-right:1px solid #fafafa !important;
 	text-align:center;
 	padding-right:0;
+	cursor: pointer;
 }
 
 .demoSummary {
