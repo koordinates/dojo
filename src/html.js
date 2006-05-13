@@ -519,6 +519,16 @@ dojo.html.isTag = function(node /* ... */) {
 	return "";
 }
 
+dojo.html.copyStyle = function(target, source){
+	// work around for opera which doesn't have cssText, and for IE which fails on setAttribute 
+	if(dojo.lang.isUndefined(source.style.cssText)){ 
+		target.setAttribute("style", source.getAttribute("style")); 
+	}else{
+		target.style.cssText = source.style.cssText; 
+	}
+	dojo.html.addClass(target, dojo.html.getClass(source));
+}
+
 dojo.html._callExtrasDeprecated = function(inFunc, args) {
 	var module = "dojo.html.extras";
 	dojo.deprecated("dojo.html." + inFunc + " has been moved to " + module);

@@ -323,17 +323,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 		this.comboBoxValue.name = this.name;
 		this.comboBoxSelectionValue.name = this.name+"_selected";
 
-		// NOTE: this doesn't copy style info inherited from classes;
-		// it's just primitive support for direct style setting
 		var source = this.getFragNodeRef(frag);
-		if ( source.style ){
-			// get around opera wich doesnt have cssText, and IE wich bugs on setAttribute 
-			if(dojo.lang.isUndefined(source.style.cssText)){ 
-				this.domNode.setAttribute("style", source.getAttribute("style")); 
-			}else{
-				this.domNode.style.cssText = source.style.cssText; 
-			}
-		}
+		dojo.html.copyStyle(this.domNode, source);
 
 		// FIXME: add logic
 		this.dataProvider = new dojo.widget.ComboBoxDataProvider();
