@@ -220,15 +220,12 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	_runOnCloseTab: function(tab) {
 		var onc = tab.extraArgs.onClose || tab.extraArgs.onclose;
 		var fcn = dojo.lang.isFunction(onc) ? onc : window[onc];
-		if(dojo.lang.isFunction(fcn)) {
-			if(fcn(this,tab)) {
-				this.removeChild(tab);
-			}
-		} else {
+		var remove = dojo.lang.isFunction(fcn) ? fcn(this,tab) : true;
+		if(remove) {
 			this.removeChild(tab);
+			// makes sure we can clean up executeScripts in ContentPane onUnLoad
+			tab.destroy();
 		}
-		// makes sure we can clean up executeScripts in ContentPane onUnLoad
-		tab.destroy();
 	},
 
 	onResized: function() {
