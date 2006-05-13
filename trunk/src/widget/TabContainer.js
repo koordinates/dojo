@@ -106,6 +106,12 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
         } else {
             this._hideTab(tab);
         }
+
+		dojo.html.addClass(tab.domNode, "dojoTabPane");
+		with(tab.domNode.style){
+			top = dojo.style.getPixelValue(this.containerNode, "padding-top", true);
+			left = dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+		}
 	},
 
 	// Configure the content pane to take up all the space except for where the tab labels are
