@@ -29,11 +29,11 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 	// DEPRECATED: use Uri objects, not strings
 	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
 		tpath = dojo.uri.dojoUri(tpath);
-		dojo.deprecated("templatePath should be of type dojo.uri.Uri");
+		dojo.deprecated("templatePath should be of type dojo.uri.Uri", null, "0.4");
 	}
 	if (cpath && !(cpath instanceof dojo.uri.Uri)) {
 		cpath = dojo.uri.dojoUri(cpath);
-		dojo.deprecated("templateCssPath should be of type dojo.uri.Uri");
+		dojo.deprecated("templateCssPath should be of type dojo.uri.Uri", null, "0.4");
 	}
 	
 	var tmplts = dojo.widget._templateCache;

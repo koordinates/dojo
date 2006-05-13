@@ -89,7 +89,7 @@ dojo.widget.manager = new function(){
 	}
 
 	this.getWidgetsOfType = function (id) {
-		dojo.deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
+		dojo.deprecated("getWidgetsOfType", "use getWidgetsByType", "0.4");
 		return dojo.widget.manager.getWidgetsByType(id);
 	}
 

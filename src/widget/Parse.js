@@ -260,7 +260,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 	if (typeof name != "string" && typeof props == "string") {
 		dojo.deprecated("dojo.widget.createWidget", 
 			"argument order is now of the form " +
-			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])");
+			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])", "0.4");
 		return fromScript(name, props, refNode);
 	}
 	
@@ -296,6 +296,6 @@ dojo.widget.createWidget = function(name, props, refNode, position){
  
 dojo.widget.fromScript = function(name, props, refNode, position){
 	dojo.deprecated("dojo.widget.fromScript", " use " +
-		"dojo.widget.createWidget instead");
+		"dojo.widget.createWidget instead", "0.4");
 	return dojo.widget.createWidget(name, props, refNode, position);
 }

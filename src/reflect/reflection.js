@@ -1,4 +1,4 @@
-dojo.deprecated("dojo.reflect is merged into dojo.lang (dojo.lang[type]).  Will be removed by 0.4");
+dojo.deprecated("dojo.reflect", "merged into dojo.lang (dojo.lang[type])", "0.4");
 dojo.provide("dojo.reflect");
 
 /*****************************************************************

@@ -346,7 +346,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			if( !kwArgs["formNode"]
 				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"] || kwArgs["watchForURL"])
 				&& (!djConfig.preventBackButtonFix)) {
-        dojo.deprecated("Using dojo.io.XMLHTTPTransport.bind() to add to browser history without doing an IO request is deprecated. Use dojo.undo.browser.addToHistory() instead.");
+        dojo.deprecated("Using dojo.io.XMLHTTPTransport.bind() to add to browser history without doing an IO request",
+        				"Use dojo.undo.browser.addToHistory() instead.", "0.4");
 				dojo.undo.browser.addToHistory(kwArgs);
 				return true;
 			}
