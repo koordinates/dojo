@@ -47,6 +47,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
+	drag: null,
+
 	fillInTemplate: function(args, frag){
 		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
@@ -79,11 +81,23 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.restoreAction.style.display= 
 				(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
 			this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
-			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
+
+			this.drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
 			if (this.constrainToContainer) {
-				drag.constrainTo();
+				this.drag.constrainTo();
 			}
-			drag.setDragHandle(this.titleBar);
+			this.drag.setDragHandle(this.titleBar);
+
+			var self = this;
+
+			dojo.event.topic.subscribe("dragMove",
+				function (info){
+					if (info.source.domNode == self.domNode){
+						dojo.event.topic.publish('floatingPaneMove', { source: self } );
+					}
+				}
+			);
+
 		}
 
 		if(this.resizable){
