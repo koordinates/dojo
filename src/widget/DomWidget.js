@@ -110,6 +110,13 @@ dojo.widget.wai = {
 				alias: "aaa",
 				prefix: "",
 				nsName: "state"
+	},
+	setAttr: function(node, attr, value){
+		if(dojo.render.html.ie){
+			node.setAttribute(this[attr].alias+":"+this[attr].name, wai.prefix+value);
+		}else{
+			node.setAttributeNS(this[attr].namespace, this[attr].nsName, this[attr].prefix+value);
+		}
 	}
 };
 
@@ -167,11 +174,7 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 			var wai = dojo.widget.wai[name];
 			var val = baseNode.getAttribute(wai.name);
 			if(val){
-				if(dojo.render.html.ie){
-					baseNode.setAttribute(wai.alias+":"+wai.name, wai.prefix+val);
-				}else{
-					baseNode.setAttributeNS(wai.namespace, wai.nsName, wai.prefix+val);
-				}
+				dojo.widget.wai.setAttr(baseNode, wai.name, val);
 			}
 		}, this);
 
