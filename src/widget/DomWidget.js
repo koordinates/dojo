@@ -97,6 +97,21 @@ dojo.widget._templateCache.dummyCount = 0;
 dojo.widget.attachProperties = ["dojoAttachPoint", "id"];
 dojo.widget.eventAttachProperty = "dojoAttachEvent";
 dojo.widget.onBuildProperty = "dojoOnBuild";
+dojo.widget.waiNames  = ["waiRole", "waiState"];
+dojo.widget.wai = {
+	waiRole: { 	name: "waiRole", 
+				namespace: "http://www.w3.org/TR/xhtml2", 
+				alias: "x2",
+				prefix: "wairole:",
+				nsName: "role"
+	},
+	waiState: { name: "waiState", 
+				namespace: "http://www.w3.org/2005/07/aaa" , 
+				alias: "aaa",
+				prefix: "",
+				nsName: "state"
+	}
+};
 
 dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 	// FIXME: this method is still taking WAAAY too long. We need ways of optimizing:
@@ -147,6 +162,18 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 		if(tmpltPoint){
 			targetObj[tmpltPoint]=baseNode;
 		}
+
+		dojo.lang.forEach(dojo.widget.waiNames, function(name){
+			var wai = dojo.widget.wai[name];
+			var val = baseNode.getAttribute(wai.name);
+			if(val){
+				if(dojo.render.html.ie){
+					baseNode.setAttribute(wai.alias+":"+wai.name, wai.prefix+val);
+				}else{
+					baseNode.setAttributeNS(wai.namespace, wai.nsName, wai.prefix+val);
+				}
+			}
+		}, this);
 
 		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
 		if(attachEvent){
