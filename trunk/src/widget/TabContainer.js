@@ -36,15 +36,10 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	selectedTab: "",		// initially selected tab (widgetId)
 
 	fillInTemplate: function(args, frag) {
-		// Copy style info and id from input node to output node
+		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
-		// get around opera wich doesnt have cssText, and IE wich bugs on setAttribute 
-		if(dojo.lang.isUndefined(source.style.cssText)){ 
-			this.domNode.setAttribute("style", source.getAttribute("style")); 
-		}else{
-			this.domNode.style.cssText = source.style.cssText; 
-		}
-		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
+		dojo.html.copyStyle(this.domNode, source);
+
 		dojo.widget.html.TabContainer.superclass.fillInTemplate.call(this, args, frag);
 	},
 
