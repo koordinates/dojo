@@ -10,8 +10,12 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
+	dojo.require("dojo.event.*");
 	dojo.require("dojo.widget.Button");
+	dojo.require("dojo.widget.html.Button");
 	dojo.require("dojo.widget.Menu2");
+
+	dojo.hostenv.writeIncludes();
 </script>
 
 <script>
@@ -25,8 +29,11 @@
 	
 	// 2. load the user defined button
 	dojo.require("acme.DogButton");
-</script>
 
+	function widgetClick() {
+		dojo.debug('widget [' + this.widgetId + '] was clicked');
+	}
+</script>
 <style>
 	/* group multiple buttons in a row */
 	.box {
@@ -54,7 +61,7 @@
 		.dojoMenuItem2.dojoMenuItem2Hover .dojoMenuItem2Label, 
 		.dojoMenuItem2.dojoMenuItem2Hover .dojoMenuItem2Accel,
 		.dojoMenuItem2.dojoMenuItem2Hover .dojoMenuItem2Icon {
-		background-color: #6F95CD;
+			background-color: #6F95CD;
 		border-color:#6F95CD;
 	}
 
@@ -88,10 +95,10 @@ Buttons can do an action, display a menu, or both:
 		<img src="images/note.gif"><br>Edit
 	</button>
 	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
-		<img src="images/save.gif"> Save
+		<img src="images/note.gif"> Save
 	</button>
 	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
-		<img src="images/save.gif"><br>Save
+		<img src="images/note.gif"><br>Save
 	</button>
 </div>
 <br clear=both>
@@ -109,10 +116,10 @@ And disabled:
 	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
 		<img src="images/note.gif"><br>Edit
 	</button>
-	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
+	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled="true">
 		<img src="images/save.gif"> Save
 	</button>
-	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled=true>
+	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled="true">
 		<img src="images/save.gif"><br>Save
 	</button>
 	<div style="clear: both;"></div>
@@ -205,5 +212,3 @@ Here's an example:</p>
 	<div dojoType="MenuItem2" iconSrc="images/save.gif" caption="Save As" accelKey="Ctrl+A"
 		onClick="dojo.debug('not actually saving anything, just a test!')"></div>
 </div>
-
-
