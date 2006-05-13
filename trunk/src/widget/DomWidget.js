@@ -113,7 +113,7 @@ dojo.widget.wai = {
 	},
 	setAttr: function(node, attr, value){
 		if(dojo.render.html.ie){
-			node.setAttribute(this[attr].alias+":"+this[attr].name, wai.prefix+value);
+			node.setAttribute(this[attr].alias+":"+this[attr].nsName, this[attr].prefix+value);
 		}else{
 			node.setAttributeNS(this[attr].namespace, this[attr].nsName, this[attr].prefix+value);
 		}
