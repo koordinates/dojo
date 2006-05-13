@@ -329,7 +329,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 
 	var anim = new dojo.lfx.Animation({
 		beforeBegin: function(){
-			dojo.style.show(outline);
+			dojo.style.setDisplay(outline, "block");
 		},
 		onAnimate: function(value){
 			with(outline.style){
@@ -340,7 +340,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 			}
 		},
 		onEnd: function(){
-			dojo.style.show(endNode);
+			dojo.style.setDisplay(endNode, "block");
 			outline.parentNode.removeChild(outline);
 		}
 	}, duration, new dojo.lfx.Line(startCoords, endCoords), easing);
