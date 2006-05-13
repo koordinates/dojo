@@ -260,9 +260,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	expandDemoNavigation: function(e) {
 		show = dojo.lfx.html.fadeShow(this.navigationNode, 1000);
 		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 1000);
-		dojo.lfx.combine(show,hide,{},{},function() {
-			this.show();
-		}).play();
+		dojo.lfx.combine(show,hide).play();
 	},
 
 	show: function() {
