@@ -101,6 +101,7 @@ dojo.html.layout = function(container, children, layoutPriority) {
 dojo.style.insertCssText(
 	".dojoLayoutContainer{ position: relative; display: block; }\n" +
 	"body .dojoAlignTop, body .dojoAlignBottom, body .dojoAlignLeft, body .dojoAlignRight { position: absolute; overflow: hidden; }\n" +
-	"body .dojoAlignClient, body .dojoAlignFloat { position: absolute; overflow: auto; }\n"
+	"body .dojoAlignClient { position: absolute }\n" +
+	".dojoAlignClient { overflow: auto; }\n"
 );
 
