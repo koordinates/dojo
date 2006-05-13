@@ -119,17 +119,17 @@ dojo.html.getEventTarget = function(evt){
 }
 
 dojo.html.getDocumentWidth = function(){
-	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportWidth();
 }
 
 dojo.html.getDocumentHeight = function(){
-	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportHeight();
 }
 
 dojo.html.getDocumentSize = function(){
-	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	dojo.deprecated("dojo.html.getDocument*", "replaced of dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportSize();
 }
 
@@ -199,7 +199,7 @@ dojo.html.getScrollOffset = function(){
 }
 
 dojo.html.getParentOfType = function(node, type){
-	dojo.deprecated("dojo.html.getParentOfType has been deprecated in favor of dojo.html.getParentByType*");
+	dojo.deprecated("dojo.html.getParentOfType", "replaced by dojo.html.getParentByType*", "0.4");
 	return dojo.html.getParentByType(node, type);
 }
 
@@ -502,7 +502,7 @@ dojo.html.getPreferredStyleSheet = function(){
 }
 
 dojo.html.body = function(){
-	dojo.deprecated("dojo.html.body", "use document.body instead");
+	// Note: document.body is not defined for a strict xhtml document
 	return document.body || document.getElementsByTagName("body")[0];
 }
 
@@ -531,7 +531,7 @@ dojo.html.copyStyle = function(target, source){
 
 dojo.html._callExtrasDeprecated = function(inFunc, args) {
 	var module = "dojo.html.extras";
-	dojo.deprecated("dojo.html." + inFunc + " has been moved to " + module);
+	dojo.deprecated("dojo.html." + inFunc, "moved to " + module, "0.4");
 	dojo["require"](module); // weird syntax to fool list-profile-deps (build)
 	return dojo.html[inFunc].apply(dojo.html, args);
 }
