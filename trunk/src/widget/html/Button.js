@@ -5,6 +5,7 @@ dojo.require("dojo.style");
 
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Button");
+dojo.require("dojo.widget.*");
 
 dojo.widget.html.Button = function(){
 	// call superclass constructors
