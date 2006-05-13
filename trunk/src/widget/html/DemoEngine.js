@@ -258,8 +258,8 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	expandDemoNavigation: function(e) {
-		show = dojo.lfx.html.fadeShow(this.navigationNode, 1000);
-		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 1000);
+		show = dojo.lfx.html.fadeShow(this.navigationNode, 500);
+		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 500);
 		dojo.lfx.combine(show,hide).play();
 	},
 
