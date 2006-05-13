@@ -82,6 +82,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 		// Create label
 		tab.div = document.createElement("div");
+		dojo.widget.wai.setAttr(tab.div, "waiRole", "tab");
 		dojo.html.addClass(tab.div, "dojoTabPaneTab");
 		var span = document.createElement("span");
 		span.innerHTML = tab.label;
