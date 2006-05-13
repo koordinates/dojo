@@ -18,7 +18,10 @@ dojo.lfx.html._byId = function(nodes){
 			return nodes;
 		}
 	}else{
-		return [dojo.byId(nodes)];
+		var n = [];
+		n.push(dojo.byId(nodes));
+		n.alreadyChecked = true;
+		return n;
 	}
 }
 
@@ -27,16 +30,17 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 											/*int*/ duration,
 											/*function*/ easing){
 	nodes = dojo.lfx.html._byId(nodes);
-
+	
 	if(nodes.length==1){
 		// FIXME: we're only supporting start-value filling when one node is
 		// passed
-
+		
 		dojo.lang.forEach(propertyMap, function(prop){
 			if(typeof prop["start"] == "undefined"){
-				prop.start = parseInt(dojo.style.getComputedStyle(nodes[0], prop.property));
-				if(isNaN(prop.start) && (prop.property == "opacity")){
-					prop.start = 1;
+				if(prop.property != "opacity"){
+					prop.start = parseInt(dojo.style.getComputedStyle(nodes[0], prop.property));
+				}else{
+					prop.start = dojo.style.getOpacity(nodes[0]);
 				}
 			}
 		});
@@ -56,7 +60,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 			if(s == "opacity"){
 				dojo.style.setOpacity(n, style[s]);
 			}else{
-				n.style[dojo.style.toCamelCase(s)] = style[s];
+				n.style[s] = style[s];
 			}
 		}
 	}
@@ -68,6 +72,10 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 			if(dojo.lang.isArray(prop.start)){
 				// don't loop through the arrays
 				this.diffs[i] = null;
+			}else if(prop.start instanceof dojo.graphics.color.Color){
+				// save these so we don't have to call toRgb() every getValue() call
+				prop.startRgb = prop.start.toRgb();
+				prop.endRgb = prop.end.toRgb();
 			}else{
 				this.diffs[i] = prop.end - prop.start;
 			}
@@ -77,15 +85,17 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 			dojo.lang.forEach(this._properties, function(prop, i){
 				var value = null;
 				if(dojo.lang.isArray(prop.start)){
+					// FIXME: what to do here?
+				}else if(prop.start instanceof dojo.graphics.color.Color){
 					value = (prop.units||"rgb") + "(";
-					for(var j = 0 ; j < prop.start.length ; j++){
-						value += Math.round(((prop.end[j] - prop.start[j]) * n) + prop.start[j]) + (j < prop.start.length - 1 ? "," : "");
+					for(var j = 0 ; j < prop.startRgb.length ; j++){
+						value += Math.round(((prop.endRgb[j] - prop.startRgb[j]) * n) + prop.startRgb[j]) + (j < prop.startRgb.length - 1 ? "," : "");
 					}
 					value += ")";
 				}else{
 					value = ((this.diffs[i]) * n) + prop.start + (prop.property != "opacity" ? prop.units||"px" : "");
 				}
-				ret[prop.property] = value;
+				ret[dojo.style.toCamelCase(prop.property)] = value;
 			}, this);
 			return ret;
 		}
@@ -400,8 +410,8 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 		var wasTransparent = (bg == "transparent" || bg == "rgba(0, 0, 0, 0)");
 		while(color.length > 3) { color.pop(); }
 
-		var rgb = new dojo.graphics.color.Color(startColor).toRgb();
-		var endRgb = new dojo.graphics.color.Color(color).toRgb();
+		var rgb = new dojo.graphics.color.Color(startColor);
+		var endRgb = new dojo.graphics.color.Color(color);
 
 		var anim = dojo.lfx.propertyAnimation(node, [{
 			property: "background-color",
@@ -410,7 +420,7 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 		}], duration, easing);
 
 		dojo.event.connect(anim, "beforeBegin", function(){
-			node.style.backgroundColor = "rgb(" + rgb.join(",") + ")";
+			node.style.backgroundColor = "rgb(" + rgb.toRgb().join(",") + ")";
 		});
 
 		dojo.event.connect(anim, "onEnd", function(){
@@ -434,8 +444,8 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var color = new dojo.graphics.color.Color(dojo.style.getBackgroundColor(node)).toRgb();
-		var rgb = new dojo.graphics.color.Color(endColor).toRgb();
+		var color = new dojo.graphics.color.Color(dojo.style.getBackgroundColor(node));
+		var rgb = new dojo.graphics.color.Color(endColor);
 		
 		var anim = dojo.lfx.propertyAnimation(node, [{
 			property: "background-color",
@@ -444,7 +454,7 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 		}], duration, easing);
 
 		dojo.event.connect(anim, "beforeBegin", function(){
-			node.style.backgroundColor = "rgb(" + color.join(",") + ")";
+			node.style.backgroundColor = "rgb(" + color.toRgb().join(",") + ")";
 		});
 		if(callback){
 			dojo.event.connect(anim, "onEnd", function(){
