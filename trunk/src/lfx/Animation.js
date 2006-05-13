@@ -77,11 +77,7 @@ dojo.lang.extend(dojo.lfx.IAnimation, {
 	
 	fire: function(evt, args){
 		if(this[evt]){
-			if(args){
-				this[evt].apply(this, args);
-			}else{
-				this[evt].apply(this);
-			}
+			this[evt].apply(this, (args||[]));
 		}
 	},
 	
