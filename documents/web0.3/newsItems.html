@@ -2,7 +2,7 @@
 	dojo.require("dojo.widget.YahooMap");
 	(function(){
 		var w=dojo.widget.byId("devdaymap");
-		w.map.setZoomLevel(5);
+		if(w.map) w.map.setZoomLevel(5);
 	})();	
 </script>
 <div class="newsItem">
