@@ -12,6 +12,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.html.extras");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lfx.*");
+dojo.require("dojo.event");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	node = dojo.byId(node);
@@ -130,6 +131,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		}
 
 		document.body.appendChild(this.dragClone);
+
+		dojo.event.topic.publish('dragStart', { source: this } );
 	},
 
 	getConstraints: function() {
@@ -183,6 +186,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
 		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
+
+		dojo.event.topic.publish('dragMove', { source: this } );
 	},
 
 	/**
@@ -225,6 +230,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		// shortly the browser will fire an onClick() event,
 		// but since this was really a drag, just squelch it
 		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
+
+		dojo.event.topic.publish('dragEnd', { source: this } );
 	},
 
 	squelchOnClick: function(e){
