@@ -24,7 +24,6 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 	{
 		classConstructor: function() {
-			var _this = this;
 			// today's date, JS Date object
 			this.today = "";
 			// selected date, JS Date object
@@ -147,35 +146,7 @@ dojo.widget.defineWidget(
 			return returnDate;
 		},
 		
-		incrementWeek: function(date, bool) {
-			dojo.unimplemented('dojo.widget.html.DatePicker.incrementWeek');
-		},
-	
-		incrementMonth: function(date, bool) {
-			dojo.unimplemented('dojo.widget.html.DatePicker.incrementMonth');
-		},
-	
-		incrementYear: function(date, bool) {
-			dojo.unimplemented('dojo.widget.html.DatePicker.incrementYear');
-		},
-	
-		onIncrementDate: function(evt) {
-			dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementDate');
-		},
-	
-		_daysIn: function(month,year) {
-			var daysIn = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
-			
-			if (month==1) {
-				return (year%400 == 0) ? 29: (year%100 == 0) ? 28: (year%4 == 0) ? 29: 28;
-			} else {
-				return daysIn[month];
-			}
-		},
-	
-		onIncrementWeek: function(evt) {
-			// FIXME: should make a call to incrementWeek when that is implemented
-			evt.stopPropagation();
+		incrementWeek: function(evt) {
 			var date = this.firstSaturday.date;
 			var month = this.firstSaturday.month;
 			var year = this.firstSaturday.year;
@@ -218,9 +189,7 @@ dojo.widget.defineWidget(
 			this.initUI();
 		},
 	
-		onIncrementMonth: function(evt) {
-			// FIXME: should make a call to incrementMonth when that is implemented
-			evt.stopPropagation();
+		incrementMonth: function(evt) {
 			var month = this.firstSaturday.month;
 			var year = this.firstSaturday.year;
 			switch(evt.currentTarget) {
@@ -268,10 +237,8 @@ dojo.widget.defineWidget(
 			this.firstSaturday.date = tempSaturday.date;
 			this.initUI();
 		},
-		
-		onIncrementYear: function(evt) {
-			// FIXME: should make a call to incrementYear when that is implemented
-			evt.stopPropagation();
+	
+		incrementYear: function(evt) {
 			var year = this.firstSaturday.year;
 			switch(evt.target) {
 				case this.nextYearLabelNode:
@@ -286,6 +253,35 @@ dojo.widget.defineWidget(
 			this.firstSaturday.month = tempSaturday.month;
 			this.firstSaturday.date = tempSaturday.date;
 			this.initUI();
+		},
+	
+		_daysIn: function(month,year) {
+			var daysIn = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
+			
+			if (month==1) {
+				return (year%400 == 0) ? 29: (year%100 == 0) ? 28: (year%4 == 0) ? 29: 28;
+			} else {
+				return daysIn[month];
+			}
+		},
+	
+		onIncrementDate: function(evt) {
+			dojo.unimplemented('dojo.widget.html.DatePicker.onIncrementDate');
+		},
+	
+		onIncrementWeek: function(evt) {
+			evt.stopPropagation();
+			this.incrementWeek(evt);
+		},
+	
+		onIncrementMonth: function(evt) {
+			evt.stopPropagation();
+			this.incrementMonth(evt);
+		},
+		
+		onIncrementYear: function(evt) {
+			evt.stopPropagation();
+			this.incrementYear(evt);
 		},
 	
 		setMonthLabel: function(monthIndex) {
