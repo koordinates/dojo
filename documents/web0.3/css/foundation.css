@@ -25,3 +25,10 @@ p#foundation-head{
 #foundation-body p {
 	margin-bottom:12px;
 }
+#partners a {
+	display:block;
+	float:left;
+	height:40px;
+	overflow:visible;
+	margin:12px;
+}
