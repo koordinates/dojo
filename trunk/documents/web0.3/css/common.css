@@ -51,7 +51,10 @@
 	display:block;
 }
 #footer div.links span{
+	/*
 	font-size:0.85em;
+	*/
+	font-size:1.3em;
 	padding:0 6px;
 	text-transform:lowercase;
 }
