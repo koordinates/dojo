@@ -394,43 +394,64 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
 	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
-
-	// FIXME: doesn't have correct parent support!
-	if(!nodeType){ nodeType = "*"; }
-	var candidateNodes = parent.getElementsByTagName(nodeType);
-
-	var node, i = 0;
-	outer:
-	while (node = candidateNodes[i++]) {
-		var nodeClasses = dojo.html.getClasses(node);
-		if(nodeClasses.length == 0) { continue outer; }
-		var matches = 0;
-
-		for(var j = 0; j < nodeClasses.length; j++) {
-			if( reClass.test(nodeClasses[j]) ) {
-				if( classMatchType == dojo.html.classMatchType.ContainsAny ) {
-					nodes.push(node);
-					continue outer;
-				} else {
-					matches++;
-				}
-			} else {
-				if( classMatchType == dojo.html.classMatchType.IsOnly ) {
-					continue outer;
-				}
-			}
-		}
-
-		if( matches == classes.length ) {
-			if( classMatchType == dojo.html.classMatchType.IsOnly && matches == nodeClasses.length ) {
-				nodes.push(node);
-			} else if( classMatchType == dojo.html.classMatchType.ContainsAll ) {
-				nodes.push(node);
-			}
-		}
-	}
+	var candidateNodes = [];
 	
-	return nodes;
+	if(document.evaluate) { // supports dom 3 xpath
+		var xpath = "//" + (nodeType || "*") + "[contains(";
+		if(classMatchType != dojo.html.classMatchType.ContainsAny){
+			xpath += "concat(' ',@class,' '), ' " +
+			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
+			" ')]";
+		}else{
+			xpath += "concat(' ',@class,' '), ' " +
+			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
+			" ')]";
+		}
+		var xpathResult = document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
+		var result = xpathResult.iterateNext();
+		while(result) {
+			candidateNodes.push(result);
+			result = xpathResult.iterateNext();
+		}
+		return candidateNodes;
+	} else {
+		if(!nodeType){
+			nodeType = "*";
+		}
+		candidateNodes = parent.getElementsByTagName(nodeType);
+
+		var node, i = 0;
+		outer:
+		while (node = candidateNodes[i++]) {
+			var nodeClasses = dojo.html.getClasses(node);
+			if(nodeClasses.length == 0) { continue outer; }
+			var matches = 0;
+	
+			for(var j = 0; j < nodeClasses.length; j++) {
+				if( reClass.test(nodeClasses[j]) ) {
+					if( classMatchType == dojo.html.classMatchType.ContainsAny ) {
+						nodes.push(node);
+						continue outer;
+					} else {
+						matches++;
+					}
+				} else {
+					if( classMatchType == dojo.html.classMatchType.IsOnly ) {
+						continue outer;
+					}
+				}
+			}
+	
+			if( matches == classes.length ) {
+				if( classMatchType == dojo.html.classMatchType.IsOnly && matches == nodeClasses.length ) {
+					nodes.push(node);
+				} else if( classMatchType == dojo.html.classMatchType.ContainsAll ) {
+					nodes.push(node);
+				}
+			}
+		}
+		return nodes;
+	}
 }
 
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
