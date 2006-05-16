@@ -69,10 +69,14 @@
 }
 
 #actionTabs > .dojoTabPaneWrapper{
-	border:0;
+	border:0 !important;
 	overflow: visible;
 	position: relative;
 	padding-top:35px; 
+}
+* html #actionTabs .dojoTabPaneWrapper{
+	margin-top:25px;
+	border:0 !important;
 }
 
 div.dojoTabLabels-top {
@@ -80,6 +84,12 @@ div.dojoTabLabels-top {
 	top : -4px;
 	left : 0px;
 	overflow : visible;
+}
+* html div.dojoTabLabels-top{
+	position:absolute;
+	top:-24px;
+	left:0px;
+	overflow:visible;
 }
 
 div.dojoTabPaneTab span {
@@ -111,7 +121,11 @@ div.dojoTabPaneTab {
 #sidebar .license {
 	margin:16px 0 16px -16px;
 }
-
+* html #sidebar .license{
+	margin:16px 0;
+	width:282px;
+	height:107px;
+}
 #sidebar .license a{
 	display:block;
 	width:282px;
@@ -136,6 +150,7 @@ div.dojoTabPaneTab {
 #demoApp, #help, #news {
 	width:auto !important;
 	height:auto !important;
+	padding-top:1.5em;
 	overflow:visible;
 }
 
