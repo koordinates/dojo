@@ -287,7 +287,7 @@
 		},
 
 		"Button": {
-			url: "dojo/tests/widget/test_Button2.html",
+			url: "dojo/tests/widget/test_Button.html",
 			author: "Bill Keese",
 			thumbnail: "dojo/demos/screenshots/test_ButtonThumb.gif",
 			screenShot: "",
