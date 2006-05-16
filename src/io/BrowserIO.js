@@ -218,7 +218,8 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
-		if((http.status==200)||(http.status==304)||(http.status==204)||
+		if(	((http.status>=200)&&(http.status<300))|| 	// allow any 2XX response code
+			(http.status==304)|| 						// get it out of the cache
 			(location.protocol=="file:" && (http.status==0 || http.status==undefined))||
 			(location.protocol=="chrome:" && (http.status==0 || http.status==undefined))
 		){
