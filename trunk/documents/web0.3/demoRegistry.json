@@ -215,7 +215,7 @@
 		},
 
 		"Menu": {
-			url: "dojo/tests/widget/test_Menu2_Bar.html",
+			url: "dojo/tests/widget/test_Menu2.html",
 			author: "",
 			thumbnail: "dojo/demos/screenshots/test_MenuThumb.gif",
 			screenShot: "",
@@ -287,7 +287,7 @@
 		},
 
 		"Button": {
-			url: "dojo/tests/widget/test_Button.html",
+			url: "dojo/tests/widget/test_Button2.html",
 			author: "Bill Keese",
 			thumbnail: "dojo/demos/screenshots/test_ButtonThumb.gif",
 			screenShot: "",
