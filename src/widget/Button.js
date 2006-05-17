@@ -91,9 +91,11 @@ dojo.widget.defineWidget(
 		},
 	
 		buttonClick: function(e){
-			if( !this.disabled && this.onClick ) { this.onClick(e); }
+			if( !this.disabled ) { this.onClick(e); }
 		},
-	
+
+		onClick: function(e) { },
+
 		_setImage: function(prefix){
 			this.leftImage.src=dojo.uri.dojoUri(prefix + "l.gif");
 			this.centerImage.src=dojo.uri.dojoUri(prefix + "c.gif");
@@ -144,7 +146,6 @@ dojo.widget.defineWidget(
 		},
 	
 		onClick: function (e){
-			if( this.disabled ){ return; }
 			this._toggleMenu(this.menuId);
 		}
 	});
@@ -223,7 +224,7 @@ dojo.widget.defineWidget(
 		},
 	
 		leftClick: function(e){
-			if ( !this.disabled && this.onClick ) {
+			if ( !this.disabled ) {
 				this.onClick(e);
 			}
 		},
