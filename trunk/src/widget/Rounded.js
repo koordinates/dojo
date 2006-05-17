@@ -6,31 +6,11 @@ dojo.require("dojo.widget.html.ContentPane");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 
-	/***************************************************************
-	* The following script is derived (with permission) from		 *
-	* curvyCorners (attribution below) and was adapted to			 *
-	* Dojo Toolkit by Brian Lucas	(brian.lucas <at> gmail.com)	 *
-	****************************************************************
-	*                                                              *
-	*  curvyCorners                                                *
-	*  ------------                                                *
-	*  This script generates rounded corners for your divs.        *
-	*                                                              *
-	*  Version 1.00 beta                                           *
-	*  Copyright (c) 2006 Cameron Cooke                            *
-	*  By: Cameron Cooke and Tim Hutchison.                        *
-	*                                                              *
-	*  Website: http://www.curvycorners.net                        *
-	*  Email:   info@totalinfinity.com                             *
-	*                                                              *
-	*  This library is free software; you can redistribute         *
-	*  it and/or modify it under the terms of the GNU              *
-	*  Lesser General Public License as published by the           *
-	*  Free Software Foundation; either version 2.1 of the         *
-	*  License, or (at your option) any later version.             *
-	*                                                              *
-	*  (...standard GPL disclaimer follows, snipped for space...)  *
-	****************************************************************/
+/*
+ *	The following script is derived (with permission) from curvyCorners,
+ *	written by Cameron Cooke (CLA on file) and was adapted to Dojo by Brian
+ *	Lucas (CLA on file)
+ */
 
 dojo.widget.Rounded = function() {
 	dojo.widget.html.ContentPane.call(this);
