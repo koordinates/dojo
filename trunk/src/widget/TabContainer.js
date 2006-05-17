@@ -28,6 +28,8 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	closeButton: "none",
 
 	useVisibility: false,		// true-->use visibility:hidden instead of display:none
+	
+	// if false, TabContainers size changes according to size of currently selected tab
 	doLayout: true,
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTabContainer.html"),
@@ -59,7 +61,11 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			this.dojoTabLabels.appendChild(div);
 		}
 
-		dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+		if(this.doLayout){
+			dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+		} else {
+			dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition+"-noLayout");
+		}
 
         this._doSizing();
 
