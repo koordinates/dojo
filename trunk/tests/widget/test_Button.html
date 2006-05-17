@@ -78,10 +78,10 @@
 Buttons can do an action, display a menu, or both:
 </p>
 <div class="box">
-	<button dojoType="Button">
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
 		<img src="images/plus.gif"> Create
 	</button>
-	<button dojoType="Button">
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
 		<img src="images/plus.gif"><br>Create
 	</button>
 	<button dojoType="dropdownButton" menuId='editMenu'>
@@ -100,10 +100,10 @@ Buttons can do an action, display a menu, or both:
 <br clear=both>
 And disabled:
 <div class="box">
-	<button dojoType="Button" disabled="true">
+	<button dojoType="Button" disabled="true" onclick='dojo.debug("clicked simple")'>
 		<img src="images/plus.gif"> Create
 	</button>
-	<button dojoType="Button" disabled="true">
+	<button dojoType="Button" disabled="true" onclick='dojo.debug("clicked simple")'>
 		<img src="images/plus.gif"><br>Create
 	</button>
 	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
