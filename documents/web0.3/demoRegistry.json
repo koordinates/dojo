@@ -215,7 +215,7 @@
 		},
 
 		"Menu": {
-			url: "dojo/tests/widget/test_Menu2.html",
+			url: "dojo/tests/widget/test_Menu2_Bar.html",
 			author: "",
 			thumbnail: "dojo/demos/screenshots/test_MenuThumb.gif",
 			screenShot: "",
