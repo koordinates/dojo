@@ -24,6 +24,8 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 	{
 		classConstructor: function() {
+			// mixin dojo.widget.DatePicker non-demoninational code
+			dojo.widget.DatePicker.call(this);
 			// today's date, JS Date object
 			this.today = "";
 			// selected date, JS Date object
