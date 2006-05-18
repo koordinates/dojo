@@ -15,11 +15,14 @@
 </head>
 <body>
 	<div id="foundation-header">
-		<div id="foundation-logo">
-			<a href="http://dojotoolkit.org/">The Dojo Toolkit home page</a>
-		</div>
-		<div id="foundation-about">
-			<a href="http://dojotoolkit.org/foundation/">About the Dojo Foundation</a>
+		<div id="header-links">
+			<ul>
+				<li><a href="http://dojotoolkit.org/" id="header-index">Home</a></li>
+				<li><a href="http://dojotoolkit.org/developers/" id="header-developers">Developers</a></li>
+				<li><a href="http://trac.dojotoolkit.org/" id="header-bugtracking">Bug Tracking</a></li>
+				<li><a href="http://dojo.jot.com/" id="header-wiki">Wiki</a></li>
+				<li><a href="http://dojotoolkit.org/foundation/" id="header-about">About the Dojo Foundation</a></li>
+			</ul>
 		</div>
 	</div>
 	<div id="header">
