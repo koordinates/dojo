@@ -332,9 +332,8 @@ dojo.addOnLoad(function(){
 
 try {
 	if (dojo.render.html.ie) {
-		//	easier and safer VML addition.  Thanks Emil!
-		document.namespaces.add("v", "urn:schemas-microsoft-com:vml");
-		document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML)");
+		document.write('<style>v\:*{ behavior:url(#default#VML); }</style>');
+		document.write('<xml:namespace ns="urn:schemas-microsoft-com:vml" prefix="v"/>');
 	}
 } catch (e) { }
 
