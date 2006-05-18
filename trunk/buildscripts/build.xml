@@ -28,6 +28,7 @@
 	<property name="version" value="development"/>
 	<property name="lang" value="en"/>
 	<property name="releaseName" value="${project}"/>
+	<property name="dojoLoader" value="default"/>
 	<property name="release_dir" value="${root}/release/${releaseName}"/>
 	<property name="docs_dir" value="${root}/documents"/>
 	<property name="articles_dir" value="${docs_dir}/articles"/>
@@ -484,6 +485,9 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<target name="compress" depends="-fix-config, list-profile-deps"
 		description="runs compression code over release JS files">
 		<echo>profileFile: ${profileFile}</echo>
+		
+		<!-- Create the release dir if it doesn't exist. -->
+		<mkdir dir="${release_dir}"/>
 		<!-- write the list of files included to the release directory -->
 		<echo file="${release_dir}/build.txt">
 Files baked into this package:
@@ -646,13 +650,6 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 				echo("WARNING: buildDojoFlash and buildDojoStorage could not run.");
 				echo("Please download and install mtasc from http://www.mtasc.org and place it in your path.");
 			}
-
-			//Get the preferred package loader.
-			var loader = dojo.getProperty("dojoLoader");
-			if((!loader)||(loader=="null")||(loader=="")){
-				loader = "default";
-			}
-			dojo.setNewProperty("dojoLoader", loader);
 		]]></script>
 		
 		<antcall target="-docs-and-tests" />
