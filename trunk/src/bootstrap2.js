@@ -10,7 +10,7 @@
 	var isRhino = false;
 	var isSpidermonkey = false;
 	var isDashboard = false;
-	if((typeof this["load"] == "function")&&(typeof this["Packages"] == "function")){
+	if((typeof this["load"] == "function")&&((typeof this["Packages"] == "function")||(typeof this["Packages"] == "object"))){
 		isRhino = true;
 	}else if(typeof this["load"] == "function"){
 		isSpidermonkey  = true;

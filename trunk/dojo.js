@@ -4,7 +4,7 @@ dj_usingBootstrap = true; //Needed for bootstrap2.js to work properly.
 	var isRhino = false;
 	var isSpidermonkey = false;
 	var isDashboard = false;
-	if((typeof this["load"] == "function")&&(typeof this["Packages"] == "function")){
+	if((typeof this["load"] == "function")&&((typeof this["Packages"] == "function")||(typeof this["Packages"] == "object"))){
 		var isRhino = true;
 		hostEnv = "rhino";
 	}else if(typeof this["load"] == "function"){
