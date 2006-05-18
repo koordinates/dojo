@@ -1,5 +1,5 @@
 dojo.provide("dojo.validate.us");
-dojo.require("dojo.regexp");
+dojo.require("dojo.validate.common");
 
 /**
   Validates U.S. currency.
@@ -11,4 +11,74 @@ dojo.require("dojo.regexp");
 */
 dojo.validate.us.isCurrency = function(value, flags) {
 	return dojo.validate.isCurrency(value, flags);
+}
+
+
+/**
+  Validates US state and territory abbreviations.
+
+	@param value  A two character string.
+  @param flags  An object.
+    flags.allowTerritories  Allow Guam, Puerto Rico, etc.  Default is true.
+    flags.allowMilitary  Allow military 'states', e.g. Armed Forces Europe (AE).  Default is true.
+  @return  true or false
+*/
+dojo.validate.us.isState = function(value, flags) {
+	var re = new RegExp("^" + dojo.regexp.us.state(flags) + "$", "i");
+	return re.test(value);
+}
+
+/**
+  Validates 10 US digit phone number for several common formats:
+
+  @param value The telephone number string
+  @return true or false
+*/
+dojo.validate.us.isPhoneNumber = function(value) {
+	flags = {
+		format: [
+			"###-###-####",
+			"(###) ###-####",
+			"(###) ### ####",
+			"###.###.####",
+			"###/###-####",
+			"### ### ####",
+			"###-###-#### x#???",
+			"(###) ###-#### x#???",
+			"(###) ### #### x#???",
+			"###.###.#### x#???",
+			"###/###-#### x#???",
+			"### ### #### x#???",
+			"##########"
+		]
+	};
+
+	return dojo.validate.isNumberFormat(value, flags);
+}
+
+// Validates social security number
+dojo.validate.us.isSocialSecurityNumber = function(value) {
+	flags = {
+		format: [
+			"###-##-####",
+			"### ## ####",
+			"#########"
+		]
+	};
+
+	return dojo.validate.isNumberFormat(value, flags);
+}
+
+// Validates U.S. zip-code
+dojo.validate.us.isZipCode = function(value) {
+	flags = {
+		format: [
+			"#####-####",
+			"##### ####",
+			"#########",
+			"#####"
+		]
+	};
+
+	return dojo.validate.isNumberFormat(value, flags);
 }
