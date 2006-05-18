@@ -16,6 +16,7 @@
 	<property name="rest_files" value=""/>
 	<property name="website_dir" value="${docs_dir}/web0.3"/>
 	<property name="release_website_dir" value="/srv/www/htdocs"/>
+	<property name="blog_website_dir" value="/srv/www/vhosts/blog/wp-content/themes"/>
 
 	<target name="help">
 		<echo message="User home is ${user.home}."/>
@@ -74,24 +75,37 @@
 		<copy todir="${release_website_dir}" overwrite="true">
 			<fileset dir="${website_dir}">
 				<exclude name="**/.svn*" />
+				<exclude name="wp_theme/**"/>
+				<exclude name="build.xml" />
 				<include name="**/*" />
 			</fileset>
 		</copy>
-		<!-- antcall target="docs" / -->
+		<copy todir="${blog_website_dir}" overwrite="true">
+			<fileset dir="${website_dir}/wp_theme">
+				<exclude name="**/.svn*" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<!--
+		<antcall target="docs" />
 		<copy todir="${release_website_dir}/docs/" overwrite="true">
 			<fileset dir="${release_docs_dir}">
 				<exclude name="**/.svn*" />
 				<include name="*.html" />
 			</fileset>
 		</copy>
+		-->
 		<chgrp group="www" type="both">
 			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
+			<fileset dir="${blog_website_dir}" followsymlinks="false" includes="**/**" />
 		</chgrp>
 		<chmod perm="g+rwx" type="dir">
 			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
+			<fileset dir="${blog_website_dir}" followsymlinks="false" includes="**/**" />
 		</chmod>
 		<chmod perm="g+rw" type="file">
 			<fileset dir="${release_website_dir}" followsymlinks="false" includes="**/**" />
+			<fileset dir="${blog_website_dir}" followsymlinks="false" includes="**/**" />
 		</chmod>
 	</target>
 
