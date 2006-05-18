@@ -46,7 +46,8 @@
 		post_load_: false,
 		
 		//Egad! Lots of test files push on this directly instead of using dojo.addOnLoad.
-		modulesLoadedListeners: []
+		modulesLoadedListeners: [],
+		loadNotifying: false
 	};
 	
 	//Add all of these properties to dojo.hostenv
@@ -114,14 +115,18 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 dojo.loaded = function(){ }
 
 dojo.hostenv.loaded = function(){
+	this.loadNotifying = true;
 	this.post_load_ = true;
 	var mll = this.modulesLoadedListeners;
-	//Clear listeners so new ones can be added
-	//For other xdomain package loads after the initial load.
-	this.modulesLoadedListeners = [];
 	for(var x=0; x<mll.length; x++){
 		mll[x]();
 	}
+
+	//Clear listeners so new ones can be added
+	//For other xdomain package loads after the initial load.
+	this.modulesLoadedListeners = [];
+	this.loadNotifying = false;
+
 	dojo.loaded();
 }
 
@@ -144,7 +149,7 @@ dojo.addOnLoad = function(obj, fcnName) {
 	//indicate callbacks after doing some dojo.require() statements.
 	//In the xdomain case, if all the requires are loaded (after initial
 	//page load), then immediately call any listeners.
-	if(dh.post_load_ && dh.inFlightCount == 0){
+	if(dh.post_load_ && dh.inFlightCount == 0 && !dh.loadNotifying){
 		dh.callLoaded();
 	}
 }
