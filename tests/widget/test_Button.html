@@ -24,7 +24,7 @@
 	dojo.widget.manager.registerWidgetPackage('acme');
 	
 	// 2. load the user defined button
-	dojo.require("acme.DogButton");
+	dojo.require("acme.UserButton");
 
 	function widgetClick() {
 		dojo.debug('widget [' + this.widgetId + '] was clicked');
@@ -181,13 +181,13 @@ Here's an example:</p>
   }
 </style>
 <div class="box">
-	<button dojoType="dogbutton" onclick='dojo.debug("short");'>
+	<button dojoType="UserButton" onclick='dojo.debug("short");'>
 		<div class="dc">short</div>
 	</button>
-	<button dojoType="dogbutton" onclick='dojo.debug("longer");'>
+	<button dojoType="UserButton" onclick='dojo.debug("longer");'>
 		<div class="dc">bit longer</div>
 	</button>
-	<button dojoType="dogbutton" onclick='dojo.debug("longer yet");'>
+	<button dojoType="UserButton" onclick='dojo.debug("longer yet");'>
 		<div class="dc">ridiculously long</div>
 	</button>
 	<div style="clear: both;"></div>
