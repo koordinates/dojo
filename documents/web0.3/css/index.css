@@ -22,6 +22,8 @@
 	background-image:url(../img/idx-logo.gif);
 	background-repeat:no-repeat;
 	z-index:50;
+	cursor: hand;
+	cursor: pointer;
 }
 #index-download{
 	position:absolute;

@@ -18,6 +18,11 @@
 		dojo.require("dojo.widget.LinkPane");
 		dojo.require("dojo.widget.ContentPane");
 		dojo.require("dojo.widget.DemoEngine");
+		dojo.addOnLoad(function(){
+			dojo.event.connect(dojo.byId("index-logo"),"onclick",function(){
+				dojo.widget.byId("actionTabs").selectTab(dojo.widget.byId("news"));
+			});
+		});
 	</script>
 </head>
 <body>
