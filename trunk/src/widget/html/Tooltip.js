@@ -158,9 +158,11 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 	},
 
 	onLoad: function(){
-		// the tooltip has changed size due to downloaded contents, so reposition it
-		dojo.lang.setTimeout(this, this.position, 50);
-		dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
+		if(this.isShowing()){
+			// the tooltip has changed size due to downloaded contents, so reposition it
+			dojo.lang.setTimeout(this, this.position, 50);
+			dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
+		}
 	},
 
 	onParentResized: function() {
