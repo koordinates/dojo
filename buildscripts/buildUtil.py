@@ -25,9 +25,9 @@ def escape(instr):
 
 
 def regexpMagic(loader, pkgString, srcRoot):
-	uriMethod = "dojo.uri.Uri"
+	uriMethod = "dojo.uri.dojoUri"
 	#if loader == "xdomain":
-	#	uriMethod = "dojo.uri.UriXd"
+	#	uriMethod = "dojo.uri.dojoUriXd"
 
 	# "Now they have two problems" -- jwz
 	#	http://en.wikiquote.org/wiki/Jamie_Zawinski
