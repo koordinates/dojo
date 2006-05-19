@@ -1,2 +1,2 @@
 dojo.provide("dojo.validate");
-dojo.require("dojo.valdiate.common");
+dojo.require("dojo.validate.common");
