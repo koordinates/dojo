@@ -138,10 +138,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	getConstraints: function() {
 
 		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
-			width = dojo.html.getViewportWidth();
-			height = dojo.html.getViewportHeight();
-			padLeft = 0;
-			padTop = 0;
+			var width = dojo.html.getViewportWidth();
+			var height = dojo.html.getViewportHeight();
+			var padLeft = 0;
+			var padTop = 0;
 		} else {
 			width = dojo.style.getContentWidth(this.constrainingContainer);
 			height = dojo.style.getContentHeight(this.constrainingContainer);
