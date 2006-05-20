@@ -35,7 +35,7 @@ dojo.validate.us.isState = function(value, flags) {
   @return true or false
 */
 dojo.validate.us.isPhoneNumber = function(value) {
-	flags = {
+	var flags = {
 		format: [
 			"###-###-####",
 			"(###) ###-####",
@@ -58,7 +58,7 @@ dojo.validate.us.isPhoneNumber = function(value) {
 
 // Validates social security number
 dojo.validate.us.isSocialSecurityNumber = function(value) {
-	flags = {
+	var flags = {
 		format: [
 			"###-##-####",
 			"### ## ####",
@@ -71,7 +71,7 @@ dojo.validate.us.isSocialSecurityNumber = function(value) {
 
 // Validates U.S. zip-code
 dojo.validate.us.isZipCode = function(value) {
-	flags = {
+	var flags = {
 		format: [
 			"#####-####",
 			"##### ####",

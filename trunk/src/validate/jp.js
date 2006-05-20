@@ -8,7 +8,7 @@ dojo.require("dojo.validate.common");
   @return  true or false.
 */
 dojo.validate.isJapaneseCurrency = function(value) {
-	flags = {
+	var flags = {
 		symbol: "�",
 		cents: false
 	};
