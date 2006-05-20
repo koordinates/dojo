@@ -132,7 +132,7 @@ dojo.io.ShortBusTransport = new function(){
 		connected = true;
 	}
 
-	this.dispatchServerEvent function(eObj){
+	this.dispatchServerEvent = function(eObj){
 		// FIXME: implement basic /meta topic semantics here!
 	}
 
