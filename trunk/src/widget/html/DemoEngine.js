@@ -260,7 +260,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	expandDemoNavigation: function(e) {
 		show = dojo.lfx.html.fadeShow(this.navigationNode, 200);
 		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 200);
-		dojo.lfx.chain(show,hide).play();
+		dojo.lfx.chain(hide,show).play();
 
 		dojo.lang.forEach(this.menuChildren, function(child) {
 			child.onParentResized();
