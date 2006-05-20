@@ -44,7 +44,7 @@ dojo.widget.SvgButton = function(){
 		//textNode.appendChild(labelNode);
 		//this.domNode.appendChild(textNode);
 		return textString;
-		alert(textNode.getComputedTextLength());
+		//alert(textNode.getComputedTextLength());
 	}
 
 	this.fillInTemplate = function(x, y, textSize, label, shape){

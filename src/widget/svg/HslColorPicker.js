@@ -77,8 +77,8 @@ dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
 		// FIXME: handle document scrolling, offset
 		var xPosition = parseInt(evt.clientX) - parseInt(evt.target.getAttribute("y"));
 		var yPosition = parseInt(evt.clientY) - parseInt(evt.target.getAttribute("y"));
-		saturation = parseInt(parseInt(xPosition)*(101/106));
-		light = parseInt(parseInt(yPosition)*(101/106));
+		var saturation = parseInt(parseInt(xPosition)*(101/106));
+		var light = parseInt(parseInt(yPosition)*(101/106));
 		this.setSaturationLight(saturation, light);
 		this.setStoredColor(dojo.graphics.color.hsl2hex(this.hue, this.saturation, this.light));
 	},
@@ -118,7 +118,7 @@ dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
 			} else {
 				var temp2 = (light+saturation-(light*saturation))
 			}
-			temp1 = 2.0*light - temp2;
+			var temp1 = 2.0*light - temp2;
 			var rgbcolor = [];
 			rgbcolor[0] = Math.round(rgb(temp1,temp2,parseInt(hue)+120)*255);
 			rgbcolor[1] = Math.round(rgb(temp1,temp2,hue)*255);

@@ -69,7 +69,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	initialize: function(args, frag) {
 
 		if (this.eventNaming == "default") {
-			for (eventName in this.eventNames) {
+			for (var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}
@@ -478,7 +478,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		this.accelShadowNode.appendChild(document.createTextNode(this.accelKey));
 
 		if (this.eventNaming == "default") {
-			for (eventName in this.eventNames) {
+			for (var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}
@@ -1107,7 +1107,7 @@ dojo.lang.extend(dojo.widget.MenuBarItem2, {
 		this.labelShadowNode.appendChild(document.createTextNode(this.caption));
 
 		if (this.eventNaming == "default") {
-			for (eventName in this.eventNames) {
+			for (var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}

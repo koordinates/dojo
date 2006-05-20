@@ -394,7 +394,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	movePoint: function(){
 
 		// make sure FLastPoint is a legal point to drag to
-		p = this.screenToMainClient(this.lastPoint);
+		var p = this.screenToMainClient(this.lastPoint);
 
 		if (this.isHorizontal){
 

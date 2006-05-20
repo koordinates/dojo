@@ -151,7 +151,7 @@ dojo.widget.html.stabile.description = function(v, showAll){
 				}else{
 					d += ", ";
 				}
-				kd = key;
+				var kd = key;
 				// If the key is not a legal identifier, use its description.
 				// For strings this will quote the stirng.
 				if(!kd.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)){
