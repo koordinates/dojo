@@ -382,7 +382,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	size: function(node) {
 		if(!this.iframe) { return; }
 
-		coords = dojo.style.toCoordinateArray(node, true);
+		var coords = dojo.style.toCoordinateArray(node, true);
 
 		var s = this.iframe.style;
 		s.width = coords.w + "px";
