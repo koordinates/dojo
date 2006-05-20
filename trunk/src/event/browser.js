@@ -1,6 +1,7 @@
 dojo.provide("dojo.event.browser");
 dojo.require("dojo.event");
 
+// FIXME: any particular reason this is in the global scope?
 dojo_ie_clobber = new function(){
 	this.clobberNodes = [];
 
