@@ -445,17 +445,20 @@ dojo.require("dojo.lang.common");
 		}
 		var style = doc.createElement("style");
 		style.setAttribute("type", "text/css");
-		if(style.styleSheet){// IE
-			style.styleSheet.cssText = cssStr;
-		} else {// w3c
-			var cssText = doc.createTextNode(cssStr);
-			style.appendChild(cssText);
-		}
+		// IE is b0rken enough to require that we add the element to the doc
+		// before changing it's properties
 		var head = doc.getElementsByTagName("head")[0];
 		if(!head){ // must have a head tag 
 			dojo.debug("No head tag in document, aborting styles");
+			return;
 		}else{
 			head.appendChild(style);
+		}
+		if(style.styleSheet){// IE
+			style.styleSheet.cssText = cssStr;
+		}else{ // w3c
+			var cssText = doc.createTextNode(cssStr);
+			style.appendChild(cssText);
 		}
 		return style;
 	}
