@@ -136,6 +136,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 		if( gotoEnd ) {
 			step = 1;
 		}
+		// where is fps defined here?
 		var e = new dojo.animation.AnimationEvent(this, "stop", this.curve.getValue(step),
 			this._startTime, new Date().valueOf(), this._endTime, this.duration, this._percent, Math.round(fps));
 		if(typeof this.handler == "function") { this.handler(e); }
@@ -158,7 +159,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 		if( this._active ) {
 			var curr = new Date().valueOf();
 			var step = (curr - this._startTime) / (this._endTime - this._startTime);
-			fps = 1000 / (curr - this._lastFrame);
+			var fps = 1000 / (curr - this._lastFrame);
 			this._lastFrame = curr;
 
 			if( step >= 1 ) {
