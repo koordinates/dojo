@@ -213,13 +213,13 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		var demo = e.currentTarget.demoName;
 
 		dojo.style.setOpacity(this.demoContainerNode, 0);
-		hide = dojo.lfx.html.fadeHide(this.navigationNode, 200);
-		show = dojo.lfx.html.fadeShow(this.demoContainerNode,200);
-		dojo.lfx.chain(hide,show).play();
+		var hide = dojo.lfx.html.fadeHide(this.navigationNode, 200);
+		var show = dojo.lfx.html.fadeShow(this.demoContainerNode,200);
+		dojo.lfx.combine(hide,show).play();
 
 		this.demoTabContainer.destroyChildren();
 
-		demoIframe = document.createElement("iframe");
+		var demoIframe = document.createElement("iframe");
 		demoIframe.src=this.registry.definitions[demo].url;
 
 		dojo.html.removeChildren(this.aboutNode);
@@ -230,7 +230,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		this.aboutNode.appendChild(name);
 		this.aboutNode.appendChild(about);
 
-		liveDemo = dojo.widget.createWidget("ContentPane",{label: "Live Demo"});
+		var liveDemo = dojo.widget.createWidget("ContentPane",{label: "Live Demo"});
 		liveDemo.domNode.appendChild(demoIframe);
 
 		this.demoTabContainer.addChild(liveDemo);
@@ -240,7 +240,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 			url: this.registry.definitions[demo].url,
 			mimetype: "text/plain",
 			load: dojo.lang.hitch(this, function(type,data,e) {
-				source = document.createElement("textarea");
+				var source = document.createElement("textarea");
 				source.appendChild(document.createTextNode(data));
 				var sourcePane = dojo.widget.createWidget("ContentPane",{label: "Source"});
 				source.rows="20";
@@ -258,9 +258,9 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	expandDemoNavigation: function(e) {
-		show = dojo.lfx.html.fadeShow(this.navigationNode, 200);
-		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 200);
-		dojo.lfx.chain(hide,show).play();
+		var show = dojo.lfx.html.fadeShow(this.navigationNode, 200);
+		var hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 200);
+		dojo.lfx.combine(show,hide).play();
 
 		dojo.lang.forEach(this.menuChildren, function(child) {
 			child.onParentResized();

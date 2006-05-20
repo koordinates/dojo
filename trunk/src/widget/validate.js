@@ -233,12 +233,13 @@ dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 		} 
 	},
 
+	// FIXME: why are there to fillInTemplate methods defined here?
 	fillInTemplate: function() {
 		// Attach isMissing and isValid methods to the textbox.
 		// We may use them later in connection with a submit button widget.
 		// TODO: this is unorthodox; it seems better to do it another way -- Bill
-		this.textbox.isValid = function() { _this.isValid.call(_this); };
-		this.textbox.isMissing = function() { _this.isMissing.call(_this); };
+		this.textbox.isValid = function() { this.isValid.call(this); };
+		this.textbox.isMissing = function() { this.isMissing.call(this); };
 	},
 
 	fillInTemplate: function() {

@@ -498,6 +498,8 @@ dojo.widget.svg.Chart.Plotter=new function(){
 		var min=chart.properties.axes.x.range.min;
 		var max=chart.properties.axes.x.range.max;
 		var ofst=0-min;
+		// FIXME: what's the point of v here?
+		var v;
 		min+=ofst; max+=ofst; v+=ofst;
 		var xmin=chart.properties.padding.left;
 		var xmax=chart.properties.width-chart.properties.padding.right;
