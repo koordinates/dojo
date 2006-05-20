@@ -56,7 +56,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 	var setStyle = function(n, style){
 		n = dojo.byId(n);
 		if(!n || !n.style){ return; }
-		for(s in style){
+		for(var s in style){
 			if(s == "opacity"){
 				dojo.style.setOpacity(n, style[s]);
 			}else{
