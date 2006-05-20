@@ -8,7 +8,7 @@ dojo.require("dojo.validate.common");
   @return  true or false.
 */
 dojo.validate.isGermanCurrency = function(value) {
-	flags = {
+	var flags = {
 		symbol: "�",
 		placement: "after",
 		decimal: ",",
