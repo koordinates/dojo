@@ -6,6 +6,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.uri.*");
 dojo.require("dojo.lang.func");
+dojo.require("dojo.lang.extras");
 
 dojo.widget._cssFiles = {};
 dojo.widget._cssStrings = {};
@@ -494,7 +495,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 				for(var i = 0; i < matches.length; i++) {
 					var key = matches[i];
 					key = key.substring(2, key.length-1);
-					var kval = (key.substring(0, 5) == "this.") ? this[key.substring(5)] : hash[key];
+					var kval = (key.substring(0, 5) == "this.") ? dojo.lang.getObjPathValue(key.substring(5), this) : hash[key];
 					var value;
 					if((kval)||(dojo.lang.isString(kval))){
 						value = (dojo.lang.isFunction(kval)) ? kval.call(this, key, this.templateString) : kval;
