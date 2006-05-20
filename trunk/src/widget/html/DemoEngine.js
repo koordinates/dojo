@@ -121,7 +121,7 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 			dojo.style.setOpacity(this.demoNavigationNode, 0);
 		}
 
-		var showDemoNav = dojo.lfx.html.fadeShow(this.demoNavigationNode, 600);
+		var showDemoNav = dojo.lfx.html.fadeShow(this.demoNavigationNode, 250);
 		var moveMenuNav = dojo.lfx.html.slideTo(this.menuNavigationNode,[0,0], 250);
 
 		dojo.html.removeChildren(this.demoNavigationNode);
@@ -213,9 +213,9 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 		var demo = e.currentTarget.demoName;
 
 		dojo.style.setOpacity(this.demoContainerNode, 0);
-		hide = dojo.lfx.html.fadeHide(this.navigationNode, 500);
-		show = dojo.lfx.html.fadeShow(this.demoContainerNode,500);
-		dojo.lfx.combine(hide,show).play();
+		hide = dojo.lfx.html.fadeHide(this.navigationNode, 200);
+		show = dojo.lfx.html.fadeShow(this.demoContainerNode,200);
+		dojo.lfx.chain(hide,show).play();
 
 		this.demoTabContainer.destroyChildren();
 
@@ -258,9 +258,9 @@ dojo.lang.extend(dojo.widget.html.DemoEngine, {
 	},
 
 	expandDemoNavigation: function(e) {
-		show = dojo.lfx.html.fadeShow(this.navigationNode, 500);
-		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 500);
-		dojo.lfx.combine(show,hide).play();
+		show = dojo.lfx.html.fadeShow(this.navigationNode, 200);
+		hide = dojo.lfx.html.fadeHide(this.demoContainerNode, 200);
+		dojo.lfx.chain(show,hide).play();
 
 		dojo.lang.forEach(this.menuChildren, function(child) {
 			child.onParentResized();
