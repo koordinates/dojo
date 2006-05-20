@@ -140,7 +140,7 @@ dojo.require("dojo.lang.common");
 	
 	ds._sumPixelValues = function(node, selectors, autoIsZero){
 		var total = 0;
-		for(x=0; x<selectors.length; x++){
+		for(var x=0; x<selectors.length; x++){
 			total += ds.getPixelValue(node, selectors[x], autoIsZero);
 		}
 		return total;

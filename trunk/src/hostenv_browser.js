@@ -42,7 +42,7 @@ if(typeof window == 'undefined'){
 			if(!src) { continue; }
 			var m = src.match(rePkg);
 			if(m) {
-				root = src.substring(0, m.index);
+				var root = src.substring(0, m.index);
 				if(src.indexOf("bootstrap1") > -1) { root += "../"; }
 				if(!this["djConfig"]) { djConfig = {}; }
 				if(djConfig["baseScriptUri"] == "") { djConfig["baseScriptUri"] = root; }

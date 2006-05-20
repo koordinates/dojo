@@ -231,8 +231,8 @@ dojo.hostenv.unpackXdDependency = function(dep){
 		case "requireAll":
 			//the arguments are an array, each element a call to require.
 			//Get rid of first item, which is "requireAll".
-			deps.shift();
-			newDeps = deps;
+			dep.shift();
+			newDeps = dep;
 			dojo.hostenv.flattenRequireArray(newDeps);
 			break;
 		case "kwCompoundRequire":

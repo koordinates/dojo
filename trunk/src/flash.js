@@ -522,7 +522,7 @@ dojo.flash.Info.prototype = {
 				this.versionRevision = versionArray[2];
 				
 				// 7.0r24 == 7.24
-				versionString = this.versionMajor + "." + this.versionRevision;
+				var versionString = this.versionMajor + "." + this.versionRevision;
 				this.version = parseFloat(versionString);
 				
 				this.capable = true;
@@ -549,9 +549,9 @@ dojo.flash.Info.prototype = {
 				var versionMajor = tempArrayMajor[0];
 				var versionMinor = tempArrayMajor[1];
 				if(descArray[3] != ""){
-					tempArrayMinor = descArray[3].split("r");
+					var tempArrayMinor = descArray[3].split("r");
 				}else{
-					tempArrayMinor = descArray[4].split("r");
+					var tempArrayMinor = descArray[4].split("r");
 				}
 				var versionRevision = tempArrayMinor[1] > 0 ? tempArrayMinor[1] : 0;
 				var version = versionMajor + "." + versionMinor + "." 
