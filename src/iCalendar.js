@@ -104,7 +104,7 @@ dojo.lang.extend(dojo.iCalendar.Component, {
 	
 			for (var y=0; y<this.properties.length; y++) {	
 				var prop = this.properties[y];
-				propName = prop.name.toLowerCase();
+				var propName = prop.name.toLowerCase();
 				if (dojo.lang.isArray(evtProperty)) {
 
 					var alreadySet = false;
@@ -225,9 +225,9 @@ dojo.lang.extend(dojo.iCalendar.VCalendar, {
 			if (prop.rrule) {
 				this.recurring.push(prop);
 			} else {
-				startDate = prop.getDate();
-				month = startDate.getMonth() + 1;
-				dateString= month + "-" + startDate.getDate() + "-" + startDate.getFullYear();
+				var startDate = prop.getDate();
+				var month = startDate.getMonth() + 1;
+				var dateString= month + "-" + startDate.getDate() + "-" + startDate.getFullYear();
 				if (!dojo.lang.isArray(this[dateString])) {
 					this.nonRecurringEvents[dateString] = [];
 				}
@@ -242,8 +242,8 @@ dojo.lang.extend(dojo.iCalendar.VCalendar, {
 		for(var x=0; x<this.recurring.length; x++) {
 			var dates = this.recurring[x].getDates(until);
 			for (var y=0; y<dates.length;y++) {
-				month = dates[y].getMonth() + 1;
-				dateStr = month + "-" + dates[y].getDate() + "-" + dates[y].getFullYear();
+				var month = dates[y].getMonth() + 1;
+				var dateStr = month + "-" + dates[y].getDate() + "-" + dates[y].getFullYear();
 				if (!dojo.lang.isArray(calculatedEvents[dateStr])) {
 					calculatedEvents[dateStr] = [];
 				}
@@ -263,7 +263,7 @@ dojo.lang.extend(dojo.iCalendar.VCalendar, {
 		var events = [];
 		var recur = [];
 		var nonRecur = [];
-		month = date.getMonth() + 1;
+		var month = date.getMonth() + 1;
 		var dateStr= month + "-" + date.getDate() + "-" + date.getFullYear();
 		if (dojo.lang.isArray(this.nonRecurringEvents[dateStr])) {
 			nonRecur= this.nonRecurringEvents[dateStr];
@@ -379,9 +379,9 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 				var freqInt = order[freq];
 
 				if (rrule.until) {
-					tmpUntil = dojo.date.fromIso8601(rrule.until);
+					var tmpUntil = dojo.date.fromIso8601(rrule.until);
 				} else {
-					tmpUntil = until
+					var tmpUntil = until
 				}
 
 				if (tmpUntil > until) {
@@ -398,7 +398,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 
 					switch(freq) {
 						case "yearly":
-							nextDate = new Date(dtstart);
+							var nextDate = new Date(dtstart);
 							set.push(nextDate);
 							while(nextDate < tmpUntil) {
 								nextDate.setYear(nextDate.getFullYear()+interval);
@@ -550,7 +550,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 								for (var z=0; z<rrule["byday"].length; z++) {
 									var regexResult = rrule["byday"][z].match(regex);
 									var occurance = regexResult[2];
-									day = regexResult[3].toLowerCase();
+									var day = regexResult[3].toLowerCase();
 
 
 									if (z==0) {
@@ -559,7 +559,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 												//find the nth to last occurance of date 
 												var numDaysFound = 0;
 												var lastDayOfMonth = dojo.date.getDaysInMonth(set[zz]);
-												daysToSubtract = 1;
+												var daysToSubtract = 1;
 												set[zz].setDate(lastDayOfMonth); 
 												if (weekdays[set[zz].getDay()] == day) {
 													numDaysFound++;
@@ -577,7 +577,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 												if (occurance) {
 													var numDaysFound=0;
 													set[zz].setDate(1);
-													daysToAdd=1;
+													var daysToAdd=1;
 
 													if(weekdays[set[zz].getDay()] == day) {
 														numDaysFound++;
@@ -597,7 +597,7 @@ dojo.lang.extend(dojo.iCalendar.VEvent, {
 													var subset = [];
 
 													lastDayOfMonth = new Date(set[zz]);
-													daysInMonth = dojo.date.getDaysInMonth(set[zz]);
+													var daysInMonth = dojo.date.getDaysInMonth(set[zz]);
 													lastDayOfMonth.setDate(daysInMonth);
 
 													set[zz].setDate(1);
