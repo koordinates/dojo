@@ -280,16 +280,17 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 		var init = (function(){
 			var innerNode = node;
 			return function(){
-				top = node.offsetTop;
-				left = node.offsetLeft;
-				pos = dojo.style.getComputedStyle(node, 'position');
+				top = innerNode.offsetTop;
+				left = innerNode.offsetLeft;
+				pos = dojo.style.getComputedStyle(innerNode, 'position');
 
 				if (pos == 'relative' || pos == 'static') {
-					top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
-					left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+					top = parseInt(dojo.style.getComputedStyle(innerNode, 'top')) || 0;
+					left = parseInt(dojo.style.getComputedStyle(innerNode, 'left')) || 0;
 				}
 			}
 		})();
+		init();
 		
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "top",
@@ -309,6 +310,52 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 		anims.push(anim);
 	});
 	
+	if(nodes.length > 1){ return dojo.lfx.combine(anims); }
+	else{ return anims[0]; }
+}
+
+dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
+	nodes = dojo.lfx.html._byId(nodes);
+	var anims = [];
+
+	dojo.lang.forEach(nodes, function(node){
+		var top = null;
+		var left = null;
+		var pos = null;
+		
+		var init = (function(){
+			var innerNode = node;
+			return function(){
+				top = node.offsetTop;
+				left = node.offsetLeft;
+				pos = dojo.style.getComputedStyle(node, 'position');
+
+				if (pos == 'relative' || pos == 'static') {
+					top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
+					left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+				}
+			}
+		})();
+		init();
+		
+		var anim = dojo.lfx.propertyAnimation(node,
+			[{	property: "top",
+				start: top,
+				end: top+coords[0] },
+			{	property: "left",
+				start: left,
+				end: left+coords[1] }], duration, easing);
+
+		dojo.event.connect(anim, "beforeBegin", init);
+		if(callback){
+			dojo.event.connect(anim, "onEnd", function(){
+				callback(node, anim);
+			});
+		}
+
+		anims.push(anim);
+	});
+
 	if(nodes.length > 1){ return dojo.lfx.combine(anims); }
 	else{ return anims[0]; }
 }
