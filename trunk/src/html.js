@@ -409,12 +409,14 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 		}
 		var xpathResult = document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
 		var result = xpathResult.iterateNext();
-		while(result) {
-			candidateNodes.push(result);
-			result = xpathResult.iterateNext();
+		while(result){
+			try{
+				candidateNodes.push(result);
+				result = xpathResult.iterateNext();
+			}catch(e){ break; }
 		}
 		return candidateNodes;
-	} else {
+	}else{
 		if(!nodeType){
 			nodeType = "*";
 		}
@@ -422,30 +424,31 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 
 		var node, i = 0;
 		outer:
-		while (node = candidateNodes[i++]) {
+		while(node = candidateNodes[i++]){
 			var nodeClasses = dojo.html.getClasses(node);
-			if(nodeClasses.length == 0) { continue outer; }
+			if(nodeClasses.length == 0){ continue outer; }
 			var matches = 0;
 	
-			for(var j = 0; j < nodeClasses.length; j++) {
-				if( reClass.test(nodeClasses[j]) ) {
-					if( classMatchType == dojo.html.classMatchType.ContainsAny ) {
+			for(var j = 0; j < nodeClasses.length; j++){
+				if(reClass.test(nodeClasses[j])){
+					if(classMatchType == dojo.html.classMatchType.ContainsAny){
 						nodes.push(node);
 						continue outer;
-					} else {
+					}else{
 						matches++;
 					}
-				} else {
-					if( classMatchType == dojo.html.classMatchType.IsOnly ) {
+				}else{
+					if(classMatchType == dojo.html.classMatchType.IsOnly){
 						continue outer;
 					}
 				}
 			}
 	
-			if( matches == classes.length ) {
-				if( classMatchType == dojo.html.classMatchType.IsOnly && matches == nodeClasses.length ) {
+			if(matches == classes.length){
+				if(	(classMatchType == dojo.html.classMatchType.IsOnly)&&
+					(matches == nodeClasses.length)){
 					nodes.push(node);
-				} else if( classMatchType == dojo.html.classMatchType.ContainsAll ) {
+				}else if(classMatchType == dojo.html.classMatchType.ContainsAll){
 					nodes.push(node);
 				}
 			}
