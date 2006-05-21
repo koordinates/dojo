@@ -2,6 +2,17 @@ dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.SHA1");
 dojo.require("dojo.experimental");
 
+/*
+ *	A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+ *	in FIPS PUB 180-1
+ *
+ * 	Version 2.1a Copyright Paul Johnston 2000 - 2002.
+ * 	Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * 	Distributed under the BSD License
+ * 	See http://pajhome.org.uk/crypt/md5 for details.
+ *
+ *	Dojo port by Tom Trenka
+ */
 dojo.experimental("dojo.crypto.SHA1");
 
 dojo.crypto.SHA1 = new function(){
