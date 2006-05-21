@@ -320,10 +320,9 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	endNode = dojo.byId(endNode);
 	var startCoords = dojo.style.toCoordinateArray(start);
 	var outline = document.createElement("div");
-	dojo.style.setOpacity(outline, 0.5);
 	with(outline.style){
 		position = "absolute";
-		border = "2px solid #9f9fa0";
+		// border = "2px solid #9f9fa0";
 		var srgb;
 		try{
 			srgb = dojo.style.getBackgroundColor(endNode);
@@ -348,23 +347,21 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		visibility = "visible";
 	}
 
-	var anim = new dojo.lfx.Animation({
-		beforeBegin: function(){
-			dojo.style.setDisplay(outline, "block");
-		},
-		onAnimate: function(value){
-			with(outline.style){
-				left = value[0] + "px";
-				top = value[1] + "px";
-				width = value[2] + "px";
-				height = value[3] + "px";
-			}
-		},
-		onEnd: function(){
-			dojo.style.setDisplay(endNode, "block");
-			outline.parentNode.removeChild(outline);
-		}
-	}, duration, new dojo.lfx.Line(startCoords, endCoords), easing);
+	var anim = new dojo.lfx.propertyAnimation(outline, [
+		{ property: "height", start: startCoords[3], end: endCoords[3] },
+		{ property: "width", start: startCoords[2], end: endCoords[2] },
+		{ property: "top", start: startCoords[1], end: endCoords[1] },
+		{ property: "left", start: startCoords[0], end: endCoords[0] },
+		{ property: "opacity", start: 0.3, end: 1.0 }
+	], duration, easing);
+	
+	anim.beforeBegin = function(){
+		dojo.style.setDisplay(outline, "block");
+	};
+	anim.onEnd = function(){
+		dojo.style.setDisplay(endNode, "block");
+		outline.parentNode.removeChild(outline);
+	};
 	if(callback){
 		dojo.event.connect(anim, "onEnd", function(){
 			callback(endNode, anim);
@@ -379,10 +376,10 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 
 	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
-	dojo.style.setOpacity(outline, 0.5);
+	dojo.style.setOpacity(outline, 0.3);
 	with(outline.style){
 		position = "absolute";
-		border = "2px solid #9f9fa0";
+		// border = "2px solid #9f9fa0";
 		var srgb;
 		try{
 			srgb = dojo.style.getBackgroundColor(startNode);
@@ -397,23 +394,21 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	}
 	document.body.appendChild(outline);
 
-	var anim = new dojo.lfx.Animation({
-		beforeBegin: function(){
-			dojo.style.hide(startNode);
-			dojo.style.show(outline);
-		},
-		onAnimate: function(value){
-			with(outline.style){
-				left = value[0] + "px";
-				top = value[1] + "px";
-				width = value[2] + "px";
-				height = value[3] + "px";
-			}
-		},
-		onEnd: function(){
-			outline.parentNode.removeChild(outline);
-		}
-	}, duration, new dojo.lfx.Line(startCoords, endCoords), easing);
+	var anim = new dojo.lfx.propertyAnimation(outline, [
+		{ property: "height", start: startCoords[3], end: endCoords[3] },
+		{ property: "width", start: startCoords[2], end: endCoords[2] },
+		{ property: "top", start: startCoords[1], end: endCoords[1] },
+		{ property: "left", start: startCoords[0], end: endCoords[0] },
+		{ property: "opacity", start: 1.0, end: 0.3 }
+	], duration, easing);
+	
+	anim.beforeBegin = function(){
+		dojo.style.hide(startNode);
+		dojo.style.show(outline);
+	};
+	anim.onEnd = function(){
+		outline.parentNode.removeChild(outline);
+	};
 	if(callback){
 		dojo.event.connect(anim, "onEnd", function(){
 			callback(startNode, anim);
