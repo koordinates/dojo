@@ -317,16 +317,27 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 }
 
 dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
+	endNode = dojo.byId(endNode);
 	var startCoords = dojo.style.toCoordinateArray(start);
 	var outline = document.createElement("div");
+	dojo.style.setOpacity(outline, 0.5);
 	with(outline.style){
 		position = "absolute";
-		border = "1px solid black";
+		border = "2px solid #9f9fa0";
+		var srgb;
+		try{
+			srgb = dojo.style.getBackgroundColor(endNode);
+			if(srgb.length > 3){ srgb.pop(); }
+			srgb = "rgb("+srgb+")";
+		}catch(e){
+			// Safari is a POS
+			srgb = "#9f9fa0";
+		}
+		backgroundColor = srgb;
 		display = "none";
 	}
 	document.body.appendChild(outline);
 
-	endNode = dojo.byId(endNode);
 	with(endNode.style){
 		visibility = "hidden";
 		display = "block";
@@ -368,9 +379,20 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 
 	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
+	dojo.style.setOpacity(outline, 0.5);
 	with(outline.style){
 		position = "absolute";
-		border = "1px solid black";
+		border = "2px solid #9f9fa0";
+		var srgb;
+		try{
+			srgb = dojo.style.getBackgroundColor(startNode);
+			if(srgb.length > 3){ srgb.pop(); }
+			srgb = "rgb("+srgb+")";
+		}catch(e){
+			// Safari is a POS
+			srgb = "#9f9fa0";
+		}
+		backgroundColor = srgb;
 		display = "none";
 	}
 	document.body.appendChild(outline);
