@@ -85,13 +85,14 @@ function testImplode(start) {
 }
 
 function wowi(node) {
-	var h = node.offsetHeight;
-	dojo.lfx.wipeOut(node, null, null, function(n) {
+	var wipeOut = dojo.lfx.wipeOut(node, null, null, function(n) {
 		n.innerHTML = "I have been replaced "
 			+ "with something completely different "
 			+ "in the middle of the wipe effects.";
-		dojo.lfx.wipeIn(n).play();
-	}).play();
+	});
+	var wipeIn = dojo.lfx.wipeIn(node);
+
+	dojo.lfx.chain(wipeOut, wipeIn).play();
 }
 </script>
 </head>
