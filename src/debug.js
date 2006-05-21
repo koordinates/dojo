@@ -13,7 +13,7 @@ dojo.debug = function(){
 	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
 	var s = [(isJUM ? "": "DEBUG: ")];
 	for(var i=0;i<args.length;++i){
-		if(!false && args[i] instanceof Error){
+		if(!false && args[i] && args[i] instanceof Error){
 			var msg = "[" + args[i].name + ": " + dojo.errorToString(args[i]) +
 				(args[i].fileName ? ", file: " + args[i].fileName : "") +
 				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";

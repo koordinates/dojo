@@ -94,10 +94,12 @@ dojo.lang.inArray = function(arr /*Array*/, val /*Object*/){
  */
 
 dojo.lang.isObject = function(wh) {
-	return typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh);
+	if(!wh){ return false; }
+	return (typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh));
 }
 
 dojo.lang.isArray = function(wh) {
+	if(!wh){ return false; }
 	return (wh instanceof Array || typeof wh == "array");
 }
 
@@ -110,15 +112,18 @@ dojo.lang.isArrayLike = function(wh) {
 	return false;
 }
 
-dojo.lang.isFunction = function(wh) {
+dojo.lang.isFunction = function(wh){
+	if(!wh){ return false; }
 	return (wh instanceof Function || typeof wh == "function");
 }
 
-dojo.lang.isString = function(wh) {
+dojo.lang.isString = function(wh){
+	if(!wh){ return false; }
 	return (wh instanceof String || typeof wh == "string");
 }
 
-dojo.lang.isAlien = function(wh) {
+dojo.lang.isAlien = function(wh){
+	if(!wh){ return false; }
 	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));
 }
 
