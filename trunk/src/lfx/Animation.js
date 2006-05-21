@@ -157,6 +157,7 @@ dojo.lang.extend(dojo.lfx.Animation, {
 			return;
 		}
 		
+		this.fire("handler", ["beforeBegin"]);
 		this.fire("beforeBegin");
 
 		if(delay > 0){

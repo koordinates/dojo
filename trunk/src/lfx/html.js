@@ -215,17 +215,16 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 		var initialize = function(){
 			init(node, overflow);
 		}
-		initialize();
 		
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
 				start: 0,
-				end: node.scrollHeight }], duration, easing);
+				end: dojo.style.getContentBoxHeight(node) }], duration, easing);
 		
 		dojo.event.connect(anim, "beforeBegin", initialize);
 		dojo.event.connect(anim, "onEnd", function(){
 			node.style.overflow = overflow;
-			node.style.height = "auto";
+			node.style.height = dojo.style.getContentBoxHeight(node) + "px";
 			if(callback){ callback(node, anim); }
 		});
 		anims.push(anim);
@@ -250,11 +249,10 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 		var initialize = function(){
 			init(node, overflow);
 		}
-		initialize();
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
-				start: node.offsetHeight,
+				start: dojo.style.getContentBoxHeight(node),
 				end: 0 } ], duration, easing);
 		
 		dojo.event.connect(anim, "beforeBegin", initialize);
@@ -292,7 +290,6 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 				}
 			}
 		})();
-		init();
 		
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "top",
