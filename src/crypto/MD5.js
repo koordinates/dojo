@@ -4,6 +4,12 @@ dojo.provide("dojo.crypto.MD5");
 /*	Return to a port of Paul Johnstone's MD5 implementation
  *	http://pajhome.org.uk/crypt/md5/index.html
  *
+ *	Copyright (C) Paul Johnston 1999 - 2002.
+ *	Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * 	Distributed under the BSD License
+ *
+ *	Dojo port by Tom Trenka
+ *
  *	2005-12-7
  *	All conversions are internalized (no dependencies)
  *	implemented getHMAC for message digest auth.
