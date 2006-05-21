@@ -468,8 +468,6 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 		var color = new dojo.graphics.color.Color(dojo.style.getBackgroundColor(node));
 		var rgb = new dojo.graphics.color.Color(endColor);
 
-		var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
-		var wasTransparent = (bg == "transparent" || bg == "rgba(0, 0, 0, 0)");
 		var bgImage = dojo.style.getStyle(node, "background-image");
 		
 		var anim = dojo.lfx.propertyAnimation(node, [{
@@ -485,12 +483,6 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 			node.style.backgroundColor = "rgb(" + color.toRgb().join(",") + ")";
 		});
 		dojo.event.connect(anim, "onEnd", function(){
-			if(bgImage){
-				node.style.backgroundImage = bgImage;
-			}
-			if(wasTransparent){
-				node.style.backgroundColor = "transparent";
-			}
 			if(callback){
 				callback(node, anim);
 			}
