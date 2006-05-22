@@ -68,10 +68,10 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 			ts = tmplts[wt];
 		}
 	}
-	if(!obj.templateString){
+	if((!obj.templateString)&&(!avoidCache)){
 		obj.templateString = templateString || ts["string"];
 	}
-	if(!obj.templateNode){
+	if((!obj.templateNode)&&(!avoidCache)){
 		obj.templateNode = ts["node"];
 	}
 	if((!obj.templateNode)&&(!obj.templateString)&&(tpath)){
@@ -513,7 +513,9 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 				// node = this.createNodesFromText(this.templateString, true);
 				// this.templateNode = node[0].cloneNode(true); // we're optimistic here
 				this.templateNode = this.createNodesFromText(this.templateString, true)[0];
-				ts.node = this.templateNode;
+				if(!avoidCache){
+					ts.node = this.templateNode;
+				}
 			}
 		}
 		if((!this.templateNode)&&(!matches)){ 
