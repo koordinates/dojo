@@ -361,6 +361,7 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 }
 
 dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
+	start = dojo.byId(start);
 	endNode = dojo.byId(endNode);
 	var startCoords = dojo.style.toCoordinateArray(start);
 	var outline = document.createElement("div");
@@ -415,10 +416,11 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 }
 
 dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
+	startNode = dojo.byId(startNode);
+	end = dojo.byId(end);
 	var startCoords = dojo.style.toCoordinateArray(startNode);
 	var endCoords = dojo.style.toCoordinateArray(end);
 
-	startNode = dojo.byId(startNode);
 	var outline = document.createElement("div");
 	dojo.style.setOpacity(outline, 0.3);
 	with(outline.style){
