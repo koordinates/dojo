@@ -153,7 +153,11 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 			var pkg = this.createXdPackage(contents);
 			dj_eval(pkg);
 		}else{
+			if(cb){ contents = '('+contents+')'; }
 			var value = dj_eval(contents);
+			if(cb){
+				cb(value);
+			}
 		}
 	}
 
