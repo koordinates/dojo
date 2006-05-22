@@ -33,11 +33,12 @@ dojo.widget.Chart.PlotTypes = {
 	Bubble:"bubble"
 };
 
-/*  Every chart has a set of data series; this is the series.
-	Note that each member of value is an object and in the
-	minimum has 2 properties: .x and .value.
+/*
+ *	Every chart has a set of data series; this is the series.  Note that each
+ *	member of value is an object and in the minimum has 2 properties: .x and
+ *	.value.
  */
-dojo.widget.Chart.DataSeries=function(key, label, plotType, color){
+dojo.widget.Chart.DataSeries = function(key, label, plotType, color){
 	this.id="DataSeries"+dojo.widget.Chart.DataSeries.count++;
 	this.key=key;
 	this.label=label||this.id;
@@ -45,6 +46,7 @@ dojo.widget.Chart.DataSeries=function(key, label, plotType, color){
 	this.color=color;
 	this.values=[];
 };
+
 dojo.widget.Chart.DataSeries.prototype={
 	add:function(v){
 		if(v.x==null||v.value==null){
@@ -101,9 +103,11 @@ dojo.widget.Chart.DataSeries.prototype={
 		}
 		return (s/c)-Math.pow(t/c,2);
 	},
+
 	getStandardDeviation:function(len){
 		return Math.sqrt(this.getVariance(len));
 	},
+
 	getMax:function(len){
 		var range=this.createRange(len);
 		if (range.index < 0) return 0;
@@ -116,21 +120,25 @@ dojo.widget.Chart.DataSeries.prototype={
 		}
 		return t;
 	},
+
 	getMin:function(len){
 		var range=this.createRange(len);
-		if (range.index < 0) return 0;
+		if(range.index < 0){ return 0; }
 		var t=0;
-		for (var i=range.index; i>=range.start; i--){
-			var n=parseFloat(this.values[i].value);
-			if (!isNaN(n)){
+		for(var i=range.index; i>=range.start; i--){
+			var n = parseFloat(this.values[i].value);
+			if(!isNaN(n)){
 				t=Math.min(n,t);
 			}
 		}
 		return t;
 	},
+
 	getMedian:function(len){
-		var range=this.createRange(len);
-		if (range.index<0) return 0;
+		var range = this.createRange(len);
+
+		if(range.index<0){ return 0; }
+
 		var a=[];
 		for (var i=range.index; i>=range.start; i--){
 			var n=parseFloat(this.values[i].value);
@@ -139,35 +147,31 @@ dojo.widget.Chart.DataSeries.prototype={
 				for(var j=0; j<a.length&&!b; j++){
 					if (n==a[j]) b=true; 
 				}
-				if(!b) a.push(n);
+				if(!b){ a.push(n); }
 			}
 		}
 		a.sort();
-		if(a.length>0) return a[Math.ceil(a.length/2)];
+		if(a.length>0){ return a[Math.ceil(a.length/2)]; }
 		return 0;
 	},
+
 	getMode:function(len){
 		var range=this.createRange(len);
-		if (range.index<0) return 0;
+		if(range.index<0){ return 0; }
 		var o={}, ret=0, m=0;
-		for (var i=range.index; i>=range.start; i--){
+		for(var i=range.index; i>=range.start; i--){
 			var n=parseFloat(this.values[i].value);
-			if (!isNaN(n)){
+			if(!isNaN(n)){
 				if (!o[this.values[i].value]) o[this.values[i].value] = 1;
 				else o[this.values[i].value]++;
 			}
 		}
-		for (var p in o){
-			if(m<o[p]){
-				m=o[p]; ret=p;
-			}
+		for(var p in o){
+			if(m<o[p]){ m=o[p]; ret=p; }
 		}
 		return parseFloat(ret);
 	}
 };
 
-if(dojo.render.svg.support.builtin){
-	dojo.require("dojo.widget.svg.Chart");
-}else if(dojo.render.html.ie){
-	dojo.require("dojo.widget.vml.Chart");
-}
+dojo.requireIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
+dojo.requireIf(dojo.render.html.ie, "dojo.widget.vml.Chart");
