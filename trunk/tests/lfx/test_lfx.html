@@ -67,11 +67,11 @@ dojo.require("dojo.lfx.*");
 
 var fadeElem, flash, unflash, wiper;
 dojo.addOnLoad(function() {
-	dojo.lfx.html.highlight("flash", [230, 230, 180], 1500).play(1500);
+	dojo.lfx.html.highlight("flash", [230, 230, 180], 500).play(1500);
 
-	dojo.lfx.html.unhighlight("unflash", [255, 200, 180], 1500).play(1500);
+	dojo.lfx.html.unhighlight("unflash", [255, 200, 180], 500).play(1500);
 
-	dojo.lfx.html.wipeIn("wiper", 1000).play();
+	dojo.lfx.html.wipeIn("wiper", 750).play();
 });
 
 function testExplode(start) {
@@ -97,26 +97,26 @@ function wowi(node) {
 </script>
 </head>
 <body>
-	<a href="javascript:void(dojo.lfx.html.fadeOut('fadeElm', 500).play())">Fade out</a>
+	<a href="javascript:void(dojo.lfx.html.fadeOut('fadeElm', 300).play())">Fade out</a>
 	|
-	<a href="javascript:void(dojo.lfx.html.fadeIn('fadeElm', 500).play())">Fade in</a>
+	<a href="javascript:void(dojo.lfx.html.fadeIn('fadeElm', 300).play())">Fade in</a>
 	|
 	<a href="javascript:void(dojo.html.setOpacity(document.getElementById('fadeElm'), 0.5))">Set opacity = 50%</a>
 
 	<div id="fadeElm">Element to fade</div>
 
-	<a href="javascript:void(dojo.lfx.html.slideTo(document.getElementById('slider'), [200, 200], 500).play())">Slide to: 200, 200</a>
+	<a href="javascript:void(dojo.lfx.html.slideTo(document.getElementById('slider'), [200, 200], 300).play())">Slide to: 200, 200</a>
 	|
-	<a href="javascript:void(dojo.lfx.html.slideBy(document.getElementById('slider'), [50, 50], 500).play())">Slide by: 50, 50</a>
+	<a href="javascript:void(dojo.lfx.html.slideBy(document.getElementById('slider'), [50, 50], 300).play())">Slide by: 50, 50</a>
 	|
-	<a href="javascript:void(dojo.lfx.html.slideTo(document.getElementById('slider'), [300, 500], 500).play())">Reset</a>
+	<a href="javascript:void(dojo.lfx.html.slideTo(document.getElementById('slider'), [300, 500], 300).play())">Reset</a>
 	<div id="slider">I slide</div>
 
 	<div id="flash">I fade to my BG!</div>
 	<div id="unflash">I fade from my BG!</div>
 
 	<div id="wiper">
-		<a href="javascript:void(dojo.lfx.html.wipeOut(document.getElementById('wiper'), 1000).play())">Wipe out</a> wipe wipe. It is so fun to...
+		<a href="javascript:void(dojo.lfx.html.wipeOut(document.getElementById('wiper'), 400).play())">Wipe out</a> wipe wipe. It is so fun to...
 		Wipe wipe wipe. It is so fun to...
 		Wipe wipe wipe. It is so fun to...
 		Wipe wipe wipe. It is so fun to...
