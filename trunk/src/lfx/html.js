@@ -212,6 +212,7 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 
 	dojo.lang.forEach(nodes, function(node){
 		var overflow = dojo.style.getStyle(node, "overflow");
+		dojo.style.show(node);
 		var initialize = function(){
 			init(node, overflow);
 		}
@@ -219,7 +220,7 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
 				start: 0,
-				end: dojo.style.getContentBoxHeight(node) }], duration, easing);
+				end: node.scrollHeight }], duration, easing);
 		
 		dojo.event.connect(anim, "beforeBegin", initialize);
 		dojo.event.connect(anim, "onEnd", function(){
