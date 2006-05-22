@@ -23,7 +23,7 @@ function test_validate_isText(){
 	jum.assertTrue("test12", dojo.validate.isText('123456', {maxlength: 6} ));
 }
 
-function test_validate_isIpAddress(){
+function test_validate_web_isIpAddress(){
 	jum.assertTrue("test1", dojo.validate.isIpAddress('24.17.155.40'));
 	jum.assertFalse("test2", dojo.validate.isIpAddress('024.17.155.040'));
 	jum.assertTrue("test3", dojo.validate.isIpAddress('255.255.255.255'));
@@ -74,7 +74,7 @@ function test_validate_isIpAddress(){
 	jum.assertFalse("test36", dojo.validate.isIpAddress('0:0:0:0:0:FFFF:129.144.52.38', {allowHybrid: false}));
 }
 
-function test_validate_isUrl(){
+function test_validate_web_isUrl(){
 	jum.assertTrue("test1", dojo.validate.isUrl('www.yahoo.com'));
 	jum.assertTrue("test2", dojo.validate.isUrl('http://www.yahoo.com'));
 	jum.assertTrue("test3", dojo.validate.isUrl('https://www.yahoo.com'));
@@ -100,7 +100,7 @@ function test_validate_isUrl(){
 	jum.assertTrue("test22", dojo.validate.isUrl('http://cocoon.apache.org/2.1/'));
 }
 
-function test_validate_isEmailAddress(){
+function test_validate_web_isEmailAddress(){
 	jum.assertTrue("test1", dojo.validate.isEmailAddress('x@yahoo.com'));
 	jum.assertTrue("test2", dojo.validate.isEmailAddress('x.y.z.w@yahoo.com'));
 	jum.assertFalse("test3", dojo.validate.isEmailAddress('x..y.z.w@yahoo.com'));
@@ -129,7 +129,7 @@ function test_validate_isEmailAddress(){
 	jum.assertFalse("test20", dojo.validate.isEmailAddress("<mailto:fred&barney@localhost>", {allowLocal: true} ));
 }
 
-function test_validate_isEmailAddressList(){
+function test_validate_web_isEmailAddressList(){
 	jum.assertTrue("test1", dojo.validate.isEmailAddressList(
 		"x@yahoo.com \n x.y.z.w@yahoo.com ; o'mally@yahoo.com , fred&barney@stonehenge.com \n" )
 	);
@@ -154,7 +154,7 @@ function test_validate_isEmailAddressList(){
 	);
 }
 
-function test_validate_getEmailAddressList(){
+function test_validate_web_getEmailAddressList(){
 	var list = "x@yahoo.com \n x.y.z.w@yahoo.com ; o'mally@yahoo.com , fred&barney@stonehenge.com";
 	jum.assertEquals("test1", 4, dojo.validate.getEmailAddressList(list).length);
 
@@ -282,7 +282,7 @@ function test_validate_isCurrency(){
 	jum.assertTrue("test10", dojo.validate.isCurrency('S/. 123,456,789.00', { symbol:"S/."} ));
 }
 
-function test_validate_isUsCurrency(){
+function test_validate_us_isCurrency(){
 	jum.assertTrue("test1", dojo.validate.us.isCurrency('$1,000'));
 	jum.assertTrue("test2", dojo.validate.us.isCurrency('$1,000.25'));
 	jum.assertTrue("test3", dojo.validate.us.isCurrency('+$1,000,000'));
@@ -299,26 +299,26 @@ function test_validate_isUsCurrency(){
 	jum.assertFalse("test14", dojo.validate.us.isCurrency('-$1,000.25', {signed: false}));
 }
 
-function test_validate_isGermanCurrency(){
-	jum.assertTrue("test1", dojo.validate.isGermanCurrency('1.000 �'));
-	jum.assertTrue("test2", dojo.validate.isGermanCurrency('1.000,25 �'));
-	jum.assertTrue("test3", dojo.validate.isGermanCurrency('+1.000.000 �'));
-	jum.assertTrue("test4", dojo.validate.isGermanCurrency('-10.000.000 �'));
-	jum.assertTrue("test5", dojo.validate.isGermanCurrency('100.000.000 �'));
-	jum.assertFalse("test6", dojo.validate.isGermanCurrency('1000,25 �'));
-	jum.assertFalse("test8", dojo.validate.isGermanCurrency('1.000,25'));
+function test_validate_de_isCurrency(){
+	jum.assertTrue("test1", dojo.validate.de.isCurrency('1.000 �'));
+	jum.assertTrue("test2", dojo.validate.de.isCurrency('1.000,25 �'));
+	jum.assertTrue("test3", dojo.validate.de.isCurrency('+1.000.000 �'));
+	jum.assertTrue("test4", dojo.validate.de.isCurrency('-10.000.000 �'));
+	jum.assertTrue("test5", dojo.validate.de.isCurrency('100.000.000 �'));
+	jum.assertFalse("test6", dojo.validate.de.isCurrency('1000,25 �'));
+	jum.assertFalse("test8", dojo.validate.de.isCurrency('1.000,25'));
 }
 
-function test_validate_isJapaneseCurrency(){
-	jum.assertTrue("test1", dojo.validate.isJapaneseCurrency('�1,000'));
-	jum.assertFalse("test2", dojo.validate.isJapaneseCurrency('�1,000.25'));
-	jum.assertTrue("test3", dojo.validate.isJapaneseCurrency('+�1,000,000'));
-	jum.assertTrue("test4", dojo.validate.isJapaneseCurrency('- �10,000,000'));
-	jum.assertTrue("test5", dojo.validate.isJapaneseCurrency('�100,000,000'));
-	jum.assertFalse("test6", dojo.validate.isJapaneseCurrency('�1000'));
+function test_validate_jp_isCurrency(){
+	jum.assertTrue("test1", dojo.validate.jp.isCurrency('�1,000'));
+	jum.assertFalse("test2", dojo.validate.jp.isCurrency('�1,000.25'));
+	jum.assertTrue("test3", dojo.validate.jp.isCurrency('+�1,000,000'));
+	jum.assertTrue("test4", dojo.validate.jp.isCurrency('- �10,000,000'));
+	jum.assertTrue("test5", dojo.validate.jp.isCurrency('�100,000,000'));
+	jum.assertFalse("test6", dojo.validate.jp.isCurrency('�1000'));
 }
 
-function test_validate_isValidTime(){
+function test_validate_datetime_isValidTime(){
 	jum.assertTrue("test1", dojo.validate.isValidTime('5:15:05 pm'));
 	jum.assertTrue("test2", dojo.validate.isValidTime('5:15:05 p.m.', {pmSymbol: "P.M."} ));
 	jum.assertFalse("test3", dojo.validate.isValidTime('5:15:05 p.m.', {} ));
@@ -338,7 +338,7 @@ function test_validate_isValidTime(){
 }
 
 
-function test_validate_is12HourTime(){
+function test_validate_datetime_is12HourTime(){
 	jum.assertTrue("test1", dojo.validate.is12HourTime('5:15:05 pm'));
 	jum.assertFalse("test2", dojo.validate.is12HourTime('05:15:05 pm'));
 	jum.assertFalse("test3", dojo.validate.is12HourTime('5:5:05 pm'));
@@ -355,7 +355,7 @@ function test_validate_is12HourTime(){
 	jum.assertFalse("test12", dojo.validate.is12HourTime('5:15: pm'));
 }
 
-function test_validate_is24HourTime(){
+function test_validate_datetime_is24HourTime(){
 	jum.assertTrue("test1", dojo.validate.is24HourTime('00:03:59'));
 	jum.assertTrue("test2", dojo.validate.is24HourTime('22:03:59'));
 	jum.assertFalse("test3", dojo.validate.is24HourTime('22:03:59 pm'));
@@ -371,7 +371,7 @@ function test_validate_is24HourTime(){
 	jum.assertFalse("test11", dojo.validate.is24HourTime('22:53:'));
 }
 
-function test_validate_isValidDate(){
+function test_validate_datetime_isValidDate(){
 	
 	// Month date year
 	jum.assertTrue("test1", dojo.validate.isValidDate("08/06/2005", "MM/DD/YYYY"));
@@ -415,7 +415,7 @@ function test_validate_isValidDate(){
 	jum.assertTrue("test25", dojo.validate.isValidDate("19-10-2005", "D-M-YYYY"));
 }
 
-function test_validate_isUsPhoneNumber(){
+function test_validate_us_datetime_isPhoneNumber(){
 	//jum.assertEquals("test1", 1, dojo.validate.us.isPhoneNumber('(111) 111-1111'));
 	jum.assertTrue("test2", dojo.validate.us.isPhoneNumber('(111) 111 1111'));
 	jum.assertTrue("test3", dojo.validate.us.isPhoneNumber('111 111 1111'));
@@ -432,7 +432,7 @@ function test_validate_isUsPhoneNumber(){
 	jum.assertTrue("test12", dojo.validate.us.isPhoneNumber('111-111-1111 x1234'));
 }
 
-function test_validate_isSocialSecurityNumber(){
+function test_validate_us_isSocialSecurityNumber(){
 	jum.assertTrue("test1", dojo.validate.us.isSocialSecurityNumber('123-45-6789'));
 	jum.assertTrue("test2", dojo.validate.us.isSocialSecurityNumber('123 45 6789'));
 	jum.assertTrue("test3", dojo.validate.us.isSocialSecurityNumber('123456789'));
@@ -441,14 +441,14 @@ function test_validate_isSocialSecurityNumber(){
 	jum.assertFalse("test6", dojo.validate.us.isSocialSecurityNumber('123-456789'));
 }
 
-function test_validate_isZipCode(){
+function test_validate_us_isZipCode(){
 	jum.assertTrue("test1", dojo.validate.us.isZipCode('12345-6789'));
 	jum.assertTrue("test2", dojo.validate.us.isZipCode('12345 6789'));
 	jum.assertTrue("test3", dojo.validate.us.isZipCode('123456789'));
 	jum.assertTrue("test4", dojo.validate.us.isZipCode('12345'));
 }
 
-function test_validate_isState(){
+function test_validate_us_isState(){
 	jum.assertTrue("test1", dojo.validate.us.isState('CA'));
 	jum.assertTrue("test2", dojo.validate.us.isState('ne'));
 	jum.assertTrue("test3", dojo.validate.us.isState('PR'));
