@@ -1,12 +1,36 @@
 dojo.require("dojo.string.extras");
 
-function test_string_paramString(){
-	var ps = "This %{string} has %{parameters} %{toReplace}";
-	var ps1 = dojo.string.paramString(ps, { string: "area", parameters: "foo"});
-	jum.assertEquals("test20", "This area has foo %{toReplace}", ps1);
+function test_string_substituteParams(){
+	var tpla = "This %{string} has %{parameters} %{toReplace}";
+	var ps0 = dojo.string.substituteParams(tpla, { string: "area", parameters: "foo", toReplace: "bar"});
+	jum.assertEquals("test20", "This area has foo bar", ps0);
 
-	var ps2 = dojo.string.paramString(ps, { string: "area", parameters: "foo"}, true);
-	jum.assertEquals("test30", "This area has foo ", ps2);
+	var thrown = false;
+	try {
+		// Missing a required parameter
+		var ps1 = dojo.string.substituteParams(tpla, { string: "area", parameters: "foo", extra: "baz"});
+	}catch(e){
+		thrown = e; // exception must be thrown
+	}
+	jum.assertTrue("test21", thrown);
+
+	var tplb = "Passed as arguments: %{0}, %{1}, %{2}.";
+	var ps2 = dojo.string.substituteParams(tplb, "zero", "one", "two");
+	jum.assertEquals("test22", "Passed as arguments: zero, one, two.", ps2);
+
+	// Unused argument provided
+	var tplb = "Passed as arguments: %{0}, %{1}, %{2}.";
+	var ps3 = dojo.string.substituteParams(tplb, "zero", "one", "two", "three");
+	jum.assertEquals("test23", "Passed as arguments: zero, one, two.", ps2);
+
+	thrown = false;
+	try{
+		// Missing a required parameter
+		var ps4 = dojo.string.substituteParams(tplb, "zero", "one");
+	}catch(e){
+		thrown = e; // exception must be thrown
+	}
+	jum.assertTrue("test24", thrown);
 }
 
 function test_string_isBlank(){
