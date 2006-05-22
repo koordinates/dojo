@@ -202,30 +202,22 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
-	var init = function(node, overflow){
+	dojo.lang.forEach(nodes, function(node){
+		var overflow = dojo.style.getStyle(node, "overflow");
 		if(overflow == "visible") {
 			node.style.overflow = "hidden";
 		}
 		dojo.style.show(node);
 		node.style.height = 0;
-	}
-
-	dojo.lang.forEach(nodes, function(node){
-		var overflow = dojo.style.getStyle(node, "overflow");
-		dojo.style.show(node);
-		var initialize = function(){
-			init(node, overflow);
-		}
 		
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
 				start: 0,
 				end: node.scrollHeight }], duration, easing);
 		
-		dojo.event.connect(anim, "beforeBegin", initialize);
 		dojo.event.connect(anim, "onEnd", function(){
 			node.style.overflow = overflow;
-			node.style.height = dojo.style.getContentBoxHeight(node) + "px";
+			node.style.height = "auto";
 			if(callback){ callback(node, anim); }
 		});
 		anims.push(anim);
@@ -239,24 +231,18 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	
-	var init = function(node, overflow){
-		dojo.style.show(node);
+	dojo.lang.forEach(nodes, function(node){
+		var overflow = dojo.style.getStyle(node, "overflow");
 		if(overflow == "visible") {
 			node.style.overflow = "hidden";
 		}
-	}
-	dojo.lang.forEach(nodes, function(node){
-		var overflow = dojo.style.getStyle(node, "overflow");
-		var initialize = function(){
-			init(node, overflow);
-		}
+		dojo.style.show(node);
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
 				start: dojo.style.getContentBoxHeight(node),
 				end: 0 } ], duration, easing);
 		
-		dojo.event.connect(anim, "beforeBegin", initialize);
 		dojo.event.connect(anim, "onEnd", function(){
 			dojo.style.hide(node);
 			node.style.overflow = overflow;
