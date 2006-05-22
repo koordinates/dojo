@@ -93,17 +93,16 @@ dojo.lang.inArray = function(arr /*Array*/, val /*Object*/){
  * The following is* functions are fairly "safe"
  */
 
-dojo.lang.isObject = function(wh) {
+dojo.lang.isObject = function(wh){
 	if(!wh){ return false; }
 	return (typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh));
 }
 
-dojo.lang.isArray = function(wh) {
-	if(!wh){ return false; }
+dojo.lang.isArray = function(wh){
 	return (wh instanceof Array || typeof wh == "array");
 }
 
-dojo.lang.isArrayLike = function(wh) {
+dojo.lang.isArrayLike = function(wh){
 	if(dojo.lang.isString(wh)){ return false; }
 	if(dojo.lang.isFunction(wh)){ return false; } // keeps out built-in ctors (Number, String, ...) which have length properties
 	if(dojo.lang.isArray(wh)){ return true; }
@@ -118,7 +117,6 @@ dojo.lang.isFunction = function(wh){
 }
 
 dojo.lang.isString = function(wh){
-	if(!wh){ return false; }
 	return (wh instanceof String || typeof wh == "string");
 }
 
@@ -127,7 +125,7 @@ dojo.lang.isAlien = function(wh){
 	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));
 }
 
-dojo.lang.isBoolean = function(wh) {
+dojo.lang.isBoolean = function(wh){
 	return (wh instanceof Boolean || typeof wh == "boolean");
 }
 
@@ -147,7 +145,7 @@ dojo.lang.isBoolean = function(wh) {
  *
  * RECOMMENDATION: Use isNaN(wh) when possible
  */
-dojo.lang.isNumber = function(wh) {
+dojo.lang.isNumber = function(wh){
 	return (wh instanceof Number || typeof wh == "number");
 }
 
@@ -163,7 +161,7 @@ dojo.lang.isNumber = function(wh) {
  *
  * FIXME: Should isUndefined go away since it is error prone?
  */
-dojo.lang.isUndefined = function(wh) {
+dojo.lang.isUndefined = function(wh){
 	return ((wh == undefined)&&(typeof wh == "undefined"));
 }
 
