@@ -37,7 +37,7 @@
 			}
 			return module;
 		},
-	
+
 		getTextStack: [],
 		loadUriStack: [],
 		loadedUris: [],
@@ -69,6 +69,7 @@
  * ending in '.js').
  * @param module A module whose existance to check for after loading a path.
  * Can be used to determine success or failure of the load.
+ * @param cb a function to pass the result of evaluating the script (optional)
  */
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
 	if((relpath.charAt(0) == '/')||(relpath.match(/^\w+:/))){
@@ -88,16 +89,23 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
  * Reads the contents of the URI, and evaluates the contents.
  * Returns true if it succeeded. Returns false if the URI reading failed.
  * Throws if the evaluation throws.
- * The result of the eval is not available to the caller.
+ * The result of the eval is not available to the caller TODO: now it is; was this a deliberate restriction?
+ *
+ * @param uri a uri which points at the script to be loaded
+ * @param cb a function to process the result of evaluating the script as an expression (optional)
  */
-dojo.hostenv.loadUri = function(uri, cb){
+dojo.hostenv.loadUri = function(uri, cb /*optional*/){
 	if(this.loadedUris[uri]){
-		return;
+		return 1;
 	}
 	var contents = this.getText(uri, null, true);
 	if(contents == null){ return 0; }
 	this.loadedUris[uri] = true;
+	if(cb){ contents = '('+contents+')'; }
 	var value = dj_eval(contents);
+	if(cb){
+		cb(value);
+	}
 	return 1;
 }
 
@@ -173,6 +181,19 @@ dojo.hostenv.callLoaded = function(){
 	}
 }
 
+dojo.hostenv.getModuleSymbols = function(modulename) {
+	var syms = modulename.split(".");
+	for(var i = syms.length - 1; i > 0; i--){
+		var parentModule = syms.slice(0, i).join(".");
+		var parentModulePath = this.getModulePrefix(parentModule);
+		if(parentModulePath != parentModule){
+			syms.splice(0, i, parentModulePath);
+			break;
+		}
+	}
+	return syms;
+}
+
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
 * If it is, it is simply returned (nothing to do).
@@ -218,19 +239,11 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// convert periods to slashes
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
-	var syms = modulename.split(".");
-	var nsyms = modulename.split(".");
-	for (var i = syms.length - 1; i > 0; i--) {
-		var parentModule = syms.slice(0, i).join(".");
-		var parentModulePath = this.getModulePrefix(parentModule);
-		if (parentModulePath != parentModule) {
-			syms.splice(0, i, parentModulePath);
-			break;
-		}
-	}
+	var syms = this.getModuleSymbols(modulename);
 	var last = syms[syms.length - 1];
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
+	var nsyms = modulename.split(".");
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
 

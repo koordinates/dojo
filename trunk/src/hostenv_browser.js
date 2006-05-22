@@ -83,6 +83,9 @@ if(typeof window == 'undefined'){
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 
+	// TODO: is the HTML LANG attribute relevant?
+	dojo.locale = (drh.ie ? navigator.userLanguage : navigator.language).toLowerCase();
+
 	dr.vml.capable=drh.ie;
 	drs.capable = f;
 	drs.support.plugin = f;
