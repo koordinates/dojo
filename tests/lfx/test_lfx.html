@@ -5,96 +5,94 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title>HTML Effects</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<style type="text/css">
-#fadeElm {
-	padding : 10px;
-	width : 70%;
-	background : #666;
-	color : #eee;
-}
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style type="text/css">
+		#fadeElm {
+			padding : 10px;
+			width : 70%;
+			background : #666;
+			color : #eee;
+		}
 
-#slider {
-	position : absolute;
-	padding : 5px;
-	background : #ccc;
-	left : 400px;
-	top : 300px;
-}
+		#slider {
+			position : absolute;
+			padding : 5px;
+			background : #ccc;
+			left : 400px;
+			top : 300px;
+		}
 
-#flash {
-}
+		#flash {
+		}
 
-#wiper {
-	position : absolute;
-	left : 100px;
-	top : 250px;
-	width : 200px;
-	background : #ccc;
-	-moz-opacity: 0.9999;
-}
+		#wiper {
+			position : absolute;
+			left : 100px;
+			top : 250px;
+			width : 200px;
+			background : #ccc;
+			-moz-opacity: 0.9999;
+		}
 
-#wiper2 {
-	position : absolute;
-	left : 350px;
-	top : 200px;
-	width : 200px;
-	background : #ccc;
-	-moz-opacity: 0.9999;
-}
+		#wiper2 {
+			position : absolute;
+			left : 350px;
+			top : 200px;
+			width : 200px;
+			background : #ccc;
+			-moz-opacity: 0.9999;
+		}
 
-#explode {
-	position : absolute;
-	left : 200px;
-	top : 100px;
-	background : #ddd;
-	width : 400px;
-	height : 300px;
-	text-align : center;
-	display : none;
-}
-</style>
-<script language="JavaScript" type="text/javascript">
-	// Dojo configuration
-	djConfig = { 
-		isDebug: true
-	};
-</script>
-<script type="text/javascript" src="../../dojo.js"></script>
-<script type="text/javascript" src="../../src/lfx/html.js"></script>
-<script type="text/javascript">
-dojo.require("dojo.lfx.*");
+		#explode {
+			position : absolute;
+			left : 200px;
+			top : 100px;
+			background : #ddd;
+			width : 400px;
+			height : 300px;
+			text-align : center;
+			display : none;
+		}
+	</style>
+	<script language="JavaScript" type="text/javascript">
+		// Dojo configuration
+		djConfig = { 
+			isDebug: true
+		};
+	</script>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript" src="../../src/lfx/html.js"></script>
+	<script type="text/javascript">
+	dojo.require("dojo.lfx.*");
 
-var fadeElem, flash, unflash, wiper;
-dojo.addOnLoad(function() {
-	dojo.lfx.html.highlight("flash", [230, 230, 180], 500).play(1500);
+	var fadeElem, flash, unflash, wiper;
+	dojo.addOnLoad(function() {
+		dojo.lfx.html.highlight("flash", [230, 230, 180], 500).play(1500);
 
-	dojo.lfx.html.unhighlight("unflash", [255, 200, 180], 500).play(1500);
+		dojo.lfx.html.unhighlight("unflash", [255, 200, 180], 500).play(1500);
 
-	dojo.lfx.html.wipeIn("wiper", 750).play();
-});
-
-function testExplode(start) {
-	var end = document.getElementById("explode");
-	dojo.lfx.html.explode(start, end, 250).play();
-}
-
-function testImplode(start) {
-	var end = document.getElementById("explode");
-	dojo.lfx.html.implode(end, start, 250).play();
-}
-
-function wowi(node) {
-	var wipeOut = dojo.lfx.wipeOut(node, null, null, function(n) {
-		n.innerHTML = "I have been replaced "
-			+ "with something completely different "
-			+ "in the middle of the wipe effects.";
+		dojo.lfx.html.wipeIn("wiper", 750).play();
 	});
-	var wipeIn = dojo.lfx.wipeIn(node);
 
-	dojo.lfx.chain(wipeOut, wipeIn).play();
-}
-</script>
+	function testExplode(start){
+		dojo.lfx.explode(start, "explode", 250).play();
+	}
+
+	function testImplode(start){
+		dojo.lfx.implode("explode", start, 250).play();
+	}
+
+	function wowi(node) {
+		var wipeOut = dojo.lfx.wipeOut(node, null, null, function(n) {
+			n.innerHTML = "I have been replaced "
+				+ "with something completely different "
+				+ "in the middle of the wipe effects.";
+		});
+		var wipeIn = dojo.lfx.wipeIn(node);
+
+		dojo.lfx.chain(wipeOut, wipeIn).play();
+	}
+	</script>
 </head>
 <body>
 	<a href="javascript:void(dojo.lfx.html.fadeOut('fadeElm', 300).play())">Fade out</a>
@@ -135,4 +133,3 @@ function wowi(node) {
 	<a href="javascript:;" onclick="testImplode(this)">Implode!</a>
 </body>
 </html>
-
