@@ -3,24 +3,28 @@ dojo.provide("dojo.widget.Chart.PlotTypes");
 dojo.provide("dojo.widget.Chart.DataSeries");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.Widget");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.graphics.color.hsl");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
-dojo.widget.Chart=function(){
+dojo.widget.Chart = function(){
 	dojo.widget.Widget.call(this);
-	this.widgetType="Chart";
-	this.isContainer=false;
-	this.series=[];
-	this.assignColors=function(){
-		var hue=30, sat=120, lum=120;
+	this.widgetType = "Chart";
+	this.isContainer = false;
+	this.series = [];
+	// FIXME: why is this a mixin method?
+	this.assignColors = function(){
+		var hue=30;
+		var sat=120;
+		var lum=120;
 		var steps = Math.round(330/this.series.length);
-		for (var i=0; i<this.series.length; i++){
+
+		for(var i=0; i<this.series.length; i++){
 			var c=dojo.graphics.color.hsl2rgb(hue,sat,lum);
-			if (!this.series[i].color) 
-				this.series[i].color=dojo.graphics.color.rgb2hex(c[0],c[1],c[2]);
-			hue+=steps;
+			if(!this.series[i].color){
+				this.series[i].color = dojo.graphics.color.rgb2hex(c[0],c[1],c[2]);
+			}
+			hue += steps;
 		}
 	};
 }
@@ -39,79 +43,85 @@ dojo.widget.Chart.PlotTypes = {
  *	.value.
  */
 dojo.widget.Chart.DataSeries = function(key, label, plotType, color){
-	this.id="DataSeries"+dojo.widget.Chart.DataSeries.count++;
-	this.key=key;
-	this.label=label||this.id;
-	this.plotType=plotType||0;
-	this.color=color;
-	this.values=[];
+	// FIXME: why the hell are plot types specified neumerically? What is this? C?
+	this.id = "DataSeries"+dojo.widget.Chart.DataSeries.count++;
+	this.key = key;
+	this.label = label||this.id;
+	this.plotType = plotType||0;
+	this.color = color;
+	this.values = [];
 };
 
-dojo.widget.Chart.DataSeries.prototype={
-	add:function(v){
+dojo.lang.extend(dojo.widget.Chart.DataSeries, {
+	add: function(v){
 		if(v.x==null||v.value==null){
 			dojo.raise("dojo.widget.Chart.DataSeries.add: v must have both an 'x' and 'value' property.");
 		}
 		this.values.push(v);
 	},
-	clear:function(){
+
+	clear: function(){
 		this.values=[];
 	},
-	createRange:function(len){
-		var idx=this.values.length-1;
-		var length=len||this.values.length;
-		return {index:idx, length:length, start:Math.max(idx-length,0)};
+
+	createRange: function(len){
+		var idx = this.values.length-1;
+		var length = (len||this.values.length);
+		return { "index": idx, "length": length, "start":Math.max(idx-length,0) };
 	},
+
 	//	trend values
-	getMean:function(len){
-		var range=this.createRange(len);
-		if (range.index<0) return 0;
-		var t=0, c=0;
-		for (var i=range.index; i>=range.start; i--){
-			var n=parseFloat(this.values[i].value);
-			if (!isNaN(n)){
-				t+=n; c++;
-			}
+	getMean: function(len){
+		var range = this.createRange(len);
+		if(range.index<0){ return 0; }
+		var t = 0;
+		var c = 0;
+		for(var i=range.index; i>=range.start; i--){
+			var n = parseFloat(this.values[i].value);
+			if(!isNaN(n)){ t += n; c++; }
 		}
-		t/=Math.max(c,1);
+		t /= Math.max(c,1);
 		return t;
 	},
-	getMovingAverage:function(len){
-		var range=this.createRange(len);
-		if (range.index<0) return 0;
-		var t=0, c=0;
-		for (var i=range.index; i>=range.start; i--){
-			var n=parseFloat(this.values[i].value);
-			if (!isNaN(n)){
-				t+=n; c++;
-			}
+
+	getMovingAverage: function(len){
+		var range = this.createRange(len);
+		if(range.index<0){ return 0; }
+		var t = 0;
+		var c = 0;
+		for(var i=range.index; i>=range.start; i--){
+			var n = parseFloat(this.values[i].value);
+			if(!isNaN(n)){ t += n; c++; }
 		}
-		t/=Math.max(c,1);
+		t /= Math.max(c,1);
 		return t;
 	},
-	getVariance:function(len){
-		var range=this.createRange(len);
-		if (range.index < 0) return 0;
-		var t=0, s=0, c=0;
-		for (var i=range.index; i>=range.start; i--){
-			var n=parseFloat(this.values[i].value);
-			if (!isNaN(n)){
-				t+=n;
-				s+=Math.pow(n,2);
+
+	getVariance: function(len){
+		var range = this.createRange(len);
+		if(range.index < 0){ return 0; }
+		var t = 0; // FIXME: for tom: wtf are t, c, and s?
+		var s = 0;
+		var c = 0;
+		for(var i=range.index; i>=range.start; i--){
+			var n = parseFloat(this.values[i].value);
+			if(!isNaN(n)){
+				t += n;
+				s += Math.pow(n,2);
 				c++;
 			}
 		}
 		return (s/c)-Math.pow(t/c,2);
 	},
 
-	getStandardDeviation:function(len){
+	getStandardDeviation: function(len){
 		return Math.sqrt(this.getVariance(len));
 	},
 
-	getMax:function(len){
-		var range=this.createRange(len);
-		if (range.index < 0) return 0;
-		var t=0;
+	getMax: function(len){
+		var range = this.createRange(len);
+		if(range.index < 0){ return 0; }
+		var t = 0;
 		for (var i=range.index; i>=range.start; i--){
 			var n=parseFloat(this.values[i].value);
 			if (!isNaN(n)){
@@ -121,10 +131,10 @@ dojo.widget.Chart.DataSeries.prototype={
 		return t;
 	},
 
-	getMin:function(len){
+	getMin: function(len){
 		var range=this.createRange(len);
 		if(range.index < 0){ return 0; }
-		var t=0;
+		var t = 0;
 		for(var i=range.index; i>=range.start; i--){
 			var n = parseFloat(this.values[i].value);
 			if(!isNaN(n)){
@@ -134,12 +144,12 @@ dojo.widget.Chart.DataSeries.prototype={
 		return t;
 	},
 
-	getMedian:function(len){
+	getMedian: function(len){
 		var range = this.createRange(len);
 
 		if(range.index<0){ return 0; }
 
-		var a=[];
+		var a = [];
 		for (var i=range.index; i>=range.start; i--){
 			var n=parseFloat(this.values[i].value);
 			if (!isNaN(n)){
@@ -155,10 +165,12 @@ dojo.widget.Chart.DataSeries.prototype={
 		return 0;
 	},
 
-	getMode:function(len){
+	getMode: function(len){
 		var range=this.createRange(len);
 		if(range.index<0){ return 0; }
-		var o={}, ret=0, m=0;
+		var o = {};
+		var ret = 0
+		var m = 0;
 		for(var i=range.index; i>=range.start; i--){
 			var n=parseFloat(this.values[i].value);
 			if(!isNaN(n)){
@@ -171,7 +183,7 @@ dojo.widget.Chart.DataSeries.prototype={
 		}
 		return parseFloat(ret);
 	}
-};
+});
 
 dojo.requireIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
 dojo.requireIf(dojo.render.html.ie, "dojo.widget.vml.Chart");
