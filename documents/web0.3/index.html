@@ -17,10 +17,55 @@
 		dojo.require("dojo.widget.TabContainer");
 		dojo.require("dojo.widget.LinkPane");
 		dojo.require("dojo.widget.ContentPane");
-		dojo.require("dojo.widget.DemoEngine");
+		dojo.require("dojo.widget.demoEngine.*");
+		dojo.require("dojo.widget.*");
+		tabs=function() {};
 		dojo.addOnLoad(function(){
+
+			demoApp = dojo.widget.byId("demoAppTab");
+			demoApp.hide();
+			help = dojo.widget.byId("helpTab");
+			help.hide();
+			news = dojo.widget.byId("newsTab");
+			tabs["demo"] = dojo.byId("seeItInAction");
+			tabs["help"] = dojo.byId("getHelp");
+			tabs["news"] = dojo.byId("newsT");
+
 			dojo.event.connect(dojo.byId("index-logo"),"onclick",function(){
-				dojo.widget.byId("actionTabs").selectTab(dojo.widget.byId("news"));
+				help.hide();
+				dojo.html.removeClass(tabs.help,"current");
+				demoApp.hide();
+				dojo.html.removeClass(tabs.demo,"current");
+				news.show();
+				dojo.html.addClass(tabs.news,"current");
+
+			});
+
+			dojo.event.connect(tabs.demo,"onclick", function(e) {
+				help.hide();
+				dojo.html.removeClass(tabs.help,"current");
+				news.hide();
+				dojo.html.removeClass(tabs.news,"current");
+				demoApp.show();	
+				dojo.html.addClass(tabs.demo,"current");
+			});
+
+			dojo.event.connect(tabs.news,"onclick", function(e) {
+				help.hide();
+				dojo.html.removeClass(tabs.help,"current");
+				demoApp.hide();
+				dojo.html.removeClass(tabs.demo,"current");
+				news.show();
+				dojo.html.addClass(tabs.news,"current");
+			});
+
+			dojo.event.connect(tabs.help,"onclick", function(e) {
+				news.hide();
+				dojo.html.removeClass(tabs.news,"current");
+				demoApp.hide();	
+				dojo.html.removeClass(tabs.demo,"current");
+				help.show();
+				dojo.html.addClass(tabs.help,"current");
 			});
 		});
 	</script>
@@ -43,6 +88,19 @@
 		<a href="http://download.dojotoolkit.org/release-0.3.0/dojo-0.3.0-ajax.zip">Now serving version 0.3.</a>
 		</p>
 	</div>
+	<div id="index-subheader">
+		<div class="tab" id="seeItInAction">
+			<span>see it in action</span>
+		</div>
+
+		<div class="tab" id="getHelp">
+			<span>get help</span>
+		</div>
+		<div class="tab current" id="newsT">
+			<span>news &amp; announcments</span>
+		</div>
+
+	</div>
 	<div id="body">
 		<div id="sidebar">
 			<p class="blurb">
@@ -58,11 +116,9 @@
 			</ul>
 		</div>
 		<div id="content"> 
-			<div id="actionTabs" dojoType="TabContainer" labelPosition="top" selectedTab="news" doLayout="false">
-				<div id="demoApp" label="see it in action" dojoType="DemoEngine" viewLinkImage="img/viewDemo.png"></div> 
-				<div id="help" dojoType="ContentPane" label="get help" href="help.html" parseContent="true" executeScripts="true"></div>
-				<div id="news" dojoType="ContentPane" label="news &amp; announcements" href="newsItems.html" parseContent="true" executeScripts="true"></div>
-			</div>
+			<div id="demoAppTab" dojoType="DemoNavigator" demoRegistryUrl="demoRegistry.json" returnImage="img/dojoDemos.gif" viewDemoImage="img/viewDemo.png"></div> 
+			<div id="helpTab" dojoType="ContentPane" href="help.html" parseContent="true" executeScripts="true"></div>
+			<div id="newsTab" dojoType="ContentPane" href="newsItems.html" parseContent="true" executeScripts="true"></div>
 		</div>
 	</div>
 	<div id="footer">
