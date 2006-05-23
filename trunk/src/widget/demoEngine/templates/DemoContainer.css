@@ -33,3 +33,7 @@
 	display: none;
 }
 
+.demoContainerTabs .dojoTabPaneWrapper {
+	border: 0px;
+}
+
