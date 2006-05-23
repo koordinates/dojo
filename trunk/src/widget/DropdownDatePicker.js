@@ -12,7 +12,7 @@ dojo.widget.defineWidget(
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
 		iconAlt: "Select a Date",
 		iconTitle: "Select a Date",
-		
+		zIndex: "10",
 		datePicker: null,
 		
 		dateFormat: "%m/%d/%Y",
@@ -35,6 +35,7 @@ dojo.widget.defineWidget(
 			}
 			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
+			this.containerNode.style.zIndex = this.zIndex;
 		},
 		
 		onSetDate: function(){
