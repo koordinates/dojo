@@ -56,7 +56,7 @@ def regexpMagic(loader, pkgString, srcRoot):
 	matches = re.findall('(this\.templateCssPath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
 	print matches
 	for x in matches:
-		replacement = "this.templateCssString=\""+escape(open(srcRoot+x[3]).read())+"\";this.templateCssPath="+uriMethod+"(\""+x[3]+"\""
+		replacement = "this.templateCssString=\""+escape(open(srcRoot+x[3]).read())+"\";this.templateCssPath="+uriMethod+"(\""+x[3]+"\")"
 		pkgString = string.replace(pkgString, x[0], replacement)
 	return pkgString
 
