@@ -28,7 +28,16 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 		returnToDemos: function() {
 			this.demoContainer.hide();
 			dojo.lfx.html.fadeShow(this.navigationContainer,250).play();
-			this.show();
+
+			dojo.lang.forEach(this.categoriesChildren, dojo.lang.hitch(this, function(child){
+				child.onParentResized();
+			}));
+
+			dojo.lang.forEach(this.demoListChildren, dojo.lang.hitch(this, function(child){
+				child.onParentResized();
+			}));
+
+			//this.show();
 			//dojo.lfx.html.fadeShow(this.navigationContainer,250,null,null,dojo.lang.hitch(this,function() { 
 			//	dojo.debug("this.show");
 			//	this.show();
