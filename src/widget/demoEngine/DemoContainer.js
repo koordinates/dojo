@@ -45,16 +45,12 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoContainer",
 		},
 
 		showSource: function() {
-			dojo.debug("Show Source");
 			dojo.html.removeClass(this.demoButtonNode,this.selectedButtonClass);
 			dojo.html.addClass(this.sourceButtonNode,this.selectedButtonClass);
 			this.tabContainer.selectTab(this.sourceTab);	
 		},
 
 		showDemo: function() {
-			dojo.debug("Show Demo");
-			dojo.debug("SlectedButtonClass: " + this.selectedButtonClass);
-			dojo.debug(this.sourceButtonNode);
 			dojo.html.removeClass(this.sourceButtonNode,this.selectedButtonClass);
 			dojo.html.addClass(this.demoButtonNode,this.selectedButtonClass);
 			this.tabContainer.selectTab(this.demoTab);

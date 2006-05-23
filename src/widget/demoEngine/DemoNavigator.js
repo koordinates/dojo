@@ -87,7 +87,6 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 		},
 
 		addDemo: function(demoName) {
-			dojo.debug("Add Demo");
 			var demo = this.registry.definitions[demoName];
 			//if (!dojo.style.isShowing(this.demoListWrapperNode) || (dojo.html.getOpacity(this.demoListWrapperNode)<1)) {
 				dojo.lfx.html.fadeShow(this.demoListWrapperNode, 250).play();
@@ -119,7 +118,6 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 			dojo.debug("Demo Selected: " + e.target.name);
 
 			dojo.lfx.html.fadeHide(this.navigationContainer,250,null,dojo.lang.hitch(this, function() {
-				dojo.debug("post animation");
 				this.demoContainer.show();	
 				this.demoContainer.showDemo();
 			})).play();
