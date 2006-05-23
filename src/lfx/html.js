@@ -6,7 +6,7 @@ dojo.require("dojo.event");
 dojo.require("dojo.lang.func");
 
 dojo.lfx.html._byId = function(nodes){
-	if(dojo.lang.isArrayLike(nodes)){
+	if(dojo.lang.isArray(nodes)){
 		if(!nodes.alreadyChecked){
 			var n = [];
 			dojo.lang.forEach(nodes, function(node){
