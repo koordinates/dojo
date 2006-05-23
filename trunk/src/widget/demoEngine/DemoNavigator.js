@@ -17,7 +17,14 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 			dojo.html.addClass(this.demoListWrapperNode,this.demoListWrapperClass);
 			dojo.html.addClass(this.demoListContainerNode,this.demoListContainerClass);
 
-			dojo.lfx.html.fadeHide(this.demoListWrapperNode, 0).play();	
+			if (dojo.render.html.ie) {
+				dojo.debug("render ie");
+				dojo.html.hide(this.demoListWrapperNode); 
+			} else {
+				dojo.debug("render non-ie");
+				dojo.lfx.html.fadeHide(this.demoListWrapperNode, 0).play();	
+			}
+
 			this.getRegistry(this.demoRegistryUrl);
 
 			this.demoContainer = dojo.widget.createWidget("DemoContainer",{returnImage: this.returnImage},this.demoNode);
@@ -27,12 +34,18 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 
 		returnToDemos: function() {
 			this.demoContainer.hide();
-			dojo.lfx.html.fadeShow(this.navigationContainer,250).play();
-			//dojo.html.show(this.navigationContainer);
-
 			if (dojo.render.html.ie) {
-				dojo.html.setOpacity(this.navigationContainer);
+				dojo.debug("render ie");
+				dojo.html.show(this.navigationContainer) ;
+			} else {	
+				dojo.debug("render non-ie");
+				dojo.lfx.html.fadeShow(this.navigationContainer,250).play();
 			}
+
+			//if (dojo.render.html.ie) {
+			//	dojo.html.setOpacity(this.navigationContainer);
+			//}
+
 			dojo.lang.forEach(this.categoriesChildren, dojo.lang.hitch(this, function(child){
 				child.onParentResized();
 			}));
@@ -88,9 +101,12 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 
 		addDemo: function(demoName) {
 			var demo = this.registry.definitions[demoName];
-			//if (!dojo.style.isShowing(this.demoListWrapperNode) || (dojo.html.getOpacity(this.demoListWrapperNode)<1)) {
+
+			if (dojo.render.html.ie) {
+				dojo.html.show(this.demoListWrapperNode) 
+			} else {
 				dojo.lfx.html.fadeShow(this.demoListWrapperNode, 250).play();
-			//}
+			}
 
 			var newDemo = dojo.widget.createWidget("DemoItem",{viewDemoImage: this.viewDemoImage, name: demoName, description: demo.description, thumbnail: demo.thumbnail});
 			this.demoListChildren.push(newDemo);
@@ -100,7 +116,7 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 
 		onSelectCategory: function(e) {
 			catName = e.currentTarget.categoryName;	
-
+			dojo.debug("Selected Category: " + catName);
 			//Remove current list of demos
 			dojo.lang.forEach(this.demoListChildren, function(child) {
 					child.destroy();
@@ -117,10 +133,18 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 			//Attach to this to do something when a demo is selected
 			dojo.debug("Demo Selected: " + e.target.name);
 
-			dojo.lfx.html.fadeHide(this.navigationContainer,250,null,dojo.lang.hitch(this, function() {
-				this.demoContainer.show();	
+			if (dojo.render.html.ie) {
+				dojo.debug("render ie");
+				dojo.html.hide(this.navigationContainer) ;
+				this.demoContainer.show();
 				this.demoContainer.showDemo();
-			})).play();
+			} else {
+				dojo.debug("render non-ie");
+				dojo.lfx.html.fadeHide(this.navigationContainer,250,null,dojo.lang.hitch(this, function() {
+					this.demoContainer.show();	
+					this.demoContainer.showDemo();
+				})).play();
+			}
 
 			this.demoContainer.loadDemo(this.registry.definitions[e.target.name].url);
 			this.demoContainer.setName(e.target.name);
