@@ -36,6 +36,7 @@ dojo.widget.defineWidget(
 			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
 			this.containerNode.style.zIndex = this.zIndex;
+			this.containerNode.style.backgroundColor = "transparent";
 		},
 		
 		onSetDate: function(){
