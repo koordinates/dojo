@@ -9,3 +9,19 @@
 	background-color:#fff;
 	padding:1em;
 }
+
+.demoNavigator h1 {
+	margin-top: 0px;
+	margin-bottom: 10px;
+	font-size: 1.2em;
+}
+
+.demoNavigator .dojoButton {
+	margin-bottom: 5px;
+}
+
+.demoNavigator .dojoButton .dojoButtonContents {
+	font-size: 1.1em;
+	width: 100px;
+	color: black;
+}
