@@ -36,13 +36,6 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 			dojo.lang.forEach(this.demoListChildren, dojo.lang.hitch(this, function(child){
 				child.onParentResized();
 			}));
-
-			//this.show();
-			//dojo.lfx.html.fadeShow(this.navigationContainer,250,null,null,dojo.lang.hitch(this,function() { 
-			//	dojo.debug("this.show");
-			//	this.show();
-			//	dojo.lfx.html.fadeShow(this.demoListWrapperNode,100).play();
-			//})).play();
 		},
 
 		show: function() {
