@@ -624,6 +624,14 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 			</fileset>
 		</copy>
 		
+		<copy todir="${release_dir}/tests" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/tests">
+				<include name="**" />
+				<exclude name="**/*.swp" />
+				<exclude name="**/.svn*" />
+			</fileset>
+		</copy>
+
 		<!-- 
 			Call our Dojo Flash and Storage tasks
 			in such a way that they won't cause the
@@ -675,14 +683,6 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 		description="builds docs, copies in tests, and constructs API outlines">
 		<copy todir="${release_dir}/apis" includeEmptyDirs="false" preservelastmodified="true">
 			<fileset dir="${root}/documents/apis">
-				<include name="**" />
-				<exclude name="**/*.swp" />
-				<exclude name="**/.svn*" />
-			</fileset>
-		</copy>
-
-		<copy todir="${release_dir}/tests" includeEmptyDirs="false" preservelastmodified="true">
-			<fileset dir="${root}/tests">
 				<include name="**" />
 				<exclude name="**/*.swp" />
 				<exclude name="**/.svn*" />
