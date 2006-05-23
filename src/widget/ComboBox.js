@@ -126,7 +126,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 						// FIXME: what about tab chars?
 						matches = true; break;
 					}
-					idx = dataLabel.indexOf(searchStr, tti+1);
+					idx = dataLabel.indexOf(searchStr, idx+1);
 				}
 				if(!matches){
 					continue;

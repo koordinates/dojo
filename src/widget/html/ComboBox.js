@@ -130,7 +130,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			for(var x = 0; x < dist; x++){
 				var te = document.createEvent("KeyEvents");
 				te.initKeyEvent("keypress", true, true, null, false, false, false, false, tcc, tcc);
-				twe.dispatchEvent(te);
+				element.dispatchEvent(te);
 			}
 		}
 	},
