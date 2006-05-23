@@ -39,9 +39,11 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 		show: function() {
 			//dojo.widget.demoEngine.DemoNavigator.superclass.show.call(this);
 			dojo.html.show(this.domNode);
-			dojo.html.setOpacity(this.domNode);
-			dojo.html.setOpacity(this.navigationContainer);	
-			dojo.html.show(this.navigationContainer);
+			dojo.html.setOpacity(this.domNode,1);
+			//dojo.html.setOpacity(this.navigationContainer);	
+			//dojo.html.show(this.navigationContainer);
+			dojo.html.setOpacity(this.navigationContainer,1);
+
 			dojo.lang.forEach(this.categoriesChildren, dojo.lang.hitch(this, function(child){
 				child.onParentResized();
 			}));
