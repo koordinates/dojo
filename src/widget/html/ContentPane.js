@@ -110,7 +110,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				if(type == "load") {
 					self.onDownloadEnd.call(self, url, data);
 				} else {
-					// works best when from a live serveer instead of from file system
+					// works best when from a live server instead of from file system
 					self._handleDefaults.call(self, "Error loading '" + url + "' (" + e.status + " "+  e.statusText + ")", "onDownloadError");
 					self.onLoad();
 				}
@@ -425,19 +425,27 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 						this._handleDefaults(e, "onContentError", true);
 					}
 				}
-				var node = this.containerNode || this.domNode;
-				var parser = new dojo.xml.Parse();
-				var frag = parser.parseElement(node, null, true);
-				// createSubComponents not createComponents because frag has already been created
-				dojo.widget.getParser().createSubComponents(frag, this);
 			}
-
-			if(this.executeScripts){
-				this._executeScripts(data);
+			// need to allow async load, Xdomain uses it
+			// is inline function because we cant send args to addOnLoad function
+			function asyncParse(){
+				if(_self.parseContent){
+					var node = _self.containerNode || _self.domNode;
+					var parser = new dojo.xml.Parse();
+					var frag = parser.parseElement(node, null, true);
+					// createSubComponents not createComponents because frag has already been created
+					dojo.widget.getParser().createSubComponents(frag, _self);
+				}
+		
+				if(_self.executeScripts){
+					_self._executeScripts(data);
+				}
 			}
+			var _self = this;
+			dojo.addOnLoad(asyncParse);
 		}
-		this.onResized(); // move this here so that resize is called when we set "" to reset sizing code
-		this.onLoad(); // tell system that we have finished
+		this.onResized();
+		this.onLoad();
 	},
 
 	// Generate pane content from given java function
@@ -484,11 +492,11 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			scripts += data.scripts[i];
 		}
 
+		try{
 			// initialize a new anonymous container for our script, dont make it part of this widgets scope chain
 			// instead send in a variable that points to this widget, usefull to connect events to onLoad, onUnLoad etc..
 			this.scriptScope = null;
 			this.scriptScope = new (new Function('_container_', scripts+'; return this;'))(self);
-	try{
 		}catch(e){
 			this._handleDefaults("Error running scripts from content:\n"+e, "onExecError", true);
 		}
