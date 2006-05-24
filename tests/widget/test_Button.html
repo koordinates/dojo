@@ -11,6 +11,7 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.Button");
 	dojo.require("dojo.widget.Menu2");
+	dojo.require("dojo.widget.Manager");
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -98,28 +99,6 @@ Buttons can do an action, display a menu, or both:
 	</button>
 </div>
 <br clear=both>
-And disabled:
-<div class="box">
-	<button dojoType="Button" disabled="true" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
-	</button>
-	<button dojoType="Button" disabled="true" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"><br>Create
-	</button>
-	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
-		<img src="images/note.gif"> Edit
-	</button>
-	<button dojoType="dropdownButton" menuId='editMenu' disabled="true">
-		<img src="images/note.gif"><br>Edit
-	</button>
-	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled="true">
-		<img src="images/save.gif"> Save
-	</button>
-	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");' disabled="true">
-		<img src="images/save.gif"><br>Save
-	</button>
-	<div style="clear: both;"></div>
-</div>
 
 <h2>Sizing</h2>
 <p>Short buttons, tall buttons, big buttons, small buttons...
@@ -145,30 +124,7 @@ These buttons size to their content (just like &lt;button&gt;).</p>
 	</button>
 	<div style="clear: both;"></div>
 </div>
-<p>Disabled:</p>
-<div class="box">
-	<button dojoType="Button" onclick='dojo.debug("big");' disabled="true">
-		<img src="images/flatScreen.gif">
-		<span style="font-size:xx-large">big</span>
-	</button>
-	<button id="smallButton1dis" dojoType="Button" onclick='dojo.debug("small");' disabled="true">
-		<img src="images/arrowSmall.gif">
-		<span style="font-size:x-small">small</span>
-	</button>
-	<button dojoType="Button" onclick='dojo.debug("long");' disabled="true">
-		<img src="images/tube.gif" height=16>
-		long
-	</button>
-	<button dojoType="Button" onclick='dojo.debug("tall");' width2height="0.1" disabled="true">
-	   <div>
-		<img src="images/tubeTall.gif" height=75px width=35px><br>
-		<span style="font-size:medium">tall</span>
-	   </div>
-	</button>
-	<div style="clear: both;"></div>
-</div>
-
-
+<br clear=both>
 
 <h2>User defined button</h2>
 <p>Dojo users can extend the button class and define their own background images.
@@ -191,6 +147,41 @@ Here's an example:</p>
 		<div class="dc">ridiculously long</div>
 	</button>
 	<div style="clear: both;"></div>
+</div>
+
+<h2>Programatically changing buttons</h2>
+<p>clicking the buttons below will change the buttons above</p>
+<script>
+	function forEachButton(func){
+		dojo.lang.forEach(
+			dojo.lang.unnest(
+				dojo.widget.manager.getWidgetsByType("Button"),
+				dojo.widget.manager.getWidgetsByType("DropDownButton"),
+				dojo.widget.manager.getWidgetsByType("ComboButton"),
+				dojo.widget.manager.getWidgetsByType("UserButton")
+			),
+			func
+		);
+	}
+
+	var disabled=false;
+	function toggleDisabled(){	
+		disabled=!disabled;
+		forEachButton(function(widget){ widget.setDisabled(disabled); });
+		dojo.byId("toggle").innerHTML= disabled ? "Enable all" : "Disable all";
+	}
+	var captions=["<img src='images/note.gif'>All", "<i>work</i>", "and", "no", "<h1>play</h1>",
+				 "<span style='color: red'>makes</span>", "Jack", "<h3>a</h3>", "dull",
+				 "<img src='images/plus.gif'>boy"];
+	var idx=0;
+	function changeCaptions(){	
+		forEachButton(function(widget){ widget.setCaption( captions[idx++ % captions.length]); });
+	}
+</script>
+<div>
+	<button id="toggle" onclick='toggleDisabled()'>Disable all</button>
+	<button onclick='changeCaptions()'>Change caption</button>
+	<button onclick='location.reload()'>Revert</button>
 </div>
 
 <div dojoType="PopupMenu2" id="editMenu" toggle="wipe">
