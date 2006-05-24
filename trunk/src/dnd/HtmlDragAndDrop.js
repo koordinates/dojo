@@ -140,20 +140,26 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
 			var width = dojo.html.getViewportWidth();
 			var height = dojo.html.getViewportHeight();
-			var padLeft = 0;
-			var padTop = 0;
+			var x = 0;
+			var y = 0;
 		} else {
 			width = dojo.style.getContentWidth(this.constrainingContainer);
 			height = dojo.style.getContentHeight(this.constrainingContainer);
-			padLeft = dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true);
-			padTop = dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true);
+			x =
+				this.parentPosition.x +
+				dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true) +
+				dojo.style.getBorderExtent(this.constrainingContainer, "left");
+			y =
+				this.parentPosition.y +
+				dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true) +
+				dojo.style.getBorderExtent(this.constrainingContainer, "top");
 		}
 
 		return {
-			minX: padLeft,
-			minY: padTop,
-			maxX: padLeft+width - dojo.style.getOuterWidth(this.domNode),
-			maxY: padTop+height - dojo.style.getOuterHeight(this.domNode)
+			minX: x,
+			minY: y,
+			maxX: x + width - dojo.style.getOuterWidth(this.domNode),
+			maxY: y + height - dojo.style.getOuterHeight(this.domNode)
 		}
 	},
 
