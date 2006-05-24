@@ -44,11 +44,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
 			x: this.dragStartPosition.x - e.pageX};
 
-		if (this.domNode.parentNode.nodeName.toLowerCase() == 'body') {
-			this.parentPosition = {y: 0, x: 0};
-		} else {
-			this.parentPosition = dojo.style.getAbsolutePosition(this.domNode.parentNode, true);
-		}
+		this.containingBlockPosition = this.domNode.offsetParent ? 
+			dojo.style.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
 
 		this.dragClone.style.position = "absolute";
 
@@ -58,12 +55,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 	},
 	
 	/**
-	 * Set the position of the drag clone.  (x,y) is relative to <body>.
+	 * Set the position of the drag node.  (x,y) is relative to <body>.
 	 */
 	setAbsolutePosition: function(x, y){
 		// The drag clone is attached to it's constraining container so offset for that
-		if(!this.disableY) { this.domNode.style.top = (y-this.parentPosition.y) + "px"; }
-		if(!this.disableX) { this.domNode.style.left = (x-this.parentPosition.x) + "px"; }
+		if(!this.disableY) { this.domNode.style.top = (y-this.containingBlockPosition.y) + "px"; }
+		if(!this.disableX) { this.domNode.style.left = (x-this.containingBlockPosition.x) + "px"; }
 	}
 
 });
