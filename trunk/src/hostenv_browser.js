@@ -82,6 +82,7 @@ if(typeof window == 'undefined'){
 	drh.ie50 = drh.ie && dav.indexOf("MSIE 5.0")>=0;
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
+	drh.ie70 = drh.ie && dav.indexOf("MSIE 7.0")>=0;
 
 	// TODO: is the HTML LANG attribute relevant?
 	dojo.locale = (drh.ie ? navigator.userLanguage : navigator.language).toLowerCase();
@@ -307,7 +308,6 @@ dojo.hostenv.makeWidgets = function(){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
 			// IE is such a tremendous peice of shit.
-			try{
 				var parser = new dojo.xml.Parse();
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
@@ -320,9 +320,6 @@ dojo.hostenv.makeWidgets = function(){
 					var frag  = parser.parseElement(document.getElementsByTagName("body")[0] || document.body, null, true);
 					dojo.widget.getParser().createComponents(frag);
 				}
-			}catch(e){
-				dojo.debug("auto-build-widgets error:", e);
-			}
 		}
 	}
 }
