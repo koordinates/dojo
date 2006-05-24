@@ -9,25 +9,22 @@
 	var djConfig = { isDebug: true };
 </script>
 
-<script type="text/javascript" src="/dojo_ssh/dojo.js"></script>
+<script type="text/javascript" src="../../dojo.js"></script>
+
 <script type="text/javascript">
 	dojo.require("dojo.dnd.HtmlDragAndDrop");
 	dojo.require("dojo.widget.DebugConsole");
 	dojo.require("dojo.widget.ResizeHandle");
 	dojo.require("dojo.event.*");
 
-	function byId(id){
-		return document.getElementById(id);
-	}
-
 	function init(){
-		new dojo.dnd.HtmlDragSource(byId("layer1"));
-		new dojo.dnd.HtmlDragSource(byId("layer2"));
-		new dojo.dnd.HtmlDragSource(byId("layer3"));
-		new dojo.dnd.HtmlDragSource(byId("layer4"));
-		new dojo.dnd.HtmlDragSource(byId("layer5"));
-		new dojo.dnd.HtmlDragSource(byId("layer6"));
-		new dojo.dnd.HtmlDragSource(byId("layer7"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer1"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer2"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer3"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer4"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer5"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer6"));
+		new dojo.dnd.HtmlDragSource(dojo.byId("layer7"));
 	}
 	dojo.event.connect(dojo, "loaded", "init");
 </script>
