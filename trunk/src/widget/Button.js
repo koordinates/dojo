@@ -39,9 +39,6 @@ dojo.widget.defineWidget(
 				this.containerNode.appendChild(document.createTextNode(this.caption));
 			}
 			dojo.html.disableSelection(this.containerNode);
-			if ( this.disabled ) {
-				dojo.html.prependClass(this.domNode, "dojoButtonDisabled");
-			}
 			
 			// after the browser has had a little time to calculate the size needed
 			// for the button contents, size the button
@@ -60,6 +57,12 @@ dojo.widget.defineWidget(
 			this.centerImage.width = this.containerWidth;
 			this.centerImage.style.left=endWidth+"px";
 			this._setImage(this.disabled ? this.disabledImg : this.inactiveImg);
+
+			if ( this.disabled ) {
+				dojo.html.prependClass(this.domNode, "dojoButtonDisabled");
+			} else {
+				dojo.html.removeClass(this.domNode, "dojoButtonDisabled");
+			}
 				
 			this.domNode.style.height=this.height + "px";
 			this.domNode.style.width= (this.containerWidth+2*endWidth) + "px";
@@ -119,6 +122,17 @@ dojo.widget.defineWidget(
 		onParentResized: function(){
 			// Not sure why this is necessary; but if button is inside a hidden floating
 			// pane (see Mail.html demo).  Revisit when buttons are redesigned
+			this.sizeMyself();
+		},
+		
+		setCaption: function(content){
+			this.caption=content;
+			this.containerNode.innerHTML=content;
+			this.sizeMyself();
+		},
+		
+		setDisabled: function(disabled){
+			this.disabled=disabled;
 			this.sizeMyself();
 		}
 	});
