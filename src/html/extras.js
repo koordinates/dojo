@@ -343,7 +343,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
  *        Attaches frame to document.body.  User must call size() to set size.
  */
 dojo.html.BackgroundIframe = function(node) {
-	if(dojo.render.html.ie) {
+	if(dojo.render.html.ie55 || dojo.render.html.ie60) {
 		var html=
 				 "<iframe "
 				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
