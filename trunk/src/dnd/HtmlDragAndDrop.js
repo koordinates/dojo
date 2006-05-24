@@ -87,7 +87,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
 		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
-		if(dojo.render.html.ie && this.createIframe){
+		if((dojo.render.html.ie55||dojo.render.html.ie60) && this.createIframe){
 			with(node.style) {
 				top="0px";
 				left="0px";
@@ -135,8 +135,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		dojo.event.topic.publish('dragStart', { source: this } );
 	},
 
+	/** Return min/max x/y (relative to document.body) for this object) **/
 	getConstraints: function() {
-
 		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
 			var width = dojo.html.getViewportWidth();
 			var height = dojo.html.getViewportHeight();
@@ -190,11 +190,20 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
 		}
 
-		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
-		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
+		this.setAbsolutePosition(x, y);
 
 		dojo.event.topic.publish('dragMove', { source: this } );
 	},
+
+	/**
+	 * Set the position of the drag clone.  (x,y) is relative to <body>.
+	 */
+	setAbsolutePosition: function(x, y){
+		// The drag clone is attached to document.body so this is trivial
+		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
+		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
+	},
+
 
 	/**
 	 * If the drag operation returned a success we reomve the clone of
