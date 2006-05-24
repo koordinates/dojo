@@ -34,7 +34,6 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 	},
 	
 	onDragStart: function(e){
-
 		dojo.html.clearSelection();
 
 		this.dragClone = this.domNode;
@@ -56,6 +55,15 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
 		}
+	},
+	
+	/**
+	 * Set the position of the drag clone.  (x,y) is relative to <body>.
+	 */
+	setAbsolutePosition: function(x, y){
+		// The drag clone is attached to it's constraining container so offset for that
+		if(!this.disableY) { this.domNode.style.top = (y-this.parentPosition.y) + "px"; }
+		if(!this.disableX) { this.domNode.style.left = (x-this.parentPosition.x) + "px"; }
 	}
 
 });
