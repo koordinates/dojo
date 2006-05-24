@@ -375,7 +375,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				node.innerHTML = xml;
 			}
 		} catch(e){
-			e = "Could'nt load html:"+e;
+			e = "Could'nt load content:"+e;
 			this._handleDefaults(e, "onContentError");
 		}
 	},
@@ -392,6 +392,8 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		if(!data || dojo.dom.isNode(data)){
 			// if we do a clean using setContent(""); or setContent(#node) bypass all parseing, extractContent etc
 			this._setContent(data);
+			this.onResized();
+			this.onLoad();
 		}else{
 			// need to run splitAndFixPaths? ie. manually setting content
 			 if(!data.xml){
@@ -440,12 +442,13 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				if(_self.executeScripts){
 					_self._executeScripts(data);
 				}
+
+				_self.onResized();
+				_self.onLoad();
 			}
 			var _self = this;
 			dojo.addOnLoad(asyncParse);
 		}
-		this.onResized();
-		this.onLoad();
 	},
 
 	// Generate pane content from given java function
