@@ -113,11 +113,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 		this.dragClone = this.createDragNode();
 
- 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (dojo.style.getComputedStyle(this.domNode.parentNode,"position") == "static")) {
-			this.parentPosition = {y: 0, x: 0};
-		} else {
-			this.parentPosition = dojo.style.getAbsolutePosition(this.domNode.parentNode, true);
-		}
+		this.containingBlockPosition = this.domNode.offsetParent ? 
+			dojo.style.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
 
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
@@ -146,11 +143,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			width = dojo.style.getContentWidth(this.constrainingContainer);
 			height = dojo.style.getContentHeight(this.constrainingContainer);
 			x =
-				this.parentPosition.x +
+				this.containingBlockPosition.x +
 				dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true) +
 				dojo.style.getBorderExtent(this.constrainingContainer, "left");
 			y =
-				this.parentPosition.y +
+				this.containingBlockPosition.y +
 				dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true) +
 				dojo.style.getBorderExtent(this.constrainingContainer, "top");
 		}
