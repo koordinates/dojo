@@ -50,17 +50,16 @@ dojo.lang.extend(dojo.widget.Rounded, {
 			antiAlias: this.antiAlias
 		};
 
-		setCorner = function(currentCorner, cornersAvailable, radius, settings) {
-			this.settings = settings;
-			var val = currentCorner.toLowerCase(); 
-			if(dojo.lang.inArray(cornersAvailable, currentCorner)) {
-				this.settings[val] = { radius: radius, enabled: true };
-			} else { 
+		var setCorner = function(currentCorner) {
+			var val = currentCorner.toLowerCase();
+			if(dojo.lang.inArray(cornersPassed, currentCorner)) {
+				this.settings[val] = { radius: this.radius, enabled: true };
+			} else {
 				this.settings[val] = { radius: 0 }
 			}
 		}
+		dojo.lang.map(cornersAvailable, setCorner, this);
 
-		dojo.lang.map(cornersAvailable, this, function(currentCorner){setCorner(currentCorner, cornersPassed, this.radius, this.settings); } );
 		this.domNode.style.margin = this.boxMargin;
 		this.curvyCorners(this.settings);
 		this.applyCorners();
