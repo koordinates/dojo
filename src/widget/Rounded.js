@@ -58,12 +58,11 @@ dojo.lang.extend(dojo.widget.Rounded, {
 				this.settings[val] = { radius: 0 }
 			}
 		}
-		dojo.lang.map(cornersAvailable, setCorner, this);
+		dojo.lang.forEach(cornersAvailable, setCorner, this);
 
 		this.domNode.style.margin = this.boxMargin;
 		this.curvyCorners(this.settings);
 		this.applyCorners();
-
 	},
 
 	// ------------- curvyCorners OBJECT
