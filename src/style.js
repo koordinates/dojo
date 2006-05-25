@@ -303,10 +303,12 @@ dojo.require("dojo.lang.common");
 				}else{
 					endNode = db.parentNode;
 				}
-				
+
 				if(node.parentNode != db){
-					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
-					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
+					var nd = node;
+					if(window.opera){ nd = db; }
+					ret.x -= ds.sumAncestorProperties(nd, "scrollLeft");
+					ret.y -= ds.sumAncestorProperties(nd, "scrollTop");
 				}
 				do{
 					var n = node["offsetLeft"];
@@ -341,6 +343,7 @@ dojo.require("dojo.lang.common");
 			var val = node[prop];
 			if(val){
 				retVal += val - 0;
+				if(node==document.body){ break; }// opera and khtml #body & #html has the same values, we only need one value
 			}
 			node = node.parentNode;
 		}
