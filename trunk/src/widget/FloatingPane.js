@@ -173,14 +173,18 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	restoreWindow: function(evt) {
-		for(var attr in this.previous){
-			this.domNode.style[attr] = this.previous[attr];
-		}
-		this.resizeTo(this.previous.width, this.previous.height);
-		this.previous=null;
+		if (this.windowState=="minimized") {
+			this.show() 
+		} else {
+			for(var attr in this.previous){
+				this.domNode.style[attr] = this.previous[attr];
+			}
+			this.resizeTo(this.previous.width, this.previous.height);
+			this.previous=null;
 
-		this.restoreAction.style.display="none";
-		this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
+			this.restoreAction.style.display="none";
+			this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
+		}
 
 		this.windowState="normal";
 	},
