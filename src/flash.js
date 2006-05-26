@@ -379,7 +379,7 @@ dojo.flash = {
 	installing: function(){
 	 //dojo.debug("installing");
 	 if(dojo.flash._installingListeners.length > 0){
-			for(var i = 0;i < dojo.flash._installingListeners.length; i++){
+			for(var i = 0; i < dojo.flash._installingListeners.length; i++){
 				dojo.flash._installingListeners[i].call(null);
 			}
 		}
@@ -666,7 +666,9 @@ dojo.flash.Embed.prototype = {
 						+ '    pluginspage="http://www.macromedia.com/go/getflashplayer">';
 		}else{ // Flash 8
 			swfloc = dojo.flash.flash8_version;
-			var swflocObject = swfloc, swflocEmbed = swfloc;
+			var swflocObject = swfloc;
+			var swflocEmbed = swfloc;
+			var dojoPath = djConfig.baseRelativePath;
 			if(doExpressInstall){
 				// the location to redirect to after installing
 				var redirectURL = escape(window.location);
@@ -674,8 +676,11 @@ dojo.flash.Embed.prototype = {
 				var docTitle = escape(document.title);
 				swflocObject += "?MMredirectURL=" + redirectURL
 				                + "&MMplayerType=ActiveX"
-				                + "&MMdoctitle="+docTitle;
-				swflocEmbed += "?MMredirectURL=" + redirectURL + "&MMplayerType=PlugIn";
+				                + "&MMdoctitle=" + docTitle
+								+ "&baseRelativePath=" + escape(dojoPath);
+				swflocEmbed += "?MMredirectURL=" + redirectURL 
+								+ "&MMplayerType=PlugIn"
+								+ "&baseRelativePath=" + escape(dojoPath);
 			}
 			
 			objectHTML =
@@ -699,7 +704,7 @@ dojo.flash.Embed.prototype = {
 				  + 'swLiveConnect="true" '
 				  + 'align="middle" '
 				  + 'allowScriptAccess="sameDomain" '
-				  + 'type="application/x-shockwave-flash" '
+				  + 'type="application/x-shockwave-flash" '+ "&baseRelativePath=" + escape(dojoPath);
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}
