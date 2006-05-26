@@ -17,6 +17,7 @@ import flash.external.ExternalInterface;
 
 class DojoExternalInterface{
 	public static var available:Boolean;
+	public static var dojoPath = "";
 	
 	private static var flashMethods:Array = new Array();
 	private static var numArgs:Number;
@@ -24,6 +25,9 @@ class DojoExternalInterface{
 	private static var resultData = null;
 	
 	public static function initialize(){
+		// extract the dojo base path
+		DojoExternalInterface.dojoPath = DojoExternalInterface.getDojoPath();
+		
 		// see if we need to do an express install
 		var install:ExpressInstall = new ExpressInstall();
 		if(install.needsUpdate){
@@ -203,6 +207,17 @@ class DojoExternalInterface{
 		var splitStr = inputStr.split(replaceThis)
 		inputStr = splitStr.join(withThis)
 		return inputStr;
+	}
+	
+	private static function getDojoPath(){
+		var url = _root._url;
+		var start = url.indexOf("baseRelativePath=") + "baseRelativePath=".length;
+		var path = url.substring(start);
+		var end = path.indexOf("&");
+		if(end != -1){
+			path = path.substring(0, end);
+		}
+		return path;
 	}
 }
 

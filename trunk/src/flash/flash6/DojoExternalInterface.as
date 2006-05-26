@@ -7,6 +7,8 @@
 
 class DojoExternalInterface{
 	public static var available:Boolean;
+	public static var dojoPath = "";
+	
 	public static var _fscommandReady = false;
 	public static var _callbacks = new Array();
 
@@ -14,6 +16,10 @@ class DojoExternalInterface{
 		//getURL("javascript:dojo.debug('FLASH:DojoExternalInterface initialize')");
 		// FIXME: Set available variable by testing for capabilities
 		DojoExternalInterface.available = true;
+		
+		// extract the dojo base path
+		DojoExternalInterface.dojoPath = DojoExternalInterface.getDojoPath();
+		//getURL("javascript:dojo.debug('FLASH:dojoPath="+DojoExternalInterface.dojoPath+"')");
 		
 		// Sometimes, on IE, the fscommand infrastructure can take a few hundred
 		// milliseconds the first time a page loads. Set a timer to keep checking
@@ -175,16 +181,23 @@ class DojoExternalInterface{
 	*/
 	public static function _initializeFlashRunner(){
 		// figure out where our Flash movie is
-		var swfLoc = "../..";
-		if(swfLoc.charAt(swfLoc.length - 1) != '/'){
-			swfLoc = swfLoc + "/";
-		}
-		swfLoc = swfLoc + "flash6_gateway.swf";
+		var swfLoc = DojoExternalInterface.dojoPath + "flash6_gateway.swf";
 		
 		// load our gateway helper file
 		_root.createEmptyMovieClip("_flashRunner", 5000);
 		_root._flashRunner._lockroot = true;
 		_root._flashRunner.loadMovie(swfLoc);
+	}
+	
+	private static function getDojoPath(){
+		var url = _root._url;
+		var start = url.indexOf("baseRelativePath=") + "baseRelativePath=".length;
+		var path = url.substring(start);
+		var end = path.indexOf("&");
+		if(end != -1){
+			path = path.substring(0, end);
+		}
+		return path;
 	}
 }
 
