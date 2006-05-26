@@ -39,13 +39,31 @@ dojo.widget.defineWidget(
 				this.containerNode.appendChild(document.createTextNode(this.caption));
 			}
 			dojo.html.disableSelection(this.containerNode);
-			
-			// after the browser has had a little time to calculate the size needed
-			// for the button contents, size the button
-			dojo.lang.setTimeout(this, this.sizeMyself, 0);
+		},
+
+		postCreate: function(args, frag){
+			this.sizeMyself();
 		},
 	
-		sizeMyself: function(e){
+		sizeMyself: function(){
+			// we cannot size correctly if any of our ancestors are hidden (display:none),
+			// so temporarily attach to document.body
+			if(this.domNode.parentNode){
+				var placeHolder = document.createElement("span");
+				dojo.dom.insertBefore(placeHolder, this.domNode);
+			}
+			dojo.html.body().appendChild(this.domNode);
+			
+			this.sizeMyselfHelper();
+			
+			// Put this.domNode back where it was originally
+			if(placeHolder){
+				dojo.dom.insertBefore(this.domNode, placeHolder);
+				dojo.dom.removeNode(placeHolder);
+			}
+		},
+
+		sizeMyselfHelper: function(){
 			this.height = dojo.style.getOuterHeight(this.containerNode);
 			this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
 			var endWidth= this.height * this.width2height;
@@ -119,12 +137,6 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		onParentResized: function(){
-			// Not sure why this is necessary; but if button is inside a hidden floating
-			// pane (see Mail.html demo).  Revisit when buttons are redesigned
-			this.sizeMyself();
-		},
-		
 		setCaption: function(content){
 			this.caption=content;
 			this.containerNode.innerHTML=content;
@@ -184,7 +196,7 @@ dojo.widget.defineWidget(
 		splitWidth: 2,		// pixels between left&right part of button
 		arrowWidth: 5,		// width of segment holding down arrow
 	
-		sizeMyself: function(e){
+		sizeMyselfHelper: function(e){
 			this.height = dojo.style.getOuterHeight(this.containerNode);
 			this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
 			var endWidth= this.height/3;
