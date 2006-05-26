@@ -157,6 +157,8 @@ dojo.widget.defineWidget(
 		widgetType: "DropDownButton",
 	
 		menuId: "",
+
+		arrow: null,
 	
 		downArrow: "src/widget/templates/images/whiteDownArrow.gif",
 		disabledDownArrow: "src/widget/templates/images/whiteDownArrow.gif",
@@ -164,13 +166,18 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(args, frag){
 			dojo.widget.html.DropDownButton.superclass.fillInTemplate.call(this, args, frag);
 	
-			// draw the arrow
-			var arrow = document.createElement("img");
-			arrow.src = dojo.uri.dojoUri(this.disabled ? this.disabledDownArrow : this.downArrow);
-			dojo.html.setClass(arrow, "downArrow");
-			this.containerNode.appendChild(arrow);
+			this.arrow = document.createElement("img");
+			dojo.html.setClass(this.arrow, "downArrow");
 		},
-	
+
+		sizeMyselfHelper: function(){
+			// draw the arrow (todo: why is the arror in containerNode rather than outside it?)
+			this.arrow.src = dojo.uri.dojoUri(this.disabled ? this.disabledDownArrow : this.downArrow);
+			this.containerNode.appendChild(this.arrow);
+
+			dojo.widget.html.DropDownButton.superclass.sizeMyselfHelper.call(this);
+		},
+
 		onClick: function (e){
 			this._toggleMenu(this.menuId);
 		}
