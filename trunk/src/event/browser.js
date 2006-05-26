@@ -2,7 +2,7 @@ dojo.provide("dojo.event.browser");
 dojo.require("dojo.event");
 
 // FIXME: any particular reason this is in the global scope?
-dojo_ie_clobber = new function(){
+dojo._ie_clobber = new function(){
 	this.clobberNodes = [];
 
 	function nukeProp(node, prop){
@@ -48,7 +48,7 @@ dojo_ie_clobber = new function(){
 
 if(dojo.render.html.ie){
 	window.onunload = function(){
-		dojo_ie_clobber.clobber();
+		dojo._ie_clobber.clobber();
 		try{
 			if((dojo["widget"])&&(dojo.widget["manager"])){
 				dojo.widget.manager.destroyAll();
@@ -56,7 +56,7 @@ if(dojo.render.html.ie){
 		}catch(e){}
 		try{ window.onload = null; }catch(e){}
 		try{ window.onunload = null; }catch(e){}
-		dojo_ie_clobber.clobberNodes = [];
+		dojo._ie_clobber.clobberNodes = [];
 		// CollectGarbage();
 	}
 }
@@ -67,14 +67,15 @@ dojo.event.browser = new function(){
 
 	this.clean = function(node){
 		if(dojo.render.html.ie){ 
-			dojo_ie_clobber.clobber(node);
+			dojo._ie_clobber.clobber(node);
 		}
 	}
 
 	this.addClobberNode = function(node){
+		if(!dojo.render.html.ie){ return; }
 		if(!node["__doClobber__"]){
 			node.__doClobber__ = true;
-			dojo_ie_clobber.clobberNodes.push(node);
+			dojo._ie_clobber.clobberNodes.push(node);
 			// this might not be the most efficient thing to do, but it's
 			// much less error prone than other approaches which were
 			// previously tried and failed
@@ -83,6 +84,7 @@ dojo.event.browser = new function(){
 	}
 
 	this.addClobberNodeAttrs = function(node, props){
+		if(!dojo.render.html.ie){ return; }
 		this.addClobberNode(node);
 		for(var x=0; x<props.length; x++){
 			node.__clobberAttrs__.push(props[x]);

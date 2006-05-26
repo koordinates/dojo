@@ -107,7 +107,7 @@ dojo.render.name = dojo.hostenv.name_ = 'browser';
 dojo.hostenv.searchIds = [];
 
 // These are in order of decreasing likelihood; this will change in time.
-var DJ_XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+dojo.hostenv._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
 
 dojo.hostenv.getXmlhttpObject = function(){
     var http = null;
@@ -115,7 +115,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 	try{ http = new XMLHttpRequest(); }catch(e){}
     if(!http){
 		for(var i=0; i<3; ++i){
-			var progid = DJ_XMLHTTP_PROGIDS[i];
+			var progid = dojo.hostenv._XMLHTTP_PROGIDS[i];
 			try{
 				http = new ActiveXObject(progid);
 			}catch(e){
@@ -123,7 +123,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 			}
 
 			if(http){
-				DJ_XMLHTTP_PROGIDS = [progid];  // so faster next time
+				dojo.hostenv._XMLHTTP_PROGIDS = [progid];  // so faster next time
 				break;
 			}
 		}
