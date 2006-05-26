@@ -165,8 +165,8 @@ dojo.undo.browser = {
 	checkLocation: function(){
 		if (!this.changingUrl){
 			var hsl = this.historyStack.length;
-	
-			if((window.location.hash == this.initialHash)||(window.location.href == this.initialHref)&&(hsl == 1)){
+
+			if((window.location.hash == this.initialHash||window.location.href == this.initialHref)&&(hsl == 1)){
 				// FIXME: could this ever be a forward button?
 				// we can't clear it because we still need to check for forwards. Ugg.
 				// clearInterval(this.locationTimer);
