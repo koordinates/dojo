@@ -38,6 +38,7 @@ load("../src/bootstrap2.js");
 // FIXME: is this really what we want to say?
 dojo.render.html.capable = true;
 
+dojo.hostenv.loadedUris.push("dojoGuardStart.js");
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
 
 if(dojoLoader == "default"){
@@ -47,6 +48,7 @@ if(dojoLoader == "default"){
 	dojo.hostenv.loadedUris.push("../src/loader.js");
 	dojo.hostenv.loadedUris.push("../src/loader_xd.js");
 }
+dojo.hostenv.loadedUris.push("dojoGuardEnd.js");
 
 if(!this["hostenvType"]){
 	hostenvType = "browser";
