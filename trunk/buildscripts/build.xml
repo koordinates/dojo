@@ -673,7 +673,6 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
-		<copy file="${root}/CHANGELOG" todir="${release_dir}/"  preservelastmodified="true" />
 		<copy file="${root}/README" todir="${release_dir}/"  preservelastmodified="true" />
 	</target>
 	<!-- end release task -->
