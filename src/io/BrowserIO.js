@@ -254,7 +254,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			}else if((kwArgs.mimetype == "application/xml")||
 						(kwArgs.mimetype == "text/xml")){
 				ret = http.responseXML;
-				if(!ret || typeof ret == "string") {
+				if(!ret || typeof ret == "string" || !http.getResponseHeader("Content-Type")) {
 					ret = dojo.dom.createDocumentFromText(http.responseText);
 				}
 			}else{
