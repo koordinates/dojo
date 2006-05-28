@@ -199,10 +199,15 @@ dojo.io.IframeTransport = new function(){
 				var js = cd.getElementsByTagName("textarea")[0].value;
 				if(cmt == "text/json") { js = "(" + js + ")"; }
 				value = dj_eval(js);
-			}else if((cmt == "application/xml")||(cmt == "text/xml")){
+			}else if((cmt == "application/xml")||(cmt == "text/xml")||(cmt == "text/html")){
 				value = dojo.io.iframeContentDocument(_this.iframe);
 			}else{ // text/plain
-				value = ifw.innerHTML;
+				var docElem = ifw.document.documentElement;
+				if(docElem.innerText){
+					value = docElem.innerText;
+				}else{
+					value = docElem.innerHTML;
+				}
 			}
 			success = true;
 		}catch(e){ 
