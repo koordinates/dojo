@@ -1,0 +1,25 @@
+html, body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+}
+h1 {
+	font-size: 50px;
+}
+p, li {
+	font-size: 30px;
+}
+.dojoShowNav {
+	background: #369;
+	overflow: hidden;
+	position: absolute;
+	height: 5px;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	text-align: center;
+}
+.dojoShowHider {
+	height: 5px;
+	width: 100%;
+}
