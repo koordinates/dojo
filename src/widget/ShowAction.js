@@ -9,7 +9,8 @@ dojo.lang.extend(dojo.widget.ShowAction, {
 	action: "",
 	duration: 0,
 	from: "",
-	to: ""
+	to: "",
+	auto: "false"
 });
 
 dojo.requireAfterIf("html", "dojo.widget.html.ShowAction");
