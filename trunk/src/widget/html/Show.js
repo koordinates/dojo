@@ -86,8 +86,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 				this.gotoSlide(node.index);
 			}else if(node.tagName == "SELECT"){
 				this.gotoSlide(node.selectedIndex);
-			}
-			else {
+			}else if(node.tagName != "A"){
 				this.nextSlide(event);
 			}
 		}else if(type == "keypress"){
