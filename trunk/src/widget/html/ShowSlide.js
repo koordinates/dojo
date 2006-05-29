@@ -25,6 +25,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 	fillInTemplate: function(){
 		this.htmlTitle.innerHTML = this.title;
 
+		this._components = {};
 		var nodes = this.containerNode.all ? this.containerNode.all : this.containerNode.getElementsByTagName('*');
 		for(var i = 0, node; node = nodes[i]; i++){
 			var as = node.getAttribute("as");
@@ -43,7 +44,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 				this._actions.push(child);
 				var components = this._components[child.on];
 				for(var j = 0, component; component = components[j]; j++){
-					if(child.action){
+					if(child.action && child.action != "remove"){
 						this.hideComponent(component);
 					}
 				}
@@ -62,16 +63,27 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		while(action.on == on){
 			var components = this._components[on];
 			for(var i = 0, component; component = components[i]; i++){
-				if(action.action){
+				if(action.action == "remove"){
+					if(component.style.display == "none"){
+						component.style.display = "";
+						component.style.visibility = "visible";
+						var exits = true;
+					}
+				}else if(action.action){
 					this.hideComponent(component);
 				}
 			}
-		
+
 			--this._action;
-			if(this._action == -1){
-				return false;
+
+			if(exits){
+				return true;
+			}	
+
+			if(action.auto == "true"){
+				on = this._actions[this._action].on;
 			}
-			
+
 			action = this._actions[this._action];
 			if(!action){
 				return false;
@@ -124,9 +136,16 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 					anim.play(true);
 				}else if(action.action == "bgcolor"){
 					dojo.fx.html.colorFade(component, duration, action.from, action.to);
+				}else if(action.action == "remove"){
+					component.style.display = "none";
 				}
 				component.style.visibility = "visible";
 			}
+		}
+		
+		action = this._actions[this._action + 1];
+		if(action && action.auto == "true"){
+			this.nextAction();
 		}
 
 		return true;
