@@ -47,6 +47,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		}
 		this.option.parentNode.removeChild(this.option);
 
+		document.body.style.display = "block";
 		this.resizeWindow();
 		this.gotoSlide(0);
 	},

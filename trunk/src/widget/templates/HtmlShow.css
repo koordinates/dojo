@@ -3,6 +3,9 @@ html, body {
 	padding: 0px;
 	width: 100%;
 }
+body {
+	display: none;
+}
 h1 {
 	font-size: 50px;
 }
