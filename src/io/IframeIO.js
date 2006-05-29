@@ -170,10 +170,25 @@ dojo.io.IframeTransport = new function(){
 		var toClean = req._contentToClean;
 		for(var i = 0; i < toClean.length; i++) {
 			var key = toClean[i];
-			var input = req.formNode[key];
-			req.formNode.removeChild(input);
-			req.formNode[key] = null;
+			if(dojo.render.html.safari){
+				//In Safari (at least 2.0.3), can't use formNode[key] syntax to find the node,
+				//for nodes that were dynamically added.
+				var fNode = req.formNode;
+				for(var j = 0; j < fNode.childNodes.length; j++){
+					var chNode = fNode.childNodes[j];
+					if(chNode.name == key){
+						var pNode = chNode.parentNode;
+						pNode.removeChild(chNode);
+						break;
+					}
+				}
+			}else{
+				var input = req.formNode[key];
+				req.formNode.removeChild(input);
+				req.formNode[key] = null;
+			}
 		}
+
 		// restore original action + target
 		if(req["_originalAction"]){
 			req.formNode.setAttribute("action", req._originalAction);
@@ -181,8 +196,7 @@ dojo.io.IframeTransport = new function(){
 		req.formNode.setAttribute("target", req._originalTarget);
 		req.formNode.target = req._originalTarget;
 
-		var ifr = _this.iframe;
-		var ifw = dojo.io.iframeContentWindow(ifr);
+		var ifd = dojo.io.iframeContentDocument(_this.iframe);
 		// handle successful returns
 		// FIXME: how do we determine success for iframes? Is there an equiv of
 		// the "status" property?
@@ -195,19 +209,13 @@ dojo.io.IframeTransport = new function(){
 				// FIXME: not sure what to do here? try to pull some evalulable
 				// text from a textarea or cdata section? 
 				// how should we set up the contract for that?
-				var cd = dojo.io.iframeContentDocument(_this.iframe);
-				var js = cd.getElementsByTagName("textarea")[0].value;
+				var js = ifd.getElementsByTagName("textarea")[0].value;
 				if(cmt == "text/json") { js = "(" + js + ")"; }
 				value = dj_eval(js);
 			}else if((cmt == "application/xml")||(cmt == "text/xml")||(cmt == "text/html")){
-				value = dojo.io.iframeContentDocument(_this.iframe);
+				value = ifd;
 			}else{ // text/plain
-				var docElem = ifw.document.documentElement;
-				if(docElem.innerText){
-					value = docElem.innerText;
-				}else{
-					value = docElem.innerHTML;
-				}
+				value = ifd.getElementsByTagName("textarea")[0].value;
 			}
 			success = true;
 		}catch(e){ 
