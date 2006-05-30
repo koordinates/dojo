@@ -430,6 +430,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			}
 			// need to allow async load, Xdomain uses it
 			// is inline function because we cant send args to addOnLoad function
+			var _self = this;
 			function asyncParse(){
 				if(_self.parseContent){
 					var node = _self.containerNode || _self.domNode;
@@ -446,7 +447,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				_self.onResized();
 				_self.onLoad();
 			}
-			var _self = this;
 			dojo.addOnLoad(asyncParse);
 		}
 	},
