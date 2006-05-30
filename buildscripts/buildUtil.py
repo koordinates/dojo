@@ -100,6 +100,35 @@ def internTemplateStrings(loader="default", packageDir="../release/dojo", srcRoo
 	internXdFiles(loader, packageDir+"/src/widget/vml", srcRoot)
 
 
+def replaceVersion(fileName, version):
+	verSegments = version.split('.')
+	majorValue = 0
+	minorValue = 0
+	patchValue = 0
+	flagValue = ""
+
+	if len(verSegments) > 0 and verSegments[0]:
+		majorValue = verSegments[0]
+	if len(verSegments) > 1 and verSegments[1]:
+		minorValue = verSegments[1]
+	if len(verSegments) > 2 and verSegments[2]:
+		patchValue = verSegments[2]
+	if len(verSegments) > 3 and verSegments[3]:
+		flagValue = verSegments[3]
+
+	pfd = open(fileName)
+	fileContents = pfd.read()
+	pfd.close()
+
+	matches = re.findall('(major:\s*\d*,\s*minor:\s*\d*,\s*patch:\s*\d*,\s*flag:\s*".*?"\s*,)', fileContents)
+	for x in matches:
+		replacement = "major: " + majorValue + ", minor: " + minorValue + ", patch: " + patchValue + ", flag: \"" + flagValue + "\","
+		fileContents = string.replace(fileContents, x, replacement)
+
+	pfd = open(fileName, "w")
+	pfd.write(fileContents)
+	pfd.close() # flush is implicit
+
 def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
 	docFiles = []
 
