@@ -165,8 +165,8 @@ dojo.lang.extend(dojo.widget.html.Tooltip, {
 		}
 	},
 
-	onParentResized: function() {
-		// onParentResized() is called when the user has resized the browser window,
+	checkSize: function() {
+		// checkSize() is called when the user has resized the browser window,
 		// but that doesn't affect this widget (or this widget's children)
 		// so it can be safely ignored
 	}

@@ -284,8 +284,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.onResized();
 	},
 
-	onParentResized: function() {
-		// onParentResized() is called when the user has resized the browser window,
+	checkSize: function() {
+		// checkSize() is called when the user has resized the browser window,
 		// but that doesn't affect this widget (or this widget's children)
 		// so it can be safely ignored...
 		// TODO: unless we are maximized.  then we should resize ourself.
