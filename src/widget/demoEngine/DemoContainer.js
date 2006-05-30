@@ -63,7 +63,7 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoContainer",
 		show: function() {
 			dojo.html.setOpacity(this.domNode,1);
 			dojo.html.show(this.domNode);
-			this.tabContainer.onParentResized();
+			this.tabContainer.checkSize();
 		}
 	},
 	"",

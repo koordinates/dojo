@@ -47,11 +47,11 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 			//}
 
 			dojo.lang.forEach(this.categoriesChildren, dojo.lang.hitch(this, function(child){
-				child.onParentResized();
+				child.checkSize();
 			}));
 
 			dojo.lang.forEach(this.demoListChildren, dojo.lang.hitch(this, function(child){
-				child.onParentResized();
+				child.checkSize();
 			}));
 		},
 
@@ -64,11 +64,11 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator",
 			dojo.html.setOpacity(this.navigationContainer,1);
 
 			dojo.lang.forEach(this.categoriesChildren, dojo.lang.hitch(this, function(child){
-				child.onParentResized();
+				child.checkSize();
 			}));
 
 			dojo.lang.forEach(this.demoListChildren, dojo.lang.hitch(this, function(child){
-				child.onParentResized();
+				child.checkSize();
 			}));
 		},
 		getRegistry: function(url) {
