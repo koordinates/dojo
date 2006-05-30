@@ -11,7 +11,7 @@ for pfile in $(cd profiles; ls *.profile.js; cd ..)
 do
 	profile=`echo $pfile | sed 's/.profile.js//g'`
 	echo Building profile: $profile
-	CLASSPATH="/home/alex/.ant/lib/js.jar:/home/alex/.ant/lib/jython.jar" ant -q -Ddocless=true -Dprofile=$profile release
+	CLASSPATH="/home/alex/.ant/lib/js.jar:/home/alex/.ant/lib/jython.jar" ant -q -Dversion=0.3.0 -Ddocless=true -Dprofile=$profile release
 	proName=dojo-0.3.0-$profile
 	cd ../release
 	mv dojo $proName

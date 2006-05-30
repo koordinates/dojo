@@ -25,7 +25,7 @@
 	<property name="build_dir" value="../build"/>
 	<property name="root" value=".."/>
 	<property name="src" value="src"/>
-	<property name="version" value="development"/>
+	<property name="version" value="0.0.0.dev"/>
 	<property name="lang" value="en"/>
 	<property name="releaseName" value="${project}"/>
 	<property name="dojoLoader" value="default"/>
@@ -518,6 +518,21 @@ ${profileDeps}
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
+ 
+		<!-- Set the version number -->
+		<script language="jython"><![CDATA[
+import sys
+# make the python standard library avialable
+sys.path.append("lib/pyLib.zip")
+sys.path.append(".")
+
+# import re
+import os
+from buildUtil import *
+
+print "Setting version for Dojo to: " + dojo.getProperty("version")
+replaceVersion(dojo.getProperty("release_dir") + "/source.__package__.js", dojo.getProperty("version"))
+]]></script>
 
 		<antcall target="-rhino-compress">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
@@ -604,6 +619,9 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 	<!-- release task -->
 	<target name="release" depends="-fix-config"
 		description="builds a release">
+		
+		<echo message="Using version number: ${version} for the release."/>
+		
 		<antcall target="clean" />
 		<!--
 		<antcall target="src" />
