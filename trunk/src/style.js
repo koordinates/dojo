@@ -645,6 +645,45 @@ dojo.require("dojo.lang.common");
 		}
 	}
 
+	/** 
+	* Set the given style attributes for the node. 
+	* Patch submitted by Wolfram Kriesing, 22/03/2006.
+	*
+	* Ie. dojo.style.setStyleAttributes(myNode, "position:absolute; left:10px; top:10px;") 
+	* This just makes it easier to set a style directly without the need to  
+	* override it completely (as node.setAttribute() would). 
+	* If there is a dojo-method for an attribute, like for "opacity" there 
+	* is setOpacity, the dojo method is called instead. 
+	* For example: dojo.style.setStyleAttributes(myNode, "opacity: .4"); 
+	*  
+	* Additionally all the dojo.style.set* methods can also be used. 
+	* Ie. when attributes contains "outer-height: 10;" it will call dojo.style.setOuterHeight("10"); 
+	* 
+	* @param object The node to set the style attributes for. 
+	* @param string Ie. "position:absolute; left:10px; top:10px;" 
+	*/ 
+	ds.setStyleAttributes = function(node, attributes) { 
+		var methodMap={ 
+			"opacity":dojo.style.setOpacity,
+			"content-height":dojo.style.setContentHeight,
+			"content-width":dojo.style.setContentWidth,
+			"outer-height":dojo.style.setOuterHeight,
+			"outer-width":dojo.style.setOuterWidth 
+		} 
+
+		var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
+		for(var i=0; i<splittedAttribs.length; i++){ 
+			var nameValue=splittedAttribs[i].split(":"); 
+			var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
+			var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
+			if(dojo.lang.has(methodMap,name)) { 
+				methodMap[name](node,value); 
+			} else { 
+				node.style[dojo.style.toCamelCase(name)]=value; 
+			} 
+		} 
+	} 
+
 	ds._toggle = function(node, tester, setter){
 		node = dojo.byId(node);
 		setter(node, !tester(node));
