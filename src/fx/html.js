@@ -7,7 +7,7 @@ dojo.require("dojo.animation");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
 
-dojo.deprecated("dojo.fx.html", "use dojo.lfx.html instead");
+dojo.deprecated("dojo.fx.html", "use dojo.lfx.html instead", "0.4");
 
 dojo.fx.duration = 300;
 
