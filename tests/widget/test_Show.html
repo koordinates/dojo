@@ -11,8 +11,8 @@
 		</script>
 	</head>
 	<body>
-		<div id="show" dojoType="show">
-			<div id="showslide" dojoType="showslide" title="Introduction">
+		<div dojoType="show">
+			<div dojoType="showslide" title="Introduction">
 				<p>This is a brief overview of what the show widget is capable of</p>
 			</div>
 			<div dojoType="showslide" title="Basic Actions">
@@ -31,7 +31,7 @@
 				<!-- Note: It's good to use fly on an inline element, as block elements are very wide -->
 				<div dojoType="showaction" on="thiscanbetext" action="wipe"></div>
 				<div dojoType="showaction" on="4" action="color" from="#aaa" to="#D12222" duration="500"></div>
-				<div dojoType="showaction" on="4" action="bgcolor" from="#fff" to="#aaa"></div>
+				<div dojoType="showaction" on="4" action="bgcolor" to="#aaa"></div>
 			</div>
 			<div dojoType="showslide" title="Automatically Advance">
 				<span as="1">First you see me</span>
