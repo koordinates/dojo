@@ -30,7 +30,18 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	inNav: false,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
-	fillInTemplate: function(){
+	fillInTemplate: function(args, frag){
+		var source = this.getFragNodeRef(frag);
+		this.sourceNode = document.body.appendChild(source.cloneNode(true));
+		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
+			if(child.tagName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
+				child.className = "dojoShowPrintSlide";
+				child.innerHTML = "<h1>" + child.title + "</h1>" + child.innerHTML;
+			}
+		}
+		this.sourceNode.className = "dojoShowPrint";
+		this.sourceNode.style.display = "none";
+		
 		dojo.event.connect(document, "onclick", this, "gotoSlideByEvent");
 		dojo.event.connect(document, "onkeypress", this, "gotoSlideByEvent");
 		dojo.event.connect(document, "onresize", this, "resizeWindow");

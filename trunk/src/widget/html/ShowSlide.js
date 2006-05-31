@@ -4,7 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.widget.ShowSlide");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.fx.*");
+dojo.require("dojo.lfx.html");
 dojo.require("dojo.animation.Animation");
 dojo.require("dojo.graphics.color");
 
@@ -118,13 +118,15 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 				var duration = action.duration || 1000;
 				if(action.action == "fade"){
 					dojo.style.setOpacity(component, 0);
-					dojo.fx.html.fadeIn(component, duration);
+					dojo.lfx.html.fadeIn(component, duration).play(true);
 				}else if(action.action == "fly"){
 					var width = dojo.style.getMarginBoxWidth(component);
 					var position = dojo.style.getAbsolutePosition(component);
-					dojo.fx.html.slide(component, duration, [-(width + position.x), 0], [0, 0], this.callWith);
+					component.style.position = "relative";
+					component.style.left = -(width + position.x) + "px";
+					dojo.lfx.html.slideBy(component, [0, (width + position.x)], duration, -1, this.callWith).play(true);
 				}else if(action.action == "wipe"){
-					dojo.fx.html.wipeIn(component, duration);
+					dojo.lfx.html.wipeIn(component, duration).play();
 				}else if(action.action == "color"){
 					var from = new dojo.graphics.color.Color(action.from).toRgb();
 					var to = new dojo.graphics.color.Color(action.to).toRgb();
@@ -135,7 +137,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 					});
 					anim.play(true);
 				}else if(action.action == "bgcolor"){
-					dojo.fx.html.colorFade(component, duration, action.from, action.to);
+					dojo.lfx.html.unhighlight(component, action.to, duration).play();
 				}else if(action.action == "remove"){
 					component.style.display = "none";
 				}
