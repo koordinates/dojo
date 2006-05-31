@@ -20,23 +20,28 @@
 
 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
 		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar"
-		setValue="dojo.byId('value1').value=arguments[0];">
+		setValue="dojo.byId('value1').value=arguments[0];"
+		setSelectedValue="dojo.byId('svalue1').value=arguments[0];"
+	>
 	<br>
-	<div>Selected value: <input id="value1"></input></div>
+	<div>Value: <input id="value1" disabled>, selected value: <input id="svalue1" disabled></div>
 	<hr>
 		
-    <p>The combo above uses an input tag. The combo below uses a select tag</p>
-	<select dojoType="ComboBox" value="this should never be seen - it is replaced!"
-		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar1" maxListLength="15"
-		setValue="dojo.byId('value2').value=arguments[0];">
-    </select>
+    <p>Same except that autocomplete==false:</p>
+ 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar" autocomplete="false"
+		setValue="dojo.byId('value2').value=arguments[0];"
+		setSelectedValue="dojo.byId('svalue2').value=arguments[0];"
+	>
 	<br>
-	<div>Selected value: <input id="value2"></input></div>
+	<div>Value: <input id="value2" disabled>, selected value: <input id="svalue2" disabled></div>
 	<hr>
-
-    <p>The combo box below has inlined data, rather than getting data from a javascript function:</p>
+ 
+    <p>The combo box below uses a select tag, and has inlined data, rather than getting data from a javascript function:</p>
 	<select name="state" dojoType="combobox" style="width: 300px;" name="foo.bar1" 
-		setValue="dojo.byId('value3').value=arguments[0];">
+		setValue="dojo.byId('value3').value=arguments[0];"
+		setSelectedValue="dojo.byId('svalue3').value=arguments[0];"
+	>
 		<option value="AL">Alabama</option>
 		<option value="AK">Alaska</option>
 		<option value="AS">American Samoa</option>
@@ -100,7 +105,7 @@
 		<option value="WY">Wyoming</option>
 	</select>    
 	<br>
-	<div>Selected value: <input id="value3"></input></div>
+	<div>Value: <input id="value3" disabled>, selected value: <input id="svalue3" disabled></div>
 	<hr>
 
 	<input type="submit">
