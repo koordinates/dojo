@@ -600,8 +600,14 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		if ( this.timerScale<1.0 ) {
 			dojo.lang.setTimeout(this, "expandSlowly", 10);
 		}
-	}
+	},
 
+	destroy: function(){
+		// need to disconnect when we destroy
+		dojo.event.disconnect(document.documentElement, "onmouseout", this, "onBodyOut");
+		dojo.event.disconnect(document.documentElement, "onmousemove", this, "mouseHandler");
+		dojo.widget.html.FisheyeList.superclass.destroy.call(this);
+	}
 });
 
 dojo.widget.html.FisheyeListItem = function(){
