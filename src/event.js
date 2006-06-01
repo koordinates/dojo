@@ -310,6 +310,10 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 	if(!obj[methname]){
 		// supply a do-nothing method implementation
 		obj[methname] = function(){};
+		if(!obj[methname]){
+			// e.g. cannot add to inbuilt objects in IE6
+			dojo.raise("Cannot set do-nothing method on that object "+methname);
+		}
 	}else if((!dojo.lang.isFunction(obj[methname]))&&(!dojo.lang.isAlien(obj[methname]))){
 		return null; // FIXME: should we throw an exception here instead?
 	}
