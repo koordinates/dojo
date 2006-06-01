@@ -1,10 +1,3 @@
-// make jsc shut up (so we can use jsc to sanity check the code even if it will never run it).
-/*@cc_on
-@if (@_jscript_version >= 7)
-var window; var XMLHttpRequest;
-@end
-@*/
-
 if(typeof window == 'undefined'){
 	dojo.raise("no window object");
 }
