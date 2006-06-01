@@ -137,7 +137,21 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 	},
 	
 	postCreate: function(args, frag) {
+		this.initializePositioning();
 
+		//
+		// in liberal trigger mode, activate menu whenever mouse is close
+		//
+		if( !this.conservativeTrigger ){
+			dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+		}
+		
+		// Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
+		dojo.event.connect(document.documentElement, "onmouseout", this, "onBodyOut");
+		dojo.event.connect(this, "addChild", this, "initializePositioning");
+	},
+
+	initializePositioning: function(){
 		this.itemCount = this.children.length;
 
 		this.barWidth  = (this.isHorizontal ? this.itemCount : 1) * this.itemWidth;
@@ -219,16 +233,6 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		//
 
 		this.calcHitGrid();
-
-		//
-		// in liberal trigger mode, activate menu whenever mouse is close
-		//
-		if( !this.conservativeTrigger ){
-			dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
-		}
-		
-		// Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
-		dojo.event.connect(document.documentElement, "onmouseout", this, "onBodyOut");
 	},
 
 	onBodyOut: function(e){
