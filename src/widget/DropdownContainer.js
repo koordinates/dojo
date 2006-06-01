@@ -11,9 +11,6 @@ dojo.widget.defineWidget(
 		initializer: function(){
 		},
 
-		isContainer: true,
-		snarfChildDomOutput: true,
-		
 		inputWidth: "7em",
 		inputId: "",
 		inputName: "",
