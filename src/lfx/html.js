@@ -1,7 +1,7 @@
 dojo.provide("dojo.lfx.html");
 dojo.require("dojo.lfx.Animation");
 
-dojo.require("dojo.html");
+dojo.require("dojo.style");
 dojo.require("dojo.event");
 dojo.require("dojo.lang.func");
 
@@ -101,13 +101,12 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 		}
 	}
 	
-	var anim = new dojo.lfx.Animation(duration, new propLine(propertyMap), easing);
-	
-	dojo.event.connect(anim, "onAnimate", function(propValues){
-		dojo.lang.forEach(nodes, function(node){
-			setStyle(node, propValues); 
-		});
-	});
+	var anim = new dojo.lfx.Animation({
+		onAnimate: function(propValues){
+			dojo.lang.forEach(nodes, function(node){
+				setStyle(node, propValues);
+			});
+		} }, duration, new propLine(propertyMap), easing);
 	
 	return anim;
 }
@@ -207,8 +206,8 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 		if(overflow == "visible") {
 			node.style.overflow = "hidden";
 		}
-		dojo.style.show(node);
 		node.style.height = 0;
+		dojo.style.show(node);
 		
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
