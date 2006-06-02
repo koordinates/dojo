@@ -555,7 +555,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			with(this.optionsListNode.style){
 				display = "";
 				height = ((visibleCount) ? (dojo.style.getOuterHeight(childs[0]) * visibleCount) : 0)+"px";
-				width = dojo.html.getOuterWidth(this.cbTableNode)+"px";
+				width = dojo.html.getOuterWidth(this.cbTableNode)-2+"px";
 			}
 			// only fadein once (flicker)
 			if(!this._result_list_open){
