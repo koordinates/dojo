@@ -28,9 +28,19 @@
                 topic2.sendMessage("Message " + ++clickCount);
             }
 
+			var subCounter = 0;
+			function addSubscriber(subName){
+				var container = dojo.byId("container");
+				var newSub = document.createElement("div");
+				newSub.id = "subscriber"+subCounter++;
+				newSub.innerHTML = newSub.id;
+				container.appendChild(newSub);
+				return new Subscriber(newSub);
+			}
+
 			dojo.addOnLoad(function(){
-				var sub1 = new Subscriber(dojo.byId("subscriber1"));
-				var sub2 = new Subscriber(dojo.byId("subscriber2"));
+				var sub1 = addSubscriber();
+				var sub2 = addSubscriber();
 
                 topic1.subscribe(sub1, "update");
                 topic1.subscribe(sub2, "update");
@@ -42,12 +52,7 @@
 	<body>
 		Check your javascript log; the scripts were all loaded in the head.
 
-		<div id="subscriber1">
-			subscriber1
-		</div>
-
-		<div id="subscriber2">
-			subscriber2
+		<div id="container">
 		</div>
 
 		<button id="publisher" onclick="sendMessage1();">
@@ -57,6 +62,8 @@
 		<button id="publisher2" onclick="sendMessage2();">
 			Publish a message on Topic2 
 		</button>
+
+		<button onclick="dojo.event.topic.subscribe('testTopic1', addSubscriber(), 'update');"> Add a new subscriber </button>
 
     </body>
 </html>
