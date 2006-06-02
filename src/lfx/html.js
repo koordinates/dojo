@@ -3,7 +3,6 @@ dojo.require("dojo.lfx.Animation");
 
 dojo.require("dojo.style");
 dojo.require("dojo.event");
-dojo.require("dojo.lang.func");
 
 dojo.lfx.html._byId = function(nodes){
 	if(dojo.lang.isArray(nodes)){
