@@ -11,7 +11,6 @@ dojo.widget.defineWidget(
 	{
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
 		iconAlt: "Select a Date",
-		iconTitle: "Select a Date",
 		zIndex: "10",
 		datePicker: null,
 		

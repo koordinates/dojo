@@ -14,8 +14,8 @@ dojo.widget.defineWidget(
 		inputWidth: "7em",
 		inputId: "",
 		inputName: "",
-		iconURL: null,
-		iconAlt: null,
+		iconURL: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
+		iconAlt: "",
 
 		inputNode: null,
 		buttonNode: null,
@@ -26,7 +26,7 @@ dojo.widget.defineWidget(
 		containerToggleDuration: 150,
 		containerAnimInProgress: false,
 
-		templateString: '<div><span style="white-space:nowrap"><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="" alt="" dojoAttachPoint="buttonNode" dojoAttachEvent="onclick: onIconClick;" style="vertical-align:middle; cursor:pointer; cursor:hand;" /></span><br /><div dojoAttachPoint="containerNode" style="display:none;position:absolute;width:12em;background-color:#fff;"></div></div>',
+		templateString: '<div><span style="white-space:nowrap"><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachPoint="buttonNode" dojoAttachEvent="onclick: onIconClick;" style="vertical-align:middle; cursor:pointer; cursor:hand;" /></span><br /><div dojoAttachPoint="containerNode" style="display:none;position:absolute;width:12em;background-color:#fff;"></div></div>',
 		templateCssPath: "",
 
 		fillInTemplate: function(args, frag){
@@ -38,9 +38,6 @@ dojo.widget.defineWidget(
 			if(this.inputId){ this.inputNode.id = this.inputId; }
 			if(this.inputName){ this.inputNode.name = this.inputName; }
 			this.inputNode.style.width = this.inputWidth;
-
-			if(this.iconURL){ this.buttonNode.src = this.iconURL; }
-			if(this.iconAlt){ this.buttonNode.alt = this.iconAlt; }
 
 			dojo.event.connect(this.inputNode, "onchange", this, "onInputChange");
 			
