@@ -16,22 +16,18 @@ dojo.require("dojo.event");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	node = dojo.byId(node);
+	this.dragObjects = [];
 	this.constrainToContainer = false;
 	if(node){
 		this.domNode = node;
 		this.dragObject = node;
-
 		// register us
 		dojo.dnd.DragSource.call(this);
-
 		// set properties that might have been clobbered by the mixin
-		this.type = type||this.domNode.nodeName.toLowerCase();
+		this.type = (type)||(this.domNode.nodeName.toLowerCase());
 	}
-
 }
-
 dojo.inherits(dojo.dnd.HtmlDragSource, dojo.dnd.DragSource);
-
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	dragClass: "", // CSS classname(s) applied to node when it is being dragged
 
@@ -62,6 +58,35 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 		if (container) {
 			this.constrainingContainer = container;
 		}
+	},
+	
+	/*
+	*
+	* see dojo.dnd.DragSource.onSelected
+	*/
+	onSelected: function() {
+		for (var i=0; i<this.dragObjects.length; i++) {
+			dojo.dnd.dragManager.selectedSources.push(new dojo.dnd.HtmlDragSource(this.dragObjects[i]));
+		}
+	},
+
+	/**
+	* Register elements that should be dragged along with
+	* the actual DragSource.
+	*
+	* Example usage:
+	* 	var dragSource = new dojo.dnd.HtmlDragSource(...);
+	*	// add a single element
+	*	dragSource.addDragObjects(dojo.byId('id1'));
+	*	// add multiple elements to drag along
+	*	dragSource.addDragObjects(dojo.byId('id2'), dojo.byId('id3'));
+	*
+	* el A dom node to add to the drag list.
+	*/
+	addDragObjects: function(/*DOMNode*/ el) {
+		for (var i=0; i<arguments.length; i++) {
+			this.dragObjects.push(arguments[i]);
+		}
 	}
 });
 
@@ -71,9 +96,7 @@ dojo.dnd.HtmlDragObject = function(node, type){
 	this.constrainToContainer = false;
 	this.dragSource = null;
 }
-
 dojo.inherits(dojo.dnd.HtmlDragObject, dojo.dnd.DragObject);
-
 dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	dragClass: "",
 	opacity: 0.5,

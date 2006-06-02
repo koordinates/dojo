@@ -6,33 +6,35 @@ dojo.require("dojo.dnd.*");
 dojo.dnd.HtmlDragMoveSource = function(node, type){
 	dojo.dnd.HtmlDragSource.call(this, node, type);
 }
-
 dojo.inherits(dojo.dnd.HtmlDragMoveSource, dojo.dnd.HtmlDragSource);
-
 dojo.lang.extend(dojo.dnd.HtmlDragMoveSource, {
 	onDragStart: function(){
 		var dragObj =  new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
-
 		if (this.constrainToContainer) {
 			dragObj.constrainTo(this.constrainingContainer);
 		}
 		return dragObj;
+	},
+	/*
+	 * see dojo.dnd.HtmlDragSource.onSelected
+	 */
+	onSelected: function() {
+		for (var i=0; i<this.dragObjects.length; i++) {
+			dojo.dnd.dragManager.selectedSources.push(new dojo.dnd.HtmlDragMoveSource(this.dragObjects[i]));
+		}
 	}
 });
 
 dojo.dnd.HtmlDragMoveObject = function(node, type){
 	dojo.dnd.HtmlDragObject.call(this, node, type);
 }
-
 dojo.inherits(dojo.dnd.HtmlDragMoveObject, dojo.dnd.HtmlDragObject);
-
 dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 	onDragEnd: function(e){
 		// shortly the browser will fire an onClick() event,
 		// but since this was really a drag, just squelch it
 		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
 	},
-	
 	onDragStart: function(e){
 		dojo.html.clearSelection();
 
@@ -53,7 +55,6 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 			this.constraints = this.getConstraints();
 		}
 	},
-	
 	/**
 	 * Set the position of the drag node.  (x,y) is relative to <body>.
 	 */
@@ -62,5 +63,4 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 		if(!this.disableY) { this.domNode.style.top = (y-this.containingBlockPosition.y) + "px"; }
 		if(!this.disableX) { this.domNode.style.left = (x-this.containingBlockPosition.x) + "px"; }
 	}
-
 });
