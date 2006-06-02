@@ -12,4 +12,4 @@
 load('buildUtil.js');
 
 // print(dojo.hostenv.loadedUris.join(",\n"));
-print(getDependencyList(this['dependencies'], this['hostenvType']).join(",\n"));
+print(buildUtil.getDependencyList(this['dependencies'], this['hostenvType']).join(",\n"));
