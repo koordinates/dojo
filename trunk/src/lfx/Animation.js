@@ -1,6 +1,7 @@
 dojo.provide("dojo.lfx.Animation");
 dojo.provide("dojo.lfx.Line");
 
+dojo.require("dojo.event");
 dojo.require("dojo.lang.func");
 
 /*
