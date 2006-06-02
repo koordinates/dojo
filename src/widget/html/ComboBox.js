@@ -53,6 +53,10 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 	setValue: function(value) {
 		this.comboBoxValue.value = value;
+		if (this.textInputNode.value != value) { // prevent mucking up of selection
+			this.textInputNode.value = value;
+		}
+		dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
 	},
 
 	getValue: function() {
@@ -60,11 +64,11 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	},
 
 	getState: function() {
-		return {value: this.getSelectedValue()};
+		return {value: this.getValue()};
 	},
 
 	setState: function(state) {
-		this.setSelectedValue(state.value);
+		this.setValue(state.value);
 	},
 
 	getCaretPos: function(element){
@@ -237,22 +241,13 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	},
 
 	onKeyUp: function(evt){
-		this.setSelectedValue(this.textInputNode.value);
+		this.setValue(this.textInputNode.value);
 	},
 
-	// get the displayed value (the label)
-	getSelectedValue: function() {
-		return this.comboBoxSelectionValue.value;
-	},
-
-	// set the displayed value (the label)
 	setSelectedValue: function(value){
 		// FIXME, not sure what to do here!
 		this.comboBoxSelectionValue.value = value;
-		if (this.textInputNode.value != value) { // prevent mucking up of selection
-			this.textInputNode.value = value;
-		}
-		dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+		this.hideResultList();
 	},
 
 	// opera, khtml, safari doesnt support node.scrollIntoView(), workaround
@@ -368,8 +363,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 					var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
 					data.push(keyValArr);
 					if(opts[x].selected){ 
-						this.setValue(keyValArr[1]); 
-						this.setSelectedValue(keyValArr[0]);
+						this.setValue(keyValArr[0]); 
+						this.comboBoxSelectionValue.value = keyValArr[1];
 					}
 				}
 				this.dataProvider.setData(data);
@@ -503,8 +498,8 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 
 		this.textInputNode.value = tgt.getAttribute("resultName");
 		this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
-		this.setValue(tgt.getAttribute("resultValue"));
-		this.setSelectedValue(tgt.getAttribute("resultName"));
+		this.setValue(tgt.getAttribute("resultName"));
+		this.comboBoxSelectionValue.value = tgt.getAttribute("resultValue");
 		if(!evt.noHide){
 			this.hideResultList();
 			this.setSelectedRange(this.textInputNode, 0, null);
