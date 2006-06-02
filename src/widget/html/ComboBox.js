@@ -179,7 +179,11 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 					// put caret last
 					this.setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
 				}else{
-					this.selectOption();
+					if(!this.textInputNode.value.length){
+						this.setValue("");
+					}else{
+						this.selectOption();
+					} 
 					return;
 				}
 				break;
@@ -198,12 +202,13 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 			case k.KEY_BACKSPACE:
 				this._prev_key_backspace = true;
 				if(!this.textInputNode.value.length){
+					this.setValue("");
 					this.hideResultList();
 					doSearch = false;
 				}
 				break;
-			case k.KEY_RIGHT_ARROW: // falltrough
-			case k.KEY_LEFT_ARROW: // falltrough
+			case k.KEY_RIGHT_ARROW: // fall through
+			case k.KEY_LEFT_ARROW: // fall through
 			case k.KEY_SHIFT:
 				doSearch = false;
 				break;
@@ -213,7 +218,6 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 				}
 		}
 
-// 		this.setValue(this.textInputNode.value);
 		if(this.searchTimer){
 			clearTimeout(this.searchTimer);
 		}
@@ -480,15 +484,30 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	},
 
 	selectOption: function(evt){
+		var tgt = null;
 		if(!evt){
 			evt = { target: this._highlighted_option };
 		}
 
 		if(!dojo.dom.isDescendantOf(evt.target, this.optionsListNode)){
-			return;
+			// handle autocompletion where the the user has hit ENTER or TAB
+
+			// if the input is empty do nothing
+			if(!this.textInputNode.value.length){
+				return;
+			}
+			tgt = dojo.dom.firstElement(this.optionsListNode);
+
+			// if the input value is different to the first element's value
+			// the user hasn't selected an option from the menu
+			if(this.textInputNode.value!=tgt.getAttribute("resultName").toLowerCase()){
+				return;
+			}
+			// otherwise the user has accepted the autocompleted value
+		} else {
+			tgt = evt.target; 
 		}
 
-		var tgt = evt.target;
 		while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 			tgt = tgt.parentNode;
 			if(tgt === document.body){
@@ -563,7 +582,7 @@ dojo.lang.extend(dojo.widget.html.ComboBox, {
 	},
 
 	tryFocus: function(){
-		try {    
+		try {
 			this.textInputNode.focus();
 		} catch (e) {
 			// element isnt focusable if disabled, or not visible etc - not easy to test for.
