@@ -48,7 +48,7 @@ dojo.string.capitalize = function (str) {
 	if (arguments.length == 0) { str = this; }
 
 	var words = str.split(' ');
-	for(var i in words){
+	for(var i=0; i<words.length; i++){
 		words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
 	}
 	return words.join(" ");
