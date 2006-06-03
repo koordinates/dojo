@@ -1,7 +1,6 @@
 dojo.provide("dojo.lfx.Animation");
 dojo.provide("dojo.lfx.Line");
 
-dojo.require("dojo.event");
 dojo.require("dojo.lang.func");
 
 /*
@@ -288,7 +287,8 @@ dojo.lfx.Combine = function(){
 	var _this = this;
 	dojo.lang.forEach(anims, function(anim){
 		_this._anims.push(anim);
-		dojo.event.connect(anim, "onEnd", function(){ _this._onAnimsEnded(); });
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ oldOnEnd(); _this._onAnimsEnded(); };
 	});
 }
 dojo.inherits(dojo.lfx.Combine, dojo.lfx.IAnimation);
@@ -359,10 +359,11 @@ dojo.lfx.Chain = function() {
 	var _this = this;
 	dojo.lang.forEach(anims, function(anim, i, anims_arr){
 		_this._anims.push(anim);
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
 		if(i < anims_arr.length - 1){
-			dojo.event.connect(anim, "onEnd", function(){ _this._playNext(); });
+			anim.onEnd = function(){ oldOnEnd(); _this._playNext(); };
 		}else{
-			dojo.event.connect(anim, "onEnd", function(){ _this.fire("onEnd"); });
+			anim.onEnd = function(){ oldOnEnd(); _this.fire("onEnd"); };
 		}
 	}, _this);
 }
