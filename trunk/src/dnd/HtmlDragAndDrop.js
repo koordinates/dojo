@@ -110,6 +110,26 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
 		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
+		if(node.tagName.toLowerCase() == "tr"){
+			// dojo.debug("Dragging table row")
+			// Create a table for the cloned row
+			var doc = this.domNode.ownerDocument;
+			var table = doc.createElement("table");
+			var tbody = doc.createElement("tbody");
+			tbody.appendChild(node);
+			table.appendChild(tbody);
+
+			// Set a fixed width to the cloned TDs
+			var domTds = this.domNode.childNodes;
+			var cloneTds = node.childNodes;
+			for(var i = 0; i < domTds.length; i++){
+			    if((cloneTds[i])&&(cloneTds[i].style)){
+				    cloneTds[i].style.width = dojo.style.getContentWidth(domTds[i]) + "px";
+			    }
+			}
+			node = table;
+		}
+
 		if((dojo.render.html.ie55||dojo.render.html.ie60) && this.createIframe){
 			with(node.style) {
 				top="0px";
@@ -255,8 +275,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
-					dojo.lang.setTimeout(dojo.dom.removeNode, 200,
-						dragObject.dragClone);
+					dojo.lang.setTimeout(function() {
+							dojo.dom.removeNode(dragObject.dragClone);
+							// Allow drag clone to be gc'ed
+							dragObject.dragClone = null;
+						},
+						200);
 				});
 				anim.play();
 				break;
