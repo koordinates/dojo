@@ -72,11 +72,16 @@
  * @param cb a function to pass the result of evaluating the script (optional)
  */
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
+	var uri;
 	if((relpath.charAt(0) == '/')||(relpath.match(/^\w+:/))){
-		dojo.raise("relpath '" + relpath + "'; must be relative");
+		// dojo.raise("relpath '" + relpath + "'; must be relative");
+		uri = relpath;
+	}else{
+		uri = this.getBaseScriptUri() + relpath;
 	}
-	var uri = this.getBaseScriptUri() + relpath;
-	if(djConfig.cacheBust && dojo.render.html.capable) { uri += "?" + String(djConfig.cacheBust).replace(/\W+/g,""); }
+	if(djConfig.cacheBust && dojo.render.html.capable){
+		uri += "?" + String(djConfig.cacheBust).replace(/\W+/g,"");
+	}
 	try{
 		return ((!module) ? this.loadUri(uri, cb) : this.loadUriAndCheck(uri, module, cb));
 	}catch(e){
@@ -240,6 +245,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
 	var syms = this.getModuleSymbols(modulename);
+	var startedRelative = ((syms[0].charAt(0) != '/')&&(!syms[0].match(/^\w+:/)));
 	var last = syms[syms.length - 1];
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
@@ -251,7 +257,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			syms.pop();
 			syms.push(this.pkgFileName);
 			relpath = syms.join("/") + '.js';
-			if(relpath.charAt(0)=="/"){
+			if(startedRelative && (relpath.charAt(0)=="/")){
 				relpath = relpath.slice(1);
 			}
 			ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
@@ -270,7 +276,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 				if(ok){ break; }
 				syms.pop();
 				relpath = syms.join('/') + '/'+this.pkgFileName+'.js';
-				if(relpath.charAt(0)=="/"){
+				if(startedRelative && (relpath.charAt(0)=="/")){
 					relpath = relpath.slice(1);
 				}
 				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
