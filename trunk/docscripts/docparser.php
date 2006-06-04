@@ -3,6 +3,7 @@
 require_once('inc/Dojo.php');
 require_once('inc/DojoObject.php');
 require_once('inc/DojoString.php');
+require_once('inc/helpers.inc');
 
 header('Content-type: text/plain');
 
@@ -68,12 +69,10 @@ foreach ($calls as $call) {
         continue;
       }
       if ($props->isFunction($key)) {
-        $output[$package->getPackageName()]['meta']['methods'][$package->getPackageName() . '.' . $key]['_'] = "";
         $function = $props->getValue($key);
-        $parameters = $function->getParameters();
-        foreach ($parameters as $parameter) {
-          $output[$package->getPackageName()][$package->getPackageName() . '.' . $key]['meta']['parameters'][] = array($parameter->getType(), $parameter->getValue());
-        }
+        $function->setThis($name->getValue());
+        $function->setFunctionName($name->getValue() . '.' . $key);
+        rolloutFunction($output, $package, $function);
       }
       else {
         $output[$package->getPackageName()][$name->getValue()]['meta']['protovariables'][] = $key;
@@ -92,25 +91,7 @@ foreach ($calls as $call) {
 // Handle method declarations
 $declarations = $package->getFunctionDeclarations();
 foreach ($declarations as $declaration) {
-  $output[$package->getPackageName()]['meta']['methods'][$declaration->getFunctionName()]['_'] = '';
-  $parameters = $declaration->getParameters();
-  foreach ($parameters as $parameter) {
-    $output[$package->getPackageName()][$declaration->getFunctionName()]['meta']['parameters'][] = array($parameter->getType(), $parameter->getValue());
-  }
-  
-  $declaration->addBlockCommentKey('summary');
-  $declaration->addBlockCommentKey('description');
-  $parameters = $declaration->getParameters();
-  foreach ($parameters as $parameter) {
-    $declaration->addBlockCommentKey($parameter->getValue());
-  }
-
-  $comment_keys = $declaration->getBlockCommentKeys();
-  foreach ($comment_keys as $key) {
-    if ($key == 'summary') {
-      $output[$package->getPackageName()]['meta']['methods'][$declaration->getFunctionName()]['_'] = $declaration->getBlockComment($key);
-    }
-  }
+  rolloutFunction($output, $package, $declaration);
 }
 
 $output['function_names'][$package->getPackageName()] = array_diff(array_keys($output[$package->getPackageName()]), array('meta'));

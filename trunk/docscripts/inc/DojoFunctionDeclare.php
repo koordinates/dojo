@@ -9,6 +9,7 @@ class DojoFunctionDeclare extends DojoFunction
   protected $function_name = "";
   protected $block_comment_keys = array();
   protected $block_comments = array();
+  protected $this_variable_names = array();
 
   public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name = false)
   {
@@ -18,29 +19,125 @@ class DojoFunctionDeclare extends DojoFunction
     parent::__construct($source, $code, $package_name, $compressed_package_name);
   }
   
+  /**
+   * This sets the opening { of the function content block
+   *
+   * @param int $line_number
+   * @param int $position
+   */
   public function setContentStart($line_number, $position)
   {
+    if (!is_int($line_number) || !is_int($position)) {
+      throw new Exception('Inputs to setContentStart must be integers');
+    }
     $this->content_start = array($line_number, $position);
     $this->content_end = array($line_number, strlen($this->source[$line_number]) - 1);
   }
   
+  /**
+   * This sets the closing { of the function content block
+   *
+   * @param int $line_number
+   * @param int $position
+   */
   public function setContentEnd($line_number, $position)
   {
+    if (!is_int($line_number) || !is_int($position)) {
+      throw new Exception('Inputs to setContentEnd must be integers');
+    }
     $this->content_end = array($line_number, $position);
   }
-  
-  public function setFunctionName($function_name)
-  {
-    $this->function_name = $function_name;
-  }
-  
+
+  /**
+   * Getter for the function name
+   *
+   * @return string
+   */
   public function getFunctionName()
   {
     return $this->function_name;
   }
 
+  /**
+   * Sets a valid key for the initial block comment
+   * 
+   * This will make any line starting with this key (which can end with a colon)
+   * be tied to that key. Anything in the comment block not associated with a key
+   * will be ignored
+   *
+   * @param string $block_comment_key
+   */
   public function addBlockCommentKey($block_comment_key) {
+    if (!is_string($block_comment_key)) {
+      throw new Exception('Key for addBlockCommentKey must be a string');
+    }
     $this->block_comment_keys[] = $block_comment_key;
+  }
+  
+  public function getThisVariableNames()
+  {
+    if ($this->this_variable_names) {
+      return array_keys($this->this_variable_names);
+    }
+    
+    $lines = $this->chop($this->code, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    if ($variables = preg_grep('%\bthis\.[a-zA-Z0-9_.$]+\s*=%', $lines)) {
+      foreach (array_keys($variables) as $start_line_number) {
+        $line = $lines[$start_line_number];
+        preg_match('%\bthis\.([a-zA-Z0-9_.$]+)\s*=%', $line, $match);
+        $name = $match[1];
+        $pos = strpos($line, $match[0]) + strlen($match[0]);
+        $param_balance = 0;
+        $block_balance = 0;
+        $value = array();
+  
+        for ($line_number = $start_line_number; $line_number < count($this->code); $line_number++) {
+          if (!$param_balance && !$block_balance && $value) {
+            $this->this_variable_names[$name] = $value;
+            continue;
+          }
+          
+          $line = $lines[$line_number];
+          $chars = array_values(array_diff(preg_split('%%', $line), array('')));
+          for ($char_pos = $pos; $char_pos < count($chars); $char_pos++) {
+            $pos = 0;
+            $char = $line{$char_pos};
+  
+            if ($char == '(') {
+              ++$param_balance;
+            }
+            elseif ($char == ')') {
+              --$param_balance;
+            }
+            elseif ($char == '{') {
+              ++$block_balance;
+            }
+            elseif ($char == '}') {
+              --$block_balance;
+            }
+            
+            if (!$param_balance && !$block_balance && $char == ';') {
+              $this->this_variable_names[$name] = $value;
+              $value = array();
+              continue 3;
+            }
+            
+            $value[$line_number] .= $char;
+          }
+        }
+      }
+      
+      if ($value) {
+        $this->this_variable_names[$name] = $value;
+      }
+    }
+    
+    return array_keys($this->this_variable_names);
+  }
+  
+  public function getThisVariable($this_variable_name)
+  {
+    
   }
   
   /**
