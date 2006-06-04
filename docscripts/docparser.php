@@ -55,7 +55,7 @@ foreach ($calls as $call) {
   }
   if (!$name instanceof DojoString) continue;
   if (!is_string($superclass)) continue;
-  $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_'] = array();
+  $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_'] = "";
   if ($superclass != "null" && $superclass != "false" && $superclass != "undefined") {
     $output[$package->getPackageName()][$name->getValue()]['meta']['inherits'][] = $superclass;
     $output[$package->getPackageName()][$name->getValue()]['meta']['this_inherits'][] = $superclass;
@@ -68,7 +68,7 @@ foreach ($calls as $call) {
         continue;
       }
       if ($props->isFunction($key)) {
-        $output[$package->getPackageName()]['meta']['methods'][$package->getPackageName() . '.' . $key]['_'] = array();
+        $output[$package->getPackageName()]['meta']['methods'][$package->getPackageName() . '.' . $key]['_'] = "";
         $function = $props->getValue($key);
         $parameters = $function->getParameters();
         foreach ($parameters as $parameter) {
@@ -76,7 +76,7 @@ foreach ($calls as $call) {
         }
       }
       else {
-        $output[$package->getPackageName()][$name->getValue()]['meta']['variables'][] = $key;
+        $output[$package->getPackageName()][$name->getValue()]['meta']['protovariables'][] = $key;
       }
     }
   }
@@ -89,14 +89,31 @@ foreach ($calls as $call) {
   }
 }
 
+// Handle method declarations
 $declarations = $package->getFunctionDeclarations();
 foreach ($declarations as $declaration) {
-  $output[$package->getPackageName()]['meta']['methods'][$declaration->getFunctionName()]['_'] = array();
+  $output[$package->getPackageName()]['meta']['methods'][$declaration->getFunctionName()]['_'] = '';
   $parameters = $declaration->getParameters();
   foreach ($parameters as $parameter) {
     $output[$package->getPackageName()][$declaration->getFunctionName()]['meta']['parameters'][] = array($parameter->getType(), $parameter->getValue());
   }
+  
+  $declaration->addBlockCommentKey('summary');
+  $declaration->addBlockCommentKey('description');
+  $parameters = $declaration->getParameters();
+  foreach ($parameters as $parameter) {
+    $declaration->addBlockCommentKey($parameter->getValue());
+  }
+
+  $comment_keys = $declaration->getBlockCommentKeys();
+  foreach ($comment_keys as $key) {
+    if ($key == 'summary') {
+      $output[$package->getPackageName()]['meta']['methods'][$declaration->getFunctionName()]['_'] = $declaration->getBlockComment($key);
+    }
+  }
 }
+
+$output['function_names'][$package->getPackageName()] = array_diff(array_keys($output[$package->getPackageName()]), array('meta'));
 
 print_r($output);
 
