@@ -162,17 +162,20 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	}
 
 	http.open('GET', uri, async_cb ? true : false);
-	try {
+	try{
 		http.send(null);
-	} catch (e) {
-		if (fail_ok && !async_cb) {
+		if(async_cb){
 			return null;
-		} else {
+		}
+		if(http.status != 200){
+			throw Error("Unable to load "+uri+" status:"+ http.status);
+		}
+	}catch(e){
+		if((fail_ok)&&(!async_cb)){
+			return null;
+		}else{
 			throw e;
 		}
-	}
-	if(async_cb){
-		return null;
 	}
 
 	return http.responseText;
