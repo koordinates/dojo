@@ -92,7 +92,8 @@ class DojoObject extends DojoFunction
       }
       
       if (preg_match('%^\s*function\s*\(%', $line)) {
-        $declare = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name);
+        $declare = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $this->function_name . '.' . $key);
+        $declare->setThis($this->function_name);
         $declare->setStart($this->start[0], $this->start[1]);
         $declare->setEnd($this->end[0], $this->end[1]);
         $start = false;
@@ -110,9 +111,10 @@ class DojoObject extends DojoFunction
         }
         
         if (($pos = strpos($line, '{')) !== false) {
-          $declare->setStart($line_number, $pos);
+          $declare->setContentStart($line_number, $pos);
           foreach (array_reverse($lines, true) as $line_number => $line) {
             if (($pos = strrpos($line, '}')) !== false) {
+              $declare->setContentEnd($line_number, $pos);
               $declare->setEnd($line_number, $pos);
               $this->keys[$key] = $declare;
               return $this->keys[$key];

@@ -12,6 +12,7 @@ class DojoFunction extends Dojo
   protected $function_name;
   protected $compressed_function_name;
   protected $parameters = array(); // A list of all parameters in this function call or declaration
+  protected $this_function = "";
   
   public function __construct(&$source, &$code, $package_name, $compressed_package_name)
   {
@@ -31,6 +32,27 @@ class DojoFunction extends Dojo
   {
     $this->start = array($line_number, $position);
     $this->end = array($line_number, strlen($this->source[$line_number]) - 1);
+  }
+  
+  /**
+   * If this function is part of an object, this states the name of the function
+   * that the this variable refers to.
+   *
+   * @param string $this_function
+   */
+  public function setThis($this_function)
+  {
+    $this->this_function = $this_function;
+  }
+  
+  public function isThis()
+  {
+    return !empty($this->this_function);
+  }
+  
+  public function getThis()
+  {
+    return $this->this_function;
   }
   
   public function setEnd($line_number, $position)
@@ -139,6 +161,18 @@ class DojoFunction extends Dojo
     }
     $lines[$end_line] = $this->blankOutAt($lines[$end_line], ($exclusive) ? $end_position : $end_position + 1, strlen($lines[$end_line]));
     return $lines;
+  }
+  
+  /**
+   * Starting at a set position, it looks for a matching character.
+   * 
+   * Character at the position must be a '{' or ')'
+   *
+   * @param int $line_number
+   * @param int $position
+   */
+  protected function findMatchingChar($line_number, $position) {
+    
   }
 }
 
