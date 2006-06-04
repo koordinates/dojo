@@ -73,6 +73,10 @@ class DojoFunction extends Dojo
    */
   public function getParameters()
   {
+    if ($this->parameters) {
+      return $this->parameters;
+    }
+    
     $paren_balance = 0;
     $block_balance = 0;
     $start = $this->parameter_start[1];
