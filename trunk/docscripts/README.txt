@@ -4,9 +4,9 @@ How the dojo-driven Doc Tool Will Work
 The various pieces
 ------------------
 
-* parser.php runs through all of the files and searches for patterns. It can do everything except handle polymorphism properly.
+* parser.php runs through all of the files and searches for patterns. It can do all basic functionality.
 * parser.php creates a bunch of JSON files (stored in the json directory)
-* dojo.doc has three important functions
+* dojo.doc has four important functions
 ** functionNames loads the list function names from the function_names object
 ** getMeta grabs the meta information for a function from a JSON object
 ** getSrc grabs the source from a stored file
@@ -128,13 +128,11 @@ Examples:
 * function_names functions have package as their parent
 * etc
 
-Directory structure:
+Directory structure (default polymorphic signature is "_"):
 
 package/
 	"meta"
 	function/
-		"meta"
-		"src"
 		id/
 			"meta"
 			"src"
@@ -154,13 +152,15 @@ This object is found in json/function_names and is a list of all dojo methods by
 		]
 	}
 
-The next object is found in json/pkg_meta/[package] and is a list of all package metadata. Note: Windows can't take the * character, so it is replaced with _. It uses the following keys and variables:
-* "requires": A key that holds the *hostenv* and *package* values.
+The next object is found in json/*package*/meta and is a list of all package metadata. Note: Windows can't take the * character, so it is replaced with _. It uses the following keys and variables:
+* "requires": A key that holds the *packages* in each *hostenv*.
 * hostenv: The environmental variables (browser, html, svg, etc)
 * "package": The name of the dojo package (is limited to child packages)
+* "methods": A key that holds the *methods*
 * method: The name of the dojo method
 * "is": A key that holds a pointer to another method (dojo.requireAfterIf "is" dojo.requireIf)
-* id: The id of the polymorphic sygnature. Default signature doesn't have a key (it is immediately below "method:")
+* id: The id of the polymorphic signature. Default signature is "_"
+* "sig": A key that holds the function signature
 * signature: The function signature: returnType functionName(paramType param, paramType param)
 * "summary": A brief description of what this function signature does.
 	{
@@ -175,46 +175,58 @@ The next object is found in json/pkg_meta/[package] and is a list of all package
 				"package"
 			]
 		},
-		method: {
-			"is": "method"
-		},
-		method: {
-			id: {
-				signature: "summary"
+		"methods": {
+			method: {
+				"is": "method"
 			},
-			id: {
-				signature: "summary"
+			method: {
+				"_": {
+					"summary": summary
+				}
+				id: {
+					"sig": signature
+				},
+				id: {
+					"sig": signature
+				}
 			}
-		},
-		method: { // This has the default ID
-			signature: "summary"
 		}
 	}
 	
-The next object is found in json/fnc_src/[package]-[id]-[method] and is the source code for each method. It is plain text.
+The next object is found in json/*package*/*method*/*id*/src and is the source code for each method. It is plain text.
 	
-The next object is found in json/fnc_meta/[method].[id] and is the metadata for each function. That means it contains things like parameters and return type. It uses the following keys and variables
+The next object is found in json/*package*/*method*/*id*/meta and is the metadata for each function. That means it contains things like parameters and return type. It uses the following keys and variables
+* "inner": If this is declared inside of another function.
+* "this": A key that signifies that this function is set by means of a this.variable
+* "returns": A static key that holds the return type of the method
+* "params": A static key that holds all the parameters this object uses
+* type: The object type
+* name: The param name
 * "variables": A static key that holds all the publicly exposed variables.
-* "variable": The name of a publicly exposed variable
+* variable: The name of a publicly exposed variable
 * "inherits": A static key that holds the methods that this function inherits from.
-* "metod": A dojo method
+* method: A dojo method
 * "this_variables": A static key that holds all variables set within the constructor
 * "this_inherits": A static key that holds all of the constructors that dojo inherits from (that is, the "this_variables" of another function)
 	{
+		"inner": true,
+		"this": true,
+		"returns": type,
+		"params": [
+			[type, name],
+			[type, name]
+		],
 		"variables": [
-			"variable",
-			"variable"
+			variable,
+			variable
 		],
-		"inherits": [
-			"method",
-			"method"
-		],
+		"inherits": method,
 		"this_variables": [
-			"variable",
-			"variable"
+			variable,
+			variable
 		],
 		"this_inherits": [
-			"method"
+			method
 		]
 	}
 
