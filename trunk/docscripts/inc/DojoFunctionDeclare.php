@@ -10,6 +10,8 @@ class DojoFunctionDeclare extends DojoFunction
   protected $block_comment_keys = array();
   protected $block_comments = array();
   protected $this_variable_names = array();
+  protected $returns = array();
+  protected $this_inheritance_calls = array();
 
   public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name = false)
   {
@@ -135,9 +137,117 @@ class DojoFunctionDeclare extends DojoFunction
     return array_keys($this->this_variable_names);
   }
   
+  /**
+   * Gets a variable for a this.variable
+   * 
+   * TODO: If this is a function, etc.
+   *
+   * @param unknown_type $this_variable_name
+   */
   public function getThisVariable($this_variable_name)
   {
+    return $this->this_variable_names[$this_variable_name];
+  }
+  
+  public function getReturnComments()
+  {
+    if ($this->returns) {
+      return array_keys($this->returns);
+    }
     
+    $lines = $this->chop($this->source, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $returns = preg_grep('%return.*(//|\*/)%', $lines);
+    foreach (array_keys($returns) as $start_line_number) {
+      $value = '';
+      $multiline = false;
+      for ($line_number = $start_line_number; $line_number < count($this->source); $line_number++) {
+        $line = $lines[$line_number];
+        
+        if ($multiline) {
+          if ($value) {
+            $value .= ' ';
+          }
+          if (($comment_end = strpos($line, '*/')) !== false) {
+            $value .= $this->trim(substr($line, 0, $comment_end));
+            $line = $this->blankOutAt($line, 0, $comment_end + 1);
+            $multiline = false;
+          }
+          else {
+            $value .= $this->trim($line);
+            continue;
+          }
+        }
+        
+        $pos = strpos($line, 'return') + 6;
+        if (($comment_start = strpos($line, '//', $pos)) !== false) {
+          $this->returns[] = $this->trim(substr($line, $comment_start + 2));
+          continue 2;
+        }
+        if (($comment_start = strpos($line, '/*', $pos)) !== false) {
+          if ($value) {
+            $value .= ' ';
+          }
+          if (($comment_end = strpos($line, '*/', $comment_start)) !== false) {
+            $value .= $this->trim(substr($line, $comment_start + 2, $comment_end));
+          }
+          else {
+            $multiline = true;
+            $value .= $this->trim(substr($line, $comment_start + 2));
+          }
+        }
+      }
+    }
+    
+    return $this->returns;
+  }
+  
+  /**
+   * Finds example.call(this
+   * functions
+   */
+  public function getThisInheritanceCalls() {
+    if ($this->this_inheritance_calls) {
+      return $this->this_inheritance_calls;
+    }
+    
+    $lines = $this->chop($this->code, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    if ($calls = preg_grep('%\b[a-zA-Z0-9_.$]+\.call\s*\(%', $lines)) {
+      foreach (array_keys($calls) as $start_line_number) {
+        for ($line_number = $start_line_number; $line_number < count($this->code); $line_number++) {
+          $line = $lines[$line_number];
+          
+          if ($call) {
+            if (($comma_pos = strpos($line, ',')) !== false) {
+              $value .= $this->trim(substr($line, 0, $comma_pos));
+              if ($value == 'this') {
+                $this->this_inheritance_calls[] = $call;
+                unset($call);
+                continue 2;
+              }
+            }
+          }
+          
+          if (!$call && preg_match('%\b([a-zA-Z0-9_.$]+)\.call\s*\(%', $line, $match)) {
+            $call = $match[1];
+            $pos = strpos($line, $match[0]);
+            $parameter_pos = strpos($line, '(', $pos);
+            if (($comma_pos = strpos($line, ',', $parameter_pos)) !== false) {
+              $value = $this->trim(substr($line, $parameter_pos + 1, $comma_pos - $parameter_pos - 1));
+            }
+            else {
+              $value = $this->trim(substr($line, $parameter_pos + 1));
+            }
+            if ($value == 'this') {
+              $this->this_inheritance_calls[] = $call;
+              unset($call);
+              continue 2;
+            }
+          }
+        }
+      }
+    }
+    
+    return $this->this_inheritance_calls;
   }
   
   /**

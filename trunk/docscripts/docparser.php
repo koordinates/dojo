@@ -10,7 +10,7 @@ header('Content-type: text/plain');
 $output = array();
 
 $dojo = new Dojo('../');
-$package = $dojo->getPackage('src/widget/Widget.js');
+$package = $dojo->getPackage('src/data/Attribute.js');
 
 // Handle dojo.require calls
 $calls = $package->getFunctionCalls('dojo.require');
@@ -92,6 +92,19 @@ foreach ($calls as $call) {
 $declarations = $package->getFunctionDeclarations();
 foreach ($declarations as $declaration) {
   rolloutFunction($output, $package, $declaration);
+}
+
+$calls = $package->getFunctionCalls('dojo.inherits');
+foreach ($calls as $call) {
+  $subclass = $call->getParameter(0);
+  $superclass = $call->getParameter(1);
+  if ($subclass && $superclass) {
+    $subclass = $subclass->getValue();
+    $superclass = $superclass->getValue();
+  }
+  if (is_string($subclass) && is_string($superclass)) {
+    $output[$package->getPackageName()][$subclass]['meta']['inherits'][] = $superclass;
+  }
 }
 
 $output['function_names'][$package->getPackageName()] = array_diff(array_keys($output[$package->getPackageName()]), array('meta'));
