@@ -243,8 +243,8 @@ dojo.widget.manager = new function(){
 			this.resizing=true;
 			for(var id in this.topWidgets){
 				var child = this.topWidgets[id];
-				if(child.onParentResized ){
-					child.onParentResized();
+				if(child.checkSize ){
+					child.checkSize();
 				}
 			};
 		}catch(e){
