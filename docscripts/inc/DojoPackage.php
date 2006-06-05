@@ -23,6 +23,18 @@ class DojoPackage extends Dojo
     $this->code = $this->getCode();
   }
   
+  /**
+   * Looks through source to find variables that are set on any external or global object
+   * 
+   * NOTE: This is VERY hard to do.
+   * 
+   * TODO: Implement
+   * TODO: Look for var variable = "value"; in the global scope.
+   */
+  public function getExternalVariableNames()
+  {
+  }
+  
   public function getFunctionDeclarations()
   {
     $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*function\s*\()%', $this->code);

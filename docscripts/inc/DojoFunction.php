@@ -82,8 +82,8 @@ class DojoFunction extends Dojo
       $this->getParameters();
     }
 
-    if ($this->parameters[0]) {
-      return $this->parameters[0];
+    if ($this->parameters[$index]) {
+      return $this->parameters[$index];
     }
     return false;
   }
