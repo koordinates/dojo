@@ -2,7 +2,6 @@ dojo.provide("dojo.lfx.html");
 dojo.require("dojo.lfx.Animation");
 
 dojo.require("dojo.style");
-dojo.require("dojo.event");
 
 dojo.lfx.html._byId = function(nodes){
 	if(dojo.lang.isArray(nodes)){
@@ -146,9 +145,8 @@ dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
 			start: dojo.style.getOpacity(nodes[0]),
 			end: 1 } ], duration, easing);
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
-			callback(nodes, anim);
-		});
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
 	}
 
 	return anim;
@@ -162,9 +160,8 @@ dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
 			start: dojo.style.getOpacity(nodes[0]),
 			end: 0 } ], duration, easing);
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
-			callback(nodes, anim);
-		});
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
 	}
 
 	return anim;
@@ -172,13 +169,15 @@ dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
 
 dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
 	var anim = dojo.lfx.html.fadeIn(nodes, duration, easing, callback);
-	dojo.event.connect(anim, "beforeBegin", function(){
+	var oldBb = (anim["beforeBegin"]) ? dojo.lang.hitch(anim, "beforeBegin") : function(){};
+	anim.beforeBegin = function(){ 
+		oldBb();
 		if(dojo.lang.isArrayLike(nodes)){
 			dojo.lang.forEach(nodes, dojo.style.show);
 		}else{
 			dojo.style.show(nodes);
 		}
-	});
+	};
 	
 	return anim;
 }
@@ -205,7 +204,7 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 		if(overflow == "visible") {
 			node.style.overflow = "hidden";
 		}
-		node.style.height = 0;
+		node.style.height = "0px";
 		dojo.style.show(node);
 		
 		var anim = dojo.lfx.propertyAnimation(node,
@@ -213,11 +212,13 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 				start: 0,
 				end: node.scrollHeight }], duration, easing);
 		
-		dojo.event.connect(anim, "onEnd", function(){
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ 
+			oldOnEnd(); 
 			node.style.overflow = overflow;
 			node.style.height = "auto";
 			if(callback){ callback(node, anim); }
-		});
+		};
 		anims.push(anim);
 	});
 	
@@ -241,11 +242,13 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 				start: dojo.style.getContentBoxHeight(node),
 				end: 0 } ], duration, easing);
 		
-		dojo.event.connect(anim, "onEnd", function(){
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ 
+			oldOnEnd(); 
 			dojo.style.hide(node);
 			node.style.overflow = overflow;
 			if(callback){ callback(node, anim); }
-		});
+		};
 		anims.push(anim);
 	});
 
@@ -285,11 +288,12 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 				start: left,
 				end: coords[1] }], duration, easing);
 		
-		dojo.event.connect(anim, "beforeBegin", init);
+		var oldBb = (anim["beforeBegin"]) ? dojo.lang.hitch(anim, "beforeBegin") : function(){};
+		anim.beforeBegin = function(){ oldBb(); init(); };
+
 		if(callback){
-			dojo.event.connect(anim, "onEnd", function(){
-				callback(node, anim);
-			});
+			var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+			anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
 		}
 
 		anims.push(anim);
@@ -331,11 +335,12 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 				start: left,
 				end: left+coords[1] }], duration, easing);
 
-		dojo.event.connect(anim, "beforeBegin", init);
+		var oldBb = (anim["beforeBegin"]) ? dojo.lang.hitch(anim, "beforeBegin") : function(){};
+		anim.beforeBegin = function(){ oldBb(); init(); };
+
 		if(callback){
-			dojo.event.connect(anim, "onEnd", function(){
-				callback(node, anim);
-			});
+			var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+			anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
 		}
 
 		anims.push(anim);
@@ -393,9 +398,8 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		outline.parentNode.removeChild(outline);
 	};
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
-			callback(endNode, anim);
-		});
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
 	}
 	return anim;
 }
@@ -441,9 +445,8 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 		outline.parentNode.removeChild(outline);
 	};
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
-			callback(startNode, anim);
-		});
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ oldOnEnd(); callback(startNode, anim); };
 	}
 	return anim;
 }
@@ -468,14 +471,18 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 			end: endRgb
 		}], duration, easing);
 
-		dojo.event.connect(anim, "beforeBegin", function(){
+		var oldbb = (anim["beforeBegin"]) ? dojo.lang.hitch(anim, "beforeBegin") : function(){};
+		anim.beforeBegin = function(){ 
+			oldbb();
 			if(bgImage){
 				node.style.backgroundImage = "none";
 			}
 			node.style.backgroundColor = "rgb(" + rgb.toRgb().join(",") + ")";
-		});
+		};
 
-		dojo.event.connect(anim, "onEnd", function(){
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ 
+			oldOnEnd();
 			if(bgImage){
 				node.style.backgroundImage = bgImage;
 			}
@@ -485,7 +492,7 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 			if(callback){
 				callback(node, anim);
 			}
-		});
+		};
 
 		anims.push(anim);
 	});
@@ -510,17 +517,22 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 			end: rgb
 		}], duration, easing);
 
-		dojo.event.connect(anim, "beforeBegin", function(){
+		var oldbb = (anim["beforeBegin"]) ? dojo.lang.hitch(anim, "beforeBegin") : function(){};
+		anim.beforeBegin = function(){ 
+			oldbb();
 			if(bgImage){
 				node.style.backgroundImage = "none";
 			}
 			node.style.backgroundColor = "rgb(" + color.toRgb().join(",") + ")";
-		});
-		dojo.event.connect(anim, "onEnd", function(){
+		};
+
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ 
+			oldOnEnd();
 			if(callback){
 				callback(node, anim);
 			}
-		});
+		};
 
 		anims.push(anim);
 	});
