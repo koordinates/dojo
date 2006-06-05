@@ -167,7 +167,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		if(async_cb){
 			return null;
 		}
-		if(http.status != 200){
+		if((http.status)&&(http.status != 200)){
 			throw Error("Unable to load "+uri+" status:"+ http.status);
 		}
 	}catch(e){
