@@ -156,38 +156,26 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	}
 }
 
-dojo.widget.ComboBox = function(){
-	dojo.widget.Widget.call(this);
-}
-
-dojo.inherits(dojo.widget.ComboBox, dojo.widget.Widget);
-
-dojo.widget.ComboBox.defaults = {
-	widgetType: "ComboBox",
-	isContainer: false,
-
-	forceValidOption: false,
-	searchType: "stringstart",
-	dataProvider: null,
-
-	startSearch: function(searchString){},
-	openResultList: function(results){},
-	clearResultList: function(){},
-	hideResultList: function(){},
-	selectNextResult: function(){},
-	selectPrevResult: function(){},
-	setSelectedResult: function(){}
-};
-
-dojo.lang.extend(dojo.widget.ComboBox, dojo.widget.ComboBox.defaults);
-
-dojo.widget.DomComboBox = function(){
-	dojo.widget.ComboBox.call(this);
-	dojo.widget.DomWidget.call(this, true);
-}
-
-dojo.inherits(dojo.widget.DomComboBox, dojo.widget.DomWidget);
-dojo.widget.tags.addParseTreeHandler("dojo:combobox");
+dojo.declare(
+	"dojo.widget.ComboBox",
+	null,
+	{
+		widgetType: "ComboBox",
+		isContainer: false,
+	
+		forceValidOption: false,
+		searchType: "stringstart",
+		dataProvider: null,
+	
+		startSearch: function(searchString){},
+		openResultList: function(results){},
+		clearResultList: function(){},
+		hideResultList: function(){},
+		selectNextResult: function(){},
+		selectPrevResult: function(){},
+		setSelectedResult: function(){}
+	}
+);
 
 // render-specific includes
 dojo.requireAfterIf("html", "dojo.widget.html.ComboBox");
