@@ -25,6 +25,7 @@ dojo.widget.defineWidget(
 		searchTimer: null,
 		searchDelay: 100,
 		dataUrl: "",
+		fadeTime: 200,
 		// maxListLength limits list to X visible rows, scroll on rest 
 		maxListLength: 8, 
 		// mode can also be "remote" for JSON-returning live search or "html" for
@@ -155,11 +156,11 @@ dojo.widget.defineWidget(
 					dojo.event.browser.stopEvent(evt);
 					return;
 				case k.KEY_ENTER:
-					// prevent to send form if we press enter with list open
+					// prevent submitting form if we press enter with list open
 					if(this._result_list_open){
 						dojo.event.browser.stopEvent(evt);
 					}
-					// falltrough
+					// fallthrough
 				case k.KEY_TAB:
 					// using linux alike tab for autocomplete
 					if(!this.autoComplete && this._result_list_open && this._highlighted_option){
@@ -169,11 +170,7 @@ dojo.widget.defineWidget(
 						// put caret last
 						this.setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
 					}else{
-						if(!this.textInputNode.value.length){
-							this.setValue("");
-						}else{
-							this.selectOption();
-						} 
+						this.selectOption();
 						return;
 					}
 					break;
@@ -192,7 +189,7 @@ dojo.widget.defineWidget(
 				case k.KEY_BACKSPACE:
 					this._prev_key_backspace = true;
 					if(!this.textInputNode.value.length){
-						this.setValue("");
+						this.setAllValues("", "");
 						this.hideResultList();
 						doSearch = false;
 					}
@@ -202,7 +199,7 @@ dojo.widget.defineWidget(
 				case k.KEY_SHIFT:
 					doSearch = false;
 					break;
-				default:// non char keys (F1-F12 etc..)  shouldnt open list
+				default:// non char keys (F1-F12 etc..)  shouldn't open list
 					if(evt.charCode==0){
 						doSearch = false;
 					}
@@ -215,7 +212,7 @@ dojo.widget.defineWidget(
 				// if we have gotten this far we dont want to keep our highlight
 				this.blurOptionNode();
 	
-				// need to wait a tad before start search so that the event bubbels through DOM and we have value visible
+				// need to wait a tad before start search so that the event bubbles through DOM and we have value visible
 				this.searchTimer = setTimeout(dojo.lang.hitch(this, this.startSearchFromInput), this.searchDelay);
 			}
 		},
@@ -241,14 +238,18 @@ dojo.widget.defineWidget(
 		setSelectedValue: function(value){
 			// FIXME, not sure what to do here!
 			this.comboBoxSelectionValue.value = value;
-			this.hideResultList();
+		},
+
+		setAllValues: function(value1, value2){
+			this.setValue(value1);
+			this.setSelectedValue(value2);
 		},
 	
 		// opera, khtml, safari doesnt support node.scrollIntoView(), workaround
 		scrollIntoView: function(){
 			var node = this._highlighted_option;
 			var parent = this.optionsListNode;
-			// dont rely on that node.scrollIntoView works just because the function is there
+			// don't rely on that node.scrollIntoView works just because the function is there
 			// it doesnt work in Konqueror or Opera even though the function is there and probably
 			// not safari either
 			// dont like browser sniffs implementations but sometimes you have to use it
@@ -357,8 +358,7 @@ dojo.widget.defineWidget(
 						var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
 						data.push(keyValArr);
 						if(opts[x].selected){ 
-							this.setValue(keyValArr[0]); 
-							this.comboBoxSelectionValue.value = keyValArr[1];
+							this.setAllValues(keyValArr[0], keyValArr[1]);
 						}
 					}
 					this.dataProvider.setData(data);
@@ -388,7 +388,7 @@ dojo.widget.defineWidget(
 				(!this._prev_key_backspace)&&
 				(this.textInputNode.value.length > 0)){
 				var cpos = this.getCaretPos(this.textInputNode);
-				// only try to extend if we added the last charachter at the end of the input
+				// only try to extend if we added the last character at the end of the input
 				if((cpos+1) > this.textInputNode.value.length){
 					// only add to input node as we would overwrite Capitalisation of chars
 					this.textInputNode.value += results[0][0].substr(cpos);
@@ -437,7 +437,7 @@ dojo.widget.defineWidget(
 			}
 		},
 	
-		// these 2 are needed in IE and Safari as inputTextNode looses focus when scrolling optionslist
+		// these 2 are needed in IE and Safari as inputTextNode loses focus when scrolling optionslist
 		_onMouseOver: function(evt){
 			if(!this._mouseover_list){
 				this._handleBlurTimer(true, 0);
@@ -454,9 +454,57 @@ dojo.widget.defineWidget(
 			}
 		},
 	
+		_isInputEqualToResult: function(result){
+			input = this.textInputNode.value;
+			if(!this.dataProvider.caseSensitive){
+				input = input.toLowerCase();
+				result = result.toLowerCase();
+			}
+			return (input == result);
+		},
+
+		_isValidOption: function(){
+			tgt = dojo.dom.firstElement(this.optionsListNode);
+			isValidOption = false;
+			while(!isValidOption && tgt){
+				if(this._isInputEqualToResult(tgt.getAttribute("resultName"))){
+					isValidOption = true;
+				}else{
+					tgt = dojo.dom.nextElement(tgt);
+				}
+			}
+			return isValidOption;
+		},
+
 		checkBlurred: function(){
 			if(!this._hasFocus && !this._mouseover_list){
 				this.hideResultList();
+				// clear the list if the user empties field and moves away.
+				if(!this.textInputNode.value.length){
+					this.setAllValues("", "");
+					return;
+				}
+				
+				isValidOption = this._isValidOption();
+				// enforce selection from option list
+				if(this.forceValidOption && !isValidOption){
+					//tgt = dojo.dom.firstElement(this.optionsListNode);
+					//isValidOption = false;
+					//while(!isValidOption && tgt){
+						//if(this._isInputEqualToResult(tgt.getAttribute("resultName"))){
+							//isValidOption = true;
+						//}else{
+							//tgt = dojo.dom.nextElement(tgt);
+						//}
+					//}
+					//if(!isValidOption){
+						this.setAllValues("", "");
+						return;
+					//}
+				}
+				if(!isValidOption){// clear
+					this.setSelectedValue("");
+				}
 			}
 		},
 	
@@ -488,13 +536,12 @@ dojo.widget.defineWidget(
 				}
 				tgt = dojo.dom.firstElement(this.optionsListNode);
 	
-				// if the input value is different to the first element's value
-				// the user hasn't selected an option from the menu
-				if(this.textInputNode.value!=tgt.getAttribute("resultName").toLowerCase()){
+				// user has input value not in option list
+				if(!this._isInputEqualToResult(tgt.getAttribute("resultName"))){
 					return;
 				}
 				// otherwise the user has accepted the autocompleted value
-			} else {
+			}else{
 				tgt = evt.target; 
 			}
 	
@@ -507,8 +554,7 @@ dojo.widget.defineWidget(
 	
 			this.textInputNode.value = tgt.getAttribute("resultName");
 			this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
-			this.setValue(tgt.getAttribute("resultName"));
-			this.comboBoxSelectionValue.value = tgt.getAttribute("resultValue");
+			this.setAllValues(tgt.getAttribute("resultName"), tgt.getAttribute("resultValue"));
 			if(!evt.noHide){
 				this.hideResultList();
 				this.setSelectedRange(this.textInputNode, 0, null);
@@ -529,7 +575,7 @@ dojo.widget.defineWidget(
 			if(this._result_list_open){
 				this._result_list_open = false;
 				this.optionsIframe.size([0,0,0,0]);
-				dojo.lfx.fadeHide(this.optionsListNode, 200).play();
+				dojo.lfx.fadeHide(this.optionsListNode, this.fadeTime).play();
 			}
 		},
 	
@@ -550,7 +596,7 @@ dojo.widget.defineWidget(
 				// only fadein once (flicker)
 				if(!this._result_list_open){
 					dojo.html.setOpacity(this.optionsListNode, 0);
-					dojo.lfx.fadeIn(this.optionsListNode, 200).play();
+					dojo.lfx.fadeIn(this.optionsListNode, this.fadeTime).play();
 				}
 				
 				// prevent IE bleed through
@@ -575,7 +621,7 @@ dojo.widget.defineWidget(
 			try {
 				this.textInputNode.focus();
 			} catch (e) {
-				// element isnt focusable if disabled, or not visible etc - not easy to test for.
+				// element isn't focusable if disabled, or not visible etc - not easy to test for.
 	 		};
 		},
 		
