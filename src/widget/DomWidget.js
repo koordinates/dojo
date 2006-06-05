@@ -79,6 +79,9 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 		// NOTE: we rely on blocking IO here!
 		var tstring = dojo.hostenv.getText(tpath);
 		if(tstring){
+			// strip <?xml ...?> declarations so that external SVG and XML
+			// documents can be added to a document without worry
+			tstring = tstring.replace(/^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im, "");
 			var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
 			if(matches){
 				tstring = matches[1];
