@@ -68,7 +68,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	this._preformSearch = function(searchStr, type, ignoreLimit){
 		//
 		//	NOTE: this search is LINEAR, which means that it exhibits perhaps
-		//	the worst possible speed charachteristics of any search type. It's
+		//	the worst possible speed characteristics of any search type. It's
 		//	written this way to outline the responsibilities and interfaces for
 		//	a search.
 		//

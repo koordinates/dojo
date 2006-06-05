@@ -16,31 +16,16 @@
 
 <body>
 <h1>Dojo ComboBox Widget Test</h1>
+<p>
+A combobox is like a text &lt;input&gt; field (ie, you can input any value you want),
+but it also has a list of suggested values that you can choose from.
+The drop down list is filtered by the data you have already typed in.
+</p>
 <form action="#" method="GET">
-
-	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
-		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar"
-		setValue="dojo.byId('value1').value=arguments[0];"
-		setSelectedValue="dojo.byId('svalue1').value=arguments[0];"
-	>
-	<br>
-	<div>Value: <input id="value1" disabled>, selected value: <input id="svalue1" disabled></div>
-	<hr>
-		
-    <p>Same except that autocomplete==false:</p>
- 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
-		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar" autocomplete="false"
-		setValue="dojo.byId('value2').value=arguments[0];"
-		setSelectedValue="dojo.byId('svalue2').value=arguments[0];"
-	>
-	<br>
-	<div>Value: <input id="value2" disabled>, selected value: <input id="svalue2" disabled></div>
-	<hr>
  
-    <p>The combo box below uses a select tag, and has inlined data, rather than getting data from a javascript function:</p>
-	<select name="state" dojoType="combobox" style="width: 300px;" name="foo.bar1" 
-		setValue="dojo.byId('value3').value=arguments[0];"
-		setSelectedValue="dojo.byId('svalue3').value=arguments[0];"
+    <p>ComboBox #1: inlined data, autocomplete=false:</p>
+	<select name="state" dojoType="combobox" style="width: 300px;" name="foo.bar1" autocomplete="false"
+		setValue="dojo.byId('value1').value=arguments[0];"
 	>
 		<option value="AL">Alabama</option>
 		<option value="AK">Alaska</option>
@@ -105,7 +90,25 @@
 		<option value="WY">Wyoming</option>
 	</select>    
 	<br>
-	<div>Value: <input id="value3" disabled>, selected value: <input id="svalue3" disabled></div>
+	<div>Value: <input id="value1" disabled></div>
+	<hr>
+
+	<p>ComboBox #2: dataUrl, autocomplete=true:</p>
+	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar"
+		setValue="dojo.byId('value2').value=arguments[0];"
+	>
+	<br>
+	<div>Value: <input id="value2" disabled></div>
+	<hr>
+		
+    <p>ComboBox #3: dataUrl, autocomplete=false:</p>
+ 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
+		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar" autocomplete="false"
+		setValue="dojo.byId('value3').value=arguments[0];"
+	>
+	<br>
+	<div>Value: <input id="value3" disabled></div>
 	<hr>
 
 	<input type="submit">
