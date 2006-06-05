@@ -302,3 +302,21 @@ function test_event_adviceMsg(){
 	obj2.foo();
 	jum.assertTrue("test39", obj2 === obj3.srcObj);
 }
+
+function test_event_disconnectFP(){
+	var obj1 = new testObjectClass();
+
+	dojo.event.connect(obj1, "func1", obj1, obj1.func2);
+	dojo.event.disconnect(obj1, "func1", obj1, obj1.func2);
+
+	jum.assertTrue("test40", obj1.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test41", obj1.funcCallCount, 1);
+
+	var obj2 = new testObjectClass();
+	dojo.event.connect("after", obj2, obj2.func1, obj2, obj2.func2);
+	dojo.event.disconnect("after", obj2, obj2.func1, obj2, obj2.func2);
+
+	jum.assertTrue("test42", obj2.func1("1", "2")=="func1, arg1: 1, arg2: 2");
+	jum.assertEquals("test43", obj2.funcCallCount, 1);
+}
+
