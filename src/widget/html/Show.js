@@ -44,7 +44,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		
 		dojo.event.connect(document, "onclick", this, "gotoSlideByEvent");
 		dojo.event.connect(document, "onkeypress", this, "gotoSlideByEvent");
-		dojo.event.connect(document, "onresize", this, "resizeWindow");
+		dojo.event.connect(window, "onresize", this, "resizeWindow");
 		dojo.event.connect(this.nav, "onmousemove", this, "popUpNav");
 	},
 	postCreate: function(){		

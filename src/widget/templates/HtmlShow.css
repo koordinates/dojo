@@ -23,8 +23,12 @@
 		width: 100%;
 		text-align: center;
 	}
+	.dojoShowNav input {
+		margin: 0px;
+	}
 	.dojoShowHider {
 		height: 5px;
+		overflow: hidden;
 		width: 100%;
 	}
 	.dojoShowPrint {
