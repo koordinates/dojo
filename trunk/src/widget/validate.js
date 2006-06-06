@@ -20,7 +20,12 @@ dojo.require("dojo.widget.Manager");
 dojo.require("dojo.widget.Parse");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.lang");
-dojo.require("dojo.validate");
+
+dojo.require("dojo.validate.common");
+dojo.require("dojo.validate.datetime");
+dojo.require("dojo.validate.check");
+dojo.require("dojo.validate.web");
+dojo.require("dojo.validate.us");
 
 dojo.widget.manager.registerWidgetPackage("dojo.widget.validate");
 
