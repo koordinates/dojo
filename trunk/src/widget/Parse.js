@@ -284,7 +284,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 		tn = refNode;
 	}
 	var widgetArray = fromScript(tn, name, props);
-	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
+	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}
 	if (notRef) {
