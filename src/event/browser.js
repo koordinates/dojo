@@ -47,7 +47,7 @@ dojo._ie_clobber = new function(){
 }
 
 if(dojo.render.html.ie){
-	window.onunload = function(){
+	dojo.addOnUnload(function(){
 		dojo._ie_clobber.clobber();
 		try{
 			if((dojo["widget"])&&(dojo.widget["manager"])){
@@ -58,7 +58,7 @@ if(dojo.render.html.ie){
 		try{ window.onunload = null; }catch(e){}
 		dojo._ie_clobber.clobberNodes = [];
 		// CollectGarbage();
-	}
+	});
 }
 
 dojo.event.browser = new function(){
