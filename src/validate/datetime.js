@@ -86,6 +86,7 @@ dojo.validate.is24HourTime = function(value) {
 */
 dojo.validate.isValidDate = function(dateValue, format) {
 	// Default is the American format
+	if (typeof format == "object" && typeof format.format == "string"){ format = format.format; }
 	if (typeof format != "string") { format = "MM/DD/YYYY"; }
 
 	// Create a literal regular expression based on format
