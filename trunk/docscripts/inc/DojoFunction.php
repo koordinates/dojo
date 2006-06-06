@@ -76,6 +76,33 @@ class DojoFunction extends Dojo
     return $this->chop($this->source, $this->start[0], $this->start[1], $this->end[0], $this->end[1]);
   }
   
+  /**
+   * Gets rid of blocks of code that have already been found
+   * to do things like check for globals
+   *
+   * @param array $lines
+   * @return array
+   */
+  public function removeDiscoveredCode($lines)
+  {
+    for ($line_number = $this->start[0]; $line_number <= $this->end[0]; $line_number++) {
+      $line = $lines[$line_number];
+      if ($this->start[0] == $this->end[0]) {
+        $lines[$line_number] = $this->blankOutAt($line, $this->start[1], $this->end[1]);
+      }
+      elseif ($line_number == $this->start[0]) {
+        $lines[$line_number] = $this->blankOutAt($line, $this->start[1]);
+      }
+      elseif ($line_number == $this->end[0]) {
+        $lines[$line_number] = $this->blankOutAt($line, 0, $this->end[1]);
+      }
+      else {
+        $lines[$line_number] = $this->blankOut($line, $line);
+      }
+    }
+    return $lines;
+  }
+  
   public function getParameter($index)
   {
     if (empty($this->parameters)) {
@@ -101,6 +128,7 @@ class DojoFunction extends Dojo
     
     $paren_balance = 0;
     $block_balance = 0;
+    $bracket_balance = 0;
     $start = $this->parameter_start[1];
     
     $lines = $this->chop($this->code, $this->parameter_start[0], $this->parameter_start[1], $this->parameter_end[0], $this->parameter_end[1], true);
@@ -135,8 +163,14 @@ class DojoFunction extends Dojo
         elseif ($char == '}') {
           --$block_balance;
         }
+        elseif ($char == '[') {
+          ++$bracket_balance;
+        }
+        elseif ($char == ']') {
+          --$bracket_balance;
+        }
         
-        if (!$paren_balance && !$block_balance && $char == ',') {
+        if (!$paren_balance && !$block_balance && !$bracket_balance && $char == ',') {
           $parameter->setEnd($line_number, $i - 1);
           $this->parameters[] = $parameter;
           unset($parameter);

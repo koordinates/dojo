@@ -1,6 +1,8 @@
 <?php
 
 require_once('DojoFunction.php');
+require_once('DojoObject.php');
+require_once('DojoArray.php');
 
 class DojoObject extends DojoFunction
 {
@@ -91,7 +93,20 @@ class DojoObject extends DojoFunction
         continue;
       }
       
-      if (preg_match('%^\s*function\s*\(%', $line)) {
+      if (preg_match('%^\s*\[%', $line)) {
+        $array = new DojoArray($this->source, $this->code, $this->package_name, $this->compressed_package_name);
+        $array->setStart($line_number, strpos($line, '['));
+        $array->setParameterStart($line_number, strpos($line, '['));
+        foreach (array_reverse($lines, true) as $line_number => $line) {
+          if (($pos = strrpos($line, ']')) !== false) {
+            $array->setParameterEnd($line_number, $pos);
+            $array->setEnd($line_number, $pos);
+            return $array;
+          }
+        }
+        return;
+      }
+      elseif (preg_match('%^\s*function\s*\(%', $line)) {
         $declare = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $this->function_name . '.' . $key);
         $declare->setThis($this->function_name);
         $declare->setStart($this->start[0], $this->start[1]);
