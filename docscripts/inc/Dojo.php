@@ -40,11 +40,16 @@ class Dojo
   
   protected function blankOutAt($to_blank, $start, $end = -1)
   {
+    if($end == -1) {
+      $end = strlen($to_blank) - 1;
+    }
     $length = $end - $start + 1;
     if (!$length) {
-      $to_blank;
+      return $to_blank;
     }
-    
+    if ($length < 0) {
+      print 'hi';
+    }
     $blanks = array_fill(0, $length, ' ');
     return substr($to_blank, 0, $start) . implode($blanks) .  substr($to_blank, $end + 1);
   }

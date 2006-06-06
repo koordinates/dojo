@@ -184,11 +184,10 @@ class DojoFunctionDeclare extends DojoFunction
           continue 2;
         }
         if (($comment_start = strpos($line, '/*', $pos)) !== false) {
-          if ($value) {
-            $value .= ' ';
-          }
           if (($comment_end = strpos($line, '*/', $comment_start)) !== false) {
             $value .= $this->trim(substr($line, $comment_start + 2, $comment_end));
+            $this->returns[] = $value;
+            continue 2;
           }
           else {
             $multiline = true;

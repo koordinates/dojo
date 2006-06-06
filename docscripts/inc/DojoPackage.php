@@ -37,25 +37,39 @@ class DojoPackage extends Dojo
   
   public function getFunctionDeclarations()
   {
-    $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*function\s*\()%', $this->code);
+    $in_function = array();
+    $lines = $this->removeDiscoveredCode($this->code);
+    
+    $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*function\s*\()%', $lines);
     foreach (array_keys($matches) as $start_line_number) {
-      $line = $this->code[$start_line_number];
+      if (in_array($start_line_number, $in_function)) continue;
+      $line = $lines[$start_line_number];
       if(!preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*function\s*\()%', $line, $match)) {
         continue;
       }
       $function_name = $match[1] . $match[2];
-      $function = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $function_name);
+      if (strpos($function_name, 'this.') === 0) {
+        continue;
+      }
+      if (($pos = strpos($function_name, '.prototype.')) !== false) {
+        $prototype = substr($function_name, 0, $pos);
+        $function_name = str_replace('.prototype.', '.', $function_name);
+      }
+      $function = new DojoFunctionDeclare($this->source, $lines, $this->package_name, $this->compressed_package_name, $function_name);
       $function->setStart($start_line_number, strpos($line, $match[0]));
       $function->setParameterStart($start_line_number, strpos($line, '('));
+      if ($prototype) {
+        $function->setThis($prototype);
+      }
 
       $content_start = false; // For content start
       $parameter_end = false; // For parameter end
       
       $balance = 0;
 
-      for ($line_number = $start_line_number; $line_number < count($this->code); $line_number++) {
-        unset($matches[$line_number]); // No inner function declarations
-        $line = $this->code[$line_number];
+      for ($line_number = $start_line_number; $line_number < count($lines); $line_number++) {
+        $in_function[] = $line_number; // No inner function declarations
+        $line = $lines[$line_number];
         if (trim($line) == '') {
           continue;
         }
@@ -103,7 +117,11 @@ class DojoPackage extends Dojo
    */
   public function getFunctionCalls($name)
   {
-    $calls = array();
+    if ($this->calls[$name]) {
+      return $this->calls[$name];
+    }
+    
+    $this->calls[$name] = array();
     $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $this->code);
     foreach ($lines as $line_number => $line) {
       $call = new DojoFunctionCall($this->source, $this->code, $this->package_name, $this->compressed_package_name, $name);
@@ -152,9 +170,26 @@ class DojoPackage extends Dojo
         while($i < count($this->code));
       }
 
-      $calls[] = $call;
+      $this->calls[$name][] = $call;
     }
-    return $calls;
+    return $this->calls[$name];
+  }
+  
+  /**
+   * Gets rid of blocks of code that have already been found
+   * to do things like check for globals
+   *
+   * @param array $lines
+   * @return array
+   */
+  public function removeDiscoveredCode($lines)
+  {
+    foreach ($this->calls as $per_name) {
+      foreach ($per_name as $call) {
+        $lines = $call->removeDiscoveredCode($lines);
+      }
+    }
+    return $lines;
   }
   
   public function getVariables()
@@ -212,7 +247,14 @@ class DojoPackage extends Dojo
   
   public function getPackageName()
   {
-    $parts = explode('/', preg_replace('%\.js$%', '', $this->file));
+    $file = $this->file;
+    if (strpos($file, '__package__.js') !== null) {
+      $file = str_replace('__package__.js', '', $file);
+      if ($file{strlen($file) - 1} == '/') {
+        $file = substr($file, 0, -1);
+      }
+    }
+    $parts = explode('/', preg_replace('%\.js$%', '', $file));
     if ($parts[0] == 'src') {
       $parts[0] = 'dojo';
     }

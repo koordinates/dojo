@@ -93,7 +93,7 @@ class DojoParameter extends DojoFunction
       }
     }
     
-    return $this->parameter_type = $parameter_type;
+    return $this->parameter_type = $this->trim($parameter_type);
   }
 }
   
