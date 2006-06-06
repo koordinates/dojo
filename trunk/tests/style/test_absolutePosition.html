@@ -16,8 +16,7 @@
 	</script>
 	<script>
 		function onMouseMove(e){
-			var mouse=dojo.html.getCursorPosition(e);
-			dojo.byId("m").innerHTML= mouse.x + ", " + mouse.y;
+			dojo.byId("m").innerHTML= e.pageX + ", " + e.pageY;
 			var btn=dojo.byId("btn");
 			var pns = dojo.style.getAbsolutePosition(btn, false);
 			var pws = dojo.style.getAbsolutePosition(btn, true);
@@ -35,22 +34,16 @@
 This file tests the code to determine mouse position and element position with respect to the document or viewport.
 </p>
 <p>
-<b>dojo.html.getCursorPosition()</b> returns the position of the cursor relative to the
-document (not relative to the viewport), meaning that scrolling the browser window will
-increase the value returned.
-</p>
-<p>
-Likewise, <b>dojo.style.getAbsolutePosition(xyz, true)</b> tells you where you would position a node
+<b>dojo.style.getAbsolutePosition(xyz, true)</b> tells you where you would position a node
 inside document.body such that it was on top of xyz.
-It works well in conjunction with dojo.html.getCursorPosition().
-</p>
+It works well in conjunction with <b>event.pageX/Y</b>.</p>
 <p>
 <b>dojo.style.getAbsolutePosition(xyz, false)</b> returns the position that would be returned
 by event.clientX/Y if the mouse were directly over the top/left of this node.
 </p>
 
 <ul>
- <li>Move the mouse; scroll down the browser window; check that getCursorPosition() returns the position within
+ <li>Move the mouse; scroll down the browser window; check that event.pageX/pageY returns the position within
  the document, rather than the viewport</li>
  <li>Scrolling the browser window should affect getAbsolutePosition(btn, false), but it shouldn't affect
  		getAbsolutePosition(btn, true);</li>
@@ -66,7 +59,7 @@ by event.clientX/Y if the mouse were directly over the top/left of this node.
 	<nobr>This is a very long sentence just to make sure there is a horizontal scrollbar</nobr>
 </div>
 <table border=1 style="margin: 20px 20px 20px 20px;">
-<tr><td>dojo.html.getCursorPosition()</td><td id="m"></td></tr>
+<tr><td>event.pageX/pageY</td><td id="m"></td></tr>
 <tr><td width=30%>getAbsolutePosition(btn, true)<br> (document)</td><td id="t"></td></tr>
 <tr><td>getAbsolutePosition(btn, false)<br> (viewport)</td><td id="f"></td></tr>
 <tr><td>dojo.html.overElement(btn, e)</td><td id="o"></td></tr>
