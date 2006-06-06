@@ -130,7 +130,6 @@ dojo.io.IframeTransport = new function(){
 				// text/javascript requests?
 				dojo.lang.inArray(kwArgs["mimetype"], 
 				[	"text/plain", "text/html", 
-					"application/xml", "text/xml", 
 					"text/javascript", "text/json"])
 			)&&(
 				// make sur we really only get used in file upload cases	
@@ -212,7 +211,7 @@ dojo.io.IframeTransport = new function(){
 				var js = ifd.getElementsByTagName("textarea")[0].value;
 				if(cmt == "text/json") { js = "(" + js + ")"; }
 				value = dj_eval(js);
-			}else if((cmt == "application/xml")||(cmt == "text/xml")||(cmt == "text/html")){
+			}else if(cmt == "text/html"){
 				value = ifd;
 			}else{ // text/plain
 				value = ifd.getElementsByTagName("textarea")[0].value;
