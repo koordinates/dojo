@@ -47,6 +47,7 @@
 		
 		//Egad! Lots of test files push on this directly instead of using dojo.addOnLoad.
 		modulesLoadedListeners: [],
+		unloadListeners: [],
 		loadNotifying: false
 	};
 	
@@ -126,6 +127,7 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 }
 
 dojo.loaded = function(){ }
+dojo.unloaded = function(){ }
 
 dojo.hostenv.loaded = function(){
 	this.loadNotifying = true;
@@ -141,6 +143,14 @@ dojo.hostenv.loaded = function(){
 	this.loadNotifying = false;
 
 	dojo.loaded();
+}
+
+dojo.hostenv.unloaded = function(){
+	var mll = this.unloadListeners;
+	while(mll.length){
+		(mll.pop())();
+	}
+	dojo.unloaded();
 }
 
 /*
@@ -164,6 +174,17 @@ dojo.addOnLoad = function(obj, fcnName) {
 	//page load), then immediately call any listeners.
 	if(dh.post_load_ && dh.inFlightCount == 0 && !dh.loadNotifying){
 		dh.callLoaded();
+	}
+}
+
+dojo.addOnUnload = function(obj, fcnName){
+	var dh = dojo.hostenv;
+	if(arguments.length == 1){
+		dh.unloadListeners.push(obj);
+	} else if(arguments.length > 1) {
+		dh.unloadListeners.push(function() {
+			obj[fcnName]();
+		});
 	}
 }
 

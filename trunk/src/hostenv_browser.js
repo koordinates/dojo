@@ -239,7 +239,7 @@ dojo.addOnLoad(function(){
 	}
 });
 
-function dj_addNodeEvtHdlr (node, evtName, fp, capture){
+function dj_addNodeEvtHdlr(node, evtName, fp, capture){
 	var oldHandler = node["on"+evtName] || function(){};
 	node["on"+evtName] = function(){
 		fp.apply(node, arguments);
@@ -286,6 +286,10 @@ dj_addNodeEvtHdlr(window, "load", function(){
 	}else{
 		dojo.addOnLoad(initFunc);
 	}
+});
+
+dj_addNodeEvtHdlr(window, "unload", function(){
+	dojo.hostenv.unloaded();
 });
 
 dojo.hostenv.makeWidgets = function(){
