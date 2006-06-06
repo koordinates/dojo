@@ -273,6 +273,7 @@ dojo.require("dojo.lang.common");
 	 * by event.clientX/Y if the mouse were directly over the top/left of this node.
 	 */
 	ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
+		node = dojo.byId(node);
 		var ret = [];
 		ret.x = ret.y = 0;
 		var st = dojo.html.getScrollTop();
@@ -283,13 +284,12 @@ dojo.require("dojo.lang.common");
 				ret.x = left-2;
 				ret.y = top-2;
 			}
-/**
 		}else if(document.getBoxObjectFor){
 			// mozilla
-			var bo=document.getBoxObjectFor(node);
-			ret.x=bo.x-sl;
-			ret.y=bo.y-st;
-**/		}else{
+			var bo = document.getBoxObjectFor(node);
+			ret.x = bo.x - ds.sumAncestorProperties(node, "scrollLeft");
+			ret.y = bo.y - ds.sumAncestorProperties(node, "scrollTop");
+		}else{
 			if(node["offsetParent"]){
 				var endNode;		
 				// in Safari, if the node is an absolutely positioned child of
@@ -351,7 +351,6 @@ dojo.require("dojo.lang.common");
 	}
 
 	ds.getTotalOffset = function(node, type, includeScroll){
-		node = dojo.byId(node);
 		return ds.abs(node, includeScroll)[(type == "top") ? "y" : "x"];
 	}
 
