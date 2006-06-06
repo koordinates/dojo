@@ -351,8 +351,8 @@ dojo.lang.extend(dojo.widget.html.Spinner, {
 			display = "inline";
 			position = "relative";
 			backgroundColor = "";
-			marginLeft = "0px";
-			paddingLeft = "-1px";
+			marginLeft = "-1px";
+			paddingLeft = "0";
 		}
 		this.inputNode.style.marginRight = "0px";
 		this.inputNode.style.paddingRight = "0px";
@@ -362,7 +362,7 @@ dojo.lang.extend(dojo.widget.html.Spinner, {
 		this.domNode = dojo.dom.removeNode(this.domNode);
 		// realign the spinner vertically in case there's a slight difference
 		var absOffset = dojo.html.getAbsoluteY(this.relNode,true)-dojo.html.getAbsoluteY(this.absNode,true);
-		this.absNode.style.top = absOffset-dojo.style.getBorderTopHeight(this.inputNode);
+		this.absNode.style.top = absOffset-dojo.style.getBorderExtent(this.inputNode, "top")+"px";
 
 		var s = dojo.widget.html.stabile.getState(this.widgetId);
 		this.setValue(this.getValue());
