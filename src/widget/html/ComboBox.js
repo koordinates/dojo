@@ -426,7 +426,7 @@ dojo.widget.defineWidget(
 	
 		onBlurInput: function(){
 			this._hasFocus = false;
-			this._handleBlurTimer(true, 100);
+			this._handleBlurTimer(true, 500);
 		},
 	
 		// collect all blur timers issues here
