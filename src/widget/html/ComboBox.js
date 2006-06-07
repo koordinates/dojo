@@ -38,6 +38,7 @@ dojo.widget.defineWidget(
 		_result_list_open: false,
 		_gotFocus: false,
 		_mouseover_list: false,
+		dataProviderClass: "dojo.widget.ComboBoxDataProvider",
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css"),
@@ -321,9 +322,10 @@ dojo.widget.defineWidget(
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
 	
-			// FIXME: add logic
-			this.dataProvider = new dojo.widget.ComboBoxDataProvider();
-	
+			var dpClass = (typeof this.dataProviderClass == "string") ? dojo.evalObjPath(this.dataProviderClass) : this.dataProviderClass;
+			this.dataProvider = new dpClass(this.mode, this);
+
+			// FIXME: need to move this initialization logic into the data provider classes themselves
 			if(!dojo.string.isBlank(this.dataUrl)){
 				if("local" == this.mode){
 					var _this = this;
