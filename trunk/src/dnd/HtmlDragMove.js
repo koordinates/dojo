@@ -47,7 +47,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 			x: this.dragStartPosition.x - e.pageX};
 
 		this.containingBlockPosition = this.domNode.offsetParent ? 
-			dojo.style.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
+			dojo.style.getAbsolutePosition(this.domNode.offsetParent, true) : {x:0, y:0};
 
 		this.dragClone.style.position = "absolute";
 
