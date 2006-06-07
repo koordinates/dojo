@@ -9,7 +9,7 @@
 .sliderHandle { 
   color: #FF0000;
   position: relative; 
-  background-image: url(images/slider-button.gif);
+  background-image: url(images/slider-button.png);
   width: 25px; 
   height: 25px;
 }
@@ -25,7 +25,7 @@
 .sliderHandleHorizontal { 
   color: #FF0000;
   position: relative; 
-  background-image: url(images/slider-button-horz.gif);
+  background-image: url(images/slider-button-horz.png);
   width: 25px; 
   height: 35px;
 }
@@ -41,7 +41,7 @@
 .sliderHandleVertical { 
   color: #FF0000;
   position: relative; 
-  background-image: url(images/slider-button-vert.gif);
+  background-image: url(images/slider-button-vert.png);
   width: 35px; 
   height: 25px;
 }
