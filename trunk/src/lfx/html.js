@@ -4,6 +4,7 @@ dojo.require("dojo.lfx.Animation");
 dojo.require("dojo.style");
 
 dojo.lfx.html._byId = function(nodes){
+	if(!nodes){ return []; }
 	if(dojo.lang.isArray(nodes)){
 		if(!nodes.alreadyChecked){
 			var n = [];
@@ -399,7 +400,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	};
 	if(callback){
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
-		anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
+		anim.onEnd = function(){ oldOnEnd(); callback(endNode, anim); };
 	}
 	return anim;
 }
