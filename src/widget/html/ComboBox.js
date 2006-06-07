@@ -322,50 +322,17 @@ dojo.widget.defineWidget(
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
 	
-			var dpClass = (typeof this.dataProviderClass == "string") ? dojo.evalObjPath(this.dataProviderClass) : this.dataProviderClass;
-			this.dataProvider = new dpClass(this.mode, this);
-
-			// FIXME: need to move this initialization logic into the data provider classes themselves
-			if(!dojo.string.isBlank(this.dataUrl)){
-				if("local" == this.mode){
-					var _this = this;
-					dojo.io.bind({
-						url: this.dataUrl,
-						load: function(type, data, evt){ 
-							if(type=="load"){
-								if(!dojo.lang.isArray(data)){
-									var arrData = [];
-									for(var key in data){
-										arrData.push([data[key], key]);
-									}
-									data = arrData;
-								}
-								_this.dataProvider.setData(data);
-							}
-						},
-						mimetype: "text/json"
-					});
-				}else if("remote" == this.mode){
-					this.dataProvider = new dojo.widget.incrementalComboBoxDataProvider(this.dataUrl);
-				}
-			}else{
-				// check to see if we can populate the list from <option> elements
-				var node = frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"];
-				if((node)&&(node.nodeName.toLowerCase() == "select")){
-					// NOTE: we're not handling <optgroup> here yet
-					var opts = node.getElementsByTagName("option");
-					var ol = opts.length;
-					var data = [];
-					for(var x=0; x<ol; x++){
-						var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
-						data.push(keyValArr);
-						if(opts[x].selected){ 
-							this.setAllValues(keyValArr[0], keyValArr[1]);
-						}
-					}
-					this.dataProvider.setData(data);
-				}
+			var dpClass;
+			if(this.mode == "remote"){
+				dpClass = dojo.widget.incrementalComboBoxDataProvider;
 			}
+			if(typeof this.dataProviderClass == "string"){
+				dpClass = dojo.evalObjPath(this.dataProviderClass)
+			}else{
+				dpClass = this.dataProviderClass;
+			}
+			this.dataProvider = new dpClass();
+			this.dataProvider.init(this, this.getFragNodeRef(frag));
 	
 			// Prevent IE bleed-through problem
 			this.optionsIframe = new dojo.html.BackgroundIframe(this.optionsListWrapper);
