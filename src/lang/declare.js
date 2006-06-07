@@ -6,34 +6,31 @@ dojo.require("dojo.lang.extras");
 /*
  * Creates a constructor: inherit and extend
  *
- * - inherits from "superclass" 
+ * - inherits from "superclass(es)" 
  *
  *   "superclass" argument may be a function, or an array of 
  *   functions. 
  *
  *   If "superclass" is an array, the first element is used 
- *   as the prototypal ancestor and any following functions 
- *   become mixin ancestors.
+ *   as the prototypical ancestor and any following functions 
+ *   become mixin ancestors. 
+ * 
+ *   All "superclass(es)" must be functions (not mere Objects).
  *
  *   Using mixin ancestors provides a type of multiple
- *   inheritance, but mixin ancestors have special 
- *   restrictions (e.g. they cannot have their own prototype
- *   chains.
+ *   inheritance. Mixin ancestors prototypical 
+ *   properties are copied to the subclass, and any 
+ *   inializater/constructor is invoked. 
  *
  * - "props" are copied to the constructor prototype
+ *
  * - name of the class ("className" argument) is stored in 
- *   "clasName" property
+ *   "declaredClass" property
  * 
  * An initializer function can be specified in the "init" 
  * argument, or by including a function called "initializer" 
  * in "props".
  * 
- * The initializer function works just like a constructor, 
- * except for the following benefits:
- * 
- * - it doesn't fire at inheritance time (when prototyping)
- * - properties set in the initializer do not become part of subclass prototypes
- *
  * Superclass methods (inherited methods) can be invoked using "inherited" method:
  *
  * this.inherited(<method name>[, <argument array>]);
@@ -53,13 +50,47 @@ dojo.require("dojo.lang.extras");
  * });
  *
  */
-dojo.lang.declare = function(className /*string*/, superclass /*function || array*/, props /*object*/, init /*function*/){
+dojo.lang.declare = function(className /*string*/, superclass /*function || array*/, init /*function*/, props /*object*/){
+	// FIXME: parameter juggling for backward compat ... deprecate and remove after 0.3.*
+	// new sig: (className (string)[, superclass (function || array)[, init (function)][, props (object)]])
+	// old sig: (className (string)[, superclass (function || array), props (object), init (function)])
+	if ((dojo.lang.isFunction(props))||((!props)&&(!dojo.lang.isFunction(init)))){ 
+		var temp = props;
+		props = init;
+		init = temp;
+	}	
 	var mixins = [ ];
 	if (dojo.lang.isArray(superclass)) {
 		mixins = superclass;
 		superclass = mixins.shift();
 	}
-	var ctor = function(){ 
+	if (!init) {
+		init = dojo.evalObjPath(className, false);
+		if ((init)&&(!dojo.lang.isFunction(init))){ init = null };
+	}
+	var ctor = dojo.lang.declare._makeConstructor();
+	var scp = (superclass ? superclass.prototype : null);
+	if(scp){
+		scp.prototyping = true;
+		ctor.prototype = new superclass();
+		scp.prototyping = false; 
+	}
+	ctor.superclass = scp;
+	ctor.mixins = mixins;
+	for(var i=0,l=mixins.length; i<l; i++){
+		dojo.lang.extend(ctor, mixins[i].prototype);
+	}
+	ctor.prototype.declaredClass = className;
+	props = (props)||({});
+	if (props){dojo.lang.extend(ctor, props);}
+	dojo.lang.extend(ctor, dojo.lang.declare.base);
+	ctor.prototype.constructor = ctor;
+	ctor.prototype.initializer=(props.initializer)||(init)||(function(){});
+	dojo.lang.setObjPathValue(className, ctor, null, true);
+}
+
+dojo.lang.declare._makeConstructor = function() {
+	return function(){ 
 		// get the generational context (which object [or prototype] should be constructed)
 		var self = this._getPropContext();
 		var s = self.constructor.superclass;
@@ -79,23 +110,6 @@ dojo.lang.declare = function(className /*string*/, superclass /*function || arra
 			self.initializer.apply(this, arguments);
 		}
 	}
-	var scp = (superclass ? superclass.prototype : null);
-	if(scp){
-		scp.prototyping = true;
-		ctor.prototype = new superclass();
-		scp.prototyping = false; 
-	}
-	ctor.superclass = scp;
-	ctor.mixins = mixins;
-	for(var i=0,l=mixins.length; i<l; i++){
-		dojo.lang.extend(ctor, mixins[i].prototype);
-	}
-	ctor.prototype.declaredClass = className;
-	if (props){dojo.lang.extend(ctor, props);}
-	dojo.lang.extend(ctor, dojo.lang.declare.base);
-	ctor.prototype.constructor = ctor;
-	ctor.prototype.initializer=(props.initializer)||(init)||(function(){});
-	dojo.lang.setObjPathValue(className, ctor, null, true);
 }
 
 dojo.lang.declare.base = {
@@ -108,6 +122,11 @@ dojo.lang.declare.base = {
 		this.___proto = stack;
 		return result;
 	},
+	// invokes ctor.prototype.method, with args, in our context 
+	inheritedFrom: function(ctor, prop, args){
+		var p = ((ctor)&&(ctor.prototype)&&(ctor.prototype[prop]));
+		return (dojo.lang.isFunction(p) ? p.apply(this, args) : p);
+	},
 	// searches backward thru prototype chain to find nearest ancestral implementation of method
 	inherited: function(prop, args){
 		var p = this._getPropContext();
@@ -115,7 +134,7 @@ dojo.lang.declare.base = {
 			if((!p.constructor)||(!p.constructor.superclass)){return;}
 			p = p.constructor.superclass;
 		}while(!(prop in p));
-		return (typeof p[prop] == 'function' ? this._inherited(p, prop, args) : p[prop]);
+		return (dojo.lang.isFunction(p[prop]) ? this._inherited(p, prop, args) : p[prop]);
 	}
 }
 
