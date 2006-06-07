@@ -488,19 +488,8 @@ dojo.widget.defineWidget(
 				isValidOption = this._isValidOption();
 				// enforce selection from option list
 				if(this.forceValidOption && !isValidOption){
-					//tgt = dojo.dom.firstElement(this.optionsListNode);
-					//isValidOption = false;
-					//while(!isValidOption && tgt){
-						//if(this._isInputEqualToResult(tgt.getAttribute("resultName"))){
-							//isValidOption = true;
-						//}else{
-							//tgt = dojo.dom.nextElement(tgt);
-						//}
-					//}
-					//if(!isValidOption){
-						this.setAllValues("", "");
-						return;
-					//}
+					this.setAllValues("", "");
+					return;
 				}
 				if(!isValidOption){// clear
 					this.setSelectedValue("");
@@ -537,7 +526,7 @@ dojo.widget.defineWidget(
 				tgt = dojo.dom.firstElement(this.optionsListNode);
 	
 				// user has input value not in option list
-				if(!this._isInputEqualToResult(tgt.getAttribute("resultName"))){
+				if(!tgt || !this._isInputEqualToResult(tgt.getAttribute("resultName"))){
 					return;
 				}
 				// otherwise the user has accepted the autocompleted value
