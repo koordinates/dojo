@@ -356,19 +356,9 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	endNode = dojo.byId(endNode);
 	var startCoords = dojo.style.toCoordinateArray(start, true);
 	var outline = document.createElement("div");
+	dojo.html.copyStyle(outline, endNode);
 	with(outline.style){
 		position = "absolute";
-		// border = "2px solid #9f9fa0";
-		var srgb;
-		try{
-			srgb = dojo.style.getBackgroundColor(endNode);
-			if(srgb.length > 3){ srgb.pop(); }
-			srgb = "rgb("+srgb+")";
-		}catch(e){
-			// Safari is a POS
-			srgb = "#9f9fa0";
-		}
-		backgroundColor = srgb;
 		display = "none";
 	}
 	document.body.appendChild(outline);
@@ -412,20 +402,10 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	var endCoords = dojo.style.toCoordinateArray(end, true);
 
 	var outline = document.createElement("div");
+	dojo.html.copyStyle(outline, startNode);
 	dojo.style.setOpacity(outline, 0.3);
 	with(outline.style){
 		position = "absolute";
-		// border = "2px solid #9f9fa0";
-		var srgb;
-		try{
-			srgb = dojo.style.getBackgroundColor(startNode);
-			if(srgb.length > 3){ srgb.pop(); }
-			srgb = "rgb("+srgb+")";
-		}catch(e){
-			// Safari is a POS
-			srgb = "#9f9fa0";
-		}
-		backgroundColor = srgb;
 		display = "none";
 	}
 	document.body.appendChild(outline);
