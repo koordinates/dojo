@@ -1,7 +1,7 @@
 dojo.provide("dojo.lfx.html");
 dojo.require("dojo.lfx.Animation");
 
-dojo.require("dojo.style");
+dojo.require("dojo.html");
 
 dojo.lfx.html._byId = function(nodes){
 	if(!nodes){ return []; }
@@ -264,18 +264,18 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
 		var left = null;
-		var pos = null;
 		
 		var init = (function(){
 			var innerNode = node;
 			return function(){
 				top = innerNode.offsetTop;
 				left = innerNode.offsetLeft;
-				pos = dojo.style.getComputedStyle(innerNode, 'position');
 
-				if (pos == 'relative' || pos == 'static') {
-					top = parseInt(dojo.style.getComputedStyle(innerNode, 'top')) || 0;
-					left = parseInt(dojo.style.getComputedStyle(innerNode, 'left')) || 0;
+				if (!dojo.style.isPositionAbsolute(innerNode)) {
+					var ret = dojo.style.abs(innerNode, true);
+					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
+					top = ret.y;
+					left = ret.x;
 				}
 			}
 		})();
@@ -311,18 +311,18 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
 		var left = null;
-		var pos = null;
 		
 		var init = (function(){
 			var innerNode = node;
 			return function(){
 				top = node.offsetTop;
 				left = node.offsetLeft;
-				pos = dojo.style.getComputedStyle(node, 'position');
 
-				if (pos == 'relative' || pos == 'static') {
-					top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
-					left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+				if (!dojo.style.isPositionAbsolute(innerNode)) {
+					var ret = dojo.style.abs(innerNode);
+					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
+					top = ret.y;
+					left = ret.x;
 				}
 			}
 		})();
