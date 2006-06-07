@@ -10,6 +10,11 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.allowCache = false;
 
 	this.cache = {};
+
+	this.init = function(cbox){
+		this.seachUrl = cbox.dataUrl;
+	}
+
 	this.addToCache = function(keyword, data){
 		if(this.allowCache){
 			this.cache[keyword] = data;
@@ -59,6 +64,45 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// for caching optimizations
 	this._lastSearch = "";
 	this._lastSearchResults = null;
+
+	this.init = function(cbox, node){
+		if(!dojo.string.isBlank(cbox.dataUrl)){
+			this.getData(cbox.dataUrl);
+		}else{
+			// check to see if we can populate the list from <option> elements
+			if((node)&&(node.nodeName.toLowerCase() == "select")){
+				// NOTE: we're not handling <optgroup> here yet
+				var opts = node.getElementsByTagName("option");
+				var ol = opts.length;
+				var data = [];
+				for(var x=0; x<ol; x++){
+					var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
+					data.push(keyValArr);
+					if(opts[x].selected){ 
+						cbox.setAllValues(keyValArr[0], keyValArr[1]);
+					}
+				}
+				this.setData(data);
+			}
+		}
+	}
+
+	this.getData = function(url){
+		dojo.io.bind({
+			url: url,
+			load: dojo.lang.hitch(this, function(type, data, evt){ 
+				if(!dojo.lang.isArray(data)){
+					var arrData = [];
+					for(var key in data){
+						arrData.push([data[key], key]);
+					}
+					data = arrData;
+				}
+				this.setData(data);
+			}),
+			mimetype: "text/json"
+		});
+	}
 
 	this.startSearch = function(searchStr, type, ignoreLimit){
 		// FIXME: need to add timeout handling here!!
