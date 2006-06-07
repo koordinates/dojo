@@ -712,16 +712,16 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 	<!-- zip task -->
 	<target name="zip"
 		description="builds zip file of release files">
-		<zip destfile="${release_dir}/${project}_${version}.zip" basedir="${release_dir}/${project}"/>
+		<zip destfile="${root}/release/${project}_${version}.zip" basedir="${root}/release/${project}"/>
 	</target>
 	<!-- end zip task -->
 
 	<!-- tar task -->
 	<target name="tar"
 		description="builds tarball of release files">
-		<tar tarfile="${release_dir}/${project}_${version}.tar" basedir="${release_dir}" includes="${project}/**"/>
-		<gzip zipfile="${release_dir}/${project}_${version}.tar.gz" src="${release_dir}/${project}_${version}.tar"/>
-		<delete file="${release_dir}/${project}_${version}.tar"/>
+		<tar tarfile="${root}/release/${project}_${version}.tar" basedir="${root}/release" includes="${project}/**"/>
+		<gzip zipfile="${root}/release/${project}_${version}.tar.gz" src="${root}/release/${project}_${version}.tar"/>
+		<delete file="${root}/release/${project}_${version}.tar"/>
 	</target>
 	<!-- end tar task -->
 	
