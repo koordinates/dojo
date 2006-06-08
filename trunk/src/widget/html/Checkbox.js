@@ -35,6 +35,7 @@ dojo.widget.defineWidget(
 	
 		srcOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
 		srcOff: dojo.uri.dojoUri('src/widget/templates/check_off.gif'),
+		disabled: "enabled",
 	
 		fillInTemplate: function(){
 	
@@ -77,14 +78,16 @@ dojo.widget.defineWidget(
 		},
 	
 		onClick: function(){
-	
-			this.domNode.checked = !this.domNode.checked ? true : false;
-			this.updateImgSrc();
+			if(this.disabled == "enabled"){
+				this.domNode.checked = !this.domNode.checked ? true : false;
+				this.updateImgSrc();
+			}
 		},
 	
 		onChange: function(){
-	
-			this.updateImgSrc();
+			if(this.disabled == "enabled"){
+				this.updateImgSrc();
+			}
 		},
 	
 		updateImgSrc: function(){
