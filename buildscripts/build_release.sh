@@ -12,7 +12,8 @@ do
 	profile=`echo $pfile | sed 's/.profile.js//g'`
 	echo Building profile: $profile
 	CLASSPATH="/home/alex/.ant/lib/js.jar:/home/alex/.ant/lib/jython.jar" ant -q -Dversion=$1 -Ddocless=true -Dprofile=$profile release
-	cp -r ../tests/* ../release/dojo/tests/
+	# the release task now includes tests by default
+	# cp -r ../tests/* ../release/dojo/tests/
 	proName=dojo-$1-$profile
 	cd ../release
 	mv dojo $proName
