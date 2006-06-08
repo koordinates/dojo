@@ -112,7 +112,9 @@ def replaceVersion(fileName, version):
 	if len(verSegments) > 1 and verSegments[1]:
 		minorValue = verSegments[1]
 	if len(verSegments) > 2 and verSegments[2]:
-		patchValue = verSegments[2]
+		patchValue = re.split('\D', verSegments[2])[0]
+		if len(patchValue) is not len(verSegments[2]):
+			flagValue = verSegments[2][len(patchValue):]
 	if len(verSegments) > 3 and verSegments[3]:
 		flagValue = verSegments[3]
 
