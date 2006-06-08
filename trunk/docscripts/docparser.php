@@ -7,6 +7,7 @@ require_once('inc/DojoArray.php');
 require_once('inc/helpers.inc');
 
 header('Content-type: text/plain');
+delTree('json');
 
 $output = array();
 
@@ -32,7 +33,7 @@ foreach ($files as $file) {
             $items = $value->getAll();
             foreach ($items as $item) {
               if ($item instanceof DojoString) {
-                $output[$package->getPackageName()][$package->getPackageName() . '._']['meta']['requires'][$key][] = $item->getValue();
+                $output[$package->getPackageName()][$package->getPackageName() . '._']['_']['meta']['requires'][$key][] = $item->getValue();
               }
             }
           }
@@ -67,44 +68,6 @@ foreach ($files as $file) {
       }
     }
     
-    // Handle. dojo.lang.extend calls
-    $calls = $package->getFunctionCalls('dojo.lang.extend');
-    foreach ($calls as $call) {
-      $object = $call->getParameter(0);
-      $properties = $call->getParameter(1);
-      if ($object && $properties) {
-        $object = $object->getValue();
-        $properties = $properties->getValue();
-        if (is_string($object) && $properties instanceof DojoObject) {
-          $keys = $properties->getKeys();
-          foreach ($keys as $key) {
-            if ($properties->isFunction($key)) {
-              $function = $properties->getValue($key);
-              $function->setThis($object);
-              $function->setFunctionName($object . '.' . $key);
-              rolloutFunction($output, $package, $function);
-            }
-            else {
-              $output[$package->getPackageName()][$object]['meta']['protovariables'][] = $key;
-            }
-          }
-        }
-        elseif (is_string($object) && is_string($properties)) {
-          // Note: inherits expects to be reading from prototype values
-          if (strpos($properties, '.prototype') !== false) {
-            $output[$package->getPackageName()][$object]['meta']['inherits'][] = str_replace('.prototype', '', $properties);
-          }
-          elseif (strpos($properties, 'new ') !== false) {
-            $output[$package->getPackageName()][$object]['meta']['inherits'][] = str_replace('new ', '', $properties);
-            $output[$package->getPackageName()][$object]['meta']['this_inherits'][] = str_replace('new ', '', $properties);
-          }
-          else {
-            $output[$package->getPackageName()][$object]['meta']['this_inherits'][] = $properties;
-          }
-        }
-      }
-    }
-    
     // Handle dojo.declare calls
     $calls = array_merge($package->getFunctionCalls('dojo.declare'), $package->getFunctionCalls('dojo.widget.defineWidget'));
     foreach ($calls as $call) {
@@ -133,8 +96,8 @@ foreach ($files as $file) {
       if (!is_string($superclass)) continue;
       $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_'] = "";
       if ($superclass != "null" && $superclass != "false" && $superclass != "undefined") {
-        $output[$package->getPackageName()][$name->getValue()]['meta']['inherits'][] = $superclass;
-        $output[$package->getPackageName()][$name->getValue()]['meta']['this_inherits'][] = $superclass;
+        $output[$package->getPackageName()][$name->getValue()]['_']['meta']['inherits'][] = $superclass;
+        $output[$package->getPackageName()][$name->getValue()]['_']['meta']['this_inherits'][] = $superclass;
       }
       if ($props instanceof DojoObject) {
         $keys = $props->getKeys();
@@ -150,7 +113,7 @@ foreach ($files as $file) {
             rolloutFunction($output, $package, $function);
           }
           else {
-            $output[$package->getPackageName()][$name->getValue()]['meta']['protovariables'][] = $key;
+            $output[$package->getPackageName()][$name->getValue()]['_']['meta']['protovariables'][] = $key;
           }
         }
       }
@@ -158,7 +121,7 @@ foreach ($files as $file) {
       if ($init instanceof DojoFunctionDeclare) {
         $parameters = $init->getParameters();
         foreach ($parameters as $parameter) {
-          $output[$package->getPackageName()]['meta']['parameters'][] = array($parameter->getType(), $parameter->getValue());
+          $output[$package->getPackageName()][$name->getValue()]['_']['meta']['parameters'][] = array($parameter->getType(), $parameter->getValue());
         }
       }
     }
@@ -169,7 +132,7 @@ foreach ($files as $file) {
       rolloutFunction($output, $package, $declaration);
     }
     
-    $calls = $package->getFunctionCalls('dojo.inherits');
+    $calls = $package->getFunctionCalls('dojo.inherits', true);
     foreach ($calls as $call) {
       $subclass = $call->getParameter(0);
       $superclass = $call->getParameter(1);
@@ -178,16 +141,55 @@ foreach ($files as $file) {
         $superclass = $superclass->getValue();
       }
       if (is_string($subclass) && is_string($superclass)) {
-        $output[$package->getPackageName()][$subclass]['meta']['inherits'][] = $superclass;
+        $output[$package->getPackageName()][$subclass]['_']['meta']['inherits'][] = $superclass;
+      }
+    }
+    
+    // Handle. dojo.lang.extend calls
+    $calls = $package->getFunctionCalls('dojo.lang.extend', true);
+    foreach ($calls as $call) {
+      $object = $call->getParameter(0);
+      $properties = $call->getParameter(1);
+      if ($object && $properties) {
+        $object = $object->getValue();
+        $properties = $properties->getValue();
+        if (is_string($object) && $properties instanceof DojoObject) {
+          $keys = $properties->getKeys();
+          foreach ($keys as $key) {
+            if ($properties->isFunction($key)) {
+              $function = $properties->getValue($key);
+              $function->setThis($object);
+              $function->setFunctionName($object . '.' . $key);
+              rolloutFunction($output, $package, $function);
+            }
+            else {
+              $output[$package->getPackageName()][$object]['_']['meta']['protovariables'][] = $key;
+            }
+          }
+        }
+        elseif (is_string($object) && is_string($properties)) {
+          // Note: inherits expects to be reading from prototype values
+          if (strpos($properties, '.prototype') !== false) {
+            $output[$package->getPackageName()][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
+          }
+          elseif (strpos($properties, 'new ') !== false) {
+            $output[$package->getPackageName()][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
+            $output[$package->getPackageName()][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
+          }
+          else {
+            $output[$package->getPackageName()][$object]['_']['meta']['object_inherits'][] = $properties;
+          }
+        }
       }
     }
     
     if ($output[$package->getPackageName()]) {
-      $output['function_names'][$package->getPackageName()] = array_diff(array_keys($output[$package->getPackageName()]), array('meta'));
+      $output['function_names'][$package->getPackageName()] = array_values(array_diff(array_keys($output[$package->getPackageName()]), array('meta')));
     }
   }
 }
 
-print_r($output);
+writeToDisk($output, 'json', 'json');
+//print_r($output);
 
 ?>
