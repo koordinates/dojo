@@ -120,14 +120,6 @@ JSON Objects
 
 In all of the following examples, a key with "" around it means that it is a text link. That is, it does not change.
 
-Also, it is assumed that if anything begins with a _, then it is replaced by its parents. It should be intuitive after looking at the functions.
-
-Examples:
-
-* function_names packages have "dojo" as their parent
-* function_names functions have package as their parent
-* etc
-
 Directory structure (default polymorphic signature is "_"):
 
 package/
@@ -184,10 +176,10 @@ The next object is found in json/*package*/meta and is a list of all package met
 					"summary": summary
 				}
 				id: {
-					"sig": signature
+					"summary": summary
 				},
 				id: {
-					"sig": signature
+					"summary": summary
 				}
 			}
 		}
@@ -196,23 +188,24 @@ The next object is found in json/*package*/meta and is a list of all package met
 The next object is found in json/*package*/*method*/*id*/src and is the source code for each method. It is plain text.
 	
 The next object is found in json/*package*/*method*/*id*/meta and is the metadata for each function. That means it contains things like parameters and return type. It uses the following keys and variables
-* "inner": If this is declared inside of another function.
 * "this": A key that signifies that this function is set by means of a this.variable
 * "returns": A static key that holds the return type of the method
 * "params": A static key that holds all the parameters this object uses
 * type: The object type
 * name: The param name
 * "variables": A static key that holds all the publicly exposed variables.
+* "protovariables": A static key that holds all the prototype variables (set by extends, declare, defineWidget)
 * variable: The name of a publicly exposed variable
 * "inherits": A static key that holds the methods that this function inherits from.
 * method: A dojo method
 * "this_variables": A static key that holds all variables set within the constructor
 * "this_inherits": A static key that holds all of the constructors that dojo inherits from (that is, the "this_variables" of another function)
+* "object_inherits": A static key that holds all of the object that this inherits from.
+* object: An object
 	{
-		"inner": true,
-		"this": true,
+		"this": method,
 		"returns": type,
-		"params": [
+		"parameters": [
 			[type, name],
 			[type, name]
 		],
@@ -220,13 +213,23 @@ The next object is found in json/*package*/*method*/*id*/meta and is the metadat
 			variable,
 			variable
 		],
-		"inherits": method,
+		"protovariables": [
+			variable,
+			variable
+		],
+		"inherits": [
+			method
+		],
 		"this_variables": [
 			variable,
 			variable
 		],
 		"this_inherits": [
 			method
+		],
+		"object_inherits": [
+			object,
+			object
 		]
 	}
 

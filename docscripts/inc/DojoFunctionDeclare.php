@@ -12,6 +12,8 @@ class DojoFunctionDeclare extends DojoFunction
   protected $this_variable_names = array();
   protected $returns = array();
   protected $this_inheritance_calls = array();
+  protected $comment_block_start = false;
+  protected $comment_block_end = false;
 
   public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name = false)
   {
@@ -284,6 +286,9 @@ class DojoFunctionDeclare extends DojoFunction
       
       if (preg_match_all('%/\*(.*)\*/%U', $line, $matches, PREG_SET_ORDER)) {
         foreach ($matches as $match) {
+          if (!$this->comment_block_start) {
+            $this->comment_block_start = array($line_number, strpos($line, $match[0]));
+          }
           $line = $this->blankOut($match[0], $line);
           if ($comments[$line_number]) {
             $comments[$line_number] .= ' ';
@@ -296,6 +301,9 @@ class DojoFunctionDeclare extends DojoFunction
       }
 
       if(preg_match('%(//|/\*)(.*)$%', $line, $match)) {
+        if (!$this->comment_block_start) {
+          $this->comment_block_start = array($line_number, strpos($line, $match[0]));
+        }
         if ($match[1] == '/*') {
           $multiline = true;
         }
@@ -310,6 +318,11 @@ class DojoFunctionDeclare extends DojoFunction
       }
       
       if (trim($line) != '') {
+        $strlen = strlen($line);
+        if ($strlen) {
+          --$strlen;
+        }
+        $this->comment_block_end = array($line_number, $strlen);
         break;
       }
     }
@@ -320,15 +333,19 @@ class DojoFunctionDeclare extends DojoFunction
       list($key,) = preg_split('%\s%', $comment, 2);
       $stripped_key = preg_replace('%(^\W+|\W+$)%', '', $key);
       if (in_array($stripped_key, $this->block_comment_keys)) {
-        $value[] = trim(substr($comment, strlen($key)));
         if ($value) {
-          $output[$stripped_key] = implode(' ', $value);
+          $output[$last_key] = implode(' ', $value);
           $value = array();
         }
+        $last_key = $stripped_key;
+        $value[] = trim(substr($comment, strlen($key)));
+      }
+      else {
+        $value[] = trim($comment);
       }
     }
     if ($value) {
-      $output[$key] = implode(' ', $value);
+      $output[$last_key] = implode(' ', $value);
     }
     
     $this->block_comments = $output;
@@ -338,6 +355,51 @@ class DojoFunctionDeclare extends DojoFunction
   public function getBlockComment($block_comment_key)
   {
     return $this->block_comments[$block_comment_key];
+  }
+  
+  public function getSource()
+  {
+    $lines = $this->chop($this->source, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+    $comments = $this->getBlockCommentKeys(); // Make sure it's here
+    if ($this->comment_block_start && $this->comment_block_end) {
+      for ($line_number = $this->comment_block_start[0]; $line_number <= $this->comment_block_end[0]; $line_number++) {
+        $line = $lines[$line_number];
+        if ($this->comment_block_start[0] == $this->comment_block_end[0]) {
+          $lines[$line_number] = $this->blankOutAt($line, $this->comment_block_start[1], $this->comment_block_end[1]);
+        }
+        elseif ($line_number == $this->comment_block_start[0]) {
+          $lines[$line_number] = $this->blankOutAt($line, $this->comment_block_start[1]);
+        }
+        elseif ($line_number == $this->comment_block_end[0]) {
+          $lines[$line_number] = $this->blankOutAt($line, 0, $this->comment_block_end[1]);
+        }
+        else {
+          $lines[$line_number] = $this->blankOut($line, $line);
+        }
+      }
+    }
+    
+    $started = false;
+    foreach ($lines as $line_number => $line) {
+      if (trim($line) == '') {
+        if (!$started) {
+          unset($lines[$line_number]);
+        }
+      }
+      else {
+        $started = true;
+      }
+    }
+    foreach (array_reverse($lines, true) as $line_number => $line) {
+      if (trim($line) == '') {
+        unset($lines[$line_number]);
+      }
+      else {
+        break;
+      }
+    }
+    
+    return implode("\n", $lines);
   }
 }
 

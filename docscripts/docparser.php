@@ -144,35 +144,44 @@ foreach ($files as $file) {
         $output[$package->getPackageName()][$subclass]['_']['meta']['inherits'][] = $superclass;
       }
     }
-    
-    // Handle. dojo.lang.extend calls
-    $calls = $package->getFunctionCalls('dojo.lang.extend', true);
+
+    // Handle. dojo.lang.extend and dojo.lang.mixin calls
+    $calls = array_merge($package->getFunctionCalls('dojo.lang.extend', true), $package->getFunctionCalls('dojo.lang.mixin'));
     foreach ($calls as $call) {
       $object = $call->getParameter(0);
       $properties = $call->getParameter(1);
       if ($object && $properties) {
         $object = $object->getValue();
+				$call_name = $call->getFunctionCallName();
+				if($call_name == 'dojo.lang.mixin' && $object != $package->getPackageName()) continue;
         $properties = $properties->getValue();
         if (is_string($object) && $properties instanceof DojoObject) {
           $keys = $properties->getKeys();
           foreach ($keys as $key) {
             if ($properties->isFunction($key)) {
               $function = $properties->getValue($key);
-              $function->setThis($object);
+							if ($call_name == 'dojo.lang.extend') {
+              	$function->setThis($object);
+							}
               $function->setFunctionName($object . '.' . $key);
               rolloutFunction($output, $package, $function);
             }
             else {
-              $output[$package->getPackageName()][$object]['_']['meta']['protovariables'][] = $key;
+							if ($call_name == 'dojo.lang.mixin') {
+              	$output[$package->getPackageName()][$object]['_']['meta']['variables'][] = $key;
+							}
+							else {
+              	$output[$package->getPackageName()][$object]['_']['meta']['protovariables'][] = $key;
+							}
             }
           }
         }
         elseif (is_string($object) && is_string($properties)) {
           // Note: inherits expects to be reading from prototype values
-          if (strpos($properties, '.prototype') !== false) {
+          if ($call_name == 'dojo.lang.extend' && strpos($properties, '.prototype') !== false) {
             $output[$package->getPackageName()][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
           }
-          elseif (strpos($properties, 'new ') !== false) {
+          elseif ($call_name == 'dojo.lang.extend' && strpos($properties, 'new ') !== false) {
             $output[$package->getPackageName()][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
             $output[$package->getPackageName()][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
           }

@@ -9,7 +9,7 @@ dojo.widget.html.DocPane = function(){
 	dojo.widget.HtmlWidget.call(this);
 
 	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html");
-	this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css");
+	this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css");
 	this.widgetType = "DocPane";
 	this.isContainer = true;
 
@@ -32,9 +32,16 @@ dojo.widget.html.DocPane = function(){
 	this.pOpt;
 	this.pType;
 	this.source;
+	this.sType;
+	this.sName;
+	this.sParams;
+	this.sPType;
+	this.sPTypeSave;
+	this.sPName;
+	this.sPNameSave;
 
-	dojo.event.topic.subscribe("docResults", this, "onDocResults");
-	dojo.event.topic.subscribe("docFunctionDetail", this, "onDocSelectFunction");
+	dojo.event.topic.subscribe("/doc/results", this, "onDocResults");
+	dojo.event.topic.subscribe("/doc/functionDetail", this, "onDocSelectFunction");
 }
 
 dojo.inherits(dojo.widget.html.DocPane, dojo.widget.HtmlWidget);
@@ -50,18 +57,20 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.vSave = dojo.dom.removeNode(this.vRow);
 		this.pParent = this.pRow.parentNode;
 		this.pSave = dojo.dom.removeNode(this.pRow);
+		this.sPTypeSave = dojo.dom.removeNode(this.sPType);
+		this.sPNameSave = dojo.dom.removeNode(this.sPName);
 	},
 
 	onDocSelectFunction: function(message){
 		var meta = message.meta;
 		if(meta){
 			var variables = meta.variables;
-			var this_variables = meta.variables;
+			var this_variables = meta.this_variables;
 			var child_variables = meta.child_variables;
 			var parameters = meta.parameters;
 		}
 		var doc = message.doc;
-		
+
 		var appends = [];
 		dojo.dom.removeChildren(this.domNode);
 		this.fn.innerHTML = message.name;
@@ -88,7 +97,7 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 			}
 		}
 		
-		this.parameters.style.display = "none";
+		this.sParams.innerHTML = "";
 		for(var param in parameters){
 			var paramType = parameters[param][0];
 			var paramName = parameters[param][1];
@@ -109,10 +118,31 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 				this.pDesc.innerHTML = doc.parameters[paramName].description;
 			}
 			appends.push(this.pParent.appendChild(this.pSave.cloneNode(true)));
+			
+			if(param > 0) {
+				this.sParams.appendChild(document.createTextNode(", "));
+			}
+			if(paramType){
+				dojo.debug(this.sPTypeSave);
+				this.sPTypeSave.innerHTML = paramType;
+				this.sParams.appendChild(this.sPTypeSave.cloneNode(true));
+				this.sParams.appendChild(document.createTextNode(" "));
+			}
+			dojo.debug(this.sPNameSave);
+			this.sPNameSave.innerHTML = paramName;
+			this.sParams.appendChild(this.sPNameSave.cloneNode(true))
 		}
 
+		if(message.returns){
+			this.sType.innerHTML = message.returns;
+		}else{
+			this.sType.innerHTML = "void";
+		}
+		
+		this.sName.innerHTML = message.name;
+		
 		dojo.dom.removeChildren(this.source);
-		this.source.appendChild(document.createTextNode(message.meta.sig + "{\r\n\t" + message.src.replace(/\n/g, "\r\n\t") + "\r\n}"));
+		this.source.appendChild(document.createTextNode(message.src.replace(/\n/g, "\r\n\t")));
 		
 		this.domNode.appendChild(this.selectSave.cloneNode(true));
 
@@ -122,11 +152,18 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 	},
 
 	onDocResults: function(message){
+		var results = message.docResults;
+		
+		if(results.length == 1){
+			dojo.event.topic.publish("/doc/selectFunction", results[0]);
+			return;
+		}
+
 		dojo.dom.removeChildren(this.domNode);
 
-		this.count.innerHTML = message.docResults.length;
+		this.count.innerHTML = results.length;
 		var appends = [];
-		for(var i = 0, row; row = message.docResults[i]; i++){
+		for(var i = 0, row; row = results[i]; i++){
 			this.fnLink.innerHTML = row.name;
 			this.fnLink.href = "#" + row.name;
 			if(row.id){
@@ -142,14 +179,14 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		
 		function makeSelect(x){
 			return function(e) {
-				dojo.event.topic.publish("docSelectFunction", x);
+				dojo.event.topic.publish("/doc/selectFunction", x);
 			}
 		}
 
 		this.domNode.appendChild(this.resultSave.cloneNode(true));
 		var as = this.domNode.getElementsByTagName("a");
 		for(var i = 0, a; a = as[i]; i++){
-			dojo.event.connect(a, "onclick", makeSelect(message.docResults[i]));
+			dojo.event.connect(a, "onclick", makeSelect(results[i]));
 		}
 		
 		for(var i = 0, append; append = appends[i]; i++){
