@@ -142,7 +142,9 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		this.sName.innerHTML = message.name;
 		
 		dojo.dom.removeChildren(this.source);
+                this.source.appendChild(document.createTextNode("\n\r"));
 		this.source.appendChild(document.createTextNode(message.src.replace(/\n/g, "\r\n\t")));
+                this.source.appendChild(document.createTextNode("\n\r"));
 		
 		this.domNode.appendChild(this.selectSave.cloneNode(true));
 
