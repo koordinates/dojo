@@ -1,4 +1,4 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: [
 		"dojo.string",
 		"dojo.string.common",
@@ -6,4 +6,4 @@ dojo.hostenv.conditionalLoadModule({
 		"dojo.string.Builder"
 	]
 });
-dojo.hostenv.moduleLoaded("dojo.string.*");
+dojo.provide("dojo.string.*");

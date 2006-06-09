@@ -6,21 +6,31 @@
 
 <script type="text/javascript">
 
-	var djConfig = {isDebug: true , debugAtAllCosts: false };
+	var djConfig = { isDebug: true };
 
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
-
-	//dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.FisheyeList");
-	dojo.hostenv.writeIncludes();
+
+	var counter = 1;
+	function addToFirstList(){
+		var fl = dojo.widget.byType("FisheyeList")[0];
+		var item = dojo.widget.createWidget("FisheyeListItem", { 
+				caption: "Dynamically Added "+counter,
+				iconSrc: "images/fisheye_"+counter+".png"
+			}
+		);
+		counter++;
+		fl.addChild(item);
+	}
 </script>
 </head>
 <body style="padding-left: 150px;">
 
 <p>HTML before</p>
 <p>HTML before</p>
+<button onclick="addToFirstList();">Add a new item to the first list</button>
 <p>HTML before</p>
 <p>Liberal trigger: move the mouse anywhere near the menu and it will start to expand:</p>
 <div dojoType="FisheyeList"

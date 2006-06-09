@@ -5,16 +5,16 @@ Compatibility package to get 0.2.2 functionality in later Dojo releases.
 //**********************************
 //From bootstrap1.js
 dj_throw = dj_rethrow = function(m, e){
-	dojo.deprecated("dj_throw and dj_rethrow deprecated, use dojo.raise instead");
+	dojo.deprecated("dj_throw and dj_rethrow", "use dojo.raise instead", "0.4");
 	dojo.raise(m, e);
 }
 
-var dj_debug = dojo.debug;
+dj_debug = dojo.debug;
 dj_unimplemented = dojo.unimplemented;
 dj_deprecated = dojo.deprecated;
 
 dj_inherits = function(subclass, superclass){
-	dojo.deprecated("dj_inherits deprecated, use dojo.inherits instead");
+	dojo.deprecated("dj_inherits", "use dojo.inherits instead", "0.4");
 	dojo.inherits(subclass, superclass);
 }
 
@@ -27,7 +27,11 @@ dj_inherits = function(subclass, superclass){
 dojo.hostenv.setBaseScriptUri = function(uri){ djConfig.baseScriptUri = uri }
 
 //**********************************
-//From bootstrap2.js
+//From the old bootstrap2.js
+dojo.hostenv.moduleLoaded = function(){
+	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
+}
+
 dojo.hostenv.require = dojo.hostenv.loadModule;
 dojo.requireAfter = dojo.require;
 dojo.conditionalRequire = dojo.requireIf;
@@ -36,8 +40,8 @@ dojo.requireAll = function() {
 	for(var i = 0; i < arguments.length; i++) { dojo.require(arguments[i]); }
 }
 
-dojo.kwCompoundRequire = function(){
-	dojo.hostenv.conditionalLoadModule.apply(dojo.hostenv, arguments);
+dojo.hostenv.conditionalLoadModule = function(){
+	dojo.kwCompoundRequire.apply(dojo, arguments);
 }
 
 dojo.hostenv.provide = dojo.hostenv.startPackage;

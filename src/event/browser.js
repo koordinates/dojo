@@ -1,7 +1,8 @@
 dojo.provide("dojo.event.browser");
 dojo.require("dojo.event");
 
-dojo_ie_clobber = new function(){
+// FIXME: any particular reason this is in the global scope?
+dojo._ie_clobber = new function(){
 	this.clobberNodes = [];
 
 	function nukeProp(node, prop){
@@ -46,8 +47,8 @@ dojo_ie_clobber = new function(){
 }
 
 if(dojo.render.html.ie){
-	window.onunload = function(){
-		dojo_ie_clobber.clobber();
+	dojo.addOnUnload(function(){
+		dojo._ie_clobber.clobber();
 		try{
 			if((dojo["widget"])&&(dojo.widget["manager"])){
 				dojo.widget.manager.destroyAll();
@@ -55,9 +56,9 @@ if(dojo.render.html.ie){
 		}catch(e){}
 		try{ window.onload = null; }catch(e){}
 		try{ window.onunload = null; }catch(e){}
-		dojo_ie_clobber.clobberNodes = [];
+		dojo._ie_clobber.clobberNodes = [];
 		// CollectGarbage();
-	}
+	});
 }
 
 dojo.event.browser = new function(){
@@ -66,14 +67,15 @@ dojo.event.browser = new function(){
 
 	this.clean = function(node){
 		if(dojo.render.html.ie){ 
-			dojo_ie_clobber.clobber(node);
+			dojo._ie_clobber.clobber(node);
 		}
 	}
 
 	this.addClobberNode = function(node){
+		if(!dojo.render.html.ie){ return; }
 		if(!node["__doClobber__"]){
 			node.__doClobber__ = true;
-			dojo_ie_clobber.clobberNodes.push(node);
+			dojo._ie_clobber.clobberNodes.push(node);
 			// this might not be the most efficient thing to do, but it's
 			// much less error prone than other approaches which were
 			// previously tried and failed
@@ -82,6 +84,7 @@ dojo.event.browser = new function(){
 	}
 
 	this.addClobberNodeAttrs = function(node, props){
+		if(!dojo.render.html.ie){ return; }
 		this.addClobberNode(node);
 		for(var x=0; x<props.length; x++){
 			node.__clobberAttrs__.push(props[x]);
@@ -233,12 +236,12 @@ dojo.event.browser = new function(){
 			if(!evt.layerX){ evt.layerX = evt.offsetX; }
 			if(!evt.layerY){ evt.layerY = evt.offsetY; }
 			// FIXME: scroll position query is duped from dojo.html to avoid dependency on that entire module
-			if(!evt.pageX){ evt.pageX = evt.clientX + (window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0) }
-			if(!evt.pageY){ evt.pageY = evt.clientY + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) }
+			if(!evt.pageX){ evt.pageX = evt.clientX + (window.pageXOffset || document.scrollLeft || document.documentElement.scrollLeft || document.body.scrollLeft || 0) }
+			if(!evt.pageY){ evt.pageY = evt.clientY + (window.pageYOffset || document.scrollTop || document.documentElement.scrollTop || document.body.scrollTop || 0) }
 			// mouseover
-			if(evt.fromElement){ evt.relatedTarget = evt.fromElement; }
+			if(evt.type == "mouseover"){ evt.relatedTarget = evt.fromElement; }
 			// mouseout
-			if(evt.toElement){ evt.relatedTarget = evt.toElement; }
+			if(evt.type == "mouseout"){ evt.relatedTarget = evt.toElement; }
 			this.currentEvent = evt;
 			evt.callListener = this.callListener;
 			evt.stopPropagation = this.stopPropagation;

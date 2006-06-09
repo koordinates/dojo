@@ -53,23 +53,30 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 	},
 
 	onDocSelectFunction: function(message){
+		var meta = message.meta;
+		if(meta){
+			var variables = meta.variables;
+			var this_variables = meta.variables;
+			var child_variables = meta.child_variables;
+			var parameters = meta.parameters;
+		}
+		var doc = message.doc;
+		
 		var appends = [];
 		dojo.dom.removeChildren(this.domNode);
 		this.fn.innerHTML = message.name;
-		this.description.innerHTML = message.doc.description;
+		this.description.innerHTML = doc.description;
 
 		this.variables.style.display = "block";
 		var all = [];
-		if(message.meta){
-			if(message.meta.variables){
-				all = message.meta.variables;
-			}
-			if(message.meta.this_variables){
-				all = all.concat(message.meta.this_variables);
-			}
-			if(message.meta.child_variables){
-				all = all.concat(message.meta.child_variables);
-			}
+		if(variables){
+			all = variables;
+		}
+		if(this_variables){
+			all = all.concat(this_variables);
+		}
+		if(child_variables){
+			all = all.concat(child_variables);
 		}
 		if(!all.length){
 			this.variables.style.display = "none";
@@ -82,22 +89,24 @@ dojo.lang.extend(dojo.widget.html.DocPane, {
 		}
 		
 		this.parameters.style.display = "none";
-		for(var param in message.meta.params){
+		for(var param in parameters){
+			var paramType = parameters[param][0];
+			var paramName = parameters[param][1];
 			this.parameters.style.display = "block";		
-			this.pLink.innerHTML = param;
+			this.pLink.innerHTML = paramName;
 			this.pOpt.style.display = "none";
-			if(message.meta.params[param].opt){
+			if(parameters[param].opt){
 				this.pOpt.style.display = "inline";				
 			}
 			this.pType.parentNode.style.display = "none";
-			if(message.meta.params[param].type){
+			if(parameters[param][0]){
 				this.pType.parentNode.style.display = "inline";
-				this.pType.innerHTML = message.meta.params[param].type;
+				this.pType.innerHTML = paramType;
 			}
-			this.pDesc.parentNode.style.display = "none";			
-			if(message.doc.parameters[param] && message.doc.parameters[param].description){
+			this.pDesc.parentNode.style.display = "none";
+			if(doc.parameters[paramName] && doc.parameters[paramName].description){
 				this.pDesc.parentNode.style.display = "inline";
-				this.pDesc.innerHTML = message.doc.parameters[param].description;
+				this.pDesc.innerHTML = doc.parameters[paramName].description;
 			}
 			appends.push(this.pParent.appendChild(this.pSave.cloneNode(true)));
 		}

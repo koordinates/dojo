@@ -23,14 +23,12 @@ def escape(instr):
 		    out.append(instr[x])
 	return string.join(out, "")
 
-def internTemplateStrings(packageFile="../release/dojo/dojo.js", srcRoot="../"):
-	try:
-		pfd = open(packageFile)
-	except:
-		packageFile = packageFile.replace("dojo.js", "__package__.js")
-		pfd = open(packageFile)
-	pkgString = pfd.read()
-	pfd.close()
+
+def regexpMagic(loader, pkgString, srcRoot):
+	uriMethod = "dojo.uri.dojoUri"
+	#if loader == "xdomain":
+	#	uriMethod = "dojo.uri.dojoUriXd"
+
 	# "Now they have two problems" -- jwz
 	#	http://en.wikiquote.org/wiki/Jamie_Zawinski
 	matches = re.findall('(templatePath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
@@ -45,8 +43,92 @@ def internTemplateStrings(packageFile="../release/dojo/dojo.js", srcRoot="../"):
 		replacement = "templateString:\""+escape(open(srcRoot+x[3]).read())+"\""
 		pkgString = string.replace(pkgString, x[0], replacement)
 
-	pfd = open(packageFile, "w")
-	pfd.write(pkgString)
+	#Find template CSS stuff.
+	matches = re.findall('(templateCssPath\s*:\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"([\w\.\/]+)"(\s*\))?)', pkgString)
+	print matches
+	for x in matches:
+		replacement = "templateCssString:\""+escape(open(srcRoot+x[3]).read())+"\",templateCssPath:"+uriMethod+"(\""+x[3]+"\")"
+		pkgString = string.replace(pkgString, x[0], replacement)
+
+	#This regexp is a little weak because it assumes a "this" in front of the templateCssPath.
+	#In theory it could be something else, but in practice it is not, and it gets a little too weird
+	#to figure out, at least given the short amount of time this change is going in.
+	matches = re.findall('(this\.templateCssPath\s*=\s*(dojo\.uri\.(dojo)?Uri\(\s*)?"(.+)"(\s*\))?)', pkgString)
+	print matches
+	for x in matches:
+		replacement = "this.templateCssString=\""+escape(open(srcRoot+x[3]).read())+"\";this.templateCssPath="+uriMethod+"(\""+x[3]+"\")"
+		pkgString = string.replace(pkgString, x[0], replacement)
+	return pkgString
+
+def internTemplateStringsInFile(loader, packageFile, srcRoot):
+		print packageFile
+		pfd = open(packageFile)
+		pkgString = pfd.read()
+		pfd.close()
+	
+		pkgString = regexpMagic(loader, pkgString, srcRoot)
+		
+		pfd = open(packageFile, "w")
+		pfd.write(pkgString)
+		pfd.close() # flush is implicit
+
+
+def internXdFiles(loader, xdDir, srcRoot):
+	xdFiles = glob.glob1(xdDir, "*.xd.js")
+	for name in xdFiles:
+		print "XD INTERNING: " + name
+		internTemplateStringsInFile(loader, xdDir+os.sep+name, srcRoot)
+
+
+def internTemplateStrings(loader="default", packageDir="../release/dojo", srcRoot="../"):
+	#Fix up dojo.js
+	print "loader: " + loader
+	print "packageDir - " + packageDir
+	packageFile = packageDir+"/dojo.js"
+	#try:
+	internTemplateStringsInFile(loader, packageFile, srcRoot)
+	#except:
+	#	packageFile = packageDir+"/__package__.js"
+	#	internTemplateStringsInFile(loader, packageFile, srcRoot)
+		
+	#If doing xdomain, then need to fix up the .xd.js files in the widget subdir.
+	#Hack alert! I am not patient enough to figure out how to do dir recursion
+	#in python right now.
+	internXdFiles(loader, packageDir+"/src/widget", srcRoot)
+	internXdFiles(loader, packageDir+"/src/widget/html", srcRoot)
+	internXdFiles(loader, packageDir+"/src/widget/svg", srcRoot)
+	internXdFiles(loader, packageDir+"/src/widget/vml", srcRoot)
+
+
+def replaceVersion(fileName, version):
+	verSegments = version.split('.')
+	majorValue = 0
+	minorValue = 0
+	patchValue = 0
+	flagValue = ""
+
+	if len(verSegments) > 0 and verSegments[0]:
+		majorValue = verSegments[0]
+	if len(verSegments) > 1 and verSegments[1]:
+		minorValue = verSegments[1]
+	if len(verSegments) > 2 and verSegments[2]:
+		patchValue = re.split('\D', verSegments[2])[0]
+		if len(patchValue) is not len(verSegments[2]):
+			flagValue = verSegments[2][len(patchValue):]
+	if len(verSegments) > 3 and verSegments[3]:
+		flagValue = verSegments[3]
+
+	pfd = open(fileName)
+	fileContents = pfd.read()
+	pfd.close()
+
+	matches = re.findall('(major:\s*\d*,\s*minor:\s*\d*,\s*patch:\s*\d*,\s*flag:\s*".*?"\s*,)', fileContents)
+	for x in matches:
+		replacement = "major: " + majorValue + ", minor: " + minorValue + ", patch: " + patchValue + ", flag: \"" + flagValue + "\","
+		fileContents = string.replace(fileContents, x, replacement)
+
+	pfd = open(fileName, "w")
+	pfd.write(fileContents)
 	pfd.close() # flush is implicit
 
 def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):

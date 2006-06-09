@@ -21,6 +21,9 @@ dojo.widget.defineWidget(
 		closeOnSave: false,
 		shareToolbar: false,
 		toolbarAlwaysVisible: false,
+		htmlEditing: false,
+		_inHtmlMode: false,
+		_htmlEditNode: null,
 
 		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
@@ -35,6 +38,12 @@ dojo.widget.defineWidget(
 				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
 										tbOpts, this.domNode, "before");
 				dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
+				this.toolbarWidget.hideUnusableButtons(this);
+
+				if(this.object){
+					this.tbBgIframe = new dojo.html.BackgroundIframe(this.toolbarWidget.domNode);
+					this.tbBgIframe.iframe.style.height = "30px";
+				}
 
 				// need to set position fixed to wherever this thing has landed
 				if(this.toolbarAlwaysVisible){
@@ -82,6 +91,38 @@ dojo.widget.defineWidget(
 
 			dojo.event.connect(this.toolbarWidget, "formatSelectClick", focusFunc);
 			dojo.event.connect(this, "execCommand", focusFunc);
+
+			if(this.htmlEditing){
+				var tb = this.toolbarWidget.htmltoggleButton;
+				if(tb){
+					tb.style.display = "";
+					dojo.event.connect(this.toolbarWidget, "htmltoggleClick",
+										this, "toggleHtmlEditing");
+				}
+			}
+		},
+
+		toggleHtmlEditing: function(){
+			if(!this._inHtmlMode){
+				this._inHtmlMode = true;
+				this.toolbarWidget.highlightButton("htmltoggle");
+				if(!this._htmlEditNode){
+					this._htmlEditNode = document.createElement("textarea");
+					dojo.html.insertBefore(this._htmlEditNode, this.domNode);
+				}
+				this._htmlEditNode.style.display = "";
+				this._htmlEditNode.style.width = "100%";
+				this._htmlEditNode.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
+				this._htmlEditNode.value = this.editNode.innerHTML;
+				this.domNode.style.display = "none";
+			}else{
+				this._inHtmlMode = false;
+				this.domNode.style.display = "";
+				this.toolbarWidget.unhighlightButton("htmltoggle");
+				dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
+				this._htmlEditNode.style.display = "none";
+				this.editNode.focus();
+			}
 		},
 
 		setFocus: function(){
@@ -95,7 +136,7 @@ dojo.widget.defineWidget(
 		},
 
 		_scrollSetUp: false,
-		_fixedEnabled: false,
+		_fixEnabled: false,
 		_scrollThreshold: false,
 		_handleScroll: true,
 		globalOnScrollHandler: function(){
@@ -131,6 +172,10 @@ dojo.widget.defineWidget(
 						document.body.appendChild(tdn);
 						tdn.style.left = cl+dojo.style.getPixelValue(document.body, "margin-left")+"px";
 						dojo.html.addClass(tdn, "IEFixedToolbar");
+						if(this.object){
+							dojo.html.addClass(this.tbBgIframe, "IEFixedToolbar");
+						}
+						
 					}else{
 						with(tdn.style){
 							position = "fixed";
@@ -152,7 +197,7 @@ dojo.widget.defineWidget(
 				}
 				if(isIE){
 					dojo.html.removeClass(tdn, "IEFixedToolbar");
-					dojo.html.insertBefore(tdn, this.domNode);
+					dojo.html.insertBefore(tdn, this._htmlEditNode||this.domNode);
 				}
 				this._fixEnabled = false;
 			}

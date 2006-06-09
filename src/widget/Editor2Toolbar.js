@@ -31,6 +31,7 @@ dojo.widget.defineWidget(
 
 		// DOM Nodes
 		wikiwordButton: null,
+		htmltoggleButton: null,
 		insertimageButton: null,
 		styleDropdownButton: null,
 		styleDropdownContainer: null,
@@ -68,6 +69,7 @@ dojo.widget.defineWidget(
 		preventSelect: function(e){ if(dojo.render.html.safari){ e.preventDefault(); } },
 		wikiwordClick: function(){ },
 		insertimageClick: function(){ },
+		htmltoggleClick: function(){ },
 
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
@@ -121,6 +123,14 @@ dojo.widget.defineWidget(
 						dojo.style.hide(tb.clickInterceptDiv);
 					}
 				}catch(e){}
+				if(dojo.render.html.ie){
+					try{
+						dojo.style.hide(tb.forecolorPalette.bgIframe);
+					}catch(e){}
+					try{
+						dojo.style.hide(tb.hilitecolorPalette.bgIframe);
+					}catch(e){}
+				}
 			});
 		},
 
@@ -201,27 +211,40 @@ dojo.widget.defineWidget(
 			dojo.style.toggleShowing(this.clickInterceptDiv);
 			var pos = dojo.style.abs(this[type+"Button"]);
 			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
+			if(pal.bgIframe){
+				with(pal.bgIframe.style){
+					display = "block";
+					left = dd.style.left;
+					top = dd.style.top;
+					width = dojo.style.getOuterWidth(dd)+"px";
+					height = dojo.style.getOuterHeight(dd)+"px";
+				}
+			}
 		},
 
 		uninitialize: function(){
-			dojo.event.kwDisconnect({
-				srcObj:		document.body, 
-				srcFunc:	"onclick", 
-				targetObj:	this,
-				targetFunc:	"hideAllDropDowns",
-				once:		true
-			});
+			if(!dojo.render.html.ie){
+				// apparently this causes leakage on IE!
+				dojo.event.kwDisconnect({
+					srcObj:		document.body, 
+					srcFunc:	"onclick", 
+					targetObj:	this,
+					targetFunc:	"hideAllDropDowns",
+					once:		true
+				});
+			}
 		},
 
 		// stub for observers
 		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
 
-		hideUnusableButtons: function(){
+		hideUnusableButtons: function(obj){
+			var op = obj||dojo.widget.html.RichText.prototype;
 			dojo.lang.forEach(this.commandList,
 				function(cmd){
 					if(this[cmd+"Button"]){
 						var cb = this[cmd+"Button"];
-						if(!dojo.widget.html.RichText.prototype.queryCommandAvailable(cmd)){
+						if(!op.queryCommandAvailable(cmd)){
 							cb.style.display = "none";
 							cb.parentNode.style.display = "none";
 						}
@@ -276,7 +299,7 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		dojo.event.connect(this, "fillInTemplate", this, "hideUnusableButtons");
+		// dojo.event.connect(this, "fillInTemplate", this, "hideUnusableButtons");
 		dojo.event.connect(this, "fillInTemplate", dojo.lang.hitch(this, function(){
 			if(dojo.render.html.ie){
 				this.domNode.style.zoom = 1.0;

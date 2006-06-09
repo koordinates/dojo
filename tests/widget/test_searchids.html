@@ -11,19 +11,34 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.Button");
+	
+	function doClick() {
+		alert(this.domNode.innerHTML);	
+	}
 </script>
 
-<span id="pn">
-	<button id="testDojoButton" dojoType="button" label="this is a test button!" 
-		onClick="alert(this.domNode.innerHTML);" onFoo="dojo.hostenv.println('onFoo');">
-		you shouldn't be seeing this
+<button id="testDojoButton" dojoType="Button" 
+	onClick="doClick" onFoo="dojo.debug('onFoo');">
+	nice soria button
+</button>
+<br>
+<button dojoType="Button" 
+	onClick="alert(this.innerHTML)" onFoo="dojo.debug('onFoo');">
+	plain vanilla button
+</button>
+<br><br>
+<div id="pn">
+	<button dojoType="Button" 
+		onClick="doClick" onFoo="dojo.debug('onFoo');">
+		nice soria button 2
 	</button>
-</span>
+	<br>
+	<button dojoType="Button" 
+		onClick="doClick" onFoo="dojo.debug('onFoo');">
+		nice soria button 3
+	</button>
+</div>
 
 <script>
-	// FIXME: dylan, this doesn't work but it should!
-	// djConfig.searchIds.push("testDojoButton");
-
-	// this works, though
-	djConfig.searchIds.push("pn");
+	djConfig.searchIds.push("testDojoButton", "pn");
 </script>

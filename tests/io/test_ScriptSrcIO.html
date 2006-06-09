@@ -128,10 +128,11 @@
 			kwArgs.url = url + query;
 			if(dojo.byId("useJsonCallback").checked){
 				kwArgs.jsonParamName = "callback";
-				kwArgs.jsonParamValue = "handleJsonpAnimalType";
 			}else{
-				kwArgs.jsonp = "handleJsonpAnimalType";
+				kwArgs.jsonParamName = "jsonp";
 			}
+
+			kwArgs.load = handleJsonpAnimalType;
 			dojo.io.bind(kwArgs);
 		}
 		
@@ -150,17 +151,18 @@
 			kwArgs.url = "Bad.js" + query;
 			if(dojo.byId("useJsonCallback").checked){
 				kwArgs.jsonParamName = "callback";
-				kwArgs.jsonParamValue = "handleJsonpAnimalType";
 			}else{
-				kwArgs.jsonp = "handleJsonpAnimalType";
+				kwArgs.jsonParamName = "jsonp";
 			}
-			
+
+			kwArgs.load = handleJsonpAnimalType;
 			dojo.io.bind(kwArgs);
 		}
 
-		function handleJsonpAnimalType(data){
+		function handleJsonpAnimalType(type, data, evt, kwArgs){
 			output("JSONP callback OK. animalType is: " + data.animalType);
 		}
+
 		function testMultipart(testServerParamChange){
 			transport.removeScripts();
 			
@@ -378,42 +380,29 @@ dojo.io.bind({
 	url: "http://the.script.url/goes/here",
 	transport: "ScriptSrcTransport",
 	checkString: "foo", //This means (typeof(foo) != undefined) indicates that the script loaded.
-	load: function(type, data, event) { /* type will be "load", data and event null */ },
-	error: function(type, data, event) { /* type will be "error", data and event will have the error */ },
+	load: function(type, data, event, kwArgs) { /* type will be "load", data and event null, , and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	error: function(type, data, event, kwArgs) { /* type will be "error", data and event will have the error, , and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
 	timeout: function() { /* Called if there is a timeout */},
 	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
 });
 </pre></p>
-
 
 <p><a name="JSONP"></a><b><a href="javascript:void(0)" onclick="showJsonp()">JSONP and JSON Callbacks</a></b><br>
-<b>JSONP</b>: Adds a script element with a src. Uses the <a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/" target="_blank">JSONP
-convention</a> to specify the callback that the server will use. A load callback is not used in this scenario, 
-since the jsonp string will be used for the callback. Timeouts are supported with this type of request. Example:</p>
-
-<p><pre>
-dojo.io.bind({
-	url: "http://the.script.url/goes/here",
-	transport: "ScriptSrcTransport",
-	jsonp: "myJsonpLoadFunction",
-	timeout: function() { /* Called if there is a timeout */},
-	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
-});
-</pre></p>
-
-<p><b>JSON Callbacks</b>: The same as JSONP, but instead of using
-"jsonp" as the URL parameter, a different name for the URL parameter can be used. This allows usage of
-API services like <a href="http://developer.yahoo.net/common/json.html">Yahoo! Web Services</a> (which uses
-the parameter name "callback"). Don't use the <i>jsonp</i> keyword argument to bind, but instead, specify the name
-of the URL parameter by using <i>jsonParamName</i> and the callback string in <i>jsonParamValue</i>. Example 
-for a data service that uses "callback" as the URL parameter:</p>
+Adds a script element with a src. This sort of usage allows using services that use the
+<a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/" target="_blank">JSONP
+convention</a> to specify the callback that the server will use. 
+Specify the name of the JSONP callback parameter using <i>jsonParamName</i>. 
+<a href="http://developer.yahoo.net/common/json.html">Yahoo! Web Services</a> use a jsonParamName of "callback". 
+Some other services use jsonParamName of "jsonp". Timeouts are supported with this type of request.
+Example for a data service that uses "callback" as the URL parameter:</p>
 
 <p><pre>
 dojo.io.bind({
 	url: "http://the.script.url/goes/here",
 	transport: "ScriptSrcTransport",
 	jsonParamName: "callback",
-	jsonParamValue: "myCallbackFunc",
+	load: function(type, data, event, kwArgs) { /* type will be "load", data will be response data,  event will null, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	error: function(type, data, event, kwArgs) { /* type will be "error", data will be response data,  event will null, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
 	timeout: function() { /* Called if there is a timeout */},
 	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
 });
@@ -431,8 +420,8 @@ dojo.io.bind({
 	useRequestId: true, //adds the _dsrId to request with a generated ID. If a specific request ID is wanted, use apiId: "myId" instead
 	//optional: forceSingleRequest: true, //Will not segment the request to multipart requests even if it is a long URL.
 	constantParams: "name1=value1&name2=value2" //params to be sent with each request that is part of a multipart request. See spec.
-	load: function(type, data, event) { /* type will be "load", data will be response data and event will be onscriptload event */ },
-	error: function(type, data, event) { /* type will be "error", data will be response data and event will be onscriptload event */ },
+	load: function(type, data, event, kwArgs) { /* type will be "load", data will be response data, event will be onscriptload event, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
+	error: function(type, data, event, kwArgs) { /* type will be "error", data will be response data, event will be onscriptload event, and kwArgs are the keyword arguments used in the dojo.io.bind call. */ },
 	timeout: function() { /* Called if there is a timeout */},
 	timeoutSeconds: 10 //The number of seconds to wait until firing timeout callback in case of timeout.
 });

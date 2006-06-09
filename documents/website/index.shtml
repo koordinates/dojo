@@ -61,6 +61,7 @@
 			height : 92px;
 			background : url(img/btn-ajax.gif) no-repeat;
 			text-indent : -999em;
+			text-decoration: none;
 		}
 
 		#btn-bottom {
@@ -71,6 +72,7 @@
 			height : 46px;
 			background : url(img/btn-more.gif) no-repeat;
 			text-indent : -999em;
+			text-decoration: none;
 		}
 
 		#col1 {

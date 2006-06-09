@@ -13,7 +13,7 @@ dojo.debug = function(){
 	var isJUM = dj_global["jum"] && !dj_global["jum"].isBrowser;
 	var s = [(isJUM ? "": "DEBUG: ")];
 	for(var i=0;i<args.length;++i){
-		if(!false && args[i] instanceof Error){
+		if(!false && args[i] && args[i] instanceof Error){
 			var msg = "[" + args[i].name + ": " + dojo.errorToString(args[i]) +
 				(args[i].fileName ? ", file: " + args[i].fileName : "") +
 				(args[i].lineNumber ? ", line: " + args[i].lineNumber : "") + "]";
@@ -63,6 +63,7 @@ dojo.debugShallow = function(obj){
 
 dojo.debugDeep = function(obj){
 	if (!djConfig.isDebug) { return; }
+	if (!dojo.uri || !dojo.uri.dojoUrl){ return dojo.debug("You'll need to load dojo.url for deep debugging - sorry!"); }
 	if (!window.open){ return dojo.debug('Deep debugging is only supported in host environments with window.open'); }
 	var win = window.open(dojo.uri.dojoUri("src/debug/deep.html"), '_blank', 'width=600, height=400, resizable=yes, scrollbars=yes, status=yes');
 	win.debugVar = obj;

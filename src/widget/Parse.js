@@ -6,73 +6,55 @@ dojo.require("dojo.dom");
 dojo.widget.Parse = function(fragment) {
 	this.propertySetsList = [];
 	this.fragment = fragment;
-
-	/*	createComponents recurses over a raw JavaScript object structure,
-			and calls the corresponding handler for its normalized tagName if it exists
-	*/
-	this.createComponents = function(fragment, parentComp){
-		var djTags = dojo.widget.tags;
-		var returnValue = [];
-		// this allows us to parse without having to include the parent
-		// it is commented out as it currently breaks the existing mechanism for
-		// adding widgets programmatically.  Once that is fixed, this can be used
-		/*if( (fragment["tagName"])&&
-			(fragment != fragment["nodeRef"])){
-			var tn = new String(fragment["tagName"]);
-			// we split so that you can declare multiple
-			// non-destructive widgets from the same ctor node
-			var tna = tn.split(";");
-			for(var x=0; x<tna.length; x++){
-				var ltn = dojo.text.trim(tna[x]).toLowerCase();
-				if(djTags[ltn]){
-					fragment.tagName = ltn;
-					returnValue.push(djTags[ltn](fragment, this, parentComp, count++));
-				}else{
-					if(ltn.substr(0, 5)=="dojo:"){
-						dojo.debug("no tag handler registed for type: ", ltn);
-					}
-				}
-			}
-		}*/
-		for(var item in fragment){
-			var built = false;
-			// if we have items to parse/create at this level, do it!
-			try{
-				if( fragment[item] && (fragment[item]["tagName"])&&
-					(fragment[item] != fragment["nodeRef"])){
-					var tn = new String(fragment[item]["tagName"]);
-					// we split so that you can declare multiple
-					// non-destructive widgets from the same ctor node
-					var tna = tn.split(";");
-					for(var x=0; x<tna.length; x++){
-						var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
-						if(djTags[ltn]){
-							built = true;
-							// var tic = new Date();
-							fragment[item].tagName = ltn;
-							var ret = djTags[ltn](fragment[item], this, parentComp, fragment[item]["index"]);
-							returnValue.push(ret);
-						}else{
-							if((dojo.lang.isString(ltn))&&(ltn.substr(0, 5)=="dojo:")){
-								dojo.debug("no tag handler registed for type: ", ltn);
-							}
+	
+	this.createComponents = function(frag, parentComp){
+		var comps = [ ];
+		var built = false;
+		// if we have items to parse/create at this level, do it!
+		try{
+			if((frag)&&(frag["tagName"])&&(frag!=frag["nodeRef"])){
+				var djTags = dojo.widget.tags;
+				// we split so that you can declare multiple
+				// non-destructive widgets from the same ctor node
+				var tna = String(frag["tagName"]).split(";");
+				for(var x=0; x<tna.length; x++){
+					var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
+					if(djTags[ltn]){
+						built = true;
+						frag.tagName = ltn;
+						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
+						comps.push(ret);
+					}else{
+						if((dojo.lang.isString(ltn))&&(ltn.substr(0, 5)=="dojo:")){
+							dojo.debug("no tag handler registed for type: ", ltn);
 						}
 					}
 				}
-			}catch(e){
-				dojo.debug("fragment creation error:", e);
-				// throw(e);
-				// IE is such a bitch sometimes
 			}
+		}catch(e){
+			dojo.debug("dojo.widget.Parse: error:", e);
+			// throw(e);
+			// IE is such a bitch sometimes
+		}
+		// if there's a sub-frag, build widgets from that too
+		if(!built){
+			comps = comps.concat(this.createSubComponents(frag, parentComp));
+		}
+		return comps;
+	}
 
-			// if there's a sub-frag, build widgets from that too
-			if( (!built) && (typeof fragment[item] == "object")&&
-				(fragment[item] != fragment.nodeRef)&&
-				(fragment[item] != fragment["tagName"])){
-				returnValue.push(this.createComponents(fragment[item], parentComp));
+	/*	createSubComponents recurses over a raw JavaScript object structure,
+			and calls the corresponding handler for its normalized tagName if it exists
+	*/
+	this.createSubComponents = function(fragment, parentComp){
+		var frag, comps = [];
+		for(var item in fragment){
+			frag = fragment[item];
+			if ((frag)&&(typeof frag == "object")&&(frag!=fragment.nodeRef)&&(frag!=fragment["tagName"])){
+				comps = comps.concat(this.createComponents(frag, parentComp));
 			}
 		}
-		return returnValue;
+		return comps;
 	}
 
 	/*  parsePropertySets checks the top level of a raw JavaScript object
@@ -168,6 +150,7 @@ dojo.widget.Parse = function(fragment) {
 		for(var x=0; x < this.propertySetsList.length; x++){
 			var cpl = this.propertySetsList[x];
 			var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
+			// FIXME: propertySetId is not in scope here
 			if((cpcc)&&(propertySetId == cpcc[0].value)){
 				propertySets.push(cpl);
 			}
@@ -188,7 +171,7 @@ dojo.widget.Parse = function(fragment) {
 			// FIXME: need a better test to see if this is local or external
 			// FIXME: doesn't handle nested propertySets, or propertySets that
 			// 		  just contain information about css documents, etc.
-			for(propertySetId in propertyProviderIds){
+			for(var propertySetId in propertyProviderIds){
 				if((propertySetId.indexOf("..")==-1)&&(propertySetId.indexOf("://")==-1)){
 					// get a reference to a propertySet within the current parsed structure
 					var propertySet = this.getPropertySetById(propertySetId);
@@ -251,11 +234,21 @@ dojo.widget.getParser = function(name){
  * @return The new Widget object
  */
  
-dojo.widget.createWidget = function (name, props, refNode, position) {
+dojo.widget.createWidget = function(name, props, refNode, position){
+	var lowerCaseName = name.toLowerCase();
+	var namespacedName = "dojo:" + lowerCaseName;
+	var isNode = ( dojo.byId(name) && (!dojo.widget.tags[namespacedName]) );
+
+	// if we got a node or an unambiguious ID, build a widget out of it
+	if(	(arguments.length==1) && ((typeof name != "string")||(isNode)) ){
+		// we got a DOM node
+		var xp = new dojo.xml.Parse();
+		// FIXME: we should try to find the parent!
+		var tn = (isNode) ? dojo.byId(name) : name;
+		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0];
+	}
 
 	function fromScript (placeKeeperNode, name, props) {
-		var lowerCaseName = name.toLowerCase();
-		var namespacedName = "dojo:" + lowerCaseName;
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
@@ -268,7 +261,7 @@ dojo.widget.createWidget = function (name, props, refNode, position) {
 	if (typeof name != "string" && typeof props == "string") {
 		dojo.deprecated("dojo.widget.createWidget", 
 			"argument order is now of the form " +
-			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])");
+			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])", "0.4");
 		return fromScript(name, props, refNode);
 	}
 	
@@ -291,7 +284,7 @@ dojo.widget.createWidget = function (name, props, refNode, position) {
 		tn = refNode;
 	}
 	var widgetArray = fromScript(tn, name, props);
-	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
+	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}
 	if (notRef) {
@@ -304,6 +297,6 @@ dojo.widget.createWidget = function (name, props, refNode, position) {
  
 dojo.widget.fromScript = function(name, props, refNode, position){
 	dojo.deprecated("dojo.widget.fromScript", " use " +
-		"dojo.widget.createWidget instead");
+		"dojo.widget.createWidget instead", "0.4");
 	return dojo.widget.createWidget(name, props, refNode, position);
 }

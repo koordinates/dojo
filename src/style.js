@@ -8,27 +8,27 @@ dojo.require("dojo.lang.common");
 	var ds = dojo.style;
 	var db = document["body"]||document["documentElement"];
 
-	// values: content-box, border-box
 	ds.boxSizing = {
-		marginBox: "margin-box",
-		borderBox: "border-box",
-		paddingBox: "padding-box",
-		contentBox: "content-box"
+		MARGIN_BOX: "margin-box",
+		BORDER_BOX: "border-box",
+		PADDING_BOX: "padding-box",
+		CONTENT_BOX: "content-box"
 	};
-
+	var bs = ds.boxSizing;
+	
 	ds.getBoxSizing = function(node){
 		if((h.ie)||(h.opera)){ 
 			var cm = document["compatMode"];
 			if((cm == "BackCompat")||(cm == "QuirksMode")){ 
-				return ds.boxSizing.borderBox; 
+				return bs.BORDER_BOX; 
 			}else{
-				return ds.boxSizing.contentBox; 
+				return bs.CONTENT_BOX; 
 			}
 		}else{
 			if(arguments.length == 0){ node = document.documentElement; }
 			var sizing = ds.getStyle(node, "-moz-box-sizing");
 			if(!sizing){ sizing = ds.getStyle(node, "box-sizing"); }
-			return (sizing ? sizing : ds.boxSizing.contentBox);
+			return (sizing ? sizing : bs.CONTENT_BOX);
 		}
 	}
 
@@ -76,7 +76,7 @@ dojo.require("dojo.lang.common");
 			- Uncomputable values are returned as NaN.
 			- setOuterWidth/Height return *false* if the outer size could not
 			  be computed, otherwise *true*.
-			- I (sjmiles) know no way to find the calculated values for auto-margins. 
+			- (sjmiles) knows no way to find the calculated values for auto-margins. 
 			- All returned values are floating point in 'px' units. If a
 			  non-zero computed style value is not specified in 'px', NaN is
 			  returned.
@@ -98,31 +98,24 @@ dojo.require("dojo.lang.common");
 
 	*/
 
-	// FIXME: these work for most elements (e.g. DIV) but not all (e.g. TEXTAREA)
+	// FIXME: these work for some elements (e.g. DIV) but not others (e.g. TABLE, TEXTAREA)
 
 	ds.isBorderBox = function(node){
-		return (ds.getBoxSizing(node) == ds.boxSizing.borderBox);
+		return (ds.getBoxSizing(node) == bs.BORDER_BOX);
 	}
 
 	ds.getUnitValue = function(node, cssSelector, autoIsZero){
-		var result = { value: 0, units: 'px' };
 		var s = ds.getComputedStyle(node, cssSelector);
-		if (s == '' || (s == 'auto' && autoIsZero)){ return result; }
-		if (dojo.lang.isUndefined(s)){ 
-			result.value = NaN;
-		}else{
-			// FIXME: is regex inefficient vs. parseInt or some manual test? 
-			var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
-			if (!match){
-				result.value = NaN;
-			}else{
-				result.value = Number(match[1]);
-				result.units = match[2].toLowerCase();
-			}
-		}
-		return result;		
+		if((!s)||((s == 'auto')&&(autoIsZero))){ return { value: 0, units: 'px' }; }
+		if(dojo.lang.isUndefined(s)){return ds.getUnitValue.bad;}
+		// FIXME: is regex inefficient vs. parseInt or some manual test? 
+		var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
+		if (!match){return ds.getUnitValue.bad;}
+		return { value: Number(match[1]), units: match[2].toLowerCase() };
 	}
-
+	// FIXME: 'bad' value should be 0?
+	ds.getUnitValue.bad = { value: NaN, units: '' };
+	
 	ds.getPixelValue = function(node, cssSelector, autoIsZero){
 		var result = ds.getUnitValue(node, cssSelector, autoIsZero);
 		// FIXME: there is serious debate as to whether or not this is the right solution
@@ -132,19 +125,33 @@ dojo.require("dojo.lang.common");
 		if((result.value)&&(result.units != 'px')){ return NaN; }
 		return result.value;
 	}
+	
+	// FIXME: deprecated
+	ds.getNumericStyle = function() {
+		dojo.deprecated('dojo.(style|html).getNumericStyle', 'in favor of dojo.(style|html).getPixelValue', '0.4');
+		return ds.getPixelValue.apply(this, arguments); 
+	}
 
+	ds.setPositivePixelValue = function(node, selector, value){
+		if(isNaN(value)){return false;}
+		node.style[selector] = Math.max(0, value) + 'px'; 
+		return true;
+	}
+	
 	ds._sumPixelValues = function(node, selectors, autoIsZero){
 		var total = 0;
-		for(x=0; x<selectors.length; x++){
+		for(var x=0; x<selectors.length; x++){
 			total += ds.getPixelValue(node, selectors[x], autoIsZero);
 		}
 		return total;
 	}
 
-	ds.getNumericStyle = ds.getPixelValue; // backward compat
-
 	ds.isPositionAbsolute = function(node){
 		return (ds.getComputedStyle(node, 'position') == 'absolute');
+	}
+
+	ds.getBorderExtent = function(node, side){
+		return (ds.getStyle(node, 'border-' + side + '-style') == 'none' ? 0 : ds.getPixelValue(node, 'border-' + side + '-width'));
 	}
 
 	ds.getMarginWidth = function(node){
@@ -152,122 +159,108 @@ dojo.require("dojo.lang.common");
 	}
 
 	ds.getBorderWidth = function(node){
-		var left = (ds.getStyle(node, 'border-left-style') == 'none' ? 0 : ds.getPixelValue(node, "border-left-width"));
-		var right = (ds.getStyle(node, 'border-right-style') == 'none' ? 0 : ds.getPixelValue(node, "border-right-width"));
-		return left + right;
+		return ds.getBorderExtent(node, 'left') + ds.getBorderExtent(node, 'right');
 	}
 
 	ds.getPaddingWidth = function(node){
 		return ds._sumPixelValues(node, ["padding-left", "padding-right"], true);
 	}
 
-	ds.getContentWidth = function(node){
+	ds.getPadBorderWidth = function(node) {
+		return ds.getPaddingWidth(node) + ds.getBorderWidth(node);
+	}
+	
+	ds.getContentBoxWidth = function(node){
 		node = dojo.byId(node);
-		return node.offsetWidth - ds.getPaddingWidth(node) - ds.getBorderWidth(node);
+		return node.offsetWidth - ds.getPadBorderWidth(node);
 	}
 
-	ds.getInnerWidth = function(node){
+	ds.getBorderBoxWidth = function(node){
 		node = dojo.byId(node);
 		return node.offsetWidth;
 	}
 
-	ds.getOuterWidth = function(node){
+	ds.getMarginBoxWidth = function(node){
 		return ds.getInnerWidth(node) + ds.getMarginWidth(node);
 	}
 
-	ds.setOuterWidth = function(node, pxWidth){
+	ds.setContentBoxWidth = function(node, pxWidth){
 		node = dojo.byId(node);
-		if (!ds.isBorderBox(node)){
-			pxWidth -= ds.getPaddingWidth(node) + ds.getBorderWidth(node);
+		if (ds.isBorderBox(node)){
+			pxWidth += ds.getPadBorderWidth(node);
 		}
-		pxWidth -= ds.getMarginWidth(node);
-		if (!isNaN(pxWidth) && pxWidth > 0){
-			node.style.width = pxWidth + 'px';
-			return true;
-		}else{
-			return false;
-		}
+		return ds.setPositivePixelValue(node, "width", pxWidth);
 	}
 
-	// FIXME: these aliases are actually the preferred names
-	ds.getContentBoxWidth = ds.getContentWidth;
-	ds.getBorderBoxWidth = ds.getInnerWidth;
-	ds.getMarginBoxWidth = ds.getOuterWidth;
-	ds.setMarginBoxWidth = ds.setOuterWidth;
+	ds.setMarginBoxWidth = function(node, pxWidth){
+		node = dojo.byId(node);
+		if (!ds.isBorderBox(node)){
+			pxWidth -= ds.getPadBorderWidth(node);
+		}
+		pxWidth -= ds.getMarginWidth(node);
+		return ds.setPositivePixelValue(node, "width", pxWidth);
+	}
+
+	// FIXME: deprecate and remove
+	ds.getContentWidth = ds.getContentBoxWidth;
+	ds.getInnerWidth = ds.getBorderBoxWidth;
+	ds.getOuterWidth = ds.getMarginBoxWidth;
+	ds.setContentWidth = ds.setContentBoxWidth;
+	ds.setOuterWidth = ds.setMarginBoxWidth;
 
 	ds.getMarginHeight = function(node){
 		return ds._sumPixelValues(node, ["margin-top", "margin-bottom"], ds.isPositionAbsolute(node));
 	}
 
 	ds.getBorderHeight = function(node){
-		var top = (ds.getStyle(node, 'border-top-style') == 'none' ? 0 : ds.getPixelValue(node, "border-top-width"));
-		var bottom = (ds.getStyle(node, 'border-bottom-style') == 'none' ? 0 : ds.getPixelValue(node, "border-bottom-width"));
-		return top + bottom;
+		return ds.getBorderExtent(node, 'top') + ds.getBorderExtent(node, 'bottom');
 	}
 
 	ds.getPaddingHeight = function(node){
 		return ds._sumPixelValues(node, ["padding-top", "padding-bottom"], true);
 	}
 
-	ds.getContentHeight = function(node){
+	ds.getPadBorderHeight = function(node) {
+		return ds.getPaddingHeight(node) + ds.getBorderHeight(node);
+	}
+	
+	ds.getContentBoxHeight = function(node){
 		node = dojo.byId(node);
-		return node.offsetHeight - ds.getPaddingHeight(node) - ds.getBorderHeight(node);
+		return node.offsetHeight - ds.getPadBorderHeight(node);
 	}
 
-	ds.getInnerHeight = function(node){
+	ds.getBorderBoxHeight = function(node){
 		node = dojo.byId(node);
 		return node.offsetHeight; // FIXME: does this work?
 	}
 
-	ds.getOuterHeight = function(node){
+	ds.getMarginBoxHeight = function(node){
 		return ds.getInnerHeight(node) + ds.getMarginHeight(node);
 	}
 
-	ds.setOuterHeight = function(node, pxHeight){
+	ds.setContentBoxHeight = function(node, pxHeight){
+		node = dojo.byId(node);
+		if (ds.isBorderBox(node)){
+			pxHeight += ds.getPadBorderHeight(node);
+		}
+		return ds.setPositivePixelValue(node, "height", pxHeight);
+	}
+
+	ds.setMarginBoxHeight = function(node, pxHeight){
 		node = dojo.byId(node);
 		if (!ds.isBorderBox(node)){
-			pxHeight -= ds.getPaddingHeight(node) + ds.getBorderHeight(node);
+			pxHeight -= ds.getPadBorderHeight(node);
 		}
 		pxHeight -= ds.getMarginHeight(node);
-		if (!isNaN(pxHeight) && pxHeight > 0){
-			node.style.height = pxHeight + 'px';
-			return true;
-		}else{
-			return false;
-		}
+		return ds.setPositivePixelValue(node, "height", pxHeight);
 	}
 
-	ds.setContentWidth = function(node, pxWidth){
-		node = dojo.byId(node);
-		if (ds.isBorderBox(node)){
-			pxWidth += ds.getPaddingWidth(node) + ds.getBorderWidth(node);
-		}
-		if (!isNaN(pxWidth) && pxWidth > 0){
-			node.style.width = pxWidth + 'px';
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	ds.setContentHeight = function(node, pxHeight){
-		node = dojo.byId(node);
-		if (ds.isBorderBox(node)){
-			pxHeight += ds.getPaddingHeight(node) + ds.getBorderHeight(node);
-		}
-		if (!isNaN(pxHeight) && pxHeight > 0){
-			node.style.height = pxHeight + 'px';
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	// FIXME: these aliases are actually the preferred names
-	ds.getContentBoxHeight = ds.getContentHeight;
-	ds.getBorderBoxHeight = ds.getInnerHeight;
-	ds.getMarginBoxHeight = ds.getOuterHeight;
-	ds.setMarginBoxHeight = ds.setOuterHeight;
+	// FIXME: deprecate and remove
+	ds.getContentHeight = ds.getContentBoxHeight;
+	ds.getInnerHeight = ds.getBorderBoxHeight;
+	ds.getOuterHeight = ds.getMarginBoxHeight;
+	ds.setContentHeight = ds.setContentBoxHeight;
+	ds.setOuterHeight = ds.setMarginBoxHeight;
 
 	/**
 	 * dojo.style.getAbsolutePosition(xyz, true) returns xyz's position relative to the document.
@@ -280,6 +273,7 @@ dojo.require("dojo.lang.common");
 	 * by event.clientX/Y if the mouse were directly over the top/left of this node.
 	 */
 	ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
+		node = dojo.byId(node);
 		var ret = [];
 		ret.x = ret.y = 0;
 		var st = dojo.html.getScrollTop();
@@ -290,13 +284,12 @@ dojo.require("dojo.lang.common");
 				ret.x = left-2;
 				ret.y = top-2;
 			}
-/**
 		}else if(document.getBoxObjectFor){
 			// mozilla
-			var bo=document.getBoxObjectFor(node);
-			ret.x=bo.x-sl;
-			ret.y=bo.y-st;
-**/		}else{
+			var bo = document.getBoxObjectFor(node);
+			ret.x = bo.x - ds.sumAncestorProperties(node, "scrollLeft");
+			ret.y = bo.y - ds.sumAncestorProperties(node, "scrollTop");
+		}else{
 			if(node["offsetParent"]){
 				var endNode;		
 				// in Safari, if the node is an absolutely positioned child of
@@ -310,10 +303,12 @@ dojo.require("dojo.lang.common");
 				}else{
 					endNode = db.parentNode;
 				}
-				
+
 				if(node.parentNode != db){
-					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
-					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
+					var nd = node;
+					if(window.opera){ nd = db; }
+					ret.x -= ds.sumAncestorProperties(nd, "scrollLeft");
+					ret.y -= ds.sumAncestorProperties(nd, "scrollTop");
 				}
 				do{
 					var n = node["offsetLeft"];
@@ -348,6 +343,7 @@ dojo.require("dojo.lang.common");
 			var val = node[prop];
 			if(val){
 				retVal += val - 0;
+				if(node==document.body){ break; }// opera and khtml #body & #html has the same values, we only need one value
 			}
 			node = node.parentNode;
 		}
@@ -355,7 +351,6 @@ dojo.require("dojo.lang.common");
 	}
 
 	ds.getTotalOffset = function(node, type, includeScroll){
-		node = dojo.byId(node);
 		return ds.abs(node, includeScroll)[(type == "top") ? "y" : "x"];
 	}
 
@@ -452,15 +447,20 @@ dojo.require("dojo.lang.common");
 		}
 		var style = doc.createElement("style");
 		style.setAttribute("type", "text/css");
+		// IE is b0rken enough to require that we add the element to the doc
+		// before changing it's properties
+		var head = doc.getElementsByTagName("head")[0];
+		if(!head){ // must have a head tag 
+			dojo.debug("No head tag in document, aborting styles");
+			return;
+		}else{
+			head.appendChild(style);
+		}
 		if(style.styleSheet){// IE
 			style.styleSheet.cssText = cssStr;
-		} else {// w3c
+		}else{ // w3c
 			var cssText = doc.createTextNode(cssStr);
 			style.appendChild(cssText);
-		}
-		var head = doc.getElementsByTagName("head")[0];
-		if(head){// must have a head tag
-			head.appendChild(style);
 		}
 		return style;
 	}
@@ -623,8 +623,15 @@ dojo.require("dojo.lang.common");
 		node = dojo.byId(node);
 		var ns = node.style;
 		if(h.ie){
-			if( node.filters && node.filters.alpha ){
-				ns.filter = ""; // FIXME: may get rid of other filter effects
+			try {
+				if( node.filters && node.filters.alpha ){
+					ns.filter = ""; // FIXME: may get rid of other filter effects
+				}
+			} catch(e) {
+				/*
+				 * IE7 gives error if node.filters not set;
+				 * don't know why or how to workaround (other than this)
+				 */
 			}
 		}else if(h.moz){
 			ns.opacity = 1;
@@ -637,10 +644,49 @@ dojo.require("dojo.lang.common");
 		}
 	}
 
-	ds._toggle = function(node, inTester, inSetter){
+	/** 
+	* Set the given style attributes for the node. 
+	* Patch submitted by Wolfram Kriesing, 22/03/2006.
+	*
+	* Ie. dojo.style.setStyleAttributes(myNode, "position:absolute; left:10px; top:10px;") 
+	* This just makes it easier to set a style directly without the need to  
+	* override it completely (as node.setAttribute() would). 
+	* If there is a dojo-method for an attribute, like for "opacity" there 
+	* is setOpacity, the dojo method is called instead. 
+	* For example: dojo.style.setStyleAttributes(myNode, "opacity: .4"); 
+	*  
+	* Additionally all the dojo.style.set* methods can also be used. 
+	* Ie. when attributes contains "outer-height: 10;" it will call dojo.style.setOuterHeight("10"); 
+	* 
+	* @param object The node to set the style attributes for. 
+	* @param string Ie. "position:absolute; left:10px; top:10px;" 
+	*/ 
+	ds.setStyleAttributes = function(node, attributes) { 
+		var methodMap={ 
+			"opacity":dojo.style.setOpacity,
+			"content-height":dojo.style.setContentHeight,
+			"content-width":dojo.style.setContentWidth,
+			"outer-height":dojo.style.setOuterHeight,
+			"outer-width":dojo.style.setOuterWidth 
+		} 
+
+		var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
+		for(var i=0; i<splittedAttribs.length; i++){ 
+			var nameValue=splittedAttribs[i].split(":"); 
+			var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
+			var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
+			if(dojo.lang.has(methodMap,name)) { 
+				methodMap[name](node,value); 
+			} else { 
+				node.style[dojo.style.toCamelCase(name)]=value; 
+			} 
+		} 
+	} 
+
+	ds._toggle = function(node, tester, setter){
 		node = dojo.byId(node);
-		inSetter(node, !inTester(node));
-		return inTester(node);
+		setter(node, !tester(node));
+		return tester(node);
 	}
 
 	// show/hide are library constructs
@@ -648,11 +694,11 @@ dojo.require("dojo.lang.common");
 	// show() 
 	// if the node.style.display == 'none' then 
 	// set style.display to '' or the value cached by hide()
-	ds.show  = function(node){
+	ds.show = function(node){
 		node = dojo.byId(node);
 		if(ds.getStyleProperty(node, 'display')=='none'){
 			ds.setStyle(node, 'display', (node.dojoDisplayCache||''));
-			node.dojoDisplayCache = undefined;	
+			node.dojoDisplayCache = undefined;	// cannot use delete on a node in IE6
 		}
 	}
 
@@ -660,8 +706,11 @@ dojo.require("dojo.lang.common");
 	// set style.display to '' or the value cached by hide()
 	ds.hide = function(node){
 		node = dojo.byId(node);
-		if(node.dojoDisplayCache===undefined){ // it could == '', so we cannot say !node.dojoDisplayCount
-			node.dojoDisplayCache = ds.getStyleProperty(node, 'display');
+		if(typeof node["dojoDisplayCache"] == "undefined"){ // it could == '', so we cannot say !node.dojoDisplayCount
+			var d = ds.getStyleProperty(node, 'display')
+			if(d!='none'){
+				node.dojoDisplayCache = d;
+			}
 		}
 		ds.setStyle(node, 'display', 'none');
 	}
@@ -754,8 +803,8 @@ dojo.require("dojo.lang.common");
 			var ret = [
 				pos.x,
 				pos.y,
-				ds.getInnerWidth(node),
-				ds.getInnerHeight(node)
+				ds.getBorderBoxWidth(node),
+				ds.getBorderBoxHeight(node)
 			];
 		}
 		ret.x = ret[0];

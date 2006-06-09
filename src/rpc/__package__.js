@@ -1,4 +1,4 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: ["dojo.rpc.JsonService", false, false]
 });
-dojo.hostenv.moduleLoaded("dojo.rpc.*");
+dojo.provide("dojo.rpc.*");

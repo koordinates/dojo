@@ -3,22 +3,17 @@ dojo.provide("dojo.widget.DatePicker.util");
 dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.date");
 
-dojo.widget.DatePicker = function(){
-	dojo.widget.Widget.call(this);
-	this.widgetType = "DatePicker";
-	this.isContainer = false;
+// NOTE: this function is only used as mixin (never as a constructor)
+dojo.widget.DatePicker = function() {
 	// the following aliases prevent breaking people using 0.2.x
-	this.months = dojo.date.months;
-	this.weekdays = dojo.date.days;
-	this.toRfcDate = dojo.widget.DatePicker.util.toRfcDate;
-	this.fromRfcDate = dojo.widget.DatePicker.util.fromRfcDate;
-	this.initFirstSaturday = dojo.widget.DatePicker.util.initFirstSaturday;
-}
+	this.months = dojo.date.months,
+	this.weekdays = dojo.date.days,
+	this.toRfcDate = dojo.widget.DatePicker.util.toRfcDate,
+	this.fromRfcDate = dojo.widget.DatePicker.util.fromRfcDate,
+	this.initFirstSaturday = dojo.widget.DatePicker.util.initFirstSaturday
+};
 
-dojo.inherits(dojo.widget.DatePicker, dojo.widget.Widget);
-dojo.widget.tags.addParseTreeHandler("dojo:datepicker");
-
-dojo.requireIf("html", "dojo.widget.html.DatePicker");
+dojo.requireAfterIf("html", "dojo.widget.html.DatePicker");
 
 dojo.widget.DatePicker.util = new function() {
 	this.months = dojo.date.months;

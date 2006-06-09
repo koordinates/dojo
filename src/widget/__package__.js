@@ -1,4 +1,4 @@
-dojo.hostenv.conditionalLoadModule({
+dojo.kwCompoundRequire({
 	common: ["dojo.xml.Parse", 
 			 "dojo.widget.Widget", 
 			 "dojo.widget.Parse", 
@@ -7,6 +7,7 @@ dojo.hostenv.conditionalLoadModule({
 			  "dojo.widget.HtmlWidget"],
 	dashboard: ["dojo.widget.DomWidget",
 			  "dojo.widget.HtmlWidget"],
-	svg: 	 ["dojo.widget.SvgWidget"]
+	svg: 	 ["dojo.widget.SvgWidget"],
+	rhino: 	 ["dojo.widget.SwtWidget"]
 });
-dojo.hostenv.moduleLoaded("dojo.widget.*");
+dojo.provide("dojo.widget.*");

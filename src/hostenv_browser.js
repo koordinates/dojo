@@ -1,10 +1,3 @@
-// make jsc shut up (so we can use jsc to sanity check the code even if it will never run it).
-/*@cc_on
-@if (@_jscript_version >= 7)
-var window; var XMLHttpRequest;
-@end
-@*/
-
 if(typeof window == 'undefined'){
 	dojo.raise("no window object");
 }
@@ -42,7 +35,7 @@ if(typeof window == 'undefined'){
 			if(!src) { continue; }
 			var m = src.match(rePkg);
 			if(m) {
-				root = src.substring(0, m.index);
+				var root = src.substring(0, m.index);
 				if(src.indexOf("bootstrap1") > -1) { root += "../"; }
 				if(!this["djConfig"]) { djConfig = {}; }
 				if(djConfig["baseScriptUri"] == "") { djConfig["baseScriptUri"] = root; }
@@ -82,12 +75,15 @@ if(typeof window == 'undefined'){
 	drh.ie50 = drh.ie && dav.indexOf("MSIE 5.0")>=0;
 	drh.ie55 = drh.ie && dav.indexOf("MSIE 5.5")>=0;
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
+	drh.ie70 = drh.ie && dav.indexOf("MSIE 7.0")>=0;
+
+	// TODO: is the HTML LANG attribute relevant?
+	dojo.locale = (drh.ie ? navigator.userLanguage : navigator.language).toLowerCase();
 
 	dr.vml.capable=drh.ie;
 	drs.capable = f;
 	drs.support.plugin = f;
 	drs.support.builtin = f;
-	drs.adobe = f;
 	if (document.implementation
 		&& document.implementation.hasFeature
 		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")
@@ -95,38 +91,6 @@ if(typeof window == 'undefined'){
 		drs.capable = t;
 		drs.support.builtin = t;
 		drs.support.plugin = f;
-		drs.adobe = f;
-	}else{
-		//	check for ASVG
-		if(navigator.mimeTypes && navigator.mimeTypes.length > 0){
-			var result = navigator.mimeTypes["image/svg+xml"] ||
-				navigator.mimeTypes["image/svg"] ||
-				navigator.mimeTypes["image/svg-xml"];
-			if (result){
-				drs.adobe = result && result.enabledPlugin &&
-					result.enabledPlugin.description &&
-					(result.enabledPlugin.description.indexOf("Adobe") > -1);
-				if(drs.adobe) {
-					drs.capable = t;
-					drs.support.plugin = t;
-				}
-			}
-		}else if(drh.ie && dr.os.win){
-			var result = f;
-			try {
-				var test = new ActiveXObject("Adobe.SVGCtl");
-				result = t;
-			} catch(e){}
-			if (result){
-				drs.capable = t;
-				drs.support.plugin = t;
-				drs.adobe = t;
-			}
-		}else{
-			drs.capable = f;
-			drs.support.plugin = f;
-			drs.adobe = f;
-		}
 	}
 })();
 
@@ -136,7 +100,7 @@ dojo.render.name = dojo.hostenv.name_ = 'browser';
 dojo.hostenv.searchIds = [];
 
 // These are in order of decreasing likelihood; this will change in time.
-var DJ_XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+dojo.hostenv._XMLHTTP_PROGIDS = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
 
 dojo.hostenv.getXmlhttpObject = function(){
     var http = null;
@@ -144,7 +108,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 	try{ http = new XMLHttpRequest(); }catch(e){}
     if(!http){
 		for(var i=0; i<3; ++i){
-			var progid = DJ_XMLHTTP_PROGIDS[i];
+			var progid = dojo.hostenv._XMLHTTP_PROGIDS[i];
 			try{
 				http = new ActiveXObject(progid);
 			}catch(e){
@@ -152,7 +116,7 @@ dojo.hostenv.getXmlhttpObject = function(){
 			}
 
 			if(http){
-				DJ_XMLHTTP_PROGIDS = [progid];  // so faster next time
+				dojo.hostenv._XMLHTTP_PROGIDS = [progid];  // so faster next time
 				break;
 			}
 		}
@@ -188,8 +152,8 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 
 	if(async_cb){
 		http.onreadystatechange = function(){
-			if((4==http.readyState)&&(http["status"])){
-				if(http.status==200){
+			if(4==http.readyState){
+				if((!http["status"])||((200 <= http.status)&&(300 > http.status))){
 					// dojo.debug("LOADED URI: "+uri);
 					async_cb(http.responseText);
 				}
@@ -198,17 +162,20 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	}
 
 	http.open('GET', uri, async_cb ? true : false);
-	try {
+	try{
 		http.send(null);
-	} catch (e) {
-		if (fail_ok && !async_cb) {
+		if(async_cb){
 			return null;
-		} else {
+		}
+		if((http["status"])&&((200 > http.status)&&(300 <= http.status))){
+			throw Error("Unable to load "+uri+" status:"+ http.status);
+		}
+	}catch(e){
+		if((fail_ok)&&(!async_cb)){
+			return null;
+		}else{
 			throw e;
 		}
-	}
-	if(async_cb){
-		return null;
 	}
 
 	return http.responseText;
@@ -272,7 +239,7 @@ dojo.addOnLoad(function(){
 	}
 });
 
-function dj_addNodeEvtHdlr (node, evtName, fp, capture){
+function dj_addNodeEvtHdlr(node, evtName, fp, capture){
 	var oldHandler = node["on"+evtName] || function(){};
 	node["on"+evtName] = function(){
 		fp.apply(node, arguments);
@@ -281,20 +248,6 @@ function dj_addNodeEvtHdlr (node, evtName, fp, capture){
 	return true;
 }
 
-
-// dj_load_init should be called right after DOM is loaded and parsed. Needs testing.
-
-dj_load_init = function(){
-	// allow multiple calls, only first one will take effect
-   if (arguments.callee.initialized) return;
-   arguments.callee.initialized = true;
-
-   // perform initialization
-	if(dojo.render.html.ie){
-		dojo.hostenv.makeWidgets();
-	}
-	dojo.hostenv.modulesLoaded();
-};
 
 /* Uncomment this to allow init after DOMLoad, not after window.onload
 
@@ -315,9 +268,29 @@ if (dojo.render.html.mozilla) {
 // that will cause flickering though ( document is loaded and THEN is processed)
 // maybe show/hide required in this case..
 // TODO: other browsers may support DOMContentLoaded/defer attribute. Add them to above.
-dj_addNodeEvtHdlr(window, "load", dj_load_init);
+dj_addNodeEvtHdlr(window, "load", function(){
+	// allow multiple calls, only first one will take effect
+	if(arguments.callee.initialized){ return; }
+	arguments.callee.initialized = true;
 
+	var initFunc = function(){
+		//perform initialization
+		if(dojo.render.html.ie){
+			dojo.hostenv.makeWidgets();
+		}
+	};
 
+	if(dojo.hostenv.inFlightCount == 0){
+		initFunc();
+		dojo.hostenv.modulesLoaded();
+	}else{
+		dojo.addOnLoad(initFunc);
+	}
+});
+
+dj_addNodeEvtHdlr(window, "unload", function(){
+	dojo.hostenv.unloaded();
+});
 
 dojo.hostenv.makeWidgets = function(){
 	// you can put searchIds in djConfig and dojo.hostenv at the moment
@@ -335,7 +308,6 @@ dojo.hostenv.makeWidgets = function(){
 			// we must do this on a delay to avoid:
 			//	http://www.shaftek.org/blog/archives/000212.html
 			// IE is such a tremendous peice of shit.
-			try{
 				var parser = new dojo.xml.Parse();
 				if(sids.length > 0){
 					for(var x=0; x<sids.length; x++){
@@ -348,14 +320,11 @@ dojo.hostenv.makeWidgets = function(){
 					var frag  = parser.parseElement(document.getElementsByTagName("body")[0] || document.body, null, true);
 					dojo.widget.getParser().createComponents(frag);
 				}
-			}catch(e){
-				dojo.debug("auto-build-widgets error:", e);
-			}
 		}
 	}
 }
 
-dojo.hostenv.modulesLoadedListeners.push(function(){
+dojo.addOnLoad(function(){
 	if(!dojo.render.html.ie) {
 		dojo.hostenv.makeWidgets();
 	}
@@ -363,9 +332,8 @@ dojo.hostenv.modulesLoadedListeners.push(function(){
 
 try {
 	if (dojo.render.html.ie) {
-		//	easier and safer VML addition.  Thanks Emil!
-		document.namespaces.add("v", "urn:schemas-microsoft-com:vml");
-		document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML)");
+		document.write('<style>v\:*{ behavior:url(#default#VML); }</style>');
+		document.write('<xml:namespace ns="urn:schemas-microsoft-com:vml" prefix="v"/>');
 	}
 } catch (e) { }
 

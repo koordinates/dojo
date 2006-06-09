@@ -1,6 +1,7 @@
 dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
-dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+dojo.hostenv.loadedUris.push("../src/loader.js");
 dojo.hostenv.loadedUris.push("../src/hostenv_browser.js");
+dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 
 function removeComments(contents){
 	contents = new String((!contents) ? "" : contents);
@@ -20,7 +21,7 @@ dojo.hostenv.getRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|hostenv.conditionalLoadModule|hostenv.startPackage|provide)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|requireIf|kwCompoundRequire|hostenv.conditionalLoadModule|hostenv.startPackage|provide)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}
@@ -35,7 +36,7 @@ dojo.hostenv.getDelayRequiresAndProvides = function(contents){
 	var deps = [];
 	var tmp;
 	RegExp.lastIndex = 0;
-	var testExp = /dojo.(requireAfterIf|requireIf)\([\w\W]*?\)/mg;
+	var testExp = /dojo.(requireAfterIf)\([\w\W]*?\)/mg;
 	while((tmp = testExp.exec(contents)) != null){
 		deps.push(tmp[0]);
 	}
@@ -139,7 +140,7 @@ dojo.hostenv.writeIncludes = function(){
 	}
 
 	dojo.hostenv._global_omit_module_check = true;
-	for(var x=3; x<depList.length; x++){
+	for(var x=4; x<depList.length; x++){
 		document.write("<script type='text/javascript' src='"+depList[x]+"'></script>");
 	}
 	document.write("<script type='text/javascript'>dojo.hostenv._global_omit_module_check = false;</script>");

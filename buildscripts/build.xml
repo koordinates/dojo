@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
-<!-- Copyright (c) 2004-2005 The Dojo Foundation, Licensed under the Academic Free License version 2.1 or above --> 
+<!-- 
+	Copyright (c) 2004-2006 The Dojo Foundation, Licensed under the Academic
+	Free License version 2.1 or BSD licenses
+--> 
 <!--
 	TODO: 
 		- single-file builds
@@ -22,9 +25,11 @@
 	<property name="build_dir" value="../build"/>
 	<property name="root" value=".."/>
 	<property name="src" value="src"/>
-	<property name="version" value="development"/>
+	<property name="version" value="0.0.0.dev"/>
 	<property name="lang" value="en"/>
-	<property name="release_dir" value="${root}/release/${project}"/>
+	<property name="releaseName" value="${project}"/>
+	<property name="dojoLoader" value="default"/>
+	<property name="release_dir" value="${root}/release/${releaseName}"/>
 	<property name="docs_dir" value="${root}/documents"/>
 	<property name="articles_dir" value="${docs_dir}/articles"/>
 	<property name="release_docs_dir" value="${release_dir}/documents"/>
@@ -331,7 +336,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+			<fileset dir="${destdir}">
+				<include name="**/*.js" />
+				<include name="**/*.as" />
+				<not>
+					<contains text="copyright" casesensitive="no"  />
+				</not>
+			</fileset>
 		</replaceregexp>
 
 		<replace dir="${release_dir}/${project}/${nodocs}">
@@ -343,7 +354,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${destdir}" includes="**/*.js"/>
+			<fileset dir="${destdir}">
+				<include name="**/*.js" />
+				<include name="**/*.as" />
+				<not>
+					<contains text="copyright" casesensitive="no"  />
+				</not>
+			</fileset>
 		</replaceregexp>
 	</target>
 	<!-- end gen-strip-docs task -->
@@ -416,12 +433,13 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 				}else{
 					dojo.setNewProperty("profileFile", "getDependencyList.js");
 				}
-			}
+			}			
 		]]></script>
 
 		<!-- FIXME: need to actually get a list of js files to be processed  -->
 		<java jar="./lib/js.jar" fork="true" outputproperty="concatFilesProp" errorproperty="concatFilesError">
 			<arg value="${profileFile}" />
+			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
 		<script language="javascript"><![CDATA[
 			var currentTask = dojo.getTargets().get("-set-profile-deps");
@@ -467,6 +485,9 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 	<target name="compress" depends="-fix-config, list-profile-deps"
 		description="runs compression code over release JS files">
 		<echo>profileFile: ${profileFile}</echo>
+		
+		<!-- Create the release dir if it doesn't exist. -->
+		<mkdir dir="${release_dir}"/>
 		<!-- write the list of files included to the release directory -->
 		<echo file="${release_dir}/build.txt">
 Files baked into this package:
@@ -497,6 +518,21 @@ ${profileDeps}
 			byline="true" flags="g" file="${release_dir}/source.__package__.js">
 			<substitution expression=""/>
 		</replaceregexp>
+ 
+		<!-- Set the version number -->
+		<script language="jython"><![CDATA[
+import sys
+# make the python standard library avialable
+sys.path.append("lib/pyLib.zip")
+sys.path.append(".")
+
+# import re
+import os
+from buildUtil import *
+
+print "Setting version for Dojo to: " + dojo.getProperty("version")
+replaceVersion(dojo.getProperty("release_dir") + "/source.__package__.js", dojo.getProperty("version"))
+]]></script>
 
 		<antcall target="-rhino-compress">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
@@ -522,7 +558,13 @@ ${profileDeps}
 
 		<!-- add copyright notice -->
 		<replaceregexp match="^" byline="false" replace="${copyright}">
-			<fileset dir="${release_dir}" includes="**/*.js"/>
+			<fileset dir="${release_dir}">
+				<include name="**/*.js" />
+				<include name="**/*.as" />
+				<not>
+					<contains text="copyright" casesensitive="no"  />
+				</not>
+			</fileset>
 		</replaceregexp>
 
 		<delete file="${release_dir}/source.__package__.js"/>
@@ -568,7 +610,8 @@ sys.path.append(".")
 import os
 from buildUtil import *
 
-internTemplateStrings()
+print "Interning strings for directory: " + dojo.getProperty("release_dir")
+internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_dir"))
 ]]></script>
 	</target>
 	<!-- end intern-strings task -->
@@ -576,6 +619,9 @@ internTemplateStrings()
 	<!-- release task -->
 	<target name="release" depends="-fix-config"
 		description="builds a release">
+		
+		<echo message="Using version number: ${version} for the release."/>
+		
 		<antcall target="clean" />
 		<!--
 		<antcall target="src" />
@@ -596,6 +642,14 @@ internTemplateStrings()
 			</fileset>
 		</copy>
 		
+		<copy todir="${release_dir}/tests" includeEmptyDirs="false" preservelastmodified="true">
+			<fileset dir="${root}/tests">
+				<include name="**" />
+				<exclude name="**/*.swp" />
+				<exclude name="**/.svn*" />
+			</fileset>
+		</copy>
+
 		<!-- 
 			Call our Dojo Flash and Storage tasks
 			in such a way that they won't cause the
@@ -628,27 +682,24 @@ internTemplateStrings()
 		<antcall target="compress" />
 		<!-- <antcall target="intern-strings" /> -->
 
+		<!-- Run xdgen if it xdomain loading is wanted. -->
+		<condition property="xdgenRun">
+			<equals arg1="xdomain" arg2="${dojoLoader}"/>
+		</condition>
+		<antcall target="xdgenRelease"/>
+		
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
-		<copy file="${root}/CHANGELOG" todir="${release_dir}/"  preservelastmodified="true" />
 		<copy file="${root}/README" todir="${release_dir}/"  preservelastmodified="true" />
 	</target>
 	<!-- end release task -->
-
+	
 	<target name="-docs-and-tests"
 		unless="docless"
 		description="builds docs, copies in tests, and constructs API outlines">
 		<copy todir="${release_dir}/apis" includeEmptyDirs="false" preservelastmodified="true">
 			<fileset dir="${root}/documents/apis">
-				<include name="**" />
-				<exclude name="**/*.swp" />
-				<exclude name="**/.svn*" />
-			</fileset>
-		</copy>
-
-		<copy todir="${release_dir}/tests" includeEmptyDirs="false" preservelastmodified="true">
-			<fileset dir="${root}/tests">
 				<include name="**" />
 				<exclude name="**/*.swp" />
 				<exclude name="**/.svn*" />
@@ -661,16 +712,16 @@ internTemplateStrings()
 	<!-- zip task -->
 	<target name="zip"
 		description="builds zip file of release files">
-		<zip destfile="${release_dir}/${project}_${version}.zip" basedir="${release_dir}/${project}"/>
+		<zip destfile="${root}/release/${project}_${version}.zip" basedir="${root}/release/${project}"/>
 	</target>
 	<!-- end zip task -->
 
 	<!-- tar task -->
 	<target name="tar"
 		description="builds tarball of release files">
-		<tar tarfile="${release_dir}/${project}_${version}.tar" basedir="${release_dir}" includes="${project}/**"/>
-		<gzip zipfile="${release_dir}/${project}_${version}.tar.gz" src="${release_dir}/${project}_${version}.tar"/>
-		<delete file="${release_dir}/${project}_${version}.tar"/>
+		<tar tarfile="${root}/release/${project}_${version}.tar" basedir="${root}/release" includes="${project}/**"/>
+		<gzip zipfile="${root}/release/${project}_${version}.tar.gz" src="${root}/release/${project}_${version}.tar"/>
+		<delete file="${root}/release/${project}_${version}.tar"/>
 	</target>
 	<!-- end tar task -->
 	
@@ -768,4 +819,64 @@ internTemplateStrings()
 		</exec>
 	</target>
 	<!-- end buildFlash task -->
+
+	<!-- xdgenRelease task -->
+	<target name="xdgenRelease" if="xdgenRun">
+		<antcall target="xdgen">
+			<param name="xdgenDir" value="${release_dir}/src" />
+		</antcall>		
+	</target>
+	<!-- end xdgenRelease task -->
+
+	<!-- xdgen task -->
+	<target name="xdgen" 
+			description="Create package files that can be used as part of a cross domain dojo installation.">
+		<property name="xdgen.basedir" location="../tools/xdgen"/>
+		<property name="xdgen.src" location="${xdgen.basedir}/src"/>
+		<property name="xdgen.build" location="${xdgen.basedir}/build"/>
+
+		<mkdir dir="${xdgen.build}"/>
+
+		<!-- Compile xdgen if it hasn't been compiled yet -->
+		<javac srcdir="${xdgen.src}" destdir="${xdgen.build}" debug="true">
+			<classpath>
+				<fileset dir="${xdgen.basedir}/lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+
+		<!-- Set up the classpath for the xdgen ant task. -->
+		<path id="xdgen.classpath">
+			<pathelement path="${classpath}"/>
+			<pathelement location="${xdgen.build}"/>
+			<fileset dir="./lib">
+				<include name="**/*.jar"/>
+				<include name="**/*.zip"/>
+			</fileset>
+		</path>
+
+		<!-- Define the xdgen ant task -->
+		<taskdef name="xdgenTask" classname="org.dojotoolkit.xdgen.XdGenAntTask">
+			<classpath refid="xdgen.classpath"/>
+		</taskdef>
+
+		<!-- Call the xdgen ant task -->
+		<xdgenTask>
+			<fileset dir="${xdgenDir}">
+				<include name="**/*.js"/>
+			</fileset>
+		</xdgenTask>
+	</target>
+	<!-- end xdgen task -->
+
+	<!-- xdgenRemove task -->
+	<target name="xdgenRemove" 
+			description="Removes package files that were created by xdgen.">
+		<delete>
+			<fileset dir="${xdgenDir}" includes="**/*.xd.js"/>
+		</delete>
+	</target>
+	<!-- end xdgenRemove task -->
+
 </project>

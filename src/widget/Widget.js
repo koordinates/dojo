@@ -3,23 +3,26 @@ dojo.provide("dojo.widget.tags");
 
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
+dojo.require("dojo.lang.extras");
+dojo.require("dojo.lang.declare");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
 
-dojo.widget.Widget = function(){
-	// these properties aren't primitives and need to be created on a per-item
-	// basis.
-	this.children = [];
-	// this.selection = new dojo.widget.Selection();
-	// FIXME: need to replace this with context menu stuff
-	this.extraArgs = {};
-}
-// FIXME: need to be able to disambiguate what our rendering context is
-//        here!
-
-// needs to be a string with the end classname. Every subclass MUST
-// over-ride.
-dojo.lang.extend(dojo.widget.Widget, {
+dojo.declare("dojo.widget.Widget", null, {
+	initializer: function() {								 
+		// these properties aren't primitives and need to be created on a per-item
+		// basis.
+		this.children = [];
+		// this.selection = new dojo.widget.Selection();
+		// FIXME: need to replace this with context menu stuff
+		this.extraArgs = {};
+	},
+	// FIXME: need to be able to disambiguate what our rendering context is
+	//        here!
+	//
+	// needs to be a string with the end classname. Every subclass MUST
+	// over-ride.
+	//
 	// base widget properties
 	parent: null,
 	// obviously, top-level and modal widgets should set these appropriately
@@ -281,13 +284,21 @@ dojo.lang.extend(dojo.widget.Widget, {
 						// FIXME: should we be allowing extension here to handle
 						// other object types intelligently?
 
-						// FIXME: unlike all other types, we do not replace the
-						// object with a new one here. Should we change that?
-						var pairs = args[x].split(";");
-						for(var y=0; y<pairs.length; y++){
-							var si = pairs[y].indexOf(":");
-							if((si != -1)&&(pairs[y].length>si)){
-								this[x][pairs[y].substr(0, si).replace(/^\s+|\s+$/g, "")] = pairs[y].substr(si+1);
+						// if we defined a URI, we probablt want to allow plain strings
+						// to override it
+						if (this[x] instanceof dojo.uri.Uri){
+
+							this[x] = args[x];
+						}else{
+
+							// FIXME: unlike all other types, we do not replace the
+							// object with a new one here. Should we change that?
+							var pairs = args[x].split(";");
+							for(var y=0; y<pairs.length; y++){
+								var si = pairs[y].indexOf(":");
+								if((si != -1)&&(pairs[y].length>si)){
+									this[x][pairs[y].substr(0, si).replace(/^\s+|\s+$/g, "")] = pairs[y].substr(si+1);
+								}
 							}
 						}
 					}else{
@@ -500,37 +511,58 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 }
 
 /*
- * it would be best to be able to call defineWidget for any widget namespace
+ * Create a widget constructor function (aka widgetClass)
  */
-dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*function*/, props /*object*/, renderer /*string*/, ctor /*function*/){
+dojo.widget.defineWidget = function(widgetClass /*string*/, renderer /*string*/, superclasses /*function||array*/, init /*function*/, props /*object*/){
+	// This meta-function does parameter juggling for backward compat and overloading
+	// if 4th argument is a string, we are using the old syntax
+	// old sig: widgetClass, superclasses, props (object), renderer (string), init (function)
+	if(dojo.lang.isString(arguments[3])){
+		dojo.widget._defineWidget(arguments[0], arguments[3], arguments[1], arguments[4], arguments[2]);
+	}else{
+		// widgetClass
+		var args = [ arguments[0] ], p = 3;
+		if(dojo.lang.isString(arguments[1])){
+			// renderer, superclass
+			args.push(arguments[1], arguments[2]);
+		}else{
+			// superclass
+			args.push('', arguments[1]);
+			p = 2;
+		}
+		if(dojo.lang.isFunction(arguments[p])){
+			// init (function), props (object) 
+			args.push(arguments[p], arguments[p+1]);
+		}else{
+			// props (object) 
+			args.push(null, arguments[p]);
+		}
+		dojo.widget._defineWidget.apply(this, args);
+	}
+}
+
+dojo.widget.defineWidget.renderers = "html|svg|vml";
+
+dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/, superclasses /*function||array*/, init /*function*/, props /*object*/){
+	// FIXME: uncomment next line to test parameter juggling ... remove when confidence improves
+	//dojo.debug('(c:)' + widgetClass + '\n\n(r:)' + renderer + '\n\n(i:)' + init + '\n\n(p:)' + props);
 	// widgetClass takes the form foo.bar.baz<.renderer>.WidgetName (e.g. foo.bar.baz.WidgetName or foo.bar.baz.html.WidgetName)
 	var namespace = widgetClass.split(".");
 	var type = namespace.pop(); // type <= WidgetName, namespace <= foo.bar.baz<.renderer>
-	if(renderer){
-		// FIXME: could just be namespace.pop(), unless there can be foo.bar.baz.html.zot.WidgetName
-		while ((namespace.length)&&(namespace.pop() != renderer)); // namespace <= foo.bar.baz
-	}
-	namespace = namespace.join(".");
+	var regx = "\\.(" + (renderer ? renderer + '|' : '') + dojo.widget.defineWidget.renderers + ")\\.";
+	//dojo.debug(regx);
+	var r = widgetClass.search(new RegExp(regx));
+	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
+	//dojo.debug(r + ': ' + widgetClass + ': ' + namespace);
 
 	dojo.widget.manager.registerWidgetPackage(namespace);
 	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
 
-	if(!props){ props = {}; }
+	props=(props)||{};
 	props.widgetType = type;
-
-	if((!ctor)&&(props["classConstructor"])){
-		ctor = props.classConstructor;
+	if((!init)&&(props["classConstructor"])){
+		init = props.classConstructor;
+		delete props.classConstructor;
 	}
-	if(!ctor){ ctor = function(){}; }
-	var subclass = function(){
-		try{
-			superclass.call(this);
-		}catch(e){ dojo.debug("superclass construction failed: ", e); }
-		try{
-			ctor.call(this);
-		}catch(e){ dojo.debug("constructor failed: ", e); }
-	}
-	dojo.inherits(subclass, superclass);
-	dojo.lang.extend(subclass, props);
-	dojo.lang.setObjPathValue(widgetClass, subclass);
+	dojo.declare(widgetClass, superclasses, init, props);
 }

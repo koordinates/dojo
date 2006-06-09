@@ -10,10 +10,18 @@
 		<script language="JavaScript" type="text/javascript" 
 			src="../../dojo.js"></script>
 		<script language="JavaScript" type="text/javascript">
+			dojo.debug("Start compat calls.");
+			dojo.hostenv.conditionalLoadModule({
+				common: ["dojo.lang"]
+			});
+
+			dojo.hostenv.moduleLoaded("dojo.foobarCompat");
+			
 			function init(){
 				dojo.hostenv.require("dojo.html");
 				dj_debug("The compat package for 0.2.2 loaded OK");
 				dojo.hostenv.byId("testTarget").innerHTML = "OK";
+				dojo.debug("End compat calls.");
 			}
 
 			dojo.addOnLoad(init);

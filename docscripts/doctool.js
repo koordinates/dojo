@@ -15,16 +15,25 @@ var docKeys = [];
 //dojo.event.topic.subscribe("docFunctionDetail", _docResult);
 
 function docInit(){
-	var search = dojo.widget.byId("search").dataProvider;
+	var search = dojo.widget.byId("search");
+	search.downArrowNode.style.visibility = "hidden";
+	var provider = search.dataProvider;
 	dojo.doc.functionNames(++docCount, docSetData);
-	dojo.widget.byId("search").dataProvider.startSearch = function(searchStr){
-		this.searchType = "SUBSTRING";
-		if("dojo.".match(new RegExp("^" + searchStr))){
-			this.searchType = "STARTSTRING";
+	provider.startSearch = function(searchStr){
+		var searchLength = searchStr.length;
+		var searchType = "SUBSTRING";
+		if("dojo.".match(new RegExp("^" + searchStr)) || searchStr.match(new RegExp("^dojo\."))){
+			var searchType = "STARTSTRING";
+			searchLength -= 4;
 		}
-		this._preformSearch(searchStr);
+		var search = dojo.widget.byId("search");
+		search.downArrowNode.style.visibility = "hidden";
+		if(searchLength > 2) {
+			search.downArrowNode.style.visibility = "visible";
+		}
+		this._preformSearch(searchStr, searchType);
 	}
-	dojo.event.connect(dojo.widget.byId("search").textInputNode, "onkeyup", docSearch);
+	dojo.event.connect(search, "selectOption", docSearch);
 }
 dojo.addOnLoad(docInit);
 
@@ -49,10 +58,8 @@ function _docResult(){
 }
 
 function docSearch(evt){
-	if(evt.keyCode == 13){
-		dojo.widget.byId("search").hideResultList();
-		dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
-	}
+	dojo.widget.byId("search").hideResultList();
+	dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
 }
 
 function docResults(/*Object*/ input){

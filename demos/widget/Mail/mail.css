@@ -4,6 +4,7 @@ html, body, #main{
 	overflow: hidden;	/* erase window level scrollbars */
 	padding: 0 0 0 0;
 	margin: 0 0 0 0;
+	font-family: Myriad,Tahoma,Verdana,sans-serif;
 }
 
 /* list of messages */
@@ -14,9 +15,10 @@ html, body, #main{
 #listPane tr, #listPane td { cursor: pointer; }
 
 #topMenu {
-	background: #660000;
+	background: #a7c9fc;
 	color: white;
 	font: bold;
+	padding: 3px;
 }
 
 tr.header {
@@ -38,9 +40,10 @@ body .dojoFloatingPaneDragbar {
 }
 
 body .dojoSplitPane {
-	background: beige;
+	background: #ededff;
 	overflow: auto;
 }
+
 /* group multiple buttons in a row */
 .box {
 	display: block;
@@ -49,6 +52,10 @@ body .dojoSplitPane {
 .box .dojoButton {
 	float: left;
 	margin-left: 10px;
+}
+
+.dojoTree {
+	padding: 5px;
 }
 
 .dojoButton .dojoButtonContents {

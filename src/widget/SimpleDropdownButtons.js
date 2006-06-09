@@ -9,7 +9,7 @@
 dojo.provide("dojo.widget.SimpleDropdownButtons");
 dojo.provide("dojo.widget.HtmlSimpleDropdownButtons");
 
-dojo.deprecated("dojo.widget.SimpleDropdownButtons",  "use dojo.widget.DropDownButton2", "0.4");
+dojo.deprecated("dojo.widget.SimpleDropdownButtons",  "use dojo.widget.DropDownButton", "0.4");
 
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");

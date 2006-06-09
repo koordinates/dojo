@@ -1,0 +1,263 @@
+/* 
+	dojotoolkit.org
+	The Summer Theme
+	Index page specific CSS code.
+*/
+#index-header{
+	width:100%;
+	height:170px; 
+	position:relative;
+	background-image:url(../img/idx-header-bg.jpg);
+	background-repeat:repeat-x;
+	background-position:bottom left;
+}
+#index-logo{
+	position:absolute;
+	top:13px; 
+	left:40px;
+	margin:0;
+	text-indent:-5000px;
+	width:400px;
+	height:150px;
+	background-image:url(../img/idx-logo.gif);
+	background-repeat:no-repeat;
+	z-index:50;
+	cursor: hand;
+	cursor: pointer;
+}
+#index-download{
+	position:absolute;
+	top:48px; 
+	right:50px;
+	width:255px;
+	height:102px;
+	z-index:49;
+}
+#index-download a{
+	position:relative;
+	display:block;
+	width:255px;
+	height:102px;
+	text-indent:-5000px;
+	background-image:url(../img/idx-download.png);
+	background-repeat:no-repeat;
+}
+* html #index-download a{
+	background-image:url(../img/idx-download.gif);
+	background-repeat:no-repeat;
+}
+
+#body {
+	position:relative;
+	width:100%;
+	min-height:550px;
+	/*background: url("../img/summerStripe.gif") top left repeat-x; */
+	padding-top:9px; 
+	overflow:visible;
+}
+
+* html #body{
+	height:100%;
+}
+#content {
+	width:auto;	/* stretch to fill */
+	margin:10px 400px 50px 50px;
+	min-height: 350px;
+}
+* html #content {
+	height:450px;
+	overflow:visible;
+}
+
+#content #actionTabs {
+/*	width:100%;
+	height:100%;
+	overflow: visible; */
+}
+
+#index-subheader {
+	position:relative;
+	width: auto;
+	height:26px;
+	padding:0;
+	padding-left:100px;
+	background-image:url("../img/summerStripe.gif");
+	background-repeat:repeat-x;
+	background-position:bottom left;
+}
+* html #index-subheader{ }
+#index-subheader .tab-wrapper{
+	position:absolute;
+	left:100px;
+	bottom:0;
+}
+
+.tab {
+	position : relative;
+	float : left;
+	padding-left : 9px;
+	border-bottom : 1px solid #6290d2;
+	background : url(../img/tab_left.gif) no-repeat left top;
+	cursor: pointer;
+	margin-left: 3px;
+}
+
+.tab span {
+	display : block;
+	padding : 4px 15px 4px 6px;
+	background : url(../img/tab_top_right.gif) no-repeat right top;
+	color : #333;
+	font-size : 90%;
+}
+
+.tab.current {
+	padding-bottom : 1px;
+	border-bottom : 0;
+	background-position : 0 -150px;
+}
+
+.tab.current span {
+	padding-bottom : 5px;
+	margin-bottom : -1px;
+	background-position : 100% -150px;
+}
+
+#actionTabs > .dojoTabPaneWrapper{
+	border:0 !important;
+	overflow: visible;
+	position: relative;
+	padding-top:35px; 
+}
+* html #actionTabs .dojoTabPaneWrapper{
+	margin-top:25px;
+	border:0 !important;
+}
+
+div.dojoTabLabels-top {
+	position : absolute;;
+	top : -4px;
+	left : 0px;
+	overflow : visible;
+}
+* html div.dojoTabLabels-top{
+	position:absolute;
+	top:-24px;
+	left:0px;
+	overflow:visible;
+}
+
+div.dojoTabPaneTab span {
+	font-size:1em;
+}
+
+
+div.dojoTabPaneTab {
+	border:0;
+	margin:0 1px;
+}
+
+
+/* sidebar */
+#sidebar {
+	position:absolute;
+	top:35px; 
+	right:50px;
+	width:248px;
+}
+
+#sidebar .blurb {
+	text-indent:-5000px;
+	width:250px;
+	height:90px;
+	background-image:url(../img/idx-blurb.png);
+	background-repeat:no-repeat;
+}
+#sidebar .license {
+	margin:16px 0 16px -16px;
+}
+* html #sidebar .license{
+	margin:16px 0;
+	width:282px;
+	height:107px;
+}
+#sidebar .license a{
+	display:block;
+	width:282px;
+	height:107px;
+	text-indent:-5000px;
+	background-image:url(../img/idx-license.gif);
+	background-repeat:no-repeat;
+}
+
+#sidebar ul {
+	margin-left:0;
+	padding-left:0;
+}
+
+#sidebar ul li { 
+	/* font-size:0.85em; */
+	font-size:1.0em;
+	margin-bottom:0.5em;
+}
+
+/*News Items */
+#demoApp, #help, #news {
+	width:auto !important;
+	height:auto !important;
+	padding-top:1.5em;
+	overflow:visible;
+}
+
+.newsItem {
+	margin-bottom:2em;
+}
+
+.newsItem h1 {
+	font-size:1.25em;
+		border-bottom:1px dotted #a9ccf5;
+}
+
+.newsItem h2 {
+	font-size:1em;
+}
+
+.newsItem h3 {
+	font-size:1em;
+	font-style:italic;
+	margin:0;
+	color:#d6a902;
+}
+
+.newsItem p {
+	text-align:justify;
+	font-size:1em;
+	line-height:1.35em;
+}
+
+#faqs{
+	background-color:#eee;
+	padding:10px;
+}
+
+#faqs h3 {
+	border-bottom:1px solid #666;
+	font-family: sans-serif;
+	font-size:0.85em;
+	text-transform:uppercase;
+	margin-top:2.5em;
+}
+
+#faqs pre {
+	width:100%;
+	overflow:auto;
+}
+
+#faqs pre.quotation {
+	background-color:#b9d3f6;
+}
+
+#faqs p.quotation{
+	background-color:#b9d3f6;
+	padding:0.5em;
+	font-style:italic;
+}

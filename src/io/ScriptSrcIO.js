@@ -133,8 +133,8 @@ dojo.io.ScriptSrcTransport = new function(){
 
 		//Fill out any other content pieces.
 		var content = kwArgs["content"];
-		var jsonpName = kwArgs.jsonParamName || "jsonp";
-		if(kwArgs.sendTransport || kwArgs.jsonp || kwArgs.jsonParamName) {
+		var jsonpName = kwArgs.jsonParamName;
+		if(kwArgs.sendTransport || jsonpName) {
 			if (!content){
 				content = {};
 			}
@@ -142,7 +142,7 @@ dojo.io.ScriptSrcTransport = new function(){
 				content["dojo.transport"] = "scriptsrc";
 			}
 
-			if(kwArgs.jsonp || kwArgs.jsonParamName){
+			if(jsonpName){
 				content[jsonpName] = "dojo.io.ScriptSrcTransport._state." + id + ".jsonpCall";
 			}
 		}
@@ -178,13 +178,7 @@ dojo.io.ScriptSrcTransport = new function(){
 		}
 
 		//If this is a jsonp request, intercept the jsonp callback
-		var jsonCallback = kwArgs.jsonp || kwArgs.jsonParamValue;
-		if(jsonCallback){
-			state.jsonp = jsonCallback;
-			state.jsonpCall = function(data){
-				dojo.io.ScriptSrcTransport._finish(this, "jsonp", data);
-			};
-		}else if(content[jsonpName]){
+		if(content && content[jsonpName]){
 			state.jsonp = content[jsonpName];
 			state.jsonpCall = function(data){
 				if(data["Error"]||data["error"]){
@@ -323,7 +317,7 @@ dojo.io.ScriptSrcTransport = new function(){
 			//Find the & or = nearest the max url length.
 			var ampEnd = state.query.lastIndexOf("&", queryMax - 1);
 			var eqEnd = state.query.lastIndexOf("=", queryMax - 1);
-			
+
 			//See if & is closer, or if = is right at the edge,
 			//which means we should put it on the next URL.
 			if(ampEnd > eqEnd || eqEnd == queryMax - 1){
@@ -353,11 +347,7 @@ dojo.io.ScriptSrcTransport = new function(){
 	}
 
 	this._finish = function(state, callback, event){
-		if(callback == "jsonp"){
-			var jsonpData = event;
-			eval(state.jsonp + "(jsonpData);");
-			state.isDone = true;
-		}else if(callback != "partOk" && !state.kwArgs[callback] && !state.kwArgs["handle"]){
+		if(callback != "partOk" && !state.kwArgs[callback] && !state.kwArgs["handle"]){
 			//Ignore "partOk" because that is an internal callback.
 			if(callback == "error"){
 				state.isDone = true;
@@ -367,6 +357,9 @@ dojo.io.ScriptSrcTransport = new function(){
 			switch(callback){
 				case "load":
 					var response = event ? event.response : null;
+					if(!response){
+						response = event;
+					}
 					state.kwArgs[(typeof state.kwArgs.load == "function") ? "load" : "handle"]("load", response, event, state.kwArgs);
 					state.isDone = true;
 					break;

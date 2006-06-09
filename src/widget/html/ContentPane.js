@@ -22,15 +22,35 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	extractContent: true,
 	parseContent: true,
 	cacheContent: true,
-	executeScripts: false,
 	preload: false,			// force load of data even if pane is hidden
 	refreshOnShow: false,
 	handler: "",			// generate pane content from a java function
+	executeScripts: false,	// if true scripts in content will be evaled after content is set and parsed
+	scriptScope: null,		// scopeContainer for downloaded scripts
+
+		// If the user want a global in the remote script he/she just omitts the var
+		// examples:
+		//--------------------------
+		// these gets collected by scriptScope and is reached by dojo.widget.byId('..').scriptScope.myCustomproperty
+		//	this.myString = "dojo is a great javascript toolkit!";
+		//
+		//	this.alertMyString = function(){
+		//		alert(myString);
+		//	}
+		// -------------------------
+		// these go into the global namespace (window) notice lack of var, equiv to window.myString
+		//	myString = "dojo is a javascript toolkit!";
+		//
+		//	alertMyString = function(){
+		//		alert(myString);
+		// }
 
 
 	// private
-	_remoteStyles: null,		// array of stylenodes inserted to document head
-					// by remote content, used when we clean up for new content
+	_remoteStyles: null,	// array of stylenodes inserted to document head
+							// by remote content, used when we clean up for new content
+
+	_callOnUnLoad: false,		// used by setContent and _handleDefults, makes sure onUnLoad is only called once
 
 
 	postCreate: function(args, frag, parentComp){
@@ -67,8 +87,10 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		}
 	},
 
-	// Reset the (external defined) content of this pane
-	setUrl: function(url) {
+	
+	setUrl: function(/*String*/ url) {
+		// summary:
+		// 	Reset the (external defined) content of this pane and replace with new url
 		this.href = url;
 		this.isLoaded = false;
 		if ( this.preload || this.isShowing() ){
@@ -88,7 +110,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				if(type == "load") {
 					self.onDownloadEnd.call(self, url, data);
 				} else {
-					// works best when from a live serveer instead of from file system
+					// works best when from a live server instead of from file system
 					self._handleDefaults.call(self, "Error loading '" + url + "' (" + e.status + " "+  e.statusText + ")", "onDownloadError");
 					self.onLoad();
 				}
@@ -98,6 +120,17 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 	// called when setContent is finished
 	onLoad: function(e){ /*stub*/ },
+
+	// called before old content is cleared
+	onUnLoad: function(e){ 
+			this.scriptScope = null;
+	},
+
+	destroy: function(){
+		// make sure we call onUnLoad
+		this.onUnLoad();
+		dojo.widget.html.ContentPane.superclass.destroy.call(this);
+	},
 
 	// called when content script eval error or Java error occurs, preventDefault-able
 	onExecError: function(e){ /*stub*/ },
@@ -140,14 +173,22 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			if(useAlert){
 				alert(e.toString());
 			}else{
+				if(this._callOnUnLoad){
+					this.onUnLoad(); // makes sure scripts can clean up after themselves, before we setContent
+				}
+				this._callOnUnLoad = false; // makes sure we dont try to call onUnLoad again on this event,
+											// ie onUnLoad before 'Loading...' but not before clearing 'Loading...'
 				this._setContent(e.toString());
 			}
 		}
 	},
 
-	// fix all remote paths in (hopefully) all cases for example images, remote scripts, links etc.
-	// splits up content in different pieces, scripts, title, style, link and whats left becomes .xml
-	splitAndFixPaths: function(/*String*/s, url){
+	
+	splitAndFixPaths: function(/*String*/s, /*dojo.uri.Uri?*/url){
+		// summary:
+		// 	fixes all remote paths in (hopefully) all cases for example images, remote scripts, links etc.
+		// 	splits up content in different pieces, scripts, title, style, link and whats left becomes .xml
+
 		if(!url) { url = "./"; } // point to this page if not set
 		if(!s) { return ""; }
 
@@ -198,14 +239,14 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 				// fix next attribute or bail out when done
 				// hopefully this charclass covers most urls
-				attr = tag.match(/ (src|href|style)=(['"]?)([\w()\/.,\\'"-:;#=&?\s@]+?)\2/i);
+				attr = tag.match(/ (src|href|style)=(['"]?)([\w()\[\]\/.,\\'"-:;#=&?\s@]+?)\2/i);
 				if(!attr){ break; }
 
 				switch(attr[1].toLowerCase()){
 					case "src":// falltrough
 					case "href":
 						// this hopefully covers most common protocols
-						if(attr[3].search(/^(?:[#]|(?:(?:https?|ftps?|file|javascript|mailto|news):))/)==-1){ 
+						if(attr[3].search(/^(?:[#]|(?:(?:https?|ftps?|file|javascript|mailto|news):))/)==-1){
 							fixedPath = (new dojo.uri.Uri(url, attr[3]).toString());
 						} else {
 							pos2 = pos2 + attr[3].length;
@@ -230,7 +271,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		}
 		s = str+s;
 
-		// cut out all script tags, stuff them into scripts array
+		// cut out all script tags, push them into scripts array
 		match = []; var tmp = [];
 		while(match){
 			match = s.match(/<script([^>]*)>([\s\S]*?)<\/script>/i);
@@ -239,8 +280,9 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				attr = match[1].match(/src=(['"]?)([^"']*)\1/i);
 				if(attr){
 					// remove a dojo.js or dojo.js.uncompressed.js from remoteScripts
-					var tmp = attr[2].match(/.*\bdojo\b\.js/);
-					if(tmp && tmp[0] == dojo.hostenv.getBaseScriptUri()+"dojo.js"){
+					// we declare all files with dojo.js as bad, regardless of folder
+					var tmp = attr[2].search(/.*(\bdojo\b(?:\.uncompressed)?\.js)$/);
+					if(tmp > -1){
 						dojo.debug("Security note! inhibit:"+attr[2]+" from  beeing loaded again.");
 					}else{
 						remoteScripts.push(attr[2]);
@@ -256,9 +298,10 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 				// cut out all dojo.require (...) calls, if we have execute 
 				// scripts false widgets dont get there require calls
+				// does suck out possible widgetpackage registration as well
 				tmp = [];
 				while(tmp && requires.length<100){
-					tmp = sc.match(/dojo\.require(?:After)?(?:If)?\((['"]).*?\1\)\s*;?/);
+					tmp = sc.match(/dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix))\((['"]).*?\1\)\s*;?/);
 					if(!tmp){ break;}
 					requires.push(tmp[0]);
 					sc = sc.replace(tmp[0], "");
@@ -266,6 +309,21 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				scripts.push(sc);
 			}
 			s = s.replace(/<script[^>]*>[\s\S]*?<\/script>/i, "");
+		}
+
+		// scan for scriptScope in html eventHandlers and replace with link to this pane
+		if(this.executeScripts){
+			var regex = /(<[a-zA-Z][a-zA-Z0-9]*\s[^>]*\S=(['"])[^>]*[^\.\]])scriptScope([^>]*>)/;
+			var pos = 0;var str = "";match = [];var cit = "";
+			while(pos > -1){
+				pos = s.search(regex);
+				if(pos > -1){
+					cit = ((RegExp.$2=="'") ? '"': "'");
+					str += s.substring(0, pos);
+					s = s.substr(pos).replace(regex, "$1dojo.widget.byId("+ cit + this.widgetId + cit + ").scriptScope$3");
+				}
+			}
+			s = str + s;
 		}
 
 		// cut out all <link rel="stylesheet" href="..">
@@ -290,8 +348,11 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			"url": url};
 	},
 
-	// private internal function without path regExpCheck and no onLoad calls aftervards
-	_setContent: function(xml){
+	
+	_setContent: function(/*String*/ xml){
+		// summary: 
+		//		private internal function without path regExpCheck and no onLoad calls aftervards
+
 		// remove old children from current content
 		this.destroyChildren();
 
@@ -307,17 +368,32 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 		var node = this.containerNode || this.domNode;
 		try{
-			node.innerHTML = xml;
+			if(typeof xml != "string"){
+				node.innerHTML = "";
+				node.appendChild(xml);
+			}else{
+				node.innerHTML = xml;
+			}
 		} catch(e){
-			e = "Could'nt load html:"+e;
+			e = "Could'nt load content:"+e;
 			this._handleDefaults(e, "onContentError");
 		}
 	},
 
-	setContent: function(data){
-		if(!data){
-			// if we do a clean using setContent(""); bypass all parseing, extractContent etc
+	setContent: function(/*String*/ data){
+		// summary:
+		// 	Destroys old content and setting new content, and possibly initialize any widgets within 'data'
+
+		if(this._callOnUnLoad){ // this tells a remote script clean up after itself
+			this.onUnLoad();
+		}
+		this._callOnUnLoad = true;
+
+		if(!data || dojo.dom.isNode(data)){
+			// if we do a clean using setContent(""); or setContent(#node) bypass all parseing, extractContent etc
 			this._setContent(data);
+			this.onResized();
+			this.onLoad();
 		}else{
 			// need to run splitAndFixPaths? ie. manually setting content
 			 if(!data.xml){
@@ -343,10 +419,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			}
 			this._setContent(data.xml);
 
-			if(this.executeScripts){
-				this._executeScripts(data);
-			}
-
 			if(this.parseContent){
 				for(var i = 0; i < data.requires.length; i++){
 					try{ 
@@ -355,14 +427,28 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 						this._handleDefaults(e, "onContentError", true);
 					}
 				}
-				var node = this.containerNode || this.domNode;
-				var parser = new dojo.xml.Parse();
-				var frag = parser.parseElement(node, null, true);
-				dojo.widget.getParser().createComponents(frag, this);
-				this.onResized();
 			}
+			// need to allow async load, Xdomain uses it
+			// is inline function because we cant send args to addOnLoad function
+			var _self = this;
+			function asyncParse(){
+				if(_self.parseContent){
+					var node = _self.containerNode || _self.domNode;
+					var parser = new dojo.xml.Parse();
+					var frag = parser.parseElement(node, null, true);
+					// createSubComponents not createComponents because frag has already been created
+					dojo.widget.getParser().createSubComponents(frag, _self);
+				}
+		
+				if(_self.executeScripts){
+					_self._executeScripts(data);
+				}
+
+				_self.onResized();
+				_self.onLoad();
+			}
+			dojo.addOnLoad(asyncParse);
 		}
-		this.onLoad(); // tell system that we have finished
 	},
 
 	// Generate pane content from given java function
@@ -392,32 +478,30 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		for(var i = 0; i < data.remoteScripts.length; i++){
 			dojo.io.bind({
 				"url": data.remoteScripts[i],
-				"load":     function(type, evaldObj){/* do nothing */ },
-				"error":    function(type, error){
-						self._handleDefaults.call(self, type + " running remote script", "onExecError", true);
+				"useCash":	this.cacheContent,
+				"load":     function(type, scriptStr){
+						dojo.lang.hitch(self, data.scripts.push(scriptStr));
 				},
-				"mimetype": "text/javascript",
+				"error":    function(type, error){
+						self._handleDefaults.call(self, type + " downloading remote script", "onExecError", true);
+				},
+				"mimetype": "text/plain",
 				"sync":     true
 			});
 		}
 
-		// do inline scripts
-		var repl = null;
+		var scripts = "";
 		for(var i = 0; i < data.scripts.length; i++){
-			// Clean up content: remove inline script  comments
-			repl = new RegExp('//.*?$', 'gm');
-			data.scripts[i] = data.scripts[i].replace(repl, '\n');
-	
-			// Clean up content: remove carriage returns
-			repl = new RegExp('[\n\r]', 'g');
-			data.scripts[i] = data.scripts[i].replace(repl, ' ');
+			scripts += data.scripts[i];
+		}
 
-			// Execute commands
-			try{
-				eval(data.scripts[i]);
-			}catch(e){
-				this._handleDefaults("Error running inline script: "+e+"\n"+data.scripts[i], "onExecError", true);
-			}
+		try{
+			// initialize a new anonymous container for our script, dont make it part of this widgets scope chain
+			// instead send in a variable that points to this widget, usefull to connect events to onLoad, onUnLoad etc..
+			this.scriptScope = null;
+			this.scriptScope = new (new Function('_container_', scripts+'; return this;'))(self);
+		}catch(e){
+			this._handleDefaults("Error running scripts from content:\n"+e, "onExecError", true);
 		}
 	}
 });

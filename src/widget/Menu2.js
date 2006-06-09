@@ -69,7 +69,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	initialize: function(args, frag) {
 
 		if (this.eventNaming == "default") {
-			for (eventName in this.eventNames) {
+			for (var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}
@@ -160,26 +160,20 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	layoutMenu: function(){
 
         // menu must be attached to DOM for size calculations to work
-
-        var parent = this.domNode.parentNode;
-        if (! parent || parent == undefined) {
-            document.body.appendChild(this.domNode);
-        }
+		// even though we attached to document.body in postCreate(), here
+		// we seem to be attached to a #document-fragment.  Don't understand why.
+        document.body.appendChild(this.domNode);
 
         // determine menu width
-
 		var max_label_w = 0;
 		var max_accel_w = 0;
 
 		for(var i=0; i<this.children.length; i++){
-
 			if (this.children[i].getLabelWidth){
-
 				max_label_w = Math.max(max_label_w, this.children[i].getLabelWidth());
 			}
 
 			if (dojo.lang.isFunction(this.children[i].getAccelWidth)){
-
 				max_accel_w = Math.max(max_accel_w, this.children[i].getAccelWidth());
 			}
 		}
@@ -478,7 +472,7 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		this.accelShadowNode.appendChild(document.createTextNode(this.accelKey));
 
 		if (this.eventNaming == "default") {
-			for (eventName in this.eventNames) {
+			for (var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}
@@ -563,10 +557,10 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 			}
 		}else{
 			this.parent.closeAll();
-
-			// for some browsers the onMouseOut doesn't get called (?), so call it manually
-			this.onUnhover();
 		}
+
+		// for some browsers the onMouseOut doesn't get called (?), so call it manually
+		this.onUnhover();
 
 		// user defined handler for click
 		this.onClick();
@@ -1014,7 +1008,7 @@ dojo.lang.extend(dojo.widget.MenuBar2, {
 
 		if (item != this.currentItem) return;
 
-		if (!this.isExpanded){
+		if (this.currentItem && !this.isExpanded){
 			this.currentItem.unhighlightItem();
 			this.currentItem = null;
 		}
@@ -1107,7 +1101,7 @@ dojo.lang.extend(dojo.widget.MenuBarItem2, {
 		this.labelShadowNode.appendChild(document.createTextNode(this.caption));
 
 		if (this.eventNaming == "default") {
-			for (eventName in this.eventNames) {
+			for (var eventName in this.eventNames) {
 				this.eventNames[eventName] = this.widgetId+"/"+eventName;
 			}
 		}

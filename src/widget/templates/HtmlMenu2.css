@@ -129,7 +129,7 @@
 
 
 .dojoMenuBar2 {
-	position: relative;
+	/*position: relative;*/
 	background-color: ThreeDFace;
 	border-bottom: 1px solid ThreeDHighlight;
 }

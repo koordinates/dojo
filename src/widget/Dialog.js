@@ -169,7 +169,7 @@ dojo.widget.defineWidget(
 				this.timer = setInterval(dojo.lang.hitch(this, "onTick"), 100);
 			}
 
-			this.onParentResized();
+			this.checkSize();
 		},
 
 		onLoad: function(){
@@ -179,7 +179,7 @@ dojo.widget.defineWidget(
 		},
 		
 		fillInTemplate: function(){
-			dojo.event.connect(this.domNode, "onclick", this, "killEvent");
+			// dojo.event.connect(this.domNode, "onclick", this, "killEvent");
 		},
 
 		hide: function(){
@@ -241,7 +241,7 @@ dojo.widget.defineWidget(
 		},
 
 		// Called when the browser window's size is changed
-		onParentResized: function() {
+		checkSize: function() {
 			if(this.isShowing()){
 				this.sizeBackground();
 				this.placeDialog();

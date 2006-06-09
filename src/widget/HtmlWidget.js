@@ -1,18 +1,12 @@
 dojo.provide("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DomWidget");
 dojo.require("dojo.html");
+dojo.require("dojo.html.extras");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lfx.toggle");
 
-dojo.widget.HtmlWidget = function(args){
-	// mixin inheritance
-	dojo.widget.DomWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.HtmlWidget, dojo.widget.DomWidget);
-
-dojo.lang.extend(dojo.widget.HtmlWidget, {
+dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {								 
 	widgetType: "HtmlWidget",
 
 	templateCssPath: null,
@@ -69,11 +63,17 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	},
 
 	toggleShowing: function(){
-		dojo.style.toggleShowing(this.domNode);
+		// dojo.style.toggleShowing(this.domNode);
+		if(this.isHidden){
+			this.show();
+		}else{
+			this.hide();
+		}
 	},
 
 	show: function(){
 		this.animationInProgress=true;
+		this.isHidden = false;
 		this.toggleObj.show(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onShow), this.explodeSrc);
 	},
@@ -81,10 +81,12 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	// called after the show() animation has completed
 	onShow: function(){
 		this.animationInProgress=false;
+		this.checkSize();
 	},
 
 	hide: function(){
-		this.animationInProgress=true;
+		this.animationInProgress = true;
+		this.isHidden = true;
 		this.toggleObj.hide(this.domNode, this.toggleDuration, null,
 			dojo.lang.hitch(this, this.onHide), this.explodeSrc);
 	},
@@ -98,7 +100,7 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	// Sizing related methods
 	//  If the parent changes size then for each child it should call either
 	//   - resizeTo(): size the child explicitly
-	//   - or onParentResized(): notify the child the the parent has changed size
+	//   - or checkSize(): notify the child the the parent has changed size
 	//////////////////////////////////////////////////////////////////////////////
 
 	// Test if my size has changed.
@@ -121,8 +123,10 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	},
 
 	// Called when my parent has changed size, but my parent won't call resizeTo().
-	// This is useful if my size is height:100% or something similar
-	onParentResized: function(){
+	// This is useful if my size is height:100% or something similar.
+	// Also called whenever I am shown, because the first time I am shown I may need
+	// to do size calculations.
+	checkSize: function(){
 		if(!this._isResized()){ return; }
 		this.onResized();
 	},
@@ -144,6 +148,6 @@ dojo.lang.extend(dojo.widget.HtmlWidget, {
 	// Called when my size has changed.
 	// Must notify children if their size has (possibly) changed
 	onResized: function(){
-		dojo.lang.forEach(this.children, function(child){ child.onParentResized(); });
+		dojo.lang.forEach(this.children, function(child){ child.checkSize(); });
 	}
 });

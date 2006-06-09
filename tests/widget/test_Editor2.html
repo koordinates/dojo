@@ -1,27 +1,35 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+<head>
+	<title>Dojo Editor2 Test</title>
+	<script type="text/javascript">
+		var djConfig = { isDebug: true };
+	</script>
 
-<title>Dojo Editor2 Test</title>
+	<script type="text/javascript" src="../../dojo.js"></script>
+	<script type="text/javascript">
+		dojo.require("dojo.widget.Editor2");
+	</script>
+</head>
+<body bgcolor="white">
 
-<script type="text/javascript">
-	var djConfig = { isDebug: true };
-</script>
+<button onclick="dojo.widget.createWidget('editor');">build it!</button>
+<button onclick="dojo.lang.forEach(dojo.widget.byType('Editor2'), function(e){ e.destroy(); });">
+	clobber the editors
+</button>
 
-<script type="text/javascript" src="../../dojo.js"></script>
-<script type="text/javascript">
-	dojo.require("dojo.widget.Editor2");
-</script>
-
-<button onclick="dojo.lang.forEach(dojo.widget.byType('Editor2'), function(e){ e.destroy(); });">clobber the editors</button>
 this is text above the editor
 <br>
 <br>
 <br>
 <br>
 <br>
-<div style="position: relative;">
+<div style="position: relative;" parseWidgets="false">
 	<div style="border: 1px solid black;">
-		<div dojoType="Editor2" shareToolbar="true" widgetId="editor" toolbarAlwaysVisible="true">
+		<div dojoType="Editor2" 
+			htmlEditing="true" useActiveX="true" 
+			shareToolbar="false" id="editor" toolbarAlwaysVisible="true">
 			look ma! it's editable content!
 			<ul>
 				<li>foo</li>
@@ -68,3 +76,6 @@ text above the second editor instance. This second editor shares a toolbar with 
 this is text after the editor
 <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
 this is more text
+</body>
+</html>
+

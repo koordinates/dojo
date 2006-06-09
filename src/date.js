@@ -64,7 +64,7 @@ dojo.date.setIso8601 = function (dateObject, string){
 }
 
 dojo.date.fromIso8601 = function (string) {
-	return dojo.date.setIso8601(new Date(0), string);
+	return dojo.date.setIso8601(new Date(0, 0), string);
 }
 
 
@@ -109,7 +109,7 @@ dojo.date.setIso8601Date = function (dateObject, string) {
 }
 
 dojo.date.fromIso8601Date = function (string) {
-	return dojo.date.setIso8601Date(new Date(0), string);
+	return dojo.date.setIso8601Date(new Date(0, 0), string);
 }
 
 
@@ -126,7 +126,7 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 			offset = (Number(d[3]) * 60) + Number(d[5]);
 			offset *= ((d[2] == '-') ? 1 : -1);
 		}
-		offset -= dateObject.getTimezoneOffset()
+		offset -= dateObject.getTimezoneOffset();
 		string = string.substr(0, string.length - d[0].length);
 	}
 
@@ -151,7 +151,7 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 }
 
 dojo.date.fromIso8601Time = function (string) {
-	return dojo.date.setIso8601Time(new Date(0), string);
+	return dojo.date.setIso8601Time(new Date(0, 0), string);
 }
 
 
@@ -237,7 +237,9 @@ dojo.date.getMonthShortName = function (dateObject) {
 
 
 dojo.date.getTimezoneName = function (dateObject) {
-	var timezoneOffset = dateObject.getTimezoneOffset();
+	// need to negate timezones to get it right 
+	// i.e UTC+1 is CET winter, but getTimezoneOffset returns -60
+	var timezoneOffset = -(dateObject.getTimezoneOffset());
 	
 	for (var i = 0; i < dojo.date.timezoneOffsets.length; i++) {
 		if (dojo.date.timezoneOffsets[i] == timezoneOffset) {
@@ -442,14 +444,14 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 		}
 
 		// toggle case if a flag is set
-		property = $(format.charAt(index++));
+		var property = $(format.charAt(index++));
 		if (switchCase == "upper" ||
 			(switchCase == "swap" && /[a-z]/.test(property))) {
 			property = property.toUpperCase();
 		} else if (switchCase == "swap" && !/[a-z]/.test(property)) {
 			property = property.toLowerCase();
 		}
-		swicthCase = null;
+		var swicthCase = null;
 		
 		string += property;
 		i = index;
