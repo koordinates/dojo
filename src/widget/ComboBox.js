@@ -12,7 +12,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.cache = {};
 
 	this.init = function(cbox){
-		this.seachUrl = cbox.dataUrl;
+		this.searchUrl = cbox.dataUrl;
 	}
 
 	this.addToCache = function(keyword, data){

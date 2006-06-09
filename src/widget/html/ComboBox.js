@@ -325,8 +325,7 @@ dojo.widget.defineWidget(
 			var dpClass;
 			if(this.mode == "remote"){
 				dpClass = dojo.widget.incrementalComboBoxDataProvider;
-			}
-			if(typeof this.dataProviderClass == "string"){
+			}else if(typeof this.dataProviderClass == "string"){
 				dpClass = dojo.evalObjPath(this.dataProviderClass)
 			}else{
 				dpClass = this.dataProviderClass;
