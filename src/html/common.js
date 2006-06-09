@@ -17,6 +17,52 @@ dojo.html.getEventTarget = function(evt){
 	return t;
 }
 
+dojo.html.getViewport = function(){
+	var w = 0;
+	var h = 0;
+	if(window.innerWidth){
+		w = window.innerWidth;
+		h = window.innerHeight;
+	} else if (dojo.exists(document, "documentElement.clientWidth")){
+		// IE6 Strict
+		var w2 = document.documentElement.clientWidth;
+		// this lets us account for scrollbars
+		if(!w || w2 && w2 < w) {
+			w = w2;
+		}
+		h = document.documentElement.clientHeight;
+	} else if (document.body){
+		w = document.body.clientWidth;
+		h = document.body.clientHeight;
+	}
+	return { width: w, height: h };
+}
+
+dojo.html.getScroll = function(){
+	var top = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+	var left = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	return { 
+		top: top, 
+		left: left, 
+		offset:{ x: left, y: top }	//	note the change, NOT an Array with added properties. 
+	};
+}
+
+dojo.html.getViewportWidth = function(){
+	dojo.deprecated("dojo.html.getViewportWidth", "replaced by dojo.html.getViewport().width", "0.4");
+	return dojo.html.getViewport().width;
+}
+
+dojo.html.getViewportHeight = function(){
+	dojo.deprecated("dojo.html.getViewportHeight", "replaced by dojo.html.getViewport().height", "0.4");
+	return dojo.html.getViewport().height;
+}
+
+dojo.html.getViewportSize = function(){
+	dojo.deprecated("dojo.html.getViewportSize", "replaced by dojo.html.getViewport", "0.4");
+	return dojo.html.getViewport();
+}
+
 dojo.html.getDocumentWidth = function(){
 	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportWidth();
@@ -32,70 +78,21 @@ dojo.html.getDocumentSize = function(){
 	return dojo.html.getViewportSize();
 }
 
-dojo.html.getViewportWidth = function(){
-	var w = 0;
-
-	if(window.innerWidth){
-		w = window.innerWidth;
-	}
-
-	if(dojo.exists(document, "documentElement.clientWidth")){
-		// IE6 Strict
-		var w2 = document.documentElement.clientWidth;
-		// this lets us account for scrollbars
-		if(!w || w2 && w2 < w) {
-			w = w2;
-		}
-		return w;
-	}
-
-	if(document.body){
-		// IE
-		return document.body.clientWidth;
-	}
-
-	return 0;
-}
-
-dojo.html.getViewportHeight = function(){
-	if (window.innerHeight){
-		return window.innerHeight;
-	}
-
-	if (dojo.exists(document, "documentElement.clientHeight")){
-		// IE6 Strict
-		return document.documentElement.clientHeight;
-	}
-
-	if (document.body){
-		// IE
-		return document.body.clientHeight;
-	}
-
-	return 0;
-}
-
-dojo.html.getViewportSize = function(){
-	var ret = [dojo.html.getViewportWidth(), dojo.html.getViewportHeight()];
-	ret.w = ret[0];
-	ret.h = ret[1];
-	return ret;
-}
-
 dojo.html.getScrollTop = function(){
-	return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+	dojo.deprecated("dojo.html.getScrollTop", "replaced by dojo.html.getScroll", "0.4");
+	return dojo.html.getScroll().top;
 }
 
 dojo.html.getScrollLeft = function(){
-	return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	dojo.deprecated("dojo.html.getScrollLeft", "replaced by dojo.html.getScroll", "0.4");
+	return dojo.html.getScroll().left;
 }
 
 dojo.html.getScrollOffset = function(){
-	var off = [dojo.html.getScrollLeft(), dojo.html.getScrollTop()];
-	off.x = off[0];
-	off.y = off[1];
-	return off;
+	dojo.deprecated("dojo.html.getScrollOffset", "replaced by dojo.html.getScroll", "0.4");
+	return dojo.html.getScroll().offset;
 }
+
 
 dojo.html.getParentOfType = function(node, type){
 	dojo.deprecated("dojo.html.getParentOfType", "replaced by dojo.html.getParentByType*", "0.4");
@@ -150,8 +147,7 @@ dojo.html.getAttribute = function(node, attr){
  *	attribute in question.
  */
 dojo.html.hasAttribute = function(node, attr){
-	node = dojo.byId(node);
-	return dojo.html.getAttribute(node, attr) ? true : false;
+	return dojo.html.getAttribute(dojo.byId(node), attr) ? true : false;
 }
 	
 /**
