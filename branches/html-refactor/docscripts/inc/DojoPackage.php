@@ -115,14 +115,18 @@ class DojoPackage extends Dojo
    *
    * @param unknown_type $name
    */
-  public function getFunctionCalls($name)
+  public function getFunctionCalls($name, $in_global_namespace = false)
   {
     if ($this->calls[$name]) {
       return $this->calls[$name];
     }
     
     $this->calls[$name] = array();
-    $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $this->code);
+    $lines = $this->code;
+    if ($in_global_namespace) {
+      $lines = $this->removeDiscoveredCode($lines);
+    }
+    $lines = preg_grep('%\b' . preg_quote($name) . '\s*\(%', $lines);
     foreach ($lines as $line_number => $line) {
       $call = new DojoFunctionCall($this->source, $this->code, $this->package_name, $this->compressed_package_name, $name);
 
@@ -188,6 +192,9 @@ class DojoPackage extends Dojo
       foreach ($per_name as $call) {
         $lines = $call->removeDiscoveredCode($lines);
       }
+    }
+    foreach ($this->functions as $declare) {
+      $lines = $declare->removeDiscoveredCode($lines);
     }
     return $lines;
   }
@@ -258,7 +265,11 @@ class DojoPackage extends Dojo
     if ($parts[0] == 'src') {
       $parts[0] = 'dojo';
     }
-    return implode('.', $parts);
+    $name = implode('.', $parts);
+    if ($name == 'dojo.bootstrap1' || $name == 'dojo.bootstrap2' || $name == 'dojo.loader') {
+      $name = 'dojo';
+    }
+    return $name;
   }
   
   private function getCompressedPackage()

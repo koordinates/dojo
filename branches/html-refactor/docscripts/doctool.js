@@ -59,7 +59,7 @@ function _docResult(){
 
 function docSearch(evt){
 	dojo.widget.byId("search").hideResultList();
-	dojo.event.topic.publish("docSearch", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
+	dojo.event.topic.publish("/doc/search", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
 }
 
 function docResults(/*Object*/ input){
