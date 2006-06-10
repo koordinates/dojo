@@ -169,4 +169,5 @@
 
 .dojoTabLabels-left-h .dojoTabPaneTab span {
 	background : 0;
+	border-bottom :  1px solid #6290d2;
 }
