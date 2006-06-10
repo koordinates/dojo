@@ -65,7 +65,7 @@ dojo.lang.declare = function(className /*string*/, superclass /*function || arra
 		mixins = superclass;
 		superclass = mixins.shift();
 	}
-	if (!init) {
+	if(!init){
 		init = dojo.evalObjPath(className, false);
 		if ((init)&&(!dojo.lang.isFunction(init))){ init = null };
 	}
@@ -82,7 +82,7 @@ dojo.lang.declare = function(className /*string*/, superclass /*function || arra
 		dojo.lang.extend(ctor, mixins[i].prototype);
 	}
 	ctor.prototype.declaredClass = className;
-	if (dojo.lang.isArray(props)){
+	if(dojo.lang.isArray(props)){
 		dojo.lang.extend.apply(dojo.lang, [ctor].concat(props));
 	}else{
 		dojo.lang.extend(ctor, (props)||{});
