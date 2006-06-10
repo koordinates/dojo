@@ -7,7 +7,7 @@
 	<script type="text/javascript">
 	var djConfig = {
 			isDebug: true,
-			baseLoaderUri: "http://tagneto.org/dojo/xd/",
+			baseScriptUri: "../../",
 			useXDomain: true,
 			xdWaitSeconds: 10
 	};
@@ -26,7 +26,6 @@
 </head>
 
 <body>
-	<h1>Test the doc0.html tooltip loaded for the select box tooltip. It should work and show the combox and button correctly.</h1>
 	<h1>Tooltip test</h1>
 	<p>Mouse-over the items below to test tooltips:</p>
 	<p>
@@ -46,17 +45,21 @@
 	<span dojoType="tooltip" connectId="four" caption="tooltip on button"></span>
 	
 	<img id="five" src="images/question.gif"></img>
-	<span dojoType="tooltip" connectId="five" toggle="explode">
+	<span dojoType="tooltip" connectId="five" toggle="explode" toggleDuration="250">
 		exploding tooltip
 	</span>
+	<img id="six" src="images/question.gif"></img>
+	<span dojoType="tooltip" connectId="six" toggle="explode" toggleDuration="500">
+		slowly exploding tooltip
+	</span>
 
-    <select id="six">
+    <select id="seven">
       <option value="alpha">Alpha</option>
       <option value="beta">Beta</option>
       <option value="gamma">Gamma</option>
       <option value="delta">Delta</option>
     </select>
-	<a dojoType="tooltip" connectId="six" href="doc0.html" executeScripts="true"></a>
+	<a dojoType="tooltip" connectId="seven" href="doc0.html" executeScripts="true"></a>
 
 <p></p>
 
