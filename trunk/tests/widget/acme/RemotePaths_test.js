@@ -3,10 +3,10 @@
 	workAround.extScriptToggle = function(){
 		var a = document.getElementById("extToggler");
 		var txt = a.firstChild.nodeValue;
-		if(txt == "Ext js file scripttest, Released"){
-			txt = "Ext js file scripttest, Pushed";
+		if(txt == "Ext. js file scripttest, Released"){
+			txt = "Ext. js file scripttest, Pushed";
 		}else{
-			txt = "Ext js file scripttest, Released";
+			txt = "Ext. js file scripttest, Released";
 		}
 		var txtNode = document.createTextNode(txt);
 		a.replaceChild(txtNode,a.firstChild);
