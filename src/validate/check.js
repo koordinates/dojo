@@ -1,5 +1,6 @@
 dojo.provide("dojo.validate.check");
 dojo.require("dojo.validate.common");
+dojo.require("dojo.lang.common");
 
 /**
   Validates user input of an HTML form based on input profile.
@@ -79,7 +80,7 @@ dojo.validate.check = function(form, profile) {
 	// See if required input fields have values missing.
 	if ( profile.required instanceof Array ) {
 		for (var i = 0; i < profile.required.length; i++) { 
-			if ( typeof profile.required[i] != "string" ) { continue; }
+			if(!dojo.lang.isString(profile.required[i])){ continue; }
 			var elem = form[profile.required[i]];
 			// Are textbox, textarea, or password fields blank.
 			if ( (elem.type == "text" || elem.type == "textarea" || elem.type == "password") && /^\s*$/.test(elem.value) ) {	
@@ -105,7 +106,7 @@ dojo.validate.check = function(form, profile) {
 	// See if checkbox groups and select boxes have x number of required values.
 	if ( profile.required instanceof Array ) {
 		for (var i = 0; i < profile.required.length; i++) { 
-			if ( typeof profile.required[i] != "object" ) { continue; }
+			if(!dojo.lang.isObject(profile.required[i])){ continue; }
 			var elem, numRequired;
 			for (var name in profile.required[i]) { 
 				elem = form[name]; 
@@ -138,7 +139,7 @@ dojo.validate.check = function(form, profile) {
 	// Todo: Support dependant and target fields that are radio button groups, or select drop-down lists.
 	// Todo: Make the dependancy based on a specific value of the target field.
 	// Todo: allow dependant fields to have several required values, like {checkboxgroup: 3}.
-	if ( typeof profile.dependancies == "object" ) {
+	if(dojo.lang.isObject(profile.dependancies)){
 		// properties of dependancies object are the names of dependant fields to be checked
 		for (name in profile.dependancies) {
 			var elem = form[name];	// the dependant element
@@ -153,43 +154,52 @@ dojo.validate.check = function(form, profile) {
 	}
 
 	// Find invalid input fields.
-	if ( typeof profile.constraints == "object" ) {
+	if(dojo.lang.isObject(profile.constraints)){
 		// constraint properties are the names of fields to be validated
-		for (name in profile.constraints) {
+		for(name in profile.constraints){
 			var elem = form[name];
-			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; }
-			// skip if blank - its optional unless required, in which case it is already listed as missing.
-			if ( /^\s*$/.test(elem.value) ) { continue; }
+			if(	(elem.type != "text")&&
+				(elem.type != "textarea")&&
+				(elem.type != "password")){
+				continue;
+			}
+			// skip if blank - its optional unless required, in which case it
+			// is already listed as missing.
+			if( /^\s*$/.test(elem.value)){ continue; }
 
 			var isValid = true;
 			// case 1: constraint value is validation function
-			if ( typeof profile.constraints[name] == "function" ) {
+			if(dojo.lang.isFunction(profile.constraints[name])){
 				isValid = profile.constraints[name](elem.value);
-			}
-			// case 2: constraint value is array, first elem is function, tail is parameters
-			else if ( profile.constraints[name] instanceof Array ) {
+			}else if(dojo.lang.isArray(profile.constraints[name])){
+				// case 2: constraint value is array, first elem is function,
+				// tail is parameters
 				var isValidSomething = profile.constraints[name][0];
 				var params = profile.constraints[name].slice(1);
 				params.unshift(elem.value);
-				isValid = isValidSomething.apply(null, params);
+				if(typeof isValidSomething != "undefined"){
+					isValid = isValidSomething.apply(null, params);
+				}else{
+					isValid = false; 
+				}
 			}
 
-			if ( !isValid ) {	
+			if(!isValid){	
 				invalid[invalid.length] = elem.name;
 			}
 		}
 	}
 
 	// Find unequal confirm fields and report them as Invalid.
-	if ( typeof profile.confirm == "object" ) {
-		for (name in profile.confirm) {
+	if(dojo.lang.isObject(profile.confirm)){
+		for(name in profile.confirm){
 			var elem = form[name];	// the confirm element
 			var target = form[profile.confirm[name]];
 			if ( (elem.type != "text" && elem.type != "textarea" && elem.type != "password") 
-				|| target.type != elem.type 
-				|| target.value == elem.value		// it's valid
-				|| results.isInvalid(elem.name)	// already listed as invalid
-				|| /^\s*$/.test(target.value)	)	// skip if blank - only confirm if target has a value
+				||(target.type != elem.type)
+				||(target.value == elem.value)	// it's valid
+				||(results.isInvalid(elem.name))// already listed as invalid
+				||(/^\s*$/.test(target.value))	)	// skip if blank - only confirm if target has a value
 			{
 				continue; 
 			}	
