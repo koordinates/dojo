@@ -21,7 +21,6 @@ dojo.widget.defineWidget(
 			"onblur",
 			"onselect",
 			"onchange",
-			"onclick",
 			"ondblclick",
 			"onmousedown",
 			"onmouseup",
