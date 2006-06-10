@@ -1,11 +1,10 @@
 dojo.provide("dojo.lang.common");
-
 dojo.require("dojo.lang");
 
 /*
  * Adds the given properties/methods to the specified object
  */
-dojo.lang.mixin = function(obj, props){
+dojo.lang._mixin = function(obj, props){
 	var tobj = {};
 	for(var x in props){
 		// the "tobj" condition avoid copying properties in "props"
@@ -24,10 +23,23 @@ dojo.lang.mixin = function(obj, props){
 }
 
 /*
- * Adds the given properties/methods to the specified object's prototype
+ * Adds the properties/methods of argument Objects to obj
  */
-dojo.lang.extend = function(ctor, props){
-	this.mixin(ctor.prototype, props);
+dojo.lang.mixin = function(obj, props /*, props, ..., props */){
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo.lang._mixin(obj, arguments[i]);
+	}
+	return obj;
+}
+
+/*
+ * Adds the properties/methods of argument Objects to ctor's prototype
+ */
+dojo.lang.extend = function(ctor /*function*/, props /*, props, ..., props */){
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo.lang._mixin(ctor.prototype, arguments[i]);
+	}
+	return ctor;
 }
 
 /**
