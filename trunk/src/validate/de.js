@@ -1,4 +1,4 @@
-dojo.provide("dojo.validate.us");
+dojo.provide("dojo.validate.de");
 dojo.require("dojo.validate.common");
 
 /**
