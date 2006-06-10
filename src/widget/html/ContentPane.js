@@ -123,7 +123,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 
 	// called before old content is cleared
 	onUnLoad: function(e){ 
-			this.scriptScope = null;
+		this.scriptScope = null;
 	},
 
 	destroy: function(){
@@ -432,6 +432,10 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			// is inline function because we cant send args to addOnLoad function
 			var _self = this;
 			function asyncParse(){
+				if(_self.executeScripts){
+					_self._executeScripts(data);
+				}
+
 				if(_self.parseContent){
 					var node = _self.containerNode || _self.domNode;
 					var parser = new dojo.xml.Parse();
@@ -439,15 +443,16 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 					// createSubComponents not createComponents because frag has already been created
 					dojo.widget.getParser().createSubComponents(frag, _self);
 				}
-		
-				if(_self.executeScripts){
-					_self._executeScripts(data);
-				}
 
 				_self.onResized();
 				_self.onLoad();
 			}
-			dojo.addOnLoad(asyncParse);
+			// try as long as possible to make setContent sync call
+			if(dojo.hostenv.isXDomain && data.requires.length){
+				dojo.addOnLoad(asyncParse);
+			}else{
+				asyncParse();
+			}
 		}
 	},
 
