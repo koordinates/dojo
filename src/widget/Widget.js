@@ -550,10 +550,8 @@ dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/
 	var namespace = widgetClass.split(".");
 	var type = namespace.pop(); // type <= WidgetName, namespace <= foo.bar.baz<.renderer>
 	var regx = "\\.(" + (renderer ? renderer + '|' : '') + dojo.widget.defineWidget.renderers + ")\\.";
-	//dojo.debug(regx);
 	var r = widgetClass.search(new RegExp(regx));
 	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
-	//dojo.debug(r + ': ' + widgetClass + ': ' + namespace);
 
 	dojo.widget.manager.registerWidgetPackage(namespace);
 	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
