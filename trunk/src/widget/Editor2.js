@@ -192,11 +192,14 @@ dojo.widget.defineWidget(
 				// TODO: when we get multiple editor toolbar support working
 				// correctly, ensure that we check this against the scroll
 				// position of the bottom-most editor instance.
-				var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.style.getInnerHeight(this.editNode) : this._lastHeight);
-				if(scrollPos > (this._scrollThreshold+eHeight)){
-					tdn.style.display = "none";
-				}else{
-					tdn.style.display = "";
+				if(!dojo.render.html.safari){
+					// safari reports a bunch of things incorrectly here
+					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.style.getInnerHeight(this.editNode) : this._lastHeight);
+					if(scrollPos > (this._scrollThreshold+eHeight)){
+						tdn.style.display = "none";
+					}else{
+						tdn.style.display = "";
+					}
 				}
 
 			}else if(this._fixEnabled){
