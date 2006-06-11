@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.style.position");
+
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.style.util");
 
@@ -67,6 +68,10 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 	ret.left = ret.x;
 
 	return ret;
+}
+
+dojo.html.isPositionAbsolute = function(node){
+	return (dojo.html.getComputedStyle(node, 'position') == 'absolute')
 }
 
 dojo.html.getTotalOffset = function(node, type, includeScroll){

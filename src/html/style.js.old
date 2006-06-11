@@ -489,7 +489,7 @@ dojo.require("dojo.lang.common");
 		return str+cssStr;
 	}
 
-	ds.getBackgroundColor = function(node) {
+	/*ds.getBackgroundColor = function(node) {
 		node = dojo.byId(node);
 		var color;
 		do{
@@ -505,7 +505,7 @@ dojo.require("dojo.lang.common");
 			color = dojo.graphics.color.extractRGB(color);
 		}
 		return color;
-	}
+	}*/
 
 	/*ds.getComputedStyle = function(node, cssSelector, inValue){
 		node = dojo.byId(node);
@@ -574,7 +574,7 @@ dojo.require("dojo.lang.common");
 	}*/
 
 	/* float between 0.0 (transparent) and 1.0 (opaque) */
-	ds.setOpacity = function setOpacity(node, opacity, dontFixOpacity) {
+	/*ds.setOpacity = function setOpacity(node, opacity, dontFixOpacity) {
 		node = dojo.byId(node);
 		if(!dontFixOpacity){
 			if( opacity >= 1.0){
@@ -627,12 +627,12 @@ dojo.require("dojo.lang.common");
 				if( node.filters && node.filters.alpha ){
 					ns.filter = ""; // FIXME: may get rid of other filter effects
 				}
-			} catch(e) {
+			} catch(e) {*/
 				/*
 				 * IE7 gives error if node.filters not set;
 				 * don't know why or how to workaround (other than this)
 				 */
-			}
+/*			}
 		}else if(h.moz){
 			ns.opacity = 1;
 			ns.MozOpacity = 1;
@@ -642,7 +642,7 @@ dojo.require("dojo.lang.common");
 		}else{
 			ns.opacity = 1;
 		}
-	}
+	}*/
 
 	/** 
 	* Set the given style attributes for the node. 
@@ -683,18 +683,18 @@ dojo.require("dojo.lang.common");
 	//	} 
 	//} 
 
-	ds._toggle = function(node, tester, setter){
+	/*ds._toggle = function(node, tester, setter){
 		node = dojo.byId(node);
 		setter(node, !tester(node));
 		return tester(node);
-	}
+	}*/
 
 	// show/hide are library constructs
 
 	// show() 
 	// if the node.style.display == 'none' then 
 	// set style.display to '' or the value cached by hide()
-	ds.show = function(node){
+	/*ds.show = function(node){
 		node = dojo.byId(node);
 		if(ds.getStyleProperty(node, 'display')=='none'){
 			ds.setStyle(node, 'display', (node.dojoDisplayCache||''));
@@ -786,7 +786,7 @@ dojo.require("dojo.lang.common");
 	// return the new value of isVisible()
 	ds.toggleVisibility = function(node){
 		return ds._toggle(node, ds.isVisible, ds.setVisibility);
-	}
+	}*/
 
 	// in: coordinate array [x,y,w,h] or dom node
 	// return: coordinate array

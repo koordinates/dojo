@@ -1,10 +1,6 @@
 dojo.provide("dojo.html.common");
 
-dojo.require("dojo.lang.func");
-dojo.require("dojo.dom");
-dojo.require("dojo.string");
-
-dojo.lang.mixin(dojo.html, dojo.dom);
+dojo.require("dojo.lang.array");
 
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
