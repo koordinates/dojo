@@ -1,4 +1,4 @@
-provide("dojo.html.style.util");
+dojo.provide("dojo.html.style.util");
 
 dojo.html.sumAncestorProperties = function(node, prop){
 	node = dojo.byId(node);

@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.style.common");
+dojo.require("dojo.lang.common");
 
 dojo.html.toCamelCase = function(selector){
 	var arr = selector.split('-'), cc = arr[0];
@@ -58,6 +59,28 @@ dojo.html.setStyle = function(node, cssSelector, value){
 		var camelCased = dojo.html.toCamelCase(cssSelector);
 		node.style[camelCased] = value;
 	}
+}
+
+dojo.html.setStyleAttributes = function(node, attributes) { 
+	var methodMap={ 
+		"opacity":dojo.style.setOpacity,
+		"content-height":dojo.style.setContentHeight,
+		"content-width":dojo.style.setContentWidth,
+		"outer-height":dojo.style.setOuterHeight,
+		"outer-width":dojo.style.setOuterWidth 
+	} 
+
+	var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
+	for(var i=0; i<splittedAttribs.length; i++){ 
+		var nameValue=splittedAttribs[i].split(":"); 
+		var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
+		var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
+		if(dojo.lang.has(methodMap,name)) { 
+			methodMap[name](node,value); 
+		} else { 
+			node.style[dojo.style.toCamelCase(name)]=value; 
+		} 
+	} 
 }
 
 dojo.html.getUnitValue = function(node, cssSelector, autoIsZero){
