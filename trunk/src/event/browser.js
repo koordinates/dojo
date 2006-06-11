@@ -236,8 +236,8 @@ dojo.event.browser = new function(){
 			if(!evt.layerX){ evt.layerX = evt.offsetX; }
 			if(!evt.layerY){ evt.layerY = evt.offsetY; }
 			// FIXME: scroll position query is duped from dojo.html to avoid dependency on that entire module
-			if(!evt.pageX){ evt.pageX = evt.clientX + (window.pageXOffset || document.scrollLeft || document.documentElement.scrollLeft || document.body.scrollLeft || 0) }
-			if(!evt.pageY){ evt.pageY = evt.clientY + (window.pageYOffset || document.scrollTop || document.documentElement.scrollTop || document.body.scrollTop || 0) }
+			if(!evt.pageX){ evt.pageX = evt.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft || 0) }
+			if(!evt.pageY){ evt.pageY = evt.clientY + (document.documentElement.scrollTop || document.body.scrollTop || 0) }
 			// mouseover
 			if(evt.type == "mouseover"){ evt.relatedTarget = evt.fromElement; }
 			// mouseout
