@@ -138,7 +138,7 @@ dojo.require("dojo.lang.common");
 		return true;
 	}*/
 	
-	ds._sumPixelValues = function(node, selectors, autoIsZero){
+	/*ds._sumPixelValues = function(node, selectors, autoIsZero){
 		var total = 0;
 		for(var x=0; x<selectors.length; x++){
 			total += ds.getPixelValue(node, selectors[x], autoIsZero);
@@ -164,9 +164,9 @@ dojo.require("dojo.lang.common");
 
 	ds.getPaddingWidth = function(node){
 		return ds._sumPixelValues(node, ["padding-left", "padding-right"], true);
-	}
+	}*/
 
-	ds.getPadBorderWidth = function(node) {
+	/*ds.getPadBorderWidth = function(node) {
 		return ds.getPaddingWidth(node) + ds.getBorderWidth(node);
 	}
 	
@@ -182,7 +182,7 @@ dojo.require("dojo.lang.common");
 
 	ds.getMarginBoxWidth = function(node){
 		return ds.getInnerWidth(node) + ds.getMarginWidth(node);
-	}
+	}*/
 
 	ds.setContentBoxWidth = function(node, pxWidth){
 		node = dojo.byId(node);
@@ -208,7 +208,7 @@ dojo.require("dojo.lang.common");
 	ds.setContentWidth = ds.setContentBoxWidth;
 	ds.setOuterWidth = ds.setMarginBoxWidth;
 
-	ds.getMarginHeight = function(node){
+	/*ds.getMarginHeight = function(node){
 		return ds._sumPixelValues(node, ["margin-top", "margin-bottom"], ds.isPositionAbsolute(node));
 	}
 
@@ -218,9 +218,9 @@ dojo.require("dojo.lang.common");
 
 	ds.getPaddingHeight = function(node){
 		return ds._sumPixelValues(node, ["padding-top", "padding-bottom"], true);
-	}
+	}*/
 
-	ds.getPadBorderHeight = function(node) {
+	/*ds.getPadBorderHeight = function(node) {
 		return ds.getPaddingHeight(node) + ds.getBorderHeight(node);
 	}
 	
@@ -236,7 +236,7 @@ dojo.require("dojo.lang.common");
 
 	ds.getMarginBoxHeight = function(node){
 		return ds.getInnerHeight(node) + ds.getMarginHeight(node);
-	}
+	}*/
 
 	ds.setContentBoxHeight = function(node, pxHeight){
 		node = dojo.byId(node);
@@ -272,7 +272,7 @@ dojo.require("dojo.lang.common");
 	 * It returns the position that would be returned
 	 * by event.clientX/Y if the mouse were directly over the top/left of this node.
 	 */
-	ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
+	/*ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
 		node = dojo.byId(node);
 		var ret = [];
 		ret.x = ret.y = 0;
@@ -332,7 +332,7 @@ dojo.require("dojo.lang.common");
 		ret[0] = ret.x;
 		ret[1] = ret.y;
 		return ret;
-	}
+	}*/
 
 	/*ds.sumAncestorProperties = function(node, prop){
 		node = dojo.byId(node);
@@ -350,7 +350,7 @@ dojo.require("dojo.lang.common");
 		return retVal;
 	}*/
 
-	ds.getTotalOffset = function(node, type, includeScroll){
+	/*ds.getTotalOffset = function(node, type, includeScroll){
 		return ds.abs(node, includeScroll)[(type == "top") ? "y" : "x"];
 	}
 
@@ -360,7 +360,7 @@ dojo.require("dojo.lang.common");
 
 	ds.getAbsoluteY = ds.totalOffsetTop = function(node, includeScroll){
 		return ds.getTotalOffset(node, "top", includeScroll);
-	}
+	}*/
 
 	ds.styleSheet = null;
 
@@ -661,27 +661,27 @@ dojo.require("dojo.lang.common");
 	* @param object The node to set the style attributes for. 
 	* @param string Ie. "position:absolute; left:10px; top:10px;" 
 	*/ 
-	ds.setStyleAttributes = function(node, attributes) { 
-		var methodMap={ 
-			"opacity":dojo.style.setOpacity,
-			"content-height":dojo.style.setContentHeight,
-			"content-width":dojo.style.setContentWidth,
-			"outer-height":dojo.style.setOuterHeight,
-			"outer-width":dojo.style.setOuterWidth 
-		} 
+	//ds.setStyleAttributes = function(node, attributes) { 
+	//	var methodMap={ 
+	//		"opacity":dojo.style.setOpacity,
+	//		"content-height":dojo.style.setContentHeight,
+	//		"content-width":dojo.style.setContentWidth,
+	//		"outer-height":dojo.style.setOuterHeight,
+	//		"outer-width":dojo.style.setOuterWidth 
+	//	} 
 
-		var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
-		for(var i=0; i<splittedAttribs.length; i++){ 
-			var nameValue=splittedAttribs[i].split(":"); 
-			var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
-			var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
-			if(dojo.lang.has(methodMap,name)) { 
-				methodMap[name](node,value); 
-			} else { 
-				node.style[dojo.style.toCamelCase(name)]=value; 
-			} 
-		} 
-	} 
+	//	var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
+	//	for(var i=0; i<splittedAttribs.length; i++){ 
+	//		var nameValue=splittedAttribs[i].split(":"); 
+	//		var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
+	//		var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
+	//		if(dojo.lang.has(methodMap,name)) { 
+	//			methodMap[name](node,value); 
+	//		} else { 
+	//			node.style[dojo.style.toCamelCase(name)]=value; 
+	//		} 
+	//	} 
+	//} 
 
 	ds._toggle = function(node, tester, setter){
 		node = dojo.byId(node);
