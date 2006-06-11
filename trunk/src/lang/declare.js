@@ -81,6 +81,7 @@ dojo.lang.declare = function(className /*string*/, superclass /*function || arra
 	for(var i=0,l=mixins.length; i<l; i++){
 		dojo.lang.extend(ctor, mixins[i].prototype);
 	}
+	ctor.prototype.initializer = null;
 	ctor.prototype.declaredClass = className;
 	if(dojo.lang.isArray(props)){
 		dojo.lang.extend.apply(dojo.lang, [ctor].concat(props));
