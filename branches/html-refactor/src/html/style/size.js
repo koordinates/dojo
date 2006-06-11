@@ -1,10 +1,6 @@
 dojo.provide("dojo.html.style.size");
 dojo.require("dojo.html.style.common");
 
-dojo.html.isPositionAbsolute = function(node){
-	return (dojo.html.getComputedStyle(node, 'position') == 'absolute');
-}
-
 dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
 	var total = 0;
 	for(var x=0; x<selectors.length; x++){
@@ -15,8 +11,8 @@ dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
 
 dojo.html.getMargin = function(node){
 	return {
-		width: dojo.html._sumPixelValues(node, ["margin-left", "margin-right"], dojo.html.isPositionAbsolute(node)),
-		height: dojo.html._sumPixelValues(node, ["margin-top", "margin-bottom"], dojo.html.isPositionAbsolute(node))
+		width: dojo.html._sumPixelValues(node, ["margin-left", "margin-right"], (dojo.html.getComputedStyle(node, 'position') == 'absolute')),
+		height: dojo.html._sumPixelValues(node, ["margin-top", "margin-bottom"], (dojo.html.getComputedStyle(node, 'position') == 'absolute'))
 	};
 }
 

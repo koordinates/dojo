@@ -1,7 +1,10 @@
 dojo.provide("dojo.lfx.html");
-dojo.require("dojo.lfx.Animation");
 
-dojo.require("dojo.html");
+dojo.require("dojo.lfx.Animation");
+dojo.require("dojo.html.style.opacity");
+dojo.require("dojo.html.style.display");
+dojo.require("dojo.html.style.size");
+dojo.require("dojo.html.style.position");
 
 dojo.lfx.html._byId = function(nodes){
 	if(!nodes){ return []; }
@@ -37,9 +40,9 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 		dojo.lang.forEach(propertyMap, function(prop){
 			if(typeof prop["start"] == "undefined"){
 				if(prop.property != "opacity"){
-					prop.start = parseInt(dojo.style.getComputedStyle(nodes[0], prop.property));
+					prop.start = parseInt(dojo.html.getComputedStyle(nodes[0], prop.property));
 				}else{
-					prop.start = dojo.style.getOpacity(nodes[0]);
+					prop.start = dojo.html.getOpacity(nodes[0]);
 				}
 			}
 		});
@@ -57,7 +60,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 		if(!n || !n.style){ return; }
 		for(var s in style){
 			if(s == "opacity"){
-				dojo.style.setOpacity(n, style[s]);
+				dojo.html.setOpacity(n, style[s]);
 			}else{
 				n.style[s] = style[s];
 			}
@@ -94,7 +97,7 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes,
 				}else{
 					value = ((this.diffs[i]) * n) + prop.start + (prop.property != "opacity" ? prop.units||"px" : "");
 				}
-				ret[dojo.style.toCamelCase(prop.property)] = value;
+				ret[dojo.html.toCamelCase(prop.property)] = value;
 			}, this);
 			return ret;
 		}
@@ -116,7 +119,7 @@ dojo.lfx.html._makeFadeable = function(nodes){
 			// only set the zoom if the "tickle" value would be the same as the
 			// default
 			if( (node.style.zoom.length == 0) &&
-				(dojo.style.getStyle(node, "zoom") == "normal") ){
+				(dojo.html.getStyle(node, "zoom") == "normal") ){
 				// make sure the node "hasLayout"
 				// NOTE: this has been tested with larger and smaller user-set text
 				// sizes and works fine
@@ -126,7 +129,7 @@ dojo.lfx.html._makeFadeable = function(nodes){
 			// don't set the width to auto if it didn't already cascade that way.
 			// We don't want to f anyones designs
 			if(	(node.style.width.length == 0) &&
-				(dojo.style.getStyle(node, "width") == "auto") ){
+				(dojo.html.getStyle(node, "width") == "auto") ){
 				node.style.width = "auto";
 			}
 		}
@@ -143,7 +146,7 @@ dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
 	dojo.lfx.html._makeFadeable(nodes);
 	var anim = dojo.lfx.propertyAnimation(nodes, [
 		{	property: "opacity",
-			start: dojo.style.getOpacity(nodes[0]),
+			start: dojo.html.getOpacity(nodes[0]),
 			end: 1 } ], duration, easing);
 	if(callback){
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
@@ -158,7 +161,7 @@ dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
 	dojo.lfx.html._makeFadeable(nodes);
 	var anim = dojo.lfx.propertyAnimation(nodes, [
 		{	property: "opacity",
-			start: dojo.style.getOpacity(nodes[0]),
+			start: dojo.html.getOpacity(nodes[0]),
 			end: 0 } ], duration, easing);
 	if(callback){
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
@@ -174,9 +177,9 @@ dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
 	anim.beforeBegin = function(){ 
 		oldBb();
 		if(dojo.lang.isArrayLike(nodes)){
-			dojo.lang.forEach(nodes, dojo.style.show);
+			dojo.lang.forEach(nodes, dojo.html.show);
 		}else{
-			dojo.style.show(nodes);
+			dojo.html.show(nodes);
 		}
 	};
 	
@@ -186,9 +189,9 @@ dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
 dojo.lfx.html.fadeHide = function(nodes, duration, easing, callback){
 	var anim = dojo.lfx.html.fadeOut(nodes, duration, easing, function(){
 		if(dojo.lang.isArrayLike(nodes)){
-			dojo.lang.forEach(nodes, dojo.style.hide);
+			dojo.lang.forEach(nodes, dojo.html.hide);
 		}else{
-			dojo.style.hide(nodes);
+			dojo.html.hide(nodes);
 		}
 		if(callback){ callback(nodes, anim); }
 	});
@@ -201,12 +204,12 @@ dojo.lfx.html.wipeIn = function(nodes, duration, easing, callback){
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var overflow = dojo.style.getStyle(node, "overflow");
+		var overflow = dojo.html.getStyle(node, "overflow");
 		if(overflow == "visible") {
 			node.style.overflow = "hidden";
 		}
 		node.style.height = "0px";
-		dojo.style.show(node);
+		dojo.html.show(node);
 		
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
@@ -232,21 +235,21 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 	var anims = [];
 	
 	dojo.lang.forEach(nodes, function(node){
-		var overflow = dojo.style.getStyle(node, "overflow");
+		var overflow = dojo.html.getStyle(node, "overflow");
 		if(overflow == "visible") {
 			node.style.overflow = "hidden";
 		}
-		dojo.style.show(node);
+		dojo.html.show(node);
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
-				start: dojo.style.getContentBoxHeight(node),
+				start: dojo.html.getContentBox(node).height,
 				end: 0 } ], duration, easing);
 		
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
 		anim.onEnd = function(){ 
 			oldOnEnd(); 
-			dojo.style.hide(node);
+			dojo.html.hide(node);
 			node.style.overflow = overflow;
 			if(callback){ callback(node, anim); }
 		};
@@ -271,9 +274,9 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 				top = innerNode.offsetTop;
 				left = innerNode.offsetLeft;
 
-				if (!dojo.style.isPositionAbsolute(innerNode)) {
-					var ret = dojo.style.abs(innerNode, true);
-					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
+				if (!(dojo.html.getComputedStyle(node, 'position') == 'absolute')) {
+					var ret = dojo.html.abs(innerNode, true);
+					dojo.html.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
 					top = ret.y;
 					left = ret.x;
 				}
@@ -318,9 +321,9 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 				top = node.offsetTop;
 				left = node.offsetLeft;
 
-				if (!dojo.style.isPositionAbsolute(innerNode)) {
-					var ret = dojo.style.abs(innerNode);
-					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
+				if (!(dojo.html.getComputedStyle(node, 'position') == 'absolute')) {
+					var ret = dojo.html.abs(innerNode);
+					dojo.html.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
 					top = ret.y;
 					left = ret.x;
 				}
@@ -354,7 +357,7 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	start = dojo.byId(start);
 	endNode = dojo.byId(endNode);
-	var startCoords = dojo.style.toCoordinateArray(start, true);
+	var startCoords = dojo.html.toCoordinateArray(start, true);
 	var outline = document.createElement("div");
 	dojo.html.copyStyle(outline, endNode);
 	with(outline.style){
@@ -367,12 +370,12 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		visibility = "hidden";
 		display = "block";
 	}
-	var endCoords = dojo.style.toCoordinateArray(endNode, true);
+	var endCoords = dojo.html.toCoordinateArray(endNode, true);
 	with(endNode.style){
 		display = "none";
 		visibility = "visible";
 	}
-
+	
 	var anim = new dojo.lfx.propertyAnimation(outline, [
 		{ property: "height", start: startCoords[3], end: endCoords[3] },
 		{ property: "width", start: startCoords[2], end: endCoords[2] },
@@ -382,10 +385,10 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	], duration, easing);
 	
 	anim.beforeBegin = function(){
-		dojo.style.setDisplay(outline, "block");
+		dojo.html.setDisplay(outline, "block");
 	};
 	anim.onEnd = function(){
-		dojo.style.setDisplay(endNode, "block");
+		dojo.html.setDisplay(endNode, "block");
 		outline.parentNode.removeChild(outline);
 	};
 	if(callback){
@@ -398,12 +401,12 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	startNode = dojo.byId(startNode);
 	end = dojo.byId(end);
-	var startCoords = dojo.style.toCoordinateArray(startNode, true);
-	var endCoords = dojo.style.toCoordinateArray(end, true);
+	var startCoords = dojo.html.toCoordinateArray(startNode, true);
+	var endCoords = dojo.html.toCoordinateArray(end, true);
 
 	var outline = document.createElement("div");
 	dojo.html.copyStyle(outline, startNode);
-	dojo.style.setOpacity(outline, 0.3);
+	dojo.html.setOpacity(outline, 0.3);
 	with(outline.style){
 		position = "absolute";
 		display = "none";
@@ -419,8 +422,8 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	], duration, easing);
 	
 	anim.beforeBegin = function(){
-		dojo.style.hide(startNode);
-		dojo.style.show(outline);
+		dojo.html.hide(startNode);
+		dojo.html.show(outline);
 	};
 	anim.onEnd = function(){
 		outline.parentNode.removeChild(outline);
@@ -437,9 +440,9 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var color = dojo.style.getBackgroundColor(node);
-		var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
-		var bgImage = dojo.style.getStyle(node, "background-image");
+		var color = dojo.html.getBackgroundColor(node);
+		var bg = dojo.html.getStyle(node, "background-color").toLowerCase();
+		var bgImage = dojo.html.getStyle(node, "background-image");
 		var wasTransparent = (bg == "transparent" || bg == "rgba(0, 0, 0, 0)");
 		while(color.length > 3) { color.pop(); }
 
@@ -487,10 +490,10 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var color = new dojo.graphics.color.Color(dojo.style.getBackgroundColor(node));
+		var color = new dojo.graphics.color.Color(dojo.html.getBackgroundColor(node));
 		var rgb = new dojo.graphics.color.Color(endColor);
 
-		var bgImage = dojo.style.getStyle(node, "background-image");
+		var bgImage = dojo.html.getStyle(node, "background-image");
 		
 		var anim = dojo.lfx.propertyAnimation(node, [{
 			property: "background-color",
