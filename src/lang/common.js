@@ -106,8 +106,8 @@ dojo.lang.inArray = function(arr /*Array*/, val /*Object*/){
  */
 
 dojo.lang.isObject = function(wh){
-	if(!wh){ return false; }
-	return (typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh));
+	if(typeof wh == "undefined"){ return false; }
+	return (typeof wh == "object" || wh === null || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh));
 }
 
 dojo.lang.isArray = function(wh){
