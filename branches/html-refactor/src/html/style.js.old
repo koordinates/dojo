@@ -790,7 +790,7 @@ dojo.require("dojo.lang.common");
 
 	// in: coordinate array [x,y,w,h] or dom node
 	// return: coordinate array
-	ds.toCoordinateArray = function(coords, includeScroll) {
+	/*ds.toCoordinateArray = function(coords, includeScroll) {
 		if(dojo.lang.isArray(coords)){
 			// coords is already an array (of format [x,y,w,h]), just return it
 			while ( coords.length < 4 ) { coords.push(0); }
@@ -812,5 +812,5 @@ dojo.require("dojo.lang.common");
 		ret.w = ret[2];
 		ret.h = ret[3];
 		return ret;
-	};
+	};*/
 })();

@@ -185,12 +185,13 @@ dojo.html.setStyle = function(node, cssSelector, value){
 }
 
 dojo.html.setStyleAttributes = function(node, attributes) { 
+	node = dojo.byId(node);
 	var methodMap={ 
-		"opacity":dojo.style.setOpacity,
-		"content-height":dojo.style.setContentHeight,
-		"content-width":dojo.style.setContentWidth,
-		"outer-height":dojo.style.setOuterHeight,
-		"outer-width":dojo.style.setOuterWidth 
+		"opacity":dojo.html.setOpacity,
+		"content-height":dojo.html.setContentHeight,
+		"content-width":dojo.html.setContentWidth,
+		"outer-height":dojo.html.setOuterHeight,
+		"outer-width":dojo.html.setOuterWidth 
 	} 
 
 	var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
@@ -201,7 +202,7 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 		if(methodMap[name]) { 
 			methodMap[name](node,value); 
 		} else { 
-			node.style[dojo.style.toCamelCase(name)]=value; 
+			node.style[dojo.html.toCamelCase(name)]=value; 
 		} 
 	} 
 }

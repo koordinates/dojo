@@ -53,7 +53,7 @@ dojo.html.renderedTextContent = function(node){
 			case 5: // ENTITY_REFERENCE_NODE
 				var display = "unknown";
 				try {
-					display = dojo.style.getStyle(node.childNodes[i], "display");
+					display = dojo.html.getStyle(node.childNodes[i], "display");
 				} catch(E) {}
 				switch (display) {
 					case "block": case "list-item": case "run-in":
@@ -83,7 +83,7 @@ dojo.html.renderedTextContent = function(node){
 				var text = node.childNodes[i].nodeValue;
 				var textTransform = "unknown";
 				try {
-					textTransform = dojo.style.getStyle(node, "text-transform");
+					textTransform = dojo.html.getStyle(node, "text-transform");
 				} catch(E) {}
 				switch (textTransform){
 					case "capitalize": text = dojo.string.capitalize(text); break;
@@ -279,8 +279,8 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 	node = dojo.byId(node);
 	var oldDisplay = node.style.display;
 	node.style.display="";
-	var w = dojo.style.getInnerWidth(node);
-	var h = dojo.style.getInnerHeight(node);
+	var w = dojo.html.getInnerWidth(node);
+	var h = dojo.html.getInnerHeight(node);
 	node.style.display=oldDisplay;
 
 	if(hasScroll) {
@@ -365,8 +365,8 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	// TODO: this function shouldn't be necessary but setting width=height=100% doesn't work!
 	onResized: function(){
 		if(this.iframe && this.domNode && this.domNode.parentElement){ // No parentElement if onResized() timeout event occurs on a removed domnode
-			var w = dojo.style.getOuterWidth(this.domNode);
-			var h = dojo.style.getOuterHeight(this.domNode);
+			var w = dojo.html.getOuterWidth(this.domNode);
+			var h = dojo.html.getOuterHeight(this.domNode);
 			if (w  == 0 || h == 0 ){
 				dojo.lang.setTimeout(this, this.onResized, 50);
 				return;
@@ -382,7 +382,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	size: function(node) {
 		if(!this.iframe) { return; }
 
-		var coords = dojo.style.toCoordinateArray(node, true);
+		var coords = dojo.html.toCoordinateObject(node, true);
 
 		var s = this.iframe.style;
 		s.width = coords.w + "px";

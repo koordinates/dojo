@@ -369,10 +369,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// it. If so, do all the actions that need doing.
 		if(this.currentDropTarget){
 			//dojo.debug(dojo.dom.hasParent(this.currentDropTarget.domNode))
-			var c = dojo.style.toCoordinateArray(this.currentDropTarget.domNode, true);
+			var c = dojo.style.toCoordinateObject(this.currentDropTarget.domNode, true);
 			//		var dtp = this.currentDropTargetPoints;
 			var dtp = [
-				[c[0],c[1]], [c[0]+c[2], c[1]+c[3]]
+				[c.x,c.y], [c.x+c.w, c.y+c.h]
 			];
 		}
 

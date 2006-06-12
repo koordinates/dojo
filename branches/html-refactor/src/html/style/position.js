@@ -1,3 +1,4 @@
+dojo.require("dojo.html.style");
 dojo.provide("dojo.html.style.position");
 
 dojo.require("dojo.html.common");
@@ -155,4 +156,32 @@ dojo.html.getMarginBox = function(node){
 	var borderbox = dojo.html.getBorderBox(node);
 	var margin = dojo.html.getMargin(node);
 	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
+}
+
+// in: coordinate array [x,y,w,h] or dom node
+// return: coordinate object
+dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll) {
+	if(dojo.lang.isArray(coords)){
+		// coords is already an array (of format [x,y,w,h]), just return it
+		while ( coords.length < 4 ) { coords.push(0); }
+		while ( coords.length > 4 ) { coords.pop(); }
+		var ret = {
+			x: coords[0],
+			y: coords[1],
+			w: coords[2],
+			h: coords[3]
+		};
+	} else {
+		// coords is an dom object (or dom object id); return it's coordinates
+		var node = dojo.byId(coords);
+		var pos = dojo.html.getAbsolutePosition(node, includeScroll);
+		var borderbox = dojo.html.getBorderBox(node);
+		var ret = {
+			x: pos.x,
+			y: pos.y,
+			w: borderbox.width,
+			h: borderbox.height
+		};
+	}
+	return ret;
 }
