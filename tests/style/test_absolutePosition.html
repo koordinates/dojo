@@ -5,14 +5,16 @@
 	<title>Position function tests</title>
 	
 	<script type="text/javascript">	
-		var djConfig = {isDebug: true};
+		var djConfig = {
+			isDebug: true
+		};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script language="JavaScript" type="text/javascript">
 		dojo.require("dojo.style");
+		dojo.require("dojo.debug");
 		dojo.require("dojo.html");	// dojo.style depends on dojo.html but doesn't include it!
-		dojo.require("dojo.event");
-		dojo.hostenv.writeIncludes();
+		dojo.require("dojo.event.*");
 	</script>
 	<script>
 		function onMouseMove(e){
@@ -66,7 +68,7 @@ by event.clientX/Y if the mouse were directly over the top/left of this node.
 <tr><td>dojo.html.getScrollLeft()/Top()</td><td id="s"></td></tr>
 </table>
 <script>
-	dojo.event.connect(document, "onmousemove", onMouseMove);
+	dojo.event.connect(document.documentElement, "onmousemove", "onMouseMove");
 </script>
 <p>HTML after</p>
 <p>HTML after</p>

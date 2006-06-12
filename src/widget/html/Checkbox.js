@@ -4,94 +4,53 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.event");
 dojo.require("dojo.html");
 
-// FIXME: the input doesn't get taken out of the tab list (i think)
-// FIXME: the image doesn't get into the tab list (needs to steal the tabindex value from the input)
-
 dojo.widget.defineWidget(
 	"dojo.widget.html.Checkbox",
 	dojo.widget.HtmlWidget,
 	{
 		widgetType: "Checkbox",
 	
-		_testImg: null,
-	
-		_events: [
-			"onclick",
-			"onfocus",
-			"onblur",
-			"onselect",
-			"onchange",
-			"ondblclick",
-			"onmousedown",
-			"onmouseup",
-			"onmouseover",
-			"onmousemove",
-			"onmouseout",
-			"onkeypress",
-			"onkeydown",
-			"onkeyup"
-		],
-	
-		srcOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
-		srcOff: dojo.uri.dojoUri('src/widget/templates/check_off.gif'),
+		templatePath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.html'),
+		templateCssPath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.css'),
+
+		// parameters
 		disabled: "enabled",
-	
+		name: "",
+		checked: false,
+		tabIndex: "",
+
+		inputNode: null,
+
+		postMixInProperties: function(){
+			// set the variables referenced by the template
+			this.disabledStr = this.disabled=="enabled" ? "" : "disabled";
+		},
+
 		fillInTemplate: function(){
-	
-			// FIXME: if images are disabled, we DON'T want to swap out the element
-			// we can use the usual 'load image to check' trick
-			// i don't know what image we can check yet, so we'll skip this for now...
-	
-			// this._testImg = document.createElement("img");
-			// document.body.appendChild(this._testImg);
-			// this._testImg.src = "spacer.gif?cachebust=" + new Date().valueOf();
-			// dojo.connect(this._testImg, 'onload', this, 'onImagesLoaded');
-	
-			this.onImagesLoaded();
+			this._setClassStr();
 		},
-	
-		onImagesLoaded: function(){
-	
-			// FIXME: if we actually check for loading images, remove the thing here
-			// document.body.removeChild(this._testImg);
-	
-			// 'hide' the checkbox
-			this.domNode.style.position = "absolute";
-			this.domNode.style.left = "-9000px";
-	
-			// create a replacement image
-			this.imgNode = document.createElement("img");
-			dojo.html.addClass(this.imgNode, "dojoHtmlCheckbox");
-			this.updateImgSrc();
-			dojo.event.connect(this.imgNode, 'onclick', this, 'onClick');
-			dojo.event.connect(this.domNode, 'onchange', this, 'onChange');
-			this.domNode.parentNode.insertBefore(this.imgNode, this.domNode.nextSibling)
-	
-			// real ugly - make sure the image has all the events that the checkbox did
-			for(var i=0; i<this._events.length; i++){
-				if(this.domNode[this._events[i]]){
-					dojo.event.connect(	this.imgNode, this._events[i], 
-										this.domNode[this._events[i]]);
-				}
-			}
-		},
-	
-		onClick: function(){
+
+		onClick: function(e){
 			if(this.disabled == "enabled"){
-				this.domNode.checked = !this.domNode.checked ? true : false;
-				this.updateImgSrc();
+				this.checked = !this.checked;
+				this.inputNode.checked = this.checked;
+				this._setClassStr();
 			}
+			e.preventDefault();
 		},
-	
-		onChange: function(){
-			if(this.disabled == "enabled"){
-				this.updateImgSrc();
-			}
+
+		keyPress: function(e){
+			var k = dojo.event.browser.keys;
+			if(e.keyCode==k.KEY_SPACE || e.charCode==k.KEY_SPACE){
+	 			this.onClick(e);
+	 		}
 		},
-	
-		updateImgSrc: function(){
-	
-			this.imgNode.src = this.domNode.checked ? this.srcOn : this.srcOff;
+
+		// set CSS class string according to checked/unchecked and disabled/enabled state
+		_setClassStr: function(){
+			var prefix = (this.disabled == "enabled" ? "dojoHtmlCheckbox" : "dojoHtmlCheckboxDisabled");
+			var state = prefix + (this.checked ? "On" : "Off");
+			dojo.html.setClass(this.domNode, "dojoHtmlCheckbox " + state);
 		}
 	}
 );

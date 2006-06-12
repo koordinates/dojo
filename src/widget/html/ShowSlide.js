@@ -95,7 +95,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		component.style.visibility = "hidden";
 		component.style.backgroundColor = "transparent";
 		var parent = component.parentNode;
-		if(parent.tagName == "LI"){
+		if((parent)&&(parent.tagName == "LI")){
 			parent.oldType = parent.style.listStyleType;
 			parent.style.listStyleType = "none";
 		}
@@ -122,6 +122,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 				}else if(action.action == "fly"){
 					var width = dojo.style.getMarginBoxWidth(component);
 					var position = dojo.style.getAbsolutePosition(component);
+					// alert(position);
 					component.style.position = "relative";
 					component.style.left = -(width + position.x) + "px";
 					dojo.lfx.html.slideBy(component, [0, (width + position.x)], duration, -1, this.callWith).play(true);
@@ -153,8 +154,13 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		return true;
 	},
 	callWith: function(/*Node*/ node){
+		if(!node){ return; }
+		if(dojo.lang.isArray(node)){
+			dojo.lang.forEach(node, arguments.callee);
+			return;
+		}
 		var parent = node.parentNode;
-		if(parent.tagName == "LI"){
+		if((parent)&&(parent.tagName.toLowerCase() == "li")){
 			parent.style.listStyleType = parent.oldType;
 		}
 	},
