@@ -473,3 +473,35 @@ dojo.dom.isTag = function(node /* ... */) {
 	}
 	return "";
 }
+
+/** 
+ * Implements DOM Level 2 setAttributeNS so it works cross browser.
+ *
+ * Example:
+ * dojo.dom.setAttributeNS(domElem, "http://foobar.com/2006/someSpec", 
+ * 							"hs:level", 3);
+ */
+dojo.dom.setAttributeNS = function(elem, namespaceURI, attrName, attrValue){
+	debug("dojo.dom.setAttributeNS");
+	if(elem == null || dojo.lang.isUndefined(elem)){
+		dojo.raise("No element given to dojo.dom.setAttributeNS");
+	}
+	
+	if(dojo.lang.isUndefined(elem.setAttributeNS) == false){ // w3c
+		elem.setAttributeNS(namespaceURI, attrName, attrValue);
+	}else{ // IE
+		// get a root XML document
+		var ownerDoc = elem.ownerDocument;
+		var attribute = ownerDoc.createNode(
+			2, // node type
+			attrName,
+			namespaceURI
+		);
+		
+		// set value
+		attribute.nodeValue = attrValue;
+		
+		// attach to element
+		elem.setAttributeNode(attribute);
+	}
+}
