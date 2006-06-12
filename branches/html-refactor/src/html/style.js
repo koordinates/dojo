@@ -1,7 +1,5 @@
 dojo.provide("dojo.html.style");
 
-dojo.require("dojo.lang.common");
-
 /**
  * Returns the string value of the list of CSS classes currently assigned
  * directly to the node in question. Returns an empty string if no class attribute
@@ -35,7 +33,13 @@ dojo.html.getClasses = function(node) {
  * styles, only classes directly applied to the node.
  */
 dojo.html.hasClass = function(node, classname){
-	return dojo.lang.inArray(dojo.html.getClasses(node), classname);
+	var classes=dojo.html.getClasses(node);
+	for(var i = 0; i < classes.length; i++){
+		if (classes[i]==classname){
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -164,9 +168,6 @@ dojo.html.getComputedStyle = function(node, cssSelector, inValue){
 
 dojo.html.getStyleProperty = function(node, cssSelector){
 	node = dojo.byId(node);
-	// FIXME: should we use node.style.getPropertyValue over style[property]?
-	// style[property] works in all (modern) browsers, getPropertyValue is W3 but not supported in IE
-	// FIXME: what about runtimeStyle?
 	return (node && node.style ? node.style[dojo.html.toCamelCase(cssSelector)] : undefined);
 }
 
@@ -197,7 +198,7 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 		var nameValue=splittedAttribs[i].split(":"); 
 		var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
 		var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
-		if(dojo.lang.has(methodMap,name)) { 
+		if(methodMap[name]) { 
 			methodMap[name](node,value); 
 		} else { 
 			node.style[dojo.style.toCamelCase(name)]=value; 
@@ -207,7 +208,7 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 
 dojo.html.copyStyle = function(target, source){
 	// work around for opera which doesn't have cssText, and for IE which fails on setAttribute 
-	if(dojo.lang.isUndefined(source.style.cssText)){ 
+	if(!source.style.cssText){ 
 		target.setAttribute("style", source.getAttribute("style")); 
 	}else{
 		target.style.cssText = source.style.cssText; 
@@ -218,7 +219,6 @@ dojo.html.copyStyle = function(target, source){
 dojo.html.getUnitValue = function(node, cssSelector, autoIsZero){
 	var s = dojo.html.getComputedStyle(node, cssSelector);
 	if((!s)||((s == 'auto')&&(autoIsZero))){ return { value: 0, units: 'px' }; }
-	if(dojo.lang.isUndefined(s)){return dojo.html.getUnitValue.bad;}
 	// FIXME: is regex inefficient vs. parseInt or some manual test? 
 	var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
 	if (!match){return dojo.html.getUnitValue.bad;}
