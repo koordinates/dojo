@@ -18,6 +18,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	isContainer: true,
 
 	// remote loading options
+	adjustPaths: true,
 	href: "",
 	extractContent: true,
 	parseContent: true,
@@ -396,7 +397,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			this.onLoad();
 		}else{
 			// need to run splitAndFixPaths? ie. manually setting content
-			 if(!data.xml){
+			 if((!data.xml)&&(this.adjustPaths)){
 				data = this.splitAndFixPaths(data);
 			}
 			if(this.extractContent) {
