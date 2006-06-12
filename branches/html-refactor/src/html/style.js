@@ -16,7 +16,7 @@ dojo.html.getClass = function(node){
 	}else if(dojo.html.hasAttribute(node, "class")){
 		cs = dojo.html.getAttribute(node, "class");
 	}
-	return dojo.string.trim(cs);
+	return cs.replace(/^\s+|\s+$/g, "");
 }
 
 /**
@@ -46,7 +46,7 @@ dojo.html.hasClass = function(node, classname){
  */
 dojo.html.prependClass = function(node, classStr){
 	classStr += " " + dojo.html.getClass(node);
-	return dojo.html.setClass(node, classStr);
+	return dojo.html.setClass(node, classStr + " " + dojo.html.getClass(node));
 }
 
 /**
@@ -57,7 +57,7 @@ dojo.html.addClass = function(node, classStr){
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
 	}
-	classStr = dojo.string.trim(dojo.html.getClass(node) + " " + classStr);
+	classStr = (dojo.html.getClass(node) + " " + classStr).replace(/^\s+|\s+$/g,"");
 	return dojo.html.setClass(node, classStr);
 }
 
@@ -89,7 +89,7 @@ dojo.html.setClass = function(node, classStr){
  * true or false indicating success or failure.
  */ 
 dojo.html.removeClass = function(node, classStr, allowPartialMatches){
-	var classStr = dojo.string.trim(new String(classStr));
+	var classStr = String(classStr).replace(/^\s+|\s+$/g,"");
 
 	try{
 		var cs = dojo.html.getClasses(node);
