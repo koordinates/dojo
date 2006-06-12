@@ -11,61 +11,46 @@ dojo.widget.defineWidget(
 		widgetType: "Checkbox",
 	
 		templatePath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.html'),
-
-		srcOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
-		srcOff: dojo.uri.dojoUri('src/widget/templates/check_off.gif'),
-		srcDisabledOn: dojo.uri.dojoUri('src/widget/templates/check_disabled_on.gif'),
-		srcDisabledOff: dojo.uri.dojoUri('src/widget/templates/check_disabled_off.gif'),
-		srcHoverOn: dojo.uri.dojoUri('src/widget/templates/check_hover_on.gif'),
-		srcHoverOff: dojo.uri.dojoUri('src/widget/templates/check_hover_off.gif'),
-
-		imgSrc: null,
+		templateCssPath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.css'),
 
 		// parameters
 		disabled: "enabled",
 		name: "",
 		checked: false,
-		tabIndex: -1,
+		tabIndex: "",
 
-		imgNode: null,
 		inputNode: null,
 
 		postMixInProperties: function(){
-			// set correct source for image before instantiating template
-			this._updateImgSrc();
+			// set the variables referenced by the template
+			this.disabledStr = this.disabled=="enabled" ? "" : "disabled";
 		},
 
-		onMouseUp: function(){
+		fillInTemplate: function(){
+			this._setClassStr();
+		},
+
+		onClick: function(e){
 			if(this.disabled == "enabled"){
 				this.checked = !this.checked;
 				this.inputNode.checked = this.checked;
-				this._updateImgSrc();
+				this._setClassStr();
 			}
+			e.preventDefault();
 		},
 
-		onMouseOver: function(){
-			this.hover=true;
-			this._updateImgSrc();
+		keyPress: function(e){
+			var k = dojo.event.browser.keys;
+			if(e.keyCode==k.KEY_SPACE || e.charCode==k.KEY_SPACE){
+	 			this.onClick(e);
+	 		}
 		},
 
-		onMouseOut: function(){
-			this.hover=false;
-			this._updateImgSrc();
-		},
-
-		_updateImgSrc: function(){
-			if(this.disabled == "enabled"){
-				if(this.hover){
-					this.imgSrc = this.checked ? this.srcHoverOn : this.srcHoverOff;
-				}else{
-					this.imgSrc = this.checked ? this.srcOn : this.srcOff;
-				}
-			}else{
-				this.imgSrc = this.checked ? this.srcDisabledOn : this.srcDisabledOff;
-			}
-			if(this.imgNode){
-				this.imgNode.src = this.imgSrc;
-			}
+		// set CSS class string according to checked/unchecked and disabled/enabled state
+		_setClassStr: function(){
+			var prefix = (this.disabled == "enabled" ? "dojoHtmlCheckbox" : "dojoHtmlCheckboxDisabled");
+			var state = prefix + (this.checked ? "On" : "Off");
+			dojo.html.setClass(this.domNode, "dojoHtmlCheckbox " + state);
 		}
 	}
 );

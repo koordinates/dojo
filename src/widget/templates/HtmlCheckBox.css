@@ -1,0 +1,30 @@
+.dojoHtmlCheckbox {
+	border: 0px;
+	text-decoration: none;
+
+	width: 16px;
+	height: 16px;
+	display: -moz-inline-box;
+	display: inline-block;
+
+	margin-right: 5px;
+}
+
+.dojoHtmlCheckboxOn {
+	background : url(check_on.gif) no-repeat left top;
+}
+.dojoHtmlCheckboxOff {
+	background : url(check_off.gif) no-repeat left top;
+}
+.dojoHtmlCheckboxDisabledOn {
+	background : url(check_disabled_on.gif) no-repeat left top;
+}
+.dojoHtmlCheckboxDisabledOff {
+	background : url(check_disabled_off.gif) no-repeat left top;
+}
+.dojoHtmlCheckboxOn:hover {
+	background : url(check_hover_on.gif) no-repeat left top;
+}
+.dojoHtmlCheckboxOff:hover {
+	background : url(check_hover_off.gif) no-repeat left top;
+}

@@ -1,6 +1,6 @@
-<span>
-	<input type="checkbox" name="${this.name}" checked="${this.checked}" tabIndex="${this.tabIndex}" style="display: none"
+<a class='dojoHtmlCheckbox' tabIndex="${this.tabIndex}" href="#" ${this.disabledStr}
+	dojoAttachEvent="onClick;keyPress">
+	<input type="checkbox" name="${this.name}" checked="${this.checked}" style="display: none"
 		dojoAttachPoint="inputNode">
-	<img src='${this.imgSrc}' class='dojoHtmlCheckbox'
-		dojoAttachPoint="imgNode" dojoAttachEvent="onMouseUp;onMouseOver;onMouseOut">
-</span>
+	&nbsp;
+</a>
