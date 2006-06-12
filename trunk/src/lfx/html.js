@@ -273,7 +273,7 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 				left = (pos == 'absolute' ? node.offsetLeft : parseInt(dojo.style.getComputedStyle(node, 'left')) || 0);
 
 				if (!dojo.lang.inArray(['absolute', 'relative'], pos)) {
-					var ret = dojo.style.abs(innerNode);
+					var ret = dojo.style.abs(innerNode, true);
 					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
 					top = ret.y;
 					left = ret.x;
@@ -321,7 +321,7 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 				left = (pos == 'absolute' ? node.offsetLeft : parseInt(dojo.style.getComputedStyle(node, 'left')) || 0);
 
 				if (!dojo.lang.inArray(['absolute', 'relative'], pos)) {
-					var ret = dojo.style.abs(innerNode);
+					var ret = dojo.style.abs(innerNode, true);
 					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
 					top = ret.y;
 					left = ret.x;
