@@ -1,6 +1,6 @@
 dojo.provide("dojo.html.style");
 
-dojo.require("dojo.html.*");
+dojo.require("dojo.lang.common");
 
 /**
  * Returns the string value of the list of CSS classes currently assigned
@@ -123,116 +123,86 @@ dojo.html.replaceClass = function(node, newClass, oldClass) {
 	dojo.html.addClass(node, newClass);
 }
 
-// Enum type for getElementsByClass classMatchType arg:
-dojo.html.classMatchType = {
-	ContainsAll : 0, // all of the classes are part of the node's class (default)
-	ContainsAny : 1, // any of the classes are part of the node's class
-	IsOnly : 2 // only all of the classes are part of the node's class
+dojo.html.toCamelCase = function(selector){
+	var arr = selector.split('-'), cc = arr[0];
+	for(var i = 1; i < arr.length; i++) {
+		cc += arr[i].charAt(0).toUpperCase() + arr[i].substring(1);
+	}
+	return cc;
 }
 
+dojo.html.toSelectorCase = function(selector){
+	return selector.replace(/([A-Z])/g, "-$1" ).toLowerCase();
+}
 
-/**
- * Returns an array of nodes for the given classStr, children of a
- * parent, and optionally of a certain nodeType
- */
-dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType, useNonXpath){
-	parent = dojo.byId(parent) || document;
-	var classes = classStr.split(/\s+/g);
-	var nodes = [];
-	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
-	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
-	var candidateNodes = [];
-	
-	if(!useNonXpath && document.evaluate) { // supports dom 3 xpath
-		var xpath = "//" + (nodeType || "*") + "[contains(";
-		if(classMatchType != dojo.html.classMatchType.ContainsAny){
-			xpath += "concat(' ',@class,' '), ' " +
-			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
-			" ')]";
-		}else{
-			xpath += "concat(' ',@class,' '), ' " +
-			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
-			" ')]";
+dojo.html.getComputedStyle = function(node, cssSelector, inValue){
+	node = dojo.byId(node);
+	// cssSelector may actually be in camel case, so force selector version
+	var cssSelector = dojo.html.toSelectorCase(cssSelector);
+	var property = dojo.html.toCamelCase(cssSelector);
+	if(!node || !node.style){
+		return inValue;
+	}else if(document.defaultView){ // W3, gecko, KHTML
+		try{			
+			var cs = document.defaultView.getComputedStyle(node, "");
+			if (cs){ 
+				return cs.getPropertyValue(cssSelector);
+			} 
+		}catch(e){ // reports are that Safari can throw an exception above
+			if (node.style.getPropertyValue){ // W3
+				return node.style.getPropertyValue(cssSelector);
+			}else return inValue;
 		}
-		var xpathResult = document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
-		var result = xpathResult.iterateNext();
-		while(result){
-			try{
-				candidateNodes.push(result);
-				result = xpathResult.iterateNext();
-			}catch(e){ break; }
-		}
-		return candidateNodes;
+	}else if(node.currentStyle){ // IE
+		return node.currentStyle[property];
+	}if(node.style.getPropertyValue){ // W3
+		return node.style.getPropertyValue(cssSelector);
 	}else{
-		if(!nodeType){
-			nodeType = "*";
-		}
-		candidateNodes = parent.getElementsByTagName(nodeType);
-
-		var node, i = 0;
-		outer:
-		while(node = candidateNodes[i++]){
-			var nodeClasses = dojo.html.getClasses(node);
-			if(nodeClasses.length == 0){ continue outer; }
-			var matches = 0;
-	
-			for(var j = 0; j < nodeClasses.length; j++){
-				if(reClass.test(nodeClasses[j])){
-					if(classMatchType == dojo.html.classMatchType.ContainsAny){
-						nodes.push(node);
-						continue outer;
-					}else{
-						matches++;
-					}
-				}else{
-					if(classMatchType == dojo.html.classMatchType.IsOnly){
-						continue outer;
-					}
-				}
-			}
-	
-			if(matches == classes.length){
-				if(	(classMatchType == dojo.html.classMatchType.IsOnly)&&
-					(matches == nodeClasses.length)){
-					nodes.push(node);
-				}else if(classMatchType == dojo.html.classMatchType.ContainsAll){
-					nodes.push(node);
-				}
-			}
-		}
-		return nodes;
+		return inValue;
 	}
 }
 
-dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
+dojo.html.getStyleProperty = function(node, cssSelector){
+	node = dojo.byId(node);
+	// FIXME: should we use node.style.getPropertyValue over style[property]?
+	// style[property] works in all (modern) browsers, getPropertyValue is W3 but not supported in IE
+	// FIXME: what about runtimeStyle?
+	return (node && node.style ? node.style[dojo.html.toCamelCase(cssSelector)] : undefined);
+}
 
-dojo.html.setActiveStyleSheet = function(title){
-	var i = 0, a, els = document.getElementsByTagName("link");
-	while (a = els[i++]) {
-		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
-			a.disabled = true;
-			if (a.getAttribute("title") == title) { a.disabled = false; }
-		}
+dojo.html.getStyle = function(node, cssSelector){
+	var value = dojo.html.getStyleProperty(node, cssSelector);
+	return (value ? value : dojo.html.getComputedStyle(node, cssSelector));
+}
+
+dojo.html.setStyle = function(node, cssSelector, value){
+	node = dojo.byId(node);
+	if(node && node.style){
+		var camelCased = dojo.html.toCamelCase(cssSelector);
+		node.style[camelCased] = value;
 	}
 }
 
-dojo.html.getActiveStyleSheet = function(){
-	var i = 0, a, els = document.getElementsByTagName("link");
-	while (a = els[i++]) {
-		if (a.getAttribute("rel").indexOf("style") != -1 &&
-			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
-	}
-	return null;
-}
+dojo.html.setStyleAttributes = function(node, attributes) { 
+	var methodMap={ 
+		"opacity":dojo.style.setOpacity,
+		"content-height":dojo.style.setContentHeight,
+		"content-width":dojo.style.setContentWidth,
+		"outer-height":dojo.style.setOuterHeight,
+		"outer-width":dojo.style.setOuterWidth 
+	} 
 
-dojo.html.getPreferredStyleSheet = function(){
-	var i = 0, a, els = document.getElementsByTagName("link");
-	while (a = els[i++]) {
-		if(a.getAttribute("rel").indexOf("style") != -1
-			&& a.getAttribute("rel").indexOf("alt") == -1
-			&& a.getAttribute("title")) { return a.getAttribute("title"); }
-	}
-	return null;
+	var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
+	for(var i=0; i<splittedAttribs.length; i++){ 
+		var nameValue=splittedAttribs[i].split(":"); 
+		var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
+		var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
+		if(dojo.lang.has(methodMap,name)) { 
+			methodMap[name](node,value); 
+		} else { 
+			node.style[dojo.style.toCamelCase(name)]=value; 
+		} 
+	} 
 }
 
 dojo.html.copyStyle = function(target, source){
@@ -243,4 +213,31 @@ dojo.html.copyStyle = function(target, source){
 		target.style.cssText = source.style.cssText; 
 	}
 	dojo.html.addClass(target, dojo.html.getClass(source));
+}
+
+dojo.html.getUnitValue = function(node, cssSelector, autoIsZero){
+	var s = dojo.html.getComputedStyle(node, cssSelector);
+	if((!s)||((s == 'auto')&&(autoIsZero))){ return { value: 0, units: 'px' }; }
+	if(dojo.lang.isUndefined(s)){return dojo.html.getUnitValue.bad;}
+	// FIXME: is regex inefficient vs. parseInt or some manual test? 
+	var match = s.match(/(\-?[\d.]+)([a-z%]*)/i);
+	if (!match){return dojo.html.getUnitValue.bad;}
+	return { value: Number(match[1]), units: match[2].toLowerCase() };
+}
+dojo.html.getUnitValue.bad = { value: NaN, units: '' };
+
+dojo.html.getPixelValue = function(node, cssSelector, autoIsZero){
+	var result = dojo.html.getUnitValue(node, cssSelector, autoIsZero);
+	// FIXME: there is serious debate as to whether or not this is the right solution
+	if(isNaN(result.value)){ return 0; }
+	// FIXME: code exists for converting other units to px (see Dean Edward's IE7) 
+	// but there are cross-browser complexities
+	if((result.value)&&(result.units != 'px')){ return NaN; }
+	return result.value;
+}
+
+dojo.html.setPositivePixelValue = function(node, selector, value){
+	if(isNaN(value)){return false;}
+	node.style[selector] = Math.max(0, value) + 'px'; 
+	return true;
 }

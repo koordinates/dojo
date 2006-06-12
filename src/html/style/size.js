@@ -1,5 +1,5 @@
 dojo.provide("dojo.html.style.size");
-dojo.require("dojo.html.style.common");
+dojo.require("dojo.html.style");
 
 dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
 	var total = 0;
