@@ -1,8 +1,8 @@
 dojo.provide("dojo.lfx.html");
 
 dojo.require("dojo.lfx.Animation");
-dojo.require("dojo.html.style.opacity");
 dojo.require("dojo.html.style.display");
+dojo.require("dojo.html.style.color");
 dojo.require("dojo.html.style.size");
 dojo.require("dojo.html.style.position");
 
