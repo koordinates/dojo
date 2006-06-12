@@ -11,42 +11,11 @@
 		};
  	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
-	<!-- <script type="text/javascript" src="../../src/widget/html/Slider.js"></script> -->
-  <script type="text/javascript">
-    dojo.require ("dojo.widget.html.Slider");
-
-    function init () {
-      var widget = dojo.widget.byId ("horizontalSlider");
-      dojo.debug ("widget = " + widget + " x = " + widget.getValueX ());
-
-      dojo.event.connect (widget.handleMove, "onDragMove", function (e) {
-        dojo.debug ("SliderWidgetTest#onDragMove - horizontal - widget.getValueX = "
-                    + widget.getValueX ());
-        document.getElementById ('horizontalSliderValue').value = widget.getValueX ();
-      });
-      dojo.event.connect (widget.domNode, "onclick", function (e) {
-        dojo.debug ("SliderWidgetTest#onClick - horizontal - widget.getValueX = "
-                    + widget.getValueX ());
-        document.getElementById ('horizontalSliderValue').value = widget.getValueX ();
-      });
-
-      var widget2 = dojo.widget.byId ("verticalSlider");
-      dojo.debug ("widget2 = " + widget2 + " y = " + widget2.getValueY ());
-      dojo.event.connect (widget2.handleMove, "onDragEnd", function (e) {
-        dojo.debug ("SliderWidgetTest#onDragEnd - vertical - widget2.getValueY = "
-                    + widget2.getValueY ());
-        document.getElementById ('verticalSliderValue').value = widget2.getValueY ();
-      });
-      dojo.event.connect (widget2.domNode, "onclick", function (e) {
-        dojo.debug ("SliderWidgetTest#onClick - vertical - widget2.getValueY = "
-                    + widget2.getValueY ());
-        document.getElementById ('verticalSliderValue').value = widget2.getValueY ();
-      });
-    };
-
-    dojo.event.connect (dojo, "loaded", "init");
-  </script>
+	<script type="text/javascript">
+		dojo.require ("dojo.widget.html.Slider");
+	</script>
 </head>
+
 <body>
 <h1>Slider Widget Demo</h1>
 This page demos the three types of slider widgets, with slightly different behaviours.
@@ -57,19 +26,42 @@ This page demos the three types of slider widgets, with slightly different behav
 <tr><td>vertical</td><td>0..20</td><td>update text field</td><td>&nbsp;</td><td>update text field</td></tr>
 <tr><td>box</td><td>0..10</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
 </tbody>
+</table>
 
 <table>
-<tr><td></td><td><div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" valuesX="20" valuesY="0"></div></td><td rowspan="2" valign="middle"><div id="boxSlider" dojoType="Slider"></div></td></tr>
-<tr><td><div id="verticalSlider" dojoType="SliderVertical" valuesX="0" valuesY="10" snapToGrid="true"></div></td></td></tr>
+<tr><td></td><td>
+<div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" value="20"
+	activeDrag="true"
+   	onValueChanged="dojo.byId('horizontalSliderValue').value = arguments[0];"
+   	>
+</div>
+</td>
+<td rowspan="2" valign="middle">
+<div id="boxSlider" dojoType="Slider"
+	onValueChanged="dojo.byId('boxX').value = arguments[0]; dojo.byId('boxY').value = arguments[1];">
+</div>
+</td></tr>
+<tr><td>
+<div id="verticalSlider" dojoType="SliderVertical" value="5" snapToGrid="true"
+  	onValueChanged="dojo.byId('verticalSliderValue').value = arguments[0];"
+   >
+</div>
+</td></td></tr>
 </table>
 
 
-<p>Horizontal Slider Value:
-   <input id="horizontalSliderValue" name="horizontalSliderValue" value="0"/> 
-   <button onclick="dojo.widget.byId ('horizontalSlider').setValue (document.getElementById ('horizontalSliderValue').value)">set</button> <i>(updates when slider handle is moved)</i><br />
+<p>
+Horizontal Slider Value:
+   <input
+   	id="horizontalSliderValue" name="horizontalSliderValue" value="0"/> 
+   <button onclick="dojo.widget.byId ('horizontalSlider').setValue (dojo.byId('horizontalSliderValue').value)">set</button> <i>(updates when slider handle is moved)</i><br />
 Vertical Slider Value:
    <input id="verticalSliderValue" name="verticalSliderValue" value="0"/> 
-   <button onclick="dojo.widget.byId ('verticalSlider').setValue (document.getElementById ('verticalSliderValue').value)">set</button> <i>(updates when slider handle drag ends)</i></p>
+   <button onclick="dojo.widget.byId ('verticalSlider').setValue (dojo.byId('verticalSliderValue').value)">set</button> <i>(updates when slider handle drag ends)</i><br />
+Box Slider Value:
+   <input id="boxX" name="boxX" value="0"/> 
+   <input id="boxY" name="boxY" value="0"/> 
+</p>
 <p><u>Debug Messages</u></p>
 
 </body>
