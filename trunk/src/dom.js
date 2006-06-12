@@ -482,7 +482,6 @@ dojo.dom.isTag = function(node /* ... */) {
  * 							"hs:level", 3);
  */
 dojo.dom.setAttributeNS = function(elem, namespaceURI, attrName, attrValue){
-	debug("dojo.dom.setAttributeNS");
 	if(elem == null || dojo.lang.isUndefined(elem)){
 		dojo.raise("No element given to dojo.dom.setAttributeNS");
 	}
