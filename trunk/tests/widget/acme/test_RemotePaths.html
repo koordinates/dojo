@@ -16,35 +16,28 @@
 	dojo.require("dojo.event.*");
 
 //--------------------------------test setting private vars to execScope ----------------------------
+
+	//set up event listeners
 	var connected = false;
+	function connect(){
+		var dec = connected ? dojo.event.disconnect : dojo.event.connect;
+		dojo.debug((connected ? "disconnect" : "connect")+" eventlisteners");
+		connected = true;
+
+		// connect to links using the new array syntax
+		dec(["https", "http", "ftps", "ftp", "news", "file", "mailto","javascript", "relative"],
+			"onclick",
+			obj,
+			"isPathFixed");
+
+		// connect to toggle clicks
+		dec(dojo.byId("inFileToggler"), "onclick", obj, "inFileScriptToggle");
+		dec(dojo.byId("extToggler"), "onclick", obj, "extScriptToggle");
+	}
 
 	// Due to bug #659, event disconnect on single function does not work
 	// as a workaround construct a placeholder for our connects 
-	var workAround = {
-		//set up or tear down event listeners
-		connect: function(){
-			var connType = connected ? "disconnect": "connect";
-			dojo.debug(connType+" eventlisteners");
-
-			if(connected){
-				// disconnect event listeners
-				dojo.event.disconnect(_container_, "onLoad", workAround, 'connect');
-				dojo.event.disconnect(_container_, "onUnLoad", workAround, 'connect');
-			}
-
-			connected = true;
-
-			// connect to links using the new array syntax
-			dojo.event[connType](["https", "http", "ftps", "ftp", "news", "file", "mailto","javascript", "relative"],
-								"onclick",
-								workAround,
-								"isPathFixed");
-	
-			// connect to toggle clicks
-			dojo.event[connType](dojo.byId("inFileToggler"), "onclick", workAround, "inFileScriptToggle");
-			dojo.event[connType](dojo.byId("extToggler"), "onclick", workAround, "extScriptToggle");
-		},
-
+	var obj = {
 		// toggle 
 		inFileScriptToggle: function(){
 			var a = document.getElementById("inFileToggler");
@@ -68,6 +61,7 @@
 	
 			if(node.id=="file" || node.id=="javascript"){
 				href = href.toLowerCase().replace(/%20/g, ' '); // FF and Opera replaces Document to document
+				href = href.substr(0,7) + href.substr(8 ,href.length).replace(/\//g, '\\'); // IE replaces to / in wine
 				shouldBe = shouldBe.toLowerCase();
 			}else if(node.id=="relative"){
 				// translate path to be relative to this folder
@@ -86,7 +80,7 @@
 //-------------------------- test setting objects to global scope -------------------------------------------
 	// this function gets set onto window object, notice the absence of var!
 	globalVar = "Hello from a global string!";
-	globalFunction = function(){
+	globalFunction = function(){ // same as window.globalFunction
 		alert(globalVar);
 	}
 
@@ -108,10 +102,10 @@
 
 //----------------------------- set up onload and onUnLoad listeners --------------------------------------
 if(typeof _container_ == 'undefined'){ // browsing page as standalone
-	dojo.addOnLoad(workAround.connect);
+	dojo.addOnLoad(obj.connect);
 }else{
-	dojo.event.connect(_container_, "onLoad", workAround, "connect");
-	dojo.event.connect(_container_, "onUnLoad", workAround, "connect");
+	_container_.addOnLoad(connect);
+	_container_.addOnUnLoad(connect);
 }
 
 </script>

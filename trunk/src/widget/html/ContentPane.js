@@ -9,6 +9,8 @@ dojo.require("dojo.string.extras");
 dojo.require("dojo.style");
 
 dojo.widget.html.ContentPane = function(){
+	this._onLoadStack = [];
+	this._onUnLoadStack = [];
 	dojo.widget.HtmlWidget.call(this);
 }
 dojo.inherits(dojo.widget.html.ContentPane, dojo.widget.HtmlWidget);
@@ -52,7 +54,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 							// by remote content, used when we clean up for new content
 
 	_callOnUnLoad: false,		// used by setContent and _handleDefults, makes sure onUnLoad is only called once
-
 
 	postCreate: function(args, frag, parentComp){
 		if ( this.handler != "" ){
@@ -111,7 +112,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				if(type == "load") {
 					self.onDownloadEnd.call(self, url, data);
 				} else {
-					// works best when from a live server instead of from file system
+					// works best when from a live server instead of from file system 
 					self._handleDefaults.call(self, "Error loading '" + url + "' (" + e.status + " "+  e.statusText + ")", "onDownloadError");
 					self.onLoad();
 				}
@@ -120,11 +121,51 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	},
 
 	// called when setContent is finished
-	onLoad: function(e){ /*stub*/ },
+	onLoad: function(e){
+		this._runStack("_onLoadStack");
+	},
 
 	// called before old content is cleared
-	onUnLoad: function(e){ 
+	onUnLoad: function(e){
+		this._runStack("_onUnLoadStack");
 		this.scriptScope = null;
+	},
+
+	_runStack: function(stName){
+		var st = this[stName]; var err = "";
+		for(var i = 0;i < st.length; i++){
+			try{
+				st[i].call(this.scriptScope);
+			}catch(e){ 
+				err += "\n"+st[i]+" failed: "+e.description;
+			}
+		}
+		this[stName] = [];
+
+		if(err.length){
+			var name = (stName== "_onLoadStack") ? "addOnLoad" : "addOnUnLoad";
+			this._handleDefaults(name+" failure\n "+err, "onExecError", true);
+		}
+	},
+
+	addOnLoad: function(obj, func){
+		// summary
+		// 	same as to dojo.addOnLoad but does not take "function_name" as a string
+		this._pushOnStack(this._onLoadStack, obj, func);
+	},
+
+	addOnUnLoad: function(obj, func){
+		// summary
+		// 	same as to dojo.addUnOnLoad but does not take "function_name" as a string
+		this._pushOnStack(this._onUnLoadStack, obj, func);
+	},
+
+	_pushOnStack: function(stack, obj, func){
+		if(typeof func == 'undefined') {
+			stack.push(obj);
+		}else{
+			stack.push(function(){ obj[func](); });
+		}
 	},
 
 	destroy: function(){

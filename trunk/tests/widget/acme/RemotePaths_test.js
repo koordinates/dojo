@@ -1,6 +1,6 @@
 // needed in test_RemotePaths.html
 // needs executescripts true
-	workAround.extScriptToggle = function(){
+	obj.extScriptToggle = function(){
 		var a = document.getElementById("extToggler");
 		var txt = a.firstChild.nodeValue;
 		if(txt == "Ext. js file scripttest, Released"){
