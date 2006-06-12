@@ -1,6 +1,6 @@
+dojo.require("dojo.html.style");
 dojo.provide("dojo.html.style.display");
 
-dojo.require("dojo.html.style");
 dojo.require("dojo.lang.common");
 
 dojo.html._toggle = function(node, tester, setter){

@@ -3,7 +3,6 @@ dojo.provide("dojo.lfx.html");
 dojo.require("dojo.lfx.Animation");
 dojo.require("dojo.html.style.display");
 dojo.require("dojo.html.style.color");
-dojo.require("dojo.html.style.size");
 dojo.require("dojo.html.style.position");
 
 dojo.lfx.html._byId = function(nodes){
@@ -271,13 +270,13 @@ dojo.lfx.html.slideTo = function(nodes, coords, duration, easing, callback){
 		var init = (function(){
 			var innerNode = node;
 			return function(){
-				var pos = dojo.style.getComputedStyle(innerNode, 'position');
-				top = (pos == 'absolute' ? node.offsetTop : parseInt(dojo.style.getComputedStyle(node, 'top')) || 0);
-				left = (pos == 'absolute' ? node.offsetLeft : parseInt(dojo.style.getComputedStyle(node, 'left')) || 0);
+				var pos = dojo.html.getComputedStyle(innerNode, 'position');
+				top = (pos == 'absolute' ? node.offsetTop : parseInt(dojo.html.getComputedStyle(node, 'top')) || 0);
+				left = (pos == 'absolute' ? node.offsetLeft : parseInt(dojo.html.getComputedStyle(node, 'left')) || 0);
 
 				if (!dojo.lang.inArray(['absolute', 'relative'], pos)) {
-					var ret = dojo.style.abs(innerNode, true);
-					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
+					var ret = dojo.html.abs(innerNode, true);
+					dojo.html.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
 					top = ret.y;
 					left = ret.x;
 				}
@@ -319,13 +318,13 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 		var init = (function(){
 			var innerNode = node;
 			return function(){
-				var pos = dojo.style.getComputedStyle(innerNode, 'position');
-				top = (pos == 'absolute' ? node.offsetTop : parseInt(dojo.style.getComputedStyle(node, 'top')) || 0);
-				left = (pos == 'absolute' ? node.offsetLeft : parseInt(dojo.style.getComputedStyle(node, 'left')) || 0);
+				var pos = dojo.html.getComputedStyle(innerNode, 'position');
+				top = (pos == 'absolute' ? node.offsetTop : parseInt(dojo.html.getComputedStyle(node, 'top')) || 0);
+				left = (pos == 'absolute' ? node.offsetLeft : parseInt(dojo.html.getComputedStyle(node, 'left')) || 0);
 
 				if (!dojo.lang.inArray(['absolute', 'relative'], pos)) {
-					var ret = dojo.style.abs(innerNode, true);
-					dojo.style.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
+					var ret = dojo.html.abs(innerNode, true);
+					dojo.html.setStyleAttributes(innerNode, "position:absolute;top:"+ret.y+"px;left:"+ret.x+"px;");
 					top = ret.y;
 					left = ret.x;
 				}
@@ -359,7 +358,7 @@ dojo.lfx.html.slideBy = function(nodes, coords, duration, easing, callback){
 dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	start = dojo.byId(start);
 	endNode = dojo.byId(endNode);
-	var startCoords = dojo.html.toCoordinateArray(start, true);
+	var startCoords = dojo.html.toCoordinateObject(start, true);
 	var outline = document.createElement("div");
 	dojo.html.copyStyle(outline, endNode);
 	with(outline.style){
@@ -372,17 +371,17 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		visibility = "hidden";
 		display = "block";
 	}
-	var endCoords = dojo.html.toCoordinateArray(endNode, true);
+	var endCoords = dojo.html.toCoordinateObject(endNode, true);
 	with(endNode.style){
 		display = "none";
 		visibility = "visible";
 	}
 	
 	var anim = new dojo.lfx.propertyAnimation(outline, [
-		{ property: "height", start: startCoords[3], end: endCoords[3] },
-		{ property: "width", start: startCoords[2], end: endCoords[2] },
-		{ property: "top", start: startCoords[1], end: endCoords[1] },
-		{ property: "left", start: startCoords[0], end: endCoords[0] },
+		{ property: "height", start: startCoords.h, end: endCoords.h },
+		{ property: "width", start: startCoords.w, end: endCoords.w },
+		{ property: "top", start: startCoords.y, end: endCoords.y },
+		{ property: "left", start: startCoords.x, end: endCoords.x },
 		{ property: "opacity", start: 0.3, end: 1.0 }
 	], duration, easing);
 	
@@ -403,8 +402,8 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	startNode = dojo.byId(startNode);
 	end = dojo.byId(end);
-	var startCoords = dojo.html.toCoordinateArray(startNode, true);
-	var endCoords = dojo.html.toCoordinateArray(end, true);
+	var startCoords = dojo.html.toCoordinateObject(startNode, true);
+	var endCoords = dojo.html.toCoordinateObject(end, true);
 
 	var outline = document.createElement("div");
 	dojo.html.copyStyle(outline, startNode);
@@ -416,10 +415,10 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	document.body.appendChild(outline);
 
 	var anim = new dojo.lfx.propertyAnimation(outline, [
-		{ property: "height", start: startCoords[3], end: endCoords[3] },
-		{ property: "width", start: startCoords[2], end: endCoords[2] },
-		{ property: "top", start: startCoords[1], end: endCoords[1] },
-		{ property: "left", start: startCoords[0], end: endCoords[0] },
+		{ property: "height", start: startCoords.h, end: endCoords.h },
+		{ property: "width", start: startCoords.w, end: endCoords.w },
+		{ property: "top", start: startCoords.y, end: endCoords.y },
+		{ property: "left", start: startCoords.x, end: endCoords.x },
 		{ property: "opacity", start: 1.0, end: 0.3 }
 	], duration, easing);
 	
