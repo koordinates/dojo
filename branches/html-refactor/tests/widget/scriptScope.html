@@ -8,34 +8,23 @@
 		+"	var connected = false;"
 		+"	var obj = { "
 		+"		click: function(evt){"
+		+"			evt.preventDefault();"
 		+"			var node = evt.currentTarget;"
-		+"		},"
-		+"		hook: function(){"
-		+"			var connectType = 'connect';"
-		+"			if(connected){"
-		+"				/*dojo.debug('disconnecting event from '+_container_.widgetId);*/"
-		+"				connectType = 'disconnect';"
-		+"				dojo.event.disconnect(_container_, 'onLoad', obj, 'hook');"
-		+"				dojo.event.disconnect(_container_, 'onUnLoad', obj, 'hook');"
-		+"			}else{"
-		+"	 			/*dojo.debug('connecting event to links in '+_container_.widgetId);*/"
-		+"			}"
-		+"			connected = true;"
-		+"			dojo.event[connectType](['_paths','_mem'], 'onclick', obj, 'click');"
+		+"			alert('you clicked: '+node.id);"
 		+"		}"
 		+"	};"
-		+"	dojo.event.connect(_container_, 'onLoad', obj, 'hook');"
-		+"	dojo.event.connect(_container_, 'onUnLoad', obj, 'hook');"
+		+"	_container_.addOnLoad(function(){dojo.event.connect(['_paths','_mem'], 'onclick', obj, 'click');});"
+		+"	_container_.addOnUnLoad(function(){ dojo.event.disconnect(['_paths','_mem'], 'onclick', obj, 'click');});"
 		+"</scr"+"ipt>"
-		+"<a href='acme/test_RemotePaths.html' id='_paths'>Paths</a><br/>"
-		+"<a href='memorytest' id='_mem'>Memory leak (check manually if browser eats resources)</a>";
+		+"Memory leak (check manually if browser eats resources)<br>"
+		+"<a href='acme/test_RemotePaths.html' id='_paths'>stub link, Paths</a><br/>"
+		+"<a href='memorytest' id='_mem'>stub link, Mem</a>";
 
 		var pane = dojo.widget.byId('docpane');
 		var i = 0;
 		for(; i<100; i++){
 			pane.setContent(cont);
 		}
-		pane.setContent("");
 		dojo.debug("set and clear content with event connects in each "+i+" times");
 	}
 
@@ -61,25 +50,21 @@
 
 		var cont = "<scr"+"ipt>"
 		+"dojo.require('dojo.widget.Button');"
-		+"this.onUnLoad = function(){"
-		+"	dojo.event.disconnect(_container_, 'onLoad', this, 'onLoad');"
-		+"	dojo.event.disconnect(_container_, 'onUnLoad', this, 'onUnLoad');"
-		+"};"
-		+"this.onLoad = function(){"
-		+"	/* test that 'this' is isolated to execScope and is not a ptr to window*/"
-		+"	_container_.domNode.appendChild(document.createTextNode('this.scriptScope defined before='+!!this.definedBefore+'\\n should always be false, regardless of number of simultanious contentpanes'));"
+		+"_container_.addOnLoad(function(){"
+		+"	/* test that 'this' is isolated to scriptScope and is not a ptr to window*/"
+		+"	var d = _container_.domNode; var p = document.createElement('p');"
+		+"	p.appendChild(document.createTextNode('this.scriptScope defined before='+(!!this.definedBefore)+'"
+		+"		s should always be false, regardless of number of simultanious contentpanes'));"
+		+"	d.appendChild(p);p.setAttribute('style', 'font-weight: bold;color: '+(this.definedBefore ? 'red': 'black'));"
 		+"	this.definedBefore = true;"
-		+"};"
+		+"});"
 		+"this.destroyMe = function(){"
 		+"	dojo.widget.byId('linkPane').scriptScope.destroyPane(_container_);"
 		+"};"
-		+"/*listen to contentpanes onLoad and onUnLoad events*/"
-		+"dojo.event.connect(_container_, 'onLoad', this, 'onLoad');"
-		+"dojo.event.connect(_container_, 'onUnLoad', this, 'onUnLoad');"
 		+"</scr"+"ipt>"
+		+"<div style='text-align:center; font-size:20pt;'>Pane "+createdPanes.length+"</div>"
 		+"<button dojoType='Button' onClick='scriptScope.destroyMe();'>Destroy me with widget event please!</button>"
-		+"<a href='javascript:scriptScope[\"destroyMe\"]();'>Destroy me from &lt;a href='javascript:handler...</a>"
-		+"<div style='text-align:center; font-size:20pt;'>Pane "+createdPanes.length+"</div>";
+		+"<a href='javascript:scriptScope[\"destroyMe\"]();'>Destroy me from &lt;a href='javascript:handler...</a><br>";
 
 		pane.setContent(cont);
 	}

@@ -54,10 +54,7 @@
 dojo.provide("dojo.widget.html.Slider");
 
 // load dependencies
-dojo.require("dojo.fx.*");
 dojo.require("dojo.event.*");
-dojo.require("dojo.lang.*");
-dojo.require("dojo.animation.Timer");
 dojo.require("dojo.dnd.*");
 // dojo.dnd.* doesn't include this package, because it's not in __package__.js
 dojo.require("dojo.dnd.HtmlDragMove");
@@ -73,7 +70,7 @@ dojo.widget.defineWidget (
 	dojo.widget.HtmlWidget,
 	{
 		// over-ride some defaults
-		isContainer: false, // or true? - not sure
+		isContainer: false,
 		widgetType: "Slider",
 
 		// useful properties (specified as attributes in the html tag)
@@ -100,6 +97,8 @@ dojo.widget.defineWidget (
 		// should the handle snap to the grid or remain where it was dragged to?
 		// (note: dojo's infrastructor will convert attribute to a boolean)
 		snapToGrid: false,
+		// should the value change while you are dragging, or just after drag finishes?
+		activeDrag: false,
 
 		templateCssPath: dojo.uri.dojoUri ("src/widget/templates/HtmlSlider.css"),
 		templatePath: dojo.uri.dojoUri ("src/widget/templates/HtmlSlider.html"),
@@ -121,8 +120,9 @@ dojo.widget.defineWidget (
 			// setup drag-n-drop for the sliderHandle
 			this.handleMove = new dojo.widget.html.SliderDragMoveSource (this.sliderHandle);
 			this.handleMove.setParent (this);
-			
-			//var dragMove = new dojo.dnd.HtmlDragMoveSource(this.sliderHandle);
+			dojo.event.connect(this.handleMove, "onDragMove", this, "onDragMove");
+			dojo.event.connect(this.handleMove, "onDragEnd", this, "onDragEnd");
+			dojo.event.connect(this.handleMove, "onClick", this, "onClick");
 
 			// keep the slider handle inside it's parent container
 			this.handleMove.constrainToContainer = true;
@@ -131,9 +131,8 @@ dojo.widget.defineWidget (
 				dojo.event.connect (this.domNode, "onclick", this, "setPosition");
 			} 
 
-			dojo.debug ("fillInTemplate - this.initialValueX = " + this.isEnableX + " " + this.initialValueX);
 			if (this.isEnableX && this.initialValueX > 0) {
-				dojo.debug ("*");
+				alert("setting x to " + this.initialValueX);
 				this.setValueX (this.initialValueX);
 			}
 			if (this.isEnableY && this.initialValueY > 0) {
@@ -229,6 +228,17 @@ dojo.widget.defineWidget (
 				}
 				this.handleMove.domNode.style.top = y + "px";
 			}
+		},
+
+		onDragMove: function(){
+			this.onValueChanged(this.getValueX(), this.getValueY());
+		},
+	
+		onClick: function(){
+			this.onValueChanged(this.getValueX(), this.getValueY());
+		},
+		
+		onValueChanged: function(x, y){
 		}
 	}
 );
@@ -246,9 +256,14 @@ dojo.widget.defineWidget (
 	{
 		widgetType: "SliderHorizontal",
 
-		valuesY: 0,
+		value: 0,
+
 		isEnableY: false,
 		templatePath: dojo.uri.dojoUri ("src/widget/templates/HtmlSliderHorizontal.html"),
+
+		postMixInProperties: function(){
+			this.initialValue = this.value;
+		},
 
 		// wrapper for getValueX
 		getValue: function () {
@@ -258,6 +273,27 @@ dojo.widget.defineWidget (
 		// wrapper for setValueX
 		setValue: function (value) {
 			this.setValueX (value);
+			this.onValueChanged(value);
+		},
+
+		onDragMove: function(){
+			if(this.activeDrag){
+				this.onValueChanged(this.getValue());
+			}
+		},
+	
+		onDragEnd: function(){
+			if(!this.activeDrag){
+				this.onValueChanged(this.getValue());
+			}
+		},
+	
+		onClick: function(){
+			this.onValueChanged(this.getValue());
+		},
+		
+		onValueChanged: function(value){
+			this.value=value;
 		}
 	}
 );
@@ -275,9 +311,14 @@ dojo.widget.defineWidget (
 	{
 		widgetType: "SliderVertical",
 
-		valuesX: 0,
+		value: 0,
+
 		isEnableX: false,
 		templatePath: dojo.uri.dojoUri ("src/widget/templates/HtmlSliderVertical.html"),
+
+		postMixInProperties: function(){
+			this.initialValueY = this.value;
+		},
 
 		// wrapper for getValueY
 		getValue: function () {
@@ -287,6 +328,26 @@ dojo.widget.defineWidget (
 		// wrapper for setValueY
 		setValue: function (value) {
 			this.setValueY (value);
+		},
+
+		onDragMove: function(){
+			if(this.activeDrag){
+				this.onValueChanged(this.getValue());
+			}
+		},
+	
+		onDragEnd: function(){
+			if(!this.activeDrag){
+				this.onValueChanged(this.getValue());
+			}
+		},
+	
+		onClick: function(){
+			this.onValueChanged(this.getValue());
+		},
+		
+		onValueChanged: function(value){
+			this.value=value;
 		}
 	}
 );
@@ -353,12 +414,8 @@ dojo.declare (
 		var dragObj = this.createDragMoveObject ();
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
 		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
-		dojo.debug ("constrainingBlockPosition.x = " + dragObj.containingBlockPosition.x
-								+ ", .y = " + dragObj.containingBlockPosition.y);
 		
 		var constraints = dragObj.getConstraints ();
-		dojo.debug ("calcValueSizeX = (" + constraints.maxX
-								+ " - " + constraints.minX + ") / " + this.slider.valuesX);
 		return (constraints.maxX - constraints.minX) / this.slider.valuesX;
 	},
 
@@ -367,8 +424,6 @@ dojo.declare (
 		var dragObj = this.createDragMoveObject ();
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
 		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
-		dojo.debug ("constrainingBlockPosition.x = " + dragObj.containingBlockPosition.x
-								+ ", .y = " + dragObj.containingBlockPosition.y);
 		var constraints = dragObj.getConstraints ();
 		return (constraints.maxY - constraints.minY) / this.slider.valuesY;
 	}

@@ -7,6 +7,10 @@ try{
 	}
 }catch(e){/* squelch */}
 
+if(dojo.render.html.opera){
+	dojo.debug("Opera is not supported with dojo.undo.browser, so back/forward detection will not work.");
+}
+
 /* NOTES:
  *  Safari 1.2: 
  *	back button "works" fine, however it's not possible to actually
@@ -193,28 +197,30 @@ dojo.undo.browser = {
 	},
 
 	iframeLoaded: function(evt, ifrLoc){
-		var query = this._getUrlQuery(ifrLoc.href);
-		if(query == null){ 
-			// alert("iframeLoaded");
-			// we hit the end of the history, so we should go back
-			if(this.historyStack.length == 1){
+		if(!dojo.render.html.opera){
+			var query = this._getUrlQuery(ifrLoc.href);
+			if(query == null){ 
+				// alert("iframeLoaded");
+				// we hit the end of the history, so we should go back
+				if(this.historyStack.length == 1){
+					this.handleBackButton();
+				}
+				return;
+			}
+			if(this.moveForward){
+				// we were expecting it, so it's not either a forward or backward movement
+				this.moveForward = false;
+				return;
+			}
+	
+			//Check the back stack first, since it is more likely.
+			//Note that only one step back or forward is supported.
+			if(this.historyStack.length >= 2 && query == this._getUrlQuery(this.historyStack[this.historyStack.length-2].url)){
 				this.handleBackButton();
 			}
-			return;
-		}
-		if(this.moveForward){
-			// we were expecting it, so it's not either a forward or backward movement
-			this.moveForward = false;
-			return;
-		}
-
-		//Check the back stack first, since it is more likely.
-		//Note that only one step back or forward is supported.
-		if(this.historyStack.length >= 2 && query == this._getUrlQuery(this.historyStack[this.historyStack.length-2].url)){
-			this.handleBackButton();
-		}
-		else if(this.forwardStack.length > 0 && query == this._getUrlQuery(this.forwardStack[this.forwardStack.length-1].url)){
-			this.handleForwardButton();
+			else if(this.forwardStack.length > 0 && query == this._getUrlQuery(this.forwardStack[this.forwardStack.length-1].url)){
+				this.handleForwardButton();
+			}
 		}
 	},
 
