@@ -63,7 +63,7 @@ dojo.widget.defineWidget(
 			this.imgNode = document.createElement("img");
 			dojo.html.addClass(this.imgNode, "dojoHtmlCheckbox");
 			this.updateImgSrc();
-			dojo.event.connect(this.imgNode, 'onclick', this, 'onClick');
+			dojo.event.connect(this.imgNode, ((dojo.render.html.ie) ? 'onmouseup' : 'onclick'), this, 'onClick');
 			dojo.event.connect(this.domNode, 'onchange', this, 'onChange');
 			this.domNode.parentNode.insertBefore(this.imgNode, this.domNode.nextSibling)
 	
