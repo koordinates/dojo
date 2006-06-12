@@ -14,10 +14,10 @@ dojo.widget.defineWidget(
 
 		srcOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
 		srcOff: dojo.uri.dojoUri('src/widget/templates/check_off.gif'),
-		srcDisabledOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
-		srcDisabledOff: dojo.uri.dojoUri('src/widget/templates/check_disabled.gif'),
-		srcHoverOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
-		srcHoverOff: dojo.uri.dojoUri('src/widget/templates/check_hover.gif'),
+		srcDisabledOn: dojo.uri.dojoUri('src/widget/templates/check_disabled_on.gif'),
+		srcDisabledOff: dojo.uri.dojoUri('src/widget/templates/check_disabled_off.gif'),
+		srcHoverOn: dojo.uri.dojoUri('src/widget/templates/check_hover_on.gif'),
+		srcHoverOff: dojo.uri.dojoUri('src/widget/templates/check_hover_off.gif'),
 
 		imgSrc: null,
 
@@ -25,7 +25,7 @@ dojo.widget.defineWidget(
 		disabled: "enabled",
 		name: "",
 		checked: false,
-		tabIndex: 0,
+		tabIndex: -1,
 
 		imgNode: null,
 		inputNode: null,
