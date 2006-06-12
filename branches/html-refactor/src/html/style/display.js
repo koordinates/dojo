@@ -1,6 +1,6 @@
 dojo.provide("dojo.html.style.display");
 
-dojo.require("dojo.html.style.common");
+dojo.require("dojo.html.style");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.lang.common");
 
