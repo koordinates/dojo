@@ -1,7 +1,5 @@
 dojo.provide("dojo.html.common");
 
-dojo.require("dojo.lang.array");
-
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
 // Need to investigate for KHTML and Opera
@@ -194,9 +192,11 @@ dojo.html.body = function(){
 dojo.html.isTag = function(node /* ... */) {
 	node = dojo.byId(node);
 	if(node && node.tagName) {
-		var arr = dojo.lang.map(dojo.lang.toArray(arguments, 1),
-			function(a) { return String(a).toLowerCase(); });
-		return arr[ dojo.lang.find(node.tagName.toLowerCase(), arr) ] || "";
+		for (var i=1; i<arguments.length; i++){
+			if (node.tagName.toLowerCase()==String(arguments[i]).toLowerCase()){
+				return String(arguments[i]).toLowerCase();
+			}
+		}
 	}
 	return "";
 }
