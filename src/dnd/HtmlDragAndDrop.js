@@ -170,7 +170,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			left = this.dragOffset.x + e.pageX + "px";
 		}
 
-		document.body.appendChild(this.dragClone);
+		dojo.html.body().appendChild(this.dragClone);
 
 		dojo.event.topic.publish('dragStart', { source: this } );
 	},
@@ -388,7 +388,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		this.placeIndicator(e, dragObjects, i, before);
 
 		if(!dojo.html.hasParent(this.dropIndicator)) {
-			document.body.appendChild(this.dropIndicator);
+			dojo.html.body().appendChild(this.dropIndicator);
 		}
 	},
 

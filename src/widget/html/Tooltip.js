@@ -11,7 +11,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.Tooltip",
 	dojo.widget.html.ContentPane,
 	{
-		widgetType: "Tooltip",
 		isContainer: true,
 	
 		// Constructor arguments
@@ -42,8 +41,8 @@ dojo.widget.defineWidget(
 		
 		postCreate: function(args, frag){
 			// The domnode was appended to my parent widget's domnode, but the positioning
-			// only works if the domnode is a child of document.body
-			document.body.appendChild(this.domNode);
+			// only works if the domnode is a child of dojo.html.body()
+			dojo.html.body().appendChild(this.domNode);
 	
 			dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
 			dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);
