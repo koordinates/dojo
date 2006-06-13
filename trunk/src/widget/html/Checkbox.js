@@ -8,8 +8,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.Checkbox",
 	dojo.widget.HtmlWidget,
 	{
-		widgetType: "Checkbox",
-	
 		templatePath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.html'),
 		templateCssPath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.css'),
 

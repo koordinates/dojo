@@ -9,8 +9,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.AnimatedPng",
 	dojo.widget.HtmlWidget,
 	{
-
-		widgetType: "AnimatedPng",
 		isContainer: false,
 
 		domNode: null,
