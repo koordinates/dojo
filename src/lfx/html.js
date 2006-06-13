@@ -363,7 +363,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		position = "absolute";
 		display = "none";
 	}
-	document.body.appendChild(outline);
+	dojo.html.body().appendChild(outline);
 
 	with(endNode.style){
 		visibility = "hidden";
@@ -410,7 +410,7 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 		position = "absolute";
 		display = "none";
 	}
-	document.body.appendChild(outline);
+	dojo.html.body().appendChild(outline);
 
 	var anim = new dojo.lfx.propertyAnimation(outline, [
 		{ property: "height", start: startCoords[3], end: endCoords[3] },
