@@ -112,8 +112,9 @@ dojo.widget.manager = new function(){
 	//	added, trt 2006-01-20
 	this.getWidgetByNode = function(/* DOMNode */ node){
 		var w=this.getAllWidgets();
-		for (var i=0; i<w.length; i++){
-			if (w[i].domNode==node){
+		node = dojo.byId(node);
+		for(var i=0; i<w.length; i++){
+			if(w[i].domNode==node){
 				return w[i];
 			}
 		}
