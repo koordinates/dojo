@@ -523,7 +523,7 @@ dojo.widget.defineWidget(
 				this.domNode.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 			}else if (this.iframe){
-				this.editNode = this.document.body;
+				this.editNode = this.dojo.html.body();
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 		
 				try { // sanity check for Mozilla
@@ -979,7 +979,7 @@ dojo.widget.defineWidget(
 					if(!tableInfo){
 						tableInfo = document.createElement("object");
 						tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
-						document.body.appendChild(tableInfo);
+						dojo.html.body().appendChild(tableInfo);
 						this.constructor._table = tableInfo;
 					}
 					
@@ -1196,7 +1196,7 @@ dojo.widget.defineWidget(
 					// not a great deal we can do
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.document.body.createTextRange();
+				var range = this.dojo.html.body().createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();
@@ -1219,7 +1219,7 @@ dojo.widget.defineWidget(
 					this.editNode.innerHTML = html;
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.document.body.createTextRange();
+				var range = this.dojo.html.body().createTextRange();
 				range.moveToElementText(this.editNode);
 				range.select();
 				this.execCommand("inserthtml", html);
@@ -1245,7 +1245,7 @@ dojo.widget.defineWidget(
 					// not a great deal we can do
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.document.body.createTextRange();
+				var range = this.dojo.html.body().createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();
@@ -1260,7 +1260,7 @@ dojo.widget.defineWidget(
 			if(this.height){ return; }
 			if(this.iframe){
 				/*
-				if(!this.document.body["offsetHeight"]){
+				if(!this.dojo.html.body()["offsetHeight"]){
 					return;
 				}
 				*/
@@ -1277,8 +1277,8 @@ dojo.widget.defineWidget(
 					}
 				}
 
-				if(this.document.body["offsetHeight"]){
-					this._lastHeight = Math.max(this.document.body.scrollHeight, this.document.body.offsetHeight) + chromeheight;
+				if(this.dojo.html.body()["offsetHeight"]){
+					this._lastHeight = Math.max(this.dojo.html.body().scrollHeight, this.dojo.html.body().offsetHeight) + chromeheight;
 					this.iframe.height = this._lastHeight + "px";
 					this.window.scrollTo(0, 0);
 				}

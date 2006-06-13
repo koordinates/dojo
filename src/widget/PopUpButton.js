@@ -166,7 +166,7 @@ dojo.lang.extend(dojo.widget.HtmlPopUpButton, {
 			var x = getAbsoluteX(this.domNode);
 		}
 	
-		document.body.appendChild(this.menu.domNode);
+		dojo.html.body().appendChild(this.menu.domNode);
 		with (this.menu.domNode.style) {
 			top = y + "px";
 			left = x + "px";
