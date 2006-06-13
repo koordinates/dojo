@@ -9,7 +9,7 @@ dojo.rpc.YahooService = function(appId){
 	this.appId = appId;
 	if(!appId){
 		this.appId = "dojotoolkit";
-		dojo.debug(	"please initializae the YahooService class with your own",
+		dojo.debug(	"please initialize the YahooService class with your own",
 					"application ID. Using the default may cause problems during",
 					"deployment of your application");
 	}

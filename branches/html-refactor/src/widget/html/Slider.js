@@ -69,10 +69,6 @@ dojo.widget.defineWidget (
 	"dojo.widget.html.Slider",
 	dojo.widget.HtmlWidget,
 	{
-		// over-ride some defaults
-		isContainer: false,
-		widgetType: "Slider",
-
 		// useful properties (specified as attributes in the html tag)
 		// number of values to be represented by slider in the horizontal direction
 		valuesX: 10,
