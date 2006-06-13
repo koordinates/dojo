@@ -347,7 +347,7 @@
 			author: "Brad Neuburg",
 			thumbnail: "dojo/demos/screenshots/test_MoxieThumb.gif",
 			screenShot: "",
-			description: "Editor application that demonstrates use of dojo.strorage for offline use"
+			description: "Editor application that demonstrates use of dojo.storage for offline use"
 		},
 
 		"FormTour": {
