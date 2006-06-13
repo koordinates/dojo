@@ -60,7 +60,7 @@ dojo.widget.defineWidget(
 				display = "none";
 				overflow = "visible";
 			}
-			var b = document.body;
+			var b = dojo.html.body();
 			b.appendChild(this.domNode);
 
 			this.bg = document.createElement("div");

@@ -32,7 +32,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
 	fillInTemplate: function(args, frag){
 		var source = this.getFragNodeRef(frag);
-		this.sourceNode = document.body.appendChild(source.cloneNode(true));
+		this.sourceNode = dojo.html.body().appendChild(source.cloneNode(true));
 		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
 			if(child.tagName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
 				child.className = "dojoShowPrintSlide";
@@ -58,7 +58,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		}
 		this.option.parentNode.removeChild(this.option);
 
-		document.body.style.display = "block";
+		dojo.html.body().style.display = "block";
 		this.resizeWindow();
 		this.gotoSlide(0);
 	},
@@ -158,10 +158,10 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		anim.play(true);
 	},
 	resizeWindow: function(/*Event*/ ev){
-		document.body.style.height = "auto";
+		dojo.html.body().style.height = "auto";
 		var h = Math.max(
-			document.documentElement.scrollHeight || document.body.scrollHeight,
+			document.documentElement.scrollHeight || dojo.html.body().scrollHeight,
 			dojo.html.getViewportHeight());
-		document.body.style.height = h + "px";
+		dojo.html.body().style.height = h + "px";
 	}
 });
