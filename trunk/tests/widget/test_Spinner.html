@@ -47,6 +47,8 @@
 		<br>
 		<h1>real number spinner</h1>
 		<br>
+		Move the cursor left and right within the input field to see the effect on the spinner.
+		<br>
 		initial value=1000, delta=0.01e1, min=-10950, max=155000, signed=always, exponent=always, esigned=never, places=2, separator=,<br>
 		<input dojoType="AdjustableRealNumberTextBox"
 			value="1000"
@@ -81,6 +83,37 @@
 		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, exponent not specified, esigned not specified, places not specified, separator not specified <br>
 		[verify no line break just after this text]<input dojoType="AdjustableRealNumberTextBox" widgetId="realtextbox3"></input>[verify no line break just before this text]
 		<span dojoType="Spinner" inputWidgetId="realtextbox3"></span><br>
+		<br>
+		<br>
+		<h1>time spinner</h1>
+		<br>
+		Move the cursor left and right within the input field to see the effect on the spinner.
+		<br>
+		initial value=10:00:00a, delta=1:01:01a, am symbol=a, pm symbol=p, format=h:mm:sst<br>
+		<input dojoType="AdjustableTimeTextBox"
+			value="10:00:00a"
+			delta="1:01:01a" 
+			amsymbol="a"
+			pmsymbol="p"
+			format="h:mm:sst" 
+			maxlength="20" 
+			widgetId="timetextbox1">
+		</input>
+		<span dojoType="Spinner" inputWidgetId="timetextbox1"></span><br>
+		<br>
+		initial value=1000, delta=0101, am symbol not specified, pm symbol not specified, format=HHmm<br>
+		<input dojoType="AdjustableTimeTextBox"
+			value="1000"
+			delta="0101" 
+			format="HHmm" 
+			maxlength="20" 
+			widgetId="timetextbox2">
+		</input>
+		<span dojoType="Spinner" inputWidgetId="timetextbox2"></span><br>
+		<br>
+		initial value not specified, delta not specified (default is 01:01:01), am symbol not specified (default is AM), pm symbol not specified (default is PM), format not specified (default is h:mm:ss t) <br>
+		[verify no line break just after this text]<input dojoType="AdjustableTimeTextBox" widgetId="timetextbox3"></input>[verify no line break just before this text]
+		<span dojoType="Spinner" inputWidgetId="timetextbox3"></span><br>
 		<br>
 	</body>
 </html>
