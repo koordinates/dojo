@@ -54,8 +54,10 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		if (this.closeButton=="pane") {
 			var div = document.createElement("div");
 			dojo.html.addClass(div, "dojoTabPanePaneClose");
-			var self = this;
-			dojo.event.connect(div, "onclick", function(){ self._runOnCloseTab(self.selectedTabWidget); });
+			dojo.event.connect(div, "onclick", dojo.lang.hitch(this, 
+					function(){ this._runOnCloseTab(this.selectedTabWidget); }
+				)
+			);
 			dojo.event.connect(div, "onmouseover", function(){ dojo.html.addClass(div, "dojoTabPanePaneCloseHover"); });
 			dojo.event.connect(div, "onmouseout", function(){ dojo.html.removeClass(div, "dojoTabPanePaneCloseHover"); });
 			this.dojoTabLabels.appendChild(div);
@@ -88,16 +90,23 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 		// Create label
 		tab.div = document.createElement("div");
-		dojo.widget.wai.setAttr(tab.div, "waiRole", "tab");
+		dojo.widget.wai.setAttr(tab.div, "waiRole", "role", "tab");
 		dojo.html.addClass(tab.div, "dojoTabPaneTab");
 		var span = document.createElement("span");
 		span.innerHTML = tab.label;
-		dojo.html.disableSelection(span);
-		if (this.closeButton=="tab") {
+		span.id=tab.label + "Desc";
+		dojo.html.disableSelection(span); 
+		dojo.widget.wai.setAttr(tab.div, "waiState", "describedby", span.id);
+
+		if(this.closeButton=="tab"){
 			var img = document.createElement("div");
 			dojo.html.addClass(img, "dojoTabPaneTabClose");
-			var self = this;
-			dojo.event.connect(img, "onclick", function(evt){ self._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt); });
+			dojo.event.connect(img, "onclick", dojo.lang.hitch(this, 
+					function(evt){ 
+						this._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt);
+					}
+				)
+			);
 			dojo.event.connect(img, "onmouseover", function(){ dojo.html.addClass(img,"dojoTabPaneTabCloseHover"); });
 			dojo.event.connect(img, "onmouseout", function(){ dojo.html.removeClass(img,"dojoTabPaneTabCloseHover"); });
 			span.appendChild(img);
@@ -105,8 +114,14 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		tab.div.appendChild(span);
 		this.dojoTabLabels.appendChild(tab.div);
 		
-		var self = this;
-		dojo.event.connect(tab.div, "onclick", function(){ self.selectTab(tab); });
+		dojo.event.connect(tab.div, "onclick", dojo.lang.hitch(this, 
+				function(){ this.selectTab(tab); }
+			)
+		);
+		dojo.event.connect(tab.div, "onkeydown", dojo.lang.hitch(this, 
+				function(evt){ this.tabNavigation(evt, tab); } 
+			)
+		);
 
 		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
     		this.selectedTabWidget = tab;
@@ -151,17 +166,20 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		
 	},
 
-    removeChild: function(tab) {
+    removeChild: function(tab){
 
 		// remove tab event handlers
-		dojo.event.disconnect(tab.div, "onclick", function () { });
-		if (this.closeButton=="tab") {
+		dojo.event.disconnect(tab.div, "onclick", function(){ });
+		if(this.closeButton == "tab"){
 			var img = tab.div.lastChild.lastChild;
-			if (img) {
-				dojo.html.removeClass(img, "dojoTabPaneTabClose", function () { });
-				dojo.event.disconnect(img, "onclick", function () { });
-				dojo.event.disconnect(img, "onmouseover", function () { });
-				dojo.event.disconnect(img, "onmouseout", function () { });
+			if(img){
+				dojo.html.removeClass(img, "dojoTabPaneTabClose");
+				/*
+				// FIXME: how was this supposed to be doing anything useful?
+				dojo.event.disconnect(img, "onclick", function(){ });
+				dojo.event.disconnect(img, "onmouseover", function(){ });
+				dojo.event.disconnect(img, "onmouseout", function(){ });
+				*/
 			}
 		}
 
@@ -182,21 +200,45 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		this._doSizing();
     },
 
-    selectTab: function(tab, _noRefresh) {
+    selectTab: function(tab, _noRefresh){
 		// Deselect old tab and select new one
-		if (this.selectedTabWidget) {
+		if(this.selectedTabWidget){
 			this._hideTab(this.selectedTabWidget);
 		}
 		this.selectedTabWidget = tab;
 		this._showTab(tab, _noRefresh);
 	},
 
+	tabNavigation: function(evt, tab){
+		if(	(evt.keyCode == evt.KEY_RIGHT_ARROW)||
+			(evt.keyCode == evt.KEY_LEFT_ARROW) ){
+			var current = null;
+			var next;
+			for(var i=0; i < this.children.length; i++){
+				if(this.children[i] == tab){
+					current = i; 
+					break;
+				}
+			}
+			if(evt.keyCode == evt.KEY_RIGHT_ARROW){
+				next = this.children[ (current+1) % this.children.length ]; 
+			}else{ // is LEFT_ARROW
+				next = this.children[ (current+ (this.children.length-1)) % this.children.length ];
+			}
+			this.selectTab(next);
+			dojo.event.browser.stopEvent(evt);
+			next.div.focus();
+		} 
+	
+	},
+
 	_showTab: function(tab, _noRefresh) {
 		dojo.html.addClass(tab.div, "current");
 		tab.selected=true;
-		if ( this.useVisibility && !dojo.render.html.ie ) {
+		tab.div.setAttribute("tabIndex","0");
+		if ( this.useVisibility && !dojo.render.html.ie){
 			tab.domNode.style.visibility="visible";
-		} else {
+		}else{
 			// make sure we dont refresh onClose and on postCreate
 			// speeds up things a bit when using refreshOnShow and fixes #646
 			if(_noRefresh && tab.refreshOnShow){
@@ -217,6 +259,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 	_hideTab: function(tab) {
 		dojo.html.removeClass(tab.div, "current");
+		tab.div.setAttribute("tabIndex","-1");
 		tab.selected=false;
 		if( this.useVisibility ){
 			tab.domNode.style.visibility="hidden";
