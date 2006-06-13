@@ -23,7 +23,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.Select",
 	dojo.widget.html.ComboBox,
 	{
-		widgetType: "Select",
 		forceValidOption: true,
 
 		setValue: function(value) {

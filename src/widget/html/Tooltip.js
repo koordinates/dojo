@@ -11,7 +11,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.Tooltip",
 	dojo.widget.html.ContentPane,
 	{
-		widgetType: "Tooltip",
 		isContainer: true,
 	
 		// Constructor arguments

@@ -11,9 +11,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.Button",
 	dojo.widget.HtmlWidget,
 	{
-		widgetType: "Button",
-		isContainer: true,
-	
 		// Constructor arguments
 		caption: "",
 		disabled: false,
@@ -154,8 +151,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.DropDownButton",
 	dojo.widget.html.Button,
 	{
-		widgetType: "DropDownButton",
-	
 		menuId: "",
 
 		arrow: null,
@@ -188,8 +183,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.ComboButton",
 	dojo.widget.html.Button,
 	{
-		widgetType: "ComboButton",
-	
 		menuId: "",
 	
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboButtonTemplate.html"),

@@ -13,10 +13,6 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css"),
 
-		// over-ride some defaults
-		isContainer: false,
-		widgetType: "SlideShow",
-
 		// useful properties
 		imgUrls: [],		// the images we'll go through
 		imgUrlBase: "",

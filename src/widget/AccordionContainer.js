@@ -7,7 +7,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.AccordionContainer",
 	dojo.widget.HtmlWidget,
 	{
-		widgetType: "AccordionContainer",
 		isContainer: true,
 		labelNodeClass: "",
 		containerNodeClass: "",
