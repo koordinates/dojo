@@ -154,6 +154,14 @@ dojo.require("dojo.lang.common");
 		return (ds.getStyle(node, 'border-' + side + '-style') == 'none' ? 0 : ds.getPixelValue(node, 'border-' + side + '-width'));
 	}
 
+	ds.getMarginExtent = function(node, side){
+		return ds._sumPixelValues(node, ["margin-" + side], ds.isPositionAbsolute(node));
+	}
+
+	ds.getPaddingExtent = function(node, side){
+		return ds._sumPixelValues(node, ["padding-" + side], true);
+	}
+
 	ds.getMarginWidth = function(node){
 		return ds._sumPixelValues(node, ["margin-left", "margin-right"], ds.isPositionAbsolute(node));
 	}
