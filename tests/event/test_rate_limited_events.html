@@ -16,17 +16,15 @@
 				dojo.debug(evt.type + ' was fired');
 			}
 
-			function init(){
+			dojo.addOnLoad(function() {
 				var kwArgs = {
-					srcObj: document.getElementById("rater"),
+					srcObj: dojo.byId("rater"),
 					srcFunc: "onmousemove",
 					adviceFunc: "logIt",
 					rate: 500
 				};
 				dojo.event.kwConnect(kwArgs);
-			}
-
-			dojo.event.connect(dojo, "loaded", "init")
+			});
 		</script>
 		<style>
 			#rater {
