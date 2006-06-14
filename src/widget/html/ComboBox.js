@@ -570,7 +570,9 @@ dojo.widget.defineWidget(
 			if(this._result_list_open){
 				this.hideResultList();
 			}else{
-				this.startSearchFromInput();
+				// forces full population of results, if they click
+				// on the arrow it means they want to see more options
+				this.startSearch("");
 			}
 		},
 	
