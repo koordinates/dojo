@@ -59,6 +59,7 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 	className: "",
 	name: "",
 	value: "",
+	type: "",
 	trim: false,
 	uppercase: false,
 	lowercase: false,
@@ -66,9 +67,11 @@ dojo.lang.extend(dojo.widget.validate.Textbox, {
 	digit: false,
 	htmlfloat: "none",
 	
-	templateString: "<span style='float:${this.htmlfloat};'><input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus'"
-					+ " id='${this.widgetId}' name='${this.name}' "
-					+ " value='${this.value}' class='${this.className}'></input></span>",
+	templateString:   "<span style='float:${this.htmlfloat};'>"
+					+   "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus'"
+					+   " id='${this.widgetId}' name='${this.name}' "
+					+   " value='${this.value}' class='${this.className}' type='${this.type}' ></input>"
+					+ "</span>",
 
 	// our DOM nodes
 	textbox: null,
@@ -142,7 +145,6 @@ dojo.inherits(dojo.widget.validate.ValidationTextbox, dojo.widget.validate.Textb
 dojo.lang.extend(dojo.widget.validate.ValidationTextbox, {
 	// default values for new subclass properties
 	widgetType: "ValidationTextbox", 
-	type: "",
 	required: false,
 	validColor: "#cfc",
 	invalidColor: "#fcc",
