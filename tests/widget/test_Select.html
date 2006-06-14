@@ -12,6 +12,17 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.Select");
 </script>
+<script>
+	function setVal1(val){
+		dojo.byId('value1').value=val;
+	}
+	function setVal2(val){
+		dojo.byId('value2').value=val;
+	}
+	function setVal3(val){
+		dojo.byId('value3').value=val;
+	}
+</script>
 </head>
 
 <body>
@@ -42,8 +53,7 @@ Enhancements over plain HTML version:
  
     <p>Select #1: inlined data, autocomplete=false:</p>
 	<select name="state3" dojoType="Select" style="width: 300px;" autocomplete="false"
-		setValue="dojo.byId('value1').value=arguments[0];"
-	>
+		onValueChanged="setVal1">
 		<option value="AL">Alabama</option>
 		<option value="AK">Alaska</option>
 		<option value="AS">American Samoa</option>
@@ -113,7 +123,7 @@ Enhancements over plain HTML version:
 	<p>Select #2: dataUrl, autocomplete=true:</p>
 	<input dojoType="Select" value="this should never be seen - it is replaced!"
 		dataUrl="comboBoxData.js" style="width: 300px;" name="state1"
-		setValue="dojo.byId('value2').value=arguments[0];"
+		onValueChanged="setVal2"
 	>
 	<br>
 	<div>Value: <input id="value2" disabled></div>
@@ -122,7 +132,7 @@ Enhancements over plain HTML version:
     <p>Select #3: dataUrl, autocomplete=false:</p>
  	<input dojoType="Select" value="this should never be seen - it is replaced!"
 		dataUrl="comboBoxData.js" style="width: 300px;" name="state2" autocomplete="false"
-		setValue="dojo.byId('value3').value=arguments[0];"
+		onValueChanged="setVal3"
 	>
 	<br>
 	<div>Value: <input id="value3" disabled></div>
