@@ -108,20 +108,26 @@ dojo.widget.wai = {
 	waiRole: { 	name: "waiRole", 
 				namespace: "http://www.w3.org/TR/xhtml2", 
 				alias: "x2",
-				prefix: "wairole:",
-				nsName: "role"
+				prefix: "wairole:"
 	},
 	waiState: { name: "waiState", 
 				namespace: "http://www.w3.org/2005/07/aaa" , 
 				alias: "aaa",
-				prefix: "",
-				nsName: "state"
+				prefix: ""
 	},
-	setAttr: function(node, attr, value){
+	setAttr: function(node, ns, attr, value){
 		if(dojo.render.html.ie){
-			node.setAttribute(this[attr].alias+":"+this[attr].nsName, this[attr].prefix+value);
+			node.setAttribute(this[ns].alias+":"+ attr, this[ns].prefix+value);
 		}else{
-			node.setAttributeNS(this[attr].namespace, this[attr].nsName, this[attr].prefix+value);
+			node.setAttributeNS(this[ns].namespace, attr, this[ns].prefix+value);
+		}
+	},
+
+	getAttr: function(node, ns, attr){
+		if(dojo.render.html.ie){
+			 return node.getAttribute(this[ns].alias+":"+attr);
+		}else{
+			return node.getAttributeNS(this[ns].namespace, attr);
 		}
 	}
 };
@@ -180,7 +186,13 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 			var wai = dojo.widget.wai[name];
 			var val = baseNode.getAttribute(wai.name);
 			if(val){
-				dojo.widget.wai.setAttr(baseNode, wai.name, val);
+				if(val.indexOf('-') == -1){ 
+					dojo.widget.wai.setAttr(baseNode, wai.name, "role", val);
+				}else{
+					// this is a state-value pair
+					var statePair = val.split('-');
+					dojo.widget.wai.setAttr(baseNode, wai.name, statePair[0], statePair[1]);
+				}
 			}
 		}, this);
 

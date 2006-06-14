@@ -28,6 +28,7 @@ dojo.widget.defineWidget(
 		setValue: function(value) {
 			this.comboBoxValue.value = value;
 			dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+			this.onValueChanged(value);
 		},
 
 		setLabel: function(value){
