@@ -148,6 +148,13 @@ dojo.widget.defineWidget(
 			if(keyCode==0 && evt.charCode==k.KEY_SPACE){
 				keyCode = k.KEY_SPACE;
 			}
+			// Safari quirk. keyCodes for arrow keys are different
+			if (dojo.render.html.safari) {
+				switch(keyCode) {
+					case 63232: keyCode = k.KEY_UP_ARROW; break;
+					case 63233: keyCode = k.KEY_DOWN_ARROW; break;
+				}
+			}
 			switch(keyCode){
 	 			case k.KEY_DOWN_ARROW:
 					if(!this._result_list_open){
