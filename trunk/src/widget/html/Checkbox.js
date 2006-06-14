@@ -15,15 +15,23 @@ dojo.widget.defineWidget(
 		disabled: "enabled",
 		name: "",
 		checked: false,
-		tabIndex: "",
+		tabIndex: "0",
 
 		inputNode: null,
 
 		postMixInProperties: function(){
 			// set the variables referenced by the template
 			this.disabledStr = this.disabled=="enabled" ? "" : "disabled";
+					
 		},
-
+		postCreate: function(args, frag) {
+			// find any associated label and create a labeleby relationship
+			var label = document.getElementsByTagName("label");
+			if (label && label[0].htmlFor != undefined) {
+				label[0].id = (label[0].htmlFor + "label"); 
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "labelledby", label[0].id);
+			}
+		},
 		fillInTemplate: function(){
 			this._setClassStr();
 		},
@@ -32,6 +40,7 @@ dojo.widget.defineWidget(
 			if(this.disabled == "enabled"){
 				this.checked = !this.checked;
 				this.inputNode.checked = this.checked;
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 				this._setClassStr();
 			}
 			e.preventDefault();
