@@ -138,8 +138,42 @@ dojo.html.getPadBorder = function(node){
 	return { width: pad.width + border.width, height: pad.height + border.height };
 }
 
+dojo.html.boxSizing = {
+	MARGIN_BOX: "margin-box",
+	BORDER_BOX: "border-box",
+	PADDING_BOX: "padding-box",
+	CONTENT_BOX: "content-box"
+};
+
+dojo.html.getBoxSizing = function(node){
+	var h = dojo.render.html;
+	var bs = dojo.html.boxSizing;
+	if((h.ie)||(h.opera)){ 
+		var cm = document["compatMode"];
+		if((cm == "BackCompat")||(cm == "QuirksMode")){ 
+			return bs.BORDER_BOX; 
+		}else{
+			return bs.CONTENT_BOX; 
+		}
+	}else{
+		if(arguments.length == 0){ node = document.documentElement; }
+		var sizing = dojo.html.getStyle(node, "-moz-box-sizing");
+		if(!sizing){ sizing = dojo.html.getStyle(node, "box-sizing"); }
+		return (sizing ? sizing : bs.CONTENT_BOX);
+	}
+}
+
+dojo.html.isBorderBox = function(node){
+	return (dojo.html.getBoxSizing(node) == dojo.html.boxSizing.BORDER_BOX);
+}
+
+dojo.html.getBorderBox = function(node){
+	node = dojo.byId(node);
+	return { width: node.offsetWidth, height: node.offsetHeight };
+}
+
 dojo.html.getContentBox = function(node){
-	var node = dojo.byId(node);
+	node = dojo.byId(node);
 	var padborder = dojo.html.getPadBorder(node);
 	return {
 		width: node.offsetWidth - padborder.width,
@@ -147,15 +181,55 @@ dojo.html.getContentBox = function(node){
 	};
 }
 
-dojo.html.getBorderBox = function(node){
-	var node = dojo.byId(node);
-	return { width: node.offsetWidth, height: node.offsetHeight };
+dojo.html.setContentBox = function(node, args){
+	node = dojo.byId(node);
+	var width = 0; var height = 0;
+	var isbb = dojo.html.isBorderBox(node);
+	var padborder = (isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0});
+	var ret = {};
+	if(typeof args.width != undefined){
+		if(isbb){
+			width = args.width + padborder.width;
+		}
+		ret.width = dojo.html.setPositivePixelValue(node, "width", width);
+	}
+	if(typeof args.height != undefined){
+		if(isbb){
+			height = args.height + padborder.height;
+		}
+		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
+	}
+	return ret;
 }
 
 dojo.html.getMarginBox = function(node){
 	var borderbox = dojo.html.getBorderBox(node);
 	var margin = dojo.html.getMargin(node);
 	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
+}
+
+dojo.html.setMarginBox = function(node, args){
+	node = dojo.byId(node);
+	var width = 0; var height = 0;
+	var isbb = dojo.html.isBorderBox(node);
+	var padborder = (isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0 });
+	var margin = dojo.html.getMargin(node);
+	var ret = {};
+	if(typeof args.width != undefined){
+		if(isbb){
+			width = args.width - padborder.width;
+		}
+		width -= margin.width;
+		ret.width = dojo.html.setPositivePixelValue(node, "width", width);
+	}
+	if(typeof args.height != undefined){
+		if(isbb){
+			height = args.height - padborder.height;
+		}
+		height -= margin.height;
+		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
+	}
+	return ret;
 }
 
 // in: coordinate array [x,y,w,h] or dom node
