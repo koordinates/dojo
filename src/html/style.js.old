@@ -8,7 +8,7 @@ dojo.require("dojo.lang.common");
 	var ds = dojo.style;
 	var db = document["body"]||document["documentElement"];
 
-	ds.boxSizing = {
+	/*ds.boxSizing = {
 		MARGIN_BOX: "margin-box",
 		BORDER_BOX: "border-box",
 		PADDING_BOX: "padding-box",
@@ -30,7 +30,7 @@ dojo.require("dojo.lang.common");
 			if(!sizing){ sizing = ds.getStyle(node, "box-sizing"); }
 			return (sizing ? sizing : bs.CONTENT_BOX);
 		}
-	}
+	}*/
 
 	/*
 
@@ -100,9 +100,9 @@ dojo.require("dojo.lang.common");
 
 	// FIXME: these work for some elements (e.g. DIV) but not others (e.g. TABLE, TEXTAREA)
 
-	ds.isBorderBox = function(node){
+	/*ds.isBorderBox = function(node){
 		return (ds.getBoxSizing(node) == bs.BORDER_BOX);
-	}
+	}*/
 
 	/*ds.getUnitValue = function(node, cssSelector, autoIsZero){
 		var s = ds.getComputedStyle(node, cssSelector);
@@ -184,7 +184,7 @@ dojo.require("dojo.lang.common");
 		return ds.getInnerWidth(node) + ds.getMarginWidth(node);
 	}*/
 
-	ds.setContentBoxWidth = function(node, pxWidth){
+	/*ds.setContentBoxWidth = function(node, pxWidth){
 		node = dojo.byId(node);
 		if (ds.isBorderBox(node)){
 			pxWidth += ds.getPadBorderWidth(node);
@@ -199,7 +199,7 @@ dojo.require("dojo.lang.common");
 		}
 		pxWidth -= ds.getMarginWidth(node);
 		return ds.setPositivePixelValue(node, "width", pxWidth);
-	}
+	}*/
 
 	// FIXME: deprecate and remove
 	ds.getContentWidth = ds.getContentBoxWidth;
@@ -238,7 +238,7 @@ dojo.require("dojo.lang.common");
 		return ds.getInnerHeight(node) + ds.getMarginHeight(node);
 	}*/
 
-	ds.setContentBoxHeight = function(node, pxHeight){
+	/*ds.setContentBoxHeight = function(node, pxHeight){
 		node = dojo.byId(node);
 		if (ds.isBorderBox(node)){
 			pxHeight += ds.getPadBorderHeight(node);
@@ -253,7 +253,7 @@ dojo.require("dojo.lang.common");
 		}
 		pxHeight -= ds.getMarginHeight(node);
 		return ds.setPositivePixelValue(node, "height", pxHeight);
-	}
+	}*/
 
 	// FIXME: deprecate and remove
 	ds.getContentHeight = ds.getContentBoxHeight;
