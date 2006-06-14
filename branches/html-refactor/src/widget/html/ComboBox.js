@@ -42,15 +42,19 @@ dojo.widget.defineWidget(
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css"),
-	
+
 		setValue: function(value) {
 			this.comboBoxValue.value = value;
 			if (this.textInputNode.value != value) { // prevent mucking up of selection
 				this.textInputNode.value = value;
 			}
 			dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+			this.onValueChanged(value);
 		},
-	
+
+		// for user to override
+		onValueChanged: function(){ },
+
 		getValue: function() {
 			return this.comboBoxValue.value;
 		},
@@ -58,11 +62,11 @@ dojo.widget.defineWidget(
 		getState: function() {
 			return {value: this.getValue()};
 		},
-	
+
 		setState: function(state) {
 			this.setValue(state.value);
 		},
-	
+
 		getCaretPos: function(element){
 			// khtml 3.5.2 has selection* methods as does webkit nightlies from 2005-06-22
 			if(dojo.lang.isNumber(element.selectionStart)){
@@ -89,12 +93,12 @@ dojo.widget.defineWidget(
 				
 			}
 		},
-	
+
 		setCaretPos: function(element, location){
 			location = parseInt(location);
 			this.setSelectedRange(element, location, location);
 		},
-	
+
 		setSelectedRange: function(element, start, end){
 			if(!end){ end = element.value.length; }  // NOTE: Strange - should be able to put caret at start of text?
 			// Mozilla
@@ -126,23 +130,30 @@ dojo.widget.defineWidget(
 				}
 			}
 		},
-	
+
 		// does the keyboard related stuff
 		_handleKeyEvents: function(evt){
 			if(evt.ctrlKey || evt.altKey){ return; }
-	
+
 			// reset these
 			this._prev_key_backspace = false;
 			this._prev_key_esc = false;
-	
+
 			var k = dojo.event.browser.keys;
 			var doSearch = true;
-	
+
 			// mozilla quirk 
 			// space has no keyCode in mozilla
 			var keyCode = evt.keyCode;
 			if(keyCode==0 && evt.charCode==k.KEY_SPACE){
 				keyCode = k.KEY_SPACE;
+			}
+			// Safari quirk. keyCodes for arrow keys are different
+			if (dojo.render.html.safari) {
+				switch(keyCode) {
+					case 63232: keyCode = k.KEY_UP_ARROW; break;
+					case 63233: keyCode = k.KEY_DOWN_ARROW; break;
+				}
 			}
 			switch(keyCode){
 	 			case k.KEY_DOWN_ARROW:
@@ -205,7 +216,7 @@ dojo.widget.defineWidget(
 						doSearch = false;
 					}
 			}
-	
+
 			if(this.searchTimer){
 				clearTimeout(this.searchTimer);
 			}
@@ -217,7 +228,7 @@ dojo.widget.defineWidget(
 				this.searchTimer = setTimeout(dojo.lang.hitch(this, this.startSearchFromInput), this.searchDelay);
 			}
 		},
-	
+
 		onKeyDown: function(evt){
 			// IE needs to stop keyDown others need to stop keyPress
 			if(!document.createEvent){ // only IE
@@ -225,17 +236,17 @@ dojo.widget.defineWidget(
 			}
 			// FIXME: What about ESC ??
 		},
-	
+
 		onKeyPress: function(evt){
 			if(document.createEvent){ // never IE
 				this._handleKeyEvents(evt);
 			}
 		},
-	
+
 		onKeyUp: function(evt){
 			this.setValue(this.textInputNode.value);
 		},
-	
+
 		setSelectedValue: function(value){
 			// FIXME, not sure what to do here!
 			this.comboBoxSelectionValue.value = value;
@@ -245,7 +256,7 @@ dojo.widget.defineWidget(
 			this.setValue(value1);
 			this.setSelectedValue(value2);
 		},
-	
+
 		// opera, khtml, safari doesnt support node.scrollIntoView(), workaround
 		scrollIntoView: function(){
 			var node = this._highlighted_option;
@@ -267,7 +278,7 @@ dojo.widget.defineWidget(
 				}
 			}
 		},
-	
+
 		// does the actual highlight
 		focusOptionNode: function(node){
 			if(this._highlighted_option != node){
@@ -276,7 +287,7 @@ dojo.widget.defineWidget(
 				dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 			}
 		},
-	
+
 		// removes highlight on highlighted
 		blurOptionNode: function(){
 			if(this._highlighted_option){
@@ -284,7 +295,7 @@ dojo.widget.defineWidget(
 				this._highlighted_option = null;
 			}
 		},
-	
+
 		highlightNextOption: function(){
 			if((!this._highlighted_option) || !this._highlighted_option.parentNode){
 				this.focusOptionNode(this.optionsListNode.firstChild);
@@ -293,7 +304,7 @@ dojo.widget.defineWidget(
 			}
 			this.scrollIntoView();
 		},
-	
+
 		highlightPrevOption: function(){
 			if(this._highlighted_option && this._highlighted_option.previousSibling){
 				this.focusOptionNode(this._highlighted_option.previousSibling);
@@ -304,24 +315,24 @@ dojo.widget.defineWidget(
 			}
 			this.scrollIntoView();
 		},
-	
+
 		itemMouseOver: function(evt){
 			this.focusOptionNode(evt.target);
 			dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 		},
-	
+
 		itemMouseOut: function(evt){
 			this.blurOptionNode();
 		},
-	
+
 		fillInTemplate: function(args, frag){
 			// FIXME: need to get/assign DOM node names for form participation here.
 			this.comboBoxValue.name = this.name;
 			this.comboBoxSelectionValue.name = this.name+"_selected";
-	
+
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
-	
+
 			var dpClass;
 			if(this.mode == "remote"){
 				dpClass = dojo.widget.incrementalComboBoxDataProvider;
@@ -333,25 +344,24 @@ dojo.widget.defineWidget(
 			}
 			this.dataProvider = new dpClass();
 			this.dataProvider.init(this, this.getFragNodeRef(frag));
-	
+
 			// Prevent IE bleed-through problem
 			this.optionsIframe = new dojo.html.BackgroundIframe(this.optionsListWrapper);
 			this.optionsIframe.size([0,0,0,0]);
 		},
-	
-	
+
 		focus: function(){
 			// summary
 			//	set focus to input node from code
 			this.tryFocus();
 		},
-	
+
 		openResultList: function(results){
 			this.clearResultList();
 			if(!results.length){
 				this.hideResultList();
 			}
-	
+
 			if(	(this.autoComplete)&&
 				(results.length)&&
 				(!this._prev_key_backspace)&&
@@ -366,7 +376,7 @@ dojo.widget.defineWidget(
 					this.setSelectedRange(this.textInputNode, cpos, this.textInputNode.value.length);
 				}
 			}
-	
+
 			var even = true;
 			while(results.length){
 				var tr = results.shift();
@@ -382,20 +392,20 @@ dojo.widget.defineWidget(
 					dojo.event.connect(td, "onmouseout", this, "itemMouseOut");
 				}
 			}
-	
+
 			// show our list (only if we have content, else nothing)
 			this.showResultList();
 		},
-	
+
 		onFocusInput: function(){
 			this._hasFocus = true;
 		},
-	
+
 		onBlurInput: function(){
 			this._hasFocus = false;
 			this._handleBlurTimer(true, 500);
 		},
-	
+
 		// collect all blur timers issues here
 		_handleBlurTimer: function(/*Boolean*/clear, /*Number*/ millisec){
 			if(this.blurTimer && (clear || millisec)){
@@ -413,7 +423,7 @@ dojo.widget.defineWidget(
 				this._mouseover_list = true;
 			}
 		},
-	
+
 		_onMouseOut:function(evt){
 			var relTarget = evt.relatedTarget;
 			if(!relTarget || relTarget.parentNode!=this.optionsListNode){
@@ -422,7 +432,7 @@ dojo.widget.defineWidget(
 				this.tryFocus();
 			}
 		},
-	
+
 		_isInputEqualToResult: function(result){
 			input = this.textInputNode.value;
 			if(!this.dataProvider.caseSensitive){
@@ -453,7 +463,7 @@ dojo.widget.defineWidget(
 					this.setAllValues("", "");
 					return;
 				}
-				
+
 				isValidOption = this._isValidOption();
 				// enforce selection from option list
 				if(this.forceValidOption && !isValidOption){
@@ -465,7 +475,7 @@ dojo.widget.defineWidget(
 				}
 			}
 		},
-	
+
 		sizeBackgroundIframe: function(){
 			var w = dojo.style.getOuterWidth(this.optionsListNode);
 			var h = dojo.style.getOuterHeight(this.optionsListNode);
@@ -478,13 +488,13 @@ dojo.widget.defineWidget(
 				this.optionsIframe.size([0,0,w,h]);
 			}
 		},
-	
+
 		selectOption: function(evt){
 			var tgt = null;
 			if(!evt){
 				evt = { target: this._highlighted_option };
 			}
-	
+
 			if(!dojo.dom.isDescendantOf(evt.target, this.optionsListNode)){
 				// handle autocompletion where the the user has hit ENTER or TAB
 	
@@ -493,7 +503,7 @@ dojo.widget.defineWidget(
 					return;
 				}
 				tgt = dojo.dom.firstElement(this.optionsListNode);
-	
+
 				// user has input value not in option list
 				if(!tgt || !this._isInputEqualToResult(tgt.getAttribute("resultName"))){
 					return;
@@ -502,14 +512,14 @@ dojo.widget.defineWidget(
 			}else{
 				tgt = evt.target; 
 			}
-	
+
 			while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 				tgt = tgt.parentNode;
 				if(tgt === document.body){
 					return false;
 				}
 			}
-	
+
 			this.textInputNode.value = tgt.getAttribute("resultName");
 			this.selectedResult = [tgt.getAttribute("resultName"), tgt.getAttribute("resultValue")];
 			this.setAllValues(tgt.getAttribute("resultName"), tgt.getAttribute("resultValue"));
@@ -519,7 +529,7 @@ dojo.widget.defineWidget(
 			}
 			this.tryFocus();
 		},
-	
+
 		clearResultList: function(){
 			var oln = this.optionsListNode;
 			while(oln.firstChild){
@@ -528,7 +538,7 @@ dojo.widget.defineWidget(
 				oln.removeChild(oln.firstChild);
 			}
 		},
-	
+
 		hideResultList: function(){
 			if(this._result_list_open){
 				this._result_list_open = false;
@@ -536,7 +546,7 @@ dojo.widget.defineWidget(
 				dojo.lfx.fadeHide(this.optionsListNode, this.fadeTime).play();
 			}
 		},
-	
+
 		showResultList: function(){
 			// Our dear friend IE doesnt take max-height so we need to calculate that on our own every time
 			var childs = this.optionsListNode.childNodes;
@@ -545,7 +555,7 @@ dojo.widget.defineWidget(
 				if(childs.length < visibleCount){
 					visibleCount = childs.length;
 				}
-	
+
 				with(this.optionsListNode.style){
 					display = "";
 					height = ((visibleCount) ? (dojo.style.getOuterHeight(childs[0]) * visibleCount) : 0)+"px";
@@ -556,7 +566,7 @@ dojo.widget.defineWidget(
 					dojo.html.setOpacity(this.optionsListNode, 0);
 					dojo.lfx.fadeIn(this.optionsListNode, this.fadeTime).play();
 				}
-				
+
 				// prevent IE bleed through
 				this._iframeTimer = dojo.lang.setTimeout(this, "sizeBackgroundIframe", 200);
 				this._result_list_open = true;
@@ -564,17 +574,19 @@ dojo.widget.defineWidget(
 				this.hideResultList();
 			}
 		},
-	
+
 		handleArrowClick: function(){
 			this._handleBlurTimer(true, 0);
 			this.tryFocus();
 			if(this._result_list_open){
 				this.hideResultList();
 			}else{
-				this.startSearchFromInput();
+				// forces full population of results, if they click
+				// on the arrow it means they want to see more options
+				this.startSearch("");
 			}
 		},
-	
+
 		tryFocus: function(){
 			try {
 				this.textInputNode.focus();
@@ -582,17 +594,17 @@ dojo.widget.defineWidget(
 				// element isn't focusable if disabled, or not visible etc - not easy to test for.
 	 		};
 		},
-		
+
 		startSearchFromInput: function(){
 			this.startSearch(this.textInputNode.value);
 		},
-	
+
 		postCreate: function(){
 			dojo.event.connect(this, "startSearch", this.dataProvider, "startSearch");
 			dojo.event.connect(this.dataProvider, "provideSearchResults", this, "openResultList");
 			dojo.event.connect(this.textInputNode, "onblur", this, "onBlurInput");
 			dojo.event.connect(this.textInputNode, "onfocus", this, "onFocusInput");
-	
+
 			var s = dojo.widget.html.stabile.getState(this.widgetId);
 			if (s) {
 				this.setState(s);

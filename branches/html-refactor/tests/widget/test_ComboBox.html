@@ -12,6 +12,17 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.ComboBox");
 </script>
+<script>
+	function setVal1(val){
+		dojo.byId('value1').value=val;
+	}
+	function setVal2(val){
+		dojo.byId('value2').value=val;
+	}
+	function setVal3(val){
+		dojo.byId('value3').value=val;
+	}
+</script>
 </head>
 
 <body>
@@ -25,7 +36,7 @@ The drop down list is filtered by the data you have already typed in.
  
     <p>ComboBox #1: inlined data, autocomplete=false:</p>
 	<select name="state" dojoType="combobox" style="width: 300px;" name="foo.bar1" autocomplete="false"
-		setValue="dojo.byId('value1').value=arguments[0];"
+		onValueChanged="setVal1"
 	>
 		<option value="AL">Alabama</option>
 		<option value="AK">Alaska</option>
@@ -96,7 +107,7 @@ The drop down list is filtered by the data you have already typed in.
 	<p>ComboBox #2: dataUrl, autocomplete=true:</p>
 	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
 		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar"
-		setValue="dojo.byId('value2').value=arguments[0];"
+		onValueChanged="setVal2"
 	>
 	<br>
 	<div>Value: <input id="value2" disabled></div>
@@ -105,7 +116,7 @@ The drop down list is filtered by the data you have already typed in.
     <p>ComboBox #3: dataUrl, autocomplete=false:</p>
  	<input dojoType="ComboBox" value="this should never be seen - it is replaced!"
 		dataUrl="comboBoxData.js" style="width: 300px;" name="foo.bar" autocomplete="false"
-		setValue="dojo.byId('value3').value=arguments[0];"
+		onValueChanged="setVal3"
 	>
 	<br>
 	<div>Value: <input id="value3" disabled></div>
