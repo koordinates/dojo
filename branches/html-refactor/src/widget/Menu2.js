@@ -118,7 +118,7 @@ dojo.lang.extend(dojo.widget.PopupMenu2, {
 	// get open event for current menu
 	getTopOpenEvent: function() {
 		var menu = this;
-		while (menu.parent){ menu = menu.parent; }
+		while (menu.parentMenu){ menu = menu.parentMenu; }
 		return menu.openEvent;
 	},
 
@@ -625,6 +625,14 @@ dojo.lang.extend(dojo.widget.MenuItem2, {
 		}else{
 			dojo.html.removeClass(this.domNode, 'dojoMenuItem2Disabled');
 		}
+	},
+
+	enable: function(){
+		this.setDisabled(false);
+	},
+
+	disable: function(){
+		this.setDisabled(true);
 	},
 
 	getLabelWidth: function(){
@@ -1168,6 +1176,14 @@ dojo.lang.extend(dojo.widget.MenuBarItem2, {
 		}else{
 			dojo.html.removeClass(this.domNode, 'dojoMenuBarItem2Disabled');
 		}
+	},
+
+	enable: function(){
+		this.setDisabled(false);
+	},
+
+	disable: function(){
+		this.setDisabled(true);
 	}
 });
 
