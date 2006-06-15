@@ -11,6 +11,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.html.Button",
 	dojo.widget.HtmlWidget,
 	{
+		isContainer: true,
+
 		// Constructor arguments
 		caption: "",
 		disabled: false,
