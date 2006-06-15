@@ -125,7 +125,9 @@ dojo.lang.extend(dojo.undo.Manager, {
 				this._undoStack.push(manager._undoStack[x]);
 			}
 			// adding a new undo-able item clears out the redo stack
-			this._redoStack = [];
+			if (manager._undoStack.length > 0) {
+				this._redoStack = [];
+			}
 			this._updateStatus();
 		} else {
 			this._currentManager.concat.apply(this._currentManager, arguments);
