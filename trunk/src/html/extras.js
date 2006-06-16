@@ -350,6 +350,7 @@ dojo.html.BackgroundIframe = function(node) {
 				+        "z-index: -1; filter:Alpha(Opacity=\"0\");' "
 				+">";
 		this.iframe = document.createElement(html);
+		this.iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didnt work.
 		if(node){
 			node.appendChild(this.iframe);
 			this.domNode=node;
