@@ -16,33 +16,34 @@
 	</script>
 </head>
 
-<body>
+<body bgcolor="#C0C0C0">
 <h1>Slider Widget Demo</h1>
 This page demos the three types of slider widgets, with slightly different behaviours.
 <table border="1">
 <thead><tr><td>Type</td><td>Range</td><td>onDragMove</td><td>onDragEnd</td><td>On Click</td></tr></thead>
 <tbody>
 <tr><td>vertical</td><td>0..10</td><td>&nbsp;</td><td>update text field</td><td>update text field</td></tr>
-<tr><td>vertical</td><td>0..20</td><td>update text field</td><td>&nbsp;</td><td>update text field</td></tr>
-<tr><td>box</td><td>0..10</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>horizontal</td><td>-10..10</td><td>update text field</td><td>&nbsp;</td><td>update text field</td></tr>
+<tr><td>box</td><td>0..10</td><td>&nbsp;</td><td>update text field</td><td>&nbsp;</td></tr>
 </tbody>
 </table>
 
 <table>
 <tr><td></td><td>
-<div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" value="20"
+<div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" initialValue="0" minimum="-10" maximum="10" snapValues="11"
 	activeDrag="true"
    	onValueChanged="dojo.byId('horizontalSliderValue').value = arguments[0];"
    	>
 </div>
 </td>
 <td rowspan="2" valign="middle">
-<div id="boxSlider" dojoType="Slider"
+<div id="boxSlider" dojoType="Slider" maximumX="10" maximumY="10" minimumX="0" minimumY="0" initialValueX="5" initialValueY="5"
+	clickSelect="false"
 	onValueChanged="dojo.byId('boxX').value = arguments[0]; dojo.byId('boxY').value = arguments[1];">
 </div>
 </td></tr>
 <tr><td>
-<div id="verticalSlider" dojoType="SliderVertical" value="5" snapToGrid="true"
+<div id="verticalSlider" dojoType="SliderVertical" initialValue="5" snapValues="10" maximum="10" minimum="1"
   	onValueChanged="dojo.byId('verticalSliderValue').value = arguments[0];"
    >
 </div>
