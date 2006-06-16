@@ -2,10 +2,12 @@ dojo.hostenv.loadedUris.push("../src/bootstrap1.js");
 dojo.hostenv.loadedUris.push("../src/loader.js");
 dojo.hostenv.loadedUris.push("../src/hostenv_browser.js");
 dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
+dojo.hostenv._loadedUrisListStart = dojo.hostenv.loadedUris.length;
 
 function removeComments(contents){
 	contents = new String((!contents) ? "" : contents);
 	// clobber all comments
+	// FIXME broken if // or /* inside quotes or regexp
 	contents = contents.replace( /^(.*?)\/\/(.*)$/mg , "$1");
 	contents = contents.replace( /(\n)/mg , "__DOJONEWLINE");
 	contents = contents.replace( /\/\*(.*?)\*\//g , "");
@@ -124,12 +126,13 @@ dojo.hostenv.loadUri = function(uri){
 	return true;
 }
 
-dojo.hostenv.writeIncludes = function(){
+dojo.hostenv._writtenIncludes = {};
+dojo.hostenv.writeIncludes = function(willCallAgain){
 	for(var x=removals.length-1; x>=0; x--){
 		dojo.clobberLastObject(removals[x]);
 	}
 	var depList = [];
-	var seen = {};
+	var seen = dojo.hostenv._writtenIncludes;
 	for(var x=0; x<dojo.hostenv.loadedUris.length; x++){
 		var curi = dojo.hostenv.loadedUris[x];
 		// dojo.debug(curi);
@@ -140,13 +143,16 @@ dojo.hostenv.writeIncludes = function(){
 	}
 
 	dojo.hostenv._global_omit_module_check = true;
-	for(var x=4; x<depList.length; x++){
+	
+	for(var x= dojo.hostenv._loadedUrisListStart; x<depList.length; x++){
 		document.write("<script type='text/javascript' src='"+depList[x]+"'></script>");
 	}
 	document.write("<script type='text/javascript'>dojo.hostenv._global_omit_module_check = false;</script>");
-
-	// turn off debugAtAllCosts, so that dojo.require() calls inside of ContentPane hrefs
-	// work correctly
-	dj_eval = old_dj_eval;
-	dojo.hostenv.loadUri = dojo.hostenv.oldLoadUri;
+	dojo.hostenv._loadedUrisListStart = 0;
+	if (!willCallAgain) {
+		// turn off debugAtAllCosts, so that dojo.require() calls inside of ContentPane hrefs
+		// work correctly
+		dj_eval = old_dj_eval;
+		dojo.hostenv.loadUri = dojo.hostenv.oldLoadUri;
+	}
 }

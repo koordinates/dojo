@@ -9,7 +9,7 @@
 .sliderHandle { 
   color: #FF0000;
   position: relative; 
-  background-image: url(images/slider-button.png);
+  background: transparent url(images/slider-button.png) no-repeat;
   width: 25px; 
   height: 25px;
 }
@@ -19,13 +19,13 @@
   /*top: 80px; left: 0px;*/
   padding: 0px; 
   width: 300px; height: 35px; 
-  background: url(images/slider-bg.gif) no-repeat 0px 4px;
+  background: transparent url(images/slider-bg.gif) no-repeat 0px 4px;
 }
 
 .sliderHandleHorizontal { 
   color: #FF0000;
   position: relative; 
-  background-image: url(images/slider-button-horz.png);
+  background: transparent url(images/slider-button-horz.png) no-repeat;
   width: 25px; 
   height: 35px;
 }
@@ -35,13 +35,13 @@
   /*top: 80px; left: 0px;*/
   padding: 0px; 
   width: 35px; height: 300px; 
-  background: url(images/slider-bg-vert.gif) no-repeat 4px 0px;
+  background: transparent url(images/slider-bg-vert.gif) no-repeat 4px 0px;
 }
 
 .sliderHandleVertical { 
   color: #FF0000;
   position: relative; 
-  background-image: url(images/slider-button-vert.png);
+  background: transparent url(images/slider-button-vert.png) no-repeat;
   width: 35px; 
   height: 25px;
 }

@@ -17,9 +17,9 @@
  *
  * The values for the slider are calculated by grouping pixels together, 
  * based on the number of values to be represented by the slider.
- * The number of pixels in a group is called the valueSize
+ * The number of pixels in a group is called the _valueSize
  *  e.g. if slider is 150 pixels long, and is representing the values
- *       0,1,...10 then pixels are grouped into lots of 15 (valueSize), where:
+ *       0,1,...10 then pixels are grouped into lots of 15 (_valueSize), where:
  *         value 0 maps to pixels  0 -  7
  *               1                 8 - 22
  *               2                23 - 37 etc.
@@ -32,10 +32,6 @@
  *    dojo.widget.fillFromTemplateCache (which ignores the changed URI)
  *
  * Todo:
- *  - Setting of initial value currently doesn't work, because the one or
- *    more of the offsets, constraints or containing block are not set and
- *    are required to set the valueSize is not set before fillInTemplate
- *    is called.
  *  - Issues with dragging handle when page has been scrolled
  *  - 
  *
@@ -70,18 +66,36 @@ dojo.widget.defineWidget (
 	dojo.widget.HtmlWidget,
 	{
 		// useful properties (specified as attributes in the html tag)
+		// minimum value to be represented by slider in the horizontal direction
+		minimumX: 0,
+		// minimum value to be represented by slider in the vertical direction
+		minimumY: 0,
+		// maximum value to be represented by slider in the horizontal direction
+		maximumX: 10,
+		// maximum value to be represented by slider in the vertical direction
+		maximumY: 10,
+		// can values be changed on the x (horizontal) axis?
 		// number of values to be represented by slider in the horizontal direction
-		valuesX: 10,
+		// =0 means no snapping
+		snapValuesX: 0,
 		// number of values to be represented by slider in the vertical direction
-		valuesY: 10,
+		// =0 means no snapping
+		snapValuesY: 0,
+		// should the handle snap to the grid or remain where it was dragged to?
+		// FIXME: snapToGrid=false is logically in conflict with setting snapValuesX and snapValuesY
+		_snapToGrid: true,
 		// can values be changed on the x (horizontal) axis?
 		isEnableX: true,
 		// can values be changed on the y (vertical) axis?
 		isEnableY: true,
 		// value size (pixels) in the x dimension
-		valueSizeX: 0.0,
+		_valueSizeX: 0.0,
 		// value size (pixels) in the y dimension
-		valueSizeY: 0.0,
+		_valueSizeY: 0.0,
+		// constrained slider size (pixels) in the x dimension
+		_constraintWidth: 0,
+		// constrained slider size (pixels) in the y dimension
+		_constraintHeight: 0,
 		// initial value in the x dimension
 		initialValueX: 0,
 		// initial value in the y dimension
@@ -90,9 +104,6 @@ dojo.widget.defineWidget (
 		// do we allow the user to click on the slider to set the position?
 		// (note: dojo's infrastructor will convert attribute to a boolean)
 		clickSelect: true,
-		// should the handle snap to the grid or remain where it was dragged to?
-		// (note: dojo's infrastructor will convert attribute to a boolean)
-		snapToGrid: false,
 		// should the value change while you are dragging, or just after drag finishes?
 		activeDrag: false,
 
@@ -109,13 +120,14 @@ dojo.widget.defineWidget (
 
 
 		// This function is called when the template is loaded
-		fillInTemplate: function () 
+		fillInTemplate: function (args, frag) 
 		{
 			// dojo.debug ("fillInTemplate - className = " + this.domNode.className);
 
 			// setup drag-n-drop for the sliderHandle
 			this.handleMove = new dojo.widget.html.SliderDragMoveSource (this.sliderHandle);
 			this.handleMove.setParent (this);
+
 			dojo.event.connect(this.handleMove, "onDragMove", this, "onDragMove");
 			dojo.event.connect(this.handleMove, "onDragEnd", this, "onDragEnd");
 			dojo.event.connect(this.handleMove, "onClick", this, "onClick");
@@ -124,116 +136,126 @@ dojo.widget.defineWidget (
 			this.handleMove.constrainToContainer = true;
 		
 			if (this.clickSelect) {
-				dojo.event.connect (this.domNode, "onclick", this, "setPosition");
+				dojo.event.connect (this.domNode, "onclick", this, "onClick");
 			} 
 
-			if (this.isEnableX && this.initialValueX > 0) {
-				alert("setting x to " + this.initialValueX);
-				this.setValueX (this.initialValueX);
+			if (this.isEnableX) {
+				this.setValueX (!isNaN(this.initialValueX) ? this.initialValueX : (!isNaN(this.minimumX) ? this.minimumX : 0));
 			}
-			if (this.isEnableY && this.initialValueY > 0) {
-				this.setValueY (this.initialValueY);
+			if (this.isEnableY) {
+				this.setValueY (!isNaN(this.initialValueY) ? this.initialValueY : (!isNaN(this.minimumY) ? this.minimumY : 0));
 			}
 		},
 
-
 		// Move the handle (in the x dimension) to the specified value
 		setValueX: function (value) {
-			if (0.0 == this.valueSizeX) {
-				this.valueSizeX = this.handleMove.calcValueSizeX ();
+			if (0.0 == this._valueSizeX) {
+				if (this.handleMove.calc_valueSizeX () == false) {
+					setTimeout(dojo.lang.hitch(this,function(){this.setValueX(value);}), 100);
+					return;
+				}
 			}
-			if (value > this.valuesX) {
-				value = this.valuesX;
-			}
-			else if (value < 0) {
+			if (isNaN(value)) {
 				value = 0;
 			}
-			//dojo.debug ("value = " + value, ", valueSizeX = " + this.valueSizeX);
-			this.handleMove.domNode.style.left = (value * this.valueSizeX) + "px";
+			if (value > this.maximumX) {
+				value = this.maximumX;
+			}
+			else if (value < this.minimumX) {
+				value = this.minimumX;
+			}
+			//dojo.debug ("value = " + value, ", _valueSizeX = " + this._valueSizeX);
+			// 2 Math.round's needed to snap the value to the closest allowable position
+			this.handleMove.domNode.style.left = Math.round ( Math.round ((value-this.minimumX) / (this.maximumX-this.minimumX) * (this.snapValuesX-1)) * this._valueSizeX) + "px";
 		},
 
 
 		// Get the number of the value that matches the position of the handle
 		getValueX: function () {
-			if (0.0 == this.valueSizeX) {
-				this.valueSizeX = this.handleMove.calcValueSizeX ();
-			}
-			return Math.round (dojo.style.getPixelValue (this.handleMove.domNode, "left") / this.valueSizeX);
+			var pixelPercent = dojo.style.getPixelValue (this.handleMove.domNode, "left") / this._constraintWidth;
+			return Math.round (pixelPercent * (this.snapValuesX-1)) * ((this.maximumX-this.minimumX) / (this.snapValuesX-1)) + this.minimumX;
 		},
 
 
 		// set the slider to a particular value
 		setValueY: function (value) {
-			if (0.0 == this.valueSizeY) {
-				this.valueSizeY = this.handleMove.calcValueSizeY ();
+			if (0.0 == this._valueSizeY) {
+				if (this.handleMove.calc_valueSizeY () == false) {
+					setTimeout(dojo.lang.hitch(this,function(){this.setValueY(value);}), 100);
+					return;
+				}
 			}
-			if (value > this.valuesY) {
-				value = this.valuesY;
-			}
-			else if (value < 0) {
+			if (isNaN(value)) {
 				value = 0;
 			}
-
-			this.handleMove.domNode.style.top = (value * this.valueSizeY) + "px";
+			if (value > this.maximumY) {
+				value = this.maximumY;
+			}
+			else if (value < this.minimumY) {
+				value = this.minimumY;
+			}
+			// 2 Math.round's needed to snap the value to the closest allowable position
+			this.handleMove.domNode.style.top = Math.round ( Math.round ((value-this.minimumY) / (this.maximumY-this.minimumY) * (this.snapValuesY-1)) * this._valueSizeY) + "px";
 		},
 
 
 		// Get the number of the value that the matches the position of the handle
 		getValueY: function () {
-			if (0.0 == this.valueSizeY) {
-				this.valueSizeY = this.handleMove.calcValueSizeY ();
-			}
-			return Math.round (dojo.style.getPixelValue (this.handleMove.domNode, "top") / this.valueSizeY);
+			var pixelPercent = dojo.style.getPixelValue (this.handleMove.domNode, "top") / this._constraintHeight;
+			return Math.round (pixelPercent * (this.snapValuesY-1)) * ((this.maximumY-this.minimumY) / (this.snapValuesY-1)) + this.minimumY;
 		},
 
 
 		// set the position of the handle
-		setPosition: function (e) {
+		onClick: function (e) {
 			//dojo.debug ("Slider#setPosition - e.clientX = " + e.clientX
 			//            + ", e.clientY = " + e.clientY);
 			if (this.isDragInProgress) {
-				this.isDragInProgress = false;
+				return;
 			}
 
 			var offset = dojo.html.getScrollOffset();
 			var parent = dojo.style.getAbsolutePosition(this.domNode, true);
 			
 			if (this.isEnableX) {
-				var x = offset.x + e.clientX - parent.x;
-				if (x > this.domNode.offsetWidth) {
-					x = this.domNode.offsetWidth;
-				}
-				if (this.snapToGrid && x > 0) {
-					if (0.0 == this.valueSizeX) {
-						this.valueSizeX = this.handleMove.calcValueSizeX ();
-					}
-					x = this.valueSizeX * (Math.round (x / this.valueSizeX));
+				var x = offset.x + e.clientX - parent.x - (dojo.style.getContentWidth(this.handleMove.domNode) >> 1);
+				if (x > this._constraintWidth) {
+					x = this._constraintWidth;
 				}
 				this.handleMove.domNode.style.left = x + "px";
 			}
 			if (this.isEnableY) {
-				var y = offset.y + e.clientY - parent.y;
-				if (y > this.domNode.offsetHeight) {
-					y = this.domNode.offsetHeight;
-				}
-				if (this.snapToGrid && y > 0) {
-					if (0.0 == this.valueSizeY) {
-						this.valueSizeY = this.handleMove.calcValueSizeY ();
-					}
-					y = this.valueSizeY * (Math.round (y / this.valueSizeY));
+				var y = offset.y + e.clientY - parent.y - (dojo.style.getContentHeight(this.handleMove.domNode) >> 1);
+				if (y > this._constraintHeight) {
+					y = this._constraintHeight;
 				}
 				this.handleMove.domNode.style.top = y + "px";
 			}
+			this.coercePosition();
 		},
 
-		onDragMove: function(){
+		notifyListeners: function() {
 			this.onValueChanged(this.getValueX(), this.getValueY());
+		},
+
+		// snap value
+		coercePosition : function() {
+			this.setValueX(this.getValueX());
+			this.setValueY(this.getValueY());
+			this.notifyListeners();
+		},
+
+
+		onDragEnd: function(){
+			this.coercePosition();
 		},
 	
-		onClick: function(){
-			this.onValueChanged(this.getValueX(), this.getValueY());
+		onDragMove: function(){
+			if(this.activeDrag){
+				this.notifyListeners();
+			}
 		},
-		
+	
 		onValueChanged: function(x, y){
 		}
 	}
@@ -252,13 +274,32 @@ dojo.widget.defineWidget (
 	{
 		widgetType: "SliderHorizontal",
 
-		value: 0,
-
+		isEnableX: true,
 		isEnableY: false,
+		initialValue: "",
+		snapValues: "",
+		minimum: "",
+		maximum: "",
+
 		templatePath: dojo.uri.dojoUri ("src/widget/templates/HtmlSliderHorizontal.html"),
 
 		postMixInProperties: function(){
-			this.initialValue = this.value;
+			if (!isNaN(parseFloat(this.initialValue))) {
+				this.initialValueX = parseFloat(this.initialValue);
+			}
+			if (!isNaN(parseFloat(this.minimum))) {
+				this.minimumX = parseFloat(this.minimum);
+			}
+			if (!isNaN(parseFloat(this.maximum))) {
+				this.maximumX = parseFloat(this.maximum);
+			}
+			if (!isNaN(parseInt(this.snapValues))) {
+				this.snapValuesX = parseInt(this.snapValues);
+			}
+		},
+
+		notifyListeners: function() {
+			this.onValueChanged(this.getValueX());
 		},
 
 		// wrapper for getValueX
@@ -269,27 +310,15 @@ dojo.widget.defineWidget (
 		// wrapper for setValueX
 		setValue: function (value) {
 			this.setValueX (value);
-			this.onValueChanged(value);
+			this.notifyListeners();
 		},
 
-		onDragMove: function(){
-			if(this.activeDrag){
-				this.onValueChanged(this.getValue());
-			}
+		// snap value
+		coercePosition: function() {
+			this.setValue(this.getValue());
 		},
-	
-		onDragEnd: function(){
-			if(!this.activeDrag){
-				this.onValueChanged(this.getValue());
-			}
-		},
-	
-		onClick: function(){
-			this.onValueChanged(this.getValue());
-		},
-		
+
 		onValueChanged: function(value){
-			this.value=value;
 		}
 	}
 );
@@ -307,13 +336,32 @@ dojo.widget.defineWidget (
 	{
 		widgetType: "SliderVertical",
 
-		value: 0,
-
 		isEnableX: false,
+		isEnableY: true,
+		initialValue: "",
+		snapValues: "",
+		minimum: "",
+		maximum: "",
+
 		templatePath: dojo.uri.dojoUri ("src/widget/templates/HtmlSliderVertical.html"),
 
 		postMixInProperties: function(){
-			this.initialValueY = this.value;
+			if (!isNaN(parseFloat(this.initialValue))) {
+				this.initialValueY = parseFloat(this.initialValue);
+			}
+			if (!isNaN(parseFloat(this.minimum))) {
+				this.minimumY = parseFloat(this.minimum);
+			}
+			if (!isNaN(parseFloat(this.maximum))) {
+				this.maximumY = parseFloat(this.maximum);
+			}
+			if (!isNaN(parseInt(this.snapValues))) {
+				this.snapValuesY = parseInt(this.snapValues);
+			}
+		},
+
+		notifyListeners: function() {
+			this.onValueChanged(this.getValueY());
 		},
 
 		// wrapper for getValueY
@@ -324,26 +372,15 @@ dojo.widget.defineWidget (
 		// wrapper for setValueY
 		setValue: function (value) {
 			this.setValueY (value);
+			this.notifyListeners();
 		},
 
-		onDragMove: function(){
-			if(this.activeDrag){
-				this.onValueChanged(this.getValue());
-			}
+		// snap value
+		coercePosition: function() {
+			this.setValue(this.getValue());
 		},
-	
-		onDragEnd: function(){
-			if(!this.activeDrag){
-				this.onValueChanged(this.getValue());
-			}
-		},
-	
-		onClick: function(){
-			this.onValueChanged(this.getValue());
-		},
-		
+
 		onValueChanged: function(value){
-			this.value=value;
 		}
 	}
 );
@@ -360,14 +397,13 @@ dojo.declare (
 	"dojo.widget.html.SliderDragMoveSource",
 	dojo.dnd.HtmlDragMoveSource,
 {
-	isDragInProgress: false,
 	slider: null,
 
 
 	/** Setup the handle for drag
 	 *  Extends dojo.dnd.HtmlDragMoveSource by creating a SliderDragMoveSource */
 	onDragStart: function (e) {
-		this.isDragInProgress = true;
+		this.slider.isDragInProgress = true;
 		this.constrainToContainer = true;
 
 		var dragObj = this.createDragMoveObject ();
@@ -379,11 +415,13 @@ dojo.declare (
 		return dragObj;
 	},
 
+	onDragEnd: function (e) {
+		this.slider.isDragInProgress = false;
+	},
 
 	onDragMove: function (e) {
 		// placeholder to enable event connection
 	},
-
 
 	createDragMoveObject: function () {
 		//dojo.debug ("SliderDragMoveSource#createDragMoveObject - " + this.slider);
@@ -406,22 +444,35 @@ dojo.declare (
 	},
 
 	
-	calcValueSizeX: function () {
+	_getConstraints: function () {
 		var dragObj = this.createDragMoveObject ();
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
 		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
-		
-		var constraints = dragObj.getConstraints ();
-		return (constraints.maxX - constraints.minX) / this.slider.valuesX;
+		return dragObj.getConstraints ();
+	},
+
+
+	calc_valueSizeX: function () {
+		var constraints = this._getConstraints ();
+		this.slider._constraintWidth = constraints.maxX - constraints.minX;
+		if (this.slider._constraintWidth <= 0) { return false; }
+		if (this.slider.snapValuesX == 0) {
+			this.slider.snapValuesX = this.slider._constraintWidth + 1;
+		}
+		this.slider._valueSizeX = this.slider._constraintWidth / (this.slider.snapValuesX - 1);
+		return true;
 	},
 
 	
-	calcValueSizeY: function () {
-		var dragObj = this.createDragMoveObject ();
-		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
-		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
-		var constraints = dragObj.getConstraints ();
-		return (constraints.maxY - constraints.minY) / this.slider.valuesY;
+	calc_valueSizeY: function () {
+		var constraints = this._getConstraints ();
+		this.slider._constraintHeight = constraints.maxY - constraints.minY;
+		if (this.slider._constraintHeight <= 0) { return false; }
+		if (this.slider.snapValuesY == 0) {
+			this.slider.snapValuesY = this.slider._constraintHeight + 1;
+		}
+		this.slider._valueSizeY = this.slider._constraintHeight / (this.slider.snapValuesY - 1);
+		return true;
 	}
 });
 
@@ -444,13 +495,6 @@ dojo.declare (
 	 *  Extends functon HtmlDragObject by adding functionality to snap handle
 	 *  to a discrete value */
 	onDragMove: function (e) {
-		if (this.slider.isEnableX && 0.0 == this.slider.valueSizeX) {
-			this.slider.valueSizeX = (this.constraints.maxX - this.constraints.minX) / this.slider.valuesX;
-		}
-		if (this.slider.isEnableY && 0.0 == this.slider.valueSizeY) {
-			this.slider.valueSizeY = (this.constraints.maxY - this.constraints.minY) / this.slider.valuesY;
-		}
-
 		this.updateDragOffset ();
 
 		var x = this.dragOffset.x + e.pageX;
@@ -466,19 +510,19 @@ dojo.declare (
 		if (this.slider.isEnableX) {
 			var selectedValue = 0;
 			if (x > 0) {
-				selectedValue = Math.round (x / this.slider.valueSizeX);
+				selectedValue = Math.round (x / this.slider._valueSizeX);
 			}
 			// dojo.debug ("x = " + x + ", valueSize = " + valueSize 
 			//             + ", selectedValue = " + selectedValue);
-			x = (selectedValue * this.slider.valueSizeX);
+			x = Math.round (selectedValue * this.slider._valueSizeX);
 		}
 
 		if (this.slider.isEnableY) {
 			var selectedValue = 0;
 			if (y > 0) {
-				selectedValue = Math.round (y / this.slider.valueSizeY);
+				selectedValue = Math.round (y / this.slider._valueSizeY);
 			}
-			y = (selectedValue * this.slider.valueSizeY);
+			y = Math.round (selectedValue * this.slider._valueSizeY);
 		}
 
 		this.setAbsolutePosition (x, y);
