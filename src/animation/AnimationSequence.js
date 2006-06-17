@@ -2,13 +2,17 @@ dojo.provide("dojo.animation.AnimationSequence");
 dojo.require("dojo.animation.AnimationEvent");
 dojo.require("dojo.animation.Animation");
 
-dojo.animation.AnimationSequence = function(repeatCount){
+dojo.animation.AnimationSequence = function(/*int?*/ repeatCount){
+	// summary: Sequence of Animations, played one after the other.
+	// repeatCount: Number of times to repeat the entire sequence.  Default is 0 (play once only).
+	// description: Calls the following events: "onBegin", "onEnd", "onNext"
+	// 				If the animation implements a "handler" function, that will be called before each event is called.
 	this._anims = [];
 	this.repeatCount = repeatCount || 0;
 }
 
 dojo.lang.extend(dojo.animation.AnimationSequence, {
-	repeateCount: 0,
+	repeatCount: 0,
 
 	_anims: [],
 	_currAnim: -1,
@@ -19,13 +23,17 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 	handler: null,
 
 	add: function() {
+		// summary: Add one or more Animations to the sequence.
+		// description:  args: Animations (dojo.animation.Animation) to add to the sequence.
 		for(var i = 0; i < arguments.length; i++) {
 			this._anims.push(arguments[i]);
 			arguments[i]._animSequence = this;
 		}
 	},
 
-	remove: function(anim) {
+	remove: function(/*dojo.animation.Animation*/ anim) {
+		// summary: Remove one particular animation from the sequence.
+		//	amim: Animation to remove.
 		for(var i = 0; i < this._anims.length; i++) {
 			if( this._anims[i] == anim ) {
 				this._anims[i]._animSequence = null;
@@ -36,6 +44,7 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 	},
 
 	removeAll: function() {
+		// summary: Remove all animations from the sequence.
 		for(var i = 0; i < this._anims.length; i++) {
 			this._anims[i]._animSequence = null;
 		}
@@ -44,10 +53,15 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 	},
 
 	clear: function() {
+		// summary: Remove all animations from the sequence.
 		this.removeAll();
 	},
 
-	play: function(gotoStart) {
+	play: function(/*Boolean?*/ gotoStart) {
+		// summary: Play the animation sequence.
+		// gotoStart: If true, will start at the beginning of the first sequence.
+		//				Otherwise, starts at the current play counter of the current animation.
+		// description: Sends an "onBegin" event to any observers.
 		if( this._anims.length == 0 ) { return; }
 		if( gotoStart || !this._anims[this._currAnim] ) {
 			this._currAnim = 0;
@@ -63,12 +77,14 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 	},
 
 	pause: function() {
+		// summary: temporarily stop the current animation.  Resume later with sequence.play()
 		if( this._anims[this._currAnim] ) {
 			this._anims[this._currAnim].pause();
 		}
 	},
 
 	playPause: function() {
+		// summary: Toggle between play and paused states.
 		if( this._anims.length == 0 ) { return; }
 		if( this._currAnim == -1 ) { this._currAnim = 0; }
 		if( this._anims[this._currAnim] ) {
@@ -77,12 +93,15 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 	},
 
 	stop: function() {
+		// summary: Stop the current animation.
 		if( this._anims[this._currAnim] ) {
 			this._anims[this._currAnim].stop();
 		}
 	},
 
 	status: function() {
+		// summary: Return the status of the current animation.
+		// description: Returns one of "playing", "paused" or "stopped".
 		if( this._anims[this._currAnim] ) {
 			return this._anims[this._currAnim].status();
 		} else {
@@ -90,7 +109,9 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 		}
 	},
 
-	_setCurrent: function(anim) {
+	_setCurrent: function(/*dojo.animation.Animation*/ anim) {
+		// summary: Set the current animation.
+		// anim: Animation to make current, must have already been added to the sequence.
 		for(var i = 0; i < this._anims.length; i++) {
 			if( this._anims[i] == anim ) {
 				this._currAnim = i;
@@ -100,6 +121,9 @@ dojo.lang.extend(dojo.animation.AnimationSequence, {
 	},
 
 	_playNext: function() {
+		// summary: Play the next animation in the sequence.
+		// description:  Sends an "onNext" event to any observers.
+		//				 Also sends "onEnd" if the last animation is finished.
 		if( this._currAnim == -1 || this._anims.length == 0 ) { return; }
 		this._currAnim++;
 		if( this._anims[this._currAnim] ) {
