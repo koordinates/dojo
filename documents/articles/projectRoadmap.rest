@@ -43,6 +43,7 @@ Core:
 - hostenvs for dashboard, canvas
 - Namespace support for widget parsing
 - dojo.html refactor
+- DnD refactor and improvements
 
 Widgets:
 - Widget Refactoring
