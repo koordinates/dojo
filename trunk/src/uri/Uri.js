@@ -2,7 +2,7 @@ dojo.provide("dojo.uri.Uri");
 
 dojo.uri = new function() {
 	this.joinPath = function() {
-		// DEPRECATED: use the dojo.uri.Uri object instead
+		dojo.deprecated("dojo.uri.joinPath", "use the dojo.uri.Uri object instead", "0.4");
 		var arr = [];
 		for(var i = 0; i < arguments.length; i++) { arr.push(arguments[i]); }
 		return arr.join("/").replace(/\/{2,}/g, "/").replace(/((https*|ftps*):)/i, "$1/");
@@ -12,7 +12,20 @@ dojo.uri = new function() {
 		// returns a Uri object resolved relative to the dojo root
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri(), uri);
 	}
-		
+
+	//returns a URI of a widget in a namespace, for example dojo.uri.nsUri("dojo","Editor"), or dojo.uri.nsUri("customNS","someWidget")
+	this.nsUri = function(namespace,uri){
+		var ns = dojo.getNamespace(namespace);
+		if(!ns){
+			return null;
+		}
+		var loc = ns.location;
+		if(loc.lastIndexOf("/") != loc.length - 1){
+			loc += "/";
+		}
+		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);
+	} 
+
 	this.Uri = function (/*uri1, uri2, [...]*/) {
 		// An object representing a Uri.
 		// Each argument is evaluated in order relative to the next until

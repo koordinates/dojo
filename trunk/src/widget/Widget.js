@@ -35,6 +35,8 @@ dojo.declare("dojo.widget.Widget", null, {
 	widgetId: "",
 	widgetType: "Widget", // used for building generic widgets
 
+	namespace: "dojo", //defaults to 'dojo'
+
 	toString: function() {
 		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']';
 	},
@@ -79,7 +81,10 @@ dojo.declare("dojo.widget.Widget", null, {
 		}
 	},
 
-	create: function(args, fragment, parentComp){
+	create: function(args, fragment, parentComp, namespace){
+		if(namespace){
+			this.namespace = namespace;
+		}
 		// dojo.debug(this.widgetType, "create");
 		this.satisfyPropertySets(args, fragment, parentComp);
 		// dojo.debug(this.widgetType, "-> mixInProperties");
@@ -284,7 +289,7 @@ dojo.declare("dojo.widget.Widget", null, {
 						// FIXME: should we be allowing extension here to handle
 						// other object types intelligently?
 
-						// if we defined a URI, we probablt want to allow plain strings
+						// if we defined a URI, we probably want to allow plain strings
 						// to override it
 						if (this[x] instanceof dojo.uri.Uri){
 
@@ -495,7 +500,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	stype = (stype.length == 2) ? stype[1] : type;
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
-	var localProperties = localProps || parser.parseProperties(frag["dojo:"+stype]);
+	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
 	// var tic = new Date();
 	var twidget = dojo.widget.manager.getImplementation(stype);
 	if(!twidget){
@@ -504,12 +509,13 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 		throw new Error("\"" + stype + "\" widget object does not appear to implement *Widget");
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
-	// FIXME: we loose no less than 5ms in construction!
-	var ret = twidget.create(localProperties, frag, parentComp);
+	// FIXME: we lose no less than 5ms in construction!
+	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
 	// dojo.debug(new Date() - tic);
 	return ret;
 }
 
+//TODO: add namespace support to this
 /*
  * Create a widget constructor function (aka widgetClass)
  */
