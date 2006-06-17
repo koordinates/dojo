@@ -146,7 +146,10 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 	dateObject.setMinutes(mins);
 	dateObject.setSeconds(secs);
 	dateObject.setMilliseconds(ms);
-	
+
+	if (offset != 0) {
+		dateObject.setTime(dateObject.getTime() + offset * 60000);
+	}	
 	return dateObject;
 }
 
