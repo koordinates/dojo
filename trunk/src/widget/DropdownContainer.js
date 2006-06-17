@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.DropdownContainer");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
+dojo.provide("dojo.widget.Menu2");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
@@ -70,6 +71,7 @@ dojo.widget.defineWidget(
 			this.containerToggleObj.show(this.containerNode, this.containerToggleDuration, null,
 				dojo.lang.hitch(this, this.onContainerShow), this.explodeSrc);
 			dojo.lang.setTimeout(this, this.sizeBackgroundIframe, this.containerToggleDuration);
+			dojo.widget.html.Menu2Manager.opened(this, this.containerNode);
 		},
 
 		onContainerShow: function(){
@@ -81,6 +83,7 @@ dojo.widget.defineWidget(
 			this.containerToggleObj.hide(this.containerNode, this.containerToggleDuration, null,
 				dojo.lang.hitch(this, this.onContainerHide), this.explodeSrc);
 			dojo.lang.setTimeout(this, this.sizeBackgroundIframe, this.containerToggleDuration);
+			dojo.widget.html.Menu2Manager.closed(this);
 		},
 
 		onContainerHide: function(){
