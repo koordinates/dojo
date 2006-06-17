@@ -38,7 +38,7 @@ dojo.declare("dojo.widget.Widget", null, {
 	namespace: "dojo", //defaults to 'dojo'
 
 	toString: function() {
-		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']';
+		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']'; // string
 	},
 
 	repr: function(){
