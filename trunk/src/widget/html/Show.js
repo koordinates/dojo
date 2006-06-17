@@ -142,10 +142,8 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			if(target.tagName == "A" || target.tagName == "INPUT" || target.tagName == "TEXTAREA" || target.tagName == "SELECT"){
 				return false;
 			}
-			for(var key in target){
-				if(key.indexOf("on") === 0 && typeof target[key] == "function"){
-					return false;
-				}
+			if(typeof target.onclick == "function"){
+				return false;
 			}
 			target = target.parentNode;
 		}
