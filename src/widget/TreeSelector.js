@@ -117,6 +117,8 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 
 		if (this.selectedNode === node) {
 			if(e.ctrlKey || e.shiftKey || e.metaKey){
+				// If the node is currently selected, and they select it again while holding
+				// down a meta key, it deselects it
 				this.deselect();
 				return;
 			}
