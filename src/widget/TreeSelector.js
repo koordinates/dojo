@@ -116,6 +116,10 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		var e = message.event;
 
 		if (this.selectedNode === node) {
+			if(e.ctrlKey || e.shiftKey || e.metaKey){
+				this.deselect();
+				return;
+			}
 			dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
 			return;
 		}
