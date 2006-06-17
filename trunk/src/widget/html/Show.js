@@ -94,11 +94,11 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		var node = event.target;
 		var type = event.type;
 		if(type == "click"){
-			if(node.tagName == "OPTION"){
+			if(node.tagName == "OPTION" && node.parentNode == this.select){
 				this.gotoSlide(node.index);
-			}else if(node.tagName == "SELECT"){
+			}else if(node == this.select){
 				this.gotoSlide(node.selectedIndex);
-			}else if(node.tagName != "A"){
+			}else{
 				this.nextSlide(event);
 			}
 		}else if(type == "keypress"){
@@ -112,14 +112,44 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		}
 	},
 	nextSlide: function(/*Event?*/ event){
-		this.stopEvent(event);
+		if(!this.stopEvent(event)){
+			return false;
+		}
 		return dojo.widget.Show.prototype.nextSlide.call(this, event);
 	},
 	previousSlide: function(/*Event?*/ event){
-		this.stopEvent(event);
+		if(!this.stopEvent(event)){
+			return false;
+		}
 		return dojo.widget.Show.prototype.previousSlide.call(this, event);
 	},
 	stopEvent: function(/*Event*/ ev){
+		if(!ev){
+			return true;
+		}
+		
+		var target = ev.target;
+		// Check to see if the target is below the show domNode
+		while(target != null){
+			if(target == this.domNode){
+				target = ev.target;
+				break;
+			}
+			target = target.parentNode;
+		}
+		// Now that we know it's below this widget's domNode, we bubble up until we get to our domNode
+		while(target && target != this.domNode){
+			if(target.tagName == "A" || target.tagName == "INPUT" || target.tagName == "TEXTAREA" || target.tagName == "SELECT"){
+				return false;
+			}
+			for(var key in target){
+				if(key.indexOf("on") === 0 && typeof target[key] == "function"){
+					return false;
+				}
+			}
+			target = target.parentNode;
+		}
+		
 		if(window.event){
 			ev.returnValue = false;
 			ev.cancelBubble = true;
@@ -127,6 +157,8 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			ev.preventDefault();
 			ev.stopPropagation();
 		}
+		
+		return true;
 	},
 	popUpNav: function(){
 		if(!this.inNav){

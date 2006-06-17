@@ -34,10 +34,22 @@
 				<div dojoType="showaction" on="4" action="bgcolor" to="#aaa"></div>
 			</div>
 			<div dojoType="showslide" title="Automatically Advance">
-				<span as="1">First you see me</span>
-				<span as="2">Then you see me</span>
+				<p as="1">First you see me</p>
+				<p as="2">Then you see me</p>
 				<div dojoType="showaction" on="1" action="remove"></div>
 				<div dojoType="showaction" on="2" action="show" auto="true"></div>
+			</div>
+			<div dojoType="showslide" title="Check Event Blocking">
+				<p>We don't want the slideshow to interfere with contents on the page. This includes links, input boxes,
+				and items with events associated with them</p>
+				<ul>
+					<li><a href="#">This shouldn't advance</a></li>
+					<li><input value="This shouldn't advance"></li>
+					<li><span onclick="">This shouldn't advance</a></li>
+				</ul>
+			</div>
+			<div dojoType="showslide" title="The End">
+				<p>Thanks for checking out the show widget</p>
 			</div>
 		</div>
 	</body>
