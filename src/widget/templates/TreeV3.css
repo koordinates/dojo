@@ -4,7 +4,7 @@
 
 /* indent for all tree children excepts root */
 .TreeNode {
-    background-image : url('/home/ilia/dojo/src/widget/templates/images/TreeV3/i.gif');
+    background-image : url('../templates/images/TreeV3/i.gif');
     background-position : top left;
     background-repeat : repeat-y;
     margin-left: 19px;
@@ -16,7 +16,7 @@
 
 /* left vertical line (grid) for all nodes */
 .TreeNode.isTreeLast {
-    background-image: url('/home/ilia/dojo/src/widget/templates/images/TreeV3/i_half.gif');
+    background-image: url('../templates/images/TreeV3/i_half.gif');
     background-repeat : no-repeat;
 }
 
@@ -39,13 +39,13 @@
 
 
 .TreeExpandLeaf {
-    background-image : url('/home/ilia/dojo/src/widget/templates/images/TreeV3/x.gif');
+    background-image : url('../templates/images/TreeV3/x.gif');
 }
 
 .TreeExpandOpen {
-    background-image : url('/home/ilia/dojo/src/widget/templates/images/TreeV3/expand_minus.gif');
+    background-image : url('../templates/images/TreeV3/expand_minus.gif');
 }
 
 .TreeExpandClosed {
-    background-image : url('/home/ilia/dojo/src/widget/templates/images/TreeV3/expand_plus.gif');
+    background-image : url('../templates/images/TreeV3/expand_plus.gif');
 }
