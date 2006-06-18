@@ -10,8 +10,16 @@ Animation package based off of Dan Pupius' work on Animations:
 http://pupius.co.uk/js/Toolkit.Drawing.js
 */
 
-dojo.animation.Animation = function(/*dojo.math.curves.Line*/ curve, /*int*/ duration, /*Decimal?*/ accel, /*int?*/ repeatCount, /*int?*/ rate) {
-	// public properties
+dojo.animation.Animation = function(/*dojo.math.curves.* */ curve, /*int*/ duration, /*Decimal?*/ accel, /*int?*/ repeatCount, /*int?*/ rate) {
+	// summary: Animation object iterates a set of numbers over a curve for a given amount of time, calling 'onAnimate' at each step.
+	// curve: Curve to animate over.
+	// duration: Duration of the animation, in milliseconds.
+	// accel: Either an integer or curve representing amount of acceleration. (?)  Default is linear acceleration.
+	// repeatCount: Number of times to repeat the animation.  Default is 0.
+	// rate: Time between animation steps, in milliseconds.  Default is 25.
+	// description: Calls the following events: "onBegin", "onAnimate", "onEnd", "onPlay", "onPause", "onStop"
+	// 				If the animation implements a "handler" function, that will be called before each event is called.
+
 	if(dojo.lang.isArray(curve)) {
 		// curve: Array
 		// id: i
@@ -63,7 +71,12 @@ dojo.lang.extend(dojo.animation.Animation, {
 	_startRepeatCount: 0,
 
 	// public methods
-	play: function(gotoStart) {
+	play: function(/*Boolean?*/ gotoStart) {
+		// summary:  Play the animation.
+		// goToStart: If true, will restart the animation from the beginning.  
+		//				Otherwise, starts from current play counter.
+		// description: Sends an "onPlay" event to any observers.
+		//				Also sends an "onBegin" event if starting from the beginning.
 		if( gotoStart ) {
 			clearTimeout(this._timer);
 			this._active = false;
@@ -105,6 +118,9 @@ dojo.lang.extend(dojo.animation.Animation, {
 	},
 
 	pause: function() {
+		// summary: Temporarily stop the animation, leaving the play counter at the current location.
+		// 			Resume later with sequence.play()
+		// description: Sends an "onPause" AnimationEvent to any observers.
 		clearTimeout(this._timer);
 		if( !this._active ) { return; }
 		this._paused = true;
@@ -115,6 +131,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 	},
 
 	playPause: function() {
+		// summary: Toggle between play and paused states.
 		if( !this._active || this._paused ) {
 			this.play();
 		} else {
@@ -122,7 +139,10 @@ dojo.lang.extend(dojo.animation.Animation, {
 		}
 	},
 
-	gotoPercent: function(pct, andPlay) {
+	gotoPercent: function(/*int*/ pct, /*Boolean*/ andPlay) {
+		// summary: Set the play counter at a certain point in the animation.
+		// pct: Point to set the play counter to, expressed as a percentage (0 to 100).
+		// andPlay: If true, will start the animation at the counter automatically.
 		clearTimeout(this._timer);
 		this._active = true;
 		this._paused = true;
@@ -130,7 +150,10 @@ dojo.lang.extend(dojo.animation.Animation, {
 		if( andPlay ) { this.play(); }
 	},
 
-	stop: function(gotoEnd) {
+	stop: function(/*Boolean?*/ gotoEnd) {
+		// summary: Stop the animation.
+		// gotoEnd: If true, will advance play counter to the end before sending the event.
+		// description: Sends an "onStop" AnimationEvent to any observers.
 		clearTimeout(this._timer);
 		var step = this._percent / 100;
 		if( gotoEnd ) {
@@ -145,15 +168,18 @@ dojo.lang.extend(dojo.animation.Animation, {
 	},
 
 	status: function() {
+		// summary: Return the status of the animation.
+		// description: Returns one of "playing", "paused" or "stopped".
 		if( this._active ) {
-			return this._paused ? "paused" : "playing";
+			return this._paused ? "paused" : "playing";	/* String */
 		} else {
-			return "stopped";
+			return "stopped";	/* String */
 		}
 	},
 
 	// "private" methods
 	_cycle: function() {
+		// summary: Perform once 'cycle' or step of the animation.
 		clearTimeout(this._timer);
 		if( this._active ) {
 			var curr = new Date().valueOf();

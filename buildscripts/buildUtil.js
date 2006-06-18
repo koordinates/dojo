@@ -28,6 +28,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	load("../src/loader.js");
 	load("../src/hostenv_rhino.js");
 	load("../src/bootstrap2.js");
+
 	// FIXME: is this really what we want to say?
 	dojo.render.html.capable = true;
 	
@@ -58,6 +59,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	
 	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 	
+	dojo.hostenv.loadedUris.push("../src/namespace.js");
 	
 	if(dependencies["prefixes"]){
 		var tmp = dependencies.prefixes;

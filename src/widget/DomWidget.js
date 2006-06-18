@@ -389,11 +389,12 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 	},
 
 	getFragNodeRef: function(frag){
-		if( !frag || !frag["dojo:"+this.widgetType.toLowerCase()] ){
-			dojo.raise("Error: no frag for widget type " + this.widgetType +
-				", id " + this.widgetId + " (maybe a widget has set it's type incorrectly)");
+		if(!frag || !frag[this.namespace+":"+this.widgetType.toLowerCase()]){
+			dojo.raise("Error: no frag for widget type " + this.widgetType
+				+ " with namespace "+this.namespace + ", id " + this.widgetId
+				+ " (maybe a widget has set it's type incorrectly)");
 		}
-		return (frag ? frag["dojo:"+this.widgetType.toLowerCase()]["nodeRef"] : null);
+		return frag ? frag[this.namespace+":"+this.widgetType.toLowerCase()]["nodeRef"] : null;
 	},
 	
 	// Replace source domNode with generated dom structure, and register

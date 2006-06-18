@@ -125,12 +125,8 @@ dojo.widget.defineWidget (
 			// dojo.debug ("fillInTemplate - className = " + this.domNode.className);
 
 			// setup drag-n-drop for the sliderHandle
-			this.handleMove = new dojo.widget.html.SliderDragMoveSource (this.sliderHandle);
+			this.handleMove = new dojo.widget.html._SliderDragMoveSource (this.sliderHandle);
 			this.handleMove.setParent (this);
-
-			dojo.event.connect(this.handleMove, "onDragMove", this, "onDragMove");
-			dojo.event.connect(this.handleMove, "onDragEnd", this, "onDragEnd");
-			dojo.event.connect(this.handleMove, "onClick", this, "onClick");
 
 			// keep the slider handle inside it's parent container
 			this.handleMove.constrainToContainer = true;
@@ -145,6 +141,17 @@ dojo.widget.defineWidget (
 			if (this.isEnableY) {
 				this.setValueY (!isNaN(this.initialValueY) ? this.initialValueY : (!isNaN(this.minimumY) ? this.minimumY : 0));
 			}
+		},
+
+		// move the X value to the closest allowable value
+		_snapX: function (x,handleMove) {
+			if (x < 0) { x = 0; }
+			else if (x > this._constraintWidth) { x = this._constraintWidth; }
+			else {
+				var selectedValue = Math.round (x / this._valueSizeX);
+				x = Math.round (selectedValue * this._valueSizeX);
+			}
+			handleMove.domNode.style.left = x + "px";
 		},
 
 		// Move the handle (in the x dimension) to the specified value
@@ -164,9 +171,8 @@ dojo.widget.defineWidget (
 			else if (value < this.minimumX) {
 				value = this.minimumX;
 			}
-			//dojo.debug ("value = " + value, ", _valueSizeX = " + this._valueSizeX);
-			// 2 Math.round's needed to snap the value to the closest allowable position
-			this.handleMove.domNode.style.left = Math.round ( Math.round ((value-this.minimumX) / (this.maximumX-this.minimumX) * (this.snapValuesX-1)) * this._valueSizeX) + "px";
+			this._snapX ((value-this.minimumX) / (this.maximumX-this.minimumX) * this._constraintWidth, this.handleMove);
+			this.notifyListeners();
 		},
 
 
@@ -176,6 +182,17 @@ dojo.widget.defineWidget (
 			return Math.round (pixelPercent * (this.snapValuesX-1)) * ((this.maximumX-this.minimumX) / (this.snapValuesX-1)) + this.minimumX;
 		},
 
+
+		// move the Y value to the closest allowable value
+		_snapY: function (y,handleMove) {
+			if (y < 0) { y = 0; }
+			else if (y > this._constraintHeight) { y = this._constraintHeight; }
+			else {
+				var selectedValue = Math.round (y / this._valueSizeY);
+				y = Math.round (selectedValue * this._valueSizeY);
+			}
+			handleMove.domNode.style.top = y + "px";
+		},
 
 		// set the slider to a particular value
 		setValueY: function (value) {
@@ -194,8 +211,8 @@ dojo.widget.defineWidget (
 			else if (value < this.minimumY) {
 				value = this.minimumY;
 			}
-			// 2 Math.round's needed to snap the value to the closest allowable position
-			this.handleMove.domNode.style.top = Math.round ( Math.round ((value-this.minimumY) / (this.maximumY-this.minimumY) * (this.snapValuesY-1)) * this._valueSizeY) + "px";
+			this._snapY ((value-this.minimumY) / (this.maximumY-this.minimumY) * this._constraintHeight, this.handleMove);
+			this.notifyListeners();
 		},
 
 
@@ -208,8 +225,6 @@ dojo.widget.defineWidget (
 
 		// set the position of the handle
 		onClick: function (e) {
-			//dojo.debug ("Slider#setPosition - e.clientX = " + e.clientX
-			//            + ", e.clientY = " + e.clientY);
 			if (this.isDragInProgress) {
 				return;
 			}
@@ -219,43 +234,19 @@ dojo.widget.defineWidget (
 			
 			if (this.isEnableX) {
 				var x = offset.x + e.clientX - parent.x - (dojo.style.getContentWidth(this.handleMove.domNode) >> 1);
-				if (x > this._constraintWidth) {
-					x = this._constraintWidth;
-				}
-				this.handleMove.domNode.style.left = x + "px";
+				this._snapX(x, this.handleMove);
 			}
 			if (this.isEnableY) {
 				var y = offset.y + e.clientY - parent.y - (dojo.style.getContentHeight(this.handleMove.domNode) >> 1);
-				if (y > this._constraintHeight) {
-					y = this._constraintHeight;
-				}
-				this.handleMove.domNode.style.top = y + "px";
+				this._snapY(y, this.handleMove);
 			}
-			this.coercePosition();
+			this.notifyListeners();
 		},
 
 		notifyListeners: function() {
 			this.onValueChanged(this.getValueX(), this.getValueY());
 		},
 
-		// snap value
-		coercePosition : function() {
-			this.setValueX(this.getValueX());
-			this.setValueY(this.getValueY());
-			this.notifyListeners();
-		},
-
-
-		onDragEnd: function(){
-			this.coercePosition();
-		},
-	
-		onDragMove: function(){
-			if(this.activeDrag){
-				this.notifyListeners();
-			}
-		},
-	
 		onValueChanged: function(x, y){
 		}
 	}
@@ -310,12 +301,6 @@ dojo.widget.defineWidget (
 		// wrapper for setValueX
 		setValue: function (value) {
 			this.setValueX (value);
-			this.notifyListeners();
-		},
-
-		// snap value
-		coercePosition: function() {
-			this.setValue(this.getValue());
 		},
 
 		onValueChanged: function(value){
@@ -372,12 +357,6 @@ dojo.widget.defineWidget (
 		// wrapper for setValueY
 		setValue: function (value) {
 			this.setValueY (value);
-			this.notifyListeners();
-		},
-
-		// snap value
-		coercePosition: function() {
-			this.setValue(this.getValue());
 		},
 
 		onValueChanged: function(value){
@@ -394,47 +373,38 @@ dojo.widget.defineWidget (
  * features for the slider handle.
  */
 dojo.declare (
-	"dojo.widget.html.SliderDragMoveSource",
+	"dojo.widget.html._SliderDragMoveSource",
 	dojo.dnd.HtmlDragMoveSource,
 {
 	slider: null,
-
 
 	/** Setup the handle for drag
 	 *  Extends dojo.dnd.HtmlDragMoveSource by creating a SliderDragMoveSource */
 	onDragStart: function (e) {
 		this.slider.isDragInProgress = true;
-		this.constrainToContainer = true;
 
 		var dragObj = this.createDragMoveObject ();
-		var constraints = null;
 
-
-		dojo.event.connect (dragObj, "onDragMove", this, "onDragMove");
-
+		this.slider.notifyListeners();
 		return dragObj;
 	},
 
 	onDragEnd: function (e) {
 		this.slider.isDragInProgress = false;
-	},
-
-	onDragMove: function (e) {
-		// placeholder to enable event connection
+		this.slider.notifyListeners();
 	},
 
 	createDragMoveObject: function () {
 		//dojo.debug ("SliderDragMoveSource#createDragMoveObject - " + this.slider);
-		var dragObj = new dojo.widget.html.SliderDragMoveObject (this.dragObject, this.type);
+		var dragObj = new dojo.widget.html._SliderDragMoveObject (this.dragObject, this.type);
 		dragObj.slider = this.slider;
 
 		// this code copied from dojo.dnd.HtmlDragSource#onDragStart
 		if (this.dragClass) { 
 			dragObj.dragClass = this.dragClass; 
 		}
-		if (this.constrainToContainer) {
-			dragObj.constrainTo(this.constrainingContainer || this.domNode.parentNode);
-		}
+		dragObj.constrainTo(this.constrainingContainer || this.domNode.parentNode);
+
 		return dragObj;
 	},
 
@@ -445,13 +415,16 @@ dojo.declare (
 
 	
 	_getConstraints: function () {
-		var dragObj = this.createDragMoveObject ();
+		var dragObj = new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
+		dragObj.constrainTo(this.constrainingContainer || this.domNode.parentNode);
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
 		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
 		return dragObj.getConstraints ();
 	},
 
 
+	// constraints.minX is the left most absolute X value for the left edge of the slider handle
+	// constraints.maxX is the left absolute X value of the slider handle when its right edge hits the right wall
 	calc_valueSizeX: function () {
 		var constraints = this._getConstraints ();
 		this.slider._constraintWidth = constraints.maxX - constraints.minX;
@@ -464,6 +437,8 @@ dojo.declare (
 	},
 
 	
+	// constraints.minY is the top most absolute Y value for the top edge of the slider handle
+	// constraints.maxY is the top absolute Y value of the slider handle when its bottom edge hits the bottom wall
 	calc_valueSizeY: function () {
 		var constraints = this._getConstraints ();
 		this.slider._constraintHeight = constraints.maxY - constraints.minY;
@@ -471,6 +446,7 @@ dojo.declare (
 		if (this.slider.snapValuesY == 0) {
 			this.slider.snapValuesY = this.slider._constraintHeight + 1;
 		}
+
 		this.slider._valueSizeY = this.slider._constraintHeight / (this.slider.snapValuesY - 1);
 		return true;
 	}
@@ -485,7 +461,7 @@ dojo.declare (
  * features for the slider handle.
  */
 dojo.declare (
-	"dojo.widget.html.SliderDragMoveObject",
+	"dojo.widget.html._SliderDragMoveObject",
 	dojo.dnd.HtmlDragMoveObject,
 {
 	// reference to dojo.widget.html.Slider
@@ -497,34 +473,17 @@ dojo.declare (
 	onDragMove: function (e) {
 		this.updateDragOffset ();
 
-		var x = this.dragOffset.x + e.pageX;
-		var y = this.dragOffset.y + e.pageY;
-
-		if (this.constrainToContainer) {
-			if (x < this.constraints.minX) { x = this.constraints.minX; }
-			if (y < this.constraints.minY) { y = this.constraints.minY; }
-			if (x > this.constraints.maxX) { x = this.constraints.maxX; }
-			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
-		}
-
 		if (this.slider.isEnableX) {
-			var selectedValue = 0;
-			if (x > 0) {
-				selectedValue = Math.round (x / this.slider._valueSizeX);
-			}
-			// dojo.debug ("x = " + x + ", valueSize = " + valueSize 
-			//             + ", selectedValue = " + selectedValue);
-			x = Math.round (selectedValue * this.slider._valueSizeX);
+			var x = this.dragOffset.x + e.pageX - this.constraints.minX;
+			this.slider._snapX(x, this.slider.handleMove);
 		}
 
 		if (this.slider.isEnableY) {
-			var selectedValue = 0;
-			if (y > 0) {
-				selectedValue = Math.round (y / this.slider._valueSizeY);
-			}
-			y = Math.round (selectedValue * this.slider._valueSizeY);
+			var y = this.dragOffset.y + e.pageY - this.constraints.minY;
+			this.slider._snapY(y, this.slider.handleMove);
 		}
-
-		this.setAbsolutePosition (x, y);
+		if(this.slider.activeDrag){
+			this.slider.notifyListeners();
+		}
 	}
 });

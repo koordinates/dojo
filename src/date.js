@@ -146,7 +146,10 @@ dojo.date.setIso8601Time = function (dateObject, string) {
 	dateObject.setMinutes(mins);
 	dateObject.setSeconds(secs);
 	dateObject.setMilliseconds(ms);
-	
+
+	if (offset != 0) {
+		dateObject.setTime(dateObject.getTime() + offset * 60000);
+	}	
 	return dateObject;
 }
 
@@ -409,7 +412,7 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 			
 			case "z": // time zone or name or abbreviation
 				var timezoneOffset = dateObject.getTimezoneOffset();
-				return (timezoneOffset < 0 ? "-" : "+") + 
+				return (timezoneOffset > 0 ? "-" : "+") + 
 					_(Math.floor(Math.abs(timezoneOffset)/60)) + ":" +
 					_(Math.abs(timezoneOffset)%60); break;
 				

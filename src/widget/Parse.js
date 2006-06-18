@@ -8,7 +8,7 @@ dojo.widget.Parse = function(fragment) {
 	this.fragment = fragment;
 	
 	this.createComponents = function(frag, parentComp){
-		var comps = [ ];
+		var comps = [];
 		var built = false;
 		// if we have items to parse/create at this level, do it!
 		try{
@@ -19,21 +19,41 @@ dojo.widget.Parse = function(fragment) {
 				var tna = String(frag["tagName"]).split(";");
 				for(var x=0; x<tna.length; x++){
 					var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
+
+			        //if we don't already have a tag registered for this widget, try to load it's
+			        //namespace, if it has one
+			        if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn)){
+			            var pos = ltn.indexOf(":");
+			            if(pos > 0){
+			                var nsName = ltn.substring(0,pos);
+			                var ns = dojo.getNamespace(nsName);
+			                var tagName = ltn.substring(pos+1,ltn.length);
+			                var domain = null;
+			                var dojoDomain = frag[ltn]["dojoDomain"] || frag[ltn]["dojodomain"]; 
+			                if(dojoDomain){
+			                   	domain = dojoDomain[0].value;
+			                }
+			                if(ns){
+			                    ns.load(tagName, domain);
+			                }
+			            }
+			        }
+
 					if(djTags[ltn]){
 						built = true;
 						frag.tagName = ltn;
 						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
 						comps.push(ret);
 					}else{
-						if((dojo.lang.isString(ltn))&&(ltn.substr(0, 5)=="dojo:")){
-							dojo.debug("no tag handler registed for type: ", ltn);
-						}
+						if(dojo.lang.isString(ltn) && (ltn.substr(0, 5)=="dojo:")){
+							dojo.debug("no tag handler registered for type: ", ltn);
+			            } //TODO: else? what if it's not dojo:? is it still an error?
 					}
 				}
 			}
 		}catch(e){
 			dojo.debug("dojo.widget.Parse: error:", e);
-			// throw(e);
+			// throw e;
 			// IE is such a bitch sometimes
 		}
 		// if there's a sub-frag, build widgets from that too
@@ -198,15 +218,16 @@ dojo.widget.Parse = function(fragment) {
 
 		properties is an object of name value pairs
 	*/
-	this.createComponentFromScript = function(nodeRef, componentName, properties){
-		var ltn = "dojo:" + componentName.toLowerCase();
+	this.createComponentFromScript = function(nodeRef, componentName, properties, namespace){
+		if(!namespace){
+			namespace = "dojo";
+		}
+		var ltn = namespace + ":" + componentName.toLowerCase();
 		if(dojo.widget.tags[ltn]){
 			properties.fastMixIn = true;
 			return [dojo.widget.tags[ltn](properties, this, null, null, properties)];
 		}else{
-			if(ltn.substr(0, 5)=="dojo:"){
-				dojo.debug("no tag handler registed for type: ", ltn);
-			}
+			dojo.debug("no tag handler registered for type: ", ltn);
 		}
 	}
 }
@@ -228,41 +249,37 @@ dojo.widget.getParser = function(name){
  * @param props    Key-Value pairs of properties of the widget
  * @param refNode  If the last argument is specified this node is used as
  *                 a reference for inserting this node into a DOM tree else
- *                 it beomces the domNode
+ *                 it becomes the domNode
  * @param position The position to insert this widget's node relative to the
  *                 refNode argument
  * @return The new Widget object
  */
- 
-dojo.widget.createWidget = function(name, props, refNode, position){
-	var lowerCaseName = name.toLowerCase();
-	var namespacedName = "dojo:" + lowerCaseName;
-	var isNode = ( dojo.byId(name) && (!dojo.widget.tags[namespacedName]) );
 
-	// if we got a node or an unambiguious ID, build a widget out of it
-	if(	(arguments.length==1) && ((typeof name != "string")||(isNode)) ){
-		// we got a DOM node
-		var xp = new dojo.xml.Parse();
-		// FIXME: we should try to find the parent!
-		var tn = (isNode) ? dojo.byId(name) : name;
-		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0];
+dojo.widget.createWidget = function(name, props, refNode, position, namespace){
+	if(!namespace){
+		namespace = "dojo";
 	}
 
-	function fromScript (placeKeeperNode, name, props) {
+	function fromScript(placeKeeperNode, name, props, namespace){
+		if(!namespace){
+			namespace="dojo";
+		}
+		var lowerCaseName = name.toLowerCase();
+		var namespacedName = namespace+":" + lowerCaseName;
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
 			fastMixIn: true
 		};
 		return dojo.widget.getParser().createComponentFromScript(
-			placeKeeperNode, name, props, true);
+			placeKeeperNode, name, props, namespace);
 	}
 
 	if (typeof name != "string" && typeof props == "string") {
 		dojo.deprecated("dojo.widget.createWidget", 
 			"argument order is now of the form " +
 			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])", "0.4");
-		return fromScript(name, props, refNode);
+		return fromScript(name, props, refNode, namespace);
 	}
 	
 	props = props||{};
@@ -283,7 +300,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var widgetArray = fromScript(tn, name, props);
+	var widgetArray = fromScript(tn, name, props, namespace);
 	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}

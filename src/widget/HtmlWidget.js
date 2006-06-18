@@ -47,7 +47,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 	destroyRendering: function(finalize){
 		try{
-			if(!finalize){
+			if(!finalize && this.domNode){
 				dojo.event.browser.clean(this.domNode);
 			}
 			this.domNode.parentNode.removeChild(this.domNode);

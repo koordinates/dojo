@@ -271,6 +271,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
 	var nsyms = modulename.split(".");
+	if(djConfig.autoLoadNamespace){ dojo.getNamespace(syms[0]); }
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
 
