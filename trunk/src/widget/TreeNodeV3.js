@@ -147,7 +147,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	viewAddLayout: function() {
 		var _this = this;
 		if (this.parent["isTree"]) {
-			dojo.html.addClass(_this.domNode, "TreeRoot");
+			dojo.html.addClass(_this.domNode, "isTreeRoot");
 		}
 		//dojo.debug(_this.parent.children.length);
 		if (this.isLastNode()) {
