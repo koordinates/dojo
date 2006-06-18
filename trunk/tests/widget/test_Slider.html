@@ -22,7 +22,7 @@ This page demos the three types of slider widgets, with slightly different behav
 <table border="1">
 <thead><tr><td>Type</td><td>Range</td><td>onDragMove</td><td>onDragEnd</td><td>On Click</td></tr></thead>
 <tbody>
-<tr><td>vertical</td><td>0..10</td><td>&nbsp;</td><td>update text field</td><td>update text field</td></tr>
+<tr><td>vertical</td><td>1..9</td><td>&nbsp;</td><td>update text field</td><td>update text field</td></tr>
 <tr><td>horizontal</td><td>-10..10</td><td>update text field</td><td>&nbsp;</td><td>update text field</td></tr>
 <tr><td>box</td><td>0..10</td><td>&nbsp;</td><td>update text field</td><td>&nbsp;</td></tr>
 </tbody>
@@ -30,7 +30,7 @@ This page demos the three types of slider widgets, with slightly different behav
 
 <table>
 <tr><td></td><td>
-<div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" initialValue="0" minimum="-10" maximum="10" snapValues="11"
+<div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" initialValue="5" minimum="-10" maximum="10" snapValues="11"
 	activeDrag="true"
    	onValueChanged="dojo.byId('horizontalSliderValue').value = arguments[0];"
    	>
@@ -43,7 +43,7 @@ This page demos the three types of slider widgets, with slightly different behav
 </div>
 </td></tr>
 <tr><td>
-<div id="verticalSlider" dojoType="SliderVertical" initialValue="5" snapValues="10" maximum="10" minimum="1"
+<div id="verticalSlider" dojoType="SliderVertical" initialValue="5" snapValues="9" maximum="9" minimum="1"
   	onValueChanged="dojo.byId('verticalSliderValue').value = arguments[0];"
    >
 </div>
