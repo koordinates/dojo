@@ -155,8 +155,18 @@ function test_date_fromIso8601Time () {
 	jum.assertEquals("fromIso8601Time_test54", 994, date.getMilliseconds());
 	
 	//1995-02-04 24:00 = 1995-02-05 00:00
-	
-	//TODO: timezone tests
+
+	// FIXME: failing because of daylight savings time
+	//timezone tests
+	var offset = new Date().getTimezoneOffset()/60;
+	var date = dojo.date.fromIso8601Time("18:46:39+07:00");
+	jum.assertEquals("fromIso8601Time_test61", 11 - offset, date.getHours());
+
+	var date = dojo.date.fromIso8601Time("18:46:39+00:00");
+	jum.assertEquals("fromIso8601Time_test62", 18 - offset, date.getHours());
+
+	var date = dojo.date.fromIso8601Time("16:46:39-07:00");
+	jum.assertEquals("fromIso8601Time_test63", 23 - offset, date.getHours());
 	
 	//+hh:mm, +hhmm, or +hh
 	

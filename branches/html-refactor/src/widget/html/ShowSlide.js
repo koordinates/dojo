@@ -52,7 +52,9 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		}
 	},
 	previousAction: function(/*Event?*/ event){
-		this.stopEvent(event);
+		if(!this.parent.stopEvent(event)){
+			return false;
+		}
 
 		var action = this._actions[this._action];
 		if(!action){
@@ -101,7 +103,9 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		}
 	},
 	nextAction: function(/*Event?*/ event){
-		this.stopEvent(event);
+		if(!this.parent.stopEvent(event)){
+			return false;
+		}
 
 		if(!dojo.widget.ShowSlide.prototype.nextAction.call(this, event)){
 			return false;
@@ -164,16 +168,4 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 			parent.style.listStyleType = parent.oldType;
 		}
 	},
-	stopEvent: function(/*Event*/ ev){
-		if(!ev){
-			return;
-		}
-		if(window.event){
-			ev.returnValue = false;
-			ev.cancelBubble = true;
-		}else{
-			ev.preventDefault();
-			ev.stopPropagation();
-		}
-	}
 });

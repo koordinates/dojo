@@ -22,26 +22,28 @@ The Plan
 What follows is highly provisional. If a feature is important to you, make it
 known on the `dojo interest mailing list`_.
 
-0.3.1
-******************************************
-
-Proposed release date: June 12, 2006 
-
-0.3.x bug fixes
-
 0.4 "The Widgets Release, Part 2"
 ********************************************
 
 Release candidate on: August 15, 2006 
 Proposed release date: August 31, 2006 
 
+Documentation:
+- Reference guide
+- User Guide
+- Writing widgets
+- Debugging widgets
+
 Core:
-- Performance improvements/profiling, smaller base namespaces
-- Provide better/simpler APIs for inheritance (public facing APIs are a bit challenging)
-- crypto
-- SVG layout calculations, etc.
+- Accessibility
+- Soria theme for all widgets
+- Internationalization
 - xhtml issues/testing (to support nested svg widgets, etc.)
+- Performance improvements/profiling, smaller base namespaces
 - hostenvs for dashboard, canvas
+- Namespace support for widget parsing
+- dojo.html refactor
+- DnD refactor and improvements
 
 Widgets:
 - Widget Refactoring
@@ -52,18 +54,14 @@ Widgets:
 	+ etc.
 
 - Widget API cleanup/unification
-- Default widget styles (should have at least 2 default themes)
-- SVG widget facility improvements
-- VML compatibility layer
+- Ongoing vector graphics efforts
+	+ SVG widget facility improvements
+	+ VML compatibility layer
 - New widgets
 
-	+ Grid widget, data binding (large number of people)
+	+ Grid widget, data binding
 	+ SVG Color Picker widget(s)
-	+ Validation widgets
 	+ Other widgets as contributed by the community
-
-- Guide on writing widgets
-- Guide on debugging widgets
 
 0.4.1
 ******************************************
@@ -86,6 +84,10 @@ Proposed release date: October 5, 2006
 Proposed release date: December 15, 2006
 
 Core:
+- crypto
+- SVG layout calculations, etc.
+- xhtml issues/testing (to support nested svg widgets, etc.)
+- hostenvs for dashboard, canvas
 - better logging/debugging
 - js linker/better packaging
 - Add many missing aspects to the parser
@@ -98,9 +100,11 @@ Widgets:
 - first release of data grid/data binding
 - start work on expression-based UI constraints
 - port some html widgets to svg to better test SVG support
+- Default widget styles (should have at least 2 default themes)
 - new widgets
 
   + SVG clock style time picker
+	+ Validation widgets
   + Other widgets as contributed by the community
 
 0.5.1

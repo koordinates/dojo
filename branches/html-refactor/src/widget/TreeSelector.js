@@ -116,6 +116,12 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		var e = message.event;
 
 		if (this.selectedNode === node) {
+			if(e.ctrlKey || e.shiftKey || e.metaKey){
+				// If the node is currently selected, and they select it again while holding
+				// down a meta key, it deselects it
+				this.deselect();
+				return;
+			}
 			dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
 			return;
 		}
