@@ -53,6 +53,9 @@ dojo.lang.extend(dojo.html.shadow, {
 
 	size: function(width, height){
 		var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
+		if (sideHeight < 0) { sideHeight = 0; }
+		if (height < 0) { height = 0; }
+		if (width < 0) { width = 0; }
 		with(this.pieces){
 			l.style.height = sideHeight+"px";
 			r.style.height = sideHeight+"px";
