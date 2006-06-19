@@ -394,6 +394,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
 	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
+	var srtLength = classes.join(" ").length;
 	var candidateNodes = [];
 	
 	if(!useNonXpath && document.evaluate) { // supports dom 3 xpath
@@ -401,7 +402,12 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 		if(classMatchType != dojo.html.classMatchType.ContainsAny){
 			xpath += "concat(' ',@class,' '), ' " +
 			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
-			" ')]";
+			" ')";
+			if (classMatchType == 2) {
+				xpath += " and string-length(@class)="+srtLength+"]";
+			}else{
+				xpath += "]";
+			}
 		}else{
 			xpath += "concat(' ',@class,' '), ' " +
 			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
