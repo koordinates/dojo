@@ -157,6 +157,15 @@ dojo.declare("dojo.widget.Widget", null, {
 		return result;
 	},
 
+
+	isFirstNode: function() {
+		return this.getParentIndex() == 0 ? true: false;
+	},
+
+	isLastNode: function() {
+		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
+	},
+
 	satisfyPropertySets: function(args){
 		// dojo.profile.start("satisfyPropertySets");
 		// get the default propsets for our component type
@@ -439,6 +448,7 @@ dojo.declare("dojo.widget.Widget", null, {
 	},
  
 	getParentIndex: function() {
+//		dojo.debug("get parent index "+this.title+" siblings count"+this.parent.children.length);
 		return dojo.lang.indexOf( this.getSiblings(), this, true);
 	},
  

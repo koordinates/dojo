@@ -346,8 +346,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 					tdo.onDragStart(e);
 
 					// "bump" the drag object to account for the drag threshold
-					tdo.dragOffset.top += dy;
-					tdo.dragOffset.left += dx;
+					tdo.dragOffset.y += dy;
+					tdo.dragOffset.x += dx;
 					tdo.dragSource = tempSource;
 
 					this.dragObjects.push(tdo);

@@ -32,16 +32,15 @@ dojo.widget.defineWidget(
 				dojo.widget.wai.setAttr(this.domNode, "waiState", "labelledby", label[0].id);
 			}
 		},
+
 		fillInTemplate: function(){
-			this._setClassStr();
+			this._setInfo();
 		},
 
 		onClick: function(e){
 			if(this.disabled == "enabled"){
 				this.checked = !this.checked;
-				this.inputNode.checked = this.checked;
-				dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
-				this._setClassStr();
+				this._setInfo();
 			}
 			e.preventDefault();
 		},
@@ -54,10 +53,12 @@ dojo.widget.defineWidget(
 		},
 
 		// set CSS class string according to checked/unchecked and disabled/enabled state
-		_setClassStr: function(){
+		_setInfo: function(){
 			var prefix = (this.disabled == "enabled" ? "dojoHtmlCheckbox" : "dojoHtmlCheckboxDisabled");
 			var state = prefix + (this.checked ? "On" : "Off");
 			dojo.html.setClass(this.domNode, "dojoHtmlCheckbox " + state);
+			this.inputNode.checked = this.checked;
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
 	}
 );
