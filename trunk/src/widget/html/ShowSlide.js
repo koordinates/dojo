@@ -167,5 +167,5 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		if((parent)&&(parent.tagName.toLowerCase() == "li")){
 			parent.style.listStyleType = parent.oldType;
 		}
-	},
+	}
 });
