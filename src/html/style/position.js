@@ -5,7 +5,7 @@ dojo.require("dojo.html.common");
 dojo.require("dojo.html.style.util");
 
 dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
-	node = dojo.byId(node);
+	node = dojo.byId(node, node.ownerDocument);
 	var ret = {
 		x: 0,
 		y: 0
@@ -22,9 +22,13 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 		}
 	}else if(document.getBoxObjectFor){
 		// mozilla
-		var bo = document.getBoxObjectFor(node);
-		ret.x = bo.x - dojo.html.sumAncestorProperties(node, "scrollLeft");
-		ret.y = bo.y - dojo.html.sumAncestorProperties(node, "scrollTop");
+		try{
+			var bo = document.getBoxObjectFor(node);
+			ret.x = bo.x - dojo.html.sumAncestorProperties(node, "scrollLeft");
+			ret.y = bo.y - dojo.html.sumAncestorProperties(node, "scrollTop");
+		}catch(e){
+			// squelch
+		}
 	}else{
 		if(node["offsetParent"]){
 			var endNode;		
