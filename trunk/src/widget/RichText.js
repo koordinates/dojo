@@ -523,7 +523,7 @@ dojo.widget.defineWidget(
 				this.domNode.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 			}else if (this.iframe){
-				this.editNode = this.dojo.html.body();
+				this.editNode = this.document.body;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 		
 				try { // sanity check for Mozilla
@@ -1277,8 +1277,8 @@ dojo.widget.defineWidget(
 					}
 				}
 
-				if(this.dojo.html.body()["offsetHeight"]){
-					this._lastHeight = Math.max(this.dojo.html.body().scrollHeight, this.dojo.html.body().offsetHeight) + chromeheight;
+				if(this.document.body["offsetHeight"]){
+					this._lastHeight = Math.max(this.document.body.scrollHeight, this.document.body.offsetHeight) + chromeheight;
 					this.iframe.height = this._lastHeight + "px";
 					this.window.scrollTo(0, 0);
 				}
