@@ -20,6 +20,8 @@ dojo.widget.defineWidget(
 dojo.lang.extend(dojo.widget.html.ShowSlide, dojo.widget.ShowSlide.prototype);
 dojo.lang.extend(dojo.widget.html.ShowSlide, {
 	htmlTitle: null,
+	debug: false,
+	noClick: false,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlShowSlide.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShowSlide.css"),
 	fillInTemplate: function(){
