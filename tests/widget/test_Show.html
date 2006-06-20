@@ -8,10 +8,13 @@
 			dojo.require("dojo.widget.Show");
 			dojo.require("dojo.widget.ShowSlide");
 			dojo.require("dojo.widget.ShowAction");
+			dojo.require("dojo.widget.FloatingPane");
+			
 		</script>
 	</head>
 	<body>
-		<div dojoType="show">
+		<div dojoType="FloatingPane" id="debugPane" title="Debug" displayCloseAction="true" style="width: 300px; height: 200px; bottom: 10px; right: 10px"></div>
+		<div dojoType="show" debugPane="debugPane">
 			<div dojoType="showslide" title="Introduction">
 				<p>This is a brief overview of what the show widget is capable of</p>
 			</div>
@@ -47,6 +50,12 @@
 					<li><input value="This shouldn't advance"></li>
 					<li><span onclick="">This shouldn't advance</a></li>
 				</ul>
+			</div>
+			<div dojoType="showslide" title="Debug Window" debug="true">
+				<p>This slide should have a debug window. It is set by the debug attribute of the showslide widget</p>
+			</div>
+			<div dojoType="showslide" title="Click Blocking" noClick="true">
+				<p>In this window, clicking won't work at all (the noClick attribute). This can also be applied to the whole show</p>
 			</div>
 			<div dojoType="showslide" title="The End">
 				<p>Thanks for checking out the show widget</p>
