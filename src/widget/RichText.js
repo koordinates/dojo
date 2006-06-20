@@ -439,7 +439,7 @@ dojo.widget.defineWidget(
 						// TODO: left positioning will case contents to disappear out of view
 						//       if it gets too wide for the visible area
 						'    body { top: 0; left: 0; right: 0;' +
-						(this.height ? '' : ' position: fixed; ') + 
+						(((this.height)||(dojo.render.html.opera)) ? '' : ' position: fixed; ') + 
 						'        font: ' + font + ';\n' + 
 						'        min-height: ' + this.minHeight + '; \n' +
 						'        line-height: ' + lineHeight + '} \n' +
