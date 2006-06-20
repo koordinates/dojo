@@ -101,15 +101,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	},
 		
 
-
-	//
-	// tree options
-	//
-
-	showGrid: true,
-	showRootGrid: true,
-
-
 	actions: {
     	ADDCHILD: "ADDCHILD"
 	},
@@ -192,6 +183,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	postCreate: function() {
 		this.viewCreateChildrenNodes();
+		
+		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 	},
 	
 	toString: function() {
