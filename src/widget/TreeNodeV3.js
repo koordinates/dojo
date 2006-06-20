@@ -48,6 +48,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expandNode: null,
 
 	// expandNode has +- CSS background. Not img.src for performance, background src string resides in single place.
+	// selection in KHTML/Mozilla disabled treewide, IE requires unselectable for every node
+	// you can add unselectable if you want both in postCreate of tree and in this template
 	templateString: '<div class="TreeNode">'
 	    + '<div class="TreeExpand" dojoAttachEvent="onClick:onExpandClick" dojoAttachPoint="expandNode"></div>\n'
 		+ '<div class="TreeContent" dojoAttachEvent="onClick:onContentClick" dojoAttachPoint="contentNode">${this.title}</div>\n' // can add more labels with hooks
@@ -77,7 +79,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	containerNodeTemplate: function() {
 			var div = document.createElement('div');
-			div.style.display = 'none';
+			div.style.display = 'none';			
 			dojo.html.addClass(div, "TreeContainer");
 			return div;
 		}(),
