@@ -3,7 +3,6 @@ dojo.provide("dojo.widget.html.Show");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Show");
-dojo.require("dojo.widget.FloatingPane");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.event");
 dojo.require("dojo.animation.Animation");
@@ -29,17 +28,9 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	select: null,
 	option: null,
 	inNav: false,
-	debugPane: null,
-	noClick: false,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
 	fillInTemplate: function(args, frag){
-		if(args.debugPane){
-			this.debugPane = dojo.widget.byId(args.debugPane);
-			var dp = this.debugPane;
-			dp.hide();
-			dojo.hostenv.println = function(message){ dp.setContent(message); }
-		}
 		var source = this.getFragNodeRef(frag);
 		this.sourceNode = dojo.html.body().appendChild(source.cloneNode(true));
 		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
@@ -52,7 +43,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		this.sourceNode.style.display = "none";
 		
 		dojo.event.connect(document, "onclick", this, "gotoSlideByEvent");
-		dojo.event.connect(document, "onkeypress", this, "gotoSlideByEvent");
+		dojo.event.connect(document,"onkeydown",this, "gotoSlideByEvent");
 		dojo.event.connect(window, "onresize", this, "resizeWindow");
 		dojo.event.connect(this.nav, "onmousemove", this, "popUpNav");
 	},
@@ -85,21 +76,15 @@ dojo.lang.extend(dojo.widget.html.Show, {
 				}
 			}
 		}
-
+		
 		if(!this._slides[slide]){
 			return;
-		}
-		
-		if(this._slides[slide].debug){
-			this.debugPane.show();
-		}else{
-			this.debugPane.hide();
 		}
 		
 		if(this._slide != -1){
 			while(this._slides[this._slide].previousAction()){}
 		}
-
+		
 		this._slide = slide;
 		this.select.selectedIndex = slide;
 		while(this.contentNode.hasChildNodes()){ this.contentNode.removeChild(this.contentNode.firstChild); }
@@ -116,7 +101,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			}else{
 				this.nextSlide(event);
 			}
-		}else if(type == "keypress"){
+		}else if (type=="keydown") {
 			var key = event.keyCode;
 			var ch = event.charCode;
 			if(key == 63234 || key == 37){
@@ -141,10 +126,6 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	stopEvent: function(/*Event*/ ev){
 		if(!ev){
 			return true;
-		}
-		
-		if(ev.type == "click" && (this._slides[this._slide].noClick || this.noClick)){
-			return false;
 		}
 		
 		var target = ev.target;
