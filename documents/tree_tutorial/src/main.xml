@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "http://www.docbook.org/xml/4.4/docbookx.dtd" [
+  <!ENTITY introduction SYSTEM "introduction.xml">
+  <!ENTITY components SYSTEM "components.xml">
+   <!ENTITY howto SYSTEM "howto.xml">
+  <!ENTITY model SYSTEM "model.xml">
+      <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
+]>
+<section>
+    <title>Dojo Tree Tutorial</title>
+    &introduction;
+    &components;
+    &model;
+    &howto;
+</section>
+

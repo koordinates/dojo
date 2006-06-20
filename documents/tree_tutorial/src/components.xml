@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Components</title>
+    <variablelist>
+        <varlistentry>
+            <term>Tree</term>
+            <listitem>Tree and TreeNode classes handle both data and view</listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Controllers</term>
+            <listitem>
+                <variablelist>                    
+                    <varlistentry>
+                        <term>TreeBasicController</term>
+                        <listitem>Controller that provides all capabilities but no server calls</listitem>
+                    </varlistentry>            
+                    <varlistentry>
+                        <term>TreeLoadingController</term>
+                        <listitem>Added dynamic node loading from server</listitem>
+                    </varlistentry>    
+                    <varlistentry>
+                        <term>TreeRPCController</term>
+                        <listitem>All actions call server</listitem>
+                    </varlistentry>
+                </variablelist>
+            </listitem>            
+        </varlistentry>
+        <varlistentry>
+            <term>Selector</term>
+            <listitem>TreeSelector handles node selection. Currently, only single node can be selected</listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Drag'n'Drop</term>
+            <listitem>TreeDragSource, TreeDropTarget and TreeDNDController are classes that
+                allow nodes to be dragged, to be dropped on and mechanism binding that together.
+                Sources are located under src/dnd folder, not among widgets. </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Context menu</term>
+            <listitem>TreeContextMenu inherits dojo context menu to provide a lightweight right-click
+                menu. There is a single menu object for all nodes, although it always knows its target</listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Style &amp; icons</term>
+            <listitem>Tree.css and icons are located under src/widget/templates and provide basic style
+                used by default. 
+                </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Extensions</term>
+            <listitem>TreeControllerExtension contains additional functions for controller that you might need
+            </listitem>
+        </varlistentry>
+        
+    </variablelist>
+    
+</section>
+

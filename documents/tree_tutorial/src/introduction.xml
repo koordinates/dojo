@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Introduction</title>
+    <para>Tree is a generic thing, a "must have" of any widget collection. 
+        Unfortunately, javacript toolkit should be lightweight, so I couldn't take a Swing
+        tree component and simply copy it. Almost all components are optional and event-based,
+        feel free to hook on whatever you'd like.
+    </para>
+    <para>
+        Basic things are shown in tests, so you might want to check them first and copy-paste
+        exactly the things you need. The tutorial is meant to provide deeper understanding for those
+        who want to extend/modify tree behavior.
+     </para>
+    <para>
+        The tutorial has a few parts. First, the tree main components are explained, then...
+    </para>
+</section>
+
