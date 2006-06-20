@@ -1,0 +1,43 @@
+<html>
+<head>
+<script type="text/javascript">
+	// KLUDGE: set parseWidgets to false so we can manually insert our namespace in our own onload handler.
+	// Usually, myns.js would belong in the dojo tree under src/namespaces and get loaded automatically
+	djConfig = { 
+		isDebug: true,
+		parseWidgets: false
+	};
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../_bootstrap.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.xml.Parse");
+dojo.require("dojo.widget.Widget");
+dojo.require("dojo.widget.Parse");
+dojo.require('tests.namespaces.myns');
+</script>
+
+<script type="text/javascript">
+dojo.addOnLoad(function(){
+	djConfig.parseWidgets = true;
+	dojo.hostenv.makeWidgets();
+});
+</script>
+
+</head>
+<body>
+<div dojoType="Checkbox"></div> Dojo Checkbox using dojoType
+<br/>------<br/>
+<dojo:Checkbox></dojo:Checkbox> Dojo Checkbox using namespaces
+<br/>------<br/>
+<dojo:Button>MyButton</dojo:Button> Dojo Button using namespaces
+<br/>------<br/>
+
+<myns:Check></myns:Check>	MyNs checkbox using namespaces
+<br/>------<br/>
+
+<div dojoType="myns:Check"></div> MyNs checkbox using dojoType
+</body>
+</html>
+
