@@ -142,6 +142,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			node = outer;
 		}
 		node.style.zIndex = 999;
+
 		return node;
 	},
 
@@ -171,6 +172,10 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		}
 
 		dojo.html.body().appendChild(this.dragClone);
+
+		// shortly the browser will fire an onClick() event,
+		// but since this was really a drag, just squelch it
+		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
 
 		dojo.event.topic.publish('dragStart', { source: this } );
 	},
@@ -286,19 +291,17 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				break;
 		}
 
-		// shortly the browser will fire an onClick() event,
-		// but since this was really a drag, just squelch it
-		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
-
 		dojo.event.topic.publish('dragEnd', { source: this } );
 	},
 
 	squelchOnClick: function(e){
 		// squelch this onClick() event because it's the result of a drag (it's not a real click)
-		e.preventDefault();
+		dojo.event.browser.stopEvent(e);
 
-		// but if a real click comes along, allow it
-		dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
+		// disconnect after a short delay to prevent "Null argument to unrollAdvice()" warning
+		dojo.lang.setTimeout(function() {
+				dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
+			},50);
 	},
 
 	constrainTo: function(container) {
