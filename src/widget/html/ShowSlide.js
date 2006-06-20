@@ -99,7 +99,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		component.style.visibility = "hidden";
 		component.style.backgroundColor = "transparent";
 		var parent = component.parentNode;
-		if((parent)&&(parent.tagName == "LI")){
+		if((parent)&&(parent.tagName.toLowerCase() == "li")){
 			parent.oldType = parent.style.listStyleType;
 			parent.style.listStyleType = "none";
 		}
