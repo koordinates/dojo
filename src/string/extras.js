@@ -1,7 +1,7 @@
 dojo.provide("dojo.string.extras");
 
 dojo.require("dojo.string.common");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.*");
 
 /**
  * Performs parameterized substitutions on a string.  For example,
