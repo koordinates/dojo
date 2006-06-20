@@ -14,7 +14,7 @@
  he: "Hebrew",
  hi: "Hindi",
  it: "Italian",
- jp: "Japanese",
+ ja: "Japanese",
  ko: "Korean",
  pl: "Polish",
  pt: "Portugese",
