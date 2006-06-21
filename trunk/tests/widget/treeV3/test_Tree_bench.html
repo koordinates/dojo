@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function(){
+
+		dojo.profile.start("totalWork");
+		var controller = dojo.widget.createWidget("TreeBasicControllerV3");		
+		var tree = dojo.widget.createWidget("TreeV3", {controller: controller.widgetId});	
+		
+		document.body.appendChild(tree.domNode);
+
+		for (var i=1; i<=5; i++) {		
+			dojo.profile.start("createWidget");
+			var ni = dojo.widget.createWidget("TreeNodeV3", {title: i, tree: tree.widgetId});
+			dojo.profile.end("createWidget");
+			
+			tree.addChild(ni);
+			
+			tree.addChild(ni);
+			for (var j=1; j<=5; j++) {
+				dojo.profile.start("createWidget");
+				var nj = dojo.widget.createWidget("TreeNodeV3", {title: i+'.'+j, tree: tree.widgetId});
+				dojo.profile.end("createWidget");
+				
+				ni.addChild(nj);
+				
+				for (var k=1; k<=5; k++) {
+					dojo.profile.start("createWidget");
+					var nk = dojo.widget.createWidget("TreeNodeV3", {title: i+'.'+j+'.'+k, tree: tree.widgetId});
+					dojo.profile.end("createWidget");
+					
+					nj.addChild(nk);
+				}
+				
+				
+			}
+			
+		}
+		
+		dojo.profile.end("totalWork");
+		
+		dojo.profile.dump(true);
+	});
+
+</script>
+</head>
+<body>
+
+<h4>Create tree programmatically</h4>
+
+
+</body>
+</html>
