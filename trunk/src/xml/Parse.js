@@ -28,7 +28,7 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
 dojo.xml.Parse = function(){
 
-	function getDojoTagName (node) {
+	function getDojoTagName(node){
 		var tagName = node.tagName;
 		if(tagName.substr(0,5).toLowerCase() == "dojo:"){
 			return tagName.toLowerCase();
@@ -71,7 +71,6 @@ dojo.xml.Parse = function(){
 					}
 				}
 			}
-		
 		}
 
 		return tagName.toLowerCase();
@@ -98,7 +97,7 @@ dojo.xml.Parse = function(){
 			}
 		}
 
-		if(!optimizeForDojoML||dojo.getNamespace(parsedNodeSet.namespace)){
+		if(!optimizeForDojoML||(parsedNodeSet.namespace&&dojo.getNamespace(parsedNodeSet.namespace))){
 			var attributeSet = this.parseAttributes(node);
 			for(var attr in attributeSet){
 				if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
@@ -134,7 +133,7 @@ dojo.xml.Parse = function(){
 					}
 					break;
 				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
-					if(node.childNodes.length == 1) {
+					if(node.childNodes.length == 1){
 						parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
 					}
 					break;
@@ -166,7 +165,7 @@ dojo.xml.Parse = function(){
 		//return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
 		//if(parsedNodeSet.tagName)dojo.debug("parseElement: RETURNING NODE WITH TAGNAME "+parsedNodeSet.tagName);
 		return parsedNodeSet;
-	}
+	};
 
 	/* parses a set of attributes on a node into an object tree */
 	this.parseAttributes = function(node){
@@ -176,7 +175,7 @@ dojo.xml.Parse = function(){
 		// TODO: should we allow for duplicate attributes at this point...
 		// would any of the relevant dom implementations even allow this?
 		var attnode, i=0;
-		while(attnode=atts[i++]) {
+		while((attnode=atts[i++])){
 			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
 				if(!attnode){ continue; }
 				if(	(typeof attnode == "object")&&
@@ -192,5 +191,5 @@ dojo.xml.Parse = function(){
 			};
 		}
 		return parsedAttributeSet;
-	}
-}
+	};
+};
