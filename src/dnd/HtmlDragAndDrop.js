@@ -298,10 +298,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		// squelch this onClick() event because it's the result of a drag (it's not a real click)
 		dojo.event.browser.stopEvent(e);
 
-		// disconnect after a short delay to prevent "Null argument to unrollAdvice()" warning
-		dojo.lang.setTimeout(function() {
-				dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
-			},50);
+		// but if a real click comes along, allow it
+		dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
 	},
 
 	constrainTo: function(container) {
