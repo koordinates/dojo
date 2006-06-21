@@ -149,7 +149,7 @@ dojo.widget.TreeWithNode = {
 		child.parent.doRemoveNode(child);
 
 		newParent.doAddChild(child, index);
-	},
+	}
 
 	
 	
