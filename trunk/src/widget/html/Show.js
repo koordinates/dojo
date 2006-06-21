@@ -51,7 +51,13 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		this.sourceNode.style.display = "none";
 		
 		dojo.event.connect(document, "onclick", this, "gotoSlideByEvent");
-		dojo.event.connect(document,"onkeydown",this, "gotoSlideByEvent");
+		if(dojo.render.html.ie) {
+			dojo.event.connect(document,"onkeydown",this, "gotoSlideByEvent");
+		} else {
+			// while keydown works, keypress allows rapid successive key presses
+			// to be handled correctly
+			dojo.event.connect(document,"onkeypress",this, "gotoSlideByEvent");
+		}
 		dojo.event.connect(window, "onresize", this, "resizeWindow");
 		dojo.event.connect(this.nav, "onmousemove", this, "popUpNav");
 	},
@@ -115,7 +121,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			}else{
 				this.nextSlide(event);
 			}
-		}else if (type=="keydown") {
+		}else if (type=="keydown" || type=="keypress") {
 			var key = event.keyCode;
 			var ch = event.charCode;
 			if(key == 63234 || key == 37){
