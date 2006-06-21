@@ -90,16 +90,19 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 		// Create label
 		tab.div = document.createElement("div");
-		dojo.widget.wai.setAttr(tab.div, "waiRole", "role", "tab");
 		dojo.html.addClass(tab.div, "dojoTabPaneTab");
-		var span = document.createElement("span");
-		span.innerHTML = tab.label;
-		span.id=tab.label + "Desc";
-		dojo.html.disableSelection(span); 
-		dojo.widget.wai.setAttr(tab.div, "waiState", "describedby", span.id);
-
+		var innerDiv = document.createElement("div");
+		// need inner span so focus rectangle is drawn properly
+		var titleSpan = document.createElement("span");
+		titleSpan.innerHTML = tab.label;
+		titleSpan.tabIndex="-1";
+		// set role on tab title
+		dojo.widget.wai.setAttr(titleSpan, "waiRole", "role", "tab");
+		innerDiv.appendChild(titleSpan);
+		dojo.html.disableSelection(titleSpan); 
+		
 		if(this.closeButton=="tab"){
-			var img = document.createElement("div");
+			var img = document.createElement("span");
 			dojo.html.addClass(img, "dojoTabPaneTabClose");
 			dojo.event.connect(img, "onclick", dojo.lang.hitch(this, 
 					function(evt){ 
@@ -109,11 +112,12 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			);
 			dojo.event.connect(img, "onmouseover", function(){ dojo.html.addClass(img,"dojoTabPaneTabCloseHover"); });
 			dojo.event.connect(img, "onmouseout", function(){ dojo.html.removeClass(img,"dojoTabPaneTabCloseHover"); });
-			span.appendChild(img);
+			innerDiv.appendChild(img);
 		}
-		tab.div.appendChild(span);
+		tab.div.appendChild(innerDiv);
+		tab.div.tabTitle=titleSpan;
 		this.dojoTabLabels.appendChild(tab.div);
-		
+
 		dojo.event.connect(tab.div, "onclick", dojo.lang.hitch(this, 
 				function(){ this.selectTab(tab); }
 			)
@@ -210,10 +214,10 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	},
 
 	tabNavigation: function(evt, tab){
-		if(	(evt.keyCode == evt.KEY_RIGHT_ARROW)||
+		if( (evt.keyCode == evt.KEY_RIGHT_ARROW)||
 			(evt.keyCode == evt.KEY_LEFT_ARROW) ){
 			var current = null;
-			var next;
+			var next = null;
 			for(var i=0; i < this.children.length; i++){
 				if(this.children[i] == tab){
 					current = i; 
@@ -227,15 +231,24 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			}
 			this.selectTab(next);
 			dojo.event.browser.stopEvent(evt);
-			next.div.focus();
+			next.div.tabTitle.focus();
 		} 
 	
+	},
+	
+	keyDown: function(e){ 
+		if(e.keyCode == e.KEY_UP_ARROW && e.ctrlKey){
+			// set focus to current tab
+			this.selectTab(this.selectedTabWidget);
+			dojo.event.browser.stopEvent(e);
+			this.selectedTabWidget.div.tabTitle.focus();
+		}
 	},
 
 	_showTab: function(tab, _noRefresh) {
 		dojo.html.addClass(tab.div, "current");
 		tab.selected=true;
-		tab.div.setAttribute("tabIndex","0");
+		tab.div.tabTitle.setAttribute("tabIndex","0");
 		if ( this.useVisibility && !dojo.render.html.ie){
 			tab.domNode.style.visibility="visible";
 		}else{
@@ -259,7 +272,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 	_hideTab: function(tab) {
 		dojo.html.removeClass(tab.div, "current");
-		tab.div.setAttribute("tabIndex","-1");
+		tab.div.tabTitle.setAttribute("tabIndex","-1");
 		tab.selected=false;
 		if( this.useVisibility ){
 			tab.domNode.style.visibility="hidden";
