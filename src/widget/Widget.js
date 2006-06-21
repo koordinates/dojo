@@ -478,8 +478,12 @@ dojo.widget.lcArgsCache = {};
 dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
-	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){ 
-		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
+	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){
+		dojo.profile.start(ltype);
+		var n = dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
+		dojo.profile.end(ltype);
+		
+		return n;
 	}
 }
 dojo.widget.tags.addParseTreeHandler("dojo:widget");
@@ -506,6 +510,9 @@ dojo.widget.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 dojo.widget.buildWidgetFromParseTree = function(type, frag, 
 												parser, parentComp, 
 												insertionIndex, localProps){
+	
+	dojo.profile.start("buildWidgetFromParseTree");
+	
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// FIXME: we don't seem to be doing anything with this!
@@ -520,8 +527,12 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
+	
 	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
 	// dojo.debug(new Date() - tic);
+	
+	dojo.profile.end("buildWidgetFromParseTree");
+	
 	return ret;
 }
 
