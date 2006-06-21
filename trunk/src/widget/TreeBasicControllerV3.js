@@ -107,10 +107,16 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 
+	getWidgetByNode: function(node) {
+		var widgetId;
+		while (! (widgetId = node.getAttribute("widgetId")) ) {
+			node = node.parentNode;
+		}
+		return dojo.widget.manager.getWidgetById(widgetId);
+	},
 
-
-	onExpandClick: function(message){
-		var node = message.source;
+	onExpandClick: function(e){
+		var node = this.getWidgetByNode(e.target);
 
 		
 		if(node.isLocked()) {

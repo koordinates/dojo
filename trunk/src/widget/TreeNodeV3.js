@@ -52,7 +52,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	// you can add unselectable if you want both in postCreate of tree and in this template
 	//
 	// FIXME: place hook on onContentClick event in selector when nodeCreate happens
-	templateString: '<div class="TreeNode">'
+	templateString: '<div class="TreeNode" widgetId="${this.widgetId}">'
 	    + '<div class="TreeExpand" dojoAttachPoint="expandNode"></div>\n'
 		+ '<div class="TreeContent" dojoAttachPoint="contentNode">${this.title}</div>\n' // can add more labels with hooks
 		+ '</div>\n', 
@@ -283,7 +283,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	viewAddExpand: function() {
 		// add class for expandNode		
 		this.expandClass = this.viewGetExpandClass();
-		dojo.debug("viewAddExpand "+this+" "+this.expandClass);
+		//dojo.debug("viewAddExpand "+this+" "+this.expandClass);
 		dojo.html.addClass(this.expandNode, this.expandClass);
 	},	
 	
