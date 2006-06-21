@@ -51,11 +51,10 @@ dojo.widget.TreeWithNode = {
 	
 	
 	actionIsDisabled: function(action) {
-		var _this = this;
 
 		var disabled = false;
 
-		if (dojo.lang.inArray(_this.actionsDisabled, action)) {
+		if (dojo.lang.inArray(this.actionsDisabled, action)) {
 			disabled = true;
 		}
 

@@ -9,5 +9,6 @@
         <file name="main.xml"/>
         <file name="model.xml"/>
         <file name="tree_treenode.xml"/>
+        <file name="whatsnew.xml"/>
     </projectTree>
 </project>
