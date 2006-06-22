@@ -229,8 +229,8 @@ dojo.render = (function(){
 			},
 			prefixes: prefs
 		};
-		for(var prop in names){
-			tmp[prop] = false;
+		for(var i=0; i<names.length; i++){
+			tmp[names[i]] = false;
 		}
 		return tmp;
 	}
