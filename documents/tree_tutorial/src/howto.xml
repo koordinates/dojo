@@ -9,6 +9,8 @@
             Apply disableSelection to every node you want to make unselectable.
         </para>
         
+        <para>TODO: selectable tree extension (chunk): tree.addExtension("unselectable");</para>
+        
     </section>
     
 

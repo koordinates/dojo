@@ -20,7 +20,17 @@
 </script>
 <script type="text/javascript">
 
+	
 	dojo.addOnLoad(function(){
+
+		function addChild(title,nodeOrTree) {
+			dojo.profile.start("createWidget");
+			var n = dojo.widget.createWidget("TreeNodeV3", {title: title, tree: tree.widgetId});
+			dojo.profile.end("createWidget");
+			nodeOrTree.addChild(n);
+			
+			return n;
+		}	
 
 		dojo.profile.start("totalWork");
 		var controller = dojo.widget.createWidget("TreeBasicControllerV3");		
@@ -28,27 +38,14 @@
 		
 		document.body.appendChild(tree.domNode);
 
-		for (var i=1; i<=5; i++) {		
-			dojo.profile.start("createWidget");
-			var ni = dojo.widget.createWidget("TreeNodeV3", {title: i, tree: tree.widgetId});
-			dojo.profile.end("createWidget");
-			
-			tree.addChild(ni);
-			
-			tree.addChild(ni);
+		for (var i=1; i<=5; i++) {
+			var ni = addChild(i, tree);
+						
 			for (var j=1; j<=5; j++) {
-				dojo.profile.start("createWidget");
-				var nj = dojo.widget.createWidget("TreeNodeV3", {title: i+'.'+j, tree: tree.widgetId});
-				dojo.profile.end("createWidget");
-				
-				ni.addChild(nj);
+				nj = addChild(i+'.'+j, ni);
 				
 				for (var k=1; k<=5; k++) {
-					dojo.profile.start("createWidget");
-					var nk = dojo.widget.createWidget("TreeNodeV3", {title: i+'.'+j+'.'+k, tree: tree.widgetId});
-					dojo.profile.end("createWidget");
-					
-					nj.addChild(nk);
+					addChild(i+'.'+j+'.'+k, nj)
 				}
 				
 				
