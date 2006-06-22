@@ -141,9 +141,9 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
  				bundle[loc] = hash;
  				if(inherit){
 					// Use mixins approach to copy string references from inherit bundle, but skip overrides.
-					for(var x in inherit){
-						if(!bundle[loc][x]){
-							bundle[loc][x] = inherit[x];
+					for(var prop in inherit){
+						if(!bundle[loc][prop]){
+							bundle[loc][prop] = inherit[prop];
 						}
 					}
  				}

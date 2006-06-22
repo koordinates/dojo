@@ -475,7 +475,8 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 
 		if(this.before.length>0){
-			dojo.lang.forEach(this.before, unrollAdvice);
+			// pass a cloned array, if this event disconnects this event forEach on this.before wont work
+			dojo.lang.forEach(this.before.concat(new Array()), unrollAdvice);
 		}
 
 		var result;
@@ -487,7 +488,8 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 
 		if(this.after.length>0){
-			dojo.lang.forEach(this.after, unrollAdvice);
+			// see comment on this.before above
+			dojo.lang.forEach(this.after.concat(new Array()), unrollAdvice);
 		}
 
 		return (this.methodfunc) ? result : null;

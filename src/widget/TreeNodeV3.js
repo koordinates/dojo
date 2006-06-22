@@ -48,9 +48,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expandNode: null,
 
 	// expandNode has +- CSS background. Not img.src for performance, background src string resides in single place.
-	templateString: '<div class="TreeNode">'
-	    + '<div class="TreeExpand" dojoAttachEvent="onClick:onExpandClick" dojoAttachPoint="expandNode"></div>\n'
-		+ '<div class="TreeContent" dojoAttachEvent="onClick:onContentClick" dojoAttachPoint="contentNode">${this.title}</div>\n' // can add more labels with hooks
+	// selection in KHTML/Mozilla disabled treewide, IE requires unselectable for every node
+	// you can add unselectable if you want both in postCreate of tree and in this template
+	//
+	// FIXME: place hook on onContentClick event in selector when nodeCreate happens
+	templateString: '<div class="TreeNode" widgetId="${this.widgetId}">'
+	    + '<div class="TreeExpand" dojoAttachPoint="expandNode"></div>\n'
+		+ '<div class="TreeContent" dojoAttachPoint="contentNode">${this.title}</div>\n' // can add more labels with hooks
 		+ '</div>\n', 
 
 
@@ -77,7 +81,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	containerNodeTemplate: function() {
 			var div = document.createElement('div');
-			div.style.display = 'none';
+			div.style.display = 'none';			
 			dojo.html.addClass(div, "TreeContainer");
 			return div;
 		}(),
@@ -98,45 +102,138 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("Init title "+this.title+ "ch len"+this.children.length);
 		
 		this.uppercaseActionDisabled();
-
-		this.adjustEventNames();
 		
 		this.expandLevel = parseInt(this.expandLevel);
 		
+		//dojo.debug("initialize " + this.title);
 		
 		
 	},
 
-
-	onExpandClick: function(e){
-		dojo.event.topic.publish(this.tree.eventNames.expandClick, { source: this, event: e });
-	},
-
-
-	onContentClick: function(e){
-		dojo.event.topic.publish(this.tree.eventNames.contentClick, { source: this, event: e });
+	
+	setFolder: function() {
+		this.isFolder = true;
+		this.viewUpdateExpand();
+		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
 	},
 	
-	postCreate: function() {
-		
-		if (this.children.length) {
-			this.isFolder = true;
+	
+	
+	unsetFolder: function() {
+		this.isFolder = false;
+		this.viewUpdateExpand();
+		dojo.event.topic.publish(this.tree.eventNames.unsetFolder, { source: this });
+	},
+	
+	
+	insertNode: function(parent, index) {
+		if (!parent.containerNode) {
+			parent.viewAddContainer();
 		}
 		
-		this.viewCreateChildrenNodes();
+		if (parent.children.length==1) {
+			//dojo.debug("insertNode append to "+parent);
+			parent.containerNode.appendChild(this.domNode);
+		} else if (index==0) {
+			//dojo.debug("insertNode "+this+" before "+parent.children[index]);
+			dojo.dom.insertBefore(this.domNode, parent.children[0].domNode, true);
+		} else {
+			dojo.dom.insertAfter(this.domNode, parent.children[index-1].domNode, true);
+		}
 	},
 	
-	addedTo: function(parent) {
-		this.tree = parent.tree;
+	updateTree: function(parent) {
+		if (this.tree !== parent.tree) {
+			var myTree = parent.tree;
+			dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = myTree; });
+		}
 	},
+				
+	
+	/**
+	 * called every time the widget is added
+	 * both HTML & program way
+	 */
+	addedTo: function(parent, index) {
 		
+		//dojo.debug(this + " addedTo "+parent+" index "+index);
+		
+		//dojo.debug(parent.containerNode.innerHTML);
+		
+		//dojo.debug((new Error()).stack);
+		
+		this.insertNode(parent, index);
+		
+		this.updateTree(parent);
+		
+		if (parent.isTreeNode) {
+			if (!parent.isFolder) {
+				//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
+				parent.setFolder();
+				parent.state = parent.loadStates.LOADED;
+			}
+		}
+		
+		//dojo.debug("update this");
+		this.viewUpdateLayout();
+	
+		var siblingsCount = parent.children.length;
+		
+		//dojo.debug("siblings "+parent.children);
+		
+		if (siblingsCount > 1) {
+			if (index == 0) {				
+				parent.children[1].viewUpdateLayout();		
+			}
+			if (index == siblingsCount-1) {
+				parent.children[siblingsCount-2].viewUpdateLayout();		
+			}
+		}
+		
+				
+	},
+	
+	postCreate: function(args) {
+		
+		
+		if (!args["tree"] && !this.parent["tree"]) {
+			dojo.raise("Tree should be passed in arguments or be known to parent");
+		}
+				
+		var tree;
+		if (this.parent) {
+			var tree = this.parent["tree"];
+		}
+		if (!tree) {
+			tree = dojo.widget.manager.getWidgetById(args["tree"]);
+		}
+			
+		if (!tree["isTree"]) {
+			dojo.raise("Tree has no 'isTree' flag set");
+		}
+		
+		this.tree = tree;
+		
+		this.viewAddExpand();
+		
+		dojo.event.topic.publish(this.tree.eventNames.createNode, { source: this } );			
+		
+		//dojo.debug("postcreate " + this.title);
+	},
+	
 	
 	// can override e.g for case of div with +- text inside
-	viewUpdateExpandNode: function() {
+	viewUpdateExpand: function() {
 		this.viewRemoveExpand();
 		this.viewAddExpand();		
 	},
 	
+	
+	// can override e.g for case of div with +- text inside
+	viewUpdateLayout: function() {
+		this.viewRemoveLayout();
+		this.viewAddLayout();		
+	},
 	
 	viewAddContainer: function() {
 		// make controller only if children exist
@@ -145,15 +242,22 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	viewAddLayout: function() {
-		var _this = this;
+		//dojo.debug("viewAddLayout in");
 		if (this.parent["isTree"]) {
-			dojo.html.addClass(_this.domNode, "isTreeRoot");
+			//dojo.debug("Parent isTree => add isTreeRoot");
+			dojo.html.addClass(this.domNode, "isTreeRoot");
 		}
-		//dojo.debug(_this.parent.children.length);
+		//dojo.debug(this.parent.children.length);
 		if (this.isLastNode()) {
-			dojo.html.addClass(_this.domNode, "isTreeLast");
+			//dojo.debug("Checked last node for "+this);
+			//dojo.debug("Parent last is "+this.parent.children[this.parent.children.length-1]);
+			//dojo.debug("last node => add isTreeLast");
+			dojo.html.addClass(this.domNode, "isTreeLast");			
 		}
+		//dojo.debug("viewAddLayout out");
+		
 	},
+	
 	
 	viewRemoveLayout: function() {
 		var _this = this;
@@ -179,9 +283,62 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	viewAddExpand: function() {
 		// add class for expandNode		
 		this.expandClass = this.viewGetExpandClass();
-		//dojo.debug("viewAddExpand "+this.expandClass);
+		//dojo.debug("viewAddExpand "+this+" "+this.expandClass);
 		dojo.html.addClass(this.expandNode, this.expandClass);
 	},	
+	
+	
+	
+// ================================ detach from parent ===================================
+
+	detach: function() {
+		if (!this.parent) return;
+
+		var oldTree = this.tree;
+		var oldParent = this.parent;
+
+		this.doDetach.apply(this, arguments);
+
+		dojo.event.topic.publish(oldTree.eventNames.detach,
+			{ child: this, tree: oldTree, parent: oldParent }
+		);
+	},
+
+
+	doDetach: function() {
+		var parent = this.parent;
+		
+		if (!parent) return;
+		
+		var index = this.getParentIndex();
+		
+		dojo.widget.DomWidget.prototype.removeChild.call(parent, this);
+		
+		var siblingsCount = parent.children.length;
+		
+		//dojo.debug("siblings "+parent.children);
+		
+		if (siblingsCount > 0) {
+			if (index == 0) {	// deleted first node => update new first
+				parent.children[0].viewUpdateLayout();		
+			}
+			if (index == siblingsCount) { // deleted last node
+				parent.children[siblingsCount-1].viewUpdateLayout();		
+			}
+		}
+		/*
+		if (parent.children.length == 0) {
+			parent.containerNode.style.display = "none";
+		}
+		*/
+		
+		// FIXME: move to extension
+		if (this.tree.unsetFolderOnEmpty && !parent.children.length && parent.isTreeNode) {
+			parent.unsetFolder();
+		}
+
+		this.parent = this.tree = null;
+	},
 	
 	
 	expand: function(){
@@ -193,7 +350,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		this.isExpanded = true;
 
-		this.viewUpdateExpandNode();
+		this.viewUpdateExpand();
 
 		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
 	},
@@ -204,7 +361,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.hideChildren();
 		this.isExpanded = false;
 
-		this.viewUpdateExpandNode();
+		this.viewUpdateExpand();
 
 		dojo.event.topic.publish(this.tree.eventNames.collapse, {source: this} );
 	},
@@ -234,4 +391,5 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 });
 
+ 
 

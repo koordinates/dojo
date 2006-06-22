@@ -219,16 +219,22 @@ dojo.widget.Parse = function(fragment) {
 		properties is an object of name value pairs
 	*/
 	this.createComponentFromScript = function(nodeRef, componentName, properties, namespace){
+		dojo.profile.start("createComponentFromScript");
+					
 		if(!namespace){
 			namespace = "dojo";
 		}
 		var ltn = namespace + ":" + componentName.toLowerCase();
 		if(dojo.widget.tags[ltn]){
-			properties.fastMixIn = true;
+			properties.fastMixIn = true;			
+			dojo.profile.start("dojo.widget.tags["+ltn+"]");
 			return [dojo.widget.tags[ltn](properties, this, null, null, properties)];
+			dojo.profile.end("dojo.widget.tags["+ltn+"]");			
 		}else{
 			dojo.debug("no tag handler registered for type: ", ltn);
 		}
+		dojo.profile.end("createComponentFromScript");
+
 	}
 }
 

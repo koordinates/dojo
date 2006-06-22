@@ -373,7 +373,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		this.children.splice(idx+1, 0, widget);
 
 		widget.parent = this;
-		widget.addedTo(this);
+		widget.addedTo(this, idx+1);
 		
 		// If this widget was created programatically, then it was erroneously added
 		// to dojo.widget.manager.topWidgets.  Fix that here.

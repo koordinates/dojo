@@ -1,5 +1,10 @@
 dojo.provide("dojo.html.common");
 
+dojo.html.body = function(){
+	// Note: document.body is not defined for a strict xhtml document
+	return document.body || document.getElementsByTagName("body")[0];
+}
+
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
 // Need to investigate for KHTML and Opera
@@ -25,16 +30,16 @@ dojo.html.getViewport = function(){
 			w = w2;
 		}
 		h = document.documentElement.clientHeight;
-	} else if (document.body){
-		w = document.body.clientWidth;
-		h = document.body.clientHeight;
+	} else if (dojo.html.body()){
+		w = dojo.html.body().clientWidth;
+		h = dojo.html.body().clientHeight;
 	}
 	return { width: w, height: h };
 }
 
 dojo.html.getScroll = function(){
-	var top = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-	var left = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	var top = window.pageYOffset || document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
+	var left = window.pageXOffset || document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
 	return { 
 		top: top, 
 		left: left, 
@@ -97,7 +102,7 @@ dojo.html.getParentByType = function(node, type) {
 	var parent = dojo.byId(node);
 	type = type.toLowerCase();
 	while((parent)&&(parent.nodeName.toLowerCase()!=type)){
-		if(parent==(document["body"]||document["documentElement"])){
+		if(parent==(dojo.html.body()||document["documentElement"])){
 			return null;
 		}
 		parent = parent.parentNode;
@@ -159,7 +164,7 @@ dojo.html.getCursorPosition = function(e){
 		cursor.y = e.pageY;
 	}else{
 		var de = document.documentElement;
-		var db = document.body;
+		var db = dojo.html.body();
 		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
@@ -181,10 +186,6 @@ dojo.html.overElement = function(element, e){
 		mouse.y >= top && mouse.y <= bottom);
 }
 
-dojo.html.body = function(){
-	// Note: document.body is not defined for a strict xhtml document
-	return document.body || document.getElementsByTagName("body")[0];
-}
 
 /**
  * Like dojo.dom.isTag, except case-insensitive
