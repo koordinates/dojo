@@ -44,11 +44,19 @@ dojo.lang.mixin(dojo.doc, {
 		for(var key in data){
 			// Add the package if it doesn't exist in its children
 			if(!dojo.lang.inArray(data[key], key)){
-				searchData.push([key, key]);
+				var aKey = key;
+				if(aKey.charAt(aKey.length - 1) == "_"){
+					aKey = [aKey.substring(0, aKey.length - 1), "*"].join("");
+				}
+				searchData.push([aKey, aKey]);
 			}
 			// Add the functions
 			for(var pkg_key in data[key]){
-				searchData.push([data[key][pkg_key], data[key][pkg_key]]);
+				var aKey = data[key][pkg_key];
+				if(aKey.charAt(aKey.length - 1) == "_"){
+					aKey = [aKey.substring(0, aKey.length - 1), "*"].join("");
+				}
+				searchData.push([aKey, aKey]);
 			}
 		}
 
@@ -220,6 +228,7 @@ dojo.lang.mixin(dojo.doc, {
 	},
 
 	_onDocSearch: function(/*Object*/ input){
+		input.name = input.name.replace("*", "_");
 		dojo.debug("_onDocSearch(" + input.name + ")");
 		if(!input.name){
 			return;
@@ -236,10 +245,27 @@ dojo.lang.mixin(dojo.doc, {
 
 	_onDocSearchFn: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 		dojo.debug("_onDocSearchFn(" + evt.name + ")");
+
+		var key = evt.selectKey;
+		var message = {};
+		
 		var packages = [];
 		var size = 0;
 		pkgLoop:
 		for(var pkg in data){
+			if(pkg == evt.name){
+				message.pkg = pkg.replace("_", "*");
+				message.pkgs = [];
+				message.size = 0;
+				for(var i = 0, fn; fn = data[pkg][i]; i++){
+					if(fn != pkg){
+						++message.size;
+						message.pkgs.push(fn);
+					}
+				}
+				dojo.doc._printPkgResults(message);
+				return;
+			}
 			for(var i = 0, fn; fn = data[pkg][i]; i++){
 				if(fn.toLowerCase().indexOf(evt.name) != -1){
 					// Build a list of all packages that need to be loaded and their loaded state.
@@ -249,12 +275,12 @@ dojo.lang.mixin(dojo.doc, {
 				}
 			}
 		}
-		dojo.doc._keys[evt.selectKey] = {};
-		dojo.doc._keys[evt.selectKey].pkgs = packages;
-		dojo.doc._keys[evt.selectKey].pkg = evt.name; // Remember what we were searching for
-		dojo.doc._keys[evt.selectKey].loaded = 0;
+		message = dojo.doc._keys[key] = {};
+		message.pkgs = packages;
+		message.pkg = evt.name; // Remember what we were searching for
+		message.loaded = 0;
 		for(var i = 0, pkg; pkg = packages[i]; i++){
-			setTimeout("dojo.doc.getPkgMeta(\"" + evt.selectKey + "\", dojo.doc._onDocResults, \"" + pkg + "\");", i*10);
+			setTimeout("dojo.doc.getPkgMeta(\"" + key + "\", dojo.doc._onDocResults, \"" + pkg + "\");", i*10);
 		}
 	},
 
@@ -295,15 +321,16 @@ dojo.lang.mixin(dojo.doc, {
 			}
 
 			dojo.debug("Publishing docResults");
-			dojo.doc._printResults(results);
+			dojo.doc._printFnResults(results);
 		}
 	},
-	
-	_printResults: function(results){
-		dojo.debug("_printResults(): called");
-		// summary: Call this function to send the /doc/results topic
+	_printFnResults: function(results){
+		dojo.debug("_printFnResults(): called");
+		// summary: Call this function to send the /doc/function/results topic
 	},
-
+	_printPkgResults: function(results){
+		dojo.debug("_printPkgResults(): called");
+	},
 	_onDocSelectFunction: function(/*Object*/ input){
 		// summary: Get doc, meta, and src
 		var name = input.name;
@@ -319,8 +346,6 @@ dojo.lang.mixin(dojo.doc, {
 		dojo.doc._keys[selectKey] = {size: 0};
 		dojo.doc._myKeys[++dojo.doc._count] = {selectKey: selectKey, type: "meta"}
 		dojo.doc.getMeta(dojo.doc._count, dojo.doc._onDocSelectResults, name);
-		dojo.doc._myKeys[++dojo.doc._count] = {selectKey: selectKey, type: "src"}
-		dojo.doc.getSrc(dojo.doc._count, dojo.doc._onDocSelectResults, name);
 		dojo.doc._myKeys[++dojo.doc._count] = {selectKey: selectKey, type: "doc"}
 		dojo.doc.getDoc(dojo.doc._count, dojo.doc._onDocSelectResults, name);
 	},
@@ -330,7 +355,7 @@ dojo.lang.mixin(dojo.doc, {
 		var myKey = dojo.doc._myKeys[evt.selectKey];
 		dojo.doc._keys[myKey.selectKey][myKey.type] = data;
 		dojo.doc._keys[myKey.selectKey].size;
-		if(++dojo.doc._keys[myKey.selectKey].size == 3){
+		if(++dojo.doc._keys[myKey.selectKey].size == 2){
 			var key = dojo.lang.mixin(evt, dojo.doc._keys[myKey.selectKey]);
 			delete key.size;
 			dojo.debug("Publishing docFunctionDetail");
@@ -606,7 +631,8 @@ dojo.lang.mixin(dojo.doc, {
 });
 
 dojo.event.topic.subscribe("/doc/search", dojo.doc, "_onDocSearch");
-dojo.event.topic.subscribe("/doc/selectFunction", dojo.doc, "_onDocSelectFunction");
+dojo.event.topic.subscribe("/doc/function/select", dojo.doc, "_onDocSelectFunction");
 
-dojo.event.topic.registerPublisher("/doc/results", dojo.doc, "_printResults");
-dojo.event.topic.registerPublisher("/doc/functionDetail", dojo.doc, "_printFunctionDetail");
+dojo.event.topic.registerPublisher("/doc/function/results", dojo.doc, "_printFnResults");
+dojo.event.topic.registerPublisher("/doc/package/results", dojo.doc, "_printPkgResults");
+dojo.event.topic.registerPublisher("/doc/function/detail", dojo.doc, "_printFunctionDetail");
