@@ -89,6 +89,7 @@ dojo.provide("dojo.namespaces.dojo");
 
 	function dojoNamespaceResolver(name, domain){
 		if(!domain){ domain="html"; }
+		if(!map[domain]){ return null; }
 		return map[domain][name];    
 	}
 
