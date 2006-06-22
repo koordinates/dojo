@@ -1,13 +1,3 @@
-/*
-	Copyright (c) 2004-2005, The Dojo Foundation
-	All Rights Reserved.
-
-	Licensed under the Academic Free License version 2.1 or above OR the
-	modified BSD license. For more information on Dojo licensing, see:
-
-		http://dojotoolkit.org/community/licensing.shtml
-*/
-
 dojo.provide("myns.widget.Check");
 dojo.require("dojo.widget.HtmlWidget");
 
@@ -16,8 +6,8 @@ dojo.widget.defineWidget(
 	"html",
 	dojo.widget.HtmlWidget,
 	{
-		templatePath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.html'),
-		templateCssPath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.css'),
+		templatePath: dojo.uri.dojoUri('tests/namespaces/myns/widget/CheckBox.html'),
+		templateCssPath: dojo.uri.dojoUri('tests/namespaces/myns/widget/CheckBox.css'),
 
 		// parameters
 		disabled: "enabled",
@@ -62,14 +52,11 @@ dojo.widget.defineWidget(
 
 		// set CSS class string according to checked/unchecked and disabled/enabled state
 		_setInfo: function(){
-			var prefix = (this.disabled == "enabled" ? "dojoHtmlCheckbox" : "dojoHtmlCheckboxDisabled");
+			var prefix = (this.disabled == "enabled" ? "myNsCheckbox" : "myNsCheckboxDisabled");
 			var state = prefix + (this.checked ? "On" : "Off");
-			dojo.html.setClass(this.domNode, "dojoHtmlCheckbox " + state);
+			dojo.html.setClass(this.domNode, "myNsCheckbox " + state);
 			this.inputNode.checked = this.checked;
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
 	}
 );
-
-
-
