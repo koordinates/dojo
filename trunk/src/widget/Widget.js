@@ -581,7 +581,14 @@ dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/
 	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
 
 	dojo.widget.manager.registerWidgetPackage(namespace);
-	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+	
+	var pos = namespace.indexOf(".");
+
+	var nsName;
+	if(pos > -1){nsName = namespace.substring(0,pos);}
+	else{nsName=namespace;}
+	
+	dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
 
 	props=(props)||{};
 	props.widgetType = type;
