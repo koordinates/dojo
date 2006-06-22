@@ -27,12 +27,11 @@ dojo.widget.TreeV3 = function() {
 	dojo.widget.HtmlWidget.call(this);
 
 	this.eventNames = {};
-
-	// self-ref to make this.tree work same for nodes and tree
-	this.tree = this;
 	
 	this.DNDAcceptTypes = [];
 	this.actionsDisabled = [];
+	
+	this.tree = this;
 
 }
 dojo.inherits(dojo.widget.TreeV3, dojo.widget.HtmlWidget);
@@ -51,21 +50,28 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		// tree created.. Perform tree-wide actions if needed
 		treeCreate: "treeCreate",
 		treeDestroy: "treeDestroy",
-		// expand icon clicked
-		expandClick: "expandClick",
-		// node title clicked
-		contentClick: "contentClick",
 
+		setFolder: "setFolder",
+		unsetFolder: "unsetFolder",
 		moveFrom: "moveFrom",
 		moveTo: "moveTo",
 		addChild: "addChild",
-		removeNode: "removeNode",
+		detach: "detach",
 		expand: "expand",
+		
 		collapse: "collapse"
 	},
 
 	
-	strictFolders: true,
+	/**
+	 * is it possible to add a new child to leaf ?
+	 */	
+	allowAddChildToLeaf: true,
+	
+	/**
+	 * when last children is removed from node should it stop being a "folder" ?
+	 */
+	unsetFolderOnEmpty: true,
 
 	DNDModes: {
 		BETWEEN: 1,
@@ -101,15 +107,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	},
 		
 
-
-	//
-	// tree options
-	//
-
-	showGrid: true,
-	showRootGrid: true,
-
-
+	
 	actions: {
     	ADDCHILD: "ADDCHILD"
 	},
@@ -124,6 +122,14 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		return info;
 	},
 
+	adjustEventNames: function() {
+		
+		for(name in this.eventNamesDefault) {
+			if (dojo.lang.isUndefined(this.eventNames[name])) {
+				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
+			}
+		}
+	},
 
 	initializeController: function(controllerId) {		
 		var controller = dojo.widget.byId(controllerId);
@@ -165,11 +171,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	initialize: function(args, frag){
 		
-
-		var _this = this;
-		
-		this.tree = _this;
-
 		this.adjustEventNames();
 		this.uppercaseActionDisabled();
 		this.adjustDNDMode();
@@ -180,22 +181,23 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		//this.initializeController();
 		//this.initializeMenu();
 
-
 		this.containerNode = this.domNode;
 		
 		
 		if (args['controller']) {
 			this.initializeController(args['controller']);
 		}
+		
 
 	},
 
 	postCreate: function() {
-		this.viewCreateChildrenNodes();
+						
+		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 	},
 	
 	toString: function() {
-		return "["+this.widgetType+" ID:"+this.widgetId+"]"
+		return "["+this.widgetType+" ID:"+this.widgetId	+"]"
 	}
 
 

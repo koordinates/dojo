@@ -20,7 +20,7 @@ dojo.Namespace.prototype.load = function(name, domain){
 			//TODO: how do we build in these deps. into the build system?
 			var req = dojo.require;
 			req(fullName);
-			this.loaded[fullName] = "true";
+			this.loaded[fullName] = true;
  		}
 		if(this.loaded[fullName]){
 			return true;
@@ -33,6 +33,11 @@ dojo.Namespace.prototype.load = function(name, domain){
 
 //list of all defined namespaces
 djConfig.namespaces = [];
+
+//list of namespaces being loaded, to prevent recursion
+djConfig.loadingNamespaces = {};
+
+
 //list of all namespaces that were needed, but didn't have the required file in the dojo/src/namespaces folder. 
 //This array ensures that a namespace will only be looked for once, rather than repeatedly trying to load the namespace descriptor file
 djConfig.failedNamespaces = [];
@@ -67,9 +72,14 @@ dojo.getNamespace = function(nsPrefix){
 	if(!djConfig.namespaces[nsPrefix] && !djConfig.failedNamespaces[nsPrefix]){
 		var req = dojo.require;
 		//TODO: another dynamic reference.  Need to track in builds?
-		req("dojo.namespaces."+nsPrefix, false, true); 
-		if(!djConfig.namespaces[nsPrefix]){
-			djConfig.failedNamespaces[nsPrefix] = true; //only look for a namespace once
+		var nsFile = "dojo.namespaces."+nsPrefix;
+		if(!djConfig.loadingNamespaces[nsFile]){
+			djConfig.loadingNamespaces[nsFile]=true;
+			req(nsFile, false, true); 
+			djConfig.loadingNamespaces[nsFile]=false;
+			if(!djConfig.namespaces[nsPrefix]){
+				djConfig.failedNamespaces[nsPrefix] = true; //only look for a namespace once
+			}
 		}
 	}
 	

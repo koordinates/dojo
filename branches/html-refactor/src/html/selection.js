@@ -26,7 +26,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = dojo.byId(element)||document.body;
+	element = dojo.byId(element)||dojo.html.body();
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -42,7 +42,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = dojo.byId(element)||document.body;
+	element = dojo.byId(element)||dojo.html.body();
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -59,8 +59,8 @@ dojo.html.enableSelection = function(element){
 
 dojo.html.selectElement = function(element){
 	element = dojo.byId(element);
-	if(document.selection && document.body.createTextRange){ // IE
-		var range = document.body.createTextRange();
+	if(document.selection && dojo.html.body().createTextRange){ // IE
+		var range = dojo.html.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	}else if(window["getSelection"]){
@@ -74,7 +74,7 @@ dojo.html.selectElement = function(element){
 
 dojo.html.selectInputText = function(element){
 	element = dojo.byId(element);
-	if(document.selection && document.body.createTextRange){ // IE
+	if(document.selection && dojo.html.body().createTextRange){ // IE
 		var range = element.createTextRange();
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);

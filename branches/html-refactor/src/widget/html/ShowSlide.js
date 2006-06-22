@@ -20,6 +20,8 @@ dojo.widget.defineWidget(
 dojo.lang.extend(dojo.widget.html.ShowSlide, dojo.widget.ShowSlide.prototype);
 dojo.lang.extend(dojo.widget.html.ShowSlide, {
 	htmlTitle: null,
+	debug: false,
+	noClick: false,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlShowSlide.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShowSlide.css"),
 	fillInTemplate: function(){
@@ -97,7 +99,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 		component.style.visibility = "hidden";
 		component.style.backgroundColor = "transparent";
 		var parent = component.parentNode;
-		if((parent)&&(parent.tagName == "LI")){
+		if((parent)&&(parent.tagName.toLowerCase() == "li")){
 			parent.oldType = parent.style.listStyleType;
 			parent.style.listStyleType = "none";
 		}

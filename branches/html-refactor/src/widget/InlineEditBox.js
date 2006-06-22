@@ -113,7 +113,9 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 			this.history.push(this.textValue);
 			this.onSave(ee.value, this.textValue);
 			this.textValue = ee.value;
-			this.editable.innerHTML = this.textValue;
+			this.editable.innerHTML = "";
+			var textNode = document.createTextNode( this.textValue );
+			this.editable.appendChild( textNode );
 		}else{
 			this.doFade = false;
 		}

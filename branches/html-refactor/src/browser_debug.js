@@ -108,18 +108,26 @@ function zip(arr){
 var old_dj_eval = dj_eval;
 dj_eval = function(){ return true; }
 dojo.hostenv.oldLoadUri = dojo.hostenv.loadUri;
-dojo.hostenv.loadUri = function(uri){
+dojo.hostenv.loadUri = function(uri, cb /*optional*/){
 	if(dojo.hostenv.loadedUris[uri]){
 		return true; // fixes endless recursion opera trac 471
 	}
 	try{
 		var text = this.getText(uri, null, true);
-		var requires = dojo.hostenv.getRequiresAndProvides(text);
-		eval(requires.join(";"));
-		dojo.hostenv.loadedUris.push(uri);
-		dojo.hostenv.loadedUris[uri] = true;
-		var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
-		eval(delayRequires.join(";"));
+		if(!text) { return false; }
+		if(cb){
+			// No way to load i18n bundles but to eval them, and they usually
+			// don't have script needing to be debugged anyway
+			var expr = old_dj_eval('('+text+')');
+			cb(expr);
+		}else {
+			var requires = dojo.hostenv.getRequiresAndProvides(text);
+			eval(requires.join(";"));
+			dojo.hostenv.loadedUris.push(uri);
+			dojo.hostenv.loadedUris[uri] = true;
+			var delayRequires = dojo.hostenv.getDelayRequiresAndProvides(text);
+			eval(delayRequires.join(";"));
+		}
 	}catch(e){ 
 		alert(e);
 	}

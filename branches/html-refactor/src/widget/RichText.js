@@ -439,7 +439,7 @@ dojo.widget.defineWidget(
 						// TODO: left positioning will case contents to disappear out of view
 						//       if it gets too wide for the visible area
 						'    body { top: 0; left: 0; right: 0;' +
-						(this.height ? '' : ' position: fixed; ') + 
+						(((this.height)||(dojo.render.html.opera)) ? '' : ' position: fixed; ') + 
 						'        font: ' + font + ';\n' + 
 						'        min-height: ' + this.minHeight + '; \n' +
 						'        line-height: ' + lineHeight + '} \n' +
@@ -523,7 +523,7 @@ dojo.widget.defineWidget(
 				this.domNode.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 			}else if (this.iframe){
-				this.editNode = this.dojo.html.body();
+				this.editNode = this.document.body;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 		
 				try { // sanity check for Mozilla
@@ -1277,8 +1277,8 @@ dojo.widget.defineWidget(
 					}
 				}
 
-				if(this.dojo.html.body()["offsetHeight"]){
-					this._lastHeight = Math.max(this.dojo.html.body().scrollHeight, this.dojo.html.body().offsetHeight) + chromeheight;
+				if(this.document.body["offsetHeight"]){
+					this._lastHeight = Math.max(this.document.body.scrollHeight, this.document.body.offsetHeight) + chromeheight;
 					this.iframe.height = this._lastHeight + "px";
 					this.window.scrollTo(0, 0);
 				}

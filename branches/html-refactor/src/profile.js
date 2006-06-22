@@ -1,5 +1,8 @@
 dojo.provide("dojo.profile");
 
+
+
+
 dojo.profile = new function(){
 	var profiles = {};
 	var pns = [];
