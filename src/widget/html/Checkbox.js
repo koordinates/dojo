@@ -16,20 +16,31 @@ dojo.widget.defineWidget(
 		name: "",
 		checked: false,
 		tabIndex: "0",
-
+		id: "",
 		inputNode: null,
 
 		postMixInProperties: function(){
 			// set the variables referenced by the template
 			this.disabledStr = this.disabled=="enabled" ? "" : "disabled";
-					
 		},
-		postCreate: function(args, frag) {
-			// find any associated label and create a labeleby relationship
-			var label = document.getElementsByTagName("label");
-			if (label && label[0].htmlFor != undefined) {
-				label[0].id = (label[0].htmlFor + "label"); 
-				dojo.widget.wai.setAttr(this.domNode, "waiState", "labelledby", label[0].id);
+
+		postCreate: function(args, frag){
+			// find any associated label and create a labelled-by relationship
+			// assumes <label for="inputId">label text </label> rather than
+			// <label><input type="xyzzy">label text</label> 
+			this.inputNode.id = this.widgetId;  
+			var inputId = this.inputNode.id;
+			if(inputId != null){
+				var labels = document.getElementsByTagName("label");
+				if (labels != null && labels.length > 0){
+					for(var i=0; i<labels.length; i++){
+						if (labels[i].htmlFor == inputId){
+							labels[i].id = (labels[i].htmlFor + "label"); 
+							dojo.widget.wai.setAttr(this.domNode, "waiState", "labelledby", labels[i].id);
+							break;
+						}
+					}
+				}
 			}
 		},
 
