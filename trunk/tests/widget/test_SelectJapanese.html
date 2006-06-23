@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Select test in Japanese</title>
+
+<script type="text/javascript"> 
+	var djConfig = {
+		isDebug: true};
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Select");
+</script>
+<script>
+	function setVal1(val){
+		dojo.byId('value1').value=val;
+	}
+</script>
+</head>
+
+<body>
+<h1>Dojo Japanese Select Widget Test</h1>
+<p>
+Tests select widget w/Japanese characters.
+Try typing “ŒA¼A–kA“ì  (north, south, east west) and a few choices will pop up.
+</p>
+ 
+<select name="state3" dojoType="Select" style="width: 300px;" autocomplete="false"
+	onValueChanged="setVal1">
+	<option value="nanboku">“ì–k</option>
+	<option value="touzai">“Œ¼</option>
+	<option value="toukyou">“Œ‹</option>
+	<option value="higashiguchi">“ŒŒû</option>
+	<option value="nishiguchi">¼Œû</option>
+	<option value="minamiguchi">“ìŒû</option>
+	<option value="kitaguchi">–kŒû</option>
+	<option value="higashiku">“Œ‹æ</option>
+	<option value="nishiku">¼‹æ</option>
+	<option value="minamiku">“ì‹æ</option>
+	<option value="kitaku">–k‹æ</option>
+</select>    
+<br>
+<div>Value: <input id="value1" disabled></div>
+<hr>
+
+<!-- maintain state of select if user presses back/forward button -->
+<form name="_dojo_form" style="display:none" disabled="true"><textarea name="stabile" cols="80" rows="10"></textarea></form>
+</body>
+</html>
