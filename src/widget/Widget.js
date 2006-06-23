@@ -82,6 +82,7 @@ dojo.declare("dojo.widget.Widget", null, {
 	},
 
 	create: function(args, fragment, parentComp, namespace){
+		dojo.profile.start(this.widgetType + " create");
 		if(namespace){
 			this.namespace = namespace;
 		}
@@ -102,6 +103,9 @@ dojo.declare("dojo.widget.Widget", null, {
 		// dojo.debug(this.widgetType, "-> postCreate");
 		this.postCreate(args, fragment, parentComp);
 		// dojo.debug(this.widgetType, "done!");
+		
+		dojo.profile.end(this.widgetType + " create");
+		
 		return this;
 	},
 
@@ -479,9 +483,10 @@ dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
 	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){
-		dojo.profile.start(ltype);
+		var _ltype = ltype;
+		dojo.profile.start(_ltype);
 		var n = dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
-		dojo.profile.end(ltype);
+		dojo.profile.end(_ltype);
 		
 		return n;
 	}
@@ -527,6 +532,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
+	
 	
 	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
 	// dojo.debug(new Date() - tic);
