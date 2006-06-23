@@ -120,8 +120,7 @@ dojo.widget.defineWidget(
 	},
 
 	/**
-	 * Open the menu at position (x,y), relative to the viewport
-	 * (usually positions are relative to the document; why is this different??)
+	 * Open the menu at position (x,y), relative to document.body
 	 */
 	open: function(x, y, parent, explodeSrc){
 		if (this.isShowingNow){ return; }
@@ -138,28 +137,19 @@ dojo.widget.defineWidget(
 			dojo.widget.html.Menu2Manager.opened(this, button);
 		}
 
-		// if I click  right button and menu is opened, then it gets 2 commands: close -> open
+		// if I click right button and menu is opened, then it gets 2 commands: close -> open
 		// so close enables animation and next "open" is put to queue to occur at new location
 		if(this.animationInProgress){
 			this.queueOnAnimationFinish.push(this.open, arguments);
 			return;
 		}
 
-		var viewport = dojo.html.getViewportSize();
-		var scrolloffset = dojo.html.getScrollOffset();
-
-		var clientRect = {
-			'left'  : scrolloffset[0],
-			'right' : scrolloffset[0] + viewport[0],
-			'top'   : scrolloffset[1],
-			'bottom': scrolloffset[1] + viewport[1]
-		};
-
-		// display temporarily, and move into position
-		this.domNode.style.display="";
-		this.domNode.style.position='absolute';
-		this.domNode.style.zIndex = 200 + this.menuIndex;
-		dojo.html.placeOnScreenPoint(this.domNode, x, y, false);
+		// display temporarily, and move into position, then hide again
+		with(this.domNode.style){
+			display="";
+			zIndex = 200 + this.menuIndex;
+		}
+		dojo.html.placeOnScreenPoint(this.domNode, x, y, [0, 0], true);
 		this.domNode.style.display="none";
 
 		this.parentMenu = parentMenu;
@@ -167,7 +157,6 @@ dojo.widget.defineWidget(
 		this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
 
 		// then use the user defined method to display it
-		this.domNode.style.display='none';
 		this.show();
 
 		this.isShowingNow = true;
@@ -230,8 +219,8 @@ dojo.widget.defineWidget(
 		this.currentSubmenuTrigger = null;
 	},
 
+	// open the menu to the right of the current menu item
 	openSubmenu: function(submenu, from_item){
-		// open the menu to the right of the current menu item
 		var fromPos = dojo.style.getAbsolutePosition(from_item.domNode, true);
 		var our_w = dojo.style.getOuterWidth(this.domNode);
 		var x = fromPos.x + our_w - this.submenuOverlap;
@@ -247,7 +236,7 @@ dojo.widget.defineWidget(
 	onOpen: function(e){
 		this.openEvent = e;
 
-		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
+		this.open(e.pageX, e.pageY, null, [e.pageX, e.pageY]);
 
 		if(e["preventDefault"]){
 			e.preventDefault();
