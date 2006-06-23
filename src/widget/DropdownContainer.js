@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.DropdownContainer");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.provide("dojo.widget.Menu2");
+dojo.require("dojo.widget.Menu2");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 
