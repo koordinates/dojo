@@ -29,7 +29,6 @@ dojo.widget.defineWidget(
 	currentSubmenu: null,
 	currentSubmenuTrigger: null,
 	parentMenu: null,
-	parentMenuBar: null,
 	isShowingNow: false,
 	menuIndex: 0,
 
@@ -173,10 +172,6 @@ dojo.widget.defineWidget(
 		this.hide();
 		this.isShowingNow = false;
 		dojo.widget.html.Menu2Manager.closed(this);
-
-		if (this.parentMenuBar){
-			this.parentMenuBar.closedMenu(this);
-		}
 	},
 
 	onShow: function() {
@@ -599,73 +594,25 @@ dojo.widget.defineWidget(
 	"dojo.widget.MenuBar2",
 	dojo.widget.PopupMenu2,
 {
+	menuOverlap: 2,
+
 	templateString: '<div class="dojoMenuBar2"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
 
-	// override PopupMenu2 to open the submenu below us rather than to our right
+	/*
+	 * override PopupMenu2 to open the submenu below us rather than to our right
+	 */
 	openSubmenu: function(submenu, from_item){
-		// open the menu to the right of the current menu item
 		var fromPos = dojo.style.getAbsolutePosition(from_item.domNode, true);
 		var ourPos = dojo.style.getAbsolutePosition(this.domNode, true);
 		var our_h = dojo.style.getInnerHeight(this.domNode);
 		var x = fromPos.x;
-		var y = ourPos.y + our_h;
+		var y = ourPos.y + our_h - this.menuOverlap;
 
 		this.currentSubmenu = submenu;
 		this.currentSubmenu.open(x, y, this, from_item.domNode);
 
-		this.currentSubmenu.parentMenuBar = this;
 		this.currentSubmenuTrigger = from_item;
 		this.currentSubmenuTrigger.is_open = true;
-	},
-
-	itemHover: function(item){
-		if (item == this.currentItem) return;
-
-		if (this.currentItem){
-			this.currentItem.unhighlightItem();
-
-			if (this.isExpanded){
-				this.closeSubmenu();
-			}
-		}
-
-		this.currentItem = item;
-		this.currentItem.highlightItem();
-
-		if (this.isExpanded){
-			this.currentItem.expandMenu();
-		}
-	},
-
-	itemUnhover: function(item){
-		if (item != this.currentItem) return;
-
-		if (this.currentItem && !this.isExpanded){
-			this.currentItem.unhighlightItem();
-			this.currentItem = null;
-		}
-	},
-
-	itemClick: function(item){
-		if (item != this.currentItem){
-			this.itemHover(item);
-		}
-
-		if (this.isExpanded){
-			this.isExpanded = false;
-			this.closeSubmenu();
-
-		}else{
-			this.isExpanded = true;
-			this.currentItem.expandMenu();
-		}
-	},
-
-	closedMenu: function(menu){
-		if (this.currentSubmenu == menu){
-			this.isExpanded = false;
-			this.itemUnhover(this.currentItem);
-		}
 	}
 });
 
@@ -678,31 +625,12 @@ dojo.widget.defineWidget(
 		+'<span><span>${this.caption}</span>${this.caption}</span>'
 		+'</td>',
 
-	onHover: function(){
-		this.parent.itemHover(this);
-	},
-
-	onUnhover: function(){
-		this.parent.itemUnhover(this);
-	},
-
-	_onClick: function(){
-		this.parent.itemClick(this);
-	},
-
 	highlightItem: function(){
 		dojo.html.addClass(this.domNode, 'dojoMenuBarItem2Hover');
 	},
 
 	unhighlightItem: function(){
 		dojo.html.removeClass(this.domNode, 'dojoMenuBarItem2Hover');
-	},
-
-	expandMenu: function(){
-		var submenu = dojo.widget.getWidgetById(this.submenuId);
-		if (submenu){
-			this.parent.openSubmenu(submenu, this);
-		}
 	},
 
 	setDisabled: function(value){
