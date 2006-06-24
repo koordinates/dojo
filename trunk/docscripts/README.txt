@@ -86,13 +86,13 @@ and expect proper results
 Topic Registry
 --------------
 
-dojo.event.topic.registerPublisher("docSearch");  	
-dojo.event.topic.registerPublisher("docResults");  	
-dojo.event.topic.registerPublisher("docSelectFunction");  	
-dojo.event.topic.registerPublisher("docFunctionDetail");  	
+dojo.event.topic.registerPublisher("/doc/search");  	
+dojo.event.topic.registerPublisher("/doc/results");  	
+dojo.event.topic.registerPublisher("/doc/function/select");  	
+dojo.event.topic.registerPublisher("/doc/function/details");  	
 
-dojo.event.topic.subscribe("docSearch", dojo.doc, "_onDocSearch");
-dojo.event.topic.subscribe("docSelectFunction", dojo.doc, "_onDocSelectFunction");
+dojo.event.topic.subscribe("/doc/search", dojo.doc, "_onDocSearch");
+dojo.event.topic.subscribe("/doc/function/select", dojo.doc, "_onDocSelectFunction");
 
 In the init of an application that uses dojo.doc and some widgets:
 

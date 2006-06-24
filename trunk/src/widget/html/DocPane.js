@@ -5,6 +5,7 @@ dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DocPane");
+dojo.require("dojo.widget.Editor");
 
 dojo.widget.html.DocPane = function(){
 	dojo.event.topic.subscribe("/doc/function/results", this, "onDocResults");
@@ -63,6 +64,11 @@ dojo.widget.defineWidget(
 			this.sPTypeSave = dojo.dom.removeNode(this.sPType);
 			this.sPNameSave = dojo.dom.removeNode(this.sPName);
 			this.navSave = dojo.dom.removeNode(this.nav);
+		},
+		postCreate: function(){
+			this.pkgDescription = dojo.widget.createWidget("editor", {
+				items: ["textGroup", "blockGroup", "justifyGroup", "colorGroup", "listGroup", "indentGroup", "linkGroup"]
+			}, this.pkgDescription);
 		},
 		onDocSelectFunction: function(message){
 			var meta = message.meta;
@@ -152,6 +158,9 @@ dojo.widget.defineWidget(
 			}
 		},
 		onPkgResults: function(/*Object*/ results){
+			dojo.debug("onPkgResults()");
+			var fns = results.fns;
+
 			dojo.dom.removeChildren(this.domNode);
 			
 			this.pkg.innerHTML = results.pkg;
@@ -165,9 +174,8 @@ dojo.widget.defineWidget(
 				}
 				this.packageSave.appendChild(this.variables.cloneNode(true));
 			}
-			
-			this.pkgDescription.innerHTML = results.description;
 
+			//this.pkgDescription.replaceEditorContent(results.description);
 			this.domNode.appendChild(this.packageSave.cloneNode(true));			
 		},
 		onDocResults: function(message){
