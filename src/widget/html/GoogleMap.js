@@ -150,7 +150,7 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 	render:function(){
 		var bounds=new GLatLngBounds();
 		var d=this.data;
-		var zoom=this.zoom;
+		var zoom=parseInt(this.zoom,10);
 		if(d.length>1){
 			for(var i=0; i<d.length; i++){
 				bounds.extend(new GLatLng(d[i].lat,d[i].lng));
