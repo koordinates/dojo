@@ -43,7 +43,6 @@ dojo.widget.html.GoogleMap=function(){
 	this.map=null;
 	this.data=[];
 	this.datasrc="";
-	this.zoom="16";
 	// FIXME: this is pehraps the stupidest way to specify this enum I can think of
 	this.controls=[gm.Controls.LargeMap,gm.Controls.Scale,gm.Controls.MapType];
 };
@@ -90,6 +89,9 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 	},
 	
 	findCenter:function(bounds){
+		if(this.data.length==1){
+			return (new GLatLng(this.data[0].lat, this.data[0].lng));
+		}
 		var clat=(bounds.getNorthEast().lat()+bounds.getSouthWest().lat())/2;
 		var clng=(bounds.getNorthEast().lng()+bounds.getSouthWest().lng())/2;
 		return (new GLatLng(clat,clng));
@@ -150,13 +152,10 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 	render:function(){
 		var bounds=new GLatLngBounds();
 		var d=this.data;
-		var zoom=parseInt(this.zoom,10);
-		if(d.length>1){
-			for(var i=0; i<d.length; i++){
-				bounds.extend(new GLatLng(d[i].lat,d[i].lng));
-			}
-			zoom=this.map.getBoundsZoomLevel(bounds);
+		for(var i=0; i<d.length; i++){
+			bounds.extend(new GLatLng(d[i].lat,d[i].lng));
 		}
+		var zoom=Math.min(this.map.getBoundsZoomLevel(bounds),15);
 		this.map.setCenter(this.findCenter(bounds), zoom);
 
 		for(var i=0; i<this.data.length; i++){
