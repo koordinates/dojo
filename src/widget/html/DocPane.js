@@ -44,6 +44,7 @@ dojo.widget.defineWidget(
 		sPTypeSave: null,
 		sPName: null,
 		sPNameSave: null,
+		pkgDescription: null,
 		// Fields and methods
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css"),
@@ -150,23 +151,24 @@ dojo.widget.defineWidget(
 				dojo.dom.removeNode(append);
 			}
 		},
-		onPkgResults: function(message){
-			dojo.debug(dojo.json.serialize(message));
+		onPkgResults: function(/*Object*/ results){
 			dojo.dom.removeChildren(this.domNode);
 			
-			this.pkg.innerHTML = message.pkg;
+			this.pkg.innerHTML = results.pkg;
 			
 			var appends = [];
-			if(message.size){
-				for(var i = 0, fn; fn = message.fns[i]; i++){
+			if(results.size){
+				for(var i = 0, fn; fn = results.fns[i]; i++){
 					this.vLink.innerHTML = fn;
 					this.vDesc.parentNode.style.display = "none";
 					appends.push(this.vParent.appendChild(this.vSave.cloneNode(true)));
 				}
 				this.packageSave.appendChild(this.variables.cloneNode(true));
 			}
+			
+			this.pkgDescription.innerHTML = results.description;
 
-			this.domNode.appendChild(this.packageSave.cloneNode(true));
+			this.domNode.appendChild(this.packageSave.cloneNode(true));			
 		},
 		onDocResults: function(message){
 			var results = message.docResults;
