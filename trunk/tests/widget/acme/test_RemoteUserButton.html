@@ -23,6 +23,7 @@
 	dojo.require("dojo.widget.Button");
 	dojo.require("dojo.widget.html.Button");
 	dojo.require("dojo.widget.Menu2");
+	dojo.require("dojo.string.extras");
 	
 	dojo.hostenv.writeIncludes();
 </script>
@@ -33,8 +34,14 @@
 	// 1. set directory for acme package (which contains widgets)
 	// The path is relative to the dojo/ directory, so typically
 	// it's something like "../acme"
-	dojo.setModulePrefix('acme', 'tests/widget/acme');
-	dojo.widget.manager.registerWidgetPackage('acme');
+// 	dojo.hostenv.setModulePrefix('acme', 'tests/widget/acme');
+// 	dojo.widget.manager.registerWidgetPackage('acme');
+	dojo.defineNamespace("acme.ns",
+						"tests/widget/acme","acme", 
+						function(name){ 
+							return "acme."+dojo.string.capitalize(name);
+						},
+						"acme");
 	
 	
 	// 2. load the user defined button
@@ -67,13 +74,13 @@ Here's an example:</p>
   }
 </style>
 <div class="box">
-	<button dojoType="UserButton" onclick='dojo.debug("short");'>
+	<button dojoType="acme:UserButton" onclick='dojo.debug("short");'>
 		<div class="dc">short</div>
 	</button>
-	<button dojoType="UserButton" onclick='dojo.debug("longer");'>
+	<button dojoType="acme:UserButton" onclick='dojo.debug("longer");'>
 		<div class="dc">bit longer</div>
 	</button>
-	<button dojoType="UserButton" onclick='dojo.debug("longer yet");'>
+	<button dojoType="acme:UserButton" onclick='dojo.debug("longer yet");'>
 		<div class="dc">ridiculously long</div>
 	</button>
 	<div style="clear: both;"></div>
