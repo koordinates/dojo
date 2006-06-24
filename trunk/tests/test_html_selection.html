@@ -7,6 +7,7 @@
 <script type="text/javascript">
 
 dojo.require("dojo.html");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
 function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
 
@@ -49,12 +50,27 @@ dojo.event.connect($("selectElement"), "onclick", function (e) {
 });
 </script>
 
-<h2><code>isSelectionCollapsed</code></h2>
+<h2><code>isSelectionCollapsed and other information</code></h2>
 
 <p>selection collapsed: <b id="selectionCollapsed"></b></p>
+<p>selection parentElement: <b id="selectionParentElement"></b></p>
 
 <script type="text/javascript">
 setInterval(function () {
 	$("selectionCollapsed").innerHTML = dojo.html.isSelectionCollapsed();
+	var p = dojo.html.selection.getParentElement();
+	if(p)
+		$("selectionParentElement").innerHTML = p.toString();
+	else
+		$("selectionParentElement").innerHTML = "null";
 }, 100);
+</script>
+
+<h2><code>delete selection</code></h2>
+<textarea>delete this</textarea>
+<p><span id="deleteSelection" onmouseover="">The current selection should be deleted when you mouse over this text span.</span></p>
+<script type="text/javascript">
+dojo.event.connect($("deleteSelection"), "onmouseover", function (e) {
+	dojo.html.selection.remove();
+});
 </script>
