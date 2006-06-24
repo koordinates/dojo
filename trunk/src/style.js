@@ -427,6 +427,7 @@ dojo.require("dojo.lang.common");
 	}
 
 	// calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
+	ds._insertedCssFiles = []; // cache container needed because IE reformats cssText when added to DOM
 	ds.insertCssFile = function(URI, doc, checkDuplicates){
 		if(!URI){ return; }
 		if(!doc){ doc = document; }
@@ -434,15 +435,29 @@ dojo.require("dojo.lang.common");
 		cssStr = ds.fixPathsInCssText(cssStr, URI);
 
 		if(checkDuplicates){
-			var styles = doc.getElementsByTagName("style");
-			var cssText = "";
-			for(var i = 0; i<styles.length; i++){
-				cssText = (styles[i].styleSheet && styles[i].styleSheet.cssText) ? styles[i].styleSheet.cssText : styles[i].innerHTML;
-				if(cssStr == cssText){ return; }
+			var idx = -1, node, ent = ds._insertedCssFiles;
+			for(var i = 0; i < ent.length; i++){
+				if((ent[i].doc == doc) && (ent[i].cssText == cssStr)){
+					idx = i; node = ent[i].nodeRef;
+					break;
+				}
+			}
+			// make sure we havent deleted our node
+			if(node){
+				var styles = doc.getElementsByTagName("style");
+				for(var i = 0; i < styles.length; i++){
+					if(styles[i] == node){
+						return;
+					}
+				}
+				// delete this entry
+				ds._insertedCssFiles.shift(idx, 1);
 			}
 		}
 
 		var style = ds.insertCssText(cssStr);
+		ds._insertedCssFiles.push({'doc': doc, 'cssText': cssStr, 'nodeRef': style});
+
 		// insert custom attribute ex dbgHref="../foo.css" usefull when debugging in DOM inspectors, no?
 		if(style && djConfig.isDebug){
 			style.setAttribute("dbgHref", URI);
@@ -483,22 +498,19 @@ dojo.require("dojo.lang.common");
 	//	then uri should point to dojoroot/src/widget/templates/
 	ds.fixPathsInCssText = function(cssStr, URI){
 		if(!cssStr || !URI){ return; }
-		var pos = 0; var str = ""; var url = "";
-		while(pos!=-1){
-			pos = 0;url = "";
-			pos = cssStr.indexOf("url(", pos);
-			if(pos<0){ break; }
-			str += cssStr.slice(0,pos+4);
-			cssStr = cssStr.substring(pos+4, cssStr.length);
-			url += cssStr.match(/^[\t\s\w()\/.\\'"-:#=&?]*\)/)[0]; // url string
-			cssStr = cssStr.substring(url.length-1, cssStr.length); // remove url from css string til next loop
-			url = url.replace(/^[\s\t]*(['"]?)([\w()\/.\\'"-:#=&?]*)\1[\s\t]*?\)/,"$2"); // clean string
-			if(url.search(/(file|https?|ftps?):\/\//)==-1){
-				url = (new dojo.uri.Uri(URI,url).toString());
+		var match, str = "", url = "";
+		var regex = /url\(\s*([\t\s\w()\/.\\'"-:#=&?]*)\s*\)/;
+		var regexProtocol = /(file|https?|ftps?):\/\//;
+		var regexTrim = /^[\s]*(['"]?)([\w()\/.\\'"-:#=&?]*)\1[\s]*?$/;
+		while(match = regex.exec(cssStr)){
+			url = match[1].replace(regexTrim, "$2");
+			if(!regexProtocol.exec(url)){
+				url = (new dojo.uri.Uri(URI, url).toString());
 			}
-			str += url;
-		};
-		return str+cssStr;
+			str += cssStr.substring(0, match.index) + "url(" + url + ")";
+			cssStr = cssStr.substr(match.index + match[0].length);
+		}
+		return str + cssStr;
 	}
 
 	ds.getBackgroundColor = function(node) {
