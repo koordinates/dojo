@@ -21,7 +21,7 @@ dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
 	return obj;
 }
 
-dojo.lang.mixin = function(obj, props /*, props, ..., props */){
+dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/ props){
 	// summary:	Adds all properties and methods of props to obj.
 	for(var i=1, l=arguments.length; i<l; i++){
 		dojo.lang._mixin(obj, arguments[i]);
@@ -29,7 +29,7 @@ dojo.lang.mixin = function(obj, props /*, props, ..., props */){
 	return obj; // Object
 }
 
-dojo.lang.extend = function(/*Object*/ constructor, /* Object, ... */ props){
+dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	// summary:	Adds all properties and methods of props to constructors prototype,
 	//			making them available to all instances created with constructor.
 	for(var i=1, l=arguments.length; i<l; i++){
