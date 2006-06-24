@@ -61,7 +61,7 @@
 	
 			if(node.id=="file" || node.id=="javascript"){
 				href = href.toLowerCase().replace(/%20/g, ' '); // FF and Opera replaces Document to document
-				href = href.substr(0,7) + href.substr(8 ,href.length).replace(/\//g, '\\'); // IE replaces to / in wine
+				href = href.substr(0,7) + href.substr(7 ,href.length).replace(/\//g, '\\'); // IE replaces to / in wine
 				shouldBe = shouldBe.toLowerCase();
 			}else if(node.id=="relative"){
 				// translate path to be relative to this folder
