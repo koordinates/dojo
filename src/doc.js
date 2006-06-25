@@ -22,7 +22,7 @@ dojo.doc._myKeys = [];
 dojo.doc._callbacks = {function_names: []};
 dojo.doc._cache = {}; // Saves the JSON objects in cache
 dojo.doc._rpc = new dojo.rpc.JotService;
-dojo.doc._rpc.serviceUrl = "http://dojotoolkit.org/~pottedmeat/jsonrpc.php";
+dojo.doc._rpc.serviceUrl = "http://dojotoolkit.org/~pottedmeat/dojo/docscripts/jsonrpc.php";
 
 dojo.lang.mixin(dojo.doc, {
 	functionNames: function(/*mixed*/ selectKey, /*Function*/ callback){
@@ -346,19 +346,19 @@ dojo.lang.mixin(dojo.doc, {
 				if(!data[pkg]){
 					continue;
 				}
-				for(var fn in data[pkg]["meta"]){
+				for(var fn in data[pkg]["meta"]["methods"]){
 					if(fn.toLowerCase().indexOf(name) == -1){
 						continue;
 					}
 					if(fn != "requires" && !rePrivate.test(fn)){
-						for(var pId in data[pkg]["meta"][fn]){
+						for(var pId in data[pkg]["meta"]["methods"][fn]){
 							var result = {
 								pkg: pkg,
 								name: fn,
 								summary: ""
 							}
-							if(data[pkg]["meta"][fn][pId].summary){
-								result.summary = data[pkg]["meta"][fn][pId].summary;
+							if(data[pkg]["meta"]["methods"][fn][pId].summary){
+								result.summary = data[pkg]["meta"]["methods"][fn][pId].summary;
 							}
 							results.docResults.push(result);
 						}
