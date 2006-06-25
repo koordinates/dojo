@@ -10,6 +10,7 @@ dojo.require("dojo.event.*");
 
 dojo.declare("dojo.widget.Widget", null, {
 	initializer: function() {								 
+		//dojo.debug("NEW "+this.widgetType);
 		// these properties aren't primitives and need to be created on a per-item
 		// basis.
 		this.children = [];
@@ -82,43 +83,43 @@ dojo.declare("dojo.widget.Widget", null, {
 	},
 
 	create: function(args, fragment, parentComp, namespace){
-		dojo.profile.start(this.widgetType + " create");
+		//dojo.profile.start(this.widgetType + " create");
 		if(namespace){
 			this.namespace = namespace;
 		}
 		// dojo.debug(this.widgetType, "create");
-		dojo.profile.start(this.widgetType + " satisfyPropertySets");
+		//dojo.profile.start(this.widgetType + " satisfyPropertySets");
 		this.satisfyPropertySets(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " satisfyPropertySets");
+		//dojo.profile.end(this.widgetType + " satisfyPropertySets");
 		// dojo.debug(this.widgetType, "-> mixInProperties");
-		dojo.profile.start(this.widgetType + " mixInProperties");
+		//dojo.profile.start(this.widgetType + " mixInProperties");
 		this.mixInProperties(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " mixInProperties");
+		//dojo.profile.end(this.widgetType + " mixInProperties");
 		// dojo.debug(this.widgetType, "-> postMixInProperties");
-		dojo.profile.start(this.widgetType + " postMixInProperties");
+		//dojo.profile.start(this.widgetType + " postMixInProperties");
 		this.postMixInProperties(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " postMixInProperties");
+		//dojo.profile.end(this.widgetType + " postMixInProperties");
 		// dojo.debug(this.widgetType, "-> dojo.widget.manager.add");
 		dojo.widget.manager.add(this);
 		// dojo.debug(this.widgetType, "-> buildRendering");
-		dojo.profile.start(this.widgetType + " buildRendering");
+		//dojo.profile.start(this.widgetType + " buildRendering");
 		this.buildRendering(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " buildRendering");
+		//dojo.profile.end(this.widgetType + " buildRendering");
 		// dojo.debug(this.widgetType, "-> initialize");
-		dojo.profile.start(this.widgetType + " initialize");
+		//dojo.profile.start(this.widgetType + " initialize");
 		this.initialize(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " initialize");
+		//dojo.profile.end(this.widgetType + " initialize");
 		// dojo.debug(this.widgetType, "-> postInitialize");
-		dojo.profile.start(this.widgetType + " postInitialize");
+		// postinitialize includes subcomponent creation
+		// profile is put directly to function
 		this.postInitialize(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " postInitialize");
 		// dojo.debug(this.widgetType, "-> postCreate");
-		dojo.profile.start(this.widgetType + " postCreate");
+		//dojo.profile.start(this.widgetType + " postCreate");
 		this.postCreate(args, fragment, parentComp);
-		dojo.profile.end(this.widgetType + " postCreate");
+		//dojo.profile.end(this.widgetType + " postCreate");
 		// dojo.debug(this.widgetType, "done!");
 		
-		dojo.profile.end(this.widgetType + " create");
+		//dojo.profile.end(this.widgetType + " create");
 		
 		return this;
 	},
@@ -177,11 +178,11 @@ dojo.declare("dojo.widget.Widget", null, {
 
 
 	isFirstNode: function() {
-		return this.getParentIndex() == 0 ? true: false;
+		return this === this.parent.children[0];
 	},
 
 	isLastNode: function() {
-		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
+		return this === this.parent.children[this.parent.children.length-1];
 	},
 
 	satisfyPropertySets: function(args){
@@ -530,7 +531,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 												parser, parentComp, 
 												insertionIndex, localProps){
 	
-	dojo.profile.start("buildWidgetFromParseTree");
+	//dojo.profile.start("buildWidgetFromParseTree");
 	
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
@@ -551,7 +552,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
 	// dojo.debug(new Date() - tic);
 	
-	dojo.profile.end("buildWidgetFromParseTree");
+	//dojo.profile.end("buildWidgetFromParseTree");
 	
 	return ret;
 }

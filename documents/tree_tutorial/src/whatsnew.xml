@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE section SYSTEM "http://www.docbook.org/xml/4.4/docbookx.dtd">
 <section>
     <title>What's new in TreeV3</title>
-    <para>
-    The new tree was written with performance and flexibility in mind.
-        </para>
+    
     
     <itemizedlist>
         <listitem>New HTML/CSS structure lightweight and easier to style</listitem>
@@ -12,7 +9,9 @@
         <listitem>Many implicit actions that were kept for compatibility in TreeV2 are now removed</listitem>
         <listitem>new extensions model: less features get included into core, more to be shipped separately</listitem>
         <listitem>TODO: denote interface so any widget may become a treeNode</listitem>
-        
+        <listitem>Major speedup. Almost all operations with single node are now small constant time. Fast program way
+            of node creation is 5-10 times faster than old version. Markup creation is 2-5 times faster also.                    
+        </listitem>
         
     </itemizedlist>
     

@@ -20,7 +20,7 @@ dojo.widget.manager = new function(){
 	}
 
 	this.add = function(widget){
-		dojo.profile.start("dojo.widget.manager.add");
+		//dojo.profile.start("dojo.widget.manager.add");
 		this.widgets.push(widget);
 		// Opera9 uses ID (caps)
 		if(!widget.extraArgs["id"]){
@@ -42,7 +42,7 @@ dojo.widget.manager = new function(){
 		this.widgetIds[widget.widgetId] = widget;
 		// Widget.destroy already calls removeById(), so we don't need to
 		// connect() it here
-		dojo.profile.end("dojo.widget.manager.add");
+		//dojo.profile.end("dojo.widget.manager.add");
 	}
 
 	this.destroyAll = function(){
