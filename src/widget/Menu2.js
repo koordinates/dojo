@@ -29,7 +29,6 @@ dojo.widget.defineWidget(
 	currentSubmenu: null,
 	currentSubmenuTrigger: null,
 	parentMenu: null,
-	parentMenuBar: null,
 	isShowingNow: false,
 	menuIndex: 0,
 
@@ -120,8 +119,7 @@ dojo.widget.defineWidget(
 	},
 
 	/**
-	 * Open the menu at position (x,y), relative to the viewport
-	 * (usually positions are relative to the document; why is this different??)
+	 * Open the menu at position (x,y), relative to document.body
 	 */
 	open: function(x, y, parent, explodeSrc){
 		if (this.isShowingNow){ return; }
@@ -138,28 +136,19 @@ dojo.widget.defineWidget(
 			dojo.widget.html.Menu2Manager.opened(this, button);
 		}
 
-		// if I click  right button and menu is opened, then it gets 2 commands: close -> open
+		// if I click right button and menu is opened, then it gets 2 commands: close -> open
 		// so close enables animation and next "open" is put to queue to occur at new location
 		if(this.animationInProgress){
 			this.queueOnAnimationFinish.push(this.open, arguments);
 			return;
 		}
 
-		var viewport = dojo.html.getViewportSize();
-		var scrolloffset = dojo.html.getScrollOffset();
-
-		var clientRect = {
-			'left'  : scrolloffset[0],
-			'right' : scrolloffset[0] + viewport[0],
-			'top'   : scrolloffset[1],
-			'bottom': scrolloffset[1] + viewport[1]
-		};
-
-		// display temporarily, and move into position
-		this.domNode.style.display="";
-		this.domNode.style.position='absolute';
-		this.domNode.style.zIndex = 200 + this.menuIndex;
-		dojo.html.placeOnScreenPoint(this.domNode, x, y, false);
+		// display temporarily, and move into position, then hide again
+		with(this.domNode.style){
+			display="";
+			zIndex = 200 + this.menuIndex;
+		}
+		dojo.html.placeOnScreenPoint(this.domNode, x, y, [0, 0], true);
 		this.domNode.style.display="none";
 
 		this.parentMenu = parentMenu;
@@ -167,7 +156,6 @@ dojo.widget.defineWidget(
 		this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
 
 		// then use the user defined method to display it
-		this.domNode.style.display='none';
 		this.show();
 
 		this.isShowingNow = true;
@@ -184,10 +172,6 @@ dojo.widget.defineWidget(
 		this.hide();
 		this.isShowingNow = false;
 		dojo.widget.html.Menu2Manager.closed(this);
-
-		if (this.parentMenuBar){
-			this.parentMenuBar.closedMenu(this);
-		}
 	},
 
 	onShow: function() {
@@ -230,8 +214,8 @@ dojo.widget.defineWidget(
 		this.currentSubmenuTrigger = null;
 	},
 
+	// open the menu to the right of the current menu item
 	openSubmenu: function(submenu, from_item){
-		// open the menu to the right of the current menu item
 		var fromPos = dojo.style.getAbsolutePosition(from_item.domNode, true);
 		var our_w = dojo.style.getOuterWidth(this.domNode);
 		var x = fromPos.x + our_w - this.submenuOverlap;
@@ -247,7 +231,7 @@ dojo.widget.defineWidget(
 	onOpen: function(e){
 		this.openEvent = e;
 
-		this.open(e.clientX, e.clientY, null, [e.clientX, e.clientY]);
+		this.open(e.pageX, e.pageY, null, [e.pageX, e.pageY]);
 
 		if(e["preventDefault"]){
 			e.preventDefault();
@@ -610,73 +594,25 @@ dojo.widget.defineWidget(
 	"dojo.widget.MenuBar2",
 	dojo.widget.PopupMenu2,
 {
+	menuOverlap: 2,
+
 	templateString: '<div class="dojoMenuBar2"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
 
-	// override PopupMenu2 to open the submenu below us rather than to our right
+	/*
+	 * override PopupMenu2 to open the submenu below us rather than to our right
+	 */
 	openSubmenu: function(submenu, from_item){
-		// open the menu to the right of the current menu item
 		var fromPos = dojo.style.getAbsolutePosition(from_item.domNode, true);
 		var ourPos = dojo.style.getAbsolutePosition(this.domNode, true);
 		var our_h = dojo.style.getInnerHeight(this.domNode);
 		var x = fromPos.x;
-		var y = ourPos.y + our_h;
+		var y = ourPos.y + our_h - this.menuOverlap;
 
 		this.currentSubmenu = submenu;
 		this.currentSubmenu.open(x, y, this, from_item.domNode);
 
-		this.currentSubmenu.parentMenuBar = this;
 		this.currentSubmenuTrigger = from_item;
 		this.currentSubmenuTrigger.is_open = true;
-	},
-
-	itemHover: function(item){
-		if (item == this.currentItem) return;
-
-		if (this.currentItem){
-			this.currentItem.unhighlightItem();
-
-			if (this.isExpanded){
-				this.closeSubmenu();
-			}
-		}
-
-		this.currentItem = item;
-		this.currentItem.highlightItem();
-
-		if (this.isExpanded){
-			this.currentItem.expandMenu();
-		}
-	},
-
-	itemUnhover: function(item){
-		if (item != this.currentItem) return;
-
-		if (this.currentItem && !this.isExpanded){
-			this.currentItem.unhighlightItem();
-			this.currentItem = null;
-		}
-	},
-
-	itemClick: function(item){
-		if (item != this.currentItem){
-			this.itemHover(item);
-		}
-
-		if (this.isExpanded){
-			this.isExpanded = false;
-			this.closeSubmenu();
-
-		}else{
-			this.isExpanded = true;
-			this.currentItem.expandMenu();
-		}
-	},
-
-	closedMenu: function(menu){
-		if (this.currentSubmenu == menu){
-			this.isExpanded = false;
-			this.itemUnhover(this.currentItem);
-		}
 	}
 });
 
@@ -689,31 +625,12 @@ dojo.widget.defineWidget(
 		+'<span><span>${this.caption}</span>${this.caption}</span>'
 		+'</td>',
 
-	onHover: function(){
-		this.parent.itemHover(this);
-	},
-
-	onUnhover: function(){
-		this.parent.itemUnhover(this);
-	},
-
-	_onClick: function(){
-		this.parent.itemClick(this);
-	},
-
 	highlightItem: function(){
 		dojo.html.addClass(this.domNode, 'dojoMenuBarItem2Hover');
 	},
 
 	unhighlightItem: function(){
 		dojo.html.removeClass(this.domNode, 'dojoMenuBarItem2Hover');
-	},
-
-	expandMenu: function(){
-		var submenu = dojo.widget.getWidgetById(this.submenuId);
-		if (submenu){
-			this.parent.openSubmenu(submenu, this);
-		}
 	},
 
 	setDisabled: function(value){

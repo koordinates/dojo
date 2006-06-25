@@ -89,6 +89,9 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 	},
 	
 	findCenter:function(bounds){
+		if(this.data.length==1){
+			return (new GLatLng(this.data[0].lat, this.data[0].lng));
+		}
 		var clat=(bounds.getNorthEast().lat()+bounds.getSouthWest().lat())/2;
 		var clng=(bounds.getNorthEast().lng()+bounds.getSouthWest().lng())/2;
 		return (new GLatLng(clat,clng));
@@ -149,12 +152,11 @@ dojo.lang.extend(dojo.widget.html.GoogleMap, {
 	render:function(){
 		var bounds=new GLatLngBounds();
 		var d=this.data;
-		var pts=[];
 		for(var i=0; i<d.length; i++){
 			bounds.extend(new GLatLng(d[i].lat,d[i].lng));
 		}
-
-		this.map.setCenter(this.findCenter(bounds), this.map.getBoundsZoomLevel(bounds));
+		var zoom=Math.min(this.map.getBoundsZoomLevel(bounds),15);
+		this.map.setCenter(this.findCenter(bounds), zoom);
 
 		for(var i=0; i<this.data.length; i++){
 			var p=new GLatLng(this.data[i].lat,this.data[i].lng);

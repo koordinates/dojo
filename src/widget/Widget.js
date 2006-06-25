@@ -82,26 +82,44 @@ dojo.declare("dojo.widget.Widget", null, {
 	},
 
 	create: function(args, fragment, parentComp, namespace){
+		dojo.profile.start(this.widgetType + " create");
 		if(namespace){
 			this.namespace = namespace;
 		}
 		// dojo.debug(this.widgetType, "create");
+		dojo.profile.start(this.widgetType + " satisfyPropertySets");
 		this.satisfyPropertySets(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " satisfyPropertySets");
 		// dojo.debug(this.widgetType, "-> mixInProperties");
+		dojo.profile.start(this.widgetType + " mixInProperties");
 		this.mixInProperties(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " mixInProperties");
 		// dojo.debug(this.widgetType, "-> postMixInProperties");
+		dojo.profile.start(this.widgetType + " postMixInProperties");
 		this.postMixInProperties(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " postMixInProperties");
 		// dojo.debug(this.widgetType, "-> dojo.widget.manager.add");
 		dojo.widget.manager.add(this);
 		// dojo.debug(this.widgetType, "-> buildRendering");
+		dojo.profile.start(this.widgetType + " buildRendering");
 		this.buildRendering(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " buildRendering");
 		// dojo.debug(this.widgetType, "-> initialize");
+		dojo.profile.start(this.widgetType + " initialize");
 		this.initialize(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " initialize");
 		// dojo.debug(this.widgetType, "-> postInitialize");
+		dojo.profile.start(this.widgetType + " postInitialize");
 		this.postInitialize(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " postInitialize");
 		// dojo.debug(this.widgetType, "-> postCreate");
+		dojo.profile.start(this.widgetType + " postCreate");
 		this.postCreate(args, fragment, parentComp);
+		dojo.profile.end(this.widgetType + " postCreate");
 		// dojo.debug(this.widgetType, "done!");
+		
+		dojo.profile.end(this.widgetType + " create");
+		
 		return this;
 	},
 
@@ -479,9 +497,10 @@ dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
 	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){
-		dojo.profile.start(ltype);
+		var _ltype = ltype;
+		dojo.profile.start(_ltype);
 		var n = dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
-		dojo.profile.end(ltype);
+		dojo.profile.end(_ltype);
 		
 		return n;
 	}
@@ -527,6 +546,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
+	
 	
 	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
 	// dojo.debug(new Date() - tic);
@@ -581,7 +601,10 @@ dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/
 	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
 
 	dojo.widget.manager.registerWidgetPackage(namespace);
-	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+	
+	var pos = namespace.indexOf(".");
+	var nsName = (pos > -1) ? namespace.substring(0,pos) : namespace;
+	dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
 
 	props=(props)||{};
 	props.widgetType = type;

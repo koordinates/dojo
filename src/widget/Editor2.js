@@ -11,6 +11,9 @@ dojo.require("dojo.widget.Editor2Toolbar");
 // dojo.require("dojo.widget.ColorPalette");
 // dojo.require("dojo.string.extras");
 
+//The current focused Editor2 Instance
+dojo.widget.Editor2._CurrentInstance = null;
+
 dojo.widget.defineWidget(
 	"dojo.widget.html.Editor2",
 	dojo.widget.html.RichText,
@@ -60,10 +63,8 @@ dojo.widget.defineWidget(
 				// 			selection in the others. This is problematic.
 				this.toolbarWidget = toolbars[0];
 			}
-			dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onfocus");
-			// dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onclick");
+			dojo.event.topic.registerPublisher("Editor2.clobberFocus", this, "clobberFocus");
 			dojo.event.topic.subscribe("Editor2.clobberFocus", this, "setBlur");
-			dojo.event.connect(this.editNode, "onfocus", this, "setFocus");
 			dojo.event.connect(this.toolbarWidget.linkButton, "onclick", 
 				dojo.lang.hitch(this, function(){
 					var range;
@@ -102,6 +103,8 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		clobberFocus: function() {},
+
 		toggleHtmlEditing: function(){
 			if(!this._inHtmlMode){
 				this._inHtmlMode = true;
@@ -126,8 +129,14 @@ dojo.widget.defineWidget(
 		},
 
 		setFocus: function(){
-			// dojo.debug("setFocus:", this);
-			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
+			if(dojo.widget.Editor2._CurrentInstance == this){ return; }
+
+			if(this.toolbarWidget){
+				this.clobberFocus();
+				// dojo.debug("setFocus:", this);
+				dojo.widget.Editor2._CurrentInstance = this;
+				dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
+			}
 		},
 
 		setBlur: function(){
@@ -337,20 +346,6 @@ dojo.widget.defineWidget(
 					this.close(e.getName().toLowerCase() == "save");
 				}
 			}
-		},
-
-		wireUpOnLoad: function(){
-			if(!dojo.render.html.ie){
-				/*
-				dojo.event.kwConnect({
-					srcObj:		this.document,
-					srcFunc:	"click", 
-					targetObj:	this.toolbarWidget,
-					targetFunc:	"hideAllDropDowns",
-					once:		true
-				});
-				*/
-			}
 		}
 	},
 	"html",
@@ -358,12 +353,6 @@ dojo.widget.defineWidget(
 		var cp = dojo.widget.html.Editor2.prototype;
 		if(!cp._wrappersSet){
 			cp._wrappersSet = true;
-			cp.fillInTemplate = (function(fit){
-				return function(){
-					fit.call(this);
-					this.editorOnLoad();
-				};
-			})(cp.fillInTemplate);
 		
 			cp.onDisplayChanged = (function(odc){
 				return function(){
@@ -377,9 +366,16 @@ dojo.widget.defineWidget(
 			cp.onLoad = (function(ol){
 				return function(){
 					ol.call(this);
-					this.wireUpOnLoad();
+					this.editorOnLoad();
 				};
 			})(cp.onLoad);
+			
+			cp.onFocus = (function(of){
+				return function(){
+					of.call(this);
+					this.setFocus();
+				};
+			})(cp.onFocus);
 		}
 	}
 );

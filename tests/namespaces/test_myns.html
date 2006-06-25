@@ -1,0 +1,49 @@
+<html>
+<head>
+<script type="text/javascript">
+	djConfig = { 
+		isDebug: true
+	};
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../_bootstrap.js"></script>
+<script type="text/javascript">
+dojo.require("dojo.xml.Parse");
+dojo.require("dojo.widget.Widget");
+dojo.require("dojo.widget.Parse");
+
+// myns.js would usually belong in src/namespaces as dojo.namespaces.myns and would be loaded implicitly
+// by merely using myns: widgets.  This reference is put here so that we don't have to check the test into
+// the dojo src/ tree.
+dojo.require('tests.namespaces.myns');
+</script>
+
+</head>
+<body>
+<dojo:Checkbox dojoDomain="html"></dojo:Checkbox> Dojo checkbock with the default HTML domain
+<br/>------<br/>
+
+<div dojoType="Checkbox"></div> Dojo Checkbox using dojoType
+<br/>------<br/>
+
+<dojo:Checkbox></dojo:Checkbox> Dojo Checkbox using namespaces
+<br/>------<br/>
+
+<dojo:Button>MyButton</dojo:Button> Dojo Button using namespaces
+<br/>------<br/>
+
+<!--
+<myns:Check dojoDomain="svg"></myns:Check>	MyNs checkbox using namespaces and SVG domain (this should NOT work since the namespace resolver for myns namespace doesn't handle the SVG domain, just HTML)
+<br/>------<br/>
+<myns:Check dojoDomain="html"></myns:Check>	MyNs checkbox using namespaces and HTML domain (which is the default anyway)
+<br/>------<br/>
+-->
+<myns:Check></myns:Check>	MyNs checkbox using namespaces
+<br/>------<br/>
+
+
+<div dojoType="myns:Check"></div> MyNs checkbox using dojoType
+
+</body>
+</html>

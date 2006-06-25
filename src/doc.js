@@ -22,7 +22,7 @@ dojo.doc._myKeys = [];
 dojo.doc._callbacks = {function_names: []};
 dojo.doc._cache = {}; // Saves the JSON objects in cache
 dojo.doc._rpc = new dojo.rpc.JotService;
-dojo.doc._rpc.serviceUrl = "http://dojotoolkit.org/~pottedmeat/jsonrpc.php";
+dojo.doc._rpc.serviceUrl = "http://dojotoolkit.org/~pottedmeat/dojo/docscripts/jsonrpc.php";
 
 dojo.lang.mixin(dojo.doc, {
 	functionNames: function(/*mixed*/ selectKey, /*Function*/ callback){
@@ -37,8 +37,9 @@ dojo.lang.mixin(dojo.doc, {
 			selectKey: selectKey
 		});
 	},
-
 	_functionNames: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
+		// summary: Converts the stored JSON object into a sorted list of packages
+		// and functions
 		dojo.debug("_functionNames()");
 		var searchData = [];
 		for(var key in data){
@@ -63,11 +64,9 @@ dojo.lang.mixin(dojo.doc, {
 		searchData = searchData.sort(dojo.doc._sort);
 
 		if(evt.callbacks && evt.callbacks.length){
-			var callback = evt.callbacks.shift();
-			callback.call(null, type, searchData, evt);
+			evt.callbacks.shift()(type, searchData, evt);
 		}
 	},
-
 	getMeta: function(/*mixed*/ selectKey, /*Function*/ callback, /*Function*/ name, /*String?*/ id){
 		// summary: Gets information about a function in regards to its meta data
 		dojo.debug("getMeta(" + name + ")");
@@ -82,7 +81,6 @@ dojo.lang.mixin(dojo.doc, {
 			selectKey: selectKey
 		});
 	},
-
 	_getMeta: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		dojo.debug("_getMeta(" + evt.name + ") has package: " + evt.pkg + " with: " + type);
 		if("load" == type && evt.pkg){
@@ -90,12 +88,10 @@ dojo.lang.mixin(dojo.doc, {
 			dojo.doc._buildCache(evt);
 		}else{
 			if(evt.callbacks && evt.callbacks.length){
-				var callback = evt.callbacks.shift();
-				callback.call(null, "error", {}, evt);
+				evt.callbacks.shift()("error", {}, evt);
 			}
 		}
 	},
-
 	getSrc: function(/*mixed*/ selectKey, /*Function*/ callback, /*String*/ name, /*String?*/ id){
 		// summary: Gets src file (created by the doc parser)
 		dojo.debug("getSrc()");
@@ -110,7 +106,6 @@ dojo.lang.mixin(dojo.doc, {
 			selectKey: selectKey
 		});
 	},
-
 	_getSrc: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		dojo.debug("_getSrc()");
 		if(evt.pkg){	
@@ -118,15 +113,13 @@ dojo.lang.mixin(dojo.doc, {
 			dojo.doc._buildCache(evt);
 		}else{
 			if(evt.callbacks && evt.callbacks.length){
-				var callback =  evt.callbacks.shift();
-				callback.call(null, "error", {}, evt);
+				evt.callbacks.shift()("error", {}, evt);
 			}
 		}
 	},
-
-	getDoc: function(/*mixed*/ selectKey, /*Function*/ callback, /*String*/ name, /*String?*/ id){
-		// summary: Gets external documentation stored on jot
-		dojo.debug("getDoc()");
+	getFnDoc: function(/*mixed*/ selectKey, /*Function*/ callback, /*String*/ name, /*String?*/ id){
+		// summary: Gets external documentation stored on Jot for a given function
+		dojo.debug("getFnDoc()");
 		if(!selectKey){
 			selectKey = ++dojo.doc._count;
 		}
@@ -137,14 +130,25 @@ dojo.lang.mixin(dojo.doc, {
 			id: id,
 			selectKey: selectKey
 		}
-		dojo.doc.functionPackage(dojo.doc._getDoc, input);
+		dojo.doc.functionPackage(dojo.doc._getFnDoc, input);
 	},
+	getPkgDoc: function(/*mixed*/ selectKey, /*Function*/ callback, /*String*/ name){
+		// summary: Gets external documentation stored on Jot for a given package
+		dojo.debug("getPkgDoc()");
+		if(!selectKey){
+			selectKey = ++dojo.doc._count;
+		}
+		dojo.doc._buildCache({
+			type: "pkgdoc",
+			callbacks: [callback],
+			name: name,
+			selectKey: selectKey
+		});
+	},
+	_getFnDoc: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
+		dojo.debug("_getFnDoc(" + evt.pkg + "/" + evt.name + ")");
 
-	_getDoc: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-		dojo.debug("_getDoc(" + evt.pkg + "/" + evt.name + ")");
-	
 		dojo.doc._keys[evt.selectKey] = {count: 0};
-
 		var search = {};
 		search.forFormName = "DocFnForm";
 		search.limit = 1;
@@ -156,7 +160,7 @@ dojo.lang.mixin(dojo.doc, {
 		}
 		dojo.debug(dojo.json.serialize(search));
 	
-		dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ evt.type = "fn"; dojo.doc._gotDoc("load", data.list[0], evt); }, function(data){ evt.type = "fn"; dojo.doc._gotDoc("error", {}, evt); });
+		dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ evt.type = "fn"; dojo.doc._gotFnDoc("load", data.list[0], evt); }, function(data){ evt.type = "fn"; dojo.doc._gotFnDoc("error", {}, evt); });
 	
 		search.forFormName = "DocParamForm";
 
@@ -167,21 +171,20 @@ dojo.lang.mixin(dojo.doc, {
 		}
 		delete search.limit;
 
-		dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ evt.type = "param"; dojo.doc._gotDoc("load", data.list, evt); }, function(data){ evt.type = "param"; dojo.doc._gotDoc("error", {}, evt); });
+		dojo.doc._rpc.callRemote("search", search).addCallbacks(function(data){ evt.type = "param"; dojo.doc._gotFnDoc("load", data.list, evt); }, function(data){ evt.type = "param"; dojo.doc._gotFnDoc("error", {}, evt); });
 	},
-
-	_gotDoc: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
-		dojo.debug("_gotDoc(" + evt.type + ") for " + evt.selectKey);
+	_gotFnDoc: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
+		dojo.debug("_gotFnDoc(" + evt.type + ") for " + evt.selectKey);
 		dojo.doc._keys[evt.selectKey][evt.type] = data;
 		if(++dojo.doc._keys[evt.selectKey].count == 2){
-			dojo.debug("_gotDoc() finished");
+			dojo.debug("_gotFnDoc() finished");
 			var keys = dojo.doc._keys[evt.selectKey];
 			var description = '';
 			if(!keys.fn){
 				keys.fn = {}
 			}
 			if(keys.fn["main/text"]){
-				description = dojo.dom.createDocumentFromText(keys.fn["main/text"]).childNodes[0].innerHTML;
+				description = dojo.doc._getMainText(keys.fn["main/text"]);
 				if(!description){
 					description = keys.fn["main/text"];
 				}			
@@ -202,12 +205,19 @@ dojo.lang.mixin(dojo.doc, {
 			delete dojo.doc._keys[evt.selectKey];
 		
 			if(evt.callbacks && evt.callbacks.length){
-				var callback = evt.callbacks.shift();
-				callback.call(null, "load", data, evt);
+				evt.callbacks.shift()("load", data, evt);
 			}
 		}
 	},
-
+	_getMainText: function(/*String*/ text){
+		// summary: Grabs the innerHTML from a Jot Rech Text node
+		dojo.debug("_getMainText()");
+		var reText = /^<[^<]+>(.*)<[^<]+>$/;
+		if(reText.test(text)){
+			return reText.exec(text)[1].replace(/<[^<]+\/>/g, "");
+		}
+		return "";
+	},
 	getPkgMeta: function(/*mixed*/ selectKey, /*Function*/ callback, /*String*/ name){
 		dojo.debug("getPkgMeta(" + name + ")");
 		if(!selectKey){
@@ -220,13 +230,11 @@ dojo.lang.mixin(dojo.doc, {
 			selectKey: selectKey
 		});
 	},
-
 	_getPkgMeta: function(/*Object*/ input){
 		dojo.debug("_getPkgMeta(" + input.name + ")");
 		input.type = "pkgmeta";
 		dojo.doc._buildCache(input);
 	},
-
 	_onDocSearch: function(/*Object*/ input){
 		input.name = input.name.replace("*", "_");
 		dojo.debug("_onDocSearch(" + input.name + ")");
@@ -242,77 +250,113 @@ dojo.lang.mixin(dojo.doc, {
 
 		dojo.doc._buildCache(input);
 	},
-
 	_onDocSearchFn: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 		dojo.debug("_onDocSearchFn(" + evt.name + ")");
 
-		var key = evt.selectKey;
-		var message = {};
-		
 		var packages = [];
-		var size = 0;
 		pkgLoop:
 		for(var pkg in data){
 			if(pkg == evt.name){
-				message.pkg = pkg.replace("_", "*");
-				message.pkgs = [];
-				message.size = 0;
-				for(var i = 0, fn; fn = data[pkg][i]; i++){
-					if(fn != pkg){
-						++message.size;
-						message.pkgs.push(fn);
-					}
-				}
-				dojo.doc._printPkgResults(message);
+				dojo.debug("_onDocSearchFn found a package");
+				dojo.doc._onDocSelectPackage(evt);
 				return;
 			}
 			for(var i = 0, fn; fn = data[pkg][i]; i++){
 				if(fn.toLowerCase().indexOf(evt.name) != -1){
 					// Build a list of all packages that need to be loaded and their loaded state.
-					++size;
 					packages.push(pkg);
 					continue pkgLoop;
 				}
 			}
 		}
-		message = dojo.doc._keys[key] = {};
-		message.pkgs = packages;
-		message.pkg = evt.name; // Remember what we were searching for
-		message.loaded = 0;
+		dojo.debug("_onDocSearchFn found a function");
+
+		evt.pkgs = packages;
+		evt.pkg = evt.name;
+		evt.loaded = 0;
 		for(var i = 0, pkg; pkg = packages[i]; i++){
-			setTimeout("dojo.doc.getPkgMeta(\"" + key + "\", dojo.doc._onDocResults, \"" + pkg + "\");", i*10);
+			dojo.doc.getPkgMeta(evt, dojo.doc._onDocResults, pkg);
 		}
 	},
-
+	_onPkgResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
+		dojo.debug("_onPkgResults(" + evt.type + ")");
+		var key = evt.selectKey;
+		var description = "";
+		var methods = {};
+		var requires = {};
+		if(typeof key == "object"){
+			key[evt.type] = data;
+			for(var i = 0, expect; expect = key.expects[i]; i++){
+				if(!(expect in key)){
+					dojo.debug("_onPkgResults() waiting for more data");
+					return;
+				}
+			}
+			description = key["pkgdoc"];
+			methods = key["pkgmeta"]["methods"];
+			requires = key["pkgmeta"]["requires"];
+			key = key.selectKey;
+		}
+		var pkg = evt.name.replace("_", "*");
+		var results = {
+			description: description,
+			size: 0,
+			fns: [],
+			pkg: pkg,
+			selectKey: key,
+			requires: requires
+		}
+		var rePrivate = /_[^.]+$/;
+		for(var method in methods){
+			if(!rePrivate.test(method)){
+				for(var pId in methods[method]){
+					results.fns.push({
+						pkg: pkg,
+						name: method,
+						id: pId,
+						summary: methods[method][pId].summary
+					})
+				}
+			}
+		}
+		results.size = results.fns.length;
+		dojo.doc._printPkgResults(results);
+	},
 	_onDocResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-		dojo.debug("_onDocResults(" + evt.name + "/" + dojo.doc._keys[evt.selectKey].pkg + ") " + type);
-		++dojo.doc._keys[evt.selectKey].loaded;
+		var message = {};
+		var key = evt.selectKey;
+		if(typeof key == "object"){
+			message = key;
+			key = key.selectKey;
+		}
+		
+		dojo.debug("_onDocResults(" + evt.name + "/" + message.pkg + ") " + type);
+		++message.loaded;
 
-		if(dojo.doc._keys[evt.selectKey].loaded == dojo.doc._keys[evt.selectKey].pkgs.length){
-			var info = dojo.doc._keys[evt.selectKey];
-			var pkgs = info.pkgs;
-			var name = info.pkg;
-			delete dojo.doc._keys[evt.selectKey];
-			var results = {selectKey: evt.selectKey, docResults: []};
+		if(message.loaded == message.pkgs.length){
+			var pkgs = message.pkgs;
+			var name = message.pkg;
+			var results = {selectKey: key, docResults: []};
+			var rePrivate = /_[^.]+$/;
 			data = dojo.doc._cache;
 
 			for(var i = 0, pkg; pkg = pkgs[i]; i++){
 				if(!data[pkg]){
 					continue;
 				}
-				for(var fn in data[pkg]["meta"]){
+				for(var fn in data[pkg]["meta"]["methods"]){
 					if(fn.toLowerCase().indexOf(name) == -1){
 						continue;
 					}
-					if(fn != "requires"){
-						for(var pId in data[pkg]["meta"][fn]){
+					if(fn != "requires" && !rePrivate.test(fn)){
+						for(var pId in data[pkg]["meta"]["methods"][fn]){
 							var result = {
 								pkg: pkg,
 								name: fn,
 								summary: ""
 							}
-							if(data[pkg]["meta"][fn][pId].summary){
-								result.summary = data[pkg]["meta"][fn][pId].summary;
+							if(data[pkg]["meta"]["methods"][fn][pId].summary){
+								result.summary = data[pkg]["meta"]["methods"][fn][pId].summary;
 							}
 							results.docResults.push(result);
 						}
@@ -347,9 +391,14 @@ dojo.lang.mixin(dojo.doc, {
 		dojo.doc._myKeys[++dojo.doc._count] = {selectKey: selectKey, type: "meta"}
 		dojo.doc.getMeta(dojo.doc._count, dojo.doc._onDocSelectResults, name);
 		dojo.doc._myKeys[++dojo.doc._count] = {selectKey: selectKey, type: "doc"}
-		dojo.doc.getDoc(dojo.doc._count, dojo.doc._onDocSelectResults, name);
+		dojo.doc.getFnDoc(dojo.doc._count, dojo.doc._onDocSelectResults, name);
 	},
-
+	_onDocSelectPackage: function(/*Object*/ input){
+		dojo.debug("_onDocSelectPackage(" + input.name + ")")
+		input.expects = ["pkgmeta", "pkgdoc"];
+		dojo.doc.getPkgMeta(input, dojo.doc._onPkgResults, input.name);
+		dojo.doc.getPkgDoc(input, dojo.doc._onPkgResults, input.name);
+	},
 	_onDocSelectResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		dojo.debug("dojo.doc._onDocSelectResults(" + evt.type + ", " + evt.name + ")");
 		var myKey = dojo.doc._myKeys[evt.selectKey];
@@ -370,6 +419,8 @@ dojo.lang.mixin(dojo.doc, {
 	},
 
 	_buildCache: function(/*Object*/ input){
+		dojo.debug("_buildCache(" + input.type + ")");
+		// Get stuff from the input object
 		var type = input.type;
 		var pkg = input.pkg;
 		var callbacks = input.callbacks;
@@ -378,49 +429,89 @@ dojo.lang.mixin(dojo.doc, {
 			id = "_";
 		}
 		var name = input.name;
+		
+		// Stuff to pass to io.bind
+		var url = "";
+		var load = null;
+		var error = null;
+		var mimetype = "text/json";
+		
+		// Stuff to pass to RPC
+		var search = {};
 	
-		dojo.debug("_buildCache() type: " + type);
-		if(type == "function_names"){
+		if(type == "pkgdoc"){
+			try{
+				var cached = dojo.doc._cache[name]["doc"];
+			}catch(e){}
+
+			if(cached){
+				callbacks.shift()("load", dojo.doc._cache[name]["doc"], input);
+				return;
+			}
+
+			search.forFormName = "DocPkgForm";
+			search.limit = 1;
+			search.filter = "it/DocPkgForm/require = '" + name + "'";
+			
+			load = function(data){
+				var description = "";
+				var list = data.list;
+				if(list && list.length && list[0]["main/text"]){
+					description = dojo.doc._getMainText(list[0]["main/text"]);
+					dojo.doc._cache[name]["doc"] = description;
+				}
+
+				if(callbacks && callbacks.length){
+					callbacks.shift()("load", description, input);
+				}
+			}
+			error = function(data){
+				if(evt.callbacks && evt.callbacks.length){
+					evt.callbacks.shift()("error", "", evt);
+				}
+			}
+		}else if(type == "function_names"){
 			if(!dojo.doc._cache["function_names"]){
 				dojo.debug("_buildCache() new cache");
 				if(callbacks && callbacks.length){
 					dojo.doc._callbacks.function_names.push([input, callbacks.shift()]);
 				}
 				dojo.doc._cache["function_names"] = {loading: true};
-				dojo.io.bind({
-					url: "json/function_names",
-					mimetype: "text/json",
-					error: function(type, data, evt){
-						dojo.debug("Unable to load function names");
-						for(var i = 0, callback; callback = dojo.doc._callbacks.function_names[i]; i++){
-							callback[1].call(null, "error", {}, callback[0]);
-						}
-					},
-					load: function(type, data, evt){
-						dojo.doc._cache['function_names'] = data;
-						for(var i = 0, callback; callback = dojo.doc._callbacks.function_names[i]; i++){
-							callback[1].call(null, "load", data, callback[0]);
-						}
+				url = "json/function_names";
+				load = function(type, data, evt){
+					dojo.doc._cache["function_names"] = data;
+					while(dojo.doc._callbacks.function_names.length){
+						var parts = dojo.doc._callbacks.function_names.pop();
+						parts[1]("load", data, parts[0]);
 					}
-				});
+				}
+				error = function(type, data, evt){
+					while(dojo.doc._callbacks.function_names.length){
+						var parts = dojo.doc._callbacks.function_names.pop();
+						parts[1]("load", {}, parts[0]);
+					}
+				}
 			}else if(dojo.doc._cache["function_names"].loading){
-				dojo.debug("_buildCache() loading cache");
+				dojo.debug("_buildCache() loading cache, adding to callback list");
 				if(callbacks && callbacks.length){
 					dojo.doc._callbacks.function_names.push([input, callbacks.shift()]);
 				}
+				return;
 			}else{
-				dojo.debug("_buildCache() from cache");
+				dojo.debug("_buildCache() loading from cache");
 				if(callbacks && callbacks.length){
-					var callback = callbacks.shift();
-					callback.call(null, "load", dojo.doc._cache["function_names"], input);
+					callbacks.shift()("load", dojo.doc._cache["function_names"], input);
 				}
+				return;
 			}
 		}else if(type == "meta" || type == "src"){
 			if(!pkg){
 				if(type == "meta"){
 					dojo.doc.functionPackage(dojo.doc._getMeta, input);
+					return;
 				}else{
 					dojo.doc.functionPackage(dojo.doc._getSrc, input);
+					return;
 				}
 			}else{
 				try{
@@ -429,82 +520,71 @@ dojo.lang.mixin(dojo.doc, {
 
 				if(cached){
 					if(callbacks && callbacks.length){
-						var callback = callbacks.shift();
-						callback.call(null, "load", cached, input);
+						callbacks.shift()("load", cached, input);
 						return;
 					}
 				}
 
 				dojo.debug("Finding " + type + " for: " + pkg + ", function: " + name + ", id: " + id);
 
-				var mimetype = "text/json";
 				if(type == "src"){
 					mimetype = "text/plain"
 				}
+				url = "json/" + pkg + "/" + name + "/" + id + "/" + type;
+				load = function(type, data, evt, args){
+					var input = args.input;
+					var pkg = input.pkg;
+					var type = input.type;
+					var id = input.id;
+					var name = input.name;
+					var cache = dojo.doc._cache;
+					dojo.debug("_buildCache() loaded " + type);
 
-				var url = "json/" + pkg + "/" + name + "/" + id + "/" + type;
+					if(!data){
+						data = {};
+					}
+					if(!cache[pkg]){
+						dojo.doc._cache[pkg] = {};
+					}
+					if(!cache[pkg][name]){
+						dojo.doc._cache[pkg][name] = {};
+					}
+					if(!cache[pkg][name][id]){
+						dojo.doc._cache[pkg][name][id] = {};
+					}
+					if(!cache[pkg][name][id][type]){
+						dojo.doc._cache[pkg][name][id][type] = {};
+					}
+					dojo.doc._cache[pkg][name][id][type] = data;
+					if(callbacks && callbacks.length){
+						callbacks.shift()("load", data, args.input);
+					}
+				}
+				error = function(type, data, evt, args){
+					var input = args.input;
+					var pkg = input.pkg;
+					var type = input.type;
+					var callbacks = input.callbacks;
+					var id = input.id;
+					var name = input.name;
 
-				dojo.io.bind({
-					url: url,
-					input: input,
-					mimetype: mimetype,
-					error: function(type, data, evt, args){
-						var input = args.input;
-						var pkg = input.pkg;
-						var type = input.type;
-						var callbacks = input.callbacks;
-						var id = input.id;
-						var name = input.name;
-
-						if(callbacks && callbacks.length){
-							if(!data){
-								data = {};
-							}
-							if(!dojo.doc._cache[pkg]){
-								dojo.doc._cache[pkg] = {};
-							}
-							if(!dojo.doc._cache[pkg][name]){
-								dojo.doc._cache[pkg][name] = {};
-							}
-							if(type == "meta"){
-								data.sig = dojo.doc._cache[pkg][name][id].sig;
-								data.params = dojo.doc._cache[pkg][name][id].params;
-							}
-							var callback = callbacks.shift();
-							callback.call(null, "error", data, args.input);
-						}
-					},
-					load: function(type, data, evt, args){
-						var input = args.input;
-						var pkg = input.pkg;
-						var type = input.type;
-						var id = input.id;
-						var name = input.name;
-						var cache = dojo.doc._cache;
-						dojo.debug("_buildCache() loaded " + type);
-
+					if(callbacks && callbacks.length){
 						if(!data){
 							data = {};
 						}
-						if(!cache[pkg]){
+						if(!dojo.doc._cache[pkg]){
 							dojo.doc._cache[pkg] = {};
 						}
-						if(!cache[pkg][name]){
+						if(!dojo.doc._cache[pkg][name]){
 							dojo.doc._cache[pkg][name] = {};
 						}
-						if(!cache[pkg][name][id]){
-							dojo.doc._cache[pkg][name][id] = {};
+						if(type == "meta"){
+							data.sig = dojo.doc._cache[pkg][name][id].sig;
+							data.params = dojo.doc._cache[pkg][name][id].params;
 						}
-						if(!cache[pkg][name][id].meta){
-							dojo.doc._cache[pkg][name][id].meta = {};
-						}
-						dojo.doc._cache[pkg][name][id][type] = data;
-						if(callbacks && callbacks.length){
-							var callback = callbacks.shift();
-							callback.call(null, "load", data, args.input);
-						}
+						callbacks.shift()("error", data, args.input);
 					}
-				});
+				}
 			}
 		}else if(type == "pkgmeta"){
 			try{
@@ -513,67 +593,74 @@ dojo.lang.mixin(dojo.doc, {
 
 			if(cached){
 				if(callbacks && callbacks.length){
-					var callback = callbacks.shift();
-					callback.call(null, "load", cached, input);
+					callbacks.shift()("load", cached, input);
 					return;
 				}
 			}
 
 			dojo.debug("Finding package meta for: " + name);
 
-			dojo.io.bind({
-				url: "json/" + name + "/meta",
-				input: input,
-				mimetype: "text/json",
-				error: function(type, data, evt, args){
-					var callbacks = args.input.callbacks;
-					if(callbacks && callbacks.length){
-						var callback = callbacks.shift();
-						callback.call(null, "error", {}, args.input);
-					}
-				},
-				load: function(type, data, evt, args){
-					var pkg = args.input.name;
-					var cache = dojo.doc._cache;
+			url = "json/" + name + "/meta";
+			load = function(type, data, evt, args){
+				var pkg = args.input.name;
+				var cache = dojo.doc._cache;
 
-					dojo.debug("_buildCache() loaded for: " + pkg);
-					if(!cache[pkg]){
-						dojo.doc._cache[pkg] = {};
-					}
-				
-					if(!cache[pkg]["meta"]){
-						dojo.doc._cache[pkg]["meta"] = {};
-					}
-				
-					var methods = data.methods;
-					if(methods){
-						for(var method in methods){
-							if (method == "is") {
-								continue;
+				dojo.debug("_buildCache() loaded for: " + pkg);
+				if(!cache[pkg]){
+					cache[pkg] = {};
+				}
+			
+				if(!cache[pkg]["meta"]){
+					cache[pkg]["meta"] = {};
+				}
+				if(!cache[pkg]["meta"]["methods"]){
+					cache[pkg]["meta"]["methods"] = {};
+				}
+			
+				var methods = data.methods;
+				if(methods){
+					for(var method in methods){
+						if (method == "is") {
+							continue;
+						}
+						for(var pId in methods[method]){
+							if(!cache[pkg]["meta"]["methods"][method]){
+								cache[pkg]["meta"]["methods"][method] = {};
 							}
-							for(var pId in methods[method]){
-								if(!cache[pkg]["meta"][method]){
-									dojo.doc._cache[pkg]["meta"][method] = {};
-								}
-								if(!cache[pkg]["meta"][method][pId]){
-									dojo.doc._cache[pkg]["meta"][method][pId] = {};
-								}
-								dojo.doc._cache[pkg]["meta"][method][pId].summary = methods[method][pId];
+							if(!cache[pkg]["meta"]["methods"][method][pId]){
+								cache[pkg]["meta"]["methods"][method][pId] = {};
 							}
+							cache[pkg]["meta"]["methods"][method][pId].summary = methods[method][pId];
 						}
 					}
-
-					dojo.doc._cache[pkg]["meta"].methods = methods;
-					var requires = data.requires;
-					if(requires){
-						dojo.doc._cache[pkg]["meta"].requires = requires;
-					}
-					if(callbacks && callbacks.length){
-						var callback = callbacks.shift();
-						callback.call(null, "load", methods, input);
-					}
 				}
+
+				var requires = data.requires;
+				if(requires){
+					cache[pkg]["meta"].requires = requires;
+				}
+				if(callbacks && callbacks.length){
+					callbacks.shift()("load", cache[pkg]["meta"], input);
+				}
+			}
+			error = function(type, data, evt, args){
+				var callbacks = args.input.callbacks;
+				if(callbacks && callbacks.length){
+					callbacks.shift()("error", {}, args.input);
+				}
+			}
+		}
+		
+		if(url){
+			dojo.io.bind({
+				url: url,
+				input: input,
+				mimetype: mimetype,
+				error: error,
+				load: load
 			});
+		}else{
+			dojo.doc._rpc.callRemote("search", search).addCallbacks(load, error);
 		}
 	},
 
@@ -592,15 +679,14 @@ dojo.lang.mixin(dojo.doc, {
 			}
 		).addCallbacks(dojo.doc._results, dojo.doc._results);
 	},
-
 	functionPackage: function(/*Function*/ callback, /*Object*/ input){
+		// Summary: Gets the package associated with a function and stores it in the .pkg value of input
 		dojo.debug("functionPackage() name: " + input.name + " for type: " + input.type);
 		input.type = "function_names";
 		input.callbacks.unshift(callback);
 		input.callbacks.unshift(dojo.doc._functionPackage);
 		dojo.doc._buildCache(input);
 	},
-
 	_functionPackage: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 		dojo.debug("_functionPackage() name: " + evt.name + " for: " + evt.type + " with: " + type);
 		evt.pkg = '';
@@ -614,11 +700,15 @@ dojo.lang.mixin(dojo.doc, {
 		}
 
 		if(evt.callbacks && evt.callbacks.length){
-			var callback = evt.callbacks.shift();
-			callback.call(null, type, data[key], evt);
+			evt.callbacks.shift()(type, data[key], evt);
 		}
 	},
-
+	setUserName: function(/*String*/ name){
+		dojo.doc._userName = name;
+	},
+	setPassword: function(/*String*/ password){
+		dojo.doc._password = password;
+	},
 	_sort: function(a, b){
 		if(a[0] < b[0]){
 			return -1;
@@ -632,6 +722,7 @@ dojo.lang.mixin(dojo.doc, {
 
 dojo.event.topic.subscribe("/doc/search", dojo.doc, "_onDocSearch");
 dojo.event.topic.subscribe("/doc/function/select", dojo.doc, "_onDocSelectFunction");
+dojo.event.topic.subscribe("/doc/package/select", dojo.doc, "_onDocSelectPackage");
 
 dojo.event.topic.registerPublisher("/doc/function/results", dojo.doc, "_printFnResults");
 dojo.event.topic.registerPublisher("/doc/package/results", dojo.doc, "_printPkgResults");
