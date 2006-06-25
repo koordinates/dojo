@@ -22,7 +22,7 @@ dojo.doc._myKeys = [];
 dojo.doc._callbacks = {function_names: []};
 dojo.doc._cache = {}; // Saves the JSON objects in cache
 dojo.doc._rpc = new dojo.rpc.JotService;
-dojo.doc._rpc.serviceUrl = "http://pottedme.at/dojo/docscripts/jsonrpc.php";
+dojo.doc._rpc.serviceUrl = "http://dojotoolkit.org/~pottedmeat/jsonrpc.php";
 
 dojo.lang.mixin(dojo.doc, {
 	functionNames: function(/*mixed*/ selectKey, /*Function*/ callback){
@@ -250,7 +250,6 @@ dojo.lang.mixin(dojo.doc, {
 
 		dojo.doc._buildCache(input);
 	},
-
 	_onDocSearchFn: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 		dojo.debug("_onDocSearchFn(" + evt.name + ")");
 
@@ -261,8 +260,7 @@ dojo.lang.mixin(dojo.doc, {
 		for(var pkg in data){
 			if(pkg == evt.name){
 				dojo.debug("_onDocSearchFn found a package");
-				dojo.doc.getPkgMeta(evt, dojo.doc._onPkgResults, pkg);
-				dojo.doc.getPkgDoc(evt, dojo.doc._onPkgResults, pkg);
+				dojo.doc._onDocSelectPackage(evt);
 				return;
 			}
 			for(var i = 0, fn; fn = data[pkg][i]; i++){
@@ -287,16 +285,18 @@ dojo.lang.mixin(dojo.doc, {
 		var key = evt.selectKey;
 		var description = "";
 		var methods = {};
-		if(typeof key == "object" && key.expects){
+		var requires = {};
+		if(typeof key == "object"){
 			key[evt.type] = data;
 			for(var i = 0, expect; expect = key.expects[i]; i++){
-				if(!key[expect]){
+				if(!(expect in key)){
 					dojo.debug("_onPkgResults() waiting for more data");
 					return;
 				}
 			}
 			description = key["pkgdoc"];
-			methods = key["pkgmeta"];
+			methods = key["pkgmeta"]["methods"];
+			requires = key["pkgmeta"]["requires"];
 			key = key.selectKey;
 		}
 		var pkg = evt.name.replace("_", "*");
@@ -305,18 +305,23 @@ dojo.lang.mixin(dojo.doc, {
 			size: 0,
 			fns: [],
 			pkg: pkg,
-			selectKey: key
+			selectKey: key,
+			requires: requires
 		}
+		var rePrivate = /_[^.]+$/;
 		for(var method in methods){
-			for(var pId in methods[method]){
-				results.fns.push({
-					pkg: pkg,
-					name: method,
-					id: pId,
-					summary: methods[method][pId]
-				})
+			if(!rePrivate.test(method)){
+				for(var pId in methods[method]){
+					results.fns.push({
+						pkg: pkg,
+						name: method,
+						id: pId,
+						summary: methods[method][pId].summary
+					})
+				}
 			}
 		}
+		results.size = results.fns.length;
 		dojo.doc._printPkgResults(results);
 	},
 	_onDocResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
@@ -334,6 +339,7 @@ dojo.lang.mixin(dojo.doc, {
 			var pkgs = message.pkgs;
 			var name = message.pkg;
 			var results = {selectKey: key, docResults: []};
+			var rePrivate = /_[^.]+$/;
 			data = dojo.doc._cache;
 
 			for(var i = 0, pkg; pkg = pkgs[i]; i++){
@@ -344,7 +350,7 @@ dojo.lang.mixin(dojo.doc, {
 					if(fn.toLowerCase().indexOf(name) == -1){
 						continue;
 					}
-					if(fn != "requires"){
+					if(fn != "requires" && !rePrivate.test(fn)){
 						for(var pId in data[pkg]["meta"][fn]){
 							var result = {
 								pkg: pkg,
@@ -389,7 +395,11 @@ dojo.lang.mixin(dojo.doc, {
 		dojo.doc._myKeys[++dojo.doc._count] = {selectKey: selectKey, type: "doc"}
 		dojo.doc.getFnDoc(dojo.doc._count, dojo.doc._onDocSelectResults, name);
 	},
-
+	_onDocSelectPackage: function(/*Object*/ input){
+		dojo.debug("_onDocSelectPackage(" + input.name + ")")
+		dojo.doc.getPkgMeta(input, dojo.doc._onPkgResults, input.name);
+		dojo.doc.getPkgDoc(input, dojo.doc._onPkgResults, input.name);
+	},
 	_onDocSelectResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
 		dojo.debug("dojo.doc._onDocSelectResults(" + evt.type + ", " + evt.name + ")");
 		var myKey = dojo.doc._myKeys[evt.selectKey];
@@ -543,8 +553,8 @@ dojo.lang.mixin(dojo.doc, {
 					if(!cache[pkg][name][id]){
 						dojo.doc._cache[pkg][name][id] = {};
 					}
-					if(!cache[pkg][name][id].meta){
-						dojo.doc._cache[pkg][name][id].meta = {};
+					if(!cache[pkg][name][id][type]){
+						dojo.doc._cache[pkg][name][id][type] = {};
 					}
 					dojo.doc._cache[pkg][name][id][type] = data;
 					if(callbacks && callbacks.length){
@@ -598,11 +608,14 @@ dojo.lang.mixin(dojo.doc, {
 
 				dojo.debug("_buildCache() loaded for: " + pkg);
 				if(!cache[pkg]){
-					dojo.doc._cache[pkg] = {};
+					cache[pkg] = {};
 				}
 			
 				if(!cache[pkg]["meta"]){
-					dojo.doc._cache[pkg]["meta"] = {};
+					cache[pkg]["meta"] = {};
+				}
+				if(!cache[pkg]["meta"]["methods"]){
+					cache[pkg]["meta"]["methods"] = {};
 				}
 			
 				var methods = data.methods;
@@ -612,24 +625,23 @@ dojo.lang.mixin(dojo.doc, {
 							continue;
 						}
 						for(var pId in methods[method]){
-							if(!cache[pkg]["meta"][method]){
-								dojo.doc._cache[pkg]["meta"][method] = {};
+							if(!cache[pkg]["meta"]["methods"][method]){
+								cache[pkg]["meta"]["methods"][method] = {};
 							}
-							if(!cache[pkg]["meta"][method][pId]){
-								dojo.doc._cache[pkg]["meta"][method][pId] = {};
+							if(!cache[pkg]["meta"]["methods"][method][pId]){
+								cache[pkg]["meta"]["methods"][method][pId] = {};
 							}
-							dojo.doc._cache[pkg]["meta"][method][pId].summary = methods[method][pId];
+							cache[pkg]["meta"]["methods"][method][pId].summary = methods[method][pId];
 						}
 					}
 				}
 
-				dojo.doc._cache[pkg]["meta"].methods = methods;
 				var requires = data.requires;
 				if(requires){
-					dojo.doc._cache[pkg]["meta"].requires = requires;
+					cache[pkg]["meta"].requires = requires;
 				}
 				if(callbacks && callbacks.length){
-					callbacks.shift()("load", methods, input);
+					callbacks.shift()("load", cache[pkg]["meta"], input);
 				}
 			}
 			error = function(type, data, evt, args){
@@ -711,6 +723,7 @@ dojo.lang.mixin(dojo.doc, {
 
 dojo.event.topic.subscribe("/doc/search", dojo.doc, "_onDocSearch");
 dojo.event.topic.subscribe("/doc/function/select", dojo.doc, "_onDocSelectFunction");
+dojo.event.topic.subscribe("/doc/package/select", dojo.doc, "_onDocSelectPackage");
 
 dojo.event.topic.registerPublisher("/doc/function/results", dojo.doc, "_printFnResults");
 dojo.event.topic.registerPublisher("/doc/package/results", dojo.doc, "_printPkgResults");
