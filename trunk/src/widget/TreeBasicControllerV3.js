@@ -1,4 +1,6 @@
 
+// TODO:
+// fix dojo.widget.isLast/FirstNode for speed (this === parent.children[..])
 dojo.provide("dojo.widget.TreeBasicControllerV3");
 
 dojo.require("dojo.event.*");
@@ -11,6 +13,8 @@ dojo.widget.tags.addParseTreeHandler("dojo:TreeBasicControllerV3");
 
 dojo.widget.TreeBasicControllerV3 = function() {
 	dojo.widget.HtmlWidget.call(this);
+	
+	this.listenedTrees = [];
 }
 
 dojo.inherits(dojo.widget.TreeBasicControllerV3, dojo.widget.HtmlWidget);
@@ -26,23 +30,38 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	listenTree: function(tree) {
 		//dojo.debug("Event "+tree.eventNames.treeClick);
 		dojo.event.topic.subscribe(tree.eventNames.createNode, this, "onCreateNode");
+		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
+		dojo.event.topic.subscribe(tree.eventNames.moveTo, this, "onMoveTo");
 		dojo.event.topic.subscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
 		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
 		dojo.event.topic.subscribe(tree.eventNames.setFolder, this, "onSetFolder");
 		dojo.event.topic.subscribe(tree.eventNames.unsetFolder, this, "onUnsetFolder");
 
+		this.listenedTrees.push(tree);
+
 	},
 
 	unlistenTree: function(tree) {
 		dojo.event.topic.unsubscribe(tree.eventNames.createNode, this, "onCreateNode");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
+		dojo.event.topic.unsubscribe(tree.eventNames.moveTo, this, "onMoveTo");
 		dojo.event.topic.unsubscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
 		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
 		dojo.event.topic.unsubscribe(tree.eventNames.setFolder, this, "onSetFolder");
 		dojo.event.topic.unsubscribe(tree.eventNames.unsetFolder, this, "onUnsetFolder");
+		
+		
+		for(var i=0; i<this.listenedTrees.length; i++){
+           if(this.listenedTrees[i] === tree){
+                   this.listenedTrees.splice(i, 1);
+                   break;
+           }
+		}
 	},
 
 
 	onSetFolder: function(message) {
+		//dojo.debug("setFolder "+message.source.title)
 		dojo.event.connect(message.source.expandNode, "onclick", this, "onExpandClick");
 	},
 	
@@ -50,6 +69,21 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	onUnsetFolder: function(message) {
 		dojo.event.disconnect(message.source.expandNode, "onclick", this, "onExpandClick");
 	},
+
+	onMoveFrom: function(message) {
+		if (dojo.lang.inArray(this.listenedTrees, message.newTree)) return;
+		if (message.child.isFolder) {
+			this.unsetFolder({source:message.child});
+		}
+	},
+
+	onMoveTo: function(message) {
+		if (dojo.lang.inArray(this.listenedTrees, message.newTree)) return;
+		
+			this.bindTreeNode(message.child);
+		}
+	},
+
 
 	onTreeDestroy: function(message) {
 		var tree = message.source;
@@ -109,7 +143,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	getWidgetByNode: function(node) {
 		var widgetId;
-		while (! (widgetId = node.getAttribute("widgetId")) ) {
+		while (! (widgetId = node.widgetId) ) {
 			node = node.parentNode;
 		}
 		return dojo.widget.manager.getWidgetById(widgetId);
@@ -117,7 +151,6 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	onExpandClick: function(e){
 		var node = this.getWidgetByNode(e.target);
-
 		
 		if(node.isLocked()) {
 			return;
@@ -197,6 +230,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 	doMove: function(child, newParent, index) {
+		//dojo.debug("MOVE "+child.tree.move);
 		child.tree.move(child, newParent, index);
 
 		return true;
@@ -257,7 +291,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	doCreateChild: function(parent, index, data, callObj, callFunc) {
 
-		var widgetType = data.widgetType ? data.widgetType : "TreeNode";
+		var widgetType = data.widgetType ? data.widgetType : "TreeNodeV3";
 
 		var newChild = dojo.widget.createWidget(widgetType, data);
 

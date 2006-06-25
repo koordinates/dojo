@@ -269,7 +269,8 @@ dojo.html.getClass = function(node){
 	}else if(dojo.html.hasAttribute(node, "class")){
 		cs = dojo.html.getAttribute(node, "class");
 	}
-	return dojo.string.trim(cs);
+	//return dojo.string.trim(cs)
+	return cs
 }
 
 /**
@@ -278,7 +279,7 @@ dojo.html.getClass = function(node){
  * are found;
  */
 dojo.html.getClasses = function(node) {
-	var c = dojo.html.getClass(node);
+	var c = dojo.string.trim(dojo.html.getClass(node));
 	return (c == "") ? [] : c.split(/\s+/g);
 }
 
@@ -288,7 +289,7 @@ dojo.html.getClasses = function(node) {
  * styles, only classes directly applied to the node.
  */
 dojo.html.hasClass = function(node, classname){
-	return dojo.lang.inArray(dojo.html.getClasses(node), classname);
+	return (new RegExp('(^|\\s+)'+classname+'(\\s+|$)')).test(dojo.html.getClass(node))
 }
 
 /**
@@ -342,25 +343,16 @@ dojo.html.setClass = function(node, classStr){
  * true or false indicating success or failure.
  */ 
 dojo.html.removeClass = function(node, classStr, allowPartialMatches){
-	var classStr = dojo.string.trim(new String(classStr));
 
+	//dojo.debug("was class "+dojo.html.getClass(node));
 	try{
-		var cs = dojo.html.getClasses(node);
-		var nca	= [];
-		if(allowPartialMatches){
-			for(var i = 0; i<cs.length; i++){
-				if(cs[i].indexOf(classStr) == -1){ 
-					nca.push(cs[i]);
-				}
-			}
-		}else{
-			for(var i=0; i<cs.length; i++){
-				if(cs[i] != classStr){ 
-					nca.push(cs[i]);
-				}
-			}
+		if (!allowPartialMatches) {
+			var newcs = dojo.html.getClass(node).replace(new RegExp('(^|\\s+)'+classStr+'(\\s+|$)'), "$1$2");
+		} else {
+			var newcs = dojo.html.getClass(node).replace(classStr,'');
 		}
-		dojo.html.setClass(node, nca.join(" "));
+		dojo.html.setClass(node, newcs);
+		//dojo.debug("now class "+newcs)
 	}catch(e){
 		dojo.debug("dojo.html.removeClass() failed", e);
 	}

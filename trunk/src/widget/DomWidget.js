@@ -400,6 +400,9 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 	// Replace source domNode with generated dom structure, and register
 	// widget with parent.
 	postInitialize: function(args, frag, parentComp){
+		
+		//dojo.profile.start(this.widgetType + " postInitialize");
+		
 		var sourceNodeRef = this.getFragNodeRef(frag);
 		// Stick my generated dom into the output tree
 		//alert(this.widgetId + ": replacing " + sourceNodeRef + " with " + this.domNode.innerHTML);
@@ -425,6 +428,9 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 			dojo.widget.manager.topWidgets[this.widgetId]=this;
 		}
 
+
+		//dojo.profile.end(this.widgetType + " postInitialize");
+		
 		// Expand my children widgets
 		if(this.isContainer){
 			//alert("recurse from " + this.widgetId);

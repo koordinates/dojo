@@ -227,10 +227,11 @@ dojo.widget.Parse = function(fragment) {
 		var ltn = namespace + ":" + componentName.toLowerCase();
 		if(dojo.widget.tags[ltn]){
 			properties.fastMixIn = true;			
-			dojo.profile.start("dojo.widget.tags - "+ltn);
-			var v = [dojo.widget.tags[ltn](properties, this, null, null, properties)];
-			dojo.profile.end("dojo.widget.tags - "+ltn);
-			return v;
+			//dojo.profile.start("dojo.widget.tags - "+ltn);
+			//var ret = [dojo.widget.tags[ltn](properties, this, null, null, properties)];
+			var ret = [dojo.widget.buildWidgetFromParseTree(ltn, properties, this, null, null, properties)];
+			//dojo.profile.end("dojo.widget.tags - "+ltn);
+			return ret;
 		}else{
 			dojo.debug("no tag handler registered for type: ", ltn);
 		}
