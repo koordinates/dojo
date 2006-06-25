@@ -224,18 +224,18 @@ dojo.widget.defineWidget(
 			//this.pkgDescription.replaceEditorContent(results.description);
 			this.domNode.appendChild(this.packageSave.cloneNode(true));
 			
-			function makeSelect(x){
+			function makeSelect(fOrP, x){
 				return function(e) {
-					dojo.event.topic.publish("/doc/function/select", x);
+					dojo.event.topic.publish("/doc/" + fOrP + "/select", x);
 				}
 			}
 
 			var as = this.domNode.getElementsByTagName("a");
 			for(var i = 0, a; a = as[i]; i++){
 				if(a.className == "docMLink"){
-					dojo.event.connect(a, "onclick", makeSelect(fns[i]));
+					dojo.event.connect(a, "onclick", makeSelect("function", fns[i]));
 				}else if(a.className == "docRLink"){
-					dojo.event.connect(a, "onclick", makeSelect(requireLinks[i]));
+					dojo.event.connect(a, "onclick", makeSelect("package", requireLinks[i]));
 				}
 			}
 

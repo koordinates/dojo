@@ -253,8 +253,6 @@ dojo.lang.mixin(dojo.doc, {
 	_onDocSearchFn: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 		dojo.debug("_onDocSearchFn(" + evt.name + ")");
 
-		evt.expects = ["pkgmeta", "pkgdoc"];
-
 		var packages = [];
 		pkgLoop:
 		for(var pkg in data){
@@ -397,6 +395,7 @@ dojo.lang.mixin(dojo.doc, {
 	},
 	_onDocSelectPackage: function(/*Object*/ input){
 		dojo.debug("_onDocSelectPackage(" + input.name + ")")
+		input.expects = ["pkgmeta", "pkgdoc"];
 		dojo.doc.getPkgMeta(input, dojo.doc._onPkgResults, input.name);
 		dojo.doc.getPkgDoc(input, dojo.doc._onPkgResults, input.name);
 	},
