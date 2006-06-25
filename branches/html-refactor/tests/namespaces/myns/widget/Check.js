@@ -1,105 +1,62 @@
-/*
-	Copyright (c) 2004-2005, The Dojo Foundation
-	All Rights Reserved.
-
-	Licensed under the Academic Free License version 2.1 or above OR the
-	modified BSD license. For more information on Dojo licensing, see:
-
-		http://dojotoolkit.org/community/licensing.shtml
-*/
-dojo.debug('MyNS Check loading');
-dojo.require("dojo.widget.HtmlWidget");
-dojo.require("myns.myns");
 dojo.provide("myns.widget.Check");
+dojo.require("dojo.widget.HtmlWidget");
 
-myns.widget.Check = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
+dojo.widget.defineWidget(
+	"myns.widget.Check",
+	"html",
+	dojo.widget.HtmlWidget,
+	{
+		templatePath: dojo.uri.dojoUri('tests/namespaces/myns/widget/CheckBox.html'),
+		templateCssPath: dojo.uri.dojoUri('tests/namespaces/myns/widget/CheckBox.css'),
 
-dojo.inherits(myns.widget.Check, dojo.widget.HtmlWidget);
-dojo.widget.tags.addParseTreeHandler("myns:check");
+		// parameters
+		disabled: "enabled",
+		name: "",
+		checked: false,
+		tabIndex: "0",
 
-dojo.lang.extend(myns.widget.Check, {
-	widgetType: "Check",
+		inputNode: null,
 
-	_testImg: null,
-
-	_events: [
-		"onclick",
-		"onfocus",
-		"onblur",
-		"onselect",
-		"onchange",
-		"onclick",
-		"ondblclick",
-		"onmousedown",
-		"onmouseup",
-		"onmouseover",
-		"onmousemove",
-		"onmouseout",
-		"onkeypress",
-		"onkeydown",
-		"onkeyup"
-	],
-
-	srcOn: dojo.uri.dojoUri('src/widget/templates/check_on.gif'),
-	srcOff: dojo.uri.dojoUri('src/widget/templates/check_off.gif'),
-
-	fillInTemplate: function(){
-
-		// FIXME: if images are disabled, we DON'T want to swap out the element
-		// we can use the usual 'load image to check' trick
-		// i don't know what image we can check yet, so we'll skip this for now...
-
-		// this._testImg = document.createElement("img");
-		// document.body.appendChild(this._testImg);
-		// this._testImg.src = "spacer.gif?cachebust=" + new Date().valueOf();
-		// dojo.connect(this._testImg, 'onload', this, 'onImagesLoaded');
-
-		this.onImagesLoaded();
-	},
-
-	onImagesLoaded: function(){
-
-		// FIXME: if we actually check for loading images, remove the thing here
-		// document.body.removeChild(this._testImg);
-
-		// 'hide' the checkbox
-		this.domNode.style.position = "absolute";
-		this.domNode.style.left = "-9000px";
-
-		// create a replacement image
-		this.imgNode = document.createElement("img");
-		dojo.html.addClass(this.imgNode, "dojoHtmlCheckbox");
-		this.updateImgSrc();
-		dojo.event.connect(this.imgNode, 'onclick', this, 'onClick');
-		dojo.event.connect(this.domNode, 'onchange', this, 'onChange');
-		this.domNode.parentNode.insertBefore(this.imgNode, this.domNode.nextSibling)
-
-		// real ugly - make sure the image has all the events that the checkbox did
-		for(var i=0; i<this._events.length; i++){
-			if(this.domNode[this._events[i]]){
-				dojo.event.connect(	this.imgNode, this._events[i], 
-									this.domNode[this._events[i]]);
+		postMixInProperties: function(){
+			// set the variables referenced by the template
+			this.disabledStr = this.disabled=="enabled" ? "" : "disabled";
+					
+		},
+		postCreate: function(args, frag){
+			// find any associated label and create a labeledby relationship
+			var label = document.getElementsByTagName("label");
+			if (label && label[0] && label[0].htmlFor !== undefined){
+				label[0].id = label[0].htmlFor + "label"; 
+				dojo.widget.wai.setAttr(this.domNode, "waiState", "labelledby", label[0].id);
 			}
+		},
+
+		fillInTemplate: function(){
+			this._setInfo();
+		},
+
+		onClick: function(e){
+			if(this.disabled == "enabled"){
+				this.checked = !this.checked;
+				this._setInfo();
+			}
+			e.preventDefault();
+		},
+
+		keyPress: function(e){
+			var k = dojo.event.browser.keys;
+			if(e.keyCode==k.KEY_SPACE || e.charCode==k.KEY_SPACE){
+	 			this.onClick(e);
+	 		}
+		},
+
+		// set CSS class string according to checked/unchecked and disabled/enabled state
+		_setInfo: function(){
+			var prefix = (this.disabled == "enabled" ? "myNsCheckbox" : "myNsCheckboxDisabled");
+			var state = prefix + (this.checked ? "On" : "Off");
+			dojo.html.setClass(this.domNode, "myNsCheckbox " + state);
+			this.inputNode.checked = this.checked;
+			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
-	},
-
-	onClick: function(){
-
-		this.domNode.checked = !this.domNode.checked ? true : false;
-		this.updateImgSrc();
-	},
-
-	onChange: function(){
-
-		this.updateImgSrc();
-	},
-
-	updateImgSrc: function(){
-
-		this.imgNode.src = this.domNode.checked ? this.srcOn : this.srcOff;
 	}
-});
-
-dojo.debug("myns.widget.Check finished loading");
+);

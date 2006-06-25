@@ -33,9 +33,15 @@ function docInit(){
 		}
 		this._preformSearch(searchStr, searchType);
 	}
+	dojo.event.connect(dojo.byId("logIn"), "onclick", logIn);
 	dojo.event.connect(search, "selectOption", docSearch);
 }
 dojo.addOnLoad(docInit);
+
+function logIn(){
+	dojo.doc.setUserName(dojo.byId("userName").value);
+	dojo.doc.setPassword(dojo.byId("password").value);
+}
 
 function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 	var search = dojo.widget.byId("search").dataProvider;

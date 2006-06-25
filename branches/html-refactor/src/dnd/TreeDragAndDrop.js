@@ -84,12 +84,11 @@ dojo.lang.extend(dojo.dnd.TreeDragSource, {
 
 // .......................................
 
-dojo.dnd.TreeDropTarget = function(domNode, controller, type, treeNode, DNDMode){
+dojo.dnd.TreeDropTarget = function(domNode, controller, type, treeNode){
 
 	this.treeNode = treeNode;
 	this.controller = controller; // I will sync-ly process drops
-	this.DNDMode = DNDMode;
-
+	
 	dojo.dnd.HtmlDropTarget.apply(this, [domNode, type]);
 }
 
@@ -197,9 +196,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	},
 
 
+	getDNDMode: function() {
+		return this.treeNode.tree.DNDMode;
+	},
+		
+
 	getAcceptPosition: function(e, sourceTreeNode) {
 
-		var DNDMode = this.DNDMode;
+		var DNDMode = this.getDNDMode();
 
 		if (DNDMode & dojo.widget.Tree.prototype.DNDModes.ONTO &&
 			// check if ONTO is allowed localy
@@ -437,7 +441,7 @@ dojo.lang.extend(dojo.dnd.TreeDNDController, {
 			this.dragSources[node.widgetId] = source;
 		}
 
-		var target = new dojo.dnd.TreeDropTarget(node.labelNode, this.treeController, node.tree.DNDAcceptTypes, node, node.tree.DNDMode);
+		var target = new dojo.dnd.TreeDropTarget(node.labelNode, this.treeController, node.tree.DNDAcceptTypes, node);
 
 		this.dropTargets[node.widgetId] = target;
 

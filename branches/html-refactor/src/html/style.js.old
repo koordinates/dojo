@@ -362,13 +362,13 @@ dojo.require("dojo.lang.common");
 		return ds.getTotalOffset(node, "top", includeScroll);
 	}*/
 
-	ds.styleSheet = null;
+	//ds.styleSheet = null;
 
 	// FIXME: this is a really basic stub for adding and removing cssRules, but
 	// it assumes that you know the index of the cssRule that you want to add 
 	// or remove, making it less than useful.  So we need something that can 
 	// search for the selector that you you want to remove.
-	ds.insertCssRule = function(selector, declaration, index) {
+	/*ds.insertCssRule = function(selector, declaration, index) {
 		if (!ds.styleSheet) {
 			if (document.createStyleSheet) { // IE
 				ds.styleSheet = document.createStyleSheet();
@@ -393,9 +393,9 @@ dojo.require("dojo.lang.common");
 		} else if (ds.styleSheet.addRule) { // IE
 			return ds.styleSheet.addRule(selector, declaration, index);
 		} else { return null; } // fail
-	}
+	}*/
 
-	ds.removeCssRule = function(index){
+	/*ds.removeCssRule = function(index){
 		if(!ds.styleSheet){
 			dojo.debug("no stylesheet defined for removing rules");
 			return false;
@@ -412,10 +412,10 @@ dojo.require("dojo.lang.common");
 			ds.styleSheet.deleteRule(index);
 		}
 		return true;
-	}
+	}*/
 
 	// calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
-	ds.insertCssFile = function(URI, doc, checkDuplicates){
+	/*ds.insertCssFile = function(URI, doc, checkDuplicates){
 		if(!URI){ return; }
 		if(!doc){ doc = document; }
 		var cssStr = dojo.hostenv.getText(URI);
@@ -436,10 +436,10 @@ dojo.require("dojo.lang.common");
 			style.setAttribute("dbgHref", URI);
 		}
 		return style
-	}
+	}*/
 
 	// DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
-	ds.insertCssText = function(cssStr, doc, URI){
+	/*ds.insertCssText = function(cssStr, doc, URI){
 		if(!cssStr){ return; }
 		if(!doc){ doc = document; }
 		if(URI){// fix paths in cssStr
@@ -463,13 +463,13 @@ dojo.require("dojo.lang.common");
 			style.appendChild(cssText);
 		}
 		return style;
-	}
+	}*/
 
 	// String cssText = fixPathsInCssText(String cssStr, dojo.uri.Uri URI)
 	// usage: cssText comes from dojoroot/src/widget/templates/HtmlFoobar.css
 	// 	it has .dojoFoo { background-image: url(images/bar.png);} 
 	//	then uri should point to dojoroot/src/widget/templates/
-	ds.fixPathsInCssText = function(cssStr, URI){
+	/*ds.fixPathsInCssText = function(cssStr, URI){
 		if(!cssStr || !URI){ return; }
 		var pos = 0; var str = ""; var url = "";
 		while(pos!=-1){
@@ -487,7 +487,7 @@ dojo.require("dojo.lang.common");
 			str += url;
 		};
 		return str+cssStr;
-	}
+	}*/
 
 	/*ds.getBackgroundColor = function(node) {
 		node = dojo.byId(node);
