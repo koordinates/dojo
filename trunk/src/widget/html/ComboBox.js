@@ -177,7 +177,7 @@ dojo.widget.defineWidget(
 					// using linux alike tab for autocomplete
 					if(!this.autoComplete && this._result_list_open && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
-						this.selectOption({ 'target': this._highlighted_option, 'noHide': true });
+						this.selectOption({ 'target': this._highlighted_option, 'noHide': false});
 	
 						// put caret last
 						this.setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
