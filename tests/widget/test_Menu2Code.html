@@ -70,31 +70,55 @@
 			menubar.addChild(dojo.widget.createWidget("MenuBarItem2", {caption: "Home", submenuId: "menu1"}));			
 	 	}
 
-		function dummy(){
-			alert("pressed something");
-		}
-
 		// This is a JSON structure representing a menu
 		var myMenu =
 		[
-			["File", [ ["Save"], ["Recent", [ ["a"], ["b"], ["c"] ] ], ["Exit"] ] ],
-			["Edit", [ ["Cut"], ["Copy"], ["Paste"] ] ],
-			["Help"]
+			{
+				caption: "File",
+				submenu:
+				[
+					{
+						caption: "Save",
+						iconSrc: "images/tools.gif"
+					},
+					{
+						caption: "Recent",
+						iconSrc: "images/plus.gif",
+						submenu: 
+						[
+							{ caption: "foo.txt", iconSrc: "images/graph.gif", onClick: function(){ alert("opening foo"); } },
+							{ caption: "bar.txt", iconSrc: "images/check.gif", onClick: function(){ alert("opening bar"); } },
+							{ caption: "doh.txt", iconSrc: "images/graph.gif", onClick: function(){ alert("opening doh"); } }
+						]
+					}
+				]
+			},
+
+			{
+				caption: "Edit",
+				submenu:
+				[
+					{ caption: "Cut", accelKey: "Ctrl+X", iconSrc: "../../src/widget/templates/buttons/cut.gif" },
+					{ caption: "Copy", accelKey: "Ctrl+P", iconSrc: "../../src/widget/templates/buttons/copy.gif" },
+					{ caption: "Paste", accelKey: "Ctrl+V", iconSrc: "../../src/widget/templates/buttons/paste.gif" }
+				]
+			},
+
+			{
+				caption: "Help",
+				onClick: function(){ alert("Help me!"); }
+			}
 		];
 		
 		function makeMenu(items, isTop){
 			var menu2 = dojo.widget.createWidget("PopupMenu2", {contextMenuForWindow: isTop});
 			dojo.lang.forEach(items, function(itemJson){
-				var caption=itemJson[0];
-				var submenuJson=itemJson[1];
-				if(submenuJson){
-					var submenu = makeMenu(submenuJson, false);
-					var item = dojo.widget.createWidget("MenuItem2", 
-						{caption: caption, submenuId: submenu.widgetId});
-				}else{
-					var item = dojo.widget.createWidget("MenuItem2", 
-						{caption: caption, onClick: dummy});
+				// if submenu is specified, create the submenu and then make submenuId point to it
+				if(itemJson.submenu){
+					var submenu = makeMenu(itemJson.submenu, false);
+					itemJson.submenuId = submenu.widgetId;
 				}
+				var item = dojo.widget.createWidget("MenuItem2",  itemJson);
 				menu2.addChild(item);
 			});
 			return menu2;
