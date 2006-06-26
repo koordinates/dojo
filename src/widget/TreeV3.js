@@ -52,8 +52,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		treeCreate: "treeCreate",
 		treeDestroy: "treeDestroy",
 		nodeDestroy: "nodeDestroy",
-		treeAttach: "treeAttach",
-		treeDetach: "treeDetach",
+		treeChange: "treeChange",
 
 		setFolder: "setFolder",
 		unsetFolder: "unsetFolder",

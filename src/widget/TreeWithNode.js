@@ -85,8 +85,8 @@ dojo.widget.TreeWithNode = {
 		for(var i=0; i<childrenArray.length; i++) {
 			var child = childrenArray[i]
 			child.parent = this;
-			if (this.tree !== child.tree) {
-				child.updateTree(this);
+			if (this.tree !== child.tree) {				
+				child.updateTree(this.tree);
 			}
 			
 			child.viewAddLayout();
