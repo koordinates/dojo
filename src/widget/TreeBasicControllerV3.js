@@ -69,7 +69,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	onUnsetFolder: function(message) {
 		dojo.event.disconnect(message.source.expandNode, "onclick", this, "onExpandClick");
 	},
-
+/*
 	onMoveFrom: function(message) {
 		if (dojo.lang.inArray(this.listenedTrees, message.newTree)) return;
 		if (message.child.isFolder) {
@@ -82,7 +82,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		
 			this.bindTreeNode(message.child);
 		}
-	},
+	},*/
 
 
 	onTreeDestroy: function(message) {
