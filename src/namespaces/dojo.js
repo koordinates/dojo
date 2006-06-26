@@ -8,7 +8,6 @@ dojo.provide("dojo.namespaces.dojo");
 			"accordioncontainer": "dojo.widget.AccordionContainer",
 			"treerpccontroller": "dojo.widget.TreeRPCController",
 			"accordionpane": "dojo.widget.AccordionPane",
-			"button2": "dojo.widget.Button2",
 			"button": "dojo.widget.Button",
 			"chart": "dojo.widget.Chart",
 			"checkbox": "dojo.widget.Checkbox",
