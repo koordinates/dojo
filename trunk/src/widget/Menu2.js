@@ -51,11 +51,6 @@ dojo.widget.defineWidget(
 	},
 
 	postCreate: function(){
-		// attach menu to document body if it's not already there
-		if (this.domNode.parentNode != document.body){
-			document.body.appendChild(this.domNode);
-		}
-
 		if (this.contextMenuForWindow){
 			var doc = document.documentElement  || document.body;
 			dojo.widget.Menu2.OperaAndKonqFixer.fixNode(doc);
@@ -123,6 +118,10 @@ dojo.widget.defineWidget(
 	 */
 	open: function(x, y, parent, explodeSrc){
 		if (this.isShowingNow){ return; }
+		
+		// for unknown reasons even if the domNode is attached to the body in postCreate(),
+		// it's not attached here, so have to attach it here.
+		document.body.appendChild(this.domNode);
 
 		// if explodeSrc isn't specified then explode from my parent widget
 		explodeSrc = explodeSrc || parent["domNode"] || [];
