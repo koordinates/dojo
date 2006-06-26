@@ -7,6 +7,11 @@ dojo.require("dojo.event");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
 
+// workaround for bug #1029 (http://trac.dojotoolkit.org/ticket/1029)
+dojo.style.insertCssFile(
+	dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css")
+);
+
 dojo.widget.defineWidget(
 	"dojo.widget.html.Tooltip",
 	dojo.widget.html.ContentPane,
@@ -19,7 +24,6 @@ dojo.widget.defineWidget(
 		hideDelay: 100,
 		connectId: "",
 	
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css"),
 	
 		connectNode: null,
@@ -32,6 +36,8 @@ dojo.widget.defineWidget(
 		state: "erased",
 	
 		fillInTemplate: function(args, frag){
+			dojo.html.addClass(this.domNode, "dojoTooltip");
+			this.domNode.style.display="none";
 			if(this.caption != ""){
 				this.domNode.appendChild(document.createTextNode(this.caption));
 			}
@@ -94,7 +100,7 @@ dojo.widget.defineWidget(
 			if(!this.bgIframe){
 				this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
 			}
-	
+
 			this.position();
 	
 			// if rendering using explosion effect, need to set explosion source
