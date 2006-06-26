@@ -243,6 +243,12 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		// For Asian languages, when inputting kanji characters it
+		// will generate this event instead an onKeyUp event
+		compositionEnd: function(evt){
+			this._handleKeyEvents(evt);
+		},
+
 		onKeyUp: function(evt){
 			this.setValue(this.textInputNode.value);
 		},
