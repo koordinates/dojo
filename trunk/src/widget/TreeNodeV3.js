@@ -169,9 +169,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if (!parent.containerNode) {
 			parent.viewAddContainer();
 		}
+		if (!index) index = 0;
+		dojo.debug("insertNode "+this+" before "+index);
 		
 		if (index==0) {
-			//dojo.debug("insertNode "+this+" before "+parent.children[index]);
 			dojo.dom.prependChild(this.domNode, parent.containerNode);
 		} else {
 			dojo.dom.insertAfter(this.domNode, parent.children[index-1].domNode);
