@@ -179,10 +179,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 	},
 	
-	updateTree: function(parent) {
-		var myTree = parent.tree;
-		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = myTree; });
-	
+	updateTree: function(newTree) {
+		if (this.tree !== newTree) {
+			var message = {oldTree:this.tree, newTree:newTree}
+			dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+			dojo.event.topic.publish(newTree.eventNames.treeChange, message );
+			dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
+		}	
 	},
 	
 	
@@ -203,7 +206,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.insertNode(parent, index);
 				
 		if (this.tree !== parent.tree) {
-			this.updateTree(parent);
+			this.updateTree(parent.tree);
 		}
 		
 		if (parent.isTreeNode) {
@@ -287,10 +290,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 		
 		
-		dojo.event.topic.publish(treeNode.tree.eventNames.createNode, { source: treeNode } );
-		
-		dojo.event.topic.publish(treeNode.tree.eventNames.treeAttach, {tree:treeNode.tree});
-		
+		dojo.event.topic.publish(treeNode.tree.eventNames.createNode, { source: treeNode } );		
 		
 		//dojo.profile.end(this.widgetType+" createSimple");
 		
@@ -411,7 +411,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 	},
 
-
+	/* node does not leave tree */
 	doDetach: function() {
 		var parent = this.parent;
 		
@@ -448,7 +448,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			parent.unsetFolder();
 		}		
 		
-		this.parent = this.tree = null;
+		this.parent = null;
 	},
 	
 	
