@@ -343,7 +343,7 @@ dojo.hostenv.writeIncludes = function(){}
 
 dojo.byId = function(id, doc){
 	if(id && (typeof id == "string" || id instanceof String)){
-		if(!doc){ doc = document; }
+		if(!doc){ doc = dojo.doc(); }
 		return doc.getElementById(id);
 	}
 	return id; // assume it's a node

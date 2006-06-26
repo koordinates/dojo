@@ -115,7 +115,7 @@ dojo.html.renderedTextContent = function(node){
 dojo.html.createNodesFromText = function(txt, trim){
 	if(trim) { txt = dojo.string.trim(txt); }
 
-	var tn = document.createElement("div");
+	var tn = dojo.doc().createElement("div");
 	// tn.style.display = "none";
 	tn.style.visibility= "hidden";
 	dojo.html.body().appendChild(tn);
@@ -340,7 +340,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
  *        Makes a background iframe as a child of node, that fills area (and position) of node
  *
  *   2. new dojo.html.BackgroundIframe()
- *        Attaches frame to document.body.  User must call size() to set size.
+ *        Attaches frame to dojo.doc().body.  User must call size() to set size.
  */
 dojo.html.BackgroundIframe = function(node) {
 	if(dojo.render.html.ie55 || dojo.render.html.ie60) {
@@ -349,7 +349,7 @@ dojo.html.BackgroundIframe = function(node) {
 				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
 				+        "z-index: -1; filter:Alpha(Opacity=\"0\");' "
 				+">";
-		this.iframe = document.createElement(html);
+		this.iframe = dojo.doc().createElement(html);
 		this.iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didnt work.
 		if(node){
 			node.appendChild(this.iframe);
@@ -378,7 +378,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		}
 	},
 
-	// Call this function if the iframe is connected to document.body rather
+	// Call this function if the iframe is connected to dojo.doc().body rather
 	// than the node being shadowed (TODO: erase)
 	size: function(node) {
 		if(!this.iframe) { return; }

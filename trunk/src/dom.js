@@ -107,9 +107,10 @@ dojo.dom.getTagName = function(node){
 }
 
 dojo.dom.getUniqueId = function(){
+	var _document = dojo.doc();
 	do {
 		var id = "dj_unique_" + (++arguments.callee._idIncrement);
-	}while(document.getElementById(id));
+	}while(_document.getElementById(id));
 	return id;
 }
 dojo.dom.getUniqueId._idIncrement = 0;
@@ -261,6 +262,7 @@ dojo.dom.innerXML = function(node){
 
 dojo.dom.createDocument = function(){
 	var doc = null;
+	var _document = dojo.doc();
 
 	if(!dj_undef("ActiveXObject")){
 		var prefixes = [ "MSXML2", "Microsoft", "MSXML", "MSXML3" ];
@@ -271,9 +273,9 @@ dojo.dom.createDocument = function(){
 
 			if(doc){ break; }
 		}
-	}else if((document.implementation)&&
-		(document.implementation.createDocument)){
-		doc = document.implementation.createDocument("", "", null);
+	}else if((_document.implementation)&&
+		(_document.implementation.createDocument)){
+		doc = _document.implementation.createDocument("", "", null);
 	}
 	
 	return doc;
@@ -307,22 +309,25 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 		req.send(null);
 		return req.responseXML;
 	*/
-	}else if(document.createElement){
-		// FIXME: this may change all tags to uppercase!
-		var tmp = document.createElement("xml");
-		tmp.innerHTML = str;
-		if(document.implementation && document.implementation.createDocument) {
-			var xmlDoc = document.implementation.createDocument("foo", "", null);
-			for(var i = 0; i < tmp.childNodes.length; i++) {
-				xmlDoc.importNode(tmp.childNodes.item(i), true);
+	}else{
+		_document = dojo.doc();
+		if(_document.createElement){
+			// FIXME: this may change all tags to uppercase!
+			var tmp = _document.createElement("xml");
+			tmp.innerHTML = str;
+			if(_document.implementation && _document.implementation.createDocument) {
+				var xmlDoc = _document.implementation.createDocument("foo", "", null);
+				for(var i = 0; i < tmp.childNodes.length; i++) {
+					xmlDoc.importNode(tmp.childNodes.item(i), true);
+				}
+				return xmlDoc;
 			}
-			return xmlDoc;
+			// FIXME: probably not a good idea to have to return an HTML fragment
+			// FIXME: the tmp.doc.firstChild is as tested from IE, so it may not
+			// work that way across the board
+			return ((tmp.document)&&
+				(tmp.document.firstChild ?  tmp.document.firstChild : tmp));
 		}
-		// FIXME: probably not a good idea to have to return an HTML fragment
-		// FIXME: the tmp.doc.firstChild is as tested from IE, so it may not
-		// work that way across the board
-		return ((tmp.document)&&
-			(tmp.document.firstChild ?  tmp.document.firstChild : tmp));
 	}
 	return null;
 }
@@ -421,7 +426,8 @@ dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
  */
 dojo.dom.textContent = function(node, text){
 	if (text) {
-		dojo.dom.replaceChildren(node, document.createTextNode(text));
+		var _document = dojo.doc();
+		dojo.dom.replaceChildren(node, _document.createTextNode(text));
 		return text;
 	} else {
 		var _result = "";

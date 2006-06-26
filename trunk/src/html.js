@@ -13,19 +13,21 @@ dojo.lang.mixin(dojo.html, dojo.style);
 // Need to investigate for KHTML and Opera
 
 dojo.html.clearSelection = function(){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	try{
-		if(window["getSelection"]){ 
+		if(_window["getSelection"]){ 
 			if(dojo.render.html.safari){
 				// pulled from WebCore/ecma/kjs_window.cpp, line 2536
-				window.getSelection().collapse();
+				_window.getSelection().collapse();
 			}else{
-				window.getSelection().removeAllRanges();
+				_window.getSelection().removeAllRanges();
 			}
-		}else if(document.selection){
-			if(document.selection.empty){
-				document.selection.empty();
-			}else if(document.selection.clear){
-				document.selection.clear();
+		}else if(_document.selection){
+			if(_document.selection.empty){
+				_document.selection.empty();
+			}else if(_document.selection.clear){
+				_document.selection.clear();
 			}
 		}
 		return true;
@@ -36,7 +38,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = dojo.byId(element)||document.body;
+	element = dojo.byId(element)||dojo.doc().body;
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -52,7 +54,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = dojo.byId(element)||document.body;
+	element = dojo.byId(element)||dojo.doc().body;
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -68,13 +70,15 @@ dojo.html.enableSelection = function(element){
 }
 
 dojo.html.selectElement = function(element){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(document.selection && document.body.createTextRange){ // IE
-		var range = document.body.createTextRange();
+	if(_document.selection && _document.body.createTextRange){ // IE
+		var range = _document.body.createTextRange();
 		range.moveToElementText(element);
 		range.select();
-	}else if(window["getSelection"]){
-		var selection = window.getSelection();
+	}else if(_window["getSelection"]){
+		var selection = _window.getSelection();
 		// FIXME: does this work on Safari?
 		if(selection["selectAllChildren"]){ // Mozilla
 			selection.selectAllChildren(element);
@@ -83,14 +87,16 @@ dojo.html.selectElement = function(element){
 }
 
 dojo.html.selectInputText = function(element){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(document.selection && document.body.createTextRange){ // IE
+	if(_document.selection && _document.body.createTextRange){ // IE
 		var range = element.createTextRange();
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);
 		range.select();
-	}else if(window["getSelection"]){
-		var selection = window.getSelection();
+	}else if(_window["getSelection"]){
+		var selection = _window.getSelection();
 		// FIXME: does this work on Safari?
 		element.setSelectionRange(0, element.value.length);
 	}
@@ -99,10 +105,12 @@ dojo.html.selectInputText = function(element){
 
 
 dojo.html.isSelectionCollapsed = function(){
-	if(document["selection"]){ // IE
-		return document.selection.createRange().text == "";
-	}else if(window["getSelection"]){
-		var selection = window.getSelection();
+	var _window = dojo.global();
+	var _document = dojo.doc();
+	if(_document["selection"]){ // IE
+		return _document.selection.createRange().text == "";
+	}else if(_window["getSelection"]){
+		var selection = _window.getSelection();
 		if(dojo.lang.isString(selection)){ // Safari
 			return selection == "";
 		}else{ // Mozilla/W3
@@ -112,7 +120,7 @@ dojo.html.isSelectionCollapsed = function(){
 }
 
 dojo.html.getEventTarget = function(evt){
-	if(!evt) { evt = window.event || {} };
+	if(!evt) { evt = dojo.global().event || {} };
 	var t = (evt.srcElement ? evt.srcElement : (evt.target ? evt.target : null));
 	while((t)&&(t.nodeType!=1)){ t = t.parentNode; }
 	return t;
@@ -134,15 +142,17 @@ dojo.html.getDocumentSize = function(){
 }
 
 dojo.html.getViewportWidth = function(){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	var w = 0;
 
-	if(window.innerWidth){
-		w = window.innerWidth;
+	if(_window.innerWidth){
+		w = _window.innerWidth;
 	}
 
-	if(dojo.exists(document, "documentElement.clientWidth")){
+	if(dojo.exists(_document, "documentElement.clientWidth")){
 		// IE6 Strict
-		var w2 = document.documentElement.clientWidth;
+		var w2 = _document.documentElement.clientWidth;
 		// this lets us account for scrollbars
 		if(!w || w2 && w2 < w) {
 			w = w2;
@@ -150,27 +160,29 @@ dojo.html.getViewportWidth = function(){
 		return w;
 	}
 
-	if(document.body){
+	if(_document.body){
 		// IE
-		return document.body.clientWidth;
+		return _document.body.clientWidth;
 	}
 
 	return 0;
 }
 
 dojo.html.getViewportHeight = function(){
-	if (window.innerHeight){
-		return window.innerHeight;
+	var _window = dojo.global();
+	var _document = dojo.doc();
+	if (_window.innerHeight){
+		return _window.innerHeight;
 	}
 
-	if (dojo.exists(document, "documentElement.clientHeight")){
+	if (dojo.exists(_document, "documentElement.clientHeight")){
 		// IE6 Strict
-		return document.documentElement.clientHeight;
+		return _document.documentElement.clientHeight;
 	}
 
-	if (document.body){
+	if (_document.body){
 		// IE
-		return document.body.clientHeight;
+		return _document.body.clientHeight;
 	}
 
 	return 0;
@@ -184,11 +196,13 @@ dojo.html.getViewportSize = function(){
 }
 
 dojo.html.getScrollTop = function(){
-	return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+	var _document = dojo.doc();
+	return dojo.global().pageYOffset || _document.documentElement.scrollTop || _document.body.scrollTop || 0;
 }
 
 dojo.html.getScrollLeft = function(){
-	return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+	var _document = dojo.doc();
+	return dojo.global().pageXOffset || _document.documentElement.scrollLeft || _document.body.scrollLeft || 0;
 }
 
 dojo.html.getScrollOffset = function(){
@@ -204,10 +218,11 @@ dojo.html.getParentOfType = function(node, type){
 }
 
 dojo.html.getParentByType = function(node, type) {
+	var _document = dojo.doc();
 	var parent = dojo.byId(node);
 	type = type.toLowerCase();
 	while((parent)&&(parent.nodeName.toLowerCase()!=type)){
-		if(parent==(document["body"]||document["documentElement"])){
+		if(parent==(_document["body"]||_document["documentElement"])){
 			return null;
 		}
 		parent = parent.parentNode;
@@ -381,7 +396,8 @@ dojo.html.classMatchType = {
  * parent, and optionally of a certain nodeType
  */
 dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType, useNonXpath){
-	parent = dojo.byId(parent) || document;
+	var _document = dojo.doc();
+	parent = dojo.byId(parent) || _document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
@@ -389,7 +405,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	var srtLength = classes.join(" ").length;
 	var candidateNodes = [];
 	
-	if(!useNonXpath && document.evaluate) { // supports dom 3 xpath
+	if(!useNonXpath && _document.evaluate) { // supports dom 3 xpath
 		var xpath = "//" + (nodeType || "*") + "[contains(";
 		if(classMatchType != dojo.html.classMatchType.ContainsAny){
 			xpath += "concat(' ',@class,' '), ' " +
@@ -405,7 +421,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
 			" ')]";
 		}
-		var xpathResult = document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
+		var xpathResult = _document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
 		var result = xpathResult.iterateNext();
 		while(result){
 			try{
@@ -465,14 +481,15 @@ dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
  * will return {x: 0, y: 10000}
  */
 dojo.html.getCursorPosition = function(e){
-	e = e || window.event;
+	e = e || dojo.global().event;
 	var cursor = {x:0, y:0};
 	if(e.pageX || e.pageY){
 		cursor.x = e.pageX;
 		cursor.y = e.pageY;
 	}else{
-		var de = document.documentElement;
-		var db = document.body;
+		var _document = dojo.doc();
+		var de = _document.documentElement;
+		var db = _document.body;
 		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
@@ -495,7 +512,7 @@ dojo.html.overElement = function(element, e){
 }
 
 dojo.html.setActiveStyleSheet = function(title){
-	var i = 0, a, els = document.getElementsByTagName("link");
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
 			a.disabled = true;
@@ -505,7 +522,7 @@ dojo.html.setActiveStyleSheet = function(title){
 }
 
 dojo.html.getActiveStyleSheet = function(){
-	var i = 0, a, els = document.getElementsByTagName("link");
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if (a.getAttribute("rel").indexOf("style") != -1 &&
 			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
@@ -514,7 +531,7 @@ dojo.html.getActiveStyleSheet = function(){
 }
 
 dojo.html.getPreferredStyleSheet = function(){
-	var i = 0, a, els = document.getElementsByTagName("link");
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1
 			&& a.getAttribute("rel").indexOf("alt") == -1
@@ -525,7 +542,7 @@ dojo.html.getPreferredStyleSheet = function(){
 
 dojo.html.body = function(){
 	// Note: document.body is not defined for a strict xhtml document
-	return document.body || document.getElementsByTagName("body")[0];
+	return dojo.doc().body || dojo.doc().getElementsByTagName("body")[0];
 }
 
 /**
