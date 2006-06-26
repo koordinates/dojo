@@ -35,11 +35,11 @@ dojo.lang.extend(dojo.html.shadow, {
 		var img;
 		var url = this.shadowPng + name.toUpperCase() + ".png";
 		if(dojo.render.html.ie){
-			img=document.createElement("div");
+			img=dojo.doc().createElement("div");
 			img.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+url+"'"+
 			(sizing?", sizingMethod='"+sizing+"'":"") + ")";
 		}else{
-			img=document.createElement("img");
+			img=dojo.doc().createElement("img");
 			img.src=url;
 		}
 		img.style.position="absolute";
