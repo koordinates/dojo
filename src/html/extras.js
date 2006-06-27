@@ -340,7 +340,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
  *        Makes a background iframe as a child of node, that fills area (and position) of node
  *
  *   2. new dojo.html.BackgroundIframe()
- *        Attaches frame to dojo.doc().body.  User must call size() to set size.
+ *        Attaches frame to dojo.body().  User must call size() to set size.
  */
 dojo.html.BackgroundIframe = function(node) {
 	if(dojo.render.html.ie55 || dojo.render.html.ie60) {
@@ -378,7 +378,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		}
 	},
 
-	// Call this function if the iframe is connected to dojo.doc().body rather
+	// Call this function if the iframe is connected to dojo.body() rather
 	// than the node being shadowed (TODO: erase)
 	size: function(node) {
 		if(!this.iframe) { return; }
