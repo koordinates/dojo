@@ -216,7 +216,7 @@ dojo.hostenv.println = function (line){
 		try {
 			var console = document.getElementById(djConfig.debugContainerId ?
 				djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
-			if(!console) { console = dojo.html.body(); }
+			if(!console) { console = dojo.body(); }
 
 			var div = document.createElement("div");
 			div.appendChild(document.createTextNode(line));
@@ -317,7 +317,7 @@ dojo.hostenv.makeWidgets = function(){
 						dojo.widget.getParser().createComponents(frag);
 					}
 				}else if(djConfig.parseWidgets){
-					var frag  = parser.parseElement(dojo.html.body(), null, true);
+					var frag  = parser.parseElement(dojo.body(), null, true);
 					dojo.widget.getParser().createComponents(frag);
 				}
 		}

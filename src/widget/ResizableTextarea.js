@@ -33,7 +33,7 @@ dojo.lang.extend(dojo.widget.ResizableTextarea, {
 		this.textAreaNode = this.getFragNodeRef(frag).cloneNode(true);
 
 		// FIXME: Safari apparently needs this!
-		dojo.html.body().appendChild(this.domNode);
+		dojo.body().appendChild(this.domNode);
 
 		this.rootLayout = dojo.widget.createWidget(
 			"LayoutContainer",

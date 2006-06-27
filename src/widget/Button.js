@@ -51,7 +51,7 @@ dojo.widget.defineWidget(
 				var placeHolder = document.createElement("span");
 				dojo.dom.insertBefore(placeHolder, this.domNode);
 			}
-			dojo.html.body().appendChild(this.domNode);
+			dojo.body().appendChild(this.domNode);
 			
 			this.sizeMyselfHelper();
 			

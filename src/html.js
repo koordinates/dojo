@@ -38,7 +38,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = dojo.byId(element)||dojo.html.body();
+	element = dojo.byId(element)||dojo.body();
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -54,7 +54,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = dojo.byId(element)||dojo.html.body();
+	element = dojo.byId(element)||dojo.body();
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -73,8 +73,8 @@ dojo.html.selectElement = function(element){
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(_document.selection && dojo.html.body().createTextRange){ // IE
-		var range = dojo.html.body().createTextRange();
+	if(_document.selection && dojo.body().createTextRange){ // IE
+		var range = dojo.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	}else if(_window["getSelection"]){
@@ -90,7 +90,7 @@ dojo.html.selectInputText = function(element){
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(_document.selection && dojo.html.body().createTextRange){ // IE
+	if(_document.selection && dojo.body().createTextRange){ // IE
 		var range = element.createTextRange();
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);
@@ -160,9 +160,9 @@ dojo.html.getViewportWidth = function(){
 		return w;
 	}
 
-	if(dojo.html.body()){
+	if(dojo.body()){
 		// IE
-		return dojo.html.body().clientWidth;
+		return dojo.body().clientWidth;
 	}
 
 	return 0;
@@ -180,9 +180,9 @@ dojo.html.getViewportHeight = function(){
 		return _document.documentElement.clientHeight;
 	}
 
-	if (dojo.html.body()){
+	if (dojo.body()){
 		// IE
-		return dojo.html.body().clientHeight;
+		return dojo.body().clientHeight;
 	}
 
 	return 0;
@@ -197,12 +197,12 @@ dojo.html.getViewportSize = function(){
 
 dojo.html.getScrollTop = function(){
 	var _document = dojo.doc();
-	return dojo.global().pageYOffset || _document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
+	return dojo.global().pageYOffset || _document.documentElement.scrollTop || dojo.body().scrollTop || 0;
 }
 
 dojo.html.getScrollLeft = function(){
 	var _document = dojo.doc();
-	return dojo.global().pageXOffset || _document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
+	return dojo.global().pageXOffset || _document.documentElement.scrollLeft || dojo.body().scrollLeft || 0;
 }
 
 dojo.html.getScrollOffset = function(){
@@ -488,7 +488,7 @@ dojo.html.getCursorPosition = function(e){
 		cursor.y = e.pageY;
 	}else{
 		var de = dojo.doc().documentElement;
-		var db = dojo.html.body();
+		var db = dojo.body();
 		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
@@ -540,8 +540,8 @@ dojo.html.getPreferredStyleSheet = function(){
 }
 
 dojo.html.body = function(){
-	// Note: document.body is not defined for a strict xhtml document
-	return dojo.doc().body || dojo.doc().getElementsByTagName("body")[0];
+	dojo.deprecated("dojo.html.body() moved to dojo.body()", "0.5");
+	return dojo.body();
 }
 
 /**

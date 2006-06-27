@@ -162,6 +162,13 @@ dojo.doc = function(){
 	return dojo._currentDocument;
 }
 
+dojo.body  = function(){
+	// summary:
+	//		return the body object associated with dojo.doc()
+	// Note: document.body is not defined for a strict xhtml document
+	return dojo.doc().body || dojo.doc().getElementsByTagName("body")[0];
+}
+
 dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject /* ... */){
 	// summary:
 	//		Call callback with globalObject as dojo.global() and globalObject.document 
