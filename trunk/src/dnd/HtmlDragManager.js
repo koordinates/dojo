@@ -131,11 +131,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	*/
 	getDragSource: function(e){
 		var tn = e.target;
-		if(tn === dojo.html.body()){ return; }
+		if(tn === dojo.body()){ return; }
 		var ta = dojo.html.getAttribute(tn, this.dsPrefix);
 		while((!ta)&&(tn)){
 			tn = tn.parentNode;
-			if((!tn)||(tn === dojo.html.body())){ return; }
+			if((!tn)||(tn === dojo.body())){ return; }
 			ta = dojo.html.getAttribute(tn, this.dsPrefix);
 		}
 		return this.dragSources[ta];

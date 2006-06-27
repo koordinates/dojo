@@ -171,7 +171,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			left = this.dragOffset.x + e.pageX + "px";
 		}
 
-		dojo.html.body().appendChild(this.dragClone);
+		dojo.body().appendChild(this.dragClone);
 
 		// shortly the browser will fire an onClick() event,
 		// but since this was really a drag, just squelch it
@@ -389,7 +389,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		this.placeIndicator(e, dragObjects, i, before);
 
 		if(!dojo.html.hasParent(this.dropIndicator)) {
-			dojo.html.body().appendChild(this.dropIndicator);
+			dojo.body().appendChild(this.dropIndicator);
 		}
 	},
 

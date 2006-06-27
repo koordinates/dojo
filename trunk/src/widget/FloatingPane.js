@@ -55,7 +55,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		dojo.html.copyStyle(this.domNode, source);
 
 		// necessary for safari, khtml (for computing width/height)
-		dojo.html.body().appendChild(this.domNode);
+		dojo.body().appendChild(this.domNode);
 
 		// if display:none then state=minimized, otherwise state=normal
 		if(!this.isShowing()){
@@ -125,7 +125,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		}
 
 		// counteract body.appendChild above
-		dojo.html.body().removeChild(this.domNode);
+		dojo.body().removeChild(this.domNode);
 
 		dojo.widget.html.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
 	},
@@ -153,8 +153,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
 			this.resizeTo(
-				dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(dojo.html.body()),
-				dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(dojo.html.body())
+				dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(dojo.body()),
+				dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(dojo.body())
 			);
 		} else {
 			this.resizeTo(

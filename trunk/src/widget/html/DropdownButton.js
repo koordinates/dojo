@@ -66,7 +66,7 @@ dojo.lang.extend(dojo.widget.html.DropdownButton, {
 		this.menu.style.position="absolute";
 		this.menu.style.display="none";
 		this.menu.style["z-index"] = 99;
-		dojo.html.body().appendChild(this.menu);
+		dojo.body().appendChild(this.menu);
 	},
 
 	postCreate: function() {

@@ -118,7 +118,7 @@ dojo.html.createNodesFromText = function(txt, trim){
 	var tn = dojo.doc().createElement("div");
 	// tn.style.display = "none";
 	tn.style.visibility= "hidden";
-	dojo.html.body().appendChild(tn);
+	dojo.body().appendChild(tn);
 	var tableType = "none";
 	if((/^<t[dh][\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
 		txt = "<table><tbody><tr>" + txt + "</tr></tbody></table>";
@@ -159,7 +159,7 @@ dojo.html.createNodesFromText = function(txt, trim){
 		ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
 		// end hack
 		// tn.style.display = "none";
-		dojo.html.body().removeChild(tn);
+		dojo.body().removeChild(tn);
 		return ret;
 	}
 	*/
@@ -168,7 +168,7 @@ dojo.html.createNodesFromText = function(txt, trim){
 		nodes.push(parent.childNodes[x].cloneNode(true));
 	}
 	tn.style.display = "none"; // FIXME: why do we do this?
-	dojo.html.body().removeChild(tn);
+	dojo.body().removeChild(tn);
 	return nodes;
 }
 
@@ -355,7 +355,7 @@ dojo.html.BackgroundIframe = function(node) {
 			node.appendChild(this.iframe);
 			this.domNode=node;
 		}else{
-			dojo.html.body().appendChild(this.iframe);
+			dojo.body().appendChild(this.iframe);
 			this.iframe.style.display="none";
 		}
 	}
