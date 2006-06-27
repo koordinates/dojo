@@ -296,17 +296,35 @@ dojo.crypto.Blowfish = new function(){
 		var p="=";
 		var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 		var s=[];
-		var count=0;
-		for (var i =0; i<ba.length;){
+		var l=ba.length;
+		var rm=l%3;
+		var x=l-rm;
+		for (var i=0; i<x;){
 			var t=ba[i++]<<16|ba[i++]<<8|ba[i++];
 			s.push(tab.charAt((t>>>18)&0x3f)); 
 			s.push(tab.charAt((t>>>12)&0x3f));
 			s.push(tab.charAt((t>>>6)&0x3f));
 			s.push(tab.charAt(t&0x3f));
-			count+=4;
 		}
-		var pa=i-ba.length;
-		while((pa--)>0)	s.push(p);	
+		//	deal with trailers, based on patch from Peter Wood.
+		switch(rm){
+			case 2:{
+				var t=ba[i++]<<16|ba[i++]<<8;
+				s.push(tab.charAt((t>>>18)&0x3f));
+				s.push(tab.charAt((t>>>12)&0x3f));
+				s.push(tab.charAt((t>>>6)&0x3f));
+				s.push(p);
+				break;
+			}
+			case 1:{
+				var t=ba[i++]<<16;
+				s.push(tab.charAt((t>>>18)&0x3f));
+				s.push(tab.charAt((t>>>12)&0x3f));
+				s.push(p);
+				s.push(p);
+				break;
+			}
+		}
 		return s.join("");
 	}
 	function fromBase64(str){
