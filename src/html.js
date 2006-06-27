@@ -38,7 +38,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = dojo.byId(element)||dojo.doc().body;
+	element = dojo.byId(element)||dojo.html.body();
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -54,7 +54,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = dojo.byId(element)||dojo.doc().body;
+	element = dojo.byId(element)||dojo.html.body();
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -73,8 +73,8 @@ dojo.html.selectElement = function(element){
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(_document.selection && _document.body.createTextRange){ // IE
-		var range = _document.body.createTextRange();
+	if(_document.selection && dojo.html.body().createTextRange){ // IE
+		var range = dojo.html.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
 	}else if(_window["getSelection"]){
@@ -90,7 +90,7 @@ dojo.html.selectInputText = function(element){
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(_document.selection && _document.body.createTextRange){ // IE
+	if(_document.selection && dojo.html.body().createTextRange){ // IE
 		var range = element.createTextRange();
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);
@@ -160,9 +160,9 @@ dojo.html.getViewportWidth = function(){
 		return w;
 	}
 
-	if(_document.body){
+	if(dojo.html.body()){
 		// IE
-		return _document.body.clientWidth;
+		return dojo.html.body().clientWidth;
 	}
 
 	return 0;
@@ -180,9 +180,9 @@ dojo.html.getViewportHeight = function(){
 		return _document.documentElement.clientHeight;
 	}
 
-	if (_document.body){
+	if (dojo.html.body()){
 		// IE
-		return _document.body.clientHeight;
+		return dojo.html.body().clientHeight;
 	}
 
 	return 0;
@@ -197,12 +197,12 @@ dojo.html.getViewportSize = function(){
 
 dojo.html.getScrollTop = function(){
 	var _document = dojo.doc();
-	return dojo.global().pageYOffset || _document.documentElement.scrollTop || _document.body.scrollTop || 0;
+	return dojo.global().pageYOffset || _document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
 }
 
 dojo.html.getScrollLeft = function(){
 	var _document = dojo.doc();
-	return dojo.global().pageXOffset || _document.documentElement.scrollLeft || _document.body.scrollLeft || 0;
+	return dojo.global().pageXOffset || _document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
 }
 
 dojo.html.getScrollOffset = function(){
@@ -487,9 +487,8 @@ dojo.html.getCursorPosition = function(e){
 		cursor.x = e.pageX;
 		cursor.y = e.pageY;
 	}else{
-		var _document = dojo.doc();
-		var de = _document.documentElement;
-		var db = _document.body;
+		var de = dojo.doc().documentElement;
+		var db = dojo.html.body();
 		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
