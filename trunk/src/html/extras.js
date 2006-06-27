@@ -333,6 +333,44 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 	return ret;
 }
 
+// Get the window object where the element is placed in.
+dojo.html.getElementWindow = function(element){
+	return dojo.html.getDocumentWindow( element.ownerDocument );
+}
+
+// Get window object associated with document doc
+dojo.html.getDocumentWindow = function(doc){
+	// With Safari, there is not wa to retrieve the window from the document, so we must fix it.
+	if(dojo.render.html.safari && !doc._parentWindow){
+		dojo.html._fixSafariDocumentParentWindow( window.top );
+	}
+
+	//In some IE versions (at least 6.0), document.parentWindow does not return a 
+	//reference to the real window object (maybe a copy), so we must fix it as well
+	if(dojo.render.html.ie && window !== document.parentWindow && !doc._parentWindow){
+		/*
+		In IE 6, only the variable "window" can be used to connect events (others
+		may be only copies). We use IE specific execScript to attach the real window
+		reference to document._parentWindow for later use
+		*/
+		doc.parentWindow.execScript("document._parentWindow = window;", "Javascript");
+	}
+
+	return doc._parentWindow || doc.parentWindow || doc.defaultView;
+}
+
+/*
+	This is a Safari specific function that fix the reference to the parent
+	window from the document object.
+*/
+dojo.html._fixSafariDocumentParentWindow = function( targetWindow ){
+	targetWindow.document.parentWindow = targetWindow;
+	
+	for (var i = 0; i < targetWindow.frames.length; i++){
+		dojo.html._fixSafariDocumentParentWindow(targetWindow.frames[i]);
+	}
+}
+
 /**
  * For IE z-index schenanigans
  * Two possible uses:
