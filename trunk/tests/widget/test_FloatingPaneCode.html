@@ -21,6 +21,7 @@
 // description of parameters for floating pane
 var paramDesc = [
 	//basic
+	{name: "widgetId", type: "string", value: ""},
 	{name: "title", type: "string", value: "Window"},
 	{name: "href", type: "string", value: "doc0.html"},
 	{name: "iconSrc", type: "image", values: ["images/note.gif", "images/flatScreen.gif", "images/openFolder.gif"] },
@@ -33,6 +34,7 @@ var paramDesc = [
 	{name: "toggleDuration", type: "number", value: 500},
 	{name: "taskBarId", type: "string", value: "mytaskbar"},
 	{name: "resizable", type: "boolean"},
+	{name: "windowState", type: "string", values: ["normal", "minimized", "maximized"]},
 	
 	// appearance
 	{name: "hasShadow", type: "boolean"}
@@ -137,17 +139,28 @@ function makePane(){
 	if( dojo.byId("debug").checked ){
 		dojo.debugDeep(widget);
 	}
-	
+	dojo.debug("**Created widget " + widget.widgetId);
+
 	// change the title for next time
 	dojo.byId("title").value="Window #" + (++cnt+1);
+	
+	// setup so we can test methods on this div
+	dojo.byId("id").value=widget.widgetId;
 }
+
+// Return current (most recently created) widget
+function currentPane(){
+	var widgetId = dojo.byId("id").value;
+	return dojo.widget.byId(widgetId);
+}
+
 </script>
 <style>
 	html, body {
 		height: 100%;
 		width: 100%;
 	}
-	table table {
+	#params, #size {
 		background: #eeeeee; border: solid black 3px;
 		margin-right: 20px;
 	}
@@ -157,21 +170,48 @@ function makePane(){
 <h1>FloatingPane Widget Programatic Creation</h1>
 
 <!-- the above code will fill in these divs -->
-<table valign=top>
-	<tr><td><h3>Parameters</h3></td><td><h3>Sizing</h3></td></tr>
-	<tr>
-		<td>
-			<form id="params"></form>
-		</td>
-		<td valign=top>
-			<form id="size"></form>
-		</td>
-	</tr>
-</table>
+<div dojoType="TabContainer" style="width: 100%; height: 70%">
+	<div dojoType="ContentPane" label="Create">
+		<table valign=top id="creator">
+			<tr><td><h3>Parameters</h3></td><td><h3>Sizing</h3></td></tr>
+			<tr>
+				<td>
+					<form id="params"></form>
+				</td>
+				<td valign=top>
+					<form id="size"></form>
+				</td>
+			</tr>
+			<tr>
+			<td colspan=2 align=center>
+				<button onClick="makePane();">Create</button>
+				<input type="checkbox" id="debug"> Debug widget</input>
+			</td>
+		</table>
+	</div>
 
-<button onClick="makePane();">Create</button>
-
-<input type="checkbox" id="debug"> Debug widget</input>
+	<div id="methods" dojoType="ContentPane" label="Methods">
+		<h3>Method call tests:</h3>
+		<table>
+			<tr>
+				<td>Id:</td>
+				<td><input id="id"></td>
+			</tr>
+			<tr>
+				<td>Content/URL:</td>
+				<td><textarea id="content" cols=70 rows=4>Type content or a URL in here. <b>OK?</b></textarea></td>
+			</tr>
+		</table>
+		<br>
+		<div align=center>
+			<button onclick="currentPane().destroy();">destroy()</button>
+			<button onclick="currentPane().show();">show()</button>
+			<button onclick="currentPane().hide();">hide()</button>
+			<button onclick="currentPane().setUrl(dojo.byId('content').value);">setUrl()</button>
+			<button onclick="currentPane().setContent(dojo.byId('content').value);">setContent()</button>
+		</div>
+	</div>
+</div>
 
 <div dojoType="DebugConsole" title="Debug output"
 	style="position: absolute; width: 300px; height: 300px; right: 50px; top: 300px;">
