@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.Parse");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.dom");
 
-dojo.widget.Parse = function(fragment) {
+dojo.widget.Parse = function(fragment){
 	this.propertySetsList = [];
 	this.fragment = fragment;
 	
@@ -81,11 +81,11 @@ dojo.widget.Parse = function(fragment) {
 			structure for any propertySets.  It stores an array of references to 
 			propertySets that it finds.
 	*/
-	this.parsePropertySets = function(fragment) {
+	this.parsePropertySets = function(fragment){
 		return [];
 		var propertySets = [];
 		for(var item in fragment){
-			if(	(fragment[item]["tagName"] == "dojo:propertyset") ) {
+			if((fragment[item]["tagName"] == "dojo:propertyset")){
 				propertySets.push(fragment[item]);
 			}
 		}
@@ -97,7 +97,7 @@ dojo.widget.Parse = function(fragment) {
 	/*  parseProperties checks a raw JavaScript object structure for
 			properties, and returns an array of properties that it finds.
 	*/
-	this.parseProperties = function(fragment) {
+	this.parseProperties = function(fragment){
 		var properties = {};
 		for(var item in fragment){
 			// FIXME: need to check for undefined?
@@ -136,7 +136,7 @@ dojo.widget.Parse = function(fragment) {
 	/* getPropertySetById returns the propertySet that matches the provided id
 	*/
 	
-	this.getDataProvider = function(objRef, dataUrl) {
+	this.getDataProvider = function(objRef, dataUrl){
 		// FIXME: this is currently sync.  To make this async, we made need to move 
 		//this step into the widget ctor, so that it is loaded when it is needed 
 		// to populate the widget
@@ -217,20 +217,20 @@ dojo.widget.Parse = function(fragment) {
 		componentName is the expected dojo widget name, i.e. Button of ContextMenu
 
 		properties is an object of name value pairs
+		namespace is the namespace of the widget.  Defaults to "dojo"
 	*/
 	this.createComponentFromScript = function(nodeRef, componentName, properties, namespace){
-		
-					
 		if(!namespace){
 			namespace = "dojo";
 		}
 		var ltn = namespace + ":" + componentName.toLowerCase();
 		if(dojo.widget.tags[ltn]){
 			properties.fastMixIn = true;			
-			dojo.profile.start("dojo.widget.tags - "+ltn);
-			var v = [dojo.widget.tags[ltn](properties, this, null, null, properties)];
-			dojo.profile.end("dojo.widget.tags - "+ltn);
-			return v;
+			//dojo.profile.start("dojo.widget.tags - "+ltn);
+			//var ret = [dojo.widget.tags[ltn](properties, this, null, null, properties)];
+			var ret = [dojo.widget.buildWidgetFromParseTree(ltn, properties, this, null, null, properties)];
+			//dojo.profile.end("dojo.widget.tags - "+ltn);
+			return ret;
 		}else{
 			dojo.debug("no tag handler registered for type: ", ltn);
 		}
@@ -258,10 +258,11 @@ dojo.widget.getParser = function(name){
  *                 it becomes the domNode
  * @param position The position to insert this widget's node relative to the
  *                 refNode argument
+ * @param namespace The namespace of the widget.  Defaults to "dojo"
  * @return The new Widget object
  */
 
-dojo.widget.createWidget = function(name, props, refNode, position, namespace){
+dojo.widget.createWidget = function(name, props, refNode, position, namespace /*optional*/){
 	if(!namespace){
 		namespace = "dojo";
 	}
@@ -299,7 +300,7 @@ dojo.widget.createWidget = function(name, props, refNode, position, namespace){
 		notRef = true;
 		refNode = tn;
 		if(h){
-			document.body.appendChild(refNode);
+			dojo.body().appendChild(refNode);
 		}
 	}else if(position){
 		dojo.dom.insertAtPosition(tn, refNode, position);

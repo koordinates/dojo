@@ -51,7 +51,7 @@ dojo.widget.defineWidget(
 				var placeHolder = document.createElement("span");
 				dojo.dom.insertBefore(placeHolder, this.domNode);
 			}
-			dojo.html.body().appendChild(this.domNode);
+			dojo.body().appendChild(this.domNode);
 			
 			this.sizeMyselfHelper();
 			
@@ -106,6 +106,9 @@ dojo.widget.defineWidget(
 	
 		onMouseOut: function(e){
 			if( this.disabled ){ return; }
+			if( e.toElement && dojo.dom.isDescendantOf(e.toElement, this.domNode) ){
+				return; // Ignore IE mouseOut events that dont actually leave button - Prevents hover image flicker in IE
+			}
 			dojo.html.removeClass(this.domNode, "dojoButtonHover");
 			this._setImage(this.inactiveImg);
 		},

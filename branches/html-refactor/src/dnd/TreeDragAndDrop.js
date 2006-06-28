@@ -277,7 +277,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	/* get DNDMode and see which position e fits */
 	getPosition: function(e, DNDMode) {
 		node = dojo.byId(this.treeNode.labelNode);
-		var mousey = e.pageY || e.clientY + dojo.html.body().scrollTop;
+		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
 		var nodey = dojo.html.getAbsoluteY(node);
 		var height = dojo.html.getInnerHeight(node);
 

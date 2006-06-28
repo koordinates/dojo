@@ -7,6 +7,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
+dojo.require("dojo.widget.html.PopupMenu2");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.ComboBox",
@@ -177,7 +178,7 @@ dojo.widget.defineWidget(
 					// using linux alike tab for autocomplete
 					if(!this.autoComplete && this._result_list_open && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
-						this.selectOption({ 'target': this._highlighted_option, 'noHide': true });
+						this.selectOption({ 'target': this._highlighted_option, 'noHide': false});
 	
 						// put caret last
 						this.setSelectedRange(this.textInputNode, this.textInputNode.value.length, null);
@@ -241,6 +242,12 @@ dojo.widget.defineWidget(
 			if(document.createEvent){ // never IE
 				this._handleKeyEvents(evt);
 			}
+		},
+
+		// When inputting characters using an input method, such as Asian  
+		// languages, it will generate this event instead of onKeyDown event 
+		compositionEnd: function(evt){
+			this._handleKeyEvents(evt);
 		},
 
 		onKeyUp: function(evt){
@@ -515,7 +522,7 @@ dojo.widget.defineWidget(
 
 			while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 				tgt = tgt.parentNode;
-				if(tgt === document.body){
+				if(tgt === dojo.body()){
 					return false;
 				}
 			}

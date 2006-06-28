@@ -33,13 +33,7 @@ dojo.html.getClasses = function(node) {
  * styles, only classes directly applied to the node.
  */
 dojo.html.hasClass = function(node, classname){
-	var classes=dojo.html.getClasses(node);
-	for(var i = 0; i < classes.length; i++){
-		if (classes[i]==classname){
-			return true;
-		}
-	}
-	return false;
+	return (new RegExp('(^|\\s+)'+classname+'(\\s+|$)')).test(dojo.html.getClass(node))
 }
 
 /**
@@ -93,25 +87,15 @@ dojo.html.setClass = function(node, classStr){
  * true or false indicating success or failure.
  */ 
 dojo.html.removeClass = function(node, classStr, allowPartialMatches){
-	var classStr = String(classStr).replace(/^\s+|\s+$/g,"");
-
+	//dojo.debug("was class "+dojo.html.getClass(node));
 	try{
-		var cs = dojo.html.getClasses(node);
-		var nca	= [];
-		if(allowPartialMatches){
-			for(var i = 0; i<cs.length; i++){
-				if(cs[i].indexOf(classStr) == -1){ 
-					nca.push(cs[i]);
-				}
-			}
-		}else{
-			for(var i=0; i<cs.length; i++){
-				if(cs[i] != classStr){ 
-					nca.push(cs[i]);
-				}
-			}
+		if (!allowPartialMatches) {
+			var newcs = dojo.html.getClass(node).replace(new RegExp('(^|\\s+)'+classStr+'(\\s+|$)'), "$1$2");
+		} else {
+			var newcs = dojo.html.getClass(node).replace(classStr,'');
 		}
-		dojo.html.setClass(node, nca.join(" "));
+		dojo.html.setClass(node, newcs);
+		//dojo.debug("now class "+newcs)
 	}catch(e){
 		dojo.debug("dojo.html.removeClass() failed", e);
 	}

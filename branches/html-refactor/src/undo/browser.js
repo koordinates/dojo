@@ -90,7 +90,7 @@ dojo.undo.browser = {
 		}
 		if(!this.bookmarkAnchor){
 			this.bookmarkAnchor = document.createElement("a");
-			(document.body||document.getElementsByTagName("body")[0]).appendChild(this.bookmarkAnchor);
+			dojo.body().appendChild(this.bookmarkAnchor);
 			this.bookmarkAnchor.style.display = "none";
 		}
 		if((!args["changeUrl"])||(dojo.render.html.ie)){

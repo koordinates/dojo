@@ -67,7 +67,7 @@ dojo.widget.HtmlSimpleDropdownButtons = function() {
 					arrow.onfocus = function(){ this.blur(); }
 				} else {
 					dojo.html.addClass(submenu, this.menuClass);
-					dojo.html.body().appendChild(submenu);
+					dojo.body().appendChild(submenu);
 					dojo.event.connect(arrow, "onmousedown", (function() {
 						var ar = arrow;
 						return function(e) {

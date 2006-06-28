@@ -682,22 +682,24 @@ dojo.date.toRelativeString = function(date) {
 	if(diff < 60) {
 		diff = Math.round(diff);
 		return diff + " second" + (diff == 1 ? "" : "s") + end;
-	} else if(diff < 3600) {
+	}
+	if(diff < 60*60) {
 		diff = Math.round(diff/60);
 		return diff + " minute" + (diff == 1 ? "" : "s") + end;
-	} else if(diff < 3600*24 && date.getDay() == now.getDay()) {
+	}
+	if(diff < 60*60*24) {
 		diff = Math.round(diff/3600);
 		return diff + " hour" + (diff == 1 ? "" : "s") + end;
-	} else if(diff < 3600*24*7) {
+	}
+	if(diff < 60*60*24*7) {
 		diff = Math.round(diff/(3600*24));
 		if(diff == 1) {
 			return future ? "Tomorrow" : "Yesterday";
 		} else {
 			return diff + " days" + end;
 		}
-	} else {
-		return dojo.date.toShortDateString(date);
 	}
+	return dojo.date.toShortDateString(date);
 }
 
 /**

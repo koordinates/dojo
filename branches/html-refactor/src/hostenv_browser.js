@@ -216,7 +216,7 @@ dojo.hostenv.println = function (line){
 		try {
 			var console = document.getElementById(djConfig.debugContainerId ?
 				djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
-			if(!console) { console = document.getElementsByTagName("body")[0] || document.body; }
+			if(!console) { console = dojo.body(); }
 
 			var div = document.createElement("div");
 			div.appendChild(document.createTextNode(line));
@@ -317,7 +317,7 @@ dojo.hostenv.makeWidgets = function(){
 						dojo.widget.getParser().createComponents(frag);
 					}
 				}else if(djConfig.parseWidgets){
-					var frag  = parser.parseElement(document.getElementsByTagName("body")[0] || document.body, null, true);
+					var frag  = parser.parseElement(dojo.body(), null, true);
 					dojo.widget.getParser().createComponents(frag);
 				}
 		}
@@ -343,7 +343,7 @@ dojo.hostenv.writeIncludes = function(){}
 
 dojo.byId = function(id, doc){
 	if(id && (typeof id == "string" || id instanceof String)){
-		if(!doc){ doc = document; }
+		if(!doc){ doc = dojo.doc(); }
 		return doc.getElementById(id);
 	}
 	return id; // assume it's a node

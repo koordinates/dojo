@@ -81,8 +81,6 @@ dojo.widget.defineWidget(
 			this.sPTypeSave = dojo.dom.removeNode(this.sPType);
 			this.sPNameSave = dojo.dom.removeNode(this.sPName);
 			this.navSave = dojo.dom.removeNode(this.nav);
-		},
-		postCreate: function(){
 			this.pkgDescription = dojo.widget.createWidget("editor", {
 				items: ["textGroup", "blockGroup", "justifyGroup", "colorGroup", "listGroup", "indentGroup", "linkGroup"]
 			}, this.pkgDescription);

@@ -35,11 +35,11 @@ dojo.lang.extend(dojo.html.shadow, {
 		var img;
 		var url = this.shadowPng + name.toUpperCase() + ".png";
 		if(dojo.render.html.ie){
-			img=document.createElement("div");
+			img=dojo.doc().createElement("div");
 			img.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+url+"'"+
 			(sizing?", sizingMethod='"+sizing+"'":"") + ")";
 		}else{
-			img=document.createElement("img");
+			img=dojo.doc().createElement("img");
 			img.src=url;
 		}
 		img.style.position="absolute";
@@ -54,8 +54,8 @@ dojo.lang.extend(dojo.html.shadow, {
 	size: function(width, height){
 		var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
 		if (sideHeight < 0) { sideHeight = 0; }
-		if (height < 0) { height = 0; }
-		if (width < 0) { width = 0; }
+		if (height < 1) { height = 1; }
+		if (width < 1) { width = 1; }
 		with(this.pieces){
 			l.style.height = sideHeight+"px";
 			r.style.height = sideHeight+"px";

@@ -5,6 +5,7 @@ dojo.provide("dojo.widget.MenuItem2");
 dojo.provide("dojo.widget.MenuBar2");
 
 dojo.require("dojo.html.*");
+dojo.require("dojo.html.iframe");
 dojo.require("dojo.style");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
@@ -51,19 +52,11 @@ dojo.widget.defineWidget(
 	},
 
 	postCreate: function(){
-		// attach menu to document body if it's not already there
-		if (this.domNode.parentNode != document.body){
-			document.body.appendChild(this.domNode);
-		}
-
 		if (this.contextMenuForWindow){
-			var doc = document.documentElement  || document.body;
-			dojo.widget.Menu2.OperaAndKonqFixer.fixNode(doc);
-			dojo.event.connect(doc, "oncontextmenu", this, "onOpen");
+			var doc = dojo.body();
+			this.bindDomNode(doc);
 		} else if ( this.targetNodeIds.length > 0 ){
-			for(var i=0; i<this.targetNodeIds.length; i++){
-				this.bindDomNode(this.targetNodeIds[i]);
-			}
+			dojo.lang.forEach(this.targetNodeIds, this.bindDomNode, this);
 		}
 
 		this.subscribeSubitemsOnOpen();
@@ -88,9 +81,14 @@ dojo.widget.defineWidget(
 	},
 
 	// attach menu to given node
-	bindDomNode: function(nodeName){
-		var node = dojo.byId(nodeName);
+	bindDomNode: function(node){
+		node = dojo.byId(node);
 
+		var win = dojo.html.getElementWindow(node);
+		if(dojo.html.isTag(node,'iframe') == 'iframe'){
+			win = dojo.html.iframeContentWindow(node);
+			node = dojo.withGlobal(win, dojo.body);
+		}
 		// fixes node so that it supports oncontextmenu if not natively supported, Konqueror, Opera more?
 		dojo.widget.Menu2.OperaAndKonqFixer.fixNode(node);
 
@@ -101,6 +99,8 @@ dojo.widget.defineWidget(
 			targetFunc: "onOpen",
 			once:       true
 		});
+		
+		dojo.widget.html.Menu2Manager.registerWin(win);
 	},
 
 	// detach menu from given node
@@ -119,10 +119,14 @@ dojo.widget.defineWidget(
 	},
 
 	/**
-	 * Open the menu at position (x,y), relative to document.body
+	 * Open the menu at position (x,y), relative to dojo.body()
 	 */
 	open: function(x, y, parent, explodeSrc){
 		if (this.isShowingNow){ return; }
+		
+		// for unknown reasons even if the domNode is attached to the body in postCreate(),
+		// it's not attached here, so have to attach it here.
+		dojo.body().appendChild(this.domNode);
 
 		// if explodeSrc isn't specified then explode from my parent widget
 		explodeSrc = explodeSrc || parent["domNode"] || [];
@@ -230,8 +234,17 @@ dojo.widget.defineWidget(
 
 	onOpen: function(e){
 		this.openEvent = e;
+		var x = e.pageX, y = e.pageY;
 
-		this.open(e.pageX, e.pageY, null, [e.pageX, e.pageY]);
+		var win = dojo.html.getElementWindow(e.target);
+		var iframe = win.frameElement;
+		if(iframe){
+			//in IE, scroll should not be counted, while in Moz it is required
+			var cood = dojo.style.getAbsolutePosition(iframe, !dojo.render.html.ie);
+			x += cood.x - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScrollLeft) );
+			y += cood.y - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScrollTop) );
+		}
+		this.open(x, y, null, [x, y]);
 
 		if(e["preventDefault"]){
 			e.preventDefault();
@@ -365,12 +378,12 @@ dojo.widget.defineWidget(
 		var self = this;
 		var closure = function(){ return function(){ self.openSubmenu(); } }();
 
-		this.hover_timer = window.setTimeout(closure, this.parent.submenuDelay);
+		this.hover_timer = dojo.lang.setTimeout(closure, this.parent.submenuDelay);
 	},
 
 	stopSubmenuTimer: function(){
 		if (this.hover_timer){
-			window.clearTimeout(this.hover_timer);
+			dojo.lang.clearTimeout(this.hover_timer);
 			this.hover_timer = null;
 		}
 	},
@@ -438,10 +451,43 @@ dojo.widget.html.Menu2Manager = new function(){
 	this.currentMenu = null;
 	this.currentButton = null;		// button that opened current menu (if any)
 	this.focusNode = null;
+	this.registeredWindows = [];
 
-	dojo.event.connect(document, 'onmousedown', this, 'onClick');
-	dojo.event.connect(window, "onscroll", this, "onClick");
+	dojo.addOnLoad(this, "registerAllWindows");
 
+	this.registerWin = function(win){
+		if(!win.__Menu2ManagerRegistered)
+		{
+			dojo.event.connect(win.document, 'onmousedown', this, 'onClick');
+			dojo.event.connect(win, "onscroll", this, "onClick");
+			win.__Menu2ManagerRegistered = true;
+			this.registeredWindows.push(win);
+		}
+	};
+
+	/*
+		This function register all the iframes and the top window,
+		so that whereever the user clicks in the page, the popup 
+		menu will be closed
+		In case you add an iframe after onload event, please call
+		dojo.widget.html.Menu2Manager.registerWin manually
+	*/
+	this.registerAllWindows = function(targetWindow){
+		//starting from window.top, clicking everywhere in this page 
+		//should close popup menus
+		if(!targetWindow)  targetWindow = window.top;
+
+		this.registerWin(targetWindow);
+
+		for (var i = 0; i < targetWindow.frames.length; i++){
+			//do not remove  dojo.html.getDocumentWindow, see comment in it
+			var win = dojo.html.getDocumentWindow(targetWindow.frames[i].document);
+			if(win){
+				this.registerAllWindows(win);
+			}
+		}
+	}
+	
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
 			this.currentMenu = null;
@@ -470,6 +516,18 @@ dojo.widget.html.Menu2Manager = new function(){
 
 		var m = this.currentMenu;
 		while (m){
+			if(!e){ //IE
+				//In IE, no way to tell under which registeredWindows
+				//this event is generated. Thus we have to check
+				//each registered one, and set the event
+				for(var i=0;i<this.registeredWindows.length;++i){
+					if(this.registeredWindows[i].event){
+						e = this.registeredWindows[i].event;
+						break;
+					}
+				}
+			}
+
 			if(dojo.html.overElement(m.domNode, e)){
 				return;
 			}
@@ -498,22 +556,22 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  	/** 	dom event check
  	*
  	*	make a event and dispatch it and se if it calls function below,
- 	*	if it does its supported and we dont need to implement our own
+ 	*	if it indeed is supported and we dont need to implement our own
  	*/
 
  	// gets called if we have support for oncontextmenu
- 	if (!dojo.lang.isFunction(document.oncontextmenu)){
- 		document.oncontextmenu = function(){
+ 	if (!dojo.lang.isFunction(dojo.doc().oncontextmenu)){
+ 		dojo.doc().oncontextmenu = function(){
  			implement = false;
  			delfunc = true;
  		}
  	}
 
- 	if (document.createEvent){ // moz, safari has contextmenu event, need to do livecheck on this env.
+ 	if (dojo.doc().createEvent){ // moz, safari has contextmenu event, need to do livecheck on this env.
  		try {
- 			var e = document.createEvent("MouseEvents");
- 			e.initMouseEvent("contextmenu", 1, 1, window, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
- 			document.dispatchEvent(e);
+ 			var e = dojo.doc().createEvent("MouseEvents");
+ 			e.initMouseEvent("contextmenu", 1, 1, dojo.global(), 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, null);
+ 			dojo.doc().dispatchEvent(e);
  		} catch (e) {/* assume not supported */}
  	} else {
  		// IE no need to implement custom contextmenu
@@ -522,7 +580,7 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
 
  	// clear this one if it wasn't there before
  	if (delfunc){
- 		delete document.oncontextmenu;
+ 		delete dojo.doc().oncontextmenu;
  	}
  	/***** end dom event check *****/
 
@@ -541,7 +599,7 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  			}
 
  			// attach control function for oncontextmenu
- 			if (window.opera){
+ 			if (dojo.render.html.opera){
  				// opera
  				// listen to ctrl-click events
  				node._menufixer_opera = function(e){

@@ -115,10 +115,10 @@ dojo.html.renderedTextContent = function(node){
 dojo.html.createNodesFromText = function(txt, trim){
 	if(trim) { txt = dojo.string.trim(txt); }
 
-	var tn = document.createElement("div");
+	var tn = dojo.doc().createElement("div");
 	// tn.style.display = "none";
 	tn.style.visibility= "hidden";
-	dojo.html.body().appendChild(tn);
+	dojo.body().appendChild(tn);
 	var tableType = "none";
 	if((/^<t[dh][\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
 		txt = "<table><tbody><tr>" + txt + "</tr></tbody></table>";
@@ -159,7 +159,7 @@ dojo.html.createNodesFromText = function(txt, trim){
 		ret[0] = ((fc.nodeValue == " ")||(fc.nodeValue == "\t")) ? fc.nextSibling : fc;
 		// end hack
 		// tn.style.display = "none";
-		dojo.html.body().removeChild(tn);
+		dojo.body().removeChild(tn);
 		return ret;
 	}
 	*/
@@ -168,7 +168,7 @@ dojo.html.createNodesFromText = function(txt, trim){
 		nodes.push(parent.childNodes[x].cloneNode(true));
 	}
 	tn.style.display = "none"; // FIXME: why do we do this?
-	dojo.html.body().removeChild(tn);
+	dojo.body().removeChild(tn);
 	return nodes;
 }
 
@@ -333,6 +333,44 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 	return ret;
 }
 
+// Get the window object where the element is placed in.
+dojo.html.getElementWindow = function(element){
+	return dojo.html.getDocumentWindow( element.ownerDocument );
+}
+
+// Get window object associated with document doc
+dojo.html.getDocumentWindow = function(doc){
+	// With Safari, there is not wa to retrieve the window from the document, so we must fix it.
+	if(dojo.render.html.safari && !doc._parentWindow){
+		dojo.html._fixSafariDocumentParentWindow( window.top );
+	}
+
+	//In some IE versions (at least 6.0), document.parentWindow does not return a 
+	//reference to the real window object (maybe a copy), so we must fix it as well
+	if(dojo.render.html.ie && window !== document.parentWindow && !doc._parentWindow){
+		/*
+		In IE 6, only the variable "window" can be used to connect events (others
+		may be only copies). We use IE specific execScript to attach the real window
+		reference to document._parentWindow for later use
+		*/
+		doc.parentWindow.execScript("document._parentWindow = window;", "Javascript");
+	}
+
+	return doc._parentWindow || doc.parentWindow || doc.defaultView;
+}
+
+/*
+	This is a Safari specific function that fix the reference to the parent
+	window from the document object.
+*/
+dojo.html._fixSafariDocumentParentWindow = function( targetWindow ){
+	targetWindow.document.parentWindow = targetWindow;
+	
+	for (var i = 0; i < targetWindow.frames.length; i++){
+		dojo.html._fixSafariDocumentParentWindow(targetWindow.frames[i]);
+	}
+}
+
 /**
  * For IE z-index schenanigans
  * Two possible uses:
@@ -340,7 +378,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
  *        Makes a background iframe as a child of node, that fills area (and position) of node
  *
  *   2. new dojo.html.BackgroundIframe()
- *        Attaches frame to document.body.  User must call size() to set size.
+ *        Attaches frame to dojo.body().  User must call size() to set size.
  */
 dojo.html.BackgroundIframe = function(node) {
 	if(dojo.render.html.ie55 || dojo.render.html.ie60) {
@@ -349,13 +387,13 @@ dojo.html.BackgroundIframe = function(node) {
 				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
 				+        "z-index: -1; filter:Alpha(Opacity=\"0\");' "
 				+">";
-		this.iframe = document.createElement(html);
+		this.iframe = dojo.doc().createElement(html);
 		this.iframe.tabIndex = -1; // Magic to prevent iframe from getting focus on tab keypress - as style didnt work.
 		if(node){
 			node.appendChild(this.iframe);
 			this.domNode=node;
 		}else{
-			dojo.html.body().appendChild(this.iframe);
+			dojo.body().appendChild(this.iframe);
 			this.iframe.style.display="none";
 		}
 	}
@@ -378,7 +416,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		}
 	},
 
-	// Call this function if the iframe is connected to document.body rather
+	// Call this function if the iframe is connected to dojo.body() rather
 	// than the node being shadowed (TODO: erase)
 	size: function(node) {
 		if(!this.iframe) { return; }
@@ -419,7 +457,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 });
 
 dojo.html.setActiveStyleSheet = function(title){
-	var i = 0, a, els = document.getElementsByTagName("link");
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
 			a.disabled = true;
@@ -429,7 +467,7 @@ dojo.html.setActiveStyleSheet = function(title){
 }
 
 dojo.html.getActiveStyleSheet = function(){
-	var i = 0, a, els = document.getElementsByTagName("link");
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if (a.getAttribute("rel").indexOf("style") != -1 &&
 			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
@@ -438,7 +476,7 @@ dojo.html.getActiveStyleSheet = function(){
 }
 
 dojo.html.getPreferredStyleSheet = function(){
-	var i = 0, a, els = document.getElementsByTagName("link");
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
 	while (a = els[i++]) {
 		if(a.getAttribute("rel").indexOf("style") != -1
 			&& a.getAttribute("rel").indexOf("alt") == -1
