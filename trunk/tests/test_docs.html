@@ -9,7 +9,6 @@
 			};
 		</script>
 		<script type="text/javascript" src="../dojo.js"></script>
-		<script type="text/javascript" src="../src/docs.js"></script>
 		<script>
 			dojo.require("dojo.docs");
 			dojo.require("dojo.widget.TabContainer");
@@ -77,6 +76,12 @@
 			function getInfo(type, data, evt){
 				dojo.debug("=== RESULTS ===");
 				dojo.debug(dojo.json.serialize(data));
+				djConfig.debugContainerId = "fnsrc";
+				dojo.docs.getSrc(9, "dojo.lang.mixin", getSrc);
+			}
+			function getSrc(type, data, evt){
+				dojo.debug("=== RESULTS ===");
+				dojo.debug(data);
 			}
 		</script>
 	</head>
@@ -94,7 +99,7 @@
 			</div>
 			<div dojoType="contentpane" label="Package Meta">
 				<div id="pkgmeta" style="padding: 15px;">
-					<p>Should return a list of all functions with their summaries</p>
+					<p>Should return a list of all functions with their summaries and requires</p>
 				</div>
 			</div>
 			<div dojoType="contentpane" label="Package Doc">
@@ -123,8 +128,9 @@
 				</div>
 			</div>
 			<div dojoType="contentpane" label="Function Source">
-				<div id="fnsrc" style="padding: 15px;">
+				<div style="padding: 15px;">
 					<p>This is the source of a given function</p>
+					<pre id="fnsrc"></pre>
 				</div>
 		</div>
 	</body>
