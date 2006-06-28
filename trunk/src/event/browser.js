@@ -236,7 +236,7 @@ dojo.event.browser = new function(){
 			if(!evt.layerX){ evt.layerX = evt.offsetX; }
 			if(!evt.layerY){ evt.layerY = evt.offsetY; }
 			// FIXME: scroll position query is duped from dojo.html to avoid dependency on that entire module
-			// is it save to use dojo.body() here?
+			// is it safe to use dojo.body() here?
 			var docBody = ((dojo.render.html.ie55)||(document["compatMode"] == "BackCompat")) ? document.body : document.documentElement;
 			if(!evt.pageX){ evt.pageX = evt.clientX + (docBody.scrollLeft || 0) }
 			if(!evt.pageY){ evt.pageY = evt.clientY + (docBody.scrollTop || 0) }
