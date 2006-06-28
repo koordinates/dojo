@@ -12,9 +12,9 @@
 	delete dojo["profile"];
 	dojo.require("dojo.lang.*");
 	dojo.require("dojo.widget.*");
-	dojo.require("dojo.widget.TreeV3");
-	dojo.require("dojo.widget.TreeNodeV3");
-	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.Tree");
+	dojo.require("dojo.widget.TreeNode");
+	dojo.require("dojo.widget.TreeBasicController");
 	dojo.require("dojo.profile");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -23,48 +23,48 @@
 	
 	dojo.addOnLoad(function(){
 
-		function addChild(title,nodeOrTree) {
-			dojo.profile.start("createWidget");
-			var n = dojo.widget.createWidget("TreeNodeV3", {title: title, tree: tree.widgetId});
-			dojo.profile.end("createWidget");
-			nodeOrTree.addChild(n);
+		var depth = 0;
+		
+		function addChildren(title,nodeOrTree) {
+			//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
+			depth++;
 			
-			return n;
-		}	
+			for (var i=1; i<=5; i++) {
+				var t = title+'.'+i
+				dojo.profile.start("createWidget");
+				var node = dojo.widget.createWidget("TreeNode", {title: t});
+				dojo.profile.end("createWidget");
+				
+				nodeOrTree.addChild(node);
+				
+				if (depth<3) {
+					addChildren(t, node);
+				}
+									
+			}
+			//dojo.debug("out "+nodeOrTree);
+			depth--;
+		}
+		
 
 		dojo.profile.start("createController");
-		var controller = dojo.widget.createWidget("TreeBasicControllerV3");
+		var controller = dojo.widget.createWidget("TreeBasicController");
 		dojo.profile.end("createController");
 		
 		dojo.profile.start("createTree");
-		var tree = dojo.widget.createWidget("TreeV3", {controller: controller.widgetId});	
+		var tree = dojo.widget.createWidget("Tree", {controller: controller.widgetId});	
 		dojo.profile.end("createTree");
 				
 		document.body.appendChild(tree.domNode);
 
 
-		dojo.profile.start("createNodes");
-		
-		
-		for (var i=1; i<=5; i++) {
-			var ni = addChild(i, tree);
-						
-			for (var j=1; j<=5; j++) {
-				nj = addChild(i+'.'+j, ni);
-				
-				for (var k=1; k<=5; k++) {
-					addChild(i+'.'+j+'.'+k, nj)
-				}
-				
-				
-			}
-			
-		}
-		
+		dojo.profile.start("createNodes");		
+		addChildren('node', tree)		
 		dojo.profile.end("createNodes");
 		
+		
 		dojo.profile.dump(true);
-	});
+	});	
 
 </script>
 </head>

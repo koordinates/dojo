@@ -12,19 +12,21 @@ dojo.html.selectionType = {
 };
 
 dojo.html.clearSelection = function(){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	try{
-		if(window["getSelection"]){ 
+		if(_window["getSelection"]){ 
 			if(dojo.render.html.safari){
 				// pulled from WebCore/ecma/kjs_window.cpp, line 2536
-				window.getSelection().collapse();
+				_window.getSelection().collapse();
 			}else{
-				window.getSelection().removeAllRanges();
+				_window.getSelection().removeAllRanges();
 			}
-		}else if(document.selection){
-			if(document.selection.empty){
-				document.selection.empty();
-			}else if(document.selection.clear){
-				document.selection.clear();
+		}else if(_document.selection){
+			if(_document.selection.empty){
+				_document.selection.empty();
+			}else if(_document.selection.clear){
+				_document.selection.clear();
 			}
 		}
 		return true;
@@ -35,7 +37,7 @@ dojo.html.clearSelection = function(){
 }
 
 dojo.html.disableSelection = function(element){
-	element = dojo.byId(element)||dojo.html.body();
+	element = dojo.byId(element)||dojo.body();
 	var h = dojo.render.html;
 	
 	if(h.mozilla){
@@ -51,7 +53,7 @@ dojo.html.disableSelection = function(element){
 }
 
 dojo.html.enableSelection = function(element){
-	element = dojo.byId(element)||dojo.html.body();
+	element = dojo.byId(element)||dojo.body();
 	
 	var h = dojo.render.html;
 	if(h.mozilla){ 
@@ -67,13 +69,15 @@ dojo.html.enableSelection = function(element){
 }
 
 dojo.html.selectElement = function(element){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(document.selection && dojo.html.body().createTextRange){ // IE
-		var range = dojo.html.body().createTextRange();
+	if(_document.selection && dojo.body().createTextRange){ // IE
+		var range = dojo.body().createTextRange();
 		range.moveToElementText(element);
 		range.select();
-	}else if(window["getSelection"]){
-		var selection = window.getSelection();
+	}else if(_window["getSelection"]){
+		var selection = _window.getSelection();
 		// FIXME: does this work on Safari?
 		if(selection["selectAllChildren"]){ // Mozilla
 			selection.selectAllChildren(element);
@@ -82,14 +86,16 @@ dojo.html.selectElement = function(element){
 }
 
 dojo.html.selectInputText = function(element){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(document.selection && dojo.html.body().createTextRange){ // IE
+	if(_document.selection && dojo.body().createTextRange){ // IE
 		var range = element.createTextRange();
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);
 		range.select();
-	}else if(window["getSelection"]){
-		var selection = window.getSelection();
+	}else if(_window["getSelection"]){
+		var selection = _window.getSelection();
 		// FIXME: does this work on Safari?
 		element.setSelectionRange(0, element.value.length);
 	}
@@ -98,10 +104,12 @@ dojo.html.selectInputText = function(element){
 
 
 dojo.html.isSelectionCollapsed = function(){
-	if(document["selection"]){ // IE
-		return document.selection.createRange().text == "";
-	}else if(window["getSelection"]){
-		var selection = window.getSelection();
+	var _window = dojo.global();
+	var _document = dojo.doc();
+	if(_document["selection"]){ // IE
+		return _document.selection.createRange().text == "";
+	}else if(_window["getSelection"]){
+		var selection = _window.getSelection();
 		if(dojo.lang.isString(selection)){ // Safari
 			return selection == "";
 		}else{ // Mozilla/W3

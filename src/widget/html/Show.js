@@ -35,12 +35,12 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
 	fillInTemplate: function(args, frag){
 		if (args.debugPane) {
-			this.debugPane = dojo.widget.byId(args.debugPane);
-			var dp = this.debugPane;
+			var dp = this.debugPane = dojo.widget.byId(args.debugPane);
 			dp.hide();
+			dojo.event.connect(dp, "closeWindow", dojo.lang.hitch(this, function(){ this.debugPane = false; }));
 		}
 		var source = this.getFragNodeRef(frag);
-		this.sourceNode = dojo.html.body().appendChild(source.cloneNode(true));
+		this.sourceNode = dojo.body().appendChild(source.cloneNode(true));
 		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
 			if(child.tagName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
 				child.className = "dojoShowPrintSlide";
@@ -72,7 +72,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		}
 		this.option.parentNode.removeChild(this.option);
 
-		dojo.html.body().style.display = "block";
+		dojo.body().style.display = "block";
 		this.resizeWindow();
 		this.gotoSlide(0);
 	},
@@ -95,10 +95,12 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			return;
 		}
 
-		if (this._slides[slide].debug) {
-			this.debugPane.show();
-		} else {
-			this.debugPane.hide();
+		if(this.debugPane){
+			if(this._slides[slide].debug){
+				this.debugPane.show();
+			}else{
+				this.debugPane.hide();
+			}
 		}
 		
 		if(this._slide != -1){
@@ -212,10 +214,10 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		anim.play(true);
 	},
 	resizeWindow: function(/*Event*/ ev){
-		dojo.html.body().style.height = "auto";
+		dojo.body().style.height = "auto";
 		var h = Math.max(
-			document.documentElement.scrollHeight || dojo.html.body().scrollHeight,
+			document.documentElement.scrollHeight || dojo.body().scrollHeight,
 			dojo.html.getViewportHeight());
-		dojo.html.body().style.height = h + "px";
+		dojo.body().style.height = h + "px";
 	}
 });

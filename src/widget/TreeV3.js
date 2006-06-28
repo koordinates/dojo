@@ -41,6 +41,7 @@ dojo.lang.extend(dojo.widget.TreeV3, dojo.widget.TreeWithNode);
 dojo.lang.extend(dojo.widget.TreeV3, {
 	widgetType: "TreeV3",
 
+	DNDMode: "",
 
 	eventNamesDefault: {
 		// new child does not get domNode filled in (only template draft)
@@ -50,6 +51,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		// tree created.. Perform tree-wide actions if needed
 		treeCreate: "treeCreate",
 		treeDestroy: "treeDestroy",
+		nodeDestroy: "nodeDestroy",
+		treeChange: "treeChange",
 
 		setFolder: "setFolder",
 		unsetFolder: "unsetFolder",
@@ -131,11 +134,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		}
 	},
 
-	initializeController: function(controllerId) {		
-		var controller = dojo.widget.byId(controllerId);
-	
-		controller.listenTree(this); // controller listens to my events
-	},
 /*
 	initializeSelector: function() {
 		if (this.selector) {
@@ -167,15 +165,19 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	},
 	
-	
+	/**
+	 * publish destruction event so that any listeners should stop listening
+	 */
+	destroy: function() {
+		dojo.event.topic.publish(this.tree.eventNames.treeDestroy, { source: this } );
+
+		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
+	},
 
 	initialize: function(args, frag){
 		
 		this.adjustEventNames();
-		this.uppercaseActionDisabled();
 		this.adjustDNDMode();
-
-		this.expandLevel = parseInt(this.expandLevel);
 
 		//this.initializeSelector();
 		//this.initializeController();
@@ -185,8 +187,12 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		
 		
 		if (args['controller']) {
-			this.initializeController(args['controller']);
+			dojo.widget.manager.getWidgetById(args['controller']).listenTree(this)
 		}
+		if (args['dndcontroller']) {
+			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
+		}
+			
 		
 
 	},
@@ -196,6 +202,47 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 	},
 	
+	
+	/**
+	 * Move child to newParent as last child
+	 * redraw tree and update icons.
+	 *
+	 * Called by target, saves source in event.
+	 * events are published for BOTH trees AFTER update.
+	*/
+	move: function(child, newParent, index) {
+		
+		var oldParent = child.parent;
+		var oldTree = child.tree;
+
+		this.doMove.apply(this, arguments);
+
+		var newParent = child.parent;
+		var newTree = child.tree;
+
+		var message = {
+				oldParent: oldParent, oldTree: oldTree,
+				newParent: newParent, newTree: newTree,
+				child: child
+		};
+
+		/* publish events here about structural changes for both source and target trees */
+		dojo.event.topic.publish(oldTree.eventNames.moveFrom, message);
+		dojo.event.topic.publish(newTree.eventNames.moveTo, message);
+
+	},
+
+
+	/* do actual parent change here. Write remove child first */
+	doMove: function(child, newParent, index) {
+		//dojo.debug("MOVE "+child+" to "+newParent+" at "+index);
+
+		//var parent = child.parent;
+		child.doDetach();
+
+		newParent.addChild(child, index);
+	},
+
 	toString: function() {
 		return "["+this.widgetType+" ID:"+this.widgetId	+"]"
 	}

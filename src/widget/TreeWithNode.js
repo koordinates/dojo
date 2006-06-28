@@ -20,6 +20,8 @@ dojo.widget.TreeWithNode = {
 		this.lockLevel--;
 		//!this.lockLevel && this.unMarkLoading();
 	},
+	
+	
 
 	isLocked: function() {
 		var node = this;
@@ -36,13 +38,6 @@ dojo.widget.TreeWithNode = {
 		return false;
 	},
 
-
-	uppercaseActionDisabled: function() {		
-		for(var i=0; i<this.actionsDisabled.length; i++) {
-			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
-		}
-	},
-	
 	
 	flushLock: function() {
 		this.lockLevel = 0;
@@ -73,27 +68,50 @@ dojo.widget.TreeWithNode = {
 	},
 	
 	
-	
-	addChild: function(child, index) {
-
-
-		var message = {
-			child: child,
-			index: index,
-			parent: this
+	setChildren: function(childrenArray) {
+		//dojo.profile.start("setChildren");
+		if (!this.containerNode) {
+			this.viewAddContainer();
 		}
-
-		this.doAddChild.apply(this, arguments);
-
-		dojo.event.topic.publish(this.tree.eventNames.addChild, message);
-	},
+		
+		if (this.isTreeNode && !this.isFolder) {
+			//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
+			this.setFolder();
+			this.state = this.loadStates.LOADED;
+		}
+		
+		this.children = childrenArray;
+			
+		for(var i=0; i<childrenArray.length; i++) {
+			var child = childrenArray[i]
+			child.parent = this;
+			if (this.tree !== child.tree) {				
+				child.updateTree(this.tree);
+			}
+			
+			child.viewAddLayout();
+			this.containerNode.appendChild(child.domNode);
+					
+			var message = {
+				child: child,
+				index: i,
+				parent: this
+			}
+			
+			dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+		
+		}
+		//dojo.profile.end("setChildren");
+		
+	},	
 	
-	doAddChild: function(child, index) {
+		
+	addChild: function(child, index) {
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
 		}
 		
-		//dojo.debug("doAddChild "+index+" called for "+child);
+		//dojo.debug("doAddChild "+index+" called for "+child+" children "+this.children);
 				
 		if (!child.isTreeNode){
 			dojo.raise("You can only add TreeNode widgets to a "+this.widgetType+" widget!");
@@ -102,55 +120,16 @@ dojo.widget.TreeWithNode = {
 			
 		this.children.splice(index, 0, child);
 		child.parent = this;
-		
+				
 		child.addedTo(this, index);
 		
-		// taken from DomWidget.registerChild 
+		// taken from DomWidget.registerChild
+		// delete from widget list that are notified on resize etc (no parent)
 		delete dojo.widget.manager.topWidgets[child.widgetId];
 				
-	},
-	
-	
-	/**
-	 * Move child to newParent as last child
-	 * redraw tree and update icons.
-	 *
-	 * Called by target, saves source in event.
-	 * events are published for BOTH trees AFTER update.
-	*/
-	move: function(child, newParent, index) {
-
-		//dojo.debug(child+" "+newParent+" at "+index);
-
-		var oldParent = child.parent;
-		var oldTree = child.tree;
-
-		this.doMove.apply(this, arguments);
-
-		var newParent = child.parent;
-		var newTree = child.tree;
-
-		var message = {
-				oldParent: oldParent, oldTree: oldTree,
-				newParent: newParent, newTree: newTree,
-				child: child
-		};
-
-		/* publish events here about structural changes for both source and target trees */
-		dojo.event.topic.publish(oldTree.eventNames.moveFrom, message);
-		dojo.event.topic.publish(newTree.eventNames.moveTo, message);
-
-	},
-
-
-	/* do actual parent change here. Write remove child first */
-	doMove: function(child, newParent, index) {
-		//var parent = child.parent;
-		child.parent.doRemoveNode(child);
-
-		newParent.doAddChild(child, index);
 	}
-
+	
+	
 	
 	
 }

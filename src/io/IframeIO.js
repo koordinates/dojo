@@ -1,6 +1,7 @@
 dojo.provide("dojo.io.IframeIO");
 dojo.require("dojo.io.BrowserIO");
 dojo.require("dojo.uri.*");
+dojo.require("dojo.html.iframe");
 
 // FIXME: is it possible to use the Google htmlfile hack to prevent the
 // background click with this transport?
@@ -18,7 +19,7 @@ dojo.io.createIFrame = function(fname, onloadstr){
 		setAttribute("name", fname);
 		id = fname;
 	}
-	(document.body||document.getElementsByTagName("body")[0]).appendChild(cframe);
+	dojo.body().appendChild(cframe);
 	window[fname] = cframe;
 	with(cframe.style){
 		position = "absolute";
@@ -40,28 +41,6 @@ dojo.io.createIFrame = function(fname, onloadstr){
 		cframe.onload = new Function(onloadstr);
 	}
 	return cframe;
-}
-
-// thanks burstlib!
-dojo.io.iframeContentWindow = function(iframe_el) {
-	var win = iframe_el.contentWindow || // IE
-		dojo.io.iframeContentDocument(iframe_el).defaultView || // Moz, opera
-		// Moz. TODO: is this available when defaultView isn't?
-		dojo.io.iframeContentDocument(iframe_el).__parent__ || 
-		(iframe_el.name && document.frames[iframe_el.name]) || null;
-	return win;
-}
-
-dojo.io.iframeContentDocument = function(iframe_el){
-	var doc = iframe_el.contentDocument || // W3
-		(
-			(iframe_el.contentWindow)&&(iframe_el.contentWindow.document)
-		) ||  // IE
-		(
-			(iframe_el.name)&&(document.frames[iframe_el.name])&&
-			(document.frames[iframe_el.name].document)
-		) || null;
-	return doc;
 }
 
 dojo.io.IframeTransport = new function(){
@@ -195,7 +174,7 @@ dojo.io.IframeTransport = new function(){
 		req.formNode.setAttribute("target", req._originalTarget);
 		req.formNode.target = req._originalTarget;
 
-		var ifd = dojo.io.iframeContentDocument(_this.iframe);
+		var ifd = dojo.html.iframeContentDocument(_this.iframe);
 		// handle successful returns
 		// FIXME: how do we determine success for iframes? Is there an equiv of
 		// the "status" property?

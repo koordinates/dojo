@@ -1,8 +1,8 @@
 dojo.provide("dojo.html.common");
 
 dojo.html.body = function(){
-	// Note: document.body is not defined for a strict xhtml document
-	return document.body || document.getElementsByTagName("body")[0];
+	dojo.deprecated("dojo.html.body() moved to dojo.body()", "0.5");
+	return dojo.body();
 }
 
 // FIXME: we are going to assume that we can throw any and every rendering
@@ -10,36 +10,40 @@ dojo.html.body = function(){
 // Need to investigate for KHTML and Opera
 
 dojo.html.getEventTarget = function(evt){
-	if(!evt) { evt = window.event || {} };
+	if(!evt) { evt = dojo.global().event || {} };
 	var t = (evt.srcElement ? evt.srcElement : (evt.target ? evt.target : null));
 	while((t)&&(t.nodeType!=1)){ t = t.parentNode; }
 	return t;
 }
 
 dojo.html.getViewport = function(){
+	var _window = dojo.global();
+	var _document = dojo.doc();
 	var w = 0;
 	var h = 0;
-	if(window.innerWidth){
-		w = window.innerWidth;
-		h = window.innerHeight;
-	} else if (dojo.exists(document, "documentElement.clientWidth")){
+	if(_window.innerWidth){
+		w = _window.innerWidth;
+		h = _window.innerHeight;
+	} else if (dojo.exists(_document, "documentElement.clientWidth")){
 		// IE6 Strict
-		var w2 = document.documentElement.clientWidth;
+		var w2 = _document.documentElement.clientWidth;
 		// this lets us account for scrollbars
 		if(!w || w2 && w2 < w) {
 			w = w2;
 		}
-		h = document.documentElement.clientHeight;
-	} else if (dojo.html.body()){
-		w = dojo.html.body().clientWidth;
-		h = dojo.html.body().clientHeight;
+		h = _document.documentElement.clientHeight;
+	} else if (dojo.body()){
+		w = dojo.body().clientWidth;
+		h = dojo.body().clientHeight;
 	}
 	return { width: w, height: h };
 }
 
 dojo.html.getScroll = function(){
-	var top = window.pageYOffset || document.documentElement.scrollTop || dojo.html.body().scrollTop || 0;
-	var left = window.pageXOffset || document.documentElement.scrollLeft || dojo.html.body().scrollLeft || 0;
+	var _window = dojo.global();
+	var _document = dojo.doc();
+	var top = _window.pageYOffset || _document.documentElement.scrollTop || dojo.body().scrollTop || 0;
+	var left = _window.pageXOffset || _document.documentElement.scrollLeft || dojo.body().scrollLeft || 0;
 	return { 
 		top: top, 
 		left: left, 
@@ -99,10 +103,11 @@ dojo.html.getParentOfType = function(node, type){
 }
 
 dojo.html.getParentByType = function(node, type) {
+	var _document = dojo.doc();
 	var parent = dojo.byId(node);
 	type = type.toLowerCase();
 	while((parent)&&(parent.nodeName.toLowerCase()!=type)){
-		if(parent==(dojo.html.body()||document["documentElement"])){
+		if(parent==(_document["body"]||_document["documentElement"])){
 			return null;
 		}
 		parent = parent.parentNode;
@@ -157,14 +162,14 @@ dojo.html.hasAttribute = function(node, attr){
  * will return {x: 0, y: 10000}
  */
 dojo.html.getCursorPosition = function(e){
-	e = e || window.event;
+	e = e || dojo.global().event;
 	var cursor = {x:0, y:0};
 	if(e.pageX || e.pageY){
 		cursor.x = e.pageX;
 		cursor.y = e.pageY;
 	}else{
-		var de = document.documentElement;
-		var db = dojo.html.body();
+		var de = dojo.doc().documentElement;
+		var db = dojo.body();
 		cursor.x = e.clientX + ((de||db)["scrollLeft"]) - ((de||db)["clientLeft"]);
 		cursor.y = e.clientY + ((de||db)["scrollTop"]) - ((de||db)["clientTop"]);
 	}
@@ -246,7 +251,8 @@ dojo.html.classMatchType = {
  * parent, and optionally of a certain nodeType
  */
 dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType, useNonXpath){
-	parent = dojo.byId(parent) || document;
+	var _document = dojo.doc();
+	parent = dojo.byId(parent) || _document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
@@ -254,7 +260,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	var srtLength = classes.join(" ").length;
 	var candidateNodes = [];
 	
-	if(!useNonXpath && document.evaluate) { // supports dom 3 xpath
+	if(!useNonXpath && _document.evaluate) { // supports dom 3 xpath
 		var xpath = "//" + (nodeType || "*") + "[contains(";
 		if(classMatchType != dojo.html.classMatchType.ContainsAny){
 			xpath += "concat(' ',@class,' '), ' " +
@@ -270,7 +276,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
 			" ')]";
 		}
-		var xpathResult = document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
+		var xpathResult = _document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
 		var result = xpathResult.iterateNext();
 		while(result){
 			try{
