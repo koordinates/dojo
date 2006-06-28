@@ -35,9 +35,9 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
 	fillInTemplate: function(args, frag){
 		if (args.debugPane) {
-			this.debugPane = dojo.widget.byId(args.debugPane);
-			var dp = this.debugPane;
+			var dp = this.debugPane = dojo.widget.byId(args.debugPane);
 			dp.hide();
+			dojo.event.connect(dp, "closeWindow", dojo.lang.hitch(this, function(){ this.debugPane = false; }));
 		}
 		var source = this.getFragNodeRef(frag);
 		this.sourceNode = dojo.body().appendChild(source.cloneNode(true));
@@ -95,10 +95,12 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			return;
 		}
 
-		if (this._slides[slide].debug) {
-			this.debugPane.show();
-		} else {
-			this.debugPane.hide();
+		if(this.debugPane){
+			if(this._slides[slide].debug){
+				this.debugPane.show();
+			}else{
+				this.debugPane.hide();
+			}
 		}
 		
 		if(this._slide != -1){
