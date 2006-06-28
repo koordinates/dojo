@@ -1,4 +1,4 @@
-dojo.require("dojo.html");
+dojo.require("dojo.html.extras");
 dojo.provide("dojo.html.iframe");
 
 /*
@@ -6,10 +6,9 @@ dojo.provide("dojo.html.iframe");
  */
 // thanks burstlib!
 dojo.html.iframeContentWindow = function(iframe_el) {
-	var win = iframe_el.contentWindow || // IE
-		dojo.io.iframeContentDocument(iframe_el).defaultView || // Moz, opera
+	var win = dojo.html.getDocumentWindow(dojo.html.iframeContentDocument(iframe_el)) ||
 		// Moz. TODO: is this available when defaultView isn't?
-		dojo.io.iframeContentDocument(iframe_el).__parent__ ||
+		dojo.html.iframeContentDocument(iframe_el).__parent__ ||
 		(iframe_el.name && document.frames[iframe_el.name]) || null;
 	return win;
 }
