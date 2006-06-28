@@ -180,12 +180,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	updateTree: function(newTree) {
-		if (this.tree !== newTree) {
-			var message = {oldTree:this.tree, newTree:newTree, node:this}
-			dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
-			dojo.event.topic.publish(newTree.eventNames.treeChange, message );
-			dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
-		}	
+		if (this.tree === newTree) {
+			return;
+		}
+		
+		var message = {oldTree:this.tree, newTree:newTree, node:this}
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
+		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
+			
 	},
 	
 	

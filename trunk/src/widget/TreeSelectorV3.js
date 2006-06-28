@@ -70,6 +70,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 	},
 
+	/* FIXME: add ondblclick */
 	onCreateNode: function(message) {
 		dojo.event.connect(message.source.labelNode, "onclick", this, "onLabelClick");
 	},
