@@ -59,9 +59,6 @@ dojo.widget.defineWidget(
 			dojo.lang.forEach(this.targetNodeIds, this.bindDomNode, this);
 		}
 
-		//register the top window for in some cases, no target node is 
-		//specified, instead open() is called directly
-		dojo.widget.html.Menu2Manager.registerWin(dojo.global());
 		this.subscribeSubitemsOnOpen();
 	},
 
@@ -456,6 +453,8 @@ dojo.widget.html.Menu2Manager = new function(){
 	this.focusNode = null;
 	this.registeredWindows = [];
 
+	dojo.addOnLoad(this, "registerAllWindows");
+
 	this.registerWin = function(win){
 		if(!win.__Menu2ManagerRegistered)
 		{
@@ -466,6 +465,29 @@ dojo.widget.html.Menu2Manager = new function(){
 		}
 	};
 
+	/*
+		This function register all the iframes and the top window,
+		so that whereever the user clicks in the page, the popup 
+		menu will be closed
+		In case you add an iframe after onload event, please call
+		dojo.widget.html.Menu2Manager.registerWin manually
+	*/
+	this.registerAllWindows = function(targetWindow){
+		//starting from window.top, clicking everywhere in this page 
+		//should close popup menus
+		if(!targetWindow)  targetWindow = window.top;
+
+		this.registerWin(targetWindow);
+
+		for (var i = 0; i < targetWindow.frames.length; i++){
+			//do not remove  dojo.html.getDocumentWindow, see comment in it
+			var win = dojo.html.getDocumentWindow(targetWindow.frames[i].document);
+			if(win){
+				this.registerAllWindows(win);
+			}
+		}
+	}
+	
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
 			this.currentMenu = null;
