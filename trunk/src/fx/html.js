@@ -307,7 +307,7 @@ dojo.fx.html.explode = function(start, endNode, duration, callback, dontPlay) {
 		border = "1px solid black";
 		display = "none";
 	}
-	document.body.appendChild(outline);
+	dojo.body().appendChild(outline);
 
 	endNode = dojo.byId(endNode);
 	with(endNode.style) {
@@ -357,7 +357,7 @@ dojo.fx.html.implode = function(startNode, end, duration, callback, dontPlay) {
 		border = "1px solid black";
 		display = "none";
 	}
-	document.body.appendChild(outline);
+	dojo.body().appendChild(outline);
 
 	var anim = new dojo.animation.Animation(
 		new dojo.math.curves.Line(startCoords, endCoords),
@@ -494,7 +494,7 @@ dojo.fx.html.Exploder = function(triggerNode, boxNode) {
 	});
 
 	// document events
-	dojo.event.connect(document.documentElement || document.body, "onclick", function(e) {
+	dojo.event.connect(dojo.body(), "onclick", function(e) {
 		function isDesc(node, ancestor) {
 			while(node) {
 				if(node == ancestor){ return true; }

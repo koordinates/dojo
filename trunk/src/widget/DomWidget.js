@@ -325,8 +325,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		var cn = (overrideContainerNode) ? overrideContainerNode : this.containerNode;
 		if(!pos){ pos = "after"; }
 		if(!ref){ 
-			// if(!cn){ cn = document.body; }
-			if(!cn){ cn = document.body; }
+			if(!cn){ cn = dojo.body(); }
 			ref = cn.lastChild; 
 		}
 		if(!insertIndex) { insertIndex = 0; }

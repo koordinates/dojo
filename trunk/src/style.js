@@ -355,7 +355,7 @@ dojo.require("dojo.lang.common");
 			var val = node[prop];
 			if(val){
 				retVal += val - 0;
-				if(node==document.body){ break; }// opera and khtml #body & #html has the same values, we only need one value
+				if(node==dojo.body()){ break; }// opera and khtml #body & #html has the same values, we only need one value
 			}
 			node = node.parentNode;
 		}

@@ -134,7 +134,7 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 				left = top = "0px";
 				display = "none";
 			}
-			document.body.appendChild(this.bgIframe);
+			dojo.body().appendChild(this.bgIframe);
 			dojo.style.setOpacity(this.bgIframe, 0);
 		}
 	},
@@ -159,7 +159,7 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 			left = x + "px";
 			zIndex = 999;
 		}
-		document.body.appendChild(this.domNode);
+		dojo.body().body.appendChild(this.domNode);
 		if(this.bgIframe){
 			with(this.bgIframe.style){
 				display = "block";

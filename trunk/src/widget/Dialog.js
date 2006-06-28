@@ -101,7 +101,7 @@ dojo.widget.defineWidget(
 		sizeBackground: function() {
 			if(this.bgOpacity > 0) {
 				var h = Math.max(
-					document.documentElement.scrollHeight || document.body.scrollHeight,
+					dojo.body().scrollHeight,
 					dojo.html.getViewportHeight());
 				var w = dojo.html.getViewportWidth();
 				this.bg.style.width = w + "px";
