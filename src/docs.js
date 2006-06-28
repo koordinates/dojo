@@ -114,11 +114,11 @@ dojo.lang.mixin(dojo.docs, {
 			input: input
 		});
 	},
-	_getMeta: function(/*String*/ type, /*Object*/ data, /*Object*/ evt, /*Object*/ input){
-		dojo.debug("_getMeta(" + evt.name + ") has package: " + data[0]);
+	_withPkg: function(/*String*/ type, /*Object*/ data, /*Object*/ evt, /*Object*/ input, /*String*/ newType){
+		dojo.debug("_withPkg(" + evt.name + ") has package: " + data[0]);
 		evt.pkg = data[0];
 		if("load" == type && evt.pkg){
-			evt.type = "meta";
+			evt.type = newType;
 			dojo.docs._buildCache(evt);
 		}else{
 			if(evt.callbacks && evt.callbacks.length){
@@ -137,20 +137,22 @@ dojo.lang.mixin(dojo.docs, {
 			evt.callbacks.shift()(type, data, evt, evt.input);
 		}
 	},
-	getSrc: function(/*mixed*/ selectKey, /*Function*/ callback, /*String*/ name, /*String?*/ id){
+	getSrc: function(/*mixed*/ selectKey, /*String*/ name, /*Function*/ callback, /*String?*/ id){
 		// summary: Gets src file (created by the doc parser)
-		dojo.debug("getSrc()");
+		dojo.debug("getSrc(" + name + ")");
 		if(!id){
 			id = "_";
 		}
 		if(!selectKey){
 			selectKey = ++dojo.docs._count;
-		}	
+		}
 		
-		var input = {};
+		var input;
 		if(typeof selectKey == "object" && selectKey.selectKey){
 			input = selectKey;
 			selectKey = selectKey.selectKey;
+		}else{
+			input = {};
 		}
 		
 		dojo.docs._buildCache({
@@ -161,17 +163,6 @@ dojo.lang.mixin(dojo.docs, {
 			input: input,
 			selectKey: selectKey
 		});
-	},
-	_getSrc: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-		dojo.debug("_getSrc()");
-		if(evt.pkg){	
-			evt.type = "src";
-			dojo.docs._buildCache(evt);
-		}else{
-			if(evt.callbacks && evt.callbacks.length){
-				evt.callbacks.shift()("error", {}, evt, evt.input);
-			}
-		}
 	},
 	getDoc: function(/*mixed*/ selectKey, /*String*/ name, /*Function*/ callback, /*String?*/ id){
 		// summary: Gets external documentation stored on Jot for a given function
@@ -187,41 +178,19 @@ dojo.lang.mixin(dojo.docs, {
 
 		var input = {};
 		if(typeof selectKey == "object" && selectKey.selectKey){
-			input = selectKey;
+			input.input = selectKey;
 			selectKey = selectKey.selectKey;
 		}
 
 		input.type = "doc";
+		input.name = name;
+		input.selectKey = selectKey;
 		input.callbacks = [callback];
 		input.selectKey = selectKey;
 
-		dojo.docs.functionPackages(selectKey, name, dojo.docs._getDoc, input);
+		dojo.docs._buildCache(input);
 	},
-	_getDoc: function(/*String*/ type, /*Object*/ data, /*Object*/ evt){
-		dojo.debug("_getDoc(" + data[0] + "/" + evt.name + ")");
-		
-		if(!data.length){
-			dojo.docs._gotDoc("error", {}, evt);
-		}
-		
-		var input = evt;
-		if(typeof key == "object"){
-			evt = evt.selectKey;
-		}
-		evt.docExpects = ["fn", "param"];
-		
-		dojo.docs._buildCache({
-			type: "doc",
-			callbacks: evt.callbacks,
-			name: evt.name,
-			pkg: data[0],
-			selectKey: evt.selectKey,
-			expects: {
-				doc: ["fn", "param"]
-			}
-		});
-	},
-	_gotDoc: function(/*String*/ type, /*Array*/ data, /*Object*/ evt){
+	_gotDoc: function(/*String*/ type, /*Array*/ data, /*Object*/ evt, /*Object*/ input){
 		dojo.debug("_gotDoc(" + evt.type + ")");
 		
 		evt[evt.type] = data;
@@ -261,7 +230,7 @@ dojo.lang.mixin(dojo.docs, {
 		evt.type = "doc";
 	
 		if(evt.callbacks && evt.callbacks.length){
-			evt.callbacks.shift()("load", data, evt);
+			evt.callbacks.shift()("load", data, evt, input);
 		}
 	},
 	getPkgDoc: function(/*mixed*/ selectKey, /*String*/ name, /*Function*/ callback){
@@ -325,21 +294,26 @@ dojo.lang.mixin(dojo.docs, {
 			expects: {
 				"info": ["meta", "doc"]
 			},
-			selectKey: selectKey
+			selectKey: selectKey,
+			callback: callback
 		}
 		dojo.docs.getMeta(input, name, dojo.docs._getInfo);
 		dojo.docs.getDoc(input, name, dojo.docs._getInfo);
 	},
 	_getInfo: function(/*String*/ type, /*String*/ data, /*Object*/ evt, /*Object*/ input){
 		dojo.debug("_getInfo(" + evt.type + ")");
-		if(input.expects && input.expects.info){
+		if(input && input.expects && input.expects.info){
 			input[evt.type] = data;
 			for(var i = 0, expect; expect = input.expects.info[i]; i++){
-				if(!(expect in key)){
+				if(!(expect in input)){
 					dojo.debug("_getInfo() waiting for more data");
 					return;
 				}
 			}
+		}
+
+		if(input.callback){
+			input.callback("load", dojo.docs._getCache(evt.pkg, "meta", "methods", evt.name, evt.id, "meta"), evt, input);
 		}
 	},
 	_getMainText: function(/*String*/ text){
@@ -573,74 +547,79 @@ dojo.lang.mixin(dojo.docs, {
 		var search = [];
 	
 		if(type == "doc"){
-			var cached = dojo.docs._getCache(pkg, "meta", "methods", name, id, "meta");
-			
-			if(cached.description){
-				callbacks.shift()("load", cached.description, input);
+			if(!pkg){
+				dojo.docs.functionPackages(input.selectKey, name, function(){ var a = arguments; dojo.docs._withPkg.call(this, a[0], a[1], a[2], a[3], "doc"); }, input);
 				return;
-			}
-
-			var aSearch = {};
-			aSearch.forFormName = "DocFnForm";
-			aSearch.limit = 1;
-
-			if(!id || id == "_"){
-				aSearch.filter = "it/DocFnForm/require = '" + pkg + "' and it/DocFnForm/name = '" + name + "' and not(it/DocFnForm/id)";
 			}else{
-				aSearch.filter = "it/DocFnForm/require = '" + pkg + "' and it/DocFnForm/name = '" + name + "' and it/DocFnForm/id = '" + id + "'";
-			}
-
-			aSearch.load = function(data){
 				var cached = dojo.docs._getCache(pkg, "meta", "methods", name, id, "meta");
-
-				var description = "";
-				var returns = "";
-				if(data.list && data.list.length){
-					description = dojo.docs._getMainText(data.list[0]["main/text"]);
-					returns = data.list[0]["DocFnForm/returns"];
-				}
-
-				cached.description  = description;
-				if(!cached.returns){
-					cached.returns = {};
-				}
-				cached.returns.summary = returns;
-
-				input.type = "fn";
-				dojo.docs._gotDoc("load", cached, input);				
-			}
-			aSearch.error = function(data){
-				input.type = "fn";
-				dojo.docs._gotDoc("error", {}, input);
-			}
-			search.push(aSearch);
-
-			aSearch = {};
-			aSearch.forFormName = "DocParamForm";
-
-			if(!id || id == "_"){
-				aSearch.filter = "it/DocParamForm/fns = '" + pkg + "=>" + name + "'";
-			}else{
-				aSearch.filter = "it/DocParamForm/fns = '" + pkg + "=>" + name + "=>" + id + "'";
-			}
 			
-			aSearch.load = function(data){
-				var cache = dojo.docs._getCache(pkg, "meta", "methods", name, id, "meta");
-				for(var i = 0, param; param = data.list[i]; i++){
-					var pName = param["DocParamForm/name"];
-					if(!cache.parameters[pName]){
-						cache.parameters[pName] = {};
-					}
-					cache.parameters[pName].summary = param["DocParamForm/desc"];
+				if(cached.description){
+					callbacks.shift()("load", cached.description, input, input.input);
+					return;
 				}
-				input.type = "param";
-				dojo.docs._gotDoc("load", cache.parameters, input);
+
+				var aSearch = {};
+				aSearch.forFormName = "DocFnForm";
+				aSearch.limit = 1;
+
+				if(!id || id == "_"){
+					aSearch.filter = "it/DocFnForm/require = '" + pkg + "' and it/DocFnForm/name = '" + name + "' and not(it/DocFnForm/id)";
+				}else{
+					aSearch.filter = "it/DocFnForm/require = '" + pkg + "' and it/DocFnForm/name = '" + name + "' and it/DocFnForm/id = '" + id + "'";
+				}
+
+				aSearch.load = function(data){
+					var cached = dojo.docs._getCache(pkg, "meta", "methods", name, id, "meta");
+
+					var description = "";
+					var returns = "";
+					if(data.list && data.list.length){
+						description = dojo.docs._getMainText(data.list[0]["main/text"]);
+						returns = data.list[0]["DocFnForm/returns"];
+					}
+
+					cached.description  = description;
+					if(!cached.returns){
+						cached.returns = {};
+					}
+					cached.returns.summary = returns;
+
+					input.type = "fn";
+					dojo.docs._gotDoc("load", cached, input, input.input);				
+				}
+				aSearch.error = function(data){
+					input.type = "fn";
+					dojo.docs._gotDoc("error", {}, input, input.input);
+				}
+				search.push(aSearch);
+
+				aSearch = {};
+				aSearch.forFormName = "DocParamForm";
+
+				if(!id || id == "_"){
+					aSearch.filter = "it/DocParamForm/fns = '" + pkg + "=>" + name + "'";
+				}else{
+					aSearch.filter = "it/DocParamForm/fns = '" + pkg + "=>" + name + "=>" + id + "'";
+				}
+			
+				aSearch.load = function(data){
+					var cache = dojo.docs._getCache(pkg, "meta", "methods", name, id, "meta");
+					for(var i = 0, param; param = data.list[i]; i++){
+						var pName = param["DocParamForm/name"];
+						if(!cache.parameters[pName]){
+							cache.parameters[pName] = {};
+						}
+						cache.parameters[pName].summary = param["DocParamForm/desc"];
+					}
+					input.type = "param";
+					dojo.docs._gotDoc("load", cache.parameters, input);
+				}
+				aSearch.error = function(data){
+					input.type = "param";
+					dojo.docs._gotDoc("error", {}, input);
+				}
+				search.push(aSearch);
 			}
-			aSearch.error = function(data){
-				input.type = "param";
-				dojo.docs._gotDoc("error", {}, input);
-			}
-			search.push(aSearch);
 		}else if(type == "pkgdoc"){
 			var cached = dojo.docs._getCache(name);
 
@@ -713,10 +692,10 @@ dojo.lang.mixin(dojo.docs, {
 		}else if(type == "meta" || type == "src"){
 			if(!pkg){
 				if(type == "meta"){
-					dojo.docs.functionPackages(input.selectKey, name, dojo.docs._getMeta, input);
+					dojo.docs.functionPackages(input.selectKey, name, function(){ var a = arguments; dojo.docs._withPkg.call(this, a[0], a[1], a[2], a[3], "meta"); }, input);
 					return;
 				}else{
-					dojo.docs.functionPackages(input.selectKey, name, dojo.docs._getSrc, input);
+					dojo.docs.functionPackages(input.selectKey, name, function(){ var a = arguments; dojo.docs._withPkg.call(this, a[0], a[1], a[2], a[3], "src"); }, input);
 					return;
 				}
 			}else{
@@ -742,6 +721,9 @@ dojo.lang.mixin(dojo.docs, {
 
 					if(input.type == "src"){
 						dojo.docs._getCache(pkg, "meta", "methods", name, id).src = data;
+						if(callbacks && callbacks.length){
+							callbacks.shift()("load", data, input, input.input);
+						}
 					}else{
 						var cache = dojo.docs._getCache(pkg, "meta", "methods", name, id, "meta");
 						if(!cache.parameters){
@@ -765,7 +747,7 @@ dojo.lang.mixin(dojo.docs, {
 				}
 				aSearch.error = function(type, data, evt){
 					if(callbacks && callbacks.length){
-						callbacks.shift()("error", {}, input);
+						callbacks.shift()("error", {}, input, input.input);
 					}
 				}
 			}
