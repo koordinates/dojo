@@ -300,7 +300,7 @@ dojo.widget.createWidget = function(name, props, refNode, position, namespace /*
 		notRef = true;
 		refNode = tn;
 		if(h){
-			document.body.appendChild(refNode);
+			dojo.body().appendChild(refNode);
 		}
 	}else if(position){
 		dojo.dom.insertAtPosition(tn, refNode, position);

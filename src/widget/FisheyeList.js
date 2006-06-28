@@ -237,7 +237,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	onBodyOut: function(e){
 		// clicking over an object inside of body causes this event to fire; ignore that case
-		if( dojo.html.overElement(document.body, e) ){
+		if( dojo.html.overElement(dojo.body(), e) ){
 			return;
 		}
 		this.setDormant(e);

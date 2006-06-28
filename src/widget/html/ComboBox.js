@@ -7,6 +7,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
+dojo.require("dojo.widget.html.PopupMenu2");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.ComboBox",
@@ -520,7 +521,7 @@ dojo.widget.defineWidget(
 
 			while((tgt.nodeType!=1)||(!tgt.getAttribute("resultName"))){
 				tgt = tgt.parentNode;
-				if(tgt === document.body){
+				if(tgt === dojo.body()){
 					return false;
 				}
 			}
