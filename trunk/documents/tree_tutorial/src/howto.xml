@@ -10,7 +10,7 @@
         </para>
         
         <para>TODO: selectable tree extension (chunk): tree.addExtension("unselectable");</para>
-        
+        <para>TODO: make lazy loading from string (nested array). Can use lazy loading controller - make dataProvider for that</para>
     </section>
     
 
