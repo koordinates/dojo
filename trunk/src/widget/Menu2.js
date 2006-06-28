@@ -59,6 +59,9 @@ dojo.widget.defineWidget(
 			dojo.lang.forEach(this.targetNodeIds, this.bindDomNode, this);
 		}
 
+		//register the top window for in some cases, no target node is 
+		//specified, instead open() is called directly
+		dojo.widget.html.Menu2Manager.registerWin(dojo.global());
 		this.subscribeSubitemsOnOpen();
 	},
 
