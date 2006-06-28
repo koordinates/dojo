@@ -3,7 +3,6 @@ dojo.provide("dojo.html");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
-dojo.require("dojo.string");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
 dojo.lang.mixin(dojo.html, dojo.style);
@@ -284,8 +283,7 @@ dojo.html.getClass = function(node){
 	}else if(dojo.html.hasAttribute(node, "class")){
 		cs = dojo.html.getAttribute(node, "class");
 	}
-	//return dojo.string.trim(cs)
-	return cs
+	return cs.replace(/^\s+|\s+$/g, "");
 }
 
 /**
@@ -294,7 +292,7 @@ dojo.html.getClass = function(node){
  * are found;
  */
 dojo.html.getClasses = function(node) {
-	var c = dojo.string.trim(dojo.html.getClass(node));
+	var c = dojo.html.getClass(node);
 	return (c == "") ? [] : c.split(/\s+/g);
 }
 
@@ -326,7 +324,7 @@ dojo.html.addClass = function(node, classStr){
 	if (dojo.html.hasClass(node, classStr)) {
 	  return false;
 	}
-	classStr = dojo.string.trim(dojo.html.getClass(node) + " " + classStr);
+	classStr = (dojo.html.getClass(node) + " " + classStr).replace(/^\s+|\s+$/g,"");
 	return dojo.html.setClass(node, classStr);
 }
 
