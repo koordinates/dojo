@@ -153,7 +153,8 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	if(async_cb){
 		http.onreadystatechange = function(){
 			if(4==http.readyState){
-				if((!http["status"])||((200 <= http.status)&&(300 > http.status))){
+				var stat = http["status"]; // allow a 304 use cache, needed in konq
+				if( (stat) && ((200 > stat) || ((300 < stat) && (304 !== stat))) ){
 					// dojo.debug("LOADED URI: "+uri);
 					async_cb(http.responseText);
 				}
@@ -167,7 +168,8 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		if(async_cb){
 			return null;
 		}
-		if((http["status"])&&((200 > http.status)||(300 <= http.status))){
+		var stat = http["status"]; // allow a 304 use cache, needed in konq
+		if( (stat) && ((200 > stat) || ((300 < stat) && (304 !== stat))) ){
 			throw Error("Unable to load "+uri+" status:"+ http.status);
 		}
 	}catch(e){
