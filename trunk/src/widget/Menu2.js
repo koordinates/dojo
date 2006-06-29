@@ -679,7 +679,7 @@ dojo.widget.defineWidget(
 	dojo.widget.MenuItem2,
 {
 	templateString:
-		 '<td class="dojoMenuBarItem2 dojoMenuBarItem2Label" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">'
+		 '<td class="dojoMenuBarItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">'
 		+'<span><span>${this.caption}</span>${this.caption}</span>'
 		+'</td>',
 
@@ -693,7 +693,6 @@ dojo.widget.defineWidget(
 
 	setDisabled: function(value){
 		this.disabled = value;
-
 		if (this.disabled){
 			dojo.html.addClass(this.domNode, 'dojoMenuBarItem2Disabled');
 		}else{
