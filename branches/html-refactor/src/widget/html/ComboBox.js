@@ -7,7 +7,6 @@ dojo.require("dojo.dom");
 dojo.require("dojo.html");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
-dojo.require("dojo.widget.html.PopupMenu2");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.ComboBox",

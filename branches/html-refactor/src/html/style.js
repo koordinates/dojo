@@ -111,6 +111,96 @@ dojo.html.replaceClass = function(node, newClass, oldClass) {
 	dojo.html.addClass(node, newClass);
 }
 
+// Enum type for getElementsByClass classMatchType arg:
+dojo.html.classMatchType = {
+	ContainsAll : 0, // all of the classes are part of the node's class (default)
+	ContainsAny : 1, // any of the classes are part of the node's class
+	IsOnly : 2 // only all of the classes are part of the node's class
+}
+
+
+/**
+ * Returns an array of nodes for the given classStr, children of a
+ * parent, and optionally of a certain nodeType
+ */
+dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType, useNonXpath){
+	var _document = dojo.doc();
+	parent = dojo.byId(parent) || _document;
+	var classes = classStr.split(/\s+/g);
+	var nodes = [];
+	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
+	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
+	var srtLength = classes.join(" ").length;
+	var candidateNodes = [];
+	
+	if(!useNonXpath && _document.evaluate) { // supports dom 3 xpath
+		var xpath = "//" + (nodeType || "*") + "[contains(";
+		if(classMatchType != dojo.html.classMatchType.ContainsAny){
+			xpath += "concat(' ',@class,' '), ' " +
+			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
+			" ')";
+			if (classMatchType == 2) {
+				xpath += " and string-length(@class)="+srtLength+"]";
+			}else{
+				xpath += "]";
+			}
+		}else{
+			xpath += "concat(' ',@class,' '), ' " +
+			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
+			" ')]";
+		}
+		var xpathResult = _document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
+		var result = xpathResult.iterateNext();
+		while(result){
+			try{
+				candidateNodes.push(result);
+				result = xpathResult.iterateNext();
+			}catch(e){ break; }
+		}
+		return candidateNodes;
+	}else{
+		if(!nodeType){
+			nodeType = "*";
+		}
+		candidateNodes = parent.getElementsByTagName(nodeType);
+
+		var node, i = 0;
+		outer:
+		while(node = candidateNodes[i++]){
+			var nodeClasses = dojo.html.getClasses(node);
+			if(nodeClasses.length == 0){ continue outer; }
+			var matches = 0;
+	
+			for(var j = 0; j < nodeClasses.length; j++){
+				if(reClass.test(nodeClasses[j])){
+					if(classMatchType == dojo.html.classMatchType.ContainsAny){
+						nodes.push(node);
+						continue outer;
+					}else{
+						matches++;
+					}
+				}else{
+					if(classMatchType == dojo.html.classMatchType.IsOnly){
+						continue outer;
+					}
+				}
+			}
+	
+			if(matches == classes.length){
+				if(	(classMatchType == dojo.html.classMatchType.IsOnly)&&
+					(matches == nodeClasses.length)){
+					nodes.push(node);
+				}else if(classMatchType == dojo.html.classMatchType.ContainsAll){
+					nodes.push(node);
+				}
+			}
+		}
+		return nodes;
+	}
+}
+
+dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
+
 dojo.html.toCamelCase = function(selector){
 	var arr = selector.split('-'), cc = arr[0];
 	for(var i = 1; i < arr.length; i++) {
