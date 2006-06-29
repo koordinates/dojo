@@ -98,7 +98,7 @@
 		children: [
 			{
 				widgetType: "ContentPane",
-				params: {widgetId: "content", label: "Content tab", href: "doc0.html"},
+				params: {widgetId: "content", label: "Content tab", href: "doc0.html", executeScripts: true},
 				style: "background: #ffeeff;"
 			},
 			{
@@ -137,6 +137,29 @@
 						innerHTML: "tab 2 of nested tabs"
 					}
 				]
+			}
+		]
+	};
+
+	// tab container layout
+	var tabNoLayout = {
+		widgetType: "TabContainer",
+		params: {widgetId: "rootWidget", doLayout: false},
+		children: [
+			{
+				widgetType: "ContentPane",
+				params: {widgetId: "doc0", label: "Doc 0", href: "doc0.html", executeScripts: true},
+				style: "background: #ffeeff;"
+			},
+			{
+				widgetType: "ContentPane",
+				params: {widgetId: "doc1", label: "Doc 1", href: "doc1.html", executeScripts: true},
+				style: "background: #eeffee;"
+			},
+			{
+				widgetType: "ContentPane",
+				params: {widgetId: "doc2", label: "Doc 2", href: "doc2.html", executeScripts: true},
+				style: "background: #ffffee;"
 			}
 		]
 	};
@@ -269,6 +292,7 @@
 				widgetId: "widget_" + cnt,
 				label: "Widget " + cnt,	// necessary if parent is tab
 				layoutAlign: alignments[cnt%4],	// necessary if parent is LayoutContainer
+				executeScripts: true,
 				href: hrefs[cnt%3]
 			},
 			node
@@ -322,6 +346,7 @@
 				<button onClick="create(simpleLayout);">Simple Layout</button>
 				<button onClick="create(splitLayout);">Split Layout</button>
 				<button onClick="create(tabLayout);">Tab Layout</button>
+				<button onClick="create(tabNoLayout);">Tab Non-Layout</button>
 				<button onClick="create(accordionLayout);">Accordion Layout</button>
 			</td>
 			<td id="current">
