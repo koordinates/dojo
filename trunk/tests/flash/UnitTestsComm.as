@@ -29,7 +29,7 @@ class UnitTestsComm{
 	public function testCallingJavaScript(inputStr : String) : Void{
 		//getURL("javascript:dojo.debug('FLASH: testCallingJavaScript, inputStr="+inputStr+"')");
 		var resultsReady = function(results){
-			DojoExternalInterface.call("returnResults", results);
+			DojoExternalInterface.call("returnResults", null, results);
 		}
 		var results = DojoExternalInterface.call("testCallingJavaScript", resultsReady,
 																						 inputStr);
