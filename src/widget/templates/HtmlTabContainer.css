@@ -18,6 +18,7 @@
 	z-index: 2;	/* so the bottom of the tab label will cover up the border of dojoTabPaneWrapper */
 }
 .dojoTabLabels-top-noLayout {
+	position : relative;
 	overflow : visible;
 	margin-bottom : -1px;
 	width : 100%;
