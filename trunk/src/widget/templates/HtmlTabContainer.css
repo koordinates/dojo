@@ -6,6 +6,7 @@
 	position : relative;
 	border : 1px solid #6290d2;
 	clear: both;
+	_zoom: 1; /* force IE6 layout mode so top border doesnt disappear */
 }
 
 .dojoTabLabels-top {
@@ -17,12 +18,9 @@
 	width : 100%;
 	z-index: 2;	/* so the bottom of the tab label will cover up the border of dojoTabPaneWrapper */
 }
-.dojoTabLabels-top-noLayout {
+
+.dojoTabNoLayout .dojoTabLabels-top {
 	position : relative;
-	overflow : visible;
-	margin-bottom : -1px;
-	width : 100%;
-	z-index: 2;
 }
 
 .dojoTabPaneTab {
@@ -32,6 +30,7 @@
 	border-bottom : 1px solid #6290d2;
 	background : url(images/tab_left.gif) no-repeat left top;
 	cursor: pointer;
+	white-space: nowrap;
 	z-index: 3;
 }
 
@@ -93,6 +92,10 @@
 	width : 100%;
 	z-index: 2;
 }
+
+.dojoTabNoLayout .dojoTabLabels-bottom {
+	position : relative;
+}}
 
 .dojoTabLabels-bottom .dojoTabPaneTab {
 	border-top :  1px solid #6290d2;
