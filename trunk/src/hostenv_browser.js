@@ -49,8 +49,8 @@ if(typeof window == 'undefined'){
 	var dr = dojo.render;
 	var drh = dojo.render.html;
 	var drs = dojo.render.svg;
-	var dua = drh.UA = navigator.userAgent;
-	var dav = drh.AV = navigator.appVersion;
+	var dua = (drh.UA = navigator.userAgent);
+	var dav = (drh.AV = navigator.appVersion);
 	var t = true;
 	var f = false;
 	drh.capable = t;
@@ -86,8 +86,7 @@ if(typeof window == 'undefined'){
 	drs.support.builtin = f;
 	if (document.implementation
 		&& document.implementation.hasFeature
-		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")
-	){
+		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")){
 		drs.capable = t;
 		drs.support.builtin = t;
 		drs.support.plugin = f;
@@ -150,11 +149,16 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 
 	var http = this.getXmlhttpObject();
 
+	function isDocumentOk(http){
+		var stat = http["status"];
+		// allow a 304 use cache, needed in konq (is this compliant with the http spec?)
+		return Boolean((!stat)||((200 <= stat)&&(300 > stat))||(stat==304));
+	}
+
 	if(async_cb){
 		http.onreadystatechange = function(){
 			if(4==http.readyState){
-				var stat = http["status"]; // allow a 304 use cache, needed in konq
-				if( (stat) && ((200 > stat) || ((300 < stat) && (304 !== stat))) ){
+				if(isDocumentOk(http)){
 					// dojo.debug("LOADED URI: "+uri);
 					async_cb(http.responseText);
 				}
@@ -168,9 +172,11 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		if(async_cb){
 			return null;
 		}
-		var stat = http["status"]; // allow a 304 use cache, needed in konq
-		if( (stat) && ((200 > stat) || ((300 < stat) && (304 !== stat))) ){
-			throw Error("Unable to load "+uri+" status:"+ http.status);
+		if(!isDocumentOk(http)){
+			var err = Error("Unable to load "+uri+" status:"+ http.status);
+			err.status = http.status;
+			err.responseText = http.responseText;
+			throw err;
 		}
 	}catch(e){
 		if((fail_ok)&&(!async_cb)){
