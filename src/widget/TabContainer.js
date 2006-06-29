@@ -10,18 +10,8 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.html.layout");
 
-//////////////////////////////////////////
-// TabContainer -- a set of Tabs
-//////////////////////////////////////////
-dojo.widget.html.TabContainer = function() {
-	dojo.widget.HtmlWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.html.TabContainer, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.TabContainer, {
-	widgetType: "TabContainer",
-    isContainer: true,
+dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget, {
+	isContainer: true,
 
 	// Constructor arguments
 	labelPosition: "top",
@@ -63,13 +53,17 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			this.dojoTabLabels.appendChild(div);
 		}
 
-		if(this.doLayout){
-			dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
-		} else {
-			dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition+"-noLayout");
+		if(!this.doLayout){
+			dojo.html.addClass(this.domNode, "dojoTabNoLayout");
+			if (this.labelPosition == 'bottom') {
+				var p = this.dojoTabLabels.parentNode;
+				p.removeChild(this.dojoTabLabels);
+				p.appendChild(this.dojoTabLabels);
+			}
 		}
+		dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
 
-        this._doSizing();
+		this._doSizing();
 
 		// Display the selected tab
 		if(this.selectedTabWidget){
@@ -78,6 +72,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
+		// FIXME need connect to tab Destroy, so call removeChild properly.
 		this._setupTab(child);
 		dojo.widget.html.TabContainer.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
 
@@ -128,15 +123,18 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		);
 
 		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
-    		this.selectedTabWidget = tab;
-        } else {
-            this._hideTab(tab);
-        }
+			this.selectedTabWidget = tab;
+		} else {
+			this._hideTab(tab);
+		}
 
 		dojo.html.addClass(tab.domNode, "dojoTabPane");
-		with(tab.domNode.style){
-			top = dojo.style.getPixelValue(this.containerNode, "padding-top", true);
-			left = dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+
+		if(this.doLayout){
+			with(tab.domNode.style){
+				top = dojo.style.getPixelValue(this.containerNode, "padding-top", true);
+				left = dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+			}
 		}
 	},
 
@@ -152,7 +150,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		];
 
 		dojo.html.layout(this.domNode, children);
-			
+
 		// size the current tab
 		// TODO: should have ptr to current tab rather than searching
 		var cw=dojo.style.getContentWidth(this.containerNode);
@@ -164,8 +162,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		});
 	},
 
-    removeChild: function(tab){
-
+	removeChild: function(tab){
 		// remove tab event handlers
 		dojo.event.disconnect(tab.div, "onclick", function(){ });
 		if(this.closeButton == "tab"){
@@ -175,24 +172,24 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			}
 		}
 
-        dojo.widget.html.TabContainer.superclass.removeChild.call(this, tab);
+		dojo.widget.html.TabContainer.superclass.removeChild.call(this, tab);
 
-        dojo.html.removeClass(tab.domNode, "dojoTabPane");
-        this.dojoTabLabels.removeChild(tab.div);
-        delete(tab.div);
+		dojo.html.removeClass(tab.domNode, "dojoTabPane");
+		this.dojoTabLabels.removeChild(tab.div);
+		delete(tab.div);
 
-        if (this.selectedTabWidget === tab) {
-            this.selectedTabWidget = undefined;
-            if (this.children.length > 0) {
-                this.selectTab(this.children[0], true);
-            }
-        }
+		if (this.selectedTabWidget === tab) {
+			this.selectedTabWidget = undefined;
+			if (this.children.length > 0) {
+				this.selectTab(this.children[0], true);
+			}
+		}
 
 		// in case the tab labels have overflowed from one line to two lines
 		this._doSizing();
-    },
+	},
 
-    selectTab: function(tab, _noRefresh){
+	selectTab: function(tab, _noRefresh){
 		// Deselect old tab and select new one
 		if(this.selectedTabWidget){
 			this._hideTab(this.selectedTabWidget);
@@ -286,7 +283,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 		this._doSizing();
 	}
 });
-dojo.widget.tags.addParseTreeHandler("dojo:TabContainer");
+
 
 // These arguments can be specified for the children of a TabContainer.
 // Since any widget can be specified as a TabContainer child, mix them
