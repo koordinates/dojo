@@ -1,6 +1,5 @@
 dojo.require("dojo.html");
 dojo.provide("dojo.html.extras");
-dojo.require("dojo.string.extras"); 
 
 /**
  * Calculates the mouse's direction of gravity relative to the centre
@@ -86,7 +85,13 @@ dojo.html.renderedTextContent = function(node){
 					textTransform = dojo.html.getStyle(node, "text-transform");
 				} catch(E) {}
 				switch (textTransform){
-					case "capitalize": text = dojo.string.capitalize(text); break;
+					case "capitalize":
+						var words = text.split(' ');
+						for(var i=0; i<words.length; i++){
+							words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+						}
+						text = words.join(" ");
+						break;
 					case "uppercase": text = text.toUpperCase(); break;
 					case "lowercase": text = text.toLowerCase(); break;
 					default: break; // leave as is
@@ -113,20 +118,20 @@ dojo.html.renderedTextContent = function(node){
 }
 
 dojo.html.createNodesFromText = function(txt, trim){
-	if(trim) { txt = dojo.string.trim(txt); }
+	if(trim) { txt = txt.replace(/^\s+|\s+$/g, ""); }
 
 	var tn = dojo.doc().createElement("div");
 	// tn.style.display = "none";
 	tn.style.visibility= "hidden";
 	dojo.body().appendChild(tn);
 	var tableType = "none";
-	if((/^<t[dh][\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
+	if((/^<t[dh][\s\r\n>]/i).test(txt.replace(/^\s+/))) {
 		txt = "<table><tbody><tr>" + txt + "</tr></tbody></table>";
 		tableType = "cell";
-	} else if((/^<tr[\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
+	} else if((/^<tr[\s\r\n>]/i).test(txt.replace(/^\s+/))) {
 		txt = "<table><tbody>" + txt + "</tbody></table>";
 		tableType = "row";
-	} else if((/^<(thead|tbody|tfoot)[\s\r\n>]/i).test(dojo.string.trimStart(txt))) {
+	} else if((/^<(thead|tbody|tfoot)[\s\r\n>]/i).test(txt.replace(/^\s+/))) {
 		txt = "<table>" + txt + "</table>";
 		tableType = "section";
 	}
