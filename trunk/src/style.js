@@ -318,7 +318,7 @@ dojo.require("dojo.lang.common");
 
 				if(node.parentNode != db){
 					var nd = node;
-					if(window.opera){ nd = db; }
+					if(dojo.render.html.opera){ nd = db; }
 					ret.x -= ds.sumAncestorProperties(nd, "scrollLeft");
 					ret.y -= ds.sumAncestorProperties(nd, "scrollTop");
 				}
@@ -327,7 +327,7 @@ dojo.require("dojo.lang.common");
 					//FIXME: ugly hack to workaround the submenu in 
 					//popupmenu2 does not shown up correctly in opera. 
 					//Someone have a better workaround?
-					if(!window.opera || n>0){
+					if(!dojo.render.html.opera || n>0){
 						ret.x += isNaN(n) ? 0 : n;
 					}
 					var m = node["offsetTop"];
