@@ -1,7 +1,8 @@
 dojo.provide("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DomWidget");
-dojo.require("dojo.html");
 dojo.require("dojo.html.extras");
+dojo.require("dojo.html.style.display");
+dojo.require("dojo.html.style.position");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lfx.toggle");
@@ -59,11 +60,11 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	// Displaying/hiding the widget
 	/////////////////////////////////////////////////////////
 	isShowing: function(){
-		return dojo.style.isShowing(this.domNode);
+		return dojo.html.isShowing(this.domNode);
 	},
 
 	toggleShowing: function(){
-		// dojo.style.toggleShowing(this.domNode);
+		// dojo.html.toggleShowing(this.domNode);
 		if(this.isHidden){
 			this.show();
 		}else{
@@ -113,8 +114,9 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 		// If my parent has been resized and I have style="height: 100%"
 		// or something similar then my size has changed too.
-		w=w||dojo.style.getOuterWidth(this.domNode);
-		h=h||dojo.style.getOuterHeight(this.domNode);
+		var wh = dojo.html.getMarginBox(this.domNode);
+		w=w||wh.w;
+		h=h||wh.h;
 		if(this.width == w && this.height == h){ return false; }
 
 		this.width=w;
@@ -134,8 +136,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	// Explicitly set this widget's size (in pixels).
 	resizeTo: function(w, h){
 		if(!this._isResized(w,h)){ return; }
-		dojo.style.setOuterWidth(this.domNode, w);
-		dojo.style.setOuterHeight(this.domNode, h);
+		dojo.html.setMarginBox(this.domNode, { width: w, height: h });
 		this.onResized();
 	},
 

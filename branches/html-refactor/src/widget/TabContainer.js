@@ -8,7 +8,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
-dojo.require("dojo.html.layout");
+dojo.require("dojo.widget.html.layout");
 
 dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget, {
 	isContainer: true,
@@ -149,7 +149,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 			{domNode: this.containerNode, layoutAlign: "client"}
 		];
 
-		dojo.html.layout(this.domNode, children);
+		dojo.widget.html.layout(this.domNode, children);
 
 		// size the current tab
 		// TODO: should have ptr to current tab rather than searching
