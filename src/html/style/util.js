@@ -1,4 +1,3 @@
-dojo.require("dojo.html.common");
 dojo.require("dojo.html.style.position");
 dojo.provide("dojo.html.style.util");
 
@@ -26,68 +25,68 @@ dojo.html.getPaddingExtent = function(node, side){
 	return dojo.html._sumPixelValues(node, ["padding-" + side], true);
 }
 
-dojo.style.styleSheet = null;
+dojo.html.styleSheet = null;
 
 // FIXME: this is a really basic stub for adding and removing cssRules, but
 // it assumes that you know the index of the cssRule that you want to add 
 // or remove, making it less than useful.  So we need something that can 
 // search for the selector that you you want to remove.
-dojo.style.insertCssRule = function(selector, declaration, index) {
-	if (!dojo.style.styleSheet) {
+dojo.html.insertCssRule = function(selector, declaration, index) {
+	if (!dojo.html.styleSheet) {
 		if (document.createStyleSheet) { // IE
-			dojo.style.styleSheet = document.createStyleSheet();
+			dojo.html.styleSheet = document.createStyleSheet();
 		} else if (document.styleSheets[0]) { // rest
 			// FIXME: should create a new style sheet here
 			// fall back on an exsiting style sheet
-			dojo.style.styleSheet = document.styleSheets[0];
+			dojo.html.styleSheet = document.styleSheets[0];
 		} else { return null; } // fail
 	}
 
 	if (arguments.length < 3) { // index may == 0
-		if (dojo.style.styleSheet.cssRules) { // W3
-			index = dojo.style.styleSheet.cssRules.length;
-		} else if (dojo.style.styleSheet.rules) { // IE
-			index = dojo.style.styleSheet.rules.length;
+		if (dojo.html.styleSheet.cssRules) { // W3
+			index = dojo.html.styleSheet.cssRules.length;
+		} else if (dojo.html.styleSheet.rules) { // IE
+			index = dojo.html.styleSheet.rules.length;
 		} else { return null; } // fail
 	}
 
-	if (dojo.style.styleSheet.insertRule) { // W3
+	if (dojo.html.styleSheet.insertRule) { // W3
 		var rule = selector + " { " + declaration + " }";
-		return dojo.style.styleSheet.insertRule(rule, index);
-	} else if (dojo.style.styleSheet.addRule) { // IE
-		return dojo.style.styleSheet.addRule(selector, declaration, index);
+		return dojo.html.styleSheet.insertRule(rule, index);
+	} else if (dojo.html.styleSheet.addRule) { // IE
+		return dojo.html.styleSheet.addRule(selector, declaration, index);
 	} else { return null; } // fail
 }
 
-dojo.style.removeCssRule = function(index){
-	if(!dojo.style.styleSheet){
+dojo.html.removeCssRule = function(index){
+	if(!dojo.html.styleSheet){
 		dojo.debug("no stylesheet defined for removing rules");
 		return false;
 	}
 	if(dojo.html.render.ie){
 		if(!index){
-			index = dojo.style.styleSheet.rules.length;
-			dojo.style.styleSheet.removeRule(index);
+			index = dojo.html.styleSheet.rules.length;
+			dojo.html.styleSheet.removeRule(index);
 		}
 	}else if(document.styleSheets[0]){
 		if(!index){
-			index = dojo.style.styleSheet.cssRules.length;
+			index = dojo.html.styleSheet.cssRules.length;
 		}
-		dojo.style.styleSheet.deleteRule(index);
+		dojo.html.styleSheet.deleteRule(index);
 	}
 	return true;
 }
 
 // calls css by XmlHTTP and inserts it into DOM as <style [widgetType="widgetType"]> *downloaded cssText*</style>
-dojo.style._insertedCssFiles = []; // cache container needed because IE reformats cssText when added to DOM
-dojo.style.insertCssFile = function(URI, doc, checkDuplicates){
+dojo.html._insertedCssFiles = []; // cache container needed because IE reformats cssText when added to DOM
+dojo.html.insertCssFile = function(URI, doc, checkDuplicates){
 	if(!URI){ return; }
 	if(!doc){ doc = document; }
 	var cssStr = dojo.hostenv.getText(URI);
-	cssStr = dojo.style.fixPathsInCssText(cssStr, URI);
+	cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
 
 	if(checkDuplicates){
-		var idx = -1, node, ent = dojo.style._insertedCssFiles;
+		var idx = -1, node, ent = dojo.html._insertedCssFiles;
 		for(var i = 0; i < ent.length; i++){
 			if((ent[i].doc == doc) && (ent[i].cssText == cssStr)){
 				idx = i; node = ent[i].nodeRef;
@@ -103,12 +102,12 @@ dojo.style.insertCssFile = function(URI, doc, checkDuplicates){
 				}
 			}
 			// delete this entry
-			dojo.style._insertedCssFiles.shift(idx, 1);
+			dojo.html._insertedCssFiles.shift(idx, 1);
 		}
 	}
 
-	var style = dojo.style.insertCssText(cssStr);
-	dojo.style._insertedCssFiles.push({'doc': doc, 'cssText': cssStr, 'nodeRef': style});
+	var style = dojo.html.insertCssText(cssStr);
+	dojo.html._insertedCssFiles.push({'doc': doc, 'cssText': cssStr, 'nodeRef': style});
 
 	// insert custom attribute ex dbgHref="../foo.css" usefull when debugging in DOM inspectors, no?
 	if(style && djConfig.isDebug){
@@ -118,11 +117,11 @@ dojo.style.insertCssFile = function(URI, doc, checkDuplicates){
 }
 
 // DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
-dojo.style.insertCssText = function(cssStr, doc, URI){
+dojo.html.insertCssText = function(cssStr, doc, URI){
 	if(!cssStr){ return; }
 	if(!doc){ doc = document; }
 	if(URI){// fix paths in cssStr
-		cssStr = dojo.style.fixPathsInCssText(cssStr, URI);
+		cssStr = dojo.html.fixPathsInCssText(cssStr, URI);
 	}
 	var style = doc.createElement("style");
 	style.setAttribute("type", "text/css");
@@ -148,7 +147,7 @@ dojo.style.insertCssText = function(cssStr, doc, URI){
 // usage: cssText comes from dojoroot/src/widget/templates/HtmlFoobar.css
 // 	it has .dojoFoo { background-image: url(images/bar.png);} 
 //	then uri should point to dojoroot/src/widget/templates/
-dojo.style.fixPathsInCssText = function(cssStr, URI){
+dojo.html.fixPathsInCssText = function(cssStr, URI){
 	if(!cssStr || !URI){ return; }
 	var match, str = "", url = "";
 	var regex = /url\(\s*([\t\s\w()\/.\\'"-:#=&?]*)\s*\)/;

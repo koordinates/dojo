@@ -143,25 +143,19 @@
 	font: menu;
 	color: WindowText;
 	margin: 0;
-}
-
-.dojoMenuBarItem2 span {
-	margin: 0;
-}
-
-.dojoMenuBarItem2Label {
 	position: relative;
 	vertical-align: middle;
 	z-index: 1;
 	padding: 3px 8px;
 }
 
-.dojoMenuBarItem2Label span {
+.dojoMenuBarItem2 span {
+	margin: 0;
 	position: relative;
 	z-index: 2;
 }
 
-.dojoMenuBarItem2Label span span {
+.dojoMenuBarItem2 span span {
 	position: absolute;
 	color: ThreeDHighlight;
 	display: none;
@@ -175,18 +169,16 @@
 	color: HighlightText;
 }
 
-.dojoMenuBarItem2Disabled .dojoMenuBarItem2Label span,
-.dojoMenuBarItem2Disabled .dojoMenuBarItem2Accel span {
+.dojoMenuBarItem2Disabled span {
 	color: ThreeDShadow;
 }
 
-.dojoMenuBarItem2Disabled .dojoMenuBarItem2Label span span,
-.dojoMenuBarItem2Disabled .dojoMenuBarItem2Accel span span {
+.dojoMenuBarItem2Disabled span span {
 	color: ThreeDHighlight;
 	display: block;
 }
 
-.dojoMenuBarItem2Hover .dojoMenuBarItem2Label span span,
-.dojoMenuBarItem2Hover .dojoMenuBarItem2Accel span span {
+.dojoMenuBarItem2Hover span span,
+.dojoMenuBarItem2Hover span span {
 	display: none;
 }
