@@ -206,34 +206,3 @@ dojo.html.isTag = function(node /* ... */) {
 	}
 	return "";
 }
-
-dojo.html._callExtrasDeprecated = function(inFunc, args) {
-	var module = "dojo.html.extras";
-	dojo.deprecated("dojo.html." + inFunc, "moved to " + module, "0.4");
-	dojo["require"](module); // weird syntax to fool list-profile-deps (build)
-	return dojo.html[inFunc].apply(dojo.html, args);
-}
-
-dojo.html.createNodesFromText = function() {
-	return dojo.html._callExtrasDeprecated('createNodesFromText', arguments);
-}
-
-dojo.html.gravity = function() {
-	return dojo.html._callExtrasDeprecated('gravity', arguments);
-}
-
-dojo.html.placeOnScreen = function() {
-	return dojo.html._callExtrasDeprecated('placeOnScreen', arguments);
-}
-
-dojo.html.placeOnScreenPoint = function() {
-	return dojo.html._callExtrasDeprecated('placeOnScreenPoint', arguments);
-}
-
-dojo.html.renderedTextContent = function() {
-	return dojo.html._callExtrasDeprecated('renderedTextContent', arguments);
-}
-
-dojo.html.BackgroundIframe = function() {
-	return dojo.html._callExtrasDeprecated('BackgroundIframe', arguments);
-}

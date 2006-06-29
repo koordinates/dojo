@@ -175,6 +175,10 @@ dojo.html.getBorderBox = function(node){
 	node = dojo.byId(node);
 	return { width: node.offsetWidth, height: node.offsetHeight };
 }
+dojo.html.getInner = function(node){
+	dojo.deprecated('dojo.html.getInner', 'in favor of dojo.html.getBorderBox', '0.5');
+	return dojo.html.getBorderBox(node);
+}
 
 dojo.html.getContentBox = function(node){
 	node = dojo.byId(node);
@@ -211,6 +215,10 @@ dojo.html.getMarginBox = function(node){
 	var margin = dojo.html.getMargin(node);
 	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
 }
+dojo.html.getOuter = function(node){
+	dojo.deprecated('dojo.html.getOuter', 'in favor of dojo.html.getMarginBox', '0.5');
+	return dojo.html.getMarginBox(node);
+}
 
 dojo.html.setMarginBox = function(node, args){
 	node = dojo.byId(node);
@@ -234,6 +242,10 @@ dojo.html.setMarginBox = function(node, args){
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
 	}
 	return ret;
+}
+dojo.html.setOuter = function(node, args){
+	dojo.deprecated('dojo.html.setOuter', 'in favor of dojo.html.setMarginBox', '0.5');
+	return dojo.html.setMarginBox(node, args);
 }
 
 // in: coordinate array [x,y,w,h] or dom node
