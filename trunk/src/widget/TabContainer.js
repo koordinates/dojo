@@ -251,10 +251,12 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 				tab.show();
 			}
 
-			tab.resizeTo(
-				dojo.style.getContentWidth(this.containerNode),
-				dojo.style.getContentHeight(this.containerNode)
-			);
+			if(this.doLayout){
+				tab.resizeTo(
+					dojo.style.getContentWidth(this.containerNode),
+					dojo.style.getContentHeight(this.containerNode)
+				);
+			}
 		}
 	},
 
