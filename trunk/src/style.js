@@ -324,11 +324,10 @@ dojo.require("dojo.lang.common");
 				}
 				do{
 					var n = node["offsetLeft"];
-					//FIXME: the submenu in popupmenu2 does not shown up
-					//correctly in opera. This is the workaround I can
-					//come up with. However I think there should be a better
-					//one
-					if(window.opera && n>0){
+					//FIXME: ugly hack to workaround the submenu in 
+					//popupmenu2 does not shown up correctly in opera. 
+					//Someone have a better workaround?
+					if(!window.opera || n>0){
 						ret.x += isNaN(n) ? 0 : n;
 					}
 					var m = node["offsetTop"];
