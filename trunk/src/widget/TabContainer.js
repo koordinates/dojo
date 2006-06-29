@@ -142,6 +142,8 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 	// Configure the content pane to take up all the space except for where the tab labels are
 	_doSizing: function(){
+		if(!this.doLayout){ return; }
+
 		// position the labels and the container node
 		var labelAlign=this.labelPosition.replace(/-h/,"");
 		var children = [
@@ -149,25 +151,17 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			{domNode: this.containerNode, layoutAlign: "client"}
 		];
 
-
-		if (this.doLayout) {
-			dojo.html.layout(this.domNode, children);
-		} 
+		dojo.html.layout(this.domNode, children);
 			
 		// size the current tab
 		// TODO: should have ptr to current tab rather than searching
 		var cw=dojo.style.getContentWidth(this.containerNode);
 		var ch=dojo.style.getContentHeight(this.containerNode);
 		dojo.lang.forEach(this.children, function(child){
-			//if (this.doLayout) {
-				if(child.selected){
-					child.resizeTo(cw, ch);
-				} 
-			//} else {
-			//	child.onResized();
-			//}
+			if(child.selected){
+				child.resizeTo(cw, ch);
+			}
 		});
-		
 	},
 
     removeChild: function(tab){
@@ -178,12 +172,6 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			var img = tab.div.lastChild.lastChild;
 			if(img){
 				dojo.html.removeClass(img, "dojoTabPaneTabClose");
-				/*
-				// FIXME: how was this supposed to be doing anything useful?
-				dojo.event.disconnect(img, "onclick", function(){ });
-				dojo.event.disconnect(img, "onmouseover", function(){ });
-				dojo.event.disconnect(img, "onmouseout", function(){ });
-				*/
 			}
 		}
 
