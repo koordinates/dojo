@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.Button");
 dojo.provide("dojo.widget.html.Button");
 
+dojo.require("dojo.dom");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
