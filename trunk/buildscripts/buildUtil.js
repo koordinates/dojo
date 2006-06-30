@@ -2,8 +2,8 @@ var buildUtil = {};
 buildUtil.getDependencyList = function(dependencies, hostenvType) {
 
 	djConfig = {
-		baseRelativePath: "../",
-		// isDebug: true
+		baseRelativePath: "../"
+		// ,isDebug: true
 	};
 	
 	if(!dependencies){
