@@ -13,15 +13,29 @@ dojo.require("dojo.xml.Parse");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.widget.Parse");
 
+// needed for programmatic creation
+dojo.require("dojo.widget.Button");
+
 // myns.js would usually belong in src/namespaces as dojo.namespaces.myns and would be loaded implicitly
 // by merely using myns: widgets.  This reference is put here so that we don't have to check the test into
 // the dojo src/ tree.
 dojo.require('tests.namespaces.myns');
+
+dojo.addOnLoad(function(){
+	var progWidget1 = dojo.byId("progWidget1"); 
+	dojo.widget.createWidget("Button", null, progWidget1);
+
+	var progWidget2 = dojo.byId("progWidget2"); 
+	dojo.widget.createWidget("dojo:Button", null, progWidget2);
+
+	var progWidget3 = dojo.byId("progWidget3"); 
+	dojo.widget.createWidget("myns:Check", null, progWidget3);
+});
 </script>
 
 </head>
 <body>
-<dojo:Checkbox dojoDomain="html"></dojo:Checkbox> Dojo checkbock with the default HTML domain
+<dojo:Checkbox dojoDomain="html"></dojo:Checkbox> Dojo checkbox with the default HTML domain
 <br/>------<br/>
 
 <div dojoType="Checkbox"></div> Dojo Checkbox using dojoType
@@ -31,6 +45,7 @@ dojo.require('tests.namespaces.myns');
 <br/>------<br/>
 
 <dojo:Button>MyButton</dojo:Button> Dojo Button using namespaces
+<p>Note: Tags with content currently do not work in IE</p>
 <br/>------<br/>
 
 <!--
@@ -44,6 +59,14 @@ dojo.require('tests.namespaces.myns');
 
 
 <div dojoType="myns:Check"></div> MyNs checkbox using dojoType
+<br/>------<br/>
+
+<button id="progWidget1">Click me!</button> Dojo button added programatically without any namespace
+<br/>------<br/>
+<button id="progWidget2">Click me!</button> Dojo button added programatically with dojo namespace specified
+<br/>------<br/>
+<div id="progWidget3">Click me!</div> MyNs checkbox added programatically
+<br/>------<br/>
 
 </body>
 </html>
