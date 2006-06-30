@@ -312,6 +312,9 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 			dojo.debug("dojo.widget.DomWidget.addChild() attempted on non-container widget");
 			return null;
 		}else{
+			if(insertIndex == undefined){
+				insertIndex = this.children.length;
+			}
 			this.addWidgetAsDirectChild(widget, overrideContainerNode, pos, ref, insertIndex);
 			this.registerChild(widget, insertIndex);
 		}
