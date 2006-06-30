@@ -220,9 +220,7 @@ dojo.widget.Parse = function(fragment){
 		namespace is the namespace of the widget.  Defaults to "dojo"
 	*/
 	this.createComponentFromScript = function(nodeRef, componentName, properties, namespace){
-		if(!namespace){
-			namespace = "dojo";
-		}
+		if(!namespace){ namespace = "dojo"; }
 		var ltn = namespace + ":" + componentName.toLowerCase();
 		if(dojo.widget.tags[ltn]){
 			properties.fastMixIn = true;			
@@ -251,28 +249,26 @@ dojo.widget.getParser = function(name){
 /**
  * Creates widget.
  *
- * @param name     The name of the widget to create
+ * @param name     The name of the widget to create with optional namespace prefix,
+ *                 e.g."ns:widget", namespace defaults to "dojo".
  * @param props    Key-Value pairs of properties of the widget
- * @param refNode  If the last argument is specified this node is used as
- *                 a reference for inserting this node into a DOM tree else
- *                 it becomes the domNode
+ * @param refNode  If the position argument is specified, this node is used as
+ *                 a reference for inserting this node into a DOM tree; else
+ *                 the widget becomes the domNode
  * @param position The position to insert this widget's node relative to the
  *                 refNode argument
- * @param namespace The namespace of the widget.  Defaults to "dojo"
  * @return The new Widget object
  */
 
-dojo.widget.createWidget = function(name, props, refNode, position, namespace /*optional*/){
-	if(!namespace){
-		namespace = "dojo";
-	}
+dojo.widget.createWidget = function(name, props, refNode, position){
+	var pos = name.indexOf(":");
+	var namespace = (pos > -1) ? name.substring(0,pos) : "dojo";
+	if (pos > -1) { name = name.substring(pos+1); }
 
 	function fromScript(placeKeeperNode, name, props, namespace){
-		if(!namespace){
-			namespace="dojo";
-		}
 		var lowerCaseName = name.toLowerCase();
 		var namespacedName = namespace+":" + lowerCaseName;
+		props.namespace = namespace;
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
