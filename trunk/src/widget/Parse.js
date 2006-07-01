@@ -281,12 +281,13 @@ dojo.widget.createWidget = function(name, props, refNode, position, namespace /*
 		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0]; 
 	}
 
-	function fromScript(placeKeeperNode, name, props){
+	function fromScript(placeKeeperNode, name, props, namespace){
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
 			fastMixIn: true
 		};
+		props.namespace = namespace;
 		return dojo.widget.getParser().createComponentFromScript(
 			placeKeeperNode, name, props, namespace);
 	}
