@@ -260,15 +260,28 @@ dojo.widget.getParser = function(name){
  * @return The new Widget object
  */
 
-dojo.widget.createWidget = function(name, props, refNode, position){
-	var pos = name.indexOf(":");
-	var namespace = (pos > -1) ? name.substring(0,pos) : "dojo";
-	if (pos > -1) { name = name.substring(pos+1); }
+dojo.widget.createWidget = function(name, props, refNode, position, namespace /*optional*/){
 
-	function fromScript(placeKeeperNode, name, props, namespace){
+	var isNode = false;
+	var isNameStr = (typeof name == "string");
+	if(isNameStr){
+		var pos = name.indexOf(":");
+		namespace = (pos > -1) ? name.substring(0,pos) : "dojo";
+		if(pos > -1){ name = name.substring(pos+1); }
 		var lowerCaseName = name.toLowerCase();
 		var namespacedName = namespace+":" + lowerCaseName;
-		props.namespace = namespace;
+		isNode = ( dojo.byId(name) && (!dojo.widget.tags[namespacedName]) ); 
+	}
+
+	if( (arguments.length == 1) && ((isNode)||(!isNameStr)) ){
+		// we got a DOM node 
+		var xp = new dojo.xml.Parse(); 
+		// FIXME: we should try to find the parent! 
+		var tn = (isNode) ? dojo.byId(name) : name; 
+		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0]; 
+	}
+
+	function fromScript(placeKeeperNode, name, props){
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
