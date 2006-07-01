@@ -59,8 +59,6 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	
 	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 	
-	dojo.hostenv.loadedUris.push("../src/namespace.js");
-	
 	if(dependencies["prefixes"]){
 		var tmp = dependencies.prefixes;
 		for(var x=0; x<tmp.length; x++){
