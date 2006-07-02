@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test (dynamic node creation)</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.profile");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	
+	dojo.addOnLoad(function(){
+		var depth = 0;
+		
+		function addChildren(title) {
+			//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
+			depth++;
+			
+			var children = [];
+			for (var i=1; i<=5; i++) {
+				var t = title+'.'+i;
+				var node = 	{title: t, tree: tree.widgetId};
+				
+				if (depth<3) {
+					node.children = addChildren(t);
+				}
+				
+				children.push(node);				
+			}
+			//dojo.debug("out "+nodeOrTree);
+			
+			depth--;
+			
+			return children;			
+		}	
+
+		dojo.profile.start("createController");
+		var controller = dojo.widget.createWidget("TreeBasicControllerV3");
+		dojo.profile.end("createController");
+		
+		dojo.profile.start("createTree");
+		var tree = dojo.widget.createWidget("TreeV3", {controller: controller.widgetId});	
+		dojo.profile.end("createTree");
+				
+		document.body.appendChild(tree.domNode);
+
+	
+		dojo.profile.start("prepareNodes");		
+		var nodes = addChildren('node', tree)
+		dojo.profile.end("prepareNodes");
+			
+		dojo.profile.start("addNodes");		
+		tree.setChildren(nodes)
+		dojo.profile.end("addNodes");
+		
+			
+		dojo.profile.dump(true);
+		
+	});
+
+</script>
+</head>
+<body>
+
+<h4>Test/profile fast nested nodes generation and adoptation</h4>
+
+
+</body>
+</html>
