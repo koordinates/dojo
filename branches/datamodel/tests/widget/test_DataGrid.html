@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<title>DataGrid tests</title>
+<link type="text/css" rel="stylesheet" href="templates/HtmlToolbar.css"/>
+<script type="text/javascript">
+	djConfig = {isDebug: true};
+	djConfig.debugAtAllCosts=true;  //BUG: Causes problem with Object supertype 
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+    dojo.require("dojo.widget.DataGrid");
+    dojo.require("dojo.widget.DataGridColumn");
+	dojo.require("dojo.data.DataProvider");
+	//dojo.require("dojo.data.js.ArrayDataProvider");
+   	dojo.hostenv.writeIncludes(); // this is a new line
+</script>
+</head>
+<body>
+
+<div dojoType="DataProvider" location="instance.xml" widgetId="tableData" type="dojo.data.xml.XMLDataProvider">  
+    <div dojoType="DerivedAttribute" path="/users/user/positions/position/@value" value="../@quantity * ../@currentPrice"></div>
+    <div dojoType="DerivedAttribute" path="/users/user/positions/position/@gains" value="../@quantity * (../@currentPrice - ../@pricePaid)"></div>
+</div>
+
+<div dojoType="DataProvider" type="dojo.data.js.ArrayDataProvider" location="instance.js" widgetId="jsTableData"></div>
+
+<p>Grid with all data columns (value and gains are calculated values):</p>
+
+<div dojoType="DataGrid" widgetId="Grid1" bindData="tableData" bindTo="/users/user[@selected = 'true']/positions/position" readonly="true" allowpaging="true" pagesize="5" navpos="3" allowpaging="true" showrowindex="true" showemptyrows="false" >
+	<div dojoType="DataGridColumn" name="Symbol" bindTo="@symbol" editable="false" sortable="true" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Current Price" bindTo="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Quantity" bindTo="@quantity" editable="true" sortable="true" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Price Paid" bindTo="@pricePaid" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Value" bindTo="@value" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+	<div dojoType="DataGridColumn" name="Gains" bindTo="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+</div>
+  
+<p>Grid test 2 Using same model.</p>
+
+<div dojoType="DataGrid" widgetId="Grid2" bindData="tableData" bindTo="/users/user[@selected = 'false']/positions/position" readonly="true" allowpaging="true" navpos="1" pagesize="5" allowpaging="true" showrowindex="true" >
+	<div dojoType="DataGridColumn" name="Symbol" bindTo="@symbol" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Current Price" bindTo="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Quantity" bindTo="@quantity" editable="true" alignment="center" width="-1" underline="false" ></div>
+</div>
+<p>Grid test 3 different selector.</p>
+<div dojoType="DataGrid" bindData="tableData" bindTo="/users/user/positions/position" readonly="true" allowpaging="false" pagesize="5"  showrowindex="false" stylename="tivoli" style="width:200px">
+	<div dojoType="DataGridColumn" name="Symbol" bindTo="@symbol" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Current Price" bindTo="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Quantity" bindTo="@quantity" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Price Paid" bindTo="@pricePaid" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Value" bindTo="@value" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+	<div dojoType="DataGridColumn" name="Gains" bindTo="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+</div>
+
+<p>Grid test 3b different selector.</p>
+
+<div dojoType="DataGrid" bindData="tableData" bindTo="/users/user/positions/position" readonly="true" allowpaging="false" pagesize="5" showrowindex="true" stylename="tivoli" style="width:200px">
+	<div dojoType="DataGridColumn" name="Symbol" bindTo="@symbol" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Current Price" bindTo="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Quantity" bindTo="@quantity" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Price Paid" bindTo="@pricePaid" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Value" bindTo="@value" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+	<div dojoType="DataGridColumn" name="Gains" bindTo="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+</div>
+
+<p>Grid test 4 javascript model.</p>
+
+<div dojoType="DataGrid" bindData="jsTableData" bindTo="" widgetId="jsGrid" readonly="true" allowpaging="false" navpos="1" pagesize="5" allowpaging="true" showrowindex="true" >
+	<div dojoType="DataGridColumn" name="Name" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Age" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="State" editable="true" alignment="center" width="-1" underline="false" ></div>
+</div>
+
+<p>Grid test 5 same javascript model.</p>
+
+<div dojoType="DataGrid" bindData="jsTableData" bindTo="" widgetId="jsGrid2" readonly="true" allowpaging="true" navpos="1" pagesize="5" allowpaging="true" showrowindex="false" showemptyrows="false" >
+	<div dojoType="DataGridColumn" name="Name" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="Age" editable="false" alignment="center" width="-1" underline="false" ></div>
+	<div dojoType="DataGridColumn" name="State" editable="true" alignment="center" width="-1" underline="false" ></div>
+</div>
+  
+</body>
+</html>

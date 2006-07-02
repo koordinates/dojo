@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<title>Databinding 101 - Single value'd control binding</title>
+<script type="text/javascript">
+	djConfig = {isDebug: true};
+//	djConfig.debugAtAllCosts=true;  //BUG: Causes problem with Object supertype 
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.data.meta.Class");
+	dojo.require("dojo.data.meta.Attribute");
+	dojo.require("dojo.data.meta.DerivedAttribute");
+	dojo.require("dojo.data.meta.Package");
+	dojo.require("dojo.data.meta.Reference");
+	dojo.require("dojo.data.meta.Factory");
+	dojo.require("dojo.data.js.DataObject");
+	dojo.require("dojo.data.DataProvider");
+	dojo.require("dojo.widget.FloatingPane");
+	dojo.require("dojo.widget.Select");
+   	dojo.hostenv.writeIncludes(); // this is a new line
+</script>
+<script language="JavaScript" type="text/javascript">
+		function createData() {
+			var portfolioMdlData = [
+			//PortfolioModel is contrived...it's the "extent"
+			["PortfolioModel",	[//Contains references to all model classes
+								["Root","Root",0,-1,0,0],	//REF
+								["Stock","Stock",0,-1,0,0],	//REF
+								["User","User",0,-1,0,0],	//REF
+								["Portfolio","Portfolio",0,-1,0,0],//REF
+								["Position","Position",0,-1,0,0]
+								]],
+			["Stock", 	[  // Class
+						["id","id",0],					// Attribute
+						["Symbol","string",0,0,1,1],	// Attribute
+						["Price","double",0,0,1,0],		// Attribute
+						["Volume","long",0,0,1,0],		// Attribute
+						["Change","double",0,0,1,0]		// Attribute
+						]],
+			["Position",[ // props
+						["id","id",0],				// Attribute
+						["RefNum","int",0,0,1,1],	// Attribute
+						["Symbol","string",0,0,1,0],// Attribute
+						["Price","double",0,0,1,0],	// Attribute
+						["Quantity","int",0,0,1,0],	// Attribute
+						["Usr","User",1,1,0,0],		// Reference 
+						["Port","Portfolio",1,1,0,0],// Reference 
+						["Stock","Stock",1,1,0,0]   // Reference 
+						]], 
+			["Portfolio",[
+						["id","id",0],				
+						["Name","string",0,0,1,1],	
+						["Usr","User",1,1,0,1],	//REF
+						["Positions","Position",0,-1,1,0]//REF
+						]],
+			["User",	[
+						["id","id",0],
+						["RefNum","int",0,0,1,1],
+						["Id","string",0,0,1,0],
+						["LastName","string",0,0,1,0],
+						["Portfolios","Portfolio",0,-1,1,0]//REF
+						]],
+			["Root",	[
+						["id","id",0],
+						["Name","string",0,0,1,0],
+						["Stocks","Stock",0,-1,1,0],
+						["Users","User",0,-1,1,0],			//REF
+						["PlaceHolderStock","Stock",1,1,1,0] //REF
+						]]];
+			var portfolioMdl = dojo.data.meta.Factory.fromArray(portfolioMdlData);
+			var RootClass = portfolioMdl[1];
+			var StockClass = portfolioMdl[2];
+			var UserClass = portfolioMdl[3];
+			var PortfolioClass = portfolioMdl[4];
+			var PositionClass = portfolioMdl[5];
+			var PortfolioModelClass = portfolioMdl[0];
+			var featureTest = RootClass.getStructuralFeature("Stocks");
+			dojo.debug("Creating object graph.");
+			var Root2 = dojo.data.js.DataObject.createDataObject(RootClass);
+			var Stock3 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock3,["Stock3","IBM",123.83,0,0]);
+			var Stock4 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock4,["Stock4","SUNW",5.61,0,0]);
+			var Stock5 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock5,["Stock5","MSFT",34.55,0,0]);
+			var Stock6 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock6,["Stock6","AMZN",43.35,0,0]);
+			var Stock7 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock7,["Stock7","YHOO",49.91,0,0]);
+			var User8 = dojo.data.js.DataObject.createDataObject(UserClass);
+			var Portfolio9 = dojo.data.js.DataObject.createDataObject(PortfolioClass);
+			var Position10 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position10,["Position10",2,"IBM",61.85,200],[User8,Portfolio9,Stock3],PositionClass);
+			var Position11 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position11,["Position11",3,"SUNW",12.65,133],[User8,Portfolio9,Stock4]);
+			var Position12 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position12,["Position12",4,"SUNW",1.95,400],[User8,Portfolio9,Stock4]);
+			var Position13 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position13,["Position13",5,"YHOO",12.41,175],[User8,Portfolio9,Stock7]);
+			var Position14 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position14,["Position14",6,"SUNW",2.55,100],[User8,Portfolio9,Stock4]);
+			var Position15 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position15,["Position15",7,"MSFT",48.12,250],[User8,Portfolio9,Stock5]);
+			var Position16 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position16,["Position16",8,"YHOO",10.21,300],[User8,Portfolio9,Stock7]);
+			var Position17 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position17,["Position17",9,"IBM",54.75,500],[User8,Portfolio9,Stock3]);
+			var Position18 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position18,["Position18",10,"AMZN",9.85,500],[User8,Portfolio9,Stock6]);
+			dojo.data.js.DataObject.initFromArray(Portfolio9,["Portfolio9","PJ portfolio 1"],[User8,[Position10,Position11,Position12,Position13,Position14,Position15,Position16,Position17,Position18]]);
+			dojo.data.js.DataObject.initFromArray(User8,["User8",1,"PJ","Pierre Jackson"],[Portfolio9]);
+			var User19 = dojo.data.js.DataObject.createDataObject(UserClass);
+			var Portfolio20 = dojo.data.js.DataObject.createDataObject(PortfolioClass);
+			var Position21 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position21,["Position21",11,"IBM",120.85,100],[User19,Portfolio20,Stock3]);
+			var Position22 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position22,["Position22",12,"MSFT",40.32,250],[User19,Portfolio20,Stock5]);
+			var Position23 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position23,["Position23",13,"YHOO",12.41,300],[User19,Portfolio20,Stock7]);
+			dojo.data.js.DataObject.initFromArray(Portfolio20,["Portfolio20","WW portfolio 1"],[User19,[Position21,Position22,Position23]]);
+			var Portfolio24 = dojo.data.js.DataObject.createDataObject(PortfolioClass);
+			var Position25 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position25,["Position25",21,"AMZN",8.15,250],[User19,Portfolio24,Stock6]);
+			dojo.data.js.DataObject.initFromArray(Portfolio24,["Portfolio24","WW portfolio 2"],[User19,[Position25]]);
+			dojo.data.js.DataObject.initFromArray(User19,["User19",5,"WW","William Wenders"],[[Portfolio20,Portfolio24]]);
+			var Stock26 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock26,["Stock26","",0.0,0,0]);
+			dojo.data.js.DataObject.initFromArray(Root2,["Root2","root"],[[ Stock3,Stock4,Stock5,Stock6,Stock7],[ User8,User19],Stock26]);
+			dojo.debug("Created object graph.");
+			return 
+		}
+</script>
+
+</head>
+<body>
+
+
+<p>
+This page provides tests for basic databinding capabilities.  Basic databinding scenarios include simple single-valued
+controls, and simple value/list controls (select, combo).
+</p>
+<p>
+The first set of tests use the dojo.js.DataProvider implementation, with a programmatically created dataset.
+</p>
+
+<select id="form1:select1" name="form1:select1" size="1"></select>
+<input dojoType="Select" value="this should never be seen - it is replaced!" dataUrl="comboBoxData.js" style="width: 300px;" name="state2" autocomplete="false"	onValueChanged="setVal3"></input>
+<form action=""></form>
+
+
+
+<div dojoType="FloatingPane" title="Position Details" constrainToContainer="true" iconSrc="images/check.gif" style="width: 300px; height: 200px; left: 200px;">
+	<div>Stock: <span id="form1:text7"></span> &nbsp; &nbsp; &nbsp; &nbsp;</div>
+	<div>Price: <input id="form1:text8" type="text" name="form1:text8" /> &nbsp; &nbsp; &nbsp; &nbsp; </div>
+	<input type="submit" value="Next&gt" name="form1:button1" id="form1:button1" onclick="showNextItem();" />
+</div>
+
+<script type="text/JavaScript" language="JavaScript">
+	function showNextItem(thisObj, thisEvent){
+		dojo.debug("Next...");
+	}
+	// Find the first user
+//	var user = findObjectByVBLPath("$#{portfolioData.users[0]}");
+	var user = dojo.data.findByPath("portfolioData.users[0]");
+	user = ;
+	// TODO: PropertyBinders must extend widget, so that they can be looked up easily via dojo.getWidgetById();
+	var propertyBinder1 = new dojo.data.js.PropertyBinder(User,'last',document.getElementById('form1:text1'),'value','onblur');
+	propertyBinder1.dataBind();
+	var propertyBinder2 = new dojo.data.js.PropertyBinder(User,'last',document.getElementById('form1:text2'),'value','onblur');
+	propertyBinder2.dataBind();
+
+	function mySelectOnHighligt(thisObj, thisEvent){
+		var widgetControllersToRefresh = 
+							   [dojo.widget.manager.getWidgetById('text1:controller'),
+							    dojo.widget.manager.getWidgetById('text2:controller'),
+							    dojo.widget.manager.getWidgetById('dataGrid1:controller'), 
+							    dojo.widget.manager.getWidgetById('graphDraw1:controller')];
+		selectAndActivateEventHandler(thisEvent, widgetControllersToRefresh);
+	}
+	var selectControl = new SelectControl("form1:select1");
+	selectControl.addHandler("onhighlight", "DropDownOnHighligt");
+	var selectController = new SelectController(selectControl, portfolioData, "users", "last");
+	selectController.bind();
+
+</script>  
+
+
+<p>
+This set of tests use the dojo.js.DataProvider implementation, with a programmatically created dataset.
+</p>
+<!-- This is a non-visual widget that provides access to some xml data -->
+<div dojoType="DataProvider" location="instance.xml" widgetId="tableData" type="dojo.data.xml.XMLDataProvider"></div>
+
+
+</body>
+</html>
