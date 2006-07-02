@@ -82,8 +82,20 @@ dojo.widget.TreeWithNode = {
 		
 		this.children = childrenArray;
 			
-		for(var i=0; i<childrenArray.length; i++) {
-			var child = childrenArray[i]
+		for(var i=0; i<this.children.length; i++) {
+			var child = this.children[i]
+			
+			if (!(child instanceof dojo.widget.Widget)) {
+				/*if (child instanceof Array) {
+					// arguments for createWidget
+					child = this.children[i] = dojo.widget.createWidget(child);
+				} else {
+					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child);					
+				}*/
+				dojo.debugShallow(child)
+				child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);					
+			}
+			
 			child.parent = this;
 			if (this.tree !== child.tree) {				
 				child.updateTree(this.tree);

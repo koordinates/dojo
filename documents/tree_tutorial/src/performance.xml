@@ -15,7 +15,7 @@
         In my tests 1000 nodes required 0.7-0.8 sec, growth is linear, depth does not matter, children
         are created with  <code>createSimple</code> and added to parent all at once with <code>setChildren</code>.                
     </para>
-    <para>Creation from markup or with standard createWidget/addChild routines is about 2 times slower,
+    <para>Creation from markup or with standard createWidget/addChild routines is  2-3 times slower,
         because these routines are generic.</para>
 
     <para>Memory footprint (IE,FF) is about 1M per 100 nodes</para>
