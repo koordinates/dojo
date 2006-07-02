@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>How-to</title>
+    
+    <section>
+        <title>Make tree unselectable</title>
+        <para>Sometimes people want tree nodes to be unselectable, sometimes selection is a good way to copy (part of) content from the node.</para>
+        <para>To make tree (or its elements) unselectable use dojo.html.disableSelection in nodeCreate and treeCreate hooks.
+            Apply disableSelection to every node you want to make unselectable.
+        </para>
+        
+    </section>
+    
+
+</section>
+

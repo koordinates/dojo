@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Dojo Tree Tutorial</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1a"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1"></a>Dojo Tree Tutorial</h2></div></div><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e4"></a>Introduction</h3></div></div></div><p>Tree is a generic thing, a "must have" of any widget collection. 
+        Unfortunately, javacript toolkit should be lightweight, so I couldn't take a Swing
+        tree component and simply copy it. Almost all components are optional and event-based,
+        feel free to hook on whatever you'd like.
+    </p><p>
+        Basic things are shown in tests, so you might want to check them first and copy-paste
+        exactly the things you need. The tutorial is meant to provide deeper understanding for those
+        who want to extend/modify tree behavior.
+     </p><p>
+        The tutorial has a few parts. First, the tree main components are explained, then...
+    </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e13"></a>Components</h3></div></div></div><div class="variablelist"><dl><dt><span class="term">Tree</span></dt><dd>Tree and TreeNode classes handle both data and view</dd><dt><span class="term">Controllers</span></dt><dd><div class="variablelist"><dl><dt><span class="term">TreeBasicController</span></dt><dd>Controller that provides all capabilities but no server calls</dd><dt><span class="term">TreeLoadingController</span></dt><dd>Added dynamic node loading from server</dd><dt><span class="term">TreeRPCController</span></dt><dd>All actions call server</dd></dl></div></dd><dt><span class="term">Selector</span></dt><dd>TreeSelector handles node selection. Currently, only single node can be selected</dd><dt><span class="term">Drag'n'Drop</span></dt><dd>TreeDragSource, TreeDropTarget and TreeDNDController are classes that
+                allow nodes to be dragged, to be dropped on and mechanism binding that together.
+                Sources are located under src/dnd folder, not among widgets. </dd><dt><span class="term">Context menu</span></dt><dd>TreeContextMenu inherits dojo context menu to provide a lightweight right-click
+                menu. There is a single menu object for all nodes, although it always knows its target</dd><dt><span class="term">Style &amp; icons</span></dt><dd>Tree.css and icons are located under src/widget/templates and provide basic style
+                used by default. 
+                </dd><dt><span class="term">Extensions</span></dt><dd>TreeControllerExtension contains additional functions for controller that you might need
+            </dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e67"></a>Tree &amp; TreeNodes</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e70"></a>Tree model</h4></div></div></div><p>Two classes handle the model: <code class="classname">Tree</code> is root node and
+    <code class="classname">TreeNode</code> is any  other node, linked by <span class="property">test</span><code class="methodname">parent</code>
+    and <code class="methodname">children[]</code> propertis.</p></div></div></div></body></html>

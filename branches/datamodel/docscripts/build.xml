@@ -1,0 +1,70 @@
+<project name="DocTools" default="build.all" basedir=".">
+	<description>
+        Project to document dojo library.
+    </description>
+	
+	<!-- Properties and global definitions -->
+	
+	<property environment="env" />
+
+	<property name="lib.dir" location="lib/" />
+	<property name="src.dir" location="src/" />
+	<property name="dojo.dir" location="../" />
+	<property name="build.dir" location="build" />
+	<property name="doc.dir" location="doc" />
+
+	<path id="class.path">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<pathelement location="${build.dir}" />
+	</path>
+	
+	<!-- Targets to be run -->
+
+	<target name="docs" description="Create Javadoc Documentation">
+		<javadoc destdir="${doc.dir}" author="true" use="true">
+			<fileset dir="${src.dir}" defaultexcludes="yes">
+				<include name="java/org/dojotoolkit/doc/**"/>
+			</fileset>
+			<fileset file="${src.dir}/test/org/dojotoolkit/doc/ParserTest.java"/>
+		</javadoc>
+	</target>
+
+	<target name="build.all" depends="clean,init,compile" />
+	
+	<target name="clean" description="Removes target directories">
+		<delete dir="${build.dir}" />
+	</target>
+	
+	<target name="init" depends="fetch-libs" description="Creates needed build directories, initialization">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="compile" description="">
+		<javac classpath="${class.path}" destdir="${build.dir}" srcdir="${src.dir}" />
+	</target>
+
+	<target name="run" depends="compile" description="Runs the doctools.">
+		<java classname="org.dojotoolkit.doc.JsToXml" 
+				classpathref="class.path" output="output.xml">
+			<arg value="../src/animation/Animation.js"/>
+		</java>
+	</target>
+	
+	<!-- Targets for fetching external libraries -->
+	
+	<macrodef name="get-lib">
+		<attribute name="project" />
+		<attribute name="version" />
+		<attribute name="dir" default="lib/" />
+		<attribute name="file" default="@{project}" />
+		<sequential>
+			<get dest="@{dir}/@{file}-@{version}.jar" src="http://www.ibiblio.org/maven/@{project}/jars/@{file}-@{version}.jar" usetimestamp="yes" verbose="yes" />
+		</sequential>
+	</macrodef>
+	
+	<target name="fetch-libs" description="Download dependencies">
+		<mkdir dir="${lib.dir}" />
+		<get-lib project="xerces" file="xercesImpl" version="2.7.1" />
+		<get-lib project="xalan" version="2.7.0" />
+	</target>
+</project>
