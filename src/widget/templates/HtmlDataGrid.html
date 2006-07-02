@@ -1,0 +1,37 @@
+<div class="datagrid">
+	<table dojoAttachPoint="tableElt" border="0" cellspacing="0" cellpadding="0" width="100%">
+		<thead>
+			<tr class="header" dojoAttachPoint="headerRowElt"></tr>
+		</thead>
+		
+		<tbody class="body" dojoAttachPoint="tableBodyElt"></tbody>
+	
+		<tfoot dojoAttachPoint="tableFootElt">
+			<TR class="footer">
+				<TD dojoAttachPoint="tableFootCellElt" >
+					<DIV dojoAttachPoint="toolbarElt" class="toolbar">
+						<ul>
+							<li class="disabled" dojoAttachPoint="goToStartElt">
+								<a dojoAttachEvent="onclick: firstPage"><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/start.gif"/></a>
+								<span><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/start_disabled.gif"/></span>
+							</li>
+							<li class="disabled" dojoAttachPoint="goToPreviousElt">
+								<a dojoAttachEvent="onclick: prevPage"><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/previous.gif"/></a>
+								<span><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/previous_disabled.gif"/></span>
+							</li>
+							<li dojoAttachPoint="goToNextElt">
+								<a dojoAttachEvent="onclick: nextPage"><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/next.gif"/></a>
+								<span><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/next_disabled.gif"/></span>
+							</li>
+							<li dojoAttachPoint="goToEndElt">
+								<a dojoAttachEvent="onclick: lastPage"><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/end.gif"/></a>
+								<span><img border="0" src="${dojoRoot}src/widget/templates/images/datagrid/end_disabled.gif"/></span>
+							</li>
+						</ul>
+						Page <SELECT dojoAttachPoint="currentPagesElt" name="page number"></SELECT> of <SPAN dojoAttachPoint="totalPagesElt"></SPAN>
+					</DIV>
+				</TD>
+			</TR>
+		</tfoot>
+	</table>
+</div>

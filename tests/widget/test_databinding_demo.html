@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta name="GENERATOR" content="IBM Software Development Platform">
+		<title>Databinding demo.html</title>
+	</head>
+	<body>
+		<!--  must be before the model(s) definition(s) -->
+		<form id="form1" method="post" action="/Tutorial/faces/Toto.jsp" class="form" enctype="application/x-www-form-urlencoded"></form>
+	
+		<script type="text/javascript">
+			var djConfig = {isDebug: true};
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.event.*");
+			dojo.require("dojo.widget.Datagrid");
+			dojo.require("dojo.widget.WebService");
+			dojo.require("dojo.widget.Select");
+			dojo.require("dojo.widget.GraphDraw");
+			dojo.require("dojo.data.meta.Class");
+			dojo.require("dojo.data.meta.Attribute");
+			dojo.require("dojo.data.meta.DerivedAttribute");
+			dojo.require("dojo.data.meta.Package");
+			dojo.require("dojo.data.meta.Reference");
+			dojo.require("dojo.data.js.DataObject");
+			dojo.hostenv.writeIncludes();
+		</script>
+	
+		<!-- Comet controls used
+		<?IMPORT namespace="jwl" implementation="toto_select.htc"> 
+		 -->
+		<!-- JWL JS libs used 
+		<script src="jsl/webservice/webservice.js" type="text/javascript"></script>
+		<script src="jsl/webservice/webserviceadapter.js" type="text/javascript"></script>
+		<script src="jsl/graphdraw/graphdrawcontrol.js" type="text/javascript"></script>
+		<script src="jsl/graphdraw/graphdrawadapter.js" type="text/javascript"></script>
+		<script src="jsl/datagrid/datagridcontrol.js" type="text/javascript"></script>
+		<script src="jsl/datagrid/datagridadapter.js" type="text/javascript"></script>
+		<script src="jsl/select/selectcontrol.js" type="text/javascript"></script>
+		<script src="jsl/select/selectadapter.js" type="text/javascript"></script>
+		<script src="jsl/OdysseyMessage_en.js" type="text/javascript"></script>
+		<script src="jsl/odcSessionControllerMessage_en.js"	type="text/javascript"></script>
+		<script src="jsl/hxclient_v2.js" type="text/javascript"></script>
+		<script src="jsl/jslUtil.js" type="text/javascript"></script>
+		<script src="jsl/logger.js" type="text/javascript"></script>
+		<script src="jsl/detectBrowser.js" type="text/javascript"></script>
+		<script src="jsl/converter/maskconverter.js" type="text/javascript"></script>
+		<script src="jsl/ODCRegistry.js" type="text/javascript"></script>
+		<script src="jsl/genericEventHandler.js" type="text/javascript"></script>
+		<script src="jsl/odcSessionController.js" type="text/javascript"></script>
+		<script src="jsl/progressbar.js" type="text/javascript"></script>
+		 -->
+		<!--  Includes for the JSDO classes 
+		<script src="jsl/eclass.js" type="text/javascript"></script>
+		<script src="jsl/ecreator.js" type="text/javascript"></script>
+		<script src="jsl/eobject.js" type="text/javascript"></script>
+		<script src="jsl/xmiHandler.js" type="text/javascript"></script>
+		<script src="jsl/binder.js" type="text/javascript"></script>
+		-->
+		<!-- Original JWL/SDO global constants.  
+		 TODO: Determine what these control
+		<script language="JavaScript" type="text/javascript">
+			var URL_REWRITER_PREFIX = ""; 
+			var URL_REWRITER_POSTFIX= "";
+			var ODCPORTAL=0; 
+			var PAGE_LOCALE = "en_US"; 
+			var ODC_SDO_SUPPORT="SDO"; 
+		</script>
+		-->
+
+		<script type="text/javascript"> 
+
+			// Creates a Porfolio schema.  Rather than creating this schema by hand, a remote data access service
+			// can be written that returns the schema information in JSON format (for example, from a database schema api).
+			function createSchema(){
+				// TODO: Convert to dojo.data.meta and dojo.data.js and encapsulate in a JSDO data provider
+				var metaFactory = new dojo.data.meta.Factory();
+			    var Root=new dojo.data.meta.Class("Root");
+			    var StockClass = new dojo.data.meta.Class("Stock");
+			    metaFactory.addAttributes(StockClass,
+			    						   [["symbol"    ,"string",0,1,1,1],
+			    							["price"     ,"float" ,0,1,1,0],
+			    							["change"    ,"float" ,0,1,1,0],
+			    							["volume"    ,"int"   ,0,1,1,0],
+			    							["percentage", "float",0,1,1,0]]);
+			
+			    var PositionClass = new dojo.data.meta.Class("Position");
+				// Note the three derived attributes (two are implemented directly as expressions, the last as a function call.
+			    metaFactory.addAttributes(PositionClass,
+			    						 [["refnum"		 ,"int",0,1,1,1],
+			                              ["quantity"    ,"int"   ,0,1,1,0],
+			                              ["pricePaid"   ,"float" ,0,1,1,0],
+			                              ["symbol"      ,"string",0,1,1,0],
+			                              ["currentPrice","float" ,1,"this.get('stock').get('price')"],
+			                              ["value"       ,"float" ,1,"this.get('quantity')*this.get('stock').get('price')"],
+			                              ["gains"       ,"float" ,1,"computeGains(this)"]]);
+			    metaFactory.addReferences(PositionClass,[["stock",StockClass,0,1,0,0]]);
+			
+			    var UserClass=new dojo.data.meta.Class("User");
+			    metaFactory.addAttributes(UserClass,
+			    					 [["refnum","int",0,1,1,1],
+			                          ["first" ,"string",0,1,1,0],
+			                          ["last"  ,"string",0,1,1,0]]);
+			    metaFactory.addReferences(UserClass, [["positions", PositionClass, 0, -1, 1, 0]]);
+			
+			    metaFactory.addReferences(Root,
+			    				[["users"    ,UserClass,0,-1,1,0],
+			                     ["stocks"   ,StockClass,0,-1,1,0],
+			                     ["tempStock",StockClass,0, 1,1,0]]);
+			    // TODO: Why is this necessary? Looks like additional model info coming from an XMI file
+			    return new dojo.data.format.XMILoader(Root, 'user', 'com/ibm/dynwdo4jsmediators/user/user_client.ecore');
+			 }
+		
+			// Computing gains is a function of a derived attribute in the model.  
+			// The "gains" derived attribute's value is calculated via this function, so the position parameter
+			// is the scope of the calculation.
+			function computeGains(/*Position*/ position){
+				return position.get("quantity")*(position.get('stock').get('price')-position.get("pricePaid"));
+			}
+			
+			//@summary Construct a data graph, using the provided schema.
+			//@param schema Describes the format of the data.
+			//This doesn't have to be done manually, and should actually be performed inside of a data provider implementation.
+			//The custom provider would take JSON-formatted input data and populates a data graph conformant with the schema.
+			//TODO: Implement custom provider that can load from JSON data
+			function populateData(schema){
+			    // Getting the meta classes that will be used to contruct data objects.
+			    var UserClass     = schema.getClass("User");
+			    var StockClass    = schema.getClass("Stock");
+			    var PositionClass = schema.getClass("Position");
+
+			    var dataFactory = dojo.meta.js.DataObject.getDatafactory(schema);
+			    var stocks = [dataFactory.create(StockClass,["IBM" ,"75.54","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["AMZN","35.54","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["DELL","40.25","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["GE"  ,"37.07","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["QQQQ","37.97","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["AAPL","39.94","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["EBAY","43.32","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["YHOO","39.54","0","0","0"],[]),
+			                  dataFactory.create(StockClass,["DNA" ,"81.17","0","0","0"],[])];
+			
+			    // Create the Positions
+			    var position = [dataFactory.create(PositionClass,["0","1000","82.34" ,"IBM" ],[findStock(stocks,"IBM" )]),
+			                dataFactory.create(PositionClass,["1","1600","112.43","IBM" ],[findStock(stocks,"IBM" )]),
+			                dataFactory.create(PositionClass,["2","1200","23.44" ,"AMZN"],[findStock(stocks,"AMZN")]),
+			                dataFactory.create(PositionClass,["3","800" ,"29.08" ,"AMZN"],[findStock(stocks,"AMZN")]),
+			                dataFactory.create(PositionClass,["4","250" ,"31.57" ,"DELL"],[findStock(stocks,"DELL")]),
+			                dataFactory.create(PositionClass,["5","1250","43.65" ,"GE"  ],[findStock(stocks,"GE"  )]),
+			                dataFactory.create(PositionClass,["6","100" ,"60.76" ,"QQQQ"],[findStock(stocks,"QQQQ")]),
+			                dataFactory.create(PositionClass,["7","175" ,"14.09" ,"AAPL"],[findStock(stocks,"AAPL")])];
+		
+			    // Create the User and passing the position array as an element in the Reference array parameter
+			    var user = dataFactory.create(UserClass,["1","Toto","Grabouk"],[position]);
+			
+			    // Attaching the User to the root object using add ALWAYS!!!! Even if this is not a multi-reference.
+			    stockData.add("users",user);
+			
+			    // Create the Positions
+			    position = [ dataFactory.create(PositionClass,["8" ,"1500","30.54","AMZN"],[findStock(stocks,"AMZN")]),
+				             dataFactory.create(PositionClass,[ "9","1000","29.08","EBAY"],[findStock(stocks,"EBAY")]),
+				             dataFactory.create(PositionClass,["10","750" ,"29.57","YHOO"],[findStock(stocks,"YHOO")]),
+				             dataFactory.create(PositionClass,["11","800" ,"39.71","DNA" ],[findStock(stocks,"DNA" )]),
+				             dataFactory.create(PositionClass,["12","500" ,"28.76","QQQQ"],[findStock(stocks,"QQQQ")]),
+				             dataFactory.create(PositionClass,["13","175" ,"27.09","AAPL"],[findStock(stocks,"AAPL")])];
+			    // Create the User and passing the position array as an element in the Reference array parameter
+			    user = dataFactory.create(UserClass,["2","Titi","Velazky"],[position]);
+			    stockData.add("users", user);
+			    stockData.add("stocks", stocks);
+			    stockData.add("tempStock", stocks[0]);
+			    return stockData;
+			}
+	
+			// Helper function for finding a stock by its symbol.
+			function findStock(stocks,symbol){
+			    for (var i=0;i<stocks.length;++i){
+					if(stocks[i].get("symbol") == symbol){
+			        	return stocks[i];
+			        }
+			    }
+			    return null;
+			}
+	
+			var portfolioSchema = createSchema();
+			var portfolioData = populateData(portfolioSchema);
+			//TODO: Need a way of registering and looking up model data. How about as a non-visual widget?
+			//This would allow us to use dojo.getWidgetById() to obtain the model data later.
+			//Registry.addDataGraph('portfolioData.user', 'MyModel_user', portfolioData, 'form1');
+		</script>
+	
+		<select id="form1:select1" name="form1:select1" size="1"></select>
+		
+		<script type="text/javascript">
+			function mySelectOnHighligt(thisObj, thisEvent){
+				var widgetControllersToRefresh = 
+									   [dojo.widget.manager.getWidgetById('text1:controller'),
+									    dojo.widget.manager.getWidgetById('text2:controller'),
+									    dojo.widget.manager.getWidgetById('dataGrid1:controller'), 
+									    dojo.widget.manager.getWidgetById('graphDraw1:controller')];
+				selectAndActivateEventHandler(thisEvent, widgetControllersToRefresh);
+			}
+			var selectControl = new SelectControl("form1:select1");
+			selectControl.addHandler("onhighlight", "DropDownOnHighligt");
+			var selectController = new SelectController(selectControl, portfolioData, "users", "last");
+			selectController.bind();
+
+		</script>
+	
+		<input id="form1:text1" type="text" name="form1:text1" />
+		<input id="form1:text2" type="text" name="form1:text2" />
+		<input type="submit" value="Submit" name="form1:button1" id="form1:button1" class="commandExButton" onclick="myFormOnClick();" />
+	
+		<!-- Todo: implement path expression binding for dojo select widget (requires a controller) -->
+		<dojo:select id="form1:select0" size="1" onHighlight="mySelectOnHighligt" binding="#{portfolioData.stocks.symbol}">
+		</dojo:select>
+	
+		<script type="text/JavaScript" language="JavaScript">
+			function myFormOnClick(thisObj, thisEvent){
+				// TODO: What does ODCRegistry.saveAllToForm() do?
+				ODCRegistry.saveAllToForm(thisObj);
+			}
+			// TODO: Need JSDO find by path capability
+			// Find the first user
+			var user = findObjectByVBL("#{portfolioData.users[0]}");
+			// TODO: PropertyBinders must extend widget, so that they can be looked up easily via dojo.getWidgetById();
+			var propertyBinder1 = new PropertyBinder(User,'last',document.getElementById('form1:text1'),'value','onblur');
+			propertyBinder1.dataBind();
+			var propertyBinder2 = new PropertyBinder(User,'last',document.getElementById('form1:text2'),'value','onblur');
+			propertyBinder2.dataBind();
+		</script>
+	
+		<br />
+		<br />
+		// TODO: Convert to dojo:datagrid 
+		<span id="dataGridControl"><!-- datagrid attaches here --></span>
+	
+		<script type="text/javascript">
+			function dataGridOnHighlight(thisObj, thisEvent){
+				// TODO: Access the controllers (previously "adapters") via the dojo widget manager.
+				controllers = [dojo.widget.manager.getWidgetById('text7'),
+							   dojo.widget.manager.getWidgetById('text8')];
+				selectAndActivateEventHandler(thisEvent, controllers, "stock");
+			}
+			
+			// TODO: Convert to dojo:datagrid 
+			// Create and configure the Datagrid control (replacing the contents of the dataGrid span
+			var dataGrid = new DataGrid(document.getElementById("dataGridControl"),["Symbol", "Current Price", "Quantity", "Price Paid", "Value", "Gains"],URL_REWRITER_PREFIX);
+			// TODO: Implement number converter
+			dataGrid.columns = 
+						   [["symbol" ,[true ,"center",-1,false],null], 
+			                ["currentPrice",[true ,"center",-1,false],new dojo.converters.NumberConverter("strict:1","pattern:$#,##0.00","locale:,.%?-$")],
+			                ["quantity"    ,[false,"center",-1,false],null], 
+			                ["pricePaid"   ,[true ,"center",-1,false],new dojo.converters.NumberConverter("strict:1","pattern:$#,##0.00","locale:,.%?-$")],
+			                ["value"       ,[true ,"center",-1,false],new dojo.converters.NumberConverter("strict:1","pattern:$#,##0.00","locale:,.%?-$")],
+			                ["gains"       ,[true ,"center",-1,false],new dojo.converters.NumberConverter("strict:1","pattern:$#,##0.00","locale:,.%?-$")]
+			               ];
+			dataGrid.readOnly       = true ;
+			dataGrid.allowPaging    = true ;
+			dataGrid.pageSize       = 5    ;
+			dataGrid.navBarPosition = 0    ;
+			dataGrid.showRowIndex   = false;
+			dataGrid.addHandler("onHighlight", "dataGridOnHighlight");
+			
+			// Create the controller for the DataGrid
+			var dataGridController = new DatagridController(dataGrid);
+
+			// TODO: Implement find by path expression (JSF's VBL expression language is used in this example)
+			// TODO: XML provider uses an xpath to locate the parent data object, and @ as the propertyName on the object
+			// parentDataObject is the the object containing the rows.
+			dataGridController.parentDataObject = dojo.data.findDataObjectByPath("vbl:#{portfolioData.users[0]}");
+			// propertyName is the the name of the collection within the parent object that containins the rows.
+			dataGridController.propertyName = "positions";
+			
+			// Bind and show the Datagrid
+			dataGridController.bind();
+			dataGrid.show();
+		</script>
+		
+		<div style="position: absolute; top:0px;left:0px; width:0px; height:0px; overflow:hidden" id="graphDraw1_AccessibleText"></div>
+	
+		<center>
+			<dojo:graphdraw id=graphDraw1 width="100%" height="500" align="center"></dojo:graphdraw>
+			<!-- 
+			TODO: Encapsulate this in the graphdraw widget
+				TODO: Implement GraphDrawControl, or rework to use the dojo graph. 
+			    The JWL graph control uses Flash, so it is more portable, but has the downside of being a blackbox 
+				that is a fixed size.  The dojo Graph widget requires native SVG support in the browser (currenltly 
+				this means only FF1.5 would work here, but it has the benefit of being integrated closely with other dom
+				widgets and can be resized dynamically.
+
+			<object id="graphDraw1"
+				classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+				codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0"
+				width="100%" height="500" align="CENTER">
+				<param name="movie" value="jsl/graphdraw/emfChart2.swf" />
+				<embed src="jsl/graphdraw/emfChart2.swf" menu="false" quality="high"
+					bgcolor="#FFFFFF" width="600" height="400" swliveconnect="true"
+					name="graphDraw1" type="application/x-shockwave-flash"
+					pluginspage="http://www.macromedia.com/go/getflashplayer" />
+			</object>
+			 -->
+		</center>
+		
+		<script type="text/javascript">
+			var graphControl = new dojo.data.widget.GraphDrawControl();
+			graphControl.chartObj = window.document.graphDraw1;
+			graphControl.dataSeriesNames = new Array("Value","Gains");
+			graphControl.chartTitle = "Stock List View";
+			graphControl.xAxisTitle = "stocks";
+			graphControl.yAxisTitle = "dollars";
+			graphControl.showLegend = true;
+			graphControl.showLabel = false;
+			graphControl.showPie = true;
+			graphControl.showBar = true;
+			graphControl.showLine = false;
+			graphControl.defaultChartType = "Bar";
+			graphControl.splitYAxis = false;
+			graphControl.showHorizontalLinesBar = false;
+			graphControl.showHorizontalLinesLine = false;
+			graphControl.showVerticalLinesLine = false;
+			graphControl.styleClass = "graphDraw";
+			graphControl.lblPie = chartdraw_lblPie;
+			graphControl.lblBar = chartdraw_lblBar;
+			graphControl.lblLine = chartdraw_lblLine;
+			graphControl.tooltipShare = chartdraw_tooltipShare;
+			graphControl.tooltipSeries = chartdraw_tooltipSeries;
+			graphControl.tooltipLabel = chartdraw_tooltipLabel;
+			graphControl.tooltipValue = chartdraw_tooltipValue;
+			graphControl.msgPieChartError = chartdraw_msgPieChartError;
+			graphControl.lblShowAll = chartdraw_lblShowAll;
+			
+			var graphController = new GraphDrawController(graphControl);
+	
+			//TODO: implement finding an object using a path expression...
+			
+			graphController.parentDataObject = dojo.data.findObjectByPath("vbl:#{portfolioData.users[0]}");
+			graphController.propertyName = "positions";
+			graphController.labelAttributeName = "symbol";
+			graphController.dataAttributeNames = ["value","gains"];
+			graphController.grouped = true;
+			graphController.groupOperations = ["SUM","SUM"];
+			graphController.labelFormat = "STRING";
+			graphController.labelConverter = "";
+			graphController.dataFormat  = "NUMBER";
+			//TODO: Port hx_c.NumberConverter to dojo
+			graphController.dataConverter = new dojo.converters.NumberConverter("strict:1","pattern:$#,##0.00","locale:,.%?-$");
+			graphController.yAxisDivisions = 10;
+			graphController.accessibleTextContainer = document.getElementById("graphDraw1_AccessibleText");
+			// Bind the graph to the data
+			graphController.bind();
+			graphControl.show();
+		</script>
+	
+		<!-- This should not be required when the dojo webservice widget using dojo.io.bind is implemented.	
+		  <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+			    codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0"
+			    width="10" height="10" id="wscomp" align="middle">
+			<param name="allowScriptAccess" value="sameDomain" />
+			<param name="movie"	value="/Tutorial/.jsl/jsl/webservice/wssample_ascript.swf">
+			<param name="quality" value="high" />
+			<param name="bgcolor" value="#ffffff" />
+			<embed src="/Tutorial/.jsl/jsl/webservice/wssample_ascript.swf"
+				quality="high" bgcolor="#ffffff" width="10" height="10" name="wscomp"
+				align="middle" allowscriptaccess="sameDomain"
+				type="application/x-shockwave-flash"
+				pluginspage="http://www.macromedia.com/go/getflashplayer" />
+		  </object>
+		-->
+		<script type="text/javascript">
+			//TODO: Create web service control to encapsulate dojo.io.bind...
+			//TODO: For now, we can do this programmatically by converting to dojo.io.bind calls.
+			var webServiceControl = new WebServiceControl(window.document.wscomp);
+			var webServiceController = new WebServiceController(webServiceControl, 
+			                               'webServiceCallback',
+			                               'http://localhost:9080/Tutorial/services/StockWebService/wsdl/StockWebService.wsdl',
+			                               'StockWebService',
+			                               'getQuote');
+			webServiceController.setupParams([[portfolioData.__id__,'tempStock',portfolioData,'null','null','false']],
+			                			  	 [[portfolioData.__id__,'stocks',portfolioData,'null','null']]);
+	
+			// Invoked when the web service results are available.
+			function webServiceCallback(){
+				//TODO: The web service adapter apparently creates a JS proxy object that implements the result handler function.
+				//its not clear how the existing client data is refreshed from this example.
+				webServiceController.resultHandler();   
+			}
+		</script>
+			
+		<br>
+		Stock: <span id="form1:text7"></span> &nbsp; &nbsp; &nbsp; &nbsp;
+		Price: <input id="form1:text8" type="text" name="form1:text8" /> &nbsp; &nbsp; &nbsp; &nbsp;
+		<input type="submit" value="Update" name="form1:button1" id="form1:button1" onclick="return updateControls();" />
+	
+		<script type="text/javascript">
+			var tempStock = portfolioData.get("tempStock")[0];
+			var propertyBinder7 = new PropertyBinder(tempStock,'symbol',document.getElementById('form1:text7'),'innerHTML','null');
+			propertyBinder7.dataBind();
+			
+			var text8 = document.getElementById('form1:text8');
+			var propertyBinder8 = new PropertyBinder(tempStock,'price', text8, 'value', 'onblur');
+			propertyBinder8.dataBind();
+			
+			function updateControls(){
+				//TODO: Implement ability to get control adapters for a set of widgets
+				var controllersToUpdate = [dojo.widget.manager.getWidgetById('dataGrid1:controller'),
+										   dojo.widget.manager.getWidgetById('graphDraw1:controller')];
+				for (var i = 0; i < controllersToUpdate.length; ++i){
+					 controllersToUpdate[i].bind();
+					 controllersToUpdate[i].refresh();
+				}
+				return false;
+			}
+		</script>
+	
+		<form action=""></form>
+	
+		</dojo:select>
+
+	</body>
+</html>

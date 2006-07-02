@@ -1,0 +1,46 @@
+[
+			["PortfolioModel",	[// This is a Class, not a package, and has named references to each class in the model
+								["Root","Root",0,-1,0,0],
+								["Stock","Stock",0,-1,0,0],
+								["User","User",0,-1,0,0],	
+								["Portfolio","Portfolio",0,-1,0,0],
+								["Position","Position",0,-1,0,0]
+								]],
+			["Stock", 	[  
+						["id","id",0],				
+						["Symbol","string",0,0,1,1],
+						["Price","double",0,0,1,0],	
+						["Volume","long",0,0,1,0],	
+						["Change","double",0,0,1,0]	
+						]],
+			["Position",[
+						["id","id",0],				
+						["RefNum","int",0,0,1,1],	
+						["Symbol","string",0,0,1,0],
+						["Price","double",0,0,1,0],	
+						["Quantity","int",0,0,1,0],	
+						["Usr","User",1,1,0,0],			 
+						["Port","Portfolio",1,1,0,0],	
+						["Stock","Stock",1,1,0,0]  		
+						]], 
+			["Portfolio",[
+						["id","id",0],				
+						["Name","string",0,0,1,1],	
+						["Usr","User",1,1,0,1],	
+						["Positions","Position",0,-1,1,0]
+						]],
+			["User",	[
+						["id","id",0],
+						["RefNum","int",0,0,1,1],
+						["Id","string",0,0,1,0],
+						["LastName","string",0,0,1,0],
+						["Portfolios","Portfolio",0,-1,1,0]
+						]],
+			["Root",	[
+						["id","id",0],
+						["Name","string",0,0,1,0],
+						["Stocks","Stock",0,-1,1,0],
+						["Users","User",0,-1,1,0],			
+						["PlaceHolderStock","Stock",1,1,1,0]
+						]]
+]

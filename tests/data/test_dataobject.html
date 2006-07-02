@@ -1,0 +1,595 @@
+<html>
+	<head>
+		<title>dojo.data Tests</title>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+			djConfig.debugAtAllCosts=true;  //BUG: Causes problem with Object supertype 
+		</script>
+		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../jsunit/css/jsUnitStyle.css">
+		<script language="JavaScript" type="text/javascript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.data.meta.Class");
+			dojo.require("dojo.data.meta.Attribute");
+			dojo.require("dojo.data.meta.DerivedAttribute");
+			dojo.require("dojo.data.meta.Package");
+			dojo.require("dojo.data.meta.Reference");
+			dojo.require("dojo.data.meta.Factory");
+			dojo.require("dojo.data.js.DataObject");
+			dojo.hostenv.writeIncludes();
+		</script>
+		
+		<script language="JavaScript" type="text/javascript">
+			
+		// JsUnit Assertion Tests
+
+		function testCreateDataObject() {
+			var portfolioMdlData = [
+			//PortfolioModel is contrived...it's the "extent"
+			["PortfolioModel",	[//Contains references to all model classes
+								["Root","Root",0,-1,0,0],	//REF
+								["Stock","Stock",0,-1,0,0],	//REF
+								["User","User",0,-1,0,0],	//REF
+								["Portfolio","Portfolio",0,-1,0,0],//REF
+								["Position","Position",0,-1,0,0]
+								]],
+			["Stock", 	[  // Class
+						["id","id",0],					// Attribute
+						["Symbol","string",0,0,1,1],	// Attribute
+						["Price","double",0,0,1,0],		// Attribute
+						["Volume","long",0,0,1,0],		// Attribute
+						["Change","double",0,0,1,0]		// Attribute
+						]],
+			["Position",[ // props
+						["id","id",0],				// Attribute
+						["RefNum","int",0,0,1,1],	// Attribute
+						["Symbol","string",0,0,1,0],// Attribute
+						["Price","double",0,0,1,0],	// Attribute
+						["Quantity","int",0,0,1,0],	// Attribute
+						["Usr","User",1,1,0,0],		// Reference 
+						["Port","Portfolio",1,1,0,0],// Reference 
+						["Stock","Stock",1,1,0,0]   // Reference 
+						]], 
+			["Portfolio",[
+						["id","id",0],				
+						["Name","string",0,0,1,1],	
+						["Usr","User",1,1,0,1],	//REF
+						["Positions","Position",0,-1,1,0]//REF
+						]],
+			["User",	[
+						["id","id",0],
+						["RefNum","int",0,0,1,1],
+						["Id","string",0,0,1,0],
+						["LastName","string",0,0,1,0],
+						["Portfolios","Portfolio",0,-1,1,0]//REF
+						]],
+			["Root",	[
+						["id","id",0],
+						["Name","string",0,0,1,0],
+						["Stocks","Stock",0,-1,1,0],
+						["Users","User",0,-1,1,0],			//REF
+						["PlaceHolderStock","Stock",1,1,1,0] //REF
+						]]];
+			var portfolioMdl = dojo.data.meta.Factory.fromArray(portfolioMdlData,"portfolio");
+			dojo.debug(portfolioMdl.toString());
+			// TODO: load initial data from JSON stream...
+
+			var RootClass = portfolioMdl.getClass("Root");
+			var StockClass = portfolioMdl.getClass("Stock");
+			var UserClass = portfolioMdl.getClass("User");
+			var PortfolioClass = portfolioMdl.getClass("Portfolio");
+			var PositionClass = portfolioMdl.getClass("Position");
+			var PortfolioModelClass = portfolioMdl.getClass("PortfolioModel");
+			
+			var featureTest = RootClass.getStructuralFeature("Stocks");
+
+/*
+			// TODO: Just a thought... maybe we should have a way to 
+			// realize dojo.data.meta.Package's as dojo packages? Similar
+			// to how JSON-RPC creates service proxies...
+			// For example, rather than declaring vars for the classes as above, we could
+			// have the loader produce the following in dojo packages...
+			// 	mypackage.Root
+			// 	mypackage.Stock
+			//	mypackage.User
+			//	mypackage.Portfolio
+			//	mypackage.Position
+			//	mypackage.Portfolio
+			// Then, to creating a strongly typed data object becomes...
+			// var newStock = new dojo.data.js.DataObject(mypackage.Stock);
+		function testLoadData(){
+*/
+			dojo.debug("Creating object graph.");
+			var Root2 = dojo.data.js.DataObject.createDataObject(RootClass);
+			var Stock3 = dojo.data.js.DataObject.createDataObject(StockClass);
+//Works to here. Problem with get/set on data object.  Also, could get name collision with existing
+//data object get/set methods.  
+			dojo.data.js.DataObject.initFromArray(Stock3,["Stock3","IBM",123.83,0,0]);
+			var Stock4 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock4,["Stock4","SUNW",5.61,0,0]);
+			var Stock5 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock5,["Stock5","MSFT",34.55,0,0]);
+			var Stock6 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock6,["Stock6","AMZN",43.35,0,0]);
+			var Stock7 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock7,["Stock7","YHOO",49.91,0,0]);
+			var User8 = dojo.data.js.DataObject.createDataObject(UserClass);
+			var Portfolio9 = dojo.data.js.DataObject.createDataObject(PortfolioClass);
+			var Position10 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position10,["Position10",2,"IBM",61.85,200],[User8,Portfolio9,Stock3],PositionClass);
+			var Position11 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position11,["Position11",3,"SUNW",12.65,133],[User8,Portfolio9,Stock4]);
+			var Position12 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position12,["Position12",4,"SUNW",1.95,400],[User8,Portfolio9,Stock4]);
+			var Position13 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position13,["Position13",5,"YHOO",12.41,175],[User8,Portfolio9,Stock7]);
+			var Position14 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position14,["Position14",6,"SUNW",2.55,100],[User8,Portfolio9,Stock4]);
+			var Position15 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position15,["Position15",7,"MSFT",48.12,250],[User8,Portfolio9,Stock5]);
+			var Position16 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position16,["Position16",8,"YHOO",10.21,300],[User8,Portfolio9,Stock7]);
+			var Position17 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position17,["Position17",9,"IBM",54.75,500],[User8,Portfolio9,Stock3]);
+			var Position18 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position18,["Position18",10,"AMZN",9.85,500],[User8,Portfolio9,Stock6]);
+			dojo.data.js.DataObject.initFromArray(Portfolio9,["Portfolio9","PJ portfolio 1"],[User8,[Position10,Position11,Position12,Position13,Position14,Position15,Position16,Position17,Position18]]);
+			dojo.data.js.DataObject.initFromArray(User8,["User8",1,"PJ","Pierre Jackson"],[Portfolio9]);
+			var User19 = dojo.data.js.DataObject.createDataObject(UserClass);
+			var Portfolio20 = dojo.data.js.DataObject.createDataObject(PortfolioClass);
+			var Position21 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position21,["Position21",11,"IBM",120.85,100],[User19,Portfolio20,Stock3]);
+			var Position22 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position22,["Position22",12,"MSFT",40.32,250],[User19,Portfolio20,Stock5]);
+			var Position23 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position23,["Position23",13,"YHOO",12.41,300],[User19,Portfolio20,Stock7]);
+			dojo.data.js.DataObject.initFromArray(Portfolio20,["Portfolio20","WW portfolio 1"],[User19,[Position21,Position22,Position23]]);
+			var Portfolio24 = dojo.data.js.DataObject.createDataObject(PortfolioClass);
+			var Position25 = dojo.data.js.DataObject.createDataObject(PositionClass);
+			dojo.data.js.DataObject.initFromArray(Position25,["Position25",21,"AMZN",8.15,250],[User19,Portfolio24,Stock6]);
+			dojo.data.js.DataObject.initFromArray(Portfolio24,["Portfolio24","WW portfolio 2"],[User19,[Position25]]);
+			dojo.data.js.DataObject.initFromArray(User19,["User19",5,"WW","William Wenders"],[[Portfolio20,Portfolio24]]);
+			var Stock26 = dojo.data.js.DataObject.createDataObject(StockClass);
+			dojo.data.js.DataObject.initFromArray(Stock26,["Stock26","",0.0,0,0]);
+			dojo.data.js.DataObject.initFromArray(Root2,["Root2","root"],[[ Stock3,Stock4,Stock5,Stock6,Stock7],[ User8,User19],Stock26]);
+			dojo.debug("Created object graph.");
+
+// TBD Find the root of the portfolio data graph, rather than using the Root var
+//			var root = dojo.data.js.findByPath("#{pc_Demo.root}"); 
+
+			// create and init a new stock data object (as a child member of the stocks 
+			// containment property of the existing root data object)
+			// Note: this creates a data object that is conformant to the type of the named reference
+			// TODO: Untyped add(name,childObj) case as alternative scenario (eg. name not exist, or name exists, with existing value
+			var newStock = Root2.createChild("Stocks"); 
+			newStock.set("Symbol", "BLAH");
+			newStock.set("Price", 23.5);
+			// TODO: Test setting member which is not in model
+			// In strong type case, throw exception
+			// In flexible type case, try to add structural feature dynamically for the attr
+			// Remove the stock
+			Root2.remove("Stocks", newStock); 
+			// Add it back
+			Root2.add("Stocks", newStock); 
+			// Print all stocks off of root using generic getters.
+			var stocks = Root2.get("Stocks"); 
+			var str = "";
+			for (var i = 0; i < stocks.length; ++i){
+				var s = stocks[i];
+				str+=" "+s.get("Symbol")+": "+s.get("Price")+"\n";
+			}
+			dojo.debug("Stock List obtained via generic getter:\n"+str);
+			// Print all stocks off of root using typed getters.
+			var stocks2 = Root2.get("Stocks"); 
+			var str2 = "";
+			for (var i = 0; i < stocks2.length; ++i){
+				var s = stocks2[i];
+				str2+=" "+s.getSymbol()+": "+s.getPrice()+"\n";
+			}
+			dojo.debug("Stock List obtained via typed getters:\n"+str);
+/*
+			// TODO: Signatures
+			var sig = newStock.getSignature(); 
+			var newStock2 = findDataObjectBySignature(root, sig);
+			dojo.debug("Signatures: \n\n"+sig+"\n\n"+newStock2.getSignature());
+			// Obtain the object's unique Id
+			var newStockId = newStock.id; 
+			var newStock3 = findDataObjectByUniqueId(dojo.data.pc_Demo_root,newStockId);
+			dojo.debug("Id's: "+newStockId+" / "+newStock3.id);
+			dojo.debug("NewStock: \n"+newStock.toStr() // Debugging
+				+"\n\nNewStock2:\n"+newStock2.toStr()
+				+"\n\nNewStock3:\n"+newStock3.toStr());
+		}		
+*/			
+		}
+		
+		function testController(){
+		/*
+		Controllers set up Binders between widgets and data (Note: In IBM JWL, these were referred to as Adapters, but to stay
+		consistent with dojo's existing controller pattern used in the Tree, we use the more traditional term.
+		Usage:
+		Widgets can provide the ability to automatically create their controllers.  
+	    To create a controller programmatically:
+		
+				// Create a tree controller (with params). Params are controller-implementation specific object
+				var params={dieWithWidget: true};
+				var controllerImpl = "TreeBasicController"
+				this.controller = dojo.widget.createWidget(controllerImpl,params);
+			
+   	    To create a controller declaratively (XML namespace variety):
+
+   	    	<dojo:controller id="control1.controller" type="TreeBasicController" dieWithWidget="true"></dojo:controller>
+
+   	    To create a controller declaratively (div variety):
+
+   	    	<div dojoType="Controller" id="control1.controller" type="TreeBasicController" dieWithWidget="true"></div>
+   	    	
+				
+		ISSUE: Tree controller's dieWithTree param should be generalized to dieWithWidget
+		ISSUE: Rather than using dojo.widget.createWidget and dojo.widget.byId it would be more clear if we had
+		similar implementation of factory/registry under dojo.widget.createController and dojo.widget.getControllerById
+		
+		Widgets can provide the ability to automatically create a default controller by specifying any value other than 
+		"off" as the controller property of the widget.  "off" means that the widget is not data bound.
+
+		To set the root data object for a control use the widget's controller. 
+		For a Tree, that is the data object that will be rendered as the root node of the Tree. 
+		For a DataGrid or a Graph, it's	the data object that contains the list property that will be rendered.
+
+			var controllerId = "tree1.controller";
+			var controller = dojo.widget.byId(controllerId);
+			controller.activateDataSet(dataObject);
+
+		ISSUE: Controllers will initially be implemented on top of the dojo widget system's id registry, so you can find
+		them by id.  To find the controller from a widget reference, use the controller property of the widget itself.
+
+			var widget = dojo.widget.getWidgetById(widgetId);
+			var controller = widget.controller;
+			
+		After a control has been constructed/initialized or data has changed, it needs to be refreshed.			
+
+			controller.refresh()
+
+		ISSUE: The refresh() protocol for Tree is the listenTree(this) method. We should adjust Tree 
+		to use the more generic refresh name.
+		*/
+		}
+
+		function testBinder(){
+		/*
+		In the controller section, we mentioned how Binders form two-way networks which connect properties of 
+		widgets to a data graph. In a pub-sub fashion, any change in a widget is reflected in the data graph, and any 
+		other widget bound to the same data graph is notified of a data change, so they can refresh.
+
+		A Binder's role is about connecting together the data element, and widget element, and the various properties
+		of each to trigger notification and data updates. Implementers of IPropertyBinder are the classes you'll use most often
+		for binding values.
+
+			PropertyBinder(dataObject,propertyname,widget,widgetProperty,widgetChangeEventName,callbackChangeEvent)
+
+		Usage: 
+		To connect an HTML <TEXTAREA> element with the id "textarea1" to the "text" property of some data object:
+
+			var b = new PropertyBinder(someDataObject,"text",dojo.byId("textarea1"),"innerHTML","onchange");
+
+		For a <textarea>, the property that contains the value of the control is "innerHTML", and the event triggered
+		when data is updated (when a user types in data), is "onchange". If you were connecting an <input> element,
+		you would have used "value" and "onblur". Once you have a binder, you will find several methods useful:
+
+			binder.fireValueChanged(name, valueInModel, index)
+
+		Remember, if you modify the data graph directly programmatically, you must make sure that the Binders for the controls you
+		want to update are properly invoked.
+		
+			binder.dataChanged() 
+			
+		dataUnbind is the method to remove all the binding information so that we will not cause memory leaks. This
+		works as garbage collection. So every time If the control needs to bind to a new set of data object, then before the
+		new binding, we need to clean up the garbage.
+
+			binder.dataUnbind() 
+
+		*/
+		}
+
+		function testRegistryDataAccess(){
+		/*
+		To obtain a data graph programmatically, use the dojo.data.getById(dataId) method to retrieve the root data object or data container
+		where dataID is either the first piece of information on a path (for example VBL) or an id designated by a user. 
+		The type of the object returned is specific to different kinds of dataproviders (for example DataObject or XMLDataSet).
+		*/
+		}
+
+		function testRegistryControllerAccess(){
+		/*
+		getClientAdapter(serverId,viewclientId)
+		Method to get the control adapter based on the key, where
+		serverId is the server side id of the control, viewclientId is JSF
+		view client ID, right now, this id is always null. This method
+		returns control adapter object.
+		*/
+		}
+
+		function testRegistryAdaptersAccess(){
+		/*
+		getClientAdapters(adapterArr)
+		Method to get the control adapters based on the key array,
+		where adapterArr is an array of key like [[serverId1,
+		clientviewId1], [serverId2, clientviewId2]...], which returns an
+		array of control adapter objects.
+		*/
+		}
+
+		function testRegistryWidgetAccess(){
+		/*
+		getClientControl(serverId,viewclientId)
+		Method to get the control based on the key, where serverId
+		is the server side id of the control , viewclientId is JSF view
+		client ID which is always null in WSAD512. This method returns
+		the control object
+		*/
+		}
+
+		function testRegistryClientElementAccess(){
+		/*
+		getClientElement(serverId,viewclientId) Method to get the html element object based on the key,
+		where serverId is the server side id of the control, viewclientId
+		is JSF view client ID which is always null in WSAD512,. This
+		method returns the html element object
+		*/
+		}
+
+		function testRegistryClientIdAccess(){
+		/*
+		getClientId(serverId,viewclientId)
+		Method to get the control client side id. where serverId is
+		the server side id of the control, viewclientId is JSF view client
+		ID which is always null in WSAD512,. This method returns the
+		client side id which is the id on the browser.
+		*/
+		}
+
+
+
+		/**
+		Use case: Creating item(s) in a datagrid.
+		Test create new data objects programmatically. You cannot just create a new instance of an Data Object just like that. 
+		Every data object must be created within a context, and	directly attached to a parent. 
+		Create and init follows this pattern:
+			dataObject.createDataObject(propertyName);
+			dataObject.set(propertyName, value);
+		*/
+		function testCreateAndInitDataObject(parent) {
+			// Create and attach a stocks object onto the root's "stocks" collection
+			var newStock = parent.createDataObject("stocks");
+			// Initialize the properties of the stock object
+			newStock.set("symbol", "BLAH");
+		}
+		/*
+		Use case: Deleting item(s) from datagrid.
+		Test deletion of an data object from a parent object. Delete follows this pattern:
+			dataObject.remove(propertyName,objectToBeRemoved);
+		*/
+		function testDeleteDataObjectFromParent(parent,stockToRemove) {
+			parent.remove("stocks", stockToRemove);
+		}
+		/*
+		Use case: Moving item(s) from one datagrid to another.
+		Test deletion of an data object from a parent object. Delete follows this pattern:
+			dataObject.add(propertyName,newObject);
+		*/
+		function testAddDataObjectToParent(parent,stockToAdd) {
+			parent.add("stocks", stockToAdd);
+		}
+
+		/*
+		Use case: Accessing property of an item.
+		Usage: To access a data object's properties, you need to use the following pattern:
+			dataObject.get(propertyName);
+		If the property is a list, a JavaScript array will be returned. If the property is 
+		another data object, that data object is returned. If the property is of a basic type, 
+		the value will be returned.
+		*/
+		function testPropertyAccess(parent) {
+			var stocks = parent.get("stocks");
+			var str = "";
+			for (var i=0;i<stocks.length;++i){
+				var s = stocks[i];
+				str+=s.get("symbol")+": "+s.get("currentPrice")+"\n";
+			}
+			dojo.debug(str);
+		}
+		/*
+			Each DataObject has a unique signature, a concatenation of all the values of its fields that have been
+			marked as primary. This signature is independent of any context and remains constant across HTTP calls, unless
+			of course the value of any of the primary fields has been changed. With the signature of a DataObject, we can
+			restore the UI state for a particular control, such as a tree node (closed or open), or a DataGrid row (selected or
+			not). With a signature, we can also fetch back the DataObject from a source.
+				dataObject.getSignature();
+				dojo.data.findDataObjectBySignature(dataObject, signature);
+			This test displays the signature of a DataObject. Then, retrieves the data object back from from a source using the signature:
+		*/
+		function testSignature(parent){
+			var newStock = parent.createDataObject("stocks");
+			// Initialize the properties of the stock object
+			newStock.set("symbol", "BLAH");
+			var sig = newStock.getSignature();
+			dojo.debug(sig);
+			var newStock2 = findDataObjectBySignature(root, sig);
+			dojo.debug(newStock2.getSignature());
+		}
+		
+		/*
+			Use case: A signature is a generic way to identify an object, but it's not the only one. When EObjects are created, they are
+			given a unique integer ID which is only valid for a single instance of a Data Model: this ID will rarely be the 
+			same across page invocations. These IDs are used by components to anchor themselves on particular objects.
+			Accessing a data object through its unique Id is faster than through its Signature, but it does not work across page
+			requests and the ID is only guaranteed to be unique inside a given data graph. 
+			
+			Usage: You'll use the following property and
+			method:
+				dataObject.id
+				findDataObjectById(root,id);
+			By convention, each data grapch is declared as a JavaScript variable:
+				dojo.data.{dataGraphName}+"_root"
+
+			Notes: With some vendors JSP tools, if you have a page Demo.jsp, the PageCode Bean will be	named pc_Demo. 
+			For a bean root, the full data graph name by default will be pc_Demo_root, that is, if you do not
+			override it of course. A JavaScript variable for the data graph will be declared with the
+			name:
+				dojo.data.pc_Demo_root
+			The unique Id of any data object is accessible, and if you know the data graph name, you can get the object back
+			later, and give that unique Id to components which require it.
+		*/
+		function testUniqueId(parent){
+			var newStockId = newStock.id;
+			dojo.debug(newStockId);
+			var newStock3 = findDataObjectById(dojo.data.pc_Demo_root.Root, newStockId);
+			dojo.debug(newStock3.id);
+		}
+
+		/*
+		Use case: Debugging data objects
+		Usage: Every DataObject has a way to print out its content and values. 
+		Use the following pattern:
+			dataObject.toStr();
+		*/
+		function testDumpObjectState(){
+		dojo.debug(newStock.toStr()+"\n\n"+ newStock2.toStr());
+
+		}
+		
+		function testGetRootObject(){
+			var Root = findDataObjectByVBL("#{pc_Demo.root}");
+		}
+
+		function init(){
+			testCreateDataObject();
+		}
+
+		function testRefreshStockBoundControls(){
+			var a = ODCRegistry.getClientAdapters( [ ['dataGrid1',null], ['graphDraw1',null] ] );
+			for (var i = 0; i < a.length; ++i){
+				a[i].bind();
+				a[i].refresh();
+			}
+		}
+
+		function testUpdateSourceStock(symbol, currentPrice){
+			var symbol = Stock.eGet("symbol");
+			var Root = findEObjectByVBL("#{pc_Demo.root}");
+			var StockList = Root.eGet("stocks");
+			for (var i = 0; i < StockList.length; ++i){
+				var S = StockList[i];
+				if (S.eGet('symbol') == symbol){
+					S.eSet('currentPrice', currentPrice);
+				}
+			}
+		}
+		
+		function testFindAndUpdateStock(){
+			var ClientId = thisObj.id.substring(thisObj.form.id.length+1);
+			var b = ODCRegistry.getClientAdapter(ClientId);
+			if (b != null){
+				UpdateSourceStock(b.EObject.eGet('symbol'), thisObj.value);
+				RefreshStockBoundControls();
+			}
+		}
+		
+		function testUpdatePositions(Stock){
+			var symbol = Stock.eGet("symbol");
+			var Root = findEObjectByVBL("#{pc_Demo.root}");
+			var UserList = Root.eGet("users");
+			for (var i = 0; i < UserList.length; ++i){
+				var Portfolios = UserList[i].eGet("portfolios");
+				for (var j = 0; j < Portfolios.length; ++j){
+					var Positions = Portfolios[j].eGet("positions");
+					for (var k = 0; k < Positions.length; ++k){
+						var Pos = Positions[k];
+						if (Pos.eGet("symbol") == symbol){
+							alert("found one matching position");
+							Pos.refresh();
+						}
+					}
+				}
+			}
+		}
+		function testSelectSet(anEvent){
+			testSelectAndSetControlHandler(anEvent,[["symbol", "symbol", "value", "onChange"],["price", "currentPrice", "value", "onChange"]]);
+		}
+		//[["symbol","symbol","value","onChange"],["price","currentPrice","value","onChange"]]
+		function testSelectAndSetHTMLControlHandler(event, ControlMetaDataArray){
+			if (null != event.eobject){
+				for (var i = 0; i < ControlMetaDataArray.length; ++i){
+					var elem = window.document.getElementById(ControlMetaDataArray[i][0]);
+					elem[""+ControlMetaDataArray[i][2]] = event.eobject.eGet(ControlMetaDataArray[i][1]);
+					if (ControlMetaDataArray [i][3] != null){
+						eval("elem."+ ControlMetaDataArray [i][3]+"();");
+					}
+				}
+				return true;
+			}
+			return false;
+		}
+
+		function testDerivedAttributes(){
+			this.eGet('quantity')*this.eGet('stock').eGet('currentPrice')
+			this.eGet('quantity')*(this.eGet('stock').eGet('currentPrice')-this.eGet('price'))
+		}
+
+		function testSelectAndActivateHandler(){	
+			SelectAndSetEventHandler(thisEvent,[ ["stock", findEObjectByVBL("#{pc_Demo.root.placeHolderStock}")] ]);
+		}
+		
+		function testAccessChildProperty(){
+			this.eGet('quantity')*this.eGet('stock').eGet('currentPrice')
+		}
+
+/*ODC JSF markup examples
+	// INPUT
+		<h:inputText styleClass="inputText" id="text1">
+			<dojo:bind value="#{pc_Demo.root.name}"></odc:clientBinder>
+		</h:inputText>
+
+		In the second and third example, we see the same <bind> tag used, but this time with widgets that have
+		been directly designed for data binding. Those "pure" client-side widgets,
+		only work if they are bound to client-side data at the current time.
+
+	// TREE
+		<dojo:tree styleClass="tree" rootVisibleFlag="true" enableSelect="false" id="tree1">
+			<dojo:bind value="#{pc_Demo.root}"></odc:clientBinder>
+			...
+		</dojo:tree>
+	// GRID		
+		<dojo:datagrid allowRowAddAndDelete="false" styleClass="dataGrid" showSelectionColumn="false" pageSize="5" id="dataGrid1" width="100%">
+			<dojo:bind value="#{pc_Demo.root.users[0].portfolios[0].positions}"></odc:clientBinder>
+			...
+		</dojo:datagrid>
+		
+		In the future, those components will be enabled to also work with server-side data (such as JSF or PHP). The general pattern is
+		that if a component uses the regular JSF binding methodology (with the value attribute), then the component will be
+		bound to server-side data:
+
+		<h:inputText styleClass="inputText" id="text1" value="#{pc_Demo.root.name}">
+		</h:inputText>		
+		
+		
+*/
+	
+		dojo.addOnLoad(init);
+		
+		</script>
+		<style type="text/css">
+			body { background: white; color: red; font-weight: bold; }
+			.msg { color: black; font-weight: normal; }
+		</style>
+	</head>
+	<body>
+		<p class="msg">Test output (passes have no output):</p>
+	</body>
+</html>
+

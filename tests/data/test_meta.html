@@ -1,0 +1,166 @@
+<html>
+	<head>
+		<title>dojo.meta Tests</title>
+		<script language="JavaScript" type="text/javascript">
+			// Dojo configuration
+			djConfig = { 
+				isDebug: true
+			};
+			djConfig.debugAtAllCosts=true;  //BUG: Causes problem with Object supertype 
+		</script>
+		<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../jsunit/css/jsUnitStyle.css">
+		<script language="JavaScript" type="text/javascript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" type="text/javascript" src="../jsunit_browser.js"></script>
+		<script language="JavaScript" type="text/javascript">
+			dojo.require("dojo.data.meta.Class");
+			dojo.require("dojo.data.meta.Attribute");
+			dojo.require("dojo.data.meta.DerivedAttribute");
+			dojo.require("dojo.data.meta.Package");
+			dojo.require("dojo.data.meta.Reference");
+			dojo.require("dojo.data.meta.Factory");
+			dojo.require("dojo.json");
+			dojo.hostenv.writeIncludes();
+		</script>
+		
+		<script language="JavaScript" type="text/javascript">
+		function init(){
+			testCreateAttribute();
+			testCreateDerivedAttribute();
+			testCreateClass();
+			testCreateReference();
+			testCreatePackage();
+			testCreateUnnamedPackages();
+			testCreateModel();
+			testCreateModel3();
+		}
+
+		dojo.addOnLoad(init);
+			
+		// JsUnit Assertion Tests
+		function testCreateAttribute() {
+			dojo.debug("creating attribute...");
+			var attr1 = new dojo.data.meta.Attribute("name", "string", false);
+			dojo.debug("created attribute"+attr1.name);
+//			jum.assertEquals("meta_Attribute_0_0", attr1.name, "name");
+		}
+		function testCreateDerivedAttribute() {
+			dojo.debug("creating derived attribute...");
+			var calcattr1 = new dojo.data.meta.DerivedAttribute("name", "string", "name+' is a guru'");
+			dojo.debug("created derived attribute: "+calcattr1.name);
+//			jum.assertEquals("meta_Attribute_0_0", attr1.name, "name");
+		}
+		
+		function testCreateReference() {
+			dojo.debug("creating reference...");
+			var classA = new dojo.data.meta.Class("Employee");
+			var classB = new dojo.data.meta.Class("Address");
+			var homeAddressRef = new dojo.data.meta.Reference("homeAddress",classB,false);
+			var businessAddressRef = new dojo.data.meta.Reference("businessAddress",classB,false);
+			classA.addReference(homeAddressRef);
+			classA.addReference(businessAddressRef);
+			dojo.debug("created references.");
+		}
+
+		function testCreateClass() {
+			dojo.debug("creating class...");
+			var class1 = new dojo.data.meta.Class("Employee");
+			class1.addAttribute(new dojo.data.meta.Attribute("firstName", "string", false));
+			class1.addAttribute(new dojo.data.meta.Attribute("lastName", "string", false));
+			class1.addAttribute(new dojo.data.meta.DerivedAttribute("sillyName", "string", "name+' is a guru'"));
+			dojo.debug(dojo.data.meta.Class.printClass(class1));
+			dojo.debug("created class...");
+		}
+		
+		function testCreatePackage() {
+			var class1 = new dojo.data.meta.Class("Employee");
+			var class2 = new dojo.data.meta.Class("Address");
+			var pkg = new dojo.data.meta.Package("employment");
+			dojo.debug("Created package: "+pkg.name);
+			pkg.addClass(class1);
+			pkg.addClass(class2);
+			dojo.debug(pkg.toString());
+		}
+		function testCreateUnnamedPackages() {
+			dojo.debug("Creating two unnamed packages: ");
+			var pkg = new dojo.data.meta.Package();
+			dojo.debug("Created package: "+pkg.name);
+			pkg = new dojo.data.meta.Package();
+			dojo.debug("Created package: "+pkg.name);
+		}
+		
+		function testCreateModel() {
+			dojo.debug("Creating model.");
+			var mdl = new dojo.data.meta.Package("myModel");
+			var classA = new dojo.data.meta.Class("Employee");
+			var classB = new dojo.data.meta.Class("Address");
+			var homeAddressRef = new dojo.data.meta.Reference("homeAddress",classB,false);
+			var businessAddressRef = new dojo.data.meta.Reference("businessAddress",classB,false);
+			classA.addReference(homeAddressRef);
+			classA.addReference(businessAddressRef);
+			mdl.addClass(classA);
+			mdl.addClass(classB);
+			dojo.debug(mdl.toString());
+			dojo.debug("Created model:"+mdl.name);
+		}
+
+		// Test model creation from JSON array form
+		function testCreateModel3(){
+			var portfolioMdl = [
+			["PortfolioModel",	[//Contains references to all model classes
+								["Root","Root",0,-1,0,0],	//REF
+								["Stock","Stock",0,-1,0,0],	//REF
+								["User","User",0,-1,0,0],	//REF
+								["Portfolio","Portfolio",0,-1,0,0],//REF
+								["Position","Position",0,-1,0,0]
+								]],
+			["Stock", 	[  // Class
+						["id","id",0],					// Attribute
+						["Symbol","string",0,0,1,1],	// Attribute
+						["Price","double",0,0,1,0],		// Attribute
+						["Volume","long",0,0,1,0],		// Attribute
+						["Change","double",0,0,1,0]		// Attribute
+						]],
+			["Position",[ // props
+						["id","id",0],				// Attribute
+						["RefNum","int",0,0,1,1],	// Attribute
+						["Symbol","string",0,0,1,0],// Attribute
+						["Price","double",0,0,1,0],	// Attribute
+						["Quantity","int",0,0,1,0],	// Attribute
+						["Usr","User",1,1,0,0],		// Reference 
+						["Port","Portfolio",1,1,0,0]// Reference 
+						["Stock","Stock",1,1,0,0]   // Reference 
+						]], 
+			["Portfolio",[
+						["id","id",0],				
+						["Name","string",0,0,1,1],	
+						["Usr","User",1,1,0,1],	//REF
+						["Positions","Position",0,-1,1,0]//REF
+						]],
+			["User",	[
+						["id","id",0],
+						["RefNum","int",0,0,1,1],
+						["Id","string",0,0,1,0],
+						["LastName","string",0,0,1,0],
+						["Portfolios","Portfolio",0,-1,1,0]//REF
+						]],
+			["Root",	[
+						["id","id",0],
+						["Name","string",0,0,1,0],
+						["Stocks",StockClass,0,-1,1,0],
+						["Users",UserClass,0,-1,1,0],			//REF
+						["PlaceHolderStock",StockClass,1,1,1,0] //REF
+						]]];
+			//TODO: call ModelProvider with JSON data
+		}
+
+		</script>
+		<style type="text/css">
+			body { background: white; color: red; font-weight: bold; }
+			.msg { color: black; font-weight: normal; }
+		</style>
+	</head>
+	<body>
+		<p class="msg">Test output (passes have no output):</p>
+	</body>
+</html>

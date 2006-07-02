@@ -1,0 +1,74 @@
+<html>
+<head>
+
+<title>Test XML Provider</title>
+<link type="text/css" rel="stylesheet" href="templates/HtmlToolbar.css"/>
+<script type="text/javascript">
+	djConfig = {isDebug: true};
+	djConfig.debugAtAllCosts=true;  //BUG: Causes problem with Object supertype 
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.widget.TableController");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.data.DataProvider");
+	dojo.require("dojo.data.xml.XMLDataProvider");
+
+	dojo.require("dojo.data.xml.XpathUtil");
+	dojo.require("dojo.data.xml.XMLPropertyBinder");
+	
+   	dojo.hostenv.writeIncludes(); // this is a new line
+	dojo.addOnLoad(window, "doStuff");
+	
+	function doStuff() {
+		var provider = dojo.widget.manager.getWidgetById("tableData"); 
+		
+		//This contains two values
+		var dataSet = provider.fetchData("/users/user[@selected = 'true']/positions/position[@refnum='4']");
+		
+		var boundDiv = document.getElementById("boundDiv");
+		var inputBox = document.getElementById("boundInput");
+		
+		var binder = new dojo.data.xml.XMLPropertyBinder(dataSet, "@symbol", boundDiv, "innerHTML");
+		var binder2 =  new dojo.data.xml.XMLPropertyBinder(dataSet, "@symbol", inputBox, "value", "onchange");
+		
+		//This contains one value
+		var dataSet2 = provider.fetchData("/users/user[@selected = 'false']/positions/position[@refnum='8']");
+		var boundDiv2 = document.getElementById("boundDiv2");
+		var inputBox2 = document.getElementById("boundInput2");
+		var binder3 = new dojo.data.xml.XMLPropertyBinder(dataSet2, "@symbol", boundDiv2, "innerHTML");
+		var binder4 =  new dojo.data.xml.XMLPropertyBinder(dataSet2, "@symbol", inputBox2, "value", "onchange");
+	}
+</script>
+
+
+</head>
+<body>
+
+<div dojoType="DataProvider" location="instance.xml" widgetId="tableData" type="dojo.data.xml.XMLDataProvider">  
+    <div dojoType="DerivedAttribute" path="/users/user/positions/position/@value" value="../@quantity * ../@currentPrice"></div>
+    <div dojoType="DerivedAttribute" path="/users/user/positions/position/@gains" value="../@quantity * (../@currentPrice - ../@pricePaid)"></div>
+</div>
+
+
+<p>This DIV is bound to an XML data set containing two nodes, so the value is an array
+<div id="boundDiv" style="border-width: 1; border-style: solid">
+	This should display the values
+</div>
+<br/>
+Both values in the XML data set is updated with the value of this text box on an <i>onchange</i> event:&nbsp;
+<input type="text" id="boundInput">
+</input>
+</p>
+<p>This DIV is bound to a single value in an XML data set
+<div id="boundDiv2" style="border-width: 1; border-style: solid">
+	This should display the values
+</div>
+<br/>
+The same node in the XML data set is updated with the value of this text box on an <i>onchange</i> event:&nbsp;
+<input type="text" id="boundInput2">
+</input>
+</p>
+
+</body>
+</html>

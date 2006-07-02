@@ -1,0 +1,463 @@
+/*GLOBAL*/
+.datagrid table{
+	border: 1px solid black;
+	margin: 0px;
+	padding: 0px;
+	font-family: Lucida Grande,Verdana;	
+	font-size: 12.8px;	
+	font-style:	normal;	
+	color: #000000;
+}
+
+.datagrid th, .datagrid td {
+	border-right: 1px solid #999999;
+	padding: 2px 2px 2px 2px;
+	font-weight: 400;
+}
+
+.datagrid th.last, .datagrid td.last {
+	border-width: 0px 0px 0px 0px;
+}
+
+/*HEADER*/
+.datagrid .header th, .datagrid .header td{
+	background-color: #94BEFF;
+	/*font-size: .8em;*/
+	text-align: center;
+	white-space: nowrap;
+}
+
+.datagrid .header th.sortable, .datagrid .header td.sortable{
+	background-image: url("images/datagrid/sortable.gif");
+	background-repeat: no-repeat;
+	background-position: right center;
+}
+
+.datagrid .header th.sorted_up, .datagrid .header td.sorted_up{
+	background-image: url("images/datagrid/sorted_up.gif");
+	background-repeat: no-repeat;
+	background-position: right center;
+}
+
+.datagrid .header th.sorted_down, .datagrid .header td.sorted_down{
+	background-image: url("images/datagrid/sorted_down.gif");
+	background-repeat: no-repeat;
+	background-position: right center;
+}
+
+.datagrid .header th.sortable a, .datagrid .header td.sortable a{
+	color: #000000;
+	text-decoration: none;
+	background: transparent;
+}
+
+.datagrid .header th.sortable a:hover, .datagrid .header td.sortable a:hover{
+	color: #000000;
+	text-decoration: underline;
+}
+
+.datagrid .header th.sortable a:active, .datagrid .header td.sortable a:active{
+	color: #000000;
+	text-decoration: none;
+}
+
+/*BODY*/
+.datagrid .body th, .datagrid .body td {
+	vertical-align: 4px;
+	background-color: #FFFFFF;
+}
+
+.datagrid .body th.index, .datagrid .body td.index {
+	/*width: 25px;*/
+}
+
+.datagrid .body tr.even td, .datagrid .body tr.even td{
+	background-color: #E3EDFA;
+}
+
+.datagrid .body tr:hover td, .datagrid .body tr:hover th {
+	background-color: #A6C2E7;
+}
+
+.datagrid .body th.editable, .datagrid .body td.editable{
+	/*background-image: url("images/datagrid/edit.gif");
+	background-repeat: no-repeat;
+	background-position: right bottom;*/
+	cursor: pointer;
+}
+
+.datagrid .body tr.hidden {
+	display: none;
+}
+
+/*FOOTER*/
+.datagrid .footer th, .datagrid .footer td{
+	background-color: #94BEFF;
+	/*font-size: .8em;*/
+	padding: 3px;
+	text-align: right;
+	border-width: 0px 0px 0px 0px;
+}
+
+.datagrid .footer .toolbar  {
+	padding: 0px;
+	margin: 0px;
+	display: block;
+}
+
+.datagrid .footer .toolbar.disabled {
+	display: none;
+}
+
+.datagrid .footer .toolbar ul{
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+	list-style-position: inside;
+	display: inline;
+}
+
+.datagrid .footer .toolbar li{		
+	margin: 0px;
+	padding: 4px 0px 0px 0px;
+	display: inline;
+	vertical-align: middle;
+}
+
+.datagrid .footer .toolbar li a{		
+	cursor: pointer;
+}
+
+.datagrid .footer .toolbar li.disabled a{		
+	cursor: default;
+}
+
+.datagrid .footer .toolbar li a,
+.datagrid .footer .toolbar li.disabled span{
+	visibility: visible;
+	display: inline;
+}
+
+.datagrid .footer .toolbar li span,
+.datagrid .footer .toolbar li.disabled a{
+	visibility: hidden;
+	display: none;
+	
+}
+
+
+
+
+/*_________________________________________________________*/
+
+.datagrid select {
+	font-family: verdana;
+	font-size: 0.8em;
+}
+
+
+
+div.editableCell {
+border-width: 1px;
+border-style: inset;
+border-color: white;
+}
+
+
+/* Top-level table tag of table - New in v5 */
+.dataGrid_wpsDataAlink{
+  text-decoration: none;
+  color:#000000;
+
+}
+.dataGrid_wpsTable {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #a0a0a0;
+  padding: 1px 0;
+}
+
+.dataGrid_wpsTable td {
+  vertical-align: top;
+}
+
+.dataGrid_wpsTable a {
+  color:#000000;
+}
+
+.dataGrid_wpsTableIndent { /*style to indent data without an icon so that it lines up with data that has an icon that is in the same column*/
+  text-indent: 16px;
+}
+
+/* Text in row of table header */
+.dataGrid_wpsTableHead {
+  font-size: 90%;
+  color: #000000;
+  text-align: left;
+}
+
+.dataGrid_wpsTableHead th {
+  padding: 3px 3px 3px 3px;
+  font-weight: normal;
+  white-space: nowrap;
+  
+}
+
+
+/* Standard table row */
+.dataGrid_wpsTableRow, .dataGrid_wpsTableNrmRow {
+  color: #000000;
+  background-color: #FFFFFF;
+}
+
+/* Text in a selected cell range - New in v5 */
+.dataGrid_wpsTableSelectedRow, .portlet-section-selected {
+  color: #333333;
+  background-color: #f0f0f0 ! important; /* needs to be set to important to override the normal color of the row */
+}
+
+/* Shaded table row - used to alternate row colors with standard row - New in v5 */
+/* For the v5 look, we have intentionally disabled alternating shaded table rows because
+   we have lines between the rows.  However, Netscape 4.x cannot display borders
+   properly so we still use the alternating shaded rows on legacy browsers. */
+.dataGrid_wpsTableShdRow, .portlet-section-alternate {
+  color: #333333;
+  background-color: #FFFFFF;
+}
+
+
+/* Text in a selected cell range - New in v5 */
+.dataGrid_wpsTableHighlightedRow, .portlet-section-highlighted {
+  color: #333333;
+  background-color: #DEDCCA! important; /* needs to be set to important to override the normal color of the row */
+}
+
+
+
+/* Backward compatibility style to get lines between rows for WPS 4.x portlet tables - New in v5 */
+/* Do not specify anything in these styles that you don't have to specify.  Because of CSS priorities,
+   these styles will override any CSS on the actual <td> tag that isn't marked ! important. */
+.dataGrid_wpsTableRow td, .dataGrid_wpsTableNrmRow td, .dataGrid_wpsTableShdRow td {
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: #e0e0e0;
+  padding: 2px;
+}
+
+/* Text links in table header row 
+FIXME 
+.dataGrid_wpsTableHeadLink: visited, 
+.dataGrid_wpsTableHeadLink: hover
+*/
+.dataGrid_wpsTableHeadLink {
+  font-weight: normal;
+  color: #000000;
+}
+
+/*new styles for a section header row*/
+.dataGrid_wpsTableSectionHead {
+  font-weight: bold;
+  color: #000000;
+  text-align: left;
+}
+
+
+.dataGrid_wpsTableSectionHead th {
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: #aaaaaa;
+  padding: 3px 0 3px 5px;
+}
+
+.dataGrid_wpsCheckBoxRow th, .dataGrid_wpsCheckBoxRow td { /*this style is applied to a checkbox row to decrease the padding*/
+}
+
+.dataGrid_wpsInnerTableCell {
+  border-width: 1px ! important;
+  border-style: solid ! important;
+  border-color: #a0a0a0 ! important;
+  vertical-align: top;
+}
+
+.dataGrid_wpsInnerTable {
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: #e0e0e0;
+}
+
+/* Styles for left, middle and right cells of the header row - New in v5 */
+.dataGrid_wpsTableHeadStart {
+  background-color: #ffffff;
+  border-width: 0px 0px 0px 0px;
+  border-style: solid;
+  border-color: #aaaaaa;
+  white-space: nowrap;
+
+}
+
+.dataGrid_wpsTableHeadMiddle {
+  background-color: #ffffff;
+  border-width: 0px 0px 0px 1px;
+  border-style: solid;
+  border-color: #aaaaaa;
+}
+
+.dataGrid_wpsTableHeadEnd {
+  background-color: #ffffff;
+  border-width: 0px 0px 0px 1px;
+  border-style: solid;
+  border-color: #aaaaaa;
+}
+
+/* Styles for left, middle and right cells of the header row where the text is center aligned. - New in v5 */
+.dataGrid_wpsDataAlignCenter {
+  text-align: center ! important;
+}
+
+/* Styles for the left, middle and right cells of the header row where the column contains numeric data. - New in v5 */
+.dataGrid_wpsDataAlignRight {
+  text-align: right ! important;
+}
+
+/* Styles for the left, middle, and right cells of a data row. - New in v5 */
+/* ! important is on some of these attributes to override the backward compatibility styles
+   .wpsTableRow td, .wpsTableNrmRow td, .wpsTableShdRow td */
+.dataGrid_wpsTableDataStart, .dataGrid_wpsTableDataMiddle, .dataGrid_wpsTableDataEnd {
+  text-align: left;
+  border-width: 1px 0px 0px 0px ! important;
+  border-style: solid ! important;
+  border-color: #e0e0e0 ! important;
+  padding: 3px 5px 3px 5px ! important;
+}
+
+/* new styles to allow for a second detail line in a row */
+.dataGrid_wpsTableRowDetail td {
+  border-width: 0px;
+  text-align: left;
+  border-width: 0px ! important;
+  padding: 2px 3px 5px 3px;
+}
+
+.dataGrid_wpsTableTopRow td {
+  border-color: #9CAECE ! important;
+}
+
+.dataGrid_wpsTableOneLeftCol {
+  vertical-align: top;
+  border-width: 1px 0 1px 1px;
+  border-color: #a0a0a0;
+  border-style: solid;
+  padding: 3px;
+}
+
+/* PORTLET PAGING TABLES */
+
+/* Styles for the top-level table tag and the cells containing the header, footer, and table body. - New in v5 */
+.dataGrid_wpsPagingTable, .dataGrid_wpsPagingTableBody, .dataGrid_wpsPagingTableHeader, .dataGrid_wpsPagingTableFooter {
+  border-width: 0;
+}
+
+.dataGrid_wpsHeaderTable { /*this is for added flexibility of creating 3-dimensional borders*/
+  font-size: 90%;
+}
+
+.dataGrid_wpsPagingTableHeaderEmpty {
+  height: 7px;
+  width: 7px;
+  line-height: 1px;
+}
+
+
+/* The size of icons in the paging header or footer - New in v5 */
+.dataGrid_wpsPagingTableHeaderIcon, .dataGrid_wpsPagingTableFooterIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* The leftmost cell of the paging table header - New in v5 */
+.dataGrid_wpsPagingTableHeaderStart {
+  background-color: #f0f0f0;
+
+  border-top: 1px solid #a0a0a0;
+  border-right: 0px none #a0a0a0;
+  border-bottom: 0px none #a0a0a0;
+  border-left: 1px solid #a0a0a0;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding: 0 3px;
+}
+
+/* All cells in the middle of the paging table header - New in v5 */
+.dataGrid_wpsPagingTableHeaderMiddle {
+  background-color: #f0f0f0;
+  border-top: 1px solid #a0a0a0;
+  border-right: 0px none #a0a0a0;
+  border-bottom: 0px none #a0a0a0;
+  border-left: 0px none #a0a0a0;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding: 0 3px;
+}
+
+/* The rightmost cell of the paging table header - New in v5 */
+.dataGrid_wpsPagingTableHeaderEnd {
+  background-image: url("PagingTableTopRight.gif");
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-color: transparent;
+  padding: 0 3px;
+}
+
+.dataGrid_wpsFooterTable {
+  font-size: 90%;
+}
+
+
+/* The leftmost cell of the paging footer - New in v5 */
+.dataGrid_wpsPagingTableFooterStart {
+  background-color: #f0f0f0;
+  border-top: 0px none #a0a0a0;
+  border-right: 0px none #a0a0a0;
+  border-bottom: 1px solid #a0a0a0;
+  border-left: 1px solid #a0a0a0;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding: 0 3px;
+}
+
+/* All cells in the middle of the paging table footer - New in v5 */
+.dataGrid_wpsPagingTableFooterMiddle {
+  background-color: #f0f0f0;
+  border-top: 0px none #a0a0a0;
+  border-right: 0px none #a0a0a0;
+  border-bottom: 1px solid #a0a0a0;
+  border-left: 0px none #a0a0a0;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding: 0 3px;
+
+}
+
+/* The rightmost cell of the paging table footer - New in v5 */
+.dataGrid_wpsPagingTableFooterEnd {
+  background-image: url("PagingTableBottomRight.gif");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-color: transparent;
+  padding: 0 3px;
+}
+
+.dataGrid_wpsPagingTableToolIcon
+{
+  width: 24px;
+  height: 24px;
+  border:0px;
+  vertical-align: middle;
+}
+
+/* This class is used to get the system icons from style sheet.Note,every icons has to be concatenated without any space, otherwise NS will has problem to get the value. */
+.dataGrid_classForDatagridSysIcons
+{
+	/*Sample style, please uncomment the following line and modify the icons path if you want use your own customized system icons*/
+	/*CCM-Uncommented the following to bypass css validation error in dojo*/
+}

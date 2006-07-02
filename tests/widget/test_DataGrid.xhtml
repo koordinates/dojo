@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"-->
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:dojo="http://www.dojotoolkit.org/2004/dojoml"
+	xml:lang="en" lang="en">
+<head>
+<title>DataGrid tests</title>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script language="JavaScript">
+ <![CDATA[   dojo.require("dojo.widget.DataGrid");
+    dojo.require("dojo.widget.DataGridColumn");
+	dojo.require("dojo.data.DataProvider");
+   	dojo.hostenv.writeIncludes(); // this is a new line
+	//]]>
+</script>
+
+<script type="text/javascript"><![CDATA[
+dojo.require("dojo.widget.DataGrid");
+    dojo.require("dojo.widget.DataGridColumn");
+	dojo.require("dojo.data.DataProvider");
+   	dojo.hostenv.writeIncludes(); // this is a
+//]]></script>
+<style>
+.dojoFloatingPaneClient {
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+</style>
+</head>
+<body>
+
+<dojo:dataprovider location="instance.xml" type="dojo.data.xml.XMLDataProvider" widgetId="tableData">  
+<!--
+<dojo:dataprovider providerClass="XMLDataProvider" url="instance.xml" w:id="tableData">   
+    <dojo:bind attribute="xp:/users/user/positions/position/@value" uses="../@quantity,../@currentPrice" expression="js:{1} * {2}"></dojo:xmlbind>
+    <dojo:bind attribute="xp:/users/user/positions/position/@value" declare="myfunc(var1,var2,var3)"></dojo:xmlbind>
+    ISSUE: Do we want to allow xpath in expression, when providerClass is JS
+    	- The full expression must be eval'd in JS for each derived element and rows in a list.
+    ISSUE: Derived attribute dependencies on other attrs, needs to set up bind depends on the vars so that when individual attrs are sparse
+    	updated in the datagraph, for example by a backend service
+-->
+    <dojo:bind path="/users/user/positions/position/@value" value="../@quantity * ../@currentPrice"></dojo:bind>
+    <dojo:bind path="/users/user/positions/position/@gains" value="../@quantity * (../@currentPrice - ../@pricePaid)"></dojo:bind>
+</dojo:dataprovider>
+<p>
+Grid with all data columns (value and gains are calculated values):
+</p>
+<!-- 
+  <dojo:datagrid instanceDataId="tableData" widgetId="lotusGrid" row="/users/user[@selected = 'true']/positions/position" readonly="true" allowpaging="true" pagesize="5" navpos="0" allowpaging="true" showrowindex="true" stylename="lotus" >
+ -->
+  <dojo:datagrid instanceDataId="tableData" widgetId="lotusGrid" nodeset="/users/user[@selected = 'true']/positions/position" readonly="true" pagesize="5" navpos="0" allowpaging="true" showrowindex="true" stylename="lotus" >
+    <!--event source="tableData" "onchange" this.refresh-->
+	 <dojo:datagridcolumn name="Symbol" ref="@symbol" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Current Price" ref="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Quantity" ref="@quantity" editable="true" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Price Paid" ref="@pricePaid" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Value" ref="@value" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Gains" ref="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></dojo:datagridcolumn>
+  </dojo:datagrid>
+<p>
+Grid test 2 Using same model.
+</p>
+
+<dojo:datagrid instanceDataId="tableData" widgetId="lotusGrid2" nodeset="/users/user[@selected = 'false']/positions/position" readonly="true" navpos="1" pagesize="5" allowpaging="true" showrowindex="true" stylename="tivoli" >
+	 <dojo:datagridcolumn name="Symbol" ref="@symbol" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Current Price" ref="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Quantity" ref="@quantity" editable="true" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+</dojo:datagrid>
+<p>
+Grid test 3 different selector.
+</p>
+<dojo:datagrid instanceDataId="tableData" nodeset="/users/user/positions/position" readonly="true" allowpaging="false" pagesize="5"  showrowindex="true" stylename="tivoli" style="width:100%">
+	 <dojo:datagridcolumn name="Symbol" ref="@symbol" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Current Price" ref="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Quantity" ref="@quantity" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Price Paid" ref="@pricePaid" editable="false" alignment="center" width="-1" underline="false" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Value" ref="@value" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></dojo:datagridcolumn>
+	 <dojo:datagridcolumn name="Gains" ref="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></dojo:datagridcolumn>
+</dojo:datagrid>
+<!--  
+<button action="dosomething()">
+//action = a service (local or remote)
+//service invocation may result in data mods that the client views depend on (including derived attrs)
+//
+//if client views have a direct binding
+//EXAMPLE PROBLEM SCENARIO: 
+//  Spreadsheet values in financial app, where each cell's function may take a long time to exec.
+function dosomething()
+ {
+   return dojo.services.utils.executeService("abc");
+ }
+ 
+<ws:input id="wsInput1">
+	<dojo:clientBinder value="#{pc_FileExplorer.feRoot.currentRootPath}"></dojo:clientBinder>
+</ws:input>
+<ws:input id="wsInput2">
+	<dojo:clientBinder value="#{pc_FileExplorer.feRoot.start}"></dojo:clientBinder>
+</ws:input>
+<ws:input id="wsInput3">
+	<dojo:clientBinder value="#{pc_FileExplorer.feRoot.quantity}"></dojo:clientBinder>
+</ws:input>
+<ws:output id="wsOutput1">
+	<dojo:clientBinder value="#{pc_FileExplorer.feRoot.files}"></dojo:clientBinder>
+</ws:output>
+-->
+
+<!-- This is used for the inline data example -->
+<xml id="inlineData">
+<users>
+	<user selected="false" refnum="2" first="Titi" last="Velazky">
+		<positions>
+			<position refnum="8" symbol="A" currentPrice="35.54" quantity="1500" 
+					pricePaid="30.54" value="" gains=""></position>
+			<position refnum="9" symbol="B" currentPrice="43.32" quantity="1000" 
+					pricePaid="29.08" value="" gains=""></position>
+			<position refnum="10" symbol="C" currentPrice="39.54" quantity="750" 
+					pricePaid="29.57" value="" gains=""></position>
+			<position refnum="11" symbol="D" currentPrice="81.17" quantity="800" 
+					pricePaid="39.71" value="" gains=""></position>
+			<position refnum="12" symbol="E" currentPrice="37.97" quantity="500" 
+					pricePaid="28.76" value="" gains=""></position>
+			<position refnum="13" symbol="F" currentPrice="39.94" quantity="175" 
+					pricePaid="27.09" value="" gains=""></position>
+		</positions>
+	</user>
+</users>
+</xml>
+
+<!-- use inline data -->
+<div dojoType="DataProvider" location="#inlineData" widgetId="inlineTableData" type="dojo.data.xml.XMLDataProvider">  
+    <div dojoType="Bind" path="/users/user/positions/position/@value" value="../@quantity * ../@currentPrice"></div>
+    <div dojoType="Bind" path="/users/user/positions/position/@gains" value="../@quantity * (../@currentPrice - ../@pricePaid)"></div>
+</div>
+<p>This table uses inline data defined within the HTML </p>
+
+<div dojoType="DataGrid" instanceDataId="inlineTableData" widgetId="lotusGrid3" nodeset="/users/user[@selected = 'false']/positions/position" readonly="true" navpos="1" pagesize="5" allowpaging="true" showrowindex="true" >
+	 <div dojoType="DataGridColumn" name="Symbol" ref="@symbol" editable="false" alignment="center" width="-1" underline="false" ></div>
+	 <div dojoType="DataGridColumn" name="Current Price" ref="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></div>
+	 <div dojoType="DataGridColumn" name="Quantity" ref="@quantity" editable="true" alignment="center" width="-1" underline="false" ></div>
+</div>
+
+
+</body>
+</html>

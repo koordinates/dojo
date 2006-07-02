@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- saved from url=(0013)about:internet -->
+<users>
+	<user selected="true" refnum="1" first="Toto" last="Grabouk">
+		<positions>
+			<position refnum="0" symbol="IBM" currentPrice="75.54" quantity="1000" 
+					pricePaid="82.34" value="" gains=""></position> 
+			<position refnum="1" symbol="IBM" currentPrice="75.54" quantity="1600" 
+					pricePaid="112.43" value="" gains=""></position>
+			<position refnum="2" symbol="AMZN" currentPrice="35.54" quantity="1200" 
+					pricePaid="23.44" value="" gains=""></position>
+			<position refnum="3" symbol="AMZN" currentPrice="35.54" quantity="800" 
+					pricePaid="29.08" value="" gains=""></position>
+			<position refnum="4" symbol="DELL" currentPrice="40.25" quantity="250" 
+					pricePaid="31.57" value="" gains=""></position>
+			<position refnum="5" symbol="GE" currentPrice="37.07" quantity="1250" 
+					pricePaid="43.65" value="" gains=""></position>
+			<position refnum="6" symbol="QQQQ" currentPrice="37.07" quantity="100" 
+					pricePaid="60.76" value="" gains=""></position>
+			<position refnum="7" symbol="AAPL" currentPrice="39.94" quantity="175" 
+					pricePaid="14.09" value="" gains=""></position>
+			<position refnum="8" symbol="AAPL" currentPrice="39.94" quantity="175" 
+					pricePaid="14.08" value="" gains=""></position>		
+			<position refnum="0" symbol="IBM" currentPrice="75.54" quantity="1000" 
+					pricePaid="82.34" value="" gains=""></position> 
+			<position refnum="1" symbol="IBM" currentPrice="75.54" quantity="1600" 
+					pricePaid="112.43" value="" gains=""></position>
+			<position refnum="2" symbol="AMZN" currentPrice="35.54" quantity="1200" 
+					pricePaid="23.44" value="" gains=""></position>
+			<position refnum="3" symbol="AMZN" currentPrice="35.54" quantity="800" 
+					pricePaid="29.08" value="" gains=""></position>
+			<position refnum="4" symbol="DELL" currentPrice="40.25" quantity="250" 
+					pricePaid="31.57" value="" gains=""></position>
+			<position refnum="5" symbol="GE" currentPrice="37.07" quantity="1250" 
+					pricePaid="43.65" value="" gains=""></position>
+			<position refnum="6" symbol="QQQQ" currentPrice="37.07" quantity="100" 
+					pricePaid="60.76" value="" gains=""></position>
+			<position refnum="7" symbol="AAPL" currentPrice="39.94" quantity="175" 
+					pricePaid="14.09" value="" gains=""></position>
+			<position refnum="8" symbol="AAPL" currentPrice="39.94" quantity="175" 
+					pricePaid="14.08" value="" gains=""></position>							
+		</positions>
+	</user>
+	<user selected="false" refnum="2" first="Titi" last="Velazky">
+		<positions>
+			<position refnum="8" symbol="AMZN" currentPrice="35.54" quantity="1500" 
+					pricePaid="30.54" value="" gains=""></position>
+			<position refnum="9" symbol="EBAY" currentPrice="43.32" quantity="1000" 
+					pricePaid="29.08" value="" gains=""></position>
+			<position refnum="10" symbol="YHOO" currentPrice="39.54" quantity="750" 
+					pricePaid="29.57" value="" gains=""></position>
+			<position refnum="11" symbol="DNA" currentPrice="81.17" quantity="800" 
+					pricePaid="39.71" value="" gains=""></position>
+			<position refnum="12" symbol="QQQQ" currentPrice="37.97" quantity="500" 
+					pricePaid="28.76" value="" gains=""></position>
+			<position refnum="13" symbol="AAPL" currentPrice="39.94" quantity="175" 
+					pricePaid="27.09" value="" gains=""></position>
+		</positions>
+	</user>
+</users>
