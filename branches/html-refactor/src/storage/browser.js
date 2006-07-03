@@ -9,7 +9,7 @@ dojo.require("dojo.uri.*");
 /** 
 		Storage provider that uses features in Flash to achieve permanent storage.
 		
-		@author Alex Russel, alex@dojotoolkit.org
+		@author Alex Russell, alex@dojotoolkit.org
 		@author Brad Neuberg, bkn3@columbia.edu 
 */
 dojo.storage.browser.FlashStorageProvider = function(){

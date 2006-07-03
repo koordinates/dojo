@@ -1,4 +1,3 @@
-
 dojo.provide("dojo.widget.TreeNodeV3");
 
 dojo.require("dojo.event.*");
@@ -92,6 +91,21 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return domNode;
 	}(),
 	
+	/**
+	 * override for speed 
+	 
+	postInitialize: function(args, frag, parentComp){
+		var sourceNodeRef = this.getFragNodeRef(frag);
+		
+		var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+		if (!parentComp) {
+			dojo.debug(this);
+		}
+		parentComp.registerChild(this, args.dojoinsertionindex);
+			
+		dojo.widget.getParser().createSubComponents(frag, this);
+	},*/ 
+		
 	
 	// fast buildRendering 	
 	buildRendering: function() {
@@ -127,6 +141,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	tree: null,
 
 	isExpanded: false,
+	
+	createChildrenOnExpand: true,
 
 	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
@@ -157,6 +173,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	
+	
+	initialize: function() {
+		if (!(this.tree["isTree"])) {
+			this.tree = dojo.widget.byId(this.tree);
+		}
+		if (this.children.length) {
+			this.isFolder = true;
+		}
+	}
 		
 	unsetFolder: function() {
 		this.isFolder = false;
@@ -180,6 +205,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	updateTree: function(newTree) {
+
 		if (this.tree === newTree) {
 			return;
 		}
@@ -188,7 +214,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
 		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
 		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
-			
 	},
 	
 	
@@ -208,7 +233,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		this.insertNode(parent, index);
 				
-		if (this.tree !== parent.tree) {
+		if (!this.tree) {
+			// special case, happens in markup only
+			this.tree = parent.tree;
+		} else if (this.tree !== parent.tree) {
 			this.updateTree(parent.tree);
 		}
 		
@@ -269,6 +297,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		for(var x in args){ // fastMixIn			
 			treeNode[x] = args[x];
 		}
+		/*
+		if (treeNode.children.length) {
+			treeNode.isFolder = true;
+		}*/
 		//dojo.profile.end(this.widgetType+" createSimple mixin");
 		
 				
@@ -289,6 +321,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.end(this.widgetType + " expand");
 		
 		if (treeNode.isFolder) {
+			// trigger event because
+			// listeners may want to process all folders
+			// both those that are set at runtime and creationtime
 			dojo.event.topic.publish(treeNode.tree.eventNames.setFolder, { source: treeNode });
 		}
 		
@@ -467,7 +502,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expand: function(){
 		if (this.isExpanded) return;
 
+		
 		if (this.children.length) {
+			if (this.createChildrenOnExpand) {
+				this.setChildren(this.children);
+				this.createChildrenOnExpand = false;				
+			}					
+					
 			this.showChildren();
 		}
 
@@ -481,7 +522,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	collapse: function(){
 		if (!this.isExpanded) return;
 
-		if (this.children.length) {
+		if (this.children.length) {			
 			this.hideChildren();
 		}
 		
@@ -516,6 +557,3 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 
 });
-
-
-

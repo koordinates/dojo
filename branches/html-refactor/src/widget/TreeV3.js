@@ -174,7 +174,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 
-	initialize: function(args, frag){
+	initialize: function(args){
 		
 		this.adjustEventNames();
 		this.adjustDNDMode();

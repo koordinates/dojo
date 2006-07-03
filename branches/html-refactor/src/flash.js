@@ -682,6 +682,10 @@ dojo.flash.Embed.prototype = {
 								+ "&MMplayerType=PlugIn"
 								+ "&baseRelativePath=" + escape(dojoPath);
 			}
+
+			if(swflocEmbed.indexOf("?") == -1){
+				swflocEmbed +=  "?baseRelativePath="+escape(dojoPath)+"' ";
+			}
 			
 			objectHTML =
 				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
@@ -694,7 +698,7 @@ dojo.flash.Embed.prototype = {
 				  + '<param name="movie" value="' + swflocObject + '" /> '
 				  + '<param name="quality" value="high" /> '
 				  + '<param name="bgcolor" value="#ffffff" /> '
-				  + '<embed src="' + swflocEmbed + '" '
+				  + '<embed src="' + swflocEmbed + "' "
 				  + 'quality="high" '
 				  + 'bgcolor="#ffffff" '
 				  + 'width="' + this.width + '" '
@@ -704,7 +708,7 @@ dojo.flash.Embed.prototype = {
 				  + 'swLiveConnect="true" '
 				  + 'align="middle" '
 				  + 'allowScriptAccess="sameDomain" '
-				  + 'type="application/x-shockwave-flash" '+ "&baseRelativePath=" + escape(dojoPath);
+				  + 'type="application/x-shockwave-flash" '
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}

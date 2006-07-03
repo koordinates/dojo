@@ -21,6 +21,7 @@ class Storage {
 		// preload the System Settings finished button movie for offline
 		// access so it is in the cache
 		_root.createEmptyMovieClip("_settingsBackground", 1);
+		// getURL("javascript:alert('"+DojoExternalInterface.dojoPath+"');");
 		_root._settingsBackground.loadMovie(DojoExternalInterface.dojoPath + "storage_dialog.swf");
 	}
 

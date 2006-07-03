@@ -24,30 +24,26 @@
 	dojo.addOnLoad(function(){
 		var depth = 0;
 		
-		function addChildren(title,nodeOrTree) {
+		function addChildren(title) {
 			//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
 			depth++;
 			
 			var children = [];
 			for (var i=1; i<=5; i++) {
-				var t = title+'.'+i
-				dojo.profile.start("createWidget");
-				//var node = 	dojo.widget.TreeNodeV3.prototype.createSimple({title: t, tree: tree})
-				// slow generic method (2x diff)
-				var node = dojo.widget.createWidget("TreeNodeV3", {title: t, tree:tree.widgetId});
-				dojo.profile.end("createWidget");
+				var t = title+'.'+i;
+				var node = 	{title: t, tree: tree.widgetId};
 				
 				if (depth<3) {
-					addChildren(t, node);
+					node.children = addChildren(t);
 				}
 				
 				children.push(node);				
 			}
-			nodeOrTree.setChildren(children)
 			//dojo.debug("out "+nodeOrTree);
 			
 			depth--;
 			
+			return children;			
 		}	
 
 		dojo.profile.start("createController");
@@ -61,9 +57,14 @@
 		document.body.appendChild(tree.domNode);
 
 	
-		dojo.profile.start("createNodes");		
-		addChildren('node', tree)		
-		dojo.profile.end("createNodes");
+		dojo.profile.start("prepareNodes");		
+		var nodes = addChildren('node', tree)
+		dojo.profile.end("prepareNodes");
+			
+		dojo.profile.start("addNodes");		
+		tree.setChildren(nodes)
+		dojo.profile.end("addNodes");
+		
 			
 		dojo.profile.dump(true);
 		

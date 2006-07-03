@@ -46,13 +46,18 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 
 			if(node.parentNode != db){
 				var nd = node;
-				if(window.opera){ nd = db; }
+				if(dojo.render.html.opera){ nd = db; }
 				ret.x -= dojo.html.sumAncestorProperties(nd, "scrollLeft");
 				ret.y -= dojo.html.sumAncestorProperties(nd, "scrollTop");
 			}
 			do{
 				var n = node["offsetLeft"];
-				ret.x += isNaN(n) ? 0 : n;
+				//FIXME: ugly hack to workaround the submenu in 
+				//popupmenu2 does not shown up correctly in opera. 
+				//Someone have a better workaround?
+				if(!dojo.render.html.opera || n>0){
+					ret.x += isNaN(n) ? 0 : n;
+				}
 				var m = node["offsetTop"];
 				ret.y += isNaN(m) ? 0 : m;
 				node = node.offsetParent;
