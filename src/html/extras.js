@@ -1,6 +1,9 @@
 dojo.require("dojo.html");
 dojo.provide("dojo.html.extras");
 
+dojo.require("dojo.lang.common");
+dojo.require("dojo.html.layout");
+
 /**
  * Calculates the mouse's direction of gravity relative to the centre
  * of the given node.
@@ -22,8 +25,10 @@ dojo.html.gravity = function(node, e){
 	var mouse = dojo.html.getCursorPosition(e);
 
 	with (dojo.html) {
-		var nodecenterx = getAbsoluteX(node, true) + (getInnerWidth(node) / 2);
-		var nodecentery = getAbsoluteY(node, true) + (getInnerHeight(node) / 2);
+		var absolute = getAbsolutePosition(node, true);
+		var inner = getBorderBox(node);
+		var nodecenterx = absolute.x + (inner.width / 2);
+		var nodecentery = absolute.y + (inner.height / 2);
 	}
 	
 	with (dojo.html.gravity) {
@@ -37,6 +42,22 @@ dojo.html.gravity.SOUTH = 1 << 1;
 dojo.html.gravity.EAST = 1 << 2;
 dojo.html.gravity.WEST = 1 << 3;
 
+dojo.html.overElement = function(element, e){
+	element = dojo.byId(element);
+	var mouse = dojo.html.getCursorPosition(e);
+
+	with(dojo.html){
+		var inner = getBorderBox(element);
+		var absolute = getAbsolutePosition(element, true);
+		var top = absolute.y;
+		var bottom = top + inner.height;
+		var left = absolute.x;
+		var right = left + inner.width;
+	}
+	
+	return (mouse.x >= left && mouse.x <= right &&
+		mouse.y >= top && mouse.y <= bottom);
+}
 
 /**
  * Attempts to return the text as it would be rendered, with the line breaks

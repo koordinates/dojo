@@ -176,22 +176,6 @@ dojo.html.getCursorPosition = function(e){
 	return cursor;
 }
 
-dojo.html.overElement = function(element, e){
-	element = dojo.byId(element);
-	var mouse = dojo.html.getCursorPosition(e);
-
-	with(dojo.html){
-		var top = getAbsoluteY(element, true);
-		var bottom = top + getInnerHeight(element);
-		var left = getAbsoluteX(element, true);
-		var right = left + getInnerWidth(element);
-	}
-	
-	return (mouse.x >= left && mouse.x <= right &&
-		mouse.y >= top && mouse.y <= bottom);
-}
-
-
 /**
  * Like dojo.dom.isTag, except case-insensitive
 **/
