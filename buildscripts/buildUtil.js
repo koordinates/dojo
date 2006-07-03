@@ -2,8 +2,8 @@ var buildUtil = {};
 buildUtil.getDependencyList = function(dependencies, hostenvType) {
 
 	djConfig = {
-		baseRelativePath: "../",
-		// isDebug: true
+		baseRelativePath: "../"
+		// ,isDebug: true
 	};
 	
 	if(!dependencies){
@@ -58,8 +58,6 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	}
 	
 	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
-	
-	dojo.hostenv.loadedUris.push("../src/namespace.js");
 	
 	if(dependencies["prefixes"]){
 		var tmp = dependencies.prefixes;

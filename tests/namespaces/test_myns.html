@@ -9,6 +9,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript" src="../_bootstrap.js"></script>
 <script type="text/javascript">
+dojo.require("dojo.namespace");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.widget.Parse");
@@ -17,20 +18,99 @@ dojo.require("dojo.widget.Parse");
 // by merely using myns: widgets.  This reference is put here so that we don't have to check the test into
 // the dojo src/ tree.
 dojo.require('tests.namespaces.myns');
+
+dojo.addOnLoad(function(){
+	var progWidget1 = dojo.byId("progWidget1"); 
+	dojo.widget.createWidget("Button", null, progWidget1);
+
+	var progWidget2 = dojo.byId("progWidget2"); 
+	dojo.widget.createWidget("dojo:Button", null, progWidget2);
+
+	var progWidget3 = dojo.byId("progWidget3"); 
+	dojo.widget.createWidget("myns:Check", null, progWidget3);
+});
 </script>
 
 </head>
 <body>
-<dojo:Checkbox dojoDomain="html"></dojo:Checkbox> Dojo checkbock with the default HTML domain
+<div dojoType="Checkbox"></div> Dojo Checkbox using <code>&lt;div dojoType="Checkbox"&gt;</code>
 <br/>------<br/>
 
-<div dojoType="Checkbox"></div> Dojo Checkbox using dojoType
+<div dojoType="dojo:Checkbox"></div> Dojo Checkbox using <code>&lt;div dojoType="dojo:Checkbox"&gt;</code>
 <br/>------<br/>
 
-<dojo:Checkbox></dojo:Checkbox> Dojo Checkbox using namespaces
+<div dojoType="myns:Check"></div> MyNs checkbox using <code>&lt;div dojoType="myns:Check"&gt;</code>
 <br/>------<br/>
 
-<dojo:Button>MyButton</dojo:Button> Dojo Button using namespaces
+
+<button id="progWidget1">Click me!</button> Dojo button added programatically without any namespace using <code>dojo.widget.createWidget("Button")</code>
+<br/>------<br/>
+<button id="progWidget2">Click me!</button> Dojo button added programatically with dojo namespace specified <code>dojo.widget.createWidget("dojo:Button")</code>
+<br/>------<br/>
+<div id="progWidget3">Click me!</div> MyNs checkbox added programatically <code>dojo.widget.createWidget("myns:Check")</code>
+<br/>------<br/>
+
+<h3>
+	All the following should not usually be used with IE6 or IE7 
+</h3>
+<ul>
+<li>
+	Unless your	web-server is serving your pages with a content-type of text/xhtml.
+</li>
+<li>
+	See comments in the HTML markup of this page for details.
+</li>
+</ul>
+<br>
+<!--
+	All the following SHOULD NOT BE USED with IE6 or IE7 unless your
+	web-server is serving your pages with a content-type of text/xhtml
+	or text/xml.&nbsp;
+	An xhtml doctype in IE wont help either - only the content-type is
+	relevant for this. The doctype has NO EFFECT on how tags are parsed.
+
+	Details of IE problems (presuming content-type is the default text/html):
+		1) A tag like <dojo:Checkbox> is actually treated like <dojo:Checkbox />
+			* Note the <dojo:Button> example below - it doesn't have the
+			  caption inside the button in IE.
+		2) A tag like </dojo:Checkbox> is added as a DOM node rather than
+			acting as a closing tag.
+		3) Don't try to use custom tags in IE that dont have a namespace.
+			* <div><Checkbox></Checkbox></div> is parsed as <div></div>
+			* <div>xxx<Test></div> is parsed as <div>xxx<Test/></div> but
+			  IE6 barfs if you try to set innerHTML on the <Test> element
+			  or if you try to use appendChild() to add a child node.
+		Use one of the DOM inspectors for IE and you can see the problems.
+
+	Mostly pages are served using text/html and you will have IE users, so
+	you should do some research before considering using <ns:tag> style tags.
+	Users can't always control the content-type (e.g. using hosting, running
+	directly from filesystem, frames, among other reasons).
+
+	Relevant links (mostly recommending against xhtml for a variety of reasons):
+		http://www.hixie.ch/advocacy/xhtml
+		http://lachy.id.au/log/2005/12/xhtml-beginners
+
+	Dojo widget nodes are transformed into HTML (via the template or to
+	a <span> tag if no template) so neither of the following asides are
+	relevant, but they are interesting!
+	Aside: it seems you can't set CSS rules on xhtml tags so something like:
+	mynamespace:mytag {
+		background-color: red;
+	}
+	has no effect in FireFox or IE upon <mynamespace:mytag>. Use a class instead.
+	Aside: You can use getElementsByTagName() to find you own nodes defined
+	with a namespace, but in IE you need to leave off the namespace or it 
+	doesn't work.
+-->
+
+<dojo:Checkbox></dojo:Checkbox> Dojo Checkbox using namespaces <code>&lt;dojo:Checkbox&gt;</code>
+<br/>------<br/>
+
+<dojo:Checkbox dojoDomain="html"></dojo:Checkbox> Dojo checkbox with the default HTML domain <code>&lt;dojo:Checkbox dojoDomain="html"&gt;</code>
+<br/>------<br/>
+
+<dojo:Button>MyButton</dojo:Button> Dojo Button using namespaces <code>&lt;dojo:Button&gt;</code>
 <br/>------<br/>
 
 <!--
@@ -39,11 +119,11 @@ dojo.require('tests.namespaces.myns');
 <myns:Check dojoDomain="html"></myns:Check>	MyNs checkbox using namespaces and HTML domain (which is the default anyway)
 <br/>------<br/>
 -->
-<myns:Check></myns:Check>	MyNs checkbox using namespaces
+<myns:Check></myns:Check>	MyNs checkbox using namespaces <code>&lt;myns:Check&gt;</code>
 <br/>------<br/>
 
-
-<div dojoType="myns:Check"></div> MyNs checkbox using dojoType
+<div dojoType="myns:Check"></div> MyNs checkbox using dojoType <code>&lt;div dojoType="myns:Check"&gt;</code>
+<br/>------<br/>
 
 </body>
 </html>

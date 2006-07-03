@@ -57,8 +57,8 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// structure for storage of items.
 
 	this.data = [];
-	this.searchTimeout = 500;
-	this.searchLimit = 30;
+	this.searchTimeout = timeout || 500;
+	this.searchLimit = limit || 30;
 	this.searchType = "STARTSTRING"; // may also be "STARTWORD" or "SUBSTRING"
 	this.caseSensitive = false;
 	// for caching optimizations

@@ -1,15 +1,15 @@
 dojo.require("dojo.widget.html.ComboBox");
-dojo.require("dojo.doc");
+dojo.require("dojo.docs");
 dojo.require("dojo.widget.DocPane");
 
 var docCount = 0;
 var docKeys = [];
 
-//dojo.doc.getMeta(++docCount, _result, "dojo.animation.Animation.play");
+//dojo.docs.getMeta(++docCount, _result, "dojo.animation.Animation.play");
 //docKeys[docCount] = "meta";
-//dojo.doc.getSrc(++docCount, _result, "dojo.animation.Animation");
+//dojo.docs.getSrc(++docCount, _result, "dojo.animation.Animation");
 //docKeys[docCount] = "src";
-//dojo.doc.getDoc(++docCount, _result, "dojo.animation.Animation.play");
+//dojo.docs.getDoc(++docCount, _result, "dojo.animation.Animation.play");
 //docKeys[docCount] = "doc";
 //dojo.event.topic.publish("docSelectFunction", {selectKey: ++docCount, name: "dojo.animation.Animation.play"});
 //dojo.event.topic.subscribe("docFunctionDetail", _docResult);
@@ -18,7 +18,7 @@ function docInit(){
 	var search = dojo.widget.byId("search");
 	search.downArrowNode.style.visibility = "hidden";
 	var provider = search.dataProvider;
-	dojo.doc.functionNames(++docCount, docSetData);
+	dojo.docs.functionNames(++docCount, docSetData);
 	provider.startSearch = function(searchStr){
 		var searchLength = searchStr.length;
 		var searchType = "SUBSTRING";
@@ -39,13 +39,20 @@ function docInit(){
 dojo.addOnLoad(docInit);
 
 function logIn(){
-	dojo.doc.setUserName(dojo.byId("userName").value);
-	dojo.doc.setPassword(dojo.byId("password").value);
+	dojo.docs.setUserName(dojo.byId("userName").value);
+	dojo.docs.setPassword(dojo.byId("password").value);
 }
 
 function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 	var search = dojo.widget.byId("search").dataProvider;
-	search.setData.call(search, data);
+	var rePrivate = /\._[^.]+$/;
+	var output = [];
+	for(var i = 0, row; row = data[i]; i++){
+		if(!rePrivate.test(row[0])){
+			output.push(row);
+		}
+	}
+	search.setData.call(search, output);
 }
 
 function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
@@ -64,8 +71,9 @@ function _docResult(){
 }
 
 function docSearch(evt){
+	dojo.debug("docSearch(" + dojo.widget.byId("search").getValue() + ")");
 	dojo.widget.byId("search").hideResultList();
-	dojo.event.topic.publish("/doc/search", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
+	dojo.event.topic.publish("/docs/search", {selectKey: ++docCount, name: dojo.widget.byId("search").getValue()});
 }
 
 function docResults(/*Object*/ input){

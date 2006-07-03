@@ -3,6 +3,7 @@
 
 <section>
     <title>Features</title>
-<para>test</para>
+<para>TODO: json2nodes converter, allowing children to be specified like children: [{..}]</para>
+    <para>lazy parsing</para>
 </section>
 

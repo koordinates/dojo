@@ -176,7 +176,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 
-	expand: function(node, sync, callObj, callFunc) {
+	expand: function(node, sync, callObj, callFunc) {		
 		node.expand();
 		if (callFunc) callFunc.apply(callObj, [node]);
 	},

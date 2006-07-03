@@ -1,5 +1,5 @@
 dojo.provide("dojo.namespaces.dojo");
-//dojo.require("dojo.namespace");
+dojo.require("dojo.namespace");
 
 (function(){
 	//mapping of all widget short names to their full package names
