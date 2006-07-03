@@ -54,7 +54,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 		}
 
 		if(!this.doLayout){
-			dojo.html.addClass(this.domNode, "dojoTabNoLayout");
+			dojo.html.addClass(this.dojoTabLabels, "dojoTabNoLayout");
 			if (this.labelPosition == 'bottom') {
 				var p = this.dojoTabLabels.parentNode;
 				p.removeChild(this.dojoTabLabels);
@@ -96,7 +96,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 		innerDiv.appendChild(titleSpan);
 		dojo.html.disableSelection(titleSpan); 
 		
-		if(this.closeButton=="tab"){
+		if(this.closeButton=="tab" || tab.tabCloseButton){
 			var img = document.createElement("span");
 			dojo.html.addClass(img, "dojoTabPaneTabClose");
 			dojo.event.connect(img, "onclick", dojo.lang.hitch(this, 
@@ -290,5 +290,6 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
 	label: "",
-	selected: false	// is this tab currently selected?
+	selected: false,	// is this tab currently selected?
+	tabCloseButton: false
 });

@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>TabContainer Demo</title>
+<title>TabContainer Demo - noLayout</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 
 <script type="text/javascript">
@@ -104,7 +104,7 @@ function testClose(pane,tab) {
 			venga venga venga venga venga venga venga venga venga venga venga venga</p>
 		</div>
 
-		<div id="subTabContainer" dojoType="TabContainer" label="Sub TabContainer" doLayout="false">	
+		<div id="subTabContainer" dojoType="TabContainer" label="Sub TabContainer" doLayout="false" closeButton="tab">
 			<a dojoType="LinkPane" href="tab1.html">SubTab 1</a>		
 			<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
 		</div>
@@ -116,27 +116,16 @@ function testClose(pane,tab) {
 	and the position will change based on the current height of the TabContainer.
 	</p>
 
-
-	<p>The following TabContainer has the tabs at the bottom.</p>
-
-
-	<!-- 2ND TABCONTAINER -->
-
-	<div id="TabContainerBottom" dojoType="TabContainer" labelPosition="bottom" doLayout="false">	
-		<a dojoType="LinkPane" href="tab1.html">SubTab 1</a>		
-		<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
-	</div>
-
-	<p><small>OOOPS in FireFox this shouldnt be next to the tab, and the tab image is wrong.</small></p>
-	<p>The following TabContainer has a fixed height set in CSS - see how FixedSizeRule is used in this page.</p>
+	<p>The following TabContainer has a fixed height set in CSS - see how FixedSizeRule is used in this page.
+ It also uses the per-tab close button feature - setting tabCloseButton per widget.</p>
 
 
-	<!-- 3RD TABCONTAINER -->
+	<!-- 2ND TABCONTAINER -  -->
 
 	<div id="FixedSizeRule">
 		<div id="TabContainerFixedHeight" dojoType="TabContainer" doLayout="false">
 			<a dojoType="LinkPane" href="tab1.html">SubTab 1</a>		
-			<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
+			<a dojoType="LinkPane" href="tab2.html" selected="true" tabCloseButton="true">SubTab 2</a>
 			<div dojoType="ContentPane" label="Tab 3">
 				<h1>I am tab 3</h1>
 				<p>And I was already part of the page! That's cool, no?</p>
@@ -167,8 +156,30 @@ function testClose(pane,tab) {
 				tortor pharetra congue. Suspendisse pulvinar.
 				</p>
 			</div>
+			<div dojoType="ContentPane" label="Another Tab" tabCloseButton="true">
+				<h1>I love local content</h1>
+				<p>And I'm not ashamed to admit it.</p>
+				<p>venga venga venga venga venga venga venga venga venga venga venga venga
+				venga venga venga venga venga venga venga venga venga venga venga venga
+				venga venga venga venga venga venga venga venga venga venga venga venga
+				venga venga venga venga venga venga venga venga venga venga venga venga
+				venga venga venga venga venga venga venga venga venga venga venga venga
+				venga venga venga venga venga venga venga venga venga venga venga venga
+				venga venga venga venga venga venga venga venga venga venga venga venga</p>
+			</div>	
 		</div>
 	</div>
+
+	<p>The following TabContainer has the tabs at the bottom.</p>
+
+	<!-- 3RD TABCONTAINER -->
+
+	<div id="TabContainerBottom" dojoType="TabContainer" labelPosition="bottom" doLayout="false">	
+		<a dojoType="LinkPane" href="tab1.html">SubTab 1</a>		
+		<a dojoType="LinkPane" href="tab2.html" selected="true">SubTab 2</a>
+	</div>
+	<p><small>OOOPS in FireFox this shouldnt be next to the tab.</small></p>
+
 	<br><br>
 	<p>And they lived happily ever after. The end.</p>
 
