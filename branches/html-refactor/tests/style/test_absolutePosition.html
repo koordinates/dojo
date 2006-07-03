@@ -10,22 +10,23 @@
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script language="JavaScript" type="text/javascript">
-		dojo.require("dojo.style");
 		dojo.require("dojo.debug");
-		dojo.require("dojo.html");	// dojo.style depends on dojo.html but doesn't include it!
+		dojo.require("dojo.html.layout");
+		dojo.require("dojo.html.extras");
 		dojo.require("dojo.event.*");
 	</script>
 	<script>
 		function onMouseMove(e){
 			dojo.byId("m").innerHTML= e.pageX + ", " + e.pageY;
 			var btn=dojo.byId("btn");
-			var pns = dojo.style.getAbsolutePosition(btn, false);
-			var pws = dojo.style.getAbsolutePosition(btn, true);
+			var pns = dojo.html.getAbsolutePosition(btn, false);
+			var pws = dojo.html.getAbsolutePosition(btn, true);
 			dojo.byId("f").innerHTML= pns.x + ", " + pns.y;
 			dojo.byId("t").innerHTML= pws.x + ", " + pws.y;
 			dojo.byId("o").innerHTML= dojo.html.overElement(btn, e);
+			var scroll = dojo.html.getScroll();
 			dojo.byId("s").innerHTML=
-				dojo.html.getScrollLeft() + ", " + dojo.html.getScrollTop();
+				scroll.left + ", " + scroll.top;
 		}
 	</script>
 </head>
@@ -35,11 +36,11 @@
 This file tests the code to determine mouse position and element position with respect to the document or viewport.
 </p>
 <p>
-<b>dojo.style.getAbsolutePosition(xyz, true)</b> tells you where you would position a node
+<b>dojo.html.getAbsolutePosition(xyz, true)</b> tells you where you would position a node
 inside document.body such that it was on top of xyz.
 It works well in conjunction with <b>event.pageX/Y</b>.</p>
 <p>
-<b>dojo.style.getAbsolutePosition(xyz, false)</b> returns the position that would be returned
+<b>dojo.html.getAbsolutePosition(xyz, false)</b> returns the position that would be returned
 by event.clientX/Y if the mouse were directly over the top/left of this node.
 </p>
 
