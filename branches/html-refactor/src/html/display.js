@@ -1,7 +1,6 @@
-dojo.require("dojo.html.style");
-dojo.provide("dojo.html.style.display");
+dojo.provide("dojo.html.display");
 
-dojo.require("dojo.lang.common");
+dojo.require("dojo.html.style");
 
 dojo.html._toggle = function(node, tester, setter){
 	node = dojo.byId(node);
@@ -71,7 +70,7 @@ dojo.html.suggestDisplayByTagName = function(node)
 // Otherwise, if 'display' is false, set style.display to 'none'.
 // Finally, set 'display' to a suggested display value based on the node's tag
 dojo.html.setDisplay = function(node, display){
-	dojo.html.setStyle(node, 'display', (dojo.lang.isString(display) ? display : (display ? dojo.html.suggestDisplayByTagName(node) : 'none')));
+	dojo.html.setStyle(node, 'display', ((display instanceof String || typeof display == "string") ? display : (display ? dojo.html.suggestDisplayByTagName(node) : 'none')));
 }
 
 // isDisplayed() is true if the the computed display style for node is not 'none'
@@ -93,7 +92,7 @@ dojo.html.toggleDisplay = function(node){
 // Otherwise, if 'visibility' is false, set style.visibility to 'hidden'.
 // Finally, set style.visibility to 'visible'.
 dojo.html.setVisibility = function(node, visibility){
-	dojo.html.setStyle(node, 'visibility', (dojo.lang.isString(visibility) ? visibility : (visibility ? 'visible' : 'hidden')));
+	dojo.html.setStyle(node, 'visibility', ((visibility instanceof String || typeof visibility == "string") ? visibility : (visibility ? 'visible' : 'hidden')));
 }
 
 // isVisible() is true if the the computed visibility style for node is not 'hidden'

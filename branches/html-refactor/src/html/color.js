@@ -1,5 +1,5 @@
 dojo.require("dojo.html.style");
-dojo.provide("dojo.html.style.color");
+dojo.provide("dojo.html.color");
 
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.lang.common");
