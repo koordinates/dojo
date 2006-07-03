@@ -1,9 +1,10 @@
 dojo.provide("dojo.lfx.html");
 
 dojo.require("dojo.lfx.Animation");
-dojo.require("dojo.html.style.display");
-dojo.require("dojo.html.style.color");
-dojo.require("dojo.html.style.position");
+dojo.require("dojo.lang.array");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.color");
+dojo.require("dojo.html.layout");
 
 dojo.lfx.html._byId = function(nodes){
 	if(!nodes){ return []; }

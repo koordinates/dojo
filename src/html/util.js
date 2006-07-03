@@ -1,5 +1,4 @@
-dojo.require("dojo.html.style.position");
-dojo.provide("dojo.html.style.util");
+dojo.provide("dojo.html.util");
 
 dojo.html.sumAncestorProperties = function(node, prop){
 	node = dojo.byId(node);
@@ -15,14 +14,6 @@ dojo.html.sumAncestorProperties = function(node, prop){
 		node = node.parentNode;
 	}
 	return retVal;
-}
-
-dojo.html.getMarginExtent = function(node, side){
-	return dojo.html._sumPixelValues(node, ["margin-" + side], dojo.html.isPositionAbsolute(node));
-}
-
-dojo.html.getPaddingExtent = function(node, side){
-	return dojo.html._sumPixelValues(node, ["padding-" + side], true);
 }
 
 dojo.html.styleSheet = null;

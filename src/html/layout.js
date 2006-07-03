@@ -1,8 +1,8 @@
-dojo.require("dojo.html.style");
-dojo.provide("dojo.html.style.position");
+dojo.provide("dojo.html.layout");
 
+dojo.require("dojo.html.style");
 dojo.require("dojo.html.common");
-dojo.require("dojo.html.style.util");
+dojo.require("dojo.html.util");
 
 dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 	node = dojo.byId(node, node.ownerDocument);
@@ -132,6 +132,14 @@ dojo.html.getBorder = function(node){
 		width: borderExtent(node, 'left') + borderExtent(node, 'right'),
 		height: borderExtent(node, 'top') + borderExtent(node, 'bottom')
 	};
+}
+
+dojo.html.getMarginExtent = function(node, side){
+	return dojo.html._sumPixelValues(node, ["margin-" + side], dojo.html.isPositionAbsolute(node));
+}
+
+dojo.html.getPaddingExtent = function(node, side){
+	return dojo.html._sumPixelValues(node, ["padding-" + side], true);
 }
 
 dojo.html.getPadding = function(node){
