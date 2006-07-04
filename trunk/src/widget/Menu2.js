@@ -615,7 +615,7 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  				// rightclick, listen to mousedown events
  				node._menufixer_konq = function(e){
  					if (e.button==2 ){
- 						e.preventDefault(); // need to prevent browsers menu
+ 						dojo.event.browser.stopEvent(e); // need to prevent browsers menu
  						this.oncontextmenu(e);
  					}
  				};
