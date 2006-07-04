@@ -2,15 +2,16 @@
 	<table class="timeContainer" cellspacing="0" >
 		<thead>
 			<tr>
-				<td>Hour</td>
-				<td class="minutesHeading">Minute</td>
-				<td>&nbsp;</td>
+				<td class="timeCorner cornerTopLeft" valign="top">&nbsp;</td>
+				<td class="timeLabelContainer hourSelector">Hour</td>
+				<td class="timeLabelContainer minutesHeading">Minute</td>
+				<td class="timeCorner cornerTopRight" valign="top">&nbsp;</td>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td valign="top">
-					<table>
+				<td valign="top" colspan="2" class="hours">
+					<table align="center">
 						<tbody dojoAttachPoint="hourContainerNode"  
 							dojoAttachEvent="onClick: onSetSelectedHour;">
 							<tr>
@@ -40,8 +41,8 @@
 						</tbody>
 					</table>
 				</td>
-				<td valign="top" class="minutes">
-					<table>
+				<td valign="top" class="minutes" colspan="2">
+					<table align="center">
 						<tbody dojoAttachPoint="minuteContainerNode" 
 							dojoAttachEvent="onClick: onSetSelectedMinute;">
 							<tr>
@@ -71,28 +72,26 @@
 						</tbody>
 					</table>
 				</td>
-				<td valign="top">
-					<table>
+			</tr>
+			<tr>
+				<td class="cornerBottomLeft">&nbsp;</td>
+				<td valign="top" class="timeOptions">
+					<table class="amPmContainer">
 						<tbody dojoAttachPoint="amPmContainerNode" 
 							dojoAttachEvent="onClick: onSetSelectedAmPm;">
 							<tr>
 								<td>AM</td>
-							</tr>
-							<tr>
 								<td>PM</td>
 							</tr>
 						</tbody>
 					</table>
 				</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td>
+				<td class="timeOptions">
 					<div dojoAttachPoint="anyTimeContainerNode" 
 						dojoAttachEvent="onClick: onSetSelectedAnyTime;" 
 						class="anyTimeContainer">any</div>
 				</td>
-				<td></td>
+				<td class="cornerBottomRight">&nbsp;</td>
 			</tr>
 		</tbody>
 	</table>
