@@ -52,7 +52,7 @@
 }
 
 .monthCurveTR {
-		background: url("images/dpCurveTR.png") no-repeat top left !important;
+		background: url("images/dpCurveTR.png") no-repeat top right !important;
 }
 
 
@@ -85,7 +85,7 @@
 }
 
 .curveBR {
-	background: url("images/dpCurveBR.png") bottom left no-repeat !important;
+	background: url("images/dpCurveBR.png") bottom right no-repeat !important;
 	width:9px !important;
 	padding:0;
 	margin:0;
