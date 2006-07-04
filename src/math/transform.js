@@ -5,6 +5,13 @@ dojo.require("dojo.lang");
 /* TODO: figure out a way of reconciling the matrix functionality of Cal's
 	to the drawing needs.
 */
+
+/*
+	3 x 3 matrix for transformation purposes:
+		| a  b  c |		| 1 0 0 |
+		| d  e  f |		| 0 1 0 |
+		| g  h  i |		| 0 0 1 |
+*/
 dojo.math.Matrix=function(){
 	this.a=this.e=this.i=1;
 	this.b=this.c=this.d=this.f=this.g=this.h=0;
