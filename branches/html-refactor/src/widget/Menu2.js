@@ -248,6 +248,7 @@ dojo.widget.defineWidget(
 
 		if(e["preventDefault"]){
 			e.preventDefault();
+			e.stopPropagation();
 		}
 	}
 });
@@ -615,7 +616,7 @@ dojo.widget.Menu2.OperaAndKonqFixer = new function(){
  				// rightclick, listen to mousedown events
  				node._menufixer_konq = function(e){
  					if (e.button==2 ){
- 						e.stopPropagation(); // need to prevent browsers menu
+ 						e.preventDefault(); // need to prevent browsers menu
  						this.oncontextmenu(e);
  					}
  				};
