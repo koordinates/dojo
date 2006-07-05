@@ -368,7 +368,11 @@ dojo.html.getElementWindow = function(element){
 dojo.html.getDocumentWindow = function(doc){
 	// With Safari, there is not wa to retrieve the window from the document, so we must fix it.
 	if(dojo.render.html.safari && !doc._parentWindow){
-		dojo.html._fixSafariDocumentParentWindow( window.top );
+		var w=window.top;
+		w.document.parentWindow=w;
+		for(var i=0; i<w.frames.length; i++){
+			w.frames[i].document.parentWindow=w.frames[i];
+		}
 	}
 
 	//In some IE versions (at least 6.0), document.parentWindow does not return a 
@@ -383,16 +387,4 @@ dojo.html.getDocumentWindow = function(doc){
 	}
 
 	return doc._parentWindow || doc.parentWindow || doc.defaultView;
-}
-
-/*
-	This is a Safari specific function that fix the reference to the parent
-	window from the document object.
-*/
-dojo.html._fixSafariDocumentParentWindow = function( targetWindow ){
-	targetWindow.document.parentWindow = targetWindow;
-	
-	for (var i = 0; i < targetWindow.frames.length; i++){
-		dojo.html._fixSafariDocumentParentWindow(targetWindow.frames[i]);
-	}
 }
