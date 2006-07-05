@@ -1,6 +1,8 @@
+dojo.require("dojo.html.common");
 dojo.provide("dojo.html.selection");
 
-dojo.require("dojo.html.*");
+dojo.require("dojo.dom");
+dojo.require("dojo.lang.common");
 
 /**
  * type of selection

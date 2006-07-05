@@ -6,8 +6,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.event");
 function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
 
@@ -25,7 +24,7 @@ h3 { color: black; font-weight: normal; font-style: italic; }
 </style>
 
 <!---------------------------------------------------------------------------->
-<h2><code>setOuter[Width|Height]</code></h2>
+<h2><code>setOuterSize</code></h2>
 
 <ul>
   <li>Colored bars bracket test boxes to reveal exterior margins</li>
@@ -90,29 +89,27 @@ function processMetrics()
 	{
 		var dump = document.getElementById('dump-' + i);
 		var box = document.getElementById('box-' + i);
-		var ok = dojo.style.setMarginBoxWidth(box, targetW);
-		ok = ok && dojo.style.setMarginBoxHeight(box, targetH);
+		var ok = dojo.html.setOuterSize(box, { width: targetW, height: targetH });
 		if (!ok)	{
 			dump.className = 'failure';
 			dump.innerHTML = "Failed to set size.";
 			report.push('<span class="failure">FAILED:</span> could not set size for style [' + styles[i] + ']');
 			continue;
 		}
-		var w = dojo.style.getMarginBoxWidth(box);
-		var h = dojo.style.getMarginBoxHeight(box);
-		ok = !isNaN(w) && !isNaN(h);
+		var mbox = dojo.html.getMarginBox(box);
+		ok = !isNaN(mbox.width) && !isNaN(mbox.height);
 		if (!ok){
 			dump.className = 'unknown';
 			dump.innerHTML = "uknown result";
 			report.push('<span class="unknown">UNKNOWN<span> result for style [' + styles[i] + ']');
-		}else if (w == targetW && h == targetH)	{
+		}else if (mbox.width == targetW && mbox.height == targetH)	{
 			dump.className = 'success';
 			dump.innerHTML = "success";
 			report.push('<span class="success">Success:</span> for style [' + styles[i] + ']');
 		}else{
 			dump.className = 'failure';
-			dump.innerHTML = "Final size (" + w + ', ' + h + ") doesn't match target (" + targetW + ', ' + targetH + ')';
-			report.push('<span class="failure">FAILED:</span> final size (' + w + ', ' + h + ') doesn`t match target (' + targetW + ', ' + targetH + '): for style [' + styles[i] + ']');
+			dump.innerHTML = "Final size (" + mbox.width + ', ' + mbox.height + ") doesn't match target (" + targetW + ', ' + targetH + ')';
+			report.push('<span class="failure">FAILED:</span> final size (' + mbox.width + ', ' + mbox.height + ') doesn`t match target (' + targetW + ', ' + targetH + '): for style [' + styles[i] + ']');
 		}
 	}
 	document.getElementById('pacify').innerHTML = '';

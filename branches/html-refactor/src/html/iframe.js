@@ -1,5 +1,5 @@
 dojo.provide("dojo.html.iframe");
-dojo.require("dojo.html.extras");
+dojo.require("dojo.html.util");
 
 /*
  * Functions to work with iframes

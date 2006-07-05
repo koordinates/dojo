@@ -1,8 +1,23 @@
 dojo.provide("dojo.html.layout");
 
-dojo.require("dojo.html.style");
 dojo.require("dojo.html.common");
-dojo.require("dojo.html.util");
+dojo.require("dojo.html.style");
+
+dojo.html.sumAncestorProperties = function(node, prop){
+	node = dojo.byId(node);
+	if(!node){ return 0; } // FIXME: throw an error?
+	
+	var retVal = 0;
+	while(node){
+		var val = node[prop];
+		if(val){
+			retVal += val - 0;
+			if(node==dojo.body()){ break; }// opera and khtml #body & #html has the same values, we only need one value
+		}
+		node = node.parentNode;
+	}
+	return retVal;
+}
 
 dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 	node = dojo.byId(node, node.ownerDocument);
