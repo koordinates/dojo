@@ -4,7 +4,8 @@ dojo.require("dojo.widget.html.DatePicker");
 dojo.require("dojo.widget.MonthlyCalendar");
 //dojo.require("dojo.widget.MonthlyCalendar.util");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
 
 dojo.widget.html.MonthlyCalendar= function(){
 	dojo.widget.MonthlyCalendar.call(this);
@@ -31,7 +32,7 @@ dojo.lang.extend(dojo.widget.html.MonthlyCalendar, {
 	},
 
 	createDayContents: function(node,mydate) {
-		dojo.dom.removeChildren(node);
+		dojo.html.removeChildren(node);
 		node.appendChild(document.createTextNode(mydate.getDate()));	
 			for(var x=0; x<this.iCalendars.length; x++) {
 				var evts = this.iCalendars[x].getEvents(mydate);
@@ -40,7 +41,7 @@ dojo.lang.extend(dojo.widget.html.MonthlyCalendar, {
 					var el = document.createElement("div");
 					dojo.html.addClass(el, "dojoMonthlyCalendarEvent");          
 					el.appendChild(document.createTextNode(evts[y].summary.value));
-					el.width = dojo.style.getContentWidth(node);
+					el.width = dojo.html.getContentSize(node).width;
 					node.appendChild(el);
 				}
 			}

@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.ResizableTextarea");
-dojo.require("dojo.html");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ResizeHandle");

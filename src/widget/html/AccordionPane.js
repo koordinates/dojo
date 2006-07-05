@@ -42,12 +42,12 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 	},
 
 	getCollapsedHeight: function() {
-		return dojo.style.getOuterHeight(this.labelNode)+1;
+		return dojo.html.getOuterSize(this.labelNode).height+1;
 	},
 
 	setSizes: function() {
 		var siblings = this.domNode.parentNode.childNodes;
-		var height=dojo.style.getInnerHeight(this.domNode.parentNode)-this.getCollapsedHeight();
+		var height=dojo.html.getInnerSize(this.domNode.parentNode).height-this.getCollapsedHeight();
 
 		this.siblingWidgets = [];
 	
@@ -62,10 +62,10 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 		}
 	
 		for (var x=0; x<this.siblingWidgets.length; x++) {
-			dojo.style.setOuterHeight(this.siblingWidgets[x].containerNode,height);
+			dojo.html.setOuterSize(this.siblingWidgets[x].containerNode,{ height: height });
 		}
 
-		dojo.style.setOuterHeight(this.containerNode,height);
+		dojo.html.setOuterSize(this.containerNode,{ height: height});
 	},
 
 	onLabelClick: function() {

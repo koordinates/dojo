@@ -1,6 +1,5 @@
 dojo.provide("dojo.widget.html.GoogleMap");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
 dojo.require("dojo.math");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.widget.HtmlWidget");

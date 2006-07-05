@@ -5,7 +5,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.string");
 dojo.require("dojo.string.extras");
-dojo.require("dojo.style");
+dojo.require("dojo.html.style");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.ContentPane",
@@ -259,7 +259,7 @@ dojo.widget.defineWidget(
 									}
 									break;
 								case "style":// style
-									path = dojo.style.fixPathsInCssText(origPath, url);
+									path = dojo.html.fixPathsInCssText(origPath, url);
 									break;
 								default:
 									path = origPath;
@@ -280,7 +280,7 @@ dojo.widget.defineWidget(
 				regex = /(?:<(style)[^>]*>([\s\S]*?)<\/style>|<link ([^>]*rel=['"]?stylesheet['"]?[^>]*)>)/i;
 				while(match = regex.exec(s)){
 					if(match[1] && match[1].toLowerCase() == "style"){
-						styles.push(dojo.style.fixPathsInCssText(match[2],url));
+						styles.push(dojo.html.fixPathsInCssText(match[2],url));
 					}else if(attr = match[3].match(/href=(['"]?)([^'">]*)\1/i)){
 						styles.push({path: attr[2]});
 					}
@@ -386,7 +386,7 @@ dojo.widget.defineWidget(
 			if(this._callOnUnLoad){ this.onUnLoad(); }// this tells a remote script clean up after itself
 			this._callOnUnLoad = true;
 	
-			if(!data || dojo.dom.isNode(data)){
+			if(!data || dojo.html.isNode(data)){
 				// if we do a clean using setContent(""); or setContent(#node) bypass all parsing, extractContent etc
 				this._setContent(data);
 				this.onResized();
@@ -401,9 +401,9 @@ dojo.widget.defineWidget(
 				// insert styles from content (in same order they came in)
 				for(var i = 0; i < data.styles.length; i++){
 					if(data.styles[i].path){
-						this._styleNodes.push(dojo.style.insertCssFile(data.styles[i].path));
+						this._styleNodes.push(dojo.html.insertCssFile(data.styles[i].path));
 					}else{
-						this._styleNodes.push(dojo.style.insertCssText(data.styles[i]));
+						this._styleNodes.push(dojo.html.insertCssText(data.styles[i]));
 					}
 				}
 	

@@ -5,6 +5,8 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.widget.ShowSlide");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.lfx.html");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.animation.Animation");
 dojo.require("dojo.graphics.color");
 
@@ -123,11 +125,11 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 			if(action.action){
 				var duration = action.duration || 1000;
 				if(action.action == "fade"){
-					dojo.style.setOpacity(component, 0);
+					dojo.html.setOpacity(component, 0);
 					dojo.lfx.html.fadeIn(component, duration).play(true);
 				}else if(action.action == "fly"){
-					var width = dojo.style.getMarginBoxWidth(component);
-					var position = dojo.style.getAbsolutePosition(component);
+					var width = dojo.html.getMarginBox(component).width;
+					var position = dojo.html.getAbsolutePosition(component);
 					// alert(position);
 					component.style.position = "relative";
 					component.style.left = -(width + position.x) + "px";
