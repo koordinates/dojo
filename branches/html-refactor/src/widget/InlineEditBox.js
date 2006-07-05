@@ -5,8 +5,8 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.string");
-dojo.require("dojo.style");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
 
 dojo.widget.tags.addParseTreeHandler("dojo:inlineeditbox");
 
@@ -47,7 +47,7 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 		// put original node back in the document, and attach handlers
 		// which hide it and display the editor
 		this.editable = this.getFragNodeRef(frag);
-		dojo.dom.insertAfter(this.editable, this.form);
+		dojo.html.insertAfter(this.editable, this.form);
 		dojo.event.connect(this.editable, "onmouseover", this, "mouseover");
 		dojo.event.connect(this.editable, "onmouseout", this, "mouseout");
 		dojo.event.connect(this.editable, "onclick", this, "beginEdit");
@@ -84,13 +84,14 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 		// setup the form's <input> or <textarea> field, as specified by mode
 		var ee = this[this.mode.toLowerCase()];
 		ee.value = dojo.string.trim(this.textValue);
-		ee.style.fontSize = dojo.style.getStyle(this.editable, "font-size");
-		ee.style.fontWeight = dojo.style.getStyle(this.editable, "font-weight");
-		ee.style.fontStyle = dojo.style.getStyle(this.editable, "font-style");
-		ee.style.width = Math.max(dojo.html.getInnerWidth(this.editable), this.minWidth) + "px";
+		ee.style.fontSize = dojo.html.getStyle(this.editable, "font-size");
+		ee.style.fontWeight = dojo.html.getStyle(this.editable, "font-weight");
+		ee.style.fontStyle = dojo.html.getStyle(this.editable, "font-style");
+		var inner = dojo.html.getInnerSize(this.editable);
+		ee.style.width = Math.max(inner.width, this.minWidth) + "px";
 		if(this.mode.toLowerCase()=="textarea"){
 			ee.style.display = "block";
-			ee.style.height = Math.max(dojo.html.getInnerHeight(this.editable), this.minHeight) + "px";
+			ee.style.height = Math.max(inner.height, this.minHeight) + "px";
 		} else {
 			ee.style.display = "";
 		}
