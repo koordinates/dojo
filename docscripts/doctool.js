@@ -1,6 +1,7 @@
 dojo.require("dojo.widget.html.ComboBox");
 dojo.require("dojo.docs");
 dojo.require("dojo.widget.DocPane");
+dojo.require("dojo.event.*");
 
 var docCount = 0;
 var docKeys = [];
@@ -33,15 +34,9 @@ function docInit(){
 		}
 		this._preformSearch(searchStr, searchType);
 	}
-	dojo.event.connect(dojo.byId("logIn"), "onclick", logIn);
 	dojo.event.connect(search, "selectOption", docSearch);
 }
 dojo.addOnLoad(docInit);
-
-function logIn(){
-	dojo.docs.setUserName(dojo.byId("userName").value);
-	dojo.docs.setPassword(dojo.byId("password").value);
-}
 
 function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 	var search = dojo.widget.byId("search").dataProvider;

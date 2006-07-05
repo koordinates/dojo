@@ -1,5 +1,16 @@
 <div class="dojoDocPane">
 	<div dojoAttachPoint="containerNode"></div>
+	<div dojoAttachPoint="dialog">
+		<div class="dojoDocDialogContainer" dojoAttachPoint="dialogBg">
+			<div class="dojoDocDialog" dojoAttachPoint="dialogFg">
+				<h2>Log In</h2>
+				<p><input id="dojoDocUserName" dojoAttachPoint="userName"><label for="dojoDocUserName">User Name:</label></p>
+				<p><input id="dojoDocPassword" dojoAttachPoint="password" type="password"><label for="dojoDocPassword">Password:</label></p>
+				<p><input type="button" dojoAttachPoint="cancel" value="cancel"> <input type="button" dojoAttachPoint="logIn" value="Log In"></p>
+				<p></p>
+			</div>
+		</div>
+	</div>
 	<div dojoAttachPoint="nav"><span>Detail</span> | <span>Source</span> | <span>Examples</span> | <span>Walkthrough</span></div>
 	<div dojoAttachPoint="detail">
 		<h1>Detail: <span dojoAttachPoint="fn">dojo.select</span></h1>
@@ -22,7 +33,7 @@
 		<div dojoAttachPoint="row"><a href="#" dojoAttachPoint="fnLink">dojo.fnLink</a><span> - <span dojoAttachPoint="summary">summary</span></span></div>
 	</div>
 	<div dojoAttachPoint="packag">
-		<h1>Package: <span dojoAttachPoint="pkg">dojo.package</span></h1>
+		<h1>Package: <span dojoAttachPoint="pkg">dojo.package</span> <span dojoAttachPoint="edit" style="font-size: 8px;">[edit]</span> <span dojoAttachPoint="save" style="font-size: 8px;">[save]</span></h1>
 		<div dojoAttachPoint="pkgDescription">Description</div>
 		<div class="dojoDocMethods" dojoAttachPoint="methods">
 			<h2>Methods</h2>
