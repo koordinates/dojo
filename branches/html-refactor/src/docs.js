@@ -395,6 +395,7 @@ dojo.lang.mixin(dojo.docs, {
 	_onPkgResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt, /*Object*/ input){
 		dojo.debug("_onPkgResults(" + evt.type + ")");
 		var description = "";
+		var path = "";
 		var methods = {};
 		var requires = {};
 		if(input){
@@ -407,12 +408,14 @@ dojo.lang.mixin(dojo.docs, {
 					}
 				}
 			}
+			path = input.pkgdoc.path;
 			description = input.pkgdoc.description;
 			methods = input.pkgmeta.methods;
 			requires = input.pkgmeta.requires;
 		}
 		var pkg = evt.name.replace("_", "*");
 		var results = {
+			path: path,
 			description: description,
 			size: 0,
 			methods: [],
@@ -491,7 +494,7 @@ dojo.lang.mixin(dojo.docs, {
 			input.selectKey = ++dojo.docs._count;
 		}
 		input.expects = {
-			"docresults": ["meta", "doc"]
+			"docresults": ["meta", "doc", "pkgmeta"]
 		}
 		dojo.docs.getMeta(input, name, dojo.docs._onDocSelectResults);
 		dojo.docs.getDoc(input, name, dojo.docs._onDocSelectResults);
@@ -506,6 +509,9 @@ dojo.lang.mixin(dojo.docs, {
 	},
 	_onDocSelectResults: function(/*String*/ type, /*Object*/ data, /*Object*/ evt, /*Object*/ input){
 		dojo.debug("_onDocSelectResults(" + evt.type + ", " + evt.name + ")");
+		if(evt.type == "meta"){
+			dojo.docs.getPkgMeta(input, evt.pkg, dojo.docs._onDocSelectResults);
+		}
 		if(input){
 			input[evt.type] = data;
 			if(input.expects && input.expects.docresults){
@@ -631,7 +637,7 @@ dojo.lang.mixin(dojo.docs, {
 			var cached = getCache(name, META);
 
 			if(cached[DESCRIPTION]){
-				callbacks.shift()(LOAD, {description: cached[DESCRIPTION]}, input, input.input);
+				callbacks.shift()(LOAD, {description: cached[DESCRIPTION], path: cached.path}, input, input.input);
 				return;
 			}
 
@@ -646,10 +652,11 @@ dojo.lang.mixin(dojo.docs, {
 				if(list && list.length && list[0]["main/text"]){
 					description = docs._getMainText(list[0]["main/text"]);
 					cached[DESCRIPTION] = description;
+					cached.path = list[0].name;
 				}
 
 				if(callbacks && callbacks.length){
-					callbacks.shift()(LOAD, {description: description}, input, input.input);
+					callbacks.shift()(LOAD, {description: description, path: cached.path}, input, input.input);
 				}
 			}
 			obj.error = function(data){
@@ -829,21 +836,24 @@ dojo.lang.mixin(dojo.docs, {
 			}
 		}
 	},
-
 	selectFunction: function(/*String*/ name, /*String?*/ id){
 		// summary: The combined information
 	},
+	savePackage: function(/*String*/ path, /*Object*/ parameters){
+		var props = {};
+		props.form = "DocPkgForm";
+		props.path = ["/WikiHome/DojoDotDoc/", path].join("");
 
-	savePackage: function(/*String*/ name, /*String*/ description){
-		dojo.docs._rpc.callRemote(
-			"saveForm",
-			{
-				form: "DocPkgForm",
-				path: "/WikiHome/DojoDotDoc/id",
-				pname1: "main/text",
-				pvalue1: "Test"
-			}
-		).addCallbacks(dojo.docs._results, dojo.docs._results);
+		var i = 1;
+		if(parameters.description){
+			props[["pname", i].join("")] = "main/text";
+			props[["pvalue", i++].join("")] = parameters.description;
+		}
+		
+		dojo.docs._rpc.callRemote("saveForm",	props).addCallbacks(dojo.docs.savedPackage, dojo.docs.savedPackage);
+	},
+	savedPackage: function(){
+		dojo.debug("Saved");
 	},
 	functionPackages: function(/*mixed*/ selectKey, /*String*/ name, /*Function*/ callback, /*Object*/ input){
 		// summary: Gets the package associated with a function and stores it in the .pkg value of input
@@ -881,10 +891,39 @@ dojo.lang.mixin(dojo.docs, {
 	},
 	setUserName: function(/*String*/ name){
 		dojo.docs._userName = name;
+		if(dojo.docs._password){
+			dojo.docs._logIn();
+		}
 	},
 	setPassword: function(/*String*/ password){
 		dojo.docs._password = password;
+		if(dojo.docs._userName){
+			dojo.docs._logIn();
+		}
 	},
+	_logIn: function(){
+		dojo.io.bind({
+			url: dojo.docs._rpc.serviceUrl.toString(),
+			method: "post",
+			mimetype: "text/json",
+			content: {
+				username: dojo.docs._userName,
+				password: dojo.docs._password
+			},
+			load: function(type, data){
+				if(data.error){
+					dojo.docs.logInSuccess();
+				}else{
+					dojo.docs.logInFailure();
+				}
+			},
+			error: function(){
+				dojo.docs.logInFailure();
+			}
+		});
+	},
+	logInSuccess: function(){},
+	logInFailure: function(){},
 	_sort: function(a, b){
 		if(a[0] < b[0]){
 			return -1;
