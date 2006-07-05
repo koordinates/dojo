@@ -154,3 +154,32 @@ dojo.html.fixPathsInCssText = function(cssStr, URI){
 	}
 	return str + cssStr;
 }
+
+dojo.html.setActiveStyleSheet = function(title){
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
+	while (a = els[i++]) {
+		if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")){
+			a.disabled = true;
+			if (a.getAttribute("title") == title) { a.disabled = false; }
+		}
+	}
+}
+
+dojo.html.getActiveStyleSheet = function(){
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
+	while (a = els[i++]) {
+		if (a.getAttribute("rel").indexOf("style") != -1 &&
+			a.getAttribute("title") && !a.disabled) { return a.getAttribute("title"); }
+	}
+	return null;
+}
+
+dojo.html.getPreferredStyleSheet = function(){
+	var i = 0, a, els = dojo.doc().getElementsByTagName("link");
+	while (a = els[i++]) {
+		if(a.getAttribute("rel").indexOf("style") != -1
+			&& a.getAttribute("rel").indexOf("alt") == -1
+			&& a.getAttribute("title")) { return a.getAttribute("title"); }
+	}
+	return null;
+}
