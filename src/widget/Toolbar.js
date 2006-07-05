@@ -315,7 +315,7 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 
 	_name: null,
 	getName: function() { return this._name; },
-	setName: function(value) { return this._name = value; },
+	setName: function(value) { return (this._name = value); },
 	getValue: function() { return this.getName(); },
 	setValue: function(value) { return this.setName(value); },
 
@@ -396,7 +396,7 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	_label: "",
 	getLabel: function() { return this._label; },
 	setLabel: function(value) {
-		var ret = this._label = value;
+		var ret = (this._label = value);
 		if(!this.labelNode) {
 			this.labelNode = document.createElement("span");
 			this.domNode.appendChild(this.labelNode);
@@ -452,7 +452,7 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 	},
 
 	_onmouseover: function(e) {
-		if(!this._enabled) { return };
+		if(!this._enabled) { return; }
 		dojo.html.addClass(this.domNode, "hover");
 	},
 
@@ -474,7 +474,7 @@ dojo.lang.extend(dojo.widget.ToolbarItem, {
 
 	_onmousedown: function(e) {
 		if(e.preventDefault) { e.preventDefault(); }
-		if(!this._enabled) { return };
+		if(!this._enabled) { return; }
 		dojo.html.addClass(this.domNode, "down");
 		if(this._toggleItem) {
 			if(this.parent.preventDeselect && this._selected) {
@@ -513,7 +513,7 @@ dojo.widget.ToolbarItem.make = function(wh, whIsType, props) {
 		item = dojo.widget.createWidget("ToolbarButton",
 			dojo.lang.mixin(props||{}, {icon: new dojo.widget.Icon(wh.toString())}));
 	} else if(whIsType) {
-		item = dojo.widget.createWidget(wh, props)
+		item = dojo.widget.createWidget(wh, props);
 	} else if(typeof wh == "string" || wh instanceof String) {
 		switch(wh.charAt(0)) {
 			case "|":
@@ -747,7 +747,7 @@ dojo.lang.extend(dojo.widget.html.ToolbarSeparator, {
 	widgetType: "ToolbarSeparator",
 	templateString: '<span unselectable="on" class="toolbarItem toolbarSeparator"></span>',
 
-	defaultIconPath: new dojo.uri.dojoUri("src/widget/templates/buttons/-.gif"),
+	defaultIconPath: new dojo.uri.dojoUri("src/widget/templates/buttons/sep.gif"),
 
 	fillInTemplate: function(args, frag, skip) {
 		dojo.widget.html.ToolbarSeparator.superclass.fillInTemplate.call(this, args, frag);
