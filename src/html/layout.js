@@ -100,27 +100,27 @@ dojo.html.isPositionAbsolute = function(node){
 }
 
 dojo.html.getTotalOffset = function(node, type, includeScroll){
-	dojo.deprecated("dojo.html.getTotalOffset", "replaced by dojo.html.getAbsolutePosition().(top|left)", "0.4");
+	dojo.deprecated("dojo.html.getTotalOffset", "replaced by dojo.html.getAbsolutePosition().(top|left)", "0.5");
 	return dojo.html.getAbsolutePosition(node, includeScroll)[type];
 }
 
 dojo.html.getAbsoluteX = function(node, includeScroll){
-	dojo.deprecated("dojo.html.getAbsoluteX", "replaced by dojo.html.getAbsolutePosition().x", "0.4");
+	dojo.deprecated("dojo.html.getAbsoluteX", "replaced by dojo.html.getAbsolutePosition().x", "0.5");
 	return dojo.html.getAbsolutePosition(node, includeScroll).x;
 }
 
 dojo.html.getAbsoluteY = function(node, includeScroll){
-	dojo.deprecated("dojo.html.getAbsoluteY", "replaced by dojo.html.getAbsolutePosition().y", "0.4");
+	dojo.deprecated("dojo.html.getAbsoluteY", "replaced by dojo.html.getAbsolutePosition().y", "0.5");
 	return dojo.html.getAbsolutePosition(node, includeScroll).y;
 }
 
 dojo.html.totalOffsetLeft = function(node, includeScroll){
-	dojo.deprecated("dojo.html.totalOffsetLeft", "replaced by dojo.html.getAbsolutePosition().left", "0.4");
+	dojo.deprecated("dojo.html.totalOffsetLeft", "replaced by dojo.html.getAbsolutePosition().left", "0.5");
 	return dojo.html.getAbsoluteX(node, includeScroll);
 }
 
 dojo.html.totalOffsetTop = function(node, includeScroll){
-	dojo.deprecated("dojo.html.totalOffsetTop", "replaced by dojo.html.getAbsolutePosition().top", "0.4");
+	dojo.deprecated("dojo.html.totalOffsetTop", "replaced by dojo.html.getAbsolutePosition().top", "0.5");
 	return dojo.html.getAbsoluteY(node, includeScroll);
 }
 

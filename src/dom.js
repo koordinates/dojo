@@ -58,54 +58,6 @@ dojo.dom.isNode = function(wh){
 	}
 }
 
-dojo.dom.getTagName = function(node){
-	dojo.deprecated("dojo.dom.getTagName", "use node.tagName instead", "0.4");
-
-	var tagName = node.tagName;
-	if(tagName.substr(0,5).toLowerCase()!="dojo:"){
-		
-		if(tagName.substr(0,4).toLowerCase()=="dojo"){
-			// FIXME: this assuumes tag names are always lower case
-			return "dojo:" + tagName.substring(4).toLowerCase();
-		}
-
-		// allow lower-casing
-		var djt = node.getAttribute("dojoType")||node.getAttribute("dojotype");
-		if(djt){
-			return "dojo:"+djt.toLowerCase();
-		}
-		
-		if((node.getAttributeNS)&&(node.getAttributeNS(this.dojoml,"type"))){
-			return "dojo:" + node.getAttributeNS(this.dojoml,"type").toLowerCase();
-		}
-		try{
-			// FIXME: IE really really doesn't like this, so we squelch
-			// errors for it
-			djt = node.getAttribute("dojo:type");
-		}catch(e){ /* FIXME: log? */ }
-		if(djt){
-			return "dojo:"+djt.toLowerCase();
-		}
-
-		if((!dj_global["djConfig"])||(!djConfig["ignoreClassNames"])){
-			// FIXME: should we make this optionally enabled via djConfig?
-			var classes = node.className||node.getAttribute("class");
-			// FIXME: following line, without check for existence of classes.indexOf
-			// breaks firefox 1.5's svg widgets
-			if((classes)&&(classes.indexOf)&&(classes.indexOf("dojo-") != -1)){
-				var aclasses = classes.split(" ");
-				for(var x=0; x<aclasses.length; x++){
-					if((aclasses[x].length>5)&&(aclasses[x].indexOf("dojo-")>=0)){
-						return "dojo:"+aclasses[x].substr(5).toLowerCase();
-					}
-				}
-			}
-		}
-
-	}
-	return tagName.toLowerCase();
-}
-
 dojo.dom.getUniqueId = function(){
 	var _document = dojo.doc();
 	do {
@@ -449,11 +401,6 @@ dojo.dom.textContent = function(node, text){
 		}
 		return _result;
 	}
-}
-
-dojo.dom.collectionToArray = function(collection){
-	dojo.deprecated("dojo.dom.collectionToArray", "use dojo.lang.toArray instead", "0.4");
-	return dojo.lang.toArray(collection);
 }
 
 dojo.dom.hasParent = function (node) {
