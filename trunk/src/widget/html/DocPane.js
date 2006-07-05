@@ -6,6 +6,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DocPane");
 dojo.require("dojo.widget.Editor2");
+dojo.require("dojo.widget.Dialog");
 
 dojo.widget.html.DocPane = function(){
 	dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
@@ -19,6 +20,13 @@ dojo.widget.defineWidget(
 	[dojo.widget.HtmlWidget, dojo.widget.DocPane],
 	{
 		// Template parameters
+		dialog: null,
+		dialogBg: null,
+		dialogFg: null,
+		logIn: null,
+		edit: null,
+		save: null,
+		cancel: null,
 		detail: null,
 		result: null,
 		packag: null,
@@ -67,12 +75,26 @@ dojo.widget.defineWidget(
 			
 			this.methods = dojo.dom.removeNode(this.methods);
 			this.mRow.style.display = "none";
+			
+			this.dialog = dojo.widget.createWidget("dialog", {}, this.dialog);
+			this.dialog.setCloseControl(this.cancel);
+			dojo.style.setOpacity(this.dialogBg, 0.8);
+			dojo.style.setOpacity(this.dialogFg, 1);
 
-			this.inherited("postCreate", arguments);
+			dojo.event.connect(this.edit, "onclick", dojo.lang.hitch(this, function(){
+				if(!this._isLoggedIn){
+					this.dialog.show();
+				}
+			}));
+			dojo.event.connect(this.logIn, "onclick", this, "_logIn");
+			dojo.event.connect(this.save, "onclick", this, "_save");
+			dojo.event.connect(dojo.docs, "logInSuccess", this, "_loggedIn");
+			
+			/*
 			this.pkgDescription = dojo.widget.createWidget("editor2", {
 				toolbarAlwaysVisible: true
 			}, this.pkgDescription);
-
+			*/
 			
 			this.homeSave = this.containerNode.cloneNode(true);
 			this.detailSave = dojo.dom.removeNode(this.detail);
@@ -89,7 +111,29 @@ dojo.widget.defineWidget(
 			this.sPNameSave = dojo.dom.removeNode(this.sPName);
 			this.navSave = dojo.dom.removeNode(this.nav);
 		},
+		_logIn: function(){
+			dojo.docs.setUserName(this.userName.value);
+			dojo.docs.setPassword(this.password.value);
+		},
+		_loggedIn: function(){
+			this._isLoggedIn = true;
+			this.dialog.hide();
+			this.pkgDescription = dojo.widget.createWidget("editor2", {
+				toolbarAlwaysVisible: true
+			}, this.pkgDescription);
+		},
+		_save: function(){
+			if(this.pkgDescription.widgetType){
+				dojo.docs.savePackage(this._pkgPath, {
+					description: this.pkgDescription.getEditorContent()
+				});
+			}
+		},
 		onDocSelectFunction: function(message){
+			dojo.debug("onDocSelectFunction()");
+			for(var key in message){
+				dojo.debug(key + ": " + dojo.json.serialize(message[key]));
+			}
 			var meta = message.meta;
 			if(meta){
 				var variables = meta.variables;
@@ -97,7 +141,8 @@ dojo.widget.defineWidget(
 				var child_variables = meta.child_variables;
 				var parameters = meta.parameters;
 			}
-			var description = message.description;
+			var doc = message.doc;
+			dojo.debug(dojo.json.serialize(doc));
 
 			var appends = this._appends;
 			dojo.dom.removeChildren(this.domNode);
@@ -125,9 +170,11 @@ dojo.widget.defineWidget(
 			}
 
 			this.sParams.innerHTML = "";
+			var first = true;
 			for(var param in parameters){
-				var paramType = parameters[param][0];
-				var paramName = parameters[param][1];
+				var paramType = parameters[param].type;
+				var paramSummary = parameters[param].summary;
+				var paramName = param;
 				this.parameters.style.display = "block";		
 				this.pLink.innerHTML = paramName;
 				this.pOpt.style.display = "none";
@@ -140,15 +187,16 @@ dojo.widget.defineWidget(
 					this.pType.innerHTML = paramType;
 				}
 				this.pDesc.parentNode.style.display = "none";
-				if(doc.parameters[paramName] && doc.parameters[paramName].description){
+				if(paramSummary){
 					this.pDesc.parentNode.style.display = "inline";
-					this.pDesc.innerHTML = doc.parameters[paramName].description;
+					this.pDesc.innerHTML = paramSummary;
 				}
 				appends.push(this.pParent.appendChild(this.pSave.cloneNode(true)));
 
-				if(param > 0) {
+				if(!first) {
 					this.sParams.appendChild(document.createTextNode(", "));
 				}
+				first = false;
 				if(paramType){
 					dojo.debug(this.sPTypeSave);
 					this.sPTypeSave.innerHTML = paramType;
@@ -179,6 +227,7 @@ dojo.widget.defineWidget(
 			var methods = results.methods;
 			var requires = results.requires;
 			var description = results.description;
+			this._pkgPath = results.path;
 			var requireLinks = [];
 			var appends = this._appends;
 			while(appends.length){
@@ -236,8 +285,19 @@ dojo.widget.defineWidget(
 
 			this.domNode.appendChild(this.packageSave);
 			
+			/*
 			dojo.debug(description);
-			this.pkgDescription.replaceEditorContent(description);
+			function fillContent(){
+				this.pkgDescription.replaceEditorContent(description);
+				this.pkgDescription._updateHeight();
+			}
+			if(this.pkgDescription.isLoaded){
+				fillContent();
+			}else{
+				dojo.event.connect(this.pkgDescription, "onLoad", dojo.lang.hitch(this, fillContent));
+			}
+			*/
+			this.pkgDescription.innerHTML = description;
 			
 			function makeSelect(fOrP, x){
 				return function(e) {
