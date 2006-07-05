@@ -55,54 +55,33 @@ dojo.html.getScroll = function(){
 }
 
 dojo.html.getViewportWidth = function(){
-	dojo.deprecated("dojo.html.getViewportWidth", "replaced by dojo.html.getViewport().width", "0.4");
+	dojo.deprecated("dojo.html.getViewportWidth", "replaced by dojo.html.getViewport().width", "0.5");
 	return dojo.html.getViewport().width;
 }
 
 dojo.html.getViewportHeight = function(){
-	dojo.deprecated("dojo.html.getViewportHeight", "replaced by dojo.html.getViewport().height", "0.4");
+	dojo.deprecated("dojo.html.getViewportHeight", "replaced by dojo.html.getViewport().height", "0.5");
 	return dojo.html.getViewport().height;
 }
 
 dojo.html.getViewportSize = function(){
-	dojo.deprecated("dojo.html.getViewportSize", "replaced by dojo.html.getViewport", "0.4");
+	dojo.deprecated("dojo.html.getViewportSize", "replaced by dojo.html.getViewport()", "0.5");
 	return dojo.html.getViewport();
 }
 
-dojo.html.getDocumentWidth = function(){
-	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
-	return dojo.html.getViewportWidth();
-}
-
-dojo.html.getDocumentHeight = function(){
-	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
-	return dojo.html.getViewportHeight();
-}
-
-dojo.html.getDocumentSize = function(){
-	dojo.deprecated("dojo.html.getDocument*", "replaced of dojo.html.getViewport*", "0.4");
-	return dojo.html.getViewportSize();
-}
-
 dojo.html.getScrollTop = function(){
-	dojo.deprecated("dojo.html.getScrollTop", "replaced by dojo.html.getScroll", "0.4");
+	dojo.deprecated("dojo.html.getScrollTop", "replaced by dojo.html.getScroll().top", "0.5");
 	return dojo.html.getScroll().top;
 }
 
 dojo.html.getScrollLeft = function(){
-	dojo.deprecated("dojo.html.getScrollLeft", "replaced by dojo.html.getScroll", "0.4");
+	dojo.deprecated("dojo.html.getScrollLeft", "replaced by dojo.html.getScroll().height", "0.5");
 	return dojo.html.getScroll().left;
 }
 
 dojo.html.getScrollOffset = function(){
-	dojo.deprecated("dojo.html.getScrollOffset", "replaced by dojo.html.getScroll", "0.4");
+	dojo.deprecated("dojo.html.getScrollOffset", "replaced by dojo.html.getScroll().offset", "0.5");
 	return dojo.html.getScroll().offset;
-}
-
-
-dojo.html.getParentOfType = function(node, type){
-	dojo.deprecated("dojo.html.getParentOfType", "replaced by dojo.html.getParentByType*", "0.4");
-	return dojo.html.getParentByType(node, type);
 }
 
 dojo.html.getParentByType = function(node, type) {

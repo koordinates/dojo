@@ -60,16 +60,6 @@ dojo.lang.reprArrayLike = function(arr){
 	}catch(e){ }
 };
 
-dojo.lang.reprString = function(str){ 
-	dojo.deprecated("dojo.lang.reprNumber", "use `String(num)` instead", "0.4");
-	return dojo.string.escapeString(str);
-};
-
-dojo.lang.reprNumber = function(num){
-	dojo.deprecated("dojo.lang.reprNumber", "use `String(num)` instead", "0.4");
-	return num + "";
-};
-
 (function(){
 	var m = dojo.lang;
 	m.registerRepr("arrayLike", m.isArrayLike, m.reprArrayLike);

@@ -26,7 +26,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 			// FIXME: implement backoff!
 		}
 		var tss = encodeURIComponent(searchStr);
-		var realUrl = dojo.string.paramString(this.searchUrl, {"searchString": tss});
+		var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
 		var _this = this;
 		var request = dojo.io.bind({
 			url: realUrl,

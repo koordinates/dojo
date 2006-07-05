@@ -292,13 +292,6 @@ dojo.widget.createWidget = function(name, props, refNode, position, namespace /*
 			placeKeeperNode, name, props, namespace);
 	}
 
-	if (typeof name != "string" && typeof props == "string") {
-		dojo.deprecated("dojo.widget.createWidget", 
-			"argument order is now of the form " +
-			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])", "0.4");
-		return fromScript(name, props, refNode, namespace);
-	}
-	
 	props = props||{};
 	var notRef = false;
 	var tn = null;
@@ -327,10 +320,4 @@ dojo.widget.createWidget = function(name, props, refNode, position, namespace /*
 		}
 	}
 	return widgetArray[0]; // just return the widget
-}
- 
-dojo.widget.fromScript = function(name, props, refNode, position){
-	dojo.deprecated("dojo.widget.fromScript", " use " +
-		"dojo.widget.createWidget instead", "0.4");
-	return dojo.widget.createWidget(name, props, refNode, position);
 }
