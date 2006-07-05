@@ -6,8 +6,7 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.event");
 function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
 
@@ -31,10 +30,10 @@ For browsers that support box-sizing or -moz-box-sizing) styles (not IE).
 
 <script type="text/javascript">
 var contentBox = document.getElementById('contentBox');
-contentBox.innerHTML = 'ASSERT content-box == ' + dojo.style.getBoxSizing(contentBox);
+contentBox.innerHTML = 'ASSERT content-box == ' + dojo.html.getBoxSizing(contentBox);
 
 var borderBox = document.getElementById('borderBox');
-borderBox.innerHTML = 'ASSERT border-box == ' + dojo.style.getBoxSizing(borderBox);
+borderBox.innerHTML = 'ASSERT border-box == ' + dojo.html.getBoxSizing(borderBox);
 </script>
 
 <!---------------------------------------------------------------------------->
@@ -134,12 +133,15 @@ function processMetrics()
 	}
 	var results = [ ];
 	for (var i=0; i<index; i++)	{
+		var mbox = dojo.html.getMarginBox(boxes[i]);
+		var bbox = dojo.html.getBorderBox(boxes[i]);
+		var cbox = dojo.html.getContentBox(boxes[i]);
 		results.push(reportHtml('getMarginBox&nbsp;', styles[i], 
-			isNaN(dojo.style.getMarginBoxWidth(boxes[i])) || isNaN(dojo.style.getMarginBoxHeight(boxes[i]))));
+			isNaN(mbox.width || mbox.height)));
 		results.push(reportHtml('getBorderBox&nbsp;', styles[i], 
-			isNaN(dojo.style.getBorderBoxWidth(boxes[i])) || isNaN(dojo.style.getBorderBoxHeight(boxes[i]))));
+			isNaN(bbox.width || bbox.height)));
 		results.push(reportHtml('getContentBox', styles[i], 
-			isNaN(dojo.style.getContentBoxWidth(boxes[i])) || isNaN(dojo.style.getContentBoxHeight(boxes[i]))));
+			isNaN(cbox.width || cbox.height)));
 	}
 	document.getElementById('pacify').innerHTML = '';
 	document.getElementById('report').innerHTML = results.join('');
@@ -148,29 +150,32 @@ function processMetrics()
 
 function dumpMetrics(node)
 {
+	var content = dojo.html.getContentSize(node);
+	var inner = dojo.html.getInnerSize(node);
+	var outer = dojo.html.getOuterSize(node);
 	var metrics = [
-		'content: ' + dojo.style.getContentWidth(node) + ', ' + dojo.style.getContentHeight(node),
-		'inner:   ' + dojo.style.getInnerWidth(node) + ', ' + dojo.style.getInnerHeight(node),
-		'outer:   ' + dojo.style.getOuterWidth(node) + ', ' + dojo.style.getOuterHeight(node)
-//	,'margin-left: ' + dojo.style.getComputedStyle(node, 'margin-left')
-//	,'getMarginWidth: ' + dojo.style.getMarginWidth(node)
-//		,'margin-top: ' + dojo.style.getStyle(node, 'margin-top')
-//		,'getMarginHeight: ' + dojo.style.getMarginHeight(node)
-//		,'padding-left: ' + dojo.style.getStyle(node, 'padding-left')
-//		,'padding-top: ' + dojo.style.getStyle(node, 'padding-top')
-//		,'getPaddingWidth: ' + dojo.style.getPaddingWidth(node)
-//		,'getPaddingHeight: ' + dojo.style.getPaddingHeight(node)
-//		,'border-left-width: ' + dojo.style.getStyle(node, 'border-left-width')
-//		,'border-top-width: ' + dojo.style.getStyle(node, 'border-top-width')
-//		,'border-top-style: ' + dojo.style.getStyle(node, 'border-top-style')
-//		,'getBorderWidth: ' + dojo.style.getBorderWidth(node)
-//		,'getBorderHeight: ' + dojo.style.getBorderHeight(node)
+		'content: ' + content.width + ', ' + content.height,
+		'inner:   ' + inner.width + ', ' + inner.height,
+		'outer:   ' + outer.width + ', ' + outer.height
+//	,'margin-left: ' + dojo.html.getComputedStyle(node, 'margin-left')
+//	,'getMarginWidth: ' + dojo.html.getMarginWidth(node)
+//		,'margin-top: ' + dojo.html.getStyle(node, 'margin-top')
+//		,'getMarginHeight: ' + dojo.html.getMarginHeight(node)
+//		,'padding-left: ' + dojo.html.getStyle(node, 'padding-left')
+//		,'padding-top: ' + dojo.html.getStyle(node, 'padding-top')
+//		,'getPaddingWidth: ' + dojo.html.getPaddingWidth(node)
+//		,'getPaddingHeight: ' + dojo.html.getPaddingHeight(node)
+//		,'border-left-width: ' + dojo.html.getStyle(node, 'border-left-width')
+//		,'border-top-width: ' + dojo.html.getStyle(node, 'border-top-width')
+//		,'border-top-style: ' + dojo.html.getStyle(node, 'border-top-style')
+//		,'getBorderWidth: ' + dojo.html.getBorderWidth(node)
+//		,'getBorderHeight: ' + dojo.html.getBorderHeight(node)
 //		,'offsetHeight: ' + node.offsetHeight
 //		,'clientHeight: ' + node.clientHeight
 //		,'scrollHeight: ' + node.scrollHeight
 //		,'offsetWidth: ' + node.offsetWidth,
 //		'clientWidth: ' + node.clientWidth,
-//		'paddingWidth: ' + dojo.style.getPaddingWidth(node)
+//		'paddingWidth: ' + dojo.html.getPaddingWidth(node)
 	];
 	return '<pre>' + metrics.join('<br>') + '</pre>';
 }
