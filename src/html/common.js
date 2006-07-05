@@ -1,4 +1,7 @@
 dojo.provide("dojo.html.common");
+dojo.require("dojo.dom");
+
+dojo.lang.mixin(dojo.html, dojo.dom);
 
 dojo.html.body = function(){
 	dojo.deprecated("dojo.html.body() moved to dojo.body()", "0.5");

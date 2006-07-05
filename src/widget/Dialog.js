@@ -5,7 +5,9 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Dialog",
@@ -89,9 +91,9 @@ dojo.widget.defineWidget(
 		
 		setBackgroundOpacity: function(op) {
 			if(arguments.length == 0) { op = this.bgOpacity; }
-			dojo.style.setOpacity(this.bg, op);
+			dojo.html.setOpacity(this.bg, op);
 			try {
-				this.bgOpacity = dojo.style.getOpacity(this.bg);
+				this.bgOpacity = dojo.html.getOpacity(this.bg);
 			} catch (e) {
 				this.bgOpacity = op;
 			}
@@ -122,8 +124,8 @@ dojo.widget.defineWidget(
 			var viewport_size = dojo.html.getViewportSize();
 
 			// find the size of the dialog
-			var w = dojo.style.getOuterWidth(this.containerNode);
-			var h = dojo.style.getOuterHeight(this.containerNode);
+			var w = dojo.html.getOuterWidth(this.containerNode);
+			var h = dojo.html.getOuterHeight(this.containerNode);
 
 			var x = scroll_offset[0] + (viewport_size[0] - w)/2;
 			var y = scroll_offset[1] + (viewport_size[1] - h)/2;

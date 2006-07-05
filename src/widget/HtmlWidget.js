@@ -1,8 +1,8 @@
 dojo.provide("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.DomWidget");
-dojo.require("dojo.html.extras");
-dojo.require("dojo.html.style.display");
-dojo.require("dojo.html.style.position");
+dojo.require("dojo.html.util");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lfx.toggle");

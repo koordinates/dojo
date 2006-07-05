@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.AccordionContainer");
 
 dojo.require("dojo.widget.*");
+dojo.require("dojo.html.*");
 dojo.require("dojo.widget.AccordionPane");
 
 dojo.widget.defineWidget(
