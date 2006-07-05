@@ -3,7 +3,9 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Menu2");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownContainer",
@@ -91,15 +93,14 @@ dojo.widget.defineWidget(
 		},
 		
 		sizeBackgroundIframe: function(){
-			var w = dojo.style.getOuterWidth(this.containerNode);
-			var h = dojo.style.getOuterHeight(this.containerNode);
-			if(w==0||h==0){
+			var outer = dojo.html.getOuterSize(this.containerNode);
+			if(outer.width==0||outer.height==0){
 				// need more time to calculate size
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 				return;
 			}
 			if(dojo.html.isShowing(this.containerNode)){
-				this.containerIframe.size([0,0,w,h]);
+				this.containerIframe.size([0,0,outer.width,outer.height]);
 			}
 		},
 
