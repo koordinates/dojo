@@ -272,7 +272,7 @@ dojo.html.setOuterSize = dojo.html.setMarginBox;
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate object
 dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll) {
-	if(dojo.lang.isArray(coords)){
+	if(coords instanceof Array || typeof coords == "array"){
 		// coords is already an array (of format [x,y,w,h]), just return it
 		while ( coords.length < 4 ) { coords.push(0); }
 		while ( coords.length > 4 ) { coords.pop(); }
