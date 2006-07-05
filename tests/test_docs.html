@@ -42,6 +42,7 @@
 			}
 			function getPkgDoc(type, data, evt){
 				dojo.debug("=== RESULTS ===");
+				dojo.debug(data.path);
 				dojo.debug(data.description);
 				djConfig.debugContainerId = "pkginfo";
 				dojo.docs.getPkgInfo(4, "dojo.doc", getPkgInfo);
