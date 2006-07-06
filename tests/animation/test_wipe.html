@@ -11,14 +11,14 @@
 		<script language="JavaScript" type="text/javascript" 
 			src="../../dojo.js"></script>
 		<script language="JavaScript" type="text/javascript">
-			dojo.require("dojo.fx.*");
+			dojo.require("dojo.lfx.*");
 
 			function wipeOut(elId){
-				dojo.fx.wipeOut(dojo.byId(elId), 300);
+				dojo.lfx.wipeOut(elId, 300).play();
 			}
 			
 			function wipeIn(elId) {
-				dojo.fx.wipeIn(dojo.byId(elId), 300);			
+				dojo.lfx.wipeIn(elId, 300).play();
 			}
 		</script>
 	</head>
