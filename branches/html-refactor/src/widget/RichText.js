@@ -6,7 +6,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
-dojo.require("dojo.string");
+dojo.require("dojo.string.extras");
 
 // used to save content
 try {

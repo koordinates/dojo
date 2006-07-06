@@ -9,7 +9,7 @@ dojo.require("dojo.html.util");
 dojo.require("dojo.html.iframe");
 
 // workaround for bug #1029 (http://trac.dojotoolkit.org/ticket/1029)
-dojo.style.insertCssFile(
+dojo.html.insertCssFile(
 	dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css")
 );
 

@@ -13,7 +13,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html.style");
-dojo.require("dojo.html.position");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
 dojo.require("dojo.io.cookie");
