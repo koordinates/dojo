@@ -232,12 +232,13 @@ dojo.widget.defineWidget (
 			var offset = dojo.html.getScrollOffset();
 			var parent = dojo.html.getAbsolutePosition(this.domNode, true);
 			
+			var content = dojo.html.getContent(this.handleMove.domNode);
 			if (this.isEnableX) {
-				var x = offset.x + e.clientX - parent.x - (dojo.html.getContentWidth(this.handleMove.domNode) >> 1);
+				var x = offset.x + e.clientX - parent.x - (content.width >> 1);
 				this._snapX(x, this.handleMove);
 			}
 			if (this.isEnableY) {
-				var y = offset.y + e.clientY - parent.y - (dojo.html.getContentHeight(this.handleMove.domNode) >> 1);
+				var y = offset.y + e.clientY - parent.y - (content.height >> 1);
 				this._snapY(y, this.handleMove);
 			}
 			this.notifyListeners();

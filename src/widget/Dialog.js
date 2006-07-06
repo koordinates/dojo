@@ -102,10 +102,11 @@ dojo.widget.defineWidget(
 
 		sizeBackground: function() {
 			if(this.bgOpacity > 0) {
+				var viewport = dojo.html.getViewport();
 				var h = Math.max(
 					dojo.doc().documentElement.scrollHeight || dojo.body().scrollHeight,
-					dojo.html.getViewportHeight());
-				var w = dojo.html.getViewportWidth();
+					viewport.height);
+				var w = viewport.width;
 				this.bg.style.width = w + "px";
 				this.bg.style.height = h + "px";
 			}
@@ -120,15 +121,14 @@ dojo.widget.defineWidget(
 		},
 
 		placeDialog: function() {
-			var scroll_offset = dojo.html.getScrollOffset();
-			var viewport_size = dojo.html.getViewportSize();
+			var scroll_offset = dojo.html.getScroll().offset;
+			var viewport_size = dojo.html.getViewport();
 
 			// find the size of the dialog
-			var w = dojo.html.getOuterWidth(this.containerNode);
-			var h = dojo.html.getOuterHeight(this.containerNode);
+			var outer = dojo.html.getOuter(this.containerNode);
 
-			var x = scroll_offset[0] + (viewport_size[0] - w)/2;
-			var y = scroll_offset[1] + (viewport_size[1] - h)/2;
+			var x = scroll_offset.x + (viewport_size.y - outer.width)/2;
+			var y = scroll_offset.y + (viewport_size.y - outer.height)/2;
 
 			with(this.domNode.style) {
 				left = x + "px";

@@ -40,7 +40,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 
 		this.dragClone = this.domNode;
 
-		this.scrollOffset = dojo.html.getScrollOffset();
+		this.scrollOffset = dojo.html.getScroll().offset;
 		this.dragStartPosition = dojo.html.abs(this.domNode, true);
 		
 		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,

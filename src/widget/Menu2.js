@@ -242,8 +242,8 @@ dojo.widget.defineWidget(
 		if(iframe){
 			//in IE, scroll should not be counted, while in Moz it is required
 			var cood = dojo.html.getAbsolutePosition(iframe, !dojo.render.html.ie);
-			x += cood.x - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScrollLeft) );
-			y += cood.y - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScrollTop) );
+			x += cood.x - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScroll).left );
+			y += cood.y - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScroll).top );
 		}
 		this.open(x, y, null, [x, y]);
 

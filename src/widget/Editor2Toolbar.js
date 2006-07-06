@@ -166,8 +166,9 @@ dojo.widget.defineWidget(
 				pal = this[type+"Palette"] = dojo.widget.createWidget("ColorPalette", {}, dd, "first");
 				var fcp = pal.domNode;
 				with(dd.style){
-					width = dojo.html.getOuterWidth(fcp) + "px";
-					height = dojo.html.getOuterHeight(fcp) + "px";
+					var outer = dojo.html.getOuter(fcp);
+					width = outer.width + "px";
+					height = outer.height + "px";
 					zIndex = 1002;
 					position = "absolute";
 				}
@@ -218,8 +219,9 @@ dojo.widget.defineWidget(
 					display = "block";
 					left = dd.style.left;
 					top = dd.style.top;
-					width = dojo.html.getOuterWidth(dd)+"px";
-					height = dojo.html.getOuterHeight(dd)+"px";
+					var outer = dojo.html.getOuter(dd);
+					width = outer.width+"px";
+					height = outer.height+"px";
 				}
 			}
 		},
