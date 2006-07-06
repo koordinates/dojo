@@ -116,12 +116,12 @@ dojo.html.getAbsoluteY = function(node, includeScroll){
 
 dojo.html.totalOffsetLeft = function(node, includeScroll){
 	dojo.deprecated("dojo.html.totalOffsetLeft", "replaced by dojo.html.getAbsolutePosition().left", "0.5");
-	return dojo.html.getAbsoluteX(node, includeScroll);
+	return dojo.html.getAbsolutePosition(node, includeScroll).left;
 }
 
 dojo.html.totalOffsetTop = function(node, includeScroll){
 	dojo.deprecated("dojo.html.totalOffsetTop", "replaced by dojo.html.getAbsolutePosition().top", "0.5");
-	return dojo.html.getAbsoluteY(node, includeScroll);
+	return dojo.html.getAbsolutePosition(node, includeScroll).top;
 }
 
 dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
@@ -140,13 +140,14 @@ dojo.html.getMargin = function(node){
 }
 
 dojo.html.getBorder = function(node){
-	function borderExtent(innerNode, side){
-		return (dojo.html.getStyle(innerNode, 'border-' + side + '-style') == 'none' ? 0 : dojo.html.getPixelValue(innerNode, 'border-' + side + '-width'));
-	}
 	return {
-		width: borderExtent(node, 'left') + borderExtent(node, 'right'),
-		height: borderExtent(node, 'top') + borderExtent(node, 'bottom')
+		width: dojo.html.getBorderExtent(node, 'left') + dojo.html.getBorderExtent(node, 'right'),
+		height: dojo.html.getBorderExtent(node, 'top') + dojo.html.getBorderExtent(node, 'bottom')
 	};
+}
+
+dojo.html.getBorderExtent = function(node, side){
+	return (dojo.html.getStyle(node, 'border-' + side + '-style') == 'none' ? 0 : dojo.html.getPixelValue(node, 'border-' + side + '-width'));
 }
 
 dojo.html.getMarginExtent = function(node, side){
@@ -222,15 +223,11 @@ dojo.html.setContentBox = function(node, args){
 	var padborder = (isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0});
 	var ret = {};
 	if(typeof args.width != undefined){
-		if(isbb){
-			width = args.width + padborder.width;
-		}
+		width = args.width + padborder.width;
 		ret.width = dojo.html.setPositivePixelValue(node, "width", width);
 	}
 	if(typeof args.height != undefined){
-		if(isbb){
-			height = args.height + padborder.height;
-		}
+		height = args.height + padborder.height;
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
 	}
 	return ret;
@@ -248,20 +245,16 @@ dojo.html.setMarginBox = function(node, args){
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);
-	var padborder = (isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0 });
+	var padborder = (!isbb ? dojo.html.getPadBorder(node) : { width: 0, height: 0 });
 	var margin = dojo.html.getMargin(node);
 	var ret = {};
 	if(typeof args.width != undefined){
-		if(isbb){
-			width = args.width - padborder.width;
-		}
+		width = args.width - padborder.width;
 		width -= margin.width;
 		ret.width = dojo.html.setPositivePixelValue(node, "width", width);
 	}
 	if(typeof args.height != undefined){
-		if(isbb){
-			height = args.height - padborder.height;
-		}
+		height = args.height - padborder.height;
 		height -= margin.height;
 		ret.height = dojo.html.setPositivePixelValue(node, "height", height);
 	}

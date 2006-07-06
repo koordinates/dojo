@@ -12,7 +12,7 @@ dojo.provide("dojo.widget.html.ToolbarSpace");
 dojo.provide("dojo.widget.Icon");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.style");
 
 /* ToolbarContainer
  *******************/
