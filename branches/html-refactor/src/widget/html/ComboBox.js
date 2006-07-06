@@ -566,7 +566,7 @@ dojo.widget.defineWidget(
 				with(this.optionsListNode.style){
 					display = "";
 					height = ((visibleCount) ? (dojo.html.getOuterSize(childs[0]).height * visibleCount) : 0)+"px";
-					width = dojo.html.getOuterWidth(this.cbTableNode)-2+"px";
+					width = dojo.html.getOuter(this.cbTableNode).width-2+"px";
 				}
 				// only fadein once (flicker)
 				if(!this._result_list_open){
