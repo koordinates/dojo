@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.html.layout");
 
 dojo.require("dojo.lang");
-dojo.require("dojo.string");
+dojo.require("dojo.string.extras");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
 

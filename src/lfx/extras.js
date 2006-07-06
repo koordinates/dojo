@@ -38,8 +38,8 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var origWidth = dojo.style.getOuterWidth(node);
-		var origHeight = dojo.style.getOuterHeight(node);
+		var origWidth = dojo.html.getOuterWidth(node);
+		var origHeight = dojo.html.getOuterHeight(node);
 
 		var actualPct = percentage/100.0;
 		var props = [
@@ -53,7 +53,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 			}];
 		
 		if(scaleContent){
-			var fontSize = dojo.style.getStyle(node, 'font-size');
+			var fontSize = dojo.html.getStyle(node, 'font-size');
 			var fontSizeType = null;
 			if(!fontSize){
 				fontSize = parseFloat('100%');
@@ -75,7 +75,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		}
 		
 		if(fromCenter){
-			var positioning = dojo.style.getStyle(node, "position");
+			var positioning = dojo.html.getStyle(node, "position");
 			var originalTop = node.offsetTop;
 			var originalLeft = node.offsetLeft;
 			var endTop = ((origHeight * actualPct) - origHeight)/2;

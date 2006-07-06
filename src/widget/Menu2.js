@@ -6,6 +6,7 @@ dojo.provide("dojo.widget.MenuBar2");
 
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.html.iframe");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");

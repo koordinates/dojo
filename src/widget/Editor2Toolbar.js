@@ -4,6 +4,8 @@ dojo.provide("dojo.widget.html.Editor2Toolbar");
 dojo.require("dojo.lang.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.display");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.ColorPalette");
 
@@ -73,7 +75,7 @@ dojo.widget.defineWidget(
 
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
-			dojo.style.toggleShowing(this.styleDropdownContainer);
+			dojo.html.toggleShowing(this.styleDropdownContainer);
 		},
 
 
@@ -116,19 +118,19 @@ dojo.widget.defineWidget(
 			this.domNode.style.height = "";
 			dojo.lang.forEach(dojo.widget.byType("Editor2Toolbar"), function(tb){
 				try{
-					dojo.style.hide(tb.forecolorDropDown);
-					dojo.style.hide(tb.hilitecolorDropDown);
-					dojo.style.hide(tb.styleDropdownContainer);
+					dojo.html.hide(tb.forecolorDropDown);
+					dojo.html.hide(tb.hilitecolorDropDown);
+					dojo.html.hide(tb.styleDropdownContainer);
 					if(tb.clickInterceptDiv){
-						dojo.style.hide(tb.clickInterceptDiv);
+						dojo.html.hide(tb.clickInterceptDiv);
 					}
 				}catch(e){}
 				if(dojo.render.html.ie){
 					try{
-						dojo.style.hide(tb.forecolorPalette.bgIframe);
+						dojo.html.hide(tb.forecolorPalette.bgIframe);
 					}catch(e){}
 					try{
-						dojo.style.hide(tb.hilitecolorPalette.bgIframe);
+						dojo.html.hide(tb.hilitecolorPalette.bgIframe);
 					}catch(e){}
 				}
 			});
@@ -159,7 +161,7 @@ dojo.widget.defineWidget(
 			e.stopPropagation();
 			var dd = this[type+"DropDown"];
 			var pal = this[type+"Palette"];
-			dojo.style.toggleShowing(dd);
+			dojo.html.toggleShowing(dd);
 			if(!pal){
 				pal = this[type+"Palette"] = dojo.widget.createWidget("ColorPalette", {}, dd, "first");
 				var fcp = pal.domNode;
@@ -178,7 +180,7 @@ dojo.widget.defineWidget(
 
 				dojo.event.connect(	"after",
 									pal, "onColorSelect",
-									dojo.style, "toggleShowing",
+									dojo.html, "toggleShowing",
 									this, function(mi){ mi.args.unshift(dd); return mi.proceed(); }
 				);
 
@@ -208,16 +210,16 @@ dojo.widget.defineWidget(
 				});
 				document.body.appendChild(dd);
 			}
-			dojo.style.toggleShowing(this.clickInterceptDiv);
-			var pos = dojo.style.abs(this[type+"Button"]);
+			dojo.html.toggleShowing(this.clickInterceptDiv);
+			var pos = dojo.html.abs(this[type+"Button"]);
 			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
 			if(pal.bgIframe){
 				with(pal.bgIframe.style){
 					display = "block";
 					left = dd.style.left;
 					top = dd.style.top;
-					width = dojo.style.getOuterWidth(dd)+"px";
-					height = dojo.style.getOuterHeight(dd)+"px";
+					width = dojo.html.getOuterWidth(dd)+"px";
+					height = dojo.html.getOuterHeight(dd)+"px";
 				}
 			}
 		},

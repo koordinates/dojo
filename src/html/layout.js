@@ -19,7 +19,7 @@ dojo.html.sumAncestorProperties = function(node, prop){
 	return retVal;
 }
 
-dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
+dojo.html.getAbsolutePosition = function(node, includeScroll){
 	node = dojo.byId(node, node.ownerDocument);
 	var ret = {
 		x: 0,
@@ -94,6 +94,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 
 	return ret;
 }
+dojo.html.abs = dojo.html.getAbsolutePosition;
 
 dojo.html.isPositionAbsolute = function(node){
 	return (dojo.html.getComputedStyle(node, 'position') == 'absolute')
@@ -101,27 +102,27 @@ dojo.html.isPositionAbsolute = function(node){
 
 dojo.html.getTotalOffset = function(node, type, includeScroll){
 	dojo.deprecated("dojo.html.getTotalOffset", "replaced by dojo.html.getAbsolutePosition().(top|left)", "0.5");
-	return dojo.html.getAbsolutePosition(node, includeScroll)[type];
+	return dojo.html.abs(node, includeScroll)[type];
 }
 
 dojo.html.getAbsoluteX = function(node, includeScroll){
 	dojo.deprecated("dojo.html.getAbsoluteX", "replaced by dojo.html.getAbsolutePosition().x", "0.5");
-	return dojo.html.getAbsolutePosition(node, includeScroll).x;
+	return dojo.html.abs(node, includeScroll).x;
 }
 
 dojo.html.getAbsoluteY = function(node, includeScroll){
 	dojo.deprecated("dojo.html.getAbsoluteY", "replaced by dojo.html.getAbsolutePosition().y", "0.5");
-	return dojo.html.getAbsolutePosition(node, includeScroll).y;
+	return dojo.html.abs(node, includeScroll).y;
 }
 
 dojo.html.totalOffsetLeft = function(node, includeScroll){
 	dojo.deprecated("dojo.html.totalOffsetLeft", "replaced by dojo.html.getAbsolutePosition().left", "0.5");
-	return dojo.html.getAbsolutePosition(node, includeScroll).left;
+	return dojo.html.abs(node, includeScroll).left;
 }
 
 dojo.html.totalOffsetTop = function(node, includeScroll){
 	dojo.deprecated("dojo.html.totalOffsetTop", "replaced by dojo.html.getAbsolutePosition().top", "0.5");
-	return dojo.html.getAbsolutePosition(node, includeScroll).top;
+	return dojo.html.abs(node, includeScroll).top;
 }
 
 dojo.html._sumPixelValues = function(node, selectors, autoIsZero){
@@ -139,11 +140,31 @@ dojo.html.getMargin = function(node){
 	};
 }
 
+dojo.html.getMarginWidth = function(node){
+	dojo.deprecated("dojo.html.getMarginWidth", "replaced by dojo.html.getMargin().width", "0.5");
+	return dojo.html.getMargin(node).width;
+}
+
+dojo.html.getMarginHeight = function(node){
+	dojo.deprecated("dojo.html.getMarginHeight", "replaced by dojo.html.getMargin().height", "0.5");
+	return dojo.html.getMargin(node).height;
+}
+
 dojo.html.getBorder = function(node){
 	return {
 		width: dojo.html.getBorderExtent(node, 'left') + dojo.html.getBorderExtent(node, 'right'),
 		height: dojo.html.getBorderExtent(node, 'top') + dojo.html.getBorderExtent(node, 'bottom')
 	};
+}
+
+dojo.html.getBorderWidth = function(node){
+	dojo.deprecated("dojo.html.getBorderWidth", "replaced by dojo.html.getBorder().width", "0.5");
+	return dojo.html.getBorder(node).width;
+}
+
+dojo.html.getBorderHeight = function(node){
+	dojo.deprecated("dojo.html.getBorderHeight", "replaced by dojo.html.getBorder().height", "0.5");
+	return dojo.html.getBorder(node).height;
 }
 
 dojo.html.getBorderExtent = function(node, side){
@@ -165,10 +186,30 @@ dojo.html.getPadding = function(node){
 	};
 }
 
+dojo.html.getPaddingWidth = function(node){
+	dojo.deprecated("dojo.html.getPaddingWidth", "replaced by dojo.html.getPadding().width", "0.5");
+	return dojo.html.getPadding(node).width;
+}
+
+dojo.html.getPaddingHeight = function(node){
+	dojo.deprecated("dojo.html.getPaddingHeight", "replaced by dojo.html.getPadding().height", "0.5");
+	return dojo.html.getPadding(node).height;
+}
+
 dojo.html.getPadBorder = function(node){
 	var pad = dojo.html.getPadding(node);
 	var border = dojo.html.getBorder(node);
 	return { width: pad.width + border.width, height: pad.height + border.height };
+}
+
+dojo.html.getPadBorderWidth = function(node){
+	dojo.deprecated("dojo.html.getPadBorderWidth", "replaced by dojo.html.getPadBorder().width", "0.5");
+	return dojo.html.getPadBorder(node).width;
+}
+
+dojo.html.getPadBorderHeight = function(node){
+	dojo.deprecated("dojo.html.getPadBorderHeight", "replaced by dojo.html.getPadBorder().height", "0.5");
+	return dojo.html.getPadBorder(node).height;
 }
 
 dojo.html.boxSizing = {
@@ -204,7 +245,27 @@ dojo.html.getBorderBox = function(node){
 	node = dojo.byId(node);
 	return { width: node.offsetWidth, height: node.offsetHeight };
 }
-dojo.html.getInnerSize = dojo.html.getBorderBox;
+dojo.html.getInner = dojo.html.getInnerSize = dojo.html.getBorderBox;
+
+dojo.html.getBorderBoxWidth = function(node){
+	dojo.deprecated("dojo.html.getBorderBoxWidth", "replaced by dojo.html.getBorderBox().width", "0.5");
+	return dojo.html.getBorderBox(node).width;
+}
+
+dojo.html.getBorderBoxHeight = function(node){
+	dojo.deprecated("dojo.html.getBorderBoxHeight", "replaced by dojo.html.getBorderBox().height", "0.5");
+	return dojo.html.getBorderBox(node).height;
+}
+
+dojo.html.getInnerWidth = function(node){
+	dojo.deprecated("dojo.html.getInnerWidth", "replaced by dojo.html.getInner().width", "0.5");
+	return dojo.html.getInner(node).width;
+}
+
+dojo.html.getInnerHeight = function(node){
+	dojo.deprecated("dojo.html.getInnerHeight", "replaced by dojo.html.getInner().height", "0.5");
+	return dojo.html.getInner(node).height;
+}
 
 dojo.html.getContentBox = function(node){
 	node = dojo.byId(node);
@@ -214,7 +275,27 @@ dojo.html.getContentBox = function(node){
 		height: node.offsetHeight - padborder.height
 	};
 }
-dojo.html.getContentSize = dojo.html.getContentBox;
+dojo.html.getContent = dojo.html.getContentSize = dojo.html.getContentBox;
+
+dojo.html.getContentBoxWidth = function(node){
+	dojo.deprecated("dojo.html.getContentBoxWidth", "replaced by dojo.html.getContentBox().width", "0.5");
+	return dojo.html.getContentBox(node).width;
+}
+
+dojo.html.getContentBoxHeight = function(node){
+	dojo.deprecated("dojo.html.getContentBoxHeight", "replaced by dojo.html.getContentBox().height", "0.5");
+	return dojo.html.getContentBox(node).height;
+}
+
+dojo.html.getContentWidth = function(node){
+	dojo.deprecated("dojo.html.getContentWidth", "replaced by dojo.html.getContent().width", "0.5");
+	return dojo.html.getContent(node).width;
+}
+
+dojo.html.getContentHeight = function(node){
+	dojo.deprecated("dojo.html.getContentHeight", "replaced by dojo.html.getContent().height", "0.5");
+	return dojo.html.getContent(node).height;
+}
 
 dojo.html.setContentBox = function(node, args){
 	node = dojo.byId(node);
@@ -232,14 +313,54 @@ dojo.html.setContentBox = function(node, args){
 	}
 	return ret;
 }
-dojo.html.setContentSize = dojo.html.setContentBox;
+dojo.html.setContent = dojo.html.setContentSize = dojo.html.setContentBox;
+
+dojo.html.setContentBoxWidth = function(node, width){
+	dojo.deprecated("dojo.html.setContentBoxWidth", "replaced by dojo.html.setContentBox(node, {width: width})", "0.5");
+	return dojo.html.setContentBox(node, { width: width });
+}
+
+dojo.html.setContentBoxHeight = function(node, height){
+	dojo.deprecated("dojo.html.setContentBoxHeight", "replaced by dojo.html.setContentBox(node, {height: height}).height", "0.5");
+	return dojo.html.setContentBox(node, { height: height });
+}
+
+dojo.html.setContentWidth = function(node, width){
+	dojo.deprecated("dojo.html.setContentWidth", "replaced by dojo.html.setContent(node, {width: width})", "0.5");
+	return dojo.html.setContent(node, {width: width});
+}
+
+dojo.html.setContentHeight = function(node, height){
+	dojo.deprecated("dojo.html.setContentHeight", "replaced by dojo.html.setContent(node, {height: height})", "0.5");
+	return dojo.html.setContent(node, {height: height});
+}
 
 dojo.html.getMarginBox = function(node){
 	var borderbox = dojo.html.getBorderBox(node);
 	var margin = dojo.html.getMargin(node);
 	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
 }
-dojo.html.getOuterSize = dojo.html.getMarginBox;
+dojo.html.getOuter = dojo.html.getOuterSize = dojo.html.getMarginBox;
+
+dojo.html.getMarginBoxWidth = function(node){
+	dojo.deprecated("dojo.html.getMarginBoxWidth", "replaced by dojo.html.getMarginBox().width", "0.5");
+	return dojo.html.getMarginBox(node).width;
+}
+
+dojo.html.getMarginBoxHeight = function(node){
+	dojo.deprecated("dojo.html.getMarginBoxHeight", "replaced by dojo.html.getMarginBox().height", "0.5");
+	return dojo.html.getMarginBox(node).height;
+}
+
+dojo.html.getOuterWidth = function(node){
+	dojo.deprecated("dojo.html.getOuterWidth", "replaced by dojo.html.getOuter().width", "0.5");
+	return dojo.html.getOuter(node).width;
+}
+
+dojo.html.getOuterHeight = function(node){
+	dojo.deprecated("dojo.html.getOuterHeight", "replaced by dojo.html.getOuter().height", "0.5");
+	return dojo.html.getOuter(node).height;
+}
 
 dojo.html.setMarginBox = function(node, args){
 	node = dojo.byId(node);
@@ -260,7 +381,27 @@ dojo.html.setMarginBox = function(node, args){
 	}
 	return ret;
 }
-dojo.html.setOuterSize = dojo.html.setMarginBox;
+dojo.html.setOuter = dojo.html.setOuterSize = dojo.html.setMarginBox;
+
+dojo.html.setMarginBoxWidth = function(node, width){
+	dojo.deprecated("dojo.html.setMarginBoxWidth", "replaced by dojo.html.setMarginBox(node, {width: width})", "0.5");
+	return dojo.html.setMarginBox(node, { width: width });
+}
+
+dojo.html.setMarginBoxHeight = function(node, height){
+	dojo.deprecated("dojo.html.setMarginBoxHeight", "replaced by dojo.html.setMarginBox(node, {height: height}).height", "0.5");
+	return dojo.html.setMarginBox(node, { height: height });
+}
+
+dojo.html.setOuterWidth = function(node, width){
+	dojo.deprecated("dojo.html.setOuterWidth", "replaced by dojo.html.setOuter(node, {width: width})", "0.5");
+	return dojo.html.setOuter(node, {width: width});
+}
+
+dojo.html.setOuterHeight = function(node, height){
+	dojo.deprecated("dojo.html.setOuterHeight", "replaced by dojo.html.setOuter(node, {height: height})", "0.5");
+	return dojo.html.setOuter(node, {height: height});
+}
 
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate object
@@ -278,7 +419,7 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 	} else {
 		// coords is an dom object (or dom object id); return it's coordinates
 		var node = dojo.byId(coords);
-		var pos = dojo.html.getAbsolutePosition(node, includeScroll);
+		var pos = dojo.html.abs(node, includeScroll);
 		var borderbox = dojo.html.getBorderBox(node);
 		var ret = {
 			x: pos.x,

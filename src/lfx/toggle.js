@@ -3,12 +3,12 @@ dojo.require("dojo.lfx.*");
 
 dojo.lfx.toggle.plain = {
 	show: function(node, duration, easing, callback){
-		dojo.style.show(node);
+		dojo.html.show(node);
 		if(dojo.lang.isFunction(callback)){ callback(); }
 	},
 	
 	hide: function(node, duration, easing, callback){
-		dojo.style.hide(node);
+		dojo.html.hide(node);
 		if(dojo.lang.isFunction(callback)){ callback(); }
 	}
 }

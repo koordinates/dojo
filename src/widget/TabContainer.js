@@ -6,7 +6,7 @@ dojo.require("dojo.lang.func");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html.position");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 

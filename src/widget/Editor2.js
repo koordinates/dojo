@@ -5,6 +5,9 @@
 dojo.provide("dojo.widget.Editor2");
 dojo.provide("dojo.widget.html.Editor2");
 dojo.require("dojo.io.*");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.iframe");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
@@ -115,7 +118,7 @@ dojo.widget.defineWidget(
 				}
 				this._htmlEditNode.style.display = "";
 				this._htmlEditNode.style.width = "100%";
-				this._htmlEditNode.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
+				this._htmlEditNode.style.height = dojo.html.getInnerHeight(this.editNode)+"px";
 				this._htmlEditNode.value = this.editNode.innerHTML;
 				this.domNode.style.display = "none";
 			}else{
@@ -151,16 +154,16 @@ dojo.widget.defineWidget(
 		globalOnScrollHandler: function(){
 			var isIE = dojo.render.html.ie;
 			if(!this._handleScroll){ return; }
-			var ds = dojo.style;
+			var dh = dojo.html;
 			var tdn = this.toolbarWidget.domNode;
 			var db = document["body"];
-			var totalHeight = ds.getOuterHeight(tdn);
+			var totalHeight = dh.getOuterHeight(tdn);
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
-				var editorWidth =  ds.getOuterWidth(this.domNode); 
-				this._scrollThreshold = ds.abs(tdn, false).y;
+				var editorWidth =  dh.getOuterWidth(this.domNode); 
+				this._scrollThreshold = dh.abs(tdn, false).y;
 				// dojo.debug("threshold:", this._scrollThreshold);
-				if((isIE)&&(db)&&(ds.getStyle(db, "background-image")=="none")){
+				if((isIE)&&(db)&&(dh.getStyle(db, "background-image")=="none")){
 					with(db.style){
 						backgroundImage = "url(" + dojo.uri.dojoUri("src/widget/templates/images/blank.gif") + ")";
 						backgroundAttachment = "fixed";
@@ -177,9 +180,9 @@ dojo.widget.defineWidget(
 					this.domNode.style.marginTop = totalHeight+"px";
 					if(isIE){
 						// FIXME: should we just use setBehvior() here instead?
-						var cl = dojo.style.abs(tdn).x;
+						var cl = dojo.html.abs(tdn).x;
 						document.body.appendChild(tdn);
-						tdn.style.left = cl+dojo.style.getPixelValue(document.body, "margin-left")+"px";
+						tdn.style.left = cl+dojo.html.getPixelValue(document.body, "margin-left")+"px";
 						dojo.html.addClass(tdn, "IEFixedToolbar");
 						if(this.object){
 							dojo.html.addClass(this.tbBgIframe, "IEFixedToolbar");
@@ -203,7 +206,7 @@ dojo.widget.defineWidget(
 				// position of the bottom-most editor instance.
 				if(!dojo.render.html.safari){
 					// safari reports a bunch of things incorrectly here
-					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.style.getInnerHeight(this.editNode) : this._lastHeight);
+					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.html.getInnerHeight(this.editNode) : this._lastHeight);
 					if(scrollPos > (this._scrollThreshold+eHeight)){
 						tdn.style.display = "none";
 					}else{
