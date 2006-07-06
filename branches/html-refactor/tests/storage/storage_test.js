@@ -2,7 +2,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
-dojo.require("dojo.fx.*");
+dojo.require("dojo.lfx.*");
 dojo.require("dojo.storage.*");
 
 var TestStorage = {
@@ -337,7 +337,7 @@ var TestStorage = {
 		status.innerHTML = message;
 		
 		top.appendChild(status);
-		dojo.fx.html.fadeOut(status, 2000) 
+		dojo.lfx.fadeOut(status, 2000).play();
 	},
 	
 	_setProvider: function(provider){
