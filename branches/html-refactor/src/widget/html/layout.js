@@ -3,7 +3,7 @@ dojo.provide("dojo.widget.html.layout");
 dojo.require("dojo.lang");
 dojo.require("dojo.string");
 dojo.require("dojo.html.style");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
 
 /**
  * Layout a bunch of child dom nodes within a parent dom node
@@ -47,10 +47,9 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 	// remaining space (blank area where nothing has been written)
 	var f={
 		top: dojo.html.getPixelValue(container, "padding-top", true),
-		left: dojo.html.getPixelValue(container, "padding-left", true),
-		height: dojo.html.getContentHeight(container),
-		width: dojo.html.getContentWidth(container)
+		left: dojo.html.getPixelValue(container, "padding-left", true)
 	};
+	dojo.lang.mixin(f, dojo.html.getContentSize(container));
 
 	// set positions/sizes
 	dojo.lang.forEach(children, function(child){
@@ -69,8 +68,8 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 		// note that setting the width of a <div> may affect it's height.
 		// TODO: same is true for widgets but need to implement API to support that
 		if ( (pos=="top")||(pos=="bottom") ) {
-			dojo.html.setOuterWidth(elm, f.width);
-			var h = dojo.html.getOuterHeight(elm);
+			dojo.html.setOuterSize(elm, { width: f.width });
+			var h = dojo.html.getOuterSize(elm).height;
 			f.height -= h;
 			if(pos=="top"){
 				f.top += h;
@@ -78,8 +77,8 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.top = f.top + f.height + "px";
 			}
 		}else if(pos=="left" || pos=="right"){
-			dojo.html.setOuterHeight(elm, f.height);
-			var w = dojo.html.getOuterWidth(elm);
+			dojo.html.setOuterSize(elm, { height: f.height });
+			var w = dojo.html.getOuterSize(elm).width;
 			f.width -= w;
 			if(pos=="left"){
 				f.left += w;
@@ -87,8 +86,7 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.left = f.left + f.width + "px";
 			}
 		} else if(pos=="flood" || pos=="client"){
-			dojo.html.setOuterWidth(elm, f.width);
-			dojo.html.setOuterHeight(elm, f.height);
+			dojo.html.setOuterSize(elm, { width: f.width, height: f.height });
 		}
 		
 		// TODO: for widgets I want to call resizeTo(), but for top/bottom

@@ -4,8 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.style");
 
 //////////////////////////////////////////
 // WizardContainer -- a set of panels

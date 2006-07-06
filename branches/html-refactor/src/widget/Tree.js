@@ -14,6 +14,8 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeNode");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.selection");
 
 
 
@@ -328,7 +330,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		// add new child into DOM after it was added into children
 		if (index < this.children.length) { // children[] already has child
 			//dojo.debug("Inserting before "+this.children[index].title);
-			dojo.dom.insertBefore(child.domNode, this.children[index].domNode);
+			dojo.html.insertBefore(child.domNode, this.children[index].domNode);
 		} else {
 			this.containerNode.appendChild(child.domNode);
 			if (this.isExpanded && this.isTreeNode) {
@@ -490,7 +492,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 
 		children.splice(index,1);
-		dojo.dom.removeNode(child.domNode);
+		dojo.html.removeNode(child.domNode);
 
 		if (parent.children.length == 0) {
 			parent.containerNode.style.display = "none";

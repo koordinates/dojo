@@ -6,8 +6,8 @@ dojo.require("dojo.lang.func");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.position");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 
 dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget, {
@@ -132,8 +132,8 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 
 		if(this.doLayout){
 			with(tab.domNode.style){
-				top = dojo.style.getPixelValue(this.containerNode, "padding-top", true);
-				left = dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+				top = dojo.html.getPixelValue(this.containerNode, "padding-top", true);
+				left = dojo.html.getPixelValue(this.containerNode, "padding-left", true);
 			}
 		}
 	},
@@ -153,11 +153,10 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 
 		// size the current tab
 		// TODO: should have ptr to current tab rather than searching
-		var cw=dojo.style.getContentWidth(this.containerNode);
-		var ch=dojo.style.getContentHeight(this.containerNode);
+		var content = dojo.html.getContentSize(this.containerNode);
 		dojo.lang.forEach(this.children, function(child){
 			if(child.selected){
-				child.resizeTo(cw, ch);
+				child.resizeTo(content.width, content.height);
 			}
 		});
 	},
@@ -249,10 +248,8 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 			}
 
 			if(this.doLayout){
-				tab.resizeTo(
-					dojo.style.getContentWidth(this.containerNode),
-					dojo.style.getContentHeight(this.containerNode)
-				);
+				var content = dojo.html.getContentSize(this.containerNode);
+				tab.resizeTo(content.width, content.height);
 			}
 		}
 	},

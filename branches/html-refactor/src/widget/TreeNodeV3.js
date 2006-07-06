@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.TreeNodeV3");
 
+dojo.require("dojo.html.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 
@@ -198,9 +199,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("insertNode "+this+" before "+index);
 		
 		if (index==0) {
-			dojo.dom.prependChild(this.domNode, parent.containerNode);
+			dojo.html.prependChild(this.domNode, parent.containerNode);
 		} else {
-			dojo.dom.insertAfter(this.domNode, parent.children[index-1].domNode);
+			dojo.html.insertAfter(this.domNode, parent.children[index-1].domNode);
 		}
 	},
 	

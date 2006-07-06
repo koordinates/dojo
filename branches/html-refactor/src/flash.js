@@ -2,7 +2,7 @@ dojo.provide("dojo.flash");
 
 dojo.require("dojo.string.*");
 dojo.require("dojo.uri.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.common");
 
 /** 
 		The goal of dojo.flash is to make it easy to extend Flash's capabilities
@@ -747,12 +747,12 @@ dojo.flash.Embed.prototype = {
 		var elementWidth = this.width;
 		var elementHeight = this.height;
 
-		var scroll_offset = dojo.html.getScrollOffset();
-		var viewport_size = dojo.html.getViewportSize();
+		var scroll_offset = dojo.html.getScroll().offset;
+		var viewport_size = dojo.html.getViewport();
 
 		// compute the centered position    
-		var x = scroll_offset[0] + (viewport_size[0] - elementWidth) / 2;
-		var y = scroll_offset[1] + (viewport_size[1] - elementHeight) / 2; 
+		var x = scroll_offset.x + (viewport_size.x - elementWidth) / 2;
+		var y = scroll_offset.y + (viewport_size.y - elementHeight) / 2; 
 
 		// set the centered position
 		var container = dojo.byId(this.id + "Container");

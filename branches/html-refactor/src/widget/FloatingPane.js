@@ -7,10 +7,11 @@ dojo.provide("dojo.widget.html.FloatingPane");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Manager");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.html.shadow");
-dojo.require("dojo.style");
-dojo.require("dojo.dom");
+dojo.require("dojo.html.iframe");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.dnd.HtmlDragMove");
@@ -64,7 +65,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 		// <img src=""> can hang IE!  better get rid of it
 		if(this.iconSrc==""){
-			dojo.dom.removeNode(this.titleBarIcon);
+			dojo.html.removeNode(this.titleBarIcon);
 		}else{
 			this.titleBarIcon.src = this.iconSrc.toString();// dojo.uri.Uri obj req. toString()
 		}
@@ -133,34 +134,33 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	postCreate: function(){
 		if(this.isShowing()){
 			this.width=-1;	// force resize
-			this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+			var outer = dojo.html.getOuterSize(this.domNode);
+			this.resizeTo(outer.width, outer.height);
 		}
 	},
 
 	maximizeWindow: function(evt) {
+		var outer = dojo.html.getOuterSize(this.domNode);
 		this.previous={
-			width: dojo.style.getOuterWidth(this.domNode) || this.width,
-			height: dojo.style.getOuterHeight(this.domNode) || this.height,
+			width: outer.width || this.width,
+			height: outer.height || this.height,
 			left: this.domNode.style.left,
 			top: this.domNode.style.top,
 			bottom: this.domNode.style.bottom,
 			right: this.domNode.style.right
 		};
 		this.domNode.style.left =
-			dojo.style.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
+			dojo.html.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
 		this.domNode.style.top =
-			dojo.style.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
+			dojo.html.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
 
 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
-			this.resizeTo(
-				dojo.html.getViewportWidth()-dojo.style.getPaddingWidth(dojo.body()),
-				dojo.html.getViewportHeight()-dojo.style.getPaddingHeight(dojo.body())
-			);
+			var viewport = dojo.html.getViewport();
+			var padding = dojo.html.getPadding(dojo.body());
+			this.resizeTo(viewport.width-padding.width, viewport.height-padding.height);
 		} else {
-			this.resizeTo(
-				dojo.style.getContentWidth(this.domNode.parentNode),
-				dojo.style.getContentHeight(this.domNode.parentNode)
-			);
+			var content = dojo.html.getContentSize(this.domNode.parentNode);
+			this.resizeTo(content.width, content.height);
 		}
 		this.maximizeAction.style.display="none";
 		this.restoreAction.style.display="";
@@ -190,7 +190,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	closeWindow: function(evt) {
-		dojo.dom.removeNode(this.domNode);
+		dojo.html.removeNode(this.domNode);
 		this.destroy();
 	},
 
@@ -261,13 +261,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	onShow: function(){
 		dojo.widget.html.FloatingPane.superclass.onShow.call(this);
-		this.resizeTo(dojo.style.getOuterWidth(this.domNode), dojo.style.getOuterHeight(this.domNode));
+		var outer = dojo.html.getOuterSize(this.domNode);
+		this.resizeTo(outer.width, outer.height);
 	},
 
 	// This is called when the user adjusts the size of the floating pane
 	resizeTo: function(w, h){
-		dojo.style.setOuterWidth(this.domNode, w);
-		dojo.style.setOuterHeight(this.domNode, h);
+		dojo.html.setOuterSize(this.domNode, { width: w, height: h });
 
 		dojo.widget.html.layout(this.domNode,
 			[

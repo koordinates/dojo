@@ -1,6 +1,7 @@
 
 dojo.provide("dojo.widget.TreeNode");
 
+dojo.require("dojo.html.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 
@@ -162,14 +163,14 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 				var img = this.tree.makeBlankImg();
 				this.imgs.unshift(img);
 				//dojo.debugShallow(this.domNode);
-				dojo.dom.insertBefore(this.imgs[0], this.domNode.firstChild);
+				dojo.html.insertBefore(this.imgs[0], this.domNode.firstChild);
 
 			}
 		}
 		if (depthDiff<0) {
 			for(var i=0; i<-depthDiff;i++) {
 				this.imgs.shift();
-				dojo.dom.removeNode(this.domNode.firstChild);
+				dojo.html.removeNode(this.domNode.firstChild);
 			}
 		}
 
@@ -233,7 +234,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		// add to images before the title
 		this.imgs.push(this.childIcon);
 
-		dojo.dom.insertBefore(this.childIcon, this.titleNode);
+		dojo.html.insertBefore(this.childIcon, this.titleNode);
 
 		// node with children(from source html) becomes folder on build stage.
 		if (this.children.length || this.isFolder) {

@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.html.TitlePane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.html.style");
 dojo.require("dojo.lfx.*");
 
 dojo.widget.html.TitlePane = function(){
