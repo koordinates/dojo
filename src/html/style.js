@@ -134,7 +134,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 	var candidateNodes = [];
 	
 	if(!useNonXpath && _document.evaluate) { // supports dom 3 xpath
-		var xpath = "//" + (nodeType || "*") + "[contains(";
+		var xpath = ".//" + (nodeType || "*") + "[contains(";
 		if(classMatchType != dojo.html.classMatchType.ContainsAny){
 			xpath += "concat(' ',@class,' '), ' " +
 			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
