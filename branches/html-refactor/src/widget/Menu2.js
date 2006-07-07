@@ -664,7 +664,7 @@ dojo.widget.defineWidget(
 	openSubmenu: function(submenu, from_item){
 		var fromPos = dojo.html.getAbsolutePosition(from_item.domNode, true);
 		var ourPos = dojo.html.getAbsolutePosition(this.domNode, true);
-		var our_h = dojo.html.getInnerHeight(this.domNode);
+		var our_h = dojo.html.getInner(this.domNode).height;
 		var x = fromPos.x;
 		var y = ourPos.y + our_h - this.menuOverlap;
 
