@@ -26,6 +26,7 @@ dojo.widget.defineWidget(
 
 	isContainer: true,
 	snarfChildDomOutput: true,
+	buddyWidget: null,  //if this is set, this widget will get focused whenever this menu is focused (opened)
 
 	currentSubmenu: null,
 	currentSubmenuTrigger: null,
@@ -42,6 +43,8 @@ dojo.widget.defineWidget(
 	submenuOverlap: 5,
 	contextMenuForWindow: false,
 	openEvent: null,
+
+	_highlighted_option: null,
 
 	initialize: function(args, frag) {
 		if (this.eventNaming == "default") {
@@ -65,10 +68,7 @@ dojo.widget.defineWidget(
 	subscribeSubitemsOnOpen: function() {
 		var subItems = this.getChildrenOfType(dojo.widget.MenuItem2);
 
-		//dojo.debug(subItems)
-
 		for(var i=0; i<subItems.length; i++) {
-			//dojo.debug(subItems[i]);
 			dojo.event.topic.subscribe(this.eventNames.open, subItems[i], "menuOpen")
 		}
 	},
@@ -118,12 +118,153 @@ dojo.widget.defineWidget(
 		dojo.widget.Menu2.OperaAndKonqFixer.cleanNode(node);
 	},
 
+	//if buddyWidget is set, it will get focus whenever this menu
+	//is focused
+	setFocus: function(){
+		if(this.buddyWidget && this.buddyWidget.focus){
+			this.buddyWidget.focus();
+		}
+	},
+
+	moveToNext: function(evt){
+		this.highlightOption(1);
+		return true; //do not pass to parent menu
+	},
+
+	moveToPrevious: function(evt){
+		this.highlightOption(-1);
+		return true; //do not pass to parent menu
+	},
+
+	moveToParentMenu: function(evt){
+		if(this._highlighted_option && this.parentMenu){
+			//only process event in the focused menu
+			//and its immediate parentMenu to support
+			//MenuBar2
+			if(evt._menu2UpKeyProcessed){
+				return true; //do not pass to parent menu
+			}else{
+				this._highlighted_option.onUnhover();
+				this.closeSubmenu();
+				evt._menu2UpKeyProcessed = true;
+			}
+		}
+		return false;
+	},
+
+	moveToChildMenu: function(evt){
+		if(this._highlighted_option && this._highlighted_option.submenuId){
+			this._highlighted_option._onClick(true);
+			return true; //do not pass to parent menu
+		}
+		return false;
+	},
+
+	selectCurrentItem: function(evt){
+		if(this._highlighted_option){
+			this._highlighted_option._onClick();
+			return true;
+		}
+		return false;
+	},
+
+	//return true to stop the event being processed by the
+	//parent popupmenu
+	processKey: function(evt){
+		if(evt.ctrlKey || evt.altKey){ return false; }
+
+		var keyCode = evt.keyCode;
+		var rval = false;
+		var k = dojo.event.browser.keys;
+
+		// mozilla quirk 
+		// space has no keyCode in mozilla
+		var keyCode = evt.keyCode;
+		if(keyCode==0 && evt.charCode==k.KEY_SPACE){
+			keyCode = k.KEY_SPACE;
+		}
+
+		switch(keyCode){
+ 			case k.KEY_DOWN_ARROW:
+				rval = this.moveToNext(evt);
+				break;
+			case k.KEY_UP_ARROW:
+				rval = this.moveToPrevious(evt);
+				break;
+			case k.KEY_RIGHT_ARROW:
+				rval = this.moveToChildMenu(evt);
+				break;
+			case k.KEY_LEFT_ARROW:
+				rval = this.moveToParentMenu(evt);
+				break;
+			case k.KEY_SPACE: //fall through
+			case k.KEY_ENTER:
+				if(rval = this.selectCurrentItem(evt)){
+					break;
+				}
+				//fall through
+			case k.KEY_ESCAPE:
+				dojo.widget.html.Menu2Manager.currentMenu.close();
+				rval = true;
+				break;
+		}
+
+		return rval;
+	},
+
+	findValidItem: function(dir, curItem){
+		if(curItem){
+			curItem = dir>0 ? curItem.getNextSibling() : curItem.getPreviousSibling();
+		}
+
+		for(var i=0; i < this.children.length; ++i){
+			if(!curItem){
+				curItem = dir>0 ? this.children[0] : this.children[this.children.length-1];
+			}
+			if(curItem.onHover){
+				return curItem;
+			}
+			curItem = dir>0 ? curItem.getNextSibling() : curItem.getPreviousSibling();
+		}
+	},
+	
+	highlightOption: function(dir){
+		var item;
+		// || !this._highlighted_option.parentNode
+		if((!this._highlighted_option)){
+			item = this.findValidItem(dir);
+		}else{
+			item = this.findValidItem(dir, this._highlighted_option);
+		}
+		if(item){
+			if(this._highlighted_option) {
+				this._highlighted_option.onUnhover();
+			}
+			item.onHover();
+			dojo.html.scrollIntoView(item.domNode);
+		}
+	},
+
+	// User defined function to handle clicks on an item
+	onItemClick: function(item) {},
+
 	/**
 	 * Open the menu at position (x,y), relative to dojo.body()
+	 * Or open(node, parent, explodeSrc, aroundOrient) to open
+	 * around node
 	 */
-	open: function(x, y, parent, explodeSrc){
+	open: function(x, y, parent, explodeSrc, orient){
 		if (this.isShowingNow){ return; }
-		
+
+		var around = false, node, aroundOrient;
+		if(typeof x == 'object'){
+			node = x;
+			aroundOrient = explodeSrc;
+			explodeSrc = parent;
+			parent = y;
+			around = true;
+		}
+
 		// for unknown reasons even if the domNode is attached to the body in postCreate(),
 		// it's not attached here, so have to attach it here.
 		dojo.body().appendChild(this.domNode);
@@ -131,7 +272,8 @@ dojo.widget.defineWidget(
 		// if explodeSrc isn't specified then explode from my parent widget
 		explodeSrc = explodeSrc || parent["domNode"] || [];
 
-		var parentMenu = (parent && parent.widgetType=="PopupMenu2") ? parent : null;
+		//FIXME: how to check derivation of class?
+		var parentMenu = (parent && (parent.widgetType=="PopupMenu2" || parent.widgetType=="MenuBar2")) ? parent : null;
 
 		if ( !parentMenu ) {
 			// record whenever a top level menu is opened
@@ -152,7 +294,16 @@ dojo.widget.defineWidget(
 			display="";
 			zIndex = 200 + this.menuIndex;
 		}
-		dojo.html.placeOnScreenPoint(this.domNode, x, y, [0, 0], true);
+
+		if(around){
+			if(!aroundOrient){ //By default, attempt to open above the aroundNode, or below
+				aroundOrient = {'BL': 'TL', 'TL': 'BL'};
+			}
+			dojo.html.placeOnScreenAroundElement(this.domNode, node, [0, 0], true, aroundOrient);
+		}else{
+			if(!orient){ orient = 'TL,TR,BL,BR';}
+			dojo.html.placeOnScreen(this.domNode, x, y, [0, 0], true, orient);
+		}
 		this.domNode.style.display="none";
 
 		this.parentMenu = parentMenu;
@@ -172,9 +323,14 @@ dojo.widget.defineWidget(
 			return;
 		}
 
+		if(this._highlighted_option){
+			this._highlighted_option.onUnhover();
+		}
+
 		this.closeSubmenu();
 		this.hide();
 		this.isShowingNow = false;
+
 		dojo.widget.html.Menu2Manager.closed(this);
 	},
 
@@ -226,6 +382,7 @@ dojo.widget.defineWidget(
 		var y = fromPos.y;
 
 		this.currentSubmenu = submenu;
+
 		this.currentSubmenu.open(x, y, this, from_item.domNode);
 
 		this.currentSubmenuTrigger = from_item;
@@ -292,7 +449,8 @@ dojo.widget.defineWidget(
 	submenuId: '',
 	disabled: false,
 	eventNaming: "default",
-
+	highlightClass: 'dojoMenuItem2Hover',
+	
 	postMixInProperties: function(){
 		this.iconStyle="";
 		if (this.iconSrc){
@@ -320,10 +478,19 @@ dojo.widget.defineWidget(
 	},
 
 	onHover: function(){
+		//this is to prevent some annoying behavior when both mouse and keyboard are used
+		this.onUnhover();
+
 		if (this.is_hovering){ return; }
 		if (this.is_open){ return; }
 
+		if(this.parent._highlighted_option){
+			this.parent._highlighted_option.onUnhover();
+		}
 		this.parent.closeSubmenu();
+		this.parent._highlighted_option = this;
+		dojo.widget.html.Menu2Manager.setFocusedMenu(this.parent);
+
 		this.highlightItem();
 
 		if (this.is_hovering){ this.stopSubmenuTimer(); }
@@ -332,43 +499,63 @@ dojo.widget.defineWidget(
 	},
 
 	onUnhover: function(){
-		if (!this.is_open){ this.unhighlightItem(); }
+		if(!this.is_open){ this.unhighlightItem(); }
 
 		this.is_hovering = false;
+
+		this.parent._highlighted_option = null;
+
+		if(this.parent.parentMenu){
+			dojo.widget.html.Menu2Manager.setFocusedMenu(this.parent.parentMenu);
+		}
+
 		this.stopSubmenuTimer();
 	},
 
 	// Internal function for clicks
-	_onClick: function(){
-		if (this.disabled){ return; }
+	_onClick: function(focus){
+		var displayingSubMenu = false;
+		if (this.disabled){ return rval; }
 
 		if (this.submenuId){
 			if (!this.is_open){
 				this.stopSubmenuTimer();
 				this.openSubmenu();
 			}
+			displayingSubMenu = true;
 		}else{
 			this.parent.closeAll();
 		}
 
 		// for some browsers the onMouseOut doesn't get called (?), so call it manually
-		this.onUnhover();
+		if(!displayingSubMenu){ //only onUnhover when no submenu is available
+			this.onUnhover();
+		}
 
 		// user defined handler for click
 		this.onClick();
 
 		dojo.event.topic.publish(this.eventNames.engage, this);
+
+		if(displayingSubMenu && focus){
+			dojo.widget.getWidgetById(this.submenuId).highlightOption(1);
+		}
+		return;
 	},
 
 	// User defined function to handle clicks
-	onClick: function() { },
+	// this default function call the parent
+	// menu's onItemClick
+	onClick: function() {
+		this.parent.onItemClick(this);
+	},
 
 	highlightItem: function(){
-		dojo.html.addClass(this.domNode, 'dojoMenuItem2Hover');
+		dojo.html.addClass(this.domNode, this.highlightClass);
 	},
 
 	unhighlightItem: function(){
-		dojo.html.removeClass(this.domNode, 'dojoMenuItem2Hover');
+		dojo.html.removeClass(this.domNode, this.highlightClass);
 	},
 
 	startSubmenuTimer: function(){
@@ -451,8 +638,14 @@ dojo.widget.html.Menu2Manager = new function(){
 
 	this.currentMenu = null;
 	this.currentButton = null;		// button that opened current menu (if any)
+	this.currentFocusMenu = null;	// the (sub)menu which receives key events
 	this.focusNode = null;
 	this.registeredWindows = [];
+
+	//In Opera, only onkeypress works, while in IE, only onkeydown works
+	//In Moz, both work. so use onkeydown in IE, otherwise use onkeypress 
+	//for keyevents (FIXME: safari/konqueror?)
+	this._keyEventName = dojo.doc().createEvent ? "onkeypress" : "onkeydown";
 
 	dojo.addOnLoad(this, "registerAllWindows");
 
@@ -461,6 +654,7 @@ dojo.widget.html.Menu2Manager = new function(){
 		{
 			dojo.event.connect(win.document, 'onmousedown', this, 'onClick');
 			dojo.event.connect(win, "onscroll", this, "onClick");
+			dojo.event.connect(win.document, this._keyEventName, this, 'onKeyPress');
 			win.__Menu2ManagerRegistered = true;
 			this.registeredWindows.push(win);
 		}
@@ -476,7 +670,7 @@ dojo.widget.html.Menu2Manager = new function(){
 	this.registerAllWindows = function(targetWindow){
 		//starting from window.top, clicking everywhere in this page 
 		//should close popup menus
-		if(!targetWindow)  targetWindow = window.top;
+		if(!targetWindow)  targetWindow = dojo.html.getDocumentWindow(window.top.document); //see comment below
 
 		this.registerWin(targetWindow);
 
@@ -493,6 +687,7 @@ dojo.widget.html.Menu2Manager = new function(){
 		if (this.currentMenu == menu){
 			this.currentMenu = null;
 			this.currentButton = null;
+			this.currentFocusMenu = null;
 		}
 	};
 
@@ -504,8 +699,27 @@ dojo.widget.html.Menu2Manager = new function(){
 		}
 
 		this.currentMenu = menu;
+		this.currentFocusMenu = menu;
 		this.currentButton = button;
 	};
+
+	this.setFocusedMenu = function(menu){
+		this.currentFocusMenu = menu;
+	};
+
+	this.onKeyPress = function(e){
+		if(!this.currentMenu || !this.currentMenu.isShowingNow){ return; }
+
+		var m = this.currentFocusMenu;
+		while (m){
+			if(m.processKey(e)){
+				e.preventDefault();
+				e.stopPropagation();
+				break;
+			}
+			m = m.parentMenu;
+		}
+	},
 
 	this.onClick = function(e){
 		if (!this.currentMenu){ return; }
@@ -516,20 +730,22 @@ dojo.widget.html.Menu2Manager = new function(){
 		// and exit when one succeeds
 
 		var m = this.currentMenu;
-		while (m){
-			if(!e){ //IE
-				//In IE, no way to tell under which registeredWindows
-				//this event is generated. Thus we have to check
-				//each registered one, and set the event
-				for(var i=0;i<this.registeredWindows.length;++i){
-					if(this.registeredWindows[i].event){
-						e = this.registeredWindows[i].event;
-						break;
-					}
+		
+		if(!e){ //IE
+			//In IE, no way to tell under which registeredWindows
+			//this event is generated. Thus we have to check
+			//each registered one, and set the event
+			for(var i=0;i<this.registeredWindows.length;++i){
+				if(this.registeredWindows[i].event){
+					e = this.registeredWindows[i].event;
+					break;
 				}
 			}
+		}
 
-			if(dojo.html.overElement(m.domNode, e)){
+		while (m){
+			if(dojo.html.overElement(m.domNode, e) || dojo.dom.isDescendantOf(e.target, m.domNode)){
+				this.currentMenu.setFocus();
 				return;
 			}
 			m = m.currentSubmenu;
@@ -657,6 +873,48 @@ dojo.widget.defineWidget(
 
 	templateString: '<div class="dojoMenuBar2"><table class="dojoMenuBar2Client"><tr dojoAttachPoint="containerNode"></tr></table></div>',
 
+	close: function(){
+		if(this._highlighted_option){
+			this._highlighted_option.onUnhover();
+		}
+
+		this.closeSubmenu();
+	},
+
+	processKey: function(evt){
+		if(evt.ctrlKey || evt.altKey){ return false; }
+
+		var keyCode = evt.keyCode;
+		var rval = false;
+		var k = dojo.event.browser.keys;
+
+		switch(keyCode){
+ 			case k.KEY_DOWN_ARROW:
+				rval = this.moveToChildMenu(evt);
+				break;
+			case k.KEY_UP_ARROW:
+				rval = this.moveToParentMenu(evt);
+				break;
+			case k.KEY_RIGHT_ARROW:
+				rval = this.moveToNext(evt);
+				break;
+			case k.KEY_LEFT_ARROW:
+				rval = this.moveToPrevious(evt);
+				break;
+			default:
+				rval = this.inherited("processKey", evt);
+				break;
+		}
+
+		return rval;
+	},
+
+	postCreate: function(){
+		this.inherited("postCreate");
+		dojo.widget.html.Menu2Manager.opened(this);
+		this.isShowingNow = true;
+	},
+
 	/*
 	 * override PopupMenu2 to open the submenu below us rather than to our right
 	 */
@@ -684,13 +942,7 @@ dojo.widget.defineWidget(
 		+'<span><span>${this.caption}</span>${this.caption}</span>'
 		+'</td>',
 
-	highlightItem: function(){
-		dojo.html.addClass(this.domNode, 'dojoMenuBarItem2Hover');
-	},
-
-	unhighlightItem: function(){
-		dojo.html.removeClass(this.domNode, 'dojoMenuBarItem2Hover');
-	},
+	highlightClass: 'dojoMenuBarItem2Hover',
 
 	setDisabled: function(value){
 		this.disabled = value;
