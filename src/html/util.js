@@ -281,8 +281,8 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll)
 		padding = [0, 0];
 	}
 
-	var scroll = dojo.html.getScrollOffset();
-	var view = dojo.html.getViewportSize();
+	var scroll = dojo.html.getScroll().offset;
+	var view = dojo.html.getViewport();
 
 	node = dojo.byId(node);
 	var w = node.offsetWidth + padding[0];
@@ -339,15 +339,14 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 		padding = [0, 0];
 	}
 
-	var scroll = dojo.html.getScrollOffset();
-	var view = dojo.html.getViewportSize();
+	var scroll = dojo.html.getScroll().offset;
+	var view = dojo.html.getViewport();
 
 	node = dojo.byId(node);
 	var oldDisplay = node.style.display;
 	node.style.display="";
-	var w = dojo.html.getInnerWidth(node);
-	var h = dojo.html.getInnerHeight(node);
 	node.style.display=oldDisplay;
+	var inner = dojo.html.getInner(node);
 
 	if(hasScroll) {
 		desiredX -= scroll.x;
@@ -355,8 +354,8 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 	}
 
 	var x = -1, y = -1;
-	//dojo.debug((desiredX+padding[0]) + w, "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
-	if((desiredX+padding[0]) + w <= view.w && (desiredY+padding[1]) + h <= view.h) { // TL
+	//dojo.debug((desiredX+padding[0]) + inner.width, "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
+	if((desiredX+padding[0]) + inner.width <= view.w && (desiredY+padding[1]) + inner.height <= view.h) { // TL
 		x = (desiredX+padding[0]);
 		y = (desiredY+padding[1]);
 		//dojo.debug("TL", x, y);
@@ -364,26 +363,26 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 
 	//dojo.debug((desiredX-padding[0]), "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
 	if((x < 0 || y < 0) && (desiredX-padding[0]) <= view.w && (desiredY+padding[1]) + h <= view.h) { // TR
-		x = (desiredX-padding[0]) - w;
+		x = (desiredX-padding[0]) - inner.width;
 		y = (desiredY+padding[1]);
 		//dojo.debug("TR", x, y);
 	}
 
 	//dojo.debug((desiredX+padding[0]) + w, "<=", view.w, "&&", (desiredY-padding[1]), "<=", view.h);
-	if((x < 0 || y < 0) && (desiredX+padding[0]) + w <= view.w && (desiredY-padding[1]) <= view.h) { // BL
+	if((x < 0 || y < 0) && (desiredX+padding[0]) + inner.width <= view.w && (desiredY-padding[1]) <= view.h) { // BL
 		x = (desiredX+padding[0]);
-		y = (desiredY-padding[1]) - h;
+		y = (desiredY-padding[1]) - inner.height;
 		//dojo.debug("BL", x, y);
 	}
 
 	//dojo.debug((desiredX-padding[0]), "<=", view.w, "&&", (desiredY-padding[1]), "<=", view.h);
 	if((x < 0 || y < 0) && (desiredX-padding[0]) <= view.w && (desiredY-padding[1]) <= view.h) { // BR
-		x = (desiredX-padding[0]) - w;
-		y = (desiredY-padding[1]) - h;
+		x = (desiredX-padding[0]) - inner.width;
+		y = (desiredY-padding[1]) - inner.height;
 		//dojo.debug("BR", x, y);
 	}
 
-	if(x < 0 || y < 0 || (x + w > view.w) || (y + h > view.h)) {
+	if(x < 0 || y < 0 || (x + inner.width > view.w) || (y + inner.height > view.h)) {
 		return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll);
 	}
 

@@ -229,7 +229,7 @@ dojo.widget.defineWidget (
 				return;
 			}
 
-			var offset = dojo.html.getScrollOffset();
+			var offset = dojo.html.getScroll().offset;
 			var parent = dojo.html.getAbsolutePosition(this.domNode, true);
 			
 			var content = dojo.html.getContent(this.handleMove.domNode);

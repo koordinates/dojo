@@ -44,9 +44,9 @@ dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 	
 	showDialog: function (e) {
 		dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
-		var x = dojo.html.getAbsoluteX(this.domNode);
-		var y = dojo.html.getAbsoluteY(this.domNode) + dojo.html.getInnerHeight(this.domNode);
-		this.dialog.showAt(x, y);
+		var abs = dojo.html.getAbsolutePosition(this.domNode);
+		var y = abs.y + dojo.html.getInner(this.domNode).height;
+		this.dialog.showAt(abs.x, y);
 	},
 	
 	hideDialog: function (e) {
