@@ -172,13 +172,7 @@ dojo.html.createNodesFromText = function(txt, trim){
 	return nodes;
 }
 
-/* TODO: merge placeOnScreen and placeOnScreenPoint to make 1 function that allows you
- * to define which corner(s) you want to bind to. Something like so:
- *
- * kes(node, desiredX, desiredY, "TR")
- * kes(node, [desiredX, desiredY], ["TR", "BL"])
- *
- * TODO: make this function have variable call sigs
+/*TODO: make this function have variable call sigs
  *
  * kes(node, ptArray, cornerArray, padding, hasScroll)
  * kes(node, ptX, ptY, cornerA, cornerB, cornerC, paddingArray, hasScroll)
@@ -191,6 +185,18 @@ dojo.html.createNodesFromText = function(txt, trim){
  * scrolling. If you already accounted for scrolling, set 'hasScroll'
  * to true. Set padding to either a number or array for [paddingX, paddingY]
  * to put some buffer around the element you want to position.
+ * Set which corner(s) you want to bind to, such as
+ *
+ * placeOnScreen(node, desiredX, desiredY, padding, hasScroll, "TR")
+ * placeOnScreen(node, [desiredX, desiredY], padding, hasScroll, ["TR", "BL"])
+ *
+ * The desiredX/desiredY will be treated as the topleft(TL)/topright(TR) or 
+ * BottomLeft(BL)/BottomRight(BR) corner of the node. Each corner is tested
+ * and if a perfect match is found, it will be used. Otherwise, it goes through
+ * all of the specified corners, and choose the most appropriate one.
+ * By default, corner = ['TL'].
+ * If tryOnly is set to true, the node will not be moved to the place.
+ *
  * NOTE: node is assumed to be absolutely or relatively positioned.
  *
  * Alternate call sig:
@@ -201,12 +207,18 @@ dojo.html.createNodesFromText = function(txt, trim){
  *  placeOnScreen("myId", [800, 623], 5)
  *  placeOnScreen(node, 234, 3284, [2, 5], true)
  */
-dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll) {
+dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll, corners, tryOnly) {
 	if(dojo.lang.isArray(desiredX)) {
+		tryOnly = corners;
+		corners = hasScroll;
 		hasScroll = padding;
 		padding = desiredY;
 		desiredY = desiredX[1];
 		desiredX = desiredX[0];
+	}
+
+	if(dojo.lang.isString(corners)){
+		corners = corners.split(",");
 	}
 
 	if(!isNaN(padding)) {
@@ -222,33 +234,64 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll)
 	var w = node.offsetWidth + padding[0];
 	var h = node.offsetHeight + padding[1];
 
-	if(hasScroll) {
-		desiredX -= scroll.x;
-		desiredY -= scroll.y;
+
+	if(!dojo.lang.isArray(corners)){
+		corners = ['TL'];
 	}
 
-	var x = desiredX + w;
-	if(x > view.w) {
-		x = view.w - w;
-	} else {
-		x = desiredX;
+	var bestx, besty, bestDistance = 10000000;
+
+	for(var cidex=0; cidex<corners.length; ++cidex){
+		var corner = corners[cidex];
+		var match = true;
+		tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w);
+		tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h);
+		if(hasScroll) {
+			tryX -= scroll.x;
+			tryY -= scroll.y;
+		}
+	
+		var x = tryX + w;
+		if(x > view.w) {
+			x = view.w - w;
+			match = false;
+		} else {
+			x = tryX;
+		}
+		x = Math.max(padding[0], x) + scroll.x;
+	
+		var y = tryY + h;
+		if(y > view.h) {
+			y = view.h - h;
+			match = false;
+		} else {
+			y = tryY;
+		}
+		y = Math.max(padding[1], y) + scroll.y;
+
+		if(match){ //perfect match, return now
+			bestx = x;
+			besty = y;
+			break;
+		}else{
+			//not perfect, find out whether it is better than the saved one
+			var dist = Math.pow(x,2)+Math.pow(y,2);
+			if(bestDistance > dist){
+				bestDistance = dist;
+				bestx = x;
+				besty = y;
+			}
+		}
 	}
-	x = Math.max(padding[0], x) + scroll.x;
 
-	var y = desiredY + h;
-	if(y > view.h) {
-		y = view.h - h;
-	} else {
-		y = desiredY;
+	if(!tryOnly){
+		node.style.left = bestx + "px";
+		node.style.top = besty + "px";
 	}
-	y = Math.max(padding[1], y) + scroll.y;
 
-	node.style.left = x + "px";
-	node.style.top = y + "px";
-
-	var ret = [x, y];
-	ret.x = x;
-	ret.y = y;
+	var ret = [bestx, besty];
+	ret.x = bestx;
+	ret.y = besty;
 	return ret;
 }
 
@@ -260,77 +303,76 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll)
  *  placeOnScreenPoint(node, e.clientX, e.clientY);
  */
 dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
-	if(dojo.lang.isArray(desiredX)) {
-		hasScroll = padding;
-		padding = desiredY;
-		desiredY = desiredX[1];
-		desiredX = desiredX[0];
+	dojo.deprecated("use dojo.html.placeOnScreen() instead of dojo.html.placeOnScreenPoint()", "0.5");
+	return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, ['TL', 'TR', 'BL', 'BR']);
+}
+
+/**
+ * Like placeOnScreen, except it accepts aroundNode instead of x.y 
+ * and attempts to place node around it.
+ * aroundCorners specify Which corner of aroundNode should be 
+ * used to place the node => which corner(s) of node to use (see the
+ * corners parameter in dojo.html.placeOnScreen)
+ * aroundCorners: {'TL': 'BL', 'BL': 'TL'}
+ */
+dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasScroll, aroundCorners, tryOnly){
+	var aroundNodeW, aroundNodeH, aroundNodePos, best, bestDistance=10000000;
+	aroundNodeW = dojo.style.getOuterWidth(aroundNode);
+	aroundNodeH = dojo.style.getOuterHeight(aroundNode);
+	aroundNodePos = dojo.style.getAbsolutePosition(aroundNode, hasScroll);
+
+	for(var nodeCorner in aroundCorners){
+		var pos, desiredX, desiredY;
+		var corners = aroundCorners[nodeCorner];
+
+		desiredX = aroundNodePos.x + (nodeCorner.charAt(1)=='L' ? 0 : aroundNodeW);
+		desiredY = aroundNodePos.y + (nodeCorner.charAt(0)=='T' ? 0 : aroundNodeH);
+
+		pos = dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, corners, true);
+		if(pos.x == desiredX && pos.y == desiredY){
+			best = pos;
+			break;
+		}else{
+			//not perfect, find out whether it is better than the saved one
+			var dist = Math.pow(pos.x,2)+Math.pow(pos.y,2);
+			if(bestDistance > dist){
+				best = pos;
+			}
+		}
 	}
 
-	if(!isNaN(padding)) {
-		padding = [Number(padding), Number(padding)];
-	} else if(!dojo.lang.isArray(padding)) {
-		padding = [0, 0];
+	if(!tryOnly){
+		node.style.left = best.x + "px";
+		node.style.top = best.y + "px";
 	}
+	return best;
+}
 
-	var scroll = dojo.html.getScrollOffset();
-	var view = dojo.html.getViewportSize();
-
-	node = dojo.byId(node);
-	var oldDisplay = node.style.display;
-	node.style.display="";
-	var w = dojo.style.getInnerWidth(node);
-	var h = dojo.style.getInnerHeight(node);
-	node.style.display=oldDisplay;
-
-	if(hasScroll) {
-		desiredX -= scroll.x;
-		desiredY -= scroll.y;
+//scrollIntoView in some implementation is broken, use our own
+dojo.html.scrollIntoView = function(node){
+	// don't rely on that node.scrollIntoView works just because the function is there
+	// it doesnt work in Konqueror or Opera even though the function is there and probably
+	// not safari either
+	// dont like browser sniffs implementations but sometimes you have to use it
+	if(dojo.render.html.ie){
+		//only call scrollIntoView if there is a scrollbar for this menu,
+		//otherwise, scrollIntoView will scroll the window scrollbar
+		if(dojo.style.getInnerHeight(node.parentNode) < node.parentNode.scrollHeight){
+			node.scrollIntoView(false);
+		}
+	}else if(dojo.render.html.mozilla){
+		// IE, mozilla
+		node.scrollIntoView(false);
+	}else{
+		var parent = node.parentNode;
+		var parentBottom = parent.scrollTop + dojo.style.getInnerHeight(parent);
+		var nodeBottom = node.offsetTop + dojo.style.getOuterHeight(node);
+		if(parentBottom < nodeBottom){
+			parent.scrollTop += (nodeBottom - parentBottom);
+		}else if(parent.scrollTop > node.offsetTop){
+			parent.scrollTop -= (parent.scrollTop - node.offsetTop);
+		}
 	}
-
-	var x = -1, y = -1;
-	//dojo.debug((desiredX+padding[0]) + w, "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
-	if((desiredX+padding[0]) + w <= view.w && (desiredY+padding[1]) + h <= view.h) { // TL
-		x = (desiredX+padding[0]);
-		y = (desiredY+padding[1]);
-		//dojo.debug("TL", x, y);
-	}
-
-	//dojo.debug((desiredX-padding[0]), "<=", view.w, "&&", (desiredY+padding[1]) + h, "<=", view.h);
-	if((x < 0 || y < 0) && (desiredX-padding[0]) <= view.w && (desiredY+padding[1]) + h <= view.h) { // TR
-		x = (desiredX-padding[0]) - w;
-		y = (desiredY+padding[1]);
-		//dojo.debug("TR", x, y);
-	}
-
-	//dojo.debug((desiredX+padding[0]) + w, "<=", view.w, "&&", (desiredY-padding[1]), "<=", view.h);
-	if((x < 0 || y < 0) && (desiredX+padding[0]) + w <= view.w && (desiredY-padding[1]) <= view.h) { // BL
-		x = (desiredX+padding[0]);
-		y = (desiredY-padding[1]) - h;
-		//dojo.debug("BL", x, y);
-	}
-
-	//dojo.debug((desiredX-padding[0]), "<=", view.w, "&&", (desiredY-padding[1]), "<=", view.h);
-	if((x < 0 || y < 0) && (desiredX-padding[0]) <= view.w && (desiredY-padding[1]) <= view.h) { // BR
-		x = (desiredX-padding[0]) - w;
-		y = (desiredY-padding[1]) - h;
-		//dojo.debug("BR", x, y);
-	}
-
-	if(x < 0 || y < 0 || (x + w > view.w) || (y + h > view.h)) {
-		return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll);
-	}
-
-	x += scroll.x;
-	y += scroll.y;
-
-	node.style.left = x + "px";
-	node.style.top = y + "px";
-
-	var ret = [x, y];
-	ret.x = x;
-	ret.y = y;
-	return ret;
 }
 
 // Get the window object where the element is placed in.
