@@ -27,29 +27,23 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 		var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
 		var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
 		switch(name){
-			case "opacity":{ 
+			case "opacity":
 				dojo.html.setOpacity(node, value); 
 				break; 
-			}
-			case "content-height":{ 
+			case "content-height":
 				dojo.html.setContent(node, {height: value}); 
 				break; 
-			}
-			case "content-width":{ 
+			case "content-width":
 				dojo.html.setContent(node, {width, value}); 
 				break; 
-			}
-			case "outer-height":{ 
+			case "outer-height":
 				dojo.html.setOuter(node, {height: value}); 
 				break; 
-			}
-			case "outer-width":{ 
+			case "outer-width":
 				dojo.html.setOuter(node, {width: value}); 
 				break; 
-			}
-			default: { 
+			default:
 				node.style[dojo.html.toCamelCase(name)]=value; 
-			}
 		}
 	} 
 }
