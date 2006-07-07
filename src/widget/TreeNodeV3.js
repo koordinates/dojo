@@ -175,13 +175,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	
 	initialize: function() {
-		if (!(this.tree["isTree"])) {
+		if (!(this.tree && this.tree["isTree"])) {
 			this.tree = dojo.widget.byId(this.tree);
 		}
 		if (this.children.length) {
 			this.isFolder = true;
 		}
-	}
+	},
 		
 	unsetFolder: function() {
 		this.isFolder = false;
