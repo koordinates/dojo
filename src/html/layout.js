@@ -266,17 +266,6 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 	return ret;
 }
 
-dojo.html._callDeprecated = function(inFunc, replFunc, args, argName, retValue){
-	dojo.deprecated("dojo.html." + inFunc,
-					"replaced by dojo.html." + replFunc + "(" + (argName ? "node, {"+ argName + ": " + argName + "}" : "" ) + ")" + (retValue ? "." + retValue : ""), "0.5");
-	var newArgs = [];
-	if(argName){ var argsIn = {}; argsIn[argName] = args[1]; newArgs.push(args[0]); newArgs.push(argsIn); }
-	else { newArgs = args }
-	var ret = dojo.html[replFunc].apply(dojo.html, args);
-	if(retValue){ return ret[retValue]; }
-	else { return ret; }
-}
-
 dojo.html.setMarginBoxWidth = dojo.html.setOuterWidth = function(node, width){
 	return dojo.html._callDeprecated("setMarginBoxWidth", "setMarginBox", arguments, "width");
 }

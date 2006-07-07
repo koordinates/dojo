@@ -54,36 +54,6 @@ dojo.html.getScroll = function(){
 	};
 }
 
-dojo.html.getViewportWidth = function(){
-	dojo.deprecated("dojo.html.getViewportWidth", "replaced by dojo.html.getViewport().width", "0.5");
-	return dojo.html.getViewport().width;
-}
-
-dojo.html.getViewportHeight = function(){
-	dojo.deprecated("dojo.html.getViewportHeight", "replaced by dojo.html.getViewport().height", "0.5");
-	return dojo.html.getViewport().height;
-}
-
-dojo.html.getViewportSize = function(){
-	dojo.deprecated("dojo.html.getViewportSize", "replaced by dojo.html.getViewport()", "0.5");
-	return dojo.html.getViewport();
-}
-
-dojo.html.getScrollTop = function(){
-	dojo.deprecated("dojo.html.getScrollTop", "replaced by dojo.html.getScroll().top", "0.5");
-	return dojo.html.getScroll().top;
-}
-
-dojo.html.getScrollLeft = function(){
-	dojo.deprecated("dojo.html.getScrollLeft", "replaced by dojo.html.getScroll().height", "0.5");
-	return dojo.html.getScroll().left;
-}
-
-dojo.html.getScrollOffset = function(){
-	dojo.deprecated("dojo.html.getScrollOffset", "replaced by dojo.html.getScroll().offset", "0.5");
-	return dojo.html.getScroll().offset;
-}
-
 dojo.html.getParentByType = function(node, type) {
 	var _document = dojo.doc();
 	var parent = dojo.byId(node);
@@ -171,4 +141,34 @@ dojo.html.isTag = function(node /* ... */) {
 		}
 	}
 	return "";
+}
+
+dojo.html._callDeprecated = function(inFunc, replFunc, args, argName, retValue){
+	dojo.deprecated("dojo.html." + inFunc,
+					"replaced by dojo.html." + replFunc + "(" + (argName ? "node, {"+ argName + ": " + argName + "}" : "" ) + ")" + (retValue ? "." + retValue : ""), "0.5");
+	var newArgs = [];
+	if(argName){ var argsIn = {}; argsIn[argName] = args[1]; newArgs.push(args[0]); newArgs.push(argsIn); }
+	else { newArgs = args }
+	var ret = dojo.html[replFunc].apply(dojo.html, args);
+	if(retValue){ return ret[retValue]; }
+	else { return ret; }
+}
+
+dojo.html.getViewportWidth = function(){
+	return dojo.html._callDeprecated("getViewportWidth", "getViewport", arguments, null, "width");
+}
+dojo.html.getViewportHeight = function(){
+	return dojo.html._callDeprecated("getViewportHeight", "getViewport", arguments, null, "height");
+}
+dojo.html.getViewportSize = function(){
+	return dojo.html._callDeprecated("getViewportSize", "getViewport", arguments);
+}
+dojo.html.getScrollTop = function(){
+	return dojo.html._callDeprecated("getScrollTop", "getScroll", arguments, null, "top");
+}
+dojo.html.getScrollLeft = function(){
+	return dojo.html._callDeprecated("getScrollLeft", "getScroll", arguments, null, "left");
+}
+dojo.html.getScrollOffset = function(){
+	return dojo.html._callDeprecated("getScrollOffset", "getScroll", arguments, null, "offset");
 }

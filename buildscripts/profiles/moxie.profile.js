@@ -1,6 +1,8 @@
 var dependencies = [ 
-	"dojo.dom",
-	"dojo.html",
+	"dojo.html.*",
+	"dojo.html.display",
+	"dojo.html.layout",
+	"dojo.html.util",
 	"dojo.widget.*",
 	"dojo.io.*",
 	"dojo.event.*",

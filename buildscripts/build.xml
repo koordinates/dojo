@@ -532,6 +532,8 @@ from buildUtil import *
 
 print "Setting version for Dojo to: " + dojo.getProperty("version")
 replaceVersion(dojo.getProperty("release_dir") + "/source.__package__.js", dojo.getProperty("version"))
+print "Removing dojo.require calls in source.__package__.js."
+removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 ]]></script>
 
 		<antcall target="-rhino-compress">
