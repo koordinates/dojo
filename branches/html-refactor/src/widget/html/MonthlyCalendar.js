@@ -41,7 +41,7 @@ dojo.lang.extend(dojo.widget.html.MonthlyCalendar, {
 					var el = document.createElement("div");
 					dojo.html.addClass(el, "dojoMonthlyCalendarEvent");          
 					el.appendChild(document.createTextNode(evts[y].summary.value));
-					el.width = dojo.html.getContentSize(node).width;
+					el.width = dojo.html.getContent(node).width;
 					node.appendChild(el);
 				}
 			}

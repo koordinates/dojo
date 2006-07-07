@@ -19,7 +19,7 @@ dojo.html.sumAncestorProperties = function(node, prop){
 	return retVal;
 }
 
-dojo.html.getAbsolutePosition = function(node, includeScroll){
+dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 	node = dojo.byId(node, node.ownerDocument);
 	var ret = {
 		x: 0,
@@ -94,7 +94,6 @@ dojo.html.getAbsolutePosition = function(node, includeScroll){
 
 	return ret;
 }
-dojo.html.abs = dojo.html.getAbsolutePosition;
 
 dojo.html.isPositionAbsolute = function(node){
 	return (dojo.html.getComputedStyle(node, 'position') == 'absolute')
@@ -176,13 +175,12 @@ dojo.html.isBorderBox = function(node){
 	return (dojo.html.getBoxSizing(node) == dojo.html.boxSizing.BORDER_BOX);
 }
 
-dojo.html.getBorderBox = function(node){
+dojo.html.getBorderBox = dojo.html.getInner = dojo.html.getInnerSize = function(node){
 	node = dojo.byId(node);
 	return { width: node.offsetWidth, height: node.offsetHeight };
 }
-dojo.html.getInner = dojo.html.getInnerSize = dojo.html.getBorderBox;
 
-dojo.html.getContentBox = function(node){
+dojo.html.getContentBox = dojo.html.getContent = dojo.html.getContentSize = function(node){
 	node = dojo.byId(node);
 	var padborder = dojo.html.getPadBorder(node);
 	return {
@@ -190,9 +188,8 @@ dojo.html.getContentBox = function(node){
 		height: node.offsetHeight - padborder.height
 	};
 }
-dojo.html.getContent = dojo.html.getContentSize = dojo.html.getContentBox;
 
-dojo.html.setContentBox = function(node, args){
+dojo.html.setContentBox = dojo.html.setContent = dojo.html.setContentSize = function(node, args){
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);
@@ -208,16 +205,14 @@ dojo.html.setContentBox = function(node, args){
 	}
 	return ret;
 }
-dojo.html.setContent = dojo.html.setContentSize = dojo.html.setContentBox;
 
-dojo.html.getMarginBox = function(node){
+dojo.html.getMarginBox = dojo.html.getOuter = dojo.html.getOuterSize = function(node){
 	var borderbox = dojo.html.getBorderBox(node);
 	var margin = dojo.html.getMargin(node);
 	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
 }
-dojo.html.getOuter = dojo.html.getOuterSize = dojo.html.getMarginBox;
 
-dojo.html.setMarginBox = function(node, args){
+dojo.html.setMarginBox = dojo.html.setOuter = dojo.html.setOuterSize = function(node, args){
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);
@@ -236,7 +231,6 @@ dojo.html.setMarginBox = function(node, args){
 	}
 	return ret;
 }
-dojo.html.setOuter = dojo.html.setOuterSize = dojo.html.setMarginBox;
 
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate object

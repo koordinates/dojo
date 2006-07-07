@@ -279,7 +279,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 		node = dojo.byId(this.treeNode.labelNode);
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
 		var nodey = dojo.html.getAbsolutePosition(node).y;
-		var height = dojo.html.getInnerSize(node).height;
+		var height = dojo.html.getInner(node).height;
 
 		var relY = mousey - nodey;
 		var p = relY / height;

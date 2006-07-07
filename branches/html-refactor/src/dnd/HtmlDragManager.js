@@ -297,7 +297,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			var tn = tempTarget.domNode;
 			if(!tn){ return; }
 			var abs = dojo.html.getAbsolutePosition(tn, true);
-			var inner = dojo.html.getInnerSize(tn);
+			var inner = dojo.html.getInner(tn);
 			this.dropTargetDimensions.push([
 				[abs.x, abs.y],	// upper-left
 				// lower-right

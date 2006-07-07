@@ -68,8 +68,8 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 		// note that setting the width of a <div> may affect it's height.
 		// TODO: same is true for widgets but need to implement API to support that
 		if ( (pos=="top")||(pos=="bottom") ) {
-			dojo.html.setOuterSize(elm, { width: f.width });
-			var h = dojo.html.getOuterSize(elm).height;
+			dojo.html.setOuter(elm, { width: f.width });
+			var h = dojo.html.getOuter(elm).height;
 			f.height -= h;
 			if(pos=="top"){
 				f.top += h;
@@ -77,8 +77,8 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.top = f.top + f.height + "px";
 			}
 		}else if(pos=="left" || pos=="right"){
-			dojo.html.setOuterSize(elm, { height: f.height });
-			var w = dojo.html.getOuterSize(elm).width;
+			dojo.html.setOuter(elm, { height: f.height });
+			var w = dojo.html.getOuter(elm).width;
 			f.width -= w;
 			if(pos=="left"){
 				f.left += w;
@@ -86,7 +86,7 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.left = f.left + f.width + "px";
 			}
 		} else if(pos=="flood" || pos=="client"){
-			dojo.html.setOuterSize(elm, { width: f.width, height: f.height });
+			dojo.html.setOuter(elm, { width: f.width, height: f.height });
 		}
 		
 		// TODO: for widgets I want to call resizeTo(), but for top/bottom
