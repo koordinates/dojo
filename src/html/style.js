@@ -258,29 +258,6 @@ dojo.html.setStyle = function(node, cssSelector, value){
 	}
 }
 
-dojo.html.setStyleAttributes = function(node, attributes) { 
-	node = dojo.byId(node);
-	var methodMap={ 
-		"opacity":dojo.html.setOpacity,
-		"content-height":dojo.html.setContentHeight,
-		"content-width":dojo.html.setContentWidth,
-		"outer-height":dojo.html.setOuterHeight,
-		"outer-width":dojo.html.setOuterWidth 
-	} 
-
-	var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
-	for(var i=0; i<splittedAttribs.length; i++){ 
-		var nameValue=splittedAttribs[i].split(":"); 
-		var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
-		var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
-		if(methodMap[name]) { 
-			methodMap[name](node,value); 
-		} else { 
-			node.style[dojo.html.toCamelCase(name)]=value; 
-		} 
-	} 
-}
-
 dojo.html.copyStyle = function(target, source){
 	// work around for opera which doesn't have cssText, and for IE which fails on setAttribute 
 	if(!source.style.cssText){ 
