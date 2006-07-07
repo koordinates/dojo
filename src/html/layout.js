@@ -34,7 +34,7 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 				dojo.html.setContent(node, {height: value}); 
 				break; 
 			case "content-width":
-				dojo.html.setContent(node, {width, value}); 
+				dojo.html.setContent(node, {width: value}); 
 				break; 
 			case "outer-height":
 				dojo.html.setOuter(node, {height: value}); 
@@ -48,7 +48,6 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 	} 
 }
 
-dojo.html.getAbsolutePosition = function(node, includeScroll){
 dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 	node = dojo.byId(node, node.ownerDocument);
 	var ret = {
