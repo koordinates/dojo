@@ -277,8 +277,8 @@ dojo.widget.defineWidget(
 				// IE, mozilla
 				node.scrollIntoView(false);	
 			}else{
-				var parentBottom = parent.scrollTop + dojo.html.getInnerSize(parent).height;
-				var nodeBottom = node.offsetTop + dojo.html.getOuterSize(node).height;
+				var parentBottom = parent.scrollTop + dojo.html.getInner(parent).height;
+				var nodeBottom = node.offsetTop + dojo.html.getOuter(node).height;
 				if(parentBottom < nodeBottom){
 					parent.scrollTop += (nodeBottom - parentBottom);
 				}else if(parent.scrollTop > node.offsetTop){
@@ -485,7 +485,7 @@ dojo.widget.defineWidget(
 		},
 
 		sizeBackgroundIframe: function(){
-			var outer = dojo.html.getOuterSize(this.optionsListNode);
+			var outer = dojo.html.getOuter(this.optionsListNode);
 			if( outer.width==0 || outer.height==0 ){
 				// need more time to calculate size
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
@@ -565,7 +565,7 @@ dojo.widget.defineWidget(
 
 				with(this.optionsListNode.style){
 					display = "";
-					height = ((visibleCount) ? (dojo.html.getOuterSize(childs[0]).height * visibleCount) : 0)+"px";
+					height = ((visibleCount) ? (dojo.html.getOuter(childs[0]).height * visibleCount) : 0)+"px";
 					width = dojo.html.getOuter(this.cbTableNode).width-2+"px";
 				}
 				// only fadein once (flicker)

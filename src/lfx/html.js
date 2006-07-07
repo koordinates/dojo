@@ -243,7 +243,7 @@ dojo.lfx.html.wipeOut = function(nodes, duration, easing, callback){
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			[{	property: "height",
-				start: dojo.html.getContentBox(node).height,
+				start: dojo.html.getContent(node).height,
 				end: 0 } ], duration, easing);
 		
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};

@@ -125,7 +125,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			var cloneTds = node.childNodes;
 			for(var i = 0; i < domTds.length; i++){
 			    if((cloneTds[i])&&(cloneTds[i].style)){
-				    cloneTds[i].style.width = dojo.html.getContentSize(domTds[i]).width + "px";
+				    cloneTds[i].style.width = dojo.html.getContent(domTds[i]).width + "px";
 			    }
 			}
 			node = table;
@@ -190,7 +190,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			var x = 0;
 			var y = 0;
 		} else {
-			var content = dojo.html.getContentSize(this.constrainingContainer);
+			var content = dojo.html.getContent(this.constrainingContainer);
 			width = content.width;
 			height = content.height;
 			x =
@@ -203,7 +203,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				dojo.html.getBorderExtent(this.constrainingContainer, "top");
 		}
 		
-		var outer = dojo.html.getOuterSize(this.domNode);
+		var outer = dojo.html.getOuter(this.domNode);
 		return {
 			minX: x,
 			minY: y,
@@ -339,7 +339,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			child = this.domNode.childNodes[i];
 			if (child.nodeType != dojo.html.ELEMENT_NODE) { continue; }
 			var pos = dojo.html.getAbsolutePosition(child, true);
-			var inner = dojo.html.getInnerSize(child);
+			var inner = dojo.html.getInner(child);
 			this.childBoxes.push({top: pos.y, bottom: pos.y+inner.height,
 				left: pos.x, right: pos.x+inner.width, node: child});
 		}
@@ -369,7 +369,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			borderTopWidth = "1px";
 			borderTopColor = "black";
 			borderTopStyle = "solid";
-			width = dojo.html.getInnerSize(this.domNode).width + "px";
+			width = dojo.html.getInner(this.domNode).width + "px";
 			left = dojo.html.getAbsolutePosition(this.domNode, true).x + "px";
 		}
 	},

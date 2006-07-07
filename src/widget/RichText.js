@@ -164,7 +164,7 @@ dojo.widget.defineWidget(
 				if(html == ""){ html = "&nbsp;"; }
 			}
 			
-			var content = dojo.html.getContentSize(this.domNode);
+			var content = dojo.html.getContent(this.domNode);
 			this._oldHeight = content.height;
 			this._oldWidth = content.width;
 

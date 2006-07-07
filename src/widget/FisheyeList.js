@@ -553,7 +553,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		var x = 0;
 		var y = 0;
 		
-		var outer = dojo.html.getOuterSize(itm.lblNode);
+		var outer = dojo.html.getOuter(itm.lblNode);
 
 		if (this.labelEdge == this.EDGE.TOP){
 			x = Math.round((itm.sizeW / 2) - (outer.width / 2));

@@ -87,7 +87,7 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 		ee.style.fontSize = dojo.html.getStyle(this.editable, "font-size");
 		ee.style.fontWeight = dojo.html.getStyle(this.editable, "font-weight");
 		ee.style.fontStyle = dojo.html.getStyle(this.editable, "font-style");
-		var inner = dojo.html.getInnerSize(this.editable);
+		var inner = dojo.html.getInner(this.editable);
 		ee.style.width = Math.max(inner.width, this.minWidth) + "px";
 		if(this.mode.toLowerCase()=="textarea"){
 			ee.style.display = "block";

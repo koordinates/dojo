@@ -222,7 +222,7 @@ dojo.widget.defineWidget(
 	// open the menu to the right of the current menu item
 	openSubmenu: function(submenu, from_item){
 		var fromPos = dojo.html.getAbsolutePosition(from_item.domNode, true);
-		var our_w = dojo.html.getOuterSize(this.domNode).width;
+		var our_w = dojo.html.getOuter(this.domNode).width;
 		var x = fromPos.x + our_w - this.submenuOverlap;
 		var y = fromPos.y;
 

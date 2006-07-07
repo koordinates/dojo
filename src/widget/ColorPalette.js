@@ -168,7 +168,7 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 				top = y + "px";
 				left = x + "px";
 				zIndex = 998;
-				var s = dojo.html.getOuterSize(this.domNode);
+				var s = dojo.html.getOuter(this.domNode);
 				width = s.width + "px";
 				height = s.height + "px";
 			}

@@ -60,7 +60,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		dojo.html.addClass(this.domNode, "dojoSplitContainer");
 		this.domNode.style.overflow='hidden';	// workaround firefox bug
 		
-		var content = dojo.html.getContentSize(this.domNode);
+		var content = dojo.html.getContent(this.domNode);
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
 
@@ -71,7 +71,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	onResized: function(e){
-		var content = dojo.html.getContentSize(this.domNode);
+		var content = dojo.html.getContent(this.domNode);
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
 		this.layoutPanels();
@@ -254,12 +254,12 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			panel.style.left = pos + 'px';
 			panel.style.top = 0;
 
-			dojo.html.setOuterSize(panel, { width: size, height: this.paneHeight });
+			dojo.html.setOuter(panel, { width: size, height: this.paneHeight });
 		}else{
 			panel.style.left = 0;
 			panel.style.top = pos + 'px';
 
-			dojo.html.setOuterSize(panel, { width: this.paneWidth, height: size });
+			dojo.html.setOuter(panel, { width: this.paneWidth, height: size });
 		}
 	},
 
@@ -495,9 +495,9 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		this.moveSizingLine();
 
 		if (this.isHorizontal){
-			dojo.html.setOuterSize(this.virtualSizer, { width: this.sizerWidth, height: this.paneHeight });
+			dojo.html.setOuter(this.virtualSizer, { width: this.sizerWidth, height: this.paneHeight });
 		}else{
-			dojo.html.setOuterWidth(this.virtualSizer, { width: this.paneWidth, height: this.sizerWidth });
+			dojo.html.setOuter(this.virtualSizer, { width: this.paneWidth, height: this.sizerWidth });
 		}
 
 		this.virtualSizer.style.display = 'block';

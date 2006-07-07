@@ -93,7 +93,7 @@ dojo.widget.defineWidget(
 		},
 		
 		sizeBackgroundIframe: function(){
-			var outer = dojo.html.getOuterSize(this.containerNode);
+			var outer = dojo.html.getOuter(this.containerNode);
 			if(outer.width==0||outer.height==0){
 				// need more time to calculate size
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);

@@ -153,7 +153,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 
 		// size the current tab
 		// TODO: should have ptr to current tab rather than searching
-		var content = dojo.html.getContentSize(this.containerNode);
+		var content = dojo.html.getContent(this.containerNode);
 		dojo.lang.forEach(this.children, function(child){
 			if(child.selected){
 				child.resizeTo(content.width, content.height);
@@ -248,7 +248,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 			}
 
 			if(this.doLayout){
-				var content = dojo.html.getContentSize(this.containerNode);
+				var content = dojo.html.getContent(this.containerNode);
 				tab.resizeTo(content.width, content.height);
 			}
 		}
