@@ -472,6 +472,9 @@ function test_validate_check(){
 		tx9: {type: "text", value: "ca",  name: "tx9"},
 		tx10: {type: "text", value: "homer SIMPSON",  name: "tx10"},
 		tx11: {type: "text", value: "$1,000,000 (US)",  name: "tx11"},
+		tx12: {type: "text", value: "as12.a13", name: "tx12"},
+		tx13: {type: "text", value: "4.13", name: "tx13"},
+		tx14: {type: "text", value: "15.681", name: "tx14"},
 		cc_no: {type: "text", value: "5434 1111 1111 1111",  name: "cc_no"},
 		cc_exp: {type: "text", value: "",  name: "cc_exp"},
 		cc_type: {type: "text", value: "Visa",  name: "cc_type"},
@@ -513,7 +516,7 @@ function test_validate_check(){
 			{type: "checkbox", value: "chocolate",  name: "doubledip", checked: false},
 			{type: "checkbox", value: "chocolate chip",  name: "doubledip", checked: false},
 			{type: "checkbox", value: "lemon custard",  name: "doubledip", checked: true},
-			{type: "checkbox", value: "pistachio almond",  name: "doubledip", checked: false},
+			{type: "checkbox", value: "pistachio almond",  name: "doubledip", checked: false}
 		],		
 		// <select>
 		s1: {
@@ -523,7 +526,7 @@ function test_validate_check(){
 			options: [
 				{text: "option 1", value: "v0", selected: false},
 				{text: "option 2", value: "v1", selected: false},
-				{text: "option 3", value: "v2", selected: false},
+				{text: "option 3", value: "v2", selected: false}
 			]
 		},
 		// <select multiple>
@@ -534,7 +537,7 @@ function test_validate_check(){
 			options: [
 				{text: "option 1", value: "v0", selected: false},
 				{text: "option 2", value: "v1", selected: true},
-				{text: "option 3", value: "v2", selected: true},
+				{text: "option 3", value: "v2", selected: true}
 			]
 		},
 		tripledip: {
@@ -547,8 +550,8 @@ function test_validate_check(){
 				{text: "option 3", value: "chocolate chip", selected: false},
 				{text: "option 4", value: "lemon custard", selected: true},
 				{text: "option 5", value: "pistachio almond", selected: true},
-				{text: "option 6", value: "mocha almond chip", selected: false},
-			],
+				{text: "option 6", value: "mocha almond chip", selected: false}
+			]
 		},
 	};
 
@@ -565,8 +568,8 @@ function test_validate_check(){
 			{"doubledip":2}, {"tripledip":3} ],
 		// dependant/conditional fields
 		dependancies:	{
-			cc_exp: "cc_no",	
-			cc_type: "cc_no",	
+			cc_exp: "cc_no",
+			cc_type: "cc_no"
 		},
 		// validated fields
 		constraints: {
@@ -578,6 +581,9 @@ function test_validate_check(){
 			tx6: [dojo.validate.isEmailAddress, {allowLocal: true}],
 			tx7: [dojo.validate.isEmailAddress, {allowCruft: true}],
 			tx8: dojo.validate.isURL,
+			tx12: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]],
+			tx13: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]],
+			tx14: [[dojo.validate.isRealNumber],[dojo.validate.isInRange, {max:100.00,min:5.0}]]		
 		},
 		// confirm fields
 		confirm: {
@@ -645,5 +651,8 @@ function test_validate_check(){
 	jum.assertFalse("invalid_test14", results.isInvalid("email") );
 	jum.assertTrue("invalid_test15", results.isInvalid("email_confirm") );
 	// invlaid: txt2, txt4, txt5, email_confirm
-	jum.assertEquals("invalid_test16", 4, results.getInvalid().length );
+	jum.assertEquals("invalid_test16", 6, results.getInvalid().length );
+	jum.assertTrue("invalid_test17", results.isInvalid("tx12"));
+	jum.assertTrue("invalid_test18", results.isInvalid("tx13"));
+	jum.assertFalse("invalid_test19", results.isInvalid("tx14"));
 }
