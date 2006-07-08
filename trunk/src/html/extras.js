@@ -231,21 +231,23 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 	var view = dojo.html.getViewportSize();
 
 	node = dojo.byId(node);
-	var w = node.offsetWidth + padding[0];
-	var h = node.offsetHeight + padding[1];
-
+	var oldDisplay = node.style.display;
+	node.style.display="";
+	var w = dojo.style.getInnerWidth(node);
+	var h = dojo.style.getInnerHeight(node);
+	node.style.display=oldDisplay;
 
 	if(!dojo.lang.isArray(corners)){
 		corners = ['TL'];
 	}
 
-	var bestx, besty, bestDistance = 10000000;
+	var bestx, besty, bestDistance = Infinity;
 
 	for(var cidex=0; cidex<corners.length; ++cidex){
 		var corner = corners[cidex];
 		var match = true;
-		tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w);
-		tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h);
+		tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w) + padding[0] * (corner.charAt(1)=='L' ? 1 : -1);
+		tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h) + padding[1] * (corner.charAt(0)=='T' ? 1 : -1);
 		if(hasScroll) {
 			tryX -= scroll.x;
 			tryY -= scroll.y;
@@ -275,7 +277,7 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 			break;
 		}else{
 			//not perfect, find out whether it is better than the saved one
-			var dist = Math.pow(x,2)+Math.pow(y,2);
+			var dist = Math.pow(x-tryX,2)+Math.pow(y-tryY,2);
 			if(bestDistance > dist){
 				bestDistance = dist;
 				bestx = x;
@@ -316,10 +318,14 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
  * aroundCorners: {'TL': 'BL', 'BL': 'TL'}
  */
 dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasScroll, aroundCorners, tryOnly){
-	var aroundNodeW, aroundNodeH, aroundNodePos, best, bestDistance=10000000;
-	aroundNodeW = dojo.style.getOuterWidth(aroundNode);
-	aroundNodeH = dojo.style.getOuterHeight(aroundNode);
-	aroundNodePos = dojo.style.getAbsolutePosition(aroundNode, hasScroll);
+	var best, bestDistance=Infinity;
+	aroundNode = dojo.byId(aroundNode);
+	var oldDisplay = aroundNode.style.display;
+	aroundNode.style.display="";
+	var aroundNodeW = dojo.style.getOuterWidth(aroundNode);
+	var aroundNodeH = dojo.style.getOuterHeight(aroundNode);
+	var aroundNodePos = dojo.style.getAbsolutePosition(aroundNode, hasScroll);
+	aroundNode.style.display=oldDisplay;
 
 	for(var nodeCorner in aroundCorners){
 		var pos, desiredX, desiredY;
@@ -334,7 +340,7 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasSc
 			break;
 		}else{
 			//not perfect, find out whether it is better than the saved one
-			var dist = Math.pow(pos.x,2)+Math.pow(pos.y,2);
+			var dist = Math.pow(pos.x-desiredX,2)+Math.pow(pos.y-desiredY,2);
 			if(bestDistance > dist){
 				best = pos;
 			}

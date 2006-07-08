@@ -145,11 +145,14 @@ dojo.html.getViewportWidth = function(){
 	var _document = dojo.doc();
 	var w = 0;
 
-	if(_window.innerWidth){
+	//in opera9, dojo.body().clientWidth should be used, instead
+	//of window.innerWidth/document.documentElement.clientWidth
+	//so we have to check whether it is opera
+	if(!dojo.render.html.opera && _window.innerWidth){
 		w = _window.innerWidth;
 	}
 
-	if(dojo.exists(_document, "documentElement.clientWidth")){
+	if(!dojo.render.html.opera && dojo.exists(_document, "documentElement.clientWidth")){
 		// IE6 Strict
 		var w2 = _document.documentElement.clientWidth;
 		// this lets us account for scrollbars
@@ -170,17 +173,19 @@ dojo.html.getViewportWidth = function(){
 dojo.html.getViewportHeight = function(){
 	var _window = dojo.global();
 	var _document = dojo.doc();
-	if (_window.innerHeight){
+
+	//see comment in dojo.html.getViewportWidth
+	if (!dojo.render.html.opera && _window.innerHeight){
 		return _window.innerHeight;
 	}
 
-	if (dojo.exists(_document, "documentElement.clientHeight")){
+	if (!dojo.render.html.opera && dojo.exists(_document, "documentElement.clientHeight")){
 		// IE6 Strict
 		return _document.documentElement.clientHeight;
 	}
 
-	if (dojo.body()){
-		// IE
+	if (dojo.body().clientHeight){
+		// IE, Opera
 		return dojo.body().clientHeight;
 	}
 
