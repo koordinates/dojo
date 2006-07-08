@@ -157,7 +157,7 @@ dojo.widget.defineWidget(
 		},
 	
 		position: function(){
-			dojo.html.placeOnScreenPoint(this.domNode, this.mouse.x, this.mouse.y, [10,15], true);
+			dojo.html.placeOnScreen(this.domNode, this.mouse.x, this.mouse.y, [10,15], true, 'TL,TR,BL,BR');
 			this.bgIframe.onResized();
 		},
 	

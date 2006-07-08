@@ -647,8 +647,6 @@ dojo.widget.html.Menu2Manager = new function(){
 	//for keyevents (FIXME: safari/konqueror?)
 	this._keyEventName = dojo.doc().createEvent ? "onkeypress" : "onkeydown";
 
-	dojo.addOnLoad(this, "registerAllWindows");
-
 	this.registerWin = function(win){
 		if(!win.__Menu2ManagerRegistered)
 		{
@@ -681,7 +679,9 @@ dojo.widget.html.Menu2Manager = new function(){
 				this.registerAllWindows(win);
 			}
 		}
-	}
+	};
+	
+	dojo.addOnLoad(this, "registerAllWindows");
 	
 	this.closed = function(menu){
 		if (this.currentMenu == menu){
