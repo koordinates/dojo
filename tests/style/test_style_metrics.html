@@ -93,9 +93,9 @@ function processMetrics()
 
 function dumpMetrics(node)
 {
-	var content = dojo.html.getContentSize(node);
-	var inner = dojo.html.getInnerSize(node);
-	var outer = dojo.html.getOuterSize(node);
+	var content = dojo.html.getContentBox(node);
+	var inner = dojo.html.getBorderBox(node);
+	var outer = dojo.html.getMarginBox(node);
 	var metrics = [
 		'content: ' + content.width + ', ' + content.height,
 		'inner:   ' + inner.width + ', ' + inner.height,

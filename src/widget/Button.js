@@ -63,9 +63,9 @@ dojo.widget.defineWidget(
 		},
 
 		sizeMyselfHelper: function(){
-			var outer = dojo.html.getOuter(this.containerNode);
-			this.height = outer.height;
-			this.containerWidth = outer.width;
+			var mb = dojo.html.getMarginBox(this.containerNode);
+			this.height = mb.height;
+			this.containerWidth = mb.width;
 			var endWidth= this.height * this.width2height;
 	
 			this.containerNode.style.left=endWidth+"px";
@@ -203,9 +203,9 @@ dojo.widget.defineWidget(
 		arrowWidth: 5,		// width of segment holding down arrow
 	
 		sizeMyselfHelper: function(e){
-			var outer = dojo.html.getOuter(this.containerNode);
-			this.height = outer.height;
-			this.containerWidth = outer.width;
+			var mb = dojo.html.getMarginBox(this.containerNode);
+			this.height = mb.height;
+			this.containerWidth = mb.width;
 			var endWidth= this.height/3;
 	
 			// left part

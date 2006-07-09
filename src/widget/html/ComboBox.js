@@ -277,8 +277,8 @@ dojo.widget.defineWidget(
 				// IE, mozilla
 				node.scrollIntoView(false);	
 			}else{
-				var parentBottom = parent.scrollTop + dojo.html.getInner(parent).height;
-				var nodeBottom = node.offsetTop + dojo.html.getOuter(node).height;
+				var parentBottom = parent.scrollTop + dojo.html.getBorderBox(parent).height;
+				var nodeBottom = node.offsetTop + dojo.html.getMarginBox(node).height;
 				if(parentBottom < nodeBottom){
 					parent.scrollTop += (nodeBottom - parentBottom);
 				}else if(parent.scrollTop > node.offsetTop){
@@ -485,14 +485,14 @@ dojo.widget.defineWidget(
 		},
 
 		sizeBackgroundIframe: function(){
-			var outer = dojo.html.getOuter(this.optionsListNode);
-			if( outer.width==0 || outer.height==0 ){
+			var mb = dojo.html.getMarginBox(this.optionsListNode);
+			if( mb.width==0 || mb.height==0 ){
 				// need more time to calculate size
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 				return;
 			}
 			if(this._result_list_open){
-				this.optionsIframe.size([0,0,outer.width,outer.height]);
+				this.optionsIframe.size([0,0,mb.width,mb.height]);
 			}
 		},
 
@@ -565,8 +565,8 @@ dojo.widget.defineWidget(
 
 				with(this.optionsListNode.style){
 					display = "";
-					height = ((visibleCount) ? (dojo.html.getOuter(childs[0]).height * visibleCount) : 0)+"px";
-					width = dojo.html.getOuter(this.cbTableNode).width-2+"px";
+					height = ((visibleCount) ? (dojo.html.getMarginBox(childs[0]).height * visibleCount) : 0)+"px";
+					width = dojo.html.getMarginBox(this.cbTableNode).width-2+"px";
 				}
 				// only fadein once (flicker)
 				if(!this._result_list_open){

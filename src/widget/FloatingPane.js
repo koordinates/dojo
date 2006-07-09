@@ -134,16 +134,16 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	postCreate: function(){
 		if(this.isShowing()){
 			this.width=-1;	// force resize
-			var outer = dojo.html.getOuter(this.domNode);
-			this.resizeTo(outer.width, outer.height);
+			var mb = dojo.html.getMarginBox(this.domNode);
+			this.resizeTo(mb.width, mb.height);
 		}
 	},
 
 	maximizeWindow: function(evt) {
-		var outer = dojo.html.getOuter(this.domNode);
+		var mb = dojo.html.getMarginBox(this.domNode);
 		this.previous={
-			width: outer.width || this.width,
-			height: outer.height || this.height,
+			width: mb.width || this.width,
+			height: mb.height || this.height,
 			left: this.domNode.style.left,
 			top: this.domNode.style.top,
 			bottom: this.domNode.style.bottom,
@@ -159,7 +159,7 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			var padding = dojo.html.getPadding(dojo.body());
 			this.resizeTo(viewport.width-padding.width, viewport.height-padding.height);
 		} else {
-			var content = dojo.html.getContent(this.domNode.parentNode);
+			var content = dojo.html.getContentBox(this.domNode.parentNode);
 			this.resizeTo(content.width, content.height);
 		}
 		this.maximizeAction.style.display="none";
@@ -261,13 +261,13 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 
 	onShow: function(){
 		dojo.widget.html.FloatingPane.superclass.onShow.call(this);
-		var outer = dojo.html.getOuter(this.domNode);
-		this.resizeTo(outer.width, outer.height);
+		var mb = dojo.html.getMarginBox(this.domNode);
+		this.resizeTo(mb.width, mb.height);
 	},
 
 	// This is called when the user adjusts the size of the floating pane
 	resizeTo: function(w, h){
-		dojo.html.setOuter(this.domNode, { width: w, height: h });
+		dojo.html.setMarginBox(this.domNode, { width: w, height: h });
 
 		dojo.widget.html.layout(this.domNode,
 			[

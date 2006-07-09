@@ -165,10 +165,10 @@ dojo.widget.defineWidget(
 			if(!pal){
 				pal = this[type+"Palette"] = dojo.widget.createWidget("ColorPalette", {}, dd, "first");
 				var fcp = pal.domNode;
+				var mb = dojo.html.getMarginBox(fcp);
 				with(dd.style){
-					var outer = dojo.html.getOuter(fcp);
-					width = outer.width + "px";
-					height = outer.height + "px";
+					width = mb.width + "px";
+					height = mb.height + "px";
 					zIndex = 1002;
 					position = "absolute";
 				}
@@ -215,13 +215,13 @@ dojo.widget.defineWidget(
 			var pos = dojo.html.abs(this[type+"Button"]);
 			dojo.html.placeOnScreenPoint(dd, pos.x, pos.y, 0, false);
 			if(pal.bgIframe){
+				var mb = dojo.html.getMarginBox(dd);
 				with(pal.bgIframe.style){
 					display = "block";
 					left = dd.style.left;
 					top = dd.style.top;
-					var outer = dojo.html.getOuter(dd);
-					width = outer.width+"px";
-					height = outer.height+"px";
+					width = mb.width+"px";
+					height = mb.height+"px";
 				}
 			}
 		},

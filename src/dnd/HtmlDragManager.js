@@ -297,11 +297,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			var tn = tempTarget.domNode;
 			if(!tn){ return; }
 			var abs = dojo.html.getAbsolutePosition(tn, true);
-			var inner = dojo.html.getInner(tn);
+			var bb = dojo.html.getBorderBox(tn);
 			this.dropTargetDimensions.push([
 				[abs.x, abs.y],	// upper-left
 				// lower-right
-				[ abs.x+inner.width, abs.y+inner.height ],
+				[ abs.x+bb.width, abs.y+bb.height ],
 				tempTarget
 			]);
 			//dojo.debug("Cached for "+tempTarget)

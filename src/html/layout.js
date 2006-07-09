@@ -31,16 +31,16 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 				dojo.html.setOpacity(node, value); 
 				break; 
 			case "content-height":
-				dojo.html.setContent(node, {height: value}); 
+				dojo.html.setContentBox(node, {height: value}); 
 				break; 
 			case "content-width":
-				dojo.html.setContent(node, {width: value}); 
+				dojo.html.setContentBox(node, {width: value}); 
 				break; 
 			case "outer-height":
-				dojo.html.setOuter(node, {height: value}); 
+				dojo.html.setMarginBox(node, {height: value}); 
 				break; 
 			case "outer-width":
-				dojo.html.setOuter(node, {width: value}); 
+				dojo.html.setMarginBox(node, {width: value}); 
 				break; 
 			default:
 				node.style[dojo.html.toCamelCase(name)]=value; 
@@ -204,12 +204,12 @@ dojo.html.isBorderBox = function(node){
 	return (dojo.html.getBoxSizing(node) == dojo.html.boxSizing.BORDER_BOX);
 }
 
-dojo.html.getBorderBox = dojo.html.getInner = dojo.html.getInnerSize = function(node){
+dojo.html.getBorderBox = function(node){
 	node = dojo.byId(node);
 	return { width: node.offsetWidth, height: node.offsetHeight };
 }
 
-dojo.html.getContentBox = dojo.html.getContent = dojo.html.getContentSize = function(node){
+dojo.html.getContentBox = function(node){
 	node = dojo.byId(node);
 	var padborder = dojo.html.getPadBorder(node);
 	return {
@@ -218,7 +218,7 @@ dojo.html.getContentBox = dojo.html.getContent = dojo.html.getContentSize = func
 	};
 }
 
-dojo.html.setContentBox = dojo.html.setContent = dojo.html.setContentSize = function(node, args){
+dojo.html.setContentBox = function(node, args){
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);
@@ -235,13 +235,13 @@ dojo.html.setContentBox = dojo.html.setContent = dojo.html.setContentSize = func
 	return ret;
 }
 
-dojo.html.getMarginBox = dojo.html.getOuter = dojo.html.getOuterSize = function(node){
+dojo.html.getMarginBox = function(node){
 	var borderbox = dojo.html.getBorderBox(node);
 	var margin = dojo.html.getMargin(node);
 	return { width: borderbox.width + margin.width, height: borderbox.height + margin.height };
 }
 
-dojo.html.setMarginBox = dojo.html.setOuter = dojo.html.setOuterSize = function(node, args){
+dojo.html.setMarginBox = function(node, args){
 	node = dojo.byId(node);
 	var width = 0; var height = 0;
 	var isbb = dojo.html.isBorderBox(node);

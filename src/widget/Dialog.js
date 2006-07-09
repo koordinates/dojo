@@ -125,10 +125,10 @@ dojo.widget.defineWidget(
 			var viewport_size = dojo.html.getViewport();
 
 			// find the size of the dialog
-			var outer = dojo.html.getOuter(this.containerNode);
+			var mb = dojo.html.getMarginBox(this.containerNode);
 
-			var x = scroll_offset.x + (viewport_size.y - outer.width)/2;
-			var y = scroll_offset.y + (viewport_size.y - outer.height)/2;
+			var x = scroll_offset.x + (viewport_size.y - mb.width)/2;
+			var y = scroll_offset.y + (viewport_size.y - mb.height)/2;
 
 			with(this.domNode.style) {
 				left = x + "px";

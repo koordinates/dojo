@@ -118,7 +118,7 @@ dojo.widget.defineWidget(
 				}
 				this._htmlEditNode.style.display = "";
 				this._htmlEditNode.style.width = "100%";
-				this._htmlEditNode.style.height = dojo.html.getInner(this.editNode).height+"px";
+				this._htmlEditNode.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
 				this._htmlEditNode.value = this.editNode.innerHTML;
 				this.domNode.style.display = "none";
 			}else{
@@ -157,10 +157,10 @@ dojo.widget.defineWidget(
 			var dh = dojo.html;
 			var tdn = this.toolbarWidget.domNode;
 			var db = document["body"];
-			var totalHeight = dh.getOuter(tdn).height;
+			var totalHeight = dh.getMarginBox(tdn).height;
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
-				var editorWidth =  dh.getOuter(this.domNode).width; 
+				var editorWidth =  dh.getMarginBox(this.domNode).width; 
 				this._scrollThreshold = dh.abs(tdn, false).y;
 				// dojo.debug("threshold:", this._scrollThreshold);
 				if((isIE)&&(db)&&(dh.getStyle(db, "background-image")=="none")){
@@ -206,7 +206,7 @@ dojo.widget.defineWidget(
 				// position of the bottom-most editor instance.
 				if(!dojo.render.html.safari){
 					// safari reports a bunch of things incorrectly here
-					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.html.getInner(this.editNode).height : this._lastHeight);
+					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.html.getBorderBox(this.editNode).height : this._lastHeight);
 					if(scrollPos > (this._scrollThreshold+eHeight)){
 						tdn.style.display = "none";
 					}else{

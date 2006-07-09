@@ -49,7 +49,7 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 		top: dojo.html.getPixelValue(container, "padding-top", true),
 		left: dojo.html.getPixelValue(container, "padding-left", true)
 	};
-	dojo.lang.mixin(f, dojo.html.getContentSize(container));
+	dojo.lang.mixin(f, dojo.html.getContentBox(container));
 
 	// set positions/sizes
 	dojo.lang.forEach(children, function(child){
@@ -68,8 +68,8 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 		// note that setting the width of a <div> may affect it's height.
 		// TODO: same is true for widgets but need to implement API to support that
 		if ( (pos=="top")||(pos=="bottom") ) {
-			dojo.html.setOuter(elm, { width: f.width });
-			var h = dojo.html.getOuter(elm).height;
+			dojo.html.setMarginBox(elm, { width: f.width });
+			var h = dojo.html.getMarginBox(elm).height;
 			f.height -= h;
 			if(pos=="top"){
 				f.top += h;
@@ -77,8 +77,8 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.top = f.top + f.height + "px";
 			}
 		}else if(pos=="left" || pos=="right"){
-			dojo.html.setOuter(elm, { height: f.height });
-			var w = dojo.html.getOuter(elm).width;
+			dojo.html.setMarginBox(elm, { height: f.height });
+			var w = dojo.html.getMarginBox(elm).width;
 			f.width -= w;
 			if(pos=="left"){
 				f.left += w;
@@ -86,7 +86,7 @@ dojo.widget.html.layout = function(container, children, layoutPriority) {
 				elm.style.left = f.left + f.width + "px";
 			}
 		} else if(pos=="flood" || pos=="client"){
-			dojo.html.setOuter(elm, { width: f.width, height: f.height });
+			dojo.html.setMarginBox(elm, { width: f.width, height: f.height });
 		}
 		
 		// TODO: for widgets I want to call resizeTo(), but for top/bottom

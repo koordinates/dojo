@@ -38,8 +38,8 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 
 		this.isSizing = true;
 		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
-		var outer = dojo.html.getOuter(this.targetDomNode);
-		this.startSize  = {'w':outer.width, 'h':outer.height};
+		var mb = dojo.html.getMarginBox(this.targetDomNode);
+		this.startSize  = {'w':mb.width, 'h':mb.height};
 
 		dojo.event.kwConnect({
 			srcObj: dojo.body(), 
@@ -70,19 +70,19 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 
 		// minimum size check
 		if (this.minSize) {
-			var outer = dojo.html.getOuter(this.targetDomNode);
+			var mb = dojo.html.getMarginBox(this.targetDomNode);
 			if (newW < this.minSize.w) {
-				newW = outer.width;
+				newW = mb.width;
 			}
 			if (newH < this.minSize.h) {
-				newH = outer.height;
+				newH = mb.height;
 			}
 		}
 		
 		if(this.targetWidget){
 			this.targetWidget.resizeTo(newW, newH);
 		}else{
-			dojo.html.setOuter(this.targetDomNode, { width: newW, height: newH});
+			dojo.html.setMarginBox(this.targetDomNode, { width: newW, height: newH});
 		}
 		
 		e.preventDefault();

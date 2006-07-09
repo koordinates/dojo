@@ -232,7 +232,7 @@ dojo.widget.defineWidget (
 			var offset = dojo.html.getScroll().offset;
 			var parent = dojo.html.getAbsolutePosition(this.domNode, true);
 			
-			var content = dojo.html.getContent(this.handleMove.domNode);
+			var content = dojo.html.getContentBox(this.handleMove.domNode);
 			if (this.isEnableX) {
 				var x = offset.x + e.clientX - parent.x - (content.width >> 1);
 				this._snapX(x, this.handleMove);

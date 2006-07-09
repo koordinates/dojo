@@ -38,7 +38,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var outer = dojo.html.getOuter(node);
+		var outer = dojo.html.getMarginBox(node);
 
 		var actualPct = percentage/100.0;
 		var props = [
