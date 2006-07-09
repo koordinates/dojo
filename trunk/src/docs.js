@@ -841,7 +841,7 @@ dojo.lang.mixin(dojo.docs, {
 	},
 	savePackage: function(/*String*/ path, /*Object*/ parameters){
 		var props = {};
-		props.form = "DocPkgForm";
+		props.form = "/DocPkgForm";
 		props.path = ["/WikiHome/DojoDotDoc/", path].join("");
 
 		var i = 1;
@@ -891,13 +891,13 @@ dojo.lang.mixin(dojo.docs, {
 	},
 	setUserName: function(/*String*/ name){
 		dojo.docs._userName = name;
-		if(dojo.docs._password){
+		if(name && dojo.docs._password){
 			dojo.docs._logIn();
 		}
 	},
 	setPassword: function(/*String*/ password){
 		dojo.docs._password = password;
-		if(dojo.docs._userName){
+		if(password && dojo.docs._userName){
 			dojo.docs._logIn();
 		}
 	},
