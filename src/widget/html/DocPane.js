@@ -118,14 +118,14 @@ dojo.widget.defineWidget(
 		_loggedIn: function(){
 			this._isLoggedIn = true;
 			this.dialog.hide();
-			this.pkgDescription = dojo.widget.createWidget("editor2", {
+			this.pkgEditor = dojo.widget.createWidget("editor2", {
 				toolbarAlwaysVisible: true
 			}, this.pkgDescription);
 		},
 		_save: function(){
-			if(this.pkgDescription.widgetType){
+			if(this.pkgEditor){
 				dojo.docs.savePackage(this._pkgPath, {
-					description: this.pkgDescription.getEditorContent()
+					description: this.pkgEditor.getEditorContent()
 				});
 			}
 		},
@@ -224,6 +224,10 @@ dojo.widget.defineWidget(
 			}
 		},
 		onPkgResults: function(/*Object*/ results){
+			if(this.pkgEditor){
+				this.pkgEditor.close(true);
+				dojo.debug(this.pkgDescription);
+			}
 			var methods = results.methods;
 			var requires = results.requires;
 			var description = results.description;
