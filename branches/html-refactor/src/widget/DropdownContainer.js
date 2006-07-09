@@ -93,14 +93,14 @@ dojo.widget.defineWidget(
 		},
 		
 		sizeBackgroundIframe: function(){
-			var outer = dojo.html.getOuter(this.containerNode);
-			if(outer.width==0||outer.height==0){
+			var mb = dojo.html.getMarginBox(this.containerNode);
+			if(mb.width==0||mb.height==0){
 				// need more time to calculate size
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 				return;
 			}
 			if(dojo.html.isShowing(this.containerNode)){
-				this.containerIframe.size([0,0,outer.width,outer.height]);
+				this.containerIframe.size([0,0,mb.width,mb.height]);
 			}
 		},
 

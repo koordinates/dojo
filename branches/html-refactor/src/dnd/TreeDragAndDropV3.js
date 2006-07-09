@@ -132,7 +132,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			} else if (position == "after") {
 				node.contentNode.style.borderBottom = this.indicatorStyle;
 			}			
-			node.contentNode.style.width = dojo.html.getInner(node.labelNode).width + "px";			
+			node.contentNode.style.width = dojo.html.getBorderBox(node.labelNode).width + "px";
 		}  
 
 
@@ -283,7 +283,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		node = dojo.byId(this.treeNode.contentNode);
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
 		var nodey = dojo.html.getAbsolutePosition(node).y;
-		var height = dojo.html.getInner(node).height;
+		var height = dojo.html.getBorderBox(node).height;
 
 		var relY = mousey - nodey;
 		var p = relY / height;

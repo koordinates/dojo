@@ -164,7 +164,7 @@ dojo.widget.defineWidget(
 				if(html == ""){ html = "&nbsp;"; }
 			}
 			
-			var content = dojo.html.getContent(this.domNode);
+			var content = dojo.html.getContentBox(this.domNode);
 			this._oldHeight = content.height;
 			this._oldWidth = content.width;
 
@@ -1284,7 +1284,7 @@ dojo.widget.defineWidget(
 				}
 				// dojo.debug(this.iframe.height);
 			}else if(this.object){
-				this.object.style.height = dojo.html.getInnerSize(this.editNode).height+"px";
+				this.object.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
 			}
 		},
 		

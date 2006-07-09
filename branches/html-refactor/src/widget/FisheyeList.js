@@ -553,26 +553,26 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		var x = 0;
 		var y = 0;
 		
-		var outer = dojo.html.getOuter(itm.lblNode);
+		var mb = dojo.html.getMarginBox(itm.lblNode);
 
 		if (this.labelEdge == this.EDGE.TOP){
-			x = Math.round((itm.sizeW / 2) - (outer.width / 2));
-			y = -outer.height;
+			x = Math.round((itm.sizeW / 2) - (mb.width / 2));
+			y = -mb.height;
 		}
 
 		if (this.labelEdge == this.EDGE.BOTTOM){
-			x = Math.round((itm.sizeW / 2) - (outer.width / 2));
+			x = Math.round((itm.sizeW / 2) - (mb.width / 2));
 			y = itm.sizeH;
 		}
 
 		if (this.labelEdge == this.EDGE.LEFT){
-			x = -outer.width;
-			y = Math.round((itm.sizeH / 2) - (outer.height / 2));
+			x = -mb.width;
+			y = Math.round((itm.sizeH / 2) - (mb.height / 2));
 		}
 
 		if (this.labelEdge == this.EDGE.RIGHT){
 			x = itm.sizeW;
-			y = Math.round((itm.sizeH / 2) - (outer.height / 2));
+			y = Math.round((itm.sizeH / 2) - (mb.height / 2));
 		}
 
 		itm.lblNode.style.left = x + 'px';

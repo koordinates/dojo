@@ -136,7 +136,8 @@ def removeRequires(fileName):
 	fileContents = pfd.read()
 	pfd.close()
 	
-	newContents = re.sub("dojo\.require\(.*?\);.*?\n", "", fileContents)
+	newContents =
+	re.sub("dojo\.(require|requireAfterIf|requireIf|kwCompoundRequire)\(.*?\);.*?\n", "", fileContents)
 
 	pfd = open(fileName, "w")
 	pfd.write(newContents)

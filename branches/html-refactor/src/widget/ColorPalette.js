@@ -45,7 +45,7 @@ dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 	showDialog: function (e) {
 		dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
 		var abs = dojo.html.getAbsolutePosition(this.domNode);
-		var y = abs.y + dojo.html.getInner(this.domNode).height;
+		var y = abs.y + dojo.html.getBorderBox(this.domNode).height;
 		this.dialog.showAt(abs.x, y);
 	},
 	
@@ -168,7 +168,7 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 				top = y + "px";
 				left = x + "px";
 				zIndex = 998;
-				var s = dojo.html.getOuter(this.domNode);
+				var s = dojo.html.getMarginBox(this.domNode);
 				width = s.width + "px";
 				height = s.height + "px";
 			}

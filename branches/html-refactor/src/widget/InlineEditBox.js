@@ -87,11 +87,11 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 		ee.style.fontSize = dojo.html.getStyle(this.editable, "font-size");
 		ee.style.fontWeight = dojo.html.getStyle(this.editable, "font-weight");
 		ee.style.fontStyle = dojo.html.getStyle(this.editable, "font-style");
-		var inner = dojo.html.getInner(this.editable);
-		ee.style.width = Math.max(inner.width, this.minWidth) + "px";
+		var bb = dojo.html.getBorderBox(this.editable);
+		ee.style.width = Math.max(bb.width, this.minWidth) + "px";
 		if(this.mode.toLowerCase()=="textarea"){
 			ee.style.display = "block";
-			ee.style.height = Math.max(inner.height, this.minHeight) + "px";
+			ee.style.height = Math.max(bb.height, this.minHeight) + "px";
 		} else {
 			ee.style.display = "";
 		}

@@ -44,12 +44,12 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 	},
 
 	getCollapsedHeight: function() {
-		return dojo.html.getOuter(this.labelNode).height+1;
+		return dojo.html.getMarginBox(this.labelNode).height+1;
 	},
 
 	setSizes: function() {
 		var siblings = this.domNode.parentNode.childNodes;
-		var height=dojo.html.getInner(this.domNode.parentNode).height-this.getCollapsedHeight();
+		var height=dojo.html.getBorderBox(this.domNode.parentNode).height-this.getCollapsedHeight();
 
 		this.siblingWidgets = [];
 	
@@ -64,10 +64,10 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 		}
 	
 		for (var x=0; x<this.siblingWidgets.length; x++) {
-			dojo.html.setOuter(this.siblingWidgets[x].containerNode,{ height: height });
+			dojo.html.setMarginBox(this.siblingWidgets[x].containerNode,{ height: height });
 		}
 
-		dojo.html.setOuter(this.containerNode,{ height: height});
+		dojo.html.setMarginBox(this.containerNode,{ height: height});
 	},
 
 	onLabelClick: function() {
