@@ -21,7 +21,6 @@ dojo.widget.defineWidget(
 		inputNode: null,
 		buttonNode: null,
 		containerNode: null,
-		subWidgetNode: null,
 
 		containerToggle: "plain",
 		containerToggleDuration: 150,
@@ -48,7 +47,7 @@ dojo.widget.defineWidget(
 
 		onIconClick: function(evt){
 			if(!this.popup.isShowingNow){
-				this.popup.open(this.buttonNode, this);
+				this.popup.open(this.inputNode, this);
 			}else{
 				this.popup.close();
 			}
