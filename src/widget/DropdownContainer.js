@@ -32,11 +32,11 @@ dojo.widget.defineWidget(
 
 		fillInTemplate: function(args, frag){
 			var source = this.getFragNodeRef(frag);
-			
-			this.popup = dojo.widget.createWidget("PopupMenu2", {templateString: '<div dojoAttachPoint="containerNode" class="dojoPopupMenu2" style="display:none;" tabindex="-1"></div>', toggle: "fade"});
-			
+
+			this.popup = dojo.widget.createWidget("PopupContainer", {toggle: this.containerToggle});
+
 			this.containerNode = this.popup.domNode;
-			
+
 			this.domNode.appendChild(this.popup.domNode);
 
 			if(this.inputId){ this.inputNode.id = this.inputId; }
