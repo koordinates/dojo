@@ -342,7 +342,6 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasSc
 			break;
 		}else{
 			//not perfect, find out whether it is better than the saved one
-			dojo.debug([pos, '|',[desiredX, desiredY], '|',[dojo.style.getInnerWidth(node), dojo.style.getInnerHeight(node)]]);
 			if(bestDistance > pos.dist){
 				bestDistance = pos.dist;
 				best = pos;
