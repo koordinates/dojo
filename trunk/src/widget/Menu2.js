@@ -1,3 +1,4 @@
+dojo.provide("dojo.widget.PopupContainer");
 dojo.provide("dojo.widget.Menu2");
 dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
@@ -12,26 +13,148 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.defineWidget(
-	"dojo.widget.PopupMenu2",
+	"dojo.widget.PopupContainer",
 	dojo.widget.HtmlWidget,
 {
 	initializer: function(){
-		this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 		this.queueOnAnimationFinish = [];
+	},
+
+	isContainer: true,
+	templateString: '<div dojoAttachPoint="containerNode" style="position:absolute;display:none;" tabindex="-1"></div>',
+	snarfChildDomOutput: true,
+
+	isShowingNow: false,
+
+	/**
+	 * Open the popup at position (x,y), relative to dojo.body()
+	 * Or open(node, parent, explodeSrc, aroundOrient) to open
+	 * around node
+	 */
+	open: function(x, y, parent, explodeSrc, orient, padding){
+		if (this.isShowingNow){ return; }
+
+		var around = false, node, aroundOrient;
+		if(typeof x == 'object'){
+			node = x;
+			aroundOrient = explodeSrc;
+			explodeSrc = parent;
+			parent = y;
+			around = true;
+		}
+
+		// for unknown reasons even if the domNode is attached to the body in postCreate(),
+		// it's not attached here, so have to attach it here.
+		dojo.body().appendChild(this.domNode);
+
+		// if explodeSrc isn't specified then explode from my parent widget
+		explodeSrc = explodeSrc || parent["domNode"] || [];
+
+		// if I click right button and menu is opened, then it gets 2 commands: close -> open
+		// so close enables animation and next "open" is put to queue to occur at new location
+		if(this.animationInProgress){
+			this.queueOnAnimationFinish.push(this.open, arguments);
+			return;
+		}
+
+		// display temporarily, and move into position, then hide again
+		with(this.domNode.style){
+			display="";
+			zIndex = 200 + this.menuIndex;
+		}
+
+		if(around){
+			if(!aroundOrient){ //By default, attempt to open above the aroundNode, or below
+				aroundOrient = {'BL': 'TL', 'TL': 'BL'};
+			}
+			dojo.html.placeOnScreenAroundElement(this.domNode, node, padding, true, aroundOrient);
+		}else{
+			if(!orient){ orient = 'TL,TR,BL,BR';}
+			dojo.html.placeOnScreen(this.domNode, x, y, padding, true, orient);
+		}
+		this.domNode.style.display="none";
+
+		this.explodeSrc = explodeSrc;
+
+		// then use the user defined method to display it
+		this.show();
+
+		this.isShowingNow = true;
+	},
+
+	close: function(){
+		// If we are in the process of opening the menu and we are asked to close it
+		if(this.animationInProgress){
+			this.queueOnAnimationFinish.push(this.close, []);
+			return;
+		}
+
+		this.hide();
+		if(this.bgIframe){
+			this.bgIframe.hide();
+			this.bgIframe.size([0,0,0,0]);
+		}
+		this.isShowingNow = false;
+	},
+
+	onShow: function() {
+		dojo.widget.PopupContainer.superclass.onShow.call(this);
+		// With some animation (wipe), after close, the size of the domnode is 0
+		// and next time when shown, the open() function can not determine
+		// the correct place to popup, so we store the opened size here and 
+		// set it after close (in function onHide())
+		this.openedSize={w: this.domNode.style.width, h: this.domNode.style.height};
+		// prevent IE bleed through
+		if(dojo.render.html.ie){
+			if(!this.bgIframe){
+				this.bgIframe = new dojo.html.BackgroundIframe();
+				this.bgIframe.setZIndex(this.domNode);
+			}
+
+			this.bgIframe.size(this.domNode);
+			this.bgIframe.show();
+		}
+		this.processQueue();
+	},
+
+	// do events from queue
+	processQueue: function() {
+		if (!this.queueOnAnimationFinish.length) return;
+
+		var func = this.queueOnAnimationFinish.shift();
+		var args = this.queueOnAnimationFinish.shift();
+
+		func.apply(this, args);
+	},
+
+	onHide: function() {
+		dojo.widget.HtmlWidget.prototype.onHide.call(this);
+		
+		//restore size of the domnode, see comment in
+		//function onShow()
+		with(this.domNode.style){
+			width=this.openedSize.w;
+			height=this.openedSize.h;
+		}
+		this.processQueue();
+	}
+});
+
+dojo.widget.defineWidget(
+	"dojo.widget.PopupMenu2",
+	dojo.widget.PopupContainer,
+{
+	initializer: function(){
+		this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 	
 		this.eventNames =  {
 			open: ""
 		};
 	},
 
-	isContainer: true,
-	snarfChildDomOutput: true,
-	buddyWidget: null,  //if this is set, this widget will get focused whenever this menu is focused (opened)
-
 	currentSubmenu: null,
 	currentSubmenuTrigger: null,
 	parentMenu: null,
-	isShowingNow: false,
 	menuIndex: 0,
 
 	eventNaming: "default",
@@ -116,14 +239,6 @@ dojo.widget.defineWidget(
 
 		// cleans a fixed node, konqueror and opera
 		dojo.widget.Menu2.OperaAndKonqFixer.cleanNode(node);
-	},
-
-	//if buddyWidget is set, it will get focus whenever this menu
-	//is focused
-	setFocus: function(){
-		if(this.buddyWidget && this.buddyWidget.focus){
-			this.buddyWidget.focus();
-		}
 	},
 
 	moveToNext: function(evt){
@@ -253,73 +368,34 @@ dojo.widget.defineWidget(
 	 * Or open(node, parent, explodeSrc, aroundOrient) to open
 	 * around node
 	 */
-	open: function(x, y, parent, explodeSrc, orient){
+	open: function(x, y, parent, explodeSrc, orient, padding){
 		if (this.isShowingNow){ return; }
 
-		var around = false, node, aroundOrient;
-		if(typeof x == 'object'){
-			node = x;
-			aroundOrient = explodeSrc;
-			explodeSrc = parent;
-			parent = y;
-			around = true;
-		}
+		dojo.widget.PopupMenu2.superclass.open.call(this, x, y, parent, explodeSrc, orient, padding);
 
-		// for unknown reasons even if the domNode is attached to the body in postCreate(),
-		// it's not attached here, so have to attach it here.
-		dojo.body().appendChild(this.domNode);
-
-		// if explodeSrc isn't specified then explode from my parent widget
-		explodeSrc = explodeSrc || parent["domNode"] || [];
-
-		//FIXME: how to check derivation of class?
-		var parentMenu = (parent && (parent.widgetType=="PopupMenu2" || parent.widgetType=="MenuBar2")) ? parent : null;
-
-		if ( !parentMenu ) {
-			// record whenever a top level menu is opened
-			// explodeSrc may or may not be a node - it may also be an [x,y] position array
-			var button = explodeSrc instanceof Array ? null : explodeSrc;
-			dojo.widget.html.Menu2Manager.opened(this, button);
-		}
-
-		// if I click right button and menu is opened, then it gets 2 commands: close -> open
-		// so close enables animation and next "open" is put to queue to occur at new location
-		if(this.animationInProgress){
-			this.queueOnAnimationFinish.push(this.open, arguments);
-			return;
-		}
-
-		// display temporarily, and move into position, then hide again
-		with(this.domNode.style){
-			display="";
-			zIndex = 200 + this.menuIndex;
-		}
-
-		if(around){
-			if(!aroundOrient){ //By default, attempt to open above the aroundNode, or below
-				aroundOrient = {'BL': 'TL', 'TL': 'BL'};
+		if (this.isShowingNow){
+			if(typeof x == 'object'){
+				explodeSrc = parent;
+				parent = y;
 			}
-			dojo.html.placeOnScreenAroundElement(this.domNode, node, [0, 0], true, aroundOrient);
-		}else{
-			if(!orient){ orient = 'TL,TR,BL,BR';}
-			dojo.html.placeOnScreen(this.domNode, x, y, [0, 0], true, orient);
+			//FIXME: how to check derivation of class?
+			var parentMenu = (parent && (parent.widgetType=="PopupMenu2" || parent.widgetType=="MenuBar2")) ? parent : null;
+	
+			if ( !parentMenu ) {
+				// record whenever a top level menu is opened
+				// explodeSrc may or may not be a node - it may also be an [x,y] position array
+				var button = explodeSrc instanceof Array ? null : explodeSrc;
+				dojo.widget.html.Menu2Manager.opened(this, button);
+			}
+	
+			this.parentMenu = parentMenu;
+			this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
 		}
-		this.domNode.style.display="none";
-
-		this.parentMenu = parentMenu;
-		this.explodeSrc = explodeSrc;
-		this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
-
-		// then use the user defined method to display it
-		this.show();
-
-		this.isShowingNow = true;
 	},
 
 	close: function(){
-		// If we are in the process of opening the menu and we are asked to close it
 		if(this.animationInProgress){
-			this.queueOnAnimationFinish.push(this.close, []);
+			dojo.widget.PopupMenu2.superclass.close.call(this);
 			return;
 		}
 
@@ -328,31 +404,9 @@ dojo.widget.defineWidget(
 		}
 
 		this.closeSubmenu();
-		this.hide();
-		this.isShowingNow = false;
+		dojo.widget.PopupMenu2.superclass.close.call(this);
 
 		dojo.widget.html.Menu2Manager.closed(this);
-	},
-
-	onShow: function() {
-		dojo.widget.HtmlWidget.prototype.onShow.call(this);
-		this.processQueue();
-	},
-
-	// do events from queue
-	processQueue: function() {
-		if (!this.queueOnAnimationFinish.length) return;
-
-		var func = this.queueOnAnimationFinish.shift();
-		var args = this.queueOnAnimationFinish.shift();
-
-		func.apply(this, args);
-	},
-
-	onHide: function() {
-		dojo.widget.HtmlWidget.prototype.onHide.call(this);
-
-		this.processQueue();
 	},
 
 	closeAll: function(){
@@ -745,7 +799,6 @@ dojo.widget.html.Menu2Manager = new function(){
 
 		while (m){
 			if(dojo.html.overElement(m.domNode, e) || dojo.dom.isDescendantOf(e.target, m.domNode)){
-				this.currentMenu.setFocus();
 				return;
 			}
 			m = m.currentSubmenu;
