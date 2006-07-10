@@ -47,10 +47,14 @@ dojo.widget.defineWidget(
 
 		onIconClick: function(evt){
 			if(!this.popup.isShowingNow){
-				this.popup.open(this.inputNode, this);
+				this.popup.open(this.inputNode, this, this.buttonNode);
 			}else{
 				this.popup.close();
 			}
+		},
+
+		hideContainer: function(){
+			this.popup.close();
 		},
 
 		onInputChange: function(){}
