@@ -8,11 +8,6 @@ dojo.require("dojo.event");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
 
-// workaround for bug #1029 (http://trac.dojotoolkit.org/ticket/1029)
-dojo.style.insertCssFile(
-	dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css")
-);
-
 dojo.widget.defineWidget(
 	"dojo.widget.html.Tooltip",
 	dojo.widget.html.ContentPane,
@@ -125,11 +120,16 @@ dojo.widget.defineWidget(
 		onHide: function(){
 			dojo.widget.html.Tooltip.superclass.hide.call(this);
 		},
-	
+
+		position: function(){
+			this.hide();
+			this.show();
+		},
+
 		onLoad: function(){
 			if(this.popupWidget.isShowingNow){
 				// the tooltip has changed size due to downloaded contents, so reposition it
-				dojo.lang.setTimeout(this, this.position, 50);
+				this.position();
 				dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
 			}
 		},
