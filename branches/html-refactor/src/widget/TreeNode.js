@@ -1,4 +1,3 @@
-
 dojo.provide("dojo.widget.TreeNode");
 
 dojo.require("dojo.html.*");
