@@ -264,7 +264,7 @@ dojo.widget.defineWidget(
 		resizeTo: function(w, h){
 			dojo.html.setMarginBox(this.domNode, { width: w, height: h });
 	
-			dojo.html.layout(this.domNode,
+			dojo.widget.html.layout(this.domNode,
 				[
 				  {domNode: this.titleBar, layoutAlign: "top"},
 				  {domNode: this.resizeBar, layoutAlign: "bottom"},
@@ -272,7 +272,7 @@ dojo.widget.defineWidget(
 				] );
 	
 			// If any of the children have layoutAlign specified, obey it
-			dojo.html.layout(this.containerNode, this.children, "top-bottom");
+			dojo.widget.html.layout(this.containerNode, this.children, "top-bottom");
 			
 			this.bgIframe.onResized();
 			if(this.shadow){ this.shadow.size(w, h); }
