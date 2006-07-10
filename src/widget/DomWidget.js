@@ -22,21 +22,16 @@ dojo.widget.buildFromTemplate = function() {
 }
 
 // static method to build from a template w/ or w/o a real widget in place
-dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath, templateString, avoidCache){
+dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, avoidCache){
 	// dojo.debug("avoidCache:", avoidCache);
 	var tpath = templatePath || obj.templatePath;
-	var cpath = templateCssPath || obj.templateCssPath;
 
 	// DEPRECATED: use Uri objects, not strings
 	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
 		tpath = dojo.uri.dojoUri(tpath);
 		dojo.deprecated("templatePath should be of type dojo.uri.Uri", null, "0.4");
 	}
-	if (cpath && !(cpath instanceof dojo.uri.Uri)) {
-		cpath = dojo.uri.dojoUri(cpath);
-		dojo.deprecated("templateCssPath should be of type dojo.uri.Uri", null, "0.4");
-	}
-	
+
 	var tmplts = dojo.widget._templateCache;
 	if(!obj["widgetType"]) { // don't have a real template here
 		do {
@@ -45,20 +40,6 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 		obj.widgetType = dummyName;
 	}
 	var wt = obj.widgetType;
-
-	if(cpath && !dojo.widget._cssFiles[cpath.toString()]){
-		if((!obj.templateCssString)&&(cpath)){
-			obj.templateCssString = dojo.hostenv.getText(cpath);
-			obj.templateCssPath = null;
-		}
-		dojo.widget._cssFiles[cpath.toString()] = true;
-	}
-
-	if((obj["templateCssString"])&&(!obj.templateCssString["loaded"])){
-		dojo.style.insertCssText(obj.templateCssString, null, cpath);
-		if(!obj.templateCssString){ obj.templateCssString = ""; }
-		obj.templateCssString.loaded = true;
-	}
 
 	var ts = tmplts[wt];
 	if(!ts){
@@ -447,6 +428,33 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 	buildRendering: function(args, frag){
 		// DOM widgets construct themselves from a template
 		var ts = dojo.widget._templateCache[this.widgetType];
+		
+		// Handle style for this widget here, as even if templatePath
+		// is not set, style specified by templateCssString or templateCssPath
+		// should be applied. templateCssString has higher priority
+		// than templateCssPath
+		if(args["templatecsspath"]){
+			args["templateCssPath"] = args["templatecsspath"];
+		}
+		var cpath = args["templateCssPath"] || this.templateCssPath;
+		// DEPRECATED: use Uri objects, not strings
+		if (cpath && !(cpath instanceof dojo.uri.Uri)) {
+			cpath = dojo.uri.dojoUri(cpath);
+			dojo.deprecated("templateCssPath should be of type dojo.uri.Uri", null, "0.4");
+		}
+		if(cpath && !dojo.widget._cssFiles[cpath.toString()]){
+			if((!this.templateCssString)&&(cpath)){
+				this.templateCssString = dojo.hostenv.getText(cpath);
+				this.templateCssPath = null;
+			}
+			dojo.widget._cssFiles[cpath.toString()] = true;
+		}
+	
+		if((this["templateCssString"])&&(!this.templateCssString["loaded"])){
+			dojo.style.insertCssText(this.templateCssString, null, cpath);
+			if(!this.templateCssString){ this.templateCssString = ""; }
+			this.templateCssString.loaded = true;
+		}
 		if(	
 			(!this.preventClobber)&&(
 				(this.templatePath)||
@@ -477,16 +485,12 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		// copy template properties if they're already set in the templates object
 		// dojo.debug("buildFromTemplate:", this);
 		var avoidCache = false;
-		if(args["templatecsspath"]){
-			args["templateCssPath"] = args["templatecsspath"];
-		}
 		if(args["templatepath"]){
 			avoidCache = true;
 			args["templatePath"] = args["templatepath"];
 		}
 		dojo.widget.fillFromTemplateCache(	this, 
 											args["templatePath"], 
-											args["templateCssPath"],
 											null,
 											avoidCache);
 		var ts = dojo.widget._templateCache[this.widgetType];
