@@ -58,4 +58,3 @@ dojo.lang.extend(dojo.widget.Widget, {
 	label: "",
 	open: false
 });
-
