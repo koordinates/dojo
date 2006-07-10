@@ -78,7 +78,6 @@ dojo.xml.Parse = function(){
 
 	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
 
-		// TODO: make this namespace aware
 		var parsedNodeSet = {};
 
 		//There's a weird bug in IE where it counts end tags, e.g. </dojo:button> as nodes that should be parsed.  Ignore these
@@ -169,7 +168,6 @@ dojo.xml.Parse = function(){
 
 	/* parses a set of attributes on a node into an object tree */
 	this.parseAttributes = function(node){
-		// TODO: make this namespace aware
 		var parsedAttributeSet = {};
 		var atts = node.attributes;
 		// TODO: should we allow for duplicate attributes at this point...
@@ -185,7 +183,10 @@ dojo.xml.Parse = function(){
 					continue; 
 				}
 			}
-			var nn = (attnode.nodeName.indexOf("dojo:") == -1) ? attnode.nodeName : attnode.nodeName.split("dojo:")[1];
+
+			var nn = attnode.nodeName.split(":");
+			nn = (nn.length == 2) ? nn[1] : attnode.nodeName;
+						
 			parsedAttributeSet[nn] = { 
 				value: attnode.nodeValue 
 			};

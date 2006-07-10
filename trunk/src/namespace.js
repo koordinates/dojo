@@ -1,4 +1,4 @@
-dojo.provide("dojo.namespace")
+dojo.provide("dojo.namespace");
 
 //Every namespace that is defined using the dojo.defineNamespace method has one of these Namespace objects created.
 //It stores the fully qualified namespace name, it's location relative to the dojo root, the short namespace name, and a 
