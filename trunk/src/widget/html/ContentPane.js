@@ -88,13 +88,18 @@ dojo.widget.defineWidget(
 				useCache: useCache,
 				preventCache: !useCache,
 				mimetype: "text/html",
-				load: function(type, data) {
+				load: function(type, data, xhr){
 					self.onDownloadEnd.call(self, url, data);
 				},
-				error: function(type, err){
-					// works best when served from a http server
-					var e = dojo.lang.shallowCopy(err);
-					e._text = "Error loading '" + url + "' (" + e.status + " "+  e.statusText + ")";
+				error: function(type, err, xhr){
+					// XHR insnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
+					var e = {
+						responseText: xhr.responseText,
+						status: xhr.status,
+						statusText: xhr.statusText,
+						responseHeaders: xhr.getAllResponseHeaders(),
+						_text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
+					};
 					self._handleDefaults.call(self, e, "onDownloadError");
 					self.onLoad();
 				}
