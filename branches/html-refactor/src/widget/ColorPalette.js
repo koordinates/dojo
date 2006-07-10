@@ -12,7 +12,7 @@ dojo.widget.html.ToolbarColorDialog = function(){
 	dojo.widget.html.ToolbarDialog.call(this);
 	
 	/*
-	FIXME: 	why the fuck did anyone ever think this kind of expensive iteration
+	FIXME: 	why did anyone ever think this kind of expensive iteration
 			was a good idea?
 
 	for (var method in this.constructor.prototype) {
@@ -44,7 +44,7 @@ dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 	
 	showDialog: function (e) {
 		dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
-		var abs = dojo.html.getAbsolutePosition(this.domNode);
+		var abs = dojo.html.getAbsolutePosition(this.domNode, true);
 		var y = abs.y + dojo.html.getBorderBox(this.domNode).height;
 		this.dialog.showAt(abs.x, y);
 	},

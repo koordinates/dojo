@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.html.Tooltip");
 dojo.require("dojo.widget.html.ContentPane");
+dojo.require("dojo.widget.Menu2"); //for dojo.widget.PopupContainer
 dojo.require("dojo.widget.Tooltip");
 dojo.require("dojo.uri");
 dojo.require("dojo.widget.*");
@@ -8,49 +9,55 @@ dojo.require("dojo.html.style");
 dojo.require("dojo.html.util");
 dojo.require("dojo.html.iframe");
 
-// workaround for bug #1029 (http://trac.dojotoolkit.org/ticket/1029)
-dojo.html.insertCssFile(
-	dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css")
-);
-
 dojo.widget.defineWidget(
 	"dojo.widget.html.Tooltip",
 	dojo.widget.html.ContentPane,
 	{
 		isContainer: true,
-	
+
 		// Constructor arguments
 		caption: "",
 		showDelay: 500,
 		hideDelay: 100,
 		connectId: "",
-	
+
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css"),
-	
+
 		connectNode: null,
-	
-		// Tooltip has the following possible states:
-		//   erased - nothing on screen
-		//   displaying - currently being faded in (partially displayed)
-		//   displayed - fully displayed
-		//   erasing - currently being faded out (partially erased)
-		state: "erased",
+		popupWidget: null,
 	
 		fillInTemplate: function(args, frag){
-			dojo.html.addClass(this.domNode, "dojoTooltip");
+			//the line below is required to prevent opera 9 from crashing
 			this.domNode.style.display="none";
+
 			if(this.caption != ""){
 				this.domNode.appendChild(document.createTextNode(this.caption));
 			}
 			this.connectNode = dojo.byId(this.connectId);		
 			dojo.widget.html.Tooltip.superclass.fillInTemplate.call(this, args, frag);
+
+			//wrap this.domNode in a PopupContainer
+			//pass animation setting to popupWidget
+			this.popupWidget = dojo.widget.createWidget("PopupContainer", {toggle: this.toggle, toggleDuration: this.toggleDuration});
+			this.popupWidget.addChild(this);
+			dojo.html.addClass(this.popupWidget.domNode, "dojoTooltip");
+
+			//copy style from input node to output node
+			var source = this.getFragNodeRef(frag);
+			dojo.html.copyStyle(this.popupWidget.domNode, source);
+
+			//reset animation on this widget
+			this.toggle="plain";
+			this.toggleDuration=150;
+			//re-create animation object
+			this.postMixInProperties();
+
+			this.popupWidget.domNode.style.display="none";
+
+			dojo.body().appendChild(this.popupWidget.domNode);
 		},
 		
 		postCreate: function(args, frag){
-			// The domnode was appended to my parent widget's domnode, but the positioning
-			// only works if the domnode is a child of dojo.body()
-			dojo.body().appendChild(this.domNode);
-	
 			dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
 			dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);
 		},
@@ -66,8 +73,8 @@ dojo.widget.defineWidget(
 	
 		onMouseMove: function(e) {
 			this.mouse = {x: e.pageX, y: e.pageY};
-	
-			if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.domNode, e)) {
+
+			if(dojo.html.overElement(this.connectNode, e) || dojo.html.overElement(this.popupWidget.domNode, e)){
 				// If the tooltip has been scheduled to be erased, cancel that timer
 				// since we are hovering over element/tooltip again
 				if(this.hideTimer) {
@@ -82,57 +89,22 @@ dojo.widget.defineWidget(
 					clearTimeout(this.showTimer);
 					delete this.showTimer;
 				}
-				if((this.state=="displaying"||this.state=="displayed") && !this.hideTimer){
+				if(this.popupWidget.isShowingNow && !this.hideTimer){
 					this.hideTimer = setTimeout(dojo.lang.hitch(this, "hide"), this.hideDelay);
 				}
 			}
 		},
 	
 		show: function() {
-			if(this.state=="erasing"){
-				// we are in the process of erasing; when that is finished, display it.
-				this.displayScheduled=true;
-				return;
-			}
-			if ( this.state=="displaying" || this.state=="displayed" ) { return; }
-	
-			// prevent IE bleed through (iframe creation is deferred until first show()
-			// call because apparently it takes a long time)
-			if(!this.bgIframe){
-				this.bgIframe = new dojo.html.BackgroundIframe(this.domNode);
-			}
-
-			this.position();
-	
-			// if rendering using explosion effect, need to set explosion source
-			this.explodeSrc = [this.mouse.x, this.mouse.y];
-	
-			this.state="displaying";
+			if (this.popupWidget.isShowingNow) { return; }
 	
 			dojo.widget.html.Tooltip.superclass.show.call(this);
-		},
-	
-		onShow: function() {
-			dojo.widget.html.Tooltip.superclass.onShow.call(this);
 			
-			this.state="displayed";
-			
-			// in the corner case where the user has moved his mouse away
-			// while the tip was fading in
-			if(this.eraseScheduled){
-				this.hide();
-				this.eraseScheduled=false;
-			}
+			this.popupWidget.open(this.mouse.x, this.mouse.y, this, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
 		},
 	
 		hide: function() {
-			if(this.state=="displaying"){
-				// in the process of fading in.  wait until that is finished and then fade out
-				this.eraseScheduled=true;
-				return;
-			}
-			if ( this.state=="displayed" ) {
-				this.state="erasing";
+			if (this.popupWidget.isShowingNow) {
 				if ( this.showTimer ) {
 					clearTimeout(this.showTimer);
 					delete this.showTimer;
@@ -142,30 +114,23 @@ dojo.widget.defineWidget(
 					delete this.hideTimer;
 				}
 				dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
-				dojo.widget.html.Tooltip.superclass.hide.call(this);
+				this.popupWidget.close();				
 			}
 		},
 	
 		onHide: function(){
-			this.state="erased";
-	
-			// in the corner case where the user has moved his mouse back
-			// while the tip was fading out
-			if(this.displayScheduled){
-				this.display();
-				this.displayScheduled=false;
-			}
+			dojo.widget.html.Tooltip.superclass.hide.call(this);
 		},
-	
+
 		position: function(){
-			dojo.html.placeOnScreenPoint(this.domNode, this.mouse.x, this.mouse.y, [10,15], true);
-			this.bgIframe.onResized();
+			this.hide();
+			this.show();
 		},
-	
+
 		onLoad: function(){
-			if(this.isShowing()){
+			if(this.popupWidget.isShowingNow){
 				// the tooltip has changed size due to downloaded contents, so reposition it
-				dojo.lang.setTimeout(this, this.position, 50);
+				this.position();
 				dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
 			}
 		},

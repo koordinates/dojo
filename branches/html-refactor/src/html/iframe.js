@@ -57,15 +57,17 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 
 	// TODO: this function shouldn't be necessary but setting width=height=100% doesn't work!
 	onResized: function(){
-		if(this.iframe && this.domNode && this.domNode.parentElement){ // No parentElement if onResized() timeout event occurs on a removed domnode
-			var outer = dojo.html.getMarginBox(this.domNode);
+		if(this.iframe && this.domNode && this.domNode.parentNode){ // No parentElement if onResized() timeout event occurs on a removed domnode
+			var outer = dojo.html.getBorderBox(this.domNode);
 			if (outer.width  == 0 || outer.height == 0 ){
-				dojo.lang.setTimeout(this, this.onResized, 50);
+				dojo.lang.setTimeout(this, this.onResized, 100);
 				return;
 			}
-			var s = this.iframe.style;
-			s.width = outer.width + "px";
-			s.height = outer.height + "px";
+
+			with(this.iframe.style){
+				width = w + "px";
+				height = h + "px";
+			}
 		}
 	},
 
@@ -76,11 +78,12 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 
 		var coords = dojo.html.toCoordinateObject(node, true);
 
-		var s = this.iframe.style;
-		s.width = coords.w + "px";
-		s.height = coords.h + "px";
-		s.left = coords.x + "px";
-		s.top = coords.y + "px";
+		with(this.iframe.style){
+			width = coords.w + "px";
+			height = coords.h + "px";
+			left = coords.x + "px";
+			top = coords.y + "px";
+		}
 	},
 
 	setZIndex: function(node /* or number */) {
@@ -99,9 +102,8 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	},
 
 	hide: function() {
-		if(!this.ie) { return; }
-		var s = this.iframe.style;
-		s.display = "none";
+		if(!this.iframe) { return; }
+		this.iframe.style.display = "none";
 	},
 
 	remove: function() {
