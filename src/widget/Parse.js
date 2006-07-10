@@ -19,35 +19,33 @@ dojo.widget.Parse = function(fragment){
 				var tna = String(frag["tagName"]).split(";");
 				for(var x=0; x<tna.length; x++){
 					var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
-
-			        //if we don't already have a tag registered for this widget, try to load it's
-			        //namespace, if it has one
-			        if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn)){
-			            var pos = ltn.indexOf(":");
-			            if(pos > 0){
-			                var nsName = ltn.substring(0,pos);
-			                var ns = dojo.getNamespace(nsName);
-			                var tagName = ltn.substring(pos+1,ltn.length);
-			                var domain = null;
-			                var dojoDomain = frag[ltn]["dojoDomain"] || frag[ltn]["dojodomain"]; 
-			                if(dojoDomain){
-			                   	domain = dojoDomain[0].value;
-			                }
-			                if(ns){
-			                    ns.load(tagName, domain);
-			                }
-			            }
-			        }
-
+					var pos = ltn.indexOf(":");
+					var nsName = (pos > 0) ? ltn.substring(0,pos) : null;
+					//if we don't already have a tag registered for this widget, try to load it's
+					//namespace, if it has one
+					if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn) && pos>0){				    					
+						var ns = dojo.getNamespace(nsName);
+						var tagName = ltn.substring(pos+1,ltn.length);
+						var domain = null;
+						var dojoDomain = frag[ltn]["dojoDomain"] || frag[ltn]["dojodomain"]; 
+						if(dojoDomain){
+							domain = dojoDomain[0].value;
+						}
+						if(ns){
+						    ns.load(tagName, domain);
+						}
+					    
+					}
+	
 					if(djTags[ltn]){
 						built = true;
 						frag.tagName = ltn;
 						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
 						comps.push(ret);
 					}else{
-						if(dojo.lang.isString(ltn) && (ltn.substr(0, 5)=="dojo:")){
+						if(dojo.lang.isString(ltn) && nsName && djConfig.namespaces[nsName]){
 							dojo.debug("no tag handler registered for type: ", ltn);
-			            } //TODO: else? what if it's not dojo:? is it still an error?
+						} 
 					}
 				}
 			}
@@ -222,7 +220,16 @@ dojo.widget.Parse = function(fragment){
 	this.createComponentFromScript = function(nodeRef, componentName, properties, namespace){
 		if(!namespace){ namespace = "dojo"; }
 		var ltn = namespace + ":" + componentName.toLowerCase();
-		if(dojo.widget.tags[ltn]){
+		
+		var djTags = dojo.widget.tags;
+		//if we don't already have a tag registered for this widget, try to load it's
+		//namespace, if it has one
+		if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn)){		    
+			var ns = dojo.getNamespace(namespace);
+			if(ns){ns.load(componentName);}
+		}
+		
+		if(djTags[ltn]){
 			properties.fastMixIn = true;			
 			//dojo.profile.start("dojo.widget.tags - "+ltn);
 			//var ret = [dojo.widget.tags[ltn](properties, this, null, null, properties)];
@@ -260,13 +267,13 @@ dojo.widget.getParser = function(name){
  * @return The new Widget object
  */
 
-dojo.widget.createWidget = function(name, props, refNode, position, namespace /*optional*/){
+dojo.widget.createWidget = function(name, props, refNode, position){
 
 	var isNode = false;
 	var isNameStr = (typeof name == "string");
 	if(isNameStr){
 		var pos = name.indexOf(":");
-		namespace = (pos > -1) ? name.substring(0,pos) : "dojo";
+		var namespace = (pos > -1) ? name.substring(0,pos) : "dojo";
 		if(pos > -1){ name = name.substring(pos+1); }
 		var lowerCaseName = name.toLowerCase();
 		var namespacedName = namespace+":" + lowerCaseName;

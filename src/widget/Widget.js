@@ -169,7 +169,7 @@ dojo.declare("dojo.widget.Widget", null, {
 		var result = [];
 		var stack = [this];
 		var elem;
-		while (elem = stack.pop()){
+		while ((elem = stack.pop())){
 			result.push(elem);
 			dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
 		}
@@ -539,7 +539,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
 	// var tic = new Date();
-	var twidget = dojo.widget.manager.getImplementation(stype);
+	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag.namespace);
 	if(!twidget){
 		throw new Error("cannot find \"" + stype + "\" widget");
 	}else if (!twidget.create){
@@ -557,7 +557,6 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	return ret;
 }
 
-//TODO: add namespace support to this
 /*
  * Create a widget constructor function (aka widgetClass)
  */
