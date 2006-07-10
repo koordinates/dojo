@@ -39,6 +39,7 @@ dojo.require("dojo.namespace");
 			"layoutcontainer": "dojo.widget.LayoutContainer",
 			"linkpane": "dojo.widget.LinkPane",
 			"manager": "dojo.widget.Manager",
+			"popupcontainer": "dojo.widget.Menu2",
 			"popupmenu2": "dojo.widget.Menu2",
 			"menuitem2": "dojo.widget.Menu2",
 			"menuseparator2": "dojo.widget.Menu2",
