@@ -452,7 +452,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		}
 	
 		if((this["templateCssString"])&&(!this.templateCssString["loaded"])){
-			dojo.style.insertCssText(this.templateCssString, null, cpath);
+			dojo.html.insertCssText(this.templateCssString, null, cpath);
 			if(!this.templateCssString){ this.templateCssString = ""; }
 			this.templateCssString.loaded = true;
 		}

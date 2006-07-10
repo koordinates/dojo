@@ -432,7 +432,7 @@ dojo.html.scrollIntoView = function(node){
 	if(dojo.render.html.ie){
 		//only call scrollIntoView if there is a scrollbar for this menu,
 		//otherwise, scrollIntoView will scroll the window scrollbar
-		if(dojo.style.getBorderBox(node.parentNode).height < node.parentNode.scrollHeight){
+		if(dojo.html.getBorderBox(node.parentNode).height < node.parentNode.scrollHeight){
 			node.scrollIntoView(false);
 		}
 	}else if(dojo.render.html.mozilla){
@@ -440,8 +440,8 @@ dojo.html.scrollIntoView = function(node){
 		node.scrollIntoView(false);
 	}else{
 		var parent = node.parentNode;
-		var parentBottom = parent.scrollTop + dojo.style.getBorderBox(parent).height;
-		var nodeBottom = node.offsetTop + dojo.style.getMarginBox(node).height;
+		var parentBottom = parent.scrollTop + dojo.html.getBorderBox(parent).height;
+		var nodeBottom = node.offsetTop + dojo.html.getMarginBox(node).height;
 		if(parentBottom < nodeBottom){
 			parent.scrollTop += (nodeBottom - parentBottom);
 		}else if(parent.scrollTop > node.offsetTop){

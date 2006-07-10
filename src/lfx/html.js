@@ -174,7 +174,7 @@ dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
 dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
 	nodes=dojo.lfx.html._byId(nodes);
 	dojo.lang.forEach(nodes, function(node){
-		dojo.style.setOpacity(node, 0.0);
+		dojo.html.setOpacity(node, 0.0);
 	});
 
 	var anim = dojo.lfx.html.fadeIn(nodes, duration, easing, callback);
