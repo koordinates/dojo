@@ -6,7 +6,6 @@
 
 <script type="text/javascript">
 	var djConfig = {isDebug: true};
-	djConfig.debugAtAllCosts = true;
 
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
@@ -18,7 +17,6 @@
 	dojo.require("dojo.widget.TreeSelector");
 	dojo.require("dojo.widget.FloatingPane");
 	dojo.require("dojo.widget.Dialog");
-	dojo.hostenv.writeIncludes();
 </script>
 
 <script>
@@ -50,8 +48,14 @@
 			return;
 		}
 		e.preventDefault(); // or e.returnValue = false;
-		var pane = dojo.widget.byId('docpane')
-		pane.setContent("Custom Loaderror goes here<br/><img src='images/x.gif' style='float:left;'/> file not found");
+		var pane = dojo.widget.byId('docpane');
+		var str = "Custom Loaderror goes here<br/><img src='images/x.gif' style='float:left;'/> file not found<br/><br/>" +
+				"This can also be used when debugging a dynamic server page, error objects properties:<br/>" +
+				"status=" + e.status + "<br/>" +
+				"statusText=" + e.statusText + "<br/>" +
+				"responseText=" + dojo.string.escape("html", e.responseText) + "<br/>" +
+				"responseHeaders=" + e.responseHeaders;
+		pane.setContent(str);
 		dialogHandler();// turn off loading dialog
 	}
 
