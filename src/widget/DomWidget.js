@@ -51,12 +51,13 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 			obj.templateCssString = dojo.hostenv.getText(cpath);
 			obj.templateCssPath = null;
 		}
-		if((obj["templateCssString"])&&(!obj.templateCssString["loaded"])){
-			dojo.style.insertCssText(obj.templateCssString, null, cpath);
-			if(!obj.templateCssString){ obj.templateCssString = ""; }
-			obj.templateCssString.loaded = true;
-		}
 		dojo.widget._cssFiles[cpath.toString()] = true;
+	}
+
+	if((obj["templateCssString"])&&(!obj.templateCssString["loaded"])){
+		dojo.style.insertCssText(obj.templateCssString, null, cpath);
+		if(!obj.templateCssString){ obj.templateCssString = ""; }
+		obj.templateCssString.loaded = true;
 	}
 
 	var ts = tmplts[wt];
