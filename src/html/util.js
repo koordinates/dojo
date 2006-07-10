@@ -359,10 +359,7 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 		node.style.top = besty + "px";
 	}
 	
-	ret.x = bestx;
-	ret.y = besty;
-	ret.dist = bestDistance;
-	return ret;
+	return { x: bestx, y: besty, dist: bestDistance };
 }
 
 /**
