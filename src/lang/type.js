@@ -103,7 +103,6 @@ dojo.lang.isPureObject = function(value){
  *   dojo.lang.isOfType(dojo.lang.isOfType, Function); // returns true
  *   dojo.lang.isOfType({foo: "bar"}, Object);         // returns true
  *   dojo.lang.isOfType(new Date(), Date);             // returns true
- *   dojo.lang.isOfType(xxxxx, Date);                  // returns true
  *
  *   dojo.lang.isOfType("foo", "string");                // returns true
  *   dojo.lang.isOfType(12345, "number");                // returns true
@@ -113,18 +112,26 @@ dojo.lang.isPureObject = function(value){
  *   dojo.lang.isOfType({foo: "bar"}, "object");         // returns true
  *   dojo.lang.isOfType(xxxxx, "undefined");             // returns true
  *   dojo.lang.isOfType(null, "null");                   // returns true
-
+ *
  *   dojo.lang.isOfType("foo", [Number, String, Boolean]); // returns true
  *   dojo.lang.isOfType(12345, [Number, String, Boolean]); // returns true
  *   dojo.lang.isOfType(false, [Number, String, Boolean]); // returns true
- *   dojo.lang.isOfType(xxxxx, "undefined");               // returns true
+ *
+ *   dojo.lang.isOfType(null, Date, {optional: true} );    // returns true
  * </pre>
  *
  * @param	value	Any literal value or object instance.
  * @param	type	A class of object, or a literal type, or the string name of a type, or an array with a list of types.
  * @return	Returns a boolean
  */
-dojo.lang.isOfType = function(value, type) {
+dojo.lang.isOfType = function(value, type, keywordParameters) {
+	var optional = false;
+	if (keywordParameters) {
+		optional = keywordParameters["optional"];
+	}
+	if (optional && ((value === null) || dojo.lang.isUndefined(value))) {
+		return true;
+	}
 	if(dojo.lang.isArray(type)){
 		var arrayOfTypes = type;
 		for(var i in arrayOfTypes){
@@ -183,6 +190,7 @@ dojo.lang.isOfType = function(value, type) {
 				return (value === null);
 				break;
 			case "optional":
+				dojo.deprecated('dojo.lang.isOfType(value, [type, "optional"])', 'use dojo.lang.isOfType(value, type, {optional: true} ) instead', "0.5");
 				return ((value === null) || dojo.lang.isUndefined(value));
 				break;
 			default:

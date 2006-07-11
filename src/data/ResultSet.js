@@ -12,8 +12,8 @@ dojo.data.ResultSet = function(/* dojo.data.provider.Base */ dataProvider, /* Ar
 	 * returns a ResultSet in reponse to a query.
 	 * (The name "Result Set" comes from the MySQL terminology.)
 	 */
-	dojo.lang.assertType(dataProvider, [dojo.data.provider.Base, "optional"]);
-	dojo.lang.assertType(arrayOfItems, [Array, "optional"]);
+	dojo.lang.assertType(dataProvider, dojo.data.provider.Base, {optional: true});
+	dojo.lang.assertType(arrayOfItems, Array, {optional: true});
 	dojo.data.Observable.call(this);
 	this._dataProvider = dataProvider;
 	this._arrayOfItems = [];
