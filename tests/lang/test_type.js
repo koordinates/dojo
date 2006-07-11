@@ -25,27 +25,27 @@ function test_lang_isNumeric() {
 	jum.assertFalse("117", dojo.lang.isNumeric(undef));
 	jum.assertFalse("118", dojo.lang.isNumeric([]));
 	jum.assertFalse("119", dojo.lang.isNumeric(error));
-	// dojo.log.debug("leaving test_lang_isNumeric()");
+	jum.assertFalse("120", dojo.lang.isNumeric(""));
+	jum.assertFalse("121", dojo.lang.isNumeric("  "));
 }
 
 function test_lang_isPureObject() {
 	var undef; // undefined
 
-	jum.assertTrue("120", dojo.lang.isPureObject(new Object()));
-	jum.assertTrue("120", dojo.lang.isPureObject({a: 1, b: 2}));
+	jum.assertTrue("130", dojo.lang.isPureObject(new Object()));
+	jum.assertTrue("131", dojo.lang.isPureObject({a: 1, b: 2}));
 
-	jum.assertFalse("121", dojo.lang.isPureObject([1, 2]));
-	jum.assertFalse("122", dojo.lang.isPureObject(new Number(365)));
-	jum.assertFalse("123", dojo.lang.isPureObject(new String("foo")));
-	jum.assertFalse("124", dojo.lang.isPureObject(test_lang_isPureObject));
-	jum.assertFalse("125", dojo.lang.isPureObject(new Boolean(true)));
-	jum.assertFalse("126", dojo.lang.isPureObject(365));
-	jum.assertFalse("127", dojo.lang.isPureObject("foo"));
-	jum.assertFalse("128", dojo.lang.isPureObject(true));
-	jum.assertFalse("129", dojo.lang.isPureObject(null));
-	jum.assertFalse("130", dojo.lang.isPureObject(undef));
-	jum.assertFalse("131", dojo.lang.isPureObject(new Error()));
-	// dojo.log.debug("leaving test_lang_isPureObject()");
+	jum.assertFalse("141", dojo.lang.isPureObject([1, 2]));
+	jum.assertFalse("142", dojo.lang.isPureObject(new Number(365)));
+	jum.assertFalse("143", dojo.lang.isPureObject(new String("foo")));
+	jum.assertFalse("144", dojo.lang.isPureObject(test_lang_isPureObject));
+	jum.assertFalse("145", dojo.lang.isPureObject(new Boolean(true)));
+	jum.assertFalse("146", dojo.lang.isPureObject(365));
+	jum.assertFalse("147", dojo.lang.isPureObject("foo"));
+	jum.assertFalse("148", dojo.lang.isPureObject(true));
+	jum.assertFalse("149", dojo.lang.isPureObject(null));
+	jum.assertFalse("140", dojo.lang.isPureObject(undef));
+	jum.assertFalse("141", dojo.lang.isPureObject(new Error()));
 }
 
 function test_lang_isOfType() {
