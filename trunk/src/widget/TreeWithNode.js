@@ -67,9 +67,13 @@ dojo.widget.TreeWithNode = {
 		return disabled;
 	},
 	
-	
+	/**
+	 * childrenArray is array of Widgets or array of Objects
+	 * widgets may be both attached and detached
+	 */
 	setChildren: function(childrenArray) {
 		//dojo.profile.start("setChildren");
+		//dojo.debug("setChildren in "+this);
 		if (!this.containerNode) {
 			this.viewAddContainer();
 		}
@@ -81,11 +85,12 @@ dojo.widget.TreeWithNode = {
 		}
 		
 		this.children = childrenArray;
-			
+		
 		for(var i=0; i<this.children.length; i++) {
-			var child = this.children[i]
+			var child = this.children[i];
 			
 			if (!(child instanceof dojo.widget.Widget)) {
+				
 				/*if (child instanceof Array) {
 					// arguments for createWidget
 					child = this.children[i] = dojo.widget.createWidget(child);
@@ -93,25 +98,29 @@ dojo.widget.TreeWithNode = {
 					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child);					
 				}*/
 				//dojo.debugShallow(child)
-				child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);					
+				child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
+				
+				//dojo.debug("setChildren creates node "+child);
 			}
 			
-			child.parent = this;
-			if (this.tree !== child.tree) {				
-				child.updateTree(this.tree);
-			}
+			if (!child.parent) { // detached child
+				child.parent = this;
+				if (this.tree !== child.tree) {				
+					child.updateTree(this.tree);
+				}
 			
-			//dojo.debug("Add layout for "+child);
-			child.viewAddLayout();
-			this.containerNode.appendChild(child.domNode);
+				//dojo.debug("Add layout for "+child);
+				child.viewAddLayout();
+				this.containerNode.appendChild(child.domNode);
 					
-			var message = {
-				child: child,
-				index: i,
-				parent: this
-			}
+				var message = {
+					child: child,
+					index: i,
+					parent: this
+				}
 			
-			dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+				dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+			}
 		
 		}
 		//dojo.profile.end("setChildren");

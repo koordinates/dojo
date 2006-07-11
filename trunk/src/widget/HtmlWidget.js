@@ -147,7 +147,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 
 	// Called when my size has changed.
 	// Must notify children if their size has (possibly) changed
-	onResized: function(){
-		dojo.lang.forEach(this.children, function(child){ child.checkSize(); });
+	onResized: function(){		
+		dojo.lang.forEach(this.children, function(child){ if (child["checkSize"]) child.checkSize(); });
 	}
 });

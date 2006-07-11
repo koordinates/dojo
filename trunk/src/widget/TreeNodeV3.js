@@ -171,6 +171,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	setFolder: function() {
 		this.isFolder = true;
 		this.viewSetExpand();
+		if (!this.containerNode) {
+			this.viewAddContainer(); // all folders have container.
+		}
 		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
 	},
 	
@@ -207,7 +210,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			parent.viewAddContainer();
 		}
 		if (!index) index = 0;
-		//dojo.debug("insertNode "+this+" before "+index);
+		//dojo.debug("insertNode "+this+" parent "+parent+" before "+index);
 		
 		if (index==0) {
 			dojo.dom.prependChild(this.domNode, parent.containerNode);
@@ -221,8 +224,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if (this.tree === newTree) {
 			return;
 		}
-		
-		
+				
 		var message = {oldTree:this.tree, newTree:newTree, node:this}
 		
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
@@ -242,13 +244,22 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 */
 	addedTo: function(parent, index) {
 		//dojo.profile.start("addedTo");
-		dojo.debug(this + " addedTo "+parent+" index "+index);
+		//dojo.debug(this + " addedTo "+parent+" index "+index);
 		//dojo.debug(parent.children);
 		//dojo.debug(parent.containerNode.innerHTML);
 		
 		//dojo.debug((new Error()).stack);
 		
+		var siblingsCount = parent.children.length;
+		
 		this.insertNode(parent, index);
+		
+		/*
+		if (siblingsCount==1 && parent.isExpanded) { // possibly I was added as first child of open folder
+			parent.containerNode.style.display='block'; // ensure container is shown
+		}*/
+			
+			
 				
 		if (!this.tree) {
 			// special case, happens in markup only
@@ -267,7 +278,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		this.viewAddLayout();
 	
-		var siblingsCount = parent.children.length;
 		
 		//dojo.debug("siblings "+parent.children);
 		
@@ -346,7 +356,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		dojo.event.topic.publish(treeNode.tree.eventNames.createNode, { source: treeNode } );		
 		
-		//dojo.profile.end(this.widgetType+" createSimple");
+		//dojo.profile.end(this.widgetType+"createSimple");
 		
 		return treeNode;
 	},
@@ -394,6 +404,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	
 	viewRemoveLayout: function() {		
+		//dojo.debug("viewRemoveLayout in "+this);
 		//dojo.profile.start("viewRemoveLayout");
 		//dojo.debug((new Error()).stack);
 		dojo.html.removeClass(this.domNode, "TreeRoot");
@@ -438,13 +449,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	/* node does not leave tree */
 	doDetach: function() {
+		//dojo.debug("doDetach in "+this+" parent "+this.parent+" class "+dojo.html.getClass(this.domNode));
+		
 		var parent = this.parent;
 		
 		if (!parent) return;
 		
 		var index = this.getParentIndex();
 		
-		s
+		
 		this.viewRemoveLayout();
 		
 		dojo.widget.DomWidget.prototype.removeChild.call(parent, this);
@@ -489,15 +502,19 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expand: function(){
 		if (this.isExpanded) return;
 
+		//dojo.debug("expand in "+this);
 		
 		if (this.children.length) {
 			if (this.createChildrenOnExpand) {
 				this.setChildren(this.children);
 				this.createChildrenOnExpand = false;				
-			}					
-					
-			this.showChildren();
+			}						
 		}
+		
+		// no matter if I have children or not. need to show/hide container anyway.
+		// e.g empty folder is expanded => then child is added
+		this.showChildren();
+		
 
 		this.isExpanded = true;
 
@@ -532,6 +549,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 
 	showChildren: function(){
+		
 		this.tree.toggleObj.show(
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShow")
 		);
@@ -540,6 +558,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
 			dojo.dnd.dragManager.cacheTargetLocations();
 		}
+	},
+	
+	toString: function() {
+		return '[TreeNodeV3, '+this.title+']';
 	}
 
 
