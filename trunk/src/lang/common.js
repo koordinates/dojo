@@ -50,10 +50,11 @@ dojo.lang.find = function(	/*Array*/		array,
 	// usage:
 	//  find(array, value[, identity [findLast]]) // recommended
 	// usage:
- 	//  find(value, array[, identity [findLast]])
+ 	//  find(value, array[, identity [findLast]]) // deprecated
 							
 	// support both (array, value) and (value, array)
 	if(!dojo.lang.isArrayLike(array) && dojo.lang.isArrayLike(value)) {
+		dojo.deprecated('dojo.lang.find(value, array)', 'use dojo.lang.find(array, value) instead', "0.5");
 		var temp = array;
 		array = value;
 		value = temp;
