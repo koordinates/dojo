@@ -67,16 +67,35 @@ dojo.widget.TreeWithNode = {
 		return disabled;
 	},
 	
+	
+	/**
+	 * if true then create all missing children on expand and pass
+	 * this parameter to them
+	 * so that their children will have makeWidgetsFromChildren=true also
+	 */
+	makeWidgetsFromChildren: false,
+	
+	
 	/**
 	 * childrenArray is array of Widgets or array of Objects
 	 * widgets may be both attached and detached
+	 *
+	 * Use Cases
+	 * 1) lots of widgets are packed and passed in.
+	 *  - widgets are created
+	 *  - widgets have no parent (detached or not attached yet)
+	 *
+	 * 2) array of widgets and data objects passed in with flag makeWidgetsFromChildren
+	 *  - some widgets are not created
+	 *  - all objects have no parent
+	 *
+	 * 3) expand is called with makeWidgetsFromChildren=true
+	 *  - some objects need to be turned into widgets
+	 *  - some widgets have parent (e.g markup), some widgets and objects do not
 	 */
 	setChildren: function(childrenArray) {
 		//dojo.profile.start("setChildren");
 		//dojo.debug("setChildren in "+this);
-		if (!this.containerNode) {
-			this.viewAddContainer();
-		}
 		
 		if (this.isTreeNode && !this.isFolder) {
 			//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
@@ -91,14 +110,17 @@ dojo.widget.TreeWithNode = {
 			
 			if (!(child instanceof dojo.widget.Widget)) {
 				
-				/*if (child instanceof Array) {
+				if (child instanceof Array) {
 					// arguments for createWidget
 					child = this.children[i] = dojo.widget.createWidget(child);
 				} else {
 					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child);					
-				}*/
+				}
+				//child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
+				
+				child.makeWidgetsFromChildren = true;
+				
 				//dojo.debugShallow(child)
-				child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
 				
 				//dojo.debug("setChildren creates node "+child);
 			}
@@ -119,6 +141,9 @@ dojo.widget.TreeWithNode = {
 					parent: this
 				}
 			
+				// just in case..			
+				delete dojo.widget.manager.topWidgets[child.widgetId];
+		
 				dojo.event.topic.publish(this.tree.eventNames.addChild, message);
 			}
 		

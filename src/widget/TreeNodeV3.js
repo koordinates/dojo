@@ -144,7 +144,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	isExpanded: false,
 	
-	createChildrenOnExpand: true,
 
 	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
@@ -184,6 +183,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		} else if (parent.tree) {
 			this.tree = parent.tree;
 		}
+		
+		if (!this.tree) {
+			dojo.raise("Can't evaluate tree from arguments or parent");
+		}
+		
 		
 		if (this.children.length || args.isFolder) {
 			this.setFolder();			
@@ -245,13 +249,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug(parent.containerNode.innerHTML);
 		
 		//dojo.debug((new Error()).stack);
-		
-		/*
-		if (siblingsCount==1 && parent.isExpanded) { // possibly I was added as first child of open folder
-			parent.containerNode.style.display='block'; // ensure container is shown
-		}*/
-			
-			
+					
 				
 		if (!this.tree) {
 			// special case, happens in markup only
@@ -313,22 +311,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		var treeNode = new (dojo.widget[this.widgetType])();
 		//dojo.profile.end(this.widgetType+" createSimple constructor");
 		
-		if (!args["tree"]) {
-			dojo.raise("Tree should be passed in arguments");
-		}
-		
 		//dojo.profile.start(this.widgetType+" createSimple mixin");		
 		for(var x in args){ // fastMixIn			
 			treeNode[x] = args[x];
 		}
-		/*
-		if (treeNode.children.length) {
-			treeNode.isFolder = true;
-		}*/
+		
 		//dojo.profile.end(this.widgetType+" createSimple mixin");
 		
 				
-		/* HtmlWidget.postMixIn */
+		// HtmlWidget.postMixIn 
 		treeNode.toggleObj = dojo.lfx.toggle[treeNode.toggle.toLowerCase()] || dojo.lfx.toggle.plain;
 
 		//dojo.profile.start(this.widgetType + " manager");
@@ -339,20 +330,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		treeNode.buildRendering();		
 		//dojo.profile.end(this.widgetType + " buildRendering");
 		
-		/* piece from postCreate that we should do */
-		//dojo.profile.start(this.widgetType + " expand");
-		treeNode.viewSetExpand();
-		//dojo.profile.end(this.widgetType + " expand");
-		
-		if (treeNode.isFolder) {
-			// trigger event because
-			// listeners may want to process all folders
-			// both those that are set at runtime and creationtime
-			dojo.event.topic.publish(treeNode.tree.eventNames.setFolder, { source: treeNode });
-		}
-		
-		
-		dojo.event.topic.publish(treeNode.tree.eventNames.createNode, { source: treeNode } );		
+		treeNode.initialize(args);
 		
 		//dojo.profile.end(this.widgetType+"createSimple");
 		
@@ -371,11 +349,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.end("viewUpdateLayout");	
 	},
 	
+	
 	viewAddContainer: function() {
 		// make controller only if children exist
 		this.containerNode = this.containerNodeTemplate.cloneNode(true);
 		this.domNode.appendChild(this.containerNode);
 	},
+	
 	
 	viewAddLayout: function() {
 		//dojo.profile.start("viewAddLayout");
@@ -444,6 +424,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.event.topic.publish(this.tree.eventNames.treeDetach, {tree:this.tree});
 		
 	},
+	
 
 	/* node does not leave tree */
 	doDetach: function() {
@@ -497,16 +478,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 	
+	
 	expand: function(){
 		if (this.isExpanded) return;
 
 		//dojo.debug("expand in "+this);
 		
-		if (this.children.length) {
-			if (this.createChildrenOnExpand) {
-				this.setChildren(this.children);
-				this.createChildrenOnExpand = false;				
-			}						
+		if (this.makeWidgetsFromChildren) {
+			this.setChildren(this.children);
+			this.makeWidgetsFromChildren = false;
 		}
 		
 		// no matter if I have children or not. need to show/hide container anyway.
@@ -520,6 +500,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
 	},
+
 
 	collapse: function(){
 		if (!this.isExpanded) return;
