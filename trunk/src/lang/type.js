@@ -3,6 +3,11 @@ dojo.provide("dojo.lang.type");
 dojo.require("dojo.lang.common");
 
 dojo.lang.whatAmI = function(value) {
+	dojo.deprecated("dojo.lang.whatAmI", "use dojo.lang.getType instead", "0.5");
+	return dojo.lang.getType(value);
+}
+
+dojo.lang.getType = function(value) {
 	try {
 		if(dojo.lang.isArray(value)) { return "array"; }
 		if(dojo.lang.isFunction(value)) { return "function"; }
