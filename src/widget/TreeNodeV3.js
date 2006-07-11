@@ -171,9 +171,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	setFolder: function() {
 		this.isFolder = true;
 		this.viewSetExpand();
-		if (!this.containerNode) {
-			this.viewAddContainer(); // all folders have container.
-		}
+		this.viewAddContainer(); // all folders have container.		
 		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
 	},
 	
@@ -206,9 +204,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	
 	insertNode: function(parent, index) {
-		if (!parent.containerNode) {
-			parent.viewAddContainer();
-		}
+		
 		if (!index) index = 0;
 		//dojo.debug("insertNode "+this+" parent "+parent+" before "+index);
 		
@@ -250,10 +246,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.debug((new Error()).stack);
 		
-		var siblingsCount = parent.children.length;
-		
-		this.insertNode(parent, index);
-		
 		/*
 		if (siblingsCount==1 && parent.isExpanded) { // possibly I was added as first child of open folder
 			parent.containerNode.style.display='block'; // ensure container is shown
@@ -275,6 +267,12 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				parent.state = parent.loadStates.LOADED;
 			}
 		}
+		
+		var siblingsCount = parent.children.length;
+		
+		// setFolder works BEFORE insertNode
+		this.insertNode(parent, index);
+		
 		
 		this.viewAddLayout();
 	
