@@ -92,7 +92,7 @@ dojo.widget.TreeWithNode = {
 				} else {
 					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child);					
 				}*/
-				dojo.debugShallow(child)
+				//dojo.debugShallow(child)
 				child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);					
 			}
 			
@@ -101,6 +101,7 @@ dojo.widget.TreeWithNode = {
 				child.updateTree(this.tree);
 			}
 			
+			//dojo.debug("Add layout for "+child);
 			child.viewAddLayout();
 			this.containerNode.appendChild(child.domNode);
 					
