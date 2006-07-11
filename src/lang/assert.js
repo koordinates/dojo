@@ -45,23 +45,24 @@ dojo.lang.assert = function(booleanValue, message){
  *   dojo.lang.assertType(dojo.lang.assertType, Function);
  *   dojo.lang.assertType({foo: "bar"}, Object);
  *   dojo.lang.assertType(new Date(), Date);
+ *   dojo.lang.assertType(null, Array, {optional: true});
  * </pre>
  *
  * @scope	public function
  * @param	value	Any literal value or object instance.
  * @param	type	A class of object, or a literal type, or the string name of a type, or an array with a list of types.
- * @param	message	Optional. A string describing the assertion.
+ * @param	keywordParameters	Optional. A string describing the assertion.
  * @throws	Throws an Error if 'value' is not of type 'type'.
  */
-dojo.lang.assertType = function(value, type, message){
-	if(!dojo.lang.isOfType(value, type)){
-		if(!message){
-			if(!dojo.lang.assertType._errorMessage){
-				dojo.lang.assertType._errorMessage = "Type mismatch: dojo.lang.assertType() failed.";
-			}
-			message = dojo.lang.assertType._errorMessage;
+dojo.lang.assertType = function(value, type, keywordParameters){
+	if (dojo.lang.isString(keywordParameters)) {
+		dojo.deprecated('dojo.lang.assertType(value, type, "message")', 'use dojo.lang.assertType(value, type) instead', "0.5");
+	}
+	if(!dojo.lang.isOfType(value, type, keywordParameters)){
+		if(!dojo.lang.assertType._errorMessage){
+			dojo.lang.assertType._errorMessage = "Type mismatch: dojo.lang.assertType() failed.";
 		}
-		dojo.lang.assert(false, message);
+		dojo.lang.assert(false, dojo.lang.assertType._errorMessage);
 	}
 }
 
