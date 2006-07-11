@@ -16,7 +16,7 @@ dojo.data.provider.FlatFile = function(/* keywords */ keywordParameters) {
 	 * A Json Data Provider knows how to read in simple JSON data
 	 * tables and make their contents accessable as Items.
 	 */
-	dojo.lang.assertType(keywordParameters, ["pureobject", "optional"]);
+	dojo.lang.assertType(keywordParameters, "pureobject", {optional: true});
 	dojo.data.provider.Base.call(this);
 	this._arrayOfItems = [];
 	this._resultSet = null;
@@ -57,7 +57,7 @@ dojo.inherits(dojo.data.provider.FlatFile, dojo.data.provider.Base);
 // Public instance methods
 // -------------------------------------------------------------------
 dojo.data.provider.FlatFile.prototype.getProviderCapabilities = function(/* string */ keyword) {
-	dojo.lang.assertType(keyword, [String, "optional"]);
+	dojo.lang.assertType(keyword, String, {optional: true});
 	if (!this._ourCapabilities) {
 		this._ourCapabilities = {
 			transactions: false,

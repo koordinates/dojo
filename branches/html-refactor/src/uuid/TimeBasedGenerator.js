@@ -187,7 +187,7 @@ dojo.uuid.TimeBasedGenerator = new function() {
  * @return   Returns a 36 character string, which will look something like "b4308fb0-86cd-11da-a72b-0800200c9a66".
  */
 	function _generateUuidString(node) {
-		dojo.lang.assertType(node, [String, "optional"]);
+		dojo.lang.assertType(node, String, {optional: true});
 		if (node) {
 			dojo.lang.assert(node.length == 12);
 		} else {
@@ -349,7 +349,7 @@ dojo.uuid.TimeBasedGenerator = new function() {
 					}
 				}
 				returnType = namedParameters["returnType"];
-				dojo.lang.assertType(returnType, [Function, "optional"]);
+				dojo.lang.assertType(returnType, Function, {optional: true});
 			} else {
 				if (dojo.lang.isString(input)) {
 					nodeString = input;
@@ -366,7 +366,7 @@ dojo.uuid.TimeBasedGenerator = new function() {
 				var integer = parseInt(nodeString, HEX_RADIX);
 				dojo.lang.assert(isFinite(integer));
 			}
-			dojo.lang.assertType(returnType, [Function, "optional"]);
+			dojo.lang.assertType(returnType, Function, {optional: true});
 		}
 		
 		var uuidString = _generateUuidString(nodeString);
