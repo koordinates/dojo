@@ -85,8 +85,8 @@ function test_lang_isOfType() {
 	jum.assertTrue("225", dojo.lang.isOfType(false, ["number", "string", "boolean"]));
 
 	jum.assertTrue("226", dojo.lang.isOfType(undef, ["number", "undefined"]));
-	jum.assertTrue("227", dojo.lang.isOfType(undef, ["number", "optional"]));
-	jum.assertTrue("228", dojo.lang.isOfType(12345, ["number", "optional"]));
+	jum.assertTrue("227", dojo.lang.isOfType(undef, "number", {optional: true}));
+	jum.assertTrue("228", dojo.lang.isOfType(12345, "number", {optional: true}));
 
 	jum.assertFalse("230", dojo.lang.isOfType(undef, String));
 	jum.assertFalse("231", dojo.lang.isOfType(undef, Number));
@@ -122,7 +122,7 @@ function test_lang_isOfTypeToo() {
 	var allTypes = [
 		String, Number, Boolean, Array, Function, Object, null,
 		"string", "number", "boolean", "array", "function", "object", "null",
-		"numeric", "pureobject", "undefined", "optional", Date, Error];
+		"numeric", "pureobject", "undefined", Date, Error];
 	var number365 = new Number(365);
 	var string365 = new String("365");
 	var numberFoo = new Number("foo");
@@ -155,9 +155,9 @@ function test_lang_isOfTypeToo() {
 		{value: obj,               types: [Object, "object", "pureobject"]},
 		{value: dojo.lang,         types: [Object, "object", "pureobject"]},
 		{value: Math,              types: [Object, "object", "pureobject"]},
-		{value: null,              types: [null, "null", Object, "object", "optional"]},
+		{value: null,              types: [null, "null", Object, "object"]},
 		{value: error,             types: [Error, Object, "object"]},
-		{value: obj.undef,         types: ["undefined", "optional"]},
+		{value: obj.undef,         types: ["undefined"]},
 		{value: iggyInstace,       types: [Object, "object", "numeric"]}
 	];
 	
@@ -173,7 +173,9 @@ function test_lang_isOfTypeToo() {
 			var matchingType = matchingTypes[j];
 			jum.assertTrue("301", dojo.lang.isOfType(value, matchingType));
 			jum.assertTrue("302", dojo.lang.isOfType(value, [Number, matchingType, String]));
-			jum.assertTrue("303", dojo.lang.isOfType(value, [matchingType, "optional"]));
+			jum.assertTrue("303", dojo.lang.isOfType(value, matchingType, {optional: true}));
+			jum.assertTrue("304", dojo.lang.isOfType(null, matchingType, {optional: true}));
+			jum.assertTrue("305", dojo.lang.isOfType(obj.undef, matchingType, {optional: true}));
 		}
 		for (var k in allTypes) {
 			var possibleType = allTypes[k];

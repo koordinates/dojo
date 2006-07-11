@@ -15,7 +15,7 @@ dojo.data.Item = function(/* dojo.data.provider.Base */ dataProvider) {
 	 * the Item class know how to store and retrieve their
 	 * attribute values.
 	 */
-	dojo.lang.assertType(dataProvider, [dojo.data.provider.Base, "optional"]);
+	dojo.lang.assertType(dataProvider, dojo.data.provider.Base, {optional: true});
 	dojo.data.Observable.call(this);
 	this._dataProvider = dataProvider;
 	this._dictionaryOfAttributeValues = {};
