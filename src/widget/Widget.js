@@ -606,9 +606,10 @@ dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/
 	var nsName = (pos > -1) ? namespace.substring(0,pos) : namespace;
 	dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
 	if(nsName != "dojo"){
-		// 2006/06/26 Providing a duplicate dojo handler is a deprecation
-		// and should eventually be removed from code
-		dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+		// 2006/06/26 Providing a duplicate handler is a deprecation
+		// and should be removed from code in 0.5.  For this purpose only,
+		// '*' is used as a fallback namespace.
+		dojo.widget.tags.addParseTreeHandler("*:"+type.toLowerCase());
 	}
 
 	props=(props)||{};
