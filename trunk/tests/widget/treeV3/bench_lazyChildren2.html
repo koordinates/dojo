@@ -51,7 +51,7 @@
 		dojo.profile.end("createController");
 		
 		dojo.profile.start("createTree");
-		var tree = dojo.widget.createWidget("TreeV3", {controller: controller.widgetId});	
+		var tree = dojo.widget.createWidget("TreeV3", {controller: controller.widgetId, makeWidgetsFromChildren:true});	
 		dojo.profile.end("createTree");
 				
 		document.body.appendChild(tree.domNode);
@@ -61,10 +61,15 @@
 		var nodes = addChildren('node', tree);
 		dojo.profile.end("prepareNodes");
 			
-		dojo.profile.start("addNodes");		
+		dojo.profile.start("addNodes");
+		
 		tree.setChildren(nodes);
 		dojo.profile.end("addNodes");
 		
+		var nodeCount = 0;
+		dojo.lang.forEach(tree.getDescendants(), function() { nodeCount++  });
+		
+		dojo.debug("Nodes total: "+nodeCount);
 			
 		dojo.profile.dump(true);
 		
