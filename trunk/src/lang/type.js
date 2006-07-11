@@ -46,7 +46,8 @@ dojo.lang.whatAmI.custom = {};
  */
 dojo.lang.isNumeric = function(wh){
 	return (!isNaN(wh) && isFinite(wh) && (wh != null) &&
-			!dojo.lang.isBoolean(wh) && !dojo.lang.isArray(wh));
+			!dojo.lang.isBoolean(wh) && !dojo.lang.isArray(wh) &&
+			!/^\s*$/.test(wh));
 }
 
 /**
