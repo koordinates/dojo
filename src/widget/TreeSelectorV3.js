@@ -24,7 +24,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	widgetType: "TreeSelectorV3",
 	selectedNode: null,
 
-	listenTreeEvents: ["createNode","collapse","treeChange",
+	listenTreeEvents: ["addChild","collapse","treeChange",
 					   "detach","treeDestroy"],
 	
 	
@@ -62,7 +62,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 
 
-	onCreateNode: function(message) {
+	onAddChild: function(message) {
 		this.listenNode(message.source);
 	},
 	
@@ -136,17 +136,17 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 	},
 	
-		
+			
 	onTreeChange: function(message) {
-				
-		var stack = [message.node];
 		
+		var stack = [message.node];
+			
 		var elem;
 		
 		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
-			// moving from our tree to new one
+			// moving from our trfee to new one
 			
-			if (this.selectedNode) {
+			if (this.selectedNode && message.node.children) {
 				this.deselectIfAncestorMatch(message.node);
 			}
 				
