@@ -114,7 +114,7 @@ dojo.widget.defineWidget(
 					delete this.hideTimer;
 				}
 				dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
-				this.popupWidget.close();				
+				this.popupWidget.close();
 			}
 		},
 	
@@ -123,8 +123,8 @@ dojo.widget.defineWidget(
 		},
 
 		position: function(){
-			this.hide();
-			this.show();
+			this.popupWidget.close();
+			this.popupWidget.open(this.mouse.x, this.mouse.y, this, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
 		},
 
 		onLoad: function(){

@@ -45,6 +45,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
     	ADDCHILD: "ADDCHILD"
 	},
 
+
 	icons: {
 		expandOpen: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_minus.gif"),
 		expandClosed: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_plus.gif"),
@@ -62,6 +63,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.html.removeClass(this.labelNode, 'TreeNodeEmphased');
 	},
 
+	expandChildrenChecked: false,
 
 	expandNode: null,
 	labelNode: null,
@@ -145,7 +147,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	isExpanded: false,
 	
-	createChildrenOnExpand: true,
 
 	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
@@ -170,8 +171,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	setFolder: function() {
+		dojo.debug("SetFolder in "+this);
 		this.isFolder = true;
 		this.viewSetExpand();
+		this.viewAddContainer(); // all folders have container.		
 		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
 	},
 	
@@ -179,13 +182,22 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	initialize: function(args, frag, parent) {
 		// set tree from args or from parent
+		dojo.debug("initialize in "+this);
 		if (args.tree) {
 			this.tree = dojo.lang.isString(args.tree) ? dojo.widget.manager.getWidgetById(args.tree) : args.tree;			
 		} else if (parent.tree) {
 			this.tree = parent.tree;
 		}
 		
+		if (!this.tree) {
+			dojo.raise("Can't evaluate tree from arguments or parent");
+		}
+		
+		
 		if (this.children.length || args.isFolder) {
+			dojo.debug("children found");
+			dojo.debug(this.children);
+			dojo.debug("isFolder "+args.isFolder);
 			this.setFolder();			
 		} else {
 			this.viewSetExpand();
@@ -193,6 +205,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		dojo.event.topic.publish(this.tree.eventNames.createNode, { source: this } );
 		
+		dojo.debug("initialize out "+this);
 		//dojo.debug(this+" parent "+parent);
 	},
 		
@@ -204,9 +217,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	
 	insertNode: function(parent, index) {
-		if (!parent.containerNode) {
-			parent.viewAddContainer();
-		}
+		
 		if (!index) index = 0;
 		//dojo.debug("insertNode "+this+" before "+index);
 		
@@ -226,20 +237,21 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		var message = {oldTree:this.tree, newTree:newTree, node:this}
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
-		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
-		
 		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
 		
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
 		
 	},
 	
 	
 	/**
-	 * called every time the widget is added with createWidget,
+	 * called every time the widget is added with createWidget or created wia markup
+	 * from addChild -> registerChild or from postInitialize->registerChild
 	 * not called in batch procession
 	 * HTML & widget.createWidget only
 	 * Layout MUST be removed when node is detached
+	 * 
 	 */
 	addedTo: function(parent, index) {
 		//dojo.profile.start("addedTo");
@@ -248,13 +260,14 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug(parent.containerNode.innerHTML);
 		
 		//dojo.debug((new Error()).stack);
-		
-		this.insertNode(parent, index);
+					
 				
-		if (!this.tree) {
+		/*if (!this.tree) {
+			dojo.debug("NEVER HAPPENS?");
 			// special case, happens in markup only
 			this.tree = parent.tree;
-		} else if (this.tree !== parent.tree) {
+		} else*/
+		if (this.tree !== parent.tree) {
 			this.updateTree(parent.tree);
 		}
 		
@@ -265,6 +278,12 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				parent.state = parent.loadStates.LOADED;
 			}
 		}
+		
+		var siblingsCount = parent.children.length;
+		
+		// setFolder works BEFORE insertNode
+		this.insertNode(parent, index);
+		
 		
 		this.viewAddLayout();
 	
@@ -296,7 +315,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	/**
-	 * Fast program-only creation of widget
+	 * Fast program-only hacky creation of widget
 	 * 	
 	 */
 	createSimple: function(args) {
@@ -306,22 +325,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		var treeNode = new (dojo.widget[this.widgetType])();
 		//dojo.profile.end(this.widgetType+" createSimple constructor");
 		
-		if (!args["tree"]) {
-			dojo.raise("Tree should be passed in arguments");
-		}
-		
 		//dojo.profile.start(this.widgetType+" createSimple mixin");		
 		for(var x in args){ // fastMixIn			
 			treeNode[x] = args[x];
 		}
-		/*
-		if (treeNode.children.length) {
-			treeNode.isFolder = true;
-		}*/
+		
 		//dojo.profile.end(this.widgetType+" createSimple mixin");
 		
 				
-		/* HtmlWidget.postMixIn */
+		// HtmlWidget.postMixIn 
 		treeNode.toggleObj = dojo.lfx.toggle[treeNode.toggle.toLowerCase()] || dojo.lfx.toggle.plain;
 
 		//dojo.profile.start(this.widgetType + " manager");
@@ -332,20 +344,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		treeNode.buildRendering();		
 		//dojo.profile.end(this.widgetType + " buildRendering");
 		
-		/* piece from postCreate that we should do */
-		//dojo.profile.start(this.widgetType + " expand");
-		treeNode.viewSetExpand();
-		//dojo.profile.end(this.widgetType + " expand");
-		
-		if (treeNode.isFolder) {
-			// trigger event because
-			// listeners may want to process all folders
-			// both those that are set at runtime and creationtime
-			dojo.event.topic.publish(treeNode.tree.eventNames.setFolder, { source: treeNode });
-		}
-		
-		
-		dojo.event.topic.publish(treeNode.tree.eventNames.createNode, { source: treeNode } );		
+		treeNode.initialize(args);
 		
 		//dojo.profile.end(this.widgetType+" createSimple");
 		
@@ -364,15 +363,17 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.end("viewUpdateLayout");	
 	},
 	
+	
 	viewAddContainer: function() {
 		// make controller only if children exist
 		this.containerNode = this.containerNodeTemplate.cloneNode(true);
 		this.domNode.appendChild(this.containerNode);
 	},
 	
+	
 	viewAddLayout: function() {
 		//dojo.profile.start("viewAddLayout");
-		//dojo.debug("viewAddLayout in "+this);
+		dojo.debug("viewAddLayout in "+this);
 		
 		if (this.parent["isTree"]) {
 			//dojo.debug("Parent isTree => add isTreeRoot");
@@ -395,6 +396,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	
 	viewRemoveLayout: function() {		
+		dojo.debug("viewRemoveLayout in "+this);
 		//dojo.profile.start("viewRemoveLayout");
 		//dojo.debug((new Error()).stack);
 		dojo.html.removeClass(this.domNode, "TreeRoot");
@@ -436,6 +438,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.event.topic.publish(this.tree.eventNames.treeDetach, {tree:this.tree});
 		
 	},
+	
 
 	/* node does not leave tree */
 	doDetach: function() {
@@ -487,17 +490,14 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 	
+	
 	expand: function(){
 		if (this.isExpanded) return;
 
 		
-		if (this.children.length) {
-			if (this.createChildrenOnExpand) {
-				this.setChildren(this.children);
-				this.createChildrenOnExpand = false;				
-			}					
-					
-			this.showChildren();
+		if (!this.expandChildrenChecked) {
+			this.setChildren(this.children);
+			this.expandChildrenChecked = true;
 		}
 
 		this.isExpanded = true;
@@ -506,6 +506,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
 	},
+
 
 	collapse: function(){
 		if (!this.isExpanded) return;
