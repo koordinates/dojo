@@ -21,10 +21,20 @@ dojo.widget.defineWidget(
 	},
 
 	isContainer: true,
-	templateString: '<div dojoAttachPoint="containerNode" style="position:absolute;display:none;" tabindex="-1"></div>',
+	templateString: '<div dojoAttachPoint="containerNode" style="display:none;" class="dojoPopupContainer" tabindex="-1"></div>',
+	templateCssString: '.dojoPopupContainer{position:absolute;}',
 	snarfChildDomOutput: true,
 
 	isShowingNow: false,
+
+	currentSubpopup: null,
+
+	parentPopup: null,
+	popupIndex: 0,
+
+	processKey: function(evt){
+		return false;
+	},
 
 	/**
 	 * Open the popup at position (x,y), relative to dojo.body()
@@ -33,6 +43,13 @@ dojo.widget.defineWidget(
 	 */
 	open: function(x, y, parent, explodeSrc, orient, padding){
 		if (this.isShowingNow){ return; }
+
+		// if I click right button and menu is opened, then it gets 2 commands: close -> open
+		// so close enables animation and next "open" is put to queue to occur at new location
+		if(this.animationInProgress){
+			this.queueOnAnimationFinish.push(this.open, arguments);
+			return;
+		}
 
 		var around = false, node, aroundOrient;
 		if(typeof x == 'object'){
@@ -50,17 +67,31 @@ dojo.widget.defineWidget(
 		// if explodeSrc isn't specified then explode from my parent widget
 		explodeSrc = explodeSrc || parent["domNode"] || [];
 
-		// if I click right button and menu is opened, then it gets 2 commands: close -> open
-		// so close enables animation and next "open" is put to queue to occur at new location
-		if(this.animationInProgress){
-			this.queueOnAnimationFinish.push(this.open, arguments);
-			return;
+		//keep track of parent popup to decided whether this is a top level popup
+		var parentPopup = null;
+		this.isTopLevel = true;
+		while(parent){
+			if(parent !== this && parent instanceof dojo.widget.PopupContainer){
+				parentPopup = parent;
+				this.isTopLevel = false;
+				parentPopup.setOpenedSubpopup(this);
+				break;
+			}
+			parent = parent.parent;
+		}
+
+		this.parentPopup = parentPopup;
+		this.popupIndex = parentPopup ? parentPopup.popupIndex + 1 : 1;
+
+		if(this.isTopLevel){
+			var button = explodeSrc instanceof Array ? null : explodeSrc;
+			dojo.widget.html.PopupManager.opened(this, button);
 		}
 
 		// display temporarily, and move into position, then hide again
 		with(this.domNode.style){
 			display="";
-			zIndex = 200 + this.menuIndex;
+			zIndex = 200 + this.popupIndex;
 		}
 
 		if(around){
@@ -89,12 +120,36 @@ dojo.widget.defineWidget(
 			return;
 		}
 
+		this.closeSubpopup();
 		this.hide();
 		if(this.bgIframe){
 			this.bgIframe.hide();
 			this.bgIframe.size([0,0,0,0]);
 		}
+		if(this.isTopLevel){
+			dojo.widget.html.PopupManager.closed(this);
+		}
 		this.isShowingNow = false;
+	},
+
+	closeAll: function(){
+		if (this.parentPopup){
+			this.parentPopup.closeAll();
+		}else{
+			this.close();
+		}
+	},
+
+	//call this when a embedded popup is shown
+	setOpenedSubpopup: function(popup) {
+		this.currentSubpopup = popup;
+	},
+
+	closeSubpopup: function() {
+		if(this.currentSubpopup == null){ return; }
+		
+		this.currentSubpopup.close();
+		this.currentSubpopup = null;
 	},
 
 	onShow: function() {
@@ -145,6 +200,7 @@ dojo.widget.defineWidget(
 	dojo.widget.PopupContainer,
 {
 	initializer: function(){
+		dojo.widget.PopupMenu2.superclass.initializer.call(this);
 		this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 	
 		this.eventNames =  {
@@ -152,10 +208,8 @@ dojo.widget.defineWidget(
 		};
 	},
 
-	currentSubmenu: null,
+	templateCssString: "",
 	currentSubmenuTrigger: null,
-	parentMenu: null,
-	menuIndex: 0,
 
 	eventNaming: "default",
 
@@ -199,7 +253,7 @@ dojo.widget.defineWidget(
 	// get open event for current menu
 	getTopOpenEvent: function() {
 		var menu = this;
-		while (menu.parentMenu){ menu = menu.parentMenu; }
+		while (menu.parentPopup){ menu = menu.parentPopup; }
 		return menu.openEvent;
 	},
 
@@ -223,7 +277,7 @@ dojo.widget.defineWidget(
 			once:       true
 		});
 		
-		dojo.widget.html.Menu2Manager.registerWin(win);
+		dojo.widget.html.PopupManager.registerWin(win);
 	},
 
 	// detach menu from given node
@@ -252,15 +306,15 @@ dojo.widget.defineWidget(
 	},
 
 	moveToParentMenu: function(evt){
-		if(this._highlighted_option && this.parentMenu){
+		if(this._highlighted_option && this.parentPopup){
 			//only process event in the focused menu
-			//and its immediate parentMenu to support
+			//and its immediate parentPopup to support
 			//MenuBar2
 			if(evt._menu2UpKeyProcessed){
 				return true; //do not pass to parent menu
 			}else{
 				this._highlighted_option.onUnhover();
-				this.closeSubmenu();
+				this.closeSubpopup();
 				evt._menu2UpKeyProcessed = true;
 			}
 		}
@@ -319,7 +373,7 @@ dojo.widget.defineWidget(
 				}
 				//fall through
 			case k.KEY_ESCAPE:
-				dojo.widget.html.Menu2Manager.currentMenu.close();
+				dojo.widget.html.PopupManager.currentMenu.close();
 				rval = true;
 				break;
 		}
@@ -363,36 +417,6 @@ dojo.widget.defineWidget(
 	// User defined function to handle clicks on an item
 	onItemClick: function(item) {},
 
-	/**
-	 * Open the menu at position (x,y), relative to dojo.body()
-	 * Or open(node, parent, explodeSrc, aroundOrient) to open
-	 * around node
-	 */
-	open: function(x, y, parent, explodeSrc, orient, padding){
-		if (this.isShowingNow){ return; }
-
-		dojo.widget.PopupMenu2.superclass.open.call(this, x, y, parent, explodeSrc, orient, padding);
-
-		if (this.isShowingNow){
-			if(typeof x == 'object'){
-				explodeSrc = parent;
-				parent = y;
-			}
-			//FIXME: how to check derivation of class?
-			var parentMenu = (parent && (parent.widgetType=="PopupMenu2" || parent.widgetType=="MenuBar2")) ? parent : null;
-	
-			if ( !parentMenu ) {
-				// record whenever a top level menu is opened
-				// explodeSrc may or may not be a node - it may also be an [x,y] position array
-				var button = explodeSrc instanceof Array ? null : explodeSrc;
-				dojo.widget.html.Menu2Manager.opened(this, button);
-			}
-	
-			this.parentMenu = parentMenu;
-			this.menuIndex = parentMenu ? parentMenu.menuIndex + 1 : 1;
-		}
-	},
-
 	close: function(){
 		if(this.animationInProgress){
 			dojo.widget.PopupMenu2.superclass.close.call(this);
@@ -403,25 +427,15 @@ dojo.widget.defineWidget(
 			this._highlighted_option.onUnhover();
 		}
 
-		this.closeSubmenu();
 		dojo.widget.PopupMenu2.superclass.close.call(this);
-
-		dojo.widget.html.Menu2Manager.closed(this);
 	},
 
-	closeAll: function(){
-		if (this.parentMenu){
-			this.parentMenu.closeAll();
-		}else{
-			this.close();
-		}
-	},
+	//overwrite the default one
+	closeSubpopup: function(){
+		if (this.currentSubpopup == null){ return; }
 
-	closeSubmenu: function(){
-		if (this.currentSubmenu == null){ return; }
-
-		this.currentSubmenu.close();
-		this.currentSubmenu = null;
+		this.currentSubpopup.close();
+		this.currentSubpopup = null;
 
 		this.currentSubmenuTrigger.is_open = false;
 		this.currentSubmenuTrigger.closedSubmenu();
@@ -435,9 +449,9 @@ dojo.widget.defineWidget(
 		var x = fromPos.x + our_w - this.submenuOverlap;
 		var y = fromPos.y;
 
-		this.currentSubmenu = submenu;
-
-		this.currentSubmenu.open(x, y, this, from_item.domNode);
+		//the following is set in open, so we do not need it
+		//this.currentSubpopup = submenu;
+		submenu.open(x, y, this, from_item.domNode);
 
 		this.currentSubmenuTrigger = from_item;
 		this.currentSubmenuTrigger.is_open = true;
@@ -457,10 +471,8 @@ dojo.widget.defineWidget(
 		}
 		this.open(x, y, null, [x, y]);
 
-		if(e["preventDefault"]){
-			e.preventDefault();
-			e.stopPropagation();
-		}
+		e.preventDefault();
+		e.stopPropagation();
 	}
 });
 
@@ -541,9 +553,9 @@ dojo.widget.defineWidget(
 		if(this.parent._highlighted_option){
 			this.parent._highlighted_option.onUnhover();
 		}
-		this.parent.closeSubmenu();
+		this.parent.closeSubpopup();
 		this.parent._highlighted_option = this;
-		dojo.widget.html.Menu2Manager.setFocusedMenu(this.parent);
+		dojo.widget.html.PopupManager.setFocusedMenu(this.parent);
 
 		this.highlightItem();
 
@@ -559,8 +571,8 @@ dojo.widget.defineWidget(
 
 		this.parent._highlighted_option = null;
 
-		if(this.parent.parentMenu){
-			dojo.widget.html.Menu2Manager.setFocusedMenu(this.parent.parentMenu);
+		if(this.parent.parentPopup){
+			dojo.widget.html.PopupManager.setFocusedMenu(this.parent.parentPopup);
 		}
 
 		this.stopSubmenuTimer();
@@ -569,7 +581,7 @@ dojo.widget.defineWidget(
 	// Internal function for clicks
 	_onClick: function(focus){
 		var displayingSubMenu = false;
-		if (this.disabled){ return rval; }
+		if (this.disabled){ return false; }
 
 		if (this.submenuId){
 			if (!this.is_open){
@@ -632,7 +644,7 @@ dojo.widget.defineWidget(
 
 	openSubmenu: function(){
 		// first close any other open submenu
-		this.parent.closeSubmenu();
+		this.parent.closeSubpopup();
 
 		var submenu = dojo.widget.getWidgetById(this.submenuId);
 		if (submenu){
@@ -682,13 +694,13 @@ dojo.widget.defineWidget(
 });
 
 //
-// the menu manager makes sure we don't have several menus
-// open at once. the root menu in an opening sequence calls
+// the popup manager makes sure we don't have several popups
+// open at once. the root popup in an opening sequence calls
 // opened(). when a root menu closes it calls closed(). then
 // everything works. lovely.
 //
 
-dojo.widget.html.Menu2Manager = new function(){
+dojo.widget.html.PopupManager = new function(){
 
 	this.currentMenu = null;
 	this.currentButton = null;		// button that opened current menu (if any)
@@ -702,12 +714,12 @@ dojo.widget.html.Menu2Manager = new function(){
 	this._keyEventName = dojo.doc().createEvent ? "onkeypress" : "onkeydown";
 
 	this.registerWin = function(win){
-		if(!win.__Menu2ManagerRegistered)
+		if(!win.__PopupManagerRegistered)
 		{
 			dojo.event.connect(win.document, 'onmousedown', this, 'onClick');
 			dojo.event.connect(win, "onscroll", this, "onClick");
 			dojo.event.connect(win.document, this._keyEventName, this, 'onKeyPress');
-			win.__Menu2ManagerRegistered = true;
+			win.__PopupManagerRegistered = true;
 			this.registeredWindows.push(win);
 		}
 	};
@@ -717,7 +729,7 @@ dojo.widget.html.Menu2Manager = new function(){
 		so that whereever the user clicks in the page, the popup 
 		menu will be closed
 		In case you add an iframe after onload event, please call
-		dojo.widget.html.Menu2Manager.registerWin manually
+		dojo.widget.html.PopupManager.registerWin manually
 	*/
 	this.registerAllWindows = function(targetWindow){
 		//starting from window.top, clicking everywhere in this page 
@@ -771,7 +783,7 @@ dojo.widget.html.Menu2Manager = new function(){
 				e.stopPropagation();
 				break;
 			}
-			m = m.parentMenu;
+			m = m.parentPopup;
 		}
 	},
 
@@ -801,7 +813,7 @@ dojo.widget.html.Menu2Manager = new function(){
 			if(dojo.html.overElement(m.domNode, e) || dojo.dom.isDescendantOf(e.target, m.domNode)){
 				return;
 			}
-			m = m.currentSubmenu;
+			m = m.currentSubpopup;
 		}
 
 		// Also, if user clicked the button that opened this menu, then
@@ -931,7 +943,7 @@ dojo.widget.defineWidget(
 			this._highlighted_option.onUnhover();
 		}
 
-		this.closeSubmenu();
+		this.closeSubpopup();
 	},
 
 	processKey: function(evt){
@@ -964,7 +976,7 @@ dojo.widget.defineWidget(
 
 	postCreate: function(){
 		this.inherited("postCreate");
-		dojo.widget.html.Menu2Manager.opened(this);
+		dojo.widget.html.PopupManager.opened(this);
 		this.isShowingNow = true;
 	},
 
@@ -978,8 +990,7 @@ dojo.widget.defineWidget(
 		var x = fromPos.x;
 		var y = ourPos.y + our_h - this.menuOverlap;
 
-		this.currentSubmenu = submenu;
-		this.currentSubmenu.open(x, y, this, from_item.domNode);
+		submenu.open(x, y, this, from_item.domNode);
 
 		this.currentSubmenuTrigger = from_item;
 		this.currentSubmenuTrigger.is_open = true;
