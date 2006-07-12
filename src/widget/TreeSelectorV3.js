@@ -18,11 +18,15 @@ dojo.widget.TreeSelectorV3 = function() {
 
 dojo.inherits(dojo.widget.TreeSelectorV3, dojo.widget.HtmlWidget);
 
+dojo.lang.extend(dojo.widget.TreeSelectorV3, dojo.widget.TreeCommon.prototype);
 
 dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	widgetType: "TreeSelectorV3",
 	selectedNode: null,
 
+	listenTreeEvents: ["createNode","collapse","treeChange",
+					   "detach","treeDestroy"],
+	
 	
 	eventNamesDefault: {
 		select : "select",
@@ -31,49 +35,37 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		dblselect: "dblselect" // select already selected node.. Edit or whatever
 	},
 
-	initialize: function() {
+	initialize: function(args) {
 
 		for(name in this.eventNamesDefault) {
 			if (dojo.lang.isUndefined(this.eventNames[name])) {
 				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
 			}
 		}
-
-	},
-
-	
-	listenTree: function(tree) {
-		dojo.event.topic.subscribe(tree.eventNames.createNode, this, "onCreateNode");		
-		dojo.event.topic.subscribe(tree.eventNames.collapse, this, "onCollapse");
-		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
-		dojo.event.topic.subscribe(tree.eventNames.detach, this, "onDetach");
-		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-
-		/* remember all my trees to deselect when element is movedFrom them */
-		this.listenedTrees.push(tree);
-	},
-
-
-	unlistenTree: function(tree) {
-		dojo.event.topic.unsubscribe(tree.eventNames.createNode, this, "onCreateNode");		
-		dojo.event.topic.unsubscribe(tree.eventNames.collapse, this, "onCollapse");
-		dojo.event.topic.unsubscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
-		dojo.event.topic.unsubscribe(tree.eventNames.detach, this, "onDetach");
-		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-
-
-		for(var i=0; i<this.listenedTrees.length; i++){
-           if(this.listenedTrees[i] === tree){
-                   this.listenedTrees.splice(i, 1);
-                   break;
-           }
+		
+		// TODO: cancel/restore selection on dnd events
+		if (args['dndcontroller']) {
+			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
 		}
+
 	},
 
-	/* FIXME: add ondblclick */
-	onCreateNode: function(message) {
-		dojo.event.connect(message.source.labelNode, "onclick", this, "onLabelClick");
+
+	listenNode: function(node) {
+		dojo.event.connect(node.labelNode, "onclick", this, "onLabelClick");
+		dojo.event.connect(node.labelNode, "ondblclick", this, "onLabelDblClick");
 	},
+	
+	unlistenNode: function(node) {
+		dojo.event.disconnect(node.labelNode, "onclick", this, "onLabelClick");
+		dojo.event.disconnect(node.labelNode, "ondblclick", this, "onLabelDblClick");
+	},
+
+
+	onCreateNode: function(message) {
+		this.listenNode(message.source);
+	},
+	
 
 	onTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
@@ -86,20 +78,34 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 		var node = message.source;
 		var parent = this.selectedNode.parent;
+		
 		while (parent !== node && parent.isTreeNode) {
 			parent = parent.parent;
 		}
+		
 		if (parent.isTreeNode) {
 			this.deselect();
 		}
 	},
 
-	onLabelClick: function(message) {		
-		var node = message.source;
-		var e = message.event;
+
+	onLabelDblClick: function(event) {
+		var node = this.domElement2TreeNode(event.target);
+
+		if (this.selectedNode !== node) {
+			this.select(node);
+		}
+		
+		dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
+	},		
+		
+
+		
+	onLabelClick: function(event) {		
+		var node = this.domElement2TreeNode(event.target);
 
 		if (this.selectedNode === node) {
-			if(e.ctrlKey || e.shiftKey || e.metaKey){
+			if(event.ctrlKey || event.shiftKey || event.metaKey){
 				// If the node is currently selected, and they select it again while holding
 				// down a meta key, it deselects it
 				this.deselect();
@@ -115,28 +121,49 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 		this.select(node);
 
-		dojo.event.topic.publish(this.eventNames.select, {node: node} );
 	},
 
-	/**
-	 * Deselect node if target tree is out of our concern
-	 */
-	onMoveFrom: function(message) {
-		if (message.child !== this.selectedNode) {
-			return;
+	deselectIfAncestorMatch: function(ancestor) {
+		var node = this.selectedNode;
+		
+		/* pass if selectedNode is descendant of message.node */
+		while (node.isTreeNode) {
+			if (node === ancestor) {
+				this.deselect(); 
+				return;					
+			}
+			node = node.parent;			
 		}
-
+	},
+	
+		
+	onTreeChange: function(message) {
+				
+		
+		var _this = this;
+		
 		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
-			this.deselect(); 
+			// moving from our tree to new one
+			
+			if (this.selectedNode) {
+				this.deselectIfAncestorMatch(message.node);
+			}
+				
+			dojo.lang.forEach(message.node, function(elem) { _this.unlistenNode(elem)  });
 		}
+		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+			// moving from old tree to our tree
+			dojo.lang.forEach(message.node, function(elem) { _this.listenNode(elem)  });
+		}
+		
+		
 	},
 
 	onDetach: function(message) {
-		if (message.child !== this.selectedNode) {
-			return;
+		if (this.selectedNode) {
+			this.deselectIfAncestorMatch(message.child);
 		}
-
-		this.deselect();
+		
 	},
 
 	select: function(node){
@@ -144,6 +171,8 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		node.viewAddEmphase();
 
 		this.selectedNode = node;
+		
+		dojo.event.topic.publish(this.eventNames.select, {node: node} );
 	},
 
 	deselect: function(){

@@ -227,20 +227,21 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				
 		var message = {oldTree:this.tree, newTree:newTree, node:this}
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
-		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
-		
 		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
 		
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
 		
 	},
 	
 	
 	/**
-	 * called every time the widget is added with createWidget,
+	 * called every time the widget is added with createWidget or created wia markup
+	 * from addChild -> registerChild or from postInitialize->registerChild
 	 * not called in batch procession
 	 * HTML & widget.createWidget only
 	 * Layout MUST be removed when node is detached
+	 * 
 	 */
 	addedTo: function(parent, index) {
 		//dojo.profile.start("addedTo");
@@ -301,7 +302,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	/**
-	 * Fast program-only creation of widget
+	 * Fast program-only hacky creation of widget
 	 * 	
 	 */
 	createSimple: function(args) {

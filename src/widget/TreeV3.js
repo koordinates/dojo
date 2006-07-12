@@ -94,11 +94,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	
 	objectId: "",
 
-/* don't need to remember it. Just read at creation time and run bind() 
-	controller: "",
-	selector: "",
-	menu: "", // autobind menu if menu's widgetId is set here
-*/
 	expandLevel: "", // expand to level automatically
 
 	//
@@ -188,6 +183,9 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		
 		if (args['controller']) {
 			dojo.widget.manager.getWidgetById(args['controller']).listenTree(this)
+		}
+		if (args['selector']) {
+			dojo.widget.manager.getWidgetById(args['selector']).listenTree(this)
 		}
 		if (args['dndcontroller']) {
 			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
