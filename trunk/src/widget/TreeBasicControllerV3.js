@@ -60,16 +60,18 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			 * clean all folders that I listen. I don't listen to non-folders.
 			 */
 			while (elem = stack.pop()) {
-                if (!elem.isFolder) continue; 
-				this.unlistenNode(elem);
-                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+                if (elem.isFolder && elem instanceof dojo.widget.Widget) { 
+					this.unlistenNode(elem);
+	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+				}
             }	
 		} else if (dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// we have new node
 			while (elem = stack.pop()) {
-                if (!elem.isFolder) continue; 
-				this.listenNode(elem);
-                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+                if (elem.isFolder && elem instanceof dojo.widget.Widget) {
+					this.listenNode(elem);
+	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+				}
             }
 		}
 	},

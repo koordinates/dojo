@@ -24,6 +24,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		
 	},
 	
+	
 	unlistenTree: function(tree) {
 		
 		var _this = this;
@@ -49,6 +50,8 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		
 		return dojo.widget.manager.getWidgetById(domElement.widgetId);
 	}
+	
+	
 		
 		
 	
