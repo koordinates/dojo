@@ -54,7 +54,6 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 		x: 0,
 		y: 0
 	};
-	var scroll = dojo.html.getScroll();
 
 	var h = dojo.render.html;
 	var db = document["body"]||document["documentElement"];
@@ -114,6 +113,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 
 	// account for document scrolling!
 	if(includeScroll){
+		var scroll = dojo.html.getScroll();
 		ret.y += scroll.top;
 		ret.x += scroll.left;
 	}
@@ -269,31 +269,33 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 		while ( coords.length < 4 ) { coords.push(0); }
 		while ( coords.length > 4 ) { coords.pop(); }
 		var ret = {
-			x: coords[0],
-			y: coords[1],
-			w: coords[2],
-			h: coords[3]
+			left: coords[0],
+			top: coords[1],
+			width: coords[2],
+			height: coords[3]
 		};
-	} else if(coords.x || coords.y || coords.w || coords.h){
+	}else if(width in coords || height in coords || left in coords || x in coords || top in coords || y in coords){
 		// coords is a coordinate object or at least part of one
 		var ret = {
-			x: coords.x||0,
-			y: coords.y||0,
-			w: coords.w||0,
-			h: coords.h||0
+			left: coords.left||coords.x||0,
+			top: coords.top||coords.y||0,
+			width: coords.width||0,
+			height: coords.height||0
 		};
-	} else {
+	}else{
 		// coords is an dom object (or dom object id); return it's coordinates
 		var node = dojo.byId(coords);
 		var pos = dojo.html.abs(node, includeScroll);
 		var borderbox = dojo.html.getBorderBox(node);
 		var ret = {
-			x: pos.x,
-			y: pos.y,
-			w: borderbox.width,
-			h: borderbox.height
+			left: pos.left,
+			top: pos.top,
+			width: borderbox.width,
+			height: borderbox.height
 		};
 	}
+	ret.x = ret.left;
+	ret.y = ret.top;
 	return ret;
 }
 
