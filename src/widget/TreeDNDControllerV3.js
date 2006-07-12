@@ -8,38 +8,24 @@ dojo.widget.TreeDNDControllerV3 = function() {
 	this.dragSources = {};
 
 	this.dropTargets = {};
+	
+	this.listenedTrees = [];
 }
 
 dojo.inherits(dojo.widget.TreeDNDControllerV3, dojo.widget.HtmlWidget);
 
 
+dojo.lang.extend(dojo.widget.TreeSelectorV3, dojo.widget.TreeCommon.prototype);
 
 dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	widgetType: "TreeDNDControllerV3",
 	
+	listenTreeEvents: ["moveFrom","moveTo","nodeCreate","nodeDestroy",
+					   "removeNode","treeDestroy"],
+	
 	initialize: function(args) {
 		this.treeController = dojo.widget.manager.getWidgetById(args.controller)
-	},
-
-	listenTree: function(tree) {
-		//dojo.debug("Listen tree "+tree);
-		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
-		dojo.event.topic.subscribe(tree.eventNames.moveTo, this, "onMoveTo");
-		dojo.event.topic.subscribe(tree.eventNames.addChild, this, "onAddChild");
-		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
-		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-		dojo.event.topic.subscribe(tree.eventNames.nodeDestroy, this, "onNodeDestroy");
-	},
-
-
-	unlistenTree: function(tree) {
-		//dojo.debug("Listen tree "+tree);
-		dojo.event.topic.unsubscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
-		dojo.event.topic.unsubscribe(tree.eventNames.moveTo, this, "onMoveTo");
-		dojo.event.topic.unsubscribe(tree.eventNames.addChild, this, "onAddChild");
-		dojo.event.topic.unsubscribe(tree.eventNames.removeNode, this, "onRemoveNode");
-		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-		dojo.event.topic.unsubscribe(tree.eventNames.nodeDestroy, this, "onNodeDestroy");
+		
 	},
 
 	onTreeDestroy: function(message) {
