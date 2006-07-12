@@ -44,7 +44,7 @@ dojo.html.hasClass = function(node, classname){
  */
 dojo.html.prependClass = function(node, classStr){
 	classStr += " " + dojo.html.getClass(node);
-	return dojo.html.setClass(node, classStr + " " + dojo.html.getClass(node));
+	return dojo.html.setClass(node, classStr);
 }
 
 /**

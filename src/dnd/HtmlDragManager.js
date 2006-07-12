@@ -372,7 +372,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			var c = dojo.html.toCoordinateObject(this.currentDropTarget.domNode, true);
 			//		var dtp = this.currentDropTargetPoints;
 			var dtp = [
-				[c.x,c.y], [c.x+c.w, c.y+c.h]
+				[c.x,c.y], [c.x+c.width, c.y+c.height]
 			];
 		}
 

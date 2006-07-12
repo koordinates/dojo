@@ -171,7 +171,10 @@ dojo.declare("dojo.widget.Widget", null, {
 		var elem;
 		while ((elem = stack.pop())){
 			result.push(elem);
-			dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+			// a child may be data object without children field set (not widget)
+			if (elem.children) {
+				dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+			}
 		}
 		return result;
 	},

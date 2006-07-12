@@ -811,7 +811,7 @@ dojo.widget.html.PopupManager = new function(){
 		}
 
 		while (m){
-			if(dojo.html.overElement(m.domNode, e) || dojo.dom.isDescendantOf(e.target, m.domNode)){
+			if(dojo.html.overElement(m.domNode, e) || dojo.html.isDescendantOf(e.target, m.domNode)){
 				return;
 			}
 			m = m.currentSubpopup;

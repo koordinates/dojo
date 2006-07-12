@@ -384,10 +384,10 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	}
 	
 	var anim = new dojo.lfx.propertyAnimation(outline, [
-		{ property: "height", start: startCoords.h, end: endCoords.h },
-		{ property: "width", start: startCoords.w, end: endCoords.w },
-		{ property: "top", start: startCoords.y, end: endCoords.y },
-		{ property: "left", start: startCoords.x, end: endCoords.x },
+		{ property: "height", start: startCoords.height, end: endCoords.height },
+		{ property: "width", start: startCoords.width, end: endCoords.width },
+		{ property: "top", start: startCoords.top, end: endCoords.top },
+		{ property: "left", start: startCoords.left, end: endCoords.left },
 		{ property: "opacity", start: 0.3, end: 1.0 }
 	], duration, easing);
 	
@@ -421,10 +421,10 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	dojo.body().appendChild(outline);
 
 	var anim = new dojo.lfx.propertyAnimation(outline, [
-		{ property: "height", start: startCoords.h, end: endCoords.h },
-		{ property: "width", start: startCoords.w, end: endCoords.w },
-		{ property: "top", start: startCoords.y, end: endCoords.y },
-		{ property: "left", start: startCoords.x, end: endCoords.x },
+		{ property: "height", start: startCoords.height, end: endCoords.height },
+		{ property: "width", start: startCoords.width, end: endCoords.width },
+		{ property: "top", start: startCoords.top, end: endCoords.top },
+		{ property: "left", start: startCoords.left, end: endCoords.left },
 		{ property: "opacity", start: 1.0, end: 0.3 }
 	], duration, easing);
 	
