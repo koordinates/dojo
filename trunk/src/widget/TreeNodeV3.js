@@ -327,6 +327,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			treeNode[x] = args[x];
 		}
 		
+		
 		//dojo.profile.end(this.widgetType+" createSimple mixin");
 		
 				

@@ -16,6 +16,7 @@
         <listitem>How to assign attributes to node using markup? We need object property because otherwise such assign is not working</listitem>
         <listitem>TODO: make method to swrite icons with document.write to avoid dynamic reloading in IE</listitem>
         <listitem>TODO: allow passing nested arrays from server for TreeLoadingController</listitem>
+        <listitem>TODO: allow other objects be dropped onto treenodes (call getTreeNode)</listitem>
     </itemizedlist>
     
 </section>
