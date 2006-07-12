@@ -79,10 +79,10 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 		var coords = dojo.html.toCoordinateObject(node, true);
 
 		with(this.iframe.style){
-			width = coords.w + "px";
-			height = coords.h + "px";
-			left = coords.x + "px";
-			top = coords.y + "px";
+			width = coords.width + "px";
+			height = coords.height + "px";
+			left = coords.left + "px";
+			top = coords.top + "px";
 		}
 	},
 

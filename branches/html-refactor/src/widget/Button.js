@@ -1,5 +1,9 @@
 dojo.provide("dojo.widget.Button");
 dojo.provide("dojo.widget.html.Button");
+dojo.provide("dojo.widget.ComboButton");
+dojo.provide("dojo.widget.html.ComboButton");
+dojo.provide("dojo.widget.DropDownButton");
+dojo.provide("dojo.widget.html.DropDownButton");
 
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.html.*");
