@@ -35,10 +35,10 @@ dojo.lfx.toggle.wipe = {
 
 dojo.lfx.toggle.explode = {
 	show: function(node, duration, easing, callback, explodeSrc){
-		dojo.lfx.explode(explodeSrc||[0,0,0,0], node, duration, easing, callback).play();
+		dojo.lfx.explode(explodeSrc||{x:0,y:0,w:0,h:0}, node, duration, easing, callback).play();
 	},
 
 	hide: function(node, duration, easing, callback, explodeSrc){
-		dojo.lfx.implode(node, explodeSrc||[0,0,0,0], duration, easing, callback).play();
+		dojo.lfx.implode(node, explodeSrc||{x:0,y:0,w:0,h:0}, duration, easing, callback).play();
 	}
 }
