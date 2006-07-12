@@ -274,6 +274,14 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 			w: coords[2],
 			h: coords[3]
 		};
+	} else if(coords.x || coords.y || coords.w || coords.h){
+		// coords is a coordinate object or at least part of one
+		var ret = {
+			x: coords.x||0,
+			y: coords.y||0,
+			w: coords.w||0,
+			h: coords.h||0
+		};
 	} else {
 		// coords is an dom object (or dom object id); return it's coordinates
 		var node = dojo.byId(coords);
