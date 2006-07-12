@@ -44,14 +44,10 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	DNDMode: "",
 
 	eventNamesDefault: {
-		// new child does not get domNode filled in (only template draft)
-		// until addChild->createDOMNode is called(program way) OR createDOMNode (html-way)
-		// hook events to operate on new DOMNode, create dropTargets etc
-		createNode: "createNode",
+
 		// tree created.. Perform tree-wide actions if needed
 		treeCreate: "treeCreate",
 		treeDestroy: "treeDestroy",
-		nodeDestroy: "nodeDestroy",
 		treeChange: "treeChange",
 
 		setFolder: "setFolder",
