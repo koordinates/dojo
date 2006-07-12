@@ -6,6 +6,7 @@ dojo.provide("dojo.widget.TreeBasicControllerV3");
 dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
+dojo.require("dojo.widget.TreeCommon");
 
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeBasicControllerV3");
@@ -20,43 +21,15 @@ dojo.widget.TreeBasicControllerV3 = function() {
 dojo.inherits(dojo.widget.TreeBasicControllerV3, dojo.widget.HtmlWidget);
 
 
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.prototype);
+
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
 
+	listenTreeEvents: ["createNode","treeChange","treeCreate",
+					   "treeDestroy","setFolder","unsetFolder"],
+	
 
-	/**
-	 * Binds controller to all tree events
-	*/
-	listenTree: function(tree) {
-		//dojo.debug("Event "+tree.eventNames.treeClick);
-		dojo.event.topic.subscribe(tree.eventNames.createNode, this, "onCreateNode");
-		dojo.event.topic.subscribe(tree.eventNames.treeChange, this, "onTreeChange");
-		dojo.event.topic.subscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
-		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-		dojo.event.topic.subscribe(tree.eventNames.setFolder, this, "onSetFolder");
-		dojo.event.topic.subscribe(tree.eventNames.unsetFolder, this, "onUnsetFolder");
-
-		this.listenedTrees.push(tree);
-
-	},
-
-	unlistenTree: function(tree) {
-		dojo.event.topic.unsubscribe(tree.eventNames.createNode, this, "onCreateNode");
-		dojo.event.topic.unsubscribe(tree.eventNames.treeChange, this, "onTreeChange");
-		dojo.event.topic.unsubscribe(tree.eventNames.treeCreate, this, "onTreeCreate");
-		dojo.event.topic.unsubscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-		dojo.event.topic.unsubscribe(tree.eventNames.setFolder, this, "onSetFolder");
-		dojo.event.topic.unsubscribe(tree.eventNames.unsetFolder, this, "onUnsetFolder");
-		
-
-		for(var i=0; i<this.listenedTrees.length; i++){
-           if(this.listenedTrees[i] === tree){
-                   this.listenedTrees.splice(i, 1);
-                   break;
-           }
-		}
-		
-	},
 
 	listenNode: function(node) {
 		dojo.event.connect(node.expandNode, "onclick", this, "onExpandClick");
@@ -83,17 +56,22 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
             
 		if (dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
 			// I got this message because node leaves me (oldtree)
+			/**
+			 * clean all folders that I listen. I don't listen to non-folders.
+			 */
 			while (elem = stack.pop()) {
-                if (!elem.isFolder) continue; 
-				this.unlistenNode(elem);
-                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+                if (elem.isFolder && elem instanceof dojo.widget.Widget) { 
+					this.unlistenNode(elem);
+	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+				}
             }	
 		} else if (dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// we have new node
 			while (elem = stack.pop()) {
-                if (!elem.isFolder) continue; 
-				this.listenNode(elem);
-                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+                if (elem.isFolder && elem instanceof dojo.widget.Widget) {
+					this.listenNode(elem);
+	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+				}
             }
 		}
 	},

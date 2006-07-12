@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeLoadingControllerV3");
+	dojo.hostenv.writeIncludes();
+
+</script>
+
+
+</head>
+<body>
+
+<ul>
+<li>New nodes are loaded dynamically.
+<li>Save/expand indices working.
+</ul>
+
+<div dojoType="TreeLoadingControllerV3" widgetId="treeController" RPCUrl="local"></div>
+
+
+<div dojoType="TreeV3" widgetId="firstTree" controller="treeController">
+    <div dojoType="TreeNodeV3" title="Node 1"></div>
+    <div dojoType="TreeNodeV3" title="Node 2">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
+    </div>
+
+</div>
+
+</html>
