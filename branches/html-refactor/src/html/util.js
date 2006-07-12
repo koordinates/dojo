@@ -321,8 +321,8 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 		}
 	
 		var x = tryX + w;
-		if(x > view.w) {
-			x = view.w - w;
+		if(x > view.width) {
+			x = view.width - w;
 			match = false;
 		} else {
 			x = tryX;
@@ -330,8 +330,8 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 		x = Math.max(padding[0], x) + scroll.x;
 	
 		var y = tryY + h;
-		if(y > view.h) {
-			y = view.h - h;
+		if(y > view.height) {
+			y = view.height - h;
 			match = false;
 		} else {
 			y = tryY;
