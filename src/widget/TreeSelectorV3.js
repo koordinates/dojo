@@ -43,7 +43,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			}
 		}
 		
-		// TODO: cancel/restore selection on dnd events
+		// TODO: cancel/restore selection on dnd eventsd
 		if (args['dndcontroller']) {
 			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
 		}
@@ -139,8 +139,9 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		
 	onTreeChange: function(message) {
 				
+		var stack = [message.node];
 		
-		var _this = this;
+		var elem;
 		
 		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// moving from our tree to new one
@@ -149,11 +150,23 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 				this.deselectIfAncestorMatch(message.node);
 			}
 				
-			dojo.lang.forEach(message.node, function(elem) { _this.unlistenNode(elem)  });
+			while (elem = stack.pop()) {
+                if (elem instanceof dojo.widget.Widget) {
+					this.unlistenNode(elem);
+	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+				}
+            }
+			
 		}
 		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
 			// moving from old tree to our tree
-			dojo.lang.forEach(message.node, function(elem) { _this.listenNode(elem)  });
+			
+			while (elem = stack.pop()) {
+                if (elem instanceof dojo.widget.Widget) {
+					this.listenNode(elem);
+	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+				}
+            }			
 		}
 		
 		

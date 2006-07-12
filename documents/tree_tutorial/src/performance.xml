@@ -22,8 +22,8 @@
     
     <section>
         <title>Comparison</title>
-        <para>Fast node creation with dojo tree is 2-3 times slower than xtree 1.7, another tree widget,
-            nicely optimized for performance.
+        <para>Fast node creation with dojo tree is 2-3 times slower than xtree 1.7, another tree widget, not
+            so featured, but nicely optimized for performance.
         </para>
         
     </section>

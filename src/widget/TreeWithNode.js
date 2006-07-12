@@ -66,15 +66,7 @@ dojo.widget.TreeWithNode = {
 
 		return disabled;
 	},
-	
-	
-	/**
-	 * if true then create all missing children on expand and pass
-	 * this parameter to them
-	 * so that their children will have makeWidgetsFromChildren=true also
-	 */
-	makeWidgetsFromChildren: false,
-	
+		
 	
 	/**
 	 * childrenArray is array of Widgets or array of Objects
@@ -117,8 +109,6 @@ dojo.widget.TreeWithNode = {
 					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child);					
 				}
 				//child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
-				
-				child.makeWidgetsFromChildren = true;
 				
 				//dojo.debugShallow(child)
 				
