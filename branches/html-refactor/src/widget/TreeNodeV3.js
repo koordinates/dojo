@@ -194,6 +194,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 		
 		
+		
 		if (this.children.length || args.isFolder) {
 			//dojo.debug("children found");
 			//dojo.debug(this.children);
@@ -203,7 +204,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			this.viewSetExpand();
 		}
 		
-		dojo.event.topic.publish(this.tree.eventNames.createNode, { source: this } );
+		var message = {oldTree:null, newTree:this.tree, node:this}
+		
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
 		
 		//dojo.debug("initialize out "+this);
 		//dojo.debug(this+" parent "+parent);
@@ -237,11 +240,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		var message = {oldTree:this.tree, newTree:newTree, node:this}
 		
-		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
-		
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
 		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
 		
+		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
+				
 	},
 	
 	
@@ -486,8 +489,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 * publish destruction event so that controller may unregister/unlisten
 	 */
 	destroy: function() {
-		dojo.event.topic.publish(this.tree.eventNames.nodeDestroy, { source: this } );
-
+		var message = {oldTree:this.tree, newTree:null, node:this}
+		
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+				
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 	
