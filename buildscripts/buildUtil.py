@@ -131,6 +131,18 @@ def replaceVersion(fileName, version):
 	pfd.write(fileContents)
 	pfd.close() # flush is implicit
 
+def removeRequires(fileName):
+	pfd = open(fileName)
+	fileContents = pfd.read()
+	pfd.close()
+	
+	r = re.compile("^dojo\.(require|requireAfterIf|requireIf|kwCompoundRequire)\(.*?\);.*?\n", re.S|re.M)
+	newContents = r.sub("", fileContents)
+
+	pfd = open(fileName, "w")
+	pfd.write(newContents)
+	pfd.close() # flush is implicit
+
 def buildRestFiles(docDir, docOutDir, styleSheetFile, restFiles=""):
 	docFiles = []
 
