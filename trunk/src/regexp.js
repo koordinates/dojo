@@ -362,11 +362,11 @@ dojo.regexp.currency = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.signed == "undefined") { flags.signed = [true, false]; }
-//	if (typeof flags.symbol == "undefined") { flags.symbol = "$"; }
-//	if (typeof flags.placement != "string") { flags.placement = "before"; }
-//	if (typeof flags.separator != "string") { flags.separator = ","; }
+	if (typeof flags.symbol == "undefined") { flags.symbol = "$"; }
+	if (typeof flags.placement != "string") { flags.placement = "before"; }
+	if (typeof flags.separator != "string") { flags.separator = ","; }
 	if (typeof flags.cents == "undefined") { flags.cents = [true, false]; }
-//	if (typeof flags.decimal != "string") { flags.decimal = "."; }
+	if (typeof flags.decimal != "string") { flags.decimal = "."; }
 
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
