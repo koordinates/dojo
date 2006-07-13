@@ -1,8 +1,7 @@
-dojo.provide("dojo.io.cometdIO");
+dojo.provide("dojo.io.cometd");
 dojo.provide("cometd");
-dojo.reqiure("dojo.AdapterRegistry");
-dojo.require("dojo.io"); // io.js provides setIFrameSrc
-dojo.require("dojo.io.BrowserIO"); // need it for the handshake, etc.
+dojo.require("dojo.AdapterRegistry");
+dojo.require("dojo.io.*"); // io.js provides setIFrameSrc and we need XHR for the handshake, etc.
 // FIXME: determine if we can use XMLHTTP to make x-domain posts despite not
 //        being able to hear back about the result
 dojo.require("dojo.io.IframeIO"); // for posting across domains
@@ -49,6 +48,7 @@ cometd = new function(){
 	}
 
 	this.init = function(handshakeObject, root){
+		handshakeObject = handshakeObject||{};
 		// go ask the short bus server what we can support
 		with(handshakeObject){
 			version = this.version;
@@ -69,7 +69,7 @@ cometd = new function(){
 			url: this.url,
 			method: "POST",
 			mimetype: "text/json",
-			load: dojo.lang.hitch(this, "finishInit");
+			load: dojo.lang.hitch(this, "finishInit"),
 			content: { message: dojo.json.serialize(handshakeObject) }
 		};
 		return dojo.io.bind(bindArgs);
@@ -114,14 +114,14 @@ cometd = new function(){
 			(message.channel.substr(0, 5) == "/meta")){
 			// check for various meta topic actions that we need to respond to
 			switch(message.channel){
-				case: "/meta/subscribe":
+				case "/meta/subscribe":
 					if(!message.successful){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
 					}
 					this.subscribed(message.channel);
 					break;
-				case: "/meta/unsubscribe":
+				case "/meta/unsubscribe":
 					if(!message.successful){
 						dojo.debug("cometd unsubscription error for channel", message.channel, ":", message.error);
 						return;
@@ -155,7 +155,7 @@ cometd = new function(){
 		//		Optional. Other meta-data to be mixed into the top-level of the
 		//		message
 		var message = {
-			data: data
+			data: data,
 			channel: channel
 		};
 		if(properties){
@@ -327,7 +327,7 @@ cometd.iframeTransport = new function(){
 				clientId:	this.clientId
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
-			});
+			})
 		});
 	}
 
@@ -344,6 +344,8 @@ cometd.iframeTransport = new function(){
 					timestamp:	this.lastTimestamp,
 					id:			this.lastId
 					// FIXME: no authToken provision!
+				})
+			});
 		}
 	}
 
@@ -370,14 +372,14 @@ cometd.iframeTransport = new function(){
 					this.connectionId = message.connectionId;
 					this.connected = true;
 					break;
-				case: "/meta/reconnect":
+				case "/meta/reconnect":
 					if(!message.successful){
 						dojo.debug("cometd reconnection error:", message.error);
 						return;
 					}
 					this.connected = true;
 					break;
-				case: "/meta/subscribe":
+				case "/meta/subscribe":
 					if(!message.successful){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
