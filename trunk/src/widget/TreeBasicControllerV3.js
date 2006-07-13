@@ -54,44 +54,32 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		//dojo.debugShallow(message);
 		
 		
-		dojo.profile.start("onTreeChange");
+		//dojo.profile.start("onTreeChange");
 		
 		// we listen/unlisten only if tree changed, not when its assigned first time
 		if (!message.oldTree) {
-			dojo.profile.end("onTreeChange");
+			if (message.node.expandLevel > 0) {
+				this.expandToLevel(message.node, message.node.expandLevel);
+			}
+			
+			//dojo.profile.end("onTreeChange");
 			return; 
 		}
-		
-				
-		var stack = [message.node];
-        var elem;
-            
+		            
 		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// I got this message because node leaves me (oldtree)
 			/**
 			 * clean all folders that I listen. I don't listen to non-folders.
 			 */
-			while (elem = stack.pop()) {
-                if (elem.isFolder && elem instanceof dojo.widget.Widget) { 
-					this.unlistenNode(elem);
-	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-				}
-            }	
-		}
+			this.processDescendants(message.node, function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget}, this.unlistenNode);
+		}		
 		
 		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
-			
 			// we have new node
-			while (elem = stack.pop()) {				
-                if (elem.isFolder && elem instanceof dojo.widget.Widget) {
-					
-					this.listenNode(elem);
-	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-				}
-            }
+			this.processDescendants(message.node, function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget}, this.listenNode);
 		}
 		
-		dojo.profile.end("onTreeChange");
+		//dojo.profile.end("onTreeChange");
 	},
 	
 
@@ -102,7 +90,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		if (tree.expandLevel) {
 			dojo.lang.forEach(tree.children,
 				function(child) {								
-					_this.expandToLevel(child, Math.max(tree.expandLevel-1, child.expandLevel))
+					_this.expandToLevel(child, tree.expandLevel-1)
 				}
 			);
 		}

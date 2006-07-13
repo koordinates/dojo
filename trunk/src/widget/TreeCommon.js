@@ -52,13 +52,13 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	},
 	
 	
-	listenDescendants: function(elem, filter) {
+	processDescendants: function(elem, filter, func) {
 		if (!filter.call(elem)) {
 			return;
 		}
 		var stack = [elem]
 		while (elem = stack.pop()) {
-			this.listenNode(elem);
+			this.func.call(elem);
 	        dojo.lang.forEach(elem.children, function(elem) { filter.call(elem) && stack.push(elem) });
 		}
     }	
