@@ -10,7 +10,9 @@
         who want to extend/modify tree behavior.
      </p><p>
         The tutorial has a few parts. First, the tree main components are explained, then...
-    </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e13"></a>Features</h3></div></div></div><p>test</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e18"></a>Performance</h3></div></div></div><p>Tree was coded with performance in mind. Although, JavaScript itself is a slow language.
+    </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e13"></a>What's new in TreeV3</h3></div></div></div><div class="itemizedlist"><ul type="disc"><li>New HTML/CSS structure lightweight and easier to style</li><li>multiline content support</li><li>Many implicit actions that were kept for compatibility in TreeV2 are now removed</li><li>less features get included into core, more to be shipped separately. TODO: extensions model, loadExtension method.</li><li>Lazy creation feature</li><li>TODO: denote interface so any widget may become a treeNode</li><li>Major speedup. Almost all operations with single node are now small constant time. Fast program way
+            of node creation is 5-10 times faster than old version. Markup creation is 2-5 times faster also.                    
+        </li><li>TODO: add  dcoument.write() for all images to prevent IE dynamic loading on every expand</li><li>How to assign attributes to node using markup? We need object property because otherwise such assign is not working</li><li>TODO: make method to swrite icons with document.write to avoid dynamic reloading in IE</li><li>TODO: allow passing nested arrays from server for TreeLoadingController</li><li>TODO: allow other objects be dropped onto treenodes (call getTreeNode)</li><li>TODO: allow inline editing of node title (with special widget?)</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e43"></a>Performance</h3></div></div></div><p>Tree was coded with performance in mind. Although, JavaScript itself is a slow language.
         Flexible model requires some code that slows it down. It's not DOM manipulations, but actually
         javascript that I couldn't make lighter. Being a part of dojo/widget structure also implies some overhead, but also power.
     </p><p>        
@@ -20,19 +22,50 @@
     </p><p>
         In my tests 1000 nodes required 0.7-0.8 sec, growth is linear, depth does not matter, children
         are created with  <code class="code">createSimple</code> and added to parent all at once with <code class="code">setChildren</code>.                
-    </p><p>Creation from markup or with standard createWidget/addChild routines is about 2 times slower,
-        because these routines are generic.</p><p>Memory footprint (IE,FF) is about 1M per 100 nodes</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e37"></a>Comparison</h4></div></div></div><p>Fast node creation with dojo tree is 2-3 times slower than xtree 1.7, another tree widget,
-            nicely optimized for performance.
-        </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e42"></a>Components</h3></div></div></div><div class="variablelist"><dl><dt><span class="term">Tree</span></dt><dd>Tree and TreeNode classes handle both data and view</dd><dt><span class="term">Controllers</span></dt><dd><div class="variablelist"><dl><dt><span class="term">TreeBasicController</span></dt><dd>Controller that provides all capabilities but no server calls</dd><dt><span class="term">TreeLoadingController</span></dt><dd>Added dynamic node loading from server</dd><dt><span class="term">TreeRPCController</span></dt><dd>All actions call server</dd></dl></div></dd><dt><span class="term">Selector</span></dt><dd>TreeSelector handles node selection. Currently, only single node can be selected</dd><dt><span class="term">Drag'n'Drop</span></dt><dd>TreeDragSource, TreeDropTarget and TreeDNDController are classes that
+    </p><p>Creation from markup or with standard createWidget/addChild routines is  2-3 times slower,
+        because these routines are generic.</p><p>Memory footprint (IE,FF) is about 1M per 100 nodes</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e62"></a>Comparison</h4></div></div></div><p>Fast node creation with dojo tree is 2-3 times slower than xtree 1.7, another tree widget, not
+            so featured, but nicely optimized for performance.
+        </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e67"></a>Performance tricks</h3></div></div></div><p>
+    When talking about performance, one should understand, that there are <span class="type">single-node operations</span>
+        
+    that operate on single node... These ones are fast. The examples are: create a node, delete a node,
+     move a node along the tree.
+    </p><p>... And there are batch operations that touch a lot of nodes. The examples are: 
+        initial tree creation,  moving a node from one tree to another which has different listeners, etc.</p><p>Observations show that performance issues become visible at 100-200 tree nodes.
+        All algorithms are linear in worst case, but JS is slow language, DOM is also not that fast. 
+      </p><p>There is a number of features one could use to get a speedup.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e81"></a>Lazy loading</h4></div></div></div><p>A node can be created with <code class="code">isFolder=true</code> flag, but without children.
+            Any node has a <code class="code">state</code>, initially UNCHECKED for empty folder, and used
+            by  TreeLoadingController.</p><p>When a user presses expand, tree controller (supporting lazy loading) will send a request to server asking for nodes,
+            and parse the answer creating children.</p><p>The benefit is obvious: you don't have to load/process whole tree at once.
+            You can only load a single node and user will load the rest clicking "expand"</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e96"></a>Lazy creation</h4></div></div></div><p>Lazy creation is somewhat a half-way approach to lazy loading.
+            Node/tree keeps array of its children in <code class="code">children</code> property. 
+            Lazy creation allows one to put data objects into this array and make widgets of them later,
+            when they are expanded.
+        </p><p>For instance, one can call <code class="code">node.children = [{title:'node1'},{title:'node2'}]</code>.
+            The objects will be set, but no widgets are created. You can also set children to nested array:
+            <code class="code">node.children = [{title:'node1', children:[{title:'node2'}] }]</code>.    
+            
+        </p><p>You can create tree on server, JSON-serialize it and put to HTML, that is gzip-compressed.
+            Compression will be 10 times or more, so it is not that space hungry. 
+        </p><p>The benefit comes from postponing almost all real job: widget creation and attaching it to tree.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="d0e116"></a>Comparison between lazy creation and lazy loading</h5></div></div></div><div class="itemizedlist"><ul type="disc"><li>You need web-service for lazy loading, not for lazy creation</li><li>No network waits for lazy creation</li><li>Lazy creation gives you the tree right here. You can search data objects, modify them.
+                    without having widgets created</li></ul></div><p>Sometimes, lazy creation and loading may work together nicely, providing seamless increase
+                in speed and decrease in memory footprint. For instance, server may pass a whole tree branch in JSON
+            to lazy loading controller. Top nodes will be created right along, because user needs them, but the rest
+            of the branch will be postponed as the effect of lazy creation feature.</p></div><p>
+            There are operations, like "expandAll" where such lazy tricks don't help. That is why
+            widget creation process is well-optimized itself. <code class="code">createSimple</code> is a hacky program-only way
+            to create TreeNodes fast. <code class="code">setChildren</code> is a method to assign (and create if needed)
+            all children at once. It helps to evade some extra work happening when children are added one by one.
+           </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e136"></a>Components</h3></div></div></div><div class="variablelist"><dl><dt><span class="term">Tree</span></dt><dd>Tree and TreeNode classes handle both data and view</dd><dt><span class="term">Controllers</span></dt><dd><div class="variablelist"><dl><dt><span class="term">TreeBasicController</span></dt><dd>Controller that provides all capabilities but no server calls</dd><dt><span class="term">TreeLoadingController</span></dt><dd>Added dynamic node loading from server</dd><dt><span class="term">TreeRPCController</span></dt><dd>All actions call server</dd></dl></div></dd><dt><span class="term">Selector</span></dt><dd>TreeSelector handles node selection. Currently, only single node can be selected</dd><dt><span class="term">Drag'n'Drop</span></dt><dd>TreeDragSource, TreeDropTarget and TreeDNDController are classes that
                 allow nodes to be dragged, to be dropped on and mechanism binding that together.
                 Sources are located under src/dnd folder, not among widgets. </dd><dt><span class="term">Context menu</span></dt><dd>TreeContextMenu inherits dojo context menu to provide a lightweight right-click
                 menu. There is a single menu object for all nodes, although it always knows its target</dd><dt><span class="term">Style &amp; icons</span></dt><dd>Tree.css and icons are located under src/widget/templates and provide basic style
                 used by default. 
                 </dd><dt><span class="term">Extensions</span></dt><dd>TreeControllerExtension contains additional functions for controller that you might need
-            </dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e96"></a>Tree &amp; TreeNodes</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e99"></a>Tree model</h4></div></div></div><p>Two classes handle the model: <code class="classname">Tree</code> is root node and
+            </dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e190"></a>Tree model</h3></div></div></div><p>Two classes handle the model: <code class="classname">Tree</code> is root node and
     <code class="classname">TreeNode</code> is any  other node, linked by <code class="methodname">parent</code>
     and <code class="methodname">children[]</code> properties. Many functions implemented in <code class="classname">Tree</code>
         are mixed into TreeNode.
-    </p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e119"></a>How-to</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e122"></a>Make tree unselectable</h4></div></div></div><p>Sometimes people want tree nodes to be unselectable, sometimes selection is a good way to copy (part of) content from the node.</p><p>To make tree (or its elements) unselectable use dojo.html.disableSelection in nodeCreate and treeCreate hooks.
+    </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e210"></a>How-to</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e213"></a>Make tree unselectable</h4></div></div></div><p>Sometimes people want tree nodes to be unselectable, sometimes selection is a good way to copy (part of) content from the node.</p><p>To make tree (or its elements) unselectable use dojo.html.disableSelection in nodeCreate and treeCreate hooks.
             Apply disableSelection to every node you want to make unselectable.
-        </p><p>TODO: selectable tree extension (chunk): tree.addExtension("unselectable");</p></div></div></div></body></html>
+        </p><p>TODO: selectable tree extension (chunk): tree.addExtension("unselectable");</p><p>TODO: make lazy loading from string (nested array). Can use lazy loading controller - make dataProvider for that</p></div></div></div></body></html>
