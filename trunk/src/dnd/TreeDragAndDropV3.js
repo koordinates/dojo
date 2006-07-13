@@ -35,10 +35,6 @@ dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
 
 		dragObject.onDragStart = function(e) {
 
-			this.savedNodeEmphase = this.treeNode.tree.emphasedNodes;
-			for (var nodeId in this.savedNodeEmphase) {				
-				dojo.widget.manager.getWidgetById(nodeId).viewRemoveEmphase()
-			}
 				
 			var result = dojo.dnd.HtmlDragObject.prototype.onDragStart.apply(this, arguments);
 
@@ -56,11 +52,6 @@ dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
 		}
 
 		dragObject.onDragEnd = function(e) {
-
-			for (var nodeId in this.savedNodeEmphase) {				
-				dojo.widget.manager.getWidgetById(nodeId).viewAddEmphase()
-			}
-			
 						
 			//dojo.debug(e.dragStatus);
 
@@ -119,6 +110,9 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		
 		var node = this.treeNode;
 			
+			
+		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode)+ "px";
+
 		if (position == "onto") {			
 			node.contentNode.style.border = this.indicatorStyle;
 		} else {
@@ -131,8 +125,6 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 				node.contentNode.style.borderBottom = this.indicatorStyle;
 			}									
 		}  
-		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode) + "px";
-
 	},
 
 	hideIndicator: function() {
@@ -290,7 +282,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		  && DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
 			if (p<=0.3) {
 				position = "before";
-			} else if (p<=0.7) {
+				// if children are expanded then I ignore understrike, cause it is confusing with firstChild
+			} else if (p<=0.7 || this.treeNode.isExpanded && this.treeNode.children.length) {
 				position = "onto";
 			} else {
 				position = "after";

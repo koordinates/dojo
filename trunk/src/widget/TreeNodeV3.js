@@ -51,26 +51,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		expandLeaf: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_leaf.gif")
 	},		
 
-	
-	addEmphase: function() {		
-		this.tree.emphasedNodes[this.widgetId] = true;
-		this.viewAddEmphase();
-	},
 
-	viewAddEmphase: function() {
-		//dojo.debug(this.labelNode)
-		dojo.html.addClass(this.labelNode, 'TreeNodeEmphased');
-	},
-
-	removeEmphase: function() {
-		delete this.tree.emphasedNodes[this.widgetId];
-		this.viewRemoveEmphase();
-	},
-	
-	viewRemoveEmphase: function() {
-		//dojo.debug('unmark')
-		dojo.html.removeClass(this.labelNode, 'TreeNodeEmphased');
-	},
 
 	expandChildrenChecked: false,
 
@@ -262,10 +243,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				elem.tree = newTree;			
 		});
 		
-		for (var emphasedNodeId in oldTree.emphasedNodes) {
-			delete oldTree.emphasedNodes[emphasedNodeId];
-			newTree.emphasedNodes[emphasedNodeId] = true;
-		}
 				
 	},
 	
@@ -520,18 +497,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );
 				
-		// clean emphasedNodes with current parent
-		for (var emphasedNodeId in this.tree.emphasedNodes) {
-			var node = dojo.widget.manager.getWidgetById(emphasedNodeId);
-			while (node.isTreeNode) {
-				if (node === this) {
-					delete oldTree.emphasedNodes[emphasedNodeId];
-					break;
-				}
-				node = node.parent;
-			}		
-		}
-		
+	
+
 		this.doDetach();			
 				
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
