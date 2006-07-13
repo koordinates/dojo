@@ -29,7 +29,6 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 
 	onTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
-		// I'm not widget so don't use destroy() call and dieWithTree
 	},
 	
 	// first DND registration happens in addChild
@@ -41,7 +40,6 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 
 
 	onTreeChange: function(message) {
-		//dojo.debugShallow(message);
 		
 		if (!message.oldTree) return;
 		
