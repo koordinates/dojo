@@ -1,7 +1,9 @@
+dojo.require("dojo.io"); // io.js provides setIFrameSrc and the IO namespace
 dojo.provide("dojo.io.cometd");
 dojo.provide("cometd");
 dojo.require("dojo.AdapterRegistry");
-dojo.require("dojo.io.*"); // io.js provides setIFrameSrc and we need XHR for the handshake, etc.
+dojo.require("dojo.json");
+dojo.require("dojo.io.BrowserIO"); // we need XHR for the handshake, etc.
 // FIXME: determine if we can use XMLHTTP to make x-domain posts despite not
 //        being able to hear back about the result
 dojo.require("dojo.io.IframeIO"); // for posting across domains
@@ -47,18 +49,17 @@ cometd = new function(){
 		// placeholder
 	}
 
-	this.init = function(handshakeObject, root){
-		handshakeObject = handshakeObject||{};
+	this.init = function(props, root){
+		props = props||{};
 		// go ask the short bus server what we can support
-		with(handshakeObject){
-			version = this.version;
-			minimumVersion = this.minimumVersion;
-			channel = "/meta/handshake";
-			// FIXME: do we just assume that the handshakeObject knows
-			// everything we care about WRT to auth? Should we be trying to
-			// call back into it for subsequent auth actions? Should we fire
-			// local auth functions to ask for/get auth data?
-		}
+		props.version = this.version;
+		props.minimumVersion = this.minimumVersion;
+		props.channel = "/meta/handshake";
+		// FIXME: do we just assume that the props knows
+		// everything we care about WRT to auth? Should we be trying to
+		// call back into it for subsequent auth actions? Should we fire
+		// local auth functions to ask for/get auth data?
+
 		// FIXME: what about ScriptSrcIO for x-domain comet?
 		this.url = root||djConfig["cometdRoot"];
 		if(!this.url){
@@ -70,7 +71,7 @@ cometd = new function(){
 			method: "POST",
 			mimetype: "text/json",
 			load: dojo.lang.hitch(this, "finishInit"),
-			content: { message: dojo.json.serialize(handshakeObject) }
+			content: { "message": dojo.json.serialize(props) }
 		};
 		return dojo.io.bind(bindArgs);
 	}
@@ -452,6 +453,8 @@ cometd.iframeTransport = new function(){
 	}
 
 	this.startup = function(handshakeData){
+		dojo.debug("startup!");
+		dojo.debug(dojo.json.serialize(handshakeData));
 
 		if(this.connected){ return; }
 
@@ -459,7 +462,7 @@ cometd.iframeTransport = new function(){
 
 		// NOTE: we require the server to cooperate by hosting
 		// cometdInit.html at the designated endpoint
-		this.rcvNodeName = "cometdRcv_"+ShortBus.getRandStr();
+		this.rcvNodeName = "cometdRcv_"+cometd.getRandStr();
 		// the "forever frame" approach
 		var initUrl = cometd.url+"/?tunnelInit=iframe&domain="+document.domain;
 		if(false && dojo.render.html.ie){ // FIXME: DISALBED FOR NOW
@@ -476,8 +479,8 @@ cometd.iframeTransport = new function(){
 			this.rcvNode.parentWindow.dojo = dojo;
 			ifrDiv.innerHTML = "<iframe src='"+initUrl+"'></iframe>"
 		}else{
-			this.rcvNode = dojo.io.createIFrame(this.rcvNodeName);
-			dojo.io.setIFrameSrc(this.rcvNode, initUrl);
+			this.rcvNode = dojo.io.createIFrame(this.rcvNodeName, "", initUrl);
+			// dojo.io.setIFrameSrc(this.rcvNode, initUrl);
 			// we're still waiting on the iframe to call back up to use and
 			// advertise that it's been initialized via tunnelInit
 		}
