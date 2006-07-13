@@ -1,5 +1,4 @@
 dojo.provide("dojo.dom");
-dojo.require("dojo.lang.array");
 
 dojo.dom.ELEMENT_NODE                  = 1;
 dojo.dom.ATTRIBUTE_NODE                = 2;
@@ -168,7 +167,7 @@ dojo.dom.removeNode = function(node){
 
 dojo.dom.getAncestors = function(node, filterFunction, returnFirstHit) {
 	var ancestors = [];
-	var isFunction = dojo.lang.isFunction(filterFunction);
+	var isFunction = (filterFunction && (filterFunction instanceof Function || typeof filterFunction == "function"));
 	while(node) {
 		if (!isFunction || filterFunction(node)) {
 			ancestors.push(node);
@@ -421,8 +420,11 @@ dojo.dom.hasParent = function (node) {
 **/
 dojo.dom.isTag = function(node /* ... */) {
 	if(node && node.tagName) {
-		var arr = dojo.lang.toArray(arguments, 1);
-		return arr[ dojo.lang.find(arr, node.tagName) ] || "";
+		for(var i=1; i<arguments.length; i++){
+			if(node.tagName==String(arguments[i])){
+				return String(arguments[i]);
+			}
+		}
 	}
 	return "";
 }
@@ -435,11 +437,11 @@ dojo.dom.isTag = function(node /* ... */) {
  * 							"hs:level", 3);
  */
 dojo.dom.setAttributeNS = function(elem, namespaceURI, attrName, attrValue){
-	if(elem == null || dojo.lang.isUndefined(elem)){
+	if(elem == null || ((elem == undefined)&&(typeof elem == "undefined"))){
 		dojo.raise("No element given to dojo.dom.setAttributeNS");
 	}
 	
-	if(dojo.lang.isUndefined(elem.setAttributeNS) == false){ // w3c
+	if(!((elem.setAttributeNS == undefined)&&(typeof elem.setAttributeNS == "undefined"))){ // w3c
 		elem.setAttributeNS(namespaceURI, attrName, attrValue);
 	}else{ // IE
 		// get a root XML document
