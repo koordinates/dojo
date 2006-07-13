@@ -4,6 +4,7 @@
   <!ENTITY components SYSTEM "components.xml">
    <!ENTITY howto SYSTEM "howto.xml">
    <!ENTITY whatsnew SYSTEM "whatsnew.xml">
+   <!ENTITY todo SYSTEM "todo.xml">
    <!ENTITY performance SYSTEM "performance.xml">  
    <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
     <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
@@ -12,6 +13,7 @@
     <title>Dojo Tree Tutorial</title>
     &introduction;
     &whatsnew;
+    &todo;
     &performance;
     &performance_tricks;
     &components;
