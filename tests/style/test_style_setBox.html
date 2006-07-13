@@ -24,7 +24,7 @@ h3 { color: black; font-weight: normal; font-style: italic; }
 </style>
 
 <!---------------------------------------------------------------------------->
-<h2><code>setOuterSize</code></h2>
+<h2><code>setMarginBox</code></h2>
 
 <ul>
   <li>Colored bars bracket test boxes to reveal exterior margins</li>
@@ -89,7 +89,7 @@ function processMetrics()
 	{
 		var dump = document.getElementById('dump-' + i);
 		var box = document.getElementById('box-' + i);
-		var ok = dojo.html.setOuterSize(box, { width: targetW, height: targetH });
+		var ok = dojo.html.setMarginBox(box, { width: targetW, height: targetH });
 		if (!ok)	{
 			dump.className = 'failure';
 			dump.innerHTML = "Failed to set size.";

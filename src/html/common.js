@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.common");
+dojo.require("dojo.lang.common");
 dojo.require("dojo.dom");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
