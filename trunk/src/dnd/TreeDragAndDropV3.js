@@ -128,11 +128,10 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	},
 
 	hideIndicator: function() {
-		this.treeNode.contentNode.style.borderBottom="";
-		this.treeNode.contentNode.style.borderTop="";
+		this.treeNode.contentNode.style.borderBottom = "";
+		this.treeNode.contentNode.style.borderTop = "";
 		this.treeNode.contentNode.style.border = "";
 		this.treeNode.contentNode.style.width=""
-		this.treeNode.contentNode.style.height=""
 		this.position = null;
 	},
 
