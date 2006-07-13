@@ -31,7 +31,6 @@ dojo.widget.TreeV3 = function() {
 	this.DNDAcceptTypes = [];
 	this.actionsDisabled = [];
 	
-	this.emphasedNodes = {};
 	
 	this.tree = this;
 
