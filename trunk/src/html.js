@@ -555,7 +555,7 @@ dojo.html.isTag = function(node /* ... */) {
 	if(node && node.tagName) {
 		var arr = dojo.lang.map(dojo.lang.toArray(arguments, 1),
 			function(a) { return String(a).toLowerCase(); });
-		return arr[ dojo.lang.find(node.tagName.toLowerCase(), arr) ] || "";
+		return arr[ dojo.lang.find(arr, node.tagName.toLowerCase()) ] || "";
 	}
 	return "";
 }
