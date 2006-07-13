@@ -35,7 +35,12 @@ dojo.widget.TreeWithNode = {
 			if (node.isTree) {
 				break;
 			}
+			if (!node.parent) {
+				dojo.raise("Tried to check isLocked at parent, but no parent");
+			}
+			
 			node = node.parent;
+			
 		}
 
 		return false;
@@ -66,7 +71,6 @@ dojo.widget.TreeWithNode = {
 				disabled = true;
 			}
 		}
-
 		return disabled;
 	},
 		

@@ -53,6 +53,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	
 	
 	processDescendants: function(elem, filter, func) {
+		
 		if (!filter.call(elem)) {
 			return;
 		}
