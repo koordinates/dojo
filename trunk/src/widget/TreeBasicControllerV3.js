@@ -41,7 +41,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	
 	onSetFolder: function(message) {
-		//dojo.debug("setFolder "+message.source.title)
+		//dojo.debug("setFolder "+message.source)
 		this.listenNode(message.source);
 	},
 	
@@ -51,10 +51,22 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 	onTreeChange: function(message) {
+		//dojo.debugShallow(message);
+		
+		
+		dojo.profile.start("onTreeChange");
+		
+		// we listen/unlisten only if tree changed, not when its assigned first time
+		if (!message.oldTree) {
+			dojo.profile.end("onTreeChange");
+			return; 
+		}
+		
+				
 		var stack = [message.node];
         var elem;
             
-		if (dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// I got this message because node leaves me (oldtree)
 			/**
 			 * clean all folders that I listen. I don't listen to non-folders.
@@ -65,31 +77,23 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
 				}
             }	
-		} else if (dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+		}
+		
+		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+			
 			// we have new node
-			while (elem = stack.pop()) {
+			while (elem = stack.pop()) {				
                 if (elem.isFolder && elem instanceof dojo.widget.Widget) {
+					
 					this.listenNode(elem);
 	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
 				}
             }
 		}
+		
+		dojo.profile.end("onTreeChange");
 	},
 	
-
-	onTreeDestroy: function(message) {
-		var tree = message.source;
-
-		this.unlistenTree(tree);
-	},
-
-	onCreateNode: function(message) {
-		var node = message.source;
-
-		if (node.expandLevel > 0) {
-			this.expandToLevel(node, node.expandLevel);
-		}
-	},
 
 	// perform actions-initializers for tree
 	onTreeCreate: function(message) {
@@ -97,8 +101,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		var _this = this;
 		if (tree.expandLevel) {
 			dojo.lang.forEach(tree.children,
-				function(child) {
-					_this.expandToLevel(child, tree.expandLevel-1)
+				function(child) {								
+					_this.expandToLevel(child, Math.max(tree.expandLevel-1, child.expandLevel))
 				}
 			);
 		}

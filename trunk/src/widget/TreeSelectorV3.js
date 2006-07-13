@@ -149,7 +149,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			if (this.selectedNode && message.node.children) {
 				this.deselectIfAncestorMatch(message.node);
 			}
-				
+			
 			while (elem = stack.pop()) {
                 if (elem instanceof dojo.widget.Widget) {
 					this.unlistenNode(elem);

@@ -49,7 +49,19 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		}
 		
 		return dojo.widget.manager.getWidgetById(domElement.widgetId);
-	}
+	},
+	
+	
+	listenDescendants: function(elem, filter) {
+		if (!filter.call(elem)) {
+			return;
+		}
+		var stack = [elem]
+		while (elem = stack.pop()) {
+			this.listenNode(elem);
+	        dojo.lang.forEach(elem.children, function(elem) { filter.call(elem) && stack.push(elem) });
+		}
+    }	
 	
 	
 		
