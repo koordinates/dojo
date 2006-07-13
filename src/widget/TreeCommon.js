@@ -9,6 +9,8 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	
 	listenTree: function(tree) {
 		
+		//dojo.debug("listenTree in "+this+" tree "+tree);
+		
 		var _this = this;
 		
 		dojo.lang.forEach(this.listenTreeEvents, function(event) {
@@ -49,7 +51,20 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		}
 		
 		return dojo.widget.manager.getWidgetById(domElement.widgetId);
-	}
+	},
+	
+	
+	processDescendants: function(elem, filter, func) {
+		
+		if (!filter.call(elem)) {
+			return;
+		}
+		var stack = [elem]
+		while (elem = stack.pop()) {
+			this.func.call(elem);
+	        dojo.lang.forEach(elem.children, function(elem) { filter.call(elem) && stack.push(elem) });
+		}
+    }	
 	
 	
 		

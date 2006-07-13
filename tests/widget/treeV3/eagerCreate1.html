@@ -32,7 +32,7 @@
 			for (var i=1; i<=5; i++) {
 				var t = title+'.'+i
 				dojo.profile.start("createWidget");
-				var node = 	dojo.widget.TreeNodeV3.prototype.createSimple({title: t, tree: tree})
+				var node = dojo.widget.TreeNodeV3.prototype.createSimple({title: t, tree: tree})
 				// slow generic method (1.5-3x diff)
 				//var node = dojo.widget.createWidget("TreeNodeV3", {title: t, tree:tree.widgetId});
 				dojo.profile.end("createWidget");

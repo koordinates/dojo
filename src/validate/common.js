@@ -1,5 +1,5 @@
 dojo.provide("dojo.validate.common");
-dojo.require("dojo.validate");
+
 dojo.require("dojo.regexp");
 
 // *** Validation Functions ****
