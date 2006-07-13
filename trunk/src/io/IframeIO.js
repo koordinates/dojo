@@ -6,12 +6,12 @@ dojo.require("dojo.html.iframe");
 // FIXME: is it possible to use the Google htmlfile hack to prevent the
 // background click with this transport?
 
-dojo.io.createIFrame = function(fname, onloadstr){
+dojo.io.createIFrame = function(fname, onloadstr, uri){
 	if(window[fname]){ return window[fname]; }
 	if(window.frames[fname]){ return window.frames[fname]; }
 	var r = dojo.render.html;
 	var cframe = null;
-	var turi = dojo.uri.dojoUri("iframe_history.html?noInit=true");
+	var turi = uri||dojo.uri.dojoUri("iframe_history.html?noInit=true");
 	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? "<iframe name='"+fname+"' src='"+turi+"' onload='"+onloadstr+"'>" : "iframe";
 	cframe = document.createElement(ifrstr);
 	with(cframe){
