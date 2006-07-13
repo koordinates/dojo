@@ -145,14 +145,18 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	
 	
 	adjustDNDMode: function() {
-
-		if (this.DNDMode == "off") {
-			this.DNDMode = 0;
-		} else if (this.DNDMode == "between") {
-			this.DNDMode = this.DNDModes.ONTO | this.DNDModes.BETWEEN;
-		} else if (this.DNDMode == "onto") {
-			this.DNDMode = this.DNDModes.ONTO;
-		}
+		var _this = this;
+		
+		var DNDMode = 0;
+		dojo.lang.forEach(this.DNDMode.split(';'),
+			function(elem) {
+				var mode = _this.DNDModes[dojo.string.trim(elem).toUpperCase()];
+				if (mode) DNDMode = DNDMode | mode;
+			}
+		 );
+	
+		
+		this.DNDMode = DNDMode;
 
 	},
 	

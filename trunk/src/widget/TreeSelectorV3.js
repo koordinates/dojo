@@ -47,10 +47,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		if (args.extensions) {
 			this.loadExtensions(args.extensions);
 		}
-		// TODO: cancel/restore selection on dnd eventsd
-		/*if (args['dndcontroller']) {
-			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
-		}*/
+		
 
 	},
 

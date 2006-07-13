@@ -280,6 +280,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var position = ""; // "" <=> forbidden
 		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO
 		  && DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
+			//dojo.debug("BOTH");
 			if (p<=0.3) {
 				position = "before";
 				// if children are expanded then I ignore understrike, cause it is confusing with firstChild
@@ -289,16 +290,19 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 				position = "after";
 			}
 		} else if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
-			if (p<=0.5) {
+			//dojo.debug("BETWEEN");
+			if (p<=0.5 || this.treeNode.isExpanded && this.treeNode.children.length) {
 				position = "before";
 			} else {
 				position = "after";
 			}
 		}
 		else if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO) {
+			//dojo.debug("ONTO");
 			position = "onto";
 		}
 
+		dojo.debug(position);
 
 		return position;
 	},
