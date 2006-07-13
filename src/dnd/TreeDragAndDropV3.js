@@ -33,16 +33,13 @@ dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
 
 		dragObject.treeNode = this.treeNode;
 
-		dragObject.onDragStart = dojo.lang.hitch(dragObject, function(e) {
+		dragObject.onDragStart = function(e) {
 
-			/* FIXME:  save selection
-			  publish dragStart event here so selector temporarily cancels selection
-			this.savedSelectedNode = this.treeNode.tree.selector.selectedNode;
-			if (this.savedSelectedNode) {
-				this.savedSelectedNode.unMarkSelected();
+			this.savedNodeEmphase = this.treeNode.tree.emphasedNodes;
+			for (var nodeId in this.savedNodeEmphase) {				
+				dojo.widget.manager.getWidgetById(nodeId).viewRemoveEmphase()
 			}
-			*/
-
+				
 			var result = dojo.dnd.HtmlDragObject.prototype.onDragStart.apply(this, arguments);
 
 
@@ -56,15 +53,15 @@ dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
 			return result;
 
 
-		});
+		}
 
 		dragObject.onDragEnd = function(e) {
 
-			/* FIXME restore selection 
-			if (this.savedSelectedNode) {
-				this.savedSelectedNode.markSelected();
+			for (var nodeId in this.savedNodeEmphase) {				
+				dojo.widget.manager.getWidgetById(nodeId).viewAddEmphase()
 			}
-			*/
+			
+						
 			//dojo.debug(e.dragStatus);
 
 			return dojo.dnd.HtmlDragObject.prototype.onDragEnd.apply(this, arguments);
@@ -120,10 +117,11 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		this.position = position;
 		
-		if (position == "onto") {
-			this.treeNode.viewAddEmphase();
+		var node = this.treeNode;
+			
+		if (position == "onto") {			
+			node.contentNode.style.border = this.indicatorStyle;
 		} else {
-			var node = this.treeNode;
 			// FIXME: bottom-top or highlight should cover ONLY top/bottom or div itself,
 			// not span whole line (try DND)
 			// FAILURE: Can't put span inside div: multiline bottom-top will span multiple lines
@@ -131,17 +129,16 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 				node.contentNode.style.borderTop = this.indicatorStyle;
 			} else if (position == "after") {
 				node.contentNode.style.borderBottom = this.indicatorStyle;
-			}			
-			node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode) + "px";			
+			}									
 		}  
-
+		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode) + "px";
 
 	},
 
 	hideIndicator: function() {
 		this.treeNode.contentNode.style.borderBottom="";
 		this.treeNode.contentNode.style.borderTop="";
-		this.treeNode.viewRemoveEmphase();
+		this.treeNode.contentNode.style.border = "";
 		this.treeNode.contentNode.style.width=""
 		this.position = null;
 	},
