@@ -283,7 +283,9 @@ dojo.regexp.integer = function(flags) {
 			}
 			var grp = flags.groupSize, grp2 = flags.groupSize2;
 			if ( typeof grp2 != "undefined" ) {
-				return "((\\d{1," + grp2 + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})|\\d{1,3})";
+				var grp2RE = "(\\d{1," + grp2 + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
+				return ((grp-grp2) > 0) ? "(" + grp2RE + "|\\d{0," + (grp-grp2) + "})" : grp2RE;
+				
 			}
 			return "(\\d{1," + grp + "}([" + sep + "]\\d{" + grp + "})*)";
 		}
@@ -331,12 +333,7 @@ dojo.regexp.realNumber = function(flags) {
 	// exponent RE
 	var exponentRE = dojo.regexp.buildGroupRE(flags.exponent,
 		function(q) { 
-			if (q) { return "([eE]" + dojo.regexp.integer({ // Q: why not just pass through flags?
-				signed: flags.eSigned, // Q: Why different than signed?
-				separator: flags.separator,
-				groupSize: flags.groupSize,
-				groupSize2: flags.groupSize2
-				}) + ")"; }
+			if (q) { return "([eE]" + dojo.regexp.integer({ signed: flags.eSigned}) + ")"; }
 			return ""; 
 		}
 	);
@@ -365,11 +362,11 @@ dojo.regexp.currency = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.signed == "undefined") { flags.signed = [true, false]; }
-	if (typeof flags.symbol == "undefined") { flags.symbol = "$"; }
-	if (typeof flags.placement != "string") { flags.placement = "before"; }
-	if (typeof flags.separator != "string") { flags.separator = ","; }
+//	if (typeof flags.symbol == "undefined") { flags.symbol = "$"; }
+//	if (typeof flags.placement != "string") { flags.placement = "before"; }
+//	if (typeof flags.separator != "string") { flags.separator = ","; }
 	if (typeof flags.cents == "undefined") { flags.cents = [true, false]; }
-	if (typeof flags.decimal != "string") { flags.decimal = "."; }
+//	if (typeof flags.decimal != "string") { flags.decimal = "."; }
 
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
