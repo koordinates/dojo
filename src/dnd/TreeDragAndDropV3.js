@@ -93,7 +93,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 	position: null,
 
-	indicatorStyle: "2px black solid",
+	indicatorStyle: "2px black groove",
 
 	showIndicator: function(position) {
 
@@ -110,10 +110,10 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		
 		var node = this.treeNode;
 			
-			
-		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode)+ "px";
+		
+		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode) + "px";
 
-		if (position == "onto") {			
+		if (position == "onto") {					
 			node.contentNode.style.border = this.indicatorStyle;
 		} else {
 			// FIXME: bottom-top or highlight should cover ONLY top/bottom or div itself,
@@ -132,6 +132,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		this.treeNode.contentNode.style.borderTop="";
 		this.treeNode.contentNode.style.border = "";
 		this.treeNode.contentNode.style.width=""
+		this.treeNode.contentNode.style.height=""
 		this.position = null;
 	},
 
@@ -302,7 +303,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			position = "onto";
 		}
 
-		dojo.debug(position);
+		//dojo.debug(position);
 
 		return position;
 	},
