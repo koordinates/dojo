@@ -475,7 +475,7 @@ dojo.dom.hasParent = function (node) {
 dojo.dom.isTag = function(node /* ... */) {
 	if(node && node.tagName) {
 		var arr = dojo.lang.toArray(arguments, 1);
-		return arr[ dojo.lang.find(node.tagName, arr) ] || "";
+		return arr[ dojo.lang.find(arr, node.tagName) ] || "";
 	}
 	return "";
 }
