@@ -2,10 +2,12 @@
 dojo.provide("dojo.widget.TreeCommon");
 
 
-dojo.widget.TreeCommon = function() {
+dojo.widget.TreeCommon = function() {	
 }
 
 dojo.lang.extend(dojo.widget.TreeCommon, {
+	
+	
 	
 	listenTree: function(tree) {
 		
@@ -25,8 +27,21 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		this.listenedTrees.push(tree);
 		
 	},
+			
+	loadExtensions: function(extensions) {
+		
+		var _this = this;
+		
+		var extensionList = extensions.split(",");
+		
+		
+		dojo.lang.forEach(extensionList, function(elem) {			
+			dojo.widget[dojo.string.trim(elem)].prototype.loadExtension(_this);
+			}
+		);
+	},
 	
-	
+			
 	unlistenTree: function(tree) {
 		
 		var _this = this;
