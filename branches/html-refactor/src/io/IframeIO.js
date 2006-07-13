@@ -107,14 +107,12 @@ dojo.io.IframeTransport = new function(){
 			(
 				// FIXME: can we really handle text/plain and
 				// text/javascript requests?
-				dojo.lang.inArray(kwArgs["mimetype"], 
-				[	"text/plain", "text/html", 
-					"text/javascript", "text/json"])
+				dojo.lang.inArray([	"text/plain", "text/html", "text/javascript", "text/json"], kwArgs["mimetype"])
 			)&&(
 				// make sur we really only get used in file upload cases	
 				(kwArgs["formNode"])&&(dojo.io.checkChildrenForFile(kwArgs["formNode"]))
 			)&&(
-				dojo.lang.inArray(kwArgs["method"].toLowerCase(), ["post", "get"])
+				dojo.lang.inArray(["post", "get"], kwArgs["method"].toLowerCase())
 			)&&(
 				// never handle a sync request
 				!  ((kwArgs["sync"])&&(kwArgs["sync"] == true))

@@ -41,7 +41,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	
 	onSetFolder: function(message) {
-		//dojo.debug("setFolder "+message.source.title)
+		//dojo.debug("setFolder "+message.source)
 		this.listenNode(message.source);
 	},
 	
@@ -51,45 +51,37 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 	onTreeChange: function(message) {
-		var stack = [message.node];
-        var elem;
-            
-		if (dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+		//dojo.debugShallow(message);
+		
+		
+		//dojo.profile.start("onTreeChange");
+		
+		// we listen/unlisten only if tree changed, not when its assigned first time
+		if (!message.oldTree) {
+			if (message.node.expandLevel > 0) {
+				this.expandToLevel(message.node, message.node.expandLevel);
+			}
+			
+			//dojo.profile.end("onTreeChange");
+			return; 
+		}
+		            
+		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// I got this message because node leaves me (oldtree)
 			/**
 			 * clean all folders that I listen. I don't listen to non-folders.
 			 */
-			while (elem = stack.pop()) {
-                if (elem.isFolder && elem instanceof dojo.widget.Widget) { 
-					this.unlistenNode(elem);
-	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-				}
-            }	
-		} else if (dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+			this.processDescendants(message.node, function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget}, this.unlistenNode);
+		}		
+		
+		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
 			// we have new node
-			while (elem = stack.pop()) {
-                if (elem.isFolder && elem instanceof dojo.widget.Widget) {
-					this.listenNode(elem);
-	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-				}
-            }
+			this.processDescendants(message.node, function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget}, this.listenNode);
 		}
+		
+		//dojo.profile.end("onTreeChange");
 	},
 	
-
-	onTreeDestroy: function(message) {
-		var tree = message.source;
-
-		this.unlistenTree(tree);
-	},
-
-	onCreateNode: function(message) {
-		var node = message.source;
-
-		if (node.expandLevel > 0) {
-			this.expandToLevel(node, node.expandLevel);
-		}
-	},
 
 	// perform actions-initializers for tree
 	onTreeCreate: function(message) {
@@ -97,7 +89,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		var _this = this;
 		if (tree.expandLevel) {
 			dojo.lang.forEach(tree.children,
-				function(child) {
+				function(child) {								
 					_this.expandToLevel(child, tree.expandLevel-1)
 				}
 			);

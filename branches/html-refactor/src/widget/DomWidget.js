@@ -549,7 +549,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 			}
 		}
 		if((!this.templateNode)&&(!matches)){ 
-			dojo.debug("weren't able to create template!");
+			dojo.debug("DomWidget.buildFromTemplate: could not create template");
 			return false;
 		}else if(!matches){
 			node = this.templateNode.cloneNode(true);

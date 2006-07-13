@@ -47,7 +47,7 @@ dojo.io.updateNode = function(node, urlOrArgs){
 dojo.io.formFilter = function(node) {
 	var type = (node.type||"").toLowerCase();
 	return !node.disabled && node.name
-		&& !dojo.lang.inArray(type, ["file", "submit", "image", "reset", "button"]);
+		&& !dojo.lang.inArray(["file", "submit", "image", "reset", "button"], type);
 }
 
 // TODO: Move to htmlUtils
@@ -71,7 +71,7 @@ dojo.io.encodeForm = function(formNode, encoding, formFilter){
 					values.push(name + "=" + enc(elm.options[j].value));
 				}
 			}
-		}else if(dojo.lang.inArray(type, ["radio", "checkbox"])){
+		}else if(dojo.lang.inArray(["radio", "checkbox"], type)){
 			if(elm.checked){
 				values.push(name + "=" + enc(elm.value));
 			}
@@ -129,7 +129,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 
 		for(var i = 0; i < form.elements.length; i++) {
 			var node = form.elements[i];
-			if(node && node.type && dojo.lang.inArray(node.type.toLowerCase(), ["submit", "button"])) {
+			if(node && node.type && dojo.lang.inArray(["submit", "button"], node.type.toLowerCase())) {
 				this.connect(node, "onclick", "click");
 			}
 		}
@@ -167,11 +167,11 @@ dojo.lang.extend(dojo.io.FormBind, {
 		var accept = false;
 		if(node.disabled || !node.name) {
 			accept = false;
-		} else if(dojo.lang.inArray(type, ["submit", "button", "image"])) {
+		} else if(dojo.lang.inArray(["submit", "button", "image"], type)) {
 			if(!this.clickedButton) { this.clickedButton = node; }
 			accept = node == this.clickedButton;
 		} else {
-			accept = !dojo.lang.inArray(type, ["file", "submit", "reset", "button"]);
+			accept = !dojo.lang.inArray(["file", "submit", "reset", "button"], type);
 		}
 		return accept;
 	},
@@ -335,7 +335,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
 		return hasXmlHttp
-			&& dojo.lang.inArray((kwArgs["mimetype"].toLowerCase()||""), ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json"])
+			&& dojo.lang.inArray(["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json"], (kwArgs["mimetype"].toLowerCase()||""))
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 

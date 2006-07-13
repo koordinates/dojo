@@ -256,6 +256,8 @@ dojo.regexp.emailAddressList = function(flags) {
       Default is [true, false], (i.e. will match if it is signed or unsigned).
     flags.separator  The character used as the thousands separator.  Default is no separator.
       For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
+	flags.groupSize group size between separators
+	flags.groupSize2 second grouping (for India)
 
   @return  A string for a regular expression for an integer.
 */
@@ -263,8 +265,11 @@ dojo.regexp.integer = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.signed == "undefined") { flags.signed = [true, false]; }
-	if (typeof flags.separator == "undefined") { flags.separator = ""; }
-
+	if (typeof flags.separator == "undefined") {
+		flags.separator = "";
+	} else if (typeof flags.groupSize == "undefined") {
+		flags.groupSize = 3;
+	}
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
 		function(q) { if (q) { return "[-+]"; }  return ""; }
@@ -274,12 +279,17 @@ dojo.regexp.integer = function(flags) {
 	var numberRE = dojo.regexp.buildGroupRE(flags.separator,
 		function(sep) { 
 			if ( sep == "" ) { 
-				return "(0|[1-9]\\d*)"; 
+				return "\\d+";
 			}
-			return "(0|[1-9]\\d{0,2}([" + sep + "]\\d{3})*)"; 
+			var grp = flags.groupSize, grp2 = flags.groupSize2;
+			if ( typeof grp2 != "undefined" ) {
+				var grp2RE = "(\\d{1," + grp2 + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
+				return ((grp-grp2) > 0) ? "(" + grp2RE + "|\\d{0," + (grp-grp2) + "})" : grp2RE;
+				
+			}
+			return "(\\d{1," + grp + "}([" + sep + "]\\d{" + grp + "})*)";
 		}
 	);
-	var numberRE;
 
 	// integer RE
 	return (signRE + numberRE);
@@ -323,7 +333,7 @@ dojo.regexp.realNumber = function(flags) {
 	// exponent RE
 	var exponentRE = dojo.regexp.buildGroupRE(flags.exponent,
 		function(q) { 
-			if (q) { return "([eE]" + dojo.regexp.integer({signed: flags.eSigned}) + ")"; }
+			if (q) { return "([eE]" + dojo.regexp.integer({ signed: flags.eSigned}) + ")"; }
 			return ""; 
 		}
 	);

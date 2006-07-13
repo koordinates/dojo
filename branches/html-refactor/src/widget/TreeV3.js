@@ -90,7 +90,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	
 	objectId: "",
 
-	expandLevel: "", // expand to level automatically
 
 	//
 	// these icons control the grid and expando buttons for the whole tree

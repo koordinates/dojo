@@ -72,8 +72,6 @@ dojo.html.getParentByType = function(node, type) {
 	return parent;
 }
 
-// RAR: this function comes from nwidgets and is more-or-less unmodified.
-// We should probably look ant Burst and f(m)'s equivalents
 dojo.html.getAttribute = function(node, attr){
 	node = dojo.byId(node);
 	// FIXME: need to add support for attr-specific accessors

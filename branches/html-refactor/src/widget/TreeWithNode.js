@@ -22,6 +22,9 @@ dojo.widget.TreeWithNode = {
 	},
 	
 	
+	expandLevel: "", // expand to level automatically
+		
+	
 
 	isLocked: function() {
 		var node = this;
@@ -32,7 +35,12 @@ dojo.widget.TreeWithNode = {
 			if (node.isTree) {
 				break;
 			}
+			if (!node.parent) {
+				dojo.raise("Tried to check isLocked at parent, but no parent");
+			}
+			
 			node = node.parent;
+			
 		}
 
 		return false;
@@ -63,7 +71,6 @@ dojo.widget.TreeWithNode = {
 				disabled = true;
 			}
 		}
-
 		return disabled;
 	},
 		
@@ -102,9 +109,9 @@ dojo.widget.TreeWithNode = {
 			if (!(child instanceof dojo.widget.Widget)) {
 				if (child instanceof Array) {
 					// arguments for createWidget
-					child = this.children[i] = dojo.widget.createWidget(child);
+					child = this.children[i] = dojo.widget.createWidget(child, {}, this);
 				} else {
-					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child);					
+					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child, this);					
 				}
 				//child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
 				

@@ -140,10 +140,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	contentNode: null, // the item label
 	
-	expandLevel: "", // expand to level
 	expandClass: "",
 
-	tree: null,
 
 	isExpanded: false,
 	
@@ -181,32 +179,37 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	
 	initialize: function(args, frag, parent) {
+		
+		dojo.profile.start("initialize");
+		
 		// set tree from args or from parent
 		//dojo.debug("initialize in "+this);
 		if (args.tree) {
 			this.tree = dojo.lang.isString(args.tree) ? dojo.widget.manager.getWidgetById(args.tree) : args.tree;			
 		} else if (parent.tree) {
 			this.tree = parent.tree;
-		}
+		} 
 		
 		if (!this.tree) {
 			dojo.raise("Can't evaluate tree from arguments or parent");
 		}
-		
-		
+				
 		
 		if (this.children.length || args.isFolder) {
 			//dojo.debug("children found");
 			//dojo.debug(this.children);
 			//dojo.debug("isFolder "+args.isFolder);
+			
+			// viewSetExpand for Folder is set here also
 			this.setFolder();			
-		} else {
+		} else {			
 			this.viewSetExpand();
 		}
 		
-		var message = {oldTree:null, newTree:this.tree, node:this}
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, {oldTree:null, newTree:this.tree, node:this} );
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+		
+		dojo.profile.end("initialize");
 		
 		//dojo.debug("initialize out "+this);
 		//dojo.debug(this+" parent "+parent);
@@ -321,7 +324,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 * Fast program-only hacky creation of widget
 	 * 	
 	 */
-	createSimple: function(args) {
+	createSimple: function(args, parent) {
 		// I pass no args and ignore default controller
 		//dojo.profile.start(this.widgetType+" createSimple");
 		//dojo.profile.start(this.widgetType+" createSimple constructor");
@@ -348,7 +351,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		treeNode.buildRendering();		
 		//dojo.profile.end(this.widgetType + " buildRendering");
 		
-		treeNode.initialize(args);
+		treeNode.initialize(args, {}, parent);
 		
 		//dojo.profile.end(this.widgetType+" createSimple");
 		

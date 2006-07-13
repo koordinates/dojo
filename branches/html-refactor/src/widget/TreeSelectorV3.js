@@ -24,8 +24,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	widgetType: "TreeSelectorV3",
 	selectedNode: null,
 
-	listenTreeEvents: ["addChild","collapse","treeChange",
-					   "detach","treeDestroy"],
+	listenTreeEvents: ["addChild","collapse","treeChange", "detach", "treeDestroy"],
 	
 	
 	eventNamesDefault: {
@@ -44,9 +43,9 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 		
 		// TODO: cancel/restore selection on dnd eventsd
-		if (args['dndcontroller']) {
+		/*if (args['dndcontroller']) {
 			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
-		}
+		}*/
 
 	},
 
@@ -72,20 +71,11 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 
 
-	// deselect node if parent is collapsed
+	// deselect node if ancestor is collapsed
 	onCollapse: function(message) {
 		if (!this.selectedNode) return;
 
-		var node = message.source;
-		var parent = this.selectedNode.parent;
-		
-		while (parent !== node && parent.isTreeNode) {
-			parent = parent.parent;
-		}
-		
-		if (parent.isTreeNode) {
-			this.deselect();
-		}
+		this.deselectIfAncestorMatch(message.source);		
 	},
 
 
@@ -139,9 +129,6 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			
 	onTreeChange: function(message) {
 		
-		var stack = [message.node];
-			
-		var elem;
 		
 		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
 			// moving from our trfee to new one
@@ -149,24 +136,13 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			if (this.selectedNode && message.node.children) {
 				this.deselectIfAncestorMatch(message.node);
 			}
-				
-			while (elem = stack.pop()) {
-                if (elem instanceof dojo.widget.Widget) {
-					this.unlistenNode(elem);
-	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-				}
-            }
+			
+			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.unlistenNode);					
 			
 		}
 		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
 			// moving from old tree to our tree
-			
-			while (elem = stack.pop()) {
-                if (elem instanceof dojo.widget.Widget) {
-					this.listenNode(elem);
-	                dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
-				}
-            }			
+			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.listenNode);			
 		}
 		
 		
