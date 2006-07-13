@@ -22,6 +22,9 @@ dojo.widget.TreeWithNode = {
 	},
 	
 	
+	expandLevel: "", // expand to level automatically
+		
+	
 
 	isLocked: function() {
 		var node = this;

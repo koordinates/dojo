@@ -139,10 +139,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	contentNode: null, // the item label
 	
-	expandLevel: "", // expand to level
 	expandClass: "",
 
-	tree: null,
 
 	isExpanded: false,
 	
