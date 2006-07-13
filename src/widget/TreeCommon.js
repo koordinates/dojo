@@ -9,6 +9,8 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	
 	listenTree: function(tree) {
 		
+		//dojo.debug("listenTree in "+this+" tree "+tree);
+		
 		var _this = this;
 		
 		dojo.lang.forEach(this.listenTreeEvents, function(event) {
