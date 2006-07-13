@@ -24,8 +24,9 @@
         <itemizedlist>
             <listitem>On Drag'n'drop tree 'wobbles', because node size increases/decreases when it is
             bordered.  Could be nice to evade it, either placing another transparent div with border onto
-            the node or decreasing their size, or using padding divs, or..s..</listitem>
+            the node or decreasing their size, or using padding divs, or..</listitem>
             
         </itemizedlist>
+        </section>
         
 </section>
