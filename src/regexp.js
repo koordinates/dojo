@@ -256,6 +256,8 @@ dojo.regexp.emailAddressList = function(flags) {
       Default is [true, false], (i.e. will match if it is signed or unsigned).
     flags.separator  The character used as the thousands separator.  Default is no separator.
       For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
+	flags.groupSize group size between separators
+	flags.groupSize2 second grouping (for India)
 
   @return  A string for a regular expression for an integer.
 */
@@ -263,8 +265,11 @@ dojo.regexp.integer = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.signed == "undefined") { flags.signed = [true, false]; }
-	if (typeof flags.separator == "undefined") { flags.separator = ""; }
-
+	if (typeof flags.separator == "undefined") {
+		flags.separator = "";
+	} else if (typeof flags.groupSize == "undefined") {
+		flags.groupSize = 3;
+	}
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
 		function(q) { if (q) { return "[-+]"; }  return ""; }
@@ -274,12 +279,15 @@ dojo.regexp.integer = function(flags) {
 	var numberRE = dojo.regexp.buildGroupRE(flags.separator,
 		function(sep) { 
 			if ( sep == "" ) { 
-				return "(0|[1-9]\\d*)"; 
+				return "\\d+";
 			}
-			return "(0|[1-9]\\d{0,2}([" + sep + "]\\d{3})*)"; 
+			var grp = flags.groupSize, grp2 = flags.groupSize2;
+			if ( typeof grp2 != "undefined" ) {
+				return "((\\d{1," + grp2 + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})|\\d{1,3})";
+			}
+			return "(\\d{1," + grp + "}([" + sep + "]\\d{" + grp + "})*)";
 		}
 	);
-	var numberRE;
 
 	// integer RE
 	return (signRE + numberRE);
@@ -323,7 +331,12 @@ dojo.regexp.realNumber = function(flags) {
 	// exponent RE
 	var exponentRE = dojo.regexp.buildGroupRE(flags.exponent,
 		function(q) { 
-			if (q) { return "([eE]" + dojo.regexp.integer({signed: flags.eSigned}) + ")"; }
+			if (q) { return "([eE]" + dojo.regexp.integer({ // Q: why not just pass through flags?
+				signed: flags.eSigned, // Q: Why different than signed?
+				separator: flags.separator,
+				groupSize: flags.groupSize,
+				groupSize2: flags.groupSize2
+				}) + ")"; }
 			return ""; 
 		}
 	);
