@@ -9,10 +9,13 @@
             Apply disableSelection to every node you want to make unselectable.
         </para>
         
-        <para>TODO: selectable tree extension (chunk): tree.addExtension("unselectable");</para>
-        <para>TODO: make lazy loading from string (nested array). Can use lazy loading controller - make dataProvider for that</para>
     </section>
-    
+  
+    <section>
+        <title>Add custom properties to tree</title>
+        
+        <para>There is an "objectId" property and "object" property ready to be filled in from markup or program-way.</para>
+    </section>
 
 </section>
 
