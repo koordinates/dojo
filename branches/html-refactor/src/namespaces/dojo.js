@@ -51,6 +51,7 @@ dojo.require("dojo.namespace");
 			"parse": "dojo.widget.Parse",
 			"popupbutton": "dojo.widget.PopUpButton",
 			"richtext": "dojo.widget.RichText",
+			"remotetabcontroller": "dojo.widget.RemoteTabController",
 			"resizehandle": "dojo.widget.ResizeHandle",
 			"resizabletextarea": "dojo.widget.ResizableTextarea",
 			"slideshow": "dojo.widget.SlideShow",

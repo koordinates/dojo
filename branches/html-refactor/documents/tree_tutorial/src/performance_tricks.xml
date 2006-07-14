@@ -12,7 +12,7 @@
     <para>... And there are batch operations that touch a lot of nodes. The examples are: 
         initial tree creation,  moving a node from one tree to another which has different listeners, etc.</para>
     
-    <para>Observations show that performance issues become visible at 100-200 tree nodes.
+    <para>That performance issues become noticeable at 100-300 tree nodes depending on your trees.
         All algorithms are linear in worst case, but JS is slow language, DOM is also not that fast. 
       </para>
     
@@ -36,10 +36,10 @@
     <section>
         <title>Lazy creation</title>
         
-        <para>Lazy creation is somewhat a half-way approach to lazy loading.
+        <para>
             Node/tree keeps array of its children in <code>children</code> property. 
-            Lazy creation allows one to put data objects into this array and make widgets of them later,
-            when they are expanded.
+            Lazy creation is somewhat a half-way approach to lazy loading. It allows you to put data objects 
+            into this array and tree will create widgets of them later, when they are expanded.
         </para>
         
         <para>For instance, one can call <code>node.children = [{title:'node1'},{title:'node2'}]</code>.
@@ -52,7 +52,8 @@
             Compression will be 10 times or more, so it is not that space hungry. 
         </para>
         
-        <para>The benefit comes from postponing almost all real job: widget creation and attaching it to tree.</para>
+        <para>The benefit comes from postponing almost all real job: widget creation and attaching it to tree will
+        happen in expansion-time.</para>
             
         
         <section>
@@ -61,14 +62,14 @@
             <itemizedlist>
                 <listitem>You need web-service for lazy loading, not for lazy creation</listitem>
                 <listitem>No network waits for lazy creation</listitem>
-                <listitem>Lazy creation gives you the tree right here. You can search data objects, modify them.
-                    without having widgets created</listitem>                
+                <listitem>Lazy creation gives you the tree right here. You can search data objects and modify them
+                    without spending time and memory on graphical widgets</listitem>                
             </itemizedlist>
                         
             <para>Sometimes, lazy creation and loading may work together nicely, providing seamless increase
                 in speed and decrease in memory footprint. For instance, server may pass a whole tree branch in JSON
             to lazy loading controller. Top nodes will be created right along, because user needs them, but the rest
-            of the branch will be postponed as the effect of lazy creation feature.</para>
+            of the branch will be postponed relying on lazy creation feature.</para>
             
             
         </section>

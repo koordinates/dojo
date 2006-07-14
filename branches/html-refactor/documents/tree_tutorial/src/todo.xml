@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>TODO for TreeV3</title>
+    
+    
+    
+    <itemizedlist>
+        <listitem>new extensions model, loadExtension method.</listitem>
+        <listitem>Denote interface so any widget may become a treeNode</listitem>
+        <listitem>Add document.write() for all images to prevent IE dynamic loading on every expand</listitem>
+        <listitem>Allow passing nested arrays from server for TreeLoadingController</listitem>
+        <listitem>Allow other objects be dropped onto treenodes (call getTreeNode)</listitem>
+        <listitem>Allow inline editing of node title (with special widget?)</listitem>
+        <listitem>Add refresh/reset method to loading controllers</listitem>
+        <listitem>Make unselectable extension (on treeChange bindings)</listitem>
+        <listitem>Add childIcon extension with folder picture opening/closing</listitem>
+    </itemizedlist>
+    
+    
+    
+    <section>
+        <title>Possible TODO</title>
+        
+        <itemizedlist>
+            <listitem>On Drag'n'drop tree 'wobbles', because node size increases/decreases when it is
+            bordered.  Could be nice to evade it, either placing another transparent div with border onto
+            the node or decreasing their size, or using padding divs, or..</listitem>
+            
+        </itemizedlist>
+        </section>
+        
+</section>
