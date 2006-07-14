@@ -7,6 +7,8 @@
         <listitem>New HTML/CSS structure, lightweight and easier to style</listitem>
         <listitem>Code rewritten completely, event system changed</listitem>
         <listitem>Multiline content support</listitem>
+        <listitem>New extensions model with examples and out-of-the box ready extensions</listitem>
+        <listitem>classPrefix property allows different trees be styled differently</listitem>
         <listitem>Implicit helper widget creations are removed</listitem>
         <listitem>less features get included into core, more to be shipped separately.</listitem>
         <listitem>Lazy creation feature</listitem>

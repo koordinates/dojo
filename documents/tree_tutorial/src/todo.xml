@@ -4,8 +4,7 @@
     
     
     
-    <itemizedlist>
-        <listitem>new extensions model, loadExtension method.</listitem>
+    <itemizedlist>        
         <listitem>Denote interface so any widget may become a treeNode</listitem>
         <listitem>Add document.write() for all images to prevent IE dynamic loading on every expand</listitem>
         <listitem>Allow passing nested arrays from server for TreeLoadingController</listitem>
@@ -14,6 +13,7 @@
         <listitem>Add refresh/reset method to loading controllers</listitem>
         <listitem>Make unselectable extension (on treeChange bindings)</listitem>
         <listitem>Add childIcon extension with folder picture opening/closing</listitem>
+        <listitem>Automated unit-testing system on Selenium</listitem>
     </itemizedlist>
     
     
