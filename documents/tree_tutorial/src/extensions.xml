@@ -7,5 +7,5 @@
     
     <para>You can declare extensions in markup by listing them in <code>extension</code> property.</para>
     
-    <para>An extension is declared just like any other widget and it has special <code>loadExtension</code> method</para>
+    <para>An extension is declared just like any other widget and it has special <code>loadExtension</code> method that applies it.</para>
     </section>
