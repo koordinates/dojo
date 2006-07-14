@@ -1,4 +1,5 @@
 dojo.provide("dojo.widget.Manager");
+dojo.require("dojo.namespace");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.event.*");
