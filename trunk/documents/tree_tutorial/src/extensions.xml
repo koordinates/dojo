@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Extensions</title>
+    
+    <para>Extensions provide additional functionality by either adding new methods or hooking on events</para>
+    <para>Additional aim of writing them is to demonstrate how one can do certain things.</para>
+    
+    <para>You can declare extensions in markup by listing them in <code>extension</code> property.</para>
+    
+    </section>

@@ -6,15 +6,13 @@
     
     <itemizedlist>
         <listitem>new extensions model, loadExtension method.</listitem>
-        <listitem>Lazy creation feature</listitem>
         <listitem>Denote interface so any widget may become a treeNode</listitem>
-        <listitem>Add  dcoument.write() for all images to prevent IE dynamic loading on every expand</listitem>
-        <listitem>How to assign attributes to node using markup? We need object property because otherwise such assign is not working</listitem>
-        <listitem>Make method to swrite icons with document.write to avoid dynamic reloading in IE</listitem>
+        <listitem>Add document.write() for all images to prevent IE dynamic loading on every expand</listitem>
         <listitem>Allow passing nested arrays from server for TreeLoadingController</listitem>
         <listitem>Allow other objects be dropped onto treenodes (call getTreeNode)</listitem>
         <listitem>Allow inline editing of node title (with special widget?)</listitem>
         <listitem>Add refresh/reset method to loading controllers</listitem>
+        <listitem>Make unselectable extension (on treeChange bindings)</listitem>
     </itemizedlist>
     
     
