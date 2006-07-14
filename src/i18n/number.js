@@ -3,6 +3,7 @@ dojo.provide("dojo.i18n.number");
 dojo.require("dojo.experimental");
 dojo.require("dojo.regexp");
 dojo.require("dojo.i18n.common");
+dojo.require("dojo.lang.common");
 
 /**
 * Method to Format and validate a given number
@@ -12,14 +13,15 @@ dojo.require("dojo.i18n.common");
 * @param int places
 *   The number of decimal places to be included in the formatted number
 * @param String locale
-*	The locale used to determine the currency.
+*	The locale used to determine the number format.
 * @return String
-* 	the formatted number of type String if successful; Nan if an
-* 	invalid currency is provided or null if an unsupported locale value was provided.
+* 	the formatted number of type String if successful
+*   or null if an unsupported locale value was provided
 **/
 dojo.i18n.number.format = function(value, places, locale /*optional*/){
-	var formatData = dojo.i18n._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
-	throw "not implemented";
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
+return String(value);
+//	dojo.unimplemented("dojo.i18n.number.format");
 };
 
 /**
@@ -33,8 +35,8 @@ dojo.i18n.number.format = function(value, places, locale /*optional*/){
 * 	Returns a primative numeric value or null if an unsupported locale is provided.
 **/
 dojo.i18n.number.parse = function(value, locale /*optional*/){
-	var formatData = dojo.i18n._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
-	throw "not implemented";
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
+	dojo.unimplemented("dojo.i18n.number.parse");
 };
 
 /**
@@ -46,15 +48,17 @@ dojo.i18n.number.parse = function(value, locale /*optional*/){
   @param flags  An object.
     flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
       Default is [true, false], (i.e. sign is optional).
-    flags.separator  The character used as the thousands separator.  Default is no separator.
+    flags.separator  The character used as the thousands separator.  Default is specified by the locale.
       For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
+      The empty array [] makes the default separator optional.   
   @return  true or false.
 */
 dojo.i18n.number.isInteger = function(value, locale /*optional*/, flags /*optional*/) {
 	flags = (typeof flags == "object") ? flags : {};
 
-	var formatData = dojo.i18n._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
 	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
+	else if (dojo.lang.isArray(flags.separator)){flags.separator = [formatData[1],""];}
 	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
 	if (typeof flags.groupSize2 == "undefined") {flags.groupSize2 = formatData[4];}
 
@@ -72,7 +76,7 @@ dojo.i18n.number.isInteger = function(value, locale /*optional*/, flags /*option
   @param flags  An object.
     flags.places  The integer number of decimal places.
       If not given, the decimal part is optional and the number of places is unlimited.
-    flags.decimal  The character used for the decimal point.  Default is ".".
+    flags.decimal  The character used for the decimal point.  The default is specified by the locale.
     flags.exponent  Express in exponential notation.  Can be true, false, or [true, false].
       Default is [true, false], (i.e. the exponential part is optional).
     flags.eSigned  The leading plus-or-minus sign on the exponent.  Can be true, false, 
@@ -83,7 +87,7 @@ dojo.i18n.number.isInteger = function(value, locale /*optional*/, flags /*option
 dojo.i18n.number.isReal = function(value, locale /*optional*/, flags /*optional*/) {
 	flags = (typeof flags == "object") ? flags : {};
 
-	var formatData = dojo.i18n._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
 	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
 	if (typeof flags.decimal == "undefined") {flags.decimal = formatData[2];}
 	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
@@ -93,9 +97,14 @@ dojo.i18n.number.isReal = function(value, locale /*optional*/, flags /*optional*
 	return re.test(value);
 };
 
+//TODO: hide in a closure?
 //TODO: change to use hashes and mixins, rather than arrays?
+//Q: fallback algorithm/how to structure table:
+// does it make sense to look by country code most of the time (wildcard match on
+// language, except where it's relevant) and provide default country when only
+// a language is given?
 dojo.i18n.number.FORMAT_TABLE = {
-	//0: thousand seperator for monetory, 1: thousand seperator for number, 2: decimal seperator, 3: group size, 4: second group size because of india
+	//0: thousand seperator for monetary, 1: thousand seperator for number, 2: decimal seperator, 3: group size, 4: second group size because of india
 	'ar-ae': ["","", ",", 1],
 	'ar-bh': ["","",",", 1],
 	'ar-dz': ["","",",", 1],
@@ -187,3 +196,10 @@ dojo.i18n.number.FORMAT_TABLE = {
 	'zh-hk': [",",",",".", 3],
 	'zh-tw': [",", ",",".", 3]
 };
+
+dojo.i18n.number._mapToLocalizedFormatData = function(locale, table){
+	locale = dojo.normalizeLocale(locale);
+//TODO: most- to least-specific search? search by country code?
+//TODO: implement aliases to simplify and shorten tables
+	return table[locale]; // just look for an exact match, for now
+}
