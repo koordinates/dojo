@@ -94,6 +94,7 @@ dojo.widget.TreeWithNode = {
 	 */
 	setChildren: function(childrenArray) {
 		//dojo.profile.start("setChildren");
+		//dojo.debug("setChildren in "+this);
 		
 		if (this.isTreeNode && !this.isFolder) {
 			//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
@@ -102,11 +103,12 @@ dojo.widget.TreeWithNode = {
 		}
 		
 		this.children = childrenArray;
-			
+		
 		for(var i=0; i<this.children.length; i++) {
-			var child = this.children[i]
+			var child = this.children[i];
 			
 			if (!(child instanceof dojo.widget.Widget)) {
+				
 				if (child instanceof Array) {
 					// arguments for createWidget
 					child = this.children[i] = dojo.widget.createWidget(child, {}, this);
@@ -120,14 +122,15 @@ dojo.widget.TreeWithNode = {
 				//dojo.debug("setChildren creates node "+child);
 			}
 			
-			child.parent = this;
-			if (this.tree !== child.tree) {				
-				child.updateTree(this.tree);
-			}
+			if (!child.parent) { // detached child
+				child.parent = this;
+				if (this.tree !== child.tree) {				
+					child.updateTree(this.tree);
+				}
 			
-			//dojo.debug("Add layout for "+child);
-			child.viewAddLayout();
-			this.containerNode.appendChild(child.domNode);
+				//dojo.debug("Add layout for "+child);
+				child.viewAddLayout();
+				this.containerNode.appendChild(child.domNode);
 					
 				var message = {
 					child: child,
@@ -140,8 +143,6 @@ dojo.widget.TreeWithNode = {
 		
 				dojo.event.topic.publish(this.tree.eventNames.addChild, message);
 			}
-			
-			dojo.event.topic.publish(this.tree.eventNames.addChild, message);
 		
 		}
 		//dojo.profile.end("setChildren");

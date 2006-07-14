@@ -111,7 +111,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var node = this.treeNode;
 			
 		
-		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode) + "px";
+		node.contentNode.style.width = dojo.html.getBorderBox(node.labelNode).width + "px";
 
 		if (position == "onto") {					
 			node.contentNode.style.border = this.indicatorStyle;

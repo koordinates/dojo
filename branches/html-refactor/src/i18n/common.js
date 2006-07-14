@@ -46,11 +46,4 @@ dojo.i18n.isLTR = function(locale /*optional*/){
 	var lang = dojo.normalizeLocale(locale).split('-')[0];
 	var RTL = {ar:true,fa:true,he:true,ur:true,yi:true};
 	return !RTL[lang];
-}
-
-dojo.i18n._mapToLocalizedFormatData = function(locale, table){
-	locale = dojo.normalizeLocale(locale);
-//TODO: most- to least-specific search? search by country code?
-//TODO: implement aliases to simplify and shorten tables
-	return table[locale]; // just look for an exact match, for now
-}
+};

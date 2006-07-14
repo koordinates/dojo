@@ -216,7 +216,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	insertNode: function(parent, index) {
 		
 		if (!index) index = 0;
-		//dojo.debug("insertNode "+this+" before "+index);
+		//dojo.debug("insertNode "+this+" parent "+parent+" before "+index);
 		
 		if (index==0) {
 			dojo.html.prependChild(this.domNode, parent.containerNode);
@@ -290,7 +290,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		this.viewAddLayout();
 	
-		var siblingsCount = parent.children.length;
 		
 		//dojo.debug("siblings "+parent.children);
 		
@@ -350,7 +349,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		treeNode.initialize(args, {}, parent);
 		
-		//dojo.profile.end(this.widgetType+" createSimple");
+		//dojo.profile.end(this.widgetType+"createSimple");
 		
 		return treeNode;
 	},
@@ -446,13 +445,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	/* node does not leave tree */
 	doDetach: function() {
+		//dojo.debug("doDetach in "+this+" parent "+this.parent+" class "+dojo.html.getClass(this.domNode));
+		
 		var parent = this.parent;
 		
 		if (!parent) return;
 		
 		var index = this.getParentIndex();
 		
-		s
+		
 		this.viewRemoveLayout();
 		
 		dojo.widget.DomWidget.prototype.removeChild.call(parent, this);
@@ -508,11 +509,17 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expand: function(){
 		if (this.isExpanded) return;
 
+		//dojo.debug("expand in "+this);
 		
 		if (!this.expandChildrenChecked) {
 			this.setChildren(this.children);
 			this.expandChildrenChecked = true;
 		}
+		
+		// no matter if I have children or not. need to show/hide container anyway.
+		// e.g empty folder is expanded => then child is added
+		this.showChildren();
+		
 
 		this.isExpanded = true;
 
@@ -548,6 +555,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 
 	showChildren: function(){
+		
 		this.tree.toggleObj.show(
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShow")
 		);
@@ -556,6 +564,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
 			dojo.dnd.dragManager.cacheTargetLocations();
 		}
+	},
+	
+	toString: function() {
+		return '[TreeNodeV3, '+this.title+']';
 	}
 
 

@@ -100,6 +100,7 @@ dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 		this.form.style.display = "";
 		this.editable.style.display = "none";
 
+		ee.focus();
 		ee.select();
 		this.submitButton.disabled = true;
 	},
