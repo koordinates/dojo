@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.RemoteTabController");
 dojo.provide("dojo.widget.html.RemoteTabController");
 
 //Summary
-//Remote Tab Controller widget.  Can be located independantly of a tab
+//Remote Tab Controller widget.  Can be located independently of a tab
 //container and control the selection of its tabs
 
 dojo.widget.defineWidget(
@@ -16,12 +16,18 @@ dojo.widget.defineWidget(
 			//summary
 			//Initialize Remote Tab Controller
 
+			// for passing in as a parameter
 			this.tabContainer = "";
+
+			// the reference to the tab container
 			this._tabContainer="";
 
+			//hash of tabs
 			this.tabs = {}; 
+
 			this.selectedTab=null;
 
+			//override these classes to change the style
 			this.class="dojoRemoteTabController";
 			this.labelClass="dojoRemoteTab";
 		},
@@ -39,7 +45,7 @@ dojo.widget.defineWidget(
 			
 		},
 
-		setTabContainer: function(tabContainer) {
+		setTabContainer: function(/* dojo.widget.TabContainer */ tabContainer) {
 			//summary
 			//Connect this Remote Tab Controller to an existing TabContainer
 			this._tabContainer = tabContainer;
@@ -54,10 +60,10 @@ dojo.widget.defineWidget(
 			//Setup tab buttons for each of the TabContainers tabs
 
 			dojo.html.removeChildren(this.domNode);
-			dojo.lang.forEach(this._tabContainer.children, dojo.lang.hitch(this,this.addTab));
+			dojo.lang.forEach(this._tabContainer.children, this.addTab, this);
 		},
 
-		onTabSelected: function(tab) {
+		onTabSelected: function(/* dojo.widget.TabPane */tab) {
 			//summary
 			//Do this when a tab gets selected
 			if (this.selectedTab.tab != tab.widgetId) {
@@ -69,7 +75,7 @@ dojo.widget.defineWidget(
 
 		},
 
-		addTab: function(tab) {
+		addTab: function(/* dojo.widget.TabPane */tab) {
 			//summary
 			//Add a new button 
 
