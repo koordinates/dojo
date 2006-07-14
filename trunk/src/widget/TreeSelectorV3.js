@@ -15,7 +15,7 @@ dojo.widget.TreeSelectorV3 = function() {
 	this.listenedTrees = [];
 	
 	this.extensions = [];
-
+	
 }
 
 dojo.inherits(dojo.widget.TreeSelectorV3, dojo.widget.HtmlWidget);
@@ -27,7 +27,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	selectedNode: null,
 
 	listenTreeEvents: ["addChild","collapse","treeChange", "detach", "treeDestroy"],
-	
+		
 	
 	eventNamesDefault: {
 		select : "select",
@@ -44,11 +44,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			}
 		}
 		
-		if (args.extensions) {
-			this.loadExtensions(args.extensions);
-		}
-		
-
+		this.loadExtensions();
 	},
 
 
