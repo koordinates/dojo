@@ -28,11 +28,11 @@ dojo.lang.extend(dojo.widget.TreeEmphaseOnSelect, {
 	},
 	
 	onSelect: function(message) {
-		dojo.html.addClass(message.node.labelNode, 'TreeNodeEmphased');
+		dojo.html.addClass(message.node.labelNode, message.node.tree.classPrefix+'NodeEmphased');
 	},
 	
 	onDeselect: function(message) {
-		dojo.html.removeClass(message.node.labelNode, 'TreeNodeEmphased');
+		dojo.html.removeClass(message.node.labelNode, message.node.tree.classPrefix+'NodeEmphased');
 	}
 	
 

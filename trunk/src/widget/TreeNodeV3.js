@@ -45,12 +45,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 
 
-	icons: {
-		expandOpen: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_minus.gif"),
-		expandClosed: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_plus.gif"),
-		expandLeaf: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_leaf.gif")
-	},		
-
+	lazyInitEnabled: true,
 
 
 	expandChildrenChecked: false,
@@ -58,31 +53,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expandNode: null,
 	labelNode: null,
 
-	// expandNode has +- CSS background. Not img.src for performance, background src string resides in single place.
-	// selection in KHTML/Mozilla disabled treewide, IE requires unselectable for every node
-	// you can add unselectable if you want both in postCreate of tree and in this template
-
-	// create new template and put into prototype
-	nodeTemplate: function() {
-		var domNode = document.createElement("div");
-		dojo.html.setClass(domNode, "TreeNode");
-		
-		var expandNode = document.createElement("img");
-		dojo.html.setClass(expandNode, "TreeExpand");
-		
-		// need <span> inside <div>
-		// div for multiline support, span for styling exactly the text, not whole line
-		var labelNode = document.createElement("span");
-		
-		var contentNode = document.createElement("div");
-		dojo.html.setClass(contentNode, "TreeContent");
-		
-		domNode.appendChild(expandNode);
-		domNode.appendChild(contentNode);
-		contentNode.appendChild(labelNode);
-		
-		return domNode;
-	}(),
 	
 	/**
 	 * override for speed 
@@ -101,9 +71,21 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 	
 	// fast buildRendering 	
-	buildRendering: function() {
+	buildRendering: function(args, fragment, parent) {
+		
+		
+		if (args.tree) {
+			this.tree = dojo.lang.isString(args.tree) ? dojo.widget.manager.getWidgetById(args.tree) : args.tree;			
+		} else if (parent.tree) {
+			this.tree = parent.tree;
+		} 
+		
+		if (!this.tree) {
+			dojo.raise("Can't evaluate tree from arguments or parent");
+		}
+		
 		//dojo.profile.start("buildRendering - cloneNode");
-		this.domNode = this.nodeTemplate.cloneNode(true);
+		this.domNode = this.tree.nodeTemplate.cloneNode(true);
 		//dojo.profile.end("buildRendering - cloneNode");
 		this.expandNode = this.domNode.firstChild;		
 		this.contentNode = this.domNode.childNodes[1];
@@ -140,13 +122,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	containerNode: null,
 
-	containerNodeTemplate: function() {
-			var div = document.createElement('div');
-			div.style.display = 'none';			
-			dojo.html.setClass(div, "TreeContainer");
-			return div;
-		}(),
-
+	
 	getInfo: function() {
 		// No title here (title may be widget)
 		var info = {
@@ -170,20 +146,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	initialize: function(args, frag, parent) {
 		
-		dojo.profile.start("initialize");
+		//dojo.profile.start("initialize");
 		
 		// set tree from args or from parent
 		//dojo.debug("initialize in "+this);
-		if (args.tree) {
-			this.tree = dojo.lang.isString(args.tree) ? dojo.widget.manager.getWidgetById(args.tree) : args.tree;			
-		} else if (parent.tree) {
-			this.tree = parent.tree;
-		} 
-		
-		if (!this.tree) {
-			dojo.raise("Can't evaluate tree from arguments or parent");
-		}
-				
+						
 		
 		if (this.children.length || args.isFolder) {
 			//dojo.debug("children found");
@@ -199,7 +166,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, {oldTree:null, newTree:this.tree, node:this} );
 		
 		
-		dojo.profile.end("initialize");
+		//dojo.profile.end("initialize");
 		
 		//dojo.debug("initialize out "+this);
 		//dojo.debug(this+" parent "+parent);
@@ -242,6 +209,27 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			function(elem) {			
 				elem.tree = newTree;			
 		});
+		
+		/**
+		 * UNTESTED
+		 * changes class prefix for all domnodes when moving between trees
+		 */
+		if (oldTree.classPrefix != newTree.classPrefix) {
+			var stack = [this.domNode]
+			var elem;
+			var reg = new RegExp("^(^|\\s)"+oldTree.classPrefix, "g");
+			
+			while (elem = stack.pop()) {
+				for(i=0; i<elem.childNodes.length; i++) {
+					var childNode = elem.childNodes[i]
+					if (childNode.nodeType != 1) continue;
+					// change prefix for classes
+					dojo.html.setClass(childNode, dojo.html.getClass(childNode).replace(reg, '$1'+newTree.classPrefix));
+					stack.push(childNode);
+				}
+			}
+			
+		}
 		
 				
 	},
@@ -299,7 +287,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			if (index == siblingsCount-1) {
 				parent.children[siblingsCount-2].viewUpdateLayout();		
 			}
+		} else if (parent.isTreeNode) {
+			parent.viewSetHasChildren();
 		}
+		
 		
 
 		var message = {
@@ -307,6 +298,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			index: index,
 			parent: parent
 		}
+		
 		
 		dojo.event.topic.publish(this.tree.eventNames.addChild, message);
 
@@ -343,7 +335,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.end(this.widgetType + " manager");
 		
 		//dojo.profile.start(this.widgetType + " buildRendering");
-		treeNode.buildRendering();		
+		treeNode.buildRendering(args, {}, parent);		
 		//dojo.profile.end(this.widgetType + " buildRendering");
 		
 		treeNode.initialize(args, {}, parent);
@@ -368,7 +360,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 	viewAddContainer: function() {
 		// make controller only if children exist
-		this.containerNode = this.containerNodeTemplate.cloneNode(true);
+		this.containerNode = this.tree.containerNodeTemplate.cloneNode(true);
 		this.domNode.appendChild(this.containerNode);
 	},
 	
@@ -381,7 +373,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			//dojo.debug("Parent isTree => add isTreeRoot");
 			
 			// use setClass, not addClass for speed
-			dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode) + ' isTreeRoot')
+			dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode) + ' '+this.tree.classPrefix+'IsRoot')
 		}
 		//dojo.debug(this.parent.children.length);
 		//dojo.debug(this.parent.children[this.parent.children.length-1]);
@@ -389,7 +381,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			//dojo.debug("Checked last node for "+this);
 			//dojo.debug("Parent last is "+this.parent.children[this.parent.children.length-1]);
 			//dojo.debug("last node => add isTreeLast for "+this);
-			dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode) + ' isTreeLast')			
+			dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode) + ' '+this.tree.classPrefix+'IsLast')			
 		}
 		//dojo.profile.end("viewAddLayout");
 		//dojo.debug("viewAddLayout out");
@@ -401,8 +393,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("viewRemoveLayout in "+this);
 		//dojo.profile.start("viewRemoveLayout");
 		//dojo.debug((new Error()).stack);
-		dojo.html.removeClass(this.domNode, "TreeRoot");
-		dojo.html.removeClass(this.domNode, "isTreeLast");
+		dojo.html.removeClass(this.domNode, this.tree.classPrefix+"IsRoot");
+		dojo.html.removeClass(this.domNode, this.tree.classPrefix+"IsLast");
 		//dojo.profile.end("viewRemoveLayout");
 	},
 		
@@ -413,14 +405,26 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("viewSetExpand in "+this);
 		
 		if (this.isFolder) {			
-			var expand = this.isExpanded ? "expandOpen" : "expandClosed";
+			var expand = this.isExpanded ? this.tree.classPrefix+"ExpandOpen" : this.tree.classPrefix+"ExpandClosed";
 		} else {
-			var expand = "expandLeaf";
+			var expand = this.tree.classPrefix+"ExpandLeaf";
 		}
-		this.expandNode.src = this.icons[expand];
+		var reg = new RegExp(this.tree.classPrefix+"Expand\\w+");
+		
+		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+expand);
+		//dojo.debug(dojo.html.getClass(this.domNode))
 		//dojo.profile.end("viewSetExpand");
 		
 	},	
+	
+	viewSetHasChildren: function() {
+		//dojo.debug(this+' '+this.children.length)
+		if (this.children.length) {
+			dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode)+' '+this.tree.classPrefix+'HasChildren');
+		} else {
+			dojo.html.removeClass(this.domNode, this.tree.classPrefix+'HasChildren');
+		}
+	},
 	
 	
 // ================================ detach from parent ===================================
@@ -469,6 +473,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			if (index == siblingsCount) { // deleted last node
 				parent.children[siblingsCount-1].viewUpdateLayout();		
 			}
+		} else {
+			parent.viewSetHasChildren();
 		}
 		/*
 		if (parent.children.length == 0) {
@@ -510,7 +516,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		//dojo.debug("expand in "+this);
 		
-		if (!this.expandChildrenChecked) {
+		if (this.lazyInitEnabled && !this.expandChildrenChecked) {
 			this.setChildren(this.children);
 			this.expandChildrenChecked = true;
 		}
@@ -547,7 +553,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHide")
 		);
 
-		// if dnd is in action, recalculate changed coordinates 
+		// if dnd is in action, recalculate changed coordinates
+		// FIXME: resize event here, DnD should catch it
 		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
 			dojo.dnd.dragManager.cacheTargetLocations();
 		}

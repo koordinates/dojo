@@ -62,6 +62,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		collapse: "collapse"
 	},
 
+	classPrefix: "Tree",
 	
 	/**
 	 * is it possible to add a new child to leaf ?
@@ -83,13 +84,50 @@ dojo.lang.extend(dojo.widget.TreeV3, {
     // will have cssRoot before it 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeV3.css"),
 
-	templateString: '<div class="TreeContainer">\n</div>',
+	templateString: '<div>\n</div>',
 
 	isExpanded: true, // consider this "root node" to be always expanded
 
 	isTree: true,
 	
 	objectId: "",
+
+	// expandNode has +- CSS background. Not img.src for performance, background src string resides in single place.
+	// selection in KHTML/Mozilla disabled treewide, IE requires unselectable for every node
+	// you can add unselectable if you want both in postCreate of tree and in this template
+
+	// create new template and put into prototype
+	makeNodeTemplate: function() {
+		
+		var domNode = document.createElement("div");
+		dojo.html.setClass(domNode, this.classPrefix+"Node "+this.classPrefix+"ExpandLeaf");
+		
+		var expandNode = document.createElement("div");
+		dojo.html.setClass(expandNode, this.classPrefix+"Expand");
+		
+		// need <span> inside <div>
+		// div for multiline support, span for styling exactly the text, not whole line
+		var labelNode = document.createElement("span");
+		
+		var contentNode = document.createElement("div");
+		dojo.html.setClass(contentNode, this.classPrefix+"Content");
+		
+		domNode.appendChild(expandNode);
+		domNode.appendChild(contentNode);
+		contentNode.appendChild(labelNode);
+		
+		return domNode;
+	},
+
+	makeContainerNodeTemplate: function() {
+		
+		var div = document.createElement('div');
+		div.style.display = 'none';			
+		dojo.html.setClass(div, this.classPrefix+"Container");
+		
+		
+		return div;
+	},
 
 
 	//
@@ -174,12 +212,16 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		this.adjustEventNames();
 		this.adjustDNDMode();
 
+		this.nodeTemplate = this.makeNodeTemplate();
+		this.containerNodeTemplate = this.makeContainerNodeTemplate();
+		
 		//this.initializeSelector();
 		//this.initializeController();
 		//this.initializeMenu();
 
 		this.containerNode = this.domNode;
 		
+		dojo.html.setClass(this.domNode, this.classPrefix+"Container");
 		
 		if (args['controller']) {
 			dojo.widget.manager.getWidgetById(args['controller']).listenTree(this)

@@ -104,6 +104,10 @@ dojo.widget.TreeWithNode = {
 		
 		this.children = childrenArray;
 		
+		if (this.isTreeNode) {
+			this.viewSetHasChildren();
+		}
+		
 		for(var i=0; i<this.children.length; i++) {
 			var child = this.children[i];
 			
@@ -145,6 +149,8 @@ dojo.widget.TreeWithNode = {
 			}
 		
 		}
+		
+
 		//dojo.profile.end("setChildren");
 		
 	},	
