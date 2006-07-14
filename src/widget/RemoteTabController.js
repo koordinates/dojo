@@ -37,9 +37,7 @@ dojo.widget.defineWidget(
 			dojo.html.addClass(this.domNode, this.class);
 
 			dojo.addOnLoad(dojo.lang.hitch(this, function() {
-				if (dojo.lang.isString(this.tabContainer)) {
-					this.setTabContainer(dojo.widget.byId(this.tabContainer));
-				}
+				this.setTabContainer(dojo.widget.byId(this.tabContainer));
 			}));
 
 			
@@ -51,8 +49,8 @@ dojo.widget.defineWidget(
 			this._tabContainer = tabContainer;
 			this.setupTabs();
 
-			dojo.event.connect(this._tabContainer, "_setupTab", dojo.lang.hitch(this,this.setupTabs));
-			dojo.event.connect(this._tabContainer, "selectTab", dojo.lang.hitch(this, this.onTabSelected));
+			dojo.event.connect(this._tabContainer, "_setupTab", this, "setupTabs");
+			dojo.event.connect(this._tabContainer, "selectTab", this, "onTabSelected");
 		},
 
 		setupTabs: function() {
@@ -78,8 +76,6 @@ dojo.widget.defineWidget(
 		addTab: function(/* dojo.widget.TabPane */tab) {
 			//summary
 			//Add a new button 
-
-			dojo.debug("Adding button for " + tab.label);
 
 			// Create label
 			div = document.createElement("div");
@@ -114,10 +110,9 @@ dojo.widget.defineWidget(
 				this.selectTab(tab); 
 			}));
 
-			dojo.event.connect(div, "onkeydown", dojo.lang.hitch(this._tabContainer, function(evt, tab) {
+			dojo.event.connect(div, "onkeydown", dojo.lang.hitch(this._tabContainer, function(evt) {
 				this.tabNavigation(evt, tab); 
 			}));
-
 		}
 
 	},
