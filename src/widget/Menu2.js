@@ -95,13 +95,9 @@ dojo.widget.defineWidget(
 		}
 
 		if(around){
-			if(!aroundOrient){ //By default, attempt to open above the aroundNode, or below
-				aroundOrient = {'BL': 'TL', 'TL': 'BL'};
-			}
-			dojo.html.placeOnScreenAroundElement(this.domNode, node, padding, true, aroundOrient);
+			this.move(node, padding, aroundOrient);
 		}else{
-			if(!orient){ orient = 'TL,TR,BL,BR';}
-			dojo.html.placeOnScreen(this.domNode, x, y, padding, true, orient);
+			this.move(x, y, padding, orient);
 		}
 		this.domNode.style.display="none";
 
@@ -111,6 +107,24 @@ dojo.widget.defineWidget(
 		this.show();
 
 		this.isShowingNow = true;
+	},
+
+	/* Summery: calculate where to place the popup
+		move(node, padding, aroundOrient) */
+	move: function(x, y, padding, orient){
+		var around = (typeof x == "object");
+		if(around){
+			var aroundOrient=padding;
+			var node=x;
+			padding=y;
+			if(!aroundOrient){ //By default, attempt to open above the aroundNode, or below
+				aroundOrient = {'BL': 'TL', 'TL': 'BL'};
+			}
+			dojo.html.placeOnScreenAroundElement(this.domNode, node, padding, true, aroundOrient);
+		}else{
+			if(!orient){ orient = 'TL,TR,BL,BR';}
+			dojo.html.placeOnScreen(this.domNode, x, y, padding, true, orient);
+		}
 	},
 
 	close: function(){
