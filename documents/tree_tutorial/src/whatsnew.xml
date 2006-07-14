@@ -4,9 +4,10 @@
     
     
     <itemizedlist>
-        <listitem>New HTML/CSS structure lightweight and easier to style</listitem>
-        <listitem>multiline content support</listitem>
-        <listitem>Many implicit actions that were kept for compatibility in TreeV2 are now removed</listitem>
+        <listitem>New HTML/CSS structure, lightweight and easier to style</listitem>
+        <listitem>Code rewritten completely, event system changed</listitem>
+        <listitem>Multiline content support</listitem>
+        <listitem>Implicit helper widget creations are removed</listitem>
         <listitem>less features get included into core, more to be shipped separately.</listitem>
         <listitem>Lazy creation feature</listitem>
         <listitem>Major speedup. Almost all operations with single node are now small constant time. Fast program way

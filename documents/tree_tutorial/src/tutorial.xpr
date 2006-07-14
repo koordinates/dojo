@@ -5,12 +5,14 @@
     </meta>
     <projectTree name="tutorial.xpr">
         <file name="components.xml"/>
+        <file name="extensions.xml"/>
         <file name="howto.xml"/>
         <file name="introduction.xml"/>
         <file name="main.xml"/>
         <file name="nodecreation.xml"/>
         <file name="performance.xml"/>
         <file name="performance_tricks.xml"/>
+        <file name="todo.xml"/>
         <file name="tree_treenode.xml"/>
         <file name="whatsnew.xml"/>
     </projectTree>

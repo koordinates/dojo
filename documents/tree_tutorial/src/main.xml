@@ -6,6 +6,7 @@
    <!ENTITY whatsnew SYSTEM "whatsnew.xml">
    <!ENTITY todo SYSTEM "todo.xml">
    <!ENTITY performance SYSTEM "performance.xml">  
+   <!ENTITY extensions SYSTEM "extensions.xml">  
    <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
     <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
 ]>
@@ -18,6 +19,8 @@
     &performance_tricks;
     &components;
     &tree_treenode;
+    &extensions;
     &howto;
+    
 </section>
 
