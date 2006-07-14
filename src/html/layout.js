@@ -275,7 +275,8 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 			height: coords[3]
 		};
 	}else if(!coords.nodeType && !(coords instanceof String || typeof coords == "string") &&
-			 (width in coords || height in coords || left in coords || x in coords || top in coords || y in coords)){
+			 ('width' in coords || 'height' in coords || 'left' in coords ||
+			  'x' in coords || 'top' in coords || 'y' in coords)){
 		// coords is a coordinate object or at least part of one
 		var ret = {
 			left: coords.left||coords.x||0,
