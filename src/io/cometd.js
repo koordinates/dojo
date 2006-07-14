@@ -1,8 +1,9 @@
-dojo.provide("dojo.io.cometdIO");
+dojo.require("dojo.io"); // io.js provides setIFrameSrc and the IO namespace
+dojo.provide("dojo.io.cometd");
 dojo.provide("cometd");
-dojo.reqiure("dojo.AdapterRegistry");
-dojo.require("dojo.io"); // io.js provides setIFrameSrc
-dojo.require("dojo.io.BrowserIO"); // need it for the handshake, etc.
+dojo.require("dojo.AdapterRegistry");
+dojo.require("dojo.json");
+dojo.require("dojo.io.BrowserIO"); // we need XHR for the handshake, etc.
 // FIXME: determine if we can use XMLHTTP to make x-domain posts despite not
 //        being able to hear back about the result
 dojo.require("dojo.io.IframeIO"); // for posting across domains
@@ -48,17 +49,17 @@ cometd = new function(){
 		// placeholder
 	}
 
-	this.init = function(handshakeObject, root){
+	this.init = function(props, root){
+		props = props||{};
 		// go ask the short bus server what we can support
-		with(handshakeObject){
-			version = this.version;
-			minimumVersion = this.minimumVersion;
-			channel = "/meta/handshake";
-			// FIXME: do we just assume that the handshakeObject knows
-			// everything we care about WRT to auth? Should we be trying to
-			// call back into it for subsequent auth actions? Should we fire
-			// local auth functions to ask for/get auth data?
-		}
+		props.version = this.version;
+		props.minimumVersion = this.minimumVersion;
+		props.channel = "/meta/handshake";
+		// FIXME: do we just assume that the props knows
+		// everything we care about WRT to auth? Should we be trying to
+		// call back into it for subsequent auth actions? Should we fire
+		// local auth functions to ask for/get auth data?
+
 		// FIXME: what about ScriptSrcIO for x-domain comet?
 		this.url = root||djConfig["cometdRoot"];
 		if(!this.url){
@@ -69,8 +70,8 @@ cometd = new function(){
 			url: this.url,
 			method: "POST",
 			mimetype: "text/json",
-			load: dojo.lang.hitch(this, "finishInit");
-			content: { message: dojo.json.serialize(handshakeObject) }
+			load: dojo.lang.hitch(this, "finishInit"),
+			content: { "message": dojo.json.serialize(props) }
 		};
 		return dojo.io.bind(bindArgs);
 	}
@@ -114,14 +115,14 @@ cometd = new function(){
 			(message.channel.substr(0, 5) == "/meta")){
 			// check for various meta topic actions that we need to respond to
 			switch(message.channel){
-				case: "/meta/subscribe":
+				case "/meta/subscribe":
 					if(!message.successful){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
 					}
 					this.subscribed(message.channel);
 					break;
-				case: "/meta/unsubscribe":
+				case "/meta/unsubscribe":
 					if(!message.successful){
 						dojo.debug("cometd unsubscription error for channel", message.channel, ":", message.error);
 						return;
@@ -155,7 +156,7 @@ cometd = new function(){
 		//		Optional. Other meta-data to be mixed into the top-level of the
 		//		message
 		var message = {
-			data: data
+			data: data,
 			channel: channel
 		};
 		if(properties){
@@ -327,7 +328,7 @@ cometd.iframeTransport = new function(){
 				clientId:	this.clientId
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
-			});
+			})
 		});
 	}
 
@@ -344,6 +345,8 @@ cometd.iframeTransport = new function(){
 					timestamp:	this.lastTimestamp,
 					id:			this.lastId
 					// FIXME: no authToken provision!
+				})
+			});
 		}
 	}
 
@@ -370,14 +373,14 @@ cometd.iframeTransport = new function(){
 					this.connectionId = message.connectionId;
 					this.connected = true;
 					break;
-				case: "/meta/reconnect":
+				case "/meta/reconnect":
 					if(!message.successful){
 						dojo.debug("cometd reconnection error:", message.error);
 						return;
 					}
 					this.connected = true;
 					break;
-				case: "/meta/subscribe":
+				case "/meta/subscribe":
 					if(!message.successful){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
@@ -450,6 +453,8 @@ cometd.iframeTransport = new function(){
 	}
 
 	this.startup = function(handshakeData){
+		dojo.debug("startup!");
+		dojo.debug(dojo.json.serialize(handshakeData));
 
 		if(this.connected){ return; }
 
@@ -457,7 +462,7 @@ cometd.iframeTransport = new function(){
 
 		// NOTE: we require the server to cooperate by hosting
 		// cometdInit.html at the designated endpoint
-		this.rcvNodeName = "cometdRcv_"+ShortBus.getRandStr();
+		this.rcvNodeName = "cometdRcv_"+cometd.getRandStr();
 		// the "forever frame" approach
 		var initUrl = cometd.url+"/?tunnelInit=iframe&domain="+document.domain;
 		if(false && dojo.render.html.ie){ // FIXME: DISALBED FOR NOW
@@ -474,8 +479,8 @@ cometd.iframeTransport = new function(){
 			this.rcvNode.parentWindow.dojo = dojo;
 			ifrDiv.innerHTML = "<iframe src='"+initUrl+"'></iframe>"
 		}else{
-			this.rcvNode = dojo.io.createIFrame(this.rcvNodeName);
-			dojo.io.setIFrameSrc(this.rcvNode, initUrl);
+			this.rcvNode = dojo.io.createIFrame(this.rcvNodeName, "", initUrl);
+			// dojo.io.setIFrameSrc(this.rcvNode, initUrl);
 			// we're still waiting on the iframe to call back up to use and
 			// advertise that it's been initialized via tunnelInit
 		}

@@ -4,22 +4,17 @@
     
     
     <itemizedlist>
-        <listitem>New HTML/CSS structure lightweight and easier to style</listitem>
-        <listitem>multiline content support</listitem>
-        <listitem>Many implicit actions that were kept for compatibility in TreeV2 are now removed</listitem>
-        <listitem>less features get included into core, more to be shipped separately. TODO: extensions model, loadExtension method.</listitem>
+        <listitem>New HTML/CSS structure, lightweight and easier to style</listitem>
+        <listitem>Code rewritten completely, event system changed</listitem>
+        <listitem>Multiline content support</listitem>
+        <listitem>Implicit helper widget creations are removed</listitem>
+        <listitem>less features get included into core, more to be shipped separately.</listitem>
         <listitem>Lazy creation feature</listitem>
-        <listitem>TODO: denote interface so any widget may become a treeNode</listitem>
         <listitem>Major speedup. Almost all operations with single node are now small constant time. Fast program way
             of node creation is 5-10 times faster than old version. Markup creation is 2-5 times faster also.                    
         </listitem>
-        <listitem>TODO: add  dcoument.write() for all images to prevent IE dynamic loading on every expand</listitem>
-        <listitem>How to assign attributes to node using markup? We need object property because otherwise such assign is not working</listitem>
-        <listitem>TODO: make method to swrite icons with document.write to avoid dynamic reloading in IE</listitem>
-        <listitem>TODO: allow passing nested arrays from server for TreeLoadingController</listitem>
-        <listitem>TODO: allow other objects be dropped onto treenodes (call getTreeNode)</listitem>
-        <listitem>TODO: allow inline editing of node title (with special widget?)</listitem>
+
     </itemizedlist>
     
+    
 </section>
-

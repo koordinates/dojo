@@ -13,7 +13,9 @@ dojo.widget.TreeSelectorV3 = function() {
 	this.eventNames = {};
 
 	this.listenedTrees = [];
-
+	
+	this.extensions = [];
+	
 }
 
 dojo.inherits(dojo.widget.TreeSelectorV3, dojo.widget.HtmlWidget);
@@ -25,7 +27,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	selectedNode: null,
 
 	listenTreeEvents: ["addChild","collapse","treeChange", "detach", "treeDestroy"],
-	
+		
 	
 	eventNamesDefault: {
 		select : "select",
@@ -42,15 +44,12 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			}
 		}
 		
-		// TODO: cancel/restore selection on dnd eventsd
-		/*if (args['dndcontroller']) {
-			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
-		}*/
-
+		this.loadExtensions();
 	},
 
 
 	listenNode: function(node) {
+		//if (!node) dojo.debug((new Error()).stack)
 		dojo.event.connect(node.labelNode, "onclick", this, "onLabelClick");
 		dojo.event.connect(node.labelNode, "ondblclick", this, "onLabelDblClick");
 	},
@@ -62,7 +61,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 
 	onAddChild: function(message) {
-		this.listenNode(message.source);
+		this.listenNode(message.child);
 	},
 	
 
@@ -157,8 +156,6 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 	select: function(node){
 
-		node.viewAddEmphase();
-
 		this.selectedNode = node;
 		
 		dojo.event.topic.publish(this.eventNames.select, {node: node} );
@@ -169,7 +166,6 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		var node = this.selectedNode;
 
 		this.selectedNode = null;
-		node.viewRemoveEmphase();
 		dojo.event.topic.publish(this.eventNames.deselect, {node: node} );
 
 	}

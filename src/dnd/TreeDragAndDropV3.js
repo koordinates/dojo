@@ -33,16 +33,9 @@ dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
 
 		dragObject.treeNode = this.treeNode;
 
-		dragObject.onDragStart = dojo.lang.hitch(dragObject, function(e) {
+		dragObject.onDragStart = function(e) {
 
-			/* FIXME:  save selection
-			  publish dragStart event here so selector temporarily cancels selection
-			this.savedSelectedNode = this.treeNode.tree.selector.selectedNode;
-			if (this.savedSelectedNode) {
-				this.savedSelectedNode.unMarkSelected();
-			}
-			*/
-
+				
 			var result = dojo.dnd.HtmlDragObject.prototype.onDragStart.apply(this, arguments);
 
 
@@ -56,15 +49,10 @@ dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
 			return result;
 
 
-		});
+		}
 
 		dragObject.onDragEnd = function(e) {
-
-			/* FIXME restore selection 
-			if (this.savedSelectedNode) {
-				this.savedSelectedNode.markSelected();
-			}
-			*/
+						
 			//dojo.debug(e.dragStatus);
 
 			return dojo.dnd.HtmlDragObject.prototype.onDragEnd.apply(this, arguments);
@@ -105,7 +93,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 	position: null,
 
-	indicatorStyle: "2px black solid",
+	indicatorStyle: "2px black groove",
 
 	showIndicator: function(position) {
 
@@ -120,10 +108,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		this.position = position;
 		
-		if (position == "onto") {
-			this.treeNode.viewAddEmphase();
+		var node = this.treeNode;
+			
+		
+		node.contentNode.style.width = dojo.style.getInnerWidth(node.labelNode) + "px";
+
+		if (position == "onto") {					
+			node.contentNode.style.border = this.indicatorStyle;
 		} else {
-			var node = this.treeNode;
 			// FIXME: bottom-top or highlight should cover ONLY top/bottom or div itself,
 			// not span whole line (try DND)
 			// FAILURE: Can't put span inside div: multiline bottom-top will span multiple lines
@@ -131,17 +123,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 				node.contentNode.style.borderTop = this.indicatorStyle;
 			} else if (position == "after") {
 				node.contentNode.style.borderBottom = this.indicatorStyle;
-			}			
-			node.contentNode.style.width = dojo.html.getBorderBox(node.labelNode).width + "px";
+			}									
 		}  
-
-
 	},
 
 	hideIndicator: function() {
-		this.treeNode.contentNode.style.borderBottom="";
-		this.treeNode.contentNode.style.borderTop="";
-		this.treeNode.viewRemoveEmphase();
+		this.treeNode.contentNode.style.borderBottom = "";
+		this.treeNode.contentNode.style.borderTop = "";
+		this.treeNode.contentNode.style.border = "";
 		this.treeNode.contentNode.style.width=""
 		this.position = null;
 	},
@@ -291,24 +280,29 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var position = ""; // "" <=> forbidden
 		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO
 		  && DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
+			//dojo.debug("BOTH");
 			if (p<=0.3) {
 				position = "before";
-			} else if (p<=0.7) {
+				// if children are expanded then I ignore understrike, cause it is confusing with firstChild
+			} else if (p<=0.7 || this.treeNode.isExpanded && this.treeNode.children.length) {
 				position = "onto";
 			} else {
 				position = "after";
 			}
 		} else if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
-			if (p<=0.5) {
+			//dojo.debug("BETWEEN");
+			if (p<=0.5 || this.treeNode.isExpanded && this.treeNode.children.length) {
 				position = "before";
 			} else {
 				position = "after";
 			}
 		}
 		else if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO) {
+			//dojo.debug("ONTO");
 			position = "onto";
 		}
 
+		//dojo.debug(position);
 
 		return position;
 	},

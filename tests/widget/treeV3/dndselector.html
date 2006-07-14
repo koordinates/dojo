@@ -11,8 +11,10 @@
 	dojo.require("dojo.lang.*");
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
-	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");	
+	dojo.require("dojo.widget.TreeSelectorV3");
 	dojo.require("dojo.widget.TreeDNDControllerV3");	
+	dojo.require("dojo.widget.TreeEmphaseOnSelect");	
 	dojo.require("dojo.dnd.TreeDragAndDropV3");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -28,10 +30,11 @@
 
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
+<div dojoType="TreeSelectorV3" widgetId="selector" extensions="TreeEmphaseOnSelect"></div>	
 <div dojoType="TreeDNDControllerV3" controller="controller" widgetId="dndcontroller"></div>	
 
 MyTree
-<div dojoType="TreeV3" expandLevel="2" DNDMode="ONTO;BETWEEN" toggle="fade" DNDAcceptTypes="firstTree" widgetId="firstTree" controller="controller" dndcontroller="dndcontroller">
+<div dojoType="TreeV3" expandLevel="2" DNDMode="BETWEEN;ONTO" toggle="fade" DNDAcceptTypes="firstTree" widgetId="firstTree" controller="controller" dndcontroller="dndcontroller" selector="selector">
     <div dojoType="TreeNodeV3" title="Item 1">
         <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
         <div dojoType="TreeNodeV3" title="Item 1.2">

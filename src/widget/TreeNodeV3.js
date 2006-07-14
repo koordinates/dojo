@@ -52,16 +52,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		expandLeaf: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/expand_leaf.gif")
 	},		
 
-	viewAddEmphase: function() {
-		//dojo.debug(this.labelNode)
-		dojo.html.addClass(this.labelNode, 'TreeNodeEmphased');
-	},
 
-
-	viewRemoveEmphase: function() {
-		//dojo.debug('unmark')
-		dojo.html.removeClass(this.labelNode, 'TreeNodeEmphased');
-	},
 
 	expandChildrenChecked: false,
 
@@ -240,13 +231,19 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			return;
 		}
 		
+		var oldTree = this.tree;
 		
-		var message = {oldTree:this.tree, newTree:newTree, node:this}
+		var message = {oldTree:oldTree, newTree:newTree, node:this}
 		
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
 		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
 		
-		dojo.lang.forEach(this.getDescendants(), function(elem) { elem.tree = newTree; });
+		
+		dojo.lang.forEach(this.getDescendants(),
+			function(elem) {			
+				elem.tree = newTree;			
+		});
+		
 				
 	},
 	
@@ -492,9 +489,17 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 * publish destruction event so that controller may unregister/unlisten
 	 */
 	destroy: function() {
-		var message = {oldTree:this.tree, newTree:null, node:this}
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
+		/**
+		 * Send event before actual work, because handlers may want to use parent etc
+		 */
+		var message = {oldTree:this.tree, newTree:null, node:this}		
+		
+		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );
+				
+	
+
+		this.doDetach();			
 				
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
