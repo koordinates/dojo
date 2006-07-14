@@ -30,13 +30,11 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 			
 	loadExtensions: function(extensions) {
 		
-		var _this = this;
+		var _this = this;		
 		
-		var extensionList = extensions.split(",");
-		
-		
-		dojo.lang.forEach(extensionList, function(elem) {			
-			dojo.widget[dojo.string.trim(elem)].prototype.loadExtension(_this);
+		dojo.lang.forEach(this.extensions, function(elem) {
+			//dojo.debug('!'+elem+'!')
+			dojo.widget.manager.getWidgetById(elem).loadExtension(_this);
 			}
 		);
 	},

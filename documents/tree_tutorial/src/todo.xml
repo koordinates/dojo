@@ -13,7 +13,9 @@
         <listitem>Allow inline editing of node title (with special widget?)</listitem>
         <listitem>Add refresh/reset method to loading controllers</listitem>
         <listitem>Make unselectable extension (on treeChange bindings)</listitem>
+        <listitem>Add childIcon extension with folder picture opening/closing</listitem>
     </itemizedlist>
+    
     
     
     <section>
