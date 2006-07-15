@@ -102,9 +102,13 @@ dojo.widget.TreeWithNode = {
 			this.state = this.loadStates.LOADED;
 		}
 		
+		var hadChildren = this.children.length > 0;
+		
 		this.children = childrenArray;
 		
-		if (this.isTreeNode) {
+		var hasChildren = this.children.length > 0;
+		if (this.isTreeNode && hasChildren != hadChildren) {
+			// call only when hasChildren state changes
 			this.viewSetHasChildren();
 		}
 		

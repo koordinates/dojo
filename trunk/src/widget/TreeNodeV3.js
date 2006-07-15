@@ -52,7 +52,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	expandNode: null,
 	labelNode: null,
-
+	
 	
 	/**
 	 * override for speed 
@@ -69,6 +69,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.widget.getParser().createSubComponents(frag, this);
 	},*/ 
 		
+	nodeType: "Document",
+	
+	getNodeType: function() {
+		if (this.isFolder) return "Folder";
+		return this.nodeType;
+	},
+	
 	
 	// fast buildRendering 	
 	buildRendering: function(args, fragment, parent) {
@@ -84,12 +91,29 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			dojo.raise("Can't evaluate tree from arguments or parent");
 		}
 		
+		
 		//dojo.profile.start("buildRendering - cloneNode");
 		this.domNode = this.tree.nodeTemplate.cloneNode(true);
 		//dojo.profile.end("buildRendering - cloneNode");
-		this.expandNode = this.domNode.firstChild;		
-		this.contentNode = this.domNode.childNodes[1];
-		this.labelNode = this.contentNode.firstChild;
+		
+		
+		/**
+		 * recursively assign node properties to template parts
+		 */
+		var stack = [this.domNode]
+		var elem;
+		while (elem = stack.pop()) {
+			for(i=0; i<elem.childNodes.length; i++) {
+				var childNode = elem.childNodes[i]
+				if (childNode.nodeType != 1) continue;
+				if (childNode.getAttribute("template")) {
+					this[childNode.getAttribute("template")] = childNode;
+					childNode.removeAttribute("template");
+				}
+				stack.push(childNode);
+			}
+		}
+		
 		
 		this.domNode.widgetId = this.widgetId;
 		
@@ -138,7 +162,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("SetFolder in "+this);
 		this.isFolder = true;
 		this.viewSetExpand();
-		this.viewAddContainer(); // all folders have container.		
+		this.viewAddContainer(); // all folders have container.
+		//dojo.debug("publish "+this.tree.eventNames.setFolder);
 		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
 	},
 	
@@ -159,9 +184,12 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			
 			// viewSetExpand for Folder is set here also
 			this.setFolder();			
-		} else {			
+		} else {
+			// set expandicon for leaf 	
 			this.viewSetExpand();
 		}
+		
+		//dojo.debug("publish "+this.tree.eventNames.treeChange);
 		
 		dojo.event.topic.publish(this.tree.eventNames.treeChange, {oldTree:null, newTree:this.tree, node:this} );
 		
@@ -217,7 +245,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if (oldTree.classPrefix != newTree.classPrefix) {
 			var stack = [this.domNode]
 			var elem;
-			var reg = new RegExp("^(^|\\s)"+oldTree.classPrefix, "g");
+			var reg = new RegExp("(^|\\s)"+oldTree.classPrefix, "g");
 			
 			while (elem = stack.pop()) {
 				for(i=0; i<elem.childNodes.length; i++) {
@@ -263,7 +291,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		if (parent.isTreeNode) {
 			if (!parent.isFolder) {
-				//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
+				//dojo.debug("folderize parent "+parent);
 				parent.setFolder();
 				parent.state = parent.loadStates.LOADED;
 			}
@@ -409,21 +437,22 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		} else {
 			var expand = this.tree.classPrefix+"ExpandLeaf";
 		}
-		var reg = new RegExp(this.tree.classPrefix+"Expand\\w+");
-		
+		var reg = new RegExp("(^|\\s)"+this.tree.classPrefix+"Expand\\w+",'g');			
+				
 		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+expand);
 		//dojo.debug(dojo.html.getClass(this.domNode))
 		//dojo.profile.end("viewSetExpand");
 		
 	},	
 	
-	viewSetHasChildren: function() {
+	viewSetHasChildren: function() {		
 		//dojo.debug(this+' '+this.children.length)
-		if (this.children.length) {
-			dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode)+' '+this.tree.classPrefix+'HasChildren');
-		} else {
-			dojo.html.removeClass(this.domNode, this.tree.classPrefix+'HasChildren');
-		}
+		
+		var clazz =  this.tree.classPrefix+'Children'+(this.children.length ? 'Yes' : 'No');
+
+		var reg = new RegExp("(^|\\s)"+this.tree.classPrefix+"Children\\w+",'g');			
+		
+		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+clazz);		
 	},
 	
 	
