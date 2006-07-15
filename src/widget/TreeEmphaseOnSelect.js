@@ -16,16 +16,19 @@ dojo.widget.TreeEmphaseOnSelect = function() {
 
 dojo.inherits(dojo.widget.TreeEmphaseOnSelect, dojo.widget.HtmlWidget);
 
+
 dojo.lang.extend(dojo.widget.TreeEmphaseOnSelect, {
 	widgetType: "TreeEmphaseOnSelect",
 	
-	/**
-	 * loadExtension: function(target, arguments object)
-	 */
-	loadExtension: function(selector) {
-		dojo.event.topic.subscribe(selector.eventNames.select, this, "onSelect");
-		dojo.event.topic.subscribe(selector.eventNames.deselect, this, "onDeselect");		
+	selector: "",
+	
+	initialize: function() {
+		this.selector = dojo.widget.manager.getWidgetById(this.selector);
+		
+		dojo.event.topic.subscribe(this.selector.eventNames.select, this, "onSelect");
+		dojo.event.topic.subscribe(this.selector.eventNames.deselect, this, "onDeselect");	
 	},
+
 	
 	onSelect: function(message) {
 		dojo.html.addClass(message.node.labelNode, message.node.tree.classPrefix+'NodeEmphased');
