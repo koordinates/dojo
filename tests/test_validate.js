@@ -552,7 +552,7 @@ function test_validate_check(){
 				{text: "option 5", value: "pistachio almond", selected: true},
 				{text: "option 6", value: "mocha almond chip", selected: false}
 			]
-		},
+		}
 	};
 
 	// Profile for form input
@@ -588,8 +588,8 @@ function test_validate_check(){
 		// confirm fields
 		confirm: {
 			email_confirm: "email",	
-			pw2: "pw1",	
-		},
+			pw2: "pw1"
+		}
 	};
 
 	// results object
