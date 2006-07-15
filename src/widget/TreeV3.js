@@ -125,9 +125,14 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		 * on this hack
 		 * FIXME: do it in CSS only, remove iconHeight from code
 		 */
-		if (dojo.render.html.ie || dojo.render.html.safari) {
+		if (dojo.render.html.ie) {
 			contentNode.style.height = this.iconHeight;
+		}		
+		if (dojo.render.html.safari) {
+			contentNode.style.height = this.iconHeight;		
 		}
+		
+		
 		
 		
 		domNode.appendChild(expandNode);
