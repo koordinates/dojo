@@ -7,20 +7,20 @@
 
 /* close has higher priority */
 .TreeChildrenYes.TreeExpandClosed .TreeContent {
-    background-image : url();
+    background-image : url('');
 }
 
 /* higher priotity: same length and appear after background-definition */
 .TreeChildrenNo.TreeExpandLeaf .TreeContent {
-    background-image : url();
+    background-image : url('');
 }
 
 .TreeChildrenNo.TreeExpandClosed .TreeContent {
-    background-image : url();
+    background-image : url('');
 }
 
 .TreeChildrenNo.TreeExpandOpen .TreeContent {
-    background-image : url();
+    background-image : url('');
 }
 
 
