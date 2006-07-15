@@ -543,23 +543,45 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	expand: function(){
 		if (this.isExpanded) return;
 
+
+		dojo.profile.start("expand");
+		
 		//dojo.debug("expand in "+this);
 		
+		dojo.profile.start("expand - lazy init");
 		if (this.lazyInitEnabled && !this.expandChildrenChecked) {
 			this.setChildren(this.children);
 			this.expandChildrenChecked = true;
 		}
 		
+		dojo.profile.end("expand - lazy init");
+		
 		// no matter if I have children or not. need to show/hide container anyway.
 		// e.g empty folder is expanded => then child is added
+		
+		dojo.profile.start("expand - showChildren");
+		
 		this.showChildren();
+		
+		dojo.profile.end("expand - showChildren");
 		
 
 		this.isExpanded = true;
 
+
+		dojo.profile.start("expand - viewSetExpand");
+		
 		this.viewSetExpand();
+		
+		dojo.profile.end("expand - viewSetExpand");
+
+		dojo.profile.start("expand - event");
 
 		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
+		
+		dojo.profile.end("expand - event");
+		
+		dojo.profile.end("expand");
 	},
 
 
@@ -591,9 +613,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	showChildren: function(){
 		
+		dojo.profile.start("Toggler show");
+		
 		this.tree.toggleObj.show(
-			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShow")
+			this.containerNode, this.toggleDuration, this.explodeSrc
 		);
+		
+		dojo.profile.end("Toggler show");
 
 		
 		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
