@@ -75,6 +75,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	 */
 	unsetFolderOnEmpty: true,
 
+	iconHeight: 18,
+
 	DNDModes: {
 		BETWEEN: 1,
 		ONTO: 2
@@ -113,9 +115,20 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		var labelNode = document.createElement("span");
 		labelNode.setAttribute("template", "labelNode");
 		
+		
 		var contentNode = document.createElement("div");
 		dojo.html.setClass(contentNode, this.classPrefix+"Content");
 		contentNode.setAttribute("template", "contentNode");
+		
+		/**
+		 * IE & Safari do not support min-height properly so I have to rely
+		 * on this hack
+		 * FIXME: do it in CSS only, remove iconHeight from code
+		 */
+		if (dojo.render.html.ie || dojo.render.html.safari) {
+			contentNode.style.height = this.iconHeight;
+		}
+		
 		
 		domNode.appendChild(expandNode);
 		domNode.appendChild(contentNode);
