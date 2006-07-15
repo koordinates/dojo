@@ -9,6 +9,8 @@
 </script>
 <script type="text/javascript" src="../../../dojo.js"></script>
 <script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.profile");
 	dojo.require("dojo.lang.*");
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
@@ -17,13 +19,24 @@
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.hostenv.writeIncludes();
 </script>
-<link rel="stylesheet" href="../../../src/widget/templates/TreeV3.css" type="text/css"/>
-<link rel="stylesheet" href="../../../src/widget/templates/TreeDocIcon.css" type="text/css"/>
 </head>
 <body>
 	
 <h2>Simplest tree</h2>
 
+<div style="display:none">	
+	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>	
+
+	
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
 
@@ -51,6 +64,7 @@
 </div>
 	
 
+<input type="button" value="Profile dump" onclick="dojo.profile.dump(true)">
 
 </body>
 </html>
