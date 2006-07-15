@@ -24,7 +24,7 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, dojo.widget.TreeCommon.prototype);
 dojo.lang.extend(dojo.widget.TreeDocIcon, {
 	widgetType: "TreeDocIcon",
 	
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeDocIcon.css"),
+	//templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeDocIcon.css"),
 
 	templateString: '<div class="dojoTree"></div>',
 

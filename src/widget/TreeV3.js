@@ -83,7 +83,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	DNDAcceptTypes: "",
 
     // will have cssRoot before it 
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeV3.css"),
+	//templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeV3.css"),
 
 	templateString: '<div>\n</div>',
 
