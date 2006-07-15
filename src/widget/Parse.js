@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.Parse");
 
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.dom");
+dojo.require("dojo.namespace");
 
 dojo.widget.Parse = function(fragment){
 	this.propertySetsList = [];
@@ -25,7 +26,7 @@ dojo.widget.Parse = function(fragment){
 					//namespace, if it has one
 					if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn) && pos>0){				    					
 						var ns = dojo.getNamespace(nsName);
-						var tagName = ltn.substring(pos+1);
+						var tagName = ltn.substring(pos+1,ltn.length);
 						var domain = null;
 						var dojoDomain = frag[ltn]["dojoDomain"] || frag[ltn]["dojodomain"]; 
 						if(dojoDomain){
@@ -36,23 +37,11 @@ dojo.widget.Parse = function(fragment){
 						}
 					    
 					}
-
-					// Workaround: begin
-					// to provide a deprecation for pre 0.4 style custom widgets. Remove this after 0.4,
-					// and s/ltnWorkaround/ltn/
-					var ltnWorkaround = ltn;
-					if (!djTags[ltn] && (nsName == "dojo")){
-						ltnWorkaround = "*:"+ltn.substring(pos+1);
-						if (djTags[ltnWorkaround]){
-							dojo.deprecated("dojo.widget.Parse","Custom widgets are deprecated. Use namespaces instead","0.5");
-						}
-					}
-					// Workaround: end
 	
-					if(djTags[ltnWorkaround]){
+					if(djTags[ltn]){
 						built = true;
 						frag.tagName = ltn;
-						var ret = djTags[ltnWorkaround](frag, this, parentComp, frag["index"]);
+						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
 						comps.push(ret);
 					}else{
 						if(dojo.lang.isString(ltn) && nsName && djConfig.namespaces[nsName]){
