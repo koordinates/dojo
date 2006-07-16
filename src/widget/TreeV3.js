@@ -104,21 +104,20 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	makeNodeTemplate: function() {
 		
 		var domNode = document.createElement("div");
-		dojo.html.setClass(domNode, this.classPrefix+"Node "+this.classPrefix+"ExpandLeaf "+this.classPrefix+"ChildrenNo");
+		dojo.html.setClass(domNode, this.classPrefix+"Node "+this.classPrefix+"ExpandLeaf "+this.classPrefix+"ChildrenNo");		
+		this.nodeTemplate = domNode;
 		
 		var expandNode = document.createElement("div");
 		dojo.html.setClass(expandNode, this.classPrefix+"Expand");
-		expandNode.setAttribute("template", "expandNode");
-		
+		this.expandNodeTemplate = expandNode;
+
 		// need <span> inside <div>
 		// div for multiline support, span for styling exactly the text, not whole line
 		var labelNode = document.createElement("span");
-		labelNode.setAttribute("template", "labelNode");
-		
+		this.labelNodeTemplate = labelNode;
 		
 		var contentNode = document.createElement("div");
 		dojo.html.setClass(contentNode, this.classPrefix+"Content");
-		contentNode.setAttribute("template", "contentNode");
 		
 		/**
 		 * IE & Safari do not support min-height properly so I have to rely
@@ -132,6 +131,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 			contentNode.style.height = this.iconHeight;		
 		}
 		
+		this.contentNodeTemplate = contentNode;
 		
 		
 		
@@ -139,10 +139,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		domNode.appendChild(contentNode);
 		contentNode.appendChild(labelNode);
 		
-		this.nodeTemplate = domNode;
-		this.expandNodeTemplate = expandNode;
-		this.contentNodeTemplate = contentNode;
-		this.labelNodeTemplate = labelNode;
+		
 	},
 
 	makeContainerNodeTemplate: function() {
