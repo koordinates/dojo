@@ -4,16 +4,16 @@
     
     
     
-    <itemizedlist>
-        <listitem>new extensions model, loadExtension method.</listitem>
+    <itemizedlist>        
         <listitem>Denote interface so any widget may become a treeNode</listitem>
-        <listitem>Add document.write() for all images to prevent IE dynamic loading on every expand</listitem>
+        <listitem>Add document.write() for all images to prevent IE dynamic loading on every expand. Maybe put this functionality into CSS parser?</listitem>
         <listitem>Allow passing nested arrays from server for TreeLoadingController</listitem>
         <listitem>Allow other objects be dropped onto treenodes (call getTreeNode)</listitem>
         <listitem>Allow inline editing of node title (with special widget?)</listitem>
         <listitem>Add refresh/reset method to loading controllers</listitem>
         <listitem>Make unselectable extension (on treeChange bindings)</listitem>
-        <listitem>Add childIcon extension with folder picture opening/closing</listitem>
+        <listitem>Automated unit-testing system on Selenium</listitem>
+        <listitem>Optimize all gifs with AGO carefully. AGO spoils transparent gifs sometimes</listitem>
     </itemizedlist>
     
     

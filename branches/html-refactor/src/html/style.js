@@ -419,7 +419,7 @@ dojo.html.insertCssText = function(cssStr, doc, URI){
 dojo.html.fixPathsInCssText = function(cssStr, URI){
 	if(!cssStr || !URI){ return; }
 	var match, str = "", url = "";
-	var regex = /url\(\s*([\t\s\w()\/.\\'"-:#=&?]*)\s*\)/;
+	var regex = /url\(\s*([\t\s\w()\/.\\'"-:#=&?]+)\s*\)/;
 	var regexProtocol = /(file|https?|ftps?):\/\//;
 	var regexTrim = /^[\s]*(['"]?)([\w()\/.\\'"-:#=&?]*)\1[\s]*?$/;
 	while(match = regex.exec(cssStr)){

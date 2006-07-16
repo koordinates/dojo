@@ -542,7 +542,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
 	// var tic = new Date();
-	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag.namespace);
+	var twidget = dojo.widget.manager.getImplementation(stype); //TODO: pass namespace
 	if(!twidget){
 		throw new Error("cannot find \"" + stype + "\" widget");
 	}else if (!twidget.create){
@@ -609,10 +609,9 @@ dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/
 	var nsName = (pos > -1) ? namespace.substring(0,pos) : namespace;
 	dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
 	if(nsName != "dojo"){
-		// 2006/06/26 Providing a duplicate handler is a deprecation
-		// and should be removed from code in 0.5.  For this purpose only,
-		// '*' is used as a fallback namespace.
-		dojo.widget.tags.addParseTreeHandler("*:"+type.toLowerCase());
+		// 2006/06/26 Providing a duplicate dojo handler is a deprecation
+		// and should eventually be removed from code
+		dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
 	}
 
 	props=(props)||{};

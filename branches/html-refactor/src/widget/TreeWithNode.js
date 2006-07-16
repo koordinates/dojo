@@ -102,7 +102,15 @@ dojo.widget.TreeWithNode = {
 			this.state = this.loadStates.LOADED;
 		}
 		
+		var hadChildren = this.children.length > 0;
+		
 		this.children = childrenArray;
+		
+		var hasChildren = this.children.length > 0;
+		if (this.isTreeNode && hasChildren != hadChildren) {
+			// call only when hasChildren state changes
+			this.viewSetHasChildren();
+		}
 		
 		for(var i=0; i<this.children.length; i++) {
 			var child = this.children[i];
@@ -145,6 +153,8 @@ dojo.widget.TreeWithNode = {
 			}
 		
 		}
+		
+
 		//dojo.profile.end("setChildren");
 		
 	},	

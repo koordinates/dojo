@@ -13,9 +13,7 @@ dojo.widget.TreeSelectorV3 = function() {
 	this.eventNames = {};
 
 	this.listenedTrees = [];
-	
-	this.extensions = [];
-	
+		
 }
 
 dojo.inherits(dojo.widget.TreeSelectorV3, dojo.widget.HtmlWidget);
@@ -44,7 +42,6 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			}
 		}
 		
-		this.loadExtensions();
 	},
 
 
