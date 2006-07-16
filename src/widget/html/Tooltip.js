@@ -37,7 +37,7 @@ dojo.widget.defineWidget(
 			dojo.widget.html.Tooltip.superclass.fillInTemplate.call(this, args, frag);
 
 			//wrap this.domNode in a PopupContainer
-			//pass animation setting to popupWidget
+			//and pass animation setting to it
 			this.popupWidget = dojo.widget.createWidget("PopupContainer", {toggle: this.toggle, toggleDuration: this.toggleDuration});
 			this.popupWidget.addChild(this);
 			dojo.html.addClass(this.popupWidget.domNode, "dojoTooltip");
@@ -123,8 +123,7 @@ dojo.widget.defineWidget(
 		},
 
 		position: function(){
-			this.popupWidget.close();
-			this.popupWidget.open(this.mouse.x, this.mouse.y, this, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
+			this.popupWidget.move(this.mouse.x, this.mouse.y, [10,15], "TL,TR,BL,BR");
 		},
 
 		onLoad: function(){

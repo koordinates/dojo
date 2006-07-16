@@ -31,6 +31,7 @@ dojo.widget.TreeV3 = function() {
 	this.DNDAcceptTypes = [];
 	this.actionsDisabled = [];
 	
+	this.beforeInitialize = [];
 	
 	this.tree = this;
 
@@ -62,6 +63,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		collapse: "collapse"
 	},
 
+	classPrefix: "Tree",
 	
 	/**
 	 * is it possible to add a new child to leaf ?
@@ -73,6 +75,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	 */
 	unsetFolderOnEmpty: true,
 
+	iconHeight: 18,
+
 	DNDModes: {
 		BETWEEN: 1,
 		ONTO: 2
@@ -83,13 +87,73 @@ dojo.lang.extend(dojo.widget.TreeV3, {
     // will have cssRoot before it 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeV3.css"),
 
-	templateString: '<div class="TreeContainer">\n</div>',
+	templateString: '<div>\n</div>',
 
 	isExpanded: true, // consider this "root node" to be always expanded
 
 	isTree: true,
 	
 	objectId: "",
+
+
+	// expandNode has +- CSS background. Not img.src for performance, background src string resides in single place.
+	// selection in KHTML/Mozilla disabled treewide, IE requires unselectable for every node
+	// you can add unselectable if you want both in postCreate of tree and in this template
+
+	// create new template and put into prototype
+	makeNodeTemplate: function() {
+		
+		var domNode = document.createElement("div");
+		dojo.html.setClass(domNode, this.classPrefix+"Node "+this.classPrefix+"ExpandLeaf "+this.classPrefix+"ChildrenNo");
+		
+		var expandNode = document.createElement("div");
+		dojo.html.setClass(expandNode, this.classPrefix+"Expand");
+		expandNode.setAttribute("template", "expandNode");
+		
+		// need <span> inside <div>
+		// div for multiline support, span for styling exactly the text, not whole line
+		var labelNode = document.createElement("span");
+		labelNode.setAttribute("template", "labelNode");
+		
+		
+		var contentNode = document.createElement("div");
+		dojo.html.setClass(contentNode, this.classPrefix+"Content");
+		contentNode.setAttribute("template", "contentNode");
+		
+		/**
+		 * IE & Safari do not support min-height properly so I have to rely
+		 * on this hack
+		 * FIXME: do it in CSS only, remove iconHeight from code
+		 */
+		if (dojo.render.html.ie) {
+			contentNode.style.height = this.iconHeight;
+		}		
+		if (dojo.render.html.safari) {
+			contentNode.style.height = this.iconHeight;		
+		}
+		
+		
+		
+		
+		domNode.appendChild(expandNode);
+		domNode.appendChild(contentNode);
+		contentNode.appendChild(labelNode);
+		
+		this.nodeTemplate = domNode;
+		this.expandNodeTemplate = expandNode;
+		this.contentNodeTemplate = contentNode;
+		this.labelNodeTemplate = labelNode;
+	},
+
+	makeContainerNodeTemplate: function() {
+		
+		var div = document.createElement('div');
+		div.style.display = 'none';			
+		dojo.html.setClass(div, this.classPrefix+"Container");
+		
+		this.containerNodeTemplate = div;
+		
+	},
 
 
 	//
@@ -174,29 +238,35 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		this.adjustEventNames();
 		this.adjustDNDMode();
 
+		this.makeNodeTemplate();
+		this.makeContainerNodeTemplate();
+		
 		//this.initializeSelector();
 		//this.initializeController();
 		//this.initializeMenu();
 
 		this.containerNode = this.domNode;
 		
+		dojo.html.setClass(this.domNode, this.classPrefix+"Container");
 		
-		if (args['controller']) {
-			dojo.widget.manager.getWidgetById(args['controller']).listenTree(this)
-		}
-		if (args['selector']) {
-			dojo.widget.manager.getWidgetById(args['selector']).listenTree(this)
-		}
-		if (args['dndcontroller']) {
-			dojo.widget.manager.getWidgetById(args['dndcontroller']).listenTree(this)
-		}
-			
+		var _this = this;
+		
+		//dojo.debug(this.beforeInitialize[1]);
+		
+		dojo.lang.forEach(this.beforeInitialize,
+			function(elem) {
+				var t = dojo.widget.manager.getWidgetById(elem);
+				if (!t) {
+					dojo.raise("No widget for "+elem);
+				}
+				t.listenTree(_this)
+			}
+		);		
 		
 
 	},
 
-	postCreate: function() {
-						
+	postCreate: function() {						
 		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 	},
 	

@@ -272,22 +272,21 @@ dojo.regexp.integer = function(flags) {
 	}
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
-		function(q) { if (q) { return "[-+]"; }  return ""; }
+		function(q) { return q ? "[-+]" : ""; }
 	);
 
 	// number RE
 	var numberRE = dojo.regexp.buildGroupRE(flags.separator,
 		function(sep) { 
 			if ( sep == "" ) { 
-				return "\\d+";
+				return "(0|[1-9]\\d*)";
 			}
 			var grp = flags.groupSize, grp2 = flags.groupSize2;
 			if ( typeof grp2 != "undefined" ) {
-				var grp2RE = "(\\d{1," + grp2 + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
-				return ((grp-grp2) > 0) ? "(" + grp2RE + "|\\d{0," + (grp-grp2) + "})" : grp2RE;
-				
+				var grp2RE = "(0|[1-9]\\d{0," + (grp2-1) + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
+				return ((grp-grp2) > 0) ? "(" + grp2RE + "|(0|[1-9]\\d{0," + (grp-1) + "}))" : grp2RE;
 			}
-			return "(\\d{1," + grp + "}([" + sep + "]\\d{" + grp + "})*)";
+			return  "(0|[1-9]\\d{0," + (grp-1) + "}([" + sep + "]\\d{" + grp + "})*)";
 		}
 	);
 

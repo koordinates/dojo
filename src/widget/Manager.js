@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.Manager");
-dojo.require("dojo.namespace");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.event.*");
@@ -144,18 +143,18 @@ dojo.widget.manager = new function(){
 		return dojo.lang.map(widgetPackages, function(elt) { return(elt!==true ? elt : undefined); });
 	}
 	
-	this.getImplementation = function(widgetName, ctorObject, mixins, namespace){
+	this.getImplementation = function(widgetName, ctorObject, mixins){
 		// try and find a name for the widget
-		var impl = this.getImplementationName(widgetName, namespace);
-		if(impl){
+		var impl = this.getImplementationName(widgetName);
+		if(impl){ 
 			// var tic = new Date();
-			var ret = ctorObject ? new impl(ctorObject) : new impl();
+			var ret = new impl(ctorObject);
 			// dojo.debug(new Date() - tic);
 			return ret;
 		}
 	}
 
-	this.getImplementationName = function(widgetName, namespace){
+	this.getImplementationName = function(widgetName){
 		/*
 		 * This is the overly-simplistic implemention of getImplementation (har
 		 * har). In the future, we are going to want something that allows more
@@ -166,17 +165,13 @@ dojo.widget.manager = new function(){
 		 * insensitive, which does not necessarialy mesh with the markup which
 		 * can construct a widget.
 		 */
-		if(!namespace){namespace="dojo";}
+
 		var lowerCaseWidgetName = widgetName.toLowerCase();
-		
-		if(!knownWidgetImplementations[namespace]){knownWidgetImplementations[namespace]={};}
-		
-		var impl = knownWidgetImplementations[namespace][lowerCaseWidgetName];
+
+		var impl = knownWidgetImplementations[lowerCaseWidgetName];
 		if(impl){
 			return impl;
 		}
-		var ns = dojo.getNamespace(namespace);
-		if(ns){ns.load(widgetName);}
 
 		// first store a list of the render prefixes we are capable of rendering
 		if(!renderPrefixCache.length){
@@ -197,19 +192,14 @@ dojo.widget.manager = new function(){
 		for(var i = 0; i < widgetPackages.length; i++){
 			var widgetPackage = dojo.evalObjPath(widgetPackages[i]);
 			if(!widgetPackage) { continue; }
-			var pos = widgetPackages[i].indexOf(".");
-			if(pos > -1){
-				var ns = widgetPackages[i].substring(0,pos);
-				if(ns != namespace){continue;}
-			}
 
 			for (var j = 0; j < renderPrefixCache.length; j++) {
 				if (!widgetPackage[renderPrefixCache[j]]) { continue; }
 				for (var widgetClass in widgetPackage[renderPrefixCache[j]]) {
 					if (widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
-					knownWidgetImplementations[namespace][lowerCaseWidgetName] =
+					knownWidgetImplementations[lowerCaseWidgetName] =
 						widgetPackage[renderPrefixCache[j]][widgetClass];
-					return knownWidgetImplementations[namespace][lowerCaseWidgetName];
+					return knownWidgetImplementations[lowerCaseWidgetName];
 				}
 			}
 
@@ -218,9 +208,9 @@ dojo.widget.manager = new function(){
 					if (widgetClass.toLowerCase() !=
 						(renderPrefixCache[j] + lowerCaseWidgetName)) { continue; }
 	
-					knownWidgetImplementations[namespace][lowerCaseWidgetName] =
+					knownWidgetImplementations[lowerCaseWidgetName] =
 						widgetPackage[widgetClass];
-					return knownWidgetImplementations[namespace][lowerCaseWidgetName];
+					return knownWidgetImplementations[lowerCaseWidgetName];
 				}
 			}
 		}

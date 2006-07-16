@@ -1,6 +1,6 @@
 
 dojo.provide("dojo.widget.TreeCommon");
-
+dojo.require("dojo.widget.*"); // for dojo.widget.manager
 
 dojo.widget.TreeCommon = function() {	
 }
@@ -17,6 +17,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		
 		dojo.lang.forEach(this.listenTreeEvents, function(event) {
 			var eventHandler =  "on" + event.charAt(0).toUpperCase() + event.substr(1);
+			//dojo.debug("subscribe "+tree.eventNames[event]+" "+eventHandler);
 			dojo.event.topic.subscribe(tree.eventNames[event], _this, eventHandler);
 		});
 		
@@ -26,18 +27,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		 */
 		this.listenedTrees.push(tree);
 		
-	},
-			
-	loadExtensions: function(extensions) {
-		
-		var _this = this;		
-		
-		dojo.lang.forEach(this.extensions, function(elem) {
-			//dojo.debug('!'+elem+'!')
-			dojo.widget.manager.getWidgetById(elem).loadExtension(_this);
-			}
-		);
-	},
+	},			
 	
 			
 	unlistenTree: function(tree) {
@@ -68,14 +58,13 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	
 	
 	processDescendants: function(elem, filter, func) {
-		
-		if (!filter.call(elem)) {
+		if (!filter.call(this,elem)) {
 			return;
 		}
 		var stack = [elem]
 		while (elem = stack.pop()) {
-			this.func.call(elem);
-	        dojo.lang.forEach(elem.children, function(elem) { filter.call(elem) && stack.push(elem) });
+			func.call(this,elem);
+	        dojo.lang.forEach(elem.children, function(elem) { filter.call(this,elem) && stack.push(elem) });
 		}
     }	
 	

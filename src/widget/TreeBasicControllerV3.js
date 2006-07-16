@@ -26,8 +26,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.proto
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
 
-	listenTreeEvents: ["createNode","treeChange","treeCreate",
-					   "treeDestroy","setFolder","unsetFolder"],
+	listenTreeEvents: ["treeChange","treeCreate", "treeDestroy","setFolder","unsetFolder"],
 	
 
 

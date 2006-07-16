@@ -30,11 +30,13 @@
 
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
-<div dojoType="TreeSelectorV3" widgetId="selector" extensions="TreeEmphaseOnSelect"></div>	
-<div dojoType="TreeDNDControllerV3" controller="controller" widgetId="dndcontroller"></div>	
+<div dojoType="TreeSelectorV3" widgetId="selector"></div>	
+<div dojoType="TreeEmphaseOnSelect" selector="selector"></div>
+<div dojoType="TreeDNDControllerV3" controller="controller" widgetId="dndcontroller"></div>
+
 
 MyTree
-<div dojoType="TreeV3" expandLevel="2" DNDMode="BETWEEN;ONTO" toggle="fade" DNDAcceptTypes="firstTree" widgetId="firstTree" controller="controller" dndcontroller="dndcontroller" selector="selector">
+<div dojoType="TreeV3" expandLevel="2" DNDMode="between;onto" toggle="fade" DNDAcceptTypes="firstTree" widgetId="firstTree" beforeInitialize="controller;dndcontroller;selector">
     <div dojoType="TreeNodeV3" title="Item 1">
         <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
         <div dojoType="TreeNodeV3" title="Item 1.2">
