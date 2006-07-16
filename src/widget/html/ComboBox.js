@@ -442,7 +442,7 @@ dojo.widget.defineWidget(
 		},
 
 		_isInputEqualToResult: function(result){
-			input = this.textInputNode.value;
+			var input = this.textInputNode.value;
 			if(!this.dataProvider.caseSensitive){
 				input = input.toLowerCase();
 				result = result.toLowerCase();
@@ -451,8 +451,10 @@ dojo.widget.defineWidget(
 		},
 
 		_isValidOption: function(){
-			tgt = dojo.html.firstElement(this.optionsListNode);
-			isValidOption = false;
+			var tgt = dojo.html.firstElement(this.optionsListNode);
+			var isValidOption = false;
+			var tgt = dojo.dom.firstElement(this.optionsListNode);
+			var isValidOption = false;
 			while(!isValidOption && tgt){
 				if(this._isInputEqualToResult(tgt.getAttribute("resultName"))){
 					isValidOption = true;
@@ -472,7 +474,7 @@ dojo.widget.defineWidget(
 					return;
 				}
 
-				isValidOption = this._isValidOption();
+				var isValidOption = this._isValidOption();
 				// enforce selection from option list
 				if(this.forceValidOption && !isValidOption){
 					this.setAllValues("", "");
