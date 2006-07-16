@@ -31,25 +31,10 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, {
 	
 	listenTreeEvents: ["treeChange","setFolder","unsetFolder"],
 	
-	
-	listenTree: function(tree) {
-		dojo.widget.TreeCommon.prototype.listenTree.call(this, tree);
 		
-		/**
-		 * add node with document type icon to node template and Tree.iconNodeTemplate
-		 * it will be set to TreeNode.iconNode on node creation
-		 * we do not assign document type yet, its node specific
-		 */
-		var iconNode = document.createElement("div");
-		dojo.html.setClass(iconNode, tree.classPrefix+"Icon");
-		iconNode.setAttribute("template", "iconNode");
-		
-		dojo.dom.insertAfter(iconNode, tree.expandNodeTemplate);
-		tree.iconNodeTemplate = iconNode;	
-	},
-	
 	setNodeTypeClass: function(node) {
 		//dojo.debug("setNodeTypeClass in "+node+" type "+node.getNodeType());
+		//dojo.debug(node.iconNode)
 		
 		var reg = new RegExp("(^|\\s)"+node.tree.classPrefix+"Icon\\w+",'g');			
 		
@@ -59,32 +44,54 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, {
 		
 		
 	onSetFolder: function(message) {
-		this.setNodeTypeClass(message.source);
+		if (message.source.iconNode) {
+			// on node-initialize time when folder is set there is no iconNode
+			// this case will be processed in treeChange anyway			
+			this.setNodeTypeClass(message.source);
+		}
 	},
+	
 	
 	onUnsetFolder: function(message) {
 		this.setNodeTypeClass(message.source);
 	},
 	
-	
+	listenNode: function(node) {
+		/**
+		 * add node with document type icon to node template and Tree.iconNodeTemplate
+		 * it will be set to TreeNode.iconNode on node creation
+		 * we do not assign document type yet, its node specific
+		 */
+		//dojo.debug("listenNode in "+node);
+		node.iconNode = document.createElement("div");
+		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+node.getNodeType());
+		
+		node.domNode.insertBefore(node.iconNode, node.contentNode);
+		
+		//dojo.dom.insertAfter(node.iconNode, node.expandNode);
+		
+		//dojo.debug("listenNode out "+node);
+		
+	},
+		
 	/**
 	 * FIXME: can't unlisten yet. TODO: remove node type and stuff ?
 	 */
 	unlistenNode: function(node) {
 	},
 	
-	unlistenTree: function(tree) {
-		dojo.widget.TreeCommon.prototype.unlistenTree.call(this, tree);
-	},
+	
 	
 	onTreeChange: function(message) {
 		var _this = this;
+		
+		//dojo.debug(message.node)
 		
 		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {			
 			// moving from old tree to our tree
 			this.processDescendants(message.node,
 				function(elem) { return elem instanceof dojo.widget.Widget},
-				this.setNodeTypeClass
+				this.listenNode
 			);
 		}
 		
