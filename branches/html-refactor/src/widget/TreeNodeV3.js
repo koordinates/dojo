@@ -94,26 +94,25 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		
 		//dojo.profile.start("buildRendering - cloneNode");
+		
 		this.domNode = this.tree.nodeTemplate.cloneNode(true);
+		this.expandNode = this.domNode.firstChild;
+        this.contentNode = this.domNode.childNodes[1];
+        this.labelNode = this.contentNode.firstChild;
+
+		/*
+		this.domNode = this.tree.nodeTemplate.cloneNode(false);
+		this.expandNode = this.tree.expandNodeTemplate.cloneNode(false);
+		this.labelNode = this.tree.labelNodeTemplate.cloneNode(false);
+		this.contentNode = this.tree.contentNodeTemplate.cloneNode(false);
+		
+		this.domNode.appendChild(this.expandNode);
+		this.domNode.appendChild(this.contentNode);
+		this.contentNode.appendChild(this.labelNode);
+		*/
+		
 		//dojo.profile.end("buildRendering - cloneNode");
 		
-		
-		/**
-		 * recursively assign node properties to template parts
-		 */
-		var stack = [this.domNode]
-		var elem;
-		while (elem = stack.pop()) {
-			for(i=0; i<elem.childNodes.length; i++) {
-				var childNode = elem.childNodes[i]
-				if (childNode.nodeType != 1) continue;
-				if (childNode.getAttribute("template")) {
-					this[childNode.getAttribute("template")] = childNode;
-					childNode.removeAttribute("template");
-				}
-				stack.push(childNode);
-			}
-		}
 		
 		
 		this.domNode.widgetId = this.widgetId;
@@ -506,11 +505,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		} else {
 			parent.viewSetHasChildren();
 		}
-		/*
-		if (parent.children.length == 0) {
-			parent.containerNode.style.display = "none";
-		}
-		*/
+		
 		
 		// FIXME: move to extension
 		if (this.tree.unsetFolderOnEmpty && !parent.children.length && parent.isTreeNode) {

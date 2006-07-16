@@ -368,7 +368,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	_removePivot: function(item) {
-		var i = dojo.lang.find(item, this._pivotItems);
+		var i = dojo.lang.find(this._pivotItems, item);
 		if(i > -1) {
 			this._pivotItems.splice(i, 1);
 			this._pivotItem = this._pivotItems[this._pivotItems.length-1];

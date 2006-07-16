@@ -13,7 +13,7 @@ dojo.html.getBackgroundColor = function(node){
 		if(color.toLowerCase() == "rgba(0, 0, 0, 0)") { color = "transparent"; }
 		if(node == document.getElementsByTagName("body")[0]) { node = null; break; }
 		node = node.parentNode;
-	}while(node && dojo.lang.inArray(color, ["transparent", ""]));
+	}while(node && dojo.lang.inArray(["transparent", ""], color));
 	if(color == "transparent"){
 		color = [255, 255, 255, 0];
 	}else{

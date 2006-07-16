@@ -133,7 +133,7 @@ dojo.lang.extend(dojo.widget.html.ShowSlide, {
 					// alert(position);
 					component.style.position = "relative";
 					component.style.left = -(width + position.x) + "px";
-					dojo.lfx.html.slideBy(component, [0, (width + position.x)], duration, -1, this.callWith).play(true);
+					dojo.lfx.html.slideBy(component, { top: 0, left: (width + position.x)}, duration, -1, this.callWith).play(true);
 				}else if(action.action == "wipe"){
 					dojo.lfx.html.wipeIn(component, duration).play();
 				}else if(action.action == "color"){
