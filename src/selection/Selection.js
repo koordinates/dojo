@@ -39,9 +39,9 @@ dojo.lang.extend(dojo.selection.Selection, {
 
 	_find: function(item, inSelection) {
 		if(inSelection) {
-			return dojo.lang.find(item, this.selection);
+			return dojo.lang.find(this.selection, item);
 		} else {
-			return dojo.lang.find(item, this.items);
+			return dojo.lang.find(this.items, item);
 		}
 	},
 
