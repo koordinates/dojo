@@ -65,8 +65,8 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 			}
 
 			with(this.iframe.style){
-				width = w + "px";
-				height = h + "px";
+				width = outer.width + "px";
+				height = outer.height + "px";
 			}
 		}
 	},
