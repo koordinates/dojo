@@ -115,12 +115,12 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 		// If my parent has been resized and I have style="height: 100%"
 		// or something similar then my size has changed too.
 		var wh = dojo.html.getMarginBox(this.domNode);
-		w=w||wh.width;
-		h=h||wh.height;
-		if(this.width == w && this.height == h){ return false; }
+		var width=w||wh.width;
+		var height=h||wh.height;
+		if(this.width == width && this.height == height){ return false; }
 
-		this.width=w;
-		this.height=h;
+		this.width=width;
+		this.height=height;
 		return true;
 	},
 
