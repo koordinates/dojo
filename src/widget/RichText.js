@@ -118,6 +118,7 @@ dojo.widget.defineWidget(
 		 * a reguler element if contentEditable is available.
 		 */
 		open: function (element) {
+			var h = dojo.render.html;
 			dojo.event.topic.publish("dojo.widget.RichText::open", this);
 
 			if (!this.isClosed) { this.close(); }
@@ -137,7 +138,7 @@ dojo.widget.defineWidget(
 					height = "1px";
 					border = margin = padding = "0px";
 					visiblity = "hidden";
-					if(dojo.render.html.ie){
+					if(h.ie){
 						overflow = "hidden";
 					}
 				}
@@ -203,15 +204,24 @@ dojo.widget.defineWidget(
 			// Safari's selections go all out of whack if we do it inline,
 			// so for now IE is our only hero
 			//if (typeof document.body.contentEditable != "undefined") {
-			if (this.useActiveX && dojo.render.html.ie) { // active-x
+			if (this.useActiveX && h.ie) { // active-x
 				this._drawObject(html);
 				// dojo.debug(this.object.document);
-			} else if (dojo.render.html.ie) { // contentEditable, easy
+			} else if (h.ie) { // contentEditable, easy
 				this.editNode = document.createElement("div");
 				with (this.editNode) {
 					innerHTML = html;
 					contentEditable = true;
-					style.height = this.height ? this.height : this.minHeight;
+					if(h.ie70){
+						if(this.height){
+							style.height = this.height;
+						}
+						if(this.minHeight){
+							style.minHeight = this.minHeight;
+						}
+					}else{
+						style["height"] = this.height ? this.height : this.minHeight;
+					}
 				}
 
 				if(this.height){ this.editNode.style.overflowY="scroll"; }
