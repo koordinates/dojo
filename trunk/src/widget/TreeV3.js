@@ -31,7 +31,7 @@ dojo.widget.TreeV3 = function() {
 	this.DNDAcceptTypes = [];
 	this.actionsDisabled = [];
 	
-	this.beforeInitialize = [];
+	this.listeners = [];
 	
 	this.tree = this;
 
@@ -248,15 +248,17 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		
 		var _this = this;
 		
-		//dojo.debug(this.beforeInitialize[1]);
+		//dojo.debug(this.listeners[1]);
 		
-		dojo.lang.forEach(this.beforeInitialize,
+		dojo.lang.forEach(this.listeners,
 			function(elem) {
 				var t = dojo.widget.manager.getWidgetById(elem);
-				if (!t) {
+				if (! (t instanceof dojo.widget.Widget)) {
 					dojo.raise("No widget for "+elem);
 				}
+				//dojo.debug(t)
 				t.listenTree(_this)
+				
 			}
 		);		
 		

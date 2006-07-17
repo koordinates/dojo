@@ -39,7 +39,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 */
 	actions: {
 		MOVE: "MOVE",
-    	REMOVE: "REMOVE",
+    	DETACH: "DETACH",
     	EDIT: "EDIT",
     	ADDCHILD: "ADDCHILD"
 	},
@@ -83,7 +83,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		if (args.tree) {
 			this.tree = dojo.lang.isString(args.tree) ? dojo.widget.manager.getWidgetById(args.tree) : args.tree;			
-		} else if (parent.tree) {
+		} else if (parent && parent.tree) {
 			this.tree = parent.tree;
 		} 
 		

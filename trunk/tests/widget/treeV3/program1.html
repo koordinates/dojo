@@ -21,7 +21,7 @@
 	dojo.addOnLoad(function(){
 
 		var controller = dojo.widget.createWidget("TreeBasicControllerV3");		
-		var tree = dojo.widget.createWidget("TreeV3", {beforeInitialize:[controller.widgetId]});
+		var tree = dojo.widget.createWidget("TreeV3", {listeners:[controller.widgetId]});
 		
 		document.body.appendChild(tree.domNode);
 

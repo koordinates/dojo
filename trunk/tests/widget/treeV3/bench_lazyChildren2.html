@@ -51,7 +51,7 @@
 		dojo.profile.end("createController");
 		
 		dojo.profile.start("createTree");
-		var tree = dojo.widget.createWidget("TreeV3", {beforeInitialize: [controller.widgetId]});	
+		var tree = dojo.widget.createWidget("TreeV3", {listeners: [controller.widgetId]});	
 		dojo.profile.end("createTree");
 				
 		document.body.appendChild(tree.domNode);
