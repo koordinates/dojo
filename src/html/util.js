@@ -1,4 +1,5 @@
 dojo.provide("dojo.html.util");
+dojo.require("dojo.html.layout");
 
 // Get the window object where the element is placed in.
 dojo.html.getElementWindow = function(element){
@@ -370,7 +371,7 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
  *  placeOnScreenPoint(node, e.clientX, e.clientY);
  */
 dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
-	dojo.deprecated("use dojo.html.placeOnScreen() instead of dojo.html.placeOnScreenPoint()", "0.5");
+	dojo.deprecated("dojo.html.placeOnScreenPoint", "use dojo.html.placeOnScreen() instead", "0.5");
 	return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, ['TL', 'TR', 'BL', 'BR']);
 }
 
