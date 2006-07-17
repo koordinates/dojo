@@ -218,11 +218,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		return true;
 	},
 
-// =============================== removeNode ============================
+// =============================== detachNode ============================
 
 
-	canRemoveNode: function(child) {
-		if (child.actionIsDisabled(child.actions.REMOVE)) {
+	canDetachNode: function(child) {
+		if (child.actionIsDisabled(child.actions.DETACH)) {
 			return false;
 		}
 
@@ -230,24 +230,56 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 
-	removeNode: function(node, callObj, callFunc) {
-		if (!this.canRemoveNode(node)) {
+	detachNode: function(node, callObj, callFunc) {
+		if (!this.canDetachNode(node)) {
 			return false;
 		}
 
-		return this.doRemoveNode(node, callObj, callFunc);
+		return this.doDetachNode(node, callObj, callFunc);
 	},
 
 
-	doRemoveNode: function(node, callObj, callFunc) {
-		node.tree.removeNode(node);
+	doDetachNode: function(node, callObj, callFunc) {
+		node.detach();
 
 		if (callFunc) {
-			callFunc.apply(dojo.lang.isUndefined(callObj) ? this : callObj, [node]);
+			callFunc.call(dojo.lang.isUndefined(callObj) ? this : callObj, node);
 		}
 	},
 
 
+// =============================== destroyNode ============================
+
+
+	canDestroyNode: function(child) {
+		
+		if (child.parent && !this.canDetachNode(child)) {
+			return false;
+		}
+
+		return true;
+	},
+
+
+	destroyNode: function(node, callObj, callFunc) {
+		//dojo.debug("destroyNode in "+node)
+		if (!this.canDestroyNode(node)) {
+			return false;
+		}
+
+		return this.doDestroyNode(node, callObj, callFunc);
+	},
+
+
+	doDestroyNode: function(node, callObj, callFunc) {
+		node.destroy();
+
+		if (callFunc) {
+			callFunc.call(dojo.lang.isUndefined(callObj) ? this : callObj, node);
+		}
+	},
+	
+	
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff
 	// -----------------------------------------------------------------------------
@@ -274,7 +306,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	doCreateChild: function(parent, index, data, callObj, callFunc) {
 
 		var widgetType = data.widgetType ? data.widgetType : "TreeNodeV3";
-
+		data.tree = parent.tree.widgetId;
+		
 		var newChild = dojo.widget.createWidget(widgetType, data);
 
 		parent.addChild(newChild, index);
