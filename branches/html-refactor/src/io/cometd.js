@@ -63,7 +63,7 @@ cometd = new function(){
 		// FIXME: what about ScriptSrcIO for x-domain comet?
 		this.url = root||djConfig["cometdRoot"];
 		if(!this.url){
-			dojo.debug("no cometd root specified in djConfig.cometdRoot");
+			dojo.debug("no cometd root specified in djConfig and no root passed");
 			return;
 		}
 		var bindArgs = {
@@ -120,14 +120,14 @@ cometd = new function(){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
 					}
-					this.subscribed(message.channel);
+					this.subscribed(message.channel, message);
 					break;
 				case "/meta/unsubscribe":
 					if(!message.successful){
 						dojo.debug("cometd unsubscription error for channel", message.channel, ":", message.error);
 						return;
 					}
-					this.subscribed(message.channel);
+					this.unsubscribed(message.channel, message);
 					break;
 			}
 		}
@@ -199,6 +199,12 @@ cometd = new function(){
 		});
 	}
 
+	this.subscribed = function(	/*string*/				channel, 
+								/*obj*/					message){
+		dojo.debug(channel);
+		dojo.debugShallow(message);
+	}
+
 	this.unsubscribe = function(/*string*/				channel, 
 								/*boolean, optional*/	useLocalTopics, 
 								/*object, optional*/	objOrFunc, 
@@ -232,6 +238,13 @@ cometd = new function(){
 			subscription: channel
 		});
 	}
+
+	this.unsubscribed = function(/*string*/				channel, 
+								/*obj*/					message){
+		dojo.debug(channel);
+		dojo.debugShallow(message);
+	}
+
 }
 
 /*
@@ -325,7 +338,8 @@ cometd.iframeTransport = new function(){
 		this.postToIframe({
 			message: dojo.json.serialize({
 				channel:	"/meta/connect",
-				clientId:	this.clientId
+				clientId:	this.clientId,
+				connectionType: "iframe"
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
 			})
@@ -372,6 +386,9 @@ cometd.iframeTransport = new function(){
 					}
 					this.connectionId = message.connectionId;
 					this.connected = true;
+					dojo.debug("connected!");
+					cometd.subscribe("/foo/bar/*");
+					dojo.debug("subscribing to /foo/bar/*");
 					break;
 				case "/meta/reconnect":
 					if(!message.successful){
@@ -385,7 +402,8 @@ cometd.iframeTransport = new function(){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
 					}
-					this.subscribed(message.channel);
+					// this.subscribed(message.channel);
+					dojo.debug(message.channel);
 					break;
 			}
 		}
@@ -399,6 +417,7 @@ cometd.iframeTransport = new function(){
 		if(dps.length<=2){ return; } // probably file:/// or an RFC 1918 address
 		dps = dps.slice(dps.length-2);
 		document.domain = dps.join(".");
+		return document.domain;
 	}
 
 	this.postToIframe = function(content, url){
@@ -444,7 +463,7 @@ cometd.iframeTransport = new function(){
 		message.connectionId = this.connectionId;
 		message.clientId = this.clientId;
 		var bindArgs = {
-			url: root||djConfig["cometdRoot"],
+			url: cometd.url||djConfig["cometdRoot"],
 			method: "POST",
 			mimetype: "text/json",
 			content: { message: dojo.json.serialize(message) }
@@ -458,13 +477,15 @@ cometd.iframeTransport = new function(){
 
 		if(this.connected){ return; }
 
-		this.widenDomain();
+		this.clientId = handshakeData.clientId;
+		// this.widenDomain();
 
 		// NOTE: we require the server to cooperate by hosting
 		// cometdInit.html at the designated endpoint
 		this.rcvNodeName = "cometdRcv_"+cometd.getRandStr();
 		// the "forever frame" approach
-		var initUrl = cometd.url+"/?tunnelInit=iframe&domain="+document.domain;
+
+		var initUrl = cometd.url+"/?tunnelInit=iframe"; // &domain="+document.domain;
 		if(false && dojo.render.html.ie){ // FIXME: DISALBED FOR NOW
 			// use the "htmlfile hack" to prevent the background click junk
 			this.rcvNode = new ActiveXObject("htmlfile");

@@ -49,8 +49,12 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	},
 	
 	domElement2TreeNode: function(domElement) {
-		while (!domElement.widgetId) {
+		while (domElement && !domElement.widgetId) {
 			domElement = domElement.parentNode;
+		}
+		
+		if (!domElement) {
+			dojo.raise("domElement2TreeNode couldnt detect widget");
 		}
 		
 		return dojo.widget.manager.getWidgetById(domElement.widgetId);
