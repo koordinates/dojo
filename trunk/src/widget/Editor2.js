@@ -50,7 +50,7 @@ dojo.widget.defineWidget(
 
 				// need to set position fixed to wherever this thing has landed
 				if(this.toolbarAlwaysVisible){
-					var src = document["documentElement"]||window;
+					var src = document.documentElement||window;
 					this.scrollInterval = setInterval(dojo.lang.hitch(this, "globalOnScrollHandler"), 100);
 					// dojo.event.connect(src, "onscroll", this, "globalOnScrollHandler");
 					dojo.event.connect("before", this, "destroyRendering", this, "unhookScroller");
@@ -82,16 +82,8 @@ dojo.widget.defineWidget(
 				})
 			);
 
-			var focusFunc = dojo.lang.hitch(this, function(){ 
-				if(dojo.render.html.ie){
-					this.editNode.focus();
-				}else{
-					this.window.focus(); 
-				}
-			});
-
-			dojo.event.connect(this.toolbarWidget, "formatSelectClick", focusFunc);
-			dojo.event.connect(this, "execCommand", focusFunc);
+			dojo.event.connect(this.toolbarWidget, "formatSelectClick", this, "focus");
+			dojo.event.connect(this, "execCommand", this, "focus");
 
 			if(this.htmlEditing){
 				var tb = this.toolbarWidget.htmltoggleButton;
@@ -106,25 +98,27 @@ dojo.widget.defineWidget(
 		clobberFocus: function() {},
 
 		toggleHtmlEditing: function(){
-			if(!this._inHtmlMode){
-				this._inHtmlMode = true;
-				this.toolbarWidget.highlightButton("htmltoggle");
-				if(!this._htmlEditNode){
-					this._htmlEditNode = document.createElement("textarea");
-					dojo.html.insertBefore(this._htmlEditNode, this.domNode);
+			if(this===dojo.widget.Editor2._CurrentInstance){
+				if(!this._inHtmlMode){
+					this._inHtmlMode = true;
+					this.toolbarWidget.highlightButton("htmltoggle");
+					if(!this._htmlEditNode){
+						this._htmlEditNode = document.createElement("textarea");
+						dojo.html.insertBefore(this._htmlEditNode, this.domNode);
+					}
+					this._htmlEditNode.style.display = "";
+					this._htmlEditNode.style.width = "100%";
+					this._htmlEditNode.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
+					this._htmlEditNode.value = this.editNode.innerHTML;
+					this.domNode.style.display = "none";
+				}else{
+					this._inHtmlMode = false;
+					this.domNode.style.display = "";
+					this.toolbarWidget.unhighlightButton("htmltoggle");
+					dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
+					this._htmlEditNode.style.display = "none";
+					this.editNode.focus();
 				}
-				this._htmlEditNode.style.display = "";
-				this._htmlEditNode.style.width = "100%";
-				this._htmlEditNode.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
-				this._htmlEditNode.value = this.editNode.innerHTML;
-				this.domNode.style.display = "none";
-			}else{
-				this._inHtmlMode = false;
-				this.domNode.style.display = "";
-				this.toolbarWidget.unhighlightButton("htmltoggle");
-				dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
-				this._htmlEditNode.style.display = "none";
-				this.editNode.focus();
 			}
 		},
 
@@ -153,7 +147,7 @@ dojo.widget.defineWidget(
 			if(!this._handleScroll){ return; }
 			var ds = dojo.style;
 			var tdn = this.toolbarWidget.domNode;
-			var db = document["body"];
+			var db = dojo.body();
 			var totalHeight = ds.getOuterHeight(tdn);
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
