@@ -39,8 +39,8 @@ dojo.require("dojo.i18n.currency");
 
 		function testFormatCurrency() {
 			for (i in dojo.i18n.currency.FORMAT_TABLE) {
-				dojo.debug(i + ": " + dojo.i18n.currency.format("1234", i));
-				dojo.debug(i + ": " + dojo.i18n.currency.format("-1234", i));
+				dojo.debug(i + ": " + dojo.i18n.currency.format("1234.567", i));
+				dojo.debug(i + ": " + dojo.i18n.currency.format("-1234.567", i));
 			}
 		}
 		</script>
