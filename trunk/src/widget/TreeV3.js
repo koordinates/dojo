@@ -75,7 +75,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	 */
 	unsetFolderOnEmpty: true,
 
-	iconHeight: 18,
 
 	DNDModes: {
 		BETWEEN: 1,
@@ -130,14 +129,12 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		if (dojo.render.html.safari) {
 			clazz = clazz + ' ' + this.classPrefix+"ContentSafari";
 		}
-		
-		
+				
 		dojo.html.setClass(contentNode, clazz);
 		
 		this.contentNodeTemplate = contentNode;
 		
-		
-		
+				
 		domNode.appendChild(expandNode);
 		domNode.appendChild(contentNode);
 		contentNode.appendChild(labelNode);
