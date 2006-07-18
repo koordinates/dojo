@@ -279,6 +279,26 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 	
+	// -------------------------- Edit node ---------------------
+	// TODO: write editing stuff
+	canEditLabel: function(node) {
+		if (node.actionIsDisabled(parent.actions.EDIT)) return false;
+
+		return true;
+	},
+
+	editLabelStart: function(node) {
+		if (!this.canEditLabel(node)) {
+			return false;
+		}
+
+		return this.doEditLabelStart.apply(this, arguments);
+	},
+
+	doEditLabelStart: function(node) {
+		node.editLabelStart();		
+	},
+	
 	
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff
@@ -299,6 +319,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		if (!this.canCreateChild(parent, index, data)) {
 			return false;
 		}
+
 
 		return this.doCreateChild.apply(this, arguments);
 	},

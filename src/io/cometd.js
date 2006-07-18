@@ -40,12 +40,14 @@ cometd = new function(){
 	this.url = null;
 	this.lastMessage = null;
 	this.globalTopicChannels = {};
+	this.backlog = [];
 
 	this.tunnelInit = function(childLocation, childDomain){
 		// placeholder
 	}
 
 	this.tunnelCollapse = function(){
+		dojo.debug("tunnel collapsed!");
 		// placeholder
 	}
 
@@ -96,6 +98,11 @@ cometd = new function(){
 		this.tunnelCollapse = dojo.lang.hitch(this.currentTransport, "tunnelCollapse");
 		this.initialized = true;
 		this.currentTransport.startup(data);
+		while(this.backlog.length != 0){
+			var cur = this.backlog.shift();
+			var fn = cur.shift();
+			this[fn].apply(this, cur);
+		}
 	}
 
 	this.getRandStr = function(){
@@ -104,12 +111,16 @@ cometd = new function(){
 
 	// public API functions called by cometd or by the transport classes
 	this.deliver = function(message){
-		this.lastMessage = message;
 		// dipatch events along the specified path
 		if(!message["channel"]){
 			dojo.debug("cometd error: no channel for message!");
 			return;
 		}
+		if(!this.currentTransport){
+			this.backlog.push(["deliver", message]);
+			return;
+		}
+		this.lastMessage = message;
 		// check to see if we got a /meta channel message that we care about
 		if(	(message.channel.length > 5)&&
 			(message.channel.substr(0, 5) == "/meta")){
@@ -120,14 +131,14 @@ cometd = new function(){
 						dojo.debug("cometd subscription error for channel", message.channel, ":", message.error);
 						return;
 					}
-					this.subscribed(message.channel, message);
+					this.subscribed(message.subscription, message);
 					break;
 				case "/meta/unsubscribe":
 					if(!message.successful){
 						dojo.debug("cometd unsubscription error for channel", message.channel, ":", message.error);
 						return;
 					}
-					this.unsubscribed(message.channel, message);
+					this.unsubscribed(message.subscription, message);
 					break;
 			}
 		}
@@ -140,6 +151,10 @@ cometd = new function(){
 	}
 
 	this.disconnect = function(){
+		if(!this.currentTransport){
+			dojo.debug("no current transport to disconnect from");
+			return;
+		}
 		this.currentTransport.disconnect();
 	}
 
@@ -155,6 +170,10 @@ cometd = new function(){
 		// properties:
 		//		Optional. Other meta-data to be mixed into the top-level of the
 		//		message
+		if(!this.currentTransport){
+			this.backlog.push(["publish", channel, data, properties]);
+			return;
+		}
 		var message = {
 			data: data,
 			channel: channel
@@ -187,6 +206,10 @@ cometd = new function(){
 		// funcName:
 		//		the second half of the objOrFunc/funcName pair for identifying
 		//		a callback function to notifiy upon channel message delivery
+		if(!this.currentTransport){
+			this.backlog.push(["subscribe", channel, useLocalTopics, objOrFunc, funcName]);
+			return;
+		}
 		if(objOrFunc){
 			var tname = (useLocalTopics) ? channel : "/cometd"+channel;
 			dojo.event.topic.subscribe(tname, objOrFunc, funcName);
@@ -224,6 +247,10 @@ cometd = new function(){
 		//		channel
 		// funcName:
 		//		the second half of the objOrFunc/funcName pair for identifying
+		if(!this.currentTransport){
+			this.backlog.push(["unsubscribe", channel, useLocalTopics, objOrFunc, funcName]);
+			return;
+		}
 		//		a callback function to notifiy upon channel message delivery
 		if(objOrFunc){
 			// FIXME: should actual local topic unsubscription be delayed for
@@ -327,6 +354,7 @@ cometd.iframeTransport = new function(){
 	this.authToken = null;
 	this.lastTimestamp = null;
 	this.lastId = null;
+	this.backlog = [];
 
 	this.check = function(types){
 		return dojo.lang.inArray(types, "iframe");
@@ -386,9 +414,7 @@ cometd.iframeTransport = new function(){
 					}
 					this.connectionId = message.connectionId;
 					this.connected = true;
-					dojo.debug("connected!");
-					cometd.subscribe("/foo/bar/*");
-					dojo.debug("subscribing to /foo/bar/*");
+					this.processBacklog();
 					break;
 				case "/meta/reconnect":
 					if(!message.successful){
@@ -458,17 +484,27 @@ cometd.iframeTransport = new function(){
 		this.phonyForm.submit();
 	}
 
-	this.sendMessage = function(message){
+	this.processBacklog = function(){
+		while(this.backlog.length > 0){
+			this.sendMessage(this.backlog.shift(), true);
+		}
+	}
+
+	this.sendMessage = function(message, bypassBacklog){
 		// FIXME: what about auth fields?
-		message.connectionId = this.connectionId;
-		message.clientId = this.clientId;
-		var bindArgs = {
-			url: cometd.url||djConfig["cometdRoot"],
-			method: "POST",
-			mimetype: "text/json",
-			content: { message: dojo.json.serialize(message) }
-		};
-		return dojo.io.bind(bindArgs);
+		if((bypassBacklog)||(this.connected)){
+			message.connectionId = this.connectionId;
+			message.clientId = this.clientId;
+			var bindArgs = {
+				url: cometd.url||djConfig["cometdRoot"],
+				method: "POST",
+				mimetype: "text/json",
+				content: { message: dojo.json.serialize(message) }
+			};
+			return dojo.io.bind(bindArgs);
+		}else{
+			this.backlog.push(message);
+		}
 	}
 
 	this.startup = function(handshakeData){

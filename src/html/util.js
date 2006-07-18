@@ -10,6 +10,11 @@ dojo.html.getElementWindow = function(element){
 dojo.html.getDocumentWindow = function(doc){
 	// With Safari, there is not wa to retrieve the window from the document, so we must fix it.
 	if(dojo.render.html.safari && !doc._parentWindow){
+		/*
+			This is a Safari specific function that fix the reference to the parent
+			window from the document object.
+		*/
+	
 		var fix=function(win){
 			win.document._parentWindow=win;
 			for(var i=0; i<win.frames.length; i++){
@@ -31,18 +36,6 @@ dojo.html.getDocumentWindow = function(doc){
 	}
 
 	return doc._parentWindow || doc.parentWindow || doc.defaultView;
-}
-
-/*
-	This is a Safari specific function that fix the reference to the parent
-	window from the document object.
-*/
-dojo.html._fixSafariDocumentParentWindow = function( targetWindow ){
-	targetWindow.document.parentWindow = targetWindow;
-	
-	for (var i = 0; i < targetWindow.frames.length; i++){
-		dojo.html._fixSafariDocumentParentWindow(targetWindow.frames[i]);
-	}
 }
 
 /**
@@ -360,7 +353,7 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 		node.style.top = besty + "px";
 	}
 	
-	return { x: bestx, y: besty, dist: bestDistance };
+	return { left: bestx, top: besty, x: bestx, y: besty, dist: bestDistance };
 }
 
 /**
@@ -415,8 +408,8 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasSc
 	}
 
 	if(!tryOnly){
-		node.style.left = best.x + "px";
-		node.style.top = best.y + "px";
+		node.style.left = best.left + "px";
+		node.style.top = best.top + "px";
 	}
 	return best;
 }
