@@ -271,13 +271,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	onScroll: function(){
+		//dojo.profile.start("DNDManager updateoffset");
 		for(var i = 0; i < this.dragObjects.length; i++) {
 			if(this.dragObjects[i].updateDragOffset) {
 				this.dragObjects[i].updateDragOffset();
 			}
 		}
+		//dojo.profile.end("DNDManager updateoffset");
+
 		// TODO: do not recalculate, only adjust coordinates
-		this.cacheTargetLocations();
+		if (this.dragObjects.length) {
+			this.cacheTargetLocations();
+		}
 	},
 
 	_dragStartDistance: function(x, y){
@@ -292,6 +297,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	cacheTargetLocations: function(){
+
+	         dojo.profile.start("cacheTargetLocations");
+
 		this.dropTargetDimensions = [];
 		dojo.lang.forEach(this.dropTargets, function(tempTarget){
 			var tn = tempTarget.domNode;
@@ -306,6 +314,9 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			]);
 			//dojo.debug("Cached for "+tempTarget)
 		}, this);
+
+     		dojo.profile.end("cacheTargetLocations");
+
 		//dojo.debug("Cache locations")
 	},
 
