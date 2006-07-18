@@ -10,18 +10,60 @@ dojo.require("dojo.lang.common");
 *
 * @param Number value
 *	The number to be formatted and validated.
-* @param int places
-*   The number of decimal places to be included in the formatted number
+* @param Object flags
+*   flags.places number of decimal places to show, default is 0 (cannot be Infinity)
+*   flags.round true to round the number, false to truncate
 * @param String locale
 *	The locale used to determine the number format.
 * @return String
 * 	the formatted number of type String if successful
 *   or null if an unsupported locale value was provided
 **/
-dojo.i18n.number.format = function(value, places, locale /*optional*/){
-	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
-return String(value);
-//	dojo.unimplemented("dojo.i18n.number.format");
+dojo.i18n.number.format = function(value, flags /*optional*/, locale /*optional*/){
+	flags = (typeof flags == "object") ? flags : {};
+
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(dojo.i18n.number.FORMAT_TABLE, locale);
+	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
+	if (typeof flags.decimal == "undefined") {flags.decimal = formatData[2];}
+	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
+	if (typeof flags.groupSize2 == "undefined") {flags.groupSize2 = formatData[4];}
+	if (typeof flags.round == "undefined") {flags.round = true;}
+	if (typeof flags.signed == "undefined") {flags.signed = true;}
+
+	var output = (flags.signed && (value < 0)) ? "-" : "";
+	value = Math.abs(value);
+	var whole = String((((flags.places > 0) || !flags.round) ? Math.floor : Math.round)(value));
+
+	// Splits str into substrings of size count, starting from right to left.  Is there a more clever way to do this in JS?
+	function splitSubstrings(str, count){
+		for(var subs = []; str.length >= count; str = str.substr(0, str.length - count)){
+			subs.push(str.substr(-count));
+		}
+		if (str.length > 0){subs.push(str);}
+		return subs.reverse();
+	}
+
+	if (flags.groupSize2 && (whole.length > flags.groupSize)){
+		var groups = splitSubstrings(whole.substr(0, whole.length - flags.groupSize), flags.groupSize2);
+		groups.push(whole.substr(-flags.groupSize));
+		output = output + groups.join(flags.separator);
+	}else if (flags.groupSize){
+		output = output + splitSubstrings(whole, flags.groupSize).join(flags.separator);
+	}else{
+		output = output + whole;
+	}
+
+//TODO: what if flags.places is Infinity?
+	if (flags.places > 0){
+	//Q: Is it safe to convert to a string and split on ".", or might that be locale dependent?  Use Math for now.
+		var fract = value - Math.floor(value);
+		fract = (flags.round ? Math.round : Math.floor)(fract * Math.pow(10, flags.places));
+		output = output + flags.decimal + fract;
+	}
+
+//TODO: exp
+
+	return output;
 };
 
 /**
@@ -31,12 +73,34 @@ return String(value);
 *	The int string to be convertted
 * @param string locale
 *	The locale used to convert the number string
+* @param Object flags
+*   flags.validate true to check the string for strict adherence to the locale settings for separator, sign, etc.
+*     Default is true
 * @return Number
-* 	Returns a primative numeric value or null if an unsupported locale is provided.
+* 	Returns a value of type Number, Number.NaN if not a number, or null if locale is not supported.
 **/
-dojo.i18n.number.parse = function(value, locale /*optional*/){
-	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
-	dojo.unimplemented("dojo.i18n.number.parse");
+dojo.i18n.number.parse = function(value, locale /*optional*/, flags /*optional*/){
+	flags = (typeof flags == "object") ? flags : {};
+
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(dojo.i18n.number.FORMAT_TABLE, locale);
+	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
+	if (typeof flags.decimal == "undefined") {flags.decimal = formatData[2];}
+	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
+	if (typeof flags.groupSize2 == "undefined") {flags.groupSize2 = formatData[4];}
+	if (typeof flags.validate == "undefined") {flags.validate = true;}
+
+	if (flags.validate && !dojo.i18n.number.isReal(value, locale, flags)) {
+		return Number.NaN;
+	}
+
+	var numbers = value.split(flags.decimal);
+	if (numbers.length > 2){return Number.NaN; }
+	var whole = Number(numbers[0].replace(new RegExp("\\" + flags.separator, "g"), ""));
+	var fract = (number.length == 1) ? 0 : Number(numbers[1]) / Math.pow(10, String(numbers[1]).length); // could also do Number(whole + "." + numbers[1]) if whole != NaN
+
+//TODO: exp
+
+	return whole + fract;
 };
 
 /**
@@ -56,7 +120,7 @@ dojo.i18n.number.parse = function(value, locale /*optional*/){
 dojo.i18n.number.isInteger = function(value, locale /*optional*/, flags /*optional*/) {
 	flags = (typeof flags == "object") ? flags : {};
 
-	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(dojo.i18n.number.FORMAT_TABLE, locale);
 	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
 	else if (dojo.lang.isArray(flags.separator)){flags.separator = [formatData[1],""];}
 	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
@@ -87,7 +151,7 @@ dojo.i18n.number.isInteger = function(value, locale /*optional*/, flags /*option
 dojo.i18n.number.isReal = function(value, locale /*optional*/, flags /*optional*/) {
 	flags = (typeof flags == "object") ? flags : {};
 
-	var formatData = dojo.i18n.number._mapToLocalizedFormatData(locale, dojo.i18n.number.FORMAT_TABLE);
+	var formatData = dojo.i18n.number._mapToLocalizedFormatData(dojo.i18n.number.FORMAT_TABLE, locale);
 	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
 	if (typeof flags.decimal == "undefined") {flags.decimal = formatData[2];}
 	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
@@ -98,7 +162,7 @@ dojo.i18n.number.isReal = function(value, locale /*optional*/, flags /*optional*
 };
 
 //TODO: hide in a closure?
-//TODO: change to use hashes and mixins, rather than arrays?
+//TODO: change to use hashes and mixins, rather than arrays
 //Q: fallback algorithm/how to structure table:
 // does it make sense to look by country code most of the time (wildcard match on
 // language, except where it's relevant) and provide default country when only
@@ -124,7 +188,7 @@ dojo.i18n.number.FORMAT_TABLE = {
 	'de-at': [".",".", ",", 3],
 	'de-de': [".",".", ",", 3],
 	'de-lu': [".",".", ",", 3],
-	//IBM JSL defect 51278. right now we have problem with single quote.
+	//IBM JSL defect 51278. right now we have problem with single quote. //IBM: explain?
 	'de-ch': ["'","'", ".", 3],
 	//'de-ch': [".",".", ",", 3],
 	'el-gr': [".",".", ",", 3],
@@ -197,9 +261,11 @@ dojo.i18n.number.FORMAT_TABLE = {
 	'zh-tw': [",", ",",".", 3]
 };
 
-dojo.i18n.number._mapToLocalizedFormatData = function(locale, table){
+dojo.i18n.number._mapToLocalizedFormatData = function(table, locale){
 	locale = dojo.normalizeLocale(locale);
 //TODO: most- to least-specific search? search by country code?
 //TODO: implement aliases to simplify and shorten tables
-	return table[locale]; // just look for an exact match, for now
+	var data = table[locale];
+	if (typeof data == 'undefined'){data = table['*'];}
+	return data;
 }
