@@ -17,6 +17,14 @@
     </itemizedlist>
     
     
+    <section>
+        <title>BUGS</title>
+        
+        <itemizedlist>
+            <listitem>Open largednd test and expand tree and scroll... Its slow!</listitem>
+            
+        </itemizedlist>
+        </section>
     
     <section>
         <title>Possible TODO</title>
