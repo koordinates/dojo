@@ -71,6 +71,7 @@ dojo.widget.defineWidget(
 		preventSelect: function(e){ if(dojo.render.html.safari){ e.preventDefault(); } },
 		wikiwordClick: function(){ },
 		insertimageClick: function(){ },
+		saveClick: function(){ },
 		htmltoggleClick: function(){ },
 
 		styleDropdownClick: function(){
