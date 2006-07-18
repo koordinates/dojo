@@ -2,7 +2,9 @@ dojo.provide("dojo.widget.ColorPalette");
 dojo.provide("dojo.widget.html.ColorPalette");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.selection");
 
 dojo.widget.tags.addParseTreeHandler("dojo:ToolbarColorDialog");
 
@@ -42,9 +44,9 @@ dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 	
 	showDialog: function (e) {
 		dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
-		var x = dojo.html.getAbsoluteX(this.domNode, true);
-		var y = dojo.html.getAbsoluteY(this.domNode, true) + dojo.html.getInnerHeight(this.domNode);
-		this.dialog.showAt(x, y);
+		var abs = dojo.html.getAbsolutePosition(this.domNode, true);
+		var y = abs.y + dojo.html.getBorderBox(this.domNode).height;
+		this.dialog.showAt(abs.x, y);
 	},
 	
 	hideDialog: function (e) {
@@ -135,7 +137,7 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 				display = "none";
 			}
 			dojo.body().appendChild(this.bgIframe);
-			dojo.style.setOpacity(this.bgIframe, 0);
+			dojo.html.setOpacity(this.bgIframe, 0);
 		}
 	},
 
@@ -166,8 +168,9 @@ dojo.lang.extend(dojo.widget.html.ColorPalette, {
 				top = y + "px";
 				left = x + "px";
 				zIndex = 998;
-				width = dojo.html.getOuterWidth(this.domNode) + "px";
-				height = dojo.html.getOuterHeight(this.domNode) + "px";
+				var s = dojo.html.getMarginBox(this.domNode);
+				width = s.width + "px";
+				height = s.height + "px";
 			}
 
 		}

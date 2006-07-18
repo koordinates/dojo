@@ -5,9 +5,10 @@ dojo.provide("dojo.widget.PopupMenu2");
 dojo.provide("dojo.widget.MenuItem2");
 dojo.provide("dojo.widget.MenuBar2");
 
-dojo.require("dojo.html.*");
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.html.iframe");
-dojo.require("dojo.style");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
@@ -458,8 +459,8 @@ dojo.widget.defineWidget(
 
 	// open the menu to the right of the current menu item
 	openSubmenu: function(submenu, from_item){
-		var fromPos = dojo.style.getAbsolutePosition(from_item.domNode, true);
-		var our_w = dojo.style.getOuterWidth(this.domNode);
+		var fromPos = dojo.html.getAbsolutePosition(from_item.domNode, true);
+		var our_w = dojo.html.getMarginBox(this.domNode).width;
 		var x = fromPos.x + our_w - this.submenuOverlap;
 		var y = fromPos.y;
 
@@ -479,9 +480,9 @@ dojo.widget.defineWidget(
 		var iframe = win.frameElement;
 		if(iframe){
 			//in IE, scroll should not be counted, while in Moz it is required
-			var cood = dojo.style.getAbsolutePosition(iframe, !dojo.render.html.ie);
-			x += cood.x - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScrollLeft) );
-			y += cood.y - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScrollTop) );
+			var cood = dojo.html.getAbsolutePosition(iframe, !dojo.render.html.ie);
+			x += cood.x - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScroll).left );
+			y += cood.y - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScroll).top );
 		}
 		this.open(x, y, null, [x, y]);
 
@@ -804,7 +805,7 @@ dojo.widget.html.PopupManager = new function(){
 	this.onClick = function(e){
 		if (!this.currentMenu){ return; }
 
-		var scrolloffset = dojo.html.getScrollOffset();
+		var scrolloffset = dojo.html.getScroll().offset;
 
 		// starting from the base menu, perform a hit test
 		// and exit when one succeeds
@@ -824,7 +825,7 @@ dojo.widget.html.PopupManager = new function(){
 		}
 
 		while (m){
-			if(dojo.html.overElement(m.domNode, e) || dojo.dom.isDescendantOf(e.target, m.domNode)){
+			if(dojo.html.overElement(m.domNode, e) || dojo.html.isDescendantOf(e.target, m.domNode)){
 				return;
 			}
 			m = m.currentSubpopup;
@@ -998,9 +999,9 @@ dojo.widget.defineWidget(
 	 * override PopupMenu2 to open the submenu below us rather than to our right
 	 */
 	openSubmenu: function(submenu, from_item){
-		var fromPos = dojo.style.getAbsolutePosition(from_item.domNode, true);
-		var ourPos = dojo.style.getAbsolutePosition(this.domNode, true);
-		var our_h = dojo.style.getInnerHeight(this.domNode);
+		var fromPos = dojo.html.getAbsolutePosition(from_item.domNode, true);
+		var ourPos = dojo.html.getAbsolutePosition(this.domNode, true);
+		var our_h = dojo.html.getBorderBox(this.domNode).height;
 		var x = fromPos.x;
 		var y = ourPos.y + our_h - this.menuOverlap;
 

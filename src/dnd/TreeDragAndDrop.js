@@ -15,7 +15,7 @@ dojo.require("dojo.dnd.HtmlDragAndDrop");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.extras");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
 
 dojo.dnd.TreeDragSource = function(node, syncController, type, treeNode){
 	this.controller = syncController;
@@ -278,8 +278,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTarget, {
 	getPosition: function(e, DNDMode) {
 		node = dojo.byId(this.treeNode.labelNode);
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
-		var nodey = dojo.html.getAbsoluteY(node);
-		var height = dojo.html.getInnerHeight(node);
+		var nodey = dojo.html.getAbsolutePosition(node).y;
+		var height = dojo.html.getBorderBox(node).height;
 
 		var relY = mousey - nodey;
 		var p = relY / height;

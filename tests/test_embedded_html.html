@@ -1,7 +1,8 @@
 <html>
 <script type="text/javascript" src="../dojo.js"></script>
 <script type="text/javascript">
-dojo.require('dojo.html');
+dojo.require('dojo.html.common');
+dojo.require('dojo.html.style');
 dojo.require("dojo.event");
 dojo.require("dojo.lang.declare");
 
@@ -20,25 +21,27 @@ dojo.addOnLoad(function(){
 
 function updateScroll() {
 	dojo.withGlobal(contentWin, function() {
-		$("scrollTop").firstChild.nodeValue = dojo.html.getScrollTop();
-		$("scrollLeft").firstChild.nodeValue = dojo.html.getScrollLeft();
+		var scroll = dojo.html.getScroll();
+		$("scrollTop").firstChild.nodeValue = scroll.top;
+		$("scrollLeft").firstChild.nodeValue = scroll.left;
 	});
 }
 
 function updateScrollOffset() {
 	dojo.withGlobal(contentWin, function() {
-		var offset = dojo.html.getScrollOffset();
-		$("scrollOffsetX").firstChild.nodeValue = offset[0];
-		$("scrollOffsetY").firstChild.nodeValue = offset[1];
+		var offset = dojo.html.getScroll().offset;
+		$("scrollOffsetX").firstChild.nodeValue = offset.x;
+		$("scrollOffsetY").firstChild.nodeValue = offset.y;
 	});
 }
 
 //use object context to invoke a member function of an object
 var ViewPort = {};
 ViewPort.update = function(msg){
-	$("viewportWidth").firstChild.nodeValue = dojo.html.getViewportWidth();
-	$("viewportHeight").firstChild.nodeValue = dojo.html.getViewportHeight();
-	$("viewportSize").firstChild.nodeValue = dojo.html.getViewportSize() + msg;
+	var viewport = dojo.html.getViewport();
+	$("viewportWidth").firstChild.nodeValue = viewport.width;
+	$("viewportHeight").firstChild.nodeValue = viewport.height;
+	$("viewportSize").firstChild.nodeValue = viewport + msg;
 }
 
 function updateViewport() {

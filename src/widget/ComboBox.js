@@ -12,7 +12,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.cache = {};
 
 	this.init = function(cbox){
-		this.searchUrl = cbox.dataUrl;
+		this.seachUrl = cbox.dataUrl;
 	}
 
 	this.addToCache = function(keyword, data){
@@ -26,7 +26,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 			// FIXME: implement backoff!
 		}
 		var tss = encodeURIComponent(searchStr);
-		var realUrl = dojo.string.paramString(this.searchUrl, {"searchString": tss});
+		var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
 		var _this = this;
 		var request = dojo.io.bind({
 			url: realUrl,

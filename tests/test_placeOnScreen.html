@@ -11,11 +11,11 @@
 		</script>
 		<script type="text/javascript" src="../dojo.js"></script>
 		<script type="text/javascript">
-			dojo.require("dojo.html.extras");
+			dojo.require("dojo.html.util");
 			dojo.require("dojo.event.*");
 			function init() {
 				dojo.event.connect(document, "onclick", function(e) {
-					dojo.html.placeOnScreenPoint("test", e.clientX, e.clientY, 5, false);
+					dojo.html.placeOnScreen("test", e.clientX, e.clientY, 5, false, ['TL', 'TR', 'BL', 'BR']);
 					dojo.html.placeOnScreen("test2", e.clientX, e.clientY, 0, false);
 				});
 			}

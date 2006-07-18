@@ -55,7 +55,7 @@ dojo.require("dojo.dnd.*");
 // dojo.dnd.* doesn't include this package, because it's not in __package__.js
 dojo.require("dojo.dnd.HtmlDragMove");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.style");
+dojo.require("dojo.html.layout");
 
 
 /**
@@ -178,7 +178,7 @@ dojo.widget.defineWidget (
 
 		// Get the number of the value that matches the position of the handle
 		getValueX: function () {
-			var pixelPercent = dojo.style.getPixelValue (this.handleMove.domNode, "left") / this._constraintWidth;
+			var pixelPercent = dojo.html.getPixelValue (this.handleMove.domNode, "left") / this._constraintWidth;
 			return Math.round (pixelPercent * (this.snapValuesX-1)) * ((this.maximumX-this.minimumX) / (this.snapValuesX-1)) + this.minimumX;
 		},
 
@@ -218,7 +218,7 @@ dojo.widget.defineWidget (
 
 		// Get the number of the value that the matches the position of the handle
 		getValueY: function () {
-			var pixelPercent = dojo.style.getPixelValue (this.handleMove.domNode, "top") / this._constraintHeight;
+			var pixelPercent = dojo.html.getPixelValue (this.handleMove.domNode, "top") / this._constraintHeight;
 			return Math.round (pixelPercent * (this.snapValuesY-1)) * ((this.maximumY-this.minimumY) / (this.snapValuesY-1)) + this.minimumY;
 		},
 
@@ -229,15 +229,16 @@ dojo.widget.defineWidget (
 				return;
 			}
 
-			var offset = dojo.html.getScrollOffset();
-			var parent = dojo.style.getAbsolutePosition(this.domNode, true);
+			var offset = dojo.html.getScroll().offset;
+			var parent = dojo.html.getAbsolutePosition(this.domNode, true);
 			
+			var content = dojo.html.getContentBox(this.handleMove.domNode);
 			if (this.isEnableX) {
-				var x = offset.x + e.clientX - parent.x - (dojo.style.getContentWidth(this.handleMove.domNode) >> 1);
+				var x = offset.x + e.clientX - parent.x - (content.width >> 1);
 				this._snapX(x, this.handleMove);
 			}
 			if (this.isEnableY) {
-				var y = offset.y + e.clientY - parent.y - (dojo.style.getContentHeight(this.handleMove.domNode) >> 1);
+				var y = offset.y + e.clientY - parent.y - (content.height >> 1);
 				this._snapY(y, this.handleMove);
 			}
 			this.notifyListeners();
@@ -418,7 +419,7 @@ dojo.declare (
 		var dragObj = new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
 		dragObj.constrainTo(this.constrainingContainer || this.domNode.parentNode);
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
-		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
+		dojo.html.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
 		return dragObj.getConstraints ();
 	},
 

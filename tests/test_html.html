@@ -1,12 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 
-<title>Dojo: Test of htmlUtil.js</title>
+<title>Dojo: Test of dojo.html</title>
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../dojo.js"></script>
 <script type="text/javascript">
 
-dojo.require("dojo.html");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.style");
 dojo.require("dojo.event");
 function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
 
@@ -16,36 +17,37 @@ function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : 
 
 
 <!---------------------------------------------------------------------------->
-<h2><code>getScrollTop</code> and <code>getScrollLeft</code></h2>
+<h2><code>getScroll</code></h2>
 
 <p>Scroll top: <span id="scrollTop">0</span><br>Scroll left: <span id="scrollLeft">0</span></p>
 <p><input type="button" id="updateScroll" value="Update Scroll Values"></p>
 
 <script type="text/javascript">
 dojo.event.connect($("updateScroll"), "onclick", function (e) {
-	$("scrollTop").firstChild.nodeValue = dojo.html.getScrollTop();
-	$("scrollLeft").firstChild.nodeValue = dojo.html.getScrollLeft();
+	var scroll = dojo.html.getScroll();
+	$("scrollTop").firstChild.nodeValue = scroll.top;
+	$("scrollLeft").firstChild.nodeValue = scroll.left;
 });
 </script>
 
 
 <!---------------------------------------------------------------------------->
-<h2><code>getScrollOffset</code></h2>
+<h2><code>getScroll().offset</code></h2>
 
 <p>Scroll offset x: <span id="scrollOffsetX">0</span><br>Scroll offset y: <span id="scrollOffsetY">0</span></p>
 <p><input type="button" id="updateScrollOffset" value="Update Scroll Values"></p>
 
 <script type="text/javascript">
 dojo.event.connect($("updateScrollOffset"), "onclick", function (e) {
-	var offset = dojo.html.getScrollOffset();
-	$("scrollOffsetX").firstChild.nodeValue = offset[0];
-	$("scrollOffsetY").firstChild.nodeValue = offset[1];
+	var offset = dojo.html.getScroll().offset;
+	$("scrollOffsetX").firstChild.nodeValue = offset.x;
+	$("scrollOffsetY").firstChild.nodeValue = offset.y;
 });
 </script>
 
 
 <!---------------------------------------------------------------------------->
-<h2><code>getViewportWidth</code>, <code>getViewportHeight</code> and <code>getViewportSize</code></h2>
+<h2><code>getViewport</code></h2>
 
 <p>
 	Viewport width: <span id="viewportWidth">0</span><br>
@@ -56,9 +58,10 @@ dojo.event.connect($("updateScrollOffset"), "onclick", function (e) {
 
 <script type="text/javascript">
 dojo.event.connect($("updateViewport"), "onclick", function (e) {
-	$("viewportWidth").firstChild.nodeValue = dojo.html.getViewportWidth();
-	$("viewportHeight").firstChild.nodeValue = dojo.html.getViewportHeight();
-	$("viewportSize").firstChild.nodeValue = dojo.html.getViewportSize();
+	var viewport = dojo.html.getViewport();
+	$("viewportWidth").firstChild.nodeValue = viewport.width;
+	$("viewportHeight").firstChild.nodeValue = viewport.height;
+	$("viewportSize").firstChild.nodeValue = viewport;
 });
 </script>
 

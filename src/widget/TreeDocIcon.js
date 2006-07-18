@@ -68,7 +68,7 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, {
 		
 		node.domNode.insertBefore(node.iconNode, node.contentNode);
 		
-		//dojo.dom.insertAfter(node.iconNode, node.expandNode);
+		//dojo.html.insertAfter(node.iconNode, node.expandNode);
 		
 		//dojo.debug("listenNode out "+node);
 		

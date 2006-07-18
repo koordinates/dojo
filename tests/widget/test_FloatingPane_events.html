@@ -13,12 +13,12 @@
 	dojo.addOnLoad(function() {
 		dojo.event.topic.subscribe("floatingPaneMove",
 			 function (info){
-				var pos = dojo.style.getAbsolutePosition(info.source.domNode);
+				var pos = dojo.html.getAbsolutePosition(info.source.domNode);
 				if (info.source.widgetId == 'pane1'){
-					document.getElementById('p1status').innerHTML = 'pane 1 : '+pos[0]+','+pos[1];
+					document.getElementById('p1status').innerHTML = 'pane 1 : '+pos.x+','+pos.y;
 				}
 				if (info.source.widgetId == 'pane2'){
-					document.getElementById('p2status').innerHTML = 'pane 2 : '+pos[0]+','+pos[1];
+					document.getElementById('p2status').innerHTML = 'pane 2 : '+pos.x+','+pos.y;
 				}
 			}
 		);

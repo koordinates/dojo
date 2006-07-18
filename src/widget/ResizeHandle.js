@@ -2,9 +2,7 @@ dojo.provide("dojo.widget.ResizeHandle");
 dojo.provide("dojo.widget.html.ResizeHandle");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
-dojo.require("dojo.dom");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.event");
 
 dojo.widget.html.ResizeHandle = function(){
@@ -40,7 +38,8 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 
 		this.isSizing = true;
 		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
-		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetDomNode), 'h':dojo.style.getOuterHeight(this.targetDomNode)};
+		var mb = dojo.html.getMarginBox(this.targetDomNode);
+		this.startSize  = {'w':mb.width, 'h':mb.height};
 
 		dojo.event.kwConnect({
 			srcObj: dojo.body(), 
@@ -71,19 +70,19 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 
 		// minimum size check
 		if (this.minSize) {
+			var mb = dojo.html.getMarginBox(this.targetDomNode);
 			if (newW < this.minSize.w) {
-				newW = dojo.style.getOuterWidth(this.targetDomNode);
+				newW = mb.width;
 			}
 			if (newH < this.minSize.h) {
-				newH = dojo.style.getOuterHeight(this.targetDomNode);
+				newH = mb.height;
 			}
 		}
 		
 		if(this.targetWidget){
 			this.targetWidget.resizeTo(newW, newH);
 		}else{
-			dojo.style.setOuterWidth(this.targetDomNode, newW);
-			dojo.style.setOuterHeight(this.targetDomNode, newH);
+			dojo.html.setMarginBox(this.targetDomNode, { width: newW, height: newH});
 		}
 		
 		e.preventDefault();

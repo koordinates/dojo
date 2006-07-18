@@ -1,6 +1,5 @@
 dojo.provide("dojo.widget.html.YahooMap");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
 dojo.require("dojo.math");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.YahooMap");

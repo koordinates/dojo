@@ -5,6 +5,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event");
+dojo.require("dojo.html.selection");
 
 // Icon associated w/a floating pane
 dojo.widget.html.TaskBarItem = function(){

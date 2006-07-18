@@ -8,6 +8,9 @@ dojo.require("dojo.widget.DocPane");
 dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.widget.Dialog");
 
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.display");
+
 dojo.widget.html.DocPane = function(){
 	dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
 	dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
@@ -69,17 +72,17 @@ dojo.widget.defineWidget(
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css"),
 		isContainer: true,
 		fillInTemplate: function(){
-			this.requires = dojo.dom.removeNode(this.requires);
+			this.requires = dojo.html.removeNode(this.requires);
 			this.rRow.style.display = "none";
 			this.rRow2.style.display = "none";
 			
-			this.methods = dojo.dom.removeNode(this.methods);
+			this.methods = dojo.html.removeNode(this.methods);
 			this.mRow.style.display = "none";
 			
 			this.dialog = dojo.widget.createWidget("dialog", {}, this.dialog);
 			this.dialog.setCloseControl(this.cancel);
-			dojo.style.setOpacity(this.dialogBg, 0.8);
-			dojo.style.setOpacity(this.dialogFg, 1);
+			dojo.html.setOpacity(this.dialogBg, 0.8);
+			dojo.html.setOpacity(this.dialogFg, 1);
 
 			dojo.event.connect(this.edit, "onclick", dojo.lang.hitch(this, function(){
 				if(!this._isLoggedIn){
@@ -97,19 +100,19 @@ dojo.widget.defineWidget(
 			*/
 			
 			this.homeSave = this.containerNode.cloneNode(true);
-			this.detailSave = dojo.dom.removeNode(this.detail);
-			this.resultSave = dojo.dom.removeNode(this.result);
-			this.packageSave = dojo.dom.removeNode(this.packag);
-			this.results = dojo.dom.removeNode(this.results);
+			this.detailSave = dojo.html.removeNode(this.detail);
+			this.resultSave = dojo.html.removeNode(this.result);
+			this.packageSave = dojo.html.removeNode(this.packag);
+			this.results = dojo.html.removeNode(this.results);
 			this.rowParent = this.row.parentNode;
-			this.rowSave = dojo.dom.removeNode(this.row);
+			this.rowSave = dojo.html.removeNode(this.row);
 			this.vParent = this.vRow.parentNode;
-			this.vSave = dojo.dom.removeNode(this.vRow);
+			this.vSave = dojo.html.removeNode(this.vRow);
 			this.pParent = this.pRow.parentNode;
-			this.pSave = dojo.dom.removeNode(this.pRow);
-			this.sPTypeSave = dojo.dom.removeNode(this.sPType);
-			this.sPNameSave = dojo.dom.removeNode(this.sPName);
-			this.navSave = dojo.dom.removeNode(this.nav);
+			this.pSave = dojo.html.removeNode(this.pRow);
+			this.sPTypeSave = dojo.html.removeNode(this.sPType);
+			this.sPNameSave = dojo.html.removeNode(this.sPName);
+			this.navSave = dojo.html.removeNode(this.nav);
 		},
 		_logIn: function(){
 			dojo.docs.setUserName(this.userName.value);
@@ -145,7 +148,7 @@ dojo.widget.defineWidget(
 			dojo.debug(dojo.json.serialize(doc));
 
 			var appends = this._appends;
-			dojo.dom.removeChildren(this.domNode);
+			dojo.html.removeChildren(this.domNode);
 			this.fn.innerHTML = message.name;
 
 			this.variables.style.display = "block";
@@ -220,7 +223,7 @@ dojo.widget.defineWidget(
 			this.domNode.appendChild(this.detailSave.cloneNode(true));
 
 			for(var i = 0, append; append = appends[i]; i++){
-				dojo.dom.removeNode(append);
+				dojo.html.removeNode(append);
 			}
 		},
 		onPkgResults: function(/*Object*/ results){
@@ -235,10 +238,10 @@ dojo.widget.defineWidget(
 			var requireLinks = [];
 			var appends = this._appends;
 			while(appends.length){
-				dojo.dom.removeNode(appends.shift());
+				dojo.html.removeNode(appends.shift());
 			}
 
-			dojo.dom.removeChildren(this.domNode);
+			dojo.html.removeChildren(this.domNode);
 			
 			this.pkg.innerHTML = results.pkg;
 			
@@ -326,7 +329,7 @@ dojo.widget.defineWidget(
 				return;
 			}
 
-			dojo.dom.removeChildren(this.domNode);
+			dojo.html.removeChildren(this.domNode);
 
 			this.count.innerHTML = results.length;
 			var appends = [];
