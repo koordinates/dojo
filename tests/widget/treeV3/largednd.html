@@ -19,25 +19,36 @@
 </script>
 <script type="text/javascript">
 
-	
+	var nodeCount = 0;
+	var nodeCountMax = 1000;
 	dojo.addOnLoad(function(){
 		var depth = 0;
 		
+
 		function addChildren(title) {
 			//dojo.debug("addChildren to "+nodeOrTree+" depth" + depth)
+			
 			depth++;
 			
 			var children = [];
-			for (var i=1; i<=10; i++) {
+			for (var i=1; i<=10; i++) {				
+
 				var t = title+'.'+i;
 				var node = {title: t};
 				
-				if (depth<3) {
-					node.children = addChildren(t);
-				}
-				
-				children.push(node);				
+				children.push(node);		
+				nodeCount++	
+				if (nodeCount >= nodeCountMax) break;			
 			}
+
+			dojo.lang.forEach(children, function(child) {
+				if (depth<5 && Math.random()>0.3 && nodeCount<nodeCountMax) {
+					child.children = addChildren(t);
+					
+				}
+			});
+				
+
 			//dojo.debug("out "+nodeOrTree);
 			
 			depth--;
@@ -69,9 +80,6 @@
 		tree.setChildren(nodes);
 		dojo.profile.end("addNodes");
 		
-		var nodeCount = 0;
-		dojo.lang.forEach(tree.getDescendants(), function() { nodeCount++  });
-		
 		dojo.debug("Nodes total: "+nodeCount);
 			
 		
@@ -83,7 +91,7 @@
 
 <h4>Test/profile fast nested nodes generation and adoptation</h4>
 
-<input type="button" value="Expand all 1111 nodes (SLOW, dont do it!)" onClick="dojo.lang.forEach(tree.children, function(c) { controller.expandToLevel(c,999) })"/>
+<input type="button" value="Expand all nodes" onClick="controller.expandToLevel(tree,999)"/>
 <input type="button" value="dump profile" onClick="dojo.profile.dump(true)">
 
 </body>
