@@ -117,7 +117,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		this.labelNodeTemplate = labelNode;
 		
 		var contentNode = document.createElement("div");
-		dojo.html.setClass(contentNode, this.classPrefix+"Content");
+		var clazz = this.classPrefix+"Content";
 		
 		/**
 		 * IE & Safari do not support min-height properly so I have to rely
@@ -125,11 +125,14 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		 * FIXME: do it in CSS only, remove iconHeight from code
 		 */
 		if (dojo.render.html.ie) {
-			contentNode.style.height = this.iconHeight;
+			clazz = clazz + ' ' + this.classPrefix+"ContentIE";
 		}		
 		if (dojo.render.html.safari) {
-			contentNode.style.height = this.iconHeight;		
+			clazz = clazz + ' ' + this.classPrefix+"ContentSafari";
 		}
+		
+		
+		dojo.html.setClass(contentNode, clazz);
 		
 		this.contentNodeTemplate = contentNode;
 		
@@ -186,24 +189,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		}
 	},
 
-/*
-	initializeSelector: function() {
-		if (this.selector) {
-			this.selector = dojo.widget.byId(this.selector);
-			this.selector.listenTree(this);
-		}
-			
-	},
-
-	initializeMenu: function() {		
-		if (this.menu) {
-			this.menu = dojo.widget.byId(this.menu);
-			this.menu.listenTree(this);
-		}
-	},
-*/
-
-	
 	
 	adjustDNDMode: function() {
 		var _this = this;

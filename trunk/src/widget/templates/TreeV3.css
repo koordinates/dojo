@@ -43,6 +43,15 @@
     /* can't make inline - multiline bugs */
 }
 
+.TreeContentIE {
+    height: 18px;
+}
+
+.TreeContentSafari {
+    height: 18px;
+}
+
+
 
 .TreeExpand {
     width: 18px;
