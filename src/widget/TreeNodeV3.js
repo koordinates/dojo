@@ -309,11 +309,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("siblings "+parent.children);
 		
 		if (siblingsCount > 1) {
-			if (index == 0) {				
-				parent.children[1].viewUpdateLayout();		
+			if (index == 0) {
+				if (parent.children[1] instanceof dojo.widget.Widget) {
+					parent.children[1].viewUpdateLayout();
+				}
 			}
 			if (index == siblingsCount-1) {
-				parent.children[siblingsCount-2].viewUpdateLayout();		
+				if (parent.children[siblingsCount-2] instanceof dojo.widget.Widget) {
+					parent.children[siblingsCount-2].viewUpdateLayout();
+				}
 			}
 		} else if (parent.isTreeNode) {
 			parent.viewSetHasChildren();

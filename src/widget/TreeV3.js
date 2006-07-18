@@ -190,6 +190,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	adjustDNDMode: function() {
 		var _this = this;
 		
+		
 		var DNDMode = 0;
 		dojo.lang.forEach(this.DNDMode.split(';'),
 			function(elem) {
