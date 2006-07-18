@@ -1,6 +1,9 @@
 
 dojo.provide("dojo.widget.TreeDNDControllerV3");
 
+
+dojo.require("dojo.dnd.TreeDragAndDropV3");
+	
 dojo.widget.tags.addParseTreeHandler("dojo:TreeDNDControllerV3");
 
 
@@ -23,7 +26,11 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	listenTreeEvents: ["treeChange","treeDestroy", "addChild"],
 	
 	initialize: function(args) {
-		this.treeController = dojo.widget.manager.getWidgetById(args.controller)
+		this.treeController = dojo.lang.isString(args.controller) ? dojo.widget.byId(args.controller) : args.controller;
+		
+		if (!this.treeController) {
+			dojo.raise("treeController must be declared");
+		}
 		
 	},
 
