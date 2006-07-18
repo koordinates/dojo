@@ -3,11 +3,10 @@ dojo.provide("dojo.widget.RichText");
 dojo.provide("dojo.widget.html.RichText");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.dom");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
-dojo.require("dojo.style");
-dojo.require("dojo.string");
+dojo.require("dojo.string.extras");
 
 // used to save content
 try {
@@ -143,7 +142,7 @@ dojo.widget.defineWidget(
 						overflow = "hidden";
 					}
 				}
-				dojo.dom.insertBefore(this.domNode, this.textarea);
+				dojo.html.insertBefore(this.domNode, this.textarea);
 				this.domNode.innerHTML = html;
 				
 				if(this.textarea.form){
@@ -159,15 +158,16 @@ dojo.widget.defineWidget(
 				// to go back and put ourselves back in
 				var editor = this;
 				dojo.event.connect(this, "postCreate", function (){
-					dojo.dom.insertAfter(editor.textarea, editor.domNode);
+					dojo.html.insertAfter(editor.textarea, editor.domNode);
 				});
 			}else{
 				var html = dojo.string.trim(this.domNode.innerHTML);
 				if(html == ""){ html = "&nbsp;"; }
 			}
-					
-			this._oldHeight = dojo.style.getContentHeight(this.domNode);
-			this._oldWidth = dojo.style.getContentWidth(this.domNode);
+			
+			var content = dojo.html.getContentBox(this.domNode);
+			this._oldHeight = content.height;
+			this._oldWidth = content.width;
 
 			this._firstChildContributingMargin = this._getContributingMargin(this.domNode, "top");
 			this._lastChildContributingMargin = this._getContributingMargin(this.domNode, "bottom");
@@ -258,11 +258,11 @@ dojo.widget.defineWidget(
 		_hasCollapseableMargin: function(element, side) {
 			// check if an element has padding or borders on the given side
 			// which would prevent it from collapsing margins
-			if (dojo.style.getPixelValue(element, 
+			if (dojo.html.getPixelValue(element, 
 										 'border-'+side+'-width', 
 										 false)) {
 				return false;
-			} else if (dojo.style.getPixelValue(element, 
+			} else if (dojo.html.getPixelValue(element, 
 												'padding-'+side,
 												false)) {
 				return false;
@@ -291,14 +291,14 @@ dojo.widget.defineWidget(
 				var siblingMarginProp = "margin-top";
 			}
 
-			var elementMargin = dojo.style.getPixelValue(element, marginProp, false);
+			var elementMargin = dojo.html.getPixelValue(element, marginProp, false);
 
 			function isSignificantNode(element) {
 				// see if an node is significant in the current context
 				// for calulating margins
 				return !(element.nodeType==3 && dojo.string.isBlank(element.data)) 
-					&& dojo.style.getStyle(element, "display") != "none" 
-					&& !dojo.style.isPositionAbsolute(element);
+					&& dojo.html.getStyle(element, "display") != "none" 
+					&& !dojo.html.isPositionAbsolute(element);
 			}
 
 			// walk throuh first/last children to find total collapsed margin size
@@ -310,7 +310,7 @@ dojo.widget.defineWidget(
 					child = child[childSiblingAttr];
 				}
 						  
-				childMargin = Math.max(childMargin, dojo.style.getPixelValue(child, marginProp, false));
+				childMargin = Math.max(childMargin, dojo.html.getPixelValue(child, marginProp, false));
 				// stop if we hit a bordered/padded element
 				if (!this._hasCollapseableMargin(child, topOrBottom)) break;
 				child = child[childAttr];								   
@@ -325,7 +325,7 @@ dojo.widget.defineWidget(
 			var sibling = element[siblingAttr];
 			while (sibling) {
 				if (isSignificantNode(sibling)) {
-					contextMargin = dojo.style.getPixelValue(sibling, 
+					contextMargin = dojo.html.getPixelValue(sibling, 
 															 siblingMarginProp, 
 															 false);
 					break;
@@ -333,7 +333,7 @@ dojo.widget.defineWidget(
 				sibling = sibling[siblingAttr];
 			}
 			if (!sibling) { // no sibling, look at parent's margin instead
-				contextMargin = dojo.style.getPixelValue(element.parentNode, 
+				contextMargin = dojo.html.getPixelValue(element.parentNode, 
 												marginProp, false);
 			}
 
@@ -392,8 +392,8 @@ dojo.widget.defineWidget(
 			}
 
 			// fix margins on tmpContent
-			var firstChild = dojo.dom.firstElement(tmpContent);
-			var lastChild = dojo.dom.lastElement(tmpContent);
+			var firstChild = dojo.html.firstElement(tmpContent);
+			var lastChild = dojo.html.lastElement(tmpContent);
 			if(firstChild){
 				firstChild.style.marginTop = this._firstChildContributingMargin+"px";
 			}
@@ -428,7 +428,7 @@ dojo.widget.defineWidget(
 
 					// curry the getStyle function
 					var getStyle = (function (domNode) { return function (style) {
-						return dojo.style.getStyle(domNode, style);
+						return dojo.html.getStyle(domNode, style);
 					}; })(this.domNode);
 
 					var font =
@@ -439,12 +439,12 @@ dojo.widget.defineWidget(
 					// line height is tricky - applying a units value will mess things up.
 					// if we can't get a non-units value, bail out.
 					var lineHeight = "1.0";
-					var lineHeightStyle = dojo.style.getUnitValue(this.domNode, 'line-height');
+					var lineHeightStyle = dojo.html.getUnitValue(this.domNode, 'line-height');
 					if (lineHeightStyle.value && lineHeightStyle.units=="") {
 						lineHeight = lineHeightStyle.value;
 					}
 
-					dojo.style.insertCssText(
+					dojo.html.insertCssText(
 						'    body,html { background: transparent; padding: 0; margin: 0; }\n' +
 						// TODO: left positioning will case contents to disappear out of view
 						//       if it gets too wide for the visible area
@@ -1280,7 +1280,7 @@ dojo.widget.defineWidget(
 					"padding-bottom", "padding-top",
 					"border-width-bottom", "border-width-top"];
 				for(var i = 0, chromeheight = 0; i < heights.length; i++){
-					var height = dojo.style.getStyle(this.iframe, heights[i]);
+					var height = dojo.html.getStyle(this.iframe, heights[i]);
 					// Safari doesn't have all the heights so we have to test
 					if(height){
 						chromeheight += Number(height.replace(/[^0-9]/g, ""));
@@ -1294,7 +1294,7 @@ dojo.widget.defineWidget(
 				}
 				// dojo.debug(this.iframe.height);
 			}else if(this.object){
-				this.object.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
+				this.object.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
 			}
 		},
 		

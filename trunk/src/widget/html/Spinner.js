@@ -4,8 +4,8 @@ dojo.require("dojo.widget.Manager.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.dom");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 
@@ -85,15 +85,17 @@ dojo.widget.defineWidget(
 		},
 
 		_resizeNode: function(node){
-			var oldh = dojo.style.getContentBoxHeight(node);
-			var oldw = dojo.style.getContentBoxWidth(node);
+			var content = dojo.html.getContentBox(node);
+			var oldh = content.height;
+			var oldw = content.width
 			if(oldh <=0 || oldw <= 0){
 				// need more time to calculate size
 				setTimeout(dojo.lang.hitch(this,function(){this._resizeNode(node);}), 100);
 				return;
 			}
 			// note that the border is not resized
-			var newh = (dojo.style.getBorderBoxHeight(this.inputNode) >> 1) - dojo.style.getBorderHeight(node);
+			var border = dojo.html.getBorder(node);
+			var newh = (dojo.html.getBorderBox(this.inputNode).height >> 1) - border.height;
 			var ratio = newh  / oldh;
 			var spinnerWidth = Math.floor(oldw * ratio);
 			node.width = spinnerWidth;
@@ -104,14 +106,14 @@ dojo.widget.defineWidget(
 			// figure out how big the spacer image should be
 			var spinnerLeft = dojo.html.getAbsoluteX(this.relNode,true);
 			var spacerLeft = dojo.html.getAbsoluteX(this.spacerNode,true);
-			var spacerWidth = spinnerLeft + spinnerWidth + dojo.style.getBorderWidth(node) - spacerLeft;
+			var spacerWidth = spinnerLeft + spinnerWidth + border.width - spacerLeft;
 			if (spacerWidth >= 0) {
 				this.spacerNode.style.width = spacerWidth + "px";
 			}
 		},
 
 		resize: function(){
-			var inputHeight = dojo.style.getBorderBoxHeight(this.inputNode);
+			var inputHeight = dojo.html.getBorderBox(this.inputNode).height;
 			if(inputHeight <= 0){
 				// need more time to calculate size
 				setTimeout(dojo.lang.hitch(this,function(){this.resize();}), 100);
@@ -315,11 +317,11 @@ dojo.widget.defineWidget(
 			}
 
 			// add the disconnected node right after the INPUT tag
-			dojo.dom.insertAfter(this.relNode, this.inputNode, false);
+			dojo.html.insertAfter(this.relNode, this.inputNode, false);
 			// dummyNode is used to calculate the spinner size
 			var dummyNode = this.domNode.ownerDocument.createElement('A');
-			dojo.dom.insertAfter(dummyNode, this.relNode, false);
-			this.domNode = dojo.dom.removeNode(this.domNode);
+			dojo.html.insertAfter(dummyNode, this.relNode, false);
+			this.domNode = dojo.html.removeNode(this.domNode);
 
 			this.resize();
 			dojo.event.connect(this.inputNode, "onresize", this, "resize");

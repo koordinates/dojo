@@ -3,8 +3,10 @@ dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.dom");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.iframe");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 
@@ -275,8 +277,8 @@ dojo.widget.defineWidget(
 				// IE, mozilla
 				node.scrollIntoView(false);	
 			}else{
-				var parentBottom = parent.scrollTop + dojo.style.getInnerHeight(parent);
-				var nodeBottom = node.offsetTop + dojo.style.getOuterHeight(node);
+				var parentBottom = parent.scrollTop + dojo.html.getBorderBox(parent).height;
+				var nodeBottom = node.offsetTop + dojo.html.getMarginBox(node).height;
 				if(parentBottom < nodeBottom){
 					parent.scrollTop += (nodeBottom - parentBottom);
 				}else if(parent.scrollTop > node.offsetTop){
@@ -342,7 +344,8 @@ dojo.widget.defineWidget(
 			var dpClass;
 			if(this.mode == "remote"){
 				dpClass = dojo.widget.incrementalComboBoxDataProvider;
-			}else if(typeof this.dataProviderClass == "string"){
+			}
+			if(typeof this.dataProviderClass == "string"){
 				dpClass = dojo.evalObjPath(this.dataProviderClass)
 			}else{
 				dpClass = this.dataProviderClass;
@@ -448,13 +451,15 @@ dojo.widget.defineWidget(
 		},
 
 		_isValidOption: function(){
-			var tgt = dojo.dom.firstElement(this.optionsListNode);
+			var tgt = dojo.html.firstElement(this.optionsListNode);
+			var isValidOption = false;
+			var tgt = dojo.html.firstElement(this.optionsListNode);
 			var isValidOption = false;
 			while(!isValidOption && tgt){
 				if(this._isInputEqualToResult(tgt.getAttribute("resultName"))){
 					isValidOption = true;
 				}else{
-					tgt = dojo.dom.nextElement(tgt);
+					tgt = dojo.html.nextElement(tgt);
 				}
 			}
 			return isValidOption;
@@ -482,15 +487,14 @@ dojo.widget.defineWidget(
 		},
 
 		sizeBackgroundIframe: function(){
-			var w = dojo.style.getOuterWidth(this.optionsListNode);
-			var h = dojo.style.getOuterHeight(this.optionsListNode);
-			if( w==0 || h==0 ){
+			var mb = dojo.html.getMarginBox(this.optionsListNode);
+			if( mb.width==0 || mb.height==0 ){
 				// need more time to calculate size
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 				return;
 			}
 			if(this._result_list_open){
-				this.optionsIframe.size([0,0,w,h]);
+				this.optionsIframe.size([0,0,mb.width,mb.height]);
 			}
 		},
 
@@ -500,14 +504,14 @@ dojo.widget.defineWidget(
 				evt = { target: this._highlighted_option };
 			}
 
-			if(!dojo.dom.isDescendantOf(evt.target, this.optionsListNode)){
+			if(!dojo.html.isDescendantOf(evt.target, this.optionsListNode)){
 				// handle autocompletion where the the user has hit ENTER or TAB
 	
 				// if the input is empty do nothing
 				if(!this.textInputNode.value.length){
 					return;
 				}
-				tgt = dojo.dom.firstElement(this.optionsListNode);
+				tgt = dojo.html.firstElement(this.optionsListNode);
 
 				// user has input value not in option list
 				if(!tgt || !this._isInputEqualToResult(tgt.getAttribute("resultName"))){
@@ -563,8 +567,8 @@ dojo.widget.defineWidget(
 
 				with(this.optionsListNode.style){
 					display = "";
-					height = ((visibleCount) ? (dojo.style.getOuterHeight(childs[0]) * visibleCount) : 0)+"px";
-					width = dojo.html.getOuterWidth(this.cbTableNode)-2+"px";
+					height = ((visibleCount) ? (dojo.html.getMarginBox(childs[0]).height * visibleCount) : 0)+"px";
+					width = dojo.html.getMarginBox(this.cbTableNode).width-2+"px";
 				}
 				// only fadein once (flicker)
 				if(!this._result_list_open){

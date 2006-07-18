@@ -6,7 +6,6 @@
 <script type="text/javascript" src="../dojo.js"></script>
 <script type="text/javascript">
 
-dojo.require("dojo.html");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
 function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : id; }
@@ -56,6 +55,7 @@ dojo.event.connect($("selectElement"), "onclick", function (e) {
 <p>selection parentElement: <b id="selectionParentElement"></b></p>
 
 <script type="text/javascript">
+dojo.addOnLoad(function(){
 setInterval(function () {
 	$("selectionCollapsed").innerHTML = dojo.html.isSelectionCollapsed();
 	var p = dojo.html.selection.getParentElement();
@@ -64,6 +64,7 @@ setInterval(function () {
 	else
 		$("selectionParentElement").innerHTML = "null";
 }, 100);
+});
 </script>
 
 <h2><code>delete selection</code></h2>

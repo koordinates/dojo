@@ -2,8 +2,8 @@ dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.dnd.DragAndDrop");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang.array");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.layout");
 
 // NOTE: there will only ever be a single instance of HTMLDragManager, so it's
 // safe to use prototype properties for book-keeping.
@@ -154,7 +154,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			return;
 		}
 
-		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
+		var target = e.target.nodeType == dojo.html.TEXT_NODE ?
 			e.target.parentNode : e.target;
 
 		// do not start drag involvement if the user is interacting with
@@ -296,12 +296,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		dojo.lang.forEach(this.dropTargets, function(tempTarget){
 			var tn = tempTarget.domNode;
 			if(!tn){ return; }
-			var ttx = dojo.style.getAbsoluteX(tn, true);
-			var tty = dojo.style.getAbsoluteY(tn, true);
+			var abs = dojo.html.getAbsolutePosition(tn, true);
+			var bb = dojo.html.getBorderBox(tn);
 			this.dropTargetDimensions.push([
-				[ttx, tty],	// upper-left
+				[abs.x, abs.y],	// upper-left
 				// lower-right
-				[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
+				[ abs.x+bb.width, abs.y+bb.height ],
 				tempTarget
 			]);
 			//dojo.debug("Cached for "+tempTarget)
@@ -368,11 +368,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// if we have a current drop target, check to see if we're outside of
 		// it. If so, do all the actions that need doing.
 		if(this.currentDropTarget){
-			//dojo.debug(dojo.dom.hasParent(this.currentDropTarget.domNode))
-			var c = dojo.style.toCoordinateArray(this.currentDropTarget.domNode, true);
+			//dojo.debug(dojo.html.hasParent(this.currentDropTarget.domNode))
+			var c = dojo.html.toCoordinateObject(this.currentDropTarget.domNode, true);
 			//		var dtp = this.currentDropTargetPoints;
 			var dtp = [
-				[c[0],c[1]], [c[0]+c[2], c[1]+c[3]]
+				[c.x,c.y], [c.x+c.width, c.y+c.height]
 			];
 		}
 

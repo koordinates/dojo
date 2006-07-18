@@ -88,11 +88,6 @@ dojo.widget.manager = new function(){
 		return ret;
 	}
 
-	this.getWidgetsOfType = function (id) {
-		dojo.deprecated("getWidgetsOfType", "use getWidgetsByType", "0.4");
-		return dojo.widget.manager.getWidgetsByType(id);
-	}
-
 	this.getWidgetsByFilter = function(unaryFunc, onlyOne){
 		var ret = [];
 		dojo.lang.every(this.widgets, function(x){

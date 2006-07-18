@@ -4,7 +4,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TimePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.date");
-dojo.require("dojo.html");
+dojo.require("dojo.html.style");
 
 dojo.widget.html.TimePicker = function(){
 	dojo.widget.TimePicker.call(this);

@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.DomWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
+dojo.require("dojo.html.style");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.uri.*");
 dojo.require("dojo.lang.func");
@@ -451,7 +452,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		}
 	
 		if((this["templateCssString"])&&(!this.templateCssString["loaded"])){
-			dojo.style.insertCssText(this.templateCssString, null, cpath);
+			dojo.html.insertCssText(this.templateCssString, null, cpath);
 			if(!this.templateCssString){ this.templateCssString = ""; }
 			this.templateCssString.loaded = true;
 		}

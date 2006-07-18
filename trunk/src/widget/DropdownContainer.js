@@ -3,7 +3,9 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Menu2");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownContainer",

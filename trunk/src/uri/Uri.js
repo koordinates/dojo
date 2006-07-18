@@ -1,13 +1,6 @@
 dojo.provide("dojo.uri.Uri");
 
 dojo.uri = new function() {
-	this.joinPath = function() {
-		dojo.deprecated("dojo.uri.joinPath", "use the dojo.uri.Uri object instead", "0.4");
-		var arr = [];
-		for(var i = 0; i < arguments.length; i++) { arr.push(arguments[i]); }
-		return arr.join("/").replace(/\/{2,}/g, "/").replace(/((https*|ftps*):)/i, "$1/");
-	}
-	
 	this.dojoUri = function (uri) {
 		// returns a Uri object resolved relative to the dojo root
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri(), uri);

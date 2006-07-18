@@ -8,7 +8,7 @@ dojo.require("dojo.uri.Uri");
 dojo.require("dojo.event");
 dojo.require("dojo.animation.Animation");
 dojo.require("dojo.math.curves");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.func");
 
@@ -217,7 +217,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		dojo.body().style.height = "auto";
 		var h = Math.max(
 			document.documentElement.scrollHeight || dojo.body().scrollHeight,
-			dojo.html.getViewportHeight());
+			dojo.html.getViewport().height);
 		dojo.body().style.height = h + "px";
 	}
 });

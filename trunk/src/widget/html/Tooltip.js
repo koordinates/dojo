@@ -5,8 +5,9 @@ dojo.require("dojo.widget.Tooltip");
 dojo.require("dojo.uri");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event");
-dojo.require("dojo.style");
-dojo.require("dojo.html");
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.util");
+dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Tooltip",
