@@ -374,6 +374,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end(this.widgetType+"createSimple");
 		
+		delete dojo.widget.manager.topWidgets[treeNode.widgetId];
+		
 		return treeNode;
 	},
 	
