@@ -248,6 +248,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	},
 
+
+	
 	postCreate: function() {						
 		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
 	},

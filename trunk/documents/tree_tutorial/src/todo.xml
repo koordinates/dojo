@@ -14,6 +14,7 @@
         <listitem>Make unselectable extension (on treeChange bindings)</listitem>
         <listitem>Automated unit-testing system on Selenium</listitem>
         <listitem>Optimize all gifs with AGO carefully. AGO spoils transparent gifs sometimes</listitem>
+        <listitem>Add ImmutableTree class FAST</listitem>
     </itemizedlist>
     
     
