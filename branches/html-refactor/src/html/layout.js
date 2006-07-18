@@ -265,6 +265,7 @@ dojo.html.setMarginBox = function(node, args){
 // return: coordinate object
 dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll) {
 	if(coords instanceof Array || typeof coords == "array"){
+		dojo.deprecated("dojo.html.toCoordinateArray", "use dojo.html.toCoordinateObject({left: , top: , width: , height: }) instead", "0.5");
 		// coords is already an array (of format [x,y,w,h]), just return it
 		while ( coords.length < 4 ) { coords.push(0); }
 		while ( coords.length > 4 ) { coords.pop(); }
