@@ -34,13 +34,15 @@ dojo.widget.defineWidget(
 		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
 		scrollInterval: null,
+		toolbarTemplatePath: null,
 		
 
 		editorOnLoad: function(){
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
 			if((!toolbars.length)||(!this.shareToolbar)){
 				var tbOpts = {};
-				tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
+				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/HtmlEditorToolbarOneline.html";
+				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
 				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
 										tbOpts, this.domNode, "before");
 				dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
@@ -328,6 +330,7 @@ dojo.widget.defineWidget(
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?
 			if(!this.isClosed){
+				dojo.debug("save attempt");
 				if(this.saveUrl.length){
 					var content = {};
 					content[this.saveArgName] = this.getHtml();
