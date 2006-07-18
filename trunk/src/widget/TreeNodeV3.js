@@ -550,38 +550,38 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.debug("expand in "+this);
 		
-		dojo.profile.start("expand - lazy init");
+		//dojo.profile.start("expand - lazy init");
 		if (this.lazyInitEnabled && !this.expandChildrenChecked) {
 			this.setChildren(this.children);
 			this.expandChildrenChecked = true;
 		}
 		
-		dojo.profile.end("expand - lazy init");
+		//dojo.profile.end("expand - lazy init");
 		
 		// no matter if I have children or not. need to show/hide container anyway.
 		// e.g empty folder is expanded => then child is added
 		
-		dojo.profile.start("expand - showChildren");
+		//dojo.profile.start("expand - showChildren");
 		
 		this.showChildren();
 		
-		dojo.profile.end("expand - showChildren");
+		//dojo.profile.end("expand - showChildren");
 		
 
 		this.isExpanded = true;
 
 
-		dojo.profile.start("expand - viewSetExpand");
+		//dojo.profile.start("expand - viewSetExpand");
 		
 		this.viewSetExpand();
 		
-		dojo.profile.end("expand - viewSetExpand");
+		//dojo.profile.end("expand - viewSetExpand");
 
-		dojo.profile.start("expand - event");
+		//dojo.profile.start("expand - event");
 
 		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
 		
-		dojo.profile.end("expand - event");
+		//dojo.profile.end("expand - event");
 		
 		dojo.profile.end("expand");
 	},
