@@ -31,6 +31,15 @@ function test_Builder_appendComplex(){
 	jum.assertEquals("test42", "foobarbaz thud quux", b.toString());
 }
 
+function test_Builder_appendRecurse(){
+	var b = new dojo.string.Builder("foo");
+	b.append(["bar", [[["baz"]]]]);
+	jum.assertEquals("test41", "foobarbaz", b.valueOf());
+	b.append([[" thud"], " quux"]);
+	jum.assertEquals("test42", "foobarbaz thud quux", b.toString());
+}
+
+
 function test_Builder_clear(){
 	var b = new dojo.string.Builder("foo");
 	jum.assertEquals("test60", "foo", b.valueOf());
