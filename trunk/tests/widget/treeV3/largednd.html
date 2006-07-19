@@ -20,7 +20,7 @@
 <script type="text/javascript">
 
 	var nodeCount = 0;
-	var nodeCountMax = 1000;
+	var nodeCountMax = 200;
 	dojo.addOnLoad(function(){
 		var depth = 0;
 		
@@ -41,9 +41,14 @@
 				if (nodeCount >= nodeCountMax) break;			
 			}
 
+			var i=1;
 			dojo.lang.forEach(children, function(child) {
+				
 				if (depth<5 && Math.random()>0.3 && nodeCount<nodeCountMax) {
+					var t = title+'.'+i;
+					i++;
 					child.children = addChildren(t);
+					
 					
 				}
 			});
