@@ -6,10 +6,11 @@ dojo.require("dojo.string");
 // significantly quicker on IE (Jscript/wsh/etc.).
 
 dojo.string.Builder = function(str){
+
 	this.arrConcat = (dojo.render.html.capable && dojo.render.html["ie"]);
 
 	var a = [];
-	var b = str || "";
+	var b = "";
 	var length = this.length = b.length;
 
 	if(this.arrConcat){
@@ -23,14 +24,22 @@ dojo.string.Builder = function(str){
 		return (this.arrConcat) ? a.join("") : b;
 	};
 
-	this.append = function(s){
-		if(this.arrConcat){
-			a.push(s);
-		}else{
-			b+=s;
+	this.append = function(){
+		for(var x=0; x<arguments.length; x++){
+			var s = arguments[x];
+			if((s instanceof String)||(typeof s == "string")){
+				if(this.arrConcat){
+					a.push(s);
+				}else{
+					b+=s;
+				}
+				length += s.length;
+				this.length = length;
+			}else{
+				// if we get something array-like, call append with it as args
+				this.append.apply(this, s);
+			}
 		}
-		length += s.length;
-		this.length = length;
 		return this;
 	};
 
@@ -92,4 +101,6 @@ dojo.string.Builder = function(str){
 		}
 		return this;
 	};
+
+	this.append.apply(this, arguments);
 };
