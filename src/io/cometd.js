@@ -355,7 +355,8 @@ cometd.iframeTransport = new function(){
 	this.backlog = [];
 
 	this.check = function(types){
-		return dojo.lang.inArray(types, "iframe");
+		return ((!dojo.render.html.safari)&&
+				(dojo.lang.inArray(types, "iframe")));
 	}
 
 	this.tunnelInit = function(){
@@ -543,7 +544,6 @@ cometd.iframeTransport = new function(){
 }
 cometd.connectionTypes.register("iframe", cometd.iframeTransport.check, cometd.iframeTransport);
 
-
 cometd.mimeReplaceTransport = new function(){
 	this.connected = false;
 	this.connectionId = null;
@@ -650,4 +650,103 @@ cometd.mimeReplaceTransport = new function(){
 }
 cometd.connectionTypes.register("mime-message-block", cometd.mimeReplaceTransport.check, cometd.mimeReplaceTransport, null, true);
 
-// FIXME: need to implement fallback-polling, long-poll, IE XML block
+
+cometd.longPollTransport = new function(){
+	this.connected = false;
+	this.connectionId = null;
+	this.clientId = null;
+
+	this.authToken = null;
+	this.lastTimestamp = null;
+	this.lastId = null;
+	this.backlog = [];
+
+	this.check = function(types){
+		return dojo.lang.inArray(types, "long-polling");
+	}
+
+	this.tunnelInit = function(){
+		if(this.connected){ return; }
+		// FIXME: open up the connection here
+		this.openTunnelWith({
+			message: dojo.json.serialize({
+				channel:	"/meta/connect",
+				clientId:	this.clientId,
+				connectionType: "long-polling"
+				// FIXME: auth not passed here!
+				// "authToken": this.authToken
+			})
+		});
+		this.connected = true;
+	}
+
+	this.tunnelCollapse = function(){
+		if(!this.connected){
+			// try to restart the tunnel
+			this.connected = false;
+			dojo.debug("clientId:", this.clientId);
+			this.openTunnelWith({
+				message: dojo.json.serialize({
+					channel:	"/meta/reconnect",
+					connectionType: "long-polling",
+					clientId:	this.clientId,
+					connectionId:	this.connectionId,
+					timestamp:	this.lastTimestamp,
+					id:			this.lastId
+					// FIXME: no authToken provision!
+				})
+			});
+		}
+	}
+
+	this.deliver = cometd.iframeTransport.deliver;
+	// the logic appears to be the same
+
+	this.openTunnelWith = function(content, url){
+		dojo.io.bind({
+			url: (url||cometd.url),
+			method: "post",
+			content: content,
+			mimetype: "text/json",
+			load: dojo.lang.hitch(this, function(type, data, evt, args){
+				// dojo.debug(evt.responseText);
+				cometd.deliver(data);
+				this.connected = false;
+				this.tunnelCollapse();
+			}),
+			error: function(){ dojo.debug("tunnel opening failed"); }
+		});
+		this.connected = true;
+	}
+
+	this.processBacklog = function(){
+		while(this.backlog.length > 0){
+			this.sendMessage(this.backlog.shift(), true);
+		}
+	}
+
+	this.sendMessage = function(message, bypassBacklog){
+		// FIXME: what about auth fields?
+		if((bypassBacklog)||(this.connected)){
+			message.connectionId = this.connectionId;
+			message.clientId = this.clientId;
+			var bindArgs = {
+				url: cometd.url||djConfig["cometdRoot"],
+				method: "post",
+				mimetype: "text/json",
+				content: { message: dojo.json.serialize(message) }
+			};
+			return dojo.io.bind(bindArgs);
+		}else{
+			this.backlog.push(message);
+		}
+	}
+
+	this.startup = function(handshakeData){
+		if(this.connected){ return; }
+		this.clientId = handshakeData.clientId;
+		this.tunnelInit();
+	}
+}
+cometd.connectionTypes.register("long-polling", cometd.longPollTransport.check, cometd.longPollTransport);
+// FIXME: need to implement fallback-polling, IE XML block
