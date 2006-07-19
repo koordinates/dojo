@@ -103,6 +103,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	expandTimeout: 20,
 	
+	// FIXME: extract iterator
 	expandToLevel: function(node, level, sync) {
 		if (level == 0) return;
 		
@@ -144,6 +145,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	},
 
+	// FIXME: extract iterator
 	_expandToLevel: function(nodeA, level, sync, stack) {
 		var _this = this;
 		
