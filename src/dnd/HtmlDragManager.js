@@ -79,21 +79,36 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	// method over-rides
 	registerDragSource: function(ds){
+		//dojo.profile.start("register DragSource");
+
 		if(ds["domNode"]){
 			// FIXME: dragSource objects SHOULD have some sort of property that
 			// references their DOM node, we shouldn't just be passing nodes and
 			// expecting it to work.
+			//dojo.profile.start("register DragSource 1");
 			var dp = this.dsPrefix;
 			var dpIdx = dp+"Idx_"+(this.dsCounter++);
 			ds.dragSourceId = dpIdx;
 			this.dragSources[dpIdx] = ds;
 			ds.domNode.setAttribute(dp, dpIdx);
+			//dojo.profile.end("register DragSource 1");
+
+			//dojo.profile.start("register DragSource 2");
 
 			// so we can drag links
 			if(dojo.render.html.ie){
-				dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
+				//dojo.profile.start("register DragSource IE");
+				
+				dojo.event.browser.addListener(ds.domNode, "ondragstart", this.cancelEvent, false, true);
+				// terribly slow
+				//dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
+				//dojo.profile.end("register DragSource IE");
+
 			}
+			//dojo.profile.end("register DragSource 2");
+
 		}
+		//dojo.profile.end("register DragSource");
 	},
 
 	unregisterDragSource: function(ds){
