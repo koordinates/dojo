@@ -60,6 +60,7 @@ dojo.widget.defineWidget(
 		strikethroughButton: null,
 		clickInterceptDiv: null,
 		oneLineTr: null,
+		saveButton: null,
 
 		buttonClick: function(e){ e.preventDefault(); /* dojo.debug("buttonClick"); */ },
 
@@ -71,14 +72,13 @@ dojo.widget.defineWidget(
 		preventSelect: function(e){ if(dojo.render.html.safari){ e.preventDefault(); } },
 		wikiwordClick: function(){ },
 		insertimageClick: function(){ },
-		saveClick: function(){ this.exec("save"); },
 		htmltoggleClick: function(){ },
+		saveClick: function(){ },
 
 		styleDropdownClick: function(){
 			dojo.debug("styleDropdownClick:", this.styleDropdownContainer);
 			dojo.html.toggleShowing(this.styleDropdownContainer);
 		},
-
 
 		copyClick: function(){ this.exec("copy"); },
 		boldClick: function(){ this.exec("bold"); },
