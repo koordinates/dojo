@@ -95,15 +95,20 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 
-	expandTimeout: 50,
+	expandTimeout: 1000,
 	
 	expandToLevel: function(node, level, sync) {
 		if (level == 0) return;
 		
-		var _this = this;
+		//maybe top widget w/o node.parent
+		//this._expandToLevel([node.parent, node.getParentIndex()], level, sync, []);
+		
+		
 		
 		var children = node.children;
 		var handler;
+		
+		var _this = this;
 		
 		if (children.length) {
 			var index = 0;
@@ -118,21 +123,24 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			if (found) {
 				var nodeA = [node,index]
 				handler = function() {					
-					setTimeout(function() { _this._expandToLevel(nodeA, level-1, sync, [nodeA]) }, _this.expandTimeout);
+					var tid = setTimeout(function() {
+						_this._expandToLevel(nodeA, level-1, sync, [nodeA]);
+						clearTimeout(tid);
+					}, _this.expandTimeout);
 				}
 			}
 			
 		}
 		
 		
-		this.expand(node, false, this, handler);
+		this.expand(node, sync, this, handler);
+		
 
 	},
 
 	_expandToLevel: function(nodeA, level, sync, stack) {
 		var _this = this;
 		
-		dojo.profile.start("_expandToLevel");
 		var handler;
 		
 		var found;
@@ -140,9 +148,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		var searchIndex = 0;
 		var searchNode = nodeA[0].children[ nodeA[1] ];
 		
+		dojo.profile.start("_expandToLevel "+nodeA[0].children[ nodeA[1] ]);
+		dojo.debug("_expandToLevel "+nodeA[0].children[ nodeA[1] ])
 			
 		while(true) {
-			//dojo.debug("_expandToLevel check children "+searchNode+" from index "+searchIndex)
+			dojo.debug("_expandToLevel check children "+searchNode+" from index "+searchIndex)
 			
 			// try to find next among children
 			
@@ -154,7 +164,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 				if (child.isFolder || child.children && child.children.length) {					
 					found = [searchNode, searchIndex];
 					stack.push(found);
-					//dojo.debug("child found "+searchNode+" index "+searchIndex);
+					dojo.debug("child found "+searchNode+" index "+searchIndex);
 					break;
 				}
 				
@@ -164,12 +174,14 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			if (found) break;
 			
 			if (stack.length) {
-				//dojo.debug("pop parent");
 				// pop previous parent			
 				var p = stack.pop();			
 				
 				searchIndex = p[1]+1;
 				searchNode = p[0];
+				
+				dojo.debug("pop parent "+searchNode+" index "+searchIndex);
+				
 				continue;
 			}
 			
@@ -181,16 +193,20 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			//dojo.debug("found next "+found[0]+" index "+found);
 			
 			handler = function() {					
-				setTimeout(function() { _this._expandToLevel(found, level-1, sync, stack) }, _this.expandTimeout);
+				var tid = setTimeout(function() {
+					_this._expandToLevel(found, level-1, sync, stack);
+					clearTimeout(tid);
+				}, _this.expandTimeout);
 			}
 		} else {
 			//dojo.debug("NOT FOUND");
 		}
 		
-		dojo.profile.end("_expandToLevel");
+		dojo.profile.stop("_expandToLevel "+nodeA[0].children[ nodeA[1] ]);
 		
 		
-		this.expand(nodeA[0].children[nodeA[1]], false, this, handler);
+		
+		this.expand(nodeA[0].children[nodeA[1]], sync, this, handler);
 		
 	},
 
@@ -221,7 +237,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	 * callout activated even if node is expanded already
 	 */
 	expand: function(node, sync, callObj, callFunc) {
-		//dojo.debug("Expand "+node);
+		dojo.debug("Expand "+node);
+		
 		if (node.isFolder) {
 			node.expand(); // skip trees or non-folders
 		}
