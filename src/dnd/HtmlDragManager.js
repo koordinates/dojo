@@ -99,7 +99,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			if(dojo.render.html.ie){
 				//dojo.profile.start("register DragSource IE");
 				
-				dojo.event.browser.addListener(ds.domNode, "ondragstart", this.cancelEvent, false, true);
+				dojo.event.browser.addListener(ds.domNode, "ondragstart", this.cancelEvent);
 				// terribly slow
 				//dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
 				//dojo.profile.end("register DragSource IE");
@@ -121,7 +121,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			ds.domNode.setAttribute(dp, null);
 		}
 		if(dojo.render.html.ie){
-			dojo.event.disconnect(ds.domNode, "ondragstart", this.cancelEvent );
+			dojo.event.browser.removeListener(ds.domNode, "ondragstart", this.cancelEvent);			
 		}
 	},
 
