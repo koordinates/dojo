@@ -13,8 +13,8 @@
         <listitem>Add refresh/reset method to loading controllers</listitem>
         <listitem>Make unselectable extension (on treeChange bindings)</listitem>
         <listitem>Automated unit-testing system on Selenium</listitem>
-        <listitem>Optimize all gifs with AGO carefully. AGO spoils transparent gifs sometimes</listitem>
-        <listitem>Add ImmutableTree class FAST</listitem>
+        <listitem>Optimize all gifs with AGO carefully. AGO spoils transparent gifs sometimes</listitem>        
+        <listitem>Need a way to inform user about finishing of expandToLevel or expansion from indices operations, that may involve async &amp; loading features</listitem>
     </itemizedlist>
     
     
