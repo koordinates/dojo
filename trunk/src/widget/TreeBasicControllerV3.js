@@ -31,12 +31,12 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 
 	listenNode: function(node) {				
-		dojo.event.browser.addListener(node.expandNode, "onclick", this.onExpandClickHandler, false, true);
+		dojo.event.browser.addListener(node.expandNode, "onclick", this.onExpandClickHandler);
 		//dojo.event.connect(node.expandNode, "onclick", this, "onExpandClick");
 	},
 
 	unlistenNode: function(node) {
-		dojo.event.browser.removeListener(node.expandNode, "onclick", this.onExpandClickHandler, false);
+		dojo.event.browser.removeListener(node.expandNode, "onclick", this.onExpandClickHandler);
 		//dojo.event.disconnect(node.expandNode, "onclick", this, "onExpandClick");
 	},
 	
@@ -230,6 +230,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 	onExpandClick: function(e){
+		//dojo.debugShallow(e)
 		var node = this.getWidgetByNode(e.target);
 		
 		if(node.isLocked()) {
