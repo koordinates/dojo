@@ -88,6 +88,7 @@ dojo.widget.defineWidget(
 			);
 
 			dojo.event.connect(this.toolbarWidget, "formatSelectClick", this, "focus");
+			dojo.event.connect(this.toolbarWidget, "saveClick", this, "save");			
 			dojo.event.connect(this, "execCommand", this, "focus");
 
 			if(this.htmlEditing){
@@ -100,8 +101,8 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		clobberFocus: function() {},
-
+		clobberFocus: function(){},
+		save: function(){ dojo.debug("Editor2.save"); },
 		toggleHtmlEditing: function(){
 			if(this===dojo.widget.Editor2._CurrentInstance){
 				if(!this._inHtmlMode){
@@ -264,7 +265,7 @@ dojo.widget.defineWidget(
 			// end frequency checker
 
 			dojo.lang.forEach(this.commandList, function(cmd){
-					if(cmd == "inserthtml"){ return; }
+					if((cmd == "inserthtml") || (cmd == "save")){ return; }
 					try{
 						if(this.queryCommandEnabled(cmd)){
 							if(this.queryCommandState(cmd)){
