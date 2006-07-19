@@ -17,10 +17,13 @@ dojo.require("dojo.lang.extras");
 dojo.require("dojo.html.layout");
 
 dojo.dnd.TreeDragSourceV3 = function(node, syncController, type, treeNode){
+	//dojo.profile.start("TreeDragSourceV3 "+treeNode);
 	this.controller = syncController;
 	this.treeNode = treeNode;
 
 	dojo.dnd.HtmlDragSource.call(this, node, type);
+	//dojo.profile.end("TreeDragSourceV3 "+treeNode);
+
 }
 
 dojo.inherits(dojo.dnd.TreeDragSourceV3, dojo.dnd.HtmlDragSource);

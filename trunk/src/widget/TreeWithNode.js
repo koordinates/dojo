@@ -93,7 +93,7 @@ dojo.widget.TreeWithNode = {
 	 *  - some widgets have parent (e.g markup), some widgets and objects do not
 	 */
 	setChildren: function(childrenArray) {
-		//dojo.profile.start("setChildren");
+		//dojo.profile.start("setChildren "+this);
 		//dojo.debug("setChildren in "+this);
 		
 		if (this.isTreeNode && !this.isFolder) {
@@ -106,14 +106,20 @@ dojo.widget.TreeWithNode = {
 		
 		this.children = childrenArray;
 		
+
+
 		var hasChildren = this.children.length > 0;
 		if (this.isTreeNode && hasChildren != hadChildren) {
 			// call only when hasChildren state changes
 			this.viewSetHasChildren();
 		}
 		
+
+
 		for(var i=0; i<this.children.length; i++) {
 			var child = this.children[i];
+
+			//dojo.profile.start("setChildren - create "+this);
 			
 			if (!(child instanceof dojo.widget.Widget)) {
 				
@@ -130,11 +136,20 @@ dojo.widget.TreeWithNode = {
 				//dojo.debug("setChildren creates node "+child);
 			}
 			
+			//dojo.profile.end("setChildren - create "+this);
+
+			//dojo.profile.start("setChildren - attach "+this);
+
 			if (!child.parent) { // detached child
 				child.parent = this;
+
+				//dojo.profile.start("setChildren - updateTree "+this);
+				
 				if (this.tree !== child.tree) {				
 					child.updateTree(this.tree);
 				}
+				//dojo.profile.end("setChildren - updateTree "+this);
+
 			
 				//dojo.debug("Add layout for "+child);
 				child.viewAddLayout();
@@ -149,13 +164,23 @@ dojo.widget.TreeWithNode = {
 				// just in case..			
 				delete dojo.widget.manager.topWidgets[child.widgetId];
 		
+
+				//dojo.profile.start("setChildren - event "+this);
+
 				dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+
+				//dojo.profile.end("setChildren - event "+this);
+
 			}
+
+			//dojo.profile.end("setChildren - attach "+this);
+
 		
 		}
 		
 
-		//dojo.profile.end("setChildren");
+
+		dojo.profile.end("setChildren "+this);
 		
 	},	
 	

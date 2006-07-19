@@ -42,18 +42,27 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			}
 		}
 		
+		this.onLabelClickHandler =  dojo.lang.hitch(this, this.onLabelClick);
+		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);
+	
+		
 	},
 
 
 	listenNode: function(node) {
 		//if (!node) dojo.debug((new Error()).stack)
-		dojo.event.connect(node.labelNode, "onclick", this, "onLabelClick");
-		dojo.event.connect(node.labelNode, "ondblclick", this, "onLabelDblClick");
+		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelClickHandler, false, true);
+		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelDblClickHandler, false, true);
+		
+		//dojo.event.connect(node.labelNode, "onclick", this, "onLabelClick");
+		//dojo.event.connect(node.labelNode, "ondblclick", this, "onLabelDblClick");
 	},
 	
 	unlistenNode: function(node) {
-		dojo.event.disconnect(node.labelNode, "onclick", this, "onLabelClick");
-		dojo.event.disconnect(node.labelNode, "ondblclick", this, "onLabelDblClick");
+		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelClickHandler, false);
+		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelDblClickHandler, false);
+		//dojo.event.disconnect(node.labelNode, "onclick", this, "onLabelClick");
+		//dojo.event.disconnect(node.labelNode, "ondblclick", this, "onLabelDblClick");
 	},
 
 

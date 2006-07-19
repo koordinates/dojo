@@ -42,7 +42,9 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	// because I have information about parent on this stage and can use it
 	// to check locking or other things
 	onAddChild: function(message) {
+		//dojo.profile.start("DND addChild "+message.child);
 		this.listenNode(message.child);
+		//dojo.profile.end("DND addChild "+message.child);
 	},
 
 
@@ -67,7 +69,8 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	 * I can't process DnD with events cause an event can't return result success/false
 	*/
 	listenNode: function(node) {
-		
+
+		//dojo.profile.start("DND listenNode "+node);		
 		if (!node.tree.DNDMode) return;
 		if (this.dragSources[node.widgetId] || this.dropTargets[node.widgetId]) return;
 
@@ -81,14 +84,22 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 		if (!node.actionIsDisabled(node.actions.MOVE)) {
 			//dojo.debug("reg source")
 			
+			//dojo.profile.start("DND source "+node);		
 			var source = new dojo.dnd.TreeDragSourceV3(node.contentNode, this, node.tree.widgetId, node);
+			//dojo.profile.end("DND source "+node);		
+
 			this.dragSources[node.widgetId] = source;
 		}
 
+		//dojo.profile.start("DND target "+node);		
 	
 		var target = new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DNDAcceptTypes, node);
+		//dojo.profile.end("DND target "+node);		
 
 		this.dropTargets[node.widgetId] = target;
+
+		//dojo.profile.end("DND listenNode "+node);		
+
 
 	},
 

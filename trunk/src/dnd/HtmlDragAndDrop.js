@@ -27,6 +27,7 @@ dojo.dnd.HtmlDragSource = function(node, type){
 		// set properties that might have been clobbered by the mixin
 		this.type = (type)||(this.domNode.nodeName.toLowerCase());
 	}
+
 }
 dojo.inherits(dojo.dnd.HtmlDragSource, dojo.dnd.DragSource);
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
