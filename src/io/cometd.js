@@ -19,8 +19,6 @@ dojo.require("dojo.lang.*");
  * interface.
  */
 
-// TODO: unlike repubsubio we don't handle any sort of connection
-// subscription/publishing backlog. Should we?
 // TODO: the auth handling in this file is a *mess*. It should probably live in
 // the cometd object with the ability to mix in or call down to an auth-handler
 // object, the prototypical variant of which is a no-op
@@ -545,4 +543,111 @@ cometd.iframeTransport = new function(){
 }
 cometd.connectionTypes.register("iframe", cometd.iframeTransport.check, cometd.iframeTransport);
 
-// FIXME: need to implement long-poll, IE XML block, and the Moz/Safari multipart-replace transports
+
+cometd.mimeReplaceTransport = new function(){
+	this.connected = false;
+	this.connectionId = null;
+	this.clientId = null;
+	this.xhr = null;
+
+	this.authToken = null;
+	this.lastTimestamp = null;
+	this.lastId = null;
+	this.backlog = [];
+
+	this.check = function(types){
+		return ((dojo.render.html.mozilla)&& // seems only Moz really supports this right now = (
+				(dojo.lang.inArray(types, "mime-message-block")));
+	}
+
+	this.tunnelInit = function(){
+		if(this.connected){ return; }
+		// FIXME: open up the connection here
+		this.openTunnelWith({
+			message: dojo.json.serialize({
+				channel:	"/meta/connect",
+				clientId:	this.clientId,
+				connectionType: "mime-message-block"
+				// FIXME: auth not passed here!
+				// "authToken": this.authToken
+			})
+		});
+		this.connected = true;
+	}
+
+	this.tunnelCollapse = function(){
+		if(this.connected){
+			// try to restart the tunnel
+			this.connected = false;
+			this.openTunnelWith({
+				message: dojo.json.serialize({
+					channel:	"/meta/reconnect",
+					clientId:	this.clientId,
+					connectionId:	this.connectionId,
+					timestamp:	this.lastTimestamp,
+					id:			this.lastId
+					// FIXME: no authToken provision!
+				})
+			});
+		}
+	}
+
+	this.deliver = cometd.iframeTransport.deliver;
+	// the logic appears to be the same
+
+	this.handleOnLoad = function(resp){
+		cometd.deliver(dojo.json.evalJson(this.xhr.responseText));
+	}
+
+	this.openTunnelWith = function(content, url){
+		// set up the XHR object and register the multipart callbacks
+		this.xhr = dojo.hostenv.getXmlhttpObject();
+		this.xhr.multipart = true; // FIXME: do Opera and Safari support this flag?
+		if(dojo.render.html.mozilla){
+			this.xhr.addEventListener("load", dojo.lang.hitch(this, "handleOnLoad"), false);
+		}else if(dojo.render.html.safari){
+			// Blah. WebKit doesn't actually populate responseText and/or responseXML. Useless.
+			dojo.debug("Webkit is broken with multipart responses over XHR = (");
+			this.xhr.onreadystatechange = dojo.lang.hitch(this, "handleOnLoad");
+		}else{
+			this.xhr.onload = dojo.lang.hitch(this, "handleOnLoad");
+		}
+		this.xhr.open("POST", (url||cometd.url), true); // async post
+		this.xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		dojo.debug(dojo.json.serialize(content));
+		this.xhr.send(dojo.io.argsFromMap(content, "utf8"));
+	}
+
+	this.processBacklog = function(){
+		while(this.backlog.length > 0){
+			this.sendMessage(this.backlog.shift(), true);
+		}
+	}
+
+	this.sendMessage = function(message, bypassBacklog){
+		// FIXME: what about auth fields?
+		if((bypassBacklog)||(this.connected)){
+			message.connectionId = this.connectionId;
+			message.clientId = this.clientId;
+			var bindArgs = {
+				url: cometd.url||djConfig["cometdRoot"],
+				method: "POST",
+				mimetype: "text/json",
+				content: { message: dojo.json.serialize(message) }
+			};
+			return dojo.io.bind(bindArgs);
+		}else{
+			this.backlog.push(message);
+		}
+	}
+
+	this.startup = function(handshakeData){
+		dojo.debugShallow(handshakeData);
+		if(this.connected){ return; }
+		this.clientId = handshakeData.clientId;
+		this.tunnelInit();
+	}
+}
+cometd.connectionTypes.register("mime-message-block", cometd.mimeReplaceTransport.check, cometd.mimeReplaceTransport, null, true);
+
+// FIXME: need to implement fallback-polling, long-poll, IE XML block
