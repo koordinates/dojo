@@ -73,6 +73,16 @@ body {
 
 <p>post-container paragraph</p>
 
+<div id="ContentPane3" class="box" hasShadow="true">
+	some content pane blah blah blah
+</div>
+
+<script type="text/javascript">
+	dojo.addOnLoad(function(){
+		dojo.debug(dojo.widget.createWidget("ContentPane", {}, dojo.byId("ContentPane3")));
+	});
+</script>
+
 </body>
 </html>
 <html><body></body></html>
