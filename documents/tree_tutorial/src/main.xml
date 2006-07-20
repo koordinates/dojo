@@ -15,6 +15,9 @@
     &introduction;
     &whatsnew;
     &todo;
+    
+    <important>The rest of the document is draft and may be outdated</important>
+    
     &performance;
     &performance_tricks;
     &components;
