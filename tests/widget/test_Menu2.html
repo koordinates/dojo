@@ -9,8 +9,10 @@
 
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../src/widget/Menu2.js"></script> <!--for firebug debug-->
 <script type="text/javascript">
 	dojo.require("dojo.widget.Menu2");
+	dojo.hostenv.writeIncludes();
 </script>
 </head>
 <body style="background-color: #3A6EA5; color: white;">
@@ -43,6 +45,8 @@
 <h2>Contextmenu should always apear within browser window, no scrolling needed</h2><br />
 
 <h3 style="color: yellow;">In Opera, press ctrl-button while clicking. This is needed as opera doesn't support right-click events</h3> 
+
+<p>In IE, test bleed through here <select><option>popupmenu</option><option>should</option><option>cover</option><option>this</option><option>select</option></select></p>
 
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus risus. Praesent eu lacus et enim laoreet sollicitudin. Quisque mollis mi a lectus. Cras ante. Aliquam tempus justo laoreet justo. Vestibulum egestas feugiat nisi. Nulla ultrices consequat felis. Curabitur dignissim augue vel enim. Fusce tempus tempor mauris. Praesent suscipit pede in nunc. Duis mi neque, malesuada non, volutpat et, nonummy et, ante. Aliquam neque. Nulla rhoncus, turpis eget mattis molestie, magna nulla dictum ligula, quis tempor odio justo vel pede. Donec sit amet tellus. Phasellus sapien. Nulla id massa at nunc condimentum fringilla. Fusce suscipit ipsum et lorem consequat pulvinar. Quisque lacinia sollicitudin tellus.</p>
 

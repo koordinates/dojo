@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Dojo Tree Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.profile");
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeDocIcon");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.hostenv.writeIncludes();
+</script>
+</head>
+<body>
+	
+<!-- BUG: (IE)
+Open Item 1
+Open Item 1.3
+Open Empty folder
+Close Empty folder
+see part of grid under 1 disappeared
+-->
+
+
+<h2>Simplest tree</h2>
+
+<div style="display:none">	
+	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>	
+
+	
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
+
+<div dojoType="TreeDocIcon" widgetId="docIcons"></div>
+	
+	
+<div dojoType="TreeV3" listeners="docIcons;controller">
+    <div dojoType="TreeNodeV3" title="Item 1">
+        <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2">
+            <div dojoType="TreeNodeV3" title="Item 1.2.1">
+				<div dojoType="TreeNodeV3" title="Item 1.2.1.1"></div>
+			</div>
+            <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.3">
+            <div dojoType="TreeNodeV3" isFolder="true" title="Empty folder"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
+        </div>
+        <div dojoType="TreeNodeV3" title="Item 1.4">
+            <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
+        </div>
+	<div dojoType="TreeNodeV3" title="Item 2"></div>
+    </div>
+</div>
+	
+
+<input type="button" value="Profile dump" onclick="dojo.profile.dump(true)">
+
+</body>
+</html>

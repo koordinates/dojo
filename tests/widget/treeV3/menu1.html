@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.TreeContextMenuV3");
+	dojo.hostenv.writeIncludes();
+
+
+
+	dojo.addOnLoad(function() {
+		dojo.event.topic.subscribe('treeContextMenuDestroy/engage',
+			function (menuItem) { 
+				var node = menuItem.getTreeNode();
+				if (confirm("Delete node with descendants: "+node.title.replace(/(<([^>]+)>)/ig," ") +" ?")) {
+					dojo.widget.byId('treeController').destroyNode(node); 
+				}
+			}
+		);
+
+
+		dojo.event.topic.subscribe('treeContextMenuCreate/engage',
+			function (menuItem) {
+                            dojo.widget.byId('treeController').createChild(menuItem.getTreeNode(), 0, {title:"New node"});
+                        }
+		);
+
+
+		dojo.event.topic.subscribe('treeContextMenuUp/engage',
+			function (menuItem) {
+                            var node = menuItem.getTreeNode();
+                            if (node.isFirstNode()) return;
+                            dojo.widget.byId('treeController').move(node, node.parent, node.getParentIndex()-1);
+                        }
+		);
+
+
+		dojo.event.topic.subscribe('treeContextMenuDown/engage',
+			function (menuItem) {
+                            var node = menuItem.getTreeNode();
+                            if (node.isLastNode()) return;
+                            dojo.widget.byId('treeController').move(node, node.parent, node.getParentIndex()+1);
+                        }
+		);
+
+
+		dojo.event.topic.subscribe('treeContextMenuEdit/engage',
+			function (menuItem) {
+                            var node = menuItem.getTreeNode();
+                            dojo.widget.byId('treeController').editLabelStart(node);
+                        }
+		);
+
+	});
+
+</script>
+
+
+</head>
+<body>
+
+
+
+	
+<div dojoType="TreeBasicControllerV3" widgetId="treeController"></div>	
+
+<div dojoType="TreeContextMenuV3" toggle="explode" contextMenuForWindow="false" widgetId="contextMenu">
+	<div dojoType="TreeMenuItemV3" treeActions="addChild" iconSrc="../images/createsmall.gif" widgetId="treeContextMenuCreate" caption="Create"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="remove" iconSrc="../images/removesmall.gif" caption="Remove" widgetId="treeContextMenuDestroy"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/downsmall.png" caption="Up" widgetId="treeContextMenuUp"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/upsmall.png" caption="Down" widgetId="treeContextMenuDown"></div>
+	<!-- TODO <div dojoType="TreeMenuItemV3" treeActions="edit" caption="Edit" widgetId="treeContextMenuEdit"></div> -->
+</div>
+
+
+<div dojoType="TreeV3" listeners="treeController;contextMenu">
+	<div dojoType="TreeNodeV3" title="Item 1" widgetId="Item 1">
+		<div dojoType="TreeNodeV3" title="Item 1.1" widgetId="Item 1.1"></div>
+		<div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2"></div>
+	</div>
+
+	<div dojoType="TreeNodeV3" title="Item 2<br/>title long yeah" widgetId="Item 2">
+		<div dojoType="TreeNodeV3" title="Item 2.1" widgetId="Item 2.1"></div>
+	</div>
+
+	<div dojoType="TreeNodeV3" title="Item 3" isFolder="true" widgetId="Item 3"></div>
+	<div dojoType="TreeNodeV3" title="Item 4" widgetId="Item 4"></div>
+</div>
+
+
+
+
+</body>
+</html>

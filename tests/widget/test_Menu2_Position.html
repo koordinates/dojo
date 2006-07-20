@@ -80,6 +80,45 @@
 		</div>
 	</div>
 
+	<br />
+	<br />
+
+	<iframe id="embed" src="../test_html_content.html" width="50%" height="200px" ></iframe>
+
+<script type="text/javascript">
+	function attachMenu(){
+		var contentWin = dojo.byId("embed").contentWindow;
+		
+		var menu = dojo.widget.createWidget("PopupMenu2", {id: "menu",
+		contextMenuForWindow: false } );
+		
+		   menu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item1",
+		caption: "Item 1"}));
+		   menu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item2",
+		caption: "Item 2", submenuId: "SubMenu"}));
+		
+		
+		   var SubMenu = dojo.widget.createWidget("PopupMenu2", {id: "SubMenu"});
+		   SubMenu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item3",
+		caption: "SubMenu-Item 1"}));
+		   SubMenu.addChild(dojo.widget.createWidget("MenuItem2", {id: "item4",
+		caption: "SubMenu-Item 2", submenuId: "NestedMenu"}));
+		
+		
+		   var NestedMenu = dojo.widget.createWidget("PopupMenu2", {id:
+		"NestedMenu"});
+		   NestedMenu.addChild(dojo.widget.createWidget("MenuItem2", {id:
+		"item5", caption: "Nested(SubMenu)-Item 1"}));
+		   NestedMenu.addChild(dojo.widget.createWidget("MenuItem2", {id:
+		"item6", caption: "Nested(SubMenu)-Item 2"}));
+		
+		document.body.appendChild(menu.domNode);
+		document.body.appendChild(SubMenu.domNode);
+		document.body.appendChild(NestedMenu.domNode);
+		menu.bindDomNode("embed");
+	}
+	dojo.event.connect(dojo.byId("embed"), "onload", attachMenu);
+</script>
 </div>
 
 <div style="clear: both">&nbsp;</div>

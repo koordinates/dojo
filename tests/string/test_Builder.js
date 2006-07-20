@@ -6,6 +6,13 @@ function test_Builder_ctor(){
 	var b = new dojo.string.Builder("foo");
 	jum.assertEquals("test20", "foo", b.toString());
 	jum.assertEquals("test30", "foo", b.valueOf());
+
+}
+
+function test_Builder_ctorComplex(){
+	var c = new dojo.string.Builder("foo", "bar", ["baz", "thud"]);
+	jum.assertEquals("test31", "foobarbazthud", c.valueOf());
+	jum.assertEquals("test32", "foobarbazthud".length, c.length);
 }
 
 function test_Builder_append(){
@@ -15,6 +22,23 @@ function test_Builder_append(){
 	b.append(" baz");
 	jum.assertEquals("test50", "foobar baz", b.toString());
 }
+
+function test_Builder_appendComplex(){
+	var b = new dojo.string.Builder("foo");
+	b.append("bar", "baz");
+	jum.assertEquals("test41", "foobarbaz", b.valueOf());
+	b.append([" thud", " quux"]);
+	jum.assertEquals("test42", "foobarbaz thud quux", b.toString());
+}
+
+function test_Builder_appendRecurse(){
+	var b = new dojo.string.Builder("foo");
+	b.append(["bar", [[["baz"]]]]);
+	jum.assertEquals("test41", "foobarbaz", b.valueOf());
+	b.append([[" thud"], " quux"]);
+	jum.assertEquals("test42", "foobarbaz thud quux", b.toString());
+}
+
 
 function test_Builder_clear(){
 	var b = new dojo.string.Builder("foo");
