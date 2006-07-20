@@ -6,14 +6,14 @@ dojo.provide("dojo.dnd.DragAndDrop");
 
 dojo.dnd.DragSource = function(){
 
-	dojo.profile.start("DragSource");
+	//dojo.profile.start("DragSource");
 
 	var dm = dojo.dnd.dragManager;
 	if(dm["registerDragSource"]){ // side-effect prevention
 		dm.registerDragSource(this);
 	}
 
-	dojo.profile.end("DragSource");
+	//dojo.profile.end("DragSource");
 
 }
 
