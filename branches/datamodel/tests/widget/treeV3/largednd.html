@@ -1,0 +1,114 @@
+<html>
+<head>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+	delete dojo["profile"];
+	dojo.require("dojo.profile");
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.TreeDNDControllerV3");
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	var nodeCount = 0;
+	var nodeCountMax = 1000;
+	dojo.addOnLoad(function(){
+		var depth = 0;
+		
+
+		function addChildren(title) {
+			//dojo.debug("addChildren title "+title);
+			
+			depth++;
+			
+			var children = [];
+			for (var i=1; i<=6; i++) {				
+
+				var t = title+'.'+i;
+				var node = {title: t};
+				
+				children.push(node);		
+				nodeCount++	
+				if (nodeCount >= nodeCountMax) break;			
+			}
+
+			var i=1;
+			dojo.lang.forEach(children, function(child) {
+				var t = title+'.'+i;
+				i++;
+
+				if (depth<5 && Math.random()>0.3 && nodeCount<nodeCountMax) {
+					//dojo.debug("add child "+t);
+					child.children = addChildren(t);        		
+				}
+			});
+				
+
+			//dojo.debug("out "+nodeOrTree);
+			
+			depth--;
+			
+			return children;			
+		}	
+
+		controller = dojo.widget.createWidget("TreeBasicControllerV3");
+		dndcontroller = dojo.widget.createWidget("TreeDNDControllerV3", { controller: controller });
+		
+		dojo.profile.start("createTree");
+		tree = dojo.widget.createWidget("TreeV3", {
+			listeners: [controller.widgetId,dndcontroller.widgetId],
+			DNDAcceptTypes: "firstTree",
+			 widgetId: "firstTree",
+			DNDMode:"between;onto"
+		});	
+		dojo.profile.end("createTree");
+				
+		document.body.appendChild(tree.domNode);
+
+	
+		dojo.profile.start("prepareNodes");		
+		var nodes = addChildren('node', tree);
+		dojo.profile.end("prepareNodes");
+			
+		dojo.profile.start("addNodes");
+		
+		tree.setChildren(nodes);
+		dojo.profile.end("addNodes");
+		
+		dojo.debug("Nodes total: "+nodeCount);
+			
+		
+	});
+
+</script>
+</head>
+<body>
+
+<div style="display:none">	
+	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_plus.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/i_long.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/document.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/open.gif">
+	<img src="../../../src/widget/templates/images/TreeV3/closed.gif">
+</div>	
+
+
+<h4>Test/profile fast nested nodes generation and adoptation</h4>
+
+<input type="button" value="Expand all nodes" onClick="controller.expandToLevel(tree,999)"/>
+<input type="button" value="dump profile" onClick="dojo.profile.dump(true)">
+
+</body>
+</html>

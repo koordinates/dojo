@@ -25,27 +25,27 @@ function test_lang_isNumeric() {
 	jum.assertFalse("117", dojo.lang.isNumeric(undef));
 	jum.assertFalse("118", dojo.lang.isNumeric([]));
 	jum.assertFalse("119", dojo.lang.isNumeric(error));
-	// dojo.log.debug("leaving test_lang_isNumeric()");
+	jum.assertFalse("120", dojo.lang.isNumeric(""));
+	jum.assertFalse("121", dojo.lang.isNumeric("  "));
 }
 
 function test_lang_isPureObject() {
 	var undef; // undefined
 
-	jum.assertTrue("120", dojo.lang.isPureObject(new Object()));
-	jum.assertTrue("120", dojo.lang.isPureObject({a: 1, b: 2}));
+	jum.assertTrue("130", dojo.lang.isPureObject(new Object()));
+	jum.assertTrue("131", dojo.lang.isPureObject({a: 1, b: 2}));
 
-	jum.assertFalse("121", dojo.lang.isPureObject([1, 2]));
-	jum.assertFalse("122", dojo.lang.isPureObject(new Number(365)));
-	jum.assertFalse("123", dojo.lang.isPureObject(new String("foo")));
-	jum.assertFalse("124", dojo.lang.isPureObject(test_lang_isPureObject));
-	jum.assertFalse("125", dojo.lang.isPureObject(new Boolean(true)));
-	jum.assertFalse("126", dojo.lang.isPureObject(365));
-	jum.assertFalse("127", dojo.lang.isPureObject("foo"));
-	jum.assertFalse("128", dojo.lang.isPureObject(true));
-	jum.assertFalse("129", dojo.lang.isPureObject(null));
-	jum.assertFalse("130", dojo.lang.isPureObject(undef));
-	jum.assertFalse("131", dojo.lang.isPureObject(new Error()));
-	// dojo.log.debug("leaving test_lang_isPureObject()");
+	jum.assertFalse("141", dojo.lang.isPureObject([1, 2]));
+	jum.assertFalse("142", dojo.lang.isPureObject(new Number(365)));
+	jum.assertFalse("143", dojo.lang.isPureObject(new String("foo")));
+	jum.assertFalse("144", dojo.lang.isPureObject(test_lang_isPureObject));
+	jum.assertFalse("145", dojo.lang.isPureObject(new Boolean(true)));
+	jum.assertFalse("146", dojo.lang.isPureObject(365));
+	jum.assertFalse("147", dojo.lang.isPureObject("foo"));
+	jum.assertFalse("148", dojo.lang.isPureObject(true));
+	jum.assertFalse("149", dojo.lang.isPureObject(null));
+	jum.assertFalse("140", dojo.lang.isPureObject(undef));
+	jum.assertFalse("141", dojo.lang.isPureObject(new Error()));
 }
 
 function test_lang_isOfType() {
@@ -85,8 +85,8 @@ function test_lang_isOfType() {
 	jum.assertTrue("225", dojo.lang.isOfType(false, ["number", "string", "boolean"]));
 
 	jum.assertTrue("226", dojo.lang.isOfType(undef, ["number", "undefined"]));
-	jum.assertTrue("227", dojo.lang.isOfType(undef, ["number", "optional"]));
-	jum.assertTrue("228", dojo.lang.isOfType(12345, ["number", "optional"]));
+	jum.assertTrue("227", dojo.lang.isOfType(undef, "number", {optional: true}));
+	jum.assertTrue("228", dojo.lang.isOfType(12345, "number", {optional: true}));
 
 	jum.assertFalse("230", dojo.lang.isOfType(undef, String));
 	jum.assertFalse("231", dojo.lang.isOfType(undef, Number));
@@ -122,7 +122,7 @@ function test_lang_isOfTypeToo() {
 	var allTypes = [
 		String, Number, Boolean, Array, Function, Object, null,
 		"string", "number", "boolean", "array", "function", "object", "null",
-		"numeric", "pureobject", "undefined", "optional", Date, Error];
+		"numeric", "pureobject", "undefined", Date, Error];
 	var number365 = new Number(365);
 	var string365 = new String("365");
 	var numberFoo = new Number("foo");
@@ -155,9 +155,9 @@ function test_lang_isOfTypeToo() {
 		{value: obj,               types: [Object, "object", "pureobject"]},
 		{value: dojo.lang,         types: [Object, "object", "pureobject"]},
 		{value: Math,              types: [Object, "object", "pureobject"]},
-		{value: null,              types: [null, "null", Object, "object", "optional"]},
+		{value: null,              types: [null, "null", Object, "object"]},
 		{value: error,             types: [Error, Object, "object"]},
-		{value: obj.undef,         types: ["undefined", "optional"]},
+		{value: obj.undef,         types: ["undefined"]},
 		{value: iggyInstace,       types: [Object, "object", "numeric"]}
 	];
 	
@@ -166,14 +166,16 @@ function test_lang_isOfTypeToo() {
 		var value = example.value;
 		var matchingTypes = example.types;
 		
-		var whatAmIResult = dojo.lang.whatAmI(value);
-		jum.assertTrue("300: " + i, dojo.lang.isOfType(value, whatAmIResult));
+		var getTypeResult = dojo.lang.getType(value);
+		jum.assertTrue("300: " + i, dojo.lang.isOfType(value, getTypeResult));
 		
 		for (var j in matchingTypes) {
 			var matchingType = matchingTypes[j];
 			jum.assertTrue("301", dojo.lang.isOfType(value, matchingType));
 			jum.assertTrue("302", dojo.lang.isOfType(value, [Number, matchingType, String]));
-			jum.assertTrue("303", dojo.lang.isOfType(value, [matchingType, "optional"]));
+			jum.assertTrue("303", dojo.lang.isOfType(value, matchingType, {optional: true}));
+			jum.assertTrue("304", dojo.lang.isOfType(null, matchingType, {optional: true}));
+			jum.assertTrue("305", dojo.lang.isOfType(obj.undef, matchingType, {optional: true}));
 		}
 		for (var k in allTypes) {
 			var possibleType = allTypes[k];

@@ -29,7 +29,7 @@
 				var TAs = document.body.getElementsByTagName("textarea");
 				for(var x=0; x<TAs.length; x++){
 					var tta = TAs[x];
-					if(!dojo.xml.htmlUtil.hasAttribute(tta, "dojoType")){
+					if(!dojo.html.hasAttribute(tta, "dojoType")){
 						tta.setAttribute("dojoType", "resizabletextarea");
 					}
 				}

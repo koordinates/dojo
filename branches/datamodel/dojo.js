@@ -26,7 +26,6 @@ if(typeof dojo == "undefined"){
 		}
 	
 		tmps.push("bootstrap2.js");
-		tmps.push("namespace.js");
 	
 		if((this["djConfig"])&&(djConfig["baseScriptUri"])){
 			var root = djConfig["baseScriptUri"];
