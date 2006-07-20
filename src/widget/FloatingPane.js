@@ -21,7 +21,7 @@ dojo.require("dojo.widget.ResizeHandle");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.FloatingPane",
-	dojo.widget.html.ContentPane,
+	dojo.widget.ContentPane,
 	{
 		// Constructor arguments
 		title: '',

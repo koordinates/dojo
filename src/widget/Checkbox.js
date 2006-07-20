@@ -1,11 +1,11 @@
-dojo.provide("dojo.widget.html.Checkbox");
+dojo.provide("dojo.widget.Checkbox");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event");
 dojo.require("dojo.html.style");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Checkbox",
+	"dojo.widget.Checkbox",
 	dojo.widget.HtmlWidget,
 	{
 		templatePath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.html'),

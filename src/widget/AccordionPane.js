@@ -1,33 +1,28 @@
-dojo.provide("dojo.widget.html.AccordionPane");
-dojo.require("dojo.widget.TitlePane");
+dojo.provide("dojo.widget.AccordionPane");
 
+dojo.require("dojo.widget.TitlePane");
 dojo.require("dojo.html.selection");
 
-dojo.widget.html.AccordionPane = function(){
-
-	dojo.widget.html.TitlePane.call(this);
-	this.widgetType = "AccordionPane";
-
-	this.open=false;
-	this.allowCollapse=true;
-	this.label="";
-	this.open=false;
-
-	this.labelNodeClass="";
-	this.containerNodeClass="";
-}
-
-dojo.inherits(dojo.widget.html.AccordionPane, dojo.widget.html.TitlePane);
-
-dojo.lang.extend(dojo.widget.html.AccordionPane, {
-        postCreate: function() {
-                dojo.widget.html.AccordionPane.superclass.postCreate.call(this);
+dojo.widget.defineWidget(
+	"dojo.widget.AccordionPane",
+	dojo.widget.TitlePane,
+{
+	// parameters
+	open: false,
+	allowCollapse: true,
+	label: "",
+	labelNodeClass: "",
+	containerNodeClass: "",
+	
+	// methods
+    postCreate: function() {
+		dojo.widget.AccordionPane.superclass.postCreate.call(this);
 		this.domNode.widgetType=this.widgetType;
 		this.setSizes();
 		dojo.html.addClass(this.labelNode, this.labelNodeClass);
 		dojo.html.disableSelection(this.labelNode);
 		dojo.html.addClass(this.containerNode, this.containerNodeClass);
-        },
+    },
 
 	collapse: function() {
 		//dojo.fx.html.wipeOut(this.containerNode,250);
@@ -86,5 +81,3 @@ dojo.lang.extend(dojo.widget.html.AccordionPane, {
 		}
 	}
 });
-
-dojo.widget.tags.addParseTreeHandler("dojo:AccordionPane");

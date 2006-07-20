@@ -1,5 +1,5 @@
-dojo.provide("dojo.widget.html.TaskBar");
-dojo.provide("dojo.widget.html.TaskBarItem");
+dojo.provide("dojo.widget.TaskBar");
+dojo.provide("dojo.widget.TaskBarItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.FloatingPane");
@@ -8,13 +8,10 @@ dojo.require("dojo.event");
 dojo.require("dojo.html.selection");
 
 // Icon associated w/a floating pane
-dojo.widget.html.TaskBarItem = function(){
-	dojo.widget.TaskBarItem.call(this);
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.html.TaskBarItem, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.TaskBarItem, {
+dojo.widget.defineWidget(
+	"dojo.widget.TaskBarItem",
+	dojo.widget.HtmlWidget,
+{
 	// constructor arguments
 	iconSrc: '',
 	caption: 'Untitled',
@@ -44,16 +41,13 @@ dojo.lang.extend(dojo.widget.html.TaskBarItem, {
 });
 
 // Collection of widgets in a bar, like Windows task bar
-dojo.widget.html.TaskBar = function(){
-
-	dojo.widget.html.FloatingPane.call(this);
-	dojo.widget.TaskBar.call(this);
-	this._addChildStack = [];
-}
-
-dojo.inherits(dojo.widget.html.TaskBar, dojo.widget.html.FloatingPane);
-
-dojo.lang.extend(dojo.widget.html.TaskBar, {
+dojo.widget.defineWidget(
+	"dojo.widget.TaskBar",
+	dojo.widget.html.FloatingPane,
+{
+	initializer: function(){
+		this._addChildStack = [];
+	},
 
 	resizable: false,
 	titleBarDisplay: "none",
@@ -71,6 +65,6 @@ dojo.lang.extend(dojo.widget.html.TaskBar, {
 				caption: child.title, 
 				iconSrc: child.iconSrc
 			});
-		dojo.widget.html.TaskBar.superclass.addChild.call(this,tbi);
+		dojo.widget.TaskBar.superclass.addChild.call(this,tbi);
 	}
 });

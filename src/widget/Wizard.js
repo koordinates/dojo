@@ -157,9 +157,9 @@ dojo.widget.tags.addParseTreeHandler("dojo:WizardContainer");
 // WizardPane -- a panel in a wizard
 //////////////////////////////////////////
 dojo.widget.WizardPane = function() {
-	dojo.widget.html.ContentPane.call(this);
+	dojo.widget.ContentPane.call(this);
 }
-dojo.inherits(dojo.widget.WizardPane, dojo.widget.html.ContentPane);
+dojo.inherits(dojo.widget.WizardPane, dojo.widget.ContentPane);
 
 dojo.lang.extend(dojo.widget.WizardPane, {
 	widgetType: "WizardPane",

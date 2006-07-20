@@ -1,25 +1,21 @@
-dojo.provide("dojo.widget.html.TitlePane");
+dojo.provide("dojo.widget.TitlePane");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html.style");
 dojo.require("dojo.lfx.*");
 
-dojo.widget.html.TitlePane = function(){
-	dojo.widget.HtmlWidget.call(this);
-	this.widgetType = "TitlePane";
+dojo.widget.defineWidget(
+	"dojo.widget.TitlePane",
+	dojo.widget.HtmlWidget,
+{
+	labelNode: "",
+	labelNodeClass: "",
+	containerNodeClass: "",
+	label: "",
+	
+	open: true,
+	templatePath: dojo.uri.dojoUri("src/widget/templates/TitlePane.html"),
 
-	this.labelNode="";
-	this.labelNodeClass="";
-	this.containerNodeClass="";
-	this.label="";
-
-	this.open=true;
-	this.templatePath = dojo.uri.dojoUri("src/widget/templates/TitlePane.html");
-}
-
-dojo.inherits(dojo.widget.html.TitlePane, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.TitlePane, {
 	isContainer: true,
 	postCreate: function() {
 		if (this.label) {
@@ -57,5 +53,3 @@ dojo.lang.extend(dojo.widget.html.TitlePane, {
 		this.labelNode.innerHTML=label;
 	}
 });
-
-dojo.widget.tags.addParseTreeHandler("dojo:TitlePane");

@@ -1,26 +1,18 @@
-dojo.provide("dojo.widget.html.DocPane");
+dojo.provide("dojo.widget.DocPane");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.DocPane");
 dojo.require("dojo.widget.Editor2");
 dojo.require("dojo.widget.Dialog");
 
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.display");
 
-dojo.widget.html.DocPane = function(){
-	dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
-	dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
-	dojo.event.topic.subscribe("/docs/function/detail", this, "onDocSelectFunction");
-}
-
 dojo.widget.defineWidget(
-	"dojo.widget.html.DocPane",
-	"html",
-	[dojo.widget.HtmlWidget, dojo.widget.DocPane],
+	"dojo.widget.DocPane",
+	dojo.widget.HtmlWidget,
 	{
 		// Template parameters
 		dialog: null,
@@ -66,11 +58,19 @@ dojo.widget.defineWidget(
 		sPName: null,
 		sPNameSave: null,
 		pkgDescription: null,
+
 		// Fields and methods
 		_appends: [],
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css"),
 		isContainer: true,
+		
+		initializer: function(){
+			dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
+			dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
+			dojo.event.topic.subscribe("/docs/function/detail", this, "onDocSelectFunction");
+		},
+
 		fillInTemplate: function(){
 			this.requires = dojo.html.removeNode(this.requires);
 			this.rRow.style.display = "none";
@@ -114,10 +114,12 @@ dojo.widget.defineWidget(
 			this.sPNameSave = dojo.html.removeNode(this.sPName);
 			this.navSave = dojo.html.removeNode(this.nav);
 		},
+
 		_logIn: function(){
 			dojo.docs.setUserName(this.userName.value);
 			dojo.docs.setPassword(this.password.value);
 		},
+
 		_loggedIn: function(){
 			this._isLoggedIn = true;
 			this.dialog.hide();
@@ -125,6 +127,7 @@ dojo.widget.defineWidget(
 				toolbarAlwaysVisible: true
 			}, this.pkgDescription);
 		},
+
 		_save: function(){
 			if(this.pkgEditor){
 				dojo.docs.savePackage(this._pkgPath, {
@@ -132,6 +135,7 @@ dojo.widget.defineWidget(
 				});
 			}
 		},
+
 		onDocSelectFunction: function(message){
 			dojo.debug("onDocSelectFunction()");
 			for(var key in message){
@@ -226,6 +230,7 @@ dojo.widget.defineWidget(
 				dojo.html.removeNode(append);
 			}
 		},
+
 		onPkgResults: function(/*Object*/ results){
 			if(this.pkgEditor){
 				this.pkgEditor.close(true);
@@ -321,6 +326,7 @@ dojo.widget.defineWidget(
 				}
 			}
 		},
+
 		onDocResults: function(message){
 			var results = message.docResults;
 

@@ -11,7 +11,7 @@ dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Dialog",
-	dojo.widget.html.ContentPane,
+	dojo.widget.ContentPane,
 	{
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDialog.html"),
 		isContainer: true,

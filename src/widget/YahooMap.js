@@ -5,12 +5,6 @@ dojo.require("dojo.math");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.*");
 
-dojo.widget.defineWidget(
-	"dojo.widget.YahooMap",
-	dojo.widget.Widget,
-	{ isContainer: false }
-);
-
 dojo.widget.YahooMap.Controls={
 	MapType:"maptype",
 	Pan:"pan",
@@ -33,21 +27,21 @@ dojo.widget.YahooMap.Controls={
 	}
 })();
 
-dojo.widget.html.YahooMap=function(){
-	dojo.widget.HtmlWidget.call(this);
-	dojo.widget.YahooMap.call(this);
+dojo.widget.defineWidget(
+	"dojo.widget.YahooMap",
+	dojo.widget.HtmlWidget,
+{
+	initializer: function(){
+		// parameters
+		this.map=null;
+		this.datasrc="";
+		this.data=[];
+		this.width=0;
+		this.height=0;
+		this.controls=["zoomlong","maptype","pan"];
+	},
 
-	this.map=null;
-	this.datasrc="";
-	this.data=[];
-	this.width=0;
-	this.height=0;
-	this.controls=["zoomlong","maptype","pan"];
-};
-dojo.inherits(dojo.widget.html.YahooMap, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.YahooMap, {
-	widgetType: "YahooMap",
+	isContainer: false,
 	templatePath:null,
 	templateCssPath:null,
 
