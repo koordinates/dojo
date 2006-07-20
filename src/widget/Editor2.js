@@ -5,11 +5,17 @@
 dojo.provide("dojo.widget.Editor2");
 dojo.provide("dojo.widget.html.Editor2");
 dojo.require("dojo.io.*");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.iframe");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
 // dojo.require("dojo.widget.ColorPalette");
 // dojo.require("dojo.string.extras");
+
+//The current focused Editor2 Instance
+dojo.widget.Editor2._CurrentInstance = null;
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Editor2",
@@ -28,13 +34,15 @@ dojo.widget.defineWidget(
 		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
 		scrollInterval: null,
+		toolbarTemplatePath: null,
 		
 
 		editorOnLoad: function(){
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
 			if((!toolbars.length)||(!this.shareToolbar)){
 				var tbOpts = {};
-				tbOpts.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlEditorToolbarOneline.html");
+				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/HtmlEditorToolbarOneline.html";
+				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
 				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
 										tbOpts, this.domNode, "before");
 				dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
@@ -47,7 +55,7 @@ dojo.widget.defineWidget(
 
 				// need to set position fixed to wherever this thing has landed
 				if(this.toolbarAlwaysVisible){
-					var src = document["documentElement"]||window;
+					var src = document.documentElement||window;
 					this.scrollInterval = setInterval(dojo.lang.hitch(this, "globalOnScrollHandler"), 100);
 					// dojo.event.connect(src, "onscroll", this, "globalOnScrollHandler");
 					dojo.event.connect("before", this, "destroyRendering", this, "unhookScroller");
@@ -60,10 +68,8 @@ dojo.widget.defineWidget(
 				// 			selection in the others. This is problematic.
 				this.toolbarWidget = toolbars[0];
 			}
-			dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onfocus");
-			// dojo.event.topic.registerPublisher("Editor2.clobberFocus", this.editNode, "onclick");
+			dojo.event.topic.registerPublisher("Editor2.clobberFocus", this, "clobberFocus");
 			dojo.event.topic.subscribe("Editor2.clobberFocus", this, "setBlur");
-			dojo.event.connect(this.editNode, "onfocus", this, "setFocus");
 			dojo.event.connect(this.toolbarWidget.linkButton, "onclick", 
 				dojo.lang.hitch(this, function(){
 					var range;
@@ -81,16 +87,9 @@ dojo.widget.defineWidget(
 				})
 			);
 
-			var focusFunc = dojo.lang.hitch(this, function(){ 
-				if(dojo.render.html.ie){
-					this.editNode.focus();
-				}else{
-					this.window.focus(); 
-				}
-			});
-
-			dojo.event.connect(this.toolbarWidget, "formatSelectClick", focusFunc);
-			dojo.event.connect(this, "execCommand", focusFunc);
+			dojo.event.connect(this.toolbarWidget, "formatSelectClick", this, "focus");
+			dojo.event.connect(this.toolbarWidget, "saveClick", this, "save");			
+			dojo.event.connect(this, "execCommand", this, "focus");
 
 			if(this.htmlEditing){
 				var tb = this.toolbarWidget.htmltoggleButton;
@@ -102,32 +101,42 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		clobberFocus: function(){},
+		save: function(){ dojo.debug("Editor2.save"); },
 		toggleHtmlEditing: function(){
-			if(!this._inHtmlMode){
-				this._inHtmlMode = true;
-				this.toolbarWidget.highlightButton("htmltoggle");
-				if(!this._htmlEditNode){
-					this._htmlEditNode = document.createElement("textarea");
-					dojo.html.insertBefore(this._htmlEditNode, this.domNode);
+			if(this===dojo.widget.Editor2._CurrentInstance){
+				if(!this._inHtmlMode){
+					this._inHtmlMode = true;
+					this.toolbarWidget.highlightButton("htmltoggle");
+					if(!this._htmlEditNode){
+						this._htmlEditNode = document.createElement("textarea");
+						dojo.html.insertBefore(this._htmlEditNode, this.domNode);
+					}
+					this._htmlEditNode.style.display = "";
+					this._htmlEditNode.style.width = "100%";
+					this._htmlEditNode.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
+					this._htmlEditNode.value = this.editNode.innerHTML;
+					this.domNode.style.display = "none";
+				}else{
+					this._inHtmlMode = false;
+					this.domNode.style.display = "";
+					this.toolbarWidget.unhighlightButton("htmltoggle");
+					dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
+					this._htmlEditNode.style.display = "none";
+					this.editNode.focus();
 				}
-				this._htmlEditNode.style.display = "";
-				this._htmlEditNode.style.width = "100%";
-				this._htmlEditNode.style.height = dojo.style.getInnerHeight(this.editNode)+"px";
-				this._htmlEditNode.value = this.editNode.innerHTML;
-				this.domNode.style.display = "none";
-			}else{
-				this._inHtmlMode = false;
-				this.domNode.style.display = "";
-				this.toolbarWidget.unhighlightButton("htmltoggle");
-				dojo.lang.setTimeout(this, "replaceEditorContent", 1, this._htmlEditNode.value);
-				this._htmlEditNode.style.display = "none";
-				this.editNode.focus();
 			}
 		},
 
 		setFocus: function(){
-			// dojo.debug("setFocus:", this);
-			dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
+			if(dojo.widget.Editor2._CurrentInstance == this){ return; }
+
+			if(this.toolbarWidget){
+				this.clobberFocus();
+				// dojo.debug("setFocus:", this);
+				dojo.widget.Editor2._CurrentInstance = this;
+				dojo.event.connect(this.toolbarWidget, "exec", this, "execCommand");
+			}
 		},
 
 		setBlur: function(){
@@ -142,16 +151,16 @@ dojo.widget.defineWidget(
 		globalOnScrollHandler: function(){
 			var isIE = dojo.render.html.ie;
 			if(!this._handleScroll){ return; }
-			var ds = dojo.style;
+			var dh = dojo.html;
 			var tdn = this.toolbarWidget.domNode;
-			var db = document["body"];
-			var totalHeight = ds.getOuterHeight(tdn);
+			var db = dojo.body();
+			var totalHeight = dh.getMarginBox(tdn).height;
 			if(!this._scrollSetUp){
 				this._scrollSetUp = true;
-				var editorWidth =  ds.getOuterWidth(this.domNode); 
-				this._scrollThreshold = ds.abs(tdn, false).y;
+				var editorWidth =  dh.getMarginBox(this.domNode).width; 
+				this._scrollThreshold = dh.abs(tdn, false).y;
 				// dojo.debug("threshold:", this._scrollThreshold);
-				if((isIE)&&(db)&&(ds.getStyle(db, "background-image")=="none")){
+				if((isIE)&&(db)&&(dh.getStyle(db, "background-image")=="none")){
 					with(db.style){
 						backgroundImage = "url(" + dojo.uri.dojoUri("src/widget/templates/images/blank.gif") + ")";
 						backgroundAttachment = "fixed";
@@ -168,9 +177,9 @@ dojo.widget.defineWidget(
 					this.domNode.style.marginTop = totalHeight+"px";
 					if(isIE){
 						// FIXME: should we just use setBehvior() here instead?
-						var cl = dojo.style.abs(tdn).x;
+						var cl = dojo.html.abs(tdn).x;
 						document.body.appendChild(tdn);
-						tdn.style.left = cl+dojo.style.getPixelValue(document.body, "margin-left")+"px";
+						tdn.style.left = cl+dojo.html.getPixelValue(document.body, "margin-left")+"px";
 						dojo.html.addClass(tdn, "IEFixedToolbar");
 						if(this.object){
 							dojo.html.addClass(this.tbBgIframe, "IEFixedToolbar");
@@ -194,7 +203,7 @@ dojo.widget.defineWidget(
 				// position of the bottom-most editor instance.
 				if(!dojo.render.html.safari){
 					// safari reports a bunch of things incorrectly here
-					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.style.getInnerHeight(this.editNode) : this._lastHeight);
+					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.html.getBorderBox(this.editNode).height : this._lastHeight);
 					if(scrollPos > (this._scrollThreshold+eHeight)){
 						tdn.style.display = "none";
 					}else{
@@ -256,7 +265,7 @@ dojo.widget.defineWidget(
 			// end frequency checker
 
 			dojo.lang.forEach(this.commandList, function(cmd){
-					if(cmd == "inserthtml"){ return; }
+					if((cmd == "inserthtml") || (cmd == "save")){ return; }
 					try{
 						if(this.queryCommandEnabled(cmd)){
 							if(this.queryCommandState(cmd)){
@@ -322,6 +331,7 @@ dojo.widget.defineWidget(
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?
 			if(!this.isClosed){
+				dojo.debug("save attempt");
 				if(this.saveUrl.length){
 					var content = {};
 					content[this.saveArgName] = this.getHtml();
@@ -337,20 +347,6 @@ dojo.widget.defineWidget(
 					this.close(e.getName().toLowerCase() == "save");
 				}
 			}
-		},
-
-		wireUpOnLoad: function(){
-			if(!dojo.render.html.ie){
-				/*
-				dojo.event.kwConnect({
-					srcObj:		this.document,
-					srcFunc:	"click", 
-					targetObj:	this.toolbarWidget,
-					targetFunc:	"hideAllDropDowns",
-					once:		true
-				});
-				*/
-			}
 		}
 	},
 	"html",
@@ -358,12 +354,6 @@ dojo.widget.defineWidget(
 		var cp = dojo.widget.html.Editor2.prototype;
 		if(!cp._wrappersSet){
 			cp._wrappersSet = true;
-			cp.fillInTemplate = (function(fit){
-				return function(){
-					fit.call(this);
-					this.editorOnLoad();
-				};
-			})(cp.fillInTemplate);
 		
 			cp.onDisplayChanged = (function(odc){
 				return function(){
@@ -377,9 +367,16 @@ dojo.widget.defineWidget(
 			cp.onLoad = (function(ol){
 				return function(){
 					ol.call(this);
-					this.wireUpOnLoad();
+					this.editorOnLoad();
 				};
 			})(cp.onLoad);
+			
+			cp.onFocus = (function(of){
+				return function(){
+					of.call(this);
+					this.setFocus();
+				};
+			})(cp.onFocus);
 		}
 	}
 );

@@ -2,9 +2,9 @@ dojo.provide("dojo.widget.Rounded");
 dojo.widget.tags.addParseTreeHandler("dojo:rounded");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.html.ContentPane");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.widget.ContentPane");
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.display");
 
 /*
  *	The following script is derived (with permission) from curvyCorners,
@@ -13,10 +13,10 @@ dojo.require("dojo.style");
  */
 
 dojo.widget.Rounded = function() {
-	dojo.widget.html.ContentPane.call(this);
+	dojo.widget.ContentPane.call(this);
 }
 
-dojo.inherits(dojo.widget.Rounded, dojo.widget.html.ContentPane);
+dojo.inherits(dojo.widget.Rounded, dojo.widget.ContentPane);
 
 dojo.lang.extend(dojo.widget.Rounded, {
 	isSafari: dojo.render.html.safari,
@@ -30,7 +30,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 	fillInTemplate: function(args, frag) {
 		dojo.widget.Rounded.superclass.fillInTemplate.call(this, args, frag);
 
-		dojo.style.insertCssFile(this.templateCssPath);
+		dojo.html.insertCssFile(this.templateCssPath);
 
 		// Magic to automatically calculate the box height/width if not supplied
 		if (this.domNode.style.height<=0) {
@@ -76,20 +76,20 @@ dojo.lang.extend(dojo.widget.Rounded, {
 		this.masterCorners   = [];
 
 		// Get box formatting details
-		var boxHeight       = dojo.style.getStyle(this.box, "height");
+		var boxHeight       = dojo.html.getStyle(this.box, "height");
 		if(boxHeight=="") boxHeight="0px";
-		var boxWidth        = dojo.style.getStyle(this.box, "width");
-		var borderWidth     = dojo.style.getStyle(this.box, "borderTopWidth");
+		var boxWidth        = dojo.html.getStyle(this.box, "width");
+		var borderWidth     = dojo.html.getStyle(this.box, "borderTopWidth");
 		if(borderWidth=="") borderWidth="0px";
 		//alert(borderWidth);
 
-		var borderColour    = dojo.style.getStyle(this.box, "borderTopColor");
+		var borderColour    = dojo.html.getStyle(this.box, "borderTopColor");
 		// Set to true if we have a border
 		if(borderWidth>0) this.antiAlias=true;
 
-		var boxColour       = dojo.style.getStyle(this.box, "backgroundColor");
-		var backgroundImage = dojo.style.getStyle(this.box, "backgroundImage");
-		var boxPosition     = dojo.style.getStyle(this.box, "position");
+		var boxColour       = dojo.html.getStyle(this.box, "backgroundColor");
+		var backgroundImage = dojo.html.getStyle(this.box, "backgroundImage");
+		var boxPosition     = dojo.html.getStyle(this.box, "position");
 
 		// Set formatting propertes
 		this.boxHeight       = parseInt(((boxHeight != "" && boxHeight != "auto" && boxHeight.indexOf("%") == -1)? boxHeight.substring(0, boxHeight.indexOf("px")) : this.box.scrollHeight));
@@ -559,7 +559,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 			
 			// Set opacity if the transparency is anything other than 100
 			if (transAmount != 100) {
-				dojo.style.setOpacity(pixel, transAmount);
+				dojo.html.setOpacity(pixel, transAmount);
 			}
 			// Set the pixels position
 			pixel.style.top = inty + "px";

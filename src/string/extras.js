@@ -23,25 +23,6 @@ dojo.string.substituteParams = function(template /*string */, hash /* object - o
 	});
 };
 
-/**
- * Parameterized string function
- * str - formatted string with %{values} to be replaces
- * pairs - object of name: "value" value pairs
- * killExtra - remove all remaining %{values} after pairs are inserted
- */
-dojo.string.paramString = function(str, pairs, killExtra) {
-	dojo.deprecated("dojo.string.paramString",
-		"use dojo.string.substituteParams instead", "0.4");
-
-	for(var name in pairs) {
-		var re = new RegExp("\\%\\{" + name + "\\}", "g");
-		str = str.replace(re, pairs[name]);
-	}
-
-	if(killExtra) { str = str.replace(/%\{([^\}\s]+)\}/g, ""); }
-	return str;
-}
-
 /** Uppercases the first letter of each word */
 dojo.string.capitalize = function (str) {
 	if (!dojo.lang.isString(str)) { return ""; }

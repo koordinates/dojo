@@ -1,9 +1,10 @@
 dojo.provide("dojo.widget.DropdownDatePicker");
+
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DropdownContainer");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
 
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownDatePicker",
@@ -50,8 +51,5 @@ dojo.widget.defineWidget(
 			this.datePicker.initData();
 			this.datePicker.initUI();
 		}
-	},
-	"html"
+	}
 );
-
-dojo.widget.tags.addParseTreeHandler("dojo:dropdowndatepicker");

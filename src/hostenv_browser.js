@@ -49,8 +49,8 @@ if(typeof window == 'undefined'){
 	var dr = dojo.render;
 	var drh = dojo.render.html;
 	var drs = dojo.render.svg;
-	var dua = drh.UA = navigator.userAgent;
-	var dav = drh.AV = navigator.appVersion;
+	var dua = (drh.UA = navigator.userAgent);
+	var dav = (drh.AV = navigator.appVersion);
 	var t = true;
 	var f = false;
 	drh.capable = t;
@@ -86,8 +86,7 @@ if(typeof window == 'undefined'){
 	drs.support.builtin = f;
 	if (document.implementation
 		&& document.implementation.hasFeature
-		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")
-	){
+		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")){
 		drs.capable = t;
 		drs.support.builtin = t;
 		drs.support.plugin = f;
@@ -150,10 +149,16 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 
 	var http = this.getXmlhttpObject();
 
+	function isDocumentOk(http){
+		var stat = http["status"];
+		// allow a 304 use cache, needed in konq (is this compliant with the http spec?)
+		return Boolean((!stat)||((200 <= stat)&&(300 > stat))||(stat==304));
+	}
+
 	if(async_cb){
 		http.onreadystatechange = function(){
 			if(4==http.readyState){
-				if((!http["status"])||((200 <= http.status)&&(300 > http.status))){
+				if(isDocumentOk(http)){
 					// dojo.debug("LOADED URI: "+uri);
 					async_cb(http.responseText);
 				}
@@ -167,8 +172,11 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		if(async_cb){
 			return null;
 		}
-		if((http["status"])&&((200 > http.status)||(300 <= http.status))){
-			throw Error("Unable to load "+uri+" status:"+ http.status);
+		if(!isDocumentOk(http)){
+			var err = Error("Unable to load "+uri+" status:"+ http.status);
+			err.status = http.status;
+			err.responseText = http.responseText;
+			throw err;
 		}
 	}catch(e){
 		if((fail_ok)&&(!async_cb)){
@@ -216,7 +224,7 @@ dojo.hostenv.println = function (line){
 		try {
 			var console = document.getElementById(djConfig.debugContainerId ?
 				djConfig.debugContainerId : dojo.hostenv.defaultDebugContainerId);
-			if(!console) { console = document.getElementsByTagName("body")[0] || document.body; }
+			if(!console) { console = dojo.body(); }
 
 			var div = document.createElement("div");
 			div.appendChild(document.createTextNode(line));
@@ -317,7 +325,7 @@ dojo.hostenv.makeWidgets = function(){
 						dojo.widget.getParser().createComponents(frag);
 					}
 				}else if(djConfig.parseWidgets){
-					var frag  = parser.parseElement(document.getElementsByTagName("body")[0] || document.body, null, true);
+					var frag  = parser.parseElement(dojo.body(), null, true);
 					dojo.widget.getParser().createComponents(frag);
 				}
 		}
@@ -332,8 +340,8 @@ dojo.addOnLoad(function(){
 
 try {
 	if (dojo.render.html.ie) {
-		document.write('<style>v\:*{ behavior:url(#default#VML); }</style>');
-		document.write('<xml:namespace ns="urn:schemas-microsoft-com:vml" prefix="v"/>');
+		document.namespaces.add("v","urn:schemas-microsoft-com:vml");
+		document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML)");
 	}
 } catch (e) { }
 
@@ -343,7 +351,7 @@ dojo.hostenv.writeIncludes = function(){}
 
 dojo.byId = function(id, doc){
 	if(id && (typeof id == "string" || id instanceof String)){
-		if(!doc){ doc = document; }
+		if(!doc){ doc = dojo.doc(); }
 		return doc.getElementById(id);
 	}
 	return id; // assume it's a node

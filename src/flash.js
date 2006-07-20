@@ -2,7 +2,7 @@ dojo.provide("dojo.flash");
 
 dojo.require("dojo.string.*");
 dojo.require("dojo.uri.*");
-
+dojo.require("dojo.html.common");
 
 /** 
 		The goal of dojo.flash is to make it easy to extend Flash's capabilities
@@ -682,6 +682,10 @@ dojo.flash.Embed.prototype = {
 								+ "&MMplayerType=PlugIn"
 								+ "&baseRelativePath=" + escape(dojoPath);
 			}
+
+			if(swflocEmbed.indexOf("?") == -1){
+				swflocEmbed +=  "?baseRelativePath="+escape(dojoPath)+"' ";
+			}
 			
 			objectHTML =
 				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
@@ -694,7 +698,7 @@ dojo.flash.Embed.prototype = {
 				  + '<param name="movie" value="' + swflocObject + '" /> '
 				  + '<param name="quality" value="high" /> '
 				  + '<param name="bgcolor" value="#ffffff" /> '
-				  + '<embed src="' + swflocEmbed + '" '
+				  + '<embed src="' + swflocEmbed + "' "
 				  + 'quality="high" '
 				  + 'bgcolor="#ffffff" '
 				  + 'width="' + this.width + '" '
@@ -704,7 +708,7 @@ dojo.flash.Embed.prototype = {
 				  + 'swLiveConnect="true" '
 				  + 'align="middle" '
 				  + 'allowScriptAccess="sameDomain" '
-				  + 'type="application/x-shockwave-flash" '+ "&baseRelativePath=" + escape(dojoPath);
+				  + 'type="application/x-shockwave-flash" '
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}
@@ -740,53 +744,15 @@ dojo.flash.Embed.prototype = {
 	
 	/** Centers the flash applet on the page. */
 	center: function(){
-		// FIXME: replace this with Dojo's centering code rather than our own
-		// We want to center the Flash applet vertically and horizontally
 		var elementWidth = this.width;
 		var elementHeight = this.height;
-    
-		// get the browser width and height; the code below
-		// works in IE and Firefox in compatibility, non-strict
-		// mode
-		var browserWidth = document.body.clientWidth;
-		var browserHeight = document.body.clientHeight;
-    
-		// in Firefox if we are in standards compliant mode
-		// (with a strict doctype), then the browser width
-		// and height have to be computed from the root level
-		// HTML element not the BODY element
-		if(!dojo.render.html.ie && document.compatMode == "CSS1Compat"){
-			browserWidth = document.body.parentNode.clientWidth;
-			browserHeight = document.body.parentNode.clientHeight;
-		}else if(dojo.render.html.ie && document.compatMode == "CSS1Compat"){
-			// IE 6 in standards compliant mode has to be calculated
-			// differently
-			browserWidth = document.documentElement.clientWidth;
-			browserHeight = document.documentElement.clientHeight;
-		}else if(dojo.render.html.safari){ // Safari works different
-			browserHeight = self.innerHeight;
-		}
-    
-		// get where we are scrolled to in the document
-		// the code below works in FireFox
-		var scrolledByWidth = window.scrollX;
-		var scrolledByHeight = window.scrollY;
-		// compute these values differently for IE;
-		// IE has two possibilities; it is either in standards
-		// compatibility mode or it is not
-		if(typeof scrolledByWidth == "undefined"){
-			if(document.compatMode == "CSS1Compat"){ // standards mode
-				scrolledByWidth = document.documentElement.scrollLeft;
-				scrolledByHeight = document.documentElement.scrollTop;
-			}else{ // Pre IE6 non-standards mode
-				scrolledByWidth = document.body.scrollLeft;
-				scrolledByHeight = document.body.scrollTop;
-			}
-		}
+
+		var scroll_offset = dojo.html.getScroll().offset;
+		var viewport_size = dojo.html.getViewport();
 
 		// compute the centered position    
-		var x = scrolledByWidth + (browserWidth - elementWidth) / 2;
-		var y = scrolledByHeight + (browserHeight - elementHeight) / 2; 
+		var x = scroll_offset.x + (viewport_size.x - elementWidth) / 2;
+		var y = scroll_offset.y + (viewport_size.y - elementHeight) / 2; 
 
 		// set the centered position
 		var container = dojo.byId(this.id + "Container");

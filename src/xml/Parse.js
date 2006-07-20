@@ -28,7 +28,7 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
 dojo.xml.Parse = function(){
 
-	function getDojoTagName (node) {
+	function getDojoTagName(node){
 		var tagName = node.tagName;
 		if(tagName.substr(0,5).toLowerCase() == "dojo:"){
 			return tagName.toLowerCase();
@@ -71,7 +71,6 @@ dojo.xml.Parse = function(){
 					}
 				}
 			}
-		
 		}
 
 		return tagName.toLowerCase();
@@ -79,7 +78,6 @@ dojo.xml.Parse = function(){
 
 	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
 
-		// TODO: make this namespace aware
 		var parsedNodeSet = {};
 
 		//There's a weird bug in IE where it counts end tags, e.g. </dojo:button> as nodes that should be parsed.  Ignore these
@@ -98,7 +96,7 @@ dojo.xml.Parse = function(){
 			}
 		}
 
-		if(!optimizeForDojoML||dojo.getNamespace(parsedNodeSet.namespace)){
+		if(!optimizeForDojoML||(parsedNodeSet.namespace&&dojo.getNamespace(parsedNodeSet.namespace))){
 			var attributeSet = this.parseAttributes(node);
 			for(var attr in attributeSet){
 				if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
@@ -134,7 +132,7 @@ dojo.xml.Parse = function(){
 					}
 					break;
 				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
-					if(node.childNodes.length == 1) {
+					if(node.childNodes.length == 1){
 						parsedNodeSet[tagName].push({ value: node.childNodes.item(0).nodeValue });
 					}
 					break;
@@ -166,17 +164,16 @@ dojo.xml.Parse = function(){
 		//return (hasParentNodeSet) ? parsedNodeSet[node.tagName] : parsedNodeSet;
 		//if(parsedNodeSet.tagName)dojo.debug("parseElement: RETURNING NODE WITH TAGNAME "+parsedNodeSet.tagName);
 		return parsedNodeSet;
-	}
+	};
 
 	/* parses a set of attributes on a node into an object tree */
 	this.parseAttributes = function(node){
-		// TODO: make this namespace aware
 		var parsedAttributeSet = {};
 		var atts = node.attributes;
 		// TODO: should we allow for duplicate attributes at this point...
 		// would any of the relevant dom implementations even allow this?
 		var attnode, i=0;
-		while(attnode=atts[i++]) {
+		while((attnode=atts[i++])){
 			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
 				if(!attnode){ continue; }
 				if(	(typeof attnode == "object")&&
@@ -186,11 +183,14 @@ dojo.xml.Parse = function(){
 					continue; 
 				}
 			}
-			var nn = (attnode.nodeName.indexOf("dojo:") == -1) ? attnode.nodeName : attnode.nodeName.split("dojo:")[1];
+
+			var nn = attnode.nodeName.split(":");
+			nn = (nn.length == 2) ? nn[1] : attnode.nodeName;
+						
 			parsedAttributeSet[nn] = { 
 				value: attnode.nodeValue 
 			};
 		}
 		return parsedAttributeSet;
-	}
-}
+	};
+};

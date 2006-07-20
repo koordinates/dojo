@@ -40,11 +40,6 @@ dojo.json = {
 		}
 	},
 
-	evalJSON: function (json) {
-		dojo.deprecated("dojo.json.evalJSON", "use dojo.json.evalJson", "0.4");
-		return this.evalJson(json);
-	},
-
 	serialize: function(o){
 		/***
 			Create a JSON serialization of an object, note that this doesn't

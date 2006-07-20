@@ -265,13 +265,14 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// convert periods to slashes
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
+	var nsyms = modulename.split(".");
+	if(djConfig.autoLoadNamespace){ dojo.getNamespace(nsyms[0]); }
+
 	var syms = this.getModuleSymbols(modulename);
 	var startedRelative = ((syms[0].charAt(0) != '/')&&(!syms[0].match(/^\w+:/)));
 	var last = syms[syms.length - 1];
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
-	var nsyms = modulename.split(".");
-	if(djConfig.autoLoadNamespace){ dojo.getNamespace(syms[0]); }
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
 
@@ -434,7 +435,7 @@ dojo.setModulePrefix = function(module, prefix){
 dojo.exists = function(obj, name){
 	var p = name.split(".");
 	for(var i = 0; i < p.length; i++){
-	if(!(obj[p[i]])) return false;
+		if(!(obj[p[i]])){ return false; }
 		obj = obj[p[i]];
 	}
 	return true;

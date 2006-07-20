@@ -6,4 +6,5 @@
 	font-size: small;
 	padding: 2px 2px 2px 2px;
 	z-index: 10;
+	display: block;
 }

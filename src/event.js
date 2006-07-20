@@ -4,6 +4,21 @@ dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.func");
 
+// TODO: connection filter functions
+//			these are functions that accept a method invocation (like around
+//			advice) and return a boolean based on it. That value determines
+//			whether or not the connection proceeds. It could "feel" like around
+//			advice for those who know what it is (calling proceed() or not),
+//			but I think presenting it as a "filter" and/or calling it with the
+//			function args and not the MethodInvocation might make it more
+//			palletable to "normal" users than around-advice currently is
+// TODO: execution scope mangling
+//			YUI's event facility by default executes listeners in the context
+//			of the source object. This is very odd, but should probably be
+//			supported as an option (both for the source and for the dest). It
+//			can be thought of as a connection-specific hitch().
+// TODO: more resiliency for 4+ arguments to connect()
+
 dojo.event = new function(){
 	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
 
@@ -475,7 +490,8 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 
 		if(this.before.length>0){
-			dojo.lang.forEach(this.before, unrollAdvice);
+			// pass a cloned array, if this event disconnects this event forEach on this.before wont work
+			dojo.lang.forEach(this.before.concat(new Array()), unrollAdvice);
 		}
 
 		var result;
@@ -487,7 +503,8 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		}
 
 		if(this.after.length>0){
-			dojo.lang.forEach(this.after, unrollAdvice);
+			// see comment on this.before above
+			dojo.lang.forEach(this.after.concat(new Array()), unrollAdvice);
 		}
 
 		return (this.methodfunc) ? result : null;

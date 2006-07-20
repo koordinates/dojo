@@ -1,9 +1,13 @@
 dojo.provide("dojo.widget.Button");
 dojo.provide("dojo.widget.html.Button");
+dojo.provide("dojo.widget.ComboButton");
+dojo.provide("dojo.widget.html.ComboButton");
+dojo.provide("dojo.widget.DropDownButton");
+dojo.provide("dojo.widget.html.DropDownButton");
 
 dojo.require("dojo.lang.extras");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.*");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
@@ -49,22 +53,23 @@ dojo.widget.defineWidget(
 			// so temporarily attach to document.body
 			if(this.domNode.parentNode){
 				var placeHolder = document.createElement("span");
-				dojo.dom.insertBefore(placeHolder, this.domNode);
+				dojo.html.insertBefore(placeHolder, this.domNode);
 			}
-			dojo.html.body().appendChild(this.domNode);
+			dojo.body().appendChild(this.domNode);
 			
 			this.sizeMyselfHelper();
 			
 			// Put this.domNode back where it was originally
 			if(placeHolder){
-				dojo.dom.insertBefore(this.domNode, placeHolder);
-				dojo.dom.removeNode(placeHolder);
+				dojo.html.insertBefore(this.domNode, placeHolder);
+				dojo.html.removeNode(placeHolder);
 			}
 		},
 
 		sizeMyselfHelper: function(){
-			this.height = dojo.style.getOuterHeight(this.containerNode);
-			this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
+			var mb = dojo.html.getMarginBox(this.containerNode);
+			this.height = mb.height;
+			this.containerWidth = mb.width;
 			var endWidth= this.height * this.width2height;
 	
 			this.containerNode.style.left=endWidth+"px";
@@ -106,6 +111,9 @@ dojo.widget.defineWidget(
 	
 		onMouseOut: function(e){
 			if( this.disabled ){ return; }
+			if( e.toElement && dojo.html.isDescendantOf(e.toElement, this.domNode) ){
+				return; // Ignore IE mouseOut events that dont actually leave button - Prevents hover image flicker in IE
+			}
 			dojo.html.removeClass(this.domNode, "dojoButtonHover");
 			this._setImage(this.inactiveImg);
 		},
@@ -127,7 +135,7 @@ dojo.widget.defineWidget(
 			if ( !menu ) { return; }
 	
 			if ( menu.open && !menu.isShowingNow) {
-				var pos = dojo.style.getAbsolutePosition(this.domNode, false);
+				var pos = dojo.html.getAbsolutePosition(this.domNode, false);
 				menu.open(pos.x, pos.y+this.height, this);
 			} else if ( menu.close && menu.isShowingNow ){
 				menu.close();
@@ -199,8 +207,9 @@ dojo.widget.defineWidget(
 		arrowWidth: 5,		// width of segment holding down arrow
 	
 		sizeMyselfHelper: function(e){
-			this.height = dojo.style.getOuterHeight(this.containerNode);
-			this.containerWidth = dojo.style.getOuterWidth(this.containerNode);
+			var mb = dojo.html.getMarginBox(this.containerNode);
+			this.height = mb.height;
+			this.containerWidth = mb.width;
 			var endWidth= this.height/3;
 	
 			// left part
