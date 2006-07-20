@@ -7,6 +7,12 @@ dojo.require("dojo.svg");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.graphics.color.hsl");
 
+dojo.widget.HslColorPicker=function(){
+	dojo.widget.Widget.call(this);
+	this.widgetType = "HslColorPicker";
+	this.isContainer = false;
+}
+
 dojo.widget.svg.HslColorPicker=function(){
 	dojo.widget.HslColorPicker.call(this);
 	dojo.widget.HtmlWidget.call(this);
