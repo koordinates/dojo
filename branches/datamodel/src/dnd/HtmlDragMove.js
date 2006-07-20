@@ -40,14 +40,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
 
 		this.dragClone = this.domNode;
 
-		this.scrollOffset = dojo.html.getScrollOffset();
-		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
+		this.scrollOffset = dojo.html.getScroll().offset;
+		this.dragStartPosition = dojo.html.abs(this.domNode, true);
 		
 		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
 			x: this.dragStartPosition.x - e.pageX};
 
 		this.containingBlockPosition = this.domNode.offsetParent ? 
-			dojo.style.getAbsolutePosition(this.domNode.offsetParent, true) : {x:0, y:0};
+			dojo.html.abs(this.domNode.offsetParent, true) : {x:0, y:0};
 
 		this.dragClone.style.position = "absolute";
 

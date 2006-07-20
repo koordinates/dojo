@@ -26,7 +26,11 @@ dojo.lang.setTimeout = function(func, delay){
 	for (var i = argsStart; i < arguments.length; i++) {
 		args.push(arguments[i]);
 	}
-	return setTimeout(function () { func.apply(context, args); }, delay);
+	return dojo.global().setTimeout(function () { func.apply(context, args); }, delay);
+}
+
+dojo.lang.clearTimeout = function(timer){
+	dojo.global().clearTimeout(timer);
 }
 
 dojo.lang.getNameInObj = function(ns, item){

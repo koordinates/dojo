@@ -2,28 +2,33 @@ dojo.provide("dojo.lang.type");
 
 dojo.require("dojo.lang.common");
 
-dojo.lang.whatAmI = function(wh) {
+dojo.lang.whatAmI = function(value) {
+	dojo.deprecated("dojo.lang.whatAmI", "use dojo.lang.getType instead", "0.5");
+	return dojo.lang.getType(value);
+}
+
+dojo.lang.getType = function(value) {
 	try {
-		if(dojo.lang.isArray(wh)) { return "array"; }
-		if(dojo.lang.isFunction(wh)) { return "function"; }
-		if(dojo.lang.isString(wh)) { return "string"; }
-		if(dojo.lang.isNumber(wh)) { return "number"; }
-		if(dojo.lang.isBoolean(wh)) { return "boolean"; }
-		if(dojo.lang.isAlien(wh)) { return "alien"; }
-		if(dojo.lang.isUndefined(wh)) { return "undefined"; }
+		if(dojo.lang.isArray(value)) { return "array"; }
+		if(dojo.lang.isFunction(value)) { return "function"; }
+		if(dojo.lang.isString(value)) { return "string"; }
+		if(dojo.lang.isNumber(value)) { return "number"; }
+		if(dojo.lang.isBoolean(value)) { return "boolean"; }
+		if(dojo.lang.isAlien(value)) { return "alien"; }
+		if(dojo.lang.isUndefined(value)) { return "undefined"; }
 		// FIXME: should this go first?
 		for(var name in dojo.lang.whatAmI.custom) {
-			if(dojo.lang.whatAmI.custom[name](wh)) {
+			if(dojo.lang.whatAmI.custom[name](value)) {
 				return name;
 			}
 		}
-		if(dojo.lang.isObject(wh)) { return "object"; }
+		if(dojo.lang.isObject(value)) { return "object"; }
 	} catch(E) {}
 	return "unknown";
 }
 /*
  * dojo.lang.whatAmI.custom[typeName] = someFunction
- * will return typeName is someFunction(wh) returns true
+ * will return typeName is someFunction(value) returns true
  */
 dojo.lang.whatAmI.custom = {};
 
@@ -44,9 +49,10 @@ dojo.lang.whatAmI.custom = {};
  *   dojo.lang.isNumeric(true);              // returns false
  * </pre>
  */
-dojo.lang.isNumeric = function(wh){
-	return (!isNaN(wh) && isFinite(wh) && (wh != null) &&
-			!dojo.lang.isBoolean(wh) && !dojo.lang.isArray(wh));
+dojo.lang.isNumeric = function(value){
+	return (!isNaN(value) && isFinite(value) && (value != null) &&
+			!dojo.lang.isBoolean(value) && !dojo.lang.isArray(value) &&
+			!/^\s*$/.test(value));
 }
 
 /**
@@ -54,15 +60,15 @@ dojo.lang.isNumeric = function(wh){
  * instance of a built-in type like String, Number, Boolean, 
  * Array, Function, or Error.
  */
-dojo.lang.isBuiltIn = function(wh){
-	return (dojo.lang.isArray(wh)		|| 
-			dojo.lang.isFunction(wh)	|| 
-			dojo.lang.isString(wh)		|| 
-			dojo.lang.isNumber(wh)		|| 
-			dojo.lang.isBoolean(wh)		|| 
-			(wh == null)				|| 
-			(wh instanceof Error)		|| 
-			(typeof wh == "error") );
+dojo.lang.isBuiltIn = function(value){
+	return (dojo.lang.isArray(value)		|| 
+			dojo.lang.isFunction(value)	|| 
+			dojo.lang.isString(value)		|| 
+			dojo.lang.isNumber(value)		|| 
+			dojo.lang.isBoolean(value)		|| 
+			(value == null)				|| 
+			(value instanceof Error)		|| 
+			(typeof value == "error") );
 }
 
 /**
@@ -78,8 +84,8 @@ dojo.lang.isBuiltIn = function(wh){
  *   dojo.lang.isPureObject([11, 2, 3]);   // returns false
  * </pre>
  */
-dojo.lang.isPureObject = function(wh){
-	return ((wh != null) && dojo.lang.isObject(wh) && wh.constructor == Object);
+dojo.lang.isPureObject = function(value){
+	return ((value != null) && dojo.lang.isObject(value) && value.constructor == Object);
 }
 
 /**
@@ -97,7 +103,6 @@ dojo.lang.isPureObject = function(wh){
  *   dojo.lang.isOfType(dojo.lang.isOfType, Function); // returns true
  *   dojo.lang.isOfType({foo: "bar"}, Object);         // returns true
  *   dojo.lang.isOfType(new Date(), Date);             // returns true
- *   dojo.lang.isOfType(xxxxx, Date);                  // returns true
  *
  *   dojo.lang.isOfType("foo", "string");                // returns true
  *   dojo.lang.isOfType(12345, "number");                // returns true
@@ -107,18 +112,26 @@ dojo.lang.isPureObject = function(wh){
  *   dojo.lang.isOfType({foo: "bar"}, "object");         // returns true
  *   dojo.lang.isOfType(xxxxx, "undefined");             // returns true
  *   dojo.lang.isOfType(null, "null");                   // returns true
-
+ *
  *   dojo.lang.isOfType("foo", [Number, String, Boolean]); // returns true
  *   dojo.lang.isOfType(12345, [Number, String, Boolean]); // returns true
  *   dojo.lang.isOfType(false, [Number, String, Boolean]); // returns true
- *   dojo.lang.isOfType(xxxxx, "undefined");               // returns true
+ *
+ *   dojo.lang.isOfType(null, Date, {optional: true} );    // returns true
  * </pre>
  *
  * @param	value	Any literal value or object instance.
  * @param	type	A class of object, or a literal type, or the string name of a type, or an array with a list of types.
  * @return	Returns a boolean
  */
-dojo.lang.isOfType = function(value, type) {
+dojo.lang.isOfType = function(value, type, keywordParameters) {
+	var optional = false;
+	if (keywordParameters) {
+		optional = keywordParameters["optional"];
+	}
+	if (optional && ((value === null) || dojo.lang.isUndefined(value))) {
+		return true;
+	}
 	if(dojo.lang.isArray(type)){
 		var arrayOfTypes = type;
 		for(var i in arrayOfTypes){
@@ -177,6 +190,7 @@ dojo.lang.isOfType = function(value, type) {
 				return (value === null);
 				break;
 			case "optional":
+				dojo.deprecated('dojo.lang.isOfType(value, [type, "optional"])', 'use dojo.lang.isOfType(value, type, {optional: true} ) instead', "0.5");
 				return ((value === null) || dojo.lang.isUndefined(value));
 				break;
 			default:

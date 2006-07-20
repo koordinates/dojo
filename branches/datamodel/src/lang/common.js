@@ -21,7 +21,7 @@ dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
 	return obj;
 }
 
-dojo.lang.mixin = function(obj, props /*, props, ..., props */){
+dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/ props){
 	// summary:	Adds all properties and methods of props to obj.
 	for(var i=1, l=arguments.length; i<l; i++){
 		dojo.lang._mixin(obj, arguments[i]);
@@ -29,7 +29,7 @@ dojo.lang.mixin = function(obj, props /*, props, ..., props */){
 	return obj; // Object
 }
 
-dojo.lang.extend = function(/*Object*/ constructor, /* Object, ... */ props){
+dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	// summary:	Adds all properties and methods of props to constructors prototype,
 	//			making them available to all instances created with constructor.
 	for(var i=1, l=arguments.length; i<l; i++){
@@ -50,10 +50,11 @@ dojo.lang.find = function(	/*Array*/		array,
 	// usage:
 	//  find(array, value[, identity [findLast]]) // recommended
 	// usage:
- 	//  find(value, array[, identity [findLast]])
+ 	//  find(value, array[, identity [findLast]]) // deprecated
 							
 	// support both (array, value) and (value, array)
 	if(!dojo.lang.isArrayLike(array) && dojo.lang.isArrayLike(value)) {
+		dojo.deprecated('dojo.lang.find(value, array)', 'use dojo.lang.find(array, value) instead', "0.5");
 		var temp = array;
 		array = value;
 		value = temp;

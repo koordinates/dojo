@@ -1,5 +1,4 @@
 dojo.provide("dojo.i18n.common");
-dojo.require("dojo.lang");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.i18n.common");
@@ -47,4 +46,4 @@ dojo.i18n.isLTR = function(locale /*optional*/){
 	var lang = dojo.normalizeLocale(locale).split('-')[0];
 	var RTL = {ar:true,fa:true,he:true,ur:true,yi:true};
 	return !RTL[lang];
-}
+};

@@ -15,7 +15,7 @@ dojo.data.Item = function(/* dojo.data.provider.Base */ dataProvider) {
 	 * the Item class know how to store and retrieve their
 	 * attribute values.
 	 */
-	dojo.lang.assertType(dataProvider, [dojo.data.provider.Base, "optional"]);
+	dojo.lang.assertType(dataProvider, dojo.data.provider.Base, {optional: true});
 	dojo.data.Observable.call(this);
 	this._dataProvider = dataProvider;
 	this._dictionaryOfAttributeValues = {};
@@ -297,12 +297,7 @@ dojo.data.Item.prototype.hasAttribute = function(/* string or dojo.data.Attribut
 	 * summary: Returns true if the given attribute of the item has been assigned any value.
 	 */ 
 	// dojo.lang.assertType(attributeId, [String, dojo.data.Attribute]);
-	for (var key in this._dictionaryOfAttributeValues) {
-		if (key == attributeId) {
-			return true; // boolean
-		}
-	}
-	return false; // boolean
+	return (attributeId in this._dictionaryOfAttributeValues); // boolean
 };
 
 dojo.data.Item.prototype.hasAttributeValue = function(/* string or dojo.data.Attribute */ attributeId, /* anything */ value) {

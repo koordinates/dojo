@@ -1,16 +1,17 @@
 dojo.provide("dojo.io.IframeIO");
 dojo.require("dojo.io.BrowserIO");
 dojo.require("dojo.uri.*");
+dojo.require("dojo.html.iframe");
 
 // FIXME: is it possible to use the Google htmlfile hack to prevent the
 // background click with this transport?
 
-dojo.io.createIFrame = function(fname, onloadstr){
+dojo.io.createIFrame = function(fname, onloadstr, uri){
 	if(window[fname]){ return window[fname]; }
 	if(window.frames[fname]){ return window.frames[fname]; }
 	var r = dojo.render.html;
 	var cframe = null;
-	var turi = dojo.uri.dojoUri("iframe_history.html?noInit=true");
+	var turi = uri||dojo.uri.dojoUri("iframe_history.html?noInit=true");
 	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? "<iframe name='"+fname+"' src='"+turi+"' onload='"+onloadstr+"'>" : "iframe";
 	cframe = document.createElement(ifrstr);
 	with(cframe){
@@ -18,7 +19,7 @@ dojo.io.createIFrame = function(fname, onloadstr){
 		setAttribute("name", fname);
 		id = fname;
 	}
-	(document.body||document.getElementsByTagName("body")[0]).appendChild(cframe);
+	dojo.body().appendChild(cframe);
 	window[fname] = cframe;
 	with(cframe.style){
 		position = "absolute";
@@ -40,28 +41,6 @@ dojo.io.createIFrame = function(fname, onloadstr){
 		cframe.onload = new Function(onloadstr);
 	}
 	return cframe;
-}
-
-// thanks burstlib!
-dojo.io.iframeContentWindow = function(iframe_el) {
-	var win = iframe_el.contentWindow || // IE
-		dojo.io.iframeContentDocument(iframe_el).defaultView || // Moz, opera
-		// Moz. TODO: is this available when defaultView isn't?
-		dojo.io.iframeContentDocument(iframe_el).__parent__ || 
-		(iframe_el.name && document.frames[iframe_el.name]) || null;
-	return win;
-}
-
-dojo.io.iframeContentDocument = function(iframe_el){
-	var doc = iframe_el.contentDocument || // W3
-		(
-			(iframe_el.contentWindow)&&(iframe_el.contentWindow.document)
-		) ||  // IE
-		(
-			(iframe_el.name)&&(document.frames[iframe_el.name])&&
-			(document.frames[iframe_el.name].document)
-		) || null;
-	return doc;
 }
 
 dojo.io.IframeTransport = new function(){
@@ -128,14 +107,12 @@ dojo.io.IframeTransport = new function(){
 			(
 				// FIXME: can we really handle text/plain and
 				// text/javascript requests?
-				dojo.lang.inArray(kwArgs["mimetype"], 
-				[	"text/plain", "text/html", 
-					"text/javascript", "text/json"])
+				dojo.lang.inArray([	"text/plain", "text/html", "text/javascript", "text/json"], kwArgs["mimetype"])
 			)&&(
 				// make sur we really only get used in file upload cases	
 				(kwArgs["formNode"])&&(dojo.io.checkChildrenForFile(kwArgs["formNode"]))
 			)&&(
-				dojo.lang.inArray(kwArgs["method"].toLowerCase(), ["post", "get"])
+				dojo.lang.inArray(["post", "get"], kwArgs["method"].toLowerCase())
 			)&&(
 				// never handle a sync request
 				!  ((kwArgs["sync"])&&(kwArgs["sync"] == true))
@@ -195,7 +172,7 @@ dojo.io.IframeTransport = new function(){
 		req.formNode.setAttribute("target", req._originalTarget);
 		req.formNode.target = req._originalTarget;
 
-		var ifd = dojo.io.iframeContentDocument(_this.iframe);
+		var ifd = dojo.html.iframeContentDocument(_this.iframe);
 		// handle successful returns
 		// FIXME: how do we determine success for iframes? Is there an equiv of
 		// the "status" property?
