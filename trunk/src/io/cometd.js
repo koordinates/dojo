@@ -6,7 +6,8 @@ dojo.require("dojo.json");
 dojo.require("dojo.io.BrowserIO"); // we need XHR for the handshake, etc.
 // FIXME: determine if we can use XMLHTTP to make x-domain posts despite not
 //        being able to hear back about the result
-dojo.require("dojo.io.IframeIO"); // for posting across domains
+dojo.require("dojo.io.IframeIO");
+dojo.require("dojo.io.ScriptSrcIO"); // for x-domain long polling
 dojo.require("dojo.io.cookie"); // for peering
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang.*");
@@ -49,7 +50,7 @@ cometd = new function(){
 		// placeholder
 	}
 
-	this.init = function(props, root){
+	this.init = function(props, root, bargs){
 		props = props||{};
 		// go ask the short bus server what we can support
 		props.version = this.version;
@@ -73,6 +74,7 @@ cometd = new function(){
 			load: dojo.lang.hitch(this, "finishInit"),
 			content: { "message": dojo.json.serialize(props) }
 		};
+		dojo.lang.mixin(bindArgs, bargs);
 		return dojo.io.bind(bindArgs);
 	}
 
@@ -542,7 +544,6 @@ cometd.iframeTransport = new function(){
 		}
 	}
 }
-cometd.connectionTypes.register("iframe", cometd.iframeTransport.check, cometd.iframeTransport);
 
 cometd.mimeReplaceTransport = new function(){
 	this.connected = false;
@@ -648,8 +649,6 @@ cometd.mimeReplaceTransport = new function(){
 		this.tunnelInit();
 	}
 }
-cometd.connectionTypes.register("mime-message-block", cometd.mimeReplaceTransport.check, cometd.mimeReplaceTransport, null, true);
-
 
 cometd.longPollTransport = new function(){
 	this.connected = false;
@@ -748,5 +747,108 @@ cometd.longPollTransport = new function(){
 		this.tunnelInit();
 	}
 }
+
+cometd.callbackPollTransport = new function(){
+	this.connected = false;
+	this.connectionId = null;
+	this.clientId = null;
+
+	this.authToken = null;
+	this.lastTimestamp = null;
+	this.lastId = null;
+	this.backlog = [];
+
+	this.check = function(types){
+		return dojo.lang.inArray(types, "callback-polling");
+	}
+
+	this.tunnelInit = function(){
+		if(this.connected){ return; }
+		// FIXME: open up the connection here
+		this.openTunnelWith({
+			message: dojo.json.serialize({
+				channel:	"/meta/connect",
+				clientId:	this.clientId,
+				connectionType: "callback-polling"
+				// FIXME: auth not passed here!
+				// "authToken": this.authToken
+			})
+		});
+		this.connected = true;
+	}
+
+	this.tunnelCollapse = function(){
+		if(!this.connected){
+			// try to restart the tunnel
+			this.connected = false;
+			this.openTunnelWith({
+				message: dojo.json.serialize({
+					channel:	"/meta/reconnect",
+					connectionType: "long-polling",
+					clientId:	this.clientId,
+					connectionId:	this.connectionId,
+					timestamp:	this.lastTimestamp,
+					id:			this.lastId
+					// FIXME: no authToken provision!
+				})
+			});
+		}
+	}
+
+	this.deliver = cometd.iframeTransport.deliver;
+	// the logic appears to be the same
+
+	this.openTunnelWith = function(content, url){
+		// create a <script> element to generate the request
+		dojo.io.bind({
+			url: (url||cometd.url),
+			content: content,
+			transport: "ScriptSrcTransport",
+			jsonParamName: "jsonp",
+			load: dojo.lang.hitch(this, function(type, data, evt, args){
+				dojo.debug(dojo.json.serialize(data));
+				cometd.deliver(data);
+				this.connected = false;
+				this.tunnelCollapse();
+			}),
+			error: function(){ dojo.debug("tunnel opening failed"); }
+		});
+		this.connected = true;
+	}
+
+	this.processBacklog = function(){
+		while(this.backlog.length > 0){
+			this.sendMessage(this.backlog.shift(), true);
+		}
+	}
+
+	this.sendMessage = function(message, bypassBacklog){
+		// FIXME: what about auth fields?
+		if((bypassBacklog)||(this.connected)){
+			message.connectionId = this.connectionId;
+			message.clientId = this.clientId;
+			var bindArgs = {
+				url: cometd.url||djConfig["cometdRoot"],
+				transport: "ScriptSrcTransport",
+				jsonParamName: "jsonp",
+				content: { message: dojo.json.serialize(message) }
+			};
+			return dojo.io.bind(bindArgs);
+		}else{
+			this.backlog.push(message);
+		}
+	}
+
+	this.startup = function(handshakeData){
+		if(this.connected){ return; }
+		this.clientId = handshakeData.clientId;
+		this.tunnelInit();
+	}
+}
+
+cometd.connectionTypes.register("mime-message-block", cometd.mimeReplaceTransport.check, cometd.mimeReplaceTransport);
+cometd.connectionTypes.register("iframe", cometd.iframeTransport.check, cometd.iframeTransport);
+cometd.connectionTypes.register("callback-polling", cometd.callbackPollTransport.check, cometd.callbackPollTransport);
 cometd.connectionTypes.register("long-polling", cometd.longPollTransport.check, cometd.longPollTransport);
+
 // FIXME: need to implement fallback-polling, IE XML block
