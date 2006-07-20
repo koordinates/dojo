@@ -3,14 +3,27 @@
   <!ENTITY introduction SYSTEM "introduction.xml">
   <!ENTITY components SYSTEM "components.xml">
    <!ENTITY howto SYSTEM "howto.xml">
-  <!ENTITY model SYSTEM "model.xml">
-      <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
+   <!ENTITY whatsnew SYSTEM "whatsnew.xml">
+   <!ENTITY todo SYSTEM "todo.xml">
+   <!ENTITY performance SYSTEM "performance.xml">  
+   <!ENTITY extensions SYSTEM "extensions.xml">  
+   <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
+    <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
 ]>
 <section>
     <title>Dojo Tree Tutorial</title>
     &introduction;
+    &whatsnew;
+    &todo;
+    
+    <important>The rest of the document is draft and may be outdated</important>
+    
+    &performance;
+    &performance_tricks;
     &components;
-    &model;
+    &tree_treenode;
+    &extensions;
     &howto;
+    
 </section>
 

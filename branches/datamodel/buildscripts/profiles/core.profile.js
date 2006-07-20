@@ -16,9 +16,10 @@ var dependencies = [
 	"dojo.io.BrowserIo",
 	"dojo.io.cookie",
 	"dojo.json",
-	"dojo.dom",
-	"dojo.style",
-	"dojo.html"
+	"dojo.html.*",
+	"dojo.html.display",
+	"dojo.html.layout",
+	"dojo.html.util"
 ];
 
 // NOTE: this MUST be included or a list of files must be output via print()
