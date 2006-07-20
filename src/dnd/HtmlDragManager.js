@@ -2,8 +2,8 @@ dojo.provide("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.dnd.DragAndDrop");
 dojo.require("dojo.event.*");
 dojo.require("dojo.lang.array");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.layout");
 
 // NOTE: there will only ever be a single instance of HTMLDragManager, so it's
 // safe to use prototype properties for book-keeping.
@@ -79,21 +79,36 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 	// method over-rides
 	registerDragSource: function(ds){
+		//dojo.profile.start("register DragSource");
+
 		if(ds["domNode"]){
 			// FIXME: dragSource objects SHOULD have some sort of property that
 			// references their DOM node, we shouldn't just be passing nodes and
 			// expecting it to work.
+			//dojo.profile.start("register DragSource 1");
 			var dp = this.dsPrefix;
 			var dpIdx = dp+"Idx_"+(this.dsCounter++);
 			ds.dragSourceId = dpIdx;
 			this.dragSources[dpIdx] = ds;
 			ds.domNode.setAttribute(dp, dpIdx);
+			//dojo.profile.end("register DragSource 1");
+
+			//dojo.profile.start("register DragSource 2");
 
 			// so we can drag links
 			if(dojo.render.html.ie){
-				dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
+				//dojo.profile.start("register DragSource IE");
+				
+				dojo.event.browser.addListener(ds.domNode, "ondragstart", this.cancelEvent);
+				// terribly slow
+				//dojo.event.connect(ds.domNode, "ondragstart", this.cancelEvent);
+				//dojo.profile.end("register DragSource IE");
+
 			}
+			//dojo.profile.end("register DragSource 2");
+
 		}
+		//dojo.profile.end("register DragSource");
 	},
 
 	unregisterDragSource: function(ds){
@@ -106,7 +121,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			ds.domNode.setAttribute(dp, null);
 		}
 		if(dojo.render.html.ie){
-			dojo.event.disconnect(ds.domNode, "ondragstart", this.cancelEvent );
+			dojo.event.browser.removeListener(ds.domNode, "ondragstart", this.cancelEvent);			
 		}
 	},
 
@@ -131,11 +146,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	*/
 	getDragSource: function(e){
 		var tn = e.target;
-		if(tn === dojo.html.body()){ return; }
+		if(tn === dojo.body()){ return; }
 		var ta = dojo.html.getAttribute(tn, this.dsPrefix);
 		while((!ta)&&(tn)){
 			tn = tn.parentNode;
-			if((!tn)||(tn === dojo.html.body())){ return; }
+			if((!tn)||(tn === dojo.body())){ return; }
 			ta = dojo.html.getAttribute(tn, this.dsPrefix);
 		}
 		return this.dragSources[ta];
@@ -154,7 +169,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 			return;
 		}
 
-		var target = e.target.nodeType == dojo.dom.TEXT_NODE ?
+		var target = e.target.nodeType == dojo.html.TEXT_NODE ?
 			e.target.parentNode : e.target;
 
 		// do not start drag involvement if the user is interacting with
@@ -271,13 +286,18 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	onScroll: function(){
+		//dojo.profile.start("DNDManager updateoffset");
 		for(var i = 0; i < this.dragObjects.length; i++) {
 			if(this.dragObjects[i].updateDragOffset) {
 				this.dragObjects[i].updateDragOffset();
 			}
 		}
+		//dojo.profile.end("DNDManager updateoffset");
+
 		// TODO: do not recalculate, only adjust coordinates
-		this.cacheTargetLocations();
+		if (this.dragObjects.length) {
+			this.cacheTargetLocations();
+		}
 	},
 
 	_dragStartDistance: function(x, y){
@@ -292,20 +312,26 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	cacheTargetLocations: function(){
+
+	         dojo.profile.start("cacheTargetLocations");
+
 		this.dropTargetDimensions = [];
 		dojo.lang.forEach(this.dropTargets, function(tempTarget){
 			var tn = tempTarget.domNode;
 			if(!tn){ return; }
-			var ttx = dojo.style.getAbsoluteX(tn, true);
-			var tty = dojo.style.getAbsoluteY(tn, true);
+			var abs = dojo.html.getAbsolutePosition(tn, true);
+			var bb = dojo.html.getBorderBox(tn);
 			this.dropTargetDimensions.push([
-				[ttx, tty],	// upper-left
+				[abs.x, abs.y],	// upper-left
 				// lower-right
-				[ ttx+dojo.style.getInnerWidth(tn), tty+dojo.style.getInnerHeight(tn) ],
+				[ abs.x+bb.width, abs.y+bb.height ],
 				tempTarget
 			]);
 			//dojo.debug("Cached for "+tempTarget)
 		}, this);
+
+     		dojo.profile.end("cacheTargetLocations");
+
 		//dojo.debug("Cache locations")
 	},
 
@@ -368,11 +394,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		// if we have a current drop target, check to see if we're outside of
 		// it. If so, do all the actions that need doing.
 		if(this.currentDropTarget){
-			//dojo.debug(dojo.dom.hasParent(this.currentDropTarget.domNode))
-			var c = dojo.style.toCoordinateArray(this.currentDropTarget.domNode, true);
+			//dojo.debug(dojo.html.hasParent(this.currentDropTarget.domNode))
+			var c = dojo.html.toCoordinateObject(this.currentDropTarget.domNode, true);
 			//		var dtp = this.currentDropTargetPoints;
 			var dtp = [
-				[c[0],c[1]], [c[0]+c[2], c[1]+c[3]]
+				[c.x,c.y], [c.x+c.width, c.y+c.height]
 			];
 		}
 

@@ -59,7 +59,7 @@ dojo.data.provider.Base.prototype.newItem = function(/* string */ itemName) {
 	/**
 	 * Creates a new item.
 	 */
-	dojo.lang.assertType(itemName, [String, "optional"]);
+	dojo.lang.assertType(itemName, String, {optional: true});
 	var item = this._newItem();
 	if (itemName) {
 		item.set('name', itemName);
@@ -71,7 +71,7 @@ dojo.data.provider.Base.prototype.newAttribute = function(/* string */ attribute
 	/**
 	 * Creates a new attribute.
 	 */
-	dojo.lang.assertType(attributeId, String); // FIXME: should be optional
+	dojo.lang.assertType(attributeId, String, {optional: true});
 	var attribute = this._newAttribute(attributeId);
 	return attribute; // dojo.data.Attribute
 };

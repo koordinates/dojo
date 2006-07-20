@@ -11,7 +11,7 @@ dojo.data.Attribute = function(/* dojo.data.provider.Base */ dataProvider, /* st
 	 * An Attribute object represents something like a column in 
 	 * a relational database.
 	 */
-	dojo.lang.assertType(dataProvider, [dojo.data.provider.Base, "optional"]);
+	dojo.lang.assertType(dataProvider, dojo.data.provider.Base, {optional: true});
 	dojo.lang.assertType(attributeId, String);
 	dojo.data.Item.call(this, dataProvider);
 	this._attributeId = attributeId;

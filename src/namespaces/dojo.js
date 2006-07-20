@@ -1,5 +1,5 @@
 dojo.provide("dojo.namespaces.dojo");
-//dojo.require("dojo.namespace");
+dojo.require("dojo.namespace");
 
 (function(){
 	//mapping of all widget short names to their full package names
@@ -8,28 +8,27 @@ dojo.provide("dojo.namespaces.dojo");
 			"accordioncontainer": "dojo.widget.AccordionContainer",
 			"treerpccontroller": "dojo.widget.TreeRPCController",
 			"accordionpane": "dojo.widget.AccordionPane",
-			"button2": "dojo.widget.Button2",
 			"button": "dojo.widget.Button",
 			"chart": "dojo.widget.Chart",
 			"checkbox": "dojo.widget.Checkbox",
-			"civicrmdatepicker": " dojo.widget.CiviCrmDatePicker",
+			"civicrmdatepicker": "dojo.widget.CiviCrmDatePicker",
 			"colorpalette": "dojo.widget.ColorPalette",
 			"combobox": "dojo.widget.ComboBox",
 			"contentpane": "dojo.widget.ContentPane",
 			"contextmenu": "dojo.widget.ContextMenu",
 			"datepicker": "dojo.widget.DatePicker",
 			"debugconsole": "dojo.widget.DebugConsole",
-			"dialog": " dojo.widget.Dialog",
+			"dialog": "dojo.widget.Dialog",
 			"docpane": "dojo.widget.DocPane",
 			"domwidget": "dojo.widget.DomWidget",
 			"dropdownbutton": "dojo.widget.DropdownButton",
 			"editor2": "dojo.widget.Editor2",
 			"editor2toolbar": "dojo.widget.Editor2Toolbar",
 			"editor": "dojo.widget.Editor",
-			"editortree": " dojo.widget.EditorTree",
+			"editortree": "dojo.widget.EditorTree",
 			"editortreecontextmenu": "dojo.widget.EditorTreeContextMenu",
 			"editortreenode": "dojo.widget.EditorTreeNode",
-			"fisheyelist": " dojo.widget.FisheyeList",
+			"fisheyelist": "dojo.widget.FisheyeList",
 			"editortreecontroller": "dojo.widget.EditorTreeController",
 			"googlemap": "dojo.widget.GoogleMap",
 			"htmlwidget": "dojo.widget.HtmlWidget",
@@ -40,6 +39,7 @@ dojo.provide("dojo.namespaces.dojo");
 			"layoutcontainer": "dojo.widget.LayoutContainer",
 			"linkpane": "dojo.widget.LinkPane",
 			"manager": "dojo.widget.Manager",
+			"popupcontainer": "dojo.widget.Menu2",
 			"popupmenu2": "dojo.widget.Menu2",
 			"menuitem2": "dojo.widget.Menu2",
 			"menuseparator2": "dojo.widget.Menu2",
@@ -51,17 +51,18 @@ dojo.provide("dojo.namespaces.dojo");
 			"parse": "dojo.widget.Parse",
 			"popupbutton": "dojo.widget.PopUpButton",
 			"richtext": "dojo.widget.RichText",
+			"remotetabcontroller": "dojo.widget.RemoteTabController",
 			"resizehandle": "dojo.widget.ResizeHandle",
 			"resizabletextarea": "dojo.widget.ResizableTextarea",
 			"slideshow": "dojo.widget.SlideShow",
-			"sortabletable": "dojo.widget.SortableTable ",
+			"sortabletable": "dojo.widget.SortableTable",
 			"simpledropdownbuttons": "dojo.widget.SimpleDropdownButtons",
 			"splitcontainer": "dojo.widget.SplitContainer",
-			"svgbutton": "dojo.widget.SvgButton ",	
+			"svgbutton": "dojo.widget.SvgButton",
 			"svgwidget": "dojo.widget.SvgWidget",
 			"tabcontainer": "dojo.widget.TabContainer",
 			"taskbar": "dojo.widget.TaskBar",
-			"timepicker": " dojo.widget.TimerPicker",
+			"timepicker": "dojo.widget.TimerPicker",
 			"titlepane": "dojo.widget.TitlePane",
 			"toggler": "dojo.widget.Toggler",
 			"toolbar": "dojo.widget.Toolbar",
@@ -89,6 +90,7 @@ dojo.provide("dojo.namespaces.dojo");
 
 	function dojoNamespaceResolver(name, domain){
 		if(!domain){ domain="html"; }
+		if(!map[domain]){ return null; }
 		return map[domain][name];    
 	}
 

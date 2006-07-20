@@ -14,7 +14,7 @@ dojo.data.format.Json = new function() {
 	};
 	
 	this.loadDataProviderFromArrayOfJsonData = function(/* dojo.data.provider.Base */ dataProvider, /* Array */ arrayOfJsonData) {
-		dojo.lang.assertType(arrayOfJsonData, [Array, "optional"]);
+		dojo.lang.assertType(arrayOfJsonData, Array, {optional: true});
 		if (arrayOfJsonData && (arrayOfJsonData.length > 0)) {
 			var firstRow = arrayOfJsonData[0];
 			dojo.lang.assertType(firstRow, [Array, "pureobject"]);
