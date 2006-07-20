@@ -47,7 +47,7 @@
 
 // tell the package system what functionality is provided in this module (file)
 // (note that the package system works on modules, not the classes)
-dojo.provide("dojo.widget.html.Slider");
+dojo.provide("dojo.widget.Slider");
 
 // load dependencies
 dojo.require("dojo.event.*");
@@ -62,7 +62,7 @@ dojo.require("dojo.html.layout");
  * Define the two dimensional slider widget class.
  */
 dojo.widget.defineWidget (
-	"dojo.widget.html.Slider",
+	"dojo.widget.Slider",
 	dojo.widget.HtmlWidget,
 	{
 		// useful properties (specified as attributes in the html tag)
@@ -125,7 +125,7 @@ dojo.widget.defineWidget (
 			// dojo.debug ("fillInTemplate - className = " + this.domNode.className);
 
 			// setup drag-n-drop for the sliderHandle
-			this.handleMove = new dojo.widget.html._SliderDragMoveSource (this.sliderHandle);
+			this.handleMove = new dojo.widget._SliderDragMoveSource (this.sliderHandle);
 			this.handleMove.setParent (this);
 
 			// keep the slider handle inside it's parent container
@@ -261,11 +261,9 @@ dojo.widget.defineWidget (
  * Define the horizontal slider widget class.
  */
 dojo.widget.defineWidget (
-	"dojo.widget.html.SliderHorizontal",
-	dojo.widget.html.Slider,
+	"dojo.widget.SliderHorizontal",
+	dojo.widget.Slider,
 	{
-		widgetType: "SliderHorizontal",
-
 		isEnableX: true,
 		isEnableY: false,
 		initialValue: "",
@@ -317,11 +315,9 @@ dojo.widget.defineWidget (
  * Define the vertical slider widget class.
  */
 dojo.widget.defineWidget (
-	"dojo.widget.html.SliderVertical",
-	dojo.widget.html.Slider,
+	"dojo.widget.SliderVertical",
+	dojo.widget.Slider,
 	{
-		widgetType: "SliderVertical",
-
 		isEnableX: false,
 		isEnableY: true,
 		initialValue: "",
@@ -374,7 +370,7 @@ dojo.widget.defineWidget (
  * features for the slider handle.
  */
 dojo.declare (
-	"dojo.widget.html._SliderDragMoveSource",
+	"dojo.widget._SliderDragMoveSource",
 	dojo.dnd.HtmlDragMoveSource,
 {
 	slider: null,
@@ -397,7 +393,7 @@ dojo.declare (
 
 	createDragMoveObject: function () {
 		//dojo.debug ("SliderDragMoveSource#createDragMoveObject - " + this.slider);
-		var dragObj = new dojo.widget.html._SliderDragMoveObject (this.dragObject, this.type);
+		var dragObj = new dojo.widget._SliderDragMoveObject (this.dragObject, this.type);
 		dragObj.slider = this.slider;
 
 		// this code copied from dojo.dnd.HtmlDragSource#onDragStart
@@ -462,10 +458,10 @@ dojo.declare (
  * features for the slider handle.
  */
 dojo.declare (
-	"dojo.widget.html._SliderDragMoveObject",
+	"dojo.widget._SliderDragMoveObject",
 	dojo.dnd.HtmlDragMoveObject,
 {
-	// reference to dojo.widget.html.Slider
+	// reference to dojo.widget.Slider
 	slider: null,
 
 	/** Moves the node to follow the mouse.
