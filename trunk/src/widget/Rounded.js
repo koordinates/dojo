@@ -2,7 +2,7 @@ dojo.provide("dojo.widget.Rounded");
 dojo.widget.tags.addParseTreeHandler("dojo:rounded");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.html.ContentPane");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.display");
 
@@ -13,10 +13,10 @@ dojo.require("dojo.html.display");
  */
 
 dojo.widget.Rounded = function() {
-	dojo.widget.html.ContentPane.call(this);
+	dojo.widget.ContentPane.call(this);
 }
 
-dojo.inherits(dojo.widget.Rounded, dojo.widget.html.ContentPane);
+dojo.inherits(dojo.widget.Rounded, dojo.widget.ContentPane);
 
 dojo.lang.extend(dojo.widget.Rounded, {
 	isSafari: dojo.render.html.safari,

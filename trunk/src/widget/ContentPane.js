@@ -2,17 +2,17 @@
 // It's useful as a child of LayoutContainer, SplitContainer, or TabContainer.
 // But note that those classes can contain any widget as a child.
 
-dojo.provide("dojo.widget.html.ContentPane");
+dojo.provide("dojo.widget.ContentPane");
+
 dojo.require("dojo.widget.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.string");
 dojo.require("dojo.string.extras");
 dojo.require("dojo.html.style");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.ContentPane",
+	"dojo.widget.ContentPane",
 	dojo.widget.HtmlWidget,
 	{
 		isContainer: true,
@@ -53,7 +53,7 @@ dojo.widget.defineWidget(
 			}else{
 				this.loadContents();
 			}
-			dojo.widget.html.ContentPane.superclass.show.call(this);
+			dojo.widget.ContentPane.superclass.show.call(this);
 		},
 	
 		refresh: function(){
@@ -162,7 +162,7 @@ dojo.widget.defineWidget(
 		destroy: function(){
 			// make sure we call onUnLoad
 			this.onUnLoad();
-			dojo.widget.html.ContentPane.superclass.destroy.call(this);
+			dojo.widget.ContentPane.superclass.destroy.call(this);
 		},
 	
 		// called when content script eval error or Java error occurs, preventDefault-able
@@ -512,3 +512,4 @@ dojo.widget.defineWidget(
 		}
 	}
 );
+

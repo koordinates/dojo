@@ -1,7 +1,6 @@
-dojo.provide("dojo.widget.html.Tooltip");
-dojo.require("dojo.widget.html.ContentPane");
+dojo.provide("dojo.widget.Tooltip");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.widget.Menu2"); //for dojo.widget.PopupContainer
-dojo.require("dojo.widget.Tooltip");
 dojo.require("dojo.uri");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event");
@@ -10,8 +9,8 @@ dojo.require("dojo.html.util");
 dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Tooltip",
-	dojo.widget.html.ContentPane,
+	"dojo.widget.Tooltip",
+	dojo.widget.ContentPane,
 	{
 		isContainer: true,
 
@@ -34,7 +33,7 @@ dojo.widget.defineWidget(
 				this.domNode.appendChild(document.createTextNode(this.caption));
 			}
 			this.connectNode = dojo.byId(this.connectId);		
-			dojo.widget.html.Tooltip.superclass.fillInTemplate.call(this, args, frag);
+			dojo.widget.Tooltip.superclass.fillInTemplate.call(this, args, frag);
 
 			//wrap this.domNode in a PopupContainer
 			//and pass animation setting to it
@@ -59,7 +58,7 @@ dojo.widget.defineWidget(
 		
 		postCreate: function(args, frag){
 			dojo.event.connect(this.connectNode, "onmouseover", this, "onMouseOver");
-			dojo.widget.html.Tooltip.superclass.postCreate.call(this, args, frag);
+			dojo.widget.Tooltip.superclass.postCreate.call(this, args, frag);
 		},
 		
 		onMouseOver: function(e) {
@@ -98,7 +97,7 @@ dojo.widget.defineWidget(
 		show: function() {
 			if (this.popupWidget.isShowingNow) { return; }
 	
-			dojo.widget.html.Tooltip.superclass.show.call(this);
+			dojo.widget.Tooltip.superclass.show.call(this);
 			
 			this.popupWidget.open(this.mouse.x, this.mouse.y, this, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
 		},
@@ -119,7 +118,7 @@ dojo.widget.defineWidget(
 		},
 	
 		onHide: function(){
-			dojo.widget.html.Tooltip.superclass.hide.call(this);
+			dojo.widget.Tooltip.superclass.hide.call(this);
 		},
 
 		position: function(){
@@ -130,7 +129,7 @@ dojo.widget.defineWidget(
 			if(this.popupWidget.isShowingNow){
 				// the tooltip has changed size due to downloaded contents, so reposition it
 				this.position();
-				dojo.widget.html.Tooltip.superclass.onLoad.apply(this, arguments);
+				dojo.widget.Tooltip.superclass.onLoad.apply(this, arguments);
 			}
 		},
 	
