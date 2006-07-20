@@ -5,11 +5,13 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.event.*");
 dojo.require("dojo.graphics.color");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.display");
+dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.html.Dialog",
-	dojo.widget.html.ContentPane,
+	dojo.widget.ContentPane,
 	{
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDialog.html"),
 		isContainer: true,
@@ -60,7 +62,7 @@ dojo.widget.defineWidget(
 				display = "none";
 				overflow = "visible";
 			}
-			var b = dojo.html.body();
+			var b = dojo.body();
 			b.appendChild(this.domNode);
 
 			this.bg = document.createElement("div");
@@ -89,9 +91,9 @@ dojo.widget.defineWidget(
 		
 		setBackgroundOpacity: function(op) {
 			if(arguments.length == 0) { op = this.bgOpacity; }
-			dojo.style.setOpacity(this.bg, op);
+			dojo.html.setOpacity(this.bg, op);
 			try {
-				this.bgOpacity = dojo.style.getOpacity(this.bg);
+				this.bgOpacity = dojo.html.getOpacity(this.bg);
 			} catch (e) {
 				this.bgOpacity = op;
 			}
@@ -100,10 +102,11 @@ dojo.widget.defineWidget(
 
 		sizeBackground: function() {
 			if(this.bgOpacity > 0) {
+				var viewport = dojo.html.getViewport();
 				var h = Math.max(
-					document.documentElement.scrollHeight || document.body.scrollHeight,
-					dojo.html.getViewportHeight());
-				var w = dojo.html.getViewportWidth();
+					dojo.doc().documentElement.scrollHeight || dojo.body().scrollHeight,
+					viewport.height);
+				var w = viewport.width;
 				this.bg.style.width = w + "px";
 				this.bg.style.height = h + "px";
 			}
@@ -118,15 +121,14 @@ dojo.widget.defineWidget(
 		},
 
 		placeDialog: function() {
-			var scroll_offset = dojo.html.getScrollOffset();
-			var viewport_size = dojo.html.getViewportSize();
+			var scroll_offset = dojo.html.getScroll().offset;
+			var viewport_size = dojo.html.getViewport();
 
 			// find the size of the dialog
-			var w = dojo.style.getOuterWidth(this.containerNode);
-			var h = dojo.style.getOuterHeight(this.containerNode);
+			var mb = dojo.html.getMarginBox(this.containerNode);
 
-			var x = scroll_offset[0] + (viewport_size[0] - w)/2;
-			var y = scroll_offset[1] + (viewport_size[1] - h)/2;
+			var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
+			var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
 
 			with(this.domNode.style) {
 				left = x + "px";

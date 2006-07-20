@@ -20,6 +20,11 @@ dojo.widget.TreeWithNode = {
 		this.lockLevel--;
 		//!this.lockLevel && this.unMarkLoading();
 	},
+	
+	
+	expandLevel: "", // expand to level automatically
+		
+	
 
 	isLocked: function() {
 		var node = this;
@@ -30,68 +35,29 @@ dojo.widget.TreeWithNode = {
 			if (node.isTree) {
 				break;
 			}
+			if (!node.parent) {
+				dojo.raise("Tried to check isLocked at parent, but no parent");
+			}
+			
 			node = node.parent;
+			
 		}
 
 		return false;
 	},
 
-
-	uppercaseActionDisabled: function() {		
-		for(var i=0; i<this.actionsDisabled.length; i++) {
-			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
-		}
-	},
-	
 	
 	flushLock: function() {
 		this.lockLevel = 0;
 		//this.unMarkLoading();
 	},
 	
-	adjustEventNames: function() {
-		
-		for(name in this.eventNamesDefault) {
-			if (dojo.lang.isUndefined(this.eventNames[name])) {
-				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
-			}
-		}
-	},
-	
-	// create my domnode on postcreate
-	viewCreateChildrenNodes: function(){
-		var _this = this;
-
-		//dojo.debug("createDOMNode");
-				
-		//
-		// create the child rows
-		//
-		if (this.children.length) {
-			if (!this.containerNode) {
-				this.viewAddContainer();
-			}			
-			
-			for(var i=0; i<this.children.length; i++) {
-				var child = this.children[i];
-				child.viewAddExpand();
-				child.viewAddLayout();
-				this.containerNode.appendChild(child.domNode);
-				
-				dojo.event.topic.publish(_this.tree.eventNames.createNode, { source: child } );
-			}
-		}
-
-	},
-
-	
 	
 	actionIsDisabled: function(action) {
-		var _this = this;
 
 		var disabled = false;
 
-		if (dojo.lang.inArray(_this.actionsDisabled, action)) {
+		if (dojo.lang.inArray(this.actionsDisabled, action)) {
 			disabled = true;
 		}
 
@@ -101,12 +67,148 @@ dojo.widget.TreeWithNode = {
 		
 		
 		if (this.isTreeNode) {
-			if (this.tree.strictFolders && action == this.actions.ADDCHILD && !this.isFolder) {
+			if (!this.tree.allowAddChildToLeaf && action == this.actions.ADDCHILD && !this.isFolder) {
 				disabled = true;
 			}
 		}
-
 		return disabled;
+	},
+		
+	
+	/**
+	 * childrenArray is array of Widgets or array of Objects
+	 * widgets may be both attached and detached
+	 *
+	 * Use Cases
+	 * 1) lots of widgets are packed and passed in.
+	 *  - widgets are created
+	 *  - widgets have no parent (detached or not attached yet)
+	 *
+	 * 2) array of widgets and data objects passed in with flag makeWidgetsFromChildren
+	 *  - some widgets are not created
+	 *  - all objects have no parent
+	 *
+	 * 3) expand is called with makeWidgetsFromChildren=true
+	 *  - some objects need to be turned into widgets
+	 *  - some widgets have parent (e.g markup), some widgets and objects do not
+	 */
+	setChildren: function(childrenArray) {
+		//dojo.profile.start("setChildren "+this);
+		//dojo.debug("setChildren in "+this);
+		
+		if (this.isTreeNode && !this.isFolder) {
+			//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
+			this.setFolder();
+			this.state = this.loadStates.LOADED;
+		}
+		
+		var hadChildren = this.children.length > 0;
+		
+		this.children = childrenArray;
+		
+
+
+		var hasChildren = this.children.length > 0;
+		if (this.isTreeNode && hasChildren != hadChildren) {
+			// call only when hasChildren state changes
+			this.viewSetHasChildren();
+		}
+		
+
+
+		for(var i=0; i<this.children.length; i++) {
+			var child = this.children[i];
+
+			//dojo.profile.start("setChildren - create "+this);
+			
+			if (!(child instanceof dojo.widget.Widget)) {
+				
+				if (child instanceof Array) {
+					// arguments for createWidget
+					child = this.children[i] = dojo.widget.createWidget(child, {}, this);
+				} else {
+					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child, this);					
+				}
+				//child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
+				
+				//dojo.debugShallow(child)
+				
+				//dojo.debug("setChildren creates node "+child);
+			}
+			
+			//dojo.profile.end("setChildren - create "+this);
+
+			//dojo.profile.start("setChildren - attach "+this);
+
+			if (!child.parent) { // detached child
+				child.parent = this;
+
+				//dojo.profile.start("setChildren - updateTree "+this);
+				
+				if (this.tree !== child.tree) {				
+					child.updateTree(this.tree);
+				}
+				//dojo.profile.end("setChildren - updateTree "+this);
+
+			
+				//dojo.debug("Add layout for "+child);
+				child.viewAddLayout();
+				this.containerNode.appendChild(child.domNode);
+					
+				var message = {
+					child: child,
+					index: i,
+					parent: this
+				}
+			
+				// just in case..			
+				delete dojo.widget.manager.topWidgets[child.widgetId];
+		
+
+				//dojo.profile.start("setChildren - event "+this);
+
+				dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+
+				//dojo.profile.end("setChildren - event "+this);
+
+			}
+
+			//dojo.profile.end("setChildren - attach "+this);
+
+		
+		}
+		
+
+
+		dojo.profile.end("setChildren "+this);
+		
+	},	
+	
+		
+	addChild: function(child, index) {
+		if (dojo.lang.isUndefined(index)) {
+			index = this.children.length;
+		}
+		
+		//dojo.debug("doAddChild "+index+" called for "+child+" children "+this.children);
+				
+		if (!child.isTreeNode){
+			dojo.raise("You can only add TreeNode widgets to a "+this.widgetType+" widget!");
+			return;
+		}
+			
+		this.children.splice(index, 0, child);
+		child.parent = this;
+				
+		child.addedTo(this, index);
+		
+		// taken from DomWidget.registerChild
+		// delete from widget list that are notified on resize etc (no parent)
+		delete dojo.widget.manager.topWidgets[child.widgetId];
+				
 	}
 	
-};
+	
+	
+	
+}

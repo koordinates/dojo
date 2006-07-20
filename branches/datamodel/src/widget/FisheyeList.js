@@ -10,9 +10,9 @@ dojo.provide("dojo.widget.html.FisheyeListItem");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.dom");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.selection");
+dojo.require("dojo.html.util");
 dojo.require("dojo.event");
 
 dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
@@ -237,7 +237,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	onBodyOut: function(e){
 		// clicking over an object inside of body causes this event to fire; ignore that case
-		if( dojo.html.overElement(document.body, e) ){
+		if( dojo.html.overElement(dojo.body(), e) ){
 			return;
 		}
 		this.setDormant(e);
@@ -553,27 +553,26 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		var x = 0;
 		var y = 0;
 		
-		var labelW = dojo.style.getOuterWidth(itm.lblNode);
-		var labelH = dojo.style.getOuterHeight(itm.lblNode);
+		var mb = dojo.html.getMarginBox(itm.lblNode);
 
 		if (this.labelEdge == this.EDGE.TOP){
-			x = Math.round((itm.sizeW / 2) - (labelW / 2));
-			y = -labelH;
+			x = Math.round((itm.sizeW / 2) - (mb.width / 2));
+			y = -mb.height;
 		}
 
 		if (this.labelEdge == this.EDGE.BOTTOM){
-			x = Math.round((itm.sizeW / 2) - (labelW / 2));
+			x = Math.round((itm.sizeW / 2) - (mb.width / 2));
 			y = itm.sizeH;
 		}
 
 		if (this.labelEdge == this.EDGE.LEFT){
-			x = -labelW;
-			y = Math.round((itm.sizeH / 2) - (labelH / 2));
+			x = -mb.width;
+			y = Math.round((itm.sizeH / 2) - (mb.height / 2));
 		}
 
 		if (this.labelEdge == this.EDGE.RIGHT){
 			x = itm.sizeW;
-			y = Math.round((itm.sizeH / 2) - (labelH / 2));
+			y = Math.round((itm.sizeH / 2) - (mb.height / 2));
 		}
 
 		itm.lblNode.style.left = x + 'px';
@@ -582,7 +581,7 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 
 	calcHitGrid: function(){
 
-		var pos = dojo.style.getAbsolutePosition(this.domNode, true);
+		var pos = dojo.html.getAbsolutePosition(this.domNode, true);
 
 		this.hitX1 = pos.x - this.proximityLeft;
 		this.hitY1 = pos.y - this.proximityTop;

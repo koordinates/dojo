@@ -5,7 +5,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.widget.html.DatePicker");
 dojo.require("dojo.widget.html.TimePicker");
-dojo.require("dojo.html");
+dojo.require("dojo.html.common");
 
 dojo.widget.HtmlCiviCrmDatePicker = function(){
 	this.widgetType = "CiviCrmDatePicker";

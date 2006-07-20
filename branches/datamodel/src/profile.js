@@ -1,5 +1,8 @@
 dojo.provide("dojo.profile");
 
+
+
+
 dojo.profile = new function(){
 	var profiles = {};
 	var pns = [];
@@ -95,9 +98,9 @@ dojo.profile = new function(){
 				padding = "10px";
 			}
 			if(document.getElementById("profileOutputTable")){
-				document.body.replaceChild(ne, document.getElementById("profileOutputTable"));
+				dojo.body().replaceChild(ne, document.getElementById("profileOutputTable"));
 			}else{
-				document.body.appendChild(ne);
+				dojo.body().appendChild(ne);
 			}
 			ne.appendChild(tbl);
 		}

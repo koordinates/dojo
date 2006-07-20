@@ -1,7 +1,6 @@
 dojo.provide("dojo.widget.Select");
-dojo.provide("dojo.widget.html.Select");
 
-dojo.require("dojo.widget.html.ComboBox");
+dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.html.stabile");
 
@@ -20,8 +19,8 @@ dojo.require("dojo.widget.html.stabile");
  */
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Select",
-	dojo.widget.html.ComboBox,
+	"dojo.widget.Select",
+	dojo.widget.ComboBox,
 	{
 		forceValidOption: true,
 
@@ -63,4 +62,5 @@ dojo.widget.defineWidget(
 			this.setValue(value2);
 			this.setLabel(value1);
 		}
-	});
+	}
+);

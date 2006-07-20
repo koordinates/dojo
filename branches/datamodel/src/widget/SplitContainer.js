@@ -12,9 +12,9 @@ dojo.provide("dojo.widget.html.SplitContainerPanel");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
-dojo.require("dojo.dom");
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
 dojo.require("dojo.io.cookie");
 
@@ -56,12 +56,13 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 
 	fillInTemplate: function(){
 
-		dojo.style.insertCssFile(this.templateCssPath, null, true);
+		dojo.html.insertCssFile(this.templateCssPath, null, true);
 		dojo.html.addClass(this.domNode, "dojoSplitContainer");
 		this.domNode.style.overflow='hidden';	// workaround firefox bug
-
-		this.paneWidth = dojo.style.getContentWidth(this.domNode);
-		this.paneHeight = dojo.style.getContentHeight(this.domNode);
+		
+		var content = dojo.html.getContentBox(this.domNode);
+		this.paneWidth = content.width;
+		this.paneHeight = content.height;
 
 		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
 		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
@@ -70,8 +71,9 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	onResized: function(e){
-		this.paneWidth = dojo.style.getContentWidth(this.domNode);
-		this.paneHeight = dojo.style.getContentHeight(this.domNode);
+		var content = dojo.html.getContentBox(this.domNode);
+		this.paneWidth = content.width;
+		this.paneHeight = content.height;
 		this.layoutPanels();
 	},
 
@@ -252,14 +254,12 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			panel.style.left = pos + 'px';
 			panel.style.top = 0;
 
-			dojo.style.setOuterWidth(panel, size);
-			dojo.style.setOuterHeight(panel, this.paneHeight);
+			dojo.html.setMarginBox(panel, { width: size, height: this.paneHeight });
 		}else{
 			panel.style.left = 0;
 			panel.style.top = pos + 'px';
 
-			dojo.style.setOuterWidth(panel, this.paneWidth);
-			dojo.style.setOuterHeight(panel, size);
+			dojo.html.setMarginBox(panel, { width: this.paneWidth, height: size });
 		}
 	},
 
@@ -338,7 +338,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 
 		this.isSizing = true;
 		this.sizingSplitter = this.sizers[i];
-		this.originPos = dojo.style.getAbsolutePosition(this.domNode, true);
+		this.originPos = dojo.html.getAbsolutePosition(this.domNode, true);
 		this.dragOffset = {'x':clientX, 'y':clientY};
 		this.startPoint  = {'x':screenX, 'y':screenY};
 		this.lastPoint  = {'x':screenX, 'y':screenY};
@@ -495,11 +495,9 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		this.moveSizingLine();
 
 		if (this.isHorizontal){
-			dojo.style.setOuterWidth(this.virtualSizer, this.sizerWidth);
-			dojo.style.setOuterHeight(this.virtualSizer, this.paneHeight);
+			dojo.html.setMarginBox(this.virtualSizer, { width: this.sizerWidth, height: this.paneHeight });
 		}else{
-			dojo.style.setOuterWidth(this.virtualSizer, this.paneWidth);
-			dojo.style.setOuterHeight(this.virtualSizer, this.sizerWidth);
+			dojo.html.setMarginBox(this.virtualSizer, { width: this.paneWidth, height: this.sizerWidth });
 		}
 
 		this.virtualSizer.style.display = 'block';

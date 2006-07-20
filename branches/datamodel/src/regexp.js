@@ -256,6 +256,8 @@ dojo.regexp.emailAddressList = function(flags) {
       Default is [true, false], (i.e. will match if it is signed or unsigned).
     flags.separator  The character used as the thousands separator.  Default is no separator.
       For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
+	flags.groupSize group size between separators
+	flags.groupSize2 second grouping (for India)
 
   @return  A string for a regular expression for an integer.
 */
@@ -263,23 +265,30 @@ dojo.regexp.integer = function(flags) {
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.signed == "undefined") { flags.signed = [true, false]; }
-	if (typeof flags.separator == "undefined") { flags.separator = ""; }
-
+	if (typeof flags.separator == "undefined") {
+		flags.separator = "";
+	} else if (typeof flags.groupSize == "undefined") {
+		flags.groupSize = 3;
+	}
 	// build sign RE
 	var signRE = dojo.regexp.buildGroupRE(flags.signed,
-		function(q) { if (q) { return "[-+]"; }  return ""; }
+		function(q) { return q ? "[-+]" : ""; }
 	);
 
 	// number RE
 	var numberRE = dojo.regexp.buildGroupRE(flags.separator,
 		function(sep) { 
 			if ( sep == "" ) { 
-				return "(0|[1-9]\\d*)"; 
+				return "(0|[1-9]\\d*)";
 			}
-			return "(0|[1-9]\\d{0,2}([" + sep + "]\\d{3})*)"; 
+			var grp = flags.groupSize, grp2 = flags.groupSize2;
+			if ( typeof grp2 != "undefined" ) {
+				var grp2RE = "(0|[1-9]\\d{0," + (grp2-1) + "}([" + sep + "]\\d{" + grp2 + "})*[" + sep + "]\\d{" + grp + "})";
+				return ((grp-grp2) > 0) ? "(" + grp2RE + "|(0|[1-9]\\d{0," + (grp-1) + "}))" : grp2RE;
+			}
+			return  "(0|[1-9]\\d{0," + (grp-1) + "}([" + sep + "]\\d{" + grp + "})*)";
 		}
 	);
-	var numberRE;
 
 	// integer RE
 	return (signRE + numberRE);
@@ -292,6 +301,8 @@ dojo.regexp.integer = function(flags) {
     flags.places  The integer number of decimal places.
       If not given, the decimal part is optional and the number of places is unlimited.
     flags.decimal  A string for the character used as the decimal point.  Default is ".".
+    flags.fractional  Whether decimal places are allowed.
+      Can be true, false, or [true, false].  Default is [true, false]
     flags.exponent  Express in exponential notation.  Can be true, false, or [true, false].
       Default is [true, false], (i.e. will match if the exponential part is present are not).
     flags.eSigned  The leading plus-or-minus sign on the exponent.  Can be true, false, 
@@ -305,6 +316,7 @@ dojo.regexp.realNumber = function(flags) {
 	flags = (typeof flags == "object") ? flags : {};
 	if (typeof flags.places != "number") { flags.places = Infinity; }
 	if (typeof flags.decimal != "string") { flags.decimal = "."; }
+	if (typeof flags.fractional == "undefined") { flags.fractional = [true, false]; }
 	if (typeof flags.exponent == "undefined") { flags.exponent = [true, false]; }
 	if (typeof flags.eSigned == "undefined") { flags.eSigned = [true, false]; }
 
@@ -312,18 +324,28 @@ dojo.regexp.realNumber = function(flags) {
 	var integerRE = dojo.regexp.integer(flags);
 
 	// decimal RE
-	var decimalRE = "";
-	if ( flags.places == Infinity) { 
-		decimalRE = "(\\" + flags.decimal + "\\d+)?"; 
-	}
-	else if ( flags.places > 0) { 
-		decimalRE = "\\" + flags.decimal + "\\d{" + flags.places + "}"; 
-	}
+	var decimalRE = dojo.regexp.buildGroupRE(flags.fractional,
+		function(q) {
+			var re = "";
+			if (q && (flags.places > 0)) {
+				re = "\\" + flags.decimal;
+				if ( flags.places == Infinity) { 
+					re = "(" + re + "\\d+)?"; 
+				}
+				else { 
+					re = re + "\\d{" + flags.places + "}"; 
+				}
+			}
+
+			return re;
+		}
+	);
+
 
 	// exponent RE
 	var exponentRE = dojo.regexp.buildGroupRE(flags.exponent,
 		function(q) { 
-			if (q) { return "([eE]" + dojo.regexp.integer({signed: flags.eSigned}) + ")"; }
+			if (q) { return "([eE]" + dojo.regexp.integer({ signed: flags.eSigned}) + ")"; }
 			return ""; 
 		}
 	);
@@ -336,15 +358,13 @@ dojo.regexp.realNumber = function(flags) {
   Builds a regular expression to match a monetary value.
 
   @param flags  An object.
-    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
-      Default is [true, false], (i.e. will match if it is signed or unsigned).
     flags.symbol  A currency symbol such as Yen "�", Pound "�", or the Euro sign "�".  
       Default is "$".  For more than one symbol use an array, e.g. ["$", ""], makes $ optional.
-    flags.placement  The symbol can come "before" the number or "after".  Default is "before".
-    flags.separator  The character used as the thousands separator. The default is ",".
-    flags.cents  The two decimal places for cents.  Can be true, false, or [true, false].
-      Default is [true, false], (i.e. will match if cents are present are not).
-    flags.decimal  A string for the character used as the decimal point.  Default is ".".
+    flags.placement  The symbol can come "before" the number or "after" the number.  Default is "before".
+    flags.signPlacement  The sign can come "before" the number or "after" the sign,
+      "around" to put parentheses around negative values, or "end" for the final char.  Default is "before".
+    flags.cents  deprecated, in favor of flags.fractional
+    flags in regexp.realNumber can be applied except exponent, eSigned.
 
   @return  A string for a regular expression for a monetary value.
 */
@@ -354,8 +374,12 @@ dojo.regexp.currency = function(flags) {
 	if (typeof flags.signed == "undefined") { flags.signed = [true, false]; }
 	if (typeof flags.symbol == "undefined") { flags.symbol = "$"; }
 	if (typeof flags.placement != "string") { flags.placement = "before"; }
+	if (typeof flags.signPlacement != "string") { flags.signPlacement = "before"; }
 	if (typeof flags.separator != "string") { flags.separator = ","; }
-	if (typeof flags.cents == "undefined") { flags.cents = [true, false]; }
+	if (typeof flags.fractional == "undefined" && typeof flags.cents != "undefined") {
+		dojo.deprecated("dojo.regexp.currency: flags.cents", "use flags.fractional instead", "0.5");
+		flags.fractional = flags.cents;
+	}
 	if (typeof flags.decimal != "string") { flags.decimal = "."; }
 
 	// build sign RE
@@ -371,23 +395,39 @@ dojo.regexp.currency = function(flags) {
 		}
 	);
 
-	// number RE
-	var numberRE = dojo.regexp.integer( {signed: false, separator: flags.separator} );
+	switch (flags.signPlacement){
+		case "before":
+			symbolRE = signRE + symbolRE;
+			break;
+		case "after":
+			symbolRE = symbolRE + signRE;
+			break;
+	}
 
-	// build cents RE
-	var centsRE = dojo.regexp.buildGroupRE(flags.cents,
-		function(q) { if (q) { return "(\\" + flags.decimal + "\\d\\d)"; }  return ""; }
-	);
+	// number RE
+	var flagsCopy = flags; //TODO: copy by value?
+	flagsCopy.signed = false; flagsCopy.exponent = false;
+	var numberRE = dojo.regexp.realNumber(flagsCopy);
 
 	// build currency RE
 	var currencyRE;
-	if (flags.placement == "before") {
-		currencyRE = signRE + symbolRE + numberRE + centsRE;
-	}
-	else {
-		currencyRE = signRE + numberRE + centsRE + symbolRE;
+	switch (flags.placement){
+		case "before":
+			currencyRE = symbolRE + numberRE;
+			break;
+		case "after":
+			currencyRE = numberRE + symbolRE;
+			break;
 	}
 
+	switch (flags.signPlacement){
+		case "around":
+			currencyRE = "(" + currencyRE + "|" + "\\(" + currencyRE + "\\)" + ")";
+			break;
+		case "end":
+			currencyRE = currencyRE + signRE;
+			break;
+	}
 	return currencyRE;
 }
 

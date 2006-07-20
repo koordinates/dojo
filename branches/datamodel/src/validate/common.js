@@ -1,5 +1,5 @@
 dojo.provide("dojo.validate.common");
-dojo.require("dojo.validate");
+
 dojo.require("dojo.regexp");
 
 // *** Validation Functions ****
@@ -77,8 +77,8 @@ dojo.validate.isRealNumber = function(value, flags) {
       Default is "$".  For more than one symbol use an array, e.g. ["$", ""], makes $ optional.
     flags.placement  The symbol can come "before" the number or "after".  Default is "before".
     flags.separator  The character used as the thousands separator. The default is ",".
-    flags.cents  The two decimal places for cents.  Can be true, false, or [true, false].
-      Default is [true, false], (i.e. cents are optional).
+    flags.fractional  The appropriate number of decimal places for fractional currency (e.g. cents)
+      Can be true, false, or [true, false].  Default is [true, false], (i.e. cents are optional).
     flags.decimal  The character used for the decimal point.  Default is ".".
   @return  true or false.
 */

@@ -1,5 +1,4 @@
 dojo.provide("dojo.dom");
-dojo.require("dojo.lang.array");
 
 dojo.dom.ELEMENT_NODE                  = 1;
 dojo.dom.ATTRIBUTE_NODE                = 2;
@@ -58,58 +57,11 @@ dojo.dom.isNode = function(wh){
 	}
 }
 
-dojo.dom.getTagName = function(node){
-	dojo.deprecated("dojo.dom.getTagName", "use node.tagName instead", "0.4");
-
-	var tagName = node.tagName;
-	if(tagName.substr(0,5).toLowerCase()!="dojo:"){
-		
-		if(tagName.substr(0,4).toLowerCase()=="dojo"){
-			// FIXME: this assuumes tag names are always lower case
-			return "dojo:" + tagName.substring(4).toLowerCase();
-		}
-
-		// allow lower-casing
-		var djt = node.getAttribute("dojoType")||node.getAttribute("dojotype");
-		if(djt){
-			return "dojo:"+djt.toLowerCase();
-		}
-		
-		if((node.getAttributeNS)&&(node.getAttributeNS(this.dojoml,"type"))){
-			return "dojo:" + node.getAttributeNS(this.dojoml,"type").toLowerCase();
-		}
-		try{
-			// FIXME: IE really really doesn't like this, so we squelch
-			// errors for it
-			djt = node.getAttribute("dojo:type");
-		}catch(e){ /* FIXME: log? */ }
-		if(djt){
-			return "dojo:"+djt.toLowerCase();
-		}
-
-		if((!dj_global["djConfig"])||(!djConfig["ignoreClassNames"])){
-			// FIXME: should we make this optionally enabled via djConfig?
-			var classes = node.className||node.getAttribute("class");
-			// FIXME: following line, without check for existence of classes.indexOf
-			// breaks firefox 1.5's svg widgets
-			if((classes)&&(classes.indexOf)&&(classes.indexOf("dojo-") != -1)){
-				var aclasses = classes.split(" ");
-				for(var x=0; x<aclasses.length; x++){
-					if((aclasses[x].length>5)&&(aclasses[x].indexOf("dojo-")>=0)){
-						return "dojo:"+aclasses[x].substr(5).toLowerCase();
-					}
-				}
-			}
-		}
-
-	}
-	return tagName.toLowerCase();
-}
-
 dojo.dom.getUniqueId = function(){
+	var _document = dojo.doc();
 	do {
 		var id = "dj_unique_" + (++arguments.callee._idIncrement);
-	}while(document.getElementById(id));
+	}while(_document.getElementById(id));
 	return id;
 }
 dojo.dom.getUniqueId._idIncrement = 0;
@@ -215,7 +167,7 @@ dojo.dom.removeNode = function(node){
 
 dojo.dom.getAncestors = function(node, filterFunction, returnFirstHit) {
 	var ancestors = [];
-	var isFunction = dojo.lang.isFunction(filterFunction);
+	var isFunction = (filterFunction && (filterFunction instanceof Function || typeof filterFunction == "function"));
 	while(node) {
 		if (!isFunction || filterFunction(node)) {
 			ancestors.push(node);
@@ -261,6 +213,7 @@ dojo.dom.innerXML = function(node){
 
 dojo.dom.createDocument = function(){
 	var doc = null;
+	var _document = dojo.doc();
 
 	if(!dj_undef("ActiveXObject")){
 		var prefixes = [ "MSXML2", "Microsoft", "MSXML", "MSXML3" ];
@@ -271,9 +224,9 @@ dojo.dom.createDocument = function(){
 
 			if(doc){ break; }
 		}
-	}else if((document.implementation)&&
-		(document.implementation.createDocument)){
-		doc = document.implementation.createDocument("", "", null);
+	}else if((_document.implementation)&&
+		(_document.implementation.createDocument)){
+		doc = _document.implementation.createDocument("", "", null);
 	}
 	
 	return doc;
@@ -307,22 +260,25 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 		req.send(null);
 		return req.responseXML;
 	*/
-	}else if(document.createElement){
-		// FIXME: this may change all tags to uppercase!
-		var tmp = document.createElement("xml");
-		tmp.innerHTML = str;
-		if(document.implementation && document.implementation.createDocument) {
-			var xmlDoc = document.implementation.createDocument("foo", "", null);
-			for(var i = 0; i < tmp.childNodes.length; i++) {
-				xmlDoc.importNode(tmp.childNodes.item(i), true);
+	}else{
+		_document = dojo.doc();
+		if(_document.createElement){
+			// FIXME: this may change all tags to uppercase!
+			var tmp = _document.createElement("xml");
+			tmp.innerHTML = str;
+			if(_document.implementation && _document.implementation.createDocument) {
+				var xmlDoc = _document.implementation.createDocument("foo", "", null);
+				for(var i = 0; i < tmp.childNodes.length; i++) {
+					xmlDoc.importNode(tmp.childNodes.item(i), true);
+				}
+				return xmlDoc;
 			}
-			return xmlDoc;
+			// FIXME: probably not a good idea to have to return an HTML fragment
+			// FIXME: the tmp.doc.firstChild is as tested from IE, so it may not
+			// work that way across the board
+			return ((tmp.document)&&
+				(tmp.document.firstChild ?  tmp.document.firstChild : tmp));
 		}
-		// FIXME: probably not a good idea to have to return an HTML fragment
-		// FIXME: the tmp.doc.firstChild is as tested from IE, so it may not
-		// work that way across the board
-		return ((tmp.document)&&
-			(tmp.document.firstChild ?  tmp.document.firstChild : tmp));
 	}
 	return null;
 }
@@ -421,7 +377,8 @@ dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
  */
 dojo.dom.textContent = function(node, text){
 	if (text) {
-		dojo.dom.replaceChildren(node, document.createTextNode(text));
+		var _document = dojo.doc();
+		dojo.dom.replaceChildren(node, _document.createTextNode(text));
 		return text;
 	} else {
 		var _result = "";
@@ -445,11 +402,6 @@ dojo.dom.textContent = function(node, text){
 	}
 }
 
-dojo.dom.collectionToArray = function(collection){
-	dojo.deprecated("dojo.dom.collectionToArray", "use dojo.lang.toArray instead", "0.4");
-	return dojo.lang.toArray(collection);
-}
-
 dojo.dom.hasParent = function (node) {
 	return node && node.parentNode && dojo.dom.isNode(node.parentNode);
 }
@@ -468,8 +420,11 @@ dojo.dom.hasParent = function (node) {
 **/
 dojo.dom.isTag = function(node /* ... */) {
 	if(node && node.tagName) {
-		var arr = dojo.lang.toArray(arguments, 1);
-		return arr[ dojo.lang.find(node.tagName, arr) ] || "";
+		for(var i=1; i<arguments.length; i++){
+			if(node.tagName==String(arguments[i])){
+				return String(arguments[i]);
+			}
+		}
 	}
 	return "";
 }
@@ -482,11 +437,11 @@ dojo.dom.isTag = function(node /* ... */) {
  * 							"hs:level", 3);
  */
 dojo.dom.setAttributeNS = function(elem, namespaceURI, attrName, attrValue){
-	if(elem == null || dojo.lang.isUndefined(elem)){
+	if(elem == null || ((elem == undefined)&&(typeof elem == "undefined"))){
 		dojo.raise("No element given to dojo.dom.setAttributeNS");
 	}
 	
-	if(dojo.lang.isUndefined(elem.setAttributeNS) == false){ // w3c
+	if(!((elem.setAttributeNS == undefined)&&(typeof elem.setAttributeNS == "undefined"))){ // w3c
 		elem.setAttributeNS(namespaceURI, attrName, attrValue);
 	}else{ // IE
 		// get a root XML document

@@ -1,6 +1,18 @@
-<div>
+<div class="dojoDocPane">
 	<div dojoAttachPoint="containerNode"></div>
-	<div dojoAttachPoint="select">
+	<div dojoAttachPoint="dialog">
+		<div class="dojoDocDialogContainer" dojoAttachPoint="dialogBg">
+			<div class="dojoDocDialog" dojoAttachPoint="dialogFg">
+				<h2>Log In</h2>
+				<p><input id="dojoDocUserName" dojoAttachPoint="userName"><label for="dojoDocUserName">User Name:</label></p>
+				<p><input id="dojoDocPassword" dojoAttachPoint="password" type="password"><label for="dojoDocPassword">Password:</label></p>
+				<p><input type="button" dojoAttachPoint="cancel" value="cancel"> <input type="button" dojoAttachPoint="logIn" value="Log In"></p>
+				<p></p>
+			</div>
+		</div>
+	</div>
+	<div dojoAttachPoint="nav"><span>Detail</span> | <span>Source</span> | <span>Examples</span> | <span>Walkthrough</span></div>
+	<div dojoAttachPoint="detail">
 		<h1>Detail: <span dojoAttachPoint="fn">dojo.select</span></h1>
 		<div dojoAttachPoint="description">Description</div>
 		<div class="dojoDocParams" dojoAttachPoint="parameters">
@@ -12,12 +24,27 @@
 			<div dojoAttachPoint="vRow"><a href="#" dojoAttachPoint="vLink">variable</a><span> - <span dojoAttachPoint="vDesc"></span></span></div>
 		</div>
 		<div>
-			<h2>Source Code</h2>
-			<div class="dojoDocSrc"><span class="dojoDocReturn" dojoAttachPoint="sType">returnType</span> <span class="dojoDocFunction" dojoAttachPoint="sName">foo</span>(<span dojoAttachPoint="sParams"><span class="dojoDocParamType" dojoAttachPoint="sPType">type </span><span class="dojoDocParamName" dojoAttachPoint="sPName">paramName</span></span>){<span dojoAttachPoint="source">...</span>}</div>
+			<h2>Signature</h2>
+			<div class="dojoDocSrc"><span class="dojoDocReturn" dojoAttachPoint="sType">returnType</span> <span class="dojoDocFunction" dojoAttachPoint="sName">foo</span>(<span dojoAttachPoint="sParams"><span class="dojoDocParamType" dojoAttachPoint="sPType">type </span><span class="dojoDocParamName" dojoAttachPoint="sPName">paramName</span></span>)</div>
 		</div>
 	</div>
 	<div dojoAttachPoint="result">
 		<h1>Search Results: <span dojoAttachPoint="count">0</span> matches</h1>
 		<div dojoAttachPoint="row"><a href="#" dojoAttachPoint="fnLink">dojo.fnLink</a><span> - <span dojoAttachPoint="summary">summary</span></span></div>
+	</div>
+	<div dojoAttachPoint="packag">
+		<h1>Package: <span dojoAttachPoint="pkg">dojo.package</span> <span dojoAttachPoint="edit" style="font-size: 8px;">[edit]</span> <span dojoAttachPoint="save" style="font-size: 8px;">[save]</span></h1>
+		<div dojoAttachPoint="pkgDescription">Description</div>
+		<div class="dojoDocMethods" dojoAttachPoint="methods">
+			<h2>Methods</h2>
+			<div dojoAttachPoint="mRow"><a href="#" dojoAttachPoint="mLink" class="docMLink">method</a><span> - <span dojoAttachPoint="mDesc"></span></span></div>
+		</div>
+		<div class="dojoDocRequires" dojoAttachPoint="requires">
+			<h2>Requires</h2>
+			<div dojoAttachPoint="rRow">
+				<h3 dojoAttachPoint="rH3">Environment</h3>
+				<div dojoAttachPoint="rRow2"><a href="#" dojoAttachPoint="rLink" class="docRLink">require</a></div>
+			</div>
+		</div>
 	</div>
 </div>

@@ -47,6 +47,7 @@
 // description:  
 //		Refer to 'dj_global' rather than referring to window to ensure your
 //		code runs correctly in contexts other than web browsers (eg: Rhino on a server).
+// TODO: replace this with dojo._currentContext
 var dj_global = this;
 
 
@@ -54,22 +55,31 @@ var dj_global = this;
 function dj_undef(/*String*/ name, /*Object?*/ object){
 	//summary: Returns true if 'name' is defined on 'object' (or globally if 'object' is null).
 	//description: Note that 'defined' and 'exists' are not the same concept.
-	if(object==null){ object = dj_global; }
+	
+	//Before dojo.global() is defined, object can not be null
+	if(object==null){ object = dojo.global(); }
 	// exception if object is not an Object
 	return (typeof object[name] == "undefined");	// Boolean
 }
 
 
 // make sure djConfig is defined
-if(dj_undef("djConfig")){ 
+if(dj_undef("djConfig", this)){ 
 	var djConfig = {}; 
 }
 
 
 //TODOC:  HOW TO DOC THIS?
 // dojo is the root variable of (almost all) our public symbols -- make sure it is defined.
-if(dj_undef("dojo")){ 
+if(dj_undef("dojo", this)){ 
 	var dojo = {}; 
+}
+
+//These are private variables, and should not be used; use dojo.global() and dojo.doc() instead
+//this variable should probably have a better name
+dojo._currentContext = this;
+if(!dj_undef("document", dojo._currentContext)){
+	dojo._currentDocument = this.document;
 }
 
 //TODOC:  HOW TO DOC THIS?
@@ -135,6 +145,76 @@ dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
 // global public utils
 // TODOC: DO WE WANT TO NOTE THAT THESE ARE GLOBAL PUBLIC UTILS?
 // ****************************************************************
+
+dojo.global = function(){
+	// summary:
+	//		return the top-level global object in the host environment
+	//		(e.g., the window object in a browser).
+	// description: 
+	//		Refer to 'dojo.global()' rather than referring to window to ensure your
+	//		code runs correctly in contexts other than web browsers (eg: Rhino on a server).
+	return dojo._currentContext;
+}
+
+dojo.doc = function(){
+	// summary:
+	//		return the document object associated with the dojo.global()
+	return dojo._currentDocument;
+}
+
+dojo.body  = function(){
+	// summary:
+	//		return the body object associated with dojo.doc()
+	// Note: document.body is not defined for a strict xhtml document
+	return dojo.doc().body || dojo.doc().getElementsByTagName("body")[0];
+}
+
+dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject /* ... */){
+	// summary:
+	//		Call callback with globalObject as dojo.global() and globalObject.document 
+	//		as dojo.doc(), if provided, globalObject will be executed in the context of 
+	//		object thisObject
+	// description: 
+	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
+	//		be restored to its previous state.
+	var oldDoc = dojo._currentDocument;
+	var oldWin = dojo._currentContext;
+	var rval;
+	try{
+		dojo._currentContext = globalObject;
+		dojo._currentDocument = globalObject.document;
+		if(thisObject){ rval = dojo.lang.curryArguments(thisObject, callback, arguments, 3); }
+		else{ rval = callback(); }
+	} catch(e) {
+		dojo._currentContext = oldWin;
+		dojo._currentDocument = oldDoc;
+		throw e;
+	}
+	dojo._currentContext = oldWin;
+	dojo._currentDocument = oldDoc;
+	return rval;
+}
+
+dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject /* ... */) {
+	// summary:
+	//		Call callback with globalObject as dojo.doc(), if provided, callback will be executed
+	//		in the context of object thisObject
+	// description: 
+	//		When callback() returns or throws an error, the dojo.doc() will
+	//		be restored to its previous state.
+	var oldDoc = this._currentDocument;
+	var rval;
+	try{
+		dojo._currentDocument = globalObject;
+		if(thisObject){ rval = dojo.lang.curryArguments(thisObject, callback, arguments, 3); }
+		else{ rval = callback(); }
+	} catch(e) {
+		dojo._currentDocument = oldDoc;
+		throw e;
+	}
+	dojo._currentDocument = oldDoc;
+	return rval;
+}
 
 dojo.errorToString = function(/*Error*/ exception){
 	// summary: Return an exception's 'message', 'description' or text.
@@ -229,8 +309,8 @@ dojo.render = (function(){
 			},
 			prefixes: prefs
 		};
-		for(var prop in names){
-			tmp[prop] = false;
+		for(var i=0; i<names.length; i++){
+			tmp[names[i]] = false;
 		}
 		return tmp;
 	}

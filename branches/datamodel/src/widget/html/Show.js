@@ -8,7 +8,7 @@ dojo.require("dojo.uri.Uri");
 dojo.require("dojo.event");
 dojo.require("dojo.animation.Animation");
 dojo.require("dojo.math.curves");
-dojo.require("dojo.html");
+dojo.require("dojo.html.layout");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.func");
 
@@ -35,12 +35,12 @@ dojo.lang.extend(dojo.widget.html.Show, {
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
 	fillInTemplate: function(args, frag){
 		if (args.debugPane) {
-			this.debugPane = dojo.widget.byId(args.debugPane);
-			var dp = this.debugPane;
+			var dp = this.debugPane = dojo.widget.byId(args.debugPane);
 			dp.hide();
+			dojo.event.connect(dp, "closeWindow", dojo.lang.hitch(this, function(){ this.debugPane = false; }));
 		}
 		var source = this.getFragNodeRef(frag);
-		this.sourceNode = dojo.html.body().appendChild(source.cloneNode(true));
+		this.sourceNode = dojo.body().appendChild(source.cloneNode(true));
 		for(var i = 0, child; child = this.sourceNode.childNodes[i]; i++){
 			if(child.tagName && child.getAttribute("dojotype").toLowerCase() == "showslide"){
 				child.className = "dojoShowPrintSlide";
@@ -51,7 +51,13 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		this.sourceNode.style.display = "none";
 		
 		dojo.event.connect(document, "onclick", this, "gotoSlideByEvent");
-		dojo.event.connect(document,"onkeydown",this, "gotoSlideByEvent");
+		if(dojo.render.html.ie) {
+			dojo.event.connect(document,"onkeydown",this, "gotoSlideByEvent");
+		} else {
+			// while keydown works, keypress allows rapid successive key presses
+			// to be handled correctly
+			dojo.event.connect(document,"onkeypress",this, "gotoSlideByEvent");
+		}
 		dojo.event.connect(window, "onresize", this, "resizeWindow");
 		dojo.event.connect(this.nav, "onmousemove", this, "popUpNav");
 	},
@@ -66,7 +72,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		}
 		this.option.parentNode.removeChild(this.option);
 
-		dojo.html.body().style.display = "block";
+		dojo.body().style.display = "block";
 		this.resizeWindow();
 		this.gotoSlide(0);
 	},
@@ -89,10 +95,12 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			return;
 		}
 
-		if (this._slides[slide].debug) {
-			this.debugPane.show();
-		} else {
-			this.debugPane.hide();
+		if(this.debugPane){
+			if(this._slides[slide].debug){
+				this.debugPane.show();
+			}else{
+				this.debugPane.hide();
+			}
 		}
 		
 		if(this._slide != -1){
@@ -115,7 +123,7 @@ dojo.lang.extend(dojo.widget.html.Show, {
 			}else{
 				this.nextSlide(event);
 			}
-		}else if (type=="keydown") {
+		}else if (type=="keydown" || type=="keypress") {
 			var key = event.keyCode;
 			var ch = event.charCode;
 			if(key == 63234 || key == 37){
@@ -206,10 +214,10 @@ dojo.lang.extend(dojo.widget.html.Show, {
 		anim.play(true);
 	},
 	resizeWindow: function(/*Event*/ ev){
-		dojo.html.body().style.height = "auto";
+		dojo.body().style.height = "auto";
 		var h = Math.max(
-			document.documentElement.scrollHeight || dojo.html.body().scrollHeight,
-			dojo.html.getViewportHeight());
-		dojo.html.body().style.height = h + "px";
+			document.documentElement.scrollHeight || dojo.body().scrollHeight,
+			dojo.html.getViewport().height);
+		dojo.body().style.height = h + "px";
 	}
 });

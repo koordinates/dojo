@@ -10,6 +10,7 @@ dojo.require("dojo.event.*");
 
 dojo.declare("dojo.widget.Widget", null, {
 	initializer: function() {								 
+		//dojo.debug("NEW "+this.widgetType);
 		// these properties aren't primitives and need to be created on a per-item
 		// basis.
 		this.children = [];
@@ -82,26 +83,44 @@ dojo.declare("dojo.widget.Widget", null, {
 	},
 
 	create: function(args, fragment, parentComp, namespace){
+		//dojo.profile.start(this.widgetType + " create");
 		if(namespace){
 			this.namespace = namespace;
 		}
 		// dojo.debug(this.widgetType, "create");
+		//dojo.profile.start(this.widgetType + " satisfyPropertySets");
 		this.satisfyPropertySets(args, fragment, parentComp);
+		//dojo.profile.end(this.widgetType + " satisfyPropertySets");
 		// dojo.debug(this.widgetType, "-> mixInProperties");
+		//dojo.profile.start(this.widgetType + " mixInProperties");
 		this.mixInProperties(args, fragment, parentComp);
+		//dojo.profile.end(this.widgetType + " mixInProperties");
 		// dojo.debug(this.widgetType, "-> postMixInProperties");
+		//dojo.profile.start(this.widgetType + " postMixInProperties");
 		this.postMixInProperties(args, fragment, parentComp);
+		//dojo.profile.end(this.widgetType + " postMixInProperties");
 		// dojo.debug(this.widgetType, "-> dojo.widget.manager.add");
 		dojo.widget.manager.add(this);
 		// dojo.debug(this.widgetType, "-> buildRendering");
+		//dojo.profile.start(this.widgetType + " buildRendering");
 		this.buildRendering(args, fragment, parentComp);
+		//dojo.profile.end(this.widgetType + " buildRendering");
 		// dojo.debug(this.widgetType, "-> initialize");
+		//dojo.profile.start(this.widgetType + " initialize");
 		this.initialize(args, fragment, parentComp);
+		//dojo.profile.end(this.widgetType + " initialize");
 		// dojo.debug(this.widgetType, "-> postInitialize");
+		// postinitialize includes subcomponent creation
+		// profile is put directly to function
 		this.postInitialize(args, fragment, parentComp);
 		// dojo.debug(this.widgetType, "-> postCreate");
+		//dojo.profile.start(this.widgetType + " postCreate");
 		this.postCreate(args, fragment, parentComp);
+		//dojo.profile.end(this.widgetType + " postCreate");
 		// dojo.debug(this.widgetType, "done!");
+		
+		//dojo.profile.end(this.widgetType + " create");
+		
 		return this;
 	},
 
@@ -150,20 +169,23 @@ dojo.declare("dojo.widget.Widget", null, {
 		var result = [];
 		var stack = [this];
 		var elem;
-		while (elem = stack.pop()){
+		while ((elem = stack.pop())){
 			result.push(elem);
-			dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+			// a child may be data object without children field set (not widget)
+			if (elem.children) {
+				dojo.lang.forEach(elem.children, function(elem) { stack.push(elem); });
+			}
 		}
 		return result;
 	},
 
 
 	isFirstNode: function() {
-		return this.getParentIndex() == 0 ? true: false;
+		return this === this.parent.children[0];
 	},
 
 	isLastNode: function() {
-		return this.getParentIndex() == this.parent.children.length-1 ? true : false;
+		return this === this.parent.children[this.parent.children.length-1];
 	},
 
 	satisfyPropertySets: function(args){
@@ -478,8 +500,13 @@ dojo.widget.lcArgsCache = {};
 dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
 	var ltype = type.toLowerCase();
-	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){ 
-		return dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
+	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){
+		var _ltype = ltype;
+		dojo.profile.start(_ltype);
+		var n = dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
+		dojo.profile.end(_ltype);
+		
+		return n;
 	}
 }
 dojo.widget.tags.addParseTreeHandler("dojo:widget");
@@ -506,13 +533,16 @@ dojo.widget.tags["dojo:connect"] = function(fragment, widgetParser, parentComp){
 dojo.widget.buildWidgetFromParseTree = function(type, frag, 
 												parser, parentComp, 
 												insertionIndex, localProps){
+	
+	//dojo.profile.start("buildWidgetFromParseTree");
+	
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
 	// var tic = new Date();
-	var twidget = dojo.widget.manager.getImplementation(stype);
+	var twidget = dojo.widget.manager.getImplementation(stype); //TODO: pass namespace
 	if(!twidget){
 		throw new Error("cannot find \"" + stype + "\" widget");
 	}else if (!twidget.create){
@@ -520,12 +550,16 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
+	
+	
 	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
 	// dojo.debug(new Date() - tic);
+	
+	//dojo.profile.end("buildWidgetFromParseTree");
+	
 	return ret;
 }
 
-//TODO: add namespace support to this
 /*
  * Create a widget constructor function (aka widgetClass)
  */
@@ -570,7 +604,15 @@ dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/
 	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
 
 	dojo.widget.manager.registerWidgetPackage(namespace);
-	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+	
+	var pos = namespace.indexOf(".");
+	var nsName = (pos > -1) ? namespace.substring(0,pos) : namespace;
+	dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
+	if(nsName != "dojo"){
+		// 2006/06/26 Providing a duplicate dojo handler is a deprecation
+		// and should eventually be removed from code
+		dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
+	}
 
 	props=(props)||{};
 	props.widgetType = type;
