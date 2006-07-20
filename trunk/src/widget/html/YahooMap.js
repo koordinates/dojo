@@ -1,8 +1,22 @@
-dojo.provide("dojo.widget.html.YahooMap");
+dojo.provide("dojo.widget.YahooMap");
+dojo.provide("dojo.widget.YahooMap.Controls");
 dojo.require("dojo.event.*");
 dojo.require("dojo.math");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.YahooMap");
+dojo.require("dojo.widget.*");
+
+dojo.widget.defineWidget(
+	"dojo.widget.YahooMap",
+	dojo.widget.Widget,
+	{ isContainer: false }
+);
+
+dojo.widget.YahooMap.Controls={
+	MapType:"maptype",
+	Pan:"pan",
+	ZoomLong:"zoomlong",
+	ZoomShort:"zoomshort"
+};
 
 (function(){
 	var yappid = djConfig["yAppId"]||djConfig["yahooAppId"]||"dojotoolkit";
