@@ -36,9 +36,11 @@ dojo.widget.defineWidget(
 
 			dojo.html.addClass(this.domNode, this.class);
 
-			dojo.addOnLoad(dojo.lang.hitch(this, function() {
-				this.setTabContainer(dojo.widget.byId(this.tabContainer));
-			}));
+			if (this.tabContainer != "") {
+				dojo.addOnLoad(dojo.lang.hitch(this, function() {
+					this.setTabContainer(dojo.widget.byId(this.tabContainer));
+				}));
+			}
 
 			
 		},
