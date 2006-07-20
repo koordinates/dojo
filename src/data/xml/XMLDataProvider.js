@@ -104,6 +104,7 @@ dojo.declare("dojo.data.xml.XMLDataProvider",dojo.data.IDataProvider,{
 				},
 				load: function(type, data, evt) {
 					toReturn = data;
+//FIXME:					try {toReturn.setProperty("SelectionLanguage", "XPath");} catch(e) {}	//enable xpath on IE
 				}
 			};
 			
@@ -115,7 +116,7 @@ dojo.declare("dojo.data.xml.XMLDataProvider",dojo.data.IDataProvider,{
 	},
 	
 	// No, this should not be here.
-	getTableController: function() {
+	getDataGridController: function() {
 		return new dojo.widget.createWidget("DataGridXMLController",{});
 	},
 

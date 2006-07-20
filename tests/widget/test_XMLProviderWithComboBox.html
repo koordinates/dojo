@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>ComboBox with an XML Data Provider</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.lang.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.ComboBox");
+	dojo.require("dojo.data.DataProvider");
+
+	dojo.hostenv.writeIncludes();
+</script>
+<script type="text/javascript">
+
+	dojo.addOnLoad(function(){
+
+		var provider = function() {
+
+			this.init =  function() {
+				this.xmlDataProv = dojo.widget.byId("tableData");
+				this.dataSet = this.xmlDataProv.fetchData("/states/state");
+			};
+
+			this.startSearch = function(searchStr, type, ignoreLimit) {
+				searchStr = searchStr.replace(/'|"/g, "");	//these characters will break the xpath expression - technically we should insert whatever the xpath escape character is
+
+				var data = this.dataSet.getValues("./@name[starts-with(., \'" + searchStr + "\')]");
+				var toAdd = new Array;
+				for (var i in data) {
+					toAdd.push([data[i], data[i]]);
+				}
+				this.provideSearchResults(toAdd);
+			};
+
+			this.provideSearchResults = function() {
+		
+			};
+
+		};
+		
+		var box = dojo.widget.createWidget("ComboBox", {dataProviderClass: provider});
+		document.body.appendChild(box.domNode);
+
+	});
+
+</script>
+</head>
+<body>
+
+<div dojoType="DataProvider" location="states.xml" widgetId="tableData" type="dojo.data.xml.XMLDataProvider">  
+
+</div>
+
+<h4>Create Combo programmatically</h4>
+
+
+</body>
+</html>

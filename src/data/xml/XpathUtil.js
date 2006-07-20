@@ -48,7 +48,7 @@ dojo.data.xml.XpathUtil = new function() {
 			
 		} catch (e) {	//failover to IE
 			errors.push(e);
-
+			
 			try {
 				var toReturn =  dom.selectNodes(xpathExp);
 				
@@ -63,7 +63,7 @@ dojo.data.xml.XpathUtil = new function() {
 
 					return toReturn;
 			} catch (e2) {
-			
+				dojo.debug("XPath Query.selectNodes: ",e2);
 				//Might be something wrong with the XPath query.  Display all the accumulated errors so the user will have an idea of what went wrong.
 				errors.push(e2);
 				for (var i in errors) {

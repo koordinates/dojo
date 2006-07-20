@@ -68,5 +68,10 @@ dojo.widget.defineWidget("dojo.widget.DataGridXMLController",dojo.widget.DataGri
 		}
 		//This binds the data model to the control
 		return new dojo.data.xml.XMLPropertyBinder(this.data, this.columnDefs[column].bindTo + "|" + row, data, dataProp);
+	},
+	
+	sortByColumnIndex: function(columnIndex, direction) { //TODO:  Make UP/DOWN a constant
+		this.data.sortData(this.columnDefs[columnIndex].bindTo, direction);
 	}
+	
 });
