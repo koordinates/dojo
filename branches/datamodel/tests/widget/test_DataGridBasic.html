@@ -16,8 +16,8 @@
 </script>
 </head>
 <body>
-<div dojoType="DataProvider" location="instance.xml" widgetId="tableData" type="dojo.data.xml.XMLDataProvider">  
-    <div dojoType="DerivedAttribute" path="/users/user/positions/position/@value" value="../@quantity * ../@currentPrice"></div>
+<div dojoType="DataProvider" widgetId="tableData" location="instance.xml" type="dojo.data.xml.XMLDataProvider">  
+    <div dojoType="DerivedAttribute" path="/users/user/positions/position/@value" value="../@quantity * ../@currentPrice)"></div>
     <div dojoType="DerivedAttribute" path="/users/user/positions/position/@gains" value="../@quantity * (../@currentPrice - ../@pricePaid)"></div>
 </div>
 <p>Grid with all data columns (value and gains are calculated values):</p>
@@ -26,8 +26,8 @@
 	<div dojoType="DataGridColumn" name="Current Price" bindTo="@currentPrice" editable="false" alignment="center" width="-1" underline="false" ></div>
 	<div dojoType="DataGridColumn" name="Quantity" bindTo="@quantity" editable="true" sortable="true" alignment="center" width="-1" underline="false" ></div>
 	<div dojoType="DataGridColumn" name="Price Paid" bindTo="@pricePaid" editable="false" alignment="center" width="-1" underline="false" ></div>
-	<div dojoType="DataGridColumn" name="Value" bindTo="@value" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
-	<div dojoType="DataGridColumn" name="Gains" bindTo="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new hX_2.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+	<div dojoType="DataGridColumn" name="Value" bindTo="@value" editable="false" alignment="center" width="-1" underline="false" converter="new dojo.data.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
+	<div dojoType="DataGridColumn" name="Gains" bindTo="@gains" editable="false" alignment="center" width="-1" underline="false" converter="new dojo.data.NumberConverter('strict:1', 'pattern:#,##0', 'locale:,.%?-$')" ></div>
 </div>
 </body>
 </html>

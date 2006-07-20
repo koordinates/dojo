@@ -51,8 +51,8 @@ dojo.widget.defineWidget("dojo.data.DataProvider",dojo.widget.DomWidget,{
 		return this.provider.fetchData(query);
 	},
 	
-	getTableController: function() {
-		return this.provider.getTableController();
+	getDataGridController: function() {
+		return this.provider.getDataGridController();
 	}
 });
 

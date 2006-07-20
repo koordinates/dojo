@@ -1,0 +1,52 @@
+<states>
+	<state name="Alabama" symbol="AL"/>
+	<state name="Alaska" symbol="AK"/>
+	<state name="Arizona" symbol="AZ"/>
+	<state name="Arkansas" symbol="AR"/>
+	<state name="California" symbol="CA"/>
+	<state name="Colorado" symbol="CO"/>
+	<state name="Conneticut" symbol="CT"/>
+	<state name="Delaware" symbol="DC"/>
+	<state name="Florida" symbol="FL"/>
+	<state name="Georgia" symbol="GA"/>
+	<state name="Hawaii" symbol="HI"/>
+	<state name="Idaho" symbol="ID"/>
+	<state name="Illinois" symbol="IL"/>
+	<state name="Indiana" symbol="IN"/>
+	<state name="Iowa" symbol="IA"/>
+	<state name="Kansas" symbol="KS"/>
+	<state name="Kentucky" symbol="KY"/>
+	<state name="Louisiana" symbol="LA"/>
+	<state name="Maine" symbol="ME"/>
+	<state name="Maryland" symbol="MD"/>
+	<state name="Massachusetts" symbol="MA"/>
+	<state name="Michigan" symbol="MI"/>
+	<state name="Minnesota" symbol="MN"/>
+	<state name="Mississippi" symbol="MS"/>
+	<state name="Missouri" symbol="MO"/>
+	<state name="Montana" symbol="MT"/>
+	<state name="Nebraska" symbol="NE"/>
+	<state name="Nevada" symbol="NV"/>
+	<state name="New Hampshire" symbol="NH"/>
+	<state name="New Jersey" symbol="NJ"/>
+	<state name="New Mexico" symbol="NM"/>
+	<state name="New York" symbol="NY"/>
+	<state name="North Carolina" symbol="NC"/>
+	<state name="North Dakota" symbol="ND"/>
+	<state name="Ohio" symbol="OH"/>
+	<state name="Oklahoma" symbol="OK"/>
+	<state name="Oregon" symbol="OR"/>
+	<state name="Pennsylvania" symbol="PA"/>
+	<state name="Rhode Island" symbol="RI"/>
+	<state name="South Carolina" symbol="SC"/>
+	<state name="South Dakota" symbol="SD"/>
+	<state name="Tennessee" symbol="TN"/>
+	<state name="Texas" symbol="TX"/>
+	<state name="Utah" symbol="UT"/>
+	<state name="Vermont" symbol="VT"/>
+	<state name="Virginia" symbol="VA"/>
+	<state name="Washington" symbol="WA"/>
+	<state name="West Virginia" symbol="WV"/>
+	<state name="Wisconsin" symbol="WI"/>
+	<state name="Wyoming" symbol="WY"/>
+</states>

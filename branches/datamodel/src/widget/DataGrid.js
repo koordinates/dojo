@@ -129,8 +129,9 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 			this._drawTable();
 			
 			//jump to the navpos
-			if( this.navpos > this.currentPage && this.navpos <= this.numOfPages )
+			if( this.navpos > this.currentPage && this.navpos <= this.numOfPages ){
 				this.gotoPage( this.navpos );
+			}
 		},
 		
 		/*
@@ -142,7 +143,14 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 	     *		- 2 params : assume row, col index, only update the specified row	 
 		 */
 		refresh: function( /*TBD*/ ){
-			dojo.unimplemented("dojo.widget.DataGrid.refresh");
+			//dojo.unimplemented("dojo.widget.DataGrid.refresh");
+			
+			if(this.allowpaging){
+				this.currentPage = 1;
+			}
+			
+			this._updateBody();
+			this._updateFooter();
 		},
 		
 		
@@ -169,7 +177,7 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 				this.headerRowElt.appendChild(headCell);
 			}
 			for(var i = 0; i < colsToRender; i++){
-				var headCell = document.createElement("th");
+				headCell = document.createElement("th");
 				if( this.tableData.isSortable(i) ){
 					//wrap text as link
 					var link = document.createElement("a");
@@ -183,8 +191,9 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 					headCell.appendChild(document.createTextNode(this.tableData.getColumnName(i)));
 				}
 				//check if last column (used to remove extra borders
-				if( i == colsToRender-1 )
+				if( i == colsToRender-1 ){
 					dojo.html.addClass( headCell, "last" );
+				}
 				this.headerRowElt.appendChild(headCell);
 			}
 		},
@@ -238,9 +247,9 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 						cell.innerHTML = "&nbsp;";				
 					}
 					//check if last column (used to remove extra borders
-					if( j == colsToRender-1 )
+					if( j == colsToRender-1 ){
 						dojo.html.addClass( cell, "last" );
-					
+					}
 					//GINO: find a better way to address the cells (should not use ids)
 					//cell.setAttribute("id", this.widgetId + "_" + i + "_" + j);
 					
@@ -400,6 +409,13 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 			//update the combo
 			this.currentPagesElt.selectedIndex = (this.currentPage-1);
 		},
+		
+		//Generic function used to fire events
+		_fire: function(evt, args){
+			if(this[evt]){
+				this[evt].apply(this, (args||[]));
+			}
+		},
 			
 		gotoPage: function(/*Number*/ pageNum) {
 			if( pageNum == this.currentPage ){
@@ -440,37 +456,53 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 				//TODO: logic based on classes that are set (could do by checking TableData
 				if( dojo.html.hasClass(headers[i], "sortable") ){
 					if( targetHeaderCell == headers[i] ){
-					
+						/*
+						 * Update the UI and fire event for sort
+						 */
+						
 						//Patrick:  This is the column index we're sorting.
 						//This might not be ideal though once we allow rearranging of columns
 						var columnIndex = i;
-						if (this.showrowindex)
+						if (this.showrowindex){
 							columnIndex--;		//subtract 1 to account for the 'fake' row index column
-					
+						}
 						//TODO: Publish sort event
 						if( dojo.html.hasClass(headers[i], "sorted_up") ){
 							dojo.html.replaceClass(headers[i], "sorted_down", "sorted_up");
 							
 							//TODO: do the sort - Patrick:  Added some sort code
-							this.tableData.sortByColumnIndex(columnIndex, "UP"); //TODO:  Make UP/DOWN a constant
+							//calling the sort through event
+							this._fire( "sort", [ columnIndex, "DOWN" ] ); 
+							//this.tableData.sortByColumnIndex(columnIndex, "UP"); //TODO:  Make UP/DOWN a constant
 						}else if( dojo.html.hasClass(headers[i], "sortable") ){
 							dojo.html.replaceClass(headers[i], "sorted_up", "sorted_down");
 							//TODO: do the sort - Patrick:  Added some sort code
-							this.tableData.sortByColumnIndex(columnIndex, "DOWN"); //TODO:  Make UP/DOWN a constant
+							//calling the sort through event
+							this._fire( "sort", [ columnIndex, "UP" ] ); 
+							//this.tableData.sortByColumnIndex(columnIndex, "DOWN"); //TODO:  Make UP/DOWN a constant
 						}else{
 							dojo.html.addClass(headers[i], "sorted_up");
 							//TODO: do the sort - Patrick:  Added some sort code
-							this.tableData.sortByColumnIndex(columnIndex, "UP"); //TODO:  Make UP/DOWN a constant
+							//calling the sort through event
+							this._fire( "sort", [ columnIndex, "UP" ] ); 
+							//this.tableData.sortByColumnIndex(columnIndex, "UP"); //TODO:  Make UP/DOWN a constant
 						}
 					}else{
 						//remove the sorted classes
 						dojo.html.removeClass( headers[i], "sorted_", true );
 					}
+					
 				}		
 			}
 			
 			//TODO:  Patrick:  This is another thing we have to work on.  Should the table automatically refresh or wait for a signal?
 			this.refresh();	
+		},
+		
+		//Sort Event (listeners must connect to this)
+		sort: function( /*Number*/ colIndex, /*String*/ sortDirection ){
+		
+			dojo.debug( "Datagrid: SORT EVENT FIRED (colIndex:<"+colIndex+">, sortDirection:<"+sortDirection+">)" );
 		},
 	
 		drawTableCell: function(row, column, node) {
@@ -521,34 +553,38 @@ dojo.widget.defineWidget("dojo.widget.DataGrid",
 				//node.appendChild(inline.domNode);
 			} else {
 				//node.appendChild(document.createTextNode(this.tableData.getValue(row,column)));
-				var binder = this.tableData.bind(row, column, node,"innerHTML");
+				binder = this.tableData.bind(row, column, node,"innerHTML");
 	
 			}
 		},
 	
 		dataBind: function () {
 	//TODO: Replace with unique id util			
-			if (this.id == "" || this.id == null){
+			if (this.id === "" || this.id === null){
 				this.id = this.widgetId;
 			}
 			var model = this.getDataProvider();
-			if (model == null){
+			if (model === null){
 				return;
 			}
 			//TODO:  This is specific to an XML table model.  Perhaps we should use a more generic fetchArray like we have in the Dojo provider class
 			// THIS SHOULD BE MOVED INTO THE CONTROLLER.  Widget events, such as requestData or requestInitialData should be 
 			// caught and handled in the controller, to perform the binding in a provider-implementation specific way.
 			this.instance = model.fetchData(this.bindTo);
-			if (this.instance == null){
+			if (this.instance === null){
 				return;	
 			}
-			this.tableData = model.getDataGridController(); 	
+			this.tableData = model.getDataGridController();
+			
+			//GINO: TEMPORARY CODE TO HOOK EVENTS BETWEEN VIEW AND CONTROLLER
+			dojo.event.connect( this, "sort", this.tableData, "sortByColumnIndex" );
+			
 			this.tableData.load(this.instance);
 			return;			
 		},
 	
 		getDataProvider: function (){
-			if ((this.model == null) && (this.bindData != "")) {
+			if ((this.model === null) && (this.bindData !== "")) {
 			//TODO: Replaced with widget lookup--check about scoped lookup, rather than using widgetId
 			//	var prefix = (this.scopeName) ? this.scopeName : this.domNode.tagName.substring(0,this.domNode.tagName.indexOf(":")); 
 			//  Look for a model element at document level, depth first search of each document child element

@@ -1,6 +1,6 @@
 dojo.provide("dojo.data.js.ArrayDataProvider");
 dojo.require("dojo.io.*");
-dojo.require("dojo.data.js.ArrayTableController");
+dojo.require("dojo.data.js.DataGridArrayController");
 dojo.require("dojo.data.DataProvider");
 
 //TODO:  If a user tries to update a dynamic attribute, we should send an error
@@ -48,5 +48,5 @@ dojo.data.js.ArrayDataProvider.prototype.fetchArray = function(query) {
 
 dojo.data.js.ArrayDataProvider.prototype.getTableAdapter = function() {
 
-	return new dojo.data.js.ArrayTableController();
+	return new dojo.data.js.DataGridArrayController();
 }
