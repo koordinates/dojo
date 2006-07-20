@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>What's new in TreeV3</title>
+    
+    
+    <itemizedlist>
+        <listitem>New HTML/CSS structure, lightweight and easier to style</listitem>
+        <listitem>Code rewritten completely, event system changed</listitem>
+        <listitem>Multiline content support</listitem>        
+        <listitem>Add TreeDocIcon extension instead of builtin childIcon support</listitem>
+        <listitem>New extensions model with examples and out-of-the box ready extensions</listitem>
+        <listitem>classPrefix property allows different trees be styled with different CSS class families</listitem>
+        <listitem>Design is moved to CSS completely. A bunch of classes was introduced to reflect TreeNode state</listitem>
+        <listitem>Implicit helper widget creations were removed. Now you need to create/assigns them explicitly with JS or markup.</listitem>
+        <listitem>Many features were moved from core into extensions</listitem>
+        <listitem>Lazy creation feature allows to create graphical widgets from node data only when they need to be shown</listitem>
+        <listitem>Major speedup</listitem>
+
+    </itemizedlist>
+    
+    
+</section>

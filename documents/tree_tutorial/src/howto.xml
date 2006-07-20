@@ -10,7 +10,12 @@
         </para>
         
     </section>
-    
+  
+    <section>
+        <title>Add custom properties to tree</title>
+        
+        <para>There is an "objectId" property and "object" property ready to be filled in from markup or program-way.</para>
+    </section>
 
 </section>
 

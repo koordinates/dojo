@@ -64,16 +64,15 @@ The topic registry
 		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
 	}
 
-"docFunctionDetail":
+"/doc/function/detail":
 	publisher: dojo.doc
-	subscriber: any widget that wishes to be aware of a selection's details
+	subscriber: Any widget that wishes to be aware of a selection's details
 	message:
 			selectKey: id indentifying selection
 			pkg: The package of the function
 			name: The function name
 			id: If this has a polymorphic ID, here it is
 			meta: object of the metadata (as shown in the meta JSON object),
-			src: source
 			doc: docs (TBD: Things like parameter descriptions, extended description, return description)
 			sig: Function signature
 
@@ -86,13 +85,13 @@ and expect proper results
 Topic Registry
 --------------
 
-dojo.event.topic.registerPublisher("docSearch");  	
-dojo.event.topic.registerPublisher("docResults");  	
-dojo.event.topic.registerPublisher("docSelectFunction");  	
-dojo.event.topic.registerPublisher("docFunctionDetail");  	
+dojo.event.topic.registerPublisher("/doc/search");  	
+dojo.event.topic.registerPublisher("/doc/results");  	
+dojo.event.topic.registerPublisher("/doc/function/select");  	
+dojo.event.topic.registerPublisher("/doc/function/details");  	
 
-dojo.event.topic.subscribe("docSearch", dojo.doc, "_onDocSearch");
-dojo.event.topic.subscribe("docSelectFunction", dojo.doc, "_onDocSelectFunction");
+dojo.event.topic.subscribe("/doc/search", dojo.doc, "_onDocSearch");
+dojo.event.topic.subscribe("/doc/function/select", dojo.doc, "_onDocSelectFunction");
 
 In the init of an application that uses dojo.doc and some widgets:
 

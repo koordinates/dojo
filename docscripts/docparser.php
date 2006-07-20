@@ -33,7 +33,8 @@ foreach ($files as $file) {
             $items = $value->getAll();
             foreach ($items as $item) {
               if ($item instanceof DojoString) {
-                $output[$package->getPackageName()][$package->getPackageName() . '._']['_']['meta']['requires'][$key][] = $item->getValue();
+                $output[$package->getPackageName() . '._']['meta']['requires'][$key][] = $item->getValue();
+								$output['function_names'][$package->getPackageName() . '._'] = array();
               }
             }
           }

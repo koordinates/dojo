@@ -2,8 +2,8 @@ var buildUtil = {};
 buildUtil.getDependencyList = function(dependencies, hostenvType) {
 
 	djConfig = {
-		baseRelativePath: "../",
-		// isDebug: true
+		baseRelativePath: "../"
+		// ,isDebug: true
 	};
 	
 	if(!dependencies){
@@ -59,8 +59,6 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 	
 	dojo.hostenv.loadedUris.push("../src/bootstrap2.js");
 	
-	dojo.hostenv.loadedUris.push("../src/namespace.js");
-	
 	if(dependencies["prefixes"]){
 		var tmp = dependencies.prefixes;
 		for(var x=0; x<tmp.length; x++){
@@ -109,7 +107,7 @@ buildUtil.getDependencyList = function(dependencies, hostenvType) {
 		var deps = [];
 		var tmp;
 		RegExp.lastIndex = 0;
-		var testExp = /dojo.(hostenv.loadModule|hosetnv.require|require|kwCompoundRequire|hostenv.conditionalLoadModule|hostenv.startPackage|provide)\([\w\W]*?\)/mg;
+		var testExp = /dojo.(hostenv.loadModule|hostenv.require|require|kwCompoundRequire|hostenv.conditionalLoadModule|hostenv.startPackage|provide)\([\w\W]*?\)/mg;
 		while((tmp = testExp.exec(contents)) != null){
 			deps.push(tmp[0]);
 		}
