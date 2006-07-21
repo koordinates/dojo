@@ -35,27 +35,68 @@ class DojoPackage extends Dojo
   {
   }
   
+	protected function getLines()
+	{
+		return $this->removeDiscoveredCode($this->code);
+	}
+	
+	protected function grepLines($lines)
+	{
+		return preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\()%', $lines);
+	}
+	
+	protected function lineMatches($line)
+	{
+		if (preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*(?:(new)\s*)?function\s*\()%', $line, $match)) {
+			return $match;
+		}
+		return false;
+	}
+	
+	protected function shouldSkipFunction($function_name)
+	{
+	  return strpos($function_name, 'this.') === 0;
+	}
+	
+	protected function reName($function_name)
+	{
+	  return $function_name;
+	}
+
   public function getFunctionDeclarations()
   {
     $in_function = array();
-    $lines = $this->removeDiscoveredCode($this->code);
+    $lines = $this->getLines();
     
-    $matches = preg_grep('%(\bfunction\s+[a-zA-Z0-9_.$]+\b\s*\(|\b[a-zA-Z0-9_.$]+\s*=\s*function\s*\()%', $lines);
+    $matches = $this->grepLines($lines);
     foreach (array_keys($matches) as $start_line_number) {
       if (in_array($start_line_number, $in_function)) continue;
       $line = $lines[$start_line_number];
-      if(!preg_match('%(?:\bfunction\s+([a-zA-Z0-9_.$]+)\b\s*\(|\b([a-zA-Z0-9_.$]+)\s*=\s*function\s*\()%', $line, $match)) {
+			$match = $this->lineMatches($line);
+      if(!$match) {
         continue;
       }
-      $function_name = $match[1] . $match[2];
-      if (strpos($function_name, 'this.') === 0) {
+      
+      if ($keys = array_keys($match, 'new')) {
+        unset($match[$keys[0]]);
+        $anonymous = true;
+      }
+      
+      $function_name = implode(array_slice($match, 1));
+      if ($this->shouldSkipFunction($line)) {
         continue;
       }
       if (($pos = strpos($function_name, '.prototype.')) !== false) {
         $prototype = substr($function_name, 0, $pos);
         $function_name = str_replace('.prototype.', '.', $function_name);
       }
-      $function = new DojoFunctionDeclare($this->source, $lines, $this->package_name, $this->compressed_package_name, $function_name);
+      
+      $function_name = $this->reName($function_name);
+      
+      $function = new DojoFunctionDeclare($this->source, $this->code, $this->package_name, $this->compressed_package_name, $function_name);
+      if ($anonymous) {
+        $function->setAnonymous(true);
+      }
       $function->setStart($start_line_number, strpos($line, $match[0]));
       $function->setParameterStart($start_line_number, strpos($line, '('));
       if ($prototype) {
@@ -64,10 +105,10 @@ class DojoPackage extends Dojo
 
       $content_start = false; // For content start
       $parameter_end = false; // For parameter end
-      
+
       $balance = 0;
 
-      for ($line_number = $start_line_number; $line_number < count($lines); $line_number++) {
+      for ($line_number = $start_line_number; $lines[$line_number] !== false; $line_number++) {
         $in_function[] = $line_number; // No inner function declarations
         $line = $lines[$line_number];
         if (trim($line) == '') {
@@ -97,7 +138,10 @@ class DojoPackage extends Dojo
               if (!$balance) {
                 $function->setContentEnd($line_number, $char_pos);
                 $function->setEnd($line_number, $char_pos);
-                $this->functions[] = $function;
+                if (!$function->isAnonymous()) {
+                  $this->functions[] = $function;
+                }
+								$this->functions = array_merge($this->functions, $function->getFunctionDeclarations());
                 unset($function);
                 continue 3;
               }
@@ -150,7 +194,7 @@ class DojoPackage extends Dojo
           }
 
           if (isset($start)) {
-            $chars = array_slice($chars, $start);
+            $chars = array_slice($chars, $start, strlen($line), true);
           }
           unset($start);
 
@@ -228,6 +272,11 @@ class DojoPackage extends Dojo
         }
       }
       
+      preg_match_all('%(?:"(.*)(?<!\\\\)"' . "|'(.*)(?<!\\\\)')%U", $line, $matches);
+      foreach (array_merge($matches[1], $matches[2]) as $match) {
+        $line = $this->blankOut($match, $line);
+      }
+      
       preg_match_all('%/\*.*\*/%U', $line, $matches);
       foreach ($matches[0] as $match) {
         $line = $this->blankOut($match, $line);
@@ -240,11 +289,6 @@ class DojoPackage extends Dojo
           }
           $line = $this->blankOut($match[0], $line);
         }
-      }
-      
-      preg_match_all('%(?:"(.*)(?<!\\")"|\'(.*)(?<!\\\')\')%U', $line, $matches);
-      foreach ($matches[1] as $match) {
-        $line = $this->blankOut($match, $line);
       }
       
       $lines[$line_number] = $line;
