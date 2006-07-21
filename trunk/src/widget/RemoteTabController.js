@@ -15,12 +15,11 @@ dojo.widget.defineWidget(
 		initializer: function() {
 			//summary
 			//Initialize Remote Tab Controller
-
 			// for passing in as a parameter
 			this.tabContainer = "";
 
 			// the reference to the tab container
-			this._tabContainer="";
+			this._tabContainer={};
 
 			//hash of tabs
 			this.tabs = {}; 
@@ -36,13 +35,11 @@ dojo.widget.defineWidget(
 
 			dojo.html.addClass(this.domNode, this.class);
 
-			if (this.tabContainer != "") {
+			if (this.tabContainer) {
 				dojo.addOnLoad(dojo.lang.hitch(this, function() {
 					this.setTabContainer(dojo.widget.byId(this.tabContainer));
 				}));
 			}
-
-			
 		},
 
 		setTabContainer: function(/* dojo.widget.TabContainer */ tabContainer) {
