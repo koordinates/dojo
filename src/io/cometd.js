@@ -10,7 +10,8 @@ dojo.require("dojo.io.IframeIO");
 dojo.require("dojo.io.ScriptSrcIO"); // for x-domain long polling
 dojo.require("dojo.io.cookie"); // for peering
 dojo.require("dojo.event.*");
-dojo.require("dojo.lang.*");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.lang.func");
 
 /*
  * this file defines Comet protocol client. Actual message transport is
@@ -51,6 +52,8 @@ cometd = new function(){
 	}
 
 	this.init = function(props, root, bargs){
+		// FIXME: if the root isn't from the same host, we should automatically
+		// try to select an XD-capable transport
 		props = props||{};
 		// go ask the short bus server what we can support
 		props.version = this.version;
@@ -74,7 +77,9 @@ cometd = new function(){
 			load: dojo.lang.hitch(this, "finishInit"),
 			content: { "message": dojo.json.serialize(props) }
 		};
-		dojo.lang.mixin(bindArgs, bargs);
+		if(bargs){
+			dojo.lang.mixin(bindArgs, bargs);
+		}
 		return dojo.io.bind(bindArgs);
 	}
 
