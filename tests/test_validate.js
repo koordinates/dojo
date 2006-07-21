@@ -214,12 +214,12 @@ function test_validate_isInteger(){
 	jum.assertTrue("test19", dojo.validate.isInteger( '100.000.000', {separator: "."} ));
 	jum.assertFalse("test20", dojo.validate.isInteger('10.000.000.000', {} ));
 	jum.assertTrue("test21", dojo.validate.isInteger( '10,000,000', {separator: ["", ","]} ));
-	jum.assertTrue("test21", dojo.validate.isInteger( '10000000', {separator: ["", ","]} ));
-	jum.assertFalse("test21", dojo.validate.isInteger( '10.000.000', {separator: ["", ","]} ));
+	jum.assertTrue("test22", dojo.validate.isInteger( '10000000', {separator: ["", ","]} ));
+	jum.assertFalse("test23", dojo.validate.isInteger( '10.000.000', {separator: ["", ","]} ));
 
 	//test sign
-	jum.assertFalse("test21", dojo.validate.isInteger( '+10000000', {signed: false} ));
-	jum.assertFalse("test22", dojo.validate.isInteger( '10000000', {signed: true} ));
+	jum.assertFalse("test24", dojo.validate.isInteger( '+10000000', {signed: false} ));
+	jum.assertFalse("test25", dojo.validate.isInteger( '10000000', {signed: true} ));
 }
 
 function test_validate_isRealNumber(){
