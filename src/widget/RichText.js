@@ -1046,7 +1046,7 @@ dojo.widget.defineWidget(
 				// select our link and unlink
 				var range = document.createRange();
 				var a = this.getSelectedNode();
-				while(a.nodeName != "A"){ a = a.parentNode; }
+				while(a.nodeName.toLowerCase() != "a"){ a = a.parentNode; }
 				range.selectNode(a);
 				selection.removeAllRanges();
 				selection.addRange(range);
@@ -1096,8 +1096,10 @@ dojo.widget.defineWidget(
 				if(dojo.render.html.moz){
 					this.document = this.iframe.contentWindow.document
 				}
-				returnValue = this.document.execCommand(command, false, argument);
 
+				if(argument || command!="createlink") {
+					returnValue = this.document.execCommand(command, false, argument);
+				}
 				// try{
 				// }catch(e){
 				// 	dojo.debug(e);
