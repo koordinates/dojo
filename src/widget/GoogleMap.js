@@ -92,7 +92,7 @@ dojo.widget.defineWidget(
 	plotAddress:function(address){
 		var self=this;
 		this.geocoder.getLocations(address, function(response){
-			if(!response || response.Status.code != 200{
+			if(!response || response.Status.code != 200){
 				alert("The address \"" + address + "\" was not found.");
 				return;
 			}
