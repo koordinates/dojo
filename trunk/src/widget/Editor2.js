@@ -43,10 +43,15 @@ dojo.widget.defineWidget(
 				var tbOpts = {};
 				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/HtmlEditorToolbarOneline.html";
 				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
-				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
-										tbOpts, this.domNode, "before");
-				dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
-				this.toolbarWidget.hideUnusableButtons(this);
+				if(this.toolbarWidget){
+					this.toolbarWidget.show();
+				}else{
+					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
+											tbOpts, this.domNode, "before");
+					dojo.event.connect(this, "close", this.toolbarWidget, "hide");
+					dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
+					this.toolbarWidget.hideUnusableButtons(this);
+				}
 
 				if(this.object){
 					this.tbBgIframe = new dojo.html.BackgroundIframe(this.toolbarWidget.domNode);
@@ -326,7 +331,6 @@ dojo.widget.defineWidget(
 				return false;
 			}
 		},
-
 
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?

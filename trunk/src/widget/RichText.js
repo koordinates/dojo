@@ -1216,7 +1216,9 @@ dojo.widget.defineWidget(
 		},
 
 		replaceEditorContent: function(html){
-			if(this.window.getSelection){
+			if(this.isClosed){
+				this.domNode.innerHTML = html;
+			}else if(this.window.getSelection){
 				var selection = this.window.getSelection;
 				// if(selection.removeAllRanges){ // Mozilla			
 				if(dojo.render.html.moz){ // Mozilla			
