@@ -1,6 +1,8 @@
 dojo.provide("dojo.i18n.currency");
 
 dojo.require("dojo.experimental");
+dojo.experimental("dojo.i18n.currency");
+
 dojo.require("dojo.regexp");
 dojo.require("dojo.i18n.common");
 dojo.require("dojo.i18n.number");
@@ -11,7 +13,7 @@ dojo.require("dojo.lang.common");
 *
 * @param Number value
 *	The number to be formatted and validated.
-  @param String iso the ISO 4217 currency code
+* @param String iso the ISO 4217 currency code
 * @param Object flags
 *   flags.places The number of decimal places to be included in the formatted number
 * @param String locale the locale to determine formatting used.  By default, the locale defined by the
@@ -139,6 +141,7 @@ dojo.i18n.currency.isCurrency = function(value, iso, locale /*optional*/, flags)
 
 	var formatData = dojo.i18n.currency._mapToLocalizedFormatData(dojo.i18n.currency.FORMAT_TABLE, iso, locale);
 	if (typeof flags.places == "undefined") {flags.places = formatData.places;}
+	if (typeof flags.places == "undefined") {flags.places = 2;}
 	if (typeof flags.symbol == "undefined") {flags.symbol = formatData.symbol;}
 	else if (dojo.lang.isArray(flags.symbol) && flags.symbol.length == 0){flags.symbol = [formatData.symbol,""];}
 	if (typeof flags.placement == "undefined") {flags.placement = formatData.placement;}

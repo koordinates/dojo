@@ -1,6 +1,8 @@
 dojo.provide("dojo.i18n.number");
 
 dojo.require("dojo.experimental");
+dojo.experimental("dojo.i18n.number");
+
 dojo.require("dojo.regexp");
 dojo.require("dojo.i18n.common");
 dojo.require("dojo.lang.common");
@@ -122,7 +124,9 @@ dojo.i18n.number.isInteger = function(value, locale /*optional*/, flags /*option
 
 	var formatData = dojo.i18n.number._mapToLocalizedFormatData(dojo.i18n.number.FORMAT_TABLE, locale);
 	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
-	else if (dojo.lang.isArray(flags.separator)){flags.separator = [formatData[1],""];}
+	else if (dojo.lang.isArray(flags.separator) && flags.separator.length ===0){
+		flags.separator = [formatData[1],""];
+	}
 	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
 	if (typeof flags.groupSize2 == "undefined") {flags.groupSize2 = formatData[4];}
 
@@ -153,6 +157,9 @@ dojo.i18n.number.isReal = function(value, locale /*optional*/, flags /*optional*
 
 	var formatData = dojo.i18n.number._mapToLocalizedFormatData(dojo.i18n.number.FORMAT_TABLE, locale);
 	if (typeof flags.separator == "undefined") {flags.separator = formatData[1];}
+	else if (dojo.lang.isArray(flags.separator) && flags.separator.length ===0){
+		flags.separator = [formatData[1],""];
+	}
 	if (typeof flags.decimal == "undefined") {flags.decimal = formatData[2];}
 	if (typeof flags.groupSize == "undefined") {flags.groupSize = formatData[3];}
 	if (typeof flags.groupSize2 == "undefined") {flags.groupSize2 = formatData[4];}
@@ -167,6 +174,8 @@ dojo.i18n.number.isReal = function(value, locale /*optional*/, flags /*optional*
 // does it make sense to look by country code most of the time (wildcard match on
 // language, except where it's relevant) and provide default country when only
 // a language is given?
+(function() {
+
 dojo.i18n.number.FORMAT_TABLE = {
 	//0: thousand seperator for monetary, 1: thousand seperator for number, 2: decimal seperator, 3: group size, 4: second group size because of india
 	'ar-ae': ["","", ",", 1],
@@ -189,7 +198,7 @@ dojo.i18n.number.FORMAT_TABLE = {
 	'de-de': [".",".", ",", 3],
 	'de-lu': [".",".", ",", 3],
 	//IBM JSL defect 51278. right now we have problem with single quote. //IBM: explain?
-	'de-ch': ["'","'", ".", 3],
+	'de-ch': ["'","'", ".", 3], //Q: comma as decimal separator for currency??
 	//'de-ch': [".",".", ",", 3],
 	'el-gr': [".",".", ",", 3],
 	'en-au': [",",",", ".", 3],
@@ -258,8 +267,10 @@ dojo.i18n.number.FORMAT_TABLE = {
 	
 	'zh-cn': [",",",", ".", 3],
 	'zh-hk': [",",",",".", 3],
-	'zh-tw': [",", ",",".", 3]
+	'zh-tw': [",", ",",".", 3],
+	'*': [",",",", ".", 3]
 };
+})();
 
 dojo.i18n.number._mapToLocalizedFormatData = function(table, locale){
 	locale = dojo.normalizeLocale(locale);
