@@ -16,7 +16,8 @@
     &whatsnew;
     &todo;
     
-    <important>The rest of the document is draft and may be outdated</important>
+        
+    <important>The rest of the document is draft and may be outdated. Lazy loading &amp; RPC stuff is not ready yet.</important>
     
     &performance;
     &performance_tricks;

@@ -158,6 +158,11 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		if (accepts && this.treeNode.isFolder && !this.treeNode.isExpanded) {
 			this.setAutoExpandTimer();
 		}
+		
+		if (accepts) {
+			this.cacheNodeCoords();
+		}
+
 
 		return accepts;
 	},
@@ -269,15 +274,21 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	},
 
 
+	cacheNodeCoords: function() {
+		var node = this.treeNode.contentNode;
+		
+		this.cachedNodeY = dojo.html.getAbsolutePosition(node).y;
+		this.cachedNodeHeight = dojo.html.getBorderBox(node).height;
+	},
+	
+	
+
 	/* get DNDMode and see which position e fits */
 	getPosition: function(e, DNDMode) {
-		node = dojo.byId(this.treeNode.contentNode);
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
-		var nodey = dojo.html.getAbsolutePosition(node).y;
-		var height = dojo.html.getBorderBox(node).height;
-
-		var relY = mousey - nodey;
-		var p = relY / height;
+		
+		var relY = mousey - this.cachedNodeY;
+		var p = relY / this.cachedNodeHeight;
 
 		var position = ""; // "" <=> forbidden
 		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO

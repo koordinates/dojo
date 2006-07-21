@@ -16,6 +16,22 @@
         <listitem>Optimize all gifs with AGO carefully. AGO spoils transparent gifs sometimes</listitem>        
         <listitem>Need a way to inform user about finishing of expandToLevel or expansion from indices operations, that may involve async &amp; loading features</listitem>
         <listitem>Make SortChildren extension to keep nodes sorted</listitem>
+        <listitem>Solve use case<literallayout>
+            I have a tree where each level has the same 'type'. Example:
+            
+            typea
+            ----- typeb
+            ---------- typec
+            ---------- typec
+            ---------- typec
+            ----- typeb
+            ----- typeb
+            ---------- typec
+            ---------- typec
+            ----- typeb
+            
+            I want to be able to dnd (between) only for the same type for subtrees. The examples I have (DnD nodes within a tree or between two trees) doesn't seem to help.
+        </literallayout></listitem>
     </itemizedlist>
     
     

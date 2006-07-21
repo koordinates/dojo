@@ -49,7 +49,7 @@
         </para>
         
         <para>You can create tree on server, JSON-serialize it and put to HTML, that is gzip-compressed.
-            Compression will be 10 times or more, so it is not that space hungry. 
+            Compression will be 6 times or more, so it is not that space hungry. 
         </para>
         
         <para>The benefit comes from postponing almost all real job: widget creation and attaching it to tree will
