@@ -489,7 +489,9 @@ dojo.widget.defineWidget(
 			// dont like browser sniffs implementations but sometimes you have to use it
 			if(dojo.render.html.ie || dojo.render.html.mozilla){
 				// IE, mozilla
-				node.scrollIntoView(false);	
+				if(node){
+					node.scrollIntoView(false);	
+				}
 			}else{
 				var parentBottom = parent.scrollTop + dojo.html.getBorderBox(parent).height;
 				var nodeBottom = node.offsetTop + dojo.html.getMarginBox(node).height;
