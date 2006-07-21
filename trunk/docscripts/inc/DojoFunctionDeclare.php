@@ -14,6 +14,7 @@ class DojoFunctionDeclare extends DojoFunction
   protected $this_inheritance_calls = array();
   protected $comment_block_start = false;
   protected $comment_block_end = false;
+  protected $anonymous = false;
 
   public function __construct(&$source, &$code, $package_name, $compressed_package_name, $function_name = false)
   {
@@ -60,6 +61,16 @@ class DojoFunctionDeclare extends DojoFunction
   public function getFunctionName()
   {
     return $this->function_name;
+  }
+  
+  public function setAnonymous($anonymous)
+  {
+    $this->anonymous = $anonymous;
+  }
+  
+  public function isAnonymous()
+  {
+    return $this->anonymous;
   }
 
   /**
@@ -401,6 +412,34 @@ class DojoFunctionDeclare extends DojoFunction
     
     return implode("\n", $lines);
   }
+  
+  protected function getLines()
+	{
+		return $this->chop($this->code, $this->content_start[0], $this->content_start[1], $this->content_end[0], $this->content_end[1], true);
+	}
+	
+	protected function grepLines($lines)
+	{
+		return preg_grep('%\bthis\.[a-zA-Z0-9_.$]+\s*=\s*(new\s*)?function\s*\(%', $lines);
+	}
+	
+	protected function lineMatches($line)
+	{
+		if (preg_match('%\bthis\.([a-zA-Z0-9_.$]+)\s*=\s*(?:new\s*)?function\s*\(%', $line, $match)) {
+			return $match;
+		}
+		return false;
+	}
+	
+	protected function shouldSkipFunction($function_name)
+	{
+	  return false;
+	}
+	
+	protected function reName($function_name)
+	{
+	  return $this->function_name . '.' . $function_name;
+	}
 }
 
 ?>

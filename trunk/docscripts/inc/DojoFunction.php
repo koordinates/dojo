@@ -1,9 +1,9 @@
 <?php
 
-require_once('Dojo.php');
+require_once('DojoPackage.php');
 require_once('DojoParameter.php');
 
-class DojoFunction extends Dojo
+class DojoFunction extends DojoPackage
 {
   protected $start = array(0, 0);
   protected $end = array(0, 0);
