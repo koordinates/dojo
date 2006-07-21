@@ -11,7 +11,6 @@ dojo.animation.Timer = function(/*int*/ interval){
 
 	this.onStart = null;
 	this.onStop = null;
-
 };
 
 dojo.lang.extend(dojo.animation.Timer, {
@@ -24,7 +23,7 @@ dojo.lang.extend(dojo.animation.Timer, {
 		// interval: New interval, in milliseconds.
 		if (this.isRunning) dj_global.clearInterval(this.timer);
 		this.interval = interval;
-		if (this.isRunning) this.timer = djglobal.setInterval(dojo.lang.hitch(this, "onTick"), this.interval);
+		if (this.isRunning) this.timer = dj_global.setInterval(dojo.lang.hitch(this, "onTick"), this.interval);
 	},
 	
 	start : function(){
