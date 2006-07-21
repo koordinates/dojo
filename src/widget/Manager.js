@@ -58,13 +58,21 @@ dojo.widget.manager = new function(){
 	// FIXME: we should never allow removal of the root widget until all others
 	// are removed!
 	this.remove = function(widgetIndex){
-		var tw = this.widgets[widgetIndex].widgetId;
-		delete this.widgetIds[tw];
-		this.widgets.splice(widgetIndex, 1);
+		if(dojo.lang.isNumber(widgetIndex)){
+			var tw = this.widgets[widgetIndex].widgetId;
+			delete this.widgetIds[tw];
+			this.widgets.splice(widgetIndex, 1);
+		}else{
+			this.removeById(widgetIndex);
+		}
 	}
 	
 	// FIXME: suboptimal performance
 	this.removeById = function(id) {
+		if(!dojo.lang.isString(id)){
+			id = id["widgetId"];
+			if(!id){ dojo.debug("invalid widget or id passed to removeById"); return; }
+		}
 		for (var i=0; i<this.widgets.length; i++){
 			if(this.widgets[i].widgetId == id){
 				this.remove(i);
@@ -74,7 +82,10 @@ dojo.widget.manager = new function(){
 	}
 
 	this.getWidgetById = function(id){
-		return this.widgetIds[id];
+		if(dojo.lang.isString(id)){
+			return this.widgetIds[id];
+		}
+		return id;
 	}
 
 	this.getWidgetsByType = function(type){
