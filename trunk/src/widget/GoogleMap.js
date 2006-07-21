@@ -57,8 +57,8 @@ dojo.widget.defineWidget(
 			smallmap:GSmallMapControl,
 			smallzoom:GSmallZoomControl,
 			scale:GScaleControl,
-			maptype:GMapTypeControl/*,
-			overview:GOverviewControl*/
+			maptype:GMapTypeControl,
+			overview:GOverviewMapControl
 		};
 		for(var i=0; i<this.controls.length; i++){
 			this.map.addControl(new (methodmap[this.controls[i].toLowerCase()])());
