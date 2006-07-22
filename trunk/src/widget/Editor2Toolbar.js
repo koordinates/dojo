@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.Editor2Toolbar");
-dojo.provide("dojo.widget.html.Editor2Toolbar");
 
 dojo.require("dojo.lang.*");
 dojo.require("dojo.widget.*");
@@ -10,7 +9,7 @@ dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.ColorPalette");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Editor2Toolbar",
+	"dojo.widget.Editor2Toolbar",
 	dojo.widget.HtmlWidget,
 	{
 		commandList: [ "bold", "italic", "underline", "subscript", "superscript",
@@ -244,7 +243,7 @@ dojo.widget.defineWidget(
 		exec: function(what, arg){ /* dojo.debug(what, new Date()); */ },
 
 		hideUnusableButtons: function(obj){
-			var op = obj||dojo.widget.html.RichText.prototype;
+			var op = obj||dojo.widget.RichText.prototype;
 			dojo.lang.forEach(this.commandList,
 				function(cmd){
 					if(this[cmd+"Button"]){

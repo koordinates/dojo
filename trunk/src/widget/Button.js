@@ -1,9 +1,7 @@
 dojo.provide("dojo.widget.Button");
-dojo.provide("dojo.widget.html.Button");
+dojo.provide("dojo.widget.Button");
 dojo.provide("dojo.widget.ComboButton");
-dojo.provide("dojo.widget.html.ComboButton");
 dojo.provide("dojo.widget.DropDownButton");
-dojo.provide("dojo.widget.html.DropDownButton");
 
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.html.*");
@@ -12,7 +10,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Button",
+	"dojo.widget.Button",
 	dojo.widget.HtmlWidget,
 	{
 		isContainer: true,
@@ -158,8 +156,8 @@ dojo.widget.defineWidget(
 
 /**** DropDownButton - push the button and a menu shows up *****/
 dojo.widget.defineWidget(
-	"dojo.widget.html.DropDownButton",
-	dojo.widget.html.Button,
+	"dojo.widget.DropDownButton",
+	dojo.widget.Button,
 	{
 		menuId: "",
 
@@ -169,7 +167,7 @@ dojo.widget.defineWidget(
 		disabledDownArrow: "src/widget/templates/images/whiteDownArrow.gif",
 	
 		fillInTemplate: function(args, frag){
-			dojo.widget.html.DropDownButton.superclass.fillInTemplate.call(this, args, frag);
+			dojo.widget.DropDownButton.superclass.fillInTemplate.call(this, args, frag);
 	
 			this.arrow = document.createElement("img");
 			dojo.html.setClass(this.arrow, "downArrow");
@@ -180,7 +178,7 @@ dojo.widget.defineWidget(
 			this.arrow.src = dojo.uri.dojoUri(this.disabled ? this.disabledDownArrow : this.downArrow);
 			this.containerNode.appendChild(this.arrow);
 
-			dojo.widget.html.DropDownButton.superclass.sizeMyselfHelper.call(this);
+			dojo.widget.DropDownButton.superclass.sizeMyselfHelper.call(this);
 		},
 
 		onClick: function (e){
@@ -190,8 +188,8 @@ dojo.widget.defineWidget(
 
 /**** ComboButton - left side is normal button, right side shows menu *****/
 dojo.widget.defineWidget(
-	"dojo.widget.html.ComboButton",
-	dojo.widget.html.Button,
+	"dojo.widget.ComboButton",
+	dojo.widget.Button,
 	{
 		menuId: "",
 	

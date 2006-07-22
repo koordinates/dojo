@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.Dialog");
-dojo.provide("dojo.widget.html.Dialog");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.ContentPane");
@@ -10,7 +9,7 @@ dojo.require("dojo.html.display");
 dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Dialog",
+	"dojo.widget.Dialog",
 	dojo.widget.ContentPane,
 	{
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDialog.html"),
@@ -140,7 +139,7 @@ dojo.widget.defineWidget(
 			this.setBackgroundOpacity();
 			this.showBackground();
 
-			dojo.widget.html.Dialog.superclass.show.call(this);
+			dojo.widget.Dialog.superclass.show.call(this);
 
 			// FIXME: moz doesn't generate onscroll events for mouse or key scrolling (wtf)
 			// we should create a fake event by polling the scrolltop/scrollleft every X ms.
@@ -198,7 +197,7 @@ dojo.widget.defineWidget(
 			this.bg.style.display = "none";
 			this.bg.style.width = this.bg.style.height = "1px";
 
-			dojo.widget.html.Dialog.superclass.hide.call(this);
+			dojo.widget.Dialog.superclass.hide.call(this);
 
 			if (this._scrollConnected){
 				this._scrollConnected = false;

@@ -1,17 +1,16 @@
 dojo.provide("dojo.widget.ResizeHandle");
-dojo.provide("dojo.widget.html.ResizeHandle");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.event");
 
-dojo.widget.html.ResizeHandle = function(){
+dojo.widget.ResizeHandle = function(){
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.html.ResizeHandle, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.ResizeHandle, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.html.ResizeHandle, {
+dojo.lang.extend(dojo.widget.ResizeHandle, {
 	widgetType: "ResizeHandle",
 
 	isSizing: false,

@@ -3,18 +3,17 @@
 //
 
 dojo.provide("dojo.widget.LayoutContainer");
-dojo.provide("dojo.widget.html.LayoutContainer");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.html.layout");
 
-dojo.widget.html.LayoutContainer = function(){
+dojo.widget.LayoutContainer = function(){
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.html.LayoutContainer, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.LayoutContainer, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.html.LayoutContainer, {
+dojo.lang.extend(dojo.widget.LayoutContainer, {
 	widgetType: "LayoutContainer",
 	isContainer: true,
 
@@ -25,12 +24,12 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
-		dojo.widget.html.LayoutContainer.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.LayoutContainer.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
 		dojo.widget.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	removeChild: function(pane){
-		dojo.widget.html.LayoutContainer.superclass.removeChild.call(this,pane);
+		dojo.widget.LayoutContainer.superclass.removeChild.call(this,pane);
 		dojo.widget.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
@@ -46,7 +45,7 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 		this.domNode.style.display="none";
 		this.domNode.style.visibility="";
 
-		dojo.widget.html.LayoutContainer.superclass.show.call(this);
+		dojo.widget.LayoutContainer.superclass.show.call(this);
 	}
 });
 

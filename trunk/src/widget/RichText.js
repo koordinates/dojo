@@ -1,6 +1,5 @@
  /* -*- tab-width: 4 -*- */
 dojo.provide("dojo.widget.RichText");
-dojo.provide("dojo.widget.html.RichText");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
@@ -15,7 +14,7 @@ try {
 }catch(e){ }
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.RichText",
+	"dojo.widget.RichText",
 	dojo.widget.HtmlWidget,
 	{
 		/** whether to inherit the parent's width or simply use 100% */

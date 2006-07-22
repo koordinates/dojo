@@ -43,7 +43,7 @@ dojo.widget.defineWidget(
 // Collection of widgets in a bar, like Windows task bar
 dojo.widget.defineWidget(
 	"dojo.widget.TaskBar",
-	dojo.widget.html.FloatingPane,
+	dojo.widget.FloatingPane,
 {
 	initializer: function(){
 		this._addChildStack = [];
