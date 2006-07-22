@@ -167,7 +167,7 @@ dojo.widget.TreeWithNode = {
 
 				//dojo.profile.start("setChildren - event "+this);
 
-				dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+				dojo.event.topic.publish(this.tree.eventNames.afterAddChild, message);
 
 				//dojo.profile.end("setChildren - event "+this);
 

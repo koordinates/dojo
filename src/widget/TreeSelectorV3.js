@@ -24,7 +24,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	widgetType: "TreeSelectorV3",
 	selectedNode: null,
 
-	listenTreeEvents: ["addChild","collapse","treeChange", "detach", "treeDestroy"],
+	listenTreeEvents: ["afterAddChild","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
 		
 	
 	eventNamesDefault: {
@@ -66,18 +66,18 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 
 
-	onAddChild: function(message) {
+	onAfterAddChild: function(message) {
 		this.listenNode(message.child);
 	},
 	
 
-	onTreeDestroy: function(message) {
+	onBeforeTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
 	},
 
 
 	// deselect node if ancestor is collapsed
-	onCollapse: function(message) {
+	onAfterCollapse: function(message) {
 		if (!this.selectedNode) return;
 
 		this.deselectIfAncestorMatch(message.source);		
@@ -132,7 +132,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 	
 			
-	onTreeChange: function(message) {
+	onAfterChangeTree: function(message) {
 		
 		
 		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
@@ -153,7 +153,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		
 	},
 
-	onDetach: function(message) {
+	onAfterDetach: function(message) {
 		if (this.selectedNode) {
 			this.deselectIfAncestorMatch(message.child);
 		}

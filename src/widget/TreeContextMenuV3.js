@@ -41,15 +41,15 @@ dojo.lang.extend(dojo.widget.TreeContextMenuV3, {
 		return result;
 	},
 
-	listenTreeEvents: ["treeChange","treeDestroy"],
+	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy"],
 
 
-	onTreeDestroy: function(message) {
+	onBeforeTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
 	},
 
 
-	onTreeChange: function(message) {
+	onAfterChangeTree: function(message) {
 		//dojo.debugShallow(message);
 				
 		            

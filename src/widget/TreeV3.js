@@ -48,19 +48,20 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	eventNamesDefault: {
 
 		// tree created.. Perform tree-wide actions if needed
-		treeCreate: "treeCreate",
-		treeDestroy: "treeDestroy",
-		treeChange: "treeChange",
+		afterTreeCreate: "afterTreeCreate",
+		beforeTreeDestroy: "beforeTreeDestroy",
+		beforeDestroy: "beforeDestroy",
+		afterChangeTree: "afterChangeTree",
 
-		setFolder: "setFolder",
-		unsetFolder: "unsetFolder",
-		moveFrom: "moveFrom",
-		moveTo: "moveTo",
-		addChild: "addChild",
-		detach: "detach",
-		expand: "expand",
+		afterSetFolder: "afterSetFolder",
+		afterUnsetFolder: "afterUnsetFolder",
+		afterMoveFrom: "afterMoveFrom",
+		afterMoveTo: "afterMoveTo",
+		afterAddChild: "afterAddChild",
+		afterDetach: "afterDetach",
+		afterExpand: "afterExpand",
 		
-		collapse: "collapse"
+		afterCollapse: "afterCollapse"
 	},
 
 	classPrefix: "Tree",
@@ -208,7 +209,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	 * publish destruction event so that any listeners should stop listening
 	 */
 	destroy: function() {
-		dojo.event.topic.publish(this.tree.eventNames.treeDestroy, { source: this } );
+		dojo.event.topic.publish(this.tree.eventNames.beforeTreeDestroy, { source: this } );
 
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
@@ -233,6 +234,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		
 		//dojo.debug(this.listeners[1]);
 		
+		
+		
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
 				var t = dojo.widget.manager.getWidgetById(elem);
@@ -243,7 +246,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 				t.listenTree(_this)
 				
 			}
-		);		
+		);
+		
 		
 
 	},
@@ -251,7 +255,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	
 	postCreate: function() {						
-		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
+		dojo.event.topic.publish(this.eventNames.afterTreeCreate, { source: this } );
 	},
 	
 	
@@ -279,8 +283,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		};
 
 		/* publish events here about structural changes for both source and target trees */
-		dojo.event.topic.publish(oldTree.eventNames.moveFrom, message);
-		dojo.event.topic.publish(newTree.eventNames.moveTo, message);
+		dojo.event.topic.publish(oldTree.eventNames.afterMoveFrom, message);
+		dojo.event.topic.publish(newTree.eventNames.afterMoveTo, message);
 
 	},
 
