@@ -5,13 +5,6 @@ dojo.require("dojo.math");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.*");
 
-dojo.widget.YahooMap.Controls={
-	MapType:"maptype",
-	Pan:"pan",
-	ZoomLong:"zoomlong",
-	ZoomShort:"zoomshort"
-};
-
 (function(){
 	var yappid = djConfig["yAppId"]||djConfig["yahooAppId"]||"dojotoolkit";
 	if(!dojo.hostenv.post_load_){
@@ -62,26 +55,17 @@ dojo.widget.defineWidget(
 		return new YGeoPoint(cLat,cLon);
 	},
 	setControls:function(){
+		var methodmap={
+			maptype:"addTypeControl",
+			pan:"addPanControl",
+			zoomlong:"addZoomLong",
+			zoomshort:"addZoomShort"
+		}
 		var c=this.controls;
-		var t=dojo.widget.YahooMap.Controls;
 		for(var i=0; i<c.length; i++){
-			switch(c[i]){
-				case t.MapType:{
-					this.map.addTypeControl();
-					break;
-				}
-				case t.Pan:{
-					this.map.addPanControl();
-					break;
-				}
-				case t.ZoomLong:{
-					this.map.addZoomLong();
-					break;
-				}
-				case t.ZoomShort:{
-					this.map.addZoomShort();
-					break;
-				}
+			var controlMethod=methodmap[c[i].toLowerCase()];
+			if(this.map[controlMethod]){
+				this.map[controlMethod]();
 			}
 		}
 	},
