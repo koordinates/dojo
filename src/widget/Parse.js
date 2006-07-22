@@ -169,7 +169,7 @@ dojo.widget.Parse = function(fragment){
 		for(var x=0; x < this.propertySetsList.length; x++){
 			var cpl = this.propertySetsList[x];
 			var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
-			// FIXME: propertySetId is not in scope here
+			var propertySetId = this.propertySetsList[x]["id"][0].value;
 			if((cpcc)&&(propertySetId == cpcc[0].value)){
 				propertySets.push(cpl);
 			}
