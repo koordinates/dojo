@@ -1,12 +1,11 @@
 dojo.provide("dojo.widget.RemoteTabController");
-dojo.provide("dojo.widget.html.RemoteTabController");
 
 //Summary
 //Remote Tab Controller widget.  Can be located independently of a tab
 //container and control the selection of its tabs
 
 dojo.widget.defineWidget(
-        "dojo.widget.html.RemoteTabController",
+        "dojo.widget.RemoteTabController",
         dojo.widget.HtmlWidget,
 	{
 

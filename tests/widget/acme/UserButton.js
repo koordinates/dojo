@@ -15,7 +15,7 @@ dojo.widget.defineWidget(
 	"acme.UserButton",
 
 	// superclass	
-	dojo.widget.html.Button,
+	dojo.widget.Button,
 	
 	// member variables/functions
 	{

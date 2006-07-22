@@ -1,5 +1,5 @@
 dojo.provide("dojo.widget.ColorPalette");
-dojo.provide("dojo.widget.html.ColorPalette");
+dojo.provide("dojo.widget.ColorPalette");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
 dojo.require("dojo.html.layout");
@@ -8,8 +8,8 @@ dojo.require("dojo.html.selection");
 
 dojo.widget.tags.addParseTreeHandler("dojo:ToolbarColorDialog");
 
-dojo.widget.html.ToolbarColorDialog = function(){
-	dojo.widget.html.ToolbarDialog.call(this);
+dojo.widget.ToolbarColorDialog = function(){
+	dojo.widget.ToolbarDialog.call(this);
 	
 	/*
 	FIXME: 	why did anyone ever think this kind of expensive iteration
@@ -21,16 +21,16 @@ dojo.widget.html.ToolbarColorDialog = function(){
 	*/
 }
 
-dojo.inherits(dojo.widget.html.ToolbarColorDialog, dojo.widget.html.ToolbarDialog);
+dojo.inherits(dojo.widget.ToolbarColorDialog, dojo.widget.ToolbarDialog);
 
-dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
+dojo.lang.extend(dojo.widget.ToolbarColorDialog, {
 
 	widgetType: "ToolbarColorDialog",
 
 	palette: "7x10",
 
 	fillInTemplate: function (args, frag) {
-		dojo.widget.html.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
+		dojo.widget.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
 		this.dialog = dojo.widget.createWidget("ColorPalette", {palette: this.palette});
 		this.dialog.domNode.style.position = "absolute";
 
@@ -43,14 +43,14 @@ dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 	},
 	
 	showDialog: function (e) {
-		dojo.widget.html.ToolbarColorDialog.superclass.showDialog.call(this, e);
+		dojo.widget.ToolbarColorDialog.superclass.showDialog.call(this, e);
 		var abs = dojo.html.getAbsolutePosition(this.domNode, true);
 		var y = abs.y + dojo.html.getBorderBox(this.domNode).height;
 		this.dialog.showAt(abs.x, y);
 	},
 	
 	hideDialog: function (e) {
-		dojo.widget.html.ToolbarColorDialog.superclass.hideDialog.call(this, e);
+		dojo.widget.ToolbarColorDialog.superclass.hideDialog.call(this, e);
 		this.dialog.hide();
 	}
 });
@@ -59,13 +59,13 @@ dojo.lang.extend(dojo.widget.html.ToolbarColorDialog, {
 
 dojo.widget.tags.addParseTreeHandler("dojo:colorpalette");
 
-dojo.widget.html.ColorPalette = function () {
+dojo.widget.ColorPalette = function () {
 	dojo.widget.HtmlWidget.call(this);
 }
 
-dojo.inherits(dojo.widget.html.ColorPalette, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.ColorPalette, dojo.widget.HtmlWidget);
 
-dojo.lang.extend(dojo.widget.html.ColorPalette, {
+dojo.lang.extend(dojo.widget.ColorPalette, {
 
 	widgetType: "colorpalette",
 	

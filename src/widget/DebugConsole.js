@@ -5,7 +5,7 @@ dojo.require("dojo.widget.FloatingPane");
 
 dojo.widget.defineWidget(
 	"dojo.widget.DebugConsole",
-	dojo.widget.html.FloatingPane,
+	dojo.widget.FloatingPane,
 {
 	fillInTemplate: function() {
 		dojo.widget.DebugConsole.superclass.fillInTemplate.apply(this, arguments);

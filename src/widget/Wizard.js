@@ -10,9 +10,9 @@ dojo.require("dojo.html.style");
 // WizardContainer -- a set of panels
 //////////////////////////////////////////
 dojo.widget.WizardContainer = function() {
-	dojo.widget.html.LayoutContainer.call(this);
+	dojo.widget.LayoutContainer.call(this);
 }
-dojo.inherits(dojo.widget.WizardContainer, dojo.widget.html.LayoutContainer);
+dojo.inherits(dojo.widget.WizardContainer, dojo.widget.LayoutContainer);
 
 dojo.lang.extend(dojo.widget.WizardContainer, {
 

@@ -8,14 +8,13 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.ComboBox");
-	dojo.require("dojo.widget.html.ComboBox");
 
 	dojo.widget.SubComboBox = function(){
-		dojo.widget.html.ComboBox.call(this);
+		dojo.widget.ComboBox.call(this);
 		this.widgetType = "SubComboBox";
 	}
 
-	dojo.inherits(dojo.widget.SubComboBox, dojo.widget.html.ComboBox);
+	dojo.inherits(dojo.widget.SubComboBox, dojo.widget.ComboBox);
 
 	dojo.lang.extend(dojo.widget.SubComboBox, {
 		fillInTemplate: function(args, frag){

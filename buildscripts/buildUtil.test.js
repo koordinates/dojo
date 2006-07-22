@@ -13,9 +13,9 @@ function test(deps) {
 	print("");	
 }
 
-test(['dojo.widget.html.Button2']);
-test(['dojo.widget.html.Button2']);
+test(['dojo.widget.Button']);
+test(['dojo.widget.Button']);
 
 print("")
-print("Note : MISSING dojo.widget.html.Button2 from second run")
+print("Note : MISSING dojo.widget.Button from second run")
 
