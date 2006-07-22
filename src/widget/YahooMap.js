@@ -1,9 +1,8 @@
 dojo.provide("dojo.widget.YahooMap");
-dojo.provide("dojo.widget.YahooMap.Controls");
 dojo.require("dojo.event.*");
 dojo.require("dojo.math");
-dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.HtmlWidget");
 
 (function(){
 	var yappid = djConfig["yAppId"]||djConfig["yahooAppId"]||"dojotoolkit";
