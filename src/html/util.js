@@ -416,6 +416,8 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasSc
 
 //scrollIntoView in some implementation is broken, use our own
 dojo.html.scrollIntoView = function(node){
+	if(!node){ return; }
+	
 	// don't rely on that node.scrollIntoView works just because the function is there
 	// it doesnt work in Konqueror or Opera even though the function is there and probably
 	// not safari either

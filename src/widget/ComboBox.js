@@ -479,30 +479,6 @@ dojo.widget.defineWidget(
 			this.setSelectedValue(value2);
 		},
 
-		// opera, khtml, safari doesnt support node.scrollIntoView(), workaround
-		scrollIntoView: function(){
-			var node = this._highlighted_option;
-			var parent = this.optionsListNode;
-			// don't rely on that node.scrollIntoView works just because the function is there
-			// it doesnt work in Konqueror or Opera even though the function is there and probably
-			// not safari either
-			// dont like browser sniffs implementations but sometimes you have to use it
-			if(dojo.render.html.ie || dojo.render.html.mozilla){
-				// IE, mozilla
-				if(node){
-					node.scrollIntoView(false);	
-				}
-			}else{
-				var parentBottom = parent.scrollTop + dojo.html.getBorderBox(parent).height;
-				var nodeBottom = node.offsetTop + dojo.html.getMarginBox(node).height;
-				if(parentBottom < nodeBottom){
-					parent.scrollTop += (nodeBottom - parentBottom);
-				}else if(parent.scrollTop > node.offsetTop){
-					parent.scrollTop -= (parent.scrollTop - node.offsetTop);
-				}
-			}
-		},
-
 		// does the actual highlight
 		focusOptionNode: function(node){
 			if(this._highlighted_option != node){
@@ -526,7 +502,7 @@ dojo.widget.defineWidget(
 			}else if(this._highlighted_option.nextSibling){
 				this.focusOptionNode(this._highlighted_option.nextSibling);
 			}
-			this.scrollIntoView();
+			dojo.html.scrollIntoView(this._highlighted_option);
 		},
 
 		highlightPrevOption: function(){
@@ -537,7 +513,7 @@ dojo.widget.defineWidget(
 				this.hideResultList();
 				return;
 			}
-			this.scrollIntoView();
+			dojo.html.scrollIntoView(this._highlighted_option);
 		},
 
 		itemMouseOver: function(evt){
