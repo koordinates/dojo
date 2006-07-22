@@ -1,19 +1,17 @@
 dojo.provide("dojo.widget.DropdownContainer");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.Menu2");
+dojo.require("dojo.widget.Menu2");		// for PopupContainer
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.html.display");
 dojo.require("dojo.html.iframe");
+dojo.require("dojo.html.util");
 
 dojo.widget.defineWidget(
 	"dojo.widget.DropdownContainer",
 	dojo.widget.HtmlWidget,
 	{
-		initializer: function(){
-		},
-
 		inputWidth: "7em",
 		inputId: "",
 		inputName: "",
@@ -60,8 +58,5 @@ dojo.widget.defineWidget(
 		},
 
 		onInputChange: function(){}
-	},
-	"html"
+	}
 );
-
-dojo.widget.tags.addParseTreeHandler("dojo:dropdowncontainer");
