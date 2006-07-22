@@ -23,7 +23,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, dojo.widget.TreeCommon.prototy
 dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	widgetType: "TreeDNDControllerV3",
 	
-	listenTreeEvents: ["treeChange","treeDestroy", "addChild"],
+	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy", "afterAddChild"],
 	
 	initialize: function(args) {
 		this.treeController = dojo.lang.isString(args.controller) ? dojo.widget.byId(args.controller) : args.controller;
@@ -34,21 +34,21 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 		
 	},
 
-	onTreeDestroy: function(message) {
+	onBeforeTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
 	},
 	
 	// first DND registration happens in addChild
 	// because I have information about parent on this stage and can use it
 	// to check locking or other things
-	onAddChild: function(message) {
+	onAfterAddChild: function(message) {
 		//dojo.profile.start("DND addChild "+message.child);
 		this.listenNode(message.child);
 		//dojo.profile.end("DND addChild "+message.child);
 	},
 
 
-	onTreeChange: function(message) {
+	onAfterChangeTree: function(message) {
 		
 		if (!message.oldTree) return;
 		

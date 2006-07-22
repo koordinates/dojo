@@ -164,7 +164,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.viewSetExpand();
 		this.viewAddContainer(); // all folders have container.
 		//dojo.debug("publish "+this.tree.eventNames.setFolder);
-		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
+		dojo.event.topic.publish(this.tree.eventNames.afterSetFolder, { source: this });
 	},
 	
 	
@@ -189,9 +189,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			this.viewSetExpand();
 		}
 		
-		//dojo.debug("publish "+this.tree.eventNames.treeChange);
+		//dojo.debug("publish "+this.tree.eventNames.changeTree);
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, {oldTree:null, newTree:this.tree, node:this} );
+		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, {oldTree:null, newTree:this.tree, node:this} );
 		
 		
 		//dojo.profile.end("initialize");
@@ -203,7 +203,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	unsetFolder: function() {
 		this.isFolder = false;
 		this.viewSetExpand();
-		dojo.event.topic.publish(this.tree.eventNames.unsetFolder, { source: this });
+		dojo.event.topic.publish(this.tree.eventNames.afterUnsetFolder, { source: this });
 	},
 	
 	
@@ -226,11 +226,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 		
 		var oldTree = this.tree;
-		
-		var message = {oldTree:oldTree, newTree:newTree, node:this}
-		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
-		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
 		
 		
 		dojo.lang.forEach(this.getDescendants(),
@@ -259,6 +254,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			
 		}
 		
+		var message = {oldTree:oldTree, newTree:newTree, node:this}
+		
+		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, message );		
+		dojo.event.topic.publish(newTree.eventNames.afterChangeTree, message );
+			
 				
 	},
 	
@@ -332,7 +332,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 		
 		
-		dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+		dojo.event.topic.publish(this.tree.eventNames.afterAddChild, message);
 
 		//dojo.profile.end("addedTo");
 		
@@ -472,11 +472,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		this.doDetach.apply(this, arguments);
 
-		dojo.event.topic.publish(oldTree.eventNames.detach,
+		dojo.event.topic.publish(oldTree.eventNames.afterDetach,
 			{ child: this, tree: oldTree, parent: oldParent }
 		);
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeDetach, {tree:this.tree});
+		dojo.event.topic.publish(this.tree.eventNames.afterDetach, {tree:this.tree});
 		
 	},
 	
@@ -527,17 +527,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 */
 	destroy: function() {
 		
-		/**
-		 * Send event before actual work, because handlers may want to use parent etc
-		 */
-		var message = {oldTree:this.tree, newTree:null, node:this}		
+		this.detach();
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );
-				
-	
+		dojo.event.topic.publish(this.tree.eventNames.beforeDestroy, { source: this } );
 
-		this.doDetach();			
-				
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 	
@@ -579,7 +572,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		//dojo.profile.start("expand - event "+this);
 
-		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
+		dojo.event.topic.publish(this.tree.eventNames.afterExpand, {source: this} );
 		
 		//dojo.profile.end("expand - event "+this);
 		
@@ -598,7 +591,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		this.viewSetExpand();
 
-		dojo.event.topic.publish(this.tree.eventNames.collapse, {source: this} );
+		dojo.event.topic.publish(this.tree.eventNames.afterCollapse, {source: this} );
 	},
 
 	hideChildren: function(){

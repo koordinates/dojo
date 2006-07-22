@@ -26,7 +26,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.proto
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
 
-	listenTreeEvents: ["treeChange","treeCreate", "treeDestroy","setFolder","unsetFolder"],
+	listenTreeEvents: ["afterChangeTree","afterTreeCreate", "beforeTreeDestroy","afterSetFolder","afterUnsetFolder"],
 	
 
 
@@ -41,13 +41,13 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 	
 	
-	onSetFolder: function(message) {
+	onAfterSetFolder: function(message) {
 		//dojo.debug("setFolder "+message.source)
 		this.listenNode(message.source);
 	},
 	
 	
-	onUnsetFolder: function(message) {
+	onAfterUnsetFolder: function(message) {
 		this.unlistenNode(message.source);
 	},
 
@@ -55,7 +55,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		this.onExpandClickHandler =  dojo.lang.hitch(this, this.onExpandClick)
 	},
 
-	onTreeChange: function(message) {
+	onAfterChangeTree: function(message) {
 		//dojo.debugShallow(message);
 		
 		
@@ -89,7 +89,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 
 	// perform actions-initializers for tree
-	onTreeCreate: function(message) {
+	onAfterTreeCreate: function(message) {
 		var tree = message.source;
 		var _this = this;
 		if (tree.expandLevel) {
@@ -101,7 +101,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 
-	expandTimeout: 15,
+	expandTimeout: 20,
 	
 	// FIXME: extract iterator
 	expandToLevel: function(node, level, sync) {
