@@ -33,8 +33,19 @@ dojo.widget.defineWidget(
 			this.render();
 		});
 		dojo.event.connect(this.store, "onAddData", this, function(addedObject){
+			var row=this.createRow(addedObject);
+			this.domNode.tBodies[0].appendChild(row);
+			this.render();
 		});
 		dojo.event.connect(this.store, "onRemoveData", this, function(removedObject){
+			var rows = this.domNode.tBodies[0].rows;
+			for(var i=0; i<rows.length; i++){
+				if(this.getDataByRow(rows[i]) == removedObject.src){
+					rows[i].parentNode.removeChild(rows[i]);
+					break;
+				}
+			}
+			this.render();
 		});
 	},
 
@@ -113,9 +124,18 @@ dojo.widget.defineWidget(
 
 	reset: function(){
 		this.store.clearData();
+		this.columns = [];
+		this.sortInformation = [ {index:0, direction:0} ];
+		this.resetSelections();
+		this.isInitialized = false;
+		this.onReset();
 	},
 	resetSelections: function(){
+		this.store.forEach(function(element){
+			element.isSelected = false;
+		});
 	},
+	onReset:function(){ },
 
 	//	selection and toggle functions
 	select: function(/*object*/ obj){
@@ -474,6 +494,58 @@ dojo.widget.defineWidget(
 	},
 
 	//	rendering
+	createRow: function(/* object */obj){
+		var row=document.createElement("tr");
+		dojo.html.disableSelection(row);
+		if(obj.key){
+			row.setAttribute("value", obj.key);
+		}
+		for(var j=0; j<this.columns.length; j++){
+			var cell=document.createElement("td");
+			cell.setAttribute("align", this.columns[j].align);
+			cell.setAttribute("valign", this.columns[j].valign);
+			dojo.html.disableSelection(cell);
+			var val = this.store.getField(obj.src, this.columns[j].getField());
+			if(typeof(val)=="undefined"){
+				val="";
+			}
+			if (this.columns[j].sortType=="__markup__"){
+				cell.innerHTML=val;
+			} else {
+				if(this.columns[j].getType()==Date) {
+					val=new Date(val);
+					if(!isNaN(val)){
+						var format = this.defaultDateFormat;
+						if(this.columns[j].format){
+							format = this.columns[j].format;
+						}
+						cell.appendChild(document.createTextNode(dojo.date.format(val, format)));
+					} else {
+						cell.appendChild(document.createTextNode(val));
+					}
+				} else if ("Number number int Integer float Float".indexOf(this.columns[j].getType())>-1){
+					//	TODO: number formatting
+					if(val.length == 0){
+						val="0";
+					}
+					var n = parseFloat(val, 10) + "";
+					//	TODO: numeric formatting + rounding :)
+					if(n.indexOf(".")>-1){
+						n = dojo.math.round(parseFloat(val,10),2);
+					}
+					cell.appendChild(document.createTextNode(n));
+				}else{
+					cell.appendChild(document.createTextNode(val));
+				}
+			}
+			// FIXME: this is an ugly, ugly hack for the last column and scrolling.
+			if(j == this.columns.length-1){
+				cell.innerHTML+="&nbsp;&nbsp;&nbsp;&nbsp;";
+			}
+			row.appendChild(cell);
+		}
+		return row;
+	},
 	prefill: function(){
 		//	summary
 		//	if there's no data in the table, then prefill it with this.minRows.
@@ -517,55 +589,7 @@ dojo.widget.defineWidget(
 
 			var data = this.store.get();
 			for(var i=0; i<data.length; i++){
-				var row=document.createElement("tr");
-				dojo.html.disableSelection(row);
-				if(data[i].key){
-					row.setAttribute("value", data[i].key);
-				}
-				for(var j=0; j<this.columns.length; j++){
-					var cell=document.createElement("td");
-					cell.setAttribute("align", this.columns[j].align);
-					cell.setAttribute("valign", this.columns[j].valign);
-					dojo.html.disableSelection(cell);
-					var val = this.store.getField(data[i].src, this.columns[j].getField());
-					if(typeof(val)=="undefined"){
-						val="";
-					}
-					if (this.columns[j].sortType=="__markup__"){
-						cell.innerHTML=val;
-					} else {
-						if(this.columns[j].getType()==Date) {
-							val=new Date(val);
-							if(!isNaN(val)){
-								var format = this.defaultDateFormat;
-								if(this.columns[j].format){
-									format = this.columns[j].format;
-								}
-								cell.appendChild(document.createTextNode(dojo.date.format(val, format)));
-							} else {
-								cell.appendChild(document.createTextNode(val));
-							}
-						} else if ("Number number int Integer float Float".indexOf(this.columns[j].getType())>-1){
-							//	TODO: number formatting
-							if(val.length == 0){
-								val="0";
-							}
-							var n = parseFloat(val, 10) + "";
-							//	TODO: numeric formatting + rounding :)
-							if(n.indexOf(".")>-1){
-								n = dojo.math.round(parseFloat(val,10),2);
-							}
-							cell.appendChild(document.createTextNode(n));
-						}else{
-							cell.appendChild(document.createTextNode(val));
-						}
-					}
-					// FIXME: this is an ugly, ugly hack for the last column and scrolling.
-					if(j == this.columns.length-1){
-						cell.innerHTML+="&nbsp;&nbsp;&nbsp;&nbsp;";
-					}
-					row.appendChild(cell);
-				}
+				var row = this.createRow(data[i]);
 				body.appendChild(row);
 				dojo.event.connect(row, "onclick", this, "onSelect");
 				idx++;
