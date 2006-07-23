@@ -12,19 +12,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 
 <script type="text/javascript">
-	var djConfig = { isDebug: true };
+	var djConfig = { isDebug: true, debugAtAllCosts: true };
 </script>
 
 <link rel="stylesheet" type="text/css" href="testRemoteTabController.css" />
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
+	dojo.require("dojo.debug.Firebug");
 	dojo.require("dojo.widget.TabContainer");
 	dojo.require("dojo.widget.Tooltip");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
 	dojo.require("dojo.widget.Button");
 	dojo.require("dojo.widget.RemoteTabController");
+	dojo.hostenv.writeIncludes();
 </script>
 
 <style type="text/css">
@@ -43,8 +45,8 @@ body {
 
 	dojo.addOnLoad(function() {
 		tabs = dojo.widget.createWidget("dojo:TabContainer",{},dojo.byId("content"));
-		tabs .addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab1", href: "doc1.html"}));
-		tabs .addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab2", href: "doc2.html"}));
+		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab1", href: "tab1.html"}));
+		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab2", href: "tab2.html", selected: true}));
 		remote = dojo.widget.createWidget("dojo:RemoteTabController",{"tabContainer": tabs });
 		document.body.appendChild(remote.domNode);
 	});
@@ -53,5 +55,6 @@ body {
 <body>
 	<div id="content" style="width: 400px; height: 200px;">
 	</div>
+
 </body>
 </html>
