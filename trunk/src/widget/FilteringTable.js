@@ -272,8 +272,8 @@ dojo.widget.defineWidget(
 	parseData: function(/* HTMLTableBody */body){
 		//	summary
 		//	Parse HTML data into native JSON structure for the store.
-		var rows=body.rows;
-		if(rows.length==0) return;	//	there's no data, ignore me.
+		var rows = body.rows;
+		if(rows.length == 0 && this.columns.length == 0) return;	//	there's no data, ignore me.
 
 		//	create a data constructor based on what we've got for the fields.
 		var ctor=function(row){
@@ -475,12 +475,188 @@ dojo.widget.defineWidget(
 
 	//	rendering
 	prefill: function(){
+		//	summary
+		//	if there's no data in the table, then prefill it with this.minRows.
+		this.isInitialized = false;
+		var body = this.domNode.tBodies[0];
+		while (body.childNodes.length > 0){
+			body.removeChild(body.childNodes[0]);
+		}
+		
+		if(this.minRows>0){
+			for(var i=0; i < this.minRows; i++){
+				var row = document.createElement("tr");
+				if(this.alternateRows){
+					dojo.html[((i % 2 == 1)?"addClass":"removeClass")](row, this.rowAlternateClass);
+				}
+				row.setAttribute("emptyRow","true");
+				for(var j=0; j<this.columns.length; j++){
+					cell = document.createElement("td");
+					cell.innerHTML = "&nbsp;";
+					row.appendChild(cell);
+				}
+				body.appendChild(row);
+			}
+		}
 	},
 	init: function(){
+		//	summary
+		//	initializes the table of data
+		this.isInitialized=false;
+		if(this.store.get().length == 0){
+			return false;
+		}
+
+		var idx=this.domNode.tBodies[0].rows.length;
+		if(idx==0 || this.domNode.tBodies[0].rows[0].getAttribute("emptyrow")=="true"){
+			idx = 0;
+			var body = this.domNode.tBodies[0];
+			while(body.childNodes.length>0){
+				body.removeChild(body.childNodes[0]);
+			}
+
+			var data = this.store.get();
+			for(var i=0; i<data.length; i++){
+				var row=document.createElement("tr");
+				dojo.html.disableSelection(row);
+				if(data[i].key){
+					row.setAttribute("value", data[i].key);
+				}
+				for(var j=0; j<this.columns.length; j++){
+					var cell=document.createElement("td");
+					cell.setAttribute("align", this.columns[j].align);
+					cell.setAttribute("valign", this.columns[j].valign);
+					dojo.html.disableSelection(cell);
+					var val = this.store.getField(data[i].src, this.columns[j].getField());
+					if(typeof(val)=="undefined"){
+						val="";
+					}
+					if (this.columns[j].sortType=="__markup__"){
+						cell.innerHTML=val;
+					} else {
+						if(this.columns[j].getType()==Date) {
+							val=new Date(val);
+							if(!isNaN(val)){
+								var format = this.defaultDateFormat;
+								if(this.columns[j].format){
+									format = this.columns[j].format;
+								}
+								cell.appendChild(document.createTextNode(dojo.date.format(val, format)));
+							} else {
+								cell.appendChild(document.createTextNode(val));
+							}
+						} else if ("Number number int Integer float Float".indexOf(this.columns[j].getType())>-1){
+							//	TODO: number formatting
+							if(val.length == 0){
+								val="0";
+							}
+							var n = parseFloat(val, 10) + "";
+							//	TODO: numeric formatting + rounding :)
+							if(n.indexOf(".")>-1){
+								n = dojo.math.round(parseFloat(val,10),2);
+							}
+							cell.appendChild(document.createTextNode(n));
+						}else{
+							cell.appendChild(document.createTextNode(val));
+						}
+					}
+					// FIXME: this is an ugly, ugly hack for the last column and scrolling.
+					if(j == this.columns.length-1){
+						cell.innerHTML+="&nbsp;&nbsp;&nbsp;&nbsp;";
+					}
+					row.appendChild(cell);
+				}
+				body.appendChild(row);
+				dojo.event.connect(row, "onclick", this, "onSelect");
+				idx++;
+			}
+		}
+
+		//	add empty rows
+		if(this.minRows > 0 && idx < this.minRows){
+			idx = this.minRows - idx;
+			for(var i=0; i<idx; i++){
+				row=document.createElement("tr");
+				row.setAttribute("emptyRow","true");
+				for(var j=0; j<this.columns.length; j++){
+					cell=document.createElement("td");
+					cell.innerHTML="&nbsp;";
+					row.appendChild(cell);
+				}
+				body.appendChild(row);
+			}
+		}
+
+		//	last but not least, show any columns that have sorting already on them.
+		var row=this.domNode.getElementsByTagName("thead")[0].rows[0];
+		var cellTag="td";
+		if(row.getElementsByTagName(cellTag).length==0) cellTag="th";
+		var headers=row.getElementsByTagName(cellTag);
+		for(var i=0; i<headers.length; i++){
+			dojo.html.setClass(headers[i], this.headerClass);
+		}
+		for(var i=0; i<this.sortInformation.length; i++){
+			var idx=this.sortInformation[i].index;
+			var dir=(~this.sortInformation[i].direction)&1;
+			dojo.html.setClass(headers[idx], dir==0?this.headerDownClass:this.headerUpClass);
+		}
+
+		this.isInitialized=true;
+		return this.isInitialized;
 	},
 	render: function(){
+	/*	The method that should be called once underlying changes
+	 *	are made, including sorting, filtering, data changes.
+	 *	Rendering the selections themselves are a different method,
+	 *	which render() will call as the last step.
+	 ****************************************************************/
+		if(!this.isInitialized){
+			var b = this.init();
+			if(!b){
+				this.prefill();
+				return;
+			}
+		}
+		
+		//	do the sort
+		var rows=[];
+		var body=this.domNode.tBodies[0];
+		var emptyRowIdx=-1;
+		for(var i=0; i<body.rows.length; i++){
+			if(body.rows[i].getAttribute("emptyRow")){
+				emptyRowIdx=i;
+				break;
+			}
+			rows.push(body.rows[i]);
+		}
+
+		//	build the sorting function, and do the sorting.
+		var sortFunction = this.createSorter(this.sortInformation);
+		if(sortFunction){
+			rows.sort(sortFunction);
+		}
+		if(emptyRowIdx>-1){
+			for(var i=emptyRowIdx; i<body.rows.length; i++){
+				rows.push(body.rows[i]);
+			}
+		}
+
+		//	append the rows without killing them, this should help with the HTML problems.
+		for(var i=0; i<rows.length; i++){
+			if(this.alternateRows){
+				dojo.html[((i%2==1)?"addClass":"removeClass")](rows[i], this.rowAlternateClass);
+			}
+			body.appendChild(rows[i]);
+		}
+
+		//	now re-render any selections.
+		this.renderSelections();
 	},
 	renderSelections: function(){
+		var body=this.domNode.tBodies[0];
+		for(var i=0; i<body.rows.length; i++){
+			dojo.html[(this.isRowSelected(body.rows[i])?"addClass":"removeClass")](body.rows[i], this.rowSelectedClass);
+		}
 	},
 	renderFilter: function(){
 	},
@@ -489,5 +665,41 @@ dojo.widget.defineWidget(
 //	initialize: function(){ },
 //	fillInTemplate: function(args, frag){ },
 	postCreate: function(){
+		//	summary
+		//	finish widget initialization.
+		if(this.domNode){
+			//	start by making sure domNode is a table element;
+			if(this.domNode.nodeName.toLowerCase() != "table"){
+			}
+
+			//	see if there is columns set up already
+			if(this.domNode.getElementsByTagName("thead")[0]){
+				var head=this.domNode.getElementsByTagName("thead")[0];
+				if(this.headClass.length > 0){
+					head.className = this.headClass;
+				}
+				dojo.html.disableSelection(this.domNode);
+				this.parseColumns(head);
+
+				var header="td";
+				if(head.getElementsByTagName(header).length==0){
+					header="th";
+				}
+				var headers = head.getElementsByTagName(header);
+				for(var i=0; i<headers.length; i++){
+					if(!this.columns[i].noSort){
+						dojo.event.connect(headers[i], "onclick", this, "onSort");
+					}
+				}
+			}
+
+			var body = this.domNode.tBodies[0];
+			if (this.tbodyClass.length > 0){
+				body.className = this.tbodyClass;
+			}
+			this.parseData(body);
+		}
+
+		this.render();
 	}
 });
