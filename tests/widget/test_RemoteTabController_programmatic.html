@@ -46,7 +46,7 @@ body {
 	dojo.addOnLoad(function() {
 		tabs = dojo.widget.createWidget("dojo:TabContainer",{},dojo.byId("content"));
 		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab1", href: "tab1.html"}));
-		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab2", href: "tab2.html", selected: true}));
+		tabs.addChild(dojo.widget.createWidget("dojo:ContentPane",{label: "Tab2", href: "tab2.html" }));
 		remote = dojo.widget.createWidget("dojo:RemoteTabController",{"tabContainer": tabs });
 		document.body.appendChild(remote.domNode);
 	});
