@@ -23,7 +23,7 @@ dojo.widget.defineWidget(
 			//hash of tabs
 			this.tabs = {}; 
 
-			this.selectedTab=null;
+			this.selectedTab="";
 
 			//override these classes to change the style
 			this.class="dojoRemoteTabController";
