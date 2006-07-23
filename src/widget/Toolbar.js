@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.ToolbarContainer");
-dojo.provide("dojo.widget.ToolbarContainer");
 dojo.provide("dojo.widget.Toolbar");
 dojo.provide("dojo.widget.ToolbarItem");
 dojo.provide("dojo.widget.ToolbarButtonGroup");
@@ -15,13 +14,10 @@ dojo.require("dojo.html.style");
 
 /* ToolbarContainer
  *******************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarContainer");
-dojo.widget.ToolbarContainer = function() {
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarContainer, dojo.widget.HtmlWidget);
-dojo.lang.extend(dojo.widget.ToolbarContainer, {
-	widgetType: "ToolbarContainer",
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarContainer",
+	dojo.widget.HtmlWidget,
+{
 	isContainer: true,
 
 	templateString: '<div class="toolbarContainer" dojoAttachPoint="containerNode"></div>',
@@ -122,17 +118,14 @@ dojo.lang.extend(dojo.widget.ToolbarContainer, {
 
 /* Toolbar
  **********/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbar");
-dojo.widget.Toolbar = function() {
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.Toolbar, dojo.widget.HtmlWidget);
-dojo.lang.extend(dojo.widget.Toolbar, {
-	widgetType: "Toolbar",
+ 
+dojo.widget.defineWidget(
+	"dojo.widget.Toolbar",
+	dojo.widget.HtmlWidget,
+{
 	isContainer: true,
 
 	templateString: '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on" dojoOnMouseover="_onmouseover" dojoOnMouseout="_onmouseout" dojoOnClick="_onclick" dojoOnMousedown="_onmousedown" dojoOnMouseup="_onmouseup"></div>',
-	//templateString: '<div class="toolbar" dojoAttachPoint="containerNode" unselectable="on"></div>',
 
 	// given a node, tries to find it's toolbar item
 	_getItem: function(node) {
@@ -305,11 +298,10 @@ dojo.lang.extend(dojo.widget.Toolbar, {
 
 /* ToolbarItem
  **************/
-dojo.widget.ToolbarItem = function() {
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarItem, dojo.widget.HtmlWidget);
-dojo.lang.extend(dojo.widget.ToolbarItem, {
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarItem",
+	dojo.widget.HtmlWidget,
+{
 	templateString: '<span unselectable="on" class="toolbarItem"></span>',
 
 	_name: null,
@@ -548,13 +540,10 @@ dojo.widget.ToolbarItem.make = function(wh, whIsType, props) {
 
 /* ToolbarButtonGroup
  *********************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarButtonGroup");
-dojo.widget.ToolbarButtonGroup = function() {
-	dojo.widget.ToolbarItem.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarButtonGroup, dojo.widget.ToolbarItem);
-dojo.lang.extend(dojo.widget.ToolbarButtonGroup, {
-	widgetType: "ToolbarButtonGroup",
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarButtonGroup",
+	dojo.widget.ToolbarItem,
+{
 	isContainer: true,
 
 	templateString: '<span unselectable="on" class="toolbarButtonGroup" dojoAttachPoint="containerNode"></span>',
@@ -663,14 +652,10 @@ dojo.lang.extend(dojo.widget.ToolbarButtonGroup, {
 
 /* ToolbarButton
  ***********************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarButton");
-dojo.widget.ToolbarButton = function() {
-	dojo.widget.ToolbarItem.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarButton, dojo.widget.ToolbarItem);
-dojo.lang.extend(dojo.widget.ToolbarButton, {
-	widgetType: "ToolbarButton",
-
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarButton",
+	dojo.widget.ToolbarItem,
+{
 	fillInTemplate: function(args, frag) {
 		dojo.widget.ToolbarButton.superclass.fillInTemplate.call(this, args, frag);
 		dojo.html.addClass(this.domNode, "toolbarButton");
@@ -696,14 +681,10 @@ dojo.lang.extend(dojo.widget.ToolbarButton, {
 
 /* ToolbarDialog
  **********************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarDialog");
-dojo.widget.ToolbarDialog = function() {
-	dojo.widget.ToolbarButton.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarDialog, dojo.widget.ToolbarButton);
-dojo.lang.extend(dojo.widget.ToolbarDialog, {
-	widgetType: "ToolbarDialog",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarDialog",
+	dojo.widget.ToolbarButton,
+{	
 	fillInTemplate: function (args, frag) {
 		dojo.widget.ToolbarDialog.superclass.fillInTemplate.call(this, args, frag);
 		dojo.event.connect(this, "onSelect", this, "showDialog");
@@ -722,13 +703,11 @@ dojo.lang.extend(dojo.widget.ToolbarDialog, {
 
 /* ToolbarMenu
  **********************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarMenu");
-dojo.widget.ToolbarMenu = function() {
-	dojo.widget.ToolbarDialog.call(this);
-
-	this.widgetType = "ToolbarMenu";
-}
-dojo.inherits(dojo.widget.ToolbarMenu, dojo.widget.ToolbarDialog);
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarMenu",
+	dojo.widget.ToolbarDialog,
+	{}
+);
 
 /* ToolbarMenuItem
  ******************/
@@ -737,13 +716,10 @@ dojo.widget.ToolbarMenuItem = function() {
 
 /* ToolbarSeparator
  **********************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarSeparator");
-dojo.widget.ToolbarSeparator = function() {
-    dojo.widget.ToolbarItem.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarSeparator, dojo.widget.ToolbarItem);
-dojo.lang.extend(dojo.widget.ToolbarSeparator, {
-	widgetType: "ToolbarSeparator",
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarSeparator",
+	dojo.widget.ToolbarItem,
+{
 	templateString: '<span unselectable="on" class="toolbarItem toolbarSeparator"></span>',
 
 	defaultIconPath: new dojo.uri.dojoUri("src/widget/templates/buttons/sep.gif"),
@@ -769,14 +745,10 @@ dojo.lang.extend(dojo.widget.ToolbarSeparator, {
 
 /* ToolbarSpace
  **********************/
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarSpace");
-dojo.widget.ToolbarSpace = function() {
-	dojo.widget.ToolbarSeparator.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarSpace, dojo.widget.ToolbarSeparator);
-dojo.lang.extend(dojo.widget.ToolbarSpace, {
-    widgetType: "ToolbarSpace",
-
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarSpace",
+	dojo.widget.ToolbarSeparator,
+{
 	fillInTemplate: function(args, frag, skip) {
 		dojo.widget.ToolbarSpace.superclass.fillInTemplate.call(this, args, frag, true);
 		if(!skip) {
@@ -788,13 +760,10 @@ dojo.lang.extend(dojo.widget.ToolbarSpace, {
 /* ToolbarSelect
  ******************/ 
 
-dojo.widget.tags.addParseTreeHandler("dojo:toolbarSelect");
-dojo.widget.ToolbarSelect = function() {
-	dojo.widget.ToolbarItem.call(this);
-}
-dojo.inherits(dojo.widget.ToolbarSelect, dojo.widget.ToolbarItem);
-dojo.lang.extend(dojo.widget.ToolbarSelect, {
-    widgetType: "ToolbarSelect",
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarSelect",
+	dojo.widget.ToolbarItem,
+{
 	templateString: '<span class="toolbarItem toolbarSelect" unselectable="on"><select dojoAttachPoint="selectBox" dojoOnChange="changed"></select></span>',
 
 	fillInTemplate: function(args, frag) {

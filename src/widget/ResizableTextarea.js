@@ -3,19 +3,12 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ResizeHandle");
 
-dojo.widget.tags.addParseTreeHandler("dojo:resizabletextarea");
-
-dojo.widget.ResizableTextarea = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.ResizableTextarea, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.ResizableTextarea, {
+dojo.widget.defineWidget(
+	"dojo.widget.ResizableTextarea",
+	dojo.widget.HtmlWidget,
+{
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlResizableTextarea.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlResizableTextarea.css"),
-	widgetType: "ResizableTextarea",
-	tagName: "dojo:resizabletextarea",
 	isContainer: false,
 	textAreaNode: null,
 	textAreaContainer: null,

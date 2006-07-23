@@ -12,15 +12,12 @@ dojo.require("dojo.html.display");
  *	Lucas (CLA on file)
  */
 
-dojo.widget.Rounded = function() {
-	dojo.widget.ContentPane.call(this);
-}
-
-dojo.inherits(dojo.widget.Rounded, dojo.widget.ContentPane);
-
-dojo.lang.extend(dojo.widget.Rounded, {
+dojo.widget.defineWidget(
+	"dojo.widget.Rounded",
+	dojo.widget.ContentPane,
+{
 	isSafari: dojo.render.html.safari,
-	widgetType: "Rounded",
+
 	boxMargin: "50px", // margin outside rounded corner box
 	radius: 14, // radius of corners
 	domNode: "",

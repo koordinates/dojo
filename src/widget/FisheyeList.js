@@ -14,19 +14,12 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.html.util");
 dojo.require("dojo.event");
 
-dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
-dojo.widget.tags.addParseTreeHandler("dojo:FisheyeListItem");
-
-dojo.widget.FisheyeList = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.FisheyeList, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.FisheyeList, {
-
+dojo.widget.defineWidget(
+	"dojo.widget.FisheyeList",
+	dojo.widget.HtmlWidget,
+{
 	templateString: '<div class="dojoHtmlFisheyeListBar"></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css"),
-	widgetType: "FisheyeList",
 
 	EDGE: {
 		CENTER: 0,
@@ -612,14 +605,10 @@ dojo.lang.extend(dojo.widget.FisheyeList, {
 	}
 });
 
-dojo.widget.FisheyeListItem = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.FisheyeListItem, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.FisheyeListItem, {
-	widgetType: "FisheyeListItem",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.FisheyeListItem",
+	dojo.widget.HtmlWidget,
+{
 	// Constructor arguments
 	iconSrc: "",
 	svgSrc: "",
