@@ -137,11 +137,13 @@ dojo.widget.defineWidget(
 		},
 
 		selectFormat: function(format){
-			dojo.lang.forEach(this.formatSelectBox.options, function(item){
-				if(item.value.toLowerCase() == format.toLowerCase()){
-					item.selected = true;
-				}
-			});
+			if(this.formatSelectBox) {
+				dojo.lang.forEach(this.formatSelectBox.options, function(item){
+					if(item.value.toLowerCase() == format.toLowerCase()){
+						item.selected = true;
+					}
+				});
+			}
 		},
 
 		forecolorClick: function(e){
