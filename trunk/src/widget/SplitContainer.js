@@ -8,7 +8,7 @@ dojo.provide("dojo.widget.SplitContainerPanel");
 //
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.LayoutContainer");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
@@ -16,17 +16,14 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
 dojo.require("dojo.io.cookie");
 
-dojo.widget.SplitContainer = function(){
+dojo.widget.defineWidget(
+	"dojo.widget.SplitContainer",
+	dojo.widget.HtmlWidget,
+{
+	initializer: function(){
+		this.sizers = [];
+	},
 
-	dojo.widget.HtmlWidget.call(this);
-
-	this.sizers = [];
-}
-
-dojo.inherits(dojo.widget.SplitContainer, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.SplitContainer, {
-	widgetType: "SplitContainer",
 	isContainer: true,
 
 	virtualSizer: null,
@@ -553,13 +550,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 // Deprecated class for split pane children.
 // Actually any widget can be the child of a split pane
-dojo.widget.SplitContainerPanel = function(){
-	dojo.widget.LayoutContainer.call(this);
-}
-dojo.inherits(dojo.widget.SplitContainerPanel, dojo.widget.LayoutContainer);
-dojo.lang.extend(dojo.widget.SplitContainerPanel, {
-	widgetType: "SplitContainerPanel"
-});
+dojo.widget.defineWidget(
+	"dojo.widget.SplitContainerPanel",
+	dojo.widget.ContentPane,
+	{}
+);
 
-dojo.widget.tags.addParseTreeHandler("dojo:SplitContainer");
-dojo.widget.tags.addParseTreeHandler("dojo:SplitContainerPanel");

@@ -4,15 +4,10 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.event");
 
-dojo.widget.ResizeHandle = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.ResizeHandle, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.ResizeHandle, {
-	widgetType: "ResizeHandle",
-
+dojo.widget.defineWidget(
+	"dojo.widget.ResizeHandle",
+	dojo.widget.HtmlWidget,
+{
 	isSizing: false,
 	startPoint: null,
 	startSize: null,
@@ -96,5 +91,3 @@ dojo.lang.extend(dojo.widget.ResizeHandle, {
 
 
 });
-
-dojo.widget.tags.addParseTreeHandler("dojo:ResizeHandle");

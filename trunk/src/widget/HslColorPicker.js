@@ -7,26 +7,20 @@ dojo.require("dojo.svg");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.graphics.color.hsl");
 
-dojo.widget.HslColorPicker=function(){
-	dojo.widget.Widget.call(this);
-	this.widgetType = "HslColorPicker";
-	this.isContainer = false;
-}
+dojo.widget.defineWidget(
+	"dojo.widget.svg.HslColorPicker",
+	dojo.widget.HtmlWidget,
+{
+	initializer: function(){
+		dojo.debug("warning: the HslColorPicker is not a finished widget, and is not yet ready for general use");
+		this.filterObject = {};
+	},
 
-dojo.widget.svg.HslColorPicker=function(){
-	dojo.widget.HslColorPicker.call(this);
-	dojo.widget.HtmlWidget.call(this);
-	dojo.debug("warning: the HslColorPicker is not a finished widget, and is not yet ready for general use");
-	this.hue = "0";
-	this.saturation = "0";
-	this.light = "0";
-	this.storedColor = "#0054aa";
-	var _this = this;
-	this.filterObject = {
-	}
-};
-dojo.inherits(dojo.widget.svg.HslColorPicker, dojo.widget.HtmlWidget);
-dojo.lang.extend(dojo.widget.svg.HslColorPicker, {
+	hue: "0",
+	saturation: "0",
+	light: "0",
+	storedColor: "#0054aa",
+
 	//	widget props
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HslColorPicker.svg"),
 	fillInTemplate: function() {

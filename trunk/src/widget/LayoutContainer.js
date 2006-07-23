@@ -7,14 +7,10 @@ dojo.provide("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.html.layout");
 
-dojo.widget.LayoutContainer = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.LayoutContainer, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.LayoutContainer, {
-	widgetType: "LayoutContainer",
+dojo.widget.defineWidget(
+	"dojo.widget.LayoutContainer",
+	dojo.widget.HtmlWidget,
+{
 	isContainer: true,
 
 	layoutChildPriority: 'top-bottom',
@@ -55,5 +51,3 @@ dojo.lang.extend(dojo.widget.LayoutContainer, {
 dojo.lang.extend(dojo.widget.Widget, {
 	layoutAlign: 'none'
 });
-
-dojo.widget.tags.addParseTreeHandler("dojo:LayoutContainer");

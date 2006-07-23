@@ -1,33 +1,15 @@
 dojo.provide("dojo.widget.ColorPalette");
-dojo.provide("dojo.widget.ColorPalette");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.html.display");
 dojo.require("dojo.html.selection");
 
-dojo.widget.tags.addParseTreeHandler("dojo:ToolbarColorDialog");
-
-dojo.widget.ToolbarColorDialog = function(){
-	dojo.widget.ToolbarDialog.call(this);
-	
-	/*
-	FIXME: 	why did anyone ever think this kind of expensive iteration
-			was a good idea?
-
-	for (var method in this.constructor.prototype) {
-		this[method] = this.constructor.prototype[method];
-	}
-	*/
-}
-
-dojo.inherits(dojo.widget.ToolbarColorDialog, dojo.widget.ToolbarDialog);
-
-dojo.lang.extend(dojo.widget.ToolbarColorDialog, {
-
-	widgetType: "ToolbarColorDialog",
-
-	palette: "7x10",
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarColorDialog",
+	dojo.widget.ToolbarDialog,
+{
+ 	palette: "7x10",
 
 	fillInTemplate: function (args, frag) {
 		dojo.widget.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
@@ -55,20 +37,10 @@ dojo.lang.extend(dojo.widget.ToolbarColorDialog, {
 	}
 });
 
-
-
-dojo.widget.tags.addParseTreeHandler("dojo:colorpalette");
-
-dojo.widget.ColorPalette = function () {
-	dojo.widget.HtmlWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.ColorPalette, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.ColorPalette, {
-
-	widgetType: "colorpalette",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.ColorPalette",
+	dojo.widget.HtmlWidget,
+{	
 	palette: "7x10",
 
 	bgIframe: null,
@@ -175,5 +147,4 @@ dojo.lang.extend(dojo.widget.ColorPalette, {
 
 		}
 	}
-
 });
