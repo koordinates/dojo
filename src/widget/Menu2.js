@@ -138,7 +138,7 @@ dojo.widget.defineWidget(
 		this.hide();
 		if(this.bgIframe){
 			this.bgIframe.hide();
-			this.bgIframe.size([0,0,0,0]);
+			this.bgIframe.size({left: 0, top: 0, width: 0, height: 0});
 		}
 		if(this.isTopLevel){
 			dojo.widget.PopupManager.closed(this);
