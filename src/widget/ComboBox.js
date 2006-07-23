@@ -10,6 +10,7 @@ dojo.require("dojo.html.layout");
 dojo.require("dojo.html.iframe");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
+dojo.require("dojo.widget.Menu2");
 
 dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.searchUrl = url;
@@ -21,13 +22,13 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 
 	this.init = function(cbox){
 		this.seachUrl = cbox.dataUrl;
-	}
+	};
 
 	this.addToCache = function(keyword, data){
 		if(this.allowCache){
 			this.cache[keyword] = data;
 		}
-	}
+	};
 
 	this.startSearch = function(searchStr, type, ignoreLimit){
 		if(this.inFlight){
@@ -54,8 +55,8 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 			}
 		});
 		this.inFlight = true;
-	}
-}
+	};
+};
 
 dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// NOTE: this data provider is designed as a naive reference
@@ -84,7 +85,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 				var ol = opts.length;
 				var data = [];
 				for(var x=0; x<ol; x++){
-					var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
+					var keyValArr = [String(opts[x].innerHTML), String(opts[x].value)];
 					data.push(keyValArr);
 					if(opts[x].selected){ 
 						cbox.setAllValues(keyValArr[0], keyValArr[1]);
@@ -93,7 +94,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 				this.setData(data);
 			}
 		}
-	}
+	};
 
 	this.getData = function(url){
 		dojo.io.bind({
@@ -110,12 +111,12 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 			}),
 			mimetype: "text/json"
 		});
-	}
+	};
 
 	this.startSearch = function(searchStr, type, ignoreLimit){
 		// FIXME: need to add timeout handling here!!
 		this._preformSearch(searchStr, type, ignoreLimit);
-	}
+	};
 
 	this._preformSearch = function(searchStr, type, ignoreLimit){
 		//
@@ -188,25 +189,25 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 			}
 		}
 		this.provideSearchResults(ret);
-	}
+	};
 
 	this.provideSearchResults = function(resultsDataPairs){
-	}
+	};
 
 	this.addData = function(pairs){
 		// FIXME: incredibly naive and slow!
 		this.data = this.data.concat(pairs);
-	}
+	};
 
 	this.setData = function(pdata){
 		// populate this.data and initialize lookup structures
 		this.data = pdata;
-	}
+	};
 	
 	if(dataPairs){
 		this.setData(dataPairs);
 	}
-}
+};
 
 dojo.widget.defineWidget(
 	"dojo.widget.ComboBox",
@@ -220,9 +221,6 @@ dojo.widget.defineWidget(
 		dataProvider: null,
 	
 		startSearch: function(searchString){},
-		openResultList: function(results){},
-		clearResultList: function(){},
-		hideResultList: function(){},
 		selectNextResult: function(){},
 		selectPrevResult: function(){},
 		setSelectedResult: function(){},
@@ -251,10 +249,12 @@ dojo.widget.defineWidget(
 		_highlighted_option: null,
 		_prev_key_backspace: false,
 		_prev_key_esc: false,
-		_result_list_open: false,
 		_gotFocus: false,
 		_mouseover_list: false,
 		dataProviderClass: "dojo.widget.ComboBoxDataProvider",
+
+		//the old implementation has builtin fade toggle, so we mimic it here
+		dropdownToggle: "fade",
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlComboBox.css"),
@@ -373,7 +373,7 @@ dojo.widget.defineWidget(
 			}
 			switch(keyCode){
 	 			case k.KEY_DOWN_ARROW:
-					if(!this._result_list_open){
+					if(!this.popupWidget.isShowingNow){
 						this.startSearchFromInput();
 					}
 					this.highlightNextOption();
@@ -385,13 +385,13 @@ dojo.widget.defineWidget(
 					return;
 				case k.KEY_ENTER:
 					// prevent submitting form if we press enter with list open
-					if(this._result_list_open){
+					if(this.popupWidget.isShowingNow){
 						dojo.event.browser.stopEvent(evt);
 					}
 					// fallthrough
 				case k.KEY_TAB:
 					// using linux alike tab for autocomplete
-					if(!this.autoComplete && this._result_list_open && this._highlighted_option){
+					if(!this.autoComplete && this.popupWidget.isShowingNow && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
 						this.selectOption({ 'target': this._highlighted_option, 'noHide': false});
 	
@@ -403,7 +403,7 @@ dojo.widget.defineWidget(
 					}
 					break;
 				case k.KEY_SPACE:
-					if(this._result_list_open && this._highlighted_option){
+					if(this.popupWidget.isShowingNow && this._highlighted_option){
 						dojo.event.browser.stopEvent(evt);
 						this.selectOption();
 						this.hideResultList();
@@ -517,11 +517,13 @@ dojo.widget.defineWidget(
 		},
 
 		itemMouseOver: function(evt){
+			if (evt.target === this.optionsListNode) { return; }
 			this.focusOptionNode(evt.target);
 			dojo.html.addClass(this._highlighted_option, "dojoComboBoxItemHighlight");
 		},
 
 		itemMouseOut: function(evt){
+			if (evt.target === this.optionsListNode) { return; }
 			this.blurOptionNode();
 		},
 
@@ -545,9 +547,17 @@ dojo.widget.defineWidget(
 			this.dataProvider = new dpClass();
 			this.dataProvider.init(this, this.getFragNodeRef(frag));
 
-			// Prevent IE bleed-through problem
-			this.optionsIframe = new dojo.html.BackgroundIframe(this.optionsListWrapper);
-			this.optionsIframe.size([0,0,0,0]);
+			this.popupWidget = new dojo.widget.createWidget("PopupContainer", {toggle: this.dropdownToggle, toggleDuration: this.toggleDuration});
+			this.addChild(this.popupWidge); //so that the popup will be destroyed when this combobox is destroyed
+			this.optionsListNode = this.popupWidget.domNode;
+			dojo.body().appendChild(this.optionsListNode);
+			dojo.html.addClass(this.optionsListNode, 'dojoComboBoxOptions');
+			dojo.event.connect(this.optionsListNode, 'onclick', this, 'selectOption');
+			dojo.event.connect(this.optionsListNode, 'onmouseover', this, '_onMouseOver');
+			dojo.event.connect(this.optionsListNode, 'onmouseout', this, '_onMouseOut');
+			
+			dojo.event.connect(this.optionsListNode, "onmouseover", this, "itemMouseOver");
+			dojo.event.connect(this.optionsListNode, "onmouseout", this, "itemMouseOut");
 		},
 
 		focus: function(){
@@ -588,8 +598,6 @@ dojo.widget.defineWidget(
 					td.className = "dojoComboBoxItem "+((even) ? "dojoComboBoxItemEven" : "dojoComboBoxItemOdd");
 					even = (!even);
 					this.optionsListNode.appendChild(td);
-					dojo.event.connect(td, "onmouseover", this, "itemMouseOver");
-					dojo.event.connect(td, "onmouseout", this, "itemMouseOut");
 				}
 			}
 
@@ -685,9 +693,6 @@ dojo.widget.defineWidget(
 				dojo.lang.setTimeout(this, "sizeBackgroundIframe", 100);
 				return;
 			}
-			if(this._result_list_open){
-				this.optionsIframe.size([0,0,mb.width,mb.height]);
-			}
 		},
 
 		selectOption: function(evt){
@@ -732,20 +737,11 @@ dojo.widget.defineWidget(
 		},
 
 		clearResultList: function(){
-			var oln = this.optionsListNode;
-			while(oln.firstChild){
-				dojo.event.disconnect(oln.firstChild, "onmouseover", this, "itemMouseOver");
-				dojo.event.disconnect(oln.firstChild, "onmouseout", this, "itemMouseOut");
-				oln.removeChild(oln.firstChild);
-			}
+			this.optionsListNode.innerHTML = "";  // browser natively knows how to collect this memory
 		},
 
 		hideResultList: function(){
-			if(this._result_list_open){
-				this._result_list_open = false;
-				this.optionsIframe.size([0,0,0,0]);
-				dojo.lfx.fadeHide(this.optionsListNode, this.fadeTime).play();
-			}
+			this.popupWidget.close();
 		},
 
 		showResultList: function(){
@@ -757,20 +753,23 @@ dojo.widget.defineWidget(
 					visibleCount = childs.length;
 				}
 
-				with(this.optionsListNode.style){
-					display = "";
-					height = ((visibleCount) ? (dojo.html.getMarginBox(childs[0]).height * visibleCount) : 0)+"px";
-					width = dojo.html.getMarginBox(this.cbTableNode).width-2+"px";
+				with(this.optionsListNode.style)
+				{
+					if(visibleCount == childs.length){
+						//no scrollbar is required, so unset height to let browser calcuate it,
+						//as in css, overflow is already set to auto
+						height = "";
+					}else{
+						//show it first to get the correct dojo.style.getOuterHeight(childs[0])
+						display="";
+						//FIXME: shall we cache the height of the item?
+						height = visibleCount * dojo.html.getMarginBox(childs[0]).height +"px";
+						display = "none";
+					}
+					width = (dojo.html.getMarginBox(this.domNode).width-2)+"px";
+					
 				}
-				// only fadein once (flicker)
-				if(!this._result_list_open){
-					dojo.html.setOpacity(this.optionsListNode, 0);
-					dojo.lfx.fadeIn(this.optionsListNode, this.fadeTime).play();
-				}
-
-				// prevent IE bleed through
-				this._iframeTimer = dojo.lang.setTimeout(this, "sizeBackgroundIframe", 200);
-				this._result_list_open = true;
+				this.popupWidget.open(this.cbTableNode, this, this.downArrowNode);
 			}else{
 				this.hideResultList();
 			}
@@ -779,7 +778,7 @@ dojo.widget.defineWidget(
 		handleArrowClick: function(){
 			this._handleBlurTimer(true, 0);
 			this.tryFocus();
-			if(this._result_list_open){
+			if(this.popupWidget.isShowingNow){
 				this.hideResultList();
 			}else{
 				// forces full population of results, if they click
