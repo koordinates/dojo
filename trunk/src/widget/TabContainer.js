@@ -121,7 +121,7 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 			)
 		);
 
-		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
+		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected || (this.children.length==0)){
 			this.selectTab(tab);
 		} else {
 			this._hideTab(tab);
