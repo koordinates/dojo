@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.AccordionPane");
 
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.TitlePane");
 dojo.require("dojo.html.selection");
 

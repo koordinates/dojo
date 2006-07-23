@@ -10,6 +10,7 @@
  */
 dojo.provide("dojo.widget.Tree");
 
+dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");

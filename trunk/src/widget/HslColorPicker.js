@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.svg.HslColorPicker");
 
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.HslColorPicker");
 dojo.require("dojo.math");
