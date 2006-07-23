@@ -1,5 +1,6 @@
 dojo.provide("dojo.widget.validate");
 
+dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.widget.Parse");

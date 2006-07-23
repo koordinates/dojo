@@ -12,6 +12,7 @@ dojo.provide("dojo.widget.TreeV3");
 
 
 dojo.require("dojo.widget.TreeWithNode");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
