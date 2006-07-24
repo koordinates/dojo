@@ -24,6 +24,8 @@
 //			- libraryScriptUri: ""
 //			- iePreventClobber: false
 //			- ieClobberMinimal: true
+//			- locale: undefined
+//			- extraLocale: undefined
 //			- preventBackButtonFix: true
 //			- searchIds: []
 //			- parseWidgets: true
@@ -81,6 +83,9 @@ dojo._currentContext = this;
 if(!dj_undef("document", dojo._currentContext)){
 	dojo._currentDocument = this.document;
 }
+
+// Override locale setting, if specified
+dojo.locale  = djConfig.locale;
 
 //TODOC:  HOW TO DOC THIS?
 dojo.version = {
