@@ -235,6 +235,8 @@ dojo.widget.defineWidget(
 			}
 			if(dojo.html.hasAttribute(cells[i], "field")){
 				o.field=dojo.html.getAttribute(cells[i],"field");
+			} else {
+				o.field="field"+i;
 			}
 			if(dojo.html.hasAttribute(cells[i], "format")){
 				o.format=dojo.html.getAttribute(cells[i],"format");
@@ -291,12 +293,13 @@ dojo.widget.defineWidget(
 		if(rows.length == 0 && this.columns.length == 0) return;	//	there's no data, ignore me.
 
 		//	create a data constructor based on what we've got for the fields.
+		var self=this;
 		var ctor=function(row){
 			var obj = {};
-			for(var i=0; i<this.columns.length; i++){
+			for(var i=0; i<self.columns.length; i++){
 				var o = obj;
 				var data = row.cells[i].innerHTML;
-				var p = this.columns[i].getField();
+				var p = self.columns[i].getField();
 				if(p.indexOf(".") > -1){
 					p = p.split(".");
 					while(p.length>1){
@@ -307,9 +310,9 @@ dojo.widget.defineWidget(
 					p = p[0];
 				}
 
-				if(this.columns[j].sortType=="__markup__") o[p] = String(data);
+				if(self.columns[i].sortType=="__markup__") o[p] = String(data);
 				else{
-					var type = this.columns[j].getType();
+					var type = self.columns[i].getType();
 					if(data){
 						o[p] = new type(data);
 					} else {
@@ -322,22 +325,25 @@ dojo.widget.defineWidget(
 
 		//	we have initialization data, let's parse it.
 		var arr=[];
+		var selected=[];
 		for(var i=0; i<rows.length; i++){
 			var row = rows[i];
 			var o = ctor(row);	// yay.  magic.  love.  sigh.
 			o[this.valueField] = dojo.html.getAttribute(row,"value");
+			if(dojo.html.getAttribute(row,"selected")=="true"){
+				selected.push(o);
+			}
 			arr.push(o);
 		}
 		this.store.setData(arr);
 		
-		//	go find all the selections and make them
-		for(var i=0; i<rows.length; i++){
-			var row = rows[i];
-			if(dojo.html.getAttribute(row,"selected")=="true"){
-				this.select(o);
-			}
+		for(var i=0; i<selected.length; i++){
+			this.select(selected[i]);
 		}
 		this.renderSelections();
+
+		//	say that we are already initialized so that we don't kill anything
+		this.isInitialized=true;
 	},
 
 	//	standard events
@@ -755,7 +761,7 @@ dojo.widget.defineWidget(
 					head.className = this.headClass;
 				}
 				dojo.html.disableSelection(this.domNode);
-				this.parseColumns(head);
+				this.parseMetadata(head);
 
 				var header="td";
 				if(head.getElementsByTagName(header).length==0){
