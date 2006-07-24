@@ -3,6 +3,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.date");
+dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 
 dojo.widget.defineWidget(
@@ -138,8 +139,14 @@ dojo.widget.defineWidget(
 
 	setSelectedHour: function(evt) {
 		if(evt && evt.target) {
-			dojo.html.setClass(evt.target, this.classNames.selectedTime);
-			this.selectedTime["hour"] = evt.target.innerHTML;
+			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
+				var eventTarget = evt.target;
+			} else {
+				var eventTarget = evt.target.parentNode;
+			}
+			dojo.event.browser.stopEvent(evt);
+			dojo.html.setClass(eventTarget, this.classNames.selectedTime);
+			this.selectedTime["hour"] = eventTarget.innerHTML;
 		} else if (!isNaN(evt)) {
 			var hourNodes = this.hourContainerNode.getElementsByTagName("td");
 			if(hourNodes.item(evt)) {
@@ -160,8 +167,14 @@ dojo.widget.defineWidget(
 
 	setSelectedMinute: function(evt) {
 		if(evt && evt.target) {
-			dojo.html.setClass(evt.target, this.classNames.selectedTime);
-			this.selectedTime["minute"] = evt.target.innerHTML;
+			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
+				var eventTarget = evt.target;
+			} else {
+				var eventTarget = evt.target.parentNode;
+			}
+			dojo.event.browser.stopEvent(evt);
+			dojo.html.setClass(eventTarget, this.classNames.selectedTime);
+			this.selectedTime["minute"] = eventTarget.innerHTML;
 		} else if (!isNaN(evt)) {
 			var minuteNodes = this.minuteContainerNode.getElementsByTagName("td");
 			if(minuteNodes.item(evt)) {
@@ -181,8 +194,14 @@ dojo.widget.defineWidget(
 
 	setSelectedAmPm: function(evt) {
 		if(evt && evt.target) {
-			dojo.html.setClass(evt.target, this.classNames.selectedTime);
-			this.selectedTime["amPm"] = evt.target.innerHTML;
+			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
+				var eventTarget = evt.target;
+			} else {
+				var eventTarget = evt.target.parentNode;
+			}
+			dojo.event.browser.stopEvent(evt);
+			dojo.html.setClass(eventTarget, this.classNames.selectedTime);
+			this.selectedTime["amPm"] = eventTarget.innerHTML;
 		} else {
 			evt = evt ? 0 : 1;
 			var amPmNodes = this.amPmContainerNode.getElementsByTagName("td");
