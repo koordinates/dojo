@@ -160,9 +160,11 @@ dojo.data.SimpleStore = function(/* array? */json){
 dojo.lang.extend(dojo.data.SimpleStore, {
 	getField:function(/*object*/obj, /*string*/field){
 		//	helper to get the nested value if needed.
-		var parts=field.split("."),i=0,obj=o;
-		do{ obj=obj[parts[i++]]; } while (i<parts.length && obj);
-		return (obj!=dj_global)?obj:null; // object
+		var parts=field.split("."), i=0, o=obj;
+		do{ 
+			o = o[parts[i++]]; 
+		} while (i<parts.length && o);
+		return (o!=dj_global)?o:null; // object
 	},
 	onSetData:function(){ },
 	onClearData:function(){ },

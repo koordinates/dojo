@@ -5,6 +5,7 @@ dojo.require("dojo.data.SimpleStore");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.util");
 dojo.require("dojo.html.style");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
@@ -21,32 +22,6 @@ dojo.widget.defineWidget(
 			index:0,
 			direction:0
 		}];
-
-		//	connect up binding listeners here.
-		dojo.event.connect(this.store, "onSetData", this, function(){
-			this.store.forEach(function(element){
-				element.isSelected = false;
-			});
-			this.render();
-		});
-		dojo.event.connect(this.store, "onClearData", this, function(){
-			this.render();
-		});
-		dojo.event.connect(this.store, "onAddData", this, function(addedObject){
-			var row=this.createRow(addedObject);
-			this.domNode.tBodies[0].appendChild(row);
-			this.render();
-		});
-		dojo.event.connect(this.store, "onRemoveData", this, function(removedObject){
-			var rows = this.domNode.tBodies[0].rows;
-			for(var i=0; i<rows.length; i++){
-				if(this.getDataByRow(rows[i]) == removedObject.src){
-					rows[i].parentNode.removeChild(rows[i]);
-					break;
-				}
-			}
-			this.render();
-		});
 	},
 
 	//	widget properties
@@ -686,7 +661,34 @@ dojo.widget.defineWidget(
 	},
 
 	//	widget lifetime handlers
-//	initialize: function(){ },
+	initialize: function(){ 
+		var self=this;
+		//	connect up binding listeners here.
+		dojo.event.connect(this.store, "onSetData", function(){
+			self.store.forEach(function(element){
+				element.isSelected = false;
+			});
+			self.render();
+		});
+		dojo.event.connect(this.store, "onClearData", function(){
+			self.render();
+		});
+		dojo.event.connect(this.store, "onAddData", function(addedObject){
+			var row=self.createRow(addedObject);
+			self.domNode.tBodies[0].appendChild(row);
+			self.render();
+		});
+		dojo.event.connect(this.store, "onRemoveData", function(removedObject){
+			var rows = self.domNode.tBodies[0].rows;
+			for(var i=0; i<rows.length; i++){
+				if(self.getDataByRow(rows[i]) == removedObject.src){
+					rows[i].parentNode.removeChild(rows[i]);
+					break;
+				}
+			}
+			self.render();
+		});
+	},
 //	fillInTemplate: function(args, frag){ },
 	postCreate: function(){
 		//	summary
