@@ -301,6 +301,43 @@ dojo.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
 	subclass['super'] = superclass.prototype;
 }
 
+dojo._mixin = function(/*Object*/ obj, /*Object*/ props){
+	// summary:	Adds all properties and methods of props to obj.
+	var tobj = {};
+	for(var x in props){
+		// the "tobj" condition avoid copying properties in "props"
+		// inherited from Object.prototype.  For example, if obj has a custom
+		// toString() method, don't overwrite it with the toString() method
+		// that props inherited from Object.protoype
+		if(typeof tobj[x] == "undefined" || tobj[x] != props[x]) {
+			obj[x] = props[x];
+		}
+	}
+	// IE doesn't recognize custom toStrings in for..in
+	if(dojo.render.html.ie && dojo.lang.isFunction(props["toString"]) && props["toString"] != obj["toString"]) {
+		obj.toString = props.toString;
+	}
+	return obj;
+}
+
+dojo.mixin = function(/*Object*/ obj, /*Object...*/props){
+	// summary:	Adds all properties and methods of props to obj.
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo._mixin(obj, arguments[i]);
+	}
+	return obj; // Object
+}
+
+dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
+	// summary:	Adds all properties and methods of props to constructors prototype,
+	//			making them available to all instances created with constructor.
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo._mixin(constructor.prototype, arguments[i]);
+	}
+	return constructor;
+}
+
+
 dojo.render = (function(){
 	//TODOC: HOW TO DOC THIS?
 	// summary: Details rendering support, OS and browser of the current environment.
