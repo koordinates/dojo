@@ -162,3 +162,21 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 		}
 	}
 };
+
+(function(){
+	var extra = djConfig.extraLocale;
+	if (extra) {
+		var req = dojo.requireLocalization;
+		dojo.requireLocalization = function(m, b, locale){
+			req(m,b,locale);
+			if (locale) return;
+			if (djConfig.extraLocale instanceof Array){
+				for (var i=0; i<extra.length; i++){
+					req(m,b,extra[i]);
+				}
+			}else{
+				req(m,b,extra);
+			}
+		}
+	}
+})();
