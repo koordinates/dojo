@@ -67,6 +67,24 @@ dojo.widget.defineWidget(
 	getDataByRow: function(/*HTMLTableRow*/row){
 		return this.store.getDataByKey(dojo.html.getAttribute(row, "value"));
 	},
+
+	getSelectedData: function(){
+		//	summary
+		//	returns all objects that are selected.
+		var data=this.store.get();
+		var a=[];
+		for(var i=0; i<data.length; i++){
+			if(data[i].isSelected){
+				a.push(data[i].src);
+			}
+		}
+		if(this.multiple){
+			return a;		//	array
+		} else {
+			return a[0];	//	object
+		}
+	},
+	
 	isSelected: function(/* object */obj){
 		var data = this.store.get();
 		for(var i=0; i<data.length; i++){
