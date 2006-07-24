@@ -4,6 +4,7 @@ dojo.require("dojo.date");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
+dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 dojo.require("dojo.date");
 
@@ -313,21 +314,26 @@ dojo.widget.defineWidget(
 		},
 		
 		onSetDate: function(evt) {
+			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
+				var eventTarget = evt.target;
+			} else {
+				var eventTarget = evt.target.parentNode;
+			}
 			dojo.event.browser.stopEvent(evt);
 			this.selectedIsUsed = 0;
 			this.todayIsUsed = 0;
 			var month = this.firstSaturday.month;
 			var year = this.firstSaturday.year;
-			if (dojo.html.hasClass(evt.target, this.classNames["next"])) {
+			if (dojo.html.hasClass(eventTarget, this.classNames["next"])) {
 				month = ++month % 12;
 				// if month is now == 0, add a year
 				year = (month==0) ? ++year : year;
-			} else if (dojo.html.hasClass(evt.target, this.classNames["previous"])) {
+			} else if (dojo.html.hasClass(eventTarget, this.classNames["previous"])) {
 				month = --month % 12;
 				// if month is now == 0, add a year
 				year = (month==11) ? --year : year;
 			}
-			this.date = new Date(year, month, evt.target.innerHTML);
+			this.date = new Date(year, month, eventTarget.innerHTML);
 			this.setDate(dojo.widget.DatePicker.util.toRfcDate(this.date));
 			this.initUI();
 		}
