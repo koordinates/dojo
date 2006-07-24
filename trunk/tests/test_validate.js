@@ -193,6 +193,10 @@ function test_validate_isInRange(){
 	jum.assertFalse("test22", dojo.validate.isInRange('123.456.789,00 �',  {max: 123456788, decimal: ","} ));
 	jum.assertFalse("test23", dojo.validate.isInRange('123.456.789,00 �',  {min: 123456790, decimal: ","} ));
 	jum.assertFalse("test24", dojo.validate.isInRange('- T123 456 789-00', {decimal: "-", min:0} ));
+
+	// test non umber
+	jum.assertFalse("test25", dojo.validate.isInRange( 'a'));
+
 }
 
 function test_validate_isInteger(){

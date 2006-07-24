@@ -99,6 +99,9 @@ dojo.validate.isCurrency = function(value, flags) {
   @return  true or false.
 */
 dojo.validate.isInRange = function(value, flags) {
+	if(isNaN(value)){
+		return false;
+	}
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
 	var max = (typeof flags.max == "number") ? flags.max : Infinity;
