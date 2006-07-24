@@ -8,7 +8,7 @@
 	// call to dojo.writeIncludes(); without the true
 	// See the example test_Custom_Widget_Debugging.html
 </script>
-<script language="JavaScript" type="text/javascript" src="../../../dojo/dojo.js"></script>
+<script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
 
 <script>
 	dojo.require('dojo.namespace');
@@ -16,7 +16,7 @@
 
 	// declaring a custom button widget that overrides a single function
 	dojo.require('dojo.widget.Button');
-	dojo.widget.defineWidget('myown.TestButton', dojo.widget.html.Button, {
+	dojo.widget.defineWidget('myown.TestButton', dojo.widget.Button, {
 
 		// override the buttonClick() method declared in Button
 		buttonClick: function() {
