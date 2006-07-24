@@ -1,4 +1,3 @@
-
 <meta http-equiv="Context-Type" content="text/html; charset=UTF-8">
 <!--
 <!DOCTYPE html
@@ -19,7 +18,7 @@
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
-	dojo.require("dojo.debug.Firebug");
+//	dojo.require("dojo.debug.Firebug");
 	dojo.require("dojo.widget.FilteringTable");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -45,14 +44,14 @@ body {
 	];
 
 	testData = [
-		{ "ColumnA": "abc", "ColumnB": "123", "ColumnC": "!@#" },
-		{ "ColumnA": "def", "ColumnB": "456", "ColumnC": "asdfasd" },
-		{ "ColumnA": "hij", "ColumnB": "789", "ColumnC": "asdfasdf" },
-		{ "ColumnA": "klm", "ColumnB": "098", "ColumnC": "asdfasdf"},
-		{ "ColumnA": "opq", "ColumnB": "765", "ColumnC": "qowie" },
-		{ "ColumnA": "rst", "ColumnB": "432", "ColumnC": "xcvms" },
-		{ "ColumnA": "uvw", "ColumnB": "101", "ColumnC": "lwqkejr" },
-		{ "ColumnA": "xyz", "ColumnB": "234", "ColumnC": "zpxocivu" }
+		{ Id:0, "ColumnA": "abc", "ColumnB": "123", "ColumnC": "!@#" },
+		{ Id:1, "ColumnA": "def", "ColumnB": "456", "ColumnC": "asdfasd" },
+		{ Id:2, "ColumnA": "hij", "ColumnB": "789", "ColumnC": "asdfasdf" },
+		{ Id:3, "ColumnA": "klm", "ColumnB": "098", "ColumnC": "asdfasdf"},
+		{ Id:4, "ColumnA": "opq", "ColumnB": "765", "ColumnC": "qowie" },
+		{ Id:5, "ColumnA": "rst", "ColumnB": "432", "ColumnC": "xcvms" },
+		{ Id:6, "ColumnA": "uvw", "ColumnB": "101", "ColumnC": "lwqkejr" },
+		{ Id:7, "ColumnA": "xyz", "ColumnB": "234", "ColumnC": "zpxocivu" }
 	];
 
 	dojo.addOnLoad(function() {
