@@ -717,7 +717,14 @@ dojo.widget.defineWidget(
 				}
 			}
 
-			var body = this.domNode.tBodies[0];
+			// if the table doesn't have a tbody already, add one and grab a reference to it
+			if (this.domNode.tBodies.length < 1) {
+				var body = document.createElement("tbody");
+				this.domNode.appendChild(body);
+			} else {
+				var body = this.domNode.tBodies[0];
+			}
+
 			if (this.tbodyClass.length > 0){
 				body.className = this.tbodyClass;
 			}
