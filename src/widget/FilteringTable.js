@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.FilteringTable");
 
 dojo.require("dojo.date");
+dojo.require("dojo.json");
 dojo.require("dojo.data.SimpleStore");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.util");
@@ -61,10 +62,10 @@ dojo.widget.defineWidget(
 
 	//	custom data access.
 	getByRow: function(/*HTMLTableRow*/row){
-		return this.store.getByValue(dojo.html.getAttribute(row, "value")); 
+		return this.store.getByKey(dojo.html.getAttribute(row, "value")); 
 	},
 	getDataByRow: function(/*HTMLTableRow*/row){
-		return this.store.getDataByValue(dojo.html.getAttribute(row, "value"));
+		return this.store.getDataByKey(dojo.html.getAttribute(row, "value"));
 	},
 	isSelected: function(/* object */obj){
 		var data = this.store.get();
@@ -124,7 +125,7 @@ dojo.widget.defineWidget(
 		this.onDataSelect(obj);
 	},
 	selectByValue: function(/*string*/ val){
-		this.select(this.getDataByValue(val));
+		this.select(this.getDataByKey(val));
 	},
 	selectByIndex: function(/*number*/ idx){
 		this.select(this.getDataByIndex(idx));
@@ -145,7 +146,7 @@ dojo.widget.defineWidget(
 		this.onDataToggle(obj);
 	},
 	toggleSelectionByValue: function(/*string*/val){
-		this.toggleSelection(this.getDataByValue(val));
+		this.toggleSelection(this.getDataByKey(val));
 	},
 	toggleSelectionByIndex: function(/*number*/idx){
 		this.toggleSelection(this.getDataByIndex(idx));
@@ -183,6 +184,7 @@ dojo.widget.defineWidget(
 				obj[p] = this._meta[p];
 			}
 		}
+		if(!obj.label) obj.label=obj.field;
 		return obj;	//	object
 	},
 	parseMetadata: function(/* HTMLTableHead */head){
@@ -301,15 +303,23 @@ dojo.widget.defineWidget(
 		};
 
 		//	we have initialization data, let's parse it.
+		var arr=[];
 		for(var i=0; i<rows.length; i++){
 			var row = rows[i];
 			var o = ctor(row);	// yay.  magic.  love.  sigh.
 			o[this.valueField] = dojo.html.getAttribute(row,"value");
-			this.store.addData(o);
+			arr.push(o);
+		}
+		this.store.setData(arr);
+		
+		//	go find all the selections and make them
+		for(var i=0; i<rows.length; i++){
+			var row = rows[i];
 			if(dojo.html.getAttribute(row,"selected")=="true"){
 				this.select(o);
 			}
 		}
+		this.renderSelections();
 	},
 
 	//	standard events
@@ -456,12 +466,12 @@ dojo.widget.defineWidget(
 		return function(rowA, rowB){
 			var a=self.getDataByRow(rowA);
 			var b=self.getDataByRow(rowB);
-			var pa=self.getProperty(a, pField);
-			var pb=self.getProperty(b, pField);
+			var pa=self.store.getField(a, pField);
+			var pb=self.store.getField(b, pField);
 			var ret=pDirection*psort(pa,pb);
 			if(ret==0 && sField){
-				var sa=self.getProperty(a, sField);
-				var sb=self.getProperty(b, sField);
+				var sa=self.store.getField(a, sField);
+				var sb=self.store.getField(b, sField);
 				ret=sDirection*ssort(sa, sb);
 			}
 			return ret;
@@ -472,7 +482,7 @@ dojo.widget.defineWidget(
 	createRow: function(/* object */obj){
 		var row=document.createElement("tr");
 		dojo.html.disableSelection(row);
-		if(obj.key){
+		if(obj.key != null){
 			row.setAttribute("value", obj.key);
 		}
 		for(var j=0; j<this.columns.length; j++){
@@ -550,6 +560,28 @@ dojo.widget.defineWidget(
 		//	summary
 		//	initializes the table of data
 		this.isInitialized=false;
+
+		//	if there is no thead, create it now.
+		var head=this.domNode.getElementsByTagName("thead")[0];
+		if(head.getElementsByTagName("tr").length == 0){
+			//	render the column code.
+			var row=document.createElement("tr");
+			for(var i=0; i<this.columns.length; i++){
+				var cell=document.createElement("td");
+				cell.setAttribute("align", this.columns[i].align);
+				cell.setAttribute("valign", this.columns[i].valign);
+				dojo.html.disableSelection(cell);
+				cell.innerHTML=this.columns[i].label;
+				row.appendChild(cell);
+
+				//	attach the events.
+				if(!this.columns[i].noSort){
+					dojo.event.connect(cell, "onclick", this, "onSort");
+				}
+			}
+			dojo.html.prependChild(row, head);
+		}
+		
 		if(this.store.get().length == 0){
 			return false;
 		}
@@ -717,6 +749,8 @@ dojo.widget.defineWidget(
 						dojo.event.connect(headers[i], "onclick", this, "onSort");
 					}
 				}
+			} else {
+				this.domNode.appendChild(document.createElement("thead"));
 			}
 
 			// if the table doesn't have a tbody already, add one and grab a reference to it
@@ -732,7 +766,5 @@ dojo.widget.defineWidget(
 			}
 			this.parseData(body);
 		}
-
-		this.render();
 	}
 });
