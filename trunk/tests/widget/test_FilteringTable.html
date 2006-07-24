@@ -12,6 +12,25 @@
 	<script type="text/javascript">
 		dojo.require("dojo.widget.FilteringTable");
 		dojo.hostenv.writeIncludes();
+
+		var theJSONData=[
+			{ Id:1, name:"William Smith", dateAdded:"1/1/2004", accounts:[ 2,3,4 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+			{ Id:2, name:"Davy Jones", dateAdded:"12/15/2001", accounts:[ ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+			{ Id:3, name:"Lucinda Williams", dateAdded:"4/15/2000", accounts:[ 2,3,4,5,6,7,8,9 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+			{ Id:4, name:"Robert Appleton", dateAdded:"1/1/2006", accounts:[ 2,3,4,5,6 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+			{ Id:5, name:"Wilma Flintstone", dateAdded:"6/21/2005", accounts:[ 2,3,4 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+			{ Id:6, name:"Charo", dateAdded:"1/1/2004", accounts:[ 2,3,4,5,6,7 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+			{ Id:7, name:"Fluffy the Lamb", dateAdded:"9/18/2004", accounts:[ 4 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
+		];
+		
+		function populateTable(){
+			var w=dojo.widget.byId("fromJSONData");
+			if(w.store.get().length > 0){
+				alert("you already pressed this button :)");
+				return;
+			}
+			w.store.setData(theJSONData);
+		}
 	</script>
 	<style type="text/css">
 		/***
@@ -32,8 +51,17 @@
 			font-weight:normal;
 		}
 		table thead td, table thead th {
-			background:#94BEFF;
+			background-image:url(images/ft-head.gif);
+			background-repeat:no-repeat;
+			background-position:top right;
 		}
+		table thead td.selectedUp, table thead th.selectedUp {
+			background-image:url(images/ft-headup.gif);
+		}
+		table thead td.selectedDown, table thead th.selectedDown {
+			background-image:url(images/ft-headdown.gif);
+		}
+			
 		table tbody tr td{
 			border-bottom:1px solid #ddd;
 		}
@@ -52,6 +80,7 @@
 	</style>
 </head>
 <body>
+	<h1>Filtering Table</h1>
 	<p>
 	The FilteringTable widget is the second Dojo widget that can take a plain table of data
 	and add functionality to it.  Like SortableTable, you can sort columns by clicking on the
@@ -113,17 +142,18 @@
 	</tbody>
 	</table>
 	<h2>Filtering Table, populated from JSON data</h2>
-	<!--table dojoType="filteringTable" id="fromJSONData" 
+	<input type="button" value="Click to populate using JSON data" onclick="populateTable();" />
+	<table dojoType="filteringTable" id="fromJSONData" 
 		multiple="true" alternateRows="true"
-		cellpadding="0" cellspacing="0" border="0">
+		cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
 	<thead>
 		<tr>
 			<th field="name" dataType="String">Name</th>
-			<th field="dateAdded" dataType="Date">Date Added</th>
-			<th field="accounts.length" dataType="Number"></th>
-			<th dataType="accounts.description.html">Label</th>
+			<th field="dateAdded" dataType="Date" align="center">Date Added</th>
+			<th field="accounts.length" dataType="Number" align="center"># of accounts</th>
+			<th field="description.html" dataType="html">Description</th>
 		</tr>
 	</thead>
-	</table-->
+	</table>
 </body>
 </html>

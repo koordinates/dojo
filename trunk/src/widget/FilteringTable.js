@@ -547,10 +547,6 @@ dojo.widget.defineWidget(
 					cell.appendChild(document.createTextNode(val));
 				}
 			}
-			// FIXME: this is an ugly, ugly hack for the last column and scrolling.
-			if(j == this.columns.length-1){
-				cell.innerHTML+="&nbsp;&nbsp;&nbsp;&nbsp;";
-			}
 			row.appendChild(cell);
 		}
 		return row;
@@ -724,6 +720,7 @@ dojo.widget.defineWidget(
 			self.store.forEach(function(element){
 				element.isSelected = false;
 			});
+			self.isInitialized=false;
 			self.render();
 		});
 		dojo.event.connect(this.store, "onClearData", function(){
