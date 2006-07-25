@@ -210,10 +210,13 @@ dojo.widget.defineWidget(
 		
 		//restore size of the domnode, see comment in
 		//function onShow()
-		with(this.domNode.style){
-			width=this.openedSize.w;
-			height=this.openedSize.h;
+		if(this.openedSize){
+			with(this.domNode.style){
+				width=this.openedSize.w;
+				height=this.openedSize.h;
+			}
 		}
+		
 		this.processQueue();
 	}
 });
