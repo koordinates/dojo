@@ -116,7 +116,7 @@ dojo.data.SimpleStore = function(/* array? */json){
 		data.push(o);
 		this.onAddData(o);
 	};
-	this.addDataRange = function(/*arr*/arr){
+	this.addDataRange = function(/*array*/arr){
 		//	summary
 		//	Add a range of objects to the internal data array.
 		var objects=[];
@@ -169,7 +169,12 @@ dojo.lang.extend(dojo.data.SimpleStore, {
 		//	helper to get the nested value if needed.
 		var parts=field.split("."), i=0, o=obj;
 		do{ 
-			o = o[parts[i++]]; 
+			if(parts[i].indexOf("()")>-1){
+				var temp=parts[i++].split("()")[0];
+				o = o[temp]();
+			} else {
+				o = o[parts[i++]];
+			}
 		} while (i<parts.length && o);
 		return (o!=dj_global)?o:null; // object
 	},
