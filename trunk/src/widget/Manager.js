@@ -154,18 +154,20 @@ dojo.widget.manager = new function(){
 		return dojo.lang.map(widgetPackages, function(elt) { return(elt!==true ? elt : undefined); });
 	}
 	
-	this.getImplementation = function(widgetName, ctorObject, mixins){
+	this.getImplementation = function(widgetName, ctorObject, mixins, namespace){
 		// try and find a name for the widget
-		var impl = this.getImplementationName(widgetName);
+		var impl = this.getImplementationName(widgetName, namespace);
 		if(impl){ 
 			// var tic = new Date();
-			var ret = new impl(ctorObject);
+			var ret;
+			if(ctorObject){ret = new impl(ctor);}
+			else{ret = new impl();}
 			// dojo.debug(new Date() - tic);
 			return ret;
 		}
 	}
 
-	this.getImplementationName = function(widgetName){
+	this.getImplementationName = function(widgetName, namespace){
 		/*
 		 * This is the overly-simplistic implemention of getImplementation (har
 		 * har). In the future, we are going to want something that allows more
@@ -176,13 +178,17 @@ dojo.widget.manager = new function(){
 		 * insensitive, which does not necessarialy mesh with the markup which
 		 * can construct a widget.
 		 */
-
+		if(!namespace){namespace="dojo";}
 		var lowerCaseWidgetName = widgetName.toLowerCase();
 
-		var impl = knownWidgetImplementations[lowerCaseWidgetName];
+		if(!knownWidgetImplementations[namespace]){knownWidgetImplementations[namespace]={};}
+		
+		var impl = knownWidgetImplementations[namespace][lowerCaseWidgetName];
 		if(impl){
 			return impl;
 		}
+		var ns = dojo.getNamespace(namespace);
+		if(ns){ns.load(widgetName);}
 
 		// first store a list of the render prefixes we are capable of rendering
 		if(!renderPrefixCache.length){
@@ -199,30 +205,51 @@ dojo.widget.manager = new function(){
 			renderPrefixCache.push("");
 		}
 
-		// look for a rendering-context specific version of our widget name
-		for(var i = 0; i < widgetPackages.length; i++){
-			var widgetPackage = dojo.evalObjPath(widgetPackages[i]);
-			if(!widgetPackage) { continue; }
+		var nsSearchArr = null;
+		
+		var deprWarningLogged=false;
+		for(var counter = 0; counter < 2; counter++){	
+			// look for a rendering-context specific version of our widget name
+			for(var i = 0; i < widgetPackages.length; i++){
+				var widgetPackage = dojo.evalObjPath(widgetPackages[i]);
+				if(!widgetPackage) { continue; }
+				var pos = widgetPackages[i].indexOf(".");
+				if(pos > -1){
+					var n = widgetPackages[i].substring(0,pos);
+					if(n != namespace){
+						if(counter==0){continue;}
+						if(!deprWarningLogged){
+							deprWarningLogged = true;
+							dojo.deprecated('dojo.widget.Manager.getImplementationName', 'Wrong namespace ('+namespace+
+								') specified. Developers should specify correct namespaces for all non-Dojo widgets', "0.5");
+						}
+					}
+				}
 
-			for (var j = 0; j < renderPrefixCache.length; j++) {
-				if (!widgetPackage[renderPrefixCache[j]]) { continue; }
-				for (var widgetClass in widgetPackage[renderPrefixCache[j]]) {
-					if (widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
-					knownWidgetImplementations[lowerCaseWidgetName] =
-						widgetPackage[renderPrefixCache[j]][widgetClass];
-					return knownWidgetImplementations[lowerCaseWidgetName];
+				for (var j = 0; j < renderPrefixCache.length; j++) {
+					if (!widgetPackage[renderPrefixCache[j]]) { continue; }
+					for (var widgetClass in widgetPackage[renderPrefixCache[j]]) {
+						if (widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
+						knownWidgetImplementations[namespace][lowerCaseWidgetName] =
+							widgetPackage[renderPrefixCache[j]][widgetClass];
+						return knownWidgetImplementations[namespace][lowerCaseWidgetName];
+					}
+				}
+	
+				for (var j = 0; j < renderPrefixCache.length; j++) {
+					for (var widgetClass in widgetPackage) {
+						if (widgetClass.toLowerCase() != (renderPrefixCache[j] + lowerCaseWidgetName) &&
+							widgetClass.toLowerCase() != lowerCaseWidgetName) { continue; }
+		
+						knownWidgetImplementations[namespace][lowerCaseWidgetName] =
+							widgetPackage[widgetClass];
+						return knownWidgetImplementations[namespace][lowerCaseWidgetName];
+					}
 				}
 			}
-
-			for (var j = 0; j < renderPrefixCache.length; j++) {
-				for (var widgetClass in widgetPackage) {
-					if (widgetClass.toLowerCase() !=
-						(renderPrefixCache[j] + lowerCaseWidgetName)) { continue; }
-	
-					knownWidgetImplementations[lowerCaseWidgetName] =
-						widgetPackage[widgetClass];
-					return knownWidgetImplementations[lowerCaseWidgetName];
-				}
+			var newNs = dojo.findNamespaceForWidget(lowerCaseWidgetName);
+			if(newNs){
+				namespace = newNs.nsPrefix;	
 			}
 		}
 		
@@ -253,7 +280,7 @@ dojo.widget.manager = new function(){
 				if(child.checkSize ){
 					child.checkSize();
 				}
-			};
+			}
 		}catch(e){
 		}finally{
 			this.resizing=false;

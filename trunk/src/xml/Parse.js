@@ -96,22 +96,28 @@ dojo.xml.Parse = function(){
 			}
 		}
 
-		if(!optimizeForDojoML||(parsedNodeSet.namespace&&dojo.getNamespace(parsedNodeSet.namespace))){
+		var process = false;
+		if(!optimizeForDojoML){process=true;}
+		else if(parsedNodeSet.namespace&&dojo.getNamespace(parsedNodeSet.namespace)){process=true;}
+		else if(dojo.widget.tags[tagName]){
+			dojo.deprecated('dojo.xml.Parse.parseElement', 'Widgets should be placed in a defined namespace', "0.5");
+			process = true;	
+		}
+		
+		if(process){
 			var attributeSet = this.parseAttributes(node);
 			for(var attr in attributeSet){
 				if((!parsedNodeSet[tagName][attr])||(typeof parsedNodeSet[tagName][attr] != "array")){
 					parsedNodeSet[tagName][attr] = [];
 				}
 				parsedNodeSet[tagName][attr].push(attributeSet[attr]);
-			}
-	
+			}	
 			// FIXME: we might want to make this optional or provide cloning instead of
 			// referencing, but for now, we include a node reference to allow
 			// instantiated components to figure out their "roots"
 			parsedNodeSet[tagName].nodeRef = node;
 			parsedNodeSet.tagName = tagName;
 			parsedNodeSet.index = thisIdx||0;
-
 			//    dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet.namespace);
 		}
 
