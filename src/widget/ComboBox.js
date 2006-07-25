@@ -547,10 +547,11 @@ dojo.widget.defineWidget(
 			this.dataProvider = new dpClass();
 			this.dataProvider.init(this, this.getFragNodeRef(frag));
 
-			this.popupWidget = new dojo.widget.createWidget("PopupContainer", {toggle: this.dropdownToggle, toggleDuration: this.toggleDuration});
-			this.addChild(this.popupWidge); //so that the popup will be destroyed when this combobox is destroyed
+			this.popupWidget = new dojo.widget.createWidget("PopupContainer", 
+				{toggle: this.dropdownToggle, toggleDuration: this.toggleDuration});
+			dojo.event.connect(this, 'destroy', this.popupWidget, 'destroy');
 			this.optionsListNode = this.popupWidget.domNode;
-			dojo.body().appendChild(this.optionsListNode);
+			this.domNode.appendChild(this.optionsListNode);
 			dojo.html.addClass(this.optionsListNode, 'dojoComboBoxOptions');
 			dojo.event.connect(this.optionsListNode, 'onclick', this, 'selectOption');
 			dojo.event.connect(this.optionsListNode, 'onmouseover', this, '_onMouseOver');
