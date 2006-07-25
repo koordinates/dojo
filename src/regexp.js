@@ -375,7 +375,7 @@ dojo.regexp.currency = function(flags) {
 	if (typeof flags.symbol == "undefined") { flags.symbol = "$"; }
 	if (typeof flags.placement != "string") { flags.placement = "before"; }
 	if (typeof flags.signPlacement != "string") { flags.signPlacement = "before"; }
-	if (typeof flags.separator != "string") { flags.separator = ","; }
+	if (typeof flags.separator == "undefined") { flags.separator = ","; }
 	if (typeof flags.fractional == "undefined" && typeof flags.cents != "undefined") {
 		dojo.deprecated("dojo.regexp.currency: flags.cents", "use flags.fractional instead", "0.5");
 		flags.fractional = flags.cents;
