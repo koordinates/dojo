@@ -27,13 +27,13 @@ dojo.widget.defineWidget(
 			this.selectedTab="";
 
 			//override these classes to change the style
-			this.className="dojoRemoteTabController";
+			this["class"]="dojoRemoteTabController";
 			this.labelClass="dojoRemoteTab";
 		},
 
 		postCreate: function() {
 
-			dojo.html.addClass(this.domNode, this.className);
+			dojo.html.addClass(this.domNode, this["class"]);
 
 			if (this.tabContainer) {
 				dojo.addOnLoad(dojo.lang.hitch(this, function() {
