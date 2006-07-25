@@ -3,6 +3,11 @@ dojo.require("dojo.namespace");
 
 (function(){
 	//mapping of all widget short names to their full package names
+	// This is used for widget autoloading - no dojo.require() is necessary.
+	// If you use a widget in markup or create one dynamically, then this
+	// mapping is used to find and load any dependencies not already loaded.
+	// You should use your own namespace for any custom widgets.
+	// For extra widgets you use, dojo.declare() may be used to explicitly load them.
 	var map = {
 		html: {
 			"accordioncontainer": "dojo.widget.AccordionContainer",
