@@ -21,7 +21,7 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.cache = {};
 
 	this.init = function(cbox){
-		this.seachUrl = cbox.dataUrl;
+		this.searchUrl = cbox.dataUrl;
 	};
 
 	this.addToCache = function(keyword, data){
@@ -538,8 +538,7 @@ dojo.widget.defineWidget(
 			var dpClass;
 			if(this.mode == "remote"){
 				dpClass = dojo.widget.incrementalComboBoxDataProvider;
-			}
-			if(typeof this.dataProviderClass == "string"){
+			}else if(typeof this.dataProviderClass == "string"){
 				dpClass = dojo.evalObjPath(this.dataProviderClass)
 			}else{
 				dpClass = this.dataProviderClass;
