@@ -568,7 +568,7 @@ dojo.widget.defineWidget(
 				}
 				row.setAttribute("emptyRow","true");
 				for(var j=0; j<this.columns.length; j++){
-					cell = document.createElement("td");
+					var cell = document.createElement("td");
 					cell.innerHTML = "&nbsp;";
 					row.appendChild(cell);
 				}

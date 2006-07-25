@@ -243,7 +243,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			var reg = new RegExp("(^|\\s)"+oldTree.classPrefix, "g");
 			
 			while (elem = stack.pop()) {
-				for(i=0; i<elem.childNodes.length; i++) {
+				for(var i=0; i<elem.childNodes.length; i++) {
 					var childNode = elem.childNodes[i]
 					if (childNode.nodeType != 1) continue;
 					// change prefix for classes
