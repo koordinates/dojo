@@ -169,7 +169,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 								
 				var child = searchNode.children[searchIndex];
 				
-				if (child.isFolder || child.children && child.children.length) {					
+				if (child.isFolder || child.children && child.children.length) {
+					// push to stack to continue next search from this position
 					found = [searchNode, searchIndex];
 					stack.push(found);
 					//dojo.debug("child found "+searchNode+" index "+searchIndex);
@@ -226,7 +227,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		while (! (widgetId = node.widgetId) ) {
 			node = node.parentNode;
 		}
-		return dojo.widget.manager.getWidgetById(widgetId);
+		return dojo.widget.byId(widgetId);
 	},
 
 	onExpandClick: function(e){
