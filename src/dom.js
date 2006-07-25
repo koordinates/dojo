@@ -261,7 +261,7 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 		return req.responseXML;
 	*/
 	}else{
-		_document = dojo.doc();
+		var _document = dojo.doc();
 		if(_document.createElement){
 			// FIXME: this may change all tags to uppercase!
 			var tmp = _document.createElement("xml");
