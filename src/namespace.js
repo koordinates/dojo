@@ -87,3 +87,14 @@ dojo.getNamespace = function(nsPrefix){
 	
 	return djConfig.namespaces[nsPrefix];
 };
+
+dojo.findNamespaceForWidget = function(widgetName){
+	dojo.deprecated('dojo.findNamespaceForWidget', 'Widget not defined for a namespace'+
+		', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
+	widgetName = widgetName.toLowerCase();
+	for(x in djConfig.namespaces){
+		if(djConfig.namespaces[x].load(widgetName)){
+			return djConfig.namespaces[x];
+		}
+	}
+}
