@@ -51,7 +51,7 @@ dojo.widget.defineWidget(
 		templateString:   "<span style='float:${this.htmlfloat};'>"
 						+   "<input dojoAttachPoint='textbox' dojoAttachEvent='onblur;onfocus'"
 						+   " id='${this.widgetId}' name='${this.name}' "
-						+   " value='${this.value}' class='${this.className}' type='${this.type}' ></input>"
+						+   " value='${this.value}' class='${this.className}' type='${this.type}' >"
 						+ "</span>",
 	
 		// our DOM nodes
@@ -146,7 +146,7 @@ dojo.widget.defineWidget(
 		templateString:   "<span style='float:${this.htmlfloat};'>"
 						+   "<input dojoAttachPoint='textbox' type='${this.type}' dojoAttachEvent='onblur;onfocus;onkeyup'"
 						+     " id='${this.widgetId}' name='${this.name}' size='${this.size}' maxlength='${this.maxlength}'"
-						+     " value='${this.value}' class='${this.className}' style=''></input>"
+						+     " value='${this.value}' class='${this.className}' style=''>"
 						+   "<span dojoAttachPoint='invalidSpan' class='${this.invalidClass}'>${this.invalidMessage}</span>"
 						+   "<span dojoAttachPoint='missingSpan' class='${this.missingClass}'>${this.missingMessage}</span>"
 						+   "<span dojoAttachPoint='rangeSpan' class='${this.rangeClass}'>${this.rangeMessage}</span>"
