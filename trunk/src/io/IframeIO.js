@@ -157,7 +157,7 @@ dojo.io.IframeTransport = new function(){
 						break;
 					}
 				}
-			}else{
+			}else if(req.formNode){
 				var input = req.formNode[key];
 				req.formNode.removeChild(input);
 				req.formNode[key] = null;
