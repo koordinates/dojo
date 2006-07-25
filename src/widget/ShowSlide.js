@@ -156,7 +156,7 @@ dojo.widget.defineWidget(
 					var from = new dojo.graphics.color.Color(action.from).toRgb();
 					var to = new dojo.graphics.color.Color(action.to).toRgb();
 					var anim = new dojo.animation.Animation(new dojo.math.curves.Line(from, to), duration, 0);
-					node = component;
+					var node = component;
 					dojo.event.connect(anim, "onAnimate", function(e) {
 						node.style.color = "rgb(" + e.coordsAsInts().join(",") + ")";
 					});

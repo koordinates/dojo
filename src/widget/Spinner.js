@@ -355,7 +355,7 @@ dojo.widget.defineWidget(
 			var val = this.getValue().replace(/[^\-+\d]/g, "");
 			if(val.length == 0){ return; }
 
-			num = Math.min(Math.max((parseInt(val)+(parseInt(this.delta) * direction)), (this.flags.min?this.flags.min:-Infinity)), (this.flags.max?this.flags.max:+Infinity));
+			var num = Math.min(Math.max((parseInt(val)+(parseInt(this.delta) * direction)), (this.flags.min?this.flags.min:-Infinity)), (this.flags.max?this.flags.max:+Infinity));
 			val = num.toString();
 
 			if(num >= 0){
