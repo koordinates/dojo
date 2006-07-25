@@ -29,6 +29,8 @@ dojo.widget.defineWidget(
 
 	currentSubpopup: null,
 
+	beginZIndex: 1000,
+
 	parentPopup: null,
 	popupIndex: 0,
 
@@ -88,10 +90,17 @@ dojo.widget.defineWidget(
 			dojo.widget.PopupManager.opened(this, button);
 		}
 
+		//convert explodeSrc from format [x, y] to 
+		//{left: x, top: y, width: 0, height: 0} which is the new
+		//format required by dojo.html.toCoordinateObject
+		if(explodeSrc instanceof Array){
+			explodeSrc = {left: explodeSrc[0], top: explodeSrc[1], width: 0, height: 0};
+		}
+
 		// display temporarily, and move into position, then hide again
 		with(this.domNode.style){
 			display="";
-			zIndex = 200 + this.popupIndex;
+			zIndex = this.beginZIndex + this.popupIndex;
 		}
 
 		if(around){
