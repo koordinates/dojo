@@ -857,11 +857,11 @@ dojo.lang.mixin(dojo.docs, {
 		var i = 1;
 
 		if(!cache.path){
-			path = "id";
+			var path = "id";
 			props[["pname", i].join("")] = "DocPkgForm/require";
 			props[["pvalue", i++].join("")] = parameters.pkg;
 		}else{
-			path = cache.path;
+			var path = cache.path;
 		}
 
 		props.form = "//DocPkgForm";
