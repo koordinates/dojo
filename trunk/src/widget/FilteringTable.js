@@ -730,6 +730,14 @@ dojo.widget.defineWidget(
 			self.domNode.tBodies[0].appendChild(row);
 			self.render();
 		});
+		dojo.event.connect(this.store, "onAddDataRange", function(arr){
+			for(var i=0; i<arr.length; i++){
+				arr[i].isSelected=false;
+				var row=self.createRow(arr[i]);
+				self.domNode.tBodies[0].appendChild(row);
+			};
+			self.render();
+		});
 		dojo.event.connect(this.store, "onRemoveData", function(removedObject){
 			var rows = self.domNode.tBodies[0].rows;
 			for(var i=0; i<rows.length; i++){

@@ -119,9 +119,16 @@ dojo.data.SimpleStore = function(/* array? */json){
 	this.addDataRange = function(/*arr*/arr){
 		//	summary
 		//	Add a range of objects to the internal data array.
+		var objects=[];
 		for(var i=0; i<arr.length; i++){
-			this.addData(arr[i]);
+			var o = { 
+				key:arr[i][this.keyField], 
+				src:arr[i] 
+			};
+			data.push(o);
+			objects.push(o);
 		}
+		this.onAddDataRange(objects);
 	};
 	
 	this.removeData = function(/*obj*/obj){
@@ -169,5 +176,6 @@ dojo.lang.extend(dojo.data.SimpleStore, {
 	onSetData:function(){ },
 	onClearData:function(){ },
 	onAddData:function(obj){ },
+	onAddDataRange:function(arr){ },
 	onRemoveData:function(obj){ }
 });
