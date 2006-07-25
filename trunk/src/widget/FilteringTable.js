@@ -17,34 +17,33 @@ dojo.widget.defineWidget(
 {
 	initializer:function(){
 		this.store=new dojo.data.SimpleStore();
-		this.store.keyField = this.valueField;
+
+		//declare per instance changeable widget properties
+		this.valueField="Id";
+		this.multiple=false;
+		this.maxSelect=0;
+		this.maxSortable=2;  // 2 columns at a time at most
+		this.minRows=0;
+		this.defaultDateFormat = "%D";
+		this.isInitialized=false;
+
 		this.columns=[];
 		this.sortInformation=[{
 			index:0,
 			direction:0
 		}];
+
+		// CSS definitions
+		this.headClass="";
+		this.tbodyClass="";
+		this.headerClass="";
+		this.headerUpClass="selectedUp";
+		this.headerDownClass="selectedDown";
+		this.rowClass="";
+		this.rowAlternateClass="alt";
+		this.rowSelectedClass="selected";
+		this.columnSelected="sorted-column";
 	},
-
-	//	widget properties
-	multiple: false,
-	maxSelected: 0,
-	maxSortable: 2,	//	2 columns at a time at most.
-	alternateRows: false,
-	minRows: 0,
-	defaultDateFormat: "%D",
-	isInitialized: false,
-	valueField: "Id",
-
-	// CSS definitions
-	headClass: "",
-	tbodyClass: "",
-	headerClass: "",
-	headerUpClass: "selectedUp",
-	headerDownClass: "selectedDown",
-	rowClass: "",
-	rowAlternateClass: "alt",
-	rowSelectedClass: "selected",
-	columnSelected: "sorted-column",
 
 	//	dojo widget properties
 	isContainer: false,
@@ -746,6 +745,9 @@ dojo.widget.defineWidget(
 	postCreate: function(){
 		//	summary
 		//	finish widget initialization.
+
+		this.store.keyField = this.valueField;
+
 		if(this.domNode){
 			//	start by making sure domNode is a table element;
 			if(this.domNode.nodeName.toLowerCase() != "table"){
