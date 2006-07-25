@@ -85,7 +85,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 			//dojo.debug("reg source")
 			
 			//dojo.profile.start("DND source "+node);		
-			var source = new dojo.dnd.TreeDragSourceV3(node.contentNode, this, node.tree.widgetId, node);
+			var source = this.makeDragSource(node);
 			//dojo.profile.end("DND source "+node);		
 
 			this.dragSources[node.widgetId] = source;
@@ -93,7 +93,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 
 		//dojo.profile.start("DND target "+node);		
 	
-		var target = new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DNDAcceptTypes, node);
+		var target = this.makeDropTarget(node);
 		//dojo.profile.end("DND target "+node);		
 
 		this.dropTargets[node.widgetId] = target;
@@ -102,7 +102,21 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 
 
 	},
+	
+	/**
+	 * Factory method, override it to create special source
+	 */
+	makeDragSource: function(node) {
+		return new dojo.dnd.TreeDragSourceV3(node.contentNode, this, node.tree.widgetId, node);
+	},
 
+
+	/**
+	 * Factory method, override it to create special target
+	 */
+	makeDropTarget: function(node) {
+		 return new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DNDAcceptTypes, node);
+	},
 
 	unlistenNode: function(node) {
 
