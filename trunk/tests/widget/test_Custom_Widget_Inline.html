@@ -1,26 +1,29 @@
 <html>
-<head>
+<head xmlns:dojo xmlns:myown>
 
 <script type="text/javascript">
 	var djConfig = {isDebug: true};
-	// Warning: To use debugAtAllCosts each set of calls to require needs to be their own
-	// script tag, with a call to dojo.writeIncludes(true); , and there must be a final 
-	// call to dojo.writeIncludes(); without the true
-	// See the example test_Custom_Widget_Debugging.html
+	// Warning: To use debugAtAllCosts each set of calls to require needs to be within
+	// their own script tag, with a call before the closing tag to 
+	// dojo.hostenv.writeIncludes(true); Also there *must* be a final call to 
+	// dojo.hostenv.writeIncludes(); without the true
+	// See example in test_Custom_Widget_Debugging.html
 </script>
 <script language="JavaScript" type="text/javascript" src="../../dojo.js"></script>
 
 <script>
 	dojo.require('dojo.namespace');
-	dojo.defineNamespace("myown", "../myown", "myown");
+	dojo.defineNamespace("myown", "../myown", "myown"); // Get exception here if debugAtAllCosts set to true - see above.
 
 	// declaring a custom button widget that overrides a single function
 	dojo.require('dojo.widget.Button');
 	dojo.widget.defineWidget('myown.TestButton', dojo.widget.Button, {
 
+		buttonName : '',
+
 		// override the buttonClick() method declared in Button
 		buttonClick: function() {
-			alert('button clicked');
+			alert('button ' + this.buttonName + ' clicked');
 			this.inherited('buttonClick', arguments);
 		}
 
@@ -28,14 +31,20 @@
 </script>
 </head>
 <body>
+<div id="test" style="width:10px"></div>
 	<h2>Creating a Dojo widget entirely within page markup</h2>
 	<p>Very useful when developing your own widgets, or you just want to quickly test something.</p>
 	<p>Also useful when you just want to slightly change an exising widget e.g. change the CSS template, change the HTML template, or just override one or two methods.</p>
-	<p>You should see a blue button, and a yellow div below:</p>
+	<p>You should see two blue buttons with custom properties below. They show an alert when clicked:</p>
 	<br>
 
 	<!-- our custom button declared above -->
-	<div dojoType="myown:TestButton">A myown:TestButton widget
+	<div dojoType="myown:TestButton" buttonName="1st button">
+		myown:TestButton widget
+	</div>
+	<br>
+	<div dojoType="myown:TestButton" buttonName="Wow!">
+		Wow button.
 	</div>
 	<br>
 
@@ -70,25 +79,33 @@
 			templateCssString: dojo.byId('TestTemplateCss').textContent || dojo.byId('TestTemplateCss').innerText,
 
 			mousePosNode: null,
+			clickTimes: 0,
 
 			onMouseMove: function(ev) {
 				this.mousePosNode.innerHTML = 'mouse.clientX: ' + ev.clientX;
 			},
 
 			buttonClick: function(ev) {
-				alert('clicked');
+				this.clickTimes++;
+				alert('clicked. You have clicked this ' + this.clickTimes + ' times.');
 			}
 		});
 	</script>
 
 
-	<!-- can use it in markup because markup is not parsed until document loaded -->
+	<br>
+	<p>
+		The yellow divs below show an alert when clicked, and they update the mouse.clientX text when the mouse is moved over it.
+		The second yellow div shows how widget namespaces are used.
+	</p>
+
+	<!-- can use widget immediately in markup - no parsing occurs until document loaded and scripts run -->
 	<div dojoType="myown:Test">
 	</div>
 
-
 	<br>
-	<p>The button shows an alert when clicked.</p>
-	<p>The yellow div shows an alert when clicked, and it also updates the mouse.clientX value when the mouse is moved over it.</p>
+	<!-- example using XML style - dont forget xmlns in the HTML tag! -->
+	<myown:Test></myown:Test>
+
 </body>
 </html>
