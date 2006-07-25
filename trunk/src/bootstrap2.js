@@ -126,11 +126,11 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 	var bundlepackage = [modulename, "_nls", bundlename].join(".");
 	var bundle = dojo.hostenv.startPackage(bundlepackage);
 	dojo.hostenv.loaded_modules_[bundlepackage] = bundle;
-	
+
 	var inherit = false;
-	for(var i = searchlist.length - 1; i >= 0; i--){
-		var loc = searchlist[i];
-		var pkg = [bundlepackage, loc].join(".");
+	for(var j = searchlist.length - 1; j >= 0; j--){
+		var loc = searchlist[j];
+		var pkg = bundlepackage+"."+loc;
 		var loaded = false;
 		if(!dojo.hostenv.findModule(pkg)){
 			// Mark loaded whether it's found or not, so that further load attempts will not be made
@@ -151,7 +151,7 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 				// Use prototype to point to other bundle, then copy in result from loadPath
 				bundle[loc] = new function(){};
 				if(inherit){ bundle[loc].prototype = inherit; }
-				for(var i in hash){ bundle[loc][i] = hash[i]; }
+				for(var k in hash){ bundle[loc][k] = hash[k]; }
 */
 			});
 		}else{
@@ -165,18 +165,18 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 
 (function(){
 	var extra = djConfig.extraLocale;
-	if (extra) {
+	if(extra){
 		var req = dojo.requireLocalization;
 		dojo.requireLocalization = function(m, b, locale){
 			req(m,b,locale);
-			if (locale) return;
-			if (djConfig.extraLocale instanceof Array){
-				for (var i=0; i<extra.length; i++){
+			if(locale){return;}
+			if(extra instanceof Array){
+				for(var i=0; i<extra.length; i++){
 					req(m,b,extra[i]);
 				}
 			}else{
 				req(m,b,extra);
 			}
-		}
+		};
 	}
 })();
