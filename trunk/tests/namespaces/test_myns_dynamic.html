@@ -1,0 +1,29 @@
+<html>
+<head>
+<script type="text/javascript">
+        djConfig = {
+                isDebug: true
+		};
+</script>
+
+<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../_bootstrap.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.xml.Parse");
+	dojo.require("dojo.widget.Widget");
+	dojo.require("dojo.widget.Parse");
+
+	//dojo.require("dojo.widget.Button");
+	
+	function doit(){
+	        var progWidget1 = dojo.byId("progWidget1");
+	        dojo.widget.createWidget("dojo:Button", null, progWidget1);
+	}
+</script>
+	
+</head>
+<body>
+	<div id="progWidget1">blahblah</div>
+	<input type="button" value="go" onclick="doit()">
+</body>
+</html>
