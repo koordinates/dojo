@@ -19,7 +19,7 @@
 <script type="text/javascript">
 
 	var nodeCount = 0;
-	var nodeCountMax = 1000;
+	var nodeCountMax = 500;
 	dojo.addOnLoad(function(){
 		var depth = 0;
 		
@@ -30,7 +30,7 @@
 			depth++;
 			
 			var children = [];
-			for (var i=1; i<=6; i++) {				
+			for (var i=1; i<=5; i++) {				
 
 				var t = title+'.'+i;
 				var node = {title: t};
@@ -44,8 +44,11 @@
 			dojo.lang.forEach(children, function(child) {
 				var t = title+'.'+i;
 				i++;
-
-				if (depth<5 && Math.random()>0.3 && nodeCount<nodeCountMax) {
+		
+				// first node is always folder for tests
+				if (nodeCount<nodeCountMax && (
+					depth==1 && child === children[0] || depth<5 && Math.random()>0.3 )
+				  ) {
 					//dojo.debug("add child "+t);
 					child.children = addChildren(t);        		
 				}
@@ -87,12 +90,24 @@
 			
 		
 	});
+	
+	function expandAllStart() {	
+		dojo.profile.start("expandAll + timeouts");
+	}
+	
+	function expandAllEnd() {	
+		dojo.profile.end("expandAll + timeouts");
+		alert("expandAll finished");
+	}
 
 </script>
 </head>
 <body>
 
-<div style="display:none">	
+<div style="display:none">
+	<!-- IE has a bug: it reloads all dynamically resolved images, no matter, is it
+	new Image() or CSS background. If you don't specify images like that,
+	it will reload them every time a node is expanded -->
 	<img src="../../../src/widget/templates/images/TreeV3/i.gif">
 	<img src="../../../src/widget/templates/images/TreeV3/i_half.gif">
 	<img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif">
@@ -105,9 +120,14 @@
 </div>	
 
 
-<h4>Test/profile fast nested nodes generation and adoptation</h4>
+<h4>Test drag'n'drop &amp; lazy creation &amp; batch expand stuff</h4>
 
-<input type="button" value="Expand all nodes" onClick="controller.expandToLevel(tree,999)"/>
+<input type="button" value="Expand first node to level 2" onClick="controller.expandToLevel(tree.children[0],2)"/>
+<input type="button" value="Expand tree to level 2" onClick="controller.expandToLevel(tree,2)"/>
+<input type="button" value="Expand all with callback at finish" onClick="expandAllStart();controller.expandAll(tree,expandAllEnd)"/>
+<br/>
+<input type="button" value="Collapse all nodes" onClick="controller.collapseAll(tree)"/>
+<br/>
 <input type="button" value="dump profile" onClick="dojo.profile.dump(true)">
 
 </body>

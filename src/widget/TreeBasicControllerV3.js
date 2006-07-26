@@ -1,6 +1,4 @@
 
-// TODO:
-// fix dojo.widget.isLast/FirstNode for speed (this === parent.children[..])
 dojo.provide("dojo.widget.TreeBasicControllerV3");
 
 dojo.require("dojo.event.*");
@@ -101,126 +99,60 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 
-	expandTimeout: 20,
+	/**
+	 * time between expand calls for batch operations
+	 * @see expandToLevel
+	 */
+	batchExpandTimeout: 20,
 	
-	// FIXME: extract iterator
-	expandToLevel: function(node, level, sync) {
-		if (level == 0) return;
-		
-		//maybe top widget w/o node.parent
-		//this._expandToLevel([node.parent, node.getParentIndex()], level, sync, []);
-		
-		
-		
-		var children = node.children;
-		var handler;
-		
-		var _this = this;
-		
-		if (children.length) {
-			var index = 0;
-			var next = children[index];
-			var found;
-
-
-			while (!(found = next.isFolder || next.children && next.children.length) && index < children.length-1) {
-				next = children[++index];
-			}
-			
-			if (found) {
-				var nodeA = [node,index]
-				handler = function() {					
-					var tid = setTimeout(function() {
-						_this._expandToLevel(nodeA, level-1, sync, [nodeA]);
-						clearTimeout(tid);
-					}, _this.expandTimeout);
-				}
-			}
-			
-		}
-		
-		
-		this.expand(node, sync, this, handler);
-		
-
-	},
-
-	// FIXME: extract iterator
-	_expandToLevel: function(nodeA, level, sync, stack) {
-		var _this = this;
-		
-		var handler;
-		
-		var found;
-		
-		var searchIndex = 0;
-		var searchNode = nodeA[0].children[ nodeA[1] ];
-		
-		//dojo.profile.start("_expandToLevel "+nodeA[0].children[ nodeA[1] ]);
-		//dojo.debug("_expandToLevel "+nodeA[0].children[ nodeA[1] ])
-			
-		while(true) {
-			//dojo.debug("_expandToLevel check children "+searchNode+" from index "+searchIndex)
-			
-			// try to find next among children
-			
-			while (searchIndex < searchNode.children.length) {
-				// take next child, unprocessed yet
-								
-				var child = searchNode.children[searchIndex];
-				
-				if (child.isFolder || child.children && child.children.length) {
-					// push to stack to continue next search from this position
-					found = [searchNode, searchIndex];
-					stack.push(found);
-					//dojo.debug("child found "+searchNode+" index "+searchIndex);
-					break;
-				}
-				
-				searchIndex++;
-			}
-				
-			if (found) break;
-			
-			if (stack.length) {
-				// pop previous parent			
-				var p = stack.pop();			
-				
-				searchIndex = p[1]+1;
-				searchNode = p[0];
-				
-				//dojo.debug("pop parent "+searchNode+" index "+searchIndex);
-				
-				continue;
-			}
-			
-			break;			
-			
-		} 
-		
-		if (found) {
-			//dojo.debug("found next "+found[0]+" index "+found);
-			
-			handler = function() {					
-				var tid = setTimeout(function() {
-					_this._expandToLevel(found, level-1, sync, stack);
-					clearTimeout(tid);
-				}, _this.expandTimeout);
-			}
-		} else {
-			//dojo.debug("NOT FOUND");
-		}
-		
-		
 	
-
-		this.expand(nodeA[0].children[nodeA[1]], sync, this, handler);
-
-		//dojo.profile.stop("_expandToLevel "+nodeA[0].children[ nodeA[1] ]);
+	expandAll: function(nodeOrTree, callback, callobj) {
 		
+		return this.expandToLevel(nodeOrTree, Number.POSITIVE_INFINITY, callback, callobj);
 		
 	},
-
+	
+	
+	collapseAll: function(nodeOrTree) {
+		var _this = this;
+		
+		var filter = function(elem) {
+			return (elem instanceof dojo.widget.Widget) && elem.isFolder && elem.isExpanded;
+		}
+		
+		if (nodeOrTree.isTreeNode) {		
+			this.processDescendants(nodeOrTree, filter, this.collapse);
+		} else if (nodeOrTree.isTree) {
+			dojo.lang.forEach(nodeOrTree.children,function(c) { _this.processDescendants(c, filter, _this.collapse) });
+		}
+	},
+	
+	
+	expandToLevel: function(nodeOrTree, level, callback, callobj) {
+		dojo.require("dojo.widget.TreeTimeoutIterator");
+		
+		var filterFunc = function(elem) {
+			//dojo.debug("Filter "+elem);
+			return elem.isFolder || elem.children && elem.children.length
+		};
+		var callFunc = function(node, iterator) {
+			return this.expand(node, false, iterator, iterator.forward);
+		}
+			
+		var iterator = new dojo.widget.TreeTimeoutIterator(nodeOrTree, callFunc, this);
+		iterator.setFilter(filterFunc);
+		
+		callback && iterator.setFinish(callback, callobj);
+		
+		iterator.timeout = this.batchExpandTimeout;
+		iterator.setMaxLevel(nodeOrTree.isTreeNode ? level-1 : level);
+		
+		//dojo.debug("here "+nodeOrTree);
+		
+		return iterator.start(nodeOrTree.isTreeNode);
+	},
+	
+	
 
 	getWidgetByNode: function(node) {
 		var widgetId;
