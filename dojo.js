@@ -1,4 +1,10 @@
 if(typeof dojo == "undefined"){
+	//this function is to workaround the annoying activation "feature" in new IE
+	//details: http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp
+	function djCreateExternalElement(doc, tag){
+		return doc.createElement(tag);
+	}
+
 	dj_usingBootstrap = true; //Needed for bootstrap2.js to work properly.
 	(function(){
 		var hostEnv = "browser";
@@ -85,7 +91,7 @@ if(typeof dojo == "undefined"){
 				load(spath);
 			} else {
 				try {
-					document.write("<scr"+"ipt type='text/javascript' src='"+spath+"'></scr"+"ipt>");
+					document.write("<scr"+"ipt type='text/javascript' src='"+spath+"'></scr"+"ipt>"); 
 				} catch (e) {
 					var script = document.createElement("script");
 					script.src = spath;
