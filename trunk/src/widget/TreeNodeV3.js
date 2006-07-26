@@ -309,17 +309,14 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("siblings "+parent.children);
 		
 		if (siblingsCount > 1) {
-			if (index == 0) {
-				if (parent.children[1] instanceof dojo.widget.Widget) {
-					parent.children[1].viewUpdateLayout();
-				}
+			if (index == 0 && parent.children[1] instanceof dojo.widget.Widget) {
+				parent.children[1].viewUpdateLayout();				
 			}
-			if (index == siblingsCount-1) {
-				if (parent.children[siblingsCount-2] instanceof dojo.widget.Widget) {
-					parent.children[siblingsCount-2].viewUpdateLayout();
-				}
+			if (index == siblingsCount-1 && parent.children[siblingsCount-2] instanceof dojo.widget.Widget) {
+				parent.children[siblingsCount-2].viewUpdateLayout();			
 			}
 		} else if (parent.isTreeNode) {
+			// added as the first child 
 			parent.viewSetHasChildren();
 		}
 		
@@ -467,16 +464,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	detach: function() {
 		if (!this.parent) return;
 
-		var oldTree = this.tree;
 		var oldParent = this.parent;
 
 		this.doDetach.apply(this, arguments);
 
-		dojo.event.topic.publish(oldTree.eventNames.afterDetach,
-			{ child: this, tree: oldTree, parent: oldParent }
+		dojo.event.topic.publish(this.tree.eventNames.afterDetach,
+			{ child: this, tree: this.tree, parent: oldParent }
 		);
-		
-		dojo.event.topic.publish(this.tree.eventNames.afterDetach, {tree:this.tree});
 		
 	},
 	
@@ -498,9 +492,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		var siblingsCount = parent.children.length;
 		
-		//dojo.debug("siblings "+parent.children);
-		
-		
 		if (siblingsCount > 0) {
 			if (index == 0) {	// deleted first node => update new first
 				parent.children[0].viewUpdateLayout();		
@@ -511,9 +502,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		} else {
 			parent.viewSetHasChildren();
 		}
-		
-		
-		// FIXME: move to extension
+				
 		if (this.tree.unsetFolderOnEmpty && !parent.children.length && parent.isTreeNode) {
 			parent.unsetFolder();
 		}		
@@ -551,11 +540,12 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end("expand - lazy init "+this);
 		
-		// no matter if I have children or not. need to show/hide container anyway.
-		// e.g empty folder is expanded => then child is added
-		
 		//dojo.profile.start("expand - showChildren "+this);
 		
+		/**
+		 * no matter if I have children or not. need to show/hide container anyway.
+		 * use case: empty folder is expanded => then child is added, container already shown all fine
+		 */
 		this.showChildren();
 		
 		//dojo.profile.end("expand - showChildren "+this);

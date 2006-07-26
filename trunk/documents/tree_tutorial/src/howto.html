@@ -1,0 +1,11 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>How-to</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1a"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1"></a>How-to</h2></div></div><hr></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e4"></a>Make tree unselectable</h3></div></div></div><p>Sometimes people want tree nodes to be unselectable, sometimes selection is a good way to copy (part of) content from the node.</p><p>To make tree (or its elements) unselectable use dojo.html.disableSelection in nodeCreate and treeCreate hooks.
+            Apply disableSelection to every node you want to make unselectable.
+        </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e11"></a>Bind an object to tree node</h3></div></div></div><p>There is an "objectId" property and "object" property ready to be filled in from markup or program-way.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e16"></a>Walk all node descendants</h3></div></div></div><p>You may use <code class="code">dojo.lang.forEach(nodeOrTree.getDescendants(),function(elem) { ... })</code> to process all descendants,
+            it will walk <code class="methodname">children</code> property recursively.        
+            
+        </p><p>The safer way would be to call <code class="code">TreeCommon.prototype.processDescendants(nodeOrTree, filter, func)</code>, it will process all children
+        with <code class="code">func</code>, but will not descend into nodes if <code class="code">filter(node)</code> returns false. E.g see <code class="methodname">collapseAll</code>
+            controller method uses it to collapse all widgets, but skip non-folders and data objects. 
+        </p></div></div></body></html>
