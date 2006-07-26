@@ -29,6 +29,9 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		
 	},			
 	
+	// interface functions
+	listenNode: function() {},	
+	unlistenNode: function() {},
 			
 	unlistenTree: function(tree) {
 		

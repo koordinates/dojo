@@ -62,7 +62,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		// we listen/unlisten only if tree changed, not when its assigned first time
 		if (!message.oldTree) {
 			if (message.node.expandLevel > 0) {
-				this.expandToLevel(message.node, message.node.expandLevel);
+				this.expandToLevel(message.node, message.node.expandLevel);				
 			}
 			
 			//dojo.profile.end("onTreeChange");
@@ -90,12 +90,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	onAfterTreeCreate: function(message) {
 		var tree = message.source;
 		var _this = this;
-		if (tree.expandLevel) {
-			dojo.lang.forEach(tree.children,
-				function(child) {								
-					_this.expandToLevel(child, tree.expandLevel-1)
-				}
-			);
+		if (tree.expandLevel) {								
+			_this.expandToLevel(tree, tree.expandLevel)
 		}
 	},
 
@@ -145,9 +141,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		callback && iterator.setFinish(callback, callobj);
 		
 		iterator.timeout = this.batchExpandTimeout;
+		
+		//dojo.debug("here "+nodeOrTree+" level "+level);
+		
 		iterator.setMaxLevel(nodeOrTree.isTreeNode ? level-1 : level);
 		
-		//dojo.debug("here "+nodeOrTree);
 		
 		return iterator.start(nodeOrTree.isTreeNode);
 	},
