@@ -23,6 +23,11 @@
 	position : relative;
 }
 
+.dojoTabNoLayout.dojoTabLabels-top .dojoTabPaneTab {
+	margin-bottom: -1px;
+	_margin-bottom: 0px; /* IE filter so top border lines up correctly */
+}
+
 .dojoTabPaneTab {
 	position : relative;
 	float : left;
@@ -108,14 +113,12 @@
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab.current {
-	padding-top : 1px;
 	border-top : 0;
 	background : url(images/tab_bot_left_curr.gif) no-repeat left bottom;
 }
 
 .dojoTabLabels-bottom .dojoTabPaneTab.current div {
-	padding-top : 5px;
-	margin-top : -1px;
+	padding-top : 4px;
 	background : url(images/tab_bot_right_curr.gif) no-repeat right bottom;
 }
 
