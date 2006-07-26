@@ -220,6 +220,36 @@ dojo.hostenv.getModuleSymbols = function(modulename) {
 	return syms;
 }
 
+//list of all defined namespaces
+dojo._namespaces = {};
+
+(function(){
+//list of namespaces being loaded, to prevent recursion
+var loadingNamespaces = {};
+
+//list of all namespaces that were needed, but didn't have the required file in the dojo/src/namespaces folder. 
+//This list ensures that a namespace will only be looked for once, rather than repeatedly trying to load the namespace descriptor file
+var failedNamespaces = {};
+
+//This returns a namespace with the given short name.  If the namespace has not been loaded already, it tries to load it. 
+dojo.getNamespace = function(nsPrefix){
+	if(!dojo._namespaces[nsPrefix] && !failedNamespaces[nsPrefix]){
+		var req = dojo.require;
+		var nsFile = "dojo.namespaces."+nsPrefix;
+		if(!loadingNamespaces[nsFile]){
+			loadingNamespaces[nsFile]=true;
+			req(nsFile, false, true); 
+			loadingNamespaces[nsFile]=false;
+			if(!dojo._namespaces[nsPrefix]){
+				failedNamespaces[nsPrefix] = true; //only look for a namespace once
+			}
+		}
+	}
+
+	return dojo._namespaces[nsPrefix];
+};
+})();
+
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
 * If it is, it is simply returned (nothing to do).
