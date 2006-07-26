@@ -54,7 +54,7 @@ dojo.lang.extend(dojo.widget.TreeTimeoutIterator, {
 	
 	setMaxLevel: function(level) {
 		if (level<1) {
-			dojo.raise("setMaxLevel: level should be >=1");
+			dojo.raise("setMaxLevel: level="+level+" should be >=1");
 		}
 		
 		this.maxStackDepth = level-2;

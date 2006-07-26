@@ -115,6 +115,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		// need <span> inside <div>
 		// div for multiline support, span for styling exactly the text, not whole line
 		var labelNode = document.createElement("span");
+		dojo.html.setClass(labelNode, this.classPrefix+"Label");
 		this.labelNodeTemplate = labelNode;
 		
 		var contentNode = document.createElement("div");
