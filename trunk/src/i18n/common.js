@@ -1,9 +1,5 @@
 dojo.provide("dojo.i18n.common");
 
-dojo.require("dojo.experimental");
-dojo.experimental("dojo.i18n.common");
-
-
 /**
  * Gets a reference to a hash containing the localization for a given bundle in a package, matching the specified
  * locale.  Bundle must have already been loaded by dojo.requireLocalization() or by a build optimization step.
@@ -19,7 +15,8 @@ dojo.i18n.getLocalization = function(modulename, bundlename, locale /*optional*/
 
 	// look for nearest locale match
 	var elements = locale.split('-');
-	var bundle = dojo.hostenv.findModule([modulename,"_nls",bundlename].join('.'), true);
+	var module = [modulename,"_nls",bundlename].join('.');
+	var bundle = dojo.hostenv.findModule(module, true);
 
 	for(var i = elements.length; i > 0; i--){
 		var loc = elements.slice(0, i).join('-');
@@ -27,12 +24,11 @@ dojo.i18n.getLocalization = function(modulename, bundlename, locale /*optional*/
 			return bundle[loc];
 		}
 	}
-
-	if(bundle[dojo.fallback_locale]){
-		return bundle[dojo.fallback_locale];
+	if(bundle.ROOT){
+		return bundle.ROOT;
 	}
 
-	dojo.raise("Bundle not found " + [modulename,"_nls",bundlename,locale].join('.'));
+	dojo.raise("Bundle not found: " + bundlename + " in " + modulename+" , locale=" + locale);
 };
 
 /**
