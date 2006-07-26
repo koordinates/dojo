@@ -30,6 +30,9 @@ dojo.xml.Parse = function(){
 
 	function getDojoTagName(node){
 		var tagName = node.tagName;
+		if(dojo.render.html.capable && dojo.render.html.ie && node.scopeName != 'HTML'){
+			tagName = node.scopeName + ':' + tagName;
+		}
 		if(tagName.substr(0,5).toLowerCase() == "dojo:"){
 			return tagName.toLowerCase();
 		}
