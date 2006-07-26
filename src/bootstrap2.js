@@ -58,13 +58,6 @@
 // Localization routines
 
 /**
- * The locale to look for string bundles if none are defined for your locale.  Translations for all strings
- * should be provided in this locale.
- */
-//TODO: this really belongs in translation metadata, not in code
-dojo.fallback_locale = 'en';
-
-/**
  * Returns canonical form of locale, as used by Dojo.  All variants are case-insensitive and are separated by '-'
  * as specified in RFC 3066
  */
@@ -75,30 +68,34 @@ dojo.normalizeLocale = function(locale) {
 /**
  * requireLocalization() is for loading translated bundles provided within a package in the namespace.
  * Contents are typically strings, but may be any name/value pair, represented in JSON format.
- * A bundle is structured in a program as follows:
+ * A bundle is structured in a program as follows, where modulename is mycode.mywidget and
+ * bundlename is mybundle:
  *
- * <package>/
- *  nls/
- *   de/
- *    mybundle.js
- *   de-at/
- *    mybundle.js
- *   en/
- *    mybundle.js
- *   en-us/
- *    mybundle.js
- *   en-gb/
- *    mybundle.js
- *   es/
- *    mybundle.js
- *  ...etc
+ * mycode/
+ *  mywidget/
+ *   nls/
+ *    mybundle.js (the fallback translation, English in this example)
+ *    de/
+ *     mybundle.js
+ *    de-at/
+ *     mybundle.js
+ *    en/
+ *     (empty; use the fallback translation)
+ *    en-us/
+ *     mybundle.js
+ *    en-gb/
+ *     mybundle.js
+ *    es/
+ *     mybundle.js
+ *   ...etc
  *
  * where package is part of the namespace as used by dojo.require().  Each directory is named for a
  * locale as specified by RFC 3066, (http://www.ietf.org/rfc/rfc3066.txt), normalized in lowercase.
  *
  * For a given locale, string bundles will be loaded for that locale and all general locales above it, as well
- * as a system-specified fallback.  For example, "de_at" will also load "de" and "en".  Lookups will traverse
- * the locales in this order.  A build step can preload the bundles to avoid data redundancy and extra network hits.
+ * as a fallback at the root.  For example, a search for the "de-at" locale will first load nls/de-at/mybundle.js,
+ * then nls/de/mybundle.js and finally nls/mybundle.js and flatten all the values in this order.  Lookups will traverse
+ * the locales in this same order.  A build step can preload the bundles to avoid data redundancy and extra network hits.
  *
  * @param modulename package in which the bundle is found
  * @param bundlename bundle name, typically the filename without the '.js' suffix
@@ -119,9 +116,7 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 	for(var i = elements.length; i > 0; i--){
 		searchlist.push(elements.slice(0, i).join('-'));
 	}
-	if(searchlist[searchlist.length-1] != dojo.fallback_locale){
-		searchlist.push(dojo.fallback_locale);
-	}
+	searchlist.push(false);
 
 	var bundlepackage = [modulename, "_nls", bundlename].join(".");
 	var bundle = dojo.hostenv.startPackage(bundlepackage);
@@ -129,14 +124,16 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 
 	var inherit = false;
 	for(var j = searchlist.length - 1; j >= 0; j--){
-		var loc = searchlist[j];
-		var pkg = bundlepackage+"."+loc;
+		var loc = searchlist[j] || "ROOT";
+		var pkg = bundlepackage + "." + loc;
 		var loaded = false;
 		if(!dojo.hostenv.findModule(pkg)){
 			// Mark loaded whether it's found or not, so that further load attempts will not be made
 			dojo.hostenv.loaded_modules_[pkg] = null;
-
-			var filespec = [modpath, loc, bundlename].join("/") + '.js';
+			var module = [modpath];
+			if(searchlist[j]){module.push(loc);}
+			module.push(bundlename);
+			var filespec = module.join("/") + '.js';
 			loaded = dojo.hostenv.loadPath(filespec, null, function(hash) {
  				bundle[loc] = hash;
  				if(inherit){
