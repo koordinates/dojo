@@ -89,7 +89,7 @@ dojo.data.SimpleStore = function(/* array? */json){
 	this.setData = function(/*array*/arr){
 		//	summary
 		//	Set up the internal data.
-		this.clearData();
+		data = []; 	//	don't fire onClearData
 		for(var i=0; i<arr.length; i++){
 			data.push({ 
 				key:arr[i][this.keyField], 
