@@ -147,6 +147,25 @@ dojo.html.isTag = function(node /* ... */) {
 	return "";
 }
 
+//define dojo.html.createExternalElement for IE to workaround the annoying activation "feature" in new IE
+//details: http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp
+if(dojo.render.html.ie){
+	(function(){
+	//The trick is to define a function in a script.src property:
+	// <script src="javascript:'function createExternalElement(){...}'"></script>,
+	//which will be treated as an external javascript file in IE
+	var xscript = dojo.doc().createElement('script');
+	xscript.src = "javascript:'dojo.html.createExternalElement=function(doc, tag){return doc.createElement(tag);}'";
+	dojo.doc().getElementsByTagName("head")[0].appendChild(xscript);
+	})();
+}else{
+	//for other browsers, simply use document.createElement
+	//is enough
+	dojo.html.createExternalElement = function(doc, tag){
+		return doc.createElement(tag);
+	}
+}
+
 dojo.html._callDeprecated = function(inFunc, replFunc, args, argName, retValue){
 	dojo.deprecated("dojo.html." + inFunc,
 					"replaced by dojo.html." + replFunc + "(" + (argName ? "node, {"+ argName + ": " + argName + "}" : "" ) + ")" + (retValue ? "." + retValue : ""), "0.5");
