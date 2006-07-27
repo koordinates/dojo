@@ -6,7 +6,8 @@
    <!ENTITY whatsnew SYSTEM "whatsnew.xml">
    <!ENTITY todo SYSTEM "todo.xml">
    <!ENTITY performance SYSTEM "performance.xml">  
-   <!ENTITY extensions SYSTEM "extensions.xml">  
+   <!ENTITY extensions SYSTEM "extensions.xml">     
+   <!ENTITY features SYSTEM "features.xml">  
    <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
     <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
 ]>
@@ -15,6 +16,7 @@
     &introduction;
     &whatsnew;
     &todo;
+    &features;
     
         
     <important>The rest of the document is draft and may be outdated. Lazy loading &amp; RPC stuff is not ready yet.</important>

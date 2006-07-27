@@ -88,12 +88,12 @@
         <title>IE image-reloading fixup</title>
         
         <para>IE has a well-known bug. If an image was loaded dynamically - with a <code>new Image()</code>, or <code>img.src=</code>
-            assignment, or even as a background of a new node, it will not be cached. So every time when you expand a node, all needed icons get loaded
+            assignment, or even as a background of a new node, it will not be cached. So every time when you create a node, all needed icons get loaded
             from server (or requested at least). A possible solution is to put a special div into HTML (adjust src to your path):
         <literallayout>&lt;div style="display:none"&gt;
   &lt;!-- IE has a bug: it reloads all dynamically resolved images, no matter, is it 
   new Image() or CSS background. If you don't specify images like that,
-  it will reload them every time a node is expanded --&gt;
+  it will reload them every time a new node is created --&gt;
   &lt;img src="../../../src/widget/templates/images/TreeV3/i.gif"/&gt;
   &lt;img src="../../../src/widget/templates/images/TreeV3/i_half.gif"/>
   &lt;img src="../../../src/widget/templates/images/TreeV3/expand_minus.gif"/&gt;
