@@ -34,7 +34,9 @@ cometd = new function(){
 
 	this.version = 0.1;
 	this.minimumVersion = 0.1;
+	this.clientId = null;
 
+	this.isXD = false;
 	this.handshakeReturn = null;
 	this.currentTransport = null;
 	this.url = null;
@@ -70,6 +72,18 @@ cometd = new function(){
 			dojo.debug("no cometd root specified in djConfig and no root passed");
 			return;
 		}
+		// borrowed from dojo.uri.Uri in lieu of fixed host and port properties
+        var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
+		var r = (""+window.location).match(new RegExp(regexp));
+		var tmp = r[4].split(":");
+		var thisHost = tmp[0];
+		var thisPort = tmp[1]||"80"; // FIXME: match 443
+
+		r = this.url.match(new RegExp(regexp));
+		tmp = r[4].split(":");
+		var urlHost = tmp[0];
+		var urlPort = tmp[1]||"80";
+		
 		// FIXME: we need to select a way to handle JSONP-style stuff
 		// generically here. We already know if the server is gonna be on
 		// another domain (or can know it), so we should select appropriate
@@ -82,6 +96,15 @@ cometd = new function(){
 			load: dojo.lang.hitch(this, "finishInit"),
 			content: { "message": dojo.json.serialize(props) }
 		};
+		if(	(urlHost != thisHost)||
+			(urlPort != thisPort) ){
+			dojo.debug(thisHost, urlHost);
+			dojo.debug(thisPort, urlPort);
+
+			this.isXD = true;
+			bindArgs.transport = "ScriptSrcTransport";
+			bindArgs.jsonParamName = "jsonp";
+		}
 		if(bargs){
 			dojo.lang.mixin(bindArgs, bargs);
 		}
@@ -101,9 +124,11 @@ cometd = new function(){
 		}
 		this.currentTransport = this.connectionTypes.match(
 			data.supportedConnectionTypes,
-			data.version
+			data.version,
+			this.isXD
 		);
 		this.currentTransport.version = data.version;
+		this.clientId = data.clientId;
 		this.tunnelInit = dojo.lang.hitch(this.currentTransport, "tunnelInit");
 		this.tunnelCollapse = dojo.lang.hitch(this.currentTransport, "tunnelCollapse");
 		this.initialized = true;
@@ -222,6 +247,9 @@ cometd = new function(){
 		}
 		if(objOrFunc){
 			var tname = (useLocalTopics) ? channel : "/cometd"+channel;
+			if(useLocalTopics){
+				this.globalTopicChannels[channel] = true;
+			}
 			dojo.event.topic.subscribe(tname, objOrFunc, funcName);
 		}
 		// FIXME: would we handle queuing of the subscription if not connected?
@@ -282,6 +310,8 @@ cometd = new function(){
 		dojo.debugShallow(message);
 	}
 
+	// FIXME: add an "addPublisher" function
+
 }
 
 /*
@@ -303,12 +333,11 @@ here's a stub transport defintion:
 cometd.blahTransport = new function(){
 	this.connected = false;
 	this.connectionId = null;
-	this.clientId = null;
 	this.authToken = null;
 	this.lastTimestamp = null;
 	this.lastId = null;
 
-	this.check = function(types, xdomain){
+	this.check = function(types, version, xdomain){
 		// summary:
 		//		determines whether or not this transport is suitable given a
 		//		list of transport types that the server supports
@@ -356,7 +385,6 @@ cometd.connectionTypes.register("blah", cometd.blahTransport.check, cometd.blahT
 cometd.iframeTransport = new function(){
 	this.connected = false;
 	this.connectionId = null;
-	this.clientId = null;
 
 	this.rcvNode = null;
 	this.rcvNodeName = "";
@@ -366,7 +394,7 @@ cometd.iframeTransport = new function(){
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types, xdomain){
+	this.check = function(types, version, xdomain){
 		return ((!xdomain)&&
 				(!dojo.render.html.safari)&&
 				(dojo.lang.inArray(types, "iframe")));
@@ -378,7 +406,7 @@ cometd.iframeTransport = new function(){
 		this.postToIframe({
 			message: dojo.json.serialize({
 				channel:	"/meta/connect",
-				clientId:	this.clientId,
+				clientId:	cometd.clientId,
 				connectionType: "iframe"
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
@@ -394,7 +422,7 @@ cometd.iframeTransport = new function(){
 			this.postToIframe({
 				message: dojo.json.serialize({
 					channel:	"/meta/reconnect",
-					clientId:	this.clientId,
+					clientId:	cometd.clientId,
 					connectionId:	this.connectionId,
 					timestamp:	this.lastTimestamp,
 					id:			this.lastId
@@ -506,7 +534,7 @@ cometd.iframeTransport = new function(){
 		// FIXME: what about auth fields?
 		if((bypassBacklog)||(this.connected)){
 			message.connectionId = this.connectionId;
-			message.clientId = this.clientId;
+			message.clientId = cometd.clientId;
 			var bindArgs = {
 				url: cometd.url||djConfig["cometdRoot"],
 				method: "POST",
@@ -525,7 +553,6 @@ cometd.iframeTransport = new function(){
 
 		if(this.connected){ return; }
 
-		this.clientId = handshakeData.clientId;
 		// this.widenDomain();
 
 		// NOTE: we require the server to cooperate by hosting
@@ -559,7 +586,6 @@ cometd.iframeTransport = new function(){
 cometd.mimeReplaceTransport = new function(){
 	this.connected = false;
 	this.connectionId = null;
-	this.clientId = null;
 	this.xhr = null;
 
 	this.authToken = null;
@@ -567,7 +593,7 @@ cometd.mimeReplaceTransport = new function(){
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types, xdomain){
+	this.check = function(types, version, xdomain){
 		return ((!xdomain)&&
 				(dojo.render.html.mozilla)&& // seems only Moz really supports this right now = (
 				(dojo.lang.inArray(types, "mime-message-block")));
@@ -579,7 +605,7 @@ cometd.mimeReplaceTransport = new function(){
 		this.openTunnelWith({
 			message: dojo.json.serialize({
 				channel:	"/meta/connect",
-				clientId:	this.clientId,
+				clientId:	cometd.clientId,
 				connectionType: "mime-message-block"
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
@@ -595,7 +621,7 @@ cometd.mimeReplaceTransport = new function(){
 			this.openTunnelWith({
 				message: dojo.json.serialize({
 					channel:	"/meta/reconnect",
-					clientId:	this.clientId,
+					clientId:	cometd.clientId,
 					connectionId:	this.connectionId,
 					timestamp:	this.lastTimestamp,
 					id:			this.lastId
@@ -641,7 +667,7 @@ cometd.mimeReplaceTransport = new function(){
 		// FIXME: what about auth fields?
 		if((bypassBacklog)||(this.connected)){
 			message.connectionId = this.connectionId;
-			message.clientId = this.clientId;
+			message.clientId = cometd.clientId;
 			var bindArgs = {
 				url: cometd.url||djConfig["cometdRoot"],
 				method: "POST",
@@ -657,7 +683,6 @@ cometd.mimeReplaceTransport = new function(){
 	this.startup = function(handshakeData){
 		dojo.debugShallow(handshakeData);
 		if(this.connected){ return; }
-		this.clientId = handshakeData.clientId;
 		this.tunnelInit();
 	}
 }
@@ -665,14 +690,13 @@ cometd.mimeReplaceTransport = new function(){
 cometd.longPollTransport = new function(){
 	this.connected = false;
 	this.connectionId = null;
-	this.clientId = null;
 
 	this.authToken = null;
 	this.lastTimestamp = null;
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types, xdomain){
+	this.check = function(types, version, xdomain){
 		return ((!xdomain)&&(dojo.lang.inArray(types, "long-polling")));
 	}
 
@@ -682,7 +706,7 @@ cometd.longPollTransport = new function(){
 		this.openTunnelWith({
 			message: dojo.json.serialize({
 				channel:	"/meta/connect",
-				clientId:	this.clientId,
+				clientId:	cometd.clientId,
 				connectionType: "long-polling"
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
@@ -695,12 +719,12 @@ cometd.longPollTransport = new function(){
 		if(!this.connected){
 			// try to restart the tunnel
 			this.connected = false;
-			dojo.debug("clientId:", this.clientId);
+			dojo.debug("clientId:", cometd.clientId);
 			this.openTunnelWith({
 				message: dojo.json.serialize({
 					channel:	"/meta/reconnect",
 					connectionType: "long-polling",
-					clientId:	this.clientId,
+					clientId:	cometd.clientId,
 					connectionId:	this.connectionId,
 					timestamp:	this.lastTimestamp,
 					id:			this.lastId
@@ -740,7 +764,7 @@ cometd.longPollTransport = new function(){
 		// FIXME: what about auth fields?
 		if((bypassBacklog)||(this.connected)){
 			message.connectionId = this.connectionId;
-			message.clientId = this.clientId;
+			message.clientId = cometd.clientId;
 			var bindArgs = {
 				url: cometd.url||djConfig["cometdRoot"],
 				method: "post",
@@ -755,7 +779,6 @@ cometd.longPollTransport = new function(){
 
 	this.startup = function(handshakeData){
 		if(this.connected){ return; }
-		this.clientId = handshakeData.clientId;
 		this.tunnelInit();
 	}
 }
@@ -763,14 +786,13 @@ cometd.longPollTransport = new function(){
 cometd.callbackPollTransport = new function(){
 	this.connected = false;
 	this.connectionId = null;
-	this.clientId = null;
 
 	this.authToken = null;
 	this.lastTimestamp = null;
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types, xdomain){
+	this.check = function(types, version, xdomain){
 		// we handle x-domain!
 		return dojo.lang.inArray(types, "callback-polling");
 	}
@@ -781,7 +803,7 @@ cometd.callbackPollTransport = new function(){
 		this.openTunnelWith({
 			message: dojo.json.serialize({
 				channel:	"/meta/connect",
-				clientId:	this.clientId,
+				clientId:	cometd.clientId,
 				connectionType: "callback-polling"
 				// FIXME: auth not passed here!
 				// "authToken": this.authToken
@@ -798,7 +820,7 @@ cometd.callbackPollTransport = new function(){
 				message: dojo.json.serialize({
 					channel:	"/meta/reconnect",
 					connectionType: "long-polling",
-					clientId:	this.clientId,
+					clientId:	cometd.clientId,
 					connectionId:	this.connectionId,
 					timestamp:	this.lastTimestamp,
 					id:			this.lastId
@@ -839,7 +861,7 @@ cometd.callbackPollTransport = new function(){
 		// FIXME: what about auth fields?
 		if((bypassBacklog)||(this.connected)){
 			message.connectionId = this.connectionId;
-			message.clientId = this.clientId;
+			message.clientId = cometd.clientId;
 			var bindArgs = {
 				url: cometd.url||djConfig["cometdRoot"],
 				transport: "ScriptSrcTransport",
@@ -854,14 +876,15 @@ cometd.callbackPollTransport = new function(){
 
 	this.startup = function(handshakeData){
 		if(this.connected){ return; }
-		this.clientId = handshakeData.clientId;
 		this.tunnelInit();
 	}
 }
 
 cometd.connectionTypes.register("mime-message-block", cometd.mimeReplaceTransport.check, cometd.mimeReplaceTransport);
-cometd.connectionTypes.register("iframe", cometd.iframeTransport.check, cometd.iframeTransport);
-cometd.connectionTypes.register("callback-polling", cometd.callbackPollTransport.check, cometd.callbackPollTransport);
 cometd.connectionTypes.register("long-polling", cometd.longPollTransport.check, cometd.longPollTransport);
+cometd.connectionTypes.register("callback-polling", cometd.callbackPollTransport.check, cometd.callbackPollTransport);
+cometd.connectionTypes.register("iframe", cometd.iframeTransport.check, cometd.iframeTransport);
 
 // FIXME: need to implement fallback-polling, IE XML block
+
+dojo.io.cometd = cometd;
