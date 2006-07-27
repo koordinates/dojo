@@ -21,6 +21,8 @@ dojo.inherits(dojo.widget.TreeBasicControllerV3, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.prototype);
 
+// TODO: do something with addChild / setChild, so that RPCController become able
+// to hook on this and report to server
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
 
@@ -298,6 +300,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		return true;
 	},
 
+
+
 // =============================== detachNode ============================
 
 
@@ -359,7 +363,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 	
-	// -------------------------- Edit node ---------------------
+	// -------------------------- TODO: Inline edit node ---------------------
 	// TODO: write editing stuff
 	canEditLabel: function(node) {
 		if (node.actionIsDisabled(parent.actions.EDIT)) return false;
