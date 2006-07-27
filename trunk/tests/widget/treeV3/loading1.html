@@ -1,5 +1,3 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 
@@ -21,22 +19,22 @@
 </head>
 <body>
 
-<ul>
-<li>New nodes are loaded dynamically.
-<li>Save/expand indices working.
-</ul>
+<h3>Dynamically loads nodes from server</h3>
+
+<input type="button" value="Expand tree to level 3" onClick="dojo.widget.byId('treeController').expandToLevel(dojo.widget.byId('firstTree'),4)"/>
+<br/>
 
 <div dojoType="TreeLoadingControllerV3" widgetId="treeController" RPCUrl="local"></div>
 
 
-<div dojoType="TreeV3" widgetId="firstTree" controller="treeController">
+<div dojoType="TreeV3" widgetId="firstTree" listeners="treeController">
     <div dojoType="TreeNodeV3" title="Node 1"></div>
     <div dojoType="TreeNodeV3" title="Node 2">
         <div dojoType="TreeNodeV3" title="Node 2.1"></div>
         <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
     </div>
     <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
-    </div>
+    </div>	
 
 </div>
 
