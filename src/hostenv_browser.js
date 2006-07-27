@@ -342,6 +342,9 @@ try {
 	if (dojo.render.html.ie) {
 		document.namespaces.add("v","urn:schemas-microsoft-com:vml");
 		document.createStyleSheet().addRule("v\\:*", "behavior:url(#default#VML)");
+
+		//	workaround for the activeX activation bullshit
+		document.write("<scr"+"ipt type=\"text/javascript\">function djCreateObject(doc, tag){ return doc.createElement(tag); }</scr"+"ipt>");
 	}
 } catch (e) { }
 
