@@ -40,9 +40,9 @@ dojo.widget.defineWidget(
 		/** whether to use the active-x object in IE */
 		useActiveX: false,
 
-		/* whether to use relative URLs for images - if this is enabled
-       	images will be given absolute URLs when inside the editor but
-       	will be changed to use relative URLs (to the current page) on save
+		/*whether to use relative URLs for images - if this is enabled
+		images will be given absolute URLs when inside the editor but
+		will be changed to use relative URLs (to the current page) on save
 		*/
 		relativeImageUrls: false,
 		
@@ -521,7 +521,7 @@ dojo.widget.defineWidget(
 	/* Event handlers
 	 *****************/
 
-	 	_isResized: function(){ return false; },
+		_isResized: function(){ return false; },
 
 		onLoad: function(e){
 			this.isLoaded = true;
@@ -768,7 +768,7 @@ dojo.widget.defineWidget(
 	/* Formatting commands
 	 **********************/
 		
-		/** IE's Active X codes */
+		/** IE's Active X codes: see http://www.computerbytesman.com/js/activex/dhtmledit.htm */
 		_activeX: {
 			command: {
 				bold: 5000,
@@ -1207,7 +1207,7 @@ dojo.widget.defineWidget(
 					// not a great deal we can do
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.dojo.body().createTextRange();
+				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();
@@ -1232,7 +1232,7 @@ dojo.widget.defineWidget(
 					this.editNode.innerHTML = html;
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.dojo.body().createTextRange();
+				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.select();
 				this.execCommand("inserthtml", html);
@@ -1258,7 +1258,7 @@ dojo.widget.defineWidget(
 					// not a great deal we can do
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.dojo.body().createTextRange();
+				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();
