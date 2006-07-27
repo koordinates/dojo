@@ -7,6 +7,8 @@ dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
 
+//define dojo.html.createExternalElement for IE to workaround the annoying activation "feature" in new IE
+//details: http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp
 if(dojo.render.html.ie){
 	(function(){
 	var xscript = dojo.doc().createElement('script');
@@ -20,10 +22,19 @@ if(dojo.render.html.ie){
 }
 
 // used to save content
-try {
-	document.write('<textarea id="dojo.widget.RichText.savedContent" ' +
-		'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
-}catch(e){ }
+if(dojo.hostenv.post_load_){
+	(function(){
+		var savetextarea = dojo.doc().createElement('textarea');
+		savetextarea.id = "dojo.widget.RichText.savedContent";
+		savetextarea.style = "display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;";
+		dojo.body().appendChild(savetextarea);
+	})();
+}else{
+	try {
+		dojo.doc().write('<textarea id="dojo.widget.RichText.savedContent" ' +
+			'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
+	}catch(e){ }
+}
 
 dojo.widget.defineWidget(
 	"dojo.widget.RichText",
