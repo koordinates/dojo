@@ -720,7 +720,7 @@ dojo.widget.defineWidget(
 				element.isSelected = false;
 			});
 			self.isInitialized=false;
-			var body = this.domNode.tBodies[0];
+			var body = self.domNode.tBodies[0];
 			if(body){
 				while(body.childNodes.length>0){
 					body.removeChild(body.childNodes[0]);
