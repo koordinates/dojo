@@ -662,13 +662,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	
 
 	/* Edit current node : change properties and update contents */
-	edit: function(props) {
-		dojo.lang.mixin(this, props);
-		if (props.title) {
-			this.labelNode.innerHTML = this.title;
-		}
-
-		dojo.event.topic.publish(this.tree.eventNames.afterEdit, { source: this, props: props });
+	setTitle: function(title) {
+		this.labelNode.innerHTML = this.title = title;
+				
+		dojo.event.topic.publish(this.tree.eventNames.afterSetTitle, { source: this, title:title });
 
 	},
 

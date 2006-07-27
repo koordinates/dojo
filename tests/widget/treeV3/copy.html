@@ -21,11 +21,11 @@
 		var treeNode = dojo.widget.byId('Item 1');
 		
 		var newNode = treeNode.clone(false);
-		newNode.edit({title: "Non-deep clone of "+newNode.title});
+		newNode.setTitle("Non-deep clone of "+newNode.title);
 		tree.addChild(newNode);
 		
 		var newNode = treeNode.clone(true);
-		newNode.edit({title: "Deep clone of "+newNode.title});
+		newNode.setTitle("Deep clone of "+newNode.title);
 		tree.addChild(newNode);
 	
 	});
