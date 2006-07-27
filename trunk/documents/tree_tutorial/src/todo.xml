@@ -9,9 +9,10 @@
         <listitem>Add document.write() for all images to prevent IE dynamic loading on every expand. Maybe put this functionality into CSS parser?</listitem>
         <listitem>Allow passing nested arrays from server for TreeLoadingController</listitem>
         <listitem>Allow other objects be dropped onto treenodes (call getTreeNode)</listitem>
-        <listitem>Allow inline editing of node title via context-menu--edit or other bindings</listitem>
+        <listitem>Allow inline editing of node title via context-menu--edit or other bindings. Make RPCController work w/ it. (events?)</listitem>
         <listitem>Add refresh/reset method to loading controllers</listitem>
         <listitem>Make unselectable extension (on treeChange bindings)</listitem>
+        <listitem>make it possible: Is it possible right now to use lazy loading to get a full tree “branch” and then use lazy creation for all levels except the top level? I am thinking that you can’t right now and that the barrier is the TreeLoadingController not being able to decode nested arrays. Is this right?</listitem>
         <listitem>Automated unit-testing system based on Selenium</listitem>
         <listitem>Optimize all gifs with AGO carefully. AGO spoils transparent gifs sometimes</listitem>        
         <listitem>Need a way to inform user about finishing of expandToLevel or expansion from indices operations, that may involve async &amp; loading features</listitem>

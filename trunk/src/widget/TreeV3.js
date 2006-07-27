@@ -242,7 +242,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 			function(elem) {
 				var t = dojo.widget.manager.getWidgetById(elem);
 				if (! (t instanceof dojo.widget.Widget)) {
-					dojo.raise("No widget for "+elem);
+					dojo.raise("No listener found by widgetId for "+elem);
 				}
 				//dojo.debug(t)
 				t.listenTree(_this)

@@ -11,6 +11,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:TreeNodeV3");
 // # //////////
 
 dojo.widget.TreeNodeV3 = function() {
+	
 	dojo.widget.HtmlWidget.call(this);
 
 	this.actionsDisabled = [];
@@ -53,22 +54,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	expandNode: null,
 	labelNode: null,
-	
-	
-	/**
-	 * override for speed 
-	 
-	postInitialize: function(args, frag, parentComp){
-		var sourceNodeRef = this.getFragNodeRef(frag);
 		
-		var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
-		if (!parentComp) {
-			dojo.debug(this);
-		}
-		parentComp.registerChild(this, args.dojoinsertionindex);
-			
-		dojo.widget.getParser().createSubComponents(frag, this);
-	},*/ 
 		
 	nodeType: "Document",
 	
@@ -77,8 +63,58 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return this.nodeType;
 	},
 	
+	cloneProperties: ["lazyInitEnabled","expandChildrenChecked","nodeType","objectId","object",
+		   "title","isFolder","isExpanded","state"],
 	
-	// fast buildRendering 	
+	
+	/**
+	 * copy cloneProperties with recursion into them
+	 * contains "copy constructor"
+	 */
+	clone: function(deep) {
+		var ret = new this.constructor();
+		
+		//dojo.debug("start cloning props "+this);
+		
+		for(var i=0; i<this.cloneProperties.length; i++) {
+			var prop = this.cloneProperties[i];
+			//dojo.debug("cloning "+prop+ ":" +this[prop]);
+			ret[prop] = dojo.lang.shallowCopy(this[prop], true);			
+		}
+		
+		//dojo.debug("cloned props "+this);
+		
+		ret.toggleObj = this.toggleObj;
+		
+		dojo.widget.manager.add(ret);
+		
+		ret.tree = this.tree;
+		ret.buildRendering({},{});
+		ret.initialize({},{});
+				
+		if (deep && this.children.length) {
+			//dojo.debug("deeper copy start");
+			for(var i=0; i<this.children.length; i++) {
+				var child = this.children[i];
+				//dojo.debug("copy child "+child);
+				if (child.clone) {
+					ret.children.push(child.clone(deep));
+				} else {
+					ret.children.push(dojo.lang.shallowCopy(child, deep));
+				}
+			}
+			//dojo.debug("deeper copy end");
+			ret.setChildren(ret.children);
+		}
+				
+		return ret;
+	},
+			
+	
+	
+	/**
+	 * get information from args & parent, then build rendering
+	 */
 	buildRendering: function(args, fragment, parent) {
 		
 		
@@ -173,11 +209,16 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.start("initialize");
 		
-		// set tree from args or from parent
-		//dojo.debug("initialize in "+this);
-						
+		/**
+		 * first we populate current widget from args,
+		 * then use its data to initialize
+		 * args may be empty, all data inside widget for copy constructor
+		 */
+		if (args.isFolder) {
+			this.isFolder = true;
+		}
 		
-		if (this.children.length || args.isFolder) {
+		if (this.children.length || this.isFolder) {
 			//dojo.debug("children found");
 			//dojo.debug(this.children);
 			//dojo.debug("isFolder "+args.isFolder);
@@ -370,8 +411,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		treeNode.initialize(args, {}, parent);
 		
 		//dojo.profile.end(this.widgetType+"createSimple");
-		
-		delete dojo.widget.manager.topWidgets[treeNode.widgetId];
+		if (treeNode.parent) {
+			delete dojo.widget.manager.topWidgets[treeNode.widgetId];
+		}
 		
 		return treeNode;
 	},

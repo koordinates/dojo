@@ -28,7 +28,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 
 
-	listenNode: function(node) {				
+	listenNode: function(node) {
+		//dojo.debug("listen "+node);
 		dojo.event.browser.addListener(node.expandNode, "onclick", this.onExpandClickHandler);
 		//dojo.event.connect(node.expandNode, "onclick", this, "onExpandClick");
 	},
