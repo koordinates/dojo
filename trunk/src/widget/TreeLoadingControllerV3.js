@@ -82,6 +82,11 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 
 
+	/**
+	 * takes arguments for dojo.io.bind + lock array
+	 * serializes params for call
+	 * calls RPC Handler in case of call error and passes result on if all fine
+	 */
 	runRPC: function(kw) {
 		var _this = this;
 
@@ -151,7 +156,8 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	batchExpandTimeout: 0,
 
 	expand: function(node, sync, callObj, callFunc) {		
-		// widget which children are data objects, *is* UNCHECKED
+		// widget which children are data objects, is UNCHECKED, but has children and shouldn't be loaded
+		// so I put children check here too
 		if (node.state == node.loadStates.UNCHECKED && node.isFolder && !node.children.length) {
 
 			this.loadRemote(node, sync,
