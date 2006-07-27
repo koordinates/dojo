@@ -220,6 +220,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 	doClone: function(child, newParent, index, deep) {
+		dojo.debug("Clone "+child);
 		var cloned = child.clone(deep);
 		newParent.addChild(cloned, index);
 				

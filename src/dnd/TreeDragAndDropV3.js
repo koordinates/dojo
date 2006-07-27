@@ -307,13 +307,32 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			dojo.raise("TreeNode not found in dragObject")
 		}
 
+		var targetParent, targetIndex;
 		if (position == "onto") {
-			return this.controller.move(sourceTreeNode, this.treeNode, 0);
+			targetParent = this.treeNode;
+			targetIndex = 0;
 		} else {
-			var index = this.getTargetParentIndex(sourceTreeNode, position);
-			return this.controller.move(sourceTreeNode, this.treeNode.parent, index);
+			targetIndex = this.getTargetParentIndex(sourceTreeNode, position);
+			targetParent = this.treeNode.parent;
 		}
+		
+		return this.getDropHandler(e, sourceTreeNode, targetParent, targetIndex)();
+			
 
+	},
+	
+	/**
+	 * determine, which action I should perform with nodes
+	 * e.g move, clone..
+	 */
+	getDropHandler: function(e, sourceTreeNode, targetParent, targetIndex) {
+		var handler;
+		
+		handler = function () {
+			return this.controller.move(sourceTreeNode, targetParent, targetIndex);	
+		}
+		
+		return handler;
 	}
 
 

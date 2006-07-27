@@ -94,13 +94,15 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
 	},		
 		
-
+	checkDeselectEvent: function(event) {
+		return event.ctrlKey || event.shiftKey || event.metaKey;
+	},
 		
 	onLabelClick: function(event) {		
 		var node = this.domElement2TreeNode(event.target);
 
 		if (this.selectedNode === node) {
-			if(event.ctrlKey || event.shiftKey || event.metaKey){
+			if(this.checkDeselectEvent(event)){
 				// If the node is currently selected, and they select it again while holding
 				// down a meta key, it deselects it
 				this.deselect();
