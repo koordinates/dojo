@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.FloatingPane");
-dojo.provide("dojo.widget.html.FloatingPane");
 
 //
 // this widget provides a window-like floating pane
@@ -20,7 +19,7 @@ dojo.require("dojo.dnd.HtmlDragMoveObject");
 dojo.require("dojo.widget.ResizeHandle");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.FloatingPane",
+	"dojo.widget.FloatingPane",
 	dojo.widget.ContentPane,
 	{
 		// Constructor arguments
@@ -123,7 +122,7 @@ dojo.widget.defineWidget(
 			// counteract body.appendChild above
 			dojo.body().removeChild(this.domNode);
 	
-			dojo.widget.html.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
+			dojo.widget.FloatingPane.superclass.fillInTemplate.call(this, args, frag);
 		},
 	
 		postCreate: function(){
@@ -250,12 +249,12 @@ dojo.widget.defineWidget(
 		},
 	
 		show: function(){
-			dojo.widget.html.FloatingPane.superclass.show.apply(this, arguments);
+			dojo.widget.FloatingPane.superclass.show.apply(this, arguments);
 			this.bringToTop();
 		},
 	
 		onShow: function(){
-			dojo.widget.html.FloatingPane.superclass.onShow.call(this);
+			dojo.widget.FloatingPane.superclass.onShow.call(this);
 			var mb = dojo.html.getMarginBox(this.domNode);
 			this.resizeTo(mb.width, mb.height);
 		},

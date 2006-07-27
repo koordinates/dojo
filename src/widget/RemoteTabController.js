@@ -1,12 +1,12 @@
 dojo.provide("dojo.widget.RemoteTabController");
-dojo.provide("dojo.widget.html.RemoteTabController");
 
 //Summary
 //Remote Tab Controller widget.  Can be located independently of a tab
 //container and control the selection of its tabs
+dojo.require("dojo.widget.*");
 
 dojo.widget.defineWidget(
-        "dojo.widget.html.RemoteTabController",
+        "dojo.widget.RemoteTabController",
         dojo.widget.HtmlWidget,
 	{
 
@@ -15,34 +15,31 @@ dojo.widget.defineWidget(
 		initializer: function() {
 			//summary
 			//Initialize Remote Tab Controller
-
 			// for passing in as a parameter
 			this.tabContainer = "";
 
 			// the reference to the tab container
-			this._tabContainer="";
+			this._tabContainer={};
 
 			//hash of tabs
 			this.tabs = {}; 
 
-			this.selectedTab=null;
+			this.selectedTab="";
 
 			//override these classes to change the style
-			this.class="dojoRemoteTabController";
+			this["class"]="dojoRemoteTabController"; // alt syntax: "class" is a reserved word in JS
 			this.labelClass="dojoRemoteTab";
 		},
 
 		postCreate: function() {
 
-			dojo.html.addClass(this.domNode, this.class);
+			dojo.html.addClass(this.domNode, this["class"]);  // "class" is a reserved word in JS
 
-			if (this.tabContainer != "") {
+			if (this.tabContainer) {
 				dojo.addOnLoad(dojo.lang.hitch(this, function() {
 					this.setTabContainer(dojo.widget.byId(this.tabContainer));
 				}));
 			}
-
-			
 		},
 
 		setTabContainer: function(/* dojo.widget.TabContainer */ tabContainer) {
@@ -51,7 +48,7 @@ dojo.widget.defineWidget(
 			this._tabContainer = tabContainer;
 			this.setupTabs();
 
-			dojo.event.connect(this._tabContainer, "_setupTab", this, "setupTabs");
+			dojo.event.connect(this._tabContainer, "addChild", this, "setupTabs");
 			dojo.event.connect(this._tabContainer, "selectTab", this, "onTabSelected");
 		},
 

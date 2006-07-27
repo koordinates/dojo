@@ -57,7 +57,7 @@ been tested on almost every modern browser, including:
     - Konqueror 3.4+
     - Opera 8.5+
 
-Note that some widgets and features may not preform exactly the same on every
+Note that some widgets and features may not perform exactly the same on every
 browser due to browser implementation differences.
 
 For those looking to use Dojo in non-browser environments, please see "Working

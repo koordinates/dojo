@@ -1,6 +1,5 @@
  /* -*- tab-width: 4 -*- */
 dojo.provide("dojo.widget.RichText");
-dojo.provide("dojo.widget.html.RichText");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
@@ -15,7 +14,7 @@ try {
 }catch(e){ }
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.RichText",
+	"dojo.widget.RichText",
 	dojo.widget.HtmlWidget,
 	{
 		/** whether to inherit the parent's width or simply use 100% */
@@ -41,9 +40,9 @@ dojo.widget.defineWidget(
 		/** whether to use the active-x object in IE */
 		useActiveX: false,
 
-		/* whether to use relative URLs for images - if this is enabled
-       	images will be given absolute URLs when inside the editor but
-       	will be changed to use relative URLs (to the current page) on save
+		/*whether to use relative URLs for images - if this is enabled
+		images will be given absolute URLs when inside the editor but
+		will be changed to use relative URLs (to the current page) on save
 		*/
 		relativeImageUrls: false,
 		
@@ -489,7 +488,7 @@ dojo.widget.defineWidget(
 		
 		/** Draws an active x object, used by IE */
 		_drawObject: function (html) {
-			this.object = document.createElement("object");
+			this.object = djCreateExternalElement(dojo.doc(), "object");
 
 			with (this.object) {
 				classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
@@ -522,7 +521,7 @@ dojo.widget.defineWidget(
 	/* Event handlers
 	 *****************/
 
-	 	_isResized: function(){ return false; },
+		_isResized: function(){ return false; },
 
 		onLoad: function(e){
 			this.isLoaded = true;
@@ -769,7 +768,7 @@ dojo.widget.defineWidget(
 	/* Formatting commands
 	 **********************/
 		
-		/** IE's Active X codes */
+		/** IE's Active X codes: see http://www.computerbytesman.com/js/activex/dhtmledit.htm */
 		_activeX: {
 			command: {
 				bold: 5000,
@@ -1046,7 +1045,7 @@ dojo.widget.defineWidget(
 				// select our link and unlink
 				var range = document.createRange();
 				var a = this.getSelectedNode();
-				while(a.nodeName != "A"){ a = a.parentNode; }
+				while(a.nodeName.toLowerCase() != "a"){ a = a.parentNode; }
 				range.selectNode(a);
 				selection.removeAllRanges();
 				selection.addRange(range);
@@ -1096,8 +1095,10 @@ dojo.widget.defineWidget(
 				if(dojo.render.html.moz){
 					this.document = this.iframe.contentWindow.document
 				}
-				returnValue = this.document.execCommand(command, false, argument);
 
+				if(argument || command!="createlink") {
+					returnValue = this.document.execCommand(command, false, argument);
+				}
 				// try{
 				// }catch(e){
 				// 	dojo.debug(e);
@@ -1206,7 +1207,7 @@ dojo.widget.defineWidget(
 					// not a great deal we can do
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.dojo.body().createTextRange();
+				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();
@@ -1214,7 +1215,9 @@ dojo.widget.defineWidget(
 		},
 
 		replaceEditorContent: function(html){
-			if(this.window.getSelection){
+			if(this.isClosed){
+				this.domNode.innerHTML = html;
+			}else if(this.window.getSelection){
 				var selection = this.window.getSelection;
 				// if(selection.removeAllRanges){ // Mozilla			
 				if(dojo.render.html.moz){ // Mozilla			
@@ -1229,7 +1232,7 @@ dojo.widget.defineWidget(
 					this.editNode.innerHTML = html;
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.dojo.body().createTextRange();
+				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.select();
 				this.execCommand("inserthtml", html);
@@ -1255,7 +1258,7 @@ dojo.widget.defineWidget(
 					// not a great deal we can do
 				}
 			}else if(this.document.selection){ // IE
-				var range = this.dojo.body().createTextRange();
+				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
 				range.select();

@@ -3,7 +3,7 @@
  * - test, bug fix, more features :)
 */
 dojo.provide("dojo.widget.Editor");
-dojo.provide("dojo.widget.html.Editor");
+dojo.provide("dojo.widget.Editor");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.Toolbar");
@@ -13,14 +13,14 @@ dojo.require("dojo.string.extras");
 
 dojo.widget.tags.addParseTreeHandler("dojo:Editor");
 
-dojo.widget.html.Editor = function() {
+dojo.widget.Editor = function() {
 	dojo.widget.HtmlWidget.call(this);
 	this.contentFilters = [];
 	this._toolbars = [];
 }
-dojo.inherits(dojo.widget.html.Editor, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.Editor, dojo.widget.HtmlWidget);
 
-dojo.widget.html.Editor.itemGroups = {
+dojo.widget.Editor.itemGroups = {
 	textGroup: ["bold", "italic", "underline", "strikethrough"],
 	blockGroup: ["formatBlock", "fontName", "fontSize"],
 	justifyGroup: ["justifyleft", "justifycenter", "justifyright"],
@@ -31,7 +31,7 @@ dojo.widget.html.Editor.itemGroups = {
 	linkGroup: ["createlink", "insertimage", "inserthorizontalrule"]
 };
 
-dojo.widget.html.Editor.formatBlockValues = {
+dojo.widget.Editor.formatBlockValues = {
 	"Normal": "p",
 	"Main heading": "h2",
 	"Sub heading": "h3",
@@ -39,14 +39,14 @@ dojo.widget.html.Editor.formatBlockValues = {
 	"Preformatted": "pre"
 };
 
-dojo.widget.html.Editor.fontNameValues = {
+dojo.widget.Editor.fontNameValues = {
 	"Arial": "Arial, Helvetica, sans-serif",
 	"Verdana": "Verdana, sans-serif",
 	"Times New Roman": "Times New Roman, serif",
 	"Courier": "Courier New, monospace"
 };
 
-dojo.widget.html.Editor.fontSizeValues = {
+dojo.widget.Editor.fontSizeValues = {
 	"1 (8 pt)" : "1",
 	"2 (10 pt)": "2",
 	"3 (12 pt)": "3",
@@ -56,25 +56,25 @@ dojo.widget.html.Editor.fontSizeValues = {
 	"7 (36 pt)": "7"
 };
 
-dojo.widget.html.Editor.defaultItems = [
+dojo.widget.Editor.defaultItems = [
 	"commandGroup", "|", "blockGroup", "|", "textGroup", "|", "colorGroup", "|", "justifyGroup", "|", "listGroup", "indentGroup", "|", "linkGroup"
 ];
 
 // ones we support by default without asking the RichText component
 // NOTE: you shouldn't put buttons like bold, italic, etc in here
-dojo.widget.html.Editor.supportedCommands = ["save", "cancel", "|", "-", "/", " "];
+dojo.widget.Editor.supportedCommands = ["save", "cancel", "|", "-", "/", " "];
 
-dojo.lang.extend(dojo.widget.html.Editor, {
+dojo.lang.extend(dojo.widget.Editor, {
 	widgetType: "Editor",
 
 	saveUrl: "",
 	saveMethod: "post",
 	saveArgName: "editorContent",
 	closeOnSave: false,
-	items: dojo.widget.html.Editor.defaultItems,
-	formatBlockItems: dojo.lang.shallowCopy(dojo.widget.html.Editor.formatBlockValues),
-	fontNameItems: dojo.lang.shallowCopy(dojo.widget.html.Editor.fontNameValues),
-	fontSizeItems: dojo.lang.shallowCopy(dojo.widget.html.Editor.fontSizeValues),
+	items: dojo.widget.Editor.defaultItems,
+	formatBlockItems: dojo.lang.shallowCopy(dojo.widget.Editor.formatBlockValues),
+	fontNameItems: dojo.lang.shallowCopy(dojo.widget.Editor.fontNameValues),
+	fontSizeItems: dojo.lang.shallowCopy(dojo.widget.Editor.fontSizeValues),
 
 	// used to get the properties of an item if it is given as a string
 	getItemProperties: function(name) {
@@ -206,7 +206,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 
 	addToolbar: function(toolbar) {
 		this.initToolbar();
-		if(!(toolbar instanceof dojo.widget.html.Toolbar)) {
+		if(!(toolbar instanceof dojo.widget.Toolbar)) {
 			toolbar = dojo.widget.createWidget(this._toolbarType);
 		}
 		this._toolbarContainer.addChild(toolbar);
@@ -218,7 +218,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 		if(!tb) { tb = this._toolbars[0]; }
 		var cmd = ((item)&&(!dojo.lang.isUndefined(item["getValue"]))) ?  cmd = item["getValue"](): item;
 
-		var groups = dojo.widget.html.Editor.itemGroups;
+		var groups = dojo.widget.Editor.itemGroups;
 		if(item instanceof dojo.widget.ToolbarItem) {
 			tb.addChild(item);
 		} else if(groups[cmd]) {
@@ -352,7 +352,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 		var items = this._toolbarContainer.getItems();
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if(item instanceof dojo.widget.html.ToolbarSeparator) { continue; }
+			if(item instanceof dojo.widget.ToolbarSeparator) { continue; }
 			var cmd = item._name;
 			if (cmd == "save" || cmd == "cancel") { continue; }
 			else if(cmd == "justifyGroup") {
@@ -407,7 +407,7 @@ dojo.lang.extend(dojo.widget.html.Editor, {
 		}
 	},
 
-	supportedCommands: dojo.widget.html.Editor.supportedCommands.concat(),
+	supportedCommands: dojo.widget.Editor.supportedCommands.concat(),
 
 	isSupportedCommand: function(cmd) {
 		// FIXME: how do we check for ActiveX?

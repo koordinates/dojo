@@ -1,10 +1,10 @@
 dojo.provide("dojo.widget.ShowAction");
-
 dojo.require("dojo.widget.*");
-dojo.require("dojo.lang.common");
 
-dojo.widget.ShowAction = function(){}
-dojo.lang.extend(dojo.widget.ShowAction, {
+dojo.widget.defineWidget(
+	"dojo.widget.ShowAction",
+	dojo.widget.HtmlWidget,
+{
 	on: "",
 	action: "",
 	duration: 0,
@@ -12,5 +12,3 @@ dojo.lang.extend(dojo.widget.ShowAction, {
 	to: "",
 	auto: "false"
 });
-
-dojo.requireAfterIf("html", "dojo.widget.html.ShowAction");

@@ -3,6 +3,11 @@ dojo.require("dojo.namespace");
 
 (function(){
 	//mapping of all widget short names to their full package names
+	// This is used for widget autoloading - no dojo.require() is necessary.
+	// If you use a widget in markup or create one dynamically, then this
+	// mapping is used to find and load any dependencies not already loaded.
+	// You should use your own namespace for any custom widgets.
+	// For extra widgets you use, dojo.declare() may be used to explicitly load them.
 	var map = {
 		html: {
 			"accordioncontainer": "dojo.widget.AccordionContainer",
@@ -20,8 +25,8 @@ dojo.require("dojo.namespace");
 			"debugconsole": "dojo.widget.DebugConsole",
 			"dialog": "dojo.widget.Dialog",
 			"docpane": "dojo.widget.DocPane",
-			"domwidget": "dojo.widget.DomWidget",
 			"dropdownbutton": "dojo.widget.DropdownButton",
+			"dropdowndatepicker": "dojo.widget.DropdownDatePicker",
 			"editor2": "dojo.widget.Editor2",
 			"editor2toolbar": "dojo.widget.Editor2Toolbar",
 			"editor": "dojo.widget.Editor",
@@ -31,7 +36,6 @@ dojo.require("dojo.namespace");
 			"fisheyelist": "dojo.widget.FisheyeList",
 			"editortreecontroller": "dojo.widget.EditorTreeController",
 			"googlemap": "dojo.widget.GoogleMap",
-			"htmlwidget": "dojo.widget.HtmlWidget",
 			"editortreeselector": "dojo.widget.EditorTreeSelector",
 			"floatingpane": "dojo.widget.FloatingPane",
 			"hslcolorpicker": "dojo.widget.HslColorPicker",
@@ -45,10 +49,7 @@ dojo.require("dojo.namespace");
 			"menuseparator2": "dojo.widget.Menu2",
 			"menubar2": "dojo.widget.Menu2",
 			"menubaritem2": "dojo.widget.Menu2",
-			"menu": "dojo.widget.Menu",//deprecated
-			"menuitem": "dojo.widget.MenuItem",
 			"monthlyCalendar": "dojo.widget.MonthlyCalendar",
-			"parse": "dojo.widget.Parse",
 			"popupbutton": "dojo.widget.PopUpButton",
 			"richtext": "dojo.widget.RichText",
 			"remotetabcontroller": "dojo.widget.RemoteTabController",
@@ -59,7 +60,6 @@ dojo.require("dojo.namespace");
 			"simpledropdownbuttons": "dojo.widget.SimpleDropdownButtons",
 			"splitcontainer": "dojo.widget.SplitContainer",
 			"svgbutton": "dojo.widget.SvgButton",
-			"svgwidget": "dojo.widget.SvgWidget",
 			"tabcontainer": "dojo.widget.TabContainer",
 			"taskbar": "dojo.widget.TaskBar",
 			"timepicker": "dojo.widget.TimerPicker",

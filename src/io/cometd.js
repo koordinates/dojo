@@ -10,7 +10,8 @@ dojo.require("dojo.io.IframeIO");
 dojo.require("dojo.io.ScriptSrcIO"); // for x-domain long polling
 dojo.require("dojo.io.cookie"); // for peering
 dojo.require("dojo.event.*");
-dojo.require("dojo.lang.*");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.lang.func");
 
 /*
  * this file defines Comet protocol client. Actual message transport is
@@ -51,6 +52,8 @@ cometd = new function(){
 	}
 
 	this.init = function(props, root, bargs){
+		// FIXME: if the root isn't from the same host, we should automatically
+		// try to select an XD-capable transport
 		props = props||{};
 		// go ask the short bus server what we can support
 		props.version = this.version;
@@ -67,6 +70,11 @@ cometd = new function(){
 			dojo.debug("no cometd root specified in djConfig and no root passed");
 			return;
 		}
+		// FIXME: we need to select a way to handle JSONP-style stuff
+		// generically here. We already know if the server is gonna be on
+		// another domain (or can know it), so we should select appropriate
+		// negotiation methods here as well as in final transport type
+		// selection.
 		var bindArgs = {
 			url: this.url,
 			method: "POST",
@@ -74,7 +82,9 @@ cometd = new function(){
 			load: dojo.lang.hitch(this, "finishInit"),
 			content: { "message": dojo.json.serialize(props) }
 		};
-		dojo.lang.mixin(bindArgs, bargs);
+		if(bargs){
+			dojo.lang.mixin(bindArgs, bargs);
+		}
 		return dojo.io.bind(bindArgs);
 	}
 
@@ -298,7 +308,7 @@ cometd.blahTransport = new function(){
 	this.lastTimestamp = null;
 	this.lastId = null;
 
-	this.check = function(types){
+	this.check = function(types, xdomain){
 		// summary:
 		//		determines whether or not this transport is suitable given a
 		//		list of transport types that the server supports
@@ -356,8 +366,9 @@ cometd.iframeTransport = new function(){
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types){
-		return ((!dojo.render.html.safari)&&
+	this.check = function(types, xdomain){
+		return ((!xdomain)&&
+				(!dojo.render.html.safari)&&
 				(dojo.lang.inArray(types, "iframe")));
 	}
 
@@ -556,8 +567,9 @@ cometd.mimeReplaceTransport = new function(){
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types){
-		return ((dojo.render.html.mozilla)&& // seems only Moz really supports this right now = (
+	this.check = function(types, xdomain){
+		return ((!xdomain)&&
+				(dojo.render.html.mozilla)&& // seems only Moz really supports this right now = (
 				(dojo.lang.inArray(types, "mime-message-block")));
 	}
 
@@ -660,8 +672,8 @@ cometd.longPollTransport = new function(){
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types){
-		return dojo.lang.inArray(types, "long-polling");
+	this.check = function(types, xdomain){
+		return ((!xdomain)&&(dojo.lang.inArray(types, "long-polling")));
 	}
 
 	this.tunnelInit = function(){
@@ -758,7 +770,8 @@ cometd.callbackPollTransport = new function(){
 	this.lastId = null;
 	this.backlog = [];
 
-	this.check = function(types){
+	this.check = function(types, xdomain){
+		// we handle x-domain!
 		return dojo.lang.inArray(types, "callback-polling");
 	}
 

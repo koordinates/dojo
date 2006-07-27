@@ -542,7 +542,7 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
 	// var tic = new Date();
-	var twidget = dojo.widget.manager.getImplementation(stype); //TODO: pass namespace
+	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag.namespace);
 	if(!twidget){
 		throw new Error("cannot find \"" + stype + "\" widget");
 	}else if (!twidget.create){

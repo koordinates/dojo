@@ -1,7 +1,5 @@
 dojo.provide("dojo.widget.SplitContainer");
 dojo.provide("dojo.widget.SplitContainerPanel");
-dojo.provide("dojo.widget.html.SplitContainer");
-dojo.provide("dojo.widget.html.SplitContainerPanel");
 
 //
 // TODO
@@ -10,7 +8,7 @@ dojo.provide("dojo.widget.html.SplitContainerPanel");
 //
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.LayoutContainer");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
@@ -18,17 +16,14 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
 dojo.require("dojo.io.cookie");
 
-dojo.widget.html.SplitContainer = function(){
+dojo.widget.defineWidget(
+	"dojo.widget.SplitContainer",
+	dojo.widget.HtmlWidget,
+{
+	initializer: function(){
+		this.sizers = [];
+	},
 
-	dojo.widget.HtmlWidget.call(this);
-
-	this.sizers = [];
-}
-
-dojo.inherits(dojo.widget.html.SplitContainer, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.SplitContainer, {
-	widgetType: "SplitContainer",
 	isContainer: true,
 
 	virtualSizer: null,
@@ -153,12 +148,12 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
         }
 
         // Remove widget and repaint
-        dojo.widget.html.SplitContainer.superclass.removeChild.call(this, widget, arguments);
+        dojo.widget.SplitContainer.superclass.removeChild.call(this, widget, arguments);
         this.onResized();
     },
 
     addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
-        dojo.widget.html.SplitContainer.superclass.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
+        dojo.widget.SplitContainer.superclass.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
         this._injectChild(widget);
 
         if (this.children.length > 1) {
@@ -555,13 +550,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 // Deprecated class for split pane children.
 // Actually any widget can be the child of a split pane
-dojo.widget.html.SplitContainerPanel = function(){
-	dojo.widget.html.LayoutContainer.call(this);
-}
-dojo.inherits(dojo.widget.html.SplitContainerPanel, dojo.widget.html.LayoutContainer);
-dojo.lang.extend(dojo.widget.html.SplitContainerPanel, {
-	widgetType: "SplitContainerPanel"
-});
+dojo.widget.defineWidget(
+	"dojo.widget.SplitContainerPanel",
+	dojo.widget.ContentPane,
+	{}
+);
 
-dojo.widget.tags.addParseTreeHandler("dojo:SplitContainer");
-dojo.widget.tags.addParseTreeHandler("dojo:SplitContainerPanel");

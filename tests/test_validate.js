@@ -193,6 +193,10 @@ function test_validate_isInRange(){
 	jum.assertFalse("test22", dojo.validate.isInRange('123.456.789,00 �',  {max: 123456788, decimal: ","} ));
 	jum.assertFalse("test23", dojo.validate.isInRange('123.456.789,00 �',  {min: 123456790, decimal: ","} ));
 	jum.assertFalse("test24", dojo.validate.isInRange('- T123 456 789-00', {decimal: "-", min:0} ));
+
+	// test non number
+	//jum.assertFalse("test25", dojo.validate.isInRange( 'a'));
+
 }
 
 function test_validate_isInteger(){
@@ -214,12 +218,12 @@ function test_validate_isInteger(){
 	jum.assertTrue("test19", dojo.validate.isInteger( '100.000.000', {separator: "."} ));
 	jum.assertFalse("test20", dojo.validate.isInteger('10.000.000.000', {} ));
 	jum.assertTrue("test21", dojo.validate.isInteger( '10,000,000', {separator: ["", ","]} ));
-	jum.assertTrue("test21", dojo.validate.isInteger( '10000000', {separator: ["", ","]} ));
-	jum.assertFalse("test21", dojo.validate.isInteger( '10.000.000', {separator: ["", ","]} ));
+	jum.assertTrue("test22", dojo.validate.isInteger( '10000000', {separator: ["", ","]} ));
+	jum.assertFalse("test23", dojo.validate.isInteger( '10.000.000', {separator: ["", ","]} ));
 
 	//test sign
-	jum.assertFalse("test21", dojo.validate.isInteger( '+10000000', {signed: false} ));
-	jum.assertFalse("test22", dojo.validate.isInteger( '10000000', {signed: true} ));
+	jum.assertFalse("test24", dojo.validate.isInteger( '+10000000', {signed: false} ));
+	jum.assertFalse("test25", dojo.validate.isInteger( '10000000', {signed: true} ));
 }
 
 function test_validate_isRealNumber(){

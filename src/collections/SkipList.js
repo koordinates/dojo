@@ -40,17 +40,20 @@ dojo.collections.SkipList = function(){
 		};
 	}
 	function iterator(list){
-		this.current = list.head;
-		this.atEnd = false;
-		this.moveNext = function(){
-			if (this.atEnd) return !this.atEnd;
-			this.current = this.current.nodes[0];
-			this.atEnd = (this.current == null);
-			return !this.atEnd;
-		};
+		this.element = list.head;
+		this.atEnd = function(){
+			return (this.element==null);
+		}
+		this.get = function(){
+			if(this.atEnd()){
+				return null;
+			}
+			this.element=this.element.nodes[0];
+			return this.element;
+		}
 		this.reset = function(){
-			this.current = null;
-		};
+			this.element = list.head;
+		}
 	}
 
 	function chooseRandomHeight(max){

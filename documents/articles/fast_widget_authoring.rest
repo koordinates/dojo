@@ -72,7 +72,7 @@ possible (loads but doesn't do anything) version of the widget. Here it is::
         dojo.widget.HtmlWidget.call(this);
 
         this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html");
-        this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
+        this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
 
         this.widgetType = "SlideShow";
     }
@@ -362,7 +362,7 @@ SlideShow.js::
         dojo.widget.HtmlWidget.call(this);
 
         this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html");
-        this.templateCSSPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
+        this.templateCssPath = dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css");
 
         // over-ride defaults
         this.widgetType = "SlideShow";

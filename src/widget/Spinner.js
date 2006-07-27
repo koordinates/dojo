@@ -7,7 +7,6 @@ dojo.require("dojo.lfx.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.string");
-dojo.require("dojo.widget.html.stabile");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Spinner",
@@ -19,33 +18,26 @@ dojo.widget.defineWidget(
 		relNode: null,
 		spacerNode: null,
 		inputWidgetId: "",
-		inputWidget: null,
-		typamaticTimer: null,
-		typamaticFunction: null,
+		_inputWidget: null,
+		_typamaticTimer: null,
+		_typamaticFunction: null,
 		defaultTimeout: 500,
-		currentTimeout: this.defaultTimeout,
-		eventCount: 0,
+		timeoutChangeRate: 0.90,
+		_currentTimeout: this.defaultTimeout,
+		_eventCount: 0,
+		incrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerIncrement.gif"),
+		decrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerDecrement.gif"),
 
-		isContainer: false,
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlSpinner.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSpinner.css"),
 
 		setValue: function(value){
-			this.inputWidget.setValue(value);
-			this.inputWidget.adjustValue(0);
-			dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+			this._inputWidget.setValue(value);
+			this._inputWidget.adjustValue(0);
 		},
 
 		getValue: function(){
-			return this.inputWidget.getValue();
-		},
-
-		getState: function(){
-			return {value: this.getValue()};
-		},
-
-		setState: function(state){
-			this.setValue(state.value);
+			return this._inputWidget.getValue();
 		},
 
 		// does the keyboard related stuff
@@ -56,14 +48,14 @@ dojo.widget.defineWidget(
 			switch(keyCode){
  			case k.KEY_DOWN_ARROW:
 					dojo.event.browser.stopEvent(evt);
-					this.downArrowPressed(evt);
+					this._downArrowPressed(evt);
 					return;
 				case k.KEY_UP_ARROW:
 					dojo.event.browser.stopEvent(evt);
-					this.upArrowPressed(evt);
+					this._upArrowPressed(evt);
 					return;
 			}
-			this.eventCount++;
+			this._eventCount++;
 
 		},
 
@@ -85,75 +77,60 @@ dojo.widget.defineWidget(
 			dojo.html.copyStyle(this.domNode, source);
 		},
 
-		_resizeNode: function(node){
-			var content = dojo.html.getContentBox(node);
-			var oldh = content.height;
-			var oldw = content.width
-			if(oldh <=0 || oldw <= 0){
+		resize: function(){
+			var inputHeight = dojo.html.getBorderBox(this.inputNode).height;
+			var oldw = dojo.html.getPixelValue(this.upArrowNode,"width");
+			if (oldw <= 0) {
+				oldw = dojo.html.getContentBox(this.upArrowNode).width;
+			}
+			var oldh = dojo.html.getPixelValue(this.upArrowNode,"height");
+			if (oldh <= 0) {
+				oldh = dojo.html.getContentBox(this.upArrowNode).height;
+			}
+			if(inputHeight <= 0 || oldh <= 0 || oldw <= 0){
 				// need more time to calculate size
-				setTimeout(dojo.lang.hitch(this,function(){this._resizeNode(node);}), 100);
+				dojo.lang.setTimeout(this, "resize", 100);
 				return;
 			}
 			// note that the border is not resized
-			var border = dojo.html.getBorder(node);
-			var newh = (dojo.html.getBorderBox(this.inputNode).height >> 1) - border.height;
-			var ratio = newh  / oldh;
-			var spinnerWidth = Math.floor(oldw * ratio);
-			node.width = spinnerWidth;
-			node.style.width = spinnerWidth;
-			node.height = newh;
-			node.style.height = newh;
-
-			// figure out how big the spacer image should be
-			var spinnerLeft = dojo.html.getAbsoluteX(this.relNode,true);
-			var spacerLeft = dojo.html.getAbsoluteX(this.spacerNode,true);
-			var spacerWidth = spinnerLeft + spinnerWidth + border.width - spacerLeft;
-			if (spacerWidth >= 0) {
-				this.spacerNode.style.width = spacerWidth + "px";
+			var border = dojo.html.getBorder(this.upArrowNode);
+			var newh = (inputHeight >> 1) - border.height;
+			var ratio = newh / oldh;
+			var neww = Math.floor(oldw * ratio);
+			this.spacerNode.style.width = (neww + border.width) + "px";
+			if (ratio != 1) {
+				this.upArrowNode.width = neww;
+				this.upArrowNode.style.width = neww;
+				this.upArrowNode.height = newh;
+				this.upArrowNode.style.height = newh;
+				this.downArrowNode.width = neww;
+				this.downArrowNode.style.width = neww;
+				this.downArrowNode.height = newh;
+				this.downArrowNode.style.height = newh;
 			}
-		},
-
-		resize: function(){
-			var inputHeight = dojo.html.getBorderBox(this.inputNode).height;
-			if(inputHeight <= 0){
-				// need more time to calculate size
-				setTimeout(dojo.lang.hitch(this,function(){this.resize();}), 100);
-				return;
+			var inputTop = dojo.html.getAbsolutePosition(this.inputNode,true).y;
+			var spinnerTop = dojo.html.getAbsolutePosition(this.upArrowNode,true).y;
+			// FIXME: dojo bug: getAbsolutePosition includes the border only for gecko browsers
+			if (dojo.render.html.mozilla || dojo.render.html.moz) {
+				inputTop -= dojo.html.getBorderExtent(this.inputNode,"top");
+				spinnerTop -= dojo.html.getBorderExtent(this.upArrowNode,"top");
 			}
-			this._resizeNode(this.upArrowNode);
-			this._resizeNode(this.downArrowNode);
-
-			// position arrows vertically
-			if (dojo.html.getAbsoluteY(this.inputNode,true) <= dojo.html.getAbsoluteY(this.spacerNode,true)) {
-				var inputTop = dojo.html.getAbsoluteY(this.inputNode,true);
-				this.relNode.style.top = "0px";
-				this.upArrowNode.style.top = "0px";
-				this.downArrowNode.style.top = "0px";
-				var spinnerTop = dojo.html.getAbsoluteY(this.upArrowNode,true);
-				// FIXME: why is mozilla/firefox off by 2 ?
-				if (dojo.render.html.mozilla || dojo.render.html.moz) {
-					spinnerTop += 2;
-				}
-				this.upArrowNode.style.top = (inputTop - spinnerTop) + "px";
-				this.downArrowNode.style.top = (inputTop - spinnerTop + (inputHeight>>1)) + "px";
+			if (inputTop != spinnerTop) {
+				this.relNode.style.top = (dojo.html.getPixelValue(this.relNode,"top") + inputTop - spinnerTop) + "px";
 			}
 		},
 
 		_pressButton: function(node){
 			with(node.style){
-				borderRight = "0px";
-				borderBottom = "0px";
-				borderLeft = "1px solid black";
-				borderTop = "1px solid black";
+				borderWidth = "1px 0px 0px 1px";
+				borderStyle = "inset";
 			}
 		},
 
 		_releaseButton: function(node){
 			with(node.style){
-				borderLeft = "0px";
-				borderTop = "0px";
-				borderRight = "1px solid gray";
-				borderBottom = "1px solid gray";
+				borderWidth = "0px 1px 1px 0px";
+				borderStyle = "outset";
 			}
 		},
 
@@ -161,39 +138,53 @@ dojo.widget.defineWidget(
 			var nodePressed = (direction == -1) ? this.downArrowNode : this.upArrowNode;
 			var nodeReleased = (direction == +1) ? this.downArrowNode : this.upArrowNode;
 			if(typeof evt != "number"){
-				if(this.typamaticTimer != null){
-					if(this.typamaticNode == nodePressed){
+				if(this._typamaticTimer != null){
+					if(this._typamaticNode == nodePressed){
 						return;
 					}
-					clearTimeout(this.typamaticTimer);
+					dojo.lang.clearTimeout(this._typamaticTimer);
 				}
 				this._releaseButton(nodeReleased);
-				this.eventCount++;
-				this.typamaticTimer = null;
-				this.currentTimeout = this.defaultTimeout;
+				this._eventCount++;
+				this._typamaticTimer = null;
+				this._currentTimeout = this.defaultTimeout;
 
-			}else if (evt != this.eventCount){
+			}else if (evt != this._eventCount){
 				this._releaseButton(nodePressed);
 				return;
 			}
 			this._pressButton(nodePressed);
-			this.setCursorX(this.inputWidget.adjustValue(direction,this.getCursorX()));
-			this.typamaticNode = nodePressed;
-			this.typamaticTimer = setTimeout( dojo.lang.hitch(this,function(){this._arrowPressed(this.eventCount,direction);}), this.currentTimeout);
-			this.currentTimeout = Math.round(this.currentTimeout * 90 / 100);
+			this.setCursorX(this._inputWidget.adjustValue(direction,this.getCursorX()));
+			this._typamaticNode = nodePressed;
+			this._typamaticTimer = dojo.lang.setTimeout(this, "_arrowPressed", this._currentTimeout, this._eventCount, direction);
+			this._currentTimeout = Math.round(this._currentTimeout * this.timeoutChangeRate);
 		},
 
-		downArrowPressed: function(evt){
+		_downArrowPressed: function(evt){
 			return this._arrowPressed(evt,-1);
 		},
 
-		upArrowPressed: function(evt){
+		// IE sends these events when rapid clicking, mimic an extra single click
+		_downArrowDoubleClicked: function(evt){
+			var rc = this._downArrowPressed(evt);
+			dojo.lang.setTimeout(this, "_arrowReleased", 50, null);
+			return rc;
+		},
+
+		_upArrowPressed: function(evt){
 			return this._arrowPressed(evt,+1);
 		},
 
-		arrowReleased: function(evt){
+		// IE sends these events when rapid clicking, mimic an extra single click
+		_upArrowDoubleClicked: function(evt){
+			var rc = this._upArrowPressed(evt);
+			dojo.lang.setTimeout(this, "_arrowReleased", 50, null);
+			return rc;
+		},
+
+		_arrowReleased: function(evt){
 			this.inputNode.focus();
-			if(evt.keyCode && evt.keyCode != null){
+			if(evt != null && typeof evt == "object" && evt.keyCode && evt.keyCode != null){
 				var keyCode = evt.keyCode;
 				var k = dojo.event.browser.keys;
 
@@ -206,15 +197,15 @@ dojo.widget.defineWidget(
 			}
 			this._releaseButton(this.upArrowNode);
 			this._releaseButton(this.downArrowNode);
-			this.eventCount++;
-			if(this.typamaticTimer != null){
-				clearTimeout(this.typamaticTimer);
+			this._eventCount++;
+			if(this._typamaticTimer != null){
+				dojo.lang.clearTimeout(this._typamaticTimer);
 			}
-			this.typamaticTimer = null;
-			this.currentTimeout = this.defaultTimeout;
+			this._typamaticTimer = null;
+			this._currentTimeout = this.defaultTimeout;
 		},
 
-		mouseWheeled: function(evt) {
+		_mouseWheeled: function(evt) {
 			var scrollAmount = 0;
 			if(typeof evt.wheelDelta == 'number'){ // IE
 				scrollAmount = evt.wheelDelta;
@@ -222,12 +213,16 @@ dojo.widget.defineWidget(
 				scrollAmount = -evt.detail;
 			}
 			if(scrollAmount > 0){
-				this.upArrowPressed(evt);
-				this.arrowReleased(evt);
+				this._upArrowPressed(evt);
+				this._arrowReleased(evt);
 			}else if (scrollAmount < 0){
-				this.downArrowPressed(evt);
-				this.arrowReleased(evt);
+				this._downArrowPressed(evt);
+				this._arrowReleased(evt);
 			}
+		},
+
+		_discardEvent: function(evt) {
+			dojo.event.browser.stopEvent(evt);
 		},
 
 		getCursorX: function(){
@@ -266,47 +261,27 @@ dojo.widget.defineWidget(
 		postCreate: function(){
 			this.domNode.style.display="none";
 
-			if((typeof this.inputWidgetId != 'string')||(this.inputWidgetId.length == 0)){
-				var w=dojo.widget.manager.getAllWidgets();
-				for(var i=w.length-1; i>=0; i--){
-					if(w[i].adjustValue){
-						this.inputWidget = w[i];
-						break;
-					}
-				}
-			}else{
-				this.inputWidget = dojo.widget.getWidgetById(this.inputWidgetId);
-			}
+			this._inputWidget = dojo.widget.byId(this.inputWidgetId);
 
-			if(typeof this.inputWidget != 'object'){
+			if(typeof this._inputWidget != 'object'){
 				dojo.lang.setTimeout(this, "postCreate", 100); 
 				return;
 			}
-			var widgetNode = this.inputWidget.domNode;
+			var widgetNode = this._inputWidget.domNode;
 			var inputNodes = widgetNode.getElementsByTagName('INPUT');
 			this.inputNode = inputNodes[0];
 
-			// TODO: this should be specified in the template, not by dojo.event.connect statements
-			dojo.event.connect(this.inputNode, "onkeypress", this, "onKeyPress");
-			dojo.event.connect(this.inputNode, "onkeydown", this, "onKeyDown");
-			dojo.event.connect(this.inputNode, "onkeyup", this, "arrowReleased");
-
-			dojo.event.connect(this.downArrowNode, "onmousedown", this, "downArrowPressed");
-			dojo.event.connect(this.downArrowNode, "onmouseup", this, "arrowReleased");
-			dojo.event.connect(this.upArrowNode, "onmousedown", this, "upArrowPressed");
-			dojo.event.connect(this.upArrowNode, "onmouseup", this, "arrowReleased");
 			if(this.inputNode.addEventListener){
 				// dojo.event.connect() doesn't seem to work with DOMMouseScroll
-				this.inputNode.addEventListener('DOMMouseScroll', dojo.lang.hitch(this, "mouseWheeled"), false); // Mozilla + Firefox + Netscape
+				this.inputNode.addEventListener('DOMMouseScroll', dojo.lang.hitch(this, "_mouseWheeled"), false); // Mozilla + Firefox + Netscape
 			}else{
-				dojo.event.connect(this.inputNode, "onmousewheel", this, "mouseWheeled"); // IE + Safari
+				dojo.event.connect(this.inputNode, "onmousewheel", this, "_mouseWheeled"); // IE + Safari
 			}
 
 			// make sure the disconnected node will fit right next to the INPUT tag w/o any interference
-			dojo.html.copyStyle(this.relNode, this.inputNode);
-			with(this.relNode.style){
-				display = "inline";
-				position = "relative";
+			dojo.html.copyStyle(this.spacerNode, this.inputNode);
+			with(this.spacerNode.style){
+				display = "inline-block";
 				backgroundColor = "";
 				marginLeft = "0px";
 				border = "0px";
@@ -315,47 +290,48 @@ dojo.widget.defineWidget(
 			with(this.inputNode.style){
 				marginRight = "0px";
 				paddingRight = "0px";
-				borderRight = "0px";
 			}
 
 			// add the disconnected node right after the INPUT tag
-			dojo.html.insertAfter(this.relNode, this.inputNode, false);
-			// dummyNode is used to calculate the spinner size
-			var dummyNode = this.domNode.ownerDocument.createElement('A');
-			dojo.html.insertAfter(dummyNode, this.relNode, false);
+			dojo.html.insertAfter(this.spacerNode, this.inputNode, false);
 			this.domNode = dojo.html.removeNode(this.domNode);
 
 			this.resize();
+
+			dojo.event.connect(this.inputNode, "onkeypress", this, "onKeyPress");
+			dojo.event.connect(this.inputNode, "onkeydown", this, "onKeyDown");
+			dojo.event.connect(this.inputNode, "onkeyup", this, "_arrowReleased");
 			dojo.event.connect(this.inputNode, "onresize", this, "resize");
 			dojo.event.connect(this.inputNode, "onchange", this, "resize");
 			dojo.event.connect(window, "onchange", this, "resize");
 
-			var s = dojo.widget.html.stabile.getState(this.widgetId);
 			this.setValue(this.getValue());
-			if(s){
-				this.setState(s);
-			}
 		}
 	}
 );
 
 /*
-  ****** AdjustableIntegerTextbox ******
+  ****** SpinnerIntegerTextbox ******
 
   A subclass of IntegerTextbox.
 */
 dojo.widget.defineWidget(
-	"dojo.widget.AdjustableIntegerTextbox",
+	"dojo.widget.SpinnerIntegerTextbox",
 	dojo.widget.validate.IntegerTextbox,
 {
 	// new subclass properties
 	delta: "1",
 
+	postCreate: function(a,f,p){
+		dojo.widget.SpinnerIntegerTextbox.superclass.postCreate.call(this,a,f,p);
+ 		dojo.widget.createWidget("Spinner", {inputWidgetId: this.widgetId});
+	},
+
 	adjustValue: function(direction, x){
 			var val = this.getValue().replace(/[^\-+\d]/g, "");
 			if(val.length == 0){ return; }
 
-			num = Math.min(Math.max((parseInt(val)+(parseInt(this.delta) * direction)), (this.flags.min?this.flags.min:-Infinity)), (this.flags.max?this.flags.max:+Infinity));
+			var num = Math.min(Math.max((parseInt(val)+(parseInt(this.delta) * direction)), (this.flags.min?this.flags.min:-Infinity)), (this.flags.max?this.flags.max:+Infinity));
 			val = num.toString();
 
 			if(num >= 0){
@@ -377,7 +353,7 @@ dojo.widget.defineWidget(
 });
 
 /*
-  ****** AdjustableRealNumberTextbox ******
+  ****** SpinnerRealNumberTextbox ******
 
   A subclass of RealNumberTextbox.
   @attr places    The exact number of decimal places.  If omitted, it's unlimited and optional.
@@ -385,11 +361,16 @@ dojo.widget.defineWidget(
   @attr eSigned   Is the exponent signed?  Can be true or false, if omitted the sign is optional.
 */
 dojo.widget.defineWidget(
-	"dojo.widget.AdjustableRealNumberTextbox",
+	"dojo.widget.SpinnerRealNumberTextbox",
 	dojo.widget.validate.RealNumberTextbox,
 {
 	// new subclass properties
 	delta: "1e1",
+
+	postCreate: function(a,f,p){
+ 		dojo.widget.createWidget("Spinner", {inputWidgetId: this.widgetId});
+		dojo.widget.SpinnerRealNumberTextbox.superclass.postCreate.call(this,a,f,p);
+	},
 
 	adjustValue: function(direction, x){
 			var val = this.getValue().replace(/[^\-+\.eE\d]/g, "");
@@ -486,15 +467,20 @@ dojo.widget.defineWidget(
 });
 
 /*
-  ****** AdjustableTimeTextbox ******
+  ****** SpinnerTimeTextbox ******
 
   A subclass of TimeTextbox.
 */
 
 dojo.widget.defineWidget(
-	"dojo.widget.AdjustableTimeTextbox",
+	"dojo.widget.SpinnerTimeTextbox",
 	dojo.widget.validate.TimeTextbox,
 {
+	postCreate: function(a,f,p){
+ 		dojo.widget.createWidget("Spinner", {inputWidgetId: this.widgetId});
+		dojo.widget.SpinnerTimeTextbox.superclass.postCreate.call(this,a,f,p);
+	},
+
 	adjustValue: function(direction, x){
 		var val = this.getValue();
 		var format = (this.flags.format && this.flags.format.search(/[Hhmst]/) >= 0) ? this.flags.format : "hh:mm:ss t";

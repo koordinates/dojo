@@ -3,7 +3,6 @@
  * - test, bug fix, more features :)
 */
 dojo.provide("dojo.widget.Editor2");
-dojo.provide("dojo.widget.html.Editor2");
 dojo.require("dojo.io.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
@@ -18,8 +17,8 @@ dojo.require("dojo.widget.Editor2Toolbar");
 dojo.widget.Editor2._CurrentInstance = null;
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Editor2",
-	dojo.widget.html.RichText,
+	"dojo.widget.Editor2",
+	dojo.widget.RichText,
 	{
 		saveUrl: "",
 		saveMethod: "post",
@@ -31,7 +30,7 @@ dojo.widget.defineWidget(
 		_inHtmlMode: false,
 		_htmlEditNode: null,
 
-		commandList: dojo.widget.html.Editor2Toolbar.prototype.commandList,
+		commandList: dojo.widget.Editor2Toolbar.prototype.commandList,
 		toolbarWidget: null,
 		scrollInterval: null,
 		toolbarTemplatePath: null,
@@ -43,10 +42,15 @@ dojo.widget.defineWidget(
 				var tbOpts = {};
 				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/HtmlEditorToolbarOneline.html";
 				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
-				this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
-										tbOpts, this.domNode, "before");
-				dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
-				this.toolbarWidget.hideUnusableButtons(this);
+				if(this.toolbarWidget){
+					this.toolbarWidget.show();
+				}else{
+					this.toolbarWidget = dojo.widget.createWidget("Editor2Toolbar", 
+											tbOpts, this.domNode, "before");
+					dojo.event.connect(this, "close", this.toolbarWidget, "hide");
+					dojo.event.connect(this, "destroy", this.toolbarWidget, "destroy");
+					this.toolbarWidget.hideUnusableButtons(this);
+				}
 
 				if(this.object){
 					this.tbBgIframe = new dojo.html.BackgroundIframe(this.toolbarWidget.domNode);
@@ -327,7 +331,6 @@ dojo.widget.defineWidget(
 			}
 		},
 
-
 		_save: function(e){
 			// FIXME: how should this behave when there's a larger form in play?
 			if(!this.isClosed){
@@ -351,7 +354,7 @@ dojo.widget.defineWidget(
 	},
 	"html",
 	function(){
-		var cp = dojo.widget.html.Editor2.prototype;
+		var cp = dojo.widget.Editor2.prototype;
 		if(!cp._wrappersSet){
 			cp._wrappersSet = true;
 		

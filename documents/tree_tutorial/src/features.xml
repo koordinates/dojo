@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Features</title>
+    
+    <important>We will have that all, but not everything in place right now</important>
+    
+    <itemizedlist>
+        <listitem>Flexible styling            
+            <itemizedlist>                
+                <listitem>All design in CSS through classes and class combinations</listitem>
+                <listitem>Different trees be styled with different CSS class families</listitem>                  
+                <listitem>Multiline content support</listitem>
+            </itemizedlist>    
+        </listitem>
+        <listitem>Full set of node operations
+            <itemizedlist>
+                <listitem>expand/collapse</listitem>
+                <listitem>create/destroy/move/clone/edit</listitem>
+                <listitem>addChild/detach/(de)folderize</listitem>
+                <listitem>batch operations</listitem>
+                <listitem>drag'n'drop</listitem>
+            </itemizedlist>
+        </listitem>        
+        
+        <listitem>Written with performance in mind</listitem>
+        <listitem>Integrated lazy loading &amp; RPC features</listitem>
+        <listitem>Rich event system</listitem>
+        <listitem>Extension system with out-of-the box working examples</listitem>
+        <listitem>Tests and documentation</listitem>
+        
+    </itemizedlist>
+    
+    
+</section>

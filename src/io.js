@@ -144,8 +144,8 @@ dojo.lang.extend(dojo.io.Request, {
 		var isFunction = dojo.lang.isFunction;
 		for(var x=0; x<dojo.io.hdlrFuncNames.length; x++){
 			var fn = dojo.io.hdlrFuncNames[x];
-			if(isFunction(kwArgs[fn])){ continue; }
-			if(isFunction(kwArgs["handle"])){
+			if(kwArgs[fn] && isFunction(kwArgs[fn])){ continue; }
+			if(kwArgs["handle"] && isFunction(kwArgs["handle"])){
 				kwArgs[fn] = kwArgs.handle;
 			}
 			// handler is aliased above, shouldn't need this check

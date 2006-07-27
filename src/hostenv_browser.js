@@ -78,7 +78,7 @@ if(typeof window == 'undefined'){
 	drh.ie70 = drh.ie && dav.indexOf("MSIE 7.0")>=0;
 
 	// TODO: is the HTML LANG attribute relevant?
-	dojo.locale = (drh.ie ? navigator.userLanguage : navigator.language).toLowerCase();
+	dojo.locale = dojo.locale || (drh.ie ? navigator.userLanguage : navigator.language).toLowerCase();
 
 	dr.vml.capable=drh.ie;
 	drs.capable = f;

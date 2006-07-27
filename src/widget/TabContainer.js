@@ -1,16 +1,13 @@
 dojo.provide("dojo.widget.TabContainer");
-dojo.provide("dojo.widget.html.TabContainer");
-dojo.provide("dojo.widget.Tab");
 
 dojo.require("dojo.lang.func");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
-dojo.require("dojo.html.layout");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 
-dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget, {
+dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 	isContainer: true,
 
 	// Constructor arguments
@@ -32,7 +29,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 		var source = this.getFragNodeRef(frag);
 		dojo.html.copyStyle(this.domNode, source);
 
-		dojo.widget.html.TabContainer.superclass.fillInTemplate.call(this, args, frag);
+		dojo.widget.TabContainer.superclass.fillInTemplate.call(this, args, frag);
 	},
 
 	postCreate: function(args, frag) {
@@ -74,7 +71,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
 		// FIXME need connect to tab Destroy, so call removeChild properly.
 		this._setupTab(child);
-		dojo.widget.html.TabContainer.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.TabContainer.superclass.addChild.call(this,child, overrideContainerNode, pos, ref, insertIndex);
 
 		// in case the tab labels have overflowed from one line to two lines
 		this._doSizing();
@@ -122,8 +119,16 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 			)
 		);
 
-		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected){
+		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected || (this.children.length==0)){
+			// Deselect old tab and select new one
+			// We do this instead of calling selectTab in this case, becuase other wise other widgets
+			// listening for addChild and selectTab can run into a race condition
+			if(this.selectedTabWidget){
+				this._hideTab(this.selectedTabWidget);
+			}
 			this.selectedTabWidget = tab;
+			this._showTab(tab);
+
 		} else {
 			this._hideTab(tab);
 		}
@@ -171,7 +176,7 @@ dojo.widget.defineWidget("dojo.widget.html.TabContainer", dojo.widget.HtmlWidget
 			}
 		}
 
-		dojo.widget.html.TabContainer.superclass.removeChild.call(this, tab);
+		dojo.widget.TabContainer.superclass.removeChild.call(this, tab);
 
 		dojo.html.removeClass(tab.domNode, "dojoTabPane");
 		this.dojoTabLabels.removeChild(tab.div);
