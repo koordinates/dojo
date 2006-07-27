@@ -501,7 +501,7 @@ dojo.widget.defineWidget(
 */
 			var span=document.createElement("span");
 			this.domNode.appendChild(span);
-			var objectId="dojo.richText.activeX"+new Date().toString;
+			var objectId="dojo.richText.activeX"+new Date().valueOf();
 
 			var s='<object classid="clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A" '
 				+ 'id="' + objectId + '" '
