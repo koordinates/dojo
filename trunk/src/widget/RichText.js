@@ -7,6 +7,18 @@ dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
 
+if(dojo.render.html.ie){
+	(function(){
+	var xscript = dojo.doc().createElement('script');
+	xscript.src = "javascript:'function dojo.html.createExternalElement(doc, tag){return doc.createElement(tag);}'";
+	dojo.doc().getElementsByTagName("head")[0].appendChild(xscript);
+	})();
+}else{
+	dojo.html.createExternalElement = function(doc, tag){
+		doc.createElement(tag);
+	}
+}
+
 // used to save content
 try {
 	document.write('<textarea id="dojo.widget.RichText.savedContent" ' +
@@ -488,8 +500,7 @@ dojo.widget.defineWidget(
 		
 		/** Draws an active x object, used by IE */
 		_drawObject: function (html) {
-			//	this.object = dojo.doc().createElement("object");
-/*			this.object = djCreateExternalElement(dojo.doc(), "object");
+			this.object = dojo.html.createExternalElement(dojo.doc(), "object");
 
 			with (this.object) {
 				classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
@@ -498,40 +509,25 @@ dojo.widget.defineWidget(
 				Scrollbars = this.height ? true : false;
 				Appearance = this._activeX.appearance.flat;
 			}
-*/
-			var _this = this;
-			var span=document.createElement("span");
-			this.domNode.appendChild(span);
-			this._XobjectId="dojo.richText.activeX"+new Date().valueOf();
+			this.domNode.appendChild(this.object);
 
-			var s='<object classid="clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A" '
-				+ 'id="' + this._XobjectId + '" '
-				+ 'width="' + this.inheritWidget ? this._oldWidth : '100%' + '" '
-				+ 'height="' + this.height ? this.height : (this._oldHeight + "px") + '" '
-				+ "></object>";
-			span.innerHTML = s;
+			this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
+			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
+			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
 
-			window.setTimeout(function(){
-				_this.object = dojo.byId(_this._XobjectId);
+			dojo.lang.forEach(this.events, function(e){
+				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
+			}, this);
 
-				_this.object.attachEvent("DocumentComplete", dojo.lang.hitch(_this, "onLoad"));
-				_this.object.attachEvent("DisplayChanged", dojo.lang.hitch(_this, "_updateHeight"));
-				_this.object.attachEvent("DisplayChanged", dojo.lang.hitch(_this, "onDisplayChanged"));
-
-				dojo.lang.forEach(_this.events, function(e){
-					_this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(_this, e));
-				}, _this);
-
-				_this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-					'<title></title>' +
-					'<style type="text/css">' +
-					'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
-					(_this.height ? '' : '    body { overflow: hidden; }') +
-					//'    #bodywrapper {  }' +
-					'</style>' +
-					//'<base href="' + window.location + '">' +
-					'<body><div id="bodywrapper">' + html + '</div></body>';
-				}, 100);
+			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
+				'<title></title>' +
+				'<style type="text/css">' +
+				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
+				(this.height ? '' : '    body { overflow: hidden; }') +
+				//'    #bodywrapper {  }' +
+				'</style>' +
+				//'<base href="' + window.location + '">' +
+				'<body><div id="bodywrapper">' + html + '</div></body>';
 		},
 
 	/* Event handlers
