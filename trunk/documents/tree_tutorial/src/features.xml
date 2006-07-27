@@ -15,7 +15,8 @@
         <listitem>Full set of node operations
             <itemizedlist>
                 <listitem>expand/collapse</listitem>
-                <listitem>create/destroy/move/clone/edit</listitem>
+                <listitem>create with JS or markup</listitem>
+                <listitem>destroy/move/clone/edit</listitem>
                 <listitem>addChild/detach/(de)folderize</listitem>
                 <listitem>batch operations</listitem>
                 <listitem>drag'n'drop</listitem>
