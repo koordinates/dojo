@@ -488,7 +488,7 @@ dojo.widget.defineWidget(
 		
 		/** Draws an active x object, used by IE */
 		_drawObject: function (html) {
-			this.object = djCreateExternalElement(dojo.doc(), "object");
+			this.object = dojo.doc().createElement("object");
 
 			with (this.object) {
 				classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
