@@ -606,7 +606,7 @@ dojo.widget.defineWidget(
 		}
 
 		var idx=this.domNode.tBodies[0].rows.length;
-		if(idx==0 || this.domNode.tBodies[0].rows[0].getAttribute("emptyrow")=="true"){
+		if(!idx || idx==0 || this.domNode.tBodies[0].rows[0].getAttribute("emptyrow")=="true"){
 			idx = 0;
 			var body = this.domNode.tBodies[0];
 			while(body.childNodes.length>0){
@@ -721,8 +721,10 @@ dojo.widget.defineWidget(
 			});
 			self.isInitialized=false;
 			var body = this.domNode.tBodies[0];
-			while(body.childNodes.length>0){
-				body.removeChild(body.childNodes[0]);
+			if(body){
+				while(body.childNodes.length>0){
+					body.removeChild(body.childNodes[0]);
+				}
 			}
 			self.render();
 		});
