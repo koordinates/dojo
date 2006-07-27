@@ -89,13 +89,14 @@ dojo.normalizeLocale = function(locale) {
  *     mybundle.js
  *   ...etc
  *
- * where package is part of the namespace as used by dojo.require().  Each directory is named for a
- * locale as specified by RFC 3066, (http://www.ietf.org/rfc/rfc3066.txt), normalized in lowercase.
+ * Each directory is named for a locale as specified by RFC 3066, (http://www.ietf.org/rfc/rfc3066.txt),
+ * normalized in lowercase.
  *
- * For a given locale, string bundles will be loaded for that locale and all general locales above it, as well
+ * For a given locale, bundles will be loaded for that locale and all less-specific locales above it, as well
  * as a fallback at the root.  For example, a search for the "de-at" locale will first load nls/de-at/mybundle.js,
- * then nls/de/mybundle.js and finally nls/mybundle.js and flatten all the values in this order.  Lookups will traverse
- * the locales in this same order.  A build step can preload the bundles to avoid data redundancy and extra network hits.
+ * then nls/de/mybundle.js and finally nls/mybundle.js.  Lookups will traverse the locales in this same order
+ * and flatten all the values into a JS object (see dojo.i18n.getLocalization).  A build step can preload the
+ * bundles to avoid data redundancy and extra network hits.
  *
  * @param modulename package in which the bundle is found
  * @param bundlename bundle name, typically the filename without the '.js' suffix
@@ -135,21 +136,11 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 			module.push(bundlename);
 			var filespec = module.join("/") + '.js';
 			loaded = dojo.hostenv.loadPath(filespec, null, function(hash) {
- 				bundle[loc] = hash;
- 				if(inherit){
-					// Use mixins approach to copy string references from inherit bundle, but skip overrides.
-					for(var prop in inherit){
-						if(!bundle[loc][prop]){
-							bundle[loc][prop] = inherit[prop];
-						}
-					}
- 				}
-/*
-				// Use prototype to point to other bundle, then copy in result from loadPath
-				bundle[loc] = new function(){};
-				if(inherit){ bundle[loc].prototype = inherit; }
+				// Use singleton with prototype to point to other bundle, then mix-in result from loadPath
+				var clazz = function(){};
+				clazz.prototype = inherit;
+				bundle[loc] = new clazz();
 				for(var k in hash){ bundle[loc][k] = hash[k]; }
-*/
 			});
 		}else{
 			loaded = true;
