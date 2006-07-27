@@ -5,24 +5,21 @@
 		dojoAttachPoint="comboBoxSelectionValue">
 	<table class="dojoComboBox"
 		cellpadding="0"
-		cellmargin="0"
+		cellspacing="0"
 		border="0"
 		dojoAttachPoint="cbTableNode">
-		<tr valign="top">
-			<td width=100%>
-				<input type="text" autocomplete="off" class="dojoComboBoxInput"
+		<tr>
+			<td width=100%><input type="text" autocomplete="off" class="dojoComboBoxInput"
 					dojoAttachEvent="keyDown: onKeyDown; keyUp: onKeyUp; keyPress: onKeyPress; compositionEnd"
 					dojoAttachPoint="textInputNode"
-					style="width: 100%;">
-			</td>
-			<td>
-				<img border="0" 
+					style="width: 100%;"></td>
+			<td><img border="0" 
 					hspace="0"
 					vspace="0"
+					class="dojoComboArrow"
 					dojoAttachPoint="downArrowNode"
 					dojoAttachEvent="onMouseUp: handleArrowClick;"
-					src="${dojoRoot}src/widget/templates/images/combo_box_arrow.png">
-			</td>
+					src="${dojoRoot}src/widget/templates/images/combo_box_arrow.png"></td>
 		</tr>
 	</table>
 	</div>
