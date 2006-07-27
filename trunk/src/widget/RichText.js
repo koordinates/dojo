@@ -7,20 +7,6 @@ dojo.require("dojo.html.layout");
 dojo.require("dojo.event.*");
 dojo.require("dojo.string.extras");
 
-//define dojo.html.createExternalElement for IE to workaround the annoying activation "feature" in new IE
-//details: http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp
-if(dojo.render.html.ie){
-	(function(){
-	var xscript = dojo.doc().createElement('script');
-	xscript.src = "javascript:'function dojo.html.createExternalElement(doc, tag){return doc.createElement(tag);}'";
-	dojo.doc().getElementsByTagName("head")[0].appendChild(xscript);
-	})();
-}else{
-	dojo.html.createExternalElement = function(doc, tag){
-		doc.createElement(tag);
-	}
-}
-
 // used to save content
 if(dojo.hostenv.post_load_){
 	(function(){
