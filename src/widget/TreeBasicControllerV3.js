@@ -53,6 +53,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	initialize: function() {
 		this.onExpandClickHandler =  dojo.lang.hitch(this, this.onExpandClick)
 	},
+		
+	
+	getInfo: function(elem) {
+		return elem.getInfo();
+	},
 
 	onAfterChangeTree: function(message) {
 		//dojo.debugShallow(message);
@@ -129,8 +134,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		dojo.require("dojo.widget.TreeTimeoutIterator");
 		
 		var filterFunc = function(elem) {
-			//dojo.debug("Filter "+elem);
-			return elem.isFolder || elem.children && elem.children.length
+			var res = elem.isFolder || elem.children && elem.children.length;
+			//dojo.debug("Filter "+elem+ " result:"+res);
+			return res;
 		};
 		var callFunc = function(node, iterator) {
 			return this.expand(node, false, iterator, iterator.forward);
@@ -139,7 +145,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		var iterator = new dojo.widget.TreeTimeoutIterator(nodeOrTree, callFunc, this);
 		iterator.setFilter(filterFunc);
 		
-		callback && iterator.setFinish(callback, callobj);
+		if (callback) {
+			iterator.setFinish(callback, callobj);
+		}
 		
 		iterator.timeout = this.batchExpandTimeout;
 		

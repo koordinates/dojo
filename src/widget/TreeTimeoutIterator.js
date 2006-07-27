@@ -85,6 +85,7 @@ dojo.lang.extend(dojo.widget.TreeTimeoutIterator, {
 	 */
 	processNext: function() {
 				
+		//dojo.debug("processNext with currentParent "+this.currentParent+" index "+this.currentIndex);
 		var handler;
 		
 		var _this = this;
@@ -100,16 +101,21 @@ dojo.lang.extend(dojo.widget.TreeTimeoutIterator, {
 			if (children && children.length) {
 		
 				// look for a node that can be the next target
-				do {
+				do {					
 					next = children[this.currentIndex];
+					//dojo.debug("check "+next);
 				} while (this.currentIndex++ < children.length && !(found = this.filterFunc.call(this.filterObj,next)));
 			
 			
 				if (found) {
-					// move to next node as new parent if it has children and level is fine
-					if (next.children && next.children.length && this.stack.length <= this.maxStackDepth) {
+					//dojo.debug("found "+next);
+					// move to next node as new parent if depth is fine
+					// I can't check current children to decide whether to move it or not,
+					// because expand may populate children					
+					if (next.isFolder && this.stack.length <= this.maxStackDepth) {
 						this.moveParent(next,0);
 					}
+					//dojo.debug("Run callFunc on "+next);
 					return this.callFunc.call(this.callObj, next, this);					
 				}
 			}

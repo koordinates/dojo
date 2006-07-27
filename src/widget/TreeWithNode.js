@@ -100,8 +100,9 @@ dojo.widget.TreeWithNode = {
 		if (this.isTreeNode && !this.isFolder) {
 			//dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
 			this.setFolder();
-			this.state = this.loadStates.LOADED;
 		}
+		
+		this.state = this.loadStates.LOADED;
 		
 		var hadChildren = this.children.length > 0;
 		
