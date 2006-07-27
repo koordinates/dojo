@@ -72,17 +72,6 @@ cometd = new function(){
 			dojo.debug("no cometd root specified in djConfig and no root passed");
 			return;
 		}
-		// borrowed from dojo.uri.Uri in lieu of fixed host and port properties
-        var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
-		var r = (""+window.location).match(new RegExp(regexp));
-		var tmp = r[4].split(":");
-		var thisHost = tmp[0];
-		var thisPort = tmp[1]||"80"; // FIXME: match 443
-
-		r = this.url.match(new RegExp(regexp));
-		tmp = r[4].split(":");
-		var urlHost = tmp[0];
-		var urlPort = tmp[1]||"80";
 		
 		// FIXME: we need to select a way to handle JSONP-style stuff
 		// generically here. We already know if the server is gonna be on
@@ -96,14 +85,30 @@ cometd = new function(){
 			load: dojo.lang.hitch(this, "finishInit"),
 			content: { "message": dojo.json.serialize(props) }
 		};
-		if(	(urlHost != thisHost)||
-			(urlPort != thisPort) ){
-			dojo.debug(thisHost, urlHost);
-			dojo.debug(thisPort, urlPort);
 
-			this.isXD = true;
-			bindArgs.transport = "ScriptSrcTransport";
-			bindArgs.jsonParamName = "jsonp";
+		// borrowed from dojo.uri.Uri in lieu of fixed host and port properties
+        var regexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$";
+		var r = (""+window.location).match(new RegExp(regexp));
+		if(r[4]){
+			var tmp = r[4].split(":");
+			var thisHost = tmp[0];
+			var thisPort = tmp[1]||"80"; // FIXME: match 443
+
+			r = this.url.match(new RegExp(regexp));
+			if(r[4]){
+				tmp = r[4].split(":");
+				var urlHost = tmp[0];
+				var urlPort = tmp[1]||"80";
+				if(	(urlHost != thisHost)||
+					(urlPort != thisPort) ){
+					dojo.debug(thisHost, urlHost);
+					dojo.debug(thisPort, urlPort);
+
+					this.isXD = true;
+					bindArgs.transport = "ScriptSrcTransport";
+					bindArgs.jsonParamName = "jsonp";
+				}
+			}
 		}
 		if(bargs){
 			dojo.lang.mixin(bindArgs, bargs);
