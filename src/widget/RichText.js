@@ -489,7 +489,7 @@ dojo.widget.defineWidget(
 		/** Draws an active x object, used by IE */
 		_drawObject: function (html) {
 			//	this.object = dojo.doc().createElement("object");
-			this.object = djCreateExternalElement(dojo.doc(), "object");
+/*			this.object = djCreateExternalElement(dojo.doc(), "object");
 
 			with (this.object) {
 				classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
@@ -498,7 +498,18 @@ dojo.widget.defineWidget(
 				Scrollbars = this.height ? true : false;
 				Appearance = this._activeX.appearance.flat;
 			}
-			this.domNode.appendChild(this.object);
+*/
+			var span=document.createElement("span");
+			this.domNode.appendChild(span);
+			var objectId="dojo.richText.activeX"+new Date().toString;
+
+			var s='<object classid="clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A" '
+				+ 'id="' + objectId + '" '
+				+ 'width="' + this.inheritWidget ? this._oldWidth : '100%' + '" '
+				+ 'height="' + this.height ? this.height : (this._oldHeight + "px") + '" '
+				+ "></object>";
+			span.innerHTML = s;
+			this.object = dojo.byId(objectId);
 
 			this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
 			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
