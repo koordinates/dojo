@@ -48,7 +48,7 @@ dojo.widget.defineWidget(
 			this._tabContainer = tabContainer;
 			this.setupTabs();
 
-			dojo.event.connect(this._tabContainer, "_setupTab", this, "setupTabs");
+			dojo.event.connect(this._tabContainer, "addChild", this, "setupTabs");
 			dojo.event.connect(this._tabContainer, "selectTab", this, "onTabSelected");
 		},
 
