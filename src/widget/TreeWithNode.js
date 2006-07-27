@@ -32,11 +32,8 @@ dojo.widget.TreeWithNode = {
 			if (node.lockLevel) {
 				return true;
 			}
-			if (node.isTree) {
+			if (!node.parent || node.isTree) {
 				break;
-			}
-			if (!node.parent) {
-				dojo.raise("Tried to check isLocked at parent, but no parent");
 			}
 			
 			node = node.parent;
@@ -91,13 +88,17 @@ dojo.widget.TreeWithNode = {
 	 * 3) expand is called with makeWidgetsFromChildren=true
 	 *  - some objects need to be turned into widgets
 	 *  - some widgets have parent (e.g markup), some widgets and objects do not
+	 *
+	 *  Will folderize a node as side-effect.
 	 */
 	setChildren: function(childrenArray) {
 		//dojo.profile.start("setChildren "+this);
 		//dojo.debug("setChildren in "+this);
 		
+		
+		
 		if (this.isTreeNode && !this.isFolder) {
-			//	dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
+			//dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
 			this.setFolder();
 			this.state = this.loadStates.LOADED;
 		}
@@ -161,7 +162,6 @@ dojo.widget.TreeWithNode = {
 					parent: this
 				}
 			
-				// just in case..			
 				delete dojo.widget.manager.topWidgets[child.widgetId];
 		
 

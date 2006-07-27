@@ -1,4 +1,4 @@
-<html>
+	<html>
 <head>
 
 <script type="text/javascript">
@@ -69,7 +69,7 @@
 		tree = dojo.widget.createWidget("TreeV3", {
 			listeners: [controller.widgetId,dndcontroller.widgetId],
 			DNDAcceptTypes: "firstTree",
-			 widgetId: "firstTree",
+			widgetId: "firstTree",
 			DNDMode:"between;onto"
 		});	
 		dojo.profile.end("createTree");
@@ -88,7 +88,7 @@
 		
 		dojo.debug("Nodes total: "+nodeCount);
 			
-		
+	
 	});
 	
 	function expandAllStart() {	
@@ -128,6 +128,9 @@
 <br/>
 <input type="button" value="Collapse all nodes" onClick="controller.collapseAll(tree)"/>
 <br/>
+<input type="button" value="Clone first node and append to tree" onClick="tree.addChild(tree.children[0].clone(true))">
+<br/>
+
 <input type="button" value="dump profile" onClick="dojo.profile.dump(true)">
 
 </body>
