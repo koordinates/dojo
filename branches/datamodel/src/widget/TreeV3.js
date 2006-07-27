@@ -12,6 +12,7 @@ dojo.provide("dojo.widget.TreeV3");
 
 
 dojo.require("dojo.widget.TreeWithNode");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
@@ -48,19 +49,20 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	eventNamesDefault: {
 
 		// tree created.. Perform tree-wide actions if needed
-		treeCreate: "treeCreate",
-		treeDestroy: "treeDestroy",
-		treeChange: "treeChange",
+		afterTreeCreate: "afterTreeCreate",
+		beforeTreeDestroy: "beforeTreeDestroy",
+		beforeDestroy: "beforeDestroy",
+		afterChangeTree: "afterChangeTree",
 
-		setFolder: "setFolder",
-		unsetFolder: "unsetFolder",
-		moveFrom: "moveFrom",
-		moveTo: "moveTo",
-		addChild: "addChild",
-		detach: "detach",
-		expand: "expand",
+		afterSetFolder: "afterSetFolder",
+		afterUnsetFolder: "afterUnsetFolder",
+		afterMoveFrom: "afterMoveFrom",
+		afterMoveTo: "afterMoveTo",
+		afterAddChild: "afterAddChild",
+		afterDetach: "afterDetach",
+		afterExpand: "afterExpand",
 		
-		collapse: "collapse"
+		afterCollapse: "afterCollapse"
 	},
 
 	classPrefix: "Tree",
@@ -113,6 +115,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		// need <span> inside <div>
 		// div for multiline support, span for styling exactly the text, not whole line
 		var labelNode = document.createElement("span");
+		dojo.html.setClass(labelNode, this.classPrefix+"Label");
 		this.labelNodeTemplate = labelNode;
 		
 		var contentNode = document.createElement("div");
@@ -208,7 +211,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	 * publish destruction event so that any listeners should stop listening
 	 */
 	destroy: function() {
-		dojo.event.topic.publish(this.tree.eventNames.treeDestroy, { source: this } );
+		dojo.event.topic.publish(this.tree.eventNames.beforeTreeDestroy, { source: this } );
 
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
@@ -233,17 +236,20 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		
 		//dojo.debug(this.listeners[1]);
 		
+		
+		
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
 				var t = dojo.widget.manager.getWidgetById(elem);
 				if (! (t instanceof dojo.widget.Widget)) {
-					dojo.raise("No widget for "+elem);
+					dojo.raise("No listener found by widgetId for "+elem);
 				}
 				//dojo.debug(t)
 				t.listenTree(_this)
 				
 			}
-		);		
+		);
+		
 		
 
 	},
@@ -251,7 +257,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	
 	postCreate: function() {						
-		dojo.event.topic.publish(this.eventNames.treeCreate, { source: this } );
+		dojo.event.topic.publish(this.eventNames.afterTreeCreate, { source: this } );
 	},
 	
 	
@@ -279,8 +285,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		};
 
 		/* publish events here about structural changes for both source and target trees */
-		dojo.event.topic.publish(oldTree.eventNames.moveFrom, message);
-		dojo.event.topic.publish(newTree.eventNames.moveTo, message);
+		dojo.event.topic.publish(oldTree.eventNames.afterMoveFrom, message);
+		dojo.event.topic.publish(newTree.eventNames.afterMoveTo, message);
 
 	},
 

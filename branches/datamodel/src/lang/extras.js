@@ -44,13 +44,27 @@ dojo.lang.getNameInObj = function(ns, item){
 	return null;
 }
 
-dojo.lang.shallowCopy = function(obj) {
-	var ret = {}, key;
-	for(key in obj) {
-		if(dojo.lang.isUndefined(ret[key])) {
-			ret[key] = obj[key];
+dojo.lang.shallowCopy = function(obj, deep) {	
+	var i, ret;	
+	
+	if (obj === null) return null;
+	
+	if (dojo.lang.isObject(obj)) {		
+		ret = new obj.constructor();
+		for (i in obj) {
+			if(dojo.lang.isUndefined(ret[i])) {
+				ret[i] = deep ? dojo.lang.shallowCopy(obj[i], deep) : obj[i];
+			}
 		}
+	} else if (dojo.lang.isArray(obj)) {
+		ret = [];
+		for(i=0; i<obj.length; i++) {
+			ret[i] = deep ? dojo.lang.shallowCopy(obj[i], deep) : obj[i];
+		}
+	} else {
+		ret = obj;
 	}
+			
 	return ret;
 }
 

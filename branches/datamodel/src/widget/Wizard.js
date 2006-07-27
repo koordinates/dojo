@@ -9,15 +9,10 @@ dojo.require("dojo.html.style");
 //////////////////////////////////////////
 // WizardContainer -- a set of panels
 //////////////////////////////////////////
-dojo.widget.WizardContainer = function() {
-	dojo.widget.html.LayoutContainer.call(this);
-}
-dojo.inherits(dojo.widget.WizardContainer, dojo.widget.html.LayoutContainer);
-
-dojo.lang.extend(dojo.widget.WizardContainer, {
-
-	widgetType: "WizardContainer",
-
+dojo.widget.defineWidget(
+	"dojo.widget.WizardContainer",
+	dojo.widget.LayoutContainer,
+{
 	labelPosition: "top",
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/Wizard.html"),
@@ -151,19 +146,14 @@ dojo.lang.extend(dojo.widget.WizardContainer, {
 		this.selected.done();
 	}
 });
-dojo.widget.tags.addParseTreeHandler("dojo:WizardContainer");
 
 //////////////////////////////////////////
 // WizardPane -- a panel in a wizard
 //////////////////////////////////////////
-dojo.widget.WizardPane = function() {
-	dojo.widget.ContentPane.call(this);
-}
-dojo.inherits(dojo.widget.WizardPane, dojo.widget.ContentPane);
-
-dojo.lang.extend(dojo.widget.WizardPane, {
-	widgetType: "WizardPane",
-
+dojo.widget.defineWidget(
+	"dojo.widget.WizardPane",
+	dojo.widget.ContentPane,
+{
 	canGoBack: true,
 
 	passFunction: "",
@@ -195,5 +185,3 @@ dojo.lang.extend(dojo.widget.WizardPane, {
 		}
 	}
 });
-
-dojo.widget.tags.addParseTreeHandler("dojo:WizardPane");

@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.InlineEditBox");
-dojo.provide("dojo.widget.html.InlineEditBox");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.lfx.*");
@@ -8,20 +7,17 @@ dojo.require("dojo.string");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 
-dojo.widget.tags.addParseTreeHandler("dojo:inlineeditbox");
+dojo.widget.defineWidget(
+	"dojo.widget.InlineEditBox",
+	dojo.widget.HtmlWidget,
+{
+	initializer: function(){
+		// mutable objects need to be in constructor to give each instance its own copy
+		this.history = [];
+	},
 
-dojo.widget.html.InlineEditBox = function(){
-	dojo.widget.HtmlWidget.call(this);
-	// mutable objects need to be in constructor to give each instance its own copy
-	this.history = [];
-}
-
-dojo.inherits(dojo.widget.html.InlineEditBox, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.InlineEditBox, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.css"),
-	widgetType: "InlineEditBox",
 
 	form: null,
 	editBox: null,

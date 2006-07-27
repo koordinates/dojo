@@ -226,7 +226,7 @@ dojo.lang.extend(dojo.logging.Logger, {
 
 	logType: function(type, args){
 		var na = [dojo.logging.log.getLevel(type)];
-		if(typeof args == "array"){
+		if(dojo.lang.isArray(args)){
 			na = na.concat(args);
 		}else if((typeof args == "object")&&(args["length"])){
 			na = na.concat(this.argsToArr(args));

@@ -37,6 +37,16 @@ dojo.widget.Parse = function(fragment){
 						}
 					    
 					}
+					
+					if(!djTags[ltn]){
+						dojo.deprecated('dojo.widget.Parse.createComponents', 'Widget not defined for  namespace'+nsName+
+							', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
+	
+						var newNs = dojo.findNamespaceForWidget(tagName);
+						if(newNs){
+							ltn = newNs.nsPrefix + ":" + (ltn.indexOf(":")> 0 ? ltn.substring(ltn.indexOf(":")+1) : ltn);
+						}
+					}
 	
 					if(djTags[ltn]){
 						built = true;
@@ -169,7 +179,7 @@ dojo.widget.Parse = function(fragment){
 		for(var x=0; x < this.propertySetsList.length; x++){
 			var cpl = this.propertySetsList[x];
 			var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
-			// FIXME: propertySetId is not in scope here
+			var propertySetId = this.propertySetsList[x]["id"][0].value;
 			if((cpcc)&&(propertySetId == cpcc[0].value)){
 				propertySets.push(cpl);
 			}
@@ -228,6 +238,20 @@ dojo.widget.Parse = function(fragment){
 		if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn)){		    
 			var ns = dojo.getNamespace(namespace);
 			if(ns){ns.load(componentName);}
+		}
+		
+		if(!djTags[ltn]){
+			dojo.deprecated('dojo.widget.Parse.createComponentFromScript', 'Widget not defined for namespace'+
+				namespace +
+				', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
+
+			var newNs = dojo.findNamespaceForWidget(componentName.toLowerCase());
+			if(newNs){
+				var newLtn = newNs.nsPrefix + ":"+(ltn.indexOf(":")> 0 ? ltn.substring(ltn.indexOf(":")+1) : ltn);
+				properties[newLtn]=properties[ltn];
+				properties.namespace = newNs.nsPrefix;
+				ltn = newLtn;
+			}
 		}
 		
 		if(djTags[ltn]){
@@ -318,7 +342,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var widgetArray = fromScript(tn, name, props, namespace);
+	var widgetArray = fromScript(tn, name.toLowerCase(), props, namespace);
 	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}

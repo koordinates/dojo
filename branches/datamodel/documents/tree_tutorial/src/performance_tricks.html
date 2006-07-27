@@ -1,0 +1,53 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Performance tricks</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1a"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1"></a>Performance tricks</h2></div></div><hr></div><p>
+    When talking about performance, one should understand, that there are <span class="type">single-node operations</span>
+        
+    that operate on single node... These ones are fast. The examples are: create a node, delete a node,
+     move a node along the tree.
+    </p><p>... And there are batch operations that touch a lot of nodes. The examples are: 
+        initial tree creation,  moving a node from one tree to another which has different listeners, etc.</p><p>That performance issues become noticeable at 100-300 tree nodes depending on your trees.
+        All algorithms are linear in worst case, but JS is slow language, DOM is also not that fast. 
+      </p><p>There is a number of features one could use to get a speedup.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e15"></a>Lazy loading</h3></div></div></div><p>A node can be created with <code class="code">isFolder=true</code> flag, but without children.
+            Any node has a <code class="code">state</code>, initially UNCHECKED for empty folder, and used
+            by  TreeLoadingController.</p><p>When a user presses expand, tree controller (supporting lazy loading) will send a request to server asking for nodes,
+            and parse the answer creating children.</p><p>The benefit is obvious: you don't have to load/process whole tree at once.
+            You can only load a single node and user will load the rest clicking "expand"</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e30"></a>Lazy creation</h3></div></div></div><p>
+            Node/tree keeps array of its children in <code class="code">children</code> property. 
+            Lazy creation is somewhat a half-way approach to lazy loading. It allows you to put data objects 
+            into this array and tree will create widgets of them later, when they are expanded.
+        </p><p>For instance, one can call <code class="code">node.children = [{title:'node1'},{title:'node2'}]</code>.
+            The objects will be set, but no widgets are created. You can also set children to nested array:
+            <code class="code">node.children = [{title:'node1', children:[{title:'node2'}] }]</code>.    
+            
+        </p><p>You can create tree on server, JSON-serialize it and put to HTML, that is gzip-compressed.
+            Compression will be 6 times or more, so it is not that space hungry. 
+        </p><p>The benefit comes from postponing almost all real job: widget creation and attaching it to tree will
+        happen in expansion-time.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="d0e50"></a>Comparison between lazy creation and lazy loading</h4></div></div></div><div class="itemizedlist"><ul type="disc"><li>You need web-service for lazy loading, not for lazy creation</li><li>No network waits for lazy creation</li><li>Lazy creation gives you the tree right here. You can search data objects and modify them
+                    without spending time and memory on graphical widgets</li></ul></div><p>Sometimes, lazy creation and loading may work together nicely, providing seamless increase
+                in speed and decrease in memory footprint. For instance, server may pass a whole tree branch in JSON
+            to lazy loading controller. Top nodes will be created right along, because user needs them, but the rest
+            of the branch will be postponed relying on lazy creation feature.</p></div><p>
+            There are operations, like "expandAll" where such lazy tricks don't help. That is why
+            widget creation process is well-optimized itself. <code class="code">createSimple</code> is a hacky program-only way
+            to create TreeNodes fast. <code class="code">setChildren</code> is a method to assign (and create if needed)
+            all children at once. It helps to evade some extra work happening when children are added one by one.
+           </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="d0e70"></a>IE specific workaround</h3></div></div></div><p>IE has a well-known bug. If an image was loaded dynamically - with a <code class="code">new Image()</code>, or <code class="code">img.src=</code>
+            assignment, or even as a background of a new node, it will not be cached. So every time when you expand a node, all icons get loaded
+            from server (or requested at least). A possible solution is to put a special div into HTML (adjust src to your path):
+        </p><div class="literallayout"><p>&lt;div&nbsp;style="display:none"&gt;<br>
+&nbsp;&nbsp;&lt;!--&nbsp;IE&nbsp;has&nbsp;a&nbsp;bug:&nbsp;it&nbsp;reloads&nbsp;all&nbsp;dynamically&nbsp;resolved&nbsp;images,&nbsp;no&nbsp;matter,&nbsp;is&nbsp;it&nbsp;<br>
+&nbsp;&nbsp;new&nbsp;Image()&nbsp;or&nbsp;CSS&nbsp;background.&nbsp;If&nbsp;you&nbsp;don't&nbsp;specify&nbsp;images&nbsp;like&nbsp;that,<br>
+&nbsp;&nbsp;it&nbsp;will&nbsp;reload&nbsp;them&nbsp;every&nbsp;time&nbsp;a&nbsp;node&nbsp;is&nbsp;expanded&nbsp;--&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/i.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/i_half.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/expand_minus.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/expand_plus.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/expand_leaf.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/i_long.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/document.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/open.gif"/&gt;<br>
+&nbsp;&nbsp;&lt;img&nbsp;src="../../../src/widget/templates/images/TreeV3/closed.gif"/&gt;<br>
+&lt;/div&gt;</p></div><p>
+        
+            </p></div></div></body></html>

@@ -503,6 +503,9 @@ dojo.lang.mixin(dojo.docs, {
 		dojo.debug("_onDocSelectPackage(" + input.name + ")")
 		input.expects = {
 			"pkgresults": ["pkgmeta", "pkgdoc"]
+		};
+		if(!input.selectKey){
+			input.selectKey = ++dojo.docs._count;
 		}
 		dojo.docs.getPkgMeta(input, input.name, dojo.docs._onPkgResults);
 		dojo.docs.getPkgDoc(input, input.name, dojo.docs._onPkgResults);
@@ -772,7 +775,7 @@ dojo.lang.mixin(dojo.docs, {
 
 			if(cached.requires){
 				if(callbacks && callbacks.length){
-					callbacks.shift()(LOAD, cached, input, input.input);
+					callbacks.shift()(LOAD, cached, input, input[INPUT]);
 					return;
 				}
 			}
@@ -839,21 +842,47 @@ dojo.lang.mixin(dojo.docs, {
 	selectFunction: function(/*String*/ name, /*String?*/ id){
 		// summary: The combined information
 	},
-	savePackage: function(/*String*/ path, /*Object*/ parameters){
+	savePackage: function(/*Object*/ callbackObject, /*String*/ callback, /*Object*/ parameters){
+		dojo.event.kwConnect({
+			srcObj: dojo.docs,
+			srcFunc: "_savedPkgRpc",
+			targetObj: callbackObject,
+			targetFunc: callback,
+			once: true
+		});
+		
 		var props = {};
-		props.form = "/DocPkgForm";
-		props.path = ["/WikiHome/DojoDotDoc/", path].join("");
+		var cache = dojo.docs._getCache(parameters.pkg, "meta");
 
 		var i = 1;
+
+		if(!cache.path){
+			var path = "id";
+			props[["pname", i].join("")] = "DocPkgForm/require";
+			props[["pvalue", i++].join("")] = parameters.pkg;
+		}else{
+			var path = cache.path;
+		}
+
+		props.form = "//DocPkgForm";
+		props.path = ["/WikiHome/DojoDotDoc/", path].join("");
+
 		if(parameters.description){
 			props[["pname", i].join("")] = "main/text";
 			props[["pvalue", i++].join("")] = parameters.description;
 		}
 		
-		dojo.docs._rpc.callRemote("saveForm",	props).addCallbacks(dojo.docs.savedPackage, dojo.docs.savedPackage);
+		dojo.docs._rpc.callRemote("saveForm",	props).addCallbacks(dojo.docs._pkgRpc, dojo.docs._pkgRpc);
 	},
-	savedPackage: function(){
-		dojo.debug("Saved");
+	_pkgRpc: function(data){
+		if(data.name){
+			dojo.docs._getCache(data["DocPkgForm/require"], "meta").path = data.name;
+			dojo.docs._savedPkgRpc("load");
+		}else{
+			dojo.docs._savedPkgRpc("error");
+		}
+	},
+	_savedPkgRpc: function(type){
 	},
 	functionPackages: function(/*mixed*/ selectKey, /*String*/ name, /*Function*/ callback, /*Object*/ input){
 		// summary: Gets the package associated with a function and stores it in the .pkg value of input

@@ -8,16 +8,11 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.ComboBox");
-	dojo.require("dojo.widget.html.ComboBox");
 
-	dojo.widget.SubComboBox = function(){
-		dojo.widget.html.ComboBox.call(this);
-		this.widgetType = "SubComboBox";
-	}
-
-	dojo.inherits(dojo.widget.SubComboBox, dojo.widget.html.ComboBox);
-
-	dojo.lang.extend(dojo.widget.SubComboBox, {
+	dojo.widget.defineWidget(
+	"dojo.widget.SubComboBox",
+	dojo.widget.ComboBox,
+	{
 		fillInTemplate: function(args, frag){
 			// this.constructor.superclass.fillInTemplate.call(this, args, frag);
 			this.dataProvider = {
@@ -27,7 +22,6 @@
 			};
 		}
 	});
-	dojo.widget.tags.addParseTreeHandler("dojo:subcombobox");
 </script>
 
 <input dojoType="subcombobox" value="this should be replaced!"

@@ -1,35 +1,30 @@
 
-dojo.provide("dojo.widget.TreeDocIcon");
+dojo.provide("dojo.widget.TreeDocIconExtension");
 
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.widget.TreeCommon");
+dojo.require("dojo.widget.TreeExtension");
 
 // selector extension to emphase node
 
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeDocIcon");
+dojo.widget.tags.addParseTreeHandler("dojo:TreeDocIconExtension");
 
 
-dojo.widget.TreeDocIcon = function() {
-	dojo.widget.HtmlWidget.call(this);
-	
-	this.listenedTrees = []
+dojo.widget.TreeDocIconExtension = function() {
+	dojo.widget.TreeExtension.call(this);	
 }
 
-dojo.inherits(dojo.widget.TreeDocIcon, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.TreeDocIconExtension, dojo.widget.TreeExtension);
 
-
-dojo.lang.extend(dojo.widget.TreeDocIcon, dojo.widget.TreeCommon.prototype);
-
-dojo.lang.extend(dojo.widget.TreeDocIcon, {
-	widgetType: "TreeDocIcon",
+dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
+	widgetType: "TreeDocIconExtension",
 	
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeDocIcon.css"),
 
 	templateString: '<div class="dojoTree"></div>',
 
 	
-	listenTreeEvents: ["treeChange","setFolder","unsetFolder"],
+	listenTreeEvents: ["afterChangeTree","afterSetFolder","afterUnsetFolder"],
 	
 		
 	setNodeTypeClass: function(node) {
@@ -43,7 +38,7 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, {
 	},
 		
 		
-	onSetFolder: function(message) {
+	onAfterSetFolder: function(message) {
 		if (message.source.iconNode) {
 			// on node-initialize time when folder is set there is no iconNode
 			// this case will be processed in treeChange anyway			
@@ -52,7 +47,7 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, {
 	},
 	
 	
-	onUnsetFolder: function(message) {
+	onAfterUnsetFolder: function(message) {
 		this.setNodeTypeClass(message.source);
 	},
 	
@@ -82,7 +77,7 @@ dojo.lang.extend(dojo.widget.TreeDocIcon, {
 	
 	
 	
-	onTreeChange: function(message) {
+	onAfterChangeTree: function(message) {
 		var _this = this;
 		
 		//dojo.debug(message.node)

@@ -15,7 +15,7 @@
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
-	dojo.require("dojo.widget.TreeDocIcon");
+	dojo.require("dojo.widget.TreeDocIconExtension");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -49,7 +49,7 @@ see part of grid under 1 disappeared
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
 
-<div dojoType="TreeDocIcon" widgetId="docIcons"></div>
+<div dojoType="TreeDocIconExtension" widgetId="docIcons"></div>
 	
 	
 <div dojoType="TreeV3" listeners="docIcons;controller">

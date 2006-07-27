@@ -151,6 +151,25 @@ Here's an example:</p>
 	<div style="clear: both;"></div>
 </div>
 
+<h2>Toggling the display test</h2>
+<p>
+(Ticket <a href="http://trac.dojotoolkit.org/ticket/403">#403</a>)
+</p>
+<div class="box">
+	<button dojoType="Button" onclick='dojo.byId("hiddenNode").style.display="inline";'>
+		Show Hidden Buttons
+	</button>
+</div>
+<div class="box" style="display:none;" id="hiddenNode">
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
+		<img src="images/plus.gif"> Create
+	</button>
+	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
+		<img src="images/plus.gif"> Create
+	</button>
+</div>
+<div style="clear: both;"></div>
+
 <h2>Programatically changing buttons</h2>
 <p>clicking the buttons below will change the buttons above</p>
 <script>

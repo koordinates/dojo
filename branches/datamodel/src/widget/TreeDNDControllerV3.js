@@ -23,7 +23,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, dojo.widget.TreeCommon.prototy
 dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	widgetType: "TreeDNDControllerV3",
 	
-	listenTreeEvents: ["treeChange","treeDestroy", "addChild"],
+	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy", "afterAddChild"],
 	
 	initialize: function(args) {
 		this.treeController = dojo.lang.isString(args.controller) ? dojo.widget.byId(args.controller) : args.controller;
@@ -34,21 +34,21 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 		
 	},
 
-	onTreeDestroy: function(message) {
+	onBeforeTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
 	},
 	
 	// first DND registration happens in addChild
 	// because I have information about parent on this stage and can use it
 	// to check locking or other things
-	onAddChild: function(message) {
+	onAfterAddChild: function(message) {
 		//dojo.profile.start("DND addChild "+message.child);
 		this.listenNode(message.child);
 		//dojo.profile.end("DND addChild "+message.child);
 	},
 
 
-	onTreeChange: function(message) {
+	onAfterChangeTree: function(message) {
 		
 		if (!message.oldTree) return;
 		
@@ -85,7 +85,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 			//dojo.debug("reg source")
 			
 			//dojo.profile.start("DND source "+node);		
-			var source = new dojo.dnd.TreeDragSourceV3(node.contentNode, this, node.tree.widgetId, node);
+			var source = this.makeDragSource(node);
 			//dojo.profile.end("DND source "+node);		
 
 			this.dragSources[node.widgetId] = source;
@@ -93,7 +93,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 
 		//dojo.profile.start("DND target "+node);		
 	
-		var target = new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DNDAcceptTypes, node);
+		var target = this.makeDropTarget(node);
 		//dojo.profile.end("DND target "+node);		
 
 		this.dropTargets[node.widgetId] = target;
@@ -102,7 +102,21 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 
 
 	},
+	
+	/**
+	 * Factory method, override it to create special source
+	 */
+	makeDragSource: function(node) {
+		return new dojo.dnd.TreeDragSourceV3(node.contentNode, this, node.tree.widgetId, node);
+	},
 
+
+	/**
+	 * Factory method, override it to create special target
+	 */
+	makeDropTarget: function(node) {
+		 return new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DNDAcceptTypes, node);
+	},
 
 	unlistenNode: function(node) {
 

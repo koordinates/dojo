@@ -28,53 +28,6 @@ dojo.dnd.TreeDragSourceV3 = function(node, syncController, type, treeNode){
 
 dojo.inherits(dojo.dnd.TreeDragSourceV3, dojo.dnd.HtmlDragSource);
 
-dojo.lang.extend(dojo.dnd.TreeDragSourceV3, {
-	onDragStart: function(){
-		/* extend adds functions to prototype */
-		var dragObject = dojo.dnd.HtmlDragSource.prototype.onDragStart.call(this);
-		//dojo.debugShallow(dragObject)
-
-		dragObject.treeNode = this.treeNode;
-
-		dragObject.onDragStart = function(e) {
-
-				
-			var result = dojo.dnd.HtmlDragObject.prototype.onDragStart.apply(this, arguments);
-
-
-			/* remove background grid from cloned object 
-			var cloneGrid = this.dragClone.getElementsByTagName('img');
-			for(var i=0; i<cloneGrid.length; i++) {
-				cloneGrid.item(i).style.backgroundImage='url()';
-			}
-			*/
-			
-			return result;
-
-
-		}
-
-		dragObject.onDragEnd = function(e) {
-						
-			//dojo.debug(e.dragStatus);
-
-			return dojo.dnd.HtmlDragObject.prototype.onDragEnd.apply(this, arguments);
-		}
-		//dojo.debug(dragObject.domNode.outerHTML)
-
-
-		return dragObject;
-	},
-
-	onDragEnd: function(e){
-
-
-		 var res = dojo.dnd.HtmlDragSource.prototype.onDragEnd.call(this, e);
-
-
-		 return res;
-	}
-});
 
 // .......................................
 
@@ -158,6 +111,11 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		if (accepts && this.treeNode.isFolder && !this.treeNode.isExpanded) {
 			this.setAutoExpandTimer();
 		}
+		
+		if (accepts) {
+			this.cacheNodeCoords();
+		}
+
 
 		return accepts;
 	},
@@ -169,7 +127,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		if (!accepts) return false;
 
-		var sourceTreeNode = dragObjects[0].treeNode;
+		var sourceTreeNode = dragObjects[0].dragSource.treeNode;
 
 		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
 			dojo.raise("Source is not TreeNode or not found");
@@ -249,7 +207,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 	onDragMove: function(e, dragObjects){
 
-		var sourceTreeNode = dragObjects[0].treeNode;
+		var sourceTreeNode = dragObjects[0].dragSource.treeNode;
 
 		var position = this.getAcceptPosition(e, sourceTreeNode);
 
@@ -269,25 +227,34 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	},
 
 
+	/**
+	 * cache node coordinates to speed up onDragMove
+	 */
+	cacheNodeCoords: function() {
+		var node = this.treeNode.contentNode;
+		
+		this.cachedNodeY = dojo.html.getAbsolutePosition(node).y;
+		this.cachedNodeHeight = dojo.html.getBorderBox(node).height;
+	},
+	
+	
+
 	/* get DNDMode and see which position e fits */
 	getPosition: function(e, DNDMode) {
-		node = dojo.byId(this.treeNode.contentNode);
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
-		var nodey = dojo.html.getAbsolutePosition(node).y;
-		var height = dojo.html.getBorderBox(node).height;
-
-		var relY = mousey - nodey;
-		var p = relY / height;
+		
+		var relY = mousey - this.cachedNodeY;
+		var p = relY / this.cachedNodeHeight;
 
 		var position = ""; // "" <=> forbidden
 		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO
 		  && DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
 			//dojo.debug("BOTH");
-			if (p<=0.3) {
+			if (p<=0.33) {
 				position = "before";
 				// if children are expanded then I ignore understrike, cause it is confusing with firstChild
 				// but for last nodes I put understrike there
-			} else if (p<=0.7 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastNode()) {
+			} else if (p<=0.66 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastNode()) {
 				position = "onto";
 			} else {
 				position = "after";
@@ -334,37 +301,40 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		this.onDragOut(e);
 
-		var sourceTreeNode = e.dragObject.treeNode;
+		var sourceTreeNode = e.dragObject.dragSource.treeNode;
 
 		if (!dojo.lang.isObject(sourceTreeNode)) {
 			dojo.raise("TreeNode not found in dragObject")
 		}
 
+		var targetParent, targetIndex;
 		if (position == "onto") {
-			return this.controller.move(sourceTreeNode, this.treeNode, 0);
+			targetParent = this.treeNode;
+			targetIndex = 0;
 		} else {
-			var index = this.getTargetParentIndex(sourceTreeNode, position);
-			return this.controller.move(sourceTreeNode, this.treeNode.parent, index);
+			targetIndex = this.getTargetParentIndex(sourceTreeNode, position);
+			targetParent = this.treeNode.parent;
 		}
+		
+		return this.getDropHandler(e, sourceTreeNode, targetParent, targetIndex)();
+			
 
-		//dojo.debug('drop2');
-
-
-
+	},
+	
+	/**
+	 * determine, which action I should perform with nodes
+	 * e.g move, clone..
+	 */
+	getDropHandler: function(e, sourceTreeNode, targetParent, targetIndex) {
+		var handler;
+		
+		handler = function () {
+			return this.controller.move(sourceTreeNode, targetParent, targetIndex);	
+		}
+		
+		return handler;
 	}
 
 
 });
 
-
-
-dojo.dnd.TreeDNDControllerV3 = function(treeController) {
-
-	// I use this controller to perform actions
-	this.treeController = treeController;
-
-	this.dragSources = {};
-
-	this.dropTargets = {};
-
-}

@@ -7,31 +7,32 @@
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript" src="../../src/iCalendar.js"></script>
 <script language="JavaScript" type="text/javascript">
-	dojo.require("dojo.debug.Firebug");
 	dojo.require("dojo.widget.*");
-	dojo.require("dojo.event.*");
 	dojo.require("dojo.widget.MonthlyCalendar");
+	dojo.require("dojo.event.*");
 	dojo.require("dojo.io.*");
 	dojo.require("dojo.text.textDirectory");
-	/*dojo.require("dojo.iCalendar");*/
 	
-	//var calendar="holidays.ics";
-	//var calendar="pgatour.ics";
 	var calendar="test_Calendar.ics";
-	//var calendar="bigCalendar.ics";
 	dojo.debug("Calendar: " + calendar);
-	dojo.io.bind({
-		url: calendar,
-		load: function(type, data, evt){
-			dojo.debug("Got ICS file");
-			var cal = dojo.iCalendar.fromText(data);
-			var monthly = dojo.widget.manager.getWidgetById("Calendar");
-			for (var x=0; x<cal.length; x++) {
-				monthly.addCalendar(cal[x]);
-			} 
-			dojo.debug("Done Adding Calendar");
-		},
-		mimetype: "text/plain"
+	dojo.addOnLoad(function(){
+		dojo.io.bind({
+			url: calendar,
+			load: function(type, data, evt){
+				dojo.debug("Got ICS file");
+				var cal = dojo.iCalendar.fromText(data);
+				var monthly = dojo.widget.byId("Calendar");
+				if(!monthly){
+					dojo.debug("ERROR: Calendar widget wasn't instantiated!");
+					return;
+				}
+				for (var x=0; x<cal.length; x++) {
+					monthly.addCalendar(cal[x]);
+				} 
+				dojo.debug("Done Adding Calendar");
+			},
+			mimetype: "text/plain"
+		});
 	});
 
 </script>

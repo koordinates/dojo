@@ -320,6 +320,11 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 				if (padChar == null) { padChar = " "; }
 				return _(dateObject.getDate(), 2); break;
 			
+			case "f": // month as a decimal number, a single digit is
+							// preceded by a space (range ' 1' to '12')
+				if (padChar == null) { padChar = " "; }
+				return _(dateObject.getMonth()+1, 2); break;				
+			
 			case "g": // like %G, but without the century.
 				break;
 			

@@ -7,7 +7,7 @@ var profiles = {
 	two : {
 		profileDeps : ['one'],
 		dependencies : [
-			'dojo.widget.html.Button2'
+			'dojo.widget.Button'
 		]
 	}
 }

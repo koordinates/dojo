@@ -4,7 +4,8 @@
     
     <section>
         <title>Make tree unselectable</title>
-        <para>Sometimes people want tree nodes to be unselectable, sometimes selection is a good way to copy (part of) content from the node.</para>
+        <para>TODO: write extension
+            Sometimes people want tree nodes to be unselectable, sometimes selection is a good way to copy (part of) content from the node.</para>
         <para>To make tree (or its elements) unselectable use dojo.html.disableSelection in nodeCreate and treeCreate hooks.
             Apply disableSelection to every node you want to make unselectable.
         </para>
@@ -12,10 +13,24 @@
     </section>
   
     <section>
-        <title>Add custom properties to tree</title>
+        <title>Bind an object to tree node</title>
         
         <para>There is an "objectId" property and "object" property ready to be filled in from markup or program-way.</para>
     </section>
 
+    <section>
+        <title>Walk all node descendants</title>
+        
+        <para>You may use <code>dojo.lang.forEach(nodeOrTree.getDescendants(),function(elem) { ... })</code> to process all descendants,
+            it will walk <methodname>children</methodname> property recursively.        
+            
+        </para>
+        
+        <para>The safer way would be to call <code>TreeCommon.prototype.processDescendants(nodeOrTree, filter, func)</code>, it will process all children
+        with <code>func</code>, but will not descend into nodes if <code>filter(node)</code> returns false. E.g see <methodname>collapseAll</methodname>
+            controller method uses it to collapse all widgets, but skip non-folders and data objects. 
+        </para>
+        </section>
+        
 </section>
 

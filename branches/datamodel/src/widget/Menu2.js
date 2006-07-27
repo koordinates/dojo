@@ -1,6 +1,5 @@
 dojo.provide("dojo.widget.PopupContainer");
 dojo.provide("dojo.widget.Menu2");
-dojo.provide("dojo.widget.html.Menu2");
 dojo.provide("dojo.widget.PopupMenu2");
 dojo.provide("dojo.widget.MenuItem2");
 dojo.provide("dojo.widget.MenuBar2");
@@ -29,6 +28,8 @@ dojo.widget.defineWidget(
 	isShowingNow: false,
 
 	currentSubpopup: null,
+
+	beginZIndex: 1000,
 
 	parentPopup: null,
 	popupIndex: 0,
@@ -86,13 +87,20 @@ dojo.widget.defineWidget(
 
 		if(this.isTopLevel){
 			var button = explodeSrc instanceof Array ? null : explodeSrc;
-			dojo.widget.html.PopupManager.opened(this, button);
+			dojo.widget.PopupManager.opened(this, button);
+		}
+
+		//convert explodeSrc from format [x, y] to 
+		//{left: x, top: y, width: 0, height: 0} which is the new
+		//format required by dojo.html.toCoordinateObject
+		if(explodeSrc instanceof Array){
+			explodeSrc = {left: explodeSrc[0], top: explodeSrc[1], width: 0, height: 0};
 		}
 
 		// display temporarily, and move into position, then hide again
 		with(this.domNode.style){
 			display="";
-			zIndex = 200 + this.popupIndex;
+			zIndex = this.beginZIndex + this.popupIndex;
 		}
 
 		if(around){
@@ -139,10 +147,10 @@ dojo.widget.defineWidget(
 		this.hide();
 		if(this.bgIframe){
 			this.bgIframe.hide();
-			this.bgIframe.size([0,0,0,0]);
+			this.bgIframe.size({left: 0, top: 0, width: 0, height: 0});
 		}
 		if(this.isTopLevel){
-			dojo.widget.html.PopupManager.closed(this);
+			dojo.widget.PopupManager.closed(this);
 		}
 		this.isShowingNow = false;
 	},
@@ -202,10 +210,13 @@ dojo.widget.defineWidget(
 		
 		//restore size of the domnode, see comment in
 		//function onShow()
-		with(this.domNode.style){
-			width=this.openedSize.w;
-			height=this.openedSize.h;
+		if(this.openedSize){
+			with(this.domNode.style){
+				width=this.openedSize.w;
+				height=this.openedSize.h;
+			}
 		}
+		
 		this.processQueue();
 	}
 });
@@ -292,7 +303,7 @@ dojo.widget.defineWidget(
 			once:       true
 		});
 		
-		dojo.widget.html.PopupManager.registerWin(win);
+		dojo.widget.PopupManager.registerWin(win);
 	},
 
 	// detach menu from given node
@@ -388,7 +399,7 @@ dojo.widget.defineWidget(
 				}
 				//fall through
 			case k.KEY_ESCAPE:
-				dojo.widget.html.PopupManager.currentMenu.close();
+				dojo.widget.PopupManager.currentMenu.close();
 				rval = true;
 				break;
 		}
@@ -570,7 +581,7 @@ dojo.widget.defineWidget(
 		}
 		this.parent.closeSubpopup();
 		this.parent._highlighted_option = this;
-		dojo.widget.html.PopupManager.setFocusedMenu(this.parent);
+		dojo.widget.PopupManager.setFocusedMenu(this.parent);
 
 		this.highlightItem();
 
@@ -587,7 +598,7 @@ dojo.widget.defineWidget(
 		this.parent._highlighted_option = null;
 
 		if(this.parent.parentPopup){
-			dojo.widget.html.PopupManager.setFocusedMenu(this.parent.parentPopup);
+			dojo.widget.PopupManager.setFocusedMenu(this.parent.parentPopup);
 		}
 
 		this.stopSubmenuTimer();
@@ -715,7 +726,7 @@ dojo.widget.defineWidget(
 // everything works. lovely.
 //
 
-dojo.widget.html.PopupManager = new function(){
+dojo.widget.PopupManager = new function(){
 
 	this.currentMenu = null;
 	this.currentButton = null;		// button that opened current menu (if any)
@@ -744,7 +755,7 @@ dojo.widget.html.PopupManager = new function(){
 		so that whereever the user clicks in the page, the popup 
 		menu will be closed
 		In case you add an iframe after onload event, please call
-		dojo.widget.html.PopupManager.registerWin manually
+		dojo.widget.PopupManager.registerWin manually
 	*/
 	this.registerAllWindows = function(targetWindow){
 		//starting from window.top, clicking everywhere in this page 
@@ -991,7 +1002,7 @@ dojo.widget.defineWidget(
 
 	postCreate: function(){
 		this.inherited("postCreate");
-		dojo.widget.html.PopupManager.opened(this);
+		dojo.widget.PopupManager.opened(this);
 		this.isShowingNow = true;
 	},
 

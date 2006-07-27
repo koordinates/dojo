@@ -307,8 +307,8 @@ dojo.html.placeOnScreen = function(node, desiredX, desiredY, padding, hasScroll,
 	for(var cidex=0; cidex<corners.length; ++cidex){
 		var corner = corners[cidex];
 		var match = true;
-		tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w) + padding[0] * (corner.charAt(1)=='L' ? 1 : -1);
-		tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h) + padding[1] * (corner.charAt(0)=='T' ? 1 : -1);
+		var tryX = desiredX - (corner.charAt(1)=='L' ? 0 : w) + padding[0] * (corner.charAt(1)=='L' ? 1 : -1);
+		var tryY = desiredY - (corner.charAt(0)=='T' ? 0 : h) + padding[1] * (corner.charAt(0)=='T' ? 1 : -1);
 		if(hasScroll) {
 			tryX -= scroll.x;
 			tryY -= scroll.y;
@@ -416,6 +416,8 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasSc
 
 //scrollIntoView in some implementation is broken, use our own
 dojo.html.scrollIntoView = function(node){
+	if(!node){ return; }
+	
 	// don't rely on that node.scrollIntoView works just because the function is there
 	// it doesnt work in Konqueror or Opera even though the function is there and probably
 	// not safari either

@@ -1,4 +1,3 @@
-dojo.require("dojo.widget.html.ComboBox");
 dojo.require("dojo.docs");
 dojo.require("dojo.widget.DocPane");
 dojo.require("dojo.event.*");

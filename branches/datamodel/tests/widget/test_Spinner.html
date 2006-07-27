@@ -4,6 +4,9 @@
 	<head>
 		<title>Dojo Spinner Widget Demo</title>
 
+		<script type="text/javascript">
+			var djConfig = {isDebug: true};
+		</script>
 		<script type="text/javascript" src="../../dojo.js"></script>
 		<script type="text/javascript">
 			dojo.require("dojo.widget.Spinner");
@@ -18,7 +21,7 @@
 		<h1>integer spinner</h1>
 		<br>
 		initial value=1000, delta=10, min=9 max=1550, signed=always separator=,<br>
-		<input dojoType="AdjustableIntegerTextBox" 
+		<input dojoType="SpinnerIntegerTextBox" 
 			value="1000" 
 			delta="10" 
 			min="9" 
@@ -27,30 +30,28 @@
 			separator="," 
 			maxlength="20" 
 			widgetId="integertextbox1">
-		</input>
-		<span dojoType="Spinner" inputWidgetId="integertextbox1"></span><br>
+		<br>
 		<br>
 		initial value=900, no delta specified, no min specified, max=1550, signed=never separator=!<br>
-		<input dojoType="AdjustableIntegerTextBox" 
+		<input dojoType="SpinnerIntegerTextBox" 
 			value="900" 
 			max="1550" 
 			signed="never" 
 			separator="!" 
 			maxlength="20" 
 			widgetId="integertextbox2">
-		</input>
-		<span dojoType="Spinner" inputWidgetId="integertextbox2"></span><br>
+		<br>
 		<br>
 		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, separator not specified<br>
-		[verify no line break just after this text]<input dojoType="AdjustableIntegerTextBox" widgetId="integertextbox3"></input>[verify no line break just before this text]
-		<span dojoType="Spinner" inputWidgetId="integertextbox3"></span><br>
+		[verify no line break just after this text]<input dojoType="SpinnerIntegerTextBox" widgetId="integertextbox3">[verify no line break just before this text]
+		<br>
 		<br>
 		<h1>real number spinner</h1>
 		<br>
 		Move the cursor left and right within the input field to see the effect on the spinner.
 		<br>
 		initial value=1000, delta=0.01e1, min=-10950, max=155000, signed=always, exponent=always, esigned=never, places=2, separator=,<br>
-		<input dojoType="AdjustableRealNumberTextBox"
+		<input dojoType="SpinnerRealNumberTextBox"
 			value="1000"
 			delta="0.01e1" 
 			min="-10950" 
@@ -62,11 +63,10 @@
 			places="2" 
 			maxlength="20" 
 			widgetId="realtextbox1">
-		</input>
-		<span dojoType="Spinner" inputWidgetId="realtextbox1"></span><br>
+		<br>
 		<br>
 		initial value=1000.45, delta=1e2, min not specified, max=155000, signed=never, exponent=never, esigned=always, places=1, separator=(space) <br>
-		<input dojoType="AdjustableRealNumberTextBox" 
+		<input dojoType="SpinnerRealNumberTextBox" 
 			value="1000.45" 
 			delta="1e2" 
 			max="155000" 
@@ -77,12 +77,11 @@
 			places="1"
 			maxlength="20"
 			widgetId="realtextbox2">
-		</input>
-		<span dojoType="Spinner" inputWidgetId="realtextbox2"></span><br>
+		<br>
 		<br>
 		initial value not specified, delta not specified, min not specified, max not specified, signed not specified, exponent not specified, esigned not specified, places not specified, separator not specified <br>
-		[verify no line break just after this text]<input dojoType="AdjustableRealNumberTextBox" widgetId="realtextbox3"></input>[verify no line break just before this text]
-		<span dojoType="Spinner" inputWidgetId="realtextbox3"></span><br>
+		[verify no line break just after this text]<input dojoType="SpinnerRealNumberTextBox" widgetId="realtextbox3">[verify no line break just before this text]
+		<br>
 		<br>
 		<br>
 		<h1>time spinner</h1>
@@ -90,7 +89,7 @@
 		Move the cursor left and right within the input field to see the effect on the spinner.
 		<br>
 		initial value=10:00:00a, delta=1:01:01a, am symbol=a, pm symbol=p, format=h:mm:sst<br>
-		<input dojoType="AdjustableTimeTextBox"
+		<input dojoType="SpinnerTimeTextBox"
 			value="10:00:00a"
 			delta="1:01:01a" 
 			amsymbol="a"
@@ -98,22 +97,20 @@
 			format="h:mm:sst" 
 			maxlength="20" 
 			widgetId="timetextbox1">
-		</input>
-		<span dojoType="Spinner" inputWidgetId="timetextbox1"></span><br>
+		<br>
 		<br>
 		initial value=1000, delta=0101, am symbol not specified, pm symbol not specified, format=HHmm<br>
-		<input dojoType="AdjustableTimeTextBox"
+		<input dojoType="SpinnerTimeTextBox"
 			value="1000"
 			delta="0101" 
 			format="HHmm" 
 			maxlength="20" 
 			widgetId="timetextbox2">
-		</input>
-		<span dojoType="Spinner" inputWidgetId="timetextbox2"></span><br>
+		<br>
 		<br>
 		initial value not specified, delta not specified (default is 01:01:01), am symbol not specified (default is AM), pm symbol not specified (default is PM), format not specified (default is h:mm:ss t) <br>
-		[verify no line break just after this text]<input dojoType="AdjustableTimeTextBox" widgetId="timetextbox3"></input>[verify no line break just before this text]
-		<span dojoType="Spinner" inputWidgetId="timetextbox3"></span><br>
+		[verify no line break just after this text]<input dojoType="SpinnerTimeTextBox" widgetId="timetextbox3">[verify no line break just before this text]
+		<br>
 		<br>
 	</body>
 </html>

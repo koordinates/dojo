@@ -11,6 +11,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:TreeNodeV3");
 // # //////////
 
 dojo.widget.TreeNodeV3 = function() {
+	
 	dojo.widget.HtmlWidget.call(this);
 
 	this.actionsDisabled = [];
@@ -53,22 +54,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	expandNode: null,
 	labelNode: null,
-	
-	
-	/**
-	 * override for speed 
-	 
-	postInitialize: function(args, frag, parentComp){
-		var sourceNodeRef = this.getFragNodeRef(frag);
 		
-		var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
-		if (!parentComp) {
-			dojo.debug(this);
-		}
-		parentComp.registerChild(this, args.dojoinsertionindex);
-			
-		dojo.widget.getParser().createSubComponents(frag, this);
-	},*/ 
 		
 	nodeType: "Document",
 	
@@ -77,8 +63,58 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return this.nodeType;
 	},
 	
+	cloneProperties: ["lazyInitEnabled","expandChildrenChecked","nodeType","objectId","object",
+		   "title","isFolder","isExpanded","state"],
 	
-	// fast buildRendering 	
+	
+	/**
+	 * copy cloneProperties with recursion into them
+	 * contains "copy constructor"
+	 */
+	clone: function(deep) {
+		var ret = new this.constructor();
+		
+		//dojo.debug("start cloning props "+this);
+		
+		for(var i=0; i<this.cloneProperties.length; i++) {
+			var prop = this.cloneProperties[i];
+			//dojo.debug("cloning "+prop+ ":" +this[prop]);
+			ret[prop] = dojo.lang.shallowCopy(this[prop], true);			
+		}
+		
+		//dojo.debug("cloned props "+this);
+		
+		ret.toggleObj = this.toggleObj;
+		
+		dojo.widget.manager.add(ret);
+		
+		ret.tree = this.tree;
+		ret.buildRendering({},{});
+		ret.initialize({},{});
+				
+		if (deep && this.children.length) {
+			//dojo.debug("deeper copy start");
+			for(var i=0; i<this.children.length; i++) {
+				var child = this.children[i];
+				//dojo.debug("copy child "+child);
+				if (child.clone) {
+					ret.children.push(child.clone(deep));
+				} else {
+					ret.children.push(dojo.lang.shallowCopy(child, deep));
+				}
+			}
+			//dojo.debug("deeper copy end");
+			ret.setChildren(ret.children);
+		}
+				
+		return ret;
+	},
+			
+	
+	
+	/**
+	 * get information from args & parent, then build rendering
+	 */
 	buildRendering: function(args, fragment, parent) {
 		
 		
@@ -164,7 +200,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.viewSetExpand();
 		this.viewAddContainer(); // all folders have container.
 		//dojo.debug("publish "+this.tree.eventNames.setFolder);
-		dojo.event.topic.publish(this.tree.eventNames.setFolder, { source: this });
+		dojo.event.topic.publish(this.tree.eventNames.afterSetFolder, { source: this });
 	},
 	
 	
@@ -173,11 +209,16 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.start("initialize");
 		
-		// set tree from args or from parent
-		//dojo.debug("initialize in "+this);
-						
+		/**
+		 * first we populate current widget from args,
+		 * then use its data to initialize
+		 * args may be empty, all data inside widget for copy constructor
+		 */
+		if (args.isFolder) {
+			this.isFolder = true;
+		}
 		
-		if (this.children.length || args.isFolder) {
+		if (this.children.length || this.isFolder) {
 			//dojo.debug("children found");
 			//dojo.debug(this.children);
 			//dojo.debug("isFolder "+args.isFolder);
@@ -189,9 +230,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			this.viewSetExpand();
 		}
 		
-		//dojo.debug("publish "+this.tree.eventNames.treeChange);
+		//dojo.debug("publish "+this.tree.eventNames.changeTree);
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, {oldTree:null, newTree:this.tree, node:this} );
+		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, {oldTree:null, newTree:this.tree, node:this} );
 		
 		
 		//dojo.profile.end("initialize");
@@ -203,7 +244,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	unsetFolder: function() {
 		this.isFolder = false;
 		this.viewSetExpand();
-		dojo.event.topic.publish(this.tree.eventNames.unsetFolder, { source: this });
+		dojo.event.topic.publish(this.tree.eventNames.afterUnsetFolder, { source: this });
 	},
 	
 	
@@ -227,11 +268,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		var oldTree = this.tree;
 		
-		var message = {oldTree:oldTree, newTree:newTree, node:this}
-		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );		
-		dojo.event.topic.publish(newTree.eventNames.treeChange, message );
-		
 		
 		dojo.lang.forEach(this.getDescendants(),
 			function(elem) {			
@@ -248,7 +284,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			var reg = new RegExp("(^|\\s)"+oldTree.classPrefix, "g");
 			
 			while (elem = stack.pop()) {
-				for(i=0; i<elem.childNodes.length; i++) {
+				for(var i=0; i<elem.childNodes.length; i++) {
 					var childNode = elem.childNodes[i]
 					if (childNode.nodeType != 1) continue;
 					// change prefix for classes
@@ -259,6 +295,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			
 		}
 		
+		var message = {oldTree:oldTree, newTree:newTree, node:this}
+		
+		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, message );		
+		dojo.event.topic.publish(newTree.eventNames.afterChangeTree, message );
+			
 				
 	},
 	
@@ -309,17 +350,14 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("siblings "+parent.children);
 		
 		if (siblingsCount > 1) {
-			if (index == 0) {
-				if (parent.children[1] instanceof dojo.widget.Widget) {
-					parent.children[1].viewUpdateLayout();
-				}
+			if (index == 0 && parent.children[1] instanceof dojo.widget.Widget) {
+				parent.children[1].viewUpdateLayout();				
 			}
-			if (index == siblingsCount-1) {
-				if (parent.children[siblingsCount-2] instanceof dojo.widget.Widget) {
-					parent.children[siblingsCount-2].viewUpdateLayout();
-				}
+			if (index == siblingsCount-1 && parent.children[siblingsCount-2] instanceof dojo.widget.Widget) {
+				parent.children[siblingsCount-2].viewUpdateLayout();			
 			}
 		} else if (parent.isTreeNode) {
+			// added as the first child 
 			parent.viewSetHasChildren();
 		}
 		
@@ -332,7 +370,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 		
 		
-		dojo.event.topic.publish(this.tree.eventNames.addChild, message);
+		dojo.event.topic.publish(this.tree.eventNames.afterAddChild, message);
 
 		//dojo.profile.end("addedTo");
 		
@@ -373,8 +411,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		treeNode.initialize(args, {}, parent);
 		
 		//dojo.profile.end(this.widgetType+"createSimple");
-		
-		delete dojo.widget.manager.topWidgets[treeNode.widgetId];
+		if (treeNode.parent) {
+			delete dojo.widget.manager.topWidgets[treeNode.widgetId];
+		}
 		
 		return treeNode;
 	},
@@ -467,16 +506,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	detach: function() {
 		if (!this.parent) return;
 
-		var oldTree = this.tree;
 		var oldParent = this.parent;
 
 		this.doDetach.apply(this, arguments);
 
-		dojo.event.topic.publish(oldTree.eventNames.detach,
-			{ child: this, tree: oldTree, parent: oldParent }
+		dojo.event.topic.publish(this.tree.eventNames.afterDetach,
+			{ child: this, tree: this.tree, parent: oldParent }
 		);
-		
-		dojo.event.topic.publish(this.tree.eventNames.treeDetach, {tree:this.tree});
 		
 	},
 	
@@ -498,9 +534,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		var siblingsCount = parent.children.length;
 		
-		//dojo.debug("siblings "+parent.children);
-		
-		
 		if (siblingsCount > 0) {
 			if (index == 0) {	// deleted first node => update new first
 				parent.children[0].viewUpdateLayout();		
@@ -511,9 +544,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		} else {
 			parent.viewSetHasChildren();
 		}
-		
-		
-		// FIXME: move to extension
+				
 		if (this.tree.unsetFolderOnEmpty && !parent.children.length && parent.isTreeNode) {
 			parent.unsetFolder();
 		}		
@@ -527,17 +558,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 */
 	destroy: function() {
 		
-		/**
-		 * Send event before actual work, because handlers may want to use parent etc
-		 */
-		var message = {oldTree:this.tree, newTree:null, node:this}		
+		this.detach();
 		
-		dojo.event.topic.publish(this.tree.eventNames.treeChange, message );
-				
-	
+		dojo.event.topic.publish(this.tree.eventNames.beforeDestroy, { source: this } );
 
-		this.doDetach();			
-				
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
 	
@@ -558,11 +582,12 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end("expand - lazy init "+this);
 		
-		// no matter if I have children or not. need to show/hide container anyway.
-		// e.g empty folder is expanded => then child is added
-		
 		//dojo.profile.start("expand - showChildren "+this);
 		
+		/**
+		 * no matter if I have children or not. need to show/hide container anyway.
+		 * use case: empty folder is expanded => then child is added, container already shown all fine
+		 */
 		this.showChildren();
 		
 		//dojo.profile.end("expand - showChildren "+this);
@@ -579,7 +604,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		//dojo.profile.start("expand - event "+this);
 
-		dojo.event.topic.publish(this.tree.eventNames.expand, {source: this} );
+		dojo.event.topic.publish(this.tree.eventNames.afterExpand, {source: this} );
 		
 		//dojo.profile.end("expand - event "+this);
 		
@@ -598,7 +623,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		this.viewSetExpand();
 
-		dojo.event.topic.publish(this.tree.eventNames.collapse, {source: this} );
+		dojo.event.topic.publish(this.tree.eventNames.afterCollapse, {source: this} );
 	},
 
 	hideChildren: function(){

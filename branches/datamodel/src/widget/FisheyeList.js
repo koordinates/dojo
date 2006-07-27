@@ -1,6 +1,5 @@
 dojo.provide("dojo.widget.FisheyeList");
-dojo.provide("dojo.widget.html.FisheyeList");
-dojo.provide("dojo.widget.html.FisheyeListItem");
+dojo.provide("dojo.widget.FisheyeListItem");
 
 //
 // TODO
@@ -15,19 +14,12 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.html.util");
 dojo.require("dojo.event");
 
-dojo.widget.tags.addParseTreeHandler("dojo:FisheyeList");
-dojo.widget.tags.addParseTreeHandler("dojo:FisheyeListItem");
-
-dojo.widget.html.FisheyeList = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.html.FisheyeList, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.FisheyeList, {
-
+dojo.widget.defineWidget(
+	"dojo.widget.FisheyeList",
+	dojo.widget.HtmlWidget,
+{
 	templateString: '<div class="dojoHtmlFisheyeListBar"></div>',
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css"),
-	widgetType: "FisheyeList",
 
 	EDGE: {
 		CENTER: 0,
@@ -609,18 +601,14 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		// need to disconnect when we destroy
 		dojo.event.disconnect(document.documentElement, "onmouseout", this, "onBodyOut");
 		dojo.event.disconnect(document.documentElement, "onmousemove", this, "mouseHandler");
-		dojo.widget.html.FisheyeList.superclass.destroy.call(this);
+		dojo.widget.FisheyeList.superclass.destroy.call(this);
 	}
 });
 
-dojo.widget.html.FisheyeListItem = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-dojo.inherits(dojo.widget.html.FisheyeListItem, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.FisheyeListItem, {
-	widgetType: "FisheyeListItem",
-	
+dojo.widget.defineWidget(
+	"dojo.widget.FisheyeListItem",
+	dojo.widget.HtmlWidget,
+{
 	// Constructor arguments
 	iconSrc: "",
 	svgSrc: "",

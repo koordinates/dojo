@@ -1,6 +1,7 @@
 dojo.provide("dojo.widget.GoogleMap");
 dojo.require("dojo.event.*");
 dojo.require("dojo.math");
+dojo.require("dojo.widget.*");
 dojo.require("dojo.uri.Uri");
 dojo.require("dojo.widget.HtmlWidget");
 
@@ -23,12 +24,15 @@ dojo.require("dojo.widget.HtmlWidget");
 	}
 
 	if(!dojo.hostenv.post_load_){
+		if(!gkey || gkey==""){
+			dojo.raise("dojo.widget.GoogleMap: The Google Map widget requires a proper API key in order to be used.");
+		}
 		var tag = "<scr"+"ipt src='http://maps.google.com/maps?file=api&amp;v=2&amp;key="+gkey+"'></scri"+"pt>";
-		if(!dj_global["GMap2"]){ // prevent multi-inclusion
+		if(!dj_global["GMap2"]){
 			document.write(tag);
 		}
 	}else{
-		dojo.debug("cannot initialize map system after the page has been loaded! Please either manually include the script block provided by Google in your page or require() the GoogleMap widget before onload has fired");
+		dojo.debug("Cannot initialize Google Map system after the page has been loaded! Please either manually include the script block provided by Google in your page or require() the GoogleMap widget before onload has fired.");
 	}
 })();
 
@@ -38,12 +42,10 @@ dojo.widget.defineWidget(
 {
 	initializer: function(){
 		this.map=null;
+		this.geocoder=null;
 		this.data=[];
 		this.datasrc="";
-
-		// FIXME: this is perhaps the stupidest way to specify this enum I can think of
-		var gm=dojo.widget.GoogleMap;
-		this.controls=[gm.Controls.LargeMap,gm.Controls.Scale,gm.Controls.MapType];
+		this.controls=["largemap","scale","maptype"];
 	},
 
 	templatePath:null,
@@ -51,38 +53,16 @@ dojo.widget.defineWidget(
 	isContainer: false,
 
 	setControls:function(){
-		var c=dojo.widget.GoogleMap.Controls;
+		var methodmap={
+			largemap:GLargeMapControl,
+			smallmap:GSmallMapControl,
+			smallzoom:GSmallZoomControl,
+			scale:GScaleControl,
+			maptype:GMapTypeControl,
+			overview:GOverviewMapControl
+		};
 		for(var i=0; i<this.controls.length; i++){
-			var type=this.controls[i];
-			switch(type){
-				case c.LargeMap:{
-					this.map.addControl(new GLargeMapControl());
-					break;
-				}
-				case c.SmallMap:{
-					this.map.addControl(new GSmallMapControl());
-					break;
-				}
-				case c.SmallZoom:{
-					this.map.addControl(new GSmallZoomControl());
-					break;
-				}
-				case c.Scale:{
-					this.map.addControl(new GScaleControl());
-					break;
-				}
-				case c.MapType:{
-					this.map.addControl(new GMapTypeControl());
-					break;
-				}
-				case c.Overview:{
-					this.map.addControl(new GOverviewMapControl());
-					break;
-				}
-				default:{
-					break;
-				}
-			}
+			this.map.addControl(new (methodmap[this.controls[i].toLowerCase()])());
 		}
 	},
 	
@@ -103,6 +83,28 @@ dojo.widget.defineWidget(
 			});
 		}
 		return m;
+	},
+	plot:function(obj){
+		var p=new GLatLng(obj.lat,obj.lng);
+		var d=obj.description||null;
+		var m=this.createPinpoint(p,d);
+		this.map.addOverlay(m);
+	},
+	plotAddress:function(address){
+		var self=this;
+		this.geocoder.getLocations(address, function(response){
+			if(!response || response.Status.code != 200){
+				alert("The address \"" + address + "\" was not found.");
+				return;
+			}
+			var obj={
+				lat:response.Placemark[0].Point.coordinates[1],
+				lng:response.Placemark[0].Point.coordinates[0],
+				description:response.Placemark[0].address
+			};
+			self.data.push(obj);
+			self.plot(obj);
+		});
 	},
 
 	parse:function(table){
@@ -157,18 +159,11 @@ dojo.widget.defineWidget(
 		this.map.setCenter(this.findCenter(bounds), zoom);
 
 		for(var i=0; i<this.data.length; i++){
-			var p=new GLatLng(this.data[i].lat,this.data[i].lng);
-			var d=this.data[i].description||null;
-			var m=this.createPinpoint(p,d);
-			this.map.addOverlay(m);
+			this.plot(this.data[i]);
 		}
 	},
-	
 
 	initialize:function(args, frag){
-		if(!GMap2){
-			dojo.raise("dojo.widget.GoogleMap: The Google Map script must be included (with a proper API key) in order to use this widget.");
-		}
 		if(this.datasrc){
 			this.parse(dojo.byId(this.datasrc));
 		}
@@ -182,26 +177,10 @@ dojo.widget.defineWidget(
 			this.domNode.removeChild(this.domNode.childNodes[0]);
 		}
 		this.map=new GMap2(this.domNode);
+		try{
+			this.geocoder=new GClientGeocoder();
+		}catch(ex){}
 		this.render();
 		this.setControls();
 	}
 });
-
-dojo.widget.GoogleMap.Controls={
-	LargeMap:"largemap",
-	SmallMap:"smallmap",
-	SmallZoom:"smallzoom",
-	Scale:"scale",
-	MapType:"maptype",
-	Overview:"overview",
-	get:function(s){
-		for(var p in this){
-			if(typeof(this[p])=="string"
-				&& this[p]==s
-			){
-				return p;
-			}
-		}
-		return null;
-	}
-};

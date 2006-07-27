@@ -1,42 +1,10 @@
 dojo.provide("dojo.lang.common");
-
 dojo.require("dojo.lang");
 
-dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
-	// summary:	Adds all properties and methods of props to obj.
-	var tobj = {};
-	for(var x in props){
-		// the "tobj" condition avoid copying properties in "props"
-		// inherited from Object.prototype.  For example, if obj has a custom
-		// toString() method, don't overwrite it with the toString() method
-		// that props inherited from Object.protoype
-		if(typeof tobj[x] == "undefined" || tobj[x] != props[x]) {
-			obj[x] = props[x];
-		}
-	}
-	// IE doesn't recognize custom toStrings in for..in
-	if(dojo.render.html.ie && dojo.lang.isFunction(props["toString"]) && props["toString"] != obj["toString"]) {
-		obj.toString = props.toString;
-	}
-	return obj;
-}
-
-dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/ props){
-	// summary:	Adds all properties and methods of props to obj.
-	for(var i=1, l=arguments.length; i<l; i++){
-		dojo.lang._mixin(obj, arguments[i]);
-	}
-	return obj; // Object
-}
-
-dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
-	// summary:	Adds all properties and methods of props to constructors prototype,
-	//			making them available to all instances created with constructor.
-	for(var i=1, l=arguments.length; i<l; i++){
-		dojo.lang._mixin(constructor.prototype, arguments[i]);
-	}
-	return constructor;
-}
+//	Backwards compatibility
+dojo.lang._mixin = dojo._mixin;
+dojo.lang.mixin = dojo.mixin;
+dojo.lang.extend = dojo.extend;
 
 dojo.lang.find = function(	/*Array*/		array, 
 							/*Object*/		value,

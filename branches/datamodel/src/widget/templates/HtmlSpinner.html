@@ -1,22 +1,24 @@
-<span style="display:none;">
-	<span style="position:relative; top:0px; left:0px;" dojoAttachPoint="relNode">
-		<img border="0"
-			hspace="0"
-			vspace="0"
-			style="visibility:hidden;height:1px;width:1px;"
-			dojoAttachPoint="spacerNode"
-			src="${dojoRoot}src/widget/templates/images/blank.gif">
-		<img border="0"
-			hspace="0"
-			vspace="0"
-			style="position:absolute; left:0px; top:0px; border-right:1px solid black;border-bottom:1px solid black;"
-			dojoAttachPoint="upArrowNode"
-			src="${dojoRoot}src/widget/templates/images/spinnerIncrement.gif">
-		<img border="0"
-			hspace="0"
-			vspace="0"
-			style="position:absolute; left:0px; top:0px; border-right:1px solid black;border-bottom:1px solid black;"
-			dojoAttachPoint="downArrowNode"
-			src="${dojoRoot}src/widget/templates/images/spinnerDecrement.gif">
-	</span>
+<span style="display:none;"><!--
+--><span dojoAttachPoint="spacerNode"
+	style="display:inline-block;border-spacing:0px;line-height:0px;width:1px;"><!--
+	--><div style="display:table-cell;display:inline-block;border-spacing:0px;line-height:0px;"><!--
+		--><span dojoAttachPoint="relNode"
+			style="display:inline-block;position:relative;top:0px;border-spacing:0px;line-height:0px;overflow:visible;"><!--
+	 		--><img border="0"
+				hspace="0"
+				vspace="0"
+				dojoAttachPoint="upArrowNode"
+				dojoAttachEvent="onDblClick: _upArrowDoubleClicked;  onMouseDown: _upArrowPressed; onMouseUp: _arrowReleased; onMouseMove: _discardEvent;"
+				src="${this.incrementSrc}"
+				style="display:block;border-width:0px 1px 1px 0px;border-style:outset;"><!--
+			--><img border="0"
+				hspace="0"
+				vspace="0"
+				dojoAttachPoint="downArrowNode"
+				dojoAttachEvent="onDblClick: _downArrowDoubleClicked;  onMouseDown: _downArrowPressed; onMouseUp: _arrowReleased; onMouseMove: _discardEvent;"
+				src="${this.decrementSrc}"
+				style="display:block;border-width:0px 1px 1px 0px;border-style:outset;"><!--
+		--></span><!--
+	--></div><!--
+--></span>
 </span>

@@ -1,12 +1,12 @@
 dojo.provide("dojo.widget.AnimatedPng");
-dojo.provide("dojo.widget.html.AnimatedPng");
+dojo.provide("dojo.widget.AnimatedPng");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.AnimatedPng",
+	"dojo.widget.AnimatedPng",
 	dojo.widget.HtmlWidget,
 	{
 		isContainer: false,

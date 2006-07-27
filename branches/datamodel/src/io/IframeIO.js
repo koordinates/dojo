@@ -1,7 +1,6 @@
 dojo.provide("dojo.io.IframeIO");
 dojo.require("dojo.io.BrowserIO");
 dojo.require("dojo.uri.*");
-dojo.require("dojo.html.iframe");
 
 // FIXME: is it possible to use the Google htmlfile hack to prevent the
 // background click with this transport?
@@ -158,7 +157,7 @@ dojo.io.IframeTransport = new function(){
 						break;
 					}
 				}
-			}else{
+			}else if(req.formNode){
 				var input = req.formNode[key];
 				req.formNode.removeChild(input);
 				req.formNode[key] = null;
@@ -172,7 +171,19 @@ dojo.io.IframeTransport = new function(){
 		req.formNode.setAttribute("target", req._originalTarget);
 		req.formNode.target = req._originalTarget;
 
-		var ifd = dojo.html.iframeContentDocument(_this.iframe);
+		var contentDoc = function(iframe_el){
+			var doc = iframe_el.contentDocument || // W3
+				(
+					(iframe_el.contentWindow)&&(iframe_el.contentWindow.document)
+				) ||  // IE
+				(
+					(iframe_el.name)&&(document.frames[iframe_el.name])&&
+					(document.frames[iframe_el.name].document)
+				) || null;
+			return doc;
+		};
+
+		var ifd = contentDoc(_this.iframe);
 		// handle successful returns
 		// FIXME: how do we determine success for iframes? Is there an equiv of
 		// the "status" property?
