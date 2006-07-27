@@ -82,6 +82,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			ret[prop] = dojo.lang.shallowCopy(this[prop], true);			
 		}
 		
+		if (this.tree.unsetFolderOnEmpty && !deep && this.isFolder) {
+			ret.isFolder = false;
+		}
+		
 		//dojo.debug("cloned props "+this);
 		
 		ret.toggleObj = this.toggleObj;
@@ -106,6 +110,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			//dojo.debug("deeper copy end");
 			ret.setChildren(ret.children);
 		}
+		
+		
 				
 		return ret;
 	},
@@ -654,9 +660,22 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 	},
 	
+
+	/* Edit current node : change properties and update contents */
+	edit: function(props) {
+		dojo.lang.mixin(this, props);
+		if (props.title) {
+			this.labelNode.innerHTML = this.title;
+		}
+
+		dojo.event.topic.publish(this.tree.eventNames.afterEdit, { source: this, props: props });
+
+	},
+
 	toString: function() {
 		return '[TreeNodeV3, '+this.title+']';
 	}
+
 
 
 });

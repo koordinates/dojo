@@ -75,7 +75,7 @@
         </section>
         
         <para>
-            There are operations, like "expandAll" where such lazy tricks don't help. That is why
+            There are operations, like "expandAll" where such lazy tricks don't help, because all graphical widgets must be processed. That is why
             widget creation process is well-optimized itself. <code>createSimple</code> is a hacky program-only way
             to create TreeNodes fast. <code>setChildren</code> is a method to assign (and create if needed)
             all children at once. It helps to evade some extra work happening when children are added one by one.

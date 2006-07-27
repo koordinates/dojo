@@ -61,6 +61,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		afterAddChild: "afterAddChild",
 		afterDetach: "afterDetach",
 		afterExpand: "afterExpand",
+		afterEdit: "afterEdit",
 		
 		afterCollapse: "afterCollapse"
 	},
