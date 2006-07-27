@@ -120,7 +120,15 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 		);
 
 		if(!this.selectedTabWidget || this.selectedTab==tab.widgetId || tab.selected || (this.children.length==0)){
-			this.selectTab(tab);
+			// Deselect old tab and select new one
+			// We do this instead of calling selectTab in this case, becuase other wise other widgets
+			// listening for addChild and selectTab can run into a race condition
+			if(this.selectedTabWidget){
+				this._hideTab(this.selectedTabWidget);
+			}
+			this.selectedTabWidget = tab;
+			this._showTab(tab);
+
 		} else {
 			this._hideTab(tab);
 		}
