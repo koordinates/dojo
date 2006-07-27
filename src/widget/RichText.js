@@ -499,35 +499,39 @@ dojo.widget.defineWidget(
 				Appearance = this._activeX.appearance.flat;
 			}
 */
+			var _this = this;
 			var span=document.createElement("span");
 			this.domNode.appendChild(span);
-			var objectId="dojo.richText.activeX"+new Date().valueOf();
+			this._XobjectId="dojo.richText.activeX"+new Date().valueOf();
 
 			var s='<object classid="clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A" '
-				+ 'id="' + objectId + '" '
+				+ 'id="' + this._XobjectId + '" '
 				+ 'width="' + this.inheritWidget ? this._oldWidth : '100%' + '" '
 				+ 'height="' + this.height ? this.height : (this._oldHeight + "px") + '" '
 				+ "></object>";
 			span.innerHTML = s;
-			this.object = dojo.byId(objectId);
 
-			this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
-			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
-			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
+			window.setTimeout(function(){
+				_this.object = dojo.byId(_this._XobjectId);
 
-			dojo.lang.forEach(this.events, function(e){
-				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
-			}, this);
+				_this.object.attachEvent("DocumentComplete", dojo.lang.hitch(_this, "onLoad"));
+				_this.object.attachEvent("DisplayChanged", dojo.lang.hitch(_this, "_updateHeight"));
+				_this.object.attachEvent("DisplayChanged", dojo.lang.hitch(_this, "onDisplayChanged"));
 
-			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-				'<title></title>' +
-				'<style type="text/css">' +
-				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
-				(this.height ? '' : '    body { overflow: hidden; }') +
-				//'    #bodywrapper {  }' +
-				'</style>' +
-				//'<base href="' + window.location + '">' +
-				'<body><div id="bodywrapper">' + html + '</div></body>';
+				dojo.lang.forEach(_this.events, function(e){
+					_this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(_this, e));
+				}, _this);
+
+				_this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
+					'<title></title>' +
+					'<style type="text/css">' +
+					'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
+					(_this.height ? '' : '    body { overflow: hidden; }') +
+					//'    #bodywrapper {  }' +
+					'</style>' +
+					//'<base href="' + window.location + '">' +
+					'<body><div id="bodywrapper">' + html + '</div></body>';
+				}, 100);
 		},
 
 	/* Event handlers
