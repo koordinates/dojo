@@ -192,8 +192,40 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	collapse: function(node) {
 
 		node.collapse();
+	
+	},
+	
+// =============================== copy ============================
+	canClone: function(child, newParent, deep){
+		return true;
+	},
+	
+	
+	clone: function(child, newParent, index, deep) {
+
+		/* move sourceTreeNode to new parent */
+		if (!this.canClone(child, newParent)) {
+			return false;
+		}
+
+		var result = this.doClone(child, newParent, index, deep);
+
+		if (!result) return result;
+
+		if (newParent.isTreeNode) {
+			this.expand(newParent);
+		}
+
+		return result;
 	},
 
+	doClone: function(child, newParent, index, deep) {
+		var cloned = child.clone(deep);
+		newParent.addChild(cloned, index);
+				
+		return true;
+	},
+	
 // =============================== move ============================
 
 	/**
@@ -380,6 +412,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 		return newChild;
 	}
+
 
 
 
