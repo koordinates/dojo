@@ -47,7 +47,7 @@ dojo.dom.xmlns = {
 };
 
 dojo.dom.isNode = function(wh){
-	if(typeof Element == "object") {
+	if(typeof Element == "function") {
 		try {
 			return wh instanceof Element;
 		} catch(E) {}
