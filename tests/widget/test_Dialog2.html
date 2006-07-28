@@ -2,7 +2,9 @@
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
-
+<html>
+<head>
+<title>Dialog Widget Dojo Tests</title>
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
@@ -32,7 +34,8 @@ form {
 	margin-bottom : 0;
 }
 </style>
-
+</head>
+<body>
 <a href="javascript:dlg.show()">Show</a>
 
 <div dojoType="dialog" id="DialogContent" bgColor="red" bgOpacity="0.5" toggle="fade" toggleDuration="250">
@@ -58,15 +61,15 @@ form {
 	</form>
 </div>
 
-<p><b>
+<p style="font-weight: bold;">
 This is a test of a dialog:
-<ul>
+</p>
+<ul style="font-weight: bold;">
   <li>with a colored background</li>
   <li>on a short page (check that the red extends all the
 way to the end of the viewport, not just to the end of this text)</li>
   <li>using XHTML</li>
 </ul>
-</b></p>
 
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
@@ -89,3 +92,5 @@ semper velit ante id metus. Praesent massa dolor, porttitor sed,
 pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
 tortor pharetra congue. Suspendisse pulvinar.
 </p>
+</body>
+</html>

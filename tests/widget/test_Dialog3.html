@@ -2,7 +2,9 @@
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
-
+<html>
+<head>
+<title>Dialog Widget Dojo Tests</title>
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
@@ -46,7 +48,8 @@ form {
 	margin-bottom : 0;
 }
 </style>
-
+</head>
+<body>
 <a href="javascript:dlg.show()">Non-blocking, 5 seconds</a>
 
 <div dojoType="dialog" id="DialogContent" bgColor="red" bgOpacity="0.1" toggle="fade" toggleDuration="250" lifetime="5000">
@@ -65,7 +68,7 @@ form {
 	Disappearing in <span id="timer3">3</span>... <a id="hider3" href="#">[X]</a>
 </div>
 
-<p><b>
+<p style="font-weight: bold;">
 
 This is a test of two new tags:
 <ul>
@@ -79,7 +82,7 @@ It also tests a new function and a change in an old function
 	<li>setCloseControl: Set a node that now hides (if blockingDuration is less than lifetime) until blockingDuration is up, or is removed if a blockingDuration is present</li>
 </ul>
 
-</b></p>
+</p>
 
 <p>
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
@@ -102,3 +105,5 @@ semper velit ante id metus. Praesent massa dolor, porttitor sed,
 pulvinar in, consequat ut, leo. Nullam nec est. Aenean id risus blandit
 tortor pharetra congue. Suspendisse pulvinar.
 </p>
+</body>
+</html>
