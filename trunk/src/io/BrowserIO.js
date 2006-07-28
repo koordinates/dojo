@@ -289,7 +289,10 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.startWatchingInFlight = function(){
 		if(!this.inFlightTimer){
-			this.inFlightTimer = setInterval("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
+			// setInterval broken in mozilla x86_64 in some circumstances, see
+			// https://bugzilla.mozilla.org/show_bug.cgi?id=344439
+			// using setTimeout instead
+			this.inFlightTimer = setTimeout("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
 		}
 	}
 
@@ -297,7 +300,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		var now = null;
 		for(var x=this.inFlight.length-1; x>=0; x--){
 			var tif = this.inFlight[x];
-			if(!tif){ this.inFlight.splice(x, 1); continue; }
+			if(!tif || tif.http._aborted || !tif.http.readyState){
+				this.inFlight.splice(x, 1); continue; 
+			}
 			if(4==tif.http.readyState){
 				// remove it so we can clean refs
 				this.inFlight.splice(x, 1);
@@ -321,9 +326,10 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		if(this.inFlight.length == 0){
-			clearInterval(this.inFlightTimer);
 			this.inFlightTimer = null;
+			return;
 		}
+		this.inFlightTimer = setTimeout("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
 	}
 
 	var hasXmlHttp = dojo.hostenv.getXmlhttpObject() ? true : false;
@@ -538,6 +544,9 @@ dojo.io.XMLHTTPTransport = new function(){
 		}
 
 		kwArgs.abort = function(){
+			try{// khtml doesent reset readyState on abort, need this workaround
+				http._aborted = true; 
+			}catch(e){/*squelsh*/}
 			return http.abort();
 		}
 
