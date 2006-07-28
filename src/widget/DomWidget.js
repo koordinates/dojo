@@ -417,7 +417,14 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 		//dojo.profile.end(this.widgetType + " postInitialize");
 		
 		// Expand my children widgets
-		if(this.isContainer){
+		/* dojoDontFollow is important for a very special case
+		 * basically if you have a widget that you instantiate from script
+		 * and that widget is a container, and it contains a reference to a parent
+		 * instance, the parser will start recursively parsing until the browser
+		 * complains.  So the solution is to set an initialization property of 
+		 * dojoDontFollow: true and then it won't recurse where it shouldn't
+		 */
+		if(this.isContainer && !frag["dojoDontFollow"]){
 			//alert("recurse from " + this.widgetId);
 			// build any sub-components with us as the parent
 			var fragParser = dojo.widget.getParser();
