@@ -46,7 +46,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	DNDMode: "",
 
-	defaultChildClass: "",
+	defaultChildClass: null,
 	
 	eventNamesDefault: {
 
