@@ -22,7 +22,7 @@ dojo.widget.defineWidget(
 		this.valueField="Id";
 		this.multiple=false;
 		this.maxSelect=0;
-		this.maxSortable=2;  // 2 columns at a time at most
+		this.maxSortable=1;  // how many columns can be sorted at once.
 		this.minRows=0;
 		this.defaultDateFormat = "%D";
 		this.isInitialized=false;
@@ -401,6 +401,8 @@ dojo.widget.defineWidget(
 		e.preventDefault();
 	},
 	onSort: function(/* HTMLEvent */e){
+		//	summary
+		//	Sort the table based on the column selected.
 		var oldIndex=this.sortIndex;
 		var oldDirection=this.sortDirection;
 		
@@ -418,10 +420,10 @@ dojo.widget.defineWidget(
 			dojo.html.setClass(headers[i], this.headerClass);
 			if(headers[i]==header){
 				if(this.sortInformation[0].index != i){
-					this.sortInformation=[
-						{index:i,direction:0}, 
-						this.sortInformation[0]
-					];
+					this.sortInformation.unshift({ 
+						index:i, 
+						direction:0
+					});
 				} else {
 					this.sortInformation[0] = {
 						index:i,
@@ -430,6 +432,8 @@ dojo.widget.defineWidget(
 				}
 			}
 		}
+
+		this.sortInformation.length = Math.min(this.sortInformation.length, this.maxSortable);
 		for(var i=0; i<this.sortInformation.length; i++){
 			var idx=this.sortInformation[i].index;
 			var dir=(~this.sortInformation[i].direction)&1;
@@ -438,66 +442,86 @@ dojo.widget.defineWidget(
 		this.render();
 	},
 	onFilter: function(/* HTMLEvent */e){
+		//	summary
+		//	show or hide rows based on the parameters of the passed filter.
+		var field = null;
+		var source=e.target;
+		var row=dojo.html.getParentByType(source,"tr");
+		var cellTag="td";
+		if(row.getElementsByTagName(cellTag).length==0){
+			cellTag="th";
+		}
+
+		var headers=row.getElementsByTagName(cellTag);
+		var header=dojo.html.getParentByType(source,cellTag);
+		
+		for(var i=0; i<headers.length; i++){
+			if(headers[i]==header){
+				field=this.columns[i].getField();
+				break;
+			}
+		}
+
+		if(!field) return;	//	something went wrong, abort
+
+		//	TODO: build or get the filtering function
+		var fn=function(data){ return true; };
+
+		//	filter it
+		this.filter(field, fn);
+	},
+	filter: function(/* string */field, /* function */fn){
+		//	summary
+		//	show or hide rows based on the result of the passed function.
+		var rows = this.domNode.tBodies[0].rows;
+		for(var i=0; i<rows.length; i++){
+			rows[i].style.display = fn(this.getByRow(rows[i])[field]) ? "" : "none";
+		}
+	},
+	clearFilters: function(){
+		//	summary
+		//	clears all filters.
+		var rows = this.domNode.tBodies[0].rows;
+		for(var i=0; i<rows.length; i++){
+			rows[i].style.display = "";
+		}
 	},
 
 	//	sorting functionality
 	createSorter: function(/* array */info){
 		//	summary
 		//	creates a custom function to be used for sorting.
-		//	FIXME: set this up so that it is NOT limited to two columns for sorting.
 		var self=this;
-		var pIndex=info[0].index;
-		var pDirection=(info[0].direction==0)?1:-1;
-		var sIndex=null, sDirection=0;
-		if(info[1]){
-			sIndex=info[1].index;
-			sDirection=(info[1].direction==0)?1:-1;
-		}
-
-		/*	The resultant function should take 2 rows for comparison.
-		 *	But we can't count on that with a custom sorter; so
-		 *	what we'll have to do is create a master function that
-		 *	takes in both rows, gets the corresponding objects from
-		 *	that row, and then passes the sub-functions the correct
-		 *	fields for comparison.
-		 ************************************************************/
-		var pField=this.columns[pIndex].getField();
-		var sField=null;
-		if(this.columns[pIndex].sortFunction){
-			var psort=this.columns[pIndex].sortFunction;
-		} else {
-			var psort=function(a,b){
-				if(a>b) return 1;
-				if(a<b) return -1;
-				return 0;
-			};
-		}
-
-		var ssort=function(a,b){ return 0; };
-		if(sIndex){
-			if(this.columns[sIndex].sortFunction){
-				ssort=this.columns[sIndex].sortFunction;
-			} else {
-				ssort=function(a,b){
-					if(a>b) return 1;
-					if(a<b) return -1;
-					return 0;
-				}
+		var sortFunctions=[];	//	our function stack.
+	
+		function createSortFunction(field, dir){
+			return function(rowA, rowB){
+				var a = self.store.getField(self.getDataByRow(rowA), field);
+				var b = self.store.getField(self.getDataByRow(rowB), field);
+				var ret = 0;
+				if(a > b) ret = 1;
+				if(a < b) ret = -1;
+				return dir * ret;
 			}
 		}
-		
+
+		var current=0;
+		var max = Math.min(info.length, this.maxSortable, this.columns.length);
+		while(current < max){
+			var field = this.columns[info[current].index].getField();
+			var direction = (info[current].direction == 0) ? 1 : -1;
+			sortFunctions.push(createSortFunction(field, direction));
+			current++;
+		}
+
 		return function(rowA, rowB){
-			var a=self.getDataByRow(rowA);
-			var b=self.getDataByRow(rowB);
-			var pa=self.store.getField(a, pField);
-			var pb=self.store.getField(b, pField);
-			var ret=pDirection*psort(pa,pb);
-			if(ret==0 && sField){
-				var sa=self.store.getField(a, sField);
-				var sb=self.store.getField(b, sField);
-				ret=sDirection*ssort(sa, sb);
+			var idx=0;
+			while(idx < sortFunctions.length){
+				var ret = sortFunctions[idx++](rowA, rowB);
+				if(ret != 0) return ret;
 			}
-			return ret;
+			//	if we got here then we must be equal.
+			return 0; 	
 		};	//	function
 	},
 
