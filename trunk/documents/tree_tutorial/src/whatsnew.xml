@@ -10,14 +10,14 @@
                 <listitem>Nested divs</listitem>
                 <listitem>All design in CSS through classes and class combinations</listitem>
                 <listitem>Different trees be styled with different CSS class families</listitem>
-                <listitem>Multiline content supported</listitem>        
+                <listitem>Multiline content support</listitem>        
             </itemizedlist>    
          </listitem>
         <listitem>Core rewritten completely, event system modified</listitem>
-        <listitem>Lazy creation feature allows to create graphical widgets from node data only when they need to be shown.
+        <listitem>Lazy creation feature allows to create graphical widgets from node data only when they are to be shown.
            
             <itemizedlist>
-                <listitem> If it is enabled, old code may call widget methods on data objects while traversing a tree</listitem>
+                <listitem> If it is used, old code may erroneously call *widget* methods on *data objects* while recursively traversing a tree</listitem>
             </itemizedlist>    
         </listitem>
         
