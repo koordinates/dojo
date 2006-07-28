@@ -31,8 +31,14 @@ dojo.widget.defineWidget(
 		controlsContainer: null,
 		img1: null,
 		img2: null,
+		preventCache: false,
 
 		fillInTemplate: function(){
+			// safari will cache the images and not fire an image onload event if
+			// there are only two images in the slideshow
+			if(dojo.render.html.safari && this.imgUrls.length == 2) {
+				this.preventCache = true;
+			}
 			dojo.html.setOpacity(this.img1, 0.9999);
 			dojo.html.setOpacity(this.img2, 0.9999);
 			with(this.imagesContainer.style){
@@ -48,14 +54,23 @@ dojo.widget.defineWidget(
 				height = this.imgHeight+"px";
 			}
 			if(this.imgUrls.length>1){
-				this.img2.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
+				this.img2.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++] + this.getUrlSuffix();
 				this.endTransition();
 			}else{
-				this.img1.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
+				this.img1.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++] + this.getUrlSuffix();
 			}
 		},
 
+		getUrlSuffix: function() {
+			if(this.preventCache) {
+				return "?ts=" + (new Date()).getTime();
+			} else {
+				return "";
+			}
+		},
+		
 		togglePaused: function(){
+			dojo.debug("pause");
 			if(this.stopped){
 				this.stopped = false;
 				this.backgroundImageLoaded();
@@ -91,7 +106,6 @@ dojo.widget.defineWidget(
 			var tmp = this.foreground;
 			this.foreground = this.background;
 			this.background = tmp;
-
 			// keep on truckin
 			this.loadNextImage();
 		},
