@@ -221,9 +221,15 @@ dojo.html.getComputedStyle = function(node, cssSelector, inValue){
 	if(!node || !node.style){
 		return inValue;
 	}else if(document.defaultView){ // W3, gecko, KHTML
-		try{			
+		try{
 			var cs = document.defaultView.getComputedStyle(node, "");
-			if (cs){ 
+			if (cs){
+				// mozilla segfaults when margin-* and node is removed from doc
+				// FIXME: need to figure out a if there is quicker workaround
+				if(dojo.dom.isDescendantOf(node.ownerDocument, node)){
+					dojo.debug("node ins'nt part of node.ownerDocument in dojo.html.getComputedStyle");
+					throw("");//bust us out of here
+				}
 				return cs.getPropertyValue(cssSelector);
 			} 
 		}catch(e){ // reports are that Safari can throw an exception above
