@@ -220,16 +220,14 @@ dojo.html.getComputedStyle = function(node, cssSelector, inValue){
 	var property = dojo.html.toCamelCase(cssSelector);
 	if(!node || !node.style){
 		return inValue;
-	}else if(document.defaultView){ // W3, gecko, KHTML
+				
+	}else if(document.defaultView &&
+			// mozilla segfaults when margin-* and node is removed from doc
+			// FIXME: need to figure out a if there is quicker workaround
+			dojo.dom.isDescendantOf(node, node.ownerDocument)){ // W3, gecko, KHTML
 		try{
 			var cs = document.defaultView.getComputedStyle(node, "");
 			if (cs){
-				// mozilla segfaults when margin-* and node is removed from doc
-				// FIXME: need to figure out a if there is quicker workaround
-				if(dojo.dom.isDescendantOf(node.ownerDocument, node)){
-					dojo.debug("node ins'nt part of node.ownerDocument in dojo.html.getComputedStyle");
-					throw("");//bust us out of here
-				}
 				return cs.getPropertyValue(cssSelector);
 			} 
 		}catch(e){ // reports are that Safari can throw an exception above
