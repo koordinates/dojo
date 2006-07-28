@@ -35,6 +35,7 @@ dojo.widget.defineWidget(
 			this._onUnLoadStack = [];
 			this._callOnUnLoad = false;
 			this.scriptScope; // undefined for now
+			this._ioBindObj;
 		},
 
 		postCreate: function(args, frag, parentComp){
@@ -83,11 +84,21 @@ dojo.widget.defineWidget(
 				this.loadContents();
 			}
 		},
+
+		abort: function(){
+			// summary
+			//	abort download of content
+			var bind = this._ioBindObj;
+			if(!bind || !bind.abort){ return; }
+			bind.abort();
+			delete this._ioBindObj;
+		},
 	
 		_downloadExternalContent: function(url, useCache) {
+			this.abort();
 			this._handleDefaults("Loading...", "onDownloadStart");
 			var self = this;
-			dojo.io.bind({
+			this._ioBindObj = dojo.io.bind({
 				url: url,
 				useCache: useCache,
 				preventCache: !useCache,
@@ -391,7 +402,7 @@ dojo.widget.defineWidget(
 		setContent: function(/*String or DOMNode*/ data){
 			// summary:
 			// 	Destroys old content and sets new content, and possibly initialize any widgets within 'data'
-
+			this.abort();
 			if(this._callOnUnLoad){ this.onUnLoad(); }// this tells a remote script clean up after itself
 			this._callOnUnLoad = true;
 	
@@ -403,7 +414,10 @@ dojo.widget.defineWidget(
 			}else{
 				// need to run splitAndFixPaths? ie. manually setting content
 				// adjustPaths is taken care of inside splitAndFixPaths
-				if(!data.xml){ data = this.splitAndFixPaths(data); }
+				if(!data.xml){ 
+					this.href = ""; // so we can refresh safely
+					data = this.splitAndFixPaths(data); 
+				}
 
 				this._setContent(data.xml);
 
