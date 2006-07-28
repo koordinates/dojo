@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    
+    <title>Lazy loading</title>
+    
+    <section>
+        <title>How to load *not* TreeNodes ?</title>
+        
+        <para>You can pass objects as element of <methodname>children</methodname> array, but you can also pass arrays.
+            If you pass objects, they are treated as data objects for TreeNodes, but arrays are treated as arguments for createWidget call.
+        E.g if you want to <code>createWidget("MyWidgetNodeType", {title:'somedata'})</code>, then you pass
+            ["MyWidgetNodeType, {title:'somedata'}] instead of just {title:'somedata'} from server (or in setChildren call).
+        </para>
+        
+        <para>Another option is to change <methodname>defaultChildWidgetType</methodname> property of the tree.
+            Helpful in case when you have your own widgets and use them elsewhere instead of TreeNode</para>
+    </section>
+    
+    
+</section>

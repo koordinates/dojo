@@ -162,7 +162,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO &&
 			// check if ONTO is allowed localy
 			!(
-			  !this.treeNode.actionIsDisabled(dojo.widget.TreeNodeV3.prototype.actions.ADDCHILD) // check dynamically cause may change w/o regeneration of dropTarget			
+			  !this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) // check dynamically cause may change w/o regeneration of dropTarget			
 			  && this.controller.canMove(sourceTreeNode, this.treeNode)
 			 )
 		) {

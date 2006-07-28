@@ -4,6 +4,7 @@ dojo.provide("dojo.widget.TreeWithNode");
 
 dojo.widget.TreeWithNode = {
 	
+	
 	// I need this to parse children
 	isContainer: true,
 	
@@ -100,9 +101,9 @@ dojo.widget.TreeWithNode = {
 		if (this.isTreeNode && !this.isFolder) {
 			//dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
 			this.setFolder();
+		} else if (this.isTreeNode) {
+			this.state = this.loadStates.LOADED;
 		}
-		
-		this.state = this.loadStates.LOADED;
 		
 		var hadChildren = this.children.length > 0;
 		
@@ -129,9 +130,8 @@ dojo.widget.TreeWithNode = {
 					// arguments for createWidget
 					child = this.children[i] = dojo.widget.createWidget(child, {}, this);
 				} else {
-					child = this.children[i] = dojo.widget.TreeNodeV3.prototype.createSimple(child, this);					
+					child = this.children[i] = dojo.widget[this.tree.defaultChildWidgetType].prototype.createSimple(child, this);					
 				}
-				//child = this.children[i] = dojo.widget.createWidget("TreeNodeV3", child);
 				
 				//dojo.debugShallow(child)
 				
