@@ -62,7 +62,7 @@ dojo.require("dojo.namespace");
 			"svgbutton": "dojo.widget.SvgButton",
 			"tabcontainer": "dojo.widget.TabContainer",
 			"taskbar": "dojo.widget.TaskBar",
-			"timepicker": "dojo.widget.TimerPicker",
+			"timepicker": "dojo.widget.TimePicker",
 			"titlepane": "dojo.widget.TitlePane",
 			"toggler": "dojo.widget.Toggler",
 			"toolbar": "dojo.widget.Toolbar",
