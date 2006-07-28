@@ -669,7 +669,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 
 	toString: function() {
-		return '[TreeNodeV3, '+this.title+']';
+		return '['+this.widgetType+', '+this.title+']';
 	}
 
 

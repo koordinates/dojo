@@ -46,6 +46,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	DNDMode: "",
 
+	defaultChildWidgetType: "TreeNodeV3",
+	
 	eventNamesDefault: {
 
 		// tree created.. Perform tree-wide actions if needed

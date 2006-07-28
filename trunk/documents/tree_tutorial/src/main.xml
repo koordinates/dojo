@@ -9,7 +9,8 @@
    <!ENTITY extensions SYSTEM "extensions.xml">     
    <!ENTITY features SYSTEM "features.xml">  
    <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
-    <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
+   <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
+   <!ENTITY lazy_loading SYSTEM "lazy_loading.xml">
 ]>
 <section>
     <title>Dojo Tree Tutorial</title>
@@ -24,6 +25,7 @@
     &performance;
     &performance_tricks;
     &components;
+    &lazy_loading;
     &tree_treenode;
     &extensions;
     &howto;
