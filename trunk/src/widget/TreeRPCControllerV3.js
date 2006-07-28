@@ -72,7 +72,6 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 		this.runRPC({		
 			url: this.getRPCUrl('move'),
-			/* I hitch to get this.loadOkHandler */
 			load: function(response){
 				success = this.processConfirmationResponse(
 					response,
@@ -102,7 +101,6 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 		this.runRPC({
 				url: this.getRPCUrl('detach'),
-				/* I hitch to get this.loadOkHandler */
 				load: function(response){
 					success = this.processConfirmationResponse(
 						response,
@@ -149,5 +147,39 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 				lock: [parent]
 			});
 
+	},
+	
+	
+	doClone: function(child, newParent, index, deep) {
+
+		var success;
+		
+		var params = {
+			child: this.getInfo(child),
+			newParent: this.getInfo(newParent),
+			index: index,
+			deep: deep ? true : false, // undefined -> false
+			tree: this.getInfo(child.tree)
+		}
+
+		this.runRPC({
+				url: this.getRPCUrl('clone'),
+				load: function(response){
+					success = this.processConfirmationResponse(
+						response,
+						dojo.widget.TreeLoadingControllerV3.prototype.doClone,
+						[child, newParent, index, deep]
+					) 
+				},
+				params: params,
+				lock: [node]
+		});
+		
+		return success;
+
 	}
+
+
+	
+	
 });
