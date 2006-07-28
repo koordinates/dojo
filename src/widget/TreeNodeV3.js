@@ -47,10 +47,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 
 
-	lazyInitEnabled: true,
+	tryLazyInit: true,
 
 
-	expandChildrenChecked: false,
 
 	expandNode: null,
 	labelNode: null,
@@ -63,7 +62,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return this.nodeType;
 	},
 	
-	cloneProperties: ["lazyInitEnabled","expandChildrenChecked","nodeType","objectId","object",
+	cloneProperties: ["tryLazyInit","nodeType","objectId","object",
 		   "title","isFolder","isExpanded","state"],
 	
 	
@@ -581,9 +580,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("expand in "+this);
 		
 		//dojo.profile.start("expand - lazy init "+this);
-		if (this.lazyInitEnabled && !this.expandChildrenChecked) {
+		if (this.tryLazyInit) {
 			this.setChildren(this.children);
-			this.expandChildrenChecked = true;
+			this.tryLazyInit = false;
 		}
 		
 		//dojo.profile.end("expand - lazy init "+this);
