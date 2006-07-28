@@ -12,8 +12,9 @@ var loadClass; var print; var load; var quit; var version; var Packages; var jav
 // TODO: not sure what we gain from the next line, anyone?
 //if (typeof loadClass == 'undefined') { dojo.raise("attempt to use Rhino host environment when no 'loadClass' global"); }
 
+dojo.locale = dojo.locale || (new java.util.Locale.getDefault()).toString().replace('_','-').toLowerCase();
 dojo.render.name = dojo.hostenv.name_ = 'rhino';
-dojo.hostenv.getVersion = function() {return version()};
+dojo.hostenv.getVersion = function() {return version();};
 
 // see comments in spidermonkey loadUri
 dojo.hostenv.loadUri = function(uri, cb){
@@ -31,17 +32,19 @@ dojo.hostenv.loadUri = function(uri, cb){
 		}
 		if(!found){
 			dojo.debug(uri+" does not exist");
-			if(cb){ cb(0); }
 			return 0;
 		}
-		var ok = load(uri);
+		if(cb){
+			var contents = readText(uri);
+			cb(eval('('+contents+')'));
+		}else{
+			var ok = load(uri);
+		}
 		// dojo.debug(typeof ok);
 		dojo.debug("rhino load('", uri, "') returned. Ok: ", ok);
-		if(cb){ cb(1); }
 		return 1;
 	}catch(e){
 		dojo.debug("rhino load('", uri, "') failed");
-		if(cb){ cb(0); }
 		return 0;
 	}
 }
@@ -101,7 +104,7 @@ dojo.hostenv.exit = function(exitcode){
 // do it by using java java.lang.Exception
 function dj_rhino_current_script_via_java(depth) {
     var optLevel = Packages.org.mozilla.javascript.Context.getCurrentContext().getOptimizationLevel();  
-    if (optLevel == -1) dojo.unimplemented("getCurrentScriptURI (determine current script path for rhino when interpreter mode)", '');
+    if (optLevel == -1){ dojo.unimplemented("getCurrentScriptURI (determine current script path for rhino when interpreter mode)", ''); }
     var caw = new java.io.CharArrayWriter();
     var pw = new java.io.PrintWriter(caw);
     var exc = new java.lang.Exception();
@@ -119,7 +122,7 @@ function dj_rhino_current_script_via_java(depth) {
     var fname = matches[3];
 	if(!fname){ fname = matches[1]; }
     // print("got fname '" + fname + "' from stack string '" + s + "'");
-    if (!fname) throw Error("could not find js file in printStackTrace output: " + s);
+    if (!fname){ throw Error("could not find js file in printStackTrace output: " + s); }
     //print("Rhino getCurrentScriptURI returning '" + fname + "' from: " + s); 
     return fname;
 }
@@ -151,7 +154,7 @@ function readText(uri){
 	var sb = new java.lang.StringBuffer();
 	var input = new java.io.BufferedReader(new java.io.FileReader(jf));
 	var line = "";
-	while((line = input.readLine()) != null){
+	while((line = input.readLine()) !== null){
 		sb.append(line);
 		sb.append(java.lang.System.getProperty("line.separator"));
 	}
@@ -168,7 +171,7 @@ if(!djConfig.libraryScriptUri.length){
 			print("\n");
 			print("we have no idea where Dojo is located from.");
 			print("Please try loading rhino in a non-interpreted mode or set a");
-			print("\n	djConfig.libraryScriptUri\n");
+			print("\n\tdjConfig.libraryScriptUri\n");
 			print("Setting the dojo path to './'");
 			print("This is probably wrong!");
 			print("\n");
