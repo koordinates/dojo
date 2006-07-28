@@ -327,9 +327,9 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	 */
 	getDropHandler: function(e, sourceTreeNode, targetParent, targetIndex) {
 		var handler;
-		
+		var _this = this;
 		handler = function () {
-			return this.controller.move(sourceTreeNode, targetParent, targetIndex);	
+			return _this.controller.move(sourceTreeNode, targetParent, targetIndex);	
 		}
 		
 		return handler;

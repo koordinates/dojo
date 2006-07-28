@@ -129,8 +129,8 @@ dojo.widget.TreeWithNode = {
 				if (child instanceof Array) {
 					// arguments for createWidget
 					child = this.children[i] = dojo.widget.createWidget(child, {}, this);
-				} else {
-					child = this.children[i] = dojo.widget[this.tree.defaultChildWidgetType].prototype.createSimple(child, this);					
+				} else {					
+					child = this.children[i] = this.tree.defaultChildClass.prototype.createSimple(child, this);					
 				}
 				
 				//dojo.debugShallow(child)
