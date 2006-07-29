@@ -203,7 +203,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("SetFolder in "+this);
 		this.isFolder = true;
 		this.viewSetExpand();
-		this.viewAddContainer(); // all folders have container.
+		if (!this.containerNode) { // maybe this node was unfolderized and still has container
+			this.viewAddContainer(); // all folders have container.
+		}
 		//dojo.debug("publish "+this.tree.eventNames.setFolder);
 		dojo.event.topic.publish(this.tree.eventNames.afterSetFolder, { source: this });
 	},
@@ -248,7 +250,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 	unsetFolder: function() {
 		this.isFolder = false;
-		this.viewSetExpand();
+		this.viewSetExpand();		
 		dojo.event.topic.publish(this.tree.eventNames.afterUnsetFolder, { source: this });
 	},
 	
@@ -326,11 +328,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug((new Error()).stack);
 					
 				
-		/*if (!this.tree) {
-			dojo.debug("NEVER HAPPENS?");
-			// special case, happens in markup only
-			this.tree = parent.tree;
-		} else*/
 		if (this.tree !== parent.tree) {
 			this.updateTree(parent.tree);
 		}
@@ -342,6 +339,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				parent.state = parent.loadStates.LOADED;
 			}
 		}
+		
 		
 		var siblingsCount = parent.children.length;
 		
@@ -362,7 +360,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				parent.children[siblingsCount-2].viewUpdateLayout();			
 			}
 		} else if (parent.isTreeNode) {
-			// added as the first child 
+			// added as the first child
+			//dojo.debug("added as first");
 			parent.viewSetHasChildren();
 		}
 		
@@ -441,7 +440,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.containerNode = this.tree.containerNodeTemplate.cloneNode(true);
 		this.domNode.appendChild(this.containerNode);
 	},
-	
+	/*
+	viewRemoveContainer: function() {
+		// make controller only if children exist
+		this.domNode.removeChild(this.containerNode);
+		this.containerNode = null;
+	},
+	*/
 	
 	viewAddLayout: function() {
 		//dojo.profile.start("viewAddLayout");
@@ -525,8 +530,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	/* node does not leave tree */
 	doDetach: function() {
 		//dojo.debug("doDetach in "+this+" parent "+this.parent+" class "+dojo.html.getClass(this.domNode));
-		
+				
 		var parent = this.parent;
+		
+		//dojo.debug(parent.containerNode.style.display)
 		
 		if (!parent) return;
 		
@@ -538,6 +545,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		dojo.widget.DomWidget.prototype.removeChild.call(parent, this);
 		
 		var siblingsCount = parent.children.length;
+		
+		//dojo.debug("siblingsCount "+siblingsCount);
 		
 		if (siblingsCount > 0) {
 			if (index == 0) {	// deleted first node => update new first
@@ -553,6 +562,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if (this.tree.unsetFolderOnEmpty && !parent.children.length && parent.isTreeNode) {
 			parent.unsetFolder();
 		}		
+		
+		//dojo.debug(parent.containerNode.style.display)
 		
 		this.parent = null;
 	},

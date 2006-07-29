@@ -329,6 +329,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var handler;
 		var _this = this;
 		handler = function () {
+			//dojo.debug("Move "+sourceTreeNode+" to parent "+targetParent+":"+targetIndex);
 			return _this.controller.move(sourceTreeNode, targetParent, targetIndex);	
 		}
 		

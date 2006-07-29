@@ -22,6 +22,7 @@
 </head>
 <body>
 
+<h3>FIXME: make it work</h3>
 
 <h3>Typed Drag'n'drop. Some nodes from firstTree have disabled actions.</h3>
 
@@ -30,7 +31,7 @@
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 <div dojoType="TreeDNDControllerV3" controller="controller" widgetId="dndcontroller"></div>	
-<div dojoType="TreeSelectorV3" widgetId="selector" dndController="dndcontroller"></div>	
+<div dojoType="TreeSelectorV3" widgetId="selector" listeners="dndcontroller"></div>	
 
 MyTree
 <div dojoType="TreeV3" expandLevel="2" DNDMode="between" toggle="fade" DNDAcceptTypes="firstTree" widgetId="firstTree" controller="controller"

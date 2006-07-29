@@ -298,7 +298,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 	doMove: function(child, newParent, index) {
-		//dojo.debug("MOVE "+child.tree.move);
+		//dojo.debug("MOVE "+child);
 		child.tree.move(child, newParent, index);
 
 		return true;
