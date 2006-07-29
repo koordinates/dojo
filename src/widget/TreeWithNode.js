@@ -191,7 +191,7 @@ dojo.widget.TreeWithNode = {
 			index = this.children.length;
 		}
 		
-		//dojo.debug("doAddChild "+index+" called for "+child+" children "+this.children);
+		//dojo.debug("doAddChild "+index+" called for "+this+" child "+child+" existing children "+(this.children.length ? this.children : "<no children>"));
 				
 		if (!child.isTreeNode){
 			dojo.raise("You can only add TreeNode widgets to a "+this.widgetType+" widget!");

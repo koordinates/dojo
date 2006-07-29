@@ -221,7 +221,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	initialize: function(args){
 		
-		dojo.debug(args.defaultChildClass ? true : false)
+		//dojo.debug(args.defaultChildClass ? true : false)
 		
 		if (!args.defaultChildClass) {
 			this.defaultChildClass = dojo.widget.TreeNodeV3;
@@ -308,6 +308,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 		//var parent = child.parent;
 		child.doDetach();
+
+		//dojo.debug("addChild "+child+" to "+newParent+" at "+index);
 
 		newParent.addChild(child, index);
 	},
