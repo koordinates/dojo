@@ -11,7 +11,7 @@ dojo.io.createIFrame = function(fname, onloadstr, uri){
 	var r = dojo.render.html;
 	var cframe = null;
 	var turi = uri||dojo.uri.dojoUri("iframe_history.html?noInit=true");
-	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? "<iframe name='"+fname+"' src='"+turi+"' onload='"+onloadstr+"'>" : "iframe";
+	var ifrstr = ((r.ie)&&(dojo.render.os.win)) ? '<iframe name="'+fname+'" src="'+turi+'" onload="'+onloadstr+'">' : 'iframe';
 	cframe = document.createElement(ifrstr);
 	with(cframe){
 		name = fname;
@@ -20,8 +20,12 @@ dojo.io.createIFrame = function(fname, onloadstr, uri){
 	}
 	dojo.body().appendChild(cframe);
 	window[fname] = cframe;
+
 	with(cframe.style){
-		position = "absolute";
+		if(!r.safari){
+			//We can't change the src in Safari 2.0.3 if absolute position. Bizarro.
+			position = "absolute";
+		}
 		left = top = "0px";
 		height = width = "1px";
 		visibility = "hidden";
@@ -39,6 +43,7 @@ dojo.io.createIFrame = function(fname, onloadstr, uri){
 		dojo.io.setIFrameSrc(cframe, turi, true);
 		cframe.onload = new Function(onloadstr);
 	}
+	
 	return cframe;
 }
 
