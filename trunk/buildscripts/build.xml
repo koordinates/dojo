@@ -571,9 +571,11 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 
 		<delete file="${release_dir}/source.__package__.js"/>
 
-		<!-- we copy over iframe_history.html here just in case this is a truly
+		<!-- we copy over iframe files here just in case this is a truly
 		stand-alone build that isn't being kicked off via release -->
 		<copy file="../iframe_history.html" todir="${release_dir}/" />
+		<copy file="../iframe_xip_client.html" todir="${release_dir}/" />
+		<copy file="../iframe_xip_server.html" todir="${release_dir}/" />
 		
 		<!-- copy our dojo.storage and dojo.flash SWFs -->
 		<copy todir="${release_dir}/" preservelastmodified="true">
@@ -691,6 +693,8 @@ internTemplateStrings(dojo.getProperty("dojoLoader"), dojo.getProperty("release_
 		<antcall target="xdgenRelease"/>
 		
 		<copy overwrite="true" file="../iframe_history.html" todir="${release_dir}/"  preservelastmodified="true" />
+		<copy overwrite="true" file="../iframe_xip_client.html" todir="${release_dir}/"  preservelastmodified="true" />
+		<copy overwrite="true" file="../iframe_xip_server.html" todir="${release_dir}/"  preservelastmodified="true" />
 
 		<copy file="${root}/LICENSE" todir="${release_dir}/"  preservelastmodified="true" />
 		<copy file="${root}/README" todir="${release_dir}/"  preservelastmodified="true" />
