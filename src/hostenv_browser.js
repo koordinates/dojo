@@ -145,7 +145,13 @@ dojo.hostenv.getXmlhttpObject = function(){
  * @param fail_ok Default false. If fail_ok and !async_cb and loading fails,
  * return null instead of throwing.
  */
+dojo.hostenv._blockAsync = false;
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
+	// need to block async callbacks from snatching this thread as the result 
+	// of an async callback might call another sync XHR, this hangs khtml forever
+	// hostenv._blockAsync must also be checked in BrowserIO's watchInFlight()
+	// NOTE: must be declared before scope switches ie. this.getXmlhttpObject()
+	if(!async_cb){ this._blockAsync = true; }
 
 	var http = this.getXmlhttpObject();
 
@@ -156,11 +162,18 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 	}
 
 	if(async_cb){
+		var _this = this, timer = null, gbl = dojo.global();
+		var xhr = dojo.evalObjPath("dojo.io.XMLHTTPTransport");
 		http.onreadystatechange = function(){
-			if(4==http.readyState){
-				if(isDocumentOk(http)){
-					// dojo.debug("LOADED URI: "+uri);
-					async_cb(http.responseText);
+			if(timer){ gbl.clearTimeout(timer); timer = null; }
+			if(_this._blockAsync || (xhr && xhr._blockAsync)){
+				timer = gbl.setTimeout(function () { http.onreadystatechange.apply(this); }, 10);
+			}else{
+				if(4==http.readyState){
+					if(isDocumentOk(http)){
+						// dojo.debug("LOADED URI: "+uri);
+						async_cb(http.responseText);
+					}
 				}
 			}
 		}
@@ -179,6 +192,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 			throw err;
 		}
 	}catch(e){
+		this._blockAsync = false;
 		if((fail_ok)&&(!async_cb)){
 			return null;
 		}else{
@@ -186,6 +200,7 @@ dojo.hostenv.getText = function(uri, async_cb, fail_ok){
 		}
 	}
 
+	this._blockAsync = false;
 	return http.responseText;
 }
 
