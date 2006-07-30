@@ -5,7 +5,7 @@
 <head>
 	<title></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
-	
+	<script type="text/javascript" src="isAllowed.js"></script>
 	<!--
 	BY DEFAULT THIS FILE DOES NOT WORK SO THAT YOU DON'T ACCIDENTALLY EXPOSE
 	ALL OF YOUR XHR-ENABLED SERVICES ON YOUR SITE. 
@@ -18,8 +18,11 @@
 	
 	Return true out of the function if you want to allow the cross-domain request.
 	
-	DON'T DEFINE THIS FUNCTION IN THIS FILE! Define it in a separate file and include
-	it in this page with a script tag that has a src attribute pointing to the file.
+	DON'T DEFINE THIS FUNCTION IN THIS FILE! Define it in a separate file called isAllowed.js
+	and include it in this page with a script tag that has a src attribute pointing to the file.
+	See the very first script tag in this file for an example. You do not have to place the
+	script file in the same directory as this file, just update the path above if you move it
+	somewhere else.
 	
 	Customize the isAllowedRequest function to restrict what types of requests are allowed
 	for this server. The request object has the following properties:
@@ -113,8 +116,6 @@
 				sendXhr();
 				setClientUrl("ok");
 				break;
-			default:
-				throw "Unknown xip command: [" + command  + "], whole message: " + urlEncodedMessage;
 		}
 	}
 
@@ -162,7 +163,12 @@
 			clientUrl += ":" + message;
 		}
 
-		parent.location.replace(clientUrl);
+		//Safari won't let us replace across domains.
+		if(navigator.userAgent.indexOf("Safari") == -1){
+			parent.location.replace(clientUrl);
+		}else{
+			parent.location = clientUrl;
+		}
 	}
 
 	function sendXhr(){
