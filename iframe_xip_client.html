@@ -131,8 +131,6 @@
 				xipResponseMessage += urlEncodedMessage;
 				parent.dojo.io.XhrIframeProxy.receive(xipStateId, xipResponseMessage);
 				break;
-			default:
-				throw "Unknown xip command: [" + command  + "], whole message: " + urlEncodedMessage;
 		}
 	}
 	
@@ -179,7 +177,13 @@
 			serverUrl += ":" + message;
 		}
 
-		xipServerWindow.location.replace(serverUrl);
+		//Safari won't let us replace across domains.
+		if(navigator.userAgent.indexOf("Safari") == -1){
+			xipServerWindow.location.replace(serverUrl);
+		}else{
+			xipServerWindow.location = serverUrl;
+		}
+
 	}
 	// -->
 	</script>
