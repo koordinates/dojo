@@ -2,6 +2,7 @@
 dojo.provide("dojo.widget.TreeSelectorV3");
 
 dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.TreeCommon");
 
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeSelectorV3");

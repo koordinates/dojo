@@ -556,7 +556,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				parent.children[siblingsCount-1].viewUpdateLayout();		
 			}
 		} else {
-			parent.viewSetHasChildren();
+			if (parent.isTreeNode) {
+				parent.viewSetHasChildren();
+			}
 		}
 				
 		if (this.tree.unsetFolderOnEmpty && !parent.children.length && parent.isTreeNode) {
