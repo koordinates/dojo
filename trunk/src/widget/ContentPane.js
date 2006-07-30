@@ -119,7 +119,7 @@ dojo.widget.defineWidget(
 						self._handleDefaults.call(self, e, "onDownloadError");
 						self.onLoad();
 					}
-				})
+				}, useCache)
 			);
 		},
 	
@@ -516,7 +516,7 @@ dojo.widget.defineWidget(
 						},
 						"mimetype": "text/plain",
 						"sync":     true
-					}));
+					}, this.cacheContent));
 					code += tmp;
 				}else{
 					code += scripts[i];
