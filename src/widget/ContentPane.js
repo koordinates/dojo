@@ -18,13 +18,15 @@ dojo.widget.defineWidget(
 		isContainer: true,
 
 		// loading options
-		adjustPaths: true,		// fix relative paths in content to fit in this page
-		href: "",				// only usable on construction, use setUrl or setContent after that
+		adjustPaths: 	true,	// fix relative paths in content to fit in this page
+		href: 			"",		// only usable on construction, use setUrl or setContent after that
 		extractContent: true,	// extract visible content from inside of <body> .... </body>
-		parseContent: true,		// construct all widgets that is in content
-		cacheContent: true,
-		preload: false,			// force load of data even if pane is hidden
-		refreshOnShow: false,	// use with cacheContent: false
+		parseContent: 	true,	// construct all widgets that is in content
+		cacheContent: 	true,
+		preventCache: 	null,	// if set, overrides cacheContent
+		useCache:		null,	// if set, overrides cacheContent
+		preload: 		false,	// force load of data even if pane is hidden
+		refreshOnShow:	false,	// use with cacheContent: false
 		handler: "",			// generate pane content from a java function
 		executeScripts: false,	// if true scripts in content will be evaled after content is innerHTML'ed
 
@@ -98,27 +100,33 @@ dojo.widget.defineWidget(
 			this.abort();
 			this._handleDefaults("Loading...", "onDownloadStart");
 			var self = this;
-			this._ioBindObj = dojo.io.bind({
-				url: url,
-				useCache: useCache,
-				preventCache: !useCache,
-				mimetype: "text/html",
-				load: function(type, data, xhr){
-					self.onDownloadEnd.call(self, url, data);
-				},
-				error: function(type, err, xhr){
-					// XHR insnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
-					var e = {
-						responseText: xhr.responseText,
-						status: xhr.status,
-						statusText: xhr.statusText,
-						responseHeaders: xhr.getAllResponseHeaders(),
-						_text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
-					};
-					self._handleDefaults.call(self, e, "onDownloadError");
-					self.onLoad();
-				}
-			});
+			this._ioBindObj = dojo.io.bind(
+				this._cacheSetting({
+					url: url,
+					mimetype: "text/html",
+					load: function(type, data, xhr){
+						self.onDownloadEnd.call(self, url, data);
+					},
+					error: function(type, err, xhr){
+						// XHR insnt a normal JS object, IE doesnt have prototype on XHR so we cant extend it or shallowCopy it
+						var e = {
+							responseText: xhr.responseText,
+							status: xhr.status,
+							statusText: xhr.statusText,
+							responseHeaders: xhr.getAllResponseHeaders(),
+							_text: "Error loading '" + url + "' (" + xhr.status + " "+  xhr.statusText + ")"
+						};
+						self._handleDefaults.call(self, e, "onDownloadError");
+						self.onLoad();
+					}
+				})
+			);
+		},
+	
+		_cacheSetting: function(bindObj, useCache){
+			bindObj.preventCache = ((typeof this.preventCache != "null") ? this.preventCache : !useCache);
+			bindObj.useCache = (typeof this.useCache != "null") ? this.useCache : useCache;
+			return bindObj;
 		},
 
 		// called when setContent is finished
@@ -497,10 +505,8 @@ dojo.widget.defineWidget(
 			var tmp = "", code = "";
 			for(var i = 0; i < scripts.length; i++){
 				if(scripts[i].path){ // remotescript
-					dojo.io.bind({
+					dojo.io.bind(this._cacheSetting({
 						"url": 		scripts[i].path,
-						"useCash":	this.cacheContent,
-						"preventCache": !this.cacheContent,
 						"load":     function(type, scriptStr){
 								dojo.lang.hitch(self, tmp = scriptStr);
 						},
@@ -510,7 +516,7 @@ dojo.widget.defineWidget(
 						},
 						"mimetype": "text/plain",
 						"sync":     true
-					});
+					}));
 					code += tmp;
 				}else{
 					code += scripts[i];
