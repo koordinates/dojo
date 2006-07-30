@@ -46,7 +46,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	DNDMode: "",
 
-	defaultChildClass: null,
+	defaultChildWidget: null,
 	
 	eventNamesDefault: {
 
@@ -221,12 +221,12 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	initialize: function(args){
 		
-		//dojo.debug(args.defaultChildClass ? true : false)
+		//dojo.debug(args.defaultChildWidget ? true : false)
 		
-		if (!args.defaultChildClass) {
-			this.defaultChildClass = dojo.widget.TreeNodeV3;
+		if (!args.defaultChildWidget) {
+			this.defaultChildWidget = dojo.widget.TreeNodeV3;
 		} else {
-			this.defaultChildClass = dojo.lang.getObjPathValue(args.defaultChildClass);
+			this.defaultChildWidget = dojo.lang.getObjPathValue(args.defaultChildWidget);
 		}
 		
 		this.adjustEventNames();
