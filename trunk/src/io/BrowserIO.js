@@ -298,33 +298,38 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.watchInFlight = function(){
 		var now = null;
-		for(var x=this.inFlight.length-1; x>=0; x--){
-			var tif = this.inFlight[x];
-			if(!tif || tif.http._aborted || !tif.http.readyState){
-				this.inFlight.splice(x, 1); continue; 
-			}
-			if(4==tif.http.readyState){
-				// remove it so we can clean refs
-				this.inFlight.splice(x, 1);
-				doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
-			}else if (tif.startTime){
-				//See if this is a timeout case.
-				if(!now){
-					now = (new Date()).getTime();
+		// make sure sync calls stay thread safe, if this callback is called during a sync call
+		// and this results in another sync call before the first sync call ends the browser hangs
+		if(!dojo.hostenv._blockAsync && !_this._blockAsync){
+			for(var x=this.inFlight.length-1; x>=0; x--){
+				var tif = this.inFlight[x];
+				if(!tif || tif.http._aborted || !tif.http.readyState){
+					this.inFlight.splice(x, 1); continue; 
 				}
-				if(tif.startTime + (tif.req.timeoutSeconds * 1000) < now){
-					//Stop the request.
-					if(typeof tif.http.abort == "function"){
-						tif.http.abort();
-					}
-
+				if(4==tif.http.readyState){
 					// remove it so we can clean refs
 					this.inFlight.splice(x, 1);
-					tif.req[(typeof tif.req.timeout == "function") ? "timeout" : "handle"]("timeout", null, tif.http, tif.req);
+					doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
+				}else if (tif.startTime){
+					//See if this is a timeout case.
+					if(!now){
+						now = (new Date()).getTime();
+					}
+					if(tif.startTime + (tif.req.timeoutSeconds * 1000) < now){
+						//Stop the request.
+						if(typeof tif.http.abort == "function"){
+							tif.http.abort();
+						}
+	
+						// remove it so we can clean refs
+						this.inFlight.splice(x, 1);
+						tif.req[(typeof tif.req.timeout == "function") ? "timeout" : "handle"]("timeout", null, tif.http, tif.req);
+					}
 				}
 			}
 		}
 
+		clearTimeout(this.inFlightTimer);
 		if(this.inFlight.length == 0){
 			this.inFlightTimer = null;
 			return;
@@ -385,7 +390,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			kwArgs.method = "get";
 		}
 
-		// guess the multipart value		
+		// guess the multipart value
 		if(kwArgs.method.toLowerCase() == "get"){
 			// GET cannot use multipart
 			kwArgs.multipart = false;
@@ -502,6 +507,9 @@ dojo.io.XMLHTTPTransport = new function(){
 				"startTime": kwArgs.timeoutSeconds ? (new Date()).getTime() : 0
 			});
 			this.startWatchingInFlight();
+		}else{
+			// block async callbacks until sync is in, needed in khtml, others?
+			_this._blockAsync = true;
 		}
 
 		if(kwArgs.method.toLowerCase() == "post"){
@@ -541,6 +549,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		if( !async ) {
 			doLoad(kwArgs, http, url, query, useCache);
+			_this._blockAsync = false;
 		}
 
 		kwArgs.abort = function(){
