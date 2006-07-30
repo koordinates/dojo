@@ -374,7 +374,6 @@ dojo.widget.defineWidget(
 	
 		
 		_setContent: function(cont){
-			// remove old children from current content
 			this.destroyChildren();
 	
 			// remove old stylenodes from HEAD
@@ -386,6 +385,9 @@ dojo.widget.defineWidget(
 			this._styleNodes = [];
 	
 			var node = this.containerNode || this.domNode;
+			try{
+				dojo.event.browser.clean(node.firstChild);
+			}catch(e){}
 			try{
 				if(typeof cont != "string"){
 					node.innerHTML = "";
@@ -432,7 +434,7 @@ dojo.widget.defineWidget(
 	
 				if(this.parseContent){
 					for(var i = 0; i < data.requires.length; i++){
-						try{ 
+						try{
 							eval(data.requires[i]);
 						} catch(e){
 							e._text = "Error in packageloading calls, "+e.description;
@@ -498,6 +500,7 @@ dojo.widget.defineWidget(
 					dojo.io.bind({
 						"url": 		scripts[i].path,
 						"useCash":	this.cacheContent,
+						"preventCache": !this.cacheContent,
 						"load":     function(type, scriptStr){
 								dojo.lang.hitch(self, tmp = scriptStr);
 						},
