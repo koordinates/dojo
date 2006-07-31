@@ -54,7 +54,7 @@ dojo.widget.Parse = function(fragment){
 						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
 						comps.push(ret);
 					}else{
-						if(dojo.lang.isString(ltn) && nsName && djConfig.namespaces[nsName]){
+						if(dojo.lang.isString(ltn) && nsName && dojo._namespaces[nsName]){
 							dojo.debug("no tag handler registered for type: ", ltn);
 						} 
 					}
