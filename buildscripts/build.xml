@@ -610,13 +610,21 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 				</tokenfilter>
 			</filterchain>
 		</copy>
-		<java jar="./lib/js.jar" fork="true" dir="..">
+		<java jar="./lib/js.jar" fork="true" dir=".." output="${release_dir}/generatedLocales.tmp.js" errorProperty="flattenErrors">
 			<arg value="./buildscripts/flattenResources.js" />
 			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg value="./buildscripts/${release_dir}/nls" />
+			<arg value="dojo" />
 			<arg value="en-us,hi,nl,ja-jp" /> <!-- FIXME -->
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
+		<concat destfile="${release_dir}/generatedLocales.tmp.js" append="true">;</concat>
+		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/dojo.js" append="true">
+			<header>var dj_generatedLocales=</header>
+			<filelist dir="${release_dir}" files="generatedLocales.tmp.js" />
+			<footer file="resourceBootstrap.js" trimLeading="true"></footer>
+		</concat>
+		<delete file="${release_dir}/generatedLocales.tmp.js" />
 		<delete file="${release_dir}/localizations.tmp.js" />
 	</target>
 
