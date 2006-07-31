@@ -34,6 +34,8 @@ dojo.widget.defineWidget(
 	parentPopup: null,
 	popupIndex: 0,
 
+	aroundBox: dojo.html.boxSizing.BORDER_BOX, //by default, popup around the BORDER box of the aroundNode in open()
+
 	processKey: function(evt){
 		return false;
 	},
@@ -129,7 +131,7 @@ dojo.widget.defineWidget(
 			if(!aroundOrient){ //By default, attempt to open above the aroundNode, or below
 				aroundOrient = {'BL': 'TL', 'TL': 'BL'};
 			}
-			dojo.html.placeOnScreenAroundElement(this.domNode, node, padding, true, aroundOrient);
+			dojo.html.placeOnScreenAroundElement(this.domNode, node, padding, this.aroundBox, aroundOrient);
 		}else{
 			if(!orient){ orient = 'TL,TR,BL,BR';}
 			dojo.html.placeOnScreen(this.domNode, x, y, padding, true, orient);

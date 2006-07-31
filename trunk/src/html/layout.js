@@ -51,12 +51,39 @@ dojo.html.setStyleAttributes = function(node, attributes) {
 	} 
 }
 
-dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
+dojo.html.boxSizing = {
+	MARGIN_BOX: "margin-box",
+	BORDER_BOX: "border-box",
+	PADDING_BOX: "padding-box",
+	CONTENT_BOX: "content-box"
+};
+
+dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, boxType){
 	node = dojo.byId(node, node.ownerDocument);
 	var ret = {
 		x: 0,
 		y: 0
 	};
+
+	var bs = dojo.html.boxSizing;
+	if(!boxType) { boxType = bs.CONTENT_BOX; }
+	var nativeBoxType = 1; //PADDING_BOX
+	var targetBoxType;
+	switch(boxType){
+		case bs.MARGIN_BOX:
+			targetBoxType = 3;
+			break;
+		case bs.BORDER_BOX:
+			targetBoxType = 2;
+			break;
+		case bs.PADDING_BOX:
+		default:
+			targetBoxType = 1;
+			break;
+		case bs.CONTENT_BOX:
+			targetBoxType = 0;
+			break;
+	}
 
 	var h = dojo.render.html;
 	var db = document["body"]||document["documentElement"];
@@ -66,6 +93,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 			ret.x = left-2;
 			ret.y = top-2;
 		}
+		nativeBoxType = 2; //in IE, getBoundingClientRect is the margin Box coordinate
 	}else if(document.getBoxObjectFor){
 		// mozilla
 		try{
@@ -77,7 +105,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 		}
 	}else{
 		if(node["offsetParent"]){
-			var endNode;		
+			var endNode;
 			// in Safari, if the node is an absolutely positioned child of
 			// the body and the body has a margin the offset of the child
 			// and the body contain the body's margins, so we need to end
@@ -90,24 +118,30 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 				endNode = db.parentNode;
 			}
 
+			//TODO: set correct nativeBoxType for safari/konqueror
+			if(h.opera){
+				nativeBoxType = 2; //in opera the calcuated value is for border box
+			}
+
 			if(node.parentNode != db){
 				var nd = node;
 //				if(dojo.render.html.opera){ nd = db; }
 				ret.x -= dojo.html.sumAncestorProperties(nd, "scrollLeft");
 				ret.y -= dojo.html.sumAncestorProperties(nd, "scrollTop");
 			}
+			var curnode = node;
 			do{
-				var n = node["offsetLeft"];
+				var n = curnode["offsetLeft"];
 				//FIXME: ugly hack to workaround the submenu in 
 				//popupmenu2 does not shown up correctly in opera. 
 				//Someone have a better workaround?
-				if(!dojo.render.html.opera || n>0){
+				if(!h.opera || n>0){
 					ret.x += isNaN(n) ? 0 : n;
 				}
-				var m = node["offsetTop"];
+				var m = curnode["offsetTop"];
 				ret.y += isNaN(m) ? 0 : m;
-				node = node.offsetParent;
-			}while((node != endNode)&&(node != null));
+				curnode = curnode.offsetParent;
+			}while((curnode != endNode)&&(curnode != null));
 		}else if(node["x"]&&node["y"]){
 			ret.x += isNaN(node.x) ? 0 : node.x;
 			ret.y += isNaN(node.y) ? 0 : node.y;
@@ -119,6 +153,19 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 		var scroll = dojo.html.getScroll();
 		ret.y += scroll.top;
 		ret.x += scroll.left;
+	}
+
+	var extentFuncArray=[dojo.html.getPaddingExtent, dojo.html.getBorderExtent, dojo.html.getMarginExtent];
+	if(nativeBoxType > targetBoxType){
+		for(var i=targetBoxType;i<nativeBoxType;++i){
+			ret.y += extentFuncArray[i](node, 'top');
+			ret.x += extentFuncArray[i](node, 'left');
+		}
+	}else if(nativeBoxType < targetBoxType){
+		for(var i=targetBoxType;i>nativeBoxType;--i){
+			ret.y -= extentFuncArray[i-1](node, 'top');
+			ret.x -= extentFuncArray[i-1](node, 'left');
+		}
 	}
 
 	ret.top = ret.y;
@@ -178,13 +225,6 @@ dojo.html.getPadBorder = function(node){
 	return { width: pad.width + border.width, height: pad.height + border.height };
 }
 
-dojo.html.boxSizing = {
-	MARGIN_BOX: "margin-box",
-	BORDER_BOX: "border-box",
-	PADDING_BOX: "padding-box",
-	CONTENT_BOX: "content-box"
-};
-
 dojo.html.getBoxSizing = function(node){
 	var h = dojo.render.html;
 	var bs = dojo.html.boxSizing;
@@ -210,6 +250,15 @@ dojo.html.isBorderBox = function(node){
 dojo.html.getBorderBox = function(node){
 	node = dojo.byId(node);
 	return { width: node.offsetWidth, height: node.offsetHeight };
+}
+
+dojo.html.getPaddingBox = function(node){
+	var box = dojo.html.getBorderBox(node);
+	var border = dojo.html.getBorder(node);
+	return {
+		width: box.width - border.width,
+		height:box.height - border.height
+	};
 }
 
 dojo.html.getContentBox = function(node){
@@ -264,6 +313,20 @@ dojo.html.setMarginBox = function(node, args){
 	return ret;
 }
 
+dojo.html.getElementBox = function(node, type){
+	var bs = dojo.html.boxSizing;
+	switch(type){
+		case bs.MARGIN_BOX:
+			return dojo.html.getMarginBox(node);
+		case bs.BORDER_BOX:
+			return dojo.html.getBorderBox(node);
+		case bs.PADDING_BOX:
+			return dojo.html.getPaddingBox(node);
+		case bs.CONTENT_BOX:
+		default:
+			return dojo.html.getContentBox(node);
+	}
+}
 // in: coordinate array [x,y,w,h] or dom node
 // return: coordinate object
 dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, includeScroll) {
