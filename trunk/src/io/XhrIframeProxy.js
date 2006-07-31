@@ -9,10 +9,6 @@ dojo.require("dojo.html.iframe");
 dojo.require("dojo.dom");
 
 /*
-TODO: Need to be able to pass back errors. Right now only load callbacks supported.
-TODO: make sure the browserIO timeout can be used to stop the request,
-specifically, calling abort when the timeout happens. Looking at the code,
-it should work, but verify.
 TODO: This page might generate a "loading unsecure items on a secure page"
 popup in browsers if it is served on a https URL, given that we are not
 setting a src on the iframe element.
@@ -33,7 +29,7 @@ dojo.io.XhrIframeProxy = new function(){
 			stateId: stateId,
 			clientFrame: dojo.io.createIFrame(stateId,
 				"dojo.io.XhrIframeProxy.clientFrameLoaded('" + stateId + "');",
-				dojo.uri.dojoUri("iframe_xip_client.html"))
+				dojo.uri.dojoUri("src/io/xip_client.html"))
 		};
 	}
 	

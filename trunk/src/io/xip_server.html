@@ -37,7 +37,7 @@
 	<script type="text/javascript">
 	// <!--
 	/*
-	See iframe_xip_client.html for more info on the xip fragment identifier protocol.
+	See xip_client.html for more info on the xip fragment identifier protocol.
 	
 	This page uses Dojo to do the actual XMLHttpRequest (XHR) to the server, but you could
 	replace the Dojo references with your own XHR code if you like. But keep the other xip
@@ -48,7 +48,7 @@
 	}
 	// -->
 	</script>
-	<script type="text/javascript" src="dojo.js"></script>
+	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
 	// <!--
 	dojo.require("dojo.io.*");
@@ -70,7 +70,7 @@
 		xipServerInit();
 		xipClientUrl = decodeURIComponent(window.location.hash.substring(1, window.location.hash.length));
 		
-		setInterval(pollHash, 20);
+		setInterval(pollHash, 10);
 		setClientUrl("loaded");
 	}
 
@@ -112,9 +112,9 @@
 				setClientUrl("ok");
 				break;
 			case "end":
+				setClientUrl("ok");
 				xipRequestMessage += urlEncodedMessage;
 				sendXhr();
-				setClientUrl("ok");
 				break;
 		}
 	}
@@ -128,7 +128,7 @@
 		var resIndex = 0;
 
 		while((resData.length - resIndex) + urlLength > xipUrlLimit){
-			xipResponseParts.push(resData.substring(resIndex, partLength));
+			xipResponseParts.push(resData.substring(resIndex, resIndex + partLength));
 			resIndex += partLength;
 		}
 		xipResponseParts.push(resData.substring(resIndex, resData.length));
@@ -208,7 +208,7 @@
 		if(isAllowedRequest(request)){
 			var kwArgs = {
 				url: request.uri,
-				load: function(type, data, xhr, args){
+				handle: function(type, data, xhr, args){
 					/* Need to pull off and return the following data:
 						- responseHeaders
 						- status
@@ -216,16 +216,22 @@
 						- responseText
 					*/
 					var response = {};
-					var allHeaders = xhr.getAllResponseHeaders();
-					if(allHeaders){
-						response.responseHeaders = allHeaders;
+					
+					if(xhr.getAllResponseHeaders){
+						var allHeaders = xhr.getAllResponseHeaders();
+						if(allHeaders){
+							response.responseHeaders = allHeaders;
+						}
 					}
+					
 					if(xhr.status == 0 || xhr.status){
 						response.status = xhr.status;
 					}
+					
 					if(xhr.statusText){
 						response.statusText = xhr.statusText;
 					}
+					
 					if(data){
 						response.responseText = data;
 					}
@@ -253,7 +259,7 @@
 	</script>
 </head>
 <body>
-	<h4>The Dojo Toolkit -- iframe_xip_server.html</h4>
+	<h4>The Dojo Toolkit -- xip_server.html</h4>
 
 	<p>This file is used for Dojo's XMLHttpRequest Iframe Proxy. This is the the file
 	that should go on the server that will actually be doing the XHR request.</p>

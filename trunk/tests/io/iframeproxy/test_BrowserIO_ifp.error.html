@@ -33,20 +33,13 @@
 				
 				var bindArgs = {
 					iframeProxyUrl: "../../../src/io/xip_server.html",
-					url: "../../tests/io/test_BrowserIO_data.txt",
-					load: function(type, data, evt){
-						dojo.debug(data);
+					url: "../../tests/io/DOES_NOT_EXIST.txt",
+					handle: function(type, data, evt){
+						dojo.debug("callback type: [" + type + "], data: [" + data + "], evt: [" + evt + "]");
 						// we could just set mimetype: "text/javascript" to
 						// have it auto-eval, but that's not as interesting
 						// dj_eval(data); 
 					},
-					backButton: function(){
-						alert("we intercepted the back button");
-					},
-					forwardButton: function(){
-						alert("onward ho!");
-					},
-					changeURL: "foo"+(new Date()).getTime()
 				};
 				var canBind = dojo.io.bind(bindArgs);
 			}
@@ -58,7 +51,7 @@
 		<p>This test will not work in Safari if it is loaded from local disk. Apparently
 		Safari won't let us change the iframe src to a local file.</p>
 
-		<p>Expected result: You should see a message like this below: <i>DEBUG: alert("we got the data!");</i></p>
+		<p>Expected result: You should see a message that starts with: <i>DEBUG: callback type: [error]...</i></p>
 		
 		
 	</body>
