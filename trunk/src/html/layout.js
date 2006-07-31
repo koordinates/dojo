@@ -9,6 +9,9 @@ dojo.html.sumAncestorProperties = function(node, prop){
 	
 	var retVal = 0;
 	while(node){
+		if(dojo.html.getComputedStyle(node, 'position') == 'fixed'){
+			return 0;
+		}
 		var val = node[prop];
 		if(val){
 			retVal += val - 0;
@@ -89,7 +92,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll){
 
 			if(node.parentNode != db){
 				var nd = node;
-				if(dojo.render.html.opera){ nd = db; }
+//				if(dojo.render.html.opera){ nd = db; }
 				ret.x -= dojo.html.sumAncestorProperties(nd, "scrollLeft");
 				ret.y -= dojo.html.sumAncestorProperties(nd, "scrollTop");
 			}

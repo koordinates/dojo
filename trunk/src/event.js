@@ -360,6 +360,8 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 						evt = obj.ownerDocument.parentWindow.event;
 					}else if(obj.documentElement){
 						evt = obj.documentElement.ownerDocument.parentWindow.event;
+					}else if(obj.event){ //obj is a window
+						evt = obj.event;
 					}else{
 						evt = window.event;
 					}
