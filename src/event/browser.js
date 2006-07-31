@@ -215,8 +215,10 @@ dojo.event.browser = new function(){
 	}
 
 	this.fixEvent = function(evt, sender){
-		if((!evt)&&(window["event"])){
-			var evt = window.event;
+		if(!evt){
+			if(window["event"]){
+				evt = window.event;
+			}
 		}
 		
 		if((evt["type"])&&(evt["type"].indexOf("key") == 0)){ // key events
@@ -238,7 +240,8 @@ dojo.event.browser = new function(){
 			// FIXME: scroll position query is duped from dojo.html to avoid dependency on that entire module
 			// DONOT replace the following to use dojo.body(), in IE, document.documentElement should be used
 			// here rather than document.body
-			var docBody = ((dojo.render.html.ie55)||(document["compatMode"] == "BackCompat")) ? document.body : document.documentElement;
+			var doc = evt.srcElement ? evt.srcElement.ownerDocument : document;
+			var docBody = ((dojo.render.html.ie55)||(doc["compatMode"] == "BackCompat")) ? doc.body : doc.documentElement;
 			if(!evt.pageX){ evt.pageX = evt.clientX + (docBody.scrollLeft || 0) }
 			if(!evt.pageY){ evt.pageY = evt.clientY + (docBody.scrollTop || 0) }
 			// mouseover

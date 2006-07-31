@@ -490,10 +490,9 @@ dojo.widget.defineWidget(
 		var win = dojo.html.getElementWindow(e.target);
 		var iframe = win.frameElement;
 		if(iframe){
-			//in IE, scroll should not be counted, while in Moz it is required
-			var cood = dojo.html.getAbsolutePosition(iframe, !dojo.render.html.ie);
-			x += cood.x - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScroll).left );
-			y += cood.y - (dojo.render.html.ie ? 0 : dojo.withGlobal(win, dojo.html.getScroll).top );
+			var cood = dojo.html.getAbsolutePosition(iframe, true);
+			x += cood.x - dojo.withGlobal(win, dojo.html.getScroll).left;
+			y += cood.y - dojo.withGlobal(win, dojo.html.getScroll).top;
 		}
 		this.open(x, y, null, [x, y]);
 
@@ -822,18 +821,6 @@ dojo.widget.PopupManager = new function(){
 		// and exit when one succeeds
 
 		var m = this.currentMenu;
-		
-		if(!e){ //IE
-			//In IE, no way to tell under which registeredWindows
-			//this event is generated. Thus we have to check
-			//each registered one, and set the event
-			for(var i=0;i<this.registeredWindows.length;++i){
-				if(this.registeredWindows[i].event){
-					e = this.registeredWindows[i].event;
-					break;
-				}
-			}
-		}
 
 		while (m){
 			if(dojo.html.overElement(m.domNode, e) || dojo.html.isDescendantOf(e.target, m.domNode)){
