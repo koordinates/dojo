@@ -370,21 +370,23 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 
 /**
  * Like placeOnScreen, except it accepts aroundNode instead of x.y 
- * and attempts to place node around it.
+ * and attempts to place node around it. aroundType (see 
+ * dojo.html.boxSizing in html/layout.js) determines which box of the
+ * aroundNode should be used to calculate the outer box.
  * aroundCorners specify Which corner of aroundNode should be 
  * used to place the node => which corner(s) of node to use (see the
  * corners parameter in dojo.html.placeOnScreen)
  * aroundCorners: {'TL': 'BL', 'BL': 'TL'}
  */
-dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasScroll, aroundCorners, tryOnly){
+dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, aroundType, aroundCorners, tryOnly){
 	var best, bestDistance=Infinity;
 	aroundNode = dojo.byId(aroundNode);
 	var oldDisplay = aroundNode.style.display;
 	aroundNode.style.display="";
-	var mb = dojo.html.getMarginBox(aroundNode);
+	var mb = dojo.html.getElementBox(aroundNode, aroundType);
 	var aroundNodeW = mb.width;
 	var aroundNodeH = mb.height;
-	var aroundNodePos = dojo.html.getAbsolutePosition(aroundNode, true);
+	var aroundNodePos = dojo.html.getAbsolutePosition(aroundNode, true, aroundType);
 	aroundNode.style.display=oldDisplay;
 	
 	for(var nodeCorner in aroundCorners){
@@ -394,7 +396,7 @@ dojo.html.placeOnScreenAroundElement = function(node, aroundNode, padding, hasSc
 		desiredX = aroundNodePos.x + (nodeCorner.charAt(1)=='L' ? 0 : aroundNodeW);
 		desiredY = aroundNodePos.y + (nodeCorner.charAt(0)=='T' ? 0 : aroundNodeH);
 
-		pos = dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, corners, true);
+		pos = dojo.html.placeOnScreen(node, desiredX, desiredY, padding, true, corners, true);
 		if(pos.dist == 0){
 			best = pos;
 			break;
