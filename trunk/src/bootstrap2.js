@@ -104,9 +104,6 @@ dojo.normalizeLocale = function(locale) {
  *	in dojo.locale
  */
 dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/){
-
-	dojo.debug("EXPERIMENTAL: dojo.requireLocalization"); //dojo.experimental
-
 	var syms = dojo.hostenv.getModuleSymbols(modulename);
 	var modpath = syms.concat("nls").join("/");
 
@@ -121,7 +118,7 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 
 	var bundlepackage = [modulename, "_nls", bundlename].join(".");
 	var bundle = dojo.hostenv.startPackage(bundlepackage);
-	dojo.hostenv.loaded_modules_[bundlepackage] = bundle;
+	dojo.hostenv.loaded_modules_[bundlepackage] = bundle; //FIXME: is this redundant?
 
 	var inherit = false;
 	for(var j = searchlist.length - 1; j >= 0; j--){

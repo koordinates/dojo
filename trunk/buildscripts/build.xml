@@ -211,9 +211,9 @@ print "look ma! Jython!"
 		<echo message=""/>
 		<echo message="+--------------------------------------------------------+" />
 		<echo message="| Due to some horrendous design decisions by the authors |" />
-		<echo message="| of Ant, it has been necessaray to install some jar     |" />
+		<echo message="| of Ant, it has been necessary to install some jar     |" />
 		<echo message="| files to your ~/.ant/ directory. Given the nature of   |" />
-		<echo message="| the problem, it will be necessaray for you to re-run   |" />
+		<echo message="| the problem, it will be necessary for you to re-run   |" />
 		<echo message="| your build command.                                    |" />
 		<echo message="|                                                        |" />
 		<echo message="| The Dojo team apologies for this inconvenience.        |" />
@@ -419,7 +419,7 @@ buildRestFiles( dojo.getProperty("articles_dir"),
 
 	<!-- -set-profile-deps task -->
 	<target name="-set-profile-deps" depends="-fix-config"
-		description="populates the contents of the dependecy list for a given profile">
+		description="populates the contents of the dependency list for a given profile">
 		<!-- 
 			FIXME: this is just a stub! need to fill it in! 
 		-->
@@ -599,6 +599,25 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 	<target name="-no-rhino-compress"
 		if="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}" />
+	</target>
+
+	<target name="flatten-resources" depends="compress"
+		description="loads all localization bundles in the build for a particular locale, flattens the object, and outputs a preloaded version">
+		<copy overwrite="true" file="${release_dir}/dojo.js" tofile="${release_dir}/localizations.tmp.js">
+			<filterchain>
+				<tokenfilter>
+					<containsregex pattern="dojo\.requireLocalization\(.*\);"/>
+				</tokenfilter>
+			</filterchain>
+		</copy>
+		<java jar="./lib/js.jar" fork="true" dir="..">
+			<arg value="./buildscripts/flattenResources.js" />
+			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
+			<arg value="./buildscripts/${release_dir}/nls" />
+			<arg value="en-us,hi,nl,ja-jp" /> <!-- FIXME -->
+			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
+		</java>
+		<delete file="${release_dir}/localizations.tmp.js" />
 	</target>
 
 	<!-- intern-strings task -->
