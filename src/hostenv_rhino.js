@@ -12,7 +12,7 @@ var loadClass; var print; var load; var quit; var version; var Packages; var jav
 // TODO: not sure what we gain from the next line, anyone?
 //if (typeof loadClass == 'undefined') { dojo.raise("attempt to use Rhino host environment when no 'loadClass' global"); }
 
-dojo.locale = dojo.locale || (new java.util.Locale.getDefault()).toString().replace('_','-').toLowerCase();
+dojo.locale = dojo.locale || java.util.Locale.getDefault().toString().replace('_','-').toLowerCase();
 dojo.render.name = dojo.hostenv.name_ = 'rhino';
 dojo.hostenv.getVersion = function() {return version();};
 
@@ -20,22 +20,18 @@ dojo.hostenv.getVersion = function() {return version();};
 dojo.hostenv.loadUri = function(uri, cb){
 	dojo.debug("uri: "+uri);
 	try{
-		// FIXME: what about remote URIs?
-		var found = true;
-		if(!(new java.io.File(uri)).exists()){
+		var local = (new java.io.File(uri)).exists();
+		if(!local){
 			try{
 				// try it as a file first, URL second
-				(new java.io.URL(uri)).openStream();
+				(new java.net.URL(uri)).openStream();
 			}catch(e){
-				found = false;
+				dojo.debug(uri+" does not exist");
+				return 0;
 			}
 		}
-		if(!found){
-			dojo.debug(uri+" does not exist");
-			return 0;
-		}
 		if(cb){
-			var contents = readText(uri);
+			var contents = (local ? readText : readUri)(uri, "UTF-8");
 			cb(eval('('+contents+')'));
 		}else{
 			var ok = load(uri);
@@ -44,7 +40,7 @@ dojo.hostenv.loadUri = function(uri, cb){
 		dojo.debug("rhino load('", uri, "') returned. Ok: ", ok);
 		return 1;
 	}catch(e){
-		dojo.debug("rhino load('", uri, "') failed");
+		dojo.debug("rhino load('", uri, "') failed. Exception: "+e);
 		return 0;
 	}
 }
@@ -147,18 +143,37 @@ function dj_rhino_current_script_via_eval_exception() {
 
 // reading a file from disk in Java is a humiliating experience by any measure.
 // Lets avoid that and just get the freaking text
-function readText(uri){
+function readText(path, encoding){
+// if(typeof readFile == 'function'){readFile(path, encoding);}
+	encoding = encoding || "utf-8";
 	// NOTE: we intentionally avoid handling exceptions, since the caller will
 	// want to know
-	var jf = new java.io.File(uri);
-	var sb = new java.lang.StringBuffer();
-	var input = new java.io.BufferedReader(new java.io.FileReader(jf));
-	var line = "";
-	while((line = input.readLine()) !== null){
-		sb.append(line);
-		sb.append(java.lang.System.getProperty("line.separator"));
+	var jf = new java.io.File(path);
+	var is = new java.io.FileInputStream(jf);
+	return dj_readInputStream(is, encoding);
+}
+
+function readUri(uri, encoding){
+// if(typeof readUrl == 'function'){readUrl(path, encoding);}
+	var conn = (new java.net.URL(uri)).openConnection();
+	encoding = encoding || conn.getContentEncoding() || "utf-8";
+	var is = conn.getInputStream();
+	return dj_readInputStream(is, encoding);
+}
+
+function dj_readInputStream(is, encoding){
+	var input = new java.io.BufferedReader(new java.io.InputStreamReader(is, encoding));
+	try {
+		var sb = new java.lang.StringBuffer();
+		var line = "";
+		while((line = input.readLine()) !== null){
+			sb.append(line);
+			sb.append(java.lang.System.getProperty("line.separator"));
+		}
+		return sb.toString();
+	} finally {
+		input.close();
 	}
-	return sb.toString();
 }
 
 // call this now because later we may not be on the top of the stack
