@@ -1,9 +1,8 @@
 
 .dojoPopupMenu2 {
 	position: absolute;
-	border: 1px solid;
-	border-color: ThreeDLightShadow ThreeDDarkShadow ThreeDDarkShadow ThreeDLightShadow;
-	background-color: ThreeDFace;
+	border: 1px solid #7298d0;
+	background:#a9ccfe url(images/soriaMenuBg.gif) repeat-x bottom left !important;
 	padding: 1px;
 	margin-top: 1px;
 	margin-bottom: 1px;
@@ -12,17 +11,18 @@
 .dojoMenuItem2, .dojoMenuItem2 span span {
 	white-space: nowrap;
 	font: menu;
-	color: WindowText;
 	margin: 0;
 }
 
 .dojoMenuItem2 span {
 	margin: 0;
+	padding-right:5px;
 }
 
 .dojoMenuItem2Hover {
-	background-color: Highlight;
-	color: HighlightText;
+	background-color: #D2E4FD;
+	cursor:pointer;
+	cursor:hand;
 }
 
 .dojoMenuItem2Icon {
@@ -50,7 +50,6 @@
 /* label shadow text */
 .dojoMenuItem2Label span span {
 	position: absolute;
-	color: ThreeDHighlight;
 	display: none;
 	left: 1px;
 	top: 1px;
@@ -73,7 +72,6 @@
 /* accelerator string shadow */
 .dojoMenuItem2Accel span span {
 	position: absolute;
-	color: ThreeDHighlight;
 	display: none;
 	left: 1px;
 	top: 1px;
@@ -82,12 +80,11 @@
 
 .dojoMenuItem2Disabled .dojoMenuItem2Label span,
 .dojoMenuItem2Disabled .dojoMenuItem2Accel span {
-	color: ThreeDShadow;
+	color: #607a9e;
 }
 
 .dojoMenuItem2Disabled .dojoMenuItem2Label span span,
 .dojoMenuItem2Disabled .dojoMenuItem2Accel span span {
-	color: ThreeDHighlight;
 	display: block;
 }
 
@@ -115,23 +112,23 @@
 
 .dojoMenuSeparator2Top {
 	height: 50%;
-	border-bottom: 1px solid ThreeDShadow;
+	border-bottom: 1px solid #7996c1;
 	margin: 0px 2px;
 	font-size: 1px;
 }
 
 .dojoMenuSeparator2Bottom {
 	height: 50%;
-	border-top: 1px solid ThreeDHighlight;
+	border-top: 1px solid #e3eeff;
 	margin: 0px 2px;
 	font-size: 1px;
 }
 
 .dojoMenuBar2 {
 	/*position: relative;*/
-	background-color: ThreeDFace;
-	border-bottom: 1px solid ThreeDHighlight;
-	border-bottom: 1px solid ThreeDShadow;
+	background:#a9ccfe url(images/soriaBarBg.gif) repeat-x bottom left;
+	border-bottom:1px solid #405067;
+	border-top:1px solid #708bb3;
 }
 
 .dojoMenuBar2Client {
@@ -141,7 +138,6 @@
 .dojoMenuBarItem2 {
 	white-space: nowrap;
 	font: menu;
-	color: WindowText;
 	margin: 0;
 	position: relative;
 	vertical-align: middle;
@@ -153,11 +149,12 @@
 	margin: 0;
 	position: relative;
 	z-index: 2;
+	cursor:pointer;
+	cursor:hand;
 }
 
 .dojoMenuBarItem2 span span {
 	position: absolute;
-	color: ThreeDHighlight;
 	display: none;
 	left: 1px;
 	top: 1px;
@@ -165,16 +162,14 @@
 }
 
 .dojoMenuBarItem2Hover {
-	background-color: Highlight;
-	color: HighlightText;
+	background-color:#d2e4fd;
 }
 
 .dojoMenuBarItem2Disabled span {
-	color: ThreeDShadow;
+	color: #4f6582;
 }
 
 .dojoMenuBarItem2Disabled span span {
-	color: ThreeDHighlight;
 	display: block;
 }
 
