@@ -182,6 +182,7 @@ dojo.widget.defineWidget(
 		sortType:"String",
 		dataType:String,
 		sortFunction:null,
+		filterFunction:null,
 		label:null,
 		align:"left",
 		valign:"middle",
@@ -201,7 +202,12 @@ dojo.widget.defineWidget(
 				obj[p] = this._meta[p];
 			}
 		}
-		if(!obj.label) obj.label=obj.field;
+		if(!obj.label){
+			obj.label=obj.field;
+		}
+		if(!obj.filterFunction){
+			obj.filterFunction=this._defaultFilter;
+		}
 		return obj;	//	object
 	},
 	parseMetadata: function(/* HTMLTableHead */head){
@@ -257,6 +263,13 @@ dojo.widget.defineWidget(
 			o.label = dojo.html.renderedTextContent(cells[i]);
 
 			//	TODO: set up filtering mechanisms here.
+			if(dojo.html.hasAttribute(cells[i], "filterusing")){
+				var trans = dojo.html.getAttribute(cells[i],"filterusing");
+				var f = this.getTypeFromString(trans);
+				if (f != null && f != window && typeof(f)=="function"){
+					o.filterFunction=f;
+				}
+			}
 			
 			this.columns.push(o);
 
@@ -441,50 +454,80 @@ dojo.widget.defineWidget(
 		}
 		this.render();
 	},
-	onFilter: function(/* HTMLEvent */e){
+	onFilter: function(){
 		//	summary
 		//	show or hide rows based on the parameters of the passed filter.
-		var field = null;
-		var source=e.target;
-		var row=dojo.html.getParentByType(source,"tr");
-		var cellTag="td";
-		if(row.getElementsByTagName(cellTag).length==0){
-			cellTag="th";
-		}
+	},
 
-		var headers=row.getElementsByTagName(cellTag);
-		var header=dojo.html.getParentByType(source,cellTag);
-		
-		for(var i=0; i<headers.length; i++){
-			if(headers[i]==header){
-				field=this.columns[i].getField();
+	//	Filtering methods
+	_defaultFilter: function(/* HTMLTableRow */row){
+		//	summary
+		//	Always return true as the result of the default filter.
+		return true;
+	},
+	setFilter: function(/* string */field, /* function */fn){
+		//	summary
+		//	set a filtering function on the passed field.
+		for(var i=0; i<this.columns.length; i++){
+			if(this.columns[i].getField() == field){
+				this.columns[i].filterFunction=fn;
 				break;
 			}
 		}
-
-		if(!field) return;	//	something went wrong, abort
-
-		//	TODO: build or get the filtering function
-		var fn=function(data){ return true; };
-
-		//	filter it
-		this.filter(field, fn);
+		this.applyFilters();
 	},
-	filter: function(/* string */field, /* function */fn){
+	setFilterByIndex: function(/* number */idx, /* function */fn){
 		//	summary
-		//	show or hide rows based on the result of the passed function.
-		var rows = this.domNode.tBodies[0].rows;
-		for(var i=0; i<rows.length; i++){
-			rows[i].style.display = fn(this.getByRow(rows[i])[field]) ? "" : "none";
-		}
+		//	set a filtering function on the passed column index.
+		this.columns[idx].filterFunction=fn;
+		this.applyFilters();
 	},
+	clearFilter: function(/* string */field){
+		//	summary
+		//	clear a filtering function on the passed field.
+		for(var i=0; i<this.columns.length; i++){
+			if(this.columns[i].getField() == field){
+				this.columns[i].filterFunction=this._defaultFilter;
+				break;
+			}
+		}
+		this.applyFilters();
+	}, 
+	clearFilterByIndex: function(/* string */field){
+		//	summary
+		//	clear a filtering function on the passed column index.
+		this.columns[idx].filterFunction=this._defaultFilter;
+		this.applyFilters();
+	}, 
 	clearFilters: function(){
 		//	summary
 		//	clears all filters.
-		var rows = this.domNode.tBodies[0].rows;
-		for(var i=0; i<rows.length; i++){
-			rows[i].style.display = "";
+		for(var i=0; i<this.columns.length; i++){
+			this.columns[i].filterFunction=this._defaultFilter;
 		}
+		//	we'll do the clear manually, it will be faster.
+		var rows=this.domNode.tBodies[0].rows;
+		for(var i=0; i<rows.length; i++){
+			rows[i].style.display="";
+		}
+		this.onFilter();
+	},
+	applyFilters: function(){
+		//	summary
+		//	apply all filters to the table.
+		var rows=this.domNode.tBodies[0].rows;
+		for(var i=0; i<rows.length; i++){
+			var b=true;
+			var row=rows[i];
+			for(var j=0; j<this.columns.length; j++){
+				if(!this.columns[j].filterFunction(this.store.getField(this.getDataByRow(row), this.columns[j].getField()))){
+					b=false;
+					break;
+				}
+			}
+			row.style.display=(b?"":"none");
+		}
+		this.onFilter();
 	},
 
 	//	sorting functionality
