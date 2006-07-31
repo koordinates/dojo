@@ -75,8 +75,8 @@
 				break;
 		}
 		var kw = {
-			iframeProxyUrl: "../../../iframe_xip_server.html",
-			url:		"tests/io/reflector.cgi",
+			iframeProxyUrl: "../../../src/io/xip_server.html",
+			url:		"../../tests/io/reflector.cgi",
 			content:	{ inline: "yes" },
 			formNode:	dojo.byId("form"),
 			load:		function(type, data)	{ dojo.byId("result").innerHTML = data; },
@@ -105,6 +105,9 @@
 </head>
 <body>
 <h1>Test dojo.io.bind()</h1>
+<p>This test will not work in Safari if it is loaded from local disk. Apparently
+Safari won't let us change the iframe src to a local file.</p>
+
 <p>This page tests different post methods of <tt>dojo.io.bind()</tt> and 
 compare them with conventional form submitting.</p>
 
@@ -123,7 +126,7 @@ compare them with conventional form submitting.</p>
 <h2>Submit a form</h2>
 <p>If you submit this form using Dojo, you can see results below. Otherwise you will be redirected to results screen.</p>
 <fieldset>
-	<form id="form" action="tests/io/reflector.cgi">
+	<form id="form" action="../../tests/io/reflector.cgi">
 		<table><tbody>
 			<tr><td><label for="text">text:</label></td><td><input type="text" id="text" name="text" /></td></tr>
 			<tr><td><label for="password">password:</label></td><td><input type="password" id="password" name="password" /></td></tr>

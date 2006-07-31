@@ -75,7 +75,7 @@
 			ifpServerUrl += "#" + encodeURIComponent(window.location);	
 
 			//Start counter to inspect hash value.
-			setInterval(pollHash, 20);
+			setInterval(pollHash, 10);
 
 			//Loader server iframe, then wait for the server page to call us back.
 			xipServerWindow = frames["xipServerFrame"];
@@ -128,6 +128,7 @@
 				setServerUrl("ok");
 				break;
 			case "end":
+				setServerUrl("ok");
 				xipResponseMessage += urlEncodedMessage;
 				parent.dojo.io.XhrIframeProxy.receive(xipStateId, xipResponseMessage);
 				break;
@@ -143,7 +144,7 @@
 		var reqIndex = 0;
 
 		while((reqData.length - reqIndex) + urlLength > xipUrlLimit){
-			xipRequestParts.push(reqData.substring(reqIndex, partLength));
+			xipRequestParts.push(reqData.substring(reqIndex, reqIndex + partLength));
 			reqIndex += partLength;
 		}
 		xipRequestParts.push(reqData.substring(reqIndex, reqData.length));
@@ -189,7 +190,7 @@
 	</script>
 </head>
 <body>
-	<h4>The Dojo Toolkit -- iframe_xip_client.html</h4>
+	<h4>The Dojo Toolkit -- xip_client.html</h4>
 
 	<p>This file is used for Dojo's XMLHttpRequest Iframe Proxy. This is the "client" file used
 	internally by dojo.io.XhrIframeProxy.</p>
