@@ -6,9 +6,8 @@
 		var djConfig={
 			isDebug: true,
 			debugAtAllCosts:true,
-			// Google's API policies are totally fucked
-			// corresponds to: http://localhost/~alex/dojo/trunk/tests/widget/
-			googleMapKey: "ABQIAAAAvJ1_5udaRrxH-XDGw5n3pxRcIG_kTcQeZMu9OboQPZYD5A04VhQRn_Qw1mA6LasrITru3ZcuGicRVA"
+			// http://localhost/dojo/
+			googleMapKey:"ABQIAAAAOQlMNe3AWkq27kRV3hWmghQyacgg3RW3kBqapZchmVLUYsjpkBQx9YjRzQ1EjBYEE7r0vXMZFfrAdA"
 		};
 	</script>
 	<script type="text/javascript" src="../../dojo.js"></script>
@@ -17,9 +16,21 @@
 	</script>
 	<script>dojo.hostenv.writeIncludes();</script>
 	<style type="text/css">
-		#mapTest{
+		.map{
 			width:100%;
 			height:480px;
+			border:1px solid black;
+		}
+		#pos{
+			position:absolute;
+			bottom:0;
+			left:0;
+			width:200px;
+			height:200px;
+		}
+		#mapTest2{
+			width:100%;
+			height:100%;
 			border:1px solid black;
 		}
 	</style>
@@ -27,7 +38,7 @@
 <body>
 	<h1>Dojo Google Map Widget</h1>
 	<p>This is an example of the Dojo Google Map widget. Note that you have to include your own Google Map API script tag at the top of your document, with your own API key.</p>
-	<div dojoType="googlemap" id="mapTest" datasrc="mapData"></div>
+	<div dojoType="googlemap" id="mapTest" class="map" datasrc="mapData"></div>
 	<table id="mapData">
 		<thead><tr><th>Lat</th><th>Long</th><th>Icon</th><th>Description</th></tr></thead>
 		<tbody>
@@ -39,6 +50,10 @@
 			<tr><td>37.413775</td><td>-122.060369</td><td></td><td><div>This is the sixth place on the map.</div></td></tr>
 		</tbody>
 	</table>
-	<p>HTML after</p>
+	<h2>More tests: the Google Geocoder!</h2>
+	<input type="button" value="Plot the Dojo Foundation Offices" onclick="dojo.widget.byId('mapTest2').plotAddress('1000 Elwell Ct., Palo Alto, CA 94303');return false;" />
+	<div style="position:relative;height:240px;">
+		<div id="pos"><div dojoType="googlemap" id="mapTest2" controls="smallmap"></div></div>
+	</div>
 </body>
 </html>

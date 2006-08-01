@@ -52,6 +52,8 @@ dojo.widget.defineWidget(
 	templateCssPath:null,
 	isContainer: false,
 
+	_defaultPoint:{lat:39.10662, lng: -94.578209},
+
 	setControls:function(){
 		var methodmap={
 			largemap:GLargeMapControl,
@@ -103,7 +105,7 @@ dojo.widget.defineWidget(
 				description:response.Placemark[0].address
 			};
 			self.data.push(obj);
-			self.plot(obj);
+			self.render();
 		});
 	},
 
@@ -150,12 +152,20 @@ dojo.widget.defineWidget(
 		}
 	},
 	render:function(){
+		if(this.data.length==0){
+			this.map.setCenter(new GLatLng(this._defaultPoint.lat, this._defaultPoint.lng), 4);
+			return;
+		}
+
+		//	remove all overlays
+		this.map.clearOverlays();
+
 		var bounds=new GLatLngBounds();
 		var d=this.data;
 		for(var i=0; i<d.length; i++){
 			bounds.extend(new GLatLng(d[i].lat,d[i].lng));
 		}
-		var zoom=Math.min(this.map.getBoundsZoomLevel(bounds),15);
+		var zoom=Math.min((this.map.getBoundsZoomLevel(bounds)-1),14);
 		this.map.setCenter(this.findCenter(bounds), zoom);
 
 		for(var i=0; i<this.data.length; i++){
@@ -175,6 +185,9 @@ dojo.widget.defineWidget(
 		//	clean the domNode before creating the map.
 		while(this.domNode.childNodes.length>0){
 			this.domNode.removeChild(this.domNode.childNodes[0]);
+		}
+		if(this.domNode.style.position!="absolute"){
+			this.domNode.style.position="relative";
 		}
 		this.map=new GMap2(this.domNode);
 		try{
