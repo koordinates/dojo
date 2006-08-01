@@ -141,34 +141,30 @@ dojo.lfx.html._makeFadeable = function(nodes){
 	}
 }
 
-dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
+dojo.lfx.html.fade = function(nodes, values, duration, easing, callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	dojo.lfx.html._makeFadeable(nodes);
-	var anim = dojo.lfx.propertyAnimation(nodes, [
-		{	property: "opacity",
-			start: dojo.html.getOpacity(nodes[0]),
-			end: 1 } ], duration, easing);
+	var props = { property: "opacity" };
+	if(typeof values.start != "undefined"){ props.start = values.start; }
+	else{ props.start = dojo.html.getOpacity(nodes[0]); }
+	if(typeof values.end != "undefined"){ props.end = values.end; }
+	else{ dojo.raise("dojo.lfx.html.fade needs an end value"); }
+
+	var anim = dojo.lfx.propertyAnimation(nodes, [ props ], duration, easing);
 	if(callback){
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
-		anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
+		anim.onEnd = function() { oldOnEnd(); callback(nodes, anim); };
 	}
 
 	return anim;
 }
 
-dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
-	nodes = dojo.lfx.html._byId(nodes);
-	dojo.lfx.html._makeFadeable(nodes);
-	var anim = dojo.lfx.propertyAnimation(nodes, [
-		{	property: "opacity",
-			start: dojo.html.getOpacity(nodes[0]),
-			end: 0 } ], duration, easing);
-	if(callback){
-		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
-		anim.onEnd = function(){ oldOnEnd(); callback(nodes, anim); };
-	}
+dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
+	return dojo.lfx.html.fade(nodes, { end: 1 }, duration, easing, callback);
+}
 
-	return anim;
+dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
+	return dojo.lfx.html.fade(nodes, { end: 0 }, duration, easing, callback);
 }
 
 dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
