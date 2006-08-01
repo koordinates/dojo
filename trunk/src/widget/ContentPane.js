@@ -393,9 +393,12 @@ dojo.widget.defineWidget(
 			this._styleNodes = [];
 	
 			var node = this.containerNode || this.domNode;
-			try{
-				dojo.event.browser.clean(node.firstChild);
-			}catch(e){}
+			while(node.firstChild){
+				try{
+					dojo.event.browser.clean(node.firstChild);
+				}catch(e){}
+				node.removeChild(node.firstChild);
+			}
 			try{
 				if(typeof cont != "string"){
 					node.innerHTML = "";
