@@ -20,36 +20,54 @@
 <h1>Slider Widget Demo</h1>
 This page demos the three types of slider widgets, with slightly different behaviours.
 <table border="1">
-<thead><tr><td>Type</td><td>Range</td><td>onDragMove</td><td>onDragEnd</td><td>On Click</td></tr></thead>
+<thead><tr><td>Type</td><td>Range</td><td>onDragMove</td><td>onDragEnd</td><td>onClick</td><td>reversed</td></tr></thead>
 <tbody>
-<tr><td>vertical</td><td>1..9</td><td>&nbsp;</td><td>update text field</td><td>update text field</td></tr>
-<tr><td>horizontal</td><td>-10..10</td><td>update text field</td><td>&nbsp;</td><td>update text field</td></tr>
-<tr><td>box</td><td>0..10</td><td>&nbsp;</td><td>update text field</td><td>&nbsp;</td></tr>
+<tr><td>vertical</td><td>1..9</td><td>&nbsp;</td><td>update text field</td><td>update text field</td><td>yes</td></tr>
+<tr><td>horizontal</td><td>-10..10</td><td>update text field</td><td>&nbsp;</td><td>update text field</td><td>no</td></tr>
+<tr><td>box</td><td>0..10</td><td>&nbsp;</td><td>update text field</td><td>&nbsp;</td><td>X:yes<br>Y:no</td></tr>
 </tbody>
 </table>
 
+Red, blue, and green borders shown to test the correct placement of slider components.<br>
 <table>
-<tr><td></td><td>
-<div style="padding-left: 40px;" id="horizontalSlider" dojoType="SliderHorizontal" initialValue="5" minimum="-10" maximum="10" snapValues="11"
+<tr><td></td><td style="border:2px solid green;line-height:0px;white-space:nowrap;">
+[before]<div id="horizontalSlider" dojoType="SliderHorizontal" 
+	initialValue="5" minimum="-10" maximum="10" snapValues="11"
 	activeDrag="true"
    	onValueChanged="dojo.byId('horizontalSliderValue').value = arguments[0];"
-   	>
-</div>
-</td>
-<td rowspan="2" valign="middle">
-<div id="boxSlider" dojoType="Slider" maximumX="10" maximumY="10" minimumX="0" minimumY="0" initialValueX="5" initialValueY="5"
+	buttonStyle="top:1px;"
+	backgroundStyle="padding:8px 4px 8px 4px;border:1px solid red;"
+	backgroundSize="width:100px;height:5px;"
+	backgroundSrc="../../src/widget/templates/images/blank.gif"
+	progressBackgroundSrc="../../src/widget/templates/images/slider-bg.gif"
+	handleStyle="top:0px;width:13px;height:18px;"
+	handleSrc="../../src/widget/templates/images/slider.gif"
+	style="border:solid blue;border-width:16px 12px 8px 4px;padding:4px 8px 12px 16px;margin:9px;"
+   ></div>[after]</td>
+<td rowspan="2" style="border:2px solid green;line-height:0px;white-space:nowrap;vertical-align:middle;">
+[before]<div id="boxSlider" dojoType="Slider" maximumX="10" maximumY="10" minimumX="0" minimumY="0" initialValueX="5" initialValueY="5"
 	clickSelect="false"
-	onValueChanged="dojo.byId('boxX').value = arguments[0]; dojo.byId('boxY').value = arguments[1];">
-</div>
-</td></tr>
-<tr><td>
-<div id="verticalSlider" dojoType="SliderVertical" initialValue="5" snapValues="9" maximum="9" minimum="1"
+	showButtons="false"
+	backgroundStyle="padding:2px 4px 8px 16px;border:1px solid red;"
+	backgroundSize="width:200px;height:200px;"
+	handleStyle="top:-1px;"
+	onValueChanged="dojo.byId('boxX').value = arguments[0]; dojo.byId('boxY').value = arguments[1];"
+	flipX="true"
+   ></div>[after]</td>
+</tr>
+<tr><td style="border:2px solid green;line-height:0px;white-space:nowrap;">
+[before]<div id="verticalSlider" dojoType="SliderVertical" 
+	initialValue="5" snapValues="9" maximum="9" minimum="1"
+	clickSelect="true"
   	onValueChanged="dojo.byId('verticalSliderValue').value = arguments[0];"
-   >
-</div>
-</td></td></tr>
+	buttonStyle="width:28px;height:16px;"
+	backgroundStyle="padding:8px 8px 8px 8px;border:1px solid red;background-color:yellow;"
+	progressBackgroundSrc="../../src/widget/templates/images/slider-bg-progress-vert.gif"
+	handleStyle="left:2px;top:-1px;"
+	handleSrc="../../src/widget/templates/images/slider-button-vert.png"
+	flip="true"
+   ></div>[after]</td></tr>
 </table>
-
 
 <p>
 Horizontal Slider Value:
