@@ -1,47 +1,61 @@
-.sliderMain { 
-  position: relative; 
-  /*top: 80px; left: 0px;*/
-  padding: 0px; 
-  border: 1px solid black;
-  width: 300px; height: 300px; 
+.sliderMain {
+  border: 0px !important;
+  border-spacing: 0px !important;
+  line-height: 0px !important;
+  padding: 0px !important;
+  display: -moz-inline-table !important;
+  display: inline !important;
+  -moz-user-focus: normal !important;
+}
+
+.sliderComponent {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
 }
 
 .sliderHandle { 
-  color: #FF0000;
-  position: relative; 
-  background: transparent url(images/slider-button.png) no-repeat 0px 0px;
-  width: 25px; 
-  height: 25px;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
+  position: absolute !important;
 }
 
-.sliderMainHorizontal { 
-  position: relative; 
-  /*top: 80px; left: 0px;*/
-  padding: 0px; 
-  width: 300px; height: 35px; 
-  background: transparent url(images/slider-bg.gif) no-repeat center center;
+.sliderOutsetButton { 
+  border-style: outset;
+  border-width: 0px 1px 1px 0px;
+  border-color: black;
 }
 
-.sliderHandleHorizontal { 
-  color: #FF0000;
-  position: relative; 
-  background: transparent url(images/slider-button-horz.png) no-repeat 0px center;
-  width: 25px; 
-  height: 35px;
+.sliderInsetButton { 
+  border-style: inset;
+  border-width: 1px 0px 0px 1px;
+  border-color: black;
 }
 
-.sliderMainVertical { 
-  position: relative; 
-  /*top: 80px; left: 0px;*/
-  padding: 0px; 
-  width: 35px; height: 300px; 
-  background: transparent url(images/slider-bg-vert.gif) no-repeat center center;
+.sliderButtonY {
+  margin: 0px;
+  padding: 0px;
+  z-index: 900;
 }
 
-.sliderHandleVertical { 
-  color: #FF0000;
-  position: relative; 
-  background: transparent url(images/slider-button-vert.png) no-repeat center 0px;
-  width: 35px; 
-  height: 25px;
+.sliderButtonX {
+  margin: 0px;
+  padding: 0px;
+  z-index: 900;
+}
+
+.sliderBackground { 
+  z-index: 0;
+  display: block !important;
+  position: relative !important;
+}
+
+.sliderProgressBackground { 
+  z-index: 800;
+  position: absolute !important;
+  clip: rect(0px,0px,0px,0px);
+}
+
+.sliderBackgroundSizeOnly { 
 }
