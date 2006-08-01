@@ -8,7 +8,7 @@ dojo.require("dojo.html.layout");
 
 dojo.lfx.html._byId = function(nodes){
 	if(!nodes){ return []; }
-	if(dojo.lang.isArray(nodes)){
+	if(dojo.lang.isArrayLike(nodes)){
 		if(!nodes.alreadyChecked){
 			var n = [];
 			dojo.lang.forEach(nodes, function(node){
