@@ -153,7 +153,7 @@
 			setClientUrl(cmd, partData);
 			xipPartIndex++;
 		}else{
-			xipReset();
+			xipServerInit();
 		}
 	}
 
@@ -217,7 +217,7 @@
 					*/
 					var response = {};
 					
-					if(xhr.getAllResponseHeaders){
+					if(typeof(xhr.getAllResponseHeaders) != "undefined"){
 						var allHeaders = xhr.getAllResponseHeaders();
 						if(allHeaders){
 							response.responseHeaders = allHeaders;
