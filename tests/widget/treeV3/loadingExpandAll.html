@@ -26,16 +26,16 @@
 		dojo.debugShallow(err);
 	}
 
-	function testLoadRemote() {		
-		var d = dojo.widget.byId('treeController').loadRemote(dojo.widget.byId('1'))
-		d.addCallbacks(printOk, printErr);
+	
+	function expandAllEnd() {	
+		dojo.profile.end("expandAll + timeouts");
+		alert("expandAll finished");
 	}
 
-	function testCreate() {
-		var d = dojo.widget.byId('treeController').createChild(dojo.widget.byId('1'),1,{title:'New'}, 1);		
-		d.addCallbacks(printOk, printErr);
+	function testExpandToLevel() {
+		var d = dojo.widget.byId('controller').expandToLevel(dojo.widget.byId('tree').children[0],4);
+		//d.addCallback(function() { alert('done') });
 	}
-
 </script>
 
 
@@ -44,14 +44,12 @@
 
 <h3>Dynamically loads nodes from server</h3>
 
-<input type="button" value="Expand first node to level 2"
-	onClick="dojo.widget.byId('controller').expandToLevel(dojo.widget.byId('tree').children[0],4)"
-/>
+<input type="button" value="Expand first node to level 2" onClick="testExpandToLevel()"/>
 
-<input type="button" value="Expand tree to level 3" onClick="testCreate()"/>
+
 <br/>
 
-<div dojoType="TreeLoadingControllerV3" widgetId="controller" RPCUrl="http://ilia.country-info.ru/dojo.php"></div>
+<div dojoType="TreeLoadingControllerV3" widgetId="controller" RPCUrl="local"></div>
 
 
 <div dojoType="TreeV3" widgetId="tree" listeners="controller">

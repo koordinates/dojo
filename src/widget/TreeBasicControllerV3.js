@@ -134,7 +134,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 	
 	
-	expandToLevel: function(nodeOrTree, level, callback, callobj) {
+	expandToLevel: function(nodeOrTree, level) {
 		dojo.require("dojo.widget.TreeTimeoutIterator");
 		
 		var filterFunc = function(elem) {
@@ -143,16 +143,13 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			return res;
 		};
 		var callFunc = function(node, iterator) {
-			 this.expand(node);
+			 this.expand(node, true);
 			 iterator.forward();
 		}
 			
 		var iterator = new dojo.widget.TreeTimeoutIterator(nodeOrTree, callFunc, this);
 		iterator.setFilter(filterFunc);
 		
-		if (callback) {
-			iterator.setFinish(callback, callobj);
-		}
 		
 		iterator.timeout = this.batchExpandTimeout;
 		
