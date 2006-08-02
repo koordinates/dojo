@@ -66,11 +66,12 @@ for (locale in djBundlesByLocale){
 		os.write("dojo.provide(\"nls.dojo_"+locale+"\");");
 		for (var j = 0; j < djLoadedBundles.length; j++){
 			entry = djLoadedBundles[j];
-			var pkg = [entry.modulename,"_nls",entry.bundlename,locale].join(".");
-			os.write("dojo.hostenv.startPackage(\""+pkg+"\");");
-//			os.write("dojo.hostenv.loaded_modules_[bundlepackage] = bundle;");
+			var pkg = [entry.modulename,"_nls",entry.bundlename].join(".");
+			var pkg2 = [pkg,locale].join(".");
+			os.write("dojo.hostenv.startPackage(\""+pkg2+"\");");
+			os.write("dojo.hostenv.loaded_modules_[\""+pkg+"\"] = true;");
 			bundle = dojo.hostenv.findModule(entry.modulename)._nls[entry.bundlename];
-			os.write(pkg+"="+dojo.json.serialize(bundle[locale]));
+			os.write(pkg2+"="+dojo.json.serialize(bundle[locale]));
 		}
 	}finally{
 		os.close();
