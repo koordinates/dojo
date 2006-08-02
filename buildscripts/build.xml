@@ -609,7 +609,7 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 				</tokenfilter>
 			</filterchain>
 		</copy>
-		<java jar="./lib/js.jar" fork="true" dir=".." output="${release_dir}/generatedLocales.tmp.js" errorProperty="flattenErrors">
+		<java jar="./lib/js.jar" fork="true" dir=".." outputProperty="generatedLocales" errorProperty="flattenErrors">
 			<arg value="./buildscripts/flattenResources.js" />
 			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg value="./buildscripts/${release_dir}/nls" />
@@ -617,14 +617,10 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 			<arg value="${locales}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
-		<!--FIXME: should somehow insert these variables after the copyright -->
-		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/generatedLocales.tmp.js" append="true">;</concat>
-		<concat fixlastline="yes" eol="crlf" destfile="${release_dir}/dojo.js">
-			<header><![CDATA[var dj_localesBuilt='${locales}'.split(',');var dj_localesGenerated=]]></header>
-			<filelist dir="${release_dir}" files="generatedLocales.tmp.js" />
-			<footer file="${release_dir}/dojo.js"></footer>
-		</concat>
-		<delete file="${release_dir}/generatedLocales.tmp.js" />
+		<!--FIXME: should make this step happen before copyrights are inserted -->
+		<replaceregexp match="^" byline="false" replace="var dj_localesBuilt='${locales}'.split(',');var dj_localesGenerated=${generatedLocales};">
+			<fileset dir="${release_dir}" includes="dojo.js"/>
+		</replaceregexp>
 		<delete file="${release_dir}/localizations.tmp.js" />
 	</target>
 
