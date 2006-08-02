@@ -23,7 +23,7 @@ dojo.inherits(dojo.widget.TreeBasicControllerV3, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, dojo.widget.TreeCommon.prototype);
 
-// TODO: do something with addChild / setChild, so that RPCController become able
+// TODO: do something with addChild / setChild, so that RpcController become able
 // to hook on this and report to server
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
@@ -349,7 +349,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	 * May incur type checks etc
 	 *
 	 * It should check only hierarchical possibility w/o index, etc
-	 * because in onDragOver event for Between DND mode we can't calculate index at once on onDragOVer.
+	 * because in onDragOver event for Between Dnd mode we can't calculate index at once on onDragOVer.
 	 * index changes as client moves mouse up-down over the node
 	 */
 	canMove: function(child, newParent){
@@ -416,7 +416,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	/* send data to server and add child from server */
 	/* data may contain an almost ready child, or anything else, suggested to server */
-	/*in RPC controllers server responds with child data to be inserted */
+	/*in Rpc controllers server responds with child data to be inserted */
 	createChild: function(parent, index, data) {
 		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.finalizeCreateChild, this.exposeCreateChild, arguments);		
 	},

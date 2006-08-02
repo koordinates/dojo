@@ -13,7 +13,7 @@
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.require("dojo.widget.TreeSelectorV3");
-	dojo.require("dojo.widget.TreeDNDControllerV3");	
+	dojo.require("dojo.widget.TreeDndControllerV3");	
 	dojo.require("dojo.dnd.TreeDragAndDropV3");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -26,16 +26,16 @@
 
 <h3>Typed Drag'n'drop. Some nodes from firstTree have disabled actions.</h3>
 
-<h4>firstTree. Between DND mode. Accepts firstTree only.</h4>
+<h4>firstTree. Between Dnd mode. Accepts firstTree only.</h4>
 
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
-<div dojoType="TreeDNDControllerV3" controller="controller" widgetId="dndcontroller"></div>	
+<div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>	
 <div dojoType="TreeSelectorV3" widgetId="selector" listeners="dndcontroller"></div>	
 
 MyTree
-<div dojoType="TreeV3" expandLevel="2" DNDMode="between" toggle="fade" DNDAcceptTypes="firstTree" widgetId="firstTree" controller="controller"
-selector="selector" DNDController="dndcontroller">
+<div dojoType="TreeV3" expandLevel="2" DndMode="between" toggle="fade" DndAcceptTypes="firstTree" widgetId="firstTree" controller="controller"
+selector="selector" DndController="dndcontroller">
     <div dojoType="TreeNodeV3" title="Item 1">
         <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
         <div dojoType="TreeNodeV3" title="Item 1.2">

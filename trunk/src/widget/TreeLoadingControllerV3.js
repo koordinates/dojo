@@ -37,11 +37,11 @@ dojo.FormatError = function() {
 dojo.inherits(dojo.FormatError, dojo.Error);
 
 
-dojo.RPCError = function() {
+dojo.RpcError = function() {
 	dojo.Error.apply(this, arguments);
-	this.name="RPCError"
+	this.name="RpcError"
 }
-dojo.inherits(dojo.RPCError, dojo.Error);
+dojo.inherits(dojo.RpcError, dojo.Error);
 
 
 
@@ -56,9 +56,9 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 
 	
 
-	RPCUrl: "",
+	RpcUrl: "",
 
-	RPCActionParam: "action", // used for GET for RPCUrl
+	RpcActionParam: "action", // used for GET for RpcUrl
 
 	preventCache: true,
 
@@ -75,7 +75,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 				//dojo.debug("GO "+deferred);
 					
 					if(!dojo.lang.isUndefined(obj.error)){
-						deferred.errback(new RPCError(obj.error, obj));
+						deferred.errback(new RpcError(obj.error, obj));
 						return;
 					}
 	
@@ -97,22 +97,22 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 	},
 
-	getRPCUrl: function(action) {
+	getRpcUrl: function(action) {
 
-		// RPCUrl=local meant SOLELY for DEMO and LOCAL TESTS.
+		// RpcUrl=local meant SOLELY for DEMO and LOCAL TESTS.
 		// May lead to widgetId collisions
-		if (this.RPCUrl == "local") {
+		if (this.RpcUrl == "local") {
 			var dir = document.location.href.substr(0, document.location.href.lastIndexOf('/'));
 			var localUrl = dir+"/local/"+action;
 			//dojo.debug(localUrl);
 			return localUrl;	
 		}
 
-		if (!this.RPCUrl) {
-			dojo.raise("Empty RPCUrl: can't load");
+		if (!this.RpcUrl) {
+			dojo.raise("Empty RpcUrl: can't load");
 		}
 
-		return this.RPCUrl + ( this.RPCUrl.indexOf("?") > -1 ? "&" : "?") + this.RPCActionParam+"="+action;
+		return this.RpcUrl + ( this.RpcUrl.indexOf("?") > -1 ? "&" : "?") + this.RpcActionParam+"="+action;
 	},
 
 
@@ -133,7 +133,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	/**
 	 * kw = { url, sync, params }
 	 */
-	runRPC: function(kw) {
+	runRpc: function(kw) {
 		var _this = this;
 		
 		var deferred = new dojo.Deferred();
@@ -167,8 +167,8 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		};
 
 		
-		var deferred = this.runRPC({
-			url: this.getRPCUrl('getChildren'),
+		var deferred = this.runRpc({
+			url: this.getRpcUrl('getChildren'),
 			sync: sync,
 			params: params
 		});

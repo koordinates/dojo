@@ -175,7 +175,10 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 
 	deselect: function(){
-
+		if (!this.selectedNode) {
+			return;
+		}
+		
 		var node = this.selectedNode;
 
 		this.selectedNode = null;
