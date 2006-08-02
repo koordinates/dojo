@@ -3,11 +3,7 @@ dojo.provide("dojo.dnd.HtmlDragMoveSource");
 dojo.provide("dojo.dnd.HtmlDragMoveObject");
 dojo.require("dojo.dnd.*");
 
-dojo.dnd.HtmlDragMoveSource = function(node, type){
-	dojo.dnd.HtmlDragSource.call(this, node, type);
-}
-dojo.inherits(dojo.dnd.HtmlDragMoveSource, dojo.dnd.HtmlDragSource);
-dojo.lang.extend(dojo.dnd.HtmlDragMoveSource, {
+dojo.declare("dojo.dnd.HtmlDragMoveSource", dojo.dnd.HtmlDragSource, {
 	onDragStart: function(){
 		var dragObj =  new dojo.dnd.HtmlDragMoveObject(this.dragObject, this.type);
 		if (this.constrainToContainer) {
@@ -25,11 +21,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragMoveSource, {
 	}
 });
 
-dojo.dnd.HtmlDragMoveObject = function(node, type){
-	dojo.dnd.HtmlDragObject.call(this, node, type);
-}
-dojo.inherits(dojo.dnd.HtmlDragMoveObject, dojo.dnd.HtmlDragObject);
-dojo.lang.extend(dojo.dnd.HtmlDragMoveObject, {
+dojo.declare("dojo.dnd.HtmlDragMoveObject", dojo.dnd.HtmlDragObject, {
 	onDragEnd: function(e){
 		// shortly the browser will fire an onClick() event,
 		// but since this was really a drag, just squelch it

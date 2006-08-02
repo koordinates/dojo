@@ -7,12 +7,7 @@ dojo.require("dojo.html.layout");
 
 // NOTE: there will only ever be a single instance of HTMLDragManager, so it's
 // safe to use prototype properties for book-keeping.
-dojo.dnd.HtmlDragManager = function(){
-}
-
-dojo.inherits(dojo.dnd.HtmlDragManager, dojo.dnd.DragManager);
-
-dojo.lang.extend(dojo.dnd.HtmlDragManager, {
+dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 	/**
 	 * There are several sets of actions that the DnD code cares about in the
 	 * HTML context:
@@ -480,12 +475,14 @@ dojo.dnd.dragManager = new dojo.dnd.HtmlDragManager();
 (function(){
 	var d = document;
 	var dm = dojo.dnd.dragManager;
-	// set up event handlers on the document
-	dojo.event.connect(d, "onkeydown", 		dm, "onKeyDown");
-	dojo.event.connect(d, "onmouseover",	dm, "onMouseOver");
-	dojo.event.connect(d, "onmouseout", 	dm, "onMouseOut");
-	dojo.event.connect(d, "onmousedown",	dm, "onMouseDown");
-	dojo.event.connect(d, "onmouseup",		dm, "onMouseUp");
-	// TODO: process scrolling of elements, not only window
-	dojo.event.connect(window, "onscroll",	dm, "onScroll");
+	//TODO: when focus manager is ready, dragManager should be rewritten to use it
+	// set up event handlers on the document (or no?)
+	dojo.event.connect(d, "onkeydown", dm, "onKeyDown");
+	dojo.event.connect(d, "onmouseover", dm, "onMouseOver");
+	dojo.event.connect(d, "onmouseout", dm, "onMouseOut");
+	dojo.event.connect(d, "onmousedown", dm, "onMouseDown");
+	dojo.event.connect(d, "onmouseup", dm, "onMouseUp");
+	// TODO: process scrolling of elements, not only window (focus manager would 
+	// probably come to rescue here as well)
+	dojo.event.connect(window, "onscroll", dm, "onScroll");
 })();

@@ -1,23 +1,11 @@
 dojo.require("dojo.lang");
+dojo.require("dojo.lang.declare");
 dojo.provide("dojo.dnd.DragSource");
 dojo.provide("dojo.dnd.DropTarget");
 dojo.provide("dojo.dnd.DragObject");
 dojo.provide("dojo.dnd.DragAndDrop");
 
-dojo.dnd.DragSource = function(){
-
-	//dojo.profile.start("DragSource");
-
-	var dm = dojo.dnd.dragManager;
-	if(dm["registerDragSource"]){ // side-effect prevention
-		dm.registerDragSource(this);
-	}
-
-	//dojo.profile.end("DragSource");
-
-}
-
-dojo.lang.extend(dojo.dnd.DragSource, {
+dojo.declare("dojo.dnd.DragSource", null, {
 	type: "",
 
 	onDragEnd: function(){
@@ -40,16 +28,20 @@ dojo.lang.extend(dojo.dnd.DragSource, {
 	reregister: function(){
 		dojo.dnd.dragManager.registerDragSource(this);
 	}
+}, function(){
+
+	//dojo.profile.start("DragSource");
+
+	var dm = dojo.dnd.dragManager;
+	if(dm["registerDragSource"]){ // side-effect prevention
+		dm.registerDragSource(this);
+	}
+
+	//dojo.profile.end("DragSource");
+
 });
 
-dojo.dnd.DragObject = function(){
-	var dm = dojo.dnd.dragManager;
-	if(dm["registerDragObject"]){ // side-effect prevention
-		dm.registerDragObject(this);
-	}
-}
-
-dojo.lang.extend(dojo.dnd.DragObject, {
+dojo.declare("dojo.dnd.DragObject", null, {
 	type: "",
 
 	onDragStart: function(){
@@ -78,15 +70,14 @@ dojo.lang.extend(dojo.dnd.DragObject, {
 	// non-camel aliases
 	ondragout: this.onDragOut,
 	ondragover: this.onDragOver
+}, function(){
+	var dm = dojo.dnd.dragManager;
+	if(dm["registerDragObject"]){ // side-effect prevention
+		dm.registerDragObject(this);
+	}
 });
 
-dojo.dnd.DropTarget = function(){
-	if (this.constructor == dojo.dnd.DropTarget) { return; } // need to be subclassed
-	this.acceptedTypes = [];
-	dojo.dnd.dragManager.registerDropTarget(this);
-}
-
-dojo.lang.extend(dojo.dnd.DropTarget, {
+dojo.declare("dojo.dnd.DropTarget", null, {
 
 	acceptsType: function(type){
 		if(!dojo.lang.inArray(this.acceptedTypes, "*")){ // wildcard
@@ -122,6 +113,10 @@ dojo.lang.extend(dojo.dnd.DropTarget, {
 
 	onDropEnd: function(){
 	}
+}, function(){
+	if (this.constructor == dojo.dnd.DropTarget) { return; } // need to be subclassed
+	this.acceptedTypes = [];
+	dojo.dnd.dragManager.registerDropTarget(this);
 });
 
 // NOTE: this interface is defined here for the convenience of the DragManager
@@ -138,16 +133,12 @@ dojo.dnd.DragEvent = function(){
 	//		"dragStart", "dragEnter", "dragLeave"]
 	//
 }
-
-dojo.dnd.DragManager = function(){
-	/*
-	 *	The DragManager handles listening for low-level events and dispatching
-	 *	them to higher-level primitives like drag sources and drop targets. In
-	 *	order to do this, it must keep a list of the items.
-	 */
-}
-
-dojo.lang.extend(dojo.dnd.DragManager, {
+/*
+ *	The DragManager handles listening for low-level events and dispatching
+ *	them to higher-level primitives like drag sources and drop targets. In
+ *	order to do this, it must keep a list of the items.
+ */
+dojo.declare("dojo.dnd.DragManager", null, {
 	selectedSources: [],
 	dragObjects: [],
 	dragSources: [],
