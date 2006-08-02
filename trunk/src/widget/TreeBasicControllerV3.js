@@ -302,10 +302,6 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	doDetachNode: function(node, callObj, callFunc) {
 		node.detach();
-
-		if (callFunc) {
-			callFunc.call(dojo.lang.isUndefined(callObj) ? this : callObj, node);
-		}
 	}
 	
 });
@@ -325,7 +321,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	destroyNode: function(node) {
 		return this.runStages(
-			this.canDestroyNode, this.prepareDestroyNode, this.doDestroyNode, this.exposeMove, arguments
+			this.canDestroyNode, this.prepareDestroyNode, this.doDestroyNode, this.exposeDestroy, arguments
 		);			
 	},
 

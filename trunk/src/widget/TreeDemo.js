@@ -1,23 +1,35 @@
 
 dojo.provide("dojo.widget.TreeDemo");
-
+dojo.require("dojo.Deferred");
 
 dojo.widget.TreeDemo = {
 	
+	reportIfDefered: function(res) {
+		if (res instanceof dojo.Deferred) {			
+			res.addCallbacks(
+				function(res) { dojo.debug("OK " + (res ? res: '')); },
+				function(err) { dojo.debug("Error"); dojo.debugShallow(err); }
+			);
+		}
+	},
+							 
+	
 	bindDemoMenu: function(controller) {
+		var _t = this;
+		
 		dojo.event.topic.subscribe('treeContextMenuDestroy/engage',
 			function (menuItem) { 
 				var node = menuItem.getTreeNode();
-				if (confirm("Delete node with descendants: "+node.title.replace(/(<([^>]+)>)/ig," ") +" ?")) {
-					controller.destroyNode(node); 
-				}
+				//if (confirm("Delete node with descendants: "+node.title.replace(/(<([^>]+)>)/ig," ") +" ?")) {
+				_t.reportIfDefered(controller.destroyNode(node)); 
+				
 			}
 		);
 
 
 		dojo.event.topic.subscribe('treeContextMenuCreate/engage',
 			function (menuItem) {
-                controller.createChild(menuItem.getTreeNode(), 0, {title:"New node"});
+               _t.reportIfDefered(controller.createChild(menuItem.getTreeNode(), 0, {title:"New node"}));
             }
 		);
 
@@ -26,7 +38,7 @@ dojo.widget.TreeDemo = {
 			function (menuItem) {
                 var node = menuItem.getTreeNode();
                 if (node.isFirstNode()) return;
-                controller.move(node, node.parent, node.getParentIndex()-1);
+                _t.reportIfDefered(controller.move(node, node.parent, node.getParentIndex()-1));
             }
 		);
 
@@ -35,7 +47,7 @@ dojo.widget.TreeDemo = {
 			function (menuItem) {
                 var node = menuItem.getTreeNode();
                 if (node.isLastNode()) return;
-                controller.move(node, node.parent, node.getParentIndex()+1);
+                _t.reportIfDefered(controller.move(node, node.parent, node.getParentIndex()+1));
             }
 		);
 
@@ -43,7 +55,7 @@ dojo.widget.TreeDemo = {
 		dojo.event.topic.subscribe('treeContextMenuEdit/engage',
 			function (menuItem) {
                 var node = menuItem.getTreeNode();
-                controller.editLabelStart(node);
+                _t.reportIfDefered(controller.editLabelStart(node));
 			}
 		);
 
