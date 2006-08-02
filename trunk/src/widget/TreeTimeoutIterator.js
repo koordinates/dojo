@@ -6,6 +6,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeCommon");
+dojo.require("dojo.Deferred");
 
 
 /**
