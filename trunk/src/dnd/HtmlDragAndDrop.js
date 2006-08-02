@@ -388,16 +388,36 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		}
 
 		var gravity = this.vertical ? dojo.html.gravity.WEST : dojo.html.gravity.NORTH;
+		var hide = false;
 		if(i < 0) {
 			if(this.childBoxes.length) {
 				var before = (dojo.html.gravity(this.childBoxes[0].node, e) & gravity);
+				if(before){ hide = true; }
 			} else {
 				var before = true;
 			}
 		} else {
 			var child = this.childBoxes[i];
 			var before = (dojo.html.gravity(child.node, e) & gravity);
+			if(child.node === dragObjects[0].dragSource.domNode){
+				hide = true;
+			}else{
+				var currentPosChild = before ? 
+						(i>0?this.childBoxes[i-1]:child) : 
+						(i<this.childBoxes.length-1?this.childBoxes[i+1]:child);
+				if(currentPosChild.node === dragObjects[0].dragSource.domNode){
+					hide = true;
+				}
+			}
 		}
+
+		if(hide){
+			this.dropIndicator.style.display="none";
+			return;
+		}else{
+			this.dropIndicator.style.display="";
+		}
+
 		this.placeIndicator(e, dragObjects, i, before);
 
 		if(!dojo.html.hasParent(this.dropIndicator)) {
@@ -426,6 +446,9 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			if(this.vertical){
 				this.dropIndicator.style.height = child.height + "px";
 				this.dropIndicator.style.top = child.top + "px";
+			}else{
+				this.dropIndicator.style.width = child.width + "px";
+				this.dropIndicator.style.left = child.left + "px";
 			}
 		}
 	},
