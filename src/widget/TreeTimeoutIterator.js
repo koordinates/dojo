@@ -18,6 +18,8 @@ dojo.require("dojo.widget.TreeCommon");
  *       keeping its parent and parent position are untouched *
  *
  * finishFunc/finishObj called at the end
+ *
+ * TODO: it should work only sync-way to solve CPU-hungry tasks 
  */
 dojo.widget.TreeTimeoutIterator = function(elem, callFunc, callObj) {
 	var _this = this;

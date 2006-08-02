@@ -62,7 +62,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return this.nodeType;
 	},
 	
-	cloneProperties: ["tryLazyInit","nodeType","objectId","object",
+	cloneProperties: ["actionsDisabled","tryLazyInit","nodeType","objectId","object",
 		   "title","isFolder","isExpanded","state"],
 	
 	

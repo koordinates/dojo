@@ -13,7 +13,7 @@
                 <listitem>Multiline content support</listitem>        
             </itemizedlist>    
          </listitem>
-        <listitem>Core rewritten completely, event system modified</listitem>
+        <listitem>Event system modified</listitem>
         <listitem>Lazy creation feature allows to create graphical widgets from node data only when they are to be shown.
            
             <itemizedlist>
@@ -24,13 +24,15 @@
         <listitem>Many features were moved from core into extensions
         
             <itemizedlist>
-                <listitem>Add TreeDocIcon extension instead of builtin childIcon support</listitem>
+                <listitem>Added TreeDocIcon extension instead of builtin childIcon support</listitem>
                 </itemizedlist>
         </listitem>
         
-        <listitem>Implicit helpers(controller,selector) were removed. Now you need to create/assigns them explicitly with JS or markup.</listitem>
+        <listitem>Implicit helpers(controller,selector)  removed</listitem>
        
+          <listitem>Locking features removed</listitem>
         
+        <listitem>RPC has both sync/async modes with callbacks</listitem>
     </itemizedlist>
     
     
