@@ -317,8 +317,12 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			targetParent = this.treeNode.parent;
 		}
 		
-		return this.getDropHandler(e, sourceTreeNode, targetParent, targetIndex)();
+		dojo.profile.start("onDrop "+sourceTreeNode);
+		var r = this.getDropHandler(e, sourceTreeNode, targetParent, targetIndex)();
+		
+		dojo.profile.end("onDrop "+sourceTreeNode);
 			
+		return r;
 
 	},
 	

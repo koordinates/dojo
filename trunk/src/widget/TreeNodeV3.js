@@ -595,7 +595,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		if (this.isExpanded) return;
 
 
-		//dojo.profile.start("expand "+this);
+		dojo.profile.start("expand "+this);
 		
 		//dojo.debug("expand in "+this);
 		
@@ -607,19 +607,20 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end("expand - lazy init "+this);
 		
-		//dojo.profile.start("expand - showChildren "+this);
 		
 		this.isExpanded = true;
 
 		this.viewSetExpand();
 
+		dojo.profile.start("expand - showChildren "+this);
+		
 		/**
 		 * no matter if I have children or not. need to show/hide container anyway.
 		 * use case: empty folder is expanded => then child is added, container already shown all fine
 		 */
 		this.showChildren();
 		
-		//dojo.profile.end("expand - showChildren "+this);
+		dojo.profile.end("expand - showChildren "+this);
 		
 		
 		//dojo.profile.start("expand - viewSetExpand "+this);
@@ -631,7 +632,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end("expand - event "+this);
 		
-		//dojo.profile.end("expand "+this);
+		dojo.profile.end("expand "+this);
 	},
 
 
