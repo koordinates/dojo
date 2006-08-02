@@ -17,6 +17,8 @@ dojo.widget.defineWidget(
 
 		messageTopic: "",
 		contentNode: null,
+
+		_scrollConnected: false,
 		
 		// possible message types
 		messageTypes: {
@@ -41,6 +43,8 @@ dojo.widget.defineWidget(
 
 		slideAnim: null,
 		fadeAnim: null,
+
+		bgIframe: null,
 
 		postCreate: function(){
 			this.hide();
@@ -108,34 +112,9 @@ dojo.widget.defineWidget(
 
 			// now do funky animation of widget appearing from
 			// bottom right of page and up
-			var view = dojo.html.getViewport();
-			var scroll = dojo.html.getScroll();
-
 			this.show();
 
 			var nodeSize = dojo.html.getMarginBox(this.containerNode);
-			var endCoords = { top: 0, left: 0 };
-
-			// TODO: Add scroll change event lisener similar to Dialog.js widget so
-			// that notify window stays with bottom of screen when it is moved
-
-			// sets up the size of the clipping node
-			this.clipNode.style.height = nodeSize.height+"px";
-			this.clipNode.style.width = nodeSize.width+"px";
-
-			// sets up the position of the clipping node
-			if(this.positionDirection.match(/^t/)){
-				this.clipNode.style.top = scroll.top+"px";
-			}else if(this.positionDirection.match(/^b/)){
-				this.clipNode.style.top = (view.height - nodeSize.height - 2 + scroll.top)+"px";
-			}
-			if(this.positionDirection.match(/^[tb]r-/)){
-				this.clipNode.style.left = (view.width - nodeSize.width - 1 - scroll.left)+"px";
-			}else if(this.positionDirection.match(/^[tb]l-/)){
-				this.clipNode.style.left = 0 + "px";
-			}
-
-			this.clipNode.style.clip = "rect(0px, " + nodeSize.width + "px, " + nodeSize.height + "px, 0px)";
 
 			// sets up initial position of container node and slide-out direction
 			if(this.positionDirection.indexOf("-up") >= 0){
@@ -176,7 +155,56 @@ dojo.widget.defineWidget(
 				})).play();
 		},
 
-		onSelect: function(e) { }
+		placeClip: function(){
+			var scroll = dojo.html.getScroll();
+			var view = dojo.html.getViewport();
+
+			var nodeSize = dojo.html.getMarginBox(this.containerNode);
+
+			// sets up the size of the clipping node
+			this.clipNode.style.height = nodeSize.height+"px";
+			this.clipNode.style.width = nodeSize.width+"px";
+
+			// sets up the position of the clipping node
+			if(this.positionDirection.match(/^t/)){
+				this.clipNode.style.top = scroll.top+"px";
+			}else if(this.positionDirection.match(/^b/)){
+				this.clipNode.style.top = (view.height - nodeSize.height - 2 + scroll.top)+"px";
+			}
+			if(this.positionDirection.match(/^[tb]r-/)){
+				this.clipNode.style.left = (view.width - nodeSize.width - 1 - scroll.left)+"px";
+			}else if(this.positionDirection.match(/^[tb]l-/)){
+				this.clipNode.style.left = 0 + "px";
+			}
+
+			this.clipNode.style.clip = "rect(0px, " + nodeSize.width + "px, " + nodeSize.height + "px, 0px)";
+		},
+
+		onSelect: function(e) { },
+
+		onScroll: function(){
+			this.placeClip();
+		},
+
+		show: function(){
+			dojo.widget.Toaster.superclass.show.call(this);
+
+			this.placeClip();
+
+			if(!this._scrollConnected){
+				this._scrollConnected = true;
+				dojo.event.connect(window, "onscroll", this, "onScroll");
+			}
+		},
+
+		hide: function(){
+			dojo.widget.Toaster.superclass.hide.call(this);
+
+			if(this._scrollConnected){
+				this._scrollConnected = false;
+				dojo.event.disconnect(window, "onscroll", this, "onScroll");
+			}
+		}
 	},
 	"html"
 );
