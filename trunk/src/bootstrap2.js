@@ -158,7 +158,7 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 
 (function(){
 	function preload(locale){
-		if(dj_generatedLocales) {
+		if(!dj_undef("dj_generatedLocales", dj_global)){
 			dojo.setModulePrefix("nls","nls");
 
 			locale = dojo.normalizeLocale(locale);
