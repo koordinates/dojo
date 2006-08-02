@@ -352,12 +352,12 @@ dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(coords, in
 		// coords is an dom object (or dom object id); return it's coordinates
 		var node = dojo.byId(coords);
 		var pos = dojo.html.abs(node, includeScroll);
-		var borderbox = dojo.html.getBorderBox(node);
+		var marginbox = dojo.html.getMarginBox(node);
 		var ret = {
 			left: pos.left,
 			top: pos.top,
-			width: borderbox.width,
-			height: borderbox.height
+			width: marginbox.width,
+			height: marginbox.height
 		};
 	}
 	ret.x = ret.left;
