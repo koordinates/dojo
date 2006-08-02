@@ -140,6 +140,7 @@ dojo.widget.defineWidget(
 			if(this.formatSelectBox) {
 				dojo.lang.forEach(this.formatSelectBox.options, function(item){
 					if(item.value.toLowerCase() == format.toLowerCase()){
+						// FIXME: SEVERE: setting selected on this item breaks the undo stack on IE
 						item.selected = true;
 					}
 				});
