@@ -63,6 +63,7 @@ for (locale in djBundlesByLocale){
 	var os = new java.io.BufferedWriter(
 			new java.io.OutputStreamWriter(new java.io.FileOutputStream(outFile), "utf-8"));
 	try{
+		os.write("dojo.provide(\"nls.dojo_"+locale+"\");");
 		for (var j = 0; j < djLoadedBundles.length; j++){
 			entry = djLoadedBundles[j];
 			var pkg = [entry.modulename,"_nls",entry.bundlename,locale].join(".");
