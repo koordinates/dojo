@@ -29,7 +29,7 @@ dojo.widget.TreeV3 = function() {
 
 	this.eventNames = {};
 	
-	this.DNDAcceptTypes = [];
+	this.DndAcceptTypes = [];
 	this.actionsDisabled = [];
 	
 	this.listeners = [];
@@ -44,7 +44,7 @@ dojo.lang.extend(dojo.widget.TreeV3, dojo.widget.TreeWithNode);
 dojo.lang.extend(dojo.widget.TreeV3, {
 	widgetType: "TreeV3",
 
-	DNDMode: "",
+	DndMode: "",
 
 	defaultChildWidget: null,
 	
@@ -81,12 +81,12 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	unsetFolderOnEmpty: true,
 
 
-	DNDModes: {
+	DndModes: {
 		BETWEEN: 1,
 		ONTO: 2
 	},
 
-	DNDAcceptTypes: "",
+	DndAcceptTypes: "",
 
     // will have cssRoot before it 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeV3.css"),
@@ -193,20 +193,20 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	},
 
 	
-	adjustDNDMode: function() {
+	adjustDndMode: function() {
 		var _this = this;
 		
 		
-		var DNDMode = 0;
-		dojo.lang.forEach(this.DNDMode.split(';'),
+		var DndMode = 0;
+		dojo.lang.forEach(this.DndMode.split(';'),
 			function(elem) {
-				var mode = _this.DNDModes[dojo.string.trim(elem).toUpperCase()];
-				if (mode) DNDMode = DNDMode | mode;
+				var mode = _this.DndModes[dojo.string.trim(elem).toUpperCase()];
+				if (mode) DndMode = DndMode | mode;
 			}
 		 );
 	
 		
-		this.DNDMode = DNDMode;
+		this.DndMode = DndMode;
 
 	},
 	
@@ -230,7 +230,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		}
 		
 		this.adjustEventNames();
-		this.adjustDNDMode();
+		this.adjustDndMode();
 
 		this.makeNodeTemplate();
 		this.makeContainerNodeTemplate();

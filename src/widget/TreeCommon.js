@@ -8,6 +8,7 @@ dojo.widget.TreeCommon = function() {
 dojo.lang.extend(dojo.widget.TreeCommon, {
 	
 	
+	listenTreeEvents: [],
 	
 	listenTree: function(tree) {
 		

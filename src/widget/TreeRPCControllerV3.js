@@ -1,5 +1,5 @@
 
-dojo.provide("dojo.widget.TreeRPCControllerV3");
+dojo.provide("dojo.widget.TreeRpcControllerV3");
 
 
 
@@ -8,19 +8,19 @@ dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeLoadingControllerV3");
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeRPCControllerV3");
+dojo.widget.tags.addParseTreeHandler("dojo:TreeRpcControllerV3");
 
-dojo.widget.TreeRPCControllerV3 = function(){
+dojo.widget.TreeRpcControllerV3 = function(){
 	dojo.widget.TreeLoadingControllerV3.call(this);
 }
 
-dojo.inherits(dojo.widget.TreeRPCControllerV3, dojo.widget.TreeLoadingControllerV3);
+dojo.inherits(dojo.widget.TreeRpcControllerV3, dojo.widget.TreeLoadingControllerV3);
 
 
-// TODO: do something with addChild / setChild, so that RPCController become able
+// TODO: do something with addChild / setChild, so that RpcController become able
 // to hook on this and report to server
-dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
-	widgetType: "TreeRPCControllerV3",
+dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
+	widgetType: "TreeRpcControllerV3",
 
 				
 	/**
@@ -50,8 +50,8 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 		};
 
 
-		var deferred = this.runRPC({		
-			url: this.getRPCUrl('move'),
+		var deferred = this.runRpc({		
+			url: this.getRpcUrl('move'),
 			sync: sync,			
 			params: params
 		});
@@ -72,7 +72,7 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 
 // -------------- detach
-dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
+dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	
 	prepareDetach: function(node, sync) {
 		var deferred = this.startProcessing(node);		
@@ -92,8 +92,8 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 			tree: this.getInfo(node.tree)
 		}
 
-		var deferred = this.runRPC({
-			url: this.getRPCUrl('detach'),
+		var deferred = this.runRpc({
+			url: this.getRpcUrl('detach'),
 			sync: sync,
 			params: params			
 		});
@@ -113,7 +113,7 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 });
 
-dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
+dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 
 	prepareDestroy: function(node, sync) {
 		//dojo.debug(node);
@@ -134,8 +134,8 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 			tree: this.getInfo(node.tree)
 		}
 
-		var deferred = this.runRPC({
-			url: this.getRPCUrl('destroy'),
+		var deferred = this.runRpc({
+			url: this.getRpcUrl('destroy'),
 			sync: sync,
 			params: params			
 		});
@@ -155,7 +155,7 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 });
 	
 
-dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
+dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff
@@ -171,8 +171,8 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 			data: data
 		}
 
-		var deferred = this.runRPC({
-			url: this.getRPCUrl('createChild'),
+		var deferred = this.runRpc({
+			url: this.getRpcUrl('createChild'),
 			sync: sync,
 			params: params
 		});
@@ -201,8 +201,8 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 		}
 		
 		
-		var deferred = this.runRPC({
-			url: this.getRPCUrl('clone'),
+		var deferred = this.runRpc({
+			url: this.getRpcUrl('clone'),
 			sync: sync,
 			params: params
 		});

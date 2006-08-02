@@ -28,7 +28,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	/*
 	 * dynamic loading-related stuff. 
 	 * When an empty folder node appears, it is "UNCHECKED" first,
-	 * then after RPC call it becomes LOADING and, finally LOADED
+	 * then after Rpc call it becomes LOADING and, finally LOADED
 	 */
 	loadStates: {
 		UNCHECKED: "UNCHECKED",
@@ -396,7 +396,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		// I pass no args and ignore default controller
 		//dojo.profile.start(this.widgetType+" createSimple");
 		//dojo.profile.start(this.widgetType+" createSimple constructor");
-		var treeNode = new (dojo.widget[this.widgetType])();
+		var treeNode = new parent.tree.defaultChildWidget(); 
 		//dojo.profile.end(this.widgetType+" createSimple constructor");
 		
 		//dojo.profile.start(this.widgetType+" createSimple mixin");		
@@ -609,6 +609,10 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.start("expand - showChildren "+this);
 		
+		this.isExpanded = true;
+
+		this.viewSetExpand();
+
 		/**
 		 * no matter if I have children or not. need to show/hide container anyway.
 		 * use case: empty folder is expanded => then child is added, container already shown all fine
@@ -617,19 +621,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end("expand - showChildren "+this);
 		
-
-		this.isExpanded = true;
-
-
+		
 		//dojo.profile.start("expand - viewSetExpand "+this);
-		
-		this.viewSetExpand();
-		
+				
 		//dojo.profile.end("expand - viewSetExpand "+this);
 
 		//dojo.profile.start("expand - event "+this);
 
-		dojo.event.topic.publish(this.tree.eventNames.afterExpand, {source: this} );
 		
 		//dojo.profile.end("expand - event "+this);
 		
@@ -640,20 +638,18 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	collapse: function(){
 		if (!this.isExpanded) return;
 
+		this.isExpanded = false;
+		
 		if (this.children.length) {			
 			this.hideChildren();
 		}
+			
 		
-		this.isExpanded = false;
-
-		this.viewSetExpand();
-
-		dojo.event.topic.publish(this.tree.eventNames.afterCollapse, {source: this} );
 	},
 
 	hideChildren: function(){
 		this.tree.toggleObj.hide(
-			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHide")
+			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
 		);
 
 		// if dnd is in action, recalculate changed coordinates
@@ -668,7 +664,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.start("Toggler show");
 		
 		this.tree.toggleObj.show(
-			this.containerNode, this.toggleDuration, this.explodeSrc
+			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
 		);
 		
 		//dojo.profile.end("Toggler show");
@@ -679,6 +675,14 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 	},
 	
+	onShowChildren: function() {		
+		dojo.event.topic.publish(this.tree.eventNames.afterExpand, {source: this} );		
+	},
+	
+	onHideChildren: function() {
+		this.viewSetExpand();
+		dojo.event.topic.publish(this.tree.eventNames.afterCollapse, {source: this} );
+	},
 
 	/* Edit current node : change properties and update contents */
 	setTitle: function(title) {

@@ -74,7 +74,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			node.contentNode.style.border = this.indicatorStyle;
 		} else {
 			// FIXME: bottom-top or highlight should cover ONLY top/bottom or div itself,
-			// not span whole line (try DND)
+			// not span whole line (try Dnd)
 			// FAILURE: Can't put span inside div: multiline bottom-top will span multiple lines
 			if (position == "before") {
 				node.contentNode.style.borderTop = this.indicatorStyle;
@@ -158,9 +158,9 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 	getAcceptPosition: function(e, sourceTreeNode) {
 
-		var DNDMode = this.treeNode.tree.DNDMode;
+		var DndMode = this.treeNode.tree.DndMode;
 
-		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO &&
+		if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO &&
 			// check if ONTO is allowed localy
 			!(
 			  !this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) // check dynamically cause may change w/o regeneration of dropTarget			
@@ -168,13 +168,13 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			 )
 		) {
 			// disable ONTO if can't move
-			DNDMode &= ~dojo.widget.TreeV3.prototype.DNDModes.ONTO;
+			DndMode &= ~dojo.widget.TreeV3.prototype.DndModes.ONTO;
 		}
 
 
-		var position = this.getPosition(e, DNDMode);
+		var position = this.getPosition(e, DndMode);
 
-		//dojo.debug(DNDMode & +" : "+position);
+		//dojo.debug(DndMode & +" : "+position);
 
 
 		// if onto is here => it was allowed before, no accept check is needed
@@ -240,16 +240,16 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	
 	
 
-	/* get DNDMode and see which position e fits */
-	getPosition: function(e, DNDMode) {
+	/* get DndMode and see which position e fits */
+	getPosition: function(e, DndMode) {
 		var mousey = e.pageY || e.clientY + dojo.body().scrollTop;
 		
 		var relY = mousey - this.cachedNodeY;
 		var p = relY / this.cachedNodeHeight;
 
 		var position = ""; // "" <=> forbidden
-		if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO
-		  && DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
+		if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO
+		  && DndMode & dojo.widget.TreeV3.prototype.DndModes.BETWEEN) {
 			//dojo.debug("BOTH");
 			if (p<=0.33) {
 				position = "before";
@@ -260,7 +260,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			} else {
 				position = "after";
 			}
-		} else if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.BETWEEN) {
+		} else if (DndMode & dojo.widget.TreeV3.prototype.DndModes.BETWEEN) {
 			//dojo.debug("BETWEEN");
 			if (p<=0.5 || this.treeNode.isExpanded && this.treeNode.children.length && !this.treeNode.isLastNode()) {
 				position = "before";
@@ -268,7 +268,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 				position = "after";
 			}
 		}
-		else if (DNDMode & dojo.widget.TreeV3.prototype.DNDModes.ONTO) {
+		else if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO) {
 			//dojo.debug("ONTO");
 			position = "onto";
 		}

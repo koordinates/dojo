@@ -1,13 +1,13 @@
 
-dojo.provide("dojo.widget.TreeDNDControllerV3");
+dojo.provide("dojo.widget.TreeDndControllerV3");
 
 
 dojo.require("dojo.dnd.TreeDragAndDropV3");
 	
-dojo.widget.tags.addParseTreeHandler("dojo:TreeDNDControllerV3");
+dojo.widget.tags.addParseTreeHandler("dojo:TreeDndControllerV3");
 
 
-dojo.widget.TreeDNDControllerV3 = function() {
+dojo.widget.TreeDndControllerV3 = function() {
 	this.dragSources = {};
 
 	this.dropTargets = {};
@@ -15,13 +15,13 @@ dojo.widget.TreeDNDControllerV3 = function() {
 	this.listenedTrees = [];
 }
 
-dojo.inherits(dojo.widget.TreeDNDControllerV3, dojo.widget.HtmlWidget);
+dojo.inherits(dojo.widget.TreeDndControllerV3, dojo.widget.HtmlWidget);
 
 
-dojo.lang.extend(dojo.widget.TreeDNDControllerV3, dojo.widget.TreeCommon.prototype);
+dojo.lang.extend(dojo.widget.TreeDndControllerV3, dojo.widget.TreeCommon.prototype);
 
-dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
-	widgetType: "TreeDNDControllerV3",
+dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
+	widgetType: "TreeDndControllerV3",
 	
 	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy", "afterAddChild"],
 	
@@ -38,13 +38,13 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 		this.unlistenTree(message.source);
 	},
 	
-	// first DND registration happens in addChild
+	// first Dnd registration happens in addChild
 	// because I have information about parent on this stage and can use it
 	// to check locking or other things
 	onAfterAddChild: function(message) {
-		//dojo.profile.start("DND addChild "+message.child);
+		//dojo.profile.start("Dnd addChild "+message.child);
 		this.listenNode(message.child);
-		//dojo.profile.end("DND addChild "+message.child);
+		//dojo.profile.end("Dnd addChild "+message.child);
 	},
 
 
@@ -65,13 +65,13 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	
 	
 	/**
-	 * Controller(node model) creates DNDNodes because it passes itself to node for synchroneous drops processing
+	 * Controller(node model) creates DndNodes because it passes itself to node for synchroneous drops processing
 	 * I can't process DnD with events cause an event can't return result success/false
 	*/
 	listenNode: function(node) {
 
-		//dojo.profile.start("DND listenNode "+node);		
-		if (!node.tree.DNDMode) return;
+		//dojo.profile.start("Dnd listenNode "+node);		
+		if (!node.tree.DndMode) return;
 		if (this.dragSources[node.widgetId] || this.dropTargets[node.widgetId]) return;
 
 	
@@ -84,21 +84,21 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 		if (!node.actionIsDisabled(node.actions.MOVE)) {
 			//dojo.debug("reg source")
 			
-			//dojo.profile.start("DND source "+node);		
+			//dojo.profile.start("Dnd source "+node);		
 			var source = this.makeDragSource(node);
-			//dojo.profile.end("DND source "+node);		
+			//dojo.profile.end("Dnd source "+node);		
 
 			this.dragSources[node.widgetId] = source;
 		}
 
-		//dojo.profile.start("DND target "+node);		
+		//dojo.profile.start("Dnd target "+node);		
 	
 		var target = this.makeDropTarget(node);
-		//dojo.profile.end("DND target "+node);		
+		//dojo.profile.end("Dnd target "+node);		
 
 		this.dropTargets[node.widgetId] = target;
 
-		//dojo.profile.end("DND listenNode "+node);		
+		//dojo.profile.end("Dnd listenNode "+node);		
 
 
 	},
@@ -115,7 +115,7 @@ dojo.lang.extend(dojo.widget.TreeDNDControllerV3, {
 	 * Factory method, override it to create special target
 	 */
 	makeDropTarget: function(node) {
-		 return new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DNDAcceptTypes, node);
+		 return new dojo.dnd.TreeDropTargetV3(node.contentNode, this.treeController, node.tree.DndAcceptTypes, node);
 	},
 
 	unlistenNode: function(node) {
