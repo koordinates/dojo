@@ -678,12 +678,14 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		}
 	},
 	
-	onShowChildren: function() {		
+	onShowChildren: function() {
+		this.onShow();
 		dojo.event.topic.publish(this.tree.eventNames.afterExpand, {source: this} );		
 	},
 	
 	onHideChildren: function() {
 		this.viewSetExpand();
+		this.onHide();
 		dojo.event.topic.publish(this.tree.eventNames.afterCollapse, {source: this} );
 	},
 
