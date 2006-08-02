@@ -65,6 +65,24 @@ dojo.normalizeLocale = function(locale) {
 	return locale ? locale.toLowerCase() : dojo.locale;
 };
 
+dojo.searchLocalePath = function(locale, down, searchFunc){
+	locale = dojo.normalizeLocale(locale);
+
+	var elements = locale.split('-');
+	var searchlist = [];
+	for(var i = elements.length; i > 0; i--){
+		searchlist.push(elements.slice(0, i).join('-'));
+	}
+	searchlist.push(false);
+	if(down){searchlist.reverse();}
+
+	for(var j = searchlist.length - 1; j >= 0; j--){
+		var loc = searchlist[j] || "ROOT";
+		var stop = searchFunc(loc);
+		if(stop){ break; }
+	}
+}
+
 /**
  * requireLocalization() is for loading translated bundles provided within a package in the namespace.
  * Contents are typically strings, but may be any name/value pair, represented in JSON format.
@@ -107,29 +125,19 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 	var syms = dojo.hostenv.getModuleSymbols(modulename);
 	var modpath = syms.concat("nls").join("/");
 
-	locale = dojo.normalizeLocale(locale);
-
-	var elements = locale.split('-');
-	var searchlist = [];
-	for(var i = elements.length; i > 0; i--){
-		searchlist.push(elements.slice(0, i).join('-'));
-	}
-	searchlist.push(false);
-
 	var bundlepackage = [modulename, "_nls", bundlename].join(".");
 	var bundle = dojo.hostenv.startPackage(bundlepackage);
 	dojo.hostenv.loaded_modules_[bundlepackage] = bundle; //FIXME: is this redundant?
 
 	var inherit = false;
-	for(var j = searchlist.length - 1; j >= 0; j--){
-		var loc = searchlist[j] || "ROOT";
+	dojo.searchLocalePath(locale, false, function(loc){
 		var pkg = bundlepackage + "." + loc;
 		var loaded = false;
 		if(!dojo.hostenv.findModule(pkg)){
 			// Mark loaded whether it's found or not, so that further load attempts will not be made
 			dojo.hostenv.loaded_modules_[pkg] = null;
 			var module = [modpath];
-			if(searchlist[j]){module.push(loc);}
+			if(loc != "ROOT"){module.push(loc);}
 			module.push(bundlename);
 			var filespec = module.join("/") + '.js';
 			loaded = dojo.hostenv.loadPath(filespec, null, function(hash) {
@@ -145,22 +153,45 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 		if(loaded && bundle[loc]){
 			inherit = bundle[loc];
 		}
-	}
+	});
 };
 
 (function(){
+	function preload(locale){
+		if(dj_generatedLocales) {
+			dojo.setModulePrefix("nls","nls");
+
+			locale = dojo.normalizeLocale(locale);
+			dojo.searchLocalePath(locale, true, function(loc){
+				for(var i=0; i<dj_generatedLocales.length;i++){
+					if(dj_generatedLocales[i] == loc){
+						dojo.require("nls.dojo_"+loc);
+						return true;
+					}
+				}
+				return false;
+			});
+		}
+	}
+
+	preload(dojo.locale);
+
 	var extra = djConfig.extraLocale;
 	if(extra){
+		if(!extra instanceof Array){
+			extra = [extra];
+		}
+
+		for(var i=0; i<extra.length; i++){
+			preload(extra[i]);
+		}
+
 		var req = dojo.requireLocalization;
 		dojo.requireLocalization = function(m, b, locale){
 			req(m,b,locale);
 			if(locale){return;}
-			if(extra instanceof Array){
-				for(var i=0; i<extra.length; i++){
-					req(m,b,extra[i]);
-				}
-			}else{
-				req(m,b,extra);
+			for(var i=0; i<extra.length; i++){
+				req(m,b,extra[i]);
 			}
 		};
 	}
