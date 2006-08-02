@@ -448,9 +448,10 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 
 		var i = this._getNodeUnderMouse(e);
 
+		var gravity = this.vertical ? dojo.html.gravity.WEST : dojo.html.gravity.NORTH;
 		if (i < 0) {
 			if (this.childBoxes.length) {
-				if (dojo.html.gravity(this.childBoxes[0].node, e) & dojo.html.gravity.NORTH) {
+				if (dojo.html.gravity(this.childBoxes[0].node, e) & gravity) {
 					return this.insert(e, this.childBoxes[0].node, "before");
 				} else {
 					return this.insert(e, this.childBoxes[this.childBoxes.length-1].node, "after");
@@ -460,7 +461,7 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		}
 
 		var child = this.childBoxes[i];
-		if (dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH) {
+		if (dojo.html.gravity(child.node, e) & gravity) {
 			return this.insert(e, child.node, "before");
 		} else {
 			return this.insert(e, child.node, "after");
