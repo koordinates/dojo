@@ -14,6 +14,7 @@ dojo.require("dojo.dnd.HtmlDragAndDrop");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.extras");
+dojo.require("dojo.Deferred");
 dojo.require("dojo.html.layout");
 
 dojo.dnd.TreeDragSourceV3 = function(node, syncController, type, treeNode){
@@ -330,7 +331,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var _this = this;
 		handler = function () {
 			//dojo.debug("Move "+sourceTreeNode+" to parent "+targetParent+":"+targetIndex);
-			return _this.controller.move(sourceTreeNode, targetParent, targetIndex);	
+			var result = _this.controller.move(sourceTreeNode, targetParent, targetIndex, true);
+			if (result instanceof dojo.Deferred) {
+				dojo.debug(result);
+				// return 
+				return (!result.fired) ? true : false;
+			} else {
+				return result;
+			}
 		}
 		
 		return handler;
