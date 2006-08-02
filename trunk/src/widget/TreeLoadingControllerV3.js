@@ -182,7 +182,46 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 
 	batchExpandTimeout: 0,
+/*
+	expandToLevel: function(node, level, sync) {
+		if (level == 0) return;
 
+		var children = node.children;
+		var _this = this;
+
+		
+		if (node.isTreeNode) {
+			var deferred = this.expand(node, sync);
+		} else {
+			var deferred = new dojo.Deferred();
+			deferred.callback();
+		}
+		
+		deferred.addCallback(function() {
+			for(var i=0; i<node.children.length; i++) {
+				var child = node.children[i];
+				
+				_this.expandToLevel(child, level-1, sync);
+			}
+		}
+		
+		var handler = function(node, expandLevel) {
+			this.node = node;
+			this.expandLevel = expandLevel;
+			// recursively expand opened node
+			this.process = function() {
+			};
+		}
+
+		var h = new handler(node, level-1);
+
+
+		var deferred = this.expand(node);
+		deferred.addCallback(function() { h.process() });
+
+		return deferred;
+	},*/
+	
 	expand: function(node, sync) {		
 		// widget which children are data objects, is UNCHECKED, but has children and shouldn't be loaded
 		// so I put children check here too
