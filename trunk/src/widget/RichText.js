@@ -602,7 +602,7 @@ dojo.widget.defineWidget(
 			if((!e)&&(this.object)){
 				e = dojo.event.browser.fixEvent(this.window.event);
 			}
-			dojo.debug("onkeydown:", e.keyCode);
+			// dojo.debug("onkeydown:", e.keyCode);
 			// we need this event at the moment to get the events from control keys
 			// such as the backspace. It might be possible to add this to Dojo, so that
 			// keyPress events can be emulated by the keyDown and keyUp detection.
