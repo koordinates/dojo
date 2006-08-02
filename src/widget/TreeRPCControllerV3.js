@@ -98,7 +98,33 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 	},
 
+	doDestroyNode: function(node, sync){
 
+		
+		var params = {
+			node: this.getInfo(node),
+			tree: this.getInfo(node.tree)
+		}
+
+		var deferred = this.runRPC({
+			url: this.getRPCUrl('destroy'),
+			sync: sync,
+			params: params			
+		});
+		
+		
+		var _this = this;
+		var args = arguments;
+		
+		deferred.addCallback(function() {			
+			dojo.widget.TreeBasicControllerV3.prototype.doDestroyNode.apply(_this,args);
+		});
+		
+						
+		return deferred;
+
+	},
+	
 
 
 	// -----------------------------------------------------------------------------
@@ -112,7 +138,7 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 			tree: this.getInfo(parent.tree),
 			parent: this.getInfo(parent),
 			index: index,
-			data: output
+			data: data
 		}
 
 		var deferred = this.runRPC({
@@ -123,6 +149,7 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 		
 		var _this = this;
 		var args = arguments;
+		
 		
 		deferred.addCallback(function() {			
 			dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.apply(_this,args);

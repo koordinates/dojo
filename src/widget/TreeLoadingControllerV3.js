@@ -66,7 +66,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 				}
 				
 				if (type=="load" ) {
-					//dojo.debug("GO "+deferred);
+				//dojo.debug("GO "+deferred);
 					
 					if(!dojo.lang.isUndefined(obj.error)){
 						deferred.errback(new RPCError(obj.error, obj));
@@ -232,10 +232,12 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 				
 		// exposer does not affect result
-		deferred.addCallback(function(res) {
-			expose.apply(_this, args);
-			return res;
-		});
+		if (expose) {
+			deferred.addCallback(function(res) {
+				expose.apply(_this, args);
+				return res;
+			});
+		}
 		
 		return deferred;
 	}
