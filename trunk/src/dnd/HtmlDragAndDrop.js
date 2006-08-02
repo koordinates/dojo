@@ -151,7 +151,7 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 		this.dragClone = this.createDragNode();
 
 		this.containingBlockPosition = this.domNode.offsetParent ? 
-			dojo.html.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
+			dojo.html.getAbsolutePosition(this.domNode.offsetParent, true) : {x:0, y:0};
 
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
