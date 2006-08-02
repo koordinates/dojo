@@ -44,17 +44,13 @@
 
 <h3>Dynamically loads nodes from server</h3>
 
-<input type="button" value="Expand first node to level 2"
-	onClick="dojo.widget.byId('controller').expandToLevel(dojo.widget.byId('tree').children[0],4)"
-/>
-
 <input type="button" value="Expand tree to level 3" onClick="testCreate()"/>
 <br/>
 
-<div dojoType="TreeLoadingControllerV3" widgetId="controller" RPCUrl="http://ilia.country-info.ru/dojo.php"></div>
+<div dojoType="TreeLoadingControllerV3" widgetId="treeController" RPCUrl="http://ilia.country-info.ru/dojo.php"></div>
 
 
-<div dojoType="TreeV3" widgetId="tree" listeners="controller">
+<div dojoType="TreeV3" widgetId="firstTree" listeners="treeController">
     <div dojoType="TreeNodeV3" title="Node 2" id="1">
         <div dojoType="TreeNodeV3" title="Node 2.1"></div>
         <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
