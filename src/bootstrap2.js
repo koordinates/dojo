@@ -122,13 +122,19 @@ dojo.searchLocalePath = function(locale, down, searchFunc){
  *	in dojo.locale
  */
 dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/){
-	var syms = dojo.hostenv.getModuleSymbols(modulename);
-	var modpath = syms.concat("nls").join("/");
-
 	var bundlepackage = [modulename, "_nls", bundlename].join(".");
 	var bundle = dojo.hostenv.startPackage(bundlepackage);
-	dojo.hostenv.loaded_modules_[bundlepackage] = bundle; //FIXME: is this redundant?
+	dojo.hostenv.loaded_modules_[bundlepackage] = bundle; // this seems to be necessary. why?
 
+	if(!dj_undef("dj_localesBuilt", dj_global) && dojo.hostenv.loaded_modules_[bundlepackage]){
+		locale = dojo.normalizeLocale(locale);
+		for(var i=0; i<dj_localesBuilt.length; i++){
+			if(dj_localesBuilt[i] == locale){return;}
+		}
+	}
+
+	var syms = dojo.hostenv.getModuleSymbols(modulename);
+	var modpath = syms.concat("nls").join("/");
 	var inherit = false;
 	dojo.searchLocalePath(locale, false, function(loc){
 		var pkg = bundlepackage + "." + loc;
@@ -140,12 +146,12 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 			if(loc != "ROOT"){module.push(loc);}
 			module.push(bundlename);
 			var filespec = module.join("/") + '.js';
-			loaded = dojo.hostenv.loadPath(filespec, null, function(hash) {
+			loaded = dojo.hostenv.loadPath(filespec, null, function(hash){
 				// Use singleton with prototype to point to other bundle, then mix-in result from loadPath
 				var clazz = function(){};
 				clazz.prototype = inherit;
 				bundle[loc] = new clazz();
-				for(var k in hash){ bundle[loc][k] = hash[k]; }
+				for(var j in hash){ bundle[loc][j] = hash[j]; }
 			});
 		}else{
 			loaded = true;
@@ -158,13 +164,13 @@ dojo.requireLocalization = function(modulename, bundlename, locale /*optional*/)
 
 (function(){
 	function preload(locale){
-		if(!dj_undef("dj_generatedLocales", dj_global)){
+		if(!dj_undef("dj_localesGenerated", dj_global)){
 			dojo.setModulePrefix("nls","nls");
 
 			locale = dojo.normalizeLocale(locale);
 			dojo.searchLocalePath(locale, true, function(loc){
-				for(var i=0; i<dj_generatedLocales.length;i++){
-					if(dj_generatedLocales[i] == loc){
+				for(var i=0; i<dj_localesGenerated.length;i++){
+					if(dj_localesGenerated[i] == loc){
 						dojo.require("nls.dojo_"+loc);
 						return true;
 					}
