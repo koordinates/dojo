@@ -115,6 +115,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		return ret;
 	},
 			
+	markProcessing: function() {		
+		dojo.html.addClass(this.expandNode, this.tree.classPrefix+'ExpandLoading');		
+	},
+	
+	unmarkProcessing: function() {
+		dojo.html.removeClass(this.expandNode, this.tree.classPrefix+'ExpandLoading');		
+	},
 	
 	
 	/**

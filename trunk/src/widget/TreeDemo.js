@@ -10,7 +10,7 @@ dojo.widget.TreeDemo = {
 				function(res) { dojo.debug("OK " + (res ? res: '')); },
 				function(err) { dojo.debug("Error"); dojo.debugShallow(err); }
 			);
-		}
+		}		
 	},
 							 
 	
@@ -21,7 +21,7 @@ dojo.widget.TreeDemo = {
 			function (menuItem) { 
 				var node = menuItem.getTreeNode();
 				//if (confirm("Delete node with descendants: "+node.title.replace(/(<([^>]+)>)/ig," ") +" ?")) {
-				_t.reportIfDefered(controller.destroyNode(node)); 
+				_t.reportIfDefered(controller.destroy(node)); 
 				
 			}
 		);

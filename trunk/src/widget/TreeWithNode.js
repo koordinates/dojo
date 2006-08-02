@@ -8,10 +8,50 @@ dojo.widget.TreeWithNode = {
 	// I need this to parse children
 	isContainer: true,
 	
-
+	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
+	
+	lock: function() {
+		//!this.lockLevel && this.markLoading();
+		this.lockLevel++;
+	},
+	unlock: function() {
+		if (!this.lockLevel) {
+			//dojo.debug((new Error()).stack);
+			dojo.raise("unlock: not locked");
+		}
+		this.lockLevel--;
+		//!this.lockLevel && this.unMarkLoading();
+	},
+	
 	
 	expandLevel: "", // expand to level automatically
 		
+	hasLock: function() {
+		return this.lockLevel>0;
+	},
+
+	isLocked: function() {
+		var node = this;
+		while (true) {
+			if (node.lockLevel) {
+				return true;
+			}
+			if (!node.parent || node.isTree) {
+				break;
+			}
+			
+			node = node.parent;
+			
+		}
+
+		return false;
+	},
+
+	
+	flushLock: function() {
+		this.lockLevel = 0;
+		//this.unMarkLoading();
+	},
 	
 	
 	actionIsDisabled: function(action) {
@@ -21,6 +61,11 @@ dojo.widget.TreeWithNode = {
 		if (dojo.lang.inArray(this.actionsDisabled, action)) {
 			disabled = true;
 		}
+
+		if (this.isLocked()) {
+			disabled = true;
+		}
+		
 		
 		if (this.isTreeNode) {
 			if (!this.tree.allowAddChildToLeaf && action == this.actions.ADDCHILD && !this.isFolder) {

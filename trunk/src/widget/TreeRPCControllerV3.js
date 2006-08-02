@@ -22,9 +22,7 @@ dojo.inherits(dojo.widget.TreeRPCControllerV3, dojo.widget.TreeLoadingController
 dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 	widgetType: "TreeRPCControllerV3",
 
-	
-			
-			
+				
 	/**
 	 * Make request to server about moving children.
 	 *
@@ -69,9 +67,24 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 		
 		return deferred;
-	},
+	}
+});
 
-	doDetach: function(node, callObj, callFunc){
+
+// -------------- detach
+dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
+	
+	prepareDetach: function(node, sync) {
+		var deferred = this.startProcessing(node);		
+		return deferred;
+	},
+	
+	finalizeDetach: function(node) {
+		this.finishProcessing(node);
+	},
+		
+
+	doDetach: function(node, sync){
 
 		
 		var params = {
@@ -96,9 +109,24 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 						
 		return deferred;
 
-	},
+	}
 
-	doDestroyNode: function(node, sync){
+});
+
+dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
+
+	prepareDestroy: function(node, sync) {
+		//dojo.debug(node);
+		var deferred = this.startProcessing(node);		
+		return deferred;
+	},
+	
+	finalizeDestroy: function(node) {
+		this.finishProcessing(node);
+	},
+		
+
+	doDestroy: function(node, sync){
 
 		
 		var params = {
@@ -117,15 +145,17 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 		var args = arguments;
 		
 		deferred.addCallback(function() {			
-			dojo.widget.TreeBasicControllerV3.prototype.doDestroyNode.apply(_this,args);
+			dojo.widget.TreeBasicControllerV3.prototype.doDestroy.apply(_this,args);
 		});
 		
 						
 		return deferred;
 
-	},
+	}
+});
 	
 
+dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff

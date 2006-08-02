@@ -14,6 +14,7 @@ dojo.widget.TreeSelectorV3 = function() {
 	this.eventNames = {};
 
 	this.listenedTrees = [];
+	this.selectedNodes = [];
 		
 }
 
@@ -21,12 +22,15 @@ dojo.inherits(dojo.widget.TreeSelectorV3, dojo.widget.HtmlWidget);
 
 dojo.lang.extend(dojo.widget.TreeSelectorV3, dojo.widget.TreeCommon.prototype);
 
+// TODO: add multiselect
 dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	widgetType: "TreeSelectorV3",
-	selectedNode: null,
 
 	listenTreeEvents: ["afterAddChild","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
 		
+	selectedNode: null,
+	
+	allowMulti: true,
 	
 	eventNamesDefault: {
 		select : "select",
