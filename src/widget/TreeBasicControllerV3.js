@@ -143,7 +143,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			return res;
 		};
 		var callFunc = function(node, iterator) {
-			return this.expand(node, false, iterator, iterator.forward);
+			 this.expand(node);
+			 iterator.forward();
 		}
 			
 		var iterator = new dojo.widget.TreeTimeoutIterator(nodeOrTree, callFunc, this);
