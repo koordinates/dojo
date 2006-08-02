@@ -326,6 +326,7 @@ dojo.dnd.HtmlDropTarget = function(node, types){
 dojo.inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
 
 dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
+	vertical: false,
 	onDragOver: function(e){
 		if(!this.accepts(e.dragObjects)){ return false; }
 
@@ -337,7 +338,8 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			var pos = dojo.html.getAbsolutePosition(child, true);
 			var inner = dojo.html.getBorderBox(child);
 			this.childBoxes.push({top: pos.y, bottom: pos.y+inner.height,
-				left: pos.x, right: pos.x+inner.width, node: child});
+				left: pos.x, right: pos.x+inner.width, height: inner.height, 
+				width: inner.width, node: child});
 		}
 
 		// TODO: use dummy node
@@ -362,11 +364,19 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 		with (this.dropIndicator.style) {
 			position = "absolute";
 			zIndex = 999;
-			borderTopWidth = "1px";
-			borderTopColor = "black";
-			borderTopStyle = "solid";
-			width = dojo.html.getBorderBox(this.domNode).width + "px";
-			left = dojo.html.getAbsolutePosition(this.domNode, true).x + "px";
+			if(this.vertical){
+				borderLeftWidth = "1px";
+				borderLeftColor = "black";
+				borderLeftStyle = "solid";
+				height = dojo.html.getBorderBox(this.domNode).height + "px";
+				top = dojo.html.getAbsolutePosition(this.domNode, true).y + "px";
+			}else{
+				borderTopWidth = "1px";
+				borderTopColor = "black";
+				borderTopStyle = "solid";
+				width = dojo.html.getBorderBox(this.domNode).width + "px";
+				left = dojo.html.getAbsolutePosition(this.domNode, true).x + "px";
+			}
 		}
 	},
 
@@ -377,15 +387,16 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 			this.createDropIndicator();
 		}
 
+		var gravity = this.vertical ? dojo.html.gravity.WEST : dojo.html.gravity.NORTH;
 		if(i < 0) {
 			if(this.childBoxes.length) {
-				var before = (dojo.html.gravity(this.childBoxes[0].node, e) & dojo.html.gravity.NORTH);
+				var before = (dojo.html.gravity(this.childBoxes[0].node, e) & gravity);
 			} else {
 				var before = true;
 			}
 		} else {
 			var child = this.childBoxes[i];
-			var before = (dojo.html.gravity(child.node, e) & dojo.html.gravity.NORTH);
+			var before = (dojo.html.gravity(child.node, e) & gravity);
 		}
 		this.placeIndicator(e, dragObjects, i, before);
 
@@ -398,17 +409,23 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 	 * Position the horizontal line that indicates "insert between these two items"
 	 */
 	placeIndicator: function(e, dragObjects, boxIndex, before) {
-		with(this.dropIndicator.style){
-			if (boxIndex < 0) {
-				if (this.childBoxes.length) {
-					top = (before ? this.childBoxes[0].top
-						: this.childBoxes[this.childBoxes.length - 1].bottom) + "px";
-				} else {
-					top = dojo.html.getAbsolutePosition(this.domNode, true).y + "px";
-				}
+		var targetProperty = this.vertical ? "left" : "top";
+		var child;
+		if (boxIndex < 0) {
+			if (this.childBoxes.length) {
+				child = before ? this.childBoxes[0]
+					: this.childBoxes[this.childBoxes.length - 1];
 			} else {
-				var child = this.childBoxes[boxIndex];
-				top = (before ? child.top : child.bottom) + "px";
+				this.dropIndicator.style[targetProperty] = dojo.html.getAbsolutePosition(this.domNode, true)[this.vertical?"x":"y"] + "px";
+			}
+		} else {
+			child = this.childBoxes[boxIndex];
+		}
+		if(child){
+			this.dropIndicator.style[targetProperty] = (before ? child[targetProperty] : child[this.vertical?"right":"bottom"]) + "px";
+			if(this.vertical){
+				this.dropIndicator.style.height = child.height + "px";
+				this.dropIndicator.style.top = child.top + "px";
 			}
 		}
 	},
