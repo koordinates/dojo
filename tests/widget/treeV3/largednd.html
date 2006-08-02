@@ -13,7 +13,7 @@
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
-	dojo.require("dojo.widget.TreeDNDControllerV3");
+	dojo.require("dojo.widget.TreeDndControllerV3");
 	dojo.hostenv.writeIncludes();
 </script>
 <script type="text/javascript">
@@ -63,14 +63,14 @@
 		}	
 
 		controller = dojo.widget.createWidget("TreeBasicControllerV3");
-		dndcontroller = dojo.widget.createWidget("TreeDNDControllerV3", { controller: controller });
+		dndcontroller = dojo.widget.createWidget("TreeDndControllerV3", { controller: controller });
 		
 		dojo.profile.start("createTree");
 		tree = dojo.widget.createWidget("TreeV3", {
 			listeners: [controller.widgetId,dndcontroller.widgetId],
-			DNDAcceptTypes: "firstTree",
+			DndAcceptTypes: "firstTree",
 			widgetId: "firstTree",
-			DNDMode:"between;onto",
+			DndMode:"between;onto",
 			toggle: "wipe"
 		});	
 		dojo.profile.end("createTree");
