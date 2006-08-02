@@ -24,6 +24,12 @@ dojo.CommunicationError = function() {
 dojo.inherits(dojo.CommunicationError, dojo.Error);
 
 
+dojo.LockedError = function() {
+	dojo.Error.apply(this, arguments);
+	this.name="LockedError"
+}
+dojo.inherits(dojo.LockedError, dojo.Error);
+
 dojo.FormatError = function() {
 	dojo.Error.apply(this, arguments);
 	this.name="FormatError"
@@ -114,7 +120,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	 * Add all loaded nodes from array obj as node children and expand it
 	*/
 	loadProcessResponse: function(node, result) {
-		dojo.debug("Process response "+node);
+		//dojo.debug("Process response "+node);
 				
 		if (!dojo.lang.isArray(result)) {
 			throw new dojo.FormatError('loadProcessResponse: Not array loaded: '+result);
@@ -181,13 +187,25 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		// widget which children are data objects, is UNCHECKED, but has children and shouldn't be loaded
 		// so I put children check here too
 		
-		var deferred = this.loadIfNeeded(node, sync);
+		var _this = this;
+		
+		var deferred = this.startProcessing(node);
+		
+		deferred.addCallback(function() {
+			return _this.loadIfNeeded(node, sync);
+		});
 				
 		deferred.addCallback(function(res) {
 			//dojo.debug("Activated callback dojo.widget.TreeBasicControllerV3.prototype.expand(node); "+res);
 			dojo.widget.TreeBasicControllerV3.prototype.expand(node);
 			return res;
 		});
+		
+		deferred.addBoth(function(res) {
+			_this.finishProcessing(node);
+			return res;
+		});
+		
 		
 		
 		return deferred;
@@ -208,18 +226,23 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	
-	runStages: function(check, prepare, make, expose, args) {
+	runStages: function(check, prepare, make, finalize, expose, args) {
+		var _this = this;
 		
 		if (check && !check.apply(this, args)) {
 			return false;
 		}
 		
+		var deferred = new dojo.Deferred();
+		
 		if (prepare) {
-			var deferred = prepare.apply(this, args);
-		} else {
-			var deferred = new dojo.Deferred();
-			deferred.callback();
+			deferred.addCallback(function() {
+				return prepare.apply(_this, args);
+			});
 		}
+		
+		deferred.callback();
+		
 		
 		//deferred.addCallback(function(res) { dojo.debug("Prepare fired "+res); return res});
 		
@@ -230,6 +253,13 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		//deferred.addCallback(function(res) { dojo.debug("Main fired "+res); return res});
 		
+		if (finalize) {
+			deferred.addBoth(function(res) {
+				finalize.apply(_this, args);
+				return res;
+			});
+		}
+			
 				
 		// exposer does not affect result
 		if (expose) {
@@ -240,18 +270,64 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		}
 		
 		return deferred;
+	},
+		
+	startProcessing: function() {
+		var deferred = new dojo.Deferred();
+		
+		for(var i=0;i<arguments.length;i++) {
+			if (arguments[i].isLocked()) {
+				deferred.errback(new dojo.LockedError("item locked "+arguments[i], arguments[i]));
+				//dojo.debug("startProcessing errback "+arguments[i]);
+				return deferred;
+			}
+			if (arguments[i].isTreeNode) {
+				arguments[i].markProcessing();
+			}
+			arguments[i].lock();
+		}
+				
+		//dojo.debug("startProcessing callback");
+				
+		deferred.callback();
+		
+		return deferred;
+	},
+	
+	finishProcessing: function() {
+		for(var i=0;i<arguments.length;i++) {
+			if (!arguments[i].hasLock()) {
+				// is not processed. probably we locked it and then met bad node in startProcessing
+				continue; 
+			}
+			//dojo.debug("has lock");	
+			arguments[i].unlock();
+			if (arguments[i].isTreeNode) {
+				arguments[i].unmarkProcessing();
+			}
+		}
 	}
 	
+		
+	
 });
+
 
 // ----------------- move -----------------
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
-	/* actually move the node, without informing viewer */
 	prepareMove: function(child, newParent, index, sync) {
-		
-		return this.loadIfNeeded(newParent, sync);		
+		var deferred = this.startProcessing(parent);
+		deferred.addCallback(dojo.lang.hitch(this, function() {
+			return this.loadIfNeeded(newParent, sync);
+		}));
+		return deferred;
+	},
+	
+	finalizeMove: function(child, newParent) {
+		this.finishProcessing(child, newParent);
 	}
+		
 	
 });
 
@@ -260,16 +336,32 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 
 	prepareCreateChild: function(parent, index, data, sync) {
-		return this.loadIfNeeded(parent, sync);		
+		var deferred = this.startProcessing(parent);
+		deferred.addCallback(dojo.lang.hitch(this, function() {
+			return this.loadIfNeeded(parent, sync);
+		}));
+		return deferred;
+	},
+	
+	finalizeCreateChild: function(parent) {
+		this.finishProcessing(parent);
 	}
 
 });
 
-
+// ---------------- clone ---------------
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
 	
 	prepareClone: function(child, newParent, index, deep, sync) {
-		return this.loadIfNeeded(newParent, sync);		
+		var deferred = this.startProcessing(child, newParent);
+		deferred.addCallback(dojo.lang.hitch(this, function() {
+			return this.loadIfNeeded(newParent, sync);
+		}));		
+		return deferred;	
+	},	
+	
+	finalizeClone: function(child, newParent) {
+		this.finishProcessing(child, newParent);
 	}
 
 });

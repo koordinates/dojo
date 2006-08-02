@@ -227,7 +227,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	 * run exposer to expose result to visitor immediatelly
 	 *   exposer does not affect result
 	 */
-	runStages: function(check, prepare, make, expose, args) {
+	runStages: function(check, prepare, make, finalize, expose, args) {
 		
 		if (check && !check.apply(this, args)) {
 			return false;
@@ -239,10 +239,16 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		
 		var result = make.apply(this, args);
 		
+		
+		if (finalize) {
+			finalize.apply(this,args);			
+		}
+			
 		if (!result) {
 			return result;
 		}
 		
+			
 		if (expose) {
 			expose.apply(this, args);
 		}
@@ -262,7 +268,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	clone: function(child, newParent, index, deep) {
 		return this.runStages(
-			this.canClone, this.prepareClone, this.doClone, this.exposeClone, arguments
+			this.canClone, this.prepareClone, this.doClone, this.finalizeClone, this.exposeClone, arguments
 		);			
 	},
 
@@ -279,12 +285,14 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 				
 		return cloned;
 	}
+	
+
 });
 
-// =============================== detachNode ============================
+// =============================== detach ============================
 
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
-	canDetachNode: function(child) {
+	canDetach: function(child) {
 		if (child.actionIsDisabled(child.actions.DETACH)) {
 			return false;
 		}
@@ -293,40 +301,40 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 
-	detachNode: function(node) {
+	detach: function(node) {
 		return this.runStages(
-			this.canDetachNode, this.prepareDetachNode, this.doDetachNode, this.exposeDetachNode, arguments
+			this.canDetach, this.prepareDetach, this.doDetach, this.finalizeDetach, this.exposeDetach, arguments
 		);			
 	},
 
 
-	doDetachNode: function(node, callObj, callFunc) {
+	doDetach: function(node, callObj, callFunc) {
 		node.detach();
 	}
 	
 });
 
 
-// =============================== destroyNode ============================
+// =============================== destroy ============================
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
-	canDestroyNode: function(child) {
+	canDestroy: function(child) {
 		
-		if (child.parent && !this.canDetachNode(child)) {
+		if (child.parent && !this.canDetach(child)) {
 			return false;
 		}
 		return true;
 	},
 
 
-	destroyNode: function(node) {
+	destroy: function(node) {
 		return this.runStages(
-			this.canDestroyNode, this.prepareDestroyNode, this.doDestroyNode, this.exposeDestroy, arguments
+			this.canDestroy, this.prepareDestroy, this.doDestroy, this.finalizeDestroy, this.exposeDestroy, arguments
 		);			
 	},
 
 
-	doDestroyNode: function(node) {
+	doDestroy: function(node) {
 		node.destroy();
 	}
 	
@@ -375,7 +383,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 
 	move: function(child, newParent, index/*,...*/) {
-		return this.runStages(this.canMove, this.prepareMove, this.doMove, this.exposeMove, arguments);			
+		return this.runStages(this.canMove, this.prepareMove, this.doMove, this.finalizeMove, this.exposeMove, arguments);			
 	},
 
 	doMove: function(child, newParent, index) {
@@ -412,7 +420,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/*in RPC controllers server responds with child data to be inserted */
 	createChild: function(parent, index, data) {
-		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.exposeCreateChild, arguments);		
+		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.finalizeCreateChild, this.exposeCreateChild, arguments);		
 	},
 
 

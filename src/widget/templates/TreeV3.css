@@ -65,3 +65,11 @@
     background-color: Highlight;
     color: HighlightText;
 }
+
+.TreeExpand.TreeExpandLoading {
+    background-image: url('../templates/images/TreeV3/expand_loading.gif');
+}
+	
+
+
+
