@@ -84,12 +84,23 @@ if(typeof window == 'undefined'){
 	drs.capable = f;
 	drs.support.plugin = f;
 	drs.support.builtin = f;
-	if (document.implementation
-		&& document.implementation.hasFeature
-		&& document.implementation.hasFeature("org.w3c.dom.svg", "1.0")){
+	var tdoc = window["document"];
+	var tdi = tdoc["implementation"];
+
+	if((tdi)&&(tdi["hasFeature"])&&(tdi.hasFeature("org.w3c.dom.svg", "1.0"))){
 		drs.capable = t;
 		drs.support.builtin = t;
 		drs.support.plugin = f;
+	}
+	// webkits after 420 support SVG natively. The test string is "AppleWebKit/420+"
+	if(drh.safari){
+		var tmp = dua.split("AppleWebKit/")[1];
+		var ver = parseFloat(tmp.split(" ")[0]);
+		if(ver >= 420){
+			drs.capable = t;
+			drs.support.builtin = t;
+			drs.support.plugin = f;
+		}
 	}
 })();
 
