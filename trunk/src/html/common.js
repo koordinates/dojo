@@ -26,10 +26,14 @@ dojo.html.getViewport = function(){
 	var w = 0;
 	var h = 0;
 
-	//in opera9, dojo.body().clientWidth should be used, instead
-	//of window.innerWidth/document.documentElement.clientWidth
-	//so we have to check whether it is opera
-	if(!dojo.render.html.opera && _window.innerWidth){
+	if(dojo.render.html.mozilla){
+		// mozilla
+		w = _document.documentElement.clientWidth;
+		h = _window.innerHeight;
+	}else if(!dojo.render.html.opera && _window.innerWidth){
+		//in opera9, dojo.body().clientWidth should be used, instead
+		//of window.innerWidth/document.documentElement.clientWidth
+		//so we have to check whether it is opera
 		w = _window.innerWidth;
 		h = _window.innerHeight;
 	} else if (!dojo.render.html.opera && dojo.exists(_document, "documentElement.clientWidth")){

@@ -1,0 +1,41 @@
+.toasterBodyOverflow {
+	overflow: hidden;
+}
+
+.toasterBlock {
+	display: block;
+	position: absolute;
+	width: 17.5em;
+	z-index: 5000;
+	margin: 0px;
+	font:0.75em Tahoma, Helvetica, Verdana, Arial;
+}
+
+.toasterContent{
+	padding:1em;
+	padding-top:0.25em;
+	background:#73c74a;
+}
+
+.toasterMessage{ 
+	color:#fff;
+}
+.toasterWarning{ }
+.toasterError,
+.toasterFatal{
+	font-weight:bold;
+	color:#fff;
+}
+
+
+.toasterWarning .toasterContent{
+	padding:1em;
+	padding-top:0.25em;
+	background:#d4d943;
+} 
+
+.toasterError .toasterContent{
+	padding:1em;
+	padding-top:0.25em;
+	background:#c46600;
+} 
