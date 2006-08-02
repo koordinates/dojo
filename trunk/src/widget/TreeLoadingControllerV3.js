@@ -5,9 +5,38 @@ dojo.require("dojo.widget.TreeBasicControllerV3");
 dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
-
+dojo.require("dojo.Deferred");
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeLoadingControllerV3");
+
+dojo.Error = function(message, extra) {
+	this.message = message;
+	this.extra = extra;
+	this.stack = (new Error()).stack;	
+}
+
+dojo.Error.prototype = new Error();
+
+dojo.CommunicationError = function() {
+	dojo.Error.apply(this, arguments);
+	this.name="CommunicationError"
+}
+dojo.inherits(dojo.CommunicationError, dojo.Error);
+
+
+dojo.FormatError = function() {
+	dojo.Error.apply(this, arguments);
+	this.name="FormatError"
+}
+dojo.inherits(dojo.FormatError, dojo.Error);
+
+
+dojo.RPCError = function() {
+	dojo.Error.apply(this, arguments);
+	this.name="RPCError"
+}
+dojo.inherits(dojo.RPCError, dojo.Error);
+
 
 
 dojo.widget.TreeLoadingControllerV3 = function() {
@@ -16,23 +45,51 @@ dojo.widget.TreeLoadingControllerV3 = function() {
 
 dojo.inherits(dojo.widget.TreeLoadingControllerV3, dojo.widget.TreeBasicControllerV3);
 
-
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	widgetType: "TreeLoadingControllerV3",
+
+	
 
 	RPCUrl: "",
 
 	RPCActionParam: "action", // used for GET for RPCUrl
 
+	preventCache: true,
 
-	/**
-	 * Common RPC error handler (dies)
-	*/
-	RPCErrorHandler: function(type, obj, evt) {
-		alert( "RPC Error: " + (obj.message||"no message"));
+	getDeferredBindHandler: function(/* dojo.rpc.Deferred */ deferred){
+		// summary
+		// create callback that calls the Deferred's callback method
+		return dojo.lang.hitch(this, 
+			function(type, obj /*,...*/){
+				for(var i=0;i<arguments.length;i++) {
+					//dojo.debug("ARG "+i+" \n"+arguments[i]);
+				}
+				
+				if (type=="load" ) {
+					//dojo.debug("GO "+deferred);
+					
+					if(!dojo.lang.isUndefined(obj.error)){
+						deferred.errback(new RPCError(obj.error, obj));
+						return;
+					}
+	
+					deferred.callback(obj);
+					return;
+				}
+				
+				var extra = {}				
+				for(var i=1; i<arguments.length;i++) {
+					dojo.lang.mixin(extra, arguments[i]);					
+				}
+				var result = new dojo.CommunicationError(arguments[1], extra);				
+				
+				
+				deferred.errback(result);
+				
+			}
+		);
+		
 	},
-
-
 
 	getRPCUrl: function(action) {
 
@@ -42,7 +99,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 			var dir = document.location.href.substr(0, document.location.href.lastIndexOf('/'));
 			var localUrl = dir+"/local/"+action;
 			//dojo.debug(localUrl);
-			return localUrl;
+			return localUrl;	
 		}
 
 		if (!this.RPCUrl) {
@@ -56,72 +113,36 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	/**
 	 * Add all loaded nodes from array obj as node children and expand it
 	*/
-	loadProcessResponse: function(node, result, callObj, callFunc) {
-
-		if (!dojo.lang.isUndefined(result.error)) {
-			this.RPCErrorHandler("server", result.error);
-			return false;
-		}
-
-		//dojo.debugShallow(result);
-
+	loadProcessResponse: function(node, result) {
+		dojo.debug("Process response "+node);
+				
 		if (!dojo.lang.isArray(result)) {
-			dojo.raise('loadProcessResponse: Not array loaded: '+result);
+			throw new dojo.FormatError('loadProcessResponse: Not array loaded: '+result);
 		}
 
 		node.setChildren(result);
 		
-		//node.addAllChildren(newChildren);
-
-		//dojo.debug(callFunc);
-
-		if (dojo.lang.isFunction(callFunc)) {
-			callFunc.call(callObj ? callObj : this, node, result);
-		}
-		//this.expand(node);
 	},
 
-
 	/**
-	 * takes arguments for dojo.io.bind + lock array
-	 * serializes params for call
-	 * calls RPC Handler in case of call error and passes result on if all fine
+	 * kw = { url, sync, params }
 	 */
 	runRPC: function(kw) {
 		var _this = this;
-
-		// response handler of any type
-		var handle = function(type, data, evt) {
-			// unlock BEFORE any processing is done
-			// so errorHandler may apply locking
-			if (kw.lock) {
-				dojo.lang.forEach(kw.lock,
-					function(t) { t.unlock() }
-				);
-			}
-
-			if(type == "load"){
-				kw.load.call(this, data);
-			}else{
-				this.RPCErrorHandler(type, data, evt);
-			}
-
-		}
-
-		if (kw.lock) {
-			dojo.lang.forEach(kw.lock, function(elem) { elem.lock() });
-		}
-
-
+		
+		var deferred = new dojo.Deferred();
+		
 		dojo.io.bind({
-			url: kw.url,
-			/* I hitch to get this.loadOkHandler */
-			handle: dojo.lang.hitch(this, handle),
+			url: kw.url,			
+			handle: this.getDeferredBindHandler(deferred),
 			mimetype: "text/json",
-			preventCache: true,
+			preventCache: this.preventCache,
 			sync: kw.sync,
 			content: { data: dojo.json.serialize(kw.params) }
 		});
+		
+		return deferred;
+
 	},
 
 
@@ -131,7 +152,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	 * Synchroneous loading doesn't break control flow
 	 * I need sync mode for DnD
 	*/
-	loadRemote: function(node, sync, callObj, callFunc){
+	loadRemote: function(node, sync){
 		var _this = this;
 
 		var params = {
@@ -139,68 +160,114 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 			tree: this.getInfo(node.tree)
 		};
 
-		//dojo.debug(callFunc)
-
-		this.runRPC({
+		
+		var deferred = this.runRPC({
 			url: this.getRPCUrl('getChildren'),
-			load: function(result) {
-				_this.loadProcessResponse(node, result, callObj, callFunc) ;
-			},
 			sync: sync,
-			lock: [node],
 			params: params
 		});
+		
+		deferred.addCallback(function(res) { return _this.loadProcessResponse(node,res) });
+		
+				
+		
+		return deferred;
 
 	},
 
 	batchExpandTimeout: 0,
 
-	expand: function(node, sync, callObj, callFunc) {		
+	expand: function(node, sync) {		
 		// widget which children are data objects, is UNCHECKED, but has children and shouldn't be loaded
 		// so I put children check here too
+		
+		var deferred = this.loadIfNeeded(node, sync);
+				
+		deferred.addCallback(function(res) {
+			//dojo.debug("Activated callback dojo.widget.TreeBasicControllerV3.prototype.expand(node); "+res);
+			dojo.widget.TreeBasicControllerV3.prototype.expand(node);
+			return res;
+		});
+		
+		
+		return deferred;
+	},
+
+	
+	loadIfNeeded: function(node, sync) {
 		if (node.state == node.loadStates.UNCHECKED && node.isFolder && !node.children.length) {
-
-			this.loadRemote(node, sync,
-				this,
-				function(node, newChildren) {
-					this.expand(node, sync, callObj, callFunc);
-				}
-			);
-
-			return;
-		}
-
-		dojo.widget.TreeBasicControllerV3.prototype.expand.apply(this, arguments);
-
-	},
-
-
-
-	doMove: function(child, newParent, index) {
-		/* load nodes into newParent in sync mode, if needed, first */
-		if (newParent.isTreeNode && newParent.state == newParent.loadStates.UNCHECKED) {
-			this.loadRemote(newParent, true);
-		}
-
-		return dojo.widget.TreeBasicControllerV3.prototype.doMove.apply(this, arguments);
-	},
-
-
-	doCreateChild: function(parent, index, data, callObj, callFunc) {
-
-		/* load nodes into newParent in sync mode, if needed, first */
-		if (parent.state == parent.loadStates.UNCHECKED) {
-			this.loadRemote(parent, true);
+			// populate deferred with other things to pre-do
+			deferred = this.loadRemote(node, sync);			
+		} else {
+			/* "fake action" here */
+			deferred = new dojo.Deferred();
+			deferred.callback();
 		}
 		
-		// error occured while updating
-		if (parent.state == parent.loadStates.UNCHECKED) {
+		return deferred;
+	},
+	
+	
+	runStages: function(check, prepare, make, expose, args) {
+		
+		if (check && !check.apply(this, args)) {
 			return false;
 		}
+		
+		if (prepare) {
+			var deferred = prepare.apply(this, args);
+		} else {
+			var deferred = new dojo.Deferred();
+			deferred.callback();
+		}
+		
+		//deferred.addCallback(function(res) { dojo.debug("Prepare fired "+res); return res});
+		
+		var _this = this;
+		deferred.addCallback(function() {			
+			return make.apply(_this, args);
+		});
+		
+		//deferred.addCallback(function(res) { dojo.debug("Main fired "+res); return res});
+		
+				
+		// exposer does not affect result
+		deferred.addCallback(function(res) {
+			expose.apply(_this, args);
+			return res;
+		});
+		
+		return deferred;
+	}
+	
+});
 
-		return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.apply(this, arguments);
+// ----------------- move -----------------
+dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
+	
+	/* actually move the node, without informing viewer */
+	prepareMove: function(child, newParent, index, sync) {
+		
+		return this.loadIfNeeded(newParent, sync);		
+	}
+	
+});
+
+// -------------------- createChild ------------
+dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
+	
+
+	prepareCreateChild: function(parent, index, data, sync) {
+		return this.loadIfNeeded(parent, sync);		
 	}
 
+});
 
+
+dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
+	
+	prepareClone: function(child, newParent, index, deep, sync) {
+		return this.loadIfNeeded(newParent, sync);		
+	}
 
 });

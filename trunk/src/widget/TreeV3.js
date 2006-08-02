@@ -265,7 +265,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	},
 
-
 	
 	postCreate: function() {						
 		dojo.event.topic.publish(this.eventNames.afterTreeCreate, { source: this } );

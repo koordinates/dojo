@@ -5,6 +5,8 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeCommon");
+dojo.require("dojo.widget.TreeNodeV3");
+dojo.require("dojo.widget.TreeV3");
 
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeBasicControllerV3");
@@ -175,10 +177,6 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		//dojo.debugShallow(e)
 		var node = this.getWidgetByNode(e.target);
 		
-		if(node.isLocked()) {
-			return;
-		}
-
 		if (node.isExpanded){
 			this.collapse(node);
 		} else {
@@ -189,48 +187,89 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	/**
 	 * callout activated even if node is expanded already
 	 */
-	expand: function(node, sync, callObj, callFunc) {
+	expand: function(node) {
 		//dojo.debug("Expand "+node);
 		
 		if (node.isFolder) {
 			node.expand(); // skip trees or non-folders
 		}
-		
-		if (callFunc) callFunc.call(callObj, node);
+				
 	},
 
 	collapse: function(node) {
-
-		node.collapse();
-	
+		node.collapse();	
 	},
 	
-// =============================== clone ============================
+	
+	// -------------------------- TODO: Inline edit node ---------------------
+	// TODO: write editing stuff
+	canEditLabel: function(node) {
+		if (node.actionIsDisabled(parent.actions.EDIT)) return false;
 
-	canClone: function(child, newParent, deep){
 		return true;
 	},
-	
-	/**
-	 *	cloning can only be done with addChild,
-	 *	so that RPC will handle that properly
-	 */
-	clone: function(child, newParent, index, deep) {
 
-		/* move sourceTreeNode to new parent */
-		if (!this.canClone(child, newParent)) {
+	editLabelStart: function(node) {
+		if (!this.canEditLabel(node)) {
 			return false;
 		}
 
-		var result = this.doClone(child, newParent, index, deep);
+		return this.doEditLabelStart.apply(this, arguments);
+	},
 
-		if (!result) return result;
+	doEditLabelStart: function(node) {
+		node.editLabelStart();		
+	},
+	
+	/**
+	 * check that something is possible
+	 * run maker to do it
+	 * run exposer to expose result to visitor immediatelly
+	 *   exposer does not affect result
+	 */
+	runStages: function(check, prepare, make, expose, args) {
+		
+		if (check && !check.apply(this, args)) {
+			return false;
+		}
+		
+		if (prepare && !prepare.apply(this, args)) {
+			return false;
+		}
+		
+		var result = make.apply(this, args);
+		
+		if (!result) {
+			return result;
+		}
+		
+		if (expose) {
+			expose.apply(this, args);
+		}
+		
+		return result;
+	}
+});
 
+
+// =============================== clone ============================
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
+	
+	canClone: function(child, newParent, index, deep){
+		return true;
+	},
+	
+	
+	clone: function(child, newParent, index, deep) {
+		return this.runStages(
+			this.canClone, this.prepareClone, this.doClone, this.exposeClone, arguments
+		);			
+	},
+
+	exposeClone: function(child, newParent) {
 		if (newParent.isTreeNode) {
 			this.expand(newParent);
 		}
-
-		return result;
 	},
 
 	doClone: function(child, newParent, index, deep) {
@@ -238,10 +277,70 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		var cloned = child.clone(deep);
 		newParent.addChild(cloned, index);
 				
+		return cloned;
+	}
+});
+
+// =============================== detachNode ============================
+
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
+	canDetachNode: function(child) {
+		if (child.actionIsDisabled(child.actions.DETACH)) {
+			return false;
+		}
+
 		return true;
 	},
+
+
+	detachNode: function(node) {
+		return this.runStages(
+			this.canDetachNode, this.prepareDetachNode, this.doDetachNode, this.exposeDetachNode, arguments
+		);			
+	},
+
+
+	doDetachNode: function(node, callObj, callFunc) {
+		node.detach();
+
+		if (callFunc) {
+			callFunc.call(dojo.lang.isUndefined(callObj) ? this : callObj, node);
+		}
+	}
 	
+});
+
+
+// =============================== destroyNode ============================
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
+
+	canDestroyNode: function(child) {
+		
+		if (child.parent && !this.canDetachNode(child)) {
+			return false;
+		}
+		return true;
+	},
+
+
+	destroyNode: function(node) {
+		return this.runStages(
+			this.canDestroyNode, this.prepareDestroyNode, this.doDestroyNode, this.exposeMove, arguments
+		);			
+	},
+
+
+	doDestroyNode: function(node) {
+		node.destroy();
+	}
+	
+});
+
+
+
 // =============================== move ============================
+
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	/**
 	 * Checks whether it is ok to change parent of child to newParent
@@ -279,22 +378,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 
 
-	move: function(child, newParent, index) {
-
-		/* move sourceTreeNode to new parent */
-		if (!this.canMove(child, newParent)) {
-			return false;
-		}
-
-		var result = this.doMove(child, newParent, index);
-
-		if (!result) return result;
-
-		if (newParent.isTreeNode) {
-			this.expand(newParent);
-		}
-
-		return result;
+	move: function(child, newParent, index/*,...*/) {
+		return this.runStages(this.canMove, this.prepareMove, this.doMove, this.exposeMove, arguments);			
 	},
 
 	doMove: function(child, newParent, index) {
@@ -303,91 +388,18 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 		return true;
 	},
-
-
-
-// =============================== detachNode ============================
-
-
-	canDetachNode: function(child) {
-		if (child.actionIsDisabled(child.actions.DETACH)) {
-			return false;
+	
+	exposeMove: function(child, newParent) {		
+		if (newParent.isTreeNode) {
+			this.expand(newParent);
 		}
-
-		return true;
-	},
-
-
-	detachNode: function(node, callObj, callFunc) {
-		if (!this.canDetachNode(node)) {
-			return false;
-		}
-
-		return this.doDetachNode(node, callObj, callFunc);
-	},
-
-
-	doDetachNode: function(node, callObj, callFunc) {
-		node.detach();
-
-		if (callFunc) {
-			callFunc.call(dojo.lang.isUndefined(callObj) ? this : callObj, node);
-		}
-	},
-
-
-// =============================== destroyNode ============================
-
-
-	canDestroyNode: function(child) {
+	}
 		
-		if (child.parent && !this.canDetachNode(child)) {
-			return false;
-		}
 
-		return true;
-	},
+});
 
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
-	destroyNode: function(node, callObj, callFunc) {
-		//dojo.debug("destroyNode in "+node)
-		if (!this.canDestroyNode(node)) {
-			return false;
-		}
-
-		return this.doDestroyNode(node, callObj, callFunc);
-	},
-
-
-	doDestroyNode: function(node, callObj, callFunc) {
-		node.destroy();
-
-		if (callFunc) {
-			callFunc.call(dojo.lang.isUndefined(callObj) ? this : callObj, node);
-		}
-	},
-	
-	// -------------------------- TODO: Inline edit node ---------------------
-	// TODO: write editing stuff
-	canEditLabel: function(node) {
-		if (node.actionIsDisabled(parent.actions.EDIT)) return false;
-
-		return true;
-	},
-
-	editLabelStart: function(node) {
-		if (!this.canEditLabel(node)) {
-			return false;
-		}
-
-		return this.doEditLabelStart.apply(this, arguments);
-	},
-
-	doEditLabelStart: function(node) {
-		node.editLabelStart();		
-	},
-	
-	
 	// -----------------------------------------------------------------------------
 	//                             Create node stuff
 	// -----------------------------------------------------------------------------
@@ -403,34 +415,26 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	/* send data to server and add child from server */
 	/* data may contain an almost ready child, or anything else, suggested to server */
 	/*in RPC controllers server responds with child data to be inserted */
-	createChild: function(parent, index, data, callObj, callFunc) {
-		if (!this.canCreateChild(parent, index, data)) {
-			return false;
-		}
-
-
-		return this.doCreateChild.apply(this, arguments);
+	createChild: function(parent, index, data) {
+		return this.runStages(this.canCreateChild, this.prepareCreateChild, this.doCreateChild, this.exposeCreateChild, arguments);		
 	},
 
-	doCreateChild: function(parent, index, data, callObj, callFunc) {
 
-		var widgetType = data.widgetType ? data.widgetType : parent.tree.defaultChildWidget.widgetType;
+	doCreateChild: function(parent, index, data) {
+
+		var widgetType = data.widgetType ? data.widgetType : parent.tree.defaultChildWidget.prototype.widgetType;
 		data.tree = parent.tree.widgetId;
 		
 		var newChild = dojo.widget.createWidget(widgetType, data);
 
 		parent.addChild(newChild, index);
 
-		this.expand(parent);
-
-		if (callFunc) {
-			callFunc.apply(callObj, [newChild]);
-		}
-
 		return newChild;
+	},
+	
+	exposeCreateChild: function(parent) {
+		this.expand(parent);
 	}
-
-
 
 
 });

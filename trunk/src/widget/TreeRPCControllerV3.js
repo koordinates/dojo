@@ -23,24 +23,6 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 	widgetType: "TreeRPCControllerV3",
 
 	
-	
-	/**
-	 * generic routine to process requests with 2 kinds of answers
-	 * object with object.error => not ok
-	 * any other object => ok
-	 */
-	processConfirmationResponse: function(response, handler,args) {
-				
-		if(!dojo.lang.isUndefined(response.error)){
-			this.RPCErrorHandler("server", response.error);
-			return false;
-		}
-		
-		return handler.apply(this, args);
-				
-		
-		
-	},
 			
 			
 	/**
@@ -54,10 +36,11 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 	 *
 	 * Also, "loading" icon is not shown until function finishes execution, so no indication for remote request.
 	*/
-	doMove: function(child, newParent, index){
+	doMove: function(child, newParent, index, sync){
 
 		//if (newParent.isTreeNode) newParent.markLoading();
 
+		
 		var params = {
 			// where from
 			child: this.getInfo(child),
@@ -68,51 +51,50 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 			newIndex: index
 		};
 
-		var success;
 
-		this.runRPC({		
+		var deferred = this.runRPC({		
 			url: this.getRPCUrl('move'),
-			load: function(response){
-				success = this.processConfirmationResponse(
-					response,
-					dojo.widget.TreeLoadingControllerV3.prototype.doMove,
-					[child, newParent, index]
-				) ;
-			},
-			sync: true,
-			lock: [child, newParent],
+			sync: sync,			
 			params: params
 		});
 
+		var _this = this;
+		var args = arguments;	
+		
+		//deferred.addCallback(function(res) { dojo.debug("doMove fired "+res); return res});
+		
+		deferred.addCallback(function() {			
+			dojo.widget.TreeBasicControllerV3.prototype.doMove.apply(_this,args);
+		});
 
-		return success;
+		
+		return deferred;
 	},
-
-
 
 	doDetach: function(node, callObj, callFunc){
 
-		var success;
 		
 		var params = {
 			node: this.getInfo(node),
 			tree: this.getInfo(node.tree)
 		}
 
-		this.runRPC({
-				url: this.getRPCUrl('detach'),
-				load: function(response){
-					success = this.processConfirmationResponse(
-						response,
-						dojo.widget.TreeLoadingControllerV3.prototype.doDetach,
-						[node, callObj, callFunc]
-					) 
-				},
-				params: params,
-				lock: [node]
+		var deferred = this.runRPC({
+			url: this.getRPCUrl('detach'),
+			sync: sync,
+			params: params			
 		});
 		
-		return success;
+		
+		var _this = this;
+		var args = arguments;
+		
+		deferred.addCallback(function() {			
+			dojo.widget.TreeBasicControllerV3.prototype.doDetach.apply(_this,args);
+		});
+		
+						
+		return deferred;
 
 	},
 
@@ -124,35 +106,34 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 	// -----------------------------------------------------------------------------
 
 
-	doCreateChild: function(parent, index, output, callObj, callFunc){
-			var success;
+	doCreateChild: function(parent, index, data, sync){		
 			
-			var params = {
-				tree: this.getInfo(parent.tree),
-				parent: this.getInfo(parent),
-				index: index,
-				data: output
-			}
+		var params = {
+			tree: this.getInfo(parent.tree),
+			parent: this.getInfo(parent),
+			index: index,
+			data: output
+		}
 
-			this.runRPC({
-				url: this.getRPCUrl('createChild'),
-				load: function(response){
-					success = this.processConfirmationResponse(
-						response,
-						dojo.widget.TreeLoadingControllerV3.prototype.doCreateChild,
-						[parent, index, response, callObj, callFunc]
-					) 
-				},
-				params: params,
-				lock: [parent]
-			});
-
+		var deferred = this.runRPC({
+			url: this.getRPCUrl('createChild'),
+			sync: sync,
+			params: params
+		});
+		
+		var _this = this;
+		var args = arguments;
+		
+		deferred.addCallback(function() {			
+			dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.apply(_this,args);
+		});
+		
+						
+		return deferred;
 	},
 	
 	
-	doClone: function(child, newParent, index, deep) {
-
-		var success;
+	doClone: function(child, newParent, index, deep, sync) {
 		
 		var params = {
 			child: this.getInfo(child),
@@ -161,25 +142,24 @@ dojo.lang.extend(dojo.widget.TreeRPCControllerV3, {
 			deep: deep ? true : false, // undefined -> false
 			tree: this.getInfo(child.tree)
 		}
-
-		this.runRPC({
-				url: this.getRPCUrl('clone'),
-				load: function(response){
-					success = this.processConfirmationResponse(
-						response,
-						dojo.widget.TreeLoadingControllerV3.prototype.doClone,
-						[child, newParent, index, deep]
-					) 
-				},
-				params: params,
-				lock: [node]
+		
+		
+		var deferred = this.runRPC({
+			url: this.getRPCUrl('clone'),
+			sync: sync,
+			params: params
 		});
 		
-		return success;
-
+		var _this = this;
+		var args = arguments;
+		
+		deferred.addCallback(function() {			
+			dojo.widget.TreeBasicControllerV3.prototype.doClone.apply(_this,args);
+		});
+		
+						
+		return deferred;	
 	}
-
-
 	
 	
 });
