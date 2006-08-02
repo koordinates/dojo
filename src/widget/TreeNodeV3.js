@@ -599,13 +599,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.debug("expand in "+this);
 		
-		//dojo.profile.start("expand - lazy init "+this);
+		dojo.profile.start("expand - lazy init "+this);
 		if (this.tryLazyInit) {
 			this.setChildren(this.children);
 			this.tryLazyInit = false;
 		}
 		
-		//dojo.profile.end("expand - lazy init "+this);
+		dojo.profile.end("expand - lazy init "+this);
 		
 		
 		this.isExpanded = true;
@@ -656,6 +656,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		// if dnd is in action, recalculate changed coordinates
 		// FIXME: resize event here, DnD should catch it
 		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
+			// SLOW !!!
 			dojo.dnd.dragManager.cacheTargetLocations();
 		}
 	},
@@ -672,6 +673,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 		
 		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
+			// SLOW !!!
 			dojo.dnd.dragManager.cacheTargetLocations();
 		}
 	},
