@@ -65,6 +65,7 @@ dojo.require("dojo.namespace");
 			"taskbar": "dojo.widget.TaskBar",
 			"timepicker": "dojo.widget.TimePicker",
 			"titlepane": "dojo.widget.TitlePane",
+			"toaster": "dojo.widget.Toaster",
 			"toggler": "dojo.widget.Toggler",
 			"toolbar": "dojo.widget.Toolbar",
 			"tooltip": "dojo.widget.Tooltip",
