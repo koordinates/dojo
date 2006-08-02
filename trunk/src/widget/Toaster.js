@@ -2,6 +2,7 @@ dojo.provide("dojo.widget.Toaster");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.lfx.*");
+dojo.require("dojo.html.iframe");
 
 // This is mostly taken from Jesse Kuhnert's MessageNotifier.
 // Modified by Bryan Forbes to support topics and a variable delay.
@@ -139,8 +140,12 @@ dojo.widget.defineWidget(
 				450,
 				null,
 				dojo.lang.hitch(this, function(nodes, anim){
-					dojo.html.removeClass(dojo.body(), this.overflowCssClass);
 					dojo.lang.setTimeout(dojo.lang.hitch(this, function(evt){
+						// we must remove the iframe in order to fade
+						// TODO: figure out how to fade with a BackgroundIframe
+						if(this.bgIframe){
+							this.bgIframe.remove();
+						}
 						// can't do a fadeHide because we're fading the
 						// inner node rather than the clipping node
 						this.fadeAnim = dojo.lfx.html.fadeOut(
@@ -149,7 +154,6 @@ dojo.widget.defineWidget(
 							null,
 							dojo.lang.hitch(this, function(evt){
 								this.hide();
-								dojo.html.setOpacity(this.containerNode, 1.0);
 							})).play();
 					}), this.showDelay);
 				})).play();
@@ -178,6 +182,15 @@ dojo.widget.defineWidget(
 			}
 
 			this.clipNode.style.clip = "rect(0px, " + nodeSize.width + "px, " + nodeSize.height + "px, 0px)";
+
+			if(dojo.render.html.ie){
+				if(!this.bgIframe){
+					this.bgIframe = new dojo.html.BackgroundIframe(this.containerNode);
+					this.bgIframe.setZIndex(this.containerNode);
+				}
+				this.bgIframe.onResized();
+				this.bgIframe.show();
+			}
 		},
 
 		onSelect: function(e) { },
@@ -204,6 +217,8 @@ dojo.widget.defineWidget(
 				this._scrollConnected = false;
 				dojo.event.disconnect(window, "onscroll", this, "onScroll");
 			}
+
+			dojo.html.setOpacity(this.containerNode, 1.0);
 		}
 	},
 	"html"
