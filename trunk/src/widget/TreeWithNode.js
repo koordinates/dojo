@@ -184,7 +184,7 @@ dojo.widget.TreeWithNode = {
 		
 
 
-		dojo.profile.end("setChildren "+this);
+		//dojo.profile.end("setChildren "+this);
 		
 	},	
 	
