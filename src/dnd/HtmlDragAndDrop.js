@@ -15,22 +15,7 @@ dojo.require("dojo.lang.extras");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.event");
 
-dojo.dnd.HtmlDragSource = function(node, type){
-	node = dojo.byId(node);
-	this.dragObjects = [];
-	this.constrainToContainer = false;
-	if(node){
-		this.domNode = node;
-		this.dragObject = node;
-		// register us
-		dojo.dnd.DragSource.call(this);
-		// set properties that might have been clobbered by the mixin
-		this.type = (type)||(this.domNode.nodeName.toLowerCase());
-	}
-
-}
-dojo.inherits(dojo.dnd.HtmlDragSource, dojo.dnd.DragSource);
-dojo.lang.extend(dojo.dnd.HtmlDragSource, {
+dojo.declare("dojo.dnd.HtmlDragSource", dojo.dnd.DragSource, {
 	dragClass: "", // CSS classname(s) applied to node when it is being dragged
 
 	onDragStart: function(){
@@ -90,16 +75,22 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 			this.dragObjects.push(arguments[i]);
 		}
 	}
+}, function(node, type){
+	node = dojo.byId(node);
+	this.dragObjects = [];
+	this.constrainToContainer = false;
+	if(node){
+		this.domNode = node;
+		this.dragObject = node;
+		// register us
+		dojo.dnd.DragSource.call(this);
+		// set properties that might have been clobbered by the mixin
+		this.type = (type)||(this.domNode.nodeName.toLowerCase());
+	}
+
 });
 
-dojo.dnd.HtmlDragObject = function(node, type){
-	this.domNode = dojo.byId(node);
-	this.type = type;
-	this.constrainToContainer = false;
-	this.dragSource = null;
-}
-dojo.inherits(dojo.dnd.HtmlDragObject, dojo.dnd.DragObject);
-dojo.lang.extend(dojo.dnd.HtmlDragObject, {
+dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 	dragClass: "",
 	opacity: 0.5,
 	createIframe: true,		// workaround IE6 bug
@@ -312,20 +303,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			this.constrainingContainer = this.domNode.parentNode;
 		}
 	}
+}, function(node, type){
+	this.domNode = dojo.byId(node);
+	this.type = type;
+	this.constrainToContainer = false;
+	this.dragSource = null;
 });
 
-dojo.dnd.HtmlDropTarget = function(node, types){
-	if (arguments.length == 0) { return; }
-	this.domNode = dojo.byId(node);
-	dojo.dnd.DropTarget.call(this);
-	if(types && dojo.lang.isString(types)) {
-		types = [types];
-	}
-	this.acceptedTypes = types || [];
-}
-dojo.inherits(dojo.dnd.HtmlDropTarget, dojo.dnd.DropTarget);
-
-dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
+dojo.declare("dojo.dnd.HtmlDropTarget", dojo.dnd.DropTarget, {
 	vertical: false,
 	onDragOver: function(e){
 		if(!this.accepts(e.dragObjects)){ return false; }
@@ -505,4 +490,12 @@ dojo.lang.extend(dojo.dnd.HtmlDropTarget, {
 
 		return false;
 	}
+}, function(node, types){
+	if (arguments.length == 0) { return; }
+	this.domNode = dojo.byId(node);
+	dojo.dnd.DropTarget.call(this);
+	if(types && dojo.lang.isString(types)) {
+		types = [types];
+	}
+	this.acceptedTypes = types || [];
 });
