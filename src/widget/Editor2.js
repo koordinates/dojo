@@ -268,7 +268,9 @@ dojo.widget.defineWidget(
 			}
 			// end frequency checker
 
-			dojo.lang.forEach(this.commandList, function(cmd){
+			// FIXME: SEVERE: This forEach block breaks undo on IE
+			dojo.lang.forEach(this.commandList, 
+				function(cmd){
 					if((cmd == "inserthtml") || (cmd == "save")){ return; }
 					try{
 						if(this.queryCommandEnabled(cmd)){
@@ -281,7 +283,9 @@ dojo.widget.defineWidget(
 					}catch(e){
 						// alert(cmd+":"+e);
 					}
-				}, this);
+				},
+				this
+			);
 
 			var h = dojo.render.html;
 			
