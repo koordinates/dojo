@@ -55,6 +55,7 @@ dojo.require("dojo.namespace");
 			"remotetabcontroller": "dojo.widget.RemoteTabController",
 			"resizehandle": "dojo.widget.ResizeHandle",
 			"resizabletextarea": "dojo.widget.ResizableTextarea",
+			"select": "dojo.widget.Select",
 			"slideshow": "dojo.widget.SlideShow",
 			"sortabletable": "dojo.widget.SortableTable",
 			"simpledropdownbuttons": "dojo.widget.SimpleDropdownButtons",
