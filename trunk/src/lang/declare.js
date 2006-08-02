@@ -92,6 +92,7 @@ dojo.lang.declare = function(className /*string*/, superclass /*function || arra
 	ctor.prototype.constructor = ctor;
 	ctor.prototype.initializer=(ctor.prototype.initializer)||(init)||(function(){});
 	dojo.lang.setObjPathValue(className, ctor, null, true);
+	return ctor;
 }
 
 dojo.lang.declare._makeConstructor = function() {
