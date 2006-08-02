@@ -162,6 +162,12 @@ dojo.event = new function(){
 		if(!ao.adviceObj){
 			dojo.raise("bad adviceObj for adviceFunc: "+ao.adviceFunc);
 		}
+		
+		if(!ao.adviceFunc){
+			dojo.debug("bad adviceFunc for srcFunc: "+ao.srcFunc);
+			dojo.debugShallow(ao);
+		} 
+		
 		return ao;
 	}
 
