@@ -67,7 +67,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, bo
 
 	var bs = dojo.html.boxSizing;
 	if(!boxType) { boxType = bs.CONTENT_BOX; }
-	var nativeBoxType = 1; //PADDING_BOX
+	var nativeBoxType = 2; //BORDER box
 	var targetBoxType;
 	switch(boxType){
 		case bs.MARGIN_BOX:
@@ -93,9 +93,9 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, bo
 			ret.x = left-2;
 			ret.y = top-2;
 		}
-		nativeBoxType = 2; //in IE, getBoundingClientRect is the margin Box coordinate
 	}else if(document.getBoxObjectFor){
 		// mozilla
+		nativeBoxType = 1; //getBoxObjectFor return padding box coordinate
 		try{
 			var bo = document.getBoxObjectFor(node);
 			ret.x = bo.x - dojo.html.sumAncestorProperties(node, "scrollLeft");
@@ -119,9 +119,6 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, bo
 			}
 
 			//TODO: set correct nativeBoxType for safari/konqueror
-			if(h.opera){
-				nativeBoxType = 2; //in opera the calcuated value is for border box
-			}
 
 			if(node.parentNode != db){
 				var nd = node;
