@@ -1,8 +1,9 @@
-.toasterBodyOverflow {
+.dojoToasterClip {
+	position: absolute;
 	overflow: hidden;
 }
 
-.toasterBlock {
+.dojoToasterContainer {
 	display: block;
 	position: absolute;
 	width: 17.5em;
@@ -11,30 +12,30 @@
 	font:0.75em Tahoma, Helvetica, Verdana, Arial;
 }
 
-.toasterContent{
+.dojoToasterContent{
 	padding:1em;
 	padding-top:0.25em;
 	background:#73c74a;
 }
 
-.toasterMessage{ 
+.dojoToasterMessage{ 
 	color:#fff;
 }
-.toasterWarning{ }
-.toasterError,
-.toasterFatal{
+.dojoToasterWarning{ }
+.dojoToasterError,
+.dojoToasterFatal{
 	font-weight:bold;
 	color:#fff;
 }
 
 
-.toasterWarning .toasterContent{
+.dojoToasterWarning .dojoToasterContent{
 	padding:1em;
 	padding-top:0.25em;
 	background:#d4d943;
 } 
 
-.toasterError .toasterContent{
+.dojoToasterError .dojoToasterContent{
 	padding:1em;
 	padding-top:0.25em;
 	background:#c46600;
