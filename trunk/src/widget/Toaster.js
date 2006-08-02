@@ -141,10 +141,10 @@ dojo.widget.defineWidget(
 				null,
 				dojo.lang.hitch(this, function(nodes, anim){
 					dojo.lang.setTimeout(dojo.lang.hitch(this, function(evt){
-						// we must remove the iframe in order to fade
+						// we must hide the iframe in order to fade
 						// TODO: figure out how to fade with a BackgroundIframe
 						if(this.bgIframe){
-							this.bgIframe.remove();
+							this.bgIframe.hide();
 						}
 						// can't do a fadeHide because we're fading the
 						// inner node rather than the clipping node
