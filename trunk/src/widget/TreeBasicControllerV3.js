@@ -408,7 +408,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 
 	canCreateChild: function(parent, index, data) {
-		if (parent.actionIsDisabled(parent.actions.ADDCHILD)) return false;
+		if (parent.actionIsDisabled(parent.actions.ADDCHILD)) {
+			return false;
+		}
 
 		return true;
 	},

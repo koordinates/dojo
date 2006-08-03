@@ -649,22 +649,18 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 	},
 
+
 	hideChildren: function(){
 		this.tree.toggleObj.hide(
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
 		);
 	},
 
+
 	showChildren: function(){
-		
-		//dojo.profile.start("Toggler show");
-		
 		this.tree.toggleObj.show(
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
 		);
-		
-		//dojo.profile.end("Toggler show");
-
 	},
 	
 	onShowChildren: function() {
