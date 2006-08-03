@@ -537,6 +537,12 @@ print "Removing dojo.require calls in source.__package__.js."
 removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 ]]></script>
 
+		<antcall target="-preload-resources">
+			<param name="srcFile" value="${release_dir}/source.__package__.js" />
+			<param name="dstFile" value="${release_dir}/source.__package__.js" />
+			<param name="buildPrefix" value="dojo" />
+		</antcall>
+
 		<antcall target="-rhino-compress">
 			<param name="srcFile" value="${release_dir}/source.__package__.js" />
 			<param name="dstFile" value="${release_dir}/dojo.js" />
@@ -600,28 +606,32 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}" />
 	</target>
 
-	<target name="flatten-resources" depends="compress"
+	<target name="-flatten-resources"
 		description="loads all localization bundles in the build for a particular locale, flattens the object, and outputs a preloaded version">
-		<copy overwrite="true" file="${release_dir}/dojo.js" tofile="${release_dir}/localizations.tmp.js">
+		<copy overwrite="true" file="${srcFile}" tofile="${release_dir}/localizations.tmp.js">
 			<filterchain>
 				<tokenfilter>
 					<containsregex pattern="dojo\.requireLocalization\(.*\);"/>
 				</tokenfilter>
 			</filterchain>
 		</copy>
+		<!--FIXME: dir=.. is kludgey. Having trouble bootstrapping without it -->
 		<java jar="./lib/js.jar" fork="true" dir=".." outputProperty="generatedLocales" errorProperty="flattenErrors">
 			<arg value="./buildscripts/flattenResources.js" />
 			<arg value="./buildscripts/${release_dir}/localizations.tmp.js" />
 			<arg value="./buildscripts/${release_dir}/nls" />
-			<arg value="dojo" />
+			<arg value="${buildPrefix}" />
 			<arg value="${locales}" />
 			<sysproperty key="DOJO_LOADER" value="${dojoLoader}" />
 		</java>
-		<!--FIXME: should make this step happen before copyrights are inserted -->
-		<replaceregexp match="^" byline="false" replace="var dj_localesBuilt='${locales}'.split(',');var dj_localesGenerated=${generatedLocales};">
-			<fileset dir="${release_dir}" includes="dojo.js"/>
-		</replaceregexp>
 		<delete file="${release_dir}/localizations.tmp.js" />
+		<available property="hasResources" file="${release_dir}/nls" type="dir" />
+	</target>
+
+	<target name="-preload-resources" depends="-flatten-resources" if="hasResources"
+		description="prepends data necessary for the bootstrap to preload the flattened resource files">
+		<replaceregexp match="^" byline="false" replace="var dj_localesBuilt='${locales}'.split(',');var dj_localesGenerated=${generatedLocales};"
+			file="${dstFile}"/>
 	</target>
 
 	<!-- intern-strings task -->
