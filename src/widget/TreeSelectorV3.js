@@ -106,7 +106,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	onLabelClick: function(event) {		
 		var node = this.domElement2TreeNode(event.target);
 
-		//dojo.debug("click "+event.target.className);
+		//dojo.debug("click "+node+ "special "+this.checkSpecialEvent(event));
 		//dojo.html.setClass(event.target, "TreeLabel TreeNodeEmphased");
 		
 		if (dojo.lang.inArray(this.selectedNodes, node)) {			
