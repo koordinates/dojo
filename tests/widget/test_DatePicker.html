@@ -5,15 +5,31 @@
 <title>Dojo Date Picker Widget Test</title>
 
 <script type="text/javascript">
-	var djConfig = {isDebug: true};
+	var djConfig = {isDebug: true,
+//	debugAtAllCosts: true,
+					extraLocale: ['en', 'nl-nl', 'ja-jp', 'xx']
+	};
 </script>
 
 <script type="text/javascript" src="../../dojo.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.widget.DatePicker");
+	dojo.hostenv.writeIncludes();
 </script>
 </head>
 <body>
+<p>A calendar in your locale, or the closest thing to it we currently provide</p>
 <div dojoType="datepicker"></div>
+
+<p>en locale</p>
+<div lang="en" dojoType="datepicker"></div>
+<p>nl-nl locale</p>
+<div lang="nl-nl" dojoType="datepicker"></div>
+<p>ja-jp locale</p>
+<div lang="ja-jp" dojoType="datepicker"></div>
+<p>xx locale</p>
+<div lang="xx" dojoType="datepicker"></div>
+
+<p>still doesn't take into account localizations for first day of week...</p>
 </body>
 </html>
