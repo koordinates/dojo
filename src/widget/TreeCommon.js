@@ -84,7 +84,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 			dojo.raise("domElement2TreeNode couldnt detect widget");
 		}
 		
-		return dojo.widget.manager.getWidgetById(domElement.widgetId);
+		return dojo.widget.byId(domElement.widgetId);
 	},
 	
 	

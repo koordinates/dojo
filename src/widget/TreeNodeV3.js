@@ -326,7 +326,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 * Layout MUST be removed when node is detached
 	 * 
 	 */
-	addedTo: function(parent, index) {
+	addedTo: function(parent, index, dontPublishEvent) {
 		//dojo.profile.start("addedTo");
 		//dojo.debug(this + " addedTo "+parent+" index "+index);
 		//dojo.debug(parent.children);
@@ -372,16 +372,16 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			parent.viewSetHasChildren();
 		}
 		
-		
+		if (!dontPublishEvent) {
 
-		var message = {
-			child: this,
-			index: index,
-			parent: parent
+			var message = {
+				child: this,
+				index: index,
+				parent: parent
+			}
+				
+			dojo.event.topic.publish(this.tree.eventNames.afterAddChild, message);
 		}
-		
-		
-		dojo.event.topic.publish(this.tree.eventNames.afterAddChild, message);
 
 		//dojo.profile.end("addedTo");
 		

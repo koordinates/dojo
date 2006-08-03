@@ -17,6 +17,7 @@ dojo.require("dojo.lang.extras");
 dojo.require("dojo.Deferred");
 dojo.require("dojo.html.layout");
 
+// FIXME: if controller can't move then skip node on move start
 dojo.dnd.TreeDragSourceV3 = function(node, syncController, type, treeNode){
 	//dojo.profile.start("TreeDragSourceV3 "+treeNode);
 	this.controller = syncController;
@@ -59,7 +60,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 			return;
 		}
 
-		//dojo.debug(position)
+		//dojo.debug("set position for "+this.treeNode)
 
 		this.hideIndicator();
 
@@ -128,13 +129,15 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		if (!accepts) return false;
 
-		var sourceTreeNode = dragObjects[0].dragSource.treeNode;
+		for(var i=0; i<dragObjects.length; i++) {
+			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
 
-		if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
-			dojo.raise("Source is not TreeNode or not found");
+			if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
+				dojo.raise("Source is not TreeNode or not found");
+			}
+
+			if (sourceTreeNode === this.treeNode) return false;
 		}
-
-		if (sourceTreeNode === this.treeNode) return false;
 
 		return true;
 	},
@@ -159,21 +162,24 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		
 
-	getAcceptPosition: function(e, sourceTreeNode) {
+	getAcceptPosition: function(e, dragObjects) {
+
 
 		var DndMode = this.treeNode.tree.DndMode;
 
-		if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO &&
-			// check if ONTO is allowed localy
-			!(
-			  !this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) // check dynamically cause may change w/o regeneration of dropTarget			
-			  && this.controller.canMove(sourceTreeNode, this.treeNode)
-			 )
-		) {
-			// disable ONTO if can't move
-			DndMode &= ~dojo.widget.TreeV3.prototype.DndModes.ONTO;
-		}
+		// disable ONTO mode possibility if impossible 
+		for(var i=0; i<dragObjects.length; i++) {
+			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
 
+			if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO &&
+				// check if ONTO is allowed localy
+				// check dynamically cause may change w/o regeneration of dropTarget
+				this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) 
+			) {
+				// disable ONTO if can't move
+				DndMode &= ~dojo.widget.TreeV3.prototype.DndModes.ONTO;
+			}
+		}
 
 		var position = this.getPosition(e, DndMode);
 
@@ -181,24 +187,39 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 
 		// if onto is here => it was allowed before, no accept check is needed
-		if (position=="onto" ||
-			(!this.isAdjacentNode(sourceTreeNode, position)
-			 && this.controller.canMove(sourceTreeNode, this.treeNode.parent)
-			)
-		) {
+		if (position=="onto") {
 			return position;
-		} else {
-			return false;
 		}
-
+		
+		for(var i=0; i<dragObjects.length; i++) {
+			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
+			if (this.isAdjacentNode(sourceTreeNode, position)) { // skip check if same parent
+				continue;
+			}
+			
+			if (!this.controller.canMove(sourceTreeNode, this.treeNode.parent)) {
+				return false;
+			}
+		}
+		
+		return position;
+	
 	},
+
+	
+
+	onDropEnd: function(e) {
+		this.clearAutoExpandTimer();
+
+		this.hideIndicator();
+	},
+
 
 	onDragOut: function(e) {
 		this.clearAutoExpandTimer();
 
 		this.hideIndicator();
 	},
-
 
 	clearAutoExpandTimer: function() {
 		if (this.autoExpandTimer) {
@@ -210,10 +231,8 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 
 	onDragMove: function(e, dragObjects){
-
-		var sourceTreeNode = dragObjects[0].dragSource.treeNode;
-
-		var position = this.getAcceptPosition(e, sourceTreeNode);
+		
+		var position = this.getAcceptPosition(e, dragObjects);
 
 		if (position) {
 			this.showIndicator(position);
@@ -295,25 +314,17 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	},
 
 
-	onDropStart: function() {
-		this.inDropProcess = true;
-	},
-	
-	onDropEnd: function() {
-		this.inDropProcess = false;
-	},
-
 	onDrop: function(e){
-		// onDragOut will clean position
+		// onDropEnd will clean position
 
-
+		
 		var position = this.position;
 
 //dojo.debug(position);
-
-		this.onDragOut(e);
-
 		var sourceTreeNode = e.dragObject.dragSource.treeNode;
+
+		//dojo.debug("onDrop "+sourceTreeNode+" " + position + " "+this.treeNode);
+
 
 		if (!dojo.lang.isObject(sourceTreeNode)) {
 			dojo.raise("TreeNode not found in dragObject")

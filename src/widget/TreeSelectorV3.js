@@ -29,7 +29,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	listenTreeEvents: ["afterAddChild","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
 	
-	allowedMulti: false,
+	allowedMulti: true,
 	
 	eventNamesDefault: {
 		select : "select",
@@ -49,12 +49,13 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		this.onLabelClickHandler =  dojo.lang.hitch(this, this.onLabelClick);
 		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);
 		
-		
 	},
 
 
 	listenNode: function(node) {
-		//if (!node) dojo.debug((new Error()).stack)
+		//dojo.debug((new Error()).stack)
+		//	dojo.debug("listen "+node);
+		
 		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelClickHandler);
 		if (dojo.render.html.ie) {
 			dojo.event.browser.addListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
@@ -62,6 +63,8 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 	
 	unlistenNode: function(node) {
+		//dojo.debug("unlisten "+node);
+		
 		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelClickHandler);
 		if (dojo.render.html.ie) {
 			dojo.event.browser.removeListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
@@ -70,6 +73,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 
 	onAfterAddChild: function(message) {
+		//dojo.debug("add child!");
 		this.listenNode(message.child);
 	},
 	
@@ -89,8 +93,8 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		this.onLabelClick(event);			
 	},		
 		
-	checkSpecialEvent: function(event) {
-		return event.ctrlKey || event.shiftKey || event.metaKey;
+	checkSpecialEvent: function(event) {		
+		return event.ctrlKey;
 	},
 		
 	/**
@@ -102,8 +106,9 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	onLabelClick: function(event) {		
 		var node = this.domElement2TreeNode(event.target);
 
-		//dojo.debug("click");
-
+		//dojo.debug("click "+event.target.className);
+		//dojo.html.setClass(event.target, "TreeLabel TreeNodeEmphased");
+		
 		if (dojo.lang.inArray(this.selectedNodes, node)) {			
 			if(this.checkSpecialEvent(event)){				
 				// If the node is currently selected, and they select it again while holding
@@ -132,6 +137,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 		
 		//dojo.debug("select");
+
 		this.select(node);
 
 	},
@@ -166,6 +172,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			
 		}
 		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
+			//dojo.debugShallow("listen! "+this.listenedTrees);
 			// moving from old tree to our tree
 			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);			
 		}
@@ -173,13 +180,16 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		
 	},
 
+
 	onAfterDetach: function(message) {
 		this.deselectIfAncestorMatch(message.child);		
 	},
 
-	select: function(node) {
-		var index = dojo.lang.find(this.selectedNodes, node, true);
 
+	select: function(node) {
+
+		var index = dojo.lang.find(this.selectedNodes, node, true);
+		
 		if (index >=0 ) {
 			return; // already selected
 		}
@@ -187,18 +197,22 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		//dojo.debug(node);
 		this.selectedNodes.push(node);
 		
+
 		dojo.event.topic.publish(this.eventNames.select, {node: node} );
 	},
+
 
 	deselect: function(node){
 		var index = dojo.lang.find(this.selectedNodes, node, true);
 		//dojo.debug("deselect "+node);
 		if (index < 0) {
+			//dojo.debug("not selected");
 			return; // not selected
 		}
 		
 		this.selectedNodes.splice(index, 1);
 		dojo.event.topic.publish(this.eventNames.deselect, {node: node} );
+		//dojo.debug("deselect");
 
 	},
 	

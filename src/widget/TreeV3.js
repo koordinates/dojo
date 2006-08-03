@@ -246,8 +246,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		var _this = this;
 		
 		//dojo.debug(this.listeners[1]);
-		
-		
+						
 		
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
@@ -310,7 +309,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 		//dojo.debug("addChild "+child+" to "+newParent+" at "+index);
 
-		newParent.addChild(child, index);
+		newParent.doAddChild(child, index);
 	},
 
 	toString: function() {

@@ -188,8 +188,12 @@ dojo.widget.TreeWithNode = {
 		
 	},	
 	
+	
+	doAddChild: function(child, index) {
+		return this.addChild(child, index, true);
+	},
 		
-	addChild: function(child, index) {
+	addChild: function(child, index, dontPublishEvent) {
 		if (dojo.lang.isUndefined(index)) {
 			index = this.children.length;
 		}
@@ -204,7 +208,7 @@ dojo.widget.TreeWithNode = {
 		this.children.splice(index, 0, child);
 		child.parent = this;
 				
-		child.addedTo(this, index);
+		child.addedTo(this, index, dontPublishEvent);
 		
 		// taken from DomWidget.registerChild
 		// delete from widget list that are notified on resize etc (no parent)

@@ -15,6 +15,7 @@
 	dojo.require("dojo.widget.TreeSelectorV3");
 	dojo.require("dojo.widget.TreeDndControllerV3");	
 	dojo.require("dojo.widget.TreeEmphaseOnSelect");	
+	dojo.require("dojo.widget.TreeDeselectOnDblselect");	
 	dojo.require("dojo.dnd.TreeDragAndDropV3");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -44,17 +45,19 @@
 
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
 <div dojoType="TreeSelectorV3" widgetId="selector"></div>	
+
+<div dojoType="TreeDeselectOnDblselect" selector="selector"></div>
 <div dojoType="TreeEmphaseOnSelect" selector="selector"></div>
 <div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>
 
 
 MyTree
 <div dojoType="TreeV3" expandLevel="2" DndMode="between;onto" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller;selector">
-    <div dojoType="TreeNodeV3" title="Item 1">
-        <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
-        <div dojoType="TreeNodeV3" title="Item 1.2">
-            <div dojoType="TreeNodeV3" title="Item 1.2.1"></div>
-            <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
+    <div dojoType="TreeNodeV3" widgetId="Item 1" title="Item 1">
+        <div dojoType="TreeNodeV3" widgetId="Item 1.1" title="Item 1.1<br/>blas"><br/></div>
+        <div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2">
+            <div dojoType="TreeNodeV3" title="Item 1.2.1" widgetId="Item 1.2.1"></div>
+            <div dojoType="TreeNodeV3" title="Item 1.2.2" widgetId="Item 1.2.2"></div>
         </div>
         <div dojoType="TreeNodeV3" title="Can't add child to this node" actionsDisabled="ADDCHILD">
             <div dojoType="TreeNodeV3" isFolder="true" title="Empty folder"></div>
