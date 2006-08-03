@@ -39,7 +39,7 @@ dojo.lang.extend(dojo.widget.TreeEmphaseOnSelect, {
 	},
 	
 	onDeselect: function(message) {
-		dojo.debug(dojo.html.getClass(message.node.labelNode))
+		//dojo.debug(dojo.html.getClass(message.node.labelNode))
 		dojo.html.removeClass(message.node.labelNode, message.node.tree.classPrefix+'NodeEmphased');
 	}
 	

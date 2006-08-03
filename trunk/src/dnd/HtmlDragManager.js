@@ -211,8 +211,10 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 		this._dragTriggered = false;
  		// e.preventDefault();
 		e.dragSource = this.dragSource;
-		//let ctrl be used for multiselect or another action
-		// if((!e.shiftKey)&&(!e.ctrlKey)){ 
+		// let ctrl be used for multiselect or another action
+		// if I use same key to trigger treeV3 node selection and here,
+		// I have bugs with drag'n'drop. why ?? no idea..
+		//if((!e.shiftKey)&&(!e.ctrlKey)){ 
 		if(!e.shiftKey){
 			if(this.currentDropTarget) {
 				this.currentDropTarget.onDropStart();
@@ -276,6 +278,8 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 			if(this.currentDropTarget) {
 				this.currentDropTarget.onDropEnd();
 			}
+		} else {
+			//dojo.debug("special click");
 		}
 
 		dojo.event.disconnect(document, "onmousemove", this, "onMouseMove");
