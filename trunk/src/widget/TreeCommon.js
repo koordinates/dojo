@@ -36,7 +36,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		
 		var filter;
 		
-		if (this.listenNodeFilter) {
+		if (this.listenNodeFilter) {			
 			this.processDescendants(tree, this.listenNodeFilter, this.listenNode, true);
 		}
 		
@@ -89,6 +89,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 	
 	
 	processDescendants: function(elem, filter, func, skipFirst) {
+		
 		var _this = this;
 		
 		if (!skipFirst) {
@@ -98,10 +99,11 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 			func.call(_this,elem);	        
 		}
 		
+		
 		var stack = [elem]
 		while (elem = stack.pop()) {
 			dojo.lang.forEach(elem.children, function(elem) {
-				if (filter.call(_this, elem)) {
+				if (filter.call(_this, elem)) {		
 					func.call(_this, elem);
 					stack.push(elem);
 				}
