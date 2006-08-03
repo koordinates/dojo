@@ -376,11 +376,14 @@ dojo.dom.insertAtIndex = function(node, containingNode, insertionIndex){
  * @param text Optional, set the text to this value.
  */
 dojo.dom.textContent = function(node, text){
-	if (text) {
+	if (arguments.length>1) {
 		var _document = dojo.doc();
 		dojo.dom.replaceChildren(node, _document.createTextNode(text));
 		return text;
 	} else {
+		if(node.textContent != undefined){ //FF 1.5
+			return node.textContent;
+		}
 		var _result = "";
 		if (node == null) { return _result; }
 		for (var i = 0; i < node.childNodes.length; i++) {
