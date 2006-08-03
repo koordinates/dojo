@@ -99,6 +99,24 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	
 	objectId: "",
 
+	createNode: function(data) {
+			
+		data.tree = this.widgetId;
+		
+		if (data.widgetName) {
+			// TODO: check if such widget has createSimple
+			return dojo.widget.createWidget(data.widgetName, data);		
+		} else if (this.defaultChildWidget.prototype.createSimple) {			
+			return this.defaultChildWidget.prototype.createSimple(data);					
+		} else {
+			var ns = parent.tree.defaultChildWidget.prototype.namespace; 
+			var wt = parent.tree.defaultChildWidget.prototype.widgetType; 
+
+			return dojo.widget.createWidget(ns + ":" + wt, data); 
+		}
+ 	    	
+	},
+				
 
 	// expandNode has +- CSS background. Not img.src for performance, background src string resides in single place.
 	// selection in KHTML/Mozilla disabled treewide, IE requires unselectable for every node

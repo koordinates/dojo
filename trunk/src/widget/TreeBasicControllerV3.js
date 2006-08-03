@@ -426,10 +426,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	doCreateChild: function(parent, index, data) {
 
-		var widgetType = data.widgetType ? data.widgetType : parent.tree.defaultChildWidget.prototype.widgetType;
-		data.tree = parent.tree.widgetId;
-		
-		var newChild = dojo.widget.createWidget(widgetType, data);
+		var newChild = this.tree.createNode(data); 
+		//var newChild = dojo.widget.createWidget(widgetType, data);
 
 		parent.addChild(newChild, index);
 

@@ -396,7 +396,18 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		// I pass no args and ignore default controller
 		//dojo.profile.start(this.widgetType+" createSimple");
 		//dojo.profile.start(this.widgetType+" createSimple constructor");
-		var treeNode = new parent.tree.defaultChildWidget(); 
+		if (args.tree) {
+			var tree = args.tree;
+		} else if (parent) {
+			var tree = parent.tree;
+		} else {
+			dojo.raise("createSimple: can't evaluate tree");
+		}
+		tree = dojo.widget.byId(tree);
+		
+		//dojo.debug(tree);
+		
+		var treeNode = new tree.defaultChildWidget(); 
 		//dojo.profile.end(this.widgetType+" createSimple constructor");
 		
 		//dojo.profile.start(this.widgetType+" createSimple mixin");		

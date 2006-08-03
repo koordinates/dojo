@@ -128,14 +128,7 @@ dojo.widget.TreeWithNode = {
 			//dojo.profile.start("setChildren - create "+this);
 			
 			if (!(child instanceof dojo.widget.Widget)) {
-				
-				if (child instanceof Array) {
-					// arguments for createWidget
-					child = this.children[i] = dojo.widget.createWidget(child, {}, this);
-				} else {					
-					child = this.children[i] = this.tree.defaultChildWidget.prototype.createSimple(child, this);					
-				}
-				
+				child = this.children[i] = this.tree.createNode(child);				
 				//dojo.debugShallow(child)
 				
 				//dojo.debug("setChildren creates node "+child);
