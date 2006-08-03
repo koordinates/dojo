@@ -61,8 +61,8 @@ dojo.widget.defineWidget(
 	},
 
 	buildRendering: function () {
-		
 		this.domNode = document.createElement("table");
+		dojo.body().appendChild(this.domNode);
 		dojo.html.disableSelection(this.domNode);
 		dojo.event.connect(this.domNode, "onmousedown", function (e) {
 			e.preventDefault();
@@ -71,17 +71,15 @@ dojo.widget.defineWidget(
 			cellPadding = "0"; cellSpacing = "1"; border = "1";
 			style.backgroundColor = "white"; //style.position = "absolute";
 		}
-		var tbody = document.createElement("tbody");
-		this.domNode.appendChild(tbody);
 		var colors = this.palettes[this.palette];
 		for (var i = 0; i < colors.length; i++) {
-			var tr = document.createElement("tr");
+			var tr = this.domNode.insertRow(-1);
 			for (var j = 0; j < colors[i].length; j++) {
 				if (colors[i][j].length == 3) {
 					colors[i][j] = colors[i][j].replace(/(.)(.)(.)/, "$1$1$2$2$3$3");
 				}
 	
-				var td = document.createElement("td");
+				var td = tr.insertCell(-1);
 				with (td.style) {
 					backgroundColor = "#" + colors[i][j];
 					border = "1px solid gray";
@@ -96,9 +94,7 @@ dojo.widget.defineWidget(
 				dojo.event.connect(td, "onmousedown", this, "click");
 	
 				td.innerHTML = "&nbsp;";
-				tr.appendChild(td);
 			}
-			tbody.appendChild(tr);
 		}
 
 		if(dojo.render.html.ie){
