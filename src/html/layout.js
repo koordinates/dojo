@@ -122,7 +122,7 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(node, includeScroll, bo
 
 			if(node.parentNode != db){
 				var nd = node;
-//				if(dojo.render.html.opera){ nd = db; }
+				if(dojo.render.html.opera){ nd = db; }
 				ret.x -= dojo.html.sumAncestorProperties(nd, "scrollLeft");
 				ret.y -= dojo.html.sumAncestorProperties(nd, "scrollTop");
 			}
