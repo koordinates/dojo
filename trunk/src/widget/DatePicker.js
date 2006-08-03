@@ -7,6 +7,7 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 dojo.require("dojo.date");
+dojo.require("dojo.i18n.calendar.GregorianNames");
 
 /*
 	Some assumptions:
@@ -25,6 +26,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.DatePicker",
 	dojo.widget.HtmlWidget,
 	{
+		lang: "", //Q: I'd really like to have a default value of null, but the parser doesn't seem to make a distinction between that and undefined?
+
 		initializer: function() {
 			// today's date, JS Date object
 			this.today = "";
@@ -72,8 +75,14 @@ dojo.widget.defineWidget(
 		setDate: function(rfcDate) {
 			this.storedDate = rfcDate;
 		},
-		
+
 		initUI: function() {
+			var dayLabels = dojo.i18n.calendar.GregorianNames.getNames('days', 'narrow', 'standAlone', this.lang);
+			var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
+			for(var i=0; i<7; i++) {
+				dayLabelNodes.item(i).innerHTML = dayLabels[i];
+			}
+
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;
 			var currentClassName = "";
@@ -285,11 +294,11 @@ dojo.widget.defineWidget(
 			evt.stopPropagation();
 			this.incrementYear(evt);
 		},
-	
+
 		setMonthLabel: function(monthIndex) {
-			this.monthLabelNode.innerHTML = dojo.date.months[monthIndex];
+			this.monthLabelNode.innerHTML = dojo.i18n.calendar.GregorianNames.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
 		},
-		
+
 		setYearLabels: function(year) {
 			this.previousYearLabelNode.innerHTML = year - 1;
 			this.currentYearLabelNode.innerHTML = year;
@@ -341,8 +350,8 @@ dojo.widget.defineWidget(
 );
 
 dojo.widget.DatePicker.util = new function() {
-	this.months = dojo.date.months;
-	this.weekdays = dojo.date.days;
+	this.months = dojo.date.months; //Q: is this used?
+	this.weekdays = dojo.date.days; //Q: is this used?
 
 	this.toRfcDate = function(jsDate) {
 		if(!jsDate) {
