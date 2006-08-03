@@ -96,6 +96,10 @@ dojo.declare("dojo.dnd.DropTarget", null, {
 		return true;
 	},
 
+	unregister: function(){
+		dojo.dnd.dragManager.unregisterDropTarget(this);
+	},
+
 	onDragOver: function(){
 	},
 
