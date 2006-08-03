@@ -12,7 +12,7 @@ dojo.widget.TreeDndControllerV3 = function() {
 
 	this.dropTargets = {};
 	
-	this.listenedTrees = [];
+	this.listenedTrees = {};
 }
 
 dojo.inherits(dojo.widget.TreeDndControllerV3, dojo.widget.HtmlWidget);
@@ -24,6 +24,7 @@ dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
 	widgetType: "TreeDndControllerV3",
 	
 	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy", "afterAddChild"],
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget}, 
 	
 	initialize: function(args) {
 		this.treeController = dojo.lang.isString(args.controller) ? dojo.widget.byId(args.controller) : args.controller;
@@ -52,13 +53,13 @@ dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
 		
 		if (!message.oldTree) return;
 		
-		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {			
-			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.unlistenNode);
+		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {			
+			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);
 		}		
 		
-		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
 			// we have new node
-			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.listenNode);	
+			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);	
 		}
 		//dojo.profile.end("onTreeChange");
 	},

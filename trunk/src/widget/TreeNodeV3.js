@@ -652,13 +652,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.tree.toggleObj.hide(
 			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
 		);
-
-		// if dnd is in action, recalculate changed coordinates
-		// FIXME: resize event here, DnD should catch it
-		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
-			// SLOW !!!
-			dojo.dnd.dragManager.cacheTargetLocations();
-		}
 	},
 
 	showChildren: function(){
@@ -671,11 +664,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		//dojo.profile.end("Toggler show");
 
-		
-		if(dojo.exists(dojo, 'dnd.dragManager.dragObjects') && dojo.dnd.dragManager.dragObjects.length) {
-			// SLOW !!!
-			dojo.dnd.dragManager.cacheTargetLocations();
-		}
 	},
 	
 	onShowChildren: function() {

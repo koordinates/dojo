@@ -15,7 +15,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:TreeBasicControllerV3");
 dojo.widget.TreeBasicControllerV3 = function() {
 	dojo.widget.HtmlWidget.call(this);
 	
-	this.listenedTrees = [];
+	this.listenedTrees = {};
 }
 
 dojo.inherits(dojo.widget.TreeBasicControllerV3, dojo.widget.HtmlWidget);
@@ -29,7 +29,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	widgetType: "TreeBasicControllerV3",
 
 	listenTreeEvents: ["afterChangeTree","afterTreeCreate", "beforeTreeDestroy","afterSetFolder","afterUnsetFolder"],
-	
+	listenNodeFilter: function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget},
 
 
 	listenNode: function(node) {
@@ -79,17 +79,17 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			return; 
 		}
 		            
-		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
 			// I got this message because node leaves me (oldtree)
 			/**
 			 * clean all folders that I listen. I don't listen to non-folders.
 			 */
-			this.processDescendants(message.node, function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget}, this.unlistenNode);
+			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);
 		}		
 		
-		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
 			// we have new node
-			this.processDescendants(message.node, function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget}, this.listenNode);
+			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);
 		}
 		
 		//dojo.profile.end("onTreeChange");

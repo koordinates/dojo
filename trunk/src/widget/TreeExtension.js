@@ -10,7 +10,7 @@ dojo.require("dojo.widget.TreeCommon");
 dojo.widget.TreeExtension = function() {
 	dojo.widget.HtmlWidget.call(this);
 	
-	this.listenedTrees = []
+	this.listenedTrees = {}
 }
 
 dojo.inherits(dojo.widget.TreeExtension, dojo.widget.HtmlWidget);

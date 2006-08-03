@@ -16,7 +16,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:TreeMenuItemV3");
 dojo.widget.TreeContextMenuV3 = function() {
 	dojo.widget.PopupMenu2.call(this);
 
-	this.listenedTrees = [];
+	this.listenedTrees = {};
 
 }
 
@@ -42,8 +42,8 @@ dojo.lang.extend(dojo.widget.TreeContextMenuV3, {
 	},
 
 	listenTreeEvents: ["afterChangeTree","beforeTreeDestroy"],
-
-
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},
+	
 	onBeforeTreeDestroy: function(message) {
 		this.unlistenTree(message.source);
 	},
@@ -53,14 +53,14 @@ dojo.lang.extend(dojo.widget.TreeContextMenuV3, {
 		//dojo.debugShallow(message);
 				
 		            
-		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
 			// I got this message because node leaves me (oldtree)
-			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.unlistenNode);
+			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);
 		}		
 		
-		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
 			// we have new node
-			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.listenNode);
+			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);
 		}
 		
 		//dojo.profile.end("onTreeChange");
