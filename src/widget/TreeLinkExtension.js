@@ -16,6 +16,9 @@ dojo.widget.TreeLinkExtension = function() {
 dojo.inherits(dojo.widget.TreeLinkExtension, dojo.widget.TreeExtension);
 
 
+/**
+ * can only listen, no unlisten
+ */
 dojo.lang.extend(dojo.widget.TreeLinkExtension, {
 	widgetType: "TreeLinkExtension",
 	
@@ -31,6 +34,8 @@ dojo.lang.extend(dojo.widget.TreeLinkExtension, {
 		dojo.html.setClass(newLabel, dojo.html.getClass(labelNode));
 		labelNode.parentNode.replaceChild(newLabel, labelNode);		
 	},
+	
+		
 	
 	makeALabel: function() {		
 		var newLabel = document.createElement("a");

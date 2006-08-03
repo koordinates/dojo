@@ -148,6 +148,9 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var autoExpand = function () {
 			if (dojo.dnd.dragManager.currentDropTarget === _this) {
 				_this.controller.expand(_this.treeNode);
+				// SLOW. Coordinates will not be recalculated if collapse occurs, or
+				// other (generic) resize. So that's a kind of hack.
+				dojo.dnd.dragManager.cacheTargetLocations();
 			}
 		}
 
@@ -291,6 +294,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		return index;
 	},
 
+
+	onDropStart: function() {
+		this.inDropProcess = true;
+	},
+	
+	onDropEnd: function() {
+		this.inDropProcess = false;
+	},
 
 	onDrop: function(e){
 		// onDragOut will clean position

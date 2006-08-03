@@ -16,6 +16,9 @@ dojo.widget.TreeDocIconExtension = function() {
 
 dojo.inherits(dojo.widget.TreeDocIconExtension, dojo.widget.TreeExtension);
 
+/**
+ * can't unlisten
+ */
 dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 	widgetType: "TreeDocIconExtension",
 	
@@ -25,7 +28,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 
 	
 	listenTreeEvents: ["afterChangeTree","afterSetFolder","afterUnsetFolder"],
-	
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},
 		
 	setNodeTypeClass: function(node) {
 		//dojo.debug("setNodeTypeClass in "+node+" type "+node.getNodeType());
@@ -68,14 +71,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		//dojo.debug("listenNode out "+node);
 		
 	},
-		
-	/**
-	 * FIXME: can't unlisten yet. TODO: remove node type and stuff ?
-	 */
-	unlistenNode: function(node) {
-	},
-	
-	
+			
 	
 	onAfterChangeTree: function(message) {
 		var _this = this;
@@ -85,7 +81,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {			
 			// moving from old tree to our tree
 			this.processDescendants(message.node,
-				function(elem) { return elem instanceof dojo.widget.Widget},
+				this.listenNodeFilter,
 				this.listenNode
 			);
 		}

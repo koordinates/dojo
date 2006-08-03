@@ -13,7 +13,7 @@ dojo.widget.TreeSelectorV3 = function() {
 
 	this.eventNames = {};
 
-	this.listenedTrees = [];
+	this.listenedTrees = {};
 	this.selectedNodes = [];
 		
 }
@@ -27,10 +27,9 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	widgetType: "TreeSelectorV3",
 
 	listenTreeEvents: ["afterAddChild","afterCollapse","afterTreeChange", "afterDetach", "beforeTreeDestroy"],
-		
-	selectedNode: null,
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
 	
-	allowMulti: true,
+	allowedMulti: false,
 	
 	eventNamesDefault: {
 		select : "select",
@@ -48,26 +47,23 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 		
 		this.onLabelClickHandler =  dojo.lang.hitch(this, this.onLabelClick);
-		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);
-	
-		
+		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);		
 	},
 
 
 	listenNode: function(node) {
 		//if (!node) dojo.debug((new Error()).stack)
 		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelClickHandler);
-		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelDblClickHandler);
-		
-		//dojo.event.connect(node.labelNode, "onclick", this, "onLabelClick");
-		//dojo.event.connect(node.labelNode, "ondblclick", this, "onLabelDblClick");
+		if (dojo.render.html.ie) {
+			dojo.event.browser.addListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
+		}
 	},
 	
 	unlistenNode: function(node) {
 		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelClickHandler);
-		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelDblClickHandler);
-		//dojo.event.disconnect(node.labelNode, "onclick", this, "onLabelClick");
-		//dojo.event.disconnect(node.labelNode, "ondblclick", this, "onLabelDblClick");
+		if (dojo.render.html.ie) {
+			dojo.event.browser.removeListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
+		}
 	},
 
 
@@ -82,108 +78,133 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 
 	// deselect node if ancestor is collapsed
-	onAfterCollapse: function(message) {
-		if (!this.selectedNode) return;
-
+	onAfterCollapse: function(message) {		
 		this.deselectIfAncestorMatch(message.source);		
 	},
 
-
+	// IE will throw select -> dblselect. Need to transform to select->select
 	onLabelDblClick: function(event) {
-		var node = this.domElement2TreeNode(event.target);
-
-		if (this.selectedNode !== node) {
-			this.select(node);
-		}
-		
-		dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
+		this.onLabelClick(event);			
 	},		
 		
-	checkDeselectEvent: function(event) {
+	checkSpecialEvent: function(event) {
 		return event.ctrlKey || event.shiftKey || event.metaKey;
 	},
 		
+	/**
+	 * press on selected with ctrl => deselect it
+	 * press on selected w/o ctrl => dblselect it and deselect all other
+	 *
+	 * press on unselected with ctrl => add it to selection
+	 */
 	onLabelClick: function(event) {		
 		var node = this.domElement2TreeNode(event.target);
 
-		if (this.selectedNode === node) {
-			if(this.checkDeselectEvent(event)){
+		//dojo.debug("click");
+
+		if (dojo.lang.inArray(this.selectedNodes, node)) {			
+			if(this.checkSpecialEvent(event)){				
 				// If the node is currently selected, and they select it again while holding
 				// down a meta key, it deselects it
-				this.deselect();
+				this.deselect(node);
 				return;
 			}
+			
+			var _this = this;
+			dojo.lang.forEach(this.selectedNodes, function(selectedNode) {
+				if (selectedNode !== node) {
+					_this.deselect(selectedNode);
+				}
+			});
 			dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
 			return;
 		}
-
-		if (this.selectedNode) {
-			this.deselect();
+		
+		// if unselected node..
+		
+		
+		// deselect all if no meta key or disallowed
+		if (!this.checkSpecialEvent(event) || !this.allowedMulti) {
+			//dojo.debug("deslec");
+			this.deselectAll();
 		}
-
+		
+		//dojo.debug("select");
 		this.select(node);
 
 	},
 
 	deselectIfAncestorMatch: function(ancestor) {
-		var node = this.selectedNode;
-		
-		/* pass if selectedNode is descendant of message.node */
-		while (node.isTreeNode) {
-			if (node === ancestor) {
-				this.deselect(); 
-				return;					
+		/* deselect all nodes with this ancestor */
+		var _this = this;
+		dojo.lang.forEach(this.selectedNodes, function(node) {
+			var selectedNode = node;
+			while (node && node.isTreeNode) {
+				if (node === ancestor) {
+					_this.deselect(selectedNode); 
+					return;					
+				}
+				node = node.parent;
 			}
-			node = node.parent;			
-		}
+		});
 	},
 	
 			
 	onAfterChangeTree: function(message) {
 		
 		
-		if (!dojo.lang.inArray(this.listenedTrees, message.newTree)) {
+		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {
 			// moving from our trfee to new one
 			
 			if (this.selectedNode && message.node.children) {
 				this.deselectIfAncestorMatch(message.node);
 			}
 			
-			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.unlistenNode);					
+			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);					
 			
 		}
-		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {
+		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
 			// moving from old tree to our tree
-			this.processDescendants(message.node, function(elem) { return elem instanceof dojo.widget.Widget}, this.listenNode);			
+			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);			
 		}
 		
 		
 	},
 
 	onAfterDetach: function(message) {
-		if (this.selectedNode) {
-			this.deselectIfAncestorMatch(message.child);
-		}
-		
+		this.deselectIfAncestorMatch(message.child);		
 	},
 
-	select: function(node){
+	select: function(node) {
+		var index = dojo.lang.find(this.selectedNodes, node, true);
 
-		this.selectedNode = node;
+		if (index >=0 ) {
+			return; // already selected
+		}
+		
+		//dojo.debug(node);
+		this.selectedNodes.push(node);
 		
 		dojo.event.topic.publish(this.eventNames.select, {node: node} );
 	},
 
-	deselect: function(){
-		if (!this.selectedNode) {
-			return;
+	deselect: function(node){
+		var index = dojo.lang.find(this.selectedNodes, node, true);
+		//dojo.debug("deselect "+node);
+		if (index < 0) {
+			return; // not selected
 		}
 		
-		var node = this.selectedNode;
-
-		this.selectedNode = null;
+		this.selectedNodes.splice(index, 1);
 		dojo.event.topic.publish(this.eventNames.deselect, {node: node} );
 
+	},
+	
+	deselectAll: function() {
+		//dojo.debug("deselect all "+this.selectedNodes);
+		while (this.selectedNodes.length) {
+			this.deselect(this.selectedNodes[0]);
+		}
 	}
 
 });
