@@ -23,7 +23,7 @@ dojo.lang.extend(dojo.widget.TreeEmphaseOnSelect, {
 	selector: "",
 	
 	initialize: function() {
-		this.selector = dojo.widget.manager.getWidgetById(this.selector);
+		this.selector = dojo.widget.byId(this.selector);
 		
 		dojo.event.topic.subscribe(this.selector.eventNames.select, this, "onSelect");
 		dojo.event.topic.subscribe(this.selector.eventNames.deselect, this, "onDeselect");	
@@ -31,10 +31,15 @@ dojo.lang.extend(dojo.widget.TreeEmphaseOnSelect, {
 
 	
 	onSelect: function(message) {
+		//dojo.debug("select "+message.node.widgetId);
+		//dojo.debug("before select "+dojo.html.getClass(message.node.labelNode))
 		dojo.html.addClass(message.node.labelNode, message.node.tree.classPrefix+'NodeEmphased');
+		//dojo.debug("after select "+dojo.html.getClass(message.node.labelNode))
+		
 	},
 	
 	onDeselect: function(message) {
+		dojo.debug(dojo.html.getClass(message.node.labelNode))
 		dojo.html.removeClass(message.node.labelNode, message.node.tree.classPrefix+'NodeEmphased');
 	}
 	

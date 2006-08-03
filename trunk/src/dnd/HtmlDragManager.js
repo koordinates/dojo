@@ -211,7 +211,9 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 		this._dragTriggered = false;
  		// e.preventDefault();
 		e.dragSource = this.dragSource;
-		if((!e.shiftKey)&&(!e.ctrlKey)){
+		//let ctrl be used for multiselect or another action
+		// if((!e.shiftKey)&&(!e.ctrlKey)){ 
+		if(!e.shiftKey){
 			if(this.currentDropTarget) {
 				this.currentDropTarget.onDropStart();
 			}
