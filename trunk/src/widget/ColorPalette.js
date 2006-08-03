@@ -62,7 +62,7 @@ dojo.widget.defineWidget(
 
 	buildRendering: function () {
 		this.domNode = document.createElement("table");
-		dojo.body().appendChild(this.domNode);
+//		dojo.body().appendChild(this.domNode);
 		dojo.html.disableSelection(this.domNode);
 		dojo.event.connect(this.domNode, "onmousedown", function (e) {
 			e.preventDefault();
