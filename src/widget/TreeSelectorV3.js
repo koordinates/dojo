@@ -47,7 +47,9 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		}
 		
 		this.onLabelClickHandler =  dojo.lang.hitch(this, this.onLabelClick);
-		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);		
+		this.onLabelDblClickHandler =  dojo.lang.hitch(this, this.onLabelDblClick);
+		
+		
 	},
 
 
