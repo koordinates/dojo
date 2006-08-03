@@ -1,8 +1,5 @@
 dojo.provide("dojo.i18n.calendar.GregorianNames");
 
-dojo.require("dojo.experimental");
-dojo.experimental("dojo.i18n.calendar.GregorianNames");
-
 dojo.require("dojo.i18n.common");
 dojo.requireLocalization("dojo.i18n.calendar", "gregorian");
 
