@@ -637,14 +637,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 
 	collapse: function(){
+		
+				
 		if (!this.isExpanded) return;
 
+		
 		this.isExpanded = false;
 		
-		if (this.children.length) {			
-			this.hideChildren();
-		}
-			
+		this.hideChildren();
+		
 		
 	},
 
@@ -672,6 +673,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	},
 	
 	onHideChildren: function() {
+
 		this.viewSetExpand();
 		this.onHide();
 		dojo.event.topic.publish(this.tree.eventNames.afterCollapse, {source: this} );

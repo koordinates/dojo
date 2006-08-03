@@ -28,7 +28,9 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 
 	
 	listenTreeEvents: ["afterChangeTree","afterSetFolder","afterUnsetFolder"],
-	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},
+	
+	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget },
+	
 		
 	setNodeTypeClass: function(node) {
 		//dojo.debug("setNodeTypeClass in "+node+" type "+node.getNodeType());
@@ -42,6 +44,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		
 		
 	onAfterSetFolder: function(message) {
+		//dojo.debug("FOLDER");
 		if (message.source.iconNode) {
 			// on node-initialize time when folder is set there is no iconNode
 			// this case will be processed in treeChange anyway			
@@ -53,6 +56,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 	onAfterUnsetFolder: function(message) {
 		this.setNodeTypeClass(message.source);
 	},
+	
 	
 	listenNode: function(node) {
 		/**
@@ -78,7 +82,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		
 		//dojo.debug(message.node)
 		
-		if (!dojo.lang.inArray(this.listenedTrees, message.oldTree)) {			
+		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {			
 			// moving from old tree to our tree
 			this.processDescendants(message.node,
 				this.listenNodeFilter,
