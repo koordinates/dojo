@@ -35,6 +35,8 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		select : "select",
 		destroy : "destroy",
 		deselect : "deselect",
+		listenNode: "listenNode",
+		unlistenNode: "unlistenNode",
 		dblselect: "dblselect" // select already selected node.. Edit or whatever
 	},
 
@@ -55,11 +57,12 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	listenNode: function(node) {
 		//dojo.debug((new Error()).stack)
 		//	dojo.debug("listen "+node);
-		
 		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelClickHandler);
 		if (dojo.render.html.ie) {
 			dojo.event.browser.addListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
 		}
+		dojo.event.topic.publish(this.eventNames.listenNode, { node: node });
+			
 	},
 	
 	unlistenNode: function(node) {
@@ -69,6 +72,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		if (dojo.render.html.ie) {
 			dojo.event.browser.removeListener(node.labelNode, "ondblclick", this.onLabelDblClickHandler);
 		}
+		dojo.event.topic.publish(this.eventNames.unlistenNode, { node: node });
 	},
 
 
@@ -132,7 +136,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		
 		// deselect all if no meta key or disallowed
 		if (!this.checkSpecialEvent(event) || !this.allowedMulti) {
-			//dojo.debug("deslec");
+			//dojo.debug("deselect All");
 			this.deselectAll();
 		}
 		
@@ -141,6 +145,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 		this.select(node);
 
 	},
+	
 
 	deselectIfAncestorMatch: function(ancestor) {
 		/* deselect all nodes with this ancestor */
@@ -194,21 +199,22 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 			return; // already selected
 		}
 		
-		//dojo.debug(node);
+		//dojo.debug("select "+node);
 		this.selectedNodes.push(node);
-		
-
+						
 		dojo.event.topic.publish(this.eventNames.select, {node: node} );
 	},
 
 
 	deselect: function(node){
 		var index = dojo.lang.find(this.selectedNodes, node, true);
-		//dojo.debug("deselect "+node);
 		if (index < 0) {
 			//dojo.debug("not selected");
 			return; // not selected
 		}
+		
+		//dojo.debug("deselect "+node);
+		
 		
 		this.selectedNodes.splice(index, 1);
 		dojo.event.topic.publish(this.eventNames.deselect, {node: node} );

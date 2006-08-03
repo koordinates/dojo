@@ -61,6 +61,7 @@
     background-repeat : no-repeat;
 }
 
+/* same style as IE selection */
 .TreeNodeEmphased {
     background-color: Highlight;
     color: HighlightText;
