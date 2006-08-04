@@ -12,6 +12,7 @@ dojo.widget.defineWidget(
 	{
 
         templateCssPath: dojo.uri.dojoUri("src/widget/templates/RemoteTabControl.css"),
+		templateString: '<div dojoAttachPoint="domNode" wairole="tablist"></div>',
 
 		initializer: function() {
 			//summary
@@ -35,8 +36,8 @@ dojo.widget.defineWidget(
 		},
 
 		postCreate: function() {
-
 			dojo.html.addClass(this.domNode, this["class"]);  // "class" is a reserved word in JS
+			dojo.widget.wai.setAttr(this.domNode, "waiRole", "role", "tablist");
 
 			if (this.tabContainer) {
 				dojo.addOnLoad(dojo.lang.hitch(this, function() {
@@ -100,8 +101,8 @@ dojo.widget.defineWidget(
 				dojo.event.connect(img, "onclick", dojo.lang.hitch(this, function(evt){
 					this._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt);
 				}));
-				dojo.event.connect(tab.div.lastChild.lastChild, "onclick", dojo.lang.hitch(this, function(evt){
-					this._runOnCloseTab(tab, true);
+				dojo.event.connect(this._tabContainer, "_runOnCloseTab", dojo.lang.hitch(this, function(t){
+					this._runOnRemoteClose(t);
 				}));
 				dojo.event.connect(img, "onmouseover", dojo.lang.hitch(this, function(){
 					dojo.html.addClass(img, this.imageHoverClass); 
@@ -134,12 +135,16 @@ dojo.widget.defineWidget(
 			}));
 		},
 
-		_runOnCloseTab: function(tab, fromContainer){
+		_runOnCloseTab: function(tab){
 			var tabObj = this.tabs[tab.widgetId];
 			this.removeChild(tabObj);
-			if(!fromContainer){
-				this._tabContainer._runOnCloseTab(tab);
-			}
+			this._tabContainer._runOnCloseTab(tab);
+		},
+
+		_runOnRemoteClose: function(tab){
+			var tabObj = this.tabs[tab.widgetId];
+			if(!tabObj.button){ return; }
+			this.removeChild(tabObj);
 		},
 
 		removeChild: function(tab){

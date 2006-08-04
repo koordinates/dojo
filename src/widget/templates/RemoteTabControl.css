@@ -1,4 +1,8 @@
-.dojoRemoteTabController .dojoRemoteTab {
+.dojoRemoteTabController {
+	position: relative;
+}
+
+.dojoRemoteTab {
 	position : relative;
 	float : left;
 	padding-left : 9px;
@@ -9,7 +13,7 @@
 	z-index: 3;
 }
 
-.dojoRemoteTabController .dojoRemoteTab div {
+.dojoRemoteTab div {
 	display : block;
 	padding : 4px 15px 4px 6px;
 	background : url(images/tab_top_right.gif) no-repeat right top;
@@ -17,7 +21,7 @@
 	font-size : 90%;
 }
 
-.dojoRemoteTabController .dojoRemoteTabClose {
+.dojoRemoteTabPaneClose {
 	position : absolute;
 	bottom : 0px;
 	right : 6px;
@@ -26,11 +30,11 @@
 	background : url(images/tab_close.gif) no-repeat right top;
 }
 
-.dojoRemoteTabController .dojoRemoteTabCloseHover {
+.dojoRemoteTabPaneCloseHover {
 	background-image : url(images/tab_close_h.gif);
 }
 
-.dojoRemoteTabController .dojoRemoteTabClose {
+.dojoRemoteTabClose {
 	display : inline-block;
 	height : 12px;
 	width : 12px;
@@ -40,17 +44,17 @@
 	cursor : default;
 }
 
-.dojoRemoteTabController .dojoRemoteTabCloseHover {
+.dojoRemoteTabCloseHover {
 	background-image : url(images/tab_close_h.gif);
 }
 
-.dojoRemoteTabController .dojoRemoteTab.current {
+.dojoRemoteTab.current {
 	padding-bottom : 1px;
 	border-bottom : 0;
 	background-position : 0 -150px;
 }
 
-.dojoRemoteTabController .dojoRemoteTab.current div {
+.dojoRemoteTab.current div {
 	padding-bottom : 5px;
 	margin-bottom : -1px;
 	background-position : 100% -150px;
