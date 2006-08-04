@@ -9,8 +9,8 @@ dojo.require("dojo.lang.common");
  * hitch(foo, "bar"); // runs foo.bar() in the scope of foo
  * hitch(foo, myFunction); // runs myFunction in the scope of foo
  */
-dojo.lang.hitch = function(thisObject, method) {
-	var fcn = dojo.lang.isString(method) ? thisObject[method] : method;
+dojo.lang.hitch = function(thisObject, method){
+	var fcn = (dojo.lang.isString(method) ? thisObject[method] : method) || function(){};
 
 	return function() {
 		return fcn.apply(thisObject, arguments);
