@@ -80,10 +80,26 @@ dojo.lang.extend(dojo.lfx.IAnimation, {
 	pause: null,
 	stop: null,
 	
+	connect: function(evt, scope, newFunc){
+		if(!newFunc){
+			newFunc = scope;
+			scope = this;
+		}
+		newFunc = dojo.lang.hitch(scope, newFunc);
+		var oldFunc = this[evt]||function(){};
+		this[evt] = function(){
+			var ret = oldFunc.apply(this, arguments);
+			newFunc.apply(this, arguments);
+			return ret;
+		}
+		return this;
+	},
+
 	fire: function(evt, args){
 		if(this[evt]){
 			this[evt].apply(this, (args||[]));
 		}
+		return this;
 	},
 	
 	// private properties
@@ -372,14 +388,14 @@ dojo.lfx.Chain = function() {
 	
 	var _this = this;
 	dojo.lang.forEach(anims, function(anim, i, anims_arr){
-		_this._anims.push(anim);
+		this._anims.push(anim);
 		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
 		if(i < anims_arr.length - 1){
 			anim.onEnd = function(){ oldOnEnd(); _this._playNext(); };
 		}else{
 			anim.onEnd = function(){ oldOnEnd(); _this.fire("onEnd"); };
 		}
-	}, _this);
+	}, this);
 }
 dojo.inherits(dojo.lfx.Chain, dojo.lfx.IAnimation);
 dojo.lang.extend(dojo.lfx.Chain, {
