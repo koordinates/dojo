@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+	<head>
+		<title>lfx</title>
+
+		<style>
+			.box {
+				width: 300px;
+				border: 2px solid black;
+				background-color: #455bae;
+				/* position: absolute; */
+			}
+		</style>
+		<script type="text/javascript">
+			var djConfig = { isDebug: true };
+		</script>
+		<script type="text/javascript" src="../../dojo.js"></script>
+		<script type="text/javascript">
+			dojo.require("dojo.lfx.*");
+			dojo.require("dojo.event.*");
+		</script>
+		<script type="text/javascript">
+			dojo.addOnLoad(function(){
+				dojo.lfx.chain(
+					dojo.lfx.wipeIn("foo", 500),
+					dojo.lfx.wipeOut("foo", 500)
+				).play(1000);
+			});
+		</script>
+	</head>
+	<body>
+		<div id="foo" class="box" style="display: none;">
+			<p>
+			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+			semper sagittis velit. Cras in mi. Duis porta mauris ut ligula.
+			Proin porta rutrum lacus. Etiam consequat scelerisque quam. Nulla
+			facilisi.  Maecenas luctus venenatis nulla. In sit amet dui non mi
+			semper iaculis.  Sed molestie tortor at ipsum. Morbi dictum rutrum
+			magna. Sed vitae risus.
+			</p>
+			<p>
+			Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
+			imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer
+			lorem nunc, ullamcorper a, commodo ac, malesuada sed, dolor. Aenean
+			id mi in massa bibendum suscipit. Integer eros. Nullam suscipit
+			mauris. In pellentesque. Mauris ipsum est, pharetra semper,
+			pharetra in, viverra quis, tellus. Etiam purus. Quisque egestas,
+			tortor ac cursus lacinia, felis leo adipiscing nisi, et rhoncus
+			elit dolor eget eros. Fusce ut quam. Suspendisse eleifend leo vitae
+			ligula. Nulla facilisi. Nulla rutrum, erat vitae lacinia dictum,
+			pede purus imperdiet lacus, ut semper velit ante id metus. Praesent
+			massa dolor, porttitor sed, pulvinar in, consequat ut, leo. Nullam
+			nec est. Aenean id risus blandit tortor pharetra congue.
+			Suspendisse pulvinar.
+			</p>
+		</div>
+	</body>
+</html>
