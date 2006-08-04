@@ -57,7 +57,7 @@ dojo.defineNamespace = function(objRoot, location, nsPrefix, resolver /*optional
 };
 
 dojo.findNamespaceForWidget = function(widgetName){
-	dojo.deprecated('dojo.findNamespaceForWidget', 'Widget not defined for a namespace'+
+	dojo.deprecated('dojo.findNamespaceForWidget', 'Widget [' + widgetName + '] not defined for a namespace'+
 		', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
 	widgetName = widgetName.toLowerCase();
 	for(x in dojo._namespaces){
