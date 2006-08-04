@@ -6,11 +6,12 @@ dojo.require("dojo.lfx.Animation");
 dojo.lfx.html.fadeWipeIn = function(nodes, duration, easing, callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	var anim = dojo.lfx.combine(
-		dojo.lfx.wipeIn(nodes, duration, easing),
-		dojo.lfx.fadeIn(nodes, duration, easing));
+		dojo.lfx.fadeIn(nodes, duration, easing),
+		dojo.lfx.wipeIn(nodes, duration, easing)
+	);
 	
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
+		anim.connect("onEnd", function(){
 			callback(nodes, anim);
 		});
 	}
@@ -21,11 +22,12 @@ dojo.lfx.html.fadeWipeIn = function(nodes, duration, easing, callback){
 dojo.lfx.html.fadeWipeOut = function(nodes, duration, easing, callback){
 	nodes = dojo.lfx.html._byId(nodes);
 	var anim = dojo.lfx.combine(
-		dojo.lfx.wipeOut(nodes, duration, easing),
-		dojo.lfx.fadeOut(nodes, duration, easing));
+		dojo.lfx.fadeOut(nodes, duration, easing),
+		dojo.lfx.wipeOut(nodes, duration, easing)
+	);
 	
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
+		anim.connect("onEnd", function(){
 			callback(nodes, anim);
 		});
 	}
@@ -93,7 +95,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		
 		var anim = dojo.lfx.propertyAnimation(node, props, duration, easing);
 		if(callback){
-			dojo.event.connect(anim, "onEnd", function(){
+			anim.connect("onEnd", function(){
 				callback(node, anim);
 			});
 		}
@@ -101,8 +103,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		anims.push(anim);
 	});
 	
-	if(nodes.length > 1){ return dojo.lfx.combine(anims); }
-	else{ return anims[0]; }
+	return dojo.lfx.combine(anims);
 }
 
 dojo.lang.mixin(dojo.lfx, dojo.lfx.html);
