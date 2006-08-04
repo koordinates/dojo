@@ -475,6 +475,7 @@ dojo.lfx.combine = function(){
 	if(dojo.lang.isArray(arguments[0])){
 		anims = arguments[0];
 	}
+	if(anims.length == 1){ return anims[0]; }
 	return new dojo.lfx.Combine(anims);
 }
 
@@ -483,5 +484,6 @@ dojo.lfx.chain = function(){
 	if(dojo.lang.isArray(arguments[0])){
 		anims = arguments[0];
 	}
+	if(anims.length == 1){ return anims[0]; }
 	return new dojo.lfx.Chain(anims);
 }
