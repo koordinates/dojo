@@ -98,7 +98,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},		
 		
 	checkSpecialEvent: function(event) {		
-		return event.ctrlKey;
+		return event.shiftKey || event.ctrlKey;
 	},
 		
 	/**
