@@ -93,11 +93,13 @@ dojo.lang.isArray = function(it){
 
 dojo.lang.isArrayLike = function(it){
 	// summary:	Return true if it can be used as an array (i.e. is an object with an integer length property).
+	if((!it)||(dojo.lang.isUndefined(it))){ return false; }
 	if(dojo.lang.isString(it)){ return false; }
 	if(dojo.lang.isFunction(it)){ return false; } // keeps out built-in constructors (Number, String, ...) which have length properties
 	if(dojo.lang.isArray(it)){ return true; }
-	if(typeof it != "undefined" && it
-		&& dojo.lang.isNumber(it.length) && isFinite(it.length)){ return true; }
+	// form node itself is ArrayLike, but not always iterable. Use form.elements instead.
+	if((it.tagName)&&(it.tagName.toLowerCase()=='form')){ return false; }
+	if(dojo.lang.isNumber(it.length) && isFinite(it.length)){ return true; }
 	return false;
 }
 
