@@ -755,16 +755,15 @@ dojo.widget.defineWidget(
 
 				with(this.optionsListNode.style)
 				{
+					display = "";
 					if(visibleCount == childs.length){
 						//no scrollbar is required, so unset height to let browser calcuate it,
 						//as in css, overflow is already set to auto
 						height = "";
 					}else{
 						//show it first to get the correct dojo.style.getOuterHeight(childs[0])
-						display="";
 						//FIXME: shall we cache the height of the item?
 						height = visibleCount * dojo.html.getMarginBox(childs[0]).height +"px";
-						display = "none";
 					}
 					width = (dojo.html.getMarginBox(this.domNode).width-2)+"px";
 					
