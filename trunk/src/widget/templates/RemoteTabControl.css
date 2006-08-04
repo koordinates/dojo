@@ -17,6 +17,33 @@
 	font-size : 90%;
 }
 
+.dojoRemoteTabController .dojoRemoteTabClose {
+	position : absolute;
+	bottom : 0px;
+	right : 6px;
+	height : 12px;
+	width : 12px;
+	background : url(images/tab_close.gif) no-repeat right top;
+}
+
+.dojoRemoteTabController .dojoRemoteTabCloseHover {
+	background-image : url(images/tab_close_h.gif);
+}
+
+.dojoRemoteTabController .dojoRemoteTabClose {
+	display : inline-block;
+	height : 12px;
+	width : 12px;
+	padding : 0 12px 0 0;
+	margin : 0 -10px 0 10px;
+	background : url(images/tab_close.gif) no-repeat right top;
+	cursor : default;
+}
+
+.dojoRemoteTabController .dojoRemoteTabCloseHover {
+	background-image : url(images/tab_close_h.gif);
+}
+
 .dojoRemoteTabController .dojoRemoteTab.current {
 	padding-bottom : 1px;
 	border-bottom : 0;

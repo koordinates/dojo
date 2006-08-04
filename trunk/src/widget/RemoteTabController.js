@@ -4,13 +4,14 @@ dojo.provide("dojo.widget.RemoteTabController");
 //Remote Tab Controller widget.  Can be located independently of a tab
 //container and control the selection of its tabs
 dojo.require("dojo.widget.*");
+dojo.require("dojo.event.*");
 
 dojo.widget.defineWidget(
         "dojo.widget.RemoteTabController",
         dojo.widget.HtmlWidget,
 	{
 
-                templateCssPath: dojo.uri.dojoUri("src/widget/templates/RemoteTabControl.css"),
+        templateCssPath: dojo.uri.dojoUri("src/widget/templates/RemoteTabControl.css"),
 
 		initializer: function() {
 			//summary
@@ -29,6 +30,8 @@ dojo.widget.defineWidget(
 			//override these classes to change the style
 			this["class"]="dojoRemoteTabController"; // alt syntax: "class" is a reserved word in JS
 			this.labelClass="dojoRemoteTab";
+			this.imageClass="dojoRemoteTabClose";
+			this.imageHoverClass="dojoRemoteTabCloseHover";
 		},
 
 		postCreate: function() {
@@ -91,13 +94,30 @@ dojo.widget.defineWidget(
 			innerDiv.appendChild(titleSpan);
 			dojo.html.disableSelection(titleSpan);
 
+			if(this._tabContainer.closeButton=="tab" || tab.tabCloseButton){
+				var img = document.createElement("span");
+				dojo.html.addClass(img, this.imageClass);
+				dojo.event.connect(img, "onclick", dojo.lang.hitch(this, function(evt){
+					this._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt);
+				}));
+				dojo.event.connect(tab.div.lastChild.lastChild, "onclick", dojo.lang.hitch(this, function(evt){
+					this._runOnCloseTab(tab, true);
+				}));
+				dojo.event.connect(img, "onmouseover", dojo.lang.hitch(this, function(){
+					dojo.html.addClass(img, this.imageHoverClass); 
+				}));
+				dojo.event.connect(img, "onmouseout", dojo.lang.hitch(this, function(){
+					dojo.html.removeClass(img, this.imageHoverClass);
+				}));
+				innerDiv.appendChild(img);
+			}
+
 			div.appendChild(innerDiv);
 			div.tabTitle=titleSpan;
 			this.domNode.appendChild(div);
 
 			var tabObj = {"tab": tab, "button": div};
-
-
+			
 			if (this._tabContainer.selectedTab == tab.widgetId || tab.selected) {
 				this.selectedTab = tabObj;
 				dojo.html.addClass(div, "current");
@@ -112,8 +132,32 @@ dojo.widget.defineWidget(
 			dojo.event.connect(div, "onkeydown", dojo.lang.hitch(this._tabContainer, function(evt) {
 				this.tabNavigation(evt, tab); 
 			}));
-		}
+		},
 
+		_runOnCloseTab: function(tab, fromContainer){
+			var tabObj = this.tabs[tab.widgetId];
+			this.removeChild(tabObj);
+			if(!fromContainer){
+				this._tabContainer._runOnCloseTab(tab);
+			}
+		},
+
+		removeChild: function(tab){
+			// remove tab event handlers
+			dojo.event.disconnect(tab.button, "onclick", function(){ });
+			if(this._tabContainer.closeButton == "tab"){
+				var img = tab.button.lastChild.lastChild;
+				if(img){
+					dojo.html.removeClass(img, this.imageClass);
+				}
+			}
+
+			dojo.widget.RemoteTabController.superclass.removeChild.call(this, tab);
+
+			if(tab.domNode) { dojo.html.removeClass(tab.domNode, this.labelClass); }
+			this.domNode.removeChild(tab.button);
+			delete(tab.button);
+		}
 	},
 	"html"
 );
