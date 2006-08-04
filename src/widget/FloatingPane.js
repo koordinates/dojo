@@ -30,20 +30,20 @@ dojo.widget.defineWidget(
 		taskBarId: "",
 		resizable: true,
 		titleBarDisplay: "fancy",
-	
+
 		windowState: "normal",
 		displayCloseAction: false,
 		displayMinimizeAction: false,
 		displayMaximizeAction: false,
-	
+
 		maxTaskBarConnectAttempts: 5,
 		taskBarConnectAttempts: 0,
-	
+
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
-	
+
 		drag: null,
-	
+
 		fillInTemplate: function(args, frag){
 			// Copy style info from input node to output node
 			var source = this.getFragNodeRef(frag);
@@ -97,8 +97,8 @@ dojo.widget.defineWidget(
 	
 			if(this.resizable){
 				this.resizeBar.style.display="";
-				var rh = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
-				this.resizeBar.appendChild(rh.domNode);
+				this.resizeHandle = dojo.widget.createWidget("ResizeHandle", {targetElmId: this.widgetId, id:this.widgetId+"_resize"});
+				this.resizeBar.appendChild(this.resizeHandle.domNode);
 			}
 	
 			// add a drop shadow
@@ -143,11 +143,16 @@ dojo.widget.defineWidget(
 				bottom: this.domNode.style.bottom,
 				right: this.domNode.style.right
 			};
+			this.parentPrevious={
+				overflow: this.domNode.parentNode.style.overflow
+			};
+			this.domNode.parentNode.style.overflow = 'hidden';
+
 			this.domNode.style.left =
 				dojo.html.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
 			this.domNode.style.top =
 				dojo.html.getPixelValue(this.domNode.parentNode, "padding-top", true) + "px";
-	
+
 			if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body')) {
 				var viewport = dojo.html.getViewport();
 				var padding = dojo.html.getPadding(dojo.body());
@@ -158,29 +163,54 @@ dojo.widget.defineWidget(
 			}
 			this.maximizeAction.style.display="none";
 			this.restoreAction.style.display="";
+
+			//disable resize and drag
+			if(this.resizeHandle){
+				this.resizeHandle.domNode.style.display="none";
+			}
+			this.drag.setDragHandle(null);
+
 			this.windowState="maximized";
 		},
 	
 		minimizeWindow: function(evt) {
 			this.hide();
+			for(var attr in this.parentPrevious){
+				this.domNode.parentNode.style[attr] = this.parentPrevious[attr];
+			}
+			this.lastWindowState = this.windowState;
 			this.windowState = "minimized";
 		},
 	
 		restoreWindow: function(evt) {
 			if (this.windowState=="minimized") {
-				this.show() 
-			} else {
+				this.show();
+				if(this.lastWindowState == "normal"){
+					this.windowState="normal";
+				}else{ //maximized
+					this.domNode.parentNode.style.overflow = 'hidden';
+					this.windowState="maximized";
+				}
+			} else if (this.windowState=="maximized"){
 				for(var attr in this.previous){
 					this.domNode.style[attr] = this.previous[attr];
 				}
+				for(var attr in this.parentPrevious){
+					this.domNode.parentNode.style[attr] = this.parentPrevious[attr];
+				}
 				this.resizeTo(this.previous.width, this.previous.height);
 				this.previous=null;
-	
+				this.parentPrevious=null;
+
 				this.restoreAction.style.display="none";
 				this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
+
+				if(this.resizeHandle){
+					this.resizeHandle.domNode.style.display="";
+				}
+				this.drag.setDragHandle(this.titleBar);
+				this.windowState="normal";
 			}
-	
-			this.windowState="normal";
 		},
 	
 		closeWindow: function(evt) {
