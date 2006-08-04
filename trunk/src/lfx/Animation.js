@@ -33,6 +33,11 @@ dojo.lfx.Line = function(start, end){
 	}
 }
 
+dojo.lfx.easeDefault = function(n){ 
+	// sin wave easing. All the cool kids are doing it.
+	return (0.5+((Math.sin( (n+1.5) * Math.PI))/2));
+}
+
 dojo.lfx.easeIn = function(n){
 	//	summary: returns the point on an easing curve
 	//	n: a floating point number greater than 0 and less than 1
