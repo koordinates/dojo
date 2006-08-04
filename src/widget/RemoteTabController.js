@@ -101,9 +101,6 @@ dojo.widget.defineWidget(
 				dojo.event.connect(img, "onclick", dojo.lang.hitch(this, function(evt){
 					this._runOnCloseTab(tab); dojo.event.browser.stopEvent(evt);
 				}));
-				dojo.event.connect(this._tabContainer, "_runOnCloseTab", dojo.lang.hitch(this, function(t){
-					this._runOnRemoteClose(t);
-				}));
 				dojo.event.connect(img, "onmouseover", dojo.lang.hitch(this, function(){
 					dojo.html.addClass(img, this.imageHoverClass); 
 				}));
@@ -111,6 +108,14 @@ dojo.widget.defineWidget(
 					dojo.html.removeClass(img, this.imageHoverClass);
 				}));
 				innerDiv.appendChild(img);
+			}
+
+			// connect to _runOnCloseTab in case the tab pane or
+			// another remote controller closes a tab
+			if(this._tabContainer.closeButton=="tab" || this._tabContainer.closeButton=="pane"){
+				dojo.event.connect(this._tabContainer, "_runOnCloseTab", dojo.lang.hitch(this, function(t){
+					this._runOnRemoteClose(t);
+				}));
 			}
 
 			div.appendChild(innerDiv);
