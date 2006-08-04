@@ -5,15 +5,6 @@ dojo.require("dojo.event.*");
 var docCount = 0;
 var docKeys = [];
 
-//dojo.docs.getMeta(++docCount, _result, "dojo.animation.Animation.play");
-//docKeys[docCount] = "meta";
-//dojo.docs.getSrc(++docCount, _result, "dojo.animation.Animation");
-//docKeys[docCount] = "src";
-//dojo.docs.getDoc(++docCount, _result, "dojo.animation.Animation.play");
-//docKeys[docCount] = "doc";
-//dojo.event.topic.publish("docSelectFunction", {selectKey: ++docCount, name: "dojo.animation.Animation.play"});
-//dojo.event.topic.subscribe("docFunctionDetail", _docResult);
-
 function docInit(){
 	var search = dojo.widget.byId("search");
 	search.downArrowNode.style.visibility = "hidden";
@@ -49,29 +40,8 @@ function docSetData(/*String*/ type, /*Array*/ data, /*Object*/ evt){
 	search.setData.call(search, output);
 }
 
-function _result(/*String*/ type, /*mixed*/ data, /*Object*/ evt){
-	if(docKeys[evt.selectKey] == "meta"){
-		dojo.debug(type + " meta: " + dojo.json.serialize(data));
-	}else if(docKeys[evt.selectKey] == "src"){
-		dojo.debug(type + " src: " + data);
-	}else if(docKeys[evt.selectKey] == "doc"){
-		dojo.debug(type + " doc: " + dojo.json.serialize(data));
-	}
-	delete docKeys[evt.selectKey];
-}
-
-function _docResult(){
-	dojo.debug(dojo.json.serialize(arguments));
-}
-
 function docSearch(evt){
-	dojo.debug("docSearch(" + dojo.widget.byId("search").getValue() + ")");
+	dojo.debug("docSearch(" + dojo.widget.byId("search").textInputNode.value + ")");
 	dojo.widget.byId("search").hideResultList();
-	dojo.event.topic.publish("/docs/search", {selectKey: ++docCount, name: dojo.widget.byId("search").getValue()});
+	dojo.event.topic.publish("/docs/search", {selectKey: ++docCount, name: dojo.widget.byId("search").textInputNode.value});
 }
-
-function docResults(/*Object*/ input){
-	dojo.debug(dojo.json.serialize(input));
-}
-
-//dojo.event.topic.subscribe("docResults", docResults);
