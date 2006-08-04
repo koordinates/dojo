@@ -370,7 +370,8 @@ dojo.lang.mixin(dojo.docs, {
 		var packages = [];
 		pkgLoop:
 		for(var pkg in data){
-			if(pkg == evt.name){
+			if(pkg.toLowerCase() == evt.name.toLowerCase()){
+				evt.name = pkg;
 				dojo.debug("_onDocSearchFn found a package");
 				dojo.docs._onDocSelectPackage(evt);
 				return;
