@@ -12,6 +12,11 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
+//PopupContainer is the base class which provide popup behaviors:
+//it can open in a given position x,y or around a given node.
+//In addition, it handles animation and IE bleed through workaround.
+//This class can be used as a super class (as the case in PopupMenu2)
+//or as a mixin (similar to multiple inheritance), such as in Tooltip
 dojo.widget.defineWidget(
 	"dojo.widget.PopupContainer",
 	dojo.widget.HtmlWidget,
@@ -20,8 +25,7 @@ dojo.widget.defineWidget(
 	},
 {
 	isContainer: true,
-	templateString: '<div dojoAttachPoint="containerNode" style="display:none;" class="dojoPopupContainer" tabindex="-1"></div>',
-	templateCssString: '.dojoPopupContainer{position:absolute;}',
+	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" tabindex="-1"></div>',
 	snarfChildDomOutput: true,
 
 	isShowingNow: false,
@@ -39,6 +43,14 @@ dojo.widget.defineWidget(
 		return false;
 	},
 
+	//this function should be called in sub class where a custom
+	//templateString/templateStringPath is used (see Tooltip widget)
+	applyPopupBasicStyle: function(){
+		with(this.domNode.style){
+			display = 'none';
+			position = 'absolute';
+		}
+	},
 	/**
 	 * Open the popup at position (x,y), relative to dojo.body()
 	 * Or open(node, parent, explodeSrc, aroundOrient) to open
@@ -74,7 +86,7 @@ dojo.widget.defineWidget(
 		var parentPopup = null;
 		this.isTopLevel = true;
 		while(parent){
-			if(parent !== this && parent instanceof dojo.widget.PopupContainer){
+			if(parent !== this && (parent instanceof dojo.widget.PopupContainer || parent.applyPopupBasicStyle != undefined)){
 				parentPopup = parent;
 				this.isTopLevel = false;
 				parentPopup.setOpenedSubpopup(this);
