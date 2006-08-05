@@ -1,39 +1,34 @@
-input.dojoSpinnerInput {
-	/* font-size: 0.8em; */
-	border: 0px;
+/* inline the table holding the <input> and buttons (method varies by browser) */
+.ie .dojoSpinner, .safari .dojoSpinner {
+	display: inline;
 }
 
-.dojoSpinnerOptions {
-	font-family: Verdana, Helvetica, Garamond, sans-serif;
-	/* font-size: 0.7em; */
-	background-color: white;
-	border: 1px solid #afafaf;
-	position: absolute;
-	z-index: 1000; 
-	overflow: auto;
-	-moz-opacity: 0;
-	cursor: default;
+.moz .dojoSpinner {
+	display: -moz-inline-box;
 }
 
+.opera .dojoSpinner {
+	display: inline-table;
+}
+
+/* generic stuff for the table */
+.dojoSpinner td {
+	padding:0px;
+	margin:0px;
+	vertical-align: middle;
+}
 table.dojoSpinner {
-	border: 1px solid #afafaf;
-}
-
-.dojoSpinnerItem {
-	padding-left: 2px;
-	padding-top: 2px;
+	border:0px;
+	border-spacing:0px;
+	line-height:0px;
+	padding:0px;
 	margin: 0px;
+	vertical-align: middle;
 }
 
-.dojoSpinnerItemEven {
-	background-color: #f4f4f4;
-}
-
-.dojoSpinnerItemOdd {
-	background-color: white;
-}
-
-.dojoSpinnerItemHighlight {
-	background-color: #63709A;
-	color: white;
+/* the buttons */
+.dojoSpinner img {
+	display: block;
+	border-width:0px 1px 1px 0px;
+	border-style:outset;
 }
