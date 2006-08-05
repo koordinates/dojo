@@ -189,12 +189,11 @@ dojo.lfx.html._makeFadeable = function(nodes){
 
 dojo.lfx.html.fade = function(nodes, values, duration, easing, callback){
 	nodes = dojo.lfx.html._byId(nodes);
-	dojo.lfx.html._makeFadeable(nodes);
 	var props = { property: "opacity" };
 	if(!dj_undef("start", values)){
 		props.start = values.start;
 	}else{
-		props.start = dojo.html.getOpacity(nodes[0]);
+		props.start = function(){ return dojo.html.getOpacity(nodes[0]); };
 	}
 
 	if(!dj_undef("end", values)){
@@ -204,6 +203,9 @@ dojo.lfx.html.fade = function(nodes, values, duration, easing, callback){
 	}
 
 	var anim = dojo.lfx.propertyAnimation(nodes, [ props ], duration, easing);
+	anim.connect("beforeBegin", function(){
+		dojo.lfx.html._makeFadeable(nodes);
+	});
 	if(callback){
 		anim.connect("onEnd", function(){ callback(nodes, anim); });
 	}
@@ -212,11 +214,11 @@ dojo.lfx.html.fade = function(nodes, values, duration, easing, callback){
 }
 
 dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
-	return dojo.lfx.html.fade(nodes, { start: 0, end: 1 }, duration, easing, callback);
+	return dojo.lfx.html.fade(nodes, { end: 1 }, duration, easing, callback);
 }
 
 dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
-	return dojo.lfx.html.fade(nodes, { start: 1, end: 0 }, duration, easing, callback);
+	return dojo.lfx.html.fade(nodes, { end: 0 }, duration, easing, callback);
 }
 
 dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
