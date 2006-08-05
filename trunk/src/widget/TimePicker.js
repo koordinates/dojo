@@ -9,8 +9,7 @@ dojo.require("dojo.html.style");
 dojo.widget.defineWidget(
 	"dojo.widget.TimePicker",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		// selected time, JS Date object
 		this.time = "";
 		// set following flag to true if a default time should be set
@@ -38,7 +37,7 @@ dojo.widget.defineWidget(
 		// minutes are ordered as follows: ["00", "30", "05", "35", "10", "40", "15", "45", "20", "50", "25", "55"]
 		this.minuteIndexMap = [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11];
 	},
-
+{
 	isContainer: false,
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTimePicker.css"),

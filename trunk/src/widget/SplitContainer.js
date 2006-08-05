@@ -19,11 +19,10 @@ dojo.require("dojo.io.cookie");
 dojo.widget.defineWidget(
 	"dojo.widget.SplitContainer",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		this.sizers = [];
 	},
-
+{
 	isContainer: true,
 
 	virtualSizer: null,

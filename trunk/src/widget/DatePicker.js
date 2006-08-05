@@ -25,21 +25,21 @@ dojo.require("dojo.i18n.calendar.GregorianNames");
 dojo.widget.defineWidget(
 	"dojo.widget.DatePicker",
 	dojo.widget.HtmlWidget,
+	function() {
+		// today's date, JS Date object
+		this.today = "";
+		// selected date, JS Date object
+		this.date = "";
+		// rfc 3339 date
+		this.storedDate = "";
+		// date currently selected in the UI, stored in year, month, date in the format that will be actually displayed
+		this.currentDate = {};
+		// stored in year, month, date in the format that will be actually displayed
+		this.firstSaturday = {};
+	},
 	{
 		lang: "", //Q: I'd really like to have a default value of null, but the parser doesn't seem to make a distinction between that and undefined?
 
-		initializer: function() {
-			// today's date, JS Date object
-			this.today = "";
-			// selected date, JS Date object
-			this.date = "";
-			// rfc 3339 date
-			this.storedDate = "";
-			// date currently selected in the UI, stored in year, month, date in the format that will be actually displayed
-			this.currentDate = {};
-			// stored in year, month, date in the format that will be actually displayed
-			this.firstSaturday = {};
-		},
 		classNames: {
 			previous: "previousMonth",
 			current: "currentMonth",

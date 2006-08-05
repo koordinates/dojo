@@ -122,12 +122,11 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.validate.ValidationTextbox",
 	dojo.widget.validate.Textbox,
+	function() {
+		// this property isn't a primitive and needs to be created on a per-item basis.
+		this.flags = {};
+	},
 	{
-		initializer: function() {
-			// this property isn't a primitive and needs to be created on a per-item basis.
-			this.flags = {};
-		},
-
 		// default values for new subclass properties
 		required: false,
 		validColor: "#cfc",

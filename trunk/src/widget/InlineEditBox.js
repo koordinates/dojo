@@ -10,12 +10,11 @@ dojo.require("dojo.html.layout");
 dojo.widget.defineWidget(
 	"dojo.widget.InlineEditBox",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		// mutable objects need to be in constructor to give each instance its own copy
 		this.history = [];
 	},
-
+{
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.css"),
 
