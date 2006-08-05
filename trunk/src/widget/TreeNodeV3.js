@@ -107,7 +107,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				}
 			}
 			//dojo.debug("deeper copy end");
-			ret.setChildren(ret.children);
+			ret.setChildren();
 		}
 		
 		
@@ -594,9 +594,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 */
 	destroy: function() {
 		
-		this.detach();
-		
 		dojo.event.topic.publish(this.tree.eventNames.beforeDestroy, { source: this } );
+		
+		this.detach();		
 
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
@@ -612,7 +612,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		
 		dojo.profile.start("expand - lazy init "+this);
 		if (this.tryLazyInit) {
-			this.setChildren(this.children);
+			this.setChildren();
 			this.tryLazyInit = false;
 		}
 		

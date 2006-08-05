@@ -100,7 +100,6 @@ dojo.widget.TreeWithNode = {
 		//dojo.debug("setChildren in "+this);
 		
 		
-		
 		if (this.isTreeNode && !this.isFolder) {
 			//dojo.debug("folder parent "+parent+ " isfolder "+parent.isFolder);
 			this.setFolder();
@@ -110,7 +109,9 @@ dojo.widget.TreeWithNode = {
 		
 		var hadChildren = this.children.length > 0;
 		
-		this.children = childrenArray;
+		if (childrenArray) {
+			this.children = childrenArray;
+		}
 		
 
 
@@ -124,14 +125,17 @@ dojo.widget.TreeWithNode = {
 
 		for(var i=0; i<this.children.length; i++) {
 			var child = this.children[i];
-
+			
 			//dojo.profile.start("setChildren - create "+this);
 			
 			if (!(child instanceof dojo.widget.Widget)) {
-				child = this.children[i] = this.tree.createNode(child);				
+				child = this.children[i] = this.tree.createNode(child);
+				var childWidgetCreated = true;	
 				//dojo.debugShallow(child)
 				
 				//dojo.debug("setChildren creates node "+child);
+			} else {
+				var childWidgetCreated = false;
 			}
 			
 			//dojo.profile.end("setChildren - create "+this);
@@ -156,7 +160,8 @@ dojo.widget.TreeWithNode = {
 				var message = {
 					child: child,
 					index: i,
-					parent: this
+					parent: this,
+					childWidgetCreated: childWidgetCreated
 				}
 			
 				delete dojo.widget.manager.topWidgets[child.widgetId];
