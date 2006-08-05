@@ -22,8 +22,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.widget.defineWidget(
 	"dojo.widget.YahooMap",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		// parameters
 		this.map=null;
 		this.datasrc="";
@@ -32,7 +31,7 @@ dojo.widget.defineWidget(
 		this.height=0;
 		this.controls=["zoomlong","maptype","pan"];
 	},
-
+{
 	isContainer: false,
 	templatePath:null,
 	templateCssPath:null,

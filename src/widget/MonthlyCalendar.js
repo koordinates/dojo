@@ -10,14 +10,12 @@ alert("load");
 dojo.widget.defineWidget(
 	"dojo.widget.MonthlyCalendar",
 	dojo.widget.DatePicker,
+	function(){
+		this.iCalendars = [];
+	},
 {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlMonthlyCalendar.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlMonthlyCalendar.css"),
-
-	initializer: function(){
-		this.iCalendars = [];
-		alert("initializer");
-	},
 
 	cache: function() {
 	},

@@ -12,13 +12,12 @@ dojo.require("dojo.lang.func");
 dojo.widget.defineWidget(
 	"dojo.widget.Show",
 	dojo.widget.HtmlWidget,
+	function(){
+		this._slides=[];
+	},
 {
 	isContainer: true,
 	_slide: -1,
-	
-	initializer: function(){
-		this._slides=[];
-	},
 
 	body: null,
 	nav: null,

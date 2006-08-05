@@ -11,12 +11,11 @@ dojo.require("dojo.graphics.color.hsl");
 dojo.widget.defineWidget(
 	"dojo.widget.svg.HslColorPicker",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		dojo.debug("warning: the HslColorPicker is not a finished widget, and is not yet ready for general use");
 		this.filterObject = {};
 	},
-
+{
 	hue: "0",
 	saturation: "0",
 	light: "0",

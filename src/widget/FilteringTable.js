@@ -14,8 +14,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.widget.defineWidget(
 	"dojo.widget.FilteringTable", 
 	dojo.widget.HtmlWidget, 
-{
-	initializer:function(){
+	function(){
 		this.store=new dojo.data.SimpleStore();
 
 		//declare per instance changeable widget properties
@@ -44,7 +43,7 @@ dojo.widget.defineWidget(
 		this.rowSelectedClass="selected";
 		this.columnSelected="sorted-column";
 	},
-
+{
 	//	dojo widget properties
 	isContainer: false,
 	templatePath: null,

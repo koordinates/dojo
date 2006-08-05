@@ -13,13 +13,12 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.widget.defineWidget(
 	"dojo.widget.SortableTable",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		this.data=[];
 		this.selected=[];		//	always an array to handle multiple selections.
 		this.columns=[];
 	},
-
+{
 	//	custom properties
 	enableMultipleSelect: false,
 	maximumNumberOfSelections: 0,	//	0 for unlimited, is the default.

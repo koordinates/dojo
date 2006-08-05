@@ -14,6 +14,15 @@ dojo.require("dojo.html.style");
 dojo.widget.defineWidget(
 	"dojo.widget.ContentPane",
 	dojo.widget.HtmlWidget,
+	function(){
+		// per widgetImpl variables
+		this._styleNodes =  [];
+		this._onLoadStack = [];
+		this._onUnLoadStack = [];
+		this._callOnUnLoad = false;
+		this.scriptScope; // undefined for now
+		this._ioBindObj;
+	},
 	{
 		isContainer: true,
 
@@ -29,16 +38,6 @@ dojo.widget.defineWidget(
 		refreshOnShow:	false,	// use with cacheContent: false
 		handler: "",			// generate pane content from a java function
 		executeScripts: false,	// if true scripts in content will be evaled after content is innerHTML'ed
-
-		initializer: function(){
-			// per widgetImpl variables
-			this._styleNodes =  [];
-			this._onLoadStack = [];
-			this._onUnLoadStack = [];
-			this._callOnUnLoad = false;
-			this.scriptScope; // undefined for now
-			this._ioBindObj;
-		},
 
 		postCreate: function(args, frag, parentComp){
 			if (this.handler!==""){

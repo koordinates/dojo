@@ -44,11 +44,10 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.TaskBar",
 	dojo.widget.FloatingPane,
-{
-	initializer: function(){
+	function(){
 		this._addChildStack = [];
 	},
-
+{
 	resizable: false,
 	titleBarDisplay: "none",
 

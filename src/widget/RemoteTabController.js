@@ -7,33 +7,31 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 
 dojo.widget.defineWidget(
-        "dojo.widget.RemoteTabController",
-        dojo.widget.HtmlWidget,
-	{
+    "dojo.widget.RemoteTabController",
+    dojo.widget.HtmlWidget,
+	function() {
+		//summary
+		//Initialize Remote Tab Controller
+		// for passing in as a parameter
+		this.tabContainer = "";
 
+		// the reference to the tab container
+		this._tabContainer={};
+
+		//hash of tabs
+		this.tabs = {}; 
+
+		this.selectedTab="";
+
+		//override these classes to change the style
+		this["class"]="dojoRemoteTabController"; // alt syntax: "class" is a reserved word in JS
+		this.labelClass="dojoRemoteTab";
+		this.imageClass="dojoRemoteTabClose";
+		this.imageHoverClass="dojoRemoteTabCloseHover";
+	},
+	{
         templateCssPath: dojo.uri.dojoUri("src/widget/templates/RemoteTabControl.css"),
 		templateString: '<div dojoAttachPoint="domNode" wairole="tablist"></div>',
-
-		initializer: function() {
-			//summary
-			//Initialize Remote Tab Controller
-			// for passing in as a parameter
-			this.tabContainer = "";
-
-			// the reference to the tab container
-			this._tabContainer={};
-
-			//hash of tabs
-			this.tabs = {}; 
-
-			this.selectedTab="";
-
-			//override these classes to change the style
-			this["class"]="dojoRemoteTabController"; // alt syntax: "class" is a reserved word in JS
-			this.labelClass="dojoRemoteTab";
-			this.imageClass="dojoRemoteTabClose";
-			this.imageHoverClass="dojoRemoteTabCloseHover";
-		},
 
 		postCreate: function() {
 			dojo.html.addClass(this.domNode, this["class"]);  // "class" is a reserved word in JS

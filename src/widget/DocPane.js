@@ -13,6 +13,11 @@ dojo.require("dojo.html.display");
 dojo.widget.defineWidget(
 	"dojo.widget.DocPane",
 	dojo.widget.HtmlWidget,
+	function(){
+		dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
+		dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
+		dojo.event.topic.subscribe("/docs/function/detail", this, "onDocSelectFunction");
+	},
 	{
 		// Template parameters
 		dialog: null,
@@ -64,12 +69,6 @@ dojo.widget.defineWidget(
 		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css"),
 		isContainer: true,
-		
-		initializer: function(){
-			dojo.event.topic.subscribe("/docs/function/results", this, "onDocResults");
-			dojo.event.topic.subscribe("/docs/package/results", this, "onPkgResults");
-			dojo.event.topic.subscribe("/docs/function/detail", this, "onDocSelectFunction");
-		},
 
 		fillInTemplate: function(){
 			this.requires = dojo.html.removeNode(this.requires);

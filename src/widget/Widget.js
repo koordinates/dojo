@@ -8,8 +8,8 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
 
-dojo.declare("dojo.widget.Widget", null, {
-	initializer: function() {								 
+dojo.declare("dojo.widget.Widget", null,
+	function() {								 
 		//dojo.debug("NEW "+this.widgetType);
 		// these properties aren't primitives and need to be created on a per-item
 		// basis.
@@ -18,6 +18,7 @@ dojo.declare("dojo.widget.Widget", null, {
 		// FIXME: need to replace this with context menu stuff
 		this.extraArgs = {};
 	},
+{
 	// FIXME: need to be able to disambiguate what our rendering context is
 	//        here!
 	//

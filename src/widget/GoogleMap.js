@@ -39,15 +39,14 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.widget.defineWidget(
 	"dojo.widget.GoogleMap",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		this.map=null;
 		this.geocoder=null;
 		this.data=[];
 		this.datasrc="";
 		this.controls=["largemap","scale","maptype"];
 	},
-
+{
 	templatePath:null,
 	templateCssPath:null,
 	isContainer: false,

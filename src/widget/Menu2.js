@@ -15,11 +15,10 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.widget.defineWidget(
 	"dojo.widget.PopupContainer",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		this.queueOnAnimationFinish = [];
 	},
-
+{
 	isContainer: true,
 	templateString: '<div dojoAttachPoint="containerNode" style="display:none;" class="dojoPopupContainer" tabindex="-1"></div>',
 	templateCssString: '.dojoPopupContainer{position:absolute;}',
@@ -226,16 +225,14 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.PopupMenu2",
 	dojo.widget.PopupContainer,
-{
-	initializer: function(){
-		dojo.widget.PopupMenu2.superclass.initializer.call(this);
+	function(){
 		this.targetNodeIds = []; // fill this with nodeIds upon widget creation and it becomes context menu for those nodes
 	
 		this.eventNames =  {
 			open: ""
 		};
 	},
-
+{
 	templateCssString: "",
 	currentSubmenuTrigger: null,
 
@@ -506,13 +503,12 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.MenuItem2",
 	dojo.widget.HtmlWidget,
-{
-	initializer: function(){
+	function(){
 		this.eventNames = {
 			engage: ""
 		};
 	},
-
+{
 	// Make 4 columns
 	//   icon, label, accelerator-key, and right-arrow indicating sub-menu
 	templateString:
@@ -543,7 +539,7 @@ dojo.widget.defineWidget(
 	disabled: false,
 	eventNaming: "default",
 	highlightClass: 'dojoMenuItem2Hover',
-	
+
 	postMixInProperties: function(){
 		this.iconStyle="";
 		if (this.iconSrc){

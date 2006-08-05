@@ -273,13 +273,13 @@ dojo.widget.buildAndAttachTemplate = function(obj, templatePath, templateCssPath
 }
 */
 
-dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
-	initializer: function() {
+dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget,
+	function() {
 		if((arguments.length>0)&&(typeof arguments[0] == "object")){
 			this.create(arguments[0]);
 		}
 	},
-								 
+{							 
 	templateNode: null,
 	templateString: null,
 	templateCssString: null,
