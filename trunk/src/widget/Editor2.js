@@ -92,7 +92,8 @@ dojo.widget.defineWidget(
 			);
 
 			dojo.event.connect(this.toolbarWidget, "formatSelectClick", this, "focus");
-			dojo.event.connect(this.toolbarWidget, "saveClick", this, "save");			
+			dojo.event.connect(this.toolbarWidget, "saveClick", this, "save");
+			dojo.event.connect(this.toolbarWidget, "insertimageClick", this, "insertImage");
 			dojo.event.connect(this, "execCommand", this, "focus");
 
 			if(this.htmlEditing){
@@ -107,6 +108,7 @@ dojo.widget.defineWidget(
 
 		clobberFocus: function(){},
 		save: function(){ dojo.debug("Editor2.save"); },
+		insertImage: function(){ dojo.debug("Editor2.insertImage"); },
 		toggleHtmlEditing: function(){
 			if(this===dojo.widget.Editor2._CurrentInstance){
 				if(!this._inHtmlMode){
