@@ -1,0 +1,1 @@
+{"dojo.experimental":{"meta":{"methods":{"dojo.experimental":{"_":{"meta":{"summary":"","parameters":{"packageName":{"type":""},"extra":{"type":""}},"src":"\tvar mess = \"EXPERIMENTAL: \" + packageName;\n\tmess += \" -- Not yet ready for use.  APIs subject to change without notice.\";\n\tif(extra){ mess += \" \" + extra; }\n\tdojo.debug(mess);"}}}}}}}
