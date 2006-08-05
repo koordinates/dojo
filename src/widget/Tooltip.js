@@ -10,7 +10,7 @@ dojo.require("dojo.html.iframe");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Tooltip",
-	[dojo.widget.ContentPane, dojo.widget.PopupContainer],
+	[dojo.widget.ContentPane, dojo.widget.PopupContainerBase],
 	{
 		isContainer: true,
 
@@ -83,16 +83,7 @@ dojo.widget.defineWidget(
 		open: function() {
 			if (this.isShowingNow) { return; }
 
-			dojo.widget.PopupContainer.prototype.open.call(this, this.mouse.x, this.mouse.y, null, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
-		},
-
-		//call dojo.widget.ContentPane.show/hide here, otherwise
-		//dojo.widget.PopupContainer.show/hide is used
-		show: function(){
-			dojo.widget.Tooltip.superclass.show.call(this);
-		},
-		hide: function(){
-			dojo.widget.Tooltip.superclass.hide.call(this);
+			dojo.widget.PopupContainerBase.prototype.open.call(this, this.mouse.x, this.mouse.y, null, [this.mouse.x, this.mouse.y], "TL,TR,BL,BR", [10,15]);
 		},
 
 		close: function() {
@@ -106,7 +97,7 @@ dojo.widget.defineWidget(
 					delete this.hideTimer;
 				}
 				dojo.event.disconnect(document.documentElement, "onmousemove", this, "onMouseMove");
-				dojo.widget.PopupContainer.prototype.close.call(this);
+				dojo.widget.PopupContainerBase.prototype.close.call(this);
 			}
 		},
 

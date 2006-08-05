@@ -12,14 +12,15 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
-//PopupContainer is the base class which provide popup behaviors:
+//PopupContainerBase is the mixin class which provide popup behaviors:
 //it can open in a given position x,y or around a given node.
 //In addition, it handles animation and IE bleed through workaround.
-//This class can be used as a super class (as the case in PopupMenu2)
-//or as a mixin (similar to multiple inheritance), such as in Tooltip
-dojo.widget.defineWidget(
-	"dojo.widget.PopupContainer",
-	dojo.widget.HtmlWidget,
+//This class can not be used standalone: it should be mixed-in to a
+//dojo.widget.HtmlWidget. Use PopupContainer instead if you want a 
+//a standalone popup widget
+dojo.declare(
+	"dojo.widget.PopupContainerBase",
+	null,
 	function(){
 		this.queueOnAnimationFinish = [];
 	},
@@ -189,7 +190,7 @@ dojo.widget.defineWidget(
 	},
 
 	onShow: function() {
-		dojo.widget.PopupContainer.superclass.onShow.call(this);
+		this.inherited('onShow');
 		// With some animation (wipe), after close, the size of the domnode is 0
 		// and next time when shown, the open() function can not determine
 		// the correct place to popup, so we store the opened size here and 
@@ -233,6 +234,10 @@ dojo.widget.defineWidget(
 		this.processQueue();
 	}
 });
+
+dojo.widget.defineWidget(
+	"dojo.widget.PopupContainer",
+	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {});
 
 dojo.widget.defineWidget(
 	"dojo.widget.PopupMenu2",
