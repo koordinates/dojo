@@ -101,7 +101,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	createNode: function(data) {
 			
-		data.tree = this.widgetId;
+		data.tree = this.widgetId;		
 		
 		if (data.widgetName) {
 			// TODO: check if such widget has createSimple
@@ -109,8 +109,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		} else if (this.defaultChildWidget.prototype.createSimple) {			
 			return this.defaultChildWidget.prototype.createSimple(data);					
 		} else {
-			var ns = parent.tree.defaultChildWidget.prototype.namespace; 
-			var wt = parent.tree.defaultChildWidget.prototype.widgetType; 
+			var ns = this.defaultChildWidget.prototype.namespace; 
+			var wt = this.defaultChildWidget.prototype.widgetType; 
 
 			return dojo.widget.createWidget(ns + ":" + wt, data); 
 		}
