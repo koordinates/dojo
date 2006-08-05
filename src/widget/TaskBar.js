@@ -36,7 +36,7 @@ dojo.widget.defineWidget(
 	},
 
 	onClick: function() {
-		this.window.restoreWindow();
+		this.window.toggleDisplay();
 	}
 });
 

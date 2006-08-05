@@ -108,15 +108,14 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 
 	unregisterDragSource: function(ds){
 		if (ds["domNode"]){
-
 			var dp = this.dsPrefix;
 			var dpIdx = ds.dragSourceId;
 			delete ds.dragSourceId;
 			delete this.dragSources[dpIdx];
 			ds.domNode.setAttribute(dp, null);
-		}
-		if(dojo.render.html.ie){
-			dojo.event.browser.removeListener(ds.domNode, "ondragstart", this.cancelEvent);			
+			if(dojo.render.html.ie){
+				dojo.event.browser.removeListener(ds.domNode, "ondragstart", this.cancelEvent);			
+			}
 		}
 	},
 

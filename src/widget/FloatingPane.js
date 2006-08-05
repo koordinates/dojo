@@ -92,7 +92,6 @@ dojo.widget.defineWidget(
 						}
 					}
 				);
-	
 			}
 	
 			if(this.resizable){
@@ -143,10 +142,13 @@ dojo.widget.defineWidget(
 				bottom: this.domNode.style.bottom,
 				right: this.domNode.style.right
 			};
-			this.parentPrevious={
-				overflow: this.domNode.parentNode.style.overflow
-			};
-			this.domNode.parentNode.style.overflow = 'hidden';
+			if(this.domNode.parentNode.style.overflow.toLowerCase() != 'hidden'){
+				this.parentPrevious={
+					overflow: this.domNode.parentNode.style.overflow
+				};
+				dojo.debug(this.domNode.parentNode.style.overflow);
+				this.domNode.parentNode.style.overflow = 'hidden';
+			}
 
 			this.domNode.style.left =
 				dojo.html.getPixelValue(this.domNode.parentNode, "padding-left", true) + "px";
@@ -185,11 +187,11 @@ dojo.widget.defineWidget(
 		restoreWindow: function(evt) {
 			if (this.windowState=="minimized") {
 				this.show();
-				if(this.lastWindowState == "normal"){
-					this.windowState="normal";
-				}else{ //maximized
+				if(this.lastWindowState == "maximized"){
 					this.domNode.parentNode.style.overflow = 'hidden';
 					this.windowState="maximized";
+				}else{ //normal
+					this.windowState="normal";
 				}
 			} else if (this.windowState=="maximized"){
 				for(var attr in this.previous){
@@ -210,9 +212,19 @@ dojo.widget.defineWidget(
 				}
 				this.drag.setDragHandle(this.titleBar);
 				this.windowState="normal";
+			} else { //normal
+				// do nothing
 			}
 		},
-	
+
+		toggleDisplay: function(){
+			if(this.windowState=="minimized"){
+				this.restoreWindow();
+			}else{
+				this.minimizeWindow();
+			}
+		},
+
 		closeWindow: function(evt) {
 			dojo.html.removeNode(this.domNode);
 			this.destroy();
@@ -244,6 +256,7 @@ dojo.widget.defineWidget(
 		},
 	
 		setInitialWindowState: function() {
+			dojo.debug(" setInitialWindowState "+this.windowState);
 			if (this.windowState == "maximized") {
 				this.maximizeWindow();
 				this.show();
