@@ -463,7 +463,7 @@ dojo.declare("dojo.widget.Widget", null,
 		 // first node is idx=0 not found is idx<0
 		if (idx<=0) return null;
  
-		return this.getSiblings()[idx-1];
+		return this.parent.children[idx-1];
 	},
  
 	getSiblings: function() {
@@ -471,18 +471,17 @@ dojo.declare("dojo.widget.Widget", null,
 	},
  
 	getParentIndex: function() {
-//		dojo.debug("get parent index "+this.title+" siblings count"+this.parent.children.length);
-		return dojo.lang.indexOf( this.getSiblings(), this, true);
+		return dojo.lang.indexOf( this.parent.children, this, true);
 	},
  
 	getNextSibling: function() {
  
 		var idx = this.getParentIndex();
  
-		if (idx == this.getSiblings().length-1) return null; // last node
+		if (idx == this.parent.children.length-1) return null; // last node
 		if (idx < 0) return null; // not found
  
-		return this.getSiblings()[idx+1];
+		return this.parent.children[idx+1];
  
 	}
 });
