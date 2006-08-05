@@ -26,15 +26,13 @@ dojo.widget.defineWidget(
 		
 		switch( e.keyCode ) {
 			case e.KEY_ESCAPE:
-				this.editor.close( false );
+				this.editor.close(false);
 				break;
 			case e.KEY_ENTER:
-				if( e.ctrlKey )
-				{
-					this.editor.execCommand( "inserthtml", "<br />" );
+				if( e.ctrlKey ) {
+					this.editor.execCommand( "inserthtml", "<br/>" );
 				}
-				else
-				{
+				else {
 					this.editor.close( true );
 				}
 				break;
