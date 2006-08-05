@@ -88,6 +88,12 @@ dojo.widget.defineWidget(
 		fillInTemplate: function() {
 			// apply any filters to initial value
 			this.filter();
+
+			// set table to be inlined (technique varies by browser)
+			if(dojo.render.html.ie){ dojo.html.addClass(this.domNode, "ie"); }
+			if(dojo.render.html.moz){ dojo.html.addClass(this.domNode, "moz"); }
+			if(dojo.render.html.opera){ dojo.html.addClass(this.domNode, "opera"); }
+			if(dojo.render.html.safari){ dojo.html.addClass(this.domNode, "safari"); }
 		}
 	
 	}
@@ -231,13 +237,14 @@ dojo.widget.defineWidget(
 	
 		// FIXME: why are there to fillInTemplate methods defined here?
 		fillInTemplate: function() {
+			dojo.widget.validate.ValidationTextbox.superclass.fillInTemplate.apply(this, arguments);
+
 			// Attach isMissing and isValid methods to the textbox.
 			// We may use them later in connection with a submit button widget.
 			// TODO: this is unorthodox; it seems better to do it another way -- Bill
 			this.textbox.isValid = function() { this.isValid.call(this); };
 			this.textbox.isMissing = function() { this.isMissing.call(this); };
 			this.textbox.isInRange = function() { this.isInRange.call(this); };
-			this.filter();
 			this.update(); 
 		}
 	}
