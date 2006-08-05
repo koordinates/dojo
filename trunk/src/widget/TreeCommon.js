@@ -87,7 +87,9 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		return dojo.widget.byId(domElement.widgetId);
 	},
 	
-	
+	/**
+	 * it is here, not in Widget, because mostly tree needs it
+	 */
 	processDescendants: function(elem, filter, func, skipFirst) {
 		
 		var _this = this;

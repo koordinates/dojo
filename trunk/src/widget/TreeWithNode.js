@@ -17,7 +17,7 @@ dojo.widget.TreeWithNode = {
 	unlock: function() {
 		if (!this.lockLevel) {
 			//dojo.debug((new Error()).stack);
-			dojo.raise("unlock: not locked");
+			dojo.raise(this.widgetType+" unlock: not locked");
 		}
 		this.lockLevel--;
 		//!this.lockLevel && this.unMarkLoading();

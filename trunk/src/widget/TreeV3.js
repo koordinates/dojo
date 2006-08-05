@@ -203,7 +203,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	adjustEventNames: function() {
 		
-		for(name in this.eventNamesDefault) {
+		for(var name in this.eventNamesDefault) {
 			if (dojo.lang.isUndefined(this.eventNames[name])) {
 				this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
 			}
@@ -297,17 +297,18 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	*/
 	move: function(child, newParent, index) {
 		
+		if (!child.parent) {
+			dojo.raise(this.widgetType+": child can be moved only while it's attached");
+		}
+		
 		var oldParent = child.parent;
 		var oldTree = child.tree;
+		var oldIndex = child.getParentIndex();
 
 		this.doMove.apply(this, arguments);
 
-		var newParent = child.parent;
-		var newTree = child.tree;
-
 		var message = {
-				oldParent: oldParent, oldTree: oldTree,
-				newParent: newParent, newTree: newTree,
+				oldParent: oldParent, oldTree: oldTree, oldIndex: oldIndex,
 				child: child
 		};
 
