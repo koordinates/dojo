@@ -72,5 +72,8 @@
 }
 	
 
-
+.TreeContent .RichTextEditable, .TreeContent .RichTextEditable iframe {
+      background-color: #ffc;
+      color: black;
+}
 
