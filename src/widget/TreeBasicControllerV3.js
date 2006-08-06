@@ -58,6 +58,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	initialize: function(args) {
 		if (args.editor) {
 			this.editor = dojo.widget.byId(args.editor);
+			this.editor.controller = this;
 		}
 		
 		this.onExpandClickHandler =  dojo.lang.hitch(this, this.onExpandClick)

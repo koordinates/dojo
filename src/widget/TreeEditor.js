@@ -12,56 +12,55 @@ dojo.widget.defineWidget(
 		
 	singleLineMode: true, // enter saves
 	saveOnBlur: true, // blur or new edit saves current
+	sync: false,  // finish editing in sync/async mode
 	
 	controller: null,
 		
 	node: null,
 	
-	initialize: function(args) {
-		if (args.controller) {
-			this.controller = dojo.widget.byId(args.controller);
-		}
+	initialize: function() {
+		this.richText = dojo.widget.createWidget("RichText") ;	
+		
+		dojo.event.connect( "around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
+		dojo.event.connect( this.richText, "onBlur", this, "richText_onBlur" );	
 	},
 	
-	makeEditor: function() {
-		this.editor = dojo.widget.createWidget( "RichText") ;	
-		
-		dojo.event.connect( "around", this.editor, "onKeyDown", this, "editor_keyDownHandler" );
-		dojo.event.connect( this.editor, "onBlur", this, "editor_finish" );		
+	getContents: function() {
+		return this.richText.getEditorContent();
 	},
 	
-	editLabelStart: function(node) {
-		if (!this.editor) {
-			this.makeEditor();
-		}
+	open: function(node) {
 		
-		this.editor_close(false);
-		
-		
-		this.node = node;
-		
+		this.richText.open(node.labelNode);
+				
+		this.node = node;		
+	},
+	
+	close: function(save) {
+		this.node = null;
+		this.richText.close(save);
 	},
 	
 	isClosed: function() {
-		return this.editor.isClosed;
+		return this.richText.isClosed;
 	},
 	
-	editor_keyDownHandler: function(invocation) {
+	richText_onKeyDown: function(invocation) {
 		var e = invocation.args[0];
 		if((!e)&&(this.object)) {
-			e = dojo.event.browser.fixEvent( this.editor.window.event );
+			e = dojo.event.browser.fixEvent(this.editor.window.event);
 		}
 		
 		switch (e.keyCode) {
 			case e.KEY_ESCAPE:
-				this.editor_close(false);
+				this.finish(false);
 				break;
 			case e.KEY_ENTER:
 				if( e.ctrlKey && !this.singleLineMode ) {
 					this.editor.execCommand( "inserthtml", "<br/>" );
 				}
 				else {
-					this.editor_close( true );
+					this.finish(true);
 				}
 				break;
 			default:
@@ -69,30 +68,15 @@ dojo.widget.defineWidget(
 		}
 	},
 	
-	editor_close: function(save) {
-		if( !this.editor ) {
-			return;
-		}
-		
-		if (!save) {
-			this.node = null;
-			this.editor.close(false);
-			return;
-		}
-		
-		return this.controller.	
-			// now call save method of controller and close editor on its success
-			dojo.debug(this.editor.getEditorContent());
-			this.editor.close(true);
-			dojo.debug(this.node.labelNode.innerHTML);
-			
-			
-		}
+	richText_onBlur: function() {
+		this.finish(this.saveOnBlur);
 	},
 	
-	editor_closeHandler: function() {
-		dojo.event.disconnect( "around", this.editor, "onKeyDown", this, "editor_keyDownHandler" );
-		dojo.event.disconnect( this.editor, "onBlur", this, "editor_close" );
-		dojo.event.disconnect( "before", this.editor, "close", this, "editor_closeHandler" );
+	
+	finish: function(save) {
+		return this.controller.editLabelFinish(this.node, save, this.sync);
 	}
+		
+		
+	
 });
