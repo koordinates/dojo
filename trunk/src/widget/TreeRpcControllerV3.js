@@ -124,26 +124,33 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		if (!this.extraRpcOnEdit) {			
 			return dojo.Deferred.makeCalled();
 		}
+	
+		//dojo.debug("requestEditConfirmation "+node+" "+action);
 		
 		var _this = this;
+	
 		var deferred = this.startProcessing(node);
-						
+			
+		//dojo.debug("startProcessing "+node);
+		
 		var params = {
 			node: this.getInfo(node),
 			tree: this.getInfo(node.tree)
 		}
 		
 		deferred.addCallback(function() {
+			//dojo.debug("add action on requestEditConfirmation "+action);
 			return _this.runRpc({
-			url: _this.getRpcUrl(action),
-			sync: sync,
-			params: params			
+				url: _this.getRpcUrl(action),
+				sync: sync,
+				params: params			
 			});
 		});
 		
 		
 		deferred.addBoth(function(r) {
-			_this.stopProcessing(node);
+			//dojo.debug("finish rpc with "+r);
+			_this.finishProcessing(node);
 			return r;
 		});
 	
@@ -164,15 +171,15 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	
 		deferred.addCallback(function() {
 			return _this.runRpc({
-			url: _this.getRpcUrl('editLabelSave'),
-			sync: sync,
-			params: params			
+				url: _this.getRpcUrl('editLabelSave'),
+				sync: sync,
+				params: params			
 			});
 		});
 		
 		
 		deferred.addBoth(function(r) {
-			_this.stopProcessing(node);
+			_this.finishProcessing(node);
 			return r;
 		});
 	
@@ -183,6 +190,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	editLabelStart: function(node, sync) {
 		
 		if (!this.editor.isClosed()) {
+			//dojo.debug("editLabelStart editor open");
 			var deferred = this.editLabelFinish(node, this.editor.saveOnBlur, sync);
 			deferred.addCallback(function() {
 				return _this.editLabelStart(node, sync);
@@ -191,9 +199,11 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		}
 						
 		var _this = this;
-		var deferred = this.requestEditConfirmation(node,'editLabelStart', sync);
+		//dojo.debug("editLabelStart closed, request");
+		var deferred = this.requestEditConfirmation(node, 'editLabelStart', sync);
 		
 		deferred.addCallback(function() {
+			dojo.debug("start edit");
 			_this.doEditLabelStart(node);
 		});
 	
