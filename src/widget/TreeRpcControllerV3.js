@@ -137,6 +137,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 			url: _this.getRpcUrl('editLabelStart'),
 			sync: sync,
 			params: params			
+			});
 		});
 		
 		return deferred;

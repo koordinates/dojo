@@ -350,7 +350,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		});
 		
 		if (node.isTreeNode) {
-			node.state == node.loadStates.UNCHECKED
+			node.state == node.loadStates.UNCHECKED;
 		}
 		
 		return this.loadRemote(node, sync);
