@@ -18,12 +18,9 @@ dojo.widget.defineWidget(
 		
 	node: null,
 	
-	initialize: function() {
-		this.richText = dojo.widget.createWidget("RichText") ;	
-		
-		dojo.event.connect( "around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
-		dojo.event.connect( this.richText, "onBlur", this, "richText_onBlur" );	
-	},
+	richTextParams: {},
+	
+	
 	
 	getContents: function() {
 		return this.richText.getEditorContent();
@@ -31,18 +28,25 @@ dojo.widget.defineWidget(
 	
 	open: function(node) {
 		
-		this.richText.open(node.labelNode);
-				
+		if (!this.richText) {
+			this.richText = dojo.widget.createWidget("RichText", this.richTextParams, node.labelNode);
+		
+			dojo.event.connect( "around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
+			dojo.event.connect( this.richText, "onBlur", this, "richText_onBlur" );
+		} else {
+			this.richText.open(node.labelNode);
+		}
+		
 		this.node = node;		
 	},
 	
 	close: function(save) {
-		this.node = null;
-		this.richText.close(save);
+		this.richText.close(save);	
+		this.node = null;	
 	},
 	
 	isClosed: function() {
-		return this.richText.isClosed;
+		return !this.richText || this.richText.isClosed;
 	},
 	
 	richText_onKeyDown: function(invocation) {
@@ -54,13 +58,17 @@ dojo.widget.defineWidget(
 		switch (e.keyCode) {
 			case e.KEY_ESCAPE:
 				this.finish(false);
+				dojo.event.browser.stopEvent(e);		
 				break;
 			case e.KEY_ENTER:
 				if( e.ctrlKey && !this.singleLineMode ) {
 					this.editor.execCommand( "inserthtml", "<br/>" );
+					dojo.event.browser.stopEvent(e);		
 				}
 				else {
 					this.finish(true);
+					dojo.event.browser.stopEvent(e);		
+					//dojo.debug("finish");
 				}
 				break;
 			default:

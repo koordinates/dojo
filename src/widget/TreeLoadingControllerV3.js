@@ -305,8 +305,13 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		return deferred;
 	},
 		
-	startProcessing: function(nodes) {
+	startProcessing: function(nodesArray) {
 		var deferred = new dojo.Deferred();
+		
+		var nodes = dojo.lang.isArray(nodesArray) ? nodesArray : arguments;
+		
+		//dojo.debug((new Error()).stack)
+		//dojo.debug(nodes[0].toSource());
 		
 		for(var i=0;i<nodes.length;i++) {
 			if (nodes[i].isLocked()) {
@@ -315,7 +320,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 				return deferred;
 			}
 			if (nodes[i].isTreeNode) {
-				//dojo.debug("mark");
+				//dojo.debug("mark "+nodes[i]);
 				nodes[i].markProcessing();
 			}
 			nodes[i].lock();
@@ -328,7 +333,10 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		return deferred;
 	},
 	
-	finishProcessing: function(nodes) {
+	finishProcessing: function(nodesArray) {
+		
+		var nodes = dojo.lang.isArray(nodesArray) ? nodesArray : arguments;
+		
 		for(var i=0;i<nodes.length;i++) {
 			if (!nodes[i].hasLock()) {
 				// is not processed. probably we locked it and then met bad node in startProcessing
