@@ -221,14 +221,15 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		var _this = this;
 		
 		if (!save) {
-			var deferred = this.requestEditConfirmation(node,'editLabelFinishCancel', sync);			
-			deferred.addCallback(function() {
-				_this.doEditLabelFinish(node, false);
-			});
-		} else {
-					
-			return this.editLabelSave(node, this.editor.getContents(), sync);
+			var deferred = this.requestEditConfirmation(node,'editLabelFinishCancel', sync);						
+		} else {					
+			var deferred = this.editLabelSave(node, this.editor.getContents(), sync);
 		}
+		
+		deferred.addCallback(function() {
+				_this.doEditLabelFinish(node, save);
+		});
+		return deferred;
 	}
 	
 	
