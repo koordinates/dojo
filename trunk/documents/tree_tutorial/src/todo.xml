@@ -3,34 +3,31 @@
     <title>TODO for TreeV3</title>
     
     
+    <section>
+        <title>Optional</title>
     
-    <itemizedlist>        
-        <listitem>Automated unit-testing system based on Selenium</listitem>
-        <listitem>Optimize all gifs with AGO (advanced gif optimizer) carefully. AGO spoils transparent gifs sometimes</listitem>        
-         <listitem>Make SortChildren extension to keep nodes sorted</listitem>
+        <itemizedlist>        
+            <listitem>Automated unit-testing system based on Selenium </listitem>
+            <listitem>Optimize all gifs with AGO (advanced gif optimizer) carefully. AGO spoils transparent gifs sometimes</listitem>        
+            <listitem>Make SortChildren extension to keep nodes sorted</listitem>
+            <listitem>On Drag'n'drop tree 'wobbles', because node size increases/decreases when it is
+                bordered.  Could be nice to evade it, either placing another transparent div with border onto
+                the node or decreasing their size, or using padding divs, or..</listitem>
       
-    </itemizedlist>
+        </itemizedlist>
+    </section>
+    
     
     
     <section>
         <title>BUGS</title>
         
         <itemizedlist>
-            <listitem>OS X improper rendering</listitem>
+            <listitem>OS X improper rendering. Need someone to assist in testing/patching.</listitem>
             <listitem>Multiple dnd of nodes selected by multiple select work incorrectly. Although all is fine if dragManager
-            uses shift for multiple dnd and TreeSelector uses ctrl.</listitem>
+            uses shift for multiple dnd and TreeSelector uses ctrl. No idea what the reason is.</listitem>
         </itemizedlist>
         </section>
     
-    <section>
-        <title>Possible TODO</title>
-        
-        <itemizedlist>
-            <listitem>On Drag'n'drop tree 'wobbles', because node size increases/decreases when it is
-            bordered.  Could be nice to evade it, either placing another transparent div with border onto
-            the node or decreasing their size, or using padding divs, or..</listitem>
-            
-        </itemizedlist>
-        </section>
         
 </section>
