@@ -6,7 +6,6 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
-dojo.require("dojo.date");
 dojo.require("dojo.i18n.calendar.GregorianNames");
 
 /*
@@ -38,7 +37,8 @@ dojo.widget.defineWidget(
 		this.firstSaturday = {};
 	},
 	{
-		lang: "", //Q: I'd really like to have a default value of null, but the parser doesn't seem to make a distinction between that and undefined?
+		lang: "", // would be better if this could be undefined if the attribute is undefined
+		dayWidth: 'narrow',
 
 		classNames: {
 			previous: "previousMonth",
@@ -77,7 +77,7 @@ dojo.widget.defineWidget(
 		},
 
 		initUI: function() {
-			var dayLabels = dojo.i18n.calendar.GregorianNames.getNames('days', 'narrow', 'standAlone', this.lang);
+			var dayLabels = dojo.i18n.calendar.GregorianNames.getNames('days', this.dayWidth, 'standAlone', this.lang);
 			var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
 			for(var i=0; i<7; i++) {
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
@@ -319,15 +319,12 @@ dojo.widget.defineWidget(
 		},
 	
 		onClick: function(evt) {
-			dojo.event.browser.stopEvent(evt)
+			dojo.event.browser.stopEvent(evt);
 		},
 		
 		onSetDate: function(evt) {
-			if(evt.target.nodeType == dojo.dom.ELEMENT_NODE) {
-				var eventTarget = evt.target;
-			} else {
-				var eventTarget = evt.target.parentNode;
-			}
+			var eventTarget = (evt.target.nodeType == dojo.dom.ELEMENT_NODE) ?
+				evt.target : evt.target.parentNode;
 			dojo.event.browser.stopEvent(evt);
 			this.selectedIsUsed = 0;
 			this.todayIsUsed = 0;
@@ -350,12 +347,9 @@ dojo.widget.defineWidget(
 );
 
 dojo.widget.DatePicker.util = new function() {
-	this.months = dojo.date.months; //Q: is this used?
-	this.weekdays = dojo.date.days; //Q: is this used?
-
 	this.toRfcDate = function(jsDate) {
 		if(!jsDate) {
-			var jsDate = new Date();
+			jsDate = new Date();
 		}
 		// because this is a date picker and not a time picker, we don't return a time
 		return dojo.date.format(jsDate, "%Y-%m-%d");
