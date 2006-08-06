@@ -31,6 +31,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	listenTreeEvents: ["afterChangeTree","afterTreeCreate", "beforeTreeDestroy","afterSetFolder","afterUnsetFolder"],
 	listenNodeFilter: function(elem) { return elem.isFolder && elem instanceof dojo.widget.Widget},
 
+	editor: null,
 
 	listenNode: function(node) {
 		//dojo.debug("listen "+node);
@@ -54,7 +55,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		this.unlistenNode(message.source);
 	},
 
-	initialize: function() {
+	initialize: function(args) {
+		if (args.editor) {
+			this.editor = dojo.widget.byId(args.editor);
+		}
+		
 		this.onExpandClickHandler =  dojo.lang.hitch(this, this.onExpandClick)
 	},
 		
@@ -202,24 +207,30 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	
 	// -------------------------- TODO: Inline edit node ---------------------
-	// TODO: write editing stuff
 	canEditLabel: function(node) {
 		if (node.actionIsDisabled(parent.actions.EDIT)) return false;
 
 		return true;
 	},
 
-	editLabelStart: function(node) {
+	editTitleStart: function(node) {
 		if (!this.canEditLabel(node)) {
 			return false;
 		}
 
 		return this.doEditLabelStart.apply(this, arguments);
 	},
+	
 
 	doEditLabelStart: function(node) {
 		node.editLabelStart();		
 	},
+	
+	setTitle: function(title, editor) {
+		node.setTitle(title);
+		editor.editor_close(true);
+	},
+	
 	
 	/**
 	 * check that something is possible

@@ -22,6 +22,7 @@ dojo.inherits(dojo.widget.TreeRpcControllerV3, dojo.widget.TreeLoadingController
 dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	widgetType: "TreeRpcControllerV3",
 
+	RpcOnEditStart: true,
 				
 	/**
 	 * Make request to server about moving children.
@@ -109,7 +110,61 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 						
 		return deferred;
 
+	},
+	
+	// -------------------------- Inline edit node ---------------------	
+
+	/**
+	 * send edit start request if needed
+	 * useful for server-side locking 
+	 */
+	prepareEditLabel: function(node, sync) {
+		if (!this.RpcOnEditStart) {
+			return;
+		}
+		
+		var _this = this;
+		var deferred = this.startProcessing(node);
+		
+				
+		var params = {
+			node: this.getInfo(node),
+			tree: this.getInfo(node.tree)
+		}
+		
+		deferred.addCallback(function() {
+			return _this.runRpc({
+			url: _this.getRpcUrl('editLabelStart'),
+			sync: sync,
+			params: params			
+		});
+		
+		return deferred;
 	}
+	/*
+			
+
+	doEditLabel: function(node, sync) {
+		if (!this.editor) {
+			dojo.raise(this.widgetType+": no editor specified");
+		}
+		
+		if (this.editor.isClosed()) {
+			var deferred = this.doEditLabelFinish(this.editor.saveOnBlur, sync);
+			var _this = this;
+			var _arguments = arguments;
+			deferred.addCallback(function() { _this.doEditLabelStart.apply(_this, _arguments) });
+		}
+		
+		node.editLabelStart();		
+	},
+	
+	setTitle: function(title, editor) {
+		node.setTitle(title);
+		editor.editor_close(true);
+	},*/
+	
+	
 
 });
 

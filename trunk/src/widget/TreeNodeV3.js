@@ -200,7 +200,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		var info = {
 			widgetId: this.widgetId,
 			objectId: this.objectId,
-			index: this.getParentIndex()			
+			index: this.getParentIndex()
 		}
 
 		return info;
