@@ -222,7 +222,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		var _this = this;
 		
-		var deferred = this.startProcessing(node);
+		var deferred = this.startProcessing([node]);
 		
 		deferred.addCallback(function() {
 			return _this.loadIfNeeded(node, sync);
@@ -235,7 +235,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		});
 		
 		deferred.addBoth(function(res) {
-			_this.finishProcessing(node);
+			_this.finishProcessing([node]);
 			return res;
 		});
 		
@@ -305,20 +305,20 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		return deferred;
 	},
 		
-	startProcessing: function() {
+	startProcessing: function(nodes) {
 		var deferred = new dojo.Deferred();
 		
-		for(var i=0;i<arguments.length;i++) {
-			if (arguments[i].isLocked()) {
-				deferred.errback(new dojo.LockedError("item locked "+arguments[i], arguments[i]));
+		for(var i=0;i<nodes.length;i++) {
+			if (nodes[i].isLocked()) {
+				deferred.errback(new dojo.LockedError("item locked "+nodes[i], nodes[i]));
 				//dojo.debug("startProcessing errback "+arguments[i]);
 				return deferred;
 			}
-			if (arguments[i].isTreeNode) {
+			if (nodes[i].isTreeNode) {
 				//dojo.debug("mark");
-				arguments[i].markProcessing();
+				nodes[i].markProcessing();
 			}
-			arguments[i].lock();
+			nodes[i].lock();
 		}
 				
 		//dojo.debug("startProcessing callback");
@@ -328,16 +328,16 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		return deferred;
 	},
 	
-	finishProcessing: function() {
-		for(var i=0;i<arguments.length;i++) {
-			if (!arguments[i].hasLock()) {
+	finishProcessing: function(nodes) {
+		for(var i=0;i<nodes.length;i++) {
+			if (!nodes[i].hasLock()) {
 				// is not processed. probably we locked it and then met bad node in startProcessing
 				continue; 
 			}
 			//dojo.debug("has lock");	
-			arguments[i].unlock();
-			if (arguments[i].isTreeNode) {
-				arguments[i].unmarkProcessing();
+			nodes[i].unlock();
+			if (nodes[i].isTreeNode) {
+				nodes[i].unmarkProcessing();
 			}
 		}
 	},
@@ -365,7 +365,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 	prepareMove: function(child, newParent, index, sync) {
-		var deferred = this.startProcessing(parent);
+		var deferred = this.startProcessing([parent]);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(newParent, sync);
 		}));
@@ -373,7 +373,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	finalizeMove: function(child, newParent) {
-		this.finishProcessing(child, newParent);
+		this.finishProcessing([child, newParent]);
 	}
 		
 	
@@ -384,7 +384,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 
 	prepareCreateChild: function(parent, index, data, sync) {
-		var deferred = this.startProcessing(parent);
+		var deferred = this.startProcessing([parent]);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(parent, sync);
 		}));
@@ -392,7 +392,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	finalizeCreateChild: function(parent) {
-		this.finishProcessing(parent);
+		this.finishProcessing([parent]);
 	}
 
 });
@@ -401,7 +401,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
 	
 	prepareClone: function(child, newParent, index, deep, sync) {
-		var deferred = this.startProcessing(child, newParent);
+		var deferred = this.startProcessing([child, newParent]);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(newParent, sync);
 		}));		
@@ -409,7 +409,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},	
 	
 	finalizeClone: function(child, newParent) {
-		this.finishProcessing(child, newParent);
+		this.finishProcessing([child, newParent]);
 	}
 
 });
