@@ -56,6 +56,12 @@
             while recursively traversing a tree, e.g with Widget#getDescendants. You should change such code to use TreeCommon#processDescendants,
             or handle data objects in special way.            
         </para>
+        
+        <para> There are no special mechanisms to add laziliy instantiated "data objects". 
+            You may manipulate them simply modifying <methodname>children</methodname> array, but no events are thrown until a
+            real widget appears on the scene. In most cases that is fine, but you are free to "disable" lazy widget creation - do not modify
+            <methodname>children</methodname> directly and enable <methodname>tree.eagerWidgetInstantiation</methodname></para>
+            
     </section>    
     
     
@@ -86,7 +92,7 @@
     </section>
     
     <section>
-        <title>Multiple selection and drag'n'drop</title>
+        <title>Multiple selection and drag'n'drop (not ready yet)</title>
         <para>Sounds simple enough.. Select multiple nodes with ctrl and get them with <methodname>selector.selectedNodes</methodname>.
             instead of old <methodname>selectorNode</methodname> call.</para>
     </section>

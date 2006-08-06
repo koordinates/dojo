@@ -32,9 +32,9 @@
 		alert("expandAll finished");
 	}
 
-	function testExpandToLevel() {
-		var d = dojo.widget.byId('controller').expandToLevel(dojo.widget.byId('tree').children[0],4);
-		//d.addCallback(function() { alert('done') });
+	function testExpandToLevel(level) {
+		var d = dojo.widget.byId('controller').expandToLevel(dojo.widget.byId('tree'),level);
+		d.addCallback(function() { alert('done') });
 	}
 </script>
 
@@ -44,12 +44,12 @@
 
 <h3>Dynamically loads nodes from server</h3>
 
-<input type="button" value="Expand first node to level 2" onClick="testExpandToLevel()"/>
+<input type="button" value="Expand to level 3" onClick="testExpandToLevel(2)"/>
 
 
 <br/>
 
-<div dojoType="TreeLoadingControllerV3" widgetId="controller" RpcUrl="local"></div>
+<div dojoType="TreeLoadingControllerV3" widgetId="controller" RpcUrl="http://ilia.country-info.ru/dojo.php"></div>
 
 
 <div dojoType="TreeV3" widgetId="tree" listeners="controller">

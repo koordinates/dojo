@@ -129,6 +129,7 @@ dojo.widget.TreeWithNode = {
 			//dojo.profile.start("setChildren - create "+this);
 			
 			if (!(child instanceof dojo.widget.Widget)) {
+				
 				child = this.children[i] = this.tree.createNode(child);
 				var childWidgetCreated = true;	
 				//dojo.debugShallow(child)
@@ -173,6 +174,12 @@ dojo.widget.TreeWithNode = {
 
 				//dojo.profile.end("setChildren - event "+this);
 
+			}
+			
+			if (this.tree.eagerWidgetInstantiation) {
+				dojo.lang.forEach(this.children, function(child) {
+					child.setChildren();
+				});
 			}
 
 			//dojo.profile.end("setChildren - attach "+this);
