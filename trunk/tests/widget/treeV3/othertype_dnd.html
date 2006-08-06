@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<title>Dojo Button Widget Test</title>
+
+<script type="text/javascript">
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+</script>
+
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript">
+
+	dojo.require("dojo.dnd.*");
+	dojo.require("dojo.event.*");
+	dojo.require("dojo.widget.*");
+	dojo.require("dojo.widget.TreeV3");
+	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeBasicControllerV3");
+	dojo.require("dojo.widget.TreeDndControllerV3");
+	dojo.hostenv.writeIncludes();
+
+	function makeGetter(title) {
+		return function() { return {title:title} };
+	}
+
+	dojo.addOnLoad(function() {
+		var dl = dojo.byId("dragList1");
+		var lis = dl.getElementsByTagName("li");
+		for(var x=0; x<lis.length; x++){
+			var elem = lis[x]
+			var source = new dojo.dnd.HtmlDragSource(elem, "li1");
+			source.getTreeNode = makeGetter(elem.innerHTML);
+			source.onDrop = function() { dojo.html.removeNode(this.domNode) }
+		}
+
+	});
+
+</script>
+
+<ul id="dragList1">
+	<li>list 1 item 1 
+		<a href="http://www.google.com">Google</a>
+		<input value="type in me">
+		<input type="button" value="ClickMe">
+		<input type="checkbox">
+		<input type="radio" name="radio" value="1" checked> 
+		<button>Inline Button</button>
+	</li>
+	<li>list 1 item 2</li>
+	<li>list 1 item 3</li>
+</ul>
+
+
+<div dojoType="TreeBasicControllerV3" widgetId="controller"></div>	
+<div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>	
+
+<div dojoType="TreeV3" listeners="controller;dndcontroller" DndMode="ONTO;BETWEEN"  DNDacceptTypes="li1">
+	<div dojoType="TreeNodeV3" title="Item 1" widgetId="Item 1">
+		<div dojoType="TreeNodeV3" title="Item 1.1" widgetId="Item 1.1"></div>
+		<div dojoType="TreeNodeV3" title="Item 1.2" widgetId="Item 1.2"></div>
+	</div>
+
+	<div dojoType="TreeNodeV3" title="Item 2<br/>title long yeah" widgetId="Item 2">
+		<div dojoType="TreeNodeV3" title="Item 2.1" widgetId="Item 2.1"></div>
+	</div>
+
+	<div dojoType="TreeNodeV3" title="Empty Folder" isFolder="true" widgetId="Item 3"></div>
+	<div dojoType="TreeNodeV3" title="Item 4" widgetId="Item 4"></div>
+</div>
+

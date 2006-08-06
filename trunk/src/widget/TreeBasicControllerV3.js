@@ -380,6 +380,17 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 	/**
+	 * check for non-treenodes
+	 */
+	canMoveNotANode: function(child, parent) {
+		if (child.treeCanMove) {
+			return child.treeCanMove(parent);
+		}
+		
+		return true;
+	},
+
+	/**
 	 * Checks whether it is ok to change parent of child to newParent
 	 * May incur type checks etc
 	 *
@@ -388,7 +399,10 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	 * index changes as client moves mouse up-down over the node
 	 */
 	canMove: function(child, newParent){
-
+		if (!child.isTreeNode) {
+			return this.canMoveNotANode(child, newParent);
+		}
+						
 		if (child.actionIsDisabled(child.actions.MOVE)) {
 			return false;
 		}
