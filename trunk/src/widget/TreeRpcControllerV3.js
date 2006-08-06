@@ -22,7 +22,7 @@ dojo.inherits(dojo.widget.TreeRpcControllerV3, dojo.widget.TreeLoadingController
 dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	widgetType: "TreeRpcControllerV3",
 
-	RpcOnEditStart: true,
+	extraRpcOnEdit: true,
 				
 	/**
 	 * Make request to server about moving children.
@@ -110,23 +110,24 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 						
 		return deferred;
 
-	},
-	
-	// -------------------------- Inline edit node ---------------------	
+	}
+});
 
+	
+// -------------------------- Inline edit node ---------------------	
+dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	/**
 	 * send edit start request if needed
 	 * useful for server-side locking 
 	 */
-	prepareEditLabel: function(node, sync) {
-		if (!this.RpcOnEditStart) {
-			return;
+	requestEditConfirmation: function(node, action, sync) {
+		if (!this.extraRpcOnEdit) {			
+			return dojo.Deferred.makeCalled();
 		}
 		
 		var _this = this;
 		var deferred = this.startProcessing(node);
-		
-				
+						
 		var params = {
 			node: this.getInfo(node),
 			tree: this.getInfo(node.tree)
@@ -134,36 +135,101 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		deferred.addCallback(function() {
 			return _this.runRpc({
-			url: _this.getRpcUrl('editLabelStart'),
+			url: _this.getRpcUrl(action),
 			sync: sync,
 			params: params			
 			});
 		});
 		
+		
+		deferred.addBoth(function(r) {
+			_this.stopProcessing(node);
+			return r;
+		});
+	
 		return deferred;
-	}
-	/*
-			
-
-	doEditLabel: function(node, sync) {
+	},
+	
+	editLabelSave: function(node, newContent, sync) {
+		var deferred = this.startProcessing(node);
+						
+		var _this = this;
+		
+		var params = {
+			node: this.getInfo(node),
+			tree: this.getInfo(node.tree),
+			newContent: newContent
+		}
+		
+	
+		deferred.addCallback(function() {
+			return _this.runRpc({
+			url: _this.getRpcUrl('editLabelSave'),
+			sync: sync,
+			params: params			
+			});
+		});
+		
+		
+		deferred.addBoth(function(r) {
+			_this.stopProcessing(node);
+			return r;
+		});
+	
+		return deferred;
+	},
+	
+	
+	editLabelStart: function(node, sync) {
+		
+		if (!this.editor.isClosed()) {
+			var deferred = this.editLabelFinish(node, this.editor.saveOnBlur, sync);
+			deferred.addCallback(function() {
+				return _this.editLabelStart(node, sync);
+			});
+			return deferred;
+		}
+						
+		var _this = this;
+		var deferred = this.requestEditConfirmation(node,'editLabelStart', sync);
+		
+		deferred.addCallback(function() {
+			_this.doEditLabelStart(node);
+		});
+	
+		
+		return deferred;
+	
+	},
+	
+	doEditLabelStart: function(node) {
 		if (!this.editor) {
 			dojo.raise(this.widgetType+": no editor specified");
 		}
 		
-		if (this.editor.isClosed()) {
-			var deferred = this.doEditLabelFinish(this.editor.saveOnBlur, sync);
-			var _this = this;
-			var _arguments = arguments;
-			deferred.addCallback(function() { _this.doEditLabelStart.apply(_this, _arguments) });
-		}
-		
-		node.editLabelStart();		
+		this.editor.open(node);
 	},
 	
-	setTitle: function(title, editor) {
-		node.setTitle(title);
-		editor.editor_close(true);
-	},*/
+	doEditLabelFinish: function(node, save) {
+		if (!this.editor) {
+			dojo.raise(this.widgetType+": no editor specified");
+		}
+		this.editor.close(save);
+	},
+	
+	editLabelFinish: function(node, save, sync) {
+		var _this = this;
+		
+		if (!save) {
+			var deferred = this.requestEditConfirmation(node,'editLabelFinishCancel', sync);			
+			deferred.addCallback(function() {
+				_this.doEditLabelFinish(node, false);
+			});
+		} else {
+					
+			return this.editLabelSave(node, this.editor.getContents(), sync);
+		}
+	}
 	
 	
 
