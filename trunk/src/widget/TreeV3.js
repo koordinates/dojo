@@ -46,7 +46,13 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	DndMode: "",
 
+	/**
+	 * factory to generate default widgets
+	 */
 	defaultChildWidget: null,
+	
+	
+	eagerWidgetInstantiation: false,
 	
 	eventNamesDefault: {
 

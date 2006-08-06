@@ -5,7 +5,7 @@ dojo.require("dojo.widget.TreeBasicControllerV3");
 dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
-dojo.require("dojo.Deferred");
+dojo.require("dojo.DeferredList");
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeLoadingControllerV3");
 
@@ -182,7 +182,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 
 	batchExpandTimeout: 0,
-/*
+
 	expandToLevel: function(node, level, sync) {
 		if (level == 0) return;
 
@@ -192,35 +192,29 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		if (node.isTreeNode) {
 			var deferred = this.expand(node, sync);
-		} else {
+		} else if (node.isTree) {
 			var deferred = new dojo.Deferred();
 			deferred.callback();
+			
+			level++;
 		}
 		
-		deferred.addCallback(function() {
+		//dojo.debug("expand deferred saved "+node+" sync "+sync);
+		
+		
+		var recurseOnExpand = function() {
+			var deferreds = [];		
 			for(var i=0; i<node.children.length; i++) {
-				var child = node.children[i];
-				
-				_this.expandToLevel(child, level-1, sync);
+				//dojo.debug("push recursive call for "+node.children[i]+" level "+level);
+				deferreds.push(_this.expandToLevel(node.children[i], level-1, sync));
 			}
+			return new dojo.DeferredList(deferreds);
 		}
 		
-		var handler = function(node, expandLevel) {
-			this.node = node;
-			this.expandLevel = expandLevel;
-			// recursively expand opened node
-			this.process = function() {
-			};
-		}
-
-		var h = new handler(node, level-1);
-
-
-		var deferred = this.expand(node);
-		deferred.addCallback(function() { h.process() });
-
+		deferred.addCallback(recurseOnExpand);
+		
 		return deferred;
-	},*/
+	},
 	
 	expand: function(node, sync) {		
 		// widget which children are data objects, is UNCHECKED, but has children and shouldn't be loaded
@@ -321,6 +315,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 				return deferred;
 			}
 			if (arguments[i].isTreeNode) {
+				//dojo.debug("mark");
 				arguments[i].markProcessing();
 			}
 			arguments[i].lock();
@@ -345,8 +340,22 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 				arguments[i].unmarkProcessing();
 			}
 		}
-	}
+	},
 	
+	refresh: function(nodeOrTree, sync) {
+		dojo.lang.forEach(nodeOrTree.children, function(child) {
+			if (child instanceof dojo.widget.Widget) {
+				child.destroy();
+			}
+		});
+		
+		if (node.isTreeNode) {
+			node.state == node.loadStates.UNCHECKED
+		}
+		
+		return this.loadRemote(node, sync);
+	}
+		
 		
 	
 });

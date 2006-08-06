@@ -133,7 +133,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		}
 	},
 	
-	
+	/**
+	 * walk a node in time, forward order, with pauses between expansions
+	 */
 	expandToLevel: function(nodeOrTree, level) {
 		dojo.require("dojo.widget.TreeTimeoutIterator");
 		

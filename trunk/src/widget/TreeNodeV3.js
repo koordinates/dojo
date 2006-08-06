@@ -611,7 +611,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.debug("expand in "+this);
 		
 		//dojo.profile.start("expand - lazy init "+this);
-		if (this.tryLazyInit) {
+		if (this.tryLazyInit && this.lazyInstantiationEnabled) {
 			this.setChildren();
 			this.tryLazyInit = false;
 		}
