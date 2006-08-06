@@ -209,29 +209,50 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	// -------------------------- TODO: Inline edit node ---------------------
 	canEditLabel: function(node) {
-		if (node.actionIsDisabled(parent.actions.EDIT)) return false;
+		if (node.actionIsDisabled(node.actions.EDIT)) return false;
 
 		return true;
 	},
-
-	editTitleStart: function(node) {
+	
+		
+	editLabelStart: function(node) {		
 		if (!this.canEditLabel(node)) {
 			return false;
 		}
-
-		return this.doEditLabelStart.apply(this, arguments);
+		
+		if (!this.editor.isClosed()) {
+			//dojo.debug("editLabelStart editor open");
+			this.editLabelFinish(node, this.editor.saveOnBlur);			
+		}
+				
+		this.doEditLabelStart(node);
+		
+	
 	},
 	
-
+	
+	editLabelFinish: function(node, save, sync) {
+		this.doEditLabelFinish(node, save);		
+	},
+	
+	
 	doEditLabelStart: function(node) {
-		node.editLabelStart();		
+		if (!this.editor) {
+			dojo.raise(this.widgetType+": no editor specified");
+		}
+		
+		this.editor.open(node);
 	},
 	
-	setTitle: function(title, editor) {
-		node.setTitle(title);
-		editor.editor_close(true);
+	doEditLabelFinish: function(node, save) {
+		if (!this.editor) {
+			dojo.raise(this.widgetType+": no editor specified");
+		}
+		this.editor.close(save);
 	},
 	
+	
+		
 	
 	/**
 	 * check that something is possible

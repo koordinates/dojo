@@ -187,7 +187,10 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	},
 	
 	
-	editLabelStart: function(node, sync) {
+	editLabelStart: function(node, sync) {		
+		if (!this.canEditLabel(node)) {
+			return false;
+		}
 		
 		if (!this.editor.isClosed()) {
 			//dojo.debug("editLabelStart editor open");
@@ -203,7 +206,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		var deferred = this.requestEditConfirmation(node, 'editLabelStart', sync);
 		
 		deferred.addCallback(function() {
-			dojo.debug("start edit");
+			//dojo.debug("start edit");
 			_this.doEditLabelStart(node);
 		});
 	
@@ -212,20 +215,6 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	
 	},
 	
-	doEditLabelStart: function(node) {
-		if (!this.editor) {
-			dojo.raise(this.widgetType+": no editor specified");
-		}
-		
-		this.editor.open(node);
-	},
-	
-	doEditLabelFinish: function(node, save) {
-		if (!this.editor) {
-			dojo.raise(this.widgetType+": no editor specified");
-		}
-		this.editor.close(save);
-	},
 	
 	editLabelFinish: function(node, save, sync) {
 		var _this = this;
@@ -237,8 +226,14 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		}
 		
 		deferred.addCallback(function() {
-				_this.doEditLabelFinish(node, save);
+			_this.doEditLabelFinish(node, save);
 		});
+		
+		deferred.addErrback(function(r) {
+			_this.doEditLabelFinish(node, false);
+			return false;
+		});
+		
 		return deferred;
 	}
 	
