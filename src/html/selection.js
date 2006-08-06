@@ -121,7 +121,7 @@ dojo.html.isSelectionCollapsed = function(){
 }
 
 dojo.lang.mixin(dojo.html.selection, {
-	getType : function() {
+	getType: function() {
 		// summary: Get the selection type (like document.select.type in IE).
 		if(dojo.doc().selection){ //IE
 		
@@ -144,7 +144,7 @@ dojo.lang.mixin(dojo.html.selection, {
 			return stype;
 		}
 	},
-	getSelectedElement : function() {
+	getSelectedElement: function() {
 		// summary: 
 		//		Retrieves the selected element (if any), just in the case that a single
 		//		element (object like and image or a table) is selected.
@@ -161,10 +161,10 @@ dojo.lang.mixin(dojo.html.selection, {
 			}
 		}
 	},
-	getParentElement : function() {
+	getParentElement: function() {
 		// summary: 
 		//		Get the parent element of the current selection
-		if ( dojo.html.selection.getType() == dojo.html.selectionType.CONTROL ){
+		if(dojo.html.selection.getType() == dojo.html.selectionType.CONTROL){
 			var p = dojo.html.selection.getSelectedElement();
 			if(p){ return p.parentNode; }
 		}else{
@@ -172,7 +172,7 @@ dojo.lang.mixin(dojo.html.selection, {
 				return dojo.doc().selection.createRange().parentElement();
 			}else{
 				var oSel = dojo.global().getSelection();
-				if ( oSel ){
+				if(oSel){
 					var oNode = oSel.anchorNode;
 		
 					while ( oNode && oNode.nodeType != 1 ){
@@ -184,15 +184,92 @@ dojo.lang.mixin(dojo.html.selection, {
 			}
 		}
 	},
-	selectNode : function(node) {
-		// summary: clear previous selection and select node
-		dojo.html.selectElement(node);
+	hasAncestorElement: function(tagName /* ... */){
+		return (dojo.html.selection.getAncestorElement(arguments) != null);
 	},
-	collapse : function() {
+	getAncestorElement: function(tagName /* ... */){
+		var node = dojo.html.selection.getSelectedElement() || dojo.html.selection.getParentElement();
+		while(node /*&& node.tagName.toLowerCase() != 'body'*/){
+			if(dojo.html.selection.isTag(arguments)){
+				return node;
+			}
+			node = node.parentNode;
+		}
+		return null;
+	},
+	//modified from dojo.html.isTag to take an array as second parameter
+	isTag: function(node, tags) {
+		if(node && node.tagName) {
+			for (var i=1; i<tags.length; i++){
+				if (node.tagName.toLowerCase()==String(tags[i]).toLowerCase()){
+					return String(tags[i]).toLowerCase();
+				}
+			}
+		}
+		return "";
+	},
+	selectElement: function(element) {
+		// summary: clear previous selection and select element
+		var _window = dojo.global();
+		var _document = dojo.doc();
+		element = dojo.byId(element);
+		if(_document.selection && dojo.body().createTextRange){ // IE
+			try{
+				var range = dojo.body().createControlRange();
+				range.addElement(element);
+				range.select();
+			}catch(e){
+				dojo.html.selection.selectElementChildren(element);
+			}
+		}else if(_window["getSelection"]){
+			var selection = _window.getSelection();
+			// FIXME: does this work on Safari?
+			if(selection["removeAllRanges"]){ // Mozilla
+				var range = _document.createRange() ;
+				range.selectNode(element) ;
+				selection.removeAllRanges() ;
+				selection.addRange(range) ;
+			}
+		}
+	},
+	selectElementChildren: function(element){
+		// summary: clear previous selection and select the content of the node
+		var _window = dojo.global();
+		var _document = dojo.doc();
+		element = dojo.byId(element);
+		if(_document.selection && dojo.body().createTextRange){ // IE
+			var range = dojo.body().createTextRange();
+			range.moveToElementText(element);
+			range.select();
+		}else if(_window["getSelection"]){
+			var selection = _window.getSelection();
+			// FIXME: does this work on Safari?
+			if(selection["selectAllChildren"]){ // Mozilla
+				selection.selectAllChildren(element);
+			}
+		}
+	},
+	collapse: function(beginning) {
 		// summary: clear selection
-		dojo.html.clearSelection();
+		if(dojo.global().getSelection){
+			var selection = dojo.global().getSelection();
+			if(selection.removeAllRanges){ // Mozilla
+				if(beginning){
+					selection.collapseToStart();
+				}else{
+					selection.collapseToEnd();
+				}
+			}else{ // Safari
+				// not a great deal we can do
+			}
+		}else if(dojo.doc().selection){ // IE
+			var range = dojo.doc().selection.createRange();
+			range.collapse(beginning);
+			range.select();
+		}
 	},
-	remove : function() {
+
+	remove: function() {
 		// summary: delete selection
 		if(dojo.doc().selection) { //IE
 			var oSel = dojo.doc().selection;
