@@ -4,8 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
-
-alert("load");
+dojo.require("dojo.i18n.calendar.GregorianNames");
 
 dojo.widget.defineWidget(
 	"dojo.widget.MonthlyCalendar",
@@ -14,6 +13,8 @@ dojo.widget.defineWidget(
 		this.iCalendars = [];
 	},
 {
+	dayWidth: 'wide',
+
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlMonthlyCalendar.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlMonthlyCalendar.css"),
 
@@ -24,7 +25,7 @@ dojo.widget.defineWidget(
 		dojo.debug("Adding Calendar");
 		this.iCalendars.push(cal);
 		dojo.debug("Starting init");
-		this.initUI()
+		this.initUI();
 		dojo.debug("done init");
 	},
 
@@ -46,6 +47,12 @@ dojo.widget.defineWidget(
 	},
 
 	initUI: function() {
+		var dayLabels = dojo.i18n.calendar.GregorianNames.getNames('days', this.dayWidth, 'standAlone', this.lang);
+		var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
+		for(var i=0; i<7; i++) {
+			dayLabelNodes.item(i).innerHTML = dayLabels[i];
+		}
+
 		this.selectedIsUsed = false;
 		this.currentIsUsed = false;
 		var currentClassName = "";
@@ -122,8 +129,8 @@ dojo.widget.defineWidget(
 });
 
 dojo.widget.MonthlyCalendar.util= new function() {
-	this.months = dojo.date.months;
-	this.weekdays = dojo.date.days;
+//	this.months = dojo.date.months;
+//	this.weekdays = dojo.date.days;
 	
 	this.toRfcDate = function(jsDate) {
 		if(!jsDate) {
@@ -151,7 +158,8 @@ dojo.widget.MonthlyCalendar.util= new function() {
 		// fullYear, month, date
 		return new Date(parseInt(tempDate[0]), (parseInt(tempDate[1], 10) - 1), parseInt(tempDate[2].substr(0,2), 10));
 	}
-	
+
+//Note: redundant with dojo.widget.DatePicker.util	
 	this.initFirstSaturday = function(month, year) {
 		if(!month) {
 			month = this.date.getMonth();
