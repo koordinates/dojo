@@ -127,15 +127,14 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		var accepts = dojo.dnd.HtmlDropTarget.prototype.accepts.apply(this, arguments);
 
+		//dojo.debug("accepts "+accepts);
+
 		if (!accepts) return false;
 
 		for(var i=0; i<dragObjects.length; i++) {
+			// there may be NO treeNode
 			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
-
-			if (dojo.lang.isUndefined(sourceTreeNode) || !sourceTreeNode || !sourceTreeNode.isTreeNode) {
-				dojo.raise("Source is not TreeNode or not found");
-			}
-
+			
 			if (sourceTreeNode === this.treeNode) return false;
 		}
 
@@ -168,18 +167,15 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var DndMode = this.treeNode.tree.DndMode;
 
 		// disable ONTO mode possibility if impossible 
-		for(var i=0; i<dragObjects.length; i++) {
-			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
-
-			if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO &&
-				// check if ONTO is allowed localy
-				// check dynamically cause may change w/o regeneration of dropTarget
-				this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) 
-			) {
-				// disable ONTO if can't move
-				DndMode &= ~dojo.widget.TreeV3.prototype.DndModes.ONTO;
-			}
+		if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO &&
+			// check if ONTO is allowed localy
+			// check dynamically cause may change w/o regeneration of dropTarget
+			this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) 
+		) {
+			// disable ONTO if can't move
+			DndMode &= ~dojo.widget.TreeV3.prototype.DndModes.ONTO;
 		}
+		
 
 		var position = this.getPosition(e, DndMode);
 
@@ -192,12 +188,12 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		}
 		
 		for(var i=0; i<dragObjects.length; i++) {
-			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
-			if (this.isAdjacentNode(sourceTreeNode, position)) { // skip check if same parent
+			var source = dragObjects[i].dragSource;
+			if (source.treeNode && this.isAdjacentNode(source.treeNode, position)) { // skip check if same parent
 				continue;
-			}
-			
-			if (!this.controller.canMove(sourceTreeNode, this.treeNode.parent)) {
+			}		
+						
+			if (!this.controller.canMove(source.treeNode ? source.treeNode : source, this.treeNode.parent)) {
 				return false;
 			}
 		}
@@ -302,11 +298,12 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 
 
-	getTargetParentIndex: function(sourceTreeNode, position) {
+	getTargetParentIndex: function(source, position) {
 
 		var index = position == "before" ? this.treeNode.getParentIndex() : this.treeNode.getParentIndex()+1;
-		if (this.treeNode.parent === sourceTreeNode.parent
-		  && this.treeNode.getParentIndex() > sourceTreeNode.getParentIndex()) {
+		if (source.treeNode
+		  && this.treeNode.parent === source.treeNode.parent
+		  && this.treeNode.getParentIndex() > source.treeNode.getParentIndex()) {
 		  	index--;  // dragging a node is different for simple move bacause of before-after issues
 		}
 
@@ -321,28 +318,24 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var position = this.position;
 
 //dojo.debug(position);
-		var sourceTreeNode = e.dragObject.dragSource.treeNode;
-
+		var source = e.dragObject.dragSource;
+		
 		//dojo.debug("onDrop "+sourceTreeNode+" " + position + " "+this.treeNode);
 
-
-		if (!dojo.lang.isObject(sourceTreeNode)) {
-			dojo.raise("TreeNode not found in dragObject")
-		}
 
 		var targetParent, targetIndex;
 		if (position == "onto") {
 			targetParent = this.treeNode;
 			targetIndex = 0;
 		} else {
-			targetIndex = this.getTargetParentIndex(sourceTreeNode, position);
+			targetIndex = this.getTargetParentIndex(source, position);
 			targetParent = this.treeNode.parent;
 		}
 		
-		dojo.profile.start("onDrop "+sourceTreeNode);
-		var r = this.getDropHandler(e, sourceTreeNode, targetParent, targetIndex)();
+		//dojo.profile.start("onDrop "+sourceTreeNode);
+		var r = this.getDropHandler(e, source, targetParent, targetIndex)();
 		
-		dojo.profile.end("onDrop "+sourceTreeNode);
+		//dojo.profile.end("onDrop "+sourceTreeNode);
 			
 		return r;
 
@@ -352,15 +345,22 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	 * determine, which action I should perform with nodes
 	 * e.g move, clone..
 	 */
-	getDropHandler: function(e, sourceTreeNode, targetParent, targetIndex) {
+	getDropHandler: function(e, source, targetParent, targetIndex) {
 		var handler;
 		var _this = this;
 		handler = function () {
 			//dojo.debug("Move "+sourceTreeNode+" to parent "+targetParent+":"+targetIndex);
-			var result = _this.controller.move(sourceTreeNode, targetParent, targetIndex, true);
+			if (source.treeNode) {
+				var result = _this.controller.move(source.treeNode, targetParent, targetIndex, true);
+			} else {
+				if (source.onDrop) {
+					source.onDrop(targetParent, targetIndex);
+				}
+				var result = _this.controller.createChild(targetParent, targetIndex, source.getTreeNode());
+			}
+			
 			if (result instanceof dojo.Deferred) {
-				dojo.debug(result);
-				// return 
+				// return error status
 				return (!result.fired) ? true : false;
 			} else {
 				return result;

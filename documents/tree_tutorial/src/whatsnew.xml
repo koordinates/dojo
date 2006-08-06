@@ -61,7 +61,7 @@
             You may manipulate them simply modifying <methodname>children</methodname> array, but no events are thrown until a
             real widget appears on the scene. In most cases that is fine, but you are free to "disable" lazy widget creation - do not modify
             <methodname>children</methodname> directly and enable <methodname>tree.eagerWidgetInstantiation</methodname></para>
-            
+        
     </section>    
     
     
@@ -92,12 +92,30 @@
     </section>
     
     <section>
-        <title>Multiple selection and drag'n'drop (not ready yet)</title>
-        <para>Sounds simple enough.. Select multiple nodes with ctrl and get them with <methodname>selector.selectedNodes</methodname>.
-            instead of old <methodname>selectorNode</methodname> call.</para>
+        <title>Drag'n'drop changes</title>
+        
+        <section>
+            <title>Multiple selection and drag'n'drop (not ready yet)</title>
+            <para>Sounds simple enough.. Select multiple nodes with ctrl and get them with <methodname>selector.selectedNodes</methodname>.
+                instead of old <methodname>selectorNode</methodname> call.</para>
+        </section>
+        
+        <section>
+            <title>Drop of any source, not just tree node</title>
+            <para>If <methodname>treeNode</methodname> property is empty, tree will create a new node from the data returned by
+                <methodname>source.getTreeNode</methodname>, then<methodname>source.onDrop</methodname> will be called to remove old node.
+            </para>
+        </section>
+        
+        <section>
+            <title>Inline node editing</title>
+            <para>It became possible to edit nodes inline, using TreeEditor. Base variant uses RichText widget, you can make another wrapper though.
+                Remote calls can be made on save only, or on start/cancel too.            
+            </para>
+        </section>
+        
     </section>
     
 </section>
 
-
-        
+    
