@@ -16,6 +16,7 @@ if(dojo.hostenv.post_load_){
 		dojo.body().appendChild(savetextarea);
 	})();
 }else{
+	//dojo.body() is not available before onLoad is fired
 	try {
 		dojo.doc().write('<textarea id="dojo.widget.RichText.savedContent" ' +
 			'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
@@ -216,6 +217,7 @@ dojo.widget.defineWidget(
 				this._drawObject(html);
 				// dojo.debug(this.object.document);
 			} else if (h.ie) { // contentEditable, easy
+				this._cacheLocalBlockFormatNames();
 				this.editNode = document.createElement("div");
 				with (this.editNode) {
 					innerHTML = html;
@@ -494,7 +496,7 @@ dojo.widget.defineWidget(
 				this.iframe.onload = ifrFunc;
 			}
 		},
-		
+
 		/** Draws an active x object, used by IE */
 		_drawObject: function (html) {
 			this.object = dojo.html.createExternalElement(dojo.doc(), "object");
@@ -509,24 +511,58 @@ dojo.widget.defineWidget(
 			this.domNode.appendChild(this.object);
 
 			this.object.attachEvent("DocumentComplete", dojo.lang.hitch(this, "onLoad"));
-			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "_updateHeight"));
-			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
+			//DisplayChanged is fired too often even no change is made, so we ignore it
+			//and call onDisplayChanged manually in execCommand instead
+//			this.object.attachEvent("DisplayChanged", dojo.lang.hitch(this, "onDisplayChanged"));
 
 			dojo.lang.forEach(this.events, function(e){
 				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
 			}, this);
 
 			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-				'<title></title>' +
+				'<html><title></title>' +
 				'<style type="text/css">' +
 				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
-				(this.height ? '' : '    body { overflow: hidden; }') +
+				(this.height ? '' : '    body,  { overflow: hidden; }') +
 				//'    #bodywrapper {  }' +
 				'</style>' +
 				//'<base href="' + window.location + '">' +
-				'<body><div id="bodywrapper">' + html + '</div></body>';
+				'<body><div id="bodywrapper">' + html + '</div></body></html>';
+
+			this._cacheLocalBlockFormatNames();
 		},
 
+		//static cache variables shared between all instance of this class
+		_local2NativeFormatNames: {},
+		_native2LocalFormatNames: {},
+		//in IE, names for blockformat is local dependent, so we cache the values here
+		_cacheLocalBlockFormatNames: function(){
+			if(!this._native2LocalFormatNames['p']){
+				var obj = this.object;
+				if(!obj){
+					//create obj temporarily
+					obj = dojo.html.createExternalElement(dojo.doc(), "object");
+					obj.classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
+					dojo.body().appendChild(obj);
+					obj.DocumentHTML = "<html><head></head><body></body></html>";
+				}
+				var oNamesParm = new ActiveXObject("DEGetBlockFmtNamesParam.DEGetBlockFmtNamesParam"); 
+				obj.ExecCommand(this._activeX.command['getblockformatnames'], 0, oNamesParm); 
+				var vbNamesArray = new VBArray(oNamesParm.Names);
+				var localFormats = vbNamesArray.toArray();
+				var nativeFormats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'ul', '', '', '','','div'];
+				for(var i=0;i<nativeFormats.length;++i){
+					if(nativeFormats[i].length>0){
+						this._local2NativeFormatNames[localFormats[i]] = nativeFormats[i];
+						this._native2LocalFormatNames[nativeFormats[i]] = localFormats[i];
+					}
+				}
+				if(!this.object){
+					//delete the temporary obj
+					dojo.body().removeChild(obj);
+				}
+			}
+		},
 	/* Event handlers
 	 *****************/
 
@@ -745,28 +781,28 @@ dojo.widget.defineWidget(
 		
 		onClick: function(e){ this.onDisplayChanged(e); },
 		onBlur: function(e){ },
-		_initialFocus: true,
+//		_initialFocus: true,
 		onFocus: function(e){ 
-			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
-				this._initialFocus = false;
-				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
-					this.execCommand("selectall");
-					this.window.getSelection().collapseToStart();
-				}
-			}
+			//what's this for?
+//			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
+//				this._initialFocus = false;
+//				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
+//					this.execCommand("selectall");
+//					this.window.getSelection().collapseToStart();
+//				}
+//			}
 		},
 
 		blur: function () {
-			if (this.iframe) { this.window.blur(); }
-			else if (this.editNode) { this.editNode.blur(); }
+			if(this.iframe) { this.window.blur(); }
+			else if(this.object) { this.document.body.blur(); }
+			else if(this.editNode) { this.editNode.blur(); }
 		},
 		
 		focus: function () {
-			if(this.iframe){
-				this.window.focus();
-			}else if(this.editNode){
-				this.editNode.focus();
-			}
+			if(this.iframe) { this.window.focus(); }
+			else if(this.object) { this.document.focus(); }
+			else if(this.editNode) { this.editNode.focus(); }
 		},
 		
 		/** this event will be fired everytime the display context changes and the
@@ -889,7 +925,10 @@ dojo.widget.defineWidget(
 			var command = joinObject.args[0].toLowerCase();
 			if(command == "formatblock"){
 				if(drh.safari){ command = "heading"; }
-				if(drh.ie){ joinObject.args[1] = "<"+joinObject.args[1]+">"; }
+				if(this.object){ //IE activeX mode
+					joinObject.args[1] = this._native2LocalFormatNames[joinObject.args[1]];
+				}
+				else if(drh.ie){ joinObject.args[1] = "<"+joinObject.args[1]+">"; }
 			}
 			if (command == "hilitecolor" && !drh.mozilla) { command = "backcolor"; }
 			joinObject.args[0] = command;
@@ -933,7 +972,7 @@ dojo.widget.defineWidget(
 				case "fontname": case "fontsize":
 				case "forecolor": case "hilitecolor":
 				case "justifycenter": case "justifyfull": case "justifyleft": 
-				case "justifyright": case "delete": case "undo": case "redo":
+				case "justifyright": case "delete": case "undo": case "redo": case "selectall":
 					supportedBy = isSupportedBy(mozilla | ie | safari | opera);
 					break;
 					
@@ -952,8 +991,10 @@ dojo.widget.defineWidget(
 				case "blockdirltr": case "blockdirrtl":
 				case "dirltr": case "dirrtl":
 				case "inlinedirltr": case "inlinedirrtl":
-				case "cut": case "copy": case "paste": 
 					supportedBy = isSupportedBy(ie);
+					break;
+				case "cut": case "copy": case "paste": 
+					supportedBy = isSupportedBy(ie|mozilla);
 					break;
 				
 				case "inserttable":
@@ -983,11 +1024,22 @@ dojo.widget.defineWidget(
 		 */
 		execCommand: function (command, argument){
 			var returnValue;
+
+			//focus() is required for IE (none-activeX mode) to work
+			//In addition, focus() makes sure after the execution of
+			//the command, the editor receives the focus as expected
+			this.focus();
+
 			if(this.object){
-				if(command == "forecolor"){
-					command = "setforecolor";
-				}else if(command == "backcolor"){
-					command = "setbackcolor";
+				switch (command) {
+					case "forecolor":
+					case "backcolor":
+					case "fontsize":
+					case "fontname":
+						command = "set" + command;
+						break;
+					case "formatblock":
+						command = "setblockformat";
 				}
 			
 				//if (typeof this._activeX.command[command] == "undefined") { return null; }
@@ -1013,12 +1065,12 @@ dojo.widget.defineWidget(
 					insertRange.select();
 					insertRange.pasteHTML(argument);
 					insertRange.collapse(true);
-					return true;
+					returnValue = true;
 				}else if(arguments.length == 1){
-					return this.object.ExecCommand(this._activeX.command[command],
+					returnValue = this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt);
 				}else{
-					return this.object.ExecCommand(this._activeX.command[command],
+					returnValue = this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt, argument);
 				}
 		
@@ -1052,12 +1104,12 @@ dojo.widget.defineWidget(
 				var selectionEndOffset = selectionRange.endOffset;
 				
 				// select our link and unlink
-				var range = document.createRange();
-				var a = this.getSelectedNode();
-				while(a.nodeName.toLowerCase() != "a"){ a = a.parentNode; }
-				range.selectNode(a);
-				selection.removeAllRanges();
-				selection.addRange(range);
+				var a = dojo.withGlobal(this.window, "getAncestorElement", dojo.html.selection, 'a');
+				dojo.withGlobal(this.window, "selectNode", dojo.html.selection, a);
+//				var range = this.document.createRange();
+//				range.selectNode(a);
+//				selection.removeAllRanges();
+//				selection.addRange(range);
 				
 				returnValue = this.document.execCommand("unlink", false, null);
 				
@@ -1089,14 +1141,16 @@ dojo.widget.defineWidget(
 				this.document.execCommand("useCSS", false, true);
 			
 			}else if((dojo.render.html.ie)&&( (command == "backcolor")||(command == "forecolor") )){
+				// Tested under IE 6 XP2, no problem here, comment out
 				// IE weirdly collapses ranges when we exec these commands, so prevent it	
-				var tr = this.document.selection.createRange();
+//				var tr = this.document.selection.createRange();
 				argument = arguments.length > 1 ? argument : null;
 				returnValue = this.document.execCommand(command, false, argument);
+
 				// timeout is workaround for weird IE behavior were the text
 				// selection gets correctly re-created, but subsequent input
 				// apparently isn't bound to it
-				setTimeout(function(){tr.select();}, 1);
+//				setTimeout(function(){tr.select();}, 1);
 			}else{
 				// dojo.debug("command:", command, "arg:", argument);
 
@@ -1108,10 +1162,6 @@ dojo.widget.defineWidget(
 				if(argument || command!="createlink") {
 					returnValue = this.document.execCommand(command, false, argument);
 				}
-				// try{
-				// }catch(e){
-				// 	dojo.debug(e);
-				// }
 			}
 			
 			this.onDisplayChanged();
@@ -1120,22 +1170,25 @@ dojo.widget.defineWidget(
 
 		queryCommandEnabled: function(command, argument){
 			if(this.object){
-				if(command == "forecolor"){
-					command = "setforecolor";
-				}else if(command == "backcolor"){
-					command = "setbackcolor";
+				switch (command) {
+					case "forecolor":
+					case "backcolor":
+					case "fontsize":
+					case "fontname":
+						command = "set" + command;
+						break;
+					case "formatblock":
+						command = "setblockformat";
 				}
 
 				if(typeof this._activeX.command[command] == "undefined"){ return false; }
 				var status = this.object.QueryStatus(this._activeX.command[command]);
-				return ((status != this.activeX.status.notsupported)&& 
-					(status != this.activeX.status.diabled));
+				return ((status != this._activeX.status.notsupported)&& 
+					(status != this._activeX.status.disabled));
 			}else{
 				// mozilla returns true always
 				if(command == "unlink" && dojo.render.html.mozilla){
-					var node = this.getSelectedNode();
-					while (node.parentNode && node.nodeName != "A") { node = node.parentNode; }
-					return node.nodeName == "A";
+					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, 'a');
 				} else if (command == "inserttable" && dojo.render.html.mozilla) {
 					return true;
 				}
@@ -1156,7 +1209,7 @@ dojo.widget.defineWidget(
 
 				if(typeof this._activeX.command[command] == "undefined"){ return null; }
 				var status = this.object.QueryStatus(this._activeX.command[command]);
-				return ((status == this._activeX.status.enabled)||
+				return ((status == this._activeX.status.latched)||
 					(status == this._activeX.status.ninched));
 			}else{
 				return this.document.queryCommandState(command);
@@ -1170,15 +1223,22 @@ dojo.widget.defineWidget(
 					case "backcolor":
 					case "fontsize":
 					case "fontname":
-					case "blockformat":
 						command = "get" + command;
 						return this.object.execCommand(
 							this._activeX.command[command],
 							this._activeX.ui.noprompt);
-				}			
-			
-				//var status = this.object.QueryStatus(this._activeX.command[command]);
+					case "formatblock":
+						var retvalue = this.object.execCommand(
+							this._activeX.command["getblockformat"],
+							this._activeX.ui.noprompt);
+						if(retvalue){
+							return this._local2NativeFormatNames[retvalue];
+						}
+				}
 			} else {
+				if(dojo.render.html.ie && command == "formatblock"){
+					return this._local2NativeFormatNames[this.document.queryCommandValue(command)];
+				}
 				return this.document.queryCommandValue(command);
 			}
 		},
@@ -1186,97 +1246,41 @@ dojo.widget.defineWidget(
 		
 	/* Misc.
 	 ********/
-
-		getSelectedNode: function(){
-			if(!this.isLoaded){ return; }
-			if(this.document.selection){
-				return this.document.selection.createRange().parentElement();
-			}else if(dojo.render.html.mozilla){
-				return this.window.getSelection().getRangeAt(0).commonAncestorContainer;
-			}
-			return this.editNode;
-		},
 		
 		placeCursorAtStart: function(){
-			if(!this.isLoaded){
-				dojo.event.connect(this, "onLoad", this, "placeCursorAtEnd");
-				return;
+			this.focus();
+			dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, this.editNode);
+			dojo.withGlobal(this.window, "collapse", dojo.html.selection, true);
+		},
+
+		placeCursorAtEnd: function(){
+			this.focus();
+			//In mozilla, if last child is not a text node, we have to use selectElementChildren on this.editNode.lastChild
+			//otherwise the cursor would be placed at the end of the closing tag of this.editNode.lastChild
+			if(dojo.render.html.moz && this.editNode.lastChild && 
+				this.editNode.lastChild.nodeType != dojo.dom.TEXT_NODE){
+				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, this.editNode.lastChild);
+			}else{
+				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, this.editNode);
 			}
-			dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
-			if(this.window.getSelection){
-				var selection = this.window.getSelection;
-				if(selection.removeAllRanges){ // Mozilla
-					var range = this.document.createRange();
-					range.selectNode(this.editNode.firstChild);
-					range.collapse(true);
-					var selection = this.window.getSelection();
-					selection.removeAllRanges();
-					selection.addRange(range);
-				}else{ // Safari
-					// not a great deal we can do
-				}
-			}else if(this.document.selection){ // IE
-				var range = this.document.body.createTextRange();
-				range.moveToElementText(this.editNode);
-				range.collapse(true);
-				range.select();
-			}
+			dojo.withGlobal(this.window, "collapse", dojo.html.selection, false);
 		},
 
 		replaceEditorContent: function(html){
 			if(this.isClosed){
 				this.domNode.innerHTML = html;
-			}else if(this.window.getSelection){
-				var selection = this.window.getSelection;
-				// if(selection.removeAllRanges){ // Mozilla			
-				if(dojo.render.html.moz){ // Mozilla			
-					var range = this.document.createRange();
-					range.selectNodeContents(this.editNode);
-					var selection = this.window.getSelection();
-					selection.removeAllRanges();
-					selection.addRange(range);
-					this.execCommand("inserthtml", html);
-				}else{ // Safari
-					// look ma! it's a totally f'd browser!
-					this.editNode.innerHTML = html;
-				}
-			}else if(this.document.selection){ // IE
-				var range = this.document.body.createTextRange();
-				range.moveToElementText(this.editNode);
-				range.select();
+			}else if(this.window.getSelection && !dojo.render.html.moz){ // Safari
+				// look ma! it's a totally f'd browser!
+				this.editNode.innerHTML = html;
+			}else if(this.window.getSelection || this.document.selection){ // Moz/IE
+				this.execCommand("selectall");
 				this.execCommand("inserthtml", html);
-			}
-		},
-		
-		placeCursorAtEnd: function(){
-			if(!this.isLoaded){
-				dojo.event.connect(this, "onLoad", this, "placeCursorAtEnd");
-				return;
-			}
-			dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
-			if(this.window.getSelection){
-				var selection = this.window.getSelection;
-				if(selection.removeAllRanges){ // Mozilla
-					var range = this.document.createRange();
-					range.selectNode(this.editNode.lastChild);
-					range.collapse(false);
-					var selection = this.window.getSelection();
-					selection.removeAllRanges();
-					selection.addRange(range);
-				}else{ // Safari
-					// not a great deal we can do
-				}
-			}else if(this.document.selection){ // IE
-				var range = this.document.body.createTextRange();
-				range.moveToElementText(this.editNode);
-				range.collapse(true);
-				range.select();
 			}
 		},
 
 		_lastHeight: 0,
 
-		/** Updates the height of the iframe to fit the contents. */
+		/** Updates the height of the editor area to fit the contents. */
 		_updateHeight: function(){
 			if(!this.isLoaded){ return; }
 			if(this.height){ return; }
@@ -1306,7 +1310,17 @@ dojo.widget.defineWidget(
 				}
 				// dojo.debug(this.iframe.height);
 			}else if(this.object){
-				this.object.style.height = dojo.html.getBorderBox(this.editNode).height+"px";
+				var height = dojo.html.getBorderBox(this.editNode).height;
+				//height maybe zero in some cases even though the content is not empty,
+				//we try the height of body instead
+				if(!height){
+					height = dojo.html.getBorderBox(this.document.body).height;
+				}
+				if(height == 0){
+					dojo.debug("Can not figure out the height of the editing area!");
+					return; //prevent setting height to 0
+				}
+				this.object.style.height = height+"px";
 			}
 		},
 		
@@ -1421,6 +1435,11 @@ dojo.widget.defineWidget(
 				this.disconnect(this._connected[0],
 					this._connected[1], this._connected[2]);
 			}
+			this.window = null;
+			this.document = null;
+			this.editNode = null;
+			this.object = null;
+			dojo.widget.RichText.superclass.destroy.call(this);
 		},
 
 		_connected: [],
