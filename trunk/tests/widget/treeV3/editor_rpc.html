@@ -19,7 +19,7 @@
 
 	function testEdit() {
 		var d = dojo.widget.byId('controller').editLabelStart(dojo.widget.byId('1'));
-		d.addBoth(function(r) {
+		d.addErrback(function(r) {
 			dojo.debugShallow(r);
 		});
 	}
