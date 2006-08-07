@@ -7,7 +7,6 @@ require_once('inc/DojoArray.php');
 require_once('inc/helpers.inc');
 
 header('Content-type: text/plain');
-delTree('json');
 
 $output = array();
 
@@ -64,7 +63,7 @@ foreach ($files as $file) {
         $environment = $environment->getValue();
         $require = $environment->getValue();
         if ($enviromnent instanceof DojoString && $require instanceof DojoString) {
-          $output[$package->getPackageName()]['meta']['require'][$environment->getValue()][] = $require->getValue();
+          $output[$package->getPackageName()]['meta']['requires'][$environment->getValue()][] = $require->getValue();
         }
       }
     }
@@ -95,10 +94,10 @@ foreach ($files as $file) {
       }
       if (!$name instanceof DojoString) continue;
       if (!is_string($superclass)) continue;
-      $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_'] = "";
+      $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['summary'] = '';
       if ($superclass != "null" && $superclass != "false" && $superclass != "undefined") {
-        $output[$package->getPackageName()][$name->getValue()]['_']['meta']['inherits'][] = $superclass;
-        $output[$package->getPackageName()][$name->getValue()]['_']['meta']['this_inherits'][] = $superclass;
+        $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['inherits'][] = $superclass;
+        $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['this_inherits'][] = $superclass;
       }
       if ($props instanceof DojoObject) {
         $keys = $props->getKeys();
@@ -114,7 +113,7 @@ foreach ($files as $file) {
             rolloutFunction($output, $package, $function);
           }
           else {
-            $output[$package->getPackageName()][$name->getValue()]['_']['meta']['protovariables'][] = $key;
+            $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['protovariables'][$key] = "";
           }
         }
       }
@@ -122,7 +121,7 @@ foreach ($files as $file) {
       if ($init instanceof DojoFunctionDeclare) {
         $parameters = $init->getParameters();
         foreach ($parameters as $parameter) {
-          $output[$package->getPackageName()][$name->getValue()]['_']['meta']['parameters'][] = array($parameter->getType(), $parameter->getValue());
+          $output[$package->getPackageName()]['meta']['methods'][$name->getValue()]['_']['meta']['parameters'][$parameter->getValue()]['type'] = $parameter->getType();
         }
       }
     }
@@ -142,7 +141,7 @@ foreach ($files as $file) {
         $superclass = $superclass->getValue();
       }
       if (is_string($subclass) && is_string($superclass)) {
-        $output[$package->getPackageName()][$subclass]['_']['meta']['inherits'][] = $superclass;
+        $output[$package->getPackageName()]['meta']['methods'][$subclass]['_']['meta']['inherits'][] = $superclass;
       }
     }
 
@@ -169,10 +168,10 @@ foreach ($files as $file) {
             }
             else {
 							if ($call_name == 'dojo.lang.mixin') {
-              	$output[$package->getPackageName()][$object]['_']['meta']['variables'][] = $key;
+              	$output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['variables'][$key] = "";
 							}
 							else {
-              	$output[$package->getPackageName()][$object]['_']['meta']['protovariables'][] = $key;
+              	$output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['protovariables'][$key] = "";
 							}
             }
           }
@@ -180,26 +179,88 @@ foreach ($files as $file) {
         elseif (is_string($object) && is_string($properties)) {
           // Note: inherits expects to be reading from prototype values
           if ($call_name == 'dojo.lang.extend' && strpos($properties, '.prototype') !== false) {
-            $output[$package->getPackageName()][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
+            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['inherits'][] = str_replace('.prototype', '', $properties);
           }
           elseif ($call_name == 'dojo.lang.extend' && strpos($properties, 'new ') !== false) {
-            $output[$package->getPackageName()][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
-            $output[$package->getPackageName()][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
+            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['inherits'][] = str_replace('new ', '', $properties);
+            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['this_inherits'][] = str_replace('new ', '', $properties);
           }
           else {
-            $output[$package->getPackageName()][$object]['_']['meta']['object_inherits'][] = $properties;
+            $output[$package->getPackageName()]['meta']['methods'][$object]['_']['meta']['object_inherits'][] = $properties;
           }
         }
       }
     }
     
     if ($output[$package->getPackageName()]) {
-      $output['function_names'][$package->getPackageName()] = array_values(array_diff(array_keys($output[$package->getPackageName()]), array('meta')));
+			$output['function_names'][$package->getPackageName()] = array();
+			if (!empty($output[$package->getPackageName()]['meta']['methods'])) {
+      	$output['function_names'][$package->getPackageName()] = array_values(array_keys($output[$package->getPackageName()]['meta']['methods']));
+			}
     }
   }
 }
 
-writeToDisk($output, 'json', 'json');
+foreach (array_keys($output['function_names']) as $package_name) {
+  sort($output['function_names'][$package_name]);
+}
+
 //print_r($output);
+writeToDisk($output, 'json');
+
+$wiki_files = scandir('wiki/WikiHome/DojoDotDoc');
+foreach ($wiki_files as $wiki_file) {
+	if ($wiki_file{0} == '.') {
+		continue;
+	}
+
+	$doc = DOMDocument::load('wiki/WikiHome/DojoDotDoc/' . $wiki_file);
+	$xpath = new DOMXPath($doc);
+	$main_property = $xpath->query("//*[@name = 'main/text']")->item(0);
+	$main_text = '';
+	if ($main_property = $main_property->firstChild) {
+		$main_text = preg_replace('%</?html[^>]*>%', '', $doc->saveXML($main_property));
+	}
+	unset($main_property);
+
+	if (strpos($wiki_file, 'DocPkg') === 0) {
+		$require = $xpath->query("//*[@name = 'DocPkgForm/require']")->item(0)->textContent;
+		$output[$require]['meta']['description'] = $main_text;
+		
+		unset($require);
+	}
+	else if (strpos($wiki_file, 'DocFn') === 0) {
+		$require = $xpath->query("//*[@name = 'DocFnForm/require']")->item(0)->textContent;
+		$name = $xpath->query("//*[@name = 'DocFnForm/name']")->item(0)->textContent;
+		$returns = $xpath->query("//*[@name = 'DocFnForm/returns']")->item(0)->textContent;
+		
+		$output[$require]['meta']['methods'][$name]['_']['meta']['description'] = $main_text;
+		$output[$require]['meta']['methods'][$name]['_']['meta']['returns']['descriptionscription'] = $returns;
+
+		unset($require);
+		unset($name);
+		unset($returns);
+	}
+	else if (strpos($wiki_file, 'DocParam') === 0) {
+		list($require, $name) = explode('=>', $xpath->query("//*[@name = 'DocParamForm/fns']")->item(0)->textContent);
+		$parameter = $xpath->query("//*[@name = 'DocParamForm/name']")->item(0)->textContent;
+		$description = $xpath->query("//*[@name = 'DocParamForm/desc']")->item(0)->textContent;
+		
+		$output[$require]['meta']['methods'][$name]['_']['meta']['parameters'][$parameter]['description'] = $description;
+		
+		unset($require);
+		unset($name);
+		unset($parameter);
+		unset($description);
+	}
+
+	unset($main_text);
+	unset($xpath);
+	unset($doc);
+}
+unset($wiki_files);
+
+writeToDisk($output, 'local_json', 'json', 'local');
+//writeToDisk($output, 'json', 'xml', 'eclipse');
 
 ?>
