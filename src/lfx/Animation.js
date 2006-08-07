@@ -35,7 +35,15 @@ dojo.lfx.Line = function(start, end){
 
 dojo.lfx.easeDefault = function(n){ 
 	// sin wave easing. All the cool kids are doing it.
-	return (0.5+((Math.sin( (n+1.5) * Math.PI))/2));
+	if(dojo.render.html.khtml){
+		// the cool kids are obviously not using konqueror...
+		// found a very wierd bug in floats constants, 1.5 evals as 1
+		// seems somebody mixed up ints and floats in 3.5.4 ??
+		// FIXME: investigate more and post a KDE bug (Fredrik)
+		return (parseFloat("0.5")+((Math.sin( (n+parseFloat("1.5")) * Math.PI))/2));
+	}else{
+		return (0.5+((Math.sin( (n+1.5) * Math.PI))/2));dojo.debug(ret);
+	}
 }
 
 dojo.lfx.easeIn = function(n){
