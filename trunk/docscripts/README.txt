@@ -4,26 +4,28 @@ How the dojo-driven Doc Tool Will Work
 The various pieces
 ------------------
 
-* parser.php runs through all of the files and searches for patterns. It can do all basic functionality.
-* parser.php creates a bunch of JSON files (stored in the json directory)
-* dojo.doc has four important functions
+* docparser.php runs through all of the files and searches for patterns. It can do all basic functionality.
+* inc/helpers.inc writeToDisc creates a bunch of JSON files (stored in the json directory)
+* dojo.doc has four important functions:
 ** functionNames loads the list function names from the function_names object
 ** getMeta grabs the meta information for a function from a JSON object
 ** getSrc grabs the source from a stored file
 ** getDoc goes out to http://manual.dojotoolkit.org and grabs external documentation
-* dojo.widget.html.DocComboBox provides a search interface to dojo.doc
-* dojo.widget.html.DocDetail gives a front end to displaying search results, package, and function information
+* dojo.widget.ComboBox provides a search interface to dojo.docs. Right now, we're just replacing a function on initialization. It might be worth extending ComboBox later, though it seems like overkill. Maybe move this to DocPane.
+* dojo.widget.DocPane gives a front end to displaying search results, package, and function information
 
 There will be a bunch of topic events that get thrown around. This is basically how they will interact:
 
-* dojo.widget.html.DocComboBox calls dojo.doc.functionNames to create its drop down
-* When the search is executed, it sends a topic event ("docSearch") with the current item
-* dojo.doc.search responds to that event by returning a topic event ("docResults")
-* dojo.widget.html.DocDetail listens for that event
-* If there is only one result, it throws a topic event ("docSelFunction") with the result
-* If there is more than one result, it displays the search results. Clicking on a search result throws the topic event ("docSelFunction") with the row's result
-* dojo.doc.selectFunction responds to that event by throwing a topic event ("docFunctionDetail")
-* dojo.widget.html.DocDetail responds to that event by displaying the method details
+* dojo.docs.functionNames gets called and its values are set with ComboBox.dataProvider.setData() to create the ComboBox drop down
+* When the search is executed, it sends a topic event ("/docs/search") with the current text
+* dojo.docs._onDocSearch responds to that event by returning a topic event ("/docs/function/results" or "/docs/package/results")
+* dojo.widget.DocPane
+* If there is only one result, it throws back a topic event ("/docs/function/select") with that one result
+* If there is more than one result, it displays the search results. Clicking on a search result throws the topic event ("/docs/function/select") with the row's result
+* dojo.docs._onDocSelectFunction catches and responds to that event by throwing a topic event ("/docs/function/detail")
+* dojo.widget.DocPane responds to that event by displaying the method details
+* If a package is found, it throws back ("/docs/package/detail")
+* dojo.widget.DocPane catches it and displays the package details.
 
 The topic registry
 ------------------
@@ -34,20 +36,39 @@ The topic registry
 *message*: the format of that particular topics message:
 *returns*: what the object returns
 
-"docSearch": 
+"/docs/search": 
 	publisher: any widget or code that wishes to search for documents
-	subscriber: dojo.doc
+	subscriber: dojo.docs
 	messsage: {
 		selectKey: id of the docSearch request,
 		name: string containing function to search for
 	}
 
-"docResults":
-	publisher: dojo.doc
-	subscriber: any widget or code that wishes to see the results of current docSearches
+"/docs/function/select":
+	publisher: any widget that can select a function
+	subscriber: dojo.docs and any other widget that wishes to be aware of a selection
+	message: {
+		selectKey: identifier (optional),
+		pkg: The package the method is in (optional)
+		name: string with name of the function,
+		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
+	}
+	
+"/docs/package/select":
+	publisher: any widget that can select a function
+	subscriber: dojo.docs and any other widget that wishes to be aware of a selection
+	message: {
+		selectKey: identifier (optional),
+		pkg: The package to select (use either this or name)
+		name: The package to select (use either this or pkg)
+	}
+
+"/docs/function/results":
+	publisher: dojo.docs
+	subscriber: any widget or code that wishes to see the results of current doc searches
 	message: {
 		selectKey: id of the docSearch request,
-		docResults: [{
+		methods: [{
 			pkg: string with the package (require statement) containing the function
 			name: string with name of function,
 			id: the polymorphic id of the function (may be blank if the default),
@@ -55,26 +76,31 @@ The topic registry
 		}]
 	}
 
-"docSelectFunction":
-	publisher: any widget that can select a function
-	subscriber: dojo.doc and any other widget that wishes to be aware of a selection
-	message: {
-		selectKey: id of the docSelectFunction request,
-		name: string with name of the function,
-		id: the polymorphic id of the function (maybe be blank, or undefined if the default)
-	}
-
-"/doc/function/detail":
-	publisher: dojo.doc
+"/docs/function/detail":
+	publisher: dojo.docs
 	subscriber: Any widget that wishes to be aware of a selection's details
-	message:
-			selectKey: id indentifying selection
+	message: {
+			selectKey: identifier
 			pkg: The package of the function
 			name: The function name
 			id: If this has a polymorphic ID, here it is
 			meta: object of the metadata (as shown in the meta JSON object),
 			doc: docs (TBD: Things like parameter descriptions, extended description, return description)
 			sig: Function signature
+	}
+	
+"/docs/package/detail":
+	publisher: dojo.docs
+	subscriber: Any widget that wishes to be aware of a selection's details
+	message: {
+			selectKey: identifier
+			pkg: The package of the function
+			name: The function name
+			id: If this has a polymorphic ID, here it is
+			meta: object of the metadata (as shown in the meta JSON object),
+			doc: docs (TBD: Things like parameter descriptions, extended description, return description)
+			sig: Function signature
+	}
 
 Note: docSelectionFunction can return the exact result as returned by docResults. That means that you can do something like
 
@@ -107,130 +133,71 @@ Any widget or code can publish to any of these topics at any time like this:
 
 dojo.event.topic.publish("docSearch",message); 	
 
-Where I need your help
-----------------------
-
-Much of the help I need is theoretical, I guess.
-
-What really needs work right now is getting the stuff in place to bounce the topics back and forth. I guess a lot of this can be emulated and I'll fill in the blanks as we go along. Please look through dojo.doc to get an idea of what's involved. There's a steep learning curve, but I'd be glad to answer any questions.
-
 JSON Objects
 ------------
 
 In all of the following examples, a key with "" around it means that it is a text link. That is, it does not change.
 
-Directory structure (default polymorphic signature is "_"):
+This is the full Object structure. *asterisks* indicate that the following is in that file. _underscores_ indicate that the following are skipped on the file system.
 
-package/
-	"meta"
-	function/
-		id/
-			"meta"
-			"src"
-	
-This object is found in json/function_names and is a list of all dojo methods by package. It uses the following keys and variables:
-* package: The name of the dojo package.
-* "method": The name of the dojo method.
-	{
-		package: [
-			"method",
-			"method",
-			"method"
-		],
-		package: [
-			"method",
-			"method"
-		]
-	}
-
-The next object is found in json/*package*/meta and is a list of all package metadata. Note: Windows can't take the * character, so it is replaced with _. It uses the following keys and variables:
-* "requires": A key that holds the *packages* in each *hostenv*.
-* hostenv: The environmental variables (browser, html, svg, etc)
-* "package": The name of the dojo package (is limited to child packages)
-* "methods": A key that holds the *methods*
-* method: The name of the dojo method
-* "is": A key that holds a pointer to another method (dojo.requireAfterIf "is" dojo.requireIf)
-* id: The id of the polymorphic signature. Default signature is "_"
-* "sig": A key that holds the function signature
-* signature: The function signature: returnType functionName(paramType param, paramType param)
-* "summary": A brief description of what this function signature does.
-	{
-		"requires": {
-			hostenv: [
-				"package",
-				"package",
-				"package"
-			],
-			hostenv: [
-				"package",
-				"package"
-			]
-		},
-		"methods": {
-			method: {
-				"is": "method"
-			},
-			method: {
-				"_": {
-					"summary": summary
-				}
+*function_names*,
+package: {
+	_meta_: {
+		*description*: "description", (from comment block)
+		_methods_: {
+			name: {
 				id: {
-					"summary": summary
-				},
-				id: {
-					"summary": summary
+					_meta_: {
+						summary: "summary", (Actually saved in the package-level *meta.json*)
+						*description*: "description",
+						*src*: "source code"
+					},
+					*meta*: {
+						this: "function",
+						inherits: [
+							"package"
+						],
+						this_inherits: [
+							"package"
+						],
+						object_inherits: [
+							"package"
+						],
+						parameters: {
+							name: {
+								type: "type",
+								description: "description" (in local version)
+							}
+						},
+						returns: {
+							type: "type",
+							description: "description" (in local version)
+						}
+					}
 				}
 			}
 		}
+	},
+	*meta.json*: {
+		description: "description", (from wiki, only in local version)
+		variables: [
+			variable: "description", (in local version)
+		],
+		protovariables: [
+			variable: "description", (in local version)
+		],
+		requires: {
+			environment: [
+				"require"
+			]
+		}
 	}
-	
-The next object is found in json/*package*/*method*/*id*/src and is the source code for each method. It is plain text.
-	
-The next object is found in json/*package*/*method*/*id*/meta and is the metadata for each function. That means it contains things like parameters and return type. It uses the following keys and variables
-* "this": A key that signifies that this function is set by means of a this.variable
-* "returns": A static key that holds the return type of the method
-* "params": A static key that holds all the parameters this object uses
-* type: The object type
-* name: The param name
-* "variables": A static key that holds all the publicly exposed variables.
-* "protovariables": A static key that holds all the prototype variables (set by extends, declare, defineWidget)
-* variable: The name of a publicly exposed variable
-* "inherits": A static key that holds the methods that this function inherits from.
-* method: A dojo method
-* "this_variables": A static key that holds all variables set within the constructor
-* "this_inherits": A static key that holds all of the constructors that dojo inherits from (that is, the "this_variables" of another function)
-* "object_inherits": A static key that holds all of the object that this inherits from.
-* object: An object
-	{
-		"this": method,
-		"returns": type,
-		"parameters": [
-			[type, name],
-			[type, name]
-		],
-		"variables": [
-			variable,
-			variable
-		],
-		"protovariables": [
-			variable,
-			variable
-		],
-		"inherits": [
-			method
-		],
-		"this_variables": [
-			variable,
-			variable
-		],
-		"this_inherits": [
-			method
-		],
-		"object_inherits": [
-			object,
-			object
-		]
-	}
+}
+
+The wiki
+--------
+
+http://manual.dojotoolkit.org/_/cmd/admin.exportZip?mode=xml&includeRevisions=false
 
 Searching docs
 --------------
