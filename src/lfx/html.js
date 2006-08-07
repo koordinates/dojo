@@ -459,7 +459,7 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 		visibility = "visible";
 	}
 
-	var props = { opacity: { start: 0.3, end: 1.0 } };
+	var props = { opacity: { start: 0.5, end: 1.0 } };
 	dojo.lang.forEach(["height", "width", "top", "left"], function(type){
 		props[type] = { start: startCoords[type], end: endCoords[type] }
 	});
@@ -502,14 +502,14 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	}
 	dojo.body().appendChild(outline);
 
-	var props = { opacity: { start: 1.0, end: 0.3 } };
+	var props = { opacity: { start: 1.0, end: 0.5 } };
 	dojo.lang.forEach(["height", "width", "top", "left"], function(type){
 		props[type] = { start: startCoords[type], end: endCoords[type] }
 	});
 	
 	var anim = new dojo.lfx.propertyAnimation(outline,
 		props,
-		duration, 
+		duration,
 		easing,
 		{
 			"beforeBegin": function(){
