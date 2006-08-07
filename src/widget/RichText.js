@@ -541,6 +541,7 @@ dojo.widget.defineWidget(
 				var obj = this.object;
 				if(!obj){
 					//create obj temporarily
+					// FIXME: does not work on IE 7!!
 					obj = dojo.html.createExternalElement(dojo.doc(), "object");
 					obj.classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
 					dojo.body().appendChild(obj);
@@ -681,7 +682,7 @@ dojo.widget.defineWidget(
 			var modifiers = e.ctrlKey ? this.KEY_CTRL : 0;
 
 			if (this._keyHandlers[character]) {
-				dojo.debug("char:", character);
+				// dojo.debug("char:", character);
 				var handlers = this._keyHandlers[character], i = 0, handler;
 				while (handler = handlers[i++]) {
 					if (modifiers == handler.modifiers) {

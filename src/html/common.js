@@ -157,12 +157,14 @@ if(dojo.render.html.ie){
 	//only define createExternalElement for IE in none https to avoid "mixed content" warning dialog
 	if(window.location.href.substr(0,6).toLowerCase() != "https:"){
 		(function(){
-		//The trick is to define a function in a script.src property:
-		// <script src="javascript:'function createExternalElement(){...}'"></script>,
-		//which will be treated as an external javascript file in IE
-		var xscript = dojo.doc().createElement('script');
-		xscript.src = "javascript:'dojo.html.createExternalElement=function(doc, tag){return doc.createElement(tag);}'";
-		dojo.doc().getElementsByTagName("head")[0].appendChild(xscript);
+			// FIXME: this seems not to work correctly on IE 7!!
+
+			//The trick is to define a function in a script.src property:
+			// <script src="javascript:'function createExternalElement(){...}'"></script>,
+			//which will be treated as an external javascript file in IE
+			var xscript = dojo.doc().createElement('script');
+			xscript.src = "javascript:'dojo.html.createExternalElement=function(doc, tag){ return doc.createElement(tag); }'";
+			dojo.doc().getElementsByTagName("head")[0].appendChild(xscript);
 		})();
 	}
 }else{
