@@ -95,26 +95,27 @@
         <title>Drag'n'drop changes</title>
         
         <section>
-            <title>Multiple selection and drag'n'drop (not ready yet)</title>
+            <title>Multiple selection and multiple drag'n'drop (not ready yet)</title>
             <para>Sounds simple enough.. Select multiple nodes with ctrl and get them with <methodname>selector.selectedNodes</methodname>.
-                instead of old <methodname>selectorNode</methodname> call.</para>
+                instead of removed <methodname>selectorNode</methodname> call.</para>
         </section>
         
         <section>
             <title>Drop of any source, not just tree node</title>
             <para>If <methodname>treeNode</methodname> property is empty, tree will create a new node from the data returned by
-                <methodname>source.getTreeNode</methodname>, then<methodname>source.onDrop</methodname> will be called to remove old node.
-            </para>
-        </section>
-        
-        <section>
-            <title>Inline node editing</title>
-            <para>It became possible to edit nodes inline, using TreeEditor. Base variant uses RichText widget, you can make another wrapper though.
-                Remote calls can be made on save only, or on start/cancel too.            
+                <methodname>source.getTreeNode</methodname>, then <methodname>source.onDrop</methodname> will be called to remove old node.
             </para>
         </section>
         
     </section>
+    
+        <section>
+            <title>Inline node editing</title>
+            <para>It became possible to edit nodes inline, using TreeEditor. Base variant uses RichText widget, you can make another wrapper though.
+                Remote calls can be made on save only, or on start/cancel too e.g for locking purposes.
+            </para>
+        </section>
+        
     
 </section>
 

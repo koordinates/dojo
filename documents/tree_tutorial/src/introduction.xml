@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section>
     <title>Introduction</title>
-    <para>Tree is a generic thing, a "must have" of any widget collection. 
-        Unfortunately, javacript toolkit should be lightweight, so I couldn't take a Swing
-        tree component and simply copy it. Almost all components are optional and event-based,
-        feel free to hook on whatever you'd like.
+    <para>
+        This documentation refers to new TreeV3, not to stable Tree widget.
+        Feel free to suggest features and test/critisize existing solutions. 
     </para>
+    
     <para>
         Basic things are shown in tests (dojo/tests/widget/treeV3), so you might want to check them first and copy-paste
         exactly the things you need. The tutorial is meant to provide deeper understanding for those
         who want to extend/modify tree behavior.
      </para>
-    <para>
-        This documentation refers to new treeV3, not to stable and old dojo Tree widget.
-        Feel free to suggest features and test/critisize existing solutions. 
-    </para>
+    
     
     <para>This is just a draft, but I'd be grateful for your replies. The contacts are
        <itemizedlist>
