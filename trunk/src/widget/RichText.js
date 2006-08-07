@@ -929,8 +929,10 @@ dojo.widget.defineWidget(
 					joinObject.args[1] = this._native2LocalFormatNames[joinObject.args[1]];
 				}
 				else if(drh.ie){ joinObject.args[1] = "<"+joinObject.args[1]+">"; }
-			}
-			if (command == "hilitecolor" && !drh.mozilla) { command = "backcolor"; }
+			}else if(command == "createlink" && this.object){
+				command = "hyperlink";
+			}else if(command == "hilitecolor" && !drh.mozilla) { command = "backcolor"; }
+
 			joinObject.args[0] = command;
 			
 			if (joinObject.args.length > 1) { // a command was specified
@@ -1105,11 +1107,7 @@ dojo.widget.defineWidget(
 				
 				// select our link and unlink
 				var a = dojo.withGlobal(this.window, "getAncestorElement", dojo.html.selection, 'a');
-				dojo.withGlobal(this.window, "selectNode", dojo.html.selection, a);
-//				var range = this.document.createRange();
-//				range.selectNode(a);
-//				selection.removeAllRanges();
-//				selection.addRange(range);
+				dojo.withGlobal(this.window, "selectElement", dojo.html.selection, a);
 				
 				returnValue = this.document.execCommand("unlink", false, null);
 				
