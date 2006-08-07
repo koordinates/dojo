@@ -24,7 +24,8 @@ dojo.widget.defineWidget(
 			"mergecells", "splitcell"
 		],
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.html"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbarOneline.html"),
+		// templatePath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.css"),
 
 		forecolorPalette: null,
