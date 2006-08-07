@@ -182,7 +182,9 @@ dojo.io.ScriptSrcTransport = new function(){
 			state.jsonp = content[jsonpName];
 			state.jsonpCall = function(data){
 				if(data["Error"]||data["error"]){
-					dojo.debug(dojo.json.serialize(data));
+					if(dojo["json"] && dojo["json"]["serialize"]){
+						dojo.debug(dojo.json.serialize(data));
+					}
 					dojo.io.ScriptSrcTransport._finish(this, "error", data);
 				}else{
 					dojo.io.ScriptSrcTransport._finish(this, "load", data);
