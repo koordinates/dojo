@@ -185,12 +185,12 @@ dojo.lang.mixin(dojo.html.selection, {
 		}
 	},
 	hasAncestorElement: function(tagName /* ... */){
-		return (dojo.html.selection.getAncestorElement(arguments) != null);
+		return (dojo.html.selection.getAncestorElement.apply(this, arguments) != null);
 	},
 	getAncestorElement: function(tagName /* ... */){
 		var node = dojo.html.selection.getSelectedElement() || dojo.html.selection.getParentElement();
 		while(node /*&& node.tagName.toLowerCase() != 'body'*/){
-			if(dojo.html.selection.isTag(arguments)){
+			if(dojo.html.selection.isTag(node, arguments).length>0){
 				return node;
 			}
 			node = node.parentNode;
@@ -200,7 +200,7 @@ dojo.lang.mixin(dojo.html.selection, {
 	//modified from dojo.html.isTag to take an array as second parameter
 	isTag: function(node, tags) {
 		if(node && node.tagName) {
-			for (var i=1; i<tags.length; i++){
+			for (var i=0; i<tags.length; i++){
 				if (node.tagName.toLowerCase()==String(tags[i]).toLowerCase()){
 					return String(tags[i]).toLowerCase();
 				}
