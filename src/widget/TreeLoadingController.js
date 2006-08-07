@@ -32,7 +32,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 		alert( "RPC Error: " + (obj.message||"no message"));
 	},
 
-
+	preventCache: true,
 
 	getRPCUrl: function(action) {
 
@@ -126,7 +126,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 			/* I hitch to get this.loadOkHandler */
 			handle: dojo.lang.hitch(this, handle),
 			mimetype: "text/json",
-			preventCache: true,
+			preventCache: _this.preventCache,
 			sync: kw.sync,
 			content: { data: dojo.json.serialize(kw.params) }
 		});
