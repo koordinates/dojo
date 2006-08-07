@@ -711,7 +711,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	/* Edit current node : change properties and update contents */
 	setTitle: function(title) {
-		this.labelNode.innerHTML = this.title = title;
+		if (!dojo.lang.isUndefined(title)) { // call with undefined means just throw event
+			this.labelNode.innerHTML = this.title = title;
+		}
 				
 		dojo.event.topic.publish(this.tree.eventNames.afterSetTitle, { source: this, title:title });
 

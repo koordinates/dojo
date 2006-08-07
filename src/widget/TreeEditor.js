@@ -41,7 +41,16 @@ dojo.widget.defineWidget(
 	},
 	
 	close: function(save) {
-		this.richText.close(save);	
+		if (save) {
+			var title = this.getContents();
+		}
+		
+		this.richText.close(save);
+		
+		if (save) {
+			dojo.event.topic.publish(node.tree.eventNames.afterSetTitle, { source: node, title:title });
+		}
+		
 		this.node = null;	
 	},
 	
