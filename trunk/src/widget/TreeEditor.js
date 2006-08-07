@@ -31,8 +31,8 @@ dojo.widget.defineWidget(
 		if (!this.richText) {
 			this.richText = dojo.widget.createWidget("RichText", this.richTextParams, node.labelNode);
 		
-			dojo.event.connect( "around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
-			dojo.event.connect( this.richText, "onBlur", this, "richText_onBlur" );
+			dojo.event.connect("around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
+			dojo.event.connect(this.richText, "onBlur", this, "richText_onBlur" );
 		} else {
 			this.richText.open(node.labelNode);
 		}
@@ -48,7 +48,7 @@ dojo.widget.defineWidget(
 		this.richText.close(save);
 		
 		if (save) {
-			dojo.event.topic.publish(node.tree.eventNames.afterSetTitle, { source: node, title:title });
+			dojo.event.topic.publish(this.node.tree.eventNames.afterSetTitle, { source: this.node, title:title });
 		}
 		
 		this.node = null;	
