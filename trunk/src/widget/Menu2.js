@@ -560,7 +560,7 @@ dojo.widget.defineWidget(
 	postMixInProperties: function(){
 		this.iconStyle="";
 		if (this.iconSrc){
-			if ((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.render.html.ie)){
+			if ((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4) == ".png") && (dojo.render.html.ie) && (!dojo.render.html.ie70)){
 				this.iconStyle="filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='image')";
 			}else{
 				this.iconStyle="background-image: url("+this.iconSrc+")";
