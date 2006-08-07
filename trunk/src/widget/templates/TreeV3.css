@@ -9,12 +9,12 @@
     background-repeat : repeat-y;
     margin-left: 19px;
 }
-.TreeNode.TreeIsRoot {
+.TreeIsRoot {
     margin-left: 0;
 }
 
 /* left vertical line (grid) for all nodes */
-.TreeNode.TreeIsLast {
+.TreeIsLast {
     background-image: url('../templates/images/TreeV3/i_half.gif');
     background-repeat : no-repeat;
 }
@@ -48,7 +48,6 @@
 }
 
 .TreeContentSafari {
-    
 }
 
 
@@ -67,7 +66,7 @@
     color: HighlightText;
 }
 
-.TreeExpand.TreeExpandLoading {
+.TreeExpandLoading {
     background-image: url('../templates/images/TreeV3/expand_loading.gif');
 }
 	

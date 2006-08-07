@@ -3,27 +3,27 @@
 
 
 /* long vertical line under docIcon, connecting w/ children */
-.TreeChildrenYes.TreeExpandOpen .TreeContent {
+.TreeStateChildrenYes-ExpandOpen .TreeContent {
     background-image : url('../templates/images/TreeV3/i_long.gif');
     background-repeat : no-repeat;
     background-position: 0px 9px;
 }
 
 /* close has higher priority */
-.TreeChildrenYes.TreeExpandClosed .TreeContent {
+.TreeStateChildrenYes-ExpandClosed .TreeContent {
     background-image : url();
 }
 
 /* higher priotity: same length and appear after background-definition */
-.TreeChildrenNo.TreeExpandLeaf .TreeContent {
+.TreeStateChildrenNo-ExpandLeaf .TreeContent {
     background-image : url();
 }
 
-.TreeChildrenNo.TreeExpandClosed .TreeContent {
+.TreeStateChildrenNo-ExpandClosed .TreeContent {
     background-image : url();
 }
 
-.TreeChildrenNo.TreeExpandOpen .TreeContent {
+.TreeStateChildrenNo-ExpandOpen .TreeContent {
     background-image : url();
 }
 
