@@ -634,7 +634,7 @@ dojo.widget.defineWidget(
 			this.svgNode = this.createSvgNode(this.svgSrc);
 			this.domNode.appendChild(this.svgNode);
 			this.imgNode.style.display = 'none';
-		} else if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4)==".png")&&(dojo.render.html.ie)){
+		} else if((this.iconSrc.toLowerCase().substring(this.iconSrc.length-4)==".png")&&(dojo.render.html.ie)&&(!dojo.render.html.ie70)){
 			this.imgNode.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+this.iconSrc+"', sizingMethod='scale')";
 			this.imgNode.src = this.blankImgPath.toString();
 		} else {
