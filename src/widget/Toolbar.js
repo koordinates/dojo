@@ -21,7 +21,7 @@ dojo.widget.defineWidget(
 	isContainer: true,
 
 	templateString: '<div class="toolbarContainer" dojoAttachPoint="containerNode"></div>',
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlToolbar.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Toolbar.css"),
 
 	getItem: function(name) {
 		if(name instanceof dojo.widget.ToolbarItem) { return name; }

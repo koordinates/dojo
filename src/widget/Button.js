@@ -19,8 +19,8 @@ dojo.widget.defineWidget(
 		caption: "",
 		disabled: false,
 	
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlButtonTemplate.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlButtonTemplate.css"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/ButtonTemplate.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ButtonTemplate.css"),
 		
 		// button images
 		inactiveImg: "src/widget/templates/images/soriaButton-",
@@ -193,7 +193,7 @@ dojo.widget.defineWidget(
 	{
 		menuId: "",
 	
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlComboButtonTemplate.html"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboButtonTemplate.html"),
 	
 		// attach points
 		leftPart: null,

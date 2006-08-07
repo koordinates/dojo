@@ -19,8 +19,8 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.HtmlWidget, {
 	// if false, TabContainers size changes according to size of currently selected tab
 	doLayout: true,
 
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTabContainer.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTabContainer.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/TabContainer.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TabContainer.css"),
 
 	selectedTab: "",		// initially selected tab (widgetId)
 

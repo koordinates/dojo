@@ -47,8 +47,8 @@ dojo.widget.defineWidget(
 			currentDate: "currentDate",
 			selectedDate: "selectedItem"
 		},
-		templatePath:  dojo.uri.dojoUri("src/widget/templates/HtmlDatePicker.html"),
-		templateCssPath:  dojo.uri.dojoUri("src/widget/templates/HtmlDatePicker.css"),
+		templatePath:  dojo.uri.dojoUri("src/widget/templates/DatePicker.html"),
+		templateCssPath:  dojo.uri.dojoUri("src/widget/templates/DatePicker.css"),
 
 		fillInTemplate: function(){
 			dojo.widget.DatePicker.call(this);

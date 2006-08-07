@@ -40,7 +40,7 @@ dojo.widget.defineWidget(
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
 			if((!toolbars.length)||(!this.shareToolbar)){
 				var tbOpts = {};
-				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/HtmlEditorToolbarOneline.html";
+				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/EditorToolbarOneline.html";
 				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
 				if(this.toolbarWidget){
 					this.toolbarWidget.show();

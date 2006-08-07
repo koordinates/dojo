@@ -15,8 +15,8 @@ dojo.widget.defineWidget(
 		this.history = [];
 	},
 {
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlInlineEditBox.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/InlineEditBox.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/InlineEditBox.css"),
 
 	form: null,
 	editBox: null,

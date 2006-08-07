@@ -27,8 +27,8 @@ dojo.widget.defineWidget(
 	inNav: false,
 	debugPane: null,
 	noClick: false,
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShow.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/Show.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Show.css"),
 	fillInTemplate: function(args, frag){
 		if (args.debugPane) {
 			var dp = this.debugPane = dojo.widget.byId(args.debugPane);

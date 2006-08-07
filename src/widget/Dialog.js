@@ -167,7 +167,7 @@ dojo.widget.defineWidget(
 	"dojo.widget.Dialog",
 	[dojo.widget.ContentPane, dojo.widget.ModalDialogBase],
 	{
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDialog.html"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/Dialog.html"),
 
 		anim: null,
 		blockDuration: 0,

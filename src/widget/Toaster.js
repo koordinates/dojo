@@ -12,7 +12,7 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 	{
 		templateString: '<div dojoAttachPoint="clipNode"><div dojoAttachPoint="containerNode" dojoAttachEvent="onClick:onSelect"><div dojoAttachPoint="contentNode"></div></div></div>',
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlToaster.css"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/Toaster.css"),
 		
 		clipNode: null,
 

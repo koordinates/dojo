@@ -9,8 +9,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.SlideShow",
 	dojo.widget.HtmlWidget,
 	{
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/SlideShow.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/SlideShow.css"),
 
 		// useful properties
 		imgUrls: [],		// the images we'll go through

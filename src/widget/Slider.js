@@ -120,8 +120,8 @@ dojo.widget.defineWidget (
 		// should the value change while you are dragging, or just after drag finishes?
 		activeDrag: false,
 
-		templateCssPath: dojo.uri.dojoUri ("src/widget/templates/HtmlSlider.css"),
-		templatePath: dojo.uri.dojoUri ("src/widget/templates/HtmlSlider.html"),
+		templateCssPath: dojo.uri.dojoUri ("src/widget/templates/Slider.css"),
+		templatePath: dojo.uri.dojoUri ("src/widget/templates/Slider.html"),
 
 		// our DOM nodes
 		sliderHandleNode: null,

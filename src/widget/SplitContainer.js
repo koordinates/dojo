@@ -38,7 +38,7 @@ dojo.widget.defineWidget(
 	offsetX: 0,
 	offsetY: 0,
 	isDraggingLeft: 0,
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSplitContainer.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/SplitContainer.css"),
 	originPos: null,
 	persist: true,		// save splitter positions in a cookie
 

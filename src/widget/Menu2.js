@@ -256,7 +256,7 @@ dojo.widget.defineWidget(
 	eventNaming: "default",
 
 	templateString: '<table class="dojoPopupMenu2" border=0 cellspacing=0 cellpadding=0 style="display: none;"><tbody dojoAttachPoint="containerNode"></tbody></table>',
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlMenu2.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/Menu2.css"),
 
 	submenuDelay: 500,
 	submenuOverlap: 5,
