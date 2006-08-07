@@ -39,8 +39,8 @@ dojo.widget.defineWidget(
 		maxTaskBarConnectAttempts: 5,
 		taskBarConnectAttempts: 0,
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/FloatingPane.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/FloatingPane.css"),
 
 		drag: null,
 

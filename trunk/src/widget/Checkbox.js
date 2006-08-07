@@ -8,8 +8,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.Checkbox",
 	dojo.widget.HtmlWidget,
 	{
-		templatePath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.html'),
-		templateCssPath: dojo.uri.dojoUri('src/widget/templates/HtmlCheckBox.css'),
+		templatePath: dojo.uri.dojoUri('src/widget/templates/Checkbox.html'),
+		templateCssPath: dojo.uri.dojoUri('src/widget/templates/Checkbox.css'),
 
 		// parameters
 		disabled: "enabled",

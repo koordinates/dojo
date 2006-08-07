@@ -20,7 +20,7 @@ dojo.widget.defineWidget(
 		hideDelay: 100,
 		connectId: "",
 
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTooltipTemplate.css"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/TooltipTemplate.css"),
 
 		connectNode: null,
 

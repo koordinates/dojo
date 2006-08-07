@@ -40,8 +40,8 @@ dojo.widget.defineWidget(
 	htmlTitle: null,
 	debug: false,
 	noClick: false,
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlShowSlide.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlShowSlide.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/ShowSlide.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/ShowSlide.css"),
 	fillInTemplate: function(){
 		this.htmlTitle.innerHTML = this.title;
 

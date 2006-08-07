@@ -7,8 +7,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.ResizableTextarea",
 	dojo.widget.HtmlWidget,
 {
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlResizableTextarea.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlResizableTextarea.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.css"),
 	isContainer: false,
 	textAreaNode: null,
 	textAreaContainer: null,

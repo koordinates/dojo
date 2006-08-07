@@ -417,7 +417,7 @@ dojo.html.insertCssText = function(cssStr, doc, URI){
 }
 
 // String cssText = fixPathsInCssText(String cssStr, dojo.uri.Uri URI)
-// usage: cssText comes from dojoroot/src/widget/templates/HtmlFoobar.css
+// usage: cssText comes from dojoroot/src/widget/templates/Foobar.css
 // 	it has .dojoFoo { background-image: url(images/bar.png);} 
 //	then uri should point to dojoroot/src/widget/templates/
 dojo.html.fixPathsInCssText = function(cssStr, URI){

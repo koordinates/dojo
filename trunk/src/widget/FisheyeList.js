@@ -19,7 +19,7 @@ dojo.widget.defineWidget(
 	dojo.widget.HtmlWidget,
 {
 	templateString: '<div class="dojoHtmlFisheyeListBar"></div>',
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFisheyeList.css"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/FisheyeList.css"),
 
 	EDGE: {
 		CENTER: 0,

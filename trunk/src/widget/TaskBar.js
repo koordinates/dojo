@@ -16,8 +16,8 @@ dojo.widget.defineWidget(
 	iconSrc: '',
 	caption: 'Untitled',
 	window: null,
-	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTaskBarItemTemplate.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlTaskBar.css"),
+	templatePath: dojo.uri.dojoUri("src/widget/templates/TaskBarItemTemplate.html"),
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TaskBar.css"),
 
 	fillInTemplate: function() {
 		if ( this.iconSrc != '' ) {

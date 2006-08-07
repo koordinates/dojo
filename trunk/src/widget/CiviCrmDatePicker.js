@@ -28,7 +28,7 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 	this.minSelect = null;
 	this.apSelect = null;
 
-	this.templatePath = dojo.uri.dojoUri("src/widget/templates/HtmlCiviCrmDatePicker.html");
+	this.templatePath = dojo.uri.dojoUri("src/widget/templates/CiviCrmDatePicker.html");
 
 	this.modeFormats = {
 		date: "MdY",

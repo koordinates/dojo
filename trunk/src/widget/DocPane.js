@@ -66,8 +66,8 @@ dojo.widget.defineWidget(
 
 		// Fields and methods
 		_appends: [],
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlDocPane.css"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/DocPane.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/DocPane.css"),
 		isContainer: true,
 
 		fillInTemplate: function(){

@@ -27,8 +27,8 @@ dojo.declare(
 		_currentTimeout: this.defaultTimeout,
 		_eventCount: 0,
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlSpinner.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSpinner.css"),
+		templatePath: dojo.uri.dojoUri("src/widget/templates/Spinner.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/Spinner.css"),
 		incrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerIncrement.gif"),
 		decrementSrc: dojo.uri.dojoUri("src/widget/templates/images/spinnerDecrement.gif"),
 
