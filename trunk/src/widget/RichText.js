@@ -146,12 +146,18 @@ dojo.widget.defineWidget(
 					width = "1px";
 					height = "1px";
 					border = margin = padding = "0px";
-					visiblity = "hidden";
+					left = top = "-50px";
+					// visiblity = "hidden";
 					if(h.ie){
 						overflow = "hidden";
 					}
 				}
-				dojo.html.insertBefore(this.domNode, this.textarea);
+				if(!dojo.render.html.safari){
+					// FIXME: VERY STRANGE safari 2.0.4 behavior here caused by
+					// moving the textarea. Often crashed the browser!!! Seems
+					// fixed on webkit nightlies.
+					dojo.html.insertBefore(this.domNode, this.textarea);
+				}
 				this.domNode.innerHTML = html;
 				
 				if(this.textarea.form){
