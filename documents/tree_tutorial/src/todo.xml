@@ -25,7 +25,6 @@
         <title>BUGS</title>
         
         <itemizedlist>
-            <listitem>OS X improper rendering. Need someone to assist in testing/patching.</listitem>
             <listitem>Multiple dnd of nodes selected by multiple select work incorrectly. Although all is fine if dragManager
             uses shift for multiple dnd and TreeSelector uses ctrl. No idea what the reason is.</listitem>
         </itemizedlist>

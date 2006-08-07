@@ -320,7 +320,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 		/* publish events here about structural changes for both source and target trees */
 		dojo.event.topic.publish(oldTree.eventNames.afterMoveFrom, message);
-		dojo.event.topic.publish(newTree.eventNames.afterMoveTo, message);
+		dojo.event.topic.publish(child.tree.eventNames.afterMoveTo, message);
 
 	},
 
