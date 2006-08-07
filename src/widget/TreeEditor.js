@@ -48,7 +48,7 @@ dojo.widget.defineWidget(
 		this.richText.close(save);
 		
 		if (save) {
-			dojo.event.topic.publish(this.node.tree.eventNames.afterSetTitle, { source: this.node, title:title });
+			this.node.setTitle(title); // to make sure everything updated and event sent			
 		}
 		
 		this.node = null;	
