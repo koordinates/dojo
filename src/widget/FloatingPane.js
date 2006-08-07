@@ -112,12 +112,6 @@ dojo.widget.defineWidget(
 				this.taskBarSetup();
 			}
 	
-			if (dojo.hostenv.post_load_) {
-				this.setInitialWindowState();
-			} else {
-				dojo.addOnLoad(this, "setInitialWindowState");
-			}
-	
 			// counteract body.appendChild above
 			dojo.body().removeChild(this.domNode);
 	
@@ -125,10 +119,10 @@ dojo.widget.defineWidget(
 		},
 	
 		postCreate: function(){
-			if(this.isShowing()){
-				this.width=-1;	// force resize
-				var mb = dojo.html.getMarginBox(this.domNode);
-				this.resizeTo(mb.width, mb.height);
+			if (dojo.hostenv.post_load_) {
+				this.setInitialWindowState();
+			} else {
+				dojo.addOnLoad(this, "setInitialWindowState");
 			}
 		},
 	
@@ -251,12 +245,16 @@ dojo.widget.defineWidget(
 	
 			var floatingPaneStartingZ = 100;
 			for (x=0; x<windows.length;x++) {
-				windows[x].domNode.style.zIndex = floatingPaneStartingZ + x;
+				windows[x].domNode.style.zIndex = floatingPaneStartingZ + x*2;
 			}
 		},
 	
 		setInitialWindowState: function() {
-			dojo.debug(" setInitialWindowState "+this.windowState);
+			if(this.isShowing()){
+				this.width=-1;	// force resize
+				var mb = dojo.html.getMarginBox(this.domNode);
+				this.resizeTo(mb.width, mb.height);
+			}
 			if (this.windowState == "maximized") {
 				this.maximizeWindow();
 				this.show();
@@ -326,6 +324,31 @@ dojo.widget.defineWidget(
 			// but that doesn't affect this widget (or this widget's children)
 			// so it can be safely ignored...
 			// TODO: unless we are maximized.  then we should resize ourself.
+		}
+	}
+);
+
+dojo.require("dojo.widget.Dialog");
+dojo.widget.defineWidget(
+	"dojo.widget.ModalFloatingPane",
+	[dojo.widget.FloatingPane, dojo.widget.ModalDialogBase],
+	{
+		windowState: "minimized",
+		displayCloseAction: true,
+		postCreate: function(){
+			dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
+			dojo.widget.ModalFloatingPane.superclass.postCreate.call(this);
+		},
+		show: function(){
+			dojo.widget.ModalFloatingPane.superclass.show.apply(this, arguments);
+			dojo.widget.ModalDialogBase.prototype.show.call(this);
+			this.placeModalDialog();
+			//place the background div under this modal pane
+			this.shared.bg.style.zIndex = this.domNode.style.zIndex-1;
+		},
+		closeWindow: function(){
+			this.hide();
+			dojo.widget.ModalFloatingPane.superclass.closeWindow.apply(this, arguments);
 		}
 	}
 );
