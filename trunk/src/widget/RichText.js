@@ -975,7 +975,7 @@ dojo.widget.defineWidget(
 				case "fontname": case "fontsize":
 				case "forecolor": case "hilitecolor":
 				case "justifycenter": case "justifyfull": case "justifyleft": 
-				case "justifyright": case "delete": case "undo": case "redo": case "selectall":
+				case "justifyright": case "delete": case "selectall":
 					supportedBy = isSupportedBy(mozilla | ie | safari | opera);
 					break;
 					
@@ -983,7 +983,7 @@ dojo.widget.defineWidget(
 				case "inserthorizontalrule": case "insertimage":
 				case "insertorderedlist": case "insertunorderedlist":
 				case "indent": case "outdent": case "formatblock": 
-				case "inserthtml":
+				case "inserthtml": case "undo": case "redo": 
 					supportedBy = isSupportedBy(mozilla | ie | opera);
 					break;
 					
