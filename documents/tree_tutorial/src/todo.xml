@@ -26,8 +26,13 @@
         
         <itemizedlist>
             <listitem>Multiple dnd of nodes selected by multiple select work incorrectly. Although all is fine if dragManager
-            uses shift for multiple dnd and TreeSelector uses ctrl. No idea what the reason is.</listitem>
+                uses shift for multiple dnd and TreeSelector uses ctrl. No idea what the reason is.</listitem>
+            <listitem><simpara>
+                TreeDocIconExtension has troubles when expanding multiline nodes under IE.
+                E.g expand large node here dojo/tests/widget/treeV3/docIcon1.html.
+            </simpara></listitem>
         </itemizedlist>
+        
         </section>
     
         

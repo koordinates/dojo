@@ -52,6 +52,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	defaultChildWidget: null,
 	
 	
+	
 	eagerWidgetInstantiation: false,
 	
 	eventNamesDefault: {
@@ -63,14 +64,15 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		afterChangeTree: "afterChangeTree",
 
 		afterSetFolder: "afterSetFolder",
-		afterUnsetFolder: "afterUnsetFolder",
+		afterUnsetFolder: "afterUnsetFolder",		
+		beforeMoveFrom: "beforeMoveFrom",
+		beforeMoveTo: "beforeMoveTo",
 		afterMoveFrom: "afterMoveFrom",
 		afterMoveTo: "afterMoveTo",
 		afterAddChild: "afterAddChild",
 		afterDetach: "afterDetach",
 		afterExpand: "afterExpand",
-		afterSetTitle: "afterSetTitle",
-		
+		afterSetTitle: "afterSetTitle",		
 		afterCollapse: "afterCollapse"
 	},
 
@@ -310,17 +312,25 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		var oldParent = child.parent;
 		var oldTree = child.tree;
 		var oldIndex = child.getParentIndex();
-
-		this.doMove.apply(this, arguments);
+		var newTree = newParent.tree;
+		var newParent = newParent;
+		var newIndex = index;
 
 		var message = {
 				oldParent: oldParent, oldTree: oldTree, oldIndex: oldIndex,
+				newParent: newParent, newTree: newTree, newIndex: newIndex,
 				child: child
 		};
 
+		dojo.event.topic.publish(oldTree.eventNames.beforeMoveFrom, message);
+		dojo.event.topic.publish(newTree.eventNames.beforeMoveTo, message);
+		
+		this.doMove.apply(this, arguments);
+
+		
 		/* publish events here about structural changes for both source and target trees */
 		dojo.event.topic.publish(oldTree.eventNames.afterMoveFrom, message);
-		dojo.event.topic.publish(child.tree.eventNames.afterMoveTo, message);
+		dojo.event.topic.publish(newTree.eventNames.afterMoveTo, message);
 
 	},
 

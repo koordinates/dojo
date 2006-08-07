@@ -499,34 +499,57 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.end("viewRemoveLayout");
 	},
 		
-		
+	viewGetExpandClass: function() {
+		if (this.isFolder) {			
+			return this.isExpanded ? "ExpandOpen" : "ExpandClosed";
+		} else {
+			return "ExpandLeaf";
+		}
+	},
+	
 	viewSetExpand: function() {
 		//dojo.profile.start("viewSetExpand");
 		
 		//dojo.debug("viewSetExpand in "+this);
 		
-		if (this.isFolder) {			
-			var expand = this.isExpanded ? this.tree.classPrefix+"ExpandOpen" : this.tree.classPrefix+"ExpandClosed";
-		} else {
-			var expand = this.tree.classPrefix+"ExpandLeaf";
-		}
+		var expand = this.tree.classPrefix+this.viewGetExpandClass();
 		var reg = new RegExp("(^|\\s)"+this.tree.classPrefix+"Expand\\w+",'g');			
-				
+			
 		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+expand);
+		
 		//dojo.debug(dojo.html.getClass(this.domNode))
 		//dojo.profile.end("viewSetExpand");
-		
+		this.viewSetHasChildrenAndExpand();
 	},	
+
+	viewGetChildrenClass: function() {
+		return 'Children'+(this.children.length ? 'Yes' : 'No');
+	},
 	
 	viewSetHasChildren: function() {		
 		//dojo.debug(this+' '+this.children.length)
 		
-		var clazz =  this.tree.classPrefix+'Children'+(this.children.length ? 'Yes' : 'No');
+		var clazz = this.tree.classPrefix+this.viewGetChildrenClass();
 
 		var reg = new RegExp("(^|\\s)"+this.tree.classPrefix+"Children\\w+",'g');			
 		
+		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+clazz);
+		
+		this.viewSetHasChildrenAndExpand();
+	},
+	
+	/**
+	 * set TreeStateChildrenYes-ExpandClosed pair
+	 * needed for IE, because IE reads only last class from .TreeChildrenYes.TreeExpandClosed pair
+	 */
+	viewSetHasChildrenAndExpand: function() {
+		var clazz = this.tree.classPrefix+'State'+this.viewGetChildrenClass()+'-'+this.viewGetExpandClass();
+		
+		var reg = new RegExp("(^|\\s)"+this.tree.classPrefix+"State[\\w-]+",'g');			
+		
 		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+clazz);		
 	},
+		
 	
 	
 // ================================ detach from parent ===================================

@@ -68,7 +68,11 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		node.iconNode = document.createElement("div");
 		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+node.getNodeType());
 		
-		node.domNode.insertBefore(node.iconNode, node.contentNode);
+		if (dojo.render.html.ie) {
+			dojo.html.prependChild(node.iconNode, node.contentNode);
+		} else {
+			dojo.html.insertBefore(node.iconNode, node.contentNode);
+		}
 		
 		//dojo.html.insertAfter(node.iconNode, node.expandNode);
 		
