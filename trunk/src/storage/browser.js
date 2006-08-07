@@ -9,7 +9,6 @@ dojo.require("dojo.uri.*");
 /** 
 		Storage provider that uses features in Flash to achieve permanent storage.
 		
-		@author Alex Russell, alex@dojotoolkit.org
 		@author Brad Neuberg, bkn3@columbia.edu 
 */
 dojo.storage.browser.FlashStorageProvider = function(){
@@ -164,26 +163,26 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 			of a put() request. 
 	*/
 	_onStatus: function(statusResult, key){
+		var ds = dojo.storage;
+		var dfo = dojo.flash.obj;
 		//dojo.debug("_onStatus, statusResult="+statusResult+", key="+key);
-		if(statusResult == dojo.storage.PENDING){
-			dojo.flash.obj.center();
-			dojo.flash.obj.setVisible(true);
+		if(statusResult == ds.PENDING){
+			dfo.center();
+			dfo.setVisible(true);
 		}else{
-			dojo.flash.obj.setVisible(false);
+			dfo.setVisible(false);
 		}
 		
-		if(!dojo.lang.isUndefined(dojo.storage._statusHandler) 
-				&& dojo.storage._statusHandler != null){
-			dojo.storage._statusHandler.call(null, statusResult, key);		
+		if((!dj_undef("_statusHandler", ds))&&(ds._statusHandler != null)){
+			ds._statusHandler.call(null, statusResult, key);		
 		}
 	}
 });
 
 // register the existence of our storage providers
 dojo.storage.manager.register("dojo.storage.browser.FlashStorageProvider",
-                              new dojo.storage.browser.FlashStorageProvider());
+								new dojo.storage.browser.FlashStorageProvider());
 
 // now that we are loaded and registered tell the storage manager to initialize
 // itself
 dojo.storage.manager.initialize();
-															
