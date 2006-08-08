@@ -13,8 +13,8 @@
 var dlg;
 function init(e) {
 	dlg = dojo.widget.byId("ModalFloatingPane");
-//	var btn = document.getElementById("hider");
-//	dlg.setCloseControl(btn);
+	var btn = document.getElementById("hider");
+	dojo.event.connect(btn, "onclick", dlg, "hide");
 }
 dojo.addOnLoad(init);
 
@@ -72,12 +72,9 @@ form {
 </select>
 
 <p>
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
-semper sagittis velit. Cras in mi. Duis porta mauris ut ligula. Proin
-porta rutrum lacus. Etiam consequat scelerisque quam. Nulla facilisi.
-Maecenas luctus venenatis nulla. In sit amet dui non mi semper iaculis.
-Sed molestie tortor at ipsum. Morbi dictum rutrum magna. Sed vitae
-risus.
+Press the link above to show the modalfloatingpane. Click ok button in it to 
+hide it. If you close it by clicking the close button in the titlebar, you can not 
+show it again before reloading this page.
 </p>
 <p>Aliquam vitae enim. Duis scelerisque metus auctor est venenatis
 imperdiet. Fusce dignissim porta augue. Nulla vestibulum. Integer lorem
