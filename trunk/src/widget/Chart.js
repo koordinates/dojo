@@ -7,13 +7,18 @@ dojo.require("dojo.graphics.color");
 dojo.require("dojo.graphics.color.hsl");
 dojo.widget.tags.addParseTreeHandler("dojo:chart");
 
-dojo.widget.Chart = function(){
-	dojo.widget.Widget.call(this);
-	this.widgetType = "Chart";
-	this.isContainer = false;
-	this.series = [];
+// Base class for svg and vml implementations of Chart
+dojo.declare(
+	"dojo.widget.Chart",
+	null,
+	function(){
+		this.series = [];
+	},
+{
+	isContainer: false,
+
 	// FIXME: why is this a mixin method?
-	this.assignColors = function(){
+	assignColors: function(){
 		var hue=30;
 		var sat=120;
 		var lum=120;
@@ -26,9 +31,8 @@ dojo.widget.Chart = function(){
 			}
 			hue += steps;
 		}
-	};
-}
-dojo.inherits(dojo.widget.Chart, dojo.widget.Widget);
+	}
+});
 
 dojo.widget.Chart.PlotTypes = {
 	Bar:"bar",
@@ -42,17 +46,19 @@ dojo.widget.Chart.PlotTypes = {
  *	member of value is an object and in the minimum has 2 properties: .x and
  *	.value.
  */
-dojo.widget.Chart.DataSeries = function(key, label, plotType, color){
-	// FIXME: why the hell are plot types specified neumerically? What is this? C?
-	this.id = "DataSeries"+dojo.widget.Chart.DataSeries.count++;
-	this.key = key;
-	this.label = label||this.id;
-	this.plotType = plotType||0;
-	this.color = color;
-	this.values = [];
-};
-
-dojo.lang.extend(dojo.widget.Chart.DataSeries, {
+dojo.declare(
+	"dojo.widget.Chart.DataSeries",
+	null,
+	function(key, label, plotType, color){
+		// FIXME: why the hell are plot types specified neumerically? What is this? C?
+		this.id = "DataSeries"+dojo.widget.Chart.DataSeries.count++;
+		this.key = key;
+		this.label = label||this.id;
+		this.plotType = plotType||0;
+		this.color = color;
+		this.values = [];
+	},
+{
 	add: function(v){
 		if(v.x==null||v.value==null){
 			dojo.raise("dojo.widget.Chart.DataSeries.add: v must have both an 'x' and 'value' property.");
@@ -186,4 +192,4 @@ dojo.lang.extend(dojo.widget.Chart.DataSeries, {
 });
 
 dojo.requireIf(dojo.render.svg.support.builtin, "dojo.widget.svg.Chart");
-dojo.requireIf(dojo.render.html.ie, "dojo.widget.vml.Chart");
+//dojo.requireIf(dojo.render.html.ie, "dojo.widget.vml.Chart");
