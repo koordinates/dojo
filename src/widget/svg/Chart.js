@@ -7,12 +7,10 @@ dojo.require("dojo.html");
 dojo.require("dojo.svg");
 dojo.require("dojo.graphics.color");
 
-dojo.widget.svg.Chart=function(){
-	dojo.widget.Chart.call(this);
-	dojo.widget.HtmlWidget.call(this);
-};
-dojo.inherits(dojo.widget.svg.Chart, dojo.widget.HtmlWidget);
-dojo.lang.extend(dojo.widget.svg.Chart, {
+dojo.widget.defineWidget(
+	"dojo.widget.svg.Chart",
+	[dojo.widget.HtmlWidget, dojo.widget.Chart],
+{
 	//	widget props
 	templatePath:null,
 	templateCssPath:null,
