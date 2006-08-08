@@ -161,7 +161,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		 * FIXME: do it in CSS only, remove iconHeight from code
 		 */
 		if (dojo.render.html.ie) {
-			clazz = clazz + ' ' + this.classPrefix+"ContentIE";
+			clazz = clazz + ' ' + this.classPrefix+"IEContent";
 		}	
 		
 				
