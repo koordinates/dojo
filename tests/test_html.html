@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
-
+<html><head>
 <title>Dojo: Test of dojo.html</title>
 <script type="text/javascript"> djConfig = { isDebug: true }; </script>
 <script type="text/javascript" src="../dojo.js"></script>
@@ -13,8 +13,8 @@ function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : 
 
 </script>
 <style type="text/css"> h2, h3 { font-size: 1em; margin-top: 2.5em; } h3 { color: black; font-weight: normal; font-style: italic; } </style>
-
-
+</head>
+<body>
 
 <!---------------------------------------------------------------------------->
 <h2><code>getScroll</code></h2>
@@ -24,6 +24,7 @@ function $ (id) { return dojo.lang.isString(id) ? document.getElementById(id) : 
 
 <script type="text/javascript">
 dojo.event.connect($("updateScroll"), "onclick", function (e) {
+	dojo.debug("updateScroll "+e);
 	var scroll = dojo.html.getScroll();
 	$("scrollTop").firstChild.nodeValue = scroll.top;
 	$("scrollLeft").firstChild.nodeValue = scroll.left;
@@ -123,3 +124,13 @@ makeGreen(dojo.html.getElementsByClass("foo3 bar3", null, null, dojo.html.classM
 <script type="text/javascript">
 makeGreen(dojo.html.getElementsByClass("foo4", null, null, dojo.html.classMatchType.IsOnly));
 </script>
+
+<h3>ContainsAny</h3>
+<p class="foo5">this should be green</p>
+<p class="foo0 bar5">this should be green</p>
+<p class="bar0 foo0">this should be red</p>
+
+<script type="text/javascript">
+makeGreen(dojo.html.getElementsByClass("foo5 bar5", null, null, dojo.html.classMatchType.ContainsAny));
+</script>
+</body></html>
