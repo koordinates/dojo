@@ -55,8 +55,12 @@
     padding-left: 18px;
 }
 
+.TreeIEContent{
+    padding-left: 0px;
+}
+
 /* IE workaround */
-.TreeContentIE {
+div.TreeIEContent {
     padding-left: 0px;
     margin-left: 0px;
 }

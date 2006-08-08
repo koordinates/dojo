@@ -138,7 +138,12 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		this.nodeTemplate = domNode;
 		
 		var expandNode = document.createElement("div");
-		dojo.html.setClass(expandNode, this.classPrefix+"Expand");
+		var clazz = this.classPrefix+"Expand";
+		if (dojo.render.html.ie) {
+			clazz = clazz + ' ' + this.classPrefix+"IEExpand";
+		}
+		dojo.html.setClass(expandNode, clazz);
+		
 		this.expandNodeTemplate = expandNode;
 
 		// need <span> inside <div>
@@ -151,16 +156,14 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		var clazz = this.classPrefix+"Content";
 		
 		/**
-		 * IE & Safari do not support min-height properly so I have to rely
+		 * IE does not support min-height properly so I have to rely
 		 * on this hack
 		 * FIXME: do it in CSS only, remove iconHeight from code
 		 */
 		if (dojo.render.html.ie) {
 			clazz = clazz + ' ' + this.classPrefix+"ContentIE";
-		}		
-		if (dojo.render.html.safari) {
-			clazz = clazz + ' ' + this.classPrefix+"ContentSafari";
-		}
+		}	
+		
 				
 		dojo.html.setClass(contentNode, clazz);
 		
