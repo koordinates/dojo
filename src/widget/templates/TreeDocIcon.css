@@ -50,12 +50,22 @@
     background-repeat : no-repeat;
 }
 
+
+.TreeIEContent {
+    height: auto;
+}
+
+.TreeIEIconContent {
+    height: 18px;
+}
+
+
 .TreeIconContent {
     margin-left:18px;
 }
 
 
-.ie.TreeIconContent { 
+.TreeIEIconContent { 
         margin-left: 0; 
 } 
 .ie.TreeExpand { 
