@@ -11,7 +11,6 @@ dojo.widget.TreeWithNode = {
 	lockLevel: 0, // lock ++ unlock --, so nested locking works fine
 	
 	lock: function() {
-		//!this.lockLevel && this.markLoading();
 		this.lockLevel++;
 	},
 	unlock: function() {
@@ -20,11 +19,11 @@ dojo.widget.TreeWithNode = {
 			dojo.raise(this.widgetType+" unlock: not locked");
 		}
 		this.lockLevel--;
-		//!this.lockLevel && this.unMarkLoading();
 	},
 	
 	
 	expandLevel: "", // expand to level automatically
+	loadLevel: "", // load to level automatically
 		
 	hasLock: function() {
 		return this.lockLevel>0;

@@ -122,7 +122,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	 */
 	requestEditConfirmation: function(node, action, sync) {
 		if (!this.extraRpcOnEdit) {			
-			return dojo.Deferred.makeCalled();
+			return dojo.Deferred.prototype.makeCalled();
 		}
 	
 		//dojo.debug("requestEditConfirmation "+node+" "+action);
