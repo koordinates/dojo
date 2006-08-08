@@ -109,8 +109,8 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 			var doc = this.domNode.ownerDocument;
 			var table = doc.createElement("table");
 			var tbody = doc.createElement("tbody");
-			tbody.appendChild(node);
 			table.appendChild(tbody);
+			tbody.appendChild(node);
 
 			// Set a fixed width to the cloned TDs
 			var domTds = this.domNode.childNodes;
