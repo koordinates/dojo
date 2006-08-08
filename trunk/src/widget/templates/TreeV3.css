@@ -44,7 +44,7 @@
 }
 
 .TreeIEContent {
-    line-height: 1.5em;
+    height: 18px;
 }
 
 
@@ -56,10 +56,6 @@
     background-repeat : no-repeat;
 }
 
-/* can't use TreeExpandIE, because regexp will replace it with TreeExpandOpen/Closed*/
-div.TreeIEExpand {
-    margin-right: -3px;
-}
 
 /* same style as IE selection */
 .TreeNodeEmphased {

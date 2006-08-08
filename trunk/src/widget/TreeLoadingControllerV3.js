@@ -272,7 +272,13 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		return deferred;
 	},
 	
-	
+	/**
+	 * 1) if specified, run check, return false if failed
+	 * 2) if specified, run prepare
+	 * 3) run make if prepare if no errors
+	 * 4) run finalize no matter what happened, pass through make result
+	 * 5) if specified, run expose if no errors
+	 */
 	runStages: function(check, prepare, make, finalize, expose, args) {
 		var _this = this;
 		
@@ -280,15 +286,13 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 			return false;
 		}
 		
-		var deferred = new dojo.Deferred();
+		var deferred = dojo.Deferred.prototype.makeCalled();
 		
 		if (prepare) {
 			deferred.addCallback(function() {
 				return prepare.apply(_this, args);
 			});
 		}
-		
-		deferred.callback();
 		
 		
 		//deferred.addCallback(function(res) { dojo.debug("Prepare fired "+res); return res});
