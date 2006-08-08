@@ -58,6 +58,7 @@
     float: left;
     display: inline;
     background-repeat : no-repeat;
+    margin-right: -3px;
 }
 
 /* same style as IE selection */
