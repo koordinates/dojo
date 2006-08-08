@@ -54,3 +54,10 @@
     margin-left:18px;
 }
 
+
+.ie.TreeIconContent { 
+        margin-left: 0; 
+} 
+.ie.TreeExpand { 
+        margin-right: -3px; 
+}
