@@ -375,7 +375,11 @@ dojo.widget.defineWidget(
 
 			cp.onLoad = (function(ol){
 				return function(){
-					ol.call(this);
+					try{
+						ol.call(this);
+					}catch(e){ // FIXME: debug why this is throwing errors in IE!
+						dojo.debug(e);
+					}
 					this.editorOnLoad();
 				};
 			})(cp.onLoad);
