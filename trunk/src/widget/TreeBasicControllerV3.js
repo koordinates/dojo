@@ -80,6 +80,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			if (message.node.expandLevel > 0) {
 				this.expandToLevel(message.node, message.node.expandLevel);				
 			}
+			if (message.node.loadLevel > 0) {
+				this.loadToLevel(message.node, message.node.loadLevel);				
+			}
 			
 			//dojo.profile.end("onTreeChange");
 			return; 
@@ -105,9 +108,11 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	// perform actions-initializers for tree
 	onAfterTreeCreate: function(message) {
 		var tree = message.source;
-		var _this = this;
 		if (tree.expandLevel) {								
-			_this.expandToLevel(tree, tree.expandLevel)
+			this.expandToLevel(tree, tree.expandLevel)
+		}
+		if (tree.loadLevel) {
+			this.loadToLevel(tree, tree.loadLevel);
 		}
 	},
 
@@ -118,9 +123,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	batchExpandTimeout: 20,
 	
 	
-	expandAll: function(nodeOrTree, callback, callobj) {
-		
-		return this.expandToLevel(nodeOrTree, Number.POSITIVE_INFINITY, callback, callobj);
+	expandAll: function(nodeOrTree) {		
+		return this.expandToLevel(nodeOrTree, Number.POSITIVE_INFINITY);
 		
 	},
 	

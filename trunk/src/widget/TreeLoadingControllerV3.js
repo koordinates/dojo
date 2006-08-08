@@ -5,6 +5,7 @@ dojo.require("dojo.widget.TreeBasicControllerV3");
 dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
+dojo.require("dojo.Deferred");
 dojo.require("dojo.DeferredList");
 
 dojo.widget.tags.addParseTreeHandler("dojo:TreeLoadingControllerV3");
@@ -183,30 +184,28 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 
 	batchExpandTimeout: 0,
 
-	expandToLevel: function(node, level, sync) {
+	recurseToLevel: function(widget, level, callFunc, callObj, skipFirst, sync) {
 		if (level == 0) return;
 
-		var children = node.children;
-		var _this = this;
 
 		
-		if (node.isTreeNode) {
-			var deferred = this.expand(node, sync);
-		} else if (node.isTree) {
-			var deferred = new dojo.Deferred();
-			deferred.callback();
-			
-			level++;
+		if (!skipFirst) {
+			var deferred = callFunc.call(callObj, widget, sync);
+		} else {
+			var deferred = dojo.Deferred.prototype.makeCalled();
 		}
 		
 		//dojo.debug("expand deferred saved "+node+" sync "+sync);
 		
 		
+		var _this = this;
+		
 		var recurseOnExpand = function() {
+			var children = widget.children;
 			var deferreds = [];		
-			for(var i=0; i<node.children.length; i++) {
+			for(var i=0; i<children.length; i++) {
 				//dojo.debug("push recursive call for "+node.children[i]+" level "+level);
-				deferreds.push(_this.expandToLevel(node.children[i], level-1, sync));
+				deferreds.push(_this.recurseToLevel(children[i], level-1, callFunc, callObj, sync));
 			}
 			return new dojo.DeferredList(deferreds);
 		}
@@ -216,13 +215,28 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		return deferred;
 	},
 	
+	expandToLevel: function(nodeOrTree, level, sync) {
+		return this.recurseToLevel(nodeOrTree, nodeOrTree.isTree ? level+1 : level, this.expand, this, nodeOrTree.isTree, sync);
+	},
+	
+	loadToLevel: function(nodeOrTree, level, sync) {
+		return this.recurseToLevel(nodeOrTree, nodeOrTree.isTree ? level+1 : level, this.loadIfNeeded, this, nodeOrTree.isTree, sync);
+	},
+	
+	
+	loadAll: function(nodeOrTree, sync) {
+		return this.loadToLevel(nodeOrTree, Number.POSITIVE_INFINITY, sync);
+	},
+		
+	
+	
 	expand: function(node, sync) {		
 		// widget which children are data objects, is UNCHECKED, but has children and shouldn't be loaded
 		// so I put children check here too
 		
 		var _this = this;
 		
-		var deferred = this.startProcessing([node]);
+		var deferred = this.startProcessing(node);
 		
 		deferred.addCallback(function() {
 			return _this.loadIfNeeded(node, sync);
@@ -235,7 +249,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		});
 		
 		deferred.addBoth(function(res) {
-			_this.finishProcessing([node]);
+			_this.finishProcessing(node);
 			return res;
 		});
 		
@@ -373,7 +387,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 	prepareMove: function(child, newParent, index, sync) {
-		var deferred = this.startProcessing([parent]);
+		var deferred = this.startProcessing(parent);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(newParent, sync);
 		}));
@@ -381,7 +395,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	finalizeMove: function(child, newParent) {
-		this.finishProcessing([child, newParent]);
+		this.finishProcessing(child, newParent);
 	}
 		
 	
@@ -392,7 +406,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 
 	prepareCreateChild: function(parent, index, data, sync) {
-		var deferred = this.startProcessing([parent]);
+		var deferred = this.startProcessing(parent);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(parent, sync);
 		}));
@@ -400,7 +414,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	finalizeCreateChild: function(parent) {
-		this.finishProcessing([parent]);
+		this.finishProcessing(parent);
 	}
 
 });
@@ -409,7 +423,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {	
 	
 	prepareClone: function(child, newParent, index, deep, sync) {
-		var deferred = this.startProcessing([child, newParent]);
+		var deferred = this.startProcessing(child, newParent);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(newParent, sync);
 		}));		
@@ -417,7 +431,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},	
 	
 	finalizeClone: function(child, newParent) {
-		this.finishProcessing([child, newParent]);
+		this.finishProcessing(child, newParent);
 	}
 
 });
