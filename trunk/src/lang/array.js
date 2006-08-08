@@ -55,6 +55,17 @@ dojo.lang.map = function(arr, obj, unary_func){
 	}
 }
 
+dojo.lang.reduce = function(arr, initialValue, obj, binary_func){
+	var reducedValue = initialValue;
+	var ob = obj ? obj : dj_global;
+	dojo.lang.map(arr, 
+		function(val){
+			reducedValue = binary_func.call(ob, reducedValue, val);
+		}
+	);
+	return reducedValue;
+}
+
 // http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach
 dojo.lang.forEach = function(anArray /* Array */, callback /* Function */, thisObject /* Object */){
 	if(dojo.lang.isString(anArray)){ 
