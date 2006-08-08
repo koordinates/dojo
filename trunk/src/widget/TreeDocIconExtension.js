@@ -56,7 +56,7 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 	onAfterUnsetFolder: function(message) {
 		this.setNodeTypeClass(message.source);
 	},
-	
+		
 	
 	listenNode: function(node) {
 		/**
@@ -67,12 +67,18 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		//dojo.debug("listenNode in "+node);
 			
 		node.contentIconNode = document.createElement("div");
-		dojo.html.setClass(node.contentIconNode, node.tree.classPrefix+"IconContent");
+		var clazz = node.tree.classPrefix+"IconContent";
+		if (dojo.render.html.ie) {
+			clazz = clazz+' '+ node.tree.classPrefix+"IEIconContent";
+		}
+		dojo.html.setClass(node.contentIconNode, clazz);
 		
 		node.contentNode.parentNode.replaceChild(node.contentIconNode, node.contentNode);
 									  
 	  	node.iconNode = document.createElement("div");
 		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+node.getNodeType());
+		
+		
 		node.contentIconNode.appendChild(node.iconNode);
 		node.contentIconNode.appendChild(node.contentNode);
 		
