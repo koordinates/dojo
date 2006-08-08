@@ -150,14 +150,14 @@ dojo.lang.mixin(dojo.html.selection, {
 		//		element (object like and image or a table) is selected.
 		if ( dojo.html.selection.getType() == dojo.html.selectionType.CONTROL ){
 			if(dojo.doc().selection){ //IE
-				var oRange = dojo.doc().selection.createRange();
+				var range = dojo.doc().selection.createRange();
 		
-				if ( oRange && oRange.item ){
+				if ( range && range.item ){
 					return dojo.doc().selection.createRange().item(0);
 				}
 			}else{
-				var oSel = dojo.global().getSelection();
-				return oSel.anchorNode.childNodes[ oSel.anchorOffset ];
+				var selection = dojo.global().getSelection();
+				return selection.anchorNode.childNodes[ selection.anchorOffset ];
 			}
 		}
 	},
@@ -171,15 +171,15 @@ dojo.lang.mixin(dojo.html.selection, {
 			if(dojo.doc().selection){ //IE
 				return dojo.doc().selection.createRange().parentElement();
 			}else{
-				var oSel = dojo.global().getSelection();
-				if(oSel){
-					var oNode = oSel.anchorNode;
+				var selection = dojo.global().getSelection();
+				if(selection){
+					var node = selection.anchorNode;
 		
-					while ( oNode && oNode.nodeType != 1 ){
-						oNode = oNode.parentNode;
+					while ( node && node.nodeType != dojo.dom.ELEMENT_NODE ){
+						node = node.parentNode;
 					}
 		
-					return oNode;
+					return node;
 				}
 			}
 		}

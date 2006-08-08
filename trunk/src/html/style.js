@@ -146,7 +146,7 @@ dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchTy
 			}
 		}else{
 			xpath += "concat(' ',@class,' '), ' " +
-			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
+			classes.join(" ') or contains(concat(' ',@class,' '), ' ") +
 			" ')]";
 		}
 		var xpathResult = _document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
