@@ -171,12 +171,20 @@ dojo.lang.extend(dojo.data.SimpleStore, {
 		do{ 
 			if(parts[i].indexOf("()")>-1){
 				var temp=parts[i++].split("()")[0];
-				o = o[temp]();
+				if(!o[temp]){
+					dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + field + "' is not a property of the passed object.");
+				} else {
+					o = o[temp]();
+				}
 			} else {
 				o = o[parts[i++]];
 			}
 		} while (i<parts.length && o);
-		return (o!=dj_global)?o:null; // object
+		
+		if(i < parts.length || !o){
+			dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + field + "' is not a property of the passed object.");
+		}
+		return o; // object
 	},
 	onSetData:function(){ },
 	onClearData:function(){ },

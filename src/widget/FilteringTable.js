@@ -409,8 +409,6 @@ dojo.widget.defineWidget(
 			this.toggleSelectionByRow(row);
 		}
 		this.renderSelections();
-		e.stopPropagation();
-		e.preventDefault();
 	},
 	onSort: function(/* HTMLEvent */e){
 		//	summary
