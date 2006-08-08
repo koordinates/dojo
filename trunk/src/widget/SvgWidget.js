@@ -5,13 +5,10 @@ dojo.provide("dojo.widget.SVGWidget"); // back compat
 dojo.require("dojo.dom");
 
 // SVGWidget is a mixin ONLY
-dojo.widget.SvgWidget = function(args){
-	// mix in the parent type
-	// dojo.widget.DomWidget.call(this);
-}
-dojo.inherits(dojo.widget.SvgWidget, dojo.widget.DomWidget);
-
-dojo.lang.extend(dojo.widget.SvgWidget, {
+dojo.widget.declare(
+	"dojo.widget.SvgWidget",
+	dojo.widget.DomWidget,
+{
 	getContainerHeight: function(){
 		// NOTE: container height must be returned as the INNER height
 		dojo.unimplemented("dojo.widget.SvgWidget.getContainerHeight");
