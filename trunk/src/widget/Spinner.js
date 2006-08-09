@@ -1,12 +1,12 @@
 dojo.provide("dojo.widget.Spinner");
-dojo.require("dojo.widget.Manager.*");
-dojo.require("dojo.widget.validate");
-dojo.require("dojo.widget.*");
+
 dojo.require("dojo.io.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.layout");
 dojo.require("dojo.string");
+dojo.require("dojo.widget.*");
+dojo.require("dojo.widget.validate");
 
 // Mixin for validation widgets with a spinner
 // This class basically (conceptually) extends dojo.widget.validate.ValidationTextbox.

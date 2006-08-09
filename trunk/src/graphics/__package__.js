@@ -1,5 +1,2 @@
-dojo.kwCompoundRequire({
-	browser:	["dojo.graphics.htmlEffects"],
-	dashboard:	["dojo.graphics.htmlEffects"]
-});
+// By default... don't pull in anything?  (todo: figure out what should be in list)
 dojo.provide("dojo.graphics.*");
