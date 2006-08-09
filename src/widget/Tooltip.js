@@ -1,7 +1,7 @@
 dojo.provide("dojo.widget.Tooltip");
 dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.widget.Menu2");
-dojo.require("dojo.uri");
+dojo.require("dojo.uri.Uri");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event");
 dojo.require("dojo.html.style");

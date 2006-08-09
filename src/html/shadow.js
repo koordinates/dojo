@@ -1,7 +1,7 @@
 dojo.provide("dojo.html.shadow");
 
-dojo.require("dojo.lang");
-dojo.require("dojo.uri");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.uri.Uri");
 
 dojo.html.shadow = function(node) {
 	this.init(node);
