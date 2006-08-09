@@ -5,13 +5,17 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.widget.Parse");
 dojo.require("dojo.xml.Parse");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.array");
+dojo.require("dojo.lang.common");
 
 dojo.require("dojo.validate.common");
 dojo.require("dojo.validate.datetime");
 dojo.require("dojo.validate.check");
 dojo.require("dojo.validate.web");
 dojo.require("dojo.validate.us");
+
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "validate");
 
 dojo.widget.manager.registerWidgetPackage("dojo.widget.validate");
 
@@ -137,9 +141,9 @@ dojo.widget.defineWidget(
 		size: "",
 		maxlength: "",
 		promptMessage: "",
-		invalidMessage: "* The value entered is not valid.",
-		missingMessage: "* This value is required.",
-		rangeMessage: "* This value out of range.",
+		invalidMessage: "",
+		missingMessage: "",
+		rangeMessage: "",
 		listenOnKeyPress: true,
 		htmlfloat: "none",
 		lastCheckedValue: null,
@@ -232,6 +236,14 @@ dojo.widget.defineWidget(
 			}else if (this.textbox.value != this.lastCheckedValue){
 			    this.textbox.style.backgroundColor = "";
 			}
+		},
+
+		postMixInProperties: function(localProperties, frag) {
+			dojo.widget.validate.ValidationTextbox.superclass.postMixInProperties.apply(this, arguments);
+			this.messages = dojo.i18n.getLocalization("dojo.widget", "validate");
+			dojo.lang.forEach(["invalidMessage", "missingMessage", "rangeMessage"], function(prop) {
+				if(this[prop]){ this.messages[prop] = this[prop]; }
+			}, this);
 		},
 	
 		// FIXME: why are there to fillInTemplate methods defined here?
@@ -369,7 +381,7 @@ dojo.widget.defineWidget(
   Over-rides isValid/isInRange to test if input denotes a monetary value .
   Has 5 new properties that can be specified as attributes in the markup.
 
-  @attr cents      The two decimal places for cents.  Can be true or false, optional if omitted.
+  @attr fractional      The decimal places (e.g. for cents).  Can be true or false, optional if omitted.
   @attr symbol     A currency symbol such as Yen "???", Pound "???", or the Euro "???". Default is "$".
   @attr separator  Default is "," instead of no separator as in IntegerTextbox.
   @attr min  Minimum signed value.  Default is -Infinity
@@ -384,8 +396,11 @@ dojo.widget.defineWidget(
 			dojo.widget.validate.CurrencyTextbox.superclass.mixInProperties.apply(this, arguments);
 	
 			// Get properties from markup attributes, and assign to flags object.
-			if ( localProperties.cents ) { 
-				this.flags.cents = ( localProperties.cents == "true" );
+			if ( localProperties.fractional ) { 
+				this.flags.fractional = ( localProperties.fractional == "true" );
+			} else if ( localProperties.cents ) {
+				dojo.deprecated("dojo.widget.validate.IntegerTextbox", "use fractional attr instead of cents", "0.5");
+				this.flags.fractional = ( localProperties.cents == "true" );
 			}
 			if ( localProperties.symbol ) { 
 				this.flags.symbol = localProperties.symbol;

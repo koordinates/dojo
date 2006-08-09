@@ -17,8 +17,8 @@
 					src="${this.decrementSrc}" style="width: ${this.buttonSize.width}; height: ${this.buttonSize.height}">
 			</td>
 		</tr>
-	</table><!--
-	--><span dojoAttachPoint='invalidSpan' class='${this.invalidClass}'>${this.invalidMessage}</span><!--
-	--><span dojoAttachPoint='missingSpan' class='${this.missingClass}'>${this.missingMessage}</span><!--
-	--><span dojoAttachPoint='rangeSpan' class='${this.rangeClass}'>${this.rangeMessage}</span><!--
---></span>
+	</table>
+	<span dojoAttachPoint='invalidSpan' class='${this.invalidClass}'>${this.messages.invalidMessage}</span>
+	<span dojoAttachPoint='missingSpan' class='${this.missingClass}'>${this.messages.missingMessage}</span>
+	<span dojoAttachPoint='rangeSpan' class='${this.rangeClass}'>${this.messages.rangeMessage}</span>
+</span>

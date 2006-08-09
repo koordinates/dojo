@@ -217,6 +217,8 @@ dojo.declare(
 		},
 
 		postMixInProperties: function(args, frag){
+			this.inherited("postMixInProperties");
+
 			// set image size before instantiating template;
 			// changing it aftwards doesn't work on FF
 			var inputNode = this.getFragNodeRef(frag);
