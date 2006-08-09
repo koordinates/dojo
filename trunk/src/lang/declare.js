@@ -122,13 +122,14 @@ dojo.lang.declare.base = {
 	_getPropContext: function() { return (this.___proto||this); },
 	// caches ptype context and calls method on it
 	_inherited: function(ptype, method, args){
-		var stack = this.___proto;
+		var result, stack = this.___proto;
 		this.___proto = ptype;
-		var result = ptype[method].apply(this,(args||[]));
-		this.___proto = stack;
+		try { result = ptype[method].apply(this,(args||[])); }
+		catch(e) { throw e; }	
+		finally { this.___proto = stack; }
 		return result;
 	},
-	// invokes ctor.prototype.method, with args, in our context 
+	// get value from ctor.prototype.prop. If prop is a function, it is invoked, with args, in our context 
 	inheritedFrom: function(ctor, prop, args){
 		var p = ((ctor)&&(ctor.prototype)&&(ctor.prototype[prop]));
 		return (dojo.lang.isFunction(p) ? p.apply(this, (args||[])) : p);
