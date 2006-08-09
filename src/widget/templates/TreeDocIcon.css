@@ -50,24 +50,6 @@
     background-repeat : no-repeat;
 }
 
-
-.TreeIEContent {
-    height: auto;
-}
-
-.TreeIEIconContent {
-    height: 18px;
-}
-
-
 .TreeIconContent {
     margin-left:18px;
-}
-
-
-.TreeIEIconContent { 
-        margin-left: 0; 
-} 
-.ie.TreeExpand { 
-        margin-right: -3px; 
 }

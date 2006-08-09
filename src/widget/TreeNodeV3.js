@@ -144,8 +144,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.start("buildRendering - cloneNode");
 		
 		this.domNode = this.tree.nodeTemplate.cloneNode(true);
-		this.expandNode = this.domNode.firstChild;
-        this.contentNode = this.domNode.childNodes[1];
+		this.expandNode = this.domNode.firstChild.firstChild;
+        this.contentNode = this.domNode.firstChild.childNodes[1];
         this.labelNode = this.contentNode.firstChild;
 
 		/*
