@@ -8,7 +8,7 @@
 <script type="text/javascript">
 	delete dojo["profile"];
 	dojo.require("dojo.profile");
-	dojo.require("dojo.lang.*");
+
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
@@ -78,7 +78,7 @@
 
 	
 		dojo.profile.start("prepareNodes");		
-		var nodes = addChildren('node', tree);
+		var nodes = addChildren('node ', tree);
 		dojo.profile.end("prepareNodes");
 			
 		dojo.profile.start("addNodes");

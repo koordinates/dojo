@@ -5,6 +5,7 @@
     background-position : top left;
     background-repeat : repeat-y;
     margin-left: 19px;
+    zoom: 1;
 }
 .TreeIsRoot {
     margin-left: 0;
