@@ -11,6 +11,7 @@
    <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
    <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
    <!ENTITY lazy_loading SYSTEM "lazy_loading.xml">
+   <!ENTITY thanks SYSTEM "thanks.xml">
 ]>
 <section>
     <title>Dojo Tree Tutorial</title>
@@ -29,6 +30,7 @@
     &tree_treenode;
     &extensions;
     &howto;
+    &thanks;
     
 </section>
 
