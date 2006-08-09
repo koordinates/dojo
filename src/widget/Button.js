@@ -1,13 +1,9 @@
 dojo.provide("dojo.widget.Button");
-dojo.provide("dojo.widget.Button");
-dojo.provide("dojo.widget.ComboButton");
-dojo.provide("dojo.widget.DropDownButton");
 
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Button",
