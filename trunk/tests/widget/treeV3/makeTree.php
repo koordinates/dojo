@@ -10,7 +10,7 @@
 <script type="text/javascript" src="../../../dojo.js"></script>
 <script type="text/javascript">
 	delete dojo["profile"];
-	dojo.require("dojo.lang.*");
+
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
