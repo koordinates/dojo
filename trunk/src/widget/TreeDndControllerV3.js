@@ -43,21 +43,22 @@ dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
 	// because I have information about parent on this stage and can use it
 	// to check locking or other things
 	onAfterAddChild: function(message) {
-		//dojo.profile.start("Dnd addChild "+message.child);
-		this.listenNode(message.child);
-		//dojo.profile.end("Dnd addChild "+message.child);
+		//dojo.debug("Dnd addChild "+message.child);
+		this.listenNode(message.child);		
 	},
 
 
 	onAfterChangeTree: function(message) {
-		
+		/* catch new nodes on afterAddChild, because I need parent */		
 		if (!message.oldTree) return;
+		
+		//dojo.debug("HERE");
 		
 		if (!message.newTree || !this.listenedTrees[message.newTree.widgetId]) {			
 			this.processDescendants(message.node, this.listenNodeFilter, this.unlistenNode);
 		}		
 		
-		if (!message.oldTree || !this.listenedTrees[message.oldTree.widgetId]) {
+		if (!this.listenedTrees[message.oldTree.widgetId]) {
 			// we have new node
 			this.processDescendants(message.node, this.listenNodeFilter, this.listenNode);	
 		}
@@ -71,6 +72,8 @@ dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
 	*/
 	listenNode: function(node) {
 
+		//dojo.debug("listen dnd "+node);
+		//dojo.debug((new Error()).stack)
 		//dojo.profile.start("Dnd listenNode "+node);		
 		if (!node.tree.DndMode) return;
 		if (this.dragSources[node.widgetId] || this.dropTargets[node.widgetId]) return;
@@ -93,7 +96,7 @@ dojo.lang.extend(dojo.widget.TreeDndControllerV3, {
 		}
 
 		//dojo.profile.start("Dnd target "+node);		
-	
+		//dojo.debug("reg target");
 		var target = this.makeDropTarget(node);
 		//dojo.profile.end("Dnd target "+node);		
 

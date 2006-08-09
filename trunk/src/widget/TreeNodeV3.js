@@ -25,27 +25,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, dojo.widget.TreeWithNode);
 dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	widgetType: "TreeNodeV3",
 
-	/*
-	 * dynamic loading-related stuff. 
-	 * When an empty folder node appears, it is "UNCHECKED" first,
-	 * then after Rpc call it becomes LOADING and, finally LOADED
-	 */
-	loadStates: {
-		UNCHECKED: "UNCHECKED",
-    	LOADING: "LOADING",
-    	LOADED: "LOADED"
-	},
-
-	/*
-	 * Basic actions one can perform on nodes.
-	 */
-	actions: {
-		MOVE: "MOVE",
-    	DETACH: "DETACH",
-    	EDIT: "EDIT",
-    	ADDCHILD: "ADDCHILD"
-	},
-
 
 	tryLazyInit: true,
 
@@ -189,8 +168,6 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	isExpanded: false,
 	
-
-	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
 	containerNode: null,
 
