@@ -29,7 +29,7 @@ dojo.lang.extend(dojo.widget.TreeCommon, {
 		
 		dojo.lang.forEach(this.listenTreeEvents, function(event) {
 			var eventHandler =  "on" + event.charAt(0).toUpperCase() + event.substr(1);
-			//dojo.debug("subscribe "+tree.eventNames[event]+" "+eventHandler);
+			//dojo.debug("subscribe: event "+tree.eventNames[event]+" widget "+_this+" handler "+eventHandler);
 			dojo.event.topic.subscribe(tree.eventNames[event], _this, eventHandler);
 		});
 		

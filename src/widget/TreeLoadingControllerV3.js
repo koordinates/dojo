@@ -288,6 +288,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		var deferred = dojo.Deferred.prototype.makeCalled();
 		
+		
 		if (prepare) {
 			deferred.addCallback(function() {
 				return prepare.apply(_this, args);
@@ -299,7 +300,9 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		var _this = this;
 		deferred.addCallback(function() {			
-			return make.apply(_this, args);
+			var res = make.apply(_this, args);
+			//res.addBoth(function(r) {dojo.debugShallow(r); return r;});
+			return res;
 		});
 		
 		//deferred.addCallback(function(res) { dojo.debug("Main fired "+res); return res});
@@ -326,10 +329,11 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	startProcessing: function(nodesArray) {
 		var deferred = new dojo.Deferred();
 		
+		
 		var nodes = dojo.lang.isArray(nodesArray) ? nodesArray : arguments;
 		
 		//dojo.debug((new Error()).stack)
-		//dojo.debug(nodes[0].toSource());
+		//dojo.debug(arguments[0]);
 		
 		for(var i=0;i<nodes.length;i++) {
 			if (nodes[i].isLocked()) {
@@ -391,7 +395,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	
 	prepareMove: function(child, newParent, index, sync) {
-		var deferred = this.startProcessing(parent);
+		var deferred = this.startProcessing(newParent);
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(newParent, sync);
 		}));

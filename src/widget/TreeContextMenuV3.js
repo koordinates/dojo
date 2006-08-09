@@ -134,7 +134,7 @@ dojo.lang.extend(dojo.widget.TreeMenuItemV3, {
 		var _this = this;
 		dojo.lang.forEach(_this.treeActions,
 			function(action) {
-				_this.setDisabled( treeNode.actionIsDisabled(action) );
+				_this.setDisabled( treeNode.actionIsDisabledNow(action) );
 			}
 		);
 

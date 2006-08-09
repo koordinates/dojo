@@ -170,7 +170,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		if (DndMode & dojo.widget.TreeV3.prototype.DndModes.ONTO &&
 			// check if ONTO is allowed localy
 			// check dynamically cause may change w/o regeneration of dropTarget
-			this.treeNode.actionIsDisabled(this.treeNode.actions.ADDCHILD) 
+			this.treeNode.actionIsDisabledNow(this.treeNode.actions.ADDCHILD) 
 		) {
 			// disable ONTO if can't move
 			DndMode &= ~dojo.widget.TreeV3.prototype.DndModes.ONTO;
@@ -320,7 +320,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 //dojo.debug(position);
 		var source = e.dragObject.dragSource;
 		
-		//dojo.debug("onDrop "+sourceTreeNode+" " + position + " "+this.treeNode);
+		//dojo.debug("onDrop "+source.treeNode+" " + position + " "+this.treeNode);
 
 
 		var targetParent, targetIndex;
@@ -349,18 +349,21 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var handler;
 		var _this = this;
 		handler = function () {
-			//dojo.debug("Move "+sourceTreeNode+" to parent "+targetParent+":"+targetIndex);
+			//dojo.debug("Move "+source.treeNode+" to parent "+targetParent+":"+targetIndex);
 			if (source.treeNode) {
 				var result = _this.controller.move(source.treeNode, targetParent, targetIndex, true);
+				//dojo.debug("moved "+result);
 			} else {
 				if (source.onDrop) {
 					source.onDrop(targetParent, targetIndex);
 				}
-				var result = _this.controller.createChild(targetParent, targetIndex, source.getTreeNode());
+				var result = _this.controller.createChild(targetParent, targetIndex, source.getTreeNode(), true);
 			}
 			
 			if (result instanceof dojo.Deferred) {
 				// return error status
+				//TODO: need handle errors somehow
+				//result.addErrback(function(r) { dojo.debugShallow(r); });
 				return (!result.fired) ? true : false;
 			} else {
 				return result;

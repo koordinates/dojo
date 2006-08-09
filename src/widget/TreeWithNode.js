@@ -4,7 +4,33 @@ dojo.provide("dojo.widget.TreeWithNode");
 
 dojo.widget.TreeWithNode = {
 	
+	/*
+	 * dynamic loading-related stuff. 
+	 * When an empty folder node appears, it is "UNCHECKED" first,
+	 * then after Rpc call it becomes LOADING and, finally LOADED
+	 *
+	 * tree may be dynamically loaded also
+	 */
+	loadStates: {
+		UNCHECKED: "UNCHECKED",
+    	LOADING: "LOADING",
+    	LOADED: "LOADED"
+	},
 	
+	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
+
+
+	/*
+	 * Basic actions one can perform on nodes and, some(addchild) on trees
+	 */
+	actions: {
+		MOVE: "MOVE",
+    	DETACH: "DETACH",
+    	EDIT: "EDIT",
+    	ADDCHILD: "ADDCHILD"
+	},
+
+
 	// I need this to parse children
 	isContainer: true,
 	
@@ -54,16 +80,14 @@ dojo.widget.TreeWithNode = {
 	
 	
 	actionIsDisabled: function(action) {
-
 		var disabled = false;
 
 		if (dojo.lang.inArray(this.actionsDisabled, action)) {
 			disabled = true;
 		}
 
-		if (this.isLocked()) {
-			disabled = true;
-		}
+
+		//dojo.debug("Check "+this+" "+disabled)
 		
 		
 		if (this.isTreeNode) {
@@ -74,6 +98,10 @@ dojo.widget.TreeWithNode = {
 		return disabled;
 	},
 		
+	actionIsDisabledNow: function(action) {
+		return this.actionIsDisabled(action) || this.isLocked();
+	},
+	
 	
 	/**
 	 * childrenArray is array of Widgets or array of Objects
@@ -143,6 +171,9 @@ dojo.widget.TreeWithNode = {
 			//dojo.profile.start("setChildren - attach "+this);
 
 			if (!child.parent) { // detached child
+				
+				//dojo.debug("detached child "+child);
+				
 				child.parent = this;
 
 				//dojo.profile.start("setChildren - updateTree "+this);
@@ -168,7 +199,7 @@ dojo.widget.TreeWithNode = {
 		
 
 				//dojo.profile.start("setChildren - event "+this);
-
+				//dojo.debug("publish "+this.tree.eventNames.afterAddChild)
 				dojo.event.topic.publish(this.tree.eventNames.afterAddChild, message);
 
 				//dojo.profile.end("setChildren - event "+this);

@@ -213,7 +213,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	// -------------------------- TODO: Inline edit node ---------------------
 	canEditLabel: function(node) {
-		if (node.actionIsDisabled(node.actions.EDIT)) return false;
+		if (node.actionIsDisabledNow(node.actions.EDIT)) return false;
 
 		return true;
 	},
@@ -330,7 +330,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	canDetach: function(child) {
-		if (child.actionIsDisabled(child.actions.DETACH)) {
+		if (child.actionIsDisabledNow(child.actions.DETACH)) {
 			return false;
 		}
 
@@ -407,14 +407,14 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			return this.canMoveNotANode(child, newParent);
 		}
 						
-		if (child.actionIsDisabled(child.actions.MOVE)) {
+		if (child.actionIsDisabledNow(child.actions.MOVE)) {
 			return false;
 		}
 
 		// if we move under same parent then no matter if ADDCHILD disabled for him
 		// but if we move to NEW parent then check if action is disabled for him
 		// also covers case for newParent being a non-folder in strict mode etc
-		if (child.parent !== newParent && newParent.actionIsDisabled(newParent.actions.ADDCHILD)) {
+		if (child.parent !== newParent && newParent.actionIsDisabledNow(newParent.actions.ADDCHILD)) {
 			return false;
 		}
 
@@ -461,7 +461,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 
 	canCreateChild: function(parent, index, data) {
-		if (parent.actionIsDisabled(parent.actions.ADDCHILD)) {
+		if (parent.actionIsDisabledNow(parent.actions.ADDCHILD)) {
 			return false;
 		}
 

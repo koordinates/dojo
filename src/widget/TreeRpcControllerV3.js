@@ -310,7 +310,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		
 		deferred.addCallback(function() {			
-			dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.apply(_this,args);
+			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.apply(_this,args);
 		});
 		
 						
