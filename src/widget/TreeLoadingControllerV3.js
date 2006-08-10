@@ -61,7 +61,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 
 	RpcActionParam: "action", // used for GET for RpcUrl
 
-	preventCache: false,
+	preventCache: true,
 
 	getDeferredBindHandler: function(/* dojo.rpc.Deferred */ deferred){
 		// summary
