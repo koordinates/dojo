@@ -253,12 +253,14 @@ dojo.widget.defineWidget(
 		_gotFocus: false,
 		_mouseover_list: false,
 		dataProviderClass: "dojo.widget.ComboBoxDataProvider",
+		buttonSrc: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
 
 		//the old implementation has builtin fade toggle, so we mimic it here
 		dropdownToggle: "fade",
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/ComboBox.html"),
 		templateCssPath: dojo.uri.dojoUri("src/widget/templates/ComboBox.css"),
+
 
 		setValue: function(value) {
 			this.comboBoxValue.value = value;
@@ -526,6 +528,23 @@ dojo.widget.defineWidget(
 		itemMouseOut: function(evt){
 			if (evt.target === this.optionsListNode) { return; }
 			this.blurOptionNode();
+		},
+
+		// reset button size; this function is called when the input area has changed size
+		onResize: function(){
+			var inputSize = dojo.html.getBorderBox(this.textInputNode);
+			var buttonSize = { width: inputSize.height, height: inputSize.height};
+			dojo.html.setMarginBox(this.downArrowNode, buttonSize);
+		},
+
+		postMixInProperties: function(args, frag){
+			this.inherited("postMixInProperties");
+
+			// set image size before instantiating template;
+			// changing it afterwards doesn't work on FF
+			var inputNode = this.getFragNodeRef(frag);
+			var inputSize = dojo.html.getBorderBox(inputNode);
+			this.initialButtonSize = inputSize.height + "px";
 		},
 
 		fillInTemplate: function(args, frag){
