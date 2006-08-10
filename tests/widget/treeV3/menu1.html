@@ -12,6 +12,7 @@
 	dojo.require("dojo.widget.*");
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
+	dojo.require("dojo.widget.TreeEditor");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.require("dojo.widget.TreeContextMenuV3");
 	dojo.require("dojo.widget.TreeDemo");
@@ -32,14 +33,15 @@
 <h2>A basic markup tree with menu,controller and multiline content</h2>
 
 	
-<div dojoType="TreeBasicControllerV3" widgetId="treeController"></div>	
+<div dojoType="TreeEditor" widgetId="editor"></div>
+<div dojoType="TreeBasicControllerV3" widgetId="treeController" editor="editor"></div>	
 
 <div dojoType="TreeContextMenuV3" toggle="explode" contextMenuForWindow="false" widgetId="contextMenu">
 	<div dojoType="TreeMenuItemV3" treeActions="addChild" iconSrc="../images/createsmall.gif" widgetId="treeContextMenuCreate" caption="Create"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="remove" iconSrc="../images/removesmall.gif" caption="Remove" widgetId="treeContextMenuDestroy"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/downsmall.png" caption="Up" widgetId="treeContextMenuUp"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/upsmall.png" caption="Down" widgetId="treeContextMenuDown"></div>
-	<!-- TODO <div dojoType="TreeMenuItemV3" treeActions="edit" caption="Edit" widgetId="treeContextMenuEdit"></div> -->
+	<div dojoType="TreeMenuItemV3" treeActions="edit" caption="Edit" widgetId="treeContextMenuEdit"></div>
 </div>
 
 

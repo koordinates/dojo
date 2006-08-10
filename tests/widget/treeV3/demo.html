@@ -22,14 +22,6 @@
 <script type="text/javascript">
 
 	dojo.addOnLoad(function(){
-
-		dojo.widget.TreeDemo.resetRandomChildren(500);
-		var nodes = dojo.widget.TreeDemo.makeRandomChildren('first ');
-		dojo.widget.byId('firstTree').setChildren(nodes);
-		
-		dojo.widget.TreeDemo.resetRandomChildren(500);
-		var nodes = dojo.widget.TreeDemo.makeRandomChildren('second ');
-		dojo.widget.byId('secondTree').setChildren(nodes);
 					
 		/* bind demo actions to menu-tree */ 
 		dojo.addOnLoad(function() { dojo.widget.TreeDemo.bindDemoMenu(dojo.widget.byId('controller')) });
@@ -48,7 +40,7 @@
 
 <div dojoType="TreeEditor" widgetId="editor"></div>
 
-<div dojoType="TreeRpcControllerV3" widgetId="controller" editor="editor" RpcUrl="local"></div>
+<div dojoType="TreeRpcControllerV3" widgetId="controller" editor="editor" RpcUrl="http://ilia.country-info.ru/dojo.php"></div>
 
 <div dojoType="TreeDndControllerV3" controller="controller" widgetId="dndcontroller"></div>
 
@@ -100,13 +92,31 @@ Tree with menu, selector, dnd and full operations set.
 <td style="width:25%"></td>
 <TD class="treeColumn">
 
+
 <div dojoType="TreeV3" DndMode="between;onto" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller;selector;contextMenu">
+    <div dojoType="TreeNodeV3" title="Node 1"></div>
+    <div dojoType="TreeNodeV3" title="Node 2">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
+    </div>
+
 </div>
 
 </TD>
 <TD class="treeColumn">
 
+
 <div dojoType="TreeV3" DndMode="between;onto" DndAcceptTypes="firstTree;secondTree" widgetId="secondTree" listeners="controller;dndcontroller;selector;contextMenu">
+    <div dojoType="TreeNodeV3" title="Node 1"></div>
+    <div dojoType="TreeNodeV3" title="Node 2">
+        <div dojoType="TreeNodeV3" title="Node 2.1"></div>
+        <div dojoType="TreeNodeV3" isFolder="true" title="Node 2.2"></div>
+    </div>
+    <div dojoType="TreeNodeV3" title="Node 3" isFolder="true">
+    </div>
+
 </div>
 
 </TD>
