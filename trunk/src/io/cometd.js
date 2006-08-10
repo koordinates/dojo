@@ -83,7 +83,7 @@ cometd = new function(){
 			method: "POST",
 			mimetype: "text/json",
 			load: dojo.lang.hitch(this, "finishInit"),
-			content: { "message": dojo.json.serialize(props) }
+			content: { "message": dojo.json.serialize([props]) }
 		};
 
 		// borrowed from dojo.uri.Uri in lieu of fixed host and port properties
@@ -150,7 +150,11 @@ cometd = new function(){
 	}
 
 	// public API functions called by cometd or by the transport classes
-	this.deliver = function(message){
+	this.deliver = function(messages){
+		dojo.lang.forEach(messages, this._deliver, this);
+	}
+
+	this._deliver = function(message){
 		// dipatch events along the specified path
 		if(!message["channel"]){
 			dojo.debug("cometd error: no channel for message!");
@@ -409,13 +413,15 @@ cometd.iframeTransport = new function(){
 		// we've gotten our initialization document back in the iframe, so
 		// now open up a connection and start passing data!
 		this.postToIframe({
-			message: dojo.json.serialize({
-				channel:	"/meta/connect",
-				clientId:	cometd.clientId,
-				connectionType: "iframe"
-				// FIXME: auth not passed here!
-				// "authToken": this.authToken
-			})
+			message: dojo.json.serialize([
+				{
+					channel:	"/meta/connect",
+					clientId:	cometd.clientId,
+					connectionType: "iframe"
+					// FIXME: auth not passed here!
+					// "authToken": this.authToken
+				}
+			])
 		});
 	}
 
@@ -425,14 +431,16 @@ cometd.iframeTransport = new function(){
 			this.connected = false;
 
 			this.postToIframe({
-				message: dojo.json.serialize({
-					channel:	"/meta/reconnect",
-					clientId:	cometd.clientId,
-					connectionId:	this.connectionId,
-					timestamp:	this.lastTimestamp,
-					id:			this.lastId
-					// FIXME: no authToken provision!
-				})
+				message: dojo.json.serialize([
+					{
+						channel:	"/meta/reconnect",
+						clientId:	cometd.clientId,
+						connectionId:	this.connectionId,
+						timestamp:	this.lastTimestamp,
+						id:			this.lastId
+						// FIXME: no authToken provision!
+					}
+				])
 			});
 		}
 	}
@@ -544,7 +552,8 @@ cometd.iframeTransport = new function(){
 				url: cometd.url||djConfig["cometdRoot"],
 				method: "POST",
 				mimetype: "text/json",
-				content: { message: dojo.json.serialize(message) }
+				// FIXME: we should be able to do better than this given that we're sending an array!
+				content: { message: dojo.json.serialize([ message ]) }
 			};
 			return dojo.io.bind(bindArgs);
 		}else{
@@ -608,13 +617,15 @@ cometd.mimeReplaceTransport = new function(){
 		if(this.connected){ return; }
 		// FIXME: open up the connection here
 		this.openTunnelWith({
-			message: dojo.json.serialize({
-				channel:	"/meta/connect",
-				clientId:	cometd.clientId,
-				connectionType: "mime-message-block"
-				// FIXME: auth not passed here!
-				// "authToken": this.authToken
-			})
+			message: dojo.json.serialize([
+				{
+					channel:	"/meta/connect",
+					clientId:	cometd.clientId,
+					connectionType: "mime-message-block"
+					// FIXME: auth not passed here!
+					// "authToken": this.authToken
+				}
+			])
 		});
 		this.connected = true;
 	}
@@ -624,14 +635,16 @@ cometd.mimeReplaceTransport = new function(){
 			// try to restart the tunnel
 			this.connected = false;
 			this.openTunnelWith({
-				message: dojo.json.serialize({
-					channel:	"/meta/reconnect",
-					clientId:	cometd.clientId,
-					connectionId:	this.connectionId,
-					timestamp:	this.lastTimestamp,
-					id:			this.lastId
-					// FIXME: no authToken provision!
-				})
+				message: dojo.json.serialize([
+					{
+						channel:	"/meta/reconnect",
+						clientId:	cometd.clientId,
+						connectionId:	this.connectionId,
+						timestamp:	this.lastTimestamp,
+						id:			this.lastId
+						// FIXME: no authToken provision!
+					}
+				])
 			});
 		}
 	}
@@ -677,7 +690,7 @@ cometd.mimeReplaceTransport = new function(){
 				url: cometd.url||djConfig["cometdRoot"],
 				method: "POST",
 				mimetype: "text/json",
-				content: { message: dojo.json.serialize(message) }
+				content: { message: dojo.json.serialize([ message ]) }
 			};
 			return dojo.io.bind(bindArgs);
 		}else{
@@ -709,13 +722,15 @@ cometd.longPollTransport = new function(){
 		if(this.connected){ return; }
 		// FIXME: open up the connection here
 		this.openTunnelWith({
-			message: dojo.json.serialize({
-				channel:	"/meta/connect",
-				clientId:	cometd.clientId,
-				connectionType: "long-polling"
-				// FIXME: auth not passed here!
-				// "authToken": this.authToken
-			})
+			message: dojo.json.serialize([
+				{
+					channel:	"/meta/connect",
+					clientId:	cometd.clientId,
+					connectionType: "long-polling"
+					// FIXME: auth not passed here!
+					// "authToken": this.authToken
+				}
+			])
 		});
 		this.connected = true;
 	}
@@ -726,15 +741,17 @@ cometd.longPollTransport = new function(){
 			this.connected = false;
 			dojo.debug("clientId:", cometd.clientId);
 			this.openTunnelWith({
-				message: dojo.json.serialize({
-					channel:	"/meta/reconnect",
-					connectionType: "long-polling",
-					clientId:	cometd.clientId,
-					connectionId:	this.connectionId,
-					timestamp:	this.lastTimestamp,
-					id:			this.lastId
-					// FIXME: no authToken provision!
-				})
+				message: dojo.json.serialize([
+					{
+						channel:	"/meta/reconnect",
+						connectionType: "long-polling",
+						clientId:	cometd.clientId,
+						connectionId:	this.connectionId,
+						timestamp:	this.lastTimestamp,
+						id:			this.lastId
+						// FIXME: no authToken provision!
+					}
+				])
 			});
 		}
 	}
@@ -774,7 +791,7 @@ cometd.longPollTransport = new function(){
 				url: cometd.url||djConfig["cometdRoot"],
 				method: "post",
 				mimetype: "text/json",
-				content: { message: dojo.json.serialize(message) }
+				content: { message: dojo.json.serialize([ message ]) }
 			};
 			return dojo.io.bind(bindArgs);
 		}else{
@@ -806,13 +823,15 @@ cometd.callbackPollTransport = new function(){
 		if(this.connected){ return; }
 		// FIXME: open up the connection here
 		this.openTunnelWith({
-			message: dojo.json.serialize({
-				channel:	"/meta/connect",
-				clientId:	cometd.clientId,
-				connectionType: "callback-polling"
-				// FIXME: auth not passed here!
-				// "authToken": this.authToken
-			})
+			message: dojo.json.serialize([
+				{
+					channel:	"/meta/connect",
+					clientId:	cometd.clientId,
+					connectionType: "callback-polling"
+					// FIXME: auth not passed here!
+					// "authToken": this.authToken
+				}
+			])
 		});
 		this.connected = true;
 	}
@@ -822,15 +841,17 @@ cometd.callbackPollTransport = new function(){
 			// try to restart the tunnel
 			this.connected = false;
 			this.openTunnelWith({
-				message: dojo.json.serialize({
-					channel:	"/meta/reconnect",
-					connectionType: "long-polling",
-					clientId:	cometd.clientId,
-					connectionId:	this.connectionId,
-					timestamp:	this.lastTimestamp,
-					id:			this.lastId
-					// FIXME: no authToken provision!
-				})
+				message: dojo.json.serialize([
+					{
+						channel:	"/meta/reconnect",
+						connectionType: "long-polling",
+						clientId:	cometd.clientId,
+						connectionId:	this.connectionId,
+						timestamp:	this.lastTimestamp,
+						id:			this.lastId
+						// FIXME: no authToken provision!
+					}
+				])
 			});
 		}
 	}
@@ -871,7 +892,7 @@ cometd.callbackPollTransport = new function(){
 				url: cometd.url||djConfig["cometdRoot"],
 				transport: "ScriptSrcTransport",
 				jsonParamName: "jsonp",
-				content: { message: dojo.json.serialize(message) }
+				content: { message: dojo.json.serialize([ message ]) }
 			};
 			return dojo.io.bind(bindArgs);
 		}else{
