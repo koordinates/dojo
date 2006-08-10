@@ -534,7 +534,7 @@ dojo.widget.defineWidget(
 			this.comboBoxSelectionValue.name = this.name+"_selected";
 
 			var source = this.getFragNodeRef(frag);
-			dojo.html.copyStyle(this.cbTableNode, source);
+			dojo.html.copyStyle(this.textInputNode, source);
 
 			var dpClass;
 			if(this.mode == "remote"){
