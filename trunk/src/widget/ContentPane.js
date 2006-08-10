@@ -22,6 +22,9 @@ dojo.widget.defineWidget(
 		this._callOnUnLoad = false;
 		this.scriptScope; // undefined for now
 		this._ioBindObj;
+
+		// loading option
+		this.bindArgs = {};		// example bindArgs="preventCache:false;" overrides cacheContent
 	},
 	{
 		isContainer: true,
@@ -32,8 +35,6 @@ dojo.widget.defineWidget(
 		extractContent: true,	// extract visible content from inside of <body> .... </body>
 		parseContent: 	true,	// construct all widgets that is in content
 		cacheContent: 	true,
-		preventCache: 	null,	// if set, overrides cacheContent
-		useCache:		null,	// if set, overrides cacheContent
 		preload: 		false,	// force load of data even if pane is hidden
 		refreshOnShow:	false,	// use with cacheContent: false
 		handler: "",			// generate pane content from a java function
@@ -67,11 +68,12 @@ dojo.widget.defineWidget(
 			if ( this.isLoaded ){
 				return;
 			}
-			this.isLoaded=true;
 			if ( dojo.lang.isFunction(this.handler)) {
 				this._runHandler();
 			} else if ( this.href != "" ) {
 				this._downloadExternalContent(this.href, this.cacheContent);
+			}else{
+				this.isLoaded=true;
 			}
 		},
 	
@@ -123,14 +125,22 @@ dojo.widget.defineWidget(
 		},
 	
 		_cacheSetting: function(bindObj, useCache){
-			bindObj.preventCache = ((typeof this.preventCache != "null") ? this.preventCache : !useCache);
-			bindObj.useCache = (typeof this.useCache != "null") ? this.useCache : useCache;
+			for(var x in this.bindArgs){
+				if(dojo.lang.isUndefined(bindObj[x])){
+					bindObj[x] = this.bindArgs[x];
+				}
+			}
+			var cache = this.cacheContent;
+			if(dojo.lang.isUndefined(bindObj.useCache)){ bindObj.useCache = cache; }
+			if(dojo.lang.isUndefined(bindObj.preventCache)){ bindObj.preventCache = !cache; }
+			if(dojo.lang.isUndefined(bindObj.mimetype)){ bindObj.mimetype = "text/html"; }
 			return bindObj;
 		},
 
 		// called when setContent is finished
 		onLoad: function(e){
 			this._runStack("_onLoadStack");
+			this.isLoaded=true;
 		},
 	
 		// called before old content is cleared
@@ -494,11 +504,13 @@ dojo.widget.defineWidget(
 		},
 	
 		_runHandler: function() {
+			var ret = true;
 			if(dojo.lang.isFunction(this.handler)) {
 				this.handler(this, this.domNode);
-				return false;
+				ret = false;
 			}
-			return true;
+			this.onLoad();
+			return ret;
 		},
 	
 		_executeScripts: function(scripts) {
