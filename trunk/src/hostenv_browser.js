@@ -77,6 +77,9 @@ if(typeof window == 'undefined'){
 	drh.ie60 = drh.ie && dav.indexOf("MSIE 6.0")>=0;
 	drh.ie70 = drh.ie && dav.indexOf("MSIE 7.0")>=0;
 
+	var cm = document["compatMode"];
+	drh.quirks = (cm == "BackCompat")||(cm == "QuirksMode")||drh.ie55||drh.ie50;
+
 	// TODO: is the HTML LANG attribute relevant?
 	dojo.locale = dojo.locale || (drh.ie ? navigator.userLanguage : navigator.language).toLowerCase();
 
