@@ -1,4 +1,4 @@
-dojo.provide("dojo.io.IO");
+dojo.provide("dojo.io");
 dojo.require("dojo.string");
 dojo.require("dojo.lang.extras");
 

@@ -360,14 +360,20 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 * object or uses what already exists. It returns the result.
 */
 dojo.hostenv.startPackage = function(packname){
-	var modref = dojo.evalObjPath((packname.split(".").slice(0, -1)).join('.'));
-	this.loaded_modules_[(new String(packname)).toLowerCase()] = modref;
+	//Make sure we have a string.
+	var fullPkgName = (new String(packname)).toString();
+	var strippedPkgName = fullPkgName;
 
 	var syms = packname.split(/\./);
 	if(syms[syms.length-1]=="*"){
 		syms.pop();
+		strippedPkgName = syms.join(".");
 	}
-	return dojo.evalObjPath(syms.join("."), true);
+	var evaledPkg = dojo.evalObjPath(strippedPkgName.toString(), true);
+	this.loaded_modules_[fullPkgName] = evaledPkg;
+	this.loaded_modules_[strippedPkgName] = evaledPkg;
+	
+	return evaledPkg;
 }
 
 /**
@@ -377,24 +383,10 @@ dojo.hostenv.startPackage = function(packname){
  * if the module does not currently exist.
  */
 dojo.hostenv.findModule = function(modulename, must_exist){
-	// check cache
-	/*
-	if(!dj_undef(modulename, this.modules_)){
-		return this.modules_[modulename];
-	}
-	*/
-
-	var lmn = (new String(modulename)).toLowerCase();
+	var lmn = new String(modulename).toString();
 
 	if(this.loaded_modules_[lmn]){
 		return this.loaded_modules_[lmn];
-	}
-
-	// see if symbol is defined anyway
-	var module = dojo.evalObjPath(modulename);
-	if((modulename)&&(typeof module != 'undefined')&&(module)){
-		this.loaded_modules_[lmn] = module;
-		return module;
 	}
 
 	if(must_exist){
