@@ -6,7 +6,7 @@
 .TreeStateChildrenYes-ExpandOpen .TreeIconContent {
     background-image : url('../templates/images/TreeV3/i_long.gif');
     background-repeat : no-repeat;
-    background-position: 0px 9px;
+    background-position: 18px 9px;
 }
 
 /* close has higher priority */
@@ -50,6 +50,6 @@
     background-repeat : no-repeat;
 }
 
-.TreeIconContent {
-    margin-left:18px;
+div.TreeContent {
+	margin-left: 36px;
 }

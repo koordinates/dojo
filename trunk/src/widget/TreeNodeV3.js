@@ -3,6 +3,8 @@ dojo.provide("dojo.widget.TreeNodeV3");
 dojo.require("dojo.html.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
+dojo.require("dojo.widget.TreeWithNode");
+
 
 // make it a tag
 dojo.widget.tags.addParseTreeHandler("dojo:TreeNodeV3");
@@ -125,9 +127,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		//dojo.profile.start("buildRendering - cloneNode");
 		
 		this.domNode = this.tree.nodeTemplate.cloneNode(true);
-		this.expandNode = this.domNode.firstChild.firstChild;
-        this.contentNode = this.domNode.firstChild.childNodes[1];
-        this.labelNode = this.contentNode.firstChild;
+		this.expandNode = this.domNode.firstChild;
+		this.contentNode = this.domNode.childNodes[1];
+		this.labelNode = this.contentNode.firstChild;
 
 		/*
 		this.domNode = this.tree.nodeTemplate.cloneNode(false);
