@@ -10,7 +10,7 @@
 		dojoAttachPoint="cbTableNode">
 		<tr>
 			<td><input type="text" autocomplete="off" class="dojoComboBoxInput"
-					dojoAttachEvent="keyDown: onKeyDown; keyUp: onKeyUp; keyPress: onKeyPress; compositionEnd"
+					dojoAttachEvent="keyDown: onKeyDown; keyUp: onKeyUp; keyPress: onKeyPress; compositionEnd; onResize"
 					dojoAttachPoint="textInputNode"></td>
 			<td><img border="0" 
 					hspace="0"
@@ -18,7 +18,8 @@
 					class="dojoComboArrow"
 					dojoAttachPoint="downArrowNode"
 					dojoAttachEvent="onMouseUp: handleArrowClick;"
-					src="${dojoRoot}src/widget/templates/images/combo_box_arrow.png"></td>
+					src="${this.buttonSrc}"
+					style="width: ${this.initialButtonSize}; height: ${this.initialButtonSize};"></td>
 		</tr>
 	</table>
 </span>

@@ -1,6 +1,8 @@
 /* the table holding the input and the button */
 .dojoComboBox {
 	border: 1px solid #afafaf;
+	padding: 0px;
+	line-height: 0px;
 }
 
 .b_ie .dojoComboBox,  .b_safari .dojoComboBox {
@@ -19,7 +21,8 @@
 input.dojoComboBoxInput {
 	/* font-size: 0.8em; */
 	border: 0px;
-	
+	margin: 0px;
+	padding: 0px;
 }
 
 /* the drop down */
