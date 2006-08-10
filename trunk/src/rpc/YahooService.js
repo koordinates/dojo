@@ -14,7 +14,7 @@ dojo.rpc.YahooService = function(appId){
 					"deployment of your application");
 	}
 	this.connect(dojo.uri.dojoUri("src/rpc/yahoo.smd"));
-	this.scrictArgChecks = false;
+	this.strictArgChecks = false;
 }
 
 dojo.inherits(dojo.rpc.YahooService, dojo.rpc.JsonService);
