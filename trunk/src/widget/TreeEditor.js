@@ -72,13 +72,13 @@ dojo.widget.defineWidget(
 			case e.KEY_ENTER:
 				if( e.ctrlKey && !this.singleLineMode ) {
 					this.editor.execCommand( "inserthtml", "<br/>" );
-					dojo.event.browser.stopEvent(e);		
+							
 				}
 				else {
-					this.finish(true);
-					dojo.event.browser.stopEvent(e);		
+					this.finish(true);					
 					//dojo.debug("finish");
 				}
+				dojo.event.browser.stopEvent(e);
 				break;
 			default:
 				return invocation.proceed();
@@ -91,7 +91,7 @@ dojo.widget.defineWidget(
 	
 	
 	finish: function(save) {
-		return this.controller.editLabelFinish(this.node, save, this.sync);
+		return this.controller.editLabelFinish(save, this.sync);
 	}
 		
 		

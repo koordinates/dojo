@@ -226,7 +226,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		
 		if (!this.editor.isClosed()) {
 			//dojo.debug("editLabelStart editor open");
-			this.editLabelFinish(node, this.editor.saveOnBlur);			
+			this.editLabelFinish(this.editor.saveOnBlur);			
 		}
 				
 		this.doEditLabelStart(node);
@@ -235,8 +235,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 	
 	
-	editLabelFinish: function(node, save, sync) {
-		this.doEditLabelFinish(node, save);		
+	editLabelFinish: function(save) {
+		this.doEditLabelFinish(save);		
 	},
 	
 	
@@ -245,14 +245,27 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 			dojo.raise(this.widgetType+": no editor specified");
 		}
 		
+		//dojo.debug("editLabelStart editor open "+node);
+		
 		this.editor.open(node);
 	},
 	
-	doEditLabelFinish: function(node, save) {
+	doEditLabelFinish: function(save) {
 		if (!this.editor) {
 			dojo.raise(this.widgetType+": no editor specified");
 		}
+		var node = this.editor.node;
+		
 		this.editor.close(save);
+		//dojo.debug("Finish edit "+node+" "+node.isPhantom+" save:"+save);
+		
+		if (node.isPhantom) {
+			if (save) {
+				node.isPhantom = false;
+			} else {
+				node.destroy();
+			}
+		}
 	},
 	
 	
@@ -292,6 +305,36 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		
 		return result;
 	}
+});
+
+
+// create and edit
+dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
+		
+	createAndEdit: function(parent, index) {
+		var data = {title:parent.tree.defaultChildTitle};
+		
+		if (!this.canCreateChild(parent, index, data)) {
+			return false;
+		}
+		
+		var child = this.doCreateChild(parent, index, data);
+		if (!child) return false;
+		this.exposeCreateChild(parent, index, data);
+		
+		child.isPhantom = true;
+		
+		if (!this.editor.isClosed()) {
+			//dojo.debug("editLabelStart editor open");
+			this.editLabelFinish(this.editor.saveOnBlur);			
+		}
+		
+		
+				
+		this.doEditLabelStart(child);		
+	
+	}
+	
 });
 
 
@@ -488,7 +531,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 	
 	exposeCreateChild: function(parent) {
-		this.expand(parent);
+		return this.expand(parent);
 	}
 
 

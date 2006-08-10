@@ -31,6 +31,11 @@
 .TreeExpandLeaf .TreeExpand {
     background-image: url('../templates/images/TreeV3/expand_leaf.gif');
 }
+
+.TreeExpandLoading .TreeExpand {
+    background-image: url('../templates/images/TreeV3/expand_loading.gif');
+}
+ 
  
  
 .TreeContent {
@@ -58,10 +63,6 @@
 .TreeNodeEmphased {
     background-color: Highlight;
     color: HighlightText;
-}
- 
-.TreeExpandLoading {
-    background-image: url('../templates/images/TreeV3/expand_loading.gif');
 }
  
  

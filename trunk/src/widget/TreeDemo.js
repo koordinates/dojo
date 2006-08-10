@@ -75,13 +75,9 @@ dojo.widget.TreeDemo = {
 
 		dojo.event.topic.subscribe('treeContextMenuCreate/engage',
 			function (menuItem) {
-               var d = controller.createChild(menuItem.getTreeNode(), 0, {title:"New node"});
-			   if (d instanceof dojo.Deferred) {
-					d.addCallback(function(node) { controller.editLabelStart(node); return node; });
-			   } else if (d) {
-					controller.editLabelStart(node);
-			   }
-			   _t.reportIfDefered(d);
+				var node = menuItem.getTreeNode();
+				var d = controller.createAndEdit(node, 0);
+				_t.reportIfDefered(d);
             }
 		);
 

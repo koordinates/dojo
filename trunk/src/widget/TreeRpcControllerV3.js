@@ -194,7 +194,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		if (!this.editor.isClosed()) {
 			//dojo.debug("editLabelStart editor open");
-			var deferred = this.editLabelFinish(node, this.editor.saveOnBlur, sync);
+			var deferred = this.editLabelFinish(this.editor.saveOnBlur, sync);
 			deferred.addCallback(function() {
 				return _this.editLabelStart(node, sync);
 			});
@@ -216,25 +216,86 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	},
 	
 	
-	editLabelFinish: function(node, save, sync) {
+	editLabelFinish: function(save, sync) {
 		var _this = this;
 		
-		if (!save) {
-			var deferred = this.requestEditConfirmation(node,'editLabelFinishCancel', sync);						
-		} else {					
-			var deferred = this.editLabelSave(node, this.editor.getContents(), sync);
+		var node = this.editor.node;
+		
+		var deferred = dojo.Deferred.prototype.makeCalled();
+		
+		if (!save && !node.isPhantom) {
+			deferred = this.requestEditConfirmation(this.editor.node,'editLabelFinishCancel', sync);
+		}
+		
+		if (save) {					
+			deferred = this.editLabelSave(this.editor.node, this.editor.getContents(), sync);
 		}
 		
 		deferred.addCallback(function() {
-			_this.doEditLabelFinish(node, save);
+			_this.doEditLabelFinish(save);
 		});
 		
 		deferred.addErrback(function(r) {
-			_this.doEditLabelFinish(node, false);
+			_this.doEditLabelFinish(false);
 			return false;
 		});
 		
 		return deferred;
+	},
+	
+	createAndEdit: function(parent, index, sync) {
+		var data = {title:parent.tree.defaultChildTitle};
+		
+		if (!this.canCreateChild(parent, index, data)) {
+			return false;
+		}
+		
+		/* close editor first */
+		if (!this.editor.isClosed()) {
+			//dojo.debug("editLabelStart editor open");
+			var deferred = this.editLabelFinish(this.editor.saveOnBlur, sync);
+			deferred.addCallback(function() {
+				return _this.createAndEdit(parent, index, sync);
+			});
+			return deferred;
+		}
+			
+		var _this = this;
+		
+		/* load parent and create child*/
+		var deferred = this.prepareCreateChild(parent, index, data, sync);
+		
+		
+		deferred.addCallback(function() {
+			var child = dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(_this,parent,index,data);			
+			child.isPhantom = true;
+			return child;
+		});
+		
+		
+		deferred.addBoth(function(r) {
+			_this.finalizeCreateChild(parent, index, data, sync);
+			return r;
+		});
+		
+		/* expand parent */
+		deferred.addCallback(function(child) {
+			var d = _this.exposeCreateChild(parent, index, data, sync);
+			d.addCallback(function() { return child });
+			return d;
+		});
+		
+		
+		deferred.addCallback(function(child) {
+			//dojo.debug("start edit");
+			_this.doEditLabelStart(child);
+			return child
+		});
+		
+		
+		
+		return deferred;
+	
 	}
 	
 	

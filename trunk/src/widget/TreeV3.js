@@ -51,6 +51,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 	 */
 	defaultChildWidget: null,
 	
+	defaultChildTitle: "New Node", // for editing
 	
 	
 	eagerWidgetInstantiation: false,
