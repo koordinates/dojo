@@ -289,7 +289,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		deferred.addCallback(function(child) {
 			//dojo.debug("start edit");
 			_this.doEditLabelStart(child);
-			return child
+			return child;
 		});
 		
 		

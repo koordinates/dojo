@@ -10,7 +10,7 @@ dojo.widget.defineWidget(
 {
 		
 		
-	singleLineMode: true, // enter saves
+	singleLineMode: false, // enter saves
 	saveOnBlur: true, // blur or new edit saves current
 	sync: false,  // finish editing in sync/async mode
 	
@@ -58,6 +58,10 @@ dojo.widget.defineWidget(
 		return !this.richText || this.richText.isClosed;
 	},
 	
+	execCommand: function() {
+		this.richText.execCommand.apply(this.richText, arguments);
+	},
+	
 	richText_onKeyDown: function(invocation) {
 		var e = invocation.args[0];
 		if((!e)&&(this.object)) {
@@ -71,7 +75,7 @@ dojo.widget.defineWidget(
 				break;
 			case e.KEY_ENTER:
 				if( e.ctrlKey && !this.singleLineMode ) {
-					this.editor.execCommand( "inserthtml", "<br/>" );
+					this.execCommand( "inserthtml", "<br/>" );
 							
 				}
 				else {
