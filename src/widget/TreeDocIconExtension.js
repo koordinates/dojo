@@ -73,13 +73,15 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		}
 		dojo.html.setClass(node.contentIconNode, clazz);
 		
-		node.contentNode.parentNode.replaceChild(node.contentIconNode, node.contentNode);
+		node.contentNode.parentNode.replaceChild(node.contentIconNode, node.expandNode);
 									  
 	  	node.iconNode = document.createElement("div");
 		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+node.getNodeType());
 		
-		
+		node.contentIconNode.appendChild(node.expandNode);
 		node.contentIconNode.appendChild(node.iconNode);
+		
+		dojo.dom.removeNode(node.contentNode)
 		node.contentIconNode.appendChild(node.contentNode);
 		
 	

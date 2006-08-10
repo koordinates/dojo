@@ -170,16 +170,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		
 		this.contentNodeTemplate = contentNode;
 		
-		var nodeContentWrapper = document.createElement("div");
-		var clazz = this.classPrefix+"ContentWrapper";
-		if (dojo.render.html.ie) {
-			clazz = clazz + ' ' + this.classPrefix+"IEContentWrapper";
-		}
-		dojo.html.setClass(nodeContentWrapper, clazz);
-		
-		domNode.appendChild(nodeContentWrapper);
-		nodeContentWrapper.appendChild(expandNode);
-		nodeContentWrapper.appendChild(contentNode);
+		domNode.appendChild(expandNode);
+		domNode.appendChild(contentNode);
 		contentNode.appendChild(labelNode);
 		
 		

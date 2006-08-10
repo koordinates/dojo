@@ -45,8 +45,8 @@
     cursor: default;
     /* can't make inline - multiline bugs */
 }
- 
-.TreeIEContentWrapper {
+
+.TreeIEContent {
 	height: 18px;
 }
  
