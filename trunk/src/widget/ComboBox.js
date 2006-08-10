@@ -11,6 +11,7 @@ dojo.require("dojo.html.iframe");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 dojo.require("dojo.widget.Menu2");
+dojo.require("dojo.html.csshack");
 
 dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.searchUrl = url;
@@ -533,7 +534,7 @@ dojo.widget.defineWidget(
 			this.comboBoxSelectionValue.name = this.name+"_selected";
 
 			var source = this.getFragNodeRef(frag);
-			dojo.html.copyStyle(this.domNode, source);
+			dojo.html.copyStyle(this.cbTableNode, source);
 
 			var dpClass;
 			if(this.mode == "remote"){
@@ -737,7 +738,9 @@ dojo.widget.defineWidget(
 		},
 
 		clearResultList: function(){
-			this.optionsListNode.innerHTML = "";  // browser natively knows how to collect this memory
+			if(this.optionsListNode.innerHTML){
+				this.optionsListNode.innerHTML = "";  // browser natively knows how to collect this memory
+			}
 		},
 
 		hideResultList: function(){
