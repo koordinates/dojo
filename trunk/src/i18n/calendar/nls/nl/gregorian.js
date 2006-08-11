@@ -4,5 +4,14 @@
 	'months-standAlone-narrow': ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
 	'days-format-wide': ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"],
 	'days-format-abbr': ["zo", "ma", "di", "wo", "do", "vr", "za"],
-	'days-standAlone-narrow': ["Z", "M", "D", "W", "D", "V", "Z"]
+	'days-standAlone-narrow': ["Z", "M", "D", "W", "D", "V", "Z"],
+
+	'dateFormat-full': "EEEE d MMMM yyyy",
+	'dateFormat-long': "d MMMM yyyy",
+	'dateFormat-medium': "d MMM yyyy",
+	'dateFormat-short': "dd-MM-yy",
+
+	'timeFormat-full': "HH:mm:ss v",
+
+	eras: ['v. Chr.','n. Chr.']
 })

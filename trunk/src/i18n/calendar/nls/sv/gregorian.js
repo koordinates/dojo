@@ -4,5 +4,19 @@
 	'months-standAlone-narrow': ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
 	'days-format-wide': ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"],
 	'days-format-abbr': ["sön", "mån", "tis", "ons", "tor", "fre", "lör"],
-	'days-standAlone-narrow': ["S", "M", "T", "O", "T", "F", "L"]
+	'days-standAlone-narrow': ["S", "M", "T", "O", "T", "F", "L"],
+
+	'dateFormat-full': "EEEE'en den' d MMMM yyyy",
+	'dateFormat-long': "EEEE d MMM yyyy",
+	'dateFormat-medium': "d MMM yyyy",
+	'dateFormat-short': "yyyy-MM-dd",
+
+	'timeFormat-full': "'kl. 'HH.mm.ss z",
+	'timeFormat-long': "HH.mm.ss z",
+	'timeFormat-medium': "HH.mm.ss",
+	'timeFormat-short': "HH.mm",
+
+	am: "fm",
+	pm: "em",
+	eras: ['f.Kr.','e.Kr.']
 })
