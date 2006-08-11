@@ -13,5 +13,7 @@
 
 	'timeFormat-full': "H:mm' Uhr 'z",
 
+	am: "vorm.",
+	pm: "nachm.",
 	eras: ['v. Chr.','n. Chr.']
 })
