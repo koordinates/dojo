@@ -38,10 +38,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	labelNode: null,
 		
 		
-	nodeType: "Document",
+	nodeType: "",
 	
 	getNodeType: function() {
-		if (this.isFolder) return "Folder";
 		return this.nodeType;
 	},
 	
