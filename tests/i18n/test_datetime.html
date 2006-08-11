@@ -34,10 +34,10 @@
 				jum.assertEquals("date_2_2", "Freitag, 11. August 2006", dojo.i18n.datetime.format(date, 'full', null, 'de-at'));
 				jum.assertEquals("date_2_3", "2006\u5E748\u670811\u65E5\u91D1\u66DC\u65E5", dojo.i18n.datetime.format(date, 'full', null, 'ja-jp'));
 
-				jum.assertEquals("date_2_4", "Friday, August 11, 2006", dojo.i18n.datetime.format(date, 'short', null, 'en-us'));
-				jum.assertEquals("date_2_5", "vendredi 11 ao\xFBt 2006", dojo.i18n.datetime.format(date, 'short', null, 'fr-fr'));
-				jum.assertEquals("date_2_6", "Freitag, 11. August 2006", dojo.i18n.datetime.format(date, 'short', null, 'de-at'));
-				jum.assertEquals("date_2_7", "2006\u5E748\u670811\u65E5\u91D1\u66DC\u65E5", dojo.i18n.datetime.format(date, 'short', null, 'ja-jp'));
+				jum.assertEquals("date_2_4", "8/11/06", dojo.i18n.datetime.format(date, 'short', null, 'en-us'));
+				jum.assertEquals("date_2_5", "11/08/06", dojo.i18n.datetime.format(date, 'short', null, 'fr-fr'));
+				jum.assertEquals("date_2_6", "11.08.06", dojo.i18n.datetime.format(date, 'short', null, 'de-at'));
+				jum.assertEquals("date_2_7", "06/08/11", dojo.i18n.datetime.format(date, 'short', null, 'ja-jp'));
 
 		}catch(e){
 			dojo.debug("datetime error occurred: "+e);
