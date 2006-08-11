@@ -79,6 +79,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	classPrefix: "Tree",
 	
+	style: "",
+	
 	/**
 	 * is it possible to add a new child to leaf ?
 	 */	
@@ -100,7 +102,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
     // will have cssRoot before it 
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeV3.css"),
 
-	templateString: '<div>\n</div>',
+	templateString: '<div style="${this.style}">\n</div>',
 
 	isExpanded: true, // consider this "root node" to be always expanded
 
