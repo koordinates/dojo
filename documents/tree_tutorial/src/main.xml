@@ -11,18 +11,18 @@
    <!ENTITY performance_tricks SYSTEM "performance_tricks.xml">
    <!ENTITY tree_treenode SYSTEM "tree_treenode.xml">
    <!ENTITY lazy_loading SYSTEM "lazy_loading.xml">
+   <!ENTITY events SYSTEM "events.xml">
    <!ENTITY thanks SYSTEM "thanks.xml">
 ]>
 <section>
-    <title>Dojo Tree Tutorial</title>
+    <title>Dojo Tree</title>
     &introduction;
     &whatsnew;
     &todo;
     &features;
     
         
-    <important>The rest of the document is draft and may be outdated</important>
-    
+    &events;
     &performance;
     &performance_tricks;
     &components;

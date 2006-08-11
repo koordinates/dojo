@@ -85,7 +85,7 @@
             
     <section>
         
-        <title>IE image-reloading fixup</title>
+        <title>IE image-reloading fixup (!!!)</title>
         
         <para>IE has a well-known bug. If an image was loaded dynamically - with a <code>new Image()</code>, or <code>img.src=</code>
             assignment, or even as a background of a new node, it will not be cached. So every time when you create a node, all needed icons get loaded

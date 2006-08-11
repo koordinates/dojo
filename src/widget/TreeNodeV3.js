@@ -538,12 +538,13 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	detach: function() {
 		if (!this.parent) return;
 
-		var oldParent = this.parent;
+		var parent = this.parent;
+		var index = this.getParentIndex();
 
 		this.doDetach.apply(this, arguments);
 
 		dojo.event.topic.publish(this.tree.eventNames.afterDetach,
-			{ child: this, tree: this.tree, parent: oldParent }
+			{ child: this, parent: parent, index:index }
 		);
 		
 	},

@@ -42,7 +42,19 @@
 </div>	
 
 
+<!-- Prevent div from collapsing beyond table width. This ensures there's enough space for all
+HTML elements in the tree -->
+<!-- Use table because it collapses to the content width.
+If use div it will be 100% width and CSS expression above will only make the width of
+the above div constant, no matter what body width is. Only initial body width will be used to
+set the width of the tree. After that it will remain the same.
+Table changes it's width to allow content to fit inside, this fixes the problem -->
+<!-- btw, there can be no comment between div and table, or firstChild is invalid -->
 
+<div style="width: expression( 5 + document.getElementById( uniqueID ).firstChild.offsetWidth )">
+<table>
+	<tr>
+	<td>
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
 
 <div dojoType="TreeDocIconExtension" widgetId="docIcons"></div>
@@ -71,7 +83,10 @@ title="<div style='border:1px red solid;width:200px;height:200px'><span>Rich HTM
 	<div dojoType="TreeNodeV3" title="Item 2"></div>
     </div>
 </div>
-	
+	</td>
+</tr>
+</table>
+</div>
 
 <input type="button" value="Profile dump" onclick="dojo.profile.dump(true)">
 

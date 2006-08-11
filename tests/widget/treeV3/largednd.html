@@ -74,7 +74,7 @@
 		});	
 		dojo.profile.end("createTree");
 				
-		document.body.appendChild(tree.domNode);
+		dojo.byId( "treeDrop" ).appendChild(tree.domNode);
 
 	
 		dojo.profile.start("prepareNodes");		
@@ -132,6 +132,13 @@
 <br/>
 
 <input type="button" value="dump profile" onClick="dojo.profile.dump(true)">
-
+<div style="width: expression( 5 + document.getElementById( uniqueID ).firstChild.offsetWidth )">
+					<table>
+						<tr>
+						<td id="treeDrop">
+</td>
+</tr>
+</table>
+</div>
 </body>
 </html>

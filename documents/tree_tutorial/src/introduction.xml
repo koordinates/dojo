@@ -2,8 +2,8 @@
 <section>
     <title>Introduction</title>
     <para>
-        This documentation refers to new TreeV3, not to stable Tree widget.
-        Feel free to suggest features and test/critisize existing solutions. 
+        This documentation refers to new TreeV3, not to stable Tree widget. Many classes have V3 on the end for TreeV3, 
+        but that suffix can be omitted, because it will be removed in dojo 0.5.
     </para>
     
     <para>

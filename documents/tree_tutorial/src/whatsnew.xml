@@ -95,9 +95,10 @@
         <title>Drag'n'drop changes</title>
         
         <section>
-            <title>Multiple selection and multiple drag'n'drop (not ready yet)</title>
+            <title>Multiple selection and multiple drag'n'drop (incomplete)</title>
             <para>Sounds simple enough.. Select multiple nodes with ctrl and get them with <methodname>selector.selectedNodes</methodname>.
                 instead of removed <methodname>selectorNode</methodname> call.</para>
+            <para>Currently, multiple drag'n'drop does not work with multiple selection because of dojo bugs. Hopefully will be fixed.</para>
         </section>
         
         <section>
