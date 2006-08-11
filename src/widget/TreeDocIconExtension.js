@@ -38,7 +38,12 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		
 		var reg = new RegExp("(^|\\s)"+node.tree.classPrefix+"Icon\\w+",'g');			
 		
-		var clazz = dojo.html.getClass(node.iconNode).replace(reg,'') + ' ' + node.tree.classPrefix+'Icon'+node.getNodeType();
+		var nodeType = node.getNodeType();
+		if (!nodeType) {
+			nodeType = node.isFolder ? "Folder" : "Document";
+		}
+		
+		var clazz = dojo.html.getClass(node.iconNode).replace(reg,'') + ' ' + node.tree.classPrefix+'Icon'+nodeType;
 		dojo.html.setClass(node.iconNode, clazz);		
 	},
 		
