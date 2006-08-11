@@ -4,5 +4,19 @@
 	'months-standAlone-narrow': ["T", "H", "M", "H", "T", "K", "H", "E", "S", "L", "M", "J"],
 	'days-format-wide': ["sunnuntai", "maanantai", "tiistai", "keskiviikko", "torstai", "perjantai", "lauantai"],
 	'days-format-abbr': ["su", "ma", "ti", "ke", "to", "pe", "la"],
-	'days-standAlone-narrow': ["S", "M", "T", "K", "T", "P", "L"]
+	'days-standAlone-narrow': ["S", "M", "T", "K", "T", "P", "L"],
+
+	'dateFormat-full': "EEEE'na 'd. MMMM'ta 'yyyy",
+	'dateFormat-long': "d. MMMM'ta 'yyyy",
+	'dateFormat-medium': "d.M.yyyy",
+	'dateFormat-short': "d.M.yyyy",
+
+	'timeFormat-full': "H.mm.ss v",
+	'timeFormat-long': "'klo 'H.mm.ss",
+	'timeFormat-medium': "H.mm.ss",
+	'timeFormat-short': "H.mm",
+
+	am: "ap.",
+	pm: "ip.",
+	eras: ['eKr.','jKr.']
 })
