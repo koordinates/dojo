@@ -146,6 +146,18 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 				case 'S':
 					s = Math.round(value.getMilliseconds() * Math.pow(10, l));
 					break;
+				case 'Z':
+					var tz = value.getTimezoneOffset().split('.');
+					var sign = "-"; //TODO: how do you derive the sign? tz is positive for EDT?
+					tz.splice(0, 0, sign);
+					tz[1] = dojo.string.pad(Math.abs(tz[0]), 2);
+					tz[2] = dojo.string.pad((tz[1] || 0), 2, 0, -1);
+					if(l==4){
+						tz.splice(0, 0, "GMT");
+						tz.splice(3, 0, ":");
+					}
+					s = s.join("");
+					break;
 				case 'Y':
 				case 'u':
 				case 'w':
@@ -155,10 +167,9 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 				case 'g':
 				case 'A':
 				case 'z':
-				case 'Z':
 				case 'v':
 					dojo.unimplemented("date format not implemented, pattern="+match);
-					s = "";
+					s = "?";
 					break;
 				default:
 					dojo.raise("invalid format: "+pattern);
