@@ -31,6 +31,17 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	tryLazyInit: true,
 
 
+	/*
+	 * Basic actions one can perform on nodes and, some(addchild) on trees
+	 */
+	actions: {
+		MOVE: "MOVE",
+    	DETACH: "DETACH",
+    	EDIT: "EDIT",
+    	ADDCHILD: "ADDCHILD"
+	},
+	
+	
 	labelStyle: "",
 	contentStyle: "",
 

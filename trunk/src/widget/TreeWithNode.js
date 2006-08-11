@@ -20,16 +20,6 @@ dojo.widget.TreeWithNode = {
 	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
 
-	/*
-	 * Basic actions one can perform on nodes and, some(addchild) on trees
-	 */
-	actions: {
-		MOVE: "MOVE",
-    	DETACH: "DETACH",
-    	EDIT: "EDIT",
-    	ADDCHILD: "ADDCHILD"
-	},
-	
 
 
 	// I need this to parse children
