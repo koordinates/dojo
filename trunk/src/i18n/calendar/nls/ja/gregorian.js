@@ -16,5 +16,7 @@
 	'timeFormat-medium': "H:mm:ss",
 	'timeFormat-short': "H:mm",
 
+	am: "午前",
+	pm: "午後",
 	eras: ['紀元前','西暦']
 })
