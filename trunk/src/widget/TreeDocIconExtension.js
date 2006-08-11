@@ -24,26 +24,24 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 	
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TreeDocIcon.css"),
 
-	templateString: '<div class="dojoTree"></div>',
-
 	
 	listenTreeEvents: ["afterChangeTree","afterSetFolder","afterUnsetFolder"],
 	
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget },
 	
-		
-	setNodeTypeClass: function(node) {
-		//dojo.debug("setNodeTypeClass in "+node+" type "+node.getNodeType());
-		//dojo.debug(node.iconNode)
-		
-		var reg = new RegExp("(^|\\s)"+node.tree.classPrefix+"Icon\\w+",'g');			
-		
+	getNodeType: function(node) {
 		var nodeType = node.getNodeType();
-		if (!nodeType) {
+		if (!nodeType) { // set default type
 			nodeType = node.isFolder ? "Folder" : "Document";
 		}
+		return nodeType;
+	},
+	
+	setNodeTypeClass: function(node) {
 		
-		var clazz = dojo.html.getClass(node.iconNode).replace(reg,'') + ' ' + node.tree.classPrefix+'Icon'+nodeType;
+		var reg = new RegExp("(^|\\s)"+node.tree.classPrefix+"Icon\\w+",'g');			
+				
+		var clazz = dojo.html.getClass(node.iconNode).replace(reg,'') + ' ' + node.tree.classPrefix+'Icon'+this.getNodeType(node);
 		dojo.html.setClass(node.iconNode, clazz);		
 	},
 		
@@ -81,12 +79,12 @@ dojo.lang.extend(dojo.widget.TreeDocIconExtension, {
 		node.contentNode.parentNode.replaceChild(node.contentIconNode, node.expandNode);
 									  
 	  	node.iconNode = document.createElement("div");
-		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+node.getNodeType());
+		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+this.getNodeType(node));
 		
 		node.contentIconNode.appendChild(node.expandNode);
 		node.contentIconNode.appendChild(node.iconNode);
 		
-		dojo.dom.removeNode(node.contentNode)
+		dojo.dom.removeNode(node.contentNode);
 		node.contentIconNode.appendChild(node.contentNode);
 		
 	

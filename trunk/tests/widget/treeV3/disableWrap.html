@@ -15,6 +15,7 @@
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
 	dojo.require("dojo.widget.TreeDocIconExtension");
+	dojo.require("dojo.widget.TreeDisableWrapExtension");
 	dojo.require("dojo.widget.TreeBasicControllerV3");
 	dojo.hostenv.writeIncludes();
 </script>
@@ -42,18 +43,28 @@
 </div>	
 
 
+<!-- Prevent div from collapsing beyond table width. This ensures there's enough space for all
+HTML elements in the tree -->
+<!-- Use table because it collapses to the content width.
+If use div it will be 100% width and CSS expression above will only make the width of
+the above div constant, no matter what body width is. Only initial body width will be used to
+set the width of the tree. After that it will remain the same.
+Table changes it's width to allow content to fit inside, this fixes the problem -->
+<!-- btw, there can be no comment between div and table, or firstChild is invalid -->
+
 <div dojoType="TreeBasicControllerV3" widgetId="controller"></div>
 
 <div dojoType="TreeDocIconExtension" widgetId="docIcons"></div>
+<div dojoType="TreeDisableWrapExtension" widgetId="disableWrap"></div>
 
 
-<div dojoType="TreeV3" listeners="docIcons;controller" expandLevel="2">
-    <div dojoType="TreeNodeV3" title="Item 1">
+<div dojoType="TreeV3" listeners="docIcons;controller;disableWrap" expandLevel="2">
+    <div dojoType="TreeNodeV3" title="Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong title">
         <div dojoType="TreeNodeV3" title="Item 1.1<br/>multiline<br/>test">
         	<div dojoType="TreeNodeV3" title="Item 1.1.1<br/>blas"></div>
 	</div>
         <div dojoType="TreeNodeV3"
-title="<div style='border:1px red solid;width:200px;height:200px'><span>Rich HTML node</span><div style='border:1px blue solid'>Body Body</div></div>" 
+title="<div style='border:1px red solid;width:700px;height:200px'><span>Rich HTML node</span><div style='border:1px blue solid'>Body Body</div></div>" 
 >
             <div dojoType="TreeNodeV3" title="Item 1.2.1">
 				<div dojoType="TreeNodeV3" title="Item 1.2.1.1"></div>
@@ -68,7 +79,6 @@ title="<div style='border:1px red solid;width:200px;height:200px'><span>Rich HTM
             <div dojoType="TreeNodeV3" title="Item 1.4.1"></div>
         </div>
 	<div dojoType="TreeNodeV3" title="Item 2"></div>
-	<div dojoType="TreeNodeV3" title="Item 3 here is my very long title it should wrap what you think ?"></div>
     </div>
 </div>
 
