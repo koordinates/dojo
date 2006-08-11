@@ -71,7 +71,7 @@ dojo.widget.defineWidget(
 			if ( dojo.lang.isFunction(this.handler)) {
 				this._runHandler();
 			} else if ( this.href != "" ) {
-				this._downloadExternalContent(this.href, this.cacheContent);
+				this._downloadExternalContent(this.href, this.cacheContent && !this.refreshOnShow);
 			}else{
 				this.isLoaded=true;
 			}
@@ -130,9 +130,9 @@ dojo.widget.defineWidget(
 					bindObj[x] = this.bindArgs[x];
 				}
 			}
-			var cache = this.cacheContent;
-			if(dojo.lang.isUndefined(bindObj.useCache)){ bindObj.useCache = cache; }
-			if(dojo.lang.isUndefined(bindObj.preventCache)){ bindObj.preventCache = !cache; }
+
+			if(dojo.lang.isUndefined(bindObj.useCache)){ bindObj.useCache = useCache; }
+			if(dojo.lang.isUndefined(bindObj.preventCache)){ bindObj.preventCache = !useCache; }
 			if(dojo.lang.isUndefined(bindObj.mimetype)){ bindObj.mimetype = "text/html"; }
 			return bindObj;
 		},
