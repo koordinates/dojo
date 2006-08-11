@@ -18,7 +18,7 @@
     <para>Creation from markup or with standard create/addChild routines is  2-3 times slower,
         because these routines are generic.</para>
 
-    <para>Memory footprint (IE,FF) is about 1M per 100 nodes, that were not postponed by lazy creation feature</para>
+    <para>Memory footprint (IE,FF) is about 1M per 100 nodes</para>
     
     <section>
         <title>Comparison</title>
@@ -27,8 +27,10 @@
         </para>
         
     </section>
+        
+    <important>The results described here refer to operations without any lazy features involved.
+        Most of time you will use lazy creation or lazy loading, or both, and operate with 10000 "virtual" nodes with ease.</important>
     
-    <important>These tests are in-dev tests carried on early stages. The results may change, but not much.</important>    
     
 </section>
 

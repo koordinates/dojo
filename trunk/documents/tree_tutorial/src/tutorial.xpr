@@ -9,6 +9,7 @@
         <file name="features.xml"/>
         <file name="howto.xml"/>
         <file name="introduction.xml"/>
+        <file name="lazy_loading.xml"/>
         <file name="main.xml"/>
         <file name="nodecreation.xml"/>
         <file name="performance.xml"/>

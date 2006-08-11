@@ -81,14 +81,6 @@
         <para><code>isFolder</code> comes into play only when there are no children. It allows creation
         of empty folders, with UNCHECKED state that can be filled later.</para>
         
-     <section>
-         <title>Folder status</title>
-         
-         <para>How does a node become a folder?      
-         </para>
-         
-         <para></para>
-     </section>
     
 </section>
     
