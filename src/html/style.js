@@ -396,7 +396,7 @@ dojo.html.insertCssFile = function(URI, doc, checkDuplicates){
 	if(style && djConfig.isDebug){
 		style.setAttribute("dbgHref", URI);
 	}
-	return style
+	return style;
 }
 
 // DomNode Style  = insertCssText(String ".dojoMenu {color: green;}"[, DomDoc document, dojo.uri.Uri Url ])
@@ -475,3 +475,26 @@ dojo.html.getPreferredStyleSheet = function(){
 	}
 	return null;
 }
+
+//	Modified version of Morris' CSS hack.
+dojo.html.applyBrowserClasses = function(/* HTMLElement */node){
+	with (dojo.render.html) {
+		var classes = {
+			b_ie: ie,
+			b_ie55: ie55,
+			b_ie6: ie60,
+			b_ie7: ie70,
+			b_iequirks: ie && quirks,
+			b_opera: opera,
+			b_khtml: khtml,
+			b_safari: safari,
+			b_gecko: mozilla
+		}; // no dojo unsupported browsers
+	}
+	for(var p in classes){
+		if(classes[p]){
+			dojo.html.addClass(node, p);
+			return;
+		}
+	}
+};
