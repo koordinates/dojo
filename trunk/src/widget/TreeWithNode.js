@@ -29,6 +29,7 @@ dojo.widget.TreeWithNode = {
     	EDIT: "EDIT",
     	ADDCHILD: "ADDCHILD"
 	},
+	
 
 
 	// I need this to parse children

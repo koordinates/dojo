@@ -31,6 +31,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	tryLazyInit: true,
 
 
+	labelStyle: "",
+	contentStyle: "",
 
 	expandNode: null,
 	labelNode: null,
@@ -130,6 +132,15 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		this.expandNode = this.domNode.firstChild;
 		this.contentNode = this.domNode.childNodes[1];
 		this.labelNode = this.contentNode.firstChild;
+		
+		if (this.labelStyle) {
+			dojo.html.setStyleText(this.labelNode, this.labelStyle);
+		}
+		
+		if (this.contentStyle) {
+			dojo.html.setStyleText(this.contentNode, this.contentStyle);
+		}
+
 
 		/*
 		this.domNode = this.tree.nodeTemplate.cloneNode(false);

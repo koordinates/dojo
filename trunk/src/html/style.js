@@ -262,6 +262,16 @@ dojo.html.setStyle = function(node, cssSelector, value){
 	}
 }
 
+dojo.html.setStyleText = function (target, text) {
+	try {
+	 	target.style.cssText = text;
+	} catch (e) {
+		target.setAttribute("style", text);
+	}
+}
+
+
+
 dojo.html.copyStyle = function(target, source){
 	// work around for opera which doesn't have cssText, and for IE which fails on setAttribute 
 	if(!source.style.cssText){ 
