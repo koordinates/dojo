@@ -477,7 +477,7 @@ dojo.html.getPreferredStyleSheet = function(){
 }
 
 //	Modified version of Morris' CSS hack.
-dojo.html.applyBrowserClasses = function(/* HTMLElement */node){
+dojo.html.applyBrowserClass = function(/* HTMLElement */node){
 	with (dojo.render.html) {
 		var classes = {
 			b_ie: ie,
