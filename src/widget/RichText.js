@@ -58,8 +58,6 @@ dojo.widget.defineWidget(
 		
 		_SEPARATOR: "@@**%%__RICHTEXTBOUNDRY__%%**@@",
 
-		// contentFilters: [],
-
 		/*
 		defaultContentCleaner: function(content){
 			if(!dojo.render.html.ie){
@@ -184,7 +182,7 @@ dojo.widget.defineWidget(
 					dojo.html.insertAfter(editor.textarea, editor.domNode);
 				});
 			}else{
-				var html = dojo.string.trim(this.domNode.innerHTML);
+				var html = this._preFilterContent(dojo.string.trim(this.domNode.innerHTML));
 				if(html == ""){ html = "&nbsp;"; }
 			}
 			
@@ -1325,7 +1323,9 @@ dojo.widget.defineWidget(
 			dojo.withGlobal(this.window, "collapse", dojo.html.selection, false);
 		},
 
+		//this function set the content while trying to maintain the undo stack
 		replaceEditorContent: function(html){
+			html = this._preFilterContent(html);
 			if(this.isClosed){
 				this.domNode.innerHTML = html;
 			}else if(this.window.getSelection && !dojo.render.html.moz){ // Safari
@@ -1335,6 +1335,14 @@ dojo.widget.defineWidget(
 				this.execCommand("selectall");
 				this.execCommand("inserthtml", html);
 			}
+		},
+
+		_preFilterContent: function(html){
+			var ec = html;
+			dojo.lang.forEach(this.contentPreFilters, function(ef){
+				ec = ef(ec);
+			});
+			return ec;
 		},
 
 		_lastHeight: 0,
@@ -1398,14 +1406,14 @@ dojo.widget.defineWidget(
 				if(dojo.string.trim(ec) == "&nbsp;"){ ec = ""; }
 			}catch(e){ /* squelch */ }
 
-			dojo.lang.forEach(this.contentFilters, function(ef){
+			dojo.lang.forEach(this.contentPostFilters, function(ef){
 				ec = ef(ec);
 			});
 
 			if (this.relativeImageUrls) {
 				// why use a regexp instead of dom? because IE is stupid 
 				// and won't let us set img.src to a relative URL
-				// this comes after contentFilters because once content
+				// this comes after contentPostFilters because once content
 				// gets innerHTML'd img urls will be fully qualified
 				var siteBase = window.location.protocol + "//" + window.location.host;
 				var pathBase = window.location.pathname;
@@ -1528,13 +1536,24 @@ dojo.widget.defineWidget(
 					this._connected.splice(i, 1);
 				}
 			}	
+		},
+
+		fixContentForMoz: function(html){
+			//Moz can not handle strong/em tags correctly, so we change them here
+			html = html.replace(/<strong([ \>])/gi, '<b$1' );
+			html = html.replace(/<\/strong>/gi, '<\/b>' );
+			html = html.replace(/<em([ \>])/gi, '<i$1' );
+			html = html.replace(/<\/em>/gi, '<\/i>' );
+			return html;
 		}
-		
 	},
 	"html",
 	function(){
-		this.contentFilters = [];
-		// this.contentFilters.push(this.defaultContentCleaner);
+		this.contentPreFilters = [];
+		this.contentPostFilters = [];
+		if(dojo.render.html.moz){
+			this.contentPreFilters.push(this.fixContentForMoz);
+		}
 		
 		this._keyHandlers = {};
 	}
