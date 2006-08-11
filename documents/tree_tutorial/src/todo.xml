@@ -32,7 +32,8 @@
             <listitem><simpara>Drag'n'drop onDrop errors can't be handled. Need a way to hook on e.g permission denied errors.</simpara>
             </listitem>
             <listitem><simpara>When I expand a large tree and try to move its top (dnd), node starts to move after a pause - a gap in time between
-            I start moving node with my mouse and dragClone appears. Lots of calculations?</simpara></listitem>
+                I start moving node with my mouse and dragClone appears. Lots of calculations?</simpara></listitem>
+            <listitem><simpara>wipe and fade togglers are broken</simpara></listitem>
         </itemizedlist>
         
         </section>
