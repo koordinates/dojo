@@ -61,7 +61,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		// tree created.. Perform tree-wide actions if needed
 		afterTreeCreate: "afterTreeCreate",
 		beforeTreeDestroy: "beforeTreeDestroy",
-		beforeDestroy: "beforeDestroy",
+		/* can't name it "beforeDestroy", because such name causes memleaks in IE */
+		beforeNodeDestroy: "beforeNodeDestroy",
 		afterChangeTree: "afterChangeTree",
 
 		afterSetFolder: "afterSetFolder",

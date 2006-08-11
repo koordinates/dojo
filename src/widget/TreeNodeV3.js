@@ -609,7 +609,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 	 */
 	destroy: function() {
 		
-		dojo.event.topic.publish(this.tree.eventNames.beforeDestroy, { source: this } );
+		dojo.event.topic.publish(this.tree.eventNames.beforeNodeDestroy, { source: this } );
 		
 		this.detach();		
 

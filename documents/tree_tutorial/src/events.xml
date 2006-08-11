@@ -40,7 +40,7 @@
     </section>
     
     <section>
-        <title>beforeDestroy</title>
+        <title>beforeNodeDestroy</title>
         
         
         <para>Right before TreeNode#destroy is called. Node is detached after this event fired.</para>
