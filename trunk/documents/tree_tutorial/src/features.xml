@@ -14,7 +14,7 @@
             <itemizedlist>
                 <listitem>expand/collapse</listitem>
                 <listitem>create with JS or markup</listitem>
-                <listitem>destroy/move/clone/edit</listitem>
+                <listitem>destroy/move/clone</listitem>
                 <listitem>addChild/detach/(de)folderize</listitem>
                 <listitem>inline editing</listitem>
                 <listitem>multiple selection and drag'n'drop</listitem>
