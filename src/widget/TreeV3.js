@@ -116,7 +116,7 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		data.tree = this.widgetId;		
 		
 		if (data.widgetName) {
-			// TODO: check if such widget has createSimple
+			// TODO: check if such widget has createSimple			
 			return dojo.widget.createWidget(data.widgetName, data);		
 		} else if (this.defaultChildWidget.prototype.createSimple) {			
 			return this.defaultChildWidget.prototype.createSimple(data);					
@@ -189,16 +189,6 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		this.containerNodeTemplate = div;
 		
 	},
-
-
-	//
-	// these icons control the grid and expando buttons for the whole tree
-	//
-
-	icons: {
-		expandLoading: dojo.uri.dojoUri("src/widget/templates/images/TreeV3/loading.gif")		
-	},
-		
 
 	
 	actions: {

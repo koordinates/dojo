@@ -16,7 +16,8 @@
             <listitem>On Drag'n'drop tree 'wobbles', because node size increases/decreases when it is
                 bordered.  Could be nice to evade it, either placing another transparent div with border onto
                 the node or decreasing their size, or using padding divs, or..</listitem>
-      
+      <listitem>Add checkbox extension. Every node will have checkbox, can save/restore checked state. When parent is checked,
+      all children are marked "grey-checked", user may uncheck grey-checked nodes. grey-checked dependant nodes removed if parent is unchecked.</listitem>
         </itemizedlist>
     </section>
     
