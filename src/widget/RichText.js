@@ -224,6 +224,10 @@ dojo.widget.defineWidget(
 				// dojo.event.connect(window, "onunload", this, "_saveContent");
 			}
 
+			if(h.ie70 && this.useActiveX){
+				dojo.debug("activeX in ie70 is not currently supported, useActiveX is ignored for now.");
+				this.useActiveX = false;
+			}
 			// Safari's selections go all out of whack if we do it inline,
 			// so for now IE is our only hero
 			//if (typeof document.body.contentEditable != "undefined") {
@@ -231,10 +235,8 @@ dojo.widget.defineWidget(
 				this._drawObject(html);
 				// dojo.debug(this.object.document);
 			} else if (h.ie) { // contentEditable, easy
-				this._cacheLocalBlockFormatNames();
 				this.editNode = document.createElement("div");
 				with (this.editNode) {
-					innerHTML = html;
 					contentEditable = true;
 					if(h.ie70){
 						if(this.height){
@@ -247,8 +249,9 @@ dojo.widget.defineWidget(
 						style["height"] = this.height ? this.height : this.minHeight;
 					}
 				}
+				this.window = window;
+				this.document = document;
 
-				if(this.height){ this.editNode.style.overflowY="scroll"; }
 				// FIXME: setting contentEditable on switches this element to
 				// IE's hasLayout mode, triggering weird margin collapsing
 				// behavior. It's particularly bad if the element you're editing
@@ -260,12 +263,48 @@ dojo.widget.defineWidget(
 
 				this.domNode.appendChild(this.editNode);
 
+				//if the normal way fails, we try the hard way to get the list
+//				this.editNode.style.display = "none";
+				if(!this._cacheLocalBlockFormatNames()){
+					//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
+					var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
+					var localhtml = "";
+					for(var i in formats){
+						if(formats[i].charAt(1) != 'l'){
+							localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
+						}else{
+							localhtml += "<"+formats[i]+"><li>content</li></"+formats[i]+">";
+						}
+					}
+					//queryCommandValue returns empty if we hide editNode, so move it out of screen temporary
+					with(this.editNode.style){
+						position = "absolute";
+						left = "-2000px";
+						top = "-2000px";
+					}
+					this.editNode.innerHTML = localhtml;
+					var node = this.editNode.firstChild;
+					while(node){
+						dojo.html.selection.selectElement(node.firstChild);
+						var nativename = node.tagName.toLowerCase();
+						this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
+						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
+						this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
+						node = node.nextSibling;
+					}
+					with(this.editNode.style){
+						position = "";
+						left = "";
+						top = "";
+					}
+				}
+
+				this.editNode.innerHTML = html;
+				if(this.height){ this.editNode.style.overflowY="scroll"; }
+
 				dojo.lang.forEach(this.events, function(e){
 					dojo.event.connect(this.editNode, e.toLowerCase(), this, e);
 				}, this);
-			
-				this.window = window;
-				this.document = document;
 				
 				this.onLoad();
 			} else { // designMode in iframe
@@ -549,17 +588,22 @@ dojo.widget.defineWidget(
 		//static cache variables shared between all instance of this class
 		_local2NativeFormatNames: {},
 		_native2LocalFormatNames: {},
-		//in IE, names for blockformat is local dependent, so we cache the values here
+		//in IE, names for blockformat is locale dependent, so we cache the values here
+		//we use activeX to obtain the list, if success or the names are already cached, 
+		//return true
 		_cacheLocalBlockFormatNames: function(){
 			if(!this._native2LocalFormatNames['p']){
 				var obj = this.object;
 				if(!obj){
 					//create obj temporarily
-					// FIXME: does not work on IE 7!!
-					obj = dojo.html.createExternalElement(dojo.doc(), "object");
-					obj.classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
-					dojo.body().appendChild(obj);
-					obj.DocumentHTML = "<html><head></head><body></body></html>";
+					try{
+						obj = dojo.html.createExternalElement(dojo.doc(), "object");
+						obj.classid = "clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A";
+						dojo.body().appendChild(obj);
+						obj.DocumentHTML = "<html><head></head><body></body></html>";
+					}catch(e){
+						return false;
+					}
 				}
 				var oNamesParm = new ActiveXObject("DEGetBlockFmtNamesParam.DEGetBlockFmtNamesParam"); 
 				obj.ExecCommand(this._activeX.command['getblockformatnames'], 0, oNamesParm); 
@@ -577,6 +621,7 @@ dojo.widget.defineWidget(
 					dojo.body().removeChild(obj);
 				}
 			}
+			return true;
 		},
 	/* Event handlers
 	 *****************/
@@ -1251,7 +1296,7 @@ dojo.widget.defineWidget(
 				}
 			} else {
 				if(dojo.render.html.ie && command == "formatblock"){
-					return this._local2NativeFormatNames[this.document.queryCommandValue(command)];
+					return this._local2NativeFormatNames[this.document.queryCommandValue(command)] || this.document.queryCommandValue(command);
 				}
 				return this.document.queryCommandValue(command);
 			}
