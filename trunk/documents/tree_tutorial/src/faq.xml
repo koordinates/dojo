@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section>
+    <title>Faq</title>
+    
+    <section>
+        <title>How to make tree unselectable?</title>
+         <para>To make tree (or its elements) unselectable use dojo.html.disableSelection in nodeCreate and treeCreate hooks.
+            Apply disableSelection to every node you want to make unselectable.
+        </para>
+        
+    </section>
+  
+    <section>
+        <title>How to bind an object to tree node?</title>
+        
+        <para>There is an "objectId" property and "object" property ready to be filled in from markup or program-way.</para>
+    </section>
+
+    <section>
+        <title>How to walk all node descendants ?</title>
+        
+        <para>You may use <code>dojo.lang.forEach(nodeOrTree.getDescendants(),function(elem) { ... })</code> to process all descendants,
+            it will walk <methodname>children</methodname> property recursively.        
+            
+        </para>
+        
+        <para>The safer way would be to call <code>TreeCommon.prototype.processDescendants(nodeOrTree, filter, func)</code>, it will process all children
+        with <code>func</code>, but will not descend into nodes if <code>filter(node)</code> returns false. E.g see <methodname>collapseAll</methodname>
+            controller method uses it to collapse all widgets, but skip non-folders and data objects. 
+        </para>
+        </section>
+        
+    
+    <section>
+        <title>How to evade a situation where all nodes are (re)moved and tree is empty without a way to add new child (no nodes) ?             
+        </title>
+        
+        <para>Make a single root node with actionsDisabled="DETACH;MOVE". User will be unable to remove it, so interface will stay sane.</para>
+        
+    </section>
+    
+    
+    <section>
+        <title>How to make pages open when a user clicks on node?</title>
+        
+        <para>There are 2 ways. The first one is to attach TreeSelector and hook on "select" event. So when a user clicks,
+            event handler will change url to node.object.href. Of course, you should fill hrefs.
+        </para>
+        <para>A probably more convinient path would be to employ TreeLinkExtension, which will turn your labelNodes into real links,
+            and apply attrbutes from node object to them.</para>
+        
+    </section>
+    
+    
+    <section>
+        <title>I open very large tree. But navigation away to another page from the tree takes time. What's up?</title>
+        
+        <para>Dojo performs actions not only when a node is created, but also cleanup when a node is destroyed.
+        Lazy features allow node creation be distributed in time, but when you navigate away from a large tree, cleanup need some time.
+        I don't know a way to evade that.</para>
+        
+    </section>
+    
+    
+    <section>
+        <title>How to add icons to nodes ?</title>
+    
+        <para>TreeDocIconExtension handles that. You should declare <property>nodeType</property> for your nodes, so they'll get
+            <property>nodeIcon[Your type]</property> CSS class. Default type is Document for leaves and Folder for folders.
+        </para>
+        
+    </section>
+    
+    
+            
+</section>
+

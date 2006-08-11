@@ -6,8 +6,8 @@
     <projectTree name="tutorial.xpr">
         <file name="components.xml"/>
         <file name="extensions.xml"/>
+        <file name="faq.xml"/>
         <file name="features.xml"/>
-        <file name="howto.xml"/>
         <file name="introduction.xml"/>
         <file name="lazy_loading.xml"/>
         <file name="main.xml"/>

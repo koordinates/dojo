@@ -46,8 +46,7 @@ dojo.lang.extend( dojo.widget.TreeDisableWrapExtension, {
 		var td = document.createElement( "td" );
 		tr.appendChild( td );
 		
-		if( tree.domNode.parentNode )
-		{
+		if( tree.domNode.parentNode ) {
 			tree.domNode.parentNode.replaceChild( wrappingDiv, tree.domNode );
 		}
 		
