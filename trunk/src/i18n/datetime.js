@@ -135,7 +135,7 @@ dojo.i18n.datetime.format = function(value, formatLength, options, locale /*opti
 					var h = value.getHours();
 					if((h>11)&&(c=='h' || c=='K')){h-=12;}
 					if(c=='h' || c=='k'){h++;}
-					s = k+1; pad = true;
+					s = h; pad = true;
 					break;
 				case 'm':
 					s = value.getMinutes(); pad = true;
