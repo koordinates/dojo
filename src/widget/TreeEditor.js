@@ -34,16 +34,15 @@ dojo.widget.defineWidget(
 		
 			dojo.event.connect("around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
 			dojo.event.connect(this.richText, "onBlur", this, "richText_onBlur" );
+			
+			var self = this;
+			dojo.event.connect(this.richText, "onLoad", function(){
+				if (self.selectOnOpen) {
+					self.richText.execCommand("selectall");
+				}
+			});
 		} else {
 			this.richText.open(node.labelNode);
-		}
-		
-		if (this.selectOnOpen) {
-			try {
-				this.richText.execCommand("selectall");
-			} catch (e) {
-				dojo.debug(e);
-			}
 		}
 		
 		this.node = node;		
