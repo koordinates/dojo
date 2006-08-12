@@ -248,6 +248,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		//dojo.debug("editLabelStart editor open "+node);
 		
 		this.editor.open(node);
+		this.editor.execCommand("selectall");
 	},
 	
 	doEditLabelFinish: function(save) {
