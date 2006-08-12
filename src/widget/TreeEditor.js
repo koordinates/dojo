@@ -13,6 +13,7 @@ dojo.widget.defineWidget(
 	singleLineMode: false, // enter saves
 	saveOnBlur: true, // blur or new edit saves current
 	sync: false,  // finish editing in sync/async mode
+	selectOnOpen: true,
 	
 	controller: null,
 		
@@ -35,6 +36,10 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.richText, "onBlur", this, "richText_onBlur" );
 		} else {
 			this.richText.open(node.labelNode);
+		}
+		
+		if (this.selectOnOpen) {
+			this.richText.execCommand("selectall");
 		}
 		
 		this.node = node;		
