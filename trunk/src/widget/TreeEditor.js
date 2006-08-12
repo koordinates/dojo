@@ -39,7 +39,11 @@ dojo.widget.defineWidget(
 		}
 		
 		if (this.selectOnOpen) {
-			this.richText.execCommand("selectall");
+			try {
+				this.richText.execCommand("selectall");
+			} catch (e) {
+				dojo.debug(e);
+			}
 		}
 		
 		this.node = node;		
