@@ -257,19 +257,12 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		this.makeNodeTemplate();
 		this.makeContainerNodeTemplate();
 		
-		//this.initializeSelector();
-		//this.initializeController();
-		//this.initializeMenu();
-
 		this.containerNode = this.domNode;
 		
 		dojo.html.setClass(this.domNode, this.classPrefix+"Container");
 		
 		var _this = this;
-		
-		//dojo.debug(this.listeners[1]);
-						
-		
+				
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
 				var t = dojo.lang.isString(elem) ? dojo.widget.byId(elem) : elem;
