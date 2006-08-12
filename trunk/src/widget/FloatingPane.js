@@ -124,6 +124,8 @@ dojo.widget.defineWidget(
 			} else {
 				dojo.addOnLoad(this, "setInitialWindowState");
 			}
+			// make preload work
+			dojo.widget.FloatingPane.superclass.postCreate.apply(this, arguments);
 		},
 	
 		maximizeWindow: function(evt) {
