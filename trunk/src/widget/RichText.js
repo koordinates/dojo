@@ -137,7 +137,7 @@ dojo.widget.defineWidget(
 				this.textarea = this.domNode;
 				var html = dojo.string.trim(this.textarea.value);
 				if(html == ""){ html = "&nbsp;"; }
-				this.domNode = document.createElement("div");
+				this.domNode = dojo.doc().createElement("div");
 				var tmpFunc = dojo.lang.hitch(this, function(){
 					with(this.textarea.style){
 						display = "block";
@@ -193,7 +193,7 @@ dojo.widget.defineWidget(
 			this._firstChildContributingMargin = this._getContributingMargin(this.domNode, "top");
 			this._lastChildContributingMargin = this._getContributingMargin(this.domNode, "bottom");
 
-			this.savedContent = document.createElement("div");
+			this.savedContent = dojo.doc().createElement("div");
 			while (this.domNode.hasChildNodes()) {
 				this.savedContent.appendChild(this.domNode.firstChild);
 			}
@@ -206,7 +206,7 @@ dojo.widget.defineWidget(
 			}
 					
 			if(this.saveName != ""){
-				var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
+				var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
 				if (saveTextarea.value != "") {
 					var datas = saveTextarea.value.split(this._SEPARATOR);
 					for (var i = 0; i < datas.length; i++) {
@@ -233,22 +233,33 @@ dojo.widget.defineWidget(
 				this._drawObject(html);
 				// dojo.debug(this.object.document);
 			} else if (h.ie) { // contentEditable, easy
-				this.editNode = document.createElement("div");
-				with (this.editNode) {
-					contentEditable = true;
+				this.iframe = dojo.doc().createElement( 'iframe' ) ;
+				this.iframe.src = 'javascript:void(0)';
+				with(this.iframe.style){
+					border = '0';
+					width = "100%";
+				}
+				this.iframe.frameBorder = 0;
+				this.domNode.appendChild(this.iframe)
+				this.window = this.iframe.contentWindow;
+				this.document = this.window.document;
+				this.document.open();
+				this.document.write("<html><head></head><body style='margin: 0; padding: 0;border: 0; overflow: hidden;'></body></html>");
+				this.document.close();
+				this.editNode = this.document.body;//document.createElement("div");
+				this.editNode.contentEditable = true;
+				with (this.iframe.style) {
 					if(h.ie70){
 						if(this.height){
-							style.height = this.height;
+							height = this.height;
 						}
 						if(this.minHeight){
-							style.minHeight = this.minHeight;
+							minHeight = this.minHeight;
 						}
 					}else{
-						style["height"] = this.height ? this.height : this.minHeight;
+						height = this.height ? this.height : this.minHeight;
 					}
 				}
-				this.window = window;
-				this.document = document;
 
 				// FIXME: setting contentEditable on switches this element to
 				// IE's hasLayout mode, triggering weird margin collapsing
@@ -259,10 +270,9 @@ dojo.widget.defineWidget(
 				// _lastChildContributingMargin don't work on IE unless all
 				// elements have margins set in CSS :-(
 
-				this.domNode.appendChild(this.editNode);
+//				this.domNode.appendChild(this.editNode);
 
 				//if the normal way fails, we try the hard way to get the list
-//				this.editNode.style.display = "none";
 				if(!this._cacheLocalBlockFormatNames()){
 					//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
 					var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
@@ -283,7 +293,7 @@ dojo.widget.defineWidget(
 					this.editNode.innerHTML = localhtml;
 					var node = this.editNode.firstChild;
 					while(node){
-						dojo.html.selection.selectElement(node.firstChild);
+						dojo.withGlobal(this.window, "selectElement", dojo.html.selection, node.firstChild);
 						var nativename = node.tagName.toLowerCase();
 						this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
 						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
@@ -415,8 +425,8 @@ dojo.widget.defineWidget(
 									typeof window.XML == 'undefined'))
 
 			if (!this.iframe) {
-				var currentDomain = (new dojo.uri.Uri(document.location)).host;
-				this.iframe = document.createElement("iframe");
+				var currentDomain = (new dojo.uri.Uri(dojo.doc().location)).host;
+				this.iframe = dojo.doc().createElement("iframe");
 				with (this.iframe) {
 					scrolling = this.height ? "auto" : "no";
 					style.border = "none";
@@ -425,7 +435,7 @@ dojo.widget.defineWidget(
 				}
 			}
 			// opera likes this to be outside the with block
-			this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + "#" + ((document.domain != currentDomain) ? document.domain : "");
+			this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + "#" + ((dojo.doc().domain != currentDomain) ? dojo.doc().domain : "");
 			this.iframe.width = this.inheritWidth ? this._oldWidth : "100%";
 			if (this.height) {
 				this.iframe.style.height = this.height;
@@ -440,14 +450,14 @@ dojo.widget.defineWidget(
 				this.iframe.height = height;
 			}
 
-			var tmpContent = document.createElement('div');
+			var tmpContent = dojo.doc().createElement('div');
 			tmpContent.innerHTML = html;
 
 			// make relative image urls absolute
 			if (this.relativeImageUrls) {
 				var imgs = tmpContent.getElementsByTagName('img');
 				for (var i=0; i<imgs.length; i++) {
-					imgs[i].src = (new dojo.uri.Uri(window.location, imgs[i].src)).toString();
+					imgs[i].src = (new dojo.uri.Uri(dojo.global().location, imgs[i].src)).toString();
 				}
 				html = tmpContent.innerHTML;
 			}
@@ -577,7 +587,7 @@ dojo.widget.defineWidget(
 				(this.height ? '' : '    body,  { overflow: hidden; }') +
 				//'    #bodywrapper {  }' +
 				'</style>' +
-				//'<base href="' + window.location + '">' +
+				//'<base href="' + dojo.global().location + '">' +
 				'<body><div id="bodywrapper">' + html + '</div></body></html>';
 
 			this._cacheLocalBlockFormatNames();
@@ -634,7 +644,7 @@ dojo.widget.defineWidget(
 				this.editNode = this.document.body.firstChild;
 				this.domNode.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
-			}else if (this.iframe){
+			}else if (this.iframe && !dojo.render.html.ie){
 				this.editNode = this.document.body;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 		
@@ -682,6 +692,7 @@ dojo.widget.defineWidget(
 				// FIXME: when scrollbars appear/disappear this needs to be fired						
 			}else if(dojo.render.html.ie){
 				// IE contentEditable
+				this.connect(this, "onDisplayChanged", "_updateHeight");
 				this.editNode.style.zoom = 1.0;
 			}
 			
@@ -1108,7 +1119,7 @@ dojo.widget.defineWidget(
 				if(command == "inserttable"){
 					var tableInfo = this.constructor._tableInfo;
 					if(!tableInfo){
-						tableInfo = document.createElement("object");
+						tableInfo = dojo.doc().createElement("object");
 						tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
 						dojo.body().appendChild(tableInfo);
 						this.constructor._table = tableInfo;
@@ -1171,7 +1182,7 @@ dojo.widget.defineWidget(
 				returnValue = this.document.execCommand("unlink", false, null);
 				
 				// restore original selection
-				var selectionRange = document.createRange();
+				var selectionRange = this.document.createRange();
 				selectionRange.setStart(selectionStartContainer, selectionStartOffset);
 				selectionRange.setEnd(selectionEndContainer, selectionEndOffset);
 				selection.removeAllRanges();
@@ -1212,9 +1223,9 @@ dojo.widget.defineWidget(
 				// dojo.debug("command:", command, "arg:", argument);
 
 				argument = arguments.length > 1 ? argument : null;
-				if(dojo.render.html.moz){
-					this.document = this.iframe.contentWindow.document
-				}
+//				if(dojo.render.html.moz){
+//					this.document = this.iframe.contentWindow.document
+//				}
 
 				if(argument || command!="createlink") {
 					returnValue = this.document.execCommand(command, false, argument);
@@ -1372,10 +1383,13 @@ dojo.widget.defineWidget(
 
 				if(this.document.body["offsetHeight"]){
 					this._lastHeight = Math.max(this.document.body.scrollHeight, this.document.body.offsetHeight) + chromeheight;
-					this.iframe.height = this._lastHeight + "px";
+					if(dojo.render.html.ie){
+						this.iframe.style.height  = this._lastHeight + "px";
+					}else{
+						this.iframe.height = this._lastHeight + "px";
+					}
 					this.window.scrollTo(0, 0);
 				}
-				// dojo.debug(this.iframe.height);
 			}else if(this.object){
 				var height = dojo.html.getBorderBox(this.editNode).height;
 				//height maybe zero in some cases even though the content is not empty,
@@ -1395,7 +1409,7 @@ dojo.widget.defineWidget(
 		 * Saves the content in an onunload event if the editor has not been closed
 		 */
 		_saveContent: function(e){
-			var saveTextarea = document.getElementById("dojo.widget.RichText.savedContent");
+			var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
 			saveTextarea.value += this._SEPARATOR + this.saveName + ":" + this.getEditorContent();
 		},
 
@@ -1415,8 +1429,8 @@ dojo.widget.defineWidget(
 				// and won't let us set img.src to a relative URL
 				// this comes after contentPostFilters because once content
 				// gets innerHTML'd img urls will be fully qualified
-				var siteBase = window.location.protocol + "//" + window.location.host;
-				var pathBase = window.location.pathname;
+				var siteBase = dojo.global().location.protocol + "//" + dojo.global().location.host;
+				var pathBase = dojo.global().location.pathname;
 				if (pathBase.match(/\/$/)) {
 					// ends with slash, match full path
 				} else {
@@ -1469,7 +1483,7 @@ dojo.widget.defineWidget(
 				// kill listeners on the saved content
 				dojo.event.browser.clean(this.savedContent);
 				if(dojo.render.html.moz){
-					var nc = document.createElement("span");
+					var nc = dojo.doc().createElement("span");
 					this.domNode.appendChild(nc);
 					nc.innerHTML = this.editNode.innerHTML;
 				}else{
