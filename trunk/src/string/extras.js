@@ -20,7 +20,10 @@ dojo.string.substituteParams = function(template /*string */, hash /* object - o
 	var map = (typeof hash == 'object') ? hash : dojo.lang.toArray(arguments, 1);
 
 	return template.replace(/\%\{(\w+)\}/g, function(match, key){
-		return map[key] || dojo.raise("Substitution not found: " + key);
+		if(typeof(map[key]) != "undefined" && map[key] != null){
+			return map[key];
+		}
+		dojo.raise("Substitution not found: " + key);
 	});
 };
 
