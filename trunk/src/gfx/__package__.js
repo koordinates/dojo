@@ -1,28 +1,12 @@
 dojo.require("dojo.gfx.m2d");
 dojo.provide("dojo.gfx.*");
 
+dojo.requireIf(dojo.render.svg.capable, "dojo.gfx.svg");
+dojo.requireIf(!dojo.render.svg.capable && dojo.render.vml.capable, "dojo.gfx.vml");
+
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.gfx.*");
 
-dojo.gfx.defaultRenderer = null;
-
-if (dojo.render.svg.capable) {
-   dojo.require("dojo.gfx.svg");
-   dojo.gfx.defaultRenderer = dojo.gfx.svg;
-   dojo.gfx.Gradient = dojo.gfx.svg.Gradient;
-   dojo.gfx.LinearGradient = dojo.gfx.svg.LinearGradient;
-   dojo.gfx.RadialGradient = dojo.gfx.svg.RadialGradient;
-   dojo.gfx.Pattern = dojo.gfx.svg.Pattern;
-   dojo.gfx.attachNode = dojo.gfx.svg.attachNode;
-} else if (dojo.render.vml.capable) {
-   dojo.require("dojo.gfx.vml");
-   dojo.gfx.defaultRenderer = dojo.gfx.vml;
-   dojo.gfx.Gradient = dojo.gfx.vml.Gradient;
-   dojo.gfx.LinearGradient = dojo.gfx.vml.LinearGradient;
-   dojo.gfx.RadialGradient = dojo.gfx.vml.RadialGradient;
-   dojo.gfx.Pattern = dojo.gfx.vml.Pattern;
-   dojo.gfx.attachNode = dojo.gfx.vml.attachNode;
-} 
 dojo.gfx.defaultRenderer.init();
 
 dojo.gfx.normalizeParameters = function (existed, update) {
