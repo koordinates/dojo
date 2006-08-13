@@ -26,12 +26,28 @@ dojo.declare(
 		_fromTrap: false,
 
 		trapTabs: function(e){
-			if(e.target == this.tabStart) {
+			if(e.target == this.tabStartOuter) {
+				if(this._fromTrap) {
+					this.tabStart.focus();
+					this._fromTrap = false;
+				} else {
+					this._fromTrap = true;
+					this.tabEnd.focus();
+				}
+			} else if (e.target == this.tabStart) {
 				if(this._fromTrap) {
 					this._fromTrap = false;
 				} else {
 					this._fromTrap = true;
 					this.tabEnd.focus();
+				}
+			} else if(e.target == this.tabEndOuter) {
+				if(this._fromTrap) {
+					this.tabEnd.focus();
+					this._fromTrap = false;
+				} else {
+					this._fromTrap = true;
+					this.tabStart.focus();
 				}
 			} else if(e.target == this.tabEnd) {
 				if(this._fromTrap) {
