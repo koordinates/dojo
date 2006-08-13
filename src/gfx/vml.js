@@ -667,3 +667,10 @@ dojo.lang.extend(dojo.gfx.vml.Surface, creators);
 delete metacreator ;
 delete creators ;
 
+// TODO: use dojo.gfx directly instead of dojo.gfx.svg
+dojo.gfx.defaultRenderer = dojo.gfx.vml;
+dojo.gfx.Gradient = dojo.gfx.vml.Gradient;
+dojo.gfx.LinearGradient = dojo.gfx.vml.LinearGradient;
+dojo.gfx.RadialGradient = dojo.gfx.vml.RadialGradient;
+dojo.gfx.Pattern = dojo.gfx.vml.Pattern;
+dojo.gfx.attachNode = dojo.gfx.vml.attachNode;
