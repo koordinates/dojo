@@ -3,7 +3,7 @@ dojo.require("dojo.math.*");
 dojo.provide("dojo.gfx.m2d");
 
 dojo.gfx.Matrix2D = function() {
-	if(arguments.length == 1){
+	if(arguments.length == 1 && arguments[0]){
 		dojo.mixin(this, arguments[0]);
 	}
 };
