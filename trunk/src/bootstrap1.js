@@ -317,6 +317,7 @@ dojo._mixin = function(/*Object*/ obj, /*Object*/ props){
 	if(dojo.render.html.ie 
 		&& typeof(props["toString"]) == "function" 
 		&& props["toString"] != obj["toString"]
+		&& props["toString"] != tobj["toString"]
 	){
 		obj.toString = props.toString;
 	}
