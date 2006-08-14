@@ -4,6 +4,16 @@
     
     
     <section>
+        <title>A must, easy to implement</title>
+        
+        <itemizedlist>
+            <listitem><simpara>doClone in RPC should get cloned nodes from server, like createChild</simpara></listitem>
+        </itemizedlist>
+        
+    </section>
+    
+    
+    <section>
         <title>Optional enhancements</title>
     
         <itemizedlist>        
@@ -18,7 +28,7 @@
                 the node or decreasing their size, or using padding divs, or..</listitem>
       <listitem>Add checkbox extension. Every node will have checkbox, can save/restore checked state. When parent is checked,
       all children are marked "grey-checked", user may uncheck grey-checked nodes. grey-checked dependant nodes removed if parent is unchecked.</listitem>
-        </itemizedlist>
+        </itemizedlist>        
     </section>
     
     
@@ -34,6 +44,8 @@
             <listitem><simpara>When I expand a large tree and try to move its top (dnd), node starts to move after a pause - a gap in time between
                 I start moving node with my mouse and dragClone appears. Lots of calculations?</simpara></listitem>
             <listitem><simpara>wipe and fade togglers are broken</simpara></listitem>
+            <listitem><simpara>can't add subwidgets in title. Seems I need to put them to children, and children property will contain
+            not only subnodes, but also title widgets.. Will need to fix a lot.</simpara></listitem>
         </itemizedlist>
         
         </section>
