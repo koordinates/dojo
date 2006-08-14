@@ -135,21 +135,21 @@ dojo.validate.check = function(form, profile) {
 		}
 	}
 
-	// Dependant fields are required when the target field is present (not blank).
-	// Todo: Support dependant and target fields that are radio button groups, or select drop-down lists.
-	// Todo: Make the dependancy based on a specific value of the target field.
-	// Todo: allow dependant fields to have several required values, like {checkboxgroup: 3}.
-	if(dojo.lang.isObject(profile.dependancies)){
-		// properties of dependancies object are the names of dependant fields to be checked
-		for (name in profile.dependancies) {
-			var elem = form[name];	// the dependant element
+	// Dependent fields are required when the target field is present (not blank).
+	// Todo: Support dependent and target fields that are radio button groups, or select drop-down lists.
+	// Todo: Make the dependency based on a specific value of the target field.
+	// Todo: allow dependent fields to have several required values, like {checkboxgroup: 3}.
+	if(dojo.lang.isObject(profile.dependencies)){
+		// properties of dependencies object are the names of dependent fields to be checked
+		for (name in profile.dependencies) {
+			var elem = form[name];	// the dependent element
 			if ( elem.type != "text" && elem.type != "textarea" && elem.type != "password" ) { continue; } // limited support
 			if ( /\S+/.test(elem.value) ) { continue; }	// has a value already
 			if ( results.isMissing(elem.name) ) { continue; }	// already listed as missing
-			var target = form[profile.dependancies[name]];
+			var target = form[profile.dependencies[name]];
 			if ( target.type != "text" && target.type != "textarea" && target.type != "password" ) { continue; }	// limited support
 			if ( /^\s*$/.test(target.value) ) { continue; }	// skip if blank
-			missing[missing.length] = elem.name;	// ok the dependant field is missing
+			missing[missing.length] = elem.name;	// ok the dependent field is missing
 		}
 	}
 
