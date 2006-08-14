@@ -8,6 +8,21 @@ if ($action == 'getChildren') {
 <?
 	return;
 }
+
+if ($action == 'createChild') {
+?>
+{title:"New node from server"}
+<?
+	return;
+}
+
+if ($action == 'editLabelSave') {
+?>
+{title:"server_generated title"}
+<?
+return;
+}
+
 ?>
 true
 

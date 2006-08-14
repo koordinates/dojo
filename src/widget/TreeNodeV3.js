@@ -720,6 +720,7 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	},
 
+
 	toString: function() {
 		return '['+this.widgetType+', '+this.title+']';
 	}

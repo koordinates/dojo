@@ -22,7 +22,7 @@ dojo.inherits(dojo.widget.TreeRpcControllerV3, dojo.widget.TreeLoadingController
 dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 	widgetType: "TreeRpcControllerV3",
 
-	extraRpcOnEdit: true,
+	extraRpcOnEdit: false,
 				
 	/**
 	 * Make request to server about moving children.
@@ -227,12 +227,13 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 			deferred = this.requestEditConfirmation(this.editor.node,'editLabelFinishCancel', sync);
 		}
 		
-		if (save) {					
+		if (save) {
+			// this deferred has new information from server
 			deferred = this.editLabelSave(this.editor.node, this.editor.getContents(), sync);
 		}
 		
-		deferred.addCallback(function() {
-			_this.doEditLabelFinish(save);
+		deferred.addCallback(function(server_data) {			
+			_this.doEditLabelFinish(save, server_data);
 		});
 		
 		deferred.addErrback(function(r) {
@@ -243,6 +244,10 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		return deferred;
 	},
 	
+	
+	/**
+	 * TODO: merge server-side info
+	 */
 	createAndEdit: function(parent, index, sync) {
 		var data = {title:parent.tree.defaultChildTitle};
 		
@@ -352,6 +357,10 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 
 
 	doCreateChild: function(parent, index, data, sync){		
+		
+		if (dojo.lang.isUndefined(data.title)) {
+			data.title = parent.tree.defaultChildTitle;
+		}
 			
 		var params = {
 			tree: this.getInfo(parent.tree),
@@ -370,8 +379,9 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		var args = arguments;
 		
 		
-		deferred.addCallback(function() {			
-			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.apply(_this,args);
+		deferred.addCallback(function(server_data) {
+			dojo.lang.mixin(data, server_data); // add my data as less priority
+			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(_this,parent,index,server_data);
 		});
 		
 						

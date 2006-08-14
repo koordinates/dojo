@@ -14,6 +14,7 @@
 	dojo.require("dojo.widget.TreeRpcControllerV3");
 	dojo.require("dojo.widget.TreeContextMenuV3");
 	dojo.require("dojo.widget.TreeDemo");
+	dojo.require("dojo.widget.TreeEditor");
 	dojo.hostenv.writeIncludes();
 </script>
 
@@ -35,12 +36,14 @@ strictFolders mode is OFF so you may add new children to ANY node not only folde
 	<div dojoType="TreeMenuItemV3" treeActions="remove" iconSrc="../images/removesmall.gif" caption="Remove" widgetId="treeContextMenuDestroy"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/downsmall.png" caption="Up" widgetId="treeContextMenuUp"></div>
 	<div dojoType="TreeMenuItemV3" treeActions="move" iconSrc="../images/upsmall.png" caption="Down" widgetId="treeContextMenuDown"></div>
+	<div dojoType="TreeMenuItemV3" treeActions="edit" caption="Edit" widgetId="treeContextMenuEdit"></div>
 </div>
 
 
 
 
-<div dojoType="TreeRpcControllerV3" widgetId="treeController" RpcUrl="/dojo.php"></div>
+<div dojoType="TreeEditor" widgetId="editor"></div>
+<div dojoType="TreeRpcControllerV3" widgetId="treeController" RpcUrl="/rpc.php" editor="editor"></div>
 
 
 <h4>firstTree</h4>
