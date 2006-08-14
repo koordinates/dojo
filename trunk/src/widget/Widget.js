@@ -137,22 +137,18 @@ dojo.declare("dojo.widget.Widget", null,
 	// Destroy the children of this widget, and their descendents
 	destroyChildren: function(){
 		var widget;
-		while(this.children.length > 0){
-			var found = false;
-			for(var i=0; i<this.children.length; i++) {
-				var widget = this.children[i];
-				if (widget instanceof dojo.widget.Widget) { // find first widget
-					this.removeChild(widget);
-					widget.destroy();
-					found = true;
-					break;
-				}
+		var i=0;
+		while(this.children.length > i){
+			var widget = this.children[i];
+			if (widget instanceof dojo.widget.Widget) { // find first widget
+				this.removeChild(widget);
+				widget.destroy();
+				continue;
 			}
-			if (!found) { // only data objects left
-				break;
-			}
-
+			
+			i++; // skip data object
 		}
+				
 	},
 
 	getChildrenOfType: function(type, recurse){
