@@ -311,7 +311,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 	},
 
 
-	onDrop: function(e){
+	onDrop: function(e) {
 		// onDropEnd will clean position
 
 		

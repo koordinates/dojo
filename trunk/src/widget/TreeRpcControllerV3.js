@@ -388,7 +388,7 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		return deferred;
 	},
 	
-	
+	// TODO: merge server data into cloned node, like in createChild	
 	doClone: function(child, newParent, index, deep, sync) {
 		
 		var params = {
