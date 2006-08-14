@@ -49,15 +49,9 @@ dojo.widget.defineWidget(
 	},
 	
 	close: function(save) {
-		if (save) {
-			var title = this.getContents();
-		}
 		
 		this.richText.close(save);
 		
-		if (save) {
-			this.node.setTitle(title); // to make sure everything updated and event sent			
-		}
 		
 		this.node = null;	
 	},

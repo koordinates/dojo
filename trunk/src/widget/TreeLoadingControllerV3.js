@@ -67,14 +67,9 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		// summary
 		// create callback that calls the Deferred's callback method
 		return dojo.lang.hitch(this, 
-			function(type, obj /*,...*/){
-				for(var i=0;i<arguments.length;i++) {
-					//dojo.debug("ARG "+i+" \n"+arguments[i]);
-				}
+			function(type, obj /*,...*/){				
 				
 				if (type=="load" ) {
-				//dojo.debug("GO "+deferred);
-					
 					if(!dojo.lang.isUndefined(obj.error)){
 						deferred.errback(new RpcError(obj.error, obj));
 						return;

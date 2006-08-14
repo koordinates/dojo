@@ -250,13 +250,23 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		this.editor.open(node);		
 	},
 	
-	doEditLabelFinish: function(save) {
+	doEditLabelFinish: function(save, server_data) {
 		if (!this.editor) {
 			dojo.raise(this.widgetType+": no editor specified");
 		}
-		var node = this.editor.node;
+
+		var node = this.editor.node;	
+		var title = (server_data && server_data.title) ? server_data.title : this.editor.getContents();
 		
 		this.editor.close(save);
+
+		if (save) {
+			if (dojo.lang.isObject(server_data)) {
+				dojo.lang.mixin(node, server_data);
+			}
+			node.setTitle(title); // to make sure everything updated and event sent			
+		}
+
 		//dojo.debug("Finish edit "+node+" "+node.isPhantom+" save:"+save);
 		
 		if (node.isPhantom) {
@@ -521,7 +531,6 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 
 	doCreateChild: function(parent, index, data) {
-
 		var newChild = parent.tree.createNode(data); 
 		//var newChild = dojo.widget.createWidget(widgetType, data);
 
