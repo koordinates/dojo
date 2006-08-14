@@ -26,11 +26,12 @@ dojo.html.getDocumentWindow = function(doc){
 
 	//In some IE versions (at least 6.0), document.parentWindow does not return a 
 	//reference to the real window object (maybe a copy), so we must fix it as well
+	//We use IE specific execScript to attach the real window reference to 
+	//document._parentWindow for later use
 	if(dojo.render.html.ie && window !== document.parentWindow && !doc._parentWindow){
 		/*
 		In IE 6, only the variable "window" can be used to connect events (others
-		may be only copies). We use IE specific execScript to attach the real window
-		reference to document._parentWindow for later use
+		may be only copies). 
 		*/
 		doc.parentWindow.execScript("document._parentWindow = window;", "Javascript");
 	}

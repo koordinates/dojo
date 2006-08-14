@@ -272,21 +272,21 @@ dojo.lang.mixin(dojo.html.selection, {
 	remove: function() {
 		// summary: delete selection
 		if(dojo.doc().selection) { //IE
-			var oSel = dojo.doc().selection;
+			var selection = dojo.doc().selection;
 
-			if ( oSel.type.toUpperCase() != "NONE" ){
-				oSel.clear();
+			if ( selection.type.toUpperCase() != "NONE" ){
+				selection.clear();
 			}
 		
-			return oSel;
+			return selection;
 		}else{
-			var oSel = dojo.global().getSelection();
+			var selection = dojo.global().getSelection();
 
-			for ( var i = 0; i < oSel.rangeCount; i++ ){
-				oSel.getRangeAt(i).deleteContents();
+			for ( var i = 0; i < selection.rangeCount; i++ ){
+				selection.getRangeAt(i).deleteContents();
 			}
 		
-			return oSel;
+			return selection;
 		}
 	}
 });
