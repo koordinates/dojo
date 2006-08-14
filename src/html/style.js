@@ -94,7 +94,11 @@ dojo.html.removeClass = function(node, classStr, allowPartialMatches){
 		} else {
 			var newcs = dojo.html.getClass(node).replace(classStr,'');
 		}
-		dojo.html.setClass(node, newcs);
+		if(newcs){
+			dojo.html.setClass(node, newcs);
+		}else{
+			node.removeAttribute("className");
+		}
 		//dojo.debug("now class "+newcs)
 	}catch(e){
 		dojo.debug("dojo.html.removeClass() failed", e);
