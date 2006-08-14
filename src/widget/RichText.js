@@ -74,6 +74,7 @@ dojo.widget.defineWidget(
 	 *******/
 
 		fillInTemplate: function(){
+			dojo.event.topic.publish("dojo.widget.RichText::init", this);
 			this.open();
 
 			// add the formatting functions
@@ -269,8 +270,6 @@ dojo.widget.defineWidget(
 				// this. Sadly _firstChildContributingMargin and 
 				// _lastChildContributingMargin don't work on IE unless all
 				// elements have margins set in CSS :-(
-
-//				this.domNode.appendChild(this.editNode);
 
 				//if the normal way fails, we try the hard way to get the list
 				if(!this._cacheLocalBlockFormatNames()){
@@ -558,6 +557,42 @@ dojo.widget.defineWidget(
 			}
 		},
 
+		applyEditingAreaStyleSheets: function(){
+			if(this.styleSheets){
+				this.editingAreaStyleSheets = this.editingAreaStyleSheets.concat(this.styleSheets.split(';'));
+			}
+
+			if(this.editingAreaStyleSheets.length>0){
+				if(this.object){
+					//for IE activeX mode, we can not append it after it is loaded, 
+					//otherwise keeping undo will crash IE reliably
+					var text = "";
+					for(var i in this.editingAreaStyleSheets){
+						var url = this.editingAreaStyleSheets[i];
+						if(url){
+							text += '<link rel="stylesheet" type="text/css" href="'+(new dojo.uri.Uri(dojo.global().location, url)).toString()+'"/>'
+						}
+					}
+					return text;
+				}else{
+					var head = this.document.getElementsByTagName("head")[0];
+					for(var i in this.editingAreaStyleSheets){
+						var url = this.editingAreaStyleSheets[i];
+						if(url){
+							var stylesheet = this.document.createElement("link");
+							with(stylesheet){
+								rel="stylesheet";
+								type="text/css";
+								//lets specify absolute path
+								href=(new dojo.uri.Uri(dojo.global().location, url)).toString();
+							}
+							head.appendChild(stylesheet);
+						}
+					}
+				}
+			}
+		},
+
 		/** Draws an active x object, used by IE */
 		_drawObject: function (html) {
 			this.object = dojo.html.createExternalElement(dojo.doc(), "object");
@@ -580,8 +615,9 @@ dojo.widget.defineWidget(
 				this.object.attachEvent(e.toLowerCase(), dojo.lang.hitch(this, e));
 			}, this);
 
+			var styles = this.applyEditingAreaStyleSheets();
 			this.object.DocumentHTML = '<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">' +
-				'<html><title></title>' +
+				'<html><title></title>' + styles +
 				'<style type="text/css">' +
 				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
 				(this.height ? '' : '    body,  { overflow: hidden; }') +
@@ -593,7 +629,7 @@ dojo.widget.defineWidget(
 			this._cacheLocalBlockFormatNames();
 		},
 
-		//static cache variables shared between all instance of this class
+		//static cache variables shared among all instance of this class
 		_local2NativeFormatNames: {},
 		_native2LocalFormatNames: {},
 		//in IE, names for blockformat is locale dependent, so we cache the values here
@@ -689,13 +725,15 @@ dojo.widget.defineWidget(
 					addListener(this.document, "click", dojo.lang.hitch(this, "onClick"));
 				}
 
+				this.applyEditingAreaStyleSheets();
 				// FIXME: when scrollbars appear/disappear this needs to be fired						
 			}else if(dojo.render.html.ie){
 				// IE contentEditable
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 				this.editNode.style.zoom = 1.0;
+				this.applyEditingAreaStyleSheets();
 			}
-			
+
 			if(this.focusOnLoad){
 				this.focus();
 			}
@@ -850,17 +888,7 @@ dojo.widget.defineWidget(
 		
 		onClick: function(e){ this.onDisplayChanged(e); },
 		onBlur: function(e){ },
-//		_initialFocus: true,
-		onFocus: function(e){ 
-			//what's this for?
-//			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
-//				this._initialFocus = false;
-//				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
-//					this.execCommand("selectall");
-//					this.window.getSelection().collapseToStart();
-//				}
-//			}
-		},
+		onFocus: function(e){},
 
 		blur: function () {
 			if(this.iframe) { this.window.blur(); }
@@ -999,8 +1027,15 @@ dojo.widget.defineWidget(
 					joinObject.args[1] = this._native2LocalFormatNames[joinObject.args[1]];
 				}
 				else if(drh.ie){ joinObject.args[1] = "<"+joinObject.args[1]+">"; }
-			}else if(command == "createlink" && this.object){
-				command = "hyperlink";
+			}else if(this.object){
+				switch(command){
+					case "createlink":
+						command = "hyperlink";
+						break;
+					case "insertimage":
+						command = "image";
+						break;
+				}
 			}else if(command == "hilitecolor" && !drh.mozilla) { command = "backcolor"; }
 
 			joinObject.args[0] = command;
@@ -1052,12 +1087,8 @@ dojo.widget.defineWidget(
 				case "inserthorizontalrule": case "insertimage":
 				case "insertorderedlist": case "insertunorderedlist":
 				case "indent": case "outdent": case "formatblock": 
-				case "inserthtml": case "undo": case "redo": 
+				case "inserthtml": case "undo": case "redo": case "strikethrough":
 					supportedBy = isSupportedBy(mozilla | ie | opera);
-					break;
-					
-				case "strikethrough": 
-					supportedBy = isSupportedBy(mozilla |  opera | (this.object ? 0 : ie));
 					break;
 
 				case "blockdirltr": case "blockdirrtl":
@@ -1113,30 +1144,51 @@ dojo.widget.defineWidget(
 					case "formatblock":
 						command = "setblockformat";
 				}
-			
-				//if (typeof this._activeX.command[command] == "undefined") { return null; }
-			
-				if(command == "inserttable"){
-					var tableInfo = this.constructor._tableInfo;
-					if(!tableInfo){
-						tableInfo = dojo.doc().createElement("object");
-						tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
-						dojo.body().appendChild(tableInfo);
-						this.constructor._table = tableInfo;
+
+				if(command == "strikethrough"){
+					command = "inserthtml";
+					var range = this.document.selection.createRange();
+					if(!range.htmlText){
+						return;
 					}
-					
-					tableInfo.NumRows = argument["rows"];
-					tableInfo.NumCols = argument["cols"];
-					tableInfo.TableAttrs = argument["TableAttrs"];
-					tableInfo.CellAttrs = argument["CellAttrs"];
-					tableInfo.Caption = argument["Caption"];
+					argument="<strike>"+range.htmlText+"<strike>";
+				}else if(command == "inserthorizontalrule"){
+					command = "inserthtml";
+					argument="<hr>";
 				}
+//				if(command == "inserttable"){
+//					var tableInfo = this.constructor._tableInfo;
+//					if(!tableInfo){
+//						tableInfo = dojo.doc().createElement("object");
+//						tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
+//						dojo.body().appendChild(tableInfo);
+//						this.constructor._table = tableInfo;
+//					}
+//					
+//					tableInfo.NumRows = argument["rows"];
+//					tableInfo.NumCols = argument["cols"];
+//					tableInfo.TableAttrs = argument["tableattrs"];
+//					tableInfo.CellAttrs = argument["cellattrs"];
+//					tableInfo.Caption = argument["caption"];
+//					argument = tableInfo;
+//				}
 			
 				if(command == "inserthtml"){
-					var insertRange = this.document.selection.createRange();
-					insertRange.select();
-					insertRange.pasteHTML(argument);
-					insertRange.collapse(true);
+					var range = this.document.selection.createRange();
+					if(this.document.selection.type.toUpperCase() == "CONTROL"){
+						//if selection is controlrange, no pasteHTML is available,
+						//we replace the outerHTML directly
+						for(var i=0;i<range.length;i++){
+							range.item(i).outerHTML = argument;
+						}
+//
+//						range.collapse(true);
+//						range.select();
+					}else{
+						range.select();
+						range.pasteHTML(argument);
+						range.collapse(true);
+					}
 					returnValue = true;
 				}else if(arguments.length == 1){
 					returnValue = this.object.ExecCommand(this._activeX.command[command],
@@ -1145,8 +1197,6 @@ dojo.widget.defineWidget(
 					returnValue = this.object.ExecCommand(this._activeX.command[command],
 						this._activeX.ui.noprompt, argument);
 				}
-		
-			/* */
 			}else if(command == "inserthtml"){
 				// on IE, we can use the pasteHTML method of the textRange object
 				// to get an undo-able innerHTML modification
@@ -1189,17 +1239,6 @@ dojo.widget.defineWidget(
 				selection.addRange(selectionRange);
 				
 				return returnValue;
-			}else if((command == "inserttable")&&(dojo.render.html.mozilla)){
-
-				var cols = "<tr>";
-				for (var i = 0; i < argument.cols; i++) { cols += "<td></td>"; }
-				cols += "</tr>";
-			
-				var table = "<table><tbody>";
-				for (var i = 0; i < argument.rows; i++) { table += cols; }
-				table += "</tbody></table>";
-				returnValue = this.document.execCommand("inserthtml", false, table);
-
 			}else if((command == "hilitecolor")&&(dojo.render.html.mozilla)){
 				// mozilla doesn't support hilitecolor properly when useCSS is
 				// set to false (bugzilla #279330)
@@ -1247,6 +1286,13 @@ dojo.widget.defineWidget(
 						break;
 					case "formatblock":
 						command = "setblockformat";
+						break;
+					//below are not natively supported commands, we fake them
+					case "strikethrough":
+						command = "bold"; //whenever bold is enabled, strikethrough should be so as well
+						break;
+					case "inserthorizontalrule":
+						return true;
 				}
 
 				if(typeof this._activeX.command[command] == "undefined"){ return false; }
@@ -1273,6 +1319,11 @@ dojo.widget.defineWidget(
 					command = "setforecolor";
 				}else if(command == "backcolor"){
 					command = "setbackcolor";
+				}else if(command == "strikethrough"){
+					//check whether we are under a <strike>
+					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, 'strike');
+				}else if(command == "inserthorizontalrule"){
+					return false;
 				}
 
 				if(typeof this._activeX.command[command] == "undefined"){ return null; }
@@ -1353,6 +1404,32 @@ dojo.widget.defineWidget(
 			dojo.lang.forEach(this.contentPreFilters, function(ef){
 				ec = ef(ec);
 			});
+			if(this.contentDomPreFilters.length>0){
+				var dom = dojo.doc().createElement('div');
+				dom.style.display = "none";
+				dojo.body().appendChild(dom);
+				dom.innerHTML = ec;
+				dojo.lang.forEach(this.contentDomPreFilters, function(ef){
+					dom = ef(dom);
+				});
+				ec = dom.innerHTML;
+				dojo.body().removeChild(dom);
+			}
+			return ec;
+		},
+		_postFilterContent: function(html){
+			var ec = html;
+			if(this.contentDomPostFilters.length>0){
+				var dom = this.document.createElement('div');
+				dom.innerHTML = ec;
+				dojo.lang.forEach(this.contentDomPostFilters, function(ef){
+					dom = ef(dom);
+				});
+				ec = dom.innerHTML;
+			}
+			dojo.lang.forEach(this.contentPostFilters, function(ef){
+				ec = ef(ec);
+			});
 			return ec;
 		},
 
@@ -1420,9 +1497,7 @@ dojo.widget.defineWidget(
 				if(dojo.string.trim(ec) == "&nbsp;"){ ec = ""; }
 			}catch(e){ /* squelch */ }
 
-			dojo.lang.forEach(this.contentPostFilters, function(ef){
-				ec = ef(ec);
-			});
+			ec = this._postFilterContent(ec);
 
 			if (this.relativeImageUrls) {
 				// why use a regexp instead of dom? because IE is stupid 
@@ -1461,7 +1536,7 @@ dojo.widget.defineWidget(
 			if(this.isClosed){return false; }
 
 			if (arguments.length == 0) { save = true; }
-			this._content = this.editNode.innerHTML;
+			this._content = this._postFilterContent(this.editNode.innerHTML);
 			var changed = (this.savedContent.innerHTML != this._content);
 			
 			// line height is squashed for iframes
@@ -1541,7 +1616,7 @@ dojo.widget.defineWidget(
 				}
 			}
 		},
-		
+
 		disconnectAllWithRoot: function (targetObj) {
 			for (var i = 0; i < this._connected.length; i++) {
 				if (this._connected[0] == targetObj) {
@@ -1565,6 +1640,10 @@ dojo.widget.defineWidget(
 	function(){
 		this.contentPreFilters = [];
 		this.contentPostFilters = [];
+		this.contentDomPreFilters = [];
+		this.contentDomPostFilters = [];
+		this.styleSheets = ""; // ; separated list of css files
+		this.editingAreaStyleSheets=[];
 		if(dojo.render.html.moz){
 			this.contentPreFilters.push(this.fixContentForMoz);
 		}
