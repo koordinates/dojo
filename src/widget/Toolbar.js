@@ -445,6 +445,7 @@ dojo.widget.defineWidget(
 	_onmouseover: function(e) {
 		if(!this._enabled) { return; }
 		dojo.html.addClass(this.domNode, "hover");
+		this._fireEvent("onMouseOver");
 	},
 
 	_onmouseout: function(e) {
@@ -453,6 +454,7 @@ dojo.widget.defineWidget(
 		if(!this._selected) {
 			dojo.html.removeClass(this.domNode, "selected");
 		}
+		this._fireEvent("onMouseOut");
 	},
 
 	_onclick: function(e) {
@@ -473,11 +475,19 @@ dojo.widget.defineWidget(
 			}
 			this.toggleSelected();
 		}
+		this._fireEvent("onMouseDown");
 	},
 
 	_onmouseup: function(e) {
 		dojo.html.removeClass(this.domNode, "down");
+		this._fireEvent("onMouseUp");
 	},
+
+	onClick: function() { },
+	onMouseOver: function() { },
+	onMouseOut: function() { },
+	onMouseDown: function() { },
+	onMouseUp: function() { },
 
 	fillInTemplate: function(args, frag) {
 		if(args.name) { this._name = args.name; }
