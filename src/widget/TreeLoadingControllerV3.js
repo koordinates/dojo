@@ -137,7 +137,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		dojo.io.bind({
 			url: kw.url,			
 			handle: this.getDeferredBindHandler(deferred),
-			mimetype: "text/json",
+			mimetype: "text/javascript",
 			preventCache: this.preventCache,
 			sync: kw.sync,
 			content: { data: dojo.json.serialize(kw.params) }
