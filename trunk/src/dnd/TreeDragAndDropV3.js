@@ -349,15 +349,23 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 		var handler;
 		var _this = this;
 		handler = function () {
+			var result;
+			
 			//dojo.debug("Move "+source.treeNode+" to parent "+targetParent+":"+targetIndex);
 			if (source.treeNode) {
-				var result = _this.controller.move(source.treeNode, targetParent, targetIndex, true);
+				result = _this.controller.move(source.treeNode, targetParent, targetIndex, true);
 				//dojo.debug("moved "+result);
 			} else {
-				if (source.onDrop) {
+				if (dojo.lang.isFunction(source.onDrop)) {
 					source.onDrop(targetParent, targetIndex);
 				}
-				var result = _this.controller.createChild(targetParent, targetIndex, source.getTreeNode(), true);
+				
+				var treeNode = source.getTreeNode();
+				if (treeNode) {
+					result = _this.controller.createChild(targetParent, targetIndex, treeNode, true);
+				} else {
+					result = true;
+				}
 			}
 			
 			if (result instanceof dojo.Deferred) {
