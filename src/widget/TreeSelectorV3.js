@@ -54,7 +54,11 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 
 
-	listenNode: function(node) {
+	listenNode: function(node) {		
+		if (node.actionIsDisabled(child.actions.SELECT)) {
+			return;
+		}
+		
 		//dojo.debug((new Error()).stack)
 		//	dojo.debug("listen "+node);
 		dojo.event.browser.addListener(node.labelNode, "onclick", this.onLabelClickHandler);
@@ -66,6 +70,10 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 	
 	unlistenNode: function(node) {
+		if (node.actionIsDisabled(child.actions.SELECT)) {
+			return;
+		}
+		
 		//dojo.debug("unlisten "+node);
 		
 		dojo.event.browser.removeListener(node.labelNode, "onclick", this.onLabelClickHandler);
@@ -109,7 +117,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	 */
 	onLabelClick: function(event) {		
 		var node = this.domElement2TreeNode(event.target);
-
+		
 		//dojo.debug("click "+node+ "special "+this.checkSpecialEvent(event));
 		//dojo.html.setClass(event.target, "TreeLabel TreeNodeEmphased");
 		
