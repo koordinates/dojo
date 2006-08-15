@@ -38,7 +38,8 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 		MOVE: "MOVE",
     	DETACH: "DETACH",
     	EDIT: "EDIT",
-    	ADDCHILD: "ADDCHILD"
+    	ADDCHILD: "ADDCHILD",
+		SELECT: "SELECT"
 	},
 	
 	
