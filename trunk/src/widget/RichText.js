@@ -700,6 +700,7 @@ dojo.widget.defineWidget(
 					// this.onDisplayChanged();
 					this.connect(this.editNode, "onblur", "onBlur");
 					this.connect(this.editNode, "onfocus", "onFocus");
+					this.connect(this.editNode, "onclick", "onFocus");
 				
 					this.interval = setInterval(dojo.lang.hitch(this, "onDisplayChanged"), 750);
 					// dojo.raise("onload");
@@ -888,7 +889,17 @@ dojo.widget.defineWidget(
 		
 		onClick: function(e){ this.onDisplayChanged(e); },
 		onBlur: function(e){ },
-		onFocus: function(e){},
+		_initialFocus: true,
+		onFocus: function(e){ 
+			//what's this for?
+			if( (dojo.render.html.mozilla)&&(this._initialFocus) ){
+				this._initialFocus = false;
+				if(dojo.string.trim(this.editNode.innerHTML) == "&nbsp;"){
+					this.execCommand("selectall");
+					this.window.getSelection().collapseToStart();
+				}
+			}
+		},
 
 		blur: function () {
 			if(this.iframe) { this.window.blur(); }
@@ -1036,7 +1047,9 @@ dojo.widget.defineWidget(
 						command = "image";
 						break;
 				}
-			}else if(command == "hilitecolor" && !drh.mozilla) { command = "backcolor"; }
+			}else if(command == "hilitecolor" && !drh.mozilla){
+				command = "backcolor";
+			}
 
 			joinObject.args[0] = command;
 			
@@ -1062,11 +1075,21 @@ dojo.widget.defineWidget(
 			var mozilla = 1 << 1;
 			var safari = 1 << 2;
 			var opera = 1 << 3;
+			var safari420 = 1 << 4;
+		
+			var gt420 = false;
+			if(dojo.render.html.safari){
+				var tmp = dojo.render.html.UA.split("AppleWebKit/")[1];
+				var ver = parseFloat(tmp.split(" ")[0]);
+				if(ver >= 420){ gt420 = true; }
+			}
+
 			function isSupportedBy (browsers) {
 				return {
 					ie: Boolean(browsers & ie),
 					mozilla: Boolean(browsers & mozilla),
 					safari: Boolean(browsers & safari),
+					safari420: Boolean(browsers & safari420),
 					opera: Boolean(browsers & opera)
 				}
 			}
@@ -1088,7 +1111,7 @@ dojo.widget.defineWidget(
 				case "insertorderedlist": case "insertunorderedlist":
 				case "indent": case "outdent": case "formatblock": 
 				case "inserthtml": case "undo": case "redo": case "strikethrough":
-					supportedBy = isSupportedBy(mozilla | ie | opera);
+					supportedBy = isSupportedBy(mozilla | ie | opera | safari420);
 					break;
 
 				case "blockdirltr": case "blockdirrtl":
@@ -1097,7 +1120,7 @@ dojo.widget.defineWidget(
 					supportedBy = isSupportedBy(ie);
 					break;
 				case "cut": case "copy": case "paste": 
-					supportedBy = isSupportedBy(ie|mozilla);
+					supportedBy = isSupportedBy( ie | mozilla | safari420);
 					break;
 				
 				case "inserttable":
@@ -1116,6 +1139,7 @@ dojo.widget.defineWidget(
 			return (dojo.render.html.ie && supportedBy.ie) ||
 				(dojo.render.html.mozilla && supportedBy.mozilla) ||
 				(dojo.render.html.safari && supportedBy.safari) ||
+				(gt420 && supportedBy.safari420) ||
 				(dojo.render.html.opera && supportedBy.opera);
 		},
 
