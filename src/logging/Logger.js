@@ -43,7 +43,7 @@
 
 dojo.provide("dojo.logging.Logger");
 dojo.provide("dojo.log");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 
 /*
 	A simple data structure class that stores information for and about
@@ -79,7 +79,7 @@ dojo.logging.Logger = function(){
 	this.handlers = [];
 }
 
-dojo.lang.extend(dojo.logging.Logger, {
+dojo.extend(dojo.logging.Logger, {
 	argsToArr: function(args){
 		// utility function, reproduced from __util__ here to remove dependency
 		var ret = [];

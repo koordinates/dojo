@@ -1,11 +1,11 @@
 dojo.provide("dojo.undo.Manager");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 
 dojo.undo.Manager = function(parent) {
 	this.clear();
 	this._parent = parent;
 };
-dojo.lang.extend(dojo.undo.Manager, {
+dojo.extend(dojo.undo.Manager, {
 	_parent: null,
 	_undoStack: null,
 	_redoStack: null,

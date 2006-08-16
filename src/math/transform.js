@@ -1,6 +1,5 @@
 dojo.provide("dojo.math.Matrix");
 dojo.provide("dojo.math.Transform");
-dojo.require("dojo.lang");
 
 /* TODO: figure out a way of reconciling the matrix functionality of Cal's
 	to the drawing needs.
@@ -16,7 +15,7 @@ dojo.math.Matrix=function(){
 	this.a=this.e=this.i=1;
 	this.b=this.c=this.d=this.f=this.g=this.h=0;
 };
-dojo.lang.extend(dojo.math.Matrix,{
+dojo.extend(dojo.math.Matrix,{
 	reset:function(){
 		this.a=this.e=this.i=1;
 		this.b=this.c=this.d=this.f=this.g=this.h=0;
@@ -33,7 +32,7 @@ dojo.math.Transform=function(matrix){
 	this.transformations=[];
 	this.transformations.push(matrix||new dojo.math.Matrix());
 };
-dojo.lang.extend(dojo.math.Transform,{
+dojo.extend(dojo.math.Transform,{
 	reset:function(){
 		this.transformations=[];
 	},

@@ -1,7 +1,7 @@
 dojo.provide("dojo.iCalendar");
 dojo.require("dojo.text.textDirectory");
 dojo.require("dojo.date");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 
 
 dojo.iCalendar.fromText =  function (/* string */text) {
@@ -82,7 +82,7 @@ dojo.iCalendar.Component = function (/* string */ body ) {
 	}
 }
 
-dojo.lang.extend(dojo.iCalendar.Component, {
+dojo.extend(dojo.iCalendar.Component, {
 
 	addProperty: function (prop) {
 		// summary
@@ -185,7 +185,7 @@ dojo.iCalendar.Property = function (prop) {
 
 }
 
-dojo.lang.extend(dojo.iCalendar.Property, {
+dojo.extend(dojo.iCalendar.Property, {
 	toString: function () {	
 		// summary
 		// output a string reprensentation of this component.
@@ -215,7 +215,7 @@ dojo.iCalendar.VCalendar = function (/* string */ calbody) {
 
 dojo.inherits(dojo.iCalendar.VCalendar, dojo.iCalendar.Component);
 
-dojo.lang.extend(dojo.iCalendar.VCalendar, {
+dojo.extend(dojo.iCalendar.VCalendar, {
 
 	addComponent: function (prop) {
 		// summary
@@ -355,7 +355,7 @@ dojo.iCalendar.VEvent = function (/* string */ body) {
 
 dojo.inherits(dojo.iCalendar.VEvent, dojo.iCalendar.Component);
 
-dojo.lang.extend(dojo.iCalendar.VEvent, {
+dojo.extend(dojo.iCalendar.VEvent, {
 		getDates: function(until) {
 			var dtstart = this.getDate();
 

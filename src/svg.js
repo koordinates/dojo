@@ -1,8 +1,7 @@
 dojo.provide("dojo.svg");
-dojo.require("dojo.lang");
 dojo.require("dojo.dom");
 
-dojo.lang.mixin(dojo.svg, dojo.dom);
+dojo.mixin(dojo.svg, dojo.dom);
 
 dojo.svg.graphics=dojo.svg.g=new function(/* DomDocument */ d){
 	//	summary

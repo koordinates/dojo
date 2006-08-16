@@ -1,6 +1,6 @@
 dojo.provide("dojo.graphics.Colorspace");
 
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 dojo.require("dojo.math.matrix");
 
 //
