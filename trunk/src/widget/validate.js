@@ -240,7 +240,7 @@ dojo.widget.defineWidget(
 
 		postMixInProperties: function(localProperties, frag) {
 			dojo.widget.validate.ValidationTextbox.superclass.postMixInProperties.apply(this, arguments);
-			this.messages = dojo.i18n.getLocalization("dojo.widget", "validate");
+			this.messages = dojo.i18n.getLocalization("dojo.widget", "validate", this.lang);
 			dojo.lang.forEach(["invalidMessage", "missingMessage", "rangeMessage"], function(prop) {
 				if(this[prop]){ this.messages[prop] = this[prop]; }
 			}, this);
