@@ -55,7 +55,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 
 
 	listenNode: function(node) {		
-		if (node.actionIsDisabled(child.actions.SELECT)) {
+		if (node.actionIsDisabled(node.actions.SELECT)) {
 			return;
 		}
 		
@@ -70,7 +70,7 @@ dojo.lang.extend(dojo.widget.TreeSelectorV3, {
 	},
 	
 	unlistenNode: function(node) {
-		if (node.actionIsDisabled(child.actions.SELECT)) {
+		if (node.actionIsDisabled(node.actions.SELECT)) {
 			return;
 		}
 		
