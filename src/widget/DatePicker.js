@@ -37,7 +37,6 @@ dojo.widget.defineWidget(
 		this.firstSaturday = {};
 	},
 	{
-		lang: "", // would be better if this could be undefined if the attribute is undefined
 		dayWidth: 'narrow',
 
 		classNames: {
