@@ -13,17 +13,21 @@ dojo.Namespace = function(objRoot, location, nsPrefix, resolver){
 };
 
 dojo.Namespace.prototype._loaded = {};
-dojo.Namespace.prototype.load = function(name, domain){
+dojo.Namespace.prototype._failedloaded = {};
+dojo.Namespace.prototype.load = function(name, domain, omit_module_check){
 	if(this.resolver){
 		var fullName = this.resolver(name,domain);
 		//only load a widget once. This is a quicker check than dojo.require does
-		if(fullName && !this._loaded[fullName]){
+		if(fullName && !this._loaded[fullName] && !this._failedloaded[fullName]){
 			//workaround so we don't break the build system
 			var req = dojo.require;
-			req(fullName);
-
-			this._loaded[fullName] = true;
- 		}
+			req(fullName, false, true);//omit the module check, we'll do it ourselves.
+			if(dojo.hostenv.findModule(fullName, false)){this._loaded[fullName] = true;}
+			else {
+				if(!omit_module_check){dojo.raise("symbol '" + fullName + "' is not defined after loading via namespace '" + this.nsPrefix + "'");} 
+				this._failedloaded[fullName] = true;
+			}
+		}
 		if(this._loaded[fullName]){
 			return true;
 		}
@@ -56,12 +60,21 @@ dojo.defineNamespace = function(objRoot, location, nsPrefix, resolver /*optional
 	}
 };
 
+if(!djConfig.nsRepository){djConfig.nsRepository="./src/namespaces";}
+
+//add the default namespace for where namespace files are placed.  The default is in "/src/namespaces", but
+//can be changed by specifying the djConfig.nsRepository location. E.g. to place the namespace folder 
+//at the same level as the dojo folder, use djConfig.nsRepository="../namespaces"
+dojo.defineNamespace("_dojoNamespaces", djConfig.nsRepository, "_dojoNamespaces", function(name){
+	return "_dojoNamespaces."+name.toLowerCase();	
+});
+
 dojo.findNamespaceForWidget = function(widgetName){
 	dojo.deprecated('dojo.findNamespaceForWidget', 'Widget [' + widgetName + '] not defined for a namespace'+
 		', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
 	widgetName = widgetName.toLowerCase();
-	for(x in dojo._namespaces){
-		if(dojo._namespaces[x].load(widgetName)){
+	for(var x in dojo._namespaces){
+		if(dojo._namespaces[x].load(widgetName, null, true)){
 			return dojo._namespaces[x];
 		}
 	}

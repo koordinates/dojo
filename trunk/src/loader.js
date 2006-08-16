@@ -234,12 +234,33 @@ var failedNamespaces = {};
 //This returns a namespace with the given short name.  If the namespace has not been loaded already, it tries to load it. 
 dojo.getNamespace = function(nsPrefix){
 	if(!dojo._namespaces[nsPrefix] && !failedNamespaces[nsPrefix]){
+		function inArray(arr, match){
+			if(arr){
+				if(!(arr instanceof Array)){arr=[arr];}
+				for(var i=0; i<arr.length; i++){
+					if(arr[i]==match){return true;}
+				}
+			}
+		}
+
+		//if the user has specified that this namespace should not be loaded, return false.
+		if(inArray(djConfig.excludeNamespace, nsPrefix)){return false;}
+
+		//If the user has specified of namespaces that SHOULD be included, and this is not one of them, return false
+		//Assume that "dojo" should be loaded regardless
+		var incl=djConfig.includeNamespace;
+		if((nsPrefix != "dojo") && incl && !inArray(incl, nsPrefix)){return false;}
+
 		var req = dojo.require;
-		var nsFile = "dojo.namespaces."+nsPrefix;
-		if(!loadingNamespaces[nsFile]){
-			loadingNamespaces[nsFile]=true;
-			req(nsFile, false, true); 
-			loadingNamespaces[nsFile]=false;
+		if(!loadingNamespaces[nsPrefix]){
+			loadingNamespaces[nsPrefix]=true;
+			//dojo namespace file is always in the Dojo namespace folder, not a custom namespace folder
+			if(nsPrefix=="dojo"){dojo.require("dojo.namespaces.dojo");}
+			else{
+				var dojoNsNamespace = dojo.getNamespace("_dojoNamespaces");
+				dojoNsNamespace.load(nsPrefix, null, true);
+			}
+			loadingNamespaces[nsPrefix]=false;
 			if(!dojo._namespaces[nsPrefix]){
 				failedNamespaces[nsPrefix] = true; //only look for a namespace once
 			}
@@ -296,7 +317,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
 	var nsyms = modulename.split(".");
-	if(djConfig.autoLoadNamespace){ dojo.getNamespace(nsyms[0]); }
+	dojo.getNamespace(nsyms[0]);
 
 	var syms = this.getModuleSymbols(modulename);
 	var startedRelative = ((syms[0].charAt(0) != '/')&&(!syms[0].match(/^\w+:/)));
@@ -383,7 +404,7 @@ dojo.hostenv.startPackage = function(packname){
  * if the module does not currently exist.
  */
 dojo.hostenv.findModule = function(modulename, must_exist){
-	var lmn = new String(modulename).toString();
+	var lmn = String(modulename).toString();
 
 	if(this.loaded_modules_[lmn]){
 		return this.loaded_modules_[lmn];
