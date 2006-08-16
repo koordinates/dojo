@@ -2,6 +2,7 @@ dojo.provide("dojo.html.layout");
 
 dojo.require("dojo.html.common");
 dojo.require("dojo.html.style");
+dojo.require("dojo.html.display");
 
 dojo.html.sumAncestorProperties = function(node, prop){
 	node = dojo.byId(node);
