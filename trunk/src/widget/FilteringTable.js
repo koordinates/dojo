@@ -1,7 +1,6 @@
 dojo.provide("dojo.widget.FilteringTable");
 
 dojo.require("dojo.date");
-dojo.require("dojo.json");
 dojo.require("dojo.data.SimpleStore");
 dojo.require("dojo.html.*");
 dojo.require("dojo.html.util");
