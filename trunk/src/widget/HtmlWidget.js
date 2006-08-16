@@ -13,6 +13,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	templateCssPath: null,
 	templatePath: null,
 
+	lang: "",
 	// for displaying/hiding widget
 	toggle: "plain",
 	toggleDuration: 150,
@@ -23,6 +24,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	},
 
 	postMixInProperties: function(args, frag){
+		if(this.lang === ""){this.lang = null;}
 		// now that we know the setting for toggle, get toggle object
 		// (default to plain toggler if user specified toggler not present)
 		this.toggleObj =
@@ -149,6 +151,6 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 	// Called when my size has changed.
 	// Must notify children if their size has (possibly) changed
 	onResized: function(){
-		dojo.lang.forEach(this.children, function(child){ if (child["checkSize"]) child.checkSize(); });
+		dojo.lang.forEach(this.children, function(child){ if(child.checkSize){child.checkSize();} });
 	}
 });
