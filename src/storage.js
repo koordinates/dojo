@@ -97,12 +97,11 @@ dojo.declare("dojo.storage", null, {
 		//		details possible error messages that might have occurred during
 		//		the storage process.
 
-	  Example:
-	    var resultsHandler = function(status, key, message){
-	      alert("status="+status+", key="+key+", message="+message);
-	    };
-	    dojo.storage.put("test", "hello world", 
-	                     resultsHandler);	
+//	  Example:
+//		var resultsHandler = function(status, key, message){
+//		  alert("status="+status+", key="+key+", message="+message);
+//		};
+//		dojo.storage.put("test", "hello world", resultsHandler);
 		dojo.unimplemented("dojo.storage.put");
 	},
 
@@ -123,12 +122,11 @@ dojo.declare("dojo.storage", null, {
 
 	/**
 	
-	getKeys: function(){ /*Array*/
+	getKeys: function(){ //Array
 		// summary: Enumerates all of the available keys in this storage system.
 		dojo.unimplemented("dojo.storage.getKeys");
 	},
 
-	/**
 	*/
 	clear: function(){
 		// summary: 
@@ -168,8 +166,8 @@ dojo.declare("dojo.storage", null, {
 	           returned
 	*/
 	getMaximumSize: function(){
-    dojo.unimplemented("dojo.storage.getMaximumSize");
-  },
+		dojo.unimplemented("dojo.storage.getMaximumSize");
+	},
 
 	hasSettingsUI: function(){ /*Boolean*/
 		// summary: Determines whether this provider has a settings UI.
@@ -228,7 +226,7 @@ dojo.storage.manager = new function(){
 		//		Initializes the storage system and autodetects the best storage
 		//		provider we can provide on this platform
 		this.autodetect();
-	}
+	};
 	
 	/**
 	
@@ -245,7 +243,7 @@ dojo.storage.manager = new function(){
 		//		isAvailable() on. 
 		this.providers[this.providers.length] = instance;
 		this.providers[name] = instance;
-	}
+	};
 	
 	/**
 	    
@@ -259,7 +257,7 @@ dojo.storage.manager = new function(){
 		//			dojo.storage.setProvider(
 		//				dojo.storage.browser.IEStorageProvider)
 	
-	}
+	};
 	
 	this.autodetect = function(){
 		// summary:
@@ -296,12 +294,12 @@ dojo.storage.manager = new function(){
 		
 		this.initialized = true;
 		this.available = true;
-	}
+	};
 	
 	this.isAvailable = function(){ /*Boolean*/
 		// summary: Returns whether any storage options are available.
 		return this.available;
-	}
+	};
 	
 	this.isInitialized = function(){ /*Boolean*/
 	 	// summary:
@@ -314,7 +312,7 @@ dojo.storage.manager = new function(){
 		}else{
 			return this.initialized;
 		}
-	}
+	};
 
 	this.supportsProvider = function(/*string*/ storageClass){
 		// summary: Determines if this platform supports the given storage provider.
@@ -336,12 +334,12 @@ dojo.storage.manager = new function(){
 			dojo.debug("exception="+exception);
 			return false;
 		}
-	}
+	};
 
 	/** Gets the current provider. */
 	this.getProvider = function(){
 		return this.currentProvider;
-	}
+	};
 	
 	this.loaded = function(){
 		// summary:
@@ -349,5 +347,5 @@ dojo.storage.manager = new function(){
 		//		and ready to be used. Clients who will use the provider will
 		//		connect to this method to know when they can use the storage
 		//		system:
-	}
-}
+	};
+};
