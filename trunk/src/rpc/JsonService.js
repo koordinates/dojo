@@ -2,7 +2,7 @@ dojo.provide("dojo.rpc.JsonService");
 dojo.require("dojo.rpc.RpcService");
 dojo.require("dojo.io.*");
 dojo.require("dojo.json");
-dojo.require("dojo.lang");
+dojo.require("dojo.lang.common");
 
 dojo.rpc.JsonService = function(args){
 	// passing just the URL isn't terribly useful. It's expected that at
@@ -47,7 +47,7 @@ dojo.rpc.JsonService = function(args){
 
 dojo.inherits(dojo.rpc.JsonService, dojo.rpc.RpcService);
 
-dojo.lang.extend(dojo.rpc.JsonService, {
+dojo.extend(dojo.rpc.JsonService, {
 
 	bustCache: false,
 	

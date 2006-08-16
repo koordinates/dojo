@@ -1,5 +1,4 @@
 dojo.provide("dojo.lang.common");
-dojo.require("dojo.lang");
 
 //	Backwards compatibility
 dojo.lang._mixin = dojo._mixin;

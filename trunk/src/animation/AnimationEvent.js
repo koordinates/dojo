@@ -1,7 +1,5 @@
 dojo.provide("dojo.animation.AnimationEvent");
 
-dojo.require("dojo.lang");
-
 dojo.animation.AnimationEvent = function(
 				/*dojo.animation.Animation*/ animation, 
 				/*String*/type, 
@@ -41,7 +39,7 @@ dojo.animation.AnimationEvent = function(
 	this.percent = percent;
 	this.fps = fps;
 };
-dojo.lang.extend(dojo.animation.AnimationEvent, {
+dojo.extend(dojo.animation.AnimationEvent, {
 	coordsAsInts: function() {
 		// summary: Coerce the coordinates into integers.
 		var cints = new Array(this.coords.length);
