@@ -1,4 +1,5 @@
 dojo.provide("dojo.data.SimpleStore");
+dojo.require("dojo.lang.common");
 
 /*	SimpleStore
  *	Designed to be a simple store of data with access methods...

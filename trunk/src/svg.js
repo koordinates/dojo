@@ -1,4 +1,5 @@
 dojo.provide("dojo.svg");
+dojo.require("dojo.lang.common");
 dojo.require("dojo.dom");
 
 dojo.mixin(dojo.svg, dojo.dom);
