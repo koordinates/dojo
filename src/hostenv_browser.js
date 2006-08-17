@@ -424,10 +424,13 @@ dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Objec
 	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
 	//		be restored to its previous state.
 	var rval;
-	var oldGlob = dojo._currentContext;
-	var oldDoc = dojo._currentDocument;
+	var oldGlob = dj_currentContext;
+	var oldDoc = dj_currentDocument;
 	try{
 		dojo.setContext(globalObject, globalObject.document);
+		if(thisObject&&((typeof callback == "string")||(callback instanceof String))){
+			callback=thisObject[callback];
+		}
 		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
 	}finally{
 		dojo.setContext(oldGlob, oldDoc);
@@ -443,12 +446,15 @@ dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?
 	//		When callback() returns or throws an error, the dojo.doc() will
 	//		be restored to its previous state.
 	var rval;
-	var oldDoc = this._currentDocument;
+	var oldDoc = dj_currentDocument;
 	try{
-		dojo._currentDocument = globalObject;
+		dj_currentDocument = globalObject;
+		if(thisObject&&((typeof callback == "string")||(callback instanceof String))){
+			callback=thisObject[callback];
+		}
 		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
 	}finally{
-		dojo._currentDocument = oldDoc;
+		dj_currentDocument = oldDoc;
 	}
 	return rval;
 }
