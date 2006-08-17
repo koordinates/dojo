@@ -185,8 +185,8 @@ dojo.widget.manager = new function(){
 		if(impl){
 			return impl;
 		}
-		var ns = dojo.getNamespace(ns);
-		if(ns){ns.load(widgetName);}
+		var nsObj = dojo.getNamespace(nsObj);
+		if(nsObj){nsObj.load(widgetName);}
 
 		// first store a list of the render prefixes we are capable of rendering
 		if(!renderPrefixCache.length){
