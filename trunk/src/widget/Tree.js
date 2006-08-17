@@ -495,7 +495,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		children.splice(index,1);
 		dojo.html.removeNode(child.domNode);
 
-		if (parent.children.length == 0) {
+		if (parent.children.length == 0 && !parent.isTree) {
 			parent.containerNode.style.display = "none";
 		}
 
