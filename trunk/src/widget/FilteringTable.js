@@ -65,6 +65,24 @@ dojo.widget.defineWidget(
 		return this.store.getDataByKey(dojo.html.getAttribute(row, "value"));
 	},
 
+	getRow: function(/* Object */ obj){
+		var rows = this.domNode.tBodies[0].rows;
+		for(var i=0; i<rows.length; i++){
+			if(this.store.getDataByKey(dojo.html.getAttribute(rows[i], "value")) == obj){
+				return rows[i];
+			}
+		}
+		return null;
+	},
+	getColumnIndex: function(/* string */fieldPath){
+		for(var i=0; i<this.columns.length; i++){
+			if(this.columns[i].getField() == fieldPath){
+				return i;
+			}
+		}
+		return -1;
+	},
+
 	getSelectedData: function(){
 		//	summary
 		//	returns all objects that are selected.
@@ -236,10 +254,13 @@ dojo.widget.defineWidget(
 					o.sortFunction=f;
 				}
 			}
+			o.label = dojo.html.renderedTextContent(cells[i]);
 			if(dojo.html.hasAttribute(cells[i], "field")){
 				o.field=dojo.html.getAttribute(cells[i],"field");
+			} else if(o.label.length > 0){
+				o.field=o.label;
 			} else {
-				o.field="field"+i;
+				o.field = "field" + i;
 			}
 			if(dojo.html.hasAttribute(cells[i], "format")){
 				o.format=dojo.html.getAttribute(cells[i],"format");
@@ -249,7 +270,7 @@ dojo.widget.defineWidget(
 				//	FIXME: switch this to let sorting happen based on dojo.html.renderedTextContent
 				if(sortType.toLowerCase()=="html" || sortType.toLowerCase()=="markup"){
 					o.sortType = "__markup__";	//	always convert to "__markup__"
-					o.noSort = true;
+				//	o.noSort = true;
 				}else{
 					var type = this.getTypeFromString(sortType);
 					if(type){
@@ -258,7 +279,6 @@ dojo.widget.defineWidget(
 					}
 				}
 			}
-			o.label = dojo.html.renderedTextContent(cells[i]);
 
 			//	TODO: set up filtering mechanisms here.
 			if(dojo.html.hasAttribute(cells[i], "filterusing")){
@@ -361,6 +381,9 @@ dojo.widget.defineWidget(
 		//	summary
 		//	Handles the onclick event of any element.
 		var row = dojo.html.getParentByType(e.target,"tr");
+		if(dojo.html.hasAttribute(row,"emptyRow")){
+			return;
+		}
 		var body = dojo.html.getParentByType(row,"tbody");
 		if(this.multiple){
 			if(e.shiftKey){
@@ -456,7 +479,7 @@ dojo.widget.defineWidget(
 	},
 
 	//	Filtering methods
-	_defaultFilter: function(/* HTMLTableRow */row){
+	_defaultFilter: function(/* Object */obj){
 		//	summary
 		//	Always return true as the result of the default filter.
 		return true;
@@ -535,6 +558,9 @@ dojo.widget.defineWidget(
 	
 		function createSortFunction(field, dir){
 			return function(rowA, rowB){
+				if(dojo.html.hasAttribute(rowA,"emptyRow") || dojo.html.hasAttribute(rowB,"emptyRow")){
+					return -1;
+				}
 				var a = self.store.getField(self.getDataByRow(rowA), field);
 				var b = self.store.getField(self.getDataByRow(rowB), field);
 				var ret = 0;
@@ -580,38 +606,41 @@ dojo.widget.defineWidget(
 			if(typeof(val)=="undefined"){
 				val="";
 			}
-			if (this.columns[j].sortType=="__markup__"){
-				cell.innerHTML=val;
-			} else {
-				if(this.columns[j].getType()==Date) {
-					val=new Date(val);
-					if(!isNaN(val)){
-						var format = this.defaultDateFormat;
-						if(this.columns[j].format){
-							format = this.columns[j].format;
-						}
-						cell.appendChild(document.createTextNode(dojo.date.format(val, format)));
-					} else {
-						cell.appendChild(document.createTextNode(val));
-					}
-				} else if ("Number number int Integer float Float".indexOf(this.columns[j].getType())>-1){
-					//	TODO: number formatting
-					if(val.length == 0){
-						val="0";
-					}
-					var n = parseFloat(val, 10) + "";
-					//	TODO: numeric formatting + rounding :)
-					if(n.indexOf(".")>-1){
-						n = dojo.math.round(parseFloat(val,10),2);
-					}
-					cell.appendChild(document.createTextNode(n));
-				}else{
-					cell.appendChild(document.createTextNode(val));
-				}
-			}
+			this.fillCell(cell, this.columns[j], val);
 			row.appendChild(cell);
 		}
 		return row;
+	},
+	fillCell: function(/* HTMLTableCell */cell, /* object */meta, /* object */val){
+		if(meta.sortType=="__markup__"){
+			cell.innerHTML=val;
+		} else {
+			if(meta.getType()==Date) {
+				val=new Date(val);
+				if(!isNaN(val)){
+					var format = this.defaultDateFormat;
+					if(meta.format){
+						format = meta.format;
+					}
+					cell.innerHTML = dojo.date.format(val, format);
+				} else {
+					cell.innerHTML = val;
+				}
+			} else if ("Number number int Integer float Float".indexOf(meta.getType())>-1){
+				//	TODO: number formatting
+				if(val.length == 0){
+					val="0";
+				}
+				var n = parseFloat(val, 10) + "";
+				//	TODO: numeric formatting + rounding :)
+				if(n.indexOf(".")>-1){
+					n = dojo.math.round(parseFloat(val,10),2);
+				}
+				cell.innerHTML = n;
+			}else{
+				cell.innerHTML = val;
+			}
+		}
 	},
 	prefill: function(){
 		//	summary
@@ -669,7 +698,7 @@ dojo.widget.defineWidget(
 		}
 
 		var idx=this.domNode.tBodies[0].rows.length;
-		if(!idx || idx==0 || this.domNode.tBodies[0].rows[0].getAttribute("emptyrow")=="true"){
+		if(!idx || idx==0 || this.domNode.tBodies[0].rows[0].getAttribute("emptyRow")=="true"){
 			idx = 0;
 			var body = this.domNode.tBodies[0];
 			while(body.childNodes.length>0){
@@ -679,8 +708,8 @@ dojo.widget.defineWidget(
 			var data = this.store.get();
 			for(var i=0; i<data.length; i++){
 				var row = this.createRow(data[i]);
-				body.appendChild(row);
 				dojo.event.connect(row, "onclick", this, "onSelect");
+				body.appendChild(row);
 				idx++;
 			}
 		}
@@ -736,10 +765,6 @@ dojo.widget.defineWidget(
 		var body=this.domNode.tBodies[0];
 		var emptyRowIdx=-1;
 		for(var i=0; i<body.rows.length; i++){
-			if(body.rows[i].getAttribute("emptyRow")){
-				emptyRowIdx=i;
-				break;
-			}
 			rows.push(body.rows[i]);
 		}
 
@@ -748,30 +773,21 @@ dojo.widget.defineWidget(
 		if(sortFunction){
 			rows.sort(sortFunction);
 		}
-		if(emptyRowIdx>-1){
-			for(var i=emptyRowIdx; i<body.rows.length; i++){
-				rows.push(body.rows[i]);
-			}
-		}
 
 		//	append the rows without killing them, this should help with the HTML problems.
 		for(var i=0; i<rows.length; i++){
 			if(this.alternateRows){
 				dojo.html[((i%2==1)?"addClass":"removeClass")](rows[i], this.rowAlternateClass);
 			}
+			dojo.html[(this.isRowSelected(body.rows[i])?"addClass":"removeClass")](body.rows[i], this.rowSelectedClass);
 			body.appendChild(rows[i]);
 		}
-
-		//	now re-render any selections.
-		this.renderSelections();
 	},
 	renderSelections: function(){
 		var body=this.domNode.tBodies[0];
 		for(var i=0; i<body.rows.length; i++){
 			dojo.html[(this.isRowSelected(body.rows[i])?"addClass":"removeClass")](body.rows[i], this.rowSelectedClass);
 		}
-	},
-	renderFilter: function(){
 	},
 
 	//	widget lifetime handlers
@@ -816,6 +832,13 @@ dojo.widget.defineWidget(
 				}
 			}
 			self.render();
+		});
+		dojo.event.connect(this.store, "onUpdateField", function(obj, fieldPath, val){
+			var row = self.getRow(obj);
+			var idx = self.getColumnIndex(fieldPath);
+			if(row && row.cells[idx] && self.columns[idx]){
+				self.fillCell(row.cells[idx], self.columns[idx], val);
+			}
 		});
 	},
 //	fillInTemplate: function(args, frag){ },

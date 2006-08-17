@@ -59,6 +59,31 @@ dojo.data.SimpleStore = function(/* array? */jsonArray){
 		return data[idx].src; 	//	object
 	};
 
+	this.update = function(/* Object */obj, /* string */fieldPath, /* Object */val){
+		var parts=fieldPath.split("."), i=0, o=obj, field;
+		if(parts.length>1) {
+			field = parts.pop();
+			do{ 
+				if(parts[i].indexOf("()")>-1){
+					var temp=parts[i++].split("()")[0];
+					if(!o[temp]){
+						dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + temp + "' is not a property of the passed object.");
+					} else {
+						//	this *will* throw an error if the method in question can't be invoked without arguments.
+						o = o[temp]();
+					}
+				} else {
+					o = o[parts[i++]];
+				}
+			} while (i<parts.length && o != null);
+		} else {
+			field = parts[0];
+		}
+
+		obj[field] = val;
+		this.onUpdateField(obj, fieldPath, val);
+	};
+
 	this.forEach = function(/* function */fn){
 		//	summary
 		//	Functional iteration directly on the internal data array.
@@ -171,6 +196,7 @@ dojo.extend(dojo.data.SimpleStore, {
 				if(!o[temp]){
 					dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + temp + "' is not a property of the passed object.");
 				} else {
+					//	this *will* throw an error if the method in question can't be invoked without arguments.
 					o = o[temp]();
 				}
 			} else {
@@ -187,5 +213,6 @@ dojo.extend(dojo.data.SimpleStore, {
 	onClearData:function(){ },
 	onAddData:function(obj){ },
 	onAddDataRange:function(arr){ },
-	onRemoveData:function(obj){ }
+	onRemoveData:function(obj){ },
+	onUpdateField:function(obj, field, val){ }
 });
