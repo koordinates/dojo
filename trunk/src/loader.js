@@ -469,8 +469,13 @@ dojo.provide = function(){
 	return dojo.hostenv.startPackage.apply(dojo.hostenv, arguments);
 }
 
-dojo.setModulePrefix = function(module, prefix){
+dojo.registerModulePath = function(module, prefix){
 	return dojo.hostenv.setModulePrefix(module, prefix);
+}
+
+dojo.setModulePrefix = function(module, prefix){
+	dojo.deprecated("dojo.setModulePrefix", "replaced by dojo.registerModulePath", "0.5");
+	return dojo.registerModulePath(module, prefix);
 }
 
 // determine if an object supports a given method

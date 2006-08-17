@@ -378,10 +378,77 @@ try {
 // breaking when it's not included
 dojo.hostenv.writeIncludes = function(){}
 
+//TODOC:  HOW TO DOC THIS?
+// @global: dj_currentDocument
+// summary: 
+//		Current document object. 'dj_currentDocument' can be modified for temporary context shifting.
+// description:  
+//    dojo.doc() returns dojo.currentDocument.
+//		Refer to dojo.doc() rather than referring to 'window.document' to ensure your
+//		code runs correctly in managed contexts.
+if(!dj_undef("document", this)){
+	dj_currentDocument = this.document;
+}
+
+dojo.doc = function(){
+	// summary:
+	//		return the document object associated with the dojo.global()
+	return dj_currentDocument;
+}
+
+dojo.body = function(){
+	// summary:
+	//		return the body object associated with dojo.doc()
+	// Note: document.body is not defined for a strict xhtml document
+	return dojo.doc().body || dojo.doc().getElementsByTagName("body")[0];
+}
+
 dojo.byId = function(id, doc){
-	if(id && (typeof id == "string" || id instanceof String)){
-		if(!doc){ doc = dojo.doc(); }
-		return doc.getElementById(id);
+	if(id && ((typeof id == "string") || (id instanceof String))){
+		return (doc || dojo.doc()).getElementById(id);
 	}
 	return id; // assume it's a node
+}
+
+dojo.setContext = function(/*Object*/globalObject, /*Object*/ globalDocument){
+	dj_currentContext = globalObject;
+	dj_currentDocument = globalDocument;
+}
+
+dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments){
+	// summary:
+	//		Call callback with globalObject as dojo.global() and globalObject.document 
+	//		as dojo.doc(), if provided, globalObject will be executed in the context of 
+	//		object thisObject
+	// description: 
+	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
+	//		be restored to its previous state.
+	var rval;
+	var oldGlob = dojo._currentContext;
+	var oldDoc = dojo._currentDocument;
+	try{
+		dojo.setContext(globalObject, globalObject.document);
+		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
+	}finally{
+		dojo.setContext(oldGlob, oldDoc);
+	}
+	return rval;
+}
+
+dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments) {
+	// summary:
+	//		Call callback with globalObject as dojo.doc(), if provided, callback will be executed
+	//		in the context of object thisObject
+	// description: 
+	//		When callback() returns or throws an error, the dojo.doc() will
+	//		be restored to its previous state.
+	var rval;
+	var oldDoc = this._currentDocument;
+	try{
+		dojo._currentDocument = globalObject;
+		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
+	}finally{
+		dojo._currentDocument = oldDoc;
+	}
+	return rval;
 }
