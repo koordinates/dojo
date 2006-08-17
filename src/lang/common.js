@@ -1,9 +1,62 @@
 dojo.provide("dojo.lang.common");
 
-//	Backwards compatibility
-dojo.lang._mixin = dojo._mixin;
-dojo.lang.mixin = dojo.mixin;
-dojo.lang.extend = dojo.extend;
+dojo.lang.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
+	// summary: Set up inheritance between two classes.
+	if(typeof superclass != 'function'){ 
+		dojo.raise("dojo.inherits: superclass argument ["+superclass+"] must be a function (subclass: ["+subclass+"']");
+	}
+	subclass.prototype = new superclass();
+	subclass.prototype.constructor = subclass;
+	subclass.superclass = superclass.prototype;
+	// DEPRICATED: super is a reserved word, use 'superclass'
+	subclass['super'] = superclass.prototype;
+}
+
+dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
+	// summary:	Adds all properties and methods of props to obj.
+	var tobj = {};
+	for(var x in props){
+		// the "tobj" condition avoid copying properties in "props"
+		// inherited from Object.prototype.  For example, if obj has a custom
+		// toString() method, don't overwrite it with the toString() method
+		// that props inherited from Object.protoype
+		if((typeof tobj[x] == "undefined") || (tobj[x] != props[x])){
+			obj[x] = props[x];
+		}
+	}
+	// IE doesn't recognize custom toStrings in for..in
+	if(dojo.render.html.ie 
+		&& (typeof(props["toString"]) == "function")
+		&& (props["toString"] != obj["toString"])
+		&& (props["toString"] != tobj["toString"]))
+	{
+		obj.toString = props.toString;
+	}
+	return obj;
+}
+
+dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/props){
+	// summary:	Adds all properties and methods of props to obj.
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo.lang._mixin(obj, arguments[i]);
+	}
+	return obj; // Object
+}
+
+dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
+	// summary:	Adds all properties and methods of props to constructor's prototype,
+	//			making them available to all instances created with constructor.
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo.lang._mixin(constructor.prototype, arguments[i]);
+	}
+	return constructor;
+}
+
+// Promote to dojo module
+dojo.inherits = dojo.lang.inherits;
+//dojo.lang._mixin = dojo.lang._mixin;
+dojo.mixin = dojo.lang.mixin;
+dojo.extend = dojo.lang.extend;
 
 dojo.lang.find = function(	/*Array*/		array, 
 							/*Object*/		value,

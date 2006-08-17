@@ -40,7 +40,6 @@
 //
 
 
-
 //TODOC:  HOW TO DOC THIS?
 // @global: dj_global
 // summary: 
@@ -49,27 +48,35 @@
 // description:  
 //		Refer to 'dj_global' rather than referring to window to ensure your
 //		code runs correctly in contexts other than web browsers (eg: Rhino on a server).
-// TODO: replace this with dojo._currentContext
 var dj_global = this;
 
+//TODOC:  HOW TO DOC THIS?
+// @global: dj_currentContext
+// summary: 
+//		Private global context object. Where 'dj_global' always refers to the boot-time
+//    global context, 'dj_currentContext' can be modified for temporary context shifting.
+//    dojo.global() returns dj_currentContext.
+// description:  
+//		Refer to dojo.global() rather than referring to dj_global to ensure your
+//		code runs correctly in managed contexts.
+var dj_currentContext = this;
 
+
+// ****************************************************************
+// global public utils
+// TODOC: DO WE WANT TO NOTE THAT THESE ARE GLOBAL PUBLIC UTILS?
+// ****************************************************************
 
 function dj_undef(/*String*/ name, /*Object?*/ object){
 	//summary: Returns true if 'name' is defined on 'object' (or globally if 'object' is null).
 	//description: Note that 'defined' and 'exists' are not the same concept.
-	
-	//Before dojo.global() is defined, object can not be null
-	if(object==null){ object = dojo.global(); }
-	// exception if object is not an Object
-	return (typeof object[name] == "undefined");	// Boolean
+	return (typeof (object || dj_currentContext)[name] == "undefined");	// Boolean
 }
-
 
 // make sure djConfig is defined
 if(dj_undef("djConfig", this)){ 
 	var djConfig = {}; 
 }
-
 
 //TODOC:  HOW TO DOC THIS?
 // dojo is the root variable of (almost all) our public symbols -- make sure it is defined.
@@ -77,11 +84,14 @@ if(dj_undef("dojo", this)){
 	var dojo = {}; 
 }
 
-//These are private variables, and should not be used; use dojo.global() and dojo.doc() instead
-//this variable should probably have a better name
-dojo._currentContext = this;
-if(!dj_undef("document", dojo._currentContext)){
-	dojo._currentDocument = this.document;
+dojo.global = function(){
+	// summary:
+	//		return the current global context object
+	//		(e.g., the window object in a browser).
+	// description: 
+	//		Refer to 'dojo.global()' rather than referring to window to ensure your
+	//		code runs correctly in contexts other than web browsers (eg: Rhino on a server).
+	return dj_currentContext;
 }
 
 // Override locale setting, if specified
@@ -104,9 +114,10 @@ dojo.evalProp = function(/*String*/ name, /*Object*/ object, /*Boolean?*/ create
 	// description: 
 	//		Returns null if 'object[name]' is not defined and 'create' is not true.
 	// 		Note: 'defined' and 'exists' are not the same concept.	
-	return (object && !dj_undef(name, object) ? object[name] : (create ? (object[name]={}) : undefined));	// mixed
+	if((!object)||(!name)) return undefined; // undefined
+	if(!dj_undef(name, object)) return object[name]; // mixed
+	return (create ? (object[name]={}) : undefined);	// mixed
 }
-
 
 dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ create){
 	// summary: Parse string path to an object, and return corresponding object reference and property name.
@@ -114,9 +125,9 @@ dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ 
 	//		Returns an object with two properties, 'obj' and 'prop'.  
 	//		'obj[prop]' is the reference indicated by 'path'.
 	// path: Path to an object, in the form "A.B.C".
-	// context: Object to use as root of path.  Defaults to 'dj_global'.
+	// context: Object to use as root of path.  Defaults to 'dojo.global()'.
 	// create: If true, Objects will be created at any point along the 'path' that is undefined.
-	var object = (context != null ? context : dj_global);
+	var object = (context || dojo.global());
 	var names = path.split('.');
 	var prop = names.pop();
 	for (var i=0,l=names.length;i<l && object;i++){
@@ -125,100 +136,24 @@ dojo.parseObjPath = function(/*String*/ path, /*Object?*/ context, /*Boolean?*/ 
 	return {obj: object, prop: prop};	// Object: {obj: Object, prop: String}
 }
 
-
 dojo.evalObjPath = function(/*String*/ path, /*Boolean?*/ create){
 	// summary: Return the value of object at 'path' in the global scope, without using 'eval()'.
 	// path: Path to an object, in the form "A.B.C".
 	// create: If true, Objects will be created at any point along the 'path' that is undefined.
 	if(typeof path != "string"){ 
-		return dj_global; 
+		return dojo.global(); 
 	}
 	// fast path for no periods
 	if(path.indexOf('.') == -1){
-		return dojo.evalProp(path, dj_global, create);		// mixed
+		return dojo.evalProp(path, dojo.global(), create);		// mixed
 	}
 
 	//MOW: old 'with' syntax was confusing and would throw an error if parseObjPath returned null.
-	var ref = dojo.parseObjPath(path, dj_global, create);
+	var ref = dojo.parseObjPath(path, dojo.global(), create);
 	if(ref){
 		return dojo.evalProp(ref.prop, ref.obj, create);	// mixed
 	}
 	return null;
-}
-
-// ****************************************************************
-// global public utils
-// TODOC: DO WE WANT TO NOTE THAT THESE ARE GLOBAL PUBLIC UTILS?
-// ****************************************************************
-
-dojo.global = function(){
-	// summary:
-	//		return the top-level global object in the host environment
-	//		(e.g., the window object in a browser).
-	// description: 
-	//		Refer to 'dojo.global()' rather than referring to window to ensure your
-	//		code runs correctly in contexts other than web browsers (eg: Rhino on a server).
-	return dojo._currentContext;
-}
-
-dojo.doc = function(){
-	// summary:
-	//		return the document object associated with the dojo.global()
-	return dojo._currentDocument;
-}
-
-dojo.body  = function(){
-	// summary:
-	//		return the body object associated with dojo.doc()
-	// Note: document.body is not defined for a strict xhtml document
-	return dojo.doc().body || dojo.doc().getElementsByTagName("body")[0];
-}
-
-dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject /* ... */){
-	// summary:
-	//		Call callback with globalObject as dojo.global() and globalObject.document 
-	//		as dojo.doc(), if provided, globalObject will be executed in the context of 
-	//		object thisObject
-	// description: 
-	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
-	//		be restored to its previous state.
-	var oldDoc = dojo._currentDocument;
-	var oldWin = dojo._currentContext;
-	var rval;
-	try{
-		dojo._currentContext = globalObject;
-		dojo._currentDocument = globalObject.document;
-		if(thisObject){ rval = dojo.lang.curryArguments(thisObject, callback, arguments, 3); }
-		else{ rval = callback(); }
-	} catch(e) {
-		dojo._currentContext = oldWin;
-		dojo._currentDocument = oldDoc;
-		throw e;
-	}
-	dojo._currentContext = oldWin;
-	dojo._currentDocument = oldDoc;
-	return rval;
-}
-
-dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject /* ... */) {
-	// summary:
-	//		Call callback with globalObject as dojo.doc(), if provided, callback will be executed
-	//		in the context of object thisObject
-	// description: 
-	//		When callback() returns or throws an error, the dojo.doc() will
-	//		be restored to its previous state.
-	var oldDoc = this._currentDocument;
-	var rval;
-	try{
-		dojo._currentDocument = globalObject;
-		if(thisObject){ rval = dojo.lang.curryArguments(thisObject, callback, arguments, 3); }
-		else{ rval = callback(); }
-	} catch(e) {
-		dojo._currentDocument = oldDoc;
-		throw e;
-	}
-	dojo._currentDocument = oldDoc;
-	return rval;
 }
 
 dojo.errorToString = function(/*Error*/ exception){
@@ -234,7 +169,6 @@ dojo.errorToString = function(/*Error*/ exception){
 		return exception;				// Error
 	}
 }
-
 
 dojo.raise = function(/*String*/ message, /*Error?*/ exception){
 	// summary: Throw an error message, appending text of 'exception' if provided.
@@ -255,7 +189,6 @@ dojo.debug = function(){}
 dojo.debugShallow = function(obj){}
 dojo.profile = { start: function(){}, end: function(){}, stop: function(){}, dump: function(){} };
 
-
 function dj_eval(/*String*/ scriptFragment){ 
 	// summary: Perform an evaluation in the global scope.  Use this rather than calling 'eval()' directly.
 	// description: Placed in a separate function to minimize size of trapped evaluation context.
@@ -266,8 +199,6 @@ function dj_eval(/*String*/ scriptFragment){
 	return dj_global.eval ? dj_global.eval(scriptFragment) : eval(scriptFragment); 	// mixed
 }
 
-
-
 dojo.unimplemented = function(/*String*/ funcname, /*String?*/ extra){
 	// summary: Throw an exception because some function is not implemented.
 	// extra: Text to append to the exception message.
@@ -275,7 +206,6 @@ dojo.unimplemented = function(/*String*/ funcname, /*String?*/ extra){
 	if (extra != null) { message += " " + extra; }
 	dojo.raise(message);
 }
-
 
 dojo.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ removal){
 	// summary: Log a debug message to indicate that a behavior has been deprecated.
@@ -286,61 +216,6 @@ dojo.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ 
 	if(removal){ message += " -- will be removed in version: " + removal; }
 	dojo.debug(message);
 }
-
-
-
-dojo.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
-	// summary: Set up inheritance between two classes.
-	if(typeof superclass != 'function'){ 
-		dojo.raise("dojo.inherits: superclass argument ["+superclass+"] must be a function (subclass: [" + subclass + "']");
-	}
-	subclass.prototype = new superclass();
-	subclass.prototype.constructor = subclass;
-	subclass.superclass = superclass.prototype;
-	// DEPRICATED: super is a reserved word, use 'superclass'
-	subclass['super'] = superclass.prototype;
-}
-
-dojo._mixin = function(/*Object*/ obj, /*Object*/ props){
-	// summary:	Adds all properties and methods of props to obj.
-	var tobj = {};
-	for(var x in props){
-		// the "tobj" condition avoid copying properties in "props"
-		// inherited from Object.prototype.  For example, if obj has a custom
-		// toString() method, don't overwrite it with the toString() method
-		// that props inherited from Object.protoype
-		if(typeof tobj[x] == "undefined" || tobj[x] != props[x]) {
-			obj[x] = props[x];
-		}
-	}
-	// IE doesn't recognize custom toStrings in for..in
-	if(dojo.render.html.ie 
-		&& typeof(props["toString"]) == "function" 
-		&& props["toString"] != obj["toString"]
-		&& props["toString"] != tobj["toString"]
-	){
-		obj.toString = props.toString;
-	}
-	return obj;
-}
-
-dojo.mixin = function(/*Object*/ obj, /*Object...*/props){
-	// summary:	Adds all properties and methods of props to obj.
-	for(var i=1, l=arguments.length; i<l; i++){
-		dojo._mixin(obj, arguments[i]);
-	}
-	return obj; // Object
-}
-
-dojo.extend = function(/*Object*/ constructor, /*Object...*/ props){
-	// summary:	Adds all properties and methods of props to constructors prototype,
-	//			making them available to all instances created with constructor.
-	for(var i=1, l=arguments.length; i<l; i++){
-		dojo._mixin(constructor.prototype, arguments[i]);
-	}
-	return constructor;
-}
-
 
 dojo.render = (function(){
 	//TODOC: HOW TO DOC THIS?
