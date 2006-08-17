@@ -11,19 +11,9 @@
 	<script type="text/javascript" src="../../dojo.js"></script>
 	<script type="text/javascript">
 		dojo.require("dojo.widget.FilteringTable");
+		dojo.require("dojo.data.SimpleStore");
 		dojo.hostenv.writeIncludes();
 
-		var theJSONData=[
-			{ Id:1, name:"William Smith", dateAdded:"1/1/2004", accounts:[ 2,3,4 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-			{ Id:2, name:"Davy Jones", dateAdded:"12/15/2001", accounts:[ ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-			{ Id:3, name:"Lucinda Williams", dateAdded:"4/15/2000", accounts:[ 2,3,4,5,6,7,8,9 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-			{ Id:4, name:"Robert Appleton", dateAdded:"1/1/2006", accounts:[ 2,3,4,5,6 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-			{ Id:5, name:"Wilma Flintstone", dateAdded:"6/21/2005", accounts:[ 2,3,4 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-			{ Id:6, name:"Charo", dateAdded:"1/1/2004", accounts:[ 2,3,4,5,6,7 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-			{ Id:7, name:"Fluffy the Lamb", dateAdded:"9/18/2004", accounts:[ 4 ], description:{ html:'<p>Testing descriptions...</p>'} }, 
-		];
-
-		//	testing the method retreival
 		var getAccounts=function(){
 			return this.accounts;
 		};
@@ -33,12 +23,33 @@
 		var getHtml=function(){
 			return this.html;
 		};
-		for(var i=0; i<theJSONData.length; i++){
-			theJSONData[i].getAccounts=getAccounts;
-			theJSONData[i].getDescription=getDescription;
-			theJSONData[i].description.getHtml=getHtml;
+		var theJSONData=[];
+		var names=["William Smith", "Davy Jones", "Lucinda Williams", "Robert Appleton", "Wilma Flintstone", "Charo", "Fluufy the Lamb" ];
+		var dates=["1/1/2004","12/15/2001","4/15/2000","1/1/2006","6/21/2005","9/18/2004"];
+		var outer=20;
+		var inner=10;
+		for(var i=0; i<outer; i++){
+			for(var j=0; j<inner; j++){
+				var o ={
+					Id:(i*outer)+j,
+					name:names[i%names.length],
+					dateAdded:dates[j%dates.length],
+					accounts:[],
+					description:{ 
+						html:'<p>testing the description...</p>',
+						getHtml:getHtml
+					},
+					getAccounts:getAccounts,
+					getDescription:getDescription
+				};
+				var l=(i*outer+j)%9;
+				for(var k=0; k<l; k++){
+					o.accounts.push((i*outer+j)%11);
+				}
+				theJSONData.push(o);
+			}
 		}
-		
+
 		function populateTable(){
 			var w=dojo.widget.byId("fromJSONData");
 			if(w.store.get().length > 0){
@@ -46,6 +57,16 @@
 				return;
 			}
 			w.store.setData(theJSONData);
+		}
+		
+		function updateCell(inp){
+			var w=dojo.widget.byId("parsedFromHtml");
+			var v=inp.value;
+			w.store.update(
+				w.getDataByRow(w.domNode.tBodies[0].rows[0]),
+				"Label",
+				v
+			);
 		}
 	</script>
 	<style type="text/css">
@@ -93,6 +114,20 @@
 		table tbody tr.selected:hover td{
 			background:#ff9;
 		}
+
+		#inputArea{
+			margin:1em 0;
+			padding:1em;
+			background-color:#eef;
+		}
+		#updateTestInput{
+			border:1px solid #ccc;
+			width:100%;
+			height:80px;
+			font-family:serif;
+			font-size:0.9em;
+			overflow:auto;
+		}
 	</style>
 </head>
 <body>
@@ -117,6 +152,10 @@
 	FilteringTable as a field</strong>.  Take a look at the source of this page to see a demonstration.
 	</p>
 	<h2>Filtering Table, parsed from existing HTML data</h2>
+	<div id="inputArea">
+		<div style="font-size:0.85em;">Change the value of Adam's Label (html allowed):</div>
+		<textarea id="updateTestInput" value="" onchange="updateCell(this);"></textarea>
+	</div>
 	<table dojoType="filteringTable" id="parsedFromHtml" 
 		multiple="true" alternateRows="true" maxSortable="2"
 		cellpadding="0" cellspacing="0" border="0">
