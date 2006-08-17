@@ -14,6 +14,24 @@
 		dojo.require("dojo.data.SimpleStore");
 		dojo.hostenv.writeIncludes();
 
+		//	a simple filtering function
+		function dateFilter(dt){
+			return (dt > new Date('6/1/2004') && dt < new Date('2/1/2006'));
+		}
+		function nameFilter(name){
+			return (name.charAt(0) >= 'M' && name.charAt(0) <= 'Z');
+		}
+
+		function applyDateModified(){
+			dojo.widget.byId("parsedFromHtml").setFilter("DateModified", dateFilter);
+		}
+		function applyName(){
+			dojo.widget.byId("parsedFromHtml").setFilter("Name", nameFilter);
+		}
+		function clearFilters(){
+			dojo.widget.byId("parsedFromHtml").clearFilters();
+		}
+
 		var getAccounts=function(){
 			return this.accounts;
 		};
@@ -155,6 +173,11 @@
 	<div id="inputArea">
 		<div style="font-size:0.85em;">Change the value of Adam's Label (html allowed):</div>
 		<textarea id="updateTestInput" value="" onchange="updateCell(this);"></textarea>
+		<div style=font-size:0.85em;">
+			<input type="button" value="Show only DateModified between 6/1/2004 and 2/1/2006" onclick="applyDateModified();" /> 
+			<input type="button" value="Show only names between M and Z" onclick="applyName();" /> 
+			<input type="button" value="Clear Filters" onclick="clearFilters();" />
+		</div> 
 	</div>
 	<table dojoType="filteringTable" id="parsedFromHtml" 
 		multiple="true" alternateRows="true" maxSortable="2"
