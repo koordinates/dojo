@@ -52,6 +52,10 @@ dojo.declare(
 			position = 'absolute';
 		}
 	},
+
+	//connect to this stub to modify the content of the popup
+	aboutToShow: function() {},
+
 	/**
 	 * Open the popup at position (x,y), relative to dojo.body()
 	 * Or open(node, parent, explodeSrc, aroundOrient) to open
@@ -59,6 +63,8 @@ dojo.declare(
 	 */
 	open: function(x, y, parent, explodeSrc, orient, padding){
 		if (this.isShowingNow){ return; }
+
+		this.aboutToShow();
 
 		// if I click right button and menu is opened, then it gets 2 commands: close -> open
 		// so close enables animation and next "open" is put to queue to occur at new location
@@ -318,7 +324,11 @@ dojo.widget.defineWidget(
 			targetFunc: "onOpen",
 			once:       true
 		});
-		
+
+		//normal connect does not work if document.designMode is on in FF, use addListener instead
+		if(dojo.render.html.moz && win.document.designMode.toLowerCase() == 'on'){
+			dojo.event.browser.addListener(node, "contextmenu", dojo.lang.hitch(this, "onOpen"));
+		}
 		dojo.widget.PopupManager.registerWin(win);
 	},
 
@@ -432,7 +442,8 @@ dojo.widget.defineWidget(
 			if(!curItem){
 				curItem = dir>0 ? this.children[0] : this.children[this.children.length-1];
 			}
-			if(curItem.onHover){
+			//find next/previous visible menu item, not including separators
+			if(curItem.onHover && curItem.isShowing()){
 				return curItem;
 			}
 			curItem = dir>0 ? curItem.getNextSibling() : curItem.getPreviousSibling();
@@ -530,9 +541,9 @@ dojo.widget.defineWidget(
 	//   icon, label, accelerator-key, and right-arrow indicating sub-menu
 	templateString:
 		 '<tr class="dojoMenuItem2" dojoAttachEvent="onMouseOver: onHover; onMouseOut: onUnhover; onClick: _onClick;">'
-		+'<td><div class="dojoMenuItem2Icon" style="${this.iconStyle}"></div></td>'
-		+'<td class="dojoMenuItem2Label"><span><span>${this.caption}</span>${this.caption}</span></td>'
-		+'<td class="dojoMenuItem2Accel"><span><span>${this.accelKey}</span>${this.accelKey}</span></td>'
+		+'<td><div class="${this.iconClass}" style="${this.iconStyle}"></div></td>'
+		+'<td class="dojoMenuItem2Label">${this.caption}</td>'
+		+'<td class="dojoMenuItem2Accel">${this.accelKey}</td>'
 		+'<td><div class="dojoMenuItem2Submenu" style="display:${this.arrowDisplay};"></div></td>'
 		+'</tr>',
 
@@ -552,6 +563,7 @@ dojo.widget.defineWidget(
 	caption: 'Untitled',
 	accelKey: '',
 	iconSrc: '',
+	iconClass: 'dojoMenuItem2Icon',
 	submenuId: '',
 	disabled: false,
 	eventNaming: "default",
@@ -567,6 +579,7 @@ dojo.widget.defineWidget(
 			}
 		}
 		this.arrowDisplay = this.submenuId ? 'block' : 'none';
+		dojo.widget.MenuItem2.superclass.postMixInProperties.apply(this, arguments);
 	},
 
 	fillInTemplate: function(){
