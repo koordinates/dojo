@@ -1,5 +1,6 @@
 dojo.provide("dojo.math.Matrix");
 dojo.provide("dojo.math.Transform");
+dojo.require("dojo.lang.common");
 
 /* TODO: figure out a way of reconciling the matrix functionality of Cal's
 	to the drawing needs.

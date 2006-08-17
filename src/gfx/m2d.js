@@ -1,4 +1,4 @@
-﻿dojo.require("dojo.lang.*");
+﻿dojo.require("dojo.lang.common");
 dojo.require("dojo.math.*");
 dojo.provide("dojo.gfx.m2d");
 

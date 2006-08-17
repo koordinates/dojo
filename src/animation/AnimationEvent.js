@@ -1,4 +1,5 @@
 dojo.provide("dojo.animation.AnimationEvent");
+dojo.require("dojo.lang.common");
 
 dojo.animation.AnimationEvent = function(
 				/*dojo.animation.Animation*/ animation, 
