@@ -11,7 +11,6 @@ dojo.require("dojo.html.iframe");
 dojo.require("dojo.string");
 dojo.require("dojo.widget.html.stabile");
 dojo.require("dojo.widget.Menu2");
-dojo.require("dojo.html.csshack");
 
 dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.searchUrl = url;
