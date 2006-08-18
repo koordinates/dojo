@@ -55,9 +55,6 @@ dojo.mixin(dojo.gfx, {
 	},
 	multiply: function(matrix, a, b){
 		var m = this.normalizeMatrix(matrix);
-		// transform a coordinate
-		if(arguments.length == 3 && typeof a   == "number" && typeof b   == "number") return this._multiplyPoint(m, a, b);
-		if(arguments.length == 2 && typeof a.x == "number" && typeof a.y == "number") return this._multiplyPoint(m, a.x, a.y);
 		// combine matrices
 		for(var i = 1; i < arguments.length; ++i){
 			var l = m;
