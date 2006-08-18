@@ -184,6 +184,19 @@ dojo.lang.mixin(dojo.html.selection, {
 			}
 		}
 	},
+	getSelectedText: function(){
+		if(dojo.doc().selection){ //IE
+			if(dojo.html.selection.getType() == dojo.html.selectionType.CONTROL){
+				return null;
+			}
+			return dojo.doc().selection.createRange().text;
+		}else{
+			var selection = dojo.global().getSelection();
+			if(selection){
+				return selection.toString();;
+			}
+		}
+	},
 	hasAncestorElement: function(tagName /* ... */){
 		return (dojo.html.selection.getAncestorElement.apply(this, arguments) != null);
 	},
@@ -268,7 +281,6 @@ dojo.lang.mixin(dojo.html.selection, {
 			range.select();
 		}
 	},
-
 	remove: function() {
 		// summary: delete selection
 		if(dojo.doc().selection) { //IE
