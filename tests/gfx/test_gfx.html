@@ -30,12 +30,12 @@ function getTestSurface(testName, testDescription, width, height)
    testSurfaceHolder.id = testName + '_holder';
    var refHolder = document.createElement('td');
    var refImg = document.createElement('img');
-   refImg.src = "ref_images/placeholder.jpg";
-   refImg.width = width;
-   refImg.height = height;
+   refImg.src = "images/placeholder.png";
+//   refImg.width = width;
+//   refImg.height = height;
    refImg.id = testName + '_refimg';
-   var imgUrl = 'ref_images/' + testName + '.png';
-   var errUrl = 'ref_images/error.png';
+   var imgUrl = 'images/' + testName + '.png';
+   var errUrl = 'images/error.png';
    var imgToLoad = new Image();
    dojo.event.connect(imgToLoad, 'onload', function() {
                          refImg.src = imgUrl;
