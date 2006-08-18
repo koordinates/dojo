@@ -39,8 +39,8 @@ dojo.widget.Parse = function(fragment){
 					}
 					
 					if(!djTags[ltn]){
-						dojo.deprecated('dojo.widget.Parse.createComponents', 'Widget not defined for  namespace'+nsName+
-							', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
+						dojo.deprecated('dojo.widget.Parse.createComponents', 'Widget not defined for namespace \''+nsName+
+							'\', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
 	
 						var newNs = dojo.findNamespaceForWidget(tagName);
 						if(newNs){
@@ -228,22 +228,22 @@ dojo.widget.Parse = function(fragment){
 		properties is an object of name value pairs
 		namespace is the namespace of the widget.  Defaults to "dojo"
 	*/
-	this.createComponentFromScript = function(nodeRef, componentName, properties, namespace){
-		if(!namespace){ namespace = "dojo"; }
-		var ltn = namespace + ":" + componentName.toLowerCase();
+	this.createComponentFromScript = function(nodeRef, componentName, properties, ns){
+		if(!ns){ ns = "dojo"; }
+		var ltn = ns + ":" + componentName.toLowerCase();
 		
 		var djTags = dojo.widget.tags;
 		//if we don't already have a tag registered for this widget, try to load it's
 		//namespace, if it has one
 		if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn)){		    
-			var ns = dojo.getNamespace(namespace);
-			if(ns){ns.load(componentName);}
+			var nsObj = dojo.getNamespace(ns);
+			if(nsObj){nsObj.load(componentName);}
 		}
 		
 		if(!djTags[ltn]){
-			dojo.deprecated('dojo.widget.Parse.createComponentFromScript', 'Widget not defined for namespace'+
-				namespace +
-				', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
+			dojo.deprecated('dojo.widget.Parse.createComponentFromScript', 'Widget not defined for namespace \''+
+				ns +
+				'\', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
 
 			var newNs = dojo.findNamespaceForWidget(componentName.toLowerCase());
 			if(newNs){
@@ -298,10 +298,10 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 	var isNameStr = (typeof name == "string");
 	if(isNameStr){
 		var pos = name.indexOf(":");
-		var namespace = (pos > -1) ? name.substring(0,pos) : "dojo";
+		var ns = (pos > -1) ? name.substring(0,pos) : "dojo";
 		if(pos > -1){ name = name.substring(pos+1); }
 		var lowerCaseName = name.toLowerCase();
-		var namespacedName = namespace+":" + lowerCaseName;
+		var namespacedName = ns + ":" + lowerCaseName;
 		isNode = ( dojo.byId(name) && (!dojo.widget.tags[namespacedName]) ); 
 	}
 
@@ -313,15 +313,15 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0]; 
 	}
 
-	function fromScript(placeKeeperNode, name, props, namespace){
+	function fromScript(placeKeeperNode, name, props, ns){
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
 			nodeRef: placeKeeperNode,
 			fastMixIn: true
 		};
-		props.namespace = namespace;
+		props.namespace = ns;
 		return dojo.widget.getParser().createComponentFromScript(
-			placeKeeperNode, name, props, namespace);
+			placeKeeperNode, name, props, ns);
 	}
 
 	props = props||{};
@@ -342,7 +342,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 	}else{ // otherwise don't replace, but build in-place
 		tn = refNode;
 	}
-	var widgetArray = fromScript(tn, name.toLowerCase(), props, namespace);
+	var widgetArray = fromScript(tn, name.toLowerCase(), props, ns);
 	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}
