@@ -4,7 +4,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.DatePicker");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
-dojo.require("dojo.i18n.calendar.GregorianNames");
+dojo.require("dojo.i18n.datetime");
 
 dojo.widget.defineWidget(
 	"dojo.widget.MonthlyCalendar",
@@ -47,7 +47,7 @@ dojo.widget.defineWidget(
 	},
 
 	initUI: function() {
-		var dayLabels = dojo.i18n.calendar.GregorianNames.getNames('days', this.dayWidth, 'standAlone', this.lang);
+		var dayLabels = dojo.i18n.datetime.getNames('days', this.dayWidth, 'standAlone', this.lang);
 		var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
 		for(var i=0; i<7; i++) {
 			dayLabelNodes.item(i).innerHTML = dayLabels[i];
