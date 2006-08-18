@@ -66,7 +66,7 @@ div.bigIcon {
 	_border: none;
 }
 
-span.icon {
+.dojoE2TBIcon {
 	display: block;
 	text-align: center;
 	min-width: 18px;
@@ -78,7 +78,22 @@ span.icon {
 }
 
 
-span.icon[class~=icon] {
+.dojoE2TBIcon[class~=dojoE2TBIcon] {
+}
+
+.ToolbarButtonLatched {
+    border: #316ac5 1px solid;
+    background-color: #c1d2ee;
+}
+
+.ToolbarButtonHighlighted {
+    border: #316ac5 1px solid;
+    background-color: #dff1ff;
+}
+
+.ToolbarButtonDisabled{
+    filter: gray() alpha(opacity=30); /* IE */
+    opacity: 0.30; /* Safari, Opera and Mozilla */
 }
 
 .headingContainer {
@@ -95,44 +110,44 @@ span.icon[class~=icon] {
 .EditorToolbarDomNode select {
 	font-size: 14px;
 }
-
-.sep { width: 5px; min-width: 5px; max-width: 5px; background-position: 0px 0px}
-.backcolor { background-position: -18px 0px}
-.bold { background-position: -36px 0px}
-.cancel { background-position: -54px 0px}
-.copy { background-position: -72px 0px}
-.createlink { background-position: -90px 0px}
-.cut { background-position: -108px 0px}
-.delete { background-position: -126px 0px}
-.forecolor { background-position: -144px 0px}
-.hilitecolor { background-position: -162px 0px}
-.indent { background-position: -180px 0px}
-.inserthorizontalrule { background-position: -198px 0px}
-.insertimage { background-position: -216px 0px}
-.insertorderedlist { background-position: -234px 0px}
-.inserttable { background-position: -252px 0px}
-.insertunorderedlist { background-position: -270px 0px}
-.italic { background-position: -288px 0px}
-.justifycenter { background-position: -306px 0px}
-.justifyfull { background-position: -324px 0px}
-.justifyleft { background-position: -342px 0px}
-.justifyright { background-position: -360px 0px}
-.left_to_right { background-position: -378px 0px}
-.list_bullet_indent { background-position: -396px 0px}
-.list_bullet_outdent { background-position: -414px 0px}
-.list_num_indent { background-position: -432px 0px}
-.list_num_outdent { background-position: -450px 0px}
-.outdent { background-position: -468px 0px}
-.paste { background-position: -486px 0px}
-.redo { background-position: -504px 0px}
-.removeformat { background-position: -522px 0px}
-.right_to_left { background-position: -540px 0px}
-.save { background-position: -558px 0px}
-.space { background-position: -576px 0px}
-.strikethrough { background-position: -594px 0px}
-.subscript { background-position: -612px 0px}
-.superscript { background-position: -630px 0px}
-.underline { background-position: -648px 0px}
-.undo { background-position: -666px 0px}
-.wikiword { background-position: -684px 0px}
+ 
+.dojoE2TBIcon_Sep { width: 5px; min-width: 5px; max-width: 5px; background-position: 0px 0px}
+.dojoE2TBIcon_Backcolor { background-position: -18px 0px}
+.dojoE2TBIcon_Bold { background-position: -36px 0px}
+.dojoE2TBIcon_Cancel { background-position: -54px 0px}
+.dojoE2TBIcon_Copy { background-position: -72px 0px}
+.dojoE2TBIcon_Link { background-position: -90px 0px}
+.dojoE2TBIcon_Cut { background-position: -108px 0px}
+.dojoE2TBIcon_Delete { background-position: -126px 0px}
+.dojoE2TBIcon_TextColor { background-position: -144px 0px}
+.dojoE2TBIcon_BackgroundColor { background-position: -162px 0px}
+.dojoE2TBIcon_Indent { background-position: -180px 0px}
+.dojoE2TBIcon_HorizontalLine { background-position: -198px 0px}
+.dojoE2TBIcon_Image { background-position: -216px 0px}
+.dojoE2TBIcon_NumberedList { background-position: -234px 0px}
+.dojoE2TBIcon_Table { background-position: -252px 0px}
+.dojoE2TBIcon_BulletedList { background-position: -270px 0px}
+.dojoE2TBIcon_Italic { background-position: -288px 0px}
+.dojoE2TBIcon_CenterJustify { background-position: -306px 0px}
+.dojoE2TBIcon_BlockJustify { background-position: -324px 0px}
+.dojoE2TBIcon_LeftJustify { background-position: -342px 0px}
+.dojoE2TBIcon_RightJustify { background-position: -360px 0px}
+.dojoE2TBIcon_left_to_right { background-position: -378px 0px}
+.dojoE2TBIcon_list_bullet_indent { background-position: -396px 0px}
+.dojoE2TBIcon_list_bullet_outdent { background-position: -414px 0px}
+.dojoE2TBIcon_list_num_indent { background-position: -432px 0px}
+.dojoE2TBIcon_list_num_outdent { background-position: -450px 0px}
+.dojoE2TBIcon_Outdent { background-position: -468px 0px}
+.dojoE2TBIcon_Paste { background-position: -486px 0px}
+.dojoE2TBIcon_Redo { background-position: -504px 0px}
+dojoE2TBIcon_RemoveFormat { background-position: -522px 0px}
+.dojoE2TBIcon_right_to_left { background-position: -540px 0px}
+.dojoE2TBIcon_Save { background-position: -558px 0px}
+.dojoE2TBIcon_Space { background-position: -576px 0px}
+.dojoE2TBIcon_StrikeThrough { background-position: -594px 0px}
+.dojoE2TBIcon_Subscript { background-position: -612px 0px}
+.dojoE2TBIcon_Superscript { background-position: -630px 0px}
+.dojoE2TBIcon_Underline { background-position: -648px 0px}
+.dojoE2TBIcon_Undo { background-position: -666px 0px}
+.dojoE2TBIcon_WikiWord { background-position: -684px 0px}
 

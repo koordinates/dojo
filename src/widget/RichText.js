@@ -292,7 +292,7 @@ dojo.widget.defineWidget(
 					this.editNode.innerHTML = localhtml;
 					var node = this.editNode.firstChild;
 					while(node){
-						dojo.withGlobal(this.window, "selectElement", dojo.html.selection, node.firstChild);
+						dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
 						var nativename = node.tagName.toLowerCase();
 						this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
 						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
@@ -621,10 +621,9 @@ dojo.widget.defineWidget(
 				'<style type="text/css">' +
 				'    body,html { padding: 0; margin: 0; }' + //font: ' + font + '; }' +
 				(this.height ? '' : '    body,  { overflow: hidden; }') +
-				//'    #bodywrapper {  }' +
 				'</style>' +
 				//'<base href="' + dojo.global().location + '">' +
-				'<body><div id="bodywrapper">' + html + '</div></body></html>';
+				'<body>' + html + '</body></html>';
 
 			this._cacheLocalBlockFormatNames();
 		},
@@ -677,7 +676,7 @@ dojo.widget.defineWidget(
 			if (this.object){
 				this.document = this.object.DOM;
 				this.window = this.document.parentWindow;
-				this.editNode = this.document.body.firstChild;
+				this.editNode = this.document.body;
 				this.domNode.style.height = this.height ? this.height : this.minHeight;
 				this.connect(this, "onDisplayChanged", "_updateHeight");
 			}else if (this.iframe && !dojo.render.html.ie){
@@ -717,8 +716,7 @@ dojo.widget.defineWidget(
 					} };
 					dojo.event.connect("before", this, "close", unBlur, "unBlur");
 					dojo.event.browser.addListener(this.document, "focus", dojo.lang.hitch(this, "onFocus"));
-				
-					// safari can't handle key listeners, it kills the speed
+
 					var addListener = dojo.event.browser.addListener;
 					addListener(this.document, "keypress", dojo.lang.hitch(this, "onKeyPress"));
 					addListener(this.document, "keydown", dojo.lang.hitch(this, "onKeyDown"));
@@ -1034,7 +1032,7 @@ dojo.widget.defineWidget(
 			var command = joinObject.args[0].toLowerCase();
 			if(command == "formatblock"){
 				if(drh.safari){ command = "heading"; }
-				if(this.object){ //IE activeX mode
+				if(this.object && joinObject.args[1]){ //IE activeX mode
 					joinObject.args[1] = this._native2LocalFormatNames[joinObject.args[1]];
 				}
 				else if(drh.ie){ joinObject.args[1] = "<"+joinObject.args[1]+">"; }
@@ -1159,6 +1157,9 @@ dojo.widget.defineWidget(
 
 			if(this.object){
 				switch (command) {
+					case "hilitecolor":
+						command = "setbackcolor";
+						break;
 					case "forecolor":
 					case "backcolor":
 					case "fontsize":
@@ -1175,7 +1176,7 @@ dojo.widget.defineWidget(
 					if(!range.htmlText){
 						return;
 					}
-					argument="<strike>"+range.htmlText+"<strike>";
+					argument=range.htmlText.strike();
 				}else if(command == "inserthorizontalrule"){
 					command = "inserthtml";
 					argument="<hr>";
@@ -1250,8 +1251,8 @@ dojo.widget.defineWidget(
 				var selectionEndOffset = selectionRange.endOffset;
 				
 				// select our link and unlink
-				var a = dojo.withGlobal(this.window, "getAncestorElement", dojo.html.selection, 'a');
-				dojo.withGlobal(this.window, "selectElement", dojo.html.selection, a);
+				var a = dojo.withGlobal(this.window, "getAncestorElement", dojo.html.selection, ['a']);
+				dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [a]);
 				
 				returnValue = this.document.execCommand("unlink", false, null);
 				
@@ -1302,6 +1303,9 @@ dojo.widget.defineWidget(
 		queryCommandEnabled: function(command, argument){
 			if(this.object){
 				switch (command) {
+					case "hilitecolor":
+						command = "setbackcolor";
+						break;
 					case "forecolor":
 					case "backcolor":
 					case "fontsize":
@@ -1326,7 +1330,7 @@ dojo.widget.defineWidget(
 			}else{
 				// mozilla returns true always
 				if(command == "unlink" && dojo.render.html.mozilla){
-					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, 'a');
+					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, ['a']);
 				} else if (command == "inserttable" && dojo.render.html.mozilla) {
 					return true;
 				}
@@ -1345,7 +1349,7 @@ dojo.widget.defineWidget(
 					command = "setbackcolor";
 				}else if(command == "strikethrough"){
 					//check whether we are under a <strike>
-					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, 'strike');
+					return dojo.withGlobal(this.window, "hasAncestorElement", dojo.html.selection, ['strike']);
 				}else if(command == "inserthorizontalrule"){
 					return false;
 				}
@@ -1392,8 +1396,14 @@ dojo.widget.defineWidget(
 		
 		placeCursorAtStart: function(){
 			this.focus();
-			dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, this.editNode);
-			dojo.withGlobal(this.window, "collapse", dojo.html.selection, true);
+			//see comments in placeCursorAtEnd
+			if(dojo.render.html.moz && this.editNode.firstChild && 
+				this.editNode.firstChild.nodeType != dojo.dom.TEXT_NODE){
+				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode.firstChild]);
+			}else{
+				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode]);
+			}
+			dojo.withGlobal(this.window, "collapse", dojo.html.selection, [true]);
 		},
 
 		placeCursorAtEnd: function(){
@@ -1402,11 +1412,11 @@ dojo.widget.defineWidget(
 			//otherwise the cursor would be placed at the end of the closing tag of this.editNode.lastChild
 			if(dojo.render.html.moz && this.editNode.lastChild && 
 				this.editNode.lastChild.nodeType != dojo.dom.TEXT_NODE){
-				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, this.editNode.lastChild);
+				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode.lastChild]);
 			}else{
-				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, this.editNode);
+				dojo.withGlobal(this.window, "selectElementChildren", dojo.html.selection, [this.editNode]);
 			}
-			dojo.withGlobal(this.window, "collapse", dojo.html.selection, false);
+			dojo.withGlobal(this.window, "collapse", dojo.html.selection, [false]);
 		},
 
 		//this function set the content while trying to maintain the undo stack
@@ -1521,6 +1531,12 @@ dojo.widget.defineWidget(
 				if(dojo.string.trim(ec) == "&nbsp;"){ ec = ""; }
 			}catch(e){ /* squelch */ }
 
+			if(dojo.render.html.ie && !this.object){
+				//removing appended <P>&nbsp;</P> for IE in none-activeX mode
+				var re = new RegExp("(?:<p>&nbsp;</p>[\n\r]*)+$", "i");
+				ec = ec.replace(re,"");
+			}
+	
 			ec = this._postFilterContent(ec);
 
 			if (this.relativeImageUrls) {

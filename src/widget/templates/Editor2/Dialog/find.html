@@ -1,0 +1,70 @@
+<script>
+_container_.addOnLoad(function(){
+	if(!_container_.refreshOnShow){
+		dojo.event.connect(_container_, "show", this, "init");
+	}
+	this.init();
+});
+
+this.init = function(){
+//	if(dojo.render.html.ie){
+//		dojo.byId("dojo_find_option_wholeword").parentNode.style.display = '';
+//	}
+//	var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+//	this.linkNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['a']);
+//	var linkAttributes = {};
+//	this.extraAttribText = "";
+//	if(this.linkNode){
+//		var attrs = this.linkNode.attributes;
+//		for(var i=0; i<attrs.length; i++) {
+//			if(dojo.lang.find(this.editableAttributes, attrs[i].name.toLowerCase())>-1){
+//				linkAttributes[attrs[i].name] = attrs[i].value;
+//			}else{
+//				this.extraAttribText += attrs[i].name + '="'+attrs[i].value+'" ';
+//			}
+//		}
+//	}
+//	for(var i in this.editableAttributes){
+//		name = this.editableAttributes[i];
+//		dojo.byId("dojo_createLink_"+name).value = (linkAttributes[name] == undefined) ? "" : linkAttributes[name] ;
+//	}
+}
+
+this.find = function(){
+	var findcmd = dojo.widget.Editor2Manager.getCommand('find');
+	var option = 0;
+
+	if(dojo.byId("dojo_find_option_casesens").checked){
+		option |= findcmd.SearchOption.CaseSensitive;
+	}
+	if(dojo.byId("dojo_find_option_backwards").checked){
+		option |= findcmd.SearchOption.SearchBackwards;
+	}
+
+	if(dojo.byId("dojo_find_option_wholeword").checked){
+		option |= findcmd.SearchOption.WholeWord;
+	}
+//	if(dojo.byId("dojo_find_option_wrapsearch").checked){
+//		option |= findcmd.SearchOption.WrapSearch;
+//	}
+	findcmd.find(dojo.byId("dojo_find_text").value, option);
+}
+this.cancel = function(){
+	_container_.hide();
+}
+</script>
+<table style="white-space: nowrap;">
+<tr><td colspan='2'>Find: <input type="text" id="dojo_find_text" /></td></tr>
+<tr><td><input type="checkbox" dojoType="CheckBox" id="dojo_find_option_casesens" />
+		<label for="dojo_find_option_casesens">Case Sensitive</label></td>
+			<td><input type="checkbox" dojoType="CheckBox" id="dojo_find_option_backwards" />
+		<label for="dojo_find_option_backwards">Search Backwards</label></td></tr>
+<tr><td style="display: none;"><input type="checkbox" dojoType="CheckBox" id="dojo_find_option_wholeword" />
+		<label for="dojo_find_option_wholeword">Whole Word</label></td>
+			<td><!-- Does not really work, comment out for now input type="checkbox" dojoType="CheckBox" id="dojo_find_option_wrapsearch" />
+		<label for="dojo_find_option_wrapsearch">Wrap Search</label--></td></tr>
+</table>
+<table><tr>
+<td><button dojoType='Button' onClick='scriptScope.find();'>Find</button></td>
+<td><button dojoType='Button' onClick='scriptScope.cancel();'>Close</button></td>
+</tr></table>
