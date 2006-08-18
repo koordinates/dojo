@@ -6,7 +6,7 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
-dojo.require("dojo.i18n.calendar.GregorianNames");
+dojo.require("dojo.i18n.datetime");
 
 /*
 	Some assumptions:
@@ -76,7 +76,7 @@ dojo.widget.defineWidget(
 		},
 
 		initUI: function() {
-			var dayLabels = dojo.i18n.calendar.GregorianNames.getNames('days', this.dayWidth, 'standAlone', this.lang);
+			var dayLabels = dojo.i18n.datetime.getNames('days', this.dayWidth, 'standAlone', this.lang);
 			var dayLabelNodes = this.dayLabelsRow.getElementsByTagName("td");
 			for(var i=0; i<7; i++) {
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
@@ -266,13 +266,7 @@ dojo.widget.defineWidget(
 		},
 	
 		_daysIn: function(month,year) {
-			var daysIn = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; 
-			
-			if (month==1) {
-				return (year%400 == 0) ? 29: (year%100 == 0) ? 28: (year%4 == 0) ? 29: 28;
-			} else {
-				return daysIn[month];
-			}
+			return dojo.date.getDaysInMonth(new Date(year, month));
 		},
 	
 		onIncrementDate: function(evt) {
@@ -295,7 +289,7 @@ dojo.widget.defineWidget(
 		},
 
 		setMonthLabel: function(monthIndex) {
-			this.monthLabelNode.innerHTML = dojo.i18n.calendar.GregorianNames.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
+			this.monthLabelNode.innerHTML = dojo.i18n.datetime.getNames('months', 'wide', 'standAlone', this.lang)[monthIndex];
 		},
 
 		setYearLabels: function(year) {
