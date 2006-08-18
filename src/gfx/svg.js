@@ -241,6 +241,7 @@ dojo.declare("dojo.gfx.svg.Path", dojo.gfx.svg.Shape, {
 	nodeType: 'path',
 	initializer: function() {
 		this.shape = { path:"", coordination:"absolute" };
+		this.lastPos = {x:0, y:0 };
 	},
 	setShape: function(newShape){
 		// FIXME: accept a string as well as a Path object
@@ -265,33 +266,84 @@ dojo.declare("dojo.gfx.svg.Path", dojo.gfx.svg.Shape, {
 		this.rawNode.setAttribute("d", this.shape.path);
 		return this;
 	},
+    update: function(x,y) {
+		if( this.coordination == "absolute" ) {
+            this.lastPos = {x:x, y:y};
+        } else {
+			this.lastPos.x += x;
+			this.lastPos.y += y;
+        }
+    },
+
 	closePath: function() {
 		return this.drawTo("z", []);
 	},
 	moveTo: function(x, y) {
+		this.update( x, y );
 		return this.drawTo("m", [x,y]);
 	},
 	lineTo: function(x, y) {
+		this.update( x, y );
 		return this.drawTo("l", [x,y]);
 	},
 	hLineTo: function(x) {
+		y = ( this.shape.coordination == "absolute" ) ? this.lastPos.y : 0;
+		this.update( x, y );
 		return this.drawTo("h", [x]);
 	},
 	vLineTo: function(y) {
+		x = ( this.shape.coordination == "absolute" ) ? this.lastPos.x : 0;
 		return this.drawTo("v", [y]);
 	},
 	curveTo: function(x1, y1, x2, y2, x, y) {
+		this.update( x, y );
 		return this.drawTo("c", [x1, y1, x2, y2, x, y]);
 	},
 	smoothCurveTo: function(x2, y2, x, y) {
+		this.update( x, y );
 		return this.drawTo("s", [x2, y2, x, y]);
 	},
 	qbCurveTo: function(x1, y1, x, y) {
+		this.update( x, y );
 		return this.drawTo("q", [x1, y1, x, y]);
 	},
 	smoothQBCurveTo: function(x, y) {
+		this.update( x, y );
 		return this.drawTo("t", [x, y]);
 	},
+    arcTo: function(top, right, bottom, left, isCCW, x, y) {
+        var rx = (right - left)/2;
+        var ry = (bottom - top)/2;
+        var cx = (left + right)/2;
+        var cy = (top + bottom)/2;
+
+        // we have to cripple this feature for VML
+        var xrotate = 0;
+        var sweepflag = isCCW ? 0 : 1;
+        
+        // normalize the coordination
+		if (this.shape.coordination == "absolute") {
+            u = this.lastPos.x - cx;
+            v = this.lastPos.y - cy;
+        } else {
+            u = 0 - cx;
+            v = 0 - cy;
+        }
+        // start point
+        alpha = Math.atan2(v/ry, u/rx);
+        // end point
+        beta = Math.atan2( (y-cy)/ry, (x-cx)/rx );
+
+        theta = isCCW ? beta - alpha : alpha - beta;
+        if( theta < 0 ) theta += 2*Math.pi;
+        if( theta > Math.pi/2 ) {
+            largearc = 1;
+        } else {
+            largearc = 0;
+        }
+
+        return this.drawTo("a", [rx, ry, xrotate, largearc, sweepflag, x, y] );
+    },
 	setPath: function(shape) { return this.setShape(shape); },
 	getPath: function(){ return this.getShape(); }
 });
