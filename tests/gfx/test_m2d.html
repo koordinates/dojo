@@ -37,11 +37,11 @@ dojo.event.connect(dojo, "loaded", function(){
 	a = dojo.gfx.rotategAt(90, 10, 10);
 	//a = dojo.gfx.multiply(dojo.gfx.rotateg(90), dojo.gfx.translate(-10, -10));
 	mdebug(a);
-	var b = dojo.gfx.multiply(a, 10, 10);
+	var b = dojo.gfx.multiplyPoint(a, 10, 10);
 	pdebug(b);
-	b = dojo.gfx.multiply(a, 10, 5);
+	b = dojo.gfx.multiplyPoint(a, 10, 5);
 	pdebug(b);
-	b = dojo.gfx.multiply(a, 10, 15);
+	b = dojo.gfx.multiplyPoint(a, 10, 15);
 	pdebug(b);
 });
 
