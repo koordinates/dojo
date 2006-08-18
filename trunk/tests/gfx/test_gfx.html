@@ -335,6 +335,18 @@ dojo.addOnLoad(function()
               setTransform({ dx: 50, dy: 78 });
            });
 
+   // test arcTo 
+   addTest('arcTo', function(testName){
+              surface = getTestSurface(testName, 'arcTo test');
+              surface.createPath().moveTo(10, 10).lineTo(50,50).
+              arcTo(0, 150, 100, 50, 1, 150, 50).
+              setCoordination("relative").
+              arcTo(-50, 0, 50, -100, 1, -50, -50).
+                setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.graphics.color.Color("red"), width: 1 }).
+              setTransform({ dx:70, dy: 100 });
+           });
+
    // test path: curveTo, smoothCurveTo
    addTest('curveTo', function(testName) {
               surface = getTestSurface(testName, 'curveTo, smoothCurveTo');
@@ -462,6 +474,7 @@ var gTestsToRun = [
    'attach',
    //'attach_gradient',
    'circle',
+   'arcTo',
    'line',
    'ellipse',
    'polyline',

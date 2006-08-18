@@ -73,7 +73,10 @@ dojo.lang.extend(
 			  // dojo.debug('joinstyle: ' + this.rawNode.stroke.joinstyle);
 		   }
 		}else{
-		   this.rawNode.stroked = 0;
+           // in most cases, you would never come here.
+           this.rawNode.stroke.width = 0;
+           dojo.debug("stroke width = 0" );
+        
 		}
 		// support for chaining
 		return this;
@@ -140,6 +143,11 @@ dojo.lang.extend(
 	},
 
 	setRawNode: function(rawNode){
+		rawNode.arcsize = 0;
+        rawNode.stroke = 1;
+        rawNode.strokecolor = "rgb(255,255,255)";
+        rawNode.strokeweight = 0.001;
+        rawNode.stroke.opacity = 0.001;
 		this.rawNode = rawNode;
 	},
 
@@ -274,13 +282,13 @@ dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
 		for( i = 0; i< args.length; i++ ) {
 			this.shape.path += args[i] + " ";
 		}
--        dojo.debug( 'action = ' + action + ' path = ' + this.shape.path );
+        dojo.debug( 'action = ' + action + ' path = ' + this.shape.path  + ' pos =(' + this.lastPos.x + ',' + this.lastPos.y + ')' );
 		this.lastAction = action; 
 		this.setShape();
 		return this;
 	},
 	update : function(x, y, x2, y2)  {
-		if( this.coordination == "absolute" ) {
+		if( this.shape.coordination == "absolute" ) {
 			this.lastPos.x = x;
 			this.lastPos.y = y;
 			if( x2 && y2 ) {
@@ -356,6 +364,32 @@ dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
 		y1 = pos.y;
 		return this.qbCurveTo(x1, y1, x, y);
 	},
+    arcTo: function(top, right, bottom, left, isCCW, x, y) {
+        // save the value, not reference
+        var lastPos = {x: this.lastPos.x, y:this.lastPos.y};
+        dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
+        dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
+        dojo.debug( "arcTo coordination = " + this.shape.coordination );
+		if (this.shape.coordination == "relative") {
+            // translate to absolute value first
+            top += this.lastPos.y;
+            right += this.lastPos.x;
+            bottom += this.lastPos.y;
+            left += this.lastPos.x;
+            x += this.lastPos.x;
+            y += this.lastPos.y;
+        } 
+        this.update(x, y);
+        dojo.debug( "lastPos in arcTo = " + lastPos.x + "," + lastPos.y );
+        dojo.debug( "this.lastPos in arcTo = " + this.lastPos.x + "," + this.lastPos.y );
+
+        if(isCCW) {
+            return this.drawTo( "ar", "ar", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
+        } else {
+            return this.drawTo( "wt", "wt", [left, top, right, bottom, lastPos.x, lastPos.y, x, y] );
+        }
+    },
+
 	setPath: function(shape) { 
         var path = shape.path;
         for(var i = 0; i< this.pathMap.length; i++ ) {
@@ -386,9 +420,9 @@ dojo.declare("dojo.gfx.vml.Rect", dojo.gfx.vml.Shape, {
 		return this;
 	},
 	setRawNode: function(rawNode){
-		// FIXME: could we update arcsize after it is attached ?
+		// FIXME: call the super class setRawNode, how ?
 		rawNode.arcsize = 0;
-		this.rawNode = rawNode;
+        this.inherited("setRawNode", [rawNode] );
 	},
 	attachShape: function(rawNode){
 		return { x: rawNode.style.left.replace(/px/,"")-0,
@@ -504,6 +538,7 @@ var metacreator = {
    createObject: function(shape, rawShape) {
 	  if(!this.rawNode) return null;
 	  var n = document.createElement('v:' + shape.nodeType);
+      // HACK: get rid of the default stroke style, single black line
 	  shape.setRawNode(n);
 	  this.rawNode.appendChild(n);
 	  if(rawShape) shape.setShape(rawShape);
