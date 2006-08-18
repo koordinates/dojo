@@ -431,6 +431,7 @@ dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Objec
 		if(thisObject&&((typeof callback == "string")||(callback instanceof String))){
 			callback=thisObject[callback];
 		}
+		if(!cbArguments){ cbArguments = []; }
 		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
 	}finally{
 		dojo.setContext(oldGlob, oldDoc);
@@ -452,6 +453,7 @@ dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?
 		if(thisObject&&((typeof callback == "string")||(callback instanceof String))){
 			callback=thisObject[callback];
 		}
+		if(!cbArguments){ cbArguments = []; }
 		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
 	}finally{
 		dj_currentDocument = oldDoc;
