@@ -107,7 +107,7 @@ dojo.lang.extend(
 		var mt = "" + this.matrix.xx + "," + this.matrix.xy + 
 		  "," + this.matrix.yx + "," + this.matrix.yy +
 		  ", 0, 0";
-		var offset = "" + this.matrix.dx + "px," + this.matrix.dy + "px";
+		var offset = "" + this.matrix.dx + "pt," + this.matrix.dy + "pt";
 		// dojo.debug( "mt = " + mt + " offset = " + offset );
 		skew.matrix =  mt;
 		skew.offset = offset;
@@ -236,6 +236,17 @@ dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
 		this.lastPos = {x:0, y:0 };
 		this.lastControl = {x:0, y:0 };
 		this.lastAction = "";
+        this.pathMap = [ 
+            // since some tokens are used in both vml and svg, the pathMap order MATTERS
+            // lineTo
+            {vml:"r", svg:"l"}, {vml:"l",svg:"L"}, 
+            // moveTo
+            {vml:"t", svg:"m"}, {vml:"m", svg:"M"}, 
+            // curveTo
+            {vml:"v", svg:"c"}, {vml:"c", svg:"C"}, 
+            // closePath
+            {vml:"x", svg:"z"}
+        ];
 	},
 	setShape: function(newShape){
 		// FIXME: accept a string as well as a Path object
@@ -345,7 +356,15 @@ dojo.declare("dojo.gfx.vml.Path", dojo.gfx.vml.Shape, {
 		y1 = pos.y;
 		return this.qbCurveTo(x1, y1, x, y);
 	},
-	setPath: function(shape) { return this.setShape(shape); },
+	setPath: function(shape) { 
+        var path = shape.path;
+        for(var i = 0; i< this.pathMap.length; i++ ) {
+            dojo.debug( "substitute " + this.pathMap[i].svg + " to " + this.pathMap[i].vml );
+            path = path.replace( new RegExp(this.pathMap[i].svg, 'g'),  this.pathMap[i].vml );
+            dojo.debug( "path = " + path );
+        }
+        return this.setShape({path:path});
+    }, 
 	getPath: function(){ return this.getShape(); }
 });
 

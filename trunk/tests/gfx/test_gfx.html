@@ -317,6 +317,24 @@ dojo.addOnLoad(function()
 
            });
 
+   addTest('setPath', function(testName){
+              surface = getTestSurface(testName, 'setPath example with lineTo moveTo');
+              surface.createPath().moveTo(10, 20).lineTo(80, 150).
+              setCoordination("relative").lineTo(40,0).
+              setCoordination("absolute").lineTo(180, 100).
+              setCoordination("relative").lineTo(0, -30).lineTo(-30, -50).
+              curveTo(10, -80, -150, -10, -90, -10).
+              closePath().
+              setStroke({ color: new dojo.graphics.color.Color("red"), width: 1 }).
+              setFill(new dojo.graphics.color.Color("none")).
+              setTransform({ dx: 10, dy: 58 });
+              
+              surface.createPath().setPath( {path:"M10,20 L80,150 l40,0 L180,100 l0,-30 l-30,-50 c10,-80 -150,-10 -90,-10 z"}).
+              setFill(new dojo.graphics.color.Color("none")).
+              setStroke({ color: new dojo.graphics.color.Color("blue"), width: 1 }).
+              setTransform({ dx: 50, dy: 78 });
+           });
+
    // test path: curveTo, smoothCurveTo
    addTest('curveTo', function(testName) {
               surface = getTestSurface(testName, 'curveTo, smoothCurveTo');
@@ -449,6 +467,7 @@ var gTestsToRun = [
    'polyline',
    'polygon',
    'lineTo',
+   'setPath',
    'curveTo',
    'curveTo2',
    'qbCurveTo',
