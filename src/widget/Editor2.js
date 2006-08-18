@@ -298,8 +298,9 @@ dojo.widget.defineWidget(
 
 		toolbarWidget: null,
 		scrollInterval: null,
-		toolbarTemplatePath: "src/widget/templates/Editor2/EditorToolbarFCKStyle.html",
-		toolbarTemplateCssPath: "src/widget/templates/Editor2/FCKDefault/EditorToolbarFCKStyle.css",
+		toolbarTemplatePath: "src/widget/templates/EditorToolbarOneline.html",
+//		toolbarTemplatePath: "src/widget/templates/Editor2/EditorToolbarFCKStyle.html",
+//		toolbarTemplateCssPath: "src/widget/templates/Editor2/FCKDefault/EditorToolbarFCKStyle.css",
 
 		plugins: "",
 
