@@ -272,7 +272,7 @@ dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2Browser
 		this.dialog.show();
 	}
 });
-/
+
 //uncomment these plugins to enable them
 //dojo.require("dojo.widget.Editor2Plugin.FindReplace");
 
