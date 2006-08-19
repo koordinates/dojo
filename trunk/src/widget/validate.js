@@ -89,17 +89,6 @@ dojo.widget.defineWidget(
 			}
 		},
 	
-		fillInTemplate: function() {
-			// apply any filters to initial value
-			this.filter();
-
-			// set table to be inlined (technique varies by browser)
-			if(dojo.render.html.ie){ dojo.html.addClass(this.domNode, "ie"); }
-			if(dojo.render.html.moz){ dojo.html.addClass(this.domNode, "moz"); }
-			if(dojo.render.html.opera){ dojo.html.addClass(this.domNode, "opera"); }
-			if(dojo.render.html.safari){ dojo.html.addClass(this.domNode, "safari"); }
-		}
-	
 	}
 );
 
@@ -257,6 +246,15 @@ dojo.widget.defineWidget(
 			this.textbox.isMissing = function() { this.isMissing.call(this); };
 			this.textbox.isInRange = function() { this.isInRange.call(this); };
 			this.update(); 
+			
+			// apply any filters to initial value
+			this.filter();
+
+			// set table to be inlined (technique varies by browser)
+			if(dojo.render.html.ie){ dojo.html.addClass(this.domNode, "ie"); }
+			if(dojo.render.html.moz){ dojo.html.addClass(this.domNode, "moz"); }
+			if(dojo.render.html.opera){ dojo.html.addClass(this.domNode, "opera"); }
+			if(dojo.render.html.safari){ dojo.html.addClass(this.domNode, "safari"); }
 		}
 	}
 );
