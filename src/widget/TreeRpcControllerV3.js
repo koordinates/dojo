@@ -381,6 +381,8 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		deferred.addCallback(function(server_data) {
 			dojo.lang.mixin(data, server_data); // add my data as less priority
+			dojo.debug("Create ");
+			dojo.debug(server_data);
 			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(_this,parent,index,server_data);
 		});
 		

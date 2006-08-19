@@ -17,6 +17,10 @@
     background-repeat : no-repeat;
 }
  
+ /* least priority (children will override me) */
+.TreeExpandLoading .TreeExpand {
+    background-image: url('../templates/images/TreeV3/expand_loading.gif');
+}
  
 .TreeExpandOpen .TreeExpand {
     background-image: url('../templates/images/TreeV3/expand_minus.gif');
@@ -32,10 +36,6 @@
     background-image: url('../templates/images/TreeV3/expand_leaf.gif');
 }
 
-.TreeExpandLoading .TreeExpand {
-    background-image: url('../templates/images/TreeV3/expand_loading.gif');
-}
- 
  
  
 .TreeContent {
