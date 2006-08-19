@@ -327,7 +327,7 @@ if (document.addEventListener) {
     };
 /*@end @*/
 
-if (/WebKit/i.test(navigator.userAgent)) { // sniff
+if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
     var _timer = setInterval(function() {
         if (/loaded|complete/.test(document.readyState)) {
             dj_load_init(); // call the onload handler
