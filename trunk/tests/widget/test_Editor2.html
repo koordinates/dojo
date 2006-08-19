@@ -76,6 +76,27 @@ text above the second editor instance. This second editor shares a toolbar with 
 this is text after the editor
 <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
 this is more text
+<form>
+	<div style="position: relative;">
+		<div style="border: 1px solid black;">
+			<textarea dojoType="Editor2" 
+				htmlEditing="true" useActiveX="true" 
+				shareToolbar="false" id="editor4" toolbarAlwaysVisible="true">
+				testcase for editor in textarea, bug #377, broken in safari
+				<ul>
+					<li>foo</li>
+					<li>bar</li>
+					<li>baz</li>
+					<ul>
+						<li>thud</li>
+					</ul>
+				</ul>
+				<h1>Lorem!</h1>
+			</div>
+		</div>
+		text below the textarea editor instance
+	</div>
+</form>
 </body>
 </html>
 
