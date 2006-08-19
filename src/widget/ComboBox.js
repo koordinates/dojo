@@ -537,7 +537,7 @@ dojo.widget.defineWidget(
 		},
 
 		postMixInProperties: function(args, frag){
-			this.inherited("postMixInProperties");
+			this.inherited("postMixInProperties", [args, frag]); 
 
 			// set image size before instantiating template;
 			// changing it afterwards doesn't work on FF
