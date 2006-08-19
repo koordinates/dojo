@@ -285,30 +285,15 @@ function dj_addNodeEvtHdlr(node, evtName, fp, capture){
 	return true;
 }
 
-
-/* Uncomment this to allow init after DOMLoad, not after window.onload
-
-// Mozilla exposes the event we could use
-if (dojo.render.html.mozilla) {
-   document.addEventListener("DOMContentLoaded", dj_load_init, null);
-}
-// for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
-//Tighten up the comments below to allow init after DOMLoad, not after window.onload
-/ * @cc_on @ * /
-/ * @if (@_win32)
-    document.write("<script defer>dj_load_init()<"+"/script>");
-/ * @end @ * /
-*/
-
-// default for other browsers
-// potential TODO: apply setTimeout approach for other browsers
-// that will cause flickering though ( document is loaded and THEN is processed)
-// maybe show/hide required in this case..
-// TODO: other browsers may support DOMContentLoaded/defer attribute. Add them to above.
-dj_addNodeEvtHdlr(window, "load", function(){
+//	BEGIN DOMContentLoaded, from Dean Edwards (http://dean.edwards.name/weblog/2006/06/again/)
+function dj_load_init(){
 	// allow multiple calls, only first one will take effect
 	if(arguments.callee.initialized){ return; }
 	arguments.callee.initialized = true;
+	if(_timer){
+		clearInterval(_timer);
+		delete _timer;
+	}
 
 	var initFunc = function(){
 		//perform initialization
@@ -323,7 +308,36 @@ dj_addNodeEvtHdlr(window, "load", function(){
 	}else{
 		dojo.addOnLoad(initFunc);
 	}
-});
+}
+
+// Mozilla exposes the event we could use
+if (document.addEventListener) {
+   document.addEventListener("DOMContentLoaded", dj_load_init, null);
+}
+// for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
+//	however, we'll include it because we don't know if there are other functions added that might.
+/*@cc_on @*/
+/*@if (@_win32)
+    document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+    var script = document.getElementById("__ie_onload");
+    script.onreadystatechange = function() {
+        if (this.readyState == "complete") {
+            dj_load_init(); // call the onload handler
+        }
+    };
+/*@end @*/
+
+if (/WebKit/i.test(navigator.userAgent)) { // sniff
+    var _timer = setInterval(function() {
+        if (/loaded|complete/.test(document.readyState)) {
+            dj_load_init(); // call the onload handler
+        }
+    }, 10);
+}
+
+// default for other browsers
+dj_addNodeEvtHdlr(window, "load", dj_load_init);
+//	end DOMContentLoaded
 
 dj_addNodeEvtHdlr(window, "unload", function(){
 	dojo.hostenv.unloaded();
