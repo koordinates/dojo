@@ -715,9 +715,11 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 
 	/* Edit current node : change properties and update contents */
 	setTitle: function(title) {
+		var oldTitle = this.title;
+		
 		this.labelNode.innerHTML = this.title = title;
 				
-		dojo.event.topic.publish(this.tree.eventNames.afterSetTitle, { source: this, title:title });
+		dojo.event.topic.publish(this.tree.eventNames.afterSetTitle, { source: this, oldTitle:oldTitle });
 
 	},
 
