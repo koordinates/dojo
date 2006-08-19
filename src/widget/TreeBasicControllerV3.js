@@ -251,28 +251,37 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	},
 	
 	doEditLabelFinish: function(save, server_data) {
+		//dojo.debug("Finish "+save);
+		//dojo.debug((new Error()).stack)
 		if (!this.editor) {
 			dojo.raise(this.widgetType+": no editor specified");
 		}
 
 		var node = this.editor.node;	
-		var title = (server_data && server_data.title) ? server_data.title : this.editor.getContents();
+		var editorTitle = this.editor.getContents();
 		
 		this.editor.close(save);
 
 		if (save) {
-			if (dojo.lang.isObject(server_data)) {
-				dojo.lang.mixin(node, server_data);
+			var data = {title:editorTitle};
+			dojo.lang.mixin(data, server_data);
+			
+			
+			if (node.isPhantom) {			
+				// I can't just set node title, because widgetId may be provided by server
+				var parent = node.parent;
+				var index = node.getParentIndex();
+				//dojo.debug("Kill "+node);
+				node.destroy();
+				// new node was added!
+				//dojo.debug("Make new");
+				dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(this, parent, index, data);
+			} else {				
+				node.setTitle(title); // to make sure everything updated and event sent
 			}
-			node.setTitle(title); // to make sure everything updated and event sent			
-		}
-
-		//dojo.debug("Finish edit "+node+" "+node.isPhantom+" save:"+save);
-		
-		if (node.isPhantom) {
-			if (save) {
-				node.isPhantom = false;
-			} else {
+		} else {
+			//dojo.debug("Kill phantom on cancel");
+			if (node.isPhantom) {
 				node.destroy();
 			}
 		}
@@ -280,6 +289,10 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 	
 	
 		
+	makeDefaultNode: function(parent, index) {
+		var data = {title:parent.tree.defaultChildTitle};
+		return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(this,parent,index,data);
+	},
 	
 	/**
 	 * check that something is possible
@@ -531,6 +544,8 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 
 
 	doCreateChild: function(parent, index, data) {
+		//dojo.debug("doCreateChild parent "+parent+" index "+index+" data "+data);
+		
 		var newChild = parent.tree.createNode(data); 
 		//var newChild = dojo.widget.createWidget(widgetType, data);
 

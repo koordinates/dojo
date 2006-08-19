@@ -108,16 +108,18 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 				
 		return ret;
 	},
+				
 			
 	markProcessing: function() {
-		var reg = new RegExp("(^|\\s)"+this.tree.classPrefix+"Expand\\w+",'g');			
-			
-		dojo.html.setClass(this.domNode, dojo.html.getClass(this.domNode).replace(reg,'') + ' '+this.tree.classPrefix+'ExpandLoading');			
+		this.markProcessingSavedClass = dojo.html.getClass(this.expandNode);
+		dojo.html.setClass(this.expandNode, this.tree.classPrefix+'ExpandLoading');			
 	},
 	
 	unmarkProcessing: function() {
-		this.viewSetExpand();		
+		dojo.html.setClass(this.expandNode, this.markProcessingSavedClass);			
 	},
+	
+	
 	
 	
 	/**
