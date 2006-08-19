@@ -535,7 +535,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget,
 					var kval = (key.substring(0, 5) == "this.") ? dojo.lang.getObjPathValue(key.substring(5), this) : hash[key];
 					var value;
 					if((kval)||(dojo.lang.isString(kval))){
-						value = (dojo.lang.isFunction(kval)) ? kval.call(this, key, this.templateString) : kval;
+						value = new String((dojo.lang.isFunction(kval)) ? kval.call(this, key, this.templateString) : kval);
 						// Safer substitution, see heading "Attribute values" in  
 						// http://www.w3.org/TR/REC-html40/appendix/notes.html#h-B.3.2
 						while (value.indexOf("\"") > -1) {
