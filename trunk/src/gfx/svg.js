@@ -165,9 +165,9 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 						}
 					}
 				}
-			} else if( fill.indexOf("rgb(") > -1 ) {
+			} else if( color = new dojo.graphics.color.Color(fill) ) {
 				// a color object !
-				fillStyle = new dojo.graphics.color.Color(fill);
+				fillStyle = color;
 				fo = rawNode.getAttribute("fill-opacity");
 				if(fo) fillStyle.a = fo;
 			}
@@ -179,10 +179,11 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 		strokeStyle = {color:null, widht:1, cap:"butt", join:4};
 		if(rawNode) {
 			stroke = rawNode.getAttribute("stroke");
-			dojo.debug("stroke == " + stroke );
-			if( stroke.indexOf("rgb(") > -1 ) {
+			dojo.debug("stroke = " + stroke );
+			color = new dojo.graphics.color.Color(stroke);
+			if( color ) {
 				// a color object !
-				strokeStyle.color = new dojo.graphics.color.Color(stroke);
+				strokeStyle.color = color;
 				strokeStyle.color.a = rawNode.getAttribute("stroke-opacity");
 				dojo.debug( "strokestyle.color = " + strokeStyle.color );
 				strokeStyle.width = rawNode.getAttribute("stroke-width");
@@ -266,14 +267,14 @@ dojo.declare("dojo.gfx.svg.Path", dojo.gfx.svg.Shape, {
 		this.rawNode.setAttribute("d", this.shape.path);
 		return this;
 	},
-    update: function(x,y) {
+	update: function(x,y) {
 		if( this.coordination == "absolute" ) {
-            this.lastPos = {x:x, y:y};
-        } else {
+			this.lastPos = {x:x, y:y};
+		} else {
 			this.lastPos.x += x;
 			this.lastPos.y += y;
-        }
-    },
+		}
+	},
 
 	closePath: function() {
 		return this.drawTo("z", []);
@@ -311,39 +312,39 @@ dojo.declare("dojo.gfx.svg.Path", dojo.gfx.svg.Shape, {
 		this.update( x, y );
 		return this.drawTo("t", [x, y]);
 	},
-    arcTo: function(top, right, bottom, left, isCCW, x, y) {
-        var rx = (right - left)/2;
-        var ry = (bottom - top)/2;
-        var cx = (left + right)/2;
-        var cy = (top + bottom)/2;
+	arcTo: function(top, right, bottom, left, isCCW, x, y) {
+		var rx = (right - left)/2;
+		var ry = (bottom - top)/2;
+		var cx = (left + right)/2;
+		var cy = (top + bottom)/2;
 
-        // we have to cripple this feature for VML
-        var xrotate = 0;
-        var sweepflag = isCCW ? 0 : 1;
-        
-        // normalize the coordination
+		// we have to cripple this feature for VML
+		var xrotate = 0;
+		var sweepflag = isCCW ? 0 : 1;
+		
+		// normalize the coordination
 		if (this.shape.coordination == "absolute") {
-            u = this.lastPos.x - cx;
-            v = this.lastPos.y - cy;
-        } else {
-            u = 0 - cx;
-            v = 0 - cy;
-        }
-        // start point
-        alpha = Math.atan2(v/ry, u/rx);
-        // end point
-        beta = Math.atan2( (y-cy)/ry, (x-cx)/rx );
+			u = this.lastPos.x - cx;
+			v = this.lastPos.y - cy;
+		} else {
+			u = 0 - cx;
+			v = 0 - cy;
+		}
+		// start point
+		alpha = Math.atan2(v/ry, u/rx);
+		// end point
+		beta = Math.atan2( (y-cy)/ry, (x-cx)/rx );
 
-        theta = isCCW ? beta - alpha : alpha - beta;
-        if( theta < 0 ) theta += 2*Math.pi;
-        if( theta > Math.pi/2 ) {
-            largearc = 1;
-        } else {
-            largearc = 0;
-        }
+		theta = isCCW ? beta - alpha : alpha - beta;
+		if( theta < 0 ) theta += 2*Math.pi;
+		if( theta > Math.pi/2 ) {
+			largearc = 1;
+		} else {
+			largearc = 0;
+		}
 
-        return this.drawTo("a", [rx, ry, xrotate, largearc, sweepflag, x, y] );
-    },
+		return this.drawTo("a", [rx, ry, xrotate, largearc, sweepflag, x, y] );
+	},
 	setPath: function(shape) { return this.setShape(shape); },
 	getPath: function(){ return this.getShape(); }
 });
