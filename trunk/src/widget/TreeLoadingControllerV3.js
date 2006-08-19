@@ -68,6 +68,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		// create callback that calls the Deferred's callback method
 		return dojo.lang.hitch(this, 
 			function(type, obj /*,...*/){				
+				//dojo.debug("getDeferredBindHandler "+obj.toSource());
 				
 				if (type=="load" ) {
 					if(!dojo.lang.isUndefined(obj.error)){
@@ -327,8 +328,10 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		var nodes = dojo.lang.isArray(nodesArray) ? nodesArray : arguments;
 		
-		//dojo.debug((new Error()).stack)
-		//dojo.debug(arguments[0]);
+		/*
+		for(var i=0;i<nodes.length;i++) {
+			dojo.debug(nodes[i]);
+		}*/
 		
 		for(var i=0;i<nodes.length;i++) {
 			if (nodes[i].isLocked()) {
@@ -409,6 +412,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 
 	prepareCreateChild: function(parent, index, data, sync) {
 		var deferred = this.startProcessing(parent);
+		
 		deferred.addCallback(dojo.lang.hitch(this, function() {
 			return this.loadIfNeeded(parent, sync);
 		}));

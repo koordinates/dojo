@@ -27,6 +27,15 @@ strictFolders mode is OFF so you may add new children to ANY node not only folde
 
 <script>
 	dojo.addOnLoad(function() { dojo.widget.TreeDemo.bindDemoMenu(dojo.widget.byId('treeController')) });
+
+	function testCreateChild() {
+		var parent = dojo.widget.byId('firstTree').children[0];
+		dojo.debug("parent "+parent);
+
+		var controller = dojo.widget.byId('treeController');
+
+		controller.createChild(parent, 0, {objectId:5});
+	}
 </script>
 
 
@@ -67,6 +76,7 @@ strictFolders mode is OFF so you may add new children to ANY node not only folde
     </div>
 </div>
 
+<input type="button" onClick="testCreateChild()" value="createChild for top node">
 
 
 </body>
