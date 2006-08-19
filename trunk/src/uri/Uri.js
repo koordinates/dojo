@@ -7,8 +7,8 @@ dojo.uri = new function() {
 	}
 
 	//returns a URI of a widget in a namespace, for example dojo.uri.nsUri("dojo","Editor"), or dojo.uri.nsUri("customNS","someWidget")
-	this.nsUri = function(namespace,uri){
-		var ns = dojo.getNamespace(namespace);
+	this.nsUri = function(ns,uri){
+		var ns = dojo.getNamespace(ns);
 		if(!ns){
 			return null;
 		}
