@@ -44,39 +44,34 @@ dojo.lang.extend(
    {
 	  // NOTE: a list of shared methods and constants in the object notation
 	  nodeType: null,
+	  
 	// set a stroke style
 	setStroke: function(stroke){
 		// normalized LineStroke object (will be in renderer-independent part of code)
-		this.strokeStyle = { color:null, width:1, cap:"butt", join:4 };
-		if(stroke == null){
+		if(!stroke){
 			this.strokeStyle = null;
-		}else { 
-			dojo.gfx.normalizeParameters(this.strokeStyle, stroke);
+			this.rawNode.stroked = false;
+			return;
 		}
+		this.strokeStyle = { color:null, width:1, cap:"butt", join:4 };
+		dojo.gfx.normalizeParameters(this.strokeStyle, stroke);
 		// generate attributes
 		var s = this.strokeStyle;
-		if(s){
-		   this.rawNode.stroked = 1;
-		   this.rawNode.strokecolor = "rgb("+s.color.r+","+s.color.g+","+s.color.b+")";
-		   this.rawNode.strokeweight = s.width;
-		   if (this.rawNode.stroke) {
-			  this.rawNode.stroke.opacity = s.color.a;
-			  this.rawNode.stroke.endcap = dojo.gfx.vml._translateCap(s.cap);
-			  if(typeof(s.join) == "number") {
-				 this.rawNode.stroke.joinstyle = "miter";
-				 this.rawNode.stroke.miterlimit = s.join;
-			  }else{
-				 this.rawNode.stroke.joinstyle = s.join;
-				 // this.rawNode.stroke.miterlimit = s.width;
-			  }
-			  // dojo.debug('miterlimit: ' + this.rawNode.stroke.miterlimit);
-			  // dojo.debug('joinstyle: ' + this.rawNode.stroke.joinstyle);
-		   }
-		}else{
-           // in most cases, you would never come here.
-           this.rawNode.stroke.width = 0;
-           dojo.debug("stroke width = 0" );
-        
+		this.rawNode.stroked = true;
+		this.rawNode.strokecolor = "rgb("+s.color.r+","+s.color.g+","+s.color.b+")";
+		this.rawNode.strokeweight = s.width + "px";
+		if (this.rawNode.stroke) {
+			this.rawNode.stroke.opacity = s.color.a;
+			this.rawNode.stroke.endcap = dojo.gfx.vml._translateCap(s.cap);
+			if(typeof(s.join) == "number") {
+				this.rawNode.stroke.joinstyle = "miter";
+				this.rawNode.stroke.miterlimit = s.join;
+			}else{
+				this.rawNode.stroke.joinstyle = s.join;
+				// this.rawNode.stroke.miterlimit = s.width;
+			}
+			// dojo.debug('miterlimit: ' + this.rawNode.stroke.miterlimit);
+			// dojo.debug('joinstyle: ' + this.rawNode.stroke.joinstyle);
 		}
 		// support for chaining
 		return this;
@@ -91,7 +86,7 @@ dojo.lang.extend(
 		} else if( fill instanceof dojo.graphics.color.Color) {
 			// color object
 			this.fillStyle = fill;
-			this.rawNode.filled = true;
+			this.rawNode.filled = "true";
 			this.rawNode.fillcolor = fill.toHex();
 			this.rawNode.fill.opacity = fill.a;
 		} else {
@@ -103,20 +98,28 @@ dojo.lang.extend(
 	},
 	// set an absolute transformation matrix
 	setTransform: function(matrix){
-	  this.matrix = dojo.gfx.normalizeMatrix(matrix);
-	  // generate the attribute
-	  if(this.matrix){
+		// generate the attribute
+		this.matrix = matrix ? dojo.gfx.normalizeMatrix(matrix) : dojo.gfx.identity;
 		var skew = this.rawNode.skew;
-		var mt = "" + this.matrix.xx + "," + this.matrix.xy + 
-		  "," + this.matrix.yx + "," + this.matrix.yy +
-		  ", 0, 0";
-		var offset = "" + this.matrix.dx + "pt," + this.matrix.dy + "pt";
-		// dojo.debug( "mt = " + mt + " offset = " + offset );
+		var mt = this.matrix.xx + ", " + this.matrix.xy + 
+			", " + this.matrix.yx + ", " + this.matrix.yy +
+			", 0, 0";
+		var offset = this.matrix.dx + "px, " + this.matrix.dy + "px";
+		var l = parseFloat(this.rawNode.style.left);
+		var w = parseFloat(this.rawNode.style.width);
+		var t = parseFloat(this.rawNode.style.top);
+		var h = parseFloat(this.rawNode.style.height);
+		if(isNaN(l)) l = 0;
+		if(isNaN(w)) w = 1;
+		if(isNaN(t)) t = 0;
+		if(isNaN(h)) h = 1;
+		var origin = (-l / w - 0.5) + ", " + (-t / h - 0.5);
+		//dojo.debug( "VML: mt = " + mt + "; offset = " + offset + "; origin = " + origin );
 		skew.matrix =  mt;
+		skew.origin = origin;
 		skew.offset = offset;
-		skew.on = "t";
-		// dojo.debug( "skew : matrix = " + skew.matrix + " offset = " + skew.offset );
-	  }
+		skew.on = true;
+		// dojo.debug( "VML: skew : matrix = " + skew.matrix + " offset = " + skew.offset );
 		// support for chaining
 		return this;
 	},
@@ -144,10 +147,8 @@ dojo.lang.extend(
 
 	setRawNode: function(rawNode){
 		rawNode.arcsize = 0;
-        rawNode.stroke = 1;
-        rawNode.strokecolor = "rgb(255,255,255)";
-        rawNode.strokeweight = 0.001;
-        rawNode.stroke.opacity = 0.001;
+		rawNode.stroked = false;
+		rawNode.filled  = false;
 		this.rawNode = rawNode;
 	},
 
@@ -172,17 +173,12 @@ dojo.lang.extend(
 
 	attachStroke: function(rawNode) {
 		strokeStyle = {color:null, widht:1, cap:"butt", join:4};
-		if(rawNode && rawNode.stroked == 1) {
-			strokeStyle.color = new dojo.graphics.color.Color(rawNode.strokecolor+"");
+		if(rawNode && rawNode.stroked) {
+			strokeStyle.color = new dojo.graphics.color.Color(rawNode.strokecolor.value);
 			strokeStyle.width = rawNode.strokeweight;
 			strokeStyle.color.a = rawNode.stroke.opacity;
 			strokeStyle.cap = dojo.gfx.vml._reverseTranslateCap(rawNode.stroke.endcap);
-
-			if(rawNode.stroke.joinstyle == "miter") {
-				strokeStyle.join = rawNode.stroke.miterlimit;
-			} else {
-				strokeStyle.join = rawNode.stroke.joinstyle;
-			}
+			strokeStyle.join = rawNode.stroke.joinstyle == "miter" ? rawNode.stroke.miterlimit : rawNode.stroke.joinstyle;
 		}
 		return strokeStyle;
 	},
@@ -228,12 +224,10 @@ dojo.declare("dojo.gfx.vml.Group", dojo.gfx.vml.Shape, {
 	nodeType: 'g',
 	shape: null,
 	setTransform: function(matrix) {
-	   this.matrix = dojo.gfx.normalizeMatrix(matrix);
-	   if(this.matrix){
-			dojo.debug("rotation for group is not implemented !");
-			this.rawNode.coordorigin = this.matrix.dx + "," + this,matrix.dy;
-	   }
-	   return this;
+		this.matrix = matrix ? dojo.gfx.normalizeMatrix(matrix) : dojo.gfx.identity;
+		dojo.debug("rotation for group is not implemented!");
+		this.rawNode.coordorigin = this.matrix.dx + " " + this,matrix.dy;
+		return this;
 	}
 });
 
@@ -538,7 +532,6 @@ var metacreator = {
    createObject: function(shape, rawShape) {
 	  if(!this.rawNode) return null;
 	  var n = document.createElement('v:' + shape.nodeType);
-      // HACK: get rid of the default stroke style, single black line
 	  shape.setRawNode(n);
 	  this.rawNode.appendChild(n);
 	  if(rawShape) shape.setShape(rawShape);
@@ -640,10 +633,10 @@ dojo.gfx.vml.createSurface = function(parentNode, width, height){
    var s = new dojo.gfx.vml.Surface();
    // TODO: Do we really need a v:group wrapper ?
    s.rawNode = document.createElement("v:group");
-   s.rawNode.style.width = width;
-   s.rawNode.style.height = height;
-   s.rawNode.coordsize = "" + width + " " + height;
-   s.rawNode.coordorigin = "0 0";
+   s.rawNode.style.width = width + "px";
+   s.rawNode.style.height = height + "px";
+   s.rawNode.coordsize = width + " " + height;
+   s.rawNode.coordorigin = "0, 0";
    parentNode.appendChild(s.rawNode);
    return s;
 };
