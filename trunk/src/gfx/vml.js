@@ -23,6 +23,25 @@ dojo.gfx.vml._reverseTranslateCap = function(capSpec) {
    return spec ? spec : capSpec;
 };
 
+dojo.gfx.vml.parseFloat = function(num) {
+    suffix = num.indexOf("f");
+    if(suffix == -1) {
+        return parseFloat(num);
+    } else {
+        return parseFloat(num.slice(0, suffix)) / 65536;
+    }
+};
+
+dojo.gfx.vml.normalizedLength = function(len) {
+    // FIXME: why 1pt = 0.75px ?
+    suffix = len.indexOf("pt");
+    if(suffix != -1) {
+        return parseFloat(len.slice(0,suffix))/ 0.75;
+    } else {
+        return parseFloat(len);
+    }
+};
+        
 // this is a Shape object, which knows how to apply graphical attributes and a transformation
 dojo.gfx.vml.Shape = function(){
 	// NOTE: constructor --- used to initialiaze every instance
@@ -175,7 +194,8 @@ dojo.lang.extend(
 		strokeStyle = {color:null, widht:1, cap:"butt", join:4};
 		if(rawNode && rawNode.stroked) {
 			strokeStyle.color = new dojo.graphics.color.Color(rawNode.strokecolor.value);
-			strokeStyle.width = rawNode.strokeweight;
+            dojo.debug("We are expecting an .75pt here, instead of strokeweight = " + rawNode.strokeweight );
+			strokeStyle.width = dojo.gfx.vml.normalizedLength(rawNode.strokeweight+"");
 			strokeStyle.color.a = rawNode.stroke.opacity;
 			strokeStyle.cap = dojo.gfx.vml._reverseTranslateCap(rawNode.stroke.endcap);
 			strokeStyle.join = rawNode.stroke.joinstyle == "miter" ? rawNode.stroke.miterlimit : rawNode.stroke.joinstyle;
@@ -192,11 +212,18 @@ dojo.lang.extend(
 				// FIXME: check the type of matrix!
 				ts = rawNode.skew.matrix + ",foo"; 
 				ts = ts.split(",");
-				matrix = { xx:ts[0], xy:ts[1], yx:ts[2], yy:ts[3], dx:ts[4], dy:ts[5] };
+				matrix = 
+                    { xx: dojo.gfx.vml.parseFloat(ts[0]), 
+                      xy: dojo.gfx.vml.parseFloat(ts[1]), 
+                      yx: dojo.gfx.vml.parseFloat(ts[2]), 
+                      yy: dojo.gfx.vml.parseFloat(ts[3]), 
+                      dx: 0,
+                      dy: 0 };
+
 				ts = rawNode.skew.offset+",foo";
 				ts = ts.split(",")
-				matrix.dx = ts[0].replace(/px/,"");
-				matrix.dy = ts[1].replace(/px/,"");
+				matrix.dx = dojo.gfx.vml.normalizedLength(ts[0]);
+				matrix.dy = dojo.gfx.vml.normalizedLength(ts[1]);
 			}
 		}
 		return matrix;
@@ -652,11 +679,36 @@ dojo.gfx.vml.Gradient = function(){
 	this.rawNode = null;
 	this.gradient = null;
 	this.id = "";
+    this.stops = null;
 };
 
 dojo.lang.extend(dojo.gfx.vml.Gradient, {
 	addStop: function(stop){
 		if(stop){
+            if( !this.stops ) {
+                this.stops = new Array;
+                // the first stop is the default color and color2
+                this.rawNode.color = stop.color.toHex();
+                this.rawNode.color2 = stop.color.toHex();
+                this.stops.push(stop);
+            } else {
+                // check the stored stops, shall we use ordered array?\
+                // find minimum offset: color2
+                var found = true;
+                for( var i = 0; i< this.stops.length && found; i++ ) {
+                    if( stop.offset >= this.stops[i].offset ) found = false;
+                }
+                if(found) this.rawNode.color2 = stop.color.toHex();
+                    
+                // find maximum offset: color
+                found = true;
+                for( var i = 0; i< this.stops.length && found; i++ ) {
+                    if( stop.offset <= this.stops[i].offset ) found = false;
+                }
+                if(found) this.rawNode.color = stop.color.toHex();
+                this.stops.push(stop);
+            }
+                        
 			this.rawNode.colors += ", " + stop.offset + " " + stop.color
 			this.rawNode.on = "t";
 		}
@@ -671,8 +723,8 @@ dojo.lang.extend(dojo.gfx.vml.Gradient, {
 		for(it in this.gradient) {
 			this.rawNode.setAttribute(it, this.gradient[it]);
 		}
-		this.rawNode.setAttribute("id", this.id);
-		this.rawNode.setAttribute("on", "t");
+		this.rawNode.id = this.id;
+		this.rawNode.on = "t";
 		return this;
 	},
 	getId: function(){ return this.id; },
@@ -682,8 +734,9 @@ dojo.lang.extend(dojo.gfx.vml.Gradient, {
 dojo.declare("dojo.gfx.vml.LinearGradient", dojo.gfx.vml.Gradient, {
 	nodeType: "fill",
 	initializer: function( newGradient ) {
-		this.gradient = {  color:"red", color2:"blue", type:"gradient" };
+		this.gradient = {  color:null, color2:null, type:"gradient" };
 		this.setGradient(newGradient);
+        this.rawNode.angle = dojo.math.radToDeg(Math.atan2(newGradient.y2-newGradient.y1, newGradient.x2-newGradient.x1));
 	}
 });
 
