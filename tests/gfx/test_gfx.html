@@ -217,16 +217,20 @@ dojo.addOnLoad(function()
               dojo.lang.assert( ar.rawNode == red_rect.rawNode );
 
               // FIXME: more generic method to compare two dictionary?
+              dojo.debug("attach shape: ");
               for (x in red_rect.shape ) {
                 dojo.lang.assert( ar.shape[x] == red_rect.shape[x], "shape property "+x+" error: ar="+ar.shape[x]+", ref="+red_rect.shape[x] );
               }
+              dojo.debug("attach matrix: ");
               for (x in red_rect.matrix ) {
                 // FIXME: the coordination is really confusing !!
                 if ( ar.matrix[x] != red_rect.matrix[x]) dojo.debug("matrix property "+x+" error: ar="+ar.matrix[x]+", ref="+red_rect.matrix[x] ); 
               }
+              dojo.debug("attach strokeStyle: ");
               for (x in red_rect.strokeStyle) {
                 if( ar.strokeStyle[x] != red_rect.strokeStyle[x]) dojo.debug("strokeStyle:"+x+" error : ar="+ar.strokeStyle[x]+", ref="+red_rect.strokeStyle[x] ); 
               }
+              dojo.debug("attach fillStyle: ");
               for (x in red_rect.fillStyle) {
                 if( ar.fillStyle[x] != red_rect.fillStyle[x] ) dojo.debug("fillStyle:"+x+" error : ar="+ar.fillStyle[x]+", ref="+red_rect.fillStyle[x] ); 
               }
