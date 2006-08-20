@@ -9,7 +9,7 @@
    };
 </script>
    <script type="text/javascript" src="../../dojo.js"></script>
-   <!--<script type="text/javascript" src="../../src/gfx/m2d.js"></script>-->
+   <script type="text/javascript" src="../../src/gfx/vml.js"></script>
    <script type="text/javascript">
 
 dojo.require("dojo.gfx.*");
@@ -26,9 +26,11 @@ function getTestSurface(testName, testDescription, width, height)
 
    // Create a DOM node for the surface
    var testRow = document.createElement('tr');
-   var testSurfaceHolder = document.createElement('td');
-   testSurfaceHolder.id = testName + '_holder';
-   var refHolder = document.createElement('td');
+   var testCell = document.createElement('td');
+   var testHolder = document.createElement('div');
+   testHolder.id = testName + '_holder';
+   var refCell = document.createElement('td');
+   var refHolder = document.createElement('div');
    var refImg = document.createElement('img');
    refImg.src = "images/placeholder.png";
 //   refImg.width = width;
@@ -46,9 +48,11 @@ function getTestSurface(testName, testDescription, width, height)
 
    imgToLoad.src = imgUrl;
 
-   testRow.appendChild(testSurfaceHolder);
+   testCell.appendChild(testHolder);
+   testRow.appendChild(testCell);
    refHolder.appendChild(refImg);
-   testRow.appendChild(refHolder);
+   refCell.appendChild(refHolder);
+   testRow.appendChild(refCell);
    gTestContainer.appendChild(testRow);
 
    var descRow = document.createElement('tr');
@@ -63,9 +67,9 @@ function getTestSurface(testName, testDescription, width, height)
    // see if there's a reference image available
    var g = dojo.gfx.defaultRenderer;	// should select SVG/VML automatically
    // our surface is created from scratch
-   testSurfaceHolder.width = width;
-   testSurfaceHolder.height = height;
-   var surface = g.createSurface(testSurfaceHolder, width, height);
+   //testSurfaceHolder.width = width + "px";
+   //testSurfaceHolder.height = height + "px";
+   var surface = g.createSurface(testHolder, width, height);
    return surface;
 }
 
@@ -119,7 +123,7 @@ dojo.addOnLoad(function()
 
    addTest('straight_rect', function(testName){
               surface = getTestSurface(testName, 'translucent rect with straight stroke');
-              // anonymous blue rectangle
+              // blue rectangle
               var blue_rect = surface.createRect(rect).setFill(new dojo.graphics.color.Color([0, 255, 0, 0.5])).
               // move
               setTransform({ dx: 100, dy: 100 });
@@ -234,7 +238,7 @@ dojo.addOnLoad(function()
               // anonymous 30 degree CCW rotated green rectangle
               surface.createRect().setRect(rect).setFill(new dojo.graphics.color.Color([0, 0, 255, 0.5])).
               // rotate it around its center and move to (100, 100)
-              setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(30, 50, 50)));
+              setTransform(dojo.gfx.multiply(dojo.gfx.translate(100, 100), dojo.gfx.rotategAt(45, 0, 0)));
            });
 
    addTest('skew_rect', function(testName){
@@ -501,7 +505,8 @@ var gTestsToRun = [
 }); // end onload
 </script>
 <style>
-   td { border: 1px solid black; text-align: center; }
+   td { border: 1px solid black; text-align: left; vertical-align: top; }
+   v:group { text-align: left; }
 </style>
    </head>
    <body>

@@ -43,6 +43,14 @@ dojo.event.connect(dojo, "loaded", function(){
 	pdebug(b);
 	b = dojo.gfx.multiplyPoint(a, 10, 15);
 	pdebug(b);
+	a = dojo.gfx.multiply(dojo.gfx.scale(2,1), dojo.gfx.invert(dojo.gfx.rotateg(45)));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.scale(1,2), dojo.gfx.invert(dojo.gfx.rotateg(45)));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.invert(dojo.gfx.rotateg(45)), dojo.gfx.scale(2,1));
+	mdebug(a);
+	a = dojo.gfx.multiply(dojo.gfx.invert(dojo.gfx.rotateg(45)), dojo.gfx.scale(1,2));
+	mdebug(a);
 });
 
 </script>
