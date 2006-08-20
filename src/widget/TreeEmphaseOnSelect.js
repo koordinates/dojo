@@ -3,6 +3,7 @@ dojo.provide("dojo.widget.TreeEmphaseOnSelect");
 
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeSelectorV3");
+dojo.require("dojo.html.selection");
 
 // selector extension to emphase node
 
