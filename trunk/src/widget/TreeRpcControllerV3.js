@@ -164,6 +164,9 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 		
 		var params = {
 			node: this.getInfo(node),
+			// useful for createAndEdit, because server does not know
+			// about node yet
+			parent: this.getInfo(node.parent),
 			tree: this.getInfo(node.tree),
 			newContent: newContent
 		}
