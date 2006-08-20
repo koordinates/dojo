@@ -277,7 +277,7 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 				//dojo.debug("Make new");
 				dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(this, parent, index, data);
 			} else {				
-				node.setTitle(title); // to make sure everything updated and event sent
+				node.setTitle(editorTitle); // to make sure everything updated and event sent
 			}
 		} else {
 			//dojo.debug("Kill phantom on cancel");
