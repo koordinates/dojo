@@ -11,6 +11,11 @@
 	dojo.require("dojo.widget.TreeV3");
 	dojo.require("dojo.widget.TreeNodeV3");
 	dojo.require("dojo.widget.TreeLoadingControllerV3");
+
+	dojo.require("dojo.widget.TreeEmphaseOnSelect");	
+	dojo.require("dojo.widget.TreeSelectorV3");	
+	dojo.require("dojo.widget.TreeDeselectOnDblselect");	
+
 	dojo.hostenv.writeIncludes();
 
 </script>
@@ -30,7 +35,13 @@
 <div dojoType="TreeLoadingControllerV3" widgetId="treeController" RpcUrl="local"></div>
 
 
-<div dojoType="TreeV3" widgetId="firstTree" listeners="treeController">
+<div dojoType="TreeSelectorV3" widgetId="selector"></div>	
+
+<div dojoType="TreeDeselectOnDblselect" selector="selector"></div>
+<div dojoType="TreeEmphaseOnSelect" selector="selector"></div>
+
+
+<div dojoType="TreeV3" widgetId="firstTree" listeners="treeController;selector">
     <div dojoType="TreeNodeV3" title="Node 1"></div>
     <div dojoType="TreeNodeV3" title="Node 2" widgetId="2">
         <div dojoType="TreeNodeV3" title="Node 2.1"></div>
