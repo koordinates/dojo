@@ -1,4 +1,5 @@
 dojo.require("dojo.widget.ComboBox");
+dojo.require("dojo.logging.Logger");
 
 var comboData = [
 	["Alabama","AL"],
@@ -76,9 +77,12 @@ function test_combobox_dataprovider(){
 	var box = new dojo.widget.ComboBox();
 
 	jum.assertEquals("test30", typeof dojo.widget.ComboBoxDataProvider, "function");
-
+	jum.assertTrue("test31", comboData.length > 40);
+	
 	var provider = new dojo.widget.ComboBoxDataProvider();
 	provider.setData(comboData);
+
+	jum.assertEquals("test32", 30, provider.searchLimit);
 
 	// test the results of our search
 	var searchTester = function(data){
@@ -95,7 +99,6 @@ function test_combobox_dataprovider(){
 		}
 		jum.assertEquals("test40", 4, data.length);
 		for(var x=0; x<data.length; x++){
-			//jum.debug(data[x][0]);
 			jum.assertTrue("testfoo", dojo.lang.find(expectedLabels, data[x][0]) != -1);
 		}
 	}
