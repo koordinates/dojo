@@ -263,21 +263,23 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 		this.editor.close(save);
 
 		if (save) {
+			
 			var data = {title:editorTitle};
+			
 			dojo.lang.mixin(data, server_data);
 			
 			
 			if (node.isPhantom) {			
-				// I can't just set node title, because widgetId may be provided by server
+				// I can't just set node phantom's title, because widgetId/objectId/widgetName...
+				// may be provided by server
 				var parent = node.parent;
-				var index = node.getParentIndex();
-				//dojo.debug("Kill "+node);
+				var index = node.getParentIndex();				
 				node.destroy();
 				// new node was added!
-				//dojo.debug("Make new");
 				dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(this, parent, index, data);
-			} else {				
-				node.setTitle(editorTitle); // to make sure everything updated and event sent
+			} else {
+				// use special method to make sure everything updated and event sent
+				node.setTitle(editorTitle); 
 			}
 		} else {
 			//dojo.debug("Kill phantom on cancel");
