@@ -85,19 +85,7 @@ dojo.widget.Editor2Manager = {
 		}
 		this._loadedCommands[name] = oCommand;
 		return oCommand;
-	}//,
-//	registerPerInstancePlugin: function(name){
-//		if(!this._perInstancePlugins){ this._perInstancePlugins = []; }
-//		this._perInstancePlugins.push(name);
-//	},
-//	getPlugin: function(pluginname, editor){
-//		dojo.require(pluginname);
-//		if(dojo.lang.find(this._perInstancePlugins, pluginname) != -1){
-//			var plugin = dojo.evalObjPath(pluginname);
-//			return new plugin(editor);
-//		}
-//		return null;
-//	}
+	}
 };
 
 dojo.addOnUnload(dojo.widget.Editor2Manager, "destroy");
@@ -123,7 +111,6 @@ dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Comman
 		execute: function(para){
 			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 			if(curInst){
-				dojo.debug("execute "+this._name);
 				curInst.execCommand(this._name, para);
 			}
 		},
@@ -315,7 +302,6 @@ dojo.widget.defineWidget(
 			var toolbars = dojo.widget.byType("Editor2Toolbar");
 			if((!toolbars.length)||(!this.shareToolbar)){
 				var tbOpts = {};
-				this.toolbarTemplatePath = this.toolbarTemplatePath || "src/widget/templates/EditorToolbarOneline.html";
 				tbOpts.templatePath = dojo.uri.dojoUri(this.toolbarTemplatePath);
 				if(this.toolbarTemplateCssPath){
 					tbOpts.templateCssPath = this.toolbarTemplateCssPath;
