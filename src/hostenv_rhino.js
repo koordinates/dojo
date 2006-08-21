@@ -196,3 +196,8 @@ if(!djConfig.libraryScriptUri.length){
 	}
 }
 
+dojo.doc = function(){
+	// summary:
+	//		return the document object associated with the dojo.global()
+	return document;
+}
