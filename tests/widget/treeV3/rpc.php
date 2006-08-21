@@ -18,7 +18,7 @@ if ($action == 'createChild') {
 
 if ($action == 'editLabelSave') {
 ?>
-({title:"server_generated title"})
+({title:"server replaced your title"})
 <?
 return;
 }
