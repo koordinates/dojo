@@ -152,20 +152,14 @@ dojo.declare(
 			}
 		},
 
-		//if the target mixin class already defined show,
-		//dojo.widget.ModalDialogBase.prototype.show.call(this)
-		//should be called in its show()
-		show: function() {
+		//call this function in show() of subclass
+		showModalDialog: function() {
 			this.setBackgroundOpacity();
 			this.showBackground();
-
-			this.inherited("show");
 		},
 
-		//if the target mixin class already defined hide,
-		//dojo.widget.ModalDialogBase.prototype.hide.call(this)
-		//should be called in its hide()
-		hide: function(){
+		//call this function in hide() of subclass
+		hideModalDialog: function(){
 			// workaround for FF focus going into outer space
 			if (this.focusElement) { 
 				dojo.byId(this.focusElement).focus(); 
@@ -174,8 +168,6 @@ dojo.declare(
 
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
-			
-			this.inherited("hide");
 		}
 	});
 
@@ -190,8 +182,6 @@ dojo.widget.defineWidget(
 		lifetime: 0,
 
 		show: function() {
-			dojo.widget.ModalDialogBase.prototype.show.call(this);
-
 			if (this.followScroll && !this._scrollConnected){
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "onScroll");
@@ -217,6 +207,8 @@ dojo.widget.defineWidget(
 				this.timer = setInterval(dojo.lang.hitch(this, "onTick"), 100);
 			}
 
+			this.showModalDialog();
+			dojo.widget.Dialog.superclass.show.call(this);
 			this.checkSize();
 		},
 
@@ -224,6 +216,7 @@ dojo.widget.defineWidget(
 			// when href is specified we need to reposition
 			// the dialog after the data is loaded
 			this.placeModalDialog();
+			dojo.widget.Dialog.superclass.onLoad.call(this);
 		},
 		
 		fillInTemplate: function(){
@@ -231,7 +224,8 @@ dojo.widget.defineWidget(
 		},
 
 		hide: function(){
-			dojo.widget.ModalDialogBase.prototype.hide.call(this)
+			this.hideModalDialog();
+			dojo.widget.Dialog.superclass.hide.call(this);
 
 			if(this.timer){
 				clearInterval(this.timer);
