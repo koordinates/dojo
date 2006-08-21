@@ -54,9 +54,8 @@ dojo.inherits(dojo.widget.TreeLoadingControllerV3, dojo.widget.TreeBasicControll
 
 dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	widgetType: "TreeLoadingControllerV3",
-
 	
-
+	
 	RpcUrl: "",
 
 	RpcActionParam: "action", // used for GET for RpcUrl
@@ -75,6 +74,8 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		if (typeof obj != 'object') {
 			return new dojo.CommunicationError("Wrong server answer format "+(obj && obj.toSource ? obj.toSource() : obj)+" type "+(typeof obj), obj);
 		}
+		
+		//dojo.debugShallow(obj);
 			
 		if (!dojo.lang.isUndefined(obj.error)) {
 			return new dojo.RpcError(obj.error, obj);

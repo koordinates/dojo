@@ -278,8 +278,9 @@ dojo.lang.extend(dojo.widget.TreeBasicControllerV3, {
 				// new node was added!
 				dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(this, parent, index, data);
 			} else {
+				var title = server_data && server_data.title ? server_data.title : editorTitle;
 				// use special method to make sure everything updated and event sent
-				node.setTitle(editorTitle); 
+				node.setTitle(title); 
 			}
 		} else {
 			//dojo.debug("Kill phantom on cancel");
