@@ -217,7 +217,7 @@ dojo.widget.defineWidget(
 		show: function(){
 			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
 			if(this.modal){
-				dojo.widget.ModalDialogBase.prototype.show.call(this);
+				this.showModalDialog();
 			}
 			this.placeModalDialog();
 			if(this.modal){
@@ -231,10 +231,9 @@ dojo.widget.defineWidget(
 		},
 		hide: function(){
 			if(this.modal){
-				dojo.widget.ModalDialogBase.prototype.hide.call(this);
-			}else{
-				dojo.widget.Editor2Dialog.superclass.hide.call(this);
+				this.hideModalDialog();
 			}
+			dojo.widget.Editor2Dialog.superclass.hide.call(this);
 		}
 	}
 );
