@@ -108,8 +108,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 
 	getRpcUrl: function(action) {
 
-		// RpcUrl=local meant SOLELY for DEMO and LOCAL TESTS.
-		// May lead to widgetId collisions
+		// RpcUrl=local meant SOLELY for DEMO and LOCAL TESTS
 		if (this.RpcUrl == "local") {
 			var dir = document.location.href.substr(0, document.location.href.lastIndexOf('/'));
 			var localUrl = dir+"/local/"+action;
@@ -120,8 +119,22 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		if (!this.RpcUrl) {
 			dojo.raise("Empty RpcUrl: can't load");
 		}
+		
+		var url = this.RpcUrl;
+		
+		if (url.indexOf("/") != 0) { // not absolute
+			var prefix = document.location.href;
+			if (prefix.indexOf("/") != prefix.length-1) {
+				prefix = prefix.replace(/\/[^\/]+$/,'/'); // strip file name
+			}
+			if (prefix.indexOf("/") != prefix.length-1) {
+				prefix = prefix+'/'; // add / if not exists it all
+			}
+			url = prefix + url;
+		}
+			
 
-		return this.RpcUrl + ( this.RpcUrl.indexOf("?") > -1 ? "&" : "?") + this.RpcActionParam+"="+action;
+		return url + ( url.indexOf("?") > -1 ? "&" : "?") + this.RpcActionParam+"="+action;
 	},
 
 
