@@ -66,8 +66,8 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	// structure for storage of items.
 
 	this.data = [];
-	this.searchTimeout = timeout || 500;
-	this.searchLimit = limit || 30;
+	this.searchTimeout = timeout | 500;
+	this.searchLimit = limit | 30;
 	this.searchType = "STARTSTRING"; // may also be "STARTWORD" or "SUBSTRING"
 	this.caseSensitive = false;
 	// for caching optimizations
@@ -145,8 +145,6 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 			}
 
 			if(st == "STARTSTRING"){
-				// jum.debug(dataLabel.substr(0, searchStr.length))
-				// jum.debug(searchStr);
 				if(searchStr == dataLabel.substr(0, searchStr.length)){
 					ret.push(this.data[x]);
 				}
