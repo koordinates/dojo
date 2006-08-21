@@ -195,6 +195,8 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 			return false;
 		}
 		
+		var _this = this;
+		
 		if (!this.editor.isClosed()) {
 			//dojo.debug("editLabelStart editor open");
 			var deferred = this.editLabelFinish(this.editor.saveOnBlur, sync);
@@ -204,7 +206,6 @@ dojo.lang.extend(dojo.widget.TreeRpcControllerV3, {
 			return deferred;
 		}
 						
-		var _this = this;
 		//dojo.debug("editLabelStart closed, request");
 		var deferred = this.requestEditConfirmation(node, 'editLabelStart', sync);
 		
