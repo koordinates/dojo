@@ -91,7 +91,7 @@ dojo.html.selectInputText = function(element){
 	var _window = dojo.global();
 	var _document = dojo.doc();
 	element = dojo.byId(element);
-	if(_document.selection && dojo.body().createTextRange){ // IE
+	if(_document["selection"] && dojo.body()["createTextRange"]){ // IE
 		var range = element.createTextRange();
 		range.moveStart("character", 0);
 		range.moveEnd("character", element.value.length);
@@ -123,8 +123,7 @@ dojo.html.isSelectionCollapsed = function(){
 dojo.lang.mixin(dojo.html.selection, {
 	getType: function() {
 		// summary: Get the selection type (like document.select.type in IE).
-		if(dojo.doc().selection){ //IE
-		
+		if(dojo.doc()["selection"]){ //IE
 			return dojo.html.selectionType[dojo.doc().selection.type.toUpperCase()];
 		}else{
 			var stype = dojo.html.selectionType.TEXT;
@@ -149,7 +148,7 @@ dojo.lang.mixin(dojo.html.selection, {
 		//		Retrieves the selected element (if any), just in the case that a single
 		//		element (object like and image or a table) is selected.
 		if ( dojo.html.selection.getType() == dojo.html.selectionType.CONTROL ){
-			if(dojo.doc().selection){ //IE
+			if(dojo.doc()["selection"]){ //IE
 				var range = dojo.doc().selection.createRange();
 		
 				if ( range && range.item ){
@@ -168,7 +167,7 @@ dojo.lang.mixin(dojo.html.selection, {
 			var p = dojo.html.selection.getSelectedElement();
 			if(p){ return p.parentNode; }
 		}else{
-			if(dojo.doc().selection){ //IE
+			if(dojo.doc()["selection"]){ //IE
 				return dojo.doc().selection.createRange().parentElement();
 			}else{
 				var selection = dojo.global().getSelection();
@@ -185,7 +184,9 @@ dojo.lang.mixin(dojo.html.selection, {
 		}
 	},
 	getSelectedText: function(){
-		if(dojo.doc().selection){ //IE
+		// summary:
+		//		Return the text (no html tags) included in the current selection or null if no text is selected
+		if(dojo.doc()["selection"]){ //IE
 			if(dojo.html.selection.getType() == dojo.html.selectionType.CONTROL){
 				return null;
 			}
@@ -193,14 +194,35 @@ dojo.lang.mixin(dojo.html.selection, {
 		}else{
 			var selection = dojo.global().getSelection();
 			if(selection){
-				return selection.toString();;
+				return selection.toString();
 			}
+		}
+	},
+	getSelectedHtml: function(){
+		// summary:
+		//		Return the html of the current selection or null if unavailable
+		if(dojo.doc()["selection"]){ //IE
+			if(dojo.html.selection.getType() == dojo.html.selectionType.CONTROL){
+				return null;
+			}
+			return dojo.doc().selection.createRange().htmlText;
+		}else{
+			var selection = dojo.global().getSelection();
+			if(selection && selection.rangeCount){
+				var frag = selection.getRangeAt(0).cloneContents();
+				var div = document.createElement("div");
+				div.appendChild(frag);
+				return div.innerHTML;
+			}
+			return null;
 		}
 	},
 	hasAncestorElement: function(tagName /* ... */){
 		return (dojo.html.selection.getAncestorElement.apply(this, arguments) != null);
 	},
 	getAncestorElement: function(tagName /* ... */){
+		// summary:
+		//		Return the parent element of the current selection which is of type tagName (or one of the other specified tagName)
 		var node = dojo.html.selection.getSelectedElement() || dojo.html.selection.getParentElement();
 		while(node /*&& node.tagName.toLowerCase() != 'body'*/){
 			if(dojo.html.selection.isTag(node, arguments).length>0){

@@ -42,7 +42,7 @@ this.init = function(){
 this.ok = function(){
 	var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 	if(!this.linkNode){
-		var html = dojo.withGlobal(curInst.window, "getSelectedText", dojo.html.selection);
+		var html = dojo.withGlobal(curInst.window, "getSelectedHtml", dojo.html.selection);
 	}else{
 		var html = this.linkNode.innerHTML;
 		dojo.withGlobal(curInst.window, "selectElement", dojo.html.selection, [this.linkNode]);
