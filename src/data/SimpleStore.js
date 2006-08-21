@@ -190,22 +190,32 @@ dojo.extend(dojo.data.SimpleStore, {
 	getField:function(/*object*/obj, /*string*/field){
 		//	helper to get the nested value if needed.
 		var parts=field.split("."), i=0, o=obj;
-		do{ 
-			if(parts[i].indexOf("()")>-1){
-				var temp=parts[i++].split("()")[0];
-				if(!o[temp]){
-					dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + temp + "' is not a property of the passed object.");
-				} else {
-					//	this *will* throw an error if the method in question can't be invoked without arguments.
-					o = o[temp]();
-				}
-			} else {
-				o = o[parts[i++]];
-			}
-		} while (i<parts.length && o != null);
 		
-		if(i < parts.length || o == null){
-			dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + field + "' is not a property of the passed object.");
+		// have to handle nested syntax seperately so 
+		// that missing fields can be detected for all expression types
+		if (parts.length > 1) {
+			do{ 
+				if(parts[i].indexOf("()")>-1){
+					var temp=parts[i++].split("()")[0];
+					if(!o[temp]){
+						dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + temp + "' is not a property of the passed object.");
+					} else {
+						//	this *will* throw an error if the method in question can't be invoked without arguments.
+						o = o[temp]();
+					}
+				} else {
+					o = o[parts[i++]];
+				}
+			} while (i<parts.length && o != null);
+			
+			if(i < parts.length || o == null){
+				dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + field + "' is not a property of the passed object.");
+			}
+		} else {
+			if (!(field in obj)) {
+				dojo.raise("dojo.data.SimpleStore.getField(obj, '" + field + "'): '" + field + "' is not a property of the passed object.");
+			}
+			o = o[field];
 		}
 		return o; // object
 	},
