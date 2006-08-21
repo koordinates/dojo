@@ -596,6 +596,7 @@ removeRequires(dojo.getProperty("release_dir") + "/source.__package__.js")
 		unless="nostrip">
 		<copy overwrite="true" file="${srcFile}" tofile="${dstFile}.uncompressed.js" />
 		<java jar="./lib/custom_rhino.jar" fork="true" output="${dstFile}">
+			<arg line="-opt -1"/>
 			<arg value="-c" />
 			<arg value="${srcFile}" />
 		</java>
