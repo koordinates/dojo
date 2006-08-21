@@ -63,32 +63,43 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 
 	preventCache: true,
 
+	checkValidRpcResponse: function(type, obj) {
+		if (type != "load") {
+			var extra = {}				
+			for(var i=1; i<arguments.length;i++) {
+				dojo.lang.mixin(extra, arguments[i]);					
+			}
+			return new dojo.CommunicationError(obj, extra);				
+		}
+		
+		if (typeof obj != 'object') {
+			return new dojo.RpcError("Wrong answer "+(obj && obj.toSource ? obj.toSource() : obj)+" type "+(typeof obj), obj);
+		}
+			
+		if (!dojo.lang.isUndefined(obj.error)) {
+			return new dojo.RpcError(obj.error, obj);
+		}
+		
+		return false;
+	},
+		
+
 	getDeferredBindHandler: function(/* dojo.rpc.Deferred */ deferred){
 		// summary
-		// create callback that calls the Deferred's callback method
+		// create callback that calls the Deferred's callback method		
+		
 		return dojo.lang.hitch(this, 
-			function(type, obj /*,...*/){				
+			function(type, obj){				
 				//dojo.debug("getDeferredBindHandler "+obj.toSource());
+								
+				var error = this.checkValidRpcResponse.apply(this, arguments);
 				
-				if (type=="load" ) {
-					if(!dojo.lang.isUndefined(obj.error)){
-						deferred.errback(new RpcError(obj.error, obj));
-						return;
-					}
-	
-					deferred.callback(obj);
+				if (error) {
+					deferred.errback(error);
 					return;
 				}
-				
-				var extra = {}				
-				for(var i=1; i<arguments.length;i++) {
-					dojo.lang.mixin(extra, arguments[i]);					
-				}
-				var result = new dojo.CommunicationError(arguments[1], extra);				
-				
-				
-				deferred.errback(result);
-				
+	
+				deferred.callback(obj);								
 			}
 		);
 		
@@ -400,7 +411,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 	},
 	
 	finalizeMove: function(child, newParent) {
-		this.finishProcessing(child, newParent);
+		this.finishProcessing(newParent);
 	}
 		
 	
