@@ -72,7 +72,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		}
 		
 		if (typeof obj != 'object') {
-			return new dojo.CommunicationError("Wrong server answer format "+(obj && obj.toSource ? obj.toSource() : obj)+" type "+(typeof obj), obj);
+			return new dojo.FormatError("Wrong server answer format "+(obj && obj.toSource ? obj.toSource() : obj)+" type "+(typeof obj), obj);
 		}
 		
 		//dojo.debugShallow(obj);
