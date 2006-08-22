@@ -5,11 +5,11 @@
 <title>Pane External Content Test</title>
 
 <script type="text/javascript">
-	var djConfig = {isDebug: true};
-
+	var djConfig = {isDebug: true, debugAtAllCosts: false};
 </script>
 <script type="text/javascript" src="../../dojo.js"></script>
 <script language="JavaScript" type="text/javascript">
+	dojo.require("dojo.debug.Firebug");
 	dojo.require("dojo.widget.LayoutContainer");
 	dojo.require("dojo.widget.LinkPane");
 	dojo.require("dojo.widget.ContentPane");
@@ -17,20 +17,20 @@
 	dojo.require("dojo.widget.TreeSelector");
 	dojo.require("dojo.widget.FloatingPane");
 	dojo.require("dojo.widget.Dialog");
+	dojo.hostenv.writeIncludes();
 </script>
 
 <script>
 	function DisplayTreeContent(){
 	    this.update = function(message) {
-	        var clickedTreeNode = message.node;
-
-			var docPane = dojo.widget.getWidgetById("docpane");
-			var file = clickedTreeNode.object || clickedTreeNode.title + ".html";
-			if (!file){
-				docPane.setContent("Try clicking doc0, doc1 or doc2 instead...");
-			}else{
-				docPane.setUrl(file);
-			}
+	      var clickedTreeNode = message.node;
+				var docPane = dojo.widget.getWidgetById("docpane");
+				var file = clickedTreeNode.object || clickedTreeNode.title + ".html";
+				if (!file){
+					docPane.setContent("Try clicking doc0, doc1 or doc2 instead...");
+				}else{
+					docPane.setUrl(file);
+				}
 	    };
 	}
 
@@ -114,8 +114,7 @@
 <input type="checkbox" id="defaultEvalError" checked="true" /><label for="defaultEvalError">Use default Error message</label><br/>
 <div dojoType="LayoutContainer" id="me"
 	layoutChildPriority='left-right'
-	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;"
->
+	style="border: 2px solid black; width: 90%; height: 500px; padding: 10px;">
 	<div dojoType="ContentPane" layoutAlign="top" style="background-color: #b39b86; ">
 		top bar
 	</div>

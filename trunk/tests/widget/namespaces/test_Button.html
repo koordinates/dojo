@@ -2,13 +2,15 @@
 <html>
 <head>
 <title>Dojo Button Widget Test</title>
-	<link rel="stylesheet" type="text/css" href="css/demos.css" />
+	<link rel="stylesheet" type="text/css" href="../css/demos.css" />
 <script type="text/javascript">
-	var djConfig = {isDebug: true , debugAtAllCosts: false };
+	var djConfig = {isDebug: true, debugAtAllCosts: false };
 </script>
 
-<script type="text/javascript" src="../../dojo.js"></script>
+<script type="text/javascript" src="../../../dojo.js"></script>
+<script type="text/javascript" src="../../../src/namespace.js"></script>
 <script type="text/javascript">
+	dojo.require("dojo.debug.Firebug");
 	dojo.require("dojo.widget.Button");
 	dojo.require("dojo.widget.Menu2");
 	dojo.require("dojo.widget.Manager");
@@ -16,7 +18,7 @@
 
 <script>
 	// Load user custom button
-	
+
 	// 1. set directory for acme package (which contains widgets)
 	// The path is relative to the dojo/ directory, so typically
 	// it's something like "../acme"
@@ -64,22 +66,22 @@ Buttons can do an action, display a menu, or both:
 </p>
 <div class="box">
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
+		<img src="../images/plus.gif"> Create
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"><br>Create
+		<img src="../images/plus.gif"><br>Create
 	</button>
 	<button dojoType="DropDownButton" menuId='editMenu'>
-		<img src="images/note.gif"> Edit
+		<img src="../images/note.gif"> Edit
 	</button>
 	<button dojoType="DropDownButton" menuId='editMenu'>
-		<img src="images/note.gif"><br>Edit
+		<img src="../images/note.gif"><br>Edit
 	</button>
 	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
-		<img src="images/note.gif"> Save
+		<img src="../images/note.gif"> Save
 	</button>
 	<button dojoType="comboButton" menuId='saveMenu' onClick='dojo.debug("clicked combo save");'>
-		<img src="images/note.gif"><br>Save
+		<img src="../images/note.gif"><br>Save
 	</button>
 </div>
 <br clear=both>
@@ -89,20 +91,20 @@ Buttons can do an action, display a menu, or both:
 These buttons size to their content (just like &lt;button&gt;).</p>
 <div class="box">
 	<button dojoType="Button" onclick='dojo.debug("big");'>
-			<img src="images/flatScreen.gif">
+			<img src="../images/flatScreen.gif">
 		<span style="font-size:xx-large">big</span>
 	</button>
 	<button id="smallButton1" dojoType="Button" onclick='dojo.debug("small");'>
-		<img src="images/arrowSmall.gif">
+		<img src="../images/arrowSmall.gif">
 		<span style="font-size:x-small">small</span>
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("long");'>
-		<img src="images/tube.gif" height=16>
+		<img src="../images/tube.gif" height=16>
 		long
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("tall");' width2height="0.1">
 	   <div>
-		<img src="images/tubeTall.gif" height=75px width=35px><br>
+		<img src="../images/tubeTall.gif" height=75px width=35px><br>
 		<span style="font-size:medium">tall</span>
 	   </div>
 	</button>
@@ -144,10 +146,10 @@ Here's an example:</p>
 </div>
 <div class="box" style="display:none;" id="hiddenNode">
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
+		<img src="../images/plus.gif"> Create
 	</button>
 	<button dojoType="Button" onclick='dojo.debug("clicked simple")'>
-		<img src="images/plus.gif"> Create
+		<img src="../images/plus.gif"> Create
 	</button>
 </div>
 <div style="clear: both;"></div>

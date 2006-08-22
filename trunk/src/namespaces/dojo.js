@@ -89,15 +89,17 @@ dojo.require("dojo.namespace");
 		}
 	};
 
+	dojo.addDojoNamespaceMapping = function(shortName, fullName){
+		map[shortName]=fullName;    
+	};
+	
 	function dojoNamespaceResolver(name, domain){
 		if(!domain){ domain="html"; }
 		if(!map[domain]){ return null; }
 		return map[domain][name];    
 	}
 
-	dojo.defineNamespace("dojo", "src", "dojo", dojoNamespaceResolver);
+	dojo.registerNamespaceResolver("dojo", dojoNamespaceResolver);
+	//dojo.defineNamespace("dojo", "src", "dojo", dojoNamespaceResolver);
 
-	dojo.addDojoNamespaceMapping = function(shortName, fullName){
-		map[shortName]=fullName;    
-	};
 })();

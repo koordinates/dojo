@@ -1,11 +1,10 @@
 dojo.provide("dojo.xml.Parse");
-
 dojo.require("dojo.dom");
 
 //TODO: determine dependencies
 // currently has dependency on dojo.xml.DomUtil nodeTypes constants...
 
-/* generic method for taking a node and parsing it into an object
+/* generic class for taking a node and parsing it into an object
 
 TODO: WARNING: This comment is wrong!
 
@@ -28,85 +27,118 @@ dojo.???.foo.baz.xyzzy.value = "xyzzy"
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
 dojo.xml.Parse = function(){
 
+	// supported dojoTagName's:
+	// 
+	// <prefix:tag> => prefix:tag
+	// <dojo:tag> => dojo:tag
+	// <dojoTag> => dojo:tag
+	// <tag dojoType="type"> => dojo:type
+	// <tag dojoType="prefix:type"> => prefix:type
+	// <tag dojo:type="type"> => dojo:type
+	// <tag class="classa dojo-type classb"> => dojo:type	
+
+	// get normalized (lowercase) tagName
+	// some browsers report tagNames in lowercase no matter what
+	function getTagName(node){
+		return ((node)&&(node.tagName) ? node.tagName.toLowerCase() : '');
+	}
+
+	// locate dojo qualified tag name
+	// FIXME: add rejection test against namespace filters declared in djConfig
 	function getDojoTagName(node){
-		var tagName = node.tagName;
+		var tagName = getTagName(node);
+		if (!tagName){
+				return '';
+		}
+		// any registered tag
+		if((dojo.widget)&&(dojo.widget.tags[tagName])){
+			return tagName;
+		}
+		// <prefix:tag> => prefix:tag
+		var p = tagName.indexOf(":");
+		if(p>=0){
+			return tagName;
+		}
+		// <dojo:tag> => dojo:tag
+		if(tagName.substr(0,5) == "dojo:"){
+			return tagName;
+		}
 		if(dojo.render.html.capable && dojo.render.html.ie && node.scopeName != 'HTML'){
-			tagName = node.scopeName + ':' + tagName;
+			return node.scopeName.toLowerCase() + ':' + tagName;
 		}
-		if(tagName.substr(0,5).toLowerCase() == "dojo:"){
-			return tagName.toLowerCase();
-		}
-
-		if(tagName.substr(0,4).toLowerCase() == "dojo"){
+		// <dojoTag> => dojo:tag
+		if(tagName.substr(0,4) == "dojo"){
 			// FIXME: this assumes tag names are always lower case
-			return "dojo:" + tagName.substring(4).toLowerCase();
+			return "dojo:" + tagName.substring(4);
 		}
-
-		// allow lower-casing
+		// <tag dojoType="prefix:type"> => prefix:type
+		// <tag dojoType="type"> => dojo:type
 		var djt = node.getAttribute("dojoType") || node.getAttribute("dojotype");
 		if(djt){
-			if(djt.indexOf(":")<0){
+			if (djt.indexOf(":")<0){
 				djt = "dojo:"+djt;
 			}
 			return djt.toLowerCase();
 		}
-		
-		if(node.getAttributeNS && node.getAttributeNS(dojo.dom.dojoml,"type")){
+		// <tag dojo:type="type"> => dojo:type
+		if((node.getAttributeNS)&&(node.getAttributeNS(dojo.dom.dojoml,"type"))){
 			return "dojo:" + node.getAttributeNS(dojo.dom.dojoml,"type").toLowerCase();
 		}
+		// <tag dojo:type="type"> => dojo:type
 		try{
 			// FIXME: IE really really doesn't like this, so we squelch errors for it
-			djt = node.getAttribute("dojo:type");
-		}catch(e){ /* FIXME: log? */ }
-
-		if(djt){ return "dojo:"+djt.toLowerCase(); }
-	
+			djt = node.getAttribute("dojo:type").toLowerCase();
+		}catch(e){ 
+			// FIXME: log?  
+		}
+		if(djt){ return "dojo:"+djt; }
+		// <tag class="classa dojo-type classb"> => dojo:type	
 		if(!dj_global["djConfig"] || !djConfig["ignoreClassNames"]){ 
 			// FIXME: should we make this optionally enabled via djConfig?
 			var classes = node.className||node.getAttribute("class");
 			// FIXME: following line, without check for existence of classes.indexOf
 			// breaks firefox 1.5's svg widgets
 			if(classes && classes.indexOf && classes.indexOf("dojo-") != -1){
-			    var aclasses = classes.split (" ");
-			    for(var x=0; x<aclasses.length; x++){
-			        if(aclasses[x].length > 5 && aclasses[x].indexOf("dojo-") >= 0){
-			            return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
+		    var aclasses = classes.split(" ");
+		    for(var x=0, c; x<aclasses.length; x++){
+	        if (aclasses[x].slice(0, 5) == "dojo-") {
+            return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
 					}
 				}
 			}
 		}
-
-		return tagName.toLowerCase();
+		// no dojo-qualified name
+		return '';
 	}
 
 	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
 
 		var parsedNodeSet = {};
-
+		
+		var tagName = getTagName(node);
 		//There's a weird bug in IE where it counts end tags, e.g. </dojo:button> as nodes that should be parsed.  Ignore these
-		if(node.tagName && node.tagName.indexOf("/") == 0){
+		if((tagName)&&(tagName.indexOf("/")==0)){
 			return null;
 		}
-
-		var tagName = getDojoTagName(node);
-		parsedNodeSet[tagName] = [];
-		if(tagName.substr(0,4).toLowerCase()=="dojo"){
-			parsedNodeSet.namespace = "dojo";
-		}else{
-			var pos = tagName.indexOf(":");
-			if(pos > 0){
-			    parsedNodeSet.namespace = tagName.substring(0,pos);
-			}
-		}
-
-		var process = false;
-		if(!optimizeForDojoML){process=true;}
-		else if(parsedNodeSet.namespace&&dojo.getNamespace(parsedNodeSet.namespace)){process=true;}
-		else if(dojo.widget.tags[tagName]){
-			dojo.deprecated('dojo.xml.Parse.parseElement', 'Widgets should be placed in a defined namespace', "0.5");
-			process = true;	
-		}
 		
+		// look for a dojoml qualified name
+		// process dojoml only when optimizeForDojoML is true
+		var process = true;
+		if(optimizeForDojoML){
+			var dojoTagName = getDojoTagName(node);
+			tagName = dojoTagName || tagName;
+			process = Boolean(dojoTagName);
+		}
+
+		parsedNodeSet[tagName] = [];
+		var pos = tagName.indexOf(":");
+		if(pos>0){
+			var ns = tagName.substring(0,pos);
+			parsedNodeSet.namespace = ns;
+			// honor user namespace filters
+			if((dojo.namespace)&&(!dojo.namespace.allow(ns))){process=false;}
+		}
+
 		if(process){
 			var attributeSet = this.parseAttributes(node);
 			for(var attr in attributeSet){
@@ -121,7 +153,7 @@ dojo.xml.Parse = function(){
 			parsedNodeSet[tagName].nodeRef = node;
 			parsedNodeSet.tagName = tagName;
 			parsedNodeSet.index = thisIdx||0;
-			//    dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet.namespace);
+			//dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet.namespace);
 		}
 
 		var count = 0;
@@ -130,7 +162,7 @@ dojo.xml.Parse = function(){
 			switch(tcn.nodeType){
 				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
 					count++;
-					var ctn = getDojoTagName(tcn);
+					var ctn = getDojoTagName(tcn) || getTagName(tcn);
 					if(!parsedNodeSet[ctn]){
 						parsedNodeSet[ctn] = [];
 					}

@@ -418,21 +418,28 @@ dojo.body = function(){
 }
 
 dojo.byId = function(id, doc){
-	if(id && ((typeof id == "string") || (id instanceof String))){
-		return (doc || dojo.doc()).getElementById(id);
+	if((id)&&((typeof id == "string")||(id instanceof String))){
+		return (doc || dj_currentDocument).getElementById(id);
 	}
 	return id; // assume it's a node
 }
-
+ 
 dojo.setContext = function(/*Object*/globalObject, /*Object*/ globalDocument){
 	dj_currentContext = globalObject;
 	dj_currentDocument = globalDocument;
+};
+
+dojo._fireCallback = function(callback, context, cbArguments) {
+	if((context)&&((typeof callback == "string")||(callback instanceof String))){
+		callback=context[callback];
+	}
+	return (context ? callback.apply(context, cbArguments || [ ]) : callback());
 }
 
 dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments){
 	// summary:
 	//		Call callback with globalObject as dojo.global() and globalObject.document 
-	//		as dojo.doc(), if provided, globalObject will be executed in the context of 
+	//		as dojo.doc(). If provided, globalObject will be executed in the context of 
 	//		object thisObject
 	// description: 
 	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
@@ -442,20 +449,16 @@ dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Objec
 	var oldDoc = dj_currentDocument;
 	try{
 		dojo.setContext(globalObject, globalObject.document);
-		if(thisObject&&((typeof callback == "string")||(callback instanceof String))){
-			callback=thisObject[callback];
-		}
-		if(!cbArguments){ cbArguments = []; }
-		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
+		rval = dojo._fireCallback(callback, thisObject, cbArguments);
 	}finally{
 		dojo.setContext(oldGlob, oldDoc);
 	}
 	return rval;
 }
 
-dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments) {
+dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments) {
 	// summary:
-	//		Call callback with globalObject as dojo.doc(), if provided, callback will be executed
+	//		Call callback with documentObject as dojo.doc(). If provided, callback will be executed
 	//		in the context of object thisObject
 	// description: 
 	//		When callback() returns or throws an error, the dojo.doc() will
@@ -463,12 +466,8 @@ dojo.withDoc = function (/*Object*/globalObject, /*Function*/callback, /*Object?
 	var rval;
 	var oldDoc = dj_currentDocument;
 	try{
-		dj_currentDocument = globalObject;
-		if(thisObject&&((typeof callback == "string")||(callback instanceof String))){
-			callback=thisObject[callback];
-		}
-		if(!cbArguments){ cbArguments = []; }
-		rval = (thisObject ? callback.apply(thisObject, cbArguments) : callback());
+		dj_currentDocument = documentObject;
+		rval = dojo._fireCallback(callback, thisObject, cbArguments);
 	}finally{
 		dj_currentDocument = oldDoc;
 	}
