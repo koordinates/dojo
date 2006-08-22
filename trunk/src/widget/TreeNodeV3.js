@@ -249,6 +249,9 @@ dojo.lang.extend(dojo.widget.TreeNodeV3, {
 			this.viewSetExpand();
 		}
 		
+		for(var i=0; i<this.actionsDisabled.length;i++) {
+			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
+		}
 		//dojo.debug("publish "+this.tree.eventNames.changeTree);
 		
 		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, {oldTree:null, newTree:this.tree, node:this} );

@@ -32,14 +32,14 @@
 
 <!-- FIXME: toggle="fade" has bug when showing empty node, wipe also has problems with hide/show -->
 MyTree
-<div dojoType="TreeV3" expandLevel="1" DndMode="ONTO;BETWEEN" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller">
+<div dojoType="TreeV3" expandLevel="1" DndMode="onto;between" DndAcceptTypes="firstTree" widgetId="firstTree" listeners="controller;dndcontroller">
     <div dojoType="TreeNodeV3" title="Item 1">
         <div dojoType="TreeNodeV3" title="Item 1.1<br/>blas"><br/></div>
         <div dojoType="TreeNodeV3" title="Item 1.2">
             <div dojoType="TreeNodeV3" title="Item 1.2.1"></div>
             <div dojoType="TreeNodeV3" title="Item 1.2.2"></div>
         </div>
-        <div dojoType="TreeNodeV3" title="Can't add child to this node" actionsDisabled="ADDCHILD">
+        <div dojoType="TreeNodeV3" title="Can't add child to this node" actionsDisabled="addchild">
             <div dojoType="TreeNodeV3" isFolder="true" title="Empty folder"></div>
             <div dojoType="TreeNodeV3" title="Item 1.3.2"></div>
         </div>
