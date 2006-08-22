@@ -8,7 +8,6 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.namespace");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
-dojo.require("dojo.a11y");
 
 dojo.declare("dojo.widget.Widget", null,
 	function() {								 
