@@ -172,10 +172,20 @@ dojo.event = new function(){
 	}
 
 	this.connect = function(){
+		// summary:
+		// 	dojo.event.connect is the glue that holds most Dojo-based
+		// 	applications together.
 		if(arguments.length == 1){
 			var ao = arguments[0];
 		}else{
 			var ao = interpolateArgs(arguments, true);
+		}
+		if(dojo.lang.isString(ao.srcFunc) && (ao.srcFunc.toLowerCase() == "onkey") ){
+			if(dojo.render.html.ie){
+				ao.srcFunc = "onkeydown";
+				this.connect(ao);
+			}
+			ao.srcFunc = "onkeypress";
 		}
 
 		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
@@ -231,13 +241,13 @@ dojo.event = new function(){
 
 	this.connectBefore = function(){
 		var args = ["before"];
-		for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
+		for(var i = 0; i < arguments.length; i++){ args.push(arguments[i]); }
 		return this.connect.apply(this, args);
 	}
 
 	this.connectAround = function(){
 		var args = ["around"];
-		for(var i = 0; i < arguments.length; i++) { args.push(arguments[i]); }
+		for(var i = 0; i < arguments.length; i++){ args.push(arguments[i]); }
 		return this.connect.apply(this, args);
 	}
 
@@ -278,8 +288,19 @@ dojo.event = new function(){
 	}
 
 	this.disconnect = function(){
-		var ao = interpolateArgs(arguments, true);
+		if(arguments.length == 1){
+			var ao = arguments[0];
+		}else{
+			var ao = interpolateArgs(arguments, true);
+		}
 		if(!ao.adviceFunc){ return; } // nothing to disconnect
+		if(dojo.lang.isString(ao.srcFunc) && (ao.srcFunc.toLowerCase() == "onkey") ){
+			if(dojo.render.html.ie){
+				ao.srcFunc = "onkeydown";
+				this.disconnect(ao);
+			}
+			ao.srcFunc = "onkeypress";
+		}
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
 		return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once);
 	}
@@ -291,7 +312,7 @@ dojo.event = new function(){
 
 // exactly one of these is created whenever a method with a joint point is run,
 // if there is at least one 'around' advice.
-dojo.event.MethodInvocation = function(join_point, obj, args) {
+dojo.event.MethodInvocation = function(join_point, obj, args){
 	this.jp_ = join_point;
 	this.object = obj;
 	this.args = [];
@@ -302,7 +323,7 @@ dojo.event.MethodInvocation = function(join_point, obj, args) {
 	this.around_index = -1;
 }
 
-dojo.event.MethodInvocation.prototype.proceed = function() {
+dojo.event.MethodInvocation.prototype.proceed = function(){
 	this.around_index++;
 	if(this.around_index >= this.jp_.around.length){
 		return this.jp_.object[this.jp_.methodname].apply(this.jp_.object, this.args);
@@ -325,7 +346,7 @@ dojo.event.MethodJoinPoint = function(obj, methname){
 	this.around = [];
 }
 
-dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
+dojo.event.MethodJoinPoint.getForMethod = function(obj, methname){
 	// if(!(methname in obj)){
 	if(!obj){ obj = dj_global; }
 	if(!obj[methname]){
@@ -405,7 +426,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 
 	disconnect: dojo.lang.forward("unintercept"),
 
-	run: function() {
+	run: function(){
 		var obj = this.object||dj_global;
 		var args = arguments;
 
