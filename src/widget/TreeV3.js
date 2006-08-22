@@ -243,6 +243,10 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 
 	initialize: function(args){
 		
+		for(var i=0; i<this.actionsDisabled.length;i++) {
+			this.actionsDisabled[i] = this.actionsDisabled[i].toUpperCase();
+		}
+		
 		//dojo.debug(args.defaultChildWidget ? true : false)
 		
 		if (!args.defaultChildWidget) {
@@ -262,6 +266,8 @@ dojo.lang.extend(dojo.widget.TreeV3, {
 		dojo.html.setClass(this.domNode, this.classPrefix+"Container");
 		
 		var _this = this;
+			
+		
 				
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
