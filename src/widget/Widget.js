@@ -5,8 +5,10 @@ dojo.require("dojo.lang.func");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lang.declare");
+dojo.require("dojo.namespace");
 dojo.require("dojo.widget.Manager");
 dojo.require("dojo.event.*");
+dojo.require("dojo.a11y");
 
 dojo.declare("dojo.widget.Widget", null,
 	function() {								 
@@ -39,8 +41,12 @@ dojo.declare("dojo.widget.Widget", null,
 
 	namespace: "dojo", //defaults to 'dojo'
 
+	getNamespacedType: function() {
+		return (this.namespace ? this.namespace + ":" + this.widgetType : this.widgetType).toLowerCase();
+	},
+	
 	toString: function() {
-		return '[Widget ' + this.widgetType + ', ' + (this.widgetId || 'NO ID') + ']'; // string
+		return '[Widget ' + this.getNamespacedType() + ', ' + (this.widgetId || 'NO ID') + ']'; // string
 	},
 
 	repr: function(){
@@ -507,17 +513,20 @@ dojo.widget.lcArgsCache = {};
 // TODO: copy/clone raw markup fragments/nodes as appropriate
 dojo.widget.tags = {};
 dojo.widget.tags.addParseTreeHandler = function(type){
+	dojo.deprecated("addParseTreeHandler", ". ParseTreeHandlers are now reserved for components. Any unfiltered DojoML tag without a ParseTreeHandler is assumed to be a widget", "0.5");
+	/*
 	var ltype = type.toLowerCase();
 	this[ltype] = function(fragment, widgetParser, parentComp, insertionIndex, localProps){
 		var _ltype = ltype;
 		dojo.profile.start(_ltype);
 		var n = dojo.widget.buildWidgetFromParseTree(ltype, fragment, widgetParser, parentComp, insertionIndex, localProps);
 		dojo.profile.end(_ltype);
-		
 		return n;
 	}
+	*/
 }
-dojo.widget.tags.addParseTreeHandler("dojo:widget");
+
+//dojo.widget.tags.addParseTreeHandler("dojo:widget");
 
 dojo.widget.tags["dojo:propertyset"] = function(fragment, widgetParser, parentComp){
 	// FIXME: Is this needed?
@@ -543,28 +552,24 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 												insertionIndex, localProps){
 	
 	//dojo.profile.start("buildWidgetFromParseTree");
-	
+	// FIXME: for codepath from createComponentFromScript, we are now splitting a path 
+	// that we already split and then joined
 	var stype = type.split(":");
 	stype = (stype.length == 2) ? stype[1] : type;
+	
 	// FIXME: we don't seem to be doing anything with this!
 	// var propertySets = parser.getPropertySets(frag);
 	var localProperties = localProps || parser.parseProperties(frag[frag.namespace+":"+stype]);
-	// var tic = new Date();
 	var twidget = dojo.widget.manager.getImplementation(stype,null,null,frag.namespace);
 	if(!twidget){
-		throw new Error("cannot find \"" + stype + "\" widget");
+		throw new Error('cannot find "' + type + '" widget');
 	}else if (!twidget.create){
-		throw new Error("\"" + stype + "\" widget object does not appear to implement *Widget");
+		throw new Error('"' + type + '" widget object has no "create" method and does not appear to implement *Widget');
 	}
 	localProperties["dojoinsertionindex"] = insertionIndex;
 	// FIXME: we lose no less than 5ms in construction!
-	
-	
 	var ret = twidget.create(localProperties, frag, parentComp, frag.namespace);
-	// dojo.debug(new Date() - tic);
-	
-	//dojo.profile.end("buildWidgetFromParseTree");
-	
+	// dojo.profile.end("buildWidgetFromParseTree");
 	return ret;
 }
 
@@ -603,25 +608,23 @@ dojo.widget.defineWidget.renderers = "html|svg|vml";
 
 dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/, superclasses /*function||array*/, init /*function*/, props /*object*/){
 	// FIXME: uncomment next line to test parameter juggling ... remove when confidence improves
-	//dojo.debug('(c:)' + widgetClass + '\n\n(r:)' + renderer + '\n\n(i:)' + init + '\n\n(p:)' + props);
+	// dojo.debug('(c:)' + widgetClass + '\n\n(r:)' + renderer + '\n\n(i:)' + init + '\n\n(p:)' + props);
 	// widgetClass takes the form foo.bar.baz<.renderer>.WidgetName (e.g. foo.bar.baz.WidgetName or foo.bar.baz.html.WidgetName)
-	var namespace = widgetClass.split(".");
-	var type = namespace.pop(); // type <= WidgetName, namespace <= foo.bar.baz<.renderer>
+	var module = widgetClass.split(".");
+	var type = module.pop(); // type <= WidgetName, module <= foo.bar.baz<.renderer>
 	var regx = "\\.(" + (renderer ? renderer + '|' : '') + dojo.widget.defineWidget.renderers + ")\\.";
 	var r = widgetClass.search(new RegExp(regx));
-	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
+	module = (r < 0 ? module.join(".") : widgetClass.substr(0, r));
 
-	dojo.widget.manager.registerWidgetPackage(namespace);
+	// deprecated in favor of namespace system, remove for 0.5
+	dojo.widget.manager.registerWidgetPackage(module);
 	
-	var pos = namespace.indexOf(".");
-	var nsName = (pos > -1) ? namespace.substring(0,pos) : namespace;
-	dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
-	if(nsName != "dojo"){
-		// 2006/06/26 Providing a duplicate dojo handler is a deprecation
-		// and should eventually be removed from code
-		dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
-	}
+	var pos = module.indexOf(".");
+	var nsName = (pos > -1) ? module.substring(0,pos) : module;
 
+	// FIXME: hrm, this might make things simpler
+	//dojo.widget.tags.addParseTreeHandler(nsName+":"+type.toLowerCase());
+	
 	props=(props)||{};
 	props.widgetType = type;
 	if((!init)&&(props["classConstructor"])){

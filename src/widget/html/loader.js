@@ -737,7 +737,7 @@ dojo.widget.html.loader = new (function(){
 							try{
 								eval(requires[i]);
 							} catch(e){
-								e._text = "Error in packageloading calls, "+(e.description||e);
+								e._text = "dojo.widget.html.loader.hookUp: error in package loading calls, "+(e.description||e);
 								handleDefaults.call(this, e, "onContentError", true);
 							}
 						}

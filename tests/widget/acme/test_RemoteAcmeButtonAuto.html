@@ -4,13 +4,12 @@
 <html>
 <head>
 
-<title>Dojo Button Widget Test</title>
+<title>Auto-Require Acme Button Test</title>
 
 <script type="text/javascript">
-	
 	var djC = "djConfig"; // this isnt allowed! becomes var djC = "";
-	var djConfig = {isDebug: true,  debugAtAllCosts: true };
-	djConfig.debugAtAllCosts = true; var a=0;var b=0;var c=0;
+	var djConfig = {isDebug: true, debugAtAllCosts: true };
+	djConfig.debugAtAllCosts = false; var a=0;var b=0;var c=0;
 	if (a<b || b>c){	
 		aksd = 65/87;
 	}
@@ -24,23 +23,17 @@
 </script>
 
 <script>
-	// Load user custom button
+	// Load custom button
 	
-	// 1. set directory for acme package (which contains widgets)
-	// The path is relative to the dojo/ directory, so typically
-	// it's something like "../acme"
-// 	dojo.hostenv.setModulePrefix('acme', 'tests/widget/acme');
-// 	dojo.widget.manager.registerWidgetPackage('acme');
-	dojo.defineNamespace("acme.ns",
-						"tests/widget/acme","acme", 
-						function(name){ 
-							return "acme."+dojo.string.capitalize(name);
-						},
-						"acme");
+	// 1. Map acme module to a path relative to the dojo/ directory. 
+	//    Typically it's something like "../acme".
+	dojo.registerModulePath("acme", "tests/widget/acme");
 	
-	
-	// 2. load the user defined button
-	dojo.require("acme.UserButton");
+	// 2. register a namespace resolver to locate 'acme.widget' module automagically
+	dojo.registerNamespace("acme", "acme.widget", 
+		function(name){ 
+			return "acme."+dojo.string.capitalize(name);
+		});
 </script>
 
 <style>
@@ -53,7 +46,6 @@
 		float: left;
 		margin-right: 10px;
 	}
-	
 </style>
 </head>
 <body>
@@ -69,13 +61,13 @@ Here's an example:</p>
   }
 </style>
 <div class="box">
-	<button dojoType="acme:UserButton" onclick='dojo.debug("short");'>
+	<button dojoType="acme:Button" onclick='dojo.debug("short");'>
 		<div class="dc">short</div>
 	</button>
-	<button dojoType="acme:UserButton" onclick='dojo.debug("longer");'>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer");'>
 		<div class="dc">bit longer</div>
 	</button>
-	<button dojoType="acme:UserButton" onclick='dojo.debug("longer yet");'>
+	<button dojoType="acme:Button" onclick='dojo.debug("longer yet");'>
 		<div class="dc">ridiculously long</div>
 	</button>
 	<div style="clear: both;"></div>

@@ -4,6 +4,20 @@ dojo.require("dojo.widget.Manager");
 dojo.require("dojo.dom");
 dojo.require("dojo.namespace");
 
+//
+// dojoML parser should be moved out of 'widget', codifying the difference between a 'component'
+// and a 'widget'. A 'component' being anything that can be generated from a tag.
+//
+// a particular dojoML tag would be handled by a registered tagHandler with a hook for a default handler
+// if the widget system is loaded, a widget builder would be attach itself as the default handler
+// 
+// widget tags are no longer registered themselves:
+// they are now arbitrarily namespaced, so we cannot register them all, and the non-prefixed portions 
+// are no longer guaranteed unique 
+// 
+// therefore dojo.widget.tags should go with this parser code out of the widget module
+//
+
 dojo.widget.Parse = function(fragment){
 	this.propertySetsList = [];
 	this.fragment = fragment;
@@ -14,49 +28,34 @@ dojo.widget.Parse = function(fragment){
 		// if we have items to parse/create at this level, do it!
 		try{
 			if((frag)&&(frag["tagName"])&&(frag!=frag["nodeRef"])){
+				
+				// these are in fact, not ever for widgets per-se anymore, 
+				// but for other markup elements (aka components)
 				var djTags = dojo.widget.tags;
-				// we split so that you can declare multiple
-				// non-destructive widgets from the same ctor node
+				
+				// we split so that you can declare multiple 
+				// non-destructive components from the same ctor node
 				var tna = String(frag["tagName"]).split(";");
 				for(var x=0; x<tna.length; x++){
 					var ltn = (tna[x].replace(/^\s+|\s+$/g, "")).toLowerCase();
-					var pos = ltn.indexOf(":");
-					var nsName = (pos > 0) ? ltn.substring(0,pos) : null;
-					//if we don't already have a tag registered for this widget, try to load it's
-					//namespace, if it has one
-					if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn) && pos>0){				    					
-						var ns = dojo.getNamespace(nsName);
-						var tagName = ltn.substring(pos+1,ltn.length);
-						var domain = null;
-						var dojoDomain = frag[ltn]["dojoDomain"] || frag[ltn]["dojodomain"]; 
-						if(dojoDomain){
-							domain = dojoDomain[0].value;
-						}
-						if(ns){
-						    ns.load(tagName, domain);
-						}
-					    
-					}
-					
-					if(!djTags[ltn]){
-						dojo.deprecated('dojo.widget.Parse.createComponents', 'Widget not defined for namespace \''+nsName+
-							'\', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
-	
-						var newNs = dojo.findNamespaceForWidget(tagName);
-						if(newNs){
-							ltn = newNs.nsPrefix + ":" + (ltn.indexOf(":")> 0 ? ltn.substring(ltn.indexOf(":")+1) : ltn);
-						}
-					}
-	
+					// FIXME: unsure what this does
+					frag.tagName = ltn;
 					if(djTags[ltn]){
 						built = true;
-						frag.tagName = ltn;
 						var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
 						comps.push(ret);
-					}else{
-						if(dojo.lang.isString(ltn) && nsName && dojo._namespaces[nsName]){
-							dojo.debug("no tag handler registered for type: ", ltn);
-						} 
+					} else {
+						// we require a namespace prefix, default to dojo:
+						if (ltn.indexOf(":") == -1){
+							ltn = "dojo:"+ltn;
+						}
+						// FIXME: handling failure condition correctly?
+						//var ret = djTags[ltn](frag, this, parentComp, frag["index"]);
+						var ret = dojo.widget.buildWidgetFromParseTree(ltn, frag, this, parentComp, frag["index"]);
+						if (ret) {
+							built = true;
+							comps.push(ret);
+						}
 					}
 				}
 			}
@@ -92,6 +91,7 @@ dojo.widget.Parse = function(fragment){
 	*/
 	this.parsePropertySets = function(fragment){
 		return [];
+		/*
 		var propertySets = [];
 		for(var item in fragment){
 			if((fragment[item]["tagName"] == "dojo:propertyset")){
@@ -101,6 +101,7 @@ dojo.widget.Parse = function(fragment){
 		// FIXME: should we store these propertySets somewhere for later retrieval
 		this.propertySetsList.push(propertySets);
 		return propertySets;
+		*/
 	}
 	
 	/*  parseProperties checks a raw JavaScript object structure for
@@ -111,8 +112,7 @@ dojo.widget.Parse = function(fragment){
 		for(var item in fragment){
 			// FIXME: need to check for undefined?
 			// case: its a tagName or nodeRef
-			if((fragment[item] == fragment["tagName"])||
-				(fragment[item] == fragment.nodeRef)){
+			if((fragment[item] == fragment["tagName"])||(fragment[item] == fragment.nodeRef)){
 				// do nothing
 			}else{
 				if((fragment[item]["tagName"])&&
@@ -229,45 +229,15 @@ dojo.widget.Parse = function(fragment){
 		namespace is the namespace of the widget.  Defaults to "dojo"
 	*/
 	this.createComponentFromScript = function(nodeRef, componentName, properties, ns){
-		if(!ns){ ns = "dojo"; }
-		var ltn = ns + ":" + componentName.toLowerCase();
-		
-		var djTags = dojo.widget.tags;
-		//if we don't already have a tag registered for this widget, try to load it's
-		//namespace, if it has one
-		if(!djTags[ltn] && dojo.getNamespace && dojo.lang.isString(ltn)){		    
-			var nsObj = dojo.getNamespace(ns);
-			if(nsObj){nsObj.load(componentName);}
+		properties.fastMixIn = true;			
+		// FIXME: we pulled it apart and now we put it back together ... 
+		var ltn = (ns || "dojo") + ":" + componentName.toLowerCase();
+		if(dojo.widget.tags[ltn]){
+			return [dojo.widget.tags[ltn](properties, this, null, null, properties)];
 		}
-		
-		if(!djTags[ltn]){
-			dojo.deprecated('dojo.widget.Parse.createComponentFromScript', 'Widget not defined for namespace \''+
-				ns +
-				'\', so searching all namespaces. Developers should specify namespaces for all non-Dojo widgets', "0.5");						
-
-			var newNs = dojo.findNamespaceForWidget(componentName.toLowerCase());
-			if(newNs){
-				var newLtn = newNs.nsPrefix + ":"+(ltn.indexOf(":")> 0 ? ltn.substring(ltn.indexOf(":")+1) : ltn);
-				properties[newLtn]=properties[ltn];
-				properties.namespace = newNs.nsPrefix;
-				ltn = newLtn;
-			}
-		}
-		
-		if(djTags[ltn]){
-			properties.fastMixIn = true;			
-			//dojo.profile.start("dojo.widget.tags - "+ltn);
-			//var ret = [dojo.widget.tags[ltn](properties, this, null, null, properties)];
-			var ret = [dojo.widget.buildWidgetFromParseTree(ltn, properties, this, null, null, properties)];
-			//dojo.profile.end("dojo.widget.tags - "+ltn);
-			return ret;
-		}else{
-			dojo.debug("no tag handler registered for type: ", ltn);
-		}
-
+		return [dojo.widget.buildWidgetFromParseTree(ltn, properties, this, null, null, properties)];
 	}
 }
-
 
 dojo.widget._parser_collection = {"dojo": new dojo.widget.Parse() };
 dojo.widget.getParser = function(name){
@@ -293,7 +263,6 @@ dojo.widget.getParser = function(name){
  */
 
 dojo.widget.createWidget = function(name, props, refNode, position){
-
 	var isNode = false;
 	var isNameStr = (typeof name == "string");
 	if(isNameStr){
@@ -302,17 +271,17 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 		if(pos > -1){ name = name.substring(pos+1); }
 		var lowerCaseName = name.toLowerCase();
 		var namespacedName = ns + ":" + lowerCaseName;
-		isNode = ( dojo.byId(name) && (!dojo.widget.tags[namespacedName]) ); 
+		isNode = (dojo.byId(name) && (!dojo.widget.tags[namespacedName])); 
 	}
 
-	if( (arguments.length == 1) && ((isNode)||(!isNameStr)) ){
+	if((arguments.length == 1) && ((isNode)||(!isNameStr))){
 		// we got a DOM node 
 		var xp = new dojo.xml.Parse(); 
 		// FIXME: we should try to find the parent! 
 		var tn = (isNode) ? dojo.byId(name) : name; 
 		return dojo.widget.getParser().createComponents(xp.parseElement(tn, null, true))[0]; 
 	}
-
+	
 	function fromScript(placeKeeperNode, name, props, ns){
 		props[namespacedName] = { 
 			dojotype: [{value: lowerCaseName}],
@@ -320,8 +289,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 			fastMixIn: true
 		};
 		props.namespace = ns;
-		return dojo.widget.getParser().createComponentFromScript(
-			placeKeeperNode, name, props, ns);
+		return dojo.widget.getParser().createComponentFromScript(placeKeeperNode, name, props, ns);
 	}
 
 	props = props||{};

@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Widgets and Namespaces Test</title>
+<script>djConfig = { isDebug: true };</script>
+<script src="../../../dojo.js"></script>
+<script>
+	dojo.require("dojo.widget.*");
+	//
+	// old style button with no namespace awareness
+	dojo.widget.defineWidget("my.widget.OldButton", dojo.widget.HtmlWidget, {
+		fillInTemplate: function() {
+			dojo.event.connect(this.domNode, 'onclick', function() {
+				alert("Old!");
+			});
+		}
+	});
+	//
+	// conventional namespaced button
+	dojo.widget.defineWidget("my.widget.Button", dojo.widget.HtmlWidget, {
+		fillInTemplate: function() {
+			dojo.event.connect(this.domNode, 'onclick', function() {
+				alert("New!");
+			});
+		}
+	});
+	//
+	// button in a custom module
+	dojo.widget.defineWidget("foo.bar.Button", dojo.widget.HtmlWidget, {
+		fillInTemplate: function() {
+			dojo.event.connect(this.domNode, 'onclick', function() {
+				alert("Foo!");
+			});
+		}
+	});
+	// register the mapping from 'foo' namespace to our custom module
+	dojo.registerNamespace("foo", "foo.bar");
+
+</script>
+</head>
+<body>
+<div dojoType="OldButton">[Old Button]</div>
+<div dojoType="my:Button">[New Button]</div>
+<div dojoType="foo:Button">[Foo Button]</div>
+<br />
+</body>
+</html>

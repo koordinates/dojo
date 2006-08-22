@@ -24,20 +24,19 @@ dojo.widget.defineWidget(
 		this._ioBindObj;
 
 		// loading option
-		this.bindArgs = {};		// example bindArgs="preventCache:false;" overrides cacheContent
-	},
-	{
+		this.bindArgs = {}; // example bindArgs="preventCache:false;" overrides cacheContent
+	}, {
 		isContainer: true,
 
 		// loading options
-		adjustPaths: 	true,	// fix relative paths in content to fit in this page
-		href: 			"",		// only usable on construction, use setUrl or setContent after that
+		adjustPaths: true, // fix relative paths in content to fit in this page
+		href: "", // only usable on construction, use setUrl or setContent after that
 		extractContent: true,	// extract visible content from inside of <body> .... </body>
-		parseContent: 	true,	// construct all widgets that is in content
-		cacheContent: 	true,
-		preload: 		false,	// force load of data even if pane is hidden
-		refreshOnShow:	false,	// use with cacheContent: false
-		handler: "",			// generate pane content from a java function
+		parseContent:	true,	// construct all widgets that is in content
+		cacheContent:	true,
+		preload: false,	// force load of data even if pane is hidden
+		refreshOnShow: false,	// use with cacheContent: false
+		handler: "", // generate pane content from a java function
 		executeScripts: false,	// if true scripts in content will be evaled after content is innerHTML'ed
 
 		postCreate: function(args, frag, parentComp){
@@ -76,7 +75,6 @@ dojo.widget.defineWidget(
 				this.isLoaded=true;
 			}
 		},
-	
 		
 		setUrl: function(/*String or dojo.uri.Uri*/ url) {
 			// summary:
@@ -329,7 +327,7 @@ dojo.widget.defineWidget(
 				var regexSrc = /src=(['"]?)([^"']*)\1/i;
 				var regexDojoJs = /.*(\bdojo\b\.js(?:\.uncompressed\.js)?)$/;
 				var regexInvalid = /(?:var )?\bdjConfig\b(?:[\s]*=[\s]*\{[^}]+\}|\.[\w]*[\s]*=[\s]*[^;\n]*)?;?|dojo\.hostenv\.writeIncludes\(\s*\);?/g;
-				var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix)|defineNamespace)\((['"]).*?\1\)\s*;?/;
+				var regexRequires = /dojo\.(?:(?:require(?:After)?(?:If)?)|(?:widget\.(?:manager\.)?registerWidgetPackage)|(?:(?:hostenv\.)?setModulePrefix|registerModulePath)|defineNamespace)\((['"]).*?\1\)\s*;?/;
 
 				while(match = regex.exec(s)){
 					if(this.executeScripts && match[1]){
@@ -457,7 +455,7 @@ dojo.widget.defineWidget(
 						try{
 							eval(data.requires[i]);
 						} catch(e){
-							e._text = "Error in packageloading calls, "+e.description;
+							e._text = "ContentPane: error in package loading calls, " + (e.description||e);
 							this._handleDefaults(e, "onContentError", true);
 						}
 					}
@@ -549,4 +547,3 @@ dojo.widget.defineWidget(
 		}
 	}
 );
-

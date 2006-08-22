@@ -25,11 +25,15 @@
 			dojo: {name: "dojo", value: "src"}
 		},
 	
-	
 		setModulePrefix: function(module, prefix){
 			this.modulePrefixes_[module] = {name: module, value: prefix};
 		},
 	
+		moduleHasPrefix: function(module){
+			var mp = this.modulePrefixes_;
+			return Boolean((mp[module])&&(mp[module]["name"]));
+		},
+		
 		getModulePrefix: function(module){
 			var mp = this.modulePrefixes_;
 			if((mp[module])&&(mp[module]["name"])){
@@ -220,57 +224,6 @@ dojo.hostenv.getModuleSymbols = function(modulename) {
 	return syms;
 }
 
-//list of all defined namespaces
-dojo._namespaces = {};
-
-(function(){
-//list of namespaces being loaded, to prevent recursion
-var loadingNamespaces = {};
-
-//list of all namespaces that were needed, but didn't have the required file in the dojo/src/namespaces folder. 
-//This list ensures that a namespace will only be looked for once, rather than repeatedly trying to load the namespace descriptor file
-var failedNamespaces = {};
-
-//This returns a namespace with the given short name.  If the namespace has not been loaded already, it tries to load it. 
-dojo.getNamespace = function(nsPrefix){
-	if(!dojo._namespaces[nsPrefix] && !failedNamespaces[nsPrefix]){
-		function inArray(arr, match){
-			if(arr){
-				if(!(arr instanceof Array)){arr=[arr];}
-				for(var i=0; i<arr.length; i++){
-					if(arr[i]==match){return true;}
-				}
-			}
-		}
-
-		//if the user has specified that this namespace should not be loaded, return false.
-		if(inArray(djConfig.excludeNamespace, nsPrefix)){return false;}
-
-		//If the user has specified of namespaces that SHOULD be included, and this is not one of them, return false
-		//Assume that "dojo" should be loaded regardless
-		var incl=djConfig.includeNamespace;
-		if((nsPrefix != "dojo") && incl && !inArray(incl, nsPrefix)){return false;}
-
-		var req = dojo.require;
-		if(!loadingNamespaces[nsPrefix]){
-			loadingNamespaces[nsPrefix]=true;
-			//dojo namespace file is always in the Dojo namespace folder, not a custom namespace folder
-			if(nsPrefix=="dojo"){dojo.require("dojo.namespaces.dojo");}
-			else{
-				var dojoNsNamespace = dojo.getNamespace("_dojoNamespaces");
-				dojoNsNamespace.load(nsPrefix, null, true);
-			}
-			loadingNamespaces[nsPrefix]=false;
-			if(!dojo._namespaces[nsPrefix]){
-				failedNamespaces[nsPrefix] = true; //only look for a namespace once
-			}
-		}
-	}
-
-	return dojo._namespaces[nsPrefix];
-};
-})();
-
 /**
 * loadModule("A.B") first checks to see if symbol A.B is defined. 
 * If it is, it is simply returned (nothing to do).
@@ -317,7 +270,15 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
 	var nsyms = modulename.split(".");
-	dojo.getNamespace(nsyms[0]);
+	
+	// this line allowed loading of a module manifest as if it were a namespace
+	// it's an interesting idea, but shouldn't be combined with 'namespaces' proper
+	// and leads to unwanted dependencies
+	// the effect can be achieved in other (albeit less-flexible) ways now, so I am
+	// removing this pending further design work
+	// perhaps we can explicitly define this idea of a 'module manifest', and subclass
+	// 'namespace manifest' from that
+	//dojo.getNamespace(nsyms[0]);
 
 	var syms = this.getModuleSymbols(modulename);
 	var startedRelative = ((syms[0].charAt(0) != '/')&&(!syms[0].match(/^\w+:/)));
@@ -326,7 +287,6 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// things slightly diffrently
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
-
 		while(syms.length){
 			syms.pop();
 			syms.push(this.pkgFileName);
@@ -474,7 +434,7 @@ dojo.registerModulePath = function(module, prefix){
 }
 
 dojo.setModulePrefix = function(module, prefix){
-	dojo.deprecated("dojo.setModulePrefix", "replaced by dojo.registerModulePath", "0.5");
+	dojo.deprecated('dojo.setModulePrefix("' + module + '", "' + prefix + '")', "replaced by dojo.registerModulePath", "0.5");
 	return dojo.registerModulePath(module, prefix);
 }
 

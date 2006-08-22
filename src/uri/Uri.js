@@ -6,6 +6,9 @@ dojo.uri = new function() {
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri(), uri);
 	}
 
+	// FIXME: Introduces an unwanted dependency. What is this used for? It can be repositioned as a
+	// utility function in another module.
+	/*
 	//returns a URI of a widget in a namespace, for example dojo.uri.nsUri("dojo","Editor"), or dojo.uri.nsUri("customNS","someWidget")
 	this.nsUri = function(ns,uri){
 		var ns = dojo.getNamespace(ns);
@@ -18,6 +21,7 @@ dojo.uri = new function() {
 		}
 		return new dojo.uri.Uri(dojo.hostenv.getBaseScriptUri()+loc,uri);
 	} 
+	*/
 
 	this.Uri = function (/*uri1, uri2, [...]*/) {
 		// An object representing a Uri.
