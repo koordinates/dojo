@@ -123,20 +123,21 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		var url = this.RpcUrl;
 		
 		if (url.indexOf("/") != 0) { // not absolute
-			var prefix = document.location.href;
+			var protocol = document.location.href.replace(/:\/\/.*/,'');
+			var prefix = document.location.href.substring(protocol.length+3);
+			
 			if (prefix.lastIndexOf("/") != prefix.length-1) {
 				prefix = prefix.replace(/\/[^\/]+$/,'/'); // strip file name
 			}
 			if (prefix.lastIndexOf("/") != prefix.length-1) {
 				prefix = prefix+'/'; // add / if not exists it all
 			}
-			//dojo.debug(prefix);
 			//dojo.debug(url);
-			url = prefix + url;
+			url = protocol + '://' + prefix + url;
 		}
 			
 
-		return url + ( url.indexOf("?") > -1 ? "&" : "?") + this.RpcActionParam+"="+action;
+		return url + (url.indexOf("?")>-1 ? "&" : "?") + this.RpcActionParam+"="+action;
 	},
 
 
