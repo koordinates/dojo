@@ -19,6 +19,31 @@ dojo.require("dojo.lang.assert");
 var gTestContainer = null;
 var gTests = {};
 
+function isEqual(foo, bar, prefix)
+{
+    var flag = true;
+    if( foo != bar ) {
+        dojo.debug(prefix+":"+foo + "!=" + bar + " try dig into it" );
+        if( foo instanceof Array ) {
+            for( var i = 0; i< foo.length; i++ ) {
+                flag = isEqual(foo[i], bar[i], prefix+"["+i+"]") && flag;
+            }
+            flag = false;
+        } else {
+            for(var x in foo) {
+                if(bar[x] != undefined ) {
+                    flag = isEqual(foo[x], bar[x], prefix+"."+x) && flag;
+                } else {
+                    dojo.debug(prefix+":"+ x + " is undefined in bar" );
+                    flag = false;
+                }
+            }
+        }
+    }
+    return flag;
+}
+
+
 function getTestSurface(testName, testDescription, width, height) 
 {
    width = width ? width : 300;
@@ -218,22 +243,13 @@ dojo.addOnLoad(function()
 
               // FIXME: more generic method to compare two dictionary?
               dojo.debug("attach shape: ");
-              for (x in red_rect.shape ) {
-                dojo.lang.assert( ar.shape[x] == red_rect.shape[x], "shape property "+x+" error: ar="+ar.shape[x]+", ref="+red_rect.shape[x] );
-              }
+              isEqual(ar.shape, red_rect.shape, "rect.shape");
               dojo.debug("attach matrix: ");
-              for (x in red_rect.matrix ) {
-                // FIXME: the coordination is really confusing !!
-                if ( ar.matrix[x] != red_rect.matrix[x]) dojo.debug("matrix property "+x+" error: ar="+ar.matrix[x]+", ref="+red_rect.matrix[x] ); 
-              }
+              isEqual(ar.matrix, red_rect.matrix, "rect.matrix");
               dojo.debug("attach strokeStyle: ");
-              for (x in red_rect.strokeStyle) {
-                if( ar.strokeStyle[x] != red_rect.strokeStyle[x]) dojo.debug("strokeStyle:"+x+" error : ar="+ar.strokeStyle[x]+", ref="+red_rect.strokeStyle[x] ); 
-              }
+              isEqual(ar.strokeStyle, red_rect.strokeStyle, "rect.strokeStyle");
               dojo.debug("attach fillStyle: ");
-              for (x in red_rect.fillStyle) {
-                if( ar.fillStyle[x] != red_rect.fillStyle[x] ) dojo.debug("fillStyle:"+x+" error : ar="+ar.fillStyle[x]+", ref="+red_rect.fillStyle[x] ); 
-              }
+              isEqual(ar.fillStyle, red_rect.fillStyle, "rect.fillStyle");
            });
    
    addTest('rotated_rect', function(testName){
@@ -442,6 +458,7 @@ dojo.addOnLoad(function()
               // this is an example to split the linearGradient from setFill:
               var lg = new dojo.gfx.LinearGradient({x1:0, y1:0, x2:75, y2:50} ).
                 addStop({ offset:"5%", color:new dojo.graphics.color.Color("#F60") }).
+                addStop({ offset:"55%", color:new dojo.graphics.color.Color("#FAF") }).
                 addStop({ offset:"95%", color:new dojo.graphics.color.Color("#FF6") });
 
               lgr = surface.createRect(rect).setFill(lg).
@@ -449,28 +466,17 @@ dojo.addOnLoad(function()
 
               var ar = dojo.gfx.attachNode(lgr.rawNode);
               // FIXME: more generic method to compare two dictionary?
-              for (var x in lgr.shape ) {
-                dojo.lang.assert( ar.shape[x] == lgr.shape[x] );
-              }
-              for (var x in lgr.matrix ) {
-                dojo.lang.assert( ar.matrix[x] == lgr.matrix[x] );
-              }
-
-              // fillStyle
-              // gradient
-              for( var x in ar.fillStyle.gradient ) {
-                dojo.lang.assert( ar.fillStyle.gradient[x] == lgr.fillStyle.gradient[x] );
-              }
-
-              // stop
-              for(var i = 0; i< ar.fillStyle.stops.length; i++ ) {
-                dojo.debug("offset=" + ar.fillStyle.stops[i].offset + " color=" + ar.fillStyle.stops[i].color);
-              }
-
-              dojo.lang.assert(ar.fillStyle.id == lgr.fillStyle.id);
-
-              // not safe, consider the alpha value.
-              dojo.lang.assert( ar.strokelStyle == lgr.strokelStyle );
+              dojo.debug("attach_gradient!");
+              
+              dojo.debug("attach shape: ");
+              isEqual(lgr.shape, ar.shape, "rect.shape");
+              dojo.debug("attach matrix: ");
+              isEqual(lgr.matrix, ar.matrix, "rect.matrix");
+              dojo.debug("attach strokeStyle: ");
+              isEqual(lgr.strokeStyle, ar.strokeStyle, "rect.strokeStyle");
+              dojo.debug("attach fillStyle: ");
+              isEqual(lgr.fillStyle.gradient, ar.fillStyle.gradient, "rect.fillStyle.gradient");
+              isEqual(lgr.fillStyle.id, ar.fillStyle.id, "rect.fillStyle.id");
            });
    
 var gTestsToRun = [
@@ -480,7 +486,7 @@ var gTestsToRun = [
    'skew_rect',
    'matrix_rect', 
    'attach',
-   //'attach_gradient',
+   'attach_gradient',
    'circle',
    'arcTo',
    'line',

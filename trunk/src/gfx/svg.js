@@ -141,27 +141,7 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 						def = defs[i];
 						if( def.getAttribute("id") == url ) {
 							// bingo, we have found the gradient.
-							fillStyle = {id:url, rawNode:def, gradient:{}, stops:null };
-
-							// FIXME: stinks, move this to a new private function
-							for( var i = 0; i< def.attributes.length; i++ ) {
-								attr = def.attributes[i];
-								fillStyle.gradient[attr.name] = attr.value;
-							}
-							delete fillStyle.gradient["id"];
-							
-							// build the stops
-							if( def.hasChildNodes() ) {
-								fillStyle.stops = new Array;
-								stops = def.childNodes;
-								for( var i = 0; i< stops.length; i++ ) {
-									stop = { offset:null, color:null };
-									stop.offset = stops[i].getAttribute("offset");
-									stop.color = new dojo.graphics.color.Color( stops[i].getAttribute("stop-color"));
-									fillStyle.stops.push( stop );
-								}
-							} 
-							break;
+                            return new dojo.gfx.LinearGradient(def);
 						}
 					}
 				}
@@ -176,10 +156,10 @@ dojo.lang.extend(dojo.gfx.svg.Shape, {
 	},
 
 	attachStroke: function(rawNode) {
-		strokeStyle = {color:null, widht:1, cap:"butt", join:4};
+		strokeStyle = {color:null, width:1, cap:"butt", join:4};
 		if(rawNode) {
 			stroke = rawNode.getAttribute("stroke");
-			dojo.debug("stroke = " + stroke );
+            if( stroke == null ) return null;
 			color = new dojo.graphics.color.Color(stroke);
 			if( color ) {
 				// a color object !
@@ -577,6 +557,25 @@ dojo.lang.extend(dojo.gfx.svg.Gradient, {
 		this.rawNode.setAttribute("id", this.id);
 		return this;
 	},
+    attach: function(rawNode) {
+        this.rawNode = rawNode;
+		for(it in this.gradient) {
+			this.gradient[it] = this.rawNode.getAttribute(it); 
+		}
+        this.id = this.rawNode.getAttribute("id"); 
+
+        //stops
+        var stops = rawNode.getElementsByTagName("stop");
+        this.stops = new Array;
+        for( var i = 0; i< stops.length; i++ ) {
+            var stop = {};
+            stop["offset"] = stops[i].getAttribute("offset");
+            stop["color"] = new dojo.graphics.color.Color( stops[i].getAttribute("stop-color") );
+            this.stops.push( stop );
+        }
+
+        return this;
+    },
 	getId: function(){ return this.id; },
 	getRawNode: function(){  return this.rawNode; }
 });
@@ -585,7 +584,11 @@ dojo.declare("dojo.gfx.svg.LinearGradient", dojo.gfx.svg.Gradient, {
 	nodeType: "linearGradient",
 	initializer: function( newGradient ) {
 		this.gradient = { x1:"0%", y1:"0%", x2:"100%", y2:"0%", gradientUnits:"userSpaceOnUse"};
-		this.setGradient(newGradient);
+        if( newGradient.getElementsByTagName != undefined ) {
+            this.attach(newGradient);
+        } else {  
+		    this.setGradient(newGradient);
+        }
 	}
 });
 
