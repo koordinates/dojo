@@ -124,12 +124,14 @@ dojo.lang.extend(dojo.widget.TreeLoadingControllerV3, {
 		
 		if (url.indexOf("/") != 0) { // not absolute
 			var prefix = document.location.href;
-			if (prefix.indexOf("/") != prefix.length-1) {
+			if (prefix.lastIndexOf("/") != prefix.length-1) {
 				prefix = prefix.replace(/\/[^\/]+$/,'/'); // strip file name
 			}
-			if (prefix.indexOf("/") != prefix.length-1) {
+			if (prefix.lastIndexOf("/") != prefix.length-1) {
 				prefix = prefix+'/'; // add / if not exists it all
 			}
+			//dojo.debug(prefix);
+			//dojo.debug(url);
 			url = prefix + url;
 		}
 			
